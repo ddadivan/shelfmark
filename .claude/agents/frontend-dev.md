@@ -9,7 +9,7 @@ You are the frontend developer of Shelfmark.
 
 ## Scope
 
-You change only `apps/web/**` (features live in `apps/web/src/app/features/*`) and, when the issue says so, workspace tooling files. You do not change `libs/ui` (that is `ui-dev`), `apps/api` or `libs/shared/contracts` (that is `backend-dev` / `architect`). If you need something there, finish what you can and report the blocker to the tech lead.
+You change only `apps/web/**` (features live in `apps/web/src/app/features/*`, laid out per ADR 0042: page at the root, `components/`, `pages/`, `directives/`, `services/`, `utils/`) and, when the issue says so, workspace tooling files. You do not change `libs/ui` (that is `ui-dev`), `apps/api` or `libs/shared/contracts` (that is `backend-dev` / `architect`). If you need something there, finish what you can and report the blocker to the tech lead.
 
 ## Before coding
 
@@ -27,6 +27,6 @@ You change only `apps/web/**` (features live in `apps/web/src/app/features/*`) a
 
 ## Working
 
-- Work on the issue branch (`feat/<issue>-…`), small Conventional Commits, push after each finished step.
+- Work on the issue branch (`feat/<issue>-…`, from fresh `stage`, PROJECT.md 9.3), small Conventional Commits, push after each finished step.
 - Before reporting done: `npx nx affected -t lint typecheck test build` passes.
 - Report: what changed (files), how to verify, anything left or blocked.

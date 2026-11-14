@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Search</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/shelfmark/tokens.css">
+<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+mark{background:var(--accent-bg);color:var(--accent-text);border-radius:3px;padding:0 1px}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<div aria-hidden="true" style="position: absolute; inset: 0; display: flex; flex-direction: column;">
+<div style="height: 60px; border-bottom: 1px solid var(--border); background: var(--surface);"></div>
+<div style="flex: 1; display: flex;"><div style="width: 248px; border-right: 1px solid var(--border); background: var(--surface);"></div><div style="flex: 1;"></div></div>
+</div>
+<div style="position: absolute; inset: 0; background: var(--overlay); display: flex; justify-content: center; padding: 96px 24px 24px;">
+<div class="sm-pop-in" role="dialog" aria-modal="true" aria-label="Search" style="width: 100%; max-width: 640px; height: fit-content; background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-popover); overflow: hidden;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border);">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" style="color: var(--text-muted)"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+<input value="signal" aria-label="Search links, folders and tags" style="flex: 1; border: 0; outline: 0; background: transparent; font: 400 17px/24px Onest, sans-serif; color: var(--text);">
+<span class="sm-kbd">Esc</span>
+</label>
+<div style="padding: 8px; display: flex; flex-direction: column; gap: 2px;">
+<div class="sm-tree__section" style="padding: 8px 12px 4px;">3 links</div>
+<a href="#" class="sm-row is-selected" style="text-decoration: none;"><span class="sm-favicon">Y</span><span class="sm-row__main"><span class="sm-row__title">Angular 22: everything about <mark>Signal</mark> Forms in 20 minutes</span><span class="sm-row__meta">youtube.com, in Work / Angular</span></span><span class="sm-kbd">↵</span></a>
+<a href="#" class="sm-row" style="text-decoration: none;"><span class="sm-favicon">D</span><span class="sm-row__main"><span class="sm-row__title">NgRx <mark>Signal</mark>Store: patterns for real apps</span><span class="sm-row__meta">dev.to, in Work / Angular</span></span></a>
+<a href="#" class="sm-row" style="text-decoration: none;"><span class="sm-favicon">M</span><span class="sm-row__main"><span class="sm-row__title"><mark>Signal</mark>s vs RxJS: when to use which</span><span class="sm-row__meta">medium.com, note matches: interview prep</span></span></a>
+<div class="sm-tree__section" style="padding: 12px 12px 4px;">Folders and tags</div>
+<a href="#" class="sm-row" style="text-decoration: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true" style="color: var(--text-muted)"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg><span class="sm-row__main"><span class="sm-row__title">Work / Angular / <mark>Signal</mark>s</span></span><span class="sm-row__meta">5 links</span></a>
+<a href="#" class="sm-row" style="text-decoration: none;"><span class="sm-chip"><mark style="background: transparent; color: inherit; font-weight: 700;">signal</mark>s</span><span class="sm-row__main"><span class="sm-row__meta">Tag, 12 links</span></span></a>
+</div>
+<div style="display: flex; gap: 16px; padding: 10px 20px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted);">
+<span><span class="sm-kbd">↑</span> <span class="sm-kbd">↓</span> move</span><span><span class="sm-kbd">↵</span> open</span><span><span class="sm-kbd">⌘</span> <span class="sm-kbd">↵</span> open in background</span>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

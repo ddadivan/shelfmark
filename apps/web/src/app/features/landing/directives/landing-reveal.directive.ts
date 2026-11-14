@@ -1,5 +1,5 @@
 import { afterNextRender, DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
-import { LandingMotionService } from '../landing-motion.service';
+import { LandingMotionService } from '../services/landing-motion.service';
 import { LANDING_REVEAL } from '../models/landing-reveal.const';
 import { LANDING_REVEAL_STATE } from '../models/landing-reveal-state.const';
 import type { LandingRevealState } from '../models/landing-reveal-state.type';

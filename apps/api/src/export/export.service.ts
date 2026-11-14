@@ -1,3 +1,4 @@
+import { toLinkKind } from '../links/to-link-kind';
 import { Readable } from 'node:stream';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EXPORT_FORMAT, EXPORT_SCHEMA_VERSION, normalizeTagName } from '@shelfmark/contracts';
@@ -22,6 +23,7 @@ const LINK_SELECT = {
   id: true,
   url: true,
   title: true,
+  kind: true,
   note: true,
   isFavorite: true,
   folderId: true,
@@ -59,7 +61,7 @@ export class ExportService {
    */
   async prepare(userId: string, query: ExportQuery, now = new Date()): Promise<ExportFile> {
     const allFolders = await this.prisma.folder.findMany({
-      where: { userId },
+      where: { userId, deletedAt: null },
       select: { id: true, parentId: true, name: true, createdAt: true, updatedAt: true },
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
     });
@@ -71,7 +73,10 @@ export class ExportService {
     const scope = this.scopeOf(allFolders, query.folderId);
     const scopeIds = new Set(scope.map((folder) => folder.id));
     const base = this.baseWhere(userId, query, query.folderId === undefined ? null : scopeIds);
-    const filtered = this.normalizedTags(query).length > 0 || (query.q ?? '').trim() !== '';
+    const filtered =
+      this.normalizedTags(query).length > 0 ||
+      (query.q ?? '').trim() !== '' ||
+      query.kind !== undefined;
     const folders = filtered ? await this.nonEmpty(scope, byId, base) : scope;
 
     const date = now.toISOString().slice(0, 10);
@@ -138,8 +143,10 @@ export class ExportService {
         ],
       });
     }
+    if (query.kind !== undefined) and.push({ kind: query.kind });
     return {
       userId,
+      deletedAt: null,
       ...(scopeIds === null ? {} : { folderId: { in: [...scopeIds] } }),
       ...(and.length > 0 ? { AND: and } : {}),
     };
@@ -212,6 +219,7 @@ export class ExportService {
         const link: ExportLink = {
           url: row.url,
           title: row.title,
+          kind: toLinkKind(row.kind),
           note: row.note,
           isFavorite: row.isFavorite,
           folderPath: row.folderId === null ? null : this.pathOf(row.folderId, byId),

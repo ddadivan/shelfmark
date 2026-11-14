@@ -1,0 +1,100 @@
+@use '../../../styles/ui' as *;
+
+// The favorite toggle and the "..." trigger reveal on their own, so a toggled-on favorite can stay.
+.ui-card__favorite,
+.ui-card__more {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(#{rem(-2px)});
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+
+  &:empty {
+    display: none;
+  }
+
+  @include reduced-motion {
+    transform: none;
+  }
+}
+
+:host(:has(:focus-visible)) :is(.ui-card__favorite, .ui-card__more),
+:host(.ui-card--pinned) :is(.ui-card__favorite, .ui-card__more),
+:host(.ui-card--favorited) .ui-card__favorite {
+  opacity: 1;
+  transform: none;
+}
+
+// Touch has no hover: the actions are always there.
+@media (hover: none) {
+  .ui-card__favorite,
+  .ui-card__more {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// Bulk selection checkbox, top left over the preview (above the stretched link, like the actions).
+// The wrapper draws nothing: the checkbox's own solid `surface` box and `border-control` outline are
+// the one frame, readable on every placeholder tone.
+// It fades in with the actions on hover and keyboard focus, and stays while a selection runs.
+.ui-card__select {
+  position: absolute;
+
+  // Same row, size and inset as the "..." on the right: 32px squares (40px on touch).
+  --ui-checkbox-size: #{rem(32px)};
+  --ui-checkbox-hit: #{rem(32px)};
+  --ui-checkbox-radius: #{rem(10px)};
+  --ui-checkbox-tick: #{rem(20px)};
+  --ui-checkbox-fill: var(--accent);
+  --ui-checkbox-hover-bg: var(--surface-hover);
+  --ui-checkbox-pressed-bg: var(--surface-pressed);
+
+  inset: rem(10px) auto auto rem(10px);
+  z-index: 2;
+  display: flex;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  &:empty {
+    display: none;
+  }
+}
+
+:host {
+  @include hover {
+    .ui-card__select {
+      opacity: 1;
+    }
+  }
+}
+
+:host(:has(:focus-visible)) .ui-card__select,
+:host(.ui-card--selecting) .ui-card__select,
+:host(.ui-card--checked) .ui-card__select {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .ui-card__select {
+    opacity: 1;
+  }
+}
+
+// Touch: the checkbox and the "..." both grow to 40px.
+@include coarse {
+  .ui-card__select {
+    --ui-checkbox-size: #{rem(40px)};
+    --ui-checkbox-hit: #{rem(40px)};
+    --ui-checkbox-radius: #{rem(12px)};
+  }
+
+  .ui-card__actions {
+    --ui-button-sm-size: #{rem(40px)};
+    --ui-button-radius: #{rem(12px)};
+  }
+}

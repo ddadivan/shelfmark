@@ -1,0 +1,41 @@
+<form [formRoot]="form">
+  <ui-dialog
+    [title]="titleKey() | transloco: { parent: parentName() }"
+    [closeLabel]="'folders.dialog.close' | transloco"
+  >
+    <div class="folder-name__fields">
+      <ui-input
+        [label]="'folders.name.label' | transloco"
+        [placeholder]="'folders.name.placeholder' | transloco"
+        [formField]="form.name"
+      />
+
+      @if (picksParent) {
+        <ui-select
+          [label]="'folders.create.inside' | transloco"
+          [options]="parentOptions()"
+          [emptyLabel]="'folders.move.topLevel' | transloco"
+          [searchLabel]="'folders.move.searchLabel' | transloco"
+          [noResultsLabel]="'folders.move.noResults' | transloco"
+          searchable
+          [formField]="form.parentId"
+        />
+      }
+
+      @if (failed()) {
+        <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'folders.create.failed' | transloco }}</ui-notice>
+      }
+    </div>
+
+    <ui-button slot="footer" [disabled]="saving()" (click)="cancel()">{{
+      'folders.dialog.cancel' | transloco
+    }}</ui-button>
+    <ui-button
+      slot="footer"
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Primary"
+      [loading]="saving()"
+      >{{ (saving() ? savingKey() : actionKey()) | transloco }}</ui-button
+    >
+  </ui-dialog>
+</form>

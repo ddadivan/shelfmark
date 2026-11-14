@@ -1,0 +1,14 @@
+@if (imageSrc(); as url) {
+  <img
+    class="ui-avatar__image"
+    alt=""
+    referrerpolicy="no-referrer"
+    decoding="async"
+    [src]="url"
+    (error)="failed.set(true)"
+  />
+} @else if (initials(); as letters) {
+  <span class="ui-avatar__initials" aria-hidden="true" [attr.data-initials]="letters"></span>
+} @else {
+  <ui-icon name="user" [size]="iconSize()" />
+}

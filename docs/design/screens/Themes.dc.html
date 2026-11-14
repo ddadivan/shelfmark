@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Settings · Appearance</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=Atkinson+Hyperlegible:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+.sw{width:34px;height:34px;border-radius:50%;border:0;cursor:pointer;padding:0}
+.bgt{border:0;padding:0;background:transparent;cursor:pointer;text-align:left;font:500 13px/18px var(--font-sans);color:var(--text)}
+.bgt span.b{display:block;height:56px;border-radius:14px;box-shadow:var(--shadow-card)}
+.thg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;width:100%;margin-top:12px}
+.thb{position:relative;display:block;height:68px;border-radius:16px;overflow:hidden}
+.cust{background:var(--bg);border-radius:18px;padding:4px 16px;margin:0 0 14px}
+.cust .sm-setting:first-of-type{padding-top:14px}
+.pv{transition:all var(--duration-base) var(--ease-out)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 1900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; box-sizing: border-box; align-items: flex-start;">
+
+<nav aria-label="Settings" style="flex: 1 1 220px; max-width: 248px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+<a href="#" class="sm-btn sm-btn--ghost sm-btn--sm" style="text-decoration: none; align-self: flex-start; margin-bottom: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 6l-6 6 6 6"/></svg>Back to links</a>
+<div class="sm-tree__section" style="padding-top: 4px;">Settings</div>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Account</a>
+<a href="#" class="sm-tree__row is-active" aria-current="page" style="text-decoration: none;">Appearance</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Library</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Notifications and reminders</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Language</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Keyboard shortcuts</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Import and export</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Privacy and data</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Your feedback</a>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; padding: 8px 16px 40px;">
+<div style="flex: 1 1 520px; max-width: 680px; display: flex; flex-direction: column; gap: 18px;">
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;"><div><h1 style="margin: 0; font-size: 34px; line-height: 40px; font-weight: 600;">Appearance</h1><p style="margin: 4px 0 0; font-size: 14px; color: var(--text-muted);">Saved as you go and synced to all your devices.</p></div><button class="sm-btn sm-btn--ghost sm-btn--sm" onClick="{{reset}}">Reset to default</button></div>
+
+<section class="sm-panel sm-settings" aria-labelledby="s-theme">
+<h2 id="s-theme" class="sm-settings__title">Theme</h2>
+<div class="sm-setting" style="flex-direction: column; align-items: stretch; gap: 0;"><div class="sm-setting__desc" style="max-width: none; margin-top: -6px;">Light and Dark are tuned by us and always stay the same. Custom is yours to change.</div>
+<div class="thg" role="radiogroup" aria-label="Theme"><sc-for list="{{themes}}" as="t" hint-placeholder-count="4"><button class="bgt" role="radio" aria-checked="{{t.on}}" onClick="{{t.pick}}"><span class="thb" style="background: {{t.bg}}; box-shadow: {{t.ring}};"><span style="position: absolute; left: 10px; top: 10px; right: 26px; height: 24px; border-radius: 8px; background: {{t.surf}};"></span><span style="position: absolute; left: 10px; bottom: 10px; width: 30px; height: 9px; border-radius: 5px; background: {{t.acc}};"></span><span style="position: absolute; right: 10px; bottom: 9px; width: 11px; height: 11px; border-radius: 50%; background: {{t.acc2}};"></span></span><span style="display: block; margin-top: 6px;">{{t.label}}</span></button></sc-for></div></div>
+<sc-if value="{{isCustom}}" hint-placeholder-val="{{true}}">
+<div class="cust sm-reveal" role="group" aria-labelledby="s-cust">
+<div class="sm-setting"><div><div class="sm-setting__title" id="s-cust">Start from</div><div class="sm-setting__desc">Your colours sit on the light or the dark base</div></div>
+<div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Start from" style="--seg-n: 2; --seg-i: {{baseI}};"><sc-for list="{{bases}}" as="o" hint-placeholder-count="2"><button class="sm-seg__item {{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="padding: 0 14px;">{{o.label}}</button></sc-for></div></div>
+<div class="sm-setting sm-setting--top"><div><div class="sm-setting__title">Accent colour</div><div class="sm-setting__desc">Active folder, tags, favourites and focus. Every option keeps 4.5:1 contrast in light and dark.</div></div>
+<div role="radiogroup" aria-label="Accent colour" style="display: flex; gap: 10px; flex-wrap: wrap; max-width: 420px; justify-content: flex-end;">
+<sc-for list="{{accents}}" as="a" hint-placeholder-count="8"><button class="sw" role="radio" aria-checked="{{a.on}}" aria-label="{{a.name}}" title="{{a.name}}" onClick="{{a.pick}}" style="background: {{a.c}}; box-shadow: {{a.ring}};"></button></sc-for>
+<label class="sw" title="Custom colour" style="display: grid; place-items: center; background: conic-gradient(#e0533f, #e6b33c, #4f9a54, #3a7fc1, #8a5bb5, #e0533f); position: relative;"><input type="color" value="#2E6A99" aria-label="Custom accent colour" style="position: absolute; inset: 0; opacity: 0; cursor: pointer;"><span style="width: 18px; height: 18px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; font-size: 14px; line-height: 1; color: var(--text);" aria-hidden="true">+</span></label>
+</div></div>
+<div class="sm-setting sm-setting--top"><div><div class="sm-setting__title">Background</div><div class="sm-setting__desc">The page behind cards and panels</div></div>
+<div role="radiogroup" aria-label="Background" style="display: grid; grid-template-columns: repeat(4, 72px); gap: 10px;">
+<sc-for list="{{bgs}}" as="b" hint-placeholder-count="4"><button class="bgt" role="radio" aria-checked="{{b.on}}" onClick="{{b.pick}}"><span class="b" style="background: {{b.c}}; box-shadow: {{b.ring}};"></span><span style="display: block; margin-top: 6px;">{{b.name}}</span></button></sc-for>
+</div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Corners</div><div class="sm-setting__desc">Cards, panels and buttons</div></div>
+<div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Corners" style="--seg-n: 3; --seg-i: {{cornerI}};"><sc-for list="{{corners}}" as="o" hint-placeholder-count="3"><button class="sm-seg__item {{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="padding: 0 12px;">{{o.label}}</button></sc-for></div></div>
+<div style="display: flex; justify-content: flex-end; padding: 0 0 12px;"><button class="sm-btn sm-btn--ghost sm-btn--sm" onClick="{{resetCustom}}">Reset custom theme</button></div>
+</div>
+</sc-if>
+<sc-if value="{{notCustom}}" hint-placeholder-val="{{false}}"><p class="a-note" style="margin: 0 0 6px;">Want other colours or corners? Choose Custom. Light and Dark won’t change.</p></sc-if>
+</section>
+
+<section class="sm-panel sm-settings" aria-labelledby="s-text">
+<h2 id="s-text" class="sm-settings__title">Text and layout</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Text size</div><div class="sm-setting__desc">Scales the whole interface, not just text</div></div>
+<div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Text size" style="--seg-n: 4; --seg-i: {{sizeI}};"><sc-for list="{{sizes}}" as="o" hint-placeholder-count="4"><button class="sm-seg__item {{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="padding: 0 12px; font-size: {{o.fs}};">{{o.label}}</button></sc-for></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Font</div><div class="sm-setting__desc">Readable is designed for low vision</div></div>
+<div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Font" style="--seg-n: 3; --seg-i: {{fontI}};"><sc-for list="{{fonts}}" as="o" hint-placeholder-count="3"><button class="sm-seg__item {{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="padding: 0 12px; font-family: {{o.ff}};">{{o.label}}</button></sc-for></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Density</div><div class="sm-setting__desc">Compact fits more links on screen</div></div>
+<div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Density" style="--seg-n: 2; --seg-i: {{densI}};"><sc-for list="{{dens}}" as="o" hint-placeholder-count="2"><button class="sm-seg__item {{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="padding: 0 12px;">{{o.label}}</button></sc-for></div></div>
+</section>
+
+<section class="sm-panel sm-settings" aria-labelledby="s-cards">
+<h2 id="s-cards" class="sm-settings__title">Cards</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Preview image</div></div>
+<div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Preview image" style="--seg-n: 3; --seg-i: {{mediaI}};"><sc-for list="{{medias}}" as="o" hint-placeholder-count="3"><button class="sm-seg__item {{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" style="padding: 0 12px;">{{o.label}}</button></sc-for></div></div>
+<sc-for list="{{toggles}}" as="t" hint-placeholder-count="3"><div class="sm-setting"><div><div class="sm-setting__title">{{t.label}}</div><div class="sm-setting__desc">{{t.desc}}</div></div><button class="sm-switch" role="switch" aria-checked="{{t.on}}" aria-label="{{t.label}}" onClick="{{t.pick}}"></button></div></sc-for>
+</section>
+
+<section class="sm-panel sm-settings" aria-labelledby="s-side">
+<h2 id="s-side" class="sm-settings__title">Sidebar and motion</h2>
+<sc-for list="{{toggles2}}" as="t" hint-placeholder-count="3"><div class="sm-setting"><div><div class="sm-setting__title">{{t.label}}</div><div class="sm-setting__desc">{{t.desc}}</div></div><button class="sm-switch" role="switch" aria-checked="{{t.on}}" aria-label="{{t.label}}" onClick="{{t.pick}}"></button></div></sc-for>
+<div class="sm-setting"><div><div class="sm-setting__title">Animations</div><div class="sm-setting__desc">Reduced keeps fades and loaders, removes movement</div></div>
+<div class="sm-seg" role="radiogroup" aria-label="Animations"><button class="sm-seg__item is-active" role="radio" aria-checked="true">System</button><button class="sm-seg__item" role="radio" aria-checked="false">Full</button><button class="sm-seg__item" role="radio" aria-checked="false">Reduced</button></div></div>
+</section>
+</div>
+
+<aside aria-label="Preview" style="flex: 1 1 380px; max-width: 520px; position: sticky; top: 12px; display: flex; flex-direction: column; gap: 10px;">
+<h2 class="a-cap">Live preview</h2>
+<div class="pv" role="img" aria-label="Preview of your settings" style="border-radius: 24px; background: {{pv.bg}}; padding: 14px; display: flex; gap: 12px; box-shadow: var(--shadow-card); font-family: {{pv.ff}}; font-size: {{pv.fs}}; color: {{pv.text}};">
+<sc-if value="{{showSidebarBox}}" hint-placeholder-val="{{true}}">
+<div class="pv" style="width: 34%; background: {{pv.surf}}; border-radius: {{pv.r}}; padding: 10px; display: flex; flex-direction: column; gap: {{pv.gapS}}; font-size: 0.85em;">
+<span style="padding: 6px 8px; display: flex; justify-content: space-between;">All links<sc-if value="{{showCounts}}" hint-placeholder-val="{{true}}"><span style="color: {{pv.muted}};">248</span></sc-if></span>
+<span style="padding: 6px 8px; display: flex; align-items: center; gap: 6px; border-radius: calc({{pv.r}} * .6); background: {{pv.accBg}}; color: {{pv.accText}}; font-weight: 600;"><span style="width: 14px; height: 14px; border-radius: 4px; background: {{pv.folderC}};"></span>Angular<sc-if value="{{showCounts}}" hint-placeholder-val="{{true}}"><span style="margin-left: auto; font-weight: 400;">12</span></sc-if></span>
+<span style="padding: 6px 8px; display: flex; align-items: center; gap: 6px;"><span style="width: 14px; height: 14px; border-radius: 4px; background: {{pv.folderC2}};"></span>Clothes</span>
+<sc-if value="{{showRecent}}" hint-placeholder-val="{{true}}"><span style="padding: 6px 8px;">Recently opened</span></sc-if>
+</div>
+</sc-if>
+<div style="flex: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: {{pv.gap}}; align-content: start;">
+<sc-for list="{{pvCards}}" as="c" hint-placeholder-count="4">
+<div class="pv" style="background: {{pv.surf}}; border-radius: {{pv.r}}; padding: {{pv.pad}}; display: flex; flex-direction: column; gap: 6px;">
+<sc-if value="{{showMedia}}" hint-placeholder-val="{{true}}"><div class="pv" style="height: {{pv.mediaH}}; border-radius: calc({{pv.r}} * .7); background: {{c.bg}};"></div></sc-if>
+<sc-if value="{{showSite}}" hint-placeholder-val="{{true}}"><span style="font-size: 0.75em; color: {{pv.muted}};">{{c.site}}</span></sc-if>
+<span style="font-weight: 600; line-height: 1.3;">{{c.title}}</span>
+<sc-if value="{{showNotes}}" hint-placeholder-val="{{true}}"><span style="font-size: 0.8em; color: {{pv.muted}};">{{c.note}}</span></sc-if>
+<sc-if value="{{showTags}}" hint-placeholder-val="{{true}}"><span style="align-self: flex-start; padding: 2px 8px; border-radius: 999px; background: {{pv.accBg}}; color: {{pv.accText}}; font-size: 0.75em;">{{c.tag}}</span></sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+<p class="a-note">Click any option on the left: the preview updates at once.</p>
+</aside>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const s = this.state || {};
+    const set = (k, v) => this.setState({ [k]: v });
+    const th = s.th ?? 'custom', base = s.base ?? 'light', cAccent = s.accent ?? 'Ocean', cBg = s.bg ?? 1, cCorner = s.corner ?? 'Soft',
+      size = s.size ?? 'M', font = s.font ?? 'Onest', dens = s.dens ?? 'Comfortable', media = s.media ?? 'Large';
+    const tg = { notes: s.notes ?? true, tags: s.tags ?? true, site: s.site ?? true, counts: s.counts ?? true, recent: s.recent ?? true, fcol: s.fcol ?? true };
+    const custom = th === 'custom';
+    const dark = custom ? base === 'dark' : th === 'dark';
+    const accent = custom ? cAccent : 'Sage', bg = custom ? cBg : 0, corner = custom ? cCorner : 'Round';
+    const A = [
+      ['Sage', '#4F7A4B', '#E3EEDF', '#2F4A2C', '#8DBB86', '#22301F', '#C6DEC0'], ['Ocean', '#2E6A99', '#DDEAF4', '#1F3F5A', '#8CBCE3', '#1B2B3A', '#C7DDF0'],
+      ['Plum', '#7A4B8A', '#EFE3F3', '#4A2B55', '#C9A4D8', '#2E2135', '#E4D0EC'], ['Clay', '#A8552F', '#F6E4DA', '#62301A', '#E8A584', '#3A231A', '#F3CDB9'],
+      ['Amber', '#8A6206', '#F6EBCF', '#563D04', '#E2BC6A', '#332A12', '#F0DCAA'], ['Rose', '#A33A5B', '#F7E0E7', '#5E1F33', '#E79AB2', '#3A1E27', '#F4CAD7'],
+      ['Teal', '#23716C', '#DAEFEC', '#123F3C', '#86CFC7', '#16302E', '#C2E7E2'], ['Graphite', '#3A3A3F', '#ECECEA', '#18181A', '#C9C9CE', '#2A2A2E', '#EDEDEF']
+    ];
+    const acc = A.find(a => a[0] === accent) || A[0];
+    const cAcc = A.find(a => a[0] === cAccent) || A[1];
+    const BL = [['Stone', '#F4F4F1'], ['Paper', '#F6F3EC'], ['Mist', '#F1F4F7'], ['White', '#FFFFFF']];
+    const BD = [['Graphite', '#111113'], ['Ink', '#12141A'], ['Forest', '#101411'], ['Black', '#000000']];
+    const B = dark ? BD : BL;
+    const cB = base === 'dark' ? BD : BL;
+    const ring = (on) => on ? '0 0 0 3px var(--surface), 0 0 0 5px var(--text)' : 'none';
+    const seg = (list, cur, key, extra) => list.map(l => ({ label: l, on: String(l === cur), cls: l === cur ? 'is-active' : '', pick: () => set(key, l), ...(extra ? extra(l) : {}) }));
+    const R = { Round: '18px', Soft: '10px', Square: '3px' }[corner];
+    const FS = { S: '12px', M: '13px', L: '14.5px', XL: '16px' }[size];
+    const FF = { Onest: 'Onest, system-ui, sans-serif', System: 'system-ui, -apple-system, sans-serif', Readable: '"Atkinson Hyperlegible", sans-serif' }[font];
+    const comp = dens === 'Compact';
+    const T = (k, label, desc) => ({ label, desc, on: String(tg[k]), pick: () => set(k, !tg[k]) });
+    return {
+      theme: (this.props.dark ?? false) ? 'dark' : 'light',
+      themes: [
+        { k: 'system', label: 'System', bg: 'linear-gradient(90deg, #F4F4F1 50%, #111113 50%)', surf: 'linear-gradient(90deg, #FFFFFF 50%, #1C1C1F 50%)', acc: 'linear-gradient(90deg, #4F7A4B 50%, #8DBB86 50%)', acc2: '#8DBB86' },
+        { k: 'light', label: 'Light', bg: '#F4F4F1', surf: '#FFFFFF', acc: '#4F7A4B', acc2: '#18181A' },
+        { k: 'dark', label: 'Dark', bg: '#111113', surf: '#1C1C1F', acc: '#8DBB86', acc2: '#EDEDEF' },
+        { k: 'custom', label: 'Custom', bg: cB[cBg][1], surf: base === 'dark' ? '#1C1C1F' : '#FFFFFF', acc: base === 'dark' ? cAcc[4] : cAcc[1], acc2: base === 'dark' ? cAcc[6] : cAcc[2] }
+      ].map(t => ({ ...t, on: String(t.k === th), ring: t.k === th ? '0 0 0 2px var(--surface), 0 0 0 4px var(--text)' : 'var(--shadow-card)', pick: () => set('th', t.k) })),
+      isCustom: custom, notCustom: !custom,
+      bases: seg(['Light', 'Dark'], base === 'dark' ? 'Dark' : 'Light', 'baseL').map(o => ({ ...o, pick: () => this.setState({ base: o.label.toLowerCase(), bg: 0 }) })),
+      baseI: base === 'dark' ? 1 : 0,
+      resetCustom: () => this.setState({ base: 'light', accent: 'Ocean', bg: 1, corner: 'Soft' }),
+      accents: A.map(a => ({ name: a[0], c: base === 'dark' ? a[4] : a[1], on: String(a[0] === cAccent), ring: ring(a[0] === cAccent), pick: () => set('accent', a[0]) })),
+      bgs: cB.map((b, i) => ({ name: b[0], c: b[1], on: String(i === cBg), ring: i === cBg ? '0 0 0 2px var(--text)' : 'var(--shadow-card)', pick: () => set('bg', i) })),
+      sizes: seg(['S', 'M', 'L', 'XL'], size, 'size', l => ({ fs: { S: '12px', M: '13px', L: '14px', XL: '15px' }[l] })), sizeI: ['S', 'M', 'L', 'XL'].indexOf(size),
+      fonts: seg(['Onest', 'System', 'Readable'], font, 'font', l => ({ ff: { Onest: 'Onest, sans-serif', System: 'system-ui, sans-serif', Readable: '"Atkinson Hyperlegible", sans-serif' }[l] })), fontI: ['Onest', 'System', 'Readable'].indexOf(font),
+      corners: seg(['Round', 'Soft', 'Square'], cCorner, 'corner'), cornerI: ['Round', 'Soft', 'Square'].indexOf(cCorner),
+      dens: seg(['Comfortable', 'Compact'], dens, 'dens'), densI: comp ? 1 : 0,
+      medias: seg(['Large', 'Small', 'Off'], media, 'media'), mediaI: ['Large', 'Small', 'Off'].indexOf(media),
+      toggles: [T('site', 'Show site', 'Domain and favicon above the title'), T('notes', 'Show notes', 'Your note under the title'), T('tags', 'Show tags', 'Tag chips at the bottom of the card')],
+      toggles2: [T('counts', 'Link counts', 'Numbers next to folders'), T('recent', 'Remember recently opened', 'Keeps the Recently opened list. Off clears it and stops recording.'), T('fcol', 'Folder colours', 'Off shows every folder in plain graphite')],
+      reset: () => this.setState({ th: 'light', base: 'light', accent: 'Ocean', bg: 1, size: 'M', font: 'Onest', corner: 'Soft', dens: 'Comfortable', media: 'Large', notes: true, tags: true, site: true, counts: true, recent: true, fcol: true }),
+      showSidebarBox: true, showCounts: tg.counts, showRecent: tg.recent, showMedia: media !== 'Off', showSite: tg.site, showNotes: tg.notes, showTags: tg.tags,
+      pv: {
+        bg: B[bg][1], surf: dark ? '#1C1C1F' : '#FFFFFF', text: dark ? '#EDEDEF' : '#18181A', muted: dark ? '#9A9AA0' : '#636368',
+        accBg: dark ? acc[5] : acc[2], accText: dark ? acc[6] : acc[3],
+        folderC: tg.fcol ? (dark ? acc[4] : acc[1]) : (dark ? '#6C6C73' : '#8A8A8F'), folderC2: tg.fcol ? (dark ? '#E79AB2' : '#A33A5B') : (dark ? '#6C6C73' : '#8A8A8F'),
+        r: R, fs: FS, ff: FF, gap: comp ? '6px' : '12px', gapS: comp ? '0px' : '2px', pad: comp ? '6px' : '8px',
+        mediaH: media === 'Small' ? '40px' : comp ? '64px' : '84px'
+      },
+      pvCards: [
+        { site: 'youtube.com', title: 'Signal Forms in 20 minutes', note: 'Watch on the weekend', tag: 'angular', bg: dark ? acc[5] : acc[2] },
+        { site: 'cos.com', title: 'Wool coat, straight cut', note: 'Wait for the sale', tag: 'clothes', bg: dark ? '#2E2E33' : '#EEEEEA' },
+        { site: 'dev.to', title: 'NgRx SignalStore patterns', note: 'For the links store', tag: 'angular', bg: dark ? '#26262A' : '#E6E6E1' },
+        { site: 'seriouseats.com', title: 'Weeknight ramen', note: 'Friday dinner', tag: 'recipes', bg: dark ? acc[5] : acc[2] }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Drag a link to a folder</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 900px; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; gap: 12px; padding: 12px; box-sizing: border-box; overflow: hidden;">
+
+<aside aria-label="Library" style="flex: 0 0 272px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+<div style="display: flex; align-items: center; gap: 10px; padding: 4px 10px 14px;"><svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 17px; font-weight: 600;">Shelfmark</span></div>
+<span class="sm-tree__row">All links<span class="sm-tree__count">248</span></span>
+<span class="sm-tree__row">Unsorted<span class="sm-tree__count">17</span></span>
+<span class="sm-tree__row">Favorites<span class="sm-tree__count">9</span></span>
+<div class="sm-tree__section">Folders</div>
+<span class="sm-tree__row">Work<span class="sm-tree__count">34</span></span>
+<span class="sm-tree__row is-active" style="padding-left: 34px;">Angular<span class="sm-tree__count">12</span></span>
+<span class="sm-tree__row" style="height: 44px; background: var(--accent-bg); color: var(--accent-text); box-shadow: inset 0 0 0 2px var(--accent); font-weight: 500;">Clothes<span class="sm-badge sm-badge--accent" style="margin-left: auto; background: var(--surface);">Move here</span></span>
+<span class="sm-tree__row">Recipes<span class="sm-tree__count">15</span></span>
+<span class="sm-tree__row">Travel<span class="sm-tree__count">6</span></span>
+</aside>
+
+<main style="flex: 1; min-width: 0; padding: 66px 16px 0; display: flex; flex-direction: column; gap: 20px;">
+<h1 style="margin: 0; font-size: 40px; line-height: 44px; font-weight: 600;">Angular</h1>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px;">
+<div aria-hidden="true" style="border: 2px dashed var(--border-control); border-radius: 22px; min-height: 300px; display: grid; place-items: center; color: var(--text-muted); font-size: 13px;">Wool coat was here</div>
+<div class="sm-card"><div class="sm-card__media" style="background: var(--surface-hover);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">D</span>dev.to</div><h2 class="sm-card__title" style="margin: 0;">NgRx SignalStore: patterns for real apps</h2></div></div>
+<div class="sm-card"><div class="sm-card__media" style="background: var(--surface-pressed);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">A</span>angular.dev</div><h2 class="sm-card__title" style="margin: 0;">Zoneless change detection, explained</h2></div></div>
+</div>
+</main>
+
+<div aria-hidden="true" class="sm-card" style="position: absolute; left: 298px; top: 236px; width: 230px; transform: rotate(-4deg) scale(.86); box-shadow: var(--shadow-float); opacity: .96; z-index: 3;"><div class="sm-card__media" style="background: var(--accent-bg);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">C</span>cos.com</div><h2 class="sm-card__title" style="margin: 0;">Wool coat, straight cut, graphite</h2></div></div>
+<span aria-hidden="true" class="sm-badge" style="position: absolute; left: 470px; top: 222px; z-index: 4; background: var(--primary); color: var(--on-primary);">Move 1 link</span>
+
+<div style="position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%);"><div class="sm-toast" role="status"><span class="sm-fic fc-clay" style="width: 32px; height: 32px; border-radius: 10px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4L4 7l2 3.5 2-1V20h8V9.5l2 1L20 7l-5-3a3 3 0 0 1-6 0z"/></svg></span><span class="sm-toast__text">Moved to Clothes<small>Wool coat, straight cut</small></span><button class="sm-toast__action">Undo</button><button class="sm-toast__close" aria-label="Dismiss"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button><span class="sm-toast__timer" style="--dur: 8s;" aria-hidden="true"></span></div></div>
+
+<div class="sm-panel" style="position: absolute; right: 28px; bottom: 28px; width: 340px; padding: 16px 18px; gap: 6px;">
+<b style="font-size: 13px; font-weight: 600;">How it behaves</b>
+<p class="a-note">Grab a card or row (hold 150 ms on touch). The card lifts and shrinks; its slot stays as a dashed outline. Folders highlight under the pointer; hovering a closed folder for 600 ms opens it. Esc cancels. Keyboard: select, then <span class="sm-kbd">M</span> to move.</p>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

@@ -19,13 +19,21 @@
   // centres its content in it. On a short window it never gets smaller than its content.
   min-block-size: max(rem(560px), calc(100svh - var(--landing-header-height, #{rem(72px)})));
 
+  // Desktop: half the row for the preview, so two cards fit from 1024px; from 1280px it takes a
+  // little more than half, for three (the headline scales to its column, below).
   @include desktop {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-    gap: rem(64px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: rem(48px);
     padding-block: var(--space-6) calc(var(--space-8) * 2);
   }
 
+  @include landing.large {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  }
+
   @include landing.wide {
+    // Equal columns: the preview gets the room for three readable cards.
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: calc(var(--space-8) * 3);
   }
 
@@ -41,6 +49,9 @@
 
   @include desktop {
     gap: rem(28px);
+
+    // The headline's size follows this column's width (`cqi`).
+    container-type: inline-size;
   }
 
   @include landing.wide {
@@ -48,45 +59,31 @@
   }
 }
 
-.landing-hero__eyebrow {
-  @include landing.eyebrow;
-
-  @include landing.wide {
-    font-size: rem(15px);
-    line-height: rem(22px);
-  }
-
-  @include landing.xwide {
-    font-size: rem(17px);
-    line-height: rem(26px);
-  }
-}
-
 .landing-hero__title {
   margin: 0;
   font-size: rem(44px);
-  font-weight: 700;
+  font-weight: 600;
   line-height: rem(42px);
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
 
   @include tablet {
     font-size: rem(64px);
     line-height: rem(60px);
   }
 
+  // From the desktop up the headline keeps its three lines: its longest line ("Even in a year.")
+  // is about 6.35em wide, so the size is capped at 15.5% of the column (`cqi` of the copy).
   @include desktop {
-    font-size: rem(84px);
-    line-height: rem(78px);
+    font-size: min(#{rem(84px)}, 15.5cqi);
+    line-height: 0.93;
   }
 
   @include landing.wide {
-    font-size: rem(96px);
-    line-height: rem(88px);
+    font-size: min(#{rem(96px)}, 15.5cqi);
   }
 
   @include landing.xwide {
-    font-size: rem(112px);
-    line-height: rem(104px);
+    font-size: min(#{rem(112px)}, 15.5cqi);
   }
 }
 
@@ -129,33 +126,29 @@
   flex-wrap: wrap;
   gap: rem(10px);
 
-  // `ui-button` has three fixed sizes in the library; the buttons grow with the screen instead.
-  @include landing.zoom(1.2, 1.45);
+  // The `lg` buttons grow with the wide breakpoints (`ui-button` reads `--ui-button-scale`).
+  @include landing.wide {
+    --ui-button-scale: 1.2;
+  }
+
+  @include landing.xwide {
+    --ui-button-scale: 1.45;
+  }
 }
 
-// Stands in for the chat phone while it loads (same height from the shared size mixin), so the
-// swap causes no layout shift. It sits in the same grid cell as the demo.
-.landing-hero__demo-placeholder {
-  @include landing.chat-size;
+.landing-hero__note {
+  margin: 0;
+  font-size: rem(13px);
+  line-height: rem(18px);
+  color: var(--text-muted);
 
-  min-height: calc(
-    var(--landing-chat-height) + var(--landing-chat-chrome) + var(--landing-chat-touch)
-  );
-
-  // The same zoom as the chat itself (below), so the swap shifts nothing.
-  @include landing.zoom(1.15, 1.4);
+  @include landing.wide {
+    font-size: rem(15px);
+    line-height: rem(22px);
+  }
 }
 
-.landing-hero__demo {
-  // The chat and its footer are spaced by the gap, not by a margin on the footer.
-  display: flex;
-  flex-direction: column;
-  gap: rem(32px);
-
-  // Smaller steps than the buttons: the phone is the tallest part of the first screen.
-  @include landing.zoom(1.15, 1.4);
-}
-
-.landing-hero__sr {
-  @include visually-hidden;
+.landing-hero__preview {
+  // The preview is a block of its own (not stretched by the grid): centred next to the copy.
+  align-self: center;
 }

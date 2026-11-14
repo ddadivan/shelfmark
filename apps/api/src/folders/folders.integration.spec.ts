@@ -94,7 +94,7 @@ describe('folders API', () => {
     expect((await list(b)).items[0].parentId).toBeNull();
   });
 
-  it('lists only own folders by name with direct counts and library counts', async () => {
+  it('lists only own folders by position, then name, with direct counts and library counts', async () => {
     const zed = await createFolder(a, 'Zed');
     const alpha = await createFolder(a, 'Alpha');
     const inner = await createFolder(a, 'Inner', alpha);
@@ -107,7 +107,12 @@ describe('folders API', () => {
     await addLink(users.intruder.userId, {});
 
     const body = await list(a);
-    expect(body.items.map((f) => f.name)).toEqual(['Alpha', 'Inner', 'Zed']);
+    // A new folder goes to the end of its parent (#314): Zed 0, Alpha 1; Inner is 0 under Alpha.
+    expect(body.items.map((f) => [f.name, f.position])).toEqual([
+      ['Inner', 0],
+      ['Zed', 0],
+      ['Alpha', 1],
+    ]);
     const count = (id: string): number => body.items.find((f) => f.id === id)?.linkCount ?? -1;
     expect(count(alpha)).toBe(1);
     expect(count(inner)).toBe(2);

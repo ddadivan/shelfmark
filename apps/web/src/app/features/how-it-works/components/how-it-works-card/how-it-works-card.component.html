@@ -1,0 +1,17 @@
+<section class="how-it-works-card" [attr.aria-label]="'howItWorks.card.label' | transloco">
+  <ui-icon class="how-it-works-card__icon" name="play" [size]="ICON_SIZE.Md" />
+  <div class="how-it-works-card__text">
+    <ui-button class="how-it-works-card__open" variant="ghost" wrap (click)="howItWorks.open()">
+      {{ 'howItWorks.card.title' | transloco }}
+    </ui-button>
+    <span class="how-it-works-card__meta">{{ 'howItWorks.card.length' | transloco }}</span>
+  </div>
+  <ui-button
+    variant="ghost"
+    size="sm"
+    iconOnly
+    iconLeft="close"
+    [ariaLabel]="'howItWorks.card.hide' | transloco"
+    (click)="howItWorks.hideCard()"
+  />
+</section>

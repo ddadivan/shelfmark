@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { EXPORT_FORMAT } from '@shelfmark/contracts';
-import { fileNameOf } from '../save-blob';
+import { fileNameOf } from '../utils/save-blob';
 import { HttpExportApi } from './http-export.api';
 
 function setup() {

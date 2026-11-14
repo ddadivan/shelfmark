@@ -1,0 +1,169 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.ui-saved-views__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+
+  // The toolbar is never a tab stop (Aria gives it tabindex -1; Tab and the arrows land on the
+  // chips, which draw the standard ring). A click in a gap can still focus the container, and the
+  // next key would then ring the whole row, so the container itself draws no ring.
+  &:focus {
+    outline: none;
+  }
+}
+
+// Phone: one row that scrolls sideways, the first chip flush with the content edge. The row keeps
+// room for the focus ring, which `overflow` would otherwise clip.
+:host(.ui-saved-views--scroll) .ui-saved-views__bar {
+  flex-wrap: nowrap;
+  padding-block: var(--space-1);
+  margin-block: calc(var(--space-1) * -1);
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+
+  // A fade at the right edge says there is more; the end padding lets the last chip scroll clear
+  // of it. The first chip stays flush left.
+  padding-inline-end: var(--space-8);
+  mask-image: linear-gradient(to right, #000 calc(100% - var(--space-8)), transparent);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// The pill: border and fill live here, the buttons inside are transparent.
+.ui-saved-views__chip {
+  display: inline-flex;
+  flex: none;
+  align-items: stretch;
+  height: rem(40px); // the 2027 control height, level with buttons and the search field
+  color: var(--text);
+  white-space: nowrap;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  @include coarse {
+    height: rem(44px);
+  }
+}
+
+.ui-saved-views__chip--on {
+  color: var(--on-primary);
+  background: var(--primary);
+  border-color: var(--primary);
+
+  @include hover {
+    background: var(--primary-hover);
+  }
+}
+
+// Scoped under the bar (one class more than a host page's `.page button` rule, such as the
+// Storybook docs re-skin), so the buttons stay transparent on the pill.
+.ui-saved-views__bar :is(.ui-saved-views__body, .ui-saved-views__menu, .ui-saved-views__add) {
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  border-radius: var(--radius-full);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.ui-saved-views__body,
+.ui-saved-views__menu {
+  border: 0;
+}
+
+.ui-saved-views__body {
+  @include type(label);
+
+  display: inline-flex;
+  gap: rem(6px);
+  align-items: center;
+  padding: 0 rem(14px);
+}
+
+.ui-saved-views__chip--menu .ui-saved-views__body {
+  padding-right: var(--space-1);
+}
+
+// "Lighter" count: muted on a plain chip, regular weight on the filled one (no opacity on text).
+.ui-saved-views__count {
+  // A one-digit count is padded with a figure space (`countText`) so 7 and 39 are the same width:
+  // a count that changes width while another feed's numbers arrive would count as a layout shift.
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.ui-saved-views__chip--on .ui-saved-views__count {
+  color: var(--on-primary);
+}
+
+// Trailing "..." button, as on `ui-chip`: clipped (not hidden, it keeps its width so nothing shifts
+// and stays focusable) until the chip is hovered or has focus inside on hover-capable pointers;
+// always shown on touch.
+.ui-saved-views__menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 rem(10px) 0 var(--space-1);
+
+  @include hit-area(-4px 0 -4px -2px);
+
+  @media (hover: hover) {
+    pointer-events: none;
+    clip-path: inset(50%);
+  }
+
+  @include coarse {
+    padding: 0 rem(12px) 0 var(--space-1);
+  }
+}
+
+@media (hover: hover) {
+  .ui-saved-views__chip--menu:hover .ui-saved-views__menu,
+  .ui-saved-views__chip--menu:focus-within .ui-saved-views__menu,
+  .ui-saved-views__menu:focus-visible {
+    pointer-events: auto;
+    clip-path: none;
+  }
+}
+
+// "+ Save this view": dashed and muted (scoped like the chip buttons above).
+.ui-saved-views__bar .ui-saved-views__add {
+  @include type(label);
+
+  display: inline-flex;
+  flex: none;
+  gap: rem(6px);
+  align-items: center;
+  height: rem(40px);
+  padding: 0 rem(14px);
+  color: var(--text-muted);
+  white-space: nowrap;
+  border: 1px dashed var(--border-control);
+
+  @include hover {
+    color: var(--text);
+    border-color: var(--text-muted);
+  }
+
+  @include coarse {
+    height: rem(44px);
+  }
+}

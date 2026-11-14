@@ -7,7 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { LandingMotionService } from '../landing-motion.service';
+import { LandingMotionService } from '../services/landing-motion.service';
 
 /**
  * Tells a scene when its loop may run: only while the element is in the viewport, the tab is

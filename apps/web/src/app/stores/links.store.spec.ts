@@ -3,12 +3,14 @@ import {
   FOLDER_DELETE_MODE,
   type LinkResponse,
   type ListLinksResponse,
+  type OpenLinkResponse,
 } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { NEVER, of, Subject, throwError } from 'rxjs';
 import { LINKS_API } from '../features/links/models/links-api.const';
 import type { LinksApi } from '../features/links/models/links-api.interface';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
+import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.const';
 import { LinksStore } from './links.store';
 
 function link(n: number, changes: Partial<LinkResponse> = {}): LinkResponse {
@@ -16,7 +18,7 @@ function link(n: number, changes: Partial<LinkResponse> = {}): LinkResponse {
 }
 
 function page(items: LinkResponse[], nextCursor: string | null = null): ListLinksResponse {
-  return { items, nextCursor };
+  return { items, nextCursor, pinned: [] };
 }
 
 function setup({ items = [link(1), link(2), link(3)] }: { items?: LinkResponse[] } = {}) {
@@ -27,8 +29,13 @@ function setup({ items = [link(1), link(2), link(3)] }: { items?: LinkResponse[]
       of(link(Number(id.slice(3)), { ...request, updatedAt: 'later' })),
     ),
     remove: vi.fn<LinksApi['remove']>(() => of(undefined)),
+    removeRecent: vi.fn<LinksApi['removeRecent']>(() => of(undefined)),
+    clearRecent: vi.fn<LinksApi['clearRecent']>(() => of(undefined)),
     open: vi.fn<LinksApi['open']>((id) =>
-      of(link(Number(id.slice(3)), { lastOpenedAt: '2026-11-07T10:00:00.000Z' })),
+      of({
+        ...link(Number(id.slice(3)), { lastOpenedAt: '2026-11-07T10:00:00.000Z' }),
+        recorded: true,
+      }),
     ),
     captureImages: vi.fn<LinksApi['captureImages']>((id) =>
       of(
@@ -208,6 +215,128 @@ describe('LinksStore', () => {
     });
   });
 
+  describe('tab sync', () => {
+    it('drops a link another tab deleted from the feed and the recent list', async () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await store.loadRecent();
+
+      store.applyRemoval('id-2');
+
+      expect(ids(store)).toEqual(['id-1', 'id-3']);
+      expect(store.recent()).toEqual([]);
+    });
+
+    it('keeps a link whose own delete is waiting for Undo', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-2');
+
+      store.applyRemoval('id-2');
+      store.undoRemove('id-2');
+
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+    });
+
+    it('reloads the open feed and the recent list, and nothing before the first load', async () => {
+      const { api, store } = setup();
+      store.refresh();
+      expect(api.list).not.toHaveBeenCalled();
+      expect(api.recent).not.toHaveBeenCalled();
+
+      store.setFilter({ scope: LINKS_SCOPE.Favorites });
+      await store.loadRecent();
+      store.refresh();
+      await Promise.resolve();
+
+      expect(api.list).toHaveBeenCalledTimes(2);
+      expect(api.list).toHaveBeenLastCalledWith({ favorite: true });
+      expect(api.recent).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('move to a folder', () => {
+    const folderA = '019a0000-0000-7000-8000-00000000000a';
+    const folderB = '019a0000-0000-7000-8000-00000000000b';
+
+    it('keeps the link in place in a scope it still belongs to and sends the folder', async () => {
+      const { api, store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      const moved = await store.move(link(2), folderA);
+
+      expect(moved).toBe(true);
+      expect(api.update).toHaveBeenCalledWith('id-2', { folderId: folderA });
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+      expect(store.entityMap()['id-2']?.folderId).toBe(folderA);
+      expect(store.entityMap()['id-2']?.updatedAt).toBe('later');
+    });
+
+    it('takes the link out of the open folder and puts it back in its slot when moved back', async () => {
+      const items = [1, 2, 3].map((n) => link(n, { folderId: folderA }));
+      const { store } = setup({ items });
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: folderA });
+
+      await store.move(items[1], folderB);
+      expect(ids(store)).toEqual(['id-1', 'id-3']);
+
+      await store.move({ ...items[1], folderId: folderB }, folderA);
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+    });
+
+    it('leaves "Unsorted" when moved into a folder', async () => {
+      const items = [link(1, { folderId: null }), link(2, { folderId: null })];
+      const { store } = setup({ items });
+      store.setFilter({ scope: LINKS_SCOPE.Unsorted });
+
+      await store.move(items[0], folderA);
+
+      expect(ids(store)).toEqual(['id-2']);
+    });
+
+    it('rolls back and resolves false when the request fails', async () => {
+      const items = [1, 2, 3].map((n) => link(n, { folderId: folderA }));
+      const { api, store } = setup({ items });
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: folderA });
+      api.update.mockReturnValueOnce(throwError(() => new Error('offline')));
+
+      const moved = await store.move(items[0], null);
+
+      expect(moved).toBe(false);
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+      expect(store.entityMap()['id-1']?.folderId).toBe(folderA);
+    });
+
+    it('updates the folder of the link in the recent list', async () => {
+      const { store } = setup();
+      await store.loadRecent();
+
+      await store.move(link(2), folderB);
+
+      expect(store.recent()[0]?.folderId).toBe(folderB);
+    });
+
+    it('does not call the API when the folder does not change', async () => {
+      const { api, store } = setup({ items: [link(1, { folderId: folderA })] });
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      expect(await store.move(link(1, { folderId: folderA }), folderA)).toBe(true);
+      expect(api.update).not.toHaveBeenCalled();
+    });
+
+    it('does not bring a link back into a scope opened after the move', async () => {
+      const items = [link(1, { folderId: folderA }), link(2, { folderId: folderA })];
+      const { store } = setup({ items });
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: folderA });
+      await store.move(items[0], folderB);
+
+      store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: folderA });
+      await store.move({ ...items[0], folderId: folderB }, folderA);
+
+      expect(ids(store)).toEqual(['id-1', 'id-2']);
+    });
+  });
+
   describe('delete with Undo', () => {
     it('hides the link and sends the request only on commit', async () => {
       const { api, store } = setup();
@@ -285,6 +414,26 @@ describe('LinksStore', () => {
       expect(api.remove).toHaveBeenCalledTimes(2);
     });
 
+    it('closes the Undo toast of each delete a flush sent, not of a failed one', async () => {
+      const { api, store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.remove('id-1');
+      store.remove('id-3');
+      const sent = vi.fn();
+      const failed = vi.fn();
+      store.attachUndo('id-1', sent);
+      store.attachUndo('id-3', failed);
+      api.remove.mockImplementation((id: string) =>
+        id === 'id-3' ? throwError(() => new Error('offline')) : of(undefined),
+      );
+
+      await store.flushPending();
+
+      expect(sent).toHaveBeenCalledTimes(1);
+      expect(failed).not.toHaveBeenCalled();
+      expect(ids(store)).toContain('id-3');
+    });
+
     it('flushes waiting deletes on pagehide', () => {
       const { api, store } = setup();
       store.setFilter({ scope: LINKS_SCOPE.All });
@@ -307,7 +456,7 @@ describe('LinksStore', () => {
 
       await store.loadRecent();
 
-      expect(api.recent).toHaveBeenCalledWith({ limit: 8 });
+      expect(api.recent).toHaveBeenCalledWith({ limit: RECENT_LINKS_LIMIT });
       expect(store.recentLoaded()).toBe(true);
     });
 
@@ -321,6 +470,85 @@ describe('LinksStore', () => {
       expect(api.open).toHaveBeenCalledWith('id-1');
       expect(store.recent().map((item) => item.id)).toEqual(['id-1', 'id-2']);
       expect(store.entityMap()['id-1']?.lastOpenedAt).toBe('2026-11-07T10:00:00.000Z');
+    });
+
+    it('leaves the history alone when the open was not recorded (paused)', async () => {
+      const { api, store } = setup();
+      api.open.mockReturnValue(of({ ...link(2), recorded: false }));
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      await store.loadRecent();
+      const before = store.recent().map((item) => item.id);
+
+      await store.recordOpen('id-2');
+
+      expect(api.open).toHaveBeenCalledWith('id-2');
+      expect(store.recent().map((item) => item.id)).toEqual(before);
+      expect(store.entityMap()['id-2']?.lastOpenedAt).toBe(link(2).lastOpenedAt);
+    });
+
+    describe('history', () => {
+      const opened = (n: number) => link(n, { lastOpenedAt: '2026-11-07T10:00:00.000Z' });
+
+      it('removes one link from the history, keeping it in the feed', async () => {
+        const { api, store } = setup({ items: [opened(1), opened(2)] });
+        api.recent.mockReturnValue(of({ items: [opened(1), opened(2)] }));
+        store.setFilter({ scope: LINKS_SCOPE.All });
+        await store.loadRecent();
+
+        await expect(store.removeFromHistory('id-1')).resolves.toBe(true);
+
+        expect(api.removeRecent).toHaveBeenCalledWith('id-1');
+        expect(store.recent().map((item) => item.id)).toEqual(['id-2']);
+        expect(store.entityMap()['id-1']?.lastOpenedAt).toBeNull();
+        expect(store.entityMap()['id-1']).toBeDefined();
+      });
+
+      it('puts the link back in place when removing fails', async () => {
+        const { api, store } = setup({ items: [opened(1), opened(2), opened(3)] });
+        api.recent.mockReturnValue(of({ items: [opened(1), opened(2), opened(3)] }));
+        api.removeRecent.mockReturnValueOnce(throwError(() => new Error('boom')));
+        store.setFilter({ scope: LINKS_SCOPE.All });
+        await store.loadRecent();
+
+        await expect(store.removeFromHistory('id-2')).resolves.toBe(false);
+
+        expect(store.recent().map((item) => item.id)).toEqual(['id-1', 'id-2', 'id-3']);
+        expect(store.entityMap()['id-2']?.lastOpenedAt).toBe('2026-11-07T10:00:00.000Z');
+      });
+
+      it('does not call the API for a link that is not in the history', async () => {
+        const { api, store } = setup();
+        await store.loadRecent();
+
+        await expect(store.removeFromHistory('nope')).resolves.toBe(true);
+        expect(api.removeRecent).not.toHaveBeenCalled();
+      });
+
+      it('clears the history and the opened time of loaded links', async () => {
+        const { api, store } = setup({ items: [opened(1), opened(2)] });
+        api.recent.mockReturnValue(of({ items: [opened(1), opened(2)] }));
+        store.setFilter({ scope: LINKS_SCOPE.All });
+        await store.loadRecent();
+
+        await expect(store.clearHistory()).resolves.toBe(true);
+
+        expect(api.clearRecent).toHaveBeenCalledTimes(1);
+        expect(store.recent()).toEqual([]);
+        expect(store.entities().every((item) => item.lastOpenedAt === null)).toBe(true);
+      });
+
+      it('brings the history back when clearing fails', async () => {
+        const { api, store } = setup({ items: [opened(1), opened(2)] });
+        api.recent.mockReturnValue(of({ items: [opened(1), opened(2)] }));
+        api.clearRecent.mockReturnValueOnce(throwError(() => new Error('boom')));
+        store.setFilter({ scope: LINKS_SCOPE.All });
+        await store.loadRecent();
+
+        await expect(store.clearHistory()).resolves.toBe(false);
+
+        expect(store.recent().map((item) => item.id)).toEqual(['id-1', 'id-2']);
+        expect(store.entityMap()['id-1']?.lastOpenedAt).toBe('2026-11-07T10:00:00.000Z');
+      });
     });
 
     it('ignores a failed open', async () => {
@@ -544,6 +772,86 @@ describe('LinksStore', () => {
       expect(ids(store)).toContain('id-2');
     });
 
+    it('marks a saved link as landed and clears the mark after the motion', () => {
+      vi.useFakeTimers();
+      try {
+        const { store } = setup();
+        store.setFilter({ scope: LINKS_SCOPE.All });
+
+        store.addSaved(link(9));
+        expect(store.landed()).toEqual({ 'id-9': 0 });
+
+        vi.advanceTimersByTime(3000);
+        expect(store.landed()).toEqual({});
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('shows links saved together at the top in paste order, staggered', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      store.addSavedMany([link(7), link(8), link(9)]);
+
+      expect(ids(store)).toEqual(['id-7', 'id-8', 'id-9', 'id-1', 'id-2', 'id-3']);
+      expect(store.landed()).toEqual({ 'id-7': 0, 'id-8': 1, 'id-9': 2 });
+    });
+
+    it('caps the stagger of a long paste', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+
+      store.addSavedMany(Array.from({ length: 15 }, (_, index) => link(100 + index)));
+
+      expect(store.landed()['id-114']).toBe(10);
+    });
+
+    it('leaves links saved together out of a scope they do not belong to', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.Unsorted });
+
+      store.addSavedMany([link(7, { folderId: 'f1' }), link(8, { folderId: null })]);
+
+      expect(ids(store)).toContain('id-8');
+      expect(ids(store)).not.toContain('id-7');
+      expect(store.landed()).toEqual({ 'id-8': 0 });
+    });
+
+    it('starts the capture of links saved together with pending images', async () => {
+      const { api, store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      const pending = link(7, {
+        title: 'https://example.org/a',
+        faviconUrl: '/api/links/id-7/favicon?v=pending',
+        imageUrl: '/api/links/id-7/image?v=pending',
+      });
+      api.captureImages.mockReturnValueOnce(
+        of(
+          link(7, {
+            title: 'The page title',
+            faviconUrl: '/api/links/id-7/favicon?v=0123456789abcdef',
+            imageUrl: '/api/links/id-7/image?v=0123456789abcdef',
+          }),
+        ),
+      );
+
+      store.addSavedMany([pending]);
+
+      await vi.waitFor(() => expect(store.entityMap()['id-7']?.title).toBe('The page title'));
+      expect(store.entityMap()['id-7']?.imageUrl).toBe('/api/links/id-7/image?v=0123456789abcdef');
+    });
+
+    it('drops links saved together (Undo) from the feed', () => {
+      const { store } = setup();
+      store.setFilter({ scope: LINKS_SCOPE.All });
+      store.addSavedMany([link(7), link(8)]);
+
+      store.dropSaved(['id-7', 'id-8']);
+
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+    });
+
     it('applies an edit from the server', () => {
       const { store } = setup();
       store.setFilter({ scope: LINKS_SCOPE.All });
@@ -730,7 +1038,7 @@ describe('LinksStore', () => {
     it('drops a first page, a recent list and an open that arrive after the reset', async () => {
       const list = new Subject<ListLinksResponse>();
       const recent = new Subject<{ items: LinkResponse[] }>();
-      const open = new Subject<LinkResponse>();
+      const open = new Subject<OpenLinkResponse>();
       const { api, store } = setup();
       api.list.mockReturnValueOnce(list);
       api.recent.mockReturnValueOnce(recent);
@@ -743,7 +1051,7 @@ describe('LinksStore', () => {
       list.next(page([link(1)]));
       recent.next({ items: [link(1)] });
       recent.complete();
-      open.next(link(1));
+      open.next({ ...link(1), recorded: true });
       open.complete();
       await Promise.all([loadingRecent, opening]);
 

@@ -1,0 +1,22 @@
+@use 'ui' as *;
+
+// A section page of the settings: a column of panels under the page header (SetAccount: 18px
+// between panels). Tablet and up the column is centred in the content area (#315): the mockup's
+// 720px panel column plus its notes column (360px) make about 1104px; without the notes the
+// panels take the middle 880px, so rows keep a readable line length. `$max` lets a page with a
+// wider layout (Appearance: options and the live preview side by side) take more room.
+@mixin settings-page($max: rem(880px)) {
+  :host {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+
+    @include tablet-up {
+      gap: rem(18px);
+      width: 100%;
+      max-width: $max;
+      margin-inline: auto;
+    }
+  }
+}

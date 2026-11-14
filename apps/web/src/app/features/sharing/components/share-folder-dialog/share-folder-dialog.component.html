@@ -1,0 +1,108 @@
+<ui-dialog
+  [title]="'sharing.dialog.title' | transloco: { name: data.folder.name }"
+  [closeLabel]="'sharing.dialog.close' | transloco"
+>
+  <div class="share__body">
+    <p class="share__count">{{ countKey | transloco: { count: data.linkCount } }}</p>
+
+    @if (data.isDemo) {
+      <ui-notice [kind]="NOTICE_KIND.Info">{{ 'sharing.dialog.demo' | transloco }}</ui-notice>
+    } @else if (store.loading()) {
+      <p class="share__muted" role="status">{{ 'sharing.dialog.loading' | transloco }}</p>
+    } @else if (store.error() === SHARE_ERROR.Load) {
+      <ui-notice [kind]="NOTICE_KIND.Danger">{{
+        'sharing.dialog.loadFailed' | transloco
+      }}</ui-notice>
+      <ui-button class="share__retry" (click)="retry()">{{
+        'sharing.dialog.retry' | transloco
+      }}</ui-button>
+    } @else {
+      <div class="share__public">
+        <ui-settings-row
+          icon="link"
+          [title]="'sharing.dialog.public' | transloco"
+          [description]="'sharing.dialog.publicHint' | transloco"
+        >
+          <ui-switch
+            [label]="'sharing.dialog.public' | transloco"
+            [disabled]="store.busy()"
+            [(checked)]="enabledView"
+            (checkedChange)="toggleEnabled($event)"
+          />
+        </ui-settings-row>
+      </div>
+
+      @if (store.enabled()) {
+        <div class="share__link">
+          <ui-input
+            #linkField
+            class="share__field"
+            type="url"
+            readonly
+            [label]="'sharing.dialog.linkLabel' | transloco"
+            [value]="url()"
+          />
+          <ui-button
+            class="share__copy"
+            iconLeft="copy"
+            [variant]="BUTTON_VARIANT.Primary"
+            (click)="copy()"
+            >{{ 'sharing.dialog.copy' | transloco }}</ui-button
+          >
+        </div>
+        @if (copyFailed()) {
+          <ui-notice [kind]="NOTICE_KIND.Info">{{
+            'sharing.dialog.copyFallback' | transloco
+          }}</ui-notice>
+        }
+
+        <section class="share__settings" aria-labelledby="share-settings-title">
+          <h3 id="share-settings-title" class="share__heading">
+            {{ 'sharing.dialog.settings' | transloco }}
+          </h3>
+          <ui-settings-row
+            [title]="'sharing.dialog.notes' | transloco"
+            [description]="'sharing.dialog.notesHint' | transloco"
+          >
+            <ui-switch
+              [label]="'sharing.dialog.notes' | transloco"
+              [disabled]="store.busy()"
+              [(checked)]="notesView"
+              (checkedChange)="toggleNotes($event)"
+            />
+          </ui-settings-row>
+          <ui-settings-row
+            [title]="'sharing.dialog.reset' | transloco"
+            [description]="'sharing.dialog.resetHint' | transloco"
+          >
+            <ui-button size="sm" [disabled]="store.busy()" (click)="reset()">{{
+              'sharing.dialog.resetAction' | transloco
+            }}</ui-button>
+          </ui-settings-row>
+        </section>
+      }
+
+      @switch (store.error()) {
+        @case (SHARE_ERROR.Limit) {
+          <ui-notice [kind]="NOTICE_KIND.Danger">{{
+            'sharing.dialog.limit' | transloco: { max: SHARE_LIMIT.PerUserMax }
+          }}</ui-notice>
+        }
+        @case (SHARE_ERROR.Demo) {
+          <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'sharing.dialog.demo' | transloco }}</ui-notice>
+        }
+        @case (SHARE_ERROR.Save) {
+          <ui-notice [kind]="NOTICE_KIND.Danger">{{
+            'sharing.dialog.saveFailed' | transloco
+          }}</ui-notice>
+        }
+      }
+
+      <p class="share__muted">{{ 'sharing.dialog.privateNotes' | transloco }}</p>
+    }
+  </div>
+
+  <ui-button slot="footer" [variant]="BUTTON_VARIANT.Primary" (click)="close()">{{
+    'sharing.dialog.done' | transloco
+  }}</ui-button>
+</ui-dialog>

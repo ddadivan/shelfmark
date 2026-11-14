@@ -5,6 +5,15 @@
   "projectType": "library",
   "tags": ["scope:web", "type:util"],
   "targets": {
+    "test": {
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vercel.json",
+        "{workspaceRoot}/middleware.ts",
+        "{workspaceRoot}/docs/SETUP.md"
+      ]
+    },
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {

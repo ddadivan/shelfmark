@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Tab sync and demo transfer</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
+
+<section class="a-state">
+<h2 class="a-cap">Tab sync · changes from another tab</h2>
+<div class="sm-panel" style="gap: 12px;">
+<div class="sm-card sm-card--landed" style="max-width: 260px;"><div class="sm-card__media" style="background: var(--accent-bg);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">R</span>rains.com</div><span class="sm-card__title">Rain jacket, packable</span></div></div>
+<p class="a-note">A link added in another tab simply appears with the same landing animation. Renames, moves and deletes apply silently. No toast — nothing to undo here.</p>
+</div>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">Tab sync · signed out in another tab</h2>
+<div class="sm-dialog" role="alertdialog" aria-labelledby="so-h" aria-describedby="so-t" style="max-width: none; gap: 14px;">
+<h3 id="so-h" style="margin: 0; font-size: 20px; font-weight: 600;">You signed out in another tab</h3>
+<p id="so-t" style="margin: 0; font-size: 14px; line-height: 21px; color: var(--text-muted);">To keep your links private, this tab is locked too. Unsaved changes in open forms are kept until you sign back in.</p>
+<div class="sm-dialog__foot"><button class="sm-btn sm-btn--primary">Sign in again</button></div>
+</div>
+<div class="sm-toast sm-toast--success" role="status"><span class="sm-toast__icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.5-9 6 6 0 0 1 11.5 1.5A3.75 3.75 0 0 1 17.5 18z"/><path d="M9.5 13.5l2 2 3.5-3.5"/></svg></span><span class="sm-toast__text">Signed in again<small>Your changes were saved</small></span></div>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">Demo transfer · right after the first sign-in</h2>
+<div class="sm-dialog" role="dialog" aria-labelledby="dt-h" style="max-width: none; gap: 16px;">
+<h3 id="dt-h" style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">Bring your demo shelf with you?</h3>
+<p style="margin: 0; font-size: 14px; line-height: 21px; color: var(--text-muted);">You added things while trying the demo. We can move them to your new account.</p>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+<div style="padding: 12px; border-radius: 16px; background: var(--bg);"><b style="display: block; font-size: 22px; font-weight: 600;">7</b><span style="font-size: 12px; color: var(--text-muted);">links you added</span></div>
+<div style="padding: 12px; border-radius: 16px; background: var(--bg);"><b style="display: block; font-size: 22px; font-weight: 600;">2</b><span style="font-size: 12px; color: var(--text-muted);">new folders</span></div>
+<div style="padding: 12px; border-radius: 16px; background: var(--bg);"><b style="display: block; font-size: 22px; font-weight: 600;">3</b><span style="font-size: 12px; color: var(--text-muted);">new tags</span></div>
+</div>
+<label style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 20px;"><input type="checkbox" class="sm-check">Also keep the sample links that came with the demo</label>
+<div class="sm-dialog__foot"><button class="sm-btn sm-btn--secondary">Start empty</button><button class="sm-btn sm-btn--primary">Move 7 links</button></div>
+</div>
+<div class="sm-toast sm-toast--success" role="status"><span class="sm-toast__icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="sm-toast__text">7 links moved to your shelf<small>The demo is deleted</small></span><button class="sm-toast__action">Show them</button><button class="sm-toast__close" aria-label="Dismiss"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

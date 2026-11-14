@@ -3,7 +3,7 @@ import { TranslocoOptions } from '@jsverse/transloco';
 import { APP_LANG } from './models/app-lang.const';
 
 export const translocoConfig: TranslocoOptions['config'] = {
-  availableLangs: [APP_LANG.En],
+  availableLangs: Object.values(APP_LANG),
   defaultLang: APP_LANG.En,
   reRenderOnLangChange: true,
   fallbackLang: APP_LANG.En,

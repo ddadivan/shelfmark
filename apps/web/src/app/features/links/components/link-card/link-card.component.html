@@ -1,0 +1,146 @@
+<ui-card
+  uiPointerShadow
+  [href]="href()"
+  [image]="image()"
+  [placeholderTone]="tone()"
+  [favorited]="link().isFavorite"
+  [newTab]="newTab()"
+  [reveal]="reveal()"
+  [description]="href() && newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
+  [actionsPinned]="menu.isOpen()"
+  [checked]="selected()"
+  [selecting]="selecting()"
+  uiLongPress
+  [uiLongPressDisabled]="!viewport.compact() || readOnly()"
+  (uiLongPress)="onLongPress()"
+  (activated)="open($event)"
+  (keydown)="onKeydown($event)"
+>
+  @if (showCheckbox()) {
+    <ui-checkbox
+      slot="select"
+      hideLabel
+      [label]="'bulk.item.select' | transloco: { title: link().title }"
+      [checked]="selected()"
+      (click)="onCheckboxClick($event)"
+    />
+  }
+  <!-- No "Open" bar in selection mode: a click only toggles, so nothing opens by surprise. -->
+  @if (href() && !selecting()) {
+    <span slot="overlay" class="link-card__open">
+      <span class="link-card__address">{{ address() }}</span>
+      <span class="link-card__open-label">
+        <span class="link-card__open-text">{{ 'links.item.open' | transloco }}</span>
+        <span class="link-card__open-arrow">↗</span>
+      </span>
+    </span>
+  }
+  <span slot="title">{{ link().title }}</span>
+  <span
+    slot="meta"
+    class="link-card__site"
+    [attr.title]="saved() ? host() + ' · ' + saved() : null"
+  >
+    <ui-favicon [src]="favicon()" [letter]="letter()" />
+    <span class="link-card__host">{{ host() }}</span>
+  </span>
+  @if (saved()) {
+    <span slot="date">{{ saved() }}</span>
+  }
+  @if (!readOnly()) {
+    <ui-button
+      slot="actions"
+      variant="secondary"
+      size="sm"
+      iconOnly
+      iconLeft="more"
+      [iconSize]="ICON_SIZE.Lg"
+      hitArea="overlay"
+      [uiMenuTrigger]="menu"
+      [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
+      [uiTooltip]="'links.item.moreActions' | transloco"
+    />
+  }
+  @if (pinnedToTop()) {
+    <ui-badge class="link-card__pinned" icon="pin">{{ 'links.item.pinned' | transloco }}</ui-badge>
+  }
+  <!-- The note and the bottom row always take their room, so every card is the same height (#335). -->
+  @if (link().note; as note) {
+    <p class="link-card__note">{{ note }}</p>
+  } @else {
+    <p class="link-card__note" aria-hidden="true"></p>
+  }
+  <!-- Tags and the favorite star share the bottom row; the star sits right whether or not there are tags. -->
+  <div class="link-card__foot">
+    @if (tags().length > 0) {
+      <ul class="link-card__tags">
+        @for (tag of tags(); track tag) {
+          <li>
+            <ui-chip>{{ tag }}</ui-chip>
+          </li>
+        }
+        @if (hiddenTags() > 0) {
+          <li>
+            <ui-chip variant="neutral">{{
+              'links.card.moreTags' | transloco: { count: hiddenTags() }
+            }}</ui-chip>
+          </li>
+        }
+      </ul>
+    }
+    @if (!readOnly()) {
+      <ui-button
+        class="link-card__star"
+        [class.link-card__star--on]="link().isFavorite"
+        variant="ghost"
+        size="sm"
+        iconOnly
+        hitArea="overlay"
+        [iconLeft]="link().isFavorite ? 'star-filled' : 'star'"
+        [ariaPressed]="link().isFavorite"
+        [ariaLabel]="'links.item.favorite' | transloco: { title: link().title }"
+        [uiTooltip]="
+          (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
+        "
+        (click)="favoriteToggled.emit()"
+      />
+    }
+  </div>
+  <ui-menu
+    #menu
+    align="end"
+    [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
+  >
+    @if (href()) {
+      <ui-menu-item icon="external" (activated)="openRequested.emit()">
+        {{ 'links.item.open' | transloco }}
+      </ui-menu-item>
+    }
+    <ui-menu-item icon="edit" (activated)="editRequested.emit()">
+      {{ 'links.item.edit' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item
+      [icon]="link().isFavorite ? 'star-filled' : 'star'"
+      (activated)="favoriteToggled.emit()"
+    >
+      {{ (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco }}
+    </ui-menu-item>
+    @if (pinnable()) {
+      <ui-menu-item icon="pin" (activated)="pinToTopToggled.emit()">
+        {{ (pinnedToTop() ? 'links.item.unpinFromTop' : 'links.item.pinToTop') | transloco }}
+      </ui-menu-item>
+    }
+    <ui-menu-item icon="pin" (activated)="pinToSidebarToggled.emit()">
+      {{
+        (pinnedToSidebar() ? 'links.item.unpinFromSidebar' : 'links.item.pinToSidebar') | transloco
+      }}
+    </ui-menu-item>
+    <ui-menu-item icon="folder-move" (activated)="moveRequested.emit()">
+      {{ 'links.item.move' | transloco }}
+    </ui-menu-item>
+    <ui-menu-separator />
+    <ui-menu-item icon="trash" danger (activated)="deleteRequested.emit()">
+      {{ 'links.item.delete' | transloco }}
+    </ui-menu-item>
+  </ui-menu>
+</ui-card>

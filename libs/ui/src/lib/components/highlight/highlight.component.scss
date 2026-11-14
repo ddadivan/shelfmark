@@ -1,0 +1,12 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: inline;
+}
+
+.ui-highlight__mark {
+  padding: 0 rem(1px);
+  color: var(--highlight-text);
+  background: var(--highlight-bg);
+  border-radius: rem(3px);
+}

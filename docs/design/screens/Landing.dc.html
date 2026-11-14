@@ -2,179 +2,112 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Shelfmark — paste a link, find it again</title>
+<title>A · Landing</title>
 <script src="./support.js"></script>
-<link rel="stylesheet" href="ds/shelfmark/tokens.css">
-<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
 </head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
 <style>
 body{margin:0}
-a{color:var(--text-muted)}a:hover{color:var(--text)}
-.lp-wrap{max-width:1180px;margin:0 auto;padding-left:24px;padding-right:24px}
-.lp-h1{margin:0;font-size:84px;line-height:78px;font-weight:700;letter-spacing:-0.05em}
-.lp-h1 em{font-style:normal;color:var(--text-muted)}
-.lp-mono{font-family:var(--font-mono);font-size:12px;color:var(--text-muted)}
-.lp-phone{position:relative;border-radius:28px;background:var(--surface);border:1px solid var(--border);overflow:hidden;box-shadow:0 30px 60px -30px rgba(24,24,26,.25)}
-.lp-phone__bar{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
-.lp-chat{padding:12px 14px 16px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;background:var(--surface-hover);height:478px;box-sizing:border-box;overflow:hidden}
-.lp-day{align-self:center;font-size:11px;color:var(--text-muted);background:var(--surface);border-radius:999px;padding:2px 10px;margin:4px 0}
-.lp-msg{display:flex;justify-content:flex-end}
-.lp-bubble{max-width:82%;background:var(--accent-bg);color:var(--text);border-radius:16px 16px 4px 16px;padding:8px 10px 6px;font-size:14px;line-height:19px}
-.lp-link{display:flex;align-items:center;gap:6px;margin-top:4px;color:var(--accent-text);font-size:13px}
-.lp-url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:underline;text-underline-offset:2px}
-.lp-time{text-align:right;font-size:11px;color:var(--text-muted);margin-top:2px}
-.lp-shelf{padding:14px;display:flex;flex-direction:column;gap:10px;height:478px;box-sizing:border-box;overflow:hidden;background:var(--bg)}
-.lp-group{display:flex;flex-direction:column;gap:6px}
-.lp-folder{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-muted);padding:0 2px}
-.lp-land{animation-delay:var(--d)!important}
-.lp-land.sm-card--landed::after{animation-delay:var(--d)}
-.lp-group.lp-land{animation:sm-reveal var(--duration-base) var(--ease-out) both}
-.lp-out .lp-msg{animation:lp-out 360ms var(--ease-in) both}
-.lp-out .lp-msg:nth-child(3){animation-delay:40ms}.lp-out .lp-msg:nth-child(5){animation-delay:80ms}.lp-out .lp-msg:nth-child(6){animation-delay:120ms}.lp-out .lp-msg:nth-child(8){animation-delay:160ms}
-@keyframes lp-out{to{opacity:0;transform:translateX(40px) scale(.96)}}
-.lp-note{position:relative;max-width:640px;font-size:20px;line-height:31px;letter-spacing:-0.005em}
-.lp-agent{font-family:var(--font-mono);font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text)}
-
-/* chat: messages arrive one by one, like a real chat */
-.lp-chat{position:relative;padding:0 14px!important;display:block!important;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 56px);mask-image:linear-gradient(to bottom,transparent 0,#000 56px)}
-.lp-track{position:absolute;left:14px;right:14px;bottom:-600px;animation:lp-feed 14.4s linear infinite;will-change:transform}
-@keyframes lp-feed{0%{transform:translateY(0)}7.986%{transform:translateY(-0px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}12.500%{transform:translateY(-76px);animation-timing-function:linear}20.486%{transform:translateY(-76px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}25.000%{transform:translateY(-152px);animation-timing-function:linear}32.986%{transform:translateY(-152px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}37.500%{transform:translateY(-228px);animation-timing-function:linear}45.486%{transform:translateY(-228px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}50.000%{transform:translateY(-304px);animation-timing-function:linear}57.986%{transform:translateY(-304px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}62.500%{transform:translateY(-380px);animation-timing-function:linear}70.486%{transform:translateY(-380px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}75.000%{transform:translateY(-456px);animation-timing-function:linear}82.986%{transform:translateY(-456px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}87.500%{transform:translateY(-532px);animation-timing-function:linear}95.486%{transform:translateY(-532px);animation-timing-function:cubic-bezier(.22,.8,.24,1)}100.000%{transform:translateY(-608px);animation-timing-function:linear}}
-.lp-msg{height:76px;box-sizing:border-box;padding-top:12px;display:flex;justify-content:flex-end}
-.lp-bubble{height:64px;box-sizing:border-box;max-width:86%;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px}
-.lp-txt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lp-link{min-width:0}
-.lp-link .lp-time{margin:0 0 0 8px;flex:none}
-.lp-out .lp-msg{animation:lp-out 360ms var(--ease-in) both!important}
-/* before: the mess drifts */
-.lp-drift{animation:lp-drift var(--t,7s) ease-in-out infinite alternate}
-@keyframes lp-drift{0%{translate:0 0;rotate:0deg}50%{translate:var(--dx,6px) var(--dy,-5px);rotate:var(--dr,1deg)}100%{translate:calc(var(--dx,6px)*-0.6) calc(var(--dy,-5px)*-0.8);rotate:calc(var(--dr,1deg)*-1)}}
-.lp-ping{animation:lp-ping 4.5s var(--ease-out) infinite}
-@keyframes lp-ping{0%,8%{opacity:0;transform:translateY(10px) scale(.9)}14%,70%{opacity:1;transform:none}80%,100%{opacity:0;transform:translateY(-6px)}}
-/* after: the shelf walks through its folders */
-.lp-tree{position:relative}
-.lp-hl{position:absolute;left:0;right:0;top:0;height:32px;border-radius:var(--radius-sm);background:var(--accent-bg);animation:lp-hl 9s var(--ease-in-out) infinite}
-@keyframes lp-hl{0%,28%{transform:translateY(0)}34%,61%{transform:translateY(68px)}67%,94%{transform:translateY(102px)}100%{transform:translateY(0)}}
-.lp-tree .sm-tree__row{position:relative;background:transparent!important}
-.lp-lists{position:relative;flex:1;min-width:0}
-.lp-list{position:absolute;inset:0;display:flex;flex-direction:column;gap:2px;opacity:0;animation:lp-list 9s var(--ease-out) infinite}
-.lp-list:nth-child(2){animation-delay:3s}.lp-list:nth-child(3){animation-delay:6s}
-@keyframes lp-list{0%{opacity:0;transform:translateY(8px)}5%,30%{opacity:1;transform:none}34%,100%{opacity:0;transform:translateY(-4px)}}
-.lp-list .sm-row{cursor:default}
-@media (prefers-reduced-motion:reduce){.lp-track,.lp-drift,.lp-ping,.lp-hl,.lp-list{animation:none!important}.lp-list:first-child{opacity:1}.lp-ping{opacity:0}}
-@media (prefers-reduced-motion:reduce){.lp-out .lp-msg{animation:none!important}}
+a{color:inherit}a:hover{color:inherit}
+@keyframes a-swap{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.a-swap>*{animation:a-swap 420ms var(--ease-out) both}
+.a-swap>*:nth-child(2){animation-delay:60ms}.a-swap>*:nth-child(3){animation-delay:120ms}
+.a-count{display:inline-block;animation:a-swap 300ms var(--ease-out) both}
+@media (prefers-reduced-motion: reduce){.a-swap>*,.a-count{animation:none}}
+@media (max-width: 760px){.a-bento{grid-template-columns:minmax(0,1fr)!important}.a-bento>*{grid-column:auto!important}.a-hero h1{font-size:44px!important;line-height:46px!important}}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 1400px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<div style="max-width: 1200px; margin: 0 auto; padding: 0 24px 48px; display: flex; flex-direction: column; gap: 72px;">
 
-<header class="lp-wrap" style="padding-top: 24px; padding-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
-<span style="display: flex; align-items: center; gap: 8px;"><svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 18px; font-weight: 600;">Shelfmark</span></span>
-<span style="display: flex; align-items: center; gap: 20px; font-size: 14px;"><a href="#how" style="text-decoration: none;">How it's built</a><a href="#" style="text-decoration: none;">GitHub</a><a href="SignIn.dc.html" class="sm-btn sm-btn--secondary" style="text-decoration: none; color: var(--text);">Sign in</a></span>
+<header style="display: flex; align-items: center; gap: 16px; padding: 20px 0; flex-wrap: wrap;">
+<a href="#" style="display: flex; align-items: center; gap: 10px; text-decoration: none;"><svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 18px; font-weight: 600; letter-spacing: -0.02em;">Shelfmark</span></a>
+<nav aria-label="Sections" style="display: flex; gap: 4px; margin-left: 16px;"><a href="#" class="sm-btn sm-btn--ghost sm-btn--sm" style="text-decoration: none;">How it works</a><a href="#" class="sm-btn sm-btn--ghost sm-btn--sm" style="text-decoration: none;">Privacy</a></nav>
+<span style="flex: 1;"></span>
+<a href="#" class="sm-btn sm-btn--ghost" style="text-decoration: none;">Sign in</a>
+<a href="#" class="sm-btn sm-btn--primary" style="text-decoration: none;">Get started</a>
 </header>
 
-<section class="lp-wrap" style="padding-top: 40px; padding-bottom: 88px; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 64px; align-items: center;">
-<div style="display: flex; flex-direction: column; gap: 28px;">
-<span class="lp-mono">For everything you send to Saved Messages</span>
-<h1 class="lp-h1">Paste a link.<br>Find it again.<br><em>Even in a year.</em></h1>
-<p style="margin: 0; max-width: 500px; font-size: 18px; line-height: 28px; color: var(--text-muted);">Telegram is where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes.</p>
-<div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-<a href="Main.dc.html" class="sm-btn sm-btn--primary sm-btn--lg" style="text-decoration: none; height: 52px; padding: 0 22px; border-radius: 14px;">Open the demo</a>
-<a href="SignIn.dc.html" class="sm-btn sm-btn--secondary sm-btn--lg" style="text-decoration: none; height: 52px; padding: 0 22px; border-radius: 14px; color: var(--text);">Sign in with Google</a>
-<span class="lp-mono" style="margin-left: 6px;">free, no card</span>
+<section class="a-hero" style="display: flex; flex-wrap: wrap; gap: 48px; align-items: center;">
+<div style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 24px;">
+<h1 style="margin: 0; font-size: 64px; line-height: 64px; font-weight: 600;">Paste a link.<br>Find it again.<br><span style="color: var(--text-muted);">Even in a year.</span></h1>
+<p style="margin: 0; font-size: 19px; line-height: 28px; color: var(--text-muted); max-width: 460px;">Videos, articles, things to buy, courses — on one calm shelf instead of chats and open tabs.</p>
+<div style="display: flex; gap: 10px; flex-wrap: wrap;"><a href="#" class="sm-btn sm-btn--primary sm-btn--lg" style="text-decoration: none;">Start your shelf</a><a href="#" class="sm-btn sm-btn--secondary sm-btn--lg" style="text-decoration: none;">Open the demo</a></div>
+<p style="margin: 0; font-size: 13px; color: var(--text-muted);">Sign in with Google or GitHub.</p>
 </div>
+<div style="flex: 1 1 520px; position: relative; min-height: 440px;">
+<div style="position: absolute; inset: 0 0 24px 24px; background: var(--surface); border-radius: 28px; box-shadow: var(--shadow-float); padding: 18px; display: flex; flex-direction: column; gap: 14px; overflow: hidden;">
+<div style="display: flex; align-items: center; gap: 10px;"><span style="font-size: 20px; font-weight: 600; letter-spacing: -0.02em;">Clothes</span><sc-if value="{{isAll}}" hint-placeholder-val="{{true}}"><span class="a-count" style="font-size: 13px; color: var(--text-muted);">21 links</span></sc-if><sc-if value="{{isBuy}}" hint-placeholder-val="{{false}}"><span class="a-count" style="font-size: 13px; color: var(--text-muted);">6 links</span></sc-if><span style="flex: 1;"></span><div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="View" style="--seg-n: 2; --seg-i: {{tabI}};"><button class="sm-seg__item {{allCls}}" role="radio" aria-checked="{{isAll}}" onClick="{{pickAll}}" style="padding: 0 14px;">All 21</button><button class="sm-seg__item {{buyCls}}" role="radio" aria-checked="{{isBuy}}" onClick="{{pickBuy}}" style="padding: 0 14px;">To buy 6</button></div></div>
+<sc-if value="{{isAll}}" hint-placeholder-val="{{true}}"><div class="a-swap" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;"><div class="sm-card"><div class="sm-card__media" style="aspect-ratio: 4 / 5; background: var(--accent-bg);"></div><div class="sm-card__body" style="padding: 10px 12px 12px;"><div class="sm-card__meta"><span class="sm-favicon">C</span>cos.com</div><div class="sm-card__title" style="font-size: 14px; line-height: 19px;">Wool coat, straight cut</div></div></div><div class="sm-card"><div class="sm-card__media" style="aspect-ratio: 4 / 5; background: var(--surface-pressed);"></div><div class="sm-card__body" style="padding: 10px 12px 12px;"><div class="sm-card__meta"><span class="sm-favicon">U</span>uniqlo.com</div><div class="sm-card__title" style="font-size: 14px; line-height: 19px;">Merino crew-neck jumper</div></div></div><div class="sm-card"><div class="sm-card__media" style="aspect-ratio: 4 / 5; background: var(--surface-hover);"></div><div class="sm-card__body" style="padding: 10px 12px 12px;"><div class="sm-card__meta"><span class="sm-favicon">D</span>drmartens.com</div><div class="sm-card__title" style="font-size: 14px; line-height: 19px;">Leather Chelsea boots</div></div></div></div></sc-if>
+<sc-if value="{{isBuy}}" hint-placeholder-val="{{false}}"><div class="a-swap" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;"><div class="sm-card"><div class="sm-card__media" style="aspect-ratio: 4 / 5; background: var(--surface-hover);"></div><div class="sm-card__body" style="padding: 10px 12px 12px;"><div class="sm-card__meta"><span class="sm-favicon">D</span>drmartens.com</div><div class="sm-card__title" style="font-size: 14px; line-height: 19px;">Leather Chelsea boots</div></div></div><div class="sm-card"><div class="sm-card__media" style="aspect-ratio: 4 / 5; background: var(--accent-bg);"></div><div class="sm-card__body" style="padding: 10px 12px 12px;"><div class="sm-card__meta"><span class="sm-favicon">A</span>arket.com</div><div class="sm-card__title" style="font-size: 14px; line-height: 19px;">Canvas tote bag</div></div></div><div class="sm-card"><div class="sm-card__media" style="aspect-ratio: 4 / 5; background: var(--surface-pressed);"></div><div class="sm-card__body" style="padding: 10px 12px 12px;"><div class="sm-card__meta"><span class="sm-favicon">R</span>rains.com</div><div class="sm-card__title" style="font-size: 14px; line-height: 19px;">Rain jacket, packable</div></div></div></div></sc-if>
 </div>
-
-<div>
-<div class="lp-phone">
-<div class="lp-phone__bar">
-<sc-if value="{{notSorted}}" hint-placeholder-val="{{true}}"><span style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; color: var(--surface);"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 3h10a1 1 0 0 1 1 1v17l-6-4-6 4V4a1 1 0 0 1 1-1z"/></svg></span><span style="flex: 1;"><span style="display: block; font-size: 15px; font-weight: 600;">Saved Messages</span><span style="display: block; font-size: 12px; color: var(--text-muted);">new links every day, none findable</span></span></sc-if>
-<sc-if value="{{sorted}}" hint-placeholder-val="{{false}}"><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="flex: 1;"><span style="display: block; font-size: 15px; font-weight: 600;">Your shelf</span><span style="display: block; font-size: 12px; color: var(--text-muted);">5 links in 4 folders, each with a note</span></span></sc-if>
-</div>
-<sc-if value="{{notSorted}}" hint-placeholder-val="{{true}}"><div class="lp-chat {{outCls}}"><div class="lp-track"><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">watch later!!</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">Y</span><span class="lp-url">youtube.com/watch?v=ng22-signal-forms</span><span class="lp-time">Mon 23:41</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">this coat, wait for the sale</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">C</span><span class="lp-url">cos.com/en/wool-coat-graphite</span><span class="lp-time">Tue 09:12</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">Fwd: Frontend Weekly</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">S</span><span class="lp-url">stepik.org/course/nestjs-for-frontend</span><span class="lp-time">Wed 18:30</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">ramen recipe, friday?</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">R</span><span class="lp-url">seriouseats.com/weeknight-ramen</span><span class="lp-time">Thu 21:05</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">where was that zoneless article…</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">A</span><span class="lp-url">angular.dev/guide/zoneless</span><span class="lp-time">Fri 08:47</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">lisbon, maybe in may</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">L</span><span class="lp-url">cntraveler.com/lisbon-in-three-days</span><span class="lp-time">Sat 11:20</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">icons for the side project</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">T</span><span class="lp-url">tabler.io/icons</span><span class="lp-time">Sun 16:02</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">read this one day</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">O</span><span class="lp-url">overreacted.io/the-two-reacts</span><span class="lp-time">Mon 07:58</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">watch later!!</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">Y</span><span class="lp-url">youtube.com/watch?v=ng22-signal-forms</span><span class="lp-time">Mon 23:41</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">this coat, wait for the sale</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">C</span><span class="lp-url">cos.com/en/wool-coat-graphite</span><span class="lp-time">Tue 09:12</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">Fwd: Frontend Weekly</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">S</span><span class="lp-url">stepik.org/course/nestjs-for-frontend</span><span class="lp-time">Wed 18:30</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">ramen recipe, friday?</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">R</span><span class="lp-url">seriouseats.com/weeknight-ramen</span><span class="lp-time">Thu 21:05</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">where was that zoneless article…</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">A</span><span class="lp-url">angular.dev/guide/zoneless</span><span class="lp-time">Fri 08:47</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">lisbon, maybe in may</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">L</span><span class="lp-url">cntraveler.com/lisbon-in-three-days</span><span class="lp-time">Sat 11:20</span></div></div></div><div class="lp-msg"><div class="lp-bubble"><div class="lp-txt">icons for the side project</div><div class="lp-link"><span class="sm-favicon" style="background: var(--surface);">T</span><span class="lp-url">tabler.io/icons</span><span class="lp-time">Sun 16:02</span></div></div></div></div></div></sc-if>
-<sc-if value="{{sorted}}" hint-placeholder-val="{{false}}"><div class="lp-shelf"><div class="lp-group lp-land" style="--d: 0ms;"><div class="lp-folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg>Work / Angular</div><article class="sm-card sm-card--landed lp-land" style="--d: 0ms; flex-direction: row; cursor: default;"><div class="sm-card__body" style="flex: 1; min-width: 0; padding: 9px 12px; gap: 2px;"><div style="display: flex; align-items: center; gap: 8px; min-width: 0;"><span class="sm-favicon" title="youtube.com">Y</span><span class="sm-card__title" style="font-size: 14px; line-height: 19px; -webkit-line-clamp: 1;">Signal Forms in 20 minutes</span></div><div style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 24px;">Watch later</div></div></article><article class="sm-card sm-card--landed lp-land" style="--d: 80ms; flex-direction: row; cursor: default;"><div class="sm-card__body" style="flex: 1; min-width: 0; padding: 9px 12px; gap: 2px;"><div style="display: flex; align-items: center; gap: 8px; min-width: 0;"><span class="sm-favicon" title="angular.dev">A</span><span class="sm-card__title" style="font-size: 14px; line-height: 19px; -webkit-line-clamp: 1;">Zoneless change detection</span></div><div style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 24px;">The article about zoneless</div></div></article></div><div class="lp-group lp-land" style="--d: 160ms;"><div class="lp-folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg>Courses</div><article class="sm-card sm-card--landed lp-land" style="--d: 160ms; flex-direction: row; cursor: default;"><div class="sm-card__body" style="flex: 1; min-width: 0; padding: 9px 12px; gap: 2px;"><div style="display: flex; align-items: center; gap: 8px; min-width: 0;"><span class="sm-favicon" title="stepik.org">S</span><span class="sm-card__title" style="font-size: 14px; line-height: 19px; -webkit-line-clamp: 1;">NestJS for frontend developers</span></div><div style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 24px;">From Frontend Weekly</div></div></article></div><div class="lp-group lp-land" style="--d: 240ms;"><div class="lp-folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg>Clothes</div><article class="sm-card sm-card--landed lp-land" style="--d: 240ms; flex-direction: row; cursor: default;"><div class="sm-card__body" style="flex: 1; min-width: 0; padding: 9px 12px; gap: 2px;"><div style="display: flex; align-items: center; gap: 8px; min-width: 0;"><span class="sm-favicon" title="cos.com">C</span><span class="sm-card__title" style="font-size: 14px; line-height: 19px; -webkit-line-clamp: 1;">Wool coat, graphite</span></div><div style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 24px;">Wait for the sale</div></div></article></div><div class="lp-group lp-land" style="--d: 320ms;"><div class="lp-folder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/></svg>Recipes</div><article class="sm-card sm-card--landed lp-land" style="--d: 320ms; flex-direction: row; cursor: default;"><div class="sm-card__body" style="flex: 1; min-width: 0; padding: 9px 12px; gap: 2px;"><div style="display: flex; align-items: center; gap: 8px; min-width: 0;"><span class="sm-favicon" title="seriouseats.com">R</span><span class="sm-card__title" style="font-size: 14px; line-height: 19px; -webkit-line-clamp: 1;">The best weeknight ramen</span></div><div style="font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 24px;">Friday?</div></div></article></div></div></sc-if>
-</div>
-<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px;">
-<span class="lp-mono">{{hint}}</span>
-<button class="sm-btn {{sortBtnCls}}" onClick="{{toggle}}">{{sortLabel}}</button>
-</div>
+<div class="sm-toast sm-glass" role="status" style="position: absolute; left: 0; bottom: 0; color: var(--text); background: var(--glass);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--accent);"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span class="sm-toast__text">Saved to Clothes</span><button class="sm-toast__action" style="color: var(--text);">Undo</button></div>
 </div>
 </section>
 
-<section style="border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--surface);">
-<div style="max-width: 1180px; margin: 0 auto; padding: 64px 24px; display: flex; flex-direction: column; gap: 32px;">
-<h2 style="margin: 0; max-width: 640px; font-size: 32px; line-height: 38px; font-weight: 700; letter-spacing: -0.025em;">The same links, before and after</h2>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
-
-<div style="display: flex; flex-direction: column; gap: 12px;">
-<p style="margin: 0; font-size: 14px; font-weight: 600; color: var(--text-muted);">Before: scattered</p>
-<div aria-hidden="true" style="position: relative; height: 300px; border-radius: 18px; background: var(--bg); border: 1px dashed var(--border-control); overflow: hidden;">
-<div class="lp-ping" style="position: absolute; left: 50%; top: 46%; margin-left: -70px; width: 140px; padding: 7px 10px; border-radius: 12px 12px 4px 12px; background: var(--accent-bg); font-size: 12px; line-height: 16px;">+1 in Saved Messages<br><span style="color: var(--accent-text);">youtu.be/…</span></div>
-<div class="lp-drift" style="--t: 7s; --dx: 8px; --dy: -6px; --dr: 1.2deg; position: absolute; left: 24px; top: 24px; width: 230px; padding: 10px 12px; border-radius: 14px 14px 14px 4px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; line-height: 18px; transform: rotate(-2deg);">Saved messages<br><span style="color: var(--text-muted);">youtube.com/watch?v=ng22…</span></div>
-<div class="lp-drift" style="--t: 9s; --dx: -7px; --dy: 5px; --dr: -1deg; position: absolute; right: 22px; top: 40px; display: flex; gap: 2px; transform: rotate(3deg);"><span style="padding: 6px 10px; border-radius: 8px 8px 0 0; background: var(--surface-pressed); font-size: 12px;">Wool coat…</span><span style="padding: 6px 10px; border-radius: 8px 8px 0 0; background: var(--surface-hover); font-size: 12px; color: var(--text-muted);">NestJS c…</span><span style="padding: 6px 10px; border-radius: 8px 8px 0 0; background: var(--surface-hover); font-size: 12px; color: var(--text-muted);">+ 37</span></div>
-<div class="lp-drift" style="--t: 6s; --dx: 6px; --dy: 7px; --dr: 1.5deg; position: absolute; left: 60px; bottom: 36px; width: 200px; padding: 12px; border-radius: 10px; background: var(--warning-bg); color: var(--warning); font-size: 13px; line-height: 18px; transform: rotate(2.5deg);">watch later: ramen recipe?? link somewhere in chat</div>
-<div class="lp-drift" style="--t: 8s; --dx: -9px; --dy: -4px; --dr: -1.3deg; position: absolute; right: 36px; bottom: 56px; padding: 8px 12px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); font-size: 12px; color: var(--text-muted); transform: rotate(-4deg);">Bookmarks bar (91)</div>
+<section aria-labelledby="how" style="display: flex; flex-direction: column; gap: 20px;">
+<h2 id="how" style="margin: 0; font-size: 32px; line-height: 38px; font-weight: 600; letter-spacing: -0.02em;">Save once, find in seconds</h2>
+<div class="a-bento" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px;">
+<article style="grid-column: span 4; background: var(--surface); border-radius: 28px; box-shadow: var(--shadow-card); padding: 28px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center;">
+<div style="flex: 1 1 220px;"><h3 style="margin: 0 0 8px; font-size: 22px; line-height: 28px; font-weight: 600;">The preview fills in by itself</h3><p style="margin: 0; font-size: 15px; line-height: 22px; color: var(--text-muted);">Paste a link: title, picture and site arrive on their own. Add a note so you remember why you saved it.</p></div>
+<div style="flex: 1 1 280px; background: var(--bg); border-radius: 20px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+<div class="sm-field__control" style="background: var(--surface);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" style="color: var(--text-muted);"><path d="M9.5 14.5l5-5M8 12l-1.8 1.8a3.2 3.2 0 0 0 4.5 4.5l1.8-1.8M16 12l1.8-1.8a3.2 3.2 0 0 0-4.5-4.5L11.5 7.5"/></svg><span style="font: 400 13px/18px var(--font-mono); color: var(--text);">youtube.com/watch?v=ng22</span></div>
+<div style="display: flex; gap: 12px; align-items: center; background: var(--surface); border-radius: 16px; padding: 8px;"><span style="width: 88px; aspect-ratio: 16 / 10; border-radius: 10px; background: var(--accent-bg); flex: none;"></span><span><span style="display: block; font-size: 12px; color: var(--text-muted);">youtube.com</span><span style="display: block; font-size: 14px; font-weight: 600; line-height: 19px;">Signal Forms in 20 minutes</span></span></div>
 </div>
-</div>
-
-<div style="display: flex; flex-direction: column; gap: 12px;">
-<p style="margin: 0; font-size: 14px; font-weight: 600; color: var(--text-muted);">After: on one shelf</p>
-<div style="height: 300px; box-sizing: border-box; border-radius: 18px; background: var(--bg); border: 1px solid var(--border); padding: 16px; display: flex; gap: 16px;">
-<div aria-hidden="true" class="lp-tree" style="width: 150px; display: flex; flex-direction: column; gap: 2px;"><span class="lp-hl"></span><div class="sm-tree__row">Clothes</div><div class="sm-tree__row">Work</div><div class="sm-tree__row" style="padding-left: 24px;">Angular</div><div class="sm-tree__row">Recipes</div><div class="sm-tree__section">Tags</div><div style="display: flex; gap: 6px; flex-wrap: wrap; padding: 0 8px;"><span class="sm-chip">video</span><span class="sm-chip">courses</span></div></div>
-<div class="lp-lists"><div class="lp-list"><div class="sm-row"><span class="sm-favicon">C</span><span class="sm-row__main"><span class="sm-row__title">Wool coat, graphite</span><span class="sm-row__meta">Wait for the sale, size M</span></span></div><div class="sm-row"><span class="sm-favicon">D</span><span class="sm-row__main"><span class="sm-row__title">Leather Chelsea boots</span><span class="sm-row__meta">For the winter</span></span></div><div class="sm-row"><span class="sm-favicon">U</span><span class="sm-row__main"><span class="sm-row__title">Merino crew-neck jumper</span><span class="sm-row__meta">Gift idea</span></span></div></div><div class="lp-list"><div class="sm-row"><span class="sm-favicon">Y</span><span class="sm-row__main"><span class="sm-row__title">Signal Forms in 20 minutes</span><span class="sm-row__meta">Watch on the weekend</span></span></div><div class="sm-row"><span class="sm-favicon">S</span><span class="sm-row__main"><span class="sm-row__title">NestJS for frontend developers</span><span class="sm-row__meta">For the side project</span></span></div><div class="sm-row"><span class="sm-favicon">A</span><span class="sm-row__main"><span class="sm-row__title">Zoneless change detection</span><span class="sm-row__meta">Read before stage 0</span></span></div></div><div class="lp-list"><div class="sm-row"><span class="sm-favicon">R</span><span class="sm-row__main"><span class="sm-row__title">The best weeknight ramen</span><span class="sm-row__meta">Friday dinner</span></span></div><div class="sm-row"><span class="sm-favicon">B</span><span class="sm-row__main"><span class="sm-row__title">Focaccia, no knead</span><span class="sm-row__meta">For Sunday</span></span></div><div class="sm-row"><span class="sm-favicon">K</span><span class="sm-row__main"><span class="sm-row__title">Kimchi in a jar</span><span class="sm-row__meta">Needs a big jar</span></span></div></div></div>
-</div>
-</div>
-
-</div>
-</div>
-</section>
-
-<section id="how" class="lp-wrap" style="padding-top: 88px; padding-bottom: 88px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: start;">
-<div style="display: flex; flex-direction: column; gap: 20px;">
-<span class="lp-mono">Why this exists</span>
-<p class="lp-note" style="margin: 0;">“My Saved Messages in Telegram had hundreds of links: courses, a coat I wanted, a ramen recipe, that one article about zoneless Angular. I could never find any of them again. So I built the shelf I wanted.”</p>
-<div style="display: flex; align-items: center; gap: 12px;"><span class="sm-avatar sm-avatar--lg">DD</span><span><span style="display: block; font-weight: 600;">Dmytro</span><span style="display: block; font-size: 13px; color: var(--text-muted);">Frontend developer</span></span></div>
-</div>
-<div style="display: flex; flex-direction: column; gap: 16px; padding: 24px; border-radius: 22px; border: 1px solid var(--border); background: var(--surface);">
-<span class="lp-mono">How it's built</span>
-<p style="margin: 0; font-size: 15px; line-height: 23px;">Angular 22 with signals, NestJS, PostgreSQL. Planned, coded, tested and reviewed by a team of Claude Code agents, with every decision in the open.</p>
-<div style="display: flex; flex-wrap: wrap; gap: 6px;"><span class="lp-agent">project-manager</span><span class="lp-agent">architect</span><span class="lp-agent">frontend-dev</span><span class="lp-agent">ui-dev</span><span class="lp-agent">backend-dev</span><span class="lp-agent">test-engineer</span><span class="lp-agent">code-reviewer</span><span class="lp-agent">security-reviewer</span></div>
-<a href="#" style="font-size: 14px; color: var(--text);">Read the code and the decision log on GitHub →</a>
+</article>
+<article style="grid-column: span 2; background: var(--surface); border-radius: 28px; box-shadow: var(--shadow-card); padding: 28px; display: flex; flex-direction: column; gap: 16px;">
+<h3 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">Folders inside folders</h3>
+<div style="display: flex; flex-direction: column; gap: 2px;"><span class="sm-tree__row">Work<span class="sm-tree__count">34</span></span><span class="sm-tree__row is-active" style="padding-left: 28px;">Angular<span class="sm-tree__count">12</span></span><span class="sm-tree__row" style="padding-left: 28px;">Courses<span class="sm-tree__count">8</span></span></div>
+</article>
+<article style="grid-column: span 2; background: var(--surface); border-radius: 28px; box-shadow: var(--shadow-card); padding: 28px; display: flex; flex-direction: column; gap: 16px;">
+<h3 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">Find it by any word</h3>
+<p style="margin: 0; font-size: 15px; line-height: 22px; color: var(--text-muted);">Title, note, site or tag — and plain phrases like “coat from last week”.</p>
+<div style="display: flex; gap: 6px; flex-wrap: wrap;"><span class="sm-token">coat</span><span class="sm-token">Last 7 days</span></div>
+</article>
+<article style="grid-column: span 2; background: var(--surface); border-radius: 28px; box-shadow: var(--shadow-card); padding: 28px; display: flex; flex-direction: column; gap: 16px;">
+<h3 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">Save from your phone</h3>
+<p style="margin: 0; font-size: 15px; line-height: 22px; color: var(--text-muted);">Shelfmark sits in the Share menu on Android. Pick a folder, add a note, back to your app.</p>
+</article>
+<article style="grid-column: span 2; background: var(--primary); color: var(--on-primary); border-radius: 28px; padding: 28px; display: flex; flex-direction: column; gap: 16px;">
+<h3 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">Your links stay yours</h3>
+<p style="margin: 0; font-size: 15px; line-height: 22px; opacity: .8;">Export everything as JSON or browser bookmarks whenever you like. No ads, no tracking.</p>
+</article>
 </div>
 </section>
 
-<section style="border-top: 1px solid var(--border);">
-<div class="lp-wrap" style="padding-top: 56px; padding-bottom: 56px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
-<h2 style="margin: 0; font-size: 32px; line-height: 38px; font-weight: 700; letter-spacing: -0.025em;">Empty your Saved Messages.</h2>
-<div style="display: flex; gap: 10px; flex-wrap: wrap;"><a href="Main.dc.html" class="sm-btn sm-btn--primary sm-btn--lg" style="text-decoration: none;">Open the demo</a><a href="SignIn.dc.html" class="sm-btn sm-btn--secondary sm-btn--lg" style="text-decoration: none; color: var(--text);">Sign in</a></div>
-</div>
+<section style="background: var(--surface); border-radius: 32px; box-shadow: var(--shadow-card); padding: 48px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px;">
+<div><h2 style="margin: 0; font-size: 36px; line-height: 42px; font-weight: 600; letter-spacing: -0.02em;">Give your links a home</h2><p style="margin: 8px 0 0; font-size: 16px; color: var(--text-muted);">It takes one minute to start.</p></div>
+<a href="#" class="sm-btn sm-btn--primary sm-btn--lg" style="text-decoration: none;">Start your shelf</a>
 </section>
 
-<footer class="lp-wrap" style="padding-top: 24px; padding-bottom: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--text-muted);">
-<span>© 2026 Shelfmark</span>
-<span style="display: flex; gap: 16px;"><a href="Privacy.dc.html">Privacy</a><a href="#">GitHub</a></span>
-</footer>
+<footer style="display: flex; gap: 16px; align-items: center; font-size: 13px; color: var(--text-muted); flex-wrap: wrap;"><span>© 2026 Shelfmark</span><a href="#" style="color: var(--text-muted);">Privacy policy</a><span style="flex: 1;"></span><span>Made with Angular and NestJS</span></footer>
+</div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1400}}'>
 class Component extends DCLogic {
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      if ((this.state || {}).manual) return;
+      this.setState({ tab: ((this.state || {}).tab ?? 'all') === 'all' ? 'buy' : 'all' });
+    }, 3200);
+  }
+  componentWillUnmount() { clearInterval(this.timer); }
   renderVals() {
-    const st = (this.state || {}).st ?? 'chat';
-    const sorted = st === 'shelf';
+    const tab = (this.state || {}).tab ?? 'all';
+    const all = tab === 'all';
     return {
       theme: (this.props.dark ?? false) ? 'dark' : 'light',
-      sorted, notSorted: !sorted,
-      outCls: st === 'leaving' ? 'lp-out' : '',
-      hint: sorted ? 'Notes come from your own messages.' : 'Five links, five different days.',
-      sortLabel: sorted ? 'Show the chat again' : 'Put them on the shelf',
-      sortBtnCls: sorted ? 'sm-btn--ghost' : 'sm-btn--primary',
-      toggle: () => {
-        if (sorted) { this.setState({ st: 'chat' }); return; }
-        this.setState({ st: 'leaving' });
-        setTimeout(() => this.setState({ st: 'shelf' }), 520);
-      }
+      isAll: all, isBuy: !all, tabI: all ? 0 : 1,
+      allCls: all ? 'is-active' : '', buyCls: all ? '' : 'is-active',
+      pickAll: () => this.setState({ tab: 'all', manual: true }),
+      pickBuy: () => this.setState({ tab: 'buy', manual: true })
     };
   }
 }

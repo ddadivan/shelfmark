@@ -7,10 +7,37 @@
   }
 }
 
-// Wraps rules that must be removed or reduced for users who prefer less motion.
+// The app's own "Animations: Reduced" setting (issue #273): ThemeService sets it on `html`.
+$motion-reduced-selector: "[data-motion='reduced']";
+
+// Wraps rules that must be removed or reduced for users who prefer less motion: the device asks
+// for it (`prefers-reduced-motion: reduce`) OR the account setting does (`html[data-motion=
+// 'reduced']`). There is no override the other way: "Full" never undoes a device request.
+// Two selector forms carry the attribute, because Angular's emulated encapsulation scopes a
+// `:root` ancestor in component styles: `:root[…] &` works in global styles (and in components
+// it compiles to a rule that never matches), `:host-context([…]) &` works in component styles
+// (outside a component the browser ignores it).
 @mixin reduced-motion {
   @media (prefers-reduced-motion: reduce) {
     @content;
+  }
+
+  @if & {
+    :root#{$motion-reduced-selector} & {
+      @content;
+    }
+
+    :host-context(#{$motion-reduced-selector}) & {
+      @content;
+    }
+  } @else {
+    :root#{$motion-reduced-selector} {
+      @content;
+    }
+
+    :host-context(#{$motion-reduced-selector}) {
+      @content;
+    }
   }
 }
 

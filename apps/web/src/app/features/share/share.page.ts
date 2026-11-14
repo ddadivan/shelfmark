@@ -19,15 +19,17 @@ import {
   SkeletonComponent,
 } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
+import { ViewportService } from '../../core/layout/viewport.service';
 import { APP_PATH } from '../../models/app-path.const';
 import { FoldersStore } from '../../stores/folders.store';
-import { buildFolderOptions } from '../links/add-link/folder-options';
-import { displayHost, urlWithoutScheme } from '../links/add-link/http-url';
-import { LinkActionsService } from '../links/link-actions.service';
+import { UserSettingsStore } from '../../stores/user-settings.store';
+import { buildFolderOptions } from '../links/utils/folder-options';
+import { displayHost, urlWithoutScheme } from '../links/utils/http-url';
+import { LinkActionsService } from '../links/services/link-actions.service';
 import { LINKS_API } from '../links/models/links-api.const';
 import { PREVIEW_STATE } from '../links/models/preview-state.const';
 import type { PreviewState } from '../links/models/preview-state.type';
-import { extractSharedLink } from './extract-shared-link';
+import { extractSharedLink } from './utils/extract-shared-link';
 import { SHARE_STATE } from './models/share-state.const';
 import type { ShareState } from './models/share-state.type';
 import type { ShareFormModel } from './models/share-form-model.interface';
@@ -66,10 +68,13 @@ export default class SharePage {
   protected readonly SHARE_STATE = SHARE_STATE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
 
+  /** The grip of the bottom sheet exists on a phone only. */
+  protected readonly phone = inject(ViewportService).phone;
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly linksApi = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
+  private readonly settings = inject(UserSettingsStore);
   private readonly actions = inject(LinkActionsService);
   private readonly transloco = inject(TranslocoService);
 
@@ -151,6 +156,13 @@ export default class SharePage {
 
   constructor() {
     void this.folders.load();
+    // Settings › Library › New links go to: the folder the form starts with, unless already picked.
+    void this.settings.load().then(() => {
+      const folderId = this.settings.libraryShown().newLinksFolderId;
+      if (folderId !== null && !this.form.folderId().dirty()) {
+        this.model.update((model) => ({ ...model, folderId }));
+      }
+    });
   }
 
   /** Back to the library, saving nothing. */

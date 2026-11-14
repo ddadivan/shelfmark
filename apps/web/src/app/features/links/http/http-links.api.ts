@@ -2,8 +2,17 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
   LINK_IMAGES_ENDPOINT,
+  LINKS_BATCH_ENDPOINT,
+  LINKS_BATCH_UPDATE_ENDPOINT,
+  RECENT_LINKS_ENDPOINT,
   type CaptureLinkImagesResponse,
   type CreateLinkRequest,
+  type DeleteLinksBatchRequest,
+  type DeleteLinksBatchResponse,
+  type UpdateLinksBatchRequest,
+  type UpdateLinksBatchResponse,
+  type CreateLinksBatchRequest,
+  type CreateLinksBatchResponse,
   type GetLinkResponse,
   type LinkPreviewRequest,
   type LinkPreviewResponse,
@@ -50,6 +59,17 @@ export class HttpLinksApi implements LinksApi {
     });
   }
 
+  removeRecent(id: string): Observable<void> {
+    return this.http.delete<void>(
+      RECENT_LINKS_ENDPOINT.Remove.replace(':id', encodeURIComponent(id)),
+      { context: skipErrorToast() },
+    );
+  }
+
+  clearRecent(): Observable<void> {
+    return this.http.delete<void>(RECENT_LINKS_ENDPOINT.Clear, { context: skipErrorToast() });
+  }
+
   get(id: string): Observable<GetLinkResponse> {
     return this.http.get<GetLinkResponse>(this.url(id));
   }
@@ -76,6 +96,25 @@ export class HttpLinksApi implements LinksApi {
       {},
       { context: skipErrorToast() },
     );
+  }
+
+  createBatch(request: CreateLinksBatchRequest): Observable<CreateLinksBatchResponse> {
+    return this.http.post<CreateLinksBatchResponse>(LINKS_BATCH_ENDPOINT.Create, request, {
+      context: skipErrorToast(),
+    });
+  }
+
+  removeBatch(ids: readonly string[]): Observable<DeleteLinksBatchResponse> {
+    const body: DeleteLinksBatchRequest = { ids: [...ids] };
+    return this.http.post<DeleteLinksBatchResponse>(LINKS_BATCH_ENDPOINT.Delete, body, {
+      context: skipErrorToast(),
+    });
+  }
+
+  updateBatch(request: UpdateLinksBatchRequest): Observable<UpdateLinksBatchResponse> {
+    return this.http.post<UpdateLinksBatchResponse>(LINKS_BATCH_UPDATE_ENDPOINT, request, {
+      context: skipErrorToast(),
+    });
   }
 
   private url(id?: string): string {

@@ -32,6 +32,82 @@ describe('MockLinksApi', () => {
     expect(response.preview.title).toContain('example.org');
   });
 
+  describe('paste many', () => {
+    it('saves a batch in paste order, pending, and replays known keys', async () => {
+      const batchApi = createApi();
+      const request = {
+        items: [
+          { url: 'https://batch.example/a', idempotencyKey: 'k-a', title: 'A' },
+          { url: 'https://batch.example/b', idempotencyKey: 'k-b' },
+          { url: 'https://batch.example/a/', idempotencyKey: 'k-c' },
+        ],
+        tags: ['pasted'],
+      };
+
+      const first = await firstValueFrom(batchApi.createBatch(request));
+      expect(first.links.map((link) => link.title)).toEqual(['A', 'https://batch.example/b']);
+      expect(first.links[0].tags).toEqual(['pasted']);
+      expect(first.links[0].imageUrl).toContain('pending');
+      expect(first.errors).toEqual([
+        { index: 2, url: 'https://batch.example/a/', code: 'duplicate-in-batch' },
+      ]);
+
+      const again = await firstValueFrom(batchApi.createBatch(request));
+      expect(again.links.map((link) => link.id)).toEqual(first.links.map((link) => link.id));
+    });
+
+    it('fills in the page title of a link saved without one when its images are captured', async () => {
+      const batchApi = createApi();
+      const { links } = await firstValueFrom(
+        batchApi.createBatch({ items: [{ url: 'https://batch.example/t', idempotencyKey: 'k' }] }),
+      );
+
+      const captured = await firstValueFrom(batchApi.captureImages(links[0].id));
+
+      expect(captured.title).toBe('Page on batch.example');
+    });
+
+    it('reports a saved link as a duplicate in the preview', async () => {
+      const batchApi = createApi();
+      const { links } = await firstValueFrom(
+        batchApi.createBatch({ items: [{ url: 'https://batch.example/d', idempotencyKey: 'k' }] }),
+      );
+
+      const response = await firstValueFrom(batchApi.preview('https://batch.example/d/'));
+
+      expect(response.duplicate).toMatchObject({ id: links[0].id, folderName: null });
+    });
+
+    it('deletes a batch (Undo) and fails it for the delete-fails host', async () => {
+      const batchApi = createApi();
+      const { links } = await firstValueFrom(
+        batchApi.createBatch({
+          items: [
+            { url: 'https://batch.example/x', idempotencyKey: 'x' },
+            { url: `https://${MOCK_HOST.DeleteFails}/y`, idempotencyKey: 'y' },
+          ],
+        }),
+      );
+
+      await expect(
+        firstValueFrom(batchApi.removeBatch(links.map((link) => link.id))),
+      ).rejects.toThrow();
+      expect(await firstValueFrom(batchApi.removeBatch([links[0].id, 'missing']))).toEqual({
+        deleted: 1,
+      });
+    });
+
+    it('fails a batch with a save-fails link as a whole', async () => {
+      await expect(
+        firstValueFrom(
+          createApi().createBatch({
+            items: [{ url: `https://${MOCK_HOST.SaveFails}/z`, idempotencyKey: 'z' }],
+          }),
+        ),
+      ).rejects.toThrow();
+    });
+  });
+
   it('fails the preview for the unreachable host', async () => {
     await expect(
       firstValueFrom(api.preview(`https://${MOCK_HOST.Unreachable}/doc`)),
@@ -124,6 +200,39 @@ describe('MockLinksApi', () => {
       expect(times).toEqual([...times].sort().reverse());
     });
 
+    it('lists only the last 30 days of opens', async () => {
+      const feed = createApi();
+      const [target] = (await firstValueFrom(feed.list({ limit: 1 }))).items;
+      await firstValueFrom(feed.open(target.id));
+      const old = (await firstValueFrom(feed.recent({ limit: 100 }))).items.length;
+      expect(old).toBeGreaterThan(0);
+      const stale = new Date(Date.now() - 31 * 86_400_000).toISOString();
+      const data = (feed as unknown as { data: MockLibraryData }).data;
+      data.links = data.links.map((link) =>
+        link.id === target.id ? { ...link, lastOpenedAt: stale } : link,
+      );
+      const { items } = await firstValueFrom(feed.recent({ limit: 100 }));
+      expect(items.some((link) => link.id === target.id)).toBe(false);
+      expect(items).toHaveLength(old - 1);
+    });
+
+    it('removes one link from the history and clears it', async () => {
+      const feed = createApi();
+      const { items } = await firstValueFrom(feed.recent({ limit: 100 }));
+      await firstValueFrom(feed.removeRecent(items[0].id));
+      const after = await firstValueFrom(feed.recent({ limit: 100 }));
+      expect(after.items.map((link) => link.id)).not.toContain(items[0].id);
+      const saved = await firstValueFrom(feed.get(items[0].id));
+      expect(saved.lastOpenedAt).toBeNull();
+      // Like the API: removing it again is fine, an unknown link is a 404.
+      await firstValueFrom(feed.removeRecent(items[0].id));
+      await expect(firstValueFrom(feed.removeRecent('missing'))).rejects.toMatchObject({
+        status: 404,
+      });
+      await firstValueFrom(feed.clearRecent());
+      expect((await firstValueFrom(feed.recent({ limit: 100 }))).items).toEqual([]);
+    });
+
     it('updates, opens and removes a link in memory', async () => {
       const feed = createApi();
       const [target] = (await firstValueFrom(feed.list({ limit: 1 }))).items;
@@ -134,6 +243,24 @@ describe('MockLinksApi', () => {
       await firstValueFrom(feed.remove(target.id));
       const rest = await firstValueFrom(feed.list({ limit: 100 }));
       expect(rest.items.some((link) => link.id === target.id)).toBe(false);
+    });
+
+    it('answers but records nothing while the history is paused, as the server', async () => {
+      const injector = Injector.create({ providers: [MockLibraryData] });
+      const feed = runInInjectionContext(injector, () => new MockLinksApi());
+      const data = injector.get(MockLibraryData);
+      const [target] = (await firstValueFrom(feed.list({ limit: 1 }))).items;
+      const before = target.lastOpenedAt;
+
+      data.pauseHistory = true;
+      const paused = await firstValueFrom(feed.open(target.id));
+      expect(paused.recorded).toBe(false);
+      expect(paused.lastOpenedAt).toBe(before);
+
+      data.pauseHistory = false;
+      const recorded = await firstValueFrom(feed.open(target.id));
+      expect(recorded.recorded).toBe(true);
+      expect(recorded.lastOpenedAt).not.toBe(before);
     });
 
     it('marks the first link pending in the pending-images scenario until it is captured', async () => {

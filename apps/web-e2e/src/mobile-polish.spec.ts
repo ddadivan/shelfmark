@@ -1,6 +1,11 @@
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
+import { SEARCH_BUTTON, useSearchDialogWidth } from './support/search-button';
+import { openSidebar, tabBar } from './support/sidebar';
+import { switchView } from './support/library-toolbar';
+import { documentScrollTop, mainScrollTop, makePageTall, scrollMainTo } from './support/scroll';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_ID.FolderReading / FolderAngular and their names (libs/shared/contracts); the e2e
 // project cannot import from them.
@@ -29,7 +34,7 @@ test.describe('mobile polish (mock API)', () => {
 
     test('opens with the keyboard in the list view', async ({ page }) => {
       await page.goto(`/folders/${READING.id}`);
-      await page.getByRole('radio', { name: 'List' }).check({ force: true });
+      await switchView(page, 'List');
 
       const tile = page.getByRole('link', { name: /^Open folder Angular/ });
       await tile.focus();
@@ -39,7 +44,7 @@ test.describe('mobile polish (mock API)', () => {
       await expect(page).toHaveURL(`/folders/${ANGULAR.id}`);
     });
 
-    test('has no horizontal overflow', async ({ page }) => {
+    test('has no horizontal overflow', { tag: E2E_TAG.Phone }, async ({ page }) => {
       await page.goto(`/folders/${READING.id}`);
       await expect(page.getByRole('link', { name: /^Open folder Angular/ })).toBeVisible();
 
@@ -50,42 +55,55 @@ test.describe('mobile polish (mock API)', () => {
     });
   });
 
-  test.describe('phone only', () => {
-    test.skip(({ isMobile }) => !isMobile, 'the phone project covers the phone layout');
+  test.describe('phone only', { tag: E2E_TAG.Phone }, () => {
+    test.skip(
+      ({ viewport }) => (viewport?.width ?? 0) >= 640,
+      'the phone project covers the phone layout',
+    );
 
-    test('the header stays at the top while the page scrolls', async ({ page }) => {
+    test('the tab bar stays at the bottom while the page scrolls', async ({ page }) => {
       await page.goto('/links');
-      const header = page.getByRole('banner');
-      await expect(header).toBeVisible();
+      const bar = tabBar(page);
+      await expect(bar).toBeVisible();
       // Make sure the page is taller than the screen, whatever the mock data size.
-      await page.addStyleTag({ content: 'main { min-height: 3000px; }' });
+      await makePageTall(page, 3000);
 
-      await page.evaluate('window.scrollTo(0, 1200)');
-      await expect.poll(() => page.evaluate('window.scrollY')).toBeGreaterThan(500);
+      await scrollMainTo(page, 1200);
+      await expect.poll(() => mainScrollTop(page)).toBeGreaterThan(500);
+      expect(await documentScrollTop(page)).toBe(0);
 
-      const box = await header.boundingBox();
-      expect(box?.y).toBeCloseTo(0, 0);
-      await expect(page.getByRole('button', { name: 'Open menu' })).toBeInViewport();
+      const box = await bar.boundingBox();
+      const view = page.viewportSize();
+      expect((view?.height ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeCloseTo(20, 0);
+      await expect(page.getByRole('button', { name: 'Add link' })).toBeInViewport();
     });
 
-    test('a dialog and the drawer stay above the sticky header', async ({ page }) => {
+    test('a dialog and the sheet stay above the tab bar', async ({ page }) => {
       await page.goto('/links');
-      await page.addStyleTag({ content: 'main { min-height: 3000px; }' });
-      await page.evaluate('window.scrollTo(0, 800)');
+      await expect(page.locator('ui-card').first()).toBeVisible();
+      await makePageTall(page, 3000);
+      await scrollMainTo(page, 800);
 
-      await page.getByRole('button', { name: 'Open menu' }).click();
-      const drawer = page.getByRole('dialog', { name: 'Menu' });
-      await expect(drawer).toBeVisible();
-      // String script: this project has no DOM lib. The header sits under the drawer's scrim.
-      const top = await page.evaluate<string>(
-        `document.elementFromPoint(40, 40)?.closest('[role="dialog"]')?.getAttribute('aria-label') ?? 'none'`,
-      );
-      expect(top).toBe('Menu');
+      await page.getByRole('button', { name: 'Add link' }).click();
+      await expect(page.getByRole('dialog', { name: 'Add link' })).toBeVisible();
+      await settled(page);
+      // String script: this project has no DOM lib. The bar sits under the dialog's scrim.
+      const covered = `(() => { const r = document.querySelector('ui-tab-bar').getBoundingClientRect();
+        return !document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)?.closest('ui-tab-bar'); })()`;
+      expect(await page.evaluate<boolean>(covered)).toBe(true);
+      await page.keyboard.press('Escape');
+      await expect(page.getByRole('dialog')).toHaveCount(0);
+
+      await openSidebar(page);
+      await page.getByRole('link', { name: /^Recently opened/ }).click();
+      await expect(page.getByRole('dialog', { name: 'Recently opened' })).toBeVisible();
+      await settled(page);
+      expect(await page.evaluate<boolean>(covered)).toBe(true);
     });
 
     test('the search dialog has no keyboard hints', async ({ page }) => {
       await page.goto('/links');
-      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       const dialog = page.getByRole('dialog', { name: 'Search' });
       await expect(dialog).toBeVisible();
       await settled(page);
@@ -100,7 +118,7 @@ test.describe('mobile polish (mock API)', () => {
 
     test('the search dialog fills the whole screen', async ({ page }) => {
       await page.goto('/links');
-      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       const panel = page.getByRole('dialog', { name: 'Search' }).locator('.ui-dialog');
       await expect(panel).toBeVisible();
       await settled(page);
@@ -112,19 +130,25 @@ test.describe('mobile polish (mock API)', () => {
       expect(Math.round(box?.width ?? 0)).toBe(view?.width);
     });
 
-    test('the add link dialog stacks its actions, the main action on top', async ({ page }) => {
+    test('the add link sheet has no Cancel, the close button and Esc still dismiss it', async ({
+      page,
+    }) => {
       await page.goto('/links');
       await page.getByRole('button', { name: 'Add link' }).click();
       const dialog = page.getByRole('dialog', { name: 'Add link' });
       await expect(dialog).toBeVisible();
       await settled(page);
 
-      const save = await dialog.getByRole('button', { name: 'Save link' }).boundingBox();
-      const cancel = await dialog.getByRole('button', { name: 'Cancel' }).boundingBox();
-      expect(save && cancel).toBeTruthy();
-      expect(save?.y).toBeLessThan(cancel?.y ?? 0);
-      expect(save?.width).toBeCloseTo(cancel?.width ?? 0, 0);
-      expect(save?.x).toBeCloseTo(cancel?.x ?? 0, 0);
+      await expect(dialog.getByRole('button', { name: 'Save link' })).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeHidden();
+
+      await dialog.getByRole('button', { name: 'Close' }).click();
+      await expect(dialog).toBeHidden();
+
+      await page.getByRole('button', { name: 'Add link' }).click();
+      await expect(dialog).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(dialog).toBeHidden();
     });
 
     test('the tap highlight is off', async ({ page }) => {
@@ -137,12 +161,46 @@ test.describe('mobile polish (mock API)', () => {
     });
   });
 
+  test.describe('library toolbar on a phone', { tag: E2E_TAG.Phone }, () => {
+    test.skip(({ viewport }) => (viewport?.width ?? 0) >= 640, 'phone only');
+
+    test('one Options menu holds sort, view and export; the saved views scroll in one row', async ({
+      page,
+    }) => {
+      await page.goto('/links');
+      await expect(page.locator('ui-card').first()).toBeVisible();
+      // No loose sort button, switch or Export button next to the title.
+      await expect(page.getByRole('button', { name: /^Sort: / })).toHaveCount(0);
+      await expect(page.getByRole('radio', { name: 'List' })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Export' })).toHaveCount(0);
+
+      await page.getByRole('button', { name: 'Options', exact: true }).click();
+      const menu = page.getByRole('menu', { name: 'Sort, view and export' });
+      await expect(menu.getByText('Sort by', { exact: true })).toBeVisible();
+      await expect(menu.getByText('View', { exact: true })).toBeVisible();
+      await expect(menu.getByText('Export', { exact: true })).toBeVisible();
+      await expect(menu.getByRole('menuitemradio', { name: 'Newest first' })).toBeVisible();
+      await expect(menu.getByRole('menuitemradio', { name: 'Cards' })).toBeVisible();
+      await expect(menu.getByRole('menuitem', { name: 'Everything as JSON' })).toBeVisible();
+      await page.keyboard.press('Escape');
+
+      // The saved views are one row that scrolls sideways, the first chip flush left.
+      const bar = page.getByRole('toolbar', { name: 'Saved views' });
+      const scrolls = await bar.evaluate((el) => el.scrollWidth > el.clientWidth);
+      expect(scrolls).toBe(true);
+      const first = await bar.getByRole('button').first().boundingBox();
+      const main = await page.getByRole('main').boundingBox();
+      expect(Math.abs((first?.x ?? 0) - (main?.x ?? 0))).toBeLessThan(24);
+    });
+  });
+
   test.describe('desktop and tablet', () => {
-    test.skip(({ isMobile }) => isMobile, 'the desktop project covers the keyboard hints');
+    test.skip(({ hasTouch }) => hasTouch, 'the desktop project covers the keyboard hints');
 
     test('the search dialog keeps the keyboard hints', async ({ page }) => {
+      await useSearchDialogWidth(page);
       await page.goto('/links');
-      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       const dialog = page.getByRole('dialog', { name: 'Search' });
       await expect(dialog).toBeVisible();
 

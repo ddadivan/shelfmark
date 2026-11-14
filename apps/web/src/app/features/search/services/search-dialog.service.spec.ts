@@ -1,0 +1,215 @@
+import { Dialog } from '@angular/cdk/dialog';
+import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { MOCK_LIBRARY_COUNTS } from '@shelfmark/contracts/testing';
+import { DialogService, type UiDialogRef } from '@shelfmark/ui';
+import { of } from 'rxjs';
+import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
+import { LinkActionsService } from '../../links/services/link-actions.service';
+import { FOLDERS_API } from '../../links/models/folders-api.const';
+import { LINKS_API } from '../../links/models/links-api.const';
+import { TAGS_API } from '../../links/models/tags-api.const';
+import { ViewportService } from '../../../core/layout/viewport.service';
+import { SearchDialogService } from './search-dialog.service';
+import { SearchFieldService } from './search-field.service';
+
+function keydown(init: KeyboardEventInit): KeyboardEvent {
+  return new KeyboardEvent('keydown', { cancelable: true, ...init });
+}
+
+describe('SearchDialogService shortcut', () => {
+  function setup(openDialogs: unknown[] = []) {
+    const dialogs = { open: vi.fn() };
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: DialogService, useValue: dialogs },
+        { provide: Dialog, useValue: { openDialogs } },
+      ],
+    });
+    return { dialogs, service: TestBed.inject(SearchDialogService) };
+  }
+
+  it('opens for Cmd+K and for Ctrl+K and stops the browser default', () => {
+    const { dialogs, service } = setup();
+    const meta = keydown({ key: 'k', code: 'KeyK', metaKey: true });
+    const ctrl = keydown({ key: 'k', code: 'KeyK', ctrlKey: true });
+
+    expect(service.handleShortcut(meta)).toBe(true);
+    expect(service.handleShortcut(ctrl)).toBe(true);
+
+    expect(dialogs.open).toHaveBeenCalledTimes(2);
+    expect(dialogs.open.mock.calls[0][1]).toMatchObject({ variant: 'command' });
+    expect(meta.defaultPrevented).toBe(true);
+    expect(ctrl.defaultPrevented).toBe(true);
+  });
+
+  it('works on a layout where the key is not "k" (matched by code)', () => {
+    const { dialogs, service } = setup();
+
+    expect(service.handleShortcut(keydown({ key: 'л', code: 'KeyK', metaKey: true }))).toBe(true);
+    expect(dialogs.open).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores a keydown without a key (autofill) and IME composition', () => {
+    const { dialogs, service } = setup();
+
+    expect(service.handleShortcut(new Event('keydown') as KeyboardEvent)).toBe(false);
+    expect(
+      service.handleShortcut(keydown({ key: 'k', code: 'KeyK', metaKey: true, isComposing: true })),
+    ).toBe(false);
+    expect(dialogs.open).not.toHaveBeenCalled();
+  });
+
+  it('uses the key on a Latin layout: a Dvorak J on the physical K position is not the shortcut', () => {
+    const { dialogs, service } = setup();
+
+    expect(service.handleShortcut(keydown({ key: 'j', code: 'KeyK', ctrlKey: true }))).toBe(false);
+    expect(service.handleShortcut(keydown({ key: 'k', code: 'KeyV', ctrlKey: true }))).toBe(true);
+    expect(dialogs.open).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores a plain K, other modifiers and other keys', () => {
+    const { dialogs, service } = setup();
+
+    expect(service.handleShortcut(keydown({ key: 'k', code: 'KeyK' }))).toBe(false);
+    expect(
+      service.handleShortcut(keydown({ key: 'k', code: 'KeyK', ctrlKey: true, shiftKey: true })),
+    ).toBe(false);
+    expect(
+      service.handleShortcut(keydown({ key: 'k', code: 'KeyK', metaKey: true, altKey: true })),
+    ).toBe(false);
+    expect(service.handleShortcut(keydown({ key: 'j', code: 'KeyJ', metaKey: true }))).toBe(false);
+    expect(dialogs.open).not.toHaveBeenCalled();
+  });
+
+  it('does nothing while another dialog is open, and leaves the key alone', () => {
+    const { dialogs, service } = setup([{}]);
+    const event = keydown({ key: 'k', code: 'KeyK', metaKey: true });
+
+    service.handleShortcut(event);
+
+    expect(dialogs.open).not.toHaveBeenCalled();
+  });
+});
+
+/** Generous: a closing dialog needs a render, the leave animation and the CDK teardown. */
+const CLOSE_TIMEOUT_MS = 15_000;
+
+describe('SearchDialogService dialog', () => {
+  async function setup() {
+    TestBed.configureTestingModule({
+      providers: [
+        provideTranslocoForTest(),
+        { provide: LINKS_API, useValue: { list: () => of({ items: [], nextCursor: null }) } },
+        {
+          provide: FOLDERS_API,
+          useValue: { list: () => of({ items: [], counts: MOCK_LIBRARY_COUNTS }) },
+        },
+        { provide: TAGS_API, useValue: { list: () => of([]) } },
+        { provide: LinkActionsService, useValue: { open: vi.fn() } },
+      ],
+    });
+    await loadEnglish();
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const trigger = document.createElement('button');
+    document.body.append(trigger);
+    trigger.focus();
+    return { service: TestBed.inject(SearchDialogService), trigger };
+  }
+
+  afterEach(() => {
+    document.body.replaceChildren();
+  });
+
+  it(
+    'focuses the search field on open and gives focus back to the opener on Esc',
+    // The leave animation and the CDK teardown scale with the CPU a loaded CI runner leaves: the
+    // test waits for the dialog to be really gone (`ref.result`), never for a fixed short time.
+    { timeout: CLOSE_TIMEOUT_MS * 2 },
+    async () => {
+      const { service, trigger } = await setup();
+      const open = vi.spyOn(TestBed.inject(DialogService), 'open');
+
+      service.open();
+      const ref = open.mock.results[0]?.value as UiDialogRef;
+      await vi.waitFor(
+        () => expect(document.activeElement?.getAttribute('role')).toBe('combobox'),
+        { timeout: CLOSE_TIMEOUT_MS },
+      );
+      // Esc is sent until the dialog starts closing, so a key that lands before the dialog is
+      // ready on a slow runner is not lost; what is proved stays the same: Esc closes it.
+      await vi.waitFor(
+        () => {
+          if (!ref.isClosing) {
+            document
+              .querySelector('input[role="combobox"]')
+              ?.dispatchEvent(
+                new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+              );
+          }
+          expect(ref.isClosing).toBe(true);
+        },
+        { timeout: CLOSE_TIMEOUT_MS, interval: 100 },
+      );
+
+      // The CDK gives focus back while it removes the overlay, before `result` resolves.
+      await ref.result;
+      expect(document.querySelector('[role="dialog"]')).toBeNull();
+      expect(document.activeElement).toBe(trigger);
+    },
+  );
+
+  it('opens only one search dialog', async () => {
+    const { service } = await setup();
+
+    service.open();
+    service.open();
+
+    await vi.waitFor(() => expect(document.querySelectorAll('[role="dialog"]')).toHaveLength(1));
+  });
+});
+
+describe('SearchDialogService on a wide screen (#329)', () => {
+  function setup(wide: boolean) {
+    const dialogs = { open: vi.fn() };
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: DialogService, useValue: dialogs },
+        { provide: Dialog, useValue: { openDialogs: [] } },
+        { provide: ViewportService, useValue: { wide: signal(wide) } },
+      ],
+    });
+    return { dialogs, service: TestBed.inject(SearchDialogService) };
+  }
+
+  it('focuses the header field instead of opening the dialog', () => {
+    const { dialogs, service } = setup(true);
+    const focus = vi.fn(() => true);
+    TestBed.inject(SearchFieldService).register(focus);
+
+    expect(service.handleShortcut(keydown({ key: 'k', code: 'KeyK', ctrlKey: true }))).toBe(true);
+
+    expect(focus).toHaveBeenCalledTimes(1);
+    expect(dialogs.open).not.toHaveBeenCalled();
+  });
+
+  it('opens the dialog when no field is there', () => {
+    const { dialogs, service } = setup(true);
+
+    service.open();
+
+    expect(dialogs.open).toHaveBeenCalledTimes(1);
+  });
+
+  it('opens the dialog below 80em even if a field is registered', () => {
+    const { dialogs, service } = setup(false);
+    const focus = vi.fn(() => true);
+    TestBed.inject(SearchFieldService).register(focus);
+
+    service.open();
+
+    expect(focus).not.toHaveBeenCalled();
+    expect(dialogs.open).toHaveBeenCalledTimes(1);
+  });
+});

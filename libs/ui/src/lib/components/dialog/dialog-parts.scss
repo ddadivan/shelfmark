@@ -1,0 +1,107 @@
+@use '../../../styles/ui' as *;
+
+.ui-dialog__drag {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  @include phone {
+    touch-action: none;
+  }
+
+  .ui-dialog--sheet & {
+    @include tablet {
+      touch-action: none;
+    }
+  }
+}
+
+.ui-dialog--phone-full .ui-dialog__grip {
+  @include phone {
+    display: none;
+  }
+}
+
+.ui-dialog__grip {
+  display: none;
+  align-self: center;
+  width: rem(36px);
+  height: rem(4px);
+  background: var(--border-control);
+  border-radius: rem(2px);
+
+  @include phone {
+    display: block;
+  }
+
+  .ui-dialog--sheet & {
+    @include tablet {
+      display: block;
+    }
+  }
+}
+
+.ui-dialog--untitled .ui-dialog__head {
+  @include visually-hidden;
+}
+
+.ui-dialog__head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ui-dialog__head-end {
+  display: flex;
+  flex: none;
+  gap: var(--space-1);
+  align-items: center;
+  margin-inline-start: auto;
+}
+
+.ui-dialog__title {
+  @include type(title);
+
+  margin: 0;
+  color: var(--text);
+}
+
+.ui-dialog__body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+// Full screen on a phone: the body takes the height left under the header, so content such as
+// the search list can grow into it (the content decides how to fill it).
+.ui-dialog--phone-full .ui-dialog__body {
+  @include phone {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+}
+
+// The footer sits space-6 (24px) under the body: the panel gap (space-4) plus this margin (#350).
+.ui-dialog__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: flex-end;
+  margin-block-start: var(--space-2);
+
+  // Phone: the actions stack at full width. The DOM order is "secondary first, primary last" (the
+  // order of a desktop row, right-aligned), so `column-reverse` puts the primary action on top,
+  // then Cancel; a separate destructive action (Delete in the edit dialog, first in the DOM)
+  // lands at the bottom. The width of the slotted children is set in the global `dialog-layout`
+  // (they belong to the feature's view, not to this one).
+  @include phone {
+    flex-flow: column-reverse nowrap;
+    align-items: stretch;
+  }
+
+  &:empty {
+    display: none;
+  }
+}

@@ -1,0 +1,43 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the History row stories only (never shipped with the library). Class names start with `hst-`.
+
+.hst-themes {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.hst-pane {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--bg);
+}
+
+.hst-hint {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// A phone-width column inside a wide story (the rows switch at the viewport width, so the
+// phone viewport stories show the 48 x 48 preview; this only narrows the text).
+.hst-phone {
+  display: grid;
+  gap: var(--space-4);
+  max-inline-size: rem(390px);
+}
+
+.hst-time-badge {
+  @include type(caption);
+
+  display: inline-flex;
+  align-items: center;
+  height: rem(22px);
+  padding: 0 var(--space-2);
+  color: var(--text);
+  background: var(--surface-hover);
+  border-radius: var(--radius-full);
+}

@@ -1,11 +1,84 @@
 @use 'ui' as *;
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 .sidebar {
-  padding: var(--space-3);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: var(--space-3) var(--space-2) 0;
+}
+
+// Folders only (the phone Library page): its own card, set in by the page gutter.
+.sidebar--folders {
+  padding: var(--space-1) var(--space-1) var(--space-2);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+// Logo row heading the card on the desktop (Main spec): 26px mark, wordmark, 4 / 10 / 14 padding.
+.sidebar__logo {
+  display: flex;
+  flex: none;
+  align-items: center;
+  padding: var(--space-1) rem(10px) rem(14px);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+// The middle scrolls (nav, Pinned, Folders, Tags, the how-it-works card); the logo above and the
+// footer below stay put, so the scrollbar never runs under them (#335). The how-it-works card is
+// pushed to the bottom of this part, right above the footer.
+.sidebar__scroll {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  // Soft edges when the tree scrolls (#352), in the sidebar card's colour.
+  @include scroll-fade(var(--surface));
+
+  > * {
+    flex: none;
+  }
+}
+
+// The phone Library page shows the folders in a card and lets the page scroll.
+.sidebar--folders .sidebar__scroll {
+  flex: none;
+  overflow: visible;
+}
+
+// "New here? Watch how it works": a section gap under Tags (#315), at the bottom of the middle.
+.sidebar__how-it-works {
+  margin-block: auto var(--space-3);
+  padding-block-start: var(--space-6);
+}
+
+// Footer, fixed at the bottom of the card: "Send feedback", then Trash under a divider (#335).
+.sidebar__footer {
+  flex: none;
+  padding-block: var(--space-1) var(--space-3);
+}
+
+.sidebar__trash {
+  display: block;
+  margin-block-start: var(--space-2);
+  padding-block-start: var(--space-2);
+  border-block-start: 1px solid var(--border);
 }
 
 .sidebar__error {
@@ -13,4 +86,9 @@
 
   margin: var(--space-3) 0 0;
   color: var(--text-muted);
+}
+
+// First load of the folder list: skeleton rows with a 'Folders' heading's worth of room above.
+.sidebar__loading {
+  padding-block-start: var(--space-6);
 }

@@ -1,0 +1,190 @@
+@use '../../../styles/ui' as *;
+
+// Whole-card activation: the title link's ::after covers the card (z-index 1); the favorite
+// toggle and the actions sit above it (z-index 2), so they never activate the card.
+
+:host {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--text);
+  cursor: pointer;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  transition:
+    box-shadow var(--duration-slow) var(--ease-out),
+    background-color var(--duration-slow) var(--ease-out);
+}
+
+// The ring sits on the card, not on the title text. An element's own outline and shadow are
+// not clipped by its own `overflow`, so the card can clip its image and keep both whole.
+:host(:has(.ui-card__link:focus-visible)) {
+  @include focus-ring;
+}
+
+:host(.ui-card--reveal) {
+  @include enter(fade);
+}
+
+// Hover: pointer devices only (Motion principle 7). The card never moves.
+:host {
+  @include hover {
+    background: var(--card-hover-bg);
+
+    // `--shadow-x` / `--shadow-y` come from `uiPointerShadow` (a few px, away from the
+    // pointer); without the directive they are 0 and the extra layer just deepens the spread.
+    box-shadow:
+      0 0 0 1px var(--card-hover-border),
+      var(--shadow-card-spread),
+      var(--shadow-x, 0) var(--shadow-y, 0) 24px -10px var(--shadow-card-pointer);
+
+    .ui-card__overlay {
+      pointer-events: auto;
+      opacity: 1;
+      transform: none;
+    }
+
+    .ui-card__favorite,
+    .ui-card__more {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .ui-card__image,
+      .ui-card__placeholder {
+        transform: scale(1.06);
+      }
+    }
+  }
+}
+
+// Press: the shadow tightens back (80 ms), the overlay bar darkens.
+:host(:has(.ui-card__link:active)) {
+  box-shadow: var(--shadow-card-press);
+  transition-duration: var(--duration-instant);
+
+  .ui-card__overlay {
+    background: var(--surface-pressed);
+  }
+}
+
+:host(.ui-card--selected) {
+  background: var(--accent-bg);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+// Picked for a bulk action: a thin 2px `accent` (sage) ring and a light `accent-bg` tint, also
+// while hovered. The author's choice (the Checkbox spec says a `primary` ring, which is too loud
+// in dark); `text` and `text-muted` hold 4.5:1 on `accent-bg` in both themes.
+:host(.ui-card--checked) {
+  // Chips are `accent-bg` too: on the tinted card they sit on `surface`, so they stay visible.
+  --ui-chip-bg: var(--surface);
+
+  background: var(--accent-bg);
+  box-shadow: 0 0 0 2px var(--accent);
+
+  @include hover {
+    background: var(--accent-bg);
+    box-shadow:
+      0 0 0 2px var(--accent),
+      var(--shadow-card-spread);
+  }
+}
+
+// Media ---------------------------------------------------------------------------------------
+
+.ui-card__media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: rem(6px) rem(6px) 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: rem(16px); // concentric with the 22px card corner (22 - 6)
+  aspect-ratio: 16 / 9;
+}
+
+// Settings › Appearance › Cards › Preview image (#285, `data-card-preview` on an ancestor): a
+// short strip, or no image area at all.
+:host-context([data-card-preview='small']) .ui-card__media {
+  aspect-ratio: 32 / 9;
+}
+
+:host-context([data-card-preview='off']) .ui-card__media {
+  display: none;
+}
+
+.ui-card__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+// Soft background and a small card drawing when there is no image (and no `fallback` content);
+// the tone rotates over `accent-bg`, `surface-hover` and `surface-pressed`. The opacities are
+// decorative (no text), so they are allowed.
+.ui-card__placeholder {
+  position: absolute;
+  inset: 0;
+  background: var(--surface-hover);
+  transition: transform var(--duration-slow) var(--ease-out);
+
+  &[data-tone='0'] {
+    background: var(--accent-bg);
+  }
+
+  &[data-tone='2'] {
+    background: var(--surface-pressed);
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.ui-card__art-glow {
+  fill: var(--surface);
+  opacity: 0.4;
+}
+
+.ui-card__art-card {
+  fill: var(--surface);
+  opacity: 0.75;
+}
+
+.ui-card__art-bar {
+  fill: var(--text-muted);
+  opacity: 0.45;
+}
+
+.ui-card__art-bar--short {
+  opacity: 0.3;
+}
+
+// A custom `fallback` (for example a site letter) sits on `accent-bg` over the drawing.
+.ui-card__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-sans);
+  font-size: rem(28px);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accent-text);
+  background: var(--accent-bg);
+
+  &:empty {
+    display: none;
+  }
+}

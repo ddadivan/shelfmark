@@ -1,0 +1,86 @@
+@if (!store.recentLoaded()) {
+  <div class="recent-history__skeleton" aria-busy="true">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
+  </div>
+} @else if (!hasHistory()) {
+  <ui-empty-state
+    class="recent-history__empty"
+    [layout]="emptyLayout()"
+    illustration="empty-recent"
+    [heading]="'links.recent.empty.title' | transloco"
+    [text]="'links.recent.empty.text' | transloco: { days: windowDays }"
+  />
+} @else {
+  @if (filterable()) {
+    <div class="recent-history__tools">
+      <ui-saved-views
+        class="recent-history__filter"
+        [items]="kindItems()"
+        [activeId]="kindFilter() ?? ALL_KINDS"
+        [ariaLabel]="'links.recent.filter.label' | transloco"
+        [layout]="kindLayout()"
+        (selected)="selectKind($event)"
+      />
+      <ui-input
+        class="recent-history__search"
+        compact
+        clearable
+        [type]="INPUT_TYPE.Search"
+        [label]="'links.recent.search.label' | transloco"
+        [placeholder]="'links.recent.search.label' | transloco"
+        [clearLabel]="'links.recent.search.clear' | transloco"
+        [(value)]="query"
+      />
+    </div>
+  }
+  @if (searchEmpty()) {
+    <ui-empty-state
+      class="recent-history__empty"
+      [layout]="emptyLayout()"
+      illustration="not-found"
+      [heading]="'links.recent.search.emptyTitle' | transloco"
+      [text]="'links.recent.search.emptyText' | transloco: { query: appliedSearch() }"
+    >
+      <ui-button (click)="clearSearch()">{{ 'links.recent.search.clear' | transloco }}</ui-button>
+    </ui-empty-state>
+  } @else if (filteredEmpty()) {
+    <ui-empty-state
+      class="recent-history__empty"
+      [layout]="emptyLayout()"
+      illustration="empty-filter"
+      [heading]="'links.recent.filter.emptyTitle' | transloco"
+      [text]="'links.recent.filter.emptyText' | transloco: { days: windowDays }"
+    >
+      <ui-button (click)="selectKind(ALL_KINDS)">{{
+        'links.recent.filter.showAll' | transloco
+      }}</ui-button>
+    </ui-empty-state>
+  }
+  <div class="recent-history__groups">
+    @for (day of days(); track day.key) {
+      <ui-history-group [title]="dayTitle(day)" [headingLevel]="headingLevel()">
+        @for (link of day.links; track link.id) {
+          <app-link-history-row
+            [link]="link"
+            [folderName]="folderName(link)"
+            [folderColour]="folderColour(link)"
+            [folderIcon]="folderIcon(link)"
+            [time]="timeOf(link)"
+            [dateTime]="link.lastOpenedAt ?? ''"
+            (opened)="actions.open(link)"
+            (openInNewTab)="openInNewTab(link)"
+            (showInFolder)="showInFolder(link)"
+            (copyLink)="copyLink(link)"
+            (removeRequested)="remove(link)"
+          />
+        }
+      </ui-history-group>
+    }
+    <p class="recent-history__note">
+      @if (compact()) {
+        {{ 'links.recent.swipe.hint' | transloco }}
+      }
+      {{ 'links.recent.note' | transloco }}
+    </p>
+  </div>
+}

@@ -1,0 +1,173 @@
+@use '../../../styles/ui' as *;
+
+.ui-command-list__option {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: rem(10px) var(--space-3);
+  cursor: pointer;
+  user-select: none;
+  border-radius: rem(12px);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+
+  // The option under the arrow keys (DOM focus stays in the input).
+  &[data-active='true'] {
+    background: var(--accent-bg);
+
+    @include focus-ring(-2px);
+  }
+
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  @include coarse {
+    @include touch-target;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+// Leading tile: a 40px square (`surface-hover`, 10px corners) holding the site's favicon or letter
+// tile, or an icon. Without a leading element the slot is not drawn.
+.ui-command-item__leading {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: rem(40px);
+  height: rem(40px);
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: rem(10px);
+
+  &:empty {
+    display: none;
+  }
+
+  // The favicon draws its own 16px box: inside the tile it is bigger and has no square of its own.
+  .ui-favicon {
+    width: rem(20px);
+    height: rem(20px);
+    background: transparent;
+  }
+}
+
+// The row under the arrow keys sits on `accent-bg`: the tile steps back to the page colour.
+.ui-command-list__option[data-active='true'] .ui-command-item__leading {
+  background: var(--surface);
+}
+
+.ui-command-item__trailing {
+  display: inline-flex;
+  flex: none;
+  gap: var(--space-1);
+  align-items: center;
+  color: var(--text-muted);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-command-item__main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ui-command-item__title {
+  @include type(body);
+  @include line-clamp(1);
+
+  font-weight: 500;
+}
+
+// "Enter opens" cap on the row under the arrow keys; decorative (the footer names the key). The
+// double class beats the generic `kbd` rule above.
+.ui-command-list .ui-command-list__enter {
+  display: none;
+}
+
+.ui-command-list__option[data-active='true'] > .ui-command-list__enter {
+  display: inline-grid;
+
+  // No keyboard hint on touch screens.
+  @include coarse {
+    display: none;
+  }
+}
+
+.ui-command-item__meta {
+  @include type(caption);
+  @include line-clamp(1);
+
+  color: var(--text-muted);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-command-list__status {
+  @include visually-hidden;
+}
+
+// The empty state: the status region turns visible and takes its padding only now.
+.ui-command-list__status--empty {
+  @include type(body);
+
+  position: static;
+  width: auto;
+  height: auto;
+  padding: var(--space-8) var(--space-6);
+  margin: 0;
+  overflow: visible;
+  clip-path: none;
+  color: var(--text-muted);
+  text-align: center;
+  white-space: normal;
+}
+
+.ui-command-list__footer {
+  @include type(caption);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  align-items: center;
+  padding: var(--space-3) rem(20px);
+  font-size: rem(14px);
+  line-height: rem(20px);
+
+  // One hint: the caps, then the label.
+  > [slot='footer'] {
+    display: inline-flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  color: var(--text-muted);
+  border-top: 1px solid var(--ui-command-divider, var(--border));
+
+  &:empty {
+    display: none;
+  }
+
+  // Phone: the key hints (arrows, Enter, command-Enter) are not shown, but their text stays in the
+  // accessibility tree for a screen reader with an attached keyboard: visually hidden, not removed.
+  @include phone {
+    @include visually-hidden;
+  }
+}

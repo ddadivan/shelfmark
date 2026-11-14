@@ -2,6 +2,7 @@ import {
   LINK_LIMIT,
   LINK_SORT_FIELD,
   PAGE_LIMIT,
+  RECENT_LINKS_WINDOW_DAYS,
   SORT_ORDER,
   type LinkResponse,
   type LinkSortField,
@@ -18,6 +19,8 @@ import type { TestAgent } from '../../test-utils/models/test-agent.interface';
 import { seedLink } from '../../test-utils/seed-link';
 
 const BASE = '/api/links';
+
+const daysAgo = (days: number): Date => new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
 async function list(agent: TestAgent, query = ''): Promise<ListLinksResponse> {
   return (await agent.get(`${BASE}${query}`).expect(200)).body as ListLinksResponse;
@@ -258,12 +261,9 @@ describe('links API: reads', () => {
   describe('recent', () => {
     it('returns opened links by last open, newest first, limited', async () => {
       await seed({ title: 'never' });
-      await seed({ title: 'first', lastOpenedAt: new Date('2026-01-01T00:00:00Z') });
-      await seed({ title: 'second', lastOpenedAt: new Date('2026-01-02T00:00:00Z') });
-      await seed(
-        { title: 'foreign', lastOpenedAt: new Date('2026-01-03T00:00:00Z') },
-        users.intruder,
-      );
+      await seed({ title: 'first', lastOpenedAt: daysAgo(3) });
+      await seed({ title: 'second', lastOpenedAt: daysAgo(2) });
+      await seed({ title: 'foreign', lastOpenedAt: daysAgo(1) }, users.intruder);
 
       const all = (await a.get(`${BASE}/recent`).expect(200)).body as RecentLinksResponse;
       expect(all.items.map((item) => item.title)).toEqual(['second', 'first']);
@@ -271,6 +271,13 @@ describe('links API: reads', () => {
       expect(one.items.map((item) => item.title)).toEqual(['second']);
       await a.get(`${BASE}/recent?limit=0`).expect(400);
       await a.get(`${BASE}/recent?limit=${PAGE_LIMIT.Max + 1}`).expect(400);
+    });
+
+    it('keeps the history of the last 30 days only', async () => {
+      await seed({ title: 'inside', lastOpenedAt: daysAgo(RECENT_LINKS_WINDOW_DAYS - 1) });
+      await seed({ title: 'outside', lastOpenedAt: daysAgo(RECENT_LINKS_WINDOW_DAYS + 1) });
+      const all = (await a.get(`${BASE}/recent`).expect(200)).body as RecentLinksResponse;
+      expect(all.items.map((item) => item.title)).toEqual(['inside']);
     });
   });
 

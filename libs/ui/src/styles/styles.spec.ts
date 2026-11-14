@@ -1,8 +1,18 @@
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { compile, compileString } from 'sass';
-import { PHONE_MEDIA_QUERY } from '../lib/media';
-import { THEME, THEME_ATTRIBUTE } from '../lib/theme';
+import { compileScss } from '../testing/scss';
+import { COMPACT_MEDIA_QUERY, PHONE_MEDIA_QUERY } from '../lib/utils/media';
+import { encapsulateStyle } from '@angular/compiler';
+import { MOTION_ATTRIBUTE, MOTION_REDUCED } from '../lib/services/motion';
+import {
+  CUSTOM_THEME_ATTRIBUTE,
+  LAYOUT_ATTRIBUTE,
+  LAYOUT_OFF,
+  THEME,
+  THEME_ATTRIBUTE,
+  THEME_CUSTOM,
+} from '../lib/models/theme';
 
 const STYLES_PATH = 'libs/ui/src/styles';
 
@@ -65,6 +75,11 @@ describe('breakpoint mixins', () => {
 
   it('tablet-up starts exactly where phone ends', () => {
     expect(css('.a { @include tablet-up { x: 1; } }')).toContain('@media (width >= 40em)');
+  });
+
+  it('compact (the mobile shell, #316) ends exactly where desktop starts', () => {
+    expect(css('.a { @include compact { x: 1; } }')).toContain(`@media ${COMPACT_MEDIA_QUERY}`);
+    expect(COMPACT_MEDIA_QUERY).toBe('(width < 64em)');
   });
 });
 
@@ -137,11 +152,13 @@ describe('utility mixins', () => {
 describe('motion mixins', () => {
   it.each([
     ['enter(pop)', 'ui-pop-in var(--duration-base) var(--ease-out) both'],
+    ['enter(disclose)', 'ui-disclose-in var(--duration-base) var(--ease-in-out) both'],
     ['enter(fade)', 'ui-reveal var(--duration-base) var(--ease-out) both'],
-    ['enter(toast)', 'ui-slide-up var(--duration-slow) var(--ease-out) both'],
+    ['enter(toast)', 'ui-toast-in var(--duration-slow) var(--ease-spring) both'],
     ['enter(sheet)', 'ui-sheet-in var(--duration-slow) var(--ease-drawer) both'],
     ['enter(drawer)', 'ui-drawer-in var(--duration-slow) var(--ease-drawer) both'],
     ['leave(drawer)', 'ui-drawer-out var(--duration-base) var(--ease-in) both'],
+    ['leave(disclose)', 'ui-disclose-out var(--duration-fast) var(--ease-in-out) both'],
     ['leave(pop)', 'ui-pop-out var(--duration-fast) var(--ease-out) both'],
     ['leave(toast)', 'ui-toast-out var(--duration-fast) var(--ease-in) both'],
     ['leave(sheet)', 'ui-sheet-out var(--duration-base) var(--ease-in) both'],
@@ -159,7 +176,7 @@ describe('motion mixins', () => {
   ])('%s falls back to a fade in 200 ms under reduced motion', (include) => {
     const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
     expect(reduced).toContain('animation: ui-reveal var(--duration-base) var(--ease-out) both');
-    expect(reduced).not.toMatch(/ui-(pop-in|slide-up|sheet-in|drawer-in|spinner-grow)/);
+    expect(reduced).not.toMatch(/ui-(pop-in|toast-in|sheet-in|drawer-in|spinner-grow)/);
   });
 
   it.each(['leave(pop)', 'leave(toast)', 'leave(sheet)', 'leave(drawer)', 'leave(spinner-shrink)'])(
@@ -220,6 +237,8 @@ describe('motion mixins', () => {
     const names = [...out.matchAll(/@keyframes (\S+)/g)].map((m) => m[1]);
     expect(names).toEqual([
       'ui-pop-in',
+      'ui-disclose-in',
+      'ui-disclose-out',
       'ui-pop-out',
       'ui-fade-out',
       'ui-reveal',
@@ -227,8 +246,9 @@ describe('motion mixins', () => {
       'ui-sheet-out',
       'ui-drawer-in',
       'ui-drawer-out',
-      'ui-slide-up',
+      'ui-toast-in',
       'ui-toast-out',
+      'ui-toast-count',
       'ui-spin',
       'ui-spinner-in',
       'ui-spinner-grow',
@@ -238,8 +258,26 @@ describe('motion mixins', () => {
       'ui-progress',
       'ui-ripple-grow',
       'ui-ripple-fade',
+      'ui-land',
+      'ui-land-ring',
     ]);
     expect(out).not.toMatch(/\d+px/);
+  });
+
+  it('landed drops the card in with the spring and fades the sage ring, staggered by --ui-land-delay', () => {
+    const out = css('.a { @include landed; }');
+    expect(out).toContain(
+      'ui-land var(--duration-slow) var(--ease-spring) var(--ui-land-delay, 0s) both',
+    );
+    expect(out).toContain('ui-land-ring 1.8s var(--ease-out) var(--ui-land-delay, 0s) both');
+    expect(out).not.toContain('infinite');
+  });
+
+  it('landed keeps only a fade and the ring under reduced motion', () => {
+    const reduced = reducedMotionBlock(css('.a { @include landed; }'));
+    expect(reduced).toContain('ui-reveal var(--duration-base)');
+    expect(reduced).toContain('ui-land-ring');
+    expect(reduced).not.toMatch(/(^|[\s,])ui-land\s/);
   });
 });
 
@@ -295,9 +333,66 @@ function contrast(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05);
 }
 
+describe('glass mixin', () => {
+  it('uses the glass tokens and shadow-float, blur only where supported, none under reduced motion', () => {
+    const out = css('.g { @include glass; }');
+    expect(out).toContain('background: var(--glass)');
+    expect(out).toContain('border: 1px solid var(--glass-line)');
+    expect(out).toContain('box-shadow: var(--shadow-float)');
+    expect(out).toMatch(/@supports \(backdrop-filter: blur\(1px\)\)/);
+    expect(out).toContain('backdrop-filter: blur(1.5rem) saturate(1.5)');
+    expect(reducedMotionBlock(out)).toContain('backdrop-filter: none');
+  });
+
+  it('glass-utility defines the global .ui-glass class', () => {
+    expect(css('@include glass-utility;')).toMatch(/\.ui-glass \{[^}]*var\(--glass\)/);
+  });
+});
+
+const FOLDER_COLOURS = ['graphite', 'sage', 'ocean', 'plum', 'clay', 'amber', 'rose', 'teal'];
+
+describe('folder colour contrast (WCAG AA 4.5:1)', () => {
+  it.each(['light', 'dark'] as const)('every glyph holds on its tile in %s', (theme) => {
+    for (const colour of FOLDER_COLOURS) {
+      const ratio = contrast(
+        tokenHex(theme, `folder-${colour}`),
+        tokenHex(theme, `folder-${colour}-bg`),
+      );
+      expect(ratio, `${theme} ${colour}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+});
+
+/** The hex behind `--illustration-disc`, an alias of another colour token. */
+function discHex(theme: 'light' | 'dark'): string {
+  const out = css(`:root { @include ${theme}; }`);
+  const alias = /--illustration-disc:\s*var\(--([a-z-]+)\)/.exec(out);
+  if (!alias) {
+    throw new Error(`token --illustration-disc is not an alias in ${theme}`);
+  }
+  return tokenHex(theme, alias[1]);
+}
+
+describe('empty-state scene disc (#315, WCAG 1.4.11 3:1)', () => {
+  it('is a step stronger than the page in light, the page itself in dark', () => {
+    expect(discHex('light')).toBe(tokenHex('light', 'surface-hover'));
+    expect(discHex('dark')).toBe(tokenHex('dark', 'bg'));
+  });
+
+  it.each(['light', 'dark'] as const)(
+    'keeps the scene edges and accent shapes at 3:1 on the disc in %s',
+    (theme) => {
+      for (const edge of ['border-control', 'accent', 'primary']) {
+        const ratio = contrast(tokenHex(theme, edge), discHex(theme));
+        expect(ratio, `${theme} ${edge}`).toBeGreaterThanOrEqual(3);
+      }
+    },
+  );
+});
+
 describe('text-muted contrast (WCAG AA 4.5:1)', () => {
   it.each(['light', 'dark'] as const)('holds on every surface in %s', (theme) => {
-    expect(tokenHex(theme, 'text-muted')).toBe(theme === 'light' ? '#67676c' : '#9a9aa0');
+    expect(tokenHex(theme, 'text-muted')).toBe(theme === 'light' ? '#636368' : '#9a9aa0');
     for (const surface of ['bg', 'surface', 'surface-hover', 'surface-pressed', 'accent-bg']) {
       const ratio = contrast(tokenHex(theme, 'text-muted'), tokenHex(theme, surface));
       expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);
@@ -331,5 +426,177 @@ describe('themes', () => {
     for (const theme of Object.values(THEME)) {
       expect(output).toContain(`[${THEME_ATTRIBUTE}=${theme}]`);
     }
+  });
+
+  it('global.scss defines the Custom theme rules on the attributes ThemeService sets', () => {
+    const output = compile(resolve(STYLES_DIR, 'global.scss'), {
+      loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
+    }).css;
+    const custom = `[${THEME_ATTRIBUTE}=${THEME_CUSTOM}]`;
+    expect(output).toContain(`${custom}[${CUSTOM_THEME_ATTRIBUTE.Base}=dark]`);
+    expect(output).toContain(
+      `${custom}[${CUSTOM_THEME_ATTRIBUTE.Base}=light][${CUSTOM_THEME_ATTRIBUTE.Accent}=ocean]`,
+    );
+    expect(output).toContain(
+      `${custom}[${CUSTOM_THEME_ATTRIBUTE.Base}=dark][${CUSTOM_THEME_ATTRIBUTE.Background}=ink]`,
+    );
+    expect(output).toContain(`${custom}[${CUSTOM_THEME_ATTRIBUTE.Corners}=square]`);
+  });
+});
+
+describe('reduced-motion mixin and the Animations setting', () => {
+  const reduced = `[${MOTION_ATTRIBUTE}=${MOTION_REDUCED}]`;
+
+  it('applies under the media query and under html[data-motion=reduced], in global and component styles', () => {
+    const out = css('.a { transition: x; @include reduced-motion { transition: none; } }');
+    expect(reducedMotionBlock(out)).toContain('transition: none');
+    expect(out).toMatch(
+      new RegExp(`:root\\[${MOTION_ATTRIBUTE}=${MOTION_REDUCED}\\] \\.a \\{\\s*transition: none;`),
+    );
+    expect(out).toContain(`:host-context(${reduced}) .a {`);
+  });
+
+  it('works at the top level of a stylesheet', () => {
+    const out = css('@include reduced-motion { .b { animation: none; } }');
+    expect(out).toContain(`:root${reduced} .b`);
+    expect(out).toContain(`:host-context(${reduced}) .b`);
+  });
+
+  it('survives Angular emulated encapsulation for plain, :host and nested selectors', () => {
+    const out = encapsulateStyle(
+      css(
+        ':host { @include reduced-motion { a: 1; } } .c { @include reduced-motion { &:active { b: 2; } } } @include reduced-motion { :host, .d { c: 3; } }',
+      ),
+      'c0',
+    );
+    expect(out).toContain(`${reduced}   [_nghost-c0]`);
+    expect(out).toMatch(
+      new RegExp(
+        `\\[${MOTION_ATTRIBUTE}=${MOTION_REDUCED}\\]\\s+\\[_nghost-c0\\]\\s+\\.c\\[_ngcontent-c0\\]:active`,
+      ),
+    );
+    expect(out).toMatch(new RegExp(`\\.d\\[_ngcontent-c0\\]`));
+    expect(out).not.toContain(':host');
+  });
+});
+
+describe('appearance layout attributes (#285)', () => {
+  const globalCss = (): string =>
+    compile(resolve(STYLES_DIR, 'global.scss'), {
+      loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
+    }).css;
+
+  /** The declarations of the first rule whose selector is exactly `selector`. */
+  function rule(output: string, selector: string): string {
+    const at = output.indexOf(`${selector} {`);
+    expect(at, `no rule for ${selector}`).toBeGreaterThanOrEqual(0);
+    const open = output.indexOf('{', at);
+    return output.slice(open + 1, output.indexOf('}', open));
+  }
+
+  it('scales the root font size for every text size but the default', () => {
+    const out = globalCss();
+    const size = (value: string) => rule(out, `:root[${LAYOUT_ATTRIBUTE.TextSize}=${value}]`);
+    expect(size('s')).toContain('--text-scale: 0.9');
+    expect(size('l')).toContain('--text-scale: 1.125');
+    expect(size('xl')).toContain('--text-scale: 1.25');
+    expect(out).not.toContain(`[${LAYOUT_ATTRIBUTE.TextSize}=m]`);
+  });
+
+  it('multiplies the text size on the root base, which steps up on very wide viewports (#352)', () => {
+    const out = globalCss();
+    expect(out).toContain('font-size: calc(var(--root-base) * var(--text-scale))');
+    const base = (min: number) => rule(out, `@media (width >= ${min}em) {\n  html`);
+    expect(out).not.toContain('@media (width >= 160em)');
+    expect(base(200)).toContain('--root-base: 112.5%');
+    expect(base(240)).toContain('--root-base: 145%');
+    expect(base(320)).toContain('--root-base: 175%');
+  });
+
+  it('swaps --font-sans for the system and the readable font', () => {
+    const out = globalCss();
+    expect(rule(out, `[${LAYOUT_ATTRIBUTE.Font}=system]`)).toContain('--font-sans: system-ui');
+    expect(rule(out, `[${LAYOUT_ATTRIBUTE.Font}=readable]`)).toContain(
+      "--font-sans: 'Atkinson Hyperlegible'",
+    );
+  });
+
+  it('has comfortable density tokens on :root and tighter ones under compact', () => {
+    const out = globalCss();
+    const root = out.slice(out.indexOf(':root {'));
+    for (const token of ['card-padding', 'card-gap', 'feed-gap', 'row-padding']) {
+      expect(root).toContain(`--density-${token}:`);
+      expect(rule(out, `[${LAYOUT_ATTRIBUTE.Density}=compact]`)).toContain(`--density-${token}:`);
+    }
+    expect(rule(out, `[${LAYOUT_ATTRIBUTE.Density}=compact]`)).toContain(
+      '--density-feed-gap: var(--space-2)',
+    );
+  });
+
+  it('lets ui-card shrink or drop its image area on the preview attribute', () => {
+    const card = compileScss('lib/components/card/card.component.scss');
+    expect(card).toMatch(
+      /:host-context\(\[data-card-preview=small\]\) \.ui-card__media \{\s*aspect-ratio: 32 ?\/ ?9;/,
+    );
+    expect(card).toMatch(
+      /:host-context\(\[data-card-preview=off\]\) \.ui-card__media \{\s*display: none;/,
+    );
+    expect(card).toContain('padding: var(--density-card-padding)');
+    const preview = compile(
+      resolve(STYLES_DIR, '../lib/components/theme-preview/theme-preview.component.scss'),
+      {
+        loadPaths: [STYLES_DIR],
+      },
+    ).css;
+    for (const [attribute, part] of [
+      [LAYOUT_ATTRIBUTE.CardSite, 'site'],
+      [LAYOUT_ATTRIBUTE.CardNotes, 'note'],
+      [LAYOUT_ATTRIBUTE.CardTags, 'tag'],
+    ] as const) {
+      expect(preview).toContain(
+        `:host-context([${attribute}=${LAYOUT_OFF}]) .ui-theme-preview__${part}`,
+      );
+    }
+  });
+});
+
+describe('scroll-fade (#352)', () => {
+  const output = css('.area { overflow-y: auto; @include scroll-fade(var(--surface)); }');
+
+  it('draws non-interactive sticky overlays from the given colour, never a mask', () => {
+    expect(output).toMatch(/\.area::before,\s*\.area::after\s*\{[^}]*position: sticky/);
+    expect(output).toMatch(/\.area::before,\s*\.area::after\s*\{[^}]*pointer-events: none/);
+    expect(output).toContain('linear-gradient(to bottom, var(--surface), transparent)');
+    expect(output).toContain('linear-gradient(to top, var(--surface), transparent)');
+    expect(output).not.toMatch(/mask/);
+  });
+
+  it('ties the opacity to the scroll where scroll-driven animations exist', () => {
+    expect(output).toContain('@supports (animation-timeline: scroll())');
+    expect(output).toContain('animation-timeline: scroll(nearest)');
+    expect(output).toContain('animation-name: ui-scroll-fade-top');
+    expect(output).toContain('animation-name: ui-scroll-fade-bottom');
+  });
+
+  it('overlaps the content only where scroll-driven animations exist; else each fade takes room', () => {
+    const [base, timeline] = output.split('@supports (animation-timeline: scroll())');
+    expect(base).not.toContain('margin-block');
+    expect(timeline).toMatch(/\.area::before\s*\{[^}]*margin-block-end: calc\(1\.5rem \* -1\)/);
+    expect(timeline).toMatch(/\.area::after\s*\{[^}]*margin-block-start: calc\(1\.5rem \* -1\)/);
+  });
+
+  it('draws only the top fade with $bottom: false', () => {
+    const top = css('.feed { overflow-y: auto; @include scroll-fade(var(--bg), $bottom: false); }');
+    expect(top).toContain('.feed::before');
+    expect(top).not.toContain('.feed::after');
+    expect(top).not.toContain('ui-scroll-fade-bottom');
+  });
+
+  it('has its keyframes once in the global styles', () => {
+    const global = compile(resolve(STYLES_DIR, 'global.scss'), {
+      loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
+    }).css;
+    expect(global.match(/@keyframes ui-scroll-fade-top/g)).toHaveLength(1);
+    expect(global.match(/@keyframes ui-scroll-fade-bottom/g)).toHaveLength(1);
   });
 });

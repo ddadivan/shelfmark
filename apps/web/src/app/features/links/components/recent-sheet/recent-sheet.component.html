@@ -1,0 +1,18 @@
+<ui-sheet
+  [title]="'links.recent.title' | transloco"
+  [closeLabel]="'links.recent.confirm.close' | transloco"
+  [height]="SHEET_HEIGHT.Tall"
+>
+  @if (hasHistory()) {
+    <ui-button
+      slot="actions"
+      variant="ghost"
+      size="sm"
+      [ariaLabel]="'links.recent.clear' | transloco"
+      (click)="history().clear()"
+    >
+      {{ 'links.recent.clearShort' | transloco }}
+    </ui-button>
+  }
+  <app-recent-history [headingLevel]="HISTORY_HEADING_LEVEL.Three" />
+</ui-sheet>

@@ -19,8 +19,10 @@
     "sourceMap": true,
     "paths": {
       "@shelfmark/contracts": ["./libs/shared/contracts/src/index.ts"],
+      "@shelfmark/contract-tests": ["./libs/shared/contract-tests/src/index.ts"],
       "@shelfmark/contracts/testing": ["./libs/shared/contracts/src/testing/index.ts"],
       "@shelfmark/ui": ["./libs/ui/src/index.ts"],
+      "@shelfmark/ui/testing": ["./libs/ui/src/testing/index.ts"],
       "@shelfmark/web-csp": ["./libs/web/csp/src/index.ts"]
     }
   },

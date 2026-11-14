@@ -1,0 +1,105 @@
+@use '../../../styles/ui' as *;
+
+.ui-emoji-picker__section + .ui-emoji-picker__section {
+  margin-top: var(--space-2);
+}
+
+.ui-emoji-picker__heading {
+  @include type(caption);
+
+  padding: var(--space-1) rem(6px);
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.ui-emoji-picker__grid {
+  display: flex;
+  flex-direction: column;
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.ui-emoji-picker__row {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+// A 40px square (44px on touch), the glyph at 24px.
+.ui-emoji-picker__cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: rem(40px);
+  font-size: rem(24px);
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  border-radius: rem(12px);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+
+  &:focus-visible {
+    background: var(--surface-hover);
+
+    @include focus-ring(-2px);
+  }
+
+  &.is-current {
+    background: var(--accent-bg);
+  }
+
+  @include coarse {
+    height: rem(44px);
+  }
+}
+
+.ui-emoji-picker__glyph {
+  pointer-events: none;
+}
+
+// The "×" of an own emoji, like the own colour swatches: on hover and focus, always on touch.
+.ui-emoji-picker__remove {
+  position: absolute;
+  inset-block-start: rem(-2px);
+  inset-inline-end: rem(-2px);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  inline-size: rem(20px);
+  block-size: rem(20px);
+  padding: 0;
+  color: var(--text);
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  .ui-emoji-picker__cell:hover &,
+  .ui-emoji-picker__cell:focus-visible & {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
+
+  @include coarse {
+    inline-size: rem(24px);
+    block-size: rem(24px);
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}

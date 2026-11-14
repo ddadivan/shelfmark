@@ -46,7 +46,7 @@ function setup(overrides: Partial<TagsApi> = {}, links: LinkResponse[] = []) {
     ...overrides,
   };
   const linksApi = {
-    list: vi.fn<LinksApi['list']>(() => of({ items: links, nextCursor: null })),
+    list: vi.fn<LinksApi['list']>(() => of({ items: links, nextCursor: null, pinned: [] })),
     recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),
   };
   TestBed.configureTestingModule({

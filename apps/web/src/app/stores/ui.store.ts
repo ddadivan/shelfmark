@@ -1,27 +1,25 @@
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
-import { isUiView } from './is-ui-view';
 import { UI_STORAGE_KEY } from './models/ui-storage-key.const';
 import type { UiState } from './models/ui-state.interface';
-import { UI_VIEW } from './models/ui-view.const';
-import type { UiView } from './models/ui-view.type';
 
-const defaults: UiState = { view: UI_VIEW.Cards, recentVisible: true };
+const defaults: UiState = { singleKeyShortcuts: true };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
-/** Reads the stored preferences; anything unexpected falls back to the default for that field. */
+/** Reads the stored preferences; anything unexpected (or a key of an older version) falls back to the default. */
 function readState(): UiState {
   try {
     const parsed: unknown = JSON.parse(globalThis.localStorage.getItem(UI_STORAGE_KEY) ?? 'null');
     if (!isRecord(parsed)) {
       return defaults;
     }
-    const { view, recentVisible } = parsed;
+    // An older version also kept the feed view here; each feed remembers its own now (#284).
+    const { singleKeyShortcuts } = parsed;
     return {
-      view: isUiView(view) ? view : defaults.view,
-      recentVisible: typeof recentVisible === 'boolean' ? recentVisible : defaults.recentVisible,
+      singleKeyShortcuts:
+        typeof singleKeyShortcuts === 'boolean' ? singleKeyShortcuts : defaults.singleKeyShortcuts,
     };
   } catch {
     return defaults;
@@ -36,18 +34,15 @@ function persist(state: UiState): void {
   }
 }
 
-/** Layout preferences (feed view, recent panel), persisted in `localStorage`. */
+/** Input preferences (single-key shortcuts), persisted in `localStorage`. The feed view is per feed (`FeedMemoryService`). */
 export const UiStore = signalStore(
   { providedIn: 'root' },
   withState<UiState>(readState),
   withMethods((store) => ({
-    setView(view: UiView): void {
-      patchState(store, { view });
-      persist({ view, recentVisible: store.recentVisible() });
-    },
-    setRecentVisible(recentVisible: boolean): void {
-      patchState(store, { recentVisible });
-      persist({ view: store.view(), recentVisible });
+    /** Turns the single-character shortcuts on or off; applies at once and is kept per device. */
+    setSingleKeyShortcuts(singleKeyShortcuts: boolean): void {
+      patchState(store, { singleKeyShortcuts });
+      persist({ singleKeyShortcuts });
     },
   })),
 );

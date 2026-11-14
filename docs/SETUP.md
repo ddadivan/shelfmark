@@ -40,13 +40,15 @@ The local database is PGlite (embedded PostgreSQL, ADR 0025): no Docker and noth
 **Verify** (already done in stage 0) at github.com/ddadivan/shelfmark → Settings:
 
 - [ ] Advanced Security (Code security): **Secret scanning** on, **Push protection** on, **Dependabot alerts** and **security updates** on.
-- [ ] General → Pull Requests: **Allow squash merging** only (merge commits and rebase merging off).
+- [ ] General → Pull Requests: **Allow squash merging** and **Allow merge commits** on, rebase merging off (ADR 0035: feature PRs into `stage` are squashed; the release PR `stage → main` and merging `main` back into `stage` after a hotfix use a merge commit).
 - [ ] Projects: the board exists with the statuses from PROJECT.md 8.2.
 - [ ] Your local `gh` is logged in with the `project` scope: `gh auth status`.
 
 **Later, by issue:**
 
-- Branch protection / ruleset on `main` (PR required, required checks, no force-push, linear history, 0 approvals) — configured in **the CI task**; reference only here.
+- Rulesets (configured in **the CI task** and in the release-flow switch, ADR 0035; reference only here):
+  - `main`: PR required, the required checks, no force-push or deletion, 0 approvals; merge methods **Merge** and **Squash**, **no** "Require linear history" (the release PR `stage → main` is a merge commit).
+  - `stage`: PR required, required checks `lint-test-build`, `e2e`, `npm-audit`, `gitleaks`, no force-push or deletion, 0 approvals; merge methods **Squash** and **Merge** (merge only for `main → stage` after a hotfix), no rebase, no linear history.
 - CodeQL default setup — **the CI task** (Settings → Advanced Security → Code scanning → CodeQL analysis → Default).
 - **Actions secrets and variables** (Settings → Secrets and variables → Actions). None are needed for the CI task: it uses the built-in `GITHUB_TOKEN`, and Vercel deploys through its Git integration, so no Vercel token is stored in GitHub. Possible later entries:
   - a direct (unpooled) Neon connection string for production, **only if** Prisma migrations run in GitHub Actions — name and location decided in stage 2. If so, store it as an **Environment secret** of a `production` environment (Settings → Environments), not a repository secret.
@@ -181,6 +183,7 @@ Settings → **Environment Variables**. Each variable is set per environment: **
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | production client | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | production app | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
 | `CRON_SECRET` | own value, at least 32 characters | not set | Mark Sensitive. Vercel sends it as `Authorization: Bearer …` to the daily demo cleanup (`vercel.json` `crons`, ADR 0034); see 5.8. Cron jobs run on Production deployments only |
+| `ADMIN_EMAILS` | your sign-in email(s), comma-separated | optional | Issue #272. Emails (case-insensitive) that may use the admin API and page to read feedback, set its status and reply. Unset or empty means nobody is an admin. Use the email of the Google / GitHub account you sign in with. Redeploy after changing. |
 | `SENTRY_DSN`, `SENTRY_WEB_DSN` | DSN of the API / web Sentry project | optional, empty by default | Issue #109, ADR 0032. Create two Sentry projects (Node.js for the API, Browser JavaScript for the web), copy each DSN (a public client key, not a secret). Empty = monitoring off. Vercel supplies `VERCEL_ENV` (environment) and `VERCEL_GIT_COMMIT_SHA` (release) itself. Redeploy after setting. |
 
 Mark every secret as **Sensitive** (value cannot be read back in the dashboard). Do not set `PORT` on Vercel. An env change applies only to **new** deployments: redeploy after editing.
@@ -201,8 +204,8 @@ Mark every secret as **Sensitive** (value cannot be read back in the dashboard).
 
 All of it lives in `vercel.json`, `api/index.mjs` and `apps/api/src/vercel-handler.ts`; the reasoning is in [ADR 0019](adr/0019-vercel-deployment-architecture.md). Nothing to do by hand except the checks below.
 
-- **CSP and security headers** for the web are set in `vercel.json` and the middleware (ADR 0022), tested by an e2e check for CSP violations. Static CSP (files, set in `vercel.json`): `default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'`. `/api/*` gets no CSP from `vercel.json`: helmet sets it there.
-- **Nonce:** component styles (`libs/ui`, CDK overlays) are added at runtime, so HTML documents get a per-request nonce from the Vercel Routing Middleware `middleware.ts` (`ngCspNonce` in `index.html`, `Cache-Control: private, no-store`); `'unsafe-inline'` stays out. Document CSP template (`{nonce}` is a fresh 128-bit base64 value): `default-src 'self'; script-src 'self'; style-src 'self' 'nonce-{nonce}'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'`. The middleware code is in `libs/web/csp`; `nx run web:middleware-shell` (part of `buildCommand`) bundles the built `index.html` into it. On the first preview deployment check: `curl` of `/` shows one CSP whose nonce equals `ngCspNonce` in the body, two requests differ, the security headers are present, a hashed asset gets the static CSP, `/missing.js` is 404.
+- **CSP and security headers** for the web are set in `vercel.json` and the middleware (ADR 0022), tested by an e2e check for CSP violations. Static CSP (files, set in `vercel.json`): `default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: https://*.googleusercontent.com https://avatars.githubusercontent.com; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'`. `/api/*` gets no CSP from `vercel.json`: helmet sets it there.
+- **Nonce:** component styles (`libs/ui`, CDK overlays) are added at runtime, so HTML documents get a per-request nonce from the Vercel Routing Middleware `middleware.ts` (`ngCspNonce` in `index.html`, `Cache-Control: private, no-store`); `'unsafe-inline'` stays out. Document CSP template (`{nonce}` is a fresh 128-bit base64 value): `default-src 'self'; script-src 'self'; style-src 'self' 'nonce-{nonce}'; font-src 'self'; img-src 'self' data: https://*.googleusercontent.com https://avatars.githubusercontent.com; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'`. The middleware code is in `libs/web/csp`; `nx run web:middleware-shell` (part of `buildCommand`) bundles the built `index.html` into it. On the first preview deployment check: `curl` of `/` shows one CSP whose nonce equals `ngCspNonce` in the body, two requests differ, the security headers are present, a hashed asset gets the static CSP, `/missing.js` is 404.
 - **Swagger UI assets** for `/api/docs` come from `swagger-ui-dist` and are included in the function with `includeFiles`; verify `/api/docs` on the first preview deployment.
 - **ESM output** of the API is `.mjs` (`main.mjs`, `vercel-handler.mjs`).
 - After the first deployment check `NODE_ENV=production` and `/api/health` returning 200 on production and preview.
@@ -258,7 +261,7 @@ Prevention layers: gitleaks in the pre-commit hook (locally) and in CI (CI task)
 | # | Step | Where | Owner | Needed by |
 | --- | --- | --- | --- | --- |
 | 1 | Node 26, gitleaks, `npm ci`, Playwright Chromium | local machine | author | now |
-| 2 | Verify secret scanning, push protection, Dependabot, squash-only | GitHub settings | author | CI task |
+| 2 | Verify secret scanning, push protection, Dependabot, merge methods (squash and merge commits, ADR 0035) | GitHub settings | author | CI task |
 | 3 | `gh auth status` with `project` scope | local machine | author | now |
 | 4 | Branch protection on `main`, CodeQL | GitHub settings | author / CI task | CI task |
 | 5 | Neon account, project in `eu-central-1` (CLI optional) | neon.com | author | deploy task |

@@ -3,11 +3,231 @@
 // App-level styles. Tokens, themes, base rules and fonts come from libs/ui (global.scss),
 // loaded before this file through the `styles` list in project.json.
 
-// Phone: toasts are bottom centre like everywhere, but sit above the floating add button of the
-// shell (`.shell__fab`: 24px from the edge, 56px high, plus a gap), so they never cover it.
-// `ui-toast-region` reads `--ui-toast-offset` for its bottom inset.
-@include phone {
-  :root {
-    --ui-toast-offset: calc(var(--space-6) + #{rem(56px)} + var(--space-3));
+// Mobile shell (below 64em, #316): toasts are bottom centre like everywhere, but in the app shell they sit 12px above the
+// floating tab bar (`ui-tab-bar`: 20px from the edge and the home indicator, 68px high). The
+// landing, sign-in and share pages have no bar. `ui-toast-region` reads `--ui-toast-offset`
+// for its bottom inset.
+@include compact {
+  :root:has(app-shell) {
+    --ui-toast-offset: calc(#{rem(20px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem));
+  }
+}
+
+// While the bulk bar shows (#267), toasts sit 12px above it (a global rule: a toast never covers
+// the bar). `ToastAreaService` measures the bar and sets the exact offset on `html` (#352); these
+// rules are the first frame before it does. Desktop: the bar's bottom is on the sidebar card's
+// bottom line, 12px above the window edge (#352), and it is 58px high. The mobile shell: above the bar
+// (68px high) whose bottom sits 12px above the tab bar (20px from the edge, 68px high).
+:root:has(.library__bulk) {
+  --ui-toast-offset: #{rem(12px + 58px + 12px)};
+}
+
+@include compact {
+  :root:has(app-shell):has(.library__bulk) {
+    --ui-toast-offset: calc(
+      #{rem(20px + 68px + 12px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem)
+    );
+  }
+}
+
+// While the app shell is shown the document never scrolls (#352): the shell is exactly `100dvh`
+// and only its inner areas scroll (feed, sidebar, settings content, dialogs, sheets). Landing,
+// sign-in, privacy and about keep the document scroll (without the rubber band, libs/ui global).
+// No `position: fixed` on body: it breaks the iPad keyboard, scroll restoration and the landing.
+:root:has(app-shell),
+:root:has(app-shell) body {
+  height: 100%;
+  overflow: hidden;
+}
+
+// The mobile shell scrolls the main column, a flex column: a page keeps at least its content
+// height there (instead of shrinking to the column and overflowing it), so the room for the tab
+// bar stays under the last row and sticky bars keep their scroll range. Desktop pages still fill
+// the column and scroll their own areas.
+@include compact {
+  app-shell .shell__main > * {
+    flex-shrink: 0;
+    min-block-size: auto;
+  }
+}
+
+// Desktop library (#352): the feed's scroll area runs to the window edge, under the 12px gap
+// the sidebar card keeps, so the bulk bar (sticky 12px above that edge) sits on the sidebar
+// card's bottom line and its shadow is not clipped. The main column has no bottom padding and
+// does not clip there; the feed is the page's only scroll area (the page itself fits).
+@include desktop {
+  app-shell .shell__main.shell__main:has(> app-library-page) {
+    padding-block-end: 0;
+    overflow: visible;
+  }
+}
+
+// Library cards (#335): the title always takes two lines (the card clamps it at two), so a one-line
+// title does not make its card shorter than the others.
+app-link-card .ui-card__heading {
+  min-block-size: calc(2 * #{rem(22px)});
+}
+
+// Narrow cards (a fluid grid of about 200px cards): below 15rem the date leaves the top row so the
+// site name is not cut against it. It stays in the DOM for screen readers (and in the site's
+// `title`), and the row keeps its height, so every card stays the same height.
+app-link-card ui-card {
+  container: link-card / inline-size;
+}
+
+@container link-card (width < #{rem(240px)}) {
+  .ui-card__date {
+    @include visually-hidden;
+  }
+}
+
+// Cards <-> list morph (View Transitions, started by the library page): every link has a
+// `view-transition-name`, so each card glides into its row. The pseudo-elements live on the
+// document, so these rules must stay global. Reduced motion never starts a transition.
+::view-transition-group(*) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-in-out);
+}
+
+// Page cross-fade (router `withViewTransitions`): the root snapshot fades old into new. Short, so
+// navigation never feels slower; reduced motion skips the transition in code. Declared after the
+// `(*)` rule above, and `(root)` is more specific, so the cards <-> list morph keeps its timing.
+::view-transition-group(root) {
+  animation-duration: var(--duration-fast);
+  animation-timing-function: var(--ease-out);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-fast);
+  animation-timing-function: var(--ease-out);
+}
+
+// Drag a link to a folder (DragDrop spec). The CDK appends the preview to <body>, outside the
+// library page's styles. It is the real card (or row), tilted and shrunk to about 0.65, and sits
+// down-right of the pointer (`--drag-grab-x|y` from `LinkDragService.grab`, the grab point in the
+// item), so the folder under the pointer stays visible. Rotate, scale and translate are their own
+// properties on the inner card, so the CDK's `transform` on the root keeps following the pointer.
+// A badge (read from the template) names "Move 1 link" or "3 links"; a selection of several adds
+// silhouettes right behind the card: one for two links, two for three or more (a deck of three
+// cards, 3px and 6px apart, never more; #350). Reduced motion: no tilt; the deck stays, static.
+.library__drag-preview {
+  --drag-x: calc(var(--drag-grab-x, 0rem) + 1.25rem);
+  --drag-y: calc(var(--drag-grab-y, 0rem) + 1.5rem);
+
+  z-index: 1100;
+  pointer-events: none;
+  list-style: none;
+
+  :is(ui-card, ui-list-item, .library__drag-stack) {
+    translate: var(--drag-x) var(--drag-y);
+    rotate: -4deg;
+    scale: 0.65;
+    transform-origin: top left;
+  }
+
+  ui-card,
+  ui-list-item {
+    box-shadow: var(--shadow-float);
+  }
+
+  ui-list-item {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+  }
+}
+
+// The deck behind a dragged selection: card silhouettes, in the card's own surface.
+.library__drag-stack {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.library__drag-preview .library__drag-stack--near {
+  translate: calc(var(--drag-x) + #{rem(3px)}) calc(var(--drag-y) + #{rem(3px)});
+  rotate: -3.5deg;
+}
+
+.library__drag-preview .library__drag-stack--far {
+  translate: calc(var(--drag-x) + #{rem(6px)}) calc(var(--drag-y) + #{rem(6px)});
+  rotate: -3deg;
+}
+
+.library__drag-badge {
+  @include type(caption);
+
+  position: absolute;
+  inset-block-start: calc(var(--drag-y) - #{rem(12px)});
+  inset-inline-start: calc(var(--drag-x) + 65% - #{rem(24px)});
+  z-index: 1;
+  padding: rem(4px) rem(10px);
+  font-weight: 500;
+  color: var(--on-primary);
+  white-space: nowrap;
+  background: var(--primary);
+  border-radius: var(--radius-full);
+}
+
+@include reduced-motion {
+  .library__drag-preview {
+    :is(ui-card, ui-list-item, .library__drag-stack) {
+      rotate: none;
+    }
+  }
+}
+
+.library__item.cdk-drag-animating {
+  transition: transform var(--duration-base) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+// Root font size of the landing and sign-in on very wide screens (#352). The app shell takes the
+// steps in libs/ui `global.scss` (100% up to 3200 CSS px, then 112.5%, 145%, 175%); these two pages are
+// tuned on their own, so each has its own steps here. `--root-base` is multiplied by the text size
+// setting (`--text-scale`). Breakpoints in em (16px each): 160em = 2560px, 200em = 3200px,
+// 240em = 3840px (4K at 100% OS scaling), 320em = 5120px (5K).
+@media (width >= 160em) {
+  :root:has(app-landing-page) {
+    --root-base: 112.5%;
+  }
+
+  :root:has(app-sign-in-page) {
+    --root-base: 112.5%;
+  }
+}
+
+@media (width >= 200em) {
+  :root:has(app-landing-page) {
+    --root-base: 125%;
+  }
+
+  :root:has(app-sign-in-page) {
+    --root-base: 125%;
+  }
+}
+
+@media (width >= 240em) {
+  :root:has(app-landing-page) {
+    --root-base: 160%;
+  }
+
+  :root:has(app-sign-in-page) {
+    --root-base: 180%;
+  }
+}
+
+@media (width >= 320em) {
+  :root:has(app-landing-page) {
+    --root-base: 230%;
+  }
+
+  :root:has(app-sign-in-page) {
+    --root-base: 230%;
   }
 }

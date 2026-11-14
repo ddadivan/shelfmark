@@ -1,0 +1,89 @@
+import { type Locator, type Page } from '@playwright/test';
+import { seedSession } from './support/mock-session';
+import { isCompact } from './support/sidebar';
+import { expect, test } from './support/test';
+import { E2E_TAG } from './models/e2e-tag.const';
+
+// The mock state lives in the page: after the first load every step stays inside the app.
+test.describe('Recently opened extras (mock API)', () => {
+  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+
+  test.beforeEach(async ({ page }) => {
+    await seedSession(page);
+  });
+
+  const rows = (page: Page) => page.locator('app-link-history-row');
+  const titleOf = (row: Locator) => row.locator('.ui-history-row__title');
+  const notice = (page: Page) => page.locator('ui-notice');
+
+  async function openRecent(page: Page): Promise<void> {
+    await page.goto('/recent');
+    await expect(page.getByRole('heading', { level: 1, name: 'Recently opened' })).toBeVisible();
+    await expect(rows(page).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Pause history' })).toBeVisible();
+  }
+
+  /** Opens a row's link (a new tab) and closes the tab again. */
+  async function openRow(page: Page, row: Locator): Promise<void> {
+    const title = (await titleOf(row).innerText()).trim();
+    const popup = page.waitForEvent('popup');
+    await row.getByRole('link', { name: new RegExp(escapeRegExp(title)) }).click();
+    await (await popup).close();
+  }
+
+  test('while paused an open is not added; after resuming it is', async ({ page }) => {
+    await openRecent(page);
+    const first = (await titleOf(rows(page).first()).innerText()).trim();
+    const second = (await titleOf(rows(page).nth(1)).innerText()).trim();
+
+    await page.getByRole('button', { name: 'Pause history' }).click();
+    await expect(notice(page)).toContainText("History is paused. Links you open now aren't added.");
+    await expect(page.getByRole('button', { name: 'Resume history' })).toBeVisible();
+
+    // That an open while paused records nothing (a negative check that needed a fixed wait here):
+    // links.store.spec "leaves the history alone when the open was not recorded (paused)" and
+    // mock-links.api.spec "answers but records nothing while the history is paused".
+    await expect(titleOf(rows(page).first())).toHaveText(first);
+
+    await notice(page).getByRole('button', { name: 'Resume', exact: true }).click();
+    await expect(notice(page)).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Pause history' })).toBeVisible();
+
+    await openRow(page, rows(page).nth(1));
+    await expect(titleOf(rows(page).first())).toHaveText(second);
+  });
+
+  test('phone: swiping a row left reveals Remove', { tag: E2E_TAG.Mobile }, async ({ page }) => {
+    test.skip(!isCompact(page), 'the swipe is the phone pattern');
+    await openRecent(page);
+    const before = await rows(page).count();
+    const first = rows(page).first();
+    const title = (await titleOf(first).innerText()).trim();
+    const surface = first.locator('.link-history-row__surface');
+    const remove = first.getByRole('button', { name: `Remove ${title} from history` });
+    await expect(page.getByText('Swipe a row left to remove it from history.')).toBeVisible();
+
+    const box = await surface.boundingBox();
+    if (!box) {
+      throw new Error('row not laid out');
+    }
+    const y = box.y + box.height / 2;
+    await page.mouse.move(box.x + box.width - 20, y);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width - 80, y, { steps: 4 });
+    await page.mouse.move(box.x + box.width - 200, y, { steps: 6 });
+    await page.mouse.up();
+
+    await expect(surface).not.toHaveCSS('translate', /^(none|0px)$/);
+    await expect(remove).toBeInViewport();
+    await remove.click();
+
+    await expect(rows(page)).toHaveCount(before - 1);
+    await expect(page.getByRole('status').getByText('Removed from history')).toBeVisible();
+    await expect(titleOf(rows(page).first())).not.toHaveText(title);
+  });
+});
+
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

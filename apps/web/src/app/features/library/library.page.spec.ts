@@ -3,18 +3,24 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import type { FolderResponse, LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { DialogService } from '@shelfmark/ui';
+import { UiButtonHarness, UiMenuItemHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { of, Subject, throwError, type Observable } from 'rxjs';
-import { AddLinkDialogService } from '../links/add-link/add-link-dialog.service';
+import { AddLinkDialogService } from '../links/services/add-link-dialog.service';
 import { FOLDERS_API } from '../links/models/folders-api.const';
 import type { FoldersApi } from '../links/models/folders-api.interface';
 import { LINKS_API } from '../links/models/links-api.const';
 import type { LinksApi } from '../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
-import { UI_STORAGE_KEY } from '../../stores/models/ui-storage-key.const';
+import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
-import { UiStore } from '../../stores/ui.store';
+import { LinksStore } from '../../stores/links.store';
+import { SavedViewsStore } from '../../stores/saved-views.store';
+import { MockSavedViewsApi } from '../views/mock/mock-saved-views.api';
+import { SAVED_VIEWS_API } from '../views/models/saved-views-api.const';
+import { FeedMemoryService } from './services/feed-memory.service';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
 import LibraryPage from './library.page';
 
@@ -30,7 +36,7 @@ function link(n: number, changes: Partial<LinkResponse> = {}): LinkResponse {
 }
 
 function page(items: LinkResponse[], nextCursor: string | null = null): ListLinksResponse {
-  return { items, nextCursor };
+  return { items, nextCursor, pinned: [] };
 }
 
 async function setup(first: Observable<ListLinksResponse> | null = null) {
@@ -53,17 +59,28 @@ async function setup(first: Observable<ListLinksResponse> | null = null) {
   return { api, fixture, element: fixture.nativeElement as HTMLElement };
 }
 
+/** Waits past the 300 ms before any loader shows (Loading spec). */
+async function afterLoaderDelay(fixture: ComponentFixture<LibraryPage>): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 340));
+  await fixture.whenStable();
+}
+
 const text = (fixture: ComponentFixture<LibraryPage>) =>
   (fixture.nativeElement as HTMLElement).textContent ?? '';
 
 describe('LibraryPage', () => {
-  beforeEach(() => localStorage.removeItem(UI_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(UI_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
 
-  it('shows a skeleton and no cards while the first page loads', async () => {
-    const { element } = await setup(new Subject<ListLinksResponse>());
+  it('shows a skeleton and no cards while the first page loads, but only after 300 ms', async () => {
+    const { element, fixture } = await setup(new Subject<ListLinksResponse>());
 
     expect(element.querySelector('section')?.getAttribute('aria-busy')).toBe('true');
+    expect(element.querySelector('ui-skeleton')).toBeNull();
+    expect(element.querySelector('app-link-card')).toBeNull();
+
+    await afterLoaderDelay(fixture);
+
     expect(element.querySelector('ui-skeleton')).not.toBeNull();
     expect(element.querySelector('app-link-card')).toBeNull();
   });
@@ -75,6 +92,9 @@ describe('LibraryPage', () => {
     expect(text(fixture)).toContain('2+ links');
     expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
     expect(element.querySelector('ui-skeleton')).toBeNull();
+    // Recently opened is its own page: the feed has no panel and no toggle for it.
+    expect(element.querySelector('app-recent-links-panel')).toBeNull();
+    expect(text(fixture)).not.toMatch(/recently opened/i);
   });
 
   it.each([
@@ -94,17 +114,38 @@ describe('LibraryPage', () => {
     expect(one.element.querySelector('.library__count')?.textContent?.trim()).toBe('1+ link');
   });
 
+  it('offers no "Pin to top" outside a folder', async () => {
+    const { element, fixture } = await setup();
+
+    element
+      .querySelector<HTMLButtonElement>('app-link-card button[aria-label^="Actions for"]')
+      ?.click();
+    await fixture.whenStable();
+    const items = [...document.querySelectorAll('[role="menuitem"]')].map((item) =>
+      item.textContent?.trim(),
+    );
+
+    expect(items).toContain('Pin to sidebar');
+    expect(items).not.toContain('Pin to top');
+  });
+
   it('names the heading after the scope', async () => {
     const { fixture, element } = await setup();
 
     fixture.componentRef.setInput('scope', LINKS_SCOPE.Favorites);
     await fixture.whenStable();
-
     expect(element.querySelector('h1')?.textContent).toBe('Favorites');
+
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.Unsorted);
+    await fixture.whenStable();
+    expect(element.querySelector('h1')?.textContent).toBe('Unsorted');
   });
 
   it('shows rows when the list view is chosen', async () => {
-    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ view: UI_VIEW.List }));
+    localStorage.setItem(
+      FEED_MEMORY_STORAGE_KEY,
+      JSON.stringify({ ['all']: { view: UI_VIEW.List } }),
+    );
     const { element } = await setup();
 
     expect(element.querySelectorAll('app-link-row')).toHaveLength(2);
@@ -117,7 +158,7 @@ describe('LibraryPage', () => {
     element.querySelector<HTMLInputElement>('input[type="radio"][value="list"]')?.click();
     await fixture.whenStable();
 
-    expect(TestBed.inject(UiStore).view()).toBe(UI_VIEW.List);
+    expect(TestBed.inject(FeedMemoryService).view('all')).toBe(UI_VIEW.List);
     expect(element.querySelectorAll('app-link-row')).toHaveLength(2);
   });
 
@@ -154,7 +195,7 @@ describe('LibraryPage', () => {
         'Your links will live here',
       );
       expect(element.querySelector('ui-illustration')).not.toBeNull();
-      expect(buttons(element)).toEqual(['Add link']);
+      expect(buttons(element)).toEqual(['Add link', 'Watch how it works']);
       const open = vi
         .spyOn(TestBed.inject(AddLinkDialogService), 'open')
         .mockResolvedValue(undefined);
@@ -194,10 +235,64 @@ describe('LibraryPage', () => {
         'No links with these tags',
       );
       element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
+      // The empty filtered state clears the kind too (a saved view may have set it).
       expect(navigate).toHaveBeenCalledWith([], {
-        queryParams: { tag: null },
+        queryParams: { tag: null, kind: null },
         queryParamsHandling: 'merge',
       });
+    });
+
+    it('is the page card with a scene per scope (#315)', async () => {
+      const scenes: Record<string, string> = {
+        [LINKS_SCOPE.All]: 'empty-feed',
+        [LINKS_SCOPE.Unsorted]: 'empty-unsorted',
+        [LINKS_SCOPE.Favorites]: 'empty-favorites',
+      };
+      const { element, fixture } = await empty(LINKS_SCOPE.All);
+      for (const [scope, scene] of Object.entries(scenes)) {
+        fixture.componentRef.setInput('scope', scope);
+        await fixture.whenStable();
+        const state = element.querySelector('ui-empty-state');
+        expect(state?.classList.contains('ui-empty-state--page')).toBe(true);
+        // The scene is drawn by its own template branch; the filled tray marks Unsorted, etc.
+        expect(state?.querySelector('ui-illustration')).not.toBeNull();
+        expect(fixture.componentInstance['emptyIllustration']()).toBe(scene);
+      }
+    });
+
+    it('names a link type filter apart from tags', async () => {
+      const { api, element, fixture } = await setup();
+      api.list.mockReturnValue(of(page([])));
+      fixture.componentRef.setInput('kind', 'shopping');
+      fixture.componentRef.setInput('tag', 'docs');
+      await fixture.whenStable();
+
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe(
+        'Nothing matches these filters',
+      );
+      expect(element.querySelector('ui-empty-state button')?.textContent?.trim()).toBe(
+        'Clear filters',
+      );
+    });
+
+    it('names the saved view whose filters match', async () => {
+      TestBed.configureTestingModule({
+        providers: [{ provide: SAVED_VIEWS_API, useClass: MockSavedViewsApi }],
+      });
+      const { api, element, fixture } = await setup();
+      api.list.mockReturnValue(of(page([])));
+      fixture.componentRef.setInput('kind', 'video');
+      // The starter views (Videos, Articles) arrive after the mock API's list latency.
+      void TestBed.inject(SavedViewsStore).load();
+      await vi.waitFor(() => expect(TestBed.inject(SavedViewsStore).loaded()).toBe(true));
+      await fixture.whenStable();
+
+      expect(element.querySelector('ui-empty-state h2')?.textContent).toBe(
+        'Nothing in “Videos” yet',
+      );
+      expect(element.querySelector('ui-empty-state button')?.textContent?.trim()).toBe(
+        'Show all links',
+      );
     });
 
     it('clears the tag filter on the favorites scope too', async () => {
@@ -212,8 +307,9 @@ describe('LibraryPage', () => {
         'No links with these tags',
       );
       element.querySelector<HTMLButtonElement>('ui-empty-state button')?.click();
+      // The empty filtered state clears the kind too (a saved view may have set it).
       expect(navigate).toHaveBeenCalledWith([], {
-        queryParams: { tag: null },
+        queryParams: { tag: null, kind: null },
         queryParamsHandling: 'merge',
       });
     });
@@ -252,12 +348,41 @@ describe('LibraryPage', () => {
     expect(element.querySelectorAll('app-link-card')).toHaveLength(3);
   });
 
+  it('does not show the links another view left in the store when it opens', async () => {
+    const api = {
+      list: vi.fn<LinksApi['list']>(() => of(page([link(9, { title: 'From Favorites' })]))),
+      recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),
+    };
+    TestBed.configureTestingModule({
+      providers: [
+        provideTranslocoForTest(),
+        { provide: LINKS_API, useValue: api },
+        { provide: DialogService, useValue: { confirm: vi.fn(() => Promise.resolve(false)) } },
+      ],
+    });
+    await loadEnglish();
+    TestBed.inject(LinksStore).setFilter({ scope: LINKS_SCOPE.Favorites });
+    api.list.mockReturnValue(new Subject<ListLinksResponse>());
+
+    const fixture = TestBed.createComponent(LibraryPage);
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.All);
+    await fixture.whenStable();
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.textContent).not.toContain('From Favorites');
+    expect(element.querySelector('app-link-card')).toBeNull();
+
+    await afterLoaderDelay(fixture);
+
+    expect(element.querySelector('ui-skeleton')).not.toBeNull();
+  });
+
   describe('switching views', () => {
     afterEach(() => {
       vi.useRealTimers();
     });
 
-    it('never shows the skeleton or dims the cards when the next view answers at once', async () => {
+    it('never shows the skeleton when the next view answers at once', async () => {
       const { api, element, fixture } = await setup();
       api.list.mockReturnValue(of(page([link(7)])));
 
@@ -269,7 +394,7 @@ describe('LibraryPage', () => {
       expect(element.querySelectorAll('app-link-card')).toHaveLength(1);
     });
 
-    it('keeps the old cards dimmed, then the skeleton after 300 ms, then the new cards', async () => {
+    it('keeps the old cards and shows the bar (no skeleton, no dimming) until the new cards arrive', async () => {
       const { api, element, fixture } = await setup();
       await fixture.whenStable();
       vi.useFakeTimers();
@@ -288,13 +413,13 @@ describe('LibraryPage', () => {
       expect(stale?.getAttribute('aria-busy')).toBe('true');
       expect(stale?.hasAttribute('inert')).toBe(true);
       expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
-      expect(element.querySelector('ui-skeleton')).toBeNull();
       expect(element.querySelector('.library__count')?.textContent).toContain('2+ links');
 
       vi.advanceTimersByTime(300);
       settle();
-      expect(element.querySelector('ui-skeleton')).not.toBeNull();
-      expect(element.querySelector('app-link-card')).toBeNull();
+      expect(element.querySelector('ui-skeleton')).toBeNull();
+      expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
+      expect(element.querySelector('ui-progress-bar [role="progressbar"]')).not.toBeNull();
 
       next.next(page([link(8), link(9), link(10)]));
       next.complete();
@@ -303,6 +428,8 @@ describe('LibraryPage', () => {
       settle();
       expect(element.querySelector('.library__list--stale')).toBeNull();
       expect(element.querySelectorAll('app-link-card')).toHaveLength(3);
+      // A view switch swaps the list without the fade-in (that is for the first load).
+      expect(element.querySelector('.library__list--reveal')).toBeNull();
       expect(element.querySelector('ui-skeleton')).toBeNull();
     });
   });
@@ -367,6 +494,21 @@ describe('LibraryPage of a folder', () => {
     expect(element.querySelectorAll('app-link-card')).toHaveLength(1);
   });
 
+  it('offers "Pin to top" on the cards of a folder only', async () => {
+    const { element, fixture } = await setupFolder('f1');
+    const menuItems = async (root: HTMLElement) => {
+      root
+        .querySelector<HTMLButtonElement>('app-link-card button[aria-label^="Actions for"]')
+        ?.click();
+      await fixture.whenStable();
+      return [...document.querySelectorAll('[role="menuitem"]')].map((item) =>
+        item.textContent?.trim(),
+      );
+    };
+
+    expect(await menuItems(element)).toContain('Pin to top');
+  });
+
   it('says so when the folder is empty and offers to add a link here', async () => {
     const { element, fixture } = await setupFolder('f1', []);
 
@@ -383,6 +525,31 @@ describe('LibraryPage of a folder', () => {
     expect(element.querySelector('h1')).toBeNull();
     expect(element.querySelector('app-link-card')).toBeNull();
     expect(element.querySelector('ui-segmented-control')).toBeNull();
+  });
+
+  it('"Show all links" on the not-found state goes to All links', async () => {
+    const { element, fixture } = await setupFolder('gone');
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+
+    const action = [...element.querySelectorAll<HTMLButtonElement>('ui-empty-state button')].find(
+      (button) => button.textContent?.trim() === 'Show all links',
+    );
+    action?.click();
+    await fixture.whenStable();
+
+    expect(navigate).toHaveBeenCalledWith('/links');
+  });
+
+  it('has no axe violations on the empty folder', async () => {
+    const { element } = await setupFolder('f1', []);
+    document.body.append(element);
+
+    const { violations } = await axe.run(element, {
+      rules: { 'color-contrast': { enabled: false } },
+    });
+    element.remove();
+
+    expect(violations.map((violation) => violation.id)).toEqual([]);
   });
 
   it('has no axe violations on the not-found state', async () => {
@@ -443,7 +610,46 @@ describe('LibraryPage of a folder', () => {
       expect(text(fixture)).toContain('No links with these tags');
     });
   });
+  describe('empty and filtered states', () => {
+    it.each([
+      ['the empty feed', {}],
+      ['a tag filter', { tag: ['docs'] }],
+      ['a search with nothing found', { q: 'zzzzqq' }],
+    ])('has no axe violations on %s', async (_name, inputs: Record<string, unknown>) => {
+      const { api, fixture, element } = await setup(of(page([])));
+      api.list.mockReturnValue(of(page([])));
+      for (const [name, value] of Object.entries(inputs)) {
+        fixture.componentRef.setInput(name, value);
+      }
+      await fixture.whenStable();
+      document.body.append(element);
+
+      expect(element.querySelector('ui-empty-state')).not.toBeNull();
+      const { violations } = await axe.run(element, {
+        rules: { 'color-contrast': { enabled: false } },
+      });
+      element.remove();
+
+      expect(violations.map((violation) => violation.id)).toEqual([]);
+    });
+  });
+
   describe('search, sort and title', () => {
+    it('sorts from the sort menu and writes the sort into the URL', async () => {
+      const { fixture } = await setup();
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+
+      const loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+      await (await loader.getHarness(UiButtonHarness.with({ name: /^Sort: / }))).click();
+      await (await loader.getHarness(UiMenuItemHarness.with({ text: 'Title A–Z' }))).click();
+
+      expect(navigate).toHaveBeenLastCalledWith([], {
+        queryParams: { sort: 'title' },
+        queryParamsHandling: 'merge',
+      });
+      localStorage.removeItem(FEED_MEMORY_STORAGE_KEY);
+    });
+
     it('asks for the search text, normalized', async () => {
       const { api, fixture } = await setup();
 
@@ -522,7 +728,7 @@ describe('LibraryPage of a folder', () => {
         ?.click();
 
       expect(navigate).toHaveBeenCalledWith([], {
-        queryParams: { q: null, tag: null },
+        queryParams: { q: null, tag: null, kind: null },
         queryParamsHandling: 'merge',
       });
     });
@@ -581,6 +787,60 @@ describe('LibraryPage of a folder', () => {
       again.destroy();
       expect(title.getTitle()).toBe('Shelfmark');
     });
+  });
+});
+
+describe('LibraryPage paste (Cmd/Ctrl+V)', () => {
+  function paste(target: EventTarget, text: string): Event {
+    const event = new Event('paste', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'clipboardData', {
+      value: { getData: (type: string) => (type === 'text/plain' ? text : '') },
+    });
+    target.dispatchEvent(event);
+    return event;
+  }
+
+  async function withSpy() {
+    const context = await setup();
+    const open = vi
+      .spyOn(TestBed.inject(AddLinkDialogService), 'open')
+      .mockResolvedValue(undefined);
+    return { ...context, open };
+  }
+
+  it('opens Add link with text that holds links pasted outside a field', async () => {
+    const { open } = await withSpy();
+
+    const event = paste(document.body, 'a.example/1\nb.example/2');
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(open).toHaveBeenCalledWith({ text: 'a.example/1\nb.example/2' });
+  });
+
+  it('pre-selects the open folder', async () => {
+    const { open, fixture } = await withSpy();
+    fixture.componentRef.setInput('scope', LINKS_SCOPE.Folder);
+    fixture.componentRef.setInput('folderId', MOCK_FOLDERS[0].id);
+    await fixture.whenStable();
+
+    paste(document.body, 'https://a.example/1');
+
+    expect(open).toHaveBeenCalledWith({
+      folderId: MOCK_FOLDERS[0].id,
+      text: 'https://a.example/1',
+    });
+  });
+
+  it('leaves a paste into a field, a paste without links and a paste behind a dialog alone', async () => {
+    const { open } = await withSpy();
+    const field = document.createElement('input');
+    document.body.append(field);
+
+    expect(paste(field, 'https://a.example/1').defaultPrevented).toBe(false);
+    expect(paste(document.body, 'just some words').defaultPrevented).toBe(false);
+    field.remove();
+
+    expect(open).not.toHaveBeenCalled();
   });
 });
 

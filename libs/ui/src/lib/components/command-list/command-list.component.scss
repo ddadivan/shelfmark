@@ -1,0 +1,138 @@
+@use '../../../styles/ui' as *;
+@use '../field/field-parts' as *;
+
+// `ViewEncapsulation.None`: the slotted `kbd` hints and the rows rendered from `ui-command-item`
+// templates belong to other views, so everything hangs off `.ui-command-list`.
+.ui-command-list {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  color: var(--text);
+
+  // Keyboard hint (`Esc`, an arrow, the Enter symbol): input end slot, footer and item trailing.
+  // A 2rem square cap with a 1.1rem glyph, centred on both axes in a grid (a flex row keeps the
+  // glyph's line box and puts wide symbols such as the command sign off-centre);
+  // `--text-muted` on `--bg` is AA in both themes.
+  kbd {
+    @include type(caption);
+
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 rem(8px);
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    line-height: 1;
+    text-align: center;
+    color: var(--text-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: rem(6px);
+  }
+}
+
+// Spoken name of a key symbol (`<kbd><span aria-hidden>↑</span><span class="ui-command-list__sr">Up</span></kbd>`).
+.ui-command-list__sr {
+  @include visually-hidden;
+}
+
+// The input row has no box of its own: icon, bare input and the `Esc` cap on the dialog surface,
+// a divider below it (`--ui-command-divider`: the glass line in a command dialog). On a phone it
+// is the pill of the mobile search (`radius-full`, `surface`, card shadow, 52px).
+.ui-command-list__field {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: rem(18px) rem(20px);
+  border-bottom: 1px solid var(--ui-command-divider, var(--border));
+
+  // The dialog's row is bare (Search.dc.html): no box ring. Focus shows as the caret and as the
+  // divider below turning `focus-ring`, 2px (a 1px border plus an inset line), so a visible
+  // indicator stays (WCAG 2.4.7) without a rectangle around the row.
+  &:has(.ui-command-list__input:focus-visible) {
+    border-bottom-color: var(--focus-ring);
+    box-shadow: inset 0 -1px 0 var(--focus-ring);
+  }
+
+  // The ring follows the rounded top corners of the dialog panel it sits in.
+  @include tablet-up {
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
+  // Phone: the `Esc` cap in the input end slot is noise (no keyboard shortcuts on a phone).
+  @include phone {
+    gap: rem(10px);
+    min-height: rem(52px);
+    padding: 0 var(--space-4);
+    background: var(--surface);
+    border-bottom: 0;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-card);
+
+    // The pill shows focus with its own border, no offset ring.
+    &:has(.ui-command-list__input:focus-visible) {
+      box-shadow:
+        var(--shadow-card),
+        inset 0 0 0 2px var(--focus-ring);
+    }
+
+    > kbd {
+      display: none;
+    }
+  }
+}
+
+.ui-command-list__icon {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.ui-command-list__input {
+  @include field-native;
+
+  font-size: rem(19px);
+  line-height: rem(26px);
+
+  // 16px keeps iOS from zooming the page on focus.
+  @include phone {
+    font-size: rem(16px);
+    line-height: rem(24px);
+  }
+}
+
+.ui-command-list__list {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  min-height: 0;
+  padding: var(--space-2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  // While new results load the shown ones stay as they are (`aria-busy` on the list); text is
+  // never faded with opacity to show a busy state (BRAND.md Colour, WCAG contrast).
+
+  &[hidden] {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.ui-command-list__group {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+}
+
+// Section heading of the Tree ("3 links").
+.ui-command-list__heading {
+  @include type(caption);
+
+  padding: var(--space-2) var(--space-3) var(--space-1);
+  color: var(--text-muted);
+}

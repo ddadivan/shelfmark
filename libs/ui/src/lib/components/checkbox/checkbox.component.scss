@@ -1,0 +1,156 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  min-width: 0;
+}
+
+.ui-checkbox__label {
+  display: inline-flex;
+  gap: rem(10px);
+  align-items: flex-start;
+  align-self: flex-start;
+  min-height: rem(24px);
+  cursor: pointer;
+
+  // Touch: at least 44px, or the feature's own `--ui-checkbox-hit` (the card's 40px box).
+  @include coarse {
+    align-items: center;
+    min-width: var(--ui-checkbox-hit, #{rem(44px)});
+    min-height: var(--ui-checkbox-hit, #{rem(44px)});
+  }
+}
+
+// Features that sit the checkbox on a surface of their own (the selection checkbox of a card or
+// row) tune it through custom properties: `--ui-checkbox-size` (22px), `--ui-checkbox-radius` (7px),
+// `--ui-checkbox-tick` (16px, the glyph), `--ui-checkbox-fill` (the checked fill, `primary`) and
+// `--ui-checkbox-hit` (the touch minimum, 44px).
+// The native checkbox stays in the tab order and the accessibility tree; the box is its drawing.
+.ui-checkbox__input {
+  @include visually-hidden;
+}
+
+.ui-checkbox__box {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--ui-checkbox-size, #{rem(22px)});
+  height: var(--ui-checkbox-size, #{rem(22px)});
+  color: var(--on-primary);
+  background: var(--surface);
+  border: 1.5px solid var(--border-control);
+  border-radius: var(--ui-checkbox-radius, #{rem(7px)});
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    border-color: var(--ui-checkbox-fill, var(--primary));
+  }
+}
+
+// An unchecked box may take a hover and pressed fill of its own (`--ui-checkbox-hover-bg`,
+// `--ui-checkbox-pressed-bg`; the card's checkbox matches its "..." button). A checked box keeps
+// its fill.
+.ui-checkbox__input:not(:checked, :indeterminate) + .ui-checkbox__box {
+  @include hover {
+    background: var(--ui-checkbox-hover-bg, var(--surface));
+  }
+}
+
+.ui-checkbox__label:active .ui-checkbox__input:not(:checked, :indeterminate) + .ui-checkbox__box {
+  background: var(--ui-checkbox-pressed-bg, var(--surface));
+}
+
+// Pressed feedback on touch (there is no tap highlight).
+.ui-checkbox__label:active .ui-checkbox__box {
+  border-color: var(--ui-checkbox-fill, var(--primary));
+}
+
+.ui-checkbox__check {
+  width: var(--ui-checkbox-tick, #{rem(16px)});
+  height: var(--ui-checkbox-tick, #{rem(16px)});
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.ui-checkbox__dash {
+  width: rem(10px);
+  height: rem(2px);
+  background: var(--on-primary);
+  border-radius: var(--radius-full);
+}
+
+:host(.ui-checkbox--checked) .ui-checkbox__box,
+.ui-checkbox__input:indeterminate + .ui-checkbox__box {
+  background: var(--ui-checkbox-fill, var(--primary));
+  border-color: var(--ui-checkbox-fill, var(--primary));
+}
+
+:host(.ui-checkbox--checked) .ui-checkbox__check {
+  opacity: 1;
+}
+
+:host(.ui-checkbox--invalid) .ui-checkbox__box {
+  border-color: var(--danger);
+}
+
+.ui-checkbox__input:focus-visible + .ui-checkbox__box {
+  @include focus-ring;
+}
+
+.ui-checkbox__text {
+  @include type(body);
+
+  color: var(--text);
+}
+
+// `hideLabel`: the text stays in the label (the input's accessible name) but is not drawn.
+.ui-checkbox__text--hidden {
+  @include visually-hidden;
+}
+
+.ui-checkbox__hint,
+.ui-checkbox__error {
+  @include type(caption);
+
+  padding-inline-start: rem(32px);
+}
+
+.ui-checkbox__hint {
+  color: var(--text-muted);
+}
+
+.ui-checkbox__error {
+  color: var(--danger);
+
+  // The live region stays mounted; while empty it must not add the flex gap below the label.
+  &:empty {
+    margin-block-start: rem(-2px);
+  }
+}
+
+// While an error shows the hint stays in the DOM for `aria-describedby`, like the field shell.
+.ui-checkbox__hint--hidden {
+  @include visually-hidden;
+}
+
+:host(.ui-checkbox--disabled) {
+  .ui-checkbox__label {
+    cursor: not-allowed;
+  }
+
+  .ui-checkbox__box,
+  .ui-checkbox__text {
+    opacity: 0.5;
+  }
+}
+
+@include reduced-motion {
+  .ui-checkbox__box,
+  .ui-checkbox__check {
+    transition: none;
+  }
+}

@@ -1,9 +1,12 @@
-<app-landing-header (howItsBuiltRequested)="showHowItsBuilt()" />
+<app-landing-header (howItWorksRequested)="showHowItWorks()" />
 <main class="landing">
   <app-landing-hero />
+  @if (signedIn()) {
+  <app-landing-whats-new />
+  }
   <!--
     Below the fold: loaded when the browser is idle, so the first paint ships less JS, or at once
-    when the visitor asks for "How it's built" (its target lives in here). Each part is its own
+    when the visitor asks for "How it works" or opens `/#how` (their targets live in here). Each part is its own
     block on its own trigger, a little apart, so the browser renders them in separate tasks
     instead of one long one. The delays are literals because `on timer()` takes no constants.
     Every block has a placeholder, and the same box again as `@loading`: while its chunk downloads
@@ -11,6 +14,12 @@
     fold only grows towards its real height.
   -->
   @defer (on idle; when sectionsRequested()) {
+  <app-landing-bento #bento />
+  } @placeholder {
+  <div class="landing__placeholder landing__placeholder--bento"></div>
+  } @loading {
+  <div class="landing__placeholder landing__placeholder--bento"></div>
+  } @defer (on idle; when sectionsRequested()) {
   <app-landing-before-after #beforeAfter />
   } @placeholder {
   <div class="landing__placeholder"></div>

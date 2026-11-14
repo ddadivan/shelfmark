@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Send feedback</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));">
+
+<section class="a-state">
+<h2 class="a-cap">1 · Account menu, updated</h2>
+<div class="sm-menu" role="menu" aria-label="Account" style="width: 280px;">
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px 10px;"><span class="sm-avatar">DD</span><span><span style="display: block; font-size: 14px; font-weight: 600;">Dmytro</span><span style="display: block; font-size: 12px; color: var(--text-muted);">dmytro@example.com</span></span></div>
+<div class="sm-menu__sep" role="separator"></div>
+<button class="sm-menu__item" role="menuitem">Settings<span class="sm-menu__hint sm-kbd">G S</span></button>
+<button class="sm-menu__item" role="menuitem">Import links…</button>
+<button class="sm-menu__item" role="menuitem">Export all links<span class="sm-menu__hint" style="color: var(--text-muted);">JSON or HTML</span></button>
+<div class="sm-menu__sep" role="separator"></div>
+<button class="sm-menu__item" role="menuitem">How it works</button>
+<button class="sm-menu__item" role="menuitem">Keyboard shortcuts<span class="sm-menu__hint sm-kbd">?</span></button>
+<button class="sm-menu__item is-hover" role="menuitem" style="background: var(--surface-hover);">Send feedback</button>
+<button class="sm-menu__item" role="menuitem">About Shelfmark</button>
+<div class="sm-menu__sep" role="separator"></div>
+<button class="sm-menu__item" role="menuitem">Sign out</button>
+</div>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">2 · Feedback form</h2>
+<form class="sm-dialog" role="dialog" aria-labelledby="fb-h" style="max-width: none; gap: 18px;">
+<div class="sm-dialog__head"><h3 id="fb-h" style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600;">Send feedback</h3><button type="button" class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div class="sm-seg" role="radiogroup" aria-label="Type" style="display: flex;"><button type="button" class="sm-seg__item is-active" role="radio" aria-checked="true" style="flex: 1; justify-content: center;">Idea</button><button type="button" class="sm-seg__item" role="radio" aria-checked="false" style="flex: 1; justify-content: center;">Problem</button><button type="button" class="sm-seg__item" role="radio" aria-checked="false" style="flex: 1; justify-content: center;">Other</button></div>
+<div class="sm-field"><label class="sm-field__label" for="fb-t">What would make Shelfmark better?</label><div class="sm-field__control sm-field__control--textarea is-focus"><textarea id="fb-t" rows="4">It would be great to sort a folder by when I last opened a link.</textarea></div><div class="sm-field__hint"><span>We read every message.</span><span>63 / 2000</span></div></div>
+<div class="sm-field"><span class="sm-field__label">Screenshot (optional)</span>
+<div style="display: flex; gap: 10px; align-items: center;"><span style="width: 92px; height: 58px; border-radius: 12px; background: var(--surface-hover); position: relative; flex: none;"><button type="button" class="sm-btn sm-btn--secondary sm-btn--icon sm-btn--sm" aria-label="Remove screenshot" style="position: absolute; top: -8px; right: -8px; width: 26px; height: 26px; border-radius: 50%;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span><span class="sm-drop" style="flex: 1; padding: 14px;">Drop an image or <a href="#" class="sm-link">choose a file</a></span></div></div>
+<label style="display: flex; gap: 10px; align-items: center; font-size: 14px;"><input type="checkbox" class="sm-check" checked>Attach browser and app version</label>
+<div class="sm-dialog__foot"><button type="button" class="sm-btn sm-btn--secondary">Cancel</button><button type="submit" class="sm-btn sm-btn--primary">Send</button></div>
+</form>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">3 · Sending, sent, failed</h2>
+<div class="sm-panel" style="gap: 12px;"><div style="display: flex; gap: 8px; justify-content: flex-end;"><button class="sm-btn sm-btn--secondary" disabled>Cancel</button><button class="sm-btn sm-btn--primary" aria-busy="true" style="min-width: 104px;"><span class="sm-spinner"></span>Sending…</button></div></div>
+<div class="sm-panel" style="align-items: center; text-align: center; gap: 10px; padding: 32px 24px;">
+<span style="width: 56px; height: 56px; border-radius: 18px; background: var(--accent-bg); color: var(--accent-text); display: grid; place-items: center;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 600;">Thank you</h3>
+<p style="margin: 0; font-size: 14px; line-height: 21px; color: var(--text-muted);">We read every message. You'll see its status in Settings › Your feedback.</p>
+<button class="sm-btn sm-btn--secondary">Done</button>
+</div>
+<div class="sm-notice sm-notice--danger" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px;"><path d="M10.3 5.4a2 2 0 0 1 3.4 0l7 12a2 2 0 0 1-1.7 3H5a2 2 0 0 1-1.7-3z"/><path d="M12 10v4M12 17h.01"/></svg><span>Couldn't send. Your text is kept — try again in a moment.</span></div>
+</section>
+
+<section class="a-state" style="grid-column: 1 / -1;">
+<h2 class="a-cap">4 · Settings › Your feedback</h2>
+<div class="sm-panel" style="padding: 20px;">
+<h3 style="margin: 0; font-size: 22px; font-weight: 600;">Your feedback</h3>
+<div style="display: flex; flex-direction: column;">
+<div class="sm-row" style="cursor: default; align-items: flex-start;"><span class="sm-badge" style="margin-top: 2px;">Idea</span><span class="sm-row__main"><span class="sm-row__title" style="white-space: normal;">Sort a folder by when I last opened a link</span><span class="sm-row__meta">Sent today</span></span><span class="sm-badge">Received</span></div>
+<div class="sm-row" style="cursor: default; align-items: flex-start;"><span class="sm-badge" style="margin-top: 2px;">Problem</span><span class="sm-row__main"><span class="sm-row__title" style="white-space: normal;">Preview doesn't load for Instagram links</span><span class="sm-row__meta">Sent 3 Nov · Reply: “Fixed in the next update, thanks!”</span></span><span class="sm-badge sm-badge--warn">In progress</span></div>
+<div class="sm-row" style="cursor: default; align-items: flex-start;"><span class="sm-badge" style="margin-top: 2px;">Idea</span><span class="sm-row__main"><span class="sm-row__title" style="white-space: normal;">Dark theme should follow the system</span><span class="sm-row__meta">Sent 12 Oct</span></span><span class="sm-badge sm-badge--accent">Done</span></div>
+<div class="sm-row" style="cursor: default; align-items: flex-start;"><span class="sm-badge" style="margin-top: 2px;">Idea</span><span class="sm-row__main"><span class="sm-row__title" style="white-space: normal;">Sync with Pocket</span><span class="sm-row__meta">Sent 2 Oct · Reply: “Pocket has closed — import from its export file is planned.”</span></span><span class="sm-badge">Planned</span></div>
+</div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

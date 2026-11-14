@@ -1,0 +1,177 @@
+@use 'ui' as *;
+
+:host {
+  display: contents;
+}
+
+// A favorite keeps its star in sage, so favorites stay recognizable at rest.
+.link-card__star--on {
+  --ui-button-color: var(--accent-text);
+}
+
+.link-card__site {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.link-card__host {
+  @include type(caption);
+  @include line-clamp(1);
+
+  color: var(--text-muted);
+}
+
+.link-card__note {
+  @include type(body);
+  @include line-clamp(2);
+
+  // Two lines are always reserved, a note or not: every card has the same height (#335).
+  min-block-size: calc(2 * 1lh);
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+}
+
+.link-card__foot {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+
+  // The card body is a flex column: the row sits at the bottom of every card, so the star lines
+  // up across a row of cards.
+  // The row keeps the height of the star (32px) even when it has neither star nor tags.
+  min-block-size: calc(var(--space-2) + #{rem(32px)});
+  padding: var(--space-2) 0 0;
+  margin: auto 0 0;
+}
+
+.link-card__tags {
+  display: flex;
+  flex: 1;
+
+  // One line of chips (up to three and "+N"): a long tag is cut, the row never grows.
+  flex-wrap: nowrap;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+// The favorite star: bottom right of the card, above the stretched link (z-index 2). A favorite
+// keeps it visible (sage); otherwise it shows on hover, keyboard focus and always on touch.
+.link-card__star {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  margin-inline-start: auto;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  &.link-card__star--on {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+ui-card {
+  @include hover {
+    .link-card__star {
+      opacity: 1;
+    }
+  }
+
+  &:has(:focus-visible) .link-card__star {
+    opacity: 1;
+  }
+}
+
+ui-card {
+  flex: 1;
+}
+
+// The open bar content (the bar itself, its slide and darkening live in `ui-card`).
+.link-card__open {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.link-card__address {
+  @include line-clamp(1);
+
+  min-width: 0;
+}
+
+.link-card__open-label {
+  display: inline-flex;
+  flex: none;
+  gap: rem(4px);
+  font-weight: 600;
+}
+
+// "Open" and the arrow sit together at rest. Only while the pointer is over the bar itself (the
+// bar is above the card's link and forwards its click to it), or the card has keyboard focus,
+// "Open" brightens and the arrow nudges up and to the right. The bar is decorative
+// (`aria-hidden`); no movement under reduced motion.
+.link-card__open-text {
+  color: color-mix(in srgb, var(--text) 78%, var(--surface));
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.link-card__open-arrow {
+  display: inline-block;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+ui-card:has(.ui-card__link:focus-visible) .link-card__open-text {
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ui-card:has(.ui-card__link:focus-visible) .link-card__open-arrow {
+    transform: translate(#{rem(2px)}, #{rem(-2px)});
+  }
+}
+
+.link-card__open {
+  @include hover {
+    .link-card__open-text {
+      color: var(--text);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .link-card__open-arrow {
+        transform: translate(#{rem(2px)}, #{rem(-2px)});
+      }
+    }
+  }
+}
+
+// "Pinned" over the preview (FolderStyle spec); it only informs, a click goes to the title link.
+.link-card__pinned {
+  position: absolute;
+  inset-block-start: var(--space-3);
+  inset-inline-start: var(--space-3);
+  z-index: 2;
+  pointer-events: none;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+// Settings › Appearance › Cards (#285): `data-card-site|notes|tags="off"` on <html> hides the part.
+:host-context([data-card-site='off']) .link-card__site,
+:host-context([data-card-notes='off']) .link-card__note,
+:host-context([data-card-tags='off']) .link-card__tags {
+  display: none;
+}

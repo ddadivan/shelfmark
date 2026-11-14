@@ -3,7 +3,6 @@
 
 :host {
   display: block;
-  border-top: 1px solid var(--border);
 }
 
 .landing-finale {
@@ -11,11 +10,25 @@
   @include landing.reveal;
   @include landing.section-pad;
 
+  // The card sits inside the page column; the section only carries the column and the padding.
+  display: block;
+}
+
+// "Give your links a home": a surface card, as in Landing.dc.html.
+.landing-finale__card {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-6);
   align-items: center;
   justify-content: space-between;
+  padding: var(--space-6);
+  background: var(--surface);
+  border-radius: rem(32px);
+  box-shadow: var(--shadow-card);
+
+  @include tablet-up {
+    padding: rem(48px);
+  }
 }
 
 .landing-finale__copy {

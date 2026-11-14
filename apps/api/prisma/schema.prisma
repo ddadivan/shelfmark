@@ -21,20 +21,71 @@ datasource db {
 // Better Auth core models (users, sessions, linked OAuth accounts, verification tokens).
 
 model User {
-  id                    String    @id @default(uuid(7)) @db.Uuid
+  id                    String        @id @default(uuid(7)) @db.Uuid
   name                  String
-  email                 String    @unique
-  emailVerified         Boolean   @default(false) @map("email_verified")
+  email                 String        @unique
+  emailVerified         Boolean       @default(false) @map("email_verified")
   image                 String?
-  isDemo                Boolean   @default(false) @map("is_demo")
-  onboardingCompletedAt DateTime? @map("onboarding_completed_at") @db.Timestamptz(3)
-  demoExpiresAt         DateTime? @map("demo_expires_at") @db.Timestamptz(3)
+  isDemo                Boolean       @default(false) @map("is_demo")
+  onboardingCompletedAt DateTime?     @map("onboarding_completed_at") @db.Timestamptz(3)
+  demoExpiresAt         DateTime?     @map("demo_expires_at") @db.Timestamptz(3)
   // HMAC of the creating client IP for the per-IP demo quota (#67); never the raw address.
-  demoSourceHash        String?   @map("demo_source_hash")
+  demoSourceHash        String?       @map("demo_source_hash")
   // Same for the wider IPv6 /48 network (null for IPv4 clients).
-  demoNetworkHash       String?   @map("demo_network_hash")
-  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  demoNetworkHash       String?       @map("demo_network_hash")
+  // How long deleted links and folders stay in Trash (ADR 0036); a CHECK in the migration keeps it to 7, 30, 90.
+  trashRetentionDays    Int           @default(30) @map("trash_retention_days") @db.SmallInt
+  // Account setting "Folder colours" (#263): off shows every folder in graphite.
+  folderColours         Boolean       @default(true) @map("folder_colours")
+  // "Pause history" on Recently opened (#269): while true, opens are not recorded.
+  historyPaused         Boolean       @default(false) @map("history_paused")
+  // Settings › Appearance (#273): theme, the Custom theme and Animations. CHECKs in the migration
+  // keep each to its allow-list (contracts) and the background to the backgrounds of its base.
+  theme                 String        @default("system") @map("theme")
+  customThemeBase       String        @default("light") @map("custom_theme_base")
+  customThemeAccent     String        @default("ocean") @map("custom_theme_accent")
+  customThemeBackground String        @default("paper") @map("custom_theme_background")
+  customThemeCorners    String        @default("soft") @map("custom_theme_corners")
+  // Own colours (#335): up to 12 lower-case #rrggbb, offered as swatches; a CHECK in the migration keeps the list valid.
+  customColours         String[]      @default([]) @map("custom_colours")
+  // Own emoji (#363): up to 24 folder emoji the picker offers under "Yours"; the API checks each is one emoji, a CHECK in the migration keeps the count and length.
+  customEmoji           String[]      @default([]) @map("custom_emoji")
+  motion                String        @default("system") @map("motion")
+  // Set by the first write of theme, customTheme or motion; NULL = the appearance was never chosen.
+  appearanceSavedAt     DateTime?     @map("appearance_saved_at") @db.Timestamptz(3)
+  // Settings › Library (#284). CHECKs in the migration keep the three text columns to the contract
+  // allow-lists. newLinksFolderId has no relation on purpose (see the migration): the API checks it.
+  defaultView           String        @default("cards") @map("default_view")
+  defaultSort           String        @default("newest") @map("default_sort")
+  openLinksIn           String        @default("new-tab") @map("open_links_in")
+  showFolderCounts      Boolean       @default(true) @map("show_folder_counts")
+  newLinksFolderId      String?       @map("new_links_folder_id") @db.Uuid
+  // Retired in #315 (the duplicate notice is always on, tracking parameters are always stripped):
+  // the API no longer reads or writes warn_duplicates and keep_query; a later migration drops them.
+  warnDuplicates        Boolean       @default(true) @map("warn_duplicates")
+  fetchPreviews         Boolean       @default(true) @map("fetch_previews")
+  keepQuery             Boolean       @default(false) @map("keep_query")
+  // Settings › Appearance extras (#285): part of the appearance (appearanceSavedAt). CHECKs in the
+  // migration keep the text columns to the contract allow-lists.
+  textSize              String        @default("m") @map("text_size")
+  font                  String        @default("onest") @map("font")
+  density               String        @default("comfortable") @map("density")
+  cardPreview           String        @default("large") @map("card_preview")
+  cardSite              Boolean       @default(true) @map("card_site")
+  cardNotes             Boolean       @default(true) @map("card_notes")
+  cardTags              Boolean       @default(true) @map("card_tags")
+  // Settings › Language (#274). CHECKs in the migration keep the text columns to the contract
+  // allow-lists; languageSavedAt marks the first write (a guest's local choice is kept until then).
+  language              String        @default("browser") @map("language")
+  dateFormat            String        @default("default") @map("date_format")
+  timeFormat            String        @default("default") @map("time_format")
+  weekStart             String        @default("default") @map("week_start")
+  // Retired in #326 (spell-check in the note field is always on, the browser default): the API no
+  // longer reads or writes spellcheck; a later migration drops it.
+  spellcheck            Boolean       @default(true) @map("spellcheck")
+  languageSavedAt       DateTime?     @map("language_saved_at") @db.Timestamptz(3)
+  createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]
   accounts              Account[]
   folders               Folder[]
@@ -42,6 +93,8 @@ model User {
   linkImages            LinkImage[]
   tags                  Tag[]
   feedback              Feedback[]
+  folderShares          FolderShare[]
+  savedViews            SavedView[]
 
   @@map("users")
 }
@@ -108,16 +161,26 @@ model Verification {
 // - the image source URLs and captureAttemptedAt are set server-side only, never from client input.
 
 model Folder {
-  id        String   @id @default(uuid(7)) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  parentId  String?  @map("parent_id") @db.Uuid
-  name      String   @db.VarChar(100)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  parent    Folder?  @relation("FolderTree", fields: [parentId, userId], references: [id, userId], onDelete: Cascade)
-  children  Folder[] @relation("FolderTree")
-  links     Link[]
+  id             String       @id @default(uuid(7)) @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  parentId       String?      @map("parent_id") @db.Uuid
+  name           String       @db.VarChar(100)
+  // Style (#263, ADR 0037): one of FOLDER_COLOUR / FOLDER_ICON; a CHECK in the migration closes the colour set.
+  colour         String       @default("graphite") @db.VarChar(16)
+  icon           String       @default("folder") @db.VarChar(24)
+  // Manual order among the siblings (#314): PUT /api/folders/order; lists sort by it, then by name.
+  position       Int          @default(0) @db.SmallInt
+  // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the folder goes to Trash.
+  pinnedPosition Int?         @map("pinned_position") @db.SmallInt
+  // Set when the folder is in Trash (ADR 0036): one shared value for the folder and the subtree deleted with it.
+  deletedAt      DateTime?    @map("deleted_at") @db.Timestamptz(3)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent         Folder?      @relation("FolderTree", fields: [parentId, userId], references: [id, userId], onDelete: Cascade)
+  children       Folder[]     @relation("FolderTree")
+  links          Link[]
+  share          FolderShare?
 
   @@unique([id, userId])
   @@index([userId, parentId])
@@ -146,7 +209,16 @@ model Link {
   // Client-generated UUID that makes a retried create return the first link (ADR 0033).
   idempotencyKey     String?     @map("idempotency_key") @db.Uuid
   isFavorite         Boolean     @default(false) @map("is_favorite")
+  // video | article | shopping | other (LINK_KIND, CHECK in the migration): derived at save time from
+  // og:type and the host, recomputed on a URL change, changeable by the user (ADR 0038).
+  kind               String      @default("other") @db.VarChar(16)
+  // Pinned to the top of its folder (#263): the pin time orders pinned links; NULL = not pinned.
+  pinnedInFolderAt   DateTime?   @map("pinned_in_folder_at") @db.Timestamptz(3)
+  // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the link goes to Trash.
+  pinnedPosition     Int?        @map("pinned_position") @db.SmallInt
   lastOpenedAt       DateTime?   @map("last_opened_at") @db.Timestamptz(3)
+  // Set when the link is in Trash (ADR 0036). The partial indexes for Trash live in the migration.
+  deletedAt          DateTime?   @map("deleted_at") @db.Timestamptz(3)
   createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt          DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
   user               User        @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -160,6 +232,7 @@ model Link {
   @@index([userId, lastOpenedAt])
   @@index([userId, titleSortKey, id])
   @@index([folderId])
+  @@index([userId, kind])
   @@index([title(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_title_trgm_idx")
   @@index([note(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_note_trgm_idx")
   @@index([url(ops: raw("gin_trgm_ops"))], type: Gin, map: "links_url_trgm_idx")
@@ -213,19 +286,89 @@ model LinkTag {
   @@map("link_tags")
 }
 
-// App rating (#100, PROJECT.md 4 story 24): one row per user and milestone ("day3", "week1", "month1",
-// "year1"). `score` null records "not now". Plain-SQL CHECKs (milestone set, score 1-10, comment
-// length, no comment without a score) live in the migration. The comment is user text: never logged.
+// Feedback (#100, #272), two kinds of row in one table. A rating (story 24) has a `milestone`
+// ("day3", "week1", "month1", "year1"), one row per user and milestone; `score` null records "not now";
+// `kind` is null. A message (story 25) has a `kind` ("idea", "problem", "other"), no milestone, no score,
+// and `comment` holds the text; `status` ("received", "planned", "in-progress", "done", "not-planned")
+// and `reply` are set by the author through the admin API; up to three screenshots of a message live
+// in `FeedbackScreenshot` (#352). NULL milestones never collide in the unique index. Plain-SQL
+// CHECKs (sets, lengths, the rating-or-message shape) live in the migrations. The comment and reply
+// are user text: never logged.
 model Feedback {
+  id               String               @id @default(uuid(7)) @db.Uuid
+  userId           String               @map("user_id") @db.Uuid
+  milestone        String?              @db.VarChar(10)
+  score            Int?                 @db.SmallInt
+  comment          String?
+  kind             String?
+  status           String               @default("received")
+  reply            String?
+  clientAppVersion String?              @map("client_app_version") @db.VarChar(300)
+  clientUserAgent  String?              @map("client_user_agent") @db.VarChar(300)
+  createdAt        DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  screenshots      FeedbackScreenshot[]
+
+  @@unique([userId, milestone])
+  @@index([userId, createdAt])
+  @@index([createdAt(sort: Desc), id(sort: Desc)])
+  @@map("feedback")
+}
+
+// A screenshot of a feedback message (#352): at most three per message, `position` 0 to 2 in the
+// order they were attached; PNG, JPEG or WebP (`type`), 1 byte to 2 MB. Only message rows get them
+// (the API attaches to a message of the session user). Deleting the message (or the user) deletes
+// them. Reads that do not need the image never select `bytes`. CHECKs live in the migration.
+model FeedbackScreenshot {
+  feedbackId String   @map("feedback_id") @db.Uuid
+  position   Int      @db.SmallInt
+  bytes      Bytes
+  type       String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  @@id([feedbackId, position])
+  @@map("feedback_screenshots")
+}
+
+// Public link of a folder (#276, ADR 0040): a row exists exactly while the folder is shared, so
+// disabling deletes it and an old token can never come back. `token` is the capability in the
+// public URL `/c/{token}`: 16 random bytes as 22 base64url characters, stored as is (the owner can
+// copy the link again) behind a unique index, so the public lookup is one indexed equality read.
+// The composite FK keeps the share on a folder of the same user; deleting the folder (or the user)
+// deletes the share. A CHECK in the migration pins the token format.
+model FolderShare {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  folderId       String   @unique @map("folder_id") @db.Uuid
+  token          String   @unique @db.VarChar(22)
+  showNotes      Boolean  @default(false) @map("show_notes")
+  // When the current token was created: enable, or the last reset.
+  tokenCreatedAt DateTime @default(now()) @map("token_created_at") @db.Timestamptz(3)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder         Folder   @relation(fields: [folderId, userId], references: [id, userId], onDelete: Cascade)
+
+  // Required by Prisma for the one-to-one composite relation; folderId alone is already unique.
+  @@unique([folderId, userId])
+  @@index([userId])
+  @@map("folder_shares")
+}
+
+// A saved filter shown as a chip above the feed (#264, ADR 0038). `query` is the normalized
+// SavedViewQuery (validated by the API); at most SAVED_VIEW_LIMIT.PerUserMax per user. New users get
+// the starter views from a database trigger (see the migration).
+model SavedView {
   id        String   @id @default(uuid(7)) @db.Uuid
   userId    String   @map("user_id") @db.Uuid
-  milestone String   @db.VarChar(10)
-  score     Int?     @db.SmallInt
-  comment   String?
+  name      String   @db.VarChar(40)
+  query     Json     @db.JsonB
+  position  Int      @db.SmallInt
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, milestone])
-  @@map("feedback")
+  @@index([userId, position])
+  @@map("saved_views")
 }

@@ -13,6 +13,15 @@
   align-items: center;
   justify-content: space-between;
   block-size: var(--landing-header-height, #{rem(72px)});
+
+  // The links and actions are `ui-button`s: they grow with the wide breakpoints like the hero's.
+  @include landing.wide {
+    --ui-button-scale: 1.1;
+  }
+
+  @include landing.xwide {
+    --ui-button-scale: 1.2;
+  }
 }
 
 .landing-header__logo {
@@ -34,35 +43,21 @@
 .landing-header__nav {
   display: flex;
 
-  // The sign-in button is 36px tall (`ui-button`); the nav keeps that block size even before the
-  // button is styled, so the header has its final height from the first frame (no CLS).
+  // Stays the height of a small button before it is styled, so the header has its final height
+  // from the first frame (no CLS).
+  min-block-size: rem(32px);
+  gap: var(--space-1);
+  align-items: center;
+  margin-inline: var(--space-4) auto;
+}
+
+.landing-header__actions {
+  display: flex;
   min-block-size: rem(36px);
-  gap: var(--space-6);
+  gap: var(--space-2);
   align-items: center;
 
-  // The sign-in button is a `ui-button`: it grows with the wide breakpoints like the hero buttons.
-  @include landing.zoom(1.1, 1.2);
-
-  @include landing.wide {
-    gap: var(--space-8);
-  }
-}
-
-.landing-header__link {
-  @include type(label);
-  @include landing.text-link;
-
-  @include tablet-up {
-    font-size: rem(15px);
-    line-height: rem(22px);
-  }
-
-  // Anchors and GitHub are secondary on a phone; sign-in stays.
-  @include phone {
-    display: none;
-  }
-}
-
-.landing-header__hint {
-  @include visually-hidden;
+  // Without the nav (a phone) the actions go to the end by themselves; with it, the nav's
+  // auto margin does.
+  margin-inline-start: auto;
 }

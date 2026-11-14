@@ -1,0 +1,50 @@
+<nav class="ui-tab-bar__nav" [attr.aria-label]="ariaLabel()">
+  <ul class="ui-tab-bar__list">
+    @for (item of before(); track item.id) {
+      <li class="ui-tab-bar__slot">
+        <ng-container *ngTemplateOutlet="tab; context: { $implicit: item }" />
+      </li>
+    }
+    <li class="ui-tab-bar__slot">
+      <button
+        type="button"
+        class="ui-tab-bar__add"
+        [attr.aria-label]="addLabel()"
+        (click)="add.emit()"
+      >
+        <ui-icon name="add" />
+      </button>
+    </li>
+    @for (item of after(); track item.id) {
+      <li class="ui-tab-bar__slot">
+        <ng-container *ngTemplateOutlet="tab; context: { $implicit: item }" />
+      </li>
+    }
+  </ul>
+</nav>
+
+<ng-template #tab let-item>
+  @if (item.href !== undefined) {
+    <a
+      class="ui-tab-bar__tab"
+      [class.ui-tab-bar__tab--active]="item.id === active()"
+      [attr.href]="item.href"
+      [attr.aria-current]="item.id === active() ? 'page' : null"
+      (click)="onClick($event, item)"
+    >
+      <ui-icon [name]="item.icon" />
+      <span class="ui-tab-bar__label">{{ item.label }}</span>
+    </a>
+  } @else {
+    <button
+      type="button"
+      class="ui-tab-bar__tab"
+      [class.ui-tab-bar__tab--active]="item.id === active()"
+      [attr.aria-current]="item.id === active() ? 'page' : null"
+      (click)="onClick($event, item)"
+    >
+      <ui-icon [name]="item.icon" />
+      <span class="ui-tab-bar__label">{{ item.label }}</span>
+    </button>
+  }
+</ng-template>

@@ -1,0 +1,181 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.feedback-dialog__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  // Room for the focus rings at the edge of the scrolling body.
+  padding: rem(2px);
+}
+
+.feedback-dialog__shot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.feedback-dialog__shot-label {
+  @include type(label);
+
+  color: var(--text);
+}
+
+.feedback-dialog__shot-hint {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.feedback-dialog__drop {
+  @include type(body);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3);
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px dashed var(--border-control);
+  border-radius: var(--radius-lg);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.feedback-dialog__drop--over {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+}
+
+.feedback-dialog__files {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.feedback-dialog__file {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.feedback-dialog__thumb {
+  flex: none;
+  width: rem(92px);
+  height: rem(58px);
+  object-fit: cover;
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+}
+
+.feedback-dialog__file-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.feedback-dialog__file-name {
+  @include type(label);
+  @include line-clamp(1);
+
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.feedback-dialog__file-size {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.feedback-dialog__foot {
+  display: flex;
+  flex: 1;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+// Phone: stacked buttons, the main action on top (the DOM order stays secondary, primary).
+@include phone {
+  .feedback-dialog__foot {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}
+
+// Thanks: centred, with a check tile (the same moment as the rating).
+.feedback-dialog__thanks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  text-align: center;
+  animation: feedback-in var(--duration-slow) var(--ease-out) both;
+}
+
+.feedback-dialog__badge {
+  display: grid;
+  place-items: center;
+  width: rem(64px);
+  height: rem(64px);
+  margin-block-end: var(--space-1);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  border-radius: var(--radius-lg);
+}
+
+.feedback-dialog__thanks-title {
+  @include type(title);
+
+  margin: 0;
+  color: var(--text);
+}
+
+.feedback-dialog__text {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+@keyframes feedback-in {
+  from {
+    opacity: 0;
+    transform: translateY(#{rem(12px)});
+  }
+}
+
+@include reduced-motion {
+  .feedback-dialog__thanks {
+    animation: none;
+  }
+}
+
+// The checkbox and the info button of "Attach browser and app version" share a line.
+.feedback-dialog__attach {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.feedback-dialog__attach-info {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}

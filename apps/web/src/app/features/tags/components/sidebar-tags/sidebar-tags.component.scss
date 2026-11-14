@@ -1,0 +1,123 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.tags {
+  margin-top: var(--space-2);
+}
+
+// Same section heading as "Folders" in the tree (Tags spec): caption, muted, the "+" at the end.
+.tags__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: calc(#{rem(30px)} + #{rem(12px)});
+  padding: rem(18px) 0 rem(6px) rem(10px);
+
+  @include coarse {
+    min-height: calc(#{rem(44px)} + #{rem(12px)});
+  }
+}
+
+.tags__heading {
+  @include type(caption);
+
+  margin: 0;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.tags__note,
+.tags__conflict {
+  @include type(caption);
+
+  margin: var(--space-2) 0 0;
+  color: var(--text-muted);
+}
+
+// "Enter saves, Esc cancels" is read to assistive technology; the pill needs no caption (Tags spec).
+.tags__hint {
+  @include visually-hidden;
+}
+
+.tags__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(6px);
+  padding: var(--space-1) var(--space-2);
+  margin: 0;
+  list-style: none;
+}
+
+.tags__item {
+  max-width: 100%;
+}
+
+// The new or renamed tag is a pill among the chips (Tags spec); with an error or the merge offer
+// it takes the whole row.
+.tags__item--editor {
+  flex: 0 1 rem(150px);
+  min-width: rem(110px);
+}
+
+.tags__item--wide {
+  flex-basis: 100%;
+}
+
+.tags__editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.tags__editor ui-input {
+  align-self: stretch;
+}
+
+// The Tags tab: the heading is the page title like "Library" and "You", the list sits on a card.
+.tags--page {
+  margin-top: 0;
+
+  // The Tags tab with no tags: the page empty state (#315), a little below the header.
+  .tags__empty {
+    margin-block-start: var(--space-2);
+  }
+
+  .tags__header {
+    padding: var(--space-4) 0 var(--space-2);
+  }
+
+  .tags__heading {
+    @include type(display);
+
+    // MobileHome title: 34 / 38.
+    font-size: rem(34px);
+    line-height: rem(38px);
+    color: var(--text);
+  }
+
+  .tags__list {
+    padding: var(--space-4);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+
+    // No tags and no editor: the empty state is the card, not an empty white box under it.
+    &.tags__list--empty {
+      display: none;
+    }
+  }
+}
+
+// First line of the tag menu (Tags spec): whose menu it is.
+.tags__menu-summary {
+  @include type(caption);
+
+  padding: var(--space-2) var(--space-3);
+  margin: 0;
+  color: var(--text-muted);
+}

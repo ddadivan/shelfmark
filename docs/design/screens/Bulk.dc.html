@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Select and bulk actions</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 900px; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; gap: 12px; padding: 12px; box-sizing: border-box;">
+
+<aside aria-label="Library" style="flex: 0 0 272px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+<div style="display: flex; align-items: center; gap: 10px; padding: 4px 10px 14px;"><svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 17px; font-weight: 600;">Shelfmark</span></div>
+<span class="sm-tree__row">All links<span class="sm-tree__count">248</span></span><span class="sm-tree__row">Unsorted<span class="sm-tree__count">17</span></span><span class="sm-tree__row">Favorites<span class="sm-tree__count">9</span></span>
+<div class="sm-tree__section">Folders</div>
+<span class="sm-tree__row">Work<span class="sm-tree__count">34</span></span><span class="sm-tree__row is-active" style="padding-left: 34px;">Angular<span class="sm-tree__count">12</span></span><span class="sm-tree__row">Clothes<span class="sm-tree__count">21</span></span><span class="sm-tree__row">Recipes<span class="sm-tree__count">15</span></span>
+</aside>
+
+<main style="flex: 1; min-width: 0; padding: 6px 16px 120px; display: flex; flex-direction: column; gap: 20px;">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 8px 0 16px; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-card);">
+<input type="checkbox" class="sm-check" aria-label="Select all 12 links" style="position: relative;">
+<b style="font-size: 15px; font-weight: 600;">3 selected</b>
+<button class="sm-btn sm-btn--ghost sm-btn--sm">Select all 12</button>
+<span style="flex: 1;"></span>
+<span class="a-note"><span class="sm-kbd">Shift</span> + click selects a range · <span class="sm-kbd">Esc</span> clears</span>
+<button class="sm-btn sm-btn--ghost sm-btn--sm">Done</button>
+</div>
+<h1 style="margin: 0; font-size: 40px; line-height: 44px; font-weight: 600;">Angular</h1>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;">
+<sc-for list="{{links}}" as="l" hint-placeholder-count="6">
+<label class="sm-card {{l.cls}}" style="cursor: pointer;">
+<span style="position: absolute; top: 14px; left: 14px; z-index: 2;"><input type="checkbox" class="sm-check" checked="{{l.on}}" aria-label="Select {{l.title}}"></span>
+<div class="sm-card__media" style="background: {{l.bg}};"></div>
+<div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">{{l.f}}</span>{{l.site}}</div><span class="sm-card__title">{{l.title}}</span></div>
+</label>
+</sc-for>
+</div>
+</main>
+
+<div role="toolbar" aria-label="Actions for 3 selected links" class="sm-glass" style="position: absolute; left: calc(50% + 142px); bottom: 28px; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; padding: 8px; border-radius: 22px;">
+<button class="sm-btn sm-btn--ghost"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M9 13.5h6M13 11.5l2 2-2 2"/></svg>Move</button>
+<button class="sm-btn sm-btn--ghost"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h5.6a2 2 0 0 1 1.4.6l7.4 7.4a2 2 0 0 1 0 2.8l-5 5a2 2 0 0 1-2.8 0L4.6 12.4A2 2 0 0 1 4 11z"/></svg>Tags</button>
+<button class="sm-btn sm-btn--ghost"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.8l2.45 5 5.5.8-4 3.9.95 5.5L12 16.4 7.1 19l.95-5.5-4-3.9 5.5-.8z"/></svg>Favorite</button>
+<button class="sm-btn sm-btn--ghost"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/></svg>Remind</button>
+<button class="sm-btn sm-btn--ghost"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 4.5h6.5V11M19.5 4.5L11 13M17 14.5v3a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3"/></svg>Open all</button>
+<span style="width: 1px; height: 24px; background: var(--border); margin: 0 4px;"></span>
+<button class="sm-btn sm-btn--ghost" style="color: var(--danger);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M6.5 7l.8 11.2a2 2 0 0 0 2 1.8h5.4a2 2 0 0 0 2-1.8L17.5 7"/></svg>Delete</button>
+</div>
+
+<div style="position: absolute; left: calc(50% + 142px); bottom: 104px; transform: translateX(-50%);"><div class="sm-toast sm-toast--danger" role="status"><span class="sm-toast__icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M6.5 7l1 12a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-12"/></svg></span><span class="sm-toast__text">3 links moved to Trash<small>Wool coat, Ramen, Signal Forms</small></span><button class="sm-toast__action">Undo</button><button class="sm-toast__close" aria-label="Dismiss"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button><span class="sm-toast__timer" style="--dur: 8s;" aria-hidden="true"></span></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const t = 'var(--accent-bg)', h = 'var(--surface-hover)', p = 'var(--surface-pressed)';
+    const rows = [
+      { f: 'Y', site: 'youtube.com', title: 'Angular 22: Signal Forms in 20 minutes', bg: t, on: true },
+      { f: 'D', site: 'dev.to', title: 'NgRx SignalStore: patterns for real apps', bg: h, on: true },
+      { f: 'A', site: 'angular.dev', title: 'Zoneless change detection, explained', bg: p, on: false },
+      { f: 'B', site: 'blog.angular.dev', title: 'Building accessible menus with Angular Aria', bg: t, on: true },
+      { f: 'N', site: 'nx.dev', title: 'Nx 23: monorepo setup for Angular and NestJS', bg: h, on: false },
+      { f: 'M', site: 'medium.com', title: 'Signals vs RxJS: when to use which', bg: p, on: false }
+    ];
+    return {
+      theme: (this.props.dark ?? false) ? 'dark' : 'light',
+      links: rows.map(r => ({ ...r, cls: r.on ? 'is-selected' : '' }))
+    };
+  }
+}
+</script>
+</body>
+</html>

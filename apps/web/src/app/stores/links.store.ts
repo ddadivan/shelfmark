@@ -21,17 +21,18 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import type { FolderDeleteMode, LinkResponse } from '@shelfmark/contracts';
 import { FOLDER_DELETE_MODE, LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
 import { catchError, EMPTY, firstValueFrom, pipe, switchMap, tap } from 'rxjs';
-import { inFilter, linksQuery, sameFilter } from '../features/links/links-filter';
-import { hasPendingImages } from '../features/links/link-view';
+import { inFilter, linksQuery, sameFilter } from '../features/links/utils/links-filter';
 import { LINKS_API } from '../features/links/models/links-api.const';
 import type { LinksFilter } from '../features/links/models/links-filter.type';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
 import type { PendingRemoval } from '../features/links/models/pending-removal.interface';
 import { RECENT_LINKS_LIMIT } from '../features/links/models/recent-links-limit.const';
+import type { LinksSnapshot } from './models/links-snapshot.interface';
 import type { LinksState } from './models/links-state.interface';
-
-/** Image capture requests in flight at once (the endpoint shares the AddLink rate limit). */
-const CAPTURE_CONCURRENCY = 3;
+import { createLinkImageCapture } from './link-image-capture';
+import { insertAt, retagLink, staysAfterEdit } from './links-feed';
+import { PinsStore } from './pins.store';
+import { SessionScope } from '../core/auth/session-scope.service';
 
 const initialState: LinksState = {
   filter: { scope: LINKS_SCOPE.All },
@@ -43,49 +44,17 @@ const initialState: LinksState = {
   loadMoreFailed: false,
   recent: [],
   recentLoaded: false,
+  landed: {},
 };
 
-/**
- * Whether an edited link still belongs in the open feed. A favorite flag never removes it (an
- * unfavorited link stays until the next load); leaving "Unsorted" or the open folder does.
- */
-function staysAfterEdit(filter: LinksFilter, link: LinkResponse): boolean {
-  switch (filter.scope) {
-    case LINKS_SCOPE.Unsorted:
-      return link.folderId === null;
-    case LINKS_SCOPE.Folder:
-      return link.folderId === filter.folderId;
-    default:
-      return true;
-  }
-}
-
-/** `link` with the tag `from` renamed to `to` (or dropped for `null`); other tags keep their order, no duplicates. */
-function retagLink(link: LinkResponse, from: string, to: string | null): LinkResponse {
-  if (!link.tags.some((name) => name.toLowerCase() === from.toLowerCase())) {
-    return link;
-  }
-  const seen = new Set<string>();
-  const tags: string[] = [];
-  for (const name of link.tags) {
-    const next = name.toLowerCase() === from.toLowerCase() ? to : name;
-    if (next !== null && !seen.has(next.toLowerCase())) {
-      seen.add(next.toLowerCase());
-      tags.push(next);
-    }
-  }
-  return { ...link, tags };
-}
-
-function insertAt<T>(list: readonly T[], index: number, item: T): T[] {
-  const copy = [...list];
-  copy.splice(Math.min(index, copy.length), 0, item);
-  return copy;
-}
+/** How long a just-saved link keeps its `landed` mark: the land, the 1.8 s ring and the stagger. */
+const LANDED_MS = 2600;
+/** At most this many cards are staggered; later ones land with the last of them. */
+const LANDED_STAGGER_MAX = 10;
 
 /**
- * The links feed and the "Recently opened" list, cached for the whole app. Favorite and delete
- * are optimistic: the change shows at once and rolls back when the request fails. A delete is
+ * The links feed and the "Recently opened" list, cached for the whole app. Favorite, delete and
+ * remove from history are optimistic: the change shows at once and rolls back when the request fails. A delete is
  * deferred: `remove()` hides the link, `undoRemove()` brings it back, `commitRemove()` (or
  * `flushPending()`, on `pagehide` and `reset()`) sends the request.
  */
@@ -104,10 +73,8 @@ export const LinksStore = signalStore(
     const api = () => injector.get(LINKS_API);
     const pending = new Map<string, PendingRemoval>();
     const favoriteBusy = new Set<string>();
-    // Links whose image capture was requested this session: one request per link.
-    const captureRequested = new Set<string>();
-    const captureQueue: LinkResponse[] = [];
-    let captureInFlight = 0;
+    // Feed slots of links a move took out of the open scope, so moving them back restores the slot.
+    const movedFrom = new Map<string, number>();
     // Bumped when the filter changes or the store resets: late responses are dropped.
     let generation = 0;
     // Bumped only by `reset()`: a response that started before it belongs to the previous user.
@@ -117,63 +84,76 @@ export const LinksStore = signalStore(
       return store.recent().map((link) => (link.id === id ? { ...link, ...changes } : link));
     }
 
-    /**
-     * Asks the server to re-capture the images of loaded links that carry the pending marker (their
-     * page changed), once per link and session, at most `CAPTURE_CONCURRENCY` at a time so a page
-     * of pending links does not burst the AddLink rate limit. A failure is silent: the card keeps
-     * the letter.
-     */
-    function noteLinks(links: readonly LinkResponse[]): void {
-      for (const link of links) {
-        if (hasPendingImages(link) && !captureRequested.has(link.id)) {
-          captureRequested.add(link.id);
-          captureQueue.push(link);
-        }
-      }
-      pumpCaptures();
-    }
-
-    function pumpCaptures(): void {
-      while (captureInFlight < CAPTURE_CONCURRENCY) {
-        const next = captureQueue.shift();
-        if (next === undefined) {
-          return;
-        }
-        captureInFlight++;
-        void captureImages(next).finally(() => {
-          captureInFlight--;
-          pumpCaptures();
-        });
-      }
-    }
-
     function loaded(id: string): LinkResponse | undefined {
       return store.entityMap()[id] ?? store.recent().find((link) => link.id === id);
     }
 
-    /** The response is applied only while the link is still the version that was asked about. */
-    async function captureImages(asked: LinkResponse): Promise<void> {
-      const { id } = asked;
+    const capture = createLinkImageCapture({
+      request: (id) => firstValueFrom(api().captureImages(id)),
+      current: loaded,
+      isHidden: (id) => pending.has(id),
+      epoch: () => epoch,
+      apply: (id, changes) =>
+        patchState(store, updateEntity({ id, changes }), { recent: mapRecent(id, changes) }),
+    });
+
+    /** Marks just-saved links for the landing motion and drops the marks once it has played. */
+    function markLanded(ids: readonly string[]): void {
+      if (ids.length === 0) {
+        return;
+      }
+      const marks: Record<string, number> = { ...store.landed() };
+      ids.forEach((id, index) => {
+        marks[id] = Math.min(index, LANDED_STAGGER_MAX);
+      });
+      patchState(store, { landed: marks });
       const started = epoch;
-      try {
-        const saved = await firstValueFrom(api().captureImages(id));
-        if (started !== epoch || pending.has(id)) {
+      setTimeout(() => {
+        if (started !== epoch) {
           return;
         }
-        const current = loaded(id);
-        if (current?.updatedAt === asked.updatedAt && hasPendingImages(current)) {
-          const changes = { faviconUrl: saved.faviconUrl, imageUrl: saved.imageUrl };
-          patchState(store, updateEntity({ id, changes }), { recent: mapRecent(id, changes) });
-        } else if (current !== undefined && hasPendingImages(current)) {
-          // Edited to another page while the request ran: that version is pending in its own right.
-          captureRequested.delete(id);
-          noteLinks([current]);
+        const rest: Record<string, number> = { ...store.landed() };
+        for (const id of ids) {
+          delete rest[id];
         }
-        // Done (or superseded): a later edit that makes the link pending again may ask again.
-        captureRequested.delete(id);
-      } catch {
-        // No toast: the capture is a courtesy, the card falls back to the site letter.
+        patchState(store, { landed: rest });
+      }, LANDED_MS);
+    }
+
+    /** Whether a new link goes on top of the open feed: loaded, newest first, in scope, not shown yet. */
+    function showsOnTop(link: LinkResponse): boolean {
+      const { sort, order } = store.filter();
+      // At the top only in the default order; other orders show it on the next load.
+      const newestFirst = (sort ?? LINK_SORT_FIELD.CreatedAt) === LINK_SORT_FIELD.CreatedAt;
+      const descending = (order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc;
+      return (
+        store.loaded() &&
+        newestFirst &&
+        descending &&
+        inFilter(store.filter(), link) &&
+        !store.entityMap()[link.id]
+      );
+    }
+
+    /**
+     * Shows `link` with its new folder: kept in place while it still belongs to the open scope,
+     * removed (remembering its slot) when it no longer does, put back at `slot` when it belongs
+     * again. The recent list only takes the new folder.
+     */
+    function placeMoved(link: LinkResponse, slot: number | undefined): void {
+      const index = store.entities().findIndex((item) => item.id === link.id);
+      if (index >= 0) {
+        if (staysAfterEdit(store.filter(), link)) {
+          patchState(store, setEntity(link));
+        } else {
+          movedFrom.set(link.id, index);
+          patchState(store, removeEntity(link.id));
+        }
+      } else if (store.loaded() && slot !== undefined && inFilter(store.filter(), link)) {
+        movedFrom.delete(link.id);
+        patchState(store, setAllEntities(insertAt(store.entities(), slot, link)));
       }
+      patchState(store, { recent: mapRecent(link.id, { folderId: link.folderId }) });
     }
 
     function restore(id: string): void {
@@ -206,10 +186,29 @@ export const LinksStore = signalStore(
       }
     }
 
+    async function loadRecent(): Promise<void> {
+      const started = epoch;
+      try {
+        const { items } = await firstValueFrom(api().recent({ limit: RECENT_LINKS_LIMIT }));
+        if (started === epoch) {
+          patchState(store, {
+            recent: items.filter((link) => !pending.has(link.id)),
+            recentLoaded: true,
+          });
+          capture.note(items);
+        }
+      } catch {
+        if (started === epoch) {
+          patchState(store, { recentLoaded: true });
+        }
+      }
+    }
+
     const setFilter = rxMethod<LinksFilter>(
       pipe(
         tap((filter) => {
           generation++;
+          movedFrom.clear();
           const changed = !sameFilter(filter, store.filter());
           patchState(
             store,
@@ -227,10 +226,13 @@ export const LinksStore = signalStore(
                 if (started === epoch) {
                   patchState(
                     store,
-                    setAllEntities(page.items.filter((link) => !pending.has(link.id))),
+                    // The pinned links of a folder come first; the rest follow in the sort order.
+                    setAllEntities(
+                      [...page.pinned, ...page.items].filter((link) => !pending.has(link.id)),
+                    ),
                     { nextCursor: page.nextCursor, loaded: true, loading: false },
                   );
-                  noteLinks(page.items);
+                  capture.note(page.items);
                 }
               }),
               catchError(() => {
@@ -247,6 +249,43 @@ export const LinksStore = signalStore(
     return {
       /** Loads page one of a scope, cancelling a request still running for the previous one. */
       setFilter,
+
+      /**
+       * Pins a link to the top of its folder (or takes it off) at once; resolves false (and puts
+       * the old state back) when the request fails. After an unpin the page is loaded again, so
+       * the link finds its place in the sort order.
+       */
+      async setPinnedInFolder(id: string, pinned: boolean): Promise<boolean> {
+        const link = store.entityMap()[id];
+        if (!link || (link.pinnedInFolderAt !== null) === pinned) {
+          return true;
+        }
+        const previous = link.pinnedInFolderAt;
+        const optimistic = pinned ? new Date().toISOString() : null;
+        const started = epoch;
+        patchState(store, updateEntity({ id, changes: { pinnedInFolderAt: optimistic } }));
+        try {
+          const saved = await firstValueFrom(api().update(id, { pinnedInFolder: pinned }));
+          if (started === epoch) {
+            patchState(
+              store,
+              updateEntity({
+                id,
+                changes: { pinnedInFolderAt: saved.pinnedInFolderAt, updatedAt: saved.updatedAt },
+              }),
+            );
+            if (!pinned && store.loaded()) {
+              setFilter(store.filter());
+            }
+          }
+          return true;
+        } catch {
+          if (started === epoch && store.entityMap()[id]?.pinnedInFolderAt === optimistic) {
+            patchState(store, updateEntity({ id, changes: { pinnedInFolderAt: previous } }));
+          }
+          return false;
+        }
+      },
 
       /** Loads the next page; does nothing while a request runs or on the last page. */
       async loadMore(): Promise<void> {
@@ -265,7 +304,7 @@ export const LinksStore = signalStore(
             nextCursor: page.nextCursor,
             loadingMore: false,
           });
-          noteLinks(page.items);
+          capture.note(page.items);
         } catch {
           if (started === generation) {
             patchState(store, { loadingMore: false, loadMoreFailed: true });
@@ -310,25 +349,38 @@ export const LinksStore = signalStore(
           );
         }
         patchState(store, { recent: mapRecent(link.id, link) });
-        noteLinks([link]);
+        capture.note([link]);
       },
 
       /** Shows a link that was just saved at the top, when it belongs to the current scope. */
       addSaved(link: LinkResponse): void {
-        const { sort, order } = store.filter();
-        // At the top only in the default order; other orders show it on the next load.
-        const newestFirst = (sort ?? LINK_SORT_FIELD.CreatedAt) === LINK_SORT_FIELD.CreatedAt;
-        const descending = (order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc;
-        if (
-          !store.loaded() ||
-          !newestFirst ||
-          !descending ||
-          !inFilter(store.filter(), link) ||
-          store.entityMap()[link.id]
-        ) {
+        if (!showsOnTop(link)) {
           return;
         }
         patchState(store, setAllEntities([link, ...store.entities()]));
+        markLanded([link.id]);
+      },
+
+      /**
+       * Shows links saved together (paste many) at the top in the order they were pasted, each
+       * landing a beat after the one before, and starts the capture of their pending images and
+       * titles.
+       */
+      addSavedMany(links: readonly LinkResponse[]): void {
+        const shown = links.filter((link) => showsOnTop(link));
+        if (shown.length > 0) {
+          patchState(store, setAllEntities([...shown, ...store.entities()]));
+          markLanded(shown.map((link) => link.id));
+        }
+        capture.note(links);
+      },
+
+      /** Takes links out of the feed and the recent list at once (Undo of a batch save). */
+      dropSaved(ids: readonly string[]): void {
+        const gone = new Set(ids);
+        patchState(store, setAllEntities(store.entities().filter((link) => !gone.has(link.id))), {
+          recent: store.recent().filter((link) => !gone.has(link.id)),
+        });
       },
 
       /**
@@ -392,6 +444,104 @@ export const LinksStore = signalStore(
         });
       },
 
+      /** Another tab deleted the link (tab sync): it leaves the feed and the recent list. */
+      applyRemoval(id: string): void {
+        if (pending.has(id)) {
+          return;
+        }
+        patchState(store, removeEntity(id), {
+          recent: store.recent().filter((item) => item.id !== id),
+        });
+      },
+
+      /** Loads the open feed and the recent list again, keeping what shows meanwhile (tab sync). */
+      refresh(): void {
+        if (store.loaded()) {
+          setFilter(store.filter());
+        }
+        if (store.recentLoaded()) {
+          void loadRecent();
+        }
+      },
+
+      /**
+       * Moves a link to another folder (`null` = Unsorted) at once: a link that leaves the open
+       * scope leaves the feed, and comes back to its old slot when it is moved back (Undo). Resolves
+       * false, with the change rolled back, when the request fails.
+       */
+      async move(link: LinkResponse, folderId: string | null): Promise<boolean> {
+        const current = store.entityMap()[link.id] ?? link;
+        if (current.folderId === folderId || pending.has(link.id)) {
+          return true;
+        }
+        const started = generation;
+        const startedEpoch = epoch;
+        const index = store.entities().findIndex((item) => item.id === link.id);
+        const slot = index >= 0 ? index : movedFrom.get(link.id);
+        placeMoved({ ...current, folderId }, slot);
+        try {
+          const saved = await firstValueFrom(api().update(link.id, { folderId }));
+          if (startedEpoch === epoch && store.entityMap()[link.id]) {
+            patchState(
+              store,
+              updateEntity({ id: link.id, changes: { updatedAt: saved.updatedAt } }),
+            );
+          }
+          return true;
+        } catch {
+          if (startedEpoch === epoch) {
+            placeMoved(current, started === generation ? slot : undefined);
+          }
+          return false;
+        }
+      },
+
+      /** The feed and the recent list as they are, before an optimistic bulk change (#267). */
+      snapshot(): LinksSnapshot {
+        return { entities: store.entities(), recent: store.recent(), generation, epoch };
+      },
+
+      /** Rolls a failed bulk change back, unless the view or the user changed meanwhile. */
+      restoreSnapshot(snapshot: LinksSnapshot): void {
+        if (snapshot.epoch !== epoch || snapshot.generation !== generation) {
+          return;
+        }
+        patchState(store, setAllEntities([...snapshot.entities]), {
+          recent: [...snapshot.recent],
+        });
+      },
+
+      /**
+       * Links a bulk change touched (optimistic copies or the server's answer): each loaded one is
+       * replaced, or leaves the feed when it no longer belongs to the open scope (moved out).
+       */
+      patchLinks(links: readonly LinkResponse[]): void {
+        const byId = new Map(links.map((link) => [link.id, link]));
+        const filter = store.filter();
+        patchState(
+          store,
+          setAllEntities(
+            store.entities().flatMap((link) => {
+              const next = byId.get(link.id);
+              if (!next) {
+                return [link];
+              }
+              return staysAfterEdit(filter, next) ? [next] : [];
+            }),
+          ),
+          { recent: store.recent().map((link) => byId.get(link.id) ?? link) },
+        );
+        capture.note(links);
+      },
+
+      /** Takes links out of the feed and the recent list at once (bulk move to Trash). */
+      removeLinks(ids: readonly string[]): void {
+        const gone = new Set(ids);
+        patchState(store, setAllEntities(store.entities().filter((link) => !gone.has(link.id))), {
+          recent: store.recent().filter((link) => !gone.has(link.id)),
+        });
+      },
+
       /** Hides a link while its Undo window is open. Returns false when it is not in the feed. */
       remove(id: string): boolean {
         const index = store.entities().findIndex((link) => link.id === id);
@@ -401,23 +551,45 @@ export const LinksStore = signalStore(
         }
         const recentIndex = store.recent().findIndex((item) => item.id === id);
         pending.set(id, { link, index, recentIndex, committing: false });
+        injector.get(PinsStore).dropLink(id);
         patchState(store, removeEntity(id), {
           recent: store.recent().filter((item) => item.id !== id),
         });
         return true;
       },
 
-      /** Brings a hidden link back where it was. */
-      undoRemove: restore,
+      /** Brings a hidden link back where it was (the server still has its sidebar pin). */
+      undoRemove(id: string): void {
+        restore(id);
+        void injector.get(PinsStore).refresh();
+      },
 
       /** Sends the delete; resolves false (and brings the link back) when it fails. */
       commitRemove,
 
-      /** Sends every delete still waiting (page hide, sign-out). */
+      /** Ties the Undo toast of a hidden link to it, so a flush can close it. */
+      attachUndo(id: string, dismiss: () => void): void {
+        const removal = pending.get(id);
+        if (removal) {
+          removal.dismissUndo = dismiss;
+        }
+      },
+
+      /**
+       * Sends every delete still waiting (opening Trash, page hide, sign-out). Each delete that went
+       * through closes its Undo toast: Undo can no longer bring the link back, and the toast must
+       * not linger over the next page until its countdown ends.
+       */
       // A delete that is already committing is not awaited: its request went out while the
       // session was valid.
       async flushPending(): Promise<void> {
-        await Promise.all([...pending.keys()].map((id) => commitRemove(id)));
+        await Promise.all(
+          [...pending.entries()].map(async ([id, removal]) => {
+            if ((await commitRemove(id)) && !pending.has(id)) {
+              removal.dismissUndo?.();
+            }
+          }),
+        );
       },
 
       /** Records an open: the link moves to the top of "Recently opened". Failures are ignored. */
@@ -425,7 +597,8 @@ export const LinksStore = signalStore(
         const started = epoch;
         try {
           const opened = await firstValueFrom(api().open(id));
-          if (started !== epoch) {
+          // A paused history (`recorded: false`) leaves the link where it was.
+          if (started !== epoch || !opened.recorded) {
             return;
           }
           patchState(store, updateEntity({ id, changes: { lastOpenedAt: opened.lastOpenedAt } }), {
@@ -439,23 +612,85 @@ export const LinksStore = signalStore(
         }
       },
 
-      async loadRecent(): Promise<void> {
+      /**
+       * Takes a link out of the history at once (the link stays saved); resolves false (and puts it
+       * back) when the request fails.
+       */
+      async removeFromHistory(id: string): Promise<boolean> {
+        const recentIndex = store.recent().findIndex((link) => link.id === id);
+        const link = store.recent()[recentIndex];
+        if (!link) {
+          return true;
+        }
         const started = epoch;
+        patchState(store, {
+          recent: store.recent().filter((item) => item.id !== id),
+        });
+        if (store.entityMap()[id]) {
+          patchState(store, updateEntity({ id, changes: { lastOpenedAt: null } }));
+        }
         try {
-          const { items } = await firstValueFrom(api().recent({ limit: RECENT_LINKS_LIMIT }));
-          if (started === epoch) {
-            patchState(store, {
-              recent: items.filter((link) => !pending.has(link.id)),
-              recentLoaded: true,
-            });
-            noteLinks(items);
-          }
+          await firstValueFrom(api().removeRecent(id));
+          return true;
         } catch {
           if (started === epoch) {
-            patchState(store, { recentLoaded: true });
+            if (!store.recent().some((item) => item.id === id)) {
+              patchState(store, { recent: insertAt(store.recent(), recentIndex, link) });
+            }
+            if (store.entityMap()[id]) {
+              patchState(store, updateEntity({ id, changes: { lastOpenedAt: link.lastOpenedAt } }));
+            }
           }
+          return false;
         }
       },
+
+      /** Clears the history at once; resolves false (and brings it back) when the request fails. */
+      async clearHistory(): Promise<boolean> {
+        const started = epoch;
+        const previous = store.recent();
+        const opened = new Map(
+          store
+            .entities()
+            .filter((link) => link.lastOpenedAt !== null)
+            .map((link) => [link.id, link.lastOpenedAt] as const),
+        );
+        patchState(
+          store,
+          { recent: [] },
+          setAllEntities(
+            store
+              .entities()
+              .map((link) => (opened.has(link.id) ? { ...link, lastOpenedAt: null } : link)),
+          ),
+        );
+        try {
+          await firstValueFrom(api().clearRecent());
+          return true;
+        } catch {
+          if (started === epoch) {
+            const newer = store.recent().map((link) => link.id);
+            patchState(
+              store,
+              {
+                recent: [...store.recent(), ...previous.filter((link) => !newer.includes(link.id))],
+              },
+              setAllEntities(
+                store
+                  .entities()
+                  .map((link) =>
+                    opened.has(link.id)
+                      ? { ...link, lastOpenedAt: link.lastOpenedAt ?? opened.get(link.id) ?? null }
+                      : link,
+                  ),
+              ),
+            );
+          }
+          return false;
+        }
+      },
+
+      loadRecent,
 
       /**
        * Sign-out: forgets everything of this user and drops responses still in flight. Call
@@ -465,8 +700,8 @@ export const LinksStore = signalStore(
       reset(): void {
         pending.clear();
         favoriteBusy.clear();
-        captureRequested.clear();
-        captureQueue.length = 0;
+        capture.clear();
+        movedFrom.clear();
         generation++;
         epoch++;
         patchState(store, initialState, removeAllEntities());
@@ -475,6 +710,11 @@ export const LinksStore = signalStore(
   }),
   withHooks({
     onInit(store) {
+      // Resolved on use, so a call goes through the store as it is by then.
+      const injector = inject(Injector);
+      const scope = inject(SessionScope);
+      scope.onEnd(() => injector.get(LinksStore).reset());
+      scope.beforeEnd(() => injector.get(LinksStore).flushPending());
       // The page is going away: the real `HttpClient` implementation (issue #72) must send these
       // deletes with `fetch(..., { keepalive: true })` or `navigator.sendBeacon`, or they are lost.
       inject(DOCUMENT).defaultView?.addEventListener('pagehide', () => {

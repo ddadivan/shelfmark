@@ -1,4 +1,5 @@
 import type { LinkResponse } from '../links/link-response.interface';
+import { LINK_KIND } from '../links/link-kind.const';
 import { MOCK_ID } from './mock-id.const';
 import { MOCK_NAME } from './mock-name.const';
 import { MOCK_TIMESTAMP } from './mock-timestamp.const';
@@ -6,6 +7,7 @@ import { MOCK_TIMESTAMP } from './mock-timestamp.const';
 export const MOCK_LINKS: ReadonlyArray<Readonly<LinkResponse>> = [
   {
     id: MOCK_ID.LinkAngular,
+    kind: LINK_KIND.Article,
     folderId: MOCK_ID.FolderAngular,
     url: 'https://angular.dev/overview',
     title: 'Angular overview',
@@ -13,6 +15,8 @@ export const MOCK_LINKS: ReadonlyArray<Readonly<LinkResponse>> = [
     faviconUrl: 'https://angular.dev/favicon.ico',
     imageUrl: null,
     isFavorite: true,
+    pinnedInFolderAt: null,
+    pinned: false,
     lastOpenedAt: MOCK_TIMESTAMP,
     tags: [MOCK_NAME.TagDocs],
     createdAt: MOCK_TIMESTAMP,
@@ -20,6 +24,7 @@ export const MOCK_LINKS: ReadonlyArray<Readonly<LinkResponse>> = [
   },
   {
     id: MOCK_ID.LinkPasta,
+    kind: LINK_KIND.Other,
     folderId: null,
     url: 'https://example.com/recipes/pasta',
     title: 'Simple pasta',
@@ -27,6 +32,8 @@ export const MOCK_LINKS: ReadonlyArray<Readonly<LinkResponse>> = [
     faviconUrl: null,
     imageUrl: null,
     isFavorite: false,
+    pinnedInFolderAt: null,
+    pinned: false,
     lastOpenedAt: null,
     tags: [MOCK_NAME.TagRecipes],
     createdAt: MOCK_TIMESTAMP,

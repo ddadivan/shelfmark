@@ -4,6 +4,7 @@ import { REQUEST_TIMEOUT_MS } from '../../common/interceptors/models/request-tim
 import { PrismaService } from '../../prisma/prisma.service';
 import { LinkPreviewService } from '../link-preview.service';
 import { LINK_INCLUDE } from '../models/link-include.const';
+import { fallbackTitle, titleOrUrl } from '../title-or-url';
 import { toLinkResponse } from '../to-link-response';
 import { LinkImageCaptureService } from './link-image-capture.service';
 import {
@@ -37,7 +38,7 @@ export class LinkImageRecaptureService {
     const startedAt = Date.now();
     if (await this.claim(userId, linkId)) await this.run(userId, linkId, startedAt);
     const row = await this.prisma.link.findFirst({
-      where: { id: linkId, userId },
+      where: { id: linkId, userId, deletedAt: null },
       include: LINK_INCLUDE,
     });
     if (!row) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
@@ -47,7 +48,7 @@ export class LinkImageRecaptureService {
   private async run(userId: string, linkId: string, startedAt: number): Promise<void> {
     try {
       const link = await this.prisma.link.findFirst({
-        where: { id: linkId, userId },
+        where: { id: linkId, userId, deletedAt: null },
         select: { url: true, normalizedUrl: true, faviconSourceUrl: true, imageSourceUrl: true },
       });
       if (!link) return;
@@ -62,6 +63,7 @@ export class LinkImageRecaptureService {
           maxRedirects: 3,
         });
         if (!fetched) return;
+        await this.fillTitle(userId, linkId, link.url, preview.title);
         sources.faviconSourceUrl = preview.faviconUrl;
         sources.imageSourceUrl = preview.imageUrl;
       }
@@ -74,6 +76,27 @@ export class LinkImageRecaptureService {
   }
 
   /**
+   * A link saved without a title (paste many, #265) keeps its URL as the title until this page load:
+   * the page title replaces it only while the stored title is still exactly that fallback and the
+   * URL is the one that was loaded, so a title the user typed meanwhile always wins. Plain SQL so
+   * `updated_at` stays as it is, like the claim: filling in a title is not an edit.
+   */
+  private async fillTitle(
+    userId: string,
+    linkId: string,
+    url: string,
+    pageTitle: string,
+  ): Promise<void> {
+    const fallback = fallbackTitle(url);
+    const title = titleOrUrl(pageTitle, url);
+    if (title === fallback) return;
+    await this.prisma.$executeRaw`
+      UPDATE links SET title = ${title}, title_sort_key = ${title.toLowerCase()}
+      WHERE id = ${linkId}::uuid AND user_id = ${userId}::uuid
+        AND url = ${url} AND title = ${fallback}`;
+  }
+
+  /**
    * One atomic UPDATE: only the request that finds the link pending (`NULL`) or past the cooldown
    * wins, so concurrent requests (several cards, several tabs) capture once. It filters by the
    * session user, so a foreign link claims nothing. Plain SQL so `updated_at` stays as it is: a
@@ -83,7 +106,7 @@ export class LinkImageRecaptureService {
     const cutoff = new Date(Date.now() - RECAPTURE_COOLDOWN_MS);
     const claimed = await this.prisma.$executeRaw`
       UPDATE links SET capture_attempted_at = date_trunc('milliseconds', now())
-      WHERE id = ${linkId}::uuid AND user_id = ${userId}::uuid
+      WHERE id = ${linkId}::uuid AND user_id = ${userId}::uuid AND deleted_at IS NULL
         AND (capture_attempted_at IS NULL OR capture_attempted_at < ${cutoff})`;
     return claimed > 0;
   }

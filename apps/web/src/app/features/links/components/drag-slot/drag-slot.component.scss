@@ -1,0 +1,101 @@
+@use 'ui' as *;
+
+// The slot a carried link leaves (DragDrop spec). It never sizes itself: the feed gives it the
+// card's box (absolutely over the hidden card, or the grabbed card's height as the CDK
+// placeholder), so nothing reflows while dragging. It fades in; no motion under reduced motion.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--space-4);
+  overflow: hidden;
+  text-align: center;
+  background: var(--accent-bg);
+  border: 2px dashed color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: var(--radius-lg);
+
+  @include enter(fade);
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.drag-slot__tile {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: rem(40px);
+  height: rem(40px);
+  color: var(--surface);
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.drag-slot__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.drag-slot__label {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.drag-slot__title {
+  @include type(label);
+  @include line-clamp(2);
+
+  max-width: 100%;
+  font-weight: 600;
+  color: var(--accent-text);
+  overflow-wrap: anywhere;
+}
+
+// List view: one line, icon + "Moving · title", the title truncated.
+:host(.drag-slot--compact) {
+  flex-direction: row;
+  gap: var(--space-3);
+  justify-content: flex-start;
+  padding: 0 var(--space-4);
+  text-align: start;
+  border-radius: var(--radius-md);
+
+  .drag-slot__tile {
+    width: rem(28px);
+    height: rem(28px);
+  }
+
+  .drag-slot__text {
+    flex-direction: row;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+
+  .drag-slot__label {
+    flex: none;
+  }
+
+  .drag-slot__title {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &::before {
+      margin-inline-end: var(--space-2);
+      font-weight: 400;
+      color: var(--text-muted);
+      content: '·';
+    }
+  }
+}

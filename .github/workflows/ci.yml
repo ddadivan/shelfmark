@@ -1,10 +1,12 @@
 name: CI
 
+# `stage` is the integration branch of the current stage (PROJECT.md 9.3): feature PRs target it,
+# and `main` only gets release PRs from `stage` and hotfixes.
 on:
   pull_request:
-    branches: [main]
+    branches: [main, stage]
   push:
-    branches: [main]
+    branches: [main, stage]
 
 # Deny by default; each job grants only what it needs.
 permissions: {}
@@ -18,10 +20,63 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  lint-test-build:
-    name: lint-test-build
+  # `lint-test-build` used to be one job of about 7.5 minutes, 5.7 of them unit tests run one after
+  # another (#349). It is now split into jobs that run side by side: `static` (format, styles,
+  # scripts, lint), `build` (typecheck, builds, bundle and migration checks, Storybook build) and
+  # the `unit` matrix (tools/ci/affected-unit-tests.sh: the API suite in two Vitest shards, the web
+  # app, the libraries). Each keeps `nx affected` semantics. The `lint-test-build` job at the end
+  # is the required check: it merges the API shards, checks the API coverage thresholds and fails
+  # when any part failed.
+  static:
+    name: static
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .nx/cache
+          key: nx-static-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            nx-static-${{ runner.os }}-
+      - run: npm ci
+      - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
+        with:
+          # Affected base: the PR's target branch, or the pushed branch itself.
+          main-branch-name: ${{ github.base_ref || github.ref_name }}
+      - run: npm run format:check
+      - run: npm run lint:styles
+      # ADR 0020: every dependency install script needs an explicit allowScripts decision.
+      # `npm install-scripts ls` exits 0 either way, so check its output.
+      - name: Check npm install scripts are reviewed
+        run: |
+          out="$(npm install-scripts ls)"
+          echo "$out"
+          grep -q 'No packages with unreviewed install scripts' <<<"$out" || {
+            echo "::error::A dependency has an install script without an allowScripts decision (or npm changed its wording). See ADR 0020."
+            exit 1
+          }
+      - run: node --test .claude/hooks/
+      - run: node --test scripts/
+      # Nx regenerates the sprite before build and test, so drift would be hidden there.
+      - name: Check the icon sprite and ICON_NAMES are up to date
+        run: node scripts/build-icon-sprite.mjs --check
+      - run: npx nx affected -t lint --output-style=static
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       actions: read
@@ -51,29 +106,15 @@ jobs:
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .nx/cache
-          key: nx-lint-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          key: nx-build-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
           restore-keys: |
-            nx-lint-${{ runner.os }}-
+            nx-build-${{ runner.os }}-
       - run: npm ci
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
-      - run: npm run format:check
-      - run: npm run lint:styles
-      # ADR 0020: every dependency install script needs an explicit allowScripts decision.
-      # `npm install-scripts ls` exits 0 either way, so check its output.
-      - name: Check npm install scripts are reviewed
-        run: |
-          out="$(npm install-scripts ls)"
-          echo "$out"
-          grep -q 'No packages with unreviewed install scripts' <<<"$out" || {
-            echo "::error::A dependency has an install script without an allowScripts decision (or npm changed its wording). See ADR 0020."
-            exit 1
-          }
-      - run: node --test .claude/hooks/
-      - run: node --test scripts/
-      # Nx regenerates the sprite before build and test, so drift would be hidden there.
-      - name: Check the icon sprite and ICON_NAMES are up to date
-        run: node scripts/build-icon-sprite.mjs --check
-      - run: npx nx affected -t lint typecheck test build --output-style=static
+        with:
+          # Affected base: the PR's target branch, or the pushed branch itself.
+          main-branch-name: ${{ github.base_ref || github.ref_name }}
+      - run: npx nx affected -t typecheck build --output-style=static
       # Applies every migration to the Postgres service and fails when the result differs from
       # schema.prisma (a schema change without a migration). Only when `api` is affected.
       - name: Check migrations against Postgres
@@ -91,14 +132,127 @@ jobs:
       # The production bundle must not contain the dev/e2e-only mock auth API.
       - run: npx nx affected -t check-bundle --output-style=static
       # Storybook must build whenever `ui` (or something it depends on) is affected (ADR 0023).
-      # Its accessibility run needs a browser and lives in the `e2e` job.
+      # Its accessibility run needs a browser and lives in the `e2e-storybook` matrix.
       - name: Build Storybook
         run: npx nx affected -t build-storybook --output-style=static
 
-  e2e:
-    name: e2e
+  unit:
+    name: unit ${{ matrix.name }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: 'api 1/2', group: api, shard: 1 }
+          - { name: 'api 2/2', group: api, shard: 2 }
+          - { name: 'web', group: web, shard: 0 }
+          - { name: 'libs', group: libs, shard: 0 }
+    env:
+      SHARD: ${{ matrix.shard }}
+      SHARDS: 2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .nx/cache
+          key: nx-unit-${{ matrix.group }}-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            nx-unit-${{ matrix.group }}-${{ runner.os }}-
+      - run: npm ci
+      - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
+        with:
+          # Affected base: the PR's target branch, or the pushed branch itself.
+          main-branch-name: ${{ github.base_ref || github.ref_name }}
+      - run: tools/ci/affected-unit-tests.sh ${{ matrix.group }}
+      - name: Upload the Vitest blob report of this API shard
+        if: matrix.group == 'api'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: api-vitest-blob-${{ matrix.shard }}
+          path: .vitest-reports
+          if-no-files-found: ignore
+          retention-days: 1
+
+  # The required check (branch protection asks for `lint-test-build`): green when `static`, `build`
+  # and every `unit` entry passed or had nothing to run. The API shards ran without coverage
+  # thresholds (each covers only part of the code); here their blob reports are merged and the
+  # thresholds of apps/api/vitest.config.mts are checked on the whole suite.
+  lint-test-build:
+    name: lint-test-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [static, build, unit]
+    if: always()
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Download the API blob reports
+        if: needs.unit.result == 'success'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: api-vitest-blob-*
+          # Outside the workspace: the checkout below would clear it.
+          path: ${{ runner.temp }}/vitest-reports
+          merge-multiple: true
+      - name: Detect API shards to merge
+        id: api
+        run: |
+          reports="${RUNNER_TEMP}/vitest-reports"
+          if [ -d "$reports" ] && [ -n "$(ls -A "$reports")" ]; then
+            ls "$reports"
+            echo "merge=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::No API blob reports (api not affected, or a part failed first)"
+            echo "merge=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.api.outputs.merge == 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: steps.api.outputs.merge == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - if: steps.api.outputs.merge == 'true'
+        run: npm ci
+      - name: Merge the API shards and check the coverage thresholds
+        if: steps.api.outputs.merge == 'true'
+        working-directory: apps/api
+        run: npx vitest --merge-reports="${RUNNER_TEMP}/vitest-reports" --reporter=default
+      - name: Result of the parts
+        run: |
+          echo "static: ${{ needs.static.result }}, build: ${{ needs.build.result }}, unit: ${{ needs.unit.result }}"
+          for result in "${{ needs.static.result }}" "${{ needs.build.result }}" "${{ needs.unit.result }}"; do
+            case "$result" in
+              success|skipped) ;;
+              *) echo "::error::A part of lint-test-build ${result}"; exit 1 ;;
+            esac
+          done
+
+  # The `e2e` bundle of the web app, built once per run (#362) and shared as the `web-e2e-build`
+  # artifact with the `e2e web` shards and `lighthouse`, which used to build it each on their own.
+  # They do not wait for this job with `needs`: they start at once, do their own setup (checkout,
+  # npm ci, Chromium) while this job builds, then wait for the artifact
+  # (tools/ci/wait-for-artifact.sh). Skips the build when no browser job needs it: on a PR that
+  # leaves web-e2e (and so `web`) unaffected; pushes always build, because Lighthouse always runs
+  # there. The Visual workflow builds its own copy inside the Playwright container.
+  web-build:
+    name: web-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       actions: read
@@ -114,37 +268,310 @@ jobs:
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .nx/cache
-          key: nx-e2e-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          key: nx-web-build-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
           restore-keys: |
-            nx-e2e-${{ runner.os }}-
+            nx-web-build-${{ runner.os }}-
       - run: npm ci
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
-      # The job always runs (required check), but the browser is only downloaded when a browser
-      # test target is affected: `e2e` (web-e2e) or `test-storybook` (libs/ui axe over Storybook).
-      - name: Detect affected browser tests
+        with:
+          # Affected base: the PR's target branch, or the pushed branch itself.
+          main-branch-name: ${{ github.base_ref || github.ref_name }}
+      - name: Detect whether a browser job needs the bundle
+        id: web
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then echo "needed=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          # web-e2e depends on `web` (implicitDependencies), so it is affected whenever `web` is:
+          # that covers the e2e shards and Lighthouse. Filtered here, not `--projects` (Nx crash).
+          projects="$(npx nx show projects --affected --json)"
+          echo "Affected: ${projects}"
+          if node -e 'process.exit(JSON.parse(process.argv[1]).includes("web-e2e") ? 0 : 1)' "$projects"; then
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Build the e2e bundle
+        if: steps.web.outputs.needed == 'true'
+        run: npx nx run web:build:e2e --output-style=static
+      - name: Upload the e2e bundle
+        if: steps.web.outputs.needed == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: web-e2e-build
+          path: dist/apps/web-e2e-build
+          if-no-files-found: error
+          # A rerun of this job replaces the copy of the earlier attempt (same commit, same bytes).
+          overwrite: true
+          retention-days: 1
+
+  # Browser tests, sharded (#313, #349): three web-e2e shards and three Storybook axe shards run
+  # side by side, so the full run (pushes to `stage`, release PRs into `main`) takes about as long
+  # as the other checks. Desktop runs every web-e2e test, tablet and phone only the tagged ones
+  # (ADR 0043). A PR into `stage` runs the diff-based set, sharded the same way (a Playwright config
+  # change runs every spec, so it must not land on one runner). The web shards serve the bundle of
+  # `web-build` (#362); the Storybook shards are a job of their own, so they never wait for it.
+  e2e-web:
+    name: e2e ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: 'web 1/3', shard: 1, shards: 3 }
+          - { name: 'web 2/3', shard: 2, shards: 3 }
+          - { name: 'web 3/3', shard: 3, shards: 3 }
+    env:
+      PR_INTO_STAGE: ${{ github.event_name == 'pull_request' && github.base_ref == 'stage' }}
+      # apps/web-e2e/reporters/flaky.reporter.ts writes the tests that passed only on a retry here;
+      # the `e2e` job lists them in its summary (#362).
+      FLAKY_REPORT_DIR: ${{ github.workspace }}/flaky-report
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
+        with:
+          # Affected base: the PR's target branch, or the pushed branch itself.
+          main-branch-name: ${{ github.base_ref || github.ref_name }}
+      # The browser is only downloaded when web-e2e is affected.
+      - name: Detect what this entry runs
         id: browser
         run: |
-          projects="$(npx nx show projects --affected --with-target e2e,test-storybook --json)"
-          echo "Affected projects with browser tests: ${projects}"
+          projects="$(npx nx show projects --affected --with-target e2e --json)"
+          echo "Affected projects with e2e: ${projects}"
           if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
+      # The browser download is cached per Playwright version (#362); the system packages are still
+      # installed on every run, with a browser-only fallback when the Ubuntu mirrors fail.
+      - name: Read the Playwright version
+        id: playwright
+        if: steps.browser.outputs.needed == 'true'
+        run: echo "version=$(node -p "require('playwright-core/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: steps.browser.outputs.needed == 'true'
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.playwright.outputs.version }}
       - name: Install Chromium
         if: steps.browser.outputs.needed == 'true'
-        run: npx playwright install --with-deps chromium
-      - name: Run e2e and Storybook a11y tests
+        run: tools/ci/install-chromium.sh
+      - name: Wait for the e2e bundle of web-build
+        id: bundle
         if: steps.browser.outputs.needed == 'true'
-        # One target at a time: web-e2e and test-storybook each use 4 browser workers.
-        run: npx nx affected -t e2e test-storybook --parallel=1 --output-style=static
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: tools/ci/wait-for-artifact.sh web-e2e-build web-build
+      - name: Download the e2e bundle
+        if: steps.bundle.outputs.found == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: web-e2e-build
+          path: dist/apps/web-e2e-build
+      # Playwright's webServer then serves the downloaded bundle (`web:serve-prebuilt`) instead of
+      # building it (apps/web-e2e/playwright.config.mts).
+      - name: Serve the downloaded bundle
+        if: steps.bundle.outputs.found == 'true'
+        run: echo "E2E_PREBUILT=true" >> "$GITHUB_ENV"
+      # A PR into `stage` runs only the browser tests its diff touches plus a smoke set
+      # (tools/ci/pr-browser-tests.sh), so the required check stays short; both parts are split
+      # into the same shards as the full run. Pushes to `stage` and release PRs into `main` run
+      # every affected suite, so nothing skipped on a PR goes unchecked.
+      - name: Run the web-e2e tests for the diff, shard ${{ matrix.shard }}/${{ matrix.shards }}
+        if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE == 'true'
+        env:
+          PR_SHARD: ${{ matrix.shard }}
+          PR_SHARDS: ${{ matrix.shards }}
+        run: tools/ci/pr-browser-tests.sh origin/stage web
+      # One shard of every web-e2e spec (all of desktop, the tagged tests of tablet and phone); each
+      # shard writes a blob report that the `e2e` job merges into one HTML report when something
+      # failed. `--reporter` replaces the config's reporters, so the flaky reporter is named again.
+      - name: Run web-e2e shard ${{ matrix.shard }}/${{ matrix.shards }}
+        if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE != 'true'
+        env:
+          PLAYWRIGHT_BLOB_OUTPUT_DIR: ${{ github.workspace }}/blob-report
+        run: npx nx affected -t e2e --output-style=static -- --shard=${{ matrix.shard }}/${{ matrix.shards }} --reporter=blob,line,./reporters/flaky.reporter.ts
+      - name: Upload the blob report of this shard
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: blob-report-${{ matrix.shard }}
+          path: blob-report
+          if-no-files-found: ignore
+          retention-days: 1
+      - name: Upload the flaky tests of this shard
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: flaky-report-${{ matrix.shard }}
+          path: flaky-report
+          if-no-files-found: ignore
+          retention-days: 1
       - if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: playwright-report
+          name: playwright-output-web-${{ matrix.shard }}
           path: |
             dist/.playwright/apps/web-e2e/playwright-report
             dist/.playwright/apps/web-e2e/test-output
           if-no-files-found: ignore
           retention-days: 7
 
-  # Not a required check (ADR 0018): reports Lighthouse scores, does not gate merges yet.
+  # The Storybook axe run of libs/ui in three Playwright shards (every story, light and dark).
+  e2e-storybook:
+    name: e2e ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: 'storybook 1/3', shard: 1, shards: 3 }
+          - { name: 'storybook 2/3', shard: 2, shards: 3 }
+          - { name: 'storybook 3/3', shard: 3, shards: 3 }
+    env:
+      PR_INTO_STAGE: ${{ github.event_name == 'pull_request' && github.base_ref == 'stage' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      # Keeps the Storybook build of earlier runs (`test-storybook` builds it first).
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .nx/cache
+          key: nx-e2e-storybook-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            nx-e2e-storybook-${{ runner.os }}-
+            nx-e2e-${{ runner.os }}-
+      - run: npm ci
+      - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
+        with:
+          # Affected base: the PR's target branch, or the pushed branch itself.
+          main-branch-name: ${{ github.base_ref || github.ref_name }}
+      # The browser is only downloaded when libs/ui (`test-storybook`) is affected.
+      - name: Detect what this entry runs
+        id: browser
+        run: |
+          projects="$(npx nx show projects --affected --with-target test-storybook --json)"
+          echo "Affected projects with test-storybook: ${projects}"
+          if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
+      # The browser download is cached per Playwright version (#362); the system packages are still
+      # installed on every run, with a browser-only fallback when the Ubuntu mirrors fail.
+      - name: Read the Playwright version
+        id: playwright
+        if: steps.browser.outputs.needed == 'true'
+        run: echo "version=$(node -p "require('playwright-core/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: steps.browser.outputs.needed == 'true'
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - name: Install Chromium
+        if: steps.browser.outputs.needed == 'true'
+        run: tools/ci/install-chromium.sh
+      - name: Run the Storybook a11y tests for the diff, shard ${{ matrix.shard }}/${{ matrix.shards }}
+        if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE == 'true'
+        env:
+          PR_SHARD: ${{ matrix.shard }}
+          PR_SHARDS: ${{ matrix.shards }}
+        run: tools/ci/pr-browser-tests.sh origin/stage ui
+      - name: Run Storybook a11y shard ${{ matrix.shard }}/${{ matrix.shards }}
+        if: steps.browser.outputs.needed == 'true' && env.PR_INTO_STAGE != 'true'
+        run: npx nx affected -t test-storybook --output-style=static -- --shard=${{ matrix.shard }}/${{ matrix.shards }}
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-output-storybook-${{ matrix.shard }}
+          path: |
+            dist/.playwright/apps/web-e2e/playwright-report
+            dist/.playwright/apps/web-e2e/test-output
+          if-no-files-found: ignore
+          retention-days: 7
+
+  # The required check (branch protection asks for `e2e`): green when `web-build` and every shard
+  # passed or had nothing to run, red when one failed or was cancelled. Lists the web-e2e tests that
+  # passed only on a retry in the job summary (#362; flakes never fail the check). On a web shard
+  # failure it merges the web shards' blob reports into one Playwright HTML report artifact.
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [web-build, e2e-web, e2e-storybook]
+    if: always()
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: needs.e2e-web.result == 'success' || needs.e2e-web.result == 'failure'
+        with:
+          persist-credentials: false
+      - name: Download the flaky test lists
+        if: needs.e2e-web.result == 'success' || needs.e2e-web.result == 'failure'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: flaky-report-*
+          path: ${{ runner.temp }}/flaky-reports
+          merge-multiple: true
+      - name: List the flaky tests in the job summary
+        if: needs.e2e-web.result == 'success' || needs.e2e-web.result == 'failure'
+        run: node tools/ci/flaky-summary.mjs "${RUNNER_TEMP}/flaky-reports"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: needs.e2e-web.result == 'failure'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - if: needs.e2e-web.result == 'failure'
+        run: npm ci
+      - name: Download the blob reports
+        if: needs.e2e-web.result == 'failure'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: blob-report-*
+          path: all-blob-reports
+          merge-multiple: true
+      - name: Merge them into one HTML report
+        if: needs.e2e-web.result == 'failure'
+        run: |
+          if [ -d all-blob-reports ] && [ -n "$(ls -A all-blob-reports)" ]; then
+            npx playwright merge-reports --reporter html ./all-blob-reports
+          else
+            echo "::notice::No blob reports to merge (the failure was before or outside web-e2e)"
+          fi
+      - if: needs.e2e-web.result == 'failure'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-report
+          path: playwright-report
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Result of the shards
+        run: |
+          echo "web-build: ${{ needs.web-build.result }}, e2e-web: ${{ needs.e2e-web.result }}, e2e-storybook: ${{ needs.e2e-storybook.result }}"
+          for result in "${{ needs.web-build.result }}" "${{ needs.e2e-web.result }}" "${{ needs.e2e-storybook.result }}"; do
+            case "$result" in
+              success|skipped) ;;
+              *) echo "::error::A browser test job ${result}"; exit 1 ;;
+            esac
+          done
+
+  # Not a required check (ADR 0018): reports Lighthouse scores, does not gate merges yet. Audits the
+  # bundle of `web-build` (#362), like the e2e shards.
   lighthouse:
     name: lighthouse
     runs-on: ubuntu-latest
@@ -161,20 +588,44 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+          # The npm cache also holds the isolated Lighthouse CI install (tools/lighthouse).
+          cache-dependency-path: |
+            package-lock.json
+            tools/lighthouse/package-lock.json
       - run: npm ci
       - uses: nrwl/nx-set-shas@e602fada7ad5987b0f7b1905e7a99ea1c661514c # v5.1.0
+        with:
+          # Affected base: the PR's target branch, or the pushed branch itself.
+          main-branch-name: ${{ github.base_ref || github.ref_name }}
       # Scores only move when the web app changes: PRs that leave `web` untouched skip the audit.
-      # Pushes to main always run it, so main keeps a baseline report.
+      # Pushes to main and stage always run it, so both keep a baseline report.
       - name: Detect affected web app
         id: web
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then echo "needed=true" >> "$GITHUB_OUTPUT"; exit 0; fi
-          projects="$(npx nx show projects --affected --projects web --json)"
+          # Not `--projects web`: Nx crashes (minimatch makeRe) when `web` is not affected, so the
+          # full affected list is filtered here instead.
+          projects="$(npx nx show projects --affected --json)"
           echo "Affected: ${projects}"
-          if [ "$projects" = "[]" ]; then echo "needed=false" >> "$GITHUB_OUTPUT"; else echo "needed=true" >> "$GITHUB_OUTPUT"; fi
+          if node -e 'process.exit(JSON.parse(process.argv[1]).includes("web") ? 0 : 1)' "$projects"; then
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          fi
+      # The browser download is cached per Playwright version (#362); the system packages are still
+      # installed on every run, with a browser-only fallback when the Ubuntu mirrors fail.
+      - name: Read the Playwright version
+        id: playwright
+        if: steps.web.outputs.needed == 'true'
+        run: echo "version=$(node -p "require('playwright-core/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: steps.web.outputs.needed == 'true'
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.playwright.outputs.version }}
       - name: Install Chromium
         if: steps.web.outputs.needed == 'true'
-        run: npx playwright install --with-deps chromium
+        run: tools/ci/install-chromium.sh
       # @lhci/cli lives in its own lockfile (tools/lighthouse, ADR 0028): its dependency tree has
       # high npm audit advisories that must not reach the root tree or the required npm-audit job.
       - name: Install Lighthouse CI (install scripts off)
@@ -185,8 +636,24 @@ jobs:
         if: steps.web.outputs.needed == 'true'
         continue-on-error: true
         run: npm audit --prefix tools/lighthouse --audit-level=high
-      - name: Lighthouse CI
+      - name: Wait for the e2e bundle of web-build
+        id: bundle
         if: steps.web.outputs.needed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: tools/ci/wait-for-artifact.sh web-e2e-build web-build
+      - name: Download the e2e bundle
+        if: steps.bundle.outputs.found == 'true'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: web-e2e-build
+          path: dist/apps/web-e2e-build
+      # The downloaded bundle is audited as it is; `web-e2e:lighthouse` would build it first.
+      - name: Lighthouse CI on the downloaded bundle
+        if: steps.bundle.outputs.found == 'true'
+        run: node tools/lighthouse/run.mjs
+      - name: Lighthouse CI (builds the bundle itself)
+        if: steps.web.outputs.needed == 'true' && steps.bundle.outputs.found != 'true'
         run: npx nx run web-e2e:lighthouse --output-style=static
       - if: always() && steps.web.outputs.needed == 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

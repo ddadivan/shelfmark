@@ -1,0 +1,59 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-history__groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+// Kind chips on the left, the search on the right; on a phone the search takes its own line.
+.recent-history__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+.recent-history__filter {
+  min-width: 0;
+}
+
+.recent-history__search {
+  // Level with the 40px kind chips on its line.
+  --ui-field-compact-height: #{rem(40px)};
+
+  flex: 0 1 rem(260px);
+
+  @include phone {
+    flex-basis: 100%;
+  }
+}
+
+.recent-history__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+// In the sheet the state is inline; on the page it is the page card, which fills the free height.
+.recent-history__empty {
+  margin-block: var(--space-8);
+
+  &.ui-empty-state--page {
+    margin-block: 0;
+  }
+}
+
+.recent-history__note {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}

@@ -3,6 +3,7 @@ import { provideRouter, Router } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import type { AuthUser } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
+import { axeViolations } from '../../../testing/axe';
 import { ToastService } from '@shelfmark/ui';
 import { AUTH_API } from '../../core/auth/auth-api.token';
 import { AuthStore } from '../../core/auth/auth.store';
@@ -73,6 +74,13 @@ describe('DemoBannerComponent', () => {
     expect(status?.textContent).toContain("You're in a demo.");
     expect(status?.textContent).toContain('resets in 23 hours.');
     expect(status?.querySelector('button')?.textContent).toContain('Sign in with your own account');
+  });
+
+  it('has no axe violations for a demo user', async () => {
+    const { root } = await setup(demoIn(23 * HOUR - 1000));
+    vi.useRealTimers();
+
+    expect(await axeViolations(root)).toEqual([]);
   });
 
   it('uses the singular for the last hour and never shows 0', async () => {

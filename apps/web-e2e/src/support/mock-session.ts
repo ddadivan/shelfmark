@@ -1,4 +1,5 @@
 import { expect, Page } from '@playwright/test';
+import { isCompact, tabBar } from './sidebar';
 
 // Same value as MOCK_SESSION_STORAGE_KEY in apps/web/src/app/core/auth/models/mock-session-storage-key.const.ts.
 const MOCK_SESSION_KEY = 'sm-mock-session';
@@ -42,9 +43,47 @@ export async function seedSession(
   );
 }
 
-/** Opens the account menu in the app shell header. */
+/** Opens the account menu in the app shell header (tablet and desktop; a phone has the You tab). */
 export async function openAccountMenu(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Account menu' }).click();
+}
+
+/** Opens Settings: the "Settings" item of the account menu, or the You tab on a phone. */
+export async function openSettingsPage(page: Page): Promise<void> {
+  if (isCompact(page)) {
+    await tabBar(page).getByRole('link', { name: 'You' }).click();
+  } else {
+    await openAccountMenu(page);
+    await page.getByRole('menuitem', { name: 'Settings' }).click();
+  }
+}
+
+/**
+ * Opens one section of the settings by its name ("Account", "Appearance", "Export", ...): the row
+ * in the settings nav, or in the You list on a phone (where the account is the card on top).
+ */
+export async function openSettingsSection(page: Page, section: string): Promise<void> {
+  await openSettingsPage(page);
+  if (isCompact(page)) {
+    const name = section === 'Account' ? /^Account/ : section;
+    await page.getByRole('main').getByRole('link', { name }).click();
+  } else {
+    await page
+      .getByRole('navigation', { name: 'Settings' })
+      .getByRole('link', { name: section })
+      .click();
+  }
+}
+
+/** Signs out: the "Sign out" item of the account menu, or the button on the You tab on a phone. */
+export async function signOutFromUi(page: Page): Promise<void> {
+  if (isCompact(page)) {
+    await tabBar(page).getByRole('link', { name: 'You' }).click();
+    await page.getByRole('button', { name: 'Sign out' }).click();
+  } else {
+    await openAccountMenu(page);
+    await page.getByRole('menuitem', { name: 'Sign out' }).click();
+  }
 }
 
 /** A user who has not seen the welcome tour yet (the mock sign-in buttons create one too). */

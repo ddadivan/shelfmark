@@ -1,0 +1,35 @@
+<div class="recent-page" [attr.aria-busy]="!store.recentLoaded()">
+  <header class="recent-page__head">
+    <div class="recent-page__heading">
+      <h1 class="recent-page__title">{{ 'links.recent.title' | transloco }}</h1>
+      <p class="recent-page__count">
+        @if (store.recentLoaded()) { {{ (hasHistory() ? pluralKey('links.recent.count',
+        store.recent().length) : 'links.recent.nothingYet' ) | transloco: { count:
+        store.recent().length, days: windowDays } }} }
+      </p>
+    </div>
+    <div class="recent-page__actions">
+      @if (settings.pauseHistory() !== null) {
+      <ui-button variant="ghost" (click)="setPaused(!settings.historyPaused())">
+        {{ (settings.historyPaused() ? 'links.recent.pause.resume' : 'links.recent.pause.pause') |
+        transloco }}
+      </ui-button>
+      } @if (hasHistory()) {
+      <ui-button variant="secondary" (click)="history().clear()">
+        {{ 'links.recent.clear' | transloco }}
+      </ui-button>
+      }
+    </div>
+  </header>
+
+  @if (settings.historyPaused()) {
+  <ui-notice class="recent-page__paused" icon="clock" [kind]="NOTICE_KIND.Info">
+    {{ 'links.recent.pause.notice' | transloco }}
+    <ui-button uiNoticeAction size="sm" variant="secondary" (click)="setPaused(false)">
+      {{ 'links.recent.pause.noticeResume' | transloco }}
+    </ui-button>
+  </ui-notice>
+  }
+
+  <app-recent-history class="recent-page__history" filterable page />
+</div>

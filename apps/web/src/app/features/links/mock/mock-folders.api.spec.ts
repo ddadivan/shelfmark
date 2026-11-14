@@ -71,7 +71,7 @@ describe('MockFoldersApi', () => {
     expect(moved.parentId).toBeNull();
     await expect(
       firstValueFrom(folders.update(MOCK_ID.FolderReading, { parentId: MOCK_ID.FolderReading })),
-    ).rejects.toThrow('Mock: folder update failed');
+    ).rejects.toMatchObject({ status: 400 });
     await firstValueFrom(
       folders.update(MOCK_ID.FolderAngular, { parentId: MOCK_ID.FolderReading }),
     );
@@ -114,5 +114,45 @@ describe('MockFoldersApi', () => {
     await firstValueFrom(folders.remove(MOCK_ID.FolderReading, FOLDER_DELETE_MODE.DeleteLinks));
 
     expect(data.links).toHaveLength(total - inSubtree);
+  });
+
+  it('reorders the subfolders of one parent like the API and keeps updatedAt', async () => {
+    const { folders } = create();
+    const one = await firstValueFrom(folders.create({ name: 'One' }));
+    const two = await firstValueFrom(folders.create({ name: 'Two' }));
+    // Top level: Reading (seed, 0), One (1), Two (2).
+    const { items } = await firstValueFrom(
+      folders.reorder({ parentId: null, ids: [two.id, MOCK_ID.FolderReading, one.id] }),
+    );
+    expect(items.filter((folder) => folder.parentId === null).map((folder) => folder.id)).toEqual([
+      two.id,
+      MOCK_ID.FolderReading,
+      one.id,
+    ]);
+    expect(items.find((folder) => folder.id === one.id)?.updatedAt).toBe(one.updatedAt);
+  });
+
+  it('refuses an order that is not exactly the subfolders of that parent', async () => {
+    const { folders } = create();
+    const one = await firstValueFrom(folders.create({ name: 'One' }));
+    for (const request of [
+      { parentId: null, ids: [one.id] },
+      { parentId: null, ids: [one.id, one.id] },
+      { parentId: null, ids: [one.id, MOCK_ID.FolderReading, MOCK_ID.FolderAngular] },
+      { parentId: 'missing', ids: [] },
+    ]) {
+      await expect(firstValueFrom(folders.reorder(request))).rejects.toThrow();
+    }
+  });
+
+  it('puts a new folder and a moved folder at the end of the parent', async () => {
+    const { folders } = create();
+    const zed = await firstValueFrom(folders.create({ name: 'Zed' }));
+    const alpha = await firstValueFrom(folders.create({ name: 'Alpha' }));
+    expect(alpha.position).toBe(zed.position + 1);
+    const moved = await firstValueFrom(folders.update(zed.id, { parentId: MOCK_ID.FolderReading }));
+    const { items } = await firstValueFrom(folders.list());
+    const inReading = items.filter((folder) => folder.parentId === MOCK_ID.FolderReading);
+    expect(inReading.at(-1)?.id).toBe(moved.id);
   });
 });

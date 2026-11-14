@@ -2,3 +2,5 @@
 declare module '*.css';
 declare module '*.scss';
 declare module '@fontsource-variable/onest/wght.css';
+declare module '@fontsource/atkinson-hyperlegible/400.css';
+declare module '@fontsource/atkinson-hyperlegible/700.css';

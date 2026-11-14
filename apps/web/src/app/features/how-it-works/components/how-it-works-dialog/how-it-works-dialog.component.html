@@ -1,0 +1,41 @@
+<ui-dialog [title]="'howItWorks.title' | transloco" [closeLabel]="'howItWorks.close' | transloco">
+  <!-- Muted so it may autoplay; the captions carry the words. MP4 first, WebM without H.264. -->
+  <video
+    #player
+    class="how-it-works__video"
+    [class.how-it-works__video--phone]="media.phone"
+    [poster]="media.poster"
+    [autoplay]="autoplay"
+    [muted]="true"
+    controls
+    playsinline
+    preload="metadata"
+    (timeupdate)="onTime($event)"
+  >
+    <source [src]="media.mp4" [type]="video.Mp4Type" />
+    <source [src]="media.webm" [type]="video.WebmType" />
+    <track
+      kind="captions"
+      srclang="en"
+      [attr.label]="'howItWorks.captions' | transloco"
+      [src]="media.captions"
+      default
+    />
+  </video>
+
+  <ol class="how-it-works__chapters" [attr.aria-label]="'howItWorks.chaptersLabel' | transloco">
+    @for (chapter of chapters; track chapter.id) {
+      <li>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          [ariaPressed]="current() === chapter.id"
+          (click)="jump(chapter)"
+        >
+          {{ chapter.titleKey | transloco }}
+          <span class="how-it-works__time">{{ clock(start(chapter)) }}</span>
+        </ui-button>
+      </li>
+    }
+  </ol>
+</ui-dialog>

@@ -1,8 +1,0 @@
-@use '../../styles/ui' as *;
-
-.ui-confirm-dialog__text {
-  @include type(body);
-
-  margin: 0;
-  color: var(--text-muted);
-}

@@ -1,0 +1,104 @@
+@use '../../../styles/ui' as *;
+
+// The swatch and the panel are items of the surrounding row (`display: contents`): the swatch sits
+// next to the curated swatches, the open panel takes a line of its own under them.
+:host {
+  display: contents;
+}
+
+// A 36px circle like the accent swatches of `ui-theme-picker` (44px on coarse pointers).
+.ui-color-picker__swatch {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: rem(36px);
+  block-size: rem(36px);
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+
+  @include coarse {
+    inline-size: rem(44px);
+    block-size: rem(44px);
+  }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+// No colour yet: a colour wheel painted from the folder colour tokens (Themes mockup), "+" on a
+// surface dot. A chosen colour paints the whole swatch.
+.ui-color-picker__paint {
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(
+    var(--folder-clay),
+    var(--folder-amber),
+    var(--folder-sage),
+    var(--folder-teal),
+    var(--folder-ocean),
+    var(--folder-plum),
+    var(--folder-rose),
+    var(--folder-clay)
+  );
+  border-radius: 50%;
+}
+
+.ui-color-picker__swatch--own .ui-color-picker__paint {
+  background-image: none;
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.ui-color-picker__swatch--selected .ui-color-picker__paint,
+.ui-color-picker__swatch--own.ui-color-picker__swatch--selected .ui-color-picker__paint {
+  box-shadow:
+    0 0 0 3px var(--surface),
+    0 0 0 5px var(--text);
+}
+
+.ui-color-picker__plus {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: rem(20px);
+  block-size: rem(20px);
+  color: var(--text);
+  background: var(--surface);
+  border-radius: 50%;
+}
+
+// The panel discloses by height (a one-row grid, like the tree): the wrapper animates, the panel
+// inside is clipped while it grows. Reduced motion: a plain fade (`enter` / `leave` presets).
+.ui-color-picker__disclose {
+  display: grid;
+  flex-basis: 100%;
+  grid-template-rows: 1fr;
+
+  &--enter {
+    @include enter(disclose);
+  }
+
+  &--leave {
+    @include leave(disclose);
+  }
+}
+
+.ui-color-picker__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 0;
+  padding: var(--space-3);
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}

@@ -1,0 +1,53 @@
+@use 'ui' as *;
+
+// The page fills the column of the shell, so an empty state can take the free height (#315).
+:host {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+.recent-page {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--space-6);
+  max-width: rem(960px);
+  padding-block: var(--space-2) var(--space-8);
+  margin-inline: auto;
+}
+
+.recent-page__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.recent-page__title {
+  @include type(title);
+
+  margin: 0;
+}
+
+// Always there (empty while the list loads) so the title block keeps its height.
+.recent-page__count {
+  @include type(caption);
+
+  min-height: 1lh;
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+}
+
+.recent-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+// The history (or its empty state) takes the rest of the page.
+.recent-page__history {
+  flex: 1 0 auto;
+}

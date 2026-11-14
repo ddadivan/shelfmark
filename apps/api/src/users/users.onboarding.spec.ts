@@ -53,23 +53,20 @@ describe('onboarding flag', () => {
     expect((second.body as OnboardingResponse).onboardingCompletedAt).toBe(onboardingCompletedAt);
   });
 
-  it('shows again: DELETE clears the flag, also when already null', async () => {
+  it('is one-way: there is no DELETE to show it again (#315)', async () => {
     await asUser(t.app, users.owner).post(ONBOARDING).expect(200);
-    const res = await asUser(t.app, users.owner).delete(ONBOARDING).expect(204);
-    expect(res.text).toBe('');
-    expect(await stored(users.owner.userId)).toBeNull();
-    expect((await sessionUser(users.owner))?.onboardingCompletedAt).toBeNull();
-    await asUser(t.app, users.owner).delete(ONBOARDING).expect(204);
+    const stamp = await stored(users.owner.userId);
+    await asUser(t.app, users.owner).delete(ONBOARDING).expect(404);
+    expect(await stored(users.owner.userId)).toEqual(stamp);
   });
 
   it('never touches another user', async () => {
     await asUser(t.app, users.owner).post(ONBOARDING).expect(200);
     expect(await stored(users.intruder.userId)).toBeNull();
 
-    await asUser(t.app, users.intruder).post(ONBOARDING).expect(200);
     const ownerStamp = await stored(users.owner.userId);
-    await asUser(t.app, users.intruder).delete(ONBOARDING).expect(204);
-    expect(await stored(users.intruder.userId)).toBeNull();
+    await asUser(t.app, users.intruder).post(ONBOARDING).expect(200);
+    expect(await stored(users.intruder.userId)).not.toBeNull();
     expect(await stored(users.owner.userId)).toEqual(ownerStamp);
   });
 
@@ -83,6 +80,5 @@ describe('onboarding flag', () => {
 
   it('needs a session', async () => {
     await anonymous(t.app).post(ONBOARDING).expect(401);
-    await anonymous(t.app).delete(ONBOARDING).expect(401);
   });
 });

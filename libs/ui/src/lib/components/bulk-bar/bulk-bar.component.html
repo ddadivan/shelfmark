@@ -1,0 +1,21 @@
+<div ngToolbar class="ui-bulk-bar__bar" orientation="horizontal" [attr.aria-label]="ariaLabel()">
+  @for (item of actions(); track item.id; let index = $index) {
+    @if (index === dividerAt()) {
+      <span class="ui-bulk-bar__divider" aria-hidden="true"></span>
+    }
+    <button
+      ngToolbarWidget
+      type="button"
+      class="ui-bulk-bar__action"
+      uiRipple
+      [class.ui-bulk-bar__action--danger]="item.danger"
+      [disabled]="item.disabled ?? false"
+      [attr.aria-pressed]="item.pressed === undefined ? null : item.pressed"
+      [attr.data-action]="item.id"
+      (click)="press(item)"
+    >
+      <ui-icon class="ui-bulk-bar__icon" [name]="item.icon" [size]="ICON_SIZE.Md" />
+      <span class="ui-bulk-bar__label">{{ item.label }}</span>
+    </button>
+  }
+</div>

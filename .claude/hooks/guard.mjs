@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 // PreToolUse guard (PROJECT.md 8.5): blocks secret files, destructive commands
-// and commits / pushes to main. Exit code 2 blocks the tool call and shows the
+// and commits / pushes to main and stage (PROJECT.md 9.3). Exit code 2 blocks the tool call and shows the
 // reason to Claude.
 import { execFileSync } from 'node:child_process';
 import { basename } from 'node:path';
 
 const ALLOWED_ENV_FILES = new Set(['.env.example']);
+// main is production, stage is the integration branch: both change only through PRs (ADR 0035).
+const PROTECTED_BRANCHES = ['main', 'stage'];
 
 function block(reason) {
   process.stderr.write(`Blocked by .claude/hooks/guard.mjs: ${reason}\n`);
@@ -491,9 +493,9 @@ function checkBash(command, cwd) {
         block('"--no-verify" skips the secret scan and git hooks.');
       }
 
-      if (sub === 'commit' && branch === 'main') {
+      if (sub === 'commit' && PROTECTED_BRANCHES.includes(branch)) {
         block(
-          'committing on main is not allowed. Create a branch: git switch -c <type>/<issue>-<name>.',
+          `committing on ${branch} is not allowed. Create a branch from stage: git switch -c <type>/<issue>-<name>.`,
         );
       }
 
@@ -507,10 +509,14 @@ function checkBash(command, cwd) {
           );
         }
         const refs = args.filter((a) => !a.startsWith('-'));
-        const targetsMain = refs.some((a) => a === 'main' || /:main$/.test(a) || a === 'HEAD:main');
-        const pushesCurrent = refs.length <= 2 && branch === 'main';
-        if (targetsMain || pushesCurrent) {
-          block('pushing to main is not allowed. Push your branch and open a PR.');
+        const target = PROTECTED_BRANCHES.find((name) =>
+          refs.some((a) => a === name || a.endsWith(`:${name}`)),
+        );
+        const current =
+          refs.length <= 2 && PROTECTED_BRANCHES.includes(branch) ? branch : undefined;
+        const blocked = target ?? current;
+        if (blocked) {
+          block(`pushing to ${blocked} is not allowed. Push your branch and open a PR into stage.`);
         }
       }
     }

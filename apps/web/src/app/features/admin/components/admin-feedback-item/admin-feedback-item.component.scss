@@ -1,0 +1,88 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.admin-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+  border-block-start: 1px solid var(--border);
+}
+
+.admin-item__head {
+  @include type(caption);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.admin-item__name {
+  @include type(label);
+
+  color: var(--text);
+}
+
+.admin-item__email,
+.admin-item__date {
+  overflow-wrap: anywhere;
+}
+
+.admin-item__status {
+  margin-inline-start: auto;
+}
+
+.admin-item__text {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.admin-item__shots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+// Each screenshot is a thumbnail that opens the full image in a new tab.
+.admin-item__shot {
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+.admin-item__shot-image {
+  display: block;
+  width: rem(160px);
+  height: rem(100px);
+  object-fit: cover;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.admin-item__controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+
+  @include tablet-up {
+    grid-template-columns: rem(220px) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.admin-item__foot {
+  display: flex;
+  justify-content: flex-end;
+}

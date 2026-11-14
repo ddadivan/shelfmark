@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { COLOR_GROUPS } from './models/color-groups.const';
-import { THEME, THEME_ATTRIBUTE } from '../lib/theme';
+import { THEME, THEME_ATTRIBUTE } from '../lib/models/theme';
 
 const meta: Meta = {
   title: 'Foundations/Colours',
@@ -10,7 +10,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          'Colour tokens from `docs/design/tokens.css`. Components use them only through CSS custom properties (`var(--text)`), never as hex values. Both themes are shown side by side; the toolbar theme switch changes the rest of the page.',
+          'Colour tokens from `docs/design/tokens.json`. Components use them only through CSS custom properties (`var(--text)`), never as hex values. Both themes are shown side by side; the toolbar theme switch changes the rest of the page.',
       },
     },
   },
@@ -45,6 +45,38 @@ export const Palette: Story = {
             </section>
           }
         </div>
+      </div>`,
+  }),
+};
+
+export const Glass: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Frosted surface for floating layers only: menus, toasts, the phone tab bar, the bulk-action bar and the sign-in card (`@include glass` in components, `.ui-glass` in app layouts). The blur is dropped under reduced motion and without `backdrop-filter` support; the `glass` fill alone keeps text readable.',
+      },
+    },
+  },
+  render: () => ({
+    props: { themes: Object.values(THEME), THEME },
+    template: `
+      <div class="fd-themes">
+        @for (theme of themes; track theme) {
+          <section class="fd-panel" [attr.${THEME_ATTRIBUTE}]="theme" [attr.aria-label]="theme + ' theme glass'">
+            <h2 class="fd-panel__title">{{ theme === THEME.Light ? 'Light' : 'Dark' }} theme</h2>
+            <div class="fd-glass-stage">
+              <div class="fd-glass-stage__blob fd-glass-stage__blob--a"></div>
+              <div class="fd-glass-stage__blob fd-glass-stage__blob--b"></div>
+              <div class="ui-glass fd-glass-bar">
+                <strong>3 selected</strong>
+                <span>Move</span>
+                <span>Favorite</span>
+                <span>Delete</span>
+              </div>
+            </div>
+          </section>
+        }
       </div>`,
   }),
 };

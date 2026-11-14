@@ -33,6 +33,7 @@ export async function seedLink(
       note: options.note ?? null,
       folderId: options.folderId ?? null,
       isFavorite: options.isFavorite ?? false,
+      ...(options.kind === undefined ? {} : { kind: options.kind }),
       lastOpenedAt: options.lastOpenedAt ?? null,
       idempotencyKey: options.idempotencyKey ?? null,
       ...(options.createdAt === undefined ? {} : { createdAt: options.createdAt }),

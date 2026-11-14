@@ -1,0 +1,136 @@
+<form [formRoot]="form">
+  <ui-dialog [title]="data.folder.name" [closeLabel]="'folders.style.close' | transloco">
+    <div class="folder-style">
+      <div class="folder-style__preview">
+        <ui-folder-icon size="xl" [icon]="previewIcon()" [colour]="previewColour()" />
+        <span class="folder-style__text">
+          <span class="folder-style__name">{{ data.folder.name }}</span>
+          <span class="folder-style__meta">{{ meta() }}</span>
+        </span>
+      </div>
+
+      <div class="folder-style__group">
+        <span class="folder-style__label" id="folder-style-colour">{{
+          'folders.style.colour' | transloco
+        }}</span>
+        <ui-choice-grid
+          singleLine
+          [options]="colourOptions"
+          ariaLabelledby="folder-style-colour"
+          [value]="colourValue()"
+          (valueChange)="chooseColour($event)"
+        />
+        <!-- Own colours: the account's swatches and the "+" swatch that opens the picker. -->
+        <div class="folder-style__own">
+          @if (ownOptions().length > 0) {
+            <ui-choice-grid
+              [options]="ownOptions()"
+              [ariaLabel]="'folders.style.own.group' | transloco"
+              [value]="ownChecked()"
+              (valueChange)="chooseColour($event)"
+              (removed)="removeColour($event)"
+            />
+          }
+          <ui-color-picker
+            [label]="'folders.style.own.add' | transloco"
+            [pickerLabel]="'folders.style.own.picker' | transloco"
+            [saturationLabel]="'settings.appearance.custom.own.saturation' | transloco"
+            [brightnessLabel]="'settings.appearance.custom.own.brightness' | transloco"
+            [hueLabel]="'settings.appearance.custom.own.hue' | transloco"
+            [hexLabel]="'settings.appearance.custom.own.hex' | transloco"
+            [invalidMessage]="'settings.appearance.custom.own.invalid' | transloco"
+            [addLabel]="'settings.appearance.custom.own.addColour' | transloco"
+            [cancelLabel]="'settings.appearance.custom.own.cancel' | transloco"
+            [(open)]="pickerOpen"
+            [(value)]="picked"
+            (committed)="addColour($event)"
+          />
+        </div>
+      </div>
+
+      <div class="folder-style__group">
+        <span class="folder-style__label" id="folder-style-icon">{{
+          'folders.style.icon' | transloco
+        }}</span>
+        <ui-segmented-control
+          name="folder-style-tab"
+          [ariaLabel]="'folders.style.icon' | transloco"
+          [options]="tabOptions()"
+          [(value)]="tab"
+        />
+        <!-- One panel at a time; Save applies the active one, the other keeps its choice. -->
+        <div class="folder-style__panel" role="region" [attr.aria-label]="panelLabel()">
+          @if (tab() === FOLDER_STYLE_TAB.Icon) {
+            <!-- The common icons, then the rest behind a toggle that opens the grid by height. Both
+                     grids share one radio name, so the arrow keys run through all icons. -->
+            <ui-choice-grid
+              kind="icon"
+              name="folder-style-icon"
+              [columns]="FOLDER_ICON_GRID.Columns"
+              [colour]="previewColour()"
+              [options]="firstIcons"
+              ariaLabelledby="folder-style-icon"
+              [value]="iconChecked()"
+              (valueChange)="chooseIcon($event)"
+            />
+            <div class="folder-style__more" [class.is-open]="iconsOpen()" [id]="moreId">
+              <div class="folder-style__more-inner">
+                <ui-choice-grid
+                  kind="icon"
+                  name="folder-style-icon"
+                  [columns]="FOLDER_ICON_GRID.Columns"
+                  [colour]="previewColour()"
+                  [options]="moreIcons"
+                  ariaLabelledby="folder-style-icon"
+                  [value]="iconChecked()"
+                  (valueChange)="chooseIcon($event)"
+                />
+              </div>
+            </div>
+            <ui-button
+              class="folder-style__toggle"
+              variant="ghost"
+              size="sm"
+              [ariaExpanded]="iconsOpen()"
+              [ariaControls]="moreId"
+              (click)="toggleIcons()"
+              >{{
+                (iconsOpen() ? 'folders.style.iconsShowFewer' : 'folders.style.iconsShowAll')
+                  | transloco: { count: iconCount }
+              }}</ui-button
+            >
+          } @else {
+            <ui-emoji-picker
+              class="folder-style__emoji"
+              [label]="'folders.style.emoji.label' | transloco"
+              [hint]="'folders.style.emoji.hint' | transloco"
+              [placeholder]="'folders.style.emoji.placeholder' | transloco"
+              [searchLabel]="'folders.style.emoji.search' | transloco"
+              [categoriesLabel]="'folders.style.emoji.categoriesLabel' | transloco"
+              [recentLabel]="'folders.style.emoji.recent' | transloco"
+              [ownLabel]="'folders.style.emoji.own' | transloco"
+              [resultsLabel]="'folders.style.emoji.results' | transloco"
+              [noResultsLabel]="'folders.style.emoji.noResults' | transloco"
+              [loadingLabel]="'folders.style.emoji.loading' | transloco"
+              [closeLabel]="'folders.style.emoji.close' | transloco"
+              [categories]="emoji.categories()"
+              [recent]="emoji.recent()"
+              [own]="emoji.own()"
+              [formField]="form.emoji"
+              (opened)="emoji.load()"
+              (removed)="emoji.remove($event)"
+            />
+          }
+        </div>
+      </div>
+    </div>
+
+    <ui-button slot="footer" class="folder-style__reset" variant="ghost" (click)="reset()">{{
+      'folders.style.reset' | transloco
+    }}</ui-button>
+    <ui-button slot="footer" (click)="cancel()">{{ 'folders.style.cancel' | transloco }}</ui-button>
+    <ui-button slot="footer" [type]="BUTTON_TYPE.Submit" [variant]="BUTTON_VARIANT.Primary">{{
+      'folders.style.save' | transloco
+    }}</ui-button>
+  </ui-dialog>
+</form>

@@ -1,0 +1,139 @@
+@use '../../../styles/ui' as *;
+@use '../field/field-parts' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+// Chips and the text input wrap inside the shell's control box.
+.ui-tag-input__box {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: rem(6px);
+  align-items: center;
+  align-self: stretch;
+  min-width: 0;
+  min-height: rem(42px);
+  padding: rem(7px) 0;
+  cursor: text;
+}
+
+.ui-tag-input__input {
+  @include field-native;
+
+  flex: 1 1 rem(96px);
+  padding: rem(2px) 0;
+  min-height: rem(24px);
+}
+
+.ui-tag-input__status {
+  @include visually-hidden;
+}
+
+// The popup element sits empty where it is written; open, the overlay moves it into its pane.
+.ui-tag-input__popup {
+  display: none;
+}
+
+.ui-tag-input__popup--shown {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ui-tag-input__panel {
+  @include glass;
+
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  min-width: 100%;
+  max-width: min(rem(480px), calc(100vw - #{rem(16px)}));
+  max-height: min(rem(320px), calc(100vh - #{rem(16px)}));
+  padding: rem(6px);
+  margin: var(--space-1) 0;
+  border-radius: rem(18px);
+}
+
+// `--ui-origin` is set on the overlay pane from the resolved position.
+.ui-tag-input--enter {
+  @include enter(pop);
+  @include origin;
+}
+
+.ui-tag-input--leave {
+  @include leave(pop);
+  @include origin;
+}
+
+.ui-tag-input__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+// Item look of `ui-menu-item`.
+.ui-tag-input__option {
+  @include type(body);
+
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  padding: rem(9px) rem(12px);
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  border-radius: rem(12px);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+
+  // The option under the arrow keys (DOM focus stays in the input).
+  &[data-active='true'] {
+    background: var(--surface-hover);
+
+    @include focus-ring(-2px);
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.ui-tag-input__option-icon {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.ui-tag-input__option-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-tag-input__count {
+  @include type(caption);
+
+  flex: none;
+  color: var(--text-muted);
+}
+
+// The shell already dims a disabled field; the chip must not dim twice (contrast).
+.ui-tag-input__box .ui-tag-input__chip.ui-chip--disabled {
+  opacity: 1;
+}

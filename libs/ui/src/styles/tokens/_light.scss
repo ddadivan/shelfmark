@@ -1,20 +1,20 @@
-// Light theme colours (docs/design/tokens.css).
+// Light theme colours (docs/design/tokens.json, 2027 Refresh).
 @mixin light {
   color-scheme: light;
 
-  --bg: #f7f7f6;
+  --bg: #f4f4f1;
   --surface: #fff;
-  --surface-hover: #f0f0ee;
-  --surface-pressed: #e8e8e5;
-  --border: #e5e5e2;
-  --border-control: #8a8a8f;
+  --surface-hover: #eeeeea;
+  --surface-pressed: #e6e6e1;
+  --border: #e4e4df;
+  --border-control: #85858a;
   --text: #18181a;
-  --text-muted: #67676c;
+  --text-muted: #636368;
   --primary: #18181a;
   --primary-hover: #2e2e31;
   --on-primary: #fff;
   --accent: #4f7a4b;
-  --accent-bg: #e5eee2;
+  --accent-bg: #e3eedf;
   --accent-text: #2f4a2c;
   --focus-ring: #5e8a58;
   --highlight-bg: #d3e4cf;
@@ -25,7 +25,39 @@
   --warning: #93600a;
   --warning-bg: #fbf1de;
   --overlay: rgb(19 19 21 / 40%);
+
+  // The disc behind a page-level empty-state scene (#315): one step stronger than the page `bg`, so the scene's
+  // edges (`border-control`, `accent`) keep 3:1 on it (WCAG 1.4.11).
+  --illustration-disc: var(--surface-hover);
   --logo-bookmark: #8dbb86;
+
+  // Frosted floating layers (menus, toasts, phone tab bar, bulk bar, sign-in card).
+  --glass: rgb(255 255 255 / 82%);
+  --glass-line: rgb(24 24 26 / 8%);
+
+  // Folder colours: glyph on tile; graphite is the default.
+  --folder-graphite: #3a3a3f;
+  --folder-graphite-bg: #ececea;
+  --folder-sage: #3f6b3b;
+  --folder-sage-bg: #e3eedf;
+  --folder-ocean: #24577f;
+  --folder-ocean-bg: #ddeaf4;
+  --folder-plum: #6a3d7a;
+  --folder-plum-bg: #efe3f3;
+  --folder-clay: #8f4423;
+  --folder-clay-bg: #f6e4da;
+  --folder-amber: #7a5605;
+  --folder-amber-bg: #f6ebcf;
+  --folder-rose: #96304f;
+  --folder-rose-bg: #f7e0e7;
+  --folder-teal: #1f6460;
+  --folder-teal-bg: #daefec;
+
+  // Resting cards, panels and the sidebar: a whisper ring, no hairline border.
+  --shadow-card: 0 0 0 1px rgb(24 24 26 / 5%), 0 1px 2px rgb(24 24 26 / 4%);
+
+  // Glass layers and dialogs.
+  --shadow-float: 0 12px 40px -12px rgb(24 24 26 / 22%), 0 0 0 1px rgb(24 24 26 / 6%);
   --shadow-card-hover: 0 4px 16px rgb(24 24 26 / 8%);
   --shadow-card-spread: 0 18px 40px -18px rgb(24 24 26 / 28%), 0 2px 6px -2px rgb(24 24 26 / 6%);
   --shadow-card-pointer: rgb(24 24 26 / 14%);

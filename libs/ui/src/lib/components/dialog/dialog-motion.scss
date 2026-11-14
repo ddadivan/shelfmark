@@ -1,0 +1,31 @@
+@use '../../../styles/ui' as *;
+
+// Dialog: fade and scale from the centre. Sheet: slides up from below the screen.
+.ui-dialog--enter {
+  @include enter(pop);
+
+  @include phone {
+    @include enter(sheet);
+  }
+}
+
+// A tablet sheet slides up like the phone's.
+.ui-dialog--sheet.ui-dialog--enter {
+  @include tablet {
+    @include enter(sheet);
+  }
+}
+
+.ui-dialog--sheet.ui-dialog--leave {
+  @include tablet {
+    @include leave(sheet);
+  }
+}
+
+.ui-dialog--leave {
+  @include leave(pop);
+
+  @include phone {
+    @include leave(sheet);
+  }
+}

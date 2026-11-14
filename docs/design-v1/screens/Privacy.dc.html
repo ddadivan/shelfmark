@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Privacy policy</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/shelfmark/tokens.css">
+<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:var(--accent)}a:hover{color:var(--text)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<header style="height: 60px; display: flex; align-items: center; gap: 8px; padding: 0 20px; border-bottom: 1px solid var(--border); background: var(--surface);">
+<svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><span style="font-size: 16px; font-weight: 600;">Shelfmark</span>
+</header>
+<article style="max-width: 680px; margin: 0 auto; padding: 48px 24px 72px; display: flex; flex-direction: column; gap: 20px; font-size: 15px; line-height: 24px;">
+<h1 style="margin: 0; font-size: 32px; line-height: 38px; font-weight: 600; letter-spacing: -0.02em;">Privacy policy</h1>
+<p style="margin: 0; color: var(--text-muted);">Last updated [DATE]</p>
+<p style="margin: 0;">Shelfmark is a personal project that stores the links you save. This page explains what we keep and why, in plain words.</p>
+<h2 style="margin: 12px 0 0; font-size: 18px; font-weight: 600;">What we store</h2>
+<ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px;">
+<li>From Google or GitHub: your name, email address and avatar — only to sign you in.</li>
+<li>Your links, titles, notes, folders and tags, and when you last opened a link.</li>
+<li>Technical logs (time, request status) without the content of your links, kept for [N] days.</li>
+</ul>
+<h2 style="margin: 12px 0 0; font-size: 18px; font-weight: 600;">What we don't do</h2>
+<ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px;">
+<li>We don't sell or share your data and don't show ads.</li>
+<li>We don't read your links ourselves; previews are fetched automatically.</li>
+</ul>
+<h2 style="margin: 12px 0 0; font-size: 18px; font-weight: 600;">Where it lives</h2>
+<p style="margin: 0;">The app runs on Vercel and the database on Neon. [CHECK REGIONS AND ADD LINKS TO THEIR POLICIES]</p>
+<h2 style="margin: 12px 0 0; font-size: 18px; font-weight: 600;">Your control</h2>
+<p style="margin: 0;">You can delete any link at any time, or delete your whole account in Settings — everything is removed for good.</p>
+<h2 style="margin: 12px 0 0; font-size: 18px; font-weight: 600;">Contact</h2>
+<p style="margin: 0;">Questions: [CONTACT EMAIL]</p>
+</article>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+@use 'ui' as *;
+@use '../../landing' as landing;
+
+:host {
+  display: block;
+}
+
+.landing-bento {
+  @include landing.wrap;
+  @include landing.section-pad;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.landing-bento__title {
+  @include landing.section-title;
+}
+
+// One column on a phone; from 40em (the mockup breaks at 760px) six columns: a wide tile of
+// four and a tile of two, then three tiles of two.
+.landing-bento__grid {
+  @include landing.reveal;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+
+  @include tablet-up {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.landing-bento__tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: var(--space-6);
+  color: var(--text);
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+
+  @include tablet-up {
+    grid-column: span 2;
+    padding: var(--space-8);
+  }
+}
+
+.landing-bento__tile--wide {
+  @include tablet-up {
+    grid-column: span 4;
+  }
+}
+
+.landing-bento__tile--preview {
+  flex-flow: row wrap;
+  align-items: center;
+}
+
+.landing-bento__tile--inverse {
+  color: var(--on-primary);
+  background: var(--primary);
+  box-shadow: none;
+
+  .landing-bento__text {
+    color: inherit;
+  }
+}
+
+.landing-bento__copy {
+  display: flex;
+  flex: 1 1 rem(220px);
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.landing-bento__heading {
+  margin: 0;
+  font-size: rem(22px);
+  font-weight: 600;
+  line-height: rem(28px);
+}
+
+.landing-bento__text {
+  margin: 0;
+  font-size: rem(15px);
+  line-height: rem(22px);
+  color: var(--text-muted);
+}
+
+.landing-bento__demo {
+  display: flex;
+  flex: 1 1 rem(260px);
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+}
+
+.landing-bento__url {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.landing-bento__mono {
+  @include line-clamp(1);
+
+  font-family: var(--font-mono);
+  font-size: rem(13px);
+  line-height: rem(18px);
+  color: var(--text);
+}

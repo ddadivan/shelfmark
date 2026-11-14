@@ -1,0 +1,90 @@
+@if (stats.loading()) {
+  <div
+    class="shelf__loading"
+    [attr.aria-label]="'settings.account.shelf.loading' | transloco"
+    role="status"
+  >
+    <ui-skeleton [shape]="SKELETON_SHAPE.Line" count="4" />
+  </div>
+} @else if (stats.failed()) {
+  <div class="shelf__error" role="alert">
+    <p class="shelf__muted">{{ 'settings.account.shelf.error' | transloco }}</p>
+    <ui-button iconLeft="refresh" (click)="stats.reload()">
+      {{ 'settings.account.shelf.retry' | transloco }}
+    </ui-button>
+  </div>
+} @else if (stats.empty()) {
+  <ui-empty-state
+    icon="bookmark"
+    [headingLevel]="3"
+    [heading]="'settings.account.shelf.empty.title' | transloco"
+    [text]="'settings.account.shelf.empty.text' | transloco"
+  />
+} @else if (stats.loaded()) {
+  <dl class="shelf__counts">
+    @for (count of stats.counts(); track count.labelKey) {
+      <div class="shelf__count">
+        <dt class="shelf__count-label">{{ count.labelKey | transloco }}</dt>
+        <dd class="shelf__count-value">{{ count.value }}</dd>
+      </div>
+    }
+  </dl>
+  @if (stats.oldestLink(); as when) {
+    <p class="shelf__muted">{{ 'settings.account.shelf.oldest' | transloco: { when } }}</p>
+  }
+
+  <div class="shelf__lists">
+    <section class="shelf__block">
+      <h3 class="shelf__heading">{{ 'settings.account.shelf.topSites' | transloco }}</h3>
+      <ol class="shelf__sites">
+        @for (site of stats.topSites(); track site.host) {
+          <li class="shelf__site">
+            <ui-favicon [src]="site.faviconUrl ?? undefined" [letter]="site.letter" />
+            <span class="shelf__host">{{ site.host }}</span>
+            <span class="shelf__number">{{ site.countText }}</span>
+          </li>
+        }
+      </ol>
+    </section>
+
+    @if (stats.topTags().length > 0) {
+      <section class="shelf__block">
+        <h3 class="shelf__heading">{{ 'settings.account.shelf.topTags' | transloco }}</h3>
+        <ol class="shelf__tags">
+          @for (tag of stats.topTags(); track tag.name) {
+            <li class="shelf__tag">
+              <span class="shelf__tag-name">{{ tag.name }}</span>
+              <span class="shelf__number">{{ tag.countText }}</span>
+            </li>
+          }
+        </ol>
+      </section>
+    }
+  </div>
+
+  <section class="shelf__block">
+    <h3 class="shelf__heading">{{ 'settings.account.shelf.weekly' | transloco }}</h3>
+    <p class="shelf__muted">{{ 'settings.account.shelf.weeklyHint' | transloco }}</p>
+    <ol class="shelf__chart">
+      @for (week of stats.weeks(); track week.weekStart) {
+        <li class="shelf__week">
+          <span
+            class="shelf__bar"
+            [class.shelf__bar--empty]="week.count === 0"
+            [style.block-size.%]="week.percent"
+            aria-hidden="true"
+          ></span>
+          <span class="shelf__sr">{{
+            'settings.account.shelf.week' | transloco: { date: week.label, count: week.count }
+          }}</span>
+        </li>
+      }
+    </ol>
+    @if (stats.weeks(); as weeks) {
+      <div class="shelf__axis" aria-hidden="true">
+        <span>{{ weeks[0]?.label }}</span>
+        <span>{{ weeks[weeks.length - 1]?.label }}</span>
+      </div>
+    }
+  </section>
+}

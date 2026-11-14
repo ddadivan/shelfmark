@@ -1,8 +1,16 @@
 @use 'ui' as *;
 
-// Wide screens (landing only, in `em` like the layout breakpoints): 1440px and 1920px.
+// Wide screens (landing only, in `em` like the layout breakpoints): 1440px and 1920px, and a
+// large desktop from 1280px (room for three preview cards next to the headline).
+$large-min: 80em;
 $wide-min: 90em;
 $xwide-min: 120em;
+
+@mixin large {
+  @media (width >= #{$large-min}) {
+    @content;
+  }
+}
 
 @mixin wide {
   @media (width >= #{$wide-min}) {
@@ -13,20 +21,6 @@ $xwide-min: 120em;
 @mixin xwide {
   @media (width >= #{$xwide-min}) {
     @content;
-  }
-}
-
-// Scales an element and everything in it from the wide breakpoints up. `zoom` (not `transform`)
-// changes the layout size too, and `ui-button` / the chat phone are sized in fixed rem inside
-// `libs/ui`, so this is how the landing makes them bigger without touching the library. Equal
-// `zoom` on a component and on its placeholder keeps their boxes equal, so nothing shifts.
-@mixin zoom($wide, $xwide: $wide) {
-  @include wide {
-    zoom: $wide;
-  }
-
-  @include xwide {
-    zoom: $xwide;
   }
 }
 
@@ -79,9 +73,9 @@ $xwide-min: 120em;
 @mixin section-title {
   margin: 0;
   font-size: rem(24px);
-  font-weight: 700;
+  font-weight: 600;
   line-height: rem(30px);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 
   @include tablet-up {
     font-size: rem(32px);
@@ -146,31 +140,5 @@ $xwide-min: 120em;
       opacity: 1;
       transform: none;
     }
-  }
-}
-
-// Size of the hero chat phone, shared by the chat and by the placeholder that stands in for it
-// while it loads: the feed window plus the rest of the phone (bar, hint and buttons), so both
-// have the same height at every breakpoint and the swap shifts nothing.
-@mixin chat-size {
-  --landing-chat-height: #{rem(300px)};
-
-  // Bar, footer and the 32px gap between the chat and its footer.
-  --landing-chat-chrome: #{rem(163px)};
-
-  // Touch: the footer buttons reach 44px instead of 36px, so the phone is this much taller.
-  --landing-chat-touch: 0rem;
-
-  @include coarse {
-    --landing-chat-touch: #{rem(8px)};
-  }
-
-  @include tablet-up {
-    --landing-chat-height: #{rem(478px)};
-    --landing-chat-chrome: #{rem(135px)};
-  }
-
-  @include desktop {
-    --landing-chat-chrome: #{rem(163px)};
   }
 }

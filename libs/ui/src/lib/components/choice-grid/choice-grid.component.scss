@@ -1,0 +1,156 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+:host(.ui-choice-grid--icon) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(rem(40px), 1fr));
+  gap: var(--space-2);
+}
+
+// A fixed column count (`columns`): the tiles share the width, so a row count means the same thing
+// at every dialog width.
+:host(.ui-choice-grid--icon.ui-choice-grid--columns) {
+  grid-template-columns: repeat(var(--ui-choice-columns), minmax(0, 1fr));
+}
+
+@each $name in 'graphite', 'sage', 'ocean', 'plum', 'clay', 'amber', 'rose', 'teal' {
+  .ui-choice--#{$name} {
+    --ui-choice-glyph: var(--folder-#{$name});
+    --ui-choice-tile: var(--folder-#{$name}-bg);
+  }
+}
+
+:host(.ui-choice-grid--single-line) {
+  flex-wrap: nowrap;
+  gap: var(--space-2);
+  justify-content: space-between;
+
+  .ui-choice {
+    flex: 0 1 rem(36px);
+    min-inline-size: rem(24px);
+
+    @include coarse {
+      flex-basis: rem(44px);
+    }
+  }
+
+  .ui-choice__swatch {
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 1;
+  }
+}
+
+.ui-choice {
+  position: relative;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+// The native radio stays in the tab order and the accessibility tree; the drawing is next to it.
+.ui-choice__input {
+  @include visually-hidden;
+}
+
+.ui-choice__swatch {
+  display: block;
+  inline-size: rem(36px);
+  block-size: rem(36px);
+  background: var(--ui-choice-glyph);
+  border-radius: 50%;
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+
+  @include coarse {
+    inline-size: rem(44px);
+    block-size: rem(44px);
+  }
+}
+
+.ui-choice--checked .ui-choice__swatch {
+  box-shadow:
+    0 0 0 3px var(--surface),
+    0 0 0 5px var(--text);
+}
+
+.ui-choice__input:focus-visible + .ui-choice__swatch,
+.ui-choice__input:focus-visible + .ui-choice__tile {
+  @include focus-ring;
+}
+
+.ui-choice__tile {
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  block-size: rem(40px);
+  color: var(--ui-choice-glyph);
+  background: var(--ui-choice-tile);
+  border-radius: var(--radius-md);
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+
+  @include coarse {
+    block-size: rem(44px);
+  }
+
+  @include hover {
+    box-shadow: inset 0 0 0 1px var(--ui-choice-glyph);
+  }
+}
+
+.ui-choice--checked .ui-choice__tile {
+  box-shadow: inset 0 0 0 2px var(--ui-choice-glyph);
+}
+
+:host(.ui-choice-grid--disabled) .ui-choice {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+// Own options only: a small round "×" in the corner, on hover and focus (always on touch).
+.ui-choice__remove {
+  position: absolute;
+  inset-block-start: rem(-6px);
+  inset-inline-end: rem(-6px);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  inline-size: rem(20px);
+  block-size: rem(20px);
+  padding: 0;
+  color: var(--text);
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  .ui-choice:hover &,
+  .ui-choice:focus-within &,
+  &:focus-visible {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
+
+  @include coarse {
+    inline-size: rem(24px);
+    block-size: rem(24px);
+  }
+}
+
+@include reduced-motion {
+  .ui-choice__remove,
+  .ui-choice__swatch,
+  .ui-choice__tile {
+    transition: none;
+  }
+}

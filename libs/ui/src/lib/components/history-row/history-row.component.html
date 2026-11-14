@@ -1,0 +1,49 @@
+<ng-template #main>
+  <span class="ui-history-row__title"><ng-content select="[slot=title]" /></span>
+  <span class="ui-history-row__meta"><ng-content select="[slot=meta]" /></span>
+</ng-template>
+
+<div class="ui-history-row__select"><ng-content select="[slot=select]" /></div>
+<div class="ui-history-row__preview">
+  @if (previewSrc(); as url) {
+    <img
+      class="ui-history-row__image"
+      alt=""
+      loading="lazy"
+      decoding="async"
+      referrerpolicy="no-referrer"
+      [src]="url"
+      (error)="failed.set(true)"
+    />
+  } @else if (previewSlot()) {
+    <ng-content select="[slot=preview]" />
+  } @else {
+    <ui-icon name="image" [size]="ICON_SIZE.Lg" />
+  }
+</div>
+@if (href(); as url) {
+  <a
+    class="ui-history-row__link"
+    [attr.href]="url"
+    [attr.target]="newTab() ? '_blank' : null"
+    [attr.rel]="newTab() ? 'noopener noreferrer' : 'noreferrer'"
+    [attr.aria-describedby]="description() ? descriptionId : null"
+    (click)="activated.emit($event)"
+  >
+    <ng-container [ngTemplateOutlet]="main" />
+  </a>
+} @else {
+  <button
+    type="button"
+    class="ui-history-row__link"
+    [attr.aria-describedby]="description() ? descriptionId : null"
+    (click)="activated.emit($event)"
+  >
+    <ng-container [ngTemplateOutlet]="main" />
+  </button>
+}
+<div class="ui-history-row__time"><ng-content select="[slot=time]" /></div>
+<div class="ui-history-row__actions"><ng-content select="[slot=actions]" /></div>
+@if (description(); as text) {
+  <span class="ui-history-row__description" [id]="descriptionId">{{ text }}</span>
+}

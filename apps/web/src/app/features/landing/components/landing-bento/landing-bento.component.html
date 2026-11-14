@@ -1,0 +1,69 @@
+<section class="landing-bento" id="works" tabindex="-1" aria-labelledby="landing-bento-title">
+  <h2 id="landing-bento-title" class="landing-bento__title">
+    {{ 'landing.bento.title' | transloco }}
+  </h2>
+  <div class="landing-bento__grid" appLandingReveal>
+    <article class="landing-bento__tile landing-bento__tile--wide landing-bento__tile--preview">
+      <div class="landing-bento__copy">
+        <h3 class="landing-bento__heading">{{ 'landing.bento.preview.title' | transloco }}</h3>
+        <p class="landing-bento__text">{{ 'landing.bento.preview.text' | transloco }}</p>
+      </div>
+      <div class="landing-bento__demo" aria-hidden="true">
+        <div class="landing-bento__url">
+          <ui-icon name="link" />
+          <span class="landing-bento__mono">{{ 'landing.bento.preview.url' | transloco }}</span>
+        </div>
+        <div class="landing-bento__result">
+          <span class="landing-bento__media"></span>
+          <span class="landing-bento__result-text">
+            <span class="landing-bento__meta"
+              ><ui-favicon letter="Y" />{{ 'landing.bento.preview.domain' | transloco }}</span
+            >
+            <span class="landing-bento__result-title">{{
+              'landing.bento.preview.cardTitle' | transloco
+            }}</span>
+          </span>
+        </div>
+      </div>
+    </article>
+
+    <article class="landing-bento__tile">
+      <h3 class="landing-bento__heading">{{ 'landing.bento.folders.title' | transloco }}</h3>
+      <p class="landing-bento__text">{{ 'landing.bento.folders.text' | transloco }}</p>
+      <div class="landing-bento__tree" aria-hidden="true">
+        @for (folder of folders; track folder.nameKey) {
+          <span
+            class="landing-bento__row"
+            [class.landing-bento__row--active]="folder.active"
+            [class.landing-bento__row--nested]="folder.depth > 0"
+          >
+            <ui-icon name="folder" />
+            <span class="landing-bento__row-name">{{ folder.nameKey | transloco }}</span>
+            <span class="landing-bento__count">{{ folder.count }}</span>
+          </span>
+        }
+      </div>
+    </article>
+
+    <article class="landing-bento__tile">
+      <h3 class="landing-bento__heading">{{ 'landing.bento.search.title' | transloco }}</h3>
+      <p class="landing-bento__text">{{ 'landing.bento.search.text' | transloco }}</p>
+      <div class="landing-bento__tokens" aria-hidden="true">
+        <ui-chip [variant]="CHIP_VARIANT.Neutral">{{
+          'landing.bento.search.word' | transloco
+        }}</ui-chip>
+        <ui-chip [variant]="CHIP_VARIANT.Tag">{{ 'landing.bento.search.tag' | transloco }}</ui-chip>
+      </div>
+    </article>
+
+    <article class="landing-bento__tile">
+      <h3 class="landing-bento__heading">{{ 'landing.bento.phone.title' | transloco }}</h3>
+      <p class="landing-bento__text">{{ 'landing.bento.phone.text' | transloco }}</p>
+    </article>
+
+    <article class="landing-bento__tile landing-bento__tile--inverse">
+      <h3 class="landing-bento__heading">{{ 'landing.bento.own.title' | transloco }}</h3>
+      <p class="landing-bento__text">{{ 'landing.bento.own.text' | transloco }}</p>
+    </article>
+  </div>
+</section>

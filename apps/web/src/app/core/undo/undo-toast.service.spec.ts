@@ -43,7 +43,7 @@ const flush = () => new Promise<void>((resolve) => setTimeout(resolve));
 
 describe('UndoToastService', () => {
   const options = () => ({
-    text: 'Link deleted',
+    title: 'Link deleted',
     actionLabel: 'Undo',
     onUndo: vi.fn(),
     onExpire: vi.fn(),
@@ -54,7 +54,7 @@ describe('UndoToastService', () => {
 
     service.show(options());
 
-    expect(shown[0]).toMatchObject({ text: 'Link deleted', duration: DELETE_UNDO_MS });
+    expect(shown[0]).toMatchObject({ title: 'Link deleted', duration: DELETE_UNDO_MS });
     expect(shown[0].action?.label).toBe('Undo');
   });
 

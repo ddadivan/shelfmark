@@ -1,0 +1,45 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  --ui-spinner-size: #{rem(16px)};
+
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: var(--ui-spinner-size);
+  height: var(--ui-spinner-size);
+  color: inherit;
+  line-height: 0;
+
+  // Fade and scale in from 40% when it appears; owners override this class-less default with
+  // their own preset class (for example `spinner-grow` inside a button).
+  @include enter(spinner);
+}
+
+:host(.ui-spinner--sm) {
+  --ui-spinner-size: #{rem(12px)};
+
+  // Spec: the 12px ring has a 1.5px stroke (2px would look heavy at this size).
+  .ui-spinner__ring {
+    border-width: 1.5px;
+  }
+}
+
+:host(.ui-spinner--lg) {
+  --ui-spinner-size: #{rem(24px)};
+}
+
+.ui-spinner__ring {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 2px solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 50%;
+
+  @include loop(spin);
+}
+
+.ui-spinner__text {
+  @include visually-hidden;
+}

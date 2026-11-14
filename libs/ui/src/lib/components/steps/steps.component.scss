@@ -1,0 +1,32 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  position: relative;
+  display: inline-flex;
+}
+
+.ui-steps__dots {
+  display: flex;
+  gap: rem(6px);
+}
+
+.ui-steps__dot {
+  width: rem(6px);
+  height: rem(6px);
+  background: var(--border-control);
+  border-radius: rem(3px);
+  transition:
+    width var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+
+  &--current {
+    width: rem(20px);
+    background: var(--accent);
+  }
+}
+
+@include reduced-motion {
+  .ui-steps__dot {
+    transition: none;
+  }
+}

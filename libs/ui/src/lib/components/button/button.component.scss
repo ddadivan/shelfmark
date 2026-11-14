@@ -1,0 +1,144 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: inline-flex;
+}
+
+:host(.ui-button-host--block) {
+  display: flex;
+  inline-size: 100%;
+}
+
+// `wrap`: the label wraps and the height grows (at least the size's height stays).
+:host(.ui-button-host--wrap) {
+  max-inline-size: 100%;
+}
+
+:host(.ui-button-host--wrap) .ui-button {
+  height: auto;
+  min-height: calc(#{rem(40px)} * var(--ui-button-scale, 1));
+  max-inline-size: 100%;
+  padding-block: var(--space-2);
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.ui-button {
+  @include type(label);
+
+  // Inside a dialog every icon is 24px (`--ui-dialog-icon-size` from `ui-dialog`).
+  --ui-icon-size: var(--ui-dialog-icon-size);
+
+  // `--ui-button-scale` (unitless, default 1): a feature that needs bigger buttons than the
+  // three sizes (the landing on wide screens) sets it on an ancestor; box, text and icons grow.
+  --ui-icon-scale: var(--ui-button-scale, 1);
+
+  display: inline-flex;
+  gap: calc(var(--space-2) * var(--ui-button-scale, 1));
+  align-items: center;
+  justify-content: center;
+  height: calc(#{rem(40px)} * var(--ui-button-scale, 1));
+  min-width: var(--ui-button-min-width, 0);
+  padding: 0 calc(#{rem(18px)} * var(--ui-button-scale, 1));
+  font-size: calc(#{rem(13px)} * var(--ui-button-scale, 1));
+  line-height: calc(#{rem(18px)} * var(--ui-button-scale, 1));
+  color: var(--ui-button-color, var(--text));
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(
+    --ui-button-radius,
+    var(--radius-full)
+  ); // a feature may ask for a round square
+
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    filter var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-spring);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:active {
+    transition-duration: var(--duration-instant);
+    transition-timing-function: var(--ease-out);
+    transform: scale(0.97);
+  }
+
+  // A busy link is `aria-disabled` too (no `href`) but is not dimmed.
+  &:disabled,
+  &[aria-disabled='true']:not([aria-busy='true']) {
+    cursor: not-allowed;
+    opacity: 0.45;
+    transform: none;
+  }
+}
+
+// The same look on an inner `<a>` (`href` input).
+a.ui-button {
+  text-decoration: none;
+}
+
+.ui-button--primary {
+  --ui-ripple-opacity: 0.2;
+
+  color: var(--on-primary);
+  background: var(--primary);
+
+  @include hover {
+    background: var(--primary-hover);
+  }
+}
+
+.ui-button--secondary {
+  background: var(--surface);
+  border-color: var(--border-control);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+}
+
+.ui-button--ghost {
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+}
+
+.ui-button--danger {
+  --ui-ripple-opacity: 0.2;
+
+  color: var(--on-primary);
+  background: var(--danger);
+
+  @include hover {
+    filter: brightness(0.92);
+  }
+}
+
+// A button that opens a menu (or any popup) stays pressed while it is open: one rule for every
+// menu trigger (`uiMenuTrigger` writes `aria-expanded` on the inner element).
+.ui-button--secondary[aria-expanded='true'],
+.ui-button--ghost[aria-expanded='true'] {
+  background: var(--surface-pressed);
+}
+
+.ui-button--primary[aria-expanded='true'] {
+  background: var(--primary-hover);
+}
+
+.ui-button--danger[aria-expanded='true'] {
+  filter: brightness(0.85);
+}

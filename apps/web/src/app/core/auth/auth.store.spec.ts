@@ -1,8 +1,10 @@
+import { EMOJI_RECENT_STORAGE_KEY } from './models/emoji-recent-storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
 import { AUTH_PROVIDER, type AuthUser } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { loadToastHost } from '../toast/lazy-toast.service';
 import { FoldersStore } from '../../stores/folders.store';
 import { LinksStore } from '../../stores/links.store';
 import { SIGN_OUT_FLUSH_TIMEOUT_MS } from './models/sign-out-flush-timeout.const';
@@ -73,6 +75,14 @@ describe('AuthStore', () => {
 
     expect(ended).toHaveBeenCalledTimes(3);
     expect(api.signOut).toHaveBeenCalledTimes(2);
+  });
+
+  it("forgets the emoji picker's Recent on sign-out (#363)", async () => {
+    const { store } = setup();
+    await store.ensureLoaded();
+    localStorage.setItem(EMOJI_RECENT_STORAGE_KEY, '["🍕"]');
+    expect(await store.signOut()).toBe(true);
+    expect(localStorage.getItem(EMOJI_RECENT_STORAGE_KEY)).toBeNull();
   });
 
   it('is a guest until the session says otherwise', () => {
@@ -207,6 +217,7 @@ describe('AuthStore', () => {
 
   it('keeps the user signed in and shows an error when sign-out fails', async () => {
     const { store } = setup({ signOut: vi.fn(() => Promise.reject(new Error('down'))) });
+    await loadToastHost();
     const show = vi.spyOn(TestBed.inject(ToastService), 'show');
     const links = vi.spyOn(TestBed.inject(LinksStore), 'reset');
     await store.signIn(AUTH_PROVIDER.Google);
@@ -217,7 +228,7 @@ describe('AuthStore', () => {
     expect(store.user()).toEqual(USER);
     expect(store.isSignedIn()).toBe(true);
     expect(links).not.toHaveBeenCalled();
-    expect(show).toHaveBeenCalledWith(expect.objectContaining({ kind: TOAST_KIND.Error }));
+    expect(show).toHaveBeenCalledWith(expect.objectContaining({ kind: TOAST_KIND.Danger }));
   });
 
   it('does not leave the page when sign-out fails', async () => {

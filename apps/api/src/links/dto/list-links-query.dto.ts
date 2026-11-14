@@ -1,10 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  LINK_KIND,
   LINK_LIMIT,
   LINK_SORT_FIELD,
   PAGE_LIMIT,
   SORT_ORDER,
   TAG_LIMIT,
+  type LinkKind,
   type LinkSortField,
   type ListLinksQuery,
   type SortOrder,
@@ -72,6 +74,11 @@ export class ListLinksQueryDto implements ListLinksQuery {
   @NoControlChars()
   @MaxLength(LINK_LIMIT.QueryMax)
   q?: string;
+
+  @ApiPropertyOptional({ enum: Object.values(LINK_KIND), description: 'Only links of this kind' })
+  @IsOptional()
+  @IsIn(Object.values(LINK_KIND))
+  kind?: LinkKind;
 
   @ApiPropertyOptional({ enum: Object.values(LINK_SORT_FIELD), default: LINK_SORT_FIELD.CreatedAt })
   @IsOptional()

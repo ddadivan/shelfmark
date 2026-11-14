@@ -3,9 +3,10 @@ import { expect, test } from './support/test';
 import { buildCsp, createCspMiddleware } from '@shelfmark/web-csp';
 import { LANDING_HEADLINE } from './models/landing-headline.const';
 import { isCiBuild } from './support/build-mode';
-import { readCsp, readVercelConfig } from './support/vercel-config';
 
-const staticCsp = readCsp(readVercelConfig());
+// vercel.json carries this policy for files; apps/web/src/config-checks/deploy-config.spec.ts
+// checks that it equals the lib (#349).
+const staticCsp = buildCsp(null);
 const deployedUrl = process.env['BASE_URL'];
 const isProductionBuild = isCiBuild();
 const deepLink = '/folders/does-not-matter';
@@ -110,13 +111,13 @@ test.describe('Content-Security-Policy', () => {
       await expect(button).toBeVisible();
       // A coarse pointer (the phone project has touch) raises every ui-button to the 2.75rem touch target.
       const coarse = test.info().project.use.hasTouch === true;
-      await expect(button).toHaveCSS('height', coarse ? '44px' : '36px');
+      await expect(button).toHaveCSS('height', coarse ? '44px' : '40px');
       await expect(page.getByRole('img', { name: 'Star' })).toBeVisible();
 
       await button.click();
       const panel = page.getByRole('dialog', { name: 'CSP test overlay' });
       await expect(panel).toBeVisible();
-      await expect(panel).toHaveCSS('border-top-left-radius', '10px');
+      await expect(panel).toHaveCSS('border-top-left-radius', '14px');
 
       expect(await readViolations(page)).toEqual([]);
     });

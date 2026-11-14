@@ -1,8 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { GetLinkResponse, LinkResponse, OpenLinkResponse } from '@shelfmark/contracts';
+import {
+  LINK_KIND,
+  type GetLinkResponse,
+  type LinkKind,
+  type LinkResponse,
+} from '@shelfmark/contracts';
 
-export class LinkResponseDto implements LinkResponse, GetLinkResponse, OpenLinkResponse {
+export class LinkResponseDto implements LinkResponse, GetLinkResponse {
   @ApiProperty({ format: 'uuid' }) id!: string;
+  @ApiProperty({ enum: Object.values(LINK_KIND) }) kind!: LinkKind;
   @ApiProperty({ format: 'uuid', nullable: true, type: String }) folderId!: string | null;
   @ApiProperty() url!: string;
   @ApiProperty() title!: string;
@@ -12,6 +18,9 @@ export class LinkResponseDto implements LinkResponse, GetLinkResponse, OpenLinkR
   @ApiProperty({ nullable: true, type: String, description: 'Always null until #149' })
   imageUrl!: string | null;
   @ApiProperty() isFavorite!: boolean;
+  @ApiProperty({ format: 'date-time', nullable: true, type: String }) pinnedInFolderAt!:
+    string | null;
+  @ApiProperty({ description: 'Pinned to the sidebar' }) pinned!: boolean;
   @ApiProperty({ format: 'date-time', nullable: true, type: String }) lastOpenedAt!: string | null;
   @ApiProperty({ type: [String] }) tags!: string[];
   @ApiProperty({ format: 'date-time' }) createdAt!: string;

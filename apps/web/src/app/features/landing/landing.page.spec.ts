@@ -41,7 +41,8 @@ describe('LandingPage', () => {
     const scrollIntoView = vi.fn(function (this: HTMLElement) {
       seen.push(
         document.body.contains(this) &&
-          this.closest('app-landing-page')?.querySelector('app-landing-before-after') !== null,
+          this.closest('app-landing-page')?.querySelector('app-landing-before-after') !== null &&
+          this.closest('app-landing-page')?.querySelector('app-landing-bento') !== null,
       );
     });
     Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
@@ -53,6 +54,7 @@ describe('LandingPage', () => {
     const root = fixture.nativeElement as HTMLElement;
     await vi.waitFor(() => {
       fixture.detectChanges();
+      expect(root.querySelector('app-landing-bento')).not.toBeNull();
       expect(root.querySelector('app-landing-before-after')).not.toBeNull();
       expect(root.querySelector('app-landing-why')).not.toBeNull();
       expect(root.querySelector('app-landing-finale')).not.toBeNull();
@@ -66,6 +68,37 @@ describe('LandingPage', () => {
     expect(root.querySelector('.landing__placeholder')).toBeNull();
   });
 
+  it('opened with #works, loads the sections and focuses the bento without waiting for the rest', async () => {
+    history.replaceState(null, '', '/#works');
+    const focus = vi.spyOn(HTMLElement.prototype, 'focus');
+
+    const fixture = await createLoaded();
+    await fixture.whenStable();
+
+    const target = (fixture.nativeElement as HTMLElement).querySelector('#works');
+    expect(target?.tagName).toBe('SECTION');
+    expect(focus.mock.contexts).toContain(target);
+  });
+
+  it('"How it works" in the header loads the sections and scrolls to the bento once', async () => {
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const fixture = await createTranslated(LandingPage);
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.querySelector('app-landing-bento')).toBeNull();
+
+    root.querySelector<HTMLElement>('a[href="#works"]')?.click();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    });
+
+    expect(scrollIntoView.mock.contexts[0]).toBe(root.querySelector('#works'));
+  });
+
   it('composes the sections under landmarks with one h1', async () => {
     const fixture = await createLoaded();
     const root = fixture.nativeElement as HTMLElement;
@@ -76,6 +109,7 @@ describe('LandingPage', () => {
     expect(root.querySelectorAll('h1')).toHaveLength(1);
     const h2 = Array.from(root.querySelectorAll('h2')).map((h) => h.textContent?.trim());
     expect(h2).toEqual([
+      'Save once, find in seconds',
       'The same links, before and after',
       'Why this exists',
       "How it's built",

@@ -1,22 +1,34 @@
-import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
+  normalizeTagName,
+  TAG_ERROR_MESSAGE,
   TAG_LIMIT,
   type CreateTagRequest,
   type MergeTagResponse,
   type TagResponse,
   type UpdateTagRequest,
 } from '@shelfmark/contracts';
+import { mockHttpError } from '../../../core/api/mock-http-error';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { MOCK_LATENCY_MS } from '../models/mock-latency.const';
 import { MOCK_TAG_NAME } from '../models/mock-tag-name.const';
 import type { TagsApi } from '../models/tags-api.interface';
 import { MockLibraryData } from './mock-library-data';
 
-function conflict(): Observable<never> {
-  return throwError(
-    () => new HttpErrorResponse({ status: HttpStatusCode.Conflict, statusText: 'Conflict' }),
-  );
+function failure(status: HttpStatusCode, message: string | string[]): Observable<never> {
+  return throwError(() => mockHttpError(status, message));
+}
+
+const notFound = (): Observable<never> =>
+  failure(HttpStatusCode.NotFound, TAG_ERROR_MESSAGE.NotFound);
+const nameTaken = (): Observable<never> =>
+  failure(HttpStatusCode.Conflict, TAG_ERROR_MESSAGE.NameTaken);
+
+/** The name as the API stores it, or `null` when it is empty or too long (a 400). */
+function validName(name: string): string | null {
+  const normalized = normalizeTagName(name);
+  return normalized === '' || normalized.length > TAG_LIMIT.NameMax ? null : normalized;
 }
 
 /**
@@ -34,19 +46,23 @@ export class MockTagsApi implements TagsApi {
 
   create(request: CreateTagRequest): Observable<TagResponse> {
     return defer(() => {
-      if (
-        request.name === MOCK_TAG_NAME.CreateFails ||
-        this.data.tagList.length >= TAG_LIMIT.PerUserMax
-      ) {
+      if (request.name === MOCK_TAG_NAME.CreateFails) {
         return throwError(() => new Error('Mock: tag create failed'));
       }
-      if (this.byName(request.name)) {
-        return conflict();
+      const name = validName(request.name);
+      if (name === null) {
+        return failure(HttpStatusCode.BadRequest, ['name is not valid']);
+      }
+      if (this.byName(name)) {
+        return nameTaken();
+      }
+      if (this.data.tagList.length >= TAG_LIMIT.PerUserMax) {
+        return failure(HttpStatusCode.Conflict, TAG_ERROR_MESSAGE.LimitReached);
       }
       const now = new Date().toISOString();
       const tag: TagResponse = {
         id: globalThis.crypto.randomUUID(),
-        name: request.name,
+        name,
         linkCount: 0,
         createdAt: now,
         updatedAt: now,
@@ -59,16 +75,23 @@ export class MockTagsApi implements TagsApi {
   update(id: string, request: UpdateTagRequest): Observable<TagResponse> {
     return defer(() => {
       const current = this.find(id);
-      if (!current || current.name === MOCK_TAG_NAME.UpdateFails) {
+      if (!current) {
+        return notFound();
+      }
+      if (current.name === MOCK_TAG_NAME.UpdateFails) {
         return throwError(() => new Error('Mock: tag update failed'));
       }
-      const other = this.byName(request.name);
+      const name = validName(request.name);
+      if (name === null) {
+        return failure(HttpStatusCode.BadRequest, ['name is not valid']);
+      }
+      const other = this.byName(name);
       if (other && other.id !== id) {
-        return conflict();
+        return nameTaken();
       }
       const updated: TagResponse = {
         ...current,
-        name: request.name,
+        name,
         updatedAt: new Date().toISOString(),
       };
       this.data.setTags(this.data.tagList.map((tag) => (tag.id === id ? updated : tag)));
@@ -80,7 +103,10 @@ export class MockTagsApi implements TagsApi {
   remove(id: string): Observable<void> {
     return defer(() => {
       const current = this.find(id);
-      if (!current || current.name === MOCK_TAG_NAME.DeleteFails) {
+      if (!current) {
+        return notFound();
+      }
+      if (current.name === MOCK_TAG_NAME.DeleteFails) {
         return throwError(() => new Error('Mock: tag delete failed'));
       }
       this.data.setTags(this.data.tagList.filter((tag) => tag.id !== id));
@@ -93,12 +119,13 @@ export class MockTagsApi implements TagsApi {
     return defer(() => {
       const source = this.find(id);
       const target = this.find(targetTagId);
-      if (
-        !source ||
-        !target ||
-        source.id === target.id ||
-        source.name === MOCK_TAG_NAME.UpdateFails
-      ) {
+      if (!source || !target) {
+        return notFound();
+      }
+      if (source.id === target.id) {
+        return failure(HttpStatusCode.BadRequest, TAG_ERROR_MESSAGE.MergeIntoItself);
+      }
+      if (source.name === MOCK_TAG_NAME.UpdateFails) {
         return throwError(() => new Error('Mock: tag update failed'));
       }
       this.data.setTags(this.data.tagList.filter((tag) => tag.id !== id));

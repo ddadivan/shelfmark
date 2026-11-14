@@ -1,0 +1,53 @@
+<!--
+  A picture of the app, not the app: decorative, so hidden from assistive technology and inert
+  (the cards' own title buttons and the switch's radios must not be tab stops).
+-->
+<div
+  class="landing-hero-preview"
+  aria-hidden="true"
+  inert
+  [class.landing-hero-preview--waiting]="waiting()"
+  [class.landing-hero-preview--playing]="playing()"
+>
+  <div class="landing-hero-preview__panel">
+    <div class="landing-hero-preview__head">
+      <span class="landing-hero-preview__folder">{{
+        'landing.hero.preview.folder' | transloco
+      }}</span>
+      <span class="landing-hero-preview__count">{{
+        (articles() ? 'landing.hero.preview.countArticles' : 'landing.hero.preview.count')
+          | transloco
+      }}</span>
+      <ui-segmented-control
+        class="landing-hero-preview__switch"
+        [options]="options()"
+        [value]="shown()"
+        [ariaLabel]="'landing.hero.preview.view' | transloco"
+      />
+    </div>
+    <div class="landing-hero-preview__grid">
+      @for (item of cards(); track item.card.id) {
+        <div
+          class="landing-hero-preview__item"
+          [style.--landing-preview-index]="item.index"
+          [style.--landing-preview-slot]="item.slot"
+        >
+          <app-link-preview-card
+            [title]="'landing.hero.preview.items.' + item.card.id + '.title' | transloco"
+            [host]="item.card.host"
+            [daysAgo]="item.card.daysAgo"
+            [tone]="item.card.tone"
+            [tags]="['landing.hero.preview.items.' + item.card.id + '.tag' | transloco]"
+          />
+        </div>
+      }
+    </div>
+  </div>
+  <ui-toast
+    class="landing-hero-preview__toast"
+    [style.--landing-preview-index]="INTRO_SLOTS"
+    [kind]="TOAST_KIND.Saved"
+    [title]="'landing.hero.preview.savedTo' | transloco: { folder: folder() }"
+    [actionLabel]="'landing.hero.preview.undo' | transloco"
+  />
+</div>

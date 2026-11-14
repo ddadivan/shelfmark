@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
+import { settled } from './support/settled';
 import { expect, test } from './support/test';
 import { openCardEdit } from './support/a11y-flows';
 import { seedSession } from './support/mock-session';
@@ -58,10 +59,11 @@ test.describe('overlays do not move content when an outside click closes them (m
     await expect(page.locator('ui-card').first()).toBeVisible();
   });
 
-  test('account menu: the header stays put', async ({ page }) => {
+  test('account menu: the header stays put', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'a phone has no header: the You tab holds the account');
     const header = page.getByRole('banner');
     const trigger = header.getByRole('button', { name: 'Account menu' });
-    const watched = [trigger, header.locator('.shell__name'), header.getByRole('button').first()];
+    const watched = [trigger, trigger.locator('ui-avatar'), header.getByRole('button').first()];
     await expect(trigger).toBeVisible();
     const before = await boxes(watched);
     await observeShifts(page);
@@ -81,7 +83,8 @@ test.describe('overlays do not move content when an outside click closes them (m
     const dialog = await openCardEdit(page);
     const select = dialog.getByRole('combobox', { name: 'Folder' });
     const watched = [select, dialog.getByLabel('Title', { exact: true }), dialog];
-    await page.waitForTimeout(500);
+    // The dialog's enter animation has ended before the boxes are measured.
+    await settled(page);
     const before = await boxes(watched);
     await observeShifts(page);
     await watchStrayHosts(page);

@@ -10,7 +10,8 @@
     "deploymentEnabled": {
       "*/**": false,
       "dependabot/**": false,
-      "docs/**": false
+      "docs/**": false,
+      "stage": false
     }
   },
   "functions": {
@@ -19,7 +20,10 @@
       "includeFiles": "{node_modules/swagger-ui-dist/**,node_modules/@prisma/client/runtime/query_compiler_fast_bg.postgresql.*,node_modules/@img/**}"
     }
   },
-  "crons": [{ "path": "/api/cron/demo-cleanup", "schedule": "17 3 * * *" }],
+  "crons": [
+    { "path": "/api/cron/demo-cleanup", "schedule": "17 3 * * *" },
+    { "path": "/api/cron/trash-cleanup", "schedule": "47 3 * * *" }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/((?!api/).*\\.[^/]*)", "destination": "/api" },
@@ -31,7 +35,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'"
+          "value": "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: https://*.googleusercontent.com https://avatars.githubusercontent.com; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'"
         }
       ]
     },
@@ -44,6 +48,10 @@
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
         { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
       ]
+    },
+    {
+      "source": "/c/(.*)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     },
     {
       "source": "/(.*-[A-Z0-9]{8}\\.(?:js|css))",

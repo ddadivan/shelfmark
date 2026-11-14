@@ -14,6 +14,10 @@
       "options": {
         "outputPath": "dist/apps/web",
         "browser": "apps/web/src/main.ts",
+        "index": {
+          "input": "apps/web/src/index.html",
+          "preloadInitial": true
+        },
         "tsConfig": "apps/web/tsconfig.app.json",
         "polyfills": [],
         "inlineStyleLanguage": "scss",
@@ -30,6 +34,8 @@
         ],
         "styles": [
           "node_modules/@fontsource-variable/onest/wght.css",
+          "node_modules/@fontsource/atkinson-hyperlegible/400.css",
+          "node_modules/@fontsource/atkinson-hyperlegible/700.css",
           "libs/ui/src/styles/global.scss",
           "apps/web/src/styles.scss"
         ],
@@ -81,6 +87,14 @@
               "with": "apps/web/src/app/features/rating/mock/provide-rating-api.e2e.ts"
             },
             {
+              "replace": "apps/web/src/app/features/feedback/provide-feedback-api.ts",
+              "with": "apps/web/src/app/features/feedback/mock/provide-feedback-api.e2e.ts"
+            },
+            {
+              "replace": "apps/web/src/app/features/admin/provide-admin-api.ts",
+              "with": "apps/web/src/app/features/admin/mock/provide-admin-api.e2e.ts"
+            },
+            {
               "replace": "apps/web/src/app/features/account-deletion/provide-account-deletion-api.ts",
               "with": "apps/web/src/app/features/account-deletion/mock/provide-account-deletion-api.e2e.ts"
             }
@@ -127,6 +141,14 @@
               "with": "apps/web/src/app/features/rating/mock/provide-rating-api.e2e.ts"
             },
             {
+              "replace": "apps/web/src/app/features/feedback/provide-feedback-api.ts",
+              "with": "apps/web/src/app/features/feedback/mock/provide-feedback-api.e2e.ts"
+            },
+            {
+              "replace": "apps/web/src/app/features/admin/provide-admin-api.ts",
+              "with": "apps/web/src/app/features/admin/mock/provide-admin-api.e2e.ts"
+            },
+            {
               "replace": "apps/web/src/app/features/account-deletion/provide-account-deletion-api.ts",
               "with": "apps/web/src/app/features/account-deletion/mock/provide-account-deletion-api.e2e.ts"
             }
@@ -143,6 +165,13 @@
       "cache": true,
       "options": {
         "command": "node scripts/write-middleware-shell.mjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "emoji": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node scripts/build-folder-emoji.mjs",
         "cwd": "{workspaceRoot}"
       }
     },
@@ -193,6 +222,16 @@
         }
       }
     },
+    "serve-prebuilt": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "port": 4200,
+        "staticFilePath": "dist/apps/web-e2e-build/browser",
+        "spa": true,
+        "watch": false
+      }
+    },
     "test": {
       "executor": "@angular/build:unit-test",
       "options": {
@@ -203,7 +242,13 @@
       },
       "configurations": {
         "coverage": {
-          "coverage": true
+          "coverage": true,
+          "coverageThresholds": {
+            "statements": 88,
+            "branches": 83,
+            "functions": 83,
+            "lines": 89
+          }
         }
       },
       "dependsOn": ["ui:icons"]

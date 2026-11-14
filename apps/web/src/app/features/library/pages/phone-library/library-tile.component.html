@@ -1,0 +1,23 @@
+@if (popup()) {
+  <a class="library-tile" [href]="href()" aria-haspopup="dialog" (click)="open($event)">
+    <ng-container [ngTemplateOutlet]="content" />
+  </a>
+} @else {
+  <a class="library-tile" [routerLink]="href()">
+    <ng-container [ngTemplateOutlet]="content" />
+  </a>
+}
+
+<ng-template #content>
+  <ui-icon
+    class="library-tile__icon"
+    [class.library-tile__icon--accent]="accent()"
+    [name]="icon()"
+    [size]="ICON_SIZE.Lg"
+  />
+  <span class="library-tile__text">
+    <span class="library-tile__label">{{ label() }}</span>
+    <!-- Always there (empty until the count loads) so the tile keeps its height. -->
+    <span class="library-tile__meta">{{ meta() }}</span>
+  </span>
+</ng-template>

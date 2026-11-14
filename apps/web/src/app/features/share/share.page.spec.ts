@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
+import { axeViolations } from '../../../testing/axe';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
-import type { LinkPreviewResponse, LinkResponse } from '@shelfmark/contracts';
+import { LINK_KIND, type LinkPreviewResponse, type LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINK_PREVIEW_DUPLICATE, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { delay, of, throwError, type Observable } from 'rxjs';
 import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
@@ -18,6 +19,7 @@ import SharePage from './share.page';
 
 const PREVIEW: LinkPreviewResponse = {
   preview: {
+    kind: LINK_KIND.Article,
     url: 'https://example.com/a',
     title: 'A fine page',
     description: 'About a thing.',
@@ -180,6 +182,15 @@ describe('SharePage', () => {
     expect(root.querySelector('form')).toBeNull();
     expect(api.preview).not.toHaveBeenCalled();
     expect(api.create).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['the quick save form', '/share?text=Look%20https%3A%2F%2Fexample.com%2Fa'],
+    ['the error state', '/share'],
+  ])('has no axe violations on %s', async (_name, url) => {
+    const { root } = await open(url);
+
+    expect(await axeViolations(root)).toEqual([]);
   });
 
   it('goes to the library from the error state', async () => {

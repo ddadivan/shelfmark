@@ -7,7 +7,7 @@ import { skipErrorToast } from '../../../core/api/skip-error-toast';
 import { ONBOARDING_ENDPOINT } from '../models/onboarding-endpoint.const';
 import type { OnboardingApi } from '../models/onboarding-api.interface';
 
-/** `OnboardingApi` over `POST` / `DELETE /api/me/onboarding`. */
+/** `OnboardingApi` over `POST /api/me/onboarding`. */
 @Service()
 export class HttpOnboardingApi implements OnboardingApi {
   private readonly http = inject(HttpClient);
@@ -17,9 +17,5 @@ export class HttpOnboardingApi implements OnboardingApi {
     return firstValueFrom(
       this.http.post<OnboardingResponse>(this.url, null, { context: skipErrorToast() }),
     );
-  }
-
-  async reset(): Promise<void> {
-    await firstValueFrom(this.http.delete<void>(this.url, { context: skipErrorToast() }));
   }
 }

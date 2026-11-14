@@ -1,0 +1,73 @@
+@switch (kind()) {
+  @case (TOAST_KIND.Saved) {
+    <span class="ui-toast__thumb">
+      @if (thumb(); as src) {
+        <img class="ui-toast__thumb-image" [src]="src" alt="" />
+      } @else {
+        <ui-icon [name]="icon()" [size]="ICON_SIZE.Sm" />
+      }
+      <span class="ui-toast__badge">
+        <ui-icon name="check" [size]="ICON_SIZE.Sm" />
+      </span>
+    </span>
+  }
+  @case (TOAST_KIND.Moved) {
+    <ui-folder-icon
+      class="ui-toast__folder"
+      [colour]="folder()?.colour ?? FOLDER_COLOUR.Graphite"
+      [icon]="folder()?.icon ?? icon()"
+    />
+  }
+  @default {
+    <span class="ui-toast__icon"><ui-icon [name]="icon()" [size]="ICON_SIZE.Sm" /></span>
+  }
+}
+<span class="ui-toast__text">
+  <span class="ui-toast__title">{{ title() }}</span>
+  @if (detail(); as line) {
+    <small class="ui-toast__detail">{{ line }}</small>
+  }
+</span>
+@if (actionHint(); as hint) {
+  <span class="ui-toast__hint">{{ hint }}</span>
+}
+@if (actionLabel(); as label) {
+  @if (shortcut().length > 0) {
+    <span class="ui-toast__keys" aria-hidden="true">
+      @for (key of shortcut(); track key.label) {
+        <kbd class="ui-toast__kbd">
+          @if (key.icon; as keyIcon) {
+            <ui-icon [name]="keyIcon" [size]="ICON_SIZE.Sm" />
+          } @else {
+            {{ key.label }}
+          }
+        </kbd>
+      }
+    </span>
+  }
+  <button type="button" class="ui-toast__action" (click)="action.emit()">{{ label }}</button>
+}
+@if (secondaryLabel(); as label) {
+  <button
+    type="button"
+    class="ui-toast__action ui-toast__action--ghost"
+    (click)="secondaryAction.emit()"
+  >
+    {{ label }}
+  </button>
+}
+<button
+  type="button"
+  class="ui-toast__close"
+  [attr.aria-label]="dismissLabel()"
+  (click)="dismiss.emit()"
+>
+  <ui-icon name="close" [size]="ICON_SIZE.Sm" />
+</button>
+@if (countdown() > 0) {
+  <span
+    class="ui-toast__timer"
+    aria-hidden="true"
+    [style.--ui-toast-duration.ms]="countdown()"
+  ></span>
+}

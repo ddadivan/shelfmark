@@ -3,91 +3,78 @@
     "header": {
       "navLabel": "Main",
       "brand": "Shelfmark",
-      "howItsBuilt": "How it's built",
-      "github": "GitHub",
-      "signIn": "Sign in"
+      "signIn": "Sign in",
+      "howItWorks": "How it works",
+      "privacy": "Privacy",
+      "getStarted": "Get started"
     },
     "hero": {
-      "eyebrow": "For everything you send to Saved Messages",
       "line1": "Paste a link.",
       "line2": "Find it again.",
       "line3": "Even in a year.",
-      "lead": "Chats and bookmark bars are where links go to be forgotten. Shelfmark keeps them in folders, with a note on why you saved each one, and finds any of them in two keystrokes.",
+      "lead": "Videos, articles, things to buy, courses — on one calm shelf instead of chats and open tabs.",
       "demo": "Open the demo",
-      "signIn": "Sign in"
-    },
-    "chat": {
-      "savedMessages": "Saved Messages",
-      "savedSubtitle": "new links every day, none findable",
-      "shelfTitle": "Your shelf",
-      "shelfSubtitle": "5 links in 4 folders, each with a note",
-      "hintChat": "Five links, five different days.",
-      "hintShelf": "Notes come from your own messages.",
-      "putOnShelf": "Put them on the shelf",
-      "showChat": "Show the chat again",
-      "messages": {
-        "watch": {
-          "text": "watch later!!",
-          "time": "Mon 23:41"
-        },
-        "coat": {
-          "text": "this coat, wait for the sale",
-          "time": "Tue 09:12"
-        },
-        "course": {
-          "text": "Fwd: Frontend Weekly",
-          "time": "Wed 18:30"
-        },
-        "ramen": {
-          "text": "ramen recipe, friday?",
-          "time": "Thu 21:05"
-        },
-        "zoneless": {
-          "text": "where was that zoneless article…",
-          "time": "Fri 08:47"
-        },
-        "lisbon": {
-          "text": "lisbon, maybe in may",
-          "time": "Sat 11:20"
-        },
-        "icons": {
-          "text": "icons for the side project",
-          "time": "Sun 16:02"
-        },
-        "react": {
-          "text": "read this one day",
-          "time": "Mon 07:58"
+      "start": "Start your shelf",
+      "note": "Sign in with Google or GitHub.",
+      "preview": {
+        "label": "App preview",
+        "folder": "Read later",
+        "count": "21 links",
+        "countArticles": "6 links",
+        "view": "View",
+        "all": "All 21",
+        "articles": "Articles 6",
+        "savedTo": "Saved to {{folder}}",
+        "undo": "Undo",
+        "items": {
+          "talk": {
+            "title": "Calm technology, a 20-minute talk",
+            "tag": "video"
+          },
+          "grid": {
+            "title": "A complete guide to CSS grid",
+            "tag": "css"
+          },
+          "design": {
+            "title": "Designing for the long read",
+            "tag": "design"
+          },
+          "slow": {
+            "title": "Why slow software feels broken",
+            "tag": "ux"
+          }
         }
       }
     },
-    "shelf": {
-      "folders": {
-        "angular": "Work / Angular",
-        "courses": "Courses",
-        "clothes": "Clothes",
-        "recipes": "Recipes"
+    "bento": {
+      "title": "Save once, find in seconds",
+      "preview": {
+        "title": "The preview fills in by itself",
+        "text": "Paste a link: the title and the site arrive on their own. Add a note so you remember why you saved it.",
+        "url": "youtube.com/watch?v=ng22",
+        "domain": "youtube.com",
+        "cardTitle": "Signal Forms in 20 minutes"
       },
-      "links": {
-        "signalForms": {
-          "title": "Signal Forms in 20 minutes",
-          "note": "Watch later"
-        },
-        "zoneless": {
-          "title": "Zoneless change detection",
-          "note": "The article about zoneless"
-        },
-        "nestjs": {
-          "title": "NestJS for frontend developers",
-          "note": "From Frontend Weekly"
-        },
-        "coat": {
-          "title": "Wool coat, graphite",
-          "note": "Wait for the sale"
-        },
-        "ramen": {
-          "title": "The best weeknight ramen",
-          "note": "Friday?"
-        }
+      "folders": {
+        "title": "Folders inside folders",
+        "text": "Keep links in folders and put folders in folders, as deep as your own system needs.",
+        "work": "Work",
+        "angular": "Angular",
+        "courses": "Courses"
+      },
+      "search": {
+        "title": "Find it by any word",
+        "text": "Search the title, note or address of every link, from anywhere with ⌘K.",
+        "word": "coat",
+        "tag": "clothes"
+      },
+      "phone": {
+        "title": "Save from your phone",
+        "text": "Install Shelfmark and it shows up in the Share menu on Android. Share a page and it lands on your shelf."
+      },
+      "own": {
+        "title": "Your links stay yours",
+        "text": "Export everything as JSON or as a browser bookmarks file whenever you like."
       }
     },
     "beforeAfter": {
@@ -184,9 +171,32 @@
     "footer": {
       "copyright": "© 2026 Shelfmark",
       "privacy": "Privacy",
-      "github": "GitHub"
+      "github": "GitHub",
+      "language": "Language"
     },
-    "newTab": "opens in a new tab"
+    "newTab": "opens in a new tab",
+    "backToShelf": "Back to my shelf",
+    "whatsNew": {
+      "title": "What's new",
+      "items": {
+        "trash": {
+          "title": "Trash",
+          "text": "Deleted links and folders wait in Trash, so nothing is gone by accident. Choose how long they stay in Settings."
+        },
+        "tabs": {
+          "title": "Your tabs stay in step",
+          "text": "Save, edit or delete a link in one tab and every other open tab shows it."
+        },
+        "move": {
+          "title": "Move to folder and drag and drop",
+          "text": "Move a link from its menu, or drag it onto a folder in the sidebar."
+        },
+        "refresh": {
+          "title": "A fresh look",
+          "text": "Softer corners, a floating tab bar on phones and toasts that say what happened."
+        }
+      }
+    }
   },
   "links": {
     "add": {
@@ -199,6 +209,12 @@
         "required": "Enter a link",
         "invalid": "Enter an address that starts with http:// or https://",
         "tooLong": "The link is too long (at most {{max}} characters)"
+      },
+      "shortcut": {
+        "cmd": "⌘",
+        "ctrl": "Ctrl",
+        "enter": "Enter",
+        "save": "to save"
       },
       "preview": {
         "loading": "Loading preview",
@@ -251,10 +267,23 @@
         "save": "Save link",
         "saveAnyway": "Save anyway",
         "saving": "Saving…"
+      },
+      "several": {
+        "offer": "Have several links? Paste them all at once",
+        "open": "Add several links",
+        "title": "Add several links",
+        "label": "Paste links, one per line or inside any text",
+        "placeholder": "https://…",
+        "hint": "Up to {{max}} links at a time. You check the list before anything is saved.",
+        "required": "Paste or type some links",
+        "none": "No links found in this text",
+        "back": "One link",
+        "find": "Find links"
       }
     },
     "edit": {
       "title": "Edit link",
+      "favorite": "Add to favorites",
       "meta": "Saved {{created}}, last opened {{opened}}",
       "metaNever": "Saved {{created}}, never opened",
       "actions": {
@@ -262,8 +291,12 @@
         "delete": "Delete"
       }
     },
+    "card": {
+      "moreTags": "+{{count}}"
+    },
     "item": {
       "edit": "Edit",
+      "move": "Move to folder…",
       "edited": "Changes saved",
       "openFailed": "Couldn't open the link.",
       "favorite": "Favorite: {{title}}",
@@ -274,27 +307,190 @@
       "delete": "Delete",
       "opensInNewTab": "Opens in a new tab",
       "open": "Open",
-      "favoriteFailed": "Couldn't update the favorite.",
+      "favoriteFailed": "Couldn't update the favorite",
       "retry": "Retry",
-      "deleted": "Link deleted",
+      "deleted": "Moved to Trash",
       "undo": "Undo",
-      "deleteFailed": "Couldn't delete the link. It is back in your list.",
-      "saved": "Link saved",
+      "deleteFailed": "Couldn't delete the link",
+      "deleteFailedDetail": "It is back in your list",
+      "savedTo": "Saved to {{folder}}",
       "confirm": {
         "title": "Delete this link?",
-        "message": "“{{title}}” will be deleted.",
-        "confirm": "Delete",
+        "message": "“{{title}}” moves to Trash. You can restore it for {{days}} days.",
+        "confirm": "Delete link",
         "cancel": "Cancel",
         "close": "Close"
-      }
+      },
+      "pinToTop": "Pin to top",
+      "unpinFromTop": "Unpin from top",
+      "pinToSidebar": "Pin to sidebar",
+      "unpinFromSidebar": "Unpin from sidebar",
+      "pinned": "Pinned"
     },
     "recent": {
       "title": "Recently opened",
-      "empty": "Links you open appear here.",
-      "hide": "Hide recently opened",
-      "show": "Show recently opened",
-      "loading": "Loading recently opened links",
-      "close": "Close"
+      "count": {
+        "one": "{{count}} link in the last {{days}} days",
+        "other": "{{count}} links in the last {{days}} days"
+      },
+      "nothingYet": "Nothing yet",
+      "clear": "Clear history",
+      "clearShort": "Clear",
+      "unsorted": "Unsorted",
+      "remove": "Remove {{title}} from history",
+      "removeTooltip": "Remove from history",
+      "more": "More for {{title}}",
+      "menu": {
+        "openInNewTab": "Open in new tab",
+        "showInFolder": "Show in folder",
+        "copyLink": "Copy link",
+        "remove": "Remove from history"
+      },
+      "linkCopied": "Link copied",
+      "copyFailed": "Couldn't copy the link",
+      "removed": "Removed from history",
+      "removeFailed": "Couldn't remove it from history",
+      "cleared": "History cleared",
+      "clearFailed": "Couldn't clear the history",
+      "note": "Kept for 30 days, only on your account. Removing from history doesn't delete the link.",
+      "empty": {
+        "title": "Nothing opened yet",
+        "text": "Links you open appear here for {{days}} days."
+      },
+      "day": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "week": "Earlier this week"
+      },
+      "confirm": {
+        "title": "Clear history?",
+        "message": "Every link leaves Recently opened. Your saved links stay where they are.",
+        "confirm": "Clear history",
+        "cancel": "Cancel",
+        "close": "Close"
+      },
+      "filter": {
+        "label": "Filter by type",
+        "all": "All",
+        "emptyTitle": "Nothing of this type",
+        "emptyText": "No link of this type was opened in the last {{days}} days.",
+        "showAll": "Show all"
+      },
+      "pause": {
+        "pause": "Pause history",
+        "resume": "Resume history",
+        "notice": "History is paused. Links you open now aren't added.",
+        "noticeResume": "Resume",
+        "pauseFailed": "Couldn't pause history",
+        "resumeFailed": "Couldn't resume history"
+      },
+      "search": {
+        "label": "Search history",
+        "clear": "Clear search",
+        "emptyTitle": "Nothing matches",
+        "emptyText": "No link in your history matches “{{query}}”."
+      },
+      "swipe": {
+        "remove": "Remove",
+        "hint": "Swipe a row left to remove it from history."
+      }
+    },
+    "kind": {
+      "label": "Type",
+      "video": "Videos",
+      "article": "Articles",
+      "shopping": "Shopping",
+      "other": "Other"
+    },
+    "kindOption": {
+      "video": "Video",
+      "article": "Article",
+      "shopping": "Shopping",
+      "other": "Other"
+    },
+    "move": {
+      "title": "Move “{{title}}”",
+      "searchLabel": "Search folders",
+      "noResults": "No folders found",
+      "list": "Folders",
+      "current": "Current folder",
+      "close": "Close",
+      "moved": "Moved to {{folder}}",
+      "failed": "Couldn't move the link",
+      "failedDetail": "It is back where it was",
+      "undoFailed": "Couldn't move the link back"
+    },
+    "many": {
+      "title": {
+        "one": "Add {{count}} link",
+        "other": "Add {{count}} links"
+      },
+      "titleNone": "Add links",
+      "found": {
+        "one": "Found {{count}} link in what you pasted.",
+        "other": "Found {{count}} links in what you pasted."
+      },
+      "already": {
+        "one": "{{count}} is already on your shelf.",
+        "other": "{{count}} are already on your shelf."
+      },
+      "selectAll": "Select all",
+      "selectedCount": "{{selected}} of {{total}} selected",
+      "listLabel": "Pasted links",
+      "row": {
+        "loading": "Loading preview",
+        "alreadySaved": "Already saved",
+        "remove": "Remove {{title}}",
+        "quoted": "“{{text}}”",
+        "skipped": "Not a link, skipped"
+      },
+      "overflow": {
+        "one": "{{count}} more link was left out: up to {{max}} links at a time. Bigger lists go to Import as text.",
+        "other": "{{count}} more links were left out: up to {{max}} links at a time. Bigger lists go to Import as text."
+      },
+      "folder": "Folder for all",
+      "tags": "Tags for all",
+      "note": "Titles and previews keep loading after you save.",
+      "save": {
+        "one": "Save {{count}} link",
+        "other": "Save {{count}} links"
+      },
+      "saveNone": "Save links",
+      "saveFailedFit": {
+        "one": "Only {{fit}} more link fits your shelf. Uncheck some and try again.",
+        "other": "Only {{fit}} more links fit your shelf. Uncheck some and try again."
+      },
+      "saved": {
+        "one": "{{count}} link saved to {{folder}}",
+        "other": "{{count}} links saved to {{folder}}"
+      },
+      "stillLoading": "Titles and previews are still loading",
+      "skippedByServer": {
+        "one": "{{count}} link was skipped: it was a repeat or too long",
+        "other": "{{count}} links were skipped: repeats or too long"
+      },
+      "noneSaved": "No links were saved",
+      "undoFailed": "Couldn't undo",
+      "undoFailedDetail": "The links are still saved"
+    },
+    "drag": {
+      "moveHere": "Move here",
+      "moving": "Moving",
+      "started": {
+        "one": "Moving {{count}} link. Drop it on a folder, or press Escape to cancel.",
+        "other": "Moving {{count}} links. Drop them on a folder, or press Escape to cancel."
+      },
+      "move": {
+        "one": "Move {{count}} link",
+        "other": "Move {{count}} links"
+      },
+      "noDrop": {
+        "all": "Can't drop here — drop it on a folder",
+        "favorites": "Can't drop here — star a link to add it to Favorites",
+        "recent": "Can't drop here — Recently opened fills as you open links",
+        "trash": "Can't drop here — use Delete to move a link to Trash",
+        "pinnedLink": "Can't drop here — a pinned link is not a folder"
+      }
     }
   },
   "privacy": {
@@ -302,14 +498,15 @@
     "home": "Shelfmark, home",
     "newTab": "(opens in a new tab)",
     "updated": "Last updated {{date}}",
-    "updatedDate": "9 November 2026",
+    "updatedDate": "13 November 2026",
     "intro": "Shelfmark is a personal project that stores the links you save. This page explains what we keep and why, in plain words.",
     "store": {
       "title": "What we store",
       "account": "From Google or GitHub: your name, email address and avatar (a link to your profile picture). They are used to sign you in and to show who is signed in. Your account record also holds which provider you used and your id there.",
-      "content": "Your links (address, title, note, favourite mark, when you last opened it), your folders and your tags.",
+      "content": "Your links (address, title, note, favorite mark, when you last opened it), your folders and your tags.",
       "images": "For each link, a small copy of the site's icon and preview image, if the site has them. Our server downloads and stores them so they load from Shelfmark.",
       "feedback": "Your answers to the in-app rating, linked to your account: a score from 1 to 10 and, if you write one, a comment.",
+      "stats": "The \"Your shelf\" numbers on the Account page (counts, the sites and tags you use most, links per week) are worked out from your own data each time you open the page. They are not stored and never shared.",
       "sessions": "For each sign-in: when it expires, plus the IP address and the browser (user agent) it was started from, to keep sessions secure.",
       "logs": "Our API logs the request method, path, status, duration and a request id, without link contents or personal data. Our host, Vercel, keeps its own standard request logs, which include IP addresses, for a limited time."
     },
@@ -317,7 +514,7 @@
       "title": "Cookies and browser storage",
       "necessary": "We use strictly necessary cookies only. A session cookie keeps you signed in, in the demo as well. A short-lived cookie protects the Google and GitHub sign-in flow. They are httpOnly and SameSite=Lax, and Secure on the live site. Signing out removes the session cookie.",
       "none": "There are no advertising, analytics or tracking cookies, and no analytics scripts.",
-      "storage": "Your browser's local storage holds interface preferences only: the theme, the cards or list view and whether the Recently opened panel is shown. They stay in your browser. The installed app (PWA) caches Shelfmark's own files for fast start-up, not your links."
+      "storage": "Your browser's local storage holds interface preferences only: the theme, the language and the cards or list view. They stay in your browser. The installed app (PWA) caches Shelfmark's own files for fast start-up, not your links."
     },
     "dont": {
       "title": "What we don't do",
@@ -334,6 +531,7 @@
       "google": "Google privacy policy",
       "github": "GitHub privacy statement",
       "tokens": "We do not store the access tokens that Google or GitHub issue when you sign in.",
+      "avatar": "Your profile photo is loaded directly from Google or GitHub, so your browser contacts them whenever Shelfmark shows it. No referrer is sent with that request, so they don't see which Shelfmark page you are on.",
       "monitoring": "If error monitoring is switched on, crashes and server errors are reported to Sentry through our own server. Reports are scrubbed before they leave: no email, IP address, cookies, request contents or saved link addresses, only technical details such as the error type, where in the code it happened, your browser and system type, the page path and a request id. If it is off, nothing is sent."
     },
     "where": {
@@ -373,14 +571,14 @@
   "auth": {
     "signIn": {
       "title": "All your links on one shelf",
-      "subtitle": "Save videos, articles, things to buy and courses in one place — and actually find them again.",
+      "subtitle": "Save anything once, find it again in seconds.",
       "google": "Continue with Google",
       "github": "Continue with GitHub",
       "demo": "Open the demo",
       "failed": "We could not sign you in. Try again.",
       "error": {
         "generic": "Sign-in did not finish. Try again.",
-        "denied": "Sign-in was cancelled. Try again when you are ready.",
+        "denied": "Sign-in was canceled. Try again when you are ready.",
         "emailMissing": "Your GitHub account has no verified email. Verify an email in your GitHub settings, or sign in with Google.",
         "restart": "The sign-in took too long or was interrupted. Start again.",
         "notLinked": "This email already belongs to an account that could not be linked. Sign in with the provider you used before."
@@ -392,20 +590,84 @@
         "demoUnavailable": "The demo is full right now. Try again later, or sign in.",
         "demoFailed": "We could not open the demo. Try again, or sign in."
       },
-      "eyebrow": "Sign in to Shelfmark",
-      "copyright": "© 2026 Shelfmark",
+      "or": "or",
       "tiles": {
-        "signalForms": { "title": "Signal Forms in 20 minutes", "note": "Watch on the weekend" },
-        "woolCoat": { "title": "Wool coat, straight cut, graphite", "note": "Wait for the sale" },
-        "nestjs": { "title": "NestJS for frontend developers", "note": "For the side project" },
-        "ramen": { "title": "The best weeknight ramen", "note": "Friday dinner" },
-        "zoneless": {
-          "title": "Zoneless change detection, explained",
-          "note": "Read before stage 0"
+        "signalForms": {
+          "title": "Signal Forms in 20 minutes"
         },
-        "lisbon": { "title": "Lisbon in three days", "note": "Maybe in May" },
-        "icons": { "title": "Icons for the side project", "note": "Compare with our own set" },
-        "reacts": { "title": "The two Reacts", "note": "Read this one day" }
+        "woolCoat": {
+          "title": "Wool coat, straight cut"
+        },
+        "nestjs": {
+          "title": "NestJS for frontend developers"
+        },
+        "ramen": {
+          "title": "The best weeknight ramen"
+        },
+        "zoneless": {
+          "title": "Zoneless change detection, explained"
+        },
+        "lisbon": {
+          "title": "Lisbon in May: a long weekend"
+        },
+        "icons": {
+          "title": "Free icon sets for side projects"
+        },
+        "grid": {
+          "title": "A complete guide to CSS grid"
+        },
+        "sourdough": {
+          "title": "Beginner sourdough, step by step"
+        },
+        "sneakers": {
+          "title": "Minimal leather sneakers"
+        },
+        "typeScale": {
+          "title": "Type scales that actually work"
+        },
+        "kyoto": {
+          "title": "Kyoto away from the crowds"
+        },
+        "containerQueries": {
+          "title": "Container queries in practice"
+        },
+        "linenShirt": {
+          "title": "Linen shirt in sage green"
+        },
+        "bikepacking": {
+          "title": "Bikepacking the Dolomites in five days"
+        },
+        "typefaces": {
+          "title": "How to pair two typefaces"
+        },
+        "rxjs": {
+          "title": "RxJS operators you actually use"
+        },
+        "cacioEPepe": {
+          "title": "Cacio e pepe without the clumps"
+        },
+        "standingDesk": {
+          "title": "The best standing desks, tested"
+        },
+        "contrast": {
+          "title": "A practical guide to color contrast"
+        },
+        "hydration": {
+          "title": "Hydration and incremental rendering"
+        },
+        "ferry": {
+          "title": "Hidden beaches you can reach by ferry"
+        }
+      },
+      "tags": {
+        "video": "video",
+        "angular": "angular",
+        "shopping": "shopping",
+        "course": "course",
+        "recipes": "recipes",
+        "travel": "travel",
+        "design": "design",
+        "css": "css"
       },
       "privacyBefore": "By continuing you agree to the",
       "privacyLink": "Privacy policy",
@@ -415,7 +677,8 @@
       "starting": "Opening the demo…"
     },
     "signOut": "Sign out",
-    "signOutFailed": "We could not sign you out. Try again."
+    "signOutFailed": "Couldn't sign you out",
+    "signOutFailedDetail": "Try again"
   },
   "shell": {
     "demoBanner": {
@@ -426,19 +689,26 @@
       },
       "signIn": "Sign in with your own account"
     },
+    "offlineBanner": {
+      "text": "You're offline. You can browse what's loaded; saving and editing come back when you reconnect."
+    },
     "accountMenu": "Account menu",
     "settings": "Settings",
     "addLink": "Add link",
-    "menu": "Open menu",
-    "drawer": {
-      "label": "Menu",
-      "close": "Close menu"
+    "tabs": {
+      "label": "Main",
+      "library": "Library",
+      "search": "Search",
+      "tags": "Tags",
+      "you": "You"
     },
     "sidebar": {
+      "footer": "Help and trash",
       "nav": "Library",
+      "foldersNav": "Folders",
       "tree": "Views and folders",
       "folders": "Folders",
-      "newFolder": "Create a folder",
+      "newFolder": "New folder",
       "folderActions": "Actions for {{name}}",
       "folderMenu": "Folder actions",
       "loadFailed": "Couldn't load your folders.",
@@ -448,10 +718,38 @@
         "addLink": "Add link here",
         "rename": "Rename",
         "move": "Move to…",
-        "delete": "Delete folder…"
+        "share": "Share…",
+        "delete": "Delete folder…",
+        "pin": "Pin to sidebar",
+        "unpin": "Unpin from sidebar",
+        "style": "Color and icon…"
+      },
+      "views": "Views",
+      "foldersTree": "Folders",
+      "pinned": {
+        "heading": "Pinned",
+        "list": "Pinned items",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "unpin": "Unpin from sidebar",
+        "unpinButton": "Unpin {{name}}",
+        "empty": "Nothing pinned yet",
+        "emptyHint": "Nothing pinned yet — use “Pin to sidebar” in a folder or link menu"
+      },
+      "reorder": {
+        "movedUp": "Moved up, position {{position}} of {{total}}",
+        "movedDown": "Moved down, position {{position}} of {{total}}"
       }
     },
-    "search": "Search"
+    "searchHint": "Search your links",
+    "searchButton": "Search",
+    "theme": {
+      "toLight": "Switch to light theme",
+      "toDark": "Switch to dark theme"
+    },
+    "sendFeedback": "Send feedback",
+    "feedbackInbox": "Feedback inbox",
+    "about": "About Shelfmark"
   },
   "folders": {
     "dialog": {
@@ -467,17 +765,20 @@
     "create": {
       "title": "New folder",
       "titleIn": "New folder in “{{parent}}”",
+      "inside": "Inside",
       "action": "Create folder",
       "saving": "Creating…",
       "failed": "Couldn't create the folder. Try again.",
       "done": "Folder created",
-      "limit": "You have reached the limit of {{max}} folders."
+      "limit": "Folder limit reached",
+      "limitDetail": "You can have up to {{max}} folders"
     },
     "rename": {
       "title": "Rename folder",
       "action": "Rename",
       "saving": "Renaming…",
-      "failed": "Couldn't rename the folder. The old name is back."
+      "failed": "Couldn't rename the folder",
+      "failedDetail": "The old name is back"
     },
     "move": {
       "title": "Move “{{name}}”",
@@ -486,7 +787,8 @@
       "searchLabel": "Search folders",
       "noResults": "No folders found",
       "action": "Move",
-      "failed": "Couldn't move the folder. It is back where it was."
+      "failed": "Couldn't move the folder",
+      "failedDetail": "It is back where it was"
     },
     "delete": {
       "title": "Delete folder “{{name}}”?",
@@ -512,7 +814,7 @@
       },
       "remove": {
         "title": "Delete links too",
-        "desc": "This can't be undone"
+        "desc": "They wait in Trash with the folder"
       },
       "action": "Delete folder",
       "actionWithLinks": {
@@ -520,11 +822,145 @@
         "other": "Delete folder and {{count}} links"
       },
       "failed": "Couldn't delete the folder. Nothing was changed.",
-      "done": "Folder deleted"
+      "done": "Folder moved to Trash"
+    },
+    "style": {
+      "colour": "Color",
+      "icon": "Icon",
+      "tabs": {
+        "icon": "Icon",
+        "emoji": "Emoji"
+      },
+      "reset": "Reset",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close",
+      "failed": "Couldn't save the style",
+      "failedDetail": "The old color and icon are back.",
+      "colours": {
+        "graphite": "Graphite",
+        "sage": "Sage",
+        "ocean": "Ocean",
+        "plum": "Plum",
+        "clay": "Clay",
+        "amber": "Amber",
+        "rose": "Rose",
+        "teal": "Teal"
+      },
+      "icons": {
+        "folder": "Folder",
+        "briefcase": "Briefcase",
+        "code": "Code",
+        "graduation-cap": "Graduation cap",
+        "shirt": "Shirt",
+        "cooking-pot": "Cooking pot",
+        "bookmark": "Bookmark",
+        "star": "Star",
+        "clock": "Clock",
+        "link": "Link",
+        "tag": "Tag",
+        "inbox": "Inbox",
+        "image": "Image",
+        "cards": "Cards",
+        "list": "List",
+        "saved-link": "Saved link",
+        "monitor": "Monitor",
+        "user": "User",
+        "settings": "Settings",
+        "download": "Download",
+        "share": "Share",
+        "ball": "Ball",
+        "bike": "Bike",
+        "book": "Book",
+        "bulb": "Light bulb",
+        "calendar": "Calendar",
+        "camera": "Camera",
+        "car": "Car",
+        "chart": "Chart",
+        "cloud": "Cloud",
+        "coffee": "Coffee",
+        "dumbbell": "Dumbbell",
+        "film": "Film",
+        "flag": "Flag",
+        "gamepad": "Game controller",
+        "gift": "Gift",
+        "globe": "Globe",
+        "hammer": "Hammer",
+        "health": "Health",
+        "heart": "Heart",
+        "home": "Home",
+        "kids": "Kids",
+        "leaf": "Leaf",
+        "map-pin": "Map pin",
+        "mountain": "Mountain",
+        "music": "Music",
+        "palette": "Palette",
+        "paw": "Paw",
+        "plane": "Plane",
+        "rocket": "Rocket",
+        "shopping-bag": "Shopping bag",
+        "sun": "Sun",
+        "tree": "Tree",
+        "trophy": "Trophy",
+        "umbrella": "Umbrella",
+        "utensils": "Food",
+        "wallet": "Wallet",
+        "newspaper": "Newspaper",
+        "backpack": "Backpack",
+        "palm": "Palm tree",
+        "guitar": "Guitar",
+        "laptop": "Laptop",
+        "lock": "Lock"
+      },
+      "own": {
+        "group": "Your own colors",
+        "add": "Add your own color",
+        "picker": "Choose a color"
+      },
+      "ownSwatch": "Your color {{colour}}",
+      "emoji": {
+        "label": "Emoji",
+        "hint": "Use one emoji instead of an icon",
+        "placeholder": "Choose an emoji",
+        "invalid": "Enter exactly one emoji.",
+        "search": "Search emoji",
+        "categoriesLabel": "Categories",
+        "categories": {
+          "food": "Food",
+          "travel": "Travel",
+          "work": "Work",
+          "sport": "Sport",
+          "home": "Home",
+          "animals": "Animals",
+          "nature": "Nature",
+          "objects": "Objects",
+          "symbols": "Symbols"
+        },
+        "recent": "Recent",
+        "own": "Yours",
+        "results": "Results",
+        "noResults": "No emoji found",
+        "loading": "Loading emoji",
+        "close": "Close",
+        "remove": "Remove emoji {{emoji}}",
+        "removed": "Emoji removed",
+        "removeFailed": "Couldn’t remove the emoji",
+        "undo": "Undo"
+      },
+      "iconsShowAll": "Show all icons ({{count}})",
+      "iconsShowFewer": "Show fewer"
     }
   },
   "library": {
     "title": "All links",
+    "phone": {
+      "title": "Library",
+      "openedToday": "{{count}} today",
+      "trashCount": {
+        "one": "{{count}} item",
+        "other": "{{count}} items"
+      }
+    },
     "scope": {
       "all": "All links",
       "unsorted": "Unsorted",
@@ -546,6 +982,7 @@
       "one": "{{count}} link",
       "other": "{{count}} links"
     },
+    "countWithFolders": "{{links}}, {{folders}}",
     "countMore": {
       "one": "{{count}}+ link",
       "other": "{{count}}+ links"
@@ -605,6 +1042,16 @@
       "text": "Nothing you saved has all of the selected tags.",
       "clear": "Clear filter"
     },
+    "emptyView": {
+      "title": "Nothing in “{{name}}” yet",
+      "text": "Links that match this view show up here as you save them.",
+      "clear": "Show all links"
+    },
+    "emptyFilters": {
+      "title": "Nothing matches these filters",
+      "text": "No saved link matches all of the selected filters.",
+      "clear": "Clear filters"
+    },
     "filter": {
       "label": "Active filters"
     },
@@ -632,11 +1079,20 @@
     "pageTitle": {
       "page": "{{page}} · {{app}}",
       "search": "Search: {{query}} · {{app}}"
+    },
+    "kind": {
+      "remove": "Remove filter {{kind}}"
+    },
+    "viewMenu": {
+      "label": "Sort, view and export",
+      "button": "Options",
+      "sortBy": "Sort by"
     }
   },
   "export": {
     "menu": "Export",
-    "failed": "Couldn't export your links. Try again.",
+    "failed": "Couldn't export your links",
+    "failedDetail": "Check your connection, then try again",
     "retry": "Try again",
     "view": {
       "json": "This view as JSON",
@@ -649,49 +1105,273 @@
   },
   "settings": {
     "title": "Settings",
+    "phoneTitle": "You",
     "back": "Back to links",
+    "backToList": "Back to You",
+    "nav": {
+      "account": "Account",
+      "appearance": "Appearance",
+      "library": "Library",
+      "language": "Language",
+      "privacy": "Privacy and data",
+      "shortcuts": "Keyboard shortcuts",
+      "feedback": "Your feedback"
+    },
+    "description": {
+      "account": "Your profile, your shelf and your data.",
+      "appearance": "Saved as you go and synced to all your devices.",
+      "library": "How links are shown, saved and kept.",
+      "language": "The language of the interface. Date and time formats are in Appearance.",
+      "privacy": "What we keep, and how to take it with you.",
+      "shortcuts": "Work without the mouse.",
+      "feedback": "Ideas, problems and the answers we sent."
+    },
     "account": {
-      "title": "Account"
+      "profile": "Profile",
+      "open": "Account",
+      "signOut": {
+        "title": "Sign out",
+        "label": "Sign out of Shelfmark",
+        "hint": "Your links stay saved. Sign in again any time."
+      },
+      "memberSince": "Member since {{date}}",
+      "shelf": {
+        "title": "Your shelf",
+        "loading": "Loading your numbers",
+        "links": "Links",
+        "folders": "Folders",
+        "tags": "Tags",
+        "oldest": "Oldest link: {{when}}",
+        "topSites": "Sites you save most",
+        "topTags": "Most used tags",
+        "weekly": "Links added per week",
+        "weeklyHint": "Last 12 weeks",
+        "week": "Week of {{date}}: {{count}}",
+        "error": "Couldn't load your numbers.",
+        "retry": "Try again",
+        "empty": {
+          "title": "Nothing saved yet",
+          "text": "Save your first link and your numbers show up here."
+        }
+      },
+      "connected": {
+        "title": "Connected accounts",
+        "since": "Connected {{date}}",
+        "none": "The demo account isn't linked to Google or GitHub.",
+        "google": "Google",
+        "github": "GitHub"
+      }
     },
     "data": {
       "title": "Your data",
       "export": {
         "label": "Export your data",
-        "hint": "All your folders, tags and links in one file",
         "json": "JSON",
-        "html": "Bookmarks HTML"
+        "jsonHint": "All your folders, tags and links in one file",
+        "html": "Bookmarks HTML",
+        "htmlHint": "Opens in any browser’s bookmark import",
+        "download": "Download",
+        "downloadAs": "Download {{format}}"
       }
     },
     "appearance": {
       "title": "Appearance",
       "theme": {
         "label": "Theme",
-        "hint": "System follows your device",
+        "hint": "Light and Dark are tuned by us and always stay the same. Custom is yours to change.",
         "system": "System",
         "light": "Light",
-        "dark": "Dark"
+        "dark": "Dark",
+        "custom": "Custom",
+        "note": "Want other colors or corners? Choose Custom. Light and Dark won’t change."
       },
-      "language": {
-        "label": "Language",
-        "hint": "More languages are coming",
-        "value": "English"
+      "custom": {
+        "base": {
+          "label": "Start from",
+          "hint": "Your colors sit on the light or the dark base",
+          "light": "Light",
+          "dark": "Dark"
+        },
+        "accent": {
+          "label": "Accent color",
+          "hint": "Active folder, tags, favorites and focus. Every option keeps 4.5:1 contrast in light and dark.",
+          "sage": "Sage",
+          "ocean": "Ocean",
+          "plum": "Plum",
+          "clay": "Clay",
+          "amber": "Amber",
+          "rose": "Rose",
+          "teal": "Teal",
+          "graphite": "Graphite"
+        },
+        "background": {
+          "label": "Background",
+          "hint": "The page behind cards and panels",
+          "stone": "Stone",
+          "paper": "Paper",
+          "mist": "Mist",
+          "white": "White",
+          "graphite": "Graphite",
+          "ink": "Ink",
+          "forest": "Forest",
+          "black": "Black"
+        },
+        "corners": {
+          "label": "Corners",
+          "hint": "Cards, panels and buttons",
+          "round": "Round",
+          "soft": "Soft",
+          "square": "Square"
+        },
+        "reset": "Reset custom theme",
+        "own": {
+          "label": "Your own color",
+          "picker": "Choose a color",
+          "hex": "Hex code",
+          "invalid": "Enter # and six digits or letters a–f, like #2e6a99.",
+          "hint": "Shelfmark keeps 4.5:1 contrast: on the other base it uses a darker or lighter shade of your color.",
+          "warning": "This color is hard to read on your background ({{ratio}}:1, it needs 4.5:1).",
+          "use": "Use {{colour}}",
+          "saturation": "Saturation",
+          "brightness": "Brightness",
+          "hue": "Hue",
+          "addColour": "Add color",
+          "cancel": "Cancel",
+          "remove": "Remove color {{colour}}",
+          "removed": "Color removed",
+          "undo": "Undo",
+          "removeFailed": "Couldn’t remove the color"
+        },
+        "ownBackground": {
+          "label": "Your own background color",
+          "hint": "Text must stay readable (4.5:1): if needed, Shelfmark uses a lighter or darker shade of your color.",
+          "warning": "Text is hard to read on this background ({{ratio}}:1, it needs 4.5:1)."
+        }
+      },
+      "layout": {
+        "title": "Text and layout",
+        "textSize": {
+          "label": "Text size",
+          "hint": "Scales the whole interface, not just text",
+          "s": "90%",
+          "m": "100%",
+          "l": "112%",
+          "xl": "125%"
+        },
+        "font": {
+          "label": "Font",
+          "hint": "Readable is designed for low vision",
+          "onest": "Onest",
+          "system": "System",
+          "readable": "Readable"
+        },
+        "density": {
+          "label": "Density",
+          "hint": "Compact fits more links on screen",
+          "comfortable": "Comfortable",
+          "compact": "Compact"
+        }
+      },
+      "cards": {
+        "title": "Cards",
+        "preview": {
+          "label": "Preview image",
+          "hint": "The picture at the top of each card",
+          "large": "Large",
+          "small": "Small",
+          "off": "Off"
+        },
+        "site": {
+          "label": "Show site",
+          "hint": "Domain and favicon above the title"
+        },
+        "notes": {
+          "label": "Show notes",
+          "hint": "Your note under the title"
+        },
+        "tags": {
+          "label": "Show tags",
+          "hint": "Tag chips at the bottom of the card"
+        }
+      },
+      "sidebar": {
+        "colours": {
+          "label": "Folder colors",
+          "hint": "Off shows every folder in plain graphite"
+        }
+      },
+      "motion": {
+        "title": "Sidebar and motion",
+        "label": "Animations",
+        "hint": "Reduced keeps fades and loaders, removes movement",
+        "system": "System",
+        "full": "Full",
+        "reduced": "Reduced"
+      },
+      "preview": {
+        "title": "Live preview",
+        "label": "Preview of your settings",
+        "hint": "Changes apply to the whole app at once.",
+        "folders": {
+          "angular": "Angular",
+          "clothes": "Clothes",
+          "recipes": "Recipes"
+        },
+        "cards": {
+          "one": {
+            "site": "youtube.com",
+            "title": "Signal Forms in 20 minutes",
+            "tag": "angular",
+            "note": "Watch on the weekend"
+          },
+          "two": {
+            "site": "cos.com",
+            "title": "Wool coat, straight cut",
+            "tag": "clothes",
+            "note": "Wait for the sale"
+          }
+        },
+        "recent": "Recently opened"
+      },
+      "failed": "Couldn't save the appearance",
+      "failedDetail": "It is back to how it was."
+    },
+    "privacy": {
+      "policy": {
+        "label": "Privacy policy",
+        "hint": "What we store and why, in plain words",
+        "action": "Read",
+        "actionLabel": "Read the privacy policy"
+      },
+      "recent": {
+        "label": "Remember recently opened",
+        "hint": "Keeps the Recently opened list. Off clears it and stops recording.",
+        "confirm": {
+          "title": "Stop remembering recently opened?",
+          "message": "The Recently opened list is cleared, and links you open are not added until you turn this back on. Your links stay saved.",
+          "confirm": "Clear and stop",
+          "cancel": "Cancel",
+          "close": "Close"
+        }
+      },
+      "data": {
+        "hint": "Everything you saved, as JSON or bookmarks HTML",
+        "action": "Open export"
+      },
+      "kept": {
+        "title": "What we keep"
       }
     },
     "footer": {
       "privacy": "Privacy policy",
       "version": "Shelfmark v1.0"
     },
-    "welcome": {
-      "title": "Welcome tour",
-      "hint": "See the 3-step introduction again",
-      "action": "Show welcome again",
-      "error": "Couldn't reset the welcome tour. Try again."
-    },
     "delete": {
       "title": "Delete account",
       "hint": "Removes your account and all your links, folders and tags for good. This can't be undone.",
       "action": "Delete account",
-      "done": "Your account and all your data were deleted.",
+      "done": "Account deleted",
+      "doneDetail": "All your data was deleted",
       "dialog": {
         "title": "Delete your account?",
         "text": "All your links, folders and tags will be deleted for good. This can't be undone.",
@@ -706,6 +1386,161 @@
         "rateLimited": "Too many attempts. Try again in a minute.",
         "failed": "We could not delete your account. Nothing was deleted. Try again."
       }
+    },
+    "library": {
+      "viewing": {
+        "title": "Viewing",
+        "view": {
+          "label": "Default view",
+          "hint": "How folders open the first time"
+        },
+        "sort": {
+          "label": "Sort links by",
+          "hint": "Each folder remembers its own choice after you change it"
+        },
+        "open": {
+          "label": "Open links in",
+          "newTab": "New tab",
+          "sameTab": "Same tab"
+        },
+        "counts": {
+          "label": "Show folder counts",
+          "hint": "Numbers next to folders in the sidebar"
+        }
+      },
+      "saving": {
+        "title": "Saving",
+        "folder": {
+          "label": "New links go to",
+          "hint": "When you paste a link without picking a folder"
+        },
+        "previews": {
+          "label": "Fetch titles and previews",
+          "hint": "Turn off to save only the address"
+        }
+      },
+      "failed": "Couldn't save the setting",
+      "failedDetail": "It is back to how it was.",
+      "note": "Subfolders are always shown first in a folder; it isn’t a setting. Changes apply at once and sync to your other devices.",
+      "trash": {
+        "title": "Trash",
+        "retention": {
+          "label": "Keep deleted items for",
+          "hint": "Then they’re removed for good",
+          "days": "{{count}} days",
+          "failed": "Couldn't save the setting",
+          "failedDetail": "It is back to {{days}} days.",
+          "loadFailed": "Couldn't load the setting."
+        },
+        "open": {
+          "label": "Trash",
+          "count": {
+            "one": "{{count}} item",
+            "other": "{{count}} items"
+          },
+          "none": "Nothing in Trash",
+          "action": "Open Trash"
+        },
+        "shorten": {
+          "title": "Shorten how long Trash keeps items?",
+          "message": {
+            "one": "{{count}} item in Trash is older than {{days}} days and will be deleted for good tonight.",
+            "other": "{{count}} items in Trash are older than {{days}} days and will be deleted for good tonight."
+          },
+          "confirm": "Keep for {{days}} days",
+          "cancel": "Cancel",
+          "close": "Close"
+        }
+      }
+    },
+    "language": {
+      "title": "Language",
+      "interface": {
+        "label": "Interface language",
+        "hint": "Your links and notes stay as they are",
+        "browser": "Match my browser"
+      },
+      "dates": {
+        "title": "Dates and numbers"
+      },
+      "date": {
+        "label": "Date format",
+        "default": "Language default ({{example}})"
+      },
+      "time": {
+        "label": "Time",
+        "default": "Auto",
+        "h24": "24-hour",
+        "h12": "12-hour"
+      },
+      "week": {
+        "label": "Week starts on",
+        "hint": "Groups this week in Recently opened",
+        "default": "Auto"
+      },
+      "preview": {
+        "label": "Preview",
+        "value": "{{weekday}}, {{date}}, {{time}}"
+      },
+      "failed": "Couldn’t save the setting",
+      "failedDetail": "It is back to how it was."
+    },
+    "help": "Help"
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "open": "Keyboard shortcuts",
+    "close": "Close",
+    "hint": "Press ? anywhere except in a text field.",
+    "page": {
+      "label": "All shortcuts",
+      "action": "Open list",
+      "singleKey": {
+        "label": "Use single-key shortcuts",
+        "hint": "The ? key opens the list on its own, never while you type in a field. Turn off to use only the top bar button."
+      }
+    },
+    "groups": {
+      "everywhere": "Everywhere",
+      "links": "Saving and finding",
+      "folders": "In the folder list",
+      "selecting": "Selecting links"
+    },
+    "items": {
+      "search": "Search",
+      "list": "This list",
+      "close": "Close a dialog, menu or toast",
+      "undo": "Undo the last action",
+      "toastAction": "Go to the button of a toast",
+      "save": "Save the link",
+      "results": "Move through search results",
+      "openResult": "Open the result",
+      "openBackground": "Open it in a background tab",
+      "moveFolder": "Move between folders",
+      "toggleFolder": "Close or open a folder",
+      "folderMenu": "Open the folder menu",
+      "paste": "Paste links into the library",
+      "reorder": "Move a pinned item or folder up or down",
+      "select": "Select or unselect the focused link",
+      "selectRange": "Select up to the focused link",
+      "selectAll": "Select every link in the list",
+      "moveLink": "Move the focused link to a folder",
+      "clearSelection": "Clear the selection"
+    },
+    "keys": {
+      "command": "Command",
+      "ctrl": "Ctrl",
+      "option": "Option",
+      "alt": "Alt",
+      "shift": "Shift",
+      "enter": "Enter",
+      "escape": "Esc",
+      "up": "Up",
+      "down": "Down",
+      "left": "Left",
+      "right": "Right",
+      "question": "Question mark",
+      "space": "Space"
     }
   },
   "tags": {
@@ -724,10 +1559,17 @@
       "showLess": "Show less",
       "menu": {
         "label": "Tag actions",
+        "summary": "{{name}}, {{links}}",
         "show": "Show links",
         "rename": "Rename",
         "merge": "Merge into another tag…",
         "delete": "Delete tag"
+      }
+    },
+    "page": {
+      "empty": {
+        "title": "No tags yet",
+        "text": "Tags group links across folders. Add one here, or while you save a link."
       }
     },
     "add": {
@@ -759,6 +1601,8 @@
       "action": "Merge",
       "required": "Choose a tag to merge into",
       "failed": "Couldn't merge the tags. Try again.",
+      "failedTitle": "Couldn't merge the tags",
+      "failedDetail": "Try again",
       "done": "Merged “{{name}}” into “{{target}}”"
     },
     "delete": {
@@ -770,7 +1614,8 @@
       "confirm": "Delete tag",
       "undo": "Undo",
       "done": "Tag “{{name}}” deleted",
-      "failed": "Couldn't delete the tag “{{name}}”. It is back."
+      "failed": "Couldn't delete the tag “{{name}}”",
+      "failedDetail": "It is back"
     },
     "filter": {
       "label": "Filtered by tags",
@@ -805,7 +1650,9 @@
       "one": "{{count}} result",
       "other": "{{count}} results"
     },
-    "hint": "Type to search your links, folders and tags.",
+    "hintTitle": "Search your shelf",
+    "hint": "Titles, notes, tags and sites show up as you type.",
+    "emptyText": "Try another word. Search looks through titles, notes, tags and sites.",
     "searching": "Searching…",
     "failed": "Couldn't search. Try again.",
     "hints": {
@@ -864,6 +1711,7 @@
     "notNow": "Not now",
     "feedback": {
       "title": "What would make it better?",
+      "yourScore": "Your score: {{score}}",
       "label": "Your feedback",
       "placeholder": "Tell us what is missing or annoying",
       "counter": "characters",
@@ -880,10 +1728,573 @@
     }
   },
   "errors": {
-    "rateLimited": "Too many requests. Try again in a moment.",
-    "server": "Something went wrong on our side. Try again."
+    "rateLimited": {
+      "title": "Too many requests",
+      "detail": "Try again in a moment"
+    },
+    "server": {
+      "title": "Something went wrong on our side",
+      "detail": "Try again"
+    }
   },
   "toast": {
-    "actionHint": "Press {{shortcut}} to reach {{action}}"
+    "actionHint": "Press {{shortcut}} to reach {{action}}",
+    "dismiss": "Dismiss"
+  },
+  "trash": {
+    "title": "Trash",
+    "count": {
+      "one": "{{count}} item, kept for {{days}} days",
+      "other": "{{count}} items, kept for {{days}} days"
+    },
+    "nothing": "Nothing here",
+    "emptyAction": "Empty trash",
+    "loading": "Loading Trash",
+    "loadFailed": {
+      "title": "Couldn't load Trash",
+      "text": "Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "filter": {
+      "label": "Show",
+      "all": "All {{count}}",
+      "links": "Links {{count}}",
+      "folders": "Folders {{count}}",
+      "emptyTitle": "Nothing of this kind in Trash",
+      "emptyText": "Show everything to see what else is waiting here.",
+      "showAll": "Show all"
+    },
+    "selectAll": "Select all",
+    "selected": {
+      "one": "{{count}} selected",
+      "other": "{{count}} selected"
+    },
+    "group": "Recently deleted",
+    "row": {
+      "from": "From {{folder}}",
+      "fromUnsorted": "From Unsorted",
+      "deleted": "Deleted {{when}}",
+      "links": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      },
+      "daysLeft": {
+        "one": "{{count}} day left",
+        "other": "{{count}} days left"
+      },
+      "lastDay": "Less than a day left",
+      "select": "Select {{title}}",
+      "selectHint": "Selects this entry",
+      "restore": "Restore",
+      "restoreItem": "Restore {{title}}",
+      "deleteItem": "Delete {{title}} forever",
+      "more": "More for {{title}}",
+      "moreTooltip": "More actions",
+      "deleteForever": "Delete forever",
+      "actionsHint": "Shows Restore and Delete",
+      "delete": "Delete"
+    },
+    "footer": "Items are deleted for good after {{days}} days. Restore puts a link back in its folder, or in Unsorted if the folder is gone.",
+    "swipeHint": "Swipe left to restore or delete for good. Long-press to select several.",
+    "emptyState": {
+      "title": "Trash is empty",
+      "text": "Deleted links and folders wait here for {{days}} days, so nothing is gone by accident."
+    },
+    "bar": {
+      "label": "Actions for selected items",
+      "restore": "Restore",
+      "deleteForever": "Delete forever",
+      "clear": "Clear selection"
+    },
+    "emptyConfirm": {
+      "title": "Empty trash?",
+      "message": "{{items}} will be deleted for good. This can’t be undone.",
+      "messageFolder": "{{items}} will be deleted for good, including the folder “{{name}}” and its {{links}}. This can’t be undone.",
+      "messageFolders": "{{items}} will be deleted for good, including {{folders}} and their {{links}}. This can’t be undone.",
+      "folders": {
+        "one": "{{count}} folder",
+        "other": "{{count}} folders"
+      },
+      "items": {
+        "one": "{{count}} item",
+        "other": "{{count}} items"
+      },
+      "confirm": {
+        "one": "Delete {{count}} item",
+        "other": "Delete {{count}} items"
+      },
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "deleteConfirm": {
+      "title": "Delete forever?",
+      "message": "“{{title}}” will be deleted for good. This can’t be undone.",
+      "messageFolder": "The folder “{{title}}” and its {{links}} will be deleted for good. This can’t be undone.",
+      "messageMany": "{{items}} will be deleted for good. This can’t be undone.",
+      "confirm": "Delete forever",
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "toast": {
+      "restored": "Restored",
+      "restoredMany": {
+        "one": "{{count}} item is back",
+        "other": "{{count}} items are back"
+      },
+      "restoreFailed": "Couldn't restore",
+      "restoreFailedDetail": "Nothing was changed.",
+      "restoreFull": "Couldn't restore",
+      "restoreFullDetail": "Your library is full. Delete something and try again.",
+      "deleted": "Deleted for good",
+      "deletedMany": {
+        "one": "{{count}} item deleted for good",
+        "other": "{{count}} items deleted for good"
+      },
+      "deleteFailed": "Couldn't delete",
+      "deleteFailedDetail": "It is back in Trash.",
+      "emptied": "Trash emptied",
+      "emptyFailed": "Couldn't empty Trash",
+      "emptyFailedDetail": "Nothing was deleted."
+    },
+    "emptyShort": "Empty"
+  },
+  "pins": {
+    "limit": {
+      "title": "Pinned is full",
+      "detail": "You can pin up to {{max}} folders and links. Unpin one first."
+    },
+    "pinFailed": {
+      "title": "Couldn't pin",
+      "detail": "Nothing was changed. Try again."
+    },
+    "unpinFailed": {
+      "title": "Couldn't unpin",
+      "detail": "It is still pinned."
+    },
+    "moveFailed": {
+      "title": "Couldn't change the order",
+      "detail": "The old order is back."
+    },
+    "pinnedToTopFailed": {
+      "title": "Couldn't change the pin",
+      "detail": "It is back as it was."
+    },
+    "unpinned": {
+      "title": "Unpinned from sidebar"
+    }
+  },
+  "views": {
+    "label": "Saved views",
+    "all": "All",
+    "add": "Save this view",
+    "menu": {
+      "for": "Actions for {{name}}",
+      "rename": "Rename",
+      "moveLeft": "Move left",
+      "moveRight": "Move right",
+      "delete": "Delete view"
+    },
+    "name": {
+      "label": "Name",
+      "placeholder": "To read",
+      "required": "Enter a name",
+      "tooLong": "Use at most {{max}} characters"
+    },
+    "dialog": {
+      "close": "Close",
+      "cancel": "Cancel"
+    },
+    "create": {
+      "title": "Save this view",
+      "action": "Save view",
+      "saving": "Saving…",
+      "failed": "Couldn't save the view. Try again.",
+      "limit": "You already have the most views you can save. Delete one first.",
+      "missing": "The folder of this view is gone. Open another folder and try again."
+    },
+    "created": {
+      "title": "View saved"
+    },
+    "rename": {
+      "title": "Rename view",
+      "action": "Rename",
+      "saving": "Renaming…"
+    },
+    "renameFailed": {
+      "title": "Couldn't rename the view"
+    },
+    "deleteConfirm": {
+      "title": "Delete view {{name}}?",
+      "message": "Only the view goes. The links stay where they are.",
+      "confirm": "Delete view",
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "deleted": {
+      "title": "View deleted"
+    },
+    "deleteFailed": {
+      "title": "Couldn't delete the view"
+    },
+    "moveFailed": {
+      "title": "Couldn't move the view"
+    },
+    "limit": {
+      "title": "Saved views are full",
+      "detail": "You can save up to {{max}} views. Delete one first."
+    },
+    "unavailable": {
+      "title": "This view is waiting for its folder",
+      "detail": "The folder of {{name}} is in Trash. Restore it to use the view."
+    },
+    "kindHint": {
+      "video": "Links detected as videos",
+      "article": "Links detected as articles",
+      "shopping": "Links detected as shopping"
+    }
+  },
+  "feedback": {
+    "kind": {
+      "idea": "Idea",
+      "problem": "Problem",
+      "other": "Other"
+    },
+    "status": {
+      "received": "Received",
+      "planned": "Planned",
+      "inProgress": "In progress",
+      "done": "Done",
+      "notPlanned": "Not planned"
+    },
+    "dialog": {
+      "title": "Send feedback",
+      "close": "Close",
+      "kind": "Type",
+      "field": {
+        "idea": "What would make Shelfmark better?",
+        "problem": "What went wrong?",
+        "other": "What's on your mind?"
+      },
+      "placeholder": {
+        "idea": "One thing we should change or add",
+        "problem": "What you did, and what happened instead",
+        "other": "Anything you would like us to know"
+      },
+      "hint": "We read every message.",
+      "counter": "characters",
+      "required": "Write a message first.",
+      "tooLong": "Keep it to {{max}} characters or fewer.",
+      "attachClient": "Attach browser and app version",
+      "cancel": "Cancel",
+      "send": "Send",
+      "sending": "Sending…",
+      "error": "Couldn't send. Your text is kept — try again in a moment.",
+      "rateLimited": "You have sent a lot of messages in the last hour. Your text is kept — try again later.",
+      "attachClientInfoLabel": "What is sent?",
+      "attachClientInfo": "Helps us reproduce problems. Only the app version and your browser name and version are sent."
+    },
+    "screenshot": {
+      "label": "Screenshots (optional)",
+      "drop": "Drop images or",
+      "choose": "choose files",
+      "hint": "PNG, JPEG or WebP, up to {{count}} images, {{max}} MB each.",
+      "full": "{{count}} images added, the most one message can have.",
+      "remove": "Remove image {{index}} of {{count}}: {{name}}",
+      "size": {
+        "kb": "{{size}} KB",
+        "mb": "{{size}} MB"
+      },
+      "error": {
+        "type": "That file is not a PNG, JPEG or WebP image.",
+        "size": "That image is larger than {{max}} MB. Choose a smaller one.",
+        "empty": "That file is empty.",
+        "read": "Couldn't read that file. Try another one.",
+        "count": "You can add up to {{count}} images."
+      }
+    },
+    "thanks": {
+      "title": "Thank you",
+      "text": "We read every message. You'll see its status in Settings › Your feedback.",
+      "done": "Done",
+      "screenshotsFailed": "Some images couldn't be attached. Your message was sent without them."
+    },
+    "page": {
+      "send": {
+        "title": "Send feedback",
+        "label": "Tell us what you think",
+        "hint": "An idea, a problem or anything else. We read every message.",
+        "action": "Send feedback"
+      },
+      "list": {
+        "title": "Your messages",
+        "error": "Couldn't load your messages.",
+        "retry": "Try again"
+      },
+      "empty": {
+        "title": "No messages yet",
+        "text": "What you send shows up here with its status and our reply."
+      },
+      "sent": "Sent {{date}}",
+      "sentToday": "Sent today",
+      "reply": "Reply: {{reply}}"
+    }
+  },
+  "admin": {
+    "feedback": {
+      "title": "Feedback inbox",
+      "description": "Every message, with its status and your reply.",
+      "filter": "Show",
+      "filterAll": "All statuses",
+      "status": "Status",
+      "reply": "Reply",
+      "replyHint": "Shown to the sender in Your feedback. Leave empty for none.",
+      "replyTooLong": "Keep the reply to {{max}} characters or fewer.",
+      "save": "Save",
+      "screenshot": "Open screenshot {{index}} of {{count}}",
+      "error": "Couldn't load the messages.",
+      "empty": {
+        "title": "No messages",
+        "text": "Nothing matches this filter yet."
+      },
+      "loadMore": "Load more",
+      "loadingMore": "Loading more messages",
+      "loadMoreFailed": {
+        "title": "Couldn't load more messages",
+        "detail": "Try again"
+      },
+      "saveFailed": {
+        "title": "Couldn't save",
+        "detail": "The message is back as it was. Try again."
+      }
+    }
+  },
+  "tabSync": {
+    "signedOut": {
+      "title": "You signed out in another tab",
+      "text": "To keep your links private, this tab is locked too.",
+      "signIn": "Sign in again"
+    }
+  },
+  "howItWorks": {
+    "menu": "How it works",
+    "title": "Shelfmark in 3 minutes",
+    "close": "Close",
+    "captions": "English",
+    "chaptersLabel": "Chapters",
+    "chapters": {
+      "save": "Save a link",
+      "organise": "Folders and tags",
+      "find": "Find it again",
+      "many": "Many at once",
+      "yours": "Make it yours",
+      "safety": "Undo and Trash",
+      "share": "Share and export"
+    },
+    "emptyLink": "Watch how it works",
+    "card": {
+      "label": "How it works",
+      "title": "New here? Watch how it works",
+      "length": "3 minutes",
+      "hide": "Hide"
+    }
+  },
+  "sharing": {
+    "dialog": {
+      "title": "Share folder “{{name}}”",
+      "close": "Close",
+      "done": "Done",
+      "count": {
+        "one": "{{count}} link, subfolders included",
+        "other": "{{count}} links, subfolders included"
+      },
+      "loading": "Loading the sharing settings…",
+      "loadFailed": "Couldn't load the sharing settings.",
+      "retry": "Try again",
+      "public": "Public folder",
+      "publicHint": "Anyone with the link can view this folder. No account needed.",
+      "linkLabel": "Folder page address",
+      "copy": "Copy link",
+      "copied": "Folder link copied",
+      "copyFallback": "Copying isn't allowed here. The link is selected: press Ctrl+C or ⌘C to copy it.",
+      "settings": "Link settings",
+      "notes": "Show my notes",
+      "notesHint": "Guests see why you saved each link",
+      "reset": "Reset link",
+      "resetHint": "The old folder link stops working at once",
+      "resetAction": "Reset",
+      "privateNotes": "Notes stay private unless you turn them on.",
+      "limit": "You can share up to {{max}} folders. Make another folder private first.",
+      "demo": "Demo accounts can't share folders. Sign in to share yours.",
+      "saveFailed": "Couldn't save the change. Try again."
+    },
+    "reset": {
+      "title": "Reset the folder link?",
+      "message": "The old folder link stops working at once. Anyone who should still see the folder needs the new link.",
+      "confirm": "Reset link",
+      "cancel": "Cancel",
+      "done": "Link reset",
+      "doneDetail": "The old link no longer works"
+    }
+  },
+  "publicCollection": {
+    "home": "Shelfmark home",
+    "signIn": "Sign in",
+    "backToShelf": "Back to my shelf",
+    "sharedBy": "Shared by {{name}}",
+    "sharedAnonymous": "Shared on Shelfmark",
+    "count": {
+      "one": "{{count}} link",
+      "other": "{{count}} links"
+    },
+    "updated": "Updated {{time}}",
+    "copy": "Copy link",
+    "copied": "Link copied",
+    "copyFailed": "Couldn't copy the link",
+    "copyFailedDetail": "Copy it from the address bar",
+    "filterLabel": "Subfolders",
+    "all": "All",
+    "loading": "Loading the collection…",
+    "more": "Show more",
+    "capped": "This page shows the newest {{max}} links.",
+    "empty": {
+      "title": "No links here yet",
+      "text": "The owner hasn't saved anything in this folder."
+    },
+    "notFound": {
+      "title": "This collection isn't available",
+      "text": "The link may be mistyped, or the owner turned it off or reset it.",
+      "action": "Go to Shelfmark"
+    },
+    "failed": "Couldn't load the collection.",
+    "retry": "Try again",
+    "cta": {
+      "title": "Keep your own links like this",
+      "text": "Shelfmark saves videos, articles, things to buy and courses on one calm shelf.",
+      "action": "Start your shelf"
+    },
+    "madeWith": "Made with Shelfmark"
+  },
+  "bulk": {
+    "bar": {
+      "label": {
+        "one": "Actions for {{count}} selected link",
+        "other": "Actions for {{count}} selected links"
+      },
+      "move": "Move",
+      "tags": "Tags",
+      "favorite": "Favorite",
+      "openAll": "Open all",
+      "copy": "Copy links",
+      "share": "Share",
+      "delete": "Delete"
+    },
+    "header": {
+      "label": "Selection",
+      "selected": {
+        "one": "{{count}} selected",
+        "other": "{{count}} selected"
+      },
+      "selectAll": "Select all {{count}}",
+      "selectAllShort": "Select all",
+      "selectAllBox": {
+        "one": "Select all {{count}} link",
+        "other": "Select all {{count}} links"
+      },
+      "shift": "Shift",
+      "rangeHint": "+ click selects a range",
+      "esc": "Esc",
+      "clearHint": "clears",
+      "done": "Done",
+      "cancel": "Cancel selection",
+      "longPressHint": "Long-press a link to start selecting, then tap others.",
+      "modeOn": "Selection mode on. Activating a link now selects it.",
+      "modeOff": "Selection mode off."
+    },
+    "item": {
+      "select": "Select {{title}}"
+    },
+    "move": {
+      "title": {
+        "one": "Move {{count}} link",
+        "other": "Move {{count}} links"
+      },
+      "moved": {
+        "one": "{{count}} link moved to {{folder}}",
+        "other": "{{count}} links moved to {{folder}}"
+      },
+      "failed": "Couldn't move the links",
+      "failedDetail": "They are back where they were",
+      "undoFailed": "Couldn't move the links back"
+    },
+    "tags": {
+      "title": {
+        "one": "Tags for {{count}} link",
+        "other": "Tags for {{count}} links"
+      },
+      "add": "Add to all",
+      "addHint": "Added to every selected link",
+      "remove": "Remove from all",
+      "removeHint": "Taken off every selected link; the tags themselves stay",
+      "removePlaceholder": "Pick a tag",
+      "onLinks": "on {{count}} of {{total}}",
+      "apply": "Apply",
+      "cancel": "Cancel",
+      "close": "Close",
+      "done": {
+        "one": "Tags updated on {{count}} link",
+        "other": "Tags updated on {{count}} links"
+      },
+      "failed": "Couldn't change the tags",
+      "failedDetail": "Nothing was changed",
+      "tooMany": "A link can have at most {{max}} tags. Nothing was changed."
+    },
+    "favorite": {
+      "on": {
+        "one": "{{count}} link added to favorites",
+        "other": "{{count}} links added to favorites"
+      },
+      "off": {
+        "one": "{{count}} link removed from favorites",
+        "other": "{{count}} links removed from favorites"
+      },
+      "failed": "Couldn't change favorites",
+      "failedDetail": "Nothing was changed"
+    },
+    "open": {
+      "confirmTitle": "Open {{count}} links?",
+      "confirmMessage": "Each link opens in a new tab.",
+      "confirm": "Open all",
+      "cancel": "Cancel",
+      "close": "Close",
+      "blocked": "The browser blocked {{blocked}} of {{count}} tabs",
+      "blockedDetail": "Allow pop-ups for this site to open them all"
+    },
+    "copy": {
+      "done": {
+        "one": "{{count}} link copied",
+        "other": "{{count}} links copied"
+      },
+      "failed": "Couldn't copy the links"
+    },
+    "share": {
+      "failed": "Couldn't share the links"
+    },
+    "delete": {
+      "title": {
+        "one": "Move {{count}} link to Trash?",
+        "other": "Move {{count}} links to Trash?"
+      },
+      "message": "They stay in Trash for {{days}} days, then they are deleted for good.",
+      "confirm": "Move to Trash",
+      "cancel": "Cancel",
+      "close": "Close",
+      "done": {
+        "one": "{{count}} link moved to Trash",
+        "other": "{{count}} links moved to Trash"
+      },
+      "failed": "Couldn't delete the links",
+      "failedDetail": "They are back in the list",
+      "undoFailed": "Couldn't restore the links"
+    }
   }
 }

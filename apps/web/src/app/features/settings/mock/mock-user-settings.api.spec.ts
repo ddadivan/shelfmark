@@ -1,0 +1,150 @@
+import { LIBRARY_SETTINGS_DEFAULT } from '@shelfmark/contracts';
+import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
+import { DOCUMENT } from '@angular/common';
+import { Injector, runInInjectionContext } from '@angular/core';
+import { CUSTOM_THEME_DEFAULT, MOTION_PREFERENCE, THEME_PREFERENCE } from '@shelfmark/contracts';
+import { MOCK_APPEARANCE_STORAGE_KEY } from '../models/mock-appearance-storage-key.const';
+import { firstValueFrom } from 'rxjs';
+import { MockLibraryData } from '../../links/mock/mock-library-data';
+import { MOCK_LIBRARY_SETTINGS_STORAGE_KEY } from '../models/mock-library-settings-storage-key.const';
+import { MockUserSettingsApi } from './mock-user-settings.api';
+
+function create() {
+  const injector = Injector.create({
+    providers: [MockLibraryData, { provide: DOCUMENT, useValue: document }],
+  });
+  return runInInjectionContext(injector, () => ({
+    api: new MockUserSettingsApi(),
+    data: injector.get(MockLibraryData),
+  }));
+}
+
+describe('MockUserSettingsApi', () => {
+  afterEach(() => {
+    localStorage.removeItem(MOCK_APPEARANCE_STORAGE_KEY);
+    localStorage.removeItem(MOCK_LIBRARY_SETTINGS_STORAGE_KEY);
+  });
+
+  it('keeps the appearance in localStorage like an account: a new instance (a reload) reads it', async () => {
+    const customTheme = { ...CUSTOM_THEME_DEFAULT, accent: 'teal' as const };
+    await firstValueFrom(
+      create().api.update({
+        theme: THEME_PREFERENCE.Custom,
+        customTheme,
+        motion: MOTION_PREFERENCE.Full,
+      }),
+    );
+    const again = await firstValueFrom(create().api.get());
+    expect(again).toMatchObject({
+      theme: 'custom',
+      customTheme,
+      motion: 'full',
+      appearanceSaved: true,
+    });
+    // Another setting alone does not mark the appearance saved.
+    localStorage.removeItem(MOCK_APPEARANCE_STORAGE_KEY);
+    expect(
+      (await firstValueFrom(create().api.update({ pauseHistory: true }))).appearanceSaved,
+    ).toBe(false);
+  });
+
+  it('falls back to the defaults for a broken or invalid stored appearance', async () => {
+    localStorage.setItem(MOCK_APPEARANCE_STORAGE_KEY, '{');
+    expect(await firstValueFrom(create().api.get())).toMatchObject(MOCK_APPEARANCE_DEFAULTS);
+    localStorage.setItem(
+      MOCK_APPEARANCE_STORAGE_KEY,
+      JSON.stringify({ theme: 'sepia', customTheme: { base: 'dark' }, motion: 1 }),
+    );
+    expect(await firstValueFrom(create().api.get())).toMatchObject(MOCK_APPEARANCE_DEFAULTS);
+  });
+
+  it('starts with the default retention of 30 days', async () => {
+    const { api } = create();
+
+    expect(await firstValueFrom(api.get())).toEqual({
+      trashRetentionDays: 30,
+      folderColours: true,
+      pauseHistory: false,
+      customColours: [],
+      customEmoji: [],
+      ...MOCK_APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
+    });
+  });
+
+  it('changes the retention and answers the settings as they are', async () => {
+    const { api, data } = create();
+
+    expect(await firstValueFrom(api.update({ trashRetentionDays: 90 }))).toEqual({
+      trashRetentionDays: 90,
+      folderColours: true,
+      pauseHistory: false,
+      customColours: [],
+      customEmoji: [],
+      ...MOCK_APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
+    });
+    expect(data.trashRetentionDays).toBe(90);
+    expect(await firstValueFrom(api.get())).toEqual({
+      trashRetentionDays: 90,
+      folderColours: true,
+      pauseHistory: false,
+      customColours: [],
+      customEmoji: [],
+      ...MOCK_APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
+    });
+  });
+
+  it('pauses and resumes the history on the shared mock library', async () => {
+    const { api, data } = create();
+
+    expect((await firstValueFrom(api.update({ pauseHistory: true }))).pauseHistory).toBe(true);
+    expect(data.pauseHistory).toBe(true);
+    expect((await firstValueFrom(api.update({ pauseHistory: false }))).pauseHistory).toBe(false);
+    expect(data.pauseHistory).toBe(false);
+  });
+
+  it('keeps what is not sent', async () => {
+    const { api } = create();
+
+    expect(await firstValueFrom(api.update({}))).toEqual({
+      trashRetentionDays: 30,
+      folderColours: true,
+      pauseHistory: false,
+      customColours: [],
+      customEmoji: [],
+      ...MOCK_APPEARANCE_DEFAULTS,
+      ...LIBRARY_SETTINGS_DEFAULT,
+    });
+  });
+
+  it('keeps the layout options (#285) as appearance, and the library choices (#284), over a reload', async () => {
+    const saved = await firstValueFrom(
+      create().api.update({ density: 'compact', cardTags: false, defaultView: 'list' }),
+    );
+    expect(saved).toMatchObject({ density: 'compact', cardTags: false, appearanceSaved: true });
+
+    const reloaded = await firstValueFrom(create().api.get());
+    expect(reloaded).toMatchObject({
+      density: 'compact',
+      cardTags: false,
+      textSize: 'm',
+      defaultView: 'list',
+      appearanceSaved: true,
+    });
+  });
+
+  it('falls back to the default for broken stored layout values', async () => {
+    localStorage.setItem(
+      MOCK_APPEARANCE_STORAGE_KEY,
+      JSON.stringify({ theme: 'dark', textSize: 'huge', font: 3, cardSite: 'no' }),
+    );
+    expect(await firstValueFrom(create().api.get())).toMatchObject({
+      theme: 'dark',
+      textSize: 'm',
+      font: 'onest',
+      cardSite: true,
+    });
+  });
+});

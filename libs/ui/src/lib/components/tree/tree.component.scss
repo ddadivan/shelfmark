@@ -1,0 +1,165 @@
+@use '../../../styles/ui' as *;
+
+// Sidebar navigation (Tree spec). Rows are 14 / 20 text, icons 20px in `text-muted`; folder rows have a 22px `ui-folder-icon` tile. Rows are 36px (44px on a phone), each level indents 16px
+// through `--ui-tree-level`, the active row is `accent-bg`, children open by `grid-template-rows`.
+
+:host {
+  position: relative;
+  display: block;
+}
+
+.ui-tree__list {
+  display: flex;
+  flex-direction: column;
+  gap: rem(1px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+// Roving focus sits on the row itself (the `treeitem`); the ring is inset because the
+// closed-group wrapper clips overflow.
+.ui-tree__row {
+  @include type(body);
+
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  min-height: rem(36px);
+  font-size: rem(14px);
+  line-height: rem(20px);
+  padding-block: 0;
+  padding-inline: calc(#{rem(10px)} + (var(--ui-tree-level, 1) - 1) * #{rem(16px)}) rem(10px);
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  border-radius: calc(var(--radius-md) - #{rem(2px)}); // 12px with the default corners
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  &:focus-visible {
+    @include focus-ring(-2px);
+
+    .ui-tree__more {
+      opacity: 1;
+    }
+  }
+
+  // 44px on a phone or a coarse pointer. The chevron stays 16px: it is a second way to do
+  // what the row does (row click and arrow keys), the "equivalent control" exception of 2.5.8.
+  @include phone {
+    min-height: rem(44px);
+  }
+
+  @include touch-target;
+
+  @include hover {
+    background: var(--surface-hover);
+
+    .ui-tree__more {
+      opacity: 1;
+    }
+  }
+
+  // Reduced motion has no ripple, so the row itself shows the press.
+  @include reduced-motion {
+    &:active {
+      background: var(--surface-pressed);
+    }
+  }
+}
+
+// The "..." button column stays reserved on every row (folders show the button, the fixed rows
+// leave it empty), so the counts of all rows share one column and do not jump on hover.
+$more-column: rem(30px);
+
+.ui-tree__row {
+  padding-inline-end: calc(#{rem(4px)} + #{$more-column} + #{rem(8px)});
+
+  @include coarse {
+    padding-inline-end: calc(#{rem(4px)} + #{rem(44px)} + #{rem(8px)});
+  }
+}
+
+.ui-tree__row--folder {
+  padding-inline-end: rem(4px);
+}
+
+.ui-tree__icon {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.ui-tree__twist {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: rem(24px);
+  height: rem(24px);
+  color: var(--text-muted);
+  transition: transform var(--duration-fast) var(--ease-in-out);
+
+  &.is-open {
+    transform: rotate(90deg);
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.ui-tree__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-tree__count {
+  @include type(caption);
+
+  flex: none;
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.ui-tree__section {
+  @include type(caption);
+
+  display: flex;
+  align-items: center;
+
+  // Tall enough for the heading action (30px button, 44px on touch) that sits over its end.
+  min-height: calc(#{rem(30px)} + #{rem(12px)});
+  padding: rem(18px) rem(10px) rem(6px);
+  font-weight: 500;
+  color: var(--text-muted);
+
+  @include coarse {
+    min-height: calc(#{rem(44px)} + #{rem(12px)});
+  }
+}
+
+.ui-tree__action {
+  position: absolute;
+  inset-inline-end: 0;
+  display: inline-flex;
+
+  // The box is as tall as the heading text; the button is centred on it and may overhang.
+  align-items: center;
+}
+
+// Active row: the one place sage appears in navigation.
+.ui-tree__row[aria-current] {
+  font-weight: 500;
+  color: var(--accent-text);
+  background: var(--accent-bg);
+
+  .ui-tree__icon,
+  .ui-tree__twist,
+  .ui-tree__count {
+    color: var(--accent-text);
+  }
+}

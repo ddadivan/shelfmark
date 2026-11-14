@@ -1,0 +1,53 @@
+<div
+  #panel
+  class="ui-dialog"
+  [class.ui-dialog--md]="effectiveSize() === DIALOG_SIZE.Md"
+  [class.ui-dialog--lg]="effectiveSize() === DIALOG_SIZE.Lg"
+  [class.ui-dialog--command]="command()"
+  [class.ui-dialog--untitled]="hideTitle()"
+  [class.ui-dialog--phone-full]="phoneFullscreen()"
+  [class.ui-dialog--sheet]="sheetHeight() !== undefined"
+  [class.ui-dialog--sheet-tall]="sheetHeight() === SHEET_HEIGHT.Tall"
+  [class.ui-dialog--enter]="!leaving()"
+  [class.ui-dialog--leave]="leaving()"
+  [class.ui-dialog--dragging]="dragging()"
+  [class.ui-dialog--snapping]="snapping()"
+>
+  <div
+    class="ui-dialog__drag"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerCancel($event)"
+  >
+    <div class="ui-dialog__grip" aria-hidden="true"></div>
+    <div class="ui-dialog__head">
+      <h2 class="ui-dialog__title" [id]="titleId">{{ title() }}</h2>
+      <div class="ui-dialog__head-end">
+        <ng-content select="[slot=actions]" />
+        @if (closeLabel(); as label) {
+          <ui-button
+            class="ui-dialog__close"
+            variant="ghost"
+            [size]="sheetMode() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
+            iconOnly
+            iconLeft="close"
+            [ariaLabel]="label"
+            [disabled]="locked()"
+            (click)="requestClose()"
+          />
+        }
+      </div>
+    </div>
+  </div>
+  <div
+    #body
+    class="ui-dialog__body"
+    [attr.tabindex]="scrollable() ? 0 : null"
+    [attr.role]="scrollable() ? 'region' : null"
+    [attr.aria-labelledby]="scrollable() ? titleId : null"
+  >
+    <ng-content />
+  </div>
+  <div class="ui-dialog__foot"><ng-content select="[slot=footer]" /></div>
+</div>

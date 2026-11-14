@@ -1,0 +1,18 @@
+@use 'ui' as *;
+@use '../../settings-page' as *;
+@include settings-page;
+
+// The two choices from a list (sort, folder) get the width of the mockup's field.
+.library__select {
+  display: block;
+  min-width: rem(200px);
+}
+
+.library__note {
+  @include type(caption);
+
+  max-width: rem(560px);
+  margin: 0;
+  padding-inline: var(--space-2);
+  color: var(--text-muted);
+}

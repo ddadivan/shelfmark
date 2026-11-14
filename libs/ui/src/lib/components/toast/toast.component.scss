@@ -1,0 +1,114 @@
+@use '../../../styles/ui' as *;
+
+// Frosted glass (docs/design/components/Toast): 18px corners, the floating shadow, 24px blur
+// where supported. Width follows the text up to 540px; the detail line truncates.
+:host {
+  // No type style is 14/20 medium (the Toast spec size); body is the base, the size follows the spec.
+  @include type(body);
+  @include glass;
+
+  font-size: rem(14px);
+  font-weight: 500;
+  line-height: rem(20px);
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  inline-size: max-content;
+  min-inline-size: min(rem(300px), 100%);
+  max-inline-size: min(rem(540px), 100%);
+  padding: rem(10px) rem(10px) rem(10px) var(--space-3);
+  color: var(--text);
+  pointer-events: auto;
+  border-radius: rem(18px);
+}
+
+// The lead: a tinted tile for success, danger, warn and info; the kind is never colour alone,
+// each has its own glyph. 32px tile, 10px corners (the same shape as the folder tile).
+.ui-toast__icon,
+.ui-toast__folder {
+  --ui-folder-icon-size: #{rem(32px)};
+  --ui-folder-icon-radius: #{rem(10px)};
+}
+
+.ui-toast__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: rem(32px);
+  block-size: rem(32px);
+  color: var(--text);
+  background: var(--surface-hover);
+  border-radius: rem(10px);
+}
+
+:host(.ui-toast--success) .ui-toast__icon {
+  color: var(--accent-text);
+  background: var(--accent-bg);
+}
+
+:host(.ui-toast--danger) .ui-toast__icon {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+:host(.ui-toast--warn) .ui-toast__icon {
+  color: var(--warning);
+  background: var(--warning-bg);
+}
+
+// A saved link: its preview with a check badge on the corner (an icon stands in without it).
+.ui-toast__thumb {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: rem(40px);
+  block-size: rem(32px);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  border-radius: rem(9px);
+}
+
+.ui-toast__thumb-image {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.ui-toast__badge {
+  position: absolute;
+  inset-block-end: rem(-5px);
+  inset-inline-end: rem(-5px);
+  display: grid;
+  place-items: center;
+  inline-size: rem(18px);
+  block-size: rem(18px);
+  color: var(--surface);
+  background: var(--accent);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+.ui-toast__text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ui-toast__title {
+  display: block;
+}
+
+.ui-toast__detail {
+  display: block;
+  overflow: hidden;
+  font-size: rem(12px);
+  font-weight: 400;
+  line-height: rem(16px);
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

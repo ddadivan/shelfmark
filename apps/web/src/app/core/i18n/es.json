@@ -1,0 +1,2351 @@
+{
+  "landing": {
+    "header": {
+      "navLabel": "Principal",
+      "brand": "Shelfmark",
+      "signIn": "Iniciar sesión",
+      "howItWorks": "Cómo funciona",
+      "privacy": "Privacidad",
+      "getStarted": "Empezar"
+    },
+    "hero": {
+      "line1": "Pega un enlace.",
+      "line2": "Encuéntralo otra vez.",
+      "line3": "Incluso dentro de un año.",
+      "lead": "Vídeos, artículos, cosas que comprar, cursos — en una estantería tranquila en lugar de chats y pestañas abiertas.",
+      "demo": "Abrir la demo",
+      "start": "Crear mi estantería",
+      "note": "Inicia sesión con Google o GitHub.",
+      "preview": {
+        "label": "Vista previa de la aplicación",
+        "folder": "Leer más tarde",
+        "count": "21 enlaces",
+        "countArticles": "6 enlaces",
+        "view": "Vista",
+        "all": "Todos 21",
+        "articles": "Artículos 6",
+        "savedTo": "Guardado en {{folder}}",
+        "undo": "Deshacer",
+        "items": {
+          "talk": {
+            "title": "Tecnología tranquila, una charla de 20 minutos",
+            "tag": "vídeo"
+          },
+          "grid": {
+            "title": "La guía completa de CSS grid",
+            "tag": "css"
+          },
+          "design": {
+            "title": "Diseñar para la lectura larga",
+            "tag": "diseño"
+          },
+          "slow": {
+            "title": "Por qué el software lento parece roto",
+            "tag": "ux"
+          }
+        }
+      }
+    },
+    "bento": {
+      "title": "Guarda una vez, encuentra en segundos",
+      "preview": {
+        "title": "La vista previa se rellena sola",
+        "text": "Pega un enlace: el título y el sitio llegan solos. Añade una nota para recordar por qué lo guardaste.",
+        "url": "youtube.com/watch?v=ng22",
+        "domain": "youtube.com",
+        "cardTitle": "Signal Forms en 20 minutos"
+      },
+      "folders": {
+        "title": "Carpetas dentro de carpetas",
+        "text": "Guarda enlaces en carpetas y carpetas dentro de carpetas, tan profundo como lo necesite tu sistema.",
+        "work": "Trabajo",
+        "angular": "Angular",
+        "courses": "Cursos"
+      },
+      "search": {
+        "title": "Encuéntralo con cualquier palabra",
+        "text": "Busca en el título, la nota o la dirección de cada enlace, desde cualquier sitio con ⌘K.",
+        "word": "abrigo",
+        "tag": "ropa"
+      },
+      "phone": {
+        "title": "Guarda desde el móvil",
+        "text": "Instala Shelfmark y aparece en el menú Compartir de Android. Comparte una página y llega a tu estantería."
+      },
+      "own": {
+        "title": "Tus enlaces siguen siendo tuyos",
+        "text": "Exporta todo en JSON o como archivo de marcadores del navegador cuando quieras."
+      }
+    },
+    "beforeAfter": {
+      "title": "Los mismos enlaces, antes y después",
+      "before": "Antes: dispersos",
+      "after": "Después: en una estantería",
+      "pauseMotion": "Pausar animaciones"
+    },
+    "before": {
+      "pingTitle": "+1 en Mensajes guardados",
+      "pingLink": "youtu.be/…",
+      "bubbleTitle": "Mensajes guardados",
+      "bubbleLink": "youtube.com/watch?v=ng22…",
+      "tabCoat": "Abrigo de l…",
+      "tabCourse": "Curso Nes…",
+      "tabMore": "+ 37",
+      "sticky": "ver luego: ¿¿receta de ramen?? enlace en algún sitio del chat",
+      "bookmarks": "Barra de marcadores (91)",
+      "summary": "Enlaces dispersos entre Mensajes guardados, pestañas del navegador, notas adhesivas y una barra de marcadores."
+    },
+    "after": {
+      "treeLabel": "Carpetas",
+      "listLabel": "Enlaces de la carpeta seleccionada",
+      "tagsTitle": "Etiquetas",
+      "tags": {
+        "video": "vídeo",
+        "courses": "cursos"
+      },
+      "folders": {
+        "clothes": "Ropa",
+        "work": "Trabajo",
+        "angular": "Angular",
+        "recipes": "Recetas"
+      },
+      "links": {
+        "coat": {
+          "title": "Abrigo de lana, grafito",
+          "note": "Esperar a las rebajas, talla M"
+        },
+        "boots": {
+          "title": "Botines Chelsea de piel",
+          "note": "Para el invierno"
+        },
+        "jumper": {
+          "title": "Jersey de cuello redondo de merino",
+          "note": "Idea de regalo"
+        },
+        "signalForms": {
+          "title": "Signal Forms en 20 minutos",
+          "note": "Ver el fin de semana"
+        },
+        "nestjs": {
+          "title": "NestJS para desarrolladores frontend",
+          "note": "Para el proyecto personal"
+        },
+        "zoneless": {
+          "title": "Detección de cambios zoneless",
+          "note": "Leer antes de la fase 0"
+        },
+        "ramen": {
+          "title": "El mejor ramen para entre semana",
+          "note": "Cena del viernes"
+        },
+        "focaccia": {
+          "title": "Focaccia sin amasar",
+          "note": "Para el domingo"
+        },
+        "kimchi": {
+          "title": "Kimchi en tarro",
+          "note": "Hace falta un tarro grande"
+        }
+      }
+    },
+    "why": {
+      "title": "Por qué existe",
+      "quote": "«Mis mensajes guardados tenían cientos de enlaces: cursos, un abrigo que quería, una receta de ramen, ese artículo sobre Angular zoneless. Nunca conseguía encontrarlos. Así que construí la estantería que quería.»",
+      "author": "Dmytro",
+      "authorName": "Dmytro Dadivan",
+      "role": "Desarrollador frontend"
+    },
+    "built": {
+      "title": "Cómo está hecho",
+      "text": "Angular 22 con signals, NestJS, PostgreSQL. Planificado, programado, probado y revisado por un equipo de agentes de Claude Code, con cada decisión a la vista.",
+      "agentsLabel": "Agentes de Claude Code",
+      "code": "Leer el código en GitHub",
+      "decisions": "Leer el registro de decisiones"
+    },
+    "finale": {
+      "title": "Vacía tus Mensajes guardados.",
+      "lead": "Pega un enlace, dale una carpeta y una nota. Todo lo que guardes a partir de ahora llega a una sola estantería, a dos pulsaciones de distancia.",
+      "demo": "Abrir la demo",
+      "signIn": "Iniciar sesión"
+    },
+    "footer": {
+      "copyright": "© 2026 Shelfmark",
+      "privacy": "Privacidad",
+      "github": "GitHub",
+      "language": "Idioma"
+    },
+    "newTab": "se abre en una pestaña nueva",
+    "backToShelf": "Volver a mi estantería",
+    "whatsNew": {
+      "title": "Novedades",
+      "items": {
+        "trash": {
+          "title": "Papelera",
+          "text": "Los enlaces y carpetas eliminados esperan en la papelera, así nada desaparece por error. Elige cuánto tiempo se quedan en Ajustes."
+        },
+        "tabs": {
+          "title": "Tus pestañas van a la par",
+          "text": "Guarda, edita o elimina un enlace en una pestaña y todas las demás pestañas abiertas lo muestran."
+        },
+        "move": {
+          "title": "Mover a carpeta y arrastrar y soltar",
+          "text": "Mueve un enlace desde su menú o arrástralo a una carpeta de la barra lateral."
+        },
+        "refresh": {
+          "title": "Un aspecto renovado",
+          "text": "Esquinas más suaves, una barra de pestañas flotante en el móvil y avisos que dicen qué ha pasado."
+        }
+      }
+    }
+  },
+  "links": {
+    "add": {
+      "title": "Añadir enlace",
+      "close": "Cerrar",
+      "url": {
+        "label": "Enlace",
+        "placeholder": "https://",
+        "hint": "Pega un enlace — el título y la vista previa se rellenan solos",
+        "required": "Introduce un enlace",
+        "invalid": "Introduce una dirección que empiece por http:// o https://",
+        "tooLong": "El enlace es demasiado largo (máximo {{max}} caracteres)"
+      },
+      "shortcut": {
+        "cmd": "⌘",
+        "ctrl": "Ctrl",
+        "enter": "Intro",
+        "save": "para guardar"
+      },
+      "preview": {
+        "loading": "Cargando vista previa",
+        "loadingHint": "Puedes seguir escribiendo una nota y eligiendo una carpeta mientras carga.",
+        "filled": "Rellenado desde la página. Puedes editar el título.",
+        "failed": "No se pudo cargar la vista previa. El enlace se guardará con su dirección como título — puedes cambiarle el nombre.",
+        "ready": "Vista previa cargada: {{title}}",
+        "unavailable": "No hay vista previa para esta página. El enlace se guardará con su dirección como título — puedes cambiarle el nombre."
+      },
+      "titleField": {
+        "label": "Título",
+        "required": "Introduce un título",
+        "tooLong": "El título es demasiado largo (máximo {{max}} caracteres)"
+      },
+      "folder": {
+        "label": "Carpeta",
+        "unsorted": "Sin carpeta",
+        "searchLabel": "Buscar carpetas",
+        "noResults": "No se encontraron carpetas"
+      },
+      "tags": {
+        "label": "Etiquetas",
+        "placeholder": "Añadir etiqueta",
+        "max": "Hasta {{max}} etiquetas",
+        "create": "Crear la etiqueta «{name}»",
+        "remove": "Quitar la etiqueta {name}",
+        "added": "Etiqueta {name} añadida",
+        "removed": "Etiqueta {name} quitada",
+        "duplicate": "La etiqueta {name} ya está añadida",
+        "list": "Sugerencias de etiquetas"
+      },
+      "note": {
+        "label": "Nota",
+        "placeholder": "¿Por qué lo guardas?",
+        "hint": "Te ayuda a encontrarlo después",
+        "counter": "caracteres",
+        "tooLong": "La nota es demasiado larga (máximo {{max}} caracteres)"
+      },
+      "duplicate": {
+        "text": "Ya guardaste este enlace en {{folder}}. Ábrelo o guárdalo otra vez."
+      },
+      "saveFailed": "No se pudo guardar el enlace. Inténtalo de nuevo.",
+      "saveFailedLimit": "Has alcanzado el límite de {{max}} enlaces guardados. Elimina algunos para guardar más.",
+      "saveFailedChanged": "Una carpeta o etiqueta cambió mientras se guardaba. Inténtalo de nuevo.",
+      "saveFailedRateLimit": "Demasiadas solicitudes. Espera un momento e inténtalo de nuevo.",
+      "saveFailedInvalid": "No se pudo guardar el enlace porque algunos datos no son válidos. Revisa la dirección, el título y la nota.",
+      "actions": {
+        "cancel": "Cancelar",
+        "openSaved": "Abrir el guardado",
+        "save": "Guardar enlace",
+        "saveAnyway": "Guardar de todos modos",
+        "saving": "Guardando…"
+      },
+      "several": {
+        "offer": "¿Tienes varios enlaces? Pégalos todos a la vez",
+        "open": "Añadir varios enlaces",
+        "title": "Añadir varios enlaces",
+        "label": "Pega enlaces, uno por línea o dentro de cualquier texto",
+        "placeholder": "https://…",
+        "hint": "Hasta {{max}} enlaces a la vez. Revisas la lista antes de guardar nada.",
+        "required": "Pega o escribe algunos enlaces",
+        "none": "No se encontraron enlaces en este texto",
+        "back": "Un solo enlace",
+        "find": "Buscar enlaces"
+      }
+    },
+    "edit": {
+      "title": "Editar enlace",
+      "favorite": "Añadir a favoritos",
+      "meta": "Guardado {{created}}, abierto por última vez {{opened}}",
+      "metaNever": "Guardado {{created}}, nunca abierto",
+      "actions": {
+        "save": "Guardar cambios",
+        "delete": "Eliminar"
+      }
+    },
+    "card": {
+      "moreTags": "+{{count}}"
+    },
+    "item": {
+      "edit": "Editar",
+      "move": "Mover a carpeta…",
+      "edited": "Cambios guardados",
+      "openFailed": "No se pudo abrir el enlace.",
+      "favorite": "Favorito: {{title}}",
+      "addFavorite": "Añadir a favoritos",
+      "removeFavorite": "Quitar de favoritos",
+      "actions": "Acciones para {{title}}",
+      "moreActions": "Más acciones",
+      "delete": "Eliminar",
+      "opensInNewTab": "Se abre en una pestaña nueva",
+      "open": "Abrir",
+      "favoriteFailed": "No se pudo actualizar el favorito",
+      "retry": "Reintentar",
+      "deleted": "Movido a la papelera",
+      "undo": "Deshacer",
+      "deleteFailed": "No se pudo eliminar el enlace",
+      "deleteFailedDetail": "Ha vuelto a tu lista",
+      "savedTo": "Guardado en {{folder}}",
+      "confirm": {
+        "title": "¿Eliminar este enlace?",
+        "message": "«{{title}}» va a la papelera. Puedes restaurarlo durante {{days}} días.",
+        "confirm": "Eliminar enlace",
+        "cancel": "Cancelar",
+        "close": "Cerrar"
+      },
+      "pinToTop": "Fijar arriba",
+      "unpinFromTop": "Dejar de fijar arriba",
+      "pinToSidebar": "Fijar en la barra lateral",
+      "unpinFromSidebar": "Quitar de la barra lateral",
+      "pinned": "Fijado"
+    },
+    "recent": {
+      "title": "Abiertos recientemente",
+      "count": {
+        "one": "{{count}} enlace en los últimos {{days}} días",
+        "many": "{{count}} enlaces en los últimos {{days}} días",
+        "other": "{{count}} enlaces en los últimos {{days}} días"
+      },
+      "nothingYet": "Nada todavía",
+      "clear": "Borrar historial",
+      "clearShort": "Borrar",
+      "unsorted": "Sin carpeta",
+      "remove": "Quitar {{title}} del historial",
+      "removeTooltip": "Quitar del historial",
+      "more": "Más para {{title}}",
+      "menu": {
+        "openInNewTab": "Abrir en una pestaña nueva",
+        "showInFolder": "Mostrar en la carpeta",
+        "copyLink": "Copiar enlace",
+        "remove": "Quitar del historial"
+      },
+      "linkCopied": "Enlace copiado",
+      "copyFailed": "No se pudo copiar el enlace",
+      "removed": "Quitado del historial",
+      "removeFailed": "No se pudo quitar del historial",
+      "cleared": "Historial borrado",
+      "clearFailed": "No se pudo borrar el historial",
+      "note": "Se guarda 30 días, solo en tu cuenta. Quitar un enlace del historial no lo elimina.",
+      "empty": {
+        "title": "Aún no has abierto nada",
+        "text": "Los enlaces que abras aparecen aquí durante {{days}} días."
+      },
+      "day": {
+        "today": "Hoy",
+        "yesterday": "Ayer",
+        "week": "Antes esta semana"
+      },
+      "confirm": {
+        "title": "¿Borrar el historial?",
+        "message": "Todos los enlaces salen de Abiertos recientemente. Tus enlaces guardados siguen donde están.",
+        "confirm": "Borrar historial",
+        "cancel": "Cancelar",
+        "close": "Cerrar"
+      },
+      "filter": {
+        "label": "Filtrar por tipo",
+        "all": "Todos",
+        "emptyTitle": "Nada de este tipo",
+        "emptyText": "No se abrió ningún enlace de este tipo en los últimos {{days}} días.",
+        "showAll": "Mostrar todo"
+      },
+      "pause": {
+        "pause": "Pausar historial",
+        "resume": "Reanudar historial",
+        "notice": "El historial está en pausa. Los enlaces que abras ahora no se añaden.",
+        "noticeResume": "Reanudar",
+        "pauseFailed": "No se pudo pausar el historial",
+        "resumeFailed": "No se pudo reanudar el historial"
+      },
+      "search": {
+        "label": "Buscar en el historial",
+        "clear": "Borrar búsqueda",
+        "emptyTitle": "Sin coincidencias",
+        "emptyText": "Ningún enlace de tu historial coincide con «{{query}}»."
+      },
+      "swipe": {
+        "remove": "Quitar",
+        "hint": "Desliza una fila a la izquierda para quitarla del historial."
+      }
+    },
+    "kind": {
+      "label": "Tipo",
+      "video": "Vídeos",
+      "article": "Artículos",
+      "shopping": "Compras",
+      "other": "Otros"
+    },
+    "kindOption": {
+      "video": "Vídeo",
+      "article": "Artículo",
+      "shopping": "Compra",
+      "other": "Otro"
+    },
+    "move": {
+      "title": "Mover «{{title}}»",
+      "searchLabel": "Buscar carpetas",
+      "noResults": "No se encontraron carpetas",
+      "list": "Carpetas",
+      "current": "Carpeta actual",
+      "close": "Cerrar",
+      "moved": "Movido a {{folder}}",
+      "failed": "No se pudo mover el enlace",
+      "failedDetail": "Ha vuelto a donde estaba",
+      "undoFailed": "No se pudo devolver el enlace a su sitio"
+    },
+    "many": {
+      "title": {
+        "one": "Añadir {{count}} enlace",
+        "many": "Añadir {{count}} enlaces",
+        "other": "Añadir {{count}} enlaces"
+      },
+      "titleNone": "Añadir enlaces",
+      "found": {
+        "one": "Se encontró {{count}} enlace en lo que pegaste.",
+        "many": "Se encontraron {{count}} enlaces en lo que pegaste.",
+        "other": "Se encontraron {{count}} enlaces en lo que pegaste."
+      },
+      "already": {
+        "one": "{{count}} ya está en tu estantería.",
+        "many": "{{count}} ya están en tu estantería.",
+        "other": "{{count}} ya están en tu estantería."
+      },
+      "selectAll": "Seleccionar todo",
+      "selectedCount": "{{selected}} de {{total}} seleccionados",
+      "listLabel": "Enlaces pegados",
+      "row": {
+        "loading": "Cargando vista previa",
+        "alreadySaved": "Ya guardado",
+        "remove": "Quitar {{title}}",
+        "quoted": "«{{text}}»",
+        "skipped": "No es un enlace, omitido"
+      },
+      "overflow": {
+        "one": "Se dejó fuera {{count}} enlace más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto.",
+        "many": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto.",
+        "other": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto."
+      },
+      "folder": "Carpeta para todos",
+      "tags": "Etiquetas para todos",
+      "note": "Los títulos y las vistas previas siguen cargando después de guardar.",
+      "save": {
+        "one": "Guardar {{count}} enlace",
+        "many": "Guardar {{count}} enlaces",
+        "other": "Guardar {{count}} enlaces"
+      },
+      "saveNone": "Guardar enlaces",
+      "saveFailedFit": {
+        "one": "Solo cabe {{fit}} enlace más en tu estantería. Desmarca algunos e inténtalo de nuevo.",
+        "many": "Solo caben {{fit}} enlaces más en tu estantería. Desmarca algunos e inténtalo de nuevo.",
+        "other": "Solo caben {{fit}} enlaces más en tu estantería. Desmarca algunos e inténtalo de nuevo."
+      },
+      "saved": {
+        "one": "{{count}} enlace guardado en {{folder}}",
+        "many": "{{count}} enlaces guardados en {{folder}}",
+        "other": "{{count}} enlaces guardados en {{folder}}"
+      },
+      "stillLoading": "Los títulos y las vistas previas aún se están cargando",
+      "skippedByServer": {
+        "one": "Se omitió {{count}} enlace: estaba repetido o era demasiado largo",
+        "many": "Se omitieron {{count}} enlaces: repetidos o demasiado largos",
+        "other": "Se omitieron {{count}} enlaces: repetidos o demasiado largos"
+      },
+      "noneSaved": "No se guardó ningún enlace",
+      "undoFailed": "No se pudo deshacer",
+      "undoFailedDetail": "Los enlaces siguen guardados"
+    },
+    "drag": {
+      "moveHere": "Mover aquí",
+      "moving": "Moviendo",
+      "started": {
+        "one": "Moviendo {{count}} enlace. Suéltalo sobre una carpeta o pulsa Esc para cancelar.",
+        "many": "Moviendo {{count}} enlaces. Suéltalos sobre una carpeta o pulsa Esc para cancelar.",
+        "other": "Moviendo {{count}} enlaces. Suéltalos sobre una carpeta o pulsa Esc para cancelar."
+      },
+      "move": {
+        "one": "Mover {{count}} enlace",
+        "many": "Mover {{count}} enlaces",
+        "other": "Mover {{count}} enlaces"
+      },
+      "noDrop": {
+        "all": "No se puede soltar aquí — suéltalo en una carpeta",
+        "favorites": "No se puede soltar aquí — marca un enlace con estrella para añadirlo a Favoritos",
+        "recent": "No se puede soltar aquí — «Abiertos recientemente» se llena al abrir enlaces",
+        "trash": "No se puede soltar aquí — usa Eliminar para mover un enlace a la papelera",
+        "pinnedLink": "No se puede soltar aquí — un enlace fijado no es una carpeta"
+      }
+    }
+  },
+  "privacy": {
+    "title": "Política de privacidad",
+    "home": "Shelfmark, inicio",
+    "newTab": "(se abre en una pestaña nueva)",
+    "updated": "Última actualización: {{date}}",
+    "updatedDate": "13 de noviembre de 2026",
+    "intro": "Shelfmark es un proyecto personal que guarda los enlaces que guardas. Esta página explica qué conservamos y por qué, con palabras sencillas.",
+    "store": {
+      "title": "Qué guardamos",
+      "account": "De Google o GitHub: tu nombre, tu dirección de correo y tu avatar (un enlace a tu foto de perfil). Sirven para iniciar sesión y mostrar quién ha iniciado sesión. Tu cuenta también guarda qué proveedor usaste y tu id en él.",
+      "content": "Tus enlaces (dirección, título, nota, marca de favorito, cuándo lo abriste por última vez), tus carpetas y tus etiquetas.",
+      "images": "Para cada enlace, una copia pequeña del icono y de la imagen de vista previa del sitio, si los tiene. Nuestro servidor los descarga y los guarda para que se carguen desde Shelfmark.",
+      "feedback": "Tus respuestas a la valoración dentro de la app, vinculadas a tu cuenta: una puntuación del 1 al 10 y, si lo escribes, un comentario.",
+      "stats": "Las cifras de «Tu estantería» en la página Cuenta (totales, los sitios y etiquetas que más usas, enlaces por semana) se calculan a partir de tus propios datos cada vez que abres la página. No se guardan ni se comparten.",
+      "sessions": "Para cada inicio de sesión: cuándo caduca, además de la dirección IP y el navegador (user agent) desde el que se inició, para mantener seguras las sesiones.",
+      "logs": "Nuestra API registra el método, la ruta, el estado, la duración y un id de solicitud, sin contenido de enlaces ni datos personales. Nuestro proveedor de alojamiento, Vercel, guarda sus propios registros estándar de solicitudes, que incluyen direcciones IP, durante un tiempo limitado."
+    },
+    "cookies": {
+      "title": "Cookies y almacenamiento del navegador",
+      "necessary": "Solo usamos cookies estrictamente necesarias. Una cookie de sesión mantiene tu sesión iniciada, también en la demo. Una cookie de corta duración protege el inicio de sesión con Google y GitHub. Son httpOnly y SameSite=Lax, y Secure en el sitio público. Cerrar sesión elimina la cookie de sesión.",
+      "none": "No hay cookies de publicidad, analítica ni seguimiento, ni scripts de analítica.",
+      "storage": "El almacenamiento local de tu navegador solo guarda preferencias de la interfaz: el tema, el idioma y la vista de tarjetas o de lista. Se quedan en tu navegador. La app instalada (PWA) guarda en caché los archivos de Shelfmark para arrancar rápido, no tus enlaces."
+    },
+    "dont": {
+      "title": "Lo que no hacemos",
+      "sell": "No vendemos ni compartimos tus datos y no mostramos anuncios.",
+      "read": "No miramos tus enlaces guardados salvo cuando hace falta para el servicio, por ejemplo para obtener una vista previa."
+    },
+    "previews": {
+      "title": "Vistas previas de enlaces",
+      "body": "Cuando guardas un enlace, nuestro servidor visita la página para leer su título, icono e imagen de vista previa. Por eso el sitio ve la dirección IP de nuestro servidor y el user agent \"ShelfmarkBot\", no tu dirección IP."
+    },
+    "third": {
+      "title": "Otros servicios",
+      "signin": "El inicio de sesión pasa por Google o GitHub. Saben que inicias sesión en Shelfmark, y cada uno tiene su propia política de privacidad:",
+      "google": "Política de privacidad de Google",
+      "github": "Declaración de privacidad de GitHub",
+      "tokens": "No guardamos los tokens de acceso que emiten Google o GitHub al iniciar sesión.",
+      "avatar": "Tu foto de perfil se carga directamente desde Google o GitHub, así que tu navegador se conecta con ellos cada vez que Shelfmark la muestra. Esa solicitud no envía ningún referente, así que no ven en qué página de Shelfmark estás.",
+      "monitoring": "Si la supervisión de errores está activada, los fallos y errores del servidor se envían a Sentry a través de nuestro propio servidor. Los informes se limpian antes de salir: sin correo, dirección IP, cookies, contenido de solicitudes ni direcciones de enlaces guardados, solo detalles técnicos como el tipo de error, el lugar del código, tu tipo de navegador y sistema, la ruta de la página y un id de solicitud. Si está desactivada, no se envía nada."
+    },
+    "where": {
+      "title": "Dónde se aloja",
+      "hosting": "La API funciona en Vercel en la región fra1 (Fráncfort) y la base de datos en Neon en eu-central-1 (Fráncfort). Los archivos estáticos de la app se sirven desde la red global de Vercel."
+    },
+    "retention": {
+      "title": "Cuánto tiempo lo conservamos",
+      "data": "Conservamos tu cuenta y todo su contenido hasta que la elimines.",
+      "sessions": "Un inicio de sesión dura 7 días y se amplía cuando usas la app, como mucho una vez al día. Después vuelves a iniciar sesión.",
+      "demo": "La demo es un espacio de pruebas temporal con enlaces de ejemplo. Termina a las 24 horas, y una limpieza diaria elimina las cuentas demo caducadas con todos sus datos. Para limitar abusos guardamos un hash unidireccional de la dirección de red que abrió la demo, nunca la dirección en sí, y se elimina con la cuenta demo."
+    },
+    "control": {
+      "title": "Tú tienes el control",
+      "export": "En Ajustes puedes exportar tus enlaces, carpetas, etiquetas y notas en JSON o como archivo de marcadores del navegador (HTML).",
+      "delete": "Puedes eliminar cualquier enlace cuando quieras, o eliminar toda tu cuenta en Ajustes. Tu cuenta y todos sus datos se borran entonces de la base de datos. Las copias de seguridad del proveedor de la base de datos pueden tardar un poco en caducar."
+    },
+    "security": {
+      "title": "Seguridad",
+      "body": "Los datos viajan por HTTPS. Cada cuenta solo accede a sus propios datos. El inicio de sesión usa Google o GitHub, así que nunca vemos ni guardamos una contraseña."
+    },
+    "children": {
+      "title": "Menores",
+      "body": "Shelfmark no está dirigido a menores y no recopilamos a sabiendas datos suyos."
+    },
+    "changes": {
+      "title": "Cambios en esta política",
+      "body": "Si cambia la forma en que Shelfmark trata los datos, actualizamos esta página y su fecha de \"Última actualización\"."
+    },
+    "contact": {
+      "title": "Contacto",
+      "body": "Si tienes preguntas sobre esta política o tus datos, abre una issue en el repositorio de GitHub.",
+      "link": "github.com/ddadivan/shelfmark",
+      "noPersonal": "Las issues son públicas, así que no incluyas datos personales en ellas."
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Todos tus enlaces en una estantería",
+      "subtitle": "Guarda cualquier cosa una vez y encuéntrala en segundos.",
+      "google": "Continuar con Google",
+      "github": "Continuar con GitHub",
+      "demo": "Abrir la demo",
+      "failed": "No pudimos iniciar tu sesión. Inténtalo de nuevo.",
+      "error": {
+        "generic": "El inicio de sesión no terminó. Inténtalo de nuevo.",
+        "denied": "Se canceló el inicio de sesión. Inténtalo cuando quieras.",
+        "emailMissing": "Tu cuenta de GitHub no tiene un correo verificado. Verifica un correo en los ajustes de GitHub o inicia sesión con Google.",
+        "restart": "El inicio de sesión tardó demasiado o se interrumpió. Empieza de nuevo.",
+        "notLinked": "Este correo ya pertenece a una cuenta que no se pudo vincular. Inicia sesión con el proveedor que usaste antes."
+      },
+      "reason": {
+        "sessionExpired": "Tu sesión ha caducado. Vuelve a iniciar sesión.",
+        "demoExpired": "La demo ha terminado. Abre una nueva o inicia sesión.",
+        "demoLimit": "Se abrieron demasiadas demos desde tu red. Inténtalo dentro de una hora o inicia sesión.",
+        "demoUnavailable": "La demo está llena ahora mismo. Inténtalo más tarde o inicia sesión.",
+        "demoFailed": "No pudimos abrir la demo. Inténtalo de nuevo o inicia sesión."
+      },
+      "or": "o",
+      "tiles": {
+        "signalForms": {
+          "title": "Signal Forms en 20 minutos"
+        },
+        "woolCoat": {
+          "title": "Abrigo de lana, corte recto"
+        },
+        "nestjs": {
+          "title": "NestJS para desarrolladores frontend"
+        },
+        "ramen": {
+          "title": "El mejor ramen para entre semana"
+        },
+        "zoneless": {
+          "title": "La detección de cambios sin zonas, explicada"
+        },
+        "lisbon": {
+          "title": "Lisboa en mayo: un fin de semana largo"
+        },
+        "icons": {
+          "title": "Sets de iconos gratis para proyectos personales"
+        },
+        "grid": {
+          "title": "La guía completa de CSS grid"
+        },
+        "sourdough": {
+          "title": "Pan de masa madre para principiantes, paso a paso"
+        },
+        "sneakers": {
+          "title": "Zapatillas de cuero minimalistas"
+        },
+        "typeScale": {
+          "title": "Escalas tipográficas que funcionan de verdad"
+        },
+        "kyoto": {
+          "title": "Kioto lejos de las multitudes"
+        },
+        "containerQueries": {
+          "title": "Container queries en la práctica"
+        },
+        "linenShirt": {
+          "title": "Camisa de lino verde salvia"
+        },
+        "bikepacking": {
+          "title": "Las Dolomitas en bicicleta en cinco días"
+        },
+        "typefaces": {
+          "title": "Cómo combinar dos tipografías"
+        },
+        "rxjs": {
+          "title": "Los operadores de RxJS que sí usas"
+        },
+        "cacioEPepe": {
+          "title": "Cacio e pepe sin grumos"
+        },
+        "standingDesk": {
+          "title": "Los mejores escritorios elevables, probados"
+        },
+        "contrast": {
+          "title": "Guía práctica del contraste de color"
+        },
+        "hydration": {
+          "title": "Hidratación y renderizado incremental"
+        },
+        "ferry": {
+          "title": "Playas escondidas a las que se llega en ferry"
+        }
+      },
+      "tags": {
+        "video": "vídeo",
+        "angular": "angular",
+        "shopping": "compras",
+        "course": "curso",
+        "recipes": "recetas",
+        "travel": "viajes",
+        "design": "diseño",
+        "css": "css"
+      },
+      "privacyBefore": "Al continuar aceptas la",
+      "privacyLink": "Política de privacidad",
+      "privacyAfter": ". Solo usamos tu nombre, tu correo y tu avatar."
+    },
+    "demo": {
+      "starting": "Abriendo la demo…"
+    },
+    "signOut": "Cerrar sesión",
+    "signOutFailed": "No se pudo cerrar la sesión",
+    "signOutFailedDetail": "Inténtalo de nuevo"
+  },
+  "shell": {
+    "demoBanner": {
+      "title": "Estás en una demo.",
+      "remaining": {
+        "one": "Prueba todo — este espacio de pruebas se reinicia en {{ hours }} hora.",
+        "many": "Prueba todo — este espacio de pruebas se reinicia en {{ hours }} horas.",
+        "other": "Prueba todo — este espacio de pruebas se reinicia en {{ hours }} horas."
+      },
+      "signIn": "Inicia sesión con tu propia cuenta"
+    },
+    "offlineBanner": {
+      "text": "Estás sin conexión. Puedes ver lo que ya está cargado; guardar y editar vuelven cuando te reconectes."
+    },
+    "accountMenu": "Menú de la cuenta",
+    "settings": "Ajustes",
+    "addLink": "Añadir enlace",
+    "tabs": {
+      "label": "Principal",
+      "library": "Enlaces",
+      "search": "Buscar",
+      "tags": "Etiquetas",
+      "you": "Tú"
+    },
+    "sidebar": {
+      "footer": "Ayuda y papelera",
+      "nav": "Biblioteca",
+      "foldersNav": "Carpetas",
+      "tree": "Vistas y carpetas",
+      "folders": "Carpetas",
+      "newFolder": "Nueva carpeta",
+      "folderActions": "Acciones para {{name}}",
+      "folderMenu": "Acciones de la carpeta",
+      "loadFailed": "No se pudieron cargar tus carpetas.",
+      "retry": "Reintentar",
+      "menu": {
+        "newSubfolder": "Nueva subcarpeta",
+        "addLink": "Añadir enlace aquí",
+        "rename": "Cambiar nombre",
+        "move": "Mover a…",
+        "share": "Compartir…",
+        "delete": "Eliminar carpeta…",
+        "pin": "Fijar en la barra lateral",
+        "unpin": "Quitar de la barra lateral",
+        "style": "Color e icono…"
+      },
+      "views": "Vistas",
+      "foldersTree": "Carpetas",
+      "pinned": {
+        "heading": "Fijados",
+        "list": "Elementos fijados",
+        "moveUp": "Subir",
+        "moveDown": "Bajar",
+        "unpin": "Quitar de la barra lateral",
+        "unpinButton": "Quitar {{name}}",
+        "empty": "Aún no hay nada fijado",
+        "emptyHint": "Aún no hay nada fijado: usa «Fijar en la barra lateral» en el menú de una carpeta o un enlace"
+      },
+      "reorder": {
+        "movedUp": "Movido hacia arriba, posición {{position}} de {{total}}",
+        "movedDown": "Movido hacia abajo, posición {{position}} de {{total}}"
+      }
+    },
+    "searchHint": "Busca en tus enlaces",
+    "searchButton": "Buscar",
+    "theme": {
+      "toLight": "Cambiar al tema claro",
+      "toDark": "Cambiar al tema oscuro"
+    },
+    "sendFeedback": "Enviar comentarios",
+    "feedbackInbox": "Buzón de comentarios",
+    "about": "Acerca de Shelfmark"
+  },
+  "folders": {
+    "dialog": {
+      "close": "Cerrar",
+      "cancel": "Cancelar"
+    },
+    "name": {
+      "label": "Nombre",
+      "placeholder": "Por ejemplo, Para leer",
+      "required": "Introduce un nombre de carpeta",
+      "tooLong": "Usa {{max}} caracteres como máximo"
+    },
+    "create": {
+      "title": "Nueva carpeta",
+      "titleIn": "Nueva carpeta en «{{parent}}»",
+      "inside": "Dentro de",
+      "action": "Crear carpeta",
+      "saving": "Creando…",
+      "failed": "No se pudo crear la carpeta. Inténtalo de nuevo.",
+      "done": "Carpeta creada",
+      "limit": "Límite de carpetas alcanzado",
+      "limitDetail": "Puedes tener hasta {{max}} carpetas"
+    },
+    "rename": {
+      "title": "Cambiar nombre de la carpeta",
+      "action": "Cambiar nombre",
+      "saving": "Cambiando nombre…",
+      "failed": "No se pudo cambiar el nombre de la carpeta",
+      "failedDetail": "Ha vuelto el nombre anterior"
+    },
+    "move": {
+      "title": "Mover «{{name}}»",
+      "label": "Mover a",
+      "topLevel": "Nivel superior",
+      "searchLabel": "Buscar carpetas",
+      "noResults": "No se encontraron carpetas",
+      "action": "Mover",
+      "failed": "No se pudo mover la carpeta",
+      "failedDetail": "Ha vuelto a donde estaba"
+    },
+    "delete": {
+      "title": "¿Eliminar la carpeta «{{name}}»?",
+      "textEmpty": "Esta carpeta está vacía.",
+      "textNoLinks": "Tiene {{subfolders}} y ningún enlace.",
+      "textLinks": "Tiene {{links}}. ¿Qué quieres hacer con los enlaces?",
+      "textBoth": "Tiene {{links}} y {{subfolders}}. ¿Qué quieres hacer con los enlaces?",
+      "links": {
+        "one": "{{count}} enlace",
+        "many": "{{count}} enlaces",
+        "other": "{{count}} enlaces"
+      },
+      "subfolders": {
+        "one": "{{count}} subcarpeta",
+        "many": "{{count}} subcarpetas",
+        "other": "{{count}} subcarpetas"
+      },
+      "modeLabel": "Qué pasa con los enlaces",
+      "move": {
+        "title": "Mover los enlaces a Sin carpeta",
+        "desc": {
+          "one": "Las carpetas se eliminan, el enlace se queda",
+          "many": "Las carpetas se eliminan, los {{count}} enlaces se quedan",
+          "other": "Las carpetas se eliminan, los {{count}} enlaces se quedan"
+        }
+      },
+      "remove": {
+        "title": "Eliminar también los enlaces",
+        "desc": "Esperan en la papelera con la carpeta"
+      },
+      "action": "Eliminar carpeta",
+      "actionWithLinks": {
+        "one": "Eliminar carpeta y {{count}} enlace",
+        "many": "Eliminar carpeta y {{count}} enlaces",
+        "other": "Eliminar carpeta y {{count}} enlaces"
+      },
+      "failed": "No se pudo eliminar la carpeta. No se ha cambiado nada.",
+      "done": "Carpeta movida a la papelera"
+    },
+    "style": {
+      "colour": "Color",
+      "icon": "Icono",
+      "tabs": {
+        "icon": "Icono",
+        "emoji": "Emoji"
+      },
+      "reset": "Restablecer",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "failed": "No se pudo guardar el estilo",
+      "failedDetail": "Han vuelto el color y el icono anteriores.",
+      "colours": {
+        "graphite": "Grafito",
+        "sage": "Salvia",
+        "ocean": "Océano",
+        "plum": "Ciruela",
+        "clay": "Arcilla",
+        "amber": "Ámbar",
+        "rose": "Rosa",
+        "teal": "Verde azulado"
+      },
+      "icons": {
+        "folder": "Carpeta",
+        "briefcase": "Maletín",
+        "code": "Código",
+        "graduation-cap": "Birrete",
+        "shirt": "Camiseta",
+        "cooking-pot": "Olla",
+        "bookmark": "Marcador",
+        "star": "Estrella",
+        "clock": "Reloj",
+        "link": "Enlace",
+        "tag": "Etiqueta",
+        "inbox": "Bandeja de entrada",
+        "image": "Imagen",
+        "cards": "Tarjetas",
+        "list": "Lista",
+        "saved-link": "Enlace guardado",
+        "monitor": "Monitor",
+        "user": "Usuario",
+        "settings": "Ajustes",
+        "download": "Descarga",
+        "share": "Compartir",
+        "ball": "Balón",
+        "bike": "Bicicleta",
+        "book": "Libro",
+        "bulb": "Bombilla",
+        "calendar": "Calendario",
+        "camera": "Cámara",
+        "car": "Coche",
+        "chart": "Gráfico",
+        "cloud": "Nube",
+        "coffee": "Café",
+        "dumbbell": "Mancuerna",
+        "film": "Película",
+        "flag": "Bandera",
+        "gamepad": "Mando",
+        "gift": "Regalo",
+        "globe": "Globo",
+        "hammer": "Martillo",
+        "health": "Salud",
+        "heart": "Corazón",
+        "home": "Casa",
+        "kids": "Niños",
+        "leaf": "Hoja",
+        "map-pin": "Marcador",
+        "mountain": "Montaña",
+        "music": "Música",
+        "palette": "Paleta",
+        "paw": "Huella",
+        "plane": "Avión",
+        "rocket": "Cohete",
+        "shopping-bag": "Bolsa de compras",
+        "sun": "Sol",
+        "tree": "Árbol",
+        "trophy": "Trofeo",
+        "umbrella": "Paraguas",
+        "utensils": "Comida",
+        "wallet": "Cartera",
+        "newspaper": "Periódico",
+        "backpack": "Mochila",
+        "palm": "Palmera",
+        "guitar": "Guitarra",
+        "laptop": "Portátil",
+        "lock": "Candado"
+      },
+      "own": {
+        "group": "Tus colores",
+        "add": "Añadir tu propio color",
+        "picker": "Elegir un color"
+      },
+      "ownSwatch": "Tu color {{colour}}",
+      "emoji": {
+        "label": "Emoji",
+        "hint": "Usa un emoji en lugar de un icono",
+        "placeholder": "Elige un emoji",
+        "invalid": "Introduce un solo emoji.",
+        "search": "Buscar emoji",
+        "categoriesLabel": "Categorías",
+        "categories": {
+          "food": "Comida",
+          "travel": "Viajes",
+          "work": "Trabajo",
+          "sport": "Deporte",
+          "home": "Hogar",
+          "animals": "Animales",
+          "nature": "Naturaleza",
+          "objects": "Objetos",
+          "symbols": "Símbolos"
+        },
+        "recent": "Recientes",
+        "own": "Tuyos",
+        "results": "Resultados",
+        "noResults": "No se encontró ningún emoji",
+        "loading": "Cargando emojis",
+        "close": "Cerrar",
+        "remove": "Quitar el emoji {{emoji}}",
+        "removed": "Emoji quitado",
+        "removeFailed": "No se pudo quitar el emoji",
+        "undo": "Deshacer"
+      },
+      "iconsShowAll": "Mostrar todos los iconos ({{count}})",
+      "iconsShowFewer": "Mostrar menos"
+    }
+  },
+  "library": {
+    "title": "Todos los enlaces",
+    "phone": {
+      "title": "Biblioteca",
+      "openedToday": "{{count}} hoy",
+      "trashCount": {
+        "one": "{{count}} elemento",
+        "many": "{{count}} elementos",
+        "other": "{{count}} elementos"
+      }
+    },
+    "scope": {
+      "all": "Todos los enlaces",
+      "unsorted": "Sin carpeta",
+      "favorites": "Favoritos",
+      "folder": "Carpeta"
+    },
+    "folderNotFound": {
+      "title": "Carpeta no encontrada",
+      "text": "Esta carpeta no existe o se ha eliminado.",
+      "action": "Mostrar todos los enlaces"
+    },
+    "emptyFolder": {
+      "title": "Esta carpeta está vacía",
+      "text": "Añade un enlace aquí o mueve enlaces desde Sin carpeta.",
+      "action": "Añadir enlace",
+      "unsorted": "Abrir Sin carpeta"
+    },
+    "count": {
+      "one": "{{count}} enlace",
+      "many": "{{count}} enlaces",
+      "other": "{{count}} enlaces"
+    },
+    "countWithFolders": "{{links}}, {{folders}}",
+    "countMore": {
+      "one": "{{count}}+ enlace",
+      "many": "{{count}}+ enlaces",
+      "other": "{{count}}+ enlaces"
+    },
+    "subfolders": {
+      "label": "Subcarpetas",
+      "links": {
+        "one": "{{count}} enlace",
+        "many": "{{count}} enlaces",
+        "other": "{{count}} enlaces"
+      },
+      "folders": {
+        "one": "{{count}} subcarpeta",
+        "many": "{{count}} subcarpetas",
+        "other": "{{count}} subcarpetas"
+      },
+      "meta": "{{links}}",
+      "metaWithFolders": "{{links}}, {{folders}}",
+      "aria": "Abrir la carpeta {{name}}, {{links}}",
+      "ariaWithFolders": "Abrir la carpeta {{name}}, {{links}}, {{folders}}"
+    },
+    "view": {
+      "label": "Vista",
+      "cards": "Tarjetas",
+      "list": "Lista"
+    },
+    "list": {
+      "label": "Enlaces guardados"
+    },
+    "loading": "Cargando enlaces",
+    "loadingMore": "Cargando más enlaces",
+    "loadMore": "Cargar más",
+    "loadMoreFailed": "No se pudieron cargar más enlaces.",
+    "error": {
+      "title": "No se pudieron cargar tus enlaces",
+      "text": "Comprueba tu conexión e inténtalo de nuevo.",
+      "retry": "Reintentar"
+    },
+    "empty": {
+      "all": {
+        "title": "Aquí vivirán tus enlaces",
+        "text": "Pega el enlace de un vídeo, un artículo o algo que quieras comprar — el título y la vista previa se rellenan solos.",
+        "action": "Añadir enlace"
+      },
+      "unsorted": {
+        "title": "Sin carpeta está vacía",
+        "text": "Los enlaces que guardas sin carpeta esperan aquí hasta que los ordenes.",
+        "action": "Añadir enlace"
+      },
+      "favorites": {
+        "title": "Aquí vivirán tus favoritos",
+        "text": "Toca la estrella de un enlace para guardarlo aquí.",
+        "action": "Mostrar todos los enlaces"
+      }
+    },
+    "refetchFailed": "No se pudieron actualizar tus enlaces. Estás viendo la última lista cargada.",
+    "emptyFiltered": {
+      "title": "Ningún enlace con estas etiquetas",
+      "text": "Nada de lo que guardaste tiene todas las etiquetas seleccionadas.",
+      "clear": "Borrar filtro"
+    },
+    "emptyView": {
+      "title": "Todavía no hay nada en «{{name}}»",
+      "text": "Los enlaces que encajen con esta vista aparecerán aquí a medida que los guardes.",
+      "clear": "Mostrar todos los enlaces"
+    },
+    "emptyFilters": {
+      "title": "Nada coincide con estos filtros",
+      "text": "Ningún enlace guardado coincide con todos los filtros elegidos.",
+      "clear": "Quitar filtros"
+    },
+    "filter": {
+      "label": "Filtros activos"
+    },
+    "sort": {
+      "label": "Orden: {{sort}}",
+      "menu": "Ordenar enlaces",
+      "newest": "Más recientes primero",
+      "oldest": "Más antiguos primero",
+      "title": "Título A–Z"
+    },
+    "search": {
+      "chip": "Búsqueda: {{query}}",
+      "remove": "Quitar la búsqueda {{query}}"
+    },
+    "emptySearch": {
+      "title": "No se encontró nada para «{{query}}»",
+      "text": "Prueba otra palabra o busca en todas las carpetas.",
+      "clear": "Borrar búsqueda",
+      "all": "Buscar en todas las carpetas"
+    },
+    "breadcrumb": {
+      "label": "Ruta de navegación",
+      "collapsed": "Mostrar carpetas ocultas"
+    },
+    "pageTitle": {
+      "page": "{{page}} · {{app}}",
+      "search": "Búsqueda: {{query}} · {{app}}"
+    },
+    "kind": {
+      "remove": "Quitar el filtro {{kind}}"
+    },
+    "viewMenu": {
+      "label": "Ordenar, ver y exportar",
+      "button": "Opciones",
+      "sortBy": "Ordenar por"
+    }
+  },
+  "export": {
+    "menu": "Exportar",
+    "failed": "No se pudieron exportar tus enlaces",
+    "failedDetail": "Comprueba tu conexión e inténtalo de nuevo",
+    "retry": "Reintentar",
+    "view": {
+      "json": "Esta vista en JSON",
+      "html": "Esta vista como HTML de marcadores"
+    },
+    "all": {
+      "json": "Todo en JSON",
+      "html": "Todo como HTML de marcadores"
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "phoneTitle": "Tú",
+    "back": "Volver a los enlaces",
+    "backToList": "Volver a Tú",
+    "nav": {
+      "account": "Cuenta",
+      "appearance": "Apariencia",
+      "library": "Biblioteca",
+      "language": "Idioma",
+      "privacy": "Privacidad y datos",
+      "shortcuts": "Atajos de teclado",
+      "feedback": "Tus comentarios"
+    },
+    "description": {
+      "account": "Tu perfil, tu estantería y tus datos.",
+      "appearance": "Se guarda al momento y se sincroniza en todos tus dispositivos.",
+      "library": "Cómo se muestran, guardan y conservan los enlaces.",
+      "language": "El idioma de la interfaz. Los formatos de fecha y hora están en Apariencia.",
+      "privacy": "Qué guardamos y cómo llevártelo.",
+      "shortcuts": "Trabaja sin ratón.",
+      "feedback": "Ideas, problemas y nuestras respuestas."
+    },
+    "account": {
+      "profile": "Perfil",
+      "open": "Cuenta",
+      "signOut": {
+        "title": "Cerrar sesión",
+        "label": "Cerrar sesión en Shelfmark",
+        "hint": "Tus enlaces siguen guardados. Vuelve a iniciar sesión cuando quieras."
+      },
+      "memberSince": "Miembro desde {{date}}",
+      "shelf": {
+        "title": "Tu estantería",
+        "loading": "Cargando tus cifras",
+        "links": "Enlaces",
+        "folders": "Carpetas",
+        "tags": "Etiquetas",
+        "oldest": "Enlace más antiguo: {{when}}",
+        "topSites": "Sitios que más guardas",
+        "topTags": "Etiquetas más usadas",
+        "weekly": "Enlaces añadidos por semana",
+        "weeklyHint": "Últimas 12 semanas",
+        "week": "Semana del {{date}}: {{count}}",
+        "error": "No se pudieron cargar tus cifras.",
+        "retry": "Reintentar",
+        "empty": {
+          "title": "Aún no has guardado nada",
+          "text": "Guarda tu primer enlace y aquí verás tus cifras."
+        }
+      },
+      "connected": {
+        "title": "Cuentas conectadas",
+        "since": "Conectada el {{date}}",
+        "none": "La cuenta de demostración no está vinculada a Google ni a GitHub.",
+        "google": "Google",
+        "github": "GitHub"
+      }
+    },
+    "data": {
+      "title": "Tus datos",
+      "export": {
+        "label": "Exporta tus datos",
+        "json": "JSON",
+        "jsonHint": "Todas tus carpetas, etiquetas y enlaces en un archivo",
+        "html": "HTML de marcadores",
+        "htmlHint": "Se abre con la importación de marcadores de cualquier navegador",
+        "download": "Descargar",
+        "downloadAs": "Descargar {{format}}"
+      }
+    },
+    "appearance": {
+      "title": "Apariencia",
+      "theme": {
+        "label": "Tema",
+        "hint": "Claro y Oscuro los ajustamos nosotros y siempre son iguales. Personalizado lo cambias tú.",
+        "system": "Sistema",
+        "light": "Claro",
+        "dark": "Oscuro",
+        "custom": "Personalizado",
+        "note": "¿Quieres otros colores u otras esquinas? Elige Personalizado. Claro y Oscuro no cambian."
+      },
+      "custom": {
+        "base": {
+          "label": "Partir de",
+          "hint": "Tus colores se apoyan en la base clara o la oscura",
+          "light": "Claro",
+          "dark": "Oscuro"
+        },
+        "accent": {
+          "label": "Color de acento",
+          "hint": "Carpeta activa, etiquetas, favoritos y foco. Cada opción mantiene un contraste de 4,5:1 en claro y en oscuro.",
+          "sage": "Salvia",
+          "ocean": "Océano",
+          "plum": "Ciruela",
+          "clay": "Arcilla",
+          "amber": "Ámbar",
+          "rose": "Rosa",
+          "teal": "Verde azulado",
+          "graphite": "Grafito"
+        },
+        "background": {
+          "label": "Fondo",
+          "hint": "La página detrás de las tarjetas y los paneles",
+          "stone": "Piedra",
+          "paper": "Papel",
+          "mist": "Niebla",
+          "white": "Blanco",
+          "graphite": "Grafito",
+          "ink": "Tinta",
+          "forest": "Bosque",
+          "black": "Negro"
+        },
+        "corners": {
+          "label": "Esquinas",
+          "hint": "Tarjetas, paneles y botones",
+          "round": "Redondas",
+          "soft": "Suaves",
+          "square": "Rectas"
+        },
+        "reset": "Restablecer tema personalizado",
+        "own": {
+          "label": "Tu propio color",
+          "picker": "Elegir un color",
+          "hex": "Código hexadecimal",
+          "invalid": "Escribe # y seis dígitos o letras a–f, por ejemplo #2e6a99.",
+          "hint": "Shelfmark mantiene un contraste de 4,5:1: en la otra base usa un tono más oscuro o más claro de tu color.",
+          "warning": "Este color se lee mal sobre tu fondo ({{ratio}}:1; necesita 4,5:1).",
+          "use": "Usar {{colour}}",
+          "saturation": "Saturación",
+          "brightness": "Brillo",
+          "hue": "Tono",
+          "addColour": "Añadir color",
+          "cancel": "Cancelar",
+          "remove": "Quitar el color {{colour}}",
+          "removed": "Color quitado",
+          "undo": "Deshacer",
+          "removeFailed": "No se pudo quitar el color"
+        },
+        "ownBackground": {
+          "label": "Tu color de fondo",
+          "hint": "El texto debe seguir siendo legible (4,5:1): si hace falta, Shelfmark usa un tono más claro u oscuro de tu color.",
+          "warning": "El texto es difícil de leer sobre este fondo ({{ratio}}:1, hacen falta 4,5:1)."
+        }
+      },
+      "layout": {
+        "title": "Texto y diseño",
+        "textSize": {
+          "label": "Tamaño del texto",
+          "hint": "Escala toda la interfaz, no solo el texto",
+          "s": "90 %",
+          "m": "100 %",
+          "l": "112 %",
+          "xl": "125 %"
+        },
+        "font": {
+          "label": "Fuente",
+          "hint": "Legible está pensada para baja visión",
+          "onest": "Onest",
+          "system": "Sistema",
+          "readable": "Legible"
+        },
+        "density": {
+          "label": "Densidad",
+          "hint": "Compacta muestra más enlaces en pantalla",
+          "comfortable": "Cómoda",
+          "compact": "Compacta"
+        }
+      },
+      "cards": {
+        "title": "Tarjetas",
+        "preview": {
+          "label": "Imagen de vista previa",
+          "hint": "La imagen en la parte superior de cada tarjeta",
+          "large": "Grande",
+          "small": "Pequeña",
+          "off": "Ninguna"
+        },
+        "site": {
+          "label": "Mostrar el sitio",
+          "hint": "Dominio y favicon encima del título"
+        },
+        "notes": {
+          "label": "Mostrar las notas",
+          "hint": "Tu nota debajo del título"
+        },
+        "tags": {
+          "label": "Mostrar las etiquetas",
+          "hint": "Las etiquetas al pie de la tarjeta"
+        }
+      },
+      "sidebar": {
+        "colours": {
+          "label": "Colores de carpeta",
+          "hint": "Desactivado muestra todas las carpetas en grafito"
+        }
+      },
+      "motion": {
+        "title": "Barra lateral y movimiento",
+        "label": "Animaciones",
+        "hint": "Reducidas mantiene fundidos y cargas, quita el movimiento",
+        "system": "Sistema",
+        "full": "Completas",
+        "reduced": "Reducidas"
+      },
+      "preview": {
+        "title": "Vista previa en directo",
+        "label": "Vista previa de tus ajustes",
+        "hint": "Los cambios se aplican al momento en toda la app.",
+        "folders": {
+          "angular": "Angular",
+          "clothes": "Ropa",
+          "recipes": "Recetas"
+        },
+        "cards": {
+          "one": {
+            "site": "youtube.com",
+            "title": "Signal Forms en 20 minutos",
+            "tag": "angular",
+            "note": "Ver el fin de semana"
+          },
+          "two": {
+            "site": "cos.com",
+            "title": "Abrigo de lana, corte recto",
+            "tag": "ropa",
+            "note": "Esperar a las rebajas"
+          }
+        },
+        "recent": "Abiertos recientemente"
+      },
+      "failed": "No se pudo guardar la apariencia",
+      "failedDetail": "Ha vuelto a como estaba."
+    },
+    "privacy": {
+      "policy": {
+        "label": "Política de privacidad",
+        "hint": "Qué guardamos y por qué, con palabras sencillas",
+        "action": "Leer",
+        "actionLabel": "Leer la política de privacidad"
+      },
+      "recent": {
+        "label": "Recordar abiertos recientemente",
+        "hint": "Mantiene la lista Abiertos recientemente. Desactivado la borra y deja de registrar.",
+        "confirm": {
+          "title": "¿Dejar de recordar los abiertos recientemente?",
+          "message": "La lista Abiertos recientemente se borra y los enlaces que abras no se añaden hasta que vuelvas a activarlo. Tus enlaces siguen guardados.",
+          "confirm": "Borrar y detener",
+          "cancel": "Cancelar",
+          "close": "Cerrar"
+        }
+      },
+      "data": {
+        "hint": "Todo lo que has guardado, en JSON o HTML de marcadores",
+        "action": "Abrir exportación"
+      },
+      "kept": {
+        "title": "Lo que guardamos"
+      }
+    },
+    "footer": {
+      "privacy": "Política de privacidad",
+      "version": "Shelfmark v1.0"
+    },
+    "delete": {
+      "title": "Eliminar cuenta",
+      "hint": "Elimina para siempre tu cuenta y todos tus enlaces, carpetas y etiquetas. No se puede deshacer.",
+      "action": "Eliminar cuenta",
+      "done": "Cuenta eliminada",
+      "doneDetail": "Se han eliminado todos tus datos",
+      "dialog": {
+        "title": "¿Eliminar tu cuenta?",
+        "text": "Todos tus enlaces, carpetas y etiquetas se eliminarán para siempre. No se puede deshacer.",
+        "label": "Escribe tu correo para confirmar",
+        "hint": "Introduce {{email}} para confirmar.",
+        "cancel": "Cancelar",
+        "close": "Cerrar",
+        "deleting": "Eliminando…"
+      },
+      "error": {
+        "mismatch": "Ese correo no coincide con tu cuenta. Revísalo e inténtalo de nuevo.",
+        "rateLimited": "Demasiados intentos. Inténtalo dentro de un minuto.",
+        "failed": "No pudimos eliminar tu cuenta. No se ha eliminado nada. Inténtalo de nuevo."
+      }
+    },
+    "library": {
+      "viewing": {
+        "title": "Visualización",
+        "view": {
+          "label": "Vista predeterminada",
+          "hint": "Cómo se abren las carpetas la primera vez"
+        },
+        "sort": {
+          "label": "Ordenar enlaces por",
+          "hint": "Cada carpeta recuerda su propia elección cuando la cambias"
+        },
+        "open": {
+          "label": "Abrir enlaces en",
+          "newTab": "Pestaña nueva",
+          "sameTab": "La misma pestaña"
+        },
+        "counts": {
+          "label": "Mostrar número en carpetas",
+          "hint": "Los números junto a las carpetas en la barra lateral"
+        }
+      },
+      "saving": {
+        "title": "Guardado",
+        "folder": {
+          "label": "Los enlaces nuevos van a",
+          "hint": "Cuando pegas un enlace sin elegir carpeta"
+        },
+        "previews": {
+          "label": "Obtener títulos y vistas previas",
+          "hint": "Desactívalo para guardar solo la dirección"
+        }
+      },
+      "failed": "No se pudo guardar el ajuste",
+      "failedDetail": "Ha vuelto a como estaba.",
+      "note": "Las subcarpetas siempre aparecen primero en una carpeta; no es un ajuste. Los cambios se aplican al momento y se sincronizan con tus otros dispositivos.",
+      "trash": {
+        "title": "Papelera",
+        "retention": {
+          "label": "Conservar los elementos eliminados",
+          "hint": "Después se eliminan para siempre",
+          "days": "{{count}} días",
+          "failed": "No se pudo guardar el ajuste",
+          "failedDetail": "Ha vuelto a {{days}} días.",
+          "loadFailed": "No se pudo cargar el ajuste."
+        },
+        "open": {
+          "label": "Papelera",
+          "count": {
+            "one": "{{count}} elemento",
+            "many": "{{count}} elementos",
+            "other": "{{count}} elementos"
+          },
+          "none": "La papelera está vacía",
+          "action": "Abrir la papelera"
+        },
+        "shorten": {
+          "title": "¿Acortar cuánto tiempo guarda la papelera?",
+          "message": {
+            "one": "{{count}} elemento de la papelera tiene más de {{days}} días y se eliminará para siempre esta noche.",
+            "many": "{{count}} elementos de la papelera tienen más de {{days}} días y se eliminarán para siempre esta noche.",
+            "other": "{{count}} elementos de la papelera tienen más de {{days}} días y se eliminarán para siempre esta noche."
+          },
+          "confirm": "Conservar {{days}} días",
+          "cancel": "Cancelar",
+          "close": "Cerrar"
+        }
+      }
+    },
+    "language": {
+      "title": "Idioma",
+      "interface": {
+        "label": "Idioma de la interfaz",
+        "hint": "Tus enlaces y notas se quedan como están",
+        "browser": "Como mi navegador"
+      },
+      "dates": {
+        "title": "Fechas y números"
+      },
+      "date": {
+        "label": "Formato de fecha",
+        "default": "Predeterminado ({{example}})"
+      },
+      "time": {
+        "label": "Hora",
+        "default": "Auto",
+        "h24": "24 horas",
+        "h12": "12 horas"
+      },
+      "week": {
+        "label": "La semana empieza el",
+        "hint": "Agrupa «esta semana» en Abiertos recientemente",
+        "default": "Auto"
+      },
+      "preview": {
+        "label": "Vista previa",
+        "value": "{{weekday}}, {{date}}, {{time}}"
+      },
+      "failed": "No se pudo guardar el ajuste",
+      "failedDetail": "Ha vuelto a como estaba."
+    },
+    "help": "Ayuda"
+  },
+  "shortcuts": {
+    "title": "Atajos de teclado",
+    "open": "Atajos de teclado",
+    "close": "Cerrar",
+    "hint": "Pulsa ? en cualquier sitio, salvo en un campo de texto.",
+    "page": {
+      "label": "Todos los atajos",
+      "action": "Abrir la lista",
+      "singleKey": {
+        "label": "Usar atajos de una tecla",
+        "hint": "La tecla ? abre la lista por sí sola, nunca mientras escribes en un campo. Desactívalo para usar solo el botón de la barra superior."
+      }
+    },
+    "groups": {
+      "everywhere": "En todas partes",
+      "links": "Guardar y encontrar",
+      "folders": "En la lista de carpetas",
+      "selecting": "Seleccionar enlaces"
+    },
+    "items": {
+      "search": "Buscar",
+      "list": "Esta lista",
+      "close": "Cerrar un diálogo, un menú o un aviso",
+      "undo": "Deshacer la última acción",
+      "toastAction": "Ir al botón de un aviso",
+      "save": "Guardar el enlace",
+      "results": "Moverse por los resultados de búsqueda",
+      "openResult": "Abrir el resultado",
+      "openBackground": "Abrirlo en una pestaña en segundo plano",
+      "moveFolder": "Moverse entre carpetas",
+      "toggleFolder": "Cerrar o abrir una carpeta",
+      "folderMenu": "Abrir el menú de la carpeta",
+      "paste": "Pegar enlaces en la biblioteca",
+      "reorder": "Subir o bajar un elemento fijado o una carpeta",
+      "select": "Seleccionar o deseleccionar el enlace activo",
+      "selectRange": "Seleccionar hasta el enlace activo",
+      "selectAll": "Seleccionar todos los enlaces de la lista",
+      "moveLink": "Mover el enlace activo a una carpeta",
+      "clearSelection": "Borrar la selección"
+    },
+    "keys": {
+      "command": "Comando",
+      "ctrl": "Ctrl",
+      "option": "Opción",
+      "alt": "Alt",
+      "shift": "Mayús",
+      "enter": "Intro",
+      "escape": "Esc",
+      "up": "Arriba",
+      "down": "Abajo",
+      "left": "Izquierda",
+      "right": "Derecha",
+      "question": "Signo de interrogación",
+      "space": "Espacio"
+    }
+  },
+  "tags": {
+    "dialog": {
+      "cancel": "Cancelar",
+      "close": "Cerrar"
+    },
+    "sidebar": {
+      "heading": "Etiquetas",
+      "add": "Nueva etiqueta",
+      "list": "Etiquetas",
+      "loadFailed": "No se pudieron cargar tus etiquetas.",
+      "empty": "Aún no hay etiquetas. Añade una con +.",
+      "menuFor": "Acciones para la etiqueta {{name}}",
+      "more": "+ {{count}} más",
+      "showLess": "Mostrar menos",
+      "menu": {
+        "label": "Acciones de la etiqueta",
+        "summary": "{{name}}, {{links}}",
+        "show": "Mostrar enlaces",
+        "rename": "Cambiar nombre",
+        "merge": "Combinar con otra etiqueta…",
+        "delete": "Eliminar etiqueta"
+      }
+    },
+    "page": {
+      "empty": {
+        "title": "Todavía no hay etiquetas",
+        "text": "Las etiquetas agrupan enlaces de distintas carpetas. Añade una aquí o al guardar un enlace."
+      }
+    },
+    "add": {
+      "label": "Nueva etiqueta",
+      "placeholder": "Nombre de la etiqueta",
+      "hint": "Intro guarda, Esc cancela. Los espacios se convierten en guiones.",
+      "done": "Etiqueta «{{name}}» creada",
+      "failed": "No se pudo crear la etiqueta. Inténtalo de nuevo.",
+      "limit": "Has alcanzado el límite de {{max}} etiquetas."
+    },
+    "name": {
+      "required": "Introduce un nombre de etiqueta",
+      "tooLong": "Usa {{max}} caracteres como máximo",
+      "exists": "Ya existe una etiqueta «{{name}}»."
+    },
+    "rename": {
+      "label": "Nombre de la etiqueta",
+      "conflict": "Ya existe una etiqueta «{{name}}». ¿Combinarlas?",
+      "merge": "Combinar con «{{name}}»",
+      "failed": "No se pudo cambiar el nombre de la etiqueta. Ha vuelto el nombre anterior."
+    },
+    "merge": {
+      "title": "Combinar «{{name}}»",
+      "text": "Cada enlace con la etiqueta «{{name}}» recibe la etiqueta que elijas y después «{{name}}» se elimina.",
+      "label": "Combinar con",
+      "placeholder": "Elige una etiqueta",
+      "searchLabel": "Buscar etiquetas",
+      "noResults": "No se encontraron etiquetas",
+      "action": "Combinar",
+      "required": "Elige la etiqueta de destino",
+      "failed": "No se pudieron combinar las etiquetas. Inténtalo de nuevo.",
+      "failedTitle": "No se pudieron combinar las etiquetas",
+      "failedDetail": "Inténtalo de nuevo",
+      "done": "«{{name}}» combinada con «{{target}}»"
+    },
+    "delete": {
+      "title": "¿Eliminar la etiqueta «{{name}}»?",
+      "message": {
+        "one": "Se quitará de {{count}} enlace. El enlace se queda donde está.",
+        "many": "Se quitará de {{count}} enlaces. Los enlaces se quedan donde están.",
+        "other": "Se quitará de {{count}} enlaces. Los enlaces se quedan donde están."
+      },
+      "confirm": "Eliminar etiqueta",
+      "undo": "Deshacer",
+      "done": "Etiqueta «{{name}}» eliminada",
+      "failed": "No se pudo eliminar la etiqueta «{{name}}»",
+      "failedDetail": "Ha vuelto"
+    },
+    "filter": {
+      "label": "Filtrado por etiquetas",
+      "remove": "Quitar el filtro de etiqueta {{name}}",
+      "clear": "Borrar filtro"
+    },
+    "count": {
+      "one": "{{count}} enlace",
+      "many": "{{count}} enlaces",
+      "other": "{{count}} enlaces"
+    }
+  },
+  "search": {
+    "title": "Buscar",
+    "close": "Cerrar búsqueda",
+    "label": "Buscar enlaces, carpetas y etiquetas",
+    "placeholder": "Buscar enlaces, carpetas y etiquetas",
+    "results": "Resultados de búsqueda",
+    "esc": "Esc",
+    "inFolder": "en {{folder}}",
+    "noteMatches": "coincide en la nota:",
+    "showAll": "Mostrar todos los resultados de «{{query}}»",
+    "foldersAndTags": "Carpetas y etiquetas",
+    "linkCount": {
+      "one": "{{count}} enlace",
+      "many": "{{count}} enlaces",
+      "other": "{{count}} enlaces"
+    },
+    "tagMeta": {
+      "one": "Etiqueta, {{count}} enlace",
+      "many": "Etiqueta, {{count}} enlaces",
+      "other": "Etiqueta, {{count}} enlaces"
+    },
+    "status": {
+      "one": "{{count}} resultado",
+      "many": "{{count}} resultados",
+      "other": "{{count}} resultados"
+    },
+    "hintTitle": "Busca en tu estantería",
+    "hint": "Títulos, notas, etiquetas y sitios aparecen mientras escribes.",
+    "emptyText": "Prueba otra palabra. La búsqueda revisa títulos, notas, etiquetas y sitios.",
+    "searching": "Buscando…",
+    "failed": "No se pudo buscar. Inténtalo de nuevo.",
+    "hints": {
+      "ctrl": "Ctrl",
+      "command": "Comando",
+      "up": "Arriba",
+      "down": "Abajo",
+      "enter": "Intro",
+      "move": "moverse",
+      "open": "abrir",
+      "background": "abrir en segundo plano"
+    }
+  },
+  "share": {
+    "title": "Guardar en Shelfmark",
+    "subtitle": "Compartido desde otra app",
+    "footnote": "Después de guardar llegas a tu biblioteca.",
+    "actions": {
+      "save": "Guardar"
+    },
+    "invalid": {
+      "title": "Nada que guardar",
+      "text": "Lo compartido no tiene ninguna dirección web que empiece por http:// o https://, así que no se guardó nada.",
+      "action": "Ir a mis enlaces",
+      "footnote": "Para volver a intentarlo, comparte una página o un enlace desde tu navegador u otra app."
+    }
+  },
+  "onboarding": {
+    "stepLabel": "Paso {{current}} de {{count}}",
+    "announce": "Paso {{current}} de {{count}}: {{title}}",
+    "skip": "Omitir",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "addFirst": "Añade tu primer enlace",
+    "collect": {
+      "title": "Todos tus enlaces en un solo lugar",
+      "text": "Vídeos, artículos, cosas que comprar, cursos — todo lo que guardas vive en una estantería tranquila en vez de en chats y pestañas."
+    },
+    "save": {
+      "title": "Guarda en un segundo",
+      "text": "Pega un enlace y el título y la vista previa se rellenan solos. Añade una nota para recordar por qué lo guardaste."
+    },
+    "find": {
+      "title": "Encuéntralo al momento",
+      "text": "Carpetas, etiquetas, favoritos y la búsqueda con ⌘K recuperan cualquier enlace en un par de pulsaciones."
+    }
+  },
+  "rating": {
+    "title": "¿Qué te parece Shelfmark hasta ahora?",
+    "scale": {
+      "label": "Valoración del 1 al 10",
+      "score": "{{score}} de 10",
+      "low": "No mucho",
+      "high": "Me encanta"
+    },
+    "notNow": "Ahora no",
+    "feedback": {
+      "title": "¿Qué lo mejoraría?",
+      "yourScore": "Tu puntuación: {{score}}",
+      "label": "Tu opinión",
+      "placeholder": "Cuéntanos qué falta o qué molesta",
+      "counter": "caracteres",
+      "send": "Enviar",
+      "sending": "Enviando…",
+      "skip": "Omitir",
+      "error": "No se pudo enviar tu opinión. Inténtalo de nuevo."
+    },
+    "thanks": {
+      "title": "Gracias",
+      "text": "Tu valoración nos ayuda a mejorar Shelfmark.",
+      "textFeedback": "Leemos todos los mensajes.",
+      "close": "Cerrar"
+    }
+  },
+  "errors": {
+    "rateLimited": {
+      "title": "Demasiadas solicitudes",
+      "detail": "Inténtalo de nuevo en un momento"
+    },
+    "server": {
+      "title": "Algo ha fallado por nuestra parte",
+      "detail": "Inténtalo de nuevo"
+    }
+  },
+  "toast": {
+    "actionHint": "Pulsa {{shortcut}} para llegar a {{action}}",
+    "dismiss": "Cerrar"
+  },
+  "trash": {
+    "title": "Papelera",
+    "count": {
+      "one": "{{count}} elemento, se guarda {{days}} días",
+      "many": "{{count}} elementos, se guardan {{days}} días",
+      "other": "{{count}} elementos, se guardan {{days}} días"
+    },
+    "nothing": "Aquí no hay nada",
+    "emptyAction": "Vaciar papelera",
+    "loading": "Cargando la papelera",
+    "loadFailed": {
+      "title": "No se pudo cargar la papelera",
+      "text": "Comprueba tu conexión e inténtalo de nuevo.",
+      "retry": "Reintentar"
+    },
+    "filter": {
+      "label": "Mostrar",
+      "all": "Todo {{count}}",
+      "links": "Enlaces {{count}}",
+      "folders": "Carpetas {{count}}",
+      "emptyTitle": "Nada de este tipo en la papelera",
+      "emptyText": "Muéstralo todo para ver qué más espera aquí.",
+      "showAll": "Mostrar todo"
+    },
+    "selectAll": "Seleccionar todo",
+    "selected": {
+      "one": "{{count}} seleccionado",
+      "many": "{{count}} seleccionados",
+      "other": "{{count}} seleccionados"
+    },
+    "group": "Eliminados recientemente",
+    "row": {
+      "from": "De {{folder}}",
+      "fromUnsorted": "De Sin carpeta",
+      "deleted": "Eliminado {{when}}",
+      "links": {
+        "one": "{{count}} enlace",
+        "many": "{{count}} enlaces",
+        "other": "{{count}} enlaces"
+      },
+      "daysLeft": {
+        "one": "Queda {{count}} día",
+        "many": "Quedan {{count}} días",
+        "other": "Quedan {{count}} días"
+      },
+      "lastDay": "Queda menos de un día",
+      "select": "Seleccionar {{title}}",
+      "selectHint": "Selecciona esta entrada",
+      "restore": "Restaurar",
+      "restoreItem": "Restaurar {{title}}",
+      "deleteItem": "Eliminar {{title}} para siempre",
+      "more": "Más para {{title}}",
+      "moreTooltip": "Más acciones",
+      "deleteForever": "Eliminar para siempre",
+      "actionsHint": "Muestra Restaurar y Eliminar",
+      "delete": "Eliminar"
+    },
+    "footer": "Los elementos se eliminan para siempre a los {{days}} días. Restaurar devuelve un enlace a su carpeta, o a Sin carpeta si la carpeta ya no existe.",
+    "swipeHint": "Desliza a la izquierda para restaurar o eliminar para siempre. Mantén pulsado para seleccionar varios.",
+    "emptyState": {
+      "title": "La papelera está vacía",
+      "text": "Los enlaces y carpetas eliminados esperan aquí {{days}} días, así nada desaparece por error."
+    },
+    "bar": {
+      "label": "Acciones para los elementos seleccionados",
+      "restore": "Restaurar",
+      "deleteForever": "Eliminar para siempre",
+      "clear": "Borrar selección"
+    },
+    "emptyConfirm": {
+      "title": "¿Vaciar la papelera?",
+      "message": "{{items}} se eliminarán para siempre. No se puede deshacer.",
+      "messageFolder": "{{items}} se eliminarán para siempre, incluida la carpeta «{{name}}» y sus {{links}}. No se puede deshacer.",
+      "messageFolders": "{{items}} se eliminarán para siempre, incluidas {{folders}} y sus {{links}}. No se puede deshacer.",
+      "folders": {
+        "one": "{{count}} carpeta",
+        "many": "{{count}} carpetas",
+        "other": "{{count}} carpetas"
+      },
+      "items": {
+        "one": "{{count}} elemento",
+        "many": "{{count}} elementos",
+        "other": "{{count}} elementos"
+      },
+      "confirm": {
+        "one": "Eliminar {{count}} elemento",
+        "many": "Eliminar {{count}} elementos",
+        "other": "Eliminar {{count}} elementos"
+      },
+      "cancel": "Cancelar",
+      "close": "Cerrar"
+    },
+    "deleteConfirm": {
+      "title": "¿Eliminar para siempre?",
+      "message": "«{{title}}» se eliminará para siempre. No se puede deshacer.",
+      "messageFolder": "La carpeta «{{title}}» y sus {{links}} se eliminarán para siempre. No se puede deshacer.",
+      "messageMany": "{{items}} se eliminarán para siempre. No se puede deshacer.",
+      "confirm": "Eliminar para siempre",
+      "cancel": "Cancelar",
+      "close": "Cerrar"
+    },
+    "toast": {
+      "restored": "Restaurado",
+      "restoredMany": {
+        "one": "{{count}} elemento ha vuelto",
+        "many": "{{count}} elementos han vuelto",
+        "other": "{{count}} elementos han vuelto"
+      },
+      "restoreFailed": "No se pudo restaurar",
+      "restoreFailedDetail": "No se ha cambiado nada.",
+      "restoreFull": "No se pudo restaurar",
+      "restoreFullDetail": "Tu biblioteca está llena. Elimina algo e inténtalo de nuevo.",
+      "deleted": "Eliminado para siempre",
+      "deletedMany": {
+        "one": "{{count}} elemento eliminado para siempre",
+        "many": "{{count}} elementos eliminados para siempre",
+        "other": "{{count}} elementos eliminados para siempre"
+      },
+      "deleteFailed": "No se pudo eliminar",
+      "deleteFailedDetail": "Ha vuelto a la papelera.",
+      "emptied": "Papelera vaciada",
+      "emptyFailed": "No se pudo vaciar la papelera",
+      "emptyFailedDetail": "No se ha eliminado nada."
+    },
+    "emptyShort": "Vaciar"
+  },
+  "pins": {
+    "limit": {
+      "title": "Fijados está lleno",
+      "detail": "Puedes fijar hasta {{max}} carpetas y enlaces. Quita uno primero."
+    },
+    "pinFailed": {
+      "title": "No se pudo fijar",
+      "detail": "No se ha cambiado nada. Inténtalo de nuevo."
+    },
+    "unpinFailed": {
+      "title": "No se pudo quitar",
+      "detail": "Sigue fijado."
+    },
+    "moveFailed": {
+      "title": "No se pudo cambiar el orden",
+      "detail": "Ha vuelto el orden anterior."
+    },
+    "pinnedToTopFailed": {
+      "title": "No se pudo cambiar la fijación",
+      "detail": "Ha vuelto a como estaba."
+    },
+    "unpinned": {
+      "title": "Quitado de la barra lateral"
+    }
+  },
+  "views": {
+    "label": "Vistas guardadas",
+    "all": "Todos",
+    "add": "Guardar esta vista",
+    "menu": {
+      "for": "Acciones para {{name}}",
+      "rename": "Cambiar nombre",
+      "moveLeft": "Mover a la izquierda",
+      "moveRight": "Mover a la derecha",
+      "delete": "Eliminar vista"
+    },
+    "name": {
+      "label": "Nombre",
+      "placeholder": "Para leer",
+      "required": "Introduce un nombre",
+      "tooLong": "Usa {{max}} caracteres como máximo"
+    },
+    "dialog": {
+      "close": "Cerrar",
+      "cancel": "Cancelar"
+    },
+    "create": {
+      "title": "Guardar esta vista",
+      "action": "Guardar vista",
+      "saving": "Guardando…",
+      "failed": "No se pudo guardar la vista. Inténtalo de nuevo.",
+      "limit": "Ya tienes el máximo de vistas que puedes guardar. Elimina una primero.",
+      "missing": "La carpeta de esta vista ya no existe. Abre otra carpeta e inténtalo de nuevo."
+    },
+    "created": {
+      "title": "Vista guardada"
+    },
+    "rename": {
+      "title": "Cambiar nombre de la vista",
+      "action": "Cambiar nombre",
+      "saving": "Cambiando nombre…"
+    },
+    "renameFailed": {
+      "title": "No se pudo cambiar el nombre de la vista"
+    },
+    "deleteConfirm": {
+      "title": "¿Eliminar la vista {{name}}?",
+      "message": "Solo se va la vista. Los enlaces se quedan donde están.",
+      "confirm": "Eliminar vista",
+      "cancel": "Cancelar",
+      "close": "Cerrar"
+    },
+    "deleted": {
+      "title": "Vista eliminada"
+    },
+    "deleteFailed": {
+      "title": "No se pudo eliminar la vista"
+    },
+    "moveFailed": {
+      "title": "No se pudo mover la vista"
+    },
+    "limit": {
+      "title": "Las vistas guardadas están llenas",
+      "detail": "Puedes guardar hasta {{max}} vistas. Elimina una primero."
+    },
+    "unavailable": {
+      "title": "Esta vista espera a su carpeta",
+      "detail": "La carpeta de {{name}} está en la papelera. Restáurala para usar la vista."
+    },
+    "kindHint": {
+      "video": "Enlaces detectados como vídeos",
+      "article": "Enlaces detectados como artículos",
+      "shopping": "Enlaces detectados como compras"
+    }
+  },
+  "feedback": {
+    "kind": {
+      "idea": "Idea",
+      "problem": "Problema",
+      "other": "Otro"
+    },
+    "status": {
+      "received": "Recibido",
+      "planned": "Previsto",
+      "inProgress": "En curso",
+      "done": "Hecho",
+      "notPlanned": "No previsto"
+    },
+    "dialog": {
+      "title": "Enviar comentarios",
+      "close": "Cerrar",
+      "kind": "Tipo",
+      "field": {
+        "idea": "¿Qué mejoraría Shelfmark?",
+        "problem": "¿Qué salió mal?",
+        "other": "¿Qué tienes en mente?"
+      },
+      "placeholder": {
+        "idea": "Algo que deberíamos cambiar o añadir",
+        "problem": "Qué hiciste y qué pasó en su lugar",
+        "other": "Lo que quieras contarnos"
+      },
+      "hint": "Leemos todos los mensajes.",
+      "counter": "caracteres",
+      "required": "Escribe un mensaje primero.",
+      "tooLong": "Usa {{max}} caracteres como máximo.",
+      "attachClient": "Adjuntar navegador y versión de la app",
+      "cancel": "Cancelar",
+      "send": "Enviar",
+      "sending": "Enviando…",
+      "error": "No se pudo enviar. Tu texto se conserva — inténtalo de nuevo en un momento.",
+      "rateLimited": "Has enviado muchos mensajes en la última hora. Tu texto se conserva — inténtalo más tarde.",
+      "attachClientInfoLabel": "¿Qué se envía?",
+      "attachClientInfo": "Nos ayuda a reproducir los problemas. Solo se envían la versión de la app y el nombre y la versión de tu navegador."
+    },
+    "screenshot": {
+      "label": "Capturas de pantalla (opcional)",
+      "drop": "Suelta imágenes o",
+      "choose": "elige archivos",
+      "hint": "PNG, JPEG o WebP, hasta {{count}} imágenes de {{max}} MB cada una.",
+      "full": "{{count}} imágenes añadidas, el máximo para un mensaje.",
+      "remove": "Quitar imagen {{index}} de {{count}}: {{name}}",
+      "size": {
+        "kb": "{{size}} KB",
+        "mb": "{{size}} MB"
+      },
+      "error": {
+        "type": "Ese archivo no es una imagen PNG, JPEG o WebP.",
+        "size": "Esa imagen supera {{max}} MB. Elige una más pequeña.",
+        "empty": "Ese archivo está vacío.",
+        "read": "No se pudo leer ese archivo. Prueba con otro.",
+        "count": "Puedes añadir hasta {{count}} imágenes."
+      }
+    },
+    "thanks": {
+      "title": "Gracias",
+      "text": "Leemos todos los mensajes. Verás su estado en Ajustes › Tus comentarios.",
+      "done": "Listo",
+      "screenshotsFailed": "Algunas imágenes no se pudieron adjuntar. Tu mensaje se envió sin ellas."
+    },
+    "page": {
+      "send": {
+        "title": "Enviar comentarios",
+        "label": "Cuéntanos qué te parece",
+        "hint": "Una idea, un problema o cualquier otra cosa. Leemos todos los mensajes.",
+        "action": "Enviar comentarios"
+      },
+      "list": {
+        "title": "Tus mensajes",
+        "error": "No se pudieron cargar tus mensajes.",
+        "retry": "Reintentar"
+      },
+      "empty": {
+        "title": "Aún no hay mensajes",
+        "text": "Lo que envíes aparece aquí con su estado y nuestra respuesta."
+      },
+      "sent": "Enviado el {{date}}",
+      "sentToday": "Enviado hoy",
+      "reply": "Respuesta: {{reply}}"
+    }
+  },
+  "admin": {
+    "feedback": {
+      "title": "Buzón de comentarios",
+      "description": "Todos los mensajes, con su estado y tu respuesta.",
+      "filter": "Mostrar",
+      "filterAll": "Todos los estados",
+      "status": "Estado",
+      "reply": "Respuesta",
+      "replyHint": "Se muestra al remitente en Tus comentarios. Déjalo vacío para no responder.",
+      "replyTooLong": "Usa {{max}} caracteres como máximo en la respuesta.",
+      "save": "Guardar",
+      "screenshot": "Abrir captura {{index}} de {{count}}",
+      "error": "No se pudieron cargar los mensajes.",
+      "empty": {
+        "title": "No hay mensajes",
+        "text": "Nada coincide todavía con este filtro."
+      },
+      "loadMore": "Cargar más",
+      "loadingMore": "Cargando más mensajes",
+      "loadMoreFailed": {
+        "title": "No se pudieron cargar más mensajes",
+        "detail": "Inténtalo de nuevo"
+      },
+      "saveFailed": {
+        "title": "No se pudo guardar",
+        "detail": "El mensaje ha vuelto a como estaba. Inténtalo de nuevo."
+      }
+    }
+  },
+  "tabSync": {
+    "signedOut": {
+      "title": "Cerraste sesión en otra pestaña",
+      "text": "Para mantener tus enlaces privados, esta pestaña también se ha bloqueado.",
+      "signIn": "Volver a iniciar sesión"
+    }
+  },
+  "howItWorks": {
+    "menu": "Cómo funciona",
+    "title": "Shelfmark en 3 minutos",
+    "close": "Cerrar",
+    "captions": "Inglés",
+    "chaptersLabel": "Capítulos",
+    "chapters": {
+      "save": "Guardar un enlace",
+      "organise": "Carpetas y etiquetas",
+      "find": "Encontrarlo otra vez",
+      "many": "Varios a la vez",
+      "yours": "Hazlo tuyo",
+      "safety": "Deshacer y Papelera",
+      "share": "Compartir y exportar"
+    },
+    "emptyLink": "Mira cómo funciona",
+    "card": {
+      "label": "Cómo funciona",
+      "title": "¿Eres nuevo? Mira cómo funciona",
+      "length": "3 minutos",
+      "hide": "Ocultar"
+    }
+  },
+  "sharing": {
+    "dialog": {
+      "title": "Compartir la carpeta «{{name}}»",
+      "close": "Cerrar",
+      "done": "Listo",
+      "count": {
+        "one": "{{count}} enlace, subcarpetas incluidas",
+        "many": "{{count}} enlaces, subcarpetas incluidas",
+        "other": "{{count}} enlaces, subcarpetas incluidas"
+      },
+      "loading": "Cargando los ajustes para compartir…",
+      "loadFailed": "No se pudieron cargar los ajustes para compartir.",
+      "retry": "Reintentar",
+      "public": "Carpeta pública",
+      "publicHint": "Cualquiera con el enlace puede ver esta carpeta. No hace falta cuenta.",
+      "linkLabel": "Dirección de la página de la carpeta",
+      "copy": "Copiar enlace",
+      "copied": "Enlace de la carpeta copiado",
+      "copyFallback": "Aquí no se permite copiar. El enlace está seleccionado: pulsa Ctrl+C o ⌘C para copiarlo.",
+      "settings": "Ajustes del enlace",
+      "notes": "Mostrar mis notas",
+      "notesHint": "Los invitados ven por qué guardaste cada enlace",
+      "reset": "Restablecer enlace",
+      "resetHint": "El enlace anterior de la carpeta deja de funcionar al instante",
+      "resetAction": "Restablecer",
+      "privateNotes": "Las notas siguen siendo privadas salvo que las actives.",
+      "limit": "Puedes compartir hasta {{max}} carpetas. Haz privada otra carpeta antes.",
+      "demo": "Las cuentas demo no pueden compartir carpetas. Inicia sesión para compartir las tuyas.",
+      "saveFailed": "No se pudo guardar el cambio. Inténtalo de nuevo."
+    },
+    "reset": {
+      "title": "¿Restablecer el enlace de la carpeta?",
+      "message": "El enlace anterior de la carpeta deja de funcionar al instante. Quien deba seguir viendo la carpeta necesitará el nuevo enlace.",
+      "confirm": "Restablecer enlace",
+      "cancel": "Cancelar",
+      "done": "Enlace restablecido",
+      "doneDetail": "El enlace anterior ya no funciona"
+    }
+  },
+  "publicCollection": {
+    "home": "Inicio de Shelfmark",
+    "signIn": "Iniciar sesión",
+    "backToShelf": "Volver a mi estantería",
+    "sharedBy": "Compartido por {{name}}",
+    "sharedAnonymous": "Compartido en Shelfmark",
+    "count": {
+      "one": "{{count}} enlace",
+      "many": "{{count}} enlaces",
+      "other": "{{count}} enlaces"
+    },
+    "updated": "Actualizado {{time}}",
+    "copy": "Copiar enlace",
+    "copied": "Enlace copiado",
+    "copyFailed": "No se pudo copiar el enlace",
+    "copyFailedDetail": "Cópialo desde la barra de direcciones",
+    "filterLabel": "Subcarpetas",
+    "all": "Todas",
+    "loading": "Cargando la colección…",
+    "more": "Mostrar más",
+    "capped": "Esta página muestra los {{max}} enlaces más recientes.",
+    "empty": {
+      "title": "Aún no hay enlaces",
+      "text": "El propietario no ha guardado nada en esta carpeta."
+    },
+    "notFound": {
+      "title": "Esta colección no está disponible",
+      "text": "Puede que el enlace esté mal escrito o que el propietario lo haya desactivado o restablecido.",
+      "action": "Ir a Shelfmark"
+    },
+    "failed": "No se pudo cargar la colección.",
+    "retry": "Reintentar",
+    "cta": {
+      "title": "Guarda tus propios enlaces así",
+      "text": "Shelfmark guarda vídeos, artículos, cosas que comprar y cursos en una estantería tranquila.",
+      "action": "Empieza tu estantería"
+    },
+    "madeWith": "Hecho con Shelfmark"
+  },
+  "bulk": {
+    "bar": {
+      "label": {
+        "one": "Acciones para {{count}} enlace seleccionado",
+        "many": "Acciones para {{count}} enlaces seleccionados",
+        "other": "Acciones para {{count}} enlaces seleccionados"
+      },
+      "move": "Mover",
+      "tags": "Etiquetas",
+      "favorite": "Favorito",
+      "openAll": "Abrir todos",
+      "copy": "Copiar enlaces",
+      "share": "Compartir",
+      "delete": "Eliminar"
+    },
+    "header": {
+      "label": "Selección",
+      "selected": {
+        "one": "{{count}} seleccionado",
+        "many": "{{count}} seleccionados",
+        "other": "{{count}} seleccionados"
+      },
+      "selectAll": "Seleccionar los {{count}}",
+      "selectAllShort": "Seleccionar todo",
+      "selectAllBox": {
+        "one": "Seleccionar {{count}} enlace",
+        "many": "Seleccionar los {{count}} enlaces",
+        "other": "Seleccionar los {{count}} enlaces"
+      },
+      "shift": "Mayús",
+      "rangeHint": "+ clic selecciona un rango",
+      "esc": "Esc",
+      "clearHint": "borra",
+      "done": "Listo",
+      "cancel": "Cancelar selección",
+      "longPressHint": "Mantén pulsado un enlace para empezar a seleccionar y luego toca otros.",
+      "modeOn": "Modo de selección activado. Activar un enlace ahora lo selecciona.",
+      "modeOff": "Modo de selección desactivado."
+    },
+    "item": {
+      "select": "Seleccionar {{title}}"
+    },
+    "move": {
+      "title": {
+        "one": "Mover {{count}} enlace",
+        "many": "Mover {{count}} enlaces",
+        "other": "Mover {{count}} enlaces"
+      },
+      "moved": {
+        "one": "{{count}} enlace movido a {{folder}}",
+        "many": "{{count}} enlaces movidos a {{folder}}",
+        "other": "{{count}} enlaces movidos a {{folder}}"
+      },
+      "failed": "No se pudieron mover los enlaces",
+      "failedDetail": "Han vuelto a donde estaban",
+      "undoFailed": "No se pudieron devolver los enlaces a su sitio"
+    },
+    "tags": {
+      "title": {
+        "one": "Etiquetas de {{count}} enlace",
+        "many": "Etiquetas de {{count}} enlaces",
+        "other": "Etiquetas de {{count}} enlaces"
+      },
+      "add": "Añadir a todos",
+      "addHint": "Se añade a cada enlace seleccionado",
+      "remove": "Quitar de todos",
+      "removeHint": "Se quita de cada enlace seleccionado; las etiquetas siguen existiendo",
+      "removePlaceholder": "Elige una etiqueta",
+      "onLinks": "en {{count}} de {{total}}",
+      "apply": "Aplicar",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "done": {
+        "one": "Etiquetas actualizadas en {{count}} enlace",
+        "many": "Etiquetas actualizadas en {{count}} enlaces",
+        "other": "Etiquetas actualizadas en {{count}} enlaces"
+      },
+      "failed": "No se pudieron cambiar las etiquetas",
+      "failedDetail": "No se ha cambiado nada",
+      "tooMany": "Un enlace puede tener como máximo {{max}} etiquetas. No se ha cambiado nada."
+    },
+    "favorite": {
+      "on": {
+        "one": "{{count}} enlace añadido a favoritos",
+        "many": "{{count}} enlaces añadidos a favoritos",
+        "other": "{{count}} enlaces añadidos a favoritos"
+      },
+      "off": {
+        "one": "{{count}} enlace quitado de favoritos",
+        "many": "{{count}} enlaces quitados de favoritos",
+        "other": "{{count}} enlaces quitados de favoritos"
+      },
+      "failed": "No se pudieron cambiar los favoritos",
+      "failedDetail": "No se ha cambiado nada"
+    },
+    "open": {
+      "confirmTitle": "¿Abrir {{count}} enlaces?",
+      "confirmMessage": "Cada enlace se abre en una pestaña nueva.",
+      "confirm": "Abrir todos",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "blocked": "El navegador bloqueó {{blocked}} de {{count}} pestañas",
+      "blockedDetail": "Permite las ventanas emergentes de este sitio para abrirlas todas"
+    },
+    "copy": {
+      "done": {
+        "one": "{{count}} enlace copiado",
+        "many": "{{count}} enlaces copiados",
+        "other": "{{count}} enlaces copiados"
+      },
+      "failed": "No se pudieron copiar los enlaces"
+    },
+    "share": {
+      "failed": "No se pudieron compartir los enlaces"
+    },
+    "delete": {
+      "title": {
+        "one": "¿Mover {{count}} enlace a la papelera?",
+        "many": "¿Mover {{count}} enlaces a la papelera?",
+        "other": "¿Mover {{count}} enlaces a la papelera?"
+      },
+      "message": "Se quedan en la papelera {{days}} días y después se eliminan para siempre.",
+      "confirm": "Mover a la papelera",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "done": {
+        "one": "{{count}} enlace movido a la papelera",
+        "many": "{{count}} enlaces movidos a la papelera",
+        "other": "{{count}} enlaces movidos a la papelera"
+      },
+      "failed": "No se pudieron eliminar los enlaces",
+      "failedDetail": "Han vuelto a la lista",
+      "undoFailed": "No se pudieron restaurar los enlaces"
+    }
+  }
+}

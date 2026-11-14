@@ -1,0 +1,65 @@
+<app-settings-page-header
+  [title]="'settings.nav.feedback' | transloco"
+  [description]="'settings.description.feedback' | transloco"
+/>
+
+<ui-settings-section [title]="'feedback.page.send.title' | transloco">
+  <ui-settings-row
+    [title]="'feedback.page.send.label' | transloco"
+    [description]="'feedback.page.send.hint' | transloco"
+  >
+    <ui-button variant="primary" iconLeft="message" ariaHaspopup="dialog" (click)="send()">
+      {{ 'feedback.page.send.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+
+@if (store.phase() === LOAD.Loaded && rows().length === 0) {
+<!-- No messages yet: the page-level empty state (#315) instead of an empty list section. -->
+<ui-empty-state
+  layout="page"
+  icon="inbox"
+  [heading]="'feedback.page.empty.title' | transloco"
+  [text]="'feedback.page.empty.text' | transloco"
+/>
+} @else {
+<ui-settings-section [title]="'feedback.page.list.title' | transloco">
+  <div class="feedback-page__body" [attr.aria-busy]="store.phase() === LOAD.Loading">
+    @switch (store.phase()) { @case (LOAD.Failed) {
+    <ui-notice [kind]="NOTICE_KIND.Danger">
+      {{ 'feedback.page.list.error' | transloco }}
+      <ui-button uiNoticeAction size="sm" (click)="retry()">
+        {{ 'feedback.page.list.retry' | transloco }}
+      </ui-button>
+    </ui-notice>
+    } @case (LOAD.Loaded) {
+    <ul class="feedback-page__list">
+      @for (row of rows(); track row.message.id) {
+      <li class="feedback-page__item">
+        <ui-chip class="feedback-page__kind" [variant]="CHIP_VARIANT.Neutral"
+          >{{ row.kindKey | transloco }}</ui-chip
+        >
+        <div class="feedback-page__main">
+          <p class="feedback-page__text">{{ row.message.text }}</p>
+          <p class="feedback-page__meta">
+            <span
+              >{{ (row.sent.today ? 'feedback.page.sentToday' : 'feedback.page.sent') | transloco: {
+              date: row.sent.text } }}</span
+            >
+          </p>
+          @if (row.message.reply; as reply) {
+          <p class="feedback-page__reply">
+            {{ 'feedback.page.reply' | transloco: { reply: reply } }}
+          </p>
+          }
+        </div>
+        <app-feedback-status-badge class="feedback-page__status" [status]="row.message.status" />
+      </li>
+      }
+    </ul>
+    } @default {
+    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="3" />
+    } }
+  </div>
+</ui-settings-section>
+}

@@ -86,6 +86,28 @@ describe('scrubEvent', () => {
     });
   });
 
+  it('redacts the share token of the public collection page in the URL and the transaction', () => {
+    const token = 'Abc123SecretShareToken_xyz';
+    const event = scrubEvent({
+      ...sample(),
+      transaction: `/c/${token}`,
+      request: { url: `https://shelfmark.app/c/${token}?folder=f1#top` },
+    });
+    expect(event.request).toEqual({ url: 'https://shelfmark.app/c/:token' });
+    expect(event.transaction).toBe('/c/:token');
+    expect(JSON.stringify(event)).not.toContain(token);
+  });
+
+  it('keeps paths that only contain a c segment deeper down', () => {
+    const event = scrubEvent({
+      ...sample(),
+      transaction: '/links/c/x',
+      request: { url: 'https://shelfmark.app/c' },
+    });
+    expect(event.request).toEqual({ url: 'https://shelfmark.app/c' });
+    expect(event.transaction).toBe('/links/c/x');
+  });
+
   it('handles an event without optional parts and a request without url', () => {
     expect(scrubEvent({ type: undefined })).toEqual({ type: undefined });
     expect(

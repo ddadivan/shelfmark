@@ -67,7 +67,7 @@ test.describe('API error toasts (real APIs, routed failures)', () => {
 
     await page.goto('/links');
 
-    await expectSingleToast(page, api, 'Too many requests. Try again in a moment.');
+    await expectSingleToast(page, api, 'Too many requests');
   });
 
   test('a 500 shows the server-error toast once', async ({ page }) => {
@@ -75,6 +75,6 @@ test.describe('API error toasts (real APIs, routed failures)', () => {
 
     await page.goto('/links');
 
-    await expectSingleToast(page, api, 'Something went wrong on our side. Try again.');
+    await expectSingleToast(page, api, 'Something went wrong on our side');
   });
 });

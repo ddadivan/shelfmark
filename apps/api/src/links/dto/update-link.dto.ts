@@ -1,9 +1,16 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { LINK_LIMIT, TAG_LIMIT, type UpdateLinkRequest } from '@shelfmark/contracts';
+import {
+  LINK_KIND,
+  LINK_LIMIT,
+  TAG_LIMIT,
+  type LinkKind,
+  type UpdateLinkRequest,
+} from '@shelfmark/contracts';
 import {
   ArrayMaxSize,
   IsArray,
   IsBoolean,
+  IsIn,
   IsOptional,
   IsString,
   IsUUID,
@@ -65,4 +72,17 @@ export class UpdateLinkDto implements UpdateLinkRequest {
   @ValidateIf(present)
   @IsBoolean()
   isFavorite?: boolean;
+
+  @ApiPropertyOptional({
+    enum: Object.values(LINK_KIND),
+    description: 'Without it a new URL recomputes the kind from the host',
+  })
+  @ValidateIf(present)
+  @IsIn(Object.values(LINK_KIND))
+  kind?: LinkKind;
+
+  @ApiPropertyOptional({ description: 'Pin to or unpin from the top of the link folder' })
+  @ValidateIf(present)
+  @IsBoolean()
+  pinnedInFolder?: boolean;
 }

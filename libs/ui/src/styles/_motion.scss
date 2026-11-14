@@ -34,11 +34,13 @@ $enter-presets: (
     'duration': 'base',
     'ease': 'out',
   ),
+  // Rises 18px with a light spring; `slow` (320 ms) is the longest duration token, the Toast spec's
+  // 420 ms is not one (Motion: nothing runs longer than 320 ms).
   'toast': (
-    'keyframes': 'ui-slide-up',
-    'duration': 'slow',
-    'ease': 'out',
-  ),
+      'keyframes': 'ui-toast-in',
+      'duration': 'slow',
+      'ease': 'spring',
+    ),
   'sheet': (
     'keyframes': 'ui-sheet-in',
     'duration': 'slow',
@@ -49,6 +51,13 @@ $enter-presets: (
     'duration': 'slow',
     'ease': 'drawer',
   ),
+  // A panel that discloses under its trigger (the colour picker, #335): its height opens from 0
+  // (`grid-template-rows` on a one-row grid, the way the tree expands) while it fades in.
+  'disclose': (
+      'keyframes': 'ui-disclose-in',
+      'duration': 'base',
+      'ease': 'in-out',
+    ),
   'spinner': (
     'keyframes': 'ui-spinner-in',
     'duration': 'base',
@@ -88,6 +97,11 @@ $leave-presets: (
     'duration': 'base',
     'ease': 'in',
   ),
+  'disclose': (
+    'keyframes': 'ui-disclose-out',
+    'duration': 'fast',
+    'ease': 'in-out',
+  ),
   'spinner': (
     'keyframes': 'ui-spinner-out',
     'duration': 'fast',
@@ -118,7 +132,7 @@ $leave-presets: (
   @return $preset;
 }
 
-// Plays an entrance: `pop` (menus, listboxes, dialogs), `fade`, `toast`, `sheet`, `drawer`,
+// Plays an entrance: `pop` (menus, listboxes, dialogs), `disclose` (a panel under its trigger), `fade`, `toast`, `sheet`, `drawer`,
 // `spinner`, `spinner-grow` (spinner inside a button, label makes room). Reduced motion: fade, 200 ms
 // (so `spinner-grow` also drops its margin growth: the label does not slide). A spinner's
 // rotation is a separate `loop(spin)` on the inner element.
@@ -136,7 +150,7 @@ $leave-presets: (
   }
 }
 
-// Plays an exit: `pop`, `fade`, `toast`, `sheet`, `drawer`, `spinner`, `spinner-shrink`.
+// Plays an exit: `pop`, `disclose`, `fade`, `toast`, `sheet`, `drawer`, `spinner`, `spinner-shrink`.
 // Reduced motion: a plain fade-out of the same duration.
 @mixin leave($name) {
   $p: -preset($leave-presets, $name, 'leave');
@@ -198,6 +212,25 @@ $leave-presets: (
     }
   }
 
+  @keyframes ui-disclose-in {
+    from {
+      grid-template-rows: 0fr;
+      opacity: 0;
+    }
+
+    to {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+  }
+
+  @keyframes ui-disclose-out {
+    to {
+      grid-template-rows: 0fr;
+      opacity: 0;
+    }
+  }
+
   @keyframes ui-pop-out {
     to {
       opacity: 0;
@@ -243,10 +276,10 @@ $leave-presets: (
     }
   }
 
-  @keyframes ui-slide-up {
+  @keyframes ui-toast-in {
     from {
       opacity: 0;
-      transform: translateY(#{rem(12px)});
+      transform: translateY(#{rem(18px)}) scale(0.96);
     }
 
     to {
@@ -259,6 +292,17 @@ $leave-presets: (
     to {
       opacity: 0;
       transform: translateY(#{rem(8px)});
+    }
+  }
+
+  // The Undo countdown line of a toast (`.ui-toast__timer`): it empties over `--ui-toast-duration`.
+  @keyframes ui-toast-count {
+    from {
+      transform: scaleX(1);
+    }
+
+    to {
+      transform: scaleX(0);
     }
   }
 
@@ -326,5 +370,48 @@ $leave-presets: (
     to {
       opacity: 0;
     }
+  }
+
+  // "Save link" (Motion spec): the new card drops in with a light spring...
+  @keyframes ui-land {
+    from {
+      opacity: 0;
+      transform: translateY(#{rem(-12px)}) scale(0.97);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  // ...and a sage ring around it fades over 1.8 s, so it can be found.
+  @keyframes ui-land-ring {
+    from {
+      box-shadow: 0 0 0 #{rem(2px)} var(--accent);
+    }
+
+    to {
+      box-shadow: 0 0 0 #{rem(2px)} transparent;
+    }
+  }
+}
+
+// The sage ring of a landed card is the one moment longer than 320 ms (Motion principle 2).
+$land-ring-duration: 1.8s;
+
+// A link that was just saved lands in the feed: `ui-land` (320 ms `ease-spring`) plus the fading
+// sage ring. `--ui-land-delay` staggers several (a paste of many). Reduced motion: no movement, the
+// card fades in (200 ms) and the ring still fades, so the new card is findable. Finite, like the
+// presets. The element needs the radius of the card for the ring to follow its corners.
+@mixin landed {
+  animation:
+    ui-land var(--duration-slow) var(--ease-spring) var(--ui-land-delay, 0s) both,
+    ui-land-ring $land-ring-duration var(--ease-out) var(--ui-land-delay, 0s) both;
+
+  @include reduced-motion {
+    animation:
+      ui-reveal var(--duration-base) var(--ease-out) var(--ui-land-delay, 0s) both,
+      ui-land-ring $land-ring-duration var(--ease-out) var(--ui-land-delay, 0s) both;
   }
 }

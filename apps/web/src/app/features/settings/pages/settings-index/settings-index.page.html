@@ -1,0 +1,68 @@
+<h1 class="settings-index__title">{{ 'settings.phoneTitle' | transloco }}</h1>
+
+@if (auth.user(); as user) {
+<a class="settings-index__card" [routerLink]="[settingsPath, SETTINGS_PATH.Account]">
+  <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="lg" />
+  <span class="settings-index__identity">
+    <span class="settings-index__sr">{{ 'settings.account.open' | transloco }}: </span>
+    <span class="settings-index__name">{{ user.name }}</span>
+    <span class="settings-index__email">{{ user.email }}</span>
+  </span>
+  <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
+</a>
+}
+
+<nav class="settings-index__list" [attr.aria-label]="'settings.title' | transloco">
+  @for (entry of rows; track entry.path) {
+  <a class="settings-index__row" [routerLink]="[settingsPath, entry.path]">
+    <span class="settings-index__label">{{ entry.labelKey | transloco }}</span>
+    @if (entry.path === SETTINGS_PATH.Appearance) {
+    <span class="settings-index__value">{{ themeKey() | transloco }}</span>
+    } @if (entry.path === SETTINGS_PATH.Language) { @if (languageName(); as name) {
+    <span class="settings-index__value" [attr.lang]="name.lang">{{ name.text }}</span>
+    } @else {
+    <span class="settings-index__value"
+      >{{ 'settings.language.interface.browser' | transloco }}</span
+    >
+    } }
+    <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
+  </a>
+  } @if (admin.isAdmin()) {
+  <a class="settings-index__row" [routerLink]="adminFeedbackPath">
+    <span class="settings-index__label">{{ 'shell.feedbackInbox' | transloco }}</span>
+    <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
+  </a>
+  }
+</nav>
+
+<ui-button
+  block
+  [size]="BUTTON_SIZE.Lg"
+  iconLeft="message"
+  ariaHaspopup="dialog"
+  (click)="feedback.open()"
+>
+  {{ 'shell.sendFeedback' | transloco }}
+</ui-button>
+
+<nav class="settings-index__list" [attr.aria-label]="'settings.help' | transloco">
+  <a class="settings-index__row" [routerLink]="aboutHref">
+    <span class="settings-index__label">{{ 'shell.about' | transloco }}</span>
+    <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
+  </a>
+</nav>
+
+<ui-button block [size]="BUTTON_SIZE.Lg" iconLeft="play" (click)="howItWorks.open()">
+  {{ 'howItWorks.menu' | transloco }}
+</ui-button>
+
+<ui-button block [size]="BUTTON_SIZE.Lg" (click)="signOut()">
+  {{ 'auth.signOut' | transloco }}
+</ui-button>
+
+<p class="settings-index__footer">
+  <a class="settings-index__privacy" [routerLink]="privacyHref"
+    >{{ 'settings.footer.privacy' | transloco }}</a
+  >
+  <span>{{ 'settings.footer.version' | transloco }}</span>
+</p>

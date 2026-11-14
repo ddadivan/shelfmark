@@ -1,54 +1,127 @@
-<nav class="sidebar" [attr.aria-label]="'shell.sidebar.nav' | transloco">
-  <ui-tree
-    [fixedNodes]="fixedNodes()"
-    [nodes]="nodes()"
-    [activeId]="activeId()"
-    [heading]="'shell.sidebar.folders' | transloco"
-    [ariaLabel]="'shell.sidebar.tree' | transloco"
-    [menuLabel]="menuLabel()"
-    [menuNodeId]="menuNodeId()"
-    (selected)="select($event)"
-    (contextMenu)="openMenu($event)"
-  >
-    <ui-button
-      uiTreeHeadingAction
-      variant="ghost"
-      size="sm"
-      iconOnly
-      iconLeft="folder-plus"
-      [iconSize]="ICON_SIZE.Lg"
-      [ariaLabel]="'shell.sidebar.newFolder' | transloco"
-      [uiTooltip]="'shell.sidebar.newFolder' | transloco"
-      (click)="createTopLevel()"
-    />
-  </ui-tree>
+<nav
+  class="sidebar"
+  [class.sidebar--folders]="foldersOnly()"
+  [attr.aria-label]="navLabelKey() | transloco"
+>
+  @if (showLogo()) {
+    <a class="sidebar__logo" routerLink="/links"><ui-logo /></a>
+  }
+  <div class="sidebar__scroll">
+    @if (!foldersOnly()) {
+      <ui-tree
+        [fixedNodes]="fixedNodes()"
+        [activeId]="activeId()"
+        [noDropIds]="drag.treeNoDropIds()"
+        [ariaLabel]="'shell.sidebar.views' | transloco"
+        (selected)="select($event)"
+      />
+      <app-sidebar-pinned [activeId]="activeId()" />
+    }
+    @if (foldersReady()) {
+      <ui-tree
+        #folderTree
+        [nodes]="nodes()"
+        [activeId]="activeId()"
+        [heading]="'shell.sidebar.folders' | transloco"
+        [ariaLabel]="'shell.sidebar.foldersTree' | transloco"
+        [menuLabel]="menuLabel()"
+        [menuNodeId]="folderMenu.menuNodeId()"
+        [dropTargetId]="drag.treeTargetId()"
+        [dropLabel]="'links.drag.moveHere' | transloco"
+        reorderable
+        (selected)="select($event)"
+        (contextMenu)="openMenu($event)"
+        (reordered)="folderMenu.reorder($event)"
+        (reorderStarted)="reorderStarted()"
+      >
+        <ui-button
+          uiTreeHeadingAction
+          variant="ghost"
+          size="sm"
+          iconOnly
+          iconLeft="add"
+          [iconSize]="ICON_SIZE.Md"
+          [ariaLabel]="'shell.sidebar.newFolder' | transloco"
+          [uiTooltip]="'shell.sidebar.newFolder' | transloco"
+          (click)="folderMenu.createTopLevel()"
+        />
+      </ui-tree>
+    } @else if (loaderShown()) {
+      <!-- The first load: nothing before 300 ms, then rows of the right height; never empty sections. -->
+      <div class="sidebar__loading" aria-hidden="true">
+        <ui-skeleton [shape]="SKELETON_SHAPE.Tree" [count]="foldersOnly() ? 5 : 4" />
+      </div>
+    }
 
-  @if (folders.error()) {
-    <p class="sidebar__error">
-      {{ 'shell.sidebar.loadFailed' | transloco }}
-      <ui-button [size]="buttonSize()" (click)="retry()">{{
-        'shell.sidebar.retry' | transloco
-      }}</ui-button>
-    </p>
+    @if (folders.error()) {
+      <p class="sidebar__error">
+        {{ 'shell.sidebar.loadFailed' | transloco }}
+        <ui-button [size]="buttonSize()" (click)="retry()">{{
+          'shell.sidebar.retry' | transloco
+        }}</ui-button>
+      </p>
+    }
+
+    @if (!foldersOnly() && tagsReady()) {
+      <app-sidebar-tags />
+    }
+
+    @if (!foldersOnly() && howItWorks.cardVisible()) {
+      <app-how-it-works-card class="sidebar__how-it-works" />
+    }
+  </div>
+
+  @if (!foldersOnly()) {
+    <!-- The footer stays put (#335): "Send feedback" (desktop only; the phone has it in the You list),
+      then Trash under its divider (Main spec). -->
+    <div class="sidebar__footer">
+      @if (feedbackNodes().length) {
+        <ui-tree
+          [fixedNodes]="feedbackNodes()"
+          [activeId]="activeId()"
+          [noDropIds]="drag.treeNoDropIds()"
+          [ariaLabel]="'shell.sidebar.footer' | transloco"
+          (selected)="footerSelected($event)"
+        />
+      }
+      <ui-tree
+        class="sidebar__trash"
+        [fixedNodes]="trashNodes()"
+        [activeId]="activeId()"
+        [noDropIds]="drag.treeNoDropIds()"
+        [ariaLabel]="'trash.title' | transloco"
+        (selected)="footerSelected($event)"
+      />
+    </div>
   }
 
-  <app-sidebar-tags />
-
-  <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="menuClosed()">
-    <ui-menu-item icon="folder-plus" (activated)="createSubfolder()">
+  <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="folderMenu.menuClosed()">
+    <ui-menu-item icon="pin" (activated)="folderMenu.togglePin()">
+      {{
+        (folderMenu.menuPinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin')
+          | transloco
+      }}
+    </ui-menu-item>
+    <ui-menu-item icon="edit" (activated)="folderMenu.style()">
+      {{ 'shell.sidebar.menu.style' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="folder-plus" (activated)="folderMenu.createSubfolder()">
       {{ 'shell.sidebar.menu.newSubfolder' | transloco }}
     </ui-menu-item>
-    <ui-menu-item icon="add" (activated)="addLinkHere()">
+    <ui-menu-item icon="add" (activated)="folderMenu.addLinkHere()">
       {{ 'shell.sidebar.menu.addLink' | transloco }}
     </ui-menu-item>
-    <ui-menu-item icon="edit" (activated)="rename()">
+    <ui-menu-item icon="edit" (activated)="folderMenu.rename()">
       {{ 'shell.sidebar.menu.rename' | transloco }}
     </ui-menu-item>
-    <ui-menu-item icon="folder-move" (activated)="move()">
+    <ui-menu-item icon="folder-move" (activated)="folderMenu.move()">
       {{ 'shell.sidebar.menu.move' | transloco }}
     </ui-menu-item>
+    <ui-menu-item icon="share" (activated)="folderMenu.share()">
+      {{ 'shell.sidebar.menu.share' | transloco }}
+    </ui-menu-item>
     <ui-menu-separator />
-    <ui-menu-item icon="trash" danger (activated)="remove()">
+    <ui-menu-item icon="trash" danger (activated)="folderMenu.remove()">
       {{ 'shell.sidebar.menu.delete' | transloco }}
     </ui-menu-item>
   </ui-menu>

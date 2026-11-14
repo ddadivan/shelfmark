@@ -1,0 +1,120 @@
+@use 'ui' as *;
+@use '../../landing' as landing;
+
+:host {
+  display: block;
+}
+
+// The panel, with the toast overlapping its bottom-left corner like the mockup: the wrapper
+// leaves room for the toast to hang out under and to the left of the panel.
+.landing-hero-preview {
+  position: relative;
+  padding: 0 0 var(--space-6);
+
+  @include tablet-up {
+    padding-inline-start: var(--space-6);
+  }
+}
+
+.landing-hero-preview__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--surface);
+
+  // The panel is the container the card count is queried against (a container cannot query
+  // itself, so not the grid).
+  container-type: inline-size;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-float);
+}
+
+.landing-hero-preview__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+}
+
+.landing-hero-preview__folder {
+  @include type(title);
+
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.landing-hero-preview__count {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.landing-hero-preview__switch {
+  margin-inline-start: auto;
+}
+
+// As many cards as fit at a readable width (160px each): three, two or one. The panel's width
+// decides (a container query on it, 32px of padding included), not the window's, because the
+// preview sits in a column that changes with the layout. Every card sits in the first cell and is moved to its slot (`--landing-preview-slot`, from the
+// component) by `translate`, one column plus the gap per slot, so the switch loop never lays
+// anything out again: it only changes `translate`, `scale` and `opacity`. A slot past the last
+// column (`--landing-preview-cols`) is off the row and transparent; slot -1 is a card that left
+// (it fades and shrinks where it stood). The grid clips what slides past its edges.
+.landing-hero-preview__grid {
+  --landing-preview-cols: 3;
+  --landing-preview-gap: var(--space-3);
+
+  display: grid;
+  grid-template-columns: repeat(var(--landing-preview-cols), minmax(0, 1fr));
+  gap: var(--landing-preview-gap);
+  overflow: clip;
+  overflow-clip-margin: var(--space-3);
+}
+
+// The cards are a picture: nothing reacts to the pointer.
+.landing-hero-preview__item {
+  --landing-preview-shown: min(
+    clamp(0, var(--landing-preview-cols) - var(--landing-preview-slot), 1),
+    clamp(0, var(--landing-preview-slot) + 1, 1)
+  );
+
+  display: flex;
+  grid-area: 1 / 1;
+  min-width: 0;
+  pointer-events: none;
+  opacity: var(--landing-preview-shown);
+  translate: calc(max(var(--landing-preview-slot), 0) * (100% + var(--landing-preview-gap))) 0;
+  scale: calc(1 - 0.08 * clamp(0, -1 * var(--landing-preview-slot), 1));
+  transition:
+    translate var(--duration-slow) var(--ease-in-out) 60ms,
+    opacity var(--duration-base) var(--ease-out),
+    scale var(--duration-base) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+@container (inline-size < #{rem(536px)}) {
+  .landing-hero-preview__grid {
+    --landing-preview-cols: 2;
+  }
+}
+
+@container (inline-size < #{rem(364px)}) {
+  .landing-hero-preview__grid {
+    --landing-preview-cols: 1;
+  }
+}
+
+.landing-hero-preview__toast {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: var(--space-3);
+  max-inline-size: calc(100% - var(--space-6));
+
+  @include tablet-up {
+    inset-inline-start: 0;
+  }
+}

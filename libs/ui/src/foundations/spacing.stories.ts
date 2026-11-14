@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { RADIUS_TOKENS } from './models/radius-tokens.const';
 import { SHADOW_TOKENS } from './models/shadow-tokens.const';
 import { SPACING_TOKENS } from './models/spacing-tokens.const';
-import { THEME, THEME_ATTRIBUTE } from '../lib/theme';
+import { THEME, THEME_ATTRIBUTE } from '../lib/models/theme';
 
 const meta: Meta = {
   title: 'Foundations/Spacing, radii and shadows',
@@ -12,7 +12,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          'Spacing and radii are rem tokens (base 16 px). Shadows are the only two elevation levels; `box-shadow` is one of the few places plain px is allowed.',
+          'Spacing and radii are rem tokens (base 16 px). Shadows: `shadow-card` at rest, `shadow-float` for glass and dialogs, the card hover layers and `shadow-popover` for tooltips; `box-shadow` is one of the few places plain px is allowed.',
       },
     },
   },

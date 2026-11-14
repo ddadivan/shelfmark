@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tags: create, rename, delete</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/shelfmark/tokens.css">
+<link rel="stylesheet" href="ds/shelfmark/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+.cap{margin:0;font-size:13px;font-weight:600;color:var(--text-muted)}
+.note{margin:0;font-size:12px;line-height:18px;color:var(--text-muted)}
+.x{width:12px;height:12px}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root" style="min-height: 900px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 48px; box-sizing: border-box; display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 32px; align-content: start;">
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 class="cap">In the link form: type a new name and press Enter</h2>
+<div style="position: relative; width: 360px; height: 250px;">
+<div class="sm-field"><label class="sm-field__label">Tags</label>
+<div class="sm-field__control sm-taginput is-focus"><span class="sm-chip">clothes<button type="button" class="sm-chip__remove" aria-label="Remove tag clothes"><svg class="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></span><input aria-label="Add tag" value="wint" role="combobox" aria-expanded="true" aria-controls="tag-suggest" aria-autocomplete="list" aria-activedescendant="tag-create"></div></div>
+<div class="sm-listbox sm-pop-in" id="tag-suggest" role="listbox" aria-label="Tag suggestions" style="position: absolute; left: 0; right: 0; top: 74px; --sm-origin: top left;">
+<div class="sm-menu__item" role="option">winter<span class="sm-menu__hint" style="color: var(--text-muted); font-size: 12px;">12 links</span></div>
+<div class="sm-menu__item" role="option">winter-sale<span class="sm-menu__hint" style="color: var(--text-muted); font-size: 12px;">3 links</span></div>
+<div class="sm-menu__sep" role="none"></div>
+<div class="sm-menu__item is-selected" id="tag-create" role="option" aria-selected="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Create tag “wint”<span class="sm-menu__hint sm-kbd">Enter</span></div>
+</div>
+</div>
+<p class="note">Matches come first, “Create tag” is always the last row. Enter or comma creates the tag and turns it into a chip. Up to 50 characters; spaces become dashes.</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 class="cap">In the sidebar: + next to Tags</h2>
+<div style="width: 248px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 8px 12px 14px;">
+<div class="sm-tree__section" style="display: flex; justify-content: space-between; align-items: center;">Tags<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm is-pressed" aria-label="New tag" style="width: 24px; height: 24px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 8px;">
+<span class="sm-field__control is-focus sm-reveal" style="min-height: 24px; height: 24px; padding: 0 10px; border-radius: var(--radius-full); width: 110px;"><input aria-label="New tag name" value="reading-list" style="padding: 0; font-size: 12px; line-height: 16px;"></span>
+<button class="sm-chip sm-chip--clickable">angular</button><button class="sm-chip sm-chip--clickable">courses</button><button class="sm-chip sm-chip--clickable">clothes</button><button class="sm-chip sm-chip--clickable">video</button><button class="sm-chip sm-chip--clickable">tools</button>
+<button class="sm-chip sm-chip--clickable sm-chip--neutral">+ 7 more</button>
+</div>
+</div>
+<p class="note">Creates an empty tag you can use right away. Enter saves, Esc cancels. The sidebar shows the 8 most used tags; “+ 7 more” expands the rest.</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 class="cap">Tag menu: right click, long press or “…” on hover</h2>
+<div style="position: relative; height: 230px;">
+<div style="display: flex; gap: 6px; padding: 4px 0;"><button class="sm-chip sm-chip--clickable">angular</button><button class="sm-chip sm-chip--clickable is-focus">winter</button><button class="sm-chip sm-chip--clickable">tools</button></div>
+<div class="sm-menu sm-pop-in" role="menu" style="position: absolute; left: 70px; top: 40px; width: 230px;">
+<div style="padding: 6px 10px 4px; font-size: 12px; color: var(--text-muted);">winter, 12 links</div>
+<button class="sm-menu__item" role="menuitem">Show links<span class="sm-menu__hint caption" style="color: var(--text-muted);">click</span></button>
+<button class="sm-menu__item" role="menuitem">Rename</button>
+<button class="sm-menu__item" role="menuitem">Merge into another tag…</button>
+<div class="sm-menu__sep" role="separator"></div>
+<button class="sm-menu__item sm-menu__item--danger" role="menuitem">Delete tag</button>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 class="cap">Rename in place, with a duplicate check</h2>
+<div style="width: 300px; display: flex; flex-direction: column; gap: 6px;">
+<div class="sm-field sm-field--error"><div class="sm-field__control is-focus" style="min-height: 30px; padding: 0 10px; border-radius: var(--radius-full); width: 160px;"><input aria-label="Tag name" value="clothes" aria-invalid="true" aria-describedby="tg-e" style="padding: 4px 0; font-size: 13px;"></div><div class="sm-field__hint" id="tg-e"><span>There's already a tag “clothes”. Merge them instead?</span></div></div>
+<button class="sm-btn sm-btn--secondary sm-btn--sm" style="align-self: flex-start;">Merge into “clothes”</button>
+</div>
+<p class="note">Names are unique regardless of case: “Clothes” and “clothes” are the same tag.</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px;">
+<h2 class="cap">Delete a tag</h2>
+<div class="sm-dialog" role="alertdialog" aria-labelledby="dt-t" style="max-width: 400px; box-shadow: var(--shadow-popover);">
+<h3 id="dt-t" style="margin: 0; font-size: 18px; font-weight: 600;">Delete tag “winter”?</h3>
+<p class="sm-dialog__text">It will be removed from 12 links. The links themselves stay where they are.</p>
+<div class="sm-dialog__foot"><button class="sm-btn sm-btn--secondary">Cancel</button><button class="sm-btn sm-btn--danger">Delete tag</button></div>
+</div>
+<p class="note">After deleting, a toast offers Undo for 8 seconds.</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

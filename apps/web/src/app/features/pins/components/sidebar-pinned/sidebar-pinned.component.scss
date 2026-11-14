@@ -1,0 +1,115 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+// Same section heading as "Folders" in the tree: caption, muted.
+.pinned__heading {
+  @include type(caption);
+
+  display: flex;
+  align-items: center;
+  min-height: rem(30px);
+  padding: rem(18px) rem(10px) rem(6px);
+  margin: 0;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.pinned__list {
+  @include reorder-drop-line;
+
+  display: flex;
+  flex-direction: column;
+  gap: rem(1px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+// The phone Library page with nothing pinned (#315): one quiet row, muted, a pin glyph, the tree
+// row's corners; a tap explains how to pin.
+.pinned__empty {
+  --ui-button-color: var(--text-muted);
+  --ui-button-radius: calc(var(--radius-md) - #{rem(2px)});
+}
+
+// A row like a tree row: 36px (44px on touch), `radius-md`, hover tint, the "..." button at the end.
+.pinned__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:has(.is-active) {
+    background: var(--accent-bg);
+  }
+
+  &:has(.pinned__link:focus-visible) {
+    background: var(--surface-hover);
+  }
+
+  &:has(.is-active):has(.pinned__link:focus-visible) {
+    background: var(--accent-bg);
+  }
+}
+
+.pinned__link {
+  @include type(body);
+
+  display: flex;
+  flex: 1 1 auto;
+  gap: rem(8px);
+  align-items: center;
+  min-width: 0;
+  min-height: rem(36px);
+  font-size: rem(14px);
+  line-height: rem(20px);
+  padding-block: 0;
+  padding-inline: rem(10px) rem(40px);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: calc(var(--radius-md) - #{rem(2px)});
+
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
+
+  @include compact {
+    min-height: rem(44px);
+  }
+
+  @include touch-target;
+}
+
+.pinned__link.is-active {
+  .pinned__count {
+    color: var(--accent-text);
+  }
+}
+
+.pinned__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pinned__count {
+  @include type(caption);
+
+  flex: none;
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.pinned__hidden {
+  @include visually-hidden;
+}

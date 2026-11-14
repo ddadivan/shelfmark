@@ -1,0 +1,67 @@
+@for (option of options(); track option.value) {
+  <label
+    class="ui-theme-picker__option"
+    [class.ui-theme-picker__option--checked]="value() === option.value"
+  >
+    <input
+      type="radio"
+      class="ui-theme-picker__input"
+      [name]="name() || groupId"
+      [value]="option.value"
+      [checked]="value() === option.value"
+      [attr.aria-label]="kind() === THEME_PICKER_KIND.Accent ? option.label : null"
+      [attr.aria-description]="option.removeLabel ?? null"
+      [attr.aria-keyshortcuts]="option.removeLabel ? 'Delete Backspace' : null"
+      (change)="select(option)"
+      (keydown)="onKeydown($event, option)"
+    />
+    <span class="ui-theme-picker__frame" aria-hidden="true">
+      @if (option.theme === SYSTEM) {
+        <span class="ui-theme-picker__half" [attr.data-theme]="THEME.Light">
+          <ng-container [ngTemplateOutlet]="thumb" />
+        </span>
+        <span
+          class="ui-theme-picker__half ui-theme-picker__half--end"
+          [attr.data-theme]="THEME.Dark"
+        >
+          <ng-container [ngTemplateOutlet]="thumb" />
+        </span>
+      } @else {
+        <span
+          class="ui-theme-picker__paint"
+          [attr.data-theme]="option.theme ?? null"
+          [attr.data-custom-base]="option.base ?? null"
+          [attr.data-custom-accent]="option.accent ?? null"
+          [attr.data-custom-background]="option.background ?? null"
+          [attr.data-custom-corners]="option.corners ?? null"
+          [style]="option.tokens ?? null"
+        >
+          @if (kind() === THEME_PICKER_KIND.Theme) {
+            <ng-container [ngTemplateOutlet]="thumb" />
+          }
+        </span>
+      }
+    </span>
+    @if (kind() !== THEME_PICKER_KIND.Accent) {
+      <span class="ui-theme-picker__label">{{ option.label }}</span>
+    }
+    @if (option.removeLabel) {
+      <!-- Pointer and touch only: the keyboard has Delete / Backspace on the radio. -->
+      <button
+        type="button"
+        class="ui-theme-picker__remove"
+        tabindex="-1"
+        aria-hidden="true"
+        (click)="remove($event, option)"
+      >
+        <ui-icon name="close" [size]="ICON_SIZE.Sm" />
+      </button>
+    }
+  </label>
+}
+
+<ng-template #thumb>
+  <span class="ui-theme-picker__surface"></span>
+  <span class="ui-theme-picker__accent"></span>
+  <span class="ui-theme-picker__dot"></span>
+</ng-template>

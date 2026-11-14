@@ -2,7 +2,9 @@ import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { openSidebar } from './support/sidebar';
+import { isPhone, openSidebar, openTags, tabBar } from './support/sidebar';
+import { SEARCH_BUTTON } from './support/search-button';
+import { E2E_TAG } from './models/e2e-tag.const';
 
 // Mirror MOCK_ID.FolderReading and its name, and the mock tag (apps/web and libs/shared/contracts);
 // the e2e project cannot import from them.
@@ -16,8 +18,15 @@ const SCREENS = [
   `/folders/${READING.id}`,
   `/links?tag=${DOCS}`,
   '/settings',
+  '/settings/account',
+  '/settings/appearance',
+  '/settings/privacy',
+  '/library',
+  '/tags',
+  '/recent',
 ] as const;
-const WIDTHS = [360, 390, 768] as const;
+// 360 (the smallest phone) and 768 (a tablet in the shell); 390 sat in the same band as 360 (#349).
+const WIDTHS = [360, 768] as const;
 
 test.describe('mobile layout (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
@@ -27,14 +36,9 @@ test.describe('mobile layout (mock API)', () => {
     await seedSession(page);
   });
 
-  const drawer = (page: Page) => page.getByRole('dialog', { name: 'Menu' });
-  const library = (page: Page) => drawer(page).getByRole('navigation', { name: 'Library' });
-
-  async function openDrawer(page: Page) {
-    await page.getByRole('button', { name: 'Open menu' }).click();
-    await expect(drawer(page)).toBeVisible();
-    await expect(library(page).getByRole('treeitem', { name: /^All links/ })).toBeVisible();
-  }
+  const tab = (page: Page, name: string) => tabBar(page).getByRole('link', { name });
+  const sheet = (page: Page) => page.getByRole('dialog', { name: 'Recently opened' });
+  const recentTile = (page: Page) => page.getByRole('link', { name: /^Recently opened/ });
 
   /** Touch down, wait for the menu the long press opens (the app's own timer fires), lift. */
   async function longPress(page: Page, target: Locator, menuItem: string) {
@@ -50,117 +54,127 @@ test.describe('mobile layout (mock API)', () => {
     );
   }
 
-  test('the sidebar is not in the page, only behind the menu button', async ({ page }) => {
+  test(
+    'the sidebar is not in the page; the tab bar is the navigation',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+
+      await expect(page.getByRole('navigation', { name: 'Library' })).toHaveCount(0);
+      await expect(page.getByRole('button', { name: 'Open menu' })).toHaveCount(0);
+      await expect(page.getByRole('banner')).toHaveCount(0);
+      await expect(tabBar(page)).toBeVisible();
+      // Add lives in the bar: no second (floating) Add button.
+      await expect(page.getByRole('button', { name: 'Add link' })).toHaveCount(1);
+    },
+  );
+
+  test(
+    'the tab bar is a landmark with Library, Search, Add, Tags and You in that order',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      await expect(tabBar(page).locator('a, button')).toHaveCount(5);
+
+      const names = await tabBar(page)
+        .locator('a, button')
+        .evaluateAll((items) =>
+          items.map((item) => item.getAttribute('aria-label') ?? item.textContent?.trim()),
+        );
+
+      expect(names).toEqual(['Library', 'Search', 'Add link', 'Tags', 'You']);
+      await expect(page.locator('ui-tab-bar ui-icon[name="chevron-down"]')).toHaveCount(0);
+    },
+  );
+
+  test(
+    'the active tab follows the route and carries aria-current',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      await expect(tab(page, 'Library')).toHaveAttribute('aria-current', 'page');
+
+      await tab(page, 'Tags').click();
+      await expect(page).toHaveURL('/tags');
+      await expect(tab(page, 'Tags')).toHaveAttribute('aria-current', 'page');
+      await expect(tab(page, 'Library')).not.toHaveAttribute('aria-current', 'page');
+
+      await tab(page, 'You').click();
+      await expect(page).toHaveURL('/settings');
+      await expect(tab(page, 'You')).toHaveAttribute('aria-current', 'page');
+
+      await page.goto(`/folders/${READING.id}`);
+      await expect(tab(page, 'Library')).toHaveAttribute('aria-current', 'page');
+    },
+  );
+
+  test(
+    'the tab bar comes after the page in the focus order',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      await expect(page.locator('app-link-card').first()).toBeVisible();
+
+      const after = await page.evaluate<boolean>(
+        `!!(document.querySelector('main')?.compareDocumentPosition(document.querySelector('ui-tab-bar'))
+        & Node.DOCUMENT_POSITION_FOLLOWING)`,
+      );
+
+      expect(after).toBe(true);
+    },
+  );
+
+  test(
+    'tapping the current tab keeps the page; the tiles open the views',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      await tab(page, 'Library').click();
+      await expect(page).toHaveURL('/library');
+      await tab(page, 'Library').click();
+      await expect(page).toHaveURL('/library');
+
+      await page.getByRole('link', { name: /^Favorites/ }).click();
+      await expect(page).toHaveURL('/favorites');
+      await expect(page.getByRole('heading', { level: 1, name: 'Favorites' })).toBeVisible();
+      await expect(tab(page, 'Library')).toHaveAttribute('aria-current', 'page');
+    },
+  );
+
+  test(
+    'the Library page has the four tiles with counts, then the folders',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      await openSidebar(page);
+
+      await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
+      for (const name of ['All links', 'Unsorted', 'Favorites', 'Recently opened']) {
+        await expect(page.getByRole('link', { name: new RegExp(`^${name}`) })).toBeVisible();
+      }
+      await expect(page.getByRole('link', { name: /^All links \d+/ })).toBeVisible();
+      await expect(
+        page.getByRole('navigation', { name: 'Folders' }).getByRole('treeitem', {
+          name: new RegExp(`^${READING.name}\\b`),
+        }),
+      ).toBeVisible();
+    },
+  );
+
+  test('navigates to a folder from the Library page', { tag: E2E_TAG.Mobile }, async ({ page }) => {
     await page.goto('/links');
+    await openSidebar(page);
 
-    await expect(page.getByRole('navigation', { name: 'Library' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Open menu' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Add link' })).toBeVisible();
-  });
-
-  test('opens the drawer, traps focus, closes with Esc and returns focus', async ({ page }) => {
-    await page.goto('/links');
-    const opener = page.getByRole('button', { name: 'Open menu' });
-
-    await openDrawer(page);
-    for (let n = 0; n < 12; n++) {
-      await page.keyboard.press('Tab');
-      expect(
-        await page.evaluate<boolean>(
-          "!!document.querySelector('[role=dialog][aria-label=Menu]')?.contains(document.activeElement)",
-        ),
-      ).toBe(true);
-    }
-    await page.keyboard.press('Escape');
-
-    await expect(drawer(page)).toHaveCount(0);
-    await expect(opener).toBeFocused();
-  });
-
-  test('closes from the close button and from the scrim', async ({ page }) => {
-    await page.goto('/links');
-
-    await openDrawer(page);
-    await drawer(page).getByRole('button', { name: 'Close menu' }).click();
-    await expect(drawer(page)).toHaveCount(0);
-
-    // Up to 600px the drawer fills the screen, so there is no scrim strip to tap.
-    await openDrawer(page);
-    const full = await drawer(page).boundingBox();
-    expect(full?.width).toBe(page.viewportSize()?.width);
-    await drawer(page).getByRole('button', { name: 'Close menu' }).click();
-
-    // From 601px to the tablet breakpoint the drawer is narrower and the strip beside it is the scrim.
-    await page.setViewportSize({ width: 620, height: page.viewportSize()?.height ?? 780 });
-    await openDrawer(page);
-    const panel = await drawer(page).boundingBox();
-    const view = page.viewportSize();
-    const edge = (panel?.x ?? 0) + (panel?.width ?? 0);
-    expect(edge).toBeLessThan(view?.width ?? 0);
-    await page.mouse.click(edge + ((view?.width ?? 0) - edge) / 2, (view?.height ?? 0) / 2);
-    await expect(drawer(page)).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Open menu' })).toBeFocused();
-  });
-
-  test('the menu button reports aria-expanded while the drawer is open', async ({ page }) => {
-    await page.goto('/links');
-    // A CSS locator: while the drawer is open the CDK hides the page from role queries.
-    const opener = page.locator('button[aria-label="Open menu"]');
-    await expect(opener).toHaveAttribute('aria-expanded', 'false');
-
-    await openDrawer(page);
-    await expect(opener).toHaveAttribute('aria-expanded', 'true');
-
-    await page.keyboard.press('Escape');
-    await expect(drawer(page)).toHaveCount(0);
-    await expect(opener).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  test('closes when the viewport grows past 40em', async ({ page }) => {
-    await page.goto('/links');
-    await openDrawer(page);
-
-    await page.setViewportSize({ width: 700, height: 780 });
-
-    await expect(drawer(page)).toHaveCount(0);
-    await expect(page.getByRole('navigation', { name: 'Library' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden();
-  });
-
-  test('tapping the current route closes the drawer', async ({ page }) => {
-    await page.goto('/links');
-    await openDrawer(page);
-    await library(page)
-      .getByRole('treeitem', { name: /^All links/ })
-      .click();
-    await expect(drawer(page)).toHaveCount(0);
-    await expect(page).toHaveURL('/links');
-
-    await openDrawer(page);
-    await library(page)
-      .getByRole('treeitem', { name: /^Favorites/ })
-      .click();
-    await expect(drawer(page)).toHaveCount(0);
-    await expect(page).toHaveURL('/favorites');
-  });
-
-  test('navigates to a folder and closes on navigation', async ({ page }) => {
-    await page.goto('/links');
-
-    await openDrawer(page);
-    await library(page)
-      .getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) })
-      .click();
+    await page.getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) }).click();
 
     await expect(page).toHaveURL(`/folders/${READING.id}`);
-    await expect(drawer(page)).toHaveCount(0);
     await expect(page.getByRole('heading', { level: 1, name: READING.name })).toBeVisible();
   });
 
-  test('a long press on a tag opens its menu', async ({ page }) => {
+  test('a long press on a tag opens its menu', { tag: E2E_TAG.Mobile }, async ({ page }) => {
     await page.goto('/links');
-    await openDrawer(page);
-    const chip = library(page).getByRole('button', { name: DOCS, exact: true });
+    await openTags(page);
+    const chip = page.getByRole('button', { name: DOCS, exact: true });
 
     await longPress(page, chip, 'Rename');
 
@@ -168,130 +182,212 @@ test.describe('mobile layout (mock API)', () => {
     await expect(page.getByRole('menuitem', { name: 'Delete tag' })).toBeVisible();
   });
 
-  test('opens the search as a sheet over the full width', async ({ page }) => {
+  test('a tap on a tag filters the feed', { tag: E2E_TAG.Mobile }, async ({ page }) => {
     await page.goto('/links');
+    await openTags(page);
 
-    await page.getByRole('button', { name: 'Search', exact: true }).click();
+    await page.getByRole('button', { name: DOCS, exact: true }).click();
 
-    const dialog = page.getByRole('dialog');
-    await expect(
-      page.getByRole('combobox', { name: 'Search links, folders and tags' }),
-    ).toBeFocused();
-    const box = await dialog.boundingBox();
-    expect(box?.width).toBe(page.viewportSize()?.width);
-    expect(await overflow(page)).toBeLessThanOrEqual(0);
+    await expect(page).toHaveURL(`/links?tag=${DOCS}`);
   });
 
-  test('Esc closes the drawer after a nested dialog and focus returns to the menu button', async ({
-    page,
-  }) => {
+  test(
+    'the Search tab opens the search over the full width and keeps the page',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
+
+      const dialog = page.getByRole('dialog');
+      await expect(
+        page.getByRole('combobox', { name: 'Search links, folders and tags' }),
+      ).toBeFocused();
+      const box = await dialog.boundingBox();
+      if (isPhone(page)) {
+        expect(box?.width).toBe(page.viewportSize()?.width);
+      } else {
+        // A tablet in the mobile shell keeps the centred search dialog (680px, #316).
+        expect(box?.width).toBeLessThanOrEqual(680);
+      }
+      expect(await overflow(page)).toBeLessThanOrEqual(0);
+      await page.keyboard.press('Escape');
+      await expect(dialog).toHaveCount(0);
+      await expect(page).toHaveURL('/links');
+    },
+  );
+
+  test(
+    'Recently opened opens as a sheet, traps focus, closes with Esc and returns focus',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      await openSidebar(page);
+      await recentTile(page).click();
+
+      await expect(sheet(page)).toBeVisible();
+      await expect(page).toHaveURL('/library');
+      await expect(sheet(page).locator('app-link-history-row').first()).toBeVisible();
+      await expect(sheet(page).getByRole('heading', { level: 3 }).first()).toBeVisible();
+      for (let n = 0; n < 12; n++) {
+        await page.keyboard.press('Tab');
+        expect(
+          await page.evaluate<boolean>(
+            "!!document.querySelector('[role=dialog]')?.contains(document.activeElement)",
+          ),
+        ).toBe(true);
+      }
+      await page.keyboard.press('Escape');
+
+      await expect(sheet(page)).toHaveCount(0);
+      await expect(recentTile(page)).toBeFocused();
+    },
+  );
+
+  test(
+    'the sheet closes from the close button and from the scrim',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      await openSidebar(page);
+
+      await recentTile(page).click();
+      await expect(sheet(page)).toBeVisible();
+      await sheet(page).getByRole('button', { name: 'Close' }).click();
+      await expect(sheet(page)).toHaveCount(0);
+
+      await recentTile(page).click();
+      await expect(sheet(page)).toBeVisible();
+      // The strip above the sheet is the scrim.
+      await page.mouse.click(180, 20);
+      await expect(sheet(page)).toHaveCount(0);
+      await expect(recentTile(page)).toBeFocused();
+    },
+  );
+
+  test(
+    'the sheet shows the same history as the page and removes and clears it',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      await openSidebar(page);
+      await recentTile(page).click();
+      const rows = sheet(page).locator('app-link-history-row');
+      await expect(rows.first()).toBeVisible();
+      const before = await rows.count();
+
+      await rows
+        .first()
+        .getByRole('button', { name: /^More for / })
+        .click();
+      await page.getByRole('menuitem', { name: 'Remove from history' }).click();
+      await expect(rows).toHaveCount(before - 1);
+
+      await sheet(page).getByRole('button', { name: 'Clear history' }).click();
+      await page.getByRole('alertdialog').getByRole('button', { name: 'Clear history' }).click();
+      await expect(sheet(page).getByText('Nothing opened yet')).toBeVisible();
+      expect(await overflow(page)).toBeLessThanOrEqual(0);
+    },
+  );
+
+  test(
+    'Esc closes a nested dialog and keeps the Library page',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      await openSidebar(page);
+
+      await page
+        .getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) })
+        .click({ button: 'right' });
+      await page.getByRole('menuitem', { name: 'Rename' }).click();
+      const dialog = page.getByRole('dialog', { name: 'Rename folder' });
+      await dialog.getByRole('button', { name: 'Cancel' }).click();
+      await expect(dialog).toHaveCount(0);
+
+      await expect(page).toHaveURL('/library');
+      await expect(tab(page, 'Library')).toHaveAttribute('aria-current', 'page');
+    },
+  );
+
+  test(
+    'a toast sits above the tab bar and stays clickable',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      await openTags(page);
+      await page.getByRole('button', { name: DOCS, exact: true }).click({ button: 'right' });
+      await page.getByRole('menuitem', { name: 'Delete tag' }).click();
+      await page.getByRole('alertdialog').getByRole('button', { name: 'Delete tag' }).click();
+
+      const undo = page.getByRole('button', { name: 'Undo' });
+      await expect(undo).toBeVisible();
+      // 12px above the bar (no safe area in the test browser). Polled: the toast rises in for 320 ms
+      // (and its Undo countdown never "finishes" while touched, so `settled` cannot be used here).
+      await expect
+        .poll(async () => {
+          const toast = await page.locator('ui-toast').first().boundingBox();
+          const bar = await tabBar(page).boundingBox();
+          return (bar?.y ?? 0) - ((toast?.y ?? 0) + (toast?.height ?? 0));
+        })
+        .toBeGreaterThanOrEqual(11);
+      await undo.click();
+
+      await expect(page.getByRole('button', { name: DOCS, exact: true })).toBeVisible();
+    },
+  );
+
+  test('a long press on a folder opens its menu', { tag: E2E_TAG.Mobile }, async ({ page }) => {
     await page.goto('/links');
-    await openDrawer(page);
-
-    await library(page)
-      .getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) })
-      .click({ button: 'right' });
-    await page.getByRole('menuitem', { name: 'Rename' }).click();
-    const dialog = page.getByRole('dialog', { name: 'Rename folder' });
-    await dialog.getByRole('button', { name: 'Cancel' }).click();
-    await expect(dialog).toHaveCount(0);
-    await expect(drawer(page)).toBeVisible();
-
-    await page.keyboard.press('Escape');
-
-    await expect(drawer(page)).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Open menu' })).toBeFocused();
-  });
-
-  test('a toast is visible and clickable above the open drawer', async ({ page }) => {
-    await page.goto('/links');
-    await openDrawer(page);
-    await library(page).getByRole('button', { name: DOCS, exact: true }).click({ button: 'right' });
-    await page.getByRole('menuitem', { name: 'Delete tag' }).click();
-    await page.getByRole('alertdialog').getByRole('button', { name: 'Delete tag' }).click();
-
-    const undo = page.getByRole('button', { name: 'Undo' });
-    await expect(undo).toBeVisible();
-    await undo.click();
-
-    await expect(library(page).getByRole('button', { name: DOCS, exact: true })).toBeVisible();
-    await expect(drawer(page)).toBeVisible();
-  });
-
-  test('a long press on a folder opens its menu', async ({ page }) => {
-    await page.goto('/links');
-    await openDrawer(page);
-    const row = library(page).getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) });
+    await openSidebar(page);
+    const row = page.getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) });
 
     await longPress(page, row, 'Rename');
 
     await expect(page.getByRole('menuitem', { name: 'Rename' })).toBeVisible();
     await expect(page.getByRole('menuitem', { name: 'New subfolder' })).toBeVisible();
-    await expect(page).toHaveURL('/links');
+    await expect(page).toHaveURL('/library');
   });
 
-  test('the "Recently opened" row opens a sheet and focus ends on the menu button', async ({
-    page,
-  }) => {
-    await page.goto('/links');
-    await openDrawer(page);
+  test(
+    'the You tab opens the settings with the account, sign out and no account menu',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
 
-    await library(page).getByRole('treeitem', { name: 'Recently opened' }).click();
+      await tab(page, 'You').click();
 
-    await expect(drawer(page)).toHaveCount(0);
-    const sheet = page.getByRole('dialog', { name: 'Recently opened' });
-    await expect(sheet).toBeVisible();
-    expect((await sheet.boundingBox())?.width).toBe(page.viewportSize()?.width);
-    expect(await overflow(page)).toBeLessThanOrEqual(0);
-    await page.keyboard.press('Escape');
-    await expect(sheet).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Open menu' })).toBeFocused();
-  });
+      await expect(page).toHaveURL('/settings');
+      await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Account menu' })).toHaveCount(0);
+    },
+  );
 
-  test('the drawer has no footer; settings open from the header account menu', async ({ page }) => {
-    await page.goto('/links');
-    await openDrawer(page);
-    await expect(drawer(page).getByRole('button', { name: 'Switch theme' })).toHaveCount(0);
-    await expect(drawer(page).getByRole('button', { name: 'Settings' })).toHaveCount(0);
-    await page.keyboard.press('Escape');
+  test(
+    'the tab bar floats 16px from the sides (centred, at most 560px on a tablet) and 20px from the bottom and does not cover the last row',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      await expect(page.locator('app-link-card').first()).toBeVisible();
 
-    await page.getByRole('button', { name: 'Account menu' }).click();
-    await page.getByRole('menuitem', { name: 'Settings' }).click();
-    await expect(page).toHaveURL('/settings');
-  });
+      const box = await tabBar(page).boundingBox();
+      const view = page.viewportSize();
+      // 16px from each side on a phone; centred and at most 560px wide on a tablet (#316).
+      const side = Math.max(16, ((view?.width ?? 0) - 560) / 2);
+      expect(box?.x).toBeCloseTo(side, 0);
+      expect((view?.width ?? 0) - ((box?.x ?? 0) + (box?.width ?? 0))).toBeCloseTo(side, 0);
+      expect((view?.height ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeCloseTo(20, 0);
+      await page.mouse.wheel(0, 100000);
+      await expect
+        .poll(async () => (await page.locator('app-link-card').last().boundingBox())?.y ?? 0)
+        .toBeLessThan(view?.height ?? 0);
+      const last = await page.locator('app-link-card').last().boundingBox();
+      expect((last?.y ?? 0) + (last?.height ?? 0)).toBeLessThanOrEqual(box?.y ?? 0);
+    },
+  );
 
-  test('the header is menu, logo, search, account in that order and the account has no chevron', async ({
-    page,
-  }) => {
-    await page.goto('/links');
-    await expect(page.getByRole('button', { name: 'Account menu' })).toBeVisible();
-
-    const names = await page
-      .getByRole('banner')
-      .getByRole('button')
-      .evaluateAll((buttons) => buttons.map((b) => b.getAttribute('aria-label')));
-
-    expect(names).toEqual(['Open menu', 'Search', 'Account menu']);
-    await expect(page.getByRole('banner').locator('ui-icon[name="chevron-down"]')).toHaveCount(0);
-  });
-
-  test('the add FAB is fixed at the bottom end and does not cover the last row', async ({
-    page,
-  }) => {
-    await page.goto('/links');
-    const fab = page.getByRole('button', { name: 'Add link' });
-
-    const box = await fab.boundingBox();
-    const view = page.viewportSize();
-    expect(box?.width).toBe(56);
-    // space-4 from the end edge and space-6 from the bottom (no safe area in the test browser).
-    expect((view?.width ?? 0) - ((box?.x ?? 0) + (box?.width ?? 0))).toBeCloseTo(16, 0);
-    expect((view?.height ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeCloseTo(24, 0);
-    await page.mouse.wheel(0, 100000);
-    await expect(page.getByRole('button', { name: 'Add link' })).toBeVisible();
-  });
-
-  test('adds a link with the floating button', async ({ page }) => {
+  test('adds a link with the Add button of the bar', { tag: E2E_TAG.Mobile }, async ({ page }) => {
     await page.goto('/links');
 
     await page.getByRole('button', { name: 'Add link' }).click();
@@ -300,54 +396,101 @@ test.describe('mobile layout (mock API)', () => {
     await dialog.getByRole('button', { name: /Save/ }).click();
 
     await expect(dialog).toBeHidden();
-    await expect(page.getByText('Link saved')).toBeVisible();
+    await expect(page.getByText(/Saved to /)).toBeVisible();
   });
 
-  test('the bottom-most control stays clickable while a toast is visible', async ({ page }) => {
-    await page.goto('/links');
-    const fab = page.getByRole('button', { name: 'Add link' });
-    await fab.click();
-    const dialog = page.getByRole('dialog', { name: 'Add link' });
-    await dialog.getByLabel('Link', { exact: true }).fill('https://mobile.example/toast');
-    await dialog.getByRole('button', { name: /Save/ }).click();
-    await expect(page.getByText('Link saved')).toBeVisible();
+  test(
+    'the bottom-most control stays clickable while a toast is visible',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      const add = page.getByRole('button', { name: 'Add link' });
+      await add.click();
+      const dialog = page.getByRole('dialog', { name: 'Add link' });
+      await dialog.getByLabel('Link', { exact: true }).fill('https://mobile.example/toast');
+      await dialog.getByRole('button', { name: /Save/ }).click();
+      await expect(page.getByText(/Saved to /)).toBeVisible();
 
-    // The toast sits at the bottom edge; its pane must not swallow clicks next to it.
-    await fab.click();
+      // The toast sits above the bar; its pane must not swallow clicks on the bar.
+      await add.click();
 
-    await expect(page.getByRole('dialog', { name: 'Add link' })).toBeVisible();
-  });
+      await expect(page.getByRole('dialog', { name: 'Add link' })).toBeVisible();
+    },
+  );
 
-  test('keeps the touch targets of the header and the drawer at 44px', async ({ page }) => {
-    await page.goto('/links');
-    const header = page.getByRole('banner').getByRole('button');
+  test(
+    'keeps the touch targets of the tab bar and the Library page at 44px',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/links');
+      for (const item of await tabBar(page).locator('a, button').all()) {
+        const box = await item.boundingBox();
+        expect(box?.height).toBeGreaterThanOrEqual(44);
+        expect(box?.width).toBeGreaterThanOrEqual(44);
+      }
 
-    for (const button of await header.all()) {
-      const box = await button.boundingBox();
-      expect(box?.height).toBeGreaterThanOrEqual(44);
-      expect(box?.width).toBeGreaterThanOrEqual(44);
-    }
+      await openSidebar(page);
+      const create = await page.getByRole('button', { name: 'New folder' }).boundingBox();
+      expect(create?.height).toBeGreaterThanOrEqual(44);
+      await openTags(page);
+      const newTag = await page.getByRole('button', { name: 'New tag' }).boundingBox();
+      expect(newTag?.height).toBeGreaterThanOrEqual(44);
+    },
+  );
 
-    await openDrawer(page);
-    for (const name of ['Close menu', 'Create a folder', 'New tag']) {
-      const box = await drawer(page).getByRole('button', { name }).boundingBox();
-      expect(box?.height, name).toBeGreaterThanOrEqual(44);
-    }
-  });
+  test(
+    'the Library tab keeps an empty Pinned section that says how to pin (#315)',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/library');
+      const pinned = page.locator('app-sidebar-pinned section.pinned');
+
+      await expect(pinned.getByRole('heading', { name: 'Pinned' })).toBeVisible();
+      await expect(pinned.locator('.pinned__item')).toHaveCount(0);
+      const empty = pinned.getByRole('button', { name: 'Nothing pinned yet' });
+      await expect(empty).toBeVisible();
+
+      await empty.click();
+      await expect(
+        page.locator('ui-toast').filter({
+          hasText: 'Nothing pinned yet — use “Pin to sidebar” in a folder or link menu',
+        }),
+      ).toBeVisible();
+    },
+  );
+
+  test(
+    'the tab bar gives way to the sidebar past 64em and the phone pages leave',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.goto('/library');
+      await expect(page.locator('app-library-tile').first()).toBeVisible();
+
+      await page.setViewportSize({ width: 1100, height: 780 });
+
+      await expect(page).toHaveURL('/links');
+      await expect(tabBar(page)).toHaveCount(0);
+      await expect(page.getByRole('navigation', { name: 'Library' })).toBeVisible();
+    },
+  );
 
   for (const width of WIDTHS) {
     for (const path of SCREENS) {
-      test(`${path} has no horizontal scroll at ${width}px`, async ({ page }) => {
-        await page.setViewportSize({ width, height: 780 });
-        await page.goto(path);
-        await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-        await settled(page);
+      test(
+        `${path} has no horizontal scroll at ${width}px`,
+        { tag: E2E_TAG.Phone },
+        async ({ page }) => {
+          await page.setViewportSize({ width, height: 780 });
+          await page.goto(path);
+          await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+          await settled(page);
 
-        expect(await overflow(page)).toBeLessThanOrEqual(0);
-      });
+          expect(await overflow(page)).toBeLessThanOrEqual(0);
+        },
+      );
     }
 
-    test(`the dialogs fit ${width}px`, async ({ page }) => {
+    test(`the dialogs fit ${width}px`, { tag: E2E_TAG.Phone }, async ({ page }) => {
       await page.setViewportSize({ width, height: 780 });
       await page.goto('/links');
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -359,7 +502,7 @@ test.describe('mobile layout (mock API)', () => {
       await page.keyboard.press('Escape');
       await expect(page.getByRole('dialog')).toHaveCount(0);
 
-      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       await expect(page.getByRole('dialog')).toBeVisible();
       await settled(page);
       expect(await overflow(page)).toBeLessThanOrEqual(0);
@@ -367,26 +510,36 @@ test.describe('mobile layout (mock API)', () => {
       await expect(page.getByRole('dialog')).toHaveCount(0);
 
       await openSidebar(page);
-      await page.getByRole('button', { name: 'Create a folder' }).click();
+      await page.getByRole('button', { name: 'New folder' }).click();
       await expect(page.getByRole('dialog', { name: 'New folder' })).toBeVisible();
       await settled(page);
       expect(await overflow(page)).toBeLessThanOrEqual(0);
     });
 
-    test(`the open drawer fits ${width}px`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 780 });
-      await page.goto('/links');
-      if (width >= 640) {
-        // From the tablet breakpoint the sidebar is inline, there is no drawer.
-        await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden();
-        await expect(page.getByRole('navigation', { name: 'Library' })).toBeVisible();
-      } else {
-        await openDrawer(page);
-        await settled(page);
-        const box = await drawer(page).boundingBox();
-        expect(box?.width).toBeLessThanOrEqual(width);
-      }
-      expect(await overflow(page)).toBeLessThanOrEqual(0);
-    });
+    test(
+      `the Library page, its sheet and the tab bar fit ${width}px`,
+      { tag: E2E_TAG.Phone },
+      async ({ page }) => {
+        await page.setViewportSize({ width, height: 780 });
+        await page.goto('/links');
+        if (width >= 1024) {
+          // From the desktop breakpoint (64em, #316) the sidebar is inline and there is no tab bar.
+          await expect(tabBar(page)).toHaveCount(0);
+          await expect(page.getByRole('navigation', { name: 'Library' })).toBeVisible();
+        } else {
+          await openSidebar(page);
+          await recentTile(page).click();
+          await expect(sheet(page)).toBeVisible();
+          await settled(page);
+          const box = await sheet(page).boundingBox();
+          expect(box?.width).toBeLessThanOrEqual(width);
+          await page.keyboard.press('Escape');
+          await expect(sheet(page)).toHaveCount(0);
+          const bar = await tabBar(page).boundingBox();
+          expect((bar?.x ?? 0) + (bar?.width ?? 0)).toBeLessThanOrEqual(width);
+        }
+        expect(await overflow(page)).toBeLessThanOrEqual(0);
+      },
+    );
   }
 });

@@ -1,0 +1,23 @@
+<div class="mz">
+  <div class="mz-grid">
+    @for (tile of SIGN_IN_TILES; track tile.id; let i = $index) {
+      <div class="mz-tile mz-tile--{{ i }}">
+        <div class="mz-inner">
+          <span class="mz-front mz-front--{{ tile.tone }}">
+            @switch (tile.mark) {
+              @case (SIGN_IN_TILE_MARK.Square) {
+                <span class="mz-sq"></span>
+              }
+              @case (SIGN_IN_TILE_MARK.Pills) {
+                <span class="mz-pills"
+                  ><span class="mz-pill mz-pill--lg"></span><span class="mz-pill mz-pill--sm"></span
+                ></span>
+              }
+            }
+          </span>
+          <span class="mz-ring"></span>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,74 @@
+@use 'sass:map';
+@use 'sass:string';
+@use '../../../styles/ui' as *;
+
+// Motion modes. `once` plays one iteration and holds the end frame (`both`); `loop` repeats
+// forever with a 3-5 s cycle. `none` has no rule: the resting styles are the final frame.
+// Reduced motion removes every animation, whatever the mode. Each mode has its own sheet
+// (`illustration-once.scss`, `illustration-loop.scss`) that includes `illustration-mode`.
+$parts: (
+  'fly': (
+    'selector': '.ui-illustration__fly',
+    'keyframes': 'ui-ill-fly',
+    'ease': 'out',
+  ),
+  'grow': (
+    'selector': '.ui-illustration__grow',
+    'keyframes': 'ui-ill-grow',
+    'ease': 'out',
+  ),
+  'type': (
+    'selector': '.ui-illustration__type',
+    'keyframes': 'ui-ill-type',
+    'ease': 'out',
+  ),
+  'dim': (
+    'selector': '.ui-illustration__dim, .ui-illustration__pick',
+    'keyframes': 'ui-ill-fade',
+    'ease': 'in-out',
+  ),
+  'shift': (
+    'selector': '.ui-illustration__shift',
+    'keyframes': 'ui-ill-shift',
+    'ease': 'in-out',
+  ),
+);
+
+@mixin illustration-mode($mode) {
+  @each $part, $config in $parts {
+    $keyframes: map.get($config, 'keyframes');
+    $ease: string.unquote('var(--ease-' + map.get($config, 'ease') + ')');
+
+    #{map.get($config, 'selector')} {
+      @if $mode == 'once' {
+        :host(.ui-illustration--once) & {
+          animation: #{$keyframes} $illustration-once-duration $ease var(--ill-delay, 0s) 1 both;
+
+          @include reduced-motion {
+            animation: none;
+          }
+        }
+      } @else {
+        // The shift keyframes go out and back, so they are already seamless.
+        $loop-name: '#{$keyframes}-loop';
+
+        @if $part == 'shift' {
+          $loop-name: $keyframes;
+        }
+
+        :host(.ui-illustration--loop) & {
+          animation: #{$loop-name}
+            $illustration-loop-duration
+            $ease
+            var(--ill-delay, 0s)
+            infinite
+            both;
+
+          @include reduced-motion {
+            animation: none;
+          }
+        }
+      }
+    }
+  }
+}

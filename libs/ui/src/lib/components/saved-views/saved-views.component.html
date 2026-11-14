@@ -1,0 +1,48 @@
+<div ngToolbar class="ui-saved-views__bar" orientation="horizontal" [attr.aria-label]="ariaLabel()">
+  @for (item of items(); track item.id) {
+    <span
+      class="ui-saved-views__chip"
+      [class.ui-saved-views__chip--on]="item.id === activeId()"
+      [class.ui-saved-views__chip--menu]="!!item.menuLabel"
+    >
+      <button
+        #body
+        ngToolbarWidget
+        type="button"
+        class="ui-saved-views__body"
+        [attr.data-ui-saved-view]="item.id"
+        uiRipple
+        [uiTooltip]="item.hint ?? ''"
+        [attr.aria-pressed]="item.id === activeId()"
+        (click)="selected.emit(item.id)"
+        (contextmenu)="requestMenu($event, item, body)"
+      >
+        <span class="ui-saved-views__label">{{ item.label }}</span
+        >{{ ' ' }}
+        @if (item.count !== null) {
+          <b class="ui-saved-views__count">{{ countText(item.count) }}</b>
+        }
+      </button>
+      @if (item.menuLabel; as menuLabel) {
+        <button
+          #menu
+          ngToolbarWidget
+          type="button"
+          class="ui-saved-views__menu"
+          aria-haspopup="menu"
+          [attr.aria-label]="menuLabel"
+          [uiTooltip]="menuLabel"
+          (click)="requestMenu($event, item, menu)"
+        >
+          <ui-icon name="more" [size]="ICON_SIZE.Sm" />
+        </button>
+      }
+    </span>
+  }
+  @if (addLabel(); as label) {
+    <button ngToolbarWidget type="button" class="ui-saved-views__add" uiRipple (click)="add.emit()">
+      <ui-icon name="add" [size]="ICON_SIZE.Sm" />
+      {{ label }}
+    </button>
+  }
+</div>

@@ -1,0 +1,163 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-block-start: var(--space-1);
+}
+
+.shelf__muted {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.shelf__error {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Three numbers side by side, also on a 360px phone.
+.shelf__counts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.shelf__count {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+}
+
+.shelf__count-label {
+  @include type(caption);
+
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shelf__count-value {
+  @include type(title);
+
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.shelf__lists {
+  display: grid;
+  gap: var(--space-4);
+
+  @include tablet-up {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+}
+
+.shelf__block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.shelf__heading {
+  @include type(label);
+
+  margin: 0;
+}
+
+.shelf__sites,
+.shelf__tags {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.shelf__site,
+.shelf__tag {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.shelf__host,
+.shelf__tag-name {
+  @include type(body);
+
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shelf__tag-name::before {
+  color: var(--text-muted);
+  content: '#';
+}
+
+.shelf__number {
+  @include type(caption);
+
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+// Links added per week: 12 bars on a baseline, the tallest week full height.
+.shelf__chart {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-1);
+  align-items: end;
+  block-size: rem(96px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border-block-end: 1px solid var(--border);
+}
+
+.shelf__week {
+  display: flex;
+  align-items: flex-end;
+  block-size: 100%;
+}
+
+.shelf__bar {
+  inline-size: 100%;
+  min-block-size: rem(4px);
+  background: var(--accent);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.shelf__bar--empty {
+  min-block-size: rem(2px);
+  background: var(--border);
+}
+
+.shelf__axis {
+  @include type(caption);
+
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+}
+
+.shelf__sr {
+  @include visually-hidden;
+}

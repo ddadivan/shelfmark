@@ -53,3 +53,33 @@ export function pathTo(folders: readonly FolderResponse[], id: string): FolderRe
   }
   return path;
 }
+
+/** The API order: the manual place among the siblings (#314), then the name. */
+export function byName(folders: readonly FolderResponse[]): FolderResponse[] {
+  return [...folders].sort((a, b) => a.position - b.position || a.name.localeCompare(b.name));
+}
+
+/** The place at the end of `parentId` (`null` = top level), ignoring the folder `movingId` itself. */
+export function endPosition(
+  folders: readonly FolderResponse[],
+  parentId: string | null,
+  movingId: string,
+): number {
+  return (
+    folders
+      .filter((folder) => folder.parentId === parentId && folder.id !== movingId)
+      .reduce((max, folder) => Math.max(max, folder.position), -1) + 1
+  );
+}
+
+/** The siblings with the one at `from` moved to `to`. */
+export function reorderedSiblings(
+  siblings: readonly FolderResponse[],
+  from: number,
+  to: number,
+): FolderResponse[] {
+  const next = [...siblings];
+  const [moved] = next.splice(from, 1);
+  next.splice(to, 0, moved);
+  return next;
+}

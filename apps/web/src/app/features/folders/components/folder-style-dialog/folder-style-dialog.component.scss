@@ -1,0 +1,120 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.folder-style {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  // Room for the focus ring and the swatch ring at the edge of the scrolling body.
+  padding: var(--space-2);
+}
+
+// The folder as it will look: a bg-coloured strip, as in the FolderStyle spec.
+.folder-style__preview {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-3);
+  background: var(--bg);
+  border-radius: var(--radius-md);
+}
+
+.folder-style__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.folder-style__name {
+  @include type(label);
+  @include line-clamp(1);
+
+  font-size: rem(16px);
+}
+
+.folder-style__meta {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.folder-style__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.folder-style__label {
+  @include type(label);
+}
+
+// Own colours: the account's swatches and the "+" swatch share a wrapping row; the open picker
+// panel takes a line of its own under them.
+.folder-style__own {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+// The icons behind "Show all icons" open by height (a one-row grid, like the tree); closed they are
+// hidden from the tab order. Padding with a negative margin leaves room for the focus rings the
+// clipping would cut. No animation under reduced motion.
+.folder-style__more {
+  display: grid;
+
+  // Closed, it also takes back the group gap below it, so the toggle sits as close to the grid as
+  // when it is open.
+  grid-template-rows: 0fr;
+  margin-block-end: calc(var(--space-3) * -1);
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--duration-base) var(--ease-in-out),
+    margin-block-end var(--duration-base) var(--ease-in-out),
+    visibility 0s var(--duration-base);
+
+  &.is-open {
+    grid-template-rows: 1fr;
+    margin-block-end: 0;
+    visibility: visible;
+    transition:
+      grid-template-rows var(--duration-base) var(--ease-in-out),
+      margin-block-end var(--duration-base) var(--ease-in-out),
+      visibility 0s;
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.folder-style__more-inner {
+  min-height: 0;
+  padding: var(--space-1);
+  margin: calc(var(--space-1) * -1);
+  overflow: hidden;
+}
+
+.folder-style__toggle {
+  // Closer to the grid it belongs to (space-2 with the group gap), further from the emoji field
+  // below (space-6), so the two groups read separately (#350).
+  align-self: flex-start;
+  margin-block: calc(var(--space-1) * -1) var(--space-3);
+}
+
+// Reset sits at the start of the footer, away from Cancel and Save.
+.folder-style__reset {
+  margin-inline-end: auto;
+}
+
+// The Icon or Emoji panel: its content stacks with the same gap as the group around it.
+.folder-style__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}

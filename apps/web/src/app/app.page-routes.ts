@@ -3,10 +3,16 @@ import { LINKS_SCOPE } from './features/links/models/links-scope.const';
 import { APP_PATH } from './models/app-path.const';
 import { authOnly, guestOnly, redirectToSignIn } from './core/auth/auth.guards';
 import { loadLibraryPage } from './features/library/load-library-page';
-import LandingPage from './features/landing/landing.page';
+import { loadLandingPage } from './features/landing/load-landing-page';
+import { adminOnly } from './features/admin/admin.guard';
 
 const libraryPage = loadLibraryPage;
-const settingsPage = () => import('./features/settings/settings.page');
+const settingsRoutes = () => import('./features/settings/settings.routes');
+const adminRoutes = () => import('./features/admin/admin.routes');
+const recentPage = () => import('./features/links/pages/recent/recent.page');
+const phoneLibraryPage = () => import('./features/library/pages/phone-library/phone-library.page');
+const trashPage = () => import('./features/trash/trash.page');
+const tagsPage = () => import('./features/tags/pages/tags-page/tags.page');
 const sharePage = () => import('./features/share/share.page');
 
 /** The real pages. `app.routes.ts` serves them as they are; the e2e build adds a test page. */
@@ -15,8 +21,9 @@ export const pageRoutes: Routes = [
   {
     path: '',
     canMatch: [guestOnly],
-    // Eager on purpose: the landing is the LCP page; a lazy chunk chain delays first paint.
-    component: LandingPage,
+    // A lazy chunk (#339: eager it was ~130 kB of the initial bundle), started from `main.ts`
+    // before the session answers, so it is there when the guard lets the landing through.
+    loadComponent: loadLandingPage,
   },
   {
     path: '',
@@ -24,6 +31,8 @@ export const pageRoutes: Routes = [
     loadComponent: () => import('./shell/app-shell.component'),
     children: [
       { path: '', pathMatch: 'full', redirectTo: APP_PATH.Links },
+      { path: APP_PATH.Library, loadComponent: phoneLibraryPage },
+      { path: APP_PATH.Tags, loadComponent: tagsPage },
       { path: APP_PATH.Links, loadComponent: libraryPage, data: { scope: LINKS_SCOPE.All } },
       {
         path: APP_PATH.Unsorted,
@@ -40,21 +49,46 @@ export const pageRoutes: Routes = [
         loadComponent: libraryPage,
         data: { scope: LINKS_SCOPE.Folder },
       },
-      { path: APP_PATH.Settings, loadComponent: settingsPage },
+      { path: APP_PATH.Recent, loadComponent: recentPage },
+      { path: APP_PATH.Trash, loadComponent: trashPage },
+      { path: APP_PATH.Settings, loadChildren: settingsRoutes },
+      { path: APP_PATH.Admin, canActivate: [adminOnly], loadChildren: adminRoutes },
     ],
   },
+  // The landing for everyone (#270): "About Shelfmark" in the account menu; signed-in people see
+  // "Back to my shelf" and "What's new". The same lazy component as `/`.
+  { path: APP_PATH.About, loadComponent: loadLandingPage },
   // Public on purpose (no guard): guests, signed-in users and the OAuth consent screen reach it.
   { path: APP_PATH.Privacy, loadComponent: () => import('./features/privacy/privacy.page') },
+  // A public collection (#276): no guard, outside the shell; guests and signed-in people alike.
+  {
+    path: `${APP_PATH.Collection}/:token`,
+    loadComponent: () => import('./features/sharing/public-collection.page'),
+  },
   // Starts a demo session (or goes to the library when already signed in).
   { path: APP_PATH.Demo, loadComponent: () => import('./features/auth/demo-start.page') },
   // Web Share Target (Android): outside the shell, a quick save sheet. Signed-in only.
   { path: APP_PATH.Share, canMatch: [authOnly], loadComponent: sharePage },
   // A guest on a protected URL: to sign-in, then back.
+  { path: APP_PATH.Library, canActivate: [redirectToSignIn], children: [] },
+  { path: APP_PATH.Tags, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Links, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Unsorted, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Favorites, canActivate: [redirectToSignIn], children: [] },
   { path: `${APP_PATH.Folders}/:folderId`, canActivate: [redirectToSignIn], children: [] },
-  { path: APP_PATH.Settings, canActivate: [redirectToSignIn], children: [] },
+  { path: APP_PATH.Recent, canActivate: [redirectToSignIn], children: [] },
+  { path: APP_PATH.Trash, canActivate: [redirectToSignIn], children: [] },
+  // The sections are children (`/settings/account`): any depth leads to sign-in and back.
+  {
+    path: APP_PATH.Settings,
+    canActivate: [redirectToSignIn],
+    children: [{ path: '**', children: [] }],
+  },
+  {
+    path: APP_PATH.Admin,
+    canActivate: [redirectToSignIn],
+    children: [{ path: '**', children: [] }],
+  },
   // `state.url` keeps the whole query, so the shared data survives the sign-in.
   { path: APP_PATH.Share, canActivate: [redirectToSignIn], children: [] },
   {

@@ -1,0 +1,47 @@
+<app-settings-page-header
+  [title]="'settings.nav.privacy' | transloco"
+  [description]="'settings.description.privacy' | transloco"
+/>
+
+<ui-settings-section [title]="'settings.data.title' | transloco">
+  <ui-settings-row
+    [title]="'settings.privacy.recent.label' | transloco"
+    [description]="'settings.privacy.recent.hint' | transloco"
+  >
+    <ui-switch
+      #rememberSwitch
+      [label]="'settings.privacy.recent.label' | transloco"
+      [checked]="!settings.historyPaused()"
+      (checkedChange)="setRemember($event, rememberSwitch)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.data.export.label' | transloco"
+    [description]="'settings.privacy.data.hint' | transloco"
+  >
+    <ui-button [href]="exportHref" (linkClick)="open($event, exportHref)">
+      {{ 'settings.privacy.data.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.privacy.policy.label' | transloco"
+    [description]="'settings.privacy.policy.hint' | transloco"
+  >
+    <ui-button
+      [href]="policyHref"
+      [ariaLabel]="'settings.privacy.policy.actionLabel' | transloco"
+      (linkClick)="open($event, policyHref)"
+    >
+      {{ 'settings.privacy.policy.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+
+<ui-settings-section [title]="'settings.privacy.kept.title' | transloco">
+  <ul class="privacy-data__points">
+    <li>{{ 'privacy.store.content' | transloco }}</li>
+    <li>{{ 'privacy.retention.data' | transloco }}</li>
+    <li>{{ 'privacy.dont.sell' | transloco }}</li>
+    <li>{{ 'privacy.cookies.none' | transloco }}</li>
+  </ul>
+</ui-settings-section>

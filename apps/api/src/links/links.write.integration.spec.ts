@@ -78,7 +78,8 @@ describe('links API: writes', () => {
         imageUrl: 'https://site.test/img.png',
       });
       expect(link).toMatchObject({
-        url: 'https://site.test/Page/?utm_source=x',
+        // "Keep the query part of links" is off by default (#284): tracking parameters go.
+        url: 'https://site.test/Page/',
         title: 'My title',
         note: 'why',
         folderId,
@@ -336,7 +337,8 @@ describe('links API: writes', () => {
       });
       await a.patch(`${BASE}/${id}`).send({ url: 'https://B.test/New/?utm_x=1' }).expect(200);
       expect(await row(id)).toMatchObject({
-        url: 'https://B.test/New/?utm_x=1',
+        // Tracking parameters go on update too (#284, default).
+        url: 'https://B.test/New/',
         normalizedUrl: 'https://b.test/New',
         faviconSourceUrl: null,
       });
@@ -406,6 +408,42 @@ describe('links API: writes', () => {
     });
   });
 
+  describe('history', () => {
+    const seedHist = (options: Parameters<typeof seedLink>[2] = {}, user = users.owner) =>
+      seedLink(t.db.prisma, user.userId, options);
+
+    it('removes one link from the history, keeps the link and updatedAt, and is idempotent', async () => {
+      const id = await seedHist({ title: 'kept', lastOpenedAt: new Date() });
+      const other = await seedHist({ title: 'other', lastOpenedAt: new Date() });
+      const before = await t.db.prisma.link.findUniqueOrThrow({ where: { id } });
+      await a.delete(`${BASE}/recent/${id}`).expect(204);
+      await a.delete(`${BASE}/recent/${id}`).expect(204);
+      const after = await t.db.prisma.link.findUniqueOrThrow({ where: { id } });
+      expect(after.lastOpenedAt).toBeNull();
+      expect(after.updatedAt).toEqual(before.updatedAt);
+      const recent = (await a.get(`${BASE}/recent`).expect(200)).body as { items: LinkResponse[] };
+      expect(recent.items.map((item) => item.id)).toEqual([other]);
+      await a.get(`${BASE}/${id}`).expect(200);
+    });
+
+    it('answers 404 for a foreign or unknown link and 400 for a malformed id', async () => {
+      const id = await seedHist({ title: 'theirs', lastOpenedAt: new Date() }, users.intruder);
+      await a.delete(`${BASE}/recent/${id}`).expect(404);
+      await a.delete(`${BASE}/recent/018f0000-0000-7000-8000-00000000dead`).expect(404);
+      await a.delete(`${BASE}/recent/not-a-uuid`).expect(400);
+    });
+
+    it('clears the whole history, keeps the links, and works on an empty history', async () => {
+      await a.delete(`${BASE}/recent`).expect(204);
+      const one = await seedHist({ title: 'one', lastOpenedAt: new Date() });
+      await seedHist({ title: 'two', lastOpenedAt: new Date() });
+      await a.delete(`${BASE}/recent`).expect(204);
+      const recent = (await a.get(`${BASE}/recent`).expect(200)).body as { items: LinkResponse[] };
+      expect(recent.items).toEqual([]);
+      await a.get(`${BASE}/${one}`).expect(200);
+    });
+  });
+
   describe('open', () => {
     it('records the open without touching updatedAt', async () => {
       const id = await seedLink(t.db.prisma, users.owner.userId, { title: 'o' });
@@ -426,12 +464,14 @@ describe('links API: writes', () => {
   });
 
   describe('delete', () => {
-    it('deletes an own link with its tag rows and keeps the tags', async () => {
+    it('moves an own link to Trash and keeps its tag rows and the tags', async () => {
       const id = await seedLink(t.db.prisma, users.owner.userId, { tags: ['t'] });
       await a.delete(`${BASE}/${id}`).expect(204);
       await a.get(`${BASE}/${id}`).expect(404);
       await a.delete(`${BASE}/${id}`).expect(404);
-      expect(await t.db.prisma.linkTag.count()).toBe(0);
+      const trashed = await t.db.prisma.link.findUniqueOrThrow({ where: { id } });
+      expect(trashed.deletedAt).not.toBeNull();
+      expect(await t.db.prisma.linkTag.count()).toBe(1);
       expect(await t.db.prisma.tag.count()).toBe(1);
     });
 

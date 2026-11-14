@@ -1,23 +1,36 @@
+import { HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
-  FOLDER_DELETE_MODE,
+  FOLDER_DEFAULT_COLOUR,
+  FOLDER_DEFAULT_ICON,
+  FOLDER_ERROR_MESSAGE,
   FOLDER_LIMIT,
+  isFolderColourValue,
+  isFolderIconValue,
   type CreateFolderRequest,
   type FolderDeleteMode,
   type FolderResponse,
   type ListFoldersResponse,
+  type ReorderFoldersRequest,
   type UpdateFolderRequest,
 } from '@shelfmark/contracts';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
+import { mockHttpError } from '../../../core/api/mock-http-error';
 import type { FoldersApi } from '../models/folders-api.interface';
 import { MOCK_FOLDER_NAME } from '../models/mock-folder-name.const';
 import { MOCK_LATENCY_MS } from '../models/mock-latency.const';
 import { MockLibraryData } from './mock-library-data';
 
+/** A folder name is 1 to `FOLDER_LIMIT.NameMax` characters after trimming. */
+function validName(name: string): boolean {
+  const length = name.trim().length;
+  return length > 0 && length <= FOLDER_LIMIT.NameMax;
+}
+
 /**
  * `FoldersApi` over the shared in-memory library, with simulated latency. Folders named like
- * `MOCK_FOLDER_NAME` fail on create, update or delete. Cycles, a missing parent and the
- * per-user limit are rejected like the real API would.
+ * `MOCK_FOLDER_NAME` fail on create, update or delete. Everything else answers like the real
+ * API (`apps/api`, checked by the contract scenarios): 404, 400 and 409 with its messages.
  */
 @Service()
 export class MockFoldersApi implements FoldersApi {
@@ -32,18 +45,31 @@ export class MockFoldersApi implements FoldersApi {
   create(request: CreateFolderRequest): Observable<FolderResponse> {
     return defer(() => {
       const parentId = request.parentId ?? null;
-      if (
-        request.name === MOCK_FOLDER_NAME.CreateFails ||
-        this.data.folderList.length >= FOLDER_LIMIT.PerUserMax ||
-        (parentId !== null && !this.find(parentId))
-      ) {
+      if (request.name === MOCK_FOLDER_NAME.CreateFails) {
         return throwError(() => new Error('Mock: folder create failed'));
+      }
+      if (!validName(request.name)) {
+        return throwError(() => mockHttpError(HttpStatusCode.BadRequest, ['name is not valid']));
+      }
+      if (parentId !== null && !this.find(parentId)) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.NotFound, FOLDER_ERROR_MESSAGE.NotFound),
+        );
+      }
+      if (this.data.folderList.length >= FOLDER_LIMIT.PerUserMax) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.Conflict, FOLDER_ERROR_MESSAGE.LimitReached),
+        );
       }
       const now = new Date().toISOString();
       const folder: FolderResponse = {
         id: globalThis.crypto.randomUUID(),
         parentId,
         name: request.name,
+        colour: FOLDER_DEFAULT_COLOUR,
+        icon: FOLDER_DEFAULT_ICON,
+        position: this.data.nextFolderPosition(parentId),
+        pinned: false,
         linkCount: 0,
         createdAt: now,
         updatedAt: now,
@@ -56,19 +82,42 @@ export class MockFoldersApi implements FoldersApi {
   update(id: string, request: UpdateFolderRequest): Observable<FolderResponse> {
     return defer(() => {
       const current = this.find(id);
-      const parentId = request.parentId === undefined ? current?.parentId : request.parentId;
-      if (
-        !current ||
-        current.name === MOCK_FOLDER_NAME.UpdateFails ||
-        parentId === undefined ||
-        (parentId !== null && (!this.find(parentId) || this.data.subtreeIds(id).includes(parentId)))
-      ) {
+      if (!current) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.NotFound, FOLDER_ERROR_MESSAGE.NotFound),
+        );
+      }
+      if (current.name === MOCK_FOLDER_NAME.UpdateFails) {
         return throwError(() => new Error('Mock: folder update failed'));
+      }
+      if (
+        (request.name !== undefined && !validName(request.name)) ||
+        // Like the API: a colour is a name or #rrggbb, an icon a name or exactly one emoji.
+        (request.colour !== undefined && !isFolderColourValue(request.colour)) ||
+        (request.icon !== undefined && !isFolderIconValue(request.icon))
+      ) {
+        return throwError(() => mockHttpError(HttpStatusCode.BadRequest, ['invalid field']));
+      }
+      const parentId = request.parentId === undefined ? current.parentId : request.parentId;
+      if (parentId !== null && !this.find(parentId)) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.NotFound, FOLDER_ERROR_MESSAGE.NotFound),
+        );
+      }
+      if (parentId !== null && this.data.subtreeIds(id).includes(parentId)) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.BadRequest, FOLDER_ERROR_MESSAGE.MoveIntoDescendant),
+        );
       }
       const updated: FolderResponse = {
         ...current,
         name: request.name ?? current.name,
         parentId,
+        colour: request.colour ?? current.colour,
+        icon: request.icon ?? current.icon,
+        // A move goes to the end of the new parent, like the API.
+        position:
+          parentId === current.parentId ? current.position : this.data.nextFolderPosition(parentId),
         updatedAt: new Date().toISOString(),
       };
       this.data.setFolders(
@@ -78,22 +127,59 @@ export class MockFoldersApi implements FoldersApi {
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
+  /**
+   * Like the API: `ids` must be exactly the subfolders of `parentId` (else the request fails); the
+   * order is not an edit, so `updatedAt` stays.
+   */
+  reorder(request: ReorderFoldersRequest): Observable<ListFoldersResponse> {
+    return defer(() => {
+      const siblings = this.data.folderList.filter(
+        (folder) => folder.parentId === request.parentId,
+      );
+      const wanted = new Set(request.ids);
+      if (request.parentId !== null && !this.find(request.parentId)) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.NotFound, FOLDER_ERROR_MESSAGE.NotFound),
+        );
+      }
+      if (siblings.some((folder) => folder.name === MOCK_FOLDER_NAME.UpdateFails)) {
+        return throwError(() => new Error('Mock: folder reorder failed'));
+      }
+      if (
+        wanted.size !== request.ids.length ||
+        siblings.length !== request.ids.length ||
+        siblings.some((folder) => !wanted.has(folder.id))
+      ) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.BadRequest, FOLDER_ERROR_MESSAGE.OrderMismatch),
+        );
+      }
+      const place = new Map(request.ids.map((id, index) => [id, index]));
+      this.data.setFolders(
+        this.data.folderList.map((folder) => {
+          const position = place.get(folder.id);
+          return position === undefined ? folder : { ...folder, position };
+        }),
+      );
+      return of<ListFoldersResponse>({
+        items: this.data.foldersView(),
+        counts: this.data.counts(),
+      });
+    }).pipe(delay(MOCK_LATENCY_MS.Create));
+  }
+
   remove(id: string, mode: FolderDeleteMode): Observable<void> {
     return defer(() => {
       const current = this.find(id);
-      if (!current || current.name === MOCK_FOLDER_NAME.DeleteFails) {
+      if (!current) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.NotFound, FOLDER_ERROR_MESSAGE.NotFound),
+        );
+      }
+      if (current.name === MOCK_FOLDER_NAME.DeleteFails) {
         return throwError(() => new Error('Mock: folder delete failed'));
       }
-      const doomed = new Set(this.data.subtreeIds(id));
-      const inDoomed = (folderId: string | null): boolean =>
-        folderId !== null && doomed.has(folderId);
-      this.data.links =
-        mode === FOLDER_DELETE_MODE.DeleteLinks
-          ? this.data.links.filter((link) => !inDoomed(link.folderId))
-          : this.data.links.map((link) =>
-              inDoomed(link.folderId) ? { ...link, folderId: null } : link,
-            );
-      this.data.setFolders(this.data.folderList.filter((folder) => !doomed.has(folder.id)));
+      this.data.trashFolder(id, mode);
       return of(undefined);
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }

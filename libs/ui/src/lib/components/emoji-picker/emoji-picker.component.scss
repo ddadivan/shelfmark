@@ -1,0 +1,59 @@
+@use '../../../styles/ui' as *;
+@use '../field/field-parts' as *;
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.ui-emoji-picker__native {
+  @include field-native;
+
+  cursor: pointer;
+}
+
+.ui-emoji-picker__chevron {
+  // 24px inside a dialog (`--icon-size-lg` from `ui-dialog`), 16px elsewhere.
+  --ui-icon-size: var(--ui-dialog-icon-size);
+
+  flex: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: transform var(--duration-base) var(--ease-out);
+
+  &.is-open {
+    transform: rotate(180deg);
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+// The popup element moves into the overlay pane while open (or leaving).
+.ui-emoji-picker__popup {
+  display: none;
+}
+
+.ui-emoji-picker__popup--shown {
+  display: block;
+}
+
+// `--ui-origin` is set on the overlay pane from the resolved position.
+.ui-emoji-picker--enter {
+  @include enter(pop);
+  @include origin;
+}
+
+.ui-emoji-picker--leave {
+  @include leave(pop);
+  @include origin;
+}
+
+.ui-emoji-picker--sheet-enter {
+  @include enter(sheet);
+}
+
+.ui-emoji-picker--sheet-leave {
+  @include leave(sheet);
+}

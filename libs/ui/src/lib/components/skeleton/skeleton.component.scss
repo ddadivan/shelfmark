@@ -1,0 +1,247 @@
+@use '../../../styles/ui' as *;
+
+// Geometry repeats the real components (ui-card, ui-list-item, ui-tree) so nothing jumps when
+// the data arrives. Widths vary (90 / 70 / 50%) through :nth-child so no inline style is needed.
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: rem(8px);
+}
+
+// Cards have no box of their own: they become items of the consumer's grid.
+:host(.ui-skeleton--card) {
+  display: contents;
+}
+
+:host(.ui-skeleton--row) {
+  gap: rem(2px);
+}
+
+:host(.ui-skeleton--tree) {
+  gap: rem(1px);
+}
+
+:host(.ui-skeleton--preview) {
+  gap: var(--space-4);
+}
+
+// One placeholder block: `surface-pressed` with a soft highlight sweeping across (1.4 s).
+// The sweep stops under reduced motion (`loop(shimmer)`), the block stays.
+.ui-skeleton__block {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-pressed);
+  border-radius: var(--radius-sm);
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background: linear-gradient(90deg, transparent, var(--skeleton-shimmer), transparent);
+    transform: translateX(-100%);
+
+    @include loop(shimmer);
+  }
+}
+
+.ui-skeleton__line {
+  height: rem(12px);
+}
+
+.ui-skeleton__title {
+  height: rem(16px);
+}
+
+.ui-skeleton__icon {
+  flex: none;
+  width: rem(16px);
+  height: rem(16px);
+}
+
+// Card ----------------------------------------------------------------------------------------
+
+.ui-skeleton__card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.ui-skeleton__media {
+  margin: rem(6px) rem(6px) 0;
+  aspect-ratio: 16 / 9;
+  border-radius: rem(16px);
+}
+
+.ui-skeleton__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.ui-skeleton__card .ui-skeleton__line--meta {
+  width: 45%;
+}
+
+.ui-skeleton__title--long {
+  width: 90%;
+}
+
+.ui-skeleton__title--short {
+  width: 65%;
+}
+
+.ui-skeleton__chips {
+  display: flex;
+  gap: rem(6px);
+}
+
+.ui-skeleton__chip {
+  width: rem(56px);
+  height: rem(22px);
+  border-radius: var(--radius-full);
+}
+
+.ui-skeleton__chip--short {
+  width: rem(44px);
+}
+
+// Row -----------------------------------------------------------------------------------------
+
+.ui-skeleton__row {
+  display: flex;
+  gap: rem(12px);
+  align-items: center;
+  min-height: rem(60px);
+  padding: rem(10px) rem(12px);
+}
+
+.ui-skeleton__row-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(6px);
+  min-width: 0;
+}
+
+:host(.ui-skeleton--row) > :nth-child(3n + 1) {
+  .ui-skeleton__title {
+    width: 80%;
+  }
+
+  .ui-skeleton__line {
+    width: 40%;
+  }
+}
+
+:host(.ui-skeleton--row) > :nth-child(3n + 2) {
+  .ui-skeleton__title {
+    width: 62%;
+  }
+
+  .ui-skeleton__line {
+    width: 30%;
+  }
+}
+
+:host(.ui-skeleton--row) > :nth-child(3n) {
+  .ui-skeleton__title {
+    width: 72%;
+  }
+
+  .ui-skeleton__line {
+    width: 36%;
+  }
+}
+
+// Tree ----------------------------------------------------------------------------------------
+
+.ui-skeleton__tree-row {
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  min-height: rem(36px);
+  padding-inline: rem(10px);
+
+  @include phone {
+    min-height: rem(44px);
+  }
+
+  .ui-skeleton__line {
+    flex: none;
+  }
+}
+
+:host(.ui-skeleton--tree) > :nth-child(4n + 1) .ui-skeleton__line {
+  width: 70%;
+}
+
+:host(.ui-skeleton--tree) > :nth-child(4n + 2) .ui-skeleton__line {
+  width: 55%;
+}
+
+:host(.ui-skeleton--tree) > :nth-child(4n + 3) {
+  padding-inline-start: rem(24px);
+
+  .ui-skeleton__line {
+    width: 60%;
+  }
+}
+
+:host(.ui-skeleton--tree) > :nth-child(4n) .ui-skeleton__line {
+  width: 45%;
+}
+
+// Preview -------------------------------------------------------------------------------------
+
+.ui-skeleton__preview {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.ui-skeleton__preview-media {
+  flex: none;
+  width: rem(128px);
+  aspect-ratio: 16 / 9;
+}
+
+.ui-skeleton__preview-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(8px);
+  min-width: 0;
+  padding-top: rem(4px);
+}
+
+.ui-skeleton__preview-meta {
+  width: 40%;
+  height: rem(10px);
+}
+
+.ui-skeleton__preview-title {
+  width: 90%;
+  height: rem(14px);
+}
+
+.ui-skeleton__preview-title--short {
+  width: 60%;
+}
+
+// Line ----------------------------------------------------------------------------------------
+
+:host(.ui-skeleton--line) > :nth-child(3n + 1) {
+  width: 90%;
+}
+
+:host(.ui-skeleton--line) > :nth-child(3n + 2) {
+  width: 70%;
+}
+
+:host(.ui-skeleton--line) > :nth-child(3n) {
+  width: 50%;
+}

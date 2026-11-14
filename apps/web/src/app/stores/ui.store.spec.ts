@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { UI_STORAGE_KEY } from './models/ui-storage-key.const';
-import { UI_VIEW } from './models/ui-view.const';
 import { UiStore } from './ui.store';
 
 function create(): InstanceType<typeof UiStore> {
@@ -12,36 +11,45 @@ describe('UiStore', () => {
   beforeEach(() => localStorage.removeItem(UI_STORAGE_KEY));
   afterAll(() => localStorage.removeItem(UI_STORAGE_KEY));
 
-  it('starts with cards and the recent panel visible', () => {
-    const store = create();
-
-    expect(store.view()).toBe(UI_VIEW.Cards);
-    expect(store.recentVisible()).toBe(true);
-  });
-
-  it('persists the view and the panel and restores them', () => {
-    const store = create();
-    store.setView(UI_VIEW.List);
-    store.setRecentVisible(false);
-
-    const restored = create();
-
-    expect(restored.view()).toBe(UI_VIEW.List);
-    expect(restored.recentVisible()).toBe(false);
-  });
-
-  it('falls back to the defaults for unexpected stored values', () => {
-    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ view: 'grid', recentVisible: 'yes' }));
-
-    const store = create();
-
-    expect(store.view()).toBe(UI_VIEW.Cards);
-    expect(store.recentVisible()).toBe(true);
-  });
-
   it('survives corrupt storage', () => {
     localStorage.setItem(UI_STORAGE_KEY, '{nope');
 
-    expect(create().view()).toBe(UI_VIEW.Cards);
+    expect(create().singleKeyShortcuts()).toBe(true);
+  });
+
+  it('has single-key shortcuts on by default', () => {
+    expect(create().singleKeyShortcuts()).toBe(true);
+  });
+
+  it('persists turning single-key shortcuts off and on', () => {
+    const store = create();
+    store.setSingleKeyShortcuts(false);
+
+    const restored = create();
+
+    expect(restored.singleKeyShortcuts()).toBe(false);
+    restored.setSingleKeyShortcuts(true);
+    expect(create().singleKeyShortcuts()).toBe(true);
+  });
+
+  it('ignores the feed view an older version kept here', () => {
+    localStorage.setItem(
+      UI_STORAGE_KEY,
+      JSON.stringify({ view: 'list', singleKeyShortcuts: false }),
+    );
+
+    const store = create();
+
+    expect(store.singleKeyShortcuts()).toBe(false);
+    expect('view' in store).toBe(false);
+  });
+
+  it('keeps single-key shortcuts on when the stored value is not a boolean', () => {
+    localStorage.setItem(
+      UI_STORAGE_KEY,
+      JSON.stringify({ view: 'list', singleKeyShortcuts: 'no' }),
+    );
+
+    expect(create().singleKeyShortcuts()).toBe(true);
   });
 });

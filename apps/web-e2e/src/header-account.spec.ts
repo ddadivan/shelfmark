@@ -3,6 +3,7 @@ import { seedSession } from './support/mock-session';
 
 test.describe('header account trigger (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+  test.skip(({ isMobile }) => isMobile, 'a phone has no header: the You tab holds the account');
 
   for (const scheme of ['light', 'dark'] as const) {
     test(`the avatar sits fully inside the trigger and stays centred (${scheme})`, async ({
@@ -18,9 +19,7 @@ test.describe('header account trigger (mock API)', () => {
 
       const triggerBox = await trigger.boundingBox();
       const avatarBox = await avatar.boundingBox();
-      const searchBox = await header
-        .getByRole('button', { name: 'Search', exact: true })
-        .boundingBox();
+      const searchBox = await header.locator('app-header-search').boundingBox();
       expect(triggerBox).not.toBeNull();
       expect(avatarBox).not.toBeNull();
       expect(searchBox).not.toBeNull();

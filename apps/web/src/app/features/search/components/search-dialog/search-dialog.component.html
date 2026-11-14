@@ -1,0 +1,8 @@
+<ui-dialog
+  class="search-dialog"
+  phoneFullscreen
+  [title]="'search.title' | transloco"
+  [closeLabel]="'search.close' | transloco"
+>
+  <app-search-results (done)="close()" />
+</ui-dialog>

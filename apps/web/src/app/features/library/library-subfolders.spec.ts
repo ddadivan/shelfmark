@@ -8,7 +8,7 @@ import { of } from 'rxjs';
 import { FOLDERS_API } from '../links/models/folders-api.const';
 import { LINKS_API } from '../links/models/links-api.const';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
-import { UI_STORAGE_KEY } from '../../stores/models/ui-storage-key.const';
+import { FEED_MEMORY_STORAGE_KEY } from './models/feed-memory-storage-key.const';
 import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { loadEnglish, provideTranslocoForTest } from '../../testing/transloco-testing';
 import LibraryPage from './library.page';
@@ -46,7 +46,8 @@ async function setup(folderId: string, inputs: Record<string, unknown> = {}) {
       {
         provide: LINKS_API,
         useValue: {
-          list: () => of({ items: [{ ...MOCK_LINKS[0], id: 'id-1' }], nextCursor: null }),
+          list: () =>
+            of({ items: [{ ...MOCK_LINKS[0], id: 'id-1' }], nextCursor: null, pinned: [] }),
           recent: () => of({ items: [] }),
         },
       },
@@ -72,8 +73,8 @@ async function setup(folderId: string, inputs: Record<string, unknown> = {}) {
 }
 
 describe('LibraryPage subfolders', () => {
-  beforeEach(() => localStorage.removeItem(UI_STORAGE_KEY));
-  afterAll(() => localStorage.removeItem(UI_STORAGE_KEY));
+  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
 
   it('lists the direct subfolders first, by name, as links into the folders', async () => {
     const { element } = await setup('f1');
@@ -93,7 +94,10 @@ describe('LibraryPage subfolders', () => {
   });
 
   it('shows rows in the list view', async () => {
-    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ view: UI_VIEW.List }));
+    localStorage.setItem(
+      FEED_MEMORY_STORAGE_KEY,
+      JSON.stringify({ ['folder:f1']: { view: UI_VIEW.List } }),
+    );
     const { element } = await setup('f1');
 
     expect(element.querySelector('.library__folders--rows')).not.toBeNull();

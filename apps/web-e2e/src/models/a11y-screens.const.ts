@@ -1,38 +1,25 @@
-import { expect, type Page } from '@playwright/test';
-import {
-  openCardEdit,
-  openEmptyFeed,
-  openFeed,
-  openSignedIn,
-  openTagMenu,
-  pickFolderMenuItem,
-  pickTagMenuItem,
-} from '../support/a11y-flows';
-import { NEW_USER, seedSession } from '../support/mock-session';
-import { openSidebar } from '../support/sidebar';
+import { expect } from '@playwright/test';
+import { openCardMove, openFeed, openSignedIn } from '../support/a11y-flows';
+import { SEARCH_BUTTON, SEARCH_FIELD_NAME, useSearchDialogWidth } from '../support/search-button';
+import { openSidebar, openTags } from '../support/sidebar';
+import { deleteFirstLink, deleteReadingFolderWithLinks, openTrash } from '../support/trash';
 import type { A11yScreen } from './a11y-screen.interface';
 import { DIALOG_SELECTOR } from './dialog-selector.const';
 import { E2E_PROJECT } from './e2e-project.const';
+import { E2E_TAG } from './e2e-tag.const';
 import { MOCK_FIXTURE } from './mock-fixture.const';
-import { TITLED_DIALOG_SELECTOR } from './titled-dialog-selector.const';
+import { switchView } from '../support/library-toolbar';
 
 const DUPLICATE_URL = 'https://angular.dev/overview';
-// Dialogs and menus are laid out alike on a phone, so one project is enough for them; the ones
-// that become a bottom sheet or have long content run on both.
-const OVERLAY = { include: DIALOG_SELECTOR, only: E2E_PROJECT.Desktop } as const;
+// A dialog that becomes a bottom sheet on a phone is scanned on both projects.
 const SHEET = { include: DIALOG_SELECTOR } as const;
 
-async function openOnboardingStep(page: Page, steps: number): Promise<void> {
-  await seedSession(page, NEW_USER);
-  await page.goto('/links');
-  await expect(page.getByRole('dialog', { name: 'All your links in one place' })).toBeVisible();
-  for (let step = 0; step < steps; step++) {
-    await page.getByRole('button', { name: 'Next' }).click();
-  }
-  // The step content slides in; the running illustration loops forever and is skipped by `settled`.
-}
-
-/** Every app screen the accessibility pass scans, in both themes and on both projects. */
+/**
+ * The key app screens the accessibility pass scans in both themes (ADR 0043, #349): the main
+ * pages, the search surfaces and the dialogs whose layout changes on a phone. Every other dialog,
+ * menu and state has a jsdom axe test in its component spec, and the libs/ui parts are scanned for
+ * contrast in both themes by the Storybook axe run.
+ */
 export const A11Y_SCREENS: readonly A11yScreen[] = [
   {
     name: 'sign-in',
@@ -41,13 +28,28 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     },
   },
-  { name: 'feed, cards', open: (page) => openFeed(page) },
+  { name: 'feed, cards', tag: E2E_TAG.Phone, open: (page) => openFeed(page) },
   {
     name: 'feed, list',
     open: async (page) => {
       await openFeed(page);
-      await page.getByRole('radio', { name: 'List' }).click();
+      await switchView(page, 'List');
       await expect(page.locator('ui-list-item').first()).toBeVisible();
+    },
+  },
+  {
+    name: 'trash with a link and a folder',
+    open: async (page) => {
+      await openFeed(page);
+      await deleteFirstLink(page);
+      // Opening Trash sends the delete that still waits for its Undo window.
+      await openTrash(page);
+      await deleteReadingFolderWithLinks(page);
+      await openTrash(page);
+      await expect(page.locator('app-trash-row')).toHaveCount(2);
+      // The folder's 3 s confirmation would fade out in the middle of the scan (axe then measures
+      // half-transparent text); the screen under test is Trash, the toast has its own stories.
+      await expect(page.getByText('Folder moved to Trash')).toBeHidden();
     },
   },
   {
@@ -60,44 +62,12 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     },
   },
   {
-    name: 'folder not found',
-    open: async (page) => {
-      await openSignedIn(page, '/folders/does-not-exist');
-      await expect(page.getByRole('heading', { name: 'Folder not found' })).toBeVisible();
-    },
-  },
-  {
-    name: 'empty folder',
-    open: async (page) => {
-      await openFeed(page);
-      await openSidebar(page);
-      await page.getByRole('button', { name: 'Create a folder' }).click();
-      const dialog = page.getByRole('dialog', { name: 'New folder' });
-      await dialog.getByLabel('Name').fill('Projects');
-      await dialog.getByRole('button', { name: 'Create folder' }).click();
-      await expect(page.getByRole('heading', { name: 'This folder is empty' })).toBeVisible();
-    },
-  },
-  { name: 'empty feed', open: (page) => openEmptyFeed(page) },
-  {
-    name: 'tag filter',
-    open: async (page) => {
-      await openFeed(page, `/links?tag=${MOCK_FIXTURE.tagDocs}`);
-      await expect(page.getByRole('group', { name: 'Active filters' })).toBeVisible();
-    },
-  },
-  {
-    name: 'search, nothing found',
-    open: async (page) => {
-      await openSignedIn(page, '/links?q=zzzzqq');
-      await expect(page.getByRole('heading', { name: 'Nothing found for “zzzzqq”' })).toBeVisible();
-    },
-  },
-  {
     name: 'search dialog',
+    tag: E2E_TAG.Phone,
     open: async (page) => {
+      await useSearchDialogWidth(page);
       await openFeed(page);
-      await page.getByRole('button', { name: 'Search', exact: true }).click();
+      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
       await page
         .getByRole('combobox', { name: 'Search links, folders and tags' })
         .fill(MOCK_FIXTURE.searchWord);
@@ -107,24 +77,46 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     ...SHEET,
   },
   {
-    name: 'settings',
-    open: async (page) => {
-      await openSignedIn(page, '/settings');
-      await expect(page.getByRole('heading', { level: 1, name: 'Settings' })).toBeVisible();
-      await expect(page.getByText('Export your data')).toBeVisible();
-    },
-  },
-  {
-    name: 'export menu',
+    // From 80em (the desktop project's 1280px) the header field opens a results panel (#329).
+    name: 'search panel (header field)',
     open: async (page) => {
       await openFeed(page);
-      await page.getByRole('button', { name: 'Export' }).click();
-      await expect(page.getByRole('menuitem', { name: 'Everything as JSON' })).toBeVisible();
+      await page.getByRole('combobox', { name: SEARCH_FIELD_NAME }).fill(MOCK_FIXTURE.searchWord);
+      await expect(page.getByRole('option').first()).toBeVisible();
+      await expect(page.getByRole('listbox')).not.toHaveAttribute('aria-busy', 'true');
     },
+    include: 'app-header-search, .ui-command-list__panel',
     only: E2E_PROJECT.Desktop,
   },
   {
+    name: 'settings (You list on a phone, the account on desktop)',
+    tag: E2E_TAG.Phone,
+    open: async (page) => {
+      await openSignedIn(page, '/settings');
+      await expect(page.getByRole('heading', { level: 1, name: /^(Account|You)$/ })).toBeVisible();
+    },
+  },
+  {
+    name: 'settings account',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/account');
+      await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
+      await expect(page.getByText('Sign out of Shelfmark')).toBeVisible();
+      // Your shelf, connected accounts and Your data (#352).
+      await expect(page.getByRole('heading', { name: 'Sites you save most' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Connected accounts' })).toBeVisible();
+    },
+  },
+  {
+    name: 'settings appearance',
+    open: async (page) => {
+      await openSignedIn(page, '/settings/appearance');
+      await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
+    },
+  },
+  {
     name: 'add link dialog',
+    tag: E2E_TAG.Mobile,
     open: async (page) => {
       await openFeed(page);
       await page.getByRole('button', { name: 'Add link' }).first().click();
@@ -135,139 +127,46 @@ export const A11Y_SCREENS: readonly A11yScreen[] = [
     ...SHEET,
   },
   {
-    name: 'add link dialog, new tag',
+    name: 'move link picker',
+    tag: E2E_TAG.Phone,
     open: async (page) => {
       await openFeed(page);
-      await page.getByRole('button', { name: 'Add link' }).first().click();
-      const dialog = page.getByRole('dialog', { name: 'Add link' });
-      const input = dialog.getByRole('combobox', { name: 'Tags' });
-      await input.fill('brand new');
-      await expect(page.getByRole('option', { name: /Create tag .brand new./ })).toBeVisible();
-      await input.press('Enter');
-      await expect(dialog.getByText('brand-new', { exact: true })).toBeVisible();
-    },
-    ...OVERLAY,
-  },
-  {
-    name: 'edit link dialog',
-    open: async (page) => {
-      await openFeed(page);
-      await openCardEdit(page);
+      const picker = await openCardMove(page);
+      await expect(picker.getByRole('option').first()).toBeVisible();
     },
     ...SHEET,
   },
   {
-    name: 'delete link confirmation',
-    open: async (page) => {
-      await openFeed(page);
-      const edit = await openCardEdit(page);
-      await edit.getByRole('button', { name: 'Delete' }).click();
-      await expect(page.getByRole('alertdialog')).toBeVisible();
-    },
-    ...OVERLAY,
-  },
-  {
-    name: 'new folder dialog',
-    open: async (page) => {
-      await openFeed(page);
-      await openSidebar(page);
-      await page.getByRole('button', { name: 'Create a folder' }).click();
-      await expect(page.getByRole('dialog', { name: 'New folder' })).toBeVisible();
-    },
-    ...OVERLAY,
-  },
-  {
-    name: 'move folder dialog',
-    open: async (page) => {
-      await openFeed(page);
-      await pickFolderMenuItem(page, MOCK_FIXTURE.readingName, 'Move to…');
-      await expect(
-        page.getByRole('dialog', { name: `Move “${MOCK_FIXTURE.readingName}”` }),
-      ).toBeVisible();
-    },
-    ...OVERLAY,
-  },
-  {
-    name: 'delete folder dialog',
-    open: async (page) => {
-      await openFeed(page);
-      await pickFolderMenuItem(page, MOCK_FIXTURE.readingName, 'Delete folder…');
-      await expect(page.getByRole('dialog', { name: /^Delete folder/ })).toBeVisible();
-    },
-    include: TITLED_DIALOG_SELECTOR,
-    // Both projects: the confirmation is a sheet on a phone.
-  },
-  {
-    name: 'tag menu',
-    open: async (page) => {
-      await openFeed(page);
-      await openTagMenu(page, MOCK_FIXTURE.tagDocs);
-      await expect(page.getByRole('menuitem', { name: 'Rename' })).toBeVisible();
-    },
-    include: '[role="menu"]',
-    only: E2E_PROJECT.Desktop,
-  },
-  {
-    name: 'tag, new tag field',
-    open: async (page) => {
-      await openFeed(page);
-      await openSidebar(page);
-      const library = page.getByRole('navigation', { name: 'Library' });
-      await library.getByRole('button', { name: 'New tag' }).click();
-      await expect(library.getByRole('textbox', { name: 'New tag' })).toBeFocused();
-    },
-    include: 'app-sidebar',
-    // Both projects: on a phone the field lives in the drawer.
-  },
-  {
-    name: 'merge tag dialog',
-    open: async (page) => {
-      await openFeed(page);
-      await pickTagMenuItem(page, MOCK_FIXTURE.tagDocs, 'Merge into another tag…');
-      await expect(page.getByRole('dialog', { name: /Merge/ })).toBeVisible();
-    },
-    ...OVERLAY,
-  },
-  {
-    name: 'delete tag confirmation',
-    open: async (page) => {
-      await openFeed(page);
-      await pickTagMenuItem(page, MOCK_FIXTURE.tagDocs, 'Delete tag');
-      await expect(page.getByRole('alertdialog')).toBeVisible();
-    },
-    ...OVERLAY,
-  },
-  {
-    name: 'onboarding dialog, step 1',
-    open: (page) => openOnboardingStep(page, 0),
-    ...SHEET,
-  },
-  {
-    name: 'onboarding dialog, step 2',
-    open: async (page) => {
-      await openOnboardingStep(page, 1);
-      await expect(page.getByRole('dialog', { name: 'Save in a second' })).toBeVisible();
-    },
-    ...SHEET,
-  },
-  {
-    name: 'onboarding dialog, step 3',
-    open: async (page) => {
-      await openOnboardingStep(page, 2);
-      await expect(page.getByRole('dialog', { name: 'Find it right away' })).toBeVisible();
-    },
-    ...SHEET,
-  },
-  {
-    name: 'phone drawer',
+    name: 'phone library',
+    tag: E2E_TAG.Phone,
     only: E2E_PROJECT.Phone,
     open: async (page) => {
       await openFeed(page);
       await openSidebar(page);
-      await expect(
-        page.getByRole('dialog', { name: 'Menu' }).getByRole('treeitem', { name: /^All links/ }),
-      ).toBeVisible();
+      await expect(page.locator('app-library-tile').first()).toBeVisible();
     },
-    include: '[role="dialog"][aria-label="Menu"]',
+  },
+  {
+    name: 'phone tags',
+    tag: E2E_TAG.Phone,
+    only: E2E_PROJECT.Phone,
+    open: async (page) => {
+      await openFeed(page);
+      await openTags(page);
+      await expect(page.locator('app-sidebar-tags ui-chip').first()).toBeVisible();
+    },
+  },
+  {
+    name: 'phone recently opened sheet',
+    tag: E2E_TAG.Phone,
+    only: E2E_PROJECT.Phone,
+    open: async (page) => {
+      await openFeed(page);
+      await openSidebar(page);
+      await page.getByRole('link', { name: /^Recently opened/ }).click();
+      await expect(page.getByRole('dialog', { name: 'Recently opened' })).toBeVisible();
+      await expect(page.locator('app-link-history-row').first()).toBeVisible();
+    },
+    ...SHEET,
   },
 ];

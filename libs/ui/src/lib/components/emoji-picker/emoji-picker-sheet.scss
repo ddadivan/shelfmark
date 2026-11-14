@@ -1,0 +1,46 @@
+@use '../../../styles/ui' as *;
+
+// Below 40em: a bottom sheet across the screen like every other sheet (28px top corners, the page
+// surface, no glass blur, a grip). The global pane lets pointer events through, the sheet takes
+// them back. Dragging the grip or the head moves it through `--ui-sheet-drag`; the leave
+// animation starts from there.
+.ui-emoji-picker__panel--sheet {
+  width: 100vw;
+  height: min(rem(520px), calc(100dvh - #{rem(150px)}));
+  padding: var(--space-3) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
+  margin: 0;
+  pointer-events: auto;
+  background: var(--surface);
+  backdrop-filter: none;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  transform: translateY(var(--ui-sheet-drag, 0));
+}
+
+// The drag moves the sheet one to one; only the snap back is animated.
+.ui-emoji-picker__panel--snapping {
+  transition: transform var(--duration-base) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.ui-emoji-picker__drag {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ui-emoji-picker__panel--sheet .ui-emoji-picker__drag {
+  touch-action: none;
+}
+
+// The 36 x 4 grip of the dialog sheets.
+.ui-emoji-picker__grip {
+  align-self: center;
+  width: rem(36px);
+  height: rem(4px);
+  background: var(--border-control);
+  border-radius: rem(2px);
+}

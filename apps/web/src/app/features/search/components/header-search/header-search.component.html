@@ -1,0 +1,13 @@
+@if (viewport.wide()) {
+  <app-search-results popup />
+} @else {
+  <ui-button
+    [variant]="BUTTON_VARIANT.Secondary"
+    iconLeft="search"
+    ariaHaspopup="dialog"
+    (click)="search.open()"
+  >
+    {{ 'shell.searchButton' | transloco }}
+    <kbd class="header-search__kbd" aria-hidden="true">{{ shortcut }}</kbd>
+  </ui-button>
+}

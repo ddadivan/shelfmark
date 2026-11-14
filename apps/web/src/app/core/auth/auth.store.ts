@@ -1,7 +1,8 @@
 import { computed, inject, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { TOAST_KIND } from '@shelfmark/ui';
+import { LazyToastService } from '../toast/lazy-toast.service';
 import {
   patchState,
   signalStore,
@@ -11,9 +12,6 @@ import {
   withState,
 } from '@ngrx/signals';
 import type { AuthProvider, AuthUser } from '@shelfmark/contracts';
-import { FoldersStore } from '../../stores/folders.store';
-import { LinksStore } from '../../stores/links.store';
-import { TagsStore } from '../../stores/tags.store';
 import { AUTH_API } from './auth-api.token';
 import { SessionScope } from './session-scope.service';
 import { DemoSignInError } from './demo-sign-in-error';
@@ -24,6 +22,8 @@ import { SIGN_IN_REASON } from './models/sign-in-reason.const';
 import type { SignInReason } from './models/sign-in-reason.type';
 import { AUTH_DEMO } from './models/auth-pending.const';
 import { AuthState } from './models/auth-state.interface';
+import { TAB_SYNC_KIND } from '../sync/models/tab-sync-kind.const';
+import { TabSyncService } from '../sync/tab-sync.service';
 
 const initialState: AuthState = {
   user: null,
@@ -44,26 +44,23 @@ export const AuthStore = signalStore(
     isSignedIn: computed(() => user() !== null),
   })),
   withMethods(
-    (
-      store,
-      api = inject(AUTH_API),
-      router = inject(Router),
-      links = inject(LinksStore),
-      folders = inject(FoldersStore),
-      tags = inject(TagsStore),
-      injector = inject(Injector),
-      scope = inject(SessionScope),
-    ) => {
+    (store, router = inject(Router), injector = inject(Injector), scope = inject(SessionScope)) => {
+      // Resolved on use: pages that only read `user` (landing, library) need no auth API in specs.
+      const api = () => injector.get(AUTH_API);
       let loading: Promise<void> | null = null;
 
       /**
-       * Forgets everything cached for the user: the library, and whatever else registered with
-       * `SessionScope` (onboarding and rating, which depend on this store).
+       * Forgets everything cached for the user: whatever registered with `SessionScope` (the
+       * library stores, onboarding and rating).
        */
+      /** Tells the other tabs a user is signed in here (they reload when locked or signed out). */
+      function announceSignedIn(user: AuthUser | null): void {
+        if (user) {
+          injector.get(TabSyncService).post({ kind: TAB_SYNC_KIND.SignedIn }, user.id);
+        }
+      }
+
       function clearUserState(): void {
-        links.reset();
-        folders.reset();
-        tags.reset();
         scope.end();
       }
 
@@ -83,6 +80,7 @@ export const AuthStore = signalStore(
             return;
           }
           patchState(store, { user, loaded: true, pending: null });
+          announceSignedIn(user);
         } catch (error) {
           patchState(store, {
             pending: null,
@@ -98,7 +96,7 @@ export const AuthStore = signalStore(
           timer = setTimeout(resolve, ms);
         });
         try {
-          await Promise.race([Promise.all([links.flushPending(), tags.flushPending()]), timeout]);
+          await Promise.race([scope.flush(), timeout]);
         } catch {
           // A failed flush restores the links in the store; sign-out goes on.
         } finally {
@@ -115,16 +113,22 @@ export const AuthStore = signalStore(
         // never longer than the timeout.
         await flushWithin(SIGN_OUT_FLUSH_TIMEOUT_MS);
         try {
-          await api.signOut();
+          await api().signOut();
         } catch {
-          injector.get(ToastService).show({
-            kind: TOAST_KIND.Error,
-            text: injector.get(TranslocoService).translate('auth.signOutFailed'),
+          injector.get(LazyToastService).show({
+            kind: TOAST_KIND.Danger,
+            title: injector.get(TranslocoService).translate('auth.signOutFailed'),
+            detail: injector.get(TranslocoService).translate('auth.signOutFailedDetail'),
           });
           return false;
         }
+        const userId = store.user()?.id;
         clearUserState();
         patchState(store, { user: null, loaded: true, failed: false });
+        // The other tabs lock too (tab sync, #268).
+        if (userId) {
+          injector.get(TabSyncService).post({ kind: TAB_SYNC_KIND.SignedOut }, userId);
+        }
         return true;
       }
 
@@ -136,18 +140,21 @@ export const AuthStore = signalStore(
           }
           // A failed request leaves `loaded` false and clears `loading`, so the next guard call
           // retries; the current navigation is treated as a guest (fail-closed).
-          loading ??= api
+          loading ??= api()
             .getSession()
             .then(
-              (user) => patchState(store, { user, loaded: true }),
+              (user) => {
+                patchState(store, { user, loaded: true });
+                announceSignedIn(user);
+              },
               () => undefined,
             )
             .finally(() => (loading = null));
           return loading;
         },
         signIn: (provider: AuthProvider, returnUrl: string | null = null) =>
-          run(provider, () => api.signIn(provider, returnUrl)),
-        signInDemo: () => run(AUTH_DEMO, () => api.signInDemo()),
+          run(provider, () => api().signIn(provider, returnUrl)),
+        signInDemo: () => run(AUTH_DEMO, () => api().signInDemo()),
         signOut,
         /**
          * The demo ran out: the server session is probably gone already, so a failing sign-out
@@ -155,7 +162,7 @@ export const AuthStore = signalStore(
          */
         async expireDemo(): Promise<void> {
           try {
-            await api.signOut();
+            await api().signOut();
           } catch {
             // Expected when the session expired on the server; nothing to tell the user.
           }

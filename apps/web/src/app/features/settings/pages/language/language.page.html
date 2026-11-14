@@ -1,0 +1,17 @@
+<app-settings-page-header
+  [title]="'settings.nav.language' | transloco"
+  [description]="'settings.description.language' | transloco"
+/>
+
+<ui-settings-section [title]="'settings.language.title' | transloco">
+  <p class="language__hint">{{ 'settings.language.interface.hint' | transloco }}</p>
+  <ui-radio-group
+    class="language__list"
+    data-testid="interface-language"
+    name="interface-language"
+    [ariaLabel]="'settings.language.interface.label' | transloco"
+    [options]="languageOptions()"
+    [value]="language().language"
+    (valueChange)="setLanguage($event)"
+  />
+</ui-settings-section>

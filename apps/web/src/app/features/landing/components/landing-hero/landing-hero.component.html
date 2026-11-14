@@ -1,6 +1,5 @@
 <section class="landing-hero" aria-labelledby="landing-hero-title">
   <div class="landing-hero__copy">
-    <p class="landing-hero__eyebrow">{{ 'landing.hero.eyebrow' | transloco }}</p>
     <h1 id="landing-hero-title" class="landing-hero__title">
       <span class="landing-hero__line">{{ 'landing.hero.line1' | transloco }}</span
       >&ngsp;<span class="landing-hero__line">{{ 'landing.hero.line2' | transloco }}</span
@@ -10,38 +9,34 @@
     </h1>
     <p class="landing-hero__lead">{{ 'landing.hero.lead' | transloco }}</p>
     <div class="landing-hero__actions">
-      <ui-button
-        [variant]="BUTTON_VARIANT.Primary"
-        [size]="BUTTON_SIZE.Lg"
-        [href]="LANDING_LINKS.Demo"
-        >{{ 'landing.hero.demo' | transloco }}</ui-button
-      >
-      <ui-button [size]="BUTTON_SIZE.Lg" [href]="LANDING_LINKS.SignIn">{{
-        'landing.hero.signIn' | transloco
-      }}</ui-button>
-    </div>
-  </div>
-  <!--
-    What the animated chat says, for assistive technology. It lives here, not in the chat, so it
-    is there before the deferred chat loads and is not repeated by it. With reduced motion the
-    chat shows the same five links as a visible static frame.
-  -->
-  @if (!motion.reducedMotion()) {
-    <ul class="landing-hero__sr" [attr.aria-label]="'landing.chat.savedMessages' | transloco">
-      @for (message of messages; track message.id) {
-        <li>{{ message.textKey | transloco }} {{ message.url }}</li>
+      @if (signedIn()) {
+        <ui-button
+          [variant]="BUTTON_VARIANT.Primary"
+          [size]="BUTTON_SIZE.Lg"
+          [href]="LANDING_LINKS.Shelf"
+          [appAppLink]="LANDING_LINKS.Shelf"
+          >{{ 'landing.backToShelf' | transloco }}</ui-button
+        >
+      } @else {
+        <ui-button
+          [variant]="BUTTON_VARIANT.Primary"
+          [size]="BUTTON_SIZE.Lg"
+          [href]="LANDING_LINKS.SignIn"
+          [appAppLink]="LANDING_LINKS.SignIn"
+          >{{ 'landing.hero.start' | transloco }}</ui-button
+        >
+        <ui-button
+          [variant]="BUTTON_VARIANT.Secondary"
+          [size]="BUTTON_SIZE.Lg"
+          [href]="LANDING_LINKS.Demo"
+          [appAppLink]="LANDING_LINKS.Demo"
+          >{{ 'landing.hero.demo' | transloco }}</ui-button
+        >
       }
-    </ul>
-  }
-  <!--
-    The demo loads when the browser is idle: its code and its first render stay out of the task
-    that paints the headline. The placeholder (also shown while the chunk loads) has the phone's height, so nothing moves.
-  -->
-  @defer (on idle) {
-    <app-landing-chat class="landing-hero__demo" />
-  } @placeholder {
-    <div class="landing-hero__demo-placeholder" aria-hidden="true"></div>
-  } @loading {
-    <div class="landing-hero__demo-placeholder" aria-hidden="true"></div>
-  }
+    </div>
+    @if (!signedIn()) {
+      <p class="landing-hero__note">{{ 'landing.hero.note' | transloco }}</p>
+    }
+  </div>
+  <app-landing-hero-preview class="landing-hero__preview" />
 </section>

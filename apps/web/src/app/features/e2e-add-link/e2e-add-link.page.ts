@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ButtonComponent } from '@shelfmark/ui';
-import { AddLinkDialogService } from '../links/add-link/add-link-dialog.service';
+import { AddLinkDialogService } from '../links/services/add-link-dialog.service';
 import { ADD_LINK_ACTION } from '../links/models/add-link-action.const';
 import { E2E_ADD_LINK_OUTCOME } from './models/e2e-add-link-outcome.const';
 

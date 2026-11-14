@@ -88,3 +88,13 @@
   margin: 0;
   color: var(--text-muted);
 }
+
+// Sheet stories (`sst-`): a line of body text in the sheet.
+.sst-line {
+  @include type(body);
+
+  margin: 0;
+  padding: var(--space-3) 0;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}

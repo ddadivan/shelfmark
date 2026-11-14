@@ -1,0 +1,91 @@
+<ng-template #entry>
+  <ui-history-row
+    [newTab]="newTab()"
+    [attr.role]="viewport.compact() ? 'presentation' : 'listitem'"
+    [href]="href()"
+    [preview]="preview()"
+    [description]="href() && newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
+    (activated)="onActivated($event)"
+  >
+    <span slot="title">{{ link().title }}</span>
+    <span slot="meta" class="link-history-row__folder">
+      <ui-folder-icon size="sm" [icon]="folderIcon()" [colour]="folderColour()" />
+      <span class="link-history-row__folder-name">
+        {{ folderName() ?? ('links.recent.unsorted' | transloco) }}
+      </span>
+    </span>
+    <time slot="time" class="link-history-row__time" [attr.datetime]="dateTime()">{{
+      time()
+    }}</time>
+    <ui-button
+      slot="actions"
+      variant="ghost"
+      size="sm"
+      iconOnly
+      iconLeft="more"
+      [uiMenuTrigger]="menu"
+      [ariaLabel]="'links.recent.more' | transloco: { title: link().title }"
+      [uiTooltip]="'links.item.moreActions' | transloco"
+    />
+    <ui-menu
+      #menu
+      slot="actions"
+      align="end"
+      [ariaLabel]="'links.recent.more' | transloco: { title: link().title }"
+    >
+      @if (href()) {
+        <ui-menu-item icon="external" (activated)="openInNewTab.emit()">
+          {{ 'links.recent.menu.openInNewTab' | transloco }}
+        </ui-menu-item>
+      }
+      <ui-menu-item icon="folder" (activated)="showInFolder.emit()">
+        {{ 'links.recent.menu.showInFolder' | transloco }}
+      </ui-menu-item>
+      <ui-menu-item icon="copy" (activated)="copyLink.emit()">
+        {{ 'links.recent.menu.copyLink' | transloco }}
+      </ui-menu-item>
+      <ui-menu-separator />
+      <ui-menu-item icon="close" (activated)="removeRequested.emit()">
+        {{ 'links.recent.menu.remove' | transloco }}
+      </ui-menu-item>
+    </ui-menu>
+  </ui-history-row>
+</ng-template>
+
+@if (viewport.compact()) {
+  <!-- Phone: the swipe frame is the list item (it holds "Remove" too); the row inside is not. -->
+  <div class="link-history-row__swipe" role="listitem">
+    <div
+      #actions
+      class="link-history-row__actions"
+      role="group"
+      [attr.aria-label]="link().title"
+      (focusin)="swipe.focusIn()"
+      (focusout)="swipe.focusOut($event)"
+    >
+      <ui-button
+        size="lg"
+        iconLeft="close"
+        [variant]="BUTTON_VARIANT.Danger"
+        [ariaLabel]="'links.recent.remove' | transloco: { title: link().title }"
+        (click)="removeFromSwipe()"
+      >
+        {{ 'links.recent.swipe.remove' | transloco }}
+      </ui-button>
+    </div>
+    <div
+      #surface
+      class="link-history-row__surface"
+      [class.link-history-row__surface--dragging]="swipe.dragging()"
+      [style.translate.px]="swipe.offset()"
+      (pointerdown)="swipe.pointerDown($event)"
+      (pointermove)="swipe.pointerMove($event)"
+      (pointerup)="swipe.pointerEnd()"
+      (pointercancel)="swipe.pointerEnd()"
+    >
+      <ng-container [ngTemplateOutlet]="entry" />
+    </div>
+  </div>
+} @else {
+  <ng-container [ngTemplateOutlet]="entry" />
+}

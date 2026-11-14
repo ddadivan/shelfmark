@@ -1,9 +1,14 @@
 @use 'ui' as *;
 
-// Fills the main column so an empty state can sit in the middle of the free space.
+// Fills the main column so an empty state can sit in the middle of the free space. On very wide
+// screens (4K and up at 100%) the feed stops at 150rem and is centred, title and toolbar with it,
+// so the grid never turns into a dozen tiny cards (#335).
 :host {
   display: flex;
   flex: 1;
+  inline-size: 100%;
+  max-inline-size: #{rem(2400px)};
+  margin-inline: auto;
   flex-direction: column;
   min-height: 0;
 }
@@ -14,29 +19,68 @@
 
   // Room for the breadcrumb trail above the title: the same in every view (with or without a
   // trail), so the title never moves between them. 20px = the 12px gap under the 24px trail
-  // line plus the 8px the trail keeps from the top edge of the main column.
+  // line plus the 8px the trail keeps from the top edge of the main column (phone: no top bar).
   padding-block-start: calc(var(--space-3) + var(--space-2));
+
+  // Desktop (Main.dc.html, from 64em since #316): a gap under the top bar, the 24px trail line, a
+  // gap, the title. The selection bar ("1 selected · Select all") sits in that room, so it is kept
+  // at rest too (#350, the author's value): the title never moves when a selection starts or ends.
+  @include desktop {
+    padding-block-start: calc(var(--space-8) + var(--space-8));
+  }
+
   flex: 1;
   flex-direction: column;
   min-height: 0;
+
+  // Mobile shell (below 64em): the selection bar needs a line of its own over the title. The page pushes the title
+  // (and the feed) down by the bar's room while a selection runs, with a short ease; there is no
+  // room to keep free at rest on a phone. Reduced motion: the change is instant.
+  @include compact {
+    transition: padding-block-start var(--duration-base) var(--ease-out);
+
+    &.library--selecting {
+      padding-block-start: calc(var(--space-3) + var(--space-2) + var(--space-6));
+    }
+
+    @include reduced-motion {
+      transition: none;
+    }
+  }
 }
 
 // The feed (or the empty state) under the fixed title, count and toolbar. From the tablet width
-// it is the one scroll area of the page; a phone scrolls the page itself.
+// it is the one scroll area of the page on desktop; the mobile shell scrolls the page itself.
 .library__scroll {
   display: flex;
   flex: 1;
   flex-direction: column;
 
-  @include tablet-up {
+  @include desktop {
     min-height: 0;
 
     // Room for the focus ring and a lifted card, which the clip of the scroll area would cut.
     padding: var(--space-1);
     margin: calc(var(--space-1) * -1);
+
+    // Down to the window edge, past the shell's 12px bottom gap (#352, see the app styles); the
+    // end padding stops the last row (or the bulk bar) on the sidebar card's bottom line.
+    margin-block-end: calc(var(--space-3) * -1);
+
+    // The scrollbar sits outside the content column, in the page margin (#352): the area grows
+    // to the right by the scrollbar's width, so the cards end on the header's right edge. The
+    // room is the main column's end padding (24px on every desktop width), which always holds
+    // the 12px bar plus the 4px focus-ring padding. Where the scrollbar takes no width (touch
+    // overlay scrollbars, Firefox's own) `--scrollbar-size` is 0 and nothing changes.
+    margin-inline-end: calc((var(--space-1) + var(--scrollbar-size)) * -1);
+    padding-block-end: var(--space-3);
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;
+
+    // Soft top and bottom edges (#352), under the bulk bar (z-index 3); the filters above the
+    // area stay clear.
+    @include scroll-fade(var(--bg), $bottom: false);
 
     // Focusable by script and by a click (so the keys scroll it), but not a tab stop; the cards
     // inside are the focus targets, so no ring on the area itself.
@@ -46,18 +90,18 @@
   }
 }
 
-// Empty and error states: centred in the space under the toolbar. With links the feed flows as usual.
-.library__scroll > ui-empty-state {
-  margin-block: auto;
-}
-
 .library__toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   margin-bottom: var(--space-4);
+
+  // Phone: the title and the one "View" button share a line; a long title wraps inside its block.
+  @include phone {
+    flex-wrap: nowrap;
+  }
 }
 
 .library__heading {
@@ -74,10 +118,19 @@
 }
 
 .library__title {
-  @include type(title);
+  // Main.dc.html: 40 / 44, 600, -0.03em (the display style).
+  @include type(display);
 
   margin: 0;
   overflow-wrap: anywhere;
+
+  // Mobile shell: the title of the view is large (MobileHome: 34 / 38).
+  @include compact {
+    @include type(display);
+
+    font-size: rem(34px);
+    line-height: rem(38px);
+  }
 }
 
 .library__count {
@@ -85,8 +138,18 @@
 
   // One line high even when empty (while the list loads).
   min-height: 1lh;
-  margin: var(--space-1) 0 0;
+  margin: calc(var(--space-1) + var(--space-1) / 2) 0 0;
   color: var(--text-muted);
+
+  @include compact {
+    margin-block-start: var(--space-1);
+    font-size: rem(13px);
+  }
+}
+
+.library__count-skeleton {
+  display: block;
+  inline-size: rem(120px);
 }
 
 .library__grid,
@@ -97,9 +160,16 @@
 }
 
 .library__grid {
+  // One fluid minimum card width (#335, #350): the number of columns grows with the window; a
+  // phone keeps one column (`min(100%, …)`). The minimum is wider above 1920px (120em), so the
+  // cards of a big screen are not smaller than at 1920 and fold without squeezing.
   display: grid;
-  gap: var(--space-4);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(256px)), 1fr));
+  gap: var(--density-feed-gap);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14.25rem), 1fr));
+
+  @media (width > 120em) {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.25rem), 1fr));
+  }
 
   // The list items hold the cards; stretch them to the row height.
   > li {
@@ -114,7 +184,7 @@
   > li {
     overflow-clip-margin: #{rem(48px)};
     content-visibility: auto;
-    contain-intrinsic-size: auto 0 auto #{rem(320px)};
+    contain-intrinsic-size: auto 0 auto #{rem(336px)};
   }
 }
 
@@ -126,15 +196,15 @@
 }
 
 .library__list {
-  // A new first page fades in with a slight rise; no motion under reduced motion. A CSS
-  // crossfade, not router view transitions: the page is reused between views and the data
-  // arrives after the navigation has finished, so a view transition would end too early.
-  animation: library-arrive var(--duration-base) var(--ease-out) both;
-  transition: opacity var(--duration-base) var(--ease-out);
+  // `--reveal`: the list replaces a skeleton, so it fades in with a slight rise. A view switch
+  // builds the list again without it: the old list stays fully visible until the swap, so nothing
+  // disappears and comes back. No motion under reduced motion.
+  &--reveal {
+    animation: library-arrive var(--duration-base) var(--ease-out) both;
 
-  @include reduced-motion {
-    animation: none;
-    transition: none;
+    @include reduced-motion {
+      animation: none;
+    }
   }
 }
 
@@ -148,82 +218,4 @@
     opacity: 1;
     transform: none;
   }
-}
-
-// The previous view's cards while the next one loads (stale-while-loading). The dimming is a
-// deliberate exception to "opacity only for disabled": the list is inert and about to be replaced.
-.library__list--stale {
-  pointer-events: none;
-  opacity: 0.6;
-}
-
-.library__rows {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.library__folders {
-  display: grid;
-  gap: var(--space-3);
-  padding: 0;
-  margin: 0 0 var(--space-6);
-  list-style: none;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, rem(224px)), 1fr));
-
-  // List view: one full-width row after the other, like the link rows.
-  &--rows {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-}
-
-// The same dimming as the stale cards (`library__list--stale`) while the next view loads.
-.library__folders--stale {
-  pointer-events: none;
-  opacity: 0.6;
-}
-
-.library__more {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  align-items: center;
-  margin-top: var(--space-6);
-}
-
-.library__more-error {
-  @include type(body);
-
-  margin: 0;
-  color: var(--text-muted);
-}
-
-.library__notice {
-  display: block;
-  margin-bottom: var(--space-4);
-}
-
-.library__filter {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  align-items: center;
-  margin-bottom: var(--space-4);
-}
-
-.library__controls {
-  display: flex;
-  gap: var(--space-2);
-  align-items: center;
-}
-
-.library__crumbs {
-  // Over the top padding of the main column (24px) and the room above the title: 8px from the
-  // top edge, a 24px line, then the 12px gap above the title. The same space in every view.
-  position: absolute;
-  inset-block-start: calc(var(--space-2) - var(--space-6));
-  inset-inline: 0;
-  display: block;
 }

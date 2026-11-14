@@ -18,6 +18,7 @@ import { LinksStore } from './links.store';
 import { TAG_OUTCOME } from './models/tag-outcome.const';
 import type { TagResult } from './models/tag-result.interface';
 import type { TagsState } from './models/tags-state.interface';
+import { SessionScope } from '../core/auth/session-scope.service';
 
 const initialState: TagsState = { loaded: false, loading: false, error: false };
 
@@ -345,6 +346,11 @@ export const TagsStore = signalStore(
   }),
   withHooks({
     onInit(store) {
+      // Resolved on use, so a call goes through the store as it is by then.
+      const injector = inject(Injector);
+      const scope = inject(SessionScope);
+      scope.onEnd(() => injector.get(TagsStore).reset());
+      scope.beforeEnd(() => injector.get(TagsStore).flushPending());
       // The page is going away: deletes still in their Undo window are sent (see `LinksStore`).
       inject(DOCUMENT).defaultView?.addEventListener('pagehide', () => {
         void store.flushPending();

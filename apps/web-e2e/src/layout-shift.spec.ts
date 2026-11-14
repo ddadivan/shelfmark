@@ -1,7 +1,8 @@
 import { type Page } from '@playwright/test';
+import { settled } from './support/settled';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
-import { openSidebar } from './support/sidebar';
+import { openSidebar, viewEntry } from './support/sidebar';
 
 // Mirrors MOCK_NAME.FolderReading (apps/web and libs/shared/contracts); the e2e project cannot
 // import from them.
@@ -52,7 +53,7 @@ test.describe('library view switch (mock API)', () => {
   }) => {
     await page.goto('/links');
     await expect(page.locator('app-link-card').first()).toBeVisible();
-    await page.waitForTimeout(500);
+    await settled(page);
     // Whatever moved while the first page and the sidebar loaded is not what is measured.
     await takeShifts(page);
 
@@ -65,15 +66,45 @@ test.describe('library view switch (mock API)', () => {
     ];
     for (const [row, title] of views) {
       await openSidebar(page);
-      await page.getByRole('treeitem', { name: new RegExp(`^${row}\\b`) }).click();
+      await (
+        row === READING
+          ? page.getByRole('treeitem', { name: new RegExp(`^${row}\\b`) })
+          : viewEntry(page, row)
+      ).click();
       await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
       await expect(page.locator('ui-skeleton')).toHaveCount(0);
       await expect(page.locator('app-link-card').first()).toBeVisible();
-      // Late shifts (fonts, the count) show up a few frames after the list.
-      await page.waitForTimeout(300);
+      // Late shifts (fonts, the count, the enter animations) are in once the page has settled.
+      await settled(page);
     }
 
     const moved = (await takeShifts(page)).filter((shift) => shift.inPage);
     expect(moved).toEqual([]);
+  });
+
+  test('keeps a gap under the top bar and the title in place with or without breadcrumbs', async ({
+    page,
+  }) => {
+    test.skip(
+      (page.viewportSize()?.width ?? 0) < 1024,
+      'the mobile shell (below 64em) has no top bar; its pages carry their own title',
+    );
+    const top = (selector: string) =>
+      page.locator(selector).evaluate((element) => element.getBoundingClientRect());
+
+    await page.goto('/links');
+    await expect(page.locator('app-link-card').first()).toBeVisible();
+    const pill = await top('app-header-search');
+    const titleAll = await top('.library__title');
+    await expect(page.locator('.library__crumbs')).toHaveCount(0);
+
+    await openSidebar(page);
+    await page.getByRole('treeitem', { name: new RegExp(`^${READING}\\b`) }).click();
+    await expect(page.getByRole('heading', { level: 1, name: READING })).toBeVisible();
+    const crumbs = await top('.library__crumbs');
+    const titleFolder = await top('.library__title');
+
+    expect(crumbs.top - pill.bottom).toBeGreaterThanOrEqual(16);
+    expect(titleFolder.top).toBeCloseTo(titleAll.top, 0);
   });
 });

@@ -1,0 +1,135 @@
+@use 'ui' as *;
+
+.landing-ba__section {
+  @include type(caption);
+
+  padding: var(--space-3) var(--space-2) var(--space-1);
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.landing-ba__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(6px);
+  padding: 0 var(--space-2);
+}
+
+.landing-ba__list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(2px);
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.landing-ba__item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-width: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+}
+
+.landing-ba__item-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.landing-ba__item-title {
+  @include type(label);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.landing-ba__item-note {
+  @include type(caption);
+
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// On desktop the after panel matches the bigger before board: larger text, rows and spacing;
+// `ui-chip` and `ui-favicon` grow through their scale properties.
+@include desktop {
+  .landing-ba__after {
+    gap: var(--space-6);
+  }
+
+  .landing-ba__tree {
+    gap: rem(4px);
+    width: rem(190px);
+  }
+
+  .landing-ba__row {
+    padding: rem(8px) var(--space-3);
+    font-size: rem(16px);
+    line-height: rem(22px);
+  }
+
+  .landing-ba__row--nested {
+    padding-inline-start: var(--space-8);
+  }
+
+  .landing-ba__section {
+    padding: var(--space-4) var(--space-3) var(--space-2);
+    font-size: rem(14px);
+    line-height: rem(20px);
+  }
+
+  .landing-ba__tags {
+    --ui-chip-scale: 1.2;
+
+    padding: 0 var(--space-3);
+  }
+
+  .landing-ba__list {
+    gap: rem(4px);
+  }
+
+  .landing-ba__item {
+    --ui-favicon-scale: 1.25;
+
+    gap: var(--space-4);
+    padding: var(--space-3);
+  }
+
+  .landing-ba__item-title {
+    font-size: rem(16px);
+    line-height: rem(22px);
+  }
+
+  .landing-ba__item-note {
+    font-size: rem(14px);
+    line-height: rem(20px);
+  }
+}
+
+// A new folder's links fade in and rise a little; the first frame has no entrance
+// (Angular only runs `animate.enter` for items added after the first render) and reduced
+// motion never moves the list.
+.landing-ba__item--enter {
+  animation: landing-ba-item-in var(--duration-base) var(--ease-out) both;
+}
+
+@keyframes landing-ba-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(rem(8px));
+  }
+}
+
+@include reduced-motion {
+  .landing-ba__item--enter {
+    animation: none;
+  }
+}

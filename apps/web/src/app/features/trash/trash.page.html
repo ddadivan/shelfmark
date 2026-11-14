@@ -1,0 +1,130 @@
+<div class="trash-page" [attr.aria-busy]="store.loading()">
+  @if (viewport.compact()) {
+  <div class="trash-page__top">
+    <ui-button
+      class="trash-page__back"
+      variant="ghost"
+      iconLeft="chevron-left"
+      [href]="libraryHref"
+      (linkClick)="goToLibrary($event)"
+    >
+      {{ 'library.phone.title' | transloco }}
+    </ui-button>
+    @if (store.total() > 0) {
+    <ui-button variant="ghost" (click)="actions.empty()">
+      {{ 'trash.emptyShort' | transloco }}
+    </ui-button>
+    }
+  </div>
+  }
+
+  <header class="trash-page__head">
+    <div class="trash-page__heading">
+      <h1 class="trash-page__title">{{ 'trash.title' | transloco }}</h1>
+      <p class="trash-page__count">
+        @if (store.loaded()) { @if (store.total() > 0) { {{ pluralKey('trash.count', store.total())
+        | transloco: { count: store.total(), days: settings.retentionDays() } }} } @else { {{
+        'trash.nothing' | transloco }} } }
+      </p>
+    </div>
+    @if (!viewport.compact() && store.total() > 0) {
+    <ui-button iconLeft="trash" (click)="actions.empty()">
+      {{ 'trash.emptyAction' | transloco }}
+    </ui-button>
+    }
+  </header>
+
+  @if (!store.loaded()) { @if (store.error()) {
+  <ui-empty-state
+    layout="page"
+    illustration="offline"
+    [heading]="'trash.loadFailed.title' | transloco"
+    [text]="'trash.loadFailed.text' | transloco"
+  >
+    <ui-button (click)="retry()">{{ 'trash.loadFailed.retry' | transloco }}</ui-button>
+  </ui-empty-state>
+  } @else {
+  <div class="trash-page__skeleton" [attr.aria-label]="'trash.loading' | transloco">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="SKELETON_COUNT" />
+  </div>
+  } } @else if (store.total() === 0) {
+  <ui-empty-state
+    layout="page"
+    illustration="empty-trash"
+    [heading]="'trash.emptyState.title' | transloco"
+    [text]="'trash.emptyState.text' | transloco: { days: settings.retentionDays() }"
+  />
+  } @else {
+  <div class="trash-page__tools">
+    @if (selecting()) {
+    <ui-checkbox
+      class="trash-page__all"
+      [label]="'trash.selectAll' | transloco"
+      [checked]="allVisibleSelected()"
+      [indeterminate]="someSelected()"
+      (checkedChange)="toggleAll($event)"
+    />
+    }
+    <ui-segmented-control
+      class="trash-page__filter"
+      [ariaLabel]="'trash.filter.label' | transloco"
+      [options]="filterOptions()"
+      [value]="filter()"
+      (valueChange)="setFilter($event)"
+    />
+  </div>
+
+  @if (visible().length === 0) {
+  <ui-empty-state
+    layout="page"
+    illustration="empty-filter"
+    [heading]="'trash.filter.emptyTitle' | transloco"
+    [text]="'trash.filter.emptyText' | transloco"
+  >
+    <ui-button (click)="setFilter(TRASH_FILTER.All)">
+      {{ 'trash.filter.showAll' | transloco }}
+    </ui-button>
+  </ui-empty-state>
+  } @else {
+  <ui-history-group [title]="'trash.group' | transloco">
+    @for (item of visible(); track trashKey(item)) {
+    <app-trash-row
+      [item]="item"
+      [now]="now()"
+      [selecting]="selecting()"
+      [selected]="isSelected(trashKey(item))"
+      (selectedChange)="setSelected(trashKey(item), $event)"
+      (selectionStarted)="setSelected(trashKey(item), true)"
+      (restoreRequested)="actions.restore([item])"
+      (deleteRequested)="actions.deleteForever([item])"
+    />
+    }
+  </ui-history-group>
+  }
+
+  <p class="trash-page__note">
+    {{ 'trash.footer' | transloco: { days: settings.retentionDays() } }}
+  </p>
+  @if (viewport.compact()) {
+  <p class="trash-page__note">{{ 'trash.swipeHint' | transloco }}</p>
+  } @if (selectedCount() > 0) {
+  <div class="trash-page__bar" role="toolbar" [attr.aria-label]="'trash.bar.label' | transloco">
+    <span class="trash-page__bar-count" role="status">
+      {{ pluralKey('trash.selected', selectedCount()) | transloco: { count: selectedCount() } }}
+    </span>
+    <ui-button variant="ghost" iconLeft="undo" (click)="restoreSelected()">
+      {{ 'trash.bar.restore' | transloco }}
+    </ui-button>
+    <ui-button variant="ghost" iconLeft="trash" (click)="deleteSelected()">
+      {{ 'trash.bar.deleteForever' | transloco }}
+    </ui-button>
+    <ui-button
+      variant="ghost"
+      iconOnly
+      iconLeft="close"
+      [ariaLabel]="'trash.bar.clear' | transloco"
+      (click)="clearSelection()"
+    />
+  </div>
+  } }
+</div>

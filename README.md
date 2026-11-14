@@ -6,13 +6,13 @@ Shelfmark keeps every link you save in one place. Paste a URL, get a preview, or
 
 A _shelfmark_ is the mark that shows a book's place on a library shelf: shelf + mark, a nod to bookmark.
 
-|                               |                                                                                             |
-| ----------------------------- | ------------------------------------------------------------------------------------------- |
-| App                           | [shelfmark-app.vercel.app](https://shelfmark-app.vercel.app)                                |
-| Component library (Storybook) | [shelfmark-ui.vercel.app](https://shelfmark-ui.vercel.app)                                  |
-| Project document              | [`docs/PROJECT.md`](docs/PROJECT.md) — scope, stories, stack, security, data model, process |
-| Design system                 | [`docs/design/`](docs/design/README.md)                                                     |
-| Decision log                  | [`docs/adr/`](docs/adr/README.md)                                                           |
+|                               |                                                                                                                         |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| App                           | [shelfmark-app.vercel.app](https://shelfmark-app.vercel.app)                                                            |
+| Component library (Storybook) | [shelfmark-ui.vercel.app](https://shelfmark-ui.vercel.app)                                                              |
+| Project document              | [`docs/PROJECT.md`](docs/PROJECT.md) — scope, stories, stack, security, data model, process                             |
+| Design system                 | [`docs/design/`](docs/design/README.md) (2027 Refresh); stage 1 design in [`docs/design-v1/`](docs/design-v1/README.md) |
+| Decision log                  | [`docs/adr/`](docs/adr/README.md)                                                                                       |
 
 > Status: stage 1 is in development. Screenshots and a demo video will be added when the main screens ship.
 

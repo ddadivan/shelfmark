@@ -1,20 +1,46 @@
 <header class="landing-header">
   <ui-logo class="landing-header__logo" [wordmark]="'landing.header.brand' | transloco" />
-  <nav class="landing-header__nav" [attr.aria-label]="'landing.header.navLabel' | transloco">
-    <a
-      class="landing-header__link"
-      [attr.href]="LANDING_LINKS.HowItsBuilt"
-      (click)="onHowItsBuilt($event)"
-      >{{ 'landing.header.howItsBuilt' | transloco }}</a
-    >
-    <a
-      class="landing-header__link"
-      [attr.href]="LANDING_LINKS.Repository"
-      target="_blank"
-      rel="noopener noreferrer"
-      >{{ 'landing.header.github' | transloco
-      }}<span class="landing-header__hint"> ({{ 'landing.newTab' | transloco }})</span></a
-    >
-    <ui-button [href]="LANDING_LINKS.SignIn">{{ 'landing.header.signIn' | transloco }}</ui-button>
-  </nav>
+  @if (!phone()) {
+    <nav class="landing-header__nav" [attr.aria-label]="'landing.header.navLabel' | transloco">
+      <ui-button
+        class="landing-header__link"
+        [variant]="BUTTON_VARIANT.Ghost"
+        [size]="BUTTON_SIZE.Sm"
+        [href]="LANDING_LINKS.HowItWorks"
+        (linkClick)="onHowItWorks($event)"
+        >{{ 'landing.header.howItWorks' | transloco }}</ui-button
+      >
+      <ui-button
+        class="landing-header__link"
+        [variant]="BUTTON_VARIANT.Ghost"
+        [size]="BUTTON_SIZE.Sm"
+        [href]="LANDING_LINKS.Privacy"
+        [appAppLink]="LANDING_LINKS.Privacy"
+        [appAppLinkPreload]="false"
+        >{{ 'landing.header.privacy' | transloco }}</ui-button
+      >
+    </nav>
+  }
+  <div class="landing-header__actions">
+    @if (signedIn()) {
+      <ui-button [href]="LANDING_LINKS.Shelf" [appAppLink]="LANDING_LINKS.Shelf">{{
+        'landing.backToShelf' | transloco
+      }}</ui-button>
+    } @else {
+      <ui-button
+        [variant]="BUTTON_VARIANT.Ghost"
+        [href]="LANDING_LINKS.SignIn"
+        [appAppLink]="LANDING_LINKS.SignIn"
+        >{{ 'landing.header.signIn' | transloco }}</ui-button
+      >
+      @if (!phone()) {
+        <ui-button
+          [variant]="BUTTON_VARIANT.Primary"
+          [href]="LANDING_LINKS.SignIn"
+          [appAppLink]="LANDING_LINKS.SignIn"
+          >{{ 'landing.header.getStarted' | transloco }}</ui-button
+        >
+      }
+    }
+  </div>
 </header>

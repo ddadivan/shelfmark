@@ -2,6 +2,9 @@ import type { Observable } from 'rxjs';
 import type {
   CaptureLinkImagesResponse,
   CreateLinkRequest,
+  CreateLinksBatchRequest,
+  CreateLinksBatchResponse,
+  DeleteLinksBatchResponse,
   GetLinkResponse,
   LinkPreviewResponse,
   LinkResponse,
@@ -11,6 +14,8 @@ import type {
   RecentLinksQuery,
   RecentLinksResponse,
   UpdateLinkRequest,
+  UpdateLinksBatchRequest,
+  UpdateLinksBatchResponse,
 } from '@shelfmark/contracts';
 
 /**
@@ -26,6 +31,10 @@ export interface LinksApi {
   list(query?: ListLinksQuery): Observable<ListLinksResponse>;
   /** `GET /api/links/recent`: links by `lastOpenedAt` descending. */
   recent(query?: RecentLinksQuery): Observable<RecentLinksResponse>;
+  /** `DELETE /api/links/recent/:id`: removes one link from the history (the link stays saved). */
+  removeRecent(id: string): Observable<void>;
+  /** `DELETE /api/links/recent`: clears the whole history. */
+  clearRecent(): Observable<void>;
   /** `GET /api/links/:id`: one link (an "open saved" target that is not in the feed). */
   get(id: string): Observable<GetLinkResponse>;
   /** `PATCH /api/links/:id`: the updated link. */
@@ -39,4 +48,13 @@ export interface LinksApi {
    * (its image paths carry the pending marker). Answers with the link as it is afterwards.
    */
   captureImages(id: string): Observable<CaptureLinkImagesResponse>;
+  /**
+   * `POST /api/links/batch`: saves several links in one request (paste many). Answers the saved
+   * links in request order (created or replayed by key) and the skipped items.
+   */
+  createBatch(request: CreateLinksBatchRequest): Observable<CreateLinksBatchResponse>;
+  /** `POST /api/links/batch/delete`: moves several of the user's links to Trash (bulk delete). */
+  removeBatch(ids: readonly string[]): Observable<DeleteLinksBatchResponse>;
+  /** `POST /api/links/batch/update`: one change (move, tags, favorite) for several links. */
+  updateBatch(request: UpdateLinksBatchRequest): Observable<UpdateLinksBatchResponse>;
 }

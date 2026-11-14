@@ -1,12 +1,36 @@
 import { computed, inject, Injector } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import { removeAllEntities, setAllEntities, withEntities } from '@ngrx/signals/entities';
-import { FOLDER_LIMIT, type FolderDeleteMode, type FolderResponse } from '@shelfmark/contracts';
+import {
+  FOLDER_LIMIT,
+  type FolderColour,
+  type FolderDeleteMode,
+  type FolderEmoji,
+  type FolderIcon,
+  type FolderResponse,
+  type HexColour,
+} from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { FOLDERS_API } from '../features/links/models/folders-api.const';
-import { buildFolderTree, descendantIds, pathTo } from './folder-tree';
+import {
+  buildFolderTree,
+  descendantIds,
+  endPosition,
+  byName,
+  pathTo,
+  reorderedSiblings,
+} from './folder-tree';
 import { LinksStore } from './links.store';
+import { PinsStore } from './pins.store';
 import type { FoldersState } from './models/folders-state.interface';
+import { SessionScope } from '../core/auth/session-scope.service';
 
 const initialState: FoldersState = {
   counts: { all: 0, unsorted: 0, favorites: 0 },
@@ -15,14 +39,10 @@ const initialState: FoldersState = {
   error: false,
 };
 
-function byName(folders: readonly FolderResponse[]): FolderResponse[] {
-  return [...folders].sort((a, b) => a.name.localeCompare(b.name));
-}
-
 /**
  * The user's folders as a flat list (the API shape) with the counts of the fixed sidebar rows,
- * cached for the whole app. Create waits for the server; rename and move are optimistic and roll
- * back on failure; remove updates the folder list and the loaded links. `reset()` (sign-out)
+ * cached for the whole app. Create waits for the server; rename, move and reorder are optimistic and
+ * roll back on failure; remove updates the folder list and the loaded links. `reset()` (sign-out)
  * forgets everything and drops responses still in flight.
  */
 export const FoldersStore = signalStore(
@@ -30,7 +50,7 @@ export const FoldersStore = signalStore(
   withEntities<FolderResponse>(),
   withState(initialState),
   withComputed(({ entities }) => ({
-    /** The nested tree, siblings in list order (by name). */
+    /** The nested tree, siblings in list order (manual position, then name). */
     tree: computed(() => buildFolderTree(entities())),
     count: computed(() => entities().length),
     /** The per-user folder limit is reached. */
@@ -116,6 +136,20 @@ export const FoldersStore = signalStore(
       );
     }
 
+    function setPositions(positions: ReadonlyMap<string, number>): void {
+      patchState(
+        store,
+        setAllEntities(
+          byName(
+            store.entities().map((folder) => {
+              const position = positions.get(folder.id);
+              return position === undefined ? folder : { ...folder, position };
+            }),
+          ),
+        ),
+      );
+    }
+
     return {
       /** Loads the list once; later calls reuse the first request. A failure can be retried. */
       load(): Promise<void> {
@@ -191,6 +225,47 @@ export const FoldersStore = signalStore(
       },
 
       /**
+       * Sets colour and / or icon at once; resolves false (and puts the old style back) when the
+       * request fails.
+       */
+      async setStyle(
+        id: string,
+        style: { colour?: FolderColour | HexColour; icon?: FolderIcon | FolderEmoji },
+      ): Promise<boolean> {
+        const previous = store.entityMap()[id];
+        if (!previous) {
+          return false;
+        }
+        const token = begin();
+        const changes: Partial<FolderResponse> = {
+          ...(style.colour !== undefined && { colour: style.colour }),
+          ...(style.icon !== undefined && { icon: style.icon }),
+        };
+        replace(id, changes);
+        try {
+          const saved = await firstValueFrom(api().update(id, style));
+          if (token === epoch) {
+            replace(id, { updatedAt: saved.updatedAt });
+          }
+          return true;
+        } catch {
+          // Only what is still the optimistic value goes back: a later edit must not be undone.
+          if (token === epoch) {
+            const current = store.entityMap()[id];
+            replace(id, {
+              ...(style.colour !== undefined &&
+                current?.colour === style.colour && { colour: previous.colour }),
+              ...(style.icon !== undefined &&
+                current?.icon === style.icon && { icon: previous.icon }),
+            });
+          }
+          return false;
+        } finally {
+          finish(token);
+        }
+      },
+
+      /**
        * Moves at once (`null` = top level); resolves false (and moves it back) when the request
        * fails. Moving into itself or a descendant is refused without a request.
        */
@@ -204,17 +279,67 @@ export const FoldersStore = signalStore(
           return false;
         }
         const token = begin();
-        replace(id, { parentId });
+        // A move goes to the end of the new parent (the API does the same).
+        const position =
+          parentId === previous.parentId
+            ? previous.position
+            : endPosition(store.entities(), parentId, id);
+        replace(id, { parentId, position });
         try {
           const saved = await firstValueFrom(api().update(id, { parentId }));
           if (token === epoch) {
-            replace(id, { updatedAt: saved.updatedAt });
+            replace(id, { updatedAt: saved.updatedAt, position: saved.position });
           }
           return true;
         } catch {
           // Only while the parent is still the optimistic one: a later move must not be undone.
           if (token === epoch && store.entityMap()[id]?.parentId === parentId) {
-            replace(id, { parentId: previous.parentId });
+            replace(id, { parentId: previous.parentId, position: previous.position });
+          }
+          return false;
+        } finally {
+          finish(token);
+        }
+      },
+
+      /** The folders that share the parent of `id` (itself included), in order. */
+      siblingsOf(id: string): FolderResponse[] {
+        const folder = store.entityMap()[id];
+        return folder ? store.entities().filter((other) => other.parentId === folder.parentId) : [];
+      },
+
+      /**
+       * Moves the folder to `toIndex` among its siblings at once (never to another parent);
+       * resolves false (and puts the order back) when the request fails.
+       */
+      async reorder(id: string, toIndex: number): Promise<boolean> {
+        const folder = store.entityMap()[id];
+        if (!folder) {
+          return false;
+        }
+        const siblings = store.entities().filter((other) => other.parentId === folder.parentId);
+        const from = siblings.findIndex((other) => other.id === id);
+        const to = Math.max(0, Math.min(toIndex, siblings.length - 1));
+        if (from === to) {
+          return true;
+        }
+        const next = reorderedSiblings(siblings, from, to);
+        const before = new Map(siblings.map((other) => [other.id, other.position]));
+        const wanted = new Map(next.map((other, position) => [other.id, position]));
+        const token = begin();
+        setPositions(wanted);
+        try {
+          await firstValueFrom(
+            api().reorder({ parentId: folder.parentId, ids: next.map((other) => other.id) }),
+          );
+          return true;
+        } catch {
+          // Only while the order is still the optimistic one: a later change must not be undone.
+          if (
+            token === epoch &&
+            [...wanted].every(([key, position]) => store.entityMap()[key]?.position === position)
+          ) {
+            setPositions(before);
           }
           return false;
         } finally {
@@ -257,6 +382,7 @@ export const FoldersStore = signalStore(
             setAllEntities(store.entities().filter((folder) => !doomed.has(folder.id))),
           );
           injector.get(LinksStore).applyFolderRemoval([...doomed], mode);
+          injector.get(PinsStore).dropFolders([...doomed]);
           finish(token);
           void fetchAll();
         }
@@ -274,5 +400,12 @@ export const FoldersStore = signalStore(
         patchState(store, initialState, removeAllEntities());
       },
     };
+  }),
+  withHooks({
+    onInit() {
+      // Resolved on use, so a call goes through the store as it is by then.
+      const injector = inject(Injector);
+      inject(SessionScope).onEnd(() => injector.get(FoldersStore).reset());
+    },
   }),
 );

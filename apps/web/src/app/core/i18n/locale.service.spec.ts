@@ -1,0 +1,237 @@
+import { DOCUMENT } from '@angular/common';
+import { TestBed } from '@angular/core/testing';
+import { provideTransloco, TranslocoService } from '@jsverse/transloco';
+import {
+  DATE_FORMAT,
+  INTERFACE_LANGUAGE,
+  LANGUAGE_SETTINGS_DEFAULT,
+  TIME_FORMAT,
+  WEEK_START,
+  type LanguageSettings,
+} from '@shelfmark/contracts';
+import { activeLang, setActiveLang } from './active-lang';
+import { AppTranslocoLoader } from './app-transloco.loader';
+import { LocaleService } from './locale.service';
+import { resetRelativeTimeFormats } from './relative-time';
+import { LANGUAGE_STORAGE_KEY } from './models/language-storage-key.const';
+import { translocoConfig } from './transloco.config';
+
+const DATE = new Date(2026, 10, 10, 15, 7);
+
+function stubLanguages(languages: readonly string[]): void {
+  vi.spyOn(navigator, 'languages', 'get').mockReturnValue(languages);
+}
+
+function setup(stored?: unknown): { locale: LocaleService; transloco: TranslocoService } {
+  if (stored !== undefined) {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, JSON.stringify(stored));
+  }
+  TestBed.configureTestingModule({
+    providers: [provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader })],
+  });
+  return { locale: TestBed.inject(LocaleService), transloco: TestBed.inject(TranslocoService) };
+}
+
+const settings = (change: Partial<LanguageSettings>): LanguageSettings => ({
+  ...LANGUAGE_SETTINGS_DEFAULT,
+  ...change,
+});
+
+describe('LocaleService', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    stubLanguages(['en-US', 'en']);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    setActiveLang('en');
+    localStorage.clear();
+  });
+
+  it('starts in English with the defaults when nothing is stored', async () => {
+    const { locale, transloco } = setup();
+    await locale.init();
+    expect(locale.settings()).toEqual(LANGUAGE_SETTINGS_DEFAULT);
+    expect(locale.lang()).toBe('en');
+    expect(transloco.getActiveLang()).toBe('en');
+    TestBed.tick();
+    expect(TestBed.inject(DOCUMENT).documentElement.lang).toBe('en');
+    expect(locale.locale()).toBe('en-US');
+  });
+
+  it('builds the relative-time formatter in a task of its own before the first render (#359)', async () => {
+    // Formatters are cached per locale for the whole module: start from an empty cache, so the
+    // build is seen on every run (and with --repeat).
+    resetRelativeTimeFormats();
+    stubLanguages(['it-CH', 'en']);
+    const build = vi.spyOn(Intl, 'RelativeTimeFormat');
+    const { locale } = setup();
+
+    const done = locale.init();
+    // Not built in the synchronous part of init(): it waits for a task of its own.
+    expect(build).not.toHaveBeenCalledWith('it-CH', { numeric: 'auto' });
+    await done;
+    // Timers with the same delay run in order, so this one runs after the warm-up task.
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(build).toHaveBeenCalledWith('it-CH', { numeric: 'auto' });
+  });
+
+  it('matches the browser language before the first render', async () => {
+    stubLanguages(['de-DE', 'en']);
+    const { locale, transloco } = setup();
+    await locale.init();
+    expect(locale.lang()).toBe('de');
+    expect(locale.locale()).toBe('de-DE');
+    expect(transloco.translate('landing.hero.line1')).toBe('Link einfügen.');
+    expect(locale.browserLang()).toBe('de');
+  });
+
+  it('uses the stored choice for the first paint', async () => {
+    const { locale } = setup(settings({ language: INTERFACE_LANGUAGE.It }));
+    await locale.init();
+    expect(locale.lang()).toBe('it');
+    expect(locale.hasStoredLanguage()).toBe(true);
+  });
+
+  it('ignores a broken stored value', async () => {
+    const { locale } = setup({ language: 'uk' });
+    await locale.init();
+    expect(locale.settings()).toEqual(LANGUAGE_SETTINGS_DEFAULT);
+    expect(locale.hasStoredLanguage()).toBe(false);
+  });
+
+  it('switches everything at once, without a reload, and remembers it', async () => {
+    const { locale, transloco } = setup();
+    await locale.init();
+    locale.apply(settings({ language: INTERFACE_LANGUAGE.Fr }));
+    TestBed.tick();
+    await locale.settled();
+    expect(activeLang()).toBe('fr');
+    expect(transloco.getActiveLang()).toBe('fr');
+    expect(transloco.translate('landing.hero.line1')).toBe('Collez un lien.');
+    TestBed.tick();
+    expect(TestBed.inject(DOCUMENT).documentElement.lang).toBe('fr');
+    expect(JSON.parse(localStorage.getItem(LANGUAGE_STORAGE_KEY) ?? 'null')).toMatchObject({
+      language: 'fr',
+    });
+  });
+
+  it('follows another tab', async () => {
+    const { locale } = setup();
+    await locale.init();
+    localStorage.setItem(
+      LANGUAGE_STORAGE_KEY,
+      JSON.stringify(settings({ language: INTERFACE_LANGUAGE.Es })),
+    );
+    window.dispatchEvent(new StorageEvent('storage', { key: LANGUAGE_STORAGE_KEY }));
+    expect(locale.settings().language).toBe('es');
+  });
+
+  it('follows a change of the browser languages', async () => {
+    const { locale } = setup();
+    await locale.init();
+    stubLanguages(['pt-BR']);
+    window.dispatchEvent(new Event('languagechange'));
+    expect(locale.wantedLang()).toBe('pt');
+  });
+
+  it('formats dates in the chosen format', async () => {
+    const { locale } = setup();
+    await locale.init();
+    expect(locale.formatDate(DATE)).toBe('Nov 10, 2026');
+    expect(locale.formatDate(DATE, DATE_FORMAT.Medium)).toBe('10 Nov 2026');
+    expect(locale.formatDate(DATE, DATE_FORMAT.Dmy)).toBe('10.11.2026');
+    expect(locale.formatDate(DATE, DATE_FORMAT.Mdy)).toBe('11/10/2026');
+    expect(locale.formatDate(DATE.toISOString(), DATE_FORMAT.Iso)).toBe('2026-11-10');
+    locale.apply(settings({ dateFormat: DATE_FORMAT.Iso }));
+    expect(locale.formatDate(DATE.getTime())).toBe('2026-11-10');
+  });
+
+  it('formats dates and numbers in the active language', async () => {
+    stubLanguages(['de-DE']);
+    const { locale } = setup();
+    await locale.init();
+    expect(locale.formatDate(DATE)).toBe('10.11.2026');
+    expect(locale.formatDate(DATE, DATE_FORMAT.Medium)).toBe('10 Nov. 2026');
+    expect(locale.formatWeekday(DATE, 'long')).toBe('Dienstag');
+    expect(locale.formatNumber(1234.5)).toBe('1.234,5');
+    expect(locale.formatRelative(new Date(Date.now() - 86_400_000).toISOString(), Date.now())).toBe(
+      'gestern',
+    );
+  });
+
+  it('formats the saved date of a card: relative, then a calendar date', async () => {
+    const { locale } = setup();
+    await locale.init();
+    const now = new Date('2026-11-10T12:00:00Z').getTime();
+    const ago = (days: number): string => new Date(now - days * 86_400_000).toISOString();
+    expect(locale.formatSaved(ago(2), now)).toBe('2 days ago');
+    expect(locale.formatSaved(ago(9), now)).toBe('Last week');
+    expect(locale.formatSaved(ago(14), now)).toBe('Oct 27');
+    expect(locale.formatSaved('2025-03-04T10:00:00Z', now)).toBe('Mar 4, 2025');
+    locale.apply(settings({ dateFormat: DATE_FORMAT.Iso }));
+    expect(locale.formatSaved(ago(14), now)).toBe('2026-10-27');
+  });
+
+  it('follows the clock setting', async () => {
+    const { locale } = setup();
+    await locale.init();
+    expect(locale.formatTime(DATE)).toBe('3:07 PM');
+    locale.apply(settings({ timeFormat: TIME_FORMAT.H24 }));
+    expect(locale.formatTime(DATE)).toBe('15:07');
+    locale.apply(settings({ timeFormat: TIME_FORMAT.H12 }));
+    expect(locale.dateTimeFormat({ hour: 'numeric' }).resolvedOptions().hourCycle).toBe('h12');
+    expect(locale.dateTimeFormat({ day: 'numeric' }).resolvedOptions().hourCycle).toBeUndefined();
+  });
+
+  it('follows the week start setting', async () => {
+    const { locale } = setup();
+    await locale.init();
+    expect(locale.firstDay()).toBe(7);
+    locale.apply(settings({ weekStart: WEEK_START.Monday }));
+    expect(locale.firstDay()).toBe(1);
+  });
+
+  it('reads a copy stored before spell-check was retired and stores it without the key (#326)', async () => {
+    const { locale } = setup({
+      ...settings({ language: INTERFACE_LANGUAGE.It }),
+      spellcheck: false,
+    });
+    await locale.init();
+    expect(locale.lang()).toBe('it');
+    expect(locale.settings()).toEqual(settings({ language: INTERFACE_LANGUAGE.It }));
+    expect(locale.hasStoredLanguage()).toBe(true);
+    locale.apply(locale.settings());
+    expect(JSON.parse(localStorage.getItem(LANGUAGE_STORAGE_KEY) ?? 'null')).not.toHaveProperty(
+      'spellcheck',
+    );
+  });
+
+  it('keeps English when a language file fails to load', async () => {
+    const { locale } = setup();
+    vi.spyOn(AppTranslocoLoader.prototype, 'getTranslation').mockImplementation((lang) =>
+      lang === 'de' ? Promise.reject(new Error('offline')) : Promise.resolve({}),
+    );
+    await locale.init();
+    locale.apply(settings({ language: INTERFACE_LANGUAGE.De }));
+    await locale.settled();
+    expect(activeLang()).toBe('en');
+  });
+
+  it('keeps working without storage', async () => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('blocked');
+    });
+    const { locale } = setup();
+    await locale.init();
+    expect(() => locale.apply(settings({ weekStart: WEEK_START.Monday }))).not.toThrow();
+    expect(locale.settings().weekStart).toBe(WEEK_START.Monday);
+  });
+
+  it('initialises once', async () => {
+    const { locale } = setup();
+    await locale.init();
+    await expect(locale.init()).resolves.toBeUndefined();
+  });
+});

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Settings › Privacy and data</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 1300px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; box-sizing: border-box; align-items: flex-start;">
+
+<nav aria-label="Settings" style="flex: 1 1 220px; max-width: 248px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+<a href="#" class="sm-btn sm-btn--ghost sm-btn--sm" style="text-decoration: none; align-self: flex-start; margin-bottom: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 6l-6 6 6 6"/></svg>Back to links</a>
+<div class="sm-tree__section" style="padding-top: 4px;">Settings</div>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Account</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Appearance</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Library</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Notifications and reminders</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Language</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Keyboard shortcuts</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Import and export</a>
+<a href="#" class="sm-tree__row is-active" aria-current="page" style="text-decoration: none;">Privacy and data</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Your feedback</a>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; padding: 8px 16px 40px;">
+<div style="flex: 1 1 520px; max-width: 720px; display: flex; flex-direction: column; gap: 18px;">
+<div><h1 style="margin: 0; font-size: 34px; line-height: 40px; font-weight: 600;">Privacy and data</h1><p style="margin: 4px 0 0; font-size: 14px; color: var(--text-muted);">What we keep, what you share, and how to take it all with you.</p></div>
+<section class="sm-panel sm-settings" aria-labelledby="v1">
+<h2 id="v1" class="sm-settings__title">Your data</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Download all your data</div><div class="sm-setting__desc">A ZIP with JSON, HTML bookmarks and CSV</div></div><button class="sm-btn sm-btn--secondary sm-btn--sm">Request download</button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Privacy policy</div><div class="sm-setting__desc">What we store and why, in plain words</div></div><button class="sm-btn sm-btn--ghost sm-btn--sm">Read</button></div>
+
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="v2">
+<h2 id="v2" class="sm-settings__title">Usage data</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Anonymous usage statistics</div><div class="sm-setting__desc">Which features are used, never which links. Helps us decide what to build.</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Anonymous usage statistics"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Crash reports</div><div class="sm-setting__desc">Sent when something breaks, without your links or notes</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Crash reports"></button></div>
+
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="v3">
+<h2 id="v3" class="sm-settings__title">Public links</h2>
+<div class="sm-setting"><div style="display: flex; gap: 12px; align-items: center;"><span class="sm-setting__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.7 3.5 5.5 3.5 8.5s-1 5.8-3.5 8.5c-2.5-2.7-3.5-5.5-3.5-8.5s1-5.8 3.5-8.5z"/></svg></span><div><div class="sm-setting__title">Recipes</div><div class="sm-setting__desc">Public link · 15 links · 41 views</div></div></div><button class="sm-btn sm-btn--ghost sm-btn--sm">Turn off</button></div>
+<div class="sm-setting"><div style="display: flex; gap: 12px; align-items: center;"><span class="sm-setting__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 19a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M18 19a6 6 0 0 0-2.5-4.9"/></svg></span><div><div class="sm-setting__title">Weekend trips</div><div class="sm-setting__desc">Shared with Anna K. · can add links</div></div></div><button class="sm-btn sm-btn--ghost sm-btn--sm">Manage</button></div>
+<div style="display: flex; justify-content: flex-end; padding-top: 10px;"><button class="sm-btn sm-btn--secondary sm-btn--sm">Turn off all public links</button></div>
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="v4">
+<h2 id="v4" class="sm-settings__title">Link previews</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Load previews through Shelfmark</div><div class="sm-setting__desc">Sites don’t see your IP address when previews load</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Proxy previews"></button></div>
+
+</section>
+
+</div>
+<aside style="flex: 1 1 300px; max-width: 360px; padding-top: 64px;"><p class="a-note" style="font-size: 13px; line-height: 20px;">Deleting the account lives in Account, so it is never one click away from a toggle.</p></aside>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

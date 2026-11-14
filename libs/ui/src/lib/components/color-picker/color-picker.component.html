@@ -1,0 +1,136 @@
+<button
+  type="button"
+  class="ui-color-picker__swatch"
+  [class.ui-color-picker__swatch--own]="value() !== ''"
+  [class.ui-color-picker__swatch--selected]="selected()"
+  [disabled]="disabled()"
+  [attr.aria-label]="label()"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="panelId"
+  (click)="toggle()"
+  (focusout)="onFocusOut($event)"
+>
+  <span
+    class="ui-color-picker__paint"
+    aria-hidden="true"
+    [style.background-color]="value() || null"
+  ></span>
+  @if (value() === '') {
+    <span class="ui-color-picker__plus" aria-hidden="true">
+      <ui-icon name="add" [size]="ICON_SIZE.Sm" />
+    </span>
+  }
+</button>
+@if (open()) {
+  <div
+    class="ui-color-picker__disclose"
+    animate.enter="ui-color-picker__disclose--enter"
+    animate.leave="ui-color-picker__disclose--leave"
+  >
+    <div
+      class="ui-color-picker__panel"
+      role="group"
+      [id]="panelId"
+      [attr.aria-label]="label()"
+      (keydown.escape)="close($event)"
+      (focusout)="onFocusOut($event)"
+    >
+      <div
+        class="ui-color-picker__area"
+        role="group"
+        [attr.aria-label]="pickerLabel()"
+        [style.--ui-cp-hue]="hueColour()"
+        [style.--ui-cp-x]="saturation() + '%'"
+        [style.--ui-cp-y]="100 - brightness() + '%'"
+        [style.--ui-cp-colour]="shown()"
+        (pointerdown)="areaDown($event)"
+        (pointermove)="areaMove($event)"
+        (pointerup)="areaUp($event)"
+        (pointercancel)="areaUp($event)"
+      >
+        <input
+          type="range"
+          class="ui-color-picker__hidden-slider"
+          min="0"
+          max="100"
+          step="1"
+          [attr.aria-label]="brightnessLabel()"
+          [attr.aria-valuetext]="brightness() + '%'"
+          [value]="brightness()"
+          [disabled]="disabled()"
+          (input)="onBrightness($event)"
+          (keydown.enter)="sliderEnter($event)"
+        />
+        <input
+          type="range"
+          class="ui-color-picker__hidden-slider"
+          min="0"
+          max="100"
+          step="1"
+          [attr.aria-label]="saturationLabel()"
+          [attr.aria-valuetext]="saturation() + '%'"
+          [value]="saturation()"
+          [disabled]="disabled()"
+          (input)="onSaturation($event)"
+          (keydown.enter)="sliderEnter($event)"
+        />
+        <span class="ui-color-picker__handle" aria-hidden="true"></span>
+      </div>
+      <input
+        type="range"
+        class="ui-color-picker__hue"
+        min="0"
+        max="359"
+        step="1"
+        [attr.aria-label]="hueLabel()"
+        [attr.aria-valuetext]="hue() + '°'"
+        [value]="hue()"
+        [disabled]="disabled()"
+        (input)="onHue($event)"
+        (keydown.enter)="sliderEnter($event)"
+      />
+      <div class="ui-color-picker__fields">
+        <span
+          class="ui-color-picker__preview"
+          aria-hidden="true"
+          [style.background-color]="shown()"
+        ></span>
+        <div class="ui-color-picker__hex">
+          <label class="ui-color-picker__hex-label" [for]="hexId">{{ hexLabel() }}</label>
+          <input
+            type="text"
+            class="ui-color-picker__hex-input"
+            inputmode="text"
+            autocomplete="off"
+            spellcheck="false"
+            maxlength="7"
+            placeholder="#2e6a99"
+            [id]="hexId"
+            [value]="draft()"
+            [disabled]="disabled()"
+            [attr.aria-invalid]="hexInvalid() || null"
+            [attr.aria-describedby]="hexInvalid() ? errorId : null"
+            (input)="onHexInput($event)"
+            (keydown.enter)="tidyHex($event)"
+            (blur)="tidyHex()"
+          />
+        </div>
+      </div>
+      @if (hexInvalid()) {
+        <p class="ui-color-picker__error" [id]="errorId">{{ invalidMessage() }}</p>
+      }
+      <ng-content />
+      <div class="ui-color-picker__actions">
+        <ui-button [variant]="BUTTON_VARIANT.Ghost" (click)="cancel()">{{
+          cancelLabel()
+        }}</ui-button>
+        <ui-button
+          [variant]="BUTTON_VARIANT.Primary"
+          [disabled]="disabled() || hexInvalid()"
+          (click)="add()"
+          >{{ addLabel() }}</ui-button
+        >
+      </div>
+    </div>
+  </div>
+}

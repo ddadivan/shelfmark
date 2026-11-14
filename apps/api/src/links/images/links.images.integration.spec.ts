@@ -227,14 +227,17 @@ describe('link images (ADR 0027)', () => {
     expect(row.imageSourceUrl).toBe(IMAGE_URL);
   });
 
-  it('removes the images with the link and with the account', async () => {
+  it('keeps the images of a trashed link (and serves them) and removes them with the account', async () => {
     const link = await create(a);
     await a.delete(`${BASE}/${link.id}`).expect(204);
-    expect(await t.db.prisma.linkImage.count()).toBe(0);
+    expect(await t.db.prisma.linkImage.count()).toBe(2);
+    await a.get(`${BASE}/${link.id}/image`).expect(200);
+    await b.get(`${BASE}/${link.id}/image`).expect(404);
+    await a.post(`${BASE}/${link.id}/images/capture`).expect(404);
 
     await create(a);
     await create(b);
-    expect(await t.db.prisma.linkImage.count()).toBe(4);
+    expect(await t.db.prisma.linkImage.count()).toBe(6);
     await t.db.prisma.user.delete({ where: { id: users.owner.userId } });
     const left = await t.db.prisma.linkImage.findMany();
     expect(left).toHaveLength(2);

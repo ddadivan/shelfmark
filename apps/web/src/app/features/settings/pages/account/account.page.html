@@ -1,0 +1,93 @@
+<app-settings-page-header
+  [title]="'settings.nav.account' | transloco"
+  [description]="'settings.description.account' | transloco"
+/>
+
+@if (auth.user(); as user) {
+<ui-settings-section [title]="'settings.account.profile' | transloco">
+  <div class="account__profile">
+    <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="lg" />
+    <div class="account__identity">
+      <div class="account__name">{{ user.name }}</div>
+      <div class="account__email">{{ user.email }}</div>
+      @if (stats.memberSince(); as date) {
+      <div class="account__email">{{ 'settings.account.memberSince' | transloco: { date } }}</div>
+      }
+    </div>
+  </div>
+</ui-settings-section>
+}
+
+<ui-settings-section [title]="'settings.account.shelf.title' | transloco">
+  <app-account-shelf />
+</ui-settings-section>
+
+@if (stats.loaded()) {
+<ui-settings-section [title]="'settings.account.connected.title' | transloco">
+  @for (account of stats.connectedAccounts(); track account.provider) {
+  <ui-settings-row
+    [icon]="account.icon"
+    [title]="account.nameKey | transloco"
+    [description]="'settings.account.connected.since' | transloco: { date: account.date }"
+  />
+  } @empty {
+  <p class="account__muted">{{ 'settings.account.connected.none' | transloco }}</p>
+  }
+</ui-settings-section>
+}
+
+<div #yourData class="account__anchor" [id]="YOUR_DATA_FRAGMENT">
+  <ui-settings-section [title]="'settings.data.title' | transloco">
+    @let json = 'settings.data.export.json' | transloco; @let html = 'settings.data.export.html' |
+    transloco;
+    <ui-settings-row
+      icon="code"
+      [title]="json"
+      [description]="'settings.data.export.jsonHint' | transloco"
+    >
+      <ui-button
+        iconLeft="download"
+        [size]="buttonSize()"
+        [ariaLabel]="'settings.data.export.downloadAs' | transloco: { format: json }"
+        (click)="exportAll(EXPORT_FORMAT.Json)"
+      >
+        {{ 'settings.data.export.download' | transloco }}
+      </ui-button>
+    </ui-settings-row>
+    <ui-settings-row
+      icon="globe"
+      [title]="html"
+      [description]="'settings.data.export.htmlHint' | transloco"
+    >
+      <ui-button
+        iconLeft="download"
+        [size]="buttonSize()"
+        [ariaLabel]="'settings.data.export.downloadAs' | transloco: { format: html }"
+        (click)="exportAll(EXPORT_FORMAT.Html)"
+      >
+        {{ 'settings.data.export.download' | transloco }}
+      </ui-button>
+    </ui-settings-row>
+  </ui-settings-section>
+</div>
+
+@if (canDeleteAccount()) {
+<ui-settings-section danger [title]="'settings.delete.title' | transloco">
+  <ui-settings-row [title]="'settings.delete.hint' | transloco">
+    <ui-button [size]="buttonSize()" [variant]="BUTTON_VARIANT.Danger" (click)="deleteAccount()">
+      {{ 'settings.delete.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+}
+
+<ui-settings-section [title]="'settings.account.signOut.title' | transloco">
+  <ui-settings-row
+    [title]="'settings.account.signOut.label' | transloco"
+    [description]="'settings.account.signOut.hint' | transloco"
+  >
+    <ui-button [size]="buttonSize()" (click)="signOut()">
+      {{ 'auth.signOut' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>

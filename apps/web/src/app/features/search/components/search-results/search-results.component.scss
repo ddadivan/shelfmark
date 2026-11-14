@@ -1,0 +1,61 @@
+@use 'ui' as *;
+
+// The command dialog (glass panel, `max-height` of the viewport minus its 96px gap) is a flex
+// column and so is the body: the results take the height that is left and shrink, the list is the
+// only part that scrolls, and the field and the hint footer stay put.
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+ui-command-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+// The empty state sits in the status region of the command list, which pads it (space-8 and
+// space-6): a centred block, a round icon tile, the heading and the hint.
+.search-results__empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.search-results__empty-icon {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: rem(40px);
+  height: rem(40px);
+  margin-bottom: var(--space-2);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  border-radius: var(--radius-full);
+}
+
+// "0 results" stays for screen readers; the heading says it on screen.
+.search-results__sr {
+  @include visually-hidden;
+}
+
+.search-results__empty-title {
+  @include type(heading);
+
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.search-results__empty-text {
+  @include type(body);
+
+  // Two even lines in every language, not one long one.
+  max-width: rem(384px);
+  color: var(--text-muted);
+  text-wrap: balance;
+}

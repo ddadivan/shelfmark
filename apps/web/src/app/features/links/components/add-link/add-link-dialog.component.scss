@@ -1,0 +1,167 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.add-link__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  // Room for the focus ring of the fields at the edge of the scrolling body.
+  padding: rem(2px);
+}
+
+.add-link__sr {
+  position: absolute;
+  width: rem(1px);
+  height: rem(1px);
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// AddLink.dc.html: a card on `bg` (8px inside, 20px corner) with a thumbnail tile, then the host,
+// the title and a note. The loading state keeps the bordered box of AddLinkStates.dc.html.
+.add-link__preview {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  min-width: 0;
+  padding: var(--space-2);
+  background: var(--bg);
+  border-radius: calc(var(--radius-lg) - var(--space-2) / 2);
+
+  &--loading {
+    padding: var(--space-3);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    ui-skeleton {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+}
+
+// No page image yet (ADR 0027): the tile of the feed cards with the first letter of the host.
+.add-link__thumb {
+  @include type(title);
+
+  display: grid;
+  flex: none;
+  place-items: center;
+  align-self: stretch;
+  width: rem(148px);
+  min-height: rem(88px);
+  color: var(--accent-text);
+  text-transform: uppercase;
+  background: var(--accent-bg);
+  border-radius: var(--radius-md);
+
+  @include phone {
+    width: rem(88px);
+    min-height: rem(66px);
+    border-radius: var(--radius-sm);
+  }
+}
+
+.add-link__preview-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.add-link__meta {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+  color: var(--text-muted);
+
+  @include type(caption);
+}
+
+.add-link__host {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.add-link__title {
+  @include type(heading);
+
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.add-link__description {
+  @include type(caption);
+
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.add-link__note {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// Under the address: "Have several links?" and the switch to the text area (#315), on one line
+// while it fits; the button keeps its whole label in every language.
+.add-link__several {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  margin-block-start: calc(-1 * var(--space-2));
+}
+
+.add-link__several-hint {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+// The several-links mode: "One link" at the start of the footer, like Delete in edit mode.
+.add-link__back {
+  @include tablet-up {
+    margin-inline-end: auto;
+  }
+}
+
+// Edit mode: Delete sits at the start of the footer, away from the confirming actions. On the
+// phone the footer is a reversed column (`ui-dialog`): Save on top, Delete last (bottom).
+.add-link__delete {
+  @include tablet-up {
+    margin-inline-end: auto;
+  }
+}
+
+// The "save" shortcut at the start of the footer; a phone has no keyboard to press it.
+.add-link__shortcut {
+  @include type(caption);
+
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin-inline-end: auto;
+  color: var(--text-muted);
+
+  kbd {
+    @include type(caption);
+
+    padding: 0 var(--space-1);
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    background: var(--surface-hover);
+    border-radius: var(--radius-sm);
+  }
+}
