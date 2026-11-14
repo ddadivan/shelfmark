@@ -66,8 +66,21 @@ describe('parsePastedLinks', () => {
     ]);
   });
 
+  it('takes a bare domain alone on its line as https:// (#405)', () => {
+    expect(
+      parsePastedLinks('example.com\n  sub.example.co.uk  \nexample.org.\nexample.net:8080').links,
+    ).toEqual([
+      'https://example.com',
+      'https://sub.example.co.uk',
+      'https://example.org',
+      'https://example.net:8080',
+    ]);
+  });
+
   it.each([
-    ['a bare domain without a path', 'example.com'],
+    ['a bare domain without a path inside a sentence', 'see example.com later'],
+    ['a file name alone on its line', 'README.md'],
+    ['a library name alone on its line', 'Node.js'],
     ['an abbreviation', 'e.g. this'],
     ['a version number', 'v1.2.3 is out'],
     ['a file name', 'notes.txt'],

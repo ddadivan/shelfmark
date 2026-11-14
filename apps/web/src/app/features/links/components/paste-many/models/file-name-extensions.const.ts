@@ -1,0 +1,40 @@
+/**
+ * Endings that make a lone `name.ext` line a file name rather than a bare domain (#405): such a
+ * line is skipped by the paste-many parser. Only consulted for a bare host alone on its line
+ * (`notes.txt`, `Node.js`); a path, `www.` or a scheme still make it a link.
+ */
+export const FILE_NAME_EXTENSIONS: readonly string[] = [
+  'txt',
+  'md',
+  'pdf',
+  'doc',
+  'docx',
+  'xls',
+  'xlsx',
+  'ppt',
+  'pptx',
+  'csv',
+  'json',
+  'xml',
+  'yml',
+  'yaml',
+  'js',
+  'ts',
+  'html',
+  'htm',
+  'css',
+  'png',
+  'jpg',
+  'jpeg',
+  'gif',
+  'svg',
+  'webp',
+  'mp3',
+  'mp4',
+  'mov',
+  'zip',
+  'rar',
+  'exe',
+  'dmg',
+  'log',
+];

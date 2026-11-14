@@ -20,6 +20,7 @@ import {
 } from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { TrimString } from '../../folders/dto/trim-string.decorator';
+import { DefaultHttpsScheme } from './default-https-scheme.decorator';
 import { IsHttpUrl } from './is-http-url.decorator';
 
 const RAW_TAG_MAX = 4 * TAG_LIMIT.NameMax;
@@ -30,7 +31,7 @@ const present = (_object: unknown, value: unknown): boolean => value !== undefin
 export class UpdateLinkDto implements UpdateLinkRequest {
   @ApiPropertyOptional({ maxLength: LINK_LIMIT.UrlMax })
   @ValidateIf(present)
-  @TrimString()
+  @DefaultHttpsScheme()
   @IsHttpUrl()
   url?: string;
 

@@ -18,6 +18,7 @@ import {
 } from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { TrimString } from '../../folders/dto/trim-string.decorator';
+import { DefaultHttpsScheme } from './default-https-scheme.decorator';
 import { IsHttpUrl } from './is-http-url.decorator';
 
 /** Upper bound for one raw tag name; the service normalizes it and enforces `TAG_LIMIT.NameMax`. */
@@ -25,7 +26,7 @@ const RAW_TAG_MAX = 4 * TAG_LIMIT.NameMax;
 
 export class CreateLinkDto implements CreateLinkRequest {
   @ApiProperty({ maxLength: LINK_LIMIT.UrlMax, example: 'https://angular.dev/overview' })
-  @TrimString()
+  @DefaultHttpsScheme()
   @IsHttpUrl()
   url!: string;
 

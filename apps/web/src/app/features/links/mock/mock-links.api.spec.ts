@@ -126,6 +126,21 @@ describe('MockLinksApi', () => {
     });
   });
 
+  it('adds https:// to an address without a scheme like the API (#405)', async () => {
+    const mock = createApi();
+    const preview = await firstValueFrom(mock.preview('example.com/a'));
+    expect(preview.preview.url).toBe('https://example.com/a');
+    const link = await firstValueFrom(mock.create({ url: ' example.com ', title: 'T' }));
+    expect(link.url).toBe('https://example.com');
+    const updated = await firstValueFrom(mock.update(link.id, { url: 'www.example.org' }));
+    expect(updated.url).toBe('https://www.example.org');
+    const batch = await firstValueFrom(
+      mock.createBatch({ items: [{ url: 'example.net', idempotencyKey: 'k-405' }] }),
+    );
+    expect(batch.links.map((item) => item.url)).toEqual(['https://example.net']);
+    await expect(firstValueFrom(mock.create({ url: 'javascript:alert(1)' }))).rejects.toBeTruthy();
+  });
+
   it('answers the same link for the same idempotency key', async () => {
     const mock = createApi();
     const key = 'b0c1d2e3-0000-4000-8000-000000000001';

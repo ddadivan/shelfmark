@@ -93,6 +93,17 @@ describe('AddLinkPreviewService', () => {
     expect(service.fetchedPreview()?.title).toBe('A fine post');
   });
 
+  it('previews an address typed without a scheme as https:// (#405)', async () => {
+    const { api, formState, service } = await setup(() => of(FETCHED));
+
+    formState.form.url().value.set('example.org/post');
+    await settle();
+
+    expect(api.preview).toHaveBeenCalledExactlyOnceWith(URL_TEXT);
+    expect(service.previewState()).toBe(PREVIEW_STATE.Ready);
+    expect(formState.form.title().value()).toBe('A fine post');
+  });
+
   it('keeps a title the user typed', async () => {
     const { formState } = await setup(() => of(FETCHED));
 
