@@ -33,5 +33,19 @@ describe('pluralKey', () => {
     expect([...pluralCategories('en')].sort()).toEqual(['one', 'other']);
     expect([...pluralCategories('de')].sort()).toEqual(['one', 'other']);
     expect([...pluralCategories('pt')].sort()).toEqual(['many', 'one', 'other']);
+    expect([...pluralCategories('uk')].sort()).toEqual(['few', 'many', 'one', 'other']);
+  });
+
+  it('picks the Ukrainian category by the number (#404)', () => {
+    expect([1, 2, 5, 11, 21, 22, 25, 1.5].map((n) => pluralKey('links.count', n, 'uk'))).toEqual([
+      'links.count.one',
+      'links.count.few',
+      'links.count.many',
+      'links.count.many',
+      'links.count.one',
+      'links.count.few',
+      'links.count.many',
+      'links.count.other',
+    ]);
   });
 });

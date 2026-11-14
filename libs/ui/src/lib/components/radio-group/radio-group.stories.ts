@@ -21,6 +21,7 @@ const LANGUAGES: RadioOption[] = [
   { value: 'it', title: 'Italiano', flag: 'it', lang: 'it' },
   { value: 'es', title: 'Español', flag: 'es', lang: 'es' },
   { value: 'pt', title: 'Português', flag: 'br', lang: 'pt' },
+  { value: 'uk', title: 'Українська', flag: 'ua', lang: 'uk' },
   { value: 'browser', title: 'Match my browser', icon: 'monitor' },
 ];
 

@@ -15,6 +15,7 @@ const loaders: Readonly<Record<AppLang, () => Promise<Translation>>> = {
   [APP_LANG.It]: async () => (await import('./it.json')).default,
   [APP_LANG.Es]: async () => (await import('./es.json')).default,
   [APP_LANG.Pt]: async () => (await import('./pt.json')).default,
+  [APP_LANG.Uk]: async () => (await import('./uk.json')).default,
 };
 
 @Service()

@@ -4,6 +4,7 @@ import es from './es.json';
 import fr from './fr.json';
 import italian from './it.json';
 import pt from './pt.json';
+import uk from './uk.json';
 import { APP_LANG } from './models/app-lang.const';
 import type { AppLang } from './models/app-lang.type';
 import { pluralCategories } from './plural-key';
@@ -17,7 +18,7 @@ import { pluralCategories } from './plural-key';
 
 type Tree = { readonly [key: string]: string | Tree };
 
-const FILES: Readonly<Record<AppLang, Tree>> = { en, fr, de, it: italian, es, pt };
+const FILES: Readonly<Record<AppLang, Tree>> = { en, fr, de, it: italian, es, pt, uk };
 const PLURAL_CATEGORIES = new Set(['zero', 'one', 'two', 'few', 'many', 'other']);
 
 function isPluralGroup(node: Tree): boolean {

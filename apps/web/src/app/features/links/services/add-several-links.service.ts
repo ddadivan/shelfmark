@@ -50,17 +50,21 @@ export class AddSeveralLinksService {
 
   /**
    * A paste into the address field: text with more than one link opens the paste-many list
-   * instead of landing in the field. One link (or none) pastes as usual.
+   * instead of landing in the field. One address without a scheme goes in with `https://`
+   * (#405); any other paste lands as usual.
    */
   onUrlPaste(event: ClipboardEvent): void {
     if (this.formState.editing) {
+      this.formState.pasteUrl(event);
       return;
     }
     const parsed = parsePastedLinks(event.clipboardData?.getData('text/plain') ?? '');
     if (parsed.links.length > 1) {
       event.preventDefault();
       this.pasted.set(parsed);
+      return;
     }
+    this.formState.pasteUrl(event);
   }
 
   /** Switches to the several-links text area and puts focus in it. */

@@ -151,6 +151,13 @@ describe('POST /api/links/preview', () => {
     expect(body.duplicate?.id).toBe(id);
   });
 
+  it('adds https:// to an address typed without a scheme (#405)', async () => {
+    fetch.mockRejectedValue(new Error('offline'));
+    const body = await preview(a, '  example.com/path?x=1 ');
+    expect(body.preview.url).toBe('https://example.com/path?x=1');
+    expect(fetch).toHaveBeenCalledWith('https://example.com/path?x=1', PREVIEW_FETCH_LIMITS);
+  });
+
   it('rejects anything that is not a plain http(s) URL, before any fetch', async () => {
     const bad = [
       'javascript:alert(1)',
@@ -158,7 +165,8 @@ describe('POST /api/links/preview', () => {
       'vbscript:x',
       'ftp://files.test/a',
       'file:///etc/passwd',
-      'example.com',
+      'example',
+      'mailto:someone@hello.test',
       '',
       'https://user:secret@hello.test/',
       `https://hello.test/${'a'.repeat(LINK_LIMIT.UrlMax)}`,

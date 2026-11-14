@@ -78,6 +78,25 @@ describe('AddLinkSaveService', () => {
     expect(api.create).toHaveBeenCalledTimes(1);
   });
 
+  it('saves an address typed without a scheme as https:// (#405)', async () => {
+    const { api, form, save } = await setup();
+    form.form.url().value.set(' example.com ');
+    await save.save();
+    expect(api.create).toHaveBeenCalledWith(
+      expect.objectContaining({ url: 'https://example.com' }),
+    );
+  });
+
+  it('sends a changed address without a scheme as https:// when editing', async () => {
+    const { api, form, save } = await setup(MOCK_LINKS[0]);
+    form.form.url().value.set('example.com/new');
+    await save.save();
+    expect(api.update).toHaveBeenCalledWith(
+      MOCK_LINKS[0].id,
+      expect.objectContaining({ url: 'https://example.com/new' }),
+    );
+  });
+
   it('reuses the key when a failed save is retried with the same payload', async () => {
     const { api, form, save } = await setup();
     api.create.mockImplementationOnce(() => throwError(() => new Error('boom')));

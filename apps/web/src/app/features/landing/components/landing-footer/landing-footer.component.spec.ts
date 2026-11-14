@@ -42,6 +42,7 @@ describe('LandingFooterComponent', () => {
       'Italiano',
       'Español',
       'Português',
+      'Українська',
     ]);
     expect(buttons[0]?.getAttribute('aria-pressed')).toBe('true');
     expect(buttons[2]?.closest('[lang]')?.getAttribute('lang')).toBe('de');

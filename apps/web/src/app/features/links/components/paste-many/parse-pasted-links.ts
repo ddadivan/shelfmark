@@ -1,4 +1,5 @@
-import { isHttpUrl, LINK_LIMIT, normalizeUrl } from '@shelfmark/contracts';
+import { isHttpUrl, LINK_LIMIT, normalizeUrl, withDefaultScheme } from '@shelfmark/contracts';
+import { FILE_NAME_EXTENSIONS } from './models/file-name-extensions.const';
 import type { ParsedPaste } from './models/parsed-paste.interface';
 import { PASTE_LIMIT } from './models/paste-limits.const';
 
@@ -31,9 +32,16 @@ const TRAILING = new Set([
   '_',
 ]);
 
-/** Whether a bare match (no scheme) is a link at all: it needs a path or a `www.` host. */
-function isBareLink(match: string): boolean {
-  return match.includes('/') || /^www\./iu.test(match);
+/**
+ * Whether a bare match (no scheme) is a link at all: it needs a path or a `www.` host, or it is the
+ * whole line (`example.com` alone on a line, #405) and does not end like a file name (`notes.txt`).
+ */
+function isBareLink(match: string, wholeLine: boolean): boolean {
+  if (match.includes('/') || /^www\./iu.test(match)) {
+    return true;
+  }
+  const ending = match.replace(/:\d+$/u, '').split('.').pop()?.toLowerCase() ?? '';
+  return wholeLine && !FILE_NAME_EXTENSIONS.includes(ending);
 }
 
 /**
@@ -56,13 +64,13 @@ function count(text: string, char: string): number {
 }
 
 /** The link as it will be saved: `https://` for a bare domain, `null` when it is not a storable http(s) URL. */
-function toUrl(match: string): string | null {
+function toUrl(match: string, wholeLine: boolean): string | null {
   const trimmed = trimTrailing(match);
   const scheme = /^https?:\/\//iu.test(trimmed);
-  if (!scheme && !isBareLink(trimmed)) {
+  if (!scheme && !isBareLink(trimmed, wholeLine)) {
     return null;
   }
-  const url = scheme ? trimmed : `https://${trimmed}`;
+  const url = withDefaultScheme(trimmed);
   if (url.length > LINK_LIMIT.UrlMax || !isHttpUrl(url)) {
     return null;
   }
@@ -81,7 +89,8 @@ function skippedText(line: string): string {
 
 /**
  * Reads the links out of pasted text: one link per line, or links anywhere inside a message, a
- * list or a note. Bare domains with a path become `https://` links; the same link twice (by
+ * list or a note. Bare domains with a path, a `www.` host or alone on their line become
+ * `https://` links; the same link twice (by
  * `normalizeUrl`, so `utm_*`, a fragment or a trailing slash do not count) is kept once; lines
  * without a link are listed as skipped. At most `LINK_LIMIT.BatchMax` links are kept, the rest is
  * counted in `overflow`. Pure.
@@ -94,7 +103,7 @@ export function parsePastedLinks(text: string): ParsedPaste {
   for (const line of text.slice(0, PASTE_LIMIT.TextMax).split(/\r\n|\r|\n/u)) {
     let lineHasLink = false;
     for (const match of line.matchAll(LINK_PATTERN)) {
-      const url = toUrl(match[0]);
+      const url = toUrl(match[0], match[0] === trimTrailing(line.trim()));
       if (url === null) {
         continue;
       }

@@ -12,4 +12,5 @@ export const LANGUAGE_FLAGS: Readonly<Record<AppLang, FlagCode>> = {
   it: FLAG_CODE.It,
   es: FLAG_CODE.Es,
   pt: FLAG_CODE.Br,
+  uk: FLAG_CODE.Ua,
 };

@@ -3,6 +3,7 @@ import {
   deriveLinkKind,
   FOLDER_ERROR_MESSAGE,
   isHttpUrl,
+  withDefaultScheme,
   LINK_BATCH_ERROR_CODE,
   LINK_ERROR_MESSAGE,
   LINK_IMAGE_PENDING_VERSION,
@@ -74,7 +75,7 @@ export class MockLinksApi implements LinksApi {
   }
 
   preview(sentUrl: string): Observable<LinkPreviewResponse> {
-    const url = this.savedUrl(sentUrl);
+    const url = this.savedUrl(withDefaultScheme(sentUrl));
     const host = displayHost(url);
     if (!this.data.library.fetchPreviews) {
       // Like the API with "Fetch titles and previews" off: no page, only the duplicate check.
@@ -133,8 +134,10 @@ export class MockLinksApi implements LinksApi {
     return of(response).pipe(delay(MOCK_LATENCY_MS.Preview));
   }
 
-  create(request: CreateLinkRequest): Observable<LinkResponse> {
+  create(sent: CreateLinkRequest): Observable<LinkResponse> {
     return defer(() => {
+      // Like the API's DTO: `example.com` is `https://example.com` (#405).
+      const request: CreateLinkRequest = { ...sent, url: withDefaultScheme(sent.url) };
       if (displayHost(request.url) === MOCK_HOST.SaveFails) {
         return throwError(() => new Error('Mock: save failed'));
       }
@@ -269,8 +272,10 @@ export class MockLinksApi implements LinksApi {
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
-  update(id: string, request: UpdateLinkRequest): Observable<LinkResponse> {
+  update(id: string, sent: UpdateLinkRequest): Observable<LinkResponse> {
     return defer(() => {
+      const request: UpdateLinkRequest =
+        sent.url === undefined ? sent : { ...sent, url: withDefaultScheme(sent.url) };
       const current = this.links.find((link) => link.id === id);
       if (!current) {
         return throwError(() => linkNotFound());
@@ -380,8 +385,12 @@ export class MockLinksApi implements LinksApi {
    * that is too long is skipped, the links are pending until `captureImages` ran. A batch with a
    * `save-fails.example` link fails as a whole.
    */
-  createBatch(request: CreateLinksBatchRequest): Observable<CreateLinksBatchResponse> {
+  createBatch(sent: CreateLinksBatchRequest): Observable<CreateLinksBatchResponse> {
     return defer(() => {
+      const request: CreateLinksBatchRequest = {
+        ...sent,
+        items: sent.items.map((item) => ({ ...item, url: withDefaultScheme(item.url) })),
+      };
       if (request.items.some((item) => displayHost(item.url) === MOCK_HOST.SaveFails)) {
         return throwError(() => new Error('Mock: save failed'));
       }

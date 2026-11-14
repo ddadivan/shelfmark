@@ -50,6 +50,7 @@
       <div class="add-link__fields">
         <ui-input
           (paste)="onUrlPaste($event)"
+          (focusout)="onUrlBlur()"
           [type]="INPUT_TYPE.Url"
           [label]="'links.add.url.label' | transloco"
           [placeholder]="'links.add.url.placeholder' | transloco"

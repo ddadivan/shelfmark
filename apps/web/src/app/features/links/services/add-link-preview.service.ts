@@ -31,7 +31,8 @@ export class AddLinkPreviewService {
   /** The typed URL once it is a valid http(s) URL; the preview follows it. */
   readonly previewUrl = computed(() => {
     const url = this.formState.form.url();
-    const value = url.value().trim();
+    // `example.com` is previewed as `https://example.com` (#405).
+    const value = this.formState.url();
     // The duplicate check always runs (#315), so a valid new address always asks the server; an
     // edit only checks a changed address for duplicates (the saved one needs no preview).
     return url.valid() && value !== this.formState.original?.url ? value : undefined;

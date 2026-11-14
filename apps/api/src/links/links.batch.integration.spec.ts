@@ -132,6 +132,15 @@ describe('links API: batch create and delete (#265)', () => {
       });
     });
 
+    it('saves items typed without a scheme as https:// (#405)', async () => {
+      const body = await batch(a, { items: [item('example.com'), item('www.example.org/a')] });
+      expect(body.errors).toEqual([]);
+      expect(body.links.map((link) => link.url).sort()).toEqual([
+        'https://example.com',
+        'https://www.example.org/a',
+      ]);
+    });
+
     it('lists the links in paste order in the newest-first feed', async () => {
       await seedLink(t.db.prisma, users.owner.userId, { title: 'older' });
       const body = await batch(a, {

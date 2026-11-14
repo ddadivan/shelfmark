@@ -185,6 +185,11 @@ export class AddLinkDialogComponent {
     this.severalLinks.onUrlPaste(event);
   }
 
+  /** Leaving the address shows it as it will be saved (`https://` added, #405). */
+  protected onUrlBlur(): void {
+    this.formState.normalizeUrlField();
+  }
+
   protected showSeveral(): void {
     this.severalLinks.showSeveral();
   }
