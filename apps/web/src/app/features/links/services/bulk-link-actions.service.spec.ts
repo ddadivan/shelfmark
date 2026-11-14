@@ -11,6 +11,7 @@ import {
 } from '@shelfmark/ui';
 import { of, throwError } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
+import { RECENT_FOLDERS_STORAGE_KEY } from '../../../core/auth/models/recent-folders-storage-key.const';
 import { RecentFoldersStore } from '../../../stores/recent-folders.store';
 import { LinksStore } from '../../../stores/links.store';
 import { PinsStore } from '../../../stores/pins.store';
@@ -155,6 +156,7 @@ async function setup(options: Options = {}) {
 const byId = (store: InstanceType<typeof LinksStore>, id: string) => store.entityMap()[id];
 
 describe('BulkLinkActionsService', () => {
+  beforeEach(() => localStorage.removeItem(RECENT_FOLDERS_STORAGE_KEY));
   afterEach(() => vi.restoreAllMocks());
   describe('move', () => {
     it('asks for a folder with a multi-link title and moves all links in one request', async () => {
