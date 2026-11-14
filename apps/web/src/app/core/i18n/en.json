@@ -827,6 +827,10 @@
     "style": {
       "colour": "Color",
       "icon": "Icon",
+      "tabs": {
+        "icon": "Icon",
+        "emoji": "Emoji"
+      },
       "reset": "Reset",
       "save": "Save",
       "cancel": "Cancel",

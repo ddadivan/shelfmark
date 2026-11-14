@@ -19,10 +19,13 @@ test.describe('folder emoji picker (mock API)', () => {
     await openFeed(page);
   });
 
-  async function openStyle(page: Page): Promise<Locator> {
+  // The dialog opens on the Icon tab (or on Emoji for an emoji folder, #376); `tab` says which
+  // one the test wants.
+  async function openStyle(page: Page, tab: 'Icon' | 'Emoji' = 'Emoji'): Promise<Locator> {
     await pickFolderMenuItem(page, READING, 'Color and icon…');
     const dialog = page.getByRole('dialog', { name: READING });
     await expect(dialog).toBeVisible();
+    await dialog.getByRole('radio', { name: tab, exact: true }).check();
     return dialog;
   }
 
@@ -86,6 +89,39 @@ test.describe('folder emoji picker (mock API)', () => {
     await expect(panel(page)).toHaveCount(0);
     // Esc closed only the picker; the style dialog stays.
     await expect(again).toBeVisible();
+  });
+
+  test('Save applies the active tab: Icon wins after switching back, Emoji otherwise (#376)', async ({
+    page,
+  }) => {
+    let dialog = await openStyle(page);
+    await emojiField(dialog).fill('🍕');
+    await dialog.getByRole('radio', { name: 'Icon', exact: true }).check();
+    // The emoji field is gone, the icon grid is back and the preview shows an icon.
+    await expect(emojiField(dialog)).toHaveCount(0);
+    await expect(dialog.locator('.ui-folder-icon__emoji')).toHaveCount(0);
+    await dialog
+      .locator('label.ui-choice', { has: page.getByLabel('Star', { exact: true }) })
+      .click();
+    await save(dialog);
+    await openSidebar(page);
+    await expect(readingEmoji(page)).toHaveCount(0);
+
+    // Emoji tab, an emoji, Save: the emoji. The dialog opens on Emoji next time.
+    dialog = await openStyle(page);
+    await emojiField(dialog).fill('🍕');
+    await save(dialog);
+    await openSidebar(page);
+    await expect(readingEmoji(page)).toHaveText('🍕');
+
+    await pickFolderMenuItem(page, READING, 'Color and icon…');
+    dialog = page.getByRole('dialog', { name: READING });
+    await expect(dialog.getByRole('radio', { name: 'Emoji', exact: true })).toBeChecked();
+    await expect(emojiField(dialog)).toHaveValue('🍕');
+    // Both choices survive a switch while the dialog is open.
+    await dialog.getByRole('radio', { name: 'Icon', exact: true }).check();
+    await dialog.getByRole('radio', { name: 'Emoji', exact: true }).check();
+    await expect(emojiField(dialog)).toHaveValue('🍕');
   });
 
   test('keeps a typed emoji the collection lacks under Yours and removes it with Undo', async ({
