@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output } f
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
 import {
+  BADGE_TONE,
   BadgeComponent,
   ButtonComponent,
   CheckboxComponent,
@@ -20,6 +21,7 @@ import { linkKeyIntent } from '../../utils/link-select-keys';
 import { LINK_KEY_INTENT } from '../../models/link-key-intent.const';
 import type { LinkSelectToggle } from '../../models/link-select-toggle.interface';
 import { linkHost, ownImageUrl, safeHref, siteLetter } from '../../utils/link-view';
+import { ReminderFormatService } from '../../../reminders/services/reminder-format.service';
 
 const MAX_TAGS = 2;
 
@@ -53,6 +55,9 @@ export class LinkRowComponent {
   /** The tags are left out on a phone: the row has no room for them. */
   protected readonly viewport = inject(ViewportService);
   protected readonly phone = this.viewport.phone;
+  private readonly reminders = inject(ReminderFormatService);
+  private readonly now = Date.now();
+  protected readonly BADGE_TONE = BADGE_TONE;
 
   readonly link = input.required<LinkResponse>();
   /** Plays the fade-in of rows that replace the skeleton. */
@@ -78,6 +83,8 @@ export class LinkRowComponent {
   readonly editRequested = output<void>();
   /** "Move to folder…" from the actions menu. */
   readonly moveRequested = output<void>();
+  /** "Remind me…" from the actions menu (#275). */
+  readonly remindRequested = output<void>();
   readonly deleteRequested = output<void>();
 
   /** A selection is in progress: a click toggles the link instead of opening it (#267). */
@@ -117,6 +124,13 @@ export class LinkRowComponent {
   protected readonly letter = computed(() => siteLetter(this.link().url));
   protected readonly favicon = computed(() => ownImageUrl(this.link().faviconUrl));
   protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS));
+  /** The reminder chip (#275): its time, or "Due …" once it came. */
+  protected readonly reminder = computed(() => {
+    const at = this.link().remindAt;
+    return at
+      ? { text: this.reminders.chip(at, this.now), due: this.reminders.isDue(at, this.now) }
+      : null;
+  });
 
   protected open(event?: MouseEvent): void {
     if (this.selecting()) {

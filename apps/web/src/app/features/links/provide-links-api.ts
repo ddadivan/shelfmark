@@ -4,6 +4,7 @@ import {
   tabSyncedLinksApi,
   tabSyncedTagsApi,
   tabSyncedPinsApi,
+  tabSyncedRemindersApi,
   tabSyncedTrashApi,
 } from '../../core/sync/tab-synced-apis';
 import { TabSyncService } from '../../core/sync/tab-sync.service';
@@ -15,6 +16,8 @@ import { HttpMeStatsApi } from '../settings/http/http-me-stats.api';
 import { ME_STATS_API } from '../settings/models/me-stats-api.const';
 import { HttpPinsApi } from '../pins/http/http-pins.api';
 import { PINS_API } from '../pins/models/pins-api.const';
+import { HttpRemindersApi } from '../reminders/http/http-reminders.api';
+import { REMINDERS_API } from '../reminders/models/reminders-api.const';
 import { HttpTrashApi } from '../trash/http/http-trash.api';
 import { TRASH_API } from '../trash/models/trash-api.const';
 import { HttpSavedViewsApi } from '../views/http/http-saved-views.api';
@@ -59,6 +62,10 @@ export function provideLinksApi(): Provider[] {
     {
       provide: TRASH_API,
       useFactory: () => tabSyncedTrashApi(inject(HttpTrashApi), inject(TabSyncService)),
+    },
+    {
+      provide: REMINDERS_API,
+      useFactory: () => tabSyncedRemindersApi(inject(HttpRemindersApi), inject(TabSyncService)),
     },
     { provide: USER_SETTINGS_API, useExisting: HttpUserSettingsApi },
     { provide: ME_STATS_API, useExisting: HttpMeStatsApi },

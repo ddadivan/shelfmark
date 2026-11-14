@@ -5,6 +5,7 @@ import { BULK_BAR_ACTION_VARIANT, type BulkBarAction } from '@shelfmark/ui';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { BULK_ACTION } from '../../links/models/bulk-action.const';
 import { BulkLinkActionsService } from '../../links/services/bulk-link-actions.service';
+import { ReminderActionsService } from '../../reminders/services/reminder-actions.service';
 import { LibrarySelectionService } from './library-selection.service';
 import { SplitViewService } from './split-view.service';
 
@@ -16,13 +17,14 @@ import { SplitViewService } from './split-view.service';
 @Service({ autoProvided: false })
 export class LibraryBulkService {
   private readonly links = inject(BulkLinkActionsService);
+  private readonly reminders = inject(ReminderActionsService);
   private readonly selection = inject(LibrarySelectionService);
   private readonly transloco = inject(TranslocoService);
   private readonly split = inject(SplitViewService);
   private readonly compact = inject(ViewportService).compact;
 
   private readonly i18n = toSignal(this.transloco.selectTranslation());
-  /** The bulk bar: desktop Move, Tags, Favorite, Open all, Copy links, Delete; the phone shares instead of opening. */
+  /** The bulk bar: desktop Move, Tags, Favorite, Remind, Open all, Copy links, Delete; the phone shares instead of opening. */
   readonly barActions = computed<BulkBarAction[]>(() => {
     this.i18n();
     const t = (key: string): string => this.transloco.translate(key);
@@ -50,6 +52,7 @@ export class LibraryBulkService {
         icon: favorite ? 'star-filled' : 'star',
         pressed: favorite,
       },
+      { id: BULK_ACTION.Remind, label: t('bulk.bar.remind'), icon: 'bell' },
     );
     if (this.compact()) {
       actions.push(
@@ -90,6 +93,9 @@ export class LibraryBulkService {
         break;
       case BULK_ACTION.Favorite:
         clear = await this.links.toggleFavorite(links);
+        break;
+      case BULK_ACTION.Remind:
+        clear = await this.reminders.remind(links);
         break;
       case BULK_ACTION.OpenAll:
         clear = await this.links.openAll(links);

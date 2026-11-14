@@ -1,16 +1,21 @@
 import { LINKS_SCOPE } from '../../../features/links/models/links-scope.const';
 import { SIDEBAR_FEEDBACK_ID } from '../models/sidebar-feedback-id.const';
 import { SIDEBAR_RECENT_ID } from '../models/sidebar-recent-id.const';
+import { SIDEBAR_REMINDERS_ID } from '../models/sidebar-reminders-id.const';
 import { SIDEBAR_TRASH_ID } from '../models/sidebar-trash-id.const';
 import type { UiTreeNode } from '@shelfmark/ui';
 import type { SidebarLabels } from '../models/sidebar-labels.interface';
 import type { SidebarCounts } from '../models/sidebar-counts.interface';
 import { sidebarCount } from './sidebar-count';
 
-/** "All links", "Unsorted", "Favorites", "Recently opened"; `counts` null leaves the counts out. */
+/**
+ * "All links", "Unsorted", "Favorites", "Recently opened", "Reminders"; `counts` null leaves the
+ * link counts out. `dueReminders` (undefined = none) is the count of the Reminders row (#275).
+ */
 export function fixedNodes(
   labels: SidebarLabels,
   counts: Readonly<SidebarCounts> | null,
+  dueReminders?: number,
 ): UiTreeNode[] {
   return [
     { id: LINKS_SCOPE.All, name: labels.all, icon: 'bookmark', ...sidebarCount(counts?.all) },
@@ -27,6 +32,12 @@ export function fixedNodes(
       ...sidebarCount(counts?.favorites),
     },
     { id: SIDEBAR_RECENT_ID, name: labels.recent, icon: 'clock' },
+    {
+      id: SIDEBAR_REMINDERS_ID,
+      name: labels.reminders,
+      icon: 'bell',
+      ...sidebarCount(dueReminders),
+    },
   ];
 }
 

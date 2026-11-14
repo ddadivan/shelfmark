@@ -490,7 +490,8 @@
         "favorites": "Can't drop here — star a link to add it to Favorites",
         "recent": "Can't drop here — Recently opened fills as you open links",
         "trash": "Can't drop here — use Delete to move a link to Trash",
-        "pinnedLink": "Can't drop here — a pinned link is not a folder"
+        "pinnedLink": "Can't drop here — a pinned link is not a folder",
+        "reminders": "Can't drop here — use “Remind me” in the link's menu"
       }
     }
   },
@@ -2329,7 +2330,8 @@
       "copy": "Copy links",
       "share": "Share",
       "delete": "Delete",
-      "moveToFolder": "Move to {{folder}}"
+      "moveToFolder": "Move to {{folder}}",
+      "remind": "Remind"
     },
     "header": {
       "label": "Selection",
@@ -2438,6 +2440,102 @@
       "failed": "Couldn't delete the links",
       "failedDetail": "They are back in the list",
       "undoFailed": "Couldn't restore the links"
+    }
+  },
+  "reminders": {
+    "title": "Reminders",
+    "dueCount": {
+      "one": "{{count}} reminder is due",
+      "other": "{{count}} reminders are due"
+    },
+    "nothingDue": "Nothing is due right now",
+    "dueShort": {
+      "one": "{{count}} due",
+      "other": "{{count}} due"
+    },
+    "loading": "Loading reminders",
+    "loadFailed": {
+      "title": "Couldn't load your reminders",
+      "text": "Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "empty": {
+      "title": "No reminders yet",
+      "text": "Choose “Remind me” in the menu of a link, and it comes back here on the day you pick."
+    },
+    "group": {
+      "due": "Due",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "this-week": "This week",
+      "later": "Later"
+    },
+    "footer": "Reminders show here, on the sidebar badge and on the card. They are not sent by email or notification.",
+    "when": {
+      "today": "Today, {{time}}",
+      "tomorrow": "Tomorrow, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Due {{when}}"
+    },
+    "preset": {
+      "later-today": "Later today",
+      "tomorrow": "Tomorrow",
+      "weekend": "This weekend",
+      "next-week": "Next week",
+      "in-month": "In a month"
+    },
+    "dialog": {
+      "title": "Remind me",
+      "titleMany": {
+        "one": "Remind me about {{count}} link",
+        "other": "Remind me about {{count}} links"
+      },
+      "close": "Close",
+      "current": "Current reminder: {{when}}",
+      "presets": "Quick choices",
+      "pick": "Pick date and time…",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "time": "Time",
+      "timeHint": "Optional; 9:00 when left empty",
+      "past": "This time has already passed. Pick a later one.",
+      "timeZone": "Times are in your time zone, {{zone}}.",
+      "remove": "Remove reminder",
+      "cancel": "Cancel",
+      "confirm": "Remind me {{when}}",
+      "confirmEmpty": "Pick a day"
+    },
+    "menu": {
+      "remind": "Remind me…",
+      "change": "Change reminder…"
+    },
+    "row": {
+      "done": "Done",
+      "doneItem": "Mark the reminder of {{title}} as done",
+      "snooze": "Snooze",
+      "snoozeItem": "Snooze the reminder of {{title}}"
+    },
+    "toast": {
+      "failed": "Couldn't save the reminder",
+      "retry": "Retry",
+      "cleared": {
+        "one": "Reminder removed",
+        "other": "{{count}} reminders removed"
+      },
+      "set": "Reminder set for {{when}}",
+      "due": {
+        "one": "A reminder is due",
+        "other": "{{count}} reminders are due"
+      },
+      "show": "Show"
+    },
+    "edit": {
+      "set": "Reminder: {{when}}",
+      "none": "No reminder",
+      "change": "Change",
+      "remind": "Remind me"
     }
   }
 }

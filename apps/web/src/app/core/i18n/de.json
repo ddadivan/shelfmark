@@ -490,7 +490,8 @@
         "favorites": "Hier nicht ablegbar — markiere einen Link mit Stern, um ihn zu den Favoriten zu legen",
         "recent": "Hier nicht ablegbar — „Zuletzt geöffnet“ füllt sich beim Öffnen von Links",
         "trash": "Hier nicht ablegbar — nutze „Löschen“, um einen Link in den Papierkorb zu legen",
-        "pinnedLink": "Hier nicht ablegbar — ein angehefteter Link ist kein Ordner"
+        "pinnedLink": "Hier nicht ablegbar — ein angehefteter Link ist kein Ordner",
+        "reminders": "Hier nicht ablegen — nutze „Erinnern“ im Menü des Links"
       }
     }
   },
@@ -2329,7 +2330,8 @@
       "copy": "Links kopieren",
       "share": "Teilen",
       "delete": "Löschen",
-      "moveToFolder": "In {{folder}} verschieben"
+      "moveToFolder": "In {{folder}} verschieben",
+      "remind": "Erinnern"
     },
     "header": {
       "label": "Auswahl",
@@ -2438,6 +2440,102 @@
       "failed": "Links konnten nicht gelöscht werden",
       "failedDetail": "Sie sind wieder in der Liste",
       "undoFailed": "Links konnten nicht wiederhergestellt werden"
+    }
+  },
+  "reminders": {
+    "title": "Erinnerungen",
+    "dueCount": {
+      "one": "{{count}} Erinnerung ist fällig",
+      "other": "{{count}} Erinnerungen sind fällig"
+    },
+    "nothingDue": "Gerade ist nichts fällig",
+    "dueShort": {
+      "one": "{{count}} fällig",
+      "other": "{{count}} fällig"
+    },
+    "loading": "Erinnerungen werden geladen",
+    "loadFailed": {
+      "title": "Erinnerungen konnten nicht geladen werden",
+      "text": "Prüfe deine Verbindung und versuche es erneut.",
+      "retry": "Erneut versuchen"
+    },
+    "empty": {
+      "title": "Noch keine Erinnerungen",
+      "text": "Wähle „Erinnern“ im Menü eines Links, dann taucht er am gewählten Tag hier wieder auf."
+    },
+    "group": {
+      "due": "Fällig",
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "this-week": "Diese Woche",
+      "later": "Später"
+    },
+    "footer": "Erinnerungen erscheinen hier, als Zähler in der Seitenleiste und auf der Karte. Sie werden nicht per E-Mail oder Benachrichtigung verschickt.",
+    "when": {
+      "today": "Heute, {{time}}",
+      "tomorrow": "Morgen, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Fällig {{when}}"
+    },
+    "preset": {
+      "later-today": "Später heute",
+      "tomorrow": "Morgen",
+      "weekend": "Dieses Wochenende",
+      "next-week": "Nächste Woche",
+      "in-month": "In einem Monat"
+    },
+    "dialog": {
+      "title": "Erinnern",
+      "titleMany": {
+        "one": "An {{count}} Link erinnern",
+        "other": "An {{count}} Links erinnern"
+      },
+      "close": "Schließen",
+      "current": "Aktuelle Erinnerung: {{when}}",
+      "presets": "Schnellauswahl",
+      "pick": "Datum und Uhrzeit wählen…",
+      "previousMonth": "Vorheriger Monat",
+      "nextMonth": "Nächster Monat",
+      "time": "Uhrzeit",
+      "timeHint": "Optional; leer bedeutet 9:00",
+      "past": "Diese Zeit ist schon vorbei. Wähle eine spätere.",
+      "timeZone": "Zeiten in deiner Zeitzone, {{zone}}.",
+      "remove": "Erinnerung entfernen",
+      "cancel": "Abbrechen",
+      "confirm": "Erinnern: {{when}}",
+      "confirmEmpty": "Tag wählen"
+    },
+    "menu": {
+      "remind": "Erinnern…",
+      "change": "Erinnerung ändern…"
+    },
+    "row": {
+      "done": "Erledigt",
+      "doneItem": "Erinnerung an {{title}} als erledigt markieren",
+      "snooze": "Später",
+      "snoozeItem": "Erinnerung an {{title}} verschieben"
+    },
+    "toast": {
+      "failed": "Erinnerung konnte nicht gespeichert werden",
+      "retry": "Erneut versuchen",
+      "cleared": {
+        "one": "Erinnerung entfernt",
+        "other": "{{count}} Erinnerungen entfernt"
+      },
+      "set": "Erinnerung für {{when}}",
+      "due": {
+        "one": "Eine Erinnerung ist fällig",
+        "other": "{{count}} Erinnerungen sind fällig"
+      },
+      "show": "Anzeigen"
+    },
+    "edit": {
+      "set": "Erinnerung: {{when}}",
+      "none": "Keine Erinnerung",
+      "change": "Ändern",
+      "remind": "Erinnern"
     }
   }
 }

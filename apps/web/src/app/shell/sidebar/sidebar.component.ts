@@ -35,6 +35,7 @@ import { SidebarTagsComponent } from '../../features/tags/components/sidebar-tag
 import { APP_PATH } from '../../models/app-path.const';
 import { FoldersStore } from '../../stores/folders.store';
 import { PinsStore } from '../../stores/pins.store';
+import { RemindersStore } from '../../stores/reminders.store';
 import { TagsStore } from '../../stores/tags.store';
 import { TrashStore } from '../../stores/trash.store';
 import { UserSettingsStore } from '../../stores/user-settings.store';
@@ -87,6 +88,7 @@ export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
   private readonly trash = inject(TrashStore);
   private readonly pins = inject(PinsStore);
+  private readonly reminders = inject(RemindersStore);
   protected readonly folderMenu = inject(SidebarFoldersService);
   private readonly settings = inject(UserSettingsStore);
   protected readonly drag = inject(LinkDragService);
@@ -146,7 +148,9 @@ export class SidebarComponent {
     // Settings › Library › Show folder counts: off drops the link counts (Trash keeps its own).
     const counts =
       this.folders.loaded() && this.settings.countsShown() ? this.folders.counts() : null;
-    return fixedNodes(labels, counts);
+    // The due reminders count shows whatever "Show folder counts" says: it asks for attention.
+    const due = this.reminders.dueCount();
+    return fixedNodes(labels, counts, due > 0 ? due : undefined);
   });
 
   /** "Send feedback" above the divider (not on the phone, which has it in the You list). */

@@ -501,7 +501,8 @@
         "favorites": "Não dá para soltar aqui — marque um link com estrela para adicioná-lo aos Favoritos",
         "recent": "Não dá para soltar aqui — «Abertos recentemente» enche ao abrir links",
         "trash": "Não dá para soltar aqui — use Excluir para mover um link para a lixeira",
-        "pinnedLink": "Não dá para soltar aqui — um link fixado não é uma pasta"
+        "pinnedLink": "Não dá para soltar aqui — um link fixado não é uma pasta",
+        "reminders": "Não dá para soltar aqui — use “Lembrar-me” no menu do link"
       }
     }
   },
@@ -2369,7 +2370,8 @@
       "copy": "Copiar links",
       "share": "Compartilhar",
       "delete": "Excluir",
-      "moveToFolder": "Mover para {{folder}}"
+      "moveToFolder": "Mover para {{folder}}",
+      "remind": "Lembrar"
     },
     "header": {
       "label": "Seleção",
@@ -2489,6 +2491,107 @@
       "failed": "Não foi possível excluir os links",
       "failedDetail": "Eles voltaram para a lista",
       "undoFailed": "Não foi possível restaurar os links"
+    }
+  },
+  "reminders": {
+    "title": "Lembretes",
+    "dueCount": {
+      "one": "{{count}} lembrete chegou",
+      "many": "{{count}} lembretes chegaram",
+      "other": "{{count}} lembretes chegaram"
+    },
+    "nothingDue": "Nada pendente agora",
+    "dueShort": {
+      "one": "{{count}} pendente",
+      "many": "{{count}} pendentes",
+      "other": "{{count}} pendentes"
+    },
+    "loading": "Carregando lembretes",
+    "loadFailed": {
+      "title": "Não foi possível carregar seus lembretes",
+      "text": "Verifique sua conexão e tente de novo.",
+      "retry": "Tentar de novo"
+    },
+    "empty": {
+      "title": "Nenhum lembrete ainda",
+      "text": "Escolha “Lembrar-me” no menu de um link e ele volta aqui no dia que você escolher."
+    },
+    "group": {
+      "due": "Pendentes",
+      "today": "Hoje",
+      "tomorrow": "Amanhã",
+      "this-week": "Esta semana",
+      "later": "Mais tarde"
+    },
+    "footer": "Os lembretes aparecem aqui, no contador da barra lateral e no cartão. Eles não são enviados por e-mail nem por notificação.",
+    "when": {
+      "today": "Hoje, {{time}}",
+      "tomorrow": "Amanhã, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Pendente {{when}}"
+    },
+    "preset": {
+      "later-today": "Mais tarde hoje",
+      "tomorrow": "Amanhã",
+      "weekend": "Neste fim de semana",
+      "next-week": "Semana que vem",
+      "in-month": "Daqui a um mês"
+    },
+    "dialog": {
+      "title": "Lembrar-me",
+      "titleMany": {
+        "one": "Lembrar-me de {{count}} link",
+        "many": "Lembrar-me de {{count}} links",
+        "other": "Lembrar-me de {{count}} links"
+      },
+      "close": "Fechar",
+      "current": "Lembrete atual: {{when}}",
+      "presets": "Opções rápidas",
+      "pick": "Escolher data e hora…",
+      "previousMonth": "Mês anterior",
+      "nextMonth": "Próximo mês",
+      "time": "Hora",
+      "timeHint": "Opcional; vazio é 9:00",
+      "past": "Esse horário já passou. Escolha um mais tarde.",
+      "timeZone": "Os horários estão no seu fuso horário, {{zone}}.",
+      "remove": "Remover lembrete",
+      "cancel": "Cancelar",
+      "confirm": "Lembrar-me {{when}}",
+      "confirmEmpty": "Escolha um dia"
+    },
+    "menu": {
+      "remind": "Lembrar-me…",
+      "change": "Alterar lembrete…"
+    },
+    "row": {
+      "done": "Concluído",
+      "doneItem": "Marcar o lembrete de {{title}} como concluído",
+      "snooze": "Adiar",
+      "snoozeItem": "Adiar o lembrete de {{title}}"
+    },
+    "toast": {
+      "failed": "Não foi possível salvar o lembrete",
+      "retry": "Tentar de novo",
+      "cleared": {
+        "one": "Lembrete removido",
+        "many": "{{count}} lembretes removidos",
+        "other": "{{count}} lembretes removidos"
+      },
+      "set": "Lembrete para {{when}}",
+      "due": {
+        "one": "Um lembrete chegou",
+        "many": "{{count}} lembretes chegaram",
+        "other": "{{count}} lembretes chegaram"
+      },
+      "show": "Ver"
+    },
+    "edit": {
+      "set": "Lembrete: {{when}}",
+      "none": "Sem lembrete",
+      "change": "Alterar",
+      "remind": "Lembrar-me"
     }
   }
 }

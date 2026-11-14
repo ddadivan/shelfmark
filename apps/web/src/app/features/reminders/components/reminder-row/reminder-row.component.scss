@@ -1,0 +1,29 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+// Fallback of a link without an image: the site's letter, large in the preview.
+.reminder-row__letter {
+  @include type(heading);
+
+  color: var(--text-muted);
+}
+
+.reminder-row__meta {
+  display: flex;
+  min-width: 0;
+}
+
+.reminder-row__host {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// The time of a snooze preset, after its name in the menu (Reminders mockup).
+.reminder-row__preset-time {
+  margin-inline-start: var(--space-2);
+  color: var(--text-muted);
+}

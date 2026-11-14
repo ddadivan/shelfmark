@@ -46,6 +46,7 @@ import { PinsStore } from '../stores/pins.store';
 import { UserSettingsStore } from '../stores/user-settings.store';
 import { ADMIN_PATH } from '../features/admin/models/admin-path.const';
 import { HowItWorksService } from '../features/how-it-works/services/how-it-works.service';
+import { ReminderNoticeService } from '../features/reminders/services/reminder-notice.service';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
@@ -169,6 +170,8 @@ export default class AppShellComponent {
   constructor() {
     void this.pins.load();
     void this.userSettings.load();
+    // The due reminders badge, and the note when some became due since the last visit (#275).
+    void inject(ReminderNoticeService).check();
   }
 
   /** The rating look starts for an eligible user (not demo, onboarding done) and stops otherwise. */

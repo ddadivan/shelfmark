@@ -7,6 +7,7 @@ describe('sidebarActiveId', () => {
     ['/unsorted', 'unsorted'],
     ['/favorites#top', 'favorites'],
     ['/recent', 'recent'],
+    ['/reminders', 'reminders'],
     ['/folders/abc-1', 'abc-1'],
     ['/folders/abc-1?sort=title', 'abc-1'],
   ])('maps %s to %s', (url, id) => {

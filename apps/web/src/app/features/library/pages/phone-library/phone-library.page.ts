@@ -17,6 +17,7 @@ import { SidebarComponent } from '../../../../shell/sidebar/sidebar.component';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { LinksStore } from '../../../../stores/links.store';
 import { TrashStore } from '../../../../stores/trash.store';
+import { RemindersStore } from '../../../../stores/reminders.store';
 import { groupByDay } from '../../../links/utils/history-days';
 import { HISTORY_DAY_KIND } from '../../../links/models/history-day-kind.const';
 import { RecentSheetComponent } from '../../../links/components/recent-sheet/recent-sheet.component';
@@ -38,6 +39,7 @@ export default class PhoneLibraryPage {
   protected readonly folders = inject(FoldersStore);
   private readonly links = inject(LinksStore);
   private readonly trash = inject(TrashStore);
+  private readonly reminders = inject(RemindersStore);
   private readonly transloco = inject(TranslocoService);
   private readonly dialogs = inject(DialogService);
   private readonly router = inject(Router);
@@ -53,6 +55,14 @@ export default class PhoneLibraryPage {
     const total = this.trash.total();
     return this.trash.loaded() && total > 0
       ? this.transloco.translate(pluralKey('library.phone.trashCount', total), { count: total })
+      : undefined;
+  });
+
+  /** "2 due" while reminders are due (#275). */
+  protected readonly remindersMeta = computed(() => {
+    const due = this.reminders.dueCount();
+    return due > 0
+      ? this.transloco.translate(pluralKey('reminders.dueShort', due), { count: due })
       : undefined;
   });
 

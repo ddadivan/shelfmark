@@ -501,7 +501,8 @@
         "favorites": "Impossible de déposer ici — mettez un lien en favori pour l’ajouter aux Favoris",
         "recent": "Impossible de déposer ici — « Ouverts récemment » se remplit quand vous ouvrez des liens",
         "trash": "Impossible de déposer ici — utilisez Supprimer pour mettre un lien à la corbeille",
-        "pinnedLink": "Impossible de déposer ici — un lien épinglé n’est pas un dossier"
+        "pinnedLink": "Impossible de déposer ici — un lien épinglé n’est pas un dossier",
+        "reminders": "Impossible de déposer ici — utilisez « Me le rappeler » dans le menu du lien"
       }
     }
   },
@@ -2369,7 +2370,8 @@
       "copy": "Copier les liens",
       "share": "Partager",
       "delete": "Supprimer",
-      "moveToFolder": "Déplacer vers {{folder}}"
+      "moveToFolder": "Déplacer vers {{folder}}",
+      "remind": "Rappel"
     },
     "header": {
       "label": "Sélection",
@@ -2489,6 +2491,107 @@
       "failed": "Impossible de supprimer les liens",
       "failedDetail": "Ils sont de retour dans la liste",
       "undoFailed": "Impossible de restaurer les liens"
+    }
+  },
+  "reminders": {
+    "title": "Rappels",
+    "dueCount": {
+      "one": "{{count}} rappel est arrivé",
+      "many": "{{count}} rappels sont arrivés",
+      "other": "{{count}} rappels sont arrivés"
+    },
+    "nothingDue": "Aucun rappel pour le moment",
+    "dueShort": {
+      "one": "{{count}} à revoir",
+      "many": "{{count}} à revoir",
+      "other": "{{count}} à revoir"
+    },
+    "loading": "Chargement des rappels",
+    "loadFailed": {
+      "title": "Impossible de charger vos rappels",
+      "text": "Vérifiez votre connexion et réessayez.",
+      "retry": "Réessayer"
+    },
+    "empty": {
+      "title": "Aucun rappel",
+      "text": "Choisissez « Me le rappeler » dans le menu d’un lien : il reviendra ici le jour choisi."
+    },
+    "group": {
+      "due": "À revoir",
+      "today": "Aujourd’hui",
+      "tomorrow": "Demain",
+      "this-week": "Cette semaine",
+      "later": "Plus tard"
+    },
+    "footer": "Les rappels s’affichent ici, sur le badge de la barre latérale et sur la carte. Ils ne sont envoyés ni par e-mail ni par notification.",
+    "when": {
+      "today": "Aujourd’hui, {{time}}",
+      "tomorrow": "Demain, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Arrivé {{when}}"
+    },
+    "preset": {
+      "later-today": "Plus tard aujourd’hui",
+      "tomorrow": "Demain",
+      "weekend": "Ce week-end",
+      "next-week": "La semaine prochaine",
+      "in-month": "Dans un mois"
+    },
+    "dialog": {
+      "title": "Me le rappeler",
+      "titleMany": {
+        "one": "Me rappeler {{count}} lien",
+        "many": "Me rappeler {{count}} liens",
+        "other": "Me rappeler {{count}} liens"
+      },
+      "close": "Fermer",
+      "current": "Rappel actuel : {{when}}",
+      "presets": "Choix rapides",
+      "pick": "Choisir la date et l’heure…",
+      "previousMonth": "Mois précédent",
+      "nextMonth": "Mois suivant",
+      "time": "Heure",
+      "timeHint": "Facultatif ; 9:00 si vide",
+      "past": "Cette heure est déjà passée. Choisissez-en une plus tard.",
+      "timeZone": "Les heures sont dans votre fuseau horaire, {{zone}}.",
+      "remove": "Supprimer le rappel",
+      "cancel": "Annuler",
+      "confirm": "Me le rappeler {{when}}",
+      "confirmEmpty": "Choisissez un jour"
+    },
+    "menu": {
+      "remind": "Me le rappeler…",
+      "change": "Modifier le rappel…"
+    },
+    "row": {
+      "done": "Terminé",
+      "doneItem": "Marquer le rappel de {{title}} comme terminé",
+      "snooze": "Reporter",
+      "snoozeItem": "Reporter le rappel de {{title}}"
+    },
+    "toast": {
+      "failed": "Impossible d’enregistrer le rappel",
+      "retry": "Réessayer",
+      "cleared": {
+        "one": "Rappel supprimé",
+        "many": "{{count}} rappels supprimés",
+        "other": "{{count}} rappels supprimés"
+      },
+      "set": "Rappel prévu {{when}}",
+      "due": {
+        "one": "Un rappel est arrivé",
+        "many": "{{count}} rappels sont arrivés",
+        "other": "{{count}} rappels sont arrivés"
+      },
+      "show": "Voir"
+    },
+    "edit": {
+      "set": "Rappel : {{when}}",
+      "none": "Aucun rappel",
+      "change": "Modifier",
+      "remind": "Me le rappeler"
     }
   }
 }

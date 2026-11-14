@@ -1,0 +1,63 @@
+<ui-history-row
+  previewSlot
+  [href]="href()"
+  [newTab]="newTab()"
+  [preview]="image()"
+  [description]="href() && newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
+  (activated)="onActivated($event)"
+>
+  <span slot="preview" class="reminder-row__letter" aria-hidden="true">{{ letter() }}</span>
+  <span slot="title">{{ link().title }}</span>
+  <!-- The mobile shell has no room for a time column: the chip takes the place of the site. -->
+  @if (viewport.compact()) {
+    <span slot="meta" class="reminder-row__meta">
+      <ui-badge icon="bell" [tone]="due() ? BADGE_TONE.Warning : BADGE_TONE.Accent">{{
+        chip()
+      }}</ui-badge>
+    </span>
+  } @else {
+    <span slot="meta" class="reminder-row__host">{{ host() }}</span>
+  }
+  @if (!viewport.compact()) {
+    <ui-badge slot="time" icon="bell" [tone]="due() ? BADGE_TONE.Warning : BADGE_TONE.Accent">{{
+      chip()
+    }}</ui-badge>
+  }
+  <ng-container slot="actions">
+    <ui-button
+      size="sm"
+      iconLeft="check"
+      [iconOnly]="viewport.compact()"
+      [ariaLabel]="'reminders.row.doneItem' | transloco: { title: link().title }"
+      [uiTooltip]="viewport.compact() ? ('reminders.row.done' | transloco) : ''"
+      (click)="doneRequested.emit()"
+      >{{ 'reminders.row.done' | transloco }}</ui-button
+    >
+    <ui-button
+      variant="ghost"
+      size="sm"
+      iconLeft="clock"
+      [iconOnly]="viewport.compact()"
+      [uiMenuTrigger]="menu"
+      [ariaLabel]="'reminders.row.snoozeItem' | transloco: { title: link().title }"
+      [uiTooltip]="viewport.compact() ? ('reminders.row.snooze' | transloco) : ''"
+      >{{ 'reminders.row.snooze' | transloco }}</ui-button
+    >
+    <ui-menu
+      #menu
+      align="end"
+      [ariaLabel]="'reminders.row.snoozeItem' | transloco: { title: link().title }"
+    >
+      @for (option of snoozeOptions(); track option.preset) {
+        <ui-menu-item (activated)="snoozeRequested.emit(option)">
+          {{ 'reminders.preset.' + option.preset | transloco }}
+          <span class="reminder-row__preset-time">{{ hint(option) }}</span>
+        </ui-menu-item>
+      }
+      <ui-menu-separator />
+      <ui-menu-item icon="calendar" (activated)="changeRequested.emit()">
+        {{ 'reminders.dialog.pick' | transloco }}
+      </ui-menu-item>
+    </ui-menu>
+  </ng-container>
+</ui-history-row>

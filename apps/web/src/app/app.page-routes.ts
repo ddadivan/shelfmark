@@ -12,6 +12,7 @@ const adminRoutes = () => import('./features/admin/admin.routes');
 const recentPage = () => import('./features/links/pages/recent/recent.page');
 const phoneLibraryPage = () => import('./features/library/pages/phone-library/phone-library.page');
 const trashPage = () => import('./features/trash/trash.page');
+const remindersPage = () => import('./features/reminders/reminders.page');
 const tagsPage = () => import('./features/tags/pages/tags-page/tags.page');
 const sharePage = () => import('./features/share/share.page');
 
@@ -50,6 +51,7 @@ export const pageRoutes: Routes = [
         data: { scope: LINKS_SCOPE.Folder },
       },
       { path: APP_PATH.Recent, loadComponent: recentPage },
+      { path: APP_PATH.Reminders, loadComponent: remindersPage },
       { path: APP_PATH.Trash, loadComponent: trashPage },
       { path: APP_PATH.Settings, loadChildren: settingsRoutes },
       { path: APP_PATH.Admin, canActivate: [adminOnly], loadChildren: adminRoutes },
@@ -77,6 +79,7 @@ export const pageRoutes: Routes = [
   { path: APP_PATH.Favorites, canActivate: [redirectToSignIn], children: [] },
   { path: `${APP_PATH.Folders}/:folderId`, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Recent, canActivate: [redirectToSignIn], children: [] },
+  { path: APP_PATH.Reminders, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Trash, canActivate: [redirectToSignIn], children: [] },
   // The sections are children (`/settings/account`): any depth leads to sign-in and back.
   {

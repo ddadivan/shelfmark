@@ -501,7 +501,8 @@
         "favorites": "No se puede soltar aquí — marca un enlace con estrella para añadirlo a Favoritos",
         "recent": "No se puede soltar aquí — «Abiertos recientemente» se llena al abrir enlaces",
         "trash": "No se puede soltar aquí — usa Eliminar para mover un enlace a la papelera",
-        "pinnedLink": "No se puede soltar aquí — un enlace fijado no es una carpeta"
+        "pinnedLink": "No se puede soltar aquí — un enlace fijado no es una carpeta",
+        "reminders": "No se puede soltar aquí — usa «Recordármelo» en el menú del enlace"
       }
     }
   },
@@ -2369,7 +2370,8 @@
       "copy": "Copiar enlaces",
       "share": "Compartir",
       "delete": "Eliminar",
-      "moveToFolder": "Mover a {{folder}}"
+      "moveToFolder": "Mover a {{folder}}",
+      "remind": "Recordar"
     },
     "header": {
       "label": "Selección",
@@ -2489,6 +2491,107 @@
       "failed": "No se pudieron eliminar los enlaces",
       "failedDetail": "Han vuelto a la lista",
       "undoFailed": "No se pudieron restaurar los enlaces"
+    }
+  },
+  "reminders": {
+    "title": "Recordatorios",
+    "dueCount": {
+      "one": "{{count}} recordatorio ha llegado",
+      "many": "{{count}} recordatorios han llegado",
+      "other": "{{count}} recordatorios han llegado"
+    },
+    "nothingDue": "No hay nada pendiente ahora",
+    "dueShort": {
+      "one": "{{count}} pendiente",
+      "many": "{{count}} pendientes",
+      "other": "{{count}} pendientes"
+    },
+    "loading": "Cargando recordatorios",
+    "loadFailed": {
+      "title": "No se pudieron cargar tus recordatorios",
+      "text": "Comprueba tu conexión e inténtalo de nuevo.",
+      "retry": "Reintentar"
+    },
+    "empty": {
+      "title": "Aún no hay recordatorios",
+      "text": "Elige «Recordármelo» en el menú de un enlace y volverá aquí el día que elijas."
+    },
+    "group": {
+      "due": "Pendientes",
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "this-week": "Esta semana",
+      "later": "Más adelante"
+    },
+    "footer": "Los recordatorios aparecen aquí, en el contador de la barra lateral y en la tarjeta. No se envían por correo ni como notificación.",
+    "when": {
+      "today": "Hoy, {{time}}",
+      "tomorrow": "Mañana, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Pendiente {{when}}"
+    },
+    "preset": {
+      "later-today": "Más tarde hoy",
+      "tomorrow": "Mañana",
+      "weekend": "Este fin de semana",
+      "next-week": "La semana que viene",
+      "in-month": "Dentro de un mes"
+    },
+    "dialog": {
+      "title": "Recordármelo",
+      "titleMany": {
+        "one": "Recordarme {{count}} enlace",
+        "many": "Recordarme {{count}} enlaces",
+        "other": "Recordarme {{count}} enlaces"
+      },
+      "close": "Cerrar",
+      "current": "Recordatorio actual: {{when}}",
+      "presets": "Opciones rápidas",
+      "pick": "Elegir fecha y hora…",
+      "previousMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente",
+      "time": "Hora",
+      "timeHint": "Opcional; vacía son las 9:00",
+      "past": "Esa hora ya pasó. Elige una más tarde.",
+      "timeZone": "Las horas están en tu zona horaria, {{zone}}.",
+      "remove": "Quitar recordatorio",
+      "cancel": "Cancelar",
+      "confirm": "Recordármelo {{when}}",
+      "confirmEmpty": "Elige un día"
+    },
+    "menu": {
+      "remind": "Recordármelo…",
+      "change": "Cambiar recordatorio…"
+    },
+    "row": {
+      "done": "Hecho",
+      "doneItem": "Marcar como hecho el recordatorio de {{title}}",
+      "snooze": "Posponer",
+      "snoozeItem": "Posponer el recordatorio de {{title}}"
+    },
+    "toast": {
+      "failed": "No se pudo guardar el recordatorio",
+      "retry": "Reintentar",
+      "cleared": {
+        "one": "Recordatorio quitado",
+        "many": "{{count}} recordatorios quitados",
+        "other": "{{count}} recordatorios quitados"
+      },
+      "set": "Recordatorio para {{when}}",
+      "due": {
+        "one": "Ha llegado un recordatorio",
+        "many": "Han llegado {{count}} recordatorios",
+        "other": "Han llegado {{count}} recordatorios"
+      },
+      "show": "Ver"
+    },
+    "edit": {
+      "set": "Recordatorio: {{when}}",
+      "none": "Sin recordatorio",
+      "change": "Cambiar",
+      "remind": "Recordármelo"
     }
   }
 }

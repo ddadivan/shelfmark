@@ -7,6 +7,7 @@ const LABELS: SidebarLabels = {
   favorites: 'Favorites',
   actions: 'Actions for {name}',
   recent: 'Recently opened',
+  reminders: 'Reminders',
   trash: 'Trash',
   feedback: 'Send feedback',
 };
@@ -19,7 +20,13 @@ describe('sidebar nodes', () => {
       ['unsorted', 'Unsorted', 2],
       ['favorites', 'Favorites', 1],
       ['recent', 'Recently opened', undefined],
+      ['reminders', 'Reminders', undefined],
     ]);
+  });
+
+  it('counts the due reminders on the Reminders row, even without link counts', () => {
+    const reminders = fixedNodes(LABELS, null, 2).find((node) => node.id === 'reminders');
+    expect(reminders).toMatchObject({ name: 'Reminders', icon: 'bell', count: 2 });
   });
 
   it('leaves the counts out without counts', () => {

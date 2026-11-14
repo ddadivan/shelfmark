@@ -501,7 +501,8 @@
         "favorites": "Non puoi rilasciarlo qui — aggiungi una stella a un link per metterlo nei Preferiti",
         "recent": "Non puoi rilasciarlo qui — «Aperti di recente» si riempie quando apri i link",
         "trash": "Non puoi rilasciarlo qui — usa Elimina per spostare un link nel cestino",
-        "pinnedLink": "Non puoi rilasciarlo qui — un link fissato non è una cartella"
+        "pinnedLink": "Non puoi rilasciarlo qui — un link fissato non è una cartella",
+        "reminders": "Non si può rilasciare qui — usa “Ricordamelo” nel menu del link"
       }
     }
   },
@@ -2369,7 +2370,8 @@
       "copy": "Copia link",
       "share": "Condividi",
       "delete": "Elimina",
-      "moveToFolder": "Sposta in {{folder}}"
+      "moveToFolder": "Sposta in {{folder}}",
+      "remind": "Promemoria"
     },
     "header": {
       "label": "Selezione",
@@ -2489,6 +2491,107 @@
       "failed": "Impossibile eliminare i link",
       "failedDetail": "Sono di nuovo nell’elenco",
       "undoFailed": "Impossibile ripristinare i link"
+    }
+  },
+  "reminders": {
+    "title": "Promemoria",
+    "dueCount": {
+      "one": "{{count}} promemoria è arrivato",
+      "many": "{{count}} promemoria sono arrivati",
+      "other": "{{count}} promemoria sono arrivati"
+    },
+    "nothingDue": "Nessun promemoria per ora",
+    "dueShort": {
+      "one": "{{count}} da rivedere",
+      "many": "{{count}} da rivedere",
+      "other": "{{count}} da rivedere"
+    },
+    "loading": "Caricamento dei promemoria",
+    "loadFailed": {
+      "title": "Impossibile caricare i promemoria",
+      "text": "Controlla la connessione e riprova.",
+      "retry": "Riprova"
+    },
+    "empty": {
+      "title": "Ancora nessun promemoria",
+      "text": "Scegli “Ricordamelo” nel menu di un link: tornerà qui nel giorno che scegli."
+    },
+    "group": {
+      "due": "Da rivedere",
+      "today": "Oggi",
+      "tomorrow": "Domani",
+      "this-week": "Questa settimana",
+      "later": "Più avanti"
+    },
+    "footer": "I promemoria compaiono qui, sul badge della barra laterale e sulla scheda. Non vengono inviati via e-mail né come notifica.",
+    "when": {
+      "today": "Oggi, {{time}}",
+      "tomorrow": "Domani, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Arrivato {{when}}"
+    },
+    "preset": {
+      "later-today": "Più tardi oggi",
+      "tomorrow": "Domani",
+      "weekend": "Questo fine settimana",
+      "next-week": "La prossima settimana",
+      "in-month": "Tra un mese"
+    },
+    "dialog": {
+      "title": "Ricordamelo",
+      "titleMany": {
+        "one": "Ricordami {{count}} link",
+        "many": "Ricordami {{count}} link",
+        "other": "Ricordami {{count}} link"
+      },
+      "close": "Chiudi",
+      "current": "Promemoria attuale: {{when}}",
+      "presets": "Scelte rapide",
+      "pick": "Scegli data e ora…",
+      "previousMonth": "Mese precedente",
+      "nextMonth": "Mese successivo",
+      "time": "Ora",
+      "timeHint": "Facoltativa; vuota vale 9:00",
+      "past": "Quest’ora è già passata. Scegline una più tarda.",
+      "timeZone": "Gli orari sono nel tuo fuso orario, {{zone}}.",
+      "remove": "Rimuovi promemoria",
+      "cancel": "Annulla",
+      "confirm": "Ricordamelo {{when}}",
+      "confirmEmpty": "Scegli un giorno"
+    },
+    "menu": {
+      "remind": "Ricordamelo…",
+      "change": "Modifica promemoria…"
+    },
+    "row": {
+      "done": "Fatto",
+      "doneItem": "Segna come fatto il promemoria di {{title}}",
+      "snooze": "Rimanda",
+      "snoozeItem": "Rimanda il promemoria di {{title}}"
+    },
+    "toast": {
+      "failed": "Impossibile salvare il promemoria",
+      "retry": "Riprova",
+      "cleared": {
+        "one": "Promemoria rimosso",
+        "many": "{{count}} promemoria rimossi",
+        "other": "{{count}} promemoria rimossi"
+      },
+      "set": "Promemoria per {{when}}",
+      "due": {
+        "one": "È arrivato un promemoria",
+        "many": "Sono arrivati {{count}} promemoria",
+        "other": "Sono arrivati {{count}} promemoria"
+      },
+      "show": "Mostra"
+    },
+    "edit": {
+      "set": "Promemoria: {{when}}",
+      "none": "Nessun promemoria",
+      "change": "Modifica",
+      "remind": "Ricordamelo"
     }
   }
 }

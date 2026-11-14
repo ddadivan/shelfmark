@@ -106,6 +106,15 @@
   overflow-wrap: anywhere;
 }
 
+// Edit mode (#275): the link's reminder and the button that sets or changes it.
+.add-link__reminder {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
 .add-link__note {
   @include type(caption);
 

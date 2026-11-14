@@ -1,4 +1,5 @@
 import { SIDEBAR_RECENT_ID } from '../../../shell/sidebar/models/sidebar-recent-id.const';
+import { SIDEBAR_REMINDERS_ID } from '../../../shell/sidebar/models/sidebar-reminders-id.const';
 import { SIDEBAR_TRASH_ID } from '../../../shell/sidebar/models/sidebar-trash-id.const';
 import { LINKS_SCOPE } from './links-scope.const';
 
@@ -10,5 +11,6 @@ export const NO_DROP_REASON_KEYS: Readonly<Record<string, string>> = {
   [LINKS_SCOPE.All]: 'links.drag.noDrop.all',
   [LINKS_SCOPE.Favorites]: 'links.drag.noDrop.favorites',
   [SIDEBAR_RECENT_ID]: 'links.drag.noDrop.recent',
+  [SIDEBAR_REMINDERS_ID]: 'links.drag.noDrop.reminders',
   [SIDEBAR_TRASH_ID]: 'links.drag.noDrop.trash',
 };

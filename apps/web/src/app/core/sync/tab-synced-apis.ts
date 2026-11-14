@@ -11,6 +11,7 @@ import type {
   UpdateLinkRequest,
   UpdateLinksBatchRequest,
   PinRef,
+  SetRemindersBatchRequest,
   TrashItemRef,
   UpdateTagRequest,
 } from '@shelfmark/contracts';
@@ -19,6 +20,7 @@ import type { FoldersApi } from '../../features/links/models/folders-api.interfa
 import type { LinksApi } from '../../features/links/models/links-api.interface';
 import type { TagsApi } from '../../features/links/models/tags-api.interface';
 import type { PinsApi } from '../../features/pins/models/pins-api.interface';
+import type { RemindersApi } from '../../features/reminders/models/reminders-api.interface';
 import type { TrashApi } from '../../features/trash/models/trash-api.interface';
 import { TAB_SYNC_KIND } from './models/tab-sync-kind.const';
 import type { TabSyncService } from './tab-sync.service';
@@ -103,5 +105,17 @@ export function tabSyncedPinsApi(inner: PinsApi, sync: TabSyncService): PinsApi 
     create: (ref: PinRef) => after(inner.create(ref), changed),
     remove: (ref: PinRef) => after(inner.remove(ref), changed),
     reorder: (refs: readonly PinRef[]) => after(inner.reorder(refs), changed),
+  };
+}
+
+/** The reminders seam with tab sync: a set, change or clear shows in the other tabs (badge, cards). */
+export function tabSyncedRemindersApi(inner: RemindersApi, sync: TabSyncService): RemindersApi {
+  const changed = () => sync.post({ kind: TAB_SYNC_KIND.LibraryChanged });
+  return {
+    list: () => inner.list(),
+    count: () => inner.count(),
+    set: (linkId: string, remindAt: string) => after(inner.set(linkId, remindAt), changed),
+    clear: (linkId: string) => after(inner.clear(linkId), changed),
+    setMany: (request: SetRemindersBatchRequest) => after(inner.setMany(request), changed),
   };
 }

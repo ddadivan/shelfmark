@@ -18,12 +18,7 @@
     (click)="shiftMonth(1)"
   />
 </div>
-<table
-  class="ui-date-picker__grid"
-  role="grid"
-  [attr.aria-label]="title()"
-  (keydown)="onKeydown($event)"
->
+<table class="ui-date-picker__grid" role="grid" [attr.aria-label]="title()">
   <thead>
     <tr>
       @for (weekday of weekdays(); track weekday.long) {
@@ -49,6 +44,7 @@
               [tabIndex]="day.iso === active() ? 0 : -1"
               [disabled]="day.disabled"
               (click)="pick(day)"
+              (keydown)="onKeydown($event)"
             >
               {{ day.day }}
             </button>

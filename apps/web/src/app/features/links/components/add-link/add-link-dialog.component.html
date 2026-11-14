@@ -188,6 +188,26 @@
           }}</ui-notice>
         }
 
+        @if (editing) {
+          <div class="add-link__reminder">
+            <span class="add-link__note">{{
+              reminder()
+                ? ('reminders.edit.set' | transloco: { when: reminder() })
+                : ('reminders.edit.none' | transloco)
+            }}</span>
+            <ui-button
+              size="sm"
+              [variant]="BUTTON_VARIANT.Ghost"
+              iconLeft="bell"
+              [disabled]="saving()"
+              (click)="requestRemind()"
+              >{{
+                (reminder() ? 'reminders.edit.change' : 'reminders.edit.remind') | transloco
+              }}</ui-button
+            >
+          </div>
+        }
+
         @if (meta(); as text) {
           <p class="add-link__note">{{ text }}</p>
         }

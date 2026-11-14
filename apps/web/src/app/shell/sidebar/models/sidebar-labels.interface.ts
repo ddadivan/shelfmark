@@ -6,6 +6,7 @@ export interface SidebarLabels {
   /** The "..." button name with its `{name}` placeholder; `ui-tree` fills in the folder. */
   actions: string;
   recent: string;
+  reminders: string;
   trash: string;
   feedback: string;
 }
