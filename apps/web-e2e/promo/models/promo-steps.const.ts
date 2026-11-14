@@ -25,7 +25,7 @@ import type { PromoStep } from './promo-step.interface';
 /** The link the video saves; the mock preview API answers "Page on <host>" for any new link. */
 const LINK_URL = 'https://web.dev/articles/vitals';
 const LINK_TITLE = 'Page on web.dev';
-const LINK_NOTE = 'Check before the release';
+const LINK_NOTE = 'Read it this weekend';
 /** A link the demo library already has (in Angular): the duplicate notice. */
 const SAVED_URL = 'https://angular.dev/guide/zoneless';
 /** A pasted list for "Add several links": three new links among some chat text. */
@@ -296,7 +296,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(dialog.getByRole('button', { name: 'Create folder' }));
       await expect(page.getByRole('heading', { name: 'This folder is empty' })).toBeVisible();
       await director.parkPointer();
-      await director.pause(1300);
+      await director.pause(900);
     },
   },
   {
@@ -328,10 +328,17 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(cell);
       await expect(picker).toHaveCount(0);
       await expect(dialog.getByRole('combobox', { name: 'Emoji' })).toHaveValue(FOLDER_EMOJI);
-      await director.pause(400);
+      // The dialog previews the emoji; the folder itself changes on Save.
+      await director.point(dialog.locator('.folder-style__preview'));
+      await director.pause(700);
       await director.press(dialog.getByRole('button', { name: 'Save' }));
       await expect(dialog).toHaveCount(0);
-      await director.pause(500);
+      // Then the folder row shows it: the pointer rests next to it, so the change is clear.
+      const row = treeRow(page, FOLDER_STYLE);
+      await expect(row).toContainText(FOLDER_EMOJI);
+      await director.reveal(row);
+      await director.point(row);
+      await director.pause(1500);
     },
   },
   {
@@ -365,7 +372,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await folderMenu(context, FOLDER_STYLE, 'Pin to sidebar');
       await expect(pinnedItems(page).filter({ hasText: FOLDER_STYLE })).toBeVisible();
       await director.parkPointer();
-      await director.pause(1000);
+      await director.pause(700);
     },
   },
   {
@@ -434,7 +441,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(tagChip(page, TAG_FILTER));
       await expect(page.getByRole('group', { name: 'Active filters' })).toBeVisible();
       await director.parkPointer();
-      await director.pause(1400);
+      await director.pause(1100);
     },
   },
   {
@@ -479,7 +486,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(await libraryEntry(context, 'Favorites'));
       await expect(page.getByRole('heading', { level: 1, name: 'Favorites' })).toBeVisible();
       await director.parkPointer();
-      await director.pause(1000);
+      await director.pause(700);
     },
   },
 
