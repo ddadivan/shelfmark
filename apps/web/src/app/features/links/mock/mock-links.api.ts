@@ -155,10 +155,13 @@ export class MockLinksApi implements LinksApi {
       }
       const now = new Date().toISOString();
       const url = this.savedUrl(request.url);
+      // Domain rules (#398), like the API: they fill what the save left open.
+      const rule = request.applyRules === false ? null : this.data.ruleEffect(url);
+      const tags = request.tags?.length ? request.tags : (rule?.tags ?? []);
       const link: LinkResponse = {
         id: globalThis.crypto.randomUUID(),
         kind: request.kind ?? deriveLinkKind(url),
-        folderId: request.folderId ?? null,
+        folderId: request.folderId ?? rule?.folderId ?? null,
         url,
         title: request.title ?? url,
         note: request.note ?? null,
@@ -168,7 +171,7 @@ export class MockLinksApi implements LinksApi {
         pinnedInFolderAt: null,
         pinned: false,
         lastOpenedAt: null,
-        tags: normalizeLinkTags(request.tags ?? []),
+        tags: normalizeLinkTags(tags),
         createdAt: now,
         updatedAt: now,
       };
@@ -424,9 +427,10 @@ export class MockLinksApi implements LinksApi {
         }
         // The first pasted link is the newest, as on the server.
         const at = new Date(now - fresh.length).toISOString();
+        const rule = this.data.ruleEffect(item.url);
         const link: LinkResponse = {
           id: globalThis.crypto.randomUUID(),
-          folderId: request.folderId ?? null,
+          folderId: request.folderId ?? rule?.folderId ?? null,
           url: item.url,
           title: item.title ?? item.url,
           kind: deriveLinkKind(item.url),
@@ -437,7 +441,7 @@ export class MockLinksApi implements LinksApi {
           pinnedInFolderAt: null,
           pinned: false,
           lastOpenedAt: null,
-          tags: normalizeLinkTags(request.tags ?? []),
+          tags: normalizeLinkTags(request.tags?.length ? request.tags : (rule?.tags ?? [])),
           createdAt: at,
           updatedAt: at,
         };
@@ -447,7 +451,7 @@ export class MockLinksApi implements LinksApi {
         links.push(link);
       });
       this.links = [...fresh, ...this.links];
-      this.data.ensureTags(request.tags ?? []);
+      this.data.ensureTags(fresh.flatMap((link) => link.tags));
       return of<CreateLinksBatchResponse>({
         links: links.map((link) => this.withImages(link, this.pending.has(link.id))),
         errors,

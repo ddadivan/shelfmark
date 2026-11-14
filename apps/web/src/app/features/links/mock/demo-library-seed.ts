@@ -4,6 +4,8 @@ import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
+import type { MockRule } from '../../rules/mock/models/mock-rule.interface';
+import { DEMO_FOLDER_KEY } from './models/demo-folder-key.const';
 import type { DemoFolderKey } from './models/demo-folder-key.type';
 import { DEMO_SEED_FOLDERS } from './models/demo-seed-folders.const';
 import { DEMO_SEED_LINKS } from './models/demo-seed-links.const';
@@ -13,6 +15,8 @@ export interface DemoLibrarySeed {
   folders: FolderResponse[];
   links: LinkResponse[];
   pins: PinRef[];
+  /** Domain rules (#398): one example, like the API's demo seed. */
+  rules: MockRule[];
 }
 
 const ID_PREFIX = '00000000-0000-4000-8000-';
@@ -108,7 +112,17 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
       .filter((link) => link.pinned)
       .map((link): PinRef => ({ kind: PIN_KIND.Link, id: link.id })),
   ];
-  return { folders, links, pins };
+  // Like the API's seed.json: links from angular.dev go to Angular with the tag "angular".
+  const rules: MockRule[] = [
+    {
+      id: `${ID_PREFIX}r00000000001`,
+      domain: 'angular.dev',
+      folderId: ids.get(DEMO_FOLDER_KEY.Angular) ?? null,
+      tags: ['angular'],
+      createdAt: stamp,
+    },
+  ];
+  return { folders, links, pins, rules };
 }
 
 function folderSuffix(index: number): string {
