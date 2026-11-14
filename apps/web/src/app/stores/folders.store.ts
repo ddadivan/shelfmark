@@ -19,7 +19,14 @@ import {
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { FOLDERS_API } from '../features/links/models/folders-api.const';
-import { buildFolderTree, descendantIds, pathTo } from './folder-tree';
+import {
+  buildFolderTree,
+  descendantIds,
+  endPosition,
+  byName,
+  pathTo,
+  reorderedSiblings,
+} from './folder-tree';
 import { LinksStore } from './links.store';
 import { PinsStore } from './pins.store';
 import type { FoldersState } from './models/folders-state.interface';
@@ -31,11 +38,6 @@ const initialState: FoldersState = {
   loading: false,
   error: false,
 };
-
-/** The API order: the manual place among the siblings (#314), then the name. */
-function byName(folders: readonly FolderResponse[]): FolderResponse[] {
-  return [...folders].sort((a, b) => a.position - b.position || a.name.localeCompare(b.name));
-}
 
 /**
  * The user's folders as a flat list (the API shape) with the counts of the fixed sidebar rows,
@@ -281,10 +283,7 @@ export const FoldersStore = signalStore(
         const position =
           parentId === previous.parentId
             ? previous.position
-            : store
-                .entities()
-                .filter((folder) => folder.parentId === parentId && folder.id !== id)
-                .reduce((max, folder) => Math.max(max, folder.position), -1) + 1;
+            : endPosition(store.entities(), parentId, id);
         replace(id, { parentId, position });
         try {
           const saved = await firstValueFrom(api().update(id, { parentId }));
@@ -324,9 +323,7 @@ export const FoldersStore = signalStore(
         if (from === to) {
           return true;
         }
-        const next = [...siblings];
-        const [moved] = next.splice(from, 1);
-        next.splice(to, 0, moved);
+        const next = reorderedSiblings(siblings, from, to);
         const before = new Map(siblings.map((other) => [other.id, other.position]));
         const wanted = new Map(next.map((other, position) => [other.id, position]));
         const token = begin();
