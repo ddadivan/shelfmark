@@ -881,7 +881,8 @@ describe('account settings', () => {
     });
 
     it.each([
-      [{ language: 'uk' }],
+      [{ language: 'pl' }],
+      [{ language: 'uk-UA' }],
       [{ language: 'EN' }],
       [{ language: 'fr-FR' }],
       [{ language: null }],

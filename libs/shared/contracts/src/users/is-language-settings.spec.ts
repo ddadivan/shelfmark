@@ -11,7 +11,9 @@ describe('language settings guards', () => {
   it('accepts the allow-listed values only', () => {
     expect(isInterfaceLanguage('fr')).toBe(true);
     expect(isInterfaceLanguage('browser')).toBe(true);
-    expect(isInterfaceLanguage('uk')).toBe(false);
+    expect(isInterfaceLanguage('uk')).toBe(true);
+    expect(isInterfaceLanguage('uk-UA')).toBe(false);
+    expect(isInterfaceLanguage('pl')).toBe(false);
     expect(isInterfaceLanguage('constructor')).toBe(false);
     expect(isDateFormat('iso')).toBe(true);
     expect(isDateFormat('yyyy')).toBe(false);

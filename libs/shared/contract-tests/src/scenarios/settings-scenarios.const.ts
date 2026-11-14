@@ -257,6 +257,16 @@ export const SETTINGS_SCENARIOS: readonly ContractScenario[] = [
     },
   ),
 
+  scenario('settings', 'saves Ukrainian as the interface language (#404)', async ({ settings }) => {
+    const updated = await settings.update({ language: INTERFACE_LANGUAGE.Uk });
+    expectEqual(updated, {
+      ...DEFAULT_SETTINGS,
+      language: INTERFACE_LANGUAGE.Uk,
+      languageSaved: true,
+    });
+    expectEqual((await settings.get()).language, INTERFACE_LANGUAGE.Uk);
+  }),
+
   scenario(
     'settings',
     'rejects a field it does not know and a wrong type',
