@@ -85,7 +85,7 @@
             [value]="splitView.leftValue()"
             [label]="splitView.leftLabel()"
             [icon]="splitView.leftTile().icon"
-            [colour]="splitView.leftTile().colour ?? 'graphite'"
+            [colour]="splitView.leftTile().colour"
             [emptyLabel]="'library.scope.unsorted' | transloco"
             [currentIds]="splitView.leftCurrentIds()"
             [currentLabel]="'library.split.onRight' | transloco"
@@ -227,6 +227,7 @@
           </ui-menu>
           @if (wide() && !splitView.open()) {
           <ui-button
+            #splitOpener
             variant="ghost"
             iconOnly
             iconLeft="columns"

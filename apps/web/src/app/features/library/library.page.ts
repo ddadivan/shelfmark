@@ -1,6 +1,13 @@
 import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   BadgeComponent,
@@ -168,6 +175,9 @@ export default class LibraryPage {
 
   protected readonly BULK_BAR_LAYOUT = BULK_BAR_LAYOUT;
 
+  /** The "Side by side" button: after the split closes it takes the focus the close button had. */
+  private readonly splitOpener = viewChild<ButtonComponent>('splitOpener');
+
   constructor() {
     this.filters.connect({
       scope: this.scope,
@@ -177,6 +187,12 @@ export default class LibraryPage {
       sort: this.sort,
       kind: this.kind,
       split: this.split,
+    });
+    effect(() => {
+      const opener = this.splitOpener();
+      if (opener && this.splitView.takeOpenerFocus()) {
+        opener.focus();
+      }
     });
     void this.settings.load();
   }

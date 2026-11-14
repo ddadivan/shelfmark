@@ -1,6 +1,7 @@
-import { computed, inject, Service, signal } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
+import { FOLDER_DEFAULT_COLOUR } from '@shelfmark/contracts';
 import { activeLang } from '../../../core/i18n/active-lang';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { FoldersStore } from '../../../stores/folders.store';
@@ -8,6 +9,8 @@ import { TagsStore } from '../../../stores/tags.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { buildFolderPickerOptions } from '../../links/utils/folder-picker-options';
+import { SPLIT_TILE_ICON } from '../models/split-tile-icon.const';
+import type { SplitTile } from '../models/split-tile.interface';
 import type { LibraryRoute } from '../models/library-route.interface';
 import { SPLIT_QUERY_PARAM } from '../models/split-query-param.const';
 import { SPLIT_RIGHT_KIND } from '../models/split-right-kind.const';
@@ -114,26 +117,30 @@ export class SplitViewService {
     return target === undefined ? [] : [target];
   });
   /** The tile of the right feed (the bulk bar and the picker): its folder's colour and icon, `inbox` for Unsorted. */
-  readonly rightTile = computed(() => {
+  readonly rightTile = computed<SplitTile>(() => {
     const folder = this.rightFolder();
     return folder
       ? { colour: this.settings.shownColour(folder.colour), icon: folder.icon }
-      : { icon: 'inbox' };
+      : { colour: FOLDER_DEFAULT_COLOUR, icon: SPLIT_TILE_ICON.Unsorted };
   });
   /** The tile of the left feed: its folder's colour and icon, or the glyph of the list or tag. */
-  readonly leftTile = computed(() => {
+  readonly leftTile = computed<SplitTile>(() => {
     const filter = this.filters.filter();
     const folder = this.filters.folder();
     if (folder) {
       return { colour: this.settings.shownColour(folder.colour), icon: folder.icon };
     }
+    const colour = FOLDER_DEFAULT_COLOUR;
     switch (filter.scope) {
       case LINKS_SCOPE.Unsorted:
-        return { icon: 'inbox' };
+        return { colour, icon: SPLIT_TILE_ICON.Unsorted };
       case LINKS_SCOPE.Favorites:
-        return { icon: 'star' };
+        return { colour, icon: SPLIT_TILE_ICON.Favorites };
       default:
-        return { icon: filter.tags && filter.tags.length > 0 ? 'tag' : 'link' };
+        return {
+          colour,
+          icon: filter.tags && filter.tags.length > 0 ? SPLIT_TILE_ICON.Tag : SPLIT_TILE_ICON.All,
+        };
     }
   });
   /** Name of what the left half shows. */
@@ -153,21 +160,37 @@ export class SplitViewService {
     return this.rightFolder()?.name ?? '';
   });
 
-  private readonly pickerFocused = signal(false);
-  /** The picker was opened by the "Side by side" button: it takes the focus its button had. */
-  readonly focusPicker = this.pickerFocused.asReadonly();
+  // The picker was opened by the "Side by side" button: it takes the focus its button had, once.
+  private pickerFocus = false;
+  // The split was closed: the "Side by side" button, which appears now, takes the focus, once.
+  private openerFocus = false;
+
+  /** Whether the right half's picker takes the focus as it appears; read once, then reset. */
+  takePickerFocus(): boolean {
+    const wanted = this.pickerFocus;
+    this.pickerFocus = false;
+    return wanted;
+  }
+
+  /** Whether the "Side by side" button takes the focus as it appears; read once, then reset. */
+  takeOpenerFocus(): boolean {
+    const wanted = this.openerFocus;
+    this.openerFocus = false;
+    return wanted;
+  }
 
   /** Opens the right half with the picker (the "Side by side" button). Only from 80em. */
   async openSplit(): Promise<void> {
     if (this.viewport.wide() && !this.open()) {
-      this.pickerFocused.set(true);
+      this.pickerFocus = true;
       await this.setSplit('', false);
     }
   }
 
   /** Closes the right half. */
   async close(): Promise<void> {
-    this.pickerFocused.set(false);
+    this.pickerFocus = false;
+    this.openerFocus = true;
     await this.router.navigate([], {
       queryParams: { [SPLIT_QUERY_PARAM]: null },
       queryParamsHandling: 'merge',
@@ -175,9 +198,10 @@ export class SplitViewService {
   }
 
   /**
-   * The right half shows `target` (a folder id, `null` for Unsorted). The first choice from the
-   * empty picker replaces the entry, so Back closes the split instead of showing an empty picker;
-   * later changes are new entries.
+   * The right half shows `target` (a folder id, `null` for Unsorted). A choice made while the half
+   * shows the picker (the empty `?split=`, and also a foreign or same-as-left id, which show it
+   * too) replaces the entry, so Back closes the split instead of returning to a picker; later
+   * changes are new entries.
    */
   async chooseRight(target: string | null): Promise<void> {
     await this.setSplit(splitParamValue(target), this.rightTarget() === undefined);

@@ -46,7 +46,7 @@
         [searchLabel]="'library.split.choose.search' | transloco"
         [listLabel]="'library.split.choose.list' | transloco"
         [noResultsLabel]="'library.split.choose.noResults' | transloco"
-        [autoFocus]="split.focusPicker()"
+        [autoFocus]="focusPicker"
         (chosen)="split.chooseRight($event)"
       />
     </ui-panel>
@@ -57,7 +57,7 @@
         [value]="split.rightValue() ?? null"
         [label]="split.rightLabel()"
         [icon]="split.rightTile().icon"
-        [colour]="split.rightTile().colour ?? 'graphite'"
+        [colour]="split.rightTile().colour"
         [emptyLabel]="'library.scope.unsorted' | transloco"
         [currentIds]="split.rightCurrentIds()"
         [currentLabel]="'library.split.onLeft' | transloco"
@@ -93,7 +93,7 @@
             {{ 'library.error.retry' | transloco }}
           </ui-button>
         </div>
-      } @else if (!feed.loaded()) {
+      } @else if (!feed.loaded() || !ready()) {
         <div class="split-right__grid">
           <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
         </div>
@@ -113,7 +113,7 @@
               [cdkDragData]="link"
               [cdkDragStartDelay]="dnd.DRAG_START_DELAY"
               (pointerdown)="drag.grab($event)"
-              (cdkDragStarted)="dnd.started(link)"
+              (cdkDragStarted)="dnd.started(link, true)"
               (cdkDragMoved)="dnd.moved($event)"
               (cdkDragEnded)="dnd.ended()"
             >

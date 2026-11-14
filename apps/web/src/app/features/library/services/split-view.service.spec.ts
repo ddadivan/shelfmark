@@ -205,6 +205,34 @@ describe('SplitViewService', () => {
       });
     });
 
+    it('gives the picker the focus once, only after the button opened it', async () => {
+      const { service } = setup();
+      expect(service.takePickerFocus()).toBe(false);
+
+      await service.openSplit();
+      expect(service.takePickerFocus()).toBe(true);
+      expect(service.takePickerFocus()).toBe(false);
+    });
+
+    it('does not give the picker the focus after the split was closed again', async () => {
+      const { service, splitParam } = setup();
+      await service.openSplit();
+      splitParam.set(B);
+      await service.close();
+
+      expect(service.takePickerFocus()).toBe(false);
+    });
+
+    it('hands the focus to the open button once after a close', async () => {
+      const { service, splitParam } = setup();
+      splitParam.set(B);
+      expect(service.takeOpenerFocus()).toBe(false);
+
+      await service.close();
+      expect(service.takeOpenerFocus()).toBe(true);
+      expect(service.takeOpenerFocus()).toBe(false);
+    });
+
     it('closes by removing the parameter', async () => {
       const { service, router, splitParam } = setup();
       splitParam.set(B);

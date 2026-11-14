@@ -26,6 +26,7 @@ async function setup(...given: [SplitTarget?]) {
   const treeTarget = signal<string | null>(null);
   const feed = {
     entities,
+    target: signal<SplitTarget>(rightTarget()),
     count: () => entities().length,
     loaded: signal(true),
     error: signal(false),
@@ -44,7 +45,7 @@ async function setup(...given: [SplitTarget?]) {
     rightTile: () => ({ colour: 'rose', icon: 'folder' }),
     rightOptions: () => [{ id: 'f1', name: 'Clothes' }],
     rightCurrentIds: () => [],
-    focusPicker: () => false,
+    takePickerFocus: () => false,
     close: vi.fn(() => Promise.resolve()),
     chooseRight: vi.fn(() => Promise.resolve()),
   };
@@ -117,6 +118,22 @@ describe('SplitRightHalfComponent', () => {
     expect(element.querySelector('ui-skeleton')).not.toBeNull();
     expect(element.querySelector('ui-picker-menu')).toBeNull();
     expect(element.querySelector('ui-picker-list')).toBeNull();
+  });
+
+  it('shows a skeleton, not the cards of the folder before, until the feed follows the target', async () => {
+    const { element, fixture, rightTarget, feed } = await setup();
+    expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
+
+    feed.target.set('f1');
+    rightTarget.set('f2');
+    await fixture.whenStable();
+
+    expect(element.querySelector('app-link-card')).toBeNull();
+    expect(element.querySelector('ui-skeleton')).not.toBeNull();
+
+    feed.target.set('f2');
+    await fixture.whenStable();
+    expect(element.querySelectorAll('app-link-card')).toHaveLength(2);
   });
 
   it('retries a failed first load', async () => {

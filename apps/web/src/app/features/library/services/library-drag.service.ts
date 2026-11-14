@@ -29,10 +29,17 @@ export class LibraryDragService {
   /** Touch holds 150 ms before a drag starts (DragDrop spec), so a swipe still scrolls. */
   readonly DRAG_START_DELAY = { touch: 150, mouse: 0 };
 
-  /** A drag began: the drag service takes the links along and a screen reader hears what moves. */
-  started(link: LinkResponse): void {
+  /** The drag began on a card of the right half: it carries that link alone, whatever is picked. */
+  private fromRight = false;
+
+  /**
+   * A drag began: the drag service takes the links along and a screen reader hears what moves.
+   * `fromRight`: the card is in the right half, whose links are never part of the selection.
+   */
+  started(link: LinkResponse, fromRight = false): void {
     this.clearReason();
-    this.links.start(link, this.selection.selectedLinks());
+    this.fromRight = fromRight;
+    this.links.start(link, fromRight ? [] : this.selection.selectedLinks());
     const count = this.bundled(link) ? this.selection.selectedCount() : 1;
     this.selection.announce(
       this.transloco.translate(pluralKey('links.drag.started', count), { count }),
@@ -44,6 +51,7 @@ export class LibraryDragService {
     this.clearReason();
     this.selection.announce('');
     this.links.drop();
+    this.fromRight = false;
   }
 
   /**
@@ -56,7 +64,7 @@ export class LibraryDragService {
 
   /** Dragging a picked link (with others picked) carries the whole selection. */
   bundled(link: LinkResponse): boolean {
-    return this.selection.selectedCount() > 1 && this.selection.has(link.id);
+    return !this.fromRight && this.selection.selectedCount() > 1 && this.selection.has(link.id);
   }
 
   /** How many links a drag of `link` carries: the whole selection when it travels, else 1. */

@@ -1,5 +1,5 @@
 import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   BadgeComponent,
@@ -58,12 +58,17 @@ const SKELETON_COUNT = 4;
 export class SplitRightHalfComponent {
   protected readonly split = inject(SplitViewService);
   protected readonly feed = inject(SplitFeedStore);
+  /** The picker takes the focus only when the "Side by side" button just opened the half. */
+  protected readonly focusPicker = this.split.takePickerFocus();
   protected readonly drag = inject(LinkDragService);
   protected readonly dnd = inject(LibraryDragService);
   protected readonly actions = inject(LinkActionsService);
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;
   protected readonly pluralKey = pluralKey;
+
+  /** The feed holds the links of the target on screen (not those of the folder before it). */
+  protected readonly ready = computed(() => this.feed.target() === this.split.rightTarget());
 
   /** Loads the first page of the target again (the error state's button). */
   protected retry(): void {

@@ -323,6 +323,23 @@ describe('LibraryPage side by side', () => {
     });
   });
 
+  it('puts the focus on the "Side by side" button after the split closes', async () => {
+    const { fixture, element } = await setup({ split: B });
+    document.body.append(element);
+    const close = await loader(fixture).getHarness(
+      UiButtonHarness.with({ label: 'Close side by side' }),
+    );
+    await close.click();
+
+    fixture.componentRef.setInput('split', undefined);
+    await fixture.whenStable();
+
+    const opener = element.querySelector('button[aria-label="Side by side"]');
+    expect(opener).not.toBeNull();
+    expect(document.activeElement).toBe(opener);
+    element.remove();
+  });
+
   it.each([
     ['the picker', ''],
     ['a folder', B],

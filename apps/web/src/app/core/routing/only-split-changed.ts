@@ -11,7 +11,8 @@ function leaf(snapshot: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
 }
 
 function withoutSplit(params: Params): Params {
-  const { [SPLIT_QUERY_PARAM]: _split, ...rest } = params;
+  const rest = { ...params };
+  delete rest[SPLIT_QUERY_PARAM];
   return rest;
 }
 

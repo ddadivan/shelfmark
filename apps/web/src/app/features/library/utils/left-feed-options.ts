@@ -6,6 +6,7 @@ import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { buildFolderPickerOptions } from '../../links/utils/folder-picker-options';
 import { TAG_QUERY_PARAM } from '../../tags/models/tag-query-param.const';
 import { LEFT_FEED_ID } from '../models/left-feed-id.const';
+import { SPLIT_TILE_ICON } from '../models/split-tile-icon.const';
 import type { LeftFeedLabels } from '../models/left-feed-labels.interface';
 import type { LibraryRoute } from '../models/library-route.interface';
 
@@ -23,13 +24,13 @@ export function leftFeedOptions(
   shownColour: (colour: FolderColour | string) => FolderColour | string,
 ): PickerOption[] {
   return [
-    { id: LEFT_FEED_ID.All, name: labels.all, icon: 'link' },
-    { id: LEFT_FEED_ID.Favorites, name: labels.favorites, icon: 'star' },
+    { id: LEFT_FEED_ID.All, name: labels.all, icon: SPLIT_TILE_ICON.All },
+    { id: LEFT_FEED_ID.Favorites, name: labels.favorites, icon: SPLIT_TILE_ICON.Favorites },
     ...buildFolderPickerOptions(folders, shownColour),
     ...tags.map((tag) => ({
       id: `${LEFT_FEED_ID.TagPrefix}${tag.name}`,
       name: tag.name,
-      icon: 'tag',
+      icon: SPLIT_TILE_ICON.Tag,
     })),
   ];
 }
