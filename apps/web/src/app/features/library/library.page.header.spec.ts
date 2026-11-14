@@ -33,7 +33,15 @@ async function setup(scope: LinksScope, folderId?: string) {
       {
         provide: LINKS_API,
         useValue: {
-          list: () => of({ items: [{ ...MOCK_LINKS[0] }], nextCursor: null, pinned: [] }),
+          list: () =>
+            of({
+              items: [
+                { ...MOCK_LINKS[0], folderId: 'f1' },
+                { ...MOCK_LINKS[1], folderId: null },
+              ],
+              nextCursor: null,
+              pinned: [],
+            }),
           recent: () => of({ items: [] }),
         },
       },
@@ -88,5 +96,26 @@ describe('LibraryPage folder header (#418)', () => {
     expect(banner).toBeNull();
     expect(element.querySelector('.library__heading ui-folder-icon')).toBeNull();
     expect(element.querySelector('h1')?.textContent?.trim()).toBe('All links');
+  });
+});
+
+describe('LibraryPage folder chips (#418)', () => {
+  it('names the folder of each link in a mixed feed, none for an unsorted link', async () => {
+    const { element } = await setup(LINKS_SCOPE.All);
+
+    const chips = [...element.querySelectorAll('app-link-card ui-folder-chip')];
+    expect(chips).toHaveLength(1);
+    expect(
+      chips[0]?.querySelector('.ui-folder-chip__label')?.textContent?.replace(/\s+/g, ' ').trim(),
+    ).toBe('In folder Recipes');
+    expect(chips[0]?.getAttribute('style')).toContain('--ui-folder-tint');
+  });
+
+  it('shows no chip inside a folder or Unsorted', async () => {
+    const inFolder = await setup(LINKS_SCOPE.Folder, 'f1');
+    expect(inFolder.element.querySelector('ui-folder-chip')).toBeNull();
+    TestBed.resetTestingModule();
+    const unsorted = await setup(LINKS_SCOPE.Unsorted);
+    expect(unsorted.element.querySelector('ui-folder-chip')).toBeNull();
   });
 });

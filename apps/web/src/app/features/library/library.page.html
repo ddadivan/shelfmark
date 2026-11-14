@@ -480,6 +480,7 @@
             </ng-template>
             <app-link-row
               [link]="link"
+              [folder]="showFolderChips() ? folderChips.of(link.folderId) : null"
               [pinnable]="filters.isFolder()"
               [selecting]="selection.selecting()"
               [selected]="selection.has(link.id)"
@@ -546,6 +547,7 @@
             </ng-template>
             <app-link-card
               [link]="link"
+              [folder]="showFolderChips() ? folderChips.of(link.folderId) : null"
               [pinnable]="filters.isFolder()"
               [selecting]="selection.selecting()"
               [selected]="selection.has(link.id)"

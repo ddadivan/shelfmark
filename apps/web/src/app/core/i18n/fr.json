@@ -292,7 +292,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "Dans le dossier"
     },
     "item": {
       "edit": "Modifier",

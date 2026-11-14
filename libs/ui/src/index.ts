@@ -17,6 +17,7 @@ export * from './lib/components/favicon';
 export * from './lib/components/field';
 export * from './lib/components/flag';
 export * from './lib/components/folder-banner';
+export * from './lib/components/folder-chip';
 export * from './lib/components/folder-icon';
 export * from './lib/components/highlight';
 export * from './lib/components/history-row';

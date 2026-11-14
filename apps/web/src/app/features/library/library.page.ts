@@ -50,6 +50,7 @@ import { LinkDragService } from '../links/services/link-drag.service';
 import { HowItWorksService } from '../how-it-works/services/how-it-works.service';
 import { LinkCardComponent } from '../links/components/link-card/link-card.component';
 import { LinkRowComponent } from '../links/components/link-row/link-row.component';
+import { FolderChipsService } from '../links/services/folder-chips.service';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
 import type { LinksScope } from '../links/models/links-scope.type';
 import { APP_PATH } from '../../models/app-path.const';
@@ -152,6 +153,12 @@ export default class LibraryPage {
   protected readonly wide = inject(ViewportService).wide;
   protected readonly splitView = inject(SplitViewService);
   protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
+  protected readonly folderChips = inject(FolderChipsService);
+  /** Cards and rows name their folder in mixed feeds, not in a folder's own feed or Unsorted (#418). */
+  protected readonly showFolderChips = computed(
+    () =>
+      this.filters.scope() !== LINKS_SCOPE.Folder && this.filters.scope() !== LINKS_SCOPE.Unsorted,
+  );
   /** The folder header (#418): band or cover, big tile, description; none in the split view. */
   protected readonly folderBanner = computed(() =>
     this.splitView.open() ? null : this.head.banner(),
