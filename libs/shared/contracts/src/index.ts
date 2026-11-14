@@ -45,6 +45,7 @@ export { RECENT_LINKS_WINDOW_DAYS } from './links/recent-links-window.const';
 export { isHttpUrl } from './links/is-http-url';
 export { normalizeUrl } from './links/normalize-url';
 export { withDefaultScheme } from './links/with-default-scheme';
+export { linkHost } from './links/link-host';
 export { LINK_ERROR_MESSAGE } from './links/link-error-message.const';
 export { LINK_LIMIT } from './links/link-limit.const';
 export { LINK_SORT_FIELD } from './links/link-sort-field.const';
@@ -298,3 +299,16 @@ export type { AdminStatsPreferences } from './admin/admin-stats-preferences.inte
 export type { AdminStatsMilestone } from './admin/admin-stats-milestone.interface';
 export type { AdminStatsRatings } from './admin/admin-stats-ratings.interface';
 export type { AdminStatsResponse } from './admin/admin-stats-response.interface';
+
+export type { RuleResponse } from './rules/rule-response.interface';
+export type { ListRulesResponse } from './rules/list-rules-response.interface';
+export type { CreateRuleRequest } from './rules/create-rule-request.interface';
+export type { UpdateRuleRequest } from './rules/update-rule-request.interface';
+export type { RuleMatch } from './rules/rule-match.interface';
+export type { RuleMatchesResponse } from './rules/rule-matches-response.interface';
+export type { RuleTarget } from './rules/rule-target.interface';
+export { RULE_LIMIT } from './rules/rule-limit.const';
+export { RULE_ENDPOINT } from './rules/rule-endpoint.const';
+export { RULE_ERROR_MESSAGE } from './rules/rule-error-message.const';
+export { normalizeRuleDomain, ruleHost } from './rules/normalize-rule-domain';
+export { findMatchingRule, hostMatchesDomain } from './rules/find-matching-rule';
