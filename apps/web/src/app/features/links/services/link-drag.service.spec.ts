@@ -87,6 +87,29 @@ describe('LinkDragService', () => {
     expect(moveTo).toHaveBeenCalledWith(link(null), FOLDER_A.id);
   });
 
+  it('reads the unsorted token of a drop half as the null folder', () => {
+    const { drag, moveTo, element, under } = setup();
+    under.mockReturnValue(element({ [LINK_DROP_ATTRIBUTE]: LINKS_SCOPE.Unsorted }));
+
+    drag.start(link(FOLDER_A.id));
+    drag.move(1, 1);
+    expect(drag.treeTargetId()).toBe(LINKS_SCOPE.Unsorted);
+    drag.drop();
+
+    expect(moveTo).toHaveBeenCalledWith(link(FOLDER_A.id), null);
+  });
+
+  it('is no target for the unsorted token when the link is already unsorted', () => {
+    const { drag, moveTo, element, under } = setup();
+    under.mockReturnValue(element({ [LINK_DROP_ATTRIBUTE]: LINKS_SCOPE.Unsorted }));
+
+    drag.start(link(null));
+    drag.move(1, 1);
+    drag.drop();
+
+    expect(moveTo).not.toHaveBeenCalled();
+  });
+
   it('lists the rows that cannot take links only while dragging (Unsorted can)', () => {
     const { drag } = setup();
     expect(drag.treeNoDropIds()).toEqual([]);

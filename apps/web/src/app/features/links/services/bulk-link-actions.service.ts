@@ -320,7 +320,7 @@ export class BulkLinkActionsService {
         await firstValueFrom(this.api().removeBatch(batch));
       }
     } catch {
-      this.store.restoreSnapshot(snapshot);
+      this.store.restoreSnapshot(snapshot, links);
       this.refreshCounts();
       this.toasts.show({
         kind: TOAST_KIND.Danger,
@@ -391,7 +391,7 @@ export class BulkLinkActionsService {
       this.refreshCounts();
       return true;
     } catch (error) {
-      this.store.restoreSnapshot(snapshot);
+      this.store.restoreSnapshot(snapshot, links);
       this.refreshCounts();
       onError?.(error);
       return false;
