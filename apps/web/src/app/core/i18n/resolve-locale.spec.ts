@@ -7,12 +7,19 @@ describe('resolveAppLang', () => {
   });
 
   it('matches the first browser language the app has', () => {
-    expect(resolveAppLang(INTERFACE_LANGUAGE.Browser, ['uk-UA', 'pt-BR', 'en'])).toBe('pt');
+    expect(resolveAppLang(INTERFACE_LANGUAGE.Browser, ['pl-PL', 'pt-BR', 'en'])).toBe('pt');
     expect(resolveAppLang(INTERFACE_LANGUAGE.Browser, ['DE_at'])).toBe('de');
   });
 
+  it('matches Ukrainian from uk and uk-UA (#404)', () => {
+    expect(resolveAppLang(INTERFACE_LANGUAGE.Uk, ['en-US'])).toBe('uk');
+    expect(resolveAppLang(INTERFACE_LANGUAGE.Browser, ['uk-UA', 'en'])).toBe('uk');
+    expect(resolveAppLang(INTERFACE_LANGUAGE.Browser, ['uk'])).toBe('uk');
+    expect(resolveAppLang(INTERFACE_LANGUAGE.Browser, ['pl', 'uk-UA', 'de'])).toBe('uk');
+  });
+
   it('falls back to English', () => {
-    expect(resolveAppLang(INTERFACE_LANGUAGE.Browser, ['uk-UA', 'ja'])).toBe('en');
+    expect(resolveAppLang(INTERFACE_LANGUAGE.Browser, ['pl-PL', 'ja'])).toBe('en');
     expect(resolveAppLang(INTERFACE_LANGUAGE.Browser, [])).toBe('en');
   });
 });
@@ -21,6 +28,7 @@ describe('resolveIntlLocale', () => {
   it('keeps the browser region when it speaks the language', () => {
     expect(resolveIntlLocale('en', ['en-GB', 'en'])).toBe('en-GB');
     expect(resolveIntlLocale('pt', ['fr', 'pt-PT'])).toBe('pt-PT');
+    expect(resolveIntlLocale('uk', ['uk-UA', 'en'])).toBe('uk-UA');
   });
 
   it('uses the bare language otherwise', () => {
@@ -42,6 +50,8 @@ describe('resolveFirstDay', () => {
     expect(resolveFirstDay(WEEK_START.Default, 'en-US')).toBe(7);
     expect(resolveFirstDay(WEEK_START.Default, 'de-DE')).toBe(1);
     expect(resolveFirstDay(WEEK_START.Default, 'fr')).toBe(1);
+    expect(resolveFirstDay(WEEK_START.Default, 'uk')).toBe(1);
+    expect(resolveFirstDay(WEEK_START.Default, 'uk-UA')).toBe(1);
   });
 
   it('falls back to Monday for a locale it cannot read', () => {
@@ -50,9 +60,11 @@ describe('resolveFirstDay', () => {
 });
 
 describe('isAppLang', () => {
-  it('knows the six languages only', () => {
+  it('knows the seven languages only', () => {
     expect(isAppLang('it')).toBe(true);
-    expect(isAppLang('uk')).toBe(false);
+    expect(isAppLang('uk')).toBe(true);
+    expect(isAppLang('uk-UA')).toBe(false);
+    expect(isAppLang('pl')).toBe(false);
     expect(isAppLang(3)).toBe(false);
   });
 });

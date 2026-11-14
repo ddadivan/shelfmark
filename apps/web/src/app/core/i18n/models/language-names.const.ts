@@ -11,4 +11,5 @@ export const LANGUAGE_NAMES: Readonly<Record<AppLang, string>> = {
   it: 'Italiano',
   es: 'Español',
   pt: 'Português',
+  uk: 'Українська',
 };

@@ -23,7 +23,7 @@ describe('toLanguageSettings', () => {
   it('falls back to the defaults for values outside the allow-lists', () => {
     expect(
       toLanguageSettings({
-        language: 'uk',
+        language: 'pl',
         dateFormat: 'yyyy',
         timeFormat: '13h',
         weekStart: 'saturday',

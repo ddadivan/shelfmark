@@ -23,7 +23,7 @@ const OUT_DIR = join(FOLDERS, 'emoji-names');
 const DATA_DIR = join(ROOT, 'node_modules/emojibase-data');
 
 /** App language -> emojibase locale (Portuguese is the Brazilian CLDR `pt`). */
-export const LOCALES = { en: 'en', fr: 'fr', de: 'de', it: 'it', es: 'es', pt: 'pt' };
+export const LOCALES = { en: 'en', fr: 'fr', de: 'de', it: 'it', es: 'es', pt: 'pt', uk: 'uk' };
 /** Search words kept per emoji besides its name: enough to find it, small enough to ship. */
 export const MAX_KEYWORDS = 6;
 

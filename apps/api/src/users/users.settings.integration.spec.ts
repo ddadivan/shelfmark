@@ -881,7 +881,8 @@ describe('account settings', () => {
     });
 
     it.each([
-      [{ language: 'uk' }],
+      [{ language: 'pl' }],
+      [{ language: 'uk-UA' }],
       [{ language: 'EN' }],
       [{ language: 'fr-FR' }],
       [{ language: null }],
@@ -919,13 +920,22 @@ describe('account settings', () => {
     it('is enforced by the database CHECKs', async () => {
       const id = users.owner.userId;
       for (const data of [
-        { language: 'uk' },
+        { language: 'pl' },
         { dateFormat: 'yyyy' },
         { timeFormat: 'h13' },
         { weekStart: 'saturday' },
       ]) {
         await expect(t.db.prisma.user.update({ where: { id }, data })).rejects.toThrow();
       }
+    });
+
+    it('lets the database store Ukrainian (#404 widens the CHECK)', async () => {
+      const id = users.owner.userId;
+      const row = await t.db.prisma.user.update({
+        where: { id },
+        data: { language: INTERFACE_LANGUAGE.Uk },
+      });
+      expect(row.language).toBe(INTERFACE_LANGUAGE.Uk);
     });
   });
 });
