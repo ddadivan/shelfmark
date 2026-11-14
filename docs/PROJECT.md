@@ -1223,7 +1223,7 @@ Vercel Analytics (no personal data): number of registered users; share of users 
 Decided by the author on Nov 9, 2026, stage 3 re-planned on Nov 14, 2026 (only side-by-side); the full lists are in "Roadmap after stage 1" and "Roadmap after stage 2" above.
 
 | Stage | Goal | Contents |
-| 2 (released Nov 14, 2026) | Daily use and polish | Redesign (2027 Refresh), Trash, folder colours, icons and pinning, saved views, paste several links, email and password sign-in, reminders, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video with a "How it works" button that plays it |
+| 2 (released Nov 14, 2026) | Daily use and polish | Redesign (2027 Refresh), Trash, folder colours, icons and pinning, saved views, paste several links, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video with a "How it works" button that plays it |
 | 3 | Sort faster | Side-by-side: two feeds to move links between (desktop) |
 | Backlog | Later | Import (bookmarks, Pocket, Raindrop.io, JSON backup), read / unread and Read later, AI (tags and folders, summaries, semantic search, Ask your shelf, clean-up, MCP server), dead-link check with Wayback copies, rules without AI, commands in ⌘K, browser extension, demo data carried into a real account, import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting, interactive guided tour |
 
