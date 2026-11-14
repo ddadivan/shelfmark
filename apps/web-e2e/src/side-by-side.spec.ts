@@ -1,12 +1,41 @@
 import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
+import { documentScrollTop, mainScrollTop } from './support/scroll';
 import { isCompact } from './support/sidebar';
 
 // Mirror MOCK_LINKS ("Simple pasta" is unsorted) and the MOCK_FOLDERS names (libs/shared/contracts);
 // the e2e project cannot import from them.
 const PASTA = 'Simple pasta';
 const READING = 'Reading';
+const LEFT_SCROLL = '.library__scroll';
+const RIGHT_SCROLL = '.split-right__scroll';
+
+/** Opens `/links` side by side with the Reading folder on the right. */
+async function openWithReading(page: Page): Promise<Locator> {
+  await seedSession(page);
+  await page.goto('/links');
+  await expect(page.locator('ui-card').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Side by side' }).click();
+  const right = page.getByRole('region', { name: 'Right: choose a folder' });
+  await right.getByRole('option', { name: READING, exact: true }).click();
+  const rightHalf = page.getByRole('region', { name: `Right: ${READING}` });
+  await expect(rightHalf.locator('ui-card').first()).toBeVisible();
+  return rightHalf;
+}
+
+function scrollTop(page: Page, selector: string): Promise<number> {
+  return page.evaluate<number>(`document.querySelector('${selector}').scrollTop`);
+}
+
+async function wheelOver(page: Page, area: Locator, deltaY: number): Promise<void> {
+  const box = await area.boundingBox();
+  if (!box) {
+    throw new Error('the scroll area is not visible');
+  }
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.wheel(0, deltaY);
+}
 
 /** Presses on `source`, moves in small steps (the CDK needs a few moves to start) and hovers `target`. */
 async function dragOver(page: Page, source: Locator, target: Locator): Promise<void> {
@@ -71,5 +100,40 @@ test.describe('side by side (mock API)', () => {
     await expect(page).not.toHaveURL(/split=/);
     await expect(page.getByRole('region', { name: /^Right:/ })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Side by side' })).toBeVisible();
+  });
+
+  test('each half scrolls on its own, the page does not, and the left one loads more', async ({
+    page,
+  }) => {
+    test.skip(isCompact(page), 'side by side starts at 80em');
+    const rightHalf = await openWithReading(page);
+    const left = page.locator(LEFT_SCROLL);
+    const right = page.locator(RIGHT_SCROLL);
+    const leftTrigger = page.getByRole('button', { name: /^Left feed:/ });
+    const rightTrigger = page.getByRole('button', { name: /^Right folder:/ });
+
+    await wheelOver(page, left, 900);
+    await expect.poll(() => scrollTop(page, LEFT_SCROLL)).toBeGreaterThan(200);
+    expect(await scrollTop(page, RIGHT_SCROLL)).toBe(0);
+
+    await wheelOver(page, right, 500);
+    await expect.poll(() => scrollTop(page, RIGHT_SCROLL)).toBeGreaterThan(200);
+    const leftAt = await scrollTop(page, LEFT_SCROLL);
+    await wheelOver(page, right, 300);
+    await expect.poll(() => scrollTop(page, RIGHT_SCROLL)).toBeGreaterThan(500);
+    expect(await scrollTop(page, LEFT_SCROLL)).toBe(leftAt);
+
+    // The document and the shell's main column stay where they are; both headers stay on screen.
+    expect(await documentScrollTop(page)).toBe(0);
+    expect(await mainScrollTop(page)).toBe(0);
+    await expect(leftTrigger).toBeInViewport();
+    await expect(rightTrigger).toBeInViewport();
+    await expect(rightHalf).toBeVisible();
+
+    // The first page of the left feed holds 50 of the 60 links: the end of it loads the rest.
+    await expect(left.locator('ui-card')).toHaveCount(50);
+    await page.evaluate(`document.querySelector('${LEFT_SCROLL}').scrollTo(0, 1e6)`);
+    await expect(left.locator('ui-card')).toHaveCount(60);
+    expect(await documentScrollTop(page)).toBe(0);
   });
 });

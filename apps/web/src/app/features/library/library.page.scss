@@ -241,7 +241,12 @@
   flex-direction: column;
   min-inline-size: 0;
   min-block-size: 0;
-  padding-inline-end: calc(var(--space-4) + var(--space-1));
+
+  // Both halves lose the same room (8px on the outer edge, 20px at the divider), so their cards
+  // are equally wide. The outer edge is the ring's room; the scrollbar of each half sits in the
+  // free margin outside its cards (the #352 rule stays on: 20px at the divider, the main column's
+  // 24px padding at the right edge).
+  padding-inline: var(--space-2) calc(var(--space-4) + var(--space-1));
   border-radius: var(--radius-xl);
 }
 

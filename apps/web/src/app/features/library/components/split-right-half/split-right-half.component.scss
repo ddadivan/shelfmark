@@ -17,7 +17,7 @@
   gap: var(--space-4);
   min-inline-size: 0;
   min-block-size: 0;
-  padding: var(--space-1) calc(var(--space-4) + var(--space-1)) 0;
+  padding: var(--space-1) var(--space-2) 0 calc(var(--space-4) + var(--space-1));
   border-radius: var(--radius-xl);
 
   &--target {
@@ -91,7 +91,8 @@
   color: var(--text-muted);
 }
 
-// Its own scroll area: the feed and the page scroll apart.
+// Its own scroll area, like the left feed's (#352): its own scrollbar outside the cards, the soft
+// top edge, the scroll position of its own, down to the window edge.
 .split-right__scroll {
   display: flex;
   flex: 1;
@@ -100,11 +101,15 @@
 
   // Room for the focus ring and a lifted card, which the clip of the scroll area would cut.
   padding: var(--space-1);
+  padding-block-end: var(--space-3);
   margin: calc(var(--space-1) * -1);
-  padding-block-end: var(--space-8);
+  margin-block-end: calc(var(--space-3) * -1);
+  margin-inline-end: calc((var(--space-1) + var(--scrollbar-size)) * -1);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
+
+  @include scroll-fade(var(--bg), $bottom: false);
 
   &:focus {
     outline: none;
@@ -114,7 +119,7 @@
 .split-right__grid {
   display: grid;
   gap: var(--density-feed-gap);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.75rem), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14.25rem), 1fr));
   padding: 0;
   margin: 0;
   list-style: none;
