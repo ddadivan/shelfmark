@@ -26,6 +26,27 @@ const token = (page: Page, name: string): Promise<string> =>
     `getComputedStyle(document.documentElement).getPropertyValue('${name}').trim().toLowerCase()`,
   );
 
+type Box = NonNullable<Awaited<ReturnType<Locator['boundingBox']>>>;
+
+async function boxOf(locator: Locator): Promise<Box> {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error('not rendered');
+  return box;
+}
+
+/**
+ * How far the "+" swatch is from the centre of the last swatch or tile of its row (#415). Beside
+ * it: the distance of the centres. On a line of its own under the tiles (a phone): 0, it is then
+ * centred on the tile height in a line of its own; anywhere else (on the caption line) Infinity.
+ */
+async function misalignment(plus: Locator, last: Locator): Promise<number> {
+  const a = await boxOf(plus);
+  const b = await boxOf(last);
+  const middle = (box: Box): number => box.y + box.height / 2;
+  if (a.y < b.y + b.height) return Math.abs(middle(a) - middle(b));
+  return a.y > b.y + b.height + 16 ? 0 : Number.POSITIVE_INFINITY;
+}
+
 async function openAppearance(page: Page): Promise<void> {
   await page.goto('/settings/appearance');
   await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
@@ -218,8 +239,7 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
       const area = page.getByRole('group', { name: 'Choose a color' });
       await area.evaluate((el) => el.scrollIntoView({ block: 'center' }));
       await settled(page);
-      const box = await area.boundingBox();
-      if (!box) throw new Error('no colour area');
+      const box = await boxOf(area);
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
       await page.mouse.down();
       await page.mouse.move(box.x + box.width * 0.8, box.y + box.height * 0.95, { steps: 4 });
@@ -274,23 +294,15 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
           ['Accent color', 'Your own color'],
           ['Background', 'Your own background color'],
         ] as const) {
-          const plus = await page.getByRole('button', { name: picker, exact: true }).boundingBox();
+          const plus = page.getByRole('button', { name: picker, exact: true });
           const frames = page
             .getByRole('radiogroup', { name: group })
             .locator('.ui-theme-picker__frame');
-          const last = await frames.last().boundingBox();
-          if (!plus || !last) throw new Error(`no ${group} row`);
-          const middle = (box: { y: number; height: number }) => box.y + box.height / 2;
-          // Beside the last swatch: centred on it. A line of its own (phone tiles): centred on
-          // the tile height, so it never sits on the caption line.
-          if (plus.y < last.y + last.height) {
-            expect(Math.abs(middle(plus) - middle(last))).toBeLessThanOrEqual(1);
-          } else {
-            expect(plus.y).toBeGreaterThan(last.y + last.height);
-          }
+          expect(await misalignment(plus, frames.last())).toBeLessThanOrEqual(1);
           // Never wider or taller than the curated round swatches.
-          expect(plus.width).toBeCloseTo(plus.height, 0);
-          expect([36, 44]).toContain(Math.round(plus.width));
+          const size = await boxOf(plus);
+          expect(size.width).toBeCloseTo(size.height, 0);
+          expect([36, 44]).toContain(Math.round(size.width));
         }
       }
     },
