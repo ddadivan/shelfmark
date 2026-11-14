@@ -128,6 +128,7 @@ describe('LanguageSettingsPage', () => {
       { name: 'Italiano', lang: 'it', flag: 'assets/ui/flags/it.svg', icon: false },
       { name: 'Español', lang: 'es', flag: 'assets/ui/flags/es.svg', icon: false },
       { name: 'Português', lang: 'pt', flag: 'assets/ui/flags/br.svg', icon: false },
+      { name: 'Українська', lang: 'uk', flag: 'assets/ui/flags/ua.svg', icon: false },
       { name: 'Match my browser', lang: null, flag: null, icon: true },
     ]);
     expect(radio(root, 'Match my browser').checked).toBe(true);

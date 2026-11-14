@@ -87,6 +87,34 @@ describe('LocaleService', () => {
     expect(locale.browserLang()).toBe('de');
   });
 
+  it('matches a Ukrainian browser (uk-UA) with its dates, numbers and Monday week (#404)', async () => {
+    stubLanguages(['uk-UA', 'uk', 'en']);
+    const { locale, transloco } = setup();
+    await locale.init();
+    expect(locale.lang()).toBe('uk');
+    expect(locale.browserLang()).toBe('uk');
+    expect(locale.locale()).toBe('uk-UA');
+    expect(locale.firstDay()).toBe(1);
+    TestBed.tick();
+    expect(TestBed.inject(DOCUMENT).documentElement.lang).toBe('uk');
+    expect(transloco.translate('landing.hero.line1')).toBe('Вставте посилання.');
+    expect(locale.formatDate(DATE, DATE_FORMAT.Dmy)).toBe('10.11.2026');
+    expect(locale.formatWeekday(DATE, 'long')).toBe('вівторок');
+    expect(locale.formatNumber(1234.5)).toBe('1\u00a0234,5');
+    expect(locale.formatRelative(new Date(Date.now() - 86_400_000).toISOString(), Date.now())).toBe(
+      'учора',
+    );
+  });
+
+  it('switches to a chosen Ukrainian from an English browser', async () => {
+    const { locale } = setup();
+    await locale.init();
+    locale.apply(settings({ language: INTERFACE_LANGUAGE.Uk }));
+    await vi.waitFor(() => expect(locale.lang()).toBe('uk'));
+    expect(locale.locale()).toBe('uk');
+    expect(locale.wantedLang()).toBe('uk');
+  });
+
   it('uses the stored choice for the first paint', async () => {
     const { locale } = setup(settings({ language: INTERFACE_LANGUAGE.It }));
     await locale.init();
@@ -95,7 +123,7 @@ describe('LocaleService', () => {
   });
 
   it('ignores a broken stored value', async () => {
-    const { locale } = setup({ language: 'uk' });
+    const { locale } = setup({ language: 'pl' });
     await locale.init();
     expect(locale.settings()).toEqual(LANGUAGE_SETTINGS_DEFAULT);
     expect(locale.hasStoredLanguage()).toBe(false);

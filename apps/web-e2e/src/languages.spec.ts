@@ -81,7 +81,7 @@ test.describe('interface languages (mock API)', () => {
     // Only the language here: a plain list with flags, no dropdown and no dates.
     await expect(page.getByRole('main').getByRole('combobox')).toHaveCount(0);
     await expect(preview(page)).toHaveCount(0);
-    await expect(page.locator('ui-flag')).toHaveCount(6);
+    await expect(page.locator('ui-flag')).toHaveCount(7);
     await page.evaluate('window.__noReload = true');
 
     await chooseLanguage(page, 'Interface language', 'Français');
@@ -107,6 +107,48 @@ test.describe('interface languages (mock API)', () => {
 
     await page.goto('/links');
     await expect(page.getByRole('heading', { level: 1, name: 'Tous les liens' })).toBeVisible();
+  });
+
+  test('switching to Ukrainian changes the UI, the plurals and the dates, and a reload keeps it (#404)', async ({
+    page,
+  }) => {
+    await seedSession(page);
+    await page.goto('/settings/language');
+    await expect(page.getByRole('heading', { level: 1, name: 'Language' })).toBeVisible();
+    await page.evaluate('window.__noReload = true');
+
+    await chooseLanguage(page, 'Interface language', 'Українська');
+
+    await expect(page.getByRole('heading', { level: 1, name: 'Мова' })).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
+    await expect(
+      page
+        .getByRole('radiogroup', { name: 'Мова інтерфейсу' })
+        .getByRole('radio', { name: 'Українська' }),
+    ).toBeChecked();
+    expect(await page.evaluate('window.__noReload === true')).toBe(true);
+
+    await page.goto('/settings/appearance');
+    await expect(preview(page)).toContainText(
+      /(січ|лют|бер|квіт|трав|черв|лип|серп|вер|жовт|лист|груд)/,
+    );
+
+    // A full load keeps Ukrainian, and the link count uses a Ukrainian plural form.
+    await page.goto('/links');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
+    await expect(page.getByRole('heading', { level: 1, name: 'Усі посилання' })).toBeVisible();
+    await expect(page.getByText(/\d+\+?\s+посилань/).first()).toBeVisible();
+  });
+
+  test.describe('with a Ukrainian browser', () => {
+    test.use({ locale: 'uk-UA' });
+
+    test('"Match my browser" shows Ukrainian on the first paint', async ({ page }) => {
+      await seedSession(page);
+      await page.goto('/links');
+      await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
+      await expect(page.getByRole('heading', { level: 1, name: 'Усі посилання' })).toBeVisible();
+    });
   });
 
   test('date format, clock and week start (Appearance, #315) apply to the preview and the app', async ({
@@ -172,11 +214,11 @@ test.describe('interface languages (mock API)', () => {
     });
   });
 
-  for (const language of ['fr', 'de']) {
-    // The German strings are the longest, so they also run on the phone (ADR 0043).
+  for (const language of ['fr', 'de', 'uk']) {
+    // German and Ukrainian strings are the longest, so they also run on the phone (ADR 0043).
     test(
       `long ${language} strings fit: no side scroll, no clipped buttons`,
-      { tag: language === 'de' ? [E2E_TAG.Phone] : [] },
+      { tag: language === 'fr' ? [] : [E2E_TAG.Phone] },
       async ({ page }, testInfo: TestInfo) => {
         await seedLanguage(page, language);
         await seedSession(page);

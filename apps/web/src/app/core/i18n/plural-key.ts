@@ -19,7 +19,8 @@ export function pluralCategories(lang: AppLang): readonly Intl.LDMLPluralRule[] 
 
 /**
  * `base.<category>` by the plural rule of the active language (`Intl.PluralRules`): English and
- * German use `one` / `other`, French, Italian, Spanish and Portuguese add `many` (for millions).
+ * German use `one` / `other`, French, Italian, Spanish and Portuguese add `many` (for millions), Ukrainian uses `one` / `few` /
+ * `many` / `other`.
  * Every language file has the categories its language needs (the key-parity spec checks it).
  * Reads the active language signal, so a `computed` around it follows a language switch.
  */

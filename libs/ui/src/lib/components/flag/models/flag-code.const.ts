@@ -9,4 +9,5 @@ export const FLAG_CODE = {
   It: 'it',
   Es: 'es',
   Br: 'br',
+  Ua: 'ua',
 } as const;
