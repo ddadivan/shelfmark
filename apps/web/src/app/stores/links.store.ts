@@ -155,9 +155,10 @@ export const LinksStore = signalStore(
     /**
      * Shows `link` with its new folder (`placeLink`): kept in place while it still belongs to the
      * open scope, removed (remembering its slot) when it no longer does, put back at its slot
-     * when it belongs again. The recent list only takes the new folder.
+     * when it belongs again. The recent list only takes the new folder. A `rollback` only puts a
+     * link back where it was: it never inserts a link the feed did not hold, and is no move.
      */
-    function placeMoved(link: LinkResponse): void {
+    function placeMoved(link: LinkResponse, rollback = false): void {
       if (store.loaded()) {
         patchState(
           store,
@@ -167,13 +168,13 @@ export const LinksStore = signalStore(
               store.filter(),
               link,
               movedFrom,
-              takesNewcomers(store.filter(), store.hasMore()),
+              !rollback && takesNewcomers(store.filter(), store.hasMore()),
             ),
           ]),
         );
       }
       patchState(store, { recent: mapRecent(link.id, { folderId: link.folderId }) });
-      publish({ upserted: [link], moved: true });
+      publish(rollback ? { upserted: [link] } : { upserted: [link], moved: true });
     }
 
     function restore(id: string): void {
@@ -517,13 +518,14 @@ export const LinksStore = signalStore(
             );
           }
           if (startedEpoch === epoch) {
-            // The other feed's copy gets the server's time too.
-            publish({ upserted: [{ ...current, folderId, updatedAt: saved.updatedAt }] });
+            // The other feed's copy gets the server's time too, on top of any change made meanwhile.
+            const latest = store.entityMap()[link.id] ?? { ...current, folderId };
+            publish({ upserted: [{ ...latest, updatedAt: saved.updatedAt }] });
           }
           return true;
         } catch {
           if (startedEpoch === epoch) {
-            placeMoved(current);
+            placeMoved(current, true);
           }
           return false;
         }

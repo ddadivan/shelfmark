@@ -59,7 +59,8 @@ describe('LinksStore.linkChanges', () => {
     await store.move(link(2), 'f');
     expect(changes.slice(before)).toEqual([
       { upserted: [link(2, { folderId: 'f' })], moved: true },
-      { upserted: [link(2)], moved: true },
+      // A rollback only puts the link back; it is no move.
+      { upserted: [link(2)] },
     ]);
     expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
 
@@ -83,6 +84,16 @@ describe('LinksStore.linkChanges', () => {
     await store.move(link(9, { folderId: 'f' }), null);
 
     expect(ids(store)).toEqual(['id-9', 'id-1', 'id-2', 'id-3']);
+  });
+
+  it('does not insert a link the feed never held when its failed move rolls back', async () => {
+    const { api, store } = setup([link(1, { folderId: 'f' })]);
+    store.setFilter({ scope: LINKS_SCOPE.Folder, folderId: 'f' });
+    api.update.mockReturnValueOnce(throwError(() => new Error('boom')));
+
+    expect(await store.move(link(9, { folderId: 'f' }), 'g')).toBe(false);
+
+    expect(ids(store)).toEqual(['id-1']);
   });
 
   it('does not insert a moved link into the all-links feed', async () => {
