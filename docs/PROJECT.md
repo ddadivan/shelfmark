@@ -57,7 +57,7 @@ Updated as work goes on — every session resumes from here.
   - Nov 14, 2026, release preparation: the 16 migrations since the last release were applied in order to a database seeded on the `main` schema (PGlite, outside the repo). All apply cleanly, keep every row, backfill the link kind, starter views and folder positions, and copy the old feedback screenshot to `feedback_screenshots`. `nx run api:db-check` shows no drift from `schema.prisma`. None of them drops or renames a column that the code on `main` reads, so production keeps working between `prisma migrate deploy` and the switch to the new deployment. The security review of the release is in progress (#371).
   - Nov 14, 2026: released to production in #378. Before the release it waited for the author's command: #371 merged into `stage`, the promo videos re-recorded (#336), merge commits turned on for `main`. Then the release PR `stage → main` (merge commit) closes every issue in To release. After the release: production smoke (`BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e`), the Feedback inbox shows for the admin (`ADMIN_EMAILS`), the Trash cleanup cron shows in Vercel, and Dependabot's pending updates are re-opened against `stage` (#279 and #282 target `main`).
 - [x] Motion in code (landing and app); promo video moved to stage 2
-- [ ] Stage 3: planned by the author on Nov 14, 2026 (see "Roadmap after stage 2" below). Side-by-side first (#386, design first), then import (#387), read / unread and Read later (#396), AI (#388 with #389–#395), the dead-link check (#397), rules without AI (#398) and commands in ⌘K (#399). Milestone and board moves are listed in the docs PR for the author.
+- [ ] Stage 3: planned by the author on Nov 14, 2026 (see "Roadmap after stage 2" below). Only side-by-side (#386, design first). The other tasks of that planning are in the backlog with their issues: import (#387), read / unread and Read later (#396), AI (#388 with #389–#395), the dead-link check (#397), rules without AI (#398) and commands in ⌘K (#399). Milestone and board moves are listed in the docs PR for the author.
   - Next: the side-by-side design in `docs/design` (#386), reviewed by the author before code.
   - Ideas that are not planned (licence, launch, monetisation, legal, trademark, save by email) are in "Ideas to discuss (not planned)".
 
@@ -510,11 +510,11 @@ Source: [Better Auth — NestJS integration](https://better-auth.com/docs/integr
 
 ### 5.5 Ways to save links
 
-Stage 1: manual adding in the web interface only (a form with a URL field). Stage 2 added Paste many and the Share target. Stage 3 adds import from browser bookmarks, Pocket, Raindrop.io and the Shelfmark JSON backup (#387) and rules that put a link into a folder and tags by its domain (#398); the browser extension is planned for stage 3 as well. Import from Telegram is in the backlog. The API is designed so they can be plugged in later without rework.
+Stage 1: manual adding in the web interface only (a form with a URL field). Stage 2 added Paste many and the Share target. Import from browser bookmarks, Pocket, Raindrop.io and the Shelfmark JSON backup (#387), rules that put a link into a folder and tags by its domain (#398), the browser extension and import from Telegram are in the backlog. The API is designed so they can be plugged in later without rework.
 
 ### 5.6 AI features
 
-Not part of stages 1 and 2. Planned for stage 3 (parent issue #388; see "Roadmap after stage 2"). `docs/design` has no AI screens yet, so every user-facing capability is designed first.
+Not part of stages 1–3. In the backlog with prepared issues (parent issue #388; see "Roadmap after stage 2"), not scheduled. `docs/design` has no AI screens yet, so every user-facing capability is designed first.
 
 **Capabilities**
 
@@ -1099,7 +1099,7 @@ Discussed after stage 1 (roadmap, stage 5): pricing tiers, free plan limits, pay
 
 ## Roadmap after stage 1
 
-Chosen by the author on Nov 9, 2026; stage 3 re-planned on Nov 14, 2026 ("Roadmap after stage 2" below). Everything else stays in the backlog. Order inside a stage is decided when the stage starts.
+Chosen by the author on Nov 9, 2026; stage 3 re-planned on Nov 14, 2026 (only side-by-side) ("Roadmap after stage 2" below). Everything else stays in the backlog. Order inside a stage is decided when the stage starts.
 
 ### Stage 2 (released to production Nov 14, 2026, #378)
 
@@ -1128,19 +1128,28 @@ Chosen by the author on Nov 9, 2026; stage 3 re-planned on Nov 14, 2026 ("Roadma
 
 ### Stage 3 (planned)
 
-Re-planned by the author on Nov 14, 2026, after the stage 2 release; the details and order are in "Roadmap after stage 2" below.
+Re-planned by the author on Nov 14, 2026, after the stage 2 release: only side-by-side. The spec is in "Roadmap after stage 2" below.
 
-- [ ] Side-by-side: two feeds to move links between (#386) — first
+- [ ] Side-by-side: two feeds to move links between (#386)
+
+### Backlog
+
+Prepared on Nov 14, 2026, with issues, not scheduled (details in "Roadmap after stage 2"):
+
 - [ ] Import links: browser bookmarks, Pocket, Raindrop.io, Shelfmark JSON backup (#387)
 - [ ] Read / unread status and Read later (#396)
 - [ ] AI: auto-tags and auto-folder, summaries, semantic (smart) search, "Ask your shelf", library clean-up, MCP server (#388, #389–#395; 5.6)
 - [ ] Dead-link check with a Wayback Machine copy (#397)
 - [ ] Rules without AI: domain → folder and / or tag (#398)
 - [ ] Commands in ⌘K (#399)
+
+Moved from stage 3 on Nov 14, 2026:
+
 - [ ] Browser extension for saving links in one click
 - [ ] Carrying data over from the demo sandbox into a real account on sign-in
 
-### Backlog
+Earlier:
+
 
 - [ ] Email and password sign-in: email verification, password reset, an email sending service (#277; moved from stage 2 on Nov 10, 2026, needs a domain and an email provider first)
 - [ ] Reminders: come back to a saved link later (#275; moved from stage 2 on Nov 10, 2026): "Remind me" with a date picker, the badge on cards, the Reminders list, delivery in the app, by Web Push (VAPID, an external scheduler, as Vercel Hobby crons run once a day) and by email, quiet hours, the weekly digest and `SetNotifications`
@@ -1154,9 +1163,11 @@ Re-planned by the author on Nov 14, 2026, after the stage 2 release; the details
 
 ## Roadmap after stage 2
 
-Planned by the author on Nov 14, 2026, after stage 2 was released (#378). The work order follows the list; independent tasks can run as parallel PRs from `stage`. Each user-facing task is designed in `docs/design` first, and its user story with acceptance criteria is added to section 4 when it starts. Milestone: stage 3.
+Planned by the author on Nov 14, 2026, after stage 2 was released (#378). **Stage 3 is only side-by-side.** The other tasks have issues ready but stay in the backlog until the author schedules them; the numbers show the order they were discussed in. Each user-facing task is designed in `docs/design` first, and its user story with acceptance criteria is added to section 4 when it starts.
 
-1. **Side-by-side (#386) — the author's first priority.** Design first in `docs/design` (desktop layout, empty right half, picker, drag), then implementation, then the release.
+### Stage 3: side-by-side
+
+1. **Side-by-side (#386).** Design first in `docs/design` (desktop layout, empty right half, picker, drag), then implementation, then the release.
    - Desktop only, from `80em`; on narrower screens the entry point is absent (via `ViewportService`).
    - Two feeds side by side; the sidebar stays.
    - Opening keeps the current feed on the **left** (same view, sort, selection). The **right** half opens a folder picker (the same as "Move to": search, tree, recent) with the empty hint "Choose a folder to move links into" until a folder is chosen.
@@ -1166,6 +1177,9 @@ Planned by the author on Nov 14, 2026, after stage 2 was released (#378). The wo
    - State in the URL (for example `?split=<folderId>`), so reload and Back work.
    - Equal halves for v1 (a draggable divider maybe later).
    - Reuses the existing drag and drop, selection, bulk bar, folder picker and Undo.
+
+### Backlog with prepared issues
+
 2. **Import links (#387):** browser bookmarks HTML, Pocket export (CSV / HTML with tags), Raindrop.io (CSV with collections and tags), Shelfmark JSON backup. The design exists (`docs/design/screens/Import.dc.html`): source → review (duplicates, folder, structure) → progress, summary, Undo import. Only export exists today (on the Account page, "Your data"). Fixes with it: Paste many says "Bigger lists go to Import as text", but that screen does not exist; `SendFeedback.dc.html` already promises import from the Pocket export. Why now: Pocket shut down in 2025 and its users (\~10M) are looking for an alternative.
 3. **Read / unread status and Read later (#396):** postponed in stage 1; the core scenario for former Pocket users.
 4. **AI (#388, sub-issues #389–#395):** auto-tags and auto-folder, short summaries, semantic search, "Ask your shelf", library clean-up, a Shelfmark MCP server; the rules from day one, models and costs are in 5.6.
@@ -1173,7 +1187,7 @@ Planned by the author on Nov 14, 2026, after stage 2 was released (#378). The wo
 6. **Rules without AI (#398):** domain → folder and / or tag (for example youtube.com → Videos).
 7. **Commands in ⌘K (#399):** not only search but actions (new folder, move selected, change theme).
 
-The browser extension and carrying demo data into a real account stay in stage 3 from the Nov 9, 2026 plan; their order is decided when they start.
+The browser extension and carrying demo data into a real account, planned for stage 3 on Nov 9, 2026, moved to the backlog as well.
 
 ## Ideas to discuss (not planned)
 
@@ -1206,12 +1220,12 @@ Vercel Analytics (no personal data): number of registered users; share of users 
 
 ### 10.3 Roadmap
 
-Decided by the author on Nov 9, 2026, stage 3 re-planned on Nov 14, 2026; the full lists are in "Roadmap after stage 1" and "Roadmap after stage 2" above.
+Decided by the author on Nov 9, 2026, stage 3 re-planned on Nov 14, 2026 (only side-by-side); the full lists are in "Roadmap after stage 1" and "Roadmap after stage 2" above.
 
 | Stage | Goal | Contents |
 | 2 (released Nov 14, 2026) | Daily use and polish | Redesign (2027 Refresh), Trash, folder colours, icons and pinning, saved views, paste several links, email and password sign-in, reminders, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video with a "How it works" button that plays it |
-| 3 | Save faster, smarter | Side-by-side (first), import (bookmarks, Pocket, Raindrop.io, JSON backup), read / unread and Read later, AI (tags and folders, summaries, semantic search, Ask your shelf, clean-up, MCP server), dead-link check with Wayback copies, rules without AI, commands in ⌘K, browser extension, demo data carried into a real account |
-| Backlog | Later | Import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting, interactive guided tour |
+| 3 | Sort faster | Side-by-side: two feeds to move links between (desktop) |
+| Backlog | Later | Import (bookmarks, Pocket, Raindrop.io, JSON backup), read / unread and Read later, AI (tags and folders, summaries, semantic search, Ask your shelf, clean-up, MCP server), dead-link check with Wayback copies, rules without AI, commands in ⌘K, browser extension, demo data carried into a real account, import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting, interactive guided tour |
 
 ## 11. Presentation in the CV and portfolio
 
