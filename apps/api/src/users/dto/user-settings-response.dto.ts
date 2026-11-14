@@ -135,4 +135,12 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
     description: 'False until a language setting is first written (the web keeps a local choice)',
   })
   languageSaved!: boolean;
+
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    example: '2.0.0',
+    description: "The newest release whose What's new the user has seen; null until first written",
+  })
+  whatsNewSeen!: string | null;
 }

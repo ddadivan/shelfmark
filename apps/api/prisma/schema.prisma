@@ -87,6 +87,9 @@ model User {
   // Admin usage stats (#333, ADR 0045): UTC day of the last authenticated non-demo request, written
   // at most once a day by UserActivityService; backfilled once in the migration.
   lastActiveOn          DateTime?     @map("last_active_on") @db.Date
+  // "What's new" (#424): the newest release (x.y.z) whose highlights the user has seen; NULL until the
+  // web app writes it. A CHECK in the migration keeps it to RELEASE_VERSION_PATTERN.
+  whatsNewSeen          String?       @map("whats_new_seen")
   createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]

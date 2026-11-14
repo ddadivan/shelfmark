@@ -47,6 +47,7 @@ const DEFAULT_SETTINGS = {
   motion: MOTION_PREFERENCE.System,
   appearanceSaved: false,
   languageSaved: false,
+  whatsNewSeen: null,
 };
 
 export const SETTINGS_SCENARIOS: readonly ContractScenario[] = [
@@ -265,6 +266,18 @@ export const SETTINGS_SCENARIOS: readonly ContractScenario[] = [
       languageSaved: true,
     });
     expectEqual((await settings.get()).language, INTERFACE_LANGUAGE.Uk);
+  }),
+
+  scenario('settings', "keeps the last seen What's new release (#424)", async ({ settings }) => {
+    const updated = await settings.update({ whatsNewSeen: '2.0.5' });
+    expectEqual(updated, { ...DEFAULT_SETTINGS, whatsNewSeen: '2.0.5' });
+    expectEqual((await settings.get()).whatsNewSeen, '2.0.5');
+    await expectError(
+      settings.update({ whatsNewSeen: '2.1.0-dev' }),
+      { status: 400 },
+      'a pre-release',
+    );
+    expectEqual((await settings.get()).whatsNewSeen, '2.0.5');
   }),
 
   scenario(

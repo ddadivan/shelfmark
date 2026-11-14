@@ -16,6 +16,7 @@ import {
   isTextSize,
   isMotionPreference,
   isThemePreference,
+  isReleaseVersion,
   type UpdateUserSettingsRequest,
   type UserSettingsResponse,
 } from '@shelfmark/contracts';
@@ -25,6 +26,7 @@ import { mockHttpError } from '../../../core/api/mock-http-error';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import { MOCK_APPEARANCE_STORAGE_KEY } from '../models/mock-appearance-storage-key.const';
+import { MOCK_WHATS_NEW_STORAGE_KEY } from '../models/mock-whats-new-storage-key.const';
 import type { MockAppearance } from '../models/mock-appearance.type';
 import type { UserSettingsApi } from '../models/user-settings-api.interface';
 import { settingsRequestProblems } from './settings-request-problems';
@@ -111,6 +113,9 @@ export class MockUserSettingsApi implements UserSettingsApi {
         }
         writeMockLanguageSettings(this.storage, language);
       }
+      if (request.whatsNewSeen !== undefined) {
+        this.writeWhatsNewSeen(request.whatsNewSeen);
+      }
       return of(this.current());
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
@@ -125,7 +130,26 @@ export class MockUserSettingsApi implements UserSettingsApi {
       ...this.readAppearance(),
       ...this.data.library,
       ...this.readLanguage(),
+      whatsNewSeen: this.readWhatsNewSeen(),
     };
+  }
+
+  /** The last seen "What's new" release of the mock account; `null` when missing or broken. */
+  private readWhatsNewSeen(): string | null {
+    try {
+      const stored = this.storage?.getItem(MOCK_WHATS_NEW_STORAGE_KEY);
+      return isReleaseVersion(stored) ? stored : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private writeWhatsNewSeen(version: string): void {
+    try {
+      this.storage?.setItem(MOCK_WHATS_NEW_STORAGE_KEY, version);
+    } catch {
+      // Blocked storage: the mock account forgets it, like a failed save.
+    }
   }
 
   private readLanguage(): LanguageSettings & Pick<UserSettingsResponse, 'languageSaved'> {

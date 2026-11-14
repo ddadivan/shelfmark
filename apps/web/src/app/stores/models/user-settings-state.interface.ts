@@ -19,6 +19,10 @@ export interface UserSettingsState {
   customColours: HexColour[];
   /** Own emoji the account keeps for the emoji picker's "Yours" (#363); empty until the settings told. */
   customEmoji: FolderEmoji[];
+  /** The newest release whose "What's new" was seen (#424); `null` while never written. */
+  whatsNewSeen: string | null;
+  /** The settings told `whatsNewSeen` (or this load wrote it): until then nothing is shown. */
+  whatsNewKnown: boolean;
   /** The settings request is running. */
   loading: boolean;
   /** The first settings request failed; the Library settings offer a retry. */
