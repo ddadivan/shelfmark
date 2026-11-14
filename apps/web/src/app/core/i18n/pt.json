@@ -1287,6 +1287,7 @@
           "invalid": "Digite # e seis dígitos ou letras a–f, como #2e6a99.",
           "hint": "O Shelfmark mantém contraste de 4,5:1: na outra base, usa um tom mais escuro ou mais claro da sua cor.",
           "warning": "Esta cor fica difícil de ler no seu fundo ({{ratio}}:1, precisa de 4,5:1).",
+          "adjusted": "Ajustada para {{colour}} para continuar legível.",
           "use": "Usar {{colour}}",
           "saturation": "Saturação",
           "brightness": "Brilho",
@@ -1301,7 +1302,8 @@
         "ownBackground": {
           "label": "Sua cor de fundo",
           "hint": "O texto deve continuar legível (4,5:1): se preciso, o Shelfmark usa um tom mais claro ou mais escuro da sua cor.",
-          "warning": "O texto é difícil de ler neste fundo ({{ratio}}:1, são precisos 4,5:1)."
+          "warning": "O texto é difícil de ler neste fundo ({{ratio}}:1, são precisos 4,5:1).",
+          "adjusted": "Ajustada para {{colour}} para o texto continuar legível."
         }
       },
       "layout": {

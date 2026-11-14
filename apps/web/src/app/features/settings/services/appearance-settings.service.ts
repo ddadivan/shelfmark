@@ -41,8 +41,10 @@ const KEY = 'settings.appearance';
  * saved on the account through `UserSettingsStore`; a failed save puts the old appearance back
  * (the store) and says so in a toast. Values outside the lists are ignored. Also the Custom
  * theme's own colours (#315, #335): a colour that keeps 4.5:1 becomes the accent or background
- * and a swatch of the account, one that does not is refused with a warning that offers the
- * nearest shade that passes. Scoped to the page through its `providers`.
+ * and a swatch of the account. A colour picked in the palette moves to the nearest shade that
+ * passes when the pick ends (`adjustAccent` / `adjustBackground`, the picker's `adjust`, #415);
+ * a typed one that does not pass gets a warning that offers that shade, and "Add colour" waits.
+ * Scoped to the page through its `providers`.
  */
 @Service()
 export class AppearanceSettingsService {
@@ -68,10 +70,40 @@ export class AppearanceSettingsService {
   readonly pickedColour = signal('');
   /** What the background picker shows while open. */
   readonly pickedBackground = signal('');
-  /** A picked accent that would not keep 4.5:1, with the nearest shade that does. */
-  readonly accentWarning = signal<AccentWarning | null>(null);
-  /** A picked background that would not keep text at 4.5:1, with the nearest shade that does. */
-  readonly backgroundWarning = signal<AccentWarning | null>(null);
+  /** The accent being picked when it would not keep 4.5:1, with the nearest shade that does. */
+  readonly accentWarning = computed<AccentWarning | null>(() => {
+    const colour = this.pickedColour();
+    const { base, background } = this.theme.customTheme();
+    if (!isHexColour(colour) || isAccessibleAccent(colour, base, background)) {
+      return null;
+    }
+    return {
+      colour,
+      ratio: this.ratio(accentContrast(colour, base, background)),
+      shade: nearestAccessibleAccent(colour, base, background),
+    };
+  });
+  /** The background being picked when text would not keep 4.5:1, with the nearest shade. */
+  readonly backgroundWarning = computed<AccentWarning | null>(() => {
+    const colour = this.pickedBackground();
+    const base = this.theme.customTheme().base;
+    if (!isHexColour(colour) || isReadableBackground(colour, base)) {
+      return null;
+    }
+    return {
+      colour,
+      ratio: this.ratio(backgroundContrast(colour, base)),
+      shade: nearestReadableBackground(colour, base),
+    };
+  });
+  /** The accent picker's `adjust`: the nearest shade that keeps 4.5:1 on the current theme. */
+  readonly adjustAccent = (colour: string): string => {
+    const { base, background } = this.theme.customTheme();
+    return nearestAccessibleAccent(colour, base, background);
+  };
+  /** The background picker's `adjust`: the nearest shade on which text keeps 4.5:1. */
+  readonly adjustBackground = (colour: string): string =>
+    nearestReadableBackground(colour, this.theme.customTheme().base);
 
   setTheme(value: string): void {
     if (isThemePreference(value)) {
@@ -143,7 +175,6 @@ export class AppearanceSettingsService {
     }
     const accent = Object.values(CUSTOM_THEME_ACCENT).find((name) => name === value);
     if (accent) {
-      this.accentWarning.set(null);
       this.setCustom({ accent });
     }
   }
@@ -151,7 +182,7 @@ export class AppearanceSettingsService {
   /**
    * A colour finished in the picker (#315): one that keeps 4.5:1 on the current base and
    * background becomes the accent at once (and a swatch, with `remember`); one that does not is
-   * not applied, a warning offers the nearest shade that passes instead.
+   * not applied, `accentWarning` offers the nearest shade that passes instead.
    */
   pickOwnAccent(colour: string, picker: ColorPickerComponent, remember = true): void {
     if (!isHexColour(colour)) {
@@ -164,16 +195,9 @@ export class AppearanceSettingsService {
       if (remember) {
         void this.settings.addCustomColour(colour);
       }
-      this.accentWarning.set(null);
       this.setCustom({ accent: colour });
       closePicker(picker);
-      return;
     }
-    this.accentWarning.set({
-      colour,
-      ratio: this.ratio(accentContrast(colour, base, background)),
-      shade: nearestAccessibleAccent(colour, base, background),
-    });
   }
 
   /** "Use <shade>" in the accent warning. */
@@ -182,7 +206,6 @@ export class AppearanceSettingsService {
       return;
     }
     this.pickedColour.set(shade);
-    this.accentWarning.set(null);
     void this.settings.addCustomColour(shade);
     this.setCustom({ accent: shade });
     closePicker(picker);
@@ -203,8 +226,8 @@ export class AppearanceSettingsService {
 
   /**
    * A background colour finished in the picker (#335): one that keeps text and muted text at
-   * 4.5:1 becomes the background at once; one that does not is not applied, a warning offers the
-   * nearest shade that passes.
+   * 4.5:1 becomes the background at once; one that does not is not applied, `backgroundWarning`
+   * offers the nearest shade that passes.
    */
   pickOwnBackground(colour: string, picker: ColorPickerComponent, remember = true): void {
     if (!isHexColour(colour)) {
@@ -216,16 +239,9 @@ export class AppearanceSettingsService {
       if (remember) {
         void this.settings.addCustomColour(colour);
       }
-      this.backgroundWarning.set(null);
       this.setCustom({ background: colour });
       closePicker(picker);
-      return;
     }
-    this.backgroundWarning.set({
-      colour,
-      ratio: this.ratio(backgroundContrast(colour, base)),
-      shade: nearestReadableBackground(colour, base),
-    });
   }
 
   /** "Use <shade>" in the background warning. */
@@ -234,7 +250,6 @@ export class AppearanceSettingsService {
       return;
     }
     this.pickedBackground.set(shade);
-    this.backgroundWarning.set(null);
     void this.settings.addCustomColour(shade);
     this.setCustom({ background: shade });
     closePicker(picker);
@@ -250,8 +265,6 @@ export class AppearanceSettingsService {
   resetCustom(): void {
     this.pickedColour.set('');
     this.pickedBackground.set('');
-    this.accentWarning.set(null);
-    this.backgroundWarning.set(null);
     void this.save({ customTheme: { ...CUSTOM_THEME_DEFAULT } });
   }
 
