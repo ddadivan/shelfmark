@@ -93,7 +93,11 @@ export class PickerMenuComponent {
     origin: () => this.trigger().nativeElement,
     popup: () => this.popupEl().nativeElement,
     isShown: () => this.open(),
-    onDetached: () => this.open.set(false),
+    onDetached: () => {
+      // The overlay went away by itself (a scroll, a resize): no outside press to wait for.
+      this.open.set(false);
+      this.document.removeEventListener('pointerdown', this.outsidePress, true);
+    },
   });
   private openedByPointer = false;
   private readonly outsidePress = (event: Event): void => {
