@@ -1,0 +1,33 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.share-row__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.share-row__label {
+  @include type(body);
+
+  min-width: 0;
+}
+
+.share-row__text {
+  @include type(caption);
+
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.share-row__text--hidden {
+  font-style: italic;
+}

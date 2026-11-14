@@ -47,6 +47,7 @@ export default class SettingsIndexPage {
   protected readonly SETTINGS_PATH = SETTINGS_PATH;
   protected readonly settingsPath = `/${APP_PATH.Settings}`;
   protected readonly adminFeedbackPath = ['/', APP_PATH.Admin, ADMIN_PATH.Feedback];
+  protected readonly adminStatsPath = ['/', APP_PATH.Admin, ADMIN_PATH.Stats];
   protected readonly privacyHref = `/${APP_PATH.Privacy}`;
   protected readonly aboutHref = `/${APP_PATH.About}`;
   protected readonly howItWorks = inject(HowItWorksService);

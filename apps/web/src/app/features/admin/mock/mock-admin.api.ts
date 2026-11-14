@@ -1,10 +1,12 @@
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { DOCUMENT } from '@angular/common';
 import { inject, Service } from '@angular/core';
 import {
   ADMIN_ENDPOINT,
   ADMIN_FEEDBACK_LIMIT,
   FEEDBACK_STATUS,
   type AdminFeedbackItem,
+  type AdminStatsResponse,
   type ListAdminFeedbackResponse,
   type ListAdminFeedbackQuery,
   type UpdateAdminFeedbackRequest,
@@ -15,6 +17,10 @@ import { MOCK_ADMIN_MODE } from '../../feedback/mock/models/mock-admin-mode.cons
 import type { MockFeedbackEntry } from '../../feedback/mock/models/mock-feedback-entry.interface';
 import type { AdminApi } from '../models/admin-api.interface';
 import { ADMIN_LIMIT } from '../models/admin-limit.const';
+import { buildMockAdminStats } from './build-mock-admin-stats';
+import { MOCK_ADMIN_STATS_ERROR_MESSAGE } from './models/mock-admin-stats-error-message.const';
+import { MOCK_ADMIN_STATS_MODE } from './models/mock-admin-stats-mode.const';
+import { MOCK_ADMIN_STATS_STORAGE_KEY } from './models/mock-admin-stats-storage-key.const';
 
 /**
  * The admin sees the screenshots through the admin route, not the owner's; a mock entry that kept
@@ -40,11 +46,13 @@ function notFound(): Promise<never> {
  * In-browser stand-in for `/api/admin`: the mock user is the author unless `sm-mock-admin` is
  * `off` (a regular user: 404 everywhere) or a demo user. It reads and writes the messages of
  * `MockFeedbackData`, so a status or reply set here shows up in the user's Your feedback.
- * `sm-mock-admin=save-fails` makes every update fail (e2e of the rollback).
+ * `sm-mock-admin=save-fails` makes every update fail (e2e of the rollback). The stats are a
+ * fixture (`buildMockAdminStats`); `sm-mock-admin-stats` picks another state (`MOCK_ADMIN_STATS_MODE`).
  */
 @Service()
 export class MockAdminApi implements AdminApi {
   private readonly data = inject(MockFeedbackData);
+  private readonly storage = inject(DOCUMENT).defaultView?.localStorage ?? null;
 
   isAdmin(): Promise<boolean> {
     return Promise.resolve(this.data.isAdmin());
@@ -98,5 +106,19 @@ export class MockAdminApi implements AdminApi {
     entries[index] = { ...found, message };
     this.data.save(entries);
     return Promise.resolve(forAdmin(entries[index]));
+  }
+
+  stats(): Promise<AdminStatsResponse> {
+    if (!this.data.isAdmin()) {
+      return notFound();
+    }
+    const mode = this.storage?.getItem(MOCK_ADMIN_STATS_STORAGE_KEY) ?? null;
+    if (mode === MOCK_ADMIN_STATS_MODE.Fails) {
+      return Promise.reject(new Error(MOCK_ADMIN_STATS_ERROR_MESSAGE));
+    }
+    if (mode === MOCK_ADMIN_STATS_MODE.Slow) {
+      return new Promise<AdminStatsResponse>(() => undefined);
+    }
+    return Promise.resolve(buildMockAdminStats(new Date(), mode === MOCK_ADMIN_STATS_MODE.Few));
   }
 }

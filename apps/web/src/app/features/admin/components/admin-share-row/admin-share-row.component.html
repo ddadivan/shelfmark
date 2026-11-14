@@ -1,0 +1,9 @@
+<div class="share-row__head">
+  <span class="share-row__label">{{ row().label }}</span>
+  <span class="share-row__text" [class.share-row__text--hidden]="row().percent === null">{{
+    row().text
+  }}</span>
+</div>
+@if (row().percent !== null) {
+  <ui-meter [value]="row().percent ?? 0" [label]="row().label" />
+}

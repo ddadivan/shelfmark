@@ -750,7 +750,8 @@
     },
     "sendFeedback": "Send feedback",
     "feedbackInbox": "Feedback inbox",
-    "about": "About Shelfmark"
+    "about": "About Shelfmark",
+    "usageStats": "Usage stats"
   },
   "folders": {
     "dialog": {
@@ -2100,6 +2101,109 @@
       "saveFailed": {
         "title": "Couldn't save",
         "detail": "The message is back as it was. Try again."
+      }
+    },
+    "nav": {
+      "label": "Admin pages",
+      "feedback": "Feedback",
+      "stats": "Stats"
+    },
+    "stats": {
+      "title": "Usage stats",
+      "description": "Totals over real accounts, worked out now. Demo and admin accounts are left out; groups of fewer than {{min}} people are hidden.",
+      "updated": "Updated at {{time}}",
+      "refreshing": "Refreshing…",
+      "refresh": "Refresh",
+      "refreshFailed": "Couldn't refresh. These are the last numbers.",
+      "error": "Couldn't load the stats.",
+      "retry": "Try again",
+      "loading": "Loading the stats",
+      "tooFew": "Not enough users yet: shares and groups appear from {{min}} real users.",
+      "notEnough": "Not enough users yet",
+      "fewer": "Fewer than {{min}}",
+      "shareOf": "{{percent}} · {{count}} of {{base}}",
+      "countOf": "{{count}} of {{base}}",
+      "shareCount": "{{percent}} · {{count}}",
+      "activitySince": "Activity is recorded from {{date}}; earlier visits are estimated.",
+      "activityEstimated": "Visits before activity tracking started are estimated.",
+      "overview": {
+        "title": "Overview"
+      },
+      "tiles": {
+        "realUsers": "Real users",
+        "active7d": "Active in the last 7 days",
+        "active30d": "Active in the last 30 days",
+        "returnedWeek": "Came back after a week",
+        "returnedMonth": "Came back after a month",
+        "onboarded": "Finished onboarding",
+        "demo": "Demo sandboxes now",
+        "demoHint": "Not counted anywhere else"
+      },
+      "signUps": {
+        "title": "Sign-ups",
+        "unit": "Show by",
+        "days": "Days",
+        "weeks": "Weeks",
+        "chartDays": "Sign-ups, last 30 days",
+        "chartWeeks": "Sign-ups, last 12 weeks",
+        "total": "{{count}} in this period",
+        "day": "Day",
+        "week": "Week from",
+        "count": "Sign-ups",
+        "dayBar": "{{date}}: {{count}}",
+        "weekBar": "Week from {{date}}: {{count}}"
+      },
+      "links": {
+        "title": "Links per user",
+        "average": "Mean {{mean}} · median {{median}}",
+        "chart": "Real users by number of saved links",
+        "bucket": "Links",
+        "users": "Users"
+      },
+      "features": {
+        "title": "Features",
+        "adoption": "Who uses what"
+      },
+      "feature": {
+        "folders": "Folders",
+        "nestedFolders": "Folders inside folders",
+        "tags": "Tags",
+        "favorites": "Favorites",
+        "notes": "Notes",
+        "sidebarPins": "Pinned to the sidebar",
+        "folderPins": "Pinned in a folder",
+        "savedViews": "Own saved views",
+        "trash": "Items in Trash",
+        "publicCollections": "Public collections",
+        "ownColours": "Own colors",
+        "ownEmoji": "Own emoji",
+        "openedRecently": "Opened a saved link in 30 days",
+        "historyPaused": "History paused",
+        "previewsOff": "Previews turned off"
+      },
+      "preferences": {
+        "title": "Preferences",
+        "theme": "Theme",
+        "language": "Language",
+        "retention": "Trash keeps items for"
+      },
+      "bucket": {
+        "other": "Other",
+        "never": "Never chosen"
+      },
+      "ratings": {
+        "title": "Ratings and messages",
+        "milestone": {
+          "day3": "After 3 days",
+          "week1": "After a week",
+          "month1": "After a month",
+          "year1": "After a year"
+        },
+        "answered": "{{answered}} answered · {{skipped}} skipped",
+        "summary": "Mean {{mean}} · median {{median}}",
+        "groups": "1–6: {{low}} · 7–8: {{mid}} · 9–10: {{high}}",
+        "byKind": "Messages by type",
+        "byStatus": "Messages by status"
       }
     }
   },

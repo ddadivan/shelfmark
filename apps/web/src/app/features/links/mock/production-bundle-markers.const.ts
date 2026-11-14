@@ -42,6 +42,8 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'sm-mock-admin',
   'Mock: feedback send failed',
   'Mock: admin update failed',
+  'sm-mock-admin-stats',
+  'Mock: admin stats failed',
   'Mock: export failed',
   'sm-mock-export',
   'mock-fail',

@@ -1,5 +1,7 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import {
+  ADMIN_ENDPOINT,
+  type AdminStatsResponse,
   FEEDBACK_ENDPOINT,
   feedbackScreenshotsPath,
   LINKS_BATCH_ENDPOINT,
@@ -141,6 +143,9 @@ export function createHttpContractApis(app: NestExpressApplication, cookie: stri
       deleteForever: (items: readonly TrashItemRef[]) =>
         http.send<TrashActionResponse>('post', TRASH_ENDPOINT.Delete, { items: [...items] }),
       empty: () => http.send<TrashActionResponse>('delete', TRASH_ENDPOINT.Base),
+    },
+    admin: {
+      stats: () => http.send<AdminStatsResponse>('get', ADMIN_ENDPOINT.Stats),
     },
     me: {
       stats: (query?: MeStatsQuery) =>

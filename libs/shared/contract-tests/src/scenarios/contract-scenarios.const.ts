@@ -1,4 +1,5 @@
 import type { ContractScenario } from '../models/contract-scenario.interface';
+import { ADMIN_SCENARIOS } from './admin-scenarios.const';
 import { EXPORT_SCENARIOS } from './export-scenarios.const';
 import { FEEDBACK_SCENARIOS } from './feedback-scenarios.const';
 import { FOLDERS_SCENARIOS } from './folders-scenarios.const';
@@ -24,4 +25,5 @@ export const CONTRACT_SCENARIOS: readonly ContractScenario[] = [
   ...FEEDBACK_SCENARIOS,
   ...EXPORT_SCENARIOS,
   ...ME_SCENARIOS,
+  ...ADMIN_SCENARIOS,
 ];

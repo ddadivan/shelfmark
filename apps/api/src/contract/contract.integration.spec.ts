@@ -17,8 +17,11 @@ import { SafeFetcherService } from '../fetcher/safe-fetcher.service';
 describe('contract scenarios against the real API', () => {
   const fetch = vi.fn<SafeFetcherService['fetch']>();
   let t: AuthTestApp;
+  const savedAdminEmails = process.env['ADMIN_EMAILS'];
 
   beforeAll(async () => {
+    // The scenario account is the admin, so the admin scenarios reach `/api/admin/*`.
+    process.env['ADMIN_EMAILS'] = 'contract@example.com';
     t = await createAuthTestApp({
       overrides: [{ provide: SafeFetcherService, useValue: { fetch } }],
     });
@@ -41,6 +44,8 @@ describe('contract scenarios against the real API', () => {
   });
 
   afterAll(async () => {
+    if (savedAdminEmails === undefined) delete process.env['ADMIN_EMAILS'];
+    else process.env['ADMIN_EMAILS'] = savedAdminEmails;
     await t.close();
   });
 

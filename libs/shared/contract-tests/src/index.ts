@@ -1,3 +1,4 @@
+export type { ContractAdminApi } from './models/contract-admin-api.interface';
 export type { ContractApis } from './models/contract-apis.interface';
 export type { ContractErrorExpectation } from './models/contract-error-expectation.interface';
 export type { ContractExportApi } from './models/contract-export-api.interface';

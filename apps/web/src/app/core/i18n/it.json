@@ -762,7 +762,8 @@
     },
     "sendFeedback": "Invia feedback",
     "feedbackInbox": "Feedback ricevuti",
-    "about": "Informazioni su Shelfmark"
+    "about": "Informazioni su Shelfmark",
+    "usageStats": "Statistiche d’uso"
   },
   "folders": {
     "dialog": {
@@ -2137,6 +2138,109 @@
       "saveFailed": {
         "title": "Salvataggio non riuscito",
         "detail": "Il messaggio è tornato com’era. Riprova."
+      }
+    },
+    "nav": {
+      "label": "Pagine di amministrazione",
+      "feedback": "Feedback",
+      "stats": "Statistiche"
+    },
+    "stats": {
+      "title": "Statistiche d’uso",
+      "description": "Totali sugli account reali, calcolati ora. Gli account demo e admin sono esclusi; i gruppi con meno di {{min}} persone sono nascosti.",
+      "updated": "Aggiornato alle {{time}}",
+      "refreshing": "Aggiornamento…",
+      "refresh": "Aggiorna",
+      "refreshFailed": "Impossibile aggiornare. Questi sono gli ultimi numeri.",
+      "error": "Impossibile caricare le statistiche.",
+      "retry": "Riprova",
+      "loading": "Caricamento delle statistiche",
+      "tooFew": "Non ci sono ancora abbastanza utenti: quote e gruppi compaiono da {{min}} utenti reali.",
+      "notEnough": "Non ci sono ancora abbastanza utenti",
+      "fewer": "Meno di {{min}}",
+      "shareOf": "{{percent}} · {{count}} su {{base}}",
+      "countOf": "{{count}} su {{base}}",
+      "shareCount": "{{percent}} · {{count}}",
+      "activitySince": "L’attività è registrata dal {{date}}; le visite precedenti sono stimate.",
+      "activityEstimated": "Le visite precedenti alla registrazione dell’attività sono stimate.",
+      "overview": {
+        "title": "Panoramica"
+      },
+      "tiles": {
+        "realUsers": "Utenti reali",
+        "active7d": "Attivi negli ultimi 7 giorni",
+        "active30d": "Attivi negli ultimi 30 giorni",
+        "returnedWeek": "Tornati dopo una settimana",
+        "returnedMonth": "Tornati dopo un mese",
+        "onboarded": "Introduzione completata",
+        "demo": "Demo in corso",
+        "demoHint": "Non conteggiate altrove"
+      },
+      "signUps": {
+        "title": "Iscrizioni",
+        "unit": "Mostra per",
+        "days": "Giorni",
+        "weeks": "Settimane",
+        "chartDays": "Iscrizioni, ultimi 30 giorni",
+        "chartWeeks": "Iscrizioni, ultime 12 settimane",
+        "total": "{{count}} nel periodo",
+        "day": "Giorno",
+        "week": "Settimana dal",
+        "count": "Iscrizioni",
+        "dayBar": "{{date}}: {{count}}",
+        "weekBar": "Settimana dal {{date}}: {{count}}"
+      },
+      "links": {
+        "title": "Link per utente",
+        "average": "Media {{mean}} · mediana {{median}}",
+        "chart": "Utenti reali per numero di link salvati",
+        "bucket": "Link",
+        "users": "Utenti"
+      },
+      "features": {
+        "title": "Funzioni",
+        "adoption": "Chi usa cosa"
+      },
+      "feature": {
+        "folders": "Cartelle",
+        "nestedFolders": "Cartelle dentro cartelle",
+        "tags": "Tag",
+        "favorites": "Preferiti",
+        "notes": "Note",
+        "sidebarPins": "Fissati nella barra laterale",
+        "folderPins": "Fissati in una cartella",
+        "savedViews": "Viste salvate proprie",
+        "trash": "Elementi nel cestino",
+        "publicCollections": "Raccolte pubbliche",
+        "ownColours": "Colori propri",
+        "ownEmoji": "Emoji proprie",
+        "openedRecently": "Link salvato aperto in 30 giorni",
+        "historyPaused": "Cronologia in pausa",
+        "previewsOff": "Anteprime disattivate"
+      },
+      "preferences": {
+        "title": "Preferenze",
+        "theme": "Tema",
+        "language": "Lingua",
+        "retention": "Il cestino conserva gli elementi per"
+      },
+      "bucket": {
+        "other": "Altro",
+        "never": "Mai scelto"
+      },
+      "ratings": {
+        "title": "Valutazioni e messaggi",
+        "milestone": {
+          "day3": "Dopo 3 giorni",
+          "week1": "Dopo una settimana",
+          "month1": "Dopo un mese",
+          "year1": "Dopo un anno"
+        },
+        "answered": "{{answered}} risposte · {{skipped}} saltate",
+        "summary": "Media {{mean}} · mediana {{median}}",
+        "groups": "1–6: {{low}} · 7–8: {{mid}} · 9–10: {{high}}",
+        "byKind": "Messaggi per tipo",
+        "byStatus": "Messaggi per stato"
       }
     }
   },
