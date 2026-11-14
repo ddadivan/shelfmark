@@ -34,7 +34,9 @@ import {
   FolderIconComponent,
   injectDialogData,
   UiDialogRef,
+  SegmentedControlComponent,
   type ChoiceOption,
+  type SegmentedOption,
 } from '@shelfmark/ui';
 import { FOLDER_ICON_COMMON } from '../../models/folder-icon-common.const';
 import { FOLDER_ICON_GRID } from '../../models/folder-icon-rows-shown.const';
@@ -43,6 +45,9 @@ import { OwnColourActionsService } from '../../../../core/colours/own-colour-act
 import { FolderEmojiService } from '../../services/folder-emoji.service';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import type { FolderStyleDialogData } from '../../models/folder-style-dialog-data.interface';
+import { FOLDER_STYLE_TAB } from '../../models/folder-style-tab.const';
+import type { FolderStyleTab } from '../../models/folder-style-tab.type';
+import { folderStyleSymbol } from '../../utils/folder-style-symbol';
 import type { FolderStyleFormModel } from '../../models/folder-style-form-model.interface';
 
 const COLOURS: readonly FolderColour[] = Object.values(FOLDER_COLOUR);
@@ -66,6 +71,7 @@ const ICONS: readonly FolderIcon[] = Object.values(FOLDER_ICON);
     FolderIconComponent,
     FormField,
     FormRoot,
+    SegmentedControlComponent,
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -92,13 +98,19 @@ export class FolderStyleDialogComponent {
     emoji: isFolderIconName(this.data.folder.icon) ? '' : this.data.folder.icon,
   });
 
+  /** Icon or Emoji; opens on the one the folder wears. Both choices stay while it is open. */
+  protected readonly tab = signal<FolderStyleTab>(
+    isFolderIconName(this.data.folder.icon) ? FOLDER_STYLE_TAB.Icon : FOLDER_STYLE_TAB.Emoji,
+  );
+
   protected readonly form = form(
     this.model,
     (path) => {
       validate(path.emoji, ({ value }) => {
         this.i18n();
         const text = value().trim();
-        return text === '' || isFolderEmoji(text)
+        // Only the Emoji tab applies the field; on the Icon tab a half-typed text is left alone.
+        return this.tab() !== FOLDER_STYLE_TAB.Emoji || text === '' || isFolderEmoji(text)
           ? undefined
           : { kind: 'emoji', message: this.transloco.translate('folders.style.emoji.invalid') };
       });
@@ -106,24 +118,30 @@ export class FolderStyleDialogComponent {
     { submission: { action: () => this.save() } },
   );
 
-  /** The emoji typed so far, when it is one emoji; it replaces the icon. */
-  private readonly chosenEmoji = computed(() => {
-    const text = this.model().emoji.trim();
-    return isFolderEmoji(text) ? text : null;
-  });
-
   protected readonly previewColour = computed<FolderColour | HexColour>(() => {
     const value = this.model().colour;
     return isFolderColourName(value) || isHexColour(value) ? value : FOLDER_DEFAULT_COLOUR;
   });
-  protected readonly previewIcon = computed<FolderIcon | FolderEmoji>(() => {
-    const emoji = this.chosenEmoji();
-    if (emoji !== null) {
-      return emoji;
-    }
-    const value = this.model().icon;
-    return isFolderIconName(value) ? value : FOLDER_DEFAULT_ICON;
+  /** What Save would apply: the active tab's choice (the icon when the emoji is missing). */
+  protected readonly previewIcon = computed<FolderIcon | FolderEmoji>(() =>
+    folderStyleSymbol(this.tab(), this.model().icon, this.model().emoji),
+  );
+
+  protected readonly tabOptions = computed<SegmentedOption[]>(() => {
+    this.i18n();
+    return [
+      { value: FOLDER_STYLE_TAB.Icon, label: this.transloco.translate('folders.style.tabs.icon') },
+      {
+        value: FOLDER_STYLE_TAB.Emoji,
+        label: this.transloco.translate('folders.style.tabs.emoji'),
+      },
+    ];
   });
+  protected readonly FOLDER_STYLE_TAB = FOLDER_STYLE_TAB;
+  /** The panel's name: the active tab's label. */
+  protected readonly panelLabel = computed(
+    () => this.tabOptions().find((option) => option.value === this.tab())?.label ?? '',
+  );
 
   protected readonly colourOptions: readonly ChoiceOption[] = COLOURS.map((colour) => ({
     value: colour,
@@ -184,10 +202,8 @@ export class FolderStyleDialogComponent {
     this.iconsOpen.update((open) => !open);
   }
 
-  /** The icon grid checks nothing while an emoji is the icon. */
-  protected readonly iconChecked = computed(() =>
-    this.chosenEmoji() === null ? this.model().icon : '',
-  );
+  /** The icon the grid checks; kept while the Emoji tab is active. */
+  protected readonly iconChecked = computed(() => this.model().icon);
 
   /** "12 links, 2 subfolders" (the counts of the folder itself, as on the folder tile). */
   protected readonly meta = computed(() => {
@@ -210,9 +226,9 @@ export class FolderStyleDialogComponent {
     this.model.update((model) => ({ ...model, colour: value }));
   }
 
-  /** An icon of the grid was chosen: the emoji field empties. */
+  /** An icon of the grid was chosen (the emoji field keeps its text for the other tab). */
   protected chooseIcon(value: string): void {
-    this.model.update((model) => ({ ...model, icon: value, emoji: '' }));
+    this.model.update((model) => ({ ...model, icon: value }));
   }
 
   /** The "×" or Delete on an own swatch: forgotten from the account (the folder keeps its colour). */
@@ -235,6 +251,7 @@ export class FolderStyleDialogComponent {
   protected reset(): void {
     this.picked.set('');
     this.model.set({ colour: FOLDER_DEFAULT_COLOUR, icon: FOLDER_DEFAULT_ICON, emoji: '' });
+    this.tab.set(FOLDER_STYLE_TAB.Icon);
   }
 
   protected cancel(): void {

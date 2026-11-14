@@ -52,64 +52,76 @@
         <span class="folder-style__label" id="folder-style-icon">{{
           'folders.style.icon' | transloco
         }}</span>
-        <!-- The common icons, then the rest behind a toggle that opens the grid by height. Both
-             grids share one radio name, so the arrow keys run through all icons. -->
-        <ui-choice-grid
-          kind="icon"
-          name="folder-style-icon"
-          [columns]="FOLDER_ICON_GRID.Columns"
-          [colour]="previewColour()"
-          [options]="firstIcons"
-          ariaLabelledby="folder-style-icon"
-          [value]="iconChecked()"
-          (valueChange)="chooseIcon($event)"
+        <ui-segmented-control
+          name="folder-style-tab"
+          [ariaLabel]="'folders.style.icon' | transloco"
+          [options]="tabOptions()"
+          [(value)]="tab"
         />
-        <div class="folder-style__more" [class.is-open]="iconsOpen()" [id]="moreId">
-          <div class="folder-style__more-inner">
+        <!-- One panel at a time; Save applies the active one, the other keeps its choice. -->
+        <div class="folder-style__panel" role="region" [attr.aria-label]="panelLabel()">
+          @if (tab() === FOLDER_STYLE_TAB.Icon) {
+            <!-- The common icons, then the rest behind a toggle that opens the grid by height. Both
+                     grids share one radio name, so the arrow keys run through all icons. -->
             <ui-choice-grid
               kind="icon"
               name="folder-style-icon"
               [columns]="FOLDER_ICON_GRID.Columns"
               [colour]="previewColour()"
-              [options]="moreIcons"
+              [options]="firstIcons"
               ariaLabelledby="folder-style-icon"
               [value]="iconChecked()"
               (valueChange)="chooseIcon($event)"
             />
-          </div>
+            <div class="folder-style__more" [class.is-open]="iconsOpen()" [id]="moreId">
+              <div class="folder-style__more-inner">
+                <ui-choice-grid
+                  kind="icon"
+                  name="folder-style-icon"
+                  [columns]="FOLDER_ICON_GRID.Columns"
+                  [colour]="previewColour()"
+                  [options]="moreIcons"
+                  ariaLabelledby="folder-style-icon"
+                  [value]="iconChecked()"
+                  (valueChange)="chooseIcon($event)"
+                />
+              </div>
+            </div>
+            <ui-button
+              class="folder-style__toggle"
+              variant="ghost"
+              size="sm"
+              [ariaExpanded]="iconsOpen()"
+              [ariaControls]="moreId"
+              (click)="toggleIcons()"
+              >{{
+                (iconsOpen() ? 'folders.style.iconsShowFewer' : 'folders.style.iconsShowAll')
+                  | transloco: { count: iconCount }
+              }}</ui-button
+            >
+          } @else {
+            <ui-emoji-picker
+              class="folder-style__emoji"
+              [label]="'folders.style.emoji.label' | transloco"
+              [hint]="'folders.style.emoji.hint' | transloco"
+              [placeholder]="'folders.style.emoji.placeholder' | transloco"
+              [searchLabel]="'folders.style.emoji.search' | transloco"
+              [categoriesLabel]="'folders.style.emoji.categoriesLabel' | transloco"
+              [recentLabel]="'folders.style.emoji.recent' | transloco"
+              [ownLabel]="'folders.style.emoji.own' | transloco"
+              [resultsLabel]="'folders.style.emoji.results' | transloco"
+              [noResultsLabel]="'folders.style.emoji.noResults' | transloco"
+              [loadingLabel]="'folders.style.emoji.loading' | transloco"
+              [closeLabel]="'folders.style.emoji.close' | transloco"
+              [categories]="emoji.categories()"
+              [recent]="emoji.recent()"
+              [own]="emoji.own()"
+              [formField]="form.emoji"
+              (opened)="emoji.load()"
+              (removed)="emoji.remove($event)"
+            />
+          }
         </div>
-        <ui-button
-          class="folder-style__toggle"
-          variant="ghost"
-          size="sm"
-          [ariaExpanded]="iconsOpen()"
-          [ariaControls]="moreId"
-          (click)="toggleIcons()"
-          >{{
-            (iconsOpen() ? 'folders.style.iconsShowFewer' : 'folders.style.iconsShowAll')
-              | transloco: { count: iconCount }
-          }}</ui-button
-        >
-        <ui-emoji-picker
-          class="folder-style__emoji"
-          [label]="'folders.style.emoji.label' | transloco"
-          [hint]="'folders.style.emoji.hint' | transloco"
-          [placeholder]="'folders.style.emoji.placeholder' | transloco"
-          [searchLabel]="'folders.style.emoji.search' | transloco"
-          [categoriesLabel]="'folders.style.emoji.categoriesLabel' | transloco"
-          [recentLabel]="'folders.style.emoji.recent' | transloco"
-          [ownLabel]="'folders.style.emoji.own' | transloco"
-          [resultsLabel]="'folders.style.emoji.results' | transloco"
-          [noResultsLabel]="'folders.style.emoji.noResults' | transloco"
-          [loadingLabel]="'folders.style.emoji.loading' | transloco"
-          [closeLabel]="'folders.style.emoji.close' | transloco"
-          [categories]="emoji.categories()"
-          [recent]="emoji.recent()"
-          [own]="emoji.own()"
-          [formField]="form.emoji"
-          (opened)="emoji.load()"
-          (removed)="emoji.remove($event)"
-        />
       </div>
     </div>
 

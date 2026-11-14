@@ -100,6 +100,21 @@ function radio(group: string, name: string): HTMLInputElement {
   return found;
 }
 
+function tab(name: 'Icon' | 'Emoji'): HTMLInputElement {
+  const found = dialog()?.querySelector<HTMLInputElement>(
+    `ui-segmented-control input[value="${name.toLowerCase()}"]`,
+  );
+  if (!found) {
+    throw new Error(`no tab ${name}`);
+  }
+  return found;
+}
+
+function showEmoji(): void {
+  tab('Emoji').click();
+  TestBed.tick();
+}
+
 afterEach(() => {
   document.querySelectorAll('.cdk-overlay-container > *').forEach((node) => {
     node.remove();
@@ -328,6 +343,7 @@ describe('FolderActionsService style', () => {
 
     void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
     const root = await opened();
+    showEmoji();
     const field = root.querySelector('.folder-style__emoji input') as HTMLInputElement;
 
     field.value = 'pizza';
@@ -355,6 +371,7 @@ describe('FolderActionsService style', () => {
 
     void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
     await opened();
+    showEmoji();
     const picker = await overlayLoader().getHarness(UiEmojiPickerHarness.with({ label: 'Emoji' }));
     expect(await picker.getPlaceholder()).toBe('Choose an emoji');
     await picker.open();
@@ -391,6 +408,96 @@ describe('FolderActionsService style', () => {
     expect(await third.getEmojiNames('Yours')).toEqual(['🦩']);
     expect(await third.getRemovableNames()).toEqual([]);
     await third.close();
+    button('Cancel').click();
+    await closed();
+  });
+
+  it('opens on the Icon tab and shows only the icon grid (#376)', async () => {
+    const { actions, store } = await setup();
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+
+    expect(tab('Icon').checked).toBe(true);
+    expect(root.querySelector('.folder-style__emoji')).toBeNull();
+    expect(root.querySelector('[role="region"]')?.getAttribute('aria-label')).toBe('Icon');
+    button('Cancel').click();
+    await closed();
+  });
+
+  it('opens on the Emoji tab for an emoji folder, and the Icon tab keeps its icon (#376)', async () => {
+    const { actions, store } = await setup();
+    await store.setStyle(MOCK_ID.FolderReading, { colour: FOLDER_COLOUR.Graphite, icon: '🍕' });
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+
+    expect(tab('Emoji').checked).toBe(true);
+    expect(root.querySelector('.folder-style__emoji input')).not.toBeNull();
+    expect(root.querySelector('.folder-style__more')).toBeNull();
+    expect(root.querySelector('.ui-folder-icon__emoji')?.textContent).toBe('🍕');
+    tab('Icon').click();
+    TestBed.tick();
+    expect(root.querySelector('.ui-folder-icon__emoji')).toBeNull();
+    button('Cancel').click();
+    await closed();
+  });
+
+  it('keeps both choices when switching tabs and saves the active tab (#376)', async () => {
+    const { actions, store } = await setup();
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    radio('icon', 'Star').click();
+    showEmoji();
+    const field = root.querySelector('.folder-style__emoji input') as HTMLInputElement;
+    field.value = '🍕';
+    field.dispatchEvent(new Event('input'));
+    TestBed.tick();
+    expect(root.querySelector('.ui-folder-icon__emoji')?.textContent).toBe('🍕');
+
+    // Back to Icon: the preview shows the icon, which is still checked.
+    tab('Icon').click();
+    TestBed.tick();
+    expect(radio('icon', 'Star').checked).toBe(true);
+    expect(root.querySelector('.ui-folder-icon__emoji')).toBeNull();
+
+    // And forth: the emoji is still in the field.
+    showEmoji();
+    expect((root.querySelector('.folder-style__emoji input') as HTMLInputElement).value).toBe('🍕');
+
+    // Save from Icon gives the icon, even with an emoji chosen.
+    tab('Icon').click();
+    TestBed.tick();
+    button('Save').click();
+    await closed();
+    expect(store.entityMap()[MOCK_ID.FolderReading].icon).toBe('star');
+  });
+
+  it('falls back to the icon when the Emoji tab holds no emoji (#376)', async () => {
+    const { actions, store } = await setup();
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    await opened();
+    radio('icon', 'Star').click();
+    showEmoji();
+    button('Save').click();
+    await closed();
+
+    expect(store.entityMap()[MOCK_ID.FolderReading].icon).toBe('star');
+  });
+
+  it('Reset goes back to the Icon tab (#376)', async () => {
+    const { actions, store } = await setup();
+    await store.setStyle(MOCK_ID.FolderReading, { colour: FOLDER_COLOUR.Rose, icon: '🍕' });
+
+    void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    await opened();
+    expect(tab('Emoji').checked).toBe(true);
+    button('Reset').click();
+    TestBed.tick();
+    expect(tab('Icon').checked).toBe(true);
+    expect(radio('icon', 'Folder').checked).toBe(true);
     button('Cancel').click();
     await closed();
   });

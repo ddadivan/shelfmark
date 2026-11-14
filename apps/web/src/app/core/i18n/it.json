@@ -843,6 +843,10 @@
     "style": {
       "colour": "Colore",
       "icon": "Icona",
+      "tabs": {
+        "icon": "Icona",
+        "emoji": "Emoji"
+      },
       "reset": "Ripristina",
       "save": "Salva",
       "cancel": "Annulla",
