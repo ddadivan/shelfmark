@@ -76,4 +76,19 @@ describe('FoldersStore setStyle', () => {
 
     expect(api.update).not.toHaveBeenCalled();
   });
+
+  it('keeps the trimmed description the server answers and rolls a failed one back (#418)', async () => {
+    const { store, api } = setup();
+    await store.load();
+    api.update.mockImplementationOnce(() =>
+      of({ ...WORK, description: 'Trimmed', updatedAt: 'later' }),
+    );
+
+    expect(await store.setStyle('w', { description: ' Trimmed ' })).toBe(true);
+    expect(store.entityMap()['w'].description).toBe('Trimmed');
+
+    api.update.mockImplementationOnce(() => throwError(() => new Error('down')));
+    expect(await store.setStyle('w', { description: null })).toBe(false);
+    expect(store.entityMap()['w'].description).toBe('Trimmed');
+  });
 });

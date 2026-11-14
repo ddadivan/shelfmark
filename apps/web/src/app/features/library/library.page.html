@@ -80,7 +80,9 @@
         <div class="library__heading" [class.library__heading--split]="splitView.open()">
           <!-- prettier-ignore -->
           <h1 class="library__title" [class.library__title--hidden]="splitView.open()">{{ filters.folder()?.name ?? (filters.titleKey() | transloco) }}</h1>
-          @if (splitView.open()) {
+          @if (!splitView.open() && filters.folder()?.description; as description) {
+          <p class="library__description">{{ description }}</p>
+          } @if (splitView.open()) {
           <ui-picker-menu
             [options]="splitView.leftOptions()"
             [value]="splitView.leftValue()"

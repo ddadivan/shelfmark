@@ -949,7 +949,14 @@
         "undo": "Rückgängig"
       },
       "iconsShowAll": "Alle Symbole anzeigen ({{count}})",
-      "iconsShowFewer": "Weniger anzeigen"
+      "iconsShowFewer": "Weniger anzeigen",
+      "description": {
+        "label": "Beschreibung",
+        "hint": "Optional, bis zu {{max}} Zeichen. Erscheint unter dem Ordnernamen.",
+        "placeholder": "Was ist in diesem Ordner?",
+        "tooLong": "Höchstens {{max}} Zeichen.",
+        "invalid": "Nur einfacher Text in einer Zeile."
+      }
     }
   },
   "library": {

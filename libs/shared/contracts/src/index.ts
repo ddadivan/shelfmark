@@ -61,6 +61,7 @@ export type { FolderDeleteMode } from './folders/folder-delete-mode.type';
 export { FOLDER_DELETE_MODE } from './folders/folder-delete-mode.const';
 export { FOLDER_ERROR_MESSAGE } from './folders/folder-error-message.const';
 export { FOLDER_LIMIT } from './folders/folder-limit.const';
+export { isFolderDescription, normalizeFolderDescription } from './folders/is-folder-description';
 
 export type { TagResponse } from './tags/tag-response.interface';
 export type { ListTagsResponse } from './tags/list-tags-response.interface';

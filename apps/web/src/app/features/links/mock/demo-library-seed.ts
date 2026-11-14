@@ -65,6 +65,7 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
       name: folder.name,
       colour: folder.colour,
       icon: folder.icon,
+      description: null,
       // Like the migration of #314: siblings start in name order.
       position: DEMO_SEED_FOLDERS.filter(
         (other) => other.parent === folder.parent && other.name.localeCompare(folder.name) < 0,

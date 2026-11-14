@@ -965,7 +965,14 @@
         "undo": "Deshacer"
       },
       "iconsShowAll": "Mostrar todos los iconos ({{count}})",
-      "iconsShowFewer": "Mostrar menos"
+      "iconsShowFewer": "Mostrar menos",
+      "description": {
+        "label": "Descripción",
+        "hint": "Opcional, hasta {{max}} caracteres. Se muestra bajo el nombre de la carpeta.",
+        "placeholder": "¿Qué hay en esta carpeta?",
+        "tooLong": "Máximo {{max}} caracteres.",
+        "invalid": "Usa texto sencillo en una sola línea."
+      }
     }
   },
   "library": {

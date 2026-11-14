@@ -6,7 +6,9 @@ import {
   FOLDER_ERROR_MESSAGE,
   FOLDER_LIMIT,
   isFolderColourValue,
+  isFolderDescription,
   isFolderIconValue,
+  normalizeFolderDescription,
   type CreateFolderRequest,
   type FolderDeleteMode,
   type FolderResponse,
@@ -68,6 +70,7 @@ export class MockFoldersApi implements FoldersApi {
         name: request.name,
         colour: FOLDER_DEFAULT_COLOUR,
         icon: FOLDER_DEFAULT_ICON,
+        description: null,
         position: this.data.nextFolderPosition(parentId),
         pinned: false,
         linkCount: 0,
@@ -94,7 +97,10 @@ export class MockFoldersApi implements FoldersApi {
         (request.name !== undefined && !validName(request.name)) ||
         // Like the API: a colour is a name or #rrggbb, an icon a name or exactly one emoji.
         (request.colour !== undefined && !isFolderColourValue(request.colour)) ||
-        (request.icon !== undefined && !isFolderIconValue(request.icon))
+        (request.icon !== undefined && !isFolderIconValue(request.icon)) ||
+        (request.description !== undefined &&
+          request.description !== null &&
+          !isFolderDescription(request.description))
       ) {
         return throwError(() => mockHttpError(HttpStatusCode.BadRequest, ['invalid field']));
       }
@@ -115,6 +121,10 @@ export class MockFoldersApi implements FoldersApi {
         parentId,
         colour: request.colour ?? current.colour,
         icon: request.icon ?? current.icon,
+        description:
+          request.description === undefined
+            ? current.description
+            : normalizeFolderDescription(request.description),
         // A move goes to the end of the new parent, like the API.
         position:
           parentId === current.parentId ? current.position : this.data.nextFolderPosition(parentId),

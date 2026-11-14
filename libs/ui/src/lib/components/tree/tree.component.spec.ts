@@ -905,4 +905,21 @@ describe('TreeComponent', () => {
       expect(root.querySelector('ui-button')).toBeNull();
     });
   });
+
+  describe('description (#418)', () => {
+    it('describes a folder row through its tooltip and leaves the others alone', async () => {
+      const { fixture, host, item } = await setup();
+
+      host.nodes.set(
+        TREE_STORY_NESTED.map((node) =>
+          node.id === TREE_STORY_ID.Recipes ? { ...node, description: 'Weeknight food' } : node,
+        ),
+      );
+      await settle(fixture);
+
+      expect(item(TREE_STORY_NAME.Recipes).getAttribute('aria-description')).toBe('Weeknight food');
+      expect(item(TREE_STORY_NAME.Work).hasAttribute('aria-description')).toBe(false);
+      expect(item(TREE_STORY_NAME.Favorites).hasAttribute('aria-description')).toBe(false);
+    });
+  });
 });

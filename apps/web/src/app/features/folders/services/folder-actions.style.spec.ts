@@ -162,6 +162,35 @@ describe('FolderActionsService style', () => {
     });
   });
 
+  it('saves a trimmed description and refuses one that is too long (#418)', async () => {
+    const { actions, store } = await setup();
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const field = root.querySelector<HTMLInputElement>('ui-input input');
+    if (!field) {
+      throw new Error('no description field');
+    }
+    field.value = 'x'.repeat(141);
+    field.dispatchEvent(new Event('input'));
+    TestBed.tick();
+    button('Save').click();
+    TestBed.tick();
+    expect(root.textContent).toContain('Keep it to 140 characters.');
+    expect(dialog()).not.toBeNull();
+
+    field.value = '  Weekend reads  ';
+    field.dispatchEvent(new Event('input'));
+    TestBed.tick();
+    button('Save').click();
+    await closed();
+    await done;
+
+    await until(() => {
+      expect(store.entityMap()[MOCK_ID.FolderReading].description).toBe('Weekend reads');
+    });
+  });
+
   it('Reset goes back to the graphite folder', async () => {
     const { actions, store } = await setup();
     await store.setStyle(MOCK_ID.FolderReading, {

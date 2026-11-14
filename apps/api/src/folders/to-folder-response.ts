@@ -16,6 +16,7 @@ export function toFolderResponse(row: FolderRow, linkCount: number): FolderRespo
     name: row.name,
     colour: row.colour as FolderColour | HexColour,
     icon: row.icon as FolderIcon | FolderEmoji,
+    description: row.description,
     position: row.position,
     pinned: row.pinnedPosition !== null,
     linkCount,

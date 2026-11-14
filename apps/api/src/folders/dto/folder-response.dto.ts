@@ -27,6 +27,8 @@ export class FolderResponseDto implements FolderResponse, GetFolderResponse {
     description: 'An icon name or exactly one emoji',
   })
   icon!: FolderIcon | FolderEmoji;
+  @ApiProperty({ type: String, nullable: true, description: 'Short description (#418)' })
+  description!: string | null;
   @ApiProperty({ description: 'Place among its siblings, 0 first (manual order)' })
   position!: number;
   @ApiProperty({ description: 'Pinned to the sidebar' }) pinned!: boolean;

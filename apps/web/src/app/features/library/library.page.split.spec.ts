@@ -31,6 +31,7 @@ function folder(id: string, name: string): FolderResponse {
     name,
     colour: 'graphite',
     icon: 'folder',
+    description: null,
     position: 0,
     pinned: false,
     linkCount: 1,

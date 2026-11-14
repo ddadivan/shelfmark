@@ -152,8 +152,8 @@ export class FolderActionsService {
   }
 
   /**
-   * "Colour and icon": the dialog closes at once on Save and the folder wears the new style while
-   * the request runs; a failure puts the old style back with a toast.
+   * "Colour and icon" (with the description, #418): the dialog closes at once on Save and the
+   * folder wears the new style while the request runs; a failure puts the old style back with a toast.
    */
   async style(folder: FolderResponse): Promise<void> {
     await this.dialogs.open<FolderStyleDialogComponent, boolean, FolderStyleDialogData>(
@@ -167,7 +167,11 @@ export class FolderActionsService {
           subfolderCount: this.folders.entities().filter((item) => item.parentId === folder.id)
             .length,
           submit: (style) => {
-            if (style.colour === folder.colour && style.icon === folder.icon) {
+            if (
+              style.colour === folder.colour &&
+              style.icon === folder.icon &&
+              style.description === folder.description
+            ) {
               return;
             }
             void this.folders.setStyle(folder.id, style).then((saved) => {

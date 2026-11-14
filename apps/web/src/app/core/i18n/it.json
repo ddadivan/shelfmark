@@ -965,7 +965,14 @@
         "undo": "Annulla"
       },
       "iconsShowAll": "Mostra tutte le icone ({{count}})",
-      "iconsShowFewer": "Mostra meno"
+      "iconsShowFewer": "Mostra meno",
+      "description": {
+        "label": "Descrizione",
+        "hint": "Facoltativa, fino a {{max}} caratteri. Appare sotto il nome della cartella.",
+        "placeholder": "Cosa c’è in questa cartella?",
+        "tooLong": "Massimo {{max}} caratteri.",
+        "invalid": "Usa testo semplice su una riga."
+      }
     }
   },
   "library": {

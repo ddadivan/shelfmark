@@ -62,6 +62,31 @@ export const FOLDERS_SCENARIOS: readonly ContractScenario[] = [
     expectEqual(custom, expectedFolder('Books', { id: folder.id, colour: '#aa00ff', icon: '📚' }));
   }),
 
+  scenario('folders', 'saves, trims and removes a description (#418)', async ({ folders }) => {
+    const folder = await folders.create({ name: 'Recipes' });
+    const saved = await folders.update(folder.id, { description: '  Worth cooking twice ' });
+    expectEqual(
+      saved,
+      expectedFolder('Recipes', { id: folder.id, description: 'Worth cooking twice' }),
+    );
+    const { items } = await folders.list();
+    expectEqual(items[0]?.description, 'Worth cooking twice');
+    const blank = await folders.update(folder.id, { description: '  ' });
+    expectEqual(blank.description, null);
+    await folders.update(folder.id, { description: 'Again' });
+    expectEqual((await folders.update(folder.id, { description: null })).description, null);
+    await expectError(
+      folders.update(folder.id, { description: 'x'.repeat(FOLDER_LIMIT.DescriptionMax + 1) }),
+      { status: 400 },
+      'long description',
+    );
+    await expectError(
+      folders.update(folder.id, { description: 'line\nbreak' }),
+      { status: 400 },
+      'control character',
+    );
+  }),
+
   scenario('folders', 'moves a folder to the end of its new parent', async ({ folders }) => {
     const a = await folders.create({ name: 'A' });
     const b = await folders.create({ name: 'B' });

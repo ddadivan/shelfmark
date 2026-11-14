@@ -13,6 +13,8 @@ export interface FolderResponse {
   colour: FolderColour | HexColour;
   /** One of `FOLDER_ICON` or exactly one emoji (#335); `folder` until chosen. */
   icon: FolderIcon | FolderEmoji;
+  /** Optional short description (#418): trimmed, 1 to `FOLDER_LIMIT.DescriptionMax` characters, or `null`. */
+  description: string | null;
   /**
    * Place among its siblings (the manual order of `PUT /api/folders/order`, 0 first). Lists are
    * sorted by it, then by name; a new or moved folder goes to the end of its parent.

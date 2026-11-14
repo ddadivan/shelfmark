@@ -949,7 +949,14 @@
         "undo": "Undo"
       },
       "iconsShowAll": "Show all icons ({{count}})",
-      "iconsShowFewer": "Show fewer"
+      "iconsShowFewer": "Show fewer",
+      "description": {
+        "label": "Description",
+        "hint": "Optional, up to {{max}} characters. Shown under the folder name.",
+        "placeholder": "What’s in this folder?",
+        "tooLong": "Keep it to {{max}} characters.",
+        "invalid": "Use plain text on one line."
+      }
     }
   },
   "library": {

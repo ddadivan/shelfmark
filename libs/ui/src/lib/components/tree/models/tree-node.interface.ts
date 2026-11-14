@@ -11,6 +11,11 @@ export interface UiTreeNode {
   readonly icon?: IconName | string;
   /** Colour of the folder tile; graphite when unset. Fixed rows ignore it. */
   readonly colour?: FolderColour | string;
+  /**
+   * Short text about a folder (#418): a tooltip on the name and the row's `aria-description`
+   * (through `uiTooltip`). Fixed rows ignore it.
+   */
+  readonly description?: string;
   /** Number shown on the right. */
   readonly count?: number;
   /** Starts expanded (folders with children only). Later changes by the user are kept. */

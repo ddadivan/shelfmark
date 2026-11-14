@@ -12,9 +12,11 @@ import {
   type UpdateFolderRequest,
 } from '@shelfmark/contracts';
 import { IsOptional, IsString, IsUUID, MaxLength, MinLength, ValidateIf } from 'class-validator';
+import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { IsFolderColour } from './is-folder-colour.decorator';
 import { IsFolderIcon } from './is-folder-icon.decorator';
 import { TrimString } from './trim-string.decorator';
+import { TrimToNull } from './trim-to-null.decorator';
 
 export class UpdateFolderDto implements UpdateFolderRequest {
   @ApiPropertyOptional({ minLength: 1, maxLength: FOLDER_LIMIT.NameMax })
@@ -57,4 +59,17 @@ export class UpdateFolderDto implements UpdateFolderRequest {
   @ValidateIf((_, value: unknown) => value !== undefined)
   @IsFolderIcon()
   icon?: FolderIcon | FolderEmoji;
+
+  @ApiPropertyOptional({
+    type: String,
+    nullable: true,
+    maxLength: FOLDER_LIMIT.DescriptionMax,
+    description: 'Short description, trimmed; blank or null removes it (#418)',
+  })
+  @TrimToNull()
+  @ValidateIf((_, value: unknown) => value !== undefined && value !== null)
+  @IsString()
+  @MaxLength(FOLDER_LIMIT.DescriptionMax)
+  @NoControlChars()
+  description?: string | null;
 }

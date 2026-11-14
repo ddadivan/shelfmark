@@ -133,6 +133,14 @@
   }
 }
 
+.library__description {
+  @include type(body);
+
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
 .library__count {
   @include type(caption);
 

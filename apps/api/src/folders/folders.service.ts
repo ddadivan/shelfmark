@@ -96,6 +96,7 @@ export class FoldersService {
         if (request.name !== undefined) data.name = request.name;
         if (request.colour !== undefined) data.colour = request.colour;
         if (request.icon !== undefined) data.icon = request.icon;
+        if (request.description !== undefined) data.description = request.description;
         if (request.parentId !== undefined) {
           if (request.parentId !== null) {
             await this.requireOwned(tx, userId, request.parentId);

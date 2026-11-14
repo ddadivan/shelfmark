@@ -41,6 +41,9 @@
         [preserveContent]="true"
         [attr.aria-labelledby]="labelledBy(item.id(), node)"
         [attr.aria-owns]="node.children?.length ? item.id() + '-group' : null"
+        [uiTooltip]="folder ? (node.description ?? '') : ''"
+        [uiTooltipPointerTarget]="nameText"
+        [position]="MORE_TOOLTIP_SIDE"
         (expandedChange)="toggled.emit({ node, expanded: $event })"
         (contextmenu)="folder && menu.fromContextMenu($event, node, row)"
         (keydown)="onKeydown($event, node, row, folder)"
@@ -68,7 +71,7 @@
         } @else if (node.icon) {
           <ui-icon class="ui-tree__icon" [name]="node.icon" [size]="ICON_SIZE.Md" />
         }
-        <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
+        <span #nameText class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
         @if (dropTargetId() === node.id && dropLabel()) {
           <span class="ui-tree__drop-badge" [id]="item.id() + '-drop'"
             >&ngsp;{{ dropLabel() }}</span

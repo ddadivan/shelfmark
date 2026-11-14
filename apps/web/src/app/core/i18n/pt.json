@@ -965,7 +965,14 @@
         "undo": "Desfazer"
       },
       "iconsShowAll": "Mostrar todos os ícones ({{count}})",
-      "iconsShowFewer": "Mostrar menos"
+      "iconsShowFewer": "Mostrar menos",
+      "description": {
+        "label": "Descrição",
+        "hint": "Opcional, até {{max}} caracteres. Aparece abaixo do nome da pasta.",
+        "placeholder": "O que tem nesta pasta?",
+        "tooLong": "No máximo {{max}} caracteres.",
+        "invalid": "Use texto simples em uma linha."
+      }
     }
   },
   "library": {
