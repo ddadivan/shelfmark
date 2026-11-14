@@ -24,7 +24,16 @@
     (keydown)="onTriggerKeydown($event)"
     (blur)="onTriggerBlur($event)"
   >
-    <ui-icon class="ui-select__icon" [name]="triggerIcon()" [size]="ICON_SIZE.Md" />
+    @if (chosen()?.icon || chosen()?.colour) {
+      <ui-folder-icon
+        class="ui-select__tile"
+        [size]="FOLDER_ICON_SIZE.Sm"
+        [icon]="chosen()?.icon ?? 'folder'"
+        [colour]="chosen()?.colour ?? 'graphite'"
+      />
+    } @else {
+      <ui-icon class="ui-select__icon" [name]="triggerIcon()" [size]="ICON_SIZE.Md" />
+    }
     <span
       class="ui-select__value"
       [class.ui-select__value--placeholder]="!chosen()"
@@ -95,11 +104,20 @@
             [attr.aria-label]="row.level > 0 ? row.path : null"
             [style.--ui-select-level]="row.level"
           >
-            <ui-icon
-              class="ui-select__option-icon"
-              [name]="rowIcon(row.id)"
-              [size]="ICON_SIZE.Md"
-            />
+            @if (row.icon || row.colour) {
+              <ui-folder-icon
+                class="ui-select__tile"
+                [size]="FOLDER_ICON_SIZE.Sm"
+                [icon]="row.icon ?? 'folder'"
+                [colour]="row.colour ?? 'graphite'"
+              />
+            } @else {
+              <ui-icon
+                class="ui-select__option-icon"
+                [name]="rowIcon(row.id)"
+                [size]="ICON_SIZE.Md"
+              />
+            }
             <span class="ui-select__option-label" [attr.lang]="row.lang ?? null">{{
               row.name
             }}</span>

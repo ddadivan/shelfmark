@@ -71,4 +71,9 @@ describe('selectRows', () => {
     expect(selectedRow(tree, null, '')).toBeUndefined();
     expect(selectedRow(tree, 'gone', '')).toBeUndefined();
   });
+
+  it('keeps the folder tile of an option (#418)', () => {
+    const [row] = selectRows([{ id: 'a', name: 'A', colour: 'rose', icon: '🍋' }], '', '');
+    expect(row).toMatchObject({ colour: 'rose', icon: '🍋' });
+  });
 });
