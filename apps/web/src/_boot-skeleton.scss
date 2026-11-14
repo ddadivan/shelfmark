@@ -1,0 +1,234 @@
+@use 'ui' as *;
+
+// The app skeleton of index.html (#410): what the screen shows between the first paint of a
+// signed-in start and the first rendered page (bundle, session request, lazy shell). Static
+// markup in the page, so no script and no inline style are needed (strict CSP). Hidden unless
+// `public/boot-skeleton.js` sets `html[data-boot-skeleton]` (a session hint, or `/demo`); the app
+// removes it after rendering a page. It is an overlay: removing it shifts nothing. Tokens come
+// from the theme attributes on `html`; geometry repeats the shell (app-shell.component.scss,
+// library.page.scss) so the real page replaces it without a jump.
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+  pointer-events: none;
+}
+
+:root[data-boot-skeleton] .boot {
+  display: flex;
+
+  @include desktop {
+    flex-direction: row;
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+}
+
+// One placeholder block, as `ui-skeleton`: `surface-pressed` with a sweeping highlight; the sweep
+// stops under reduced motion (`loop(shimmer)`), the block stays.
+.boot__block {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--surface-pressed);
+  border-radius: var(--radius-sm);
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background: linear-gradient(90deg, transparent, var(--skeleton-shimmer), transparent);
+    transform: translateX(-100%);
+
+    @include loop(shimmer);
+  }
+}
+
+// Sidebar: the inset card, desktop only.
+.boot__sidebar {
+  display: none;
+  flex: none;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-self: stretch;
+  width: rem(272px);
+  padding: var(--space-4) var(--space-3);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+
+  @include desktop {
+    display: flex;
+  }
+}
+
+.boot__logo {
+  width: 55%;
+  height: rem(28px);
+  margin-block-end: var(--space-4);
+}
+
+.boot__row {
+  height: rem(36px);
+}
+
+.boot__row--folder {
+  margin-inline-start: rem(24px);
+}
+
+.boot__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.boot__header {
+  display: none;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-1) var(--space-6) 0;
+
+  @include desktop {
+    display: flex;
+  }
+}
+
+.boot__search {
+  width: min(100%, rem(360px));
+  height: rem(40px);
+  border-radius: var(--radius-full);
+}
+
+.boot__spacer {
+  flex: 1 1 0;
+}
+
+.boot__tool,
+.boot__avatar {
+  flex: none;
+  width: rem(40px);
+  height: rem(40px);
+  border-radius: var(--radius-full);
+}
+
+.boot__add {
+  flex: none;
+  width: rem(112px);
+  height: rem(40px);
+  border-radius: var(--radius-full);
+}
+
+.boot__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 0;
+  padding: var(--space-6) var(--space-4);
+  overflow: hidden;
+
+  @include tablet {
+    padding-inline: var(--space-6);
+  }
+
+  @include desktop {
+    padding: var(--space-4) var(--space-6) 0;
+  }
+
+  // Blocks keep their size; the column clips what does not fit.
+  > * {
+    flex: none;
+  }
+}
+
+.boot__title {
+  width: rem(160px);
+  height: rem(32px);
+}
+
+.boot__count {
+  width: rem(96px);
+  height: rem(14px);
+  margin-block-end: var(--space-2);
+}
+
+// The feed: the same fluid columns as the library grid (one column on a phone).
+.boot__grid {
+  display: grid;
+  gap: var(--density-feed-gap, var(--space-3));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14.25rem), 1fr));
+
+  @media (width > 120em) {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.25rem), 1fr));
+  }
+}
+
+.boot__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-block-end: var(--space-4);
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.boot__media {
+  margin: rem(6px) rem(6px) var(--space-1);
+  aspect-ratio: 16 / 9;
+  border-radius: rem(16px);
+}
+
+.boot__line {
+  height: rem(14px);
+  margin-inline: var(--space-4);
+}
+
+.boot__line--long {
+  width: 80%;
+}
+
+.boot__line--short {
+  width: 45%;
+}
+
+// The floating tab bar of the mobile shell (ui-tab-bar: 16px from the sides, 20px above the
+// bottom edge and the home indicator, 68px high, at most 560px wide).
+.boot__tabbar {
+  position: fixed;
+  inset-inline: max(var(--space-4), calc((100vw - #{rem(560px)}) / 2));
+  inset-block-end: calc(#{rem(20px)} + env(safe-area-inset-bottom, 0rem));
+  display: none;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-around;
+  box-sizing: border-box;
+  block-size: rem(68px);
+  padding-inline: var(--space-2);
+  background: var(--surface);
+  border-radius: rem(26px);
+  box-shadow: var(--shadow-card);
+
+  @include compact {
+    display: flex;
+  }
+}
+
+.boot__tab {
+  width: rem(44px);
+  height: rem(40px);
+  border-radius: var(--radius-full);
+}
+
+.boot__tab--add {
+  width: rem(52px);
+  height: rem(52px);
+}

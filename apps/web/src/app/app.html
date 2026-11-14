@@ -1,1 +1,1 @@
-<router-outlet (activate)="renderActivatedPage()" />
+<router-outlet #outlet="outlet" (activate)="renderActivatedPage(outlet.activatedRouteData)" />
