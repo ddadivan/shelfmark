@@ -105,10 +105,16 @@ test.describe('scroll fades (mock API)', () => {
   test.skip(({ isMobile }) => isMobile, 'desktop: the feed is its own scroll area');
 
   const fade = (page: Page, selector: string, edge: '::before' | '::after') =>
-    page.evaluate<{ opacity: string; pointerEvents: string; position: string; content: string }>(
-      `(() => { const s = getComputedStyle(document.querySelector(${JSON.stringify(selector)}), ${JSON.stringify(edge)});
-        return { opacity: s.opacity, pointerEvents: s.pointerEvents, position: s.position, content: s.content }; })()`,
-    );
+    // Arguments, not a code string built from the selector (CodeQL js/bad-code-sanitization).
+    page.locator(selector).evaluate((element, pseudo) => {
+      const s = element.ownerDocument.defaultView!.getComputedStyle(element, pseudo);
+      return {
+        opacity: s.opacity,
+        pointerEvents: s.pointerEvents,
+        position: s.position,
+        content: s.content,
+      };
+    }, edge);
 
   test('the feed fades in at the top once scrolled and has no bottom fade', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
