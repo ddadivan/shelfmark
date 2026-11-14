@@ -14,6 +14,7 @@ export function appearanceOf(settings: UserSettingsResponse): Appearance {
     cardSite: settings.cardSite,
     cardNotes: settings.cardNotes,
     cardTags: settings.cardTags,
+    folderHighlight: settings.folderHighlight,
   };
 }
 
@@ -59,6 +60,7 @@ export function sameAppearance(a: Appearance, b: Appearance): boolean {
     a.cardSite === b.cardSite &&
     a.cardNotes === b.cardNotes &&
     a.cardTags === b.cardTags &&
+    a.folderHighlight === b.folderHighlight &&
     a.customTheme.base === b.customTheme.base &&
     a.customTheme.accent === b.customTheme.accent &&
     a.customTheme.background === b.customTheme.background &&

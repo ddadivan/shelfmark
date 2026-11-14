@@ -74,6 +74,8 @@ model User {
   cardSite              Boolean       @default(true) @map("card_site")
   cardNotes             Boolean       @default(true) @map("card_notes")
   cardTags              Boolean       @default(true) @map("card_tags")
+  // Sidebar folder highlight (#418): FOLDER_HIGHLIGHT; a CHECK in the migration closes the set.
+  folderHighlight       String        @default("stripe") @map("folder_highlight")
   // Settings › Language (#274). CHECKs in the migration keep the text columns to the contract
   // allow-lists; languageSavedAt marks the first write (a guest's local choice is kept until then).
   language              String        @default("browser") @map("language")

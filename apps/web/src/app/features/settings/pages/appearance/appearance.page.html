@@ -272,6 +272,19 @@
         />
       </ui-settings-row>
       <ui-settings-row
+        #highlightRow
+        [title]="'settings.appearance.sidebar.highlight.label' | transloco"
+        [description]="'settings.appearance.sidebar.highlight.hint' | transloco"
+      >
+        <ui-segmented-control
+          [ariaLabelledby]="highlightRow.titleId"
+          [options]="highlightOptions()"
+          [value]="theme.layout().folderHighlight"
+          [disabled]="!settings.coloursOn()"
+          (valueChange)="appearance.setFolderHighlight($event)"
+        />
+      </ui-settings-row>
+      <ui-settings-row
         #motionRow
         [title]="'settings.appearance.motion.label' | transloco"
         [description]="'settings.appearance.motion.hint' | transloco"

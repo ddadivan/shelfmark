@@ -61,6 +61,8 @@ export type { FolderDeleteMode } from './folders/folder-delete-mode.type';
 export { FOLDER_DELETE_MODE } from './folders/folder-delete-mode.const';
 export { FOLDER_ERROR_MESSAGE } from './folders/folder-error-message.const';
 export { FOLDER_LIMIT } from './folders/folder-limit.const';
+export { FOLDER_HIGHLIGHT } from './users/folder-highlight.const';
+export type { FolderHighlight } from './users/folder-highlight.type';
 export { isFolderDescription, normalizeFolderDescription } from './folders/is-folder-description';
 
 export type { TagResponse } from './tags/tag-response.interface';
@@ -209,6 +211,7 @@ export {
   isCardPreview,
   isDensity,
   isLayoutSettings,
+  isFolderHighlight,
   isTextSize,
 } from './users/is-layout-settings';
 export { TRACKING_QUERY_PARAMS } from './links/tracking-query-params.const';

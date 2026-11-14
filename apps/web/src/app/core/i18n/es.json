@@ -1370,6 +1370,13 @@
         "colours": {
           "label": "Colores de carpeta",
           "hint": "Desactivado muestra todas las carpetas en grafito"
+        },
+        "highlight": {
+          "label": "Resaltar las carpetas con su color",
+          "hint": "Cómo se ve una carpeta con color en la barra lateral, más marcada si está abierta",
+          "off": "No",
+          "stripe": "Franja",
+          "background": "Fondo"
         }
       },
       "motion": {

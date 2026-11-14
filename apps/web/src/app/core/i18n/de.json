@@ -1349,6 +1349,13 @@
         "colours": {
           "label": "Ordnerfarben",
           "hint": "Aus zeigt jeden Ordner in schlichtem Graphit"
+        },
+        "highlight": {
+          "label": "Ordner in ihrer Farbe hervorheben",
+          "hint": "Wie ein farbiger Ordner in der Seitenleiste erscheint, stärker, wenn er geöffnet ist",
+          "off": "Aus",
+          "stripe": "Streifen",
+          "background": "Hintergrund"
         }
       },
       "motion": {

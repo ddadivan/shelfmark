@@ -1370,6 +1370,13 @@
         "colours": {
           "label": "Couleurs des dossiers",
           "hint": "Désactivé, tous les dossiers sont en graphite"
+        },
+        "highlight": {
+          "label": "Mettre en valeur les dossiers par leur couleur",
+          "hint": "Comment un dossier coloré apparaît dans la barre latérale, plus marqué quand il est ouvert",
+          "off": "Non",
+          "stripe": "Bande",
+          "background": "Fond"
         }
       },
       "motion": {

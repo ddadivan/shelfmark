@@ -5,6 +5,7 @@ import {
   APP_FONT,
   CARD_PREVIEW,
   DENSITY,
+  FOLDER_HIGHLIGHT,
   TEXT_SIZE,
   CUSTOM_THEME_ACCENT,
   CUSTOM_THEME_BACKGROUNDS,
@@ -56,7 +57,7 @@ const SYSTEM_THUMB = 'system';
  * Custom); for Custom the base, accent, background and corners and "Reset custom theme"; a live
  * preview; Text and layout (text size, font, density); Cards (preview image, site, notes, tags);
  * Dates and numbers (date format, clock, week start, preview; moved from Language in #315);
- * Sidebar and motion (folder colours, Animations). Link counts live in Library, "Remember
+ * Sidebar and motion (folder colours, how folders are highlighted in the sidebar, Animations). Link counts live in Library, "Remember
  * recently opened" in Privacy and data (#315). Every change applies to the whole app at once
  * (ThemeService) and is saved on the account right away, so the preview simply shows a sample in
  * the current tokens; a failed save puts the old appearance back and says so. Light and Dark never
@@ -170,6 +171,11 @@ export default class AppearancePage {
 
   protected readonly motionOptions = computed<SegmentedOption[]>(() =>
     this.labels(Object.values(MOTION_PREFERENCE), `${KEY}.motion`),
+  );
+
+  /** Highlight folders with their colour (#418): off, stripe, background. */
+  protected readonly highlightOptions = computed<SegmentedOption[]>(() =>
+    this.labels(Object.values(FOLDER_HIGHLIGHT), `${KEY}.sidebar.highlight`),
   );
 
   protected readonly textSizeOptions = computed<SegmentedOption[]>(() =>

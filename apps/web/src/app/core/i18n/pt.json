@@ -1370,6 +1370,13 @@
         "colours": {
           "label": "Cores das pastas",
           "hint": "Desligado, todas as pastas ficam em grafite"
+        },
+        "highlight": {
+          "label": "Destacar pastas com a cor delas",
+          "hint": "Como uma pasta colorida aparece na barra lateral, mais forte quando está aberta",
+          "off": "Não",
+          "stripe": "Faixa",
+          "background": "Fundo"
         }
       },
       "motion": {

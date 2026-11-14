@@ -1370,6 +1370,13 @@
         "colours": {
           "label": "Colori delle cartelle",
           "hint": "Disattivato mostra ogni cartella in grafite"
+        },
+        "highlight": {
+          "label": "Evidenzia le cartelle con il loro colore",
+          "hint": "Come appare una cartella colorata nella barra laterale, più marcata quando è aperta",
+          "off": "No",
+          "stripe": "Striscia",
+          "background": "Sfondo"
         }
       },
       "motion": {

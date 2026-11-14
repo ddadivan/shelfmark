@@ -1349,6 +1349,13 @@
         "colours": {
           "label": "Folder colors",
           "hint": "Off shows every folder in plain graphite"
+        },
+        "highlight": {
+          "label": "Highlight folders with their color",
+          "hint": "How a colored folder shows in the sidebar; stronger when it’s open",
+          "off": "Off",
+          "stripe": "Stripe",
+          "background": "Background"
         }
       },
       "motion": {

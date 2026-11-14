@@ -8,6 +8,7 @@ import {
   LAYOUT_SETTINGS_DEFAULT,
   TEXT_SIZE,
   isLayoutSettings,
+  FOLDER_HIGHLIGHT,
   type LayoutSettings,
   MOTION_PREFERENCE,
   THEME_PREFERENCE,
@@ -175,6 +176,8 @@ export class ThemeService {
         [LAYOUT_ATTRIBUTE.CardSite]: layout.cardSite ? null : LAYOUT_OFF,
         [LAYOUT_ATTRIBUTE.CardNotes]: layout.cardNotes ? null : LAYOUT_OFF,
         [LAYOUT_ATTRIBUTE.CardTags]: layout.cardTags ? null : LAYOUT_OFF,
+        [LAYOUT_ATTRIBUTE.FolderHighlight]:
+          layout.folderHighlight === FOLDER_HIGHLIGHT.Stripe ? null : layout.folderHighlight,
       };
       for (const [name, value] of Object.entries(values)) {
         if (value === null) {
@@ -246,6 +249,7 @@ export class ThemeService {
       cardSite: layout.cardSite,
       cardNotes: layout.cardNotes,
       cardTags: layout.cardTags,
+      folderHighlight: layout.folderHighlight,
     };
     this.layoutState.set(next);
     this.store(LAYOUT_STORAGE_KEY, JSON.stringify(next));
@@ -281,8 +285,7 @@ export class ThemeService {
       return true;
     }
     return (
-      this.parse(CUSTOM_THEME_STORAGE_KEY, isCustomTheme) !== null ||
-      this.parse(LAYOUT_STORAGE_KEY, isLayoutSettings) !== null
+      this.parse(CUSTOM_THEME_STORAGE_KEY, isCustomTheme) !== null || this.readLayout() !== null
     );
   }
 
@@ -294,6 +297,23 @@ export class ThemeService {
     } catch {
       return null;
     }
+  }
+
+  /**
+   * The stored layout; a copy saved before a newer field existed (the folder highlight, #418)
+   * takes that field's default, so a returning browser keeps the rest of its layout.
+   */
+  private readLayout(): LayoutSettings | null {
+    const stored = this.parse(
+      LAYOUT_STORAGE_KEY,
+      (value): value is Record<string, unknown> =>
+        typeof value === 'object' && value !== null && !Array.isArray(value),
+    );
+    const layout = stored && {
+      folderHighlight: LAYOUT_SETTINGS_DEFAULT.folderHighlight,
+      ...stored,
+    };
+    return isLayoutSettings(layout) ? layout : null;
   }
 
   /** Takes every valid stored value; a missing or broken one keeps the current value. */
@@ -310,7 +330,7 @@ export class ThemeService {
     if (custom !== null) {
       this.customThemeState.set(custom);
     }
-    const layout = this.parse(LAYOUT_STORAGE_KEY, isLayoutSettings);
+    const layout = this.readLayout();
     if (layout !== null) {
       this.layoutState.set(layout);
     }

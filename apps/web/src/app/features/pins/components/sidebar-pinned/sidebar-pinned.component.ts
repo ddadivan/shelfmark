@@ -23,6 +23,7 @@ import { PIN_KIND, type FolderResponse, type LinkResponse } from '@shelfmark/con
 import {
   ButtonComponent,
   FaviconComponent,
+  FolderColourDirective,
   FolderIconComponent,
   holdRowsStill,
   KEYBOARD_KEY,
@@ -64,6 +65,7 @@ import { PinActionsService } from '../../services/pin-actions.service';
     CdkDragPreview,
     CdkDropList,
     FaviconComponent,
+    FolderColourDirective,
     FolderIconComponent,
     RouterLink,
     TooltipDirective,

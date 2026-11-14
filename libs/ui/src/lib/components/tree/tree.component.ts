@@ -19,6 +19,7 @@ import {
   viewChildren,
 } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
+import { FolderColourDirective } from '../../directives/folder-colour/folder-colour.directive';
 import { FolderIconComponent } from '../folder-icon/folder-icon.component';
 import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
 import { FOLDER_ICON_SIZE } from '../folder-icon/models/folder-icon-size.const';
@@ -63,6 +64,7 @@ import { indexTreeNodes } from './tree-nodes';
   selector: 'ui-tree',
   imports: [
     ButtonComponent,
+    FolderColourDirective,
     FolderIconComponent,
     IconComponent,
     LongPressDirective,

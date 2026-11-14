@@ -9,6 +9,7 @@ import {
   isAppFont,
   isCardPreview,
   isDensity,
+  isFolderHighlight,
   isHexColour,
   isMotionPreference,
   isTextSize,
@@ -106,6 +107,13 @@ export class AppearanceSettingsService {
   setPreviewImage(value: string): void {
     if (isCardPreview(value)) {
       void this.save({ cardPreview: value });
+    }
+  }
+
+  /** Settings › Appearance › Highlight folders with their colour (#418). */
+  setFolderHighlight(value: string): void {
+    if (isFolderHighlight(value)) {
+      void this.save({ folderHighlight: value });
     }
   }
 
