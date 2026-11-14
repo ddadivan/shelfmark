@@ -13,22 +13,32 @@ import { REQUEST_ID_HEADER } from '../request-id/request-id.middleware';
 import { TunnelUpstreamException } from '../../monitoring/tunnel-upstream.exception';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 
+interface FakeRequest {
+  method: string;
+  path: string;
+  baseUrl?: string;
+  route?: { path: string };
+}
+
 function callFilter(
   exception: unknown,
   headersSent = false,
   report: (exception: unknown, requestId: string) => Promise<void> = () => Promise.resolve(),
+  req: FakeRequest = { method: 'GET', path: '/x' },
 ) {
   const json = vi.fn();
   const status = vi.fn(() => ({ json }));
   const host = {
     switchToHttp: () => ({
-      getRequest: () => ({ method: 'GET', path: '/x' }),
+      getRequest: () => req,
       getResponse: () => ({ locals: { requestId: 'rid-1' }, headersSent, status }),
     }),
   } as unknown as ArgumentsHost;
   const done = new AllExceptionsFilter(report).catch(exception, host);
   return { status, json, done };
 }
+
+const TOKEN = 'Abc123SecretShareToken_xyz';
 
 describe('AllExceptionsFilter', () => {
   afterEach(() => {
@@ -156,6 +166,28 @@ describe('AllExceptionsFilter', () => {
     expect(errorLog).toHaveBeenCalledWith('GET /x 500 rid-1', 'boom');
   });
 
+  it('logs the route pattern, never the share token, for a 429 on a matched route', () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    callFilter(new HttpException('Too Many Requests', 429), false, undefined, {
+      method: 'GET',
+      path: `/api/public/collections/${TOKEN}`,
+      baseUrl: '',
+      route: { path: '/api/public/collections/:token' },
+    });
+    expect(warn).toHaveBeenCalledWith('GET /api/public/collections/:token 429 rid-1');
+    expect(JSON.stringify(warn.mock.calls)).not.toContain(TOKEN);
+  });
+
+  it('replaces the share token in the raw path of a 404 before routing', () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    callFilter(new NotFoundException(), false, undefined, {
+      method: 'GET',
+      path: `/api/public/collections/${TOKEN}/links/l1/nope`,
+    });
+    expect(warn).toHaveBeenCalledWith('GET /api/public/collections/:token/links/l1/nope 404 rid-1');
+    expect(JSON.stringify(warn.mock.calls)).not.toContain(TOKEN);
+  });
+
   it('writes nothing when headers were already sent', () => {
     const { status } = callFilter(new Error('late'), true);
     expect(status).not.toHaveBeenCalled();
@@ -184,6 +216,27 @@ describe('error responses over HTTP', () => {
       message: 'Cannot GET /api/nope',
       requestId: 'my-id',
     });
+  });
+
+  it('never logs the share token of an unmatched public collection path', async () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    const res = await request(app.getHttpServer()).get(`/api/public/collections/${TOKEN}/nope`);
+    expect(res.status).toBe(404);
+    // Nest's not-found catch-all matches here, so the line names its pattern, not the path.
+    expect(warn).toHaveBeenCalledWith(expect.stringMatching(/^GET \S+ 404 /));
+    expect(JSON.stringify(warn.mock.calls)).not.toContain(TOKEN);
+    warn.mockRestore();
+  });
+
+  it('logs the route pattern for a refused share token', async () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    const res = await request(app.getHttpServer()).get(`/api/public/collections/${TOKEN}`);
+    expect(res.status).toBe(404);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringMatching(/^GET \/api\/public\/collections\/:token 404 /),
+    );
+    expect(JSON.stringify(warn.mock.calls)).not.toContain(TOKEN);
+    warn.mockRestore();
   });
 
   it('maps malformed JSON to 400', async () => {

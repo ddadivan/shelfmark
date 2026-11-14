@@ -13,6 +13,7 @@ import type { Request, Response } from 'express';
 import { TunnelUpstreamException } from '../../monitoring/tunnel-upstream.exception';
 import { reportException } from '../../monitoring/report-exception';
 import { REQUEST_ID_LOCAL } from '../request-id/request-id.middleware';
+import { loggedPath } from '../util/logged-path';
 
 type Normalised = Pick<ApiError, 'statusCode' | 'error' | 'message'>;
 
@@ -95,8 +96,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const requestId = typeof local === 'string' ? local : randomUUID();
     const { statusCode, error, message } = normalise(exception);
 
-    // Method, path, status and request id only: never bodies, queries or headers.
-    const line = `${req.method} ${req.path} ${statusCode} ${requestId}`;
+    // Method, route pattern, status and request id only: never bodies, queries, headers or the
+    // share token.
+    const line = `${req.method} ${loggedPath(req)} ${statusCode} ${requestId}`;
     if (statusCode >= 500) {
       this.logger.error(line, exception instanceof Error ? exception.stack : String(exception));
     } else {
