@@ -56,10 +56,11 @@ export class LibraryDragService {
 
   /**
    * A half of the side-by-side view (its `data-link-drop-folder` value, `unsorted` for Unsorted)
-   * is the drop target under the pointer: it shows the ring and "Move here".
+   * is the drop target under the pointer: it shows the ring and "Move here". Only the half itself
+   * counts: with the pointer over a sidebar row of the same folder the half stays quiet (one target).
    */
   dropsOn(value: string | null): boolean {
-    return isDropTarget(value, this.links.treeTargetId());
+    return isDropTarget(value, this.links.halfTargetId());
   }
 
   /** Dragging a picked link (with others picked) carries the whole selection. */

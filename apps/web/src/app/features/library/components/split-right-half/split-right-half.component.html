@@ -7,6 +7,7 @@
       : ('library.split.rightRegion' | transloco: { name: split.rightLabel() })
   "
   [attr.data-link-drop-folder]="split.rightDropValue()"
+  data-link-drop-half
 >
   @if (dnd.dropsOn(split.rightDropValue())) {
     <ui-badge class="split-right__here" tone="accent" aria-hidden="true">

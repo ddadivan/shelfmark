@@ -8,6 +8,7 @@ import { BulkLinkActionsService } from './bulk-link-actions.service';
 import { LinkActionsService } from './link-actions.service';
 import { LINKS_SCOPE } from '../models/links-scope.const';
 import { LINK_DROP_ATTRIBUTE } from '../models/link-drop-attribute.const';
+import { LINK_DROP_HALF_ATTRIBUTE } from '../models/link-drop-half-attribute.const';
 import { LinkDragService } from './link-drag.service';
 
 const FOLDER_A = MOCK_FOLDERS[0] as FolderResponse;
@@ -61,6 +62,45 @@ describe('LinkDragService', () => {
     expect(moveTo).toHaveBeenCalledWith(link(FOLDER_A.id), FOLDER_B.id);
     expect(drag.dragging()).toBe(false);
     expect(drag.treeTargetId()).toBeNull();
+  });
+
+  it('makes a half of the side-by-side view the one target: no sidebar row, tile or pinned row with it', () => {
+    const { drag, moveTo, element, under } = setup();
+    under.mockReturnValue(
+      element({ [LINK_DROP_ATTRIBUTE]: FOLDER_B.id, [LINK_DROP_HALF_ATTRIBUTE]: '' }),
+    );
+
+    drag.start(link(FOLDER_A.id));
+    drag.move(1, 1);
+    expect(drag.halfTargetId()).toBe(FOLDER_B.id);
+    expect(drag.treeTargetId()).toBeNull();
+    expect(drag.folderTargetId()).toBeNull();
+
+    // The same folder through a sidebar row: the row is the target and the half stays quiet.
+    under.mockReturnValue(element({ 'data-ui-tree-id': FOLDER_B.id }));
+    drag.move(2, 2);
+    expect(drag.treeTargetId()).toBe(FOLDER_B.id);
+    expect(drag.halfTargetId()).toBeNull();
+
+    under.mockReturnValue(
+      element({ [LINK_DROP_ATTRIBUTE]: FOLDER_B.id, [LINK_DROP_HALF_ATTRIBUTE]: '' }),
+    );
+    drag.move(3, 3);
+    drag.drop();
+    expect(moveTo).toHaveBeenCalledWith(link(FOLDER_A.id), FOLDER_B.id);
+    expect(drag.halfTargetId()).toBeNull();
+  });
+
+  it('is no half target when the links are in that folder already', () => {
+    const { drag, element, under } = setup();
+    under.mockReturnValue(
+      element({ [LINK_DROP_ATTRIBUTE]: FOLDER_A.id, [LINK_DROP_HALF_ATTRIBUTE]: '' }),
+    );
+
+    drag.start(link(FOLDER_A.id));
+    drag.move(1, 1);
+
+    expect(drag.halfTargetId()).toBeNull();
   });
 
   it('targets Unsorted in the tree as the null folder', () => {

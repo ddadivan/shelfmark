@@ -69,6 +69,7 @@
       [attr.aria-label]="splitView.open() ? ('library.split.leftRegion' | transloco: { name: splitView.leftLabel() }) : null"
       [attr.role]="splitView.open() ? 'region' : null"
       [attr.data-link-drop-folder]="splitView.open() ? splitView.leftDropValue() : null"
+      [attr.data-link-drop-half]="splitView.open() ? '' : null"
     >
       @if (splitView.open() && dnd.dropsOn(splitView.leftDropValue())) {
       <ui-badge class="library__here" tone="accent" aria-hidden="true"
