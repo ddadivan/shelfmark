@@ -1,0 +1,156 @@
+<section
+  class="split-right"
+  [class.split-right--target]="dnd.dropsOn(split.rightDropValue())"
+  [attr.aria-label]="
+    split.rightTarget() === undefined
+      ? ('library.split.rightRegionEmpty' | transloco)
+      : ('library.split.rightRegion' | transloco: { name: split.rightLabel() })
+  "
+  [attr.data-link-drop-folder]="split.rightDropValue()"
+>
+  @if (dnd.dropsOn(split.rightDropValue())) {
+    <ui-badge class="split-right__here" tone="accent" aria-hidden="true">
+      {{ 'links.drag.moveHere' | transloco }}
+    </ui-badge>
+  }
+  @if (split.resolving()) {
+    <div class="split-right__head" aria-hidden="true">
+      <span class="split-right__head-skeleton"><ui-skeleton [shape]="SKELETON_SHAPE.Line" /></span>
+    </div>
+    <div class="split-right__grid">
+      <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
+    </div>
+  } @else if (split.rightTarget() === undefined) {
+    <div class="split-right__head">
+      <span class="split-right__choose">{{ 'library.split.choose.title' | transloco }}</span>
+      <span class="split-right__spacer"></span>
+      <ui-button
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="close"
+        [ariaLabel]="'library.split.close' | transloco"
+        (click)="split.close()"
+      />
+    </div>
+    <ui-panel class="split-right__panel">
+      <div class="split-right__intro">
+        <h2 class="split-right__heading">{{ 'library.split.choose.heading' | transloco }}</h2>
+        <p class="split-right__text">{{ 'library.split.choose.text' | transloco }}</p>
+      </div>
+      <ui-picker-list
+        [options]="split.rightOptions()"
+        [emptyLabel]="'library.scope.unsorted' | transloco"
+        [currentIds]="split.rightCurrentIds()"
+        [currentLabel]="'library.split.onLeft' | transloco"
+        [searchLabel]="'library.split.choose.search' | transloco"
+        [listLabel]="'library.split.choose.list' | transloco"
+        [noResultsLabel]="'library.split.choose.noResults' | transloco"
+        [autoFocus]="split.focusPicker()"
+        (chosen)="split.chooseRight($event)"
+      />
+    </ui-panel>
+  } @else {
+    <div class="split-right__head">
+      <ui-picker-menu
+        [options]="split.rightOptions()"
+        [value]="split.rightValue() ?? null"
+        [label]="split.rightLabel()"
+        [icon]="split.rightTile().icon"
+        [colour]="split.rightTile().colour ?? 'graphite'"
+        [emptyLabel]="'library.scope.unsorted' | transloco"
+        [currentIds]="split.rightCurrentIds()"
+        [currentLabel]="'library.split.onLeft' | transloco"
+        [searchLabel]="'library.split.choose.search' | transloco"
+        [listLabel]="'library.split.rightMenu.label' | transloco"
+        [noResultsLabel]="'library.split.choose.noResults' | transloco"
+        [triggerLabel]="'library.split.rightTrigger' | transloco: { name: split.rightLabel() }"
+        (chosen)="split.chooseRight($event)"
+      />
+      <span class="split-right__count">
+        @if (feed.loaded()) {
+          {{
+            pluralKey(feed.hasMore() ? 'library.countMore' : 'library.count', feed.count())
+              | transloco: { count: feed.count() }
+          }}
+        }
+      </span>
+      <span class="split-right__spacer"></span>
+      <ui-button
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="close"
+        [ariaLabel]="'library.split.close' | transloco"
+        (click)="split.close()"
+      />
+    </div>
+    <div class="split-right__scroll">
+      @if (feed.error() && feed.count() === 0) {
+        <div class="split-right__state">
+          <p class="split-right__text">{{ 'library.error.text' | transloco }}</p>
+          <ui-button variant="primary" (click)="retry()">
+            {{ 'library.error.retry' | transloco }}
+          </ui-button>
+        </div>
+      } @else if (!feed.loaded()) {
+        <div class="split-right__grid">
+          <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
+        </div>
+      } @else if (feed.count() === 0) {
+        <p class="split-right__empty">{{ 'library.split.empty.text' | transloco }}</p>
+      } @else {
+        <ul
+          class="split-right__grid"
+          cdkDropList
+          cdkDropListSortingDisabled
+          [attr.aria-label]="'library.list.label' | transloco"
+        >
+          @for (link of feed.entities(); track link.id) {
+            <li
+              class="split-right__item"
+              cdkDrag
+              [cdkDragData]="link"
+              [cdkDragStartDelay]="dnd.DRAG_START_DELAY"
+              (pointerdown)="drag.grab($event)"
+              (cdkDragStarted)="dnd.started(link)"
+              (cdkDragMoved)="dnd.moved($event)"
+              (cdkDragEnded)="dnd.ended()"
+            >
+              <app-drag-slot
+                *cdkDragPlaceholder
+                class="split-right__drag-slot"
+                [title]="link.title"
+              />
+              <ng-template cdkDragPreview matchSize>
+                <div class="library__drag-preview" aria-hidden="true">
+                  <app-link-card [link]="link" [readOnly]="true" />
+                  <span class="library__drag-badge">
+                    {{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}
+                  </span>
+                </div>
+              </ng-template>
+              <app-link-card [link]="link" [readOnly]="true" (opened)="actions.open(link)" />
+            </li>
+          }
+        </ul>
+        <ui-load-more [loading]="feed.loadingMore()" [text]="'library.loadingMore' | transloco" />
+        @if (feed.hasMore()) {
+          <div
+            class="split-right__more"
+            appInView
+            [appInViewRecheck]="feed.count()"
+            (entered)="feed.loadMore()"
+          >
+            @if (feed.loadMoreFailed()) {
+              <p class="split-right__text">{{ 'library.loadMoreFailed' | transloco }}</p>
+            }
+            <ui-button [disabled]="feed.loadingMore()" (click)="feed.loadMore()">
+              {{ 'library.loadMore' | transloco }}
+            </ui-button>
+          </div>
+        }
+      }
+    </div>
+  }
+</section>

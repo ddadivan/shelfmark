@@ -5,6 +5,7 @@ import type { LinkResponse } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService, type ToastRef } from '@shelfmark/ui';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { LinkDragService } from '../../links/services/link-drag.service';
+import { isDropTarget } from '../utils/split-param';
 import { LibrarySelectionService } from './library-selection.service';
 
 /** How long the "can't drop here" toast stays (ms). */
@@ -43,6 +44,14 @@ export class LibraryDragService {
     this.clearReason();
     this.selection.announce('');
     this.links.drop();
+  }
+
+  /**
+   * A half of the side-by-side view (its `data-link-drop-folder` value, `unsorted` for Unsorted)
+   * is the drop target under the pointer: it shows the ring and "Move here".
+   */
+  dropsOn(value: string | null): boolean {
+    return isDropTarget(value, this.links.treeTargetId());
   }
 
   /** Dragging a picked link (with others picked) carries the whole selection. */

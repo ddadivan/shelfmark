@@ -1,4 +1,4 @@
-import { computed, inject, Service } from '@angular/core';
+import { computed, inject, Service, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { activeLang } from '../../../core/i18n/active-lang';
@@ -120,6 +120,22 @@ export class SplitViewService {
       ? { colour: this.settings.shownColour(folder.colour), icon: folder.icon }
       : { icon: 'inbox' };
   });
+  /** The tile of the left feed: its folder's colour and icon, or the glyph of the list or tag. */
+  readonly leftTile = computed(() => {
+    const filter = this.filters.filter();
+    const folder = this.filters.folder();
+    if (folder) {
+      return { colour: this.settings.shownColour(folder.colour), icon: folder.icon };
+    }
+    switch (filter.scope) {
+      case LINKS_SCOPE.Unsorted:
+        return { icon: 'inbox' };
+      case LINKS_SCOPE.Favorites:
+        return { icon: 'star' };
+      default:
+        return { icon: filter.tags && filter.tags.length > 0 ? 'tag' : 'link' };
+    }
+  });
   /** Name of what the left half shows. */
   readonly leftLabel = computed(() => {
     activeLang();
@@ -137,15 +153,21 @@ export class SplitViewService {
     return this.rightFolder()?.name ?? '';
   });
 
+  private readonly pickerFocused = signal(false);
+  /** The picker was opened by the "Side by side" button: it takes the focus its button had. */
+  readonly focusPicker = this.pickerFocused.asReadonly();
+
   /** Opens the right half with the picker (the "Side by side" button). Only from 80em. */
   async openSplit(): Promise<void> {
     if (this.viewport.wide() && !this.open()) {
+      this.pickerFocused.set(true);
       await this.setSplit('', false);
     }
   }
 
   /** Closes the right half. */
   async close(): Promise<void> {
+    this.pickerFocused.set(false);
     await this.router.navigate([], {
       queryParams: { [SPLIT_QUERY_PARAM]: null },
       queryParamsHandling: 'merge',

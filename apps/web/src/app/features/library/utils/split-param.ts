@@ -71,6 +71,14 @@ export function dropValue(target: SplitTarget): string | null {
   return target === undefined ? null : splitParamValue(target);
 }
 
+/**
+ * Whether a half with this `data-link-drop-folder` value is the drop target the drag service
+ * names (`treeTargetId`: a folder id or `unsorted`; `null` for none).
+ */
+export function isDropTarget(value: string | null, treeTargetId: string | null): boolean {
+  return value !== null && value === treeTargetId;
+}
+
 /** The folder id (`null` for Unsorted) the left half shows, `undefined` when it shows another list. */
 export function leftDropTarget(leftFilter: LinksFilter): SplitTarget {
   switch (leftFilter.scope) {
