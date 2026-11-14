@@ -233,6 +233,24 @@ describe('SplitViewService', () => {
       expect(service.takeOpenerFocus()).toBe(false);
     });
 
+    it('toggles: opens the picker while closed, closes while open', async () => {
+      const { service, router, splitParam } = setup();
+
+      await service.toggle();
+      expect(router.navigate).toHaveBeenLastCalledWith([], {
+        queryParams: { split: '' },
+        queryParamsHandling: 'merge',
+        replaceUrl: false,
+      });
+
+      splitParam.set(B);
+      await service.toggle();
+      expect(router.navigate).toHaveBeenLastCalledWith([], {
+        queryParams: { split: null },
+        queryParamsHandling: 'merge',
+      });
+    });
+
     it('closes by removing the parameter', async () => {
       const { service, router, splitParam } = setup();
       splitParam.set(B);

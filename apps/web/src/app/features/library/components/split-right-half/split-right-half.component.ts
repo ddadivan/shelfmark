@@ -70,6 +70,17 @@ export class SplitRightHalfComponent {
   /** The feed holds the links of the target on screen (not those of the folder before it). */
   protected readonly ready = computed(() => this.feed.target() === this.split.rightTarget());
 
+  /**
+   * Esc with the focus in the right half closes the side-by-side view. A popup, a dialog or a
+   * drag that took the key already stopped it, so only a bare Esc gets here.
+   */
+  protected onEscape(event: Event): void {
+    if (!event.defaultPrevented) {
+      event.preventDefault();
+      void this.split.close();
+    }
+  }
+
   /** Loads the first page of the target again (the error state's button). */
   protected retry(): void {
     this.feed.show(this.split.rightTarget());

@@ -175,7 +175,7 @@ export default class LibraryPage {
 
   protected readonly BULK_BAR_LAYOUT = BULK_BAR_LAYOUT;
 
-  /** The "Side by side" button: after the split closes it takes the focus the close button had. */
+  /** The "Side by side" toggle: after the split closes it takes the focus the close control had. */
   private readonly splitOpener = viewChild<ButtonComponent>('splitOpener');
 
   constructor() {
@@ -190,7 +190,8 @@ export default class LibraryPage {
     });
     effect(() => {
       const opener = this.splitOpener();
-      if (opener && this.splitView.takeOpenerFocus()) {
+      // After the split closes the button, which stays, takes the focus the close control had.
+      if (!this.splitView.open() && opener && this.splitView.takeOpenerFocus()) {
         opener.focus();
       }
     });

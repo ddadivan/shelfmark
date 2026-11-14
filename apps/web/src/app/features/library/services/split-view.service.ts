@@ -187,6 +187,15 @@ export class SplitViewService {
     }
   }
 
+  /** The "Side by side" toggle: opens the picker, or closes the right half while it is open. */
+  async toggle(): Promise<void> {
+    if (this.open()) {
+      await this.close();
+    } else {
+      await this.openSplit();
+    }
+  }
+
   /** Closes the right half. */
   async close(): Promise<void> {
     this.pickerFocus = false;

@@ -323,6 +323,44 @@ describe('LibraryPage side by side', () => {
     });
   });
 
+  it('shows the "Side by side" button as a pressed toggle while open and closes with it', async () => {
+    const { fixture, navigate } = await setup({ split: B });
+    const toggle = await loader(fixture).getHarness(
+      UiButtonHarness.with({ label: /^Side by side$/ }),
+    );
+
+    expect(await toggle.getPressed()).toBe('true');
+    await toggle.click();
+    expect(navigate).toHaveBeenCalledWith([], {
+      queryParams: { split: null },
+      queryParamsHandling: 'merge',
+    });
+  });
+
+  it('is not pressed while the split is closed', async () => {
+    const { fixture } = await setup();
+    const toggle = await loader(fixture).getHarness(
+      UiButtonHarness.with({ label: /^Side by side$/ }),
+    );
+
+    expect(await toggle.getPressed()).toBe('false');
+  });
+
+  it('closes with Esc in the right half, not in the left one', async () => {
+    const { element, navigate } = await setup({ split: B });
+    const closed = { queryParams: { split: null }, queryParamsHandling: 'merge' };
+
+    element
+      .querySelector('.library__scroll')
+      ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(navigate).not.toHaveBeenCalledWith([], closed);
+
+    element
+      .querySelector('app-split-right-half section')
+      ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(navigate).toHaveBeenCalledWith([], closed);
+  });
+
   it('puts the focus on the "Side by side" button after the split closes', async () => {
     const { fixture, element } = await setup({ split: B });
     document.body.append(element);
