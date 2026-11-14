@@ -25,7 +25,9 @@ import { PrivateNoStoreInterceptor } from '../common/interceptors/private-no-sto
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { sendFeedbackScreenshot } from '../feedback/send-feedback-screenshot';
+import type { AdminStatsResponse } from '@shelfmark/contracts';
 import { AdminFeedbackService } from './admin-feedback.service';
+import { AdminStatsService } from './admin-stats.service';
 import { AdminGuard } from './admin.guard';
 import {
   AdminFeedbackItemDto,
@@ -45,7 +47,10 @@ import { UpdateAdminFeedbackDto } from './dto/update-admin-feedback.dto';
 @UseGuards(AdminGuard)
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly feedback: AdminFeedbackService) {}
+  constructor(
+    private readonly feedback: AdminFeedbackService,
+    private readonly statsService: AdminStatsService,
+  ) {}
 
   @Get('status')
   @Header('Cache-Control', 'no-store')
@@ -54,6 +59,17 @@ export class AdminController {
   @ApiNotFoundResponse({ description: 'Not an admin' })
   status(): AdminStatusResponseDto {
     return { admin: true };
+  }
+
+  @Get('stats')
+  @RateLimit(RATE_LIMIT.Admin)
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({ summary: 'Usage aggregates over real users, under the minimum group size' })
+  @ApiOkResponse({ description: 'AdminStatsResponse: counts, shares, means, medians, buckets' })
+  @ApiNotFoundResponse({ description: 'Not an admin' })
+  @ApiTooManyRequestsResponse({ description: 'Rate limit exceeded' })
+  stats(): Promise<AdminStatsResponse> {
+    return this.statsService.stats();
   }
 
   @Get('feedback')

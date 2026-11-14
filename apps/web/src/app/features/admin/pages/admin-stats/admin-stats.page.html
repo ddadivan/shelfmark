@@ -1,0 +1,147 @@
+<app-settings-page-header
+  [title]="'admin.stats.title' | transloco"
+  [description]="'admin.stats.description' | transloco: { min: minGroup() || 3 }"
+/>
+
+<app-admin-switch [active]="ADMIN_PATH.Stats" />
+
+@if (store.stats(); as stats) {
+<div class="admin-stats__meta">
+  <span class="admin-stats__muted" role="status">
+    @if (store.loading()) { {{ 'admin.stats.refreshing' | transloco }} } @else { {{
+    'admin.stats.updated' | transloco: { time: updated() } }} }
+  </span>
+  <ui-button size="sm" iconLeft="refresh" [loading]="store.loading()" (click)="refresh()">
+    {{ 'admin.stats.refresh' | transloco }}
+  </ui-button>
+</div>
+
+@if (store.failed()) {
+<ui-notice [kind]="NOTICE_KIND.Danger">{{ 'admin.stats.refreshFailed' | transloco }}</ui-notice>
+} @if (store.tooFew()) {
+<ui-notice [kind]="NOTICE_KIND.Info">
+  {{ 'admin.stats.tooFew' | transloco: { min: stats.minGroup } }}
+</ui-notice>
+}
+
+<ui-settings-section [title]="'admin.stats.overview.title' | transloco">
+  <div class="admin-stats__block">
+    <dl class="admin-stats__tiles">
+      @for (tile of tiles(); track tile.labelKey) {
+      <div class="admin-stats__tile">
+        <dt class="admin-stats__tile-label">{{ tile.labelKey | transloco }}</dt>
+        <dd class="admin-stats__tile-value">{{ tile.value }}</dd>
+        @if (tile.hint) {
+        <dd class="admin-stats__tile-hint">{{ tile.hint }}</dd>
+        }
+      </div>
+      }
+    </dl>
+    <p class="admin-stats__muted">{{ activityNote() }}</p>
+  </div>
+</ui-settings-section>
+
+<ui-settings-section [title]="'admin.stats.signUps.title' | transloco">
+  <div class="admin-stats__block">
+    <ui-segmented-control
+      class="admin-stats__unit"
+      [options]="unitOptions()"
+      [value]="unit()"
+      [ariaLabel]="'admin.stats.signUps.unit' | transloco"
+      (valueChange)="setUnit($event)"
+    />
+    @if (signUps(); as chart) {
+    <p class="admin-stats__muted">{{ chart.summary }}</p>
+    <ui-bar-chart
+      [bars]="chart.bars"
+      [label]="chart.label"
+      [summary]="chart.summary"
+      [labelHeader]="chart.labelHeader"
+      [valueHeader]="'admin.stats.signUps.count' | transloco"
+      [labelEvery]="chart.labelEvery"
+    />
+    }
+  </div>
+</ui-settings-section>
+
+<ui-settings-section [title]="'admin.stats.features.title' | transloco">
+  <section class="admin-stats__block">
+    <h3 class="admin-stats__heading">{{ 'admin.stats.links.title' | transloco }}</h3>
+    <p class="admin-stats__muted">{{ links().average }}</p>
+    <ui-bar-chart
+      [bars]="links().bars"
+      [label]="'admin.stats.links.chart' | transloco"
+      [labelHeader]="'admin.stats.links.bucket' | transloco"
+      [valueHeader]="'admin.stats.links.users' | transloco"
+    />
+  </section>
+  <section class="admin-stats__block">
+    <h3 class="admin-stats__heading">{{ 'admin.stats.features.adoption' | transloco }}</h3>
+    <ul class="admin-stats__rows">
+      @for (row of adoption(); track row.key) {
+      <li><app-admin-share-row [row]="row" /></li>
+      }
+    </ul>
+  </section>
+</ui-settings-section>
+
+<ui-settings-section [title]="'admin.stats.preferences.title' | transloco">
+  <div class="admin-stats__columns">
+    @for (group of preferences(); track group.titleKey) {
+    <section class="admin-stats__block">
+      <h3 class="admin-stats__heading">{{ group.titleKey | transloco }}</h3>
+      <ul class="admin-stats__rows">
+        @for (row of group.rows; track row.key) {
+        <li><app-admin-share-row [row]="row" /></li>
+        }
+      </ul>
+    </section>
+    }
+  </div>
+</ui-settings-section>
+
+<ui-settings-section [title]="'admin.stats.ratings.title' | transloco">
+  <ul class="admin-stats__milestones">
+    @for (m of milestones(); track m.key) {
+    <li class="admin-stats__milestone">
+      <span class="admin-stats__milestone-title">{{ m.title }}</span>
+      <span class="admin-stats__muted">{{ m.answered }}</span>
+      <span class="admin-stats__milestone-summary">{{ m.summary }}</span>
+      @if (m.groups) {
+      <span class="admin-stats__muted">{{ m.groups }}</span>
+      }
+    </li>
+    }
+  </ul>
+  <div class="admin-stats__columns">
+    @for (group of messages(); track group.titleKey) {
+    <section class="admin-stats__block">
+      <h3 class="admin-stats__heading">{{ group.titleKey | transloco }}</h3>
+      <dl class="admin-stats__counts">
+        @for (item of group.items; track item.key) {
+        <div class="admin-stats__count">
+          <dt>{{ item.label }}</dt>
+          <dd>{{ item.value }}</dd>
+        </div>
+        }
+      </dl>
+    </section>
+    }
+  </div>
+</ui-settings-section>
+} @else if (store.failed()) {
+<ui-panel>
+  <ui-notice [kind]="NOTICE_KIND.Danger">
+    {{ 'admin.stats.error' | transloco }}
+    <ui-button uiNoticeAction size="sm" (click)="refresh()">
+      {{ 'admin.stats.retry' | transloco }}
+    </ui-button>
+  </ui-notice>
+</ui-panel>
+} @else {
+<ui-panel>
+  <div role="status" [attr.aria-label]="'admin.stats.loading' | transloco" aria-busy="true">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="4" />
+  </div>
+</ui-panel>
+}

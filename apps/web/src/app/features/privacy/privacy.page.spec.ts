@@ -49,7 +49,7 @@ describe('PrivacyPage', () => {
   it('shows the last updated date and renders no raw translation keys', async () => {
     const element = await render();
 
-    expect(element.textContent).toContain('Last updated 13 November 2026');
+    expect(element.textContent).toContain('Last updated 15 November 2026');
     expect(element.textContent).not.toMatch(/\bprivacy\.[a-zA-Z.]+/);
   });
 
@@ -60,6 +60,14 @@ describe('PrivacyPage', () => {
     expect(element.textContent).toContain('No referrer is sent');
     expect(element.textContent).toContain('"Your shelf" numbers');
     expect(element.textContent).toContain('They are not stored and never shared.');
+  });
+
+  it('explains the activity date and the admin usage totals (#333)', async () => {
+    const element = await render();
+
+    expect(element.textContent).toContain('we record the day you last used the app');
+    expect(element.textContent).toContain('Groups of fewer than three people are not shown');
+    expect(element.textContent).toContain('When you delete your account, the date goes with it.');
   });
 
   it('gives the repository as the contact and shows no email address', async () => {

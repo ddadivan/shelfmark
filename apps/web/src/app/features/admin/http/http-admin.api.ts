@@ -5,6 +5,7 @@ import { skipErrorToast } from '../../../core/api/skip-error-toast';
 import type { AdminApi } from '../models/admin-api.interface';
 import {
   type AdminFeedbackItem,
+  type AdminStatsResponse,
   type ListAdminFeedbackResponse,
   type ListAdminFeedbackQuery,
   type UpdateAdminFeedbackRequest,
@@ -57,6 +58,12 @@ export class HttpAdminApi implements AdminApi {
         request,
         { context: skipErrorToast() },
       ),
+    );
+  }
+
+  stats(): Promise<AdminStatsResponse> {
+    return firstValueFrom(
+      this.http.get<AdminStatsResponse>(ADMIN_ENDPOINT.Stats, { context: skipErrorToast() }),
     );
   }
 }

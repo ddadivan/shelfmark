@@ -84,6 +84,9 @@ model User {
   // longer reads or writes spellcheck; a later migration drops it.
   spellcheck            Boolean       @default(true) @map("spellcheck")
   languageSavedAt       DateTime?     @map("language_saved_at") @db.Timestamptz(3)
+  // Admin usage stats (#333, ADR 0045): UTC day of the last authenticated non-demo request, written
+  // at most once a day by UserActivityService; backfilled once in the migration.
+  lastActiveOn          DateTime?     @map("last_active_on") @db.Date
   createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]

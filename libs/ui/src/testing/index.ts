@@ -39,3 +39,6 @@ export * from '../lib/components/emoji-picker/testing/emoji-picker.harness';
 export type * from '../lib/components/emoji-picker/testing/models/emoji-picker-harness-filters.interface';
 export * from '../lib/components/picker-menu/testing/picker-menu.harness';
 export type * from '../lib/components/picker-menu/testing/models/picker-menu-harness-filters.interface';
+export * from '../lib/components/bar-chart/testing/bar-chart.harness';
+export type * from '../lib/components/bar-chart/testing/models/bar-chart-harness-filters.interface';
+export type * from '../lib/components/bar-chart/testing/models/bar-chart-harness-row.interface';

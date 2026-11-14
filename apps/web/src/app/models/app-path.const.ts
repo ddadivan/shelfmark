@@ -13,7 +13,7 @@ export const APP_PATH = {
   /** Deleted links and folders waiting for their retention to pass; reached from the sidebar and the phone Library. */
   Trash: 'trash',
   Settings: 'settings',
-  /** The author's pages (`/admin/feedback`); behind `adminOnly`. */
+  /** The author's pages (`/admin/feedback`, `/admin/stats`); behind `adminOnly`. */
   Admin: 'admin',
   SignIn: 'sign-in',
   Demo: 'demo',

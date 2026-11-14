@@ -1,3 +1,4 @@
+import type { ContractAdminApi } from './contract-admin-api.interface';
 import type { ContractExportApi } from './contract-export-api.interface';
 import type { ContractFeedbackApi } from './contract-feedback-api.interface';
 import type { ContractFoldersApi } from './contract-folders-api.interface';
@@ -27,4 +28,5 @@ export interface ContractApis {
   feedback: ContractFeedbackApi;
   exports: ContractExportApi;
   me: ContractMeApi;
+  admin: ContractAdminApi;
 }

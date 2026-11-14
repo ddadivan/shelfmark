@@ -499,7 +499,7 @@
     "home": "Shelfmark, home",
     "newTab": "(opens in a new tab)",
     "updated": "Last updated {{date}}",
-    "updatedDate": "13 November 2026",
+    "updatedDate": "15 November 2026",
     "intro": "Shelfmark is a personal project that stores the links you save. This page explains what we keep and why, in plain words.",
     "store": {
       "title": "What we store",
@@ -508,6 +508,7 @@
       "images": "For each link, a small copy of the site's icon and preview image, if the site has them. Our server downloads and stores them so they load from Shelfmark.",
       "feedback": "Your answers to the in-app rating, linked to your account: a score from 1 to 10 and, if you write one, a comment.",
       "stats": "The \"Your shelf\" numbers on the Account page (counts, the sites and tags you use most, links per week) are worked out from your own data each time you open the page. They are not stored and never shared.",
+      "usage": "To learn how Shelfmark is used, we record the day you last used the app: a date only, no time, page or action. The author sees only totals worked out from all accounts together, such as how many people use folders or tags or which themes are popular. Groups of fewer than three people are not shown, and no one's links, notes or settings are looked at one by one. These totals are worked out on request and are not stored. When you delete your account, the date goes with it.",
       "sessions": "For each sign-in: when it expires, plus the IP address and the browser (user agent) it was started from, to keep sessions secure.",
       "logs": "Our API logs the request method, path, status, duration and a request id, without link contents or personal data. Our host, Vercel, keeps its own standard request logs, which include IP addresses, for a limited time."
     },
@@ -750,7 +751,8 @@
     },
     "sendFeedback": "Send feedback",
     "feedbackInbox": "Feedback inbox",
-    "about": "About Shelfmark"
+    "about": "About Shelfmark",
+    "usageStats": "Usage stats"
   },
   "folders": {
     "dialog": {
@@ -2102,6 +2104,109 @@
       "saveFailed": {
         "title": "Couldn't save",
         "detail": "The message is back as it was. Try again."
+      }
+    },
+    "nav": {
+      "label": "Admin pages",
+      "feedback": "Feedback",
+      "stats": "Stats"
+    },
+    "stats": {
+      "title": "Usage stats",
+      "description": "Totals over real accounts, worked out now. Demo and admin accounts are left out; groups of fewer than {{min}} people are hidden.",
+      "updated": "Updated at {{time}}",
+      "refreshing": "Refreshing…",
+      "refresh": "Refresh",
+      "refreshFailed": "Couldn't refresh. These are the last numbers.",
+      "error": "Couldn't load the stats.",
+      "retry": "Try again",
+      "loading": "Loading the stats",
+      "tooFew": "Not enough users yet: shares and groups appear from {{min}} real users.",
+      "notEnough": "Not enough users yet",
+      "fewer": "Fewer than {{min}}",
+      "shareOf": "{{percent}} · {{count}} of {{base}}",
+      "countOf": "{{count}} of {{base}}",
+      "shareCount": "{{percent}} · {{count}}",
+      "activitySince": "Activity is recorded from {{date}}; earlier visits are estimated.",
+      "activityEstimated": "Visits before activity tracking started are estimated.",
+      "overview": {
+        "title": "Overview"
+      },
+      "tiles": {
+        "realUsers": "Real users",
+        "active7d": "Active in the last 7 days",
+        "active30d": "Active in the last 30 days",
+        "returnedWeek": "Came back after a week",
+        "returnedMonth": "Came back after a month",
+        "onboarded": "Finished onboarding",
+        "demo": "Demo sandboxes now",
+        "demoHint": "Not counted anywhere else"
+      },
+      "signUps": {
+        "title": "Sign-ups",
+        "unit": "Show by",
+        "days": "Days",
+        "weeks": "Weeks",
+        "chartDays": "Sign-ups, last 30 days",
+        "chartWeeks": "Sign-ups, last 12 weeks",
+        "total": "{{count}} in this period",
+        "day": "Day",
+        "week": "Week from",
+        "count": "Sign-ups",
+        "dayBar": "{{date}}: {{count}}",
+        "weekBar": "Week from {{date}}: {{count}}"
+      },
+      "links": {
+        "title": "Links per user",
+        "average": "Mean {{mean}} · median {{median}}",
+        "chart": "Real users by number of saved links",
+        "bucket": "Links",
+        "users": "Users"
+      },
+      "features": {
+        "title": "Features",
+        "adoption": "Who uses what"
+      },
+      "feature": {
+        "folders": "Folders",
+        "nestedFolders": "Folders inside folders",
+        "tags": "Tags",
+        "favorites": "Favorites",
+        "notes": "Notes",
+        "sidebarPins": "Pinned to the sidebar",
+        "folderPins": "Pinned in a folder",
+        "savedViews": "Own saved views",
+        "trash": "Items in Trash",
+        "publicCollections": "Public collections",
+        "ownColours": "Own colors",
+        "ownEmoji": "Own emoji",
+        "openedRecently": "Opened a saved link in 30 days",
+        "historyPaused": "History paused",
+        "previewsOff": "Previews turned off"
+      },
+      "preferences": {
+        "title": "Preferences",
+        "theme": "Theme",
+        "language": "Language",
+        "retention": "Trash keeps items for"
+      },
+      "bucket": {
+        "other": "Other",
+        "never": "Never chosen"
+      },
+      "ratings": {
+        "title": "Ratings and messages",
+        "milestone": {
+          "day3": "After 3 days",
+          "week1": "After a week",
+          "month1": "After a month",
+          "year1": "After a year"
+        },
+        "answered": "{{answered}} answered · {{skipped}} skipped",
+        "summary": "Mean {{mean}} · median {{median}}",
+        "groups": "1–6: {{low}} · 7–8: {{mid}} · 9–10: {{high}}",
+        "byKind": "Messages by type",
+        "byStatus": "Messages by status"
       }
     }
   },

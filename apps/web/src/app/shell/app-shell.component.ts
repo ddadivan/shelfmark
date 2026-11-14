@@ -213,6 +213,10 @@ export default class AppShellComponent {
     await this.router.navigateByUrl(`/${APP_PATH.Admin}/${ADMIN_PATH.Feedback}`);
   }
 
+  protected async openUsageStats(): Promise<void> {
+    await this.router.navigateByUrl(`/${APP_PATH.Admin}/${ADMIN_PATH.Stats}`);
+  }
+
   /** "About Shelfmark": the landing page, with "Back to my shelf" and "What's new" (#270). */
   protected async openAbout(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.About}`);
