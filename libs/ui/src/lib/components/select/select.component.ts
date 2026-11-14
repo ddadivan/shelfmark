@@ -8,7 +8,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -20,21 +19,17 @@ import {
   viewChild,
 } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
-import type { Subscription } from 'rxjs';
 import { UiFieldControl } from '../field/field-control.directive';
 import { FieldShellComponent } from '../field/field-shell.component';
 import { IconComponent } from '../icon/icon.component';
-import { menuPositions } from '../menu/menu-positions';
-import type { ConnectedOverlay } from '../../services/overlay/connected-overlay';
-import { UiOverlay } from '../../services/overlay/overlay.service';
+import { FieldPopup } from '../../services/overlay/field-popup';
 import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import type { SelectOption } from './models/select-option.interface';
 import type { SelectIcon } from './models/select-icon.type';
 import { SELECT_ICON } from './models/select-icon.const';
+import { relayKey } from './relay-key';
 import { selectedRow, selectRows } from './select-rows';
 import { KEYBOARD_KEY } from '../../models/keyboard';
-import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
-import { MENU_ALIGN } from '../menu/models/menu-align.const';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
@@ -88,7 +83,6 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   /** Text shown when the search finds nothing. */
   readonly noResultsLabel = input('');
 
-  private readonly overlays = inject(UiOverlay);
   private readonly injector = inject(Injector);
   private readonly document = inject(DOCUMENT);
 
@@ -101,8 +95,6 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
 
   /** The popup is open (the Aria combobox `expanded` state). */
   protected readonly open = signal(false);
-  /** The popup element sits in the overlay pane (open, or still leaving). */
-  protected readonly attached = signal(false);
   protected readonly query = signal('');
 
   protected readonly rows = computed(() =>
@@ -115,9 +107,19 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   protected readonly triggerText = computed(() => this.chosen()?.path ?? this.placeholder());
   protected readonly triggerIcon = computed(() => this.rowIcon(this.value()));
 
-  private overlay: ConnectedOverlay | null = null;
-  private detachSubscription: Subscription | null = null;
-  private resizeObserver: ResizeObserver | null = null;
+  /** The list's overlay pane, at least as wide as the trigger. */
+  private readonly pane = new FieldPopup({
+    origin: () => this.trigger().nativeElement,
+    popup: () => this.popup().nativeElement,
+    isShown: () => this.open(),
+    onDetached: () => {
+      if (this.open()) {
+        this.open.set(false);
+      }
+    },
+  });
+  /** The popup element sits in the overlay pane (open, or still leaving). */
+  protected readonly attached = this.pane.attached;
 
   constructor() {
     super();
@@ -136,13 +138,6 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
       if (id && this.open()) {
         this.document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' });
       }
-    });
-    inject(DestroyRef).onDestroy(() => {
-      this.stopWidthSync();
-      this.detachSubscription?.unsubscribe();
-      this.overlay?.dispose();
-      // The pane may still hold the popup element, which Angular no longer owns.
-      this.popup().nativeElement.remove();
     });
   }
 
@@ -241,7 +236,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
           if (this.open() && this.rows().length > 0) {
             this.listbox()?.gotoFirst();
           }
-          this.overlay?.updatePosition();
+          this.pane.updatePosition();
         });
       },
       { injector: this.injector },
@@ -254,12 +249,12 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
       case KEYBOARD_KEY.ArrowDown:
       case KEYBOARD_KEY.ArrowUp:
       case KEYBOARD_KEY.Enter:
-        this.relay(event);
+        relayKey(event, this.listbox()?.element);
         break;
       case KEYBOARD_KEY.Home:
       case KEYBOARD_KEY.End:
         if (!field?.value || event.ctrlKey || event.metaKey) {
-          this.relay(event);
+          relayKey(event, this.listbox()?.element);
         }
         break;
       case KEYBOARD_KEY.Escape:
@@ -276,64 +271,13 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     }
   }
 
-  /** Hands a key of the search box to the Aria listbox, as the combobox does for the trigger. */
-  private relay(event: KeyboardEvent): void {
-    event.preventDefault();
-    // Ctrl / Cmd on Home / End only chooses the options over the caret; Aria's single-select
-    // listbox binds the plain key, so those two modifiers are dropped there.
-    const edge = event.key === KEYBOARD_KEY.Home || event.key === KEYBOARD_KEY.End;
-    this.listbox()?.element.dispatchEvent(
-      new KeyboardEvent('keydown', {
-        key: event.key,
-        shiftKey: event.shiftKey,
-        altKey: event.altKey,
-        ctrlKey: edge ? false : event.ctrlKey,
-        metaKey: edge ? false : event.metaKey,
-      }),
-    );
-  }
-
   private show(): void {
     if (this.open()) {
       return;
     }
     this.query.set('');
     this.open.set(true);
-    const trigger = this.trigger().nativeElement;
-    if (this.overlay?.isAttached) {
-      // Reopened while the leave animation runs.
-      this.overlay.cancelRelease();
-    } else {
-      this.createOverlay(trigger);
-    }
-    this.syncWidth();
-    this.watchWidth(trigger);
-    this.attached.set(true);
-    afterNextRender(
-      () => {
-        this.overlay?.updatePosition();
-      },
-      { injector: this.injector },
-    );
-  }
-
-  private createOverlay(trigger: HTMLElement): void {
-    this.detachSubscription?.unsubscribe();
-    this.overlay?.dispose();
-    const overlay = this.overlays.connect(
-      { origin: trigger, positions: menuPositions(MENU_ALIGN.Start), layer: OVERLAY_LAYER.Menu },
-      { injector: this.injector, onPositionChange: () => this.syncWidth() },
-    );
-    this.overlay = overlay;
-    overlay.attachElement(this.popup().nativeElement);
-    this.detachSubscription = overlay.detachments().subscribe(() => {
-      if (this.overlay === overlay) {
-        this.attached.set(false);
-        if (this.open()) {
-          this.open.set(false);
-        }
-      }
-    });
+    this.pane.show();
   }
 
   private hide(restoreFocus: boolean): void {
@@ -341,44 +285,11 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
       return;
     }
     this.open.set(false);
-    this.stopWidthSync();
+    this.pane.hide();
     if (restoreFocus) {
       this.focus();
     }
     this.touch.emit();
-    // The popup content is removed in this render (the leave animation starts); release the
-    // pane in the next one so it sees the running animations.
-    afterNextRender(
-      () => {
-        this.overlay?.release();
-      },
-      { injector: this.injector },
-    );
-  }
-
-  /** The pane is at least as wide as the trigger; re-read on every reposition and resize. */
-  private syncWidth(): void {
-    this.overlay?.pane.style.setProperty(
-      'min-width',
-      `${this.trigger().nativeElement.offsetWidth}px`,
-    );
-  }
-
-  private watchWidth(trigger: HTMLElement): void {
-    this.stopWidthSync();
-    if (typeof ResizeObserver === 'undefined') {
-      return;
-    }
-    this.resizeObserver = new ResizeObserver(() => {
-      this.syncWidth();
-      this.overlay?.updatePosition();
-    });
-    this.resizeObserver.observe(trigger);
-  }
-
-  private stopWidthSync(): void {
-    this.resizeObserver?.disconnect();
-    this.resizeObserver = null;
   }
 
   /** The document lost focus (window or tab switch) while an element in it keeps it. */
