@@ -11,6 +11,7 @@ import {
 } from '@shelfmark/contracts';
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
 import {
+  type ColorPickerComponent,
   CUSTOM_ACCENT_OWN,
   CUSTOM_THEME_ATTRIBUTE,
   TOAST_KIND,
@@ -31,6 +32,7 @@ import { MOTION_STORAGE_KEY } from '../../../../core/theme/models/motion-storage
 import { THEME_STORAGE_KEY } from '../../../../core/theme/models/theme-storage-key.const';
 import { USER_SETTINGS_API } from '../../models/user-settings-api.const';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
+import { AppearanceSettingsService } from '../../services/appearance-settings.service';
 import AppearancePage from './appearance.page';
 
 /** The radio named `label` inside the radiogroup named by the row or label `group`. */
@@ -376,14 +378,16 @@ describe('AppearancePage', () => {
 
   it('ignores values outside the lists', async () => {
     const { harness, settingsApi } = await setup();
-    const page = harness.routeDebugElement?.componentInstance as Record<
-      string,
-      (value: string) => void
-    >;
-    for (const method of ['setTheme', 'setAccent', 'setBackground', 'setCorners', 'setMotion']) {
-      page[method]('nope');
-    }
-    page['setBase']('light');
+    const appearance = harness.routeDebugElement?.injector.get(AppearanceSettingsService);
+    // Neither a curated name nor a colour: the picker is never touched.
+    const untouched = {} as ColorPickerComponent;
+    appearance?.setTheme('nope');
+    appearance?.setMotion('nope');
+    appearance?.setCorners('nope');
+    appearance?.setAccent('nope', untouched);
+    appearance?.setBackground('nope', untouched);
+    appearance?.setBase('light');
+    expect(appearance).toBeDefined();
     expect(settingsApi.update).not.toHaveBeenCalled();
   });
 
