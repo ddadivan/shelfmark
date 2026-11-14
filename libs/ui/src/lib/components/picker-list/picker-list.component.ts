@@ -160,7 +160,10 @@ export class PickerListComponent {
       queueMicrotask(() => {
         if (seq === this.valueSeq) {
           this.selection.set([value]);
-          this.chosen.emit(value);
+          // A search that filtered the shown row out makes Aria drop it too: that is no choice.
+          if (this.rows().some((row) => row.id === value)) {
+            this.chosen.emit(value);
+          }
         }
       });
     }

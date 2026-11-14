@@ -175,6 +175,18 @@ describe('PickerListComponent', () => {
     expect(host.picked).toEqual(['clothes', 'work']);
   });
 
+  it('keeps the shown row selected and emits nothing when a search filters it out', async () => {
+    const { fixture, type, options } = await setup();
+    const host = fixture.componentInstance as HostComponent;
+    host.value.set('clothes');
+    await settle(fixture);
+    host.picked.length = 0;
+    await type('cour');
+    await type('');
+    expect(host.picked).toEqual([]);
+    expect(options()[4]?.getAttribute('aria-selected')).toBe('true');
+  });
+
   it('focuses the search box on open', async () => {
     const { search } = await setup();
     expect(document.activeElement).toBe(search);

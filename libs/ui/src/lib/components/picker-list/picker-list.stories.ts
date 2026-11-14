@@ -72,6 +72,7 @@ const meta: Meta<PickerListComponent> = {
           [emptyLabel]="emptyLabel"
           [currentIds]="currentIds"
           [currentLabel]="currentLabel"
+          [value]="value"
           [searchLabel]="searchLabel"
           [listLabel]="listLabel"
           [noResultsLabel]="noResultsLabel"
@@ -98,6 +99,9 @@ export const Nested: Story = {};
 export const UnsortedIsCurrent: Story = { args: { currentIds: [null] } };
 
 export const NoCurrent: Story = { args: { currentIds: [] } };
+
+/** A shown value (the side-by-side headers): its row has the check; other rows in `currentIds` keep their label only. */
+export const WithValue: Story = { args: { value: 'clothes', currentIds: ['angular'] } };
 
 export const WithoutUnsorted: Story = { args: { emptyLabel: '' } };
 
