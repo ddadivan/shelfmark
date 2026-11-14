@@ -36,7 +36,7 @@ async function probeFrames(page: Page, hint: boolean): Promise<void> {
     const tick = () => {
       globalThis.__frames.push({
         skeleton: document.querySelector('[data-app-skeleton], .boot--page') !== null,
-        logo: document.querySelector('app-root ui-logo, app-root ui-spinner') !== null,
+        logo: document.querySelector('.demo-start ui-logo, .demo-start ui-spinner') !== null,
         shell: document.querySelector('app-shell') !== null,
         page: document.querySelector('app-root > :not(router-outlet)') !== null,
       });
