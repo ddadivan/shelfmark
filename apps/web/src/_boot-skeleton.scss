@@ -4,7 +4,8 @@
 // signed-in start and the first rendered page (bundle, session request, lazy shell). Static
 // markup in the page, so no script and no inline style are needed (strict CSP). Hidden unless
 // `public/boot-skeleton.js` sets `html[data-boot-skeleton]` (a session hint, or `/demo`); the app
-// removes it after rendering a page. It is an overlay: removing it shifts nothing. Tokens come
+// removes it after rendering a page. The demo start page renders the same markup itself
+// (`BootSkeletonComponent`, `.boot--page`, always shown) so the hand-over is seamless. It is an overlay: removing it shifts nothing. Tokens come
 // from the theme attributes on `html`; geometry repeats the shell (app-shell.component.scss,
 // library.page.scss) so the real page replaces it without a jump.
 
@@ -19,7 +20,8 @@
   pointer-events: none;
 }
 
-:root[data-boot-skeleton] .boot {
+:root[data-boot-skeleton] .boot,
+.boot--page {
   display: flex;
 
   @include desktop {

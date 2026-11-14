@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { keepsBootSkeleton, removeBootSkeleton } from './boot-skeleton';
-import { KEEP_BOOT_SKELETON_DATA } from './models/keep-boot-skeleton-data.const';
+import { removeBootSkeleton } from './boot-skeleton';
 
 describe('boot skeleton', () => {
   it('removes the skeleton element and tolerates its absence', () => {
@@ -10,12 +9,5 @@ describe('boot skeleton', () => {
     removeBootSkeleton(document);
     expect(document.querySelector('[data-app-skeleton]')).toBeNull();
     expect(() => removeBootSkeleton(document)).not.toThrow();
-  });
-
-  it('stays only for a route that asks for it', () => {
-    expect(keepsBootSkeleton({ [KEEP_BOOT_SKELETON_DATA]: true })).toBe(true);
-    expect(keepsBootSkeleton({ [KEEP_BOOT_SKELETON_DATA]: 'yes' })).toBe(false);
-    expect(keepsBootSkeleton({})).toBe(false);
-    expect(keepsBootSkeleton(undefined)).toBe(false);
   });
 });

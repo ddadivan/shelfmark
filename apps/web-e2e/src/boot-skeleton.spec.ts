@@ -21,6 +21,7 @@ const DEMO_SESSION = {
 
 interface Frame {
   skeleton: boolean;
+  logo: boolean;
   shell: boolean;
   page: boolean;
 }
@@ -34,7 +35,8 @@ async function probeFrames(page: Page, hint: boolean): Promise<void> {
     globalThis.__frames = [];
     const tick = () => {
       globalThis.__frames.push({
-        skeleton: document.querySelector('[data-app-skeleton]') !== null,
+        skeleton: document.querySelector('[data-app-skeleton], .boot--page') !== null,
+        logo: document.querySelector('app-root ui-logo, app-root ui-spinner') !== null,
         shell: document.querySelector('app-shell') !== null,
         page: document.querySelector('app-root > :not(router-outlet)') !== null,
       });
@@ -80,7 +82,7 @@ test.describe('app skeleton while a signed-in start loads (#410)', () => {
   );
 
   test(
-    'opening the demo keeps the skeleton over the start page until the library',
+    'opening the demo shows the skeleton, with no logo or spinner, until the library',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await probeFrames(page, false);
@@ -106,7 +108,8 @@ test.describe('app skeleton while a signed-in start loads (#410)', () => {
       await expect(page.locator('[data-app-skeleton]')).toHaveCount(0);
       const frames = await readFrames(page);
       expect(frames.filter((f) => !f.skeleton && !f.shell && !f.page)).toEqual([]);
-      // The "Opening the demo" page is never uncovered: no frame has it without the skeleton.
+      // The start page is the skeleton itself: no logo or spinner in any frame.
+      expect(frames.filter((f) => f.logo)).toEqual([]);
       expect(frames.filter((f) => f.page && !f.skeleton && !f.shell)).toEqual([]);
     },
   );

@@ -4,7 +4,6 @@ import { APP_PATH } from './models/app-path.const';
 import { authOnly, guestOnly, redirectToSignIn } from './core/auth/auth.guards';
 import { loadLibraryPage } from './features/library/load-library-page';
 import { loadLandingPage } from './features/landing/load-landing-page';
-import { KEEP_BOOT_SKELETON_DATA } from './core/routing/models/keep-boot-skeleton-data.const';
 import { adminOnly } from './features/admin/admin.guard';
 
 const libraryPage = loadLibraryPage;
@@ -67,12 +66,7 @@ export const pageRoutes: Routes = [
     loadComponent: () => import('./features/sharing/public-collection.page'),
   },
   // Starts a demo session (or goes to the library when already signed in).
-  {
-    path: APP_PATH.Demo,
-    // The app skeleton stays over the spinner page until the library shows (#410).
-    data: { [KEEP_BOOT_SKELETON_DATA]: true },
-    loadComponent: () => import('./features/auth/demo-start.page'),
-  },
+  { path: APP_PATH.Demo, loadComponent: () => import('./features/auth/demo-start.page') },
   // Web Share Target (Android): outside the shell, a quick save sheet. Signed-in only.
   { path: APP_PATH.Share, canMatch: [authOnly], loadComponent: sharePage },
   // A guest on a protected URL: to sign-in, then back.

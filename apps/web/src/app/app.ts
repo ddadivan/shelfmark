@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { ApplicationRef, ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { keepsBootSkeleton, removeBootSkeleton } from './core/routing/boot-skeleton';
+import { removeBootSkeleton } from './core/routing/boot-skeleton';
 
 @Component({
   selector: 'app-root',
@@ -29,10 +29,8 @@ export class App {
    * that render, so every frame shows the skeleton or a page. A route that only forwards (`/demo`)
    * keeps it until the page it forwards to.
    */
-  protected renderActivatedPage(data: Record<string, unknown> | undefined): void {
+  protected renderActivatedPage(): void {
     this.appRef.tick();
-    if (!keepsBootSkeleton(data)) {
-      removeBootSkeleton(this.document);
-    }
+    removeBootSkeleton(this.document);
   }
 }
