@@ -1087,6 +1087,39 @@
       "label": "Sortieren, Ansicht und Export",
       "button": "Optionen",
       "sortBy": "Sortieren nach"
+    },
+    "split": {
+      "open": "Nebeneinander",
+      "close": "Nebeneinander schließen",
+      "swap": "Seiten tauschen",
+      "choose": {
+        "title": "Ordner wählen",
+        "heading": "Ordner wählen, in den Links verschoben werden",
+        "text": "Ziehe dann Links von links hierher, oder wähle sie aus und nutze die Leiste unten.",
+        "search": "Ordner suchen",
+        "list": "Ordner",
+        "noResults": "Kein Ordner gefunden"
+      },
+      "leftMenu": {
+        "label": "Links anzeigen",
+        "search": "Ordner oder Tag suchen",
+        "list": "Ansichten",
+        "noResults": "Nichts gefunden"
+      },
+      "rightMenu": {
+        "label": "Rechts anzeigen"
+      },
+      "onLeft": "Links",
+      "onRight": "Rechts",
+      "leftTrigger": "Linke Ansicht: {{name}}. Ändern",
+      "rightTrigger": "Rechter Ordner: {{name}}. Ändern",
+      "leftRegion": "Links: {{name}}",
+      "rightRegion": "Rechts: {{name}}",
+      "rightRegionEmpty": "Rechts: Ordner wählen",
+      "searchName": "Suche: {{query}}",
+      "empty": {
+        "text": "Ziehe Links von links hierher."
+      }
     }
   },
   "export": {
@@ -2186,7 +2219,8 @@
       "openAll": "Alle öffnen",
       "copy": "Links kopieren",
       "share": "Teilen",
-      "delete": "Löschen"
+      "delete": "Löschen",
+      "moveToFolder": "In {{folder}} verschieben"
     },
     "header": {
       "label": "Auswahl",

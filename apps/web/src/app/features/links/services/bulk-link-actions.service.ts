@@ -320,7 +320,7 @@ export class BulkLinkActionsService {
         await firstValueFrom(this.api().removeBatch(batch));
       }
     } catch {
-      this.store.restoreSnapshot(snapshot);
+      this.store.restoreSnapshot(snapshot, links);
       this.refreshCounts();
       this.toasts.show({
         kind: TOAST_KIND.Danger,
@@ -380,18 +380,19 @@ export class BulkLinkActionsService {
     onError?: (error: unknown) => void,
   ): Promise<boolean> {
     const snapshot = this.store.snapshot();
-    this.store.patchLinks(links.map(apply));
+    const moved = change.folderId !== undefined;
+    this.store.patchLinks(links.map(apply), moved);
     try {
       for (const batch of chunks(links, LINK_LIMIT.BatchMax)) {
         const response = await firstValueFrom(
           this.api().updateBatch({ ...change, ids: batch.map((link) => link.id) }),
         );
-        this.store.patchLinks(response.links);
+        this.store.patchLinks(response.links, moved);
       }
       this.refreshCounts();
       return true;
     } catch (error) {
-      this.store.restoreSnapshot(snapshot);
+      this.store.restoreSnapshot(snapshot, links);
       this.refreshCounts();
       onError?.(error);
       return false;

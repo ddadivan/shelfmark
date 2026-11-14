@@ -10,6 +10,7 @@ import {
   inject,
   Injector,
   input,
+  linkedSignal,
   output,
   signal,
   viewChild,
@@ -26,7 +27,6 @@ import type { PickerRow } from './models/picker-row.interface';
 import { pickerRows } from './picker-rows';
 
 const COARSE_POINTER = '(pointer: coarse)';
-const NO_SELECTION: (string | null)[] = [];
 
 /**
  * A searchable, nested list of choices that acts at once (the "Move to folder" picker): a search
@@ -55,7 +55,6 @@ const NO_SELECTION: (string | null)[] = [];
 export class PickerListComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
-  protected readonly NO_SELECTION = NO_SELECTION;
 
   /** The option tree. */
   readonly options = input<readonly PickerOption[]>([]);
@@ -63,6 +62,13 @@ export class PickerListComponent {
   readonly emptyLabel = input('');
   /** Ids of the rows that are the current place (`null` = the empty row): marked, not choosable. */
   readonly currentIds = input<readonly (string | null)[]>([]);
+  /**
+   * The shown choice (side-by-side headers): that row carries the check and `aria-selected`, and
+   * `currentIds` rows then show only their label (no check). `null` is the empty row; unset (the
+   * default) means no row is selected, which is how the "Move to folder" picker works. Choosing
+   * the shown row again emits `chosen` with the same id, so an owner can just close.
+   */
+  readonly value = input<string | null | undefined>(undefined);
   /** Text of the current-place mark, for example "Current folder". */
   readonly currentLabel = input('');
   /** Accessible name and placeholder of the search box. */
@@ -96,6 +102,12 @@ export class PickerListComponent {
   /** Runs once the first match of the latest search is active (an Enter typed right behind the text). */
   private afterFirst: (() => void) | undefined;
   private filtering = false;
+  private valueSeq = 0;
+  /** The Aria listbox value: the shown row, or nothing. */
+  protected readonly selection = linkedSignal<(string | null)[]>(() => {
+    const value = this.value();
+    return value === undefined ? [] : [value];
+  });
   protected readonly rows = computed(() =>
     pickerRows(this.options(), this.query(), this.emptyLabel(), this.currentIds()),
   );
@@ -127,9 +139,33 @@ export class PickerListComponent {
     return row.level > 0 || current ? `${row.path}${current}` : null;
   }
 
+  /** Check mark of a row: the shown value, or a current-place row while no value is shown. */
+  protected showsCheck(row: PickerRow): boolean {
+    const value = this.value();
+    return value === undefined ? row.current : row.id === value;
+  }
+
   protected onValue(selected: readonly (string | null)[]): void {
+    const value = this.value();
+    const seq = ++this.valueSeq;
     if (selected.length > 0) {
-      this.chosen.emit(selected[selected.length - 1] ?? null);
+      const id = selected[selected.length - 1] ?? null;
+      // The shown row coming back as selected is the echo of our own reset below, not a choice.
+      if (value === undefined || id !== value) {
+        this.chosen.emit(id);
+      }
+    } else if (value !== undefined) {
+      // Aria also reports an empty value for an instant while it moves the selection to another
+      // row; only an empty value that stays is the shown row toggled off by choosing it again.
+      queueMicrotask(() => {
+        if (seq === this.valueSeq) {
+          this.selection.set([value]);
+          // A search that filtered the shown row out makes Aria drop it too: that is no choice.
+          if (this.rows().some((row) => row.id === value)) {
+            this.chosen.emit(value);
+          }
+        }
+      });
     }
   }
 

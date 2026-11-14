@@ -1,7 +1,16 @@
 import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
+  BadgeComponent,
   BreadcrumbsComponent,
   BULK_BAR_LAYOUT,
   BulkBarComponent,
@@ -17,6 +26,7 @@ import {
   MenuSeparatorComponent,
   MenuTriggerDirective,
   NoticeComponent,
+  PickerMenuComponent,
   ProgressBarComponent,
   SegmentedControlComponent,
   SKELETON_SHAPE,
@@ -54,6 +64,8 @@ import { LibrarySelectionService } from './services/library-selection.service';
 import { LibraryFilterService } from './services/library-filter.service';
 import { provideLibraryPage } from './services/provide-library-page';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
+import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
+import { SplitViewService } from './services/split-view.service';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
 
@@ -72,7 +84,9 @@ const SKELETON_COUNT = 8;
     CdkDragPlaceholder,
     CdkDragPreview,
     CdkDropList,
+    NgTemplateOutlet,
     TranslocoPipe,
+    BadgeComponent,
     BreadcrumbsComponent,
     BulkBarComponent,
     ButtonComponent,
@@ -94,10 +108,12 @@ const SKELETON_COUNT = 8;
     MenuSeparatorComponent,
     MenuTriggerDirective,
     NoticeComponent,
+    PickerMenuComponent,
     ProgressBarComponent,
     SavedViewChipsComponent,
     SegmentedControlComponent,
     SkeletonComponent,
+    SplitRightHalfComponent,
   ],
   templateUrl: './library.page.html',
   styleUrls: ['./library.page.scss', './library-feed.scss', './library-selection.scss'],
@@ -121,6 +137,9 @@ export default class LibraryPage {
    * the stacked bulk bar over the tab bar, the share action.
    */
   protected readonly compact = inject(ViewportService).compact;
+  /** From 80em: the "Side by side" button and the right half (#386). */
+  protected readonly wide = inject(ViewportService).wide;
+  protected readonly splitView = inject(SplitViewService);
   protected readonly selection = inject(LibrarySelectionService);
   protected readonly bulk = inject(LibraryBulkService);
   protected readonly drag = inject(LinkDragService);
@@ -140,6 +159,8 @@ export default class LibraryPage {
   readonly sort = input<unknown>();
   /** From the query (`?kind=video`): see `parseLinkKind`. */
   readonly kind = input<unknown>();
+  /** From the query (`?split=<folder id>`): the right half of the side-by-side view. */
+  readonly split = input<unknown>();
 
   protected readonly emptyIllustration = this.filters.emptyIllustration;
   protected readonly UI_VIEW = UI_VIEW;
@@ -154,6 +175,9 @@ export default class LibraryPage {
 
   protected readonly BULK_BAR_LAYOUT = BULK_BAR_LAYOUT;
 
+  /** The "Side by side" button: after the split closes it takes the focus the close button had. */
+  private readonly splitOpener = viewChild<ButtonComponent>('splitOpener');
+
   constructor() {
     this.filters.connect({
       scope: this.scope,
@@ -162,6 +186,13 @@ export default class LibraryPage {
       q: this.q,
       sort: this.sort,
       kind: this.kind,
+      split: this.split,
+    });
+    effect(() => {
+      const opener = this.splitOpener();
+      if (opener && this.splitView.takeOpenerFocus()) {
+        opener.focus();
+      }
     });
     void this.settings.load();
   }

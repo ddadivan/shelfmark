@@ -13,6 +13,7 @@ import type { LinksFilter } from '../../links/models/links-filter.type';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { SEARCH_QUERY_PARAM } from '../../links/models/search-query-param.const';
 import { SORT_QUERY_PARAM } from '../../links/models/sort-query-param.const';
+import { sameFilter } from '../../links/utils/links-filter';
 import { explicitFeedSort, feedSortQuery } from '../../links/utils/feed-sort';
 import { parseLinkKind } from '../../links/utils/link-kind';
 import { parseSearchQuery } from '../../links/utils/search-query';
@@ -82,6 +83,8 @@ export class LibraryFilterService {
   readonly view = computed<UiView>(
     () => this.memory.view(this.feedKey()) ?? this.settings.libraryShown().defaultView,
   );
+  /** `?split` as the URL has it (`undefined` when absent): read by `SplitViewService`. */
+  readonly splitParam = computed(() => this.inputs().split?.());
   readonly linkKind = computed(() => parseLinkKind(this.inputs().kind()));
   readonly searching = computed(() => this.query() !== '');
   readonly filtered = computed(
@@ -124,27 +127,34 @@ export class LibraryFilterService {
   });
   /** Favorites cannot be filled by adding a link, so its empty state points back to all links. */
   readonly canAddLink = computed(() => this.scope() !== LINKS_SCOPE.Favorites);
-  readonly filter = computed<LinksFilter>(() => {
-    const scope = this.scope();
-    const folderId = this.folderId();
-    const tags = this.tags();
-    const q = this.query();
-    const sort = this.feedSort();
-    const kind = this.linkKind();
-    const options = {
-      ...(tags.length > 0 ? { tags } : {}),
-      ...(q === '' ? {} : { q }),
-      ...(kind === undefined ? {} : { kind }),
-      ...(sort === FEED_SORT.Newest ? {} : feedSortQuery(sort)),
-    };
-    if (scope !== LINKS_SCOPE.Folder) {
-      return { scope, ...options };
-    }
-    // A folder page without an id cannot happen through the router; it shows "not found".
-    return folderId === undefined
-      ? { scope: LINKS_SCOPE.All, ...options }
-      : { scope, folderId, ...options };
-  });
+  /**
+   * The filter of the links store. Equal filters (the same request) keep the same object, so a
+   * query parameter that is no filter (`?split`) refetches nothing and keeps the selection.
+   */
+  readonly filter = computed<LinksFilter>(
+    () => {
+      const scope = this.scope();
+      const folderId = this.folderId();
+      const tags = this.tags();
+      const q = this.query();
+      const sort = this.feedSort();
+      const kind = this.linkKind();
+      const options = {
+        ...(tags.length > 0 ? { tags } : {}),
+        ...(q === '' ? {} : { q }),
+        ...(kind === undefined ? {} : { kind }),
+        ...(sort === FEED_SORT.Newest ? {} : feedSortQuery(sort)),
+      };
+      if (scope !== LINKS_SCOPE.Folder) {
+        return { scope, ...options };
+      }
+      // A folder page without an id cannot happen through the router; it shows "not found".
+      return folderId === undefined
+        ? { scope: LINKS_SCOPE.All, ...options }
+        : { scope, folderId, ...options };
+    },
+    { equal: sameFilter },
+  );
   /** What "This view" exports; `undefined` when the view has no export equivalent. */
   readonly viewScope = computed(() => exportScopeOf(this.filter()));
 

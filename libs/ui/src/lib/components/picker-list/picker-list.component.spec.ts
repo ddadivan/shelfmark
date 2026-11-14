@@ -27,6 +27,7 @@ const TREE: PickerOption[] = [
     [options]="options"
     emptyLabel="Unsorted"
     [currentIds]="current()"
+    [value]="value()"
     currentLabel="Current folder"
     searchLabel="Find a folder"
     listLabel="Folders"
@@ -39,6 +40,7 @@ class HostComponent {
   readonly options = TREE;
   readonly current = signal<readonly (string | null)[]>(['angular']);
   readonly autoFocus = signal(true);
+  readonly value = signal<string | null | undefined>(undefined);
   readonly picked: (string | null)[] = [];
 }
 
@@ -128,6 +130,61 @@ describe('PickerListComponent', () => {
     options()[2]?.click();
     await settle(fixture);
     expect((fixture.componentInstance as HostComponent).picked).toEqual([]);
+  });
+
+  it('without a value shows the check only on current rows and selects nothing', async () => {
+    const { options } = await setup();
+    expect(
+      options()[2]?.querySelector('ui-icon[name="check"], .ui-picker-list__current ui-icon'),
+    ).not.toBeNull();
+    expect(options().filter((o) => o.getAttribute('aria-selected') === 'true')).toHaveLength(0);
+  });
+
+  it('with a value checks and selects that row; current rows keep only their label', async () => {
+    const { fixture, options } = await setup();
+    (fixture.componentInstance as HostComponent).value.set('clothes');
+    await settle(fixture);
+    const clothes = options()[4] as HTMLElement;
+    expect(clothes.getAttribute('aria-selected')).toBe('true');
+    expect(clothes.querySelector('.ui-picker-list__current ui-icon')).not.toBeNull();
+    const current = options()[2] as HTMLElement;
+    expect(current.getAttribute('aria-disabled')).toBe('true');
+    expect(current.textContent).toContain('Current folder');
+    expect(current.querySelector('ui-icon[name="check"]')).toBeNull();
+  });
+
+  it('selects the empty row when the value is null', async () => {
+    const { fixture, options } = await setup();
+    (fixture.componentInstance as HostComponent).value.set(null);
+    await settle(fixture);
+    expect(options()[0]?.getAttribute('aria-selected')).toBe('true');
+  });
+
+  it('reports a repeated choice of the shown row and keeps it selected', async () => {
+    const { fixture, options } = await setup();
+    const host = fixture.componentInstance as HostComponent;
+    host.value.set('clothes');
+    await settle(fixture);
+    host.picked.length = 0;
+    options()[4]?.click();
+    await settle(fixture);
+    expect(host.picked).toEqual(['clothes']);
+    expect(options()[4]?.getAttribute('aria-selected')).toBe('true');
+    options()[1]?.click();
+    await settle(fixture);
+    expect(host.picked).toEqual(['clothes', 'work']);
+  });
+
+  it('keeps the shown row selected and emits nothing when a search filters it out', async () => {
+    const { fixture, type, options } = await setup();
+    const host = fixture.componentInstance as HostComponent;
+    host.value.set('clothes');
+    await settle(fixture);
+    host.picked.length = 0;
+    await type('cour');
+    await type('');
+    expect(host.picked).toEqual([]);
+    expect(options()[4]?.getAttribute('aria-selected')).toBe('true');
   });
 
   it('focuses the search box on open', async () => {

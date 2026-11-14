@@ -81,7 +81,23 @@
   color: var(--danger);
 }
 
-.ui-bulk-bar__icon {
+// The one action that stands out ("Move to <folder>"): a surface button with an edge (a shadow, so
+// the box does not grow), like the secondary `ui-button`.
+.ui-bulk-bar__bar .ui-bulk-bar__action--secondary {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border-control);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    background: var(--surface-pressed);
+  }
+}
+
+.ui-bulk-bar__icon,
+.ui-bulk-bar__folder {
   flex: none;
 }
 

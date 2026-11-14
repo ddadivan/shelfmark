@@ -5,6 +5,7 @@ import type { LinkResponse } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService, type ToastRef } from '@shelfmark/ui';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { LinkDragService } from '../../links/services/link-drag.service';
+import { isDropTarget } from '../utils/split-param';
 import { LibrarySelectionService } from './library-selection.service';
 
 /** How long the "can't drop here" toast stays (ms). */
@@ -28,10 +29,17 @@ export class LibraryDragService {
   /** Touch holds 150 ms before a drag starts (DragDrop spec), so a swipe still scrolls. */
   readonly DRAG_START_DELAY = { touch: 150, mouse: 0 };
 
-  /** A drag began: the drag service takes the links along and a screen reader hears what moves. */
-  started(link: LinkResponse): void {
+  /** The drag began on a card of the right half: it carries that link alone, whatever is picked. */
+  private fromRight = false;
+
+  /**
+   * A drag began: the drag service takes the links along and a screen reader hears what moves.
+   * `fromRight`: the card is in the right half, whose links are never part of the selection.
+   */
+  started(link: LinkResponse, fromRight = false): void {
     this.clearReason();
-    this.links.start(link, this.selection.selectedLinks());
+    this.fromRight = fromRight;
+    this.links.start(link, fromRight ? [] : this.selection.selectedLinks());
     const count = this.bundled(link) ? this.selection.selectedCount() : 1;
     this.selection.announce(
       this.transloco.translate(pluralKey('links.drag.started', count), { count }),
@@ -43,11 +51,20 @@ export class LibraryDragService {
     this.clearReason();
     this.selection.announce('');
     this.links.drop();
+    this.fromRight = false;
+  }
+
+  /**
+   * A half of the side-by-side view (its `data-link-drop-folder` value, `unsorted` for Unsorted)
+   * is the drop target under the pointer: it shows the ring and "Move here".
+   */
+  dropsOn(value: string | null): boolean {
+    return isDropTarget(value, this.links.treeTargetId());
   }
 
   /** Dragging a picked link (with others picked) carries the whole selection. */
   bundled(link: LinkResponse): boolean {
-    return this.selection.selectedCount() > 1 && this.selection.has(link.id);
+    return !this.fromRight && this.selection.selectedCount() > 1 && this.selection.has(link.id);
   }
 
   /** How many links a drag of `link` carries: the whole selection when it travels, else 1. */

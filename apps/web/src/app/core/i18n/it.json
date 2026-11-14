@@ -1108,6 +1108,39 @@
       "label": "Ordina, visualizza ed esporta",
       "button": "Opzioni",
       "sortBy": "Ordina per"
+    },
+    "split": {
+      "open": "Affiancati",
+      "close": "Chiudi la vista affiancata",
+      "swap": "Scambia i lati",
+      "choose": {
+        "title": "Scegli una cartella",
+        "heading": "Scegli una cartella in cui spostare i link",
+        "text": "Poi trascina qui i link da sinistra, oppure selezionali e usa la barra in basso.",
+        "search": "Trova una cartella",
+        "list": "Cartelle",
+        "noResults": "Nessuna cartella trovata"
+      },
+      "leftMenu": {
+        "label": "Mostra a sinistra",
+        "search": "Trova una cartella o un tag",
+        "list": "Elenchi",
+        "noResults": "Nessun risultato"
+      },
+      "rightMenu": {
+        "label": "Mostra a destra"
+      },
+      "onLeft": "A sinistra",
+      "onRight": "A destra",
+      "leftTrigger": "Elenco di sinistra: {{name}}. Cambia",
+      "rightTrigger": "Cartella di destra: {{name}}. Cambia",
+      "leftRegion": "Sinistra: {{name}}",
+      "rightRegion": "Destra: {{name}}",
+      "rightRegionEmpty": "Destra: scegli una cartella",
+      "searchName": "Ricerca: {{query}}",
+      "empty": {
+        "text": "Trascina qui i link da sinistra."
+      }
     }
   },
   "export": {
@@ -2226,7 +2259,8 @@
       "openAll": "Apri tutti",
       "copy": "Copia link",
       "share": "Condividi",
-      "delete": "Elimina"
+      "delete": "Elimina",
+      "moveToFolder": "Sposta in {{folder}}"
     },
     "header": {
       "label": "Selezione",

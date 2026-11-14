@@ -1,0 +1,47 @@
+<button
+  #trigger
+  uiRipple
+  type="button"
+  class="ui-picker-menu__trigger"
+  aria-haspopup="dialog"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="open() ? panelId : null"
+  [attr.aria-label]="triggerLabel() || null"
+  (click)="toggle()"
+>
+  <ui-folder-icon [icon]="icon()" [colour]="colour()" [size]="FOLDER_ICON_SIZE.Sm" />
+  <span class="ui-picker-menu__name">{{ label() }}</span>
+  <ui-icon class="ui-picker-menu__chevron" name="chevron-down" [size]="ICON_SIZE.Sm" />
+</button>
+
+<div
+  #popupRef
+  class="ui-picker-menu__popup"
+  [class.ui-picker-menu__popup--shown]="popup.attached()"
+>
+  @if (open()) {
+    <div
+      class="ui-picker-menu__panel"
+      role="dialog"
+      tabindex="-1"
+      [id]="panelId"
+      [attr.aria-label]="listLabel()"
+      animate.enter="ui-picker-menu--enter"
+      animate.leave="ui-picker-menu--leave"
+      (keydown)="onKeydown($event)"
+      (focusout)="onFocusOut($event)"
+    >
+      <ui-picker-list
+        [options]="options()"
+        [value]="value()"
+        [emptyLabel]="emptyLabel()"
+        [currentIds]="currentIds()"
+        [currentLabel]="currentLabel()"
+        [searchLabel]="searchLabel()"
+        [listLabel]="listLabel()"
+        [noResultsLabel]="noResultsLabel()"
+        (chosen)="onChosen($event)"
+      />
+    </div>
+  }
+</div>

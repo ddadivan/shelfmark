@@ -1,0 +1,166 @@
+@use 'ui' as *;
+
+// The right half of the side-by-side view (SideBySide.dc.html): a column that fills its grid cell,
+// a header like the left toolbar, and its own scroll area under it. A dragged link over it shows an
+// inset 2px accent ring and the "Move here" badge on its top edge (no fill).
+:host {
+  display: flex;
+  min-inline-size: 0;
+  min-block-size: 0;
+}
+
+.split-right {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-inline-size: 0;
+  min-block-size: 0;
+  padding: var(--space-1) calc(var(--space-4) + var(--space-1)) 0;
+  border-radius: var(--radius-xl);
+
+  &--target {
+    box-shadow: inset 0 0 0 2px var(--accent);
+  }
+}
+
+.split-right__here {
+  position: absolute;
+  inset-block-start: calc(var(--space-3) * -1);
+  inset-inline-start: 50%;
+  z-index: 2;
+  translate: -50% 0;
+}
+
+.split-right__head {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-block-size: rem(48px);
+}
+
+.split-right__head-skeleton {
+  display: block;
+  inline-size: rem(160px);
+}
+
+.split-right__choose {
+  @include type(title);
+
+  padding-inline-start: var(--space-2);
+}
+
+.split-right__count {
+  @include type(caption);
+
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.split-right__spacer {
+  flex: 1;
+}
+
+.split-right__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  inline-size: 100%;
+  max-inline-size: rem(420px);
+  margin: var(--space-6) auto 0;
+}
+
+.split-right__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.split-right__heading {
+  @include type(label);
+
+  margin: 0;
+  font-weight: 600;
+}
+
+.split-right__text {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// Its own scroll area: the feed and the page scroll apart.
+.split-right__scroll {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-block-size: 0;
+
+  // Room for the focus ring and a lifted card, which the clip of the scroll area would cut.
+  padding: var(--space-1);
+  margin: calc(var(--space-1) * -1);
+  padding-block-end: var(--space-8);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.split-right__grid {
+  display: grid;
+  gap: var(--density-feed-gap);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.75rem), 1fr));
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.split-right__item {
+  display: flex;
+  flex-direction: column;
+
+  &.cdk-drag-animating {
+    transition: transform var(--duration-base) var(--ease-out);
+
+    @include reduced-motion {
+      transition: none;
+    }
+  }
+}
+
+.split-right__drag-slot {
+  block-size: var(--drag-slot-height, 100%);
+}
+
+.split-right__empty {
+  @include type(body);
+
+  padding: var(--space-8) var(--space-4);
+  margin: 0;
+  color: var(--text-muted);
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.split-right__state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+
+.split-right__more {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  margin-block-start: var(--space-6);
+}

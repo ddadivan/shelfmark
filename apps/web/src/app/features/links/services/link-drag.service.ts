@@ -188,7 +188,8 @@ export class LinkDragService {
     const element = this.doc.elementFromPoint(x, y);
     const tile = element?.closest(`[${LINK_DROP_ATTRIBUTE}]`);
     if (tile) {
-      return this.folderOrNothing(tile.getAttribute(LINK_DROP_ATTRIBUTE));
+      const value = tile.getAttribute(LINK_DROP_ATTRIBUTE);
+      return value === LINKS_SCOPE.Unsorted ? null : this.folderOrNothing(value);
     }
     const id = element?.closest(TREE_ROW_SELECTOR)?.getAttribute('data-ui-tree-id');
     return id === LINKS_SCOPE.Unsorted ? null : this.folderOrNothing(id);

@@ -108,6 +108,21 @@ describe('LibraryDragService', () => {
     expect(links.drop).toHaveBeenCalledOnce();
   });
 
+  it('carries a right-half card alone even when the same link is picked on the left', async () => {
+    const { dnd, selection, links } = await setup();
+    selection.toggleSelected(link(1), { range: false });
+    selection.toggleSelected(link(2), { range: false });
+
+    dnd.started(link(2), true);
+
+    expect(links.start).toHaveBeenCalledWith(link(2), []);
+    expect(dnd.bundled(link(2))).toBe(false);
+    expect(dnd.dragCount(link(2))).toBe(1);
+
+    dnd.ended();
+    expect(dnd.bundled(link(2))).toBe(true);
+  });
+
   it('hit-tests the folders under the pointer', async () => {
     const { dnd, links } = await setup();
     dnd.moved({ pointerPosition: { x: 12, y: 34 } } as Parameters<LibraryDragService['moved']>[0]);

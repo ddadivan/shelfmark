@@ -2,6 +2,7 @@ import { ElementRef, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
+import { BULK_BAR_ACTION_VARIANT } from '@shelfmark/ui';
 import { of } from 'rxjs';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { BULK_ACTION } from '../../links/models/bulk-action.const';
@@ -14,6 +15,7 @@ import { LibraryBulkService } from './library-bulk.service';
 import { LibraryFilterService } from './library-filter.service';
 import { LibrarySelectionService } from './library-selection.service';
 import { provideLibraryPage } from './provide-library-page';
+import { SplitViewService } from './split-view.service';
 
 const link = (n: number): LinkResponse => ({
   ...MOCK_LINKS[0],
@@ -27,7 +29,7 @@ const page = (items: LinkResponse[]): ListLinksResponse => ({
   pinned: [],
 });
 
-async function setup(deleted: boolean) {
+async function setup(deleted: boolean, rightTarget: string | null | undefined = undefined) {
   const api = {
     list: vi.fn<LinksApi['list']>(() => of(page([link(1), link(2)]))),
     recent: vi.fn<LinksApi['recent']>(() => of({ items: [] })),
@@ -41,6 +43,7 @@ async function setup(deleted: boolean) {
     copy: vi.fn(() => Promise.resolve(false)),
     share: vi.fn(() => Promise.resolve(false)),
     delete: vi.fn(() => Promise.resolve(deleted)),
+    moveTo: vi.fn(() => Promise.resolve(true)),
   };
   TestBed.configureTestingModule({
     providers: [
@@ -48,6 +51,14 @@ async function setup(deleted: boolean) {
       provideTranslocoForTest(),
       { provide: LINKS_API, useValue: api },
       { provide: BulkLinkActionsService, useValue: links },
+      {
+        provide: SplitViewService,
+        useValue: {
+          rightTarget: () => rightTarget,
+          rightLabel: () => 'Clothes',
+          rightTile: () => ({ colour: 'rose', icon: 'folder' }),
+        },
+      },
       { provide: ElementRef, useValue: new ElementRef(document.createElement('div')) },
     ],
   });
@@ -96,5 +107,39 @@ describe('LibraryBulkService', () => {
     await bulk.run(BULK_ACTION.Move);
     expect(links.move).toHaveBeenCalledOnce();
     expect(selection.selecting()).toBe(true);
+  });
+
+  it('has no split action while the right half shows no target', async () => {
+    const { bulk } = await setup(true);
+    expect(bulk.barActions().some((action) => action.id === BULK_ACTION.MoveToSplit)).toBe(false);
+  });
+
+  it('puts "Move to <folder>" first while the right half shows a folder', async () => {
+    const { bulk } = await setup(true, 'folder-1');
+    const [first] = bulk.barActions();
+    expect(first).toEqual({
+      id: BULK_ACTION.MoveToSplit,
+      label: 'Move to Clothes',
+      variant: BULK_BAR_ACTION_VARIANT.Secondary,
+      folder: { colour: 'rose', icon: 'folder' },
+    });
+  });
+
+  it('moves the picked links to the folder on the right and ends the selection', async () => {
+    const { bulk, selection, links } = await setup(true, 'folder-1');
+    selection.selectAll();
+    await bulk.run(BULK_ACTION.MoveToSplit);
+    expect(links.moveTo).toHaveBeenCalledWith(
+      selection.order().map((id) => expect.objectContaining({ id })),
+      'folder-1',
+    );
+    expect(selection.selecting()).toBe(false);
+  });
+
+  it('moves to Unsorted for the null target', async () => {
+    const { bulk, selection, links } = await setup(true, null);
+    selection.selectAll();
+    await bulk.run(BULK_ACTION.MoveToSplit);
+    expect(links.moveTo).toHaveBeenCalledWith(expect.any(Array), null);
   });
 });

@@ -30,7 +30,7 @@
   selectionMode="explicit"
   tabindex="-1"
   [attr.aria-label]="listLabel()"
-  [value]="NO_SELECTION"
+  [(value)]="selection"
   [hidden]="rows().length === 0"
   (valueChange)="onValue($event)"
 >
@@ -52,10 +52,14 @@
         <ui-folder-icon [icon]="row.icon" [colour]="row.colour" [size]="FOLDER_ICON_SIZE.Sm" />
       }
       <span class="ui-picker-list__label">{{ row.name }}</span>
-      @if (row.current) {
+      @if (row.current || showsCheck(row)) {
         <span class="ui-picker-list__current" aria-hidden="true">
-          <ui-icon name="check" [size]="ICON_SIZE.Md" />
-          {{ currentLabel() }}
+          @if (showsCheck(row)) {
+            <ui-icon name="check" [size]="ICON_SIZE.Md" />
+          }
+          @if (row.current) {
+            {{ currentLabel() }}
+          }
         </span>
       }
     </div>

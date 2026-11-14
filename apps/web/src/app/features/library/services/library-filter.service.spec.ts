@@ -48,6 +48,31 @@ describe('LibraryFilterService', () => {
     expect(service.canAddLink()).toBe(false);
   });
 
+  it('keeps the same filter object for the same request, so ?split refetches nothing', () => {
+    const { service, scope, tag } = setup();
+    const split = signal<unknown>(undefined);
+    service.connect({
+      scope,
+      folderId: signal(undefined),
+      tag,
+      q: signal(undefined),
+      sort: signal(undefined),
+      kind: signal(undefined),
+      split,
+    });
+    const before = service.filter();
+    expect(service.splitParam()).toBeUndefined();
+
+    split.set('');
+    expect(service.splitParam()).toBe('');
+    // An input that recomputes the filter to the same request gives the same object.
+    tag.set([]);
+    expect(service.filter()).toBe(before);
+
+    tag.set(['a']);
+    expect(service.filter()).not.toBe(before);
+  });
+
   it('keys the feed by folder and names a folder page without an id as not found', () => {
     const { service, scope, folderId } = setup();
     expect(service.feedKey()).toBe(LINKS_SCOPE.All);

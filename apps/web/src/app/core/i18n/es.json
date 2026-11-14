@@ -1108,6 +1108,39 @@
       "label": "Ordenar, ver y exportar",
       "button": "Opciones",
       "sortBy": "Ordenar por"
+    },
+    "split": {
+      "open": "Lado a lado",
+      "close": "Cerrar la vista lado a lado",
+      "swap": "Intercambiar lados",
+      "choose": {
+        "title": "Elige una carpeta",
+        "heading": "Elige una carpeta a la que mover enlaces",
+        "text": "Después arrastra enlaces aquí desde la izquierda, o selecciónalos y usa la barra de abajo.",
+        "search": "Buscar una carpeta",
+        "list": "Carpetas",
+        "noResults": "No se encontró ninguna carpeta"
+      },
+      "leftMenu": {
+        "label": "Mostrar a la izquierda",
+        "search": "Buscar una carpeta o etiqueta",
+        "list": "Listas",
+        "noResults": "Sin resultados"
+      },
+      "rightMenu": {
+        "label": "Mostrar a la derecha"
+      },
+      "onLeft": "A la izquierda",
+      "onRight": "A la derecha",
+      "leftTrigger": "Lista izquierda: {{name}}. Cambiar",
+      "rightTrigger": "Carpeta derecha: {{name}}. Cambiar",
+      "leftRegion": "Izquierda: {{name}}",
+      "rightRegion": "Derecha: {{name}}",
+      "rightRegionEmpty": "Derecha: elige una carpeta",
+      "searchName": "Búsqueda: {{query}}",
+      "empty": {
+        "text": "Arrastra enlaces aquí desde la izquierda."
+      }
     }
   },
   "export": {
@@ -2226,7 +2259,8 @@
       "openAll": "Abrir todos",
       "copy": "Copiar enlaces",
       "share": "Compartir",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "moveToFolder": "Mover a {{folder}}"
     },
     "header": {
       "label": "Selección",
