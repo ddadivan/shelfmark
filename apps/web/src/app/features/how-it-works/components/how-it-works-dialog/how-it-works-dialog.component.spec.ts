@@ -69,11 +69,11 @@ describe('HowItWorksDialogComponent', () => {
       ).toEqual([
         'Save a link 0:00',
         'Folders and tags 0:33',
-        'Many at once 1:09',
-        'Find it again 1:40',
-        'Undo and Trash 2:09',
-        'Make it yours 2:26',
-        'Share and export 2:55',
+        'Many at once 1:10',
+        'Find it again 1:41',
+        'Undo and Trash 2:10',
+        'Make it yours 2:27',
+        'Share and export 2:57',
       ]);
       expect(await axeViolations(root)).toEqual([]);
     },
@@ -99,7 +99,7 @@ describe('HowItWorksDialogComponent', () => {
 
     expect(
       Array.from(root.querySelectorAll('.how-it-works__time')).map((time) => time.textContent),
-    ).toEqual(['0:00', '0:27', '0:58', '1:21', '1:42', '1:56', '2:15']);
+    ).toEqual(['0:00', '0:27', '0:59', '1:22', '1:42', '1:56', '2:15']);
     const buttons = Array.from(
       root.querySelectorAll<HTMLButtonElement>('.how-it-works__chapters button'),
     );
@@ -139,7 +139,7 @@ describe('HowItWorksDialogComponent', () => {
     buttons[6].click();
     await fixture.whenStable();
 
-    expect(video.currentTime).toBe(175);
+    expect(video.currentTime).toBe(177);
     expect(buttons[6].getAttribute('aria-pressed')).toBe('true');
     expect(buttons[6].textContent).toContain('Share and export');
   });
