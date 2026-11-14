@@ -92,10 +92,8 @@ jobs:
           retention-days: 7
 
   # The `visual:update` label on a PR from this repository: regenerates every baseline in the same
-  # container, commits them to the PR branch and uploads them as an artifact. The only job with
-  # write access; the token is used in the push step alone (the checkout keeps no credentials).
-  # The runs queued for that bot commit wait for approval ("action required"); approving them or
-  # the next push to the PR runs the comparison.
+  # container and uploads them as an artifact. Read-only: it installs and runs project code, so it
+  # never holds a token that can write. `visual-update-commit` commits the result.
   visual-update:
     name: visual-update
     if: >-
@@ -104,16 +102,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
-      contents: write
+      contents: read
       actions: read
     container:
       image: mcr.microsoft.com/playwright:v1.65.0-noble@sha256:9beb546099e11f52d62e505537914870e01a67e0e6b00ae41da4775324e73dbe
     env:
       E2E_PORT: '4200'
     steps:
+      # The exact head commit: the commit job pushes on top of it, so a newer push to the branch
+      # makes that push fail instead of mixing baselines of two commits.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -131,13 +131,38 @@ jobs:
           path: apps/web-e2e/visual/__screenshots__
           if-no-files-found: error
           retention-days: 7
+
+  # Commits the baselines rendered by `visual-update` to the PR branch. The only job with write
+  # access, so it never installs dependencies or runs project code: checkout, artifact, git. The
+  # token is used in the push step alone (the checkout keeps no credentials). The runs queued for
+  # that bot commit wait for approval ("action required"); approving them or the next push to the
+  # PR runs the comparison.
+  visual-update-commit:
+    name: visual-update-commit
+    needs: visual-update
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      # Replace the whole folder, so baselines of removed screens are deleted too.
+      - name: Clear the old baselines
+        run: rm -rf apps/web-e2e/visual/__screenshots__
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: visual-baselines
+          path: apps/web-e2e/visual/__screenshots__
       - name: Commit the baselines to the PR branch
         env:
           TOKEN: ${{ github.token }}
           BRANCH: ${{ github.head_ref }}
         run: |
-          git add apps/web-e2e/visual/__screenshots__
+          git add -A apps/web-e2e/visual/__screenshots__
           if git diff --cached --quiet; then echo "Baselines unchanged"; exit 0; fi
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
             commit -m "test(web-e2e): update the visual baselines (visual:update)"
-          git push "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${BRANCH}"
+          git push "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/${BRANCH}"

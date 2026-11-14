@@ -61,10 +61,11 @@ is a regression to fix.
 
 ## Update the baselines on purpose
 
-1. Add the `visual:update` label to the PR (a PR from this repository). The `visual-update` job
-   regenerates every baseline in the container, commits them to the PR branch as
-   `test(web-e2e): update the visual baselines (visual:update)` and also uploads them as the
-   `visual-baselines` artifact.
+1. Add the `visual:update` label to the PR (a PR from this repository). The read-only
+   `visual-update` job regenerates every baseline in the container and uploads them as the
+   `visual-baselines` artifact; the `visual-update-commit` job (the only one that can write, it
+   never installs or runs project code) replaces the baseline folder with that artifact and
+   commits it to the PR branch as `test(web-e2e): update the visual baselines (visual:update)`.
 2. Review the changed PNGs in the PR's diff (GitHub shows image diffs side by side, swipe and
    onion skin). Pull the commit before you push again.
 3. The workflows that GitHub queues for the bot's commit wait for approval (they show "action
