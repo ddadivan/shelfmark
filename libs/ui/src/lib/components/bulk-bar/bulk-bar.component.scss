@@ -2,6 +2,11 @@
 
 :host {
   display: block;
+
+  // A grid or flex parent may shrink it below its content: the bar then scrolls inside itself
+  // (7 actions with "Move to <folder>" are wider than a narrow container) instead of pushing
+  // actions out of the parent and the window.
+  min-inline-size: 0;
   max-inline-size: 100%;
 }
 
