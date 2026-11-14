@@ -9,6 +9,7 @@ import { AppTranslocoLoader } from '../../../../core/i18n/app-transloco.loader';
 import { APP_LANG } from '../../../../core/i18n/models/app-lang.const';
 import { translocoConfig } from '../../../../core/i18n/transloco.config';
 import { FoldersStore } from '../../../../stores/folders.store';
+import { RecentFoldersStore } from '../../../../stores/recent-folders.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { axeViolations } from '../../../../../testing/axe';
 import type { MovePickerData } from '../../models/move-picker-data.interface';
@@ -17,6 +18,7 @@ import { MovePickerComponent } from './move-picker.component';
 async function setup(
   data: Partial<MovePickerData> = {},
   folders: readonly FolderResponse[] = MOCK_FOLDERS,
+  recent: readonly (string | null)[] = [],
 ) {
   const submit = vi.fn<MovePickerData['submit']>();
   const ref = { close: vi.fn(), locked: () => false };
@@ -26,6 +28,7 @@ async function setup(
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
       { provide: UiDialogRef, useValue: ref },
       { provide: FoldersStore, useValue: { entities: signal(folders) } },
+      { provide: RecentFoldersStore, useValue: { targets: signal(recent) } },
       {
         provide: UserSettingsStore,
         useValue: { shownColour: (colour: string) => colour },
@@ -58,6 +61,20 @@ describe('MovePickerComponent', () => {
     expect(names()).toEqual(['Unsorted', 'Reading', 'Angular']);
     expect(root.querySelector('[role="listbox"]')?.getAttribute('aria-label')).toBe('Folders');
     expect(root.querySelector('input')?.getAttribute('aria-label')).toBe('Search folders');
+  });
+
+  it('puts the recently used folders first, under a Recent title, and moves from them', async () => {
+    const { fixture, root, options, names, submit } = await setup({}, MOCK_FOLDERS, [
+      MOCK_ID.FolderAngular,
+      null,
+    ]);
+
+    expect(names()).toEqual(['Angular', 'Unsorted', 'Unsorted', 'Reading', 'Angular']);
+    expect(root.querySelector('.ui-picker-list__group')?.textContent).toBe('Recent');
+
+    options()[0]?.click();
+    await fixture.whenStable();
+    expect(submit).toHaveBeenCalledWith(MOCK_ID.FolderAngular);
   });
 
   it('marks the current folder and does not move for it', async () => {

@@ -418,7 +418,8 @@
       "moved": "Moved to {{folder}}",
       "failed": "Couldn't move the link",
       "failedDetail": "It is back where it was",
-      "undoFailed": "Couldn't move the link back"
+      "undoFailed": "Couldn't move the link back",
+      "recent": "Recent"
     },
     "many": {
       "title": {
@@ -1087,6 +1088,40 @@
       "label": "Sort, view and export",
       "button": "Options",
       "sortBy": "Sort by"
+    },
+    "split": {
+      "open": "Side by side",
+      "close": "Close side by side",
+      "swap": "Swap sides",
+      "choose": {
+        "title": "Choose a folder",
+        "heading": "Choose a folder to move links into",
+        "text": "Then drag links here from the left, or select them and use the bar below.",
+        "search": "Find a folder",
+        "list": "Folders",
+        "noResults": "No folder found"
+      },
+      "leftMenu": {
+        "label": "Show on the left",
+        "search": "Find a folder or tag",
+        "list": "Feeds",
+        "noResults": "Nothing found"
+      },
+      "rightMenu": {
+        "label": "Show on the right"
+      },
+      "onLeft": "On the left",
+      "onRight": "On the right",
+      "leftTrigger": "Left feed: {{name}}. Change",
+      "rightTrigger": "Right folder: {{name}}. Change",
+      "leftRegion": "Left: {{name}}",
+      "rightRegion": "Right: {{name}}",
+      "rightRegionEmpty": "Right: choose a folder",
+      "searchName": "Search: {{query}}",
+      "empty": {
+        "text": "Drag links here from the left."
+      },
+      "moveToLeft": "Move “{{title}}” to {{folder}}"
     }
   },
   "export": {
@@ -2186,7 +2221,8 @@
       "openAll": "Open all",
       "copy": "Copy links",
       "share": "Share",
-      "delete": "Delete"
+      "delete": "Delete",
+      "moveToFolder": "Move to {{folder}}"
     },
     "header": {
       "label": "Selection",

@@ -13,17 +13,19 @@ function index(options: readonly PickerOption[], into: Map<string, PickerOption>
 /**
  * Flattens the option tree into picker rows: with a query only matching names stay, plus their
  * ancestors (the matching and ordering rules of `ui-select`). The empty-value row comes first when
- * `emptyLabel` is set. Rows in `currentIds` are flagged `current`.
+ * `emptyLabel` is set. Rows in `currentIds` are flagged `current`. Without a query the rows of
+ * `recentIds` come first as flat copies flagged `recent` (ids the list does not have are skipped).
  */
 export function pickerRows(
   options: readonly PickerOption[],
   query: string,
   emptyLabel: string,
   currentIds: readonly (string | null)[],
+  recentIds: readonly (string | null)[] = [],
 ): PickerRow[] {
   const byId = new Map<string, PickerOption>();
   index(options, byId);
-  return selectRows(options, query, emptyLabel).map((row) => {
+  const rows = selectRows(options, query, emptyLabel).map((row) => {
     const option = row.id === null ? undefined : byId.get(row.id);
     return {
       id: row.id,
@@ -33,6 +35,15 @@ export function pickerRows(
       icon: row.id === null ? 'inbox' : (option?.icon ?? 'folder'),
       colour: option?.colour ?? FOLDER_COLOUR.Graphite,
       current: currentIds.includes(row.id),
+      recent: false,
     };
   });
+  if (query.trim() !== '') {
+    return rows;
+  }
+  const recent = [...new Set(recentIds)].flatMap((id) => {
+    const row = rows.find((candidate) => candidate.id === id);
+    return row ? [{ ...row, level: 0, recent: true }] : [];
+  });
+  return [...recent, ...rows];
 }

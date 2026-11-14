@@ -27,6 +27,7 @@ const APP_ICONS = [
   'bulb',
   'calendar',
   'camera',
+  'columns',
   'car',
   'chart',
   'cloud',
@@ -72,6 +73,7 @@ const APP_ICONS = [
   'pin-off',
   'play',
   'shirt',
+  'swap',
 ];
 
 const sprite = readFileSync(SPRITE_PATH, 'utf8');

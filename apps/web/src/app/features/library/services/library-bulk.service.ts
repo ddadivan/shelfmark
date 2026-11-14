@@ -1,11 +1,12 @@
 import { computed, inject, Service } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoService } from '@jsverse/transloco';
-import type { BulkBarAction } from '@shelfmark/ui';
+import { BULK_BAR_ACTION_VARIANT, type BulkBarAction } from '@shelfmark/ui';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { BULK_ACTION } from '../../links/models/bulk-action.const';
 import { BulkLinkActionsService } from '../../links/services/bulk-link-actions.service';
 import { LibrarySelectionService } from './library-selection.service';
+import { SplitViewService } from './split-view.service';
 
 /**
  * The bulk bar of the library page: its buttons for the picked links (the phone shares instead
@@ -17,6 +18,7 @@ export class LibraryBulkService {
   private readonly links = inject(BulkLinkActionsService);
   private readonly selection = inject(LibrarySelectionService);
   private readonly transloco = inject(TranslocoService);
+  private readonly split = inject(SplitViewService);
   private readonly compact = inject(ViewportService).compact;
 
   private readonly i18n = toSignal(this.transloco.selectTranslation());
@@ -26,7 +28,20 @@ export class LibraryBulkService {
     const t = (key: string): string => this.transloco.translate(key);
     const favorite =
       this.selection.selecting() && this.selection.selectedLinks().every((link) => link.isFavorite);
-    const actions: BulkBarAction[] = [
+    const target = this.split.rightTarget();
+    const actions: BulkBarAction[] = [];
+    if (target !== undefined) {
+      // Side by side: moving to the folder on the right is one press, so it comes first.
+      actions.push({
+        id: BULK_ACTION.MoveToSplit,
+        label: this.transloco.translate('bulk.bar.moveToFolder', {
+          folder: this.split.rightLabel(),
+        }),
+        variant: BULK_BAR_ACTION_VARIANT.Secondary,
+        folder: this.split.rightTile(),
+      });
+    }
+    actions.push(
       { id: BULK_ACTION.Move, label: t('bulk.bar.move'), icon: 'folder-move' },
       { id: BULK_ACTION.Tags, label: t('bulk.bar.tags'), icon: 'tag' },
       {
@@ -35,7 +50,7 @@ export class LibraryBulkService {
         icon: favorite ? 'star-filled' : 'star',
         pressed: favorite,
       },
-    ];
+    );
     if (this.compact()) {
       actions.push(
         this.links.canShare()
@@ -62,6 +77,11 @@ export class LibraryBulkService {
     const links = this.selection.selectedLinks();
     let clear = false;
     switch (id) {
+      case BULK_ACTION.MoveToSplit: {
+        const target = this.split.rightTarget();
+        clear = target !== undefined && (await this.links.moveTo(links, target));
+        break;
+      }
       case BULK_ACTION.Move:
         clear = await this.links.move(links);
         break;

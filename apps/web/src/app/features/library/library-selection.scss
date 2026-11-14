@@ -101,6 +101,18 @@
   }
 }
 
+// The cards that stay behind while a selection travels fade to 60% (SideBySide.dc.html). Only
+// this state carries the transition (a transition on every card breaks the scroll height of the
+// `content-visibility` list); the drop restores them at once. Instant under reduced motion.
+.library__item--dimmed {
+  opacity: 0.6;
+  transition: opacity var(--duration-base) var(--ease-out);
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
 // Every link that travels with a drag shows the same empty slot (DragDrop spec, `app-drag-slot`):
 // the grabbed one as the CDK placeholder, at the height it had (`--drag-slot-height`, set on grab),
 // every other carried one laid over its own card, which stays in place invisible to keep its box.

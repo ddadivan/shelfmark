@@ -5,6 +5,8 @@ import { LibraryFeedService } from './library-feed.service';
 import { LibraryFilterService } from './library-filter.service';
 import { LibraryHeadService } from './library-head.service';
 import { LibrarySelectionService } from './library-selection.service';
+import { SplitFeedStore } from './split-feed.store';
+import { SplitViewService } from './split-view.service';
 
 /**
  * The page-scoped services of one library page (#338). They are `autoProvided: false`, so each
@@ -18,5 +20,7 @@ export function provideLibraryPage(): Provider[] {
     LibrarySelectionService,
     LibraryBulkService,
     LibraryDragService,
+    SplitViewService,
+    SplitFeedStore,
   ];
 }

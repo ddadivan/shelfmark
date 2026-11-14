@@ -21,6 +21,8 @@ import { firstValueFrom } from 'rxjs';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { UndoToastService } from '../../../core/undo/undo-toast.service';
 import { FoldersStore } from '../../../stores/folders.store';
+import { RecentFoldersStore } from '../../../stores/recent-folders.store';
+import { toastFolder } from '../utils/toast-folder';
 import { LinksStore } from '../../../stores/links.store';
 import { PinsStore } from '../../../stores/pins.store';
 import { SavedViewsStore } from '../../../stores/saved-views.store';
@@ -55,6 +57,7 @@ interface ShareCapable {
 export class BulkLinkActionsService {
   private readonly store = inject(LinksStore);
   private readonly folders = inject(FoldersStore);
+  private readonly recent = inject(RecentFoldersStore);
   private readonly tags = inject(TagsStore);
   private readonly trash = inject(TrashStore);
   private readonly views = inject(SavedViewsStore);
@@ -116,11 +119,16 @@ export class BulkLinkActionsService {
       );
       return false;
     }
+    this.recent.record(folderId);
     const undo = this.t('links.item.undo');
     this.toasts.show({
       kind: TOAST_KIND.Moved,
       title: this.plural('bulk.move.moved', moving.length, { folder: this.folderLabel(folderId) }),
       detail: this.titles(moving),
+      folder: toastFolder(
+        folderId === null ? undefined : this.folders.entityMap()[folderId],
+        (colour) => this.settings.shownColour(colour),
+      ),
       duration: TOAST_DURATION_MS.Undo,
       actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
       action: { label: undo, run: () => void this.moveBack(moving, folderId) },
@@ -320,7 +328,7 @@ export class BulkLinkActionsService {
         await firstValueFrom(this.api().removeBatch(batch));
       }
     } catch {
-      this.store.restoreSnapshot(snapshot);
+      this.store.restoreSnapshot(snapshot, links);
       this.refreshCounts();
       this.toasts.show({
         kind: TOAST_KIND.Danger,
@@ -380,18 +388,19 @@ export class BulkLinkActionsService {
     onError?: (error: unknown) => void,
   ): Promise<boolean> {
     const snapshot = this.store.snapshot();
-    this.store.patchLinks(links.map(apply));
+    const moved = change.folderId !== undefined;
+    this.store.patchLinks(links.map(apply), moved);
     try {
       for (const batch of chunks(links, LINK_LIMIT.BatchMax)) {
         const response = await firstValueFrom(
           this.api().updateBatch({ ...change, ids: batch.map((link) => link.id) }),
         );
-        this.store.patchLinks(response.links);
+        this.store.patchLinks(response.links, moved);
       }
       this.refreshCounts();
       return true;
     } catch (error) {
-      this.store.restoreSnapshot(snapshot);
+      this.store.restoreSnapshot(snapshot, links);
       this.refreshCounts();
       onError?.(error);
       return false;

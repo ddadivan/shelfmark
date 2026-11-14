@@ -5,6 +5,7 @@ import { KEYBOARD_KEY } from '@shelfmark/ui';
 import { FoldersStore } from '../../../stores/folders.store';
 import { LINKS_SCOPE } from '../models/links-scope.const';
 import { LINK_DROP_ATTRIBUTE } from '../models/link-drop-attribute.const';
+import { LINK_DROP_HALF_ATTRIBUTE } from '../models/link-drop-half-attribute.const';
 import { LinkSelectionStore } from '../../../stores/link-selection.store';
 import { SIDEBAR_RECENT_ID } from '../../../shell/sidebar/models/sidebar-recent-id.const';
 import { SIDEBAR_TRASH_ID } from '../../../shell/sidebar/models/sidebar-trash-id.const';
@@ -51,6 +52,8 @@ export class LinkDragService {
   private readonly link = signal<LinkResponse | null>(null);
   /** Folder id under the pointer, `null` for Unsorted, `undefined` for no target. */
   private readonly target = signal<string | null | undefined>(undefined);
+  /** The target was found through a half of the side-by-side view, not a sidebar row or a tile. */
+  private readonly viaHalf = signal(false);
 
   /** The row under the pointer that cannot take links, with the reason it shows (#350). */
   private readonly noDropHover = signal<NoDropHover | null>(null);
@@ -58,11 +61,14 @@ export class LinkDragService {
   readonly dragging = computed(() => this.link() !== null);
   /** Ids of the links that travel with the pointer (the feed dims the other ones). */
   readonly carriedIds = computed(() => new Set(this.links().map((item) => item.id)));
-  /** Id of the highlighted sidebar row (`ui-tree` `dropTargetId`). */
-  readonly treeTargetId = computed(() => {
+  private readonly targetId = computed(() => {
     const target = this.target();
     return target === undefined ? null : (target ?? LINKS_SCOPE.Unsorted);
   });
+  /** Id of the highlighted sidebar row (`ui-tree` `dropTargetId`); none while a half is the target. */
+  readonly treeTargetId = computed(() => (this.viaHalf() ? null : this.targetId()));
+  /** Folder id (`unsorted` for Unsorted) of the half that is the target, `null` for any other target. */
+  readonly halfTargetId = computed(() => (this.viaHalf() ? this.targetId() : null));
   /**
    * Sidebar rows that cannot take links while one is dragged (`ui-tree` `noDropIds`): they show a
    * no-drop cursor and a muted state. Unsorted can (the drop removes the folder).
@@ -75,7 +81,7 @@ export class LinkDragService {
   /** Translation key of the reason the hovered no-drop row shows, for the row and the live region. */
   readonly noDropReasonKey = computed(() => this.noDropHover()?.reasonKey ?? null);
   /** Folder id of the highlighted subfolder tile and pinned folder row. */
-  readonly folderTargetId = computed(() => this.target() ?? null);
+  readonly folderTargetId = computed(() => (this.viaHalf() ? null : (this.target() ?? null)));
 
   constructor() {
     // A drag cut short by the injector going away (sign-out, a destroyed test bed) must not leave
@@ -121,6 +127,7 @@ export class LinkDragService {
     this.links.set(together ? selected : [link]);
     this.link.set(link);
     this.target.set(undefined);
+    this.viaHalf.set(false);
     this.cancelled = false;
     this.doc.addEventListener('keydown', this.onKeydown, true);
   }
@@ -132,9 +139,10 @@ export class LinkDragService {
       return;
     }
     this.noDropHover.set(this.noDropAt(x, y));
-    const target = this.targetAt(x, y);
+    const { target, half } = this.locate(x, y);
     const already = this.links().every((item) => item.folderId === target);
     this.target.set(already ? undefined : target);
+    this.viaHalf.set(!already && half);
   }
 
   /** The pointer was released: moves the link when it is over a target. */
@@ -165,6 +173,7 @@ export class LinkDragService {
     this.doc.documentElement.style.removeProperty('--drag-grab-y');
     this.doc.documentElement.style.removeProperty('--drag-slot-height');
     this.target.set(undefined);
+    this.viaHalf.set(false);
     this.noDropHover.set(null);
     this.doc.removeEventListener('keydown', this.onKeydown, true);
   }
@@ -184,14 +193,17 @@ export class LinkDragService {
     return null;
   }
 
-  private targetAt(x: number, y: number): string | null | undefined {
+  /** The drop target under the pointer, and whether it is a half of the side-by-side view. */
+  private locate(x: number, y: number): { target: string | null | undefined; half: boolean } {
     const element = this.doc.elementFromPoint(x, y);
     const tile = element?.closest(`[${LINK_DROP_ATTRIBUTE}]`);
     if (tile) {
-      return this.folderOrNothing(tile.getAttribute(LINK_DROP_ATTRIBUTE));
+      const value = tile.getAttribute(LINK_DROP_ATTRIBUTE);
+      const target = value === LINKS_SCOPE.Unsorted ? null : this.folderOrNothing(value);
+      return { target, half: target !== undefined && tile.hasAttribute(LINK_DROP_HALF_ATTRIBUTE) };
     }
     const id = element?.closest(TREE_ROW_SELECTOR)?.getAttribute('data-ui-tree-id');
-    return id === LINKS_SCOPE.Unsorted ? null : this.folderOrNothing(id);
+    return { target: id === LINKS_SCOPE.Unsorted ? null : this.folderOrNothing(id), half: false };
   }
 
   private folderOrNothing(id: string | null | undefined): string | undefined {

@@ -1,9 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { Toolbar, ToolbarWidget } from '@angular/aria/toolbar';
+import { FolderIconComponent } from '../folder-icon/folder-icon.component';
+import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
+import { FOLDER_ICON_SIZE } from '../folder-icon/models/folder-icon-size.const';
 import { IconComponent } from '../icon/icon.component';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import type { BulkBarAction } from './models/bulk-bar-action.interface';
+import { BULK_BAR_ACTION_VARIANT } from './models/bulk-bar-action-variant.const';
 import { BULK_BAR_LAYOUT } from './models/bulk-bar-layout.const';
 import type { BulkBarLayout } from './models/bulk-bar-layout.type';
 
@@ -12,7 +16,9 @@ import type { BulkBarLayout } from './models/bulk-bar-layout.type';
  * items ("Move", "Tags", "Favorite", …, "Delete"). Angular Aria's toolbar gives one tab stop, the
  * arrow keys, Home and End; Enter and Space are the native button activation. Danger actions get
  * `danger` text and, in the `inline` layout, a divider before the first of them. `stacked` puts the
- * icon above the label and lets the buttons share the width (phone, like the tab bar).
+ * icon above the label and lets the buttons share the width (phone, like the tab bar). An action
+ * may be `secondary` (a surface button with an edge) and draw a small folder tile instead of its
+ * icon ("Move to Clothes").
  *
  * Presentational: the feature positions the bar (it is not fixed), owns the selection and runs
  * the actions. Put `animate.enter="ui-bulk-bar--enter"` and `animate.leave="ui-bulk-bar--leave"`
@@ -20,7 +26,7 @@ import type { BulkBarLayout } from './models/bulk-bar-layout.type';
  */
 @Component({
   selector: 'ui-bulk-bar',
-  imports: [IconComponent, RippleDirective, Toolbar, ToolbarWidget],
+  imports: [FolderIconComponent, IconComponent, RippleDirective, Toolbar, ToolbarWidget],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-bulk-bar',
@@ -32,6 +38,9 @@ import type { BulkBarLayout } from './models/bulk-bar-layout.type';
 export class BulkBarComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly BULK_BAR_LAYOUT = BULK_BAR_LAYOUT;
+  protected readonly BULK_BAR_ACTION_VARIANT = BULK_BAR_ACTION_VARIANT;
+  protected readonly FOLDER_COLOUR = FOLDER_COLOUR;
+  protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
 
   readonly actions = input.required<readonly BulkBarAction[]>();
   /** Accessible name of the toolbar, for example "Actions for 3 selected links". */

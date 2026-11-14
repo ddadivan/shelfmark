@@ -30,17 +30,28 @@
   selectionMode="explicit"
   tabindex="-1"
   [attr.aria-label]="listLabel()"
-  [value]="NO_SELECTION"
+  [(value)]="selection"
   [hidden]="rows().length === 0"
   (valueChange)="onValue($event)"
 >
-  @for (row of rows(); track row.id) {
+  @for (
+    row of rows();
+    track row.recent ? 'recent:' + row.id : row.id;
+    let first = $first;
+    let index = $index
+  ) {
+    @if (row.recent && first) {
+      <div class="ui-picker-list__group" aria-hidden="true">{{ recentLabel() }}</div>
+    }
+    @if (!row.recent && index > 0 && rows()[index - 1]?.recent) {
+      <div class="ui-picker-list__rule" aria-hidden="true"></div>
+    }
     <div
       ngOption
       uiRipple
       class="ui-picker-list__option"
       [class.is-current]="row.current"
-      [value]="row.id"
+      [value]="optionValue(row)"
       [label]="row.name"
       [disabled]="row.current"
       [attr.aria-label]="ariaName(row)"
@@ -52,10 +63,14 @@
         <ui-folder-icon [icon]="row.icon" [colour]="row.colour" [size]="FOLDER_ICON_SIZE.Sm" />
       }
       <span class="ui-picker-list__label">{{ row.name }}</span>
-      @if (row.current) {
+      @if (row.current || showsCheck(row)) {
         <span class="ui-picker-list__current" aria-hidden="true">
-          <ui-icon name="check" [size]="ICON_SIZE.Md" />
-          {{ currentLabel() }}
+          @if (showsCheck(row)) {
+            <ui-icon name="check" [size]="ICON_SIZE.Md" />
+          }
+          @if (row.current) {
+            {{ currentLabel() }}
+          }
         </span>
       }
     </div>

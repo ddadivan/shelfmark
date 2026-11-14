@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { RECENT_FOLDERS_STORAGE_KEY } from '../../../core/auth/models/recent-folders-storage-key.const';
+import { RecentFoldersStore } from '../../../stores/recent-folders.store';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import {
@@ -103,7 +105,10 @@ async function setup(confirmed = true) {
 const ids = (store: InstanceType<typeof LinksStore>) => store.entities().map((item) => item.id);
 
 describe('LinkActionsService', () => {
-  beforeEach(() => vi.useFakeTimers());
+  beforeEach(() => {
+    localStorage.removeItem(RECENT_FOLDERS_STORAGE_KEY);
+    vi.useFakeTimers();
+  });
   afterEach(() => vi.useRealTimers());
 
   describe('delete', () => {
@@ -202,6 +207,7 @@ describe('LinkActionsService', () => {
         }),
       );
       expect(store.entityMap()['id-1']?.folderId).toBe(folderId);
+      expect(TestBed.inject(RecentFoldersStore).ids()).toEqual([folderId]);
 
       toasts[0]?.action?.run();
       await vi.runAllTicks();

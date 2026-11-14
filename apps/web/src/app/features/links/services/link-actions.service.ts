@@ -13,6 +13,8 @@ import {
   type ToastFolder,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../stores/folders.store';
+import { RecentFoldersStore } from '../../../stores/recent-folders.store';
+import { toastFolder } from '../utils/toast-folder';
 import { LinksStore } from '../../../stores/links.store';
 import { PinsStore } from '../../../stores/pins.store';
 import { TagsStore } from '../../../stores/tags.store';
@@ -40,6 +42,7 @@ import { MovePickerComponent } from '../components/move-picker/move-picker.compo
 export class LinkActionsService {
   private readonly store = inject(LinksStore);
   private readonly folders = inject(FoldersStore);
+  private readonly recent = inject(RecentFoldersStore);
   private readonly tags = inject(TagsStore);
   private readonly trash = inject(TrashStore);
   private readonly settings = inject(UserSettingsStore);
@@ -166,6 +169,7 @@ export class LinkActionsService {
       return;
     }
     void this.folders.refresh();
+    this.recent.record(folderId);
     const undo = this.t('links.item.undo');
     this.toasts.show({
       kind: TOAST_KIND.Moved,
@@ -181,7 +185,7 @@ export class LinkActionsService {
   /** The folder tile of a `moved` toast: the folder's colour and icon, graphite for Unsorted. */
   private toastFolder(folderId: string | null): ToastFolder {
     const folder = folderId === null ? undefined : this.folders.entityMap()[folderId];
-    return folder ? { colour: this.settings.shownColour(folder.colour), icon: folder.icon } : {};
+    return toastFolder(folder, (colour) => this.settings.shownColour(colour));
   }
 
   private async moveBack(link: LinkResponse, folderId: string | null): Promise<void> {

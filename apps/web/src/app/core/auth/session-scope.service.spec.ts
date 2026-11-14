@@ -1,5 +1,6 @@
 import { THEME_STORAGE_KEY } from '../theme/models/theme-storage-key.const';
 import { EMOJI_RECENT_STORAGE_KEY } from './models/emoji-recent-storage-key.const';
+import { RECENT_FOLDERS_STORAGE_KEY } from './models/recent-folders-storage-key.const';
 import { TestBed } from '@angular/core/testing';
 import { SessionScope } from './session-scope.service';
 
@@ -69,10 +70,12 @@ describe('SessionScope', () => {
 
   it('removes the per-user keys from localStorage on end, even with blocked storage (#363)', () => {
     localStorage.setItem(EMOJI_RECENT_STORAGE_KEY, '["🍕"]');
+    localStorage.setItem(RECENT_FOLDERS_STORAGE_KEY, '["unsorted"]');
     localStorage.setItem(THEME_STORAGE_KEY, 'dark');
     const scope = TestBed.inject(SessionScope);
     scope.end();
     expect(localStorage.getItem(EMOJI_RECENT_STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(RECENT_FOLDERS_STORAGE_KEY)).toBeNull();
     expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
     vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
       throw new Error('blocked');

@@ -84,6 +84,20 @@
   }
 }
 
+// The "Recent" group on top: a small title, then a rule before the whole list.
+.ui-picker-list__group {
+  @include type(caption);
+
+  padding: rem(6px) rem(12px) rem(2px);
+  color: var(--text-muted);
+}
+
+.ui-picker-list__rule {
+  block-size: 0;
+  margin: rem(4px) rem(12px);
+  border-block-start: 1px solid var(--border);
+}
+
 .ui-picker-list__empty-icon {
   flex: none;
 
