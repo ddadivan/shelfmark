@@ -76,7 +76,7 @@
         >{{ 'links.drag.moveHere' | transloco }}</ui-badge
       >
       } @if (!filters.folderMissing()) {
-      <header class="library__toolbar">
+      <header class="library__toolbar" [class.library__toolbar--split]="splitView.open()">
         <div class="library__heading" [class.library__heading--split]="splitView.open()">
           <!-- prettier-ignore -->
           <h1 class="library__title" [class.library__title--hidden]="splitView.open()">{{ filters.folder()?.name ?? (filters.titleKey() | transloco) }}</h1>
@@ -87,7 +87,6 @@
             [label]="splitView.leftLabel()"
             [icon]="splitView.leftTile().icon"
             [colour]="splitView.leftTile().colour"
-            [emptyLabel]="'library.scope.unsorted' | transloco"
             [currentIds]="splitView.leftCurrentIds()"
             [currentLabel]="'library.split.onRight' | transloco"
             [searchLabel]="'library.split.leftMenu.search' | transloco"
@@ -174,8 +173,10 @@
             <ui-button
               [uiMenuTrigger]="sortMenu"
               variant="ghost"
+              [iconOnly]="splitView.open()"
+              [iconLeft]="splitView.open() ? 'sort' : undefined"
               iconRight="chevron-down"
-              [iconSize]="ICON_SIZE.Sm"
+              [iconSize]="splitView.open() ? ICON_SIZE.Md : ICON_SIZE.Sm"
               [ariaLabel]="'library.sort.label' | transloco: { sort: SORT_OPTION_KEYS[filters.feedSort()] | transloco }"
             >
               {{ SORT_OPTION_KEYS[filters.feedSort()] | transloco }}
@@ -205,6 +206,7 @@
             variant="secondary"
             iconLeft="download"
             iconRight="chevron-down"
+            [iconOnly]="splitView.open()"
             [ariaLabel]="'export.menu' | transloco"
           >
             {{ 'export.menu' | transloco }}
@@ -414,6 +416,7 @@
             [cdkDragDisabled]="compact()"
             [cdkDragStartDelay]="dnd.DRAG_START_DELAY"
             [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
+            [class.library__item--dimmed]="dnd.dims(link.id)"
             [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
             [class.library__landed]="store.landed()[link.id] !== undefined"
             [style.--ui-land-delay]="feed.landDelay(link.id)"
@@ -484,6 +487,7 @@
             [cdkDragDisabled]="compact()"
             [cdkDragStartDelay]="dnd.DRAG_START_DELAY"
             [class.library__item--carried]="drag.dragging() && drag.carriedIds().has(link.id)"
+            [class.library__item--dimmed]="dnd.dims(link.id)"
             [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
             [class.library__landed]="store.landed()[link.id] !== undefined"
             [style.--ui-land-delay]="feed.landDelay(link.id)"
@@ -569,6 +573,9 @@
   </div>
   @if (selection.selecting() && splitView.open()) {
   <div class="library__bulk-split"><ng-container *ngTemplateOutlet="bulkBar" /></div>
+  } @if (splitView.open()) {
+  <!-- Registered after the left scroll area, so the toasts centre on both halves, like the bulk bar. -->
+  <span class="library__toast-area" aria-hidden="true" appToastArea></span>
   }
   <ng-template #bulkBar>
     <ui-bulk-bar

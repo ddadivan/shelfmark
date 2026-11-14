@@ -87,6 +87,15 @@ test.describe('side by side (mock API)', () => {
     const toast = page.getByRole('status').filter({ hasText: `Moved to ${READING}` });
     await expect(toast).toContainText(PASTA);
 
+    // The toast centres on both halves (the right half starts at the divider), not on the left feed.
+    await expect(page.locator('.ui-toast__folder')).toBeVisible();
+    const toastBox = await page.locator('ui-toast').filter({ hasText: PASTA }).boundingBox();
+    const dividerBox = await rightHalf.boundingBox();
+    if (!toastBox || !dividerBox) {
+      throw new Error('the toast or the divider is not visible');
+    }
+    expect(Math.abs(toastBox.x + toastBox.width / 2 - dividerBox.x)).toBeLessThan(12);
+
     await toast.getByRole('button', { name: 'Undo' }).click();
     await expect(page.locator('li.library__item').filter({ hasText: PASTA })).toHaveCount(1);
     await expect(rightHalf.getByRole('heading', { name: PASTA, exact: true })).toHaveCount(0);
@@ -151,5 +160,63 @@ test.describe('side by side (mock API)', () => {
     // A fresh search shows the plain list again.
     await menu.getByRole('combobox').fill('read');
     await expect(menu.getByText('Recent', { exact: true })).toHaveCount(0);
+  });
+
+  test('closes with the toggle, the cross and Esc in the right half', async ({ page }) => {
+    test.skip(isCompact(page), 'side by side starts at 80em');
+    await openWithReading(page);
+    const toggle = page.getByRole('button', { name: 'Side by side', exact: true });
+    const rightRegion = page.getByRole('region', { name: /^Right:/ });
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+
+    await toggle.click();
+    await expect(rightRegion).toHaveCount(0);
+    await expect(page).not.toHaveURL(/split=/);
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+
+    await toggle.click();
+    await expect(rightRegion).toBeVisible();
+    await page.getByRole('button', { name: 'Close side by side' }).click();
+    await expect(rightRegion).toHaveCount(0);
+    await expect(toggle).toBeFocused();
+
+    // Esc counts only with the focus in the right half.
+    await toggle.click();
+    await page
+      .getByRole('region', { name: 'Right: choose a folder' })
+      .getByRole('option', { name: READING, exact: true })
+      .last()
+      .click();
+    await expect(rightRegion).toBeVisible();
+    await page.getByRole('button', { name: /^Left feed:/ }).focus();
+    await page.keyboard.press('Escape');
+    await expect(rightRegion).toBeVisible();
+    await page.getByRole('button', { name: /^Right folder:/ }).focus();
+    await page.keyboard.press('Escape');
+    await expect(rightRegion).toHaveCount(0);
+    await expect(page).not.toHaveURL(/split=/);
+  });
+
+  test('a drag over the right half has one drop target, not the sidebar folder too', async ({
+    page,
+  }) => {
+    test.skip(isCompact(page), 'side by side starts at 80em');
+    const rightHalf = await openWithReading(page);
+    const sidebarRow = page.locator('[data-ui-tree-id]').filter({ hasText: READING });
+
+    await dragOver(page, page.locator('li.library__item').first(), rightHalf);
+    await expect(rightHalf).toContainText('Move here');
+    await expect(page.locator('.ui-tree__row--drop')).toHaveCount(0);
+
+    // The same folder through its sidebar row: that row is the target and the half stays quiet.
+    const row = await sidebarRow.boundingBox();
+    if (!row) {
+      throw new Error('the sidebar row is not visible');
+    }
+    await page.mouse.move(row.x + row.width / 2, row.y + row.height / 2, { steps: 5 });
+    await expect(page.locator('.ui-tree__row--drop')).toHaveCount(1);
+    await expect(rightHalf).not.toContainText('Move here');
+    await page.keyboard.press('Escape');
+    await page.mouse.up();
   });
 });

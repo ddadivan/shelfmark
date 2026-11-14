@@ -242,6 +242,9 @@
   min-inline-size: 0;
   min-block-size: 0;
 
+  // The same top room as the right half, so both headers sit on one line.
+  padding-block-start: var(--space-1);
+
   // Both halves lose the same room (8px on the outer edge, 20px at the divider), so their cards
   // are equally wide. The outer edge is the ring's room; the scrollbar of each half sits in the
   // free margin outside its cards (the #352 rule stays on: 20px at the divider, the main column's
@@ -284,16 +287,51 @@
   @include visually-hidden;
 }
 
+// Both halves have one header row: the picker (it truncates), the count, then the controls.
+.library__toolbar--split {
+  flex-wrap: nowrap;
+  gap: var(--space-2);
+  align-items: center;
+  min-block-size: rem(48px);
+  margin-block-end: var(--space-4);
+
+  .library__tools {
+    flex-wrap: nowrap;
+  }
+}
+
 .library__heading--split {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-2);
+  flex: 1 1 auto;
+  gap: var(--space-2);
   align-items: center;
+  min-inline-size: 0;
+
+  // The picker takes what the controls leave and truncates; the count stays whole.
+  ui-picker-menu {
+    min-inline-size: 0;
+  }
 
   .library__count {
+    flex: none;
     min-block-size: 0;
     margin: 0;
+    white-space: nowrap;
+
+    // Narrow halves (a 1280px window) give the room to the picker; the count is in its place
+    // again from 88em.
+    @media (width < 88em) {
+      @include visually-hidden;
+    }
   }
+}
+
+// Measured by the toast area service only: the box of both halves, which the toasts centre on.
+.library__toast-area {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  visibility: hidden;
 }
 
 // The bulk bar spans the main column, not the left half: centred over both halves.

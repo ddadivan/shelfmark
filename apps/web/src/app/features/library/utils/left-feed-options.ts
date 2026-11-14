@@ -14,8 +14,8 @@ import type { LibraryRoute } from '../models/library-route.interface';
 type Translate = (key: string, params?: Record<string, string>) => string;
 
 /**
- * The options of the left half's picker: All links and Favorites, the folder tree, then the tags.
- * Unsorted is not an option here: it is the picker's `null` row.
+ * The options of the left half's picker, in one fixed order whatever is shown: All links,
+ * Unsorted, Favorites, the folder tree, then the tags.
  */
 export function leftFeedOptions(
   folders: readonly FolderResponse[],
@@ -25,6 +25,7 @@ export function leftFeedOptions(
 ): PickerOption[] {
   return [
     { id: LEFT_FEED_ID.All, name: labels.all, icon: SPLIT_TILE_ICON.All },
+    { id: LEFT_FEED_ID.Unsorted, name: labels.unsorted, icon: SPLIT_TILE_ICON.Unsorted },
     { id: LEFT_FEED_ID.Favorites, name: labels.favorites, icon: SPLIT_TILE_ICON.Favorites },
     ...buildFolderPickerOptions(folders, shownColour),
     ...tags.map((tag) => ({
@@ -35,13 +36,13 @@ export function leftFeedOptions(
   ];
 }
 
-/** The option the left half shows: a folder id, `null` for Unsorted, a list or (one) tag. */
-export function leftFeedId(filter: LinksFilter): string | null {
+/** The option the left half shows: a folder id, a list (Unsorted included) or (one) tag. */
+export function leftFeedId(filter: LinksFilter): string {
   switch (filter.scope) {
     case LINKS_SCOPE.Folder:
       return filter.folderId;
     case LINKS_SCOPE.Unsorted:
-      return null;
+      return LEFT_FEED_ID.Unsorted;
     case LINKS_SCOPE.Favorites:
       return LEFT_FEED_ID.Favorites;
     default:
@@ -51,9 +52,9 @@ export function leftFeedId(filter: LinksFilter): string | null {
   }
 }
 
-/** The page a picked option opens (`null` is Unsorted). Its query is only what the option itself says. */
-export function leftFeedRoute(id: string | null): LibraryRoute {
-  if (id === null) {
+/** The page a picked option opens. Its query is only what the option itself says. */
+export function leftFeedRoute(id: string): LibraryRoute {
+  if (id === LEFT_FEED_ID.Unsorted) {
     return { commands: ['/', APP_PATH.Unsorted], queryParams: {} };
   }
   if (id === LEFT_FEED_ID.All) {

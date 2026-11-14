@@ -56,6 +56,11 @@
 
   color: var(--text-muted);
   white-space: nowrap;
+
+  // As in the left header: below 88em the picker keeps the room.
+  @media (width < 88em) {
+    @include visually-hidden;
+  }
 }
 
 .split-right__spacer {

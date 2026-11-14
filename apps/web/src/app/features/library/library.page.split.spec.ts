@@ -346,6 +346,15 @@ describe('LibraryPage side by side', () => {
     expect(await toggle.getPressed()).toBe('false');
   });
 
+  it('marks both halves as the area the toasts centre on, only while split', async () => {
+    const { element, fixture } = await setup({ split: B });
+    expect(element.querySelector('.library__toast-area')).not.toBeNull();
+
+    fixture.componentRef.setInput('split', undefined);
+    await fixture.whenStable();
+    expect(element.querySelector('.library__toast-area')).toBeNull();
+  });
+
   it('closes with Esc in the right half, not in the left one', async () => {
     const { element, navigate } = await setup({ split: B });
     const closed = { queryParams: { split: null }, queryParamsHandling: 'merge' };

@@ -28,6 +28,7 @@ const TREE: PickerOption[] = [
     emptyLabel="Unsorted"
     [currentIds]="current()"
     [value]="value()"
+    [currentCheck]="currentCheck()"
     [recentIds]="recent()"
     recentLabel="Recent"
     currentLabel="Current folder"
@@ -41,6 +42,7 @@ const TREE: PickerOption[] = [
 class HostComponent {
   readonly options = TREE;
   readonly current = signal<readonly (string | null)[]>(['angular']);
+  readonly currentCheck = signal(true);
   readonly recent = signal<readonly (string | null)[]>([]);
   readonly autoFocus = signal(true);
   readonly value = signal<string | null | undefined>(undefined);
@@ -141,6 +143,17 @@ describe('PickerListComponent', () => {
     expect(current.getAttribute('aria-label')).toBe('Work / Angular, Current folder');
     expect(current.textContent).toContain('Current folder');
     expect(options()[1]?.getAttribute('aria-disabled')).toBe('false');
+  });
+
+  it('shows a current row with its label alone when currentCheck is off', async () => {
+    const { fixture, options } = await setup();
+    const current = () => options()[2] as HTMLElement;
+    expect(current().querySelector('ui-icon[name="check"]')).not.toBeNull();
+
+    fixture.componentInstance.currentCheck.set(false);
+    await settle(fixture);
+    expect(current().querySelector('ui-icon[name="check"]')).toBeNull();
+    expect(current().textContent).toContain('Current folder');
   });
 
   it('emits the id of a clicked row and null for Unsorted', async () => {

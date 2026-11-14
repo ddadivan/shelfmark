@@ -29,7 +29,19 @@ async function setup() {
   };
   const noDropReasonKey = vi.fn<() => string | null>(() => null);
   const noDropHoverId = vi.fn<() => string | null>(() => null);
-  const links = { start: vi.fn(), drop: vi.fn(), move: vi.fn(), noDropReasonKey, noDropHoverId };
+  const dragging = signal(false);
+  const carriedIds = signal<ReadonlySet<string>>(new Set());
+  const halfTargetId = signal<string | null>(null);
+  const links = {
+    start: vi.fn(),
+    drop: vi.fn(),
+    move: vi.fn(),
+    noDropReasonKey,
+    noDropHoverId,
+    dragging,
+    carriedIds,
+    halfTargetId,
+  };
   const dismiss = vi.fn();
   const shown: ToastOptions[] = [];
   const toasts = {
@@ -60,12 +72,49 @@ async function setup() {
   const dnd = TestBed.inject(LibraryDragService);
   const selection = TestBed.inject(LibrarySelectionService);
   TestBed.tick();
-  return { dnd, selection, links, noDropReasonKey, noDropHoverId, shown, dismiss };
+  return {
+    dnd,
+    selection,
+    links,
+    noDropReasonKey,
+    noDropHoverId,
+    shown,
+    dismiss,
+    dragging,
+    carriedIds,
+    halfTargetId,
+  };
 }
 
 describe('LibraryDragService', () => {
   beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
   afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+
+  it('dims the cards left behind only while a selection of several links travels', async () => {
+    const { dnd, dragging, carriedIds } = await setup();
+    expect(dnd.dims('id-3')).toBe(false);
+
+    dragging.set(true);
+    carriedIds.set(new Set(['id-1']));
+    expect(dnd.dims('id-3')).toBe(false);
+
+    carriedIds.set(new Set(['id-1', 'id-2']));
+    expect(dnd.dims('id-3')).toBe(true);
+    expect(dnd.dims('id-1')).toBe(false);
+
+    dragging.set(false);
+    expect(dnd.dims('id-3')).toBe(false);
+  });
+
+  it('names a half as the drop target only through the drag service half target', async () => {
+    const { dnd, halfTargetId } = await setup();
+    expect(dnd.dropsOn('f1')).toBe(false);
+
+    halfTargetId.set('f1');
+    expect(dnd.dropsOn('f1')).toBe(true);
+    expect(dnd.dropsOn('f2')).toBe(false);
+    expect(dnd.dropsOn(null)).toBe(false);
+  });
 
   it('carries one link unless a picked link is dragged with others picked', async () => {
     const { dnd, selection } = await setup();

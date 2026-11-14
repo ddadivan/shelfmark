@@ -13,6 +13,7 @@ import { buildFolderPickerOptions } from '../../links/utils/folder-picker-option
 import { SPLIT_TILE_ICON } from '../models/split-tile-icon.const';
 import type { SplitTile } from '../models/split-tile.interface';
 import type { LibraryRoute } from '../models/library-route.interface';
+import { LEFT_FEED_ID } from '../models/left-feed-id.const';
 import { SPLIT_QUERY_PARAM } from '../models/split-query-param.const';
 import { SPLIT_RIGHT_KIND } from '../models/split-right-kind.const';
 import {
@@ -93,6 +94,7 @@ export class SplitViewService {
       this.tags.entities(),
       {
         all: this.transloco.translate(`library.scope.${LINKS_SCOPE.All}`),
+        unsorted: this.transloco.translate(`library.scope.${LINKS_SCOPE.Unsorted}`),
         favorites: this.transloco.translate(`library.scope.${LINKS_SCOPE.Favorites}`),
       },
       (colour) => this.settings.shownColour(colour),
@@ -111,9 +113,12 @@ export class SplitViewService {
   /** The option the right picker shows; `undefined` while there is none. */
   readonly rightValue = this.rightTarget;
   /** Rows of the left picker that are the right feed ("On the right"). */
-  readonly leftCurrentIds = computed<readonly (string | null)[]>(() => {
+  readonly leftCurrentIds = computed<readonly string[]>(() => {
     const target = this.rightTarget();
-    return target === undefined ? [] : [target];
+    if (target === undefined) {
+      return [];
+    }
+    return [target ?? LEFT_FEED_ID.Unsorted];
   });
   /** Rows of the right picker that are the left feed ("On the left"). */
   readonly rightCurrentIds = computed<readonly (string | null)[]>(() => {
@@ -223,7 +228,8 @@ export class SplitViewService {
 
   /** The left half shows another feed; the right half stays, the left filters are dropped. */
   async chooseLeft(id: string | null): Promise<void> {
-    const route = leftFeedRoute(id);
+    // The picker has no empty row here, so `null` never comes; it would mean Unsorted.
+    const route = leftFeedRoute(id ?? LEFT_FEED_ID.Unsorted);
     await this.go(route, splitParamValue(this.rightTarget()));
   }
 

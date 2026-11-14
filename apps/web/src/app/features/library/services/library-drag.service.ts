@@ -63,6 +63,16 @@ export class LibraryDragService {
     return isDropTarget(value, this.links.halfTargetId());
   }
 
+  /**
+   * A card the drag leaves behind dims while a selection (several links) travels, so it is clear
+   * which ones move. A single link dims nothing.
+   */
+  dims(id: string): boolean {
+    return (
+      this.links.dragging() && this.links.carriedIds().size > 1 && !this.links.carriedIds().has(id)
+    );
+  }
+
   /** Dragging a picked link (with others picked) carries the whole selection. */
   bundled(link: LinkResponse): boolean {
     return !this.fromRight && this.selection.selectedCount() > 1 && this.selection.has(link.id);

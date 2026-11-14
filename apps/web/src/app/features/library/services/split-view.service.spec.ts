@@ -159,7 +159,12 @@ describe('SplitViewService', () => {
     splitParam.set(B);
     filter.set({ scope: LINKS_SCOPE.Folder, folderId: A });
 
-    expect(service.leftOptions()[0].id).toBe('scope:all');
+    expect(
+      service
+        .leftOptions()
+        .map((option) => option.id)
+        .slice(0, 3),
+    ).toEqual(['scope:all', 'scope:unsorted', 'scope:favorites']);
     expect(service.rightOptions().map((option) => option.id)).toEqual([A]);
     expect(service.leftValue()).toBe(A);
     expect(service.rightValue()).toBe(B);
@@ -170,6 +175,7 @@ describe('SplitViewService', () => {
 
     splitParam.set('unsorted');
     expect(service.rightLabel()).toBe('library.scope.unsorted');
+    expect(service.leftCurrentIds()).toEqual(['scope:unsorted']);
   });
 
   describe('navigation', () => {
@@ -290,7 +296,7 @@ describe('SplitViewService', () => {
         queryParams: { tag: 'docs', split: B },
       });
 
-      await service.chooseLeft(null);
+      await service.chooseLeft('scope:unsorted');
       expect(router.navigate).toHaveBeenLastCalledWith(['/', 'unsorted'], {
         queryParams: { split: B },
       });

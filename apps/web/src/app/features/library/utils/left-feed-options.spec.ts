@@ -14,22 +14,23 @@ describe('leftFeedOptions', () => {
   const options = leftFeedOptions(
     MOCK_FOLDERS,
     MOCK_TAGS,
-    { all: 'All links', favorites: 'Favorites' },
+    { all: 'All links', unsorted: 'Unsorted', favorites: 'Favorites' },
     (colour) => colour,
   );
 
-  it('starts with All links and Favorites', () => {
-    expect(options.slice(0, 2)).toEqual([
+  it('starts with All links, Unsorted and Favorites, in that order', () => {
+    expect(options.slice(0, 3)).toEqual([
       { id: 'scope:all', name: 'All links', icon: 'link' },
+      { id: 'scope:unsorted', name: 'Unsorted', icon: 'inbox' },
       { id: 'scope:favorites', name: 'Favorites', icon: 'star' },
     ]);
   });
 
   it('continues with the folder tree and ends with the tags', () => {
-    const folder = options[2];
+    const folder = options[3];
     expect(folder.id).toBe(MOCK_ID.FolderReading);
     expect(folder.children?.map((child) => child.id)).toEqual([MOCK_ID.FolderAngular]);
-    const tags = options.slice(3);
+    const tags = options.slice(4);
     expect(tags).toHaveLength(MOCK_TAGS.length);
     expect(tags[0]).toEqual({
       id: `tag:${MOCK_TAGS[0].name}`,
@@ -38,8 +39,12 @@ describe('leftFeedOptions', () => {
     });
   });
 
-  it('has no Unsorted option (it is the picker null row)', () => {
-    expect(options.some((option) => option.id === 'unsorted')).toBe(false);
+  it('keeps that order whatever the left half shows', () => {
+    expect(options.map((option) => option.id).slice(0, 3)).toEqual([
+      'scope:all',
+      'scope:unsorted',
+      'scope:favorites',
+    ]);
   });
 });
 
@@ -47,7 +52,7 @@ describe('leftFeedId', () => {
   it('names the option a filter shows', () => {
     expect(leftFeedId({ scope: LINKS_SCOPE.All })).toBe('scope:all');
     expect(leftFeedId({ scope: LINKS_SCOPE.Favorites })).toBe('scope:favorites');
-    expect(leftFeedId({ scope: LINKS_SCOPE.Unsorted })).toBeNull();
+    expect(leftFeedId({ scope: LINKS_SCOPE.Unsorted })).toBe('scope:unsorted');
     expect(leftFeedId({ scope: LINKS_SCOPE.Folder, folderId: 'f' })).toBe('f');
     expect(leftFeedId({ scope: LINKS_SCOPE.All, tags: ['a'] })).toBe('tag:a');
   });
@@ -60,7 +65,10 @@ describe('leftFeedId', () => {
 
 describe('leftFeedRoute', () => {
   it('opens the page of an option', () => {
-    expect(leftFeedRoute(null)).toEqual({ commands: ['/', 'unsorted'], queryParams: {} });
+    expect(leftFeedRoute('scope:unsorted')).toEqual({
+      commands: ['/', 'unsorted'],
+      queryParams: {},
+    });
     expect(leftFeedRoute('scope:all')).toEqual({ commands: ['/', 'links'], queryParams: {} });
     expect(leftFeedRoute('scope:favorites')).toEqual({
       commands: ['/', 'favorites'],

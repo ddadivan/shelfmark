@@ -80,6 +80,12 @@ export class PickerListComponent {
   readonly recentIds = input<readonly (string | null)[]>([]);
   /** Title of the recent group, for example "Recent". */
   readonly recentLabel = input('');
+  /**
+   * Whether a current-place row shows the check next to its label while no `value` is shown
+   * (the "Move to folder" picker does). Off, it shows the label alone, like the same row in the
+   * title menu of a half (side by side).
+   */
+  readonly currentCheck = input(true, { transform: booleanAttribute });
   /** Text of the current-place mark, for example "Current folder". */
   readonly currentLabel = input('');
   /** Accessible name and placeholder of the search box. */
@@ -159,7 +165,7 @@ export class PickerListComponent {
   /** Check mark of a row: the shown value, or a current-place row while no value is shown. */
   protected showsCheck(row: PickerRow): boolean {
     const value = this.value();
-    return value === undefined ? row.current : row.id === value;
+    return value === undefined ? row.current && this.currentCheck() : row.id === value;
   }
 
   /** Aria value of a row: its id, or the prefixed id for a copy in the recent group. */
