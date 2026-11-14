@@ -130,14 +130,14 @@ test.describe('interface languages (mock API)', () => {
 
     await page.goto('/settings/appearance');
     await expect(preview(page)).toContainText(
-      /(понеділок|вівторок|середа|четвер|пʼятниця|п’ятниця|субота|неділя)/,
+      /(січ|лют|бер|квіт|трав|черв|лип|серп|вер|жовт|лист|груд)/,
     );
 
     // A full load keeps Ukrainian, and the link count uses a Ukrainian plural form.
     await page.goto('/links');
     await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
     await expect(page.getByRole('heading', { level: 1, name: 'Усі посилання' })).toBeVisible();
-    await expect(page.getByText(/^\d+\+? посилан(ня|ь)$/).first()).toBeVisible();
+    await expect(page.getByText(/\d+\+?\s+посилань/).first()).toBeVisible();
   });
 
   test.describe('with a Ukrainian browser', () => {
