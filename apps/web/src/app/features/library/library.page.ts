@@ -140,6 +140,8 @@ export default class LibraryPage {
   readonly sort = input<unknown>();
   /** From the query (`?kind=video`): see `parseLinkKind`. */
   readonly kind = input<unknown>();
+  /** From the query (`?split=<folder id>`): the right half of the side-by-side view. */
+  readonly split = input<unknown>();
 
   protected readonly emptyIllustration = this.filters.emptyIllustration;
   protected readonly UI_VIEW = UI_VIEW;
@@ -162,6 +164,7 @@ export default class LibraryPage {
       q: this.q,
       sort: this.sort,
       kind: this.kind,
+      split: this.split,
     });
     void this.settings.load();
   }
