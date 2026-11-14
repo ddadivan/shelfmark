@@ -57,6 +57,7 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 - `Tags.dc.html` — Tags: create, rename, delete (desktop)
 - `Bulk.dc.html` — Select and bulk actions (desktop)
 - `TrashView.dc.html` — Trash · desktop (desktop)
+- `SideBySide.dc.html` — Side by side: two feeds, the folder picker in the right half, drag between halves, Move to the right folder (desktop, from 80em; `state`: picker, half menu, drag one, drag selection, bulk bar, moved)
 - `MobileBulk.dc.html` — Select links · phone (phone)
 - `MobileTrash.dc.html` — Trash · phone (phone)
 
