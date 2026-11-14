@@ -7,7 +7,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -20,17 +19,12 @@ import {
   viewChildren,
 } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
-import type { Subscription } from 'rxjs';
 import { ChipComponent } from '../chip/chip.component';
 import { UiFieldControl } from '../field/field-control.directive';
 import { FieldShellComponent } from '../field/field-shell.component';
 import { IconComponent } from '../icon/icon.component';
 import { KEYBOARD_KEY } from '../../models/keyboard';
-import { MENU_ALIGN } from '../menu/models/menu-align.const';
-import { menuPositions } from '../menu/menu-positions';
-import type { ConnectedOverlay } from '../../services/overlay/connected-overlay';
-import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
-import { UiOverlay } from '../../services/overlay/overlay.service';
+import { FieldPopup } from '../../services/overlay/field-popup';
 import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import { TAG_INPUT_ICON } from './models/tag-input-icon.const';
 import type { TagInputIcon } from './models/tag-input-icon.type';
@@ -105,7 +99,6 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
   /** Accessible name of the suggestion list, for example "Tag suggestions"; `label` when empty. */
   readonly listLabel = input('');
 
-  private readonly overlays = inject(UiOverlay);
   private readonly injector = inject(Injector);
   private readonly document = inject(DOCUMENT);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -121,8 +114,6 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
   protected readonly query = signal('');
   /** The user asked for the list (typing, arrow); it shows only while there are rows. */
   private readonly wanted = signal(false);
-  /** The popup element sits in the overlay pane (open, or still leaving). */
-  protected readonly attached = signal(false);
   protected readonly announcement = signal('');
   protected readonly noSelection: string[] = [];
 
@@ -138,9 +129,14 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
     this.atLimit() && this.maxTagsLabel() ? this.maxTagsLabel() : this.placeholder(),
   );
 
-  private overlay: ConnectedOverlay | null = null;
-  private detachSubscription: Subscription | null = null;
-  private resizeObserver: ResizeObserver | null = null;
+  /** The suggestion list's overlay pane, at least as wide as the field box. */
+  private readonly pane = new FieldPopup({
+    origin: () => this.box().nativeElement,
+    popup: () => this.popup().nativeElement,
+    isShown: () => this.open(),
+  });
+  /** The popup element sits in the overlay pane (open, or still leaving). */
+  protected readonly attached = this.pane.attached;
   private syncing = false;
   /** A chip is being removed: its button is destroyed, so the focus-out has no related target. */
   private removing = false;
@@ -162,7 +158,7 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
     });
     effect(() => {
       const open = this.open();
-      untracked(() => (open ? this.show() : this.hide()));
+      untracked(() => (open ? this.pane.show() : this.pane.hide()));
     });
     // Aria activates the first option; the option Enter adds is the typed text (its exact tag or
     // the "Create tag" row), so that one is activated and announced instead.
@@ -180,13 +176,6 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
       if (id && this.open()) {
         this.document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' });
       }
-    });
-    inject(DestroyRef).onDestroy(() => {
-      this.stopWidthSync();
-      this.detachSubscription?.unsubscribe();
-      this.overlay?.dispose();
-      // The pane may still hold the popup element, which Angular no longer owns.
-      this.popup().nativeElement.remove();
     });
   }
 
@@ -382,78 +371,5 @@ export class TagInputComponent extends UiFieldControl implements FormValueContro
 
   private announce(template: string, name: string): void {
     this.announcement.set(template ? fillName(template, name) : '');
-  }
-
-  private show(): void {
-    const box = this.box().nativeElement;
-    if (this.overlay?.isAttached) {
-      this.overlay.cancelRelease();
-    } else {
-      this.createOverlay(box);
-    }
-    this.syncWidth();
-    this.watchWidth(box);
-    this.attached.set(true);
-    afterNextRender(
-      () => {
-        this.overlay?.updatePosition();
-      },
-      { injector: this.injector },
-    );
-  }
-
-  private createOverlay(box: HTMLElement): void {
-    this.detachSubscription?.unsubscribe();
-    this.overlay?.dispose();
-    const overlay = this.overlays.connect(
-      { origin: box, positions: menuPositions(MENU_ALIGN.Start), layer: OVERLAY_LAYER.Menu },
-      { injector: this.injector, onPositionChange: () => this.syncWidth() },
-    );
-    this.overlay = overlay;
-    overlay.attachElement(this.popup().nativeElement);
-    this.detachSubscription = overlay.detachments().subscribe(() => {
-      if (this.overlay === overlay) {
-        this.attached.set(false);
-      }
-    });
-  }
-
-  private hide(): void {
-    if (!this.overlay) {
-      return;
-    }
-    this.stopWidthSync();
-    // The popup content is removed in this render (the leave animation starts); release the
-    // pane in the next one so it sees the running animations.
-    afterNextRender(
-      () => {
-        if (!this.open()) {
-          this.overlay?.release();
-        }
-      },
-      { injector: this.injector },
-    );
-  }
-
-  /** The pane is at least as wide as the field box (measured px on purpose, as in `ui-select`). */
-  private syncWidth(): void {
-    this.overlay?.pane.style.setProperty('min-width', `${this.box().nativeElement.offsetWidth}px`);
-  }
-
-  private watchWidth(box: HTMLElement): void {
-    this.stopWidthSync();
-    if (typeof ResizeObserver === 'undefined') {
-      return;
-    }
-    this.resizeObserver = new ResizeObserver(() => {
-      this.syncWidth();
-      this.overlay?.updatePosition();
-    });
-    this.resizeObserver.observe(box);
-  }
-
-  private stopWidthSync(): void {
-    this.resizeObserver?.disconnect();
-    this.resizeObserver = null;
   }
 }
