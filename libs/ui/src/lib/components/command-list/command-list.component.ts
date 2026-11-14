@@ -13,24 +13,18 @@ import {
   effect,
   ElementRef,
   inject,
-  Injector,
   input,
   model,
   output,
-  signal,
   untracked,
   viewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import type { Subscription } from 'rxjs';
 import { IconComponent } from '../icon/icon.component';
-import { MENU_ALIGN } from '../menu/models/menu-align.const';
-import { menuPositions } from '../menu/menu-positions';
-import type { ConnectedOverlay } from '../../services/overlay/connected-overlay';
-import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
-import { UiOverlay } from '../../services/overlay/overlay.service';
+import { FieldPopup } from '../../services/overlay/field-popup';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { IME_KEY_CODE } from './models/ime-key-code.const';
+import { ActiveRowReset } from './active-row-reset';
 import { scrollIntoList } from './scroll-into-list';
 import { CommandItemComponent } from './command-item/command-item.component';
 import type { CommandSection } from './models/command-section.interface';
@@ -123,19 +117,23 @@ export class CommandListComponent {
   private readonly combo = viewChild(Combobox);
   private readonly popupEl = viewChild.required<ElementRef<HTMLElement>>('popupEl');
 
-  private readonly overlays = inject(UiOverlay);
-  private readonly injector = inject(Injector);
   private readonly document = inject(DOCUMENT);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   /** The results are on screen: always in a dialog, in popup mode while wanted and there is text. */
   protected readonly shown = computed(() => !this.popup() || (this.open() && this.query() !== ''));
+  /** Popup mode: the results panel's overlay pane, exactly as wide as the field. */
+  private readonly pane = new FieldPopup({
+    origin: () => this.host,
+    popup: () => this.popupEl().nativeElement,
+    isShown: () => this.shown(),
+    exactWidth: true,
+    // Without `popup` the element stays in this component's own view.
+    ownsPopup: () => this.popup(),
+  });
   /** The popup element sits in the overlay pane (shown, or still leaving). */
-  protected readonly attached = signal(false);
+  protected readonly attached = this.pane.attached;
 
-  private overlay: ConnectedOverlay | null = null;
-  private detachSubscription: Subscription | null = null;
-  private resizeObserver: ResizeObserver | null = null;
   private syncing = false;
 
   /** The items in order, grouped by neighbouring items of the same group. */
@@ -169,7 +167,7 @@ export class CommandListComponent {
     });
     effect(() => {
       const shown = this.popup() && this.shown();
-      untracked(() => (shown ? this.show() : this.hide()));
+      untracked(() => (shown ? this.pane.show() : this.pane.hide()));
     });
     // The first Esc closes the panel, the next one clears the text. Captured on the input itself,
     // before the Aria combobox (which would collapse and clear in its own way) and before a
@@ -180,38 +178,18 @@ export class CommandListComponent {
     });
     inject(DestroyRef).onDestroy(() => {
       this.field().nativeElement.removeEventListener('keydown', onEscape, true);
-      this.stopWidthSync();
-      this.detachSubscription?.unsubscribe();
-      this.overlay?.dispose();
-      // The pane may still hold the popup element, which Angular no longer owns.
-      if (this.popup()) {
-        this.popupEl().nativeElement.remove();
-      }
     });
     // The active option must always be a row that exists and is enabled: after the items or the
-    // query change, a missing or disabled active row is replaced by the first enabled one, and a
-    // new query starts again at the top (the best match comes first). Results usually arrive after
-    // the query, so a query change also stays pending until the items next change, which resets
-    // to the top once more.
-    let lastQuery = this.query();
-    let lastIds = '';
-    let resetPending = false;
+    // query change, a missing or disabled active row is replaced by the first enabled one, and
+    // `ActiveRowReset` says when it goes back to the top.
+    const reset = new ActiveRowReset(this.query());
     afterRenderEffect(() => {
       const listbox = this.listbox();
       const items = this.items();
       const query = this.query();
       // Read the flags here so a row that becomes disabled re-runs the effect.
       items.forEach((item) => item.disabled());
-      const queryChanged = query !== lastQuery;
-      lastQuery = query;
-      const ids = items.map((item) => item.id).join('|');
-      const itemsChanged = ids !== lastIds;
-      lastIds = ids;
-      resetPending = resetPending || queryChanged;
-      const resetToTop = queryChanged || (resetPending && itemsChanged);
-      if (itemsChanged) {
-        resetPending = false;
-      }
+      const resetToTop = reset.next(query, items.map((item) => item.id).join('|'));
       if (!listbox) {
         return;
       }
@@ -357,82 +335,5 @@ export class CommandListComponent {
       aria.expanded.set(false);
       this.syncing = false;
     }
-  }
-
-  private show(): void {
-    if (this.overlay?.isAttached) {
-      this.overlay.cancelRelease();
-    } else {
-      this.createOverlay();
-    }
-    this.syncWidth();
-    this.watchWidth();
-    this.attached.set(true);
-    afterNextRender(
-      () => {
-        this.overlay?.updatePosition();
-      },
-      { injector: this.injector },
-    );
-  }
-
-  private createOverlay(): void {
-    this.detachSubscription?.unsubscribe();
-    this.overlay?.dispose();
-    const overlay = this.overlays.connect(
-      {
-        origin: this.host,
-        positions: menuPositions(MENU_ALIGN.Start),
-        layer: OVERLAY_LAYER.Menu,
-      },
-      { injector: this.injector, onPositionChange: () => this.syncWidth() },
-    );
-    this.overlay = overlay;
-    overlay.attachElement(this.popupEl().nativeElement);
-    this.detachSubscription = overlay.detachments().subscribe(() => {
-      if (this.overlay === overlay) {
-        this.attached.set(false);
-      }
-    });
-  }
-
-  private hide(): void {
-    if (!this.overlay) {
-      return;
-    }
-    this.stopWidthSync();
-    // The panel is removed in this render (its leave animation starts); release the pane in the
-    // next one so it sees the running animations.
-    afterNextRender(
-      () => {
-        if (!this.shown()) {
-          this.overlay?.release();
-        }
-      },
-      { injector: this.injector },
-    );
-  }
-
-  /** The pane is exactly as wide as the field (measured px on purpose, as in `ui-select`). */
-  private syncWidth(): void {
-    const width = `${this.host.offsetWidth}px`;
-    this.overlay?.pane.style.setProperty('width', width);
-  }
-
-  private watchWidth(): void {
-    this.stopWidthSync();
-    if (typeof ResizeObserver === 'undefined') {
-      return;
-    }
-    this.resizeObserver = new ResizeObserver(() => {
-      this.syncWidth();
-      this.overlay?.updatePosition();
-    });
-    this.resizeObserver.observe(this.host);
-  }
-
-  private stopWidthSync(): void {
-    this.resizeObserver?.disconnect();
-    this.resizeObserver = null;
   }
 }
