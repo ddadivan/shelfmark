@@ -37,10 +37,10 @@ $enter-presets: (
   // Rises 18px with a light spring; `slow` (320 ms) is the longest duration token, the Toast spec's
   // 420 ms is not one (Motion: nothing runs longer than 320 ms).
   'toast': (
-      'keyframes': 'ui-toast-in',
-      'duration': 'slow',
-      'ease': 'spring',
-    ),
+    'keyframes': 'ui-toast-in',
+    'duration': 'slow',
+    'ease': 'spring',
+  ),
   'sheet': (
     'keyframes': 'ui-sheet-in',
     'duration': 'slow',
@@ -54,10 +54,10 @@ $enter-presets: (
   // A panel that discloses under its trigger (the colour picker, #335): its height opens from 0
   // (`grid-template-rows` on a one-row grid, the way the tree expands) while it fades in.
   'disclose': (
-      'keyframes': 'ui-disclose-in',
-      'duration': 'base',
-      'ease': 'in-out',
-    ),
+    'keyframes': 'ui-disclose-in',
+    'duration': 'base',
+    'ease': 'in-out',
+  ),
   'spinner': (
     'keyframes': 'ui-spinner-in',
     'duration': 'base',
