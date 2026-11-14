@@ -44,6 +44,7 @@ export { RECENT_LINKS_ENDPOINT } from './links/recent-links-endpoint.const';
 export { RECENT_LINKS_WINDOW_DAYS } from './links/recent-links-window.const';
 export { isHttpUrl } from './links/is-http-url';
 export { normalizeUrl } from './links/normalize-url';
+export { withDefaultScheme } from './links/with-default-scheme';
 export { LINK_ERROR_MESSAGE } from './links/link-error-message.const';
 export { LINK_LIMIT } from './links/link-limit.const';
 export { LINK_SORT_FIELD } from './links/link-sort-field.const';
