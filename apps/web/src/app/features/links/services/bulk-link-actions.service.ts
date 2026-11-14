@@ -33,6 +33,7 @@ import { LINKS_API } from '../models/links-api.const';
 import type { MovePickerData } from '../models/move-picker-data.interface';
 import { MovePickerComponent } from '../components/move-picker/move-picker.component';
 import { BulkTagsDialogComponent } from '../components/bulk-tags-dialog/bulk-tags-dialog.component';
+import { groupedByFolder, tagCounts, withTagsChanged } from '../utils/bulk-link-changes';
 import { chunks } from '../utils/chunks';
 import { BULK_OPEN_CONFIRM_ABOVE } from '../models/bulk-open-confirm-above.const';
 import type { BulkTagsChange } from '../models/bulk-tags-change.interface';
@@ -133,12 +134,7 @@ export class BulkLinkActionsService {
       return false;
     }
     void this.tags.load();
-    const present = new Map<string, number>();
-    for (const link of links) {
-      for (const name of link.tags) {
-        present.set(name, (present.get(name) ?? 0) + 1);
-      }
-    }
+    const present = tagCounts(links);
     const change = await this.dialogs.open<
       BulkTagsDialogComponent,
       BulkTagsChange,
@@ -169,7 +165,6 @@ export class BulkLinkActionsService {
 
   /** Applies a tags change; a link that would pass the tag limit fails the whole change. */
   async applyTags(links: readonly LinkResponse[], change: BulkTagsChange): Promise<boolean> {
-    const removing = new Set(change.remove.map((name) => name.toLowerCase()));
     const request: Omit<UpdateLinksBatchRequest, 'ids'> = {
       ...(change.add.length > 0 ? { addTags: [...change.add] } : {}),
       ...(change.remove.length > 0 ? { removeTags: [...change.remove] } : {}),
@@ -178,13 +173,7 @@ export class BulkLinkActionsService {
     const ok = await this.update(
       links,
       request,
-      (link) => {
-        const kept = link.tags.filter((name) => !removing.has(name.toLowerCase()));
-        const added = change.add.filter(
-          (name) => !kept.some((tag) => tag.toLowerCase() === name.toLowerCase()),
-        );
-        return { ...link, tags: [...kept, ...added] };
-      },
+      (link) => withTagsChanged(link, change),
       (cause) => (error = cause),
     );
     if (!ok) {
@@ -368,10 +357,7 @@ export class BulkLinkActionsService {
 
   /** Undo of a bulk move: every link goes back to its own folder (one request per folder). */
   private async moveBack(moved: readonly LinkResponse[], to: string | null): Promise<void> {
-    const groups = new Map<string | null, LinkResponse[]>();
-    for (const link of moved) {
-      groups.set(link.folderId, [...(groups.get(link.folderId) ?? []), { ...link, folderId: to }]);
-    }
+    const groups = groupedByFolder(moved, to);
     for (const [folderId, group] of groups) {
       const ok = await this.update(group, { folderId }, (link) => ({ ...link, folderId }));
       if (!ok) {
