@@ -422,6 +422,19 @@ describe('LinkActionsService', () => {
       });
     });
 
+    it('names no folder when domain rules filed the links in different folders (#398)', async () => {
+      const { actions, addLinkOpen, toasts } = await setup();
+      const mixed = savedMany();
+      addLinkOpen.mockResolvedValue({
+        ...mixed,
+        links: [{ ...link(7), folderId: 'videos' }, link(8), link(9)],
+      });
+
+      await actions.addLink();
+
+      expect(toasts[0]).toMatchObject({ title: '3 links saved to their folders' });
+    });
+
     it('names the items the server skipped instead of the loading hint', async () => {
       const { actions, addLinkOpen, toasts } = await setup();
       addLinkOpen.mockResolvedValue(savedMany(1));

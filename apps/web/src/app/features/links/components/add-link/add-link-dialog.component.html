@@ -3,6 +3,7 @@
     [paste]="paste"
     [folderId]="form.folderId().value()"
     [tags]="form.tags().value()"
+    [folderChosen]="form.folderId().dirty()"
   />
 } @else if (several()) {
   <!-- "Add several links" (#315): any text with links, read by the paste-many parser. -->

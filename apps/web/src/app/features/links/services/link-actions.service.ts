@@ -239,7 +239,7 @@ export class LinkActionsService {
    * its second line instead of the "still loading" hint.
    */
   noteSavedMany(result: AddLinkSavedMany): void {
-    const { links, errors, folderId } = result;
+    const { links, errors } = result;
     if (links.length === 0) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
@@ -254,12 +254,20 @@ export class LinkActionsService {
     void this.folders.refresh();
     void this.tags.noteLinkSaved();
     const undo = this.t('links.item.undo');
+    // Domain rules (#398) may file the links in different folders: then no folder is named.
+    const landed = new Set(links.map((link) => link.folderId));
+    const shared = landed.size === 1 ? (links[0]?.folderId ?? null) : undefined;
     this.toasts.show({
       kind: errors.length > 0 ? TOAST_KIND.Warn : TOAST_KIND.Success,
-      title: this.t(pluralKey('links.many.saved', links.length), {
-        count: String(links.length),
-        folder: this.folderLabel(folderId),
-      }),
+      title:
+        shared === undefined
+          ? this.t(pluralKey('links.many.savedMixed', links.length), {
+              count: String(links.length),
+            })
+          : this.t(pluralKey('links.many.saved', links.length), {
+              count: String(links.length),
+              folder: this.folderLabel(shared),
+            }),
       detail:
         errors.length > 0
           ? this.t(pluralKey('links.many.skippedByServer', errors.length), {

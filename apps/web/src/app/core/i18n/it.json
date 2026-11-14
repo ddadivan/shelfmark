@@ -486,7 +486,13 @@
       },
       "noneSaved": "Nessun link è stato salvato",
       "undoFailed": "Impossibile annullare",
-      "undoFailedDetail": "I link restano salvati"
+      "undoFailedDetail": "I link restano salvati",
+      "applyRules": "Applica le regole di dominio",
+      "savedMixed": {
+        "one": "{{count}} link salvato",
+        "many": "{{count}} link salvati nelle loro cartelle",
+        "other": "{{count}} link salvati nelle loro cartelle"
+      }
     },
     "drag": {
       "moveHere": "Sposta qui",

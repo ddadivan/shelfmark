@@ -477,7 +477,12 @@
       },
       "noneSaved": "No links were saved",
       "undoFailed": "Couldn't undo",
-      "undoFailedDetail": "The links are still saved"
+      "undoFailedDetail": "The links are still saved",
+      "applyRules": "Apply domain rules",
+      "savedMixed": {
+        "one": "{{count}} link saved",
+        "other": "{{count}} links saved to their folders"
+      }
     },
     "drag": {
       "moveHere": "Move here",

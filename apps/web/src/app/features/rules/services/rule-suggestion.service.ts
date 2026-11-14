@@ -3,6 +3,7 @@ import { FoldersStore } from '../../../stores/folders.store';
 import { RulesStore } from '../../../stores/rules.store';
 import type { AppliedRule } from '../models/applied-rule.interface';
 import type { RuleSuggestionSource } from '../models/rule-suggestion-source.interface';
+import { ruleChipTarget } from '../utils/rule-chip-target';
 import { applyRule, changedSomething, revertRule } from '../utils/rule-suggestion';
 
 /**
@@ -33,10 +34,11 @@ export class RuleSuggestionService {
     if (!changedSomething(applied)) {
       return null;
     }
-    const folder =
-      applied.folderId === null ? '' : (this.folders.entityMap()[applied.folderId]?.name ?? '');
-    const parts = [folder, ...applied.tags.map((tag) => `#${tag}`)].filter((part) => part !== '');
-    return { domain: applied.domain, target: parts.join(', ') };
+    const folders = this.folders.entityMap();
+    return {
+      domain: applied.domain,
+      target: ruleChipTarget(applied, (id) => folders[id]?.name ?? ''),
+    };
   });
 
   /** Starts matching the form's address against the rules (loads them once). */

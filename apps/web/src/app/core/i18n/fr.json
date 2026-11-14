@@ -486,7 +486,13 @@
       },
       "noneSaved": "Aucun lien n’a été enregistré",
       "undoFailed": "Impossible d’annuler",
-      "undoFailedDetail": "Les liens restent enregistrés"
+      "undoFailedDetail": "Les liens restent enregistrés",
+      "applyRules": "Appliquer les règles de domaine",
+      "savedMixed": {
+        "one": "{{count}} lien enregistré",
+        "many": "{{count}} liens enregistrés dans leurs dossiers",
+        "other": "{{count}} liens enregistrés dans leurs dossiers"
+      }
     },
     "drag": {
       "moveHere": "Déplacer ici",

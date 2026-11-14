@@ -486,7 +486,13 @@
       },
       "noneSaved": "No se guardó ningún enlace",
       "undoFailed": "No se pudo deshacer",
-      "undoFailedDetail": "Los enlaces siguen guardados"
+      "undoFailedDetail": "Los enlaces siguen guardados",
+      "applyRules": "Aplicar reglas de dominio",
+      "savedMixed": {
+        "one": "{{count}} enlace guardado",
+        "many": "{{count}} enlaces guardados en sus carpetas",
+        "other": "{{count}} enlaces guardados en sus carpetas"
+      }
     },
     "drag": {
       "moveHere": "Mover aquí",

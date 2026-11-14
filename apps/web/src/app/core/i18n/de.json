@@ -477,7 +477,12 @@
       },
       "noneSaved": "Es wurden keine Links gespeichert",
       "undoFailed": "Rückgängig machen fehlgeschlagen",
-      "undoFailedDetail": "Die Links bleiben gespeichert"
+      "undoFailedDetail": "Die Links bleiben gespeichert",
+      "applyRules": "Domain-Regeln anwenden",
+      "savedMixed": {
+        "one": "{{count}} Link gespeichert",
+        "other": "{{count}} Links in ihren Ordnern gespeichert"
+      }
     },
     "drag": {
       "moveHere": "Hierher verschieben",

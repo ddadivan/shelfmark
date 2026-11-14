@@ -486,7 +486,13 @@
       },
       "noneSaved": "Nenhum link foi salvo",
       "undoFailed": "Não foi possível desfazer",
-      "undoFailedDetail": "Os links continuam salvos"
+      "undoFailedDetail": "Os links continuam salvos",
+      "applyRules": "Aplicar regras de domínio",
+      "savedMixed": {
+        "one": "{{count}} link salvo",
+        "many": "{{count}} links salvos nas pastas deles",
+        "other": "{{count}} links salvos nas pastas deles"
+      }
     },
     "drag": {
       "moveHere": "Mover para cá",
