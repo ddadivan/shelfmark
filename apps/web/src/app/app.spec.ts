@@ -33,4 +33,27 @@ describe('App', () => {
 
     expect((harness.routeNativeElement as HTMLElement).textContent).toContain('stub page');
   });
+
+  describe('boot skeleton (#410)', () => {
+    afterEach(() => document.querySelector('[data-app-skeleton]')?.remove());
+
+    async function activate(): Promise<void> {
+      const skeleton = document.createElement('div');
+      skeleton.setAttribute('data-app-skeleton', '');
+      document.body.append(skeleton);
+      await TestBed.configureTestingModule({
+        imports: [App],
+        providers: [provideRouter([])],
+      }).compileComponents();
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+      // What the outlet's `(activate)` calls, outside a change detection run like in the app.
+      fixture.componentInstance['renderActivatedPage']();
+    }
+
+    it('is removed once a page is rendered', async () => {
+      await activate();
+      expect(document.querySelector('[data-app-skeleton]')).toBeNull();
+    });
+  });
 });

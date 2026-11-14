@@ -19,5 +19,82 @@
   </head>
   <body>
     <app-root ngCspNonce="CSP_NONCE_PLACEHOLDER"></app-root>
+    <!-- App skeleton (#410): an overlay for a signed-in start, shown by public/boot-skeleton.js and
+         removed by the app once a page is rendered. Static markup, styled by src/_boot-skeleton.scss. -->
+    <div class="boot" data-app-skeleton aria-hidden="true">
+      <div class="boot__sidebar">
+        <span class="boot__block boot__logo"></span>
+        <span class="boot__block boot__row"></span>
+        <span class="boot__block boot__row"></span>
+        <span class="boot__block boot__row"></span>
+        <span class="boot__block boot__row boot__row--folder"></span>
+        <span class="boot__block boot__row boot__row--folder"></span>
+        <span class="boot__block boot__row"></span>
+      </div>
+      <div class="boot__content">
+        <div class="boot__header">
+          <span class="boot__block boot__search"></span>
+          <span class="boot__spacer"></span>
+          <span class="boot__block boot__tool"></span>
+          <span class="boot__block boot__tool"></span>
+          <span class="boot__block boot__add"></span>
+          <span class="boot__block boot__avatar"></span>
+        </div>
+        <div class="boot__main">
+          <span class="boot__block boot__title"></span>
+          <span class="boot__block boot__count"></span>
+          <div class="boot__grid">
+            <div class="boot__card">
+              <span class="boot__block boot__media"></span
+              ><span class="boot__block boot__line boot__line--long"></span
+              ><span class="boot__block boot__line boot__line--short"></span>
+            </div>
+            <div class="boot__card">
+              <span class="boot__block boot__media"></span
+              ><span class="boot__block boot__line boot__line--long"></span
+              ><span class="boot__block boot__line boot__line--short"></span>
+            </div>
+            <div class="boot__card">
+              <span class="boot__block boot__media"></span
+              ><span class="boot__block boot__line boot__line--long"></span
+              ><span class="boot__block boot__line boot__line--short"></span>
+            </div>
+            <div class="boot__card">
+              <span class="boot__block boot__media"></span
+              ><span class="boot__block boot__line boot__line--long"></span
+              ><span class="boot__block boot__line boot__line--short"></span>
+            </div>
+            <div class="boot__card">
+              <span class="boot__block boot__media"></span
+              ><span class="boot__block boot__line boot__line--long"></span
+              ><span class="boot__block boot__line boot__line--short"></span>
+            </div>
+            <div class="boot__card">
+              <span class="boot__block boot__media"></span
+              ><span class="boot__block boot__line boot__line--long"></span
+              ><span class="boot__block boot__line boot__line--short"></span>
+            </div>
+            <div class="boot__card">
+              <span class="boot__block boot__media"></span
+              ><span class="boot__block boot__line boot__line--long"></span
+              ><span class="boot__block boot__line boot__line--short"></span>
+            </div>
+            <div class="boot__card">
+              <span class="boot__block boot__media"></span
+              ><span class="boot__block boot__line boot__line--long"></span
+              ><span class="boot__block boot__line boot__line--short"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="boot__tabbar">
+        <span class="boot__block boot__tab"></span>
+        <span class="boot__block boot__tab"></span>
+        <span class="boot__block boot__tab boot__tab--add"></span>
+        <span class="boot__block boot__tab"></span>
+        <span class="boot__block boot__tab"></span>
+      </div>
+    </div>
+    <script src="boot-skeleton.js"></script>
   </body>
 </html>
