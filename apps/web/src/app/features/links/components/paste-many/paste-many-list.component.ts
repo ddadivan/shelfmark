@@ -53,26 +53,12 @@ import type { AddLinkResult } from '../../models/add-link-result.type';
 import type { AddLinkSavedMany } from '../../models/add-link-saved-many.interface';
 import { LINKS_API } from '../../models/links-api.const';
 import { batchSaveError } from './batch-save-error';
+import { fitTitle } from './fit-title';
 import { loadPreviews } from './load-previews';
 import type { BatchSaveError } from './models/batch-save-error.interface';
 import type { ParsedPaste } from './models/parsed-paste.interface';
 import type { PasteManyFormModel } from './models/paste-many-form-model.interface';
 import type { PasteRow } from './models/paste-row.interface';
-
-/**
- * A preview title cut to `LINK_LIMIT.TitleMax` UTF-16 units (what the API's `MaxLength` counts),
- * never inside a surrogate pair, then trimmed.
- */
-function fitTitle(title: string): string {
-  let fitted = '';
-  for (const char of title.trim()) {
-    if (fitted.length + char.length > LINK_LIMIT.TitleMax) {
-      break;
-    }
-    fitted += char;
-  }
-  return fitted.trim();
-}
 
 /**
  * The add-link dialog after a paste with several links (screen `PasteMany`): one row per link,
