@@ -2,9 +2,20 @@ import type { AdminStatsBucket, AdminStatsRate } from '@shelfmark/contracts';
 import type { AdminShareRow } from '../models/admin-share-row.interface';
 import type { AdminStatsFormat } from '../models/admin-stats-format.interface';
 
-/** "38% · 18 of 47", or "Not enough users yet" while the rate is hidden. */
-export function rateText(rate: AdminStatsRate, format: AdminStatsFormat): string {
-  if (rate.share === null || rate.count === null) return format.t('admin.stats.notEnough');
+/** Why a rate is hidden: too small a base, or a small group on one side of the split. */
+export function hiddenRateText(
+  rate: AdminStatsRate,
+  format: AdminStatsFormat,
+  minGroup: number,
+): string {
+  return rate.base < minGroup
+    ? format.t('admin.stats.notEnough')
+    : format.t('admin.stats.smallGroup', { min: minGroup });
+}
+
+/** "38% · 18 of 47", or why the rate is hidden. */
+export function rateText(rate: AdminStatsRate, format: AdminStatsFormat, minGroup: number): string {
+  if (rate.share === null || rate.count === null) return hiddenRateText(rate, format, minGroup);
   return format.t('admin.stats.shareOf', {
     percent: format.percent(rate.share),
     count: format.number(rate.count),
@@ -18,12 +29,13 @@ export function rateRow(
   label: string,
   rate: AdminStatsRate,
   format: AdminStatsFormat,
+  minGroup: number,
 ): AdminShareRow {
   return {
     key,
     label,
     percent: rate.share === null ? null : Math.round(rate.share * 100),
-    text: rateText(rate, format),
+    text: rateText(rate, format, minGroup),
   };
 }
 

@@ -60,9 +60,7 @@ function valid(): AdminStatsResponse {
         skipped: 0,
         mean: null,
         median: null,
-        low: null,
-        mid: null,
-        high: null,
+        groups: [],
       })),
       messagesByKind: [{ key: 'idea', count: 1 }],
       messagesByStatus: [{ key: 'received', count: 1 }],
@@ -97,9 +95,43 @@ describe('expectAdminStatsShape', () => {
       /shows a base of 2/,
     ],
     [
-      'a hidden share of a large base',
-      (s) => (at(s, 'overview')['active7d'] = { base: 10, count: null, share: null }),
-      /count/,
+      'a shown group of 2',
+      (s) => (at(s, 'overview')['active7d'] = { base: 10, count: 2, share: 0.2 }),
+      /group of 2/,
+    ],
+    [
+      'a shown complement of 1',
+      (s) => (at(s, 'overview')['active7d'] = { base: 10, count: 9, share: 0.9 }),
+      /1 do not/,
+    ],
+    [
+      'a hidden count with a share',
+      (s) => (at(s, 'overview')['active7d'] = { base: 10, count: null, share: 0.5 }),
+      /shows a base/,
+    ],
+    [
+      'rating groups of 1 person',
+      (s) =>
+        Object.assign(at(s, 'ratings', 'milestones', 0), {
+          answered: 4,
+          mean: 6,
+          median: 6,
+          groups: [
+            { key: '1-6', count: 3 },
+            { key: '7-8', count: 1 },
+          ],
+        }),
+      /group of 1/,
+    ],
+    [
+      'rating groups of too few answers',
+      (s) => (at(s, 'ratings', 'milestones', 0)['groups'] = [{ key: 'other', count: null }]),
+      /ratings of 1 people/,
+    ],
+    [
+      'sign-ups while too few users',
+      (s) => (at(s, 'overview')['realUsers'] = 2),
+      /sign-ups of 2 real users/,
     ],
     [
       'a count above its base',
@@ -145,7 +177,17 @@ describe('expectAdminStatsShape', () => {
       (s) => (at(s, 'ratings', 'milestones', 0)['mean'] = 9),
       /ratings of 1 people/,
     ],
-    ['a mean while too few users', (s) => (at(s, 'overview')['realUsers'] = 2), /is shown/],
+    [
+      'a mean while too few users',
+      (s) => {
+        const overview = at(s, 'overview');
+        overview['realUsers'] = 2;
+        for (const series of ['signUpsByDay', 'signUpsByWeek']) {
+          for (const point of overview[series] as Mutable[]) point['count'] = 0;
+        }
+      },
+      /is shown/,
+    ],
     ['another minimum group size', (s) => (s['minGroup'] = 1), /minGroup/],
     ['a non-ISO time', (s) => (s['generatedAt'] = 'yesterday'), /generatedAt/],
     ['a bad activity day', (s) => (at(s, 'overview')['activitySince'] = 5), /activitySince/],

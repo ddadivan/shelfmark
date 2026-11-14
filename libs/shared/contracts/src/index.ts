@@ -287,6 +287,7 @@ export { ADMIN_STATS_FEATURE } from './admin/admin-stats-feature.const';
 export type { AdminStatsFeature } from './admin/admin-stats-feature.type';
 export { ADMIN_STATS_BUCKET_KEY } from './admin/admin-stats-bucket-key.const';
 export { ADMIN_STATS_LINKS_BUCKET } from './admin/admin-stats-links-bucket.const';
+export { ADMIN_STATS_SCORE_GROUP } from './admin/admin-stats-score-group.const';
 export type { AdminStatsPoint } from './admin/admin-stats-point.interface';
 export type { AdminStatsRate } from './admin/admin-stats-rate.interface';
 export type { AdminStatsBucket } from './admin/admin-stats-bucket.interface';

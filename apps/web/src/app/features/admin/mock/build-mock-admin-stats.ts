@@ -15,8 +15,10 @@ function day(time: number): string {
   return new Date(time).toISOString().slice(0, 10);
 }
 
+/** Like the API: hidden below the minimum base and with a group of 1 to 2 on either side. */
 function rate(base: number, count: number): AdminStatsRate {
-  return base < K
+  const small = (group: number) => group > 0 && group < K;
+  return base < K || small(count) || small(base - count)
     ? { base, count: null, share: null }
     : { base, count, share: Math.round((count / base) * 1000) / 1000 };
 }
@@ -68,16 +70,12 @@ export function buildMockAdminStats(now: Date, few = false): AdminStatsResponse 
     skipped: 0,
     mean: null,
     median: null,
-    low: null,
-    mid: null,
-    high: null,
+    groups: [],
   }));
   if (few) {
+    // Fewer than 3 real users: no sign-up day is shown, like the API.
     const byDay = SIGN_UPS_BY_DAY.map(() => 0);
-    byDay[byDay.length - 1] = 1;
-    byDay[byDay.length - 4] = 1;
     const byWeek = SIGN_UPS_BY_WEEK.map(() => 0);
-    byWeek[byWeek.length - 1] = 2;
     return {
       generatedAt,
       minGroup: K,
@@ -213,9 +211,11 @@ export function buildMockAdminStats(now: Date, few = false): AdminStatsResponse 
           skipped: 6,
           mean: 8.1,
           median: 8,
-          low: 3,
-          mid: 9,
-          high: 9,
+          groups: [
+            { key: '1-6', count: 3 },
+            { key: '7-8', count: 9 },
+            { key: '9-10', count: 9 },
+          ],
         },
         {
           milestone: 'week1',
@@ -223,9 +223,11 @@ export function buildMockAdminStats(now: Date, few = false): AdminStatsResponse 
           skipped: 4,
           mean: 7.6,
           median: 8,
-          low: 3,
-          mid: 5,
-          high: 4,
+          // 1-6 (2) merged with the next smallest, 9-10 (4), into Other.
+          groups: [
+            { key: '7-8', count: 6 },
+            { key: 'other', count: 6 },
+          ],
         },
         { ...noRatings[2], answered: 2, skipped: 1 },
         noRatings[3],

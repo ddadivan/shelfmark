@@ -27,7 +27,7 @@ Why new data is needed: no existing column records a visit. `sessions.updated_at
 
 ### 1.2 Feature usage
 
-Every adoption row is "real users with at least one ...", shown as count and share of real users; both are `null` while there are fewer than k real users.
+Every adoption row is "real users with at least one ...", shown as count and share of real users; both are `null` while there are fewer than k real users or when the users with or without it are a group of 1 to k-1.
 
 | Metric | Definition | Source | Cost (10k users) |
 | --- | --- | --- | --- |
@@ -68,7 +68,7 @@ All adoption rows fit in one SQL statement over `users` with `count(*) FILTER (W
 ## 2. Privacy rules
 
 1. **Aggregates only.** Responses contain counts, shares, means, medians and bucket counts. No id, name, email, URL, title, note, tag or folder name, no per-user rows, no drill-down, no export of raw rows. A contract test fails if a response field outside the allow-list appears.
-2. **Minimum group size k = 3** (`ADMIN_STATS_LIMIT.MinGroup` in contracts; decided, raise it later when there are more users). A distribution bucket with 1 to 2 users merges into "Other"; if "Other" would then hold a single hidden value or fewer than 3 users, the next smallest bucket joins it, and if that is still under 3 its count is `null` ("fewer than 3"). A share or rate whose base (eligible users) is below 3 is `null` ("not enough users yet"); so are the mean and median of links per user and a milestone's rating summary with fewer than 3 answers. Plain totals (real users, sign-ups per day) are shown as is: they carry no attribute. Honest limit: the author has database access anyway; the threshold guards against casual identification on the page and in screenshots, not against the operator.
+2. **Minimum group size k = 3** (`ADMIN_STATS_LIMIT.MinGroup` in contracts; decided, raise it later when there are more users). A distribution bucket with 1 to 2 users merges into "Other"; if "Other" would then hold a single hidden value or fewer than 3 users, the next smallest bucket joins it, and if that is still under 3 its count is `null` ("fewer than 3"). A share or rate whose base (eligible users) is below 3 is `null` ("not enough users yet"), and so is one where either side of the split is a group of 1 or 2 ("hidden: a group of fewer than 3"); 0 and all stay visible. The mean and median of links per user and a milestone's mean and median with fewer than 3 answers are `null`; a milestone's score groups (1-6, 7-8, 9-10) merge into "Other" like any bucket; the sign-up series are all zero while there are fewer than 3 real users. Plain totals (real users, sign-ups per day) are shown as is: they carry no attribute. Honest limit: the author has database access anyway; the threshold guards against casual identification on the page and in screenshots, not against the operator.
 3. **Demo accounts** are excluded from every metric and shown only as "demo sandboxes now" (v2: per day). Demo-to-sign-up conversion is not measurable (the two accounts are not linked) and should stay that way.
 4. **Admin accounts** excluded from real-user metrics (decided); early on the author's own library would dominate the means.
 5. **Deletion.** v1 stores nothing. `last_active_on` is a column on `users` and goes with the row. v2 snapshots hold anonymous totals that cannot be traced back to a person (k applied on read); they are not personal data once aggregated (GDPR Recital 26), and the policy says so.
@@ -120,7 +120,7 @@ interface AdminStatsOverview {
   activitySince: string | null; // ISO date the last_active_on tracking started (earlier = estimated); null when unknown
 }
 interface AdminStatsPoint { start: string; count: number }               // admin-stats-point.interface.ts
-interface AdminStatsRate { base: number; count: number | null; share: number | null } // null = base < k
+interface AdminStatsRate { base: number; count: number | null; share: number | null } // null = base < k or a side of 1..k-1
 interface AdminStatsBucket { key: string; count: number | null }         // key: allow-list value | 'other' | 'never'
 interface AdminStatsFeatures {
   linksPerUser: { mean: number | null; median: number | null; buckets: AdminStatsBucket[] };
@@ -136,7 +136,7 @@ interface AdminStatsPreferences { theme: AdminStatsBucket[]; language: AdminStat
 interface AdminStatsRatings { milestones: AdminStatsMilestone[]; messagesByKind: AdminStatsBucket[];
   messagesByStatus: AdminStatsBucket[] }
 interface AdminStatsMilestone { milestone: FeedbackMilestone; answered: number; skipped: number;
-  mean: number | null; median: number | null; low: number | null; mid: number | null; high: number | null }
+  mean: number | null; median: number | null; groups: AdminStatsBucket[] } // ADMIN_STATS_SCORE_GROUP keys + other
 // admin-stats-limit.const.ts: ADMIN_STATS_LIMIT = { MinGroup: 3, SignUpDays: 30, SignUpWeeks: 12 }
 // admin-endpoint.const.ts gains Stats: '/api/admin/stats'
 ```

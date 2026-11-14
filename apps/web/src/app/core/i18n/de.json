@@ -2124,11 +2124,12 @@
       "tooFew": "Noch zu wenige Nutzer: Anteile und Gruppen erscheinen ab {{min}} echten Nutzern.",
       "notEnough": "Noch zu wenige Nutzer",
       "fewer": "Weniger als {{min}}",
+      "smallGroup": "Ausgeblendet: eine Gruppe mit weniger als {{min}}",
       "shareOf": "{{percent}} · {{count}} von {{base}}",
       "countOf": "{{count}} von {{base}}",
       "shareCount": "{{percent}} · {{count}}",
-      "activitySince": "Aktivität wird seit {{date}} erfasst; frühere Besuche sind geschätzt.",
-      "activityEstimated": "Besuche vor Beginn der Aktivitätserfassung sind geschätzt.",
+      "activitySince": "Aktivität wird seit {{date}} erfasst. Frühere Besuche sind aus gespeicherten Links und Anmeldungen geschätzt, daher können Aktivitäts- und Rückkehrzahlen, die davor zurückreichen, zu hoch ausfallen.",
+      "activityEstimated": "Besuche vor Beginn der Aktivitätserfassung sind aus gespeicherten Links und Anmeldungen geschätzt, daher können Aktivitäts- und Rückkehrzahlen zu hoch ausfallen.",
       "overview": {
         "title": "Überblick"
       },
@@ -2204,7 +2205,6 @@
         },
         "answered": "{{answered}} beantwortet · {{skipped}} übersprungen",
         "summary": "Mittelwert {{mean}} · Median {{median}}",
-        "groups": "1–6: {{low}} · 7–8: {{mid}} · 9–10: {{high}}",
         "byKind": "Nachrichten nach Art",
         "byStatus": "Nachrichten nach Status"
       }

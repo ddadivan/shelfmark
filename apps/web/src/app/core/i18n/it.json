@@ -2161,11 +2161,12 @@
       "tooFew": "Non ci sono ancora abbastanza utenti: quote e gruppi compaiono da {{min}} utenti reali.",
       "notEnough": "Non ci sono ancora abbastanza utenti",
       "fewer": "Meno di {{min}}",
+      "smallGroup": "Nascosto: un gruppo di meno di {{min}}",
       "shareOf": "{{percent}} · {{count}} su {{base}}",
       "countOf": "{{count}} su {{base}}",
       "shareCount": "{{percent}} · {{count}}",
-      "activitySince": "L’attività è registrata dal {{date}}; le visite precedenti sono stimate.",
-      "activityEstimated": "Le visite precedenti alla registrazione dell’attività sono stimate.",
+      "activitySince": "L’attività è registrata dal {{date}}. Le visite precedenti sono stimate dai link salvati e dagli accessi, quindi i numeri di attività e ritorno che risalgono a prima possono risultare alti.",
+      "activityEstimated": "Le visite precedenti alla registrazione dell’attività sono stimate dai link salvati e dagli accessi, quindi i numeri di attività e ritorno possono risultare alti.",
       "overview": {
         "title": "Panoramica"
       },
@@ -2241,7 +2242,6 @@
         },
         "answered": "{{answered}} risposte · {{skipped}} saltate",
         "summary": "Media {{mean}} · mediana {{median}}",
-        "groups": "1–6: {{low}} · 7–8: {{mid}} · 9–10: {{high}}",
         "byKind": "Messaggi per tipo",
         "byStatus": "Messaggi per stato"
       }

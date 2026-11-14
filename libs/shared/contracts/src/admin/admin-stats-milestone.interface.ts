@@ -1,9 +1,11 @@
 import type { FeedbackMilestone } from '../feedback/feedback-milestone.type';
+import type { AdminStatsBucket } from './admin-stats-bucket.interface';
 
 /**
- * Ratings of one milestone by real users. `answered` and `skipped` are plain counts; the mean,
- * median and the three score groups (1 to 6, 7 to 8, 9 to 10) are `null` with fewer than
- * `ADMIN_STATS_LIMIT.MinGroup` answers. Comments are never part of the stats.
+ * Ratings of one milestone by real users. `answered` and `skipped` are plain counts; the mean and
+ * median are `null` and `groups` is empty with fewer than `ADMIN_STATS_LIMIT.MinGroup` answers.
+ * `groups` holds the score groups (`ADMIN_STATS_SCORE_GROUP`) with small ones merged into `other`.
+ * Comments are never part of the stats.
  */
 export interface AdminStatsMilestone {
   milestone: FeedbackMilestone;
@@ -11,7 +13,5 @@ export interface AdminStatsMilestone {
   skipped: number;
   mean: number | null;
   median: number | null;
-  low: number | null;
-  mid: number | null;
-  high: number | null;
+  groups: AdminStatsBucket[];
 }

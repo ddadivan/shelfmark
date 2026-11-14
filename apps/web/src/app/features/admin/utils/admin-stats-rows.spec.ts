@@ -9,21 +9,26 @@ const format: AdminStatsFormat = {
 
 describe('admin stats rows', () => {
   it('words a shown rate and a hidden one', () => {
-    expect(rateText({ base: 47, count: 18, share: 0.383 }, format)).toBe(
+    expect(rateText({ base: 47, count: 18, share: 0.383 }, format, 3)).toBe(
       'admin.stats.shareOf {"percent":"38%","count":"18","base":"47"}',
     );
-    expect(rateText({ base: 2, count: null, share: null }, format)).toBe('admin.stats.notEnough');
+    expect(rateText({ base: 2, count: null, share: null }, format, 3)).toBe(
+      'admin.stats.notEnough',
+    );
+    expect(rateText({ base: 9, count: null, share: null }, format, 3)).toBe(
+      'admin.stats.smallGroup {"min":3}',
+    );
   });
 
   it('turns a rate into a meter row', () => {
-    expect(rateRow('tags', 'Tags', { base: 4, count: 1, share: 0.25 }, format)).toEqual({
+    expect(rateRow('tags', 'Tags', { base: 4, count: 1, share: 0.25 }, format, 3)).toEqual({
       key: 'tags',
       label: 'Tags',
       percent: 25,
       text: 'admin.stats.shareOf {"percent":"25%","count":"1","base":"4"}',
     });
     expect(
-      rateRow('tags', 'Tags', { base: 1, count: null, share: null }, format).percent,
+      rateRow('tags', 'Tags', { base: 1, count: null, share: null }, format, 3).percent,
     ).toBeNull();
   });
 
