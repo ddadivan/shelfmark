@@ -1,7 +1,14 @@
 import type { LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
-import { insertAt, placeLink, placeLinks, retagLink, staysAfterEdit } from './links-feed';
+import {
+  insertAt,
+  placeLink,
+  placeLinks,
+  retagLink,
+  staysAfterEdit,
+  takesNewcomers,
+} from './links-feed';
 
 function link(changes: Partial<LinkResponse>): LinkResponse {
   return { ...MOCK_LINKS[0], ...changes };
@@ -83,20 +90,34 @@ describe('placeLink', () => {
 
   it('inserts a link the feed never held after the pinned links of a folder', () => {
     const pinned = link({ id: 'p', folderId: 'a', pinnedInFolderAt: '2026-01-01T00:00:00.000Z' });
-    const next = placeLink([pinned, one], folder, two, new Map());
+    const next = placeLink([pinned, one], folder, two, new Map(), true);
     expect(next.map((item) => item.id)).toEqual(['p', '2', '1']);
   });
 
   it('inserts into Unsorted, at the top without pinned links', () => {
     const unsorted = { scope: LINKS_SCOPE.Unsorted } as const;
-    const next = placeLink([one], unsorted, link({ id: '9', folderId: null }), new Map());
+    const next = placeLink([one], unsorted, link({ id: '9', folderId: null }), new Map(), true);
     expect(next.map((item) => item.id)).toEqual(['9', '1']);
   });
 
   it('does not insert into other scopes or a link of another folder', () => {
     const list = [one];
-    expect(placeLink(list, { scope: LINKS_SCOPE.All }, two, new Map())).toBe(list);
-    expect(placeLink(list, folder, link({ id: '7', folderId: 'b' }), new Map())).toBe(list);
+    expect(placeLink(list, { scope: LINKS_SCOPE.All }, two, new Map(), true)).toBe(list);
+    expect(placeLink(list, folder, link({ id: '7', folderId: 'b' }), new Map(), true)).toBe(list);
+  });
+
+  it('does not insert a newcomer unless it is a move or a save', () => {
+    const list = [one];
+    expect(placeLink(list, folder, two, new Map())).toBe(list);
+  });
+});
+
+describe('takesNewcomers', () => {
+  it('is true for the default order, or when there are no more pages', () => {
+    expect(takesNewcomers({ scope: LINKS_SCOPE.Unsorted }, true)).toBe(true);
+    expect(takesNewcomers({ scope: LINKS_SCOPE.Unsorted, sort: 'title' }, true)).toBe(false);
+    expect(takesNewcomers({ scope: LINKS_SCOPE.Unsorted, order: 'asc' }, true)).toBe(false);
+    expect(takesNewcomers({ scope: LINKS_SCOPE.Unsorted, sort: 'title' }, false)).toBe(true);
   });
 });
 
@@ -112,6 +133,26 @@ describe('placeLinks', () => {
 
     const back = placeLinks(left, folder, [items[2], items[0]], slots);
     expect(back.map((item) => item.id)).toEqual(['1', '2', '3', '4']);
+  });
+
+  it('keeps the order of newcomers, the newest first', () => {
+    const at = (id: string, createdAt: string) => link({ id, folderId: 'a', createdAt });
+    const none = placeLinks(
+      [],
+      folder,
+      [at('x', '2026-01-01'), at('y', '2026-03-01'), at('z', '2026-02-01')],
+      new Map(),
+      true,
+    );
+    expect(none.map((item) => item.id)).toEqual(['y', 'z', 'x']);
+    const ties = placeLinks(
+      [],
+      folder,
+      [link({ id: 'p', folderId: 'a' }), link({ id: 'q', folderId: 'a' })],
+      new Map(),
+      true,
+    );
+    expect(ties.map((item) => item.id)).toEqual(['p', 'q']);
   });
 
   it('works for one link and for none', () => {

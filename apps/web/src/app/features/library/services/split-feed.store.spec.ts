@@ -1,9 +1,15 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
-import { MOCK_LINKS } from '@shelfmark/contracts/testing';
+import {
+  FOLDER_DELETE_MODE,
+  type LinkResponse,
+  type ListLinksResponse,
+} from '@shelfmark/contracts';
+import { MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { of, Subject, throwError } from 'rxjs';
+import { FoldersStore } from '../../../stores/folders.store';
 import { LinksStore } from '../../../stores/links.store';
+import { FOLDERS_API } from '../../links/models/folders-api.const';
 import { LINKS_API } from '../../links/models/links-api.const';
 import type { LinksApi } from '../../links/models/links-api.interface';
 import type { SplitTarget } from '../models/split-target.type';
@@ -46,6 +52,10 @@ function setup(first: ListLinksResponse = page([link(1), link(2), link(3)])) {
   TestBed.configureTestingModule({
     providers: [
       { provide: LINKS_API, useValue: api },
+      {
+        provide: FOLDERS_API,
+        useValue: { list: () => of({ items: [], counts: MOCK_LIBRARY_COUNTS }) },
+      },
       { provide: SplitViewService, useValue: { rightTarget } },
       SplitFeedStore,
     ],
@@ -275,6 +285,76 @@ describe('SplitFeedStore', () => {
       again.next(page([link(4)]));
       await flush();
       expect(ids(store)).toEqual(['id-4']);
+    });
+
+    it('remembers the slots of several removed ids as they were in the feed', async () => {
+      const { store, links } = setup(page([link(1), link(2), link(3), link(4)]));
+      await settled();
+
+      links.removeLinks(['id-2', 'id-4']);
+      expect(ids(store)).toEqual(['id-1', 'id-3']);
+      links.applyEdit(link(4));
+      links.patchLinks([link(2), link(4)], true);
+
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3', 'id-4']);
+    });
+
+    it('ignores an upsert that is no move for a link it never held', async () => {
+      const { store, links } = setup(page([link(1)], 'c1'));
+      await settled();
+
+      links.applyEdit(link(7, { isFavorite: true }));
+      links.patchLinks([link(8, { tags: ['a'] })]);
+
+      expect(ids(store)).toEqual(['id-1']);
+    });
+
+    it('keeps the order of links moved in together', async () => {
+      const { store, links } = setup();
+      await settled();
+
+      links.patchLinks([link(7), link(8), link(9)], true);
+
+      expect(ids(store)).toEqual(['id-7', 'id-8', 'id-9', 'id-1', 'id-2', 'id-3']);
+    });
+
+    it('keeps changes that come while page one loads and applies them when it arrives', async () => {
+      const first = new Subject<ListLinksResponse>();
+      const { api, store, links } = setup();
+      api.list.mockReturnValueOnce(first);
+      await settled();
+      expect(store.loading()).toBe(true);
+
+      await links.move(link(9, { folderId: null }), FOLDER);
+      first.next(page([link(1), link(2)]));
+      await flush();
+
+      expect(ids(store)).toEqual(['id-9', 'id-1', 'id-2']);
+    });
+
+    it('loads page one once more when a reload came meanwhile', async () => {
+      const first = new Subject<ListLinksResponse>();
+      const { api, store, links } = setup();
+      api.list.mockReturnValueOnce(first);
+      await settled();
+
+      links.refresh();
+      first.next(page([link(1)]));
+      await flush();
+
+      expect(api.list).toHaveBeenCalledTimes(2);
+      expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
+    });
+
+    it('does not ask for a folder that was deleted', async () => {
+      const { api, links } = setup();
+      await settled();
+      await TestBed.inject(FoldersStore).load();
+      api.list.mockClear();
+
+      links.applyFolderRemoval([FOLDER], FOLDER_DELETE_MODE.MoveToUnsorted);
+
+      expect(api.list).not.toHaveBeenCalled();
     });
 
     it('ignores changes while it shows no feed', async () => {

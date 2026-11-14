@@ -43,23 +43,28 @@ describe('LinksStore.linkChanges', () => {
     store.setFilter({ scope: LINKS_SCOPE.Unsorted });
 
     await store.move(link(1), 'f');
-    expect(changes.at(-1)).toEqual({ upserted: [link(1, { folderId: 'f' })] });
+    expect(changes.slice(-2)).toEqual([
+      { upserted: [link(1, { folderId: 'f' })], moved: true },
+      // The server's time for the other feed's copy; it is no move.
+      { upserted: [link(1, { folderId: 'f', updatedAt: 'later' })] },
+    ]);
     expect(ids(store)).toEqual(['id-2', 'id-3']);
 
     await store.move(link(1, { folderId: 'f' }), null);
     expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
-    expect(changes.at(-1)).toEqual({ upserted: [link(1)] });
+    expect(changes.at(-2)).toEqual({ upserted: [link(1)], moved: true });
 
     api.update.mockReturnValueOnce(throwError(() => new Error('boom')));
+    const before = changes.length;
     await store.move(link(2), 'f');
-    expect(changes.slice(-2)).toEqual([
-      { upserted: [link(2, { folderId: 'f' })] },
-      { upserted: [link(2)] },
+    expect(changes.slice(before)).toEqual([
+      { upserted: [link(2, { folderId: 'f' })], moved: true },
+      { upserted: [link(2)], moved: true },
     ]);
     expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
 
     await store.move(link(99), 'f');
-    expect(changes.at(-1)).toEqual({ upserted: [link(99, { folderId: 'f' })] });
+    expect(changes.at(-2)).toEqual({ upserted: [link(99, { folderId: 'f' })], moved: true });
   });
 
   it('inserts a link moved into the open folder that the feed never held', async () => {
@@ -89,17 +94,32 @@ describe('LinksStore.linkChanges', () => {
     expect(ids(store)).toEqual(['id-1', 'id-2', 'id-3']);
   });
 
+  it('does not insert a moved-in link into a feed in another order that has more pages', async () => {
+    const { api, store } = setup([link(1), link(2)]);
+    api.list.mockReturnValue(of({ items: [link(1), link(2)], nextCursor: 'c1', pinned: [] }));
+    store.setFilter({ scope: LINKS_SCOPE.Unsorted, sort: 'title' });
+
+    await store.move(link(9, { folderId: 'f' }), null);
+
+    expect(ids(store)).toEqual(['id-1', 'id-2']);
+  });
+
   it('publishes a bulk change, the server answer and a rollback with the originals', () => {
     const { store, changes } = setup();
     store.setFilter({ scope: LINKS_SCOPE.All });
     const snapshot = store.snapshot();
     const originals = [link(1), link(2)];
 
-    store.patchLinks(originals.map((item) => ({ ...item, folderId: 'f' })));
+    store.patchLinks(
+      originals.map((item) => ({ ...item, folderId: 'f' })),
+      true,
+    );
+    store.patchLinks(originals.map((item) => ({ ...item, tags: ['a'] })));
     store.restoreSnapshot(snapshot, originals);
 
     expect(changes).toEqual([
-      { upserted: originals.map((item) => ({ ...item, folderId: 'f' })) },
+      { upserted: originals.map((item) => ({ ...item, folderId: 'f' })), moved: true },
+      { upserted: originals.map((item) => ({ ...item, tags: ['a'] })) },
       { upserted: originals },
     ]);
   });
@@ -173,7 +193,10 @@ describe('LinksStore.linkChanges', () => {
     store.addSaved(link(8));
     store.addSavedMany([link(9), link(10)]);
 
-    expect(changes).toEqual([{ upserted: [link(8)] }, { upserted: [link(9), link(10)] }]);
+    expect(changes).toEqual([
+      { upserted: [link(8)], moved: true },
+      { upserted: [link(9), link(10)], moved: true },
+    ]);
   });
 
   it('publishes a reload for refresh, a folder removal and tag changes', () => {

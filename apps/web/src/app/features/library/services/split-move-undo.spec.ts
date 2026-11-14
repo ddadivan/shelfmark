@@ -138,7 +138,7 @@ describe('moving a link between the halves and Undo', () => {
 
     expect(await bulk.moveTo([link(1, null), link(3, null)], FOLDER.id)).toBe(true);
     expect(ids(left)).toEqual(['id-2']);
-    expect([...ids(right)].sort()).toEqual(['id-1', 'id-3', 'id-9']);
+    expect(ids(right)).toEqual(['id-1', 'id-3', 'id-9']);
 
     toasts[0].action?.run();
     await flush();

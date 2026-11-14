@@ -16,8 +16,9 @@ import {
 } from '@ngrx/signals/entities';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
+import { FoldersStore } from '../../../stores/folders.store';
 import { LinksStore } from '../../../stores/links.store';
-import { placeLinks } from '../../../stores/links-feed';
+import { placeLinks, takesNewcomers } from '../../../stores/links-feed';
 import type { LinkChange } from '../../../stores/models/link-change.interface';
 import { LINKS_API } from '../../links/models/links-api.const';
 import type { LinksFilter } from '../../links/models/links-filter.type';
@@ -61,10 +62,27 @@ export const SplitFeedStore = signalStore(
   withMethods((store) => {
     const api = inject(LINKS_API);
     const links = inject(LinksStore);
+    const folders = inject(FoldersStore);
+    // Changes that came while page one was on its way: replayed once it has arrived.
+    let buffer: LinkChange[] = [];
+    let reloadAfter = false;
     // Feed slots of links that left the target, so a link that comes back (Undo) gets its slot.
     const slots = new Map<string, number>();
     // Bumped by every target change and reload: late responses are dropped.
     let generation = 0;
+
+    /** Applies what came while page one was loading (a coarse change loads page one once more). */
+    function replay(target: string | null): void {
+      const pending = buffer;
+      const again = reloadAfter;
+      buffer = [];
+      reloadAfter = false;
+      if (again) {
+        show(target);
+        return;
+      }
+      pending.forEach((change) => apply(change));
+    }
 
     async function loadFirst(target: string | null, started: number): Promise<void> {
       try {
@@ -78,6 +96,7 @@ export const SplitFeedStore = signalStore(
             ),
             { nextCursor: page.nextCursor, loaded: true, loading: false },
           );
+          replay(target);
         }
       } catch {
         if (started === generation) {
@@ -90,6 +109,8 @@ export const SplitFeedStore = signalStore(
     function show(target: SplitTarget): void {
       generation++;
       slots.clear();
+      buffer = [];
+      reloadAfter = false;
       if (target === undefined) {
         patchState(store, initialState, removeAllEntities());
         return;
@@ -102,6 +123,52 @@ export const SplitFeedStore = signalStore(
         changed ? { loaded: false, nextCursor: null } : {},
       );
       void loadFirst(target, generation);
+    }
+
+    function apply(change: LinkChange): void {
+      const target = store.target();
+      if (target === undefined) {
+        return;
+      }
+      if (change.reload) {
+        // A deleted folder is not asked for: the target effect moves the half to the picker.
+        if (target !== null && folders.loaded() && !folders.entityMap()[target]) {
+          return;
+        }
+        if (store.loading() && !store.loaded()) {
+          reloadAfter = true;
+        } else {
+          show(target);
+        }
+        return;
+      }
+      if (!store.loaded()) {
+        // Page one is on its way and may not hold this change: keep it for when it arrives.
+        if (store.loading()) {
+          buffer.push(change);
+        }
+        return;
+      }
+      const filter = filterOf(target);
+      const original = store.entities();
+      for (const id of change.removed ?? []) {
+        // The slot is the place in the feed as it was, and is kept: Undo of a delete brings the
+        // link back to it.
+        const at = original.findIndex((link) => link.id === id);
+        if (at >= 0) {
+          slots.set(id, at);
+        }
+      }
+      const gone = new Set(change.removed ?? []);
+      const kept = original.filter((link) => !gone.has(link.id));
+      const entities = placeLinks(
+        kept,
+        filter,
+        change.upserted ?? [],
+        slots,
+        change.moved === true && takesNewcomers(filter, store.hasMore()),
+      );
+      patchState(store, setAllEntities([...entities]));
     }
 
     return {
@@ -132,31 +199,7 @@ export const SplitFeedStore = signalStore(
       },
 
       /** Applies what `LinksStore` changed: a link in its new state, gone ids, or a reload. */
-      apply(change: LinkChange): void {
-        const target = store.target();
-        if (target === undefined) {
-          return;
-        }
-        if (change.reload) {
-          show(target);
-          return;
-        }
-        if (!store.loaded()) {
-          return;
-        }
-        const filter = filterOf(target);
-        let entities: readonly LinkResponse[] = store.entities();
-        for (const id of change.removed ?? []) {
-          // The slot is kept: Undo of a delete brings the link back to it.
-          const at = entities.findIndex((link) => link.id === id);
-          if (at >= 0) {
-            slots.set(id, at);
-            entities = entities.filter((link) => link.id !== id);
-          }
-        }
-        entities = placeLinks(entities, filter, change.upserted ?? [], slots);
-        patchState(store, setAllEntities([...entities]));
-      },
+      apply,
     };
   }),
   withHooks({

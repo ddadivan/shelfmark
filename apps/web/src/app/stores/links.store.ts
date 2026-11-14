@@ -32,7 +32,7 @@ import type { LinkChange } from './models/link-change.interface';
 import type { LinksSnapshot } from './models/links-snapshot.interface';
 import type { LinksState } from './models/links-state.interface';
 import { createLinkImageCapture } from './link-image-capture';
-import { insertAt, placeLink, retagLink, staysAfterEdit } from './links-feed';
+import { insertAt, placeLink, retagLink, staysAfterEdit, takesNewcomers } from './links-feed';
 import { PinsStore } from './pins.store';
 import { SessionScope } from '../core/auth/session-scope.service';
 
@@ -161,11 +161,19 @@ export const LinksStore = signalStore(
       if (store.loaded()) {
         patchState(
           store,
-          setAllEntities([...placeLink(store.entities(), store.filter(), link, movedFrom)]),
+          setAllEntities([
+            ...placeLink(
+              store.entities(),
+              store.filter(),
+              link,
+              movedFrom,
+              takesNewcomers(store.filter(), store.hasMore()),
+            ),
+          ]),
         );
       }
       patchState(store, { recent: mapRecent(link.id, { folderId: link.folderId }) });
-      publish({ upserted: [link] });
+      publish({ upserted: [link], moved: true });
     }
 
     function restore(id: string): void {
@@ -370,7 +378,7 @@ export const LinksStore = signalStore(
 
       /** Shows a link that was just saved at the top, when it belongs to the current scope. */
       addSaved(link: LinkResponse): void {
-        publish({ upserted: [link] });
+        publish({ upserted: [link], moved: true });
         if (!showsOnTop(link)) {
           return;
         }
@@ -384,7 +392,7 @@ export const LinksStore = signalStore(
        * titles.
        */
       addSavedMany(links: readonly LinkResponse[]): void {
-        publish({ upserted: links });
+        publish({ upserted: links, moved: true });
         const shown = links.filter((link) => showsOnTop(link));
         if (shown.length > 0) {
           patchState(store, setAllEntities([...shown, ...store.entities()]));
@@ -508,6 +516,10 @@ export const LinksStore = signalStore(
               updateEntity({ id: link.id, changes: { updatedAt: saved.updatedAt } }),
             );
           }
+          if (startedEpoch === epoch) {
+            // The other feed's copy gets the server's time too.
+            publish({ upserted: [{ ...current, folderId, updatedAt: saved.updatedAt }] });
+          }
           return true;
         } catch {
           if (startedEpoch === epoch) {
@@ -542,9 +554,10 @@ export const LinksStore = signalStore(
       /**
        * Links a bulk change touched (optimistic copies or the server's answer): each loaded one is
        * replaced, or leaves the feed when it no longer belongs to the open scope (moved out).
+       * `moved` says the change is a move into a folder: the other feed may take such links in.
        */
-      patchLinks(links: readonly LinkResponse[]): void {
-        publish({ upserted: links });
+      patchLinks(links: readonly LinkResponse[], moved = false): void {
+        publish(moved ? { upserted: links, moved: true } : { upserted: links });
         const byId = new Map(links.map((link) => [link.id, link]));
         const filter = store.filter();
         patchState(
