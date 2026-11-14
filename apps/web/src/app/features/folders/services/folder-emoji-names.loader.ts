@@ -13,6 +13,7 @@ const loaders: Readonly<Record<AppLang, () => Promise<FolderEmojiNames>>> = {
   [APP_LANG.It]: async () => (await import('../emoji-names/it.json')).default,
   [APP_LANG.Es]: async () => (await import('../emoji-names/es.json')).default,
   [APP_LANG.Pt]: async () => (await import('../emoji-names/pt.json')).default,
+  [APP_LANG.Uk]: async () => (await import('../emoji-names/uk.json')).default,
 };
 
 /** The names for `lang`, English for a language the app does not have. */
