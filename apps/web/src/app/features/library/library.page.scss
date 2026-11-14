@@ -241,7 +241,7 @@
   flex-direction: column;
   min-inline-size: 0;
   min-block-size: 0;
-  padding-inline-end: var(--space-5);
+  padding-inline-end: calc(var(--space-4) + var(--space-1));
   border-radius: var(--radius-xl);
 }
 

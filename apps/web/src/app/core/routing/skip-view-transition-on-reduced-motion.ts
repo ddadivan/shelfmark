@@ -6,6 +6,7 @@ import {
   prefersReducedMotion,
   settleViewTransition,
 } from '../../features/library/utils/view-transition';
+import { onlySplitChanged } from './only-split-changed';
 
 /**
  * `onViewTransitionCreated` of the router's page cross-fade (`withViewTransitions`): with
@@ -17,7 +18,12 @@ import {
 export function skipViewTransitionOnReducedMotion(info: ViewTransitionInfo): void {
   const doc = inject(DOCUMENT);
   settleViewTransition(info.transition);
-  if (prefersReducedMotion(doc, inject(Injector)) || !canRunViewTransition(doc)) {
+  if (
+    prefersReducedMotion(doc, inject(Injector)) ||
+    !canRunViewTransition(doc) ||
+    // Opening, closing or changing the right half (`?split`) is no page change: no cross-fade.
+    (info.from && info.to && onlySplitChanged(info.from, info.to))
+  ) {
     info.transition.skipTransition();
   }
 }

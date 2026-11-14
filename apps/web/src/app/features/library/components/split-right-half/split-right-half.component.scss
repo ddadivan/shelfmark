@@ -17,7 +17,7 @@
   gap: var(--space-4);
   min-inline-size: 0;
   min-block-size: 0;
-  padding: var(--space-1) var(--space-5) 0;
+  padding: var(--space-1) calc(var(--space-4) + var(--space-1)) 0;
   border-radius: var(--radius-xl);
 
   &--target {
