@@ -24,6 +24,7 @@ describe('AppTranslocoLoader', () => {
     [APP_LANG.It, 'Incolla un link.'],
     [APP_LANG.Es, 'Pega un enlace.'],
     [APP_LANG.Pt, 'Cole um link.'],
+    [APP_LANG.Uk, 'Вставте посилання.'],
   ])('loads the %s translations lazily', async (lang, line1) => {
     const translation = await loader.getTranslation(lang);
 
@@ -31,7 +32,7 @@ describe('AppTranslocoLoader', () => {
   });
 
   it('rejects an unsupported language', async () => {
-    await expect(loader.getTranslation('uk')).rejects.toThrow('Unsupported language: uk');
+    await expect(loader.getTranslation('pl')).rejects.toThrow('Unsupported language: pl');
   });
 
   it('does not resolve prototype keys as languages', async () => {
