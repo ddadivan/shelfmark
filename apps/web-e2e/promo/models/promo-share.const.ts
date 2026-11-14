@@ -22,7 +22,9 @@ export const PROMO_SHARE = {
     id: 'promo-account',
     name: 'Sam Rivera',
     email: 'sam@example.com',
-    image: null,
+    /** An illustrated stand-in for the photo a provider sends (a drawn face, no real person). */
+    image:
+      'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJiIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjRjMzhhIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZTA4MDVlIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiBmaWxsPSJ1cmwoI2IpIi8+PGNpcmNsZSBjeD0iNDgiIGN5PSIzOCIgcj0iMTciIGZpbGw9IiNmYmU3ZDMiLz48cGF0aCBkPSJNMTQgOTZjMy0yMSAxNy0zMiAzNC0zMnMzMSAxMSAzNCAzMnoiIGZpbGw9IiMyZjVkNjIiLz48cGF0aCBkPSJNMzAgMzRjMC0xMyA4LTIxIDE4LTIxczE5IDcgMTkgMjBjLTUtNi0xMi04LTE5LThzLTEzIDMtMTggOXoiIGZpbGw9IiM1YTNiMmUiLz48L3N2Zz4=',
     isDemo: false,
     demoExpiresAt: null,
     onboardingCompletedAt: '2026-10-01T00:00:00.000Z',

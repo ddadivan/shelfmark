@@ -1,5 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { SEARCH_BUTTON } from '../../src/support/search-button';
+import { settled } from '../../src/support/settled';
 import { openTags } from '../../src/support/sidebar';
 import { Finger } from '../../src/support/touch';
 import {
@@ -15,6 +16,7 @@ import {
   pressTab,
   useShareAccount,
 } from '../support/promo-flows';
+import { HIDE_CURSOR_CSS } from '../support/promo-director';
 import { PROMO_DEVICE } from './promo-device.const';
 import { PROMO_SHARE } from './promo-share.const';
 import type { PromoContext } from './promo-context.interface';
@@ -23,7 +25,7 @@ import type { PromoStep } from './promo-step.interface';
 /** The link the video saves; the mock preview API answers "Page on <host>" for any new link. */
 const LINK_URL = 'https://web.dev/articles/vitals';
 const LINK_TITLE = 'Page on web.dev';
-const LINK_NOTE = 'Check before the release';
+const LINK_NOTE = 'Read it this weekend';
 /** A link the demo library already has (in Angular): the duplicate notice. */
 const SAVED_URL = 'https://angular.dev/guide/zoneless';
 /** A pasted list for "Add several links": three new links among some chat text. */
@@ -36,6 +38,10 @@ const PASTED_LIST = [
 /** Folders and tags of the demo library (apps/web/src/app/features/links/mock/models). */
 const FOLDER_SAVE = 'Work';
 const FOLDER_STYLE = 'Clothes';
+/** The folder style of chapter 2: a color, and an emoji found through the picker's search. */
+const FOLDER_COLOR = 'Teal';
+const EMOJI_QUERY = 'dress';
+const FOLDER_EMOJI = '👗';
 const FOLDER_MOVE = 'Recipes';
 const FOLDER_PARENT = 'Work';
 const FOLDER_PINNED = 'Angular';
@@ -87,6 +93,24 @@ async function openAddLink({ page, director }: PromoContext): Promise<Locator> {
   await expect(dialog).toBeVisible();
   await director.pause(300);
   return dialog;
+}
+
+/** Scrolls the page smoothly until `target` sits in the middle, as a person would. */
+async function glide({ director }: PromoContext, target: Locator): Promise<void> {
+  await target.evaluate((element) =>
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+  );
+  await director.pause(700);
+}
+
+/** Attaches a screenshot of the app as it is now to the feedback dialog, through its file picker. */
+async function attachScreenshot({ page, director }: PromoContext, dialog: Locator): Promise<void> {
+  const shot = await page.screenshot({ style: HIDE_CURSOR_CSS });
+  const chooser = page.waitForEvent('filechooser');
+  await director.press(dialog.getByRole('button', { name: 'choose files' }));
+  await (await chooser).setFiles({ name: 'shelfmark.png', mimeType: 'image/png', buffer: shot });
+  await expect(dialog.locator('.feedback-dialog__thumb')).toBeVisible();
+  await director.pause(600);
 }
 
 /** Closes a tab that "Open all" opened behind the recording. */
@@ -272,30 +296,58 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(dialog.getByRole('button', { name: 'Create folder' }));
       await expect(page.getByRole('heading', { name: 'This folder is empty' })).toBeVisible();
       await director.parkPointer();
-      await director.pause(1300);
+      await director.pause(900);
     },
   },
   {
     id: 'style',
     caption: {
-      desktop: 'Give a folder a colour and an icon.',
-      phone: 'Hold a folder for its menu: a colour and an icon.',
+      desktop: 'Give a folder a color, and search for an emoji to go with it.',
+      phone: 'Hold a folder for its menu: a color, and an emoji found by search.',
     },
     run: async (context) => {
       const { page, director } = context;
-      await folderMenu(context, FOLDER_STYLE, 'Colour and icon…', true);
+      await folderMenu(context, FOLDER_STYLE, 'Color and icon…', true);
       const dialog = page.getByRole('dialog', { name: FOLDER_STYLE });
       await expect(dialog).toBeVisible();
-      for (const choice of ['Teal', 'Star']) {
-        await director.pause(300);
-        await director.press(
-          dialog.locator('label.ui-choice', { has: page.getByLabel(choice, { exact: true }) }),
-        );
-      }
-      await director.pause(400);
+      await director.pause(200);
+      await director.press(
+        dialog.locator('label.ui-choice', { has: page.getByLabel(FOLDER_COLOR, { exact: true }) }),
+      );
+      // Icon or Emoji (#376): the Emoji tab holds the picker (search, categories, Recent, Yours).
+      const emojiTab = dialog.getByRole('radio', { name: 'Emoji', exact: true });
+      await director.press(
+        dialog
+          .locator('label', { has: page.getByRole('radio', { name: 'Emoji', exact: true }) })
+          .first(),
+      );
+      await expect(emojiTab).toBeChecked();
+      await director.pause(250);
+      await director.press(dialog.getByRole('combobox', { name: 'Emoji', exact: true }));
+      const picker = page.getByRole('dialog', { name: 'Emoji', exact: true });
+      const search = picker.getByRole('textbox', { name: 'Search emoji' });
+      await expect(search).toBeVisible();
+      await director.pause(300);
+      await director.type(search, EMOJI_QUERY);
+      const cell = picker.locator(`[data-emoji="${FOLDER_EMOJI}"]`).first();
+      await expect(cell).toBeVisible();
+      await director.pause(300);
+      await director.press(cell);
+      await expect(picker).toHaveCount(0);
+      await expect(dialog.getByRole('combobox', { name: 'Emoji', exact: true })).toHaveValue(
+        FOLDER_EMOJI,
+      );
+      // The dialog previews the emoji; the folder itself changes on Save.
+      await director.point(dialog.locator('.folder-style__preview'));
+      await director.pause(600);
       await director.press(dialog.getByRole('button', { name: 'Save' }));
       await expect(dialog).toHaveCount(0);
-      await director.pause(600);
+      // Then the folder row shows it: the pointer rests next to it, so the change is clear.
+      const row = treeRow(page, FOLDER_STYLE);
+      await expect(row).toContainText(FOLDER_EMOJI);
+      await director.reveal(row);
+      await director.point(row);
+      await director.pause(1500);
     },
   },
   {
@@ -312,13 +364,13 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       const expanded = (await row.getAttribute('aria-expanded')) === 'true';
       await director.press(twist);
       await expect(row).toHaveAttribute('aria-expanded', expanded ? 'false' : 'true');
-      await director.pause(700);
+      await director.pause(500);
       if (!expanded) {
         return;
       }
       await director.press(twist);
       await expect(row).toHaveAttribute('aria-expanded', 'true');
-      await director.pause(600);
+      await director.pause(450);
     },
   },
   {
@@ -329,7 +381,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await folderMenu(context, FOLDER_STYLE, 'Pin to sidebar');
       await expect(pinnedItems(page).filter({ hasText: FOLDER_STYLE })).toBeVisible();
       await director.parkPointer();
-      await director.pause(1000);
+      await director.pause(700);
     },
   },
   {
@@ -363,7 +415,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(row.getByRole('button', { name: `Unpin ${FOLDER_PINNED}` }));
       await expect(toast(page, 'Unpinned from sidebar')).toBeVisible();
       await expect(pinnedItems(page)).toHaveCount(before - 1);
-      await director.pause(1000);
+      await director.pause(800);
     },
   },
   {
@@ -383,7 +435,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
         })
         .toBe(true);
       await director.parkPointer();
-      await director.pause(700);
+      await director.pause(500);
     },
   },
   {
@@ -398,7 +450,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(tagChip(page, TAG_FILTER));
       await expect(page.getByRole('group', { name: 'Active filters' })).toBeVisible();
       await director.parkPointer();
-      await director.pause(1400);
+      await director.pause(1100);
     },
   },
   {
@@ -421,11 +473,11 @@ export const PROMO_STEPS: readonly PromoStep[] = [
         .locator('app-sidebar-tags')
         .getByRole('button', { name: new RegExp(`Merge into .${TAG_MERGE}.`) });
       await expect(merge).toBeVisible();
-      await director.pause(800);
+      await director.pause(600);
       await director.press(merge);
       await expect(tagChip(page, TAG_RENAME)).toHaveCount(0);
       await director.parkPointer();
-      await director.pause(700);
+      await director.pause(500);
     },
   },
   {
@@ -443,7 +495,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(await libraryEntry(context, 'Favorites'));
       await expect(page.getByRole('heading', { level: 1, name: 'Favorites' })).toBeVisible();
       await director.parkPointer();
-      await director.pause(1000);
+      await director.pause(700);
     },
   },
 
@@ -630,7 +682,10 @@ export const PROMO_STEPS: readonly PromoStep[] = [
   },
   {
     id: 'sort-view',
-    caption: { desktop: 'Sort it your way, and switch between cards and a list.' },
+    caption: {
+      desktop: 'Sort it your way, and switch between cards and a list.',
+      phone: 'Options: sort it your way, switch between cards and a list.',
+    },
     run: async (context) => {
       const { page, phone, director } = context;
       await backToAllLinks(context);
@@ -785,7 +840,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
   {
     id: 'theme',
     chapter: 'Yours',
-    caption: { desktop: 'Light, dark, or Custom with your own accent colour…' },
+    caption: { desktop: 'Light, dark, or Custom with your own accent color…' },
     run: async (context) => {
       const { page, director } = context;
       await openSettings(context, 'Appearance');
@@ -804,21 +859,22 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     id: 'accent',
     caption: { desktop: '…and Shelfmark keeps it readable: 4.5:1 contrast, always.' },
     run: async ({ page, director }) => {
-      const swatch = page.getByRole('button', { name: 'Your own colour' });
+      const swatch = page.getByRole('button', { name: 'Your own color' });
       await director.press(swatch);
       const hex = page.getByRole('textbox', { name: 'Hex code' });
       await expect(hex).toBeFocused();
       await hex.fill('');
       await hex.pressSequentially(FAINT_ACCENT, { delay: 80 });
-      await hex.press('Enter');
+      // The picker chooses only on "Add color" (#335); a colour that fails 4.5:1 is refused.
+      const add = page.getByRole('button', { name: 'Add color' }).filter({ visible: true }).first();
+      await director.press(add);
       await expect(page.getByText(/hard to read on your background/u)).toBeVisible();
       await director.pause(1300);
       await hex.fill('');
       await hex.pressSequentially(OWN_ACCENT, { delay: 80 });
-      await hex.press('Enter');
+      await director.press(add);
       await expect(page.locator('html')).toHaveAttribute('data-custom-accent', 'own');
       await expect(page.getByText(/hard to read on your background/u)).toHaveCount(0);
-      await page.keyboard.press('Escape');
       await director.parkPointer();
       await director.pause(800);
     },
@@ -886,7 +942,10 @@ export const PROMO_STEPS: readonly PromoStep[] = [
   },
   {
     id: 'feedback',
-    caption: { desktop: 'And tell us what you think: we read every message.' },
+    caption: {
+      desktop: 'And tell us what you think, with a screenshot if it helps.',
+      phone: 'And tell us what you think: we read every message.',
+    },
     run: async (context) => {
       const { page, phone, director } = context;
       if (phone) {
@@ -894,11 +953,15 @@ export const PROMO_STEPS: readonly PromoStep[] = [
         await director.press(page.getByRole('main').getByRole('button', { name: 'Send feedback' }));
       } else {
         await director.press(
-          page.locator('app-sidebar').getByRole('button', { name: 'Send feedback' }),
+          page.locator('app-sidebar').getByRole('treeitem', { name: 'Send feedback' }),
         );
       }
       const dialog = page.getByRole('dialog', { name: 'Send feedback' });
       await director.type(dialog.getByRole('textbox'), 'Calm and quick. More themes, please!');
+      if (!phone) {
+        // Up to three screenshots can go with it (the phone skips this to keep its pace).
+        await attachScreenshot(context, dialog);
+      }
       await director.press(dialog.getByRole('button', { name: 'Send', exact: true }));
       const done = page.getByRole('button', { name: 'Done' });
       await expect(done).toBeVisible();
@@ -910,60 +973,8 @@ export const PROMO_STEPS: readonly PromoStep[] = [
 
   // Share and export
   {
-    id: 'export',
-    chapter: 'Share',
-    caption: { desktop: 'Export everything as JSON or a bookmarks file, any time.' },
-    run: async (context) => {
-      const { page, phone, director } = context;
-      const download = page.waitForEvent('download');
-      if (phone) {
-        await openSettings(context, 'Export');
-        await director.pause(500);
-        await director.press(page.getByRole('main').getByRole('button', { name: 'JSON' }));
-      } else {
-        await director.press(page.getByRole('button', { name: 'Account menu' }));
-        await expect(page.getByRole('menuitem', { name: 'Everything as JSON' })).toBeVisible();
-        await director.point(page.getByRole('menuitem', { name: 'Everything as Bookmarks HTML' }));
-        await director.pause(600);
-        await director.press(page.getByRole('menuitem', { name: 'Everything as JSON' }));
-      }
-      await download;
-      await director.parkPointer();
-      await director.pause(800);
-    },
-  },
-  {
-    id: 'install',
-    only: PROMO_DEVICE.Phone,
-    caption: { desktop: 'Install Shelfmark from the browser menu and it joins your Share menu.' },
-    run: async (context) => {
-      const { page, director } = context;
-      const heading = page.getByRole('heading', { name: 'Save from your phone' });
-      await loadPage(context, '/about', heading);
-      await director.reveal(heading);
-      await director.pause(1800);
-    },
-  },
-  {
-    id: 'share-target',
-    only: PROMO_DEVICE.Phone,
-    caption: { desktop: 'Share a page from any app, and it lands on your shelf.' },
-    run: async (context) => {
-      const { page, director } = context;
-      // The installed app is a share target: the system share sheet opens this address.
-      await loadPage(
-        context,
-        `/share?url=${encodeURIComponent(SHARED_URL)}`,
-        page.getByRole('heading', { level: 1, name: 'Save to Shelfmark' }),
-      );
-      await director.pause(1000);
-      await director.press(page.getByRole('button', { name: 'Save', exact: true }));
-      await expect(page).toHaveURL(/\/links$/);
-      await director.pause(1000);
-    },
-  },
-  {
     id: 'share-folder',
+    chapter: 'Share',
     caption: { desktop: 'With an account, share a folder as a public page.' },
     run: async (context) => {
       const { page, director } = context;
@@ -1012,9 +1023,82 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.press(rating.getByRole('button', { name: '9 out of 10' }));
       const thanks = page.getByRole('dialog', { name: 'Thank you' });
       await expect(thanks).toBeVisible();
-      await director.pause(1000);
+      await director.pause(800);
       await director.press(thanks.getByRole('button', { name: 'Close' }));
       await expect(page.getByRole('dialog')).toHaveCount(0);
+    },
+  },
+  {
+    id: 'account',
+    caption: {
+      desktop: 'Your account: the photo you sign in with, your shelf in numbers…',
+    },
+    run: async (context) => {
+      const { page, phone, director } = context;
+      if (phone) {
+        await pressTab(context, 'You');
+        await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();
+        await settled(page);
+        await director.press(page.getByRole('main').getByRole('link', { name: /^Account: / }));
+      } else {
+        await openSettings(context, 'Account');
+      }
+      await expect(page.getByRole('heading', { level: 1, name: 'Account' })).toBeVisible();
+      // The numbers have loaded once the connected accounts show.
+      await expect(page.getByRole('heading', { name: 'Connected accounts' })).toBeVisible();
+      await director.parkPointer();
+      await director.pause(1300);
+      if (phone) {
+        // The phone shows one section at a time: the connected account comes next.
+        await glide(context, page.getByRole('heading', { name: 'Connected accounts' }));
+        await director.pause(700);
+      }
+    },
+  },
+  {
+    id: 'export',
+    caption: { desktop: '…and Your data: export everything as JSON or a bookmarks file.' },
+    run: async (context) => {
+      const { page, director } = context;
+      const json = page.getByRole('button', { name: 'Download JSON' });
+      await glide(context, page.getByRole('button', { name: 'Download Bookmarks HTML' }));
+      await director.point(page.getByRole('button', { name: 'Download Bookmarks HTML' }));
+      await director.pause(500);
+      const download = page.waitForEvent('download');
+      await director.press(json);
+      await download;
+      await director.parkPointer();
+      await director.pause(800);
+    },
+  },
+  {
+    id: 'install',
+    only: PROMO_DEVICE.Phone,
+    caption: { desktop: 'Install Shelfmark from the browser menu and it joins your Share menu.' },
+    run: async (context) => {
+      const { page, director } = context;
+      const heading = page.getByRole('heading', { name: 'Save from your phone' });
+      await loadPage(context, '/about', heading);
+      await director.reveal(heading);
+      await director.pause(1800);
+    },
+  },
+  {
+    id: 'share-target',
+    only: PROMO_DEVICE.Phone,
+    caption: { desktop: 'Share a page from any app, and it lands on your shelf.' },
+    run: async (context) => {
+      const { page, director } = context;
+      // The installed app is a share target: the system share sheet opens this address.
+      await loadPage(
+        context,
+        `/share?url=${encodeURIComponent(SHARED_URL)}`,
+        page.getByRole('heading', { level: 1, name: 'Save to Shelfmark' }),
+      );
+      await director.pause(1000);
+      await director.press(page.getByRole('button', { name: 'Save', exact: true }));
+      await expect(page).toHaveURL(/\/links$/);
+      await director.pause(1000);
     },
   },
   {
@@ -1030,9 +1114,9 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await expect(page.getByText(`Shared by ${PROMO_SHARE.OwnerFirstName}`)).toBeVisible();
       await expect(cards(page).first()).toBeVisible();
       await expect(page.getByRole('button', { name: /^Actions for / })).toHaveCount(0);
-      await director.pause(1200);
-      await director.reveal(cards(page).last());
       await director.pause(1000);
+      await director.reveal(cards(page).last());
+      await director.pause(800);
       await director.reveal(page.getByRole('link', { name: 'Start your shelf' }).first());
       await director.pause(600);
     },

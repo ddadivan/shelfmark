@@ -6,9 +6,10 @@ captioned scenes (2–5 s), grouped into seven chapters:
 
 1. **Save a link**: landing → "Open the demo" → paste a link, the preview fills in, folder, tag
    and note, the card lands; the "already saved" notice; "Add several links" with a pasted list.
-2. **Folders and tags**: a nested folder and its empty state, colour and icon, expand / collapse,
-   pin, reorder Pinned by drag (the drop line), Unpin with Undo, reorder folders, filter by a tag,
-   rename a tag into another one and merge, Favorites.
+2. **Folders and tags**: a nested folder and its empty state, a color and, on the Emoji tab, an
+   emoji found through the picker's search (then the folder row shows it), expand / collapse, pin,
+   reorder Pinned by drag (the drop line), Unpin with Undo, reorder folders, filter by a tag, rename
+   a tag into another one and merge, Favorites.
 3. **Many at once**: the Move to folder picker (search, the current folder) and the toast's Undo,
    dragging two cards onto a sidebar folder, selecting links and the bulk bar (tags, favorite,
    copy, open all, move).
@@ -17,21 +18,22 @@ captioned scenes (2–5 s), grouped into seven chapters:
 5. **Undo and Trash**: delete with Undo, Trash and restore, the retention setting.
 6. **Make it yours**: dark, Custom on the dark base with an own accent (a faint one first, so the
    4.5:1 guard shows), text size, font, density and card preview with the live preview, a
-   language switch, the "?" shortcuts dialog, Send feedback.
-7. **Share and export**: export (JSON / bookmarks HTML), a public folder page (Share… → "Public
-   folder" → Copy link), the rating question, the page as a guest.
+   language switch, the "?" shortcuts dialog, Send feedback (with a screenshot on the desktop).
+7. **Share and export**: a public folder page (Share… → "Public folder" → Copy link), the rating
+   question, the Account page (the provider photo, "Your shelf", connected accounts) and export
+   from its "Your data" (JSON / bookmarks HTML), the page as a guest.
 
 The phone recording skips the desktop-only scenes (mouse drags, the inline search panel, the
 shortcuts) and a few repeats, and shows the tab bar, a long press, touch reorder, bottom sheets
 (the Move to folder picker), installing the app and the share target instead.
 
 Demo accounts cannot share, so the last chapter switches to a made-up regular mock account
-(`PROMO_SHARE`, Sam Rivera, no personal data) under the mock `showcase` scenario
-(`sm-mock-links-scenario`), which starts every mock session, the guest's too, from the demo's
-mockup library; under it the share dialog shows the production origin (`MOCK_PUBLIC_ORIGIN`),
-never the local server. The account is nine days old, so the rating question comes once the
-share dialog closes. The guest is the same tab without the session. It never runs with the e2e
-suite: it has its own config (`playwright.promo.config.mts`) and file pattern.
+(`PROMO_SHARE`, Sam Rivera, no personal data; a drawn SVG face stands in for the provider photo)
+under the mock `showcase` scenario (`sm-mock-links-scenario`), which starts every mock session, the
+guest's too, from the demo's mockup library; under it the share dialog shows the production origin
+(`MOCK_PUBLIC_ORIGIN`), never the local server. The account is nine days old, so the rating question
+comes once the share dialog closes. The guest is the same tab without the session. It never runs
+with the e2e suite: it has its own config (`playwright.promo.config.mts`) and file pattern.
 
 ## Re-record
 
@@ -67,8 +69,8 @@ script checks for the encoders first and stops with the fix.
 - `models/promo-steps.const.ts` is the script: each step has a caption and an action; the
   recorder measures when each step starts and writes the captions from those times.
 - Chapters: a step with `chapter` waits until that chapter's start in its recording
-  (`PROMO_CHAPTER_START_MS`, one set per device: desktop 0:00, 0:33, 1:09, 1:40, 2:09, 2:26,
-  2:55; phone 0:00, 0:27, 0:58, 1:21, 1:42, 1:56, 2:15), so the captions line up with the
+  (`PROMO_CHAPTER_START_MS`, one set per device: desktop 0:00, 0:33, 1:10, 1:41, 2:10, 2:27,
+  2:57; phone 0:00, 0:27, 0:59, 1:22, 1:42, 1:56, 2:15), so the captions line up with the
   dialog's chapter buttons (`HOW_IT_WORKS_CHAPTERS` in `apps/web`, which shows the times of the
   recording it plays). If a chapter starts more than 0.5 s late, the run
   fails: shorten the steps before it, or move both constants to the new time (a `PROMO_MEASURE=1`
