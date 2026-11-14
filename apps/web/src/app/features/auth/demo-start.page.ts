@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { LogoComponent, SpinnerComponent } from '@shelfmark/ui';
+import { BootSkeletonComponent } from '../../shell/boot-skeleton/boot-skeleton.component';
 import { preloadAppChunks } from '../../core/routing/preload-app-chunks';
 import { AuthStore } from '../../core/auth/auth.store';
 import { AUTH_ROUTE } from '../../core/auth/models/auth-routes.const';
@@ -15,7 +15,7 @@ import { DEMO_ERROR_REASON } from './models/demo-error-reason.const';
  */
 @Component({
   selector: 'app-demo-start-page',
-  imports: [TranslocoPipe, LogoComponent, SpinnerComponent],
+  imports: [TranslocoPipe, BootSkeletonComponent],
   templateUrl: './demo-start.page.html',
   styleUrl: './demo-start.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

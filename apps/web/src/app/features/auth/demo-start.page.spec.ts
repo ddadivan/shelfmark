@@ -58,6 +58,11 @@ describe('DemoStartPage', () => {
     await vi.waitFor(() =>
       expect((harness.routeNativeElement as HTMLElement).textContent).toContain('Opening the demo'),
     );
+    const page = harness.routeNativeElement as HTMLElement;
+    expect(page.querySelector('main')?.getAttribute('aria-busy')).toBe('true');
+    expect(page.querySelector('[role="status"]')?.textContent).toContain('Opening the demo');
+    expect(page.querySelector('app-boot-skeleton .boot__card')).not.toBeNull();
+    expect(page.querySelector('ui-logo, ui-spinner')).toBeNull();
     finish(DEMO);
     await harness.fixture.whenStable();
   });

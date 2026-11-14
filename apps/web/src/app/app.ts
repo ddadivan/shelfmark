@@ -1,5 +1,7 @@
+import { DOCUMENT } from '@angular/common';
 import { ApplicationRef, ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { removeBootSkeleton } from './core/routing/boot-skeleton';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +11,7 @@ import { RouterOutlet } from '@angular/router';
 })
 export class App {
   private readonly appRef = inject(ApplicationRef);
+  private readonly document = inject(DOCUMENT);
 
   /**
    * The outlet inserts a routed page into the document as soon as it is created, but its bindings
@@ -21,8 +24,13 @@ export class App {
    * the user or the router after bootstrap). `ApplicationRef.tick()` inside a running tick throws,
    * so revisit it for a blocking initial navigation or SSR, where the first activation can happen
    * during bootstrap.
+   *
+   * The static skeleton of `index.html` (#410) covers the app until here and goes away right after
+   * that render, so every frame shows the skeleton or a page. A route that only forwards (`/demo`)
+   * keeps it until the page it forwards to.
    */
   protected renderActivatedPage(): void {
     this.appRef.tick();
+    removeBootSkeleton(this.document);
   }
 }
