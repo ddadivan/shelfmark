@@ -15,3 +15,4 @@ export type { ContractTrashApi } from './models/contract-trash-api.interface';
 export type { ContractViewsApi } from './models/contract-views-api.interface';
 export { ContractError } from './support/contract-error';
 export { CONTRACT_SCENARIOS } from './scenarios/contract-scenarios.const';
+export { expectAdminStatsShape } from './support/expect-admin-stats-shape';

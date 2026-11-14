@@ -2,4 +2,5 @@
 export const ADMIN_ENDPOINT = {
   Status: '/api/admin/status',
   Feedback: '/api/admin/feedback',
+  Stats: '/api/admin/stats',
 } as const;
