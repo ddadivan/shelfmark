@@ -9,15 +9,8 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { tap, type Observable } from 'rxjs';
-import { isRecord } from '../util/is-record';
+import { loggedPath } from '../util/logged-path';
 import { REQUEST_ID_LOCAL } from '../request-id/request-id.middleware';
-
-/** The route pattern (`/api/links/:id`) when matched, else the path; never the query string. */
-function loggedPath(req: Request): string {
-  const route: unknown = req.route;
-  const pattern = isRecord(route) ? route['path'] : undefined;
-  return typeof pattern === 'string' ? `${req.baseUrl}${pattern}` : req.path;
-}
 
 /**
  * One line per handled request: method, path, status, duration and request id. Never bodies,

@@ -5,9 +5,20 @@ import { scrubText } from './scrub-text';
 /** Context keys that carry only runtime facts, never user data. */
 const ALLOWED_CONTEXTS = ['runtime', 'os', 'browser'];
 
+/**
+ * The token segment of the public collection page (`/c/<token>`, #276), as the first path
+ * segment of a URL (`https://host/c/<token>`) or of a bare path (`/c/<token>`).
+ */
+const SHARE_TOKEN_PATH = /^((?:[a-z][a-z0-9+.-]*:\/\/[^/?#]*)?\/c\/)[^/?#]+/i;
+
 function withoutQueryAndHash(url: string): string {
   const end = url.search(/[?#]/);
   return end === -1 ? url : url.slice(0, end);
+}
+
+/** The share token is a capability: it never leaves the browser (PROJECT.md 5.8). */
+function withoutShareToken(url: string): string {
+  return url.replace(SHARE_TOKEN_PATH, '$1:token');
 }
 
 /**
@@ -16,7 +27,8 @@ function withoutQueryAndHash(url: string): string {
  *
  * Removed: cookies, headers, request body, user (email, IP), breadcrumbs, extra data, source
  * lines and local variables of stack frames, every context except runtime/os/browser. The page
- * URL and stack frame paths keep no query string and no fragment. Free text and tag values lose
+ * URL and stack frame paths keep no query string and no fragment; the share token of the public
+ * collection page (`/c/<token>`) becomes `:token` in the page URL and the transaction. Free text and tag values lose
  * URLs, hosts, emails and auth tokens; the `requestId` tag is kept as is.
  * The API has the same rules in `apps/api/src/monitoring/scrub-event.ts`.
  */
@@ -26,7 +38,7 @@ export function scrubEvent(event: ErrorEvent): ErrorEvent {
   delete event.extra;
 
   if (event.request?.url !== undefined) {
-    event.request = { url: withoutQueryAndHash(event.request.url) };
+    event.request = { url: withoutShareToken(withoutQueryAndHash(event.request.url)) };
   } else {
     delete event.request;
   }
@@ -45,7 +57,9 @@ export function scrubEvent(event: ErrorEvent): ErrorEvent {
   }
 
   if (event.message !== undefined) event.message = scrubText(event.message);
-  if (event.transaction !== undefined) event.transaction = scrubText(event.transaction);
+  if (event.transaction !== undefined) {
+    event.transaction = scrubText(withoutShareToken(event.transaction));
+  }
   if (event.logentry?.message !== undefined) {
     event.logentry = { message: scrubText(event.logentry.message) };
   }
