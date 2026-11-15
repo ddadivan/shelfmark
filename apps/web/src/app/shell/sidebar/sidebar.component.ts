@@ -43,6 +43,8 @@ import { HowItWorksService } from '../../features/how-it-works/services/how-it-w
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/components/how-it-works-card/how-it-works-card.component';
 import { SIDEBAR_FEEDBACK_ID } from './models/sidebar-feedback-id.const';
+import { SIDEBAR_WHATS_NEW_ID } from './models/sidebar-whats-new-id.const';
+import { WhatsNewStore } from '../../features/changelog/services/whats-new.store';
 import { folderTreeNodes } from './utils/folder-tree-nodes';
 import { injectSidebarLabels } from './utils/inject-sidebar-labels';
 import { latched } from './utils/latched';
@@ -93,6 +95,7 @@ export class SidebarComponent {
   protected readonly howItWorks = inject(HowItWorksService);
   /** "Send feedback" in the sidebar footer opens the same dialog as the account menu (#315). */
   protected readonly feedback = inject(FeedbackDialogService);
+  private readonly whatsNew = inject(WhatsNewStore);
   private readonly tagsStore = inject(TagsStore);
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
@@ -149,10 +152,10 @@ export class SidebarComponent {
     return fixedNodes(labels, counts);
   });
 
-  /** "Send feedback" above the divider (not on the phone, which has it in the You list). */
+  /** "What's new" and "Send feedback" above the divider (not on the phone: the You list has them). */
   protected readonly feedbackNodes = computed<UiTreeNode[]>(() => {
     const labels = this.labels();
-    return !labels || this.phone() ? [] : feedbackNodes(labels);
+    return !labels || this.phone() ? [] : feedbackNodes(labels, this.whatsNew.pending());
   });
 
   /** Trash under the divider; its count shows once the list has loaded and only while not empty. */
@@ -208,6 +211,10 @@ export class SidebarComponent {
   protected async footerSelected(node: UiTreeNode): Promise<void> {
     if (node.id === SIDEBAR_FEEDBACK_ID) {
       this.feedback.open();
+      return;
+    }
+    if (node.id === SIDEBAR_WHATS_NEW_ID) {
+      void this.whatsNew.open();
       return;
     }
     await this.router.navigate([`/${APP_PATH.Trash}`]);

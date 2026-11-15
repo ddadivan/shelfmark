@@ -9,7 +9,7 @@
   const root = document.documentElement;
   const path = location.pathname.replace(/(.)\/$/, '$1');
   // Pages a guest can be on: the hint (a session that may have ended) is not trusted there.
-  const guestPage = /^\/(sign-in|about|privacy|c\/.*)$/.test(path);
+  const guestPage = /^\/(sign-in|about|privacy|changelog|c\/.*)$/.test(path);
   let show = path === '/demo';
   let theme = null;
   try {

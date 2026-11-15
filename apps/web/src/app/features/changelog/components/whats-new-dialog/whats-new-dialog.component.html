@@ -1,0 +1,53 @@
+<ui-dialog [title]="'whatsNew.title' | transloco" size="md">
+  <p class="whats-new__lead">{{ 'whatsNew.lead' | transloco }}</p>
+  <ul class="whats-new__list">
+    @for (entry of highlights; track entry.item.id) {
+      <li class="whats-new__item">
+        @if (entry.item.video; as video) {
+          @if (reducedMotion()) {
+            <img
+              class="whats-new__media"
+              [ngSrc]="video.poster"
+              [width]="video.width"
+              [height]="video.height"
+              alt=""
+            />
+          } @else {
+            <video
+              class="whats-new__media"
+              [src]="video.src"
+              [poster]="video.poster"
+              [width]="video.width"
+              [height]="video.height"
+              [muted]="true"
+              muted
+              autoplay
+              loop
+              playsinline
+              preload="none"
+              aria-hidden="true"
+            ></video>
+          }
+        } @else if (entry.item.image; as image) {
+          <img
+            class="whats-new__media"
+            [ngSrc]="image.src"
+            [width]="image.width"
+            [height]="image.height"
+            alt=""
+          />
+        }
+        <h3 class="whats-new__name">{{ entry.item.titleKey | transloco }}</h3>
+        <p class="whats-new__text">{{ entry.item.textKey | transloco }}</p>
+      </li>
+    }
+  </ul>
+  <div slot="footer" class="whats-new__foot">
+    <ui-button [variant]="BUTTON_VARIANT.Ghost" [block]="phone()" wrap (click)="seeAll()">
+      {{ 'whatsNew.seeAll' | transloco }}
+    </ui-button>
+    <ui-button [variant]="BUTTON_VARIANT.Primary" [block]="phone()" wrap (click)="close()">
+      {{ 'whatsNew.close' | transloco }}
+    </ui-button>
+  </div>
+</ui-dialog>

@@ -1,0 +1,38 @@
+<header class="header">
+  <a class="home" routerLink="/" [attr.aria-label]="'changelog.home' | transloco">
+    <ui-logo />
+  </a>
+</header>
+<main>
+  <article class="article">
+    <h1 class="title">{{ 'changelog.title' | transloco }}</h1>
+    <p class="muted">
+      {{ 'changelog.lead' | transloco }} {{ 'changelog.current' | transloco: { version } }}
+    </p>
+
+    @for (release of releases; track release.version) {
+    <section class="release" [attr.aria-labelledby]="'release-' + release.version">
+      <div class="release__head">
+        <h2 class="release__name" [id]="'release-' + release.version">
+          {{ 'changelog.release' | transloco: { version: release.version } }}
+        </h2>
+        <time class="release__date" [attr.datetime]="release.date"
+          >{{ release.date | appDate }}</time
+        >
+      </div>
+      <ul class="release__items">
+        @for (item of release.features; track item.id) {
+        <li class="release__item">
+          <h3 class="release__title">{{ item.titleKey | transloco }}</h3>
+          <p class="release__text">{{ item.textKey | transloco }}</p>
+        </li>
+        } @for (item of release.fixes; track item.id) {
+        <li class="release__item">
+          <p class="release__fix">{{ item.textKey | transloco }}</p>
+        </li>
+        }
+      </ul>
+    </section>
+    }
+  </article>
+</main>

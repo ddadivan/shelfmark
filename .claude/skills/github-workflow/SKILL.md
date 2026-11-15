@@ -67,6 +67,7 @@ gh project item-edit --project-id <PROJECT_NODE_ID> --id <ITEM_ID> \
 - To bring a branch up to date, merge `origin/stage` into it. Never rebase or force-push a branch that has a PR.
 - Never commit or push to `main` or `stage` (the guard hook blocks both).
 - Hotfix for production only: a branch from `main`, a PR into `main`, then `main` is merged back into `stage` through a PR.
+- **Version** (#424, PROJECT.md 9.3): the root `package.json` `version` is the app version (Settings footer, `/about`, `/changelog`). `stage` carries the next release with `-dev` (`2.1.0-dev`). Before the release PR, a `chore/<N>-release-x.y.0` PR into `stage` sets `x.y.0` (minor +1) in `package.json` and `package-lock.json` and the release date in `apps/web/src/app/features/changelog/models/changelog.const.ts`; after the release, `stage` moves to the next `-dev`. A hotfix into `main` bumps the patch (`2.0.6`) and adds a changelog entry; when `main` is merged back, `stage` keeps its `-dev` version. CI fails a PR into `main` whose version is not plain SemVer greater than main's (`tools/ci/check-version-bump.mjs`).
 - Conventional Commits: `type(scope): imperative summary` (≤ 72 chars), scope = project or area (`web`, `api`, `ui`, `contracts`, `claude`, `ci`). Small commits after every finished step; push right away.
 - End every commit message with:
 
@@ -78,7 +79,7 @@ gh project item-edit --project-id <PROJECT_NODE_ID> --id <ITEM_ID> \
 
 - One PR = one logical change = one issue, into `stage`, squash merge. Body follows `.github/pull_request_template.md`: What, `Refs #N`, How to verify, checklist.
 - `Refs #N`, not `Closes #N`: closing keywords only act on the default branch, and the issue stays open until the release.
-- **Release PR** `stage → main` at the end of a stage (title "Release: stage N"): lists `Closes #N` for every issue of the stage, merged by the author with a merge commit.
+- **Release PR** `stage → main` at the end of a stage (title "Release: stage N · x.y.0"): lists `Closes #N` for every issue of the stage, merged by the author with a merge commit. The version bump PR into `stage` goes first (see Version above).
 - Labels and milestone copied from the issue.
 - PR body ends with `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
 - Write issue / PR / comment bodies to a file with the Write tool and pass `-F <file>`. The guard hook scans Bash command text, so a heredoc that mentions env file names gets blocked.

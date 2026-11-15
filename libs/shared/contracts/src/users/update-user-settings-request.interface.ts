@@ -33,4 +33,6 @@ export interface UpdateUserSettingsRequest
    * 404 and changes nothing.
    */
   newLinksFolderId?: string | null;
+  /** The newest release whose "What's new" was seen: a release version `x.y.z` (`isReleaseVersion`). */
+  whatsNewSeen?: string;
 }

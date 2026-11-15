@@ -1,6 +1,7 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { MOCK_USER } from './support/mock-session';
+import { seedWhatsNewSeen } from './support/whats-new';
 import { E2E_TAG } from './models/e2e-tag.const';
 
 // Same values as REAL_AUTH_API_STORAGE_KEY and SESSION_HINT_STORAGE_KEY in apps/web/src/app/core/auth/models.
@@ -28,6 +29,7 @@ interface Frame {
 
 /** Records, on every animation frame, whether the skeleton, the shell or any page is in the DOM. */
 async function probeFrames(page: Page, hint: boolean): Promise<void> {
+  await seedWhatsNewSeen(page);
   // String script: this project has no DOM lib, and the code runs in the browser anyway.
   await page.addInitScript(`
     localStorage.setItem('${REAL_AUTH_API_KEY}', '1');

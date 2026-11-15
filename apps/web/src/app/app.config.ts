@@ -38,6 +38,7 @@ import { provideAdminApi } from './features/admin/provide-admin-api';
 import { TOAST_DISMISS_LABEL } from '@shelfmark/ui';
 import { ThemeService } from './core/theme/theme.service';
 import { TabSyncService } from './core/sync/tab-sync.service';
+import { UpdatePromptService } from './core/pwa/update-prompt.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -81,7 +82,7 @@ export const appConfig: ApplicationConfig = {
     provideRatingApi(),
     provideFeedbackApi(),
     provideAdminApi(),
-    // SwUpdate is not wired: a new version is applied on the next navigation, with no prompt.
+    // A new version waits for the user: UpdatePromptService offers Reload (#424), never forces it.
     // App shell and static assets only; the worker never touches /api (apps/web/ngsw-config.json).
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
@@ -90,5 +91,6 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(ThemeService).init()),
     // Keeps the tabs of this browser in step (#268).
     provideAppInitializer(() => inject(TabSyncService).init()),
+    provideAppInitializer(() => inject(UpdatePromptService).init()),
   ],
 };

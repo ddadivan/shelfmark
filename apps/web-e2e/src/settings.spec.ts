@@ -63,7 +63,7 @@ test.describe('settings (mock auth)', () => {
         'href',
         '/privacy',
       );
-      await expect(page.getByText('Shelfmark v1.0')).toBeVisible();
+      await expect(page.getByText(/^Shelfmark \d+\.\d+\.\d+/)).toBeVisible();
     },
   );
 

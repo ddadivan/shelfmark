@@ -3,6 +3,7 @@ import { COLOR_SCHEME } from './models/color-scheme.const';
 import { settled } from './support/settled';
 import { expectNoBlockingViolations } from './support/axe';
 import { MOCK_USER, seedSession } from './support/mock-session';
+import { seedWhatsNewSeen } from './support/whats-new';
 import { expect, test } from './support/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 
@@ -23,6 +24,7 @@ async function openLibrary(
 ): Promise<void> {
   await page.clock.install({ time: NOW });
   await seedSession(page, user);
+  await seedWhatsNewSeen(page);
   await page.addInitScript(
     ([key, createdAt]) => {
       // Once per tab: a reload keeps the answers the mock stored.

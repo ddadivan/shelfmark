@@ -172,30 +172,14 @@
       "copyright": "© 2026 Shelfmark",
       "privacy": "Datenschutz",
       "github": "GitHub",
-      "language": "Sprache"
+      "language": "Sprache",
+      "changelog": "Neuigkeiten"
     },
     "newTab": "öffnet in einem neuen Tab",
     "backToShelf": "Zurück zu meinem Regal",
     "whatsNew": {
       "title": "Neuigkeiten",
-      "items": {
-        "trash": {
-          "title": "Papierkorb",
-          "text": "Gelöschte Links und Ordner warten im Papierkorb, damit nichts aus Versehen verloren geht. Wie lange sie bleiben, legst du in den Einstellungen fest."
-        },
-        "tabs": {
-          "title": "Deine Tabs bleiben synchron",
-          "text": "Speichere, bearbeite oder lösche einen Link in einem Tab, und alle anderen offenen Tabs zeigen es."
-        },
-        "move": {
-          "title": "In Ordner verschieben und Drag-and-drop",
-          "text": "Verschiebe einen Link über sein Menü oder zieh ihn auf einen Ordner in der Seitenleiste."
-        },
-        "refresh": {
-          "title": "Ein frischer Look",
-          "text": "Weichere Ecken, eine schwebende Tab-Leiste auf dem Handy und Meldungen, die sagen, was passiert ist."
-        }
-      }
+      "all": "Alle Änderungen"
     }
   },
   "links": {
@@ -1437,7 +1421,7 @@
     },
     "footer": {
       "privacy": "Datenschutzerklärung",
-      "version": "Shelfmark v1.0"
+      "version": "Shelfmark {{version}}"
     },
     "delete": {
       "title": "Konto löschen",
@@ -2473,6 +2457,103 @@
       "failedDetail": "Sie sind wieder in der Liste",
       "undoFailed": "Links konnten nicht wiederhergestellt werden"
     }
+  },
+  "changelog": {
+    "title": "Neuigkeiten",
+    "lead": "Alle Shelfmark-Versionen, die neueste zuerst.",
+    "current": "Sie nutzen Shelfmark {{version}}.",
+    "release": "Shelfmark {{version}}",
+    "home": "Shelfmark, Startseite",
+    "items": {
+      "sideBySide": {
+        "title": "Nebeneinander",
+        "text": "Öffnen Sie zwei Listen nebeneinander und ziehen Sie Links von einer in die andere."
+      },
+      "folderStyle": {
+        "title": "Ordner gestalten",
+        "text": "Farbe, Symbol oder Emoji eines Ordners an einer Stelle wählen."
+      },
+      "domainRules": {
+        "title": "Regeln pro Website",
+        "text": "Links einer Website landen direkt im Ordner Ihrer Wahl."
+      },
+      "reminders": {
+        "title": "Erinnerungen",
+        "text": "Lassen Sie sich von Shelfmark später an einen Link erinnern."
+      },
+      "colourPicker": {
+        "text": "Eigene Farben: Die +-Taste sitzt mittig, und eine gewählte Farbe gilt sofort in einem gut lesbaren Ton."
+      },
+      "phoneSignIn": {
+        "text": "Beim Anmelden am Handy fliegen kleine Karten ins Regal."
+      },
+      "appSkeleton": {
+        "text": "Nach der Anmeldung baut sich die App sofort auf statt eines schwarzen Bildschirms."
+      },
+      "ukrainian": {
+        "text": "Shelfmark spricht jetzt Ukrainisch. Wählen Sie es unter Einstellungen › Sprache."
+      },
+      "noHttps": {
+        "text": "Ein als beispiel.de eingegebener Link wird wie jeder andere gespeichert."
+      },
+      "refresh": {
+        "title": "Ein frischer Look",
+        "text": "Weichere Ecken, ruhigere Farben, eine schwebende Tab-Leiste am Handy und Hinweise, die sagen, was passiert ist."
+      },
+      "trash": {
+        "title": "Papierkorb",
+        "text": "Gelöschte Links und Ordner warten im Papierkorb, damit nichts versehentlich verloren geht. Sie bestimmen, wie lange."
+      },
+      "folders": {
+        "title": "Ordnerfarben, Symbole und Anheften",
+        "text": "Geben Sie einem Ordner eine Farbe und ein Symbol oder Emoji, und heften Sie die meistgenutzten an die Seitenleiste."
+      },
+      "savedViews": {
+        "title": "Gespeicherte Ansichten",
+        "text": "Ein oft genutzter Filter, etwa Videos oder Artikel zum Lesen, ist nur einen Klick entfernt."
+      },
+      "sharing": {
+        "title": "Ordner teilen",
+        "text": "Machen Sie einen Ordner zu einer öffentlichen Seite, die jeder mit dem Link öffnen kann. Teilen jederzeit beenden."
+      },
+      "pasteMany": {
+        "title": "Viele Links einfügen",
+        "text": "Fügen Sie eine ganze Liste von Links ein und speichern Sie alle auf einmal."
+      },
+      "bulk": {
+        "title": "Mehrere Links auswählen",
+        "text": "Viele Links auf einmal verschieben, taggen, favorisieren oder löschen."
+      },
+      "dragDrop": {
+        "title": "Ziehen und Ablegen",
+        "text": "Ziehen Sie einen Link auf einen Ordner in der Seitenleiste oder ordnen Sie Ihre Ordner neu."
+      },
+      "theme": {
+        "title": "Ihr eigenes Design",
+        "text": "Wählen Sie Akzent, Hintergrund und Ecken selbst, und wie viel animiert wird."
+      },
+      "languages": {
+        "title": "Sechs Sprachen",
+        "text": "Nutzen Sie Shelfmark auf Englisch, Französisch, Deutsch, Italienisch, Spanisch oder Portugiesisch."
+      },
+      "feedback": {
+        "title": "Feedback senden",
+        "text": "Sagen Sie uns direkt in der App, was gut läuft und was nicht, gern mit Screenshot."
+      }
+    }
+  },
+  "whatsNew": {
+    "title": "Neu in Shelfmark",
+    "lead": "Das hat sich seit Ihrem letzten Besuch geändert.",
+    "seeAll": "Alle Änderungen",
+    "close": "Verstanden",
+    "entry": "Neuigkeiten",
+    "unseen": "neu"
+  },
+  "update": {
+    "available": "Eine neue Version von Shelfmark ist bereit",
+    "reload": "Neu laden",
+    "later": "Später"
   },
   "rules": {
     "title": "Regeln",

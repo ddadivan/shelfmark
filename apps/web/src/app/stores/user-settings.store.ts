@@ -38,6 +38,8 @@ const initialState: UserSettingsState = {
   customColours: [],
   customEmoji: [],
   library: null,
+  whatsNewSeen: null,
+  whatsNewKnown: false,
   loading: false,
   error: false,
 };
@@ -123,9 +125,16 @@ export const UserSettingsStore = signalStore(
                 customColours: settings.customColours,
                 customEmoji: settings.customEmoji,
                 library: libraryOf(settings),
+                whatsNewSeen: settings.whatsNewSeen,
+                whatsNewKnown: true,
                 loading: false,
               }
-            : { loading: false },
+            : {
+                // A change was made meanwhile: keep a release this load already marked as seen.
+                whatsNewSeen: store.whatsNewKnown() ? store.whatsNewSeen() : settings.whatsNewSeen,
+                whatsNewKnown: true,
+                loading: false,
+              },
         );
       } catch {
         if (started === epoch) {
@@ -273,6 +282,25 @@ export const UserSettingsStore = signalStore(
           if (started === epoch && store.folderColours() === on) {
             patchState(store, { folderColours: previous });
           }
+          return false;
+        }
+      },
+
+      /**
+       * Remembers on the account that "What's new" of `release` was seen (#424). Shown as seen at
+       * once and kept so for this load even when the save fails (the next load asks again); resolves
+       * whether it was saved.
+       */
+      async setWhatsNewSeen(release: string): Promise<boolean> {
+        if (store.whatsNewKnown() && store.whatsNewSeen() === release) {
+          return true;
+        }
+        version++;
+        patchState(store, { whatsNewSeen: release, whatsNewKnown: true });
+        try {
+          await firstValueFrom(api().update({ whatsNewSeen: release }));
+          return true;
+        } catch {
           return false;
         }
       },

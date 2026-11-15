@@ -115,6 +115,17 @@ export const NoDropRows: Story = {
   render: (args) => ({ props: args, template }),
 };
 
+/** A fixed row with a dot ("What's new" until it is opened); the dot's label is read with the name. */
+export const WithDot: Story = {
+  args: {
+    fixedNodes: [
+      ...TREE_STORY_FIXED,
+      { id: 'whats-new', name: "What's new", icon: 'gift', dot: 'new' },
+    ],
+  },
+  render: (args) => ({ props: args, template }),
+};
+
 /** No fixed entries, no menu button (no `menuLabel`). */
 export const FoldersOnly: Story = {
   args: { fixedNodes: [], menuLabel: undefined, activeId: null },

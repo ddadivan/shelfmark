@@ -50,6 +50,17 @@
 </ui-button>
 
 <nav class="settings-index__list" [attr.aria-label]="'settings.help' | transloco">
+  <a class="settings-index__row" [routerLink]="changelogHref" (click)="openWhatsNew($event)">
+    <span class="settings-index__label settings-index__label--fit"
+      >{{ 'whatsNew.entry' | transloco }}</span
+    >
+    @if (whatsNew.pending()) {
+    <span class="settings-index__dot"
+      ><span class="settings-index__sr">{{ 'whatsNew.unseen' | transloco }}</span></span
+    >
+    }
+    <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
+  </a>
   <a class="settings-index__row" [routerLink]="aboutHref">
     <span class="settings-index__label">{{ 'shell.about' | transloco }}</span>
     <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
@@ -68,5 +79,5 @@
   <a class="settings-index__privacy" [routerLink]="privacyHref"
     >{{ 'settings.footer.privacy' | transloco }}</a
   >
-  <span>{{ 'settings.footer.version' | transloco }}</span>
+  <span>{{ 'settings.footer.version' | transloco: { version: appVersion } }}</span>
 </p>

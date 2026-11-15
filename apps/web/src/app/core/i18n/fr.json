@@ -172,30 +172,14 @@
       "copyright": "© 2026 Shelfmark",
       "privacy": "Confidentialité",
       "github": "GitHub",
-      "language": "Langue"
+      "language": "Langue",
+      "changelog": "Nouveautés"
     },
     "newTab": "s’ouvre dans un nouvel onglet",
     "backToShelf": "Retour à mon étagère",
     "whatsNew": {
       "title": "Nouveautés",
-      "items": {
-        "trash": {
-          "title": "Corbeille",
-          "text": "Les liens et dossiers supprimés attendent dans la corbeille, pour que rien ne disparaisse par erreur. Choisissez leur durée de conservation dans les paramètres."
-        },
-        "tabs": {
-          "title": "Vos onglets restent synchronisés",
-          "text": "Enregistrez, modifiez ou supprimez un lien dans un onglet : tous les autres onglets ouverts le montrent."
-        },
-        "move": {
-          "title": "Déplacer vers un dossier et glisser-déposer",
-          "text": "Déplacez un lien depuis son menu, ou faites-le glisser sur un dossier de la barre latérale."
-        },
-        "refresh": {
-          "title": "Un nouveau look",
-          "text": "Des coins plus doux, une barre d’onglets flottante sur téléphone et des notifications qui disent ce qui s’est passé."
-        }
-      }
+      "all": "Voir tous les changements"
     }
   },
   "links": {
@@ -1459,7 +1443,7 @@
     },
     "footer": {
       "privacy": "Politique de confidentialité",
-      "version": "Shelfmark v1.0"
+      "version": "Shelfmark {{version}}"
     },
     "delete": {
       "title": "Supprimer le compte",
@@ -2525,6 +2509,103 @@
       "failedDetail": "Ils sont de retour dans la liste",
       "undoFailed": "Impossible de restaurer les liens"
     }
+  },
+  "changelog": {
+    "title": "Nouveautés",
+    "lead": "Toutes les versions de Shelfmark, de la plus récente à la plus ancienne.",
+    "current": "Vous utilisez Shelfmark {{version}}.",
+    "release": "Shelfmark {{version}}",
+    "home": "Shelfmark, accueil",
+    "items": {
+      "sideBySide": {
+        "title": "Côte à côte",
+        "text": "Ouvrez deux listes l'une à côté de l'autre et glissez des liens de l'une à l'autre."
+      },
+      "folderStyle": {
+        "title": "Style des dossiers",
+        "text": "Choisissez la couleur, l'icône ou l'emoji d'un dossier au même endroit."
+      },
+      "domainRules": {
+        "title": "Règles par site",
+        "text": "Envoyez les liens d'un site directement dans le dossier de votre choix."
+      },
+      "reminders": {
+        "title": "Rappels",
+        "text": "Demandez à Shelfmark de vous rappeler un lien plus tard."
+      },
+      "colourPicker": {
+        "text": "Couleurs personnalisées : le bouton + est centré, et la couleur choisie s'applique tout de suite dans une teinte lisible."
+      },
+      "phoneSignIn": {
+        "text": "De petites cartes s'envolent vers l'étagère pendant que vous vous connectez sur mobile."
+      },
+      "appSkeleton": {
+        "text": "Après la connexion, l'application prend forme tout de suite au lieu d'un écran noir."
+      },
+      "ukrainian": {
+        "text": "Shelfmark parle maintenant ukrainien. Choisissez-le dans Réglages › Langue."
+      },
+      "noHttps": {
+        "text": "Un lien saisi comme exemple.com s'enregistre comme les autres."
+      },
+      "refresh": {
+        "title": "Un nouveau look",
+        "text": "Des coins plus doux, des couleurs plus calmes, une barre d'onglets flottante sur mobile et des notifications qui disent ce qui s'est passé."
+      },
+      "trash": {
+        "title": "Corbeille",
+        "text": "Les liens et dossiers supprimés attendent dans la corbeille : rien ne disparaît par erreur. Vous choisissez combien de temps ils y restent."
+      },
+      "folders": {
+        "title": "Couleurs, icônes et épingles",
+        "text": "Donnez à un dossier une couleur et une icône ou un emoji, et épinglez ceux que vous utilisez le plus dans la barre latérale."
+      },
+      "savedViews": {
+        "title": "Vues enregistrées",
+        "text": "Gardez un filtre que vous utilisez souvent, comme les vidéos ou les articles à lire, à portée de clic."
+      },
+      "sharing": {
+        "title": "Partager un dossier",
+        "text": "Transformez un dossier en page publique que toute personne ayant le lien peut ouvrir. Arrêtez le partage quand vous voulez."
+      },
+      "pasteMany": {
+        "title": "Coller plusieurs liens",
+        "text": "Collez toute une liste de liens et enregistrez-les d'un coup."
+      },
+      "bulk": {
+        "title": "Sélectionner plusieurs liens",
+        "text": "Déplacez, étiquetez, mettez en favori ou supprimez plusieurs liens à la fois."
+      },
+      "dragDrop": {
+        "title": "Glisser-déposer",
+        "text": "Glissez un lien sur un dossier de la barre latérale, ou réorganisez vos dossiers."
+      },
+      "theme": {
+        "title": "Votre propre thème",
+        "text": "Choisissez votre accent, votre fond et vos coins, et le niveau d'animation."
+      },
+      "languages": {
+        "title": "Six langues",
+        "text": "Utilisez Shelfmark en anglais, français, allemand, italien, espagnol ou portugais."
+      },
+      "feedback": {
+        "title": "Envoyer un avis",
+        "text": "Dites-nous ce qui marche et ce qui ne marche pas, avec une capture si vous voulez, directement depuis l'application."
+      }
+    }
+  },
+  "whatsNew": {
+    "title": "Nouveautés de Shelfmark",
+    "lead": "Voici ce qui a changé depuis votre dernière visite.",
+    "seeAll": "Voir tous les changements",
+    "close": "Compris",
+    "entry": "Nouveautés",
+    "unseen": "nouveau"
+  },
+  "update": {
+    "available": "Une nouvelle version de Shelfmark est prête",
+    "reload": "Recharger",
+    "later": "Plus tard"
   },
   "rules": {
     "title": "Règles",
