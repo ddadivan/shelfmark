@@ -30,6 +30,7 @@ import {
   BUTTON_VARIANT,
   ButtonComponent,
   CheckboxComponent,
+  ChipComponent,
   DialogComponent,
   injectDialogData,
   NOTICE_KIND,
@@ -53,6 +54,7 @@ import type { AddLinkDialogData } from '../../models/add-link-dialog-data.interf
 import type { AddLinkResult } from '../../models/add-link-result.type';
 import type { AddLinkSavedMany } from '../../models/add-link-saved-many.interface';
 import { LINKS_API } from '../../models/links-api.const';
+import { BatchRuleService } from '../../../rules/services/batch-rule.service';
 import { batchSaveError } from './batch-save-error';
 import { fitTitle } from './fit-title';
 import { loadPreviews } from './load-previews';
@@ -79,6 +81,7 @@ import type { PasteRow } from './models/paste-row.interface';
     BadgeComponent,
     ButtonComponent,
     CheckboxComponent,
+    ChipComponent,
     DialogComponent,
     FormField,
     FormRoot,
@@ -88,6 +91,7 @@ import type { PasteRow } from './models/paste-row.interface';
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [BatchRuleService],
   templateUrl: './paste-many-list.component.html',
   styleUrl: './paste-many-list.component.scss',
 })
@@ -106,6 +110,8 @@ export class PasteManyListComponent {
   readonly folderId = input<string | null>(null);
   /** Tags entered in the dialog so far. */
   readonly tags = input<readonly string[]>([]);
+  /** The user picked the folder in the single-link form already (domain rules keep out of it). */
+  readonly folderChosen = input(false);
 
   /** The phone sheet has a close button and no Cancel, like the single-link dialog. */
   protected readonly phone = inject(ViewportService).phone;
@@ -141,6 +147,9 @@ export class PasteManyListComponent {
   protected readonly form = form(this.model, () => undefined, {
     submission: { action: () => this.save() },
   });
+
+  /** Domain rules per line (#398): chips, the batch switch and the fields each link is saved with. */
+  protected readonly ruleRows = inject(BatchRuleService);
 
   protected readonly saving = signal(false);
   protected readonly saveError = signal<BatchSaveError | null>(null);
@@ -199,6 +208,12 @@ export class PasteManyListComponent {
   );
 
   constructor() {
+    this.ruleRows.connect({
+      rows: () => this.rows(),
+      batch: () => this.model(),
+      folderLocked: () =>
+        this.folderChosen() || this.data.folderId !== undefined || this.form.folderId().dirty(),
+    });
     void this.folders.load();
     void this.tagStore.load();
     toObservable(this.paste)
@@ -235,6 +250,13 @@ export class PasteManyListComponent {
     this.choices.set(new Map(this.rows().map((row) => [row.url, checked])));
   }
 
+  /** A line's rule chip removed: that link is saved with the folder and tags for all; focus to its box. */
+  protected dismissRule(row: PasteRow): void {
+    const index = this.rows().indexOf(row);
+    this.ruleRows.dismiss(row.key);
+    this.rowBoxes()[index]?.focus();
+  }
+
   /** Takes a row out of the list; focus moves to the next row (or "Select all" when none is left). */
   protected remove(row: PasteRow): void {
     const index = this.rows().indexOf(row);
@@ -264,6 +286,8 @@ export class PasteManyListComponent {
       items: rows.map((row) => this.item(row)),
       ...(folderId !== null && { folderId }),
       ...(names.length > 0 && { tags: names }),
+      // The list shows what the domain rules do per line and sends that (#398).
+      ...(this.ruleRows.handled() && { applyRules: false }),
     };
     this.saving.set(true);
     this.saveError.set(null);
@@ -296,6 +320,7 @@ export class PasteManyListComponent {
     return {
       url: row.url,
       idempotencyKey: row.key,
+      ...this.ruleRows.itemFields(row.key),
       ...(title !== '' && { title }),
       ...(preview?.faviconUrl && { faviconUrl: preview.faviconUrl }),
       ...(preview?.imageUrl && { imageUrl: preview.imageUrl }),

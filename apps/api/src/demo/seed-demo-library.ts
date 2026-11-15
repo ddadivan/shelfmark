@@ -87,4 +87,12 @@ export async function seedDemoLibrary(
   });
   await tx.link.createMany({ data: linkRows });
   await tx.linkTag.createMany({ data: linkTags });
+  await tx.linkRule.createMany({
+    data: seed.rules.map((rule) => ({
+      userId,
+      domain: rule.domain,
+      folderId: rule.folder === null ? null : idOfFolder(rule.folder),
+      tagNames: rule.tags.map(normalizeTagName),
+    })),
+  });
 }

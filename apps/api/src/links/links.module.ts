@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { FetcherModule } from '../fetcher/fetcher.module';
 import { FoldersModule } from '../folders/folders.module';
+import { RulesModule } from '../rules/rules.module';
 import { TagsModule } from '../tags/tags.module';
 import { LinkImageCaptureService } from './images/link-image-capture.service';
 import { LinkImageRecaptureService } from './images/link-image-recapture.service';
@@ -13,7 +14,7 @@ import { LinksWriteService } from './links-write.service';
 import { LinksService } from './links.service';
 
 @Module({
-  imports: [FetcherModule, FoldersModule, TagsModule],
+  imports: [FetcherModule, FoldersModule, TagsModule, RulesModule],
   controllers: [LinksController],
   providers: [
     LinksService,

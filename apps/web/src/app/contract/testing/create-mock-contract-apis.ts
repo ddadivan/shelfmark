@@ -16,6 +16,7 @@ import { MockUserSettingsApi } from '../../features/settings/mock/mock-user-sett
 import { MockSharesApi } from '../../features/sharing/mock/mock-shares.api';
 import { MockTrashApi } from '../../features/trash/mock/mock-trash.api';
 import { MockSavedViewsApi } from '../../features/views/mock/mock-saved-views.api';
+import { MockRulesApi } from '../../features/rules/mock/mock-rules.api';
 import { MockExportApi } from '../../features/export/mock/mock-export.api';
 import { exportedFileName } from './exported-file-name';
 import { settle, settlePromise } from './settle';
@@ -46,6 +47,7 @@ export function createMockContractApis(): ContractApis {
   data.setTags([]);
   data.pins = [];
   data.trash = [];
+  data.rules = [];
 
   const links = TestBed.inject(MockLinksApi);
   const folders = TestBed.inject(MockFoldersApi);
@@ -53,6 +55,7 @@ export function createMockContractApis(): ContractApis {
   const pins = TestBed.inject(MockPinsApi);
   const reminders = TestBed.inject(MockRemindersApi);
   const views = TestBed.inject(MockSavedViewsApi);
+  const rules = TestBed.inject(MockRulesApi);
   const trash = TestBed.inject(MockTrashApi);
   const settings = TestBed.inject(MockUserSettingsApi);
   const meStats = TestBed.inject(MockMeStatsApi);
@@ -112,6 +115,13 @@ export function createMockContractApis(): ContractApis {
       set: (linkId, remindAt) => settle(reminders.set(linkId, remindAt)),
       clear: (linkId) => settle(reminders.clear(linkId)),
       setMany: (request) => settle(reminders.setMany(request)),
+    },
+    rules: {
+      list: () => settle(rules.list()),
+      create: (request) => settle(rules.create(request)),
+      update: (id, request) => settle(rules.update(id, request)),
+      remove: (id) => settle(rules.remove(id)),
+      matches: (id) => settle(rules.matches(id)),
     },
     trash: {
       list: () => settle(trash.list()),

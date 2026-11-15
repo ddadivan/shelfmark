@@ -279,6 +279,10 @@
         "none": "Nessun link trovato in questo testo",
         "back": "Un solo link",
         "find": "Trova i link"
+      },
+      "rule": {
+        "chip": "Regola: {{domain}} → {{target}}",
+        "remove": "Non applicare la regola per {{domain}}"
       }
     },
     "edit": {
@@ -326,7 +330,8 @@
       "unpinFromTop": "Togli dall’alto",
       "pinToSidebar": "Fissa nella barra laterale",
       "unpinFromSidebar": "Togli dalla barra laterale",
-      "pinned": "Fissato"
+      "pinned": "Fissato",
+      "createRule": "Crea una regola per {{domain}}…"
     },
     "recent": {
       "title": "Aperti di recente",
@@ -482,7 +487,13 @@
       },
       "noneSaved": "Nessun link è stato salvato",
       "undoFailed": "Impossibile annullare",
-      "undoFailedDetail": "I link restano salvati"
+      "undoFailedDetail": "I link restano salvati",
+      "applyRules": "Applica le regole di dominio",
+      "savedMixed": {
+        "one": "{{count}} link salvato",
+        "many": "{{count}} link salvati nelle loro cartelle",
+        "other": "{{count}} link salvati nelle loro cartelle"
+      }
     },
     "drag": {
       "moveHere": "Sposta qui",
@@ -2616,6 +2627,91 @@
       "none": "Nessun promemoria",
       "change": "Modifica",
       "remind": "Ricordamelo"
+    }
+  },
+  "rules": {
+    "title": "Regole",
+    "intro": "I link di un dominio finiscono in una cartella e ricevono dei tag quando li salvi. La cartella o i tag che scegli tu hanno sempre la precedenza.",
+    "add": "Aggiungi regola",
+    "list": "Regole",
+    "tags": "Tag",
+    "empty": "Ancora nessuna regola. Per esempio, i link di youtube.com possono andare in Video con il tag video.",
+    "loadFailed": "Impossibile caricare le regole.",
+    "retry": "Riprova",
+    "folderTrashed": "Cartella nel cestino: vengono aggiunti solo i tag",
+    "more": "Azioni per {{domain}}",
+    "moreTooltip": "Altre azioni",
+    "edit": "Modifica",
+    "applyExisting": "Applica ai link esistenti",
+    "delete": "Elimina regola",
+    "undo": "Annulla",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Regola aggiunta"
+    },
+    "saved": {
+      "title": "Regola salvata"
+    },
+    "deleted": {
+      "title": "Regola eliminata"
+    },
+    "deleteFailed": "Impossibile eliminare la regola",
+    "limit": {
+      "title": "Numero massimo di regole raggiunto"
+    },
+    "apply": {
+      "title": "Applicare la regola per {{domain}}?",
+      "message": {
+        "one": "{{count}} link in «Senza cartella» riceve la cartella e i tag di questa regola: {{target}}.",
+        "many": "{{count}} link in «Senza cartella» ricevono la cartella e i tag di questa regola: {{target}}.",
+        "other": "{{count}} link in «Senza cartella» ricevono la cartella e i tag di questa regola: {{target}}."
+      },
+      "more": "In tutto sono {{total}}. Applicala di nuovo per gli altri.",
+      "confirm": {
+        "one": "Applica a {{count}} link",
+        "many": "Applica a {{count}} link",
+        "other": "Applica a {{count}} link"
+      },
+      "cancel": "Annulla",
+      "none": "Nessun link di {{domain}} in «Senza cartella»",
+      "done": {
+        "one": "Regola applicata a {{count}} link",
+        "many": "Regola applicata a {{count}} link",
+        "other": "Regola applicata a {{count}} link"
+      },
+      "failed": "Impossibile applicare la regola",
+      "undoFailed": "Impossibile annullare la regola"
+    },
+    "dialog": {
+      "addTitle": "Aggiungi regola",
+      "editTitle": "Modifica regola",
+      "close": "Chiudi",
+      "cancel": "Annulla",
+      "save": "Salva regola",
+      "saving": "Salvataggio…",
+      "domain": {
+        "label": "Dominio",
+        "placeholder": "youtube.com",
+        "hint": "Vale anche per i sottodomini, come m.youtube.com",
+        "required": "Inserisci un dominio",
+        "invalid": "Inserisci un dominio come youtube.com"
+      },
+      "folder": {
+        "label": "Cartella",
+        "none": "Nessuna cartella",
+        "search": "Cerca cartelle",
+        "trashed": "La cartella di questa regola è nel cestino. Scegline un’altra o tieni solo i tag."
+      },
+      "tags": {
+        "label": "Tag",
+        "max": "Fino a {{max}} tag"
+      },
+      "nothing": "Scegli una cartella o aggiungi almeno un tag.",
+      "taken": "Esiste già una regola per questo dominio.",
+      "limit": "Puoi avere fino a {{max}} regole. Eliminane prima una.",
+      "missingFolder": "Questa cartella non esiste più. Scegline un’altra.",
+      "missing": "Questa regola è stata eliminata nel frattempo.",
+      "failed": "Impossibile salvare la regola. Riprova."
     }
   }
 }

@@ -131,6 +131,7 @@ describe('LibrarySettingsPage', () => {
     expect([...root.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toEqual([
       'Viewing',
       'Saving',
+      'Rules',
       'Trash',
     ]);
     expect(root.textContent).toContain('Keep deleted items for');

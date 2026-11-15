@@ -2,6 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { openFeed } from './support/a11y-flows';
 import { E2E_TAG } from './models/e2e-tag.const';
+import { demoUser, seedSession } from './support/mock-session';
 
 // `angular.dev/overview` is the mock's saved link (the duplicate fixture).
 const PASTE = [
@@ -144,5 +145,62 @@ test.describe('paste several links (mock API)', () => {
     const landed = page.locator('li.library__landed').first();
     await expect(landed).toBeVisible();
     await expect(landed).toHaveCSS('animation-name', 'ui-reveal, ui-land-ring');
+  });
+});
+
+test.describe('paste several links with a domain rule (#398, mock API)', () => {
+  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+
+  // The demo sandbox starts with the rule angular.dev → Angular, #angular.
+  test.beforeEach(async ({ page }) => {
+    await seedSession(page, demoUser(5));
+    await page.goto('/links');
+    await expect(page.locator('ui-card').first()).toBeVisible();
+  });
+
+  const RULE_PASTE = ['https://angular.dev/guide/routing', 'https://example.org/notes'].join('\n');
+  const CHIP = 'Rule: angular.dev → Angular, #angular';
+
+  test(
+    'a matching line shows its rule and lands in the rule folder; the others stay',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await page.getByRole('button', { name: 'Add link' }).first().click();
+      const field = page
+        .getByRole('dialog', { name: 'Add link' })
+        .getByLabel('Link', { exact: true });
+      await pasteInto(field, RULE_PASTE);
+
+      const dialog = page.getByRole('dialog', { name: 'Add 2 links' });
+      const ruled = dialog.getByRole('listitem').filter({ hasText: 'angular.dev' });
+      await expect(ruled.getByText(CHIP)).toBeVisible();
+      await expect(
+        dialog.getByRole('listitem').filter({ hasText: 'example.org' }),
+      ).not.toContainText('Rule:');
+      await dialog.getByRole('button', { name: 'Save 2 links' }).click();
+      await expect(dialog).toBeHidden();
+      await expect(
+        page.getByRole('status').filter({ hasText: '2 links saved to their folders' }),
+      ).toBeVisible();
+    },
+  );
+
+  test('"Apply domain rules" off saves every line with the folder for all', async ({ page }) => {
+    await page.getByRole('button', { name: 'Add link' }).first().click();
+    const field = page
+      .getByRole('dialog', { name: 'Add link' })
+      .getByLabel('Link', { exact: true });
+    await pasteInto(field, RULE_PASTE);
+
+    const dialog = page.getByRole('dialog', { name: 'Add 2 links' });
+    await expect(dialog.getByText(CHIP)).toBeVisible();
+    // A click on the label: the visually hidden input sits under it.
+    await dialog.getByText('Apply domain rules', { exact: true }).click();
+    await expect(dialog.getByRole('checkbox', { name: 'Apply domain rules' })).not.toBeChecked();
+    await expect(dialog.getByText(CHIP)).toHaveCount(0);
+    await dialog.getByRole('button', { name: 'Save 2 links' }).click();
+    await expect(
+      page.getByRole('status').filter({ hasText: '2 links saved to Unsorted' }),
+    ).toBeVisible();
   });
 });

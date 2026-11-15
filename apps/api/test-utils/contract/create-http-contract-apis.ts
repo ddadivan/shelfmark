@@ -13,6 +13,12 @@ import {
   type SetRemindersBatchResponse,
   RECENT_LINKS_ENDPOINT,
   SAVED_VIEW_ENDPOINT,
+  RULE_ENDPOINT,
+  type CreateRuleRequest,
+  type ListRulesResponse,
+  type RuleMatchesResponse,
+  type RuleResponse,
+  type UpdateRuleRequest,
   TRASH_ENDPOINT,
   USER_SETTINGS_ENDPOINT,
   ME_STATS_ENDPOINT,
@@ -148,6 +154,15 @@ export function createHttpContractApis(app: NestExpressApplication, cookie: stri
       remove: (id) => http.send<void>('delete', `${SAVED_VIEW_ENDPOINT}/${enc(id)}`),
       reorder: (ids) =>
         http.send<ListSavedViewsResponse>('put', `${SAVED_VIEW_ENDPOINT}/order`, { ids: [...ids] }),
+    },
+    rules: {
+      list: () => http.send<ListRulesResponse>('get', RULE_ENDPOINT),
+      create: (request: CreateRuleRequest) =>
+        http.send<RuleResponse>('post', RULE_ENDPOINT, request),
+      update: (id, request: UpdateRuleRequest) =>
+        http.send<RuleResponse>('patch', `${RULE_ENDPOINT}/${enc(id)}`, request),
+      remove: (id) => http.send<void>('delete', `${RULE_ENDPOINT}/${enc(id)}`),
+      matches: (id) => http.send<RuleMatchesResponse>('get', `${RULE_ENDPOINT}/${enc(id)}/matches`),
     },
     trash: {
       list: () => http.send<ListTrashResponse>('get', TRASH_ENDPOINT.Base),

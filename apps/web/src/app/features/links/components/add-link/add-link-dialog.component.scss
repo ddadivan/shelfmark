@@ -174,3 +174,13 @@
     border-radius: var(--radius-sm);
   }
 }
+
+// The rule chip (#398) sits on its own line above the folder field; long names wrap.
+.add-link__rule {
+  display: flex;
+  min-width: 0;
+
+  ui-chip {
+    max-width: 100%;
+  }
+}

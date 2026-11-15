@@ -7,6 +7,7 @@ import { LINKS_SCENARIOS } from './links-scenarios.const';
 import { ME_SCENARIOS } from './me-scenarios.const';
 import { PINS_SCENARIOS } from './pins-scenarios.const';
 import { REMINDERS_SCENARIOS } from './reminders-scenarios.const';
+import { RULES_SCENARIOS } from './rules-scenarios.const';
 import { SETTINGS_SCENARIOS } from './settings-scenarios.const';
 import { SHARES_SCENARIOS } from './shares-scenarios.const';
 import { TAGS_SCENARIOS } from './tags-scenarios.const';
@@ -21,6 +22,7 @@ export const CONTRACT_SCENARIOS: readonly ContractScenario[] = [
   ...PINS_SCENARIOS,
   ...REMINDERS_SCENARIOS,
   ...VIEWS_SCENARIOS,
+  ...RULES_SCENARIOS,
   ...TRASH_SCENARIOS,
   ...SETTINGS_SCENARIOS,
   ...SHARES_SCENARIOS,

@@ -22,6 +22,7 @@ import { TrashStore } from '../../../stores/trash.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { PinActionsService } from '../../pins/services/pin-actions.service';
 import { AddLinkDialogService } from './add-link-dialog.service';
+import { RuleActionsService } from '../../rules/services/rule-actions.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
 import type { AddLinkSavedMany } from '../models/add-link-saved-many.interface';
@@ -56,6 +57,7 @@ export class LinkActionsService {
   private readonly toasts = inject(ToastService);
   private readonly undoToast = inject(UndoToastService);
   private readonly addLinkDialog = inject(AddLinkDialogService);
+  private readonly ruleActions = inject(RuleActionsService);
   private readonly transloco = inject(TranslocoService);
   private readonly doc = inject(DOCUMENT);
 
@@ -141,6 +143,11 @@ export class LinkActionsService {
   /** "Remind me…" / "Change reminder" (#275): presets or a date and time. */
   async remind(link: LinkResponse): Promise<void> {
     await this.injector.get(ReminderActionsService).remind([link]);
+  }
+
+  /** "Create a rule for youtube.com…" (#398): the rule dialog with the link's domain. */
+  async createRule(link: LinkResponse): Promise<void> {
+    await this.ruleActions.create(link.url);
   }
 
   /** "Move to folder…": a folder picker (a sheet below 64em); choosing a folder moves the link at once. */
@@ -239,7 +246,7 @@ export class LinkActionsService {
    * its second line instead of the "still loading" hint.
    */
   noteSavedMany(result: AddLinkSavedMany): void {
-    const { links, errors, folderId } = result;
+    const { links, errors } = result;
     if (links.length === 0) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
@@ -254,12 +261,20 @@ export class LinkActionsService {
     void this.folders.refresh();
     void this.tags.noteLinkSaved();
     const undo = this.t('links.item.undo');
+    // Domain rules (#398) may file the links in different folders: then no folder is named.
+    const landed = new Set(links.map((link) => link.folderId));
+    const shared = landed.size === 1 ? (links[0]?.folderId ?? null) : undefined;
     this.toasts.show({
       kind: errors.length > 0 ? TOAST_KIND.Warn : TOAST_KIND.Success,
-      title: this.t(pluralKey('links.many.saved', links.length), {
-        count: String(links.length),
-        folder: this.folderLabel(folderId),
-      }),
+      title:
+        shared === undefined
+          ? this.t(pluralKey('links.many.savedMixed', links.length), {
+              count: String(links.length),
+            })
+          : this.t(pluralKey('links.many.saved', links.length), {
+              count: String(links.length),
+              folder: this.folderLabel(shared),
+            }),
       detail:
         errors.length > 0
           ? this.t(pluralKey('links.many.skippedByServer', errors.length), {

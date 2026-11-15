@@ -5,6 +5,7 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsOptional,
   IsString,
   IsUUID,
@@ -47,4 +48,13 @@ export class CreateLinksBatchDto implements CreateLinksBatchRequest {
   @NoControlChars(true, { each: true })
   @MaxLength(RAW_TAG_MAX, { each: true })
   tags?: string[];
+
+  @ApiPropertyOptional({
+    default: true,
+    description:
+      'Domain rules fill folder and tags of items that leave them open; false skips them',
+  })
+  @IsOptional()
+  @IsBoolean()
+  applyRules?: boolean;
 }

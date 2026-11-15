@@ -2,8 +2,10 @@ import {
   isHttpUrl,
   LINK_KIND,
   LINK_LIMIT,
+  normalizeRuleDomain,
   normalizeTagName,
   normalizeUrl,
+  RULE_LIMIT,
   TAG_LIMIT,
 } from '@shelfmark/contracts';
 import { FOLDER_LIMIT } from '@shelfmark/contracts';
@@ -27,6 +29,18 @@ describe('demo seed (seed.json)', () => {
     expect(names).toEqual(
       expect.arrayContaining(['Work', 'Angular', 'Courses', 'Clothes', 'Recipes']),
     );
+  });
+
+  it('has valid domain rules on seed folders and tags', () => {
+    const tags = new Set(DEMO_SEED.tags.map(normalizeTagName));
+    expect(DEMO_SEED.rules.length).toBeLessThanOrEqual(RULE_LIMIT.PerUserMax);
+    for (const rule of DEMO_SEED.rules) {
+      expect(normalizeRuleDomain(rule.domain)).toBe(rule.domain);
+      if (rule.folder !== null) expect(folderKeys).toContain(rule.folder);
+      expect(rule.tags.length).toBeLessThanOrEqual(RULE_LIMIT.TagsMax);
+      expect(rule.folder !== null || rule.tags.length > 0).toBe(true);
+      for (const name of rule.tags) expect(tags.has(normalizeTagName(name))).toBe(true);
+    }
   });
 
   it('gives only known kinds', () => {

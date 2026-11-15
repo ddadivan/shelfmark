@@ -35,6 +35,15 @@
         }}</span>
       </div>
 
+      @if (ruleRows.anyMatch()) {
+        <ui-checkbox
+          class="paste-many__rules"
+          [label]="'links.many.applyRules' | transloco"
+          [checked]="!ruleRows.ignored()"
+          (checkedChange)="ruleRows.ignored.set(!$event)"
+        />
+      }
+
       <ul class="paste-many__list" [attr.aria-label]="'links.many.listLabel' | transloco">
         @for (view of views(); track view.row.key) {
           <li class="paste-many__row" [class.paste-many__row--off]="!view.checked">
@@ -46,6 +55,17 @@
               [checked]="view.checked"
               (checkedChange)="toggle(view.row, $event)"
             />
+            @if (ruleRows.rows().get(view.row.key); as rule) {
+              <ui-chip
+                class="paste-many__rule"
+                variant="neutral"
+                icon="globe"
+                removable
+                [removeLabel]="'links.add.rule.remove' | transloco: { domain: rule.chip.domain }"
+                (removed)="dismissRule(view.row)"
+                >{{ 'links.add.rule.chip' | transloco: rule.chip }}</ui-chip
+              >
+            }
             @if (view.duplicate) {
               <ui-badge class="paste-many__badge" [tone]="BADGE_TONE.Warning">{{
                 'links.many.row.alreadySaved' | transloco

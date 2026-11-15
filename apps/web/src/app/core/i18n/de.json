@@ -279,6 +279,10 @@
         "none": "In diesem Text wurden keine Links gefunden",
         "back": "Ein Link",
         "find": "Links finden"
+      },
+      "rule": {
+        "chip": "Regel: {{domain}} → {{target}}",
+        "remove": "Regel für {{domain}} nicht anwenden"
       }
     },
     "edit": {
@@ -326,7 +330,8 @@
       "unpinFromTop": "Oben lösen",
       "pinToSidebar": "An Seitenleiste anheften",
       "unpinFromSidebar": "Von Seitenleiste lösen",
-      "pinned": "Angeheftet"
+      "pinned": "Angeheftet",
+      "createRule": "Regel für {{domain}} erstellen…"
     },
     "recent": {
       "title": "Zuletzt geöffnet",
@@ -473,7 +478,12 @@
       },
       "noneSaved": "Es wurden keine Links gespeichert",
       "undoFailed": "Rückgängig machen fehlgeschlagen",
-      "undoFailedDetail": "Die Links bleiben gespeichert"
+      "undoFailedDetail": "Die Links bleiben gespeichert",
+      "applyRules": "Domain-Regeln anwenden",
+      "savedMixed": {
+        "one": "{{count}} Link gespeichert",
+        "other": "{{count}} Links in ihren Ordnern gespeichert"
+      }
     },
     "drag": {
       "moveHere": "Hierher verschieben",
@@ -2560,6 +2570,88 @@
       "none": "Keine Erinnerung",
       "change": "Ändern",
       "remind": "Erinnern"
+    }
+  },
+  "rules": {
+    "title": "Regeln",
+    "intro": "Links einer Domain landen beim Speichern in einem Ordner und bekommen Tags. Ein Ordner oder Tags, die du selbst wählst, haben immer Vorrang.",
+    "add": "Regel hinzufügen",
+    "list": "Regeln",
+    "tags": "Tags",
+    "empty": "Noch keine Regeln. Zum Beispiel können Links von youtube.com mit dem Tag video in Videos landen.",
+    "loadFailed": "Die Regeln konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "folderTrashed": "Ordner im Papierkorb: nur Tags werden hinzugefügt",
+    "more": "Aktionen für {{domain}}",
+    "moreTooltip": "Weitere Aktionen",
+    "edit": "Bearbeiten",
+    "applyExisting": "Auf vorhandene Links anwenden",
+    "delete": "Regel löschen",
+    "undo": "Rückgängig",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Regel hinzugefügt"
+    },
+    "saved": {
+      "title": "Regel gespeichert"
+    },
+    "deleted": {
+      "title": "Regel gelöscht"
+    },
+    "deleteFailed": "Die Regel konnte nicht gelöscht werden",
+    "limit": {
+      "title": "Maximale Anzahl an Regeln erreicht"
+    },
+    "apply": {
+      "title": "Regel für {{domain}} anwenden?",
+      "message": {
+        "one": "{{count}} Link in „Ohne Ordner“ bekommt Ordner und Tags dieser Regel: {{target}}.",
+        "other": "{{count}} Links in „Ohne Ordner“ bekommen Ordner und Tags dieser Regel: {{target}}."
+      },
+      "more": "Insgesamt sind es {{total}}. Wende sie für den Rest erneut an.",
+      "confirm": {
+        "one": "Auf {{count}} Link anwenden",
+        "other": "Auf {{count}} Links anwenden"
+      },
+      "cancel": "Abbrechen",
+      "none": "Keine Links von {{domain}} in „Ohne Ordner“",
+      "done": {
+        "one": "Regel auf {{count}} Link angewendet",
+        "other": "Regel auf {{count}} Links angewendet"
+      },
+      "failed": "Die Regel konnte nicht angewendet werden",
+      "undoFailed": "Die Regel konnte nicht rückgängig gemacht werden"
+    },
+    "dialog": {
+      "addTitle": "Regel hinzufügen",
+      "editTitle": "Regel bearbeiten",
+      "close": "Schließen",
+      "cancel": "Abbrechen",
+      "save": "Regel speichern",
+      "saving": "Wird gespeichert…",
+      "domain": {
+        "label": "Domain",
+        "placeholder": "youtube.com",
+        "hint": "Gilt auch für Subdomains wie m.youtube.com",
+        "required": "Gib eine Domain ein",
+        "invalid": "Gib eine Domain wie youtube.com ein"
+      },
+      "folder": {
+        "label": "Ordner",
+        "none": "Kein Ordner",
+        "search": "Ordner suchen",
+        "trashed": "Der Ordner dieser Regel liegt im Papierkorb. Wähle einen anderen oder behalte nur die Tags."
+      },
+      "tags": {
+        "label": "Tags",
+        "max": "Bis zu {{max}} Tags"
+      },
+      "nothing": "Wähle einen Ordner oder füge mindestens einen Tag hinzu.",
+      "taken": "Für diese Domain gibt es schon eine Regel.",
+      "limit": "Du kannst bis zu {{max}} Regeln haben. Lösche zuerst eine.",
+      "missingFolder": "Dieser Ordner existiert nicht mehr. Wähle einen anderen.",
+      "missing": "Diese Regel wurde inzwischen gelöscht.",
+      "failed": "Die Regel konnte nicht gespeichert werden. Versuche es erneut."
     }
   }
 }
