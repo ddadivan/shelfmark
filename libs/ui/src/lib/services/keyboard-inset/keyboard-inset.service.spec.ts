@@ -20,6 +20,11 @@ describe('keyboardInset', () => {
     expect(keyboardInset(800, { offsetTop: 120, height: 500 })).toBe(180);
   });
 
+  it('ignores a pinch zoom, which shrinks the visual viewport without a keyboard', () => {
+    expect(keyboardInset(800, { offsetTop: 0, height: 400, scale: 2 })).toBe(0);
+    expect(keyboardInset(800, { offsetTop: 0, height: 500, scale: 1 })).toBe(300);
+  });
+
   it('ignores browser chrome and rounding', () => {
     expect(keyboardInset(800, { offsetTop: 0, height: 800 })).toBe(0);
     expect(keyboardInset(800, { offsetTop: 0, height: 800 - KEYBOARD_INSET_MIN_PX + 1 })).toBe(0);

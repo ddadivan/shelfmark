@@ -10,6 +10,7 @@ import {
 class FakeViewport extends EventTarget {
   offsetTop = 0;
   height = 800;
+  scale = 1;
 }
 
 function fakeView(viewport: FakeViewport | undefined): Window & typeof globalThis {
@@ -51,6 +52,19 @@ describe('visible area fit', () => {
     expect(panel.style.getPropertyValue(VISIBLE_AREA_PROPERTY)).toBe('');
     viewport.dispatchEvent(new Event('resize'));
     expect(panel.style.getPropertyValue(VISIBLE_AREA_PROPERTY)).toBe('');
+  });
+
+  it('leaves a pinch-zoomed page alone', () => {
+    const viewport = new FakeViewport();
+    const panel = panelAt(200);
+    const stop = watchVisibleArea(() => panel, fakeView(viewport));
+    expect(panel.style.getPropertyValue(VISIBLE_AREA_PROPERTY)).not.toBe('');
+
+    viewport.scale = 2;
+    viewport.height = 400;
+    viewport.dispatchEvent(new Event('resize'));
+    expect(panel.style.getPropertyValue(VISIBLE_AREA_PROPERTY)).toBe('');
+    stop();
   });
 
   it('does nothing without a visual viewport or a panel', () => {
