@@ -3,6 +3,7 @@ import { inject, Injector, Service } from '@angular/core';
 import { ConnectedOverlay } from './connected-overlay';
 import type { GlobalOverlayConfig } from './models/global-overlay-config.interface';
 import { setOverlayLayer } from './overlay-layer';
+import { KeyboardInset } from '../keyboard-inset/keyboard-inset.service';
 import type { ConnectedOverlayConfig } from './models/connected-overlay-config.interface';
 import { OVERLAY_EDGE } from './models/overlay-edge.const';
 import type { OverlaySide } from './models/overlay-side.type';
@@ -18,6 +19,11 @@ import type { OverlaySide } from './models/overlay-side.type';
 export class UiOverlay {
   private readonly overlay = inject(Overlay);
   private readonly injector = inject(Injector);
+
+  constructor() {
+    // Every overlay keeps clear of the on-screen keyboard (`--ui-keyboard-inset`).
+    inject(KeyboardInset);
+  }
 
   /**
    * The layer class `ui-overlay-layer--<layer>` is on `hostElement`.

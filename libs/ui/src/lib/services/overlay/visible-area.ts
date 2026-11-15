@@ -2,8 +2,11 @@
 export const VISIBLE_AREA_GAP_PX = 8;
 /** The popup never shrinks below this: the search box and about two rows stay usable. */
 export const VISIBLE_AREA_MIN_PX = 120;
-/** The custom property `.ui-select__panel` reads as an extra `max-height` cap. */
-export const VISIBLE_AREA_PROPERTY = '--ui-select-visible-height';
+/**
+ * Set on the popup element (inherited): the panels of `ui-select` and `ui-tag-input` read it as an
+ * extra `max-height` cap.
+ */
+export const VISIBLE_AREA_PROPERTY = '--ui-popup-visible-height';
 
 /**
  * Room from `top` (a viewport y of the popup) down to the bottom of the visible area. On a phone
@@ -19,7 +22,7 @@ export function visibleRoomBelow(
 }
 
 /**
- * Keeps `panel` within the visual viewport while it is open: on every resize or scroll of the
+ * Keeps the popup `panel` within the visual viewport while it is open: on every resize or scroll of the
  * visual viewport (the keyboard opens or closes) it caps the panel height through
  * `VISIBLE_AREA_PROPERTY` (CSSOM, CSP-safe), so its list scrolls above the keyboard instead of
  * hiding under it. Returns the function that stops watching and removes the cap.
@@ -41,6 +44,8 @@ export function watchVisibleArea(
   };
   viewport.addEventListener('resize', fit);
   viewport.addEventListener('scroll', fit);
+  // The keyboard may be up already (a tag typed into its field opens the popup).
+  fit();
   return () => {
     viewport.removeEventListener('resize', fit);
     viewport.removeEventListener('scroll', fit);

@@ -6,9 +6,11 @@
 // animation starts from there.
 .ui-emoji-picker__panel--sheet {
   width: 100vw;
-  height: min(rem(520px), calc(100dvh - #{rem(150px)}));
+
+  // Above the on-screen keyboard (`--ui-keyboard-inset`, KeyboardInset) once the search is tapped.
+  height: min(rem(520px), calc(100dvh - var(--ui-keyboard-inset, 0rem) - #{rem(150px)}));
   padding: var(--space-3) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
-  margin: 0;
+  margin: 0 0 var(--ui-keyboard-inset, 0);
   pointer-events: auto;
   background: var(--surface);
   backdrop-filter: none;

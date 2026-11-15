@@ -5,7 +5,7 @@ import {
   VISIBLE_AREA_PROPERTY,
   visibleRoomBelow,
   watchVisibleArea,
-} from './visible-area-fit';
+} from './visible-area';
 
 class FakeViewport extends EventTarget {
   offsetTop = 0;

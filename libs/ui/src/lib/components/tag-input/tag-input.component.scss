@@ -51,7 +51,9 @@
   width: max-content;
   min-width: 100%;
   max-width: min(rem(480px), calc(100vw - #{rem(16px)}));
-  max-height: min(rem(320px), calc(100vh - #{rem(16px)}));
+
+  // `--ui-popup-visible-height` (FieldPopup, visible-area.ts): the room above an on-screen keyboard.
+  max-height: min(rem(320px), calc(100vh - #{rem(16px)}), var(--ui-popup-visible-height, 100vh));
   padding: rem(6px);
   margin: var(--space-1) 0;
   border-radius: rem(18px);

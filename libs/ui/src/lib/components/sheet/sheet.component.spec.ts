@@ -85,11 +85,15 @@ describe('SheetComponent', () => {
   it('leaves 150px of the page above and rounds the top corners to 28px on a phone', () => {
     const css = compileScss('lib/components/dialog/dialog.component.scss');
     const phone = mediaBlocks(css, /width\s*<\s*40em/).join('\n');
-    expect(phone).toMatch(/\.ui-dialog--sheet\s*\{[^}]*calc\(100dvh - 9\.375rem\)/);
+    expect(phone).toMatch(
+      /\.ui-dialog--sheet\s*\{[^}]*calc\(100dvh - var\(--ui-keyboard-inset, 0rem\) - 9\.375rem\)/,
+    );
     expect(phone).toMatch(/\.ui-dialog--sheet\s*\{[^}]*var\(--radius-xl\) var\(--radius-xl\) 0 0/);
     // `tall` holds below 64em: on a phone and as the centred tablet sheet (#316).
     const compact = mediaBlocks(css, /width\s*<\s*64em/).join('\n');
-    expect(compact).toMatch(/\.ui-dialog--sheet-tall\s*\{[^}]*height: calc\(100dvh - 9\.375rem\)/);
+    expect(compact).toMatch(
+      /\.ui-dialog--sheet-tall\s*\{[^}]*height: calc\(100dvh - var\(--ui-keyboard-inset, 0rem\) - 9\.375rem\)/,
+    );
   });
 
   it('stays a bottom sheet on a tablet: centred, 560px wide, 28px top corners (#316)', () => {
