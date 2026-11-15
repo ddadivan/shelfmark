@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clearSessionHint, markSessionHint } from './session-hint';
+import { clearSessionHint, hasSessionHint, markSessionHint } from './session-hint';
 import { SESSION_HINT_STORAGE_KEY } from './models/session-hint-storage-key.const';
 
 function fakeStorage(): Storage {
@@ -20,6 +20,14 @@ describe('session hint', () => {
     expect(storage.getItem(SESSION_HINT_STORAGE_KEY)).toBeNull();
   });
 
+  it('is read back', () => {
+    const storage = fakeStorage();
+    expect(hasSessionHint(storage)).toBe(false);
+    markSessionHint(storage);
+    expect(hasSessionHint(storage)).toBe(true);
+    expect(hasSessionHint(undefined)).toBe(false);
+  });
+
   it('survives a storage that throws', () => {
     const broken = {
       setItem: () => {
@@ -31,5 +39,11 @@ describe('session hint', () => {
     };
     expect(() => markSessionHint(broken)).not.toThrow();
     expect(() => clearSessionHint(broken)).not.toThrow();
+    const unreadable = {
+      getItem: () => {
+        throw new Error('blocked');
+      },
+    };
+    expect(hasSessionHint(unreadable)).toBe(false);
   });
 });
