@@ -21,6 +21,8 @@ export interface LinkResponse {
   pinned: boolean;
   /** ISO timestamp of the last open; `null` if never opened. */
   lastOpenedAt: string | null;
+  /** ISO time of the link's reminder (#275); due once it has passed; `null` = no reminder. */
+  remindAt: string | null;
   /** Tag names. */
   tags: string[];
   createdAt: string;

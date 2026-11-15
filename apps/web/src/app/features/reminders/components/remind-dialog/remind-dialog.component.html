@@ -1,0 +1,100 @@
+<ui-dialog [title]="data.heading" [closeLabel]="'reminders.dialog.close' | transloco">
+  <div class="remind-dialog">
+    @if (data.subtitle) {
+      <p class="remind-dialog__subtitle">{{ data.subtitle }}</p>
+    }
+    @if (currentLabel(); as current) {
+      <p class="remind-dialog__current">
+        {{ 'reminders.dialog.current' | transloco: { when: current } }}
+      </p>
+    }
+
+    @if (!picking()) {
+      <ul class="remind-dialog__presets" [attr.aria-label]="'reminders.dialog.presets' | transloco">
+        @for (option of presets; track option.preset) {
+          <li>
+            <ui-button
+              block
+              class="remind-dialog__preset"
+              [variant]="BUTTON_VARIANT.Ghost"
+              (click)="choose(option)"
+            >
+              <span class="remind-dialog__preset-label">{{
+                'reminders.preset.' + option.preset | transloco
+              }}</span>
+              <span class="remind-dialog__preset-hint">{{ hint(option) }}</span>
+            </ui-button>
+          </li>
+        }
+        <li>
+          <ui-button
+            block
+            class="remind-dialog__preset"
+            [variant]="BUTTON_VARIANT.Ghost"
+            iconLeft="calendar"
+            (click)="startPicking()"
+          >
+            <span class="remind-dialog__preset-label">{{
+              'reminders.dialog.pick' | transloco
+            }}</span>
+          </ui-button>
+        </li>
+      </ul>
+    } @else {
+      <div class="remind-dialog__picker">
+        <ui-date-picker
+          [(date)]="day"
+          [min]="today"
+          [today]="today"
+          [locale]="locale.locale()"
+          [firstDay]="locale.firstDay()"
+          [previousMonthLabel]="'reminders.dialog.previousMonth' | transloco"
+          [nextMonthLabel]="'reminders.dialog.nextMonth' | transloco"
+        />
+        <ui-input
+          class="remind-dialog__time"
+          [type]="INPUT_TYPE.Time"
+          [label]="'reminders.dialog.time' | transloco"
+          [hint]="'reminders.dialog.timeHint' | transloco"
+          [(value)]="time"
+        />
+        @if (pickedInPast()) {
+          <ui-notice [kind]="NOTICE_KIND.Warning">{{
+            'reminders.dialog.past' | transloco
+          }}</ui-notice>
+        }
+      </div>
+    }
+    <p class="remind-dialog__zone">
+      {{ 'reminders.dialog.timeZone' | transloco: { zone: timeZone } }}
+    </p>
+  </div>
+
+  @if (data.current) {
+    <ui-button
+      slot="footer"
+      class="remind-dialog__remove"
+      [variant]="BUTTON_VARIANT.Ghost"
+      iconLeft="close"
+      (click)="remove()"
+      >{{ 'reminders.dialog.remove' | transloco }}</ui-button
+    >
+  }
+  <ui-button slot="footer" (click)="cancel()">{{
+    'reminders.dialog.cancel' | transloco
+  }}</ui-button>
+  @if (picking()) {
+    <ui-button
+      slot="footer"
+      wrap
+      [variant]="BUTTON_VARIANT.Primary"
+      [disabled]="pickedLabel() === null"
+      (click)="confirmPicked()"
+      >{{
+        pickedLabel()
+          ? ('reminders.dialog.confirm' | transloco: { when: pickedLabel() })
+          : ('reminders.dialog.confirmEmpty' | transloco)
+      }}</ui-button
+    >
+  }
+</ui-dialog>

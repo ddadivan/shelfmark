@@ -497,7 +497,8 @@
         "favorites": "No se puede soltar aquí — marca un enlace con estrella para añadirlo a Favoritos",
         "recent": "No se puede soltar aquí — «Abiertos recientemente» se llena al abrir enlaces",
         "trash": "No se puede soltar aquí — usa Eliminar para mover un enlace a la papelera",
-        "pinnedLink": "No se puede soltar aquí — un enlace fijado no es una carpeta"
+        "pinnedLink": "No se puede soltar aquí — un enlace fijado no es una carpeta",
+        "reminders": "No se puede soltar aquí — usa «Recordármelo» en el menú del enlace"
       }
     }
   },
@@ -2388,7 +2389,8 @@
       "copy": "Copiar enlaces",
       "share": "Compartir",
       "delete": "Eliminar",
-      "moveToFolder": "Mover a {{folder}}"
+      "moveToFolder": "Mover a {{folder}}",
+      "remind": "Recordar"
     },
     "header": {
       "label": "Selección",
@@ -2510,6 +2512,192 @@
       "undoFailed": "No se pudieron restaurar los enlaces"
     }
   },
+  "reminders": {
+    "title": "Recordatorios",
+    "dueCount": {
+      "one": "{{count}} recordatorio ha llegado",
+      "many": "{{count}} recordatorios han llegado",
+      "other": "{{count}} recordatorios han llegado"
+    },
+    "nothingDue": "No hay nada pendiente ahora",
+    "dueShort": {
+      "one": "{{count}} pendiente",
+      "many": "{{count}} pendientes",
+      "other": "{{count}} pendientes"
+    },
+    "loading": "Cargando recordatorios",
+    "loadFailed": {
+      "title": "No se pudieron cargar tus recordatorios",
+      "text": "Comprueba tu conexión e inténtalo de nuevo.",
+      "retry": "Reintentar"
+    },
+    "empty": {
+      "title": "Aún no hay recordatorios",
+      "text": "Elige «Recordármelo» en el menú de un enlace y volverá aquí el día que elijas."
+    },
+    "group": {
+      "due": "Pendientes",
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "this-week": "Esta semana",
+      "later": "Más adelante"
+    },
+    "footer": "Los recordatorios aparecen aquí, en el contador de la barra lateral y en la tarjeta. No se envían por correo ni como notificación.",
+    "when": {
+      "today": "Hoy, {{time}}",
+      "tomorrow": "Mañana, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Pendiente {{when}}"
+    },
+    "preset": {
+      "later-today": "Más tarde hoy",
+      "tomorrow": "Mañana",
+      "weekend": "Este fin de semana",
+      "next-week": "La semana que viene",
+      "in-month": "Dentro de un mes"
+    },
+    "dialog": {
+      "title": "Recordármelo",
+      "titleMany": {
+        "one": "Recordarme {{count}} enlace",
+        "many": "Recordarme {{count}} enlaces",
+        "other": "Recordarme {{count}} enlaces"
+      },
+      "close": "Cerrar",
+      "current": "Recordatorio actual: {{when}}",
+      "presets": "Opciones rápidas",
+      "pick": "Elegir fecha y hora…",
+      "previousMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente",
+      "time": "Hora",
+      "timeHint": "Opcional; vacía son las 9:00",
+      "past": "Esa hora ya pasó. Elige una más tarde.",
+      "timeZone": "Las horas están en tu zona horaria, {{zone}}.",
+      "remove": "Quitar recordatorio",
+      "cancel": "Cancelar",
+      "confirm": "Recordármelo {{when}}",
+      "confirmEmpty": "Elige un día"
+    },
+    "menu": {
+      "remind": "Recordármelo…",
+      "change": "Cambiar recordatorio…"
+    },
+    "row": {
+      "done": "Hecho",
+      "doneItem": "Marcar como hecho el recordatorio de {{title}}",
+      "snooze": "Posponer",
+      "snoozeItem": "Posponer el recordatorio de {{title}}"
+    },
+    "toast": {
+      "failed": "No se pudo guardar el recordatorio",
+      "retry": "Reintentar",
+      "cleared": {
+        "one": "Recordatorio quitado",
+        "many": "{{count}} recordatorios quitados",
+        "other": "{{count}} recordatorios quitados"
+      },
+      "set": "Recordatorio para {{when}}",
+      "due": {
+        "one": "Ha llegado un recordatorio",
+        "many": "Han llegado {{count}} recordatorios",
+        "other": "Han llegado {{count}} recordatorios"
+      },
+      "show": "Ver"
+    },
+    "edit": {
+      "set": "Recordatorio: {{when}}",
+      "none": "Sin recordatorio",
+      "change": "Cambiar",
+      "remind": "Recordármelo"
+    }
+  },
+  "rules": {
+    "title": "Reglas",
+    "intro": "Los enlaces de un dominio van a una carpeta y reciben etiquetas al guardarlos. La carpeta o las etiquetas que elijas tú siempre tienen prioridad.",
+    "add": "Añadir regla",
+    "list": "Reglas",
+    "tags": "Etiquetas",
+    "empty": "Aún no hay reglas. Por ejemplo, los enlaces de youtube.com pueden ir a Vídeos con la etiqueta video.",
+    "loadFailed": "No se pudieron cargar las reglas.",
+    "retry": "Reintentar",
+    "folderTrashed": "Carpeta en la papelera: solo se añaden etiquetas",
+    "more": "Acciones para {{domain}}",
+    "moreTooltip": "Más acciones",
+    "edit": "Editar",
+    "applyExisting": "Aplicar a enlaces existentes",
+    "delete": "Eliminar regla",
+    "undo": "Deshacer",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Regla añadida"
+    },
+    "saved": {
+      "title": "Regla guardada"
+    },
+    "deleted": {
+      "title": "Regla eliminada"
+    },
+    "deleteFailed": "No se pudo eliminar la regla",
+    "limit": {
+      "title": "Has alcanzado el máximo de reglas"
+    },
+    "apply": {
+      "title": "¿Aplicar la regla de {{domain}}?",
+      "message": {
+        "one": "{{count}} enlace de «Sin carpeta» recibe la carpeta y las etiquetas de esta regla: {{target}}.",
+        "many": "{{count}} enlaces de «Sin carpeta» reciben la carpeta y las etiquetas de esta regla: {{target}}.",
+        "other": "{{count}} enlaces de «Sin carpeta» reciben la carpeta y las etiquetas de esta regla: {{target}}."
+      },
+      "more": "Hay {{total}} en total. Vuelve a aplicarla para el resto.",
+      "confirm": {
+        "one": "Aplicar a {{count}} enlace",
+        "many": "Aplicar a {{count}} enlaces",
+        "other": "Aplicar a {{count}} enlaces"
+      },
+      "cancel": "Cancelar",
+      "none": "No hay enlaces de {{domain}} en «Sin carpeta»",
+      "done": {
+        "one": "Regla aplicada a {{count}} enlace",
+        "many": "Regla aplicada a {{count}} enlaces",
+        "other": "Regla aplicada a {{count}} enlaces"
+      },
+      "failed": "No se pudo aplicar la regla",
+      "undoFailed": "No se pudo deshacer la regla"
+    },
+    "dialog": {
+      "addTitle": "Añadir regla",
+      "editTitle": "Editar regla",
+      "close": "Cerrar",
+      "cancel": "Cancelar",
+      "save": "Guardar regla",
+      "saving": "Guardando…",
+      "domain": {
+        "label": "Dominio",
+        "placeholder": "youtube.com",
+        "hint": "También incluye sus subdominios, como m.youtube.com",
+        "required": "Escribe un dominio",
+        "invalid": "Escribe un dominio como youtube.com"
+      },
+      "folder": {
+        "label": "Carpeta",
+        "none": "Sin carpeta",
+        "search": "Buscar carpetas",
+        "trashed": "La carpeta de esta regla está en la papelera. Elige otra o conserva solo las etiquetas."
+      },
+      "tags": {
+        "label": "Etiquetas",
+        "max": "Hasta {{max}} etiquetas"
+      },
+      "nothing": "Elige una carpeta o añade al menos una etiqueta.",
+      "taken": "Ya hay una regla para este dominio.",
+      "limit": "Puedes tener hasta {{max}} reglas. Elimina una primero.",
+      "missingFolder": "Esta carpeta ya no existe. Elige otra.",
+      "missing": "Esta regla se eliminó mientras tanto.",
+      "failed": "No se pudo guardar la regla. Inténtalo de nuevo."
+    }
+  },
   "changelog": {
     "title": "Novedades",
     "lead": "Todas las versiones de Shelfmark, de la más reciente a la más antigua.",
@@ -2606,90 +2794,5 @@
     "available": "Hay una nueva versión de Shelfmark lista",
     "reload": "Recargar",
     "later": "Más tarde"
-  },
-  "rules": {
-    "title": "Reglas",
-    "intro": "Los enlaces de un dominio van a una carpeta y reciben etiquetas al guardarlos. La carpeta o las etiquetas que elijas tú siempre tienen prioridad.",
-    "add": "Añadir regla",
-    "list": "Reglas",
-    "tags": "Etiquetas",
-    "empty": "Aún no hay reglas. Por ejemplo, los enlaces de youtube.com pueden ir a Vídeos con la etiqueta video.",
-    "loadFailed": "No se pudieron cargar las reglas.",
-    "retry": "Reintentar",
-    "folderTrashed": "Carpeta en la papelera: solo se añaden etiquetas",
-    "more": "Acciones para {{domain}}",
-    "moreTooltip": "Más acciones",
-    "edit": "Editar",
-    "applyExisting": "Aplicar a enlaces existentes",
-    "delete": "Eliminar regla",
-    "undo": "Deshacer",
-    "describe": "{{domain}}: {{target}}",
-    "created": {
-      "title": "Regla añadida"
-    },
-    "saved": {
-      "title": "Regla guardada"
-    },
-    "deleted": {
-      "title": "Regla eliminada"
-    },
-    "deleteFailed": "No se pudo eliminar la regla",
-    "limit": {
-      "title": "Has alcanzado el máximo de reglas"
-    },
-    "apply": {
-      "title": "¿Aplicar la regla de {{domain}}?",
-      "message": {
-        "one": "{{count}} enlace de «Sin carpeta» recibe la carpeta y las etiquetas de esta regla: {{target}}.",
-        "many": "{{count}} enlaces de «Sin carpeta» reciben la carpeta y las etiquetas de esta regla: {{target}}.",
-        "other": "{{count}} enlaces de «Sin carpeta» reciben la carpeta y las etiquetas de esta regla: {{target}}."
-      },
-      "more": "Hay {{total}} en total. Vuelve a aplicarla para el resto.",
-      "confirm": {
-        "one": "Aplicar a {{count}} enlace",
-        "many": "Aplicar a {{count}} enlaces",
-        "other": "Aplicar a {{count}} enlaces"
-      },
-      "cancel": "Cancelar",
-      "none": "No hay enlaces de {{domain}} en «Sin carpeta»",
-      "done": {
-        "one": "Regla aplicada a {{count}} enlace",
-        "many": "Regla aplicada a {{count}} enlaces",
-        "other": "Regla aplicada a {{count}} enlaces"
-      },
-      "failed": "No se pudo aplicar la regla",
-      "undoFailed": "No se pudo deshacer la regla"
-    },
-    "dialog": {
-      "addTitle": "Añadir regla",
-      "editTitle": "Editar regla",
-      "close": "Cerrar",
-      "cancel": "Cancelar",
-      "save": "Guardar regla",
-      "saving": "Guardando…",
-      "domain": {
-        "label": "Dominio",
-        "placeholder": "youtube.com",
-        "hint": "También incluye sus subdominios, como m.youtube.com",
-        "required": "Escribe un dominio",
-        "invalid": "Escribe un dominio como youtube.com"
-      },
-      "folder": {
-        "label": "Carpeta",
-        "none": "Sin carpeta",
-        "search": "Buscar carpetas",
-        "trashed": "La carpeta de esta regla está en la papelera. Elige otra o conserva solo las etiquetas."
-      },
-      "tags": {
-        "label": "Etiquetas",
-        "max": "Hasta {{max}} etiquetas"
-      },
-      "nothing": "Elige una carpeta o añade al menos una etiqueta.",
-      "taken": "Ya hay una regla para este dominio.",
-      "limit": "Puedes tener hasta {{max}} reglas. Elimina una primero.",
-      "missingFolder": "Esta carpeta ya no existe. Elige otra.",
-      "missing": "Esta regla se eliminó mientras tanto.",
-      "failed": "No se pudo guardar la regla. Inténtalo de nuevo."
-    }
   }
 }

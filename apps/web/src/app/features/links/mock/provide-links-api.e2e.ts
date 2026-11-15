@@ -15,6 +15,10 @@ import { HttpPinsApi } from '../../pins/http/http-pins.api';
 import { MockPinsApi } from '../../pins/mock/mock-pins.api';
 import { PINS_API } from '../../pins/models/pins-api.const';
 import type { PinsApi } from '../../pins/models/pins-api.interface';
+import { HttpRemindersApi } from '../../reminders/http/http-reminders.api';
+import { MockRemindersApi } from '../../reminders/mock/mock-reminders.api';
+import { REMINDERS_API } from '../../reminders/models/reminders-api.const';
+import type { RemindersApi } from '../../reminders/models/reminders-api.interface';
 import { HttpTrashApi } from '../../trash/http/http-trash.api';
 import { MockTrashApi } from '../../trash/mock/mock-trash.api';
 import { TRASH_API } from '../../trash/models/trash-api.const';
@@ -49,6 +53,7 @@ import {
   tabSyncedLinksApi,
   tabSyncedTagsApi,
   tabSyncedPinsApi,
+  tabSyncedRemindersApi,
   tabSyncedTrashApi,
 } from '../../../core/sync/tab-synced-apis';
 import { TabSyncService } from '../../../core/sync/tab-sync.service';
@@ -114,6 +119,14 @@ export function provideLinksApi(): Provider[] {
       useFactory: (): PinsApi =>
         tabSyncedPinsApi(
           useRealApi() ? inject(HttpPinsApi) : inject(MockPinsApi),
+          inject(TabSyncService),
+        ),
+    },
+    {
+      provide: REMINDERS_API,
+      useFactory: (): RemindersApi =>
+        tabSyncedRemindersApi(
+          useRealApi() ? inject(HttpRemindersApi) : inject(MockRemindersApi),
           inject(TabSyncService),
         ),
     },

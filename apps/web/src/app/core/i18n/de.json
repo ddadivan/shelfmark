@@ -485,7 +485,8 @@
         "favorites": "Hier nicht ablegbar — markiere einen Link mit Stern, um ihn zu den Favoriten zu legen",
         "recent": "Hier nicht ablegbar — „Zuletzt geöffnet“ füllt sich beim Öffnen von Links",
         "trash": "Hier nicht ablegbar — nutze „Löschen“, um einen Link in den Papierkorb zu legen",
-        "pinnedLink": "Hier nicht ablegbar — ein angehefteter Link ist kein Ordner"
+        "pinnedLink": "Hier nicht ablegbar — ein angehefteter Link ist kein Ordner",
+        "reminders": "Hier nicht ablegen — nutze „Erinnern“ im Menü des Links"
       }
     }
   },
@@ -2347,7 +2348,8 @@
       "copy": "Links kopieren",
       "share": "Teilen",
       "delete": "Löschen",
-      "moveToFolder": "In {{folder}} verschieben"
+      "moveToFolder": "In {{folder}} verschieben",
+      "remind": "Erinnern"
     },
     "header": {
       "label": "Auswahl",
@@ -2458,6 +2460,184 @@
       "undoFailed": "Links konnten nicht wiederhergestellt werden"
     }
   },
+  "reminders": {
+    "title": "Erinnerungen",
+    "dueCount": {
+      "one": "{{count}} Erinnerung ist fällig",
+      "other": "{{count}} Erinnerungen sind fällig"
+    },
+    "nothingDue": "Gerade ist nichts fällig",
+    "dueShort": {
+      "one": "{{count}} fällig",
+      "other": "{{count}} fällig"
+    },
+    "loading": "Erinnerungen werden geladen",
+    "loadFailed": {
+      "title": "Erinnerungen konnten nicht geladen werden",
+      "text": "Prüfe deine Verbindung und versuche es erneut.",
+      "retry": "Erneut versuchen"
+    },
+    "empty": {
+      "title": "Noch keine Erinnerungen",
+      "text": "Wähle „Erinnern“ im Menü eines Links, dann taucht er am gewählten Tag hier wieder auf."
+    },
+    "group": {
+      "due": "Fällig",
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "this-week": "Diese Woche",
+      "later": "Später"
+    },
+    "footer": "Erinnerungen erscheinen hier, als Zähler in der Seitenleiste und auf der Karte. Sie werden nicht per E-Mail oder Benachrichtigung verschickt.",
+    "when": {
+      "today": "Heute, {{time}}",
+      "tomorrow": "Morgen, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Fällig {{when}}"
+    },
+    "preset": {
+      "later-today": "Später heute",
+      "tomorrow": "Morgen",
+      "weekend": "Dieses Wochenende",
+      "next-week": "Nächste Woche",
+      "in-month": "In einem Monat"
+    },
+    "dialog": {
+      "title": "Erinnern",
+      "titleMany": {
+        "one": "An {{count}} Link erinnern",
+        "other": "An {{count}} Links erinnern"
+      },
+      "close": "Schließen",
+      "current": "Aktuelle Erinnerung: {{when}}",
+      "presets": "Schnellauswahl",
+      "pick": "Datum und Uhrzeit wählen…",
+      "previousMonth": "Vorheriger Monat",
+      "nextMonth": "Nächster Monat",
+      "time": "Uhrzeit",
+      "timeHint": "Optional; leer bedeutet 9:00",
+      "past": "Diese Zeit ist schon vorbei. Wähle eine spätere.",
+      "timeZone": "Zeiten in deiner Zeitzone, {{zone}}.",
+      "remove": "Erinnerung entfernen",
+      "cancel": "Abbrechen",
+      "confirm": "Erinnern: {{when}}",
+      "confirmEmpty": "Tag wählen"
+    },
+    "menu": {
+      "remind": "Erinnern…",
+      "change": "Erinnerung ändern…"
+    },
+    "row": {
+      "done": "Erledigt",
+      "doneItem": "Erinnerung an {{title}} als erledigt markieren",
+      "snooze": "Später",
+      "snoozeItem": "Erinnerung an {{title}} verschieben"
+    },
+    "toast": {
+      "failed": "Erinnerung konnte nicht gespeichert werden",
+      "retry": "Erneut versuchen",
+      "cleared": {
+        "one": "Erinnerung entfernt",
+        "other": "{{count}} Erinnerungen entfernt"
+      },
+      "set": "Erinnerung für {{when}}",
+      "due": {
+        "one": "Eine Erinnerung ist fällig",
+        "other": "{{count}} Erinnerungen sind fällig"
+      },
+      "show": "Anzeigen"
+    },
+    "edit": {
+      "set": "Erinnerung: {{when}}",
+      "none": "Keine Erinnerung",
+      "change": "Ändern",
+      "remind": "Erinnern"
+    }
+  },
+  "rules": {
+    "title": "Regeln",
+    "intro": "Links einer Domain landen beim Speichern in einem Ordner und bekommen Tags. Ein Ordner oder Tags, die du selbst wählst, haben immer Vorrang.",
+    "add": "Regel hinzufügen",
+    "list": "Regeln",
+    "tags": "Tags",
+    "empty": "Noch keine Regeln. Zum Beispiel können Links von youtube.com mit dem Tag video in Videos landen.",
+    "loadFailed": "Die Regeln konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "folderTrashed": "Ordner im Papierkorb: nur Tags werden hinzugefügt",
+    "more": "Aktionen für {{domain}}",
+    "moreTooltip": "Weitere Aktionen",
+    "edit": "Bearbeiten",
+    "applyExisting": "Auf vorhandene Links anwenden",
+    "delete": "Regel löschen",
+    "undo": "Rückgängig",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Regel hinzugefügt"
+    },
+    "saved": {
+      "title": "Regel gespeichert"
+    },
+    "deleted": {
+      "title": "Regel gelöscht"
+    },
+    "deleteFailed": "Die Regel konnte nicht gelöscht werden",
+    "limit": {
+      "title": "Maximale Anzahl an Regeln erreicht"
+    },
+    "apply": {
+      "title": "Regel für {{domain}} anwenden?",
+      "message": {
+        "one": "{{count}} Link in „Ohne Ordner“ bekommt Ordner und Tags dieser Regel: {{target}}.",
+        "other": "{{count}} Links in „Ohne Ordner“ bekommen Ordner und Tags dieser Regel: {{target}}."
+      },
+      "more": "Insgesamt sind es {{total}}. Wende sie für den Rest erneut an.",
+      "confirm": {
+        "one": "Auf {{count}} Link anwenden",
+        "other": "Auf {{count}} Links anwenden"
+      },
+      "cancel": "Abbrechen",
+      "none": "Keine Links von {{domain}} in „Ohne Ordner“",
+      "done": {
+        "one": "Regel auf {{count}} Link angewendet",
+        "other": "Regel auf {{count}} Links angewendet"
+      },
+      "failed": "Die Regel konnte nicht angewendet werden",
+      "undoFailed": "Die Regel konnte nicht rückgängig gemacht werden"
+    },
+    "dialog": {
+      "addTitle": "Regel hinzufügen",
+      "editTitle": "Regel bearbeiten",
+      "close": "Schließen",
+      "cancel": "Abbrechen",
+      "save": "Regel speichern",
+      "saving": "Wird gespeichert…",
+      "domain": {
+        "label": "Domain",
+        "placeholder": "youtube.com",
+        "hint": "Gilt auch für Subdomains wie m.youtube.com",
+        "required": "Gib eine Domain ein",
+        "invalid": "Gib eine Domain wie youtube.com ein"
+      },
+      "folder": {
+        "label": "Ordner",
+        "none": "Kein Ordner",
+        "search": "Ordner suchen",
+        "trashed": "Der Ordner dieser Regel liegt im Papierkorb. Wähle einen anderen oder behalte nur die Tags."
+      },
+      "tags": {
+        "label": "Tags",
+        "max": "Bis zu {{max}} Tags"
+      },
+      "nothing": "Wähle einen Ordner oder füge mindestens einen Tag hinzu.",
+      "taken": "Für diese Domain gibt es schon eine Regel.",
+      "limit": "Du kannst bis zu {{max}} Regeln haben. Lösche zuerst eine.",
+      "missingFolder": "Dieser Ordner existiert nicht mehr. Wähle einen anderen.",
+      "missing": "Diese Regel wurde inzwischen gelöscht.",
+      "failed": "Die Regel konnte nicht gespeichert werden. Versuche es erneut."
+    }
+  },
   "changelog": {
     "title": "Neuigkeiten",
     "lead": "Alle Shelfmark-Versionen, die neueste zuerst.",
@@ -2554,87 +2734,5 @@
     "available": "Eine neue Version von Shelfmark ist bereit",
     "reload": "Neu laden",
     "later": "Später"
-  },
-  "rules": {
-    "title": "Regeln",
-    "intro": "Links einer Domain landen beim Speichern in einem Ordner und bekommen Tags. Ein Ordner oder Tags, die du selbst wählst, haben immer Vorrang.",
-    "add": "Regel hinzufügen",
-    "list": "Regeln",
-    "tags": "Tags",
-    "empty": "Noch keine Regeln. Zum Beispiel können Links von youtube.com mit dem Tag video in Videos landen.",
-    "loadFailed": "Die Regeln konnten nicht geladen werden.",
-    "retry": "Erneut versuchen",
-    "folderTrashed": "Ordner im Papierkorb: nur Tags werden hinzugefügt",
-    "more": "Aktionen für {{domain}}",
-    "moreTooltip": "Weitere Aktionen",
-    "edit": "Bearbeiten",
-    "applyExisting": "Auf vorhandene Links anwenden",
-    "delete": "Regel löschen",
-    "undo": "Rückgängig",
-    "describe": "{{domain}}: {{target}}",
-    "created": {
-      "title": "Regel hinzugefügt"
-    },
-    "saved": {
-      "title": "Regel gespeichert"
-    },
-    "deleted": {
-      "title": "Regel gelöscht"
-    },
-    "deleteFailed": "Die Regel konnte nicht gelöscht werden",
-    "limit": {
-      "title": "Maximale Anzahl an Regeln erreicht"
-    },
-    "apply": {
-      "title": "Regel für {{domain}} anwenden?",
-      "message": {
-        "one": "{{count}} Link in „Ohne Ordner“ bekommt Ordner und Tags dieser Regel: {{target}}.",
-        "other": "{{count}} Links in „Ohne Ordner“ bekommen Ordner und Tags dieser Regel: {{target}}."
-      },
-      "more": "Insgesamt sind es {{total}}. Wende sie für den Rest erneut an.",
-      "confirm": {
-        "one": "Auf {{count}} Link anwenden",
-        "other": "Auf {{count}} Links anwenden"
-      },
-      "cancel": "Abbrechen",
-      "none": "Keine Links von {{domain}} in „Ohne Ordner“",
-      "done": {
-        "one": "Regel auf {{count}} Link angewendet",
-        "other": "Regel auf {{count}} Links angewendet"
-      },
-      "failed": "Die Regel konnte nicht angewendet werden",
-      "undoFailed": "Die Regel konnte nicht rückgängig gemacht werden"
-    },
-    "dialog": {
-      "addTitle": "Regel hinzufügen",
-      "editTitle": "Regel bearbeiten",
-      "close": "Schließen",
-      "cancel": "Abbrechen",
-      "save": "Regel speichern",
-      "saving": "Wird gespeichert…",
-      "domain": {
-        "label": "Domain",
-        "placeholder": "youtube.com",
-        "hint": "Gilt auch für Subdomains wie m.youtube.com",
-        "required": "Gib eine Domain ein",
-        "invalid": "Gib eine Domain wie youtube.com ein"
-      },
-      "folder": {
-        "label": "Ordner",
-        "none": "Kein Ordner",
-        "search": "Ordner suchen",
-        "trashed": "Der Ordner dieser Regel liegt im Papierkorb. Wähle einen anderen oder behalte nur die Tags."
-      },
-      "tags": {
-        "label": "Tags",
-        "max": "Bis zu {{max}} Tags"
-      },
-      "nothing": "Wähle einen Ordner oder füge mindestens einen Tag hinzu.",
-      "taken": "Für diese Domain gibt es schon eine Regel.",
-      "limit": "Du kannst bis zu {{max}} Regeln haben. Lösche zuerst eine.",
-      "missingFolder": "Dieser Ordner existiert nicht mehr. Wähle einen anderen.",
-      "missing": "Diese Regel wurde inzwischen gelöscht.",
-      "failed": "Die Regel konnte nicht gespeichert werden. Versuche es erneut."
-    }
   }
 }

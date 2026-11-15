@@ -37,6 +37,7 @@ import { MovePickerComponent } from '../components/move-picker/move-picker.compo
 import { BulkTagsDialogComponent } from '../components/bulk-tags-dialog/bulk-tags-dialog.component';
 import { groupedByFolder, tagCounts, withTagsChanged } from '../utils/bulk-link-changes';
 import { chunks } from '../utils/chunks';
+import { RemindersStore } from '../../../stores/reminders.store';
 import { BULK_OPEN_CONFIRM_ABOVE } from '../models/bulk-open-confirm-above.const';
 import type { BulkTagsChange } from '../models/bulk-tags-change.interface';
 import type { BulkTagsDialogData } from '../models/bulk-tags-dialog-data.interface';
@@ -342,6 +343,7 @@ export class BulkLinkActionsService {
     }
     this.refreshCounts();
     void this.trash.refresh();
+    void this.injector.get(RemindersStore).refresh();
     this.undoToast.show({
       title: this.plural('bulk.delete.done', links.length),
       detail: this.titles(links),

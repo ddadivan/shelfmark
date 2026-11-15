@@ -14,18 +14,31 @@ export function injectSidebarLabels(): Signal<SidebarLabels | undefined> {
       transloco.selectTranslate('library.scope.favorites'),
       transloco.selectTranslate('shell.sidebar.folderActions', { name: '{name}' }),
       transloco.selectTranslate('links.recent.title'),
+      transloco.selectTranslate('reminders.title'),
       transloco.selectTranslate('trash.title'),
       transloco.selectTranslate('shell.sendFeedback'),
       transloco.selectTranslate('whatsNew.entry'),
       transloco.selectTranslate('whatsNew.unseen'),
     ]).pipe(
       map(
-        ([all, unsorted, favorites, actions, recent, trash, feedback, whatsNew, whatsNewDot]) => ({
+        ([
           all,
           unsorted,
           favorites,
           actions,
           recent,
+          reminders,
+          trash,
+          feedback,
+          whatsNew,
+          whatsNewDot,
+        ]) => ({
+          all,
+          unsorted,
+          favorites,
+          actions,
+          recent,
+          reminders,
           trash,
           feedback,
           whatsNew,

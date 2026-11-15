@@ -232,6 +232,9 @@ model Link {
   // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the link goes to Trash.
   pinnedPosition     Int?        @map("pinned_position") @db.SmallInt
   lastOpenedAt       DateTime?   @map("last_opened_at") @db.Timestamptz(3)
+  // In-app reminder (#275): the link is due once this time has passed; NULL = no reminder. Done
+  // clears it. Written with plain SQL so `updated_at` stays; the partial index lives in the migration.
+  remindAt           DateTime?   @map("remind_at") @db.Timestamptz(3)
   // Set when the link is in Trash (ADR 0036). The partial indexes for Trash live in the migration.
   deletedAt          DateTime?   @map("deleted_at") @db.Timestamptz(3)
   createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)

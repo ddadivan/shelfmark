@@ -10,6 +10,7 @@ import { LINKS_API } from '../../links/models/links-api.const';
 import type { LinksApi } from '../../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { BulkLinkActionsService } from '../../links/services/bulk-link-actions.service';
+import { ReminderActionsService } from '../../reminders/services/reminder-actions.service';
 import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { LibraryBulkService } from './library-bulk.service';
 import { LibraryFilterService } from './library-filter.service';
@@ -45,12 +46,14 @@ async function setup(deleted: boolean, rightTarget: string | null | undefined = 
     delete: vi.fn(() => Promise.resolve(deleted)),
     moveTo: vi.fn(() => Promise.resolve(true)),
   };
+  const reminders = { remind: vi.fn(() => Promise.resolve(true)) };
   TestBed.configureTestingModule({
     providers: [
       ...provideLibraryPage(),
       provideTranslocoForTest(),
       { provide: LINKS_API, useValue: api },
       { provide: BulkLinkActionsService, useValue: links },
+      { provide: ReminderActionsService, useValue: reminders },
       {
         provide: SplitViewService,
         useValue: {
@@ -74,7 +77,7 @@ async function setup(deleted: boolean, rightTarget: string | null | undefined = 
   const bulk = TestBed.inject(LibraryBulkService);
   const selection = TestBed.inject(LibrarySelectionService);
   TestBed.tick();
-  return { bulk, selection, links };
+  return { bulk, selection, links, reminders };
 }
 
 describe('LibraryBulkService', () => {
@@ -98,6 +101,18 @@ describe('LibraryBulkService', () => {
     expect(links.delete).toHaveBeenCalledWith(
       selection.order().map((id) => expect.objectContaining({ id })),
     );
+    expect(selection.selecting()).toBe(false);
+  });
+
+  it('Remind opens the reminder dialog for the picked links and ends the selection (#275)', async () => {
+    const { bulk, selection, reminders } = await setup(false);
+    selection.selectAll();
+    const picked = selection.order().length;
+    await bulk.run(BULK_ACTION.Remind);
+    expect(reminders.remind).toHaveBeenCalledWith(
+      expect.arrayContaining([expect.objectContaining({ id: 'id-1' })]),
+    );
+    expect(picked).toBeGreaterThan(0);
     expect(selection.selecting()).toBe(false);
   });
 

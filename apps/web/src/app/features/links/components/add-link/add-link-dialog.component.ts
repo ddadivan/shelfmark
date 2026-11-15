@@ -43,6 +43,7 @@ import { AddLinkRuleService } from '../../services/add-link-rule.service';
 import { RuleSuggestionService } from '../../../rules/services/rule-suggestion.service';
 import { AddSeveralLinksService } from '../../services/add-several-links.service';
 import { buildFolderOptions } from '../../utils/folder-options';
+import { ReminderFormatService } from '../../../reminders/services/reminder-format.service';
 
 /**
  * Content of the add-link dialog (`openAddLinkDialog()`): paste a URL, the preview fills the
@@ -114,6 +115,7 @@ export class AddLinkDialogComponent {
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
   private readonly localeService = inject(LocaleService);
+  private readonly reminderFormat = inject(ReminderFormatService);
   private readonly data = injectDialogData<AddLinkDialogData>();
 
   /** The link being edited; `undefined` when adding. */
@@ -160,6 +162,13 @@ export class AddLinkDialogComponent {
         count: tag.linkCount,
       }),
     }));
+  });
+
+  /** Edit mode: the link's reminder ("Sat, 10:00", "Due 2 hours ago"), or `null` without one. */
+  protected readonly reminder = computed(() => {
+    this.formState.i18n();
+    const at = this.original?.remindAt;
+    return at ? this.reminderFormat.chip(at) : null;
   });
 
   /** "Saved X, last opened Y" under the form (edit mode). */
@@ -227,6 +236,13 @@ export class AddLinkDialogComponent {
 
   protected cancel(): void {
     this.ref.close();
+  }
+
+  /** "Remind me" / "Change": the caller opens the reminder dialog (unsaved edits are dropped, as Delete). */
+  protected requestRemind(): void {
+    if (this.original) {
+      this.ref.close({ action: ADD_LINK_ACTION.Remind, link: this.original });
+    }
   }
 
   /** The chip's remove: the rule leaves the form and focus goes to the folder it changed. */

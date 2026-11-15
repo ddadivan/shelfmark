@@ -5,6 +5,8 @@ export const BULK_ACTION = {
   Move: 'move',
   Tags: 'tags',
   Favorite: 'favorite',
+  /** "Remind": one reminder for every picked link (#275). */
+  Remind: 'remind',
   OpenAll: 'open-all',
   Copy: 'copy',
   Share: 'share',

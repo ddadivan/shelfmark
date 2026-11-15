@@ -1,0 +1,56 @@
+<div class="ui-date-picker__head">
+  <ui-button
+    variant="ghost"
+    size="sm"
+    iconOnly
+    iconLeft="chevron-left"
+    [ariaLabel]="previousMonthLabel()"
+    [disabled]="!canGoBack()"
+    (click)="shiftMonth(-1)"
+  />
+  <span class="ui-date-picker__title" aria-live="polite">{{ title() }}</span>
+  <ui-button
+    variant="ghost"
+    size="sm"
+    iconOnly
+    iconLeft="chevron-right"
+    [ariaLabel]="nextMonthLabel()"
+    (click)="shiftMonth(1)"
+  />
+</div>
+<table class="ui-date-picker__grid" role="grid" [attr.aria-label]="title()">
+  <thead>
+    <tr>
+      @for (weekday of weekdays(); track weekday.long) {
+        <th scope="col" [attr.abbr]="weekday.long">{{ weekday.short }}</th>
+      }
+    </tr>
+  </thead>
+  <tbody>
+    @for (week of weeks(); track week[0].iso) {
+      <tr>
+        @for (day of week; track day.iso) {
+          <td role="gridcell" [attr.aria-selected]="day.iso === date()">
+            <button
+              type="button"
+              class="ui-date-picker__day"
+              [class.ui-date-picker__day--muted]="day.outside"
+              [class.ui-date-picker__day--today]="day.today"
+              [class.ui-date-picker__day--on]="day.iso === date()"
+              [attr.data-day]="day.iso"
+              [attr.aria-label]="day.label"
+              [attr.aria-current]="day.today ? 'date' : null"
+              [attr.aria-pressed]="day.iso === date()"
+              [tabIndex]="day.iso === active() ? 0 : -1"
+              [disabled]="day.disabled"
+              (click)="pick(day)"
+              (keydown)="onKeydown($event)"
+            >
+              {{ day.day }}
+            </button>
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>

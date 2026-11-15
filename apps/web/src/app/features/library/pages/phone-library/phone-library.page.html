@@ -32,7 +32,12 @@
       (activated)="openRecent()"
     />
     <app-library-tile
-      class="phone-library__trash"
+      [href]="'/' + APP_PATH.Reminders"
+      icon="bell"
+      [label]="'reminders.title' | transloco"
+      [meta]="remindersMeta()"
+    />
+    <app-library-tile
       [href]="'/' + APP_PATH.Trash"
       icon="trash"
       [label]="'trash.title' | transloco"

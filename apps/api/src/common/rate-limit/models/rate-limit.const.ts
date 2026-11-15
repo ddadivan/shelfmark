@@ -40,6 +40,8 @@ export const RATE_LIMIT = {
   TrashDelete: { limit: 10, ttl: MINUTE_MS },
   // Saved view writes (create, rename, delete, reorder): generous for menus, tight against scripts.
   ViewWrite: { limit: 30, ttl: MINUTE_MS },
+  // Reminder writes (#275: set, change, clear, snooze, bulk): generous for menus and snoozes.
+  ReminderWrite: { limit: 60, ttl: MINUTE_MS },
   // Domain rule writes (#398, create, edit, delete): like the saved views.
   RuleWrite: { limit: 30, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;

@@ -19,4 +19,6 @@ export interface DemoSeedLink {
   pinned?: true;
   /** Pinned to the top of its folder (the card with the "Pinned" badge). */
   pinnedToTop?: true;
+  /** Reminder (#275) this many hours from now; negative = already due. */
+  remindInHours?: number;
 }

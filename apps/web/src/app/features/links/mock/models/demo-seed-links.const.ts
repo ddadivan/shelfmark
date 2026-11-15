@@ -147,6 +147,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     tags: ['courses'],
     daysAgo: 19,
     openedDaysAgo: null,
+    remindInHours: 72,
   },
   {
     folder: DEMO_FOLDER_KEY.Courses,
@@ -213,6 +214,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     openedDaysAgo: null,
     favorite: true,
     note: 'Size M, olive.',
+    remindInHours: -3,
   },
   {
     folder: DEMO_FOLDER_KEY.Clothes,

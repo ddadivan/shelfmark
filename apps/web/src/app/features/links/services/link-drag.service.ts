@@ -8,6 +8,7 @@ import { LINK_DROP_ATTRIBUTE } from '../models/link-drop-attribute.const';
 import { LINK_DROP_HALF_ATTRIBUTE } from '../models/link-drop-half-attribute.const';
 import { LinkSelectionStore } from '../../../stores/link-selection.store';
 import { SIDEBAR_RECENT_ID } from '../../../shell/sidebar/models/sidebar-recent-id.const';
+import { SIDEBAR_REMINDERS_ID } from '../../../shell/sidebar/models/sidebar-reminders-id.const';
 import { SIDEBAR_TRASH_ID } from '../../../shell/sidebar/models/sidebar-trash-id.const';
 import { BulkLinkActionsService } from './bulk-link-actions.service';
 import { LinkActionsService } from './link-actions.service';
@@ -21,11 +22,12 @@ const TREE_ROW_SELECTOR = '[data-ui-tree-id]';
 /** `data-pin` on the rows of the pinned section; a pinned folder also has `data-link-drop-folder`. */
 const PINNED_ROW_SELECTOR = '[data-pin]';
 
-/** Fixed sidebar rows that are no drop target: All links, Favorites, Recently opened, Trash. */
+/** Fixed sidebar rows that are no drop target: All links, Favorites, Recently opened, Reminders, Trash. */
 const NO_DROP_TREE_IDS: readonly string[] = [
   LINKS_SCOPE.All,
   LINKS_SCOPE.Favorites,
   SIDEBAR_RECENT_ID,
+  SIDEBAR_REMINDERS_ID,
   SIDEBAR_TRASH_ID,
 ];
 const EMPTY_IDS: readonly string[] = [];

@@ -50,4 +50,6 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'sm-mock-account-deletion',
   'sm-mock-shares',
   'sm-mock-trash-scenario',
+  // The reminders mock's batch message (#275).
+  'ids must hold 1 to 100 distinct ids',
 ] as const;

@@ -6,6 +6,7 @@ import type { DemoSeed } from './models/demo-seed.interface';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MS_PER_MINUTE = 60 * 1000;
+const MS_PER_HOUR = 60 * MS_PER_MINUTE;
 
 function daysAgo(now: Date, days: number, order: number): Date {
   // The index keeps the timestamps distinct, so ordering by date is stable.
@@ -73,6 +74,10 @@ export async function seedDemoLibrary(
       createdAt: daysAgo(now, link.createdDaysAgo, order),
       lastOpenedAt:
         link.lastOpenedDaysAgo === null ? null : daysAgo(now, link.lastOpenedDaysAgo, order),
+      remindAt:
+        link.remindInHours === undefined
+          ? null
+          : new Date(now.getTime() + link.remindInHours * MS_PER_HOUR),
     });
     for (const name of link.tags) {
       const tagId = tagIds.get(normalizeTagName(name));

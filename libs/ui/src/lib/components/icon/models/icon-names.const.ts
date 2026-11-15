@@ -6,6 +6,7 @@ export const ICON_NAMES = [
   'add',
   'backpack',
   'ball',
+  'bell',
   'bike',
   'book',
   'bookmark',

@@ -497,7 +497,8 @@
         "favorites": "Non puoi rilasciarlo qui — aggiungi una stella a un link per metterlo nei Preferiti",
         "recent": "Non puoi rilasciarlo qui — «Aperti di recente» si riempie quando apri i link",
         "trash": "Non puoi rilasciarlo qui — usa Elimina per spostare un link nel cestino",
-        "pinnedLink": "Non puoi rilasciarlo qui — un link fissato non è una cartella"
+        "pinnedLink": "Non puoi rilasciarlo qui — un link fissato non è una cartella",
+        "reminders": "Non si può rilasciare qui — usa “Ricordamelo” nel menu del link"
       }
     }
   },
@@ -2388,7 +2389,8 @@
       "copy": "Copia link",
       "share": "Condividi",
       "delete": "Elimina",
-      "moveToFolder": "Sposta in {{folder}}"
+      "moveToFolder": "Sposta in {{folder}}",
+      "remind": "Promemoria"
     },
     "header": {
       "label": "Selezione",
@@ -2510,6 +2512,192 @@
       "undoFailed": "Impossibile ripristinare i link"
     }
   },
+  "reminders": {
+    "title": "Promemoria",
+    "dueCount": {
+      "one": "{{count}} promemoria è arrivato",
+      "many": "{{count}} promemoria sono arrivati",
+      "other": "{{count}} promemoria sono arrivati"
+    },
+    "nothingDue": "Nessun promemoria per ora",
+    "dueShort": {
+      "one": "{{count}} da rivedere",
+      "many": "{{count}} da rivedere",
+      "other": "{{count}} da rivedere"
+    },
+    "loading": "Caricamento dei promemoria",
+    "loadFailed": {
+      "title": "Impossibile caricare i promemoria",
+      "text": "Controlla la connessione e riprova.",
+      "retry": "Riprova"
+    },
+    "empty": {
+      "title": "Ancora nessun promemoria",
+      "text": "Scegli “Ricordamelo” nel menu di un link: tornerà qui nel giorno che scegli."
+    },
+    "group": {
+      "due": "Da rivedere",
+      "today": "Oggi",
+      "tomorrow": "Domani",
+      "this-week": "Questa settimana",
+      "later": "Più avanti"
+    },
+    "footer": "I promemoria compaiono qui, sul badge della barra laterale e sulla scheda. Non vengono inviati via e-mail né come notifica.",
+    "when": {
+      "today": "Oggi, {{time}}",
+      "tomorrow": "Domani, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Arrivato {{when}}"
+    },
+    "preset": {
+      "later-today": "Più tardi oggi",
+      "tomorrow": "Domani",
+      "weekend": "Questo fine settimana",
+      "next-week": "La prossima settimana",
+      "in-month": "Tra un mese"
+    },
+    "dialog": {
+      "title": "Ricordamelo",
+      "titleMany": {
+        "one": "Ricordami {{count}} link",
+        "many": "Ricordami {{count}} link",
+        "other": "Ricordami {{count}} link"
+      },
+      "close": "Chiudi",
+      "current": "Promemoria attuale: {{when}}",
+      "presets": "Scelte rapide",
+      "pick": "Scegli data e ora…",
+      "previousMonth": "Mese precedente",
+      "nextMonth": "Mese successivo",
+      "time": "Ora",
+      "timeHint": "Facoltativa; vuota vale 9:00",
+      "past": "Quest’ora è già passata. Scegline una più tarda.",
+      "timeZone": "Gli orari sono nel tuo fuso orario, {{zone}}.",
+      "remove": "Rimuovi promemoria",
+      "cancel": "Annulla",
+      "confirm": "Ricordamelo {{when}}",
+      "confirmEmpty": "Scegli un giorno"
+    },
+    "menu": {
+      "remind": "Ricordamelo…",
+      "change": "Modifica promemoria…"
+    },
+    "row": {
+      "done": "Fatto",
+      "doneItem": "Segna come fatto il promemoria di {{title}}",
+      "snooze": "Rimanda",
+      "snoozeItem": "Rimanda il promemoria di {{title}}"
+    },
+    "toast": {
+      "failed": "Impossibile salvare il promemoria",
+      "retry": "Riprova",
+      "cleared": {
+        "one": "Promemoria rimosso",
+        "many": "{{count}} promemoria rimossi",
+        "other": "{{count}} promemoria rimossi"
+      },
+      "set": "Promemoria per {{when}}",
+      "due": {
+        "one": "È arrivato un promemoria",
+        "many": "Sono arrivati {{count}} promemoria",
+        "other": "Sono arrivati {{count}} promemoria"
+      },
+      "show": "Mostra"
+    },
+    "edit": {
+      "set": "Promemoria: {{when}}",
+      "none": "Nessun promemoria",
+      "change": "Modifica",
+      "remind": "Ricordamelo"
+    }
+  },
+  "rules": {
+    "title": "Regole",
+    "intro": "I link di un dominio finiscono in una cartella e ricevono dei tag quando li salvi. La cartella o i tag che scegli tu hanno sempre la precedenza.",
+    "add": "Aggiungi regola",
+    "list": "Regole",
+    "tags": "Tag",
+    "empty": "Ancora nessuna regola. Per esempio, i link di youtube.com possono andare in Video con il tag video.",
+    "loadFailed": "Impossibile caricare le regole.",
+    "retry": "Riprova",
+    "folderTrashed": "Cartella nel cestino: vengono aggiunti solo i tag",
+    "more": "Azioni per {{domain}}",
+    "moreTooltip": "Altre azioni",
+    "edit": "Modifica",
+    "applyExisting": "Applica ai link esistenti",
+    "delete": "Elimina regola",
+    "undo": "Annulla",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Regola aggiunta"
+    },
+    "saved": {
+      "title": "Regola salvata"
+    },
+    "deleted": {
+      "title": "Regola eliminata"
+    },
+    "deleteFailed": "Impossibile eliminare la regola",
+    "limit": {
+      "title": "Numero massimo di regole raggiunto"
+    },
+    "apply": {
+      "title": "Applicare la regola per {{domain}}?",
+      "message": {
+        "one": "{{count}} link in «Senza cartella» riceve la cartella e i tag di questa regola: {{target}}.",
+        "many": "{{count}} link in «Senza cartella» ricevono la cartella e i tag di questa regola: {{target}}.",
+        "other": "{{count}} link in «Senza cartella» ricevono la cartella e i tag di questa regola: {{target}}."
+      },
+      "more": "In tutto sono {{total}}. Applicala di nuovo per gli altri.",
+      "confirm": {
+        "one": "Applica a {{count}} link",
+        "many": "Applica a {{count}} link",
+        "other": "Applica a {{count}} link"
+      },
+      "cancel": "Annulla",
+      "none": "Nessun link di {{domain}} in «Senza cartella»",
+      "done": {
+        "one": "Regola applicata a {{count}} link",
+        "many": "Regola applicata a {{count}} link",
+        "other": "Regola applicata a {{count}} link"
+      },
+      "failed": "Impossibile applicare la regola",
+      "undoFailed": "Impossibile annullare la regola"
+    },
+    "dialog": {
+      "addTitle": "Aggiungi regola",
+      "editTitle": "Modifica regola",
+      "close": "Chiudi",
+      "cancel": "Annulla",
+      "save": "Salva regola",
+      "saving": "Salvataggio…",
+      "domain": {
+        "label": "Dominio",
+        "placeholder": "youtube.com",
+        "hint": "Vale anche per i sottodomini, come m.youtube.com",
+        "required": "Inserisci un dominio",
+        "invalid": "Inserisci un dominio come youtube.com"
+      },
+      "folder": {
+        "label": "Cartella",
+        "none": "Nessuna cartella",
+        "search": "Cerca cartelle",
+        "trashed": "La cartella di questa regola è nel cestino. Scegline un’altra o tieni solo i tag."
+      },
+      "tags": {
+        "label": "Tag",
+        "max": "Fino a {{max}} tag"
+      },
+      "nothing": "Scegli una cartella o aggiungi almeno un tag.",
+      "taken": "Esiste già una regola per questo dominio.",
+      "limit": "Puoi avere fino a {{max}} regole. Eliminane prima una.",
+      "missingFolder": "Questa cartella non esiste più. Scegline un’altra.",
+      "missing": "Questa regola è stata eliminata nel frattempo.",
+      "failed": "Impossibile salvare la regola. Riprova."
+    }
+  },
   "changelog": {
     "title": "Novità",
     "lead": "Tutte le versioni di Shelfmark, dalla più recente.",
@@ -2606,90 +2794,5 @@
     "available": "Una nuova versione di Shelfmark è pronta",
     "reload": "Ricarica",
     "later": "Più tardi"
-  },
-  "rules": {
-    "title": "Regole",
-    "intro": "I link di un dominio finiscono in una cartella e ricevono dei tag quando li salvi. La cartella o i tag che scegli tu hanno sempre la precedenza.",
-    "add": "Aggiungi regola",
-    "list": "Regole",
-    "tags": "Tag",
-    "empty": "Ancora nessuna regola. Per esempio, i link di youtube.com possono andare in Video con il tag video.",
-    "loadFailed": "Impossibile caricare le regole.",
-    "retry": "Riprova",
-    "folderTrashed": "Cartella nel cestino: vengono aggiunti solo i tag",
-    "more": "Azioni per {{domain}}",
-    "moreTooltip": "Altre azioni",
-    "edit": "Modifica",
-    "applyExisting": "Applica ai link esistenti",
-    "delete": "Elimina regola",
-    "undo": "Annulla",
-    "describe": "{{domain}}: {{target}}",
-    "created": {
-      "title": "Regola aggiunta"
-    },
-    "saved": {
-      "title": "Regola salvata"
-    },
-    "deleted": {
-      "title": "Regola eliminata"
-    },
-    "deleteFailed": "Impossibile eliminare la regola",
-    "limit": {
-      "title": "Numero massimo di regole raggiunto"
-    },
-    "apply": {
-      "title": "Applicare la regola per {{domain}}?",
-      "message": {
-        "one": "{{count}} link in «Senza cartella» riceve la cartella e i tag di questa regola: {{target}}.",
-        "many": "{{count}} link in «Senza cartella» ricevono la cartella e i tag di questa regola: {{target}}.",
-        "other": "{{count}} link in «Senza cartella» ricevono la cartella e i tag di questa regola: {{target}}."
-      },
-      "more": "In tutto sono {{total}}. Applicala di nuovo per gli altri.",
-      "confirm": {
-        "one": "Applica a {{count}} link",
-        "many": "Applica a {{count}} link",
-        "other": "Applica a {{count}} link"
-      },
-      "cancel": "Annulla",
-      "none": "Nessun link di {{domain}} in «Senza cartella»",
-      "done": {
-        "one": "Regola applicata a {{count}} link",
-        "many": "Regola applicata a {{count}} link",
-        "other": "Regola applicata a {{count}} link"
-      },
-      "failed": "Impossibile applicare la regola",
-      "undoFailed": "Impossibile annullare la regola"
-    },
-    "dialog": {
-      "addTitle": "Aggiungi regola",
-      "editTitle": "Modifica regola",
-      "close": "Chiudi",
-      "cancel": "Annulla",
-      "save": "Salva regola",
-      "saving": "Salvataggio…",
-      "domain": {
-        "label": "Dominio",
-        "placeholder": "youtube.com",
-        "hint": "Vale anche per i sottodomini, come m.youtube.com",
-        "required": "Inserisci un dominio",
-        "invalid": "Inserisci un dominio come youtube.com"
-      },
-      "folder": {
-        "label": "Cartella",
-        "none": "Nessuna cartella",
-        "search": "Cerca cartelle",
-        "trashed": "La cartella di questa regola è nel cestino. Scegline un’altra o tieni solo i tag."
-      },
-      "tags": {
-        "label": "Tag",
-        "max": "Fino a {{max}} tag"
-      },
-      "nothing": "Scegli una cartella o aggiungi almeno un tag.",
-      "taken": "Esiste già una regola per questo dominio.",
-      "limit": "Puoi avere fino a {{max}} regole. Eliminane prima una.",
-      "missingFolder": "Questa cartella non esiste più. Scegline un’altra.",
-      "missing": "Questa regola è stata eliminata nel frattempo.",
-      "failed": "Impossibile salvare la regola. Riprova."
-    }
   }
 }

@@ -485,7 +485,8 @@
         "favorites": "Can't drop here — star a link to add it to Favorites",
         "recent": "Can't drop here — Recently opened fills as you open links",
         "trash": "Can't drop here — use Delete to move a link to Trash",
-        "pinnedLink": "Can't drop here — a pinned link is not a folder"
+        "pinnedLink": "Can't drop here — a pinned link is not a folder",
+        "reminders": "Can't drop here — use “Remind me” in the link's menu"
       }
     }
   },
@@ -2347,7 +2348,8 @@
       "copy": "Copy links",
       "share": "Share",
       "delete": "Delete",
-      "moveToFolder": "Move to {{folder}}"
+      "moveToFolder": "Move to {{folder}}",
+      "remind": "Remind"
     },
     "header": {
       "label": "Selection",
@@ -2458,6 +2460,184 @@
       "undoFailed": "Couldn't restore the links"
     }
   },
+  "reminders": {
+    "title": "Reminders",
+    "dueCount": {
+      "one": "{{count}} reminder is due",
+      "other": "{{count}} reminders are due"
+    },
+    "nothingDue": "Nothing is due right now",
+    "dueShort": {
+      "one": "{{count}} due",
+      "other": "{{count}} due"
+    },
+    "loading": "Loading reminders",
+    "loadFailed": {
+      "title": "Couldn't load your reminders",
+      "text": "Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "empty": {
+      "title": "No reminders yet",
+      "text": "Choose “Remind me” in the menu of a link, and it comes back here on the day you pick."
+    },
+    "group": {
+      "due": "Due",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "this-week": "This week",
+      "later": "Later"
+    },
+    "footer": "Reminders show here, on the sidebar badge and on the card. They are not sent by email or notification.",
+    "when": {
+      "today": "Today, {{time}}",
+      "tomorrow": "Tomorrow, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Due {{when}}"
+    },
+    "preset": {
+      "later-today": "Later today",
+      "tomorrow": "Tomorrow",
+      "weekend": "This weekend",
+      "next-week": "Next week",
+      "in-month": "In a month"
+    },
+    "dialog": {
+      "title": "Remind me",
+      "titleMany": {
+        "one": "Remind me about {{count}} link",
+        "other": "Remind me about {{count}} links"
+      },
+      "close": "Close",
+      "current": "Current reminder: {{when}}",
+      "presets": "Quick choices",
+      "pick": "Pick date and time…",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "time": "Time",
+      "timeHint": "Optional; 9:00 when left empty",
+      "past": "This time has already passed. Pick a later one.",
+      "timeZone": "Times are in your time zone, {{zone}}.",
+      "remove": "Remove reminder",
+      "cancel": "Cancel",
+      "confirm": "Remind me {{when}}",
+      "confirmEmpty": "Pick a day"
+    },
+    "menu": {
+      "remind": "Remind me…",
+      "change": "Change reminder…"
+    },
+    "row": {
+      "done": "Done",
+      "doneItem": "Mark the reminder of {{title}} as done",
+      "snooze": "Snooze",
+      "snoozeItem": "Snooze the reminder of {{title}}"
+    },
+    "toast": {
+      "failed": "Couldn't save the reminder",
+      "retry": "Retry",
+      "cleared": {
+        "one": "Reminder removed",
+        "other": "{{count}} reminders removed"
+      },
+      "set": "Reminder set for {{when}}",
+      "due": {
+        "one": "A reminder is due",
+        "other": "{{count}} reminders are due"
+      },
+      "show": "Show"
+    },
+    "edit": {
+      "set": "Reminder: {{when}}",
+      "none": "No reminder",
+      "change": "Change",
+      "remind": "Remind me"
+    }
+  },
+  "rules": {
+    "title": "Rules",
+    "intro": "Links from a domain go to a folder and get tags when you save them. A folder or tags you choose yourself always win.",
+    "add": "Add rule",
+    "list": "Rules",
+    "tags": "Tags",
+    "empty": "No rules yet. For example, links from youtube.com can go to Videos with the tag video.",
+    "loadFailed": "Couldn't load the rules.",
+    "retry": "Try again",
+    "folderTrashed": "Folder in Trash: only tags are added",
+    "more": "Actions for {{domain}}",
+    "moreTooltip": "More actions",
+    "edit": "Edit",
+    "applyExisting": "Apply to existing links",
+    "delete": "Delete rule",
+    "undo": "Undo",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Rule added"
+    },
+    "saved": {
+      "title": "Rule saved"
+    },
+    "deleted": {
+      "title": "Rule deleted"
+    },
+    "deleteFailed": "Couldn't delete the rule",
+    "limit": {
+      "title": "Rules are full"
+    },
+    "apply": {
+      "title": "Apply the rule for {{domain}}?",
+      "message": {
+        "one": "{{count}} link in Unsorted gets the folder and tags of this rule: {{target}}.",
+        "other": "{{count}} links in Unsorted get the folder and tags of this rule: {{target}}."
+      },
+      "more": "There are {{total}} in all. Apply it again for the rest.",
+      "confirm": {
+        "one": "Apply to {{count}} link",
+        "other": "Apply to {{count}} links"
+      },
+      "cancel": "Cancel",
+      "none": "No links from {{domain}} in Unsorted",
+      "done": {
+        "one": "Rule applied to {{count}} link",
+        "other": "Rule applied to {{count}} links"
+      },
+      "failed": "Couldn't apply the rule",
+      "undoFailed": "Couldn't undo the rule"
+    },
+    "dialog": {
+      "addTitle": "Add rule",
+      "editTitle": "Edit rule",
+      "close": "Close",
+      "cancel": "Cancel",
+      "save": "Save rule",
+      "saving": "Saving…",
+      "domain": {
+        "label": "Domain",
+        "placeholder": "youtube.com",
+        "hint": "Also matches its subdomains, such as m.youtube.com",
+        "required": "Enter a domain",
+        "invalid": "Enter a domain such as youtube.com"
+      },
+      "folder": {
+        "label": "Folder",
+        "none": "No folder",
+        "search": "Search folders",
+        "trashed": "The folder of this rule is in Trash. Choose another one or keep only the tags."
+      },
+      "tags": {
+        "label": "Tags",
+        "max": "Up to {{max}} tags"
+      },
+      "nothing": "Choose a folder or add at least one tag.",
+      "taken": "There is a rule for this domain already.",
+      "limit": "You can have up to {{max}} rules. Delete one first.",
+      "missingFolder": "This folder is gone. Choose another one.",
+      "missing": "This rule was deleted meanwhile.",
+      "failed": "Couldn't save the rule. Try again."
+    }
+  },
   "changelog": {
     "title": "What's new",
     "lead": "Every Shelfmark release, newest first.",
@@ -2554,87 +2734,5 @@
     "available": "A new version of Shelfmark is ready",
     "reload": "Reload",
     "later": "Later"
-  },
-  "rules": {
-    "title": "Rules",
-    "intro": "Links from a domain go to a folder and get tags when you save them. A folder or tags you choose yourself always win.",
-    "add": "Add rule",
-    "list": "Rules",
-    "tags": "Tags",
-    "empty": "No rules yet. For example, links from youtube.com can go to Videos with the tag video.",
-    "loadFailed": "Couldn't load the rules.",
-    "retry": "Try again",
-    "folderTrashed": "Folder in Trash: only tags are added",
-    "more": "Actions for {{domain}}",
-    "moreTooltip": "More actions",
-    "edit": "Edit",
-    "applyExisting": "Apply to existing links",
-    "delete": "Delete rule",
-    "undo": "Undo",
-    "describe": "{{domain}}: {{target}}",
-    "created": {
-      "title": "Rule added"
-    },
-    "saved": {
-      "title": "Rule saved"
-    },
-    "deleted": {
-      "title": "Rule deleted"
-    },
-    "deleteFailed": "Couldn't delete the rule",
-    "limit": {
-      "title": "Rules are full"
-    },
-    "apply": {
-      "title": "Apply the rule for {{domain}}?",
-      "message": {
-        "one": "{{count}} link in Unsorted gets the folder and tags of this rule: {{target}}.",
-        "other": "{{count}} links in Unsorted get the folder and tags of this rule: {{target}}."
-      },
-      "more": "There are {{total}} in all. Apply it again for the rest.",
-      "confirm": {
-        "one": "Apply to {{count}} link",
-        "other": "Apply to {{count}} links"
-      },
-      "cancel": "Cancel",
-      "none": "No links from {{domain}} in Unsorted",
-      "done": {
-        "one": "Rule applied to {{count}} link",
-        "other": "Rule applied to {{count}} links"
-      },
-      "failed": "Couldn't apply the rule",
-      "undoFailed": "Couldn't undo the rule"
-    },
-    "dialog": {
-      "addTitle": "Add rule",
-      "editTitle": "Edit rule",
-      "close": "Close",
-      "cancel": "Cancel",
-      "save": "Save rule",
-      "saving": "Saving…",
-      "domain": {
-        "label": "Domain",
-        "placeholder": "youtube.com",
-        "hint": "Also matches its subdomains, such as m.youtube.com",
-        "required": "Enter a domain",
-        "invalid": "Enter a domain such as youtube.com"
-      },
-      "folder": {
-        "label": "Folder",
-        "none": "No folder",
-        "search": "Search folders",
-        "trashed": "The folder of this rule is in Trash. Choose another one or keep only the tags."
-      },
-      "tags": {
-        "label": "Tags",
-        "max": "Up to {{max}} tags"
-      },
-      "nothing": "Choose a folder or add at least one tag.",
-      "taken": "There is a rule for this domain already.",
-      "limit": "You can have up to {{max}} rules. Delete one first.",
-      "missingFolder": "This folder is gone. Choose another one.",
-      "missing": "This rule was deleted meanwhile.",
-      "failed": "Couldn't save the rule. Try again."
-    }
   }
 }

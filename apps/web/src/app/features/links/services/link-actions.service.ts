@@ -32,6 +32,8 @@ import { LINKS_API } from '../models/links-api.const';
 import { UndoToastService } from '../../../core/undo/undo-toast.service';
 import type { MovePickerData } from '../models/move-picker-data.interface';
 import { MovePickerComponent } from '../components/move-picker/move-picker.component';
+import { ReminderActionsService } from '../../reminders/services/reminder-actions.service';
+import { RemindersStore } from '../../../stores/reminders.store';
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,
@@ -136,6 +138,11 @@ export class LinkActionsService {
       onExpire: () => void this.commitDelete(link.id),
     });
     this.store.attachUndo(link.id, () => toast.dismiss());
+  }
+
+  /** "Remind me…" / "Change reminder" (#275): presets or a date and time. */
+  async remind(link: LinkResponse): Promise<void> {
+    await this.injector.get(ReminderActionsService).remind([link]);
   }
 
   /** "Create a rule for youtube.com…" (#398): the rule dialog with the link's domain. */
@@ -314,6 +321,8 @@ export class LinkActionsService {
       });
     } else if (result?.action === ADD_LINK_ACTION.Delete) {
       await this.delete(result.link);
+    } else if (result?.action === ADD_LINK_ACTION.Remind) {
+      await this.remind(result.link);
     }
   }
 
@@ -340,6 +349,8 @@ export class LinkActionsService {
       void this.folders.refresh();
       void this.tags.noteLinkSaved();
       void this.trash.refresh();
+      // A deleted link's reminder leaves the badge and the Reminders list.
+      void this.injector.get(RemindersStore).refresh();
     } else {
       this.toasts.show({
         kind: TOAST_KIND.Danger,

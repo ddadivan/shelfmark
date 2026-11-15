@@ -17,6 +17,7 @@ describe('CONTRACT_SCENARIOS', () => {
       'links',
       'me',
       'pins',
+      'reminders',
       'rules',
       'settings',
       'sharing',

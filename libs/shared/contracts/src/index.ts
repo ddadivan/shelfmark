@@ -251,6 +251,17 @@ export type { PinResponse } from './pins/pin-response.interface';
 export type { ListPinsResponse } from './pins/list-pins-response.interface';
 export type { ReorderPinsRequest } from './pins/reorder-pins-request.interface';
 
+export { REMINDER_ENDPOINT } from './reminders/reminder-endpoint.const';
+export { REMINDER_LIMIT } from './reminders/reminder-limit.const';
+export { REMINDER_ERROR_MESSAGE } from './reminders/reminder-error-message.const';
+export type { ReminderErrorMessage } from './reminders/reminder-error-message.type';
+export { remindAtProblem } from './reminders/remind-at-problem';
+export type { SetReminderRequest } from './reminders/set-reminder-request.interface';
+export type { SetRemindersBatchRequest } from './reminders/set-reminders-batch-request.interface';
+export type { SetRemindersBatchResponse } from './reminders/set-reminders-batch-response.type';
+export type { ListRemindersResponse } from './reminders/list-reminders-response.interface';
+export type { ReminderCountResponse } from './reminders/reminder-count-response.interface';
+
 export { LINK_KIND } from './links/link-kind.const';
 export type { LinkKind } from './links/link-kind.type';
 export { LINK_KIND_VIDEO_HOSTS } from './links/link-kind-video-hosts.const';

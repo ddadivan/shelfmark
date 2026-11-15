@@ -497,7 +497,8 @@
         "favorites": "Não dá para soltar aqui — marque um link com estrela para adicioná-lo aos Favoritos",
         "recent": "Não dá para soltar aqui — «Abertos recentemente» enche ao abrir links",
         "trash": "Não dá para soltar aqui — use Excluir para mover um link para a lixeira",
-        "pinnedLink": "Não dá para soltar aqui — um link fixado não é uma pasta"
+        "pinnedLink": "Não dá para soltar aqui — um link fixado não é uma pasta",
+        "reminders": "Não dá para soltar aqui — use “Lembrar-me” no menu do link"
       }
     }
   },
@@ -2388,7 +2389,8 @@
       "copy": "Copiar links",
       "share": "Compartilhar",
       "delete": "Excluir",
-      "moveToFolder": "Mover para {{folder}}"
+      "moveToFolder": "Mover para {{folder}}",
+      "remind": "Lembrar"
     },
     "header": {
       "label": "Seleção",
@@ -2510,6 +2512,192 @@
       "undoFailed": "Não foi possível restaurar os links"
     }
   },
+  "reminders": {
+    "title": "Lembretes",
+    "dueCount": {
+      "one": "{{count}} lembrete chegou",
+      "many": "{{count}} lembretes chegaram",
+      "other": "{{count}} lembretes chegaram"
+    },
+    "nothingDue": "Nada pendente agora",
+    "dueShort": {
+      "one": "{{count}} pendente",
+      "many": "{{count}} pendentes",
+      "other": "{{count}} pendentes"
+    },
+    "loading": "Carregando lembretes",
+    "loadFailed": {
+      "title": "Não foi possível carregar seus lembretes",
+      "text": "Verifique sua conexão e tente de novo.",
+      "retry": "Tentar de novo"
+    },
+    "empty": {
+      "title": "Nenhum lembrete ainda",
+      "text": "Escolha “Lembrar-me” no menu de um link e ele volta aqui no dia que você escolher."
+    },
+    "group": {
+      "due": "Pendentes",
+      "today": "Hoje",
+      "tomorrow": "Amanhã",
+      "this-week": "Esta semana",
+      "later": "Mais tarde"
+    },
+    "footer": "Os lembretes aparecem aqui, no contador da barra lateral e no cartão. Eles não são enviados por e-mail nem por notificação.",
+    "when": {
+      "today": "Hoje, {{time}}",
+      "tomorrow": "Amanhã, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Pendente {{when}}"
+    },
+    "preset": {
+      "later-today": "Mais tarde hoje",
+      "tomorrow": "Amanhã",
+      "weekend": "Neste fim de semana",
+      "next-week": "Semana que vem",
+      "in-month": "Daqui a um mês"
+    },
+    "dialog": {
+      "title": "Lembrar-me",
+      "titleMany": {
+        "one": "Lembrar-me de {{count}} link",
+        "many": "Lembrar-me de {{count}} links",
+        "other": "Lembrar-me de {{count}} links"
+      },
+      "close": "Fechar",
+      "current": "Lembrete atual: {{when}}",
+      "presets": "Opções rápidas",
+      "pick": "Escolher data e hora…",
+      "previousMonth": "Mês anterior",
+      "nextMonth": "Próximo mês",
+      "time": "Hora",
+      "timeHint": "Opcional; vazio é 9:00",
+      "past": "Esse horário já passou. Escolha um mais tarde.",
+      "timeZone": "Os horários estão no seu fuso horário, {{zone}}.",
+      "remove": "Remover lembrete",
+      "cancel": "Cancelar",
+      "confirm": "Lembrar-me {{when}}",
+      "confirmEmpty": "Escolha um dia"
+    },
+    "menu": {
+      "remind": "Lembrar-me…",
+      "change": "Alterar lembrete…"
+    },
+    "row": {
+      "done": "Concluído",
+      "doneItem": "Marcar o lembrete de {{title}} como concluído",
+      "snooze": "Adiar",
+      "snoozeItem": "Adiar o lembrete de {{title}}"
+    },
+    "toast": {
+      "failed": "Não foi possível salvar o lembrete",
+      "retry": "Tentar de novo",
+      "cleared": {
+        "one": "Lembrete removido",
+        "many": "{{count}} lembretes removidos",
+        "other": "{{count}} lembretes removidos"
+      },
+      "set": "Lembrete para {{when}}",
+      "due": {
+        "one": "Um lembrete chegou",
+        "many": "{{count}} lembretes chegaram",
+        "other": "{{count}} lembretes chegaram"
+      },
+      "show": "Ver"
+    },
+    "edit": {
+      "set": "Lembrete: {{when}}",
+      "none": "Sem lembrete",
+      "change": "Alterar",
+      "remind": "Lembrar-me"
+    }
+  },
+  "rules": {
+    "title": "Regras",
+    "intro": "Os links de um domínio vão para uma pasta e recebem tags quando você os salva. A pasta ou as tags que você escolhe sempre têm prioridade.",
+    "add": "Adicionar regra",
+    "list": "Regras",
+    "tags": "Tags",
+    "empty": "Ainda não há regras. Por exemplo, links de youtube.com podem ir para Vídeos com a tag video.",
+    "loadFailed": "Não foi possível carregar as regras.",
+    "retry": "Tentar novamente",
+    "folderTrashed": "Pasta na lixeira: só as tags são adicionadas",
+    "more": "Ações para {{domain}}",
+    "moreTooltip": "Mais ações",
+    "edit": "Editar",
+    "applyExisting": "Aplicar aos links existentes",
+    "delete": "Excluir regra",
+    "undo": "Desfazer",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Regra adicionada"
+    },
+    "saved": {
+      "title": "Regra salva"
+    },
+    "deleted": {
+      "title": "Regra excluída"
+    },
+    "deleteFailed": "Não foi possível excluir a regra",
+    "limit": {
+      "title": "Limite de regras atingido"
+    },
+    "apply": {
+      "title": "Aplicar a regra de {{domain}}?",
+      "message": {
+        "one": "{{count}} link em Sem pasta recebe a pasta e as tags desta regra: {{target}}.",
+        "many": "{{count}} links em Sem pasta recebem a pasta e as tags desta regra: {{target}}.",
+        "other": "{{count}} links em Sem pasta recebem a pasta e as tags desta regra: {{target}}."
+      },
+      "more": "São {{total}} no total. Aplique de novo para o restante.",
+      "confirm": {
+        "one": "Aplicar a {{count}} link",
+        "many": "Aplicar a {{count}} links",
+        "other": "Aplicar a {{count}} links"
+      },
+      "cancel": "Cancelar",
+      "none": "Nenhum link de {{domain}} em Sem pasta",
+      "done": {
+        "one": "Regra aplicada a {{count}} link",
+        "many": "Regra aplicada a {{count}} links",
+        "other": "Regra aplicada a {{count}} links"
+      },
+      "failed": "Não foi possível aplicar a regra",
+      "undoFailed": "Não foi possível desfazer a regra"
+    },
+    "dialog": {
+      "addTitle": "Adicionar regra",
+      "editTitle": "Editar regra",
+      "close": "Fechar",
+      "cancel": "Cancelar",
+      "save": "Salvar regra",
+      "saving": "Salvando…",
+      "domain": {
+        "label": "Domínio",
+        "placeholder": "youtube.com",
+        "hint": "Também vale para os subdomínios, como m.youtube.com",
+        "required": "Digite um domínio",
+        "invalid": "Digite um domínio como youtube.com"
+      },
+      "folder": {
+        "label": "Pasta",
+        "none": "Nenhuma pasta",
+        "search": "Buscar pastas",
+        "trashed": "A pasta desta regra está na lixeira. Escolha outra ou mantenha só as tags."
+      },
+      "tags": {
+        "label": "Tags",
+        "max": "Até {{max}} tags"
+      },
+      "nothing": "Escolha uma pasta ou adicione pelo menos uma tag.",
+      "taken": "Já existe uma regra para este domínio.",
+      "limit": "Você pode ter até {{max}} regras. Exclua uma primeiro.",
+      "missingFolder": "Esta pasta não existe mais. Escolha outra.",
+      "missing": "Esta regra foi excluída nesse meio-tempo.",
+      "failed": "Não foi possível salvar a regra. Tente novamente."
+    }
+  },
   "changelog": {
     "title": "Novidades",
     "lead": "Todas as versões do Shelfmark, da mais recente para a mais antiga.",
@@ -2606,90 +2794,5 @@
     "available": "Uma nova versão do Shelfmark está pronta",
     "reload": "Recarregar",
     "later": "Depois"
-  },
-  "rules": {
-    "title": "Regras",
-    "intro": "Os links de um domínio vão para uma pasta e recebem tags quando você os salva. A pasta ou as tags que você escolhe sempre têm prioridade.",
-    "add": "Adicionar regra",
-    "list": "Regras",
-    "tags": "Tags",
-    "empty": "Ainda não há regras. Por exemplo, links de youtube.com podem ir para Vídeos com a tag video.",
-    "loadFailed": "Não foi possível carregar as regras.",
-    "retry": "Tentar novamente",
-    "folderTrashed": "Pasta na lixeira: só as tags são adicionadas",
-    "more": "Ações para {{domain}}",
-    "moreTooltip": "Mais ações",
-    "edit": "Editar",
-    "applyExisting": "Aplicar aos links existentes",
-    "delete": "Excluir regra",
-    "undo": "Desfazer",
-    "describe": "{{domain}}: {{target}}",
-    "created": {
-      "title": "Regra adicionada"
-    },
-    "saved": {
-      "title": "Regra salva"
-    },
-    "deleted": {
-      "title": "Regra excluída"
-    },
-    "deleteFailed": "Não foi possível excluir a regra",
-    "limit": {
-      "title": "Limite de regras atingido"
-    },
-    "apply": {
-      "title": "Aplicar a regra de {{domain}}?",
-      "message": {
-        "one": "{{count}} link em Sem pasta recebe a pasta e as tags desta regra: {{target}}.",
-        "many": "{{count}} links em Sem pasta recebem a pasta e as tags desta regra: {{target}}.",
-        "other": "{{count}} links em Sem pasta recebem a pasta e as tags desta regra: {{target}}."
-      },
-      "more": "São {{total}} no total. Aplique de novo para o restante.",
-      "confirm": {
-        "one": "Aplicar a {{count}} link",
-        "many": "Aplicar a {{count}} links",
-        "other": "Aplicar a {{count}} links"
-      },
-      "cancel": "Cancelar",
-      "none": "Nenhum link de {{domain}} em Sem pasta",
-      "done": {
-        "one": "Regra aplicada a {{count}} link",
-        "many": "Regra aplicada a {{count}} links",
-        "other": "Regra aplicada a {{count}} links"
-      },
-      "failed": "Não foi possível aplicar a regra",
-      "undoFailed": "Não foi possível desfazer a regra"
-    },
-    "dialog": {
-      "addTitle": "Adicionar regra",
-      "editTitle": "Editar regra",
-      "close": "Fechar",
-      "cancel": "Cancelar",
-      "save": "Salvar regra",
-      "saving": "Salvando…",
-      "domain": {
-        "label": "Domínio",
-        "placeholder": "youtube.com",
-        "hint": "Também vale para os subdomínios, como m.youtube.com",
-        "required": "Digite um domínio",
-        "invalid": "Digite um domínio como youtube.com"
-      },
-      "folder": {
-        "label": "Pasta",
-        "none": "Nenhuma pasta",
-        "search": "Buscar pastas",
-        "trashed": "A pasta desta regra está na lixeira. Escolha outra ou mantenha só as tags."
-      },
-      "tags": {
-        "label": "Tags",
-        "max": "Até {{max}} tags"
-      },
-      "nothing": "Escolha uma pasta ou adicione pelo menos uma tag.",
-      "taken": "Já existe uma regra para este domínio.",
-      "limit": "Você pode ter até {{max}} regras. Exclua uma primeiro.",
-      "missingFolder": "Esta pasta não existe mais. Escolha outra.",
-      "missing": "Esta regra foi excluída nesse meio-tempo.",
-      "failed": "Não foi possível salvar a regra. Tente novamente."
-    }
   }
 }

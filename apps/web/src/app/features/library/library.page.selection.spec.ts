@@ -106,7 +106,7 @@ describe('LibraryPage selection', () => {
     ).toEqual(['Shift + click selects a range', 'Esc clears']);
     expect(
       [...element.querySelectorAll('.ui-bulk-bar__action')].map((b) => b.textContent?.trim()),
-    ).toEqual(['Move', 'Tags', 'Favorite', 'Open all', 'Copy links', 'Delete']);
+    ).toEqual(['Move', 'Tags', 'Favorite', 'Remind', 'Open all', 'Copy links', 'Delete']);
   });
 
   it('has no axe violations with the selection header and the bulk bar', async () => {

@@ -7,6 +7,10 @@ import {
   LINKS_BATCH_ENDPOINT,
   LINKS_BATCH_UPDATE_ENDPOINT,
   PIN_ENDPOINT,
+  REMINDER_ENDPOINT,
+  type ListRemindersResponse,
+  type ReminderCountResponse,
+  type SetRemindersBatchResponse,
   RECENT_LINKS_ENDPOINT,
   SAVED_VIEW_ENDPOINT,
   RULE_ENDPOINT,
@@ -127,6 +131,15 @@ export function createHttpContractApis(app: NestExpressApplication, cookie: stri
         http.send<ListPinsResponse>('put', `${PIN_ENDPOINT}/order`, {
           items: refs.map(({ kind, id }) => ({ kind, id })),
         }),
+    },
+    reminders: {
+      list: () => http.send<ListRemindersResponse>('get', REMINDER_ENDPOINT.Base),
+      count: () => http.send<ReminderCountResponse>('get', REMINDER_ENDPOINT.Count),
+      set: (linkId, remindAt) =>
+        http.send<LinkResponse>('put', `${REMINDER_ENDPOINT.Base}/${enc(linkId)}`, { remindAt }),
+      clear: (linkId) => http.send<void>('delete', `${REMINDER_ENDPOINT.Base}/${enc(linkId)}`),
+      setMany: (request) =>
+        http.send<SetRemindersBatchResponse>('post', REMINDER_ENDPOINT.Batch, request),
     },
     views: {
       list: (feed?: ListSavedViewsQuery) =>

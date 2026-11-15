@@ -20,6 +20,7 @@ import { HealthModule } from '../health/health.module';
 import { LinksModule } from '../links/links.module';
 import { MonitoringModule } from '../monitoring/monitoring.module';
 import { PinsModule } from '../pins/pins.module';
+import { RemindersModule } from '../reminders/reminders.module';
 import { ViewsModule } from '../views/views.module';
 import { RulesModule } from '../rules/rules.module';
 import { PrismaModule } from '../prisma/prisma.module';
@@ -47,6 +48,7 @@ import { UsersModule } from '../users/users.module';
     TrashModule,
     PinsModule,
     ViewsModule,
+    RemindersModule,
     RulesModule,
     // Async so the environment is read at DI time, not at import time.
     ThrottlerModule.forRootAsync({
