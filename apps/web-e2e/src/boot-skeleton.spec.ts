@@ -8,6 +8,7 @@ import { E2E_TAG } from './models/e2e-tag.const';
 const REAL_AUTH_API_KEY = 'sm-real-auth-api';
 const SESSION_HINT_KEY = 'sm-session-hint';
 const SESSION_DELAY_MS = 400;
+const COLD_SESSION_MS = 8000;
 const SESSION = {
   user: { ...MOCK_USER, onboardingCompletedAt: '2026-01-01T00:00:00.000Z' },
   session: { expiresAt: '2030-01-01T00:00:00.000Z' },
@@ -115,6 +116,20 @@ test.describe('app skeleton while a signed-in start loads (#410)', () => {
       expect(frames.filter((f) => f.page && !f.skeleton && !f.shell)).toEqual([]);
     },
   );
+
+  test('a first visit shows the landing without waiting for the session', async ({ page }) => {
+    await probeFrames(page, false);
+    // A cold API: the landing must not wait for it.
+    await page.route('**/api/auth/get-session', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, COLD_SESSION_MS));
+      await route.fulfill({ contentType: 'application/json', body: 'null' });
+    });
+    const start = Date.now();
+    await page.goto('/');
+
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    expect(Date.now() - start).toBeLessThan(COLD_SESSION_MS);
+  });
 
   test('a guest on the landing gets no skeleton', async ({ page }) => {
     await probeFrames(page, false);
