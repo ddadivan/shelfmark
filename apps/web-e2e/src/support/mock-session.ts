@@ -5,6 +5,10 @@ import { isCompact, tabBar } from './sidebar';
 const MOCK_SESSION_KEY = 'sm-mock-session';
 const MS_PER_HOUR = 3_600_000;
 const SEEDED_FLAG = 'seeded';
+// Same value as MOCK_WHATS_NEW_STORAGE_KEY (apps/web/src/app/features/settings/models).
+const MOCK_WHATS_NEW_KEY = 'sm-mock-whats-new-seen';
+/** Newer than any release: the mock account has seen every "What's new" (#424). */
+const SEEN_EVERYTHING = '999.999.999';
 
 export const MOCK_USER = {
   id: 'e2e',
@@ -26,20 +30,28 @@ export function demoUser(hours: number) {
   };
 }
 
-/** Signs the mock auth API in before the app starts (as `user`, a regular user by default). */
+/**
+ * Signs the mock auth API in before the app starts (as `user`, a regular user by default), with
+ * every "What's new" seen (`seedWhatsNewSeen` after it stores another release).
+ */
 export async function seedSession(
   page: Page,
   user: Record<string, unknown> = MOCK_USER,
 ): Promise<void> {
   await page.addInitScript(
-    ([key, user, flag]) => {
+    ([key, user, flag, whatsNewKey, seen]) => {
       // Seed once: sign-out clears the key and a reload must not bring the session back.
       if (!sessionStorage.getItem(flag)) {
         sessionStorage.setItem(flag, '1');
         localStorage.setItem(key, user);
+        // The seeded user counts as onboarded (a missing onboardingCompletedAt is legacy), so it
+        // would get the "What's new" dialog: mark every release seen unless a spec stored one.
+        if (localStorage.getItem(whatsNewKey) === null) {
+          localStorage.setItem(whatsNewKey, seen);
+        }
       }
     },
-    [MOCK_SESSION_KEY, JSON.stringify(user), SEEDED_FLAG],
+    [MOCK_SESSION_KEY, JSON.stringify(user), SEEDED_FLAG, MOCK_WHATS_NEW_KEY, SEEN_EVERYTHING],
   );
 }
 

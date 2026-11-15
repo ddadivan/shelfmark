@@ -29,7 +29,7 @@ const LATEST_RELEASE = releasedChangelog(CHANGELOG)[0]?.version ?? null;
  */
 export const WhatsNewStore = signalStore(
   { providedIn: 'root' },
-  withState({ open: false }),
+  withState({ dialogOpen: false }),
   withComputed((_, auth = inject(AuthStore), settings = inject(UserSettingsStore)) => {
     const newAccount = computed(
       () => settings.whatsNewSeen() === null && auth.user()?.onboardingCompletedAt === null,
@@ -69,7 +69,7 @@ export const WhatsNewStore = signalStore(
       }
 
       async function open(): Promise<void> {
-        if (store.open()) {
+        if (store.dialogOpen()) {
           return;
         }
         // Nothing new: the newest highlights, so the entry is never an empty dialog.
@@ -77,14 +77,14 @@ export const WhatsNewStore = signalStore(
           ? store.unseen()
           : changelogHighlights(CHANGELOG, null, WHATS_NEW_MAX);
         markSeen();
-        patchState(store, { open: true });
+        patchState(store, { dialogOpen: true });
         try {
           await dialogs.open<WhatsNewDialogComponent, undefined, WhatsNewDialogData>(
             WhatsNewDialogComponent,
             { size: DIALOG_SIZE.Md, data: { highlights } },
           ).result;
         } finally {
-          patchState(store, { open: false });
+          patchState(store, { dialogOpen: false });
         }
       }
 
@@ -93,7 +93,7 @@ export const WhatsNewStore = signalStore(
         if (auth.user()?.id !== userId || !store.pending()) {
           return;
         }
-        if (store.open() || isRatingBlocked(doc)) {
+        if (store.dialogOpen() || isRatingBlocked(doc)) {
           timer = setTimeout(() => attempt(userId), WHATS_NEW_DELAY.Retry);
           return;
         }
@@ -108,7 +108,7 @@ export const WhatsNewStore = signalStore(
       scope.onEnd(() => {
         stop();
         lookedFor = null;
-        patchState(store, { open: false });
+        patchState(store, { dialogOpen: false });
       });
 
       return {
