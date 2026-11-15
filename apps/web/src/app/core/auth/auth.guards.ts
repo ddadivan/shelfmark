@@ -18,16 +18,23 @@ export const guestOnly: CanMatchFn = async () => {
  * straight to the app shell. Without one the visitor is almost surely a guest on a first visit:
  * the landing matches at once and the session is asked in the background, so a cold API never
  * holds the first paint. If a session turns up after all, the app replaces the landing.
+ * The router asks this guard for every URL (the `''` path matches as a prefix before its missing
+ * children rule it out), so the shortcut is only for `/` itself: any deeper URL waits as before,
+ * or a deep link would be sent to `/links`.
  */
-export const landingGuestOnly: CanMatchFn = async () => {
+export const landingGuestOnly: CanMatchFn = async (_route, segments) => {
   const auth = inject(AuthStore);
-  if (auth.loaded() || hasSessionHint()) {
+  if (segments.length > 0 || auth.loaded() || hasSessionHint()) {
     await auth.ensureLoaded();
     return !auth.isSignedIn();
   }
   const router = inject(Router);
   void auth.ensureLoaded().then(() => {
-    if (auth.isSignedIn() && router.parseUrl(router.url).root.children['primary'] === undefined) {
+    // Still on (or still heading to) `/`: the app replaces the landing. A visitor who moved on
+    // meanwhile keeps the page they chose.
+    const navigation = router.currentNavigation();
+    const target = navigation ? navigation.extractedUrl : router.parseUrl(router.url);
+    if (auth.isSignedIn() && target.root.children['primary'] === undefined) {
       void router.navigateByUrl(`/${APP_PATH.Links}`, { replaceUrl: true });
     }
   });
