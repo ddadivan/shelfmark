@@ -3,8 +3,13 @@ import { axeViolations } from '../../../testing/axe';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
-import { LINK_KIND, type LinkPreviewResponse, type LinkResponse } from '@shelfmark/contracts';
-import { MOCK_LINK_PREVIEW_DUPLICATE, MOCK_LINKS } from '@shelfmark/contracts/testing';
+import {
+  LINK_KIND,
+  type LinkPreviewResponse,
+  type LinkResponse,
+  type RuleResponse,
+} from '@shelfmark/contracts';
+import { MOCK_ID, MOCK_LINK_PREVIEW_DUPLICATE, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { delay, of, throwError, type Observable } from 'rxjs';
 import { AppTranslocoLoader } from '../../core/i18n/app-transloco.loader';
 import { APP_LANG } from '../../core/i18n/models/app-lang.const';
@@ -15,6 +20,7 @@ import { FOLDERS_API } from '../links/models/folders-api.const';
 import { LINKS_API } from '../links/models/links-api.const';
 import type { LinksApi } from '../links/models/links-api.interface';
 import { TAGS_API } from '../links/models/tags-api.const';
+import { RULES_API } from '../rules/models/rules-api.const';
 import SharePage from './share.page';
 
 const PREVIEW: LinkPreviewResponse = {
@@ -39,7 +45,7 @@ function fakeApi(preview: () => Observable<LinkPreviewResponse> = () => of(PREVI
   };
 }
 
-async function open(url: string, api = fakeApi()) {
+async function open(url: string, api = fakeApi(), rules?: RuleResponse[]) {
   TestBed.configureTestingModule({
     providers: [
       provideRouter([
@@ -50,6 +56,7 @@ async function open(url: string, api = fakeApi()) {
       { provide: LINKS_API, useValue: api },
       { provide: FOLDERS_API, useClass: MockFoldersApi },
       { provide: TAGS_API, useClass: MockTagsApi },
+      ...(rules ? [{ provide: RULES_API, useValue: { list: () => of({ items: rules }) } }] : []),
     ],
   });
   await new Promise<void>((resolve) => {
@@ -86,6 +93,37 @@ function button(root: HTMLElement, name: string): HTMLButtonElement {
 }
 
 describe('SharePage', () => {
+  it('shows a matching domain rule and saves its folder and tags (#398)', async () => {
+    const rule: RuleResponse = {
+      id: 'r1',
+      domain: 'example.com',
+      folderId: MOCK_ID.FolderAngular,
+      folderAvailable: true,
+      tags: ['docs'],
+      createdAt: '2026-11-01T00:00:00.000Z',
+    };
+    const { api, harness, root, router } = await open(
+      '/share?url=https%3A%2F%2Fexample.com%2Fa',
+      fakeApi(),
+      [rule],
+    );
+    await vi.waitFor(() => {
+      harness.detectChanges();
+      expect(root.textContent).toContain('Rule: example.com → Angular, #docs');
+    });
+    button(root, 'Save').click();
+    await vi.waitFor(() => {
+      expect(router.url).toBe('/links');
+    });
+    expect(api.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        folderId: MOCK_ID.FolderAngular,
+        tags: ['docs'],
+        applyRules: false,
+      }),
+    );
+  });
+
   it('shows the quick save form with the preview of the URL found in the text', async () => {
     const { api, root } = await open('/share?text=Look%20https%3A%2F%2Fexample.com%2Fa');
 

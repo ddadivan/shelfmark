@@ -16,6 +16,7 @@ import { isLinkKind } from '../utils/link-kind';
 import { saveErrorKey } from '../utils/save-error-key';
 import { AddLinkFormService } from './add-link-form.service';
 import { AddLinkPreviewService } from './add-link-preview.service';
+import { AddLinkRuleService } from './add-link-rule.service';
 
 /**
  * The save flow of the add-link dialog (provided by the dialog component): builds the create
@@ -28,6 +29,8 @@ export class AddLinkSaveService {
   private readonly linksApi = inject(LINKS_API);
   private readonly formState = inject(AddLinkFormService);
   private readonly previewService = inject(AddLinkPreviewService);
+  // Optional: specs of the save flow alone run without rules.
+  private readonly ruleService = inject(AddLinkRuleService, { optional: true });
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly data = injectDialogData<AddLinkDialogData>();
 
@@ -67,6 +70,8 @@ export class AddLinkSaveService {
         ...(fetched?.imageUrl && { imageUrl: fetched.imageUrl }),
         // The kind the server read from the page (og:type and host); without it the server uses the host.
         ...(fetched && { kind: fetched.kind }),
+        // The form already shows what the domain rule does (#398): the server must not add it again.
+        ...(this.ruleService?.handled() && { applyRules: false }),
       };
       request$ = this.linksApi.create({
         ...payload,

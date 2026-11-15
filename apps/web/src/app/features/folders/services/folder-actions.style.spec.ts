@@ -438,6 +438,7 @@ describe('FolderActionsService style', () => {
     const { actions, store } = await setup();
     const settings = TestBed.inject(UserSettingsStore);
     await settings.load();
+    const seededAt = store.entityMap()[MOCK_ID.FolderReading].updatedAt;
 
     void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
     await opened();
@@ -454,7 +455,15 @@ describe('FolderActionsService style', () => {
     expect(await picker.getValue()).toBe('🍕');
     button('Save').click();
     await closed();
-    expect(store.entityMap()[MOCK_ID.FolderReading].icon).toBe('🍕');
+    // The save is optimistic: its answer replaces the folder a moment later, and an answer that
+    // arrives after the next save would put the first emoji back. Wait for it (`updatedAt` moves).
+    await until(() => {
+      expect(store.entityMap()[MOCK_ID.FolderReading]).toMatchObject({
+        icon: '🍕',
+        updatedAt: expect.not.stringMatching(seededAt),
+      });
+    });
+    const firstSavedAt = store.entityMap()[MOCK_ID.FolderReading].updatedAt;
     expect(settings.customEmoji()).toEqual([]);
 
     void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
@@ -466,8 +475,14 @@ describe('FolderActionsService style', () => {
     await again.setValue('🦩');
     button('Save').click();
     await closed();
+    // The dialog closes at once; the folder and the own list answer a moment later (a folder
+    // answer after this point would be the stale one of the first save).
     await until(() => {
       expect(settings.customEmoji()).toEqual(['🦩']);
+      expect(store.entityMap()[MOCK_ID.FolderReading]).toMatchObject({
+        icon: '🦩',
+        updatedAt: expect.not.stringMatching(firstSavedAt),
+      });
     });
 
     // Worn by the folder: shown under Yours, but not removable.

@@ -45,6 +45,10 @@ describe('demo library, limits and expiry', () => {
 
       expect(await t.db.prisma.link.count({ where })).toBe(DEMO_SEED.links.length);
       expect(await t.db.prisma.tag.count({ where })).toBe(DEMO_SEED.tags.length);
+      const rules = await t.db.prisma.linkRule.findMany({ where, include: { folder: true } });
+      expect(rules.map((rule) => [rule.domain, rule.folder?.name, rule.tagNames])).toEqual([
+        ['angular.dev', 'Angular', ['angular']],
+      ]);
       const folders = await t.db.prisma.folder.findMany({ where, include: { parent: true } });
       expect(folders).toHaveLength(DEMO_SEED.folders.length);
       const nested = folders.filter((folder) => folder.parentId !== null);

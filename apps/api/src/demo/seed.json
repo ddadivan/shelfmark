@@ -230,5 +230,12 @@
       "createdDaysAgo": 0,
       "lastOpenedDaysAgo": null
     }
+  ],
+  "rules": [
+    {
+      "domain": "angular.dev",
+      "folder": "angular",
+      "tags": ["angular"]
+    }
   ]
 }

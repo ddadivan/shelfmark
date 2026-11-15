@@ -100,6 +100,7 @@ model User {
   feedback              Feedback[]
   folderShares          FolderShare[]
   savedViews            SavedView[]
+  linkRules             LinkRule[]
 
   @@map("users")
 }
@@ -191,6 +192,7 @@ model Folder {
   children       Folder[]     @relation("FolderTree")
   links          Link[]
   share          FolderShare?
+  linkRules      LinkRule[]
 
   @@unique([id, userId])
   @@index([userId, parentId])
@@ -381,4 +383,28 @@ model SavedView {
 
   @@index([userId, position])
   @@map("saved_views")
+}
+
+// A domain rule (#398): a link saved from `domain` or one of its subdomains goes to `folderId` and
+// gets `tagNames`, unless the save chose them itself. `domain` is `normalizeRuleDomain` (lower case,
+// no `www.`, IDN in punycode), unique per user; at most RULE_LIMIT.PerUserMax rules per user.
+// `folderId` is a single-column FK with ON DELETE SET NULL like Link.folder (Prisma cannot generate
+// `SET NULL (folder_id)` on a composite key); the API checks that the folder is the user's on every
+// write and reads it with the userId filter. A folder in Trash keeps the reference (the rule is
+// flagged and adds only its tags); deleting it for good clears it. Tags are stored by name, so a
+// deleted tag is created again by the next matching save. CHECKs live in the migration.
+model LinkRule {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  domain    String   @db.VarChar(253)
+  folderId  String?  @map("folder_id") @db.Uuid
+  tagNames  String[] @default([]) @map("tag_names")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder    Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, domain])
+  @@index([folderId])
+  @@map("link_rules")
 }

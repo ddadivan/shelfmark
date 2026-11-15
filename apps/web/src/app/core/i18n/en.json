@@ -279,6 +279,10 @@
         "none": "No links found in this text",
         "back": "One link",
         "find": "Find links"
+      },
+      "rule": {
+        "chip": "Rule: {{domain}} → {{target}}",
+        "remove": "Don't apply the rule for {{domain}}"
       }
     },
     "edit": {
@@ -326,7 +330,8 @@
       "unpinFromTop": "Unpin from top",
       "pinToSidebar": "Pin to sidebar",
       "unpinFromSidebar": "Unpin from sidebar",
-      "pinned": "Pinned"
+      "pinned": "Pinned",
+      "createRule": "Create a rule for {{domain}}…"
     },
     "recent": {
       "title": "Recently opened",
@@ -473,7 +478,12 @@
       },
       "noneSaved": "No links were saved",
       "undoFailed": "Couldn't undo",
-      "undoFailedDetail": "The links are still saved"
+      "undoFailedDetail": "The links are still saved",
+      "applyRules": "Apply domain rules",
+      "savedMixed": {
+        "one": "{{count}} link saved",
+        "other": "{{count}} links saved to their folders"
+      }
     },
     "drag": {
       "moveHere": "Move here",
@@ -2462,6 +2472,88 @@
       "failed": "Couldn't delete the links",
       "failedDetail": "They are back in the list",
       "undoFailed": "Couldn't restore the links"
+    }
+  },
+  "rules": {
+    "title": "Rules",
+    "intro": "Links from a domain go to a folder and get tags when you save them. A folder or tags you choose yourself always win.",
+    "add": "Add rule",
+    "list": "Rules",
+    "tags": "Tags",
+    "empty": "No rules yet. For example, links from youtube.com can go to Videos with the tag video.",
+    "loadFailed": "Couldn't load the rules.",
+    "retry": "Try again",
+    "folderTrashed": "Folder in Trash: only tags are added",
+    "more": "Actions for {{domain}}",
+    "moreTooltip": "More actions",
+    "edit": "Edit",
+    "applyExisting": "Apply to existing links",
+    "delete": "Delete rule",
+    "undo": "Undo",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Rule added"
+    },
+    "saved": {
+      "title": "Rule saved"
+    },
+    "deleted": {
+      "title": "Rule deleted"
+    },
+    "deleteFailed": "Couldn't delete the rule",
+    "limit": {
+      "title": "Rules are full"
+    },
+    "apply": {
+      "title": "Apply the rule for {{domain}}?",
+      "message": {
+        "one": "{{count}} link in Unsorted gets the folder and tags of this rule: {{target}}.",
+        "other": "{{count}} links in Unsorted get the folder and tags of this rule: {{target}}."
+      },
+      "more": "There are {{total}} in all. Apply it again for the rest.",
+      "confirm": {
+        "one": "Apply to {{count}} link",
+        "other": "Apply to {{count}} links"
+      },
+      "cancel": "Cancel",
+      "none": "No links from {{domain}} in Unsorted",
+      "done": {
+        "one": "Rule applied to {{count}} link",
+        "other": "Rule applied to {{count}} links"
+      },
+      "failed": "Couldn't apply the rule",
+      "undoFailed": "Couldn't undo the rule"
+    },
+    "dialog": {
+      "addTitle": "Add rule",
+      "editTitle": "Edit rule",
+      "close": "Close",
+      "cancel": "Cancel",
+      "save": "Save rule",
+      "saving": "Saving…",
+      "domain": {
+        "label": "Domain",
+        "placeholder": "youtube.com",
+        "hint": "Also matches its subdomains, such as m.youtube.com",
+        "required": "Enter a domain",
+        "invalid": "Enter a domain such as youtube.com"
+      },
+      "folder": {
+        "label": "Folder",
+        "none": "No folder",
+        "search": "Search folders",
+        "trashed": "The folder of this rule is in Trash. Choose another one or keep only the tags."
+      },
+      "tags": {
+        "label": "Tags",
+        "max": "Up to {{max}} tags"
+      },
+      "nothing": "Choose a folder or add at least one tag.",
+      "taken": "There is a rule for this domain already.",
+      "limit": "You can have up to {{max}} rules. Delete one first.",
+      "missingFolder": "This folder is gone. Choose another one.",
+      "missing": "This rule was deleted meanwhile.",
+      "failed": "Couldn't save the rule. Try again."
     }
   }
 }

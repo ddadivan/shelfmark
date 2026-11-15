@@ -47,6 +47,17 @@
 
     @if (previewState() === PREVIEW_STATE.Failed) {
     <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'links.add.preview.failed' | transloco }}</ui-notice>
+    } @if (ruleChip(); as chip) {
+    <div class="share__rule">
+      <ui-chip
+        variant="neutral"
+        icon="globe"
+        removable
+        [removeLabel]="'links.add.rule.remove' | transloco: { domain: chip.domain }"
+        (removed)="dismissRule()"
+        >{{ 'links.add.rule.chip' | transloco: chip }}</ui-chip
+      >
+    </div>
     }
 
     <ui-select

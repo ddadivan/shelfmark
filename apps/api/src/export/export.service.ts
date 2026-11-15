@@ -2,7 +2,7 @@ import { toLinkKind } from '../links/to-link-kind';
 import { Readable } from 'node:stream';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EXPORT_FORMAT, EXPORT_SCHEMA_VERSION, normalizeTagName } from '@shelfmark/contracts';
-import type { ExportFolder, ExportLink, ExportQuery } from '@shelfmark/contracts';
+import type { ExportFolder, ExportLink, ExportQuery, ExportRule } from '@shelfmark/contracts';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EXPORT_CONTENT_TYPE } from './models/export-content-type.const';
@@ -78,13 +78,15 @@ export class ExportService {
       (query.q ?? '').trim() !== '' ||
       query.kind !== undefined;
     const folders = filtered ? await this.nonEmpty(scope, byId, base) : scope;
+    // Rules are account settings: only a full export carries them (#398).
+    const rules = filtered || query.folderId !== undefined ? [] : await this.rules(userId, byId);
 
     const date = now.toISOString().slice(0, 10);
     if (query.format === EXPORT_FORMAT.Json) {
       return {
         filename: `shelfmark-${date}.json`,
         contentType: EXPORT_CONTENT_TYPE.Json,
-        body: Readable.from(this.guarded(this.jsonChunks(folders, byId, base, now))),
+        body: Readable.from(this.guarded(this.jsonChunks(folders, byId, base, now, rules))),
       };
     }
     return {
@@ -187,6 +189,23 @@ export class ExportService {
     }
   }
 
+  /** The user's rules, sorted by domain; a folder that is not live (in Trash) exports as `null`. */
+  private async rules(userId: string, byId: Map<string, ExportFolderRow>): Promise<ExportRule[]> {
+    const rows = await this.prisma.linkRule.findMany({
+      where: { userId },
+      select: { domain: true, folderId: true, tagNames: true, createdAt: true },
+    });
+    return rows
+      .sort((a, b) => (a.domain < b.domain ? -1 : a.domain > b.domain ? 1 : 0))
+      .map((row) => ({
+        domain: row.domain,
+        folderPath:
+          row.folderId !== null && byId.has(row.folderId) ? this.pathOf(row.folderId, byId) : null,
+        tags: [...row.tagNames],
+        createdAt: row.createdAt.toISOString(),
+      }));
+  }
+
   private pathOf(id: string, byId: Map<string, ExportFolderRow>): string[] {
     const path: string[] = [];
     const seen = new Set<string>();
@@ -204,6 +223,7 @@ export class ExportService {
     byId: Map<string, ExportFolderRow>,
     where: Prisma.LinkWhereInput,
     now: Date,
+    rules: ExportRule[],
   ): AsyncGenerator<string> {
     const exportFolders: ExportFolder[] = folders
       .map((folder) => ({
@@ -233,7 +253,7 @@ export class ExportService {
       yield (first ? '' : ',') + parts.join(',');
       first = false;
     }
-    yield ']}\n';
+    yield `],"rules":${JSON.stringify(rules)}}\n`;
   }
 
   /**

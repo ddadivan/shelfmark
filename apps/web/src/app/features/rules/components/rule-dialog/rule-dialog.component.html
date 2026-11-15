@@ -1,0 +1,71 @@
+<form [formRoot]="form">
+  <ui-dialog
+    [title]="(state.editing ? 'rules.dialog.editTitle' : 'rules.dialog.addTitle') | transloco"
+    [closeLabel]="'rules.dialog.close' | transloco"
+    size="md"
+  >
+    <div class="rule-dialog__fields">
+      <ui-input
+        (focusout)="state.normalizeDomainField()"
+        [label]="'rules.dialog.domain.label' | transloco"
+        [placeholder]="'rules.dialog.domain.placeholder' | transloco"
+        [hint]="'rules.dialog.domain.hint' | transloco"
+        [formField]="form.domain"
+      />
+
+      <div class="rule-dialog__folder" role="group" aria-labelledby="rule-dialog-folder">
+        <span id="rule-dialog-folder" class="rule-dialog__label">{{
+          'rules.dialog.folder.label' | transloco
+        }}</span>
+        @if (trashedFolder) {
+          <ui-notice>{{ 'rules.dialog.folder.trashed' | transloco }}</ui-notice>
+        }
+        <ui-picker-list
+          class="rule-dialog__picker"
+          [autoFocus]="false"
+          [options]="options()"
+          [value]="state.model().folderId"
+          [emptyLabel]="'rules.dialog.folder.none' | transloco"
+          [recentIds]="recent()"
+          [recentLabel]="'links.move.recent' | transloco"
+          [searchLabel]="'rules.dialog.folder.search' | transloco"
+          [listLabel]="'rules.dialog.folder.label' | transloco"
+          [noResultsLabel]="'links.move.noResults' | transloco"
+          (chosen)="state.chooseFolder($event)"
+        />
+      </div>
+
+      <ui-tag-input
+        [label]="'rules.dialog.tags.label' | transloco"
+        [placeholder]="'links.add.tags.placeholder' | transloco"
+        [suggestions]="tagSuggestions()"
+        [maxTags]="RULE_LIMIT.TagsMax"
+        [maxTagsLabel]="'rules.dialog.tags.max' | transloco: { max: RULE_LIMIT.TagsMax }"
+        [createLabel]="'links.add.tags.create' | transloco"
+        [removeLabel]="'links.add.tags.remove' | transloco"
+        [addedLabel]="'links.add.tags.added' | transloco"
+        [removedLabel]="'links.add.tags.removed' | transloco"
+        [duplicateLabel]="'links.add.tags.duplicate' | transloco"
+        [listLabel]="'links.add.tags.list' | transloco"
+        [formField]="form.tags"
+      />
+
+      @if (state.errorKey(); as key) {
+        <ui-notice [kind]="NOTICE_KIND.Danger">{{
+          key | transloco: { max: RULE_LIMIT.PerUserMax }
+        }}</ui-notice>
+      }
+    </div>
+
+    <ui-button slot="footer" [disabled]="state.saving()" (click)="state.cancel()">{{
+      'rules.dialog.cancel' | transloco
+    }}</ui-button>
+    <ui-button
+      slot="footer"
+      [type]="BUTTON_TYPE.Submit"
+      [variant]="BUTTON_VARIANT.Primary"
+      [loading]="state.saving()"
+      >{{ (state.saving() ? 'rules.dialog.saving' : 'rules.dialog.save') | transloco }}</ui-button
+    >
+  </ui-dialog>
+</form>

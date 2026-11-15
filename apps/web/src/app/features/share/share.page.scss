@@ -174,3 +174,13 @@
   text-align: center;
   color: var(--text-muted);
 }
+
+// The rule chip (#398) above the folder field; long names wrap.
+.share__rule {
+  display: flex;
+  min-width: 0;
+
+  ui-chip {
+    max-width: 100%;
+  }
+}
