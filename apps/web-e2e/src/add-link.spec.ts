@@ -117,3 +117,34 @@ test.describe('a link typed without https:// (#405, mock API)', () => {
     },
   );
 });
+
+test.describe('folder field on a touch screen (mock API)', () => {
+  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+
+  test(
+    'tapping the folder opens the list without moving focus into its search box',
+    { tag: E2E_TAG.Phone },
+    async ({ page, hasTouch }) => {
+      test.skip(!hasTouch, 'the keyboard only appears on touch screens');
+      await openFeed(page);
+      await page.getByRole('button', { name: 'Add link' }).first().click();
+      const dialog = page.getByRole('dialog', { name: 'Add link' });
+      const folder = dialog.getByRole('combobox', { name: 'Folder' });
+
+      await folder.tap();
+
+      await expect(page.getByRole('listbox', { name: 'Folder' })).toBeVisible();
+      const search = page.getByRole('combobox', { name: 'Search folders' });
+      await expect(search).toBeVisible();
+      // No focused text field, so no on-screen keyboard over the list.
+      await expect(search).not.toBeFocused();
+      await expect(folder).toBeFocused();
+
+      // Tapping the search box is the way to type, and the list still answers.
+      await search.tap();
+      await expect(search).toBeFocused();
+      await search.fill('zzz-no-such-folder');
+      await expect(page.getByText('No folders found').first()).toBeVisible();
+    },
+  );
+});
