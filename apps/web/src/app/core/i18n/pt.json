@@ -1172,6 +1172,14 @@
     "all": {
       "json": "Tudo em JSON",
       "html": "Tudo como HTML de favoritos"
+    },
+    "empty": {
+      "title": "Ainda não há nada para exportar",
+      "detail": "Salve um link primeiro e depois você poderá exportar sua biblioteca"
+    },
+    "emptyView": {
+      "title": "Nada para exportar nesta visualização",
+      "detail": "Esta visualização não tem links. Exporte tudo ou abra outra visualização"
     }
   },
   "settings": {

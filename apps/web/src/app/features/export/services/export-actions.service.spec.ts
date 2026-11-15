@@ -9,12 +9,23 @@ import { translocoConfig } from '../../../core/i18n/transloco.config';
 import { ExportActionsService } from './export-actions.service';
 import { EXPORT_API } from '../models/export-api.const';
 import type { ExportApi } from '../models/export-api.interface';
+import { FoldersStore } from '../../../stores/folders.store';
 
-async function setup(api: ExportApi) {
+/** The sidebar counts the service reads: `null` = they could not be loaded. */
+function foldersWith(all: number | null) {
+  return {
+    load: vi.fn(() => (all === null ? Promise.reject(new Error('offline')) : Promise.resolve())),
+    loaded: () => all !== null,
+    counts: () => ({ all: all ?? 0, unsorted: 0, favorites: 0 }),
+  };
+}
+
+async function setup(api: ExportApi, links: number | null = 3) {
   TestBed.configureTestingModule({
     providers: [
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
       { provide: EXPORT_API, useValue: api },
+      { provide: FoldersStore, useValue: foldersWith(links) },
     ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -85,5 +96,53 @@ describe('ExportActionsService', () => {
     await service.download(EXPORT_FORMAT.Json);
 
     expect(download).toHaveBeenCalledTimes(2);
+  });
+
+  describe('with nothing to export', () => {
+    it('explains instead of saving an empty file when the account has no link', async () => {
+      const download = vi.fn(() => of(undefined));
+      const { service, show } = await setup({ download }, 0);
+
+      await service.download(EXPORT_FORMAT.Json);
+
+      expect(download).not.toHaveBeenCalled();
+      expect(show).toHaveBeenCalledOnce();
+      const options = show.mock.calls[0][0];
+      expect(options.kind).toBe('info');
+      expect(options.title).toBe('Nothing to export yet');
+      expect(options.detail).toBe('Save a link first, then you can export your library');
+    });
+
+    it('explains an empty view and still exports a full one', async () => {
+      const download = vi.fn(() => of(undefined));
+      const { service, show } = await setup({ download });
+
+      await service.download(EXPORT_FORMAT.Html, { folderId: 'f' }, { viewEmpty: true });
+      expect(download).not.toHaveBeenCalled();
+      expect(show.mock.calls[0][0].title).toBe('Nothing to export in this view');
+
+      await service.download(EXPORT_FORMAT.Html, { folderId: 'f' }, { viewEmpty: false });
+      expect(download).toHaveBeenCalledWith(EXPORT_FORMAT.Html, { folderId: 'f' });
+    });
+
+    it('exports as before when the counts cannot be loaded', async () => {
+      const download = vi.fn(() => of(undefined));
+      const { service, show } = await setup({ download }, null);
+
+      await service.download(EXPORT_FORMAT.Json);
+
+      expect(download).toHaveBeenCalledOnce();
+      expect(show).not.toHaveBeenCalled();
+    });
+
+    it('lets the next export run after explaining', async () => {
+      const download = vi.fn(() => of(undefined));
+      const { service } = await setup({ download });
+
+      await service.download(EXPORT_FORMAT.Json, { tags: ['a'] }, { viewEmpty: true });
+      await service.download(EXPORT_FORMAT.Json);
+
+      expect(download).toHaveBeenCalledWith(EXPORT_FORMAT.Json, {});
+    });
   });
 });

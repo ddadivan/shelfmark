@@ -1150,6 +1150,14 @@
     "all": {
       "json": "Everything as JSON",
       "html": "Everything as Bookmarks HTML"
+    },
+    "empty": {
+      "title": "Nothing to export yet",
+      "detail": "Save a link first, then you can export your library"
+    },
+    "emptyView": {
+      "title": "Nothing to export in this view",
+      "detail": "This view has no links. Export everything, or open another view"
     }
   },
   "settings": {

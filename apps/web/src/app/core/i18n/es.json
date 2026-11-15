@@ -1172,6 +1172,14 @@
     "all": {
       "json": "Todo en JSON",
       "html": "Todo como HTML de marcadores"
+    },
+    "empty": {
+      "title": "Todavía no hay nada que exportar",
+      "detail": "Guarda primero un enlace y luego podrás exportar tu biblioteca"
+    },
+    "emptyView": {
+      "title": "No hay nada que exportar en esta vista",
+      "detail": "Esta vista no tiene enlaces. Exporta todo o abre otra vista"
     }
   },
   "settings": {
