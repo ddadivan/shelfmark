@@ -90,6 +90,16 @@ async function setup(
   rules?: RuleResponse[],
   newLinksFolderId?: string,
 ) {
+  const settings = {
+    trashRetentionDays: 30,
+    folderColours: true,
+    pauseHistory: false,
+    customColours: [],
+    customEmoji: [],
+    ...MOCK_APPEARANCE_DEFAULTS,
+    ...LIBRARY_SETTINGS_DEFAULT,
+    newLinksFolderId: newLinksFolderId ?? null,
+  };
   TestBed.configureTestingModule({
     providers: [
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
@@ -102,17 +112,8 @@ async function setup(
             {
               provide: USER_SETTINGS_API,
               useValue: {
-                get: () =>
-                  of({
-                    trashRetentionDays: 30,
-                    folderColours: true,
-                    pauseHistory: false,
-                    customColours: [],
-                    customEmoji: [],
-                    ...MOCK_APPEARANCE_DEFAULTS,
-                    ...LIBRARY_SETTINGS_DEFAULT,
-                    newLinksFolderId,
-                  }),
+                get: () => of(settings),
+                update: () => of(settings),
               },
             },
           ]
@@ -198,6 +199,12 @@ function pasteInto(target: HTMLElement, text: string): Event {
   TestBed.tick();
   return event;
 }
+
+// Another spec of the worker may leave a theme or language in the browser storage; with one there,
+// the settings store saves it through the faked account (`update`) before it applies the settings.
+beforeEach(() => {
+  localStorage.clear();
+});
 
 afterEach(() => {
   document.querySelectorAll('.cdk-overlay-container').forEach((el) => {
