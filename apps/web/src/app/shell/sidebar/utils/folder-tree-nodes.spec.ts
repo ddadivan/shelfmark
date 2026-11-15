@@ -39,4 +39,24 @@ describe('folderTreeNodes', () => {
     });
     expect(nodes.some((entry) => 'count' in entry)).toBe(false);
   });
+
+  it('passes a folder description on for the tooltip (#418)', () => {
+    const described = {
+      folder: {
+        id: 'd',
+        name: 'D',
+        icon: 'folder',
+        colour: 'sage',
+        linkCount: 0,
+        description: 'Hi',
+      },
+      children: [],
+    } as unknown as FolderNode;
+    const [row] = folderTreeNodes([described], {
+      open: new Set(),
+      countsShown: false,
+      shownColour: (colour) => colour,
+    });
+    expect(row?.description).toBe('Hi');
+  });
 });

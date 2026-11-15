@@ -150,6 +150,28 @@ describe('SelectComponent', () => {
     expect(trigger.getAttribute('aria-describedby')).toContain('-hint');
   });
 
+  it('draws the tile of a folder option in the trigger and its row (#418)', async () => {
+    const fixture = TestBed.createComponent(SelectComponent);
+    fixture.componentRef.setInput('label', 'Folder');
+    fixture.componentRef.setInput('options', [
+      { id: 'a', name: 'A', colour: 'rose', icon: 'star' },
+      { id: 'b', name: 'B' },
+    ]);
+    fixture.componentInstance.value.set('a');
+    document.body.appendChild(fixture.nativeElement);
+    await settle(fixture);
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('button ui-folder-icon.ui-folder-icon--rose')).not.toBeNull();
+
+    host.querySelector<HTMLButtonElement>('button[role="combobox"]')?.click();
+    await settle(fixture);
+    const rows = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));
+    expect(rows[0]?.querySelector('ui-folder-icon')).not.toBeNull();
+    expect(rows[1]?.querySelector('ui-folder-icon')).toBeNull();
+    expect(rows[1]?.querySelector('ui-icon')).not.toBeNull();
+    fixture.destroy();
+  });
+
   it('shows the empty label for null and the placeholder for an unknown value', async () => {
     const { fixture, trigger, host } = await setup();
     host.value.set(null);

@@ -1,0 +1,70 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  --ui-folder-banner-padding-block: var(--space-6);
+  --ui-folder-banner-padding-inline: var(--space-6);
+  --ui-folder-banner-cover-room: #{rem(88px)};
+  --ui-folder-banner-ground: var(--bg);
+
+  position: relative;
+  display: block;
+  isolation: isolate;
+  padding: var(--ui-folder-banner-padding-block) var(--ui-folder-banner-padding-inline);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+
+  @include phone {
+    --ui-folder-banner-cover-room: #{rem(64px)};
+  }
+}
+
+// A chosen colour: a soft band from the top start corner that fades into the page. The tint is a
+// tile colour, so text keeps 4.5:1 on it; on a dark base it is quieter still.
+:host([data-ui-folder-colour]) {
+  background: linear-gradient(
+    160deg,
+    light-dark(var(--ui-folder-tint), color-mix(in srgb, var(--ui-folder-tint) 70%, transparent)) 0%,
+    transparent 75%
+  );
+}
+
+// A cover: the picture shows in the room above the content and fades into the page background
+// before the text starts, so the heading and the description sit on the plain page colour.
+:host(.ui-folder-banner--cover) {
+  padding-block-start: calc(
+    var(--ui-folder-banner-padding-block) + var(--ui-folder-banner-cover-room)
+  );
+  background: var(--ui-folder-banner-ground);
+}
+
+.ui-folder-banner__cover {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+
+  // The picture itself ends before the text: nothing of it is left at the rounded bottom corners.
+  mask-image: linear-gradient(to bottom, var(--bg) 30%, transparent 60%);
+}
+
+.ui-folder-banner__scrim {
+  position: absolute;
+
+  // A hair past the edges, so no anti-aliased rim of the picture shows at the rounded corners.
+  inset: rem(-1px);
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    var(--ui-folder-banner-ground) 0%,
+    var(--ui-folder-banner-ground) 55%,
+    color-mix(in srgb, var(--ui-folder-banner-ground) 70%, transparent) 75%,
+    color-mix(in srgb, var(--ui-folder-banner-ground) 10%, transparent) 100%
+  );
+}
+
+.ui-folder-banner__content {
+  position: relative;
+  min-width: 0;
+}

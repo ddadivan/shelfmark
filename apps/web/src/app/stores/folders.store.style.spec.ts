@@ -76,4 +76,40 @@ describe('FoldersStore setStyle', () => {
 
     expect(api.update).not.toHaveBeenCalled();
   });
+
+  it('keeps the trimmed description the server answers and rolls a failed one back (#418)', async () => {
+    const { store, api } = setup();
+    await store.load();
+    api.update.mockImplementationOnce(() =>
+      of({ ...WORK, description: 'Trimmed', updatedAt: 'later' }),
+    );
+
+    expect(await store.setStyle('w', { description: ' Trimmed ' })).toBe(true);
+    expect(store.entityMap()['w'].description).toBe('Trimmed');
+
+    api.update.mockImplementationOnce(() => throwError(() => new Error('down')));
+    expect(await store.setStyle('w', { description: null })).toBe(false);
+    expect(store.entityMap()['w'].description).toBe('Trimmed');
+  });
+
+  it('shows a new cover at once, takes the server path and rolls a failed one back (#418)', async () => {
+    const { store, api } = setup();
+    await store.load();
+    const pending = new Subject<FolderResponse>();
+    api.update.mockImplementationOnce(() => pending);
+
+    const result = store.setStyle('w', { coverLinkId: 'l1' }, '/optimistic.png');
+    expect(store.entityMap()['w']).toMatchObject({
+      coverLinkId: 'l1',
+      coverUrl: '/optimistic.png',
+    });
+    pending.next({ ...WORK, coverLinkId: 'l1', coverUrl: '/server.png', updatedAt: 'later' });
+    pending.complete();
+    expect(await result).toBe(true);
+    expect(store.entityMap()['w'].coverUrl).toBe('/server.png');
+
+    api.update.mockImplementationOnce(() => throwError(() => new Error('down')));
+    expect(await store.setStyle('w', { coverLinkId: null })).toBe(false);
+    expect(store.entityMap()['w']).toMatchObject({ coverLinkId: 'l1', coverUrl: '/server.png' });
+  });
 });

@@ -16,4 +16,5 @@ export interface AppearanceRow {
   cardSite: boolean;
   cardNotes: boolean;
   cardTags: boolean;
+  folderHighlight: string;
 }

@@ -27,6 +27,7 @@ import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { matchesQuery } from '../utils/search-query';
 import { buildDemoLibrarySeed, usesDemoLibrary } from './demo-library-seed';
 import { generateMockLinks } from './generate-mock-links';
+import { withMockPreviews } from './with-mock-previews';
 import type { MockSavedView } from '../../views/mock/models/mock-saved-view.interface';
 import { mockStarterViews } from '../../views/mock/mock-starter-views';
 import {
@@ -60,7 +61,7 @@ export class MockLibraryData {
    * mock session from the fixtures.
    */
   private readonly demo = usesDemoLibrary() ? buildDemoLibrarySeed() : null;
-  links: LinkResponse[] = this.demo?.links ?? generateMockLinks();
+  links: LinkResponse[] = withMockPreviews(this.demo?.links ?? generateMockLinks());
   private folders: FolderResponse[] =
     this.demo?.folders ?? MOCK_FOLDERS.map((folder) => ({ ...folder }));
   private tags: TagResponse[] = [
@@ -119,14 +120,24 @@ export class MockLibraryData {
     );
   }
 
-  /** Folders with `linkCount` (links directly in the folder), by position, then name (the API order). */
+  /**
+   * Folders with `linkCount` (links directly in the folder) and the cover (#418: only while the
+   * cover link is still a live link of that folder, like the API), by position, then name.
+   */
   foldersView(): FolderResponse[] {
     return this.folders
-      .map((folder) => ({
-        ...folder,
-        pinned: this.isPinned(PIN_KIND.Folder, folder.id),
-        linkCount: this.links.filter((link) => link.folderId === folder.id).length,
-      }))
+      .map((folder) => {
+        const cover = this.links.find(
+          (link) => link.id === folder.coverLinkId && link.folderId === folder.id,
+        );
+        return {
+          ...folder,
+          coverLinkId: cover?.id ?? null,
+          coverUrl: cover?.imageUrl ?? null,
+          pinned: this.isPinned(PIN_KIND.Folder, folder.id),
+          linkCount: this.links.filter((link) => link.folderId === folder.id).length,
+        };
+      })
       .sort((a, b) => a.position - b.position || a.name.localeCompare(b.name));
   }
 

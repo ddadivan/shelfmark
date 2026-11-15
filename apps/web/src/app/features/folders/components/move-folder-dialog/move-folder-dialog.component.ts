@@ -11,6 +11,7 @@ import {
   UiDialogRef,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../../stores/folders.store';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { buildFolderOptions } from '../../../links/utils/folder-options';
 import type { MoveFolderDialogData } from '../../models/move-folder-dialog-data.interface';
 
@@ -31,6 +32,8 @@ export class MoveFolderDialogComponent {
 
   private readonly ref = inject<UiDialogRef<boolean>>(UiDialogRef);
   private readonly folders = inject(FoldersStore);
+  /** Folder tiles in the folder select, as the account shows colours (#418). */
+  private readonly shownColour = inject(UserSettingsStore).shownColour;
   protected readonly data = injectDialogData<MoveFolderDialogData>();
 
   private readonly model = signal<{ parentId: string | null }>({
@@ -46,7 +49,10 @@ export class MoveFolderDialogComponent {
       this.data.folder.id,
       ...this.folders.descendantIds(this.data.folder.id),
     ]);
-    return buildFolderOptions(this.folders.entities().filter((folder) => !excluded.has(folder.id)));
+    return buildFolderOptions(
+      this.folders.entities().filter((folder) => !excluded.has(folder.id)),
+      this.shownColour,
+    );
   });
 
   protected cancel(): void {

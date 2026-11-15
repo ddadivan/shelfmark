@@ -8,6 +8,7 @@ import {
   CheckboxComponent,
   ChipComponent,
   FaviconComponent,
+  FolderChipComponent,
   LongPressDirective,
   ListItemComponent,
   MenuComponent,
@@ -20,6 +21,7 @@ import { ViewportService } from '../../../../core/layout/viewport.service';
 import { linkKeyIntent } from '../../utils/link-select-keys';
 import { LINK_KEY_INTENT } from '../../models/link-key-intent.const';
 import type { LinkSelectToggle } from '../../models/link-select-toggle.interface';
+import type { FolderChipView } from '../../models/folder-chip-view.interface';
 import { linkHost, ownImageUrl, safeHref, siteLetter } from '../../utils/link-view';
 import { ReminderFormatService } from '../../../reminders/services/reminder-format.service';
 
@@ -38,6 +40,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
     LongPressDirective,
     ChipComponent,
     FaviconComponent,
+    FolderChipComponent,
     ListItemComponent,
     MenuComponent,
     MenuItemComponent,
@@ -62,6 +65,8 @@ export class LinkRowComponent {
   readonly link = input.required<LinkResponse>();
   /** Plays the fade-in of rows that replace the skeleton. */
   readonly reveal = input(false);
+  /** The link's folder as a chip, in mixed feeds only (#418); `null` for none. */
+  readonly folder = input<FolderChipView | null>(null);
 
   /** The link is shown inside a folder: its menu offers "Pin to top" (a pinned link leads the folder). */
   readonly pinnable = input(false);

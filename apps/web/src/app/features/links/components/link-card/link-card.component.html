@@ -96,6 +96,16 @@
         }
       </ul>
     }
+    <!-- After the tags, so the tags keep their place whether the feed names folders or not. -->
+    @if (folder(); as chip) {
+      <ui-folder-chip
+        class="link-card__folder"
+        [label]="chip.name"
+        [icon]="chip.icon"
+        [colour]="chip.colour"
+        [hint]="'links.card.inFolder' | transloco"
+      />
+    }
     @if (!readOnly()) {
       <ui-button
         class="link-card__star"

@@ -31,6 +31,8 @@ import { relayKey } from './relay-key';
 import { selectedRow, selectRows } from './select-rows';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
+import { FolderIconComponent } from '../folder-icon/folder-icon.component';
+import { FOLDER_ICON_SIZE } from '../folder-icon/models/folder-icon-size.const';
 
 /**
  * Picks one value from a nested list (the folder of a link). The trigger is an Angular Aria
@@ -53,6 +55,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
   selector: 'ui-select',
   imports: [
     FieldShellComponent,
+    FolderIconComponent,
     IconComponent,
     RippleDirective,
     Combobox,
@@ -68,6 +71,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
 })
 export class SelectComponent extends UiFieldControl implements FormValueControl<string | null> {
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
   /** Id of the chosen option, or `null` for the empty option or no choice. */
   readonly value = model<string | null>(null);
   /** The option tree. */

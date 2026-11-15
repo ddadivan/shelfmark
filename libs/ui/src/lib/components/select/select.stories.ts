@@ -184,6 +184,19 @@ export const ErrorState: Story = {
 
 export const Disabled: Story = { args: { disabled: true, hint: 'The folder cannot change here' } };
 
+/** Folder tiles (#418): each folder option shows its own colour and glyph or emoji, the trigger too. */
+const TILED: SelectOption[] = [
+  { id: SELECT_FIXTURE_ID.Work, name: 'Work', colour: 'ocean', icon: 'briefcase' },
+  { id: SELECT_FIXTURE_ID.Recipes, name: 'Recipes', colour: 'amber', icon: 'utensils' },
+  { id: SELECT_FIXTURE_ID.Clothes, name: 'Clothes', colour: '#3a7bd5', icon: '👕' },
+  { id: SELECT_FIXTURE_ID.Courses, name: 'Courses' },
+];
+
+export const FolderTiles: Story = {
+  args: { options: TILED, value: SELECT_FIXTURE_ID.Recipes },
+  play: openPopup,
+};
+
 /** Open: indented levels, the selected option with a check and the accent background. */
 export const Open: Story = { play: openPopup };
 

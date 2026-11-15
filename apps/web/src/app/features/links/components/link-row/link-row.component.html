@@ -23,6 +23,15 @@
   <span slot="title">{{ link().title }}</span>
   <span slot="meta" class="link-row__meta">
     {{ host() }}
+    @if (folder(); as chip) {
+      <ui-folder-chip
+        class="link-row__folder"
+        [label]="chip.name"
+        [icon]="chip.icon"
+        [colour]="chip.colour"
+        [hint]="'links.card.inFolder' | transloco"
+      />
+    }
     @if (reminder(); as chip) {
       <ui-badge icon="bell" [tone]="chip.due ? BADGE_TONE.Warning : BADGE_TONE.Accent">{{
         chip.text

@@ -21,6 +21,22 @@
     />
     @if (kind() === CHOICE_GRID_KIND.Swatch) {
       <span class="ui-choice__swatch" aria-hidden="true"></span>
+    } @else if (kind() === CHOICE_GRID_KIND.Image) {
+      <span class="ui-choice__thumb" aria-hidden="true">
+        @if (option.image && !failed().includes(option.value)) {
+          <img
+            class="ui-choice__image"
+            alt=""
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+            [src]="option.image"
+            (error)="markFailed(option.value)"
+          />
+        } @else {
+          <ui-icon [name]="option.icon ?? 'image'" [size]="ICON_SIZE.Lg" />
+        }
+      </span>
     } @else {
       <span class="ui-choice__tile" aria-hidden="true">
         @if (option.icon; as icon) {

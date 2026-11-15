@@ -24,6 +24,7 @@ import {
   type TagSuggestion,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../../stores/folders.store';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { TagsStore } from '../../../../stores/tags.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { pluralKey } from '../../../../core/i18n/plural-key';
@@ -102,6 +103,8 @@ export class AddLinkDialogComponent {
   protected readonly phone = inject(ViewportService).phone;
   private readonly formState = inject(AddLinkFormService);
   private readonly folders = inject(FoldersStore);
+  /** Folder tiles in the folder select, as the account shows colours (#418). */
+  private readonly shownColour = inject(UserSettingsStore).shownColour;
   private readonly tagStore = inject(TagsStore);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
@@ -138,7 +141,9 @@ export class AddLinkDialogComponent {
   protected readonly previewHost = this.previewService.previewHost;
   protected readonly duplicate = this.previewService.duplicate;
 
-  protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
+  protected readonly folderOptions = computed(() =>
+    buildFolderOptions(this.folders.entities(), this.shownColour),
+  );
   protected readonly tagSuggestions = computed<TagSuggestion[]>(() => {
     this.formState.i18n();
     return this.tagStore.entities().map((tag) => ({

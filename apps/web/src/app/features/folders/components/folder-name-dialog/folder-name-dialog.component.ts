@@ -24,6 +24,7 @@ import {
   UiDialogRef,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../../stores/folders.store';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { buildFolderOptions } from '../../../links/utils/folder-options';
 import { FOLDER_NAME_ERROR } from '../../models/folder-name-error.const';
 import { FOLDER_NAME_MODE } from '../../models/folder-name-mode.const';
@@ -64,6 +65,10 @@ export class FolderNameDialogComponent {
 
   private readonly folders = inject(FoldersStore);
 
+  /** Folder tiles in the folder select, as the account shows colours (#418). */
+
+  private readonly shownColour = inject(UserSettingsStore).shownColour;
+
   private readonly model = signal<{ name: string; parentId: string | null }>({
     name: this.data.name,
     parentId: this.data.parentId,
@@ -71,7 +76,9 @@ export class FolderNameDialogComponent {
 
   /** The "Inside" field belongs to a new folder; a rename keeps the place. */
   protected readonly picksParent = this.data.mode === FOLDER_NAME_MODE.Create;
-  protected readonly parentOptions = computed(() => buildFolderOptions(this.folders.entities()));
+  protected readonly parentOptions = computed(() =>
+    buildFolderOptions(this.folders.entities(), this.shownColour),
+  );
   protected readonly parentName = computed(
     () => this.folders.entities().find((folder) => folder.id === this.model().parentId)?.name,
   );
