@@ -2,6 +2,8 @@
 export const VISIBLE_AREA_GAP_PX = 8;
 /** The popup never shrinks below this: the search box and about two rows stay usable. */
 export const VISIBLE_AREA_MIN_PX = 120;
+/** Above this visual-viewport scale the page is pinch-zoomed, not under a keyboard. */
+const ZOOM_TOLERANCE = 1.01;
 /**
  * Set on the popup element (inherited): the panels of `ui-select` and `ui-tag-input` read it as an
  * extra `max-height` cap.
@@ -37,7 +39,10 @@ export function watchVisibleArea(
   }
   const fit = (): void => {
     const element = panel();
-    if (element) {
+    if (element && (viewport.scale ?? 1) > ZOOM_TOLERANCE) {
+      // A pinch zoom shrinks the visual viewport too; the popup keeps its own size then.
+      element.style.removeProperty(VISIBLE_AREA_PROPERTY);
+    } else if (element) {
       const room = visibleRoomBelow(element.getBoundingClientRect().top, viewport);
       element.style.setProperty(VISIBLE_AREA_PROPERTY, `${room}px`);
     }
