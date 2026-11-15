@@ -19,6 +19,7 @@ import {
   viewChildren,
 } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
+import { FolderColourDirective } from '../../directives/folder-colour/folder-colour.directive';
 import { FolderIconComponent } from '../folder-icon/folder-icon.component';
 import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
 import { FOLDER_ICON_SIZE } from '../folder-icon/models/folder-icon-size.const';
@@ -63,6 +64,7 @@ import { indexTreeNodes } from './tree-nodes';
   selector: 'ui-tree',
   imports: [
     ButtonComponent,
+    FolderColourDirective,
     FolderIconComponent,
     IconComponent,
     LongPressDirective,
@@ -81,7 +83,12 @@ import { indexTreeNodes } from './tree-nodes';
     '(focusout)': 'focus.onFocusout($event)',
   },
   templateUrl: './tree.component.html',
-  styleUrls: ['./tree.component.scss', './tree-drop.scss', './tree-reorder.scss'],
+  styleUrls: [
+    './tree.component.scss',
+    './tree-drop.scss',
+    './tree-reorder.scss',
+    './tree-highlight.scss',
+  ],
 })
 export class TreeComponent {
   /** Folder tree, shown after the heading. Rows nest by `children`. */

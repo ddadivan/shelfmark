@@ -1,0 +1,14 @@
+@use '../../../styles/ui' as *;
+
+// Coloured folder rows (#418): a stripe at the start or a soft tint, by the appearance setting.
+.ui-tree__row--folder {
+  @include folder-highlight;
+}
+
+:host-context([data-folder-highlight='background'])
+  .ui-tree__row--folder[aria-current][data-ui-folder-colour] {
+  .ui-tree__twist,
+  .ui-tree__count {
+    color: var(--text-muted);
+  }
+}

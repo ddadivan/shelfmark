@@ -6,4 +6,5 @@ export const FOLDER_ERROR_MESSAGE = {
   LimitReached: `Folder limit reached (${FOLDER_LIMIT.PerUserMax})`,
   MoveIntoDescendant: 'A folder cannot be moved into itself or a subfolder',
   OrderMismatch: 'The order must list every folder of that parent exactly once',
+  CoverNotFound: 'Cover link not found in this folder',
 } as const;

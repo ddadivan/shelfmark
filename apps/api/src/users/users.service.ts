@@ -120,6 +120,7 @@ export class UsersService {
       cardSite: request.cardSite,
       cardNotes: request.cardNotes,
       cardTags: request.cardTags,
+      folderHighlight: request.folderHighlight,
     };
     const layoutSent = Object.values(layout).some((value) => value !== undefined);
     // Prisma skips `undefined` fields: only the layout fields sent are written.

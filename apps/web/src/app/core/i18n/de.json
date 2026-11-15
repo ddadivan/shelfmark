@@ -276,7 +276,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "Im Ordner"
     },
     "item": {
       "edit": "Bearbeiten",
@@ -935,7 +936,23 @@
         "undo": "Rückgängig"
       },
       "iconsShowAll": "Alle Symbole anzeigen ({{count}})",
-      "iconsShowFewer": "Weniger anzeigen"
+      "iconsShowFewer": "Weniger anzeigen",
+      "description": {
+        "label": "Beschreibung",
+        "hint": "Optional, bis zu {{max}} Zeichen. Erscheint unter dem Ordnernamen.",
+        "placeholder": "Was ist in diesem Ordner?",
+        "tooLong": "Höchstens {{max}} Zeichen.",
+        "invalid": "Nur einfacher Text in einer Zeile."
+      },
+      "cover": {
+        "label": "Titelbild",
+        "hint": "Ein Vorschaubild eines Links aus diesem Ordner, hinter dem Ordnerkopf.",
+        "none": "Kein Titelbild",
+        "option": "Titelbild von „{{title}}“",
+        "current": "Aktuelles Titelbild",
+        "empty": "Links in diesem Ordner mit Vorschaubild können sein Titelbild sein.",
+        "loading": "Bilder werden geladen"
+      }
     }
   },
   "library": {
@@ -1321,6 +1338,13 @@
         "colours": {
           "label": "Ordnerfarben",
           "hint": "Aus zeigt jeden Ordner in schlichtem Graphit"
+        },
+        "highlight": {
+          "label": "Ordner in ihrer Farbe hervorheben",
+          "hint": "Wie ein farbiger Ordner in der Seitenleiste erscheint, stärker, wenn er geöffnet ist",
+          "off": "Aus",
+          "stripe": "Streifen",
+          "background": "Hintergrund"
         }
       },
       "motion": {

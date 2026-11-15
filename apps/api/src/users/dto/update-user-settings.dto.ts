@@ -10,10 +10,12 @@ import {
   type WeekStart,
   APP_FONT,
   CARD_PREVIEW,
+  FOLDER_HIGHLIGHT,
   DENSITY,
   TEXT_SIZE,
   type AppFont,
   type CardPreview,
+  type FolderHighlight,
   type Density,
   type TextSize,
   LIBRARY_SORT,
@@ -203,6 +205,15 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateIf(present)
   @IsBoolean()
   cardTags?: boolean;
+
+  @ApiPropertyOptional({
+    enum: Object.values(FOLDER_HIGHLIGHT),
+    example: FOLDER_HIGHLIGHT.Stripe,
+    description: 'How coloured folders show in the sidebar (#418)',
+  })
+  @ValidateIf(present)
+  @IsIn(Object.values(FOLDER_HIGHLIGHT))
+  folderHighlight?: FolderHighlight;
 
   @ApiPropertyOptional({ enum: Object.values(INTERFACE_LANGUAGE), example: INTERFACE_LANGUAGE.Fr })
   @ValidateIf(present)

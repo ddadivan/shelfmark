@@ -46,6 +46,11 @@
   margin: auto 0 0;
 }
 
+.link-card__folder {
+  flex: 0 1 auto;
+  max-inline-size: 50%;
+}
+
 .link-card__tags {
   display: flex;
   flex: 1;

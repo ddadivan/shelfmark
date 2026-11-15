@@ -1,6 +1,7 @@
 import {
   isAppFont,
   isCardPreview,
+  isFolderHighlight,
   isCustomTheme,
   isDateFormat,
   isDensity,
@@ -49,6 +50,7 @@ const FIELD_CHECKS: Readonly<Record<string, Check>> = {
   cardSite: isFlag,
   cardNotes: isFlag,
   cardTags: isFlag,
+  folderHighlight: isFolderHighlight,
   defaultView: isLibraryView,
   defaultSort: isLibrarySort,
   openLinksIn: isLinkOpenTarget,

@@ -8,15 +8,7 @@ import {
   withState,
 } from '@ngrx/signals';
 import { removeAllEntities, setAllEntities, withEntities } from '@ngrx/signals/entities';
-import {
-  FOLDER_LIMIT,
-  type FolderColour,
-  type FolderDeleteMode,
-  type FolderEmoji,
-  type FolderIcon,
-  type FolderResponse,
-  type HexColour,
-} from '@shelfmark/contracts';
+import { FOLDER_LIMIT, type FolderDeleteMode, type FolderResponse } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { FOLDERS_API } from '../features/links/models/folders-api.const';
 import {
@@ -31,6 +23,9 @@ import { LinksStore } from './links.store';
 import { PinsStore } from './pins.store';
 import type { FoldersState } from './models/folders-state.interface';
 import { SessionScope } from '../core/auth/session-scope.service';
+import { FOLDER_STYLE_KEYS } from './models/folder-style-keys.const';
+import type { FolderStyleChange } from './models/folder-style-change.type';
+import { pickStyle } from './folder-style';
 
 const initialState: FoldersState = {
   counts: { all: 0, unsorted: 0, favorites: 0 },
@@ -225,38 +220,43 @@ export const FoldersStore = signalStore(
       },
 
       /**
-       * Sets colour and / or icon at once; resolves false (and puts the old style back) when the
-       * request fails.
+       * Sets colour, icon, description and / or cover at once; resolves false (and puts the old
+       * values back) when the request fails. `coverUrl` is the picture of a new cover, shown until
+       * the server answers its own.
        */
       async setStyle(
         id: string,
-        style: { colour?: FolderColour | HexColour; icon?: FolderIcon | FolderEmoji },
+        style: FolderStyleChange,
+        coverUrl: string | null = null,
       ): Promise<boolean> {
         const previous = store.entityMap()[id];
         if (!previous) {
           return false;
         }
+        const keys = FOLDER_STYLE_KEYS.filter((key) => style[key] !== undefined);
+        const withCover = (cover: Partial<FolderResponse>): Partial<FolderResponse> =>
+          style.coverLinkId === undefined ? {} : cover;
         const token = begin();
-        const changes: Partial<FolderResponse> = {
-          ...(style.colour !== undefined && { colour: style.colour }),
-          ...(style.icon !== undefined && { icon: style.icon }),
-        };
-        replace(id, changes);
+        replace(id, { ...pickStyle(style, keys), ...withCover({ coverUrl }) });
         try {
           const saved = await firstValueFrom(api().update(id, style));
           if (token === epoch) {
-            replace(id, { updatedAt: saved.updatedAt });
+            // The server's values (a trimmed description, the cover path) win over the optimistic ones.
+            replace(id, {
+              ...pickStyle(saved, keys),
+              ...withCover({ coverUrl: saved.coverUrl }),
+              updatedAt: saved.updatedAt,
+            });
           }
           return true;
         } catch {
           // Only what is still the optimistic value goes back: a later edit must not be undone.
           if (token === epoch) {
             const current = store.entityMap()[id];
+            const undo = keys.filter((key) => current?.[key] === style[key]);
             replace(id, {
-              ...(style.colour !== undefined &&
-                current?.colour === style.colour && { colour: previous.colour }),
-              ...(style.icon !== undefined &&
-                current?.icon === style.icon && { icon: previous.icon }),
+              ...pickStyle(previous, undo),
+              ...(undo.includes('coverLinkId') && { coverUrl: previous.coverUrl }),
             });
           }
           return false;

@@ -11,4 +11,9 @@ export const MOCK_LINKS_SCENARIO = {
    * a regular account can share one of its folders on video (the promo recorder, #326).
    */
   Showcase: 'showcase',
+  /**
+   * Every link has a captured preview image (`/api/links/:id/image?v=…`; e2e answers those
+   * requests), so the folder cover can be chosen (#418).
+   */
+  Previews: 'previews',
 } as const;

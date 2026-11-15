@@ -1,3 +1,4 @@
+import { MOCK_APPEARANCE_STORAGE_KEY } from '../../settings/models/mock-appearance-storage-key.const';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -20,6 +21,7 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { FoldersStore } from '../../../stores/folders.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { MockFoldersApi } from '../../links/mock/mock-folders.api';
+import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MockLinksApi } from '../../links/mock/mock-links.api';
 import { MockTagsApi } from '../../links/mock/mock-tags.api';
 import { FOLDERS_API } from '../../links/models/folders-api.const';
@@ -37,6 +39,9 @@ function overlayLoader() {
 }
 
 async function setup() {
+  // The mock settings API keeps its choices (own colours, own emoji) in localStorage; start clean so
+  // an earlier test (or a retry) cannot leak its own emoji into this one.
+  localStorage.removeItem(MOCK_APPEARANCE_STORAGE_KEY);
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
@@ -159,6 +164,71 @@ describe('FolderActionsService style', () => {
     expect(store.entityMap()[MOCK_ID.FolderReading]).toMatchObject({
       colour: 'clay',
       icon: 'star',
+    });
+  });
+
+  it('saves a trimmed description and refuses one that is too long (#418)', async () => {
+    const { actions, store } = await setup();
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const field = root.querySelector<HTMLInputElement>('ui-input input');
+    if (!field) {
+      throw new Error('no description field');
+    }
+    field.value = 'x'.repeat(141);
+    field.dispatchEvent(new Event('input'));
+    TestBed.tick();
+    button('Save').click();
+    TestBed.tick();
+    expect(root.textContent).toContain('Keep it to 140 characters.');
+    expect(dialog()).not.toBeNull();
+
+    field.value = '  Weekend reads  ';
+    field.dispatchEvent(new Event('input'));
+    TestBed.tick();
+    button('Save').click();
+    await closed();
+    await done;
+
+    await until(() => {
+      expect(store.entityMap()[MOCK_ID.FolderReading].description).toBe('Weekend reads');
+    });
+  });
+
+  it('offers the previews of the folder links as covers and saves the chosen one (#418)', async () => {
+    const { actions, store } = await setup();
+    const data = TestBed.inject(MockLibraryData);
+    const inFolder = data.links.filter((link) => link.folderId === MOCK_ID.FolderReading);
+    data.links = data.links.map((link) =>
+      link.id === inFolder[0]?.id
+        ? { ...link, imageUrl: `/api/links/${link.id}/image?v=0123456789abcdef` }
+        : link,
+    );
+    const chosen = inFolder[0];
+    if (!chosen) {
+      throw new Error('no link in the folder');
+    }
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    await until(() => {
+      expect(root.querySelectorAll('[aria-labelledby="folder-style-cover"] input')).toHaveLength(2);
+    });
+    const option = root.querySelector<HTMLInputElement>(
+      `[aria-labelledby="folder-style-cover"] input[aria-label="Cover from “${chosen.title}”"]`,
+    );
+    option?.click();
+    TestBed.tick();
+    button('Save').click();
+    await closed();
+    await done;
+
+    await until(() => {
+      expect(store.entityMap()[MOCK_ID.FolderReading]).toMatchObject({
+        coverLinkId: chosen.id,
+        coverUrl: `/api/links/${chosen.id}/image?v=0123456789abcdef`,
+      });
     });
   });
 
