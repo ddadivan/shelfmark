@@ -11,6 +11,7 @@ export * from '../lib/components/select/testing/select.harness';
 export * from '../lib/components/select/testing/option.harness';
 export type * from '../lib/components/select/testing/models/select-harness-filters.interface';
 export type * from '../lib/components/select/testing/models/option-harness-filters.interface';
+export * from '../lib/components/date-picker/testing/date-picker.harness';
 export * from '../lib/components/dialog/testing/dialog.harness';
 export * from '../lib/components/dialog/testing/models/dialog-harness-slot.const';
 export type * from '../lib/components/dialog/testing/models/dialog-harness-slot.type';

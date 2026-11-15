@@ -90,8 +90,15 @@ export const RemindersStore = signalStore(
       }
     }
 
-    /** Puts changed links into the lists (or out of them) and the feed. */
-    function apply(links: readonly LinkResponse[]): void {
+    /** Whether a link's reminder has come at `now` (ISO). */
+    const isDue = (link: LinkResponse, now: string): boolean =>
+      link.remindAt !== null && link.remindAt <= now;
+
+    /**
+     * Puts changed links into the lists (or out of them) and the feed. `before` are the same links
+     * as they were, so the badge moves right even when the lists were never loaded.
+     */
+    function apply(links: readonly LinkResponse[], before: readonly LinkResponse[]): void {
       if (links.length === 0) {
         return;
       }
@@ -100,19 +107,16 @@ export const RemindersStore = signalStore(
       const now = new Date().toISOString();
       const keep = (list: readonly LinkResponse[]) => list.filter((link) => !changed.has(link.id));
       const set = links.filter((link) => link.remindAt !== null);
-      const due = [...keep(store.due()), ...set.filter((link) => (link.remindAt ?? '') <= now)];
-      const upcoming = [
-        ...keep(store.upcoming()),
-        ...set.filter((link) => (link.remindAt ?? '') > now),
-      ];
-      const dueCountChange =
-        due.filter((link) => changed.has(link.id)).length -
-        store.due().filter((link) => changed.has(link.id)).length;
+      const due = [...keep(store.due()), ...set.filter((link) => isDue(link, now))];
+      const upcoming = [...keep(store.upcoming()), ...set.filter((link) => !isDue(link, now))];
+      const dueChange =
+        links.filter((link) => isDue(link, now)).length -
+        before.filter((link) => isDue(link, now)).length;
       patchState(store, {
         due: due.sort(bySoonest),
         upcoming: upcoming.sort(bySoonest),
-        // Without the list, the count moves by what this change made due or not due.
-        dueCount: store.loaded() ? due.length : Math.max(0, store.dueCount() + dueCountChange),
+        // Without the lists, the count moves by what this change made due or not due.
+        dueCount: store.loaded() ? due.length : Math.max(0, store.dueCount() + dueChange),
       });
     }
 
@@ -161,7 +165,7 @@ export const RemindersStore = signalStore(
             changed = (await firstValueFrom(api().setMany({ ids, remindAt }))).links;
           }
           if (started === epoch) {
-            apply(changed);
+            apply(changed, links);
           }
           return true;
         } catch {
