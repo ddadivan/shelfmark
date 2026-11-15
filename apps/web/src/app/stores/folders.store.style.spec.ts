@@ -68,6 +68,21 @@ describe('FoldersStore setStyle', () => {
     expect(store.entityMap()['w'].colour).toBe('teal');
   });
 
+  it('does not undo a later choice when an earlier answer arrives late', async () => {
+    const { store, api } = setup();
+    await store.load();
+    const first = new Subject<FolderResponse>();
+    api.update.mockImplementationOnce(() => first);
+
+    const late = store.setStyle('w', { icon: FOLDER_ICON.Star });
+    await store.setStyle('w', { icon: FOLDER_ICON.Heart });
+    first.next({ ...WORK, icon: FOLDER_ICON.Star, updatedAt: 'earlier' });
+    first.complete();
+
+    expect(await late).toBe(true);
+    expect(store.entityMap()['w'].icon).toBe(FOLDER_ICON.Heart);
+  });
+
   it('refuses an unknown folder without a request', async () => {
     const { store, api } = setup();
     await store.load();
