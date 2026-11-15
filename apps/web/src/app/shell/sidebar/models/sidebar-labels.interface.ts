@@ -9,4 +9,7 @@ export interface SidebarLabels {
   reminders: string;
   trash: string;
   feedback: string;
+  whatsNew: string;
+  /** Accessible name of the dot on "What's new" while a release is unseen. */
+  whatsNewDot: string;
 }

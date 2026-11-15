@@ -1,0 +1,135 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+  min-height: 100dvh;
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font-sans);
+}
+
+// Like Privacy.dc: a bare 60px bar with the logo, then one column; each release is a card.
+.header {
+  display: flex;
+  align-items: center;
+  height: rem(60px);
+  padding-inline: var(--space-4);
+
+  @media (min-width: 40em) {
+    padding-inline: rem(20px);
+  }
+}
+
+.home {
+  display: inline-flex;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+
+  --ui-logo-size: #{rem(24px)};
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.article {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: rem(680px);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) rem(72px);
+  overflow-wrap: anywhere;
+
+  @include type(body);
+
+  @media (min-width: 40em) {
+    padding: var(--space-8) var(--space-6) rem(72px);
+  }
+}
+
+.title {
+  @include type(display);
+
+  margin: 0;
+  font-size: rem(32px);
+  line-height: rem(38px);
+  letter-spacing: -0.02em;
+}
+
+.muted {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.release {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.release__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.release__name {
+  @include type(heading);
+
+  margin: 0;
+  font-size: rem(18px);
+}
+
+.release__date {
+  @include type(caption);
+
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.release__items {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: var(--space-1) rem(20px);
+  list-style: none;
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+
+  @media (max-width: 39.99em) {
+    padding-inline: var(--space-4);
+  }
+}
+
+.release__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-block: var(--space-4);
+
+  & + & {
+    border-top: 1px solid var(--border);
+  }
+}
+
+.release__title {
+  @include type(label);
+
+  margin: 0;
+  font-size: rem(15px);
+}
+
+.release__text {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// A fix is one plain line (author rule, #424): no title, no media.
+.release__fix {
+  margin: 0;
+}

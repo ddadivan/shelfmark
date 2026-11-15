@@ -8,6 +8,8 @@ export const LANDING_LINKS = {
   /** "Back to my shelf" on `/about` for a signed-in person. */
   Shelf: `/${APP_PATH.Links}`,
   Privacy: `/${APP_PATH.Privacy}`,
+  /** The public changelog (#424): the footer and "What's new" on `/about`. */
+  Changelog: `/${APP_PATH.Changelog}`,
   Repository: 'https://github.com/ddadivan/shelfmark',
   DecisionLog: 'https://github.com/ddadivan/shelfmark/tree/main/docs/adr',
   HowItsBuilt: '#how',

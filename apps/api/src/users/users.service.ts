@@ -73,6 +73,7 @@ export class UsersService {
         trashRetentionDays: true,
         folderColours: true,
         historyPaused: true,
+        whatsNewSeen: true,
         ...APPEARANCE_SELECT,
         ...LIBRARY_SELECT,
         ...LANGUAGE_SELECT,
@@ -92,6 +93,7 @@ export class UsersService {
       ...toAppearanceSettings(row),
       ...toLibrarySettings(row, liveFolder),
       ...toLanguageSettings(row),
+      whatsNewSeen: row.whatsNewSeen,
     };
   }
 
@@ -105,6 +107,7 @@ export class UsersService {
       data.trashRetentionDays = request.trashRetentionDays;
     if (request.folderColours !== undefined) data.folderColours = request.folderColours;
     if (request.pauseHistory !== undefined) data.historyPaused = request.pauseHistory;
+    if (request.whatsNewSeen !== undefined) data.whatsNewSeen = request.whatsNewSeen;
     if (request.theme !== undefined) data.theme = request.theme;
     if (request.motion !== undefined) data.motion = request.motion;
     if (request.customColours !== undefined) data.customColours = [...request.customColours];

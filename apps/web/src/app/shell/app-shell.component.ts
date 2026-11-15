@@ -35,6 +35,7 @@ import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/services/onboarding.store';
 import { RatingStore } from '../features/rating/services/rating.store';
+import { WhatsNewStore } from '../features/changelog/services/whats-new.store';
 import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
 import { ShortcutsDialogService } from '../features/shortcuts/services/shortcuts-dialog.service';
@@ -186,6 +187,18 @@ export default class AppShellComponent {
         this.rating.stop();
       }
     });
+  });
+
+  private readonly whatsNew = inject(WhatsNewStore);
+  /**
+   * "What's new" (#424): once the account told its last seen release, a new account is marked up to
+   * date and an existing one sees the dialog once when a newer release has highlights.
+   */
+  private readonly whatsNewWatch = effect(() => {
+    this.auth.user();
+    this.userSettings.whatsNewKnown();
+    this.userSettings.whatsNewSeen();
+    untracked(() => this.whatsNew.watch());
   });
 
   /** Switches between the fixed Light and Dark themes and saves the choice on the account. */

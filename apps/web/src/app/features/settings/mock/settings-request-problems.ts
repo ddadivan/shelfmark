@@ -16,6 +16,7 @@ import {
   isThemePreference,
   isTimeFormat,
   isWeekStart,
+  isReleaseVersion,
   TRASH_RETENTION_DAYS,
   USER_LIMIT,
 } from '@shelfmark/contracts';
@@ -60,6 +61,7 @@ const FIELD_CHECKS: Readonly<Record<string, Check>> = {
   dateFormat: isDateFormat,
   timeFormat: isTimeFormat,
   weekStart: isWeekStart,
+  whatsNewSeen: isReleaseVersion,
 };
 
 /**

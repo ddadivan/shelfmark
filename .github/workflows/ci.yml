@@ -68,6 +68,11 @@ jobs:
           }
       - run: node --test .claude/hooks/
       - run: node --test scripts/
+      - run: node --test tools/ci/
+      # #424: a PR into main (release or hotfix) must raise the package.json version, without -dev.
+      - name: Check the version bump
+        if: github.event_name == 'pull_request' && github.base_ref == 'main'
+        run: node tools/ci/check-version-bump.mjs origin/main
       # Nx regenerates the sprite before build and test, so drift would be hidden there.
       - name: Check the icon sprite and ICON_NAMES are up to date
         run: node scripts/build-icon-sprite.mjs --check

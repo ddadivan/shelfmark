@@ -102,12 +102,26 @@
   min-width: 0;
 }
 
+// "What's new" (#424): the label only as wide as its text, so the dot sits right after it.
+.settings-index__label--fit {
+  flex: 0 1 auto;
+}
+
+.settings-index__dot {
+  flex: none;
+  width: rem(8px);
+  height: rem(8px);
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+
 .settings-index__value {
   color: var(--text-muted);
 }
 
 .settings-index__chevron {
   flex: none;
+  margin-inline-start: auto;
   color: var(--text-muted);
 }
 

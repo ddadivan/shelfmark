@@ -10,6 +10,8 @@ const LABELS: SidebarLabels = {
   reminders: 'Reminders',
   trash: 'Trash',
   feedback: 'Send feedback',
+  whatsNew: "What's new",
+  whatsNewDot: 'new',
 };
 
 describe('sidebar nodes', () => {
@@ -35,8 +37,15 @@ describe('sidebar nodes', () => {
 
   it('builds the feedback row', () => {
     expect(feedbackNodes(LABELS)).toEqual([
+      { id: 'whats-new', name: "What's new", icon: 'gift' },
       { id: 'feedback', name: 'Send feedback', icon: 'message' },
     ]);
+    expect(feedbackNodes(LABELS, true)[0]).toEqual({
+      id: 'whats-new',
+      name: "What's new",
+      icon: 'gift',
+      dot: 'new',
+    });
   });
 
   it('builds the trash row with or without a count', () => {

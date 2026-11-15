@@ -3,6 +3,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonComponent, RippleDirective } from '@shelfmark/ui';
 import { APP_PATH } from '../../../../models/app-path.const';
+import { APP_VERSION } from '../../../../models/app-version.const';
 import { SETTINGS_NAV_ENTRIES } from '../../models/settings-nav-entries.const';
 
 /**
@@ -20,6 +21,7 @@ export class SettingsNavComponent {
   private readonly router = inject(Router);
 
   protected readonly entries = SETTINGS_NAV_ENTRIES;
+  protected readonly appVersion = APP_VERSION;
   protected readonly linksHref = `/${APP_PATH.Links}`;
   protected readonly settingsPath = `/${APP_PATH.Settings}`;
 

@@ -21,5 +21,7 @@
       {{ entry.labelKey | transloco }}
     </a>
   }
-  <p class="settings-nav__version">{{ 'settings.footer.version' | transloco }}</p>
+  <p class="settings-nav__version">
+    {{ 'settings.footer.version' | transloco: { version: appVersion } }}
+  </p>
 </nav>

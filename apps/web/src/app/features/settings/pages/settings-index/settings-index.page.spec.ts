@@ -18,6 +18,7 @@ import { of } from 'rxjs';
 import { EXPORT_API } from '../../../export/models/export-api.const';
 import { ME_STATS_API } from '../../models/me-stats-api.const';
 import { SETTINGS_TEST_STATS } from '../../../../../testing/settings-test-stats.const';
+import { APP_VERSION } from '../../../../models/app-version.const';
 
 async function setup(phone: boolean) {
   localStorage.removeItem(THEME_STORAGE_KEY);
@@ -69,6 +70,7 @@ describe('the You list (/settings)', () => {
       '/settings/language',
       '/settings/privacy',
       '/settings/feedback',
+      '/changelog',
       '/about',
     ]);
     expect(
@@ -81,7 +83,7 @@ describe('the You list (/settings)', () => {
       'Match my browser',
     );
     expect(root.querySelector('a[href="/privacy"]')?.textContent).toContain('Privacy policy');
-    expect(root.textContent).toContain('Shelfmark v1.0');
+    expect(root.textContent).toContain(`Shelfmark ${APP_VERSION}`);
     expect(await axeViolations(root)).toEqual([]);
   });
 
