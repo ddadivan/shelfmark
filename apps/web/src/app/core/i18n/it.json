@@ -1122,6 +1122,14 @@
     "all": {
       "json": "Tutto in JSON",
       "html": "Tutto come HTML dei preferiti"
+    },
+    "empty": {
+      "title": "Ancora niente da esportare",
+      "detail": "Salva prima un link, poi potrai esportare la tua libreria"
+    },
+    "emptyView": {
+      "title": "Niente da esportare in questa vista",
+      "detail": "Questa vista non contiene link. Esporta tutto o apri un'altra vista"
     }
   },
   "settings": {
