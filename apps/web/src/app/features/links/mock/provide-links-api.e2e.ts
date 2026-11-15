@@ -23,6 +23,10 @@ import { HttpSavedViewsApi } from '../../views/http/http-saved-views.api';
 import { MockSavedViewsApi } from '../../views/mock/mock-saved-views.api';
 import { SAVED_VIEWS_API } from '../../views/models/saved-views-api.const';
 import type { SavedViewsApi } from '../../views/models/saved-views-api.interface';
+import { HttpRulesApi } from '../../rules/http/http-rules.api';
+import { MockRulesApi } from '../../rules/mock/mock-rules.api';
+import { RULES_API } from '../../rules/models/rules-api.const';
+import type { RulesApi } from '../../rules/models/rules-api.interface';
 import { HttpFoldersApi } from '../http/http-folders.api';
 import { HttpLinksApi } from '../http/http-links.api';
 import { HttpTagsApi } from '../http/http-tags.api';
@@ -127,6 +131,10 @@ export function provideLinksApi(): Provider[] {
       provide: SAVED_VIEWS_API,
       useFactory: (): SavedViewsApi =>
         useRealApi() ? inject(HttpSavedViewsApi) : inject(MockSavedViewsApi),
+    },
+    {
+      provide: RULES_API,
+      useFactory: (): RulesApi => (useRealApi() ? inject(HttpRulesApi) : inject(MockRulesApi)),
     },
     { provide: EXPORT_API, useExisting: MockExportApi },
   ];

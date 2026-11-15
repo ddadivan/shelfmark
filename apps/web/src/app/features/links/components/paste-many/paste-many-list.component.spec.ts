@@ -8,8 +8,10 @@ import {
   type CreateLinksBatchResponse,
   type LinkPreviewResponse,
   type LinkResponse,
+  type RuleResponse,
+  LIBRARY_SETTINGS_DEFAULT,
 } from '@shelfmark/contracts';
-import { MOCK_ID, MOCK_LINKS } from '@shelfmark/contracts/testing';
+import { MOCK_APPEARANCE_DEFAULTS, MOCK_ID, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { of, throwError, type Observable } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
 import { APP_LANG } from '../../../../core/i18n/models/app-lang.const';
@@ -24,6 +26,9 @@ import { LINKS_API } from '../../models/links-api.const';
 import { TAGS_API } from '../../models/tags-api.const';
 import { MockFoldersApi } from '../../mock/mock-folders.api';
 import { MockTagsApi } from '../../mock/mock-tags.api';
+import { RULES_API } from '../../../rules/models/rules-api.const';
+import { USER_SETTINGS_API } from '../../../settings/models/user-settings-api.const';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
 
 const SAVED_URL = 'https://youtube.com/watch?v=ng22-signal-forms';
 const PASTE = [
@@ -79,15 +84,45 @@ function fakeApi(previewOf: (url: string) => Observable<LinkPreviewResponse>): F
   };
 }
 
-async function setup(api: FakeApi, data: AddLinkData = { text: PASTE }) {
+async function setup(
+  api: FakeApi,
+  data: AddLinkData = { text: PASTE },
+  rules?: RuleResponse[],
+  newLinksFolderId?: string,
+) {
+  const settings = {
+    trashRetentionDays: 30,
+    folderColours: true,
+    pauseHistory: false,
+    customColours: [],
+    customEmoji: [],
+    ...MOCK_APPEARANCE_DEFAULTS,
+    ...LIBRARY_SETTINGS_DEFAULT,
+    newLinksFolderId: newLinksFolderId ?? null,
+  };
   TestBed.configureTestingModule({
     providers: [
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
       { provide: LINKS_API, useValue: api },
       { provide: FOLDERS_API, useClass: MockFoldersApi },
       { provide: TAGS_API, useClass: MockTagsApi },
+      ...(rules ? [{ provide: RULES_API, useValue: { list: () => of({ items: rules }) } }] : []),
+      ...(newLinksFolderId
+        ? [
+            {
+              provide: USER_SETTINGS_API,
+              useValue: {
+                get: () => of(settings),
+                update: () => of(settings),
+              },
+            },
+          ]
+        : []),
     ],
   });
+  if (newLinksFolderId) {
+    await TestBed.inject(UserSettingsStore).load();
+  }
   await new Promise<void>((resolve) => {
     TestBed.inject(TranslocoService)
       .load(APP_LANG.En)
@@ -164,6 +199,12 @@ function pasteInto(target: HTMLElement, text: string): Event {
   TestBed.tick();
   return event;
 }
+
+// Another spec of the worker may leave a theme or language in the browser storage; with one there,
+// the settings store saves it through the faked account (`update`) before it applies the settings.
+beforeEach(() => {
+  localStorage.clear();
+});
 
 afterEach(() => {
   document.querySelectorAll('.cdk-overlay-container').forEach((el) => {
@@ -338,6 +379,74 @@ describe('PasteManyListComponent', () => {
       folderId: MOCK_ID.FolderAngular,
     });
     expect(outcome?.action === ADD_LINK_ACTION.SavedMany && outcome.links).toHaveLength(3);
+  });
+
+  describe('domain rules (#398)', () => {
+    const RULE: RuleResponse = {
+      id: 'rule-1',
+      domain: 'angular.dev',
+      folderId: MOCK_ID.FolderAngular,
+      folderAvailable: true,
+      tags: ['docs'],
+      createdAt: '2026-11-01T00:00:00.000Z',
+    };
+    const CHIP = 'Rule: angular.dev → Angular, #docs';
+
+    function folderSelectText(): string {
+      return dialog().querySelector('ui-select')?.textContent ?? '';
+    }
+    async function saveAll(result: Promise<unknown>): Promise<CreateLinksBatchRequest> {
+      button('Save 3 links').click();
+      await result;
+      return api.createBatch.mock.calls[0][0];
+    }
+    let api: FakeApi;
+    beforeEach(() => {
+      api = fakeApi((url) => of(preview(url)));
+    });
+
+    it('shows the rule on its line and sends its folder and tags for that link only', async () => {
+      const { result } = await setup(api, { text: PASTE }, [RULE], MOCK_ID.FolderReading);
+      await until(() => expect(dialog().textContent).toContain(CHIP));
+      // The "New links go to" folder shows once the folders have loaded; saving earlier (a slow CI
+      // runner) sent no batch folder.
+      await until(() => expect(folderSelectText()).toContain('Reading'));
+      const request = await saveAll(result);
+      expect(request.applyRules).toBe(false);
+      // "New links go to" stays the folder for all; the rule's folder wins on its line.
+      expect(request.folderId).toBe(MOCK_ID.FolderReading);
+      expect(request.items[1]).toMatchObject({ folderId: MOCK_ID.FolderAngular, tags: ['docs'] });
+      expect(request.items[0]?.folderId).toBeUndefined();
+      expect(request.items[0]?.tags).toBeUndefined();
+    });
+
+    it('keeps a folder chosen for the batch and adds only the tags', async () => {
+      const { result } = await setup(api, { text: PASTE, folderId: MOCK_ID.FolderReading }, [RULE]);
+      await until(() => expect(dialog().textContent).toContain('Rule: angular.dev → #docs'));
+      const request = await saveAll(result);
+      expect(request.items[1]?.folderId).toBeUndefined();
+      expect(request.items[1]?.tags).toEqual(['docs']);
+    });
+
+    it('drops the rule of one line, or of the whole batch', async () => {
+      const { result } = await setup(api, { text: PASTE }, [RULE]);
+      await until(() => expect(dialog().textContent).toContain(CHIP));
+      button("Don't apply the rule for angular.dev").click();
+      await until(() => expect(dialog().textContent).not.toContain(CHIP));
+      const request = await saveAll(result);
+      expect(request.applyRules).toBe(false);
+      expect(request.items[1]?.folderId).toBeUndefined();
+      expect(request.items[1]?.tags).toBeUndefined();
+    });
+
+    it('"Apply domain rules" off sends no rule fields', async () => {
+      const { result } = await setup(api, { text: PASTE }, [RULE]);
+      await until(() => expect(dialog().textContent).toContain(CHIP));
+      checkbox('Apply domain rules').click();
+      await until(() => expect(dialog().textContent).not.toContain(CHIP));
+      const request = await saveAll(result);
+      expect(request.items.every((item) => item.folderId === undefined)).toBe(true);
+    });
   });
 
   it('cuts a long preview title to the API limit without splitting an emoji', async () => {

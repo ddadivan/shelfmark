@@ -263,6 +263,10 @@
         "none": "No se encontraron enlaces en este texto",
         "back": "Un solo enlace",
         "find": "Buscar enlaces"
+      },
+      "rule": {
+        "chip": "Regla: {{domain}} → {{target}}",
+        "remove": "No aplicar la regla de {{domain}}"
       }
     },
     "edit": {
@@ -310,7 +314,8 @@
       "unpinFromTop": "Dejar de fijar arriba",
       "pinToSidebar": "Fijar en la barra lateral",
       "unpinFromSidebar": "Quitar de la barra lateral",
-      "pinned": "Fijado"
+      "pinned": "Fijado",
+      "createRule": "Crear una regla para {{domain}}…"
     },
     "recent": {
       "title": "Abiertos recientemente",
@@ -466,7 +471,13 @@
       },
       "noneSaved": "No se guardó ningún enlace",
       "undoFailed": "No se pudo deshacer",
-      "undoFailedDetail": "Los enlaces siguen guardados"
+      "undoFailedDetail": "Los enlaces siguen guardados",
+      "applyRules": "Aplicar reglas de dominio",
+      "savedMixed": {
+        "one": "{{count}} enlace guardado",
+        "many": "{{count}} enlaces guardados en sus carpetas",
+        "other": "{{count}} enlaces guardados en sus carpetas"
+      }
     },
     "drag": {
       "moveHere": "Mover aquí",
@@ -2595,5 +2606,90 @@
     "available": "Hay una nueva versión de Shelfmark lista",
     "reload": "Recargar",
     "later": "Más tarde"
+  },
+  "rules": {
+    "title": "Reglas",
+    "intro": "Los enlaces de un dominio van a una carpeta y reciben etiquetas al guardarlos. La carpeta o las etiquetas que elijas tú siempre tienen prioridad.",
+    "add": "Añadir regla",
+    "list": "Reglas",
+    "tags": "Etiquetas",
+    "empty": "Aún no hay reglas. Por ejemplo, los enlaces de youtube.com pueden ir a Vídeos con la etiqueta video.",
+    "loadFailed": "No se pudieron cargar las reglas.",
+    "retry": "Reintentar",
+    "folderTrashed": "Carpeta en la papelera: solo se añaden etiquetas",
+    "more": "Acciones para {{domain}}",
+    "moreTooltip": "Más acciones",
+    "edit": "Editar",
+    "applyExisting": "Aplicar a enlaces existentes",
+    "delete": "Eliminar regla",
+    "undo": "Deshacer",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Regla añadida"
+    },
+    "saved": {
+      "title": "Regla guardada"
+    },
+    "deleted": {
+      "title": "Regla eliminada"
+    },
+    "deleteFailed": "No se pudo eliminar la regla",
+    "limit": {
+      "title": "Has alcanzado el máximo de reglas"
+    },
+    "apply": {
+      "title": "¿Aplicar la regla de {{domain}}?",
+      "message": {
+        "one": "{{count}} enlace de «Sin carpeta» recibe la carpeta y las etiquetas de esta regla: {{target}}.",
+        "many": "{{count}} enlaces de «Sin carpeta» reciben la carpeta y las etiquetas de esta regla: {{target}}.",
+        "other": "{{count}} enlaces de «Sin carpeta» reciben la carpeta y las etiquetas de esta regla: {{target}}."
+      },
+      "more": "Hay {{total}} en total. Vuelve a aplicarla para el resto.",
+      "confirm": {
+        "one": "Aplicar a {{count}} enlace",
+        "many": "Aplicar a {{count}} enlaces",
+        "other": "Aplicar a {{count}} enlaces"
+      },
+      "cancel": "Cancelar",
+      "none": "No hay enlaces de {{domain}} en «Sin carpeta»",
+      "done": {
+        "one": "Regla aplicada a {{count}} enlace",
+        "many": "Regla aplicada a {{count}} enlaces",
+        "other": "Regla aplicada a {{count}} enlaces"
+      },
+      "failed": "No se pudo aplicar la regla",
+      "undoFailed": "No se pudo deshacer la regla"
+    },
+    "dialog": {
+      "addTitle": "Añadir regla",
+      "editTitle": "Editar regla",
+      "close": "Cerrar",
+      "cancel": "Cancelar",
+      "save": "Guardar regla",
+      "saving": "Guardando…",
+      "domain": {
+        "label": "Dominio",
+        "placeholder": "youtube.com",
+        "hint": "También incluye sus subdominios, como m.youtube.com",
+        "required": "Escribe un dominio",
+        "invalid": "Escribe un dominio como youtube.com"
+      },
+      "folder": {
+        "label": "Carpeta",
+        "none": "Sin carpeta",
+        "search": "Buscar carpetas",
+        "trashed": "La carpeta de esta regla está en la papelera. Elige otra o conserva solo las etiquetas."
+      },
+      "tags": {
+        "label": "Etiquetas",
+        "max": "Hasta {{max}} etiquetas"
+      },
+      "nothing": "Elige una carpeta o añade al menos una etiqueta.",
+      "taken": "Ya hay una regla para este dominio.",
+      "limit": "Puedes tener hasta {{max}} reglas. Elimina una primero.",
+      "missingFolder": "Esta carpeta ya no existe. Elige otra.",
+      "missing": "Esta regla se eliminó mientras tanto.",
+      "failed": "No se pudo guardar la regla. Inténtalo de nuevo."
+    }
   }
 }

@@ -19,6 +19,8 @@ import { HttpTrashApi } from '../trash/http/http-trash.api';
 import { TRASH_API } from '../trash/models/trash-api.const';
 import { HttpSavedViewsApi } from '../views/http/http-saved-views.api';
 import { SAVED_VIEWS_API } from '../views/models/saved-views-api.const';
+import { HttpRulesApi } from '../rules/http/http-rules.api';
+import { RULES_API } from '../rules/models/rules-api.const';
 import { HttpFoldersApi } from './http/http-folders.api';
 import { HttpLinksApi } from './http/http-links.api';
 import { HttpTagsApi } from './http/http-tags.api';
@@ -30,7 +32,7 @@ import { SHARES_API } from '../sharing/models/shares-api.const';
 
 /**
  * Registers the data seams of the links feature (`LINKS_API`, `FOLDERS_API`, `TAGS_API`) and
- * `EXPORT_API`, `TRASH_API`, `USER_SETTINGS_API`, `SAVED_VIEWS_API` and `SHARES_API` over the REST API. `EXPORT_API` is registered here, not in `app.config.ts`,
+ * `EXPORT_API`, `TRASH_API`, `USER_SETTINGS_API`, `SAVED_VIEWS_API`, `RULES_API` and `SHARES_API` over the REST API. `EXPORT_API` is registered here, not in `app.config.ts`,
  * because this file is the single seam `fileReplacements` swaps: the `development` and `e2e`
  * builds replace it with `mock/provide-links-api.e2e.ts`, which provides `MockExportApi`
  * instead, so no export code needs its own build switch.
@@ -63,5 +65,6 @@ export function provideLinksApi(): Provider[] {
     { provide: USER_SETTINGS_API, useExisting: HttpUserSettingsApi },
     { provide: ME_STATS_API, useExisting: HttpMeStatsApi },
     { provide: SAVED_VIEWS_API, useExisting: HttpSavedViewsApi },
+    { provide: RULES_API, useExisting: HttpRulesApi },
   ];
 }

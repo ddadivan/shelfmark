@@ -29,4 +29,10 @@ export interface CreateLinkRequest {
   faviconUrl?: string;
   /** Source hint (http(s), at most `LINK_LIMIT.UrlMax`), usually from the preview; the server never fetches it. */
   imageUrl?: string;
+  /**
+   * Domain rules (#398), default `true`: the rule matching the URL fills what this save leaves open,
+   * the folder when `folderId` is absent and the tags when none are sent. `false` when the client
+   * showed the rule and the user removed it (a form sends what it showed, so nothing is applied twice).
+   */
+  applyRules?: boolean;
 }

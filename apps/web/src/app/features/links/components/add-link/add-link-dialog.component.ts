@@ -5,6 +5,7 @@ import { LINK_KIND, LINK_LIMIT } from '@shelfmark/contracts';
 import {
   ButtonComponent,
   CheckboxComponent,
+  ChipComponent,
   DialogComponent,
   FaviconComponent,
   injectDialogData,
@@ -38,6 +39,8 @@ import { PasteManyListComponent } from '../paste-many/paste-many-list.component'
 import { AddLinkFormService } from '../../services/add-link-form.service';
 import { AddLinkSaveService } from '../../services/add-link-save.service';
 import { AddLinkPreviewService } from '../../services/add-link-preview.service';
+import { AddLinkRuleService } from '../../services/add-link-rule.service';
+import { RuleSuggestionService } from '../../../rules/services/rule-suggestion.service';
 import { AddSeveralLinksService } from '../../services/add-several-links.service';
 import { buildFolderOptions } from '../../utils/folder-options';
 
@@ -64,6 +67,7 @@ import { buildFolderOptions } from '../../utils/folder-options';
   imports: [
     ButtonComponent,
     CheckboxComponent,
+    ChipComponent,
     DialogComponent,
     FaviconComponent,
     FormField,
@@ -82,6 +86,8 @@ import { buildFolderOptions } from '../../utils/folder-options';
     AddLinkFormService,
     AddSeveralLinksService,
     AddLinkPreviewService,
+    AddLinkRuleService,
+    RuleSuggestionService,
     AddLinkSaveService,
   ],
   templateUrl: './add-link-dialog.component.html',
@@ -138,6 +144,10 @@ export class AddLinkDialogComponent {
   protected readonly previewData = this.previewService.previewData;
   protected readonly previewHost = this.previewService.previewHost;
   protected readonly duplicate = this.previewService.duplicate;
+
+  private readonly ruleService = inject(AddLinkRuleService);
+  /** "Rule: youtube.com → Videos" while a domain rule filled folder or tags (#398). */
+  protected readonly ruleChip = this.ruleService.chip;
 
   protected readonly folderOptions = computed(() =>
     buildFolderOptions(this.folders.entities(), this.shownColour),
@@ -217,6 +227,12 @@ export class AddLinkDialogComponent {
 
   protected cancel(): void {
     this.ref.close();
+  }
+
+  /** The chip's remove: the rule leaves the form and focus goes to the folder it changed. */
+  protected dismissRule(): void {
+    this.ruleService.dismiss();
+    this.form.folderId().focusBoundControl();
   }
 
   protected requestDelete(): void {

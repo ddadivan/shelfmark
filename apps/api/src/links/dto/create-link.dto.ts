@@ -9,6 +9,7 @@ import {
 import {
   ArrayMaxSize,
   IsArray,
+  IsBoolean,
   IsIn,
   IsOptional,
   IsString,
@@ -103,4 +104,13 @@ export class CreateLinkDto implements CreateLinkRequest {
   @TrimString()
   @IsHttpUrl()
   imageUrl?: string;
+
+  @ApiPropertyOptional({
+    default: true,
+    description:
+      'Domain rules: the matching rule fills the folder when folderId is absent and the tags when none are sent; false skips them',
+  })
+  @IsOptional()
+  @IsBoolean()
+  applyRules?: boolean;
 }

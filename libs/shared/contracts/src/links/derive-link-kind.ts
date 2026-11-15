@@ -1,15 +1,8 @@
+import { linkHost } from './link-host';
 import { LINK_KIND } from './link-kind.const';
 import { LINK_KIND_SHOP_HOSTS } from './link-kind-shop-hosts.const';
 import { LINK_KIND_VIDEO_HOSTS } from './link-kind-video-hosts.const';
 import type { LinkKind } from './link-kind.type';
-
-function hostOf(url: string): string | null {
-  try {
-    return new URL(url).hostname.toLowerCase().replace(/\.$/, '');
-  } catch {
-    return null;
-  }
-}
 
 function onHost(host: string, hosts: readonly string[]): boolean {
   return hosts.some((entry) => host === entry || host.endsWith(`.${entry}`));
@@ -33,7 +26,7 @@ function fromOgType(ogType: string | null | undefined): LinkKind | null {
 export function deriveLinkKind(url: string, ogType?: string | null): LinkKind {
   const fromPage = fromOgType(ogType);
   if (fromPage !== null) return fromPage;
-  const host = hostOf(url);
+  const host = linkHost(url);
   if (host === null) return LINK_KIND.Other;
   if (onHost(host, LINK_KIND_VIDEO_HOSTS)) return LINK_KIND.Video;
   if (onHost(host, LINK_KIND_SHOP_HOSTS)) return LINK_KIND.Shopping;
