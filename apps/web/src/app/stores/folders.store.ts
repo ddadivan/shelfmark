@@ -241,10 +241,13 @@ export const FoldersStore = signalStore(
         try {
           const saved = await firstValueFrom(api().update(id, style));
           if (token === epoch) {
-            // The server's values (a trimmed description, the cover path) win over the optimistic ones.
+            // The server's values (a trimmed description, the cover path) win over the optimistic
+            // ones, but only where this edit is still shown: a late answer must not undo a newer one.
+            const current = store.entityMap()[id];
+            const shown = keys.filter((key) => current?.[key] === style[key]);
             replace(id, {
-              ...pickStyle(saved, keys),
-              ...withCover({ coverUrl: saved.coverUrl }),
+              ...pickStyle(saved, shown),
+              ...(shown.includes('coverLinkId') && { coverUrl: saved.coverUrl }),
               updatedAt: saved.updatedAt,
             });
           }
