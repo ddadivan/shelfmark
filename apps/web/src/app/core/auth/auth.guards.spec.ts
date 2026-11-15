@@ -162,13 +162,26 @@ describe('auth guards', () => {
       const session = deferred<AuthUser | null>();
       const { harness, router } = await setup(null, () => session.promise);
       await harness.navigateByUrl('/');
-      await harness.navigateByUrl('/about');
-
+      // A deeper URL waits for the session (as before the shortcut); then nothing moves it.
+      const navigation = harness.navigateByUrl('/about');
       session.resolve(USER);
-      await session.promise;
+      await navigation;
       await harness.fixture.whenStable();
 
       expect(router.url).toBe('/about');
+    });
+
+    it('keeps a deep link of a signed-in user on a device without the hint', async () => {
+      const session = deferred<AuthUser | null>();
+      const { harness, router } = await setup(null, () => session.promise);
+
+      const navigation = harness.navigateByUrl('/share?text=hi');
+      session.resolve(USER);
+      await navigation;
+      await harness.fixture.whenStable();
+
+      expect(router.url).toBe('/share?text=hi');
+      expect((harness.routeNativeElement as HTMLElement).textContent).toBe('shell');
     });
 
     it('waits for the session when the device has a session hint', async () => {
