@@ -428,6 +428,15 @@ describe('themes', () => {
     }
   });
 
+  it('global.scss lifts every dialog and sheet above the on-screen keyboard', () => {
+    const output = compile(resolve(STYLES_DIR, 'global.scss'), {
+      loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
+    }).css;
+    expect(output).toMatch(
+      /\.cdk-global-overlay-wrapper\.ui-overlay-layer--dialog\s*\{[^}]*padding-block-end: var\(--ui-keyboard-inset, 0\)/,
+    );
+  });
+
   it('global.scss defines the Custom theme rules on the attributes ThemeService sets', () => {
     const output = compile(resolve(STYLES_DIR, 'global.scss'), {
       loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
