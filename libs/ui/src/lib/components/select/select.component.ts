@@ -9,6 +9,7 @@ import {
   Component,
   computed,
   effect,
+  DestroyRef,
   ElementRef,
   inject,
   Injector,
@@ -28,9 +29,13 @@ import type { SelectOption } from './models/select-option.interface';
 import type { SelectIcon } from './models/select-icon.type';
 import { SELECT_ICON } from './models/select-icon.const';
 import { relayKey } from './relay-key';
+import { watchVisibleArea } from './visible-area-fit';
 import { selectedRow, selectRows } from './select-rows';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
+
+/** Touch screens: opening the popup does not move focus into the search box (no keyboard). */
+const COARSE_POINTER = '(pointer: coarse)';
 
 /**
  * Picks one value from a nested list (the folder of a link). The trigger is an Angular Aria
@@ -108,6 +113,9 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   protected readonly triggerIcon = computed(() => this.rowIcon(this.value()));
 
   /** The list's overlay pane, at least as wide as the trigger. */
+  /** Stops the visual-viewport watch of the open popup (the on-screen keyboard). */
+  private stopVisibleArea: () => void = () => undefined;
+
   private readonly pane = new FieldPopup({
     origin: () => this.trigger().nativeElement,
     popup: () => this.popup().nativeElement,
@@ -124,14 +132,18 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   constructor() {
     super();
     // The search box takes focus as soon as it exists (the popup content renders after opening).
+    // On a touch screen the keyboard would cover the list the moment it opens: focus stays on the
+    // trigger (Aria still relays keys from there) and the keyboard comes only when the search box
+    // is tapped, as in `ui-picker-list`.
     effect(() => {
       const field = this.searchField();
-      if (field) {
+      if (field && !this.coarsePointer()) {
         untracked(() => {
           field.nativeElement.focus({ preventScroll: true });
         });
       }
     });
+    inject(DestroyRef).onDestroy(() => this.stopVisibleArea());
     // Keep the active option visible while the arrows move through a long list.
     afterRenderEffect(() => {
       const id = this.listbox()?.activeDescendant();
@@ -278,6 +290,15 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     this.query.set('');
     this.open.set(true);
     this.pane.show();
+    this.stopVisibleArea();
+    this.stopVisibleArea = watchVisibleArea(
+      () => this.popup().nativeElement.querySelector<HTMLElement>('.ui-select__panel'),
+      this.document.defaultView,
+    );
+  }
+
+  private coarsePointer(): boolean {
+    return this.document.defaultView?.matchMedia?.(COARSE_POINTER).matches ?? false;
   }
 
   private hide(restoreFocus: boolean): void {
@@ -286,6 +307,8 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     }
     this.open.set(false);
     this.pane.hide();
+    this.stopVisibleArea();
+    this.stopVisibleArea = () => undefined;
     if (restoreFocus) {
       this.focus();
     }
