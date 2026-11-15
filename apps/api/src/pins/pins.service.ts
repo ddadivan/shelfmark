@@ -14,6 +14,7 @@ import {
 } from '@shelfmark/contracts';
 import { FoldersService } from '../folders/folders.service';
 import { toFolderResponse } from '../folders/to-folder-response';
+import { loadFolderCovers } from '../folders/folder-covers';
 import type { Prisma } from '../generated/prisma/client';
 import { LINK_INCLUDE } from '../links/models/link-include.const';
 import { toLinkResponse } from '../links/to-link-response';
@@ -170,12 +171,13 @@ export class PinsService {
         if (group.folderId !== null) counts.set(group.folderId, group._count._all);
       }
     }
+    const covers = await loadFolderCovers(client, userId, folders);
     const entries = [
       ...folders.map((row) => ({
         kind: PIN_KIND.Folder,
         position: row.pinnedPosition ?? 0,
         id: row.id,
-        folder: toFolderResponse(row, counts.get(row.id) ?? 0),
+        folder: toFolderResponse(row, counts.get(row.id) ?? 0, covers.get(row.id)),
         link: null,
       })),
       ...links.map((row) => ({

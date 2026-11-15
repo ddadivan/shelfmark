@@ -74,6 +74,8 @@ model User {
   cardSite              Boolean       @default(true) @map("card_site")
   cardNotes             Boolean       @default(true) @map("card_notes")
   cardTags              Boolean       @default(true) @map("card_tags")
+  // Sidebar folder highlight (#418): FOLDER_HIGHLIGHT; a CHECK in the migration closes the set.
+  folderHighlight       String        @default("stripe") @map("folder_highlight")
   // Settings › Language (#274). CHECKs in the migration keep the text columns to the contract
   // allow-lists; languageSavedAt marks the first write (a guest's local choice is kept until then).
   language              String        @default("browser") @map("language")
@@ -172,6 +174,11 @@ model Folder {
   // Style (#263, ADR 0037): one of FOLDER_COLOUR / FOLDER_ICON; a CHECK in the migration closes the colour set.
   colour         String       @default("graphite") @db.VarChar(16)
   icon           String       @default("folder") @db.VarChar(24)
+  // Optional short description (#418), trimmed, 1 to FOLDER_LIMIT.DescriptionMax characters (a CHECK in the migration).
+  description    String?      @db.VarChar(140)
+  // The link whose preview image is the cover (#418). No foreign key: the API writes only a live own
+  // link of this folder and answers the cover only while that is still true (folder-covers.ts).
+  coverLinkId    String?      @map("cover_link_id") @db.Uuid
   // Manual order among the siblings (#314): PUT /api/folders/order; lists sort by it, then by name.
   position       Int          @default(0) @db.SmallInt
   // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the folder goes to Trash.

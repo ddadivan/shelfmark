@@ -73,6 +73,14 @@ describe('AdminStatsPage', () => {
     expect(page).toContain('21 answered · 6 skipped');
     expect(page).toContain('1–6: 3 · 7–8: 9 · 9–10: 9');
     expect(page).toContain('Messages by status');
+    // History paused: 2 of 47, a group of fewer than 3, so hidden.
+    const paused = [...root.querySelectorAll('app-admin-share-row')].find((row) =>
+      text(row).startsWith('History paused'),
+    );
+    expect(text(paused)).toBe('History pausedHidden: a group of fewer than 3');
+    expect(paused?.querySelector('ui-meter')).toBeNull();
+    expect(page).toContain('7–8: 6 · Other: 6');
+    expect(page).toContain('return numbers that reach back before then may read high');
   });
 
   it('switches the chart to weeks', async () => {

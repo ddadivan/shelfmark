@@ -62,6 +62,9 @@ export type { FolderDeleteMode } from './folders/folder-delete-mode.type';
 export { FOLDER_DELETE_MODE } from './folders/folder-delete-mode.const';
 export { FOLDER_ERROR_MESSAGE } from './folders/folder-error-message.const';
 export { FOLDER_LIMIT } from './folders/folder-limit.const';
+export { FOLDER_HIGHLIGHT } from './users/folder-highlight.const';
+export type { FolderHighlight } from './users/folder-highlight.type';
+export { isFolderDescription, normalizeFolderDescription } from './folders/is-folder-description';
 
 export type { TagResponse } from './tags/tag-response.interface';
 export type { ListTagsResponse } from './tags/list-tags-response.interface';
@@ -210,6 +213,7 @@ export {
   isCardPreview,
   isDensity,
   isLayoutSettings,
+  isFolderHighlight,
   isTextSize,
 } from './users/is-layout-settings';
 export { TRACKING_QUERY_PARAMS } from './links/tracking-query-params.const';
@@ -289,6 +293,7 @@ export { ADMIN_STATS_FEATURE } from './admin/admin-stats-feature.const';
 export type { AdminStatsFeature } from './admin/admin-stats-feature.type';
 export { ADMIN_STATS_BUCKET_KEY } from './admin/admin-stats-bucket-key.const';
 export { ADMIN_STATS_LINKS_BUCKET } from './admin/admin-stats-links-bucket.const';
+export { ADMIN_STATS_SCORE_GROUP } from './admin/admin-stats-score-group.const';
 export type { AdminStatsPoint } from './admin/admin-stats-point.interface';
 export type { AdminStatsRate } from './admin/admin-stats-rate.interface';
 export type { AdminStatsBucket } from './admin/admin-stats-bucket.interface';

@@ -296,7 +296,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "Na pasta"
     },
     "item": {
       "edit": "Editar",
@@ -978,7 +979,23 @@
         "undo": "Desfazer"
       },
       "iconsShowAll": "Mostrar todos os ícones ({{count}})",
-      "iconsShowFewer": "Mostrar menos"
+      "iconsShowFewer": "Mostrar menos",
+      "description": {
+        "label": "Descrição",
+        "hint": "Opcional, até {{max}} caracteres. Aparece abaixo do nome da pasta.",
+        "placeholder": "O que tem nesta pasta?",
+        "tooLong": "No máximo {{max}} caracteres.",
+        "invalid": "Use texto simples em uma linha."
+      },
+      "cover": {
+        "label": "Capa",
+        "hint": "Uma imagem de prévia de um link desta pasta, atrás do cabeçalho da pasta.",
+        "none": "Sem capa",
+        "option": "Capa de “{{title}}”",
+        "current": "Capa atual",
+        "empty": "Links desta pasta com imagem de prévia podem ser a capa dela.",
+        "loading": "Carregando imagens"
+      }
     }
   },
   "library": {
@@ -1369,6 +1386,13 @@
         "colours": {
           "label": "Cores das pastas",
           "hint": "Desligado, todas as pastas ficam em grafite"
+        },
+        "highlight": {
+          "label": "Destacar pastas com a cor delas",
+          "hint": "Como uma pasta colorida aparece na barra lateral, mais forte quando está aberta",
+          "off": "Não",
+          "stripe": "Faixa",
+          "background": "Fundo"
         }
       },
       "motion": {
@@ -2172,11 +2196,12 @@
       "tooFew": "Ainda não há usuários suficientes: porcentagens e grupos aparecem a partir de {{min}} usuários reais.",
       "notEnough": "Ainda não há usuários suficientes",
       "fewer": "Menos de {{min}}",
+      "smallGroup": "Oculto: um grupo de menos de {{min}}",
       "shareOf": "{{percent}} · {{count}} de {{base}}",
       "countOf": "{{count}} de {{base}}",
       "shareCount": "{{percent}} · {{count}}",
-      "activitySince": "A atividade é registrada desde {{date}}; visitas anteriores são estimadas.",
-      "activityEstimated": "Visitas anteriores ao registro de atividade são estimadas.",
+      "activitySince": "A atividade é registrada desde {{date}}. Visitas anteriores são estimadas a partir dos links salvos e dos logins, então os números de atividade e de retorno que vão até antes disso podem sair altos.",
+      "activityEstimated": "Visitas anteriores ao registro de atividade são estimadas a partir dos links salvos e dos logins, então os números de atividade e de retorno podem sair altos.",
       "overview": {
         "title": "Visão geral"
       },
@@ -2252,7 +2277,6 @@
         },
         "answered": "{{answered}} respondidas · {{skipped}} puladas",
         "summary": "Média {{mean}} · mediana {{median}}",
-        "groups": "1–6: {{low}} · 7–8: {{mid}} · 9–10: {{high}}",
         "byKind": "Mensagens por tipo",
         "byStatus": "Mensagens por status"
       }

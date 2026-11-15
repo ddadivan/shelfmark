@@ -27,6 +27,8 @@ function visit(
       path: names.join(SELECT_PATH_SEPARATOR),
       level,
       ...(option.lang ? { lang: option.lang } : {}),
+      ...(option.colour ? { colour: option.colour } : {}),
+      ...(option.icon ? { icon: option.icon } : {}),
     },
     ...nested,
   ];

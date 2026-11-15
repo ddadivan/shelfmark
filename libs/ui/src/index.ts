@@ -16,6 +16,8 @@ export * from './lib/components/empty-state';
 export * from './lib/components/favicon';
 export * from './lib/components/field';
 export * from './lib/components/flag';
+export * from './lib/components/folder-banner';
+export * from './lib/components/folder-chip';
 export * from './lib/components/folder-icon';
 export * from './lib/components/highlight';
 export * from './lib/components/history-row';
@@ -55,6 +57,7 @@ export * from './lib/components/toast';
 export * from './lib/components/tree';
 
 export * from './lib/directives/focus-target';
+export * from './lib/directives/folder-colour';
 export * from './lib/directives/long-press';
 export * from './lib/directives/menu-trigger';
 export * from './lib/directives/pointer-shadow';

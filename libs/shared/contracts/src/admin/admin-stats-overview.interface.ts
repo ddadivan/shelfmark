@@ -7,7 +7,10 @@ export interface AdminStatsOverview {
   /** Demo sandboxes that exist now (they live 24 hours). */
   demoSandboxes: number;
   onboarded: AdminStatsRate;
-  /** `ADMIN_STATS_LIMIT.SignUpDays` UTC days, oldest first, zero-filled, today last. */
+  /**
+   * `ADMIN_STATS_LIMIT.SignUpDays` UTC days, oldest first, zero-filled, today last. Every count is
+   * 0 while there are fewer than `MinGroup` real users (a lone sign-up day would point at someone).
+   */
   signUpsByDay: AdminStatsPoint[];
   /** `ADMIN_STATS_LIMIT.SignUpWeeks` ISO weeks (Monday), oldest first, this week last. */
   signUpsByWeek: AdminStatsPoint[];

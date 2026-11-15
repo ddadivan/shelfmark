@@ -296,7 +296,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "Nella cartella"
     },
     "item": {
       "edit": "Modifica",
@@ -978,7 +979,23 @@
         "undo": "Annulla"
       },
       "iconsShowAll": "Mostra tutte le icone ({{count}})",
-      "iconsShowFewer": "Mostra meno"
+      "iconsShowFewer": "Mostra meno",
+      "description": {
+        "label": "Descrizione",
+        "hint": "Facoltativa, fino a {{max}} caratteri. Appare sotto il nome della cartella.",
+        "placeholder": "Cosa c’è in questa cartella?",
+        "tooLong": "Massimo {{max}} caratteri.",
+        "invalid": "Usa testo semplice su una riga."
+      },
+      "cover": {
+        "label": "Copertina",
+        "hint": "Un’immagine di anteprima di un link di questa cartella, dietro l’intestazione.",
+        "none": "Nessuna copertina",
+        "option": "Copertina da «{{title}}»",
+        "current": "Copertina attuale",
+        "empty": "I link di questa cartella con un’immagine di anteprima possono farle da copertina.",
+        "loading": "Caricamento immagini"
+      }
     }
   },
   "library": {
@@ -1369,6 +1386,13 @@
         "colours": {
           "label": "Colori delle cartelle",
           "hint": "Disattivato mostra ogni cartella in grafite"
+        },
+        "highlight": {
+          "label": "Evidenzia le cartelle con il loro colore",
+          "hint": "Come appare una cartella colorata nella barra laterale, più marcata quando è aperta",
+          "off": "No",
+          "stripe": "Striscia",
+          "background": "Sfondo"
         }
       },
       "motion": {
@@ -2172,11 +2196,12 @@
       "tooFew": "Non ci sono ancora abbastanza utenti: quote e gruppi compaiono da {{min}} utenti reali.",
       "notEnough": "Non ci sono ancora abbastanza utenti",
       "fewer": "Meno di {{min}}",
+      "smallGroup": "Nascosto: un gruppo di meno di {{min}}",
       "shareOf": "{{percent}} · {{count}} su {{base}}",
       "countOf": "{{count}} su {{base}}",
       "shareCount": "{{percent}} · {{count}}",
-      "activitySince": "L’attività è registrata dal {{date}}; le visite precedenti sono stimate.",
-      "activityEstimated": "Le visite precedenti alla registrazione dell’attività sono stimate.",
+      "activitySince": "L’attività è registrata dal {{date}}. Le visite precedenti sono stimate dai link salvati e dagli accessi, quindi i numeri di attività e ritorno che risalgono a prima possono risultare alti.",
+      "activityEstimated": "Le visite precedenti alla registrazione dell’attività sono stimate dai link salvati e dagli accessi, quindi i numeri di attività e ritorno possono risultare alti.",
       "overview": {
         "title": "Panoramica"
       },
@@ -2252,7 +2277,6 @@
         },
         "answered": "{{answered}} risposte · {{skipped}} saltate",
         "summary": "Media {{mean}} · mediana {{median}}",
-        "groups": "1–6: {{low}} · 7–8: {{mid}} · 9–10: {{high}}",
         "byKind": "Messaggi per tipo",
         "byStatus": "Messaggi per stato"
       }

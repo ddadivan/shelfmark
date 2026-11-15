@@ -44,6 +44,7 @@ import { firstValueFrom, switchMap } from 'rxjs';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { FoldersStore } from '../../../../stores/folders.store';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { TagsStore } from '../../../../stores/tags.store';
 import { normalizeTagNames } from '../../../tags/utils/normalize-tag-names';
 import { buildFolderOptions } from '../../utils/folder-options';
@@ -116,6 +117,8 @@ export class PasteManyListComponent {
   protected readonly phone = inject(ViewportService).phone;
   private readonly linksApi = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
+  /** Folder tiles in the folder select, as the account shows colours (#418). */
+  private readonly shownColour = inject(UserSettingsStore).shownColour;
   private readonly tagStore = inject(TagsStore);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
@@ -151,7 +154,9 @@ export class PasteManyListComponent {
   protected readonly saving = signal(false);
   protected readonly saveError = signal<BatchSaveError | null>(null);
 
-  protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
+  protected readonly folderOptions = computed(() =>
+    buildFolderOptions(this.folders.entities(), this.shownColour),
+  );
   protected readonly tagSuggestions = computed<TagSuggestion[]>(() => {
     this.i18n();
     return this.tagStore.entities().map((tag) => ({

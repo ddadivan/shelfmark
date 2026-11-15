@@ -30,7 +30,7 @@ import { ADMIN_PATH } from '../../models/admin-path.const';
 import { ADMIN_STATS_FEATURE_LABEL } from '../../models/admin-stats-feature-label.const';
 import type { AdminStatsFormat } from '../../models/admin-stats-format.interface';
 import { AdminStatsStore } from '../../services/admin-stats.store';
-import { bucketRows, rateRow } from '../../utils/admin-stats-rows';
+import { bucketRows, hiddenRateText, rateRow } from '../../utils/admin-stats-rows';
 
 /** Which sign-up series the chart shows. */
 const SIGN_UP_UNIT = { Days: 'days', Weeks: 'weeks' } as const;
@@ -115,7 +115,7 @@ export default class AdminStatsPage {
       value: value.share === null ? '–' : format.percent(value.share),
       hint:
         value.count === null
-          ? format.t('admin.stats.notEnough')
+          ? hiddenRateText(value, format, stats.minGroup)
           : format.t('admin.stats.countOf', {
               count: format.number(value.count),
               base: format.number(value.base),
@@ -200,7 +200,13 @@ export default class AdminStatsPage {
   protected readonly adoption = computed(() => {
     const format = this.format();
     return (this.store.stats()?.features.adoption ?? []).map((row) =>
-      rateRow(row.feature, format.t(ADMIN_STATS_FEATURE_LABEL[row.feature]), row.rate, format),
+      rateRow(
+        row.feature,
+        format.t(ADMIN_STATS_FEATURE_LABEL[row.feature]),
+        row.rate,
+        format,
+        this.minGroup(),
+      ),
     );
   });
 
@@ -240,6 +246,7 @@ export default class AdminStatsPage {
   protected readonly milestones = computed(() => {
     const format = this.format();
     const { t, number } = format;
+    const k = this.minGroup();
     return (this.store.stats()?.ratings.milestones ?? []).map((m) => ({
       key: m.milestone,
       title: t(`admin.stats.ratings.milestone.${m.milestone}`),
@@ -251,14 +258,14 @@ export default class AdminStatsPage {
         m.mean === null || m.median === null
           ? t('admin.stats.notEnough')
           : t('admin.stats.ratings.summary', { mean: number(m.mean), median: number(m.median) }),
-      groups:
-        m.low === null || m.mid === null || m.high === null
-          ? ''
-          : t('admin.stats.ratings.groups', {
-              low: number(m.low),
-              mid: number(m.mid),
-              high: number(m.high),
-            }),
+      groups: m.groups
+        .map((group) => {
+          const range = this.otherOr(group.key, () => group.key.replace('-', '–'));
+          const value =
+            group.count === null ? t('admin.stats.fewer', { min: k }) : number(group.count);
+          return `${range}: ${value}`;
+        })
+        .join(' · '),
     }));
   });
 

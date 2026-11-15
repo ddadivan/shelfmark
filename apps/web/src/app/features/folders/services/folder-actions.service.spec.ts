@@ -342,6 +342,20 @@ describe('FolderActionsService', () => {
       await done;
     });
 
+    it('shows the parent folder with its tile, like the Move to picker (#418)', async () => {
+      const { actions, store } = await setup();
+      await store.setStyle(MOCK_ID.FolderReading, { colour: 'teal', icon: 'star' });
+
+      const done = actions.move(store.entityMap()[MOCK_ID.FolderAngular]);
+      await opened();
+      expect(
+        dialog().querySelector('ui-select ui-folder-icon.ui-folder-icon--teal'),
+      ).not.toBeNull();
+      button('Cancel').click();
+      await closed();
+      await done;
+    });
+
     it('sends nothing when the parent is not changed', async () => {
       const { actions, store } = await setup();
 

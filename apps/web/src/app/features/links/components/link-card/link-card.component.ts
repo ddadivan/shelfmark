@@ -8,6 +8,7 @@ import {
   CardComponent,
   ChipComponent,
   FaviconComponent,
+  FolderChipComponent,
   ICON_SIZE,
   LongPressDirective,
   MenuComponent,
@@ -18,6 +19,7 @@ import {
   TooltipDirective,
 } from '@shelfmark/ui';
 import type { LinkCardItem } from '../../models/link-card-item.type';
+import type { FolderChipView } from '../../models/folder-chip-view.interface';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { linkKeyIntent } from '../../utils/link-select-keys';
 import { LINK_KEY_INTENT } from '../../models/link-key-intent.const';
@@ -51,6 +53,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
     CardComponent,
     ChipComponent,
     FaviconComponent,
+    FolderChipComponent,
     MenuComponent,
     MenuItemComponent,
     MenuSeparatorComponent,
@@ -75,6 +78,8 @@ export class LinkCardComponent {
   readonly readOnly = input(false);
   /** Plays the fade-in of cards that replace the skeleton. */
   readonly reveal = input(false);
+  /** The link's folder as a chip, in mixed feeds only (#418); `null` for none. */
+  readonly folder = input<FolderChipView | null>(null);
 
   /** The link is shown inside a folder: its menu offers "Pin to top" (a pinned link leads the folder). */
   readonly pinnable = input(false);

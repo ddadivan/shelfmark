@@ -296,7 +296,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "In folder"
     },
     "item": {
       "edit": "Edit",
@@ -961,7 +962,23 @@
         "undo": "Undo"
       },
       "iconsShowAll": "Show all icons ({{count}})",
-      "iconsShowFewer": "Show fewer"
+      "iconsShowFewer": "Show fewer",
+      "description": {
+        "label": "Description",
+        "hint": "Optional, up to {{max}} characters. Shown under the folder name.",
+        "placeholder": "What’s in this folder?",
+        "tooLong": "Keep it to {{max}} characters.",
+        "invalid": "Use plain text on one line."
+      },
+      "cover": {
+        "label": "Cover",
+        "hint": "A preview picture from a link in this folder, behind the folder header.",
+        "none": "No cover",
+        "option": "Cover from “{{title}}”",
+        "current": "Current cover",
+        "empty": "Links in this folder with a preview picture can be its cover.",
+        "loading": "Loading pictures"
+      }
     }
   },
   "library": {
@@ -1347,6 +1364,13 @@
         "colours": {
           "label": "Folder colors",
           "hint": "Off shows every folder in plain graphite"
+        },
+        "highlight": {
+          "label": "Highlight folders with their color",
+          "hint": "How a colored folder shows in the sidebar; stronger when it’s open",
+          "off": "Off",
+          "stripe": "Stripe",
+          "background": "Background"
         }
       },
       "motion": {
@@ -2134,11 +2158,12 @@
       "tooFew": "Not enough users yet: shares and groups appear from {{min}} real users.",
       "notEnough": "Not enough users yet",
       "fewer": "Fewer than {{min}}",
+      "smallGroup": "Hidden: a group of fewer than {{min}}",
       "shareOf": "{{percent}} · {{count}} of {{base}}",
       "countOf": "{{count}} of {{base}}",
       "shareCount": "{{percent}} · {{count}}",
-      "activitySince": "Activity is recorded from {{date}}; earlier visits are estimated.",
-      "activityEstimated": "Visits before activity tracking started are estimated.",
+      "activitySince": "Activity is recorded from {{date}}. Earlier visits are estimated from saved links and sign-ins, so active and return numbers that reach back before then may read high.",
+      "activityEstimated": "Visits before activity tracking started are estimated from saved links and sign-ins, so active and return numbers may read high.",
       "overview": {
         "title": "Overview"
       },
@@ -2214,7 +2239,6 @@
         },
         "answered": "{{answered}} answered · {{skipped}} skipped",
         "summary": "Mean {{mean}} · median {{median}}",
-        "groups": "1–6: {{low}} · 7–8: {{mid}} · 9–10: {{high}}",
         "byKind": "Messages by type",
         "byStatus": "Messages by status"
       }

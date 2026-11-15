@@ -16,6 +16,7 @@ import type { TestAgent } from '../../test-utils/models/test-agent.interface';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
 import { signInDemo } from '../../test-utils/sign-in-demo';
+import { AdminStatsService } from './admin-stats.service';
 
 const STATS = ADMIN_ENDPOINT.Stats;
 const DAY_MS = 86_400_000;
@@ -174,6 +175,9 @@ describe('admin usage stats API', () => {
       expect(body.features.linksPerUser.mean).toBeNull();
       expect(body.features.linksPerUser.median).toBeNull();
       for (const row of body.features.adoption) expect(row.rate.share).toBeNull();
+      // Both signed up today, but a lone sign-up day would point at someone.
+      expect(body.overview.signUpsByDay.every((day) => day.count === 0)).toBe(true);
+      expect(body.overview.signUpsByWeek.every((week) => week.count === 0)).toBe(true);
     });
 
     it('merges small buckets into Other and never reveals a single hidden value', async () => {
@@ -234,6 +238,8 @@ describe('admin usage stats API', () => {
 
       const body = await stats();
       expect(body.overview.realUsers).toBe(4);
+      // The raw counts (minimum group size 1), then what the endpoint shows.
+      const raw = await t.app.get(AdminStatsService).stats(new Date(), 1);
       const expected: Partial<Record<AdminStatsFeature, number>> = {
         [ADMIN_STATS_FEATURE.Folders]: 1,
         [ADMIN_STATS_FEATURE.NestedFolders]: 1,
@@ -252,11 +258,15 @@ describe('admin usage stats API', () => {
         [ADMIN_STATS_FEATURE.PreviewsOff]: 1,
       };
       for (const [feature, count] of Object.entries(expected)) {
-        expect(adoption(body, feature as AdminStatsFeature), feature).toEqual({
+        expect(adoption(raw, feature as AdminStatsFeature), feature).toEqual({
           base: 4,
           count,
           share: count / 4,
         });
+        // A group of 1 (and its complement of 3 would be fine, but 1 is not): hidden.
+        expect(adoption(body, feature as AdminStatsFeature), feature).toEqual(
+          count === 0 ? { base: 4, count: 0, share: 0 } : { base: 4, count: null, share: null },
+        );
       }
       expect(body.features.linksPerUser).toEqual({
         mean: 0.8,
@@ -305,12 +315,24 @@ describe('admin usage stats API', () => {
       await user({ createdAt: daysAgo(40), lastActiveOn: utcDate(daysAgo(40)) });
       // Joined 3 days ago: not in the week base yet.
       await user({ createdAt: daysAgo(3), lastActiveOn: today });
-      const body = await stats();
-      expect(body.overview.active7d).toEqual({ base: 5, count: 3, share: 0.6 });
-      expect(body.overview.active30d).toEqual({ base: 5, count: 4, share: 0.8 });
-      expect(body.overview.returnedAfterWeek).toEqual({ base: 3, count: 2, share: 0.667 });
-      expect(body.overview.returnedAfterMonth).toEqual({ base: 3, count: 1, share: 0.333 });
-      expect(body.overview.activitySince).toBeNull();
+      const raw = (await t.app.get(AdminStatsService).stats(new Date(), 1)).overview;
+      expect(raw.active7d).toEqual({ base: 5, count: 3, share: 0.6 });
+      expect(raw.active30d).toEqual({ base: 5, count: 4, share: 0.8 });
+      expect(raw.returnedAfterWeek).toEqual({ base: 3, count: 2, share: 0.667 });
+      expect(raw.returnedAfterMonth).toEqual({ base: 3, count: 1, share: 0.333 });
+      // Each split leaves a group of 1 or 2 on one side (2 inactive, 1 inactive, 1 not back, 1
+      // back), so the endpoint shows none of them.
+      const { overview } = await stats();
+      for (const rate of [
+        overview.active7d,
+        overview.active30d,
+        overview.returnedAfterWeek,
+        overview.returnedAfterMonth,
+      ]) {
+        expect(rate.count).toBeNull();
+        expect(rate.share).toBeNull();
+      }
+      expect(overview.activitySince).toBeNull();
     });
 
     it('summarises ratings per milestone from 3 answers on, messages as plain counts', async () => {
@@ -342,9 +364,8 @@ describe('admin usage stats API', () => {
           skipped: 1,
           mean: 7.3,
           median: 8,
-          low: 1,
-          mid: 1,
-          high: 1,
+          // Groups of 1 each: all merged into Other.
+          groups: [{ key: 'other', count: 3 }],
         },
         {
           milestone: 'week1',
@@ -352,9 +373,7 @@ describe('admin usage stats API', () => {
           skipped: 0,
           mean: null,
           median: null,
-          low: null,
-          mid: null,
-          high: null,
+          groups: [],
         },
         {
           milestone: 'month1',
@@ -362,9 +381,7 @@ describe('admin usage stats API', () => {
           skipped: 0,
           mean: null,
           median: null,
-          low: null,
-          mid: null,
-          high: null,
+          groups: [],
         },
         {
           milestone: 'year1',
@@ -372,9 +389,7 @@ describe('admin usage stats API', () => {
           skipped: 0,
           mean: null,
           median: null,
-          low: null,
-          mid: null,
-          high: null,
+          groups: [],
         },
       ]);
       expect(ratings.messagesByKind).toEqual([

@@ -3,6 +3,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
@@ -18,6 +19,9 @@ import {
   CheckboxComponent,
   ChipComponent,
   EmptyStateComponent,
+  FolderBannerComponent,
+  FolderIconComponent,
+  FOLDER_ICON_SIZE,
   ICON_SIZE,
   LoadMoreComponent,
   MenuComponent,
@@ -46,6 +50,7 @@ import { LinkDragService } from '../links/services/link-drag.service';
 import { HowItWorksService } from '../how-it-works/services/how-it-works.service';
 import { LinkCardComponent } from '../links/components/link-card/link-card.component';
 import { LinkRowComponent } from '../links/components/link-row/link-row.component';
+import { FolderChipsService } from '../links/services/folder-chips.service';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
 import type { LinksScope } from '../links/models/links-scope.type';
 import { APP_PATH } from '../../models/app-path.const';
@@ -93,6 +98,8 @@ const SKELETON_COUNT = 8;
     CheckboxComponent,
     ChipComponent,
     EmptyStateComponent,
+    FolderBannerComponent,
+    FolderIconComponent,
     FolderTileComponent,
     InViewDirective,
     LibraryHotkeysDirective,
@@ -116,7 +123,12 @@ const SKELETON_COUNT = 8;
     SplitRightHalfComponent,
   ],
   templateUrl: './library.page.html',
-  styleUrls: ['./library.page.scss', './library-feed.scss', './library-selection.scss'],
+  styleUrls: [
+    './library.page.scss',
+    './library-head.scss',
+    './library-feed.scss',
+    './library-selection.scss',
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: provideLibraryPage(),
 })
@@ -140,6 +152,17 @@ export default class LibraryPage {
   /** From 80em: the "Side by side" button and the right half (#386). */
   protected readonly wide = inject(ViewportService).wide;
   protected readonly splitView = inject(SplitViewService);
+  protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
+  protected readonly folderChips = inject(FolderChipsService);
+  /** Cards and rows name their folder in mixed feeds, not in a folder's own feed or Unsorted (#418). */
+  protected readonly showFolderChips = computed(
+    () =>
+      this.filters.scope() !== LINKS_SCOPE.Folder && this.filters.scope() !== LINKS_SCOPE.Unsorted,
+  );
+  /** The folder header (#418): band or cover, big tile, description; none in the split view. */
+  protected readonly folderBanner = computed(() =>
+    this.splitView.open() ? null : this.head.banner(),
+  );
   protected readonly selection = inject(LibrarySelectionService);
   protected readonly bulk = inject(LibraryBulkService);
   protected readonly drag = inject(LinkDragService);

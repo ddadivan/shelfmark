@@ -3,6 +3,7 @@ import {
   ADMIN_STATS_FEATURE,
   ADMIN_STATS_LIMIT,
   ADMIN_STATS_LINKS_BUCKET,
+  ADMIN_STATS_SCORE_GROUP,
   FEEDBACK_MESSAGE_KIND,
   FEEDBACK_MILESTONE,
   FEEDBACK_STATUS,
@@ -55,16 +56,22 @@ function list(value: unknown, path: string): readonly unknown[] {
   return value;
 }
 
-/** A rate: `null` exactly while the base is below the minimum group size. */
+/**
+ * A rate: `null` while the base is below the minimum group size, and never shown with a group of 1
+ * to `minGroup - 1` on either side (`count` or `base - count`).
+ */
 function rate(value: unknown, path: string, minGroup: number): void {
   const r = exactly(value, path, ['base', 'count', 'share']);
   const base = count(r['base'], `${path}.base`);
-  if (base < minGroup) {
+  if (r['count'] === null || base < minGroup) {
     if (r['count'] !== null || r['share'] !== null) fail(path, `shows a base of ${base}`);
     return;
   }
   const c = count(r['count'], `${path}.count`);
   if (c > base) fail(path, 'counts more than its base');
+  const small = (group: number) => group > 0 && group < minGroup;
+  if (small(c)) fail(path, `shows a group of ${c}`);
+  if (small(base - c)) fail(path, `shows that ${base - c} do not`);
   nullableNumber(r['share'], `${path}.share`, 0, 1);
   if (r['share'] === null) fail(path, 'has no share');
 }
@@ -162,6 +169,14 @@ export function expectAdminStatsShape(stats: unknown, now: Date = new Date()): v
   if (isObject(lastDay) && lastDay['start'] !== now.toISOString().slice(0, 10)) {
     fail('overview.signUpsByDay', 'does not end today (UTC)');
   }
+  if (realUsers < k) {
+    for (const key of ['signUpsByDay', 'signUpsByWeek']) {
+      const shown = list(overview[key], `overview.${key}`).some(
+        (point) => isObject(point) && point['count'] !== 0,
+      );
+      if (shown) fail(`overview.${key}`, `shows sign-ups of ${realUsers} real users`);
+    }
+  }
   const since = overview['activitySince'];
   if (since !== null && (typeof since !== 'string' || !DAY.test(since))) {
     fail('overview.activitySince', 'is not null or a day');
@@ -226,24 +241,14 @@ export function expectAdminStatsShape(stats: unknown, now: Date = new Date()): v
   if (milestones.length !== milestoneKeys.length) fail('ratings.milestones', 'misses milestones');
   for (const [i, item] of milestones.entries()) {
     const at = `ratings.milestones[${i}]`;
-    const m = exactly(item, at, [
-      'milestone',
-      'answered',
-      'skipped',
-      'mean',
-      'median',
-      'low',
-      'mid',
-      'high',
-    ]);
+    const m = exactly(item, at, ['milestone', 'answered', 'skipped', 'mean', 'median', 'groups']);
     if (m['milestone'] !== milestoneKeys[i]) fail(at, 'is out of order');
     const answered = count(m['answered'], `${at}.answered`);
     count(m['skipped'], `${at}.skipped`);
     for (const field of ['mean', 'median']) nullableNumber(m[field], `${at}.${field}`, 1, 10);
-    for (const field of ['low', 'mid', 'high']) {
-      if (m[field] !== null) count(m[field], `${at}.${field}`);
-    }
-    const shown = ['mean', 'median', 'low', 'mid', 'high'].filter((field) => m[field] !== null);
+    buckets(m['groups'], `${at}.groups`, Object.values(ADMIN_STATS_SCORE_GROUP), k);
+    const shown = ['mean', 'median'].filter((field) => m[field] !== null);
+    if (list(m['groups'], `${at}.groups`).length > 0) shown.push('groups');
     if (answered < k && shown.length > 0) fail(at, `shows the ratings of ${answered} people`);
   }
   buckets(

@@ -12,6 +12,7 @@ export function folderTreeNodes(
     name: folder.name,
     ...(options.countsShown && { count: folder.linkCount }),
     icon: folder.icon,
+    ...(folder.description && { description: folder.description }),
     colour: options.shownColour(folder.colour),
     ...(options.open.has(folder.id) && { expanded: true }),
     ...(children.length > 0 && { children: children.map(toNode) }),

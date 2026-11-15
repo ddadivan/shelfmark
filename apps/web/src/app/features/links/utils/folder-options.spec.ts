@@ -21,4 +21,12 @@ describe('buildFolderOptions', () => {
   it('returns nothing for no folders', () => {
     expect(buildFolderOptions([])).toEqual([]);
   });
+
+  it('carries the folder tile with the shown colour when asked (#418)', () => {
+    const [option] = buildFolderOptions(
+      [{ ...MOCK_FOLDERS[0], parentId: null, colour: 'rose', icon: '🍋' }],
+      (colour) => `shown-${colour}`,
+    );
+    expect(option).toMatchObject({ colour: 'shown-rose', icon: '🍋' });
+  });
 });

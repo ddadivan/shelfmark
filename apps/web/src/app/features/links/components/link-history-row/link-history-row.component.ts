@@ -20,7 +20,7 @@ import {
 import {
   BUTTON_VARIANT,
   ButtonComponent,
-  FolderIconComponent,
+  FolderChipComponent,
   HistoryRowComponent,
   MenuComponent,
   MenuItemComponent,
@@ -49,7 +49,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
     NgTemplateOutlet,
     TranslocoPipe,
     ButtonComponent,
-    FolderIconComponent,
+    FolderChipComponent,
     HistoryRowComponent,
     MenuComponent,
     MenuItemComponent,

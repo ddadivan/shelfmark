@@ -8,6 +8,7 @@ import {
   DATE_FORMAT,
   DENSITY,
   FOLDER_DELETE_MODE,
+  FOLDER_HIGHLIGHT,
   FOLDER_ERROR_MESSAGE,
   INTERFACE_LANGUAGE,
   LANGUAGE_SETTINGS_DEFAULT,
@@ -182,6 +183,7 @@ export const SETTINGS_SCENARIOS: readonly ContractScenario[] = [
       density: DENSITY.Compact,
       cardPreview: CARD_PREVIEW.Off,
       cardNotes: false,
+      folderHighlight: FOLDER_HIGHLIGHT.Background,
     });
     expectEqual(updated, {
       ...DEFAULT_SETTINGS,
@@ -192,12 +194,18 @@ export const SETTINGS_SCENARIOS: readonly ContractScenario[] = [
       density: DENSITY.Compact,
       cardPreview: CARD_PREVIEW.Off,
       cardNotes: false,
+      folderHighlight: FOLDER_HIGHLIGHT.Background,
       appearanceSaved: true,
     });
     await expectError(
       settings.update({ theme: 'neon' as never }),
       { status: 400 },
       'unknown theme',
+    );
+    await expectError(
+      settings.update({ folderHighlight: 'glow' as never }),
+      { status: 400 },
+      'unknown folder highlight',
     );
   }),
 

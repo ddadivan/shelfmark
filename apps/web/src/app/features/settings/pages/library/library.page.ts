@@ -139,7 +139,9 @@ export default class LibrarySettingsPage {
     ];
   });
 
-  protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
+  protected readonly folderOptions = computed(() =>
+    buildFolderOptions(this.folders.entities(), this.settings.shownColour),
+  );
   /** The chosen folder while the folder list knows it; Unsorted otherwise. */
   protected readonly newLinksFolder = computed(() => {
     const id = this.library().newLinksFolderId;

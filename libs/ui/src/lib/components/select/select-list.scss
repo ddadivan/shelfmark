@@ -111,3 +111,8 @@
     padding: rem(7px) rem(10px);
   }
 }
+
+// A folder option's own tile (#418): its colour and glyph, never recoloured by the row.
+.ui-select__tile {
+  flex: none;
+}
