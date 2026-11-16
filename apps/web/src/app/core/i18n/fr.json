@@ -2799,6 +2799,15 @@
       },
       "bulkBar": {
         "text": "Sur téléphone, la barre des liens sélectionnés se place de nouveau juste au-dessus de la barre d’onglets."
+      },
+      "sheetDropdown": {
+        "text": "Une liste déroulante se ferme dès que tu fais glisser un panneau vers le bas sur téléphone."
+      },
+      "skeletonRows": {
+        "text": "L’écran de chargement correspond à la page et montre trois rangées de cartes."
+      },
+      "feedbackActive": {
+        "text": "« Envoyer un avis » ne reste plus en surbrillance après fermeture."
       }
     }
   },

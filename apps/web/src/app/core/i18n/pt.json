@@ -2799,6 +2799,15 @@
       },
       "bulkBar": {
         "text": "No celular a barra dos links selecionados volta a ficar logo acima da barra de abas."
+      },
+      "sheetDropdown": {
+        "text": "Um menu suspenso fecha assim que você arrasta um painel para baixo no celular."
+      },
+      "skeletonRows": {
+        "text": "A tela de carregamento combina com a página e mostra três fileiras de cards."
+      },
+      "feedbackActive": {
+        "text": "“Enviar feedback” não fica mais destacado depois de fechar."
       }
     }
   },

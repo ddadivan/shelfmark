@@ -2739,6 +2739,15 @@
       },
       "bulkBar": {
         "text": "Auf dem Handy sitzt die Leiste für ausgewählte Links wieder direkt über der Tab-Leiste."
+      },
+      "sheetDropdown": {
+        "text": "Ein Auswahlmenü schließt sich, sobald du ein Sheet auf dem Handy nach unten ziehst."
+      },
+      "skeletonRows": {
+        "text": "Der Ladebildschirm passt zur Seite und zeigt drei Reihen Karten."
+      },
+      "feedbackActive": {
+        "text": "„Feedback senden“ bleibt nach dem Schließen nicht mehr hervorgehoben."
       }
     }
   },

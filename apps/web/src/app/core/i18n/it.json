@@ -2799,6 +2799,15 @@
       },
       "bulkBar": {
         "text": "Sul telefono la barra dei link selezionati torna appena sopra la barra delle schede."
+      },
+      "sheetDropdown": {
+        "text": "Un menu a tendina si chiude appena trascini un pannello verso il basso sul telefono."
+      },
+      "skeletonRows": {
+        "text": "La schermata di caricamento corrisponde alla pagina e mostra tre file di schede."
+      },
+      "feedbackActive": {
+        "text": "«Invia feedback» non resta più evidenziato dopo la chiusura."
       }
     }
   },

@@ -44,6 +44,27 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
     ],
   },
   {
+    version: '2.0.7',
+    date: '2026-11-16',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'sheetDropdown',
+        textKey: 'changelog.items.sheetDropdown.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'skeletonRows',
+        textKey: 'changelog.items.skeletonRows.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'feedbackActive',
+        textKey: 'changelog.items.feedbackActive.text',
+      },
+    ],
+  },
+  {
     version: '2.0.6',
     date: '2026-11-16',
     items: [
