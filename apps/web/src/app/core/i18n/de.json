@@ -503,6 +503,7 @@
       "content": "Deine Links (Adresse, Titel, Notiz, Favoritenmarkierung, wann du ihn zuletzt geöffnet hast), deine Ordner und deine Tags.",
       "images": "Für jeden Link eine kleine Kopie des Website-Icons und des Vorschaubilds, falls die Website welche hat. Unser Server lädt sie herunter und speichert sie, damit sie von Shelfmark geladen werden.",
       "feedback": "Deine Antworten auf die Bewertung in der App, mit deinem Konto verknüpft: eine Punktzahl von 1 bis 10 und, falls du einen schreibst, ein Kommentar.",
+      "promptViews": "Die App zählt außerdem, wie oft und wann dir die Bewertungsabfrage angezeigt wurde, um zu wissen, welche Abfragen beantwortet werden.",
       "stats": "Die Zahlen unter „Dein Regal“ auf der Kontoseite (Anzahlen, deine häufigsten Websites und Tags, Links pro Woche) werden bei jedem Öffnen der Seite aus deinen eigenen Daten berechnet. Sie werden weder gespeichert noch weitergegeben.",
       "usage": "Um zu verstehen, wie Shelfmark genutzt wird, speichern wir den Tag, an dem du die App zuletzt benutzt hast: nur ein Datum, ohne Uhrzeit, Seite oder Aktion. Der Autor sieht nur Summen über alle Konten zusammen, etwa wie viele Menschen Ordner oder Tags nutzen oder welche Designs beliebt sind. Gruppen mit weniger als drei Personen werden nicht gezeigt, und niemandes Links, Notizen oder Einstellungen werden einzeln angesehen. Diese Summen werden bei Bedarf berechnet und nicht gespeichert. Wenn du dein Konto löschst, wird das Datum mit gelöscht.",
       "sessions": "Für jede Anmeldung: wann sie abläuft, dazu die IP-Adresse und der Browser (User-Agent), von dem aus sie gestartet wurde, um Sitzungen abzusichern.",
@@ -517,7 +518,7 @@
     "dont": {
       "title": "Was wir nicht tun",
       "sell": "Wir verkaufen oder teilen deine Daten nicht und zeigen keine Werbung.",
-      "read": "Wir sehen uns deine gespeicherten Links nicht an, außer wenn es für den Dienst nötig ist, etwa um eine Vorschau abzurufen."
+      "read": "Wir sehen nicht, welche Links du speicherst; für Statistiken nutzen wir nur Zahlen. Die Adresse eines Links lesen wir nur, wenn es für den Dienst nötig ist, etwa um eine Vorschau abzurufen."
     },
     "previews": {
       "title": "Link-Vorschauen",
