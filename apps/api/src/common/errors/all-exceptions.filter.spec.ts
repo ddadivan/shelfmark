@@ -163,10 +163,10 @@ describe('AllExceptionsFilter', () => {
     expect(report).toHaveBeenCalledTimes(1);
   });
 
-  it('logs a stringified non-Error cause', () => {
+  it('logs a placeholder, not the value, for a non-Error cause', () => {
     const errorLog = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
     callFilter('boom');
-    expect(errorLog).toHaveBeenCalledWith('GET /x 500 rid-1', 'boom');
+    expect(errorLog).toHaveBeenCalledWith('GET /x 500 rid-1', 'non-Error exception');
   });
 
   it('logs the route pattern, never the share token, for a 429 on a matched route', () => {
