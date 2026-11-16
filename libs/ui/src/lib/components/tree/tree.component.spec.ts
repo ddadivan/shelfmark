@@ -415,6 +415,14 @@ describe('TreeComponent', () => {
       ]);
     });
 
+    it('keeps the host-chosen active row current after a click on another row (action rows)', async () => {
+      const { host, item, click } = await setup();
+      await click(item(TREE_STORY_NAME.Work));
+      expect(host.selected.at(-1)?.name).toBe(TREE_STORY_NAME.Work);
+      expect(item(TREE_STORY_NAME.Work).hasAttribute('aria-current')).toBe(false);
+      expect(item(TREE_STORY_NAME.Angular).getAttribute('aria-current')).toBe('page');
+    });
+
     it('sets aria-level, aria-expanded and aria-current', async () => {
       const { item } = await setup();
       expect(item(TREE_STORY_NAME.All).getAttribute('aria-level')).toBe('1');
@@ -624,10 +632,13 @@ describe('TreeComponent', () => {
     });
 
     it('chooses a row with Enter', async () => {
-      const { press, item, host } = await start();
+      const { press, item, host, fixture } = await start();
       await press(KEYBOARD_KEY.ArrowDown);
       await press(KEYBOARD_KEY.Enter);
       expect(host.selected.at(-1)?.id).toBe(TREE_STORY_ID.Unsorted);
+      // The host owns the active row (the route): it follows once the host moves it.
+      host.activeId.set(TREE_STORY_ID.Unsorted);
+      await settle(fixture);
       expect(item(TREE_STORY_NAME.Unsorted).getAttribute('aria-current')).toBe('page');
     });
 
