@@ -10,6 +10,7 @@ import {
   IsString,
   IsUUID,
   MaxLength,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
@@ -32,7 +33,8 @@ export class CreateLinksBatchDto implements CreateLinksBatchRequest {
   items!: CreateLinksBatchItemDto[];
 
   @ApiPropertyOptional({ format: 'uuid', description: 'One of your folders, for every link' })
-  @IsOptional()
+  // Absent means no folder (or the domain rule's folder); an explicit null is refused (#423).
+  @ValidateIf((_, value: unknown) => value !== undefined)
   @IsUUID()
   folderId?: string;
 

@@ -125,6 +125,8 @@
   .ui-dialog__body {
     display: flex;
     flex-direction: column;
+    padding-inline: 0;
+    margin-inline: 0;
     overflow: hidden;
   }
 

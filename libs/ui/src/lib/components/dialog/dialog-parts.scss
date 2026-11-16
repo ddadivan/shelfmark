@@ -67,8 +67,13 @@
   color: var(--text);
 }
 
+// The body scrolls, so anything wider than it scrolls sideways. It reaches 8px into the panel's
+// padding on each side and gives that room back as its own padding: content stays where it was,
+// and rows that bleed out to show a wider hover (the reminder presets) fit without a scrollbar.
 .ui-dialog__body {
   min-height: 0;
+  padding-inline: var(--space-2);
+  margin-inline: calc(-1 * var(--space-2));
   overflow-y: auto;
   overscroll-behavior: contain;
 }

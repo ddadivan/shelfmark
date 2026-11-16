@@ -8,6 +8,7 @@ import {
   IsUUID,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { TrimString } from '../../folders/dto/trim-string.decorator';
@@ -63,7 +64,8 @@ export class CreateLinksBatchItemDto implements CreateLinksBatchItem {
     format: 'uuid',
     description: "This link's folder, in place of the batch folder",
   })
-  @IsOptional()
+  // Absent means no folder (or the domain rule's folder); an explicit null is refused (#423).
+  @ValidateIf((_, value: unknown) => value !== undefined)
   @IsUUID()
   folderId?: string;
 
