@@ -2,15 +2,16 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
-import { DialogService, ReducedMotion } from '@shelfmark/ui';
+import { THEME_PREFERENCE } from '@shelfmark/contracts';
+import { DialogService } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
-import { signal } from '@angular/core';
 import { axeViolations } from '../../../../../testing/axe';
 import { AppTranslocoLoader } from '../../../../core/i18n/app-transloco.loader';
 import { APP_LANG } from '../../../../core/i18n/models/app-lang.const';
 import { translocoConfig } from '../../../../core/i18n/transloco.config';
 import type { ChangelogFeature } from '../../models/changelog-feature.interface';
 import { CHANGELOG_ITEM_KIND } from '../../models/changelog-item-kind.const';
+import { ThemeService } from '../../../../core/theme/theme.service';
 import type { WhatsNewDialogData } from '../../models/whats-new-dialog-data.interface';
 import { WhatsNewDialogComponent } from './whats-new-dialog.component';
 
@@ -22,52 +23,50 @@ const feature = (id: string, extra: Partial<ChangelogFeature> = {}): ChangelogFe
   id,
   titleKey: `changelog.items.${id}.title`,
   textKey: `changelog.items.${id}.text`,
-  highlight: true,
   ...extra,
 });
 
+const SIDE = feature('sideBySide', {
+  priority: 1,
+  image: {
+    light: '/media/whats-new/2.1.0/side-light.webp',
+    dark: '/media/whats-new/2.1.0/side-dark.webp',
+    width: 1600,
+    height: 1000,
+    altKey: 'changelog.items.sideBySide.alt',
+  },
+});
+
+const entry = (item: ChangelogFeature) => ({ item, version: '2.1.0', date: '2026-12-01' });
+
 const DATA: WhatsNewDialogData = {
   highlights: [
-    { item: feature('trash'), version: '2.0.0', date: '2026-11-14' },
-    {
-      item: feature('sharing', {
-        image: { src: '/media/whats-new/share.webp', width: 640, height: 360 },
-      }),
-      version: '2.0.0',
-      date: '2026-11-14',
-    },
-    {
-      item: feature('sideBySide', {
-        video: {
-          src: '/media/whats-new/side.mp4',
-          poster: '/media/whats-new/side.webp',
-          width: 640,
-          height: 360,
-        },
-      }),
-      version: '2.1.0',
-      date: '2026-12-01',
-    },
+    entry(SIDE),
+    entry(feature('folderStyle', { priority: 2 })),
+    entry(feature('domainRules', { priority: 3 })),
+    entry(feature('reminders', { priority: 4 })),
   ],
+  moreCount: 6,
 };
 
-async function open(reduced = false) {
-  const motion = { reduced: signal(reduced) };
+async function open(data: WhatsNewDialogData = DATA, dark = false) {
   TestBed.configureTestingModule({
     imports: [EmptyComponent],
     providers: [
       provideRouter([{ path: '**', component: EmptyComponent }]),
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
-      { provide: ReducedMotion, useValue: motion },
     ],
   });
+  if (dark) {
+    TestBed.inject(ThemeService).setPreference(THEME_PREFERENCE.Dark);
+  }
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
   const fixture = TestBed.createComponent(EmptyComponent);
   const ref = TestBed.inject(DialogService).open<
     WhatsNewDialogComponent,
     undefined,
     WhatsNewDialogData
-  >(WhatsNewDialogComponent, { data: DATA });
+  >(WhatsNewDialogComponent, { data });
   await fixture.whenStable();
   const panel = document.querySelector<HTMLElement>('app-whats-new-dialog');
   if (!panel) throw new Error('dialog not open');
@@ -83,29 +82,49 @@ function button(panel: HTMLElement, text: string): HTMLButtonElement {
 describe('WhatsNewDialogComponent', () => {
   afterEach(() => document.body.replaceChildren());
 
-  it('lists each highlight with its title, text and media', async () => {
+  it('shows the priority 1 feature large with its screenshot, then the others in order', async () => {
     const { panel } = await open();
 
     expect(panel.querySelector('h2')?.textContent?.trim()).toBe("What's new in Shelfmark");
     expect([...panel.querySelectorAll('h3')].map((h) => h.textContent?.trim())).toEqual([
-      'Trash',
-      'Share a folder',
       'Side by side',
+      'Folder styling',
+      'Rules by site',
+      'Reminders',
     ]);
-    expect(panel.querySelector('img')?.getAttribute('src')).toBe('/media/whats-new/share.webp');
-    const video = panel.querySelector('video');
-    expect(video?.muted).toBe(true);
-    expect(video?.loop).toBe(true);
-    expect(video?.hasAttribute('playsinline')).toBe(true);
-    expect(video?.getAttribute('poster')).toBe('/media/whats-new/side.webp');
+    expect(panel.querySelector('.whats-new__top h3')?.textContent?.trim()).toBe('Side by side');
+    const images = panel.querySelectorAll('img');
+    expect(images).toHaveLength(1);
+    expect(images[0]?.getAttribute('src')).toBe('/media/whats-new/2.1.0/side-light.webp');
+    expect(images[0]?.getAttribute('alt')).toBe('Two feeds next to each other in Shelfmark.');
+    expect(panel.querySelectorAll('.whats-new__item')).toHaveLength(3);
   });
 
-  it('shows the poster instead of the loop under reduced motion', async () => {
-    const { panel } = await open(true);
+  it('uses the screenshot of the dark theme', async () => {
+    const { panel } = await open(DATA, true);
 
-    expect(panel.querySelector('video')).toBeNull();
-    expect([...panel.querySelectorAll('img')].map((img) => img.getAttribute('src'))).toContain(
-      '/media/whats-new/side.webp',
+    expect(panel.querySelector('img')?.getAttribute('src')).toBe(
+      '/media/whats-new/2.1.0/side-dark.webp',
+    );
+  });
+
+  it('ends with "And N more improvements and fixes" linking to /changelog', async () => {
+    const { panel } = await open();
+
+    const more = panel.querySelector<HTMLAnchorElement>('.whats-new__more');
+    expect(more?.textContent?.trim()).toBe('And 6 more improvements and fixes');
+    expect(more?.getAttribute('href')).toBe('/changelog');
+  });
+
+  it('leaves the line out when nothing else is left, and uses the singular for one', async () => {
+    const none = await open({ ...DATA, moreCount: 0 });
+    expect(none.panel.querySelector('.whats-new__more')).toBeNull();
+    document.body.replaceChildren();
+    TestBed.resetTestingModule();
+
+    const one = await open({ ...DATA, moreCount: 1 });
+    expect(one.panel.querySelector('.whats-new__more')?.textContent?.trim()).toBe(
+      'And 1 more improvement or fix',
     );
   });
 

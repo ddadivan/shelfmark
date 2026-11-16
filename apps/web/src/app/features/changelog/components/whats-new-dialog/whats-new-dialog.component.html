@@ -1,47 +1,35 @@
 <ui-dialog [title]="'whatsNew.title' | transloco" size="md">
   <p class="whats-new__lead">{{ 'whatsNew.lead' | transloco }}</p>
-  <ul class="whats-new__list">
-    @for (entry of highlights; track entry.item.id) {
-      <li class="whats-new__item">
-        @if (entry.item.video; as video) {
-          @if (reducedMotion()) {
-            <img
-              class="whats-new__media"
-              [ngSrc]="video.poster"
-              [width]="video.width"
-              [height]="video.height"
-              alt=""
-            />
-          } @else {
-            <video
-              class="whats-new__media"
-              [src]="video.src"
-              [poster]="video.poster"
-              [width]="video.width"
-              [height]="video.height"
-              [muted]="true"
-              muted
-              autoplay
-              loop
-              playsinline
-              preload="none"
-              aria-hidden="true"
-            ></video>
-          }
-        } @else if (entry.item.image; as image) {
-          <img
-            class="whats-new__media"
-            [ngSrc]="image.src"
-            [width]="image.width"
-            [height]="image.height"
-            alt=""
-          />
-        }
-        <h3 class="whats-new__name">{{ entry.item.titleKey | transloco }}</h3>
-        <p class="whats-new__text">{{ entry.item.textKey | transloco }}</p>
-      </li>
-    }
-  </ul>
+  @if (top(); as lead) {
+    <section class="whats-new__top">
+      @if (lead.item.image; as image) {
+        <img
+          class="whats-new__media"
+          [ngSrc]="imageSrc(image)"
+          [width]="image.width"
+          [height]="image.height"
+          [alt]="image.altKey | transloco"
+        />
+      }
+      <h3 class="whats-new__name whats-new__name--top">{{ lead.item.titleKey | transloco }}</h3>
+      <p class="whats-new__text">{{ lead.item.textKey | transloco }}</p>
+    </section>
+  }
+  @if (others().length > 0) {
+    <ul class="whats-new__list">
+      @for (entry of others(); track entry.item.id) {
+        <li class="whats-new__item">
+          <h3 class="whats-new__name">{{ entry.item.titleKey | transloco }}</h3>
+          <p class="whats-new__text">{{ entry.item.textKey | transloco }}</p>
+        </li>
+      }
+    </ul>
+  }
+  @if (moreKey(); as key) {
+    <a class="whats-new__more" [routerLink]="changelogHref" (click)="close()">{{
+      key | transloco: { count: moreCount }
+    }}</a>
+  }
   <div slot="footer" class="whats-new__foot">
     <ui-button [variant]="BUTTON_VARIANT.Ghost" [block]="phone()" wrap (click)="seeAll()">
       {{ 'whatsNew.seeAll' | transloco }}

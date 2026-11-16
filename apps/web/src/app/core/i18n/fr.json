@@ -2716,19 +2716,23 @@
     "items": {
       "sideBySide": {
         "title": "Côte à côte",
-        "text": "Ouvrez deux listes l'une à côté de l'autre et glissez des liens de l'une à l'autre."
+        "text": "Ouvrez deux listes l'une à côté de l'autre et glissez des liens de l'une à l'autre.",
+        "alt": "Deux flux côte à côte dans Shelfmark."
       },
       "folderStyle": {
         "title": "Style des dossiers",
-        "text": "Choisissez la couleur, l'icône ou l'emoji d'un dossier au même endroit."
+        "text": "Donnez à un dossier une couleur, une icône ou un emoji, une description et une couverture, au même endroit.",
+        "alt": "Un dossier avec sa couleur, son icône, sa description et sa couverture, à côté de la barre latérale."
       },
       "domainRules": {
         "title": "Règles par site",
-        "text": "Envoyez les liens d'un site directement dans le dossier de votre choix."
+        "text": "Envoyez les liens d'un site directement dans le dossier de votre choix.",
+        "alt": "Une règle qui envoie les liens d'un site vers un dossier."
       },
       "reminders": {
         "title": "Rappels",
-        "text": "Demandez à Shelfmark de vous rappeler un lien plus tard."
+        "text": "Demandez à Shelfmark de vous rappeler un lien plus tard.",
+        "alt": "Un lien enregistré avec un rappel."
       },
       "colourPicker": {
         "text": "Couleurs personnalisées : le bouton + est centré, et la couleur choisie s'applique tout de suite dans une teinte lisible."
@@ -2809,7 +2813,30 @@
       },
       "feedbackActive": {
         "text": "« Envoyer un avis » ne reste plus en surbrillance après fermeture."
+      },
+      "folderChips": {
+        "text": "Les cartes et les lignes montrent dans quel dossier se trouve un lien, avec la couleur du dossier."
+      },
+      "folderHighlight": {
+        "text": "Choisissez comment les dossiers ressortent dans la barre latérale : rien, un liseré ou un fond."
+      },
+      "updatePrompt": {
+        "text": "Quand une nouvelle version est prête, Shelfmark demande avant de recharger."
+      },
+      "whatsNewCard": {
+        "text": "Une carte Nouveautés après chaque mise à jour, et une page qui liste toutes les versions."
+      },
+      "privacyWording": {
+        "text": "La page de confidentialité explique plus clairement ce qui est stocké et qui peut le voir."
+      },
+      "folderStyleRace": {
+        "text": "Changer vite le style d'un dossier ne ramène plus un ancien choix."
       }
+    },
+    "sections": {
+      "new": "Nouveautés",
+      "improved": "Améliorations",
+      "fixed": "Corrections"
     }
   },
   "whatsNew": {
@@ -2818,7 +2845,12 @@
     "seeAll": "Voir tous les changements",
     "close": "Compris",
     "entry": "Nouveautés",
-    "unseen": "nouveau"
+    "unseen": "nouveau",
+    "more": {
+      "one": "Et {{count}} autre amélioration ou correction",
+      "many": "Et {{count}} autres améliorations et corrections",
+      "other": "Et {{count}} autres améliorations et corrections"
+    }
   },
   "update": {
     "available": "Une nouvelle version de Shelfmark est prête",

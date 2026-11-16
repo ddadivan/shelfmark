@@ -2716,19 +2716,23 @@
     "items": {
       "sideBySide": {
         "title": "Lado a lado",
-        "text": "Abre dos listas una junto a otra y arrastra enlaces de una a la otra."
+        "text": "Abre dos listas una junto a otra y arrastra enlaces de una a la otra.",
+        "alt": "Dos feeds uno junto al otro en Shelfmark."
       },
       "folderStyle": {
         "title": "Estilo de carpetas",
-        "text": "Elige el color, el icono o el emoji de una carpeta en un solo sitio."
+        "text": "Da a una carpeta un color, un icono o emoji, una descripción y una portada, todo en un solo sitio.",
+        "alt": "Una carpeta con su propio color, icono, descripción y portada, junto a la barra lateral."
       },
       "domainRules": {
         "title": "Reglas por sitio",
-        "text": "Envía los enlaces de un sitio directamente a la carpeta que elijas."
+        "text": "Envía los enlaces de un sitio directamente a la carpeta que elijas.",
+        "alt": "Una regla que envía los enlaces de un sitio a una carpeta."
       },
       "reminders": {
         "title": "Recordatorios",
-        "text": "Pide a Shelfmark que te recuerde un enlace más tarde."
+        "text": "Pide a Shelfmark que te recuerde un enlace más tarde.",
+        "alt": "Un enlace guardado con un recordatorio."
       },
       "colourPicker": {
         "text": "Colores propios: el botón + está centrado y el color elegido se aplica al momento en un tono legible."
@@ -2809,7 +2813,30 @@
       },
       "feedbackActive": {
         "text": "«Enviar comentarios» ya no queda resaltado después de cerrarlo."
+      },
+      "folderChips": {
+        "text": "Las tarjetas y las filas muestran en qué carpeta está un enlace, con el color de la carpeta."
+      },
+      "folderHighlight": {
+        "text": "Elige cómo destacan las carpetas en la barra lateral: nada, una franja o un fondo."
+      },
+      "updatePrompt": {
+        "text": "Cuando hay una versión nueva lista, Shelfmark pregunta antes de recargar."
+      },
+      "whatsNewCard": {
+        "text": "Una tarjeta de Novedades tras cada actualización y una página con todas las versiones."
+      },
+      "privacyWording": {
+        "text": "La página de privacidad explica con más claridad qué se guarda y quién puede verlo."
+      },
+      "folderStyleRace": {
+        "text": "Cambiar rápido el estilo de una carpeta ya no devuelve una elección anterior."
       }
+    },
+    "sections": {
+      "new": "Novedades",
+      "improved": "Mejoras",
+      "fixed": "Correcciones"
     }
   },
   "whatsNew": {
@@ -2818,7 +2845,12 @@
     "seeAll": "Ver todos los cambios",
     "close": "Entendido",
     "entry": "Novedades",
-    "unseen": "nuevo"
+    "unseen": "nuevo",
+    "more": {
+      "one": "Y {{count}} mejora o corrección más",
+      "many": "Y {{count}} mejoras y correcciones más",
+      "other": "Y {{count}} mejoras y correcciones más"
+    }
   },
   "update": {
     "available": "Hay una nueva versión de Shelfmark lista",

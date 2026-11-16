@@ -2656,19 +2656,23 @@
     "items": {
       "sideBySide": {
         "title": "Side by side",
-        "text": "Open two feeds next to each other and drag links from one to the other."
+        "text": "Open two feeds next to each other and drag links from one to the other.",
+        "alt": "Two feeds next to each other in Shelfmark."
       },
       "folderStyle": {
         "title": "Folder styling",
-        "text": "Pick a folder's color, icon or emoji in one place."
+        "text": "Give a folder a color, an icon or emoji, a description and a cover, all in one place.",
+        "alt": "A folder with its own color, icon, description and cover, next to the sidebar."
       },
       "domainRules": {
         "title": "Rules by site",
-        "text": "Send links from a site straight to the folder you choose."
+        "text": "Send links from a site straight to the folder you choose.",
+        "alt": "A rule that sends links from one site to a folder."
       },
       "reminders": {
         "title": "Reminders",
-        "text": "Ask Shelfmark to remind you about a link later."
+        "text": "Ask Shelfmark to remind you about a link later.",
+        "alt": "A saved link with a reminder."
       },
       "colourPicker": {
         "text": "Own colors: the + button is centered, and a picked color applies right away in a readable shade."
@@ -2749,7 +2753,30 @@
       },
       "feedbackActive": {
         "text": "Send feedback no longer stays highlighted after you close it."
+      },
+      "folderChips": {
+        "text": "Cards and rows show which folder a link is in, in the folder's color."
+      },
+      "folderHighlight": {
+        "text": "Choose how folders stand out in the sidebar: off, a stripe or a background."
+      },
+      "updatePrompt": {
+        "text": "When a new version is ready, Shelfmark asks before reloading."
+      },
+      "whatsNewCard": {
+        "text": "A What's new card after each update, and a page that lists every release."
+      },
+      "privacyWording": {
+        "text": "The privacy page says more clearly what is stored and who can see it."
+      },
+      "folderStyleRace": {
+        "text": "Changing a folder's style quickly no longer brings back an older choice."
       }
+    },
+    "sections": {
+      "new": "New",
+      "improved": "Improved",
+      "fixed": "Fixed"
     }
   },
   "whatsNew": {
@@ -2758,7 +2785,11 @@
     "seeAll": "See all changes",
     "close": "Got it",
     "entry": "What's new",
-    "unseen": "new"
+    "unseen": "new",
+    "more": {
+      "one": "And {{count}} more improvement or fix",
+      "other": "And {{count}} more improvements and fixes"
+    }
   },
   "update": {
     "available": "A new version of Shelfmark is ready",

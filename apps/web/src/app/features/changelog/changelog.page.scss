@@ -91,12 +91,11 @@
   font-variant-numeric: tabular-nums;
 }
 
-.release__items {
+.release__body {
   display: flex;
   flex-direction: column;
-  margin: 0;
-  padding: var(--space-1) rem(20px);
-  list-style: none;
+  gap: var(--space-4);
+  padding: var(--space-4) rem(20px);
   background: var(--surface);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-card);
@@ -106,11 +105,29 @@
   }
 }
 
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.group__head {
+  margin: 0;
+}
+
+.group__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .release__item {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  padding-block: var(--space-4);
+  padding-block: var(--space-3);
 
   & + & {
     border-top: 1px solid var(--border);
@@ -129,7 +146,17 @@
   color: var(--text-muted);
 }
 
-// A fix is one plain line (author rule, #424): no title, no media.
-.release__fix {
+// A screenshot of a feature, drawn for the current theme.
+.release__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-block-start: var(--space-2);
+  background: var(--surface-hover);
+  border-radius: var(--radius-lg);
+}
+
+// An improvement or a fix is one plain line (author rule, #424): no title, no media.
+.release__line {
   margin: 0;
 }

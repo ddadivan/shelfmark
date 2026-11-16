@@ -10,10 +10,15 @@ import { WhatsNewDialogComponent } from '../components/whats-new-dialog/whats-ne
 import { CHANGELOG } from '../models/changelog.const';
 import type { WhatsNewDialogData } from '../models/whats-new-dialog-data.interface';
 import { WHATS_NEW_DELAY } from '../models/whats-new-delay.const';
-import { changelogHighlights, releasedChangelog } from '../utils/changelog-highlights';
+import {
+  changelogHighlights,
+  changelogMoreCount,
+  isHighlight,
+  releasedChangelog,
+} from '../utils/changelog-highlights';
 
-/** At most this many highlights in the dialog. */
-const WHATS_NEW_MAX = 5;
+/** At most this many features in the dialog: one large and three small cards. */
+const WHATS_NEW_MAX = 4;
 
 /** The newest shipped release of the changelog data; null while nothing shipped. */
 const LATEST_RELEASE = releasedChangelog(CHANGELOG)[0]?.version ?? null;
@@ -72,16 +77,24 @@ export const WhatsNewStore = signalStore(
         if (store.dialogOpen()) {
           return;
         }
-        // Nothing new: the newest highlights, so the entry is never an empty dialog.
-        const highlights = store.pending()
+        // Nothing new: the newest release with highlights, so the entry is never an empty dialog.
+        const pending = store.pending();
+        const releases = pending
+          ? CHANGELOG
+          : releasedChangelog(CHANGELOG)
+              .filter((release) => release.items.some(isHighlight))
+              .slice(0, 1);
+        const after = pending ? settings.whatsNewSeen() : null;
+        const highlights = pending
           ? store.unseen()
-          : changelogHighlights(CHANGELOG, null, WHATS_NEW_MAX);
+          : changelogHighlights(releases, null, WHATS_NEW_MAX);
+        const moreCount = changelogMoreCount(releases, after, highlights.length);
         markSeen();
         patchState(store, { dialogOpen: true });
         try {
           await dialogs.open<WhatsNewDialogComponent, undefined, WhatsNewDialogData>(
             WhatsNewDialogComponent,
-            { size: DIALOG_SIZE.Md, data: { highlights } },
+            { size: DIALOG_SIZE.Md, data: { highlights, moreCount } },
           ).result;
         } finally {
           patchState(store, { dialogOpen: false });

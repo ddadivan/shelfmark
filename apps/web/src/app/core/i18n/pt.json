@@ -2716,19 +2716,23 @@
     "items": {
       "sideBySide": {
         "title": "Lado a lado",
-        "text": "Abra duas listas uma ao lado da outra e arraste links de uma para a outra."
+        "text": "Abra duas listas uma ao lado da outra e arraste links de uma para a outra.",
+        "alt": "Dois feeds lado a lado no Shelfmark."
       },
       "folderStyle": {
         "title": "Estilo das pastas",
-        "text": "Escolha a cor, o ícone ou o emoji de uma pasta num só lugar."
+        "text": "Dê a uma pasta uma cor, um ícone ou emoji, uma descrição e uma capa, tudo num só lugar.",
+        "alt": "Uma pasta com cor, ícone, descrição e capa próprios, ao lado da barra lateral."
       },
       "domainRules": {
         "title": "Regras por site",
-        "text": "Envie os links de um site direto para a pasta que você escolher."
+        "text": "Envie os links de um site direto para a pasta que você escolher.",
+        "alt": "Uma regra que envia os links de um site para uma pasta."
       },
       "reminders": {
         "title": "Lembretes",
-        "text": "Peça ao Shelfmark para lembrar você de um link mais tarde."
+        "text": "Peça ao Shelfmark para lembrar você de um link mais tarde.",
+        "alt": "Um link guardado com um lembrete."
       },
       "colourPicker": {
         "text": "Cores próprias: o botão + fica centralizado, e a cor escolhida é aplicada na hora num tom legível."
@@ -2809,7 +2813,30 @@
       },
       "feedbackActive": {
         "text": "“Enviar feedback” não fica mais destacado depois de fechar."
+      },
+      "folderChips": {
+        "text": "Os cartões e as linhas mostram em que pasta está um link, com a cor da pasta."
+      },
+      "folderHighlight": {
+        "text": "Escolha como as pastas se destacam na barra lateral: nada, uma faixa ou um fundo."
+      },
+      "updatePrompt": {
+        "text": "Quando uma nova versão está pronta, o Shelfmark pergunta antes de recarregar."
+      },
+      "whatsNewCard": {
+        "text": "Um cartão de Novidades após cada atualização e uma página com todas as versões."
+      },
+      "privacyWording": {
+        "text": "A página de privacidade explica com mais clareza o que é guardado e quem pode ver."
+      },
+      "folderStyleRace": {
+        "text": "Mudar depressa o estilo de uma pasta já não traz de volta uma escolha antiga."
       }
+    },
+    "sections": {
+      "new": "Novidades",
+      "improved": "Melhorias",
+      "fixed": "Correções"
     }
   },
   "whatsNew": {
@@ -2818,7 +2845,12 @@
     "seeAll": "Ver todas as mudanças",
     "close": "Entendi",
     "entry": "Novidades",
-    "unseen": "novo"
+    "unseen": "novo",
+    "more": {
+      "one": "E mais {{count}} melhoria ou correção",
+      "many": "E mais {{count}} melhorias e correções",
+      "other": "E mais {{count}} melhorias e correções"
+    }
   },
   "update": {
     "available": "Uma nova versão do Shelfmark está pronta",

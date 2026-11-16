@@ -4,9 +4,10 @@ import type { ChangelogRelease } from './changelog-release.interface';
 /**
  * Every release, newest first (#424). The release PR `stage → main` sets the date of the entry
  * at the top (until then it is a hidden draft) and the matching `package.json` version; a hotfix
- * into `main` adds a patch entry with one-line fixes. Media rules (PROJECT.md 9.3): fixes are text
- * only; highlighted features get a short text and an image (`public/media/whats-new/`), at most one
- * short silent loop per release. The 2.1.0 media come with the release.
+ * into `main` adds a patch entry with one-line fixes. Media rules (PROJECT.md 9.3): improvements
+ * and fixes are one line of text; features get a short text and, when they have a `priority`, a
+ * screenshot per theme (`public/media/whats-new/<version>/`, made by the generator, no video).
+ * The draft lists the 2.1.0 changes since 2.0.0; hotfixes 2.0.1 to 2.0.7 are not repeated.
  */
 export const CHANGELOG: readonly ChangelogRelease[] = [
   {
@@ -18,28 +19,86 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
         id: 'sideBySide',
         titleKey: 'changelog.items.sideBySide.title',
         textKey: 'changelog.items.sideBySide.text',
-        highlight: true,
+        priority: 1,
+        image: {
+          light: '/media/whats-new/2.1.0/side-by-side-light.webp',
+          dark: '/media/whats-new/2.1.0/side-by-side-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.sideBySide.alt',
+        },
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'folderStyle',
         titleKey: 'changelog.items.folderStyle.title',
         textKey: 'changelog.items.folderStyle.text',
-        highlight: true,
+        priority: 2,
+        image: {
+          light: '/media/whats-new/2.1.0/folder-styling-light.webp',
+          dark: '/media/whats-new/2.1.0/folder-styling-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.folderStyle.alt',
+        },
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'domainRules',
         titleKey: 'changelog.items.domainRules.title',
         textKey: 'changelog.items.domainRules.text',
-        highlight: true,
+        priority: 3,
+        image: {
+          light: '/media/whats-new/2.1.0/rules-by-domain-light.webp',
+          dark: '/media/whats-new/2.1.0/rules-by-domain-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.domainRules.alt',
+        },
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'reminders',
         titleKey: 'changelog.items.reminders.title',
         textKey: 'changelog.items.reminders.text',
-        highlight: true,
+        priority: 4,
+        image: {
+          light: '/media/whats-new/2.1.0/reminders-light.webp',
+          dark: '/media/whats-new/2.1.0/reminders-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.reminders.alt',
+        },
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'folderChips',
+        textKey: 'changelog.items.folderChips.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'folderHighlight',
+        textKey: 'changelog.items.folderHighlight.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'updatePrompt',
+        textKey: 'changelog.items.updatePrompt.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'whatsNewCard',
+        textKey: 'changelog.items.whatsNewCard.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'privacyWording',
+        textKey: 'changelog.items.privacyWording.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'folderStyleRace',
+        textKey: 'changelog.items.folderStyleRace.text',
       },
     ],
   },
@@ -146,77 +205,71 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
         id: 'refresh',
         titleKey: 'changelog.items.refresh.title',
         textKey: 'changelog.items.refresh.text',
-        highlight: true,
+        priority: 1,
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'trash',
         titleKey: 'changelog.items.trash.title',
         textKey: 'changelog.items.trash.text',
-        highlight: true,
+        priority: 2,
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'folders',
         titleKey: 'changelog.items.folders.title',
         textKey: 'changelog.items.folders.text',
-        highlight: true,
+        priority: 3,
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'savedViews',
         titleKey: 'changelog.items.savedViews.title',
         textKey: 'changelog.items.savedViews.text',
-        highlight: true,
+        priority: 4,
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'sharing',
         titleKey: 'changelog.items.sharing.title',
         textKey: 'changelog.items.sharing.text',
-        highlight: true,
+        priority: 5,
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'pasteMany',
         titleKey: 'changelog.items.pasteMany.title',
         textKey: 'changelog.items.pasteMany.text',
-        highlight: false,
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'bulk',
         titleKey: 'changelog.items.bulk.title',
         textKey: 'changelog.items.bulk.text',
-        highlight: false,
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'dragDrop',
         titleKey: 'changelog.items.dragDrop.title',
         textKey: 'changelog.items.dragDrop.text',
-        highlight: false,
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'theme',
         titleKey: 'changelog.items.theme.title',
         textKey: 'changelog.items.theme.text',
-        highlight: false,
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'languages',
         titleKey: 'changelog.items.languages.title',
         textKey: 'changelog.items.languages.text',
-        highlight: false,
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'feedback',
         titleKey: 'changelog.items.feedback.title',
         textKey: 'changelog.items.feedback.text',
-        highlight: false,
       },
     ],
   },
