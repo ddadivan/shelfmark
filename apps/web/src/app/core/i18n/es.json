@@ -507,7 +507,7 @@
     "home": "Shelfmark, inicio",
     "newTab": "(se abre en una pestaña nueva)",
     "updated": "Última actualización: {{date}}",
-    "updatedDate": "15 de noviembre de 2026",
+    "updatedDate": "16 de noviembre de 2026",
     "intro": "Shelfmark es un proyecto personal que guarda los enlaces que guardas. Esta página explica qué conservamos y por qué, con palabras sencillas.",
     "store": {
       "title": "Qué guardamos",
@@ -515,7 +515,7 @@
       "content": "Tus enlaces (dirección, título, nota, marca de favorito, cuándo lo abriste por última vez), tus carpetas y tus etiquetas.",
       "images": "Para cada enlace, una copia pequeña del icono y de la imagen de vista previa del sitio, si los tiene. Nuestro servidor los descarga y los guarda para que se carguen desde Shelfmark.",
       "feedback": "Tus respuestas a la valoración dentro de la app, vinculadas a tu cuenta: una puntuación del 1 al 10 y, si lo escribes, un comentario.",
-      "promptViews": "La app también cuenta cuántas veces y cuándo se te mostró la petición de valoración, para saber a qué peticiones se responde.",
+      "promptViews": "La app también cuenta cuántas veces y cuándo se te mostró la solicitud de valoración, para saber cuáles se responden. Estas cifras pertenecen a tu cuenta y se borran con ella.",
       "stats": "Las cifras de «Tu estantería» en la página Cuenta (totales, los sitios y etiquetas que más usas, enlaces por semana) se calculan a partir de tus propios datos cada vez que abres la página. No se guardan ni se comparten.",
       "usage": "Para saber cómo se usa Shelfmark, registramos el día en que usaste la app por última vez: solo una fecha, sin hora, página ni acción. El autor solo ve totales calculados sobre todas las cuentas juntas, como cuántas personas usan carpetas o etiquetas o qué temas son populares. Los grupos de menos de tres personas no se muestran, y nadie mira uno por uno los enlaces, notas o ajustes de nadie. Estos totales se calculan al pedirlos y no se guardan. Cuando eliminas tu cuenta, la fecha se elimina con ella.",
       "sessions": "Para cada inicio de sesión: cuándo caduca, además de la dirección IP y el navegador (user agent) desde el que se inició, para mantener seguras las sesiones.",
@@ -530,7 +530,7 @@
     "dont": {
       "title": "Lo que no hacemos",
       "sell": "No vendemos ni compartimos tus datos y no mostramos anuncios.",
-      "read": "No miramos qué enlaces guardas; para las estadísticas solo usamos recuentos. Solo leemos la dirección de un enlace cuando hace falta para el servicio, por ejemplo para obtener una vista previa."
+      "read": "No usamos el contenido de tus enlaces para estadísticas: solo cifras (enlaces, carpetas, valoraciones), nunca direcciones ni títulos. Tus enlaces se guardan en nuestra base de datos para que la app pueda mostrarlos, buscarlos y generar vistas previas; solo el autor del servicio tiene acceso a ella."
     },
     "previews": {
       "title": "Vistas previas de enlaces",

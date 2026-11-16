@@ -507,7 +507,7 @@
     "home": "Shelfmark, accueil",
     "newTab": "(s’ouvre dans un nouvel onglet)",
     "updated": "Dernière mise à jour : {{date}}",
-    "updatedDate": "15 novembre 2026",
+    "updatedDate": "16 novembre 2026",
     "intro": "Shelfmark est un projet personnel qui stocke les liens que vous enregistrez. Cette page explique ce que nous conservons et pourquoi, en termes simples.",
     "store": {
       "title": "Ce que nous stockons",
@@ -515,7 +515,7 @@
       "content": "Vos liens (adresse, titre, note, marque de favori, dernière ouverture), vos dossiers et vos tags.",
       "images": "Pour chaque lien, une petite copie de l’icône et de l’image d’aperçu du site, s’il en a. Notre serveur les télécharge et les stocke pour qu’elles se chargent depuis Shelfmark.",
       "feedback": "Vos réponses à l’évaluation dans l’application, liées à votre compte : une note de 1 à 10 et, si vous en écrivez un, un commentaire.",
-      "promptViews": "L’application compte aussi combien de fois l’évaluation vous a été proposée et quand, pour savoir quelles invitations reçoivent une réponse.",
+      "promptViews": "L’app compte aussi combien de fois et quand la demande de note vous a été montrée, pour savoir lesquelles obtiennent une réponse. Ces nombres sont liés à votre compte et supprimés avec lui.",
       "stats": "Les chiffres de « Votre étagère » sur la page Compte (totaux, sites et tags les plus utilisés, liens par semaine) sont calculés à partir de vos propres données chaque fois que vous ouvrez la page. Ils ne sont ni stockés ni partagés.",
       "usage": "Pour savoir comment Shelfmark est utilisé, nous enregistrons le jour où vous avez utilisé l’app pour la dernière fois : une date seulement, sans heure, page ni action. L’auteur ne voit que des totaux calculés sur l’ensemble des comptes, par exemple combien de personnes utilisent des dossiers ou des tags, ou quels thèmes sont populaires. Les groupes de moins de trois personnes ne sont pas affichés, et personne ne regarde un par un les liens, notes ou réglages de qui que ce soit. Ces totaux sont calculés à la demande et ne sont pas conservés. Quand vous supprimez votre compte, la date disparaît avec lui.",
       "sessions": "Pour chaque connexion : sa date d’expiration, ainsi que l’adresse IP et le navigateur (user agent) d’où elle a été ouverte, pour sécuriser les sessions.",
@@ -530,7 +530,7 @@
     "dont": {
       "title": "Ce que nous ne faisons pas",
       "sell": "Nous ne vendons ni ne partageons vos données et n’affichons pas de publicité.",
-      "read": "Nous ne regardons pas quels liens vous enregistrez ; pour les statistiques, nous n’utilisons que des totaux. Nous ne lisons l’adresse d’un lien que lorsque c’est nécessaire au service, par exemple pour récupérer un aperçu."
+      "read": "Nous n’utilisons pas le contenu de vos liens pour les statistiques : seulement des nombres (liens, dossiers, notes), jamais d’adresses ni de titres. Vos liens sont stockés dans notre base de données pour que l’app puisse les afficher, les rechercher et en faire un aperçu ; seul l’auteur du service y a accès."
     },
     "previews": {
       "title": "Aperçus des liens",
