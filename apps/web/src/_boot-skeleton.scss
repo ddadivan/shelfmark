@@ -200,6 +200,39 @@
   }
 }
 
+// Only the cards of the three visible rows are rendered: every card sweeps, and 36 sweeping cards
+// kept a slow machine busy before the app could render. The columns follow the grid's own width
+// (column minimum plus the 1rem gap per column).
+@mixin boot-visible-cards($column-em) {
+  @for $columns from 1 through 12 {
+    $from: 0;
+
+    @if $columns > 1 {
+      $from: $columns * ($column-em + 1) - 1;
+    }
+
+    $to: ($columns + 1) * ($column-em + 1) - 1;
+
+    @container boot-feed (width >= #{$from}em) and (width < #{$to}em) {
+      .boot__card:nth-child(n + #{3 * $columns + 1}) {
+        display: none;
+      }
+    }
+  }
+}
+
+.boot__grid {
+  container: boot-feed / inline-size;
+}
+
+@media (width <= 120em) {
+  @include boot-visible-cards(14.25);
+}
+
+@media (width > 120em) {
+  @include boot-visible-cards(16.25);
+}
+
 .boot__card {
   display: flex;
   flex-direction: column;
