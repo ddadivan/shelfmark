@@ -15,10 +15,12 @@ Chrome Manifest V3 extension (#445): a popup that saves the current tab to the u
 ## Commands
 
 ```bash
-npx nx build extension --configuration=development   # dist/apps/extension-dev, load unpacked, talks to localhost:4200
-npx nx run extension:package                          # store build + dist/shelfmark-extension-<version>.zip
+npm run extension:dev        # dist/apps/extension-dev, load unpacked, talks to localhost:4200
+npm run extension:watch      # the same, rebuilt on every change (reload the extension card after)
+npm run extension:build      # store build in dist/apps/extension
+npm run extension:package    # store build + dist/shelfmark-extension-<version>.zip
 npx nx test extension [--configuration=coverage]
 npx nx run extension:typecheck
 npx nx lint extension
-node apps/extension/scripts/build-icons.mjs           # icons from the design-system app icon
+npm run extension:icons      # icons from the design-system app icon
 ```

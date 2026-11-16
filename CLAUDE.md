@@ -37,6 +37,8 @@ npm ci                                   # install
 npm start                                # web on http://localhost:4200 (npx nx serve web; mock APIs)
 npm run start:api                        # api on http://localhost:3000/api (npx nx serve api)
 npm run start:all                        # web + api together (npx nx run-many -t serve -p web api)
+npm run extension:dev                    # browser extension, unpacked dev build (dist/apps/extension-dev, docs/SETUP.md 5.9)
+npm run extension:package                # browser extension store zip (dist/shelfmark-extension-<version>.zip)
 npm run lint:styles                      # stylelint on css/scss (rem/em rules)
 npm run format:check                     # prettier check
 npm run affected                         # what CI runs (npx nx affected -t lint typecheck test build)
