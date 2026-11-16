@@ -58,7 +58,12 @@ Updated as work goes on — every session resumes from here.
   - Nov 14, 2026: released to production in #378. Before the release it waited for the author's command: #371 merged into `stage`, the promo videos re-recorded (#336), merge commits turned on for `main`. Then the release PR `stage → main` (merge commit) closes every issue in To release. After the release: production smoke (`BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e`), the Feedback inbox shows for the admin (`ADMIN_EMAILS`), the Trash cleanup cron shows in Vercel, and Dependabot's pending updates are re-opened against `stage` (#279 and #282 target `main`).
 - [x] Motion in code (landing and app); promo video moved to stage 2
 - [ ] Stage 3: planned by the author on Nov 14, 2026 (see "Roadmap after stage 2" below). Only side-by-side (#386, design first). The other tasks of that planning are in the backlog with their issues: import (#387), read / unread and Read later (#396), AI (#388 with #389–#395), the dead-link check (#397), rules without AI (#398) and commands in ⌘K (#399). Milestone and board moves are listed in the docs PR for the author.
-  - Next: the side-by-side design in `docs/design` (#386), reviewed by the author before code.
+  - Nov 14–15, 2026, merged into `stage` (cards in To release), waiting for release 2.1.0:
+    - side-by-side (#386), folder styling (#418), admin usage stats with small-group suppression (#333, #419, #420), Icon / Emoji tabs and the promo videos;
+    - rules by domain (#398, #421), in-app reminders (#275, #425; email reminders wait for a sending domain, no push), the update toast, What's new and the public `/changelog` with a real app version (#424, #426), a late folder-style answer no longer undoes a newer choice (#427, #428);
+    - hotfixes 2.0.1–2.0.5 are in production and in `stage` (#409, #417).
+  - Next: the author reviews `stage`. Then release 2.1.0: a chore PR into `stage` sets the version `2.1.0`, the changelog date and the What's new media; a `release/2.1` branch from `stage` with `git merge -s ours origin/main`; the release PR into `main` merged with "Create a merge commit".
+  - Backlog: #423 (`folderId: null` on POST /api/links answers 500), a rate limit on `/rules/:id/matches`, format characters in folder descriptions.
   - Ideas that are not planned (licence, launch, monetisation, legal, trademark, save by email) are in "Ideas to discuss (not planned)".
 
 ## 1. Problem and idea
