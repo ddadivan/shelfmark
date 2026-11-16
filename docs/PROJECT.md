@@ -63,6 +63,7 @@ Updated as work goes on — every session resumes from here.
     - rules by domain (#398, #421), in-app reminders (#275, #425; email reminders wait for a sending domain, no push), the update toast, What's new and the public `/changelog` with a real app version (#424, #426), a late folder-style answer no longer undoes a newer choice (#427, #428);
     - hotfixes 2.0.1–2.0.5 are in production and in `stage` (#409, #417).
   - Next: the author reviews `stage`. Then release 2.1.0: a chore PR into `stage` sets the version `2.1.0`, the changelog date and the What's new media; a `release/2.1` branch from `stage` with `git merge -s ours origin/main`; the release PR into `main` merged with "Create a merge commit".
+  - Nov 16, 2026: browser extension (#445), plan approved by the author. Design PR #446 (`docs/design/screens/Extension.dc.html`, one form with Save, then a Saved screen), code PR #447 stacked on it (`apps/extension`, `EXTENSION_ORIGINS` in the CSRF guard, `POST /api/links/lookup`, ADR 0046, SETUP.md 5.9, store materials in `docs/store/extension/`). Both drafts: the author tests the unpacked build locally before anything is merged; publishing in the Chrome Web Store is the author's step.
   - Backlog: #423 (`folderId: null` on POST /api/links answers 500), a rate limit on `/rules/:id/matches`, format characters in folder descriptions.
   - Ideas that are not planned (licence, launch, monetisation, legal, trademark, save by email) are in "Ideas to discuss (not planned)".
 
