@@ -495,7 +495,7 @@
     "home": "Shelfmark, home",
     "newTab": "(opens in a new tab)",
     "updated": "Last updated {{date}}",
-    "updatedDate": "15 November 2026",
+    "updatedDate": "16 November 2026",
     "intro": "Shelfmark is a personal project that stores the links you save. This page explains what we keep and why, in plain words.",
     "store": {
       "title": "What we store",
@@ -503,6 +503,7 @@
       "content": "Your links (address, title, note, favorite mark, when you last opened it), your folders and your tags.",
       "images": "For each link, a small copy of the site's icon and preview image, if the site has them. Our server downloads and stores them so they load from Shelfmark.",
       "feedback": "Your answers to the in-app rating, linked to your account: a score from 1 to 10 and, if you write one, a comment.",
+      "promptViews": "The app also counts how often the rating prompt was shown to you and when, to know which prompts get answered. These counts belong to your account and are deleted with it.",
       "stats": "The \"Your shelf\" numbers on the Account page (counts, the sites and tags you use most, links per week) are worked out from your own data each time you open the page. They are not stored and never shared.",
       "usage": "To learn how Shelfmark is used, we record the day you last used the app: a date only, no time, page or action. The author sees only totals worked out from all accounts together, such as how many people use folders or tags or which themes are popular. Groups of fewer than three people are not shown, and no one's links, notes or settings are looked at one by one. These totals are worked out on request and are not stored. When you delete your account, the date goes with it.",
       "sessions": "For each sign-in: when it expires, plus the IP address and the browser (user agent) it was started from, to keep sessions secure.",
@@ -517,7 +518,7 @@
     "dont": {
       "title": "What we don't do",
       "sell": "We don't sell or share your data and don't show ads.",
-      "read": "We don't look at your saved links except where needed to run the service, for example to fetch a preview."
+      "read": "We don't use the content of your links for statistics: only counts (links, folders, ratings), never addresses or titles. Your links are stored in our database so the app can show, search and preview them; only the author of the service has access to it."
     },
     "previews": {
       "title": "Link previews",

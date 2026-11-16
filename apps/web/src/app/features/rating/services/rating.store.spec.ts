@@ -45,6 +45,7 @@ async function setup(
   const api = {
     prompt: vi.fn(() => Promise.resolve(milestone)),
     record: vi.fn(() => Promise.resolve()),
+    recordPromptView: vi.fn((_milestone: FeedbackMilestone) => Promise.resolve()),
   } satisfies RatingApi;
   const dialogs = { open: vi.fn((..._args: unknown[]) => ({ result: closed.promise })) };
   TestBed.configureTestingModule({
@@ -197,6 +198,41 @@ describe('RatingStore', () => {
     await advance(RATING_DELAY.Show);
 
     expect(dialogs.open).not.toHaveBeenCalled();
+  });
+
+  it('reports one view per display, with its milestone, and not before the dialog opens', async () => {
+    const { store, api } = await setup();
+
+    store.watch();
+    await advance(RATING_DELAY.Show - 1);
+    expect(api.recordPromptView).not.toHaveBeenCalled();
+
+    await advance(1);
+    expect(api.recordPromptView).toHaveBeenCalledTimes(1);
+    expect(api.recordPromptView).toHaveBeenCalledWith('week1');
+  });
+
+  it('reports no view when nothing is shown', async () => {
+    const { store, api } = await setup(user(), null);
+
+    store.watch();
+    await advance(RATING_DELAY.Show);
+
+    expect(api.recordPromptView).not.toHaveBeenCalled();
+  });
+
+  it('keeps showing the dialog silently when the view report fails', async () => {
+    const { store, api, dialogs, closed } = await setup();
+    api.recordPromptView.mockRejectedValueOnce(new Error('offline'));
+
+    store.watch();
+    await advance(RATING_DELAY.Show);
+
+    expect(dialogs.open).toHaveBeenCalledTimes(1);
+    expect(store.open()).toBe(true);
+    closed.resolve(undefined);
+    await advance(0);
+    expect(api.record).toHaveBeenCalledWith({ milestone: 'week1', score: null });
   });
 
   it('records a skip when the dialog closes without a score (Not now, Esc, scrim)', async () => {

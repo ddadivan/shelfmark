@@ -507,7 +507,7 @@
     "home": "Shelfmark, início",
     "newTab": "(abre em uma nova aba)",
     "updated": "Última atualização: {{date}}",
-    "updatedDate": "15 de novembro de 2026",
+    "updatedDate": "16 de novembro de 2026",
     "intro": "O Shelfmark é um projeto pessoal que guarda os links que você salva. Esta página explica o que mantemos e por quê, em palavras simples.",
     "store": {
       "title": "O que guardamos",
@@ -515,6 +515,7 @@
       "content": "Seus links (endereço, título, nota, marcação de favorito, quando você abriu pela última vez), suas pastas e suas tags.",
       "images": "Para cada link, uma pequena cópia do ícone e da imagem de prévia do site, se ele tiver. Nosso servidor baixa e guarda essas imagens para que carreguem a partir do Shelfmark.",
       "feedback": "Suas respostas à avaliação no app, vinculadas à sua conta: uma nota de 1 a 10 e, se você escrever, um comentário.",
+      "promptViews": "O app também conta quantas vezes e quando o pedido de avaliação foi mostrado a você, para saber quais recebem resposta. Essas contagens pertencem à sua conta e são apagadas com ela.",
       "stats": "Os números de “Sua estante” na página Conta (totais, os sites e tags que você mais usa, links por semana) são calculados a partir dos seus próprios dados toda vez que você abre a página. Eles não são guardados nem compartilhados.",
       "usage": "Para entender como o Shelfmark é usado, registramos o dia em que você usou o app pela última vez: só uma data, sem hora, página ou ação. O autor vê apenas totais calculados sobre todas as contas juntas, como quantas pessoas usam pastas ou tags ou quais temas são populares. Grupos com menos de três pessoas não são mostrados, e ninguém olha um por um os links, notas ou configurações de alguém. Esses totais são calculados quando pedidos e não são guardados. Quando você exclui sua conta, a data vai junto.",
       "sessions": "Para cada login: quando expira, além do endereço IP e do navegador (user agent) de onde foi iniciado, para manter as sessões seguras.",
@@ -529,7 +530,7 @@
     "dont": {
       "title": "O que não fazemos",
       "sell": "Não vendemos nem compartilhamos seus dados e não mostramos anúncios.",
-      "read": "Não olhamos seus links salvos, exceto quando é necessário para o serviço, por exemplo para buscar uma prévia."
+      "read": "Não usamos o conteúdo dos seus links para estatísticas: só contagens (links, pastas, avaliações), nunca endereços ou títulos. Seus links ficam no nosso banco de dados para que o app possa mostrá-los, buscá-los e gerar prévias; só o autor do serviço tem acesso a ele."
     },
     "previews": {
       "title": "Prévias de links",

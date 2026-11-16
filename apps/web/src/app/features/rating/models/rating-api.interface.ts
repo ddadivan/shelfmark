@@ -9,4 +9,9 @@ export interface RatingApi {
   prompt(): Promise<FeedbackMilestone | null>;
   /** `POST /api/feedback`: saves a score, a comment or a skip (`score: null`). */
   record(request: RecordFeedbackRequest): Promise<void>;
+  /**
+   * `POST /api/feedback/rating-prompt/views`: counts one display of the prompt (the server keeps a
+   * count per milestone, read only in the database). Fire and forget: the caller ignores a failure.
+   */
+  recordPromptView(milestone: FeedbackMilestone): Promise<void>;
 }

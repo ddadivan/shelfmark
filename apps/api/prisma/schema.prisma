@@ -101,6 +101,7 @@ model User {
   linkImages            LinkImage[]
   tags                  Tag[]
   feedback              Feedback[]
+  ratingPromptViews     RatingPromptView[]
   folderShares          FolderShare[]
   savedViews            SavedView[]
   linkRules             LinkRule[]
@@ -332,6 +333,22 @@ model Feedback {
   @@index([userId, createdAt])
   @@index([createdAt(sort: Desc), id(sort: Desc)])
   @@map("feedback")
+}
+
+// How often the rating prompt was shown to a user (#437): one row per user and milestone, written by
+// `POST /api/feedback/rating-prompt/views` (an atomic upsert). Read only in the database, through the
+// view `admin_user_overview`; no API returns it. The milestone CHECK (same set as feedback) and
+// `shown_count > 0` live in the migration.
+model RatingPromptView {
+  userId       String   @map("user_id") @db.Uuid
+  milestone    String   @db.VarChar(10)
+  shownCount   Int      @default(1) @map("shown_count")
+  firstShownAt DateTime @default(now()) @map("first_shown_at") @db.Timestamptz(3)
+  lastShownAt  DateTime @default(now()) @map("last_shown_at") @db.Timestamptz(3)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, milestone])
+  @@map("rating_prompt_views")
 }
 
 // A screenshot of a feedback message (#352): at most three per message, `position` 0 to 2 in the

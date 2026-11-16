@@ -46,6 +46,19 @@ describe('HttpRatingApi', () => {
     await expect(result).resolves.toBeUndefined();
   });
 
+  it('reports a view with POST /api/feedback/rating-prompt/views and only the milestone', async () => {
+    const { api, http } = setup();
+
+    const result = api.recordPromptView('month1');
+    const request = http.expectOne('/api/feedback/rating-prompt/views');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({ milestone: 'month1' });
+    expect(request.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
+    request.flush(null, { status: 204, statusText: 'No Content' });
+
+    await expect(result).resolves.toBeUndefined();
+  });
+
   it('rejects when the server answers an error', async () => {
     const { api, http } = setup();
 

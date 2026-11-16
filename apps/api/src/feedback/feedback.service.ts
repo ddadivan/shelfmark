@@ -98,4 +98,16 @@ export class FeedbackService {
       await tx.feedback.update({ where: key, data: { comment: combined } });
     });
   }
+
+  /**
+   * Counts one display of the rating prompt: one atomic upsert per (user, milestone). Demo users are
+   * recorded too. The table is read only in the database (view `admin_user_overview`), never by the app.
+   */
+  async recordPromptView(userId: string, milestone: FeedbackMilestone): Promise<void> {
+    await this.prisma.$executeRaw`
+      INSERT INTO rating_prompt_views (user_id, milestone, shown_count, first_shown_at, last_shown_at)
+      VALUES (${userId}::uuid, ${milestone}, 1, now(), now())
+      ON CONFLICT (user_id, milestone)
+      DO UPDATE SET shown_count = rating_prompt_views.shown_count + 1, last_shown_at = now()`;
+  }
 }

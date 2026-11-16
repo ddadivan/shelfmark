@@ -119,6 +119,7 @@ export type { FeedbackMilestone } from './feedback/feedback-milestone.type';
 export type { FeedbackScore } from './feedback/feedback-score.type';
 export type { FeedbackPromptResponse } from './feedback/feedback-prompt-response.interface';
 export type { RecordFeedbackRequest } from './feedback/record-feedback-request.interface';
+export type { RecordRatingPromptViewRequest } from './feedback/record-rating-prompt-view-request.interface';
 export { FEEDBACK_MILESTONE } from './feedback/feedback-milestone.const';
 export { FEEDBACK_MILESTONE_DAYS } from './feedback/feedback-milestone-days.const';
 export { FEEDBACK_LIMIT } from './feedback/feedback-limit.const';

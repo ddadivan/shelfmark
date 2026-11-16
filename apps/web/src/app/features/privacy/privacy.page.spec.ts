@@ -49,7 +49,7 @@ describe('PrivacyPage', () => {
   it('shows the last updated date and renders no raw translation keys', async () => {
     const element = await render();
 
-    expect(element.textContent).toContain('Last updated 15 November 2026');
+    expect(element.textContent).toContain('Last updated 16 November 2026');
     expect(element.textContent).not.toMatch(/\bprivacy\.[a-zA-Z.]+/);
   });
 

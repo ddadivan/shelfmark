@@ -61,6 +61,10 @@ export const RatingStore = signalStore(
         const scored = signal(false);
         const data: RatingDialogData = { milestone, scored };
         patchState(store, { open: true });
+        // One count per display, fire and forget: a failure never reaches the UI (no toast).
+        Promise.resolve()
+          .then(() => api.recordPromptView(milestone))
+          .catch(() => undefined);
         try {
           await dialogs.open<RatingDialogComponent, undefined, RatingDialogData>(
             RatingDialogComponent,
