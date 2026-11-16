@@ -956,6 +956,10 @@
         "tooLong": "Keep it to {{max}} characters.",
         "invalid": "Use plain text on one line."
       },
+      "highlight": {
+        "label": "Highlight with background",
+        "hint": "Gives the folder a soft background in its color, in the sidebar and on its page."
+      },
       "cover": {
         "label": "Cover",
         "hint": "A preview picture from a link in this folder, behind the folder header.",
@@ -1358,13 +1362,6 @@
         "colours": {
           "label": "Folder colors",
           "hint": "Off shows every folder in plain graphite"
-        },
-        "highlight": {
-          "label": "Highlight folders with their color",
-          "hint": "How a colored folder shows in the sidebar; stronger when it’s open",
-          "off": "Off",
-          "stripe": "Stripe",
-          "background": "Background"
         }
       },
       "motion": {

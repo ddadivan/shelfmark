@@ -5,7 +5,6 @@ import {
   APP_FONT,
   CARD_PREVIEW,
   DENSITY,
-  FOLDER_HIGHLIGHT,
   TEXT_SIZE,
   CUSTOM_THEME_ACCENT,
   CUSTOM_THEME_BACKGROUNDS,
@@ -171,11 +170,6 @@ export default class AppearancePage {
 
   protected readonly motionOptions = computed<SegmentedOption[]>(() =>
     this.labels(Object.values(MOTION_PREFERENCE), `${KEY}.motion`),
-  );
-
-  /** Highlight folders with their colour (#418): off, stripe, background. */
-  protected readonly highlightOptions = computed<SegmentedOption[]>(() =>
-    this.labels(Object.values(FOLDER_HIGHLIGHT), `${KEY}.sidebar.highlight`),
   );
 
   protected readonly textSizeOptions = computed<SegmentedOption[]>(() =>
