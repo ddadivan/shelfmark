@@ -11,6 +11,7 @@ import {
 import type { ApiError } from '@shelfmark/contracts';
 import type { Request, Response } from 'express';
 import { TunnelUpstreamException } from '../../monitoring/tunnel-upstream.exception';
+import { logTrace } from './log-trace';
 import { reportException } from '../../monitoring/report-exception';
 import { REQUEST_ID_LOCAL } from '../request-id/request-id.middleware';
 import { loggedPath } from '../util/logged-path';
@@ -100,7 +101,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // share token.
     const line = `${req.method} ${loggedPath(req)} ${statusCode} ${requestId}`;
     if (statusCode >= 500) {
-      this.logger.error(line, exception instanceof Error ? exception.stack : String(exception));
+      this.logger.error(line, logTrace(exception));
     } else {
       this.logger.warn(line);
     }

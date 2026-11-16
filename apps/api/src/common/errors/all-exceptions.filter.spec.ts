@@ -11,6 +11,7 @@ import request from 'supertest';
 import { createApp } from '../../app/create-app';
 import { REQUEST_ID_HEADER } from '../request-id/request-id.middleware';
 import { TunnelUpstreamException } from '../../monitoring/tunnel-upstream.exception';
+import { logTrace } from './log-trace';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 
 interface FakeRequest {
@@ -130,11 +131,13 @@ describe('AllExceptionsFilter', () => {
     });
   });
 
-  it('logs the stack server-side but not in the response', () => {
+  it('logs the class and stack frames server-side, never the message, and not in the response', () => {
     const errorLog = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
-    const failure = new Error('secret detail');
+    const failure = new Error('secret detail https://example.test/private');
     const { json } = callFilter(failure);
-    expect(errorLog).toHaveBeenCalledWith('GET /x 500 rid-1', failure.stack);
+    expect(errorLog).toHaveBeenCalledWith('GET /x 500 rid-1', logTrace(failure));
+    expect(String(errorLog.mock.calls[0]?.[1])).not.toContain('secret detail');
+    expect(String(errorLog.mock.calls[0]?.[1])).toContain('at ');
     expect(JSON.stringify(json.mock.calls)).not.toContain('secret detail');
     expect(JSON.stringify(json.mock.calls)).not.toContain('at ');
   });
