@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LocaleDatePipe } from '../../../../core/i18n/locale-date.pipe';
-import { CHANGELOG } from '../../../changelog/models/changelog.const';
+import { SHOWN_CHANGELOG } from '../../../changelog/models/shown-changelog.const';
 import { changelogHighlights } from '../../../changelog/utils/changelog-highlights';
 import { LandingRevealDirective } from '../../directives/landing-reveal.directive';
 import { LANDING_LINKS } from '../../models/landing-links.const';
@@ -22,6 +22,6 @@ const ABOUT_HIGHLIGHTS = 4;
   styleUrl: './landing-whats-new.component.scss',
 })
 export class LandingWhatsNewComponent {
-  protected readonly highlights = changelogHighlights(CHANGELOG, null, ABOUT_HIGHLIGHTS);
+  protected readonly highlights = changelogHighlights(SHOWN_CHANGELOG, null, ABOUT_HIGHLIGHTS);
   protected readonly changelogHref = LANDING_LINKS.Changelog;
 }

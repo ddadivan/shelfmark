@@ -8,7 +8,7 @@ import { BADGE_TONE, BadgeComponent, LogoComponent } from '@shelfmark/ui';
 import { LocaleDatePipe } from '../../core/i18n/locale-date.pipe';
 import { ThemeService } from '../../core/theme/theme.service';
 import { APP_VERSION } from '../../models/app-version.const';
-import { CHANGELOG } from './models/changelog.const';
+import { SHOWN_CHANGELOG } from './models/shown-changelog.const';
 import { changelogSections, releasedChangelog } from './utils/changelog-highlights';
 import { changelogImageSrc } from './utils/changelog-image-src';
 import type { ChangelogImage } from './models/changelog-image.interface';
@@ -41,7 +41,7 @@ export default class ChangelogPage {
   protected readonly BADGE_TONE = BADGE_TONE;
 
   /** Each shipped release, newest first, with its items grouped into sections. */
-  protected readonly releases = releasedChangelog(CHANGELOG).map((release) => ({
+  protected readonly releases = releasedChangelog(SHOWN_CHANGELOG).map((release) => ({
     version: release.version,
     date: release.date,
     ...changelogSections(release),

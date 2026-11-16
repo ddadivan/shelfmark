@@ -7,7 +7,7 @@ import { SessionScope } from '../../../core/auth/session-scope.service';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { isRatingBlocked } from '../../rating/utils/rating-blockers';
 import { WhatsNewDialogComponent } from '../components/whats-new-dialog/whats-new-dialog.component';
-import { CHANGELOG } from '../models/changelog.const';
+import { SHOWN_CHANGELOG } from '../models/shown-changelog.const';
 import type { WhatsNewDialogData } from '../models/whats-new-dialog-data.interface';
 import { WHATS_NEW_DELAY } from '../models/whats-new-delay.const';
 import {
@@ -21,7 +21,7 @@ import {
 const WHATS_NEW_MAX = 4;
 
 /** The newest shipped release of the changelog data; null while nothing shipped. */
-const LATEST_RELEASE = releasedChangelog(CHANGELOG)[0]?.version ?? null;
+const LATEST_RELEASE = releasedChangelog(SHOWN_CHANGELOG)[0]?.version ?? null;
 
 /**
  * "What's new" (#424). The account remembers the newest release whose highlights the user saw
@@ -41,7 +41,7 @@ export const WhatsNewStore = signalStore(
     );
     /** Highlights of the releases the user has not seen yet. */
     const unseen = computed(() =>
-      changelogHighlights(CHANGELOG, settings.whatsNewSeen(), WHATS_NEW_MAX),
+      changelogHighlights(SHOWN_CHANGELOG, settings.whatsNewSeen(), WHATS_NEW_MAX),
     );
     return {
       latest: computed(() => LATEST_RELEASE),
@@ -80,8 +80,8 @@ export const WhatsNewStore = signalStore(
         // Nothing new: the newest release with highlights, so the entry is never an empty dialog.
         const pending = store.pending();
         const releases = pending
-          ? CHANGELOG
-          : releasedChangelog(CHANGELOG)
+          ? SHOWN_CHANGELOG
+          : releasedChangelog(SHOWN_CHANGELOG)
               .filter((release) => release.items.some(isHighlight))
               .slice(0, 1);
         const after = pending ? settings.whatsNewSeen() : null;
