@@ -33,7 +33,7 @@ for (const colorScheme of THEMES) {
         await page.mouse.move(0, 0);
         await settled(page);
         const png = await page.screenshot({
-          clip: { ...clip, ...WHATS_NEW_MEDIA.crop },
+          clip: { ...WHATS_NEW_MEDIA.crop, ...clip },
           animations: 'disabled',
           caret: 'hide',
         });

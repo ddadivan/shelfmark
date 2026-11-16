@@ -77,11 +77,6 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
       },
       {
         kind: CHANGELOG_ITEM_KIND.Improvement,
-        id: 'folderHighlight',
-        textKey: 'changelog.items.folderHighlight.text',
-      },
-      {
-        kind: CHANGELOG_ITEM_KIND.Improvement,
         id: 'updatePrompt',
         textKey: 'changelog.items.updatePrompt.text',
       },

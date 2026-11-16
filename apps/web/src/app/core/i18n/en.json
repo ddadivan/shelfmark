@@ -2658,7 +2658,7 @@
       },
       "folderStyle": {
         "title": "Folder styling",
-        "text": "Give a folder a color, an icon or emoji, a description and a cover, all in one place.",
+        "text": "Give a folder a color, an icon or emoji, a description and a cover, and highlight it with a background in the sidebar.",
         "alt": "A folder with its own color, icon, description and cover, next to the sidebar."
       },
       "domainRules": {
@@ -2753,9 +2753,6 @@
       },
       "folderChips": {
         "text": "Cards and rows show which folder a link is in, in the folder's color."
-      },
-      "folderHighlight": {
-        "text": "Choose how folders stand out in the sidebar: off, a stripe or a background."
       },
       "updatePrompt": {
         "text": "When a new version is ready, Shelfmark asks before reloading."

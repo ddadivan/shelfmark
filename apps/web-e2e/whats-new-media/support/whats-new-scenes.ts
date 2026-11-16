@@ -15,13 +15,17 @@ const PREVIEWS = 'previews';
 const SHOWCASE = 'showcase';
 const DESCRIPTION = 'Long reads worth a second look';
 
-/** A calm drawn cover (a gradient with soft shapes) for every link preview of the folder dialog. */
-const COVER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c8826a"/><stop offset="1" stop-color="#e9c9a8"/></linearGradient></defs>
-<rect width="640" height="360" fill="url(#g)"/>
-<circle cx="480" cy="120" r="90" fill="#ffffff" fill-opacity="0.25"/>
-<rect x="60" y="200" width="320" height="24" rx="12" fill="#ffffff" fill-opacity="0.45"/>
-<rect x="60" y="244" width="220" height="24" rx="12" fill="#ffffff" fill-opacity="0.3"/>
+/** A drawn landscape (sky, sun, hills) as the cover of the folder: pleasant in both themes. */
+const COVER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fb3d5"/><stop offset="0.7" stop-color="#f6d9b0"/></linearGradient>
+<linearGradient id="far" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6c8fa8"/><stop offset="1" stop-color="#4d7088"/></linearGradient>
+</defs>
+<rect width="1280" height="720" fill="url(#sky)"/>
+<circle cx="930" cy="250" r="86" fill="#fff4d6"/>
+<path d="M0 470 L180 330 L330 440 L520 280 L720 450 L900 340 L1100 450 L1280 380 L1280 720 L0 720 Z" fill="url(#far)"/>
+<path d="M0 560 Q240 450 480 540 T960 520 T1280 560 L1280 720 L0 720 Z" fill="#3f6b57"/>
+<path d="M0 640 Q300 560 620 630 T1280 620 L1280 720 L0 720 Z" fill="#2c4f40"/>
 </svg>`;
 
 /** The crop of `crop` size centred on `box`, kept inside the window. */
@@ -76,16 +80,27 @@ export async function folderStyling(page: Page): Promise<WhatsNewClip> {
   await openFeed(page);
   await pickFolderMenuItem(page, READING, 'Color and icon…');
   const dialog = page.getByRole('dialog', { name: READING });
-  await chooseOption(dialog, 'Clay');
+  await chooseOption(dialog, 'Ocean');
   await chooseOption(dialog, 'Star');
   await dialog.getByLabel('Description').fill(DESCRIPTION);
   const first = dialog.getByRole('radiogroup', { name: 'Cover' }).locator('label.ui-choice').nth(1);
   await first.scrollIntoViewIfNeeded();
   await first.click();
+  await dialog.getByRole('switch', { name: 'Highlight with background' }).click();
   await dialog.getByRole('button', { name: 'Save' }).click();
   await expect(dialog).toHaveCount(0);
   await page.getByRole('treeitem', { name: new RegExp(`^${READING}\\b`) }).click();
   await expect(page).toHaveURL(`/folders/${MOCK_FIXTURE.readingId}`);
+
+  // A second highlighted folder that is not open: the subfolder under Reading.
+  await page.getByRole('treeitem', { name: /^Angular\b/ }).click({ button: 'right' });
+  await page.getByRole('menuitem', { name: 'Color and icon…' }).click();
+  const sub = page.getByRole('dialog', { name: 'Angular' });
+  await chooseOption(sub, 'Amber');
+  await sub.getByRole('switch', { name: 'Highlight with background' }).click();
+  await sub.getByRole('button', { name: 'Save' }).click();
+  await expect(sub).toHaveCount(0);
+
   const banner = page.locator('ui-folder-banner');
   await expect(banner.getByText(DESCRIPTION, { exact: true })).toBeVisible();
   await expect(banner.locator('img.ui-folder-banner__cover')).toBeVisible();
@@ -122,15 +137,8 @@ export async function rulesByDomain(page: Page): Promise<WhatsNewClip> {
   await dialog.getByLabel('Link', { exact: true }).fill('https://m.youtube.com/watch?v=second');
   await expect(dialog.getByText(`Rule: youtube.com → ${READING}, #video`)).toBeVisible();
   await expect(dialog.getByLabel('Title', { exact: true })).not.toHaveValue('');
-  // From just above the link field down through the rule chip, the folder and the tags.
-  const link = await boxOf(dialog.getByLabel('Link', { exact: true }));
-  const { viewport, crop } = WHATS_NEW_MEDIA;
-  return {
-    x: Math.round(
-      Math.min(Math.max(link.x + link.width / 2 - crop.width / 2, 0), viewport.width - crop.width),
-    ),
-    y: Math.max(0, Math.round(link.y - 60)),
-  };
+  // The whole window: the dialog with its header, the rule chip, the folder and the tags.
+  return { x: 0, y: 0, ...WHATS_NEW_MEDIA.viewport };
 }
 
 /** The Reminders view of the demo library: one reminder due, one upcoming. */

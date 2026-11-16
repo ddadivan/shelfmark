@@ -2658,7 +2658,7 @@
       },
       "folderStyle": {
         "title": "Ordner gestalten",
-        "text": "Geben Sie einem Ordner Farbe, Symbol oder Emoji, eine Beschreibung und ein Titelbild, alles an einer Stelle.",
+        "text": "Geben Sie einem Ordner Farbe, Symbol oder Emoji, eine Beschreibung und ein Titelbild und heben Sie ihn in der Seitenleiste mit einem Hintergrund hervor.",
         "alt": "Ein Ordner mit eigener Farbe, Symbol, Beschreibung und Titelbild neben der Seitenleiste."
       },
       "domainRules": {
@@ -2753,9 +2753,6 @@
       },
       "folderChips": {
         "text": "Karten und Zeilen zeigen, in welchem Ordner ein Link liegt, in der Farbe des Ordners."
-      },
-      "folderHighlight": {
-        "text": "Wählen Sie, wie Ordner in der Seitenleiste hervortreten: aus, ein Streifen oder ein Hintergrund."
       },
       "updatePrompt": {
         "text": "Wenn eine neue Version bereit ist, fragt Shelfmark vor dem Neuladen nach."

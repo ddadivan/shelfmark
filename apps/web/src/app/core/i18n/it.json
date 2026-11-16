@@ -2718,7 +2718,7 @@
       },
       "folderStyle": {
         "title": "Stile delle cartelle",
-        "text": "Dai a una cartella un colore, un'icona o un emoji, una descrizione e una copertina, tutto in un unico posto.",
+        "text": "Dai a una cartella un colore, un'icona o un emoji, una descrizione e una copertina, ed evidenziala con uno sfondo nella barra laterale.",
         "alt": "Una cartella con colore, icona, descrizione e copertina propri, accanto alla barra laterale."
       },
       "domainRules": {
@@ -2813,9 +2813,6 @@
       },
       "folderChips": {
         "text": "Schede e righe mostrano in quale cartella si trova un link, con il colore della cartella."
-      },
-      "folderHighlight": {
-        "text": "Scegli come le cartelle risaltano nella barra laterale: niente, una striscia o uno sfondo."
       },
       "updatePrompt": {
         "text": "Quando una nuova versione è pronta, Shelfmark chiede prima di ricaricare."

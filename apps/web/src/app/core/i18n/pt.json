@@ -2718,7 +2718,7 @@
       },
       "folderStyle": {
         "title": "Estilo das pastas",
-        "text": "Dê a uma pasta uma cor, um ícone ou emoji, uma descrição e uma capa, tudo num só lugar.",
+        "text": "Dê a uma pasta uma cor, um ícone ou emoji, uma descrição e uma capa, e destaque-a com um fundo na barra lateral.",
         "alt": "Uma pasta com cor, ícone, descrição e capa próprios, ao lado da barra lateral."
       },
       "domainRules": {
@@ -2813,9 +2813,6 @@
       },
       "folderChips": {
         "text": "Os cartões e as linhas mostram em que pasta está um link, com a cor da pasta."
-      },
-      "folderHighlight": {
-        "text": "Escolha como as pastas se destacam na barra lateral: nada, uma faixa ou um fundo."
       },
       "updatePrompt": {
         "text": "Quando uma nova versão está pronta, o Shelfmark pergunta antes de recarregar."

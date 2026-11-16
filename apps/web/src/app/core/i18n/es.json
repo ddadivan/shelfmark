@@ -2718,7 +2718,7 @@
       },
       "folderStyle": {
         "title": "Estilo de carpetas",
-        "text": "Da a una carpeta un color, un icono o emoji, una descripción y una portada, todo en un solo sitio.",
+        "text": "Da a una carpeta un color, un icono o emoji, una descripción y una portada, y destácala con un fondo en la barra lateral.",
         "alt": "Una carpeta con su propio color, icono, descripción y portada, junto a la barra lateral."
       },
       "domainRules": {
@@ -2813,9 +2813,6 @@
       },
       "folderChips": {
         "text": "Las tarjetas y las filas muestran en qué carpeta está un enlace, con el color de la carpeta."
-      },
-      "folderHighlight": {
-        "text": "Elige cómo destacan las carpetas en la barra lateral: nada, una franja o un fondo."
       },
       "updatePrompt": {
         "text": "Cuando hay una versión nueva lista, Shelfmark pregunta antes de recargar."

@@ -2718,7 +2718,7 @@
       },
       "folderStyle": {
         "title": "Style des dossiers",
-        "text": "Donnez à un dossier une couleur, une icône ou un emoji, une description et une couverture, au même endroit.",
+        "text": "Donnez à un dossier une couleur, une icône ou un emoji, une description et une couverture, et mettez-le en valeur avec un fond dans la barre latérale.",
         "alt": "Un dossier avec sa couleur, son icône, sa description et sa couverture, à côté de la barre latérale."
       },
       "domainRules": {
@@ -2813,9 +2813,6 @@
       },
       "folderChips": {
         "text": "Les cartes et les lignes montrent dans quel dossier se trouve un lien, avec la couleur du dossier."
-      },
-      "folderHighlight": {
-        "text": "Choisissez comment les dossiers ressortent dans la barre latérale : rien, un liseré ou un fond."
       },
       "updatePrompt": {
         "text": "Quand une nouvelle version est prête, Shelfmark demande avant de recharger."
