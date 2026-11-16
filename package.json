@@ -20,6 +20,7 @@
     "e2e:visual": "nx run web-e2e:visual",
     "e2e:visual:update": "nx run web-e2e:visual-update",
     "promo": "nx run web-e2e:promo",
+    "whats-new-media": "nx run web-e2e:whats-new-media",
     "storybook": "nx storybook ui",
     "prepare": "node scripts/prepare.mjs",
     "format": "prettier --write .",

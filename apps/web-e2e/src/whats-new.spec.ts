@@ -34,7 +34,12 @@ test.describe('public changelog', () => {
       const releases = page.getByRole('heading', { level: 2 });
       await expect(releases.first()).toHaveText(/Shelfmark \d+\.\d+\.\d+/);
       await expect(page.getByRole('heading', { level: 2, name: 'Shelfmark 2.0.0' })).toBeVisible();
-      await expect(page.getByRole('heading', { level: 3, name: 'A fresh look' })).toBeVisible();
+      const release = page.getByRole('region', { name: 'Shelfmark 2.0.0' });
+      await expect(release.getByRole('heading', { level: 3, name: 'New' })).toBeVisible();
+      await expect(release.getByRole('heading', { level: 4, name: 'A fresh look' })).toBeVisible();
+      const hotfix = page.getByRole('region', { name: 'Shelfmark 2.0.5' });
+      await expect(hotfix.getByRole('heading', { level: 3 })).toHaveText('Fixed');
+      await expect(hotfix.getByRole('heading', { level: 4 })).toHaveCount(0);
       await expect(
         page.getByText('A link typed as example.com saves like any other.'),
       ).toBeVisible();
@@ -72,6 +77,9 @@ test.describe("What's new after an update (mock API)", () => {
       const dialog = page.getByRole('dialog', { name: DIALOG });
       await expect(dialog).toBeVisible();
       await expect(dialog.getByRole('heading', { level: 3 }).first()).toBeVisible();
+      await expect(
+        dialog.getByRole('link', { name: /^And \d+ more improvements and fixes$/ }),
+      ).toBeVisible();
       await dialog.getByRole('button', { name: 'Got it' }).click();
 
       await expect(dialog).toHaveCount(0);
@@ -104,6 +112,18 @@ test.describe("What's new after an update (mock API)", () => {
       await expect(page.getByRole('heading', { level: 1, name: "What's new" })).toBeVisible();
     },
   );
+
+  test('"And N more…" opens /changelog', { tag: E2E_TAG.Phone }, async ({ page }) => {
+    await seedSession(page, ONBOARDED);
+    await seedWhatsNewSeen(page, '1.0.0');
+    await page.goto(isCompact(page) ? '/settings' : '/links');
+
+    const dialog = page.getByRole('dialog', { name: DIALOG });
+    await dialog.getByRole('link', { name: /^And \d+ more improvements and fixes$/ }).click();
+
+    await expect(page).toHaveURL(/\/changelog$/);
+    await expect(dialog).toHaveCount(0);
+  });
 
   test("a new account gets the welcome tour, never What's new", async ({ page }) => {
     await page.clock.install();

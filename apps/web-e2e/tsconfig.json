@@ -18,6 +18,7 @@
     "**/*.js",
     "playwright.config.mts",
     "promo/**/*.mts",
+    "whats-new-media/**/*.mts",
     "visual/**/*.mts",
     "visual/**/*.ts",
     "src/**/*.spec.ts",

@@ -26,15 +26,43 @@ describe('ChangelogPage', () => {
     expect(root.textContent).not.toContain('Side by side');
   });
 
-  it('shows features with a title, fixes as one line, the dates and the current version', async () => {
+  it('shows the current version, the dates and a release heading per shipped release', async () => {
     const root = (await createTranslated(ChangelogPage)).nativeElement as HTMLElement;
 
     expect(root.textContent).toContain(`You're using Shelfmark ${APP_VERSION}.`);
-    expect(root.querySelector('h3')?.textContent).toBe('A fresh look');
-    const fixes = [...root.querySelectorAll('.release__fix')].map((fix) => fix.textContent ?? '');
-    expect(fixes.some((fix) => fix.includes('Own colors'))).toBe(true);
     expect(root.querySelector('time')?.getAttribute('datetime')).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    expect(root.textContent).not.toMatch(/changelog\.items/);
+    expect(root.textContent).not.toMatch(/changelog\.(items|sections)/);
+  });
+
+  it('groups a release into New, Improved and Fixed, leaving empty sections out', async () => {
+    const root = (await createTranslated(ChangelogPage)).nativeElement as HTMLElement;
+    const releases = [...root.querySelectorAll('section.release')];
+    const sectionsOf = (heading: string) =>
+      [
+        ...(releases
+          .find((release) => release.querySelector('h2')?.textContent?.includes(heading))
+          ?.querySelectorAll('h3') ?? []),
+      ].map((h) => h.textContent?.trim());
+
+    // 2.0.0 brought features only; 2.0.5 is one fix; no release shows an empty section.
+    expect(sectionsOf('Shelfmark 2.0.0')).toEqual(['New']);
+    expect(sectionsOf('Shelfmark 2.0.5')).toEqual(['Fixed']);
+    const fixOnly = releases.find((release) =>
+      release.querySelector('h2')?.textContent?.includes('2.0.5'),
+    );
+    expect(fixOnly?.querySelectorAll('h4')).toHaveLength(0);
+    expect(fixOnly?.textContent).toContain('Own colors');
+    for (const release of releases) {
+      for (const list of release.querySelectorAll('.group__list')) {
+        expect(list.children.length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('shows a feature as a title and a text under a heading level 4', async () => {
+    const root = (await createTranslated(ChangelogPage)).nativeElement as HTMLElement;
+
+    expect(root.querySelector('h4')?.textContent).toBe('A fresh look');
   });
 
   it('sets the document title and puts it back on leave', async () => {

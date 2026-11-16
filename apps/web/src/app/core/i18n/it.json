@@ -2713,19 +2713,23 @@
     "items": {
       "sideBySide": {
         "title": "Fianco a fianco",
-        "text": "Apri due elenchi uno accanto all'altro e trascina i link dall'uno all'altro."
+        "text": "Apri due elenchi uno accanto all'altro e trascina i link dall'uno all'altro.",
+        "alt": "Due feed affiancati in Shelfmark."
       },
       "folderStyle": {
         "title": "Stile delle cartelle",
-        "text": "Scegli colore, icona o emoji di una cartella in un unico posto."
+        "text": "Dai a una cartella un colore, un'icona o un emoji, una descrizione e una copertina, ed evidenziala con uno sfondo nella barra laterale.",
+        "alt": "Una cartella con colore, icona, descrizione e copertina propri, accanto alla barra laterale."
       },
       "domainRules": {
         "title": "Regole per sito",
-        "text": "Manda i link di un sito direttamente nella cartella che scegli."
+        "text": "Manda i link di un sito direttamente nella cartella che scegli.",
+        "alt": "Una regola che manda i link di un sito in una cartella."
       },
       "reminders": {
         "title": "Promemoria",
-        "text": "Chiedi a Shelfmark di ricordarti un link più tardi."
+        "text": "Chiedi a Shelfmark di ricordarti un link più tardi.",
+        "alt": "Un link salvato con un promemoria."
       },
       "colourPicker": {
         "text": "Colori personalizzati: il pulsante + è al centro e il colore scelto si applica subito in una tonalità leggibile."
@@ -2806,7 +2810,27 @@
       },
       "feedbackActive": {
         "text": "«Invia feedback» non resta più evidenziato dopo la chiusura."
+      },
+      "folderChips": {
+        "text": "Schede e righe mostrano in quale cartella si trova un link, con il colore della cartella."
+      },
+      "updatePrompt": {
+        "text": "Quando una nuova versione è pronta, Shelfmark chiede prima di ricaricare."
+      },
+      "whatsNewCard": {
+        "text": "Una scheda Novità dopo ogni aggiornamento e una pagina con tutte le versioni."
+      },
+      "privacyWording": {
+        "text": "La pagina sulla privacy spiega più chiaramente cosa viene conservato e chi può vederlo."
+      },
+      "folderStyleRace": {
+        "text": "Cambiare in fretta lo stile di una cartella non riporta più una scelta precedente."
       }
+    },
+    "sections": {
+      "new": "Novità",
+      "improved": "Miglioramenti",
+      "fixed": "Correzioni"
     }
   },
   "whatsNew": {
@@ -2815,7 +2839,12 @@
     "seeAll": "Vedi tutte le modifiche",
     "close": "Ho capito",
     "entry": "Novità",
-    "unseen": "nuovo"
+    "unseen": "nuovo",
+    "more": {
+      "one": "E {{count}} altro miglioramento o correzione",
+      "many": "E {{count}} altri miglioramenti e correzioni",
+      "other": "E {{count}} altri miglioramenti e correzioni"
+    }
   },
   "update": {
     "available": "Una nuova versione di Shelfmark è pronta",

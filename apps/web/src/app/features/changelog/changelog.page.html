@@ -20,18 +20,60 @@
           >{{ release.date | appDate }}</time
         >
       </div>
-      <ul class="release__items">
-        @for (item of release.features; track item.id) {
-        <li class="release__item">
-          <h3 class="release__title">{{ item.titleKey | transloco }}</h3>
-          <p class="release__text">{{ item.textKey | transloco }}</p>
-        </li>
-        } @for (item of release.fixes; track item.id) {
-        <li class="release__item">
-          <p class="release__fix">{{ item.textKey | transloco }}</p>
-        </li>
+      <div class="release__body">
+        @if (release.features.length > 0) {
+        <section class="group">
+          <h3 class="group__head">
+            <ui-badge [tone]="BADGE_TONE.Accent"
+              >{{ 'changelog.sections.new' | transloco }}</ui-badge
+            >
+          </h3>
+          <ul class="group__list">
+            @for (item of release.features; track item.id) {
+            <li class="release__item">
+              <h4 class="release__title">{{ item.titleKey | transloco }}</h4>
+              <p class="release__text">{{ item.textKey | transloco }}</p>
+              @if (item.image; as image) {
+              <img
+                class="release__image"
+                [ngSrc]="imageSrc(image)"
+                [width]="image.width"
+                [height]="image.height"
+                [alt]="image.altKey | transloco"
+              />
+              }
+            </li>
+            }
+          </ul>
+        </section>
+        } @if (release.improvements.length > 0) {
+        <section class="group">
+          <h3 class="group__head">
+            <ui-badge>{{ 'changelog.sections.improved' | transloco }}</ui-badge>
+          </h3>
+          <ul class="group__list">
+            @for (item of release.improvements; track item.id) {
+            <li class="release__item">
+              <p class="release__line">{{ item.textKey | transloco }}</p>
+            </li>
+            }
+          </ul>
+        </section>
+        } @if (release.fixes.length > 0) {
+        <section class="group">
+          <h3 class="group__head">
+            <ui-badge>{{ 'changelog.sections.fixed' | transloco }}</ui-badge>
+          </h3>
+          <ul class="group__list">
+            @for (item of release.fixes; track item.id) {
+            <li class="release__item">
+              <p class="release__line">{{ item.textKey | transloco }}</p>
+            </li>
+            }
+          </ul>
+        </section>
         }
-      </ul>
+      </div>
     </section>
     }
   </article>

@@ -2653,19 +2653,23 @@
     "items": {
       "sideBySide": {
         "title": "Nebeneinander",
-        "text": "Öffnen Sie zwei Listen nebeneinander und ziehen Sie Links von einer in die andere."
+        "text": "Öffnen Sie zwei Listen nebeneinander und ziehen Sie Links von einer in die andere.",
+        "alt": "Zwei Feeds nebeneinander in Shelfmark."
       },
       "folderStyle": {
         "title": "Ordner gestalten",
-        "text": "Farbe, Symbol oder Emoji eines Ordners an einer Stelle wählen."
+        "text": "Geben Sie einem Ordner Farbe, Symbol oder Emoji, eine Beschreibung und ein Titelbild und heben Sie ihn in der Seitenleiste mit einem Hintergrund hervor.",
+        "alt": "Ein Ordner mit eigener Farbe, Symbol, Beschreibung und Titelbild neben der Seitenleiste."
       },
       "domainRules": {
         "title": "Regeln pro Website",
-        "text": "Links einer Website landen direkt im Ordner Ihrer Wahl."
+        "text": "Links einer Website landen direkt im Ordner Ihrer Wahl.",
+        "alt": "Eine Regel, die Links einer Website in einen Ordner legt."
       },
       "reminders": {
         "title": "Erinnerungen",
-        "text": "Lassen Sie sich von Shelfmark später an einen Link erinnern."
+        "text": "Lassen Sie sich von Shelfmark später an einen Link erinnern.",
+        "alt": "Ein gespeicherter Link mit Erinnerung."
       },
       "colourPicker": {
         "text": "Eigene Farben: Die +-Taste sitzt mittig, und eine gewählte Farbe gilt sofort in einem gut lesbaren Ton."
@@ -2746,7 +2750,27 @@
       },
       "feedbackActive": {
         "text": "„Feedback senden“ bleibt nach dem Schließen nicht mehr hervorgehoben."
+      },
+      "folderChips": {
+        "text": "Karten und Zeilen zeigen, in welchem Ordner ein Link liegt, in der Farbe des Ordners."
+      },
+      "updatePrompt": {
+        "text": "Wenn eine neue Version bereit ist, fragt Shelfmark vor dem Neuladen nach."
+      },
+      "whatsNewCard": {
+        "text": "Nach jedem Update eine Karte „Neuigkeiten“ und eine Seite mit allen Versionen."
+      },
+      "privacyWording": {
+        "text": "Die Datenschutzseite erklärt klarer, was gespeichert wird und wer es sehen kann."
+      },
+      "folderStyleRace": {
+        "text": "Wer den Stil eines Ordners schnell ändert, bekommt keine ältere Auswahl mehr zurück."
       }
+    },
+    "sections": {
+      "new": "Neu",
+      "improved": "Verbessert",
+      "fixed": "Behoben"
     }
   },
   "whatsNew": {
@@ -2755,7 +2779,11 @@
     "seeAll": "Alle Änderungen",
     "close": "Verstanden",
     "entry": "Neuigkeiten",
-    "unseen": "neu"
+    "unseen": "neu",
+    "more": {
+      "one": "Und {{count}} weitere Verbesserung oder Korrektur",
+      "other": "Und {{count}} weitere Verbesserungen und Korrekturen"
+    }
   },
   "update": {
     "available": "Eine neue Version von Shelfmark ist bereit",

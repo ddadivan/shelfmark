@@ -105,8 +105,9 @@ describe('WhatsNewStore', () => {
 
     expect(dialogs.open).toHaveBeenCalledTimes(1);
     const highlights = dialogData(dialogs).highlights;
-    expect(highlights.length).toBeGreaterThanOrEqual(3);
-    expect(highlights.length).toBeLessThanOrEqual(5);
+    expect(highlights.length).toBe(4);
+    expect(highlights.map((entry) => entry.item.priority)).toEqual([1, 2, 3, 4]);
+    expect(dialogData(dialogs).moreCount).toBeGreaterThan(0);
     expect(settingsApi.update).toHaveBeenCalledWith({ whatsNewSeen: LATEST });
     expect(store.pending()).toBe(false);
 
@@ -157,6 +158,7 @@ describe('WhatsNewStore', () => {
     await store.open();
 
     expect(dialogData(dialogs).highlights.length).toBeGreaterThan(0);
+    expect(dialogData(dialogs).highlights[0]?.item.priority).toBe(1);
   });
 
   it('cancels a planned dialog when the session ends', async () => {

@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import en from '../../../core/i18n/en.json';
 import { APP_VERSION } from '../../../models/app-version.const';
 import { compareVersions } from '../utils/compare-versions';
@@ -47,30 +49,52 @@ describe('CHANGELOG', () => {
       expect(typeof english(item.textKey), item.textKey).toBe('string');
       if (item.kind === CHANGELOG_ITEM_KIND.Feature) {
         expect(typeof english(item.titleKey), item.titleKey).toBe('string');
+        if (item.image) {
+          expect(typeof english(item.image.altKey), item.image.altKey).toBe('string');
+        }
       }
     }
   });
 
-  it('gives every minor release a highlight and keeps patch releases to one-line fixes', () => {
+  it('gives every minor release a prioritised feature and keeps patch releases to improvements and fixes', () => {
     for (const release of CHANGELOG) {
       expect(release.items.length).toBeGreaterThan(0);
       if (release.version.endsWith('.0')) {
         expect(release.items.some(isHighlight)).toBe(true);
       } else {
-        expect(release.items.every((item) => item.kind === CHANGELOG_ITEM_KIND.Fix)).toBe(true);
+        expect(release.items.every((item) => item.kind !== CHANGELOG_ITEM_KIND.Feature)).toBe(true);
       }
     }
   });
 
-  it('keeps media same-origin under /media/whats-new/, one loop per release at most', () => {
+  it('numbers priorities from 1 without gaps or duplicates, on features only', () => {
     for (const release of CHANGELOG) {
-      const features = release.items.filter((item) => item.kind === CHANGELOG_ITEM_KIND.Feature);
-      expect(features.filter((item) => item.video).length).toBeLessThanOrEqual(1);
-      for (const item of features) {
-        for (const src of [item.image?.src, item.video?.src, item.video?.poster]) {
-          if (src !== undefined) {
-            expect(src).toMatch(/^\/media\/whats-new\/[\w.-]+$/);
-          }
+      const priorities = release.items.flatMap((item) =>
+        item.kind === CHANGELOG_ITEM_KIND.Feature && item.priority !== undefined
+          ? [item.priority]
+          : [],
+      );
+      expect(
+        priorities.toSorted((a, b) => a - b),
+        release.version,
+      ).toEqual(priorities.map((_, index) => index + 1));
+      expect(release.items.filter(isHighlight).length).toBe(priorities.length);
+    }
+  });
+
+  it('keeps screenshots same-origin under /media/whats-new/<version>/, both themes, on disk', () => {
+    for (const release of CHANGELOG) {
+      for (const item of release.items) {
+        if (item.kind !== CHANGELOG_ITEM_KIND.Feature || !item.image) {
+          continue;
+        }
+        for (const src of [item.image.light, item.image.dark]) {
+          expect(src).toMatch(
+            new RegExp(
+              `^/media/whats-new/${release.version.replaceAll('.', '\\.')}/[\\w.-]+\\.webp$`,
+            ),
+          );
+          expect(existsSync(join(process.cwd(), 'apps/web/public', src)), src).toBe(true);
         }
       }
     }
