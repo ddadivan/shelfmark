@@ -52,6 +52,8 @@
   }
 }
 
-.form__save {
+// Doubled class: wins over the block host rule of ui-button, so the inner button fills this width.
+.form__save.form__save {
+  inline-size: auto;
   min-inline-size: rem(132px);
 }

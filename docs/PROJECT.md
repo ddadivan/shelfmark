@@ -523,7 +523,7 @@ Source: [Better Auth — NestJS integration](https://better-auth.com/docs/integr
 
 ### 5.5 Ways to save links
 
-Stage 1: manual adding in the web interface only (a form with a URL field). Stage 2 added Paste many and the Share target. Import from browser bookmarks, Pocket, Raindrop.io and the Shelfmark JSON backup (#387), rules that put a link into a folder and tags by its domain (#398), the browser extension and import from Telegram are in the backlog. The API is designed so they can be plugged in later without rework.
+Stage 1: manual adding in the web interface only (a form with a URL field). Stage 2 added Paste many and the Share target. Import from browser bookmarks, Pocket, Raindrop.io and the Shelfmark JSON backup (#387), rules that put a link into a folder and tags by its domain (#398) and import from Telegram are in the backlog. The browser extension (#445, `apps/extension`, ADR 0046) saves the current tab from Chrome, Edge, Brave and Arc: `activeTab` plus host access to the Shelfmark API only, the browser's session cookie, no token. The API is designed so they can be plugged in later without rework.
 
 ### 5.6 AI features
 

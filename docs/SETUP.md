@@ -231,6 +231,38 @@ The demo sign-in (#67) creates a 24 hour sandbox user per visitor. A Vercel Cron
 - [ ] Without the variable the route answers 401 to everyone (fails closed) and expired sandboxes are never deleted, though they stop working after 24 hours.
 - [ ] After the first deploy: Vercel → Settings → Cron Jobs shows `/api/cron/demo-cleanup`; use **Run** once and check the response `{ "deleted": …, "hasMore": false }` in the logs.
 
+### 5.9 Browser extension (#445)
+
+The extension is `apps/extension`, a Chrome Manifest V3 popup. It asks for `activeTab` and host access to the Shelfmark API only, and it uses the session cookie of the app in the same browser (ADR 0046). There are two builds:
+
+| Build | Command | Output | Talks to |
+| --- | --- | --- | --- |
+| Development | `npx nx build extension --configuration=development` | `dist/apps/extension-dev` | `http://localhost:4200` (the web dev server, which proxies `/api` to the local API) |
+| Store | `npx nx run extension:package` (builds first) | `dist/apps/extension` and `dist/shelfmark-extension-<version>.zip` | `https://shelfmark-app.vercel.app` |
+
+**Try it locally (unpacked development build).** Outside production the API trusts any extension id, so no variable is needed.
+
+1. Start the app with its API: `npm run start:all`, then open http://localhost:4200 in Chrome and sign in (local OAuth app or **Try demo**).
+2. Build: `npx nx build extension --configuration=development`.
+3. Open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and choose `dist/apps/extension-dev`. Pin "Shelfmark (dev)" in the toolbar puzzle menu.
+4. Open any web page and click the icon, or press **Alt+Shift+S** (change it at `chrome://extensions/shortcuts`).
+5. After a rebuild, press the reload arrow on the extension's card. To see errors, right-click the popup → **Inspect**.
+
+The store build can also be loaded unpacked (`dist/apps/extension`). It saves to production only after the API change is released and `EXTENSION_ORIGINS` holds its id (below); before that, Save answers 403.
+
+**Chrome Web Store** (you do these steps; agents never publish). The listing texts, the privacy answers and the images are in [`docs/store/extension/`](store/extension/README.md).
+
+- [ ] Developer account: https://chrome.google.com/webstore/devconsole, sign in with the Google account that should own the item, pay the one-time $5 fee, turn on 2-step verification and verify the contact email.
+- [ ] `npx nx run extension:package`, then **New item** → upload `dist/shelfmark-extension-<version>.zip`. Uploading creates a draft and gives the item its permanent id (32 letters a–p, on the item's page and in its URL).
+- [ ] Vercel → Settings → Environment Variables → `EXTENSION_ORIGINS` = `chrome-extension://<item id>` for **Production** (a comma-separated list if an Edge Add-ons copy is added later), then redeploy. Without it the published extension can sign in but every Save gets 403.
+- [ ] **Store listing** tab: description, category, language, the 128 px icon (`apps/extension/public/icons/icon-128.png`), the screenshots and the small promo tile from `docs/store/extension/`.
+- [ ] **Privacy practices** tab: the single purpose, a justification for `activeTab` and for the host permission, the data usage answers and the privacy policy URL `https://shelfmark-app.vercel.app/privacy`, all from `docs/store/extension/listing.md`.
+- [ ] **Distribution**: **Unlisted** for a first round with a few people, **Public** later; all regions.
+- [ ] **Submit for review**. A first review usually takes a few days; the dashboard emails the result.
+- [ ] Every update: raise `version` in `apps/extension/manifest/production/manifest.json` (and the development manifest), package, upload, submit again.
+
+Edge, Brave and Arc install straight from the Chrome Web Store (Edge asks once to allow extensions from other stores). A separate Edge Add-ons listing is optional and gets its own id, which then goes into `EXTENSION_ORIGINS` too.
+
 ## 6. Secrets policy
 
 | Secret | Lives in | Never in |
@@ -277,5 +309,6 @@ Prevention layers: gitleaks in the pre-commit hook (locally) and in CI (CI task)
 | 15 | ~~Migration secret in a GitHub `production` environment~~ not needed (Vercel build migrates, ADR 0025) | GitHub Environments | - | dropped |
 | 16 | Privacy policy URL, publish the Google app | Google Auth Platform | author | stage 7 |
 | 17 | `CRON_SECRET` (32+ characters) in Vercel Production for the demo cleanup cron | Vercel env | author | demo sign-in (#67) |
+| 18 | Chrome Web Store developer account ($5), item upload, `EXTENSION_ORIGINS` with the item id, listing, submit (section 5.9) | Chrome Web Store, Vercel env | author | browser extension (#445) |
 
 The showcase builds only from `main`: `ignoreCommand` in `libs/ui/vercel.json` skips every other branch (issue #50), so PRs create no `shelfmark-ui` deployments and the Hobby deployment limit is spent on the app project. Storybook on PRs is checked by CI (`nx test-storybook ui`).

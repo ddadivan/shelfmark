@@ -524,6 +524,11 @@
       "title": "Link-Vorschauen",
       "body": "Wenn du einen Link speicherst, ruft unser Server die Seite auf, um Titel, Icon und Vorschaubild zu lesen. Die Website sieht daher die IP-Adresse unseres Servers und den User-Agent „ShelfmarkBot“, nicht deine IP-Adresse."
     },
+    "extension": {
+      "title": "Browser-Erweiterung",
+      "body": "Die Shelfmark-Erweiterung für Chrome, Edge, Brave und Arc sendet Shelfmark nur die Adresse und den Titel des Tabs, den Sie speichern möchten, zusammen mit Ordner, Tags und Notiz, die Sie wählen. Sie liest einen Tab nur, wenn Sie auf ihre Schaltfläche klicken oder ihr Tastenkürzel drücken, nie im Hintergrund, und sieht weder Ihren Verlauf noch andere Websites, die Sie besuchen.",
+      "access": "Sie nutzt Ihre Shelfmark-Anmeldung in diesem Browser und kann das Anmelde-Cookie selbst nicht lesen. Sie erreicht nur Shelfmark und speichert auf Ihrem Gerät nur die zuletzt verwendeten Ordner, um sie beim nächsten Mal anzubieten."
+    },
     "third": {
       "title": "Andere Dienste",
       "signin": "Die Anmeldung läuft über Google oder GitHub. Sie erfahren, dass du dich bei Shelfmark anmeldest, und haben jeweils eigene Datenschutzbestimmungen:",
