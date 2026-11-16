@@ -45,6 +45,8 @@ export async function seedDemoLibrary(
         userId,
         name: folder.name,
         parentId: folder.parent === null ? null : idOfFolder(folder.parent),
+        colour: folder.colour,
+        highlighted: folder.highlighted ?? false,
       })),
     });
     for (const folder of ready) created.add(folder.key);

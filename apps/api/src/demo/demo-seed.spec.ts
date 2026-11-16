@@ -8,7 +8,7 @@ import {
   RULE_LIMIT,
   TAG_LIMIT,
 } from '@shelfmark/contracts';
-import { FOLDER_LIMIT } from '@shelfmark/contracts';
+import { FOLDER_COLOUR, FOLDER_LIMIT } from '@shelfmark/contracts';
 import { isStorableUrl } from '../links/dto/is-http-url.decorator';
 import { DEMO_SEED } from './demo-seed';
 
@@ -59,6 +59,21 @@ describe('demo seed (seed.json)', () => {
         expect(folderKeys.slice(0, index)).toContain(folder.parent);
       }
     });
+  });
+
+  it('highlights one or two folders, each with a real colour (#440)', () => {
+    const highlighted = DEMO_SEED.folders.filter((folder) => folder.highlighted === true);
+    expect(highlighted.length).toBeGreaterThanOrEqual(1);
+    expect(highlighted.length).toBeLessThanOrEqual(2);
+    for (const folder of DEMO_SEED.folders) {
+      if (folder.colour !== undefined) {
+        expect(Object.values(FOLDER_COLOUR)).toContain(folder.colour);
+      }
+    }
+    for (const folder of highlighted) {
+      expect(folder.colour).toBeDefined();
+      expect(folder.colour).not.toBe(FOLDER_COLOUR.Graphite);
+    }
   });
 
   it('has valid, unique, storable http(s) URLs and bounded titles and notes', () => {

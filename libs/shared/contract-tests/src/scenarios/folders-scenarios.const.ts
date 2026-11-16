@@ -62,6 +62,24 @@ export const FOLDERS_SCENARIOS: readonly ContractScenario[] = [
     expectEqual(custom, expectedFolder('Books', { id: folder.id, colour: '#aa00ff', icon: '📚' }));
   }),
 
+  scenario('folders', 'highlights a folder and takes it back (#440)', async ({ folders }) => {
+    const folder = await folders.create({ name: 'Reading' });
+    const on = await folders.update(folder.id, { highlighted: true });
+    expectEqual(on, expectedFolder('Reading', { id: folder.id, highlighted: true }));
+    const kept = await folders.update(folder.id, { colour: FOLDER_COLOUR.Plum });
+    expectEqual(
+      kept,
+      expectedFolder('Reading', { id: folder.id, highlighted: true, colour: FOLDER_COLOUR.Plum }),
+    );
+    const off = await folders.update(folder.id, { highlighted: false });
+    expectEqual(off, expectedFolder('Reading', { id: folder.id, colour: FOLDER_COLOUR.Plum }));
+    await expectError(
+      folders.update(folder.id, { highlighted: 'yes' as never }),
+      { status: 400 },
+      'highlighted',
+    );
+  }),
+
   scenario('folders', 'saves, trims and removes a description (#418)', async ({ folders }) => {
     const folder = await folders.create({ name: 'Recipes' });
     const saved = await folders.update(folder.id, { description: '  Worth cooking twice ' });

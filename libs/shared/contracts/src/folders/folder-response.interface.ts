@@ -13,6 +13,8 @@ export interface FolderResponse {
   colour: FolderColour | HexColour;
   /** One of `FOLDER_ICON` or exactly one emoji (#335); `folder` until chosen. */
   icon: FolderIcon | FolderEmoji;
+  /** Shown with a soft background in the folder colour: its sidebar row and its page header (#440). */
+  highlighted: boolean;
   /** Optional short description (#418): trimmed, 1 to `FOLDER_LIMIT.DescriptionMax` characters, or `null`. */
   description: string | null;
   /**

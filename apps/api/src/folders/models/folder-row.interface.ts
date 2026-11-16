@@ -5,6 +5,7 @@ export interface FolderRow {
   name: string;
   colour: string;
   icon: string;
+  highlighted: boolean;
   description: string | null;
   coverLinkId: string | null;
   position: number;

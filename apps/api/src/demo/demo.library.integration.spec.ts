@@ -52,6 +52,17 @@ describe('demo library, limits and expiry', () => {
       ]);
       const folders = await t.db.prisma.folder.findMany({ where, include: { parent: true } });
       expect(folders).toHaveLength(DEMO_SEED.folders.length);
+      expect(
+        folders
+          .filter((folder) => folder.highlighted)
+          .map((folder) => folder.name)
+          .sort(),
+      ).toEqual(
+        DEMO_SEED.folders
+          .filter((folder) => folder.highlighted === true)
+          .map((folder) => folder.name)
+          .sort(),
+      );
       const nested = folders.filter((folder) => folder.parentId !== null);
       expect(nested).toHaveLength(1);
       expect(nested[0]?.parent?.name).toBe('Work');
