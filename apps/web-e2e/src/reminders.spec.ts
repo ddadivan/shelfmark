@@ -44,6 +44,11 @@ test.describe('reminders (mock API)', { tag: E2E_TAG.Phone }, () => {
 
     const dialog = page.getByRole('dialog', { name: 'Remind me' });
     await expect(dialog).toContainText(title);
+    // The presets bleed out for a wider hover; the scrolling body must not scroll sideways.
+    const sideways = await dialog
+      .locator('.ui-dialog__body')
+      .evaluate((body) => body.scrollWidth - body.clientWidth);
+    expect(sideways).toBeLessThanOrEqual(0);
     await expect(dialog).toContainText('Times are in your time zone');
     await dialog.getByRole('button', { name: /^In a month/ }).click();
     await expect(dialog).toBeHidden();
