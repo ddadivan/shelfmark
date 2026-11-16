@@ -68,6 +68,7 @@ import { LibraryBulkService } from './services/library-bulk.service';
 import { LibrarySelectionService } from './services/library-selection.service';
 import { LibraryFilterService } from './services/library-filter.service';
 import { provideLibraryPage } from './services/provide-library-page';
+import { FolderCoverComponent } from './components/folder-cover/folder-cover.component';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
 import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
 import { SplitViewService } from './services/split-view.service';
@@ -99,6 +100,7 @@ const SKELETON_COUNT = 8;
     ChipComponent,
     EmptyStateComponent,
     FolderBannerComponent,
+    FolderCoverComponent,
     FolderIconComponent,
     FolderTileComponent,
     InViewDirective,
@@ -159,10 +161,16 @@ export default class LibraryPage {
     () =>
       this.filters.scope() !== LINKS_SCOPE.Folder && this.filters.scope() !== LINKS_SCOPE.Unsorted,
   );
-  /** The folder header (#418): band or cover, big tile, description; none in the split view. */
-  protected readonly folderBanner = computed(() =>
-    this.splitView.open() ? null : this.head.banner(),
-  );
+  /** The tinted folder header (#418): band or cover, big tile, description; only for a highlighted folder (#440), never in the split view. */
+  protected readonly folderBanner = computed(() => {
+    const banner = this.splitView.open() ? null : this.head.banner();
+    return banner?.highlighted ? banner : null;
+  });
+  /** A folder that is not highlighted: its description and cover beside the plain title (#440). */
+  protected readonly plainFolder = computed(() => {
+    const banner = this.splitView.open() ? null : this.head.banner();
+    return banner && !banner.highlighted ? banner : null;
+  });
   protected readonly selection = inject(LibrarySelectionService);
   protected readonly bulk = inject(LibraryBulkService);
   protected readonly drag = inject(LinkDragService);

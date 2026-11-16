@@ -103,7 +103,14 @@
             <ng-container *ngTemplateOutlet="countLine" />
           </div>
           } @else {
-          <div class="library__heading" [class.library__heading--split]="splitView.open()">
+          <div
+            class="library__heading"
+            [class.library__heading--split]="splitView.open()"
+            [class.library__heading--cover]="!!plainFolder()?.cover"
+          >
+            @if (plainFolder()?.cover; as cover) {
+            <app-folder-cover class="library__cover" [src]="cover" />
+            }
             <!-- prettier-ignore -->
             <h1 class="library__title" [class.library__title--hidden]="splitView.open()">{{ filters.folder()?.name ?? (filters.titleKey() | transloco) }}</h1>
             @if (splitView.open()) {
@@ -121,6 +128,8 @@
               [triggerLabel]="'library.split.leftTrigger' | transloco: { name: splitView.leftLabel() }"
               (chosen)="splitView.chooseLeft($event)"
             />
+            } @if (plainFolder()?.description; as description) {
+            <p class="library__description">{{ description }}</p>
             }
             <ng-container *ngTemplateOutlet="countLine" />
           </div>

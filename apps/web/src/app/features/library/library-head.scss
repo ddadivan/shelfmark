@@ -1,7 +1,8 @@
 @use 'ui' as *;
 
-// The folder header (#418): the toolbar sits in `ui-folder-banner`, which draws the band of the
-// folder colour or the cover. Outside a folder (and in the split view) it is a plain wrapper.
+// The folder header (#418): for a highlighted folder (#440) the toolbar sits in `ui-folder-banner`,
+// which draws the band of the folder colour or the cover. Any other page (and the split view) has
+// the plain title block.
 .library__banner {
   // The band bleeds a little past the content, so the title, the tools and the feed below keep the
   // places they have on every other page (the layout-shift and alignment checks); only a cover
@@ -10,7 +11,10 @@
   --ui-folder-banner-padding-inline: var(--space-4);
 
   flex: none;
-  margin: calc(var(--space-3) * -1) calc(var(--space-4) * -1) calc(var(--space-4) - var(--space-3));
+
+  // The room under the block (#440) is a full `space-6`, so the chips row (All / Videos / ...) no
+  // longer touches the band; the band's own bottom padding comes on top.
+  margin: calc(var(--space-3) * -1) calc(var(--space-4) * -1) var(--space-6);
 
   @include compact {
     --ui-folder-banner-padding-inline: var(--space-3);
@@ -51,4 +55,26 @@
   margin: var(--space-1) 0 0;
   color: var(--text-muted);
   overflow-wrap: anywhere;
+}
+
+// A folder that is not highlighted (#440) keeps the plain title block; a cover sits beside the
+// title as a small picture, the description and the count under the title.
+.library__heading--cover {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--space-4);
+  align-items: start;
+
+  > :not(.library__cover) {
+    grid-column: 2;
+  }
+
+  @include phone {
+    column-gap: var(--space-3);
+  }
+}
+
+.library__cover {
+  grid-row: 1 / span 3;
+  align-self: center;
 }

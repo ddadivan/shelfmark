@@ -40,6 +40,38 @@ describe('folderTreeNodes', () => {
     expect(nodes.some((entry) => 'count' in entry)).toBe(false);
   });
 
+  it('marks a highlighted folder and leaves the flag out otherwise (#440)', () => {
+    const lit = {
+      folder: {
+        id: 'h',
+        name: 'H',
+        icon: 'folder',
+        colour: 'sage',
+        linkCount: 0,
+        highlighted: true,
+      },
+      children: [],
+    } as unknown as FolderNode;
+    const quiet = {
+      folder: {
+        id: 'q',
+        name: 'Q',
+        icon: 'folder',
+        colour: 'sage',
+        linkCount: 0,
+        highlighted: false,
+      },
+      children: [],
+    } as unknown as FolderNode;
+    const [on, off] = folderTreeNodes([lit, quiet], {
+      open: new Set(),
+      countsShown: false,
+      shownColour: (colour) => colour,
+    });
+    expect(on?.highlighted).toBe(true);
+    expect(off && 'highlighted' in off).toBe(false);
+  });
+
   it('passes a folder description on for the tooltip (#418)', () => {
     const described = {
       folder: {
