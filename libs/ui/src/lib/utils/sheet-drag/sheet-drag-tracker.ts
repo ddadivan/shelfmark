@@ -37,6 +37,7 @@ export class SheetDragTracker {
       startY: event.clientY,
       samples: [{ y: event.clientY, time: event.timeStamp }],
       offset: 0,
+      released: false,
     };
     if (event.currentTarget instanceof Element) {
       event.currentTarget.setPointerCapture?.(event.pointerId);
@@ -56,6 +57,10 @@ export class SheetDragTracker {
     }
     drag.offset = Math.max(0, event.clientY - drag.startY);
     setSheetOffset(sheet, drag.offset);
+    if (drag.offset > 0 && !drag.released) {
+      drag.released = true;
+      releaseFocus(sheet);
+    }
   }
 
   /**
@@ -84,6 +89,18 @@ export class SheetDragTracker {
     this.drag = undefined;
     setSheetOffset(sheet, 0);
     return true;
+  }
+}
+
+/**
+ * A moving sheet takes its open dropdowns along: they close on focus loss (select, tag input,
+ * command list, menus), so the focused control lets go. A touch drag fires no mousedown that
+ * would blur it, and its popups live in an overlay that does not move with the sheet.
+ */
+function releaseFocus(sheet: HTMLElement): void {
+  const active = sheet.ownerDocument.activeElement;
+  if (active instanceof HTMLElement && active !== sheet.ownerDocument.body) {
+    active.blur();
   }
 }
 

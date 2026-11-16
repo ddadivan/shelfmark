@@ -3,6 +3,7 @@ import { expect, test } from './support/test';
 import { isStaticBuild } from './support/build-mode';
 import { openFeed } from './support/a11y-flows';
 import { E2E_TAG } from './models/e2e-tag.const';
+import { Finger } from './support/touch';
 
 const testPage = '/__e2e/add-link';
 const duplicateUrl = 'https://angular.dev/overview';
@@ -145,6 +146,30 @@ test.describe('folder field on a touch screen (mock API)', () => {
       await expect(search).toBeFocused();
       await search.fill('zzz-no-such-folder');
       await expect(page.getByText('No folders found').first()).toBeVisible();
+    },
+  );
+
+  test(
+    'dragging the sheet closes the open folder list (#434)',
+    { tag: E2E_TAG.Mobile },
+    async ({ page, hasTouch }) => {
+      test.skip(!hasTouch, 'a sheet drag is a touch gesture');
+      await openFeed(page);
+      await page.getByRole('button', { name: 'Add link' }).first().click();
+      const dialog = page.getByRole('dialog', { name: 'Add link' });
+      await expect(dialog).toBeVisible();
+      const grip = dialog.locator('.ui-dialog__grip');
+      test.skip(!(await grip.isVisible()), 'the dialog is not a bottom sheet at this width');
+      await dialog.getByRole('combobox', { name: 'Folder' }).tap();
+      await expect(page.getByRole('listbox', { name: 'Folder' })).toBeVisible();
+
+      const box = await grip.boundingBox();
+      const start = { x: (box?.x ?? 0) + (box?.width ?? 0) / 2, y: (box?.y ?? 0) + 6 };
+      const finger = await Finger.down(page, start);
+      await finger.move({ x: start.x, y: start.y + 60 }, 6);
+      // The finger is still down: the list is already gone, it does not float over the sheet.
+      await expect(page.getByRole('listbox', { name: 'Folder' })).toBeHidden();
+      await finger.up();
     },
   );
 });

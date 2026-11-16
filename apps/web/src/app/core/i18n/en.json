@@ -2739,6 +2739,15 @@
       },
       "bulkBar": {
         "text": "On phones the bar for selected links sits just above the tab bar again."
+      },
+      "sheetDropdown": {
+        "text": "A dropdown closes as soon as you drag a sheet down on a phone."
+      },
+      "skeletonRows": {
+        "text": "The loading screen matches the page and shows three rows of cards."
+      },
+      "feedbackActive": {
+        "text": "Send feedback no longer stays highlighted after you close it."
       }
     }
   },
