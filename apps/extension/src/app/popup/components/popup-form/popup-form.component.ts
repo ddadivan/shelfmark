@@ -27,7 +27,11 @@ import { PopupStore } from '../../popup.store';
   templateUrl: './popup-form.component.html',
   styleUrl: './popup-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'ext-screen', '(keydown.enter)': 'saveFromKeyboard($event)' },
+  host: {
+    class: 'ext-screen',
+    '(keydown.control.enter)': 'saveFromKeyboard($event)',
+    '(keydown.meta.enter)': 'saveFromKeyboard($event)',
+  },
   imports: [
     ButtonComponent,
     ChipComponent,
@@ -60,9 +64,7 @@ export class PopupFormComponent {
 
   /** ⌘/Ctrl+Enter saves from anywhere in the form (Enter alone stays with the tag and note fields). */
   protected saveFromKeyboard(event: Event): void {
-    if (event instanceof KeyboardEvent && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault();
-      void this.store.save();
-    }
+    event.preventDefault();
+    void this.store.save();
   }
 }

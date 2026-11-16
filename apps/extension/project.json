@@ -93,7 +93,15 @@
       },
       "configurations": {
         "coverage": {
-          "coverage": true
+          "coverage": true,
+          "coverageInclude": ["apps/extension/src/**/*.{ts,html}"],
+          "coverageExclude": ["**/*.spec.ts", "**/testing/**", "**/models/**", "**/main.ts"],
+          "coverageThresholds": {
+            "statements": 90,
+            "branches": 85,
+            "functions": 85,
+            "lines": 90
+          }
         }
       },
       "dependsOn": ["ui:icons"]
