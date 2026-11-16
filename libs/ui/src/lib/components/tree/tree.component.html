@@ -25,6 +25,7 @@
         ngTreeItem
         class="ui-tree__row"
         [class.ui-tree__row--folder]="folder"
+        [attr.data-ui-folder-highlight]="folder && node.highlighted ? '' : null"
         [uiFolderColour]="folder ? (node.colour ?? FOLDER_COLOUR.Graphite) : FOLDER_COLOUR.Graphite"
         [class.ui-tree__row--drop]="dropTargetId() === node.id"
         [class.ui-tree__row--no-drop]="noDropIds().includes(node.id)"

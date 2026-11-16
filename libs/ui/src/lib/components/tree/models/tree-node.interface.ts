@@ -12,6 +12,11 @@ export interface UiTreeNode {
   /** Colour of the folder tile; graphite when unset. Fixed rows ignore it. */
   readonly colour?: FolderColour | string;
   /**
+   * Draws the folder row with a soft background in its colour (#440), stronger when it is the
+   * open row and with no grey hover. Needs a `colour` other than graphite; fixed rows ignore it.
+   */
+  readonly highlighted?: boolean;
+  /**
    * Short text about a folder (#418): a tooltip on the name and the row's `aria-description`
    * (through `uiTooltip`). Fixed rows ignore it.
    */

@@ -4,9 +4,7 @@
  * `global.scss` reacts to text size (root font size), font (`--font-sans`) and density (the
  * `--density-*` tokens); `ui-card`, `ui-theme-preview` and the app's link card react to the card
  * options. The values are the contracts' `TEXT_SIZE`, `APP_FONT`, `DENSITY`, `CARD_PREVIEW`, and
- * `LAYOUT_OFF` for a card part that is hidden. `data-folder-highlight` (#418, the contracts'
- * `FOLDER_HIGHLIGHT`, left out for `stripe`) styles the coloured folder rows of the sidebar
- * (`folder-highlight` mixin).
+ * `LAYOUT_OFF` for a card part that is hidden.
  */
 export const LAYOUT_ATTRIBUTE = {
   TextSize: 'data-text-size',
@@ -16,5 +14,4 @@ export const LAYOUT_ATTRIBUTE = {
   CardSite: 'data-card-site',
   CardNotes: 'data-card-notes',
   CardTags: 'data-card-tags',
-  FolderHighlight: 'data-folder-highlight',
 } as const;
