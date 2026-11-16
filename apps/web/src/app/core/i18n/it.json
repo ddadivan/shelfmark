@@ -538,7 +538,7 @@
     },
     "extension": {
       "title": "Estensione del browser",
-      "body": "L’estensione Shelfmark per Chrome, Edge, Brave e Arc invia a Shelfmark solo l’indirizzo e il titolo della scheda che scegli di salvare, insieme a cartella, tag e nota che indichi. Legge una scheda solo quando fai clic sul suo pulsante o usi la sua scorciatoia, mai in background, e non vede la tua cronologia né gli altri siti che visiti.",
+      "body": "L’estensione Shelfmark per Chrome, Edge, Brave e Arc si attiva solo quando fai clic sul suo pulsante o usi la sua scorciatoia, mai in background. Invia allora a Shelfmark l’indirizzo di quella scheda, per controllare se l’hai già salvata, e ne salva indirizzo e titolo, con la cartella, i tag e la nota scelti, solo quando premi Salva. Non vede mai la tua cronologia né gli altri siti che visiti.",
       "access": "Usa il tuo accesso a Shelfmark in quel browser e non può leggere il cookie di accesso. Può raggiungere solo Shelfmark e conserva sul tuo dispositivo solo le cartelle usate di recente, per proporle la volta successiva."
     },
     "third": {

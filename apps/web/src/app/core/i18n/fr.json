@@ -538,7 +538,7 @@
     },
     "extension": {
       "title": "Extension de navigateur",
-      "body": "L’extension Shelfmark pour Chrome, Edge, Brave et Arc n’envoie à Shelfmark que l’adresse et le titre de l’onglet que vous choisissez d’enregistrer, avec le dossier, les tags et la note que vous indiquez. Elle ne lit un onglet que lorsque vous cliquez sur son bouton ou utilisez son raccourci, jamais en arrière-plan, et ne voit ni votre historique ni les autres sites que vous visitez.",
+      "body": "L’extension Shelfmark pour Chrome, Edge, Brave et Arc ne s’active que lorsque vous cliquez sur son bouton ou utilisez son raccourci, jamais en arrière-plan. Elle envoie alors à Shelfmark l’adresse de cet onglet, pour vérifier s’il est déjà enregistré, et n’enregistre son adresse et son titre, avec le dossier, les tags et la note choisis, que lorsque vous appuyez sur Enregistrer. Elle ne voit ni votre historique ni les autres sites que vous visitez.",
       "access": "Elle utilise votre connexion à Shelfmark dans ce navigateur et ne peut pas lire le cookie de connexion lui-même. Elle ne peut joindre que Shelfmark et garde seulement, sur votre appareil, les dossiers utilisés récemment pour vous les proposer la fois suivante."
     },
     "third": {

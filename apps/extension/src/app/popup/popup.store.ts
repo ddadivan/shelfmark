@@ -21,6 +21,7 @@ import { readRecentFolders, rememberRecentFolder } from './utils/recent-folders'
 import { toFolderOptions } from './utils/to-folder-options';
 import { toPageInfo } from './utils/to-page-info';
 import { toPopupFailure } from './utils/to-popup-failure';
+import { withoutFragment } from './utils/without-fragment';
 
 /**
  * The popup's one flow (#445): read the tab, ask the API whether the user is signed in and whether
@@ -176,7 +177,8 @@ export class PopupStore {
         this.api.folders(),
         this.api.tags(),
         this.api.rules(),
-        this.api.lookup({ url: page.url }),
+        // Only the address, without the #fragment (the server ignores it), only to check for a duplicate.
+        this.api.lookup({ url: withoutFragment(page.url) }),
       ]);
       this.folders.set(folders.items);
       this.tags.set(tags.items);

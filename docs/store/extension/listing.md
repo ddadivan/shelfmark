@@ -21,7 +21,7 @@ Texts to paste into the Chrome Web Store developer dashboard (#445). The author 
 > - Add tags and a short note if you like, then press Save (or just Enter).
 > - Already saved it? Shelfmark tells you when, and where, instead of making a copy.
 >
-> Nothing is saved until you press Save, and only the page you choose is ever sent. The extension reads a tab only when you click its button, never in the background, and it can talk to Shelfmark only.
+> The extension reads a tab only when you click its button or press its shortcut, never in the background. It then sends the address of that one tab to your Shelfmark library to check whether you saved it already; the page is saved only when you press Save. It can talk to Shelfmark only.
 >
 > You need a Shelfmark account (free, sign in with Google or GitHub) at https://shelfmark-app.vercel.app. Sign in once in the browser and the extension uses that sign-in.
 >
@@ -58,11 +58,11 @@ Texts to paste into the Chrome Web Store developer dashboard (#445). The author 
 
 **Remote code:** No, I am not using remote code. (All scripts are in the package; the Content Security Policy is `script-src 'self'`.)
 
-**Data usage.** Tick only:
+**Data usage.** Tick only **Web history**, and nothing else:
 
-- **Website content**? No.
-- **Web history**? No. The extension does not read history; it sends one address only when the user presses Save.
-- **Personally identifiable information, health, financial, authentication, personal communications, location, user activity**: No.
+- **Web history**: yes. When the user opens the popup, the address of the current tab goes to their own Shelfmark library to check whether it is saved already, and its address and title are stored there when they press Save. Nothing else of their browsing is read or sent.
+- **Website content**: no. The extension never reads the page itself (no content scripts).
+- **Personally identifiable information, health, financial, authentication, personal communications, location, user activity**: no.
 
 Then confirm all three statements:
 
@@ -70,7 +70,7 @@ Then confirm all three statements:
 - I do not use or transfer user data for purposes that are unrelated to my item's single purpose.
 - I do not use or transfer user data to determine creditworthiness or for lending purposes.
 
-> Note for the reviewer field, if asked: the user explicitly chooses each page to save; its URL and title go to the user's own library on shelfmark-app.vercel.app, which the user signed up for. That is the single purpose, not collection.
+> Note for the reviewer field, if asked: the extension acts only when the user opens it on a tab; that tab's URL goes to the user's own library on shelfmark-app.vercel.app (a duplicate check), and its URL and title are stored there only on Save. That is the single purpose, not collection.
 
 **Privacy policy URL:** https://shelfmark-app.vercel.app/privacy (it has a "Browser extension" section).
 

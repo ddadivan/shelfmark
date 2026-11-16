@@ -538,7 +538,7 @@
     },
     "extension": {
       "title": "Extensión del navegador",
-      "body": "La extensión de Shelfmark para Chrome, Edge, Brave y Arc solo envía a Shelfmark la dirección y el título de la pestaña que eliges guardar, junto con la carpeta, las etiquetas y la nota que indiques. Solo lee una pestaña cuando pulsas su botón o su atajo, nunca en segundo plano, y no ve tu historial ni los demás sitios que visitas.",
+      "body": "La extensión de Shelfmark para Chrome, Edge, Brave y Arc solo actúa cuando pulsas su botón o su atajo, nunca en segundo plano. Entonces envía a Shelfmark la dirección de esa pestaña, para comprobar si ya la guardaste, y solo guarda su dirección y su título, con la carpeta, las etiquetas y la nota que elijas, cuando pulsas Guardar. Nunca ve tu historial ni los demás sitios que visitas.",
       "access": "Usa tu sesión de Shelfmark en ese navegador y no puede leer la cookie de sesión. Solo puede conectarse a Shelfmark y guarda en tu dispositivo únicamente las carpetas que usaste hace poco, para ofrecértelas la próxima vez."
     },
     "third": {

@@ -21,6 +21,20 @@ if (hosts.length === 0 || hosts.some((host) => !host.startsWith('https://'))) {
 if ('key' in manifest) {
   throw new Error('The store manifest must not contain a `key`.');
 }
+// The permissions the store review and the privacy texts describe; anything wider needs the author's OK.
+if (JSON.stringify(manifest.permissions) !== JSON.stringify(['activeTab']) || hosts.length !== 1) {
+  throw new Error('The store manifest asks for more than activeTab and the one API host.');
+}
+for (const field of [
+  'background',
+  'content_scripts',
+  'web_accessible_resources',
+  'externally_connectable',
+  'optional_permissions',
+  'optional_host_permissions',
+]) {
+  if (field in manifest) throw new Error(`The store manifest must not contain \`${field}\`.`);
+}
 
 const zip = resolve(root, `dist/shelfmark-extension-${manifest.version}.zip`);
 rmSync(zip, { force: true });

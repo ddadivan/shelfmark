@@ -29,6 +29,14 @@ describe('readExtensionConfig', () => {
     expect(readExtensionConfig({ NODE_ENV: NODE_ENV.Test }).allowAny).toBe(true);
   });
 
+  it('never accepts any extension origin on a Vercel deployment, whatever NODE_ENV says', () => {
+    for (const vercelEnv of ['preview', 'production', 'development']) {
+      expect(
+        readExtensionConfig({ NODE_ENV: NODE_ENV.Development, VERCEL_ENV: vercelEnv }).allowAny,
+      ).toBe(false);
+    }
+  });
+
   it.each([
     ['a wildcard', 'chrome-extension://*'],
     ['a wildcard inside the id', `chrome-extension://${'a'.repeat(31)}*`],
