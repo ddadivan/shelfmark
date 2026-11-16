@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { clearSessionHint, hasSessionHint, markSessionHint } from './session-hint';
+import { SESSION_HINT_KIND } from './models/session-hint-kind.const';
 import { SESSION_HINT_STORAGE_KEY } from './models/session-hint-storage-key.const';
 
 function fakeStorage(): Storage {
@@ -18,6 +19,15 @@ describe('session hint', () => {
     expect(storage.getItem(SESSION_HINT_STORAGE_KEY)).toBe('1');
     clearSessionHint(storage);
     expect(storage.getItem(SESSION_HINT_STORAGE_KEY)).toBeNull();
+  });
+
+  it('says whether the session is a demo (#440)', () => {
+    const storage = fakeStorage();
+    markSessionHint(storage, SESSION_HINT_KIND.Demo);
+    expect(storage.getItem(SESSION_HINT_STORAGE_KEY)).toBe('demo');
+    expect(hasSessionHint(storage)).toBe(true);
+    markSessionHint(storage);
+    expect(storage.getItem(SESSION_HINT_STORAGE_KEY)).toBe('1');
   });
 
   it('is read back', () => {
