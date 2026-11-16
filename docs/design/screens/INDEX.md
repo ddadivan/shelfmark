@@ -96,4 +96,4 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 
 ## 11 · Browser extension
 
-- `Extension.dc.html` — Browser extension popup (Chrome, #445): saved and refine, saving, folder picker, already saved, signed out, page that cannot be saved, errors, demo limit, removed; light and dark
+- `Extension.dc.html` — Browser extension popup (Chrome, #445): form and Save, saved, opening, folder picker, already saved, signed out, page that cannot be saved, errors; light and dark
