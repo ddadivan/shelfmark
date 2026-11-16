@@ -11,22 +11,8 @@ import { WHATS_NEW_MEDIA } from '../models/whats-new-media.const';
 const READING = MOCK_FIXTURE.readingName;
 // Same values as MOCK_LINKS_SCENARIO_KEY and its Previews / Showcase scenarios (apps/web).
 const SCENARIO_KEY = 'sm-mock-links-scenario';
-const PREVIEWS = 'previews';
 const SHOWCASE = 'showcase';
 const DESCRIPTION = 'Long reads worth a second look';
-
-/** A drawn landscape (sky, sun, hills) as the cover of the folder: pleasant in both themes. */
-const COVER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
-<defs>
-<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fb3d5"/><stop offset="0.7" stop-color="#f6d9b0"/></linearGradient>
-<linearGradient id="far" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6c8fa8"/><stop offset="1" stop-color="#4d7088"/></linearGradient>
-</defs>
-<rect width="1280" height="720" fill="url(#sky)"/>
-<circle cx="930" cy="250" r="86" fill="#fff4d6"/>
-<path d="M0 470 L180 330 L330 440 L520 280 L720 450 L900 340 L1100 450 L1280 380 L1280 720 L0 720 Z" fill="url(#far)"/>
-<path d="M0 560 Q240 450 480 540 T960 520 T1280 560 L1280 720 L0 720 Z" fill="#3f6b57"/>
-<path d="M0 640 Q300 560 620 630 T1280 620 L1280 720 L0 720 Z" fill="#2c4f40"/>
-</svg>`;
 
 /** The crop of `crop` size centred on `box`, kept inside the window. */
 function centred(box: { x: number; y: number; width: number; height: number }): WhatsNewClip {
@@ -68,24 +54,14 @@ export async function sideBySide(page: Page): Promise<WhatsNewClip> {
   return { x: Math.round(left.x), y: 0 };
 }
 
-/** A folder with a colour, an icon, a description and a cover, in the sidebar and as the header. */
+/** A highlighted folder (colour, icon, description): the tinted header block and the sidebar rows. */
 export async function folderStyling(page: Page): Promise<WhatsNewClip> {
-  await page.route(/\/api\/links\/[^/]+\/image\?v=/, (route) =>
-    route.fulfill({ contentType: 'image/svg+xml', body: COVER_SVG }),
-  );
-  await page.addInitScript(
-    ([key, value]) => sessionStorage.setItem(key, value),
-    [SCENARIO_KEY, PREVIEWS],
-  );
   await openFeed(page);
   await pickFolderMenuItem(page, READING, 'Color and icon…');
   const dialog = page.getByRole('dialog', { name: READING });
   await chooseOption(dialog, 'Ocean');
   await chooseOption(dialog, 'Star');
   await dialog.getByLabel('Description').fill(DESCRIPTION);
-  const first = dialog.getByRole('radiogroup', { name: 'Cover' }).locator('label.ui-choice').nth(1);
-  await first.scrollIntoViewIfNeeded();
-  await first.click();
   await dialog.getByRole('switch', { name: 'Highlight with background' }).click();
   await dialog.getByRole('button', { name: 'Save' }).click();
   await expect(dialog).toHaveCount(0);
@@ -103,7 +79,6 @@ export async function folderStyling(page: Page): Promise<WhatsNewClip> {
 
   const banner = page.locator('ui-folder-banner');
   await expect(banner.getByText(DESCRIPTION, { exact: true })).toBeVisible();
-  await expect(banner.locator('img.ui-folder-banner__cover')).toBeVisible();
   return { x: 0, y: 0 };
 }
 
