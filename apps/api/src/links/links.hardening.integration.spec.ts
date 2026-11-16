@@ -161,6 +161,23 @@ describe('links API: hardening', () => {
       expect(fetch).not.toHaveBeenCalled();
     });
 
+    it('refuses an explicit null folder with 400, not a 500 (#423)', async () => {
+      const res = await a
+        .post(BASE)
+        .send({ url: 'https://site.test/', folderId: null })
+        .expect(400);
+      expect(JSON.stringify(res.body)).toContain('folderId');
+      await a
+        .post(`${BASE}/batch`)
+        .send({ items: [{ url: 'https://site.test/a' }], folderId: null })
+        .expect(400);
+      await a
+        .post(`${BASE}/batch`)
+        .send({ items: [{ url: 'https://site.test/a', folderId: null }] })
+        .expect(400);
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
     it('does not fetch for a user at the cap', async () => {
       const userId = users.owner.userId;
       await t.db.prisma.link.createMany({
