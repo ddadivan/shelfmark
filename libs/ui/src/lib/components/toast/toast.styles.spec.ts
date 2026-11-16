@@ -34,14 +34,15 @@ describe('toast styles', () => {
     expect(mediaBlocks(region, /prefers-reduced-motion/).join('')).toContain('transition: none');
   });
 
-  it('is a glass surface with 18px corners, up to 540px wide, with a truncating detail line', () => {
+  it('is a glass surface with 18px corners, up to 540px wide, with a detail line that wraps', () => {
     expect(toast).toContain('background: var(--glass)');
     expect(toast).toContain('box-shadow: var(--shadow-float)');
     expect(toast).toContain('border-radius: 1.125rem');
     expect(toast).not.toContain('--shadow-popover');
     expect(toast).toContain('max-inline-size: min(33.75rem, 100%)');
-    expect(toast).toMatch(/\.ui-toast__detail\s*\{[^}]*text-overflow:\s*ellipsis/);
-    expect(toast).toMatch(/\.ui-toast__detail\s*\{[^}]*white-space:\s*nowrap/);
+    // The author's call (Nov 2026): the whole message is readable, on a phone too.
+    expect(toast).not.toMatch(/\.ui-toast__detail\s*\{[^}]*text-overflow:\s*ellipsis/);
+    expect(toast).not.toMatch(/\.ui-toast__detail\s*\{[^}]*white-space:\s*nowrap/);
   });
 
   it('tints the icon tile by kind', () => {

@@ -104,11 +104,8 @@
 
 .ui-toast__detail {
   display: block;
-  overflow: hidden;
   font-size: rem(12px);
   font-weight: 400;
   line-height: rem(16px);
   color: var(--text-muted);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }

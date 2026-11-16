@@ -134,9 +134,10 @@ test.describe('export with nothing to export (mock API)', () => {
       await openExportMenu(page);
       await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
       await expect(notice).toBeVisible();
-      await expect(
-        page.getByText('Save a link first, then you can export your library'),
-      ).toBeVisible();
+      const detail = page.getByText('Save a link first, then you can export your library');
+      await expect(detail).toBeVisible();
+      // The detail wraps instead of being cut with an ellipsis, on a phone too.
+      expect(await detail.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(0);
 
       await openSettingsSection(page, 'Account');
       await page.getByRole('button', { name: 'Download Bookmarks HTML' }).click();

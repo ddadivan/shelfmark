@@ -7,4 +7,4 @@ Toast confirms what just happened, names what it happened to, and offers Undo or
 - Durations: 3 s quick confirmation, 4–5 s save or status, 8 s with Undo (countdown line), errors and reminders stay until handled. Hover, focus or touch pauses the timer.
 - `role="status"`; errors `role="alert"`. Undo is a button reachable by Tab; ⌘Z also undoes while it is visible; Esc dismisses.
 - Up to three stack, newest in front; many saves at once collapse into one summary toast.
-- Width follows the text up to 540px; the second line truncates with “…”.
+- Width follows the text up to 540px; the second line wraps, so the whole message is readable on a phone too (the author's decision, November 2026).
