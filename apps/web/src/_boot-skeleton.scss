@@ -95,6 +95,8 @@
   display: none;
   gap: var(--space-3);
   align-items: center;
+  box-sizing: border-box;
+  block-size: rem(52px);
   padding: var(--space-1) var(--space-6) 0;
 
   @include desktop {
@@ -102,10 +104,16 @@
   }
 }
 
+// The header search: a 44px button from 64em, the 42px field from 80em (as the real header).
 .boot__search {
-  width: min(100%, rem(360px));
-  height: rem(40px);
+  width: rem(44px);
+  height: rem(44px);
   border-radius: var(--radius-full);
+
+  @include wide {
+    width: min(100%, rem(524px));
+    height: rem(42px);
+  }
 }
 
 .boot__spacer {
@@ -131,9 +139,11 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--space-3);
   min-height: 0;
-  padding: var(--space-6) var(--space-4);
+
+  // The title sits where the real one does: the main column's top padding plus the library's
+  // room for the breadcrumb trail (library.page.scss).
+  padding: calc(var(--space-6) + var(--space-3) + var(--space-2)) var(--space-4) var(--space-6);
   overflow: hidden;
 
   @include tablet {
@@ -141,7 +151,7 @@
   }
 
   @include desktop {
-    padding: var(--space-4) var(--space-6) 0;
+    padding: calc(var(--space-4) + var(--space-8) + var(--space-8)) var(--space-6) 0;
   }
 
   // Blocks keep their size; the column clips what does not fit.
@@ -152,30 +162,82 @@
 
 .boot__title {
   width: rem(160px);
-  height: rem(32px);
+  height: rem(38px);
+
+  @include desktop {
+    height: rem(44px);
+  }
 }
 
+// The count line, then the room of the toolbar and the filters above the feed (72px).
 .boot__count {
   width: rem(96px);
-  height: rem(14px);
-  margin-block-end: var(--space-2);
+  height: rem(16px);
+  margin-block: var(--space-1) rem(72px);
+
+  @include desktop {
+    margin-block-start: rem(6px);
+  }
 }
 
-// The feed: the same fluid columns as the library grid (one column on a phone).
+// The feed: the same fluid columns as the library grid (one column on a phone). Cards have a fixed
+// height and the grid is cut after three rows, however many columns the width gives.
 .boot__grid {
+  --boot-card-height: #{rem(340px)};
+
   display: grid;
-  gap: var(--density-feed-gap, var(--space-3));
+  gap: var(--density-feed-gap, var(--space-4));
+  max-block-size: calc(3 * var(--boot-card-height) + 2 * var(--density-feed-gap, var(--space-4)));
+  overflow: hidden;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 14.25rem), 1fr));
+
+  @include phone {
+    --boot-card-height: #{rem(384px)};
+  }
 
   @media (width > 120em) {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.25rem), 1fr));
   }
 }
 
+// Only the cards of the three visible rows are rendered: every card sweeps, and 36 sweeping cards
+// kept a slow machine busy before the app could render. The columns follow the grid's own width
+// (column minimum plus the 1rem gap per column).
+@mixin boot-visible-cards($column-em) {
+  @for $columns from 1 through 12 {
+    $from: 0;
+
+    @if $columns > 1 {
+      $from: $columns * ($column-em + 1) - 1;
+    }
+
+    $to: ($columns + 1) * ($column-em + 1) - 1;
+
+    @container boot-feed (width >= #{$from}em) and (width < #{$to}em) {
+      .boot__card:nth-child(n + #{3 * $columns + 1}) {
+        display: none;
+      }
+    }
+  }
+}
+
+.boot__grid {
+  container: boot-feed / inline-size;
+}
+
+@media (width <= 120em) {
+  @include boot-visible-cards(14.25);
+}
+
+@media (width > 120em) {
+  @include boot-visible-cards(16.25);
+}
+
 .boot__card {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  block-size: var(--boot-card-height);
   padding-block-end: var(--space-4);
   overflow: hidden;
   background: var(--surface);
