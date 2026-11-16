@@ -10,4 +10,6 @@ export interface DemoSeedFolder {
   icon: FolderIcon;
   /** Pinned to the sidebar. */
   pinned?: true;
+  /** Shown with a background in its colour (#440). */
+  highlighted?: true;
 }

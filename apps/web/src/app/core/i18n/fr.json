@@ -973,6 +973,10 @@
         "tooLong": "{{max}} caractères maximum.",
         "invalid": "Utilisez du texte simple sur une ligne."
       },
+      "highlight": {
+        "label": "Mettre en évidence avec un fond",
+        "hint": "Donne au dossier un fond doux de sa couleur, dans la barre latérale et sur sa page."
+      },
       "cover": {
         "label": "Couverture",
         "hint": "Une image d’aperçu d’un lien de ce dossier, derrière l’en-tête du dossier.",
@@ -1380,13 +1384,6 @@
         "colours": {
           "label": "Couleurs des dossiers",
           "hint": "Désactivé, tous les dossiers sont en graphite"
-        },
-        "highlight": {
-          "label": "Mettre en valeur les dossiers par leur couleur",
-          "hint": "Comment un dossier coloré apparaît dans la barre latérale, plus marqué quand il est ouvert",
-          "off": "Non",
-          "stripe": "Bande",
-          "background": "Fond"
         }
       },
       "motion": {

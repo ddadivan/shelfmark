@@ -3,7 +3,9 @@
     {
       "key": "work",
       "name": "Work",
-      "parent": null
+      "parent": null,
+      "colour": "ocean",
+      "highlighted": true
     },
     {
       "key": "angular",
@@ -23,7 +25,9 @@
     {
       "key": "recipes",
       "name": "Recipes",
-      "parent": null
+      "parent": null,
+      "colour": "amber",
+      "highlighted": true
     }
   ],
   "tags": [

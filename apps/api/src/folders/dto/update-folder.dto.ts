@@ -11,7 +11,15 @@ import {
   type HexColour,
   type UpdateFolderRequest,
 } from '@shelfmark/contracts';
-import { IsOptional, IsString, IsUUID, MaxLength, MinLength, ValidateIf } from 'class-validator';
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  MinLength,
+  ValidateIf,
+} from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { IsFolderColour } from './is-folder-colour.decorator';
 import { IsFolderIcon } from './is-folder-icon.decorator';
@@ -59,6 +67,12 @@ export class UpdateFolderDto implements UpdateFolderRequest {
   @ValidateIf((_, value: unknown) => value !== undefined)
   @IsFolderIcon()
   icon?: FolderIcon | FolderEmoji;
+
+  @ApiPropertyOptional({ description: 'Show the folder with a background in its colour (#440)' })
+  // Absent is fine, an explicit null is not.
+  @ValidateIf((_, value: unknown) => value !== undefined)
+  @IsBoolean()
+  highlighted?: boolean;
 
   @ApiPropertyOptional({
     type: String,

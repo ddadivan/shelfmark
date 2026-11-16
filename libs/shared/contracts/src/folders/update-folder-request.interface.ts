@@ -13,6 +13,8 @@ export interface UpdateFolderRequest {
   colour?: FolderColour | HexColour;
   /** One of `FOLDER_ICON` or exactly one emoji (`isFolderEmoji`; at most `FOLDER_EMOJI_MAX_CODE_POINTS` code points). */
   icon?: FolderIcon | FolderEmoji;
+  /** Highlight the folder with a background in its colour (#440). */
+  highlighted?: boolean;
   /**
    * Short description (#418): trimmed before it is checked, at most `FOLDER_LIMIT.DescriptionMax`
    * characters, no control characters (`isFolderDescription`); blank or `null` removes it.

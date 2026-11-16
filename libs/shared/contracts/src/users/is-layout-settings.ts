@@ -4,13 +4,13 @@ import { CARD_PREVIEW } from './card-preview.const';
 import type { CardPreview } from './card-preview.type';
 import { DENSITY } from './density.const';
 import type { Density } from './density.type';
-import { FOLDER_HIGHLIGHT } from './folder-highlight.const';
-import type { FolderHighlight } from './folder-highlight.type';
 import type { LayoutSettings } from './layout-settings.interface';
 import { TEXT_SIZE } from './text-size.const';
 import type { TextSize } from './text-size.type';
 
-const LAYOUT_KEYS = 'cardNotes,cardPreview,cardSite,cardTags,density,folderHighlight,font,textSize';
+const LAYOUT_KEYS = 'cardNotes,cardPreview,cardSite,cardTags,density,font,textSize';
+/** Retired in #440 (the sidebar colour bars): a layout stored before still carries it and is read without it. */
+const RETIRED_LAYOUT_KEY = 'folderHighlight';
 
 function isOneOf<T extends string>(values: readonly T[], value: unknown): value is T {
   return typeof value === 'string' && (values as readonly string[]).includes(value);
@@ -32,25 +32,26 @@ export function isCardPreview(value: unknown): value is CardPreview {
   return isOneOf(Object.values(CARD_PREVIEW), value);
 }
 
-export function isFolderHighlight(value: unknown): value is FolderHighlight {
-  return isOneOf(Object.values(FOLDER_HIGHLIGHT), value);
-}
-
-/** A whole, valid `LayoutSettings` with no other keys (what the web stores for the first paint). */
+/**
+ * A whole, valid `LayoutSettings` with no other keys (what the web stores for the first paint);
+ * the retired `folderHighlight` key (#440) is tolerated and ignored.
+ */
 export function isLayoutSettings(value: unknown): value is LayoutSettings {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return false;
   }
   const record = value as Record<string, unknown>;
   return (
-    Object.keys(record).sort().join(',') === LAYOUT_KEYS &&
+    Object.keys(record)
+      .filter((key) => key !== RETIRED_LAYOUT_KEY)
+      .sort()
+      .join(',') === LAYOUT_KEYS &&
     isTextSize(record['textSize']) &&
     isAppFont(record['font']) &&
     isDensity(record['density']) &&
     isCardPreview(record['cardPreview']) &&
     typeof record['cardSite'] === 'boolean' &&
     typeof record['cardNotes'] === 'boolean' &&
-    typeof record['cardTags'] === 'boolean' &&
-    isFolderHighlight(record['folderHighlight'])
+    typeof record['cardTags'] === 'boolean'
   );
 }

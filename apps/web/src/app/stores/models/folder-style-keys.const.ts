@@ -4,6 +4,7 @@ import type { FolderStyleChange } from './folder-style-change.type';
 export const FOLDER_STYLE_KEYS: readonly (keyof FolderStyleChange)[] = [
   'colour',
   'icon',
+  'highlighted',
   'description',
   'coverLinkId',
 ];

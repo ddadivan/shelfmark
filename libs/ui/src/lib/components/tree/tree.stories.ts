@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { MenuItemComponent } from '../menu/menu-item/menu-item.component';
 import { MenuSeparatorComponent } from '../menu/menu-separator/menu-separator.component';
 import { MenuComponent } from '../menu/menu.component';
+import type { UiTreeNode } from './models/tree-node.interface';
 import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.interface';
 import { TREE_STORY_ID } from './stories/tree-story-id.const';
 import { TREE_STORY_DEEP } from './stories/tree-story-deep.const';
@@ -219,34 +220,51 @@ export const ReorderLine: Story = {
 };
 
 /**
- * Coloured folders (#418) in the three sidebar highlight modes (`html[data-folder-highlight]`, set
- * here on a wrapper): stripe (default), a soft background tint, off. The current row (Angular) is
- * stronger; graphite rows stay plain. Recipes has a description (its tooltip). Both themes.
+ * Coloured folders (#418) and the highlight (#440), in both themes: plain (the folder tile only),
+ * then the same folders with `highlighted` (a soft background in the folder colour even when the
+ * folder is not open, a stronger tint and bolder text on the open row, hover and focus a stronger
+ * tint of the same colour, never the grey hover). Graphite rows stay plain. Recipes has a
+ * description (its tooltip).
  */
 export const FolderColours: Story = {
   parameters: { layout: 'fullscreen' },
-  render: () => ({
-    props: { nodes: TREE_STORY_COLOURED, ids: TREE_STORY_ID },
-    template: `${Object.values(THEME)
-      .map(
-        (theme) => `
+  render: () => {
+    const light = (list: readonly UiTreeNode[]): UiTreeNode[] =>
+      list.map((node) => ({
+        ...node,
+        ...(node.colour !== undefined && { highlighted: true }),
+        ...(node.children && { children: light(node.children) }),
+      }));
+    return {
+      props: {
+        plain: TREE_STORY_COLOURED,
+        highlighted: light(TREE_STORY_COLOURED),
+        ids: TREE_STORY_ID,
+      },
+      template: `${Object.values(THEME)
+        .map(
+          (theme) => `
           <div ${THEME_ATTRIBUTE}="${theme}" class="ts-panel ts-panel--variants">
-            <p class="ts-hint">${theme} theme: stripe, background, off</p>
+            <p class="ts-hint">${theme} theme: plain, highlighted (Angular is open)</p>
             <div class="ts-row">
-              ${['stripe', 'background', 'off']
-                .map(
-                  (mode) => `
-                <div class="ts-sidebar" data-folder-highlight="${mode}">
-                  <ui-tree ariaLabel="Folders, ${mode} (${theme})" heading="Folders"
-                    menuLabel="Actions for {name}" [nodes]="nodes" [activeId]="ids.Angular" />
-                </div>`,
-                )
-                .join('')}
+              <div class="ts-sidebar">
+                <ui-tree ariaLabel="Folders, plain (${theme})" heading="Folders"
+                  menuLabel="Actions for {name}" [nodes]="plain" [activeId]="ids.Angular" />
+              </div>
+              <div class="ts-sidebar">
+                <ui-tree ariaLabel="Folders, highlighted (${theme})" heading="Folders"
+                  menuLabel="Actions for {name}" [nodes]="highlighted" [activeId]="ids.Angular" />
+              </div>
+              <div class="ts-sidebar">
+                <ui-tree ariaLabel="Folders, highlighted, none open (${theme})" heading="Folders"
+                  menuLabel="Actions for {name}" [nodes]="highlighted" />
+              </div>
             </div>
           </div>`,
-      )
-      .join('')}`,
-  }),
+        )
+        .join('')}`,
+    };
+  },
 };
 
 const variants = (theme: Theme) => `

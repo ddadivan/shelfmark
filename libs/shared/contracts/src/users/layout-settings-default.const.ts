@@ -1,7 +1,6 @@
 import { APP_FONT } from './app-font.const';
 import { CARD_PREVIEW } from './card-preview.const';
 import { DENSITY } from './density.const';
-import { FOLDER_HIGHLIGHT } from './folder-highlight.const';
 import type { LayoutSettings } from './layout-settings.interface';
 import { TEXT_SIZE } from './text-size.const';
 
@@ -14,5 +13,4 @@ export const LAYOUT_SETTINGS_DEFAULT: Readonly<LayoutSettings> = {
   cardSite: true,
   cardNotes: true,
   cardTags: true,
-  folderHighlight: FOLDER_HIGHLIGHT.Stripe,
 };

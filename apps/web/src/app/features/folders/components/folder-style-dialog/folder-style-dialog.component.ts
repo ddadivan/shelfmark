@@ -38,6 +38,8 @@ import {
   injectDialogData,
   UiDialogRef,
   SegmentedControlComponent,
+  SettingsRowComponent,
+  SwitchComponent,
   type ChoiceOption,
   type SegmentedOption,
 } from '@shelfmark/ui';
@@ -79,6 +81,8 @@ const ICONS: readonly FolderIcon[] = Object.values(FOLDER_ICON);
     InputComponent,
     FormRoot,
     SegmentedControlComponent,
+    SettingsRowComponent,
+    SwitchComponent,
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -103,6 +107,7 @@ export class FolderStyleDialogComponent {
     colour: this.data.folder.colour,
     icon: isFolderIconName(this.data.folder.icon) ? this.data.folder.icon : FOLDER_DEFAULT_ICON,
     emoji: isFolderIconName(this.data.folder.icon) ? '' : this.data.folder.icon,
+    highlighted: this.data.folder.highlighted,
     description: this.data.folder.description ?? '',
     cover: this.data.folder.coverLinkId ?? '',
   });
@@ -284,6 +289,7 @@ export class FolderStyleDialogComponent {
       colour: FOLDER_DEFAULT_COLOUR,
       icon: FOLDER_DEFAULT_ICON,
       emoji: '',
+      highlighted: false,
     }));
     this.tab.set(FOLDER_STYLE_TAB.Icon);
   }
@@ -293,7 +299,7 @@ export class FolderStyleDialogComponent {
   }
 
   private save(): Promise<undefined> {
-    const { colour, description, cover } = this.model();
+    const { colour, highlighted, description, cover } = this.model();
     const icon = this.previewIcon();
     if (
       (isFolderColourName(colour) || isHexColour(colour)) &&
@@ -306,6 +312,7 @@ export class FolderStyleDialogComponent {
         {
           colour,
           icon,
+          highlighted,
           description: normalizeFolderDescription(description),
           coverLinkId: cover === '' ? null : cover,
         },

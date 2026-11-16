@@ -1,3 +1,5 @@
+import { SESSION_HINT_KIND } from './models/session-hint-kind.const';
+import type { SessionHintKind } from './models/session-hint-kind.type';
 import { SESSION_HINT_STORAGE_KEY } from './models/session-hint-storage-key.const';
 
 type HintStorage = Pick<Storage, 'setItem' | 'removeItem'>;
@@ -11,10 +13,16 @@ function defaultStorage(): Storage | undefined {
   }
 }
 
-/** Remembers on this device that a session exists or is about to (OAuth redirect, demo). */
-export function markSessionHint(storage: HintStorage | undefined = defaultStorage()): void {
+/**
+ * Remembers on this device that a session exists or is about to (OAuth redirect, demo). `kind`
+ * says whether it is a demo session, so the next load's skeleton shows the demo banner (#440).
+ */
+export function markSessionHint(
+  storage: HintStorage | undefined = defaultStorage(),
+  kind: SessionHintKind = SESSION_HINT_KIND.Session,
+): void {
   try {
-    storage?.setItem(SESSION_HINT_STORAGE_KEY, '1');
+    storage?.setItem(SESSION_HINT_STORAGE_KEY, kind);
   } catch {
     // Storage may be full or blocked; the skeleton is a nicety, never a requirement.
   }

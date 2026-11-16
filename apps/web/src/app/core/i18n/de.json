@@ -956,6 +956,10 @@
         "tooLong": "Höchstens {{max}} Zeichen.",
         "invalid": "Nur einfacher Text in einer Zeile."
       },
+      "highlight": {
+        "label": "Mit Hintergrund hervorheben",
+        "hint": "Hinterlegt den Ordner in der Seitenleiste und auf seiner Seite sanft mit seiner Farbe."
+      },
       "cover": {
         "label": "Titelbild",
         "hint": "Ein Vorschaubild eines Links aus diesem Ordner, hinter dem Ordnerkopf.",
@@ -1358,13 +1362,6 @@
         "colours": {
           "label": "Ordnerfarben",
           "hint": "Aus zeigt jeden Ordner in schlichtem Graphit"
-        },
-        "highlight": {
-          "label": "Ordner in ihrer Farbe hervorheben",
-          "hint": "Wie ein farbiger Ordner in der Seitenleiste erscheint, stärker, wenn er geöffnet ist",
-          "off": "Aus",
-          "stripe": "Streifen",
-          "background": "Hintergrund"
         }
       },
       "motion": {

@@ -1,58 +1,38 @@
 @use 'functions' as *;
 @use 'media' as *;
 
-// The sidebar highlight of a coloured folder row (#418, Settings › Appearance "Highlight folders
-// with their colour"). Include it in the row's rule; the row carries `uiFolderColour`, so it has
-// `--ui-folder-ink` / `--ui-folder-tint` and `[data-ui-folder-colour]` while a colour is chosen
-// (graphite rows stay plain). `$current` is the open row's selector suffix (`[aria-current]`,
-// `:has(.is-active)`). The mode comes from `html[data-folder-highlight]` (ThemeService):
-// - none (the default, stripe): a thin ink bar at the row's start, longer and wider when current;
-// - `background`: a soft tint behind the row, the full tile tint (the text then plain `--text`)
-//   when current, which keeps its bar as the shape cue; tints are tile colours, so text keeps 4.5:1;
-// - `off`: nothing but the tile.
-@mixin folder-highlight($current: '[aria-current]') {
-  &[data-ui-folder-colour] {
-    position: relative;
-
-    &::before {
-      position: absolute;
-      inset-block: rem(10px);
-      inset-inline-start: rem(3px);
-      inline-size: rem(3px);
-      pointer-events: none;
-      content: '';
-      background: var(--ui-folder-ink);
-      border-radius: var(--radius-full);
-    }
-  }
-
-  &#{$current}[data-ui-folder-colour]::before {
-    inset-block: rem(6px);
-    inline-size: rem(4px);
-  }
-
-  :host-context([data-folder-highlight='off']) &[data-ui-folder-colour]::before {
-    content: none;
-  }
-
-  :host-context([data-folder-highlight='background']) &[data-ui-folder-colour] {
+// The sidebar highlight of a folder row (#440, "Highlight with background" in the folder's style
+// dialog; it replaces the colour bars of #418). Include it in the row's rule. The row carries
+// `uiFolderColour` (`--ui-folder-ink` / `--ui-folder-tint`, `[data-ui-folder-colour]` while a
+// colour is chosen) and `data-ui-folder-highlight` when the folder is highlighted, so a graphite
+// or a plain row stays as it is. Tints are the tile colours, so the text keeps 4.5:1 on both bases.
+// - at rest: a soft tint of the folder colour, also when the folder is not open;
+// - hover and keyboard focus (`$focus`): a slightly stronger tint of the same colour, never the grey hover;
+// - open (`$current`, the selector suffix of the open row): the full tint, plain text colour, bolder text.
+@mixin folder-highlight($current: '[aria-current]', $focus: ':focus-visible') {
+  &[data-ui-folder-colour][data-ui-folder-highlight] {
     background: color-mix(in srgb, var(--ui-folder-tint) 55%, transparent);
-
-    &::before {
-      content: none;
-    }
 
     @include hover {
       background: color-mix(in srgb, var(--ui-folder-tint) 80%, transparent);
     }
+
+    &#{$focus} {
+      background: color-mix(in srgb, var(--ui-folder-tint) 80%, transparent);
+    }
   }
 
-  :host-context([data-folder-highlight='background']) &#{$current}[data-ui-folder-colour] {
+  &#{$current}[data-ui-folder-colour][data-ui-folder-highlight] {
+    font-weight: 600;
     color: var(--text);
     background: var(--ui-folder-tint);
 
-    &::before {
-      content: '';
+    @include hover {
+      background: color-mix(in srgb, var(--ui-folder-tint) 85%, var(--ui-folder-ink));
+    }
+
+    &#{$focus} {
+      background: color-mix(in srgb, var(--ui-folder-tint) 85%, var(--ui-folder-ink));
     }
   }
 }

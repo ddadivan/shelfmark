@@ -12,6 +12,7 @@ export function expectedFolder(
     name,
     colour: FOLDER_DEFAULT_COLOUR,
     icon: FOLDER_DEFAULT_ICON,
+    highlighted: false,
     description: null,
     coverLinkId: null,
     coverUrl: null,
