@@ -17,7 +17,7 @@
   flex-direction: column;
   gap: var(--space-4);
   width: min(var(--ui-dialog-custom-width, var(--ui-dialog-width)), calc(100vw - #{rem(48px)}));
-  max-height: calc(100dvh - #{rem(48px)});
+  max-height: calc(100dvh - var(--ui-keyboard-inset, 0rem) - #{rem(48px)});
   padding: rem(28px);
   color: var(--text);
   background: var(--surface);
@@ -34,7 +34,7 @@
 
   @include phone {
     width: 100vw;
-    max-height: calc(100dvh - #{rem(48px)});
+    max-height: calc(100dvh - var(--ui-keyboard-inset, 0rem) - #{rem(48px)});
     padding: var(--space-3) rem(20px) calc(#{rem(28px)} + env(safe-area-inset-bottom));
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     transform: translateY(var(--ui-sheet-drag, 0));
@@ -43,8 +43,8 @@
   // Full screen on a phone (search): the whole viewport, square corners, safe areas padded.
   &--phone-full {
     @include phone {
-      height: 100dvh;
-      max-height: 100dvh;
+      height: calc(100dvh - var(--ui-keyboard-inset, 0rem));
+      max-height: calc(100dvh - var(--ui-keyboard-inset, 0rem));
       padding-top: calc(var(--space-4) + env(safe-area-inset-top));
       border-radius: 0;
     }
@@ -56,14 +56,14 @@
   &--sheet {
     @include tablet {
       width: min(#{rem(560px)}, 100vw);
-      max-height: calc(100dvh - #{rem(150px)});
+      max-height: calc(100dvh - var(--ui-keyboard-inset, 0rem) - #{rem(150px)});
       padding: var(--space-3) rem(20px) calc(#{rem(28px)} + env(safe-area-inset-bottom));
       border-radius: var(--radius-xl) var(--radius-xl) 0 0;
       transform: translateY(var(--ui-sheet-drag, 0));
     }
 
     @include phone {
-      max-height: calc(100dvh - #{rem(150px)});
+      max-height: calc(100dvh - var(--ui-keyboard-inset, 0rem) - #{rem(150px)});
       padding-inline: rem(20px);
       padding-bottom: calc(#{rem(28px)} + env(safe-area-inset-bottom));
       border-radius: var(--radius-xl) var(--radius-xl) 0 0;
@@ -72,7 +72,7 @@
 
   &--sheet-tall {
     @include compact {
-      height: calc(100dvh - #{rem(150px)});
+      height: calc(100dvh - var(--ui-keyboard-inset, 0rem) - #{rem(150px)});
     }
   }
 
@@ -120,7 +120,7 @@
   padding: 0;
   margin-block-start: rem(96px);
   overflow: hidden;
-  max-height: calc(100dvh - #{rem(96px + 48px)});
+  max-height: calc(100dvh - var(--ui-keyboard-inset, 0rem) - #{rem(96px + 48px)});
 
   .ui-dialog__body {
     display: flex;
@@ -144,7 +144,7 @@
     border-radius: 0;
     box-shadow: none;
     padding: calc(var(--space-4) + env(safe-area-inset-top)) rem(16px) env(safe-area-inset-bottom);
-    max-height: 100dvh;
+    max-height: calc(100dvh - var(--ui-keyboard-inset, 0rem));
 
     .ui-dialog__drag {
       gap: 0;

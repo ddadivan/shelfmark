@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { afterNextRender, DestroyRef, inject, Injector, signal } from '@angular/core';
 import type { Subscription } from 'rxjs';
 import { MENU_ALIGN } from '../../components/menu/models/menu-align.const';
@@ -6,6 +7,7 @@ import type { ConnectedOverlay } from './connected-overlay';
 import type { FieldPopupOptions } from './models/field-popup-options.interface';
 import { OVERLAY_LAYER } from './models/overlay-layer.const';
 import { UiOverlay } from './overlay.service';
+import { watchVisibleArea } from './visible-area';
 
 /**
  * The listbox popup of a field (`ui-select`, `ui-tag-input`, the `popup` mode of
@@ -21,13 +23,17 @@ export class FieldPopup {
 
   private readonly overlays = inject(UiOverlay);
   private readonly injector = inject(Injector);
+  private readonly document = inject(DOCUMENT);
   private overlay: ConnectedOverlay | null = null;
   private detachSubscription: Subscription | null = null;
   private resizeObserver: ResizeObserver | null = null;
+  /** Stops capping the popup to the visible area (above the on-screen keyboard). */
+  private stopVisibleArea: () => void = () => undefined;
 
   constructor(private readonly options: FieldPopupOptions) {
     inject(DestroyRef).onDestroy(() => {
       this.stopWidthSync();
+      this.stopVisibleArea();
       this.detachSubscription?.unsubscribe();
       this.overlay?.dispose();
       if (this.options.ownsPopup?.() ?? true) {
@@ -50,6 +56,14 @@ export class FieldPopup {
     afterNextRender(
       () => {
         this.overlay?.updatePosition();
+        // Placed: cap its height to what the on-screen keyboard leaves visible, and follow it.
+        this.stopVisibleArea();
+        if (this.options.isShown()) {
+          this.stopVisibleArea = watchVisibleArea(
+            () => this.options.popup(),
+            this.document.defaultView,
+          );
+        }
       },
       { injector: this.injector },
     );
@@ -61,6 +75,8 @@ export class FieldPopup {
       return;
     }
     this.stopWidthSync();
+    this.stopVisibleArea();
+    this.stopVisibleArea = () => undefined;
     afterNextRender(
       () => {
         if (!this.options.isShown()) {

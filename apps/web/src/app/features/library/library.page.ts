@@ -226,7 +226,9 @@ export default class LibraryPage {
   }
 
   protected async exportView(format: ExportFormat): Promise<void> {
-    await this.exporter.download(format, this.filters.viewScope());
+    await this.exporter.download(format, this.filters.viewScope(), {
+      viewEmpty: this.feed.empty(),
+    });
   }
 
   protected async exportAll(format: ExportFormat): Promise<void> {

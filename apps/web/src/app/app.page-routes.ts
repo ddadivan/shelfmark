@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { LINKS_SCOPE } from './features/links/models/links-scope.const';
 import { APP_PATH } from './models/app-path.const';
-import { authOnly, guestOnly, redirectToSignIn } from './core/auth/auth.guards';
+import { authOnly, guestOnly, landingGuestOnly, redirectToSignIn } from './core/auth/auth.guards';
 import { loadLibraryPage } from './features/library/load-library-page';
 import { loadLandingPage } from './features/landing/load-landing-page';
 import { adminOnly } from './features/admin/admin.guard';
@@ -21,7 +21,8 @@ export const pageRoutes: Routes = [
   // `/` is the landing for a guest and the app shell for a signed-in user (no redirect flicker).
   {
     path: '',
-    canMatch: [guestOnly],
+    // Does not wait for the session without a session hint: a first visit never waits for the API.
+    canMatch: [landingGuestOnly],
     // A lazy chunk (#339: eager it was ~130 kB of the initial bundle), started from `main.ts`
     // before the session answers, so it is there when the guard lets the landing through.
     loadComponent: loadLandingPage,

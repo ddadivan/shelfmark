@@ -459,6 +459,22 @@ describe('SelectComponent', () => {
       expect(active()?.textContent.trim()).toBe('Clothes');
     });
 
+    it('keeps focus on the trigger on a touch screen, so no keyboard covers the list', async () => {
+      vi.stubGlobal('matchMedia', (query: string) => ({
+        matches: query === '(pointer: coarse)',
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }));
+      try {
+        const { search, trigger } = await searching();
+        expect(search()).not.toBeNull();
+        expect(document.activeElement).toBe(trigger);
+        expect(trigger.getAttribute('aria-expanded')).toBe('true');
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+
     it('gives the search box the combobox semantics and takes the pointer off the trigger', async () => {
       const { search, trigger, active, fixture } = await searching();
       const field = search() as HTMLInputElement;

@@ -1172,6 +1172,14 @@
     "all": {
       "json": "Todo en JSON",
       "html": "Todo como HTML de marcadores"
+    },
+    "empty": {
+      "title": "Todavía no hay nada que exportar",
+      "detail": "Guarda primero un enlace y luego podrás exportar tu biblioteca"
+    },
+    "emptyView": {
+      "title": "No hay nada que exportar en esta vista",
+      "detail": "Esta vista no tiene enlaces. Exporta todo o abre otra vista"
     }
   },
   "settings": {
@@ -2779,6 +2787,18 @@
       "feedback": {
         "title": "Enviar comentarios",
         "text": "Cuéntanos qué funciona y qué no, con una captura si quieres, desde la propia app."
+      },
+      "fastLanding": {
+        "text": "En la primera visita la página de inicio se abre al momento, sin una pausa oscura."
+      },
+      "phoneKeyboard": {
+        "text": "En el móvil el teclado ya no tapa la lista de carpetas, los paneles, los diálogos ni las sugerencias."
+      },
+      "emptyExport": {
+        "text": "La exportación explica cuando no hay nada que exportar en lugar de descargar un archivo vacío."
+      },
+      "bulkBar": {
+        "text": "En el móvil la barra de enlaces seleccionados vuelve a quedar justo encima de la barra de pestañas."
       }
     }
   },

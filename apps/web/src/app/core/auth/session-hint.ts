@@ -1,8 +1,9 @@
 import { SESSION_HINT_STORAGE_KEY } from './models/session-hint-storage-key.const';
 
 type HintStorage = Pick<Storage, 'setItem' | 'removeItem'>;
+type HintReader = Pick<Storage, 'getItem'>;
 
-function defaultStorage(): HintStorage | undefined {
+function defaultStorage(): Storage | undefined {
   try {
     return globalThis.localStorage;
   } catch {
@@ -25,5 +26,17 @@ export function clearSessionHint(storage: HintStorage | undefined = defaultStora
     storage?.removeItem(SESSION_HINT_STORAGE_KEY);
   } catch {
     // See markSessionHint.
+  }
+}
+
+/**
+ * Whether this device has seen a session. Without the hint the visitor is almost surely a guest,
+ * so the landing renders without waiting for the session request (a cold API takes seconds).
+ */
+export function hasSessionHint(storage: HintReader | undefined = defaultStorage()): boolean {
+  try {
+    return storage?.getItem(SESSION_HINT_STORAGE_KEY) != null;
+  } catch {
+    return false;
   }
 }

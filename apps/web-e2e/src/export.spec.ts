@@ -5,6 +5,7 @@ import { openAccountMenu, openSettingsSection, seedSession } from './support/moc
 import { isCompact } from './support/sidebar';
 import { openExportMenu } from './support/library-toolbar';
 import { E2E_TAG } from './models/e2e-tag.const';
+import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
 
 // Mirrors EXPORT_MOCK_MARKER (apps/web); this project cannot import it.
 const MOCK_MARKER = 'sm-mock-export';
@@ -49,13 +50,30 @@ test.describe('export (mock API)', () => {
   });
 
   test('a tag filter adds "This view" items that carry the tag', async ({ page }) => {
-    await page.goto('/links?tag=docs&tag=c%2B%2B');
+    // A view with links (an empty one only explains, below). The encoding of tags such as `c++`
+    // is covered by export-url.spec.ts.
+    await page.goto('/links?tag=docs');
+    await expect(page.locator('ui-card').first()).toBeVisible();
     await openExportMenu(page);
 
     const download = page.waitForEvent('download');
     await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
 
-    expect(await requestedUrl(await download)).toBe('/api/export?format=json&tag=docs&tag=c%2B%2B');
+    expect(await requestedUrl(await download)).toBe('/api/export?format=json&tag=docs');
+  });
+
+  test('an empty view explains instead of saving an empty file', async ({ page }) => {
+    let downloads = 0;
+    page.on('download', () => downloads++);
+
+    // No mock link has both tags: the view is empty, the library is not.
+    await page.goto('/links?tag=docs&tag=c%2B%2B');
+    await expect(page.locator('ui-empty-state')).toBeVisible();
+    await openExportMenu(page);
+    await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
+
+    await expect(page.getByText('Nothing to export in this view')).toBeVisible();
+    expect(downloads).toBe(0);
   });
 
   test(
@@ -89,4 +107,42 @@ test.describe('export (mock API)', () => {
 
     expect(await requestedUrl(await download)).toBe('/api/export?format=html');
   });
+});
+
+test.describe('export with nothing to export (mock API)', () => {
+  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+
+  test.beforeEach(async ({ page }) => {
+    await seedSession(page);
+    // A new account: no link at all.
+    await page.addInitScript(
+      ([key, value]) => sessionStorage.setItem(key, value),
+      [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
+    );
+  });
+
+  test(
+    'every export explains there is nothing yet instead of saving an empty file',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      let downloads = 0;
+      page.on('download', () => downloads++);
+      const notice = page.getByText('Nothing to export yet');
+
+      await page.goto('/links');
+      await expect(page.getByRole('heading', { name: 'Your links will live here' })).toBeVisible();
+      await openExportMenu(page);
+      await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
+      await expect(notice).toBeVisible();
+      await expect(
+        page.getByText('Save a link first, then you can export your library'),
+      ).toBeVisible();
+
+      await openSettingsSection(page, 'Account');
+      await page.getByRole('button', { name: 'Download Bookmarks HTML' }).click();
+      await expect(notice.first()).toBeVisible();
+
+      expect(downloads).toBe(0);
+    },
+  );
 });

@@ -1,5 +1,6 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { Overlay } from '@angular/cdk/overlay';
+import { KeyboardInset } from '../keyboard-inset/keyboard-inset.service';
 import type { ComponentType } from '@angular/cdk/portal';
 import { inject, Injector, Service } from '@angular/core';
 import { trackInputModality } from './focus-return';
@@ -33,6 +34,11 @@ export class DialogService {
   private readonly dialog = inject(Dialog);
   private readonly overlay = inject(Overlay);
   private readonly injector = inject(Injector);
+
+  constructor() {
+    // Sheets lift above the on-screen keyboard (`--ui-keyboard-inset`, read by the dialog styles).
+    inject(KeyboardInset);
+  }
 
   /**
    * Opens `component` in a dialog. `R` is the type of the result, `D` of `config.data`.

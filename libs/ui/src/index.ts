@@ -67,6 +67,7 @@ export * from './lib/directives/tooltip';
 
 export * from './lib/services/dialog';
 export * from './lib/services/drawer';
+export * from './lib/services/keyboard-inset';
 export * from './lib/services/motion';
 export * from './lib/services/overlay';
 export * from './lib/services/toast';

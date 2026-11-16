@@ -44,6 +44,32 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
     ],
   },
   {
+    version: '2.0.6',
+    date: '2026-11-16',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'fastLanding',
+        textKey: 'changelog.items.fastLanding.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'phoneKeyboard',
+        textKey: 'changelog.items.phoneKeyboard.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'emptyExport',
+        textKey: 'changelog.items.emptyExport.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'bulkBar',
+        textKey: 'changelog.items.bulkBar.text',
+      },
+    ],
+  },
+  {
     version: '2.0.5',
     date: '2026-11-14',
     items: [

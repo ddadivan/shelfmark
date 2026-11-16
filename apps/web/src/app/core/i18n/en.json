@@ -1150,6 +1150,14 @@
     "all": {
       "json": "Everything as JSON",
       "html": "Everything as Bookmarks HTML"
+    },
+    "empty": {
+      "title": "Nothing to export yet",
+      "detail": "Save a link first, then you can export your library"
+    },
+    "emptyView": {
+      "title": "Nothing to export in this view",
+      "detail": "This view has no links. Export everything, or open another view"
     }
   },
   "settings": {
@@ -2719,6 +2727,18 @@
       "feedback": {
         "title": "Send feedback",
         "text": "Tell us what works and what doesn't, with a screenshot if you like, right from the app."
+      },
+      "fastLanding": {
+        "text": "On a first visit the landing opens at once instead of after a dark pause."
+      },
+      "phoneKeyboard": {
+        "text": "On phones the keyboard no longer covers the folder list, sheets, dialogs and suggestions."
+      },
+      "emptyExport": {
+        "text": "Export explains when there is nothing to export instead of downloading an empty file."
+      },
+      "bulkBar": {
+        "text": "On phones the bar for selected links sits just above the tab bar again."
       }
     }
   },
