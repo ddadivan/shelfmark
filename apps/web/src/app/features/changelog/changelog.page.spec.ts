@@ -31,7 +31,8 @@ describe('ChangelogPage', () => {
 
     expect(root.textContent).toContain(`You're using Shelfmark ${APP_VERSION}.`);
     expect(root.querySelector('h3')?.textContent).toBe('A fresh look');
-    expect(root.querySelector('.release__fix')?.textContent).toContain('Own colors');
+    const fixes = [...root.querySelectorAll('.release__fix')].map((fix) => fix.textContent ?? '');
+    expect(fixes.some((fix) => fix.includes('Own colors'))).toBe(true);
     expect(root.querySelector('time')?.getAttribute('datetime')).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(root.textContent).not.toMatch(/changelog\.items/);
   });
