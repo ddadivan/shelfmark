@@ -3,6 +3,7 @@ import {
   findMatchingRule,
   LINK_LIMIT,
   type FolderResponse,
+  type LinkLookupResponse,
   type LinkResponse,
   type RuleResponse,
   type TagResponse,
@@ -72,7 +73,9 @@ export class PopupStore {
   readonly linkFolder = computed(() => this.findFolder(this.link()?.folderId ?? null));
 
   async init(): Promise<void> {
-    const page = toPageInfo(await this.tabs.active());
+    // A tab closed while the popup opens leaves nothing to save: the same screen as a browser page.
+    const tab = await this.tabs.active().catch(() => null);
+    const page = toPageInfo(tab);
     this.page.set(page);
     if (page === null) {
       this.view.set(POPUP_VIEW.Unsupported);
@@ -88,10 +91,11 @@ export class PopupStore {
     this.failure.set(null);
     try {
       const note = this.note().trim();
+      const folderId = this.folderId();
       const link = await this.api.create({
         url: page.url,
         title: page.title.slice(0, LINK_LIMIT.TitleMax),
-        ...(this.folderId() !== null && { folderId: this.folderId() ?? undefined }),
+        ...(folderId !== null && { folderId }),
         tags: this.chosenTags(),
         ...(note !== '' && { note }),
         idempotencyKey: this.idempotencyKey,
@@ -177,8 +181,7 @@ export class PopupStore {
         this.api.folders(),
         this.api.tags(),
         this.api.rules(),
-        // Only the address, without the #fragment (the server ignores it), only to check for a duplicate.
-        this.api.lookup({ url: withoutFragment(page.url) }),
+        this.lookup(page.url),
       ]);
       this.folders.set(folders.items);
       this.tags.set(tags.items);
@@ -189,6 +192,20 @@ export class PopupStore {
       this.fail(error, POPUP_STEP.Load);
     } finally {
       clearTimeout(timer);
+    }
+  }
+
+  /**
+   * The duplicate check: the address only, without the #fragment (the server ignores it). It never
+   * blocks saving: any failure but a 401 (signed out) falls back to the plain form, so a 404 from an
+   * older API or a 429 still leaves Save working.
+   */
+  private async lookup(url: string): Promise<LinkLookupResponse> {
+    try {
+      return await this.api.lookup({ url: withoutFragment(url) });
+    } catch (error: unknown) {
+      if (toPopupFailure(error, POPUP_STEP.Load) === 'signedOut') throw error;
+      return { link: null };
     }
   }
 

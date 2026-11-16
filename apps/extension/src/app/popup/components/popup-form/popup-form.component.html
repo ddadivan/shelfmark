@@ -15,7 +15,7 @@
 
 <div class="form">
   <div class="form__folder">
-    <span class="form__label" id="ext-folder-label">{{ 'popup.form.folder' | transloco }}</span>
+    <span class="form__label" aria-hidden="true">{{ 'popup.form.folder' | transloco }}</span>
     <ui-button
       block
       iconRight="chevron-down"
@@ -47,7 +47,7 @@
             clickable
             [variant]="recent.id === store.folderId() ? CHIP_VARIANT.Tag : CHIP_VARIANT.Neutral"
             [disabled]="store.saving()"
-            (clicked)="store.folderId.set(recent.id)"
+            (clicked)="store.chooseFolder(recent.id)"
             >{{ recent.folder?.name ?? ('popup.unsorted' | transloco) }}</ui-chip
           >
         }

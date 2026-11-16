@@ -38,6 +38,31 @@ describe('PopupStore', () => {
       expect(store.page()).toBeNull();
     });
 
+    it('shows the unsupported screen when reading the tab fails', async () => {
+      const { store, tabs } = setup();
+      tabs.active.mockRejectedValue(new Error('No tab with id'));
+      await store.init();
+      expect(store.view()).toBe(POPUP_VIEW.Unsupported);
+    });
+
+    it.each([404, 429, 500, 0])(
+      'falls back to the form when the duplicate check answers %s',
+      async (status) => {
+        const { store, api } = setup();
+        api.lookup.mockRejectedValue(http(status));
+        await store.init();
+        expect(store.view()).toBe(POPUP_VIEW.Form);
+        expect(store.link()).toBeNull();
+        expect(store.failure()).toBeNull();
+      },
+    );
+
+    it('checks for a duplicate without the fragment', async () => {
+      const { store, api } = setup({ tab: { url: 'https://a.dev/p?q=1#top', title: 'P' } });
+      await store.init();
+      expect(api.lookup).toHaveBeenCalledWith({ url: 'https://a.dev/p?q=1' });
+    });
+
     it('shows the signed-out screen when there is no session', async () => {
       const { store, api } = setup({ session: null });
       await store.init();

@@ -38,6 +38,10 @@ for (const field of [
 
 const zip = resolve(root, `dist/shelfmark-extension-${manifest.version}.zip`);
 rmSync(zip, { force: true });
-// `-X` leaves out extra file attributes; `-r` the whole folder, paths relative to the build root.
-execFileSync('zip', ['-X', '-r', zip, '.', '-x', '.*'], { cwd: build, stdio: 'inherit' });
+// `-X` leaves out extra file attributes; `-r` the whole folder, paths relative to the build root;
+// dotfiles (`.DS_Store`) are left out at every level. Needs the `zip` command (macOS, Linux).
+execFileSync('zip', ['-X', '-r', zip, '.', '-x', '.*', '-x', '*/.*'], {
+  cwd: build,
+  stdio: 'inherit',
+});
 console.log(`Packed ${zip}`);
