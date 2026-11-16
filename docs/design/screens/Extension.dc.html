@@ -34,6 +34,8 @@ a{color:inherit}a:hover{color:inherit}
 .ex-center h3{margin:0;font-size:18px;line-height:24px;font-weight:600;letter-spacing:-0.01em}
 .ex-big{border-radius:16px;background:var(--bg);overflow:hidden;display:flex;flex-direction:column}
 .ex-big__media{aspect-ratio:16/9;background:var(--accent-bg)}
+.ex-done{width:64px;height:64px;border-radius:50%;background:var(--accent);color:var(--surface);display:grid;place-items:center;box-shadow:0 0 0 8px var(--accent-bg);animation:ex-pop 360ms var(--ease-spring) both}
+@keyframes ex-pop{from{transform:scale(.6);opacity:0}}
 .ex-big__body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px}
 
 /* Signed out: the phone sign-in strip (the six cards of app-sign-in-phone-cards), edge to edge on top. */
@@ -66,40 +68,53 @@ a{color:inherit}a:hover{color:inherit}
 
 <!-- 1 · The main flow. One click saves; the popup then refines the saved link. -->
 <section class="a-state" style="grid-column: 1 / -1;">
-<h2 class="a-cap">1 · Click the toolbar button (or press Alt+Shift+S): saved at once, then refine</h2>
+<h2 class="a-cap">1 · Click the toolbar button (or press Alt+Shift+S): one form, Save</h2>
 <div style="border-radius: 18px; overflow: hidden; box-shadow: var(--shadow-card); background: var(--surface);">
 <div aria-hidden="true" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface-hover);"><span style="display: flex; gap: 6px;"><span style="width: 11px; height: 11px; border-radius: 50%; background: var(--surface-pressed);"></span><span style="width: 11px; height: 11px; border-radius: 50%; background: var(--surface-pressed);"></span><span style="width: 11px; height: 11px; border-radius: 50%; background: var(--surface-pressed);"></span></span><span style="flex: 1; height: 30px; border-radius: 999px; background: var(--surface); display: flex; align-items: center; padding: 0 14px; font-size: 13px; color: var(--text-muted);">cos.com/en/wool-coat-graphite</span><span style="width: 32px; height: 32px; border-radius: 10px; background: var(--accent-bg); display: grid; place-items: center;"><svg width="18" height="18" viewBox="0 0 32 32"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg></span></div>
 <div style="position: relative; height: 560px; background: var(--bg);">
 <div aria-hidden="true" style="position: absolute; left: 32px; top: 32px; width: 46%; display: flex; flex-direction: column; gap: 14px;"><div style="height: 280px; border-radius: 12px; background: var(--surface-pressed);"></div><div style="height: 16px; width: 70%; border-radius: 8px; background: var(--surface-pressed);"></div><div style="height: 12px; width: 40%; border-radius: 6px; background: var(--surface-pressed);"></div></div>
 <div class="ex-pop" role="dialog" aria-labelledby="ex-h" style="position: absolute; right: 16px; top: 8px;">
-<div class="ex-head"><span class="ex-lead ex-lead--ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><h3 id="ex-h">Saved to Clothes</h3></div>
+<div class="ex-head"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><h3 id="ex-h">Save to Shelfmark</h3></div>
 <div class="ex-preview"><span class="ex-thumb"></span><span style="min-width: 0;"><span class="ex-host">cos.com</span><span class="ex-title">Wool coat, straight cut, graphite</span></span></div>
 <div class="sm-field"><label class="sm-field__label" for="ex-f">Folder</label><button class="sm-field__control" id="ex-f" aria-haspopup="dialog" aria-expanded="false" style="text-align: left; font: inherit; color: inherit; cursor: pointer;"><span class="sm-fic sm-fic--sm fc-clay" aria-hidden="true"></span><span class="sm-select__value" style="flex: 1;">Clothes</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
 <span class="sm-field__hint">From your rule for cos.com</span>
 <div style="display: flex; gap: 6px; flex-wrap: wrap;" aria-label="Recent folders"><button class="sm-chip sm-chip--neutral sm-chip--clickable">Unsorted</button><button class="sm-chip sm-chip--clickable" aria-pressed="true">Clothes</button><button class="sm-chip sm-chip--neutral sm-chip--clickable">Angular</button></div></div>
 <div class="sm-field"><label class="sm-field__label" for="ex-t">Tags</label><div class="sm-field__control sm-taginput"><span class="sm-chip">winter<button class="sm-chip__remove" aria-label="Remove tag winter">×</button></span><input id="ex-t" placeholder="Add tag"></div></div>
 <div class="sm-field"><label class="sm-field__label" for="ex-n">Note</label><div class="sm-field__control"><input id="ex-n" placeholder="Why are you saving this?"></div></div>
-<div class="ex-foot"><a href="#" class="sm-link">Open Shelfmark</a><button class="sm-btn sm-btn--ghost sm-btn--sm" style="color: var(--danger);">Remove</button><button class="sm-btn sm-btn--primary sm-btn--sm">Done</button></div>
+<div class="ex-foot"><a href="#" class="sm-link">Open Shelfmark</a><button class="sm-btn sm-btn--primary" style="min-width: 132px;">Save<span class="sm-kbd" style="margin-left: 6px; background: transparent; color: inherit; opacity: .7;">↵</span></button></div>
 </div>
 </div>
 </div>
-<p class="a-note">Every state below is the same 360 × 520 popup, so nothing jumps when one state turns into another; the footer stays on the bottom edge. The tab's URL and title are saved the moment the popup opens. Folder, tags and note save as they change: the change shows at once and rolls back with the error notice if the server refuses it. Done closes the popup. The folder is the one a domain rule picked, else Unsorted; the hint names the rule only when one applied. The chips are the three folders saved to most recently. Alt+Shift+S is the default shortcut (Option+Shift+S on a Mac); people can change it in the browser's extension shortcuts.</p>
+<p class="a-note">Every state below is the same 360 × 520 popup, so nothing jumps when one state turns into another; the footer stays on the bottom edge. Nothing is saved until Save: closing the popup leaves no trace, so there is no Remove or Undo. Everything is filled in already and focus starts on Save, so the quick path is the shortcut, then Enter; the tag and note fields keep Enter for themselves (a tag is added on Enter), and Save still takes ⌘/Ctrl+Enter there. The folder is the one a domain rule picked, else Unsorted; the hint names the rule only when one applied. The chips are the three folders saved to most recently. While saving, the button shows its spinner and the fields lock. Alt+Shift+S is the default shortcut (Option+Shift+S on a Mac); people can change it in the browser's extension shortcuts.</p>
 </section>
 
 <section class="a-state">
-<h2 class="a-cap">2 · Saving (only shown if it takes over 300 ms)</h2>
-<div class="ex-pop" role="dialog" aria-label="Saving" aria-busy="true">
-<div class="ex-head"><span class="sm-spinner sm-spinner--sm" aria-hidden="true"></span><h3>Saving…</h3></div>
+<h2 class="a-cap">2 · Saved</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="ex-ok-h">
+<div class="ex-center" style="gap: 12px;">
+<span class="ex-done" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+<h3 id="ex-ok-h">Saved to Clothes</h3>
+<div class="ex-big" style="width: 100%; text-align: left;"><div class="ex-big__media"></div><div class="ex-big__body"><span class="ex-host">cos.com</span><span class="ex-title">Wool coat, straight cut, graphite</span><span style="display: flex; gap: 6px; margin-top: 2px;"><span class="sm-chip">winter</span></span></div></div>
+</div>
+<div class="ex-foot"><button class="sm-btn sm-btn--secondary" style="flex: 1;">Open in Shelfmark</button><button class="sm-btn sm-btn--primary" style="flex: 1;">Done</button></div>
+</div>
+<p class="a-note">The thank-you screen. The saving moment, scaled to the popup: the check pops in with the sage ring fading out, the card lands under it (the same motion as a card landing in the feed). Open in Shelfmark opens the app on that folder with the new card highlighted; Done or Esc closes the popup. It stays until closed: no timer to race.</p>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">3 · Opening (only shown if it takes over 300 ms)</h2>
+<div class="ex-pop" role="dialog" aria-label="Loading" aria-busy="true">
+<div class="ex-head"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><h3>Save to Shelfmark</h3></div>
 <div class="ex-preview"><span class="ex-thumb" style="background: var(--surface-pressed);"></span><span style="min-width: 0; flex: 1;"><span class="ex-host">cos.com</span><span class="ex-title">Wool coat, straight cut, graphite</span></span></div>
 <div style="display: flex; flex-direction: column; gap: 8px;"><div class="sm-skel sm-skel--line" style="width: 64px; height: 12px;"></div><div class="sm-skel sm-skel--line" style="height: 44px; border-radius: 999px;"></div></div>
 <div style="display: flex; flex-direction: column; gap: 8px;"><div class="sm-skel sm-skel--line" style="width: 48px; height: 12px;"></div><div class="sm-skel sm-skel--line" style="height: 44px; border-radius: 999px;"></div></div>
 <div style="display: flex; flex-direction: column; gap: 8px;"><div class="sm-skel sm-skel--line" style="width: 52px; height: 12px;"></div><div class="sm-skel sm-skel--line" style="height: 44px; border-radius: 999px;"></div></div>
 </div>
-<p class="a-note">The skeleton has the shape of state 1, so the fields appear in place. The tab's own title and host show at once; the image fills in when the server has fetched the page.</p>
+<p class="a-note">On open the popup asks the server three things at once: is the user signed in, is this URL already saved, and the folders and tags. The skeleton has the shape of state 1, so the fields appear in place. The tab's own title and host show at once, from the browser.</p>
 </section>
 
 <section class="a-state">
-<h2 class="a-cap">3 · Folder picker</h2>
+<h2 class="a-cap">4 · Folder picker</h2>
 <div class="ex-pop" role="dialog" aria-labelledby="ex-pick-h">
 <div class="ex-head"><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h3 id="ex-pick-h">Choose a folder</h3></div>
 <div class="sm-field__control"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" style="color: var(--text-muted);"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input placeholder="Find a folder" aria-label="Find a folder"></div>
@@ -119,18 +134,18 @@ a{color:inherit}a:hover{color:inherit}
 </section>
 
 <section class="a-state">
-<h2 class="a-cap">4 · Already saved</h2>
+<h2 class="a-cap">5 · Already saved</h2>
 <div class="ex-pop" role="dialog" aria-labelledby="ex-dup-h">
 <div class="ex-head"><span class="ex-lead ex-lead--muted"><svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: currentColor"/></svg></span><h3 id="ex-dup-h">Already in your library</h3></div>
 <div class="ex-big"><div class="ex-big__media"></div><div class="ex-big__body"><span class="ex-host">cos.com</span><span class="ex-title">Wool coat, straight cut, graphite</span><span style="display: flex; gap: 6px; margin-top: 2px;"><span class="sm-chip">winter</span><span class="sm-chip">shopping</span></span></div></div>
 <div class="sm-notice sm-notice--warning" role="status"><span>You saved this 2 days ago in <b>Clothes</b>.</span></div>
-<div class="ex-foot"><button class="sm-btn sm-btn--ghost sm-btn--sm" style="margin-right: auto;">Save a copy</button><button class="sm-btn sm-btn--secondary sm-btn--sm">Open in Shelfmark</button><button class="sm-btn sm-btn--primary sm-btn--sm">Edit</button></div>
+<div class="ex-foot"><button class="sm-btn sm-btn--ghost" style="margin-right: auto;">Save a copy</button><button class="sm-btn sm-btn--primary">Open in Shelfmark</button></div>
 </div>
-<p class="a-note">Nothing is created. The saved card shows as it is in the library (image, title, tags). Edit shows state 1 for the existing link (heading "In Clothes"); Open in Shelfmark opens the link in the app; Save a copy saves it again, as "save anyway" in Add link.</p>
+<p class="a-note">Shown instead of the form when the URL is already in the library; nothing is created. The saved card shows as it is in the library (image, title, tags). Open in Shelfmark opens the link in the app, where it can be edited; Save a copy shows the form (state 1) and saves a second copy, as "save anyway" in Add link.</p>
 </section>
 
 <section class="a-state">
-<h2 class="a-cap">5 · Signed out</h2>
+<h2 class="a-cap">6 · Signed out</h2>
 <div class="ex-pop" role="dialog" aria-labelledby="ex-out-h">
 <div class="ex-strip" aria-hidden="true">
 <div class="ex-c ex-c--far" style="--x: -12px; --y: 18px;"><div class="ex-fly" style="--w: 4;"><div class="ex-float" style="--r: -4deg; --spin: 2deg; --t: 7s; --d: -1s; --ax: 6px; --ay: -8px;"><div class="ex-size" style="--s: .38;"><div class="ex-card"><div class="ex-card__media" data-tone="1"></div><div class="ex-card__body"><span class="ex-card__title">A complete guide to CSS grid</span><span class="ex-card__meta"><span class="ex-fav">W</span>web.dev<span>4 days ago</span></span><span><span class="sm-chip">css</span></span></div></div></div></div></div></div>
@@ -151,7 +166,7 @@ a{color:inherit}a:hover{color:inherit}
 </section>
 
 <section class="a-state">
-<h2 class="a-cap">6 · A page that can't be saved</h2>
+<h2 class="a-cap">7 · A page that can't be saved</h2>
 <div class="ex-pop" role="dialog" aria-labelledby="ex-no-h">
 <div class="ex-center">
 <svg width="240" height="150" viewBox="0 0 240 150" aria-hidden="true"><rect x="70" y="30" width="100" height="90" rx="12" fill="var(--surface)" stroke="var(--border)"/><path d="M146 30h14v34l-7-5.5-7 5.5z" fill="var(--accent)"/><rect x="84" y="78" width="72" height="8" rx="4" fill="var(--surface-pressed)"/><rect x="84" y="94" width="44" height="8" rx="4" fill="var(--surface-pressed)"/></svg>
@@ -164,7 +179,7 @@ a{color:inherit}a:hover{color:inherit}
 </section>
 
 <section class="a-state">
-<h2 class="a-cap">7 · Couldn't save</h2>
+<h2 class="a-cap">8 · Couldn't save</h2>
 <div class="ex-pop" role="dialog" aria-labelledby="ex-err-h">
 <div class="ex-center">
 <svg width="240" height="150" viewBox="0 0 240 150" aria-hidden="true"><rect x="40" y="62" width="70" height="26" rx="13" fill="var(--primary)"/><rect x="130" y="62" width="70" height="26" rx="13" fill="var(--accent)"/><rect x="113" y="40" width="4" height="12" rx="2" transform="rotate(-20 115 46)" fill="var(--surface-pressed)"/><rect x="123" y="98" width="4" height="12" rx="2" transform="rotate(-20 125 104)" fill="var(--surface-pressed)"/></svg>
@@ -178,7 +193,7 @@ a{color:inherit}a:hover{color:inherit}
 </section>
 
 <section class="a-state">
-<h2 class="a-cap">8 · Library is full (demo)</h2>
+<h2 class="a-cap">9 · Library is full (demo)</h2>
 <div class="ex-pop" role="dialog" aria-labelledby="ex-full-h">
 <div class="ex-center">
 <svg width="240" height="150" viewBox="0 0 240 150" aria-hidden="true"><rect x="62" y="28" width="116" height="94" rx="12" fill="none" stroke="var(--border-control)" stroke-width="1.5" stroke-dasharray="5 5"/><rect x="98" y="64" width="44" height="22" rx="11" fill="var(--accent)"/><rect x="118" y="69" width="4" height="12" rx="2" fill="var(--surface)"/><rect x="114" y="73" width="12" height="4" rx="2" fill="var(--surface)"/></svg>
@@ -188,19 +203,6 @@ a{color:inherit}a:hover{color:inherit}
 <div class="ex-foot"><button class="sm-btn sm-btn--primary" style="width: 100%;">Open Shelfmark</button></div>
 </div>
 <p class="a-note">The same wording as the demo limit in the app (the text comes from the API's limit message).</p>
-</section>
-
-<section class="a-state">
-<h2 class="a-cap">9 · Removed</h2>
-<div class="ex-pop" role="dialog" aria-labelledby="ex-rm-h">
-<div class="ex-center">
-<span class="ex-lead ex-lead--muted" style="width: 56px; height: 56px;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5h5v2M6.5 7l.8 11.2a1.8 1.8 0 0 0 1.8 1.6h5.8a1.8 1.8 0 0 0 1.8-1.6L17.5 7"/></svg></span>
-<h3 id="ex-rm-h">Moved to Trash</h3>
-<p class="ex-text">Wool coat, straight cut, graphite</p>
-</div>
-<div class="ex-foot"><button class="sm-btn sm-btn--secondary" style="flex: 1;">Close</button><button class="sm-btn sm-btn--primary" style="flex: 1;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Undo</button></div>
-</div>
-<p class="a-note">Remove sends the link to Trash, like every delete in the app. Undo restores it and goes back to state 1.</p>
 </section>
 
 <section class="a-state">
@@ -217,7 +219,7 @@ a{color:inherit}a:hover{color:inherit}
 
 <section class="a-state">
 <h2 class="a-cap">Motion and behaviour</h2>
-<p class="a-note">The popup opens with the browser's own animation. Inside it, states change with a 120 ms fade; the check in "Saved" pops in once (the saving moment, scaled down: there is no feed for a card to land in). The folder picker slides in from the right (200 ms ease-out) and back (120 ms ease-in). Signed out: the cards fly in and float (state 5). Illustrations play once. Reduced motion: fades only, cards and scenes at rest. Light and dark follow the browser's colour scheme; the popup has no theme switch. Every text goes through translation keys, in the six app languages.</p>
+<p class="a-note">The popup opens with the browser's own animation. Inside it, states change with a 120 ms fade; "Saved" plays the saving moment, scaled down (state 2). The folder picker slides in from the right (200 ms ease-out) and back (120 ms ease-in). Signed out: the cards fly in and float (state 6). Illustrations play once. Reduced motion: fades only, cards and scenes at rest. Light and dark follow the browser's colour scheme; the popup has no theme switch. Every text goes through translation keys, in the six app languages.</p>
 </section>
 </div>
 </x-dc>
