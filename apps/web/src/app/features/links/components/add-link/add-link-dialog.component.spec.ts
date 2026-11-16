@@ -49,6 +49,10 @@ const PLAIN: LinkPreviewResponse = {
   fetched: true,
 };
 
+function daysAgo(days: number): string {
+  return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+}
+
 const EDITED: LinkResponse = {
   ...MOCK_LINKS[0],
   url: 'https://example.org/saved',
@@ -56,8 +60,9 @@ const EDITED: LinkResponse = {
   note: 'A note',
   folderId: MOCK_ID.FolderAngular,
   tags: ['docs'],
-  createdAt: '2026-10-17T12:00:00Z',
-  lastOpenedAt: '2026-11-06T12:00:00Z',
+  // Relative to today: past 30 days the dialog shows a date instead of "Saved N days ago".
+  createdAt: daysAgo(5),
+  lastOpenedAt: daysAgo(2),
 };
 
 interface FakeApi extends Pick<LinksApi, 'preview' | 'create' | 'update'> {
