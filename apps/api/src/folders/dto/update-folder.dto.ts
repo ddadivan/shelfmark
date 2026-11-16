@@ -69,7 +69,8 @@ export class UpdateFolderDto implements UpdateFolderRequest {
   icon?: FolderIcon | FolderEmoji;
 
   @ApiPropertyOptional({ description: 'Show the folder with a background in its colour (#440)' })
-  @IsOptional()
+  // Absent is fine, an explicit null is not.
+  @ValidateIf((_, value: unknown) => value !== undefined)
   @IsBoolean()
   highlighted?: boolean;
 
