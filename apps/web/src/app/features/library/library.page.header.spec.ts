@@ -22,8 +22,16 @@ const RECIPES: FolderResponse = {
   description: 'Dishes worth cooking twice',
   coverLinkId: MOCK_LINKS[0].id,
   coverUrl: COVER,
+  highlighted: true,
 };
-const PLAIN: FolderResponse = { ...MOCK_FOLDERS[0], id: 'f2', name: 'Plain' };
+const PLAIN: FolderResponse = {
+  ...MOCK_FOLDERS[0],
+  id: 'f2',
+  name: 'Plain',
+  highlighted: true,
+};
+/** Styled like Recipes but not highlighted (#440): the plain title block. */
+const QUIET: FolderResponse = { ...RECIPES, id: 'f3', name: 'Quiet', highlighted: false };
 
 async function setup(scope: LinksScope, folderId?: string) {
   TestBed.configureTestingModule({
@@ -47,7 +55,9 @@ async function setup(scope: LinksScope, folderId?: string) {
       },
       {
         provide: FOLDERS_API,
-        useValue: { list: () => of({ items: [RECIPES, PLAIN], counts: MOCK_LIBRARY_COUNTS }) },
+        useValue: {
+          list: () => of({ items: [RECIPES, PLAIN, QUIET], counts: MOCK_LIBRARY_COUNTS }),
+        },
       },
       { provide: DialogService, useValue: { confirm: vi.fn(() => Promise.resolve(false)) } },
     ],
@@ -63,7 +73,7 @@ async function setup(scope: LinksScope, folderId?: string) {
   return { fixture, element, banner: element.querySelector<HTMLElement>('ui-folder-banner') };
 }
 
-describe('LibraryPage folder header (#418)', () => {
+describe('LibraryPage folder header (#418, #440)', () => {
   it('puts the heading, big tile and description on the band with the cover', async () => {
     const { element, banner: found } = await setup(LINKS_SCOPE.Folder, 'f1');
     const banner = found as HTMLElement;
@@ -88,6 +98,34 @@ describe('LibraryPage folder header (#418)', () => {
     expect(banner.querySelector('.ui-folder-banner__cover')).toBeNull();
     expect(banner.querySelector('.library__description')).toBeNull();
     expect(banner.querySelector('ui-folder-icon')).not.toBeNull();
+  });
+
+  it('shows the plain title block for a folder that is not highlighted (#440)', async () => {
+    const { element, banner } = await setup(LINKS_SCOPE.Folder, 'f3');
+
+    expect(banner).toBeNull();
+    expect(element.querySelector('h1')?.textContent?.trim()).toBe('Quiet');
+    expect(element.querySelector('.library__heading ui-folder-icon')).toBeNull();
+    expect(element.querySelector('.library__count')).not.toBeNull();
+  });
+
+  it('keeps the description and the cover of a folder that is not highlighted, in plain form (#440)', async () => {
+    const { element } = await setup(LINKS_SCOPE.Folder, 'f3');
+
+    expect(element.querySelector('.library__description')?.textContent?.trim()).toBe(
+      'Dishes worth cooking twice',
+    );
+    expect(element.querySelector('app-folder-cover img')?.getAttribute('src')).toBe(COVER);
+    expect(element.querySelector('.library__heading--cover')).not.toBeNull();
+    expect((await axe.run(element)).violations).toEqual([]);
+  });
+
+  it('shows no cover block for a plain folder without a cover (#440)', async () => {
+    const { element } = await setup(LINKS_SCOPE.Folder, 'f3');
+    TestBed.resetTestingModule();
+    const none = await setup(LINKS_SCOPE.All);
+    expect(none.element.querySelector('app-folder-cover')).toBeNull();
+    expect(element.querySelector('app-folder-cover')).not.toBeNull();
   });
 
   it('keeps a plain header outside a folder', async () => {

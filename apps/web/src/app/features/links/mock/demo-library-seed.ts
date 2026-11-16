@@ -70,6 +70,7 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
       name: folder.name,
       colour: folder.colour,
       icon: folder.icon,
+      highlighted: folder.highlighted === true,
       description: null,
       coverLinkId: null,
       coverUrl: null,

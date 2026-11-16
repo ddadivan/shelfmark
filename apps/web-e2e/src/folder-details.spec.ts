@@ -44,7 +44,7 @@ test.describe('folder description and cover (mock API)', () => {
   }
 
   test(
-    'a description and a cover set in the style dialog show in the folder header',
+    'a description and a cover of a highlighted folder show in the folder header',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await start(page);
@@ -59,6 +59,7 @@ test.describe('folder description and cover (mock API)', () => {
       const first = covers.locator('label.ui-choice').nth(1);
       await first.scrollIntoViewIfNeeded();
       await first.click();
+      await dialog.getByRole('switch', { name: 'Highlight with background' }).click();
       await dialog.getByRole('button', { name: 'Save' }).click();
       await expect(dialog).toHaveCount(0);
 
@@ -92,6 +93,7 @@ test.describe('folder description and cover (mock API)', () => {
       .locator('label.ui-choice')
       .nth(1)
       .click();
+    await dialog.getByRole('switch', { name: 'Highlight with background' }).click();
     await dialog.getByRole('button', { name: 'Save' }).click();
     await expect(dialog).toHaveCount(0);
 
@@ -101,4 +103,31 @@ test.describe('folder description and cover (mock API)', () => {
     await expect(banner).toHaveAttribute('data-ui-folder-colour', '');
     await expect(banner).toHaveCSS('background-image', /gradient/);
   });
+
+  test(
+    'a folder that is not highlighted keeps its description and cover in the plain title block',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await start(page);
+      await pickFolderMenuItem(page, READING, 'Color and icon…');
+      const dialog = page.getByRole('dialog', { name: READING });
+      await dialog.getByLabel('Description').fill(DESCRIPTION);
+      await dialog
+        .getByRole('radiogroup', { name: 'Cover' })
+        .locator('label.ui-choice')
+        .nth(1)
+        .click();
+      await dialog.getByRole('button', { name: 'Save' }).click();
+      await expect(dialog).toHaveCount(0);
+
+      await openReading(page);
+      await expect(page.locator('ui-folder-banner')).toHaveCount(0);
+      await expect(page.getByRole('heading', { level: 1, name: READING })).toBeVisible();
+      await expect(page.getByText(DESCRIPTION, { exact: true })).toBeVisible();
+      await expect(page.locator('app-folder-cover img')).toHaveAttribute(
+        'src',
+        /\/api\/links\/[^/]+\/image\?v=/,
+      );
+    },
+  );
 });

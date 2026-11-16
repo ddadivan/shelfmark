@@ -103,6 +103,7 @@ export class FoldersService {
         if (request.name !== undefined) data.name = request.name;
         if (request.colour !== undefined) data.colour = request.colour;
         if (request.icon !== undefined) data.icon = request.icon;
+        if (request.highlighted !== undefined) data.highlighted = request.highlighted;
         if (request.description !== undefined) data.description = request.description;
         if (request.coverLinkId !== undefined) {
           if (request.coverLinkId !== null)

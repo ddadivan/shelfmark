@@ -11,7 +11,6 @@ import {
   THEME_PREFERENCE,
   isAppFont,
   isCardPreview,
-  isFolderHighlight,
   isCustomTheme,
   isDensity,
   isTextSize,
@@ -195,9 +194,6 @@ export class MockUserSettingsApi implements UserSettingsApi {
       cardSite: flag(stored.cardSite, d.cardSite),
       cardNotes: flag(stored.cardNotes, d.cardNotes),
       cardTags: flag(stored.cardTags, d.cardTags),
-      folderHighlight: isFolderHighlight(stored.folderHighlight)
-        ? stored.folderHighlight
-        : d.folderHighlight,
     };
   }
 

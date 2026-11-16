@@ -7,6 +7,8 @@ export interface FolderStyleFormModel {
   colour: string;
   icon: string;
   emoji: string;
+  /** "Highlight with background" (#440). */
+  highlighted: boolean;
   description: string;
   cover: string;
 }

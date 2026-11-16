@@ -13,7 +13,6 @@ import {
   TIME_FORMAT,
   WEEK_START,
   CARD_PREVIEW,
-  FOLDER_HIGHLIGHT,
   DENSITY,
   LAYOUT_SETTINGS_DEFAULT,
   TEXT_SIZE,
@@ -721,7 +720,6 @@ describe('account settings', () => {
       cardSite: false,
       cardNotes: false,
       cardTags: false,
-      folderHighlight: FOLDER_HIGHLIGHT.Background,
     };
 
     it('saves text size, font, density and the card options, and marks the appearance saved', async () => {
@@ -753,25 +751,9 @@ describe('account settings', () => {
       expect(body.cardTags).toBe(true);
     });
 
-    it.each(Object.values(FOLDER_HIGHLIGHT))(
-      'saves the folder highlight %s (#418)',
-      async (folderHighlight) => {
-        const a = asUser(t.app, users.owner);
-        const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ folderHighlight }).expect(200);
-        expect(res.body as UserSettingsResponse).toMatchObject({
-          folderHighlight,
-          appearanceSaved: true,
-        });
-      },
-    );
-
-    it('the database keeps the folder highlight to the allow-list (#418)', async () => {
-      await expect(
-        t.db.prisma.user.update({
-          where: { id: users.owner.userId },
-          data: { folderHighlight: 'glow' },
-        }),
-      ).rejects.toThrow();
+    it('no longer takes the retired folderHighlight setting (#440)', async () => {
+      const a = asUser(t.app, users.owner);
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ folderHighlight: 'background' }).expect(400);
     });
 
     it.each(Object.values(TEXT_SIZE))('saves the text size %s', async (textSize) => {
@@ -791,8 +773,6 @@ describe('account settings', () => {
       [{ cardSite: 'off' }],
       [{ cardNotes: null }],
       [{ cardTags: 0 }],
-      [{ folderHighlight: 'glow' }],
-      [{ folderHighlight: null }],
       [{ fontSize: 20 }],
     ])('rejects %j with 400 and changes nothing', async (body) => {
       const a = asUser(t.app, users.owner);

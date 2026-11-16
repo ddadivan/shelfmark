@@ -1,6 +1,6 @@
 @use 'ui' as *;
 
-// Pinned folders show their colour like the folder tree (#418): a stripe or a soft tint.
+// Pinned folders that are highlighted wear their background like the folder tree (#440).
 .pinned__item {
-  @include folder-highlight(':has(.is-active)');
+  @include folder-highlight(':has(.is-active)', ':has(.pinned__link:focus-visible)');
 }

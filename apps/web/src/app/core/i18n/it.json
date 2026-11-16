@@ -973,6 +973,10 @@
         "tooLong": "Massimo {{max}} caratteri.",
         "invalid": "Usa testo semplice su una riga."
       },
+      "highlight": {
+        "label": "Evidenzia con uno sfondo",
+        "hint": "Dà alla cartella uno sfondo tenue del suo colore, nella barra laterale e nella sua pagina."
+      },
       "cover": {
         "label": "Copertina",
         "hint": "Un’immagine di anteprima di un link di questa cartella, dietro l’intestazione.",
@@ -1380,13 +1384,6 @@
         "colours": {
           "label": "Colori delle cartelle",
           "hint": "Disattivato mostra ogni cartella in grafite"
-        },
-        "highlight": {
-          "label": "Evidenzia le cartelle con il loro colore",
-          "hint": "Come appare una cartella colorata nella barra laterale, più marcata quando è aperta",
-          "off": "No",
-          "stripe": "Striscia",
-          "background": "Sfondo"
         }
       },
       "motion": {

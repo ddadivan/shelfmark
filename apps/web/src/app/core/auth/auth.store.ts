@@ -21,6 +21,7 @@ import { SIGN_IN_QUERY } from './models/sign-in-query.const';
 import { SIGN_IN_REASON } from './models/sign-in-reason.const';
 import type { SignInReason } from './models/sign-in-reason.type';
 import { AUTH_DEMO } from './models/auth-pending.const';
+import { SESSION_HINT_KIND } from './models/session-hint-kind.const';
 import { clearSessionHint, markSessionHint } from './session-hint';
 import { AuthState } from './models/auth-state.interface';
 import { TAB_SYNC_KIND } from '../sync/models/tab-sync-kind.const';
@@ -57,6 +58,11 @@ export const AuthStore = signalStore(
       /** Tells the other tabs a user is signed in here (they reload when locked or signed out). */
       function announceSignedIn(user: AuthUser | null): void {
         if (user) {
+          // A demo session is remembered as such, so the next load's skeleton has the demo banner.
+          markSessionHint(
+            undefined,
+            user.isDemo ? SESSION_HINT_KIND.Demo : SESSION_HINT_KIND.Session,
+          );
           injector.get(TabSyncService).post({ kind: TAB_SYNC_KIND.SignedIn }, user.id);
         }
       }

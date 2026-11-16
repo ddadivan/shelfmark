@@ -57,7 +57,8 @@ export class LibraryHeadService {
   });
   /**
    * The header of a folder page (#418): the folder's shown colour (the band), icon (the big
-   * tile), description and cover; `null` outside a folder.
+   * tile), description and cover, and whether it is highlighted (#440: only then the tinted block);
+   * `null` outside a folder.
    */
   readonly banner = computed<FolderBannerView | null>(() => {
     const folder = this.filters.folder();
@@ -67,6 +68,7 @@ export class LibraryHeadService {
     return {
       colour: this.settings.shownColour(folder.colour),
       icon: folder.icon,
+      highlighted: folder.highlighted,
       description: folder.description,
       cover: ownImageUrl(folder.coverUrl) ?? null,
     };

@@ -189,6 +189,36 @@ describe('SidebarComponent', () => {
     expect(tile?.classList).toContain('ui-folder-icon--graphite');
   });
 
+  it('tints only the rows of highlighted coloured folders, and the open one too (#440)', async () => {
+    const { element, router } = await setup();
+    const store = TestBed.inject(FoldersStore);
+    const id = MOCK_ID.FolderReading;
+
+    expect(row(element, MOCK_NAME.FolderReading).hasAttribute('data-ui-folder-highlight')).toBe(
+      false,
+    );
+    await store.setStyle(id, { colour: 'rose', highlighted: true });
+    TestBed.tick();
+    const lit = row(element, MOCK_NAME.FolderReading);
+    expect(lit.hasAttribute('data-ui-folder-highlight')).toBe(true);
+    expect(lit.hasAttribute('data-ui-folder-colour')).toBe(true);
+    expect(lit.hasAttribute('aria-current')).toBe(false);
+    expect(row(element, 'All links').hasAttribute('data-ui-folder-highlight')).toBe(false);
+
+    await router.navigateByUrl(`/folders/${id}`);
+    TestBed.tick();
+    expect(row(element, MOCK_NAME.FolderReading).hasAttribute('aria-current')).toBe(true);
+    expect(row(element, MOCK_NAME.FolderReading).hasAttribute('data-ui-folder-highlight')).toBe(
+      true,
+    );
+
+    await store.setStyle(id, { highlighted: false });
+    TestBed.tick();
+    expect(row(element, MOCK_NAME.FolderReading).hasAttribute('data-ui-folder-highlight')).toBe(
+      false,
+    );
+  });
+
   it('opens the Recently opened page from its row and marks it', async () => {
     const { fixture, router } = await setup();
 

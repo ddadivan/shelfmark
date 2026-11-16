@@ -23,6 +23,7 @@ export function toFolderResponse(
     name: row.name,
     colour: row.colour as FolderColour | HexColour,
     icon: row.icon as FolderIcon | FolderEmoji,
+    highlighted: row.highlighted,
     description: row.description,
     coverLinkId: cover.coverLinkId,
     coverUrl: cover.coverUrl,

@@ -477,20 +477,6 @@ describe('AppearancePage', () => {
       expect(root.getAttribute(LAYOUT_ATTRIBUTE.CardPreview)).toBe('small');
     });
 
-    it('sets how folders are highlighted in the sidebar on <html> and the account (#418)', async () => {
-      const { root: page, settingsApi, stable, theme } = await setup();
-
-      radioIn(page, 'Highlight folders with their color', 'Background').click();
-      await stable();
-      expect(settingsApi.update).toHaveBeenCalledWith({ folderHighlight: 'background' });
-      expect(theme.layout().folderHighlight).toBe('background');
-      expect(root.getAttribute(LAYOUT_ATTRIBUTE.FolderHighlight)).toBe('background');
-
-      radioIn(page, 'Highlight folders with their color', 'Stripe').click();
-      await stable();
-      expect(root.hasAttribute(LAYOUT_ATTRIBUTE.FolderHighlight)).toBe(false);
-    });
-
     it('hides site, notes and tags of cards with the switches', async () => {
       const { root: page, settingsApi, stable } = await setup();
 

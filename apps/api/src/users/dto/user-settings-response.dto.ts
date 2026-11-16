@@ -10,12 +10,10 @@ import {
   type WeekStart,
   APP_FONT,
   CARD_PREVIEW,
-  FOLDER_HIGHLIGHT,
   DENSITY,
   TEXT_SIZE,
   type AppFont,
   type CardPreview,
-  type FolderHighlight,
   type Density,
   type TextSize,
   LIBRARY_SORT,
@@ -119,9 +117,6 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
 
   @ApiProperty({ example: true })
   cardTags!: boolean;
-
-  @ApiProperty({ enum: Object.values(FOLDER_HIGHLIGHT), example: FOLDER_HIGHLIGHT.Stripe })
-  folderHighlight!: FolderHighlight;
 
   @ApiProperty({ enum: Object.values(INTERFACE_LANGUAGE), example: INTERFACE_LANGUAGE.Browser })
   language!: InterfaceLanguage;

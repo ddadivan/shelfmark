@@ -11,14 +11,15 @@ describe('folder style helpers', () => {
   });
 
   it('keeps what differs from the folder', () => {
-    expect(
-      changedStyle({ colour: 'sage', icon: 'star', description: 'Hi', coverLinkId: null }, folder),
-    ).toEqual({ icon: 'star' });
-    expect(
-      changedStyle(
-        { colour: 'sage', icon: folder.icon, description: 'Hi', coverLinkId: null },
-        folder,
-      ),
-    ).toEqual({});
+    const same = {
+      colour: 'sage',
+      icon: folder.icon,
+      highlighted: false,
+      description: 'Hi',
+      coverLinkId: null,
+    } as const;
+    expect(changedStyle({ ...same, icon: 'star' }, folder)).toEqual({ icon: 'star' });
+    expect(changedStyle({ ...same, highlighted: true }, folder)).toEqual({ highlighted: true });
+    expect(changedStyle(same, folder)).toEqual({});
   });
 });

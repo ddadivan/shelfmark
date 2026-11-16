@@ -131,6 +131,17 @@
         </div>
       </div>
 
+      <ui-settings-row
+        class="folder-style__highlight"
+        [title]="'folders.style.highlight.label' | transloco"
+        [description]="'folders.style.highlight.hint' | transloco"
+      >
+        <ui-switch
+          [label]="'folders.style.highlight.label' | transloco"
+          [formField]="form.highlighted"
+        />
+      </ui-settings-row>
+
       <app-folder-cover-picker
         [folderId]="data.folder.id"
         [current]="currentCover"

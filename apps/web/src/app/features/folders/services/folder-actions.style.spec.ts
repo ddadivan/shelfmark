@@ -167,6 +167,45 @@ describe('FolderActionsService style', () => {
     });
   });
 
+  it('has a Highlight with background switch that saves through setStyle (#440)', async () => {
+    const { actions, store } = await setup();
+    expect(store.entityMap()[MOCK_ID.FolderReading].highlighted).toBe(false);
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const toggle = root.querySelector<HTMLButtonElement>(
+      'button[role="switch"][aria-label="Highlight with background"]',
+    );
+    expect(toggle?.getAttribute('aria-checked')).toBe('false');
+    toggle?.click();
+    TestBed.tick();
+    expect(toggle?.getAttribute('aria-checked')).toBe('true');
+    button('Save').click();
+    await closed();
+    await done;
+
+    await until(() => {
+      expect(store.entityMap()[MOCK_ID.FolderReading].highlighted).toBe(true);
+    });
+  });
+
+  it('opens with the switch on for a highlighted folder, and Reset turns it off (#440)', async () => {
+    const { actions, store } = await setup();
+    await store.setStyle(MOCK_ID.FolderReading, { colour: 'rose', highlighted: true });
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const toggle = root.querySelector<HTMLButtonElement>('button[role="switch"]');
+    expect(toggle?.getAttribute('aria-checked')).toBe('true');
+    button('Reset').click();
+    TestBed.tick();
+    expect(toggle?.getAttribute('aria-checked')).toBe('false');
+    button('Cancel').click();
+    await closed();
+    await done;
+    expect(store.entityMap()[MOCK_ID.FolderReading].highlighted).toBe(true);
+  });
+
   it('saves a trimmed description and refuses one that is too long (#418)', async () => {
     const { actions, store } = await setup();
 
