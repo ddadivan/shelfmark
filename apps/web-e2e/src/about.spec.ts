@@ -172,6 +172,9 @@ test.describe('About and "How it works" (mock API)', () => {
     page,
   }) => {
     test.skip(isCompact(page), 'the card lives in the desktop sidebar');
+    // The middle of the sidebar scrolls when it does not fit (#335); with the views, the mock
+    // folders, Tags and Reminders it no longer fits 720px. The layout is checked where it fits.
+    await page.setViewportSize({ width: 1280, height: 1000 });
     await seedSession(page);
     await page.goto('/links');
     const card = page.getByRole('region', { name: 'How it works' });
