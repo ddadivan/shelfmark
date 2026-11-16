@@ -2787,6 +2787,18 @@
       "feedback": {
         "title": "Envoyer un avis",
         "text": "Dites-nous ce qui marche et ce qui ne marche pas, avec une capture si vous voulez, directement depuis l'application."
+      },
+      "fastLanding": {
+        "text": "À la première visite, la page d’accueil s’ouvre tout de suite, sans pause sombre."
+      },
+      "phoneKeyboard": {
+        "text": "Sur téléphone, le clavier ne cache plus la liste des dossiers, les panneaux, les dialogues ni les suggestions."
+      },
+      "emptyExport": {
+        "text": "L’export explique quand il n’y a rien à exporter au lieu de télécharger un fichier vide."
+      },
+      "bulkBar": {
+        "text": "Sur téléphone, la barre des liens sélectionnés se place de nouveau juste au-dessus de la barre d’onglets."
       }
     }
   },

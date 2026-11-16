@@ -2787,6 +2787,18 @@
       "feedback": {
         "title": "Invia un feedback",
         "text": "Dicci cosa funziona e cosa no, anche con uno screenshot, direttamente dall'app."
+      },
+      "fastLanding": {
+        "text": "Alla prima visita la pagina iniziale si apre subito, senza una pausa scura."
+      },
+      "phoneKeyboard": {
+        "text": "Sul telefono la tastiera non copre più l’elenco delle cartelle, i pannelli, le finestre e i suggerimenti."
+      },
+      "emptyExport": {
+        "text": "L’esportazione spiega quando non c’è nulla da esportare invece di scaricare un file vuoto."
+      },
+      "bulkBar": {
+        "text": "Sul telefono la barra dei link selezionati torna appena sopra la barra delle schede."
       }
     }
   },

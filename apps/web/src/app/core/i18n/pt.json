@@ -2787,6 +2787,18 @@
       "feedback": {
         "title": "Enviar feedback",
         "text": "Conte o que funciona e o que não funciona, com uma captura de tela se quiser, direto do app."
+      },
+      "fastLanding": {
+        "text": "Na primeira visita a página inicial abre na hora, sem uma pausa escura."
+      },
+      "phoneKeyboard": {
+        "text": "No celular o teclado não cobre mais a lista de pastas, os painéis, os diálogos e as sugestões."
+      },
+      "emptyExport": {
+        "text": "A exportação explica quando não há nada para exportar em vez de baixar um arquivo vazio."
+      },
+      "bulkBar": {
+        "text": "No celular a barra dos links selecionados volta a ficar logo acima da barra de abas."
       }
     }
   },

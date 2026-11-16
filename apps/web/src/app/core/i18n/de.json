@@ -2727,6 +2727,18 @@
       "feedback": {
         "title": "Feedback senden",
         "text": "Sagen Sie uns direkt in der App, was gut läuft und was nicht, gern mit Screenshot."
+      },
+      "fastLanding": {
+        "text": "Beim ersten Besuch öffnet sich die Startseite sofort statt nach einer dunklen Pause."
+      },
+      "phoneKeyboard": {
+        "text": "Auf dem Handy verdeckt die Tastatur nicht mehr die Ordnerliste, Sheets, Dialoge und Vorschläge."
+      },
+      "emptyExport": {
+        "text": "Der Export erklärt, wenn es nichts zu exportieren gibt, statt eine leere Datei herunterzuladen."
+      },
+      "bulkBar": {
+        "text": "Auf dem Handy sitzt die Leiste für ausgewählte Links wieder direkt über der Tab-Leiste."
       }
     }
   },

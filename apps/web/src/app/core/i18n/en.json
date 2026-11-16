@@ -2727,6 +2727,18 @@
       "feedback": {
         "title": "Send feedback",
         "text": "Tell us what works and what doesn't, with a screenshot if you like, right from the app."
+      },
+      "fastLanding": {
+        "text": "On a first visit the landing opens at once instead of after a dark pause."
+      },
+      "phoneKeyboard": {
+        "text": "On phones the keyboard no longer covers the folder list, sheets, dialogs and suggestions."
+      },
+      "emptyExport": {
+        "text": "Export explains when there is nothing to export instead of downloading an empty file."
+      },
+      "bulkBar": {
+        "text": "On phones the bar for selected links sits just above the tab bar again."
       }
     }
   },
