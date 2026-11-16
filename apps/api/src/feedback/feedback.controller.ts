@@ -15,6 +15,7 @@ import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { FeedbackPromptResponseDto } from './dto/feedback-prompt-response.dto';
 import { RecordFeedbackDto } from './dto/record-feedback.dto';
+import { RecordRatingPromptViewDto } from './dto/record-rating-prompt-view.dto';
 import { FeedbackService } from './feedback.service';
 
 @ApiTags('feedback')
@@ -46,5 +47,23 @@ export class FeedbackController {
   @ApiTooManyRequestsResponse({ description: 'Rate limit exceeded' })
   record(@CurrentUser() user: AuthUser, @Body() body: RecordFeedbackDto): Promise<void> {
     return this.feedback.record(user.id, body);
+  }
+
+  @Post('rating-prompt/views')
+  @RateLimit(RATE_LIMIT.RatingPromptView)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary:
+      'Count one display of the rating prompt for the session user (also for a demo user); the count is only read in the database',
+  })
+  @ApiNoContentResponse({ description: 'Counted' })
+  @ApiBadRequestResponse({ description: 'Unknown milestone' })
+  @ApiForbiddenResponse({ description: 'A foreign Origin' })
+  @ApiTooManyRequestsResponse({ description: 'Rate limit exceeded' })
+  recordPromptView(
+    @CurrentUser() user: AuthUser,
+    @Body() body: RecordRatingPromptViewDto,
+  ): Promise<void> {
+    return this.feedback.recordPromptView(user.id, body.milestone);
   }
 }
