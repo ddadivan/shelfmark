@@ -331,6 +331,27 @@ test.describe('select links and bulk actions (mock API)', () => {
     });
   });
 
+  test.describe('mobile shell', { tag: E2E_TAG.Mobile }, () => {
+    test.skip(({ isMobile }) => !isMobile, 'the desktop has its own tests');
+
+    for (const [name, url] of [
+      ['a short feed', '/links?tag=recipes&kind=video'],
+      ['a long feed', '/links'],
+    ] as const) {
+      test(`the bulk bar stands 12px above the tab bar in ${name}`, async ({ page }) => {
+        await openFeed(page, url);
+        await cards(page).first().locator('ui-checkbox .ui-checkbox__box').tap();
+        await expect(bar(page)).toBeVisible();
+        await settled(page);
+
+        const barBox = await bar(page).boundingBox();
+        const tabBox = await page.locator('ui-tab-bar').boundingBox();
+        const gap = (tabBox?.y ?? 0) - ((barBox?.y ?? 0) + (barBox?.height ?? 0));
+        expect(Math.abs(gap - 12)).toBeLessThanOrEqual(1);
+      });
+    }
+  });
+
   test.describe('phone', { tag: E2E_TAG.Phone }, () => {
     test.skip(({ isMobile }) => !isMobile, 'the desktop has its own tests');
 

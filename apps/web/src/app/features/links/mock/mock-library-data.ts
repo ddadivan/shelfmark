@@ -1,4 +1,6 @@
 import { Service } from '@angular/core';
+import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
+import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import {
   FOLDER_DELETE_MODE,
   PIN_KIND,
@@ -45,6 +47,15 @@ function mockStorage(): Storage | undefined {
   }
 }
 const SEEDED_OLD_DAYS = 20;
+
+/** The `empty` links scenario (`sm-mock-links-scenario`): a new account with nothing saved. */
+function emptyLinksScenario(): boolean {
+  try {
+    return globalThis.sessionStorage.getItem(MOCK_LINKS_SCENARIO_KEY) === MOCK_LINKS_SCENARIO.Empty;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * The one in-memory library behind the mock links, folders and tags APIs, so a folder deleted
@@ -174,6 +185,10 @@ export class MockLibraryData {
   }
 
   counts(): LibraryCounts {
+    if (emptyLinksScenario()) {
+      // The `empty` links scenario lists nothing: the sidebar counts agree (a new account).
+      return { all: 0, unsorted: 0, favorites: 0 };
+    }
     return {
       all: this.links.length,
       unsorted: this.links.filter((link) => link.folderId === null).length,

@@ -9,7 +9,7 @@
 //   (the CDK removes the "showing" class when the dialog starts to close). Opacity only, so it
 //   is the same under reduced motion.
 // The wrapper is the global-position host element: a centred dialog on tablet and desktop,
-//   a panel stuck to the bottom edge (bottom sheet) on a phone, and for a `ui-sheet` also on a
+//   a panel stuck to the bottom edge (bottom sheet) on a phone, above the on-screen keyboard, and for a `ui-sheet` also on a
 //   tablet (#316: quick lists are centred bottom sheets on an iPad, forms stay dialogs).
 @mixin dialog-layout {
   .ui-dialog-scrim {
@@ -22,8 +22,14 @@
   }
 
   .cdk-global-overlay-wrapper.ui-overlay-layer--dialog {
+    box-sizing: border-box;
     align-items: center;
     justify-content: center;
+
+    // The on-screen keyboard covers the bottom of the layout viewport (`--ui-keyboard-inset`,
+    // KeyboardInset): sheets sit on top of it and centred dialogs centre in what is left; the
+    // panels subtract the same value from their height (dialog.component.scss).
+    padding-block-end: var(--ui-keyboard-inset, 0);
 
     @include phone {
       align-items: flex-end;

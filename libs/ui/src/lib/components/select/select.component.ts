@@ -32,6 +32,9 @@ import { selectedRow, selectRows } from './select-rows';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 
+/** Touch screens: opening the popup does not move focus into the search box (no keyboard). */
+const COARSE_POINTER = '(pointer: coarse)';
+
 /**
  * Picks one value from a nested list (the folder of a link). The trigger is an Angular Aria
  * `ngCombobox` button, the popup an Aria `ngListbox` (`aria-activedescendant`: DOM focus stays on
@@ -124,9 +127,12 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   constructor() {
     super();
     // The search box takes focus as soon as it exists (the popup content renders after opening).
+    // On a touch screen the keyboard would cover the list the moment it opens: focus stays on the
+    // trigger (Aria still relays keys from there) and the keyboard comes only when the search box
+    // is tapped, as in `ui-picker-list`.
     effect(() => {
       const field = this.searchField();
-      if (field) {
+      if (field && !this.coarsePointer()) {
         untracked(() => {
           field.nativeElement.focus({ preventScroll: true });
         });
@@ -278,6 +284,10 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
     this.query.set('');
     this.open.set(true);
     this.pane.show();
+  }
+
+  private coarsePointer(): boolean {
+    return this.document.defaultView?.matchMedia?.(COARSE_POINTER).matches ?? false;
   }
 
   private hide(restoreFocus: boolean): void {

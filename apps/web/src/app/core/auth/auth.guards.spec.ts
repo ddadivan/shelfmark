@@ -3,7 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router, Routes } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { AUTH_API } from './auth-api.token';
-import { authOnly, guestOnly, redirectToSignIn } from './auth.guards';
+import { authOnly, guestOnly, landingGuestOnly, redirectToSignIn } from './auth.guards';
+import { markSessionHint } from './session-hint';
 import { AuthApi } from './models/auth-api.interface';
 import { safeReturnUrl } from './safe-return-url';
 import type { AuthUser } from '@shelfmark/contracts';
@@ -26,7 +27,8 @@ class ShellStub {}
 class SignInStub {}
 
 const routes: Routes = [
-  { path: '', canMatch: [guestOnly], component: LandingStub },
+  { path: '', canMatch: [landingGuestOnly], component: LandingStub },
+  { path: 'about', component: LandingStub },
   {
     path: '',
     canMatch: [authOnly],
@@ -40,9 +42,9 @@ const routes: Routes = [
   { path: 'sign-in', redirectTo: 'links' },
 ];
 
-async function setup(session: AuthUser | null) {
+async function setup(session: AuthUser | null, getSession = () => Promise.resolve(session)) {
   const api: AuthApi = {
-    getSession: vi.fn(() => Promise.resolve(session)),
+    getSession: vi.fn(getSession),
     signIn: vi.fn(),
     signInDemo: vi.fn(),
     signOut: vi.fn(),
@@ -53,13 +55,23 @@ async function setup(session: AuthUser | null) {
   return { api, harness: await RouterTestingHarness.create(), router: TestBed.inject(Router) };
 }
 
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((done) => (resolve = done));
+  return { promise, resolve };
+}
+
 describe('auth guards', () => {
+  beforeEach(() => localStorage.clear());
+  afterEach(() => localStorage.clear());
+
   it('shows the landing for a guest and the shell for a signed-in user', async () => {
     const guest = await setup(null);
     await guest.harness.navigateByUrl('/');
     expect((guest.harness.routeNativeElement as HTMLElement).textContent).toBe('landing');
 
     TestBed.resetTestingModule();
+    markSessionHint();
     const member = await setup(USER);
     await member.harness.navigateByUrl('/');
     expect((member.harness.routeNativeElement as HTMLElement).textContent).toBe('shell');
@@ -110,5 +122,80 @@ describe('auth guards', () => {
     await harness.navigateByUrl('/sign-in');
 
     expect(api.getSession).toHaveBeenCalledTimes(1);
+  });
+
+  describe('landing on a first visit (no session hint)', () => {
+    it('renders the landing before the session request answers', async () => {
+      const session = deferred<AuthUser | null>();
+      const { api, harness } = await setup(null, () => session.promise);
+
+      await harness.navigateByUrl('/');
+
+      expect((harness.routeNativeElement as HTMLElement).textContent).toBe('landing');
+      expect(api.getSession).toHaveBeenCalledTimes(1);
+      session.resolve(null);
+    });
+
+    it('stays on the landing when the session turns out to be a guest', async () => {
+      const { harness, router } = await setup(null);
+
+      await harness.navigateByUrl('/');
+      await harness.fixture.whenStable();
+
+      expect(router.url).toBe('/');
+      expect((harness.routeNativeElement as HTMLElement).textContent).toBe('landing');
+    });
+
+    it('moves to the app when a session turns up after all', async () => {
+      const session = deferred<AuthUser | null>();
+      const { harness, router } = await setup(null, () => session.promise);
+      await harness.navigateByUrl('/');
+
+      session.resolve(USER);
+      await vi.waitFor(() => expect(router.url).toBe('/links'));
+      await harness.fixture.whenStable();
+
+      expect((harness.routeNativeElement as HTMLElement).textContent).toBe('shell');
+    });
+
+    it('leaves a page the visitor moved to meanwhile alone', async () => {
+      const session = deferred<AuthUser | null>();
+      const { harness, router } = await setup(null, () => session.promise);
+      await harness.navigateByUrl('/');
+      // A deeper URL waits for the session (as before the shortcut); then nothing moves it.
+      const navigation = harness.navigateByUrl('/about');
+      session.resolve(USER);
+      await navigation;
+      await harness.fixture.whenStable();
+
+      expect(router.url).toBe('/about');
+    });
+
+    it('keeps a deep link of a signed-in user on a device without the hint', async () => {
+      const session = deferred<AuthUser | null>();
+      const { harness, router } = await setup(null, () => session.promise);
+
+      const navigation = harness.navigateByUrl('/share?text=hi');
+      session.resolve(USER);
+      await navigation;
+      await harness.fixture.whenStable();
+
+      expect(router.url).toBe('/share?text=hi');
+      expect((harness.routeNativeElement as HTMLElement).textContent).toBe('shell');
+    });
+
+    it('waits for the session when the device has a session hint', async () => {
+      markSessionHint();
+      const session = deferred<AuthUser | null>();
+      const { harness, router } = await setup(null, () => session.promise);
+
+      const navigation = harness.navigateByUrl('/');
+      await Promise.resolve();
+      expect(router.navigated).toBe(false);
+
+      session.resolve(USER);
+      await navigation;
+      expect((harness.routeNativeElement as HTMLElement).textContent).toBe('shell');
+    });
   });
 });

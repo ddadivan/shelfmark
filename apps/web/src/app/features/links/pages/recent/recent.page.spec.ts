@@ -203,6 +203,14 @@ describe('RecentPage', () => {
   });
 
   it('groups the links by day with the folder and time, newest first', async () => {
+    // A fixed Saturday afternoon (local time): 3 days ago is still this week whether the week
+    // starts on Monday or on Sunday, so the groups do not depend on the day the suite runs.
+    // Only Date is faked; the fixtures (`opened`) and the page's "now" both read it.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 10, 14, 15, 0, 0));
+    onTestFinished(() => {
+      vi.useRealTimers();
+    });
     const { element, api } = await setup([
       opened(1, 0, { folderId: 'f-1' }),
       opened(2, 0),

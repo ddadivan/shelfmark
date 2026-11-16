@@ -1101,6 +1101,14 @@
     "all": {
       "json": "Alles als JSON",
       "html": "Alles als Lesezeichen-HTML"
+    },
+    "empty": {
+      "title": "Noch nichts zu exportieren",
+      "detail": "Speichere zuerst einen Link, dann kannst du deine Bibliothek exportieren"
+    },
+    "emptyView": {
+      "title": "In dieser Ansicht gibt es nichts zu exportieren",
+      "detail": "Diese Ansicht enthält keine Links. Exportiere alles oder öffne eine andere Ansicht"
     }
   },
   "settings": {
