@@ -593,10 +593,10 @@ Security is a mandatory requirement, not a wish: a task is not done until the it
 | **SSRF** when fetching previews (the main risk of the service) | Only `http`/`https`; block private and reserved IPs (localhost, 10.x, 172.16–31.x, 192.168.x, 169.254.x, IPv6 equivalents) after DNS resolution; timeout; limits on response size and number of redirects; no cookie forwarding |
 | **Access to other users' data (IDOR)** | Every request to links, folders, tags is filtered by the session `userId`; dedicated tests "user A cannot see or change user B's data" |
 | **XSS** | Angular escaping by default; `innerHTML` and `bypassSecurityTrust…` are forbidden; links with a `javascript:` / `data:` scheme are rejected on the backend |
-| **Sessions and CSRF** | httpOnly + Secure + SameSite cookies; Origin check; limited session lifetime; sign-out invalidates the session |
+| **Sessions and CSRF** | httpOnly + Secure + SameSite cookies; Origin check (the browser extension's `chrome-extension://<id>` origins from `EXTENSION_ORIGINS` are trusted in `CsrfGuard` only, ADR 0046); limited session lifetime; sign-out invalidates the session |
 | **Invalid data** | Validation of all DTOs; field length limits (URL, title, note, tag) |
 | **API abuse** | Rate limiting (`@nestjs/throttler`), stricter on adding links and fetching previews |
-| **Headers** | Helmet, Content-Security-Policy, HSTS; no CORS: web and API share one origin (ADR 0007) |
+| **Headers** | Helmet, Content-Security-Policy, HSTS; no CORS: web and API share one origin (ADR 0007); the browser extension needs none either (host permission, ADR 0046) |
 | **SQL injection** | Only parameterised Prisma queries; `$queryRawUnsafe` is forbidden |
 | **Secret leaks** | Secrets only in Vercel environment variables; `.env` in `.gitignore`; GitHub secret scanning + push protection; secrets and tokens are never written to logs |
 | **Vulnerable dependencies** | Dependabot; `npm audit` in CI; CodeQL (free for public repositories) |
@@ -704,6 +704,7 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 | `*` | `/api/auth/*` | Sign-in / sign-out with Google and GitHub (Better Auth) |
 | GET | `/api/auth/get-session` | Current user and session (Better Auth); `null` when signed out |
 | DELETE | `/api/me` | Delete the account and all data |
+| POST | `/api/links/lookup` | `{ url }` → `{ link: LinkResponse \| null }`: the user's newest live (not trashed) link whose normalized URL equals the URL without tracking parameters. Never fetches the page; rate limit as `POST /api/links` (browser extension, ADR 0046) |
 | POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill). With the account's `fetchPreviews` off no page is loaded (`fetched: false`, only the duplicate check); the URL is always checked and fetched without tracking parameters (#284, #315) |
 | GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `kind` (one of `video`, `article`, `shopping`, `other`; ADR 0038), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit`. With `folderId` the first page also returns `pinned`: the links pinned to the top of that folder in pin order (same filters), not repeated in `items` or later pages (ADR 0037) |
 | GET | `/api/links/recent` | Recently opened (by `lastOpenedAt`, only the last 30 days, `RECENT_LINKS_WINDOW_DAYS`), `limit` |

@@ -12,6 +12,7 @@ import {
   shouldTrustProxyHeaders,
 } from '../common/rate-limit/rate-limit-options';
 import { readAuthConfig } from '../config/auth-config';
+import { readExtensionConfig } from '../config/extension-config';
 import { DemoModule } from '../demo/demo.module';
 import { FeedbackModule } from '../feedback/feedback.module';
 import { ExportModule } from '../export/export.module';
@@ -60,7 +61,10 @@ import { UsersModule } from '../users/users.module';
     // so a flood is rejected before anything else; then the CSRF check (cheap, no database); then the
     // session guard, which hits the database. Keep every global guard here, in one visible list.
     { provide: APP_GUARD, useClass: ThrottlerGuard },
-    { provide: APP_GUARD, useFactory: () => new CsrfGuard(readAuthConfig().trustedOrigins) },
+    {
+      provide: APP_GUARD,
+      useFactory: () => new CsrfGuard(readAuthConfig().trustedOrigins, readExtensionConfig()),
+    },
     { provide: APP_GUARD, useClass: SessionAuthGuard },
     // Used by SessionAuthGuard to record the day of activity (ADR 0045).
     UserActivityService,
