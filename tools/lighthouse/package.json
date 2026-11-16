@@ -4,6 +4,6 @@
   "private": true,
   "description": "Isolated install of Lighthouse CI, outside the root dependency tree (ADR 0028).",
   "devDependencies": {
-    "@lhci/cli": "0.16.0"
+    "@lhci/cli": "0.16.1"
   }
 }
