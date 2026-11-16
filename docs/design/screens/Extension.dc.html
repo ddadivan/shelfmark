@@ -15,49 +15,142 @@
 <style>
 body{margin:0}
 a{color:inherit}a:hover{color:inherit}
+/* The popup: Chrome draws it under the toolbar button, at most 800 × 600; ours is 360 wide and grows with its content. */
+.ex-pop{width:360px;max-width:100%;box-sizing:border-box;background:var(--surface);border-radius:22px;box-shadow:var(--shadow-float);padding:18px;display:flex;flex-direction:column;gap:14px}
+.ex-head{display:flex;align-items:center;gap:10px;min-height:32px}
+.ex-head h3{margin:0;font-size:16px;font-weight:600;line-height:22px;flex:1;min-width:0}
+.ex-lead{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ex-lead--ok{background:var(--accent);color:var(--surface)}
+.ex-lead--muted{background:var(--surface-hover);color:var(--text-muted)}
+.ex-lead--danger{background:var(--danger);color:var(--surface)}
+.ex-preview{display:flex;gap:12px;align-items:center;padding:8px;border-radius:16px;background:var(--bg)}
+.ex-thumb{width:72px;aspect-ratio:4/3;border-radius:10px;background:var(--accent-bg);flex:none}
+.ex-host{display:block;font-size:12px;line-height:16px;color:var(--text-muted)}
+.ex-title{display:block;font-size:14px;font-weight:600;line-height:19px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ex-text{margin:0;font-size:13px;line-height:19px;color:var(--text-muted)}
+.ex-foot{display:flex;gap:8px;align-items:center}
+.ex-foot .sm-link{font-size:13px;margin-right:auto}
+.ex-logo{width:30px;height:30px}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));">
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
 
+<!-- 1 · The main flow. One click saves; the popup then refines the saved link. -->
 <section class="a-state" style="grid-column: 1 / -1;">
-<h2 class="a-cap">1 · Click the toolbar button (or press Alt+S): saved at once, then refine</h2>
+<h2 class="a-cap">1 · Click the toolbar button (or press Alt+Shift+S): saved at once, then refine</h2>
 <div style="border-radius: 18px; overflow: hidden; box-shadow: var(--shadow-card); background: var(--surface);">
 <div aria-hidden="true" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface-hover);"><span style="display: flex; gap: 6px;"><span style="width: 11px; height: 11px; border-radius: 50%; background: var(--surface-pressed);"></span><span style="width: 11px; height: 11px; border-radius: 50%; background: var(--surface-pressed);"></span><span style="width: 11px; height: 11px; border-radius: 50%; background: var(--surface-pressed);"></span></span><span style="flex: 1; height: 30px; border-radius: 999px; background: var(--surface); display: flex; align-items: center; padding: 0 14px; font-size: 13px; color: var(--text-muted);">cos.com/en/wool-coat-graphite</span><span style="width: 32px; height: 32px; border-radius: 10px; background: var(--accent-bg); display: grid; place-items: center;"><svg width="18" height="18" viewBox="0 0 32 32"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg></span></div>
-<div style="position: relative; height: 560px; background: var(--bg);">
+<div style="position: relative; height: 600px; background: var(--bg);">
 <div aria-hidden="true" style="position: absolute; left: 32px; top: 32px; width: 46%; display: flex; flex-direction: column; gap: 14px;"><div style="height: 280px; border-radius: 12px; background: var(--surface-pressed);"></div><div style="height: 16px; width: 70%; border-radius: 8px; background: var(--surface-pressed);"></div><div style="height: 12px; width: 40%; border-radius: 6px; background: var(--surface-pressed);"></div></div>
-<div role="dialog" aria-labelledby="ex-h" style="position: absolute; right: 16px; top: 8px; width: 360px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-float); padding: 18px; display: flex; flex-direction: column; gap: 14px;">
-<div style="display: flex; align-items: center; gap: 10px;"><span style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--surface); display: grid; place-items: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><h3 id="ex-h" style="margin: 0; font-size: 16px; font-weight: 600; flex: 1;">Saved to Unsorted</h3><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
-<div style="display: flex; gap: 12px; align-items: center; padding: 8px; border-radius: 16px; background: var(--bg);"><span style="width: 72px; aspect-ratio: 4 / 3; border-radius: 10px; background: var(--accent-bg); flex: none;"></span><span style="min-width: 0;"><span style="display: block; font-size: 12px; color: var(--text-muted);">cos.com</span><span style="display: block; font-size: 14px; font-weight: 600; line-height: 19px;">Wool coat, straight cut, graphite</span></span></div>
-<div class="sm-field"><label class="sm-field__label" for="ex-f">Folder</label><div class="sm-field__control" id="ex-f"><span class="sm-select__value" style="flex: 1;">Clothes</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
-<div style="display: flex; gap: 6px; flex-wrap: wrap;"><button class="sm-chip sm-chip--neutral sm-chip--clickable">Unsorted</button><button class="sm-chip sm-chip--clickable">Clothes</button><button class="sm-chip sm-chip--neutral sm-chip--clickable">Work / Angular</button></div></div>
-<div class="sm-field"><label class="sm-field__label" for="ex-t">Tags</label><div class="sm-field__control sm-taginput"><span class="sm-chip">clothes</span><input id="ex-t" placeholder="Add tag"></div></div>
+<div class="ex-pop" role="dialog" aria-labelledby="ex-h" style="position: absolute; right: 16px; top: 8px;">
+<div class="ex-head"><span class="ex-lead ex-lead--ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><h3 id="ex-h">Saved to Clothes</h3></div>
+<div class="ex-preview"><span class="ex-thumb"></span><span style="min-width: 0;"><span class="ex-host">cos.com</span><span class="ex-title">Wool coat, straight cut, graphite</span></span></div>
+<div class="sm-field"><label class="sm-field__label" for="ex-f">Folder</label><button class="sm-field__control" id="ex-f" aria-haspopup="dialog" aria-expanded="false" style="text-align: left; font: inherit; color: inherit; cursor: pointer;"><span class="sm-fic sm-fic--sm fc-clay" aria-hidden="true"></span><span class="sm-select__value" style="flex: 1;">Clothes</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+<span class="sm-field__hint">From your rule for cos.com</span>
+<div style="display: flex; gap: 6px; flex-wrap: wrap;" aria-label="Recent folders"><button class="sm-chip sm-chip--neutral sm-chip--clickable">Unsorted</button><button class="sm-chip sm-chip--clickable" aria-pressed="true">Clothes</button><button class="sm-chip sm-chip--neutral sm-chip--clickable">Angular</button></div></div>
+<div class="sm-field"><label class="sm-field__label" for="ex-t">Tags</label><div class="sm-field__control sm-taginput"><span class="sm-chip">winter<button class="sm-chip__remove" aria-label="Remove tag winter">×</button></span><input id="ex-t" placeholder="Add tag"></div></div>
 <div class="sm-field"><label class="sm-field__label" for="ex-n">Note</label><div class="sm-field__control"><input id="ex-n" placeholder="Why are you saving this?"></div></div>
-<div style="display: flex; gap: 8px; align-items: center;"><a href="#" class="sm-link" style="font-size: 13px; margin-right: auto;">Open Shelfmark</a><button class="sm-btn sm-btn--ghost sm-btn--sm" style="color: var(--danger);">Remove</button><button class="sm-btn sm-btn--primary sm-btn--sm">Done</button></div>
+<div class="ex-foot"><a href="#" class="sm-link">Open Shelfmark</a><button class="sm-btn sm-btn--ghost sm-btn--sm" style="color: var(--danger);">Remove</button><button class="sm-btn sm-btn--primary sm-btn--sm">Done</button></div>
 </div>
 </div>
 </div>
+<p class="a-note">The tab's URL and title are saved the moment the popup opens; folder, tags and note save as they change (optimistic, a failed change shows the error state's notice in place). Done closes the popup. The folder is the one a domain rule picked, else Unsorted; the hint names the rule only when one applied. The chips are the three folders saved to most recently. Alt+Shift+S is the default shortcut (Option+Shift+S on a Mac); people can change it in the browser's extension shortcuts.</p>
 </section>
 
 <section class="a-state">
-<h2 class="a-cap">2 · Already saved</h2>
-<div class="sm-panel" style="width: 100%; max-width: 360px; padding: 18px; gap: 12px; box-shadow: var(--shadow-float);">
+<h2 class="a-cap">2 · Saving (only shown if it takes over 300 ms)</h2>
+<div class="ex-pop" role="dialog" aria-label="Saving" aria-busy="true">
+<div class="ex-head"><span class="sm-spinner sm-spinner--sm" aria-hidden="true"></span><h3>Saving…</h3></div>
+<div class="ex-preview"><span class="ex-thumb sm-skel sm-skel--media" style="background: var(--surface-pressed);"></span><span style="min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 6px;"><span class="ex-host">cos.com</span><span class="ex-title">Wool coat, straight cut, graphite</span></span></div>
+<div class="sm-skel sm-skel--line" style="height: 44px; border-radius: 999px;"></div>
+<div class="sm-skel sm-skel--line" style="height: 44px; border-radius: 999px;"></div>
+</div>
+<p class="a-note">The tab's own title and host show at once; the image fills in when the server has fetched the page. Fields stay hidden until the link exists.</p>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">3 · Folder picker</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="ex-pick-h">
+<div class="ex-head"><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h3 id="ex-pick-h">Choose a folder</h3></div>
+<div class="sm-field__control"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" style="color: var(--text-muted);"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input placeholder="Find a folder" aria-label="Find a folder"></div>
+<div role="listbox" aria-label="Folders" style="display: flex; flex-direction: column; max-height: 300px; overflow: auto; margin: 0 -6px;">
+<div class="sm-menu__item" role="option">Unsorted</div>
+<div class="sm-menu__item" role="option"><span class="sm-fic sm-fic--sm fc-ocean" aria-hidden="true"></span>Work</div>
+<div class="sm-menu__item" role="option" style="padding-left: 34px;"><span class="sm-fic sm-fic--sm fc-ocean" aria-hidden="true"></span>Angular</div>
+<div class="sm-menu__item" role="option" style="padding-left: 34px;"><span class="sm-fic sm-fic--sm fc-ocean" aria-hidden="true"></span>Courses</div>
+<div class="sm-menu__item is-selected" role="option" aria-selected="true"><span class="sm-fic sm-fic--sm fc-clay" aria-hidden="true"></span>Clothes<span class="sm-menu__hint">✓</span></div>
+<div class="sm-menu__item" role="option"><span class="sm-fic sm-fic--sm fc-rose" aria-hidden="true"></span>Recipes</div>
+<div class="sm-menu__item" role="option"><span class="sm-fic sm-fic--sm fc-teal" aria-hidden="true"></span>Travel</div>
+</div>
+</div>
+<p class="a-note">The same picker list as Move to folder, filling the popup instead of a menu (a popup has no room for a popover). Opening it focuses the search; choosing a row moves the link and goes back. Esc or Back returns without a change.</p>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">4 · Already saved</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="ex-dup-h">
+<div class="ex-head"><span class="ex-lead ex-lead--muted"><svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: currentColor"/></svg></span><h3 id="ex-dup-h">Already in your library</h3></div>
+<div class="ex-preview"><span class="ex-thumb"></span><span style="min-width: 0;"><span class="ex-host">cos.com</span><span class="ex-title">Wool coat, straight cut, graphite</span></span></div>
 <div class="sm-notice sm-notice--warning" role="status"><span>You saved this 2 days ago in <b>Clothes</b>.</span></div>
-<div style="display: flex; gap: 8px;"><button class="sm-btn sm-btn--secondary sm-btn--sm" style="flex: 1;">Open in Shelfmark</button><button class="sm-btn sm-btn--primary sm-btn--sm" style="flex: 1;">Edit</button></div>
+<div class="ex-foot"><button class="sm-btn sm-btn--ghost sm-btn--sm" style="margin-right: auto;">Save a copy</button><button class="sm-btn sm-btn--secondary sm-btn--sm">Open in Shelfmark</button><button class="sm-btn sm-btn--primary sm-btn--sm">Edit</button></div>
 </div>
+<p class="a-note">Nothing is created. Edit shows state 1 for the existing link (heading "Saved to Clothes" becomes "In Clothes"); Open in Shelfmark opens the link in the app; Save a copy saves it again, as "save anyway" in Add link.</p>
 </section>
 
 <section class="a-state">
-<h2 class="a-cap">3 · Signed out</h2>
-<div class="sm-panel" style="width: 100%; max-width: 360px; padding: 22px; gap: 12px; align-items: flex-start; box-shadow: var(--shadow-float);">
-<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg>
-<h3 style="margin: 0; font-size: 17px; font-weight: 600;">Sign in to save this page</h3>
-<p style="margin: 0; font-size: 13px; line-height: 19px; color: var(--text-muted);">One sign-in in the browser, and every save after that is a single click.</p>
+<h2 class="a-cap">5 · Signed out</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="ex-out-h" style="padding: 22px; gap: 12px; align-items: flex-start;">
+<svg class="ex-logo" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg>
+<h3 id="ex-out-h" style="margin: 0; font-size: 17px; font-weight: 600;">Sign in to save this page</h3>
+<p class="ex-text">One sign-in in the browser, and every save after that is a single click.</p>
 <button class="sm-btn sm-btn--primary sm-btn--sm">Sign in to Shelfmark</button>
 </div>
+<p class="a-note">Opens the sign-in page in a new tab; the popup closes. The extension uses the browser's Shelfmark sign-in, so signing out in the app signs it out too.</p>
 </section>
 
 <section class="a-state">
-<h2 class="a-cap">4 · Right-click a link on any page</h2>
+<h2 class="a-cap">6 · A page that can't be saved</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="ex-no-h">
+<div class="ex-head"><span class="ex-lead ex-lead--muted"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></svg></span><h3 id="ex-no-h">This page can't be saved</h3></div>
+<p class="ex-text">Shelfmark saves web pages. Browser pages, files and the new tab page stay out.</p>
+<div class="ex-foot"><span style="margin-right: auto;"></span><button class="sm-btn sm-btn--secondary sm-btn--sm">Open Shelfmark</button></div>
+</div>
+<p class="a-note">Any tab whose URL is not http or https: chrome://, edge://, file://, the Web Store, the new tab page. Nothing is sent.</p>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">7 · Couldn't save</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="ex-err-h">
+<div class="ex-head"><span class="ex-lead ex-lead--danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M8 8l8 8M16 8l-8 8"/></svg></span><h3 id="ex-err-h">Couldn't save this page</h3></div>
+<div class="ex-preview"><span class="ex-thumb" style="background: var(--surface-pressed);"></span><span style="min-width: 0;"><span class="ex-host">cos.com</span><span class="ex-title">Wool coat, straight cut, graphite</span></span></div>
+<div class="sm-notice sm-notice--danger" role="alert"><span>No connection to Shelfmark. Check the internet and try again.</span></div>
+<div class="ex-foot"><span style="margin-right: auto;"></span><button class="sm-btn sm-btn--primary sm-btn--sm">Try again</button></div>
+</div>
+<p class="a-note">The notice says why: no connection; too many saves in a minute ("Too many saves in a row. Wait a minute and try again."); anything else ("Something went wrong on our side. Try again in a moment."). Try again repeats the same save, so a slow first answer never makes a second copy.</p>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">8 · Library is full (demo)</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="ex-full-h">
+<div class="ex-head"><span class="ex-lead ex-lead--muted"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></svg></span><h3 id="ex-full-h">The demo library is full</h3></div>
+<p class="ex-text">A demo holds 100 links. Sign in with Google or GitHub to keep saving.</p>
+<div class="ex-foot"><span style="margin-right: auto;"></span><button class="sm-btn sm-btn--primary sm-btn--sm">Open Shelfmark</button></div>
+</div>
+<p class="a-note">The same wording as the demo limit in the app (the text comes from the API's limit message).</p>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">9 · Removed</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="ex-rm-h">
+<div class="ex-head"><span class="ex-lead ex-lead--muted"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5h5v2M6.5 7l.8 11.2a1.8 1.8 0 0 0 1.8 1.6h5.8a1.8 1.8 0 0 0 1.8-1.6L17.5 7"/></svg></span><h3 id="ex-rm-h">Moved to Trash</h3></div>
+<p class="ex-text">Wool coat, straight cut, graphite</p>
+<div class="ex-foot"><span style="margin-right: auto;"></span><button class="sm-btn sm-btn--secondary sm-btn--sm">Close</button><button class="sm-btn sm-btn--primary sm-btn--sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Undo</button></div>
+</div>
+<p class="a-note">Remove sends the link to Trash, like every delete in the app. Undo restores it and goes back to state 1.</p>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">10 · Later, not in v1: right-click a link on any page</h2>
 <div class="sm-menu" role="menu" aria-label="Context menu" style="width: 260px; background: var(--surface);">
 <button class="sm-menu__item" role="menuitem">Open link in new tab</button>
 <button class="sm-menu__item" role="menuitem">Copy link address</button>
@@ -65,11 +158,16 @@ a{color:inherit}a:hover{color:inherit}
 <button class="sm-menu__item" role="menuitem" style="background: var(--surface-hover);"><svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg>Save link to Shelfmark</button>
 <button class="sm-menu__item" role="menuitem" style="padding-left: 38px;">Save this page</button>
 </div>
-<p class="a-note">Saves without opening the popup; a small toast confirms in the corner.</p>
+<p class="a-note">Saves without opening the popup; a small toast confirms in the corner. Needs a background worker and the context menu permission, so it waits for a later version.</p>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">Motion and behaviour</h2>
+<p class="a-note">The popup opens with the browser's own animation; inside it, states change with a 120 ms fade, and the check in "Saved" pops in once (the saving moment, scaled down: no card landing, there is no feed). The folder picker slides in from the right (200 ms ease-out) and back out (120 ms ease-in). Reduced motion: fades only. Light and dark follow the browser's colour scheme; the popup has no theme switch. Every text goes through translation keys, in the six app languages.</p>
 </section>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1150}}'>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2100}}'>
 class Component extends DCLogic {
   renderVals() {
     return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
