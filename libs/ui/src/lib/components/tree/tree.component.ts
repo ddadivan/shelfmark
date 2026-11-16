@@ -232,9 +232,14 @@ export class TreeComponent {
 
   protected onValueChange(ids: readonly string[]): void {
     const node = this.nodesById().get(ids.at(-1) ?? '');
-    if (node) {
-      this.selected.emit(node);
+    if (!node || node.id === this.activeId()) {
+      return;
     }
+    this.selected.emit(node);
+    // The Aria tree keeps what was clicked as its own value. The active row is the host's call
+    // (the route): put it back, or an action row ("Send feedback") stays marked as current.
+    // The echo of this reset is the active row again, which the guard above ignores.
+    this.tree().value.set([...this.selectedValue()]);
   }
 
   /** `id` of the count element of a row, or `null` for a row without a count. */
