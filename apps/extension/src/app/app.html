@@ -1,0 +1,17 @@
+@switch (store.view()) { @case (POPUP_VIEW.Opening) {
+<ext-popup-opening />
+} @case (POPUP_VIEW.Form) {
+<ext-popup-form />
+} @case (POPUP_VIEW.Picker) {
+<ext-popup-picker />
+} @case (POPUP_VIEW.Saved) {
+<ext-popup-saved />
+} @case (POPUP_VIEW.Duplicate) {
+<ext-popup-duplicate />
+} @case (POPUP_VIEW.SignedOut) {
+<ext-popup-signed-out />
+} @case (POPUP_VIEW.Unsupported) {
+<ext-popup-message />
+} @case (POPUP_VIEW.Error) {
+<ext-popup-message />
+} }

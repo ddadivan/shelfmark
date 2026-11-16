@@ -1,0 +1,72 @@
+{
+  "popup": {
+    "loading": "Wird geladen",
+    "openApp": "Shelfmark öffnen",
+    "openInApp": "In Shelfmark öffnen",
+    "unsorted": "Unsortiert",
+    "form": {
+      "title": "In Shelfmark speichern",
+      "folder": "Ordner",
+      "chooseFolder": "Ordner: {{folder}}. Ändern",
+      "ruleHint": "Aus Ihrer Regel für {{domain}}",
+      "recentFolders": "Zuletzt verwendete Ordner",
+      "tags": "Tags",
+      "tagsPlaceholder": "Tag hinzufügen",
+      "tagsMax": "Bis zu {{max}} Tags",
+      "tagsCreate": "Tag erstellen",
+      "tagsRemove": "Tag entfernen",
+      "tagsAdded": "Tag hinzugefügt",
+      "tagsRemoved": "Tag entfernt",
+      "tagsDuplicate": "Dieser Tag ist schon hinzugefügt",
+      "tagsList": "Tag-Vorschläge",
+      "note": "Notiz",
+      "notePlaceholder": "Warum speichern Sie das?",
+      "save": "Speichern"
+    },
+    "picker": {
+      "title": "Ordner wählen",
+      "back": "Zurück",
+      "search": "Ordner suchen",
+      "list": "Ordner",
+      "noResults": "Kein Ordner mit diesem Namen"
+    },
+    "saved": {
+      "title": "In {{folder}} gespeichert",
+      "done": "Fertig"
+    },
+    "duplicate": {
+      "title": "Schon in Ihrer Bibliothek",
+      "notice": "Sie haben das {{when}} in {{folder}} gespeichert.",
+      "saveCopy": "Kopie speichern"
+    },
+    "signedOut": {
+      "title": "Melden Sie sich an, um diese Seite zu speichern",
+      "text": "Einmal in diesem Browser anmelden, danach ist jede Seite einen Klick entfernt.",
+      "signIn": "Bei Shelfmark anmelden",
+      "privacy": "Gesendet wird nur die Seite, die Sie speichern, sonst nichts.",
+      "privacyLink": "Datenschutz",
+      "cards": {
+        "grid": "Der komplette Leitfaden zu CSS Grid",
+        "nestjs": "NestJS für Frontend-Entwickler",
+        "icons": "Kostenlose Icon-Sets für Nebenprojekte",
+        "ramen": "Das beste Ramen für den Feierabend",
+        "woolCoat": "Wollmantel, gerader Schnitt",
+        "signalForms": "Signal Forms in 20 Minuten"
+      }
+    },
+    "unsupported": {
+      "title": "Diese Seite lässt sich nicht speichern",
+      "text": "Shelfmark speichert Webseiten. Browserseiten, Dateien und der neue Tab bleiben außen vor."
+    },
+    "error": {
+      "title": "Seite konnte nicht gespeichert werden",
+      "loadTitle": "Shelfmark ist nicht erreichbar",
+      "offline": "Keine Verbindung zu Shelfmark. Prüfen Sie das Internet und versuchen Sie es erneut.",
+      "rateLimit": "Zu viele Speichervorgänge hintereinander. Warten Sie eine Minute und versuchen Sie es erneut.",
+      "limit": "Ihre Bibliothek ist voll. Entfernen Sie Links in Shelfmark, um neue zu speichern.",
+      "demoLimit": "Eine Demo fasst 100 Links. Melden Sie sich mit Google oder GitHub an, um weiter zu speichern.",
+      "server": "Bei uns ist etwas schiefgelaufen. Versuchen Sie es gleich noch einmal.",
+      "tryAgain": "Erneut versuchen"
+    }
+  }
+}

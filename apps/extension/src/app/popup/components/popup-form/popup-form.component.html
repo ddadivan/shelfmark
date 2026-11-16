@@ -1,0 +1,95 @@
+<div class="ext-screen__head">
+  <ui-logo variant="mark" />
+  <h1 class="ext-screen__title">{{ 'popup.form.title' | transloco }}</h1>
+</div>
+
+@if (store.page(); as page) {
+  <div class="ext-preview">
+    <span class="ext-preview__thumb" aria-hidden="true"></span>
+    <span class="ext-preview__text">
+      <span class="ext-preview__host">{{ page.host }}</span>
+      <span class="ext-preview__title">{{ page.title }}</span>
+    </span>
+  </div>
+}
+
+<div class="form">
+  <div class="form__folder">
+    <span class="form__label" id="ext-folder-label">{{ 'popup.form.folder' | transloco }}</span>
+    <ui-button
+      block
+      iconRight="chevron-down"
+      ariaHaspopup="dialog"
+      [ariaLabel]="'popup.form.chooseFolder' | transloco: { folder: folderName() }"
+      [disabled]="store.saving()"
+      (click)="store.openPicker()"
+    >
+      <span class="form__folder-value">
+        @if (store.folder(); as folder) {
+          <ui-folder-icon size="sm" [icon]="folder.icon" [colour]="folder.colour" />
+        } @else {
+          <ui-folder-icon size="sm" icon="inbox" />
+        }
+        <span class="form__folder-name">{{ folderName() }}</span>
+      </span>
+    </ui-button>
+    @if (store.ruleHint(); as domain) {
+      <span class="form__hint">{{ 'popup.form.ruleHint' | transloco: { domain } }}</span>
+    }
+    @if (store.recentFolders().length > 0) {
+      <div
+        class="form__recent"
+        role="group"
+        [attr.aria-label]="'popup.form.recentFolders' | transloco"
+      >
+        @for (recent of store.recentFolders(); track recent.id) {
+          <ui-chip
+            clickable
+            [variant]="recent.id === store.folderId() ? CHIP_VARIANT.Tag : CHIP_VARIANT.Neutral"
+            [disabled]="store.saving()"
+            (clicked)="store.folderId.set(recent.id)"
+            >{{ recent.folder?.name ?? ('popup.unsorted' | transloco) }}</ui-chip
+          >
+        }
+      </div>
+    }
+  </div>
+
+  <ui-tag-input
+    [label]="'popup.form.tags' | transloco"
+    [placeholder]="'popup.form.tagsPlaceholder' | transloco"
+    [suggestions]="tagSuggestions()"
+    [maxTags]="LINK_LIMIT.TagsMax"
+    [maxTagsLabel]="'popup.form.tagsMax' | transloco: { max: LINK_LIMIT.TagsMax }"
+    [createLabel]="'popup.form.tagsCreate' | transloco"
+    [removeLabel]="'popup.form.tagsRemove' | transloco"
+    [addedLabel]="'popup.form.tagsAdded' | transloco"
+    [removedLabel]="'popup.form.tagsRemoved' | transloco"
+    [duplicateLabel]="'popup.form.tagsDuplicate' | transloco"
+    [listLabel]="'popup.form.tagsList' | transloco"
+    [disabled]="store.saving()"
+    [(value)]="store.chosenTags"
+  />
+
+  <ui-input
+    [label]="'popup.form.note' | transloco"
+    [placeholder]="'popup.form.notePlaceholder' | transloco"
+    [disabled]="store.saving()"
+    [(value)]="store.note"
+  />
+</div>
+
+<div class="ext-screen__foot form__foot">
+  <ui-button [variant]="BUTTON_VARIANT.Ghost" (click)="store.openApp()">{{
+    'popup.openApp' | transloco
+  }}</ui-button>
+  <ui-button
+    #save
+    class="form__save"
+    block
+    [variant]="BUTTON_VARIANT.Primary"
+    [loading]="store.saving()"
+    (click)="store.save()"
+    >{{ 'popup.form.save' | transloco }}</ui-button
+  >
+</div>

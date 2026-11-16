@@ -1,0 +1,9 @@
+@use 'ui' as *;
+
+// The list takes the rest of the popup and scrolls inside it.
+.picker {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}

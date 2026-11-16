@@ -1,0 +1,112 @@
+{
+  "name": "extension",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "ext",
+  "sourceRoot": "apps/extension/src",
+  "tags": ["scope:web", "type:app"],
+  "implicitDependencies": ["ui"],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath.base}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": { "base": "dist/apps/extension", "browser": "" },
+        "browser": "apps/extension/src/main.ts",
+        "index": "apps/extension/src/index.html",
+        "tsConfig": "apps/extension/tsconfig.app.json",
+        "polyfills": [],
+        "inlineStyleLanguage": "scss",
+        "outputHashing": "none",
+        "assets": [
+          { "glob": "**/*", "input": "apps/extension/public" },
+          { "glob": "icons/sprite.svg", "input": "libs/ui/src/assets", "output": "assets/ui" }
+        ],
+        "styles": [
+          "node_modules/@fontsource-variable/onest/wght.css",
+          "libs/ui/src/styles/global.scss",
+          "apps/extension/src/styles.scss"
+        ],
+        "stylePreprocessorOptions": { "includePaths": ["libs/ui/src/styles"] },
+        "optimization": {
+          "scripts": true,
+          "styles": { "minify": true, "inlineCritical": false },
+          "fonts": false
+        },
+        "extractLicenses": false
+      },
+      "configurations": {
+        "production": {
+          "assets": [
+            { "glob": "**/*", "input": "apps/extension/public" },
+            { "glob": "icons/sprite.svg", "input": "libs/ui/src/assets", "output": "assets/ui" },
+            {
+              "glob": "manifest.json",
+              "input": "apps/extension/manifest/production",
+              "output": "."
+            }
+          ],
+          "budgets": [
+            { "type": "initial", "maximumWarning": "400kb", "maximumError": "700kb" },
+            { "type": "anyComponentStyle", "maximumWarning": "4kb", "maximumError": "8kb" }
+          ]
+        },
+        "development": {
+          "outputPath": { "base": "dist/apps/extension-dev", "browser": "" },
+          "assets": [
+            { "glob": "**/*", "input": "apps/extension/public" },
+            { "glob": "icons/sprite.svg", "input": "libs/ui/src/assets", "output": "assets/ui" },
+            {
+              "glob": "manifest.json",
+              "input": "apps/extension/manifest/development",
+              "output": "."
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/extension/src/app/core/config/shelfmark-origin.const.ts",
+              "with": "apps/extension/src/app/core/config/shelfmark-origin.development.const.ts"
+            }
+          ],
+          "optimization": false,
+          "sourceMap": true
+        }
+      },
+      "dependsOn": ["^build", "ui:icons"]
+    },
+    "package": {
+      "executor": "nx:run-commands",
+      "dependsOn": [{ "target": "build", "params": "forward" }],
+      "options": {
+        "command": "node apps/extension/scripts/package-extension.mjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test": {
+      "executor": "@angular/build:unit-test",
+      "options": {
+        "tsConfig": "apps/extension/tsconfig.spec.json",
+        "buildTarget": "extension:build:development",
+        "runner": "vitest",
+        "watch": false
+      },
+      "configurations": {
+        "coverage": {
+          "coverage": true
+        }
+      },
+      "dependsOn": ["ui:icons"]
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "ngc -p apps/extension/tsconfig.app.json --noEmit",
+          "ngc -p apps/extension/tsconfig.spec.json --noEmit"
+        ],
+        "parallel": false
+      }
+    }
+  }
+}

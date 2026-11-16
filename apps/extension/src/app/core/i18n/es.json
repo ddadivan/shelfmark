@@ -1,0 +1,72 @@
+{
+  "popup": {
+    "loading": "Cargando",
+    "openApp": "Abrir Shelfmark",
+    "openInApp": "Abrir en Shelfmark",
+    "unsorted": "Sin ordenar",
+    "form": {
+      "title": "Guardar en Shelfmark",
+      "folder": "Carpeta",
+      "chooseFolder": "Carpeta: {{folder}}. Cambiar",
+      "ruleHint": "Según tu regla para {{domain}}",
+      "recentFolders": "Carpetas recientes",
+      "tags": "Etiquetas",
+      "tagsPlaceholder": "Añadir etiqueta",
+      "tagsMax": "Hasta {{max}} etiquetas",
+      "tagsCreate": "Crear etiqueta",
+      "tagsRemove": "Quitar etiqueta",
+      "tagsAdded": "Etiqueta añadida",
+      "tagsRemoved": "Etiqueta quitada",
+      "tagsDuplicate": "Esta etiqueta ya está añadida",
+      "tagsList": "Sugerencias de etiquetas",
+      "note": "Nota",
+      "notePlaceholder": "¿Por qué lo guardas?",
+      "save": "Guardar"
+    },
+    "picker": {
+      "title": "Elige una carpeta",
+      "back": "Atrás",
+      "search": "Buscar una carpeta",
+      "list": "Carpetas",
+      "noResults": "No hay ninguna carpeta con ese nombre"
+    },
+    "saved": {
+      "title": "Guardado en {{folder}}",
+      "done": "Listo"
+    },
+    "duplicate": {
+      "title": "Ya está en tu biblioteca",
+      "notice": "Lo guardaste {{when}} en {{folder}}.",
+      "saveCopy": "Guardar una copia"
+    },
+    "signedOut": {
+      "title": "Inicia sesión para guardar esta página",
+      "text": "Inicia sesión una vez en este navegador y cada página quedará a un clic.",
+      "signIn": "Iniciar sesión en Shelfmark",
+      "privacy": "Solo se envía la página que guardas, nada más de lo que navegas.",
+      "privacyLink": "Privacidad",
+      "cards": {
+        "grid": "La guía completa de CSS grid",
+        "nestjs": "NestJS para desarrolladores frontend",
+        "icons": "Iconos gratis para proyectos personales",
+        "ramen": "El mejor ramen para entre semana",
+        "woolCoat": "Abrigo de lana, corte recto",
+        "signalForms": "Signal Forms en 20 minutos"
+      }
+    },
+    "unsupported": {
+      "title": "Esta página no se puede guardar",
+      "text": "Shelfmark guarda páginas web. Las páginas del navegador, los archivos y la pestaña nueva quedan fuera."
+    },
+    "error": {
+      "title": "No se pudo guardar esta página",
+      "loadTitle": "No se pudo conectar con Shelfmark",
+      "offline": "Sin conexión con Shelfmark. Revisa internet e inténtalo de nuevo.",
+      "rateLimit": "Demasiados guardados seguidos. Espera un minuto e inténtalo de nuevo.",
+      "limit": "Tu biblioteca está llena. Elimina algunos enlaces en Shelfmark para guardar otros nuevos.",
+      "demoLimit": "Una demo guarda 100 enlaces. Inicia sesión con Google o GitHub para seguir guardando.",
+      "server": "Algo salió mal por nuestra parte. Inténtalo de nuevo en un momento.",
+      "tryAgain": "Reintentar"
+    }
+  }
+}

@@ -1,0 +1,127 @@
+@use 'ui' as *;
+
+// The strip of the phone sign-in (apps/web sign-in-phone-cards), edge to edge on top of the popup.
+.strip {
+  position: relative;
+  flex: none;
+  block-size: rem(236px);
+  margin: rem(-18px) rem(-18px) 0;
+  overflow: hidden;
+  background: var(--bg);
+  border-block-end: 1px solid var(--border);
+}
+
+.strip__card {
+  position: absolute;
+  inset-block-start: var(--y);
+  inset-inline-start: var(--x);
+  z-index: 3;
+  inline-size: rem(240px);
+}
+
+.strip__card--mid {
+  z-index: 2;
+}
+
+.strip__card--far {
+  z-index: 1;
+}
+
+// Fly-in from below on every open (800 ms, a short wave), then each card floats on its own loop.
+.strip__fly {
+  animation: strip-fly 800ms var(--ease-out) backwards;
+  animation-delay: calc(var(--w) * 45ms + 40ms);
+
+  .strip__card--mid & {
+    opacity: 0.85;
+  }
+
+  .strip__card--far & {
+    opacity: 0.6;
+  }
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.strip__float {
+  transform: rotate(var(--r));
+  animation: strip-float var(--t) ease-in-out var(--d) infinite;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.strip__size {
+  transform-origin: top left;
+  scale: var(--s);
+}
+
+.strip__site {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.strip__host {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.strip__tags {
+  display: flex;
+  gap: var(--space-1);
+  padding: 0;
+  margin: var(--space-2) 0 0;
+  list-style: none;
+}
+
+.signin {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(12px);
+  padding-block-start: rem(4px);
+}
+
+.signin__intro {
+  display: flex;
+  flex-direction: column;
+  gap: rem(4px);
+}
+
+.signin__title {
+  @include type(title);
+
+  margin: 0;
+}
+
+.signin__privacy {
+  @include type(caption);
+
+  margin: auto 0 0;
+  color: var(--text-muted);
+}
+
+@keyframes strip-fly {
+  from {
+    opacity: 0;
+    translate: 0 rem(260px);
+    scale: 0.6;
+  }
+}
+
+@keyframes strip-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--r));
+  }
+
+  50% {
+    transform: translate3d(var(--ax), var(--ay), 0) rotate(calc(var(--r) + var(--spin)));
+  }
+}

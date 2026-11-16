@@ -1,0 +1,57 @@
+@use 'ui' as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: rem(12px);
+  min-height: 0;
+}
+
+.form__folder {
+  display: flex;
+  flex-direction: column;
+  gap: rem(6px);
+}
+
+.form__label {
+  @include type(label);
+}
+
+.form__folder-value {
+  display: flex;
+  flex: 1;
+  gap: rem(8px);
+  align-items: center;
+  min-width: 0;
+}
+
+.form__folder-name {
+  @include line-clamp(1);
+
+  text-align: start;
+}
+
+.form__hint {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.form__recent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(6px);
+}
+
+// The quiet way out on the left, Save on the right with room for the longest translation.
+.form__foot {
+  justify-content: space-between;
+
+  > ui-button {
+    flex: none;
+  }
+}
+
+.form__save {
+  min-inline-size: rem(132px);
+}

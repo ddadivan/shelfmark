@@ -1,0 +1,14 @@
+{
+  "extName": {
+    "message": "Shelfmark",
+    "description": "Extension name; the product name, never translated."
+  },
+  "extDescription": {
+    "message": "Guarda la página abierta en tu biblioteca de Shelfmark con un clic, con carpeta y etiquetas.",
+    "description": "Store and extensions page description, at most 132 characters."
+  },
+  "actionTitle": {
+    "message": "Guardar en Shelfmark",
+    "description": "Tooltip of the toolbar button."
+  }
+}

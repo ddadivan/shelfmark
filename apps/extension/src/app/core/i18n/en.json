@@ -1,0 +1,72 @@
+{
+  "popup": {
+    "loading": "Loading",
+    "openApp": "Open Shelfmark",
+    "openInApp": "Open in Shelfmark",
+    "unsorted": "Unsorted",
+    "form": {
+      "title": "Save to Shelfmark",
+      "folder": "Folder",
+      "chooseFolder": "Folder: {{folder}}. Change",
+      "ruleHint": "From your rule for {{domain}}",
+      "recentFolders": "Recent folders",
+      "tags": "Tags",
+      "tagsPlaceholder": "Add tag",
+      "tagsMax": "Up to {{max}} tags",
+      "tagsCreate": "Create tag",
+      "tagsRemove": "Remove tag",
+      "tagsAdded": "Tag added",
+      "tagsRemoved": "Tag removed",
+      "tagsDuplicate": "This tag is already added",
+      "tagsList": "Tag suggestions",
+      "note": "Note",
+      "notePlaceholder": "Why are you saving this?",
+      "save": "Save"
+    },
+    "picker": {
+      "title": "Choose a folder",
+      "back": "Back",
+      "search": "Find a folder",
+      "list": "Folders",
+      "noResults": "No folder with that name"
+    },
+    "saved": {
+      "title": "Saved to {{folder}}",
+      "done": "Done"
+    },
+    "duplicate": {
+      "title": "Already in your library",
+      "notice": "You saved this {{when}} in {{folder}}.",
+      "saveCopy": "Save a copy"
+    },
+    "signedOut": {
+      "title": "Sign in to save this page",
+      "text": "Sign in once in this browser, and every page after that is one click away.",
+      "signIn": "Sign in to Shelfmark",
+      "privacy": "Only the page you save is sent, nothing else you browse.",
+      "privacyLink": "Privacy policy",
+      "cards": {
+        "grid": "A complete guide to CSS grid",
+        "nestjs": "NestJS for frontend developers",
+        "icons": "Free icon sets for side projects",
+        "ramen": "The best weeknight ramen",
+        "woolCoat": "Wool coat, straight cut",
+        "signalForms": "Signal Forms in 20 minutes"
+      }
+    },
+    "unsupported": {
+      "title": "This page can't be saved",
+      "text": "Shelfmark saves web pages. Browser pages, files and the new tab page stay out."
+    },
+    "error": {
+      "title": "Couldn't save this page",
+      "loadTitle": "Couldn't reach Shelfmark",
+      "offline": "No connection to Shelfmark. Check the internet and try again.",
+      "rateLimit": "Too many saves in a row. Wait a minute and try again.",
+      "limit": "Your library is full. Remove some links in Shelfmark to save new ones.",
+      "demoLimit": "A demo holds 100 links. Sign in with Google or GitHub to keep saving.",
+      "server": "Something went wrong on our side. Try again in a moment.",
+      "tryAgain": "Try again"
+    }
+  }
+}

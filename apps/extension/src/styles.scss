@@ -1,0 +1,121 @@
+@use 'ui' as *;
+
+// The popup has one fixed size in every state (docs/design/screens/Extension.dc.html): Chrome sizes
+// the popup to the document, up to 800 x 600. Tokens, themes, fonts and base rules come from
+// libs/ui (global.scss); without `data-theme` the page follows the browser's colour scheme.
+html,
+body {
+  width: rem(360px);
+  height: rem(520px);
+  margin: 0;
+  overflow: hidden;
+  background: var(--surface);
+  color: var(--text);
+}
+
+// The frame every screen shares: 18px padding, 14px gaps, the footer on the bottom edge. Shared by
+// the screen components (global, so each component stylesheet stays small).
+.ext-screen {
+  display: flex;
+  flex-direction: column;
+  gap: rem(14px);
+  box-sizing: border-box;
+  height: 100%;
+  padding: rem(18px);
+  animation: ext-fade var(--duration-fast) var(--ease-out) both;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.ext-screen__head {
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  min-height: rem(32px);
+}
+
+.ext-screen__title {
+  @include type(heading);
+
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.ext-screen__foot {
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  margin-block-start: auto;
+
+  > ui-button {
+    flex: 1;
+  }
+}
+
+.ext-screen__center {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(10px);
+  align-items: center;
+  justify-content: center;
+  padding-inline: rem(8px);
+  text-align: center;
+}
+
+.ext-screen__center-title {
+  @include type(title);
+
+  margin: 0;
+}
+
+.ext-screen__text {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// The tab being saved: thumbnail tile, host and title (two lines at most).
+.ext-preview {
+  display: flex;
+  gap: rem(12px);
+  align-items: center;
+  padding: rem(8px);
+  background: var(--bg);
+  border-radius: var(--radius-md);
+}
+
+.ext-preview__thumb {
+  flex: none;
+  inline-size: rem(72px);
+  aspect-ratio: 4 / 3;
+  background: var(--accent-bg);
+  border-radius: var(--radius-sm);
+}
+
+.ext-preview__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ext-preview__host {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.ext-preview__title {
+  @include type(label);
+  @include line-clamp(2);
+}
+
+@keyframes ext-fade {
+  from {
+    opacity: 0;
+  }
+}
