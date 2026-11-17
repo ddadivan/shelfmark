@@ -25,6 +25,7 @@ Shelfmark is a calm shelf for everything people save: videos, articles, clothes,
 - `primary` is graphite: use it for the ONE main action per view (usually «Add link»), with `on-primary` text. Every other button is secondary or ghost.
 - Sage (`accent`, `accent-bg`, `accent-text`) is a signal, never decoration: the favorite star, the active nav item, tag chips, the selected row and `focus-ring`. Never fill a large area or a primary button with sage.
 - Controls (inputs, selects, checkboxes) use `border-control`, not `border` — it holds 3:1 for form boundaries.
+- AI: `ai` (the spark and the + on suggestion chips), `ai-line` (dashed edge of suggestion chips), `ai-bg` (the large spark tile). Never a fill, never text; see «AI» below.
 - Status: `danger` for destructive actions and errors, `warning` / `warning-bg` for the duplicate-link notice, `success` for confirmations. Each status also carries an icon and words — never colour alone.
 - Dark theme is not pure black and text is not pure white. The theme follows the system by default. Light and Dark are fixed: people cannot change their colours, so they always look as designed and stay checked for contrast. A separate Custom theme (Settings › Appearance) starts from the light or dark base and lets people pick the accent, background and corners; it only swaps token values.
 
@@ -74,8 +75,9 @@ One indicator per wait, chosen by what is loading (full rules in the Loading com
 
 AI in Shelfmark is a quiet helper, off until the person turns it on (Settings › AI). Feature list and tiers: `docs/ai/FEATURES.md`. Components: AiMark, Suggestion, AiSummary.
 
-- **One mark.** The `spark` icon (AiMark) marks everything the model made. No gradients, no purple, no glow, no robot or wand: AI uses the graphite palette like the rest of the app.
-- **Suggested is dashed, yours is solid.** Suggestions are dashed, uncoloured chips (dashed already means "not there yet" in «Save this view»); accepting one turns it into the ordinary solid thing. Sage stays the person's own signal: AI never fills anything with `accent`.
+- **One mark, one quiet colour.** The `spark` icon (AiMark) marks everything the model made, in its own indigo (`ai`), so AI is recognisable at a glance without shouting. `ai` colours only the mark and the + of suggestion chips; `ai-line` only their dashed edge; `ai-bg` only the large spark tile. Never a fill of a control or text block, never sage, no glow, no robot or wand.
+- **One gradient.** The only gradient in the AI design is the small intro tile (`sm-ai-tile`: `ai-bg` to `accent-bg`, 48px) at the top of the first-run intro. No gradient anywhere else, no purple promo styling.
+- **Suggested is dashed, yours is solid.** Suggestions are chips with a dashed indigo edge and no fill (dashed already means "not there yet" in «Save this view»); accepting one turns it into the ordinary solid thing. Sage stays the person's own signal: AI never fills anything with `accent`.
 - **The person keeps the choice.** The model proposes; the person applies. A folder or tags the person picked are never overridden or moved. Auto-apply exists only as an opt-in per feature (Settings › AI: Suggest, Apply automatically when I don't choose, Off), only fills what the person left empty, always shows the spark («Moved by AI») and Undo while it can be undone. Learning from corrections changes future suggestions only; existing links are re-sorted only through Tidy with a preview.
 - **Quiet when absent.** Off, failed, nothing found: the space collapses, no placeholder, no error toast. Limits and outages are one muted line (AiLine) where the content would be, and a warning notice only in Settings › AI.
 - **AI text is the person's once edited.** An edited summary loses the mark and is never rewritten.

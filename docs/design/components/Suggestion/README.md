@@ -1,4 +1,4 @@
-Suggestion is a chip the model proposes: an existing tag, at most one new tag, or an existing folder. It is dashed and uncoloured until the user taps it; then it becomes the ordinary thing (a sage tag chip, the chosen folder). Screens: `AiTags`, `AiTidy`, `MobileAi`.
+Suggestion is a chip the model proposes: an existing tag, at most one new tag, or an existing folder. It has a dashed indigo edge (`ai-line`) and no fill until the user taps it; then it becomes the ordinary thing (a sage tag chip, the chosen folder). Screens: `AiTags`, `AiTidy`, `MobileAi`.
 
 **Angular:** `ui-suggestion` — inputs `label`, `kind: 'tag' | 'new-tag' | 'folder'`, `folderColor?`, `folderIcon?`, `selected` (for review lists); outputs `accepted`, `dismissed`, `toggled`. `ui-suggestion-row` — inputs `label` (default "Suggested"), `ariaLabel`, `addAll: boolean`; projects the chips; output `acceptAll`. Built on Angular Aria toolbar behaviour: one tab stop per row, arrow keys between chips.
 
@@ -25,4 +25,4 @@ Accessibility:
 - The row is `role="group"` with "Suggested tags" / "Suggested folder"; the loading row is `role="status"` `aria-busy="true"`.
 - After an accept, focus moves to the next chip in the row (or to the field when the row is empty), and a polite live region says "Tag signals added".
 - Touch: the pill is 28px but the hit area is extended to 44px (`pointer: coarse`); × is always visible on touch.
-- Dashed edge uses `border-control` (3:1), text uses `text` (4.5:1) in both themes.
+- Dashed edge uses `ai-line` (3:1), the + uses `ai`, text uses `text` (4.5:1) in both themes.

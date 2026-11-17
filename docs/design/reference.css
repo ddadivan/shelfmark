@@ -506,16 +506,19 @@ button.sm-rating__item:active { transform: scale(.94); }
 
 /* ===== AI layer (#476) =====
    Everything the model produced: the spark mark, dashed suggestion chips, the AI summary line,
-   quiet status lines. Graphite only: AI never uses sage fills (sage is the user's signal),
-   never gradients or glow. Spec: components/AiMark, Suggestion, AiSummary; BRAND.md › AI. */
-.sm-ai-mark { display: inline-flex; flex: none; color: var(--text-muted); }
+   quiet status lines. AI has one quiet indigo (ai, ai-line, ai-bg) for the mark and the dashed
+   chip edge only: never a fill, never sage (sage is the user's signal). The one gradient is the
+   intro tile (sm-ai-tile). Spec: components/AiMark, Suggestion, AiSummary; BRAND.md › AI. */
+.sm-ai-mark { display: inline-flex; flex: none; color: var(--ai); }
+.sm-ai-spark { color: var(--ai); flex: none; }
+.sm-ai-tile { width: 48px; height: 48px; flex: none; border-radius: 16px; display: grid; place-items: center; color: var(--ai); background: linear-gradient(135deg, var(--ai-bg), var(--accent-bg)); }
 .sm-suggest-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .sm-suggest-row__label { display: inline-flex; align-items: center; gap: 4px; margin-right: 2px; font: 500 12px/16px var(--font-sans); color: var(--text-muted); }
-.sm-suggest { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 4px 0 8px; border-radius: 999px; border: 1px dashed var(--border-control); background: transparent; color: var(--text); font: 500 12px/16px var(--font-sans); white-space: nowrap; cursor: pointer; transition: background-color var(--duration-fast), border-color var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out); }
+.sm-suggest { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 4px 0 8px; border-radius: 999px; border: 1px dashed var(--ai-line); background: transparent; color: var(--text); font: 500 12px/16px var(--font-sans); white-space: nowrap; cursor: pointer; transition: background-color var(--duration-fast), border-color var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out); }
 .sm-suggest__apply { display: inline-flex; align-items: center; gap: 4px; height: 100%; padding: 0 2px 0 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
 .sm-suggest:has(.sm-suggest__apply:focus-visible) { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .sm-suggest__apply:focus-visible { outline: none; }
-.sm-suggest__plus { display: inline-flex; color: var(--text-muted); }
+.sm-suggest__plus { display: inline-flex; color: var(--ai); }
 .sm-suggest__new { font: 500 11px/16px var(--font-sans); color: var(--text-muted); }
 .sm-suggest__dismiss { width: 22px; height: 22px; flex: none; display: inline-grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--text-muted); cursor: pointer; padding: 0; }
 .sm-suggest .sm-fic--sm { width: 18px; height: 18px; border-radius: 6px; margin-left: -2px; }
