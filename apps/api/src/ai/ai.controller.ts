@@ -10,6 +10,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiAcceptedResponse,
@@ -37,6 +38,9 @@ import { AiCatchUpService } from './catch-up/ai-catch-up.service';
 import { AiBackfillStatusDto } from './dto/ai-backfill-status.dto';
 import { AiTickResponseDto } from './dto/ai-tick-response.dto';
 import { AiSuggestionsService } from './suggestions/ai-suggestions.service';
+import { MeaningSearchQueryDto } from './dto/meaning-search-query.dto';
+import { MeaningSearchResponseDto } from './dto/meaning-search-response.dto';
+import { MeaningSearchService } from './search/meaning-search.service';
 
 /** AI routes under `/api/ai` (`AI_ENDPOINT`). Thin: the services own the rules. */
 @ApiTags('ai')
@@ -49,7 +53,24 @@ export class AiController {
     private readonly data: AiDataService,
     private readonly backfill: AiBackfillService,
     private readonly catchUp: AiCatchUpService,
+    private readonly meaning: MeaningSearchService,
   ) {}
+
+  @Get('search')
+  @RateLimit(RATE_LIMIT.AiSearch)
+  @ApiOkResponse({ type: MeaningSearchResponseDto })
+  @ApiBadRequestResponse({ description: 'q shorter than 3 or longer than 200 characters' })
+  @ApiOperation({
+    summary: 'Search by meaning',
+    description:
+      'Links found by meaning that are not word matches for q, best first, with why they matched. Always 200: anything but status.state = ready answers no items (AI or the switch off, links still getting ready, the monthly allowance used up, the provider unavailable).',
+  })
+  searchByMeaning(
+    @CurrentUser() user: AuthUser,
+    @Query() query: MeaningSearchQueryDto,
+  ): Promise<MeaningSearchResponseDto> {
+    return this.meaning.search(user, query.q, query.limit);
+  }
 
   @Get('backfill')
   @ApiOkResponse({ type: AiBackfillStatusDto })

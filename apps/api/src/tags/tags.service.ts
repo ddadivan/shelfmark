@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { markEmbeddingsStale } from '../ai/embeddings/mark-embeddings-stale';
 import { normalizeTagName, TAG_ERROR_MESSAGE, TAG_LIMIT } from '@shelfmark/contracts';
 import type { ListTagsResponse, TagResponse } from '@shelfmark/contracts';
 import { escapeLike } from '../common/util/escape-like';
@@ -84,8 +85,12 @@ export class TagsService {
     try {
       // The unique index is on lower(name) per user, so a case-only change of the tag's own name
       // never collides with itself.
-      const result = await this.prisma.tag.updateMany({ where: { id, userId }, data: { name } });
-      if (result.count === 0) throw new NotFoundException(TAG_ERROR_MESSAGE.NotFound);
+      await this.prisma.$transaction(async (tx) => {
+        const result = await tx.tag.updateMany({ where: { id, userId }, data: { name } });
+        if (result.count === 0) throw new NotFoundException(TAG_ERROR_MESSAGE.NotFound);
+        // The name is part of what search by meaning embeds for every link with the tag.
+        await markEmbeddingsStale(tx, userId, { tagIds: [id] });
+      });
     } catch (error) {
       throw this.conflictOr(error);
     }
@@ -93,9 +98,13 @@ export class TagsService {
   }
 
   async remove(userId: string, id: string): Promise<void> {
-    // The tag's link rows go with it (cascade); the links themselves stay.
-    const result = await this.prisma.tag.deleteMany({ where: { id, userId } });
-    if (result.count === 0) throw new NotFoundException(TAG_ERROR_MESSAGE.NotFound);
+    // The tag's link rows go with it (cascade); the links themselves stay. Their vectors go stale
+    // first, while the link rows still say which links had the tag.
+    await this.prisma.$transaction(async (tx) => {
+      await markEmbeddingsStale(tx, userId, { tagIds: [id] });
+      const result = await tx.tag.deleteMany({ where: { id, userId } });
+      if (result.count === 0) throw new NotFoundException(TAG_ERROR_MESSAGE.NotFound);
+    });
   }
 
   /** Moves the links of `sourceId` onto `targetId` and deletes the source, in one transaction. */
@@ -123,6 +132,7 @@ export class TagsService {
       if (sourceId === targetId) throw new BadRequestException(TAG_ERROR_MESSAGE.MergeIntoItself);
       // Trashed links move too (no deletedAt filter): the source tag is deleted, and a restored link
       // must not lose it.
+      await markEmbeddingsStale(tx, userId, { tagIds: [sourceId] });
       const moved = await tx.linkTag.findMany({
         where: { tagId: sourceId, link: { userId } },
         select: { linkId: true },

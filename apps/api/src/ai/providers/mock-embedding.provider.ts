@@ -2,78 +2,33 @@ import { EMBEDDING_INPUT_TYPE } from '../models/embedding-input-type.const';
 import { EMBEDDING_LIMIT } from '../models/embedding-limit.const';
 import { MOCK_EMBEDDING_LIMIT } from '../models/mock-embedding-limit.const';
 import { MOCK_EMBEDDING_SYNONYMS } from '../models/mock-embedding-synonyms.const';
+import { wordStem, wordStems } from '../search/word-stems';
 import type { EmbedOutcome } from '../models/embed-outcome.type';
 import type { EmbeddingInputType } from '../models/embedding-input-type.type';
 import type { EmbeddingProvider } from '../models/embedding-provider.interface';
 
-const WORD = /[\p{L}\p{N}]+/gu;
-/** Suffixes stripped once, longest first, keeping at least four letters (`s` keeps three). */
-const SUFFIXES = [
-  'ations',
-  'ation',
-  'ances',
-  'ance',
-  'ences',
-  'ence',
-  'ities',
-  'ity',
-  'ings',
-  'ing',
-  'ers',
-  'er',
-  'ed',
-  'es',
-  'ly',
-] as const;
-const STOP_WORDS: ReadonlySet<string> = new Set([
-  'the',
-  'and',
-  'for',
-  'with',
-  'about',
-  'from',
-  'that',
-  'this',
-  'into',
-  'your',
-  'are',
-  'was',
-  'how',
-  'what',
-  'why',
-  'talk',
-  'title',
-  'tags',
-  'summary',
-  'note',
-]);
+/** The labels of the embedded text's lines are not words of the link. */
+const LABELS: ReadonlySet<string> = new Set(['title', 'tag', 'summary', 'note']);
 /** Marks a text without any stem, so it still has a direction (a zero vector has no cosine). */
 const EMPTY_STEM = '\u0000';
 const FNV_OFFSET = 0x811c9dc5;
 const FNV_PRIME = 0x01000193;
 
-/** Light stemming: lower case, one suffix stripped, then the synonym table. */
+/** Light stemming (`wordStem`), then the synonym table. */
 export function mockStem(word: string): string {
-  const lower = word.toLowerCase();
-  let stem = lower;
-  const suffix = SUFFIXES.find((s) => lower.endsWith(s) && lower.length - s.length >= 4);
-  if (suffix !== undefined) stem = lower.slice(0, -suffix.length);
-  else if (lower.endsWith('s') && !lower.endsWith('ss') && lower.length - 1 >= 3) {
-    stem = lower.slice(0, -1);
-  }
+  const stem = wordStem(word);
   return MOCK_EMBEDDING_SYNONYMS[stem] ?? stem;
 }
 
-/** The distinct stems of a text (words of three or more letters, stop words left out). */
+/** The distinct stems of a text after synonyms, the line labels left out. */
 export function mockStems(text: string): string[] {
-  const stems = new Set<string>();
-  for (const [word] of text.matchAll(WORD)) {
-    if (word.length < MOCK_EMBEDDING_LIMIT.MinStemLength) continue;
-    const lower = word.toLowerCase();
-    if (STOP_WORDS.has(lower)) continue;
-    stems.add(mockStem(lower));
-  }
-  return [...stems];
+  return [
+    ...new Set(
+      wordStems(text)
+        .filter((stem) => !LABELS.has(stem))
+        .map((stem) => MOCK_EMBEDDING_SYNONYMS[stem] ?? stem),
+    ),
+  ];
 }
 
 function fnv1a(value: string): number {

@@ -17,7 +17,13 @@ import { AiApplyService } from './apply/ai-apply.service';
 import { AiBackgroundService } from './background/ai-background.service';
 import { readAiConfig } from './config/ai-config';
 import { AiExcerptService } from './excerpt/ai-excerpt.service';
+import { AiEmbedService } from './embeddings/ai-embed.service';
+import { AiSearchStatusService } from './embeddings/ai-search-status.service';
 import { AiJobsService } from './jobs/ai-jobs.service';
+import { MeaningSearchService } from './search/meaning-search.service';
+import { RelatedLinksService } from './search/related-links.service';
+import { RelatedLinksController } from './related-links.controller';
+import { QueryEmbeddingCache } from './search/query-embedding-cache.service';
 import { AiLinkHooksService } from './link-hooks/ai-link-hooks.service';
 import { AI_CONFIG } from './models/ai-config.token';
 import { REAL_AI_PROVIDER_FACTORY } from './models/real-ai-provider-factory.token';
@@ -36,7 +42,13 @@ import { AiUsageService } from './usage/ai-usage.service';
  */
 @Module({
   imports: [FetcherModule, FoldersModule, RulesModule, TagsModule],
-  controllers: [AiController, AiTidyController, LinkAiController, AiSweepController],
+  controllers: [
+    AiController,
+    AiTidyController,
+    LinkAiController,
+    RelatedLinksController,
+    AiSweepController,
+  ],
   providers: [
     // Read once at boot (the module is created when the app starts): never at import time.
     { provide: AI_CONFIG, useFactory: () => readAiConfig() },
@@ -58,6 +70,11 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiCatchUpService,
     AiTidyService,
     AiTidyUndoService,
+    AiSearchStatusService,
+    AiEmbedService,
+    QueryEmbeddingCache,
+    MeaningSearchService,
+    RelatedLinksService,
   ],
   exports: [
     AiProviderRegistry,
@@ -66,6 +83,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiJobsService,
     AiSuggestionsService,
     AiLinkHooksService,
+    AiEmbedService,
   ],
 })
 export class AiModule {}

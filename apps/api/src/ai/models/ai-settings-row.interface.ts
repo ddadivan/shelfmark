@@ -13,4 +13,5 @@ export interface AiSettingsRow {
   backfillTotal: number;
   backfillDone: number;
   backfillUsed: number;
+  embedFailedAt: Date | null;
 }

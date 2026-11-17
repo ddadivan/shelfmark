@@ -57,6 +57,8 @@ export const RATE_LIMIT = {
   AiDeleteData: { limit: 5, ttl: MINUTE_MS },
   // AI-2 (#390): Tidy apply and its Undo, up to 100 links per call in one transaction.
   AiTidy: { limit: 20, ttl: MINUTE_MS },
+  // AI-3 search by meaning: one call per settled query in the search dialog (debounced by the web).
+  AiSearch: { limit: 60, ttl: MINUTE_MS },
   // Tidy list and count (each a bounded scan of Unsorted): the page, the Unsorted button and its
   // refresh after jobs finish.
   AiTidyRead: { limit: 60, ttl: MINUTE_MS },

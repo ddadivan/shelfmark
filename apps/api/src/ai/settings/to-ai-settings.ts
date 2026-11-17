@@ -36,6 +36,7 @@ export function toStoredAiSettings(row: AiSettingsRow | null): StoredAiSettings 
       backfillTotal: 0,
       backfillDone: 0,
       backfillUsed: 0,
+      embedFailedAt: null,
     };
   }
   return {
@@ -56,5 +57,6 @@ export function toStoredAiSettings(row: AiSettingsRow | null): StoredAiSettings 
     backfillTotal: row.backfillTotal,
     backfillDone: row.backfillDone,
     backfillUsed: row.backfillUsed,
+    embedFailedAt: row.embedFailedAt,
   };
 }

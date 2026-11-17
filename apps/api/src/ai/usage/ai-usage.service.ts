@@ -94,4 +94,70 @@ export class AiUsageService {
       UPDATE ai_settings SET backfill_used = GREATEST(backfill_used - ${count}::int, 0)
       WHERE user_id = ${userId}::uuid`;
   }
+
+  /** Link texts embedded this month (search by meaning, ADR 0050 point 5). */
+  async embedsUsed(userId: string, now = new Date()): Promise<number> {
+    const rows = await this.prisma.$queryRaw<{ embeds: number }[]>`
+      SELECT embeds FROM ai_usage WHERE user_id = ${userId}::uuid AND month = ${usageMonth(now)}::date`;
+    return rows[0]?.embeds ?? 0;
+  }
+
+  /**
+   * Takes up to `wanted` embeddings from this month's allowance (a separate counter: embeddings never
+   * use the link limit or the backfill allowance) and answers the month and how many were granted
+   * (0 when it is used up). The row is locked for the update, so racing passes never exceed it.
+   */
+  async reserveEmbeds(
+    userId: string,
+    tier: AiTier,
+    wanted: number,
+    now = new Date(),
+  ): Promise<{ month: string; granted: number }> {
+    const month = usageMonth(now);
+    const limit = AI_QUOTA[tier].embedsPerMonth;
+    if (limit <= 0 || wanted <= 0) return { month, granted: 0 };
+    await this.prisma.$executeRaw`
+      INSERT INTO ai_usage (user_id, month) VALUES (${userId}::uuid, ${month}::date)
+      ON CONFLICT (user_id, month) DO NOTHING`;
+    const rows = await this.prisma.$queryRaw<{ granted: number }[]>`
+      WITH current AS (
+        SELECT embeds FROM ai_usage
+        WHERE user_id = ${userId}::uuid AND month = ${month}::date FOR UPDATE
+      )
+      UPDATE ai_usage AS u
+      SET embeds = u.embeds + LEAST(${wanted}::int, ${limit}::int - c.embeds)
+      FROM current AS c
+      WHERE u.user_id = ${userId}::uuid AND u.month = ${month}::date AND c.embeds < ${limit}::int
+      RETURNING LEAST(${wanted}::int, ${limit}::int - c.embeds)::int AS granted`;
+    return { month, granted: rows[0]?.granted ?? 0 };
+  }
+
+  /** Gives back embeddings whose provider call produced no vectors. */
+  async refundEmbeds(userId: string, month: string, count: number): Promise<void> {
+    if (count <= 0) return;
+    await this.prisma.$executeRaw`
+      UPDATE ai_usage SET embeds = GREATEST(embeds - ${count}::int, 0)
+      WHERE user_id = ${userId}::uuid AND month = ${month}::date`;
+  }
+
+  /** Counts one search query against this month's allowance; `null` when it is used up. */
+  async reserveSearchQuery(userId: string, tier: AiTier, now = new Date()): Promise<string | null> {
+    const limit = AI_QUOTA[tier].searchQueriesPerMonth;
+    if (limit <= 0) return null;
+    const month = usageMonth(now);
+    const rows = await this.prisma.$queryRaw<{ n: number }[]>`
+      INSERT INTO ai_usage (user_id, month, search_queries)
+      VALUES (${userId}::uuid, ${month}::date, 1)
+      ON CONFLICT (user_id, month) DO UPDATE SET search_queries = ai_usage.search_queries + 1
+      WHERE ai_usage.search_queries < ${limit}
+      RETURNING search_queries AS n`;
+    return rows.length > 0 ? month : null;
+  }
+
+  /** Gives back a search query whose provider call produced no vector. */
+  async refundSearchQuery(userId: string, month: string): Promise<void> {
+    await this.prisma.$executeRaw`
+      UPDATE ai_usage SET search_queries = search_queries - 1
+      WHERE user_id = ${userId}::uuid AND month = ${month}::date AND search_queries > 0`;
+  }
 }
