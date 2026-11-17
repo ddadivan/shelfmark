@@ -4,6 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AiApplyService } from '../apply/ai-apply.service';
 import { toAiParts } from '../jobs/requested-parts';
 import { AI_BATCH_STATE } from '../models/ai-batch-state.const';
+import { AI_JOB_SOURCE } from '../models/ai-job-source.const';
 import { AI_JOB_STATE } from '../models/ai-job-state.const';
 import { LINK_BATCH_STATUS } from '../models/link-batch-status.const';
 import type { AiPart } from '../models/ai-part.type';
@@ -180,6 +181,38 @@ export class AiBackfillResultsService {
       )
       SELECT count(*)::int AS n FROM failed`;
     return rows[0]?.n ?? 0;
+  }
+
+  /**
+   * Fails backfill jobs whose chunk was claimed but never recorded as a batch (the instance died in
+   * between) once the chunk lease is over, marks their links and gives them back to the allowance;
+   * they count as done. `null` covers every user (the sweep only). Answers how many failed.
+   */
+  async failOrphans(userId: string | null): Promise<number> {
+    const rows = await this.prisma.$queryRaw<{ userId: string; n: number }[]>`
+      WITH failed AS (
+        UPDATE ai_jobs
+        SET status = ${AI_JOB_STATE.Failed}, reason = ${AI_JOB_REASON.Unavailable},
+          lease_until = NULL, result = NULL, updated_at = now()
+        WHERE source = ${AI_JOB_SOURCE.Backfill} AND status = ${AI_JOB_STATE.Running}
+          AND batch_id IS NULL AND lease_until < now()
+          AND (${userId}::uuid IS NULL OR user_id = ${userId}::uuid)
+        RETURNING user_id, link_id
+      ), marked AS (
+        UPDATE links AS l SET ai_status = ${AI_JOB_STATE.Failed}
+        FROM failed AS f
+        WHERE l.id = f.link_id AND l.user_id = f.user_id
+        RETURNING 1
+      )
+      SELECT user_id AS "userId", count(*)::int AS n FROM failed GROUP BY user_id`;
+    let total = 0;
+    for (const row of rows) {
+      await this.usage.refundBackfill(row.userId, row.n);
+      await this.countDone(row.userId, row.n);
+      total += row.n;
+    }
+    if (total > 0) this.logger.warn(`AI backfill: ${total} orphaned job(s) failed (unavailable)`);
+    return total;
   }
 
   async countDone(userId: string, count: number): Promise<void> {

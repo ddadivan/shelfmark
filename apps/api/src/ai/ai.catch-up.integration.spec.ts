@@ -512,6 +512,143 @@ describe('AI tick, sweep and backfill', () => {
       expect(await settingsRow()).toMatchObject({ backfillUsed: 0, backfillState: 'done' });
     });
 
+    it('fails and refunds a chunk whose instance died before its batch was recorded', async () => {
+      const ids = await oldLinks(3);
+      await turnOn();
+      await aiPack();
+      // The run dies between the claim and the batch: nothing records the chunk.
+      excerpts.load.mockRejectedValueOnce(new Error('instance gone'));
+      await a.post(AI_ENDPOINT.Backfill).expect(200);
+      await expect(deferrer.flush()).rejects.toThrow('instance gone');
+      const orphans = await t.db.prisma.aiJob.findMany({ where: { source: 'backfill' } });
+      expect(orphans).toHaveLength(3);
+      for (const job of orphans) {
+        expect(job).toMatchObject({ status: 'running', batchId: null });
+        expect(job.leaseUntil?.getTime()).toBeGreaterThan(Date.now() + 60_000);
+      }
+      expect(await settingsRow()).toMatchObject({ backfillUsed: 3, backfillDone: 0 });
+
+      // Within the chunk lease nothing touches it, and the runner never claims backfill jobs.
+      await tick();
+      await deferrer.flush();
+      expect(
+        await t.db.prisma.aiJob.count({ where: { source: 'backfill', status: 'running' } }),
+      ).toBe(3);
+
+      await t.db.prisma.aiJob.updateMany({
+        where: { source: 'backfill' },
+        data: { leaseUntil: new Date(Date.now() - 1000) },
+      });
+      await tick();
+      await deferrer.flush();
+      expect(
+        await t.db.prisma.aiJob.findMany({
+          select: { status: true, reason: true, attempts: true },
+        }),
+      ).toEqual(Array(3).fill({ status: 'failed', reason: 'unavailable', attempts: 1 }));
+      const links = await t.db.prisma.link.findMany({ where: { id: { in: ids } } });
+      expect(links.map((link) => link.aiStatus)).toEqual(['failed', 'failed', 'failed']);
+      expect(await settingsRow()).toMatchObject({
+        backfillUsed: 0,
+        backfillDone: 3,
+        backfillState: 'done',
+      });
+      expect((await tick()).pendingJobs).toBe(0);
+    });
+
+    it('lets the sweep fail orphaned chunks of every user', async () => {
+      const [linkId] = await oldLinks(1);
+      const [otherId] = await oldLinks(1, users.intruder.userId, 'b');
+      await turnOn();
+      await turnOn({}, b);
+      const orphan = (userId: string, id: string, leaseUntil: Date) =>
+        t.db.prisma.aiJob.create({
+          data: {
+            userId,
+            linkId: id,
+            source: 'backfill',
+            status: 'running',
+            attempts: 1,
+            parts: ['summary'],
+            language: 'en',
+            leaseUntil,
+          },
+        });
+      await t.db.prisma.aiSettings.updateMany({ data: { backfillUsed: 1 } });
+      const dead = await orphan(users.owner.userId, linkId ?? '', new Date(Date.now() - 1000));
+      const live = await orphan(
+        users.intruder.userId,
+        otherId ?? '',
+        new Date(Date.now() + 60_000),
+      );
+      const res = await sweep(`Bearer ${SECRET}`).expect(200);
+      expect(res.body).toMatchObject({ failed: 1 });
+      expect(await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: dead.id } })).toMatchObject({
+        status: 'failed',
+        reason: 'unavailable',
+      });
+      expect((await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: live.id } })).status).toBe(
+        'running',
+      );
+      expect(await settingsRow()).toMatchObject({ backfillUsed: 0, backfillDone: 1 });
+      expect(await settingsRow(users.intruder.userId)).toMatchObject({ backfillUsed: 1 });
+      deferrer.clear();
+    });
+
+    it('records no batch and applies nothing when the run is stopped during the submit', async () => {
+      const ids = await oldLinks(2);
+      await turnOn();
+      await aiPack();
+      const original = MockAiProvider.prototype.submitLinkBatch;
+      const cancel = vi.spyOn(MockAiProvider.prototype, 'cancelLinkBatch');
+      vi.spyOn(MockAiProvider.prototype, 'submitLinkBatch').mockImplementation(async function (
+        this: MockAiProvider,
+        requests,
+      ) {
+        await a.delete(AI_ENDPOINT.Backfill).expect(200);
+        return original.call(this, requests);
+      });
+      await a.post(AI_ENDPOINT.Backfill).expect(200);
+      await deferrer.flush();
+      expect(await t.db.prisma.aiBatch.count()).toBe(0);
+      expect(cancel).not.toHaveBeenCalled();
+      expect(await t.db.prisma.aiJob.findMany({ select: { status: true, reason: true } })).toEqual([
+        { status: 'skipped', reason: 'off' },
+        { status: 'skipped', reason: 'off' },
+      ]);
+      const links = await t.db.prisma.link.findMany({ where: { id: { in: ids } } });
+      expect(links.map((link) => [link.summary, link.aiStatus])).toEqual([
+        [null, 'skipped'],
+        [null, 'skipped'],
+      ]);
+      expect(await t.db.prisma.linkSuggestion.count()).toBe(0);
+      expect(await settingsRow()).toMatchObject({ backfillUsed: 0, backfillState: 'stopped' });
+    });
+
+    it('cancels at the provider a batch submitted after AI was turned off, and refunds the chunk', async () => {
+      await oldLinks(2);
+      await turnOn();
+      await aiPack();
+      const cancel = vi.spyOn(MockAiProvider.prototype, 'cancelLinkBatch');
+      vi.spyOn(MockAiProvider.prototype, 'submitLinkBatch').mockImplementation(async () => {
+        await a.patch(AI_ENDPOINT.Settings).send({ enabled: false }).expect(200);
+        return { providerBatchId: 'mock-late', completed: null };
+      });
+      await a.post(AI_ENDPOINT.Backfill).expect(200);
+      await deferrer.flush();
+      expect(await t.db.prisma.aiBatch.count()).toBe(0);
+      expect(cancel).toHaveBeenCalledWith('mock-late');
+      expect(await t.db.prisma.aiJob.findMany({ select: { status: true, reason: true } })).toEqual([
+        { status: 'skipped', reason: 'off' },
+        { status: 'skipped', reason: 'off' },
+      ]);
+      expect(await settingsRow()).toMatchObject({
+        enabled: false,
+        backfillUsed: 0,
+        backfillState: 'stopped',
+      });
+    });
+
     it('reads pages only while previews are on', async () => {
       await oldLinks(1);
       await turnOn();

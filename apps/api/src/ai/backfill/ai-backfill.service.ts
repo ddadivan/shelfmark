@@ -18,6 +18,7 @@ import { AI_JOB_SOURCE } from '../models/ai-job-source.const';
 import { AI_JOB_STATE } from '../models/ai-job-state.const';
 import type { AiDbClient } from '../models/ai-db-client.type';
 import type { BackfillChunkJob } from '../models/backfill-chunk-job.interface';
+import type { BatchRecord } from '../models/batch-record.interface';
 import type { CanceledBatch } from '../models/canceled-batch.interface';
 import type { LinkBatchRequest } from '../models/link-batch-request.interface';
 import type { PageExcerpt } from '../models/page-excerpt.interface';
@@ -92,8 +93,9 @@ export class AiBackfillService {
   }
 
   /**
-   * `DELETE /api/ai/backfill`: stops a run and keeps what is done. Open batches are cancelled, their
-   * unfinished jobs skipped and given back to the allowance. Idempotent.
+   * `DELETE /api/ai/backfill`: stops a run and keeps what is done. Open batches are cancelled, every
+   * unfinished backfill job (in a batch or in a chunk still being submitted) is skipped and given back
+   * to the allowance. Idempotent.
    */
   async stop(userId: string): Promise<AiBackfillStatus> {
     const { canceled, skipped } = await this.prisma.$transaction(async (tx) => {
@@ -101,18 +103,19 @@ export class AiBackfillService {
         UPDATE ai_settings SET backfill_state = ${AI_BACKFILL_STATE.Stopped},
           backfill_cursor = NULL, updated_at = now()
         WHERE user_id = ${userId}::uuid AND backfill_state = ${AI_BACKFILL_STATE.Running}`;
-      const batches = await tx.$queryRaw<(CanceledBatch & { id: string })[]>`
+      const batches = await tx.$queryRaw<CanceledBatch[]>`
         UPDATE ai_batches SET status = ${AI_BATCH_STATE.Canceled}, ended_at = now()
         WHERE user_id = ${userId}::uuid AND status = ${AI_BATCH_STATE.Submitted}
-        RETURNING id, provider, provider_batch_id AS "providerBatchId"`;
-      const ids = batches.map((batch) => batch.id);
+        RETURNING provider, provider_batch_id AS "providerBatchId"`;
+      // A chunk being submitted right now has no batch yet: its jobs stop too, and `submit` sees it
+      // under the same settings row lock and records no batch.
       const rows = await tx.$queryRaw<{ n: number }[]>`
         WITH stopped AS (
           UPDATE ai_jobs
           SET status = ${AI_JOB_STATE.Skipped}, reason = ${AI_JOB_REASON.Off}, lease_until = NULL,
             result = NULL, updated_at = now()
           WHERE user_id = ${userId}::uuid AND status = ${AI_JOB_STATE.Running}
-            AND batch_id = ANY(${ids}::uuid[])
+            AND source = ${AI_JOB_SOURCE.Backfill}
           RETURNING link_id
         ), marked AS (
           UPDATE links SET ai_status = ${AI_JOB_STATE.Skipped}
@@ -141,8 +144,9 @@ export class AiBackfillService {
 
   /**
    * Claims the next chunk under the settings row lock: picks links after the cursor, takes them from
-   * the allowance, creates their jobs (`running`, no lease, so no claim ever picks them) and moves the
-   * cursor. `null` when the run is over (and marks it done), an empty array when the links of this
+   * the allowance, creates their jobs (`running` with a chunk lease; the runner never claims backfill
+   * jobs, and a chunk whose instance died before its batch was recorded fails once the lease is over,
+   * see `AiBackfillResultsService.failOrphans`) and moves the cursor. `null` when the run is over (and marks it done), an empty array when the links of this
    * chunk asked for nothing.
    */
   private async claimChunk(userId: string): Promise<BackfillChunkJob[] | null> {
@@ -213,6 +217,7 @@ export class AiBackfillService {
       const cursor =
         granted < planned.length ? (taken[taken.length - 1]?.link.id ?? null) : lastCandidate;
       const language = await this.jobs.language(tx, userId, stored, {});
+      const leaseUntil = new Date(Date.now() + AI_BACKFILL_LIMIT.ChunkLeaseMs);
       const created = await tx.aiJob.createManyAndReturn({
         data: taken.map((entry) => ({
           userId,
@@ -220,6 +225,7 @@ export class AiBackfillService {
           source: AI_JOB_SOURCE.Backfill,
           status: AI_JOB_STATE.Running,
           attempts: 1,
+          leaseUntil,
           parts: entry.parts,
           language,
         })),
@@ -291,25 +297,60 @@ export class AiBackfillService {
       return false;
     }
     const completed = submission.completed !== null;
-    const batch = await this.prisma.aiBatch.create({
-      data: {
-        userId,
-        provider: provider.name,
-        providerBatchId: submission.providerBatchId,
-        requestCount: chunk.length,
-        status: completed ? AI_BATCH_STATE.Ended : AI_BATCH_STATE.Submitted,
-        endedAt: completed ? new Date() : null,
-      },
-      select: { id: true },
+    const batchId = await this.record(userId, jobIds, {
+      provider: provider.name,
+      providerBatchId: submission.providerBatchId,
+      completed,
+      folderKeys: toFolderKeysJson(vocabulary.folderIdByKey),
     });
-    await this.prisma.aiJob.updateMany({
-      where: { userId, id: { in: jobIds }, status: AI_JOB_STATE.Running },
-      data: { batchId: batch.id, result: toFolderKeysJson(vocabulary.folderIdByKey) },
-    });
+    if (batchId === null) {
+      // Stopped (or AI turned off) while the chunk was being submitted: its jobs are already
+      // skipped and refunded; the batch is never recorded, so nothing of it is ever applied.
+      if (!completed) {
+        await this.settings.cancelBatches([
+          { provider: provider.name, providerBatchId: submission.providerBatchId },
+        ]);
+      }
+      return false;
+    }
     if (submission.completed !== null) {
-      await this.results.applyItems(userId, batch.id, submission.completed);
+      await this.results.applyItems(userId, batchId, submission.completed);
     }
     return true;
+  }
+
+  /**
+   * Records a submitted batch and moves the chunk's jobs into it, under the settings row lock that
+   * `stop` and turning AI off take first: `null` (nothing recorded) when they stopped the chunk.
+   */
+  private async record(
+    userId: string,
+    jobIds: readonly string[],
+    batch: BatchRecord,
+  ): Promise<string | null> {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT 1 FROM ai_settings WHERE user_id = ${userId}::uuid FOR UPDATE`;
+      const running = await tx.aiJob.count({
+        where: { userId, id: { in: [...jobIds] }, status: AI_JOB_STATE.Running },
+      });
+      if (running === 0) return null;
+      const row = await tx.aiBatch.create({
+        data: {
+          userId,
+          provider: batch.provider,
+          providerBatchId: batch.providerBatchId,
+          requestCount: jobIds.length,
+          status: batch.completed ? AI_BATCH_STATE.Ended : AI_BATCH_STATE.Submitted,
+          endedAt: batch.completed ? new Date() : null,
+        },
+        select: { id: true },
+      });
+      await tx.aiJob.updateMany({
+        where: { userId, id: { in: [...jobIds] }, status: AI_JOB_STATE.Running },
+        data: { batchId: row.id, leaseUntil: null, result: batch.folderKeys },
+      });
+      return row.id;
+    });
   }
 
   private async finishRun(tx: AiDbClient, userId: string): Promise<void> {

@@ -13,10 +13,12 @@ import {
 import { PrismaService } from '../../prisma/prisma.service';
 import { readAiFullAccessEmails } from '../config/ai-full-access-config';
 import { AI_BATCH_STATE } from '../models/ai-batch-state.const';
+import { AI_JOB_SOURCE } from '../models/ai-job-source.const';
 import { AI_JOB_STATE } from '../models/ai-job-state.const';
 import { AI_STATUS_LIMIT } from '../models/ai-status-limit.const';
 import type { AiDbClient } from '../models/ai-db-client.type';
 import type { CanceledBatch } from '../models/canceled-batch.interface';
+import type { StoppedQueue } from '../models/stopped-queue.interface';
 import type { StoredAiSettings } from '../models/stored-ai-settings.interface';
 import { AiProviderRegistry } from '../providers/ai-provider.registry';
 import { AiUsageService } from '../usage/ai-usage.service';
@@ -95,7 +97,7 @@ export class AiSettingsService {
     if (Object.values(request).every((value) => value === undefined)) {
       throw new BadRequestException(AI_ERROR_MESSAGE.NothingToUpdate);
     }
-    const canceled = await this.prisma.$transaction(async (tx) => {
+    const stopped = await this.prisma.$transaction(async (tx) => {
       const current = await this.read(tx, userId);
       const now = new Date();
       const changes = {
@@ -119,30 +121,41 @@ export class AiSettingsService {
         create: { userId, ...changes },
         update: changes,
       });
-      return request.enabled === false ? this.stopQueued(tx, userId) : [];
+      return request.enabled === false ? this.stopQueued(tx, userId) : null;
     });
-    await this.cancelBatches(canceled);
+    if (stopped) {
+      // After the commit: the allowance row was locked by the transaction.
+      await this.usage.refundBackfill(userId, stopped.backfillSkipped);
+      await this.cancelBatches(stopped.canceled);
+    }
     return this.get(userId);
   }
 
-  /** Skips the user's queued jobs and closes their open batches; answers the batches to cancel. */
-  private async stopQueued(tx: AiDbClient, userId: string): Promise<CanceledBatch[]> {
-    await tx.$executeRaw`
+  /**
+   * Skips the user's queued jobs (backfill chunks still being submitted included) and closes their
+   * open batches; answers the batches to cancel and how many backfill jobs to give back.
+   */
+  private async stopQueued(tx: AiDbClient, userId: string): Promise<StoppedQueue> {
+    const rows = await tx.$queryRaw<{ n: number }[]>`
       WITH stopped AS (
         UPDATE ai_jobs
         SET status = ${AI_JOB_STATE.Skipped}, reason = ${AI_JOB_REASON.Off}, lease_until = NULL,
           not_before = NULL, result = NULL, updated_at = now()
         WHERE user_id = ${userId}::uuid
           AND status IN (${AI_JOB_STATE.Pending}, ${AI_JOB_STATE.Running})
-        RETURNING link_id
+        RETURNING link_id, source
+      ), marked AS (
+        UPDATE links SET ai_status = ${AI_JOB_STATE.Skipped}
+        WHERE user_id = ${userId}::uuid
+          AND id IN (SELECT link_id FROM stopped WHERE link_id IS NOT NULL)
+        RETURNING 1
       )
-      UPDATE links SET ai_status = ${AI_JOB_STATE.Skipped}
-      WHERE user_id = ${userId}::uuid
-        AND id IN (SELECT link_id FROM stopped WHERE link_id IS NOT NULL)`;
-    return tx.$queryRaw<CanceledBatch[]>`
+      SELECT (count(*) FILTER (WHERE source = ${AI_JOB_SOURCE.Backfill}))::int AS n FROM stopped`;
+    const canceled = await tx.$queryRaw<CanceledBatch[]>`
       UPDATE ai_batches SET status = ${AI_BATCH_STATE.Canceled}, ended_at = now()
       WHERE user_id = ${userId}::uuid AND status = ${AI_BATCH_STATE.Submitted}
       RETURNING provider, provider_batch_id AS "providerBatchId"`;
+    return { canceled, backfillSkipped: rows[0]?.n ?? 0 };
   }
 
   /** Best effort after the commit: a batch the provider cannot cancel just ends unread. */

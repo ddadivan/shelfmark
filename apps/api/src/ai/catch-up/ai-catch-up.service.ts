@@ -6,6 +6,7 @@ import { AiBackfillService } from '../backfill/ai-backfill.service';
 import { AiBackgroundService } from '../background/ai-background.service';
 import { AI_BATCH_STATE } from '../models/ai-batch-state.const';
 import { AI_CATCH_UP_LIMIT } from '../models/ai-catch-up-limit.const';
+import { AI_JOB_SOURCE } from '../models/ai-job-source.const';
 import { AI_JOB_STATE } from '../models/ai-job-state.const';
 import { AI_RUNNER_LIMIT } from '../models/ai-runner-limit.const';
 import type { AiSweepResponse } from '../models/ai-sweep-response.interface';
@@ -18,7 +19,8 @@ import { AiSettingsService } from '../settings/ai-settings.service';
  * and run the work after the response within their budget: poll open batches, run stale jobs
  * (pending past 30 s or a lease that expired; drafts not yet attached are left to their dialog),
  * advance the backfill. The sweep also fails jobs whose attempts are used up and deletes unattached
- * drafts older than a day. Logs carry counts only.
+ * drafts older than a day. Both fail backfill chunks orphaned by a dead instance. Logs carry counts
+ * only.
  */
 @Injectable()
 export class AiCatchUpService {
@@ -42,7 +44,7 @@ export class AiCatchUpService {
 
   /** `GET /api/cron/ai-sweep` (no session: the only AI code that touches every user's rows). */
   async sweep(): Promise<AiSweepResponse> {
-    const failed = await this.failExhausted();
+    const failed = (await this.backfillResults.failOrphans(null)) + (await this.failExhausted());
     const deletedDrafts = await this.prisma.$executeRaw`
       DELETE FROM ai_jobs
       WHERE link_id IS NULL AND draft_id IS NOT NULL
@@ -75,17 +77,22 @@ export class AiCatchUpService {
 
   /** One user's catch-up within the deadline. */
   async catchUp(userId: string, deadline: number): Promise<void> {
+    await this.backfillResults.failOrphans(userId);
     await this.backfillResults.poll(userId, deadline);
     const stale = await this.staleJobs(userId);
     if (stale.length > 0) await this.runner.runMany(userId, stale, deadline - Date.now());
     await this.backfill.advance(userId, deadline);
   }
 
-  /** Saved-link jobs of the user that should have run by now (claimable, outside a batch). */
+  /**
+   * Saved-link jobs of the user that should have run by now (claimable, outside a batch). Backfill
+   * jobs are never run one by one: an orphaned chunk fails through `failOrphans` instead.
+   */
   private async staleJobs(userId: string): Promise<string[]> {
     const rows = await this.prisma.$queryRaw<{ id: string }[]>`
       SELECT id FROM ai_jobs
       WHERE user_id = ${userId}::uuid AND link_id IS NOT NULL AND batch_id IS NULL
+        AND source <> ${AI_JOB_SOURCE.Backfill}
         AND attempts < ${AI_RUNNER_LIMIT.MaxAttempts}
         AND (
           (status = ${AI_JOB_STATE.Pending} AND (
