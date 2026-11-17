@@ -5,7 +5,8 @@ import { AiSettingsStore } from './ai-settings.store';
 
 /**
  * Calls `POST /api/ai/tick` every `AI_TICK_INTERVAL_MS` while AI is on, the page is visible and
- * jobs are pending or "Process existing links" runs (plan 1.4: the per-user catch-up). Stops when
+ * jobs are pending, "Process existing links" runs or links are being embedded for search by
+ * meaning (AI-3) (plan 1.4: the per-user catch-up). Stops when
  * the tab is hidden or nothing is left; starts again when either changes. Injecting it is enough.
  */
 @Service()
@@ -19,7 +20,9 @@ export class AiTickService {
     () =>
       this.store.isOn() &&
       this.visible() &&
-      (this.store.pendingJobs() > 0 || this.store.backfillRunning()),
+      (this.store.pendingJobs() > 0 ||
+        this.store.backfillRunning() ||
+        this.store.searchProcessing()),
   );
 
   constructor() {

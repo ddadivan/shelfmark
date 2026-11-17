@@ -44,7 +44,13 @@ describe('TidyCountStore', () => {
     settings.jobQueued(2);
     TestBed.tick();
     api.getTidyCount.mockReturnValue(of({ total: 14 }));
-    api.tick.mockReturnValue(of({ pendingJobs: 0, backfill: aiSettingsResponse().backfill }));
+    api.tick.mockReturnValue(
+      of({
+        pendingJobs: 0,
+        backfill: aiSettingsResponse().backfill,
+        search: aiSettingsResponse().search,
+      }),
+    );
     await settings.tick();
     TestBed.tick();
     await vi.waitFor(() => expect(store.total()).toBe(14));

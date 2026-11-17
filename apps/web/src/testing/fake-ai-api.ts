@@ -2,6 +2,7 @@ import {
   ACCOUNT_PLAN,
   AI_BACKFILL_STATE,
   AI_PROVIDER_STATUS,
+  AI_SEARCH_STATE,
   AI_TIER,
   type AiSettingsResponse,
 } from '@shelfmark/contracts';
@@ -34,6 +35,7 @@ export function aiSettingsResponse(patch: Partial<AiSettingsResponse> = {}): AiS
       done: 0,
       estimatedMinutes: null,
     },
+    search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
     ...patch,
   };
 }
@@ -58,5 +60,7 @@ export function fakeAiApi(settings: AiSettingsResponse = aiSettingsResponse()): 
     getLinkAi: vi.fn<AiApi['getLinkAi']>(),
     rewriteSummary: vi.fn<AiApi['rewriteSummary']>(),
     undoApply: vi.fn<AiApi['undoApply']>(),
+    searchMeaning: vi.fn<AiApi['searchMeaning']>(),
+    related: vi.fn<AiApi['related']>(),
   };
 }

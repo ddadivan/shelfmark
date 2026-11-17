@@ -7,6 +7,7 @@ import {
   AI_TIER,
   type AiBackfillStatus,
   type AiSettingsResponse,
+  AI_SEARCH_STATE,
 } from '@shelfmark/contracts';
 import { of, Subject, throwError, type Observable } from 'rxjs';
 import { SessionScope } from '../../../core/auth/session-scope.service';
@@ -38,6 +39,7 @@ function response(patch: Partial<AiSettingsResponse> = {}): AiSettingsResponse {
     providerStatus: AI_PROVIDER_STATUS.Ok,
     pendingJobs: 0,
     backfill: BACKFILL,
+    search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
     ...patch,
   };
 }
@@ -63,6 +65,8 @@ function setup(initial: AiSettingsResponse = response()) {
     getLinkAi: vi.fn(),
     rewriteSummary: vi.fn(),
     undoApply: vi.fn(),
+    searchMeaning: vi.fn(),
+    related: vi.fn(),
   };
   TestBed.configureTestingModule({ providers: [{ provide: AI_API, useValue: api }] });
   return { api, store: TestBed.inject(AiSettingsStore) };
@@ -213,6 +217,30 @@ describe('AiSettingsStore', () => {
     expect(await store.startBackfill()).toBe(false);
     expect(await store.stopBackfill()).toBe(false);
     expect(await store.tick()).toBeNull();
+  });
+
+  it('reads search by meaning: on with AI and the switch, ready only when the server says so', async () => {
+    const on = { ...AI_SETTINGS_DEFAULT, enabled: true };
+    const { store, api } = setup(response({ settings: on }));
+    expect(store.meaningSearchOn()).toBe(false);
+    expect(store.searchStatus()).toBeNull();
+    await store.load();
+    expect(store.meaningSearchOn()).toBe(true);
+    expect(store.meaningReady()).toBe(true);
+    expect(store.searchProcessing()).toBe(false);
+    const processing = { state: AI_SEARCH_STATE.Processing, ready: 6, total: 10 };
+    api.tick.mockReturnValue(of({ pendingJobs: 0, backfill: BACKFILL, search: processing }));
+    await store.tick();
+    expect(store.searchStatus()).toEqual(processing);
+    expect(store.meaningReady()).toBe(false);
+    expect(store.searchProcessing()).toBe(true);
+    store.searchStatusSeen({ state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 });
+    expect(store.meaningReady()).toBe(true);
+    const off = { ...on, meaningSearch: false };
+    api.updateSettings.mockReturnValue(of(response({ settings: off })));
+    await store.update({ meaningSearch: false });
+    expect(store.meaningSearchOn()).toBe(false);
+    expect(store.meaningReady()).toBe(false);
   });
 
   it('counts a queued job', async () => {

@@ -4,8 +4,10 @@ import {
   AI_BACKFILL_STATE,
   AI_FEATURE_MODE,
   AI_PROVIDER_STATUS,
+  AI_SEARCH_STATE,
   type AiBackfillStatus,
   type AiFeatureMode,
+  type AiSearchStatus,
   type AiSettings,
   type AiSettingsResponse,
   type AiTickResponse,
@@ -36,6 +38,8 @@ export const AiSettingsStore = signalStore(
       computed<AiFeatureMode>(() => (isOn() ? pick(settings()) : AI_FEATURE_MODE.Off));
     const usage = computed(() => response()?.usage ?? null);
     const backfill = computed(() => response()?.backfill ?? null);
+    const meaningSearchOn = computed(() => isOn() && settings().meaningSearch);
+    const searchStatus = computed(() => response()?.search ?? null);
     return {
       loaded: computed(() => response() !== null),
       settings,
@@ -65,6 +69,18 @@ export const AiSettingsStore = signalStore(
       /** "Process existing links" exists for the account's tier (allowance above 0). */
       backfillAvailable: computed(() => (usage()?.backfillLimit ?? 0) > 0),
       backfillRunning: computed(() => backfill()?.state === AI_BACKFILL_STATE.Running),
+      /** "Search by meaning" in effect (AI-3): AI and the switch on. */
+      meaningSearchOn,
+      /** Search by meaning readiness ("N of M links ready"), `null` until loaded. */
+      searchStatus,
+      /** Meaning results and related links may show: switched on and the server says `ready`. */
+      meaningReady: computed(
+        () => meaningSearchOn() && searchStatus()?.state === AI_SEARCH_STATE.Ready,
+      ),
+      /** Links are being embedded: the tick runs to move the pass on. */
+      searchProcessing: computed(
+        () => meaningSearchOn() && searchStatus()?.state === AI_SEARCH_STATE.Processing,
+      ),
     };
   }),
   withMethods((store) => {
@@ -196,13 +212,20 @@ export const AiSettingsStore = signalStore(
         }
       },
 
-      /** Catch-up call while jobs are pending or a backfill runs; a failure changes nothing. */
+      /**
+       * Catch-up call while jobs are pending, a backfill runs or links are being embedded; a
+       * failure changes nothing.
+       */
       async tick(): Promise<AiTickResponse | null> {
         const started = epoch;
         try {
           const response = await firstValueFrom(api().tick());
           if (started === epoch) {
-            patchResponse({ pendingJobs: response.pendingJobs, backfill: response.backfill });
+            patchResponse({
+              pendingJobs: response.pendingJobs,
+              backfill: response.backfill,
+              search: response.search,
+            });
           }
           return response;
         } catch {
@@ -215,7 +238,15 @@ export const AiSettingsStore = signalStore(
         patchResponse({ pendingJobs: store.pendingJobs() + count });
       },
 
-      /** Deletes every AI summary and suggestion; reloads the settings after it. */
+      /**
+       * A meaning search answered with a newer readiness: keeps "N of M links ready" and the tick
+       * in step without another settings read.
+       */
+      searchStatusSeen(search: AiSearchStatus): void {
+        patchResponse({ search });
+      },
+
+      /** Deletes every AI summary, suggestion and vector; reloads the settings after it. */
       async deleteData(): Promise<boolean> {
         try {
           await firstValueFrom(api().deleteData());

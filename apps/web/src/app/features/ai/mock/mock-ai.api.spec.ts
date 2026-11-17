@@ -8,6 +8,9 @@ import {
   AI_JOB_STATUS,
   AI_PROVIDER_STATUS,
   AI_QUOTA,
+  AI_SEARCH_LIMIT,
+  AI_SEARCH_STATE,
+  MEANING_REASON_SOURCE,
   AI_TIER,
   SUGGESTION_KIND,
   SUGGESTION_STATE,
@@ -20,6 +23,7 @@ import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import { MockAiApi } from './mock-ai.api';
 import { MockAiData } from './mock-ai-data';
 import { MockAiTidy } from './mock-ai-tidy';
+import { MockAiMeaning } from './mock-ai-meaning';
 import { MOCK_AI_TIMING } from './models/mock-ai-timing.const';
 
 /** Resolves `source` while the fake clock runs past the mock latency. */
@@ -40,7 +44,9 @@ async function statusOf(source: Observable<unknown>): Promise<number> {
 }
 
 function setup() {
-  const injector = Injector.create({ providers: [MockLibraryData, MockAiData, MockAiTidy] });
+  const injector = Injector.create({
+    providers: [MockLibraryData, MockAiData, MockAiTidy, MockAiMeaning],
+  });
   return runInInjectionContext(injector, () => ({
     ai: new MockAiApi(),
     links: new MockLinksApi(),
@@ -103,6 +109,76 @@ describe('MockAiApi', () => {
     const job = await run(ai.createDraft({ draftId: 'd', url: 'https://a.example' }));
     expect(job).toEqual(expect.objectContaining({ status: 'skipped', reason: AI_JOB_REASON.Off }));
     expect((await run(ai.getSettings())).usage.linksUsed).toBe(0);
+  });
+
+  it('searches by meaning only while AI and the switch are on, without word matches', async () => {
+    const { ai, data } = setup();
+    const off = await run(ai.searchMeaning('cooking recipes'));
+    expect(off).toEqual({
+      status: expect.objectContaining({ state: AI_SEARCH_STATE.Off }),
+      items: [],
+    });
+    const on = await run(ai.updateSettings({ enabled: true }));
+    expect(on.settings.meaningSearch).toBe(true);
+    expect(on.search).toEqual({
+      state: AI_SEARCH_STATE.Ready,
+      ready: data.links.length,
+      total: data.links.length,
+    });
+    const found = await run(ai.searchMeaning('cooking recipes'));
+    expect(found.items.length).toBeGreaterThan(0);
+    expect(found.items.length).toBeLessThanOrEqual(AI_SEARCH_LIMIT.MeaningDefault);
+    expect(found.items[0].link.tags).toContain('recipes');
+    expect(found.items[0].why[0]).toEqual({ source: MEANING_REASON_SOURCE.Tag, text: 'recipes' });
+    const words = await run(ai.searchMeaning('Simple pasta recipes', 10));
+    expect(words.items.map((item) => item.link.title)).not.toContain('Simple pasta');
+    expect(await statusOf(ai.searchMeaning('ab'))).toBe(400);
+    expect(await statusOf(ai.searchMeaning('recipes', 11))).toBe(400);
+    await run(ai.updateSettings({ meaningSearch: false }));
+    expect((await run(ai.searchMeaning('cooking recipes'))).items).toEqual([]);
+  });
+
+  it('reads the failure, quota and processing states of search by meaning', async () => {
+    const { ai, store } = setup();
+    await run(ai.updateSettings({ enabled: true }));
+    expect((await run(ai.searchMeaning('recipes ai-fail'))).status.state).toBe(
+      AI_SEARCH_STATE.Unavailable,
+    );
+    expect((await run(ai.searchMeaning('recipes ai-quota'))).status.state).toBe(
+      AI_SEARCH_STATE.Quota,
+    );
+    store.account = { ...store.account, searchProcessing: true };
+    const processing = await run(ai.searchMeaning('cooking recipes'));
+    expect(processing.status.state).toBe(AI_SEARCH_STATE.Processing);
+    expect(processing.status.ready).toBeLessThan(processing.status.total * 0.8);
+    expect(processing.items).toEqual([]);
+    expect((await run(ai.tick())).search.state).toBe(AI_SEARCH_STATE.Processing);
+  });
+
+  it('lists related links without the link itself, 404 for an unknown link', async () => {
+    const { ai, data } = setup();
+    const pasta = data.links.find((link) => link.title === 'Simple pasta') ?? data.links[0];
+    expect((await run(ai.related(pasta.id))).items).toEqual([]);
+    await run(ai.updateSettings({ enabled: true }));
+    const related = await run(ai.related(pasta.id));
+    expect(related.status.state).toBe(AI_SEARCH_STATE.Ready);
+    expect(related.items.length).toBe(AI_SEARCH_LIMIT.RelatedDefault);
+    expect(related.items.map((item) => item.link.id)).not.toContain(pasta.id);
+    expect(related.items[0].why).toContainEqual({
+      source: MEANING_REASON_SOURCE.Tag,
+      text: 'recipes',
+    });
+    expect(await statusOf(ai.related('missing'))).toBe(404);
+    expect(await statusOf(ai.related(pasta.id, 0))).toBe(400);
+  });
+
+  it('turns search by meaning off with Delete AI data', async () => {
+    const { ai } = setup();
+    await run(ai.updateSettings({ enabled: true }));
+    await run(ai.deleteData());
+    const after = await run(ai.getSettings());
+    expect(after.settings.meaningSearch).toBe(false);
+    expect(after.search.state).toBe(AI_SEARCH_STATE.Off);
   });
 
   it('simulates the failure states through the URL', async () => {

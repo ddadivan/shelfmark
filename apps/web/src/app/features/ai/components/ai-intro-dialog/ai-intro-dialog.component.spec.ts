@@ -8,6 +8,7 @@ import {
   AI_PROVIDER_STATUS,
   AI_TIER,
   type AiSettingsResponse,
+  AI_SEARCH_STATE,
 } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import { UiButtonHarness, UiDialogHarness } from '@shelfmark/ui/testing';
@@ -45,6 +46,7 @@ const RESPONSE: AiSettingsResponse = {
     done: 0,
     estimatedMinutes: null,
   },
+  search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
 };
 
 async function setup(options: { fail?: boolean; phone?: boolean } = {}) {
