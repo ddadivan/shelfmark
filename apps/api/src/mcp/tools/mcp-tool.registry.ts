@@ -5,6 +5,10 @@ import type { McpTool } from '../models/mcp-tool.interface';
 import type { McpToolCall } from '../models/mcp-tool-call.type';
 import type { McpToolDefinition } from '../models/mcp-tool-definition.interface';
 import type { McpToolEntry } from '../models/mcp-tool-entry.interface';
+import { GetLinkTool } from './get-link.tool';
+import { ListFoldersTool } from './list-folders.tool';
+import { ListTagsTool } from './list-tags.tool';
+import { SearchLinksTool } from './search-links.tool';
 
 function toEntry<T>(tool: McpTool<T>): McpToolEntry {
   return {
@@ -22,8 +26,13 @@ function toEntry<T>(tool: McpTool<T>): McpToolEntry {
 export class McpToolRegistry {
   private readonly entries: readonly McpToolEntry[];
 
-  constructor() {
-    this.entries = ([] as McpTool<never>[]).map(toEntry);
+  constructor(
+    search: SearchLinksTool,
+    get: GetLinkTool,
+    folders: ListFoldersTool,
+    tags: ListTagsTool,
+  ) {
+    this.entries = [toEntry(search), toEntry(get), toEntry(folders), toEntry(tags)];
   }
 
   definitions(): McpToolDefinition[] {
