@@ -4,6 +4,7 @@ import {
   AI_ERROR_MESSAGE,
   AI_JOB_REASON,
   AI_PROVIDER_STATUS,
+  AI_SEARCH_STATE,
   type AiEntitlements,
   type AiProviderStatus,
   type AiSettingsResponse,
@@ -90,6 +91,7 @@ export class AiSettingsService {
       providerStatus,
       pendingJobs,
       backfill: toBackfillStatus(stored, eligible),
+      search: { state: AI_SEARCH_STATE.Off, ready: 0, total: 0 },
     };
   }
 
@@ -203,7 +205,11 @@ export class AiSettingsService {
       this.pendingJobs(userId),
       this.eligibleForBackfill(userId, stored.enabledAt),
     ]);
-    return { pendingJobs, backfill: toBackfillStatus(stored, eligible) };
+    return {
+      pendingJobs,
+      backfill: toBackfillStatus(stored, eligible),
+      search: { state: AI_SEARCH_STATE.Off, ready: 0, total: 0 },
+    };
   }
 
   private pendingJobs(userId: string): Promise<number> {

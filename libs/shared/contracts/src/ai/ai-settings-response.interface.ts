@@ -1,6 +1,7 @@
 import type { AiBackfillStatus } from './ai-backfill-status.interface';
 import type { AiEntitlements } from './ai-entitlements.interface';
 import type { AiProviderStatus } from './ai-provider-status.type';
+import type { AiSearchStatus } from './ai-search-status.interface';
 import type { AiSettings } from './ai-settings.interface';
 import type { AiUsage } from './ai-usage.interface';
 
@@ -15,4 +16,6 @@ export interface AiSettingsResponse {
   /** Jobs of the user still pending; the web app calls the tick while this is above 0. */
   pendingJobs: number;
   backfill: AiBackfillStatus;
+  /** Search by meaning readiness; the web app calls the tick while `state` is `processing`. */
+  search: AiSearchStatus;
 }

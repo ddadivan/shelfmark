@@ -6,6 +6,7 @@ import {
 } from '@shelfmark/contracts';
 import { AiBackfillStatusDto } from './ai-backfill-status.dto';
 import { AiEntitlementsDto } from './ai-entitlements.dto';
+import { AiSearchStatusDto } from './ai-search-status.dto';
 import { AiSettingsDto } from './ai-settings.dto';
 import { AiUsageDto } from './ai-usage.dto';
 
@@ -17,4 +18,5 @@ export class AiSettingsResponseDto implements AiSettingsResponse {
   @ApiProperty({ enum: Object.values(AI_PROVIDER_STATUS) }) providerStatus!: AiProviderStatus;
   @ApiProperty() pendingJobs!: number;
   @ApiProperty({ type: AiBackfillStatusDto }) backfill!: AiBackfillStatusDto;
+  @ApiProperty({ type: AiSearchStatusDto }) search!: AiSearchStatusDto;
 }

@@ -39,6 +39,7 @@ describe('toStoredAiSettings', () => {
         summaries: false,
         includeNotes: true,
         summaryLanguage: 'fr',
+        meaningSearch: false,
       },
       enabledAt: ROW.enabledAt,
       introSeenAt: ROW.introSeenAt,

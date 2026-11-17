@@ -119,8 +119,10 @@ export async function seedDemoLibrary(
       tagNames: rule.tags.map(normalizeTagName),
     })),
   });
+  // `meaningSearch` has no column until the AI-3 migration.
+  const { meaningSearch: _meaningSearch, ...aiDefaults } = AI_SETTINGS_DEFAULT;
   await tx.aiSettings.create({
-    data: { userId, ...AI_SETTINGS_DEFAULT, enabled: true, enabledAt: now, introSeenAt: now },
+    data: { userId, ...aiDefaults, enabled: true, enabledAt: now, introSeenAt: now },
   });
 
   /** The pending suggestions of one link: the folder first, then tags (a name not in the seed is new). */
