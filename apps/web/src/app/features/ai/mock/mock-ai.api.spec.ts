@@ -117,6 +117,9 @@ describe('MockAiApi', () => {
     );
     expect((await run(ai.getJob(refuse.id))).reason).toBe(AI_JOB_REASON.Rejected);
     expect((await run(ai.getSettings())).providerStatus).toBe(AI_PROVIDER_STATUS.Unavailable);
+    // "Try again" sends the same draft: it runs once more under the same job.
+    const again = await run(ai.createDraft({ draftId: 'f', url: 'https://x.example/ai-fail' }));
+    expect(again).toEqual(expect.objectContaining({ id: fail.id, status: 'pending' }));
   });
 
   it('skips with the quota reason once the month is used up', async () => {

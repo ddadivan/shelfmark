@@ -1,0 +1,35 @@
+@if (ai.on()) {
+  @if (applied.tagsApplied() > 0) {
+    <app-ai-applied
+      [label]="applied.tagsAppliedLabel()"
+      [undoLabel]="'ai.applied.undo' | transloco"
+      [undoAriaLabel]="'ai.applied.undoTags' | transloco"
+      [busy]="applied.undoing() === AI_APPLIED_PART.Tags"
+      (undo)="applied.undo(AI_APPLIED_PART.Tags)"
+    />
+  }
+  @if (ai.line(); as line) {
+    <ui-ai-line
+      role="status"
+      [text]="line.text"
+      [actionLabel]="line.actionLabel"
+      (action)="ai.lineAction()"
+    />
+  } @else {
+    <app-ai-suggestion-row
+      [chips]="ai.tagChips()"
+      [label]="'ai.suggest.label' | transloco"
+      [ariaLabel]="'ai.suggest.tagsRow' | transloco"
+      [loading]="ai.loading()"
+      [loadingLabel]="'ai.suggest.loading' | transloco"
+      [allowAddAll]="true"
+      [addAllLabel]="'ai.suggest.addAll' | transloco"
+      [addedAllMessage]="'ai.suggest.addedAll' | transloco"
+      [newLabel]="'ai.suggest.new' | transloco"
+      (accepted)="ai.accept($event)"
+      (dismissed)="ai.dismiss($event)"
+      (acceptedAll)="ai.acceptAllTags()"
+      (cleared)="focusField()"
+    />
+  }
+}

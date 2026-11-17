@@ -22,6 +22,7 @@ import { toastFolder } from '../../links/utils/toast-folder';
 import { AI_API } from '../models/ai-api.const';
 import { AI_BATCH_FOLLOW_UP } from '../models/ai-batch-follow-up.const';
 import { AI_POLL_INTERVAL_MS } from '../models/ai-poll-interval.const';
+import { appliedSince } from '../utils/applied-since';
 import { AiSettingsStore } from './ai-settings.store';
 
 /**
@@ -102,10 +103,15 @@ export class AiFollowUpService {
     if (pending) {
       this.settings.jobQueued();
     }
-    void this.follow(link, this.epoch, pending);
+    void this.follow(link, this.epoch, pending, created);
   }
 
-  private async follow(link: LinkResponse, epoch: number, poll: boolean): Promise<void> {
+  private async follow(
+    link: LinkResponse,
+    epoch: number,
+    poll: boolean,
+    created: boolean,
+  ): Promise<void> {
     const until = Date.now() + AI_LIMIT.PendingSkeletonMs;
     const api = this.injector.get(AI_API);
     try {
@@ -121,7 +127,7 @@ export class AiFollowUpService {
           return;
         }
         if (state.aiStatus !== AI_JOB_STATUS.Pending) {
-          await this.settle(link, state);
+          await this.settle(link, state, created);
           return;
         }
       } while (poll && Date.now() < until);
@@ -161,8 +167,12 @@ export class AiFollowUpService {
     }
   }
 
-  /** Puts what AI did into the feed; an auto-applied change also brings the toast. */
-  private async settle(saved: LinkResponse, state: LinkAiState): Promise<void> {
+  /**
+   * Puts what AI did into the feed; an auto-applied change also brings the toast. After an edit
+   * only what this follow-up applied counts: `autoApplied` also lists what AI applied before the
+   * edit, which the saved link already shows (MUST-FIX 7).
+   */
+  private async settle(saved: LinkResponse, state: LinkAiState, created: boolean): Promise<void> {
     const current = this.links.entityMap()[saved.id] ?? saved;
     const withSummary: LinkResponse = {
       ...current,
@@ -170,7 +180,7 @@ export class AiFollowUpService {
       summarySource: state.summarySource,
       aiStatus: state.aiStatus,
     };
-    const applied = state.autoApplied;
+    const applied = created ? state.autoApplied : appliedSince(saved, state.autoApplied);
     if (!applied || (applied.folderId === null && applied.tags.length === 0)) {
       this.links.applyEdit(withSummary);
       return;

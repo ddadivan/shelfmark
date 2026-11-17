@@ -21,7 +21,8 @@ import { AiSettingsStore } from './ai-settings.store';
  * dialog, `POST /api/ai/drafts` once the preview of an address has loaded, then `GET
  * /api/ai/jobs/:id` until the job is done or `AI_LIMIT.DraftPollMaxMs` has passed (then the rows
  * collapse: the save never waits). A new address starts a new draft; "Try again" after a provider
- * error asks once more with a new id. Dismissing a draft chip only hides it here: the server
+ * error asks once more with the same id, so the server runs that draft again instead of leaving
+ * it behind. Dismissing a draft chip only hides it here: the server
  * cannot dismiss suggestions of a link that is not saved yet. Does nothing while AI is off.
  */
 @Service({ autoProvided: false })
@@ -83,13 +84,13 @@ export class AiDraftService {
     this.state.set(AI_DRAFT_STATE.Idle);
   }
 
-  /** "Try again" (once): a new draft for the same address. */
+  /** "Try again" (once): the same draft again, which the server re-arms after an outage. */
   retry(): void {
     if (!this.canRetry() || this.input === null) {
       return;
     }
     this.retried.set(true);
-    void this.run();
+    void this.run(this.id());
   }
 
   /** Hides a chip for the rest of this dialog. */
@@ -102,14 +103,14 @@ export class AiDraftService {
     return this.state() === AI_DRAFT_STATE.Idle ? null : this.id();
   }
 
-  private async run(): Promise<void> {
+  private async run(reuse: string | null = null): Promise<void> {
     const input = this.input;
     if (input === null) {
       return;
     }
     this.stop();
     const run = this.epoch;
-    const draftId = globalThis.crypto.randomUUID();
+    const draftId = reuse ?? globalThis.crypto.randomUUID();
     this.id.set(draftId);
     this.job.set(null);
     this.state.set(AI_DRAFT_STATE.Loading);
