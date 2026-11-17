@@ -1,0 +1,737 @@
+import { randomUUID } from 'node:crypto';
+import {
+  AI_ENDPOINT,
+  AI_ERROR_MESSAGE,
+  type AiJobResponse,
+  type CreateLinksBatchResponse,
+  type FolderResponse,
+  type LinkResponse,
+} from '@shelfmark/contracts';
+import { AwaitableDeferrer } from '../../test-utils/awaitable-deferrer';
+import { createAuthTestApp } from '../../test-utils/auth-test-app';
+import { createIsolationUsers } from '../../test-utils/isolation/create-isolation-users';
+import { expectIsolated } from '../../test-utils/isolation/expect-isolated';
+import { asUser } from '../../test-utils/isolation/test-agent';
+import type { AuthTestApp } from '../../test-utils/models/auth-test-app.interface';
+import type { IsolationUsers } from '../../test-utils/models/isolation-users.interface';
+import type { TestAgent } from '../../test-utils/models/test-agent.interface';
+import { resetRateLimits } from '../../test-utils/reset-rate-limits';
+import { seedLink } from '../../test-utils/seed-link';
+import { AiBackgroundService } from './background/ai-background.service';
+import { AiExcerptService } from './excerpt/ai-excerpt.service';
+import { AI_ENV } from './models/ai-env.const';
+import type { LinkJobInput } from './models/link-job-input.interface';
+import { MockAiProvider } from './providers/mock-ai.provider';
+import { AiRunnerService } from './runner/ai-runner.service';
+
+const PAGE = { excerpt: 'Visible page text', description: 'From the page' };
+
+describe('AI link jobs', () => {
+  let t: AuthTestApp;
+  let users: IsolationUsers;
+  let a: TestAgent;
+  let b: TestAgent;
+  const deferrer = new AwaitableDeferrer();
+  const excerpts = { load: vi.fn(() => Promise.resolve(PAGE)) };
+
+  beforeAll(async () => {
+    t = await createAuthTestApp({
+      env: { [AI_ENV.FullAccessEmails]: undefined },
+      overrides: [
+        { provide: AiBackgroundService, useValue: deferrer },
+        { provide: AiExcerptService, useValue: excerpts },
+      ],
+    });
+  });
+
+  beforeEach(async () => {
+    resetRateLimits(t.app);
+    users = await createIsolationUsers(t);
+    a = asUser(t.app, users.owner);
+    b = asUser(t.app, users.intruder);
+  });
+
+  afterEach(async () => {
+    deferrer.clear();
+    excerpts.load.mockClear();
+    vi.restoreAllMocks();
+    await t.db.truncateAll();
+  });
+
+  afterAll(async () => {
+    await t.close();
+  });
+
+  const turnOn = (settings: object = {}, agent: TestAgent = a) =>
+    agent
+      .patch(AI_ENDPOINT.Settings)
+      .send({ enabled: true, ...settings })
+      .expect(200);
+  const folder = async (name: string, agent: TestAgent = a): Promise<string> =>
+    ((await agent.post('/api/folders').send({ name }).expect(201)).body as FolderResponse).id;
+  const tag = (name: string, userId = users.owner.userId) =>
+    seedLink(t.db.prisma, userId, { title: `Tagged ${name}`, tags: [name] });
+  const save = async (body: object, agent: TestAgent = a): Promise<LinkResponse> =>
+    (
+      await agent
+        .post('/api/links')
+        .send({ url: 'https://example.com/design', title: 'Design systems', ...body })
+        .expect(201)
+    ).body as LinkResponse;
+  const link = (id: string) =>
+    t.db.prisma.link.findUniqueOrThrow({
+      where: { id },
+      include: { tags: { include: { tag: true } } },
+    });
+  const jobsOf = (linkId: string) =>
+    t.db.prisma.aiJob.findMany({ where: { linkId }, orderBy: { createdAt: 'asc' } });
+  const suggestions = (linkId: string) =>
+    t.db.prisma.linkSuggestion.findMany({
+      where: { linkId },
+      orderBy: [{ kind: 'asc' }, { tagName: 'asc' }],
+      select: { kind: true, tagName: true, folderId: true, state: true },
+    });
+  const captureInputs = (): LinkJobInput[] => {
+    const inputs: LinkJobInput[] = [];
+    const original = MockAiProvider.prototype.runLinkJob;
+    vi.spyOn(MockAiProvider.prototype, 'runLinkJob').mockImplementation(function (
+      this: MockAiProvider,
+      input,
+    ) {
+      inputs.push(input);
+      return original.call(this, input);
+    });
+    return inputs;
+  };
+  const draft = async (body: object, agent: TestAgent = a): Promise<AiJobResponse> =>
+    (
+      await agent
+        .post(AI_ENDPOINT.Drafts)
+        .send({ url: 'https://example.com/design', title: 'Design systems', ...body })
+        .expect(202)
+    ).body as AiJobResponse;
+  const job = async (id: string, agent: TestAgent = a): Promise<AiJobResponse> =>
+    (await agent.get(AI_ENDPOINT.Job.replace(':id', id)).expect(200)).body as AiJobResponse;
+  const makeDue = (jobId: string) =>
+    t.db.prisma.aiJob.update({
+      where: { id: jobId },
+      data: { notBefore: new Date(Date.now() - 1) },
+    });
+
+  describe('enqueue on save', () => {
+    it('saves exactly as before while AI is off', async () => {
+      const saved = await save({});
+      expect(saved).toMatchObject({ aiStatus: null, summary: null, summarySource: null });
+      expect(await t.db.prisma.aiJob.count()).toBe(0);
+      expect(deferrer.size).toBe(0);
+    });
+
+    it('enqueues a job in the save, runs it after the response and writes summary and suggestions', async () => {
+      await turnOn();
+      const design = await folder('Design');
+      await tag('design');
+      const saved = await save({});
+      expect(saved.aiStatus).toBe('pending');
+      const [queued] = await jobsOf(saved.id);
+      expect(queued).toMatchObject({
+        source: 'save',
+        status: 'pending',
+        parts: ['tags', 'folder', 'summary'],
+        language: 'en',
+      });
+      expect(deferrer.size).toBe(1);
+
+      await deferrer.flush();
+      const row = await link(saved.id);
+      expect(row).toMatchObject({
+        summary: 'A page about Design systems.',
+        summarySource: 'ai',
+        aiStatus: 'done',
+        folderId: null,
+        kind: 'other',
+      });
+      expect(row.tags).toEqual([]);
+      expect(await suggestions(saved.id)).toEqual([
+        { kind: 'folder', tagName: null, folderId: design, state: 'suggested' },
+        { kind: 'new-tag', tagName: 'example', folderId: null, state: 'suggested' },
+        { kind: 'tag', tagName: 'design', folderId: null, state: 'suggested' },
+      ]);
+      expect((await jobsOf(saved.id))[0]).toMatchObject({
+        status: 'done',
+        reason: null,
+        attempts: 1,
+      });
+      const read = (await a.get(`/api/links/${saved.id}`).expect(200)).body as LinkResponse;
+      expect(read).toMatchObject({ summarySource: 'ai', aiStatus: 'done' });
+      const usage = await t.db.prisma.aiUsage.findFirstOrThrow({
+        where: { userId: users.owner.userId },
+      });
+      expect(usage.links).toBe(1);
+    });
+
+    it('asks only for what the save left open, and nothing when every part is off', async () => {
+      await turnOn();
+      const design = await folder('Design');
+      const withFolder = await save({ folderId: design, tags: ['mine'] });
+      expect((await jobsOf(withFolder.id))[0]?.parts).toEqual(['summary']);
+      await a.post('/api/rules').send({ domain: 'rules.example', folderId: design }).expect(201);
+      const ruled = await save({ url: 'https://rules.example/a' });
+      expect((await jobsOf(ruled.id))[0]?.parts).toEqual(['tags', 'summary']);
+      await turnOn({ tagsMode: 'off', folderMode: 'off', summaries: false });
+      const none = await save({ url: 'https://example.com/none' });
+      expect(none.aiStatus).toBeNull();
+      expect(await jobsOf(none.id)).toEqual([]);
+    });
+
+    it('applies Automatic mode to what the user left empty: folder and existing tags, never the new tag', async () => {
+      await turnOn({ folderMode: 'auto', tagsMode: 'auto' });
+      const design = await folder('Design');
+      await tag('design');
+      const saved = await save({});
+      await deferrer.flush();
+      const row = await link(saved.id);
+      expect(row.folderId).toBe(design);
+      expect(row.tags.map((entry) => entry.tag.name)).toEqual(['design']);
+      expect(await suggestions(saved.id)).toEqual([
+        { kind: 'folder', tagName: null, folderId: design, state: 'auto-applied' },
+        { kind: 'new-tag', tagName: 'example', folderId: null, state: 'suggested' },
+        { kind: 'tag', tagName: 'design', folderId: null, state: 'auto-applied' },
+      ]);
+      expect(await t.db.prisma.tag.count({ where: { userId: users.owner.userId } })).toBe(1);
+    });
+
+    it('never overrides a choice the user made before the job finished', async () => {
+      await turnOn({ folderMode: 'auto', tagsMode: 'auto' });
+      const design = await folder('Design');
+      const other = await folder('Elsewhere');
+      await tag('design');
+      const saved = await save({});
+      await a
+        .patch(`/api/links/${saved.id}`)
+        .send({ folderId: other, tags: ['picked'], summary: undefined })
+        .expect(200);
+      await t.db.prisma.link.update({
+        where: { id: saved.id },
+        data: { summary: 'Mine', summarySource: 'user' },
+      });
+      await deferrer.flush();
+      const row = await link(saved.id);
+      expect(row).toMatchObject({ folderId: other, summary: 'Mine', summarySource: 'user' });
+      expect(row.tags.map((entry) => entry.tag.name)).toEqual(['picked']);
+      expect(await suggestions(saved.id)).toEqual([
+        { kind: 'folder', tagName: null, folderId: design, state: 'suggested' },
+        { kind: 'new-tag', tagName: 'example', folderId: null, state: 'suggested' },
+        { kind: 'tag', tagName: 'design', folderId: null, state: 'suggested' },
+      ]);
+    });
+
+    it('never brings back a dismissed or accepted suggestion and skips what the link already has', async () => {
+      await turnOn();
+      await tag('design');
+      const saved = await save({});
+      await deferrer.flush();
+      await t.db.prisma.linkSuggestion.updateMany({
+        where: { linkId: saved.id, kind: 'new-tag' },
+        data: { state: 'dismissed' },
+      });
+      await t.db.prisma.link.update({
+        where: { id: saved.id },
+        data: { summary: null, summarySource: null },
+      });
+      await t.db.prisma.aiJob.create({
+        data: {
+          userId: users.owner.userId,
+          linkId: saved.id,
+          source: 'rewrite',
+          parts: ['tags', 'summary'],
+          language: 'en',
+        },
+      });
+      const second = (await jobsOf(saved.id))[1];
+      await t.app.get(AiRunnerService).run(second?.id ?? '', users.owner.userId);
+      expect(await suggestions(saved.id)).toEqual([
+        { kind: 'new-tag', tagName: 'example', folderId: null, state: 'dismissed' },
+        { kind: 'tag', tagName: 'design', folderId: null, state: 'suggested' },
+      ]);
+      expect((await link(saved.id)).summary).toBe('A page about Design systems.');
+    });
+
+    it('marks a job that found nothing', async () => {
+      await turnOn({ tagsMode: 'off', folderMode: 'off' });
+      vi.spyOn(MockAiProvider.prototype, 'runLinkJob').mockResolvedValue({
+        type: 'output',
+        output: { tags: [], newTag: null, folder: null, summary: null, kind: null },
+      });
+      const saved = await save({});
+      await deferrer.flush();
+      expect((await jobsOf(saved.id))[0]).toMatchObject({
+        status: 'done',
+        reason: 'nothing-found',
+      });
+      expect((await link(saved.id)).aiStatus).toBe('done');
+    });
+
+    it('reads the page only while previews are on and sends the note only with the switch', async () => {
+      const inputs = captureInputs();
+      await turnOn();
+      await save({ note: 'private note' });
+      await deferrer.flush();
+      expect(excerpts.load).toHaveBeenCalledOnce();
+      expect(inputs[0]).toMatchObject({
+        note: null,
+        excerpt: PAGE.excerpt,
+        description: PAGE.description,
+      });
+
+      await turnOn({ includeNotes: true });
+      await a.patch('/api/me/settings').send({ fetchPreviews: false }).expect(200);
+      await save({ url: 'https://example.com/2', note: 'private note' });
+      await deferrer.flush();
+      expect(excerpts.load).toHaveBeenCalledOnce();
+      expect(inputs[1]).toMatchObject({ note: 'private note', excerpt: null, description: null });
+    });
+
+    it('writes the summary in the explicit language, else the interface language, else Accept-Language', async () => {
+      await turnOn();
+      const browser = await a
+        .post('/api/links')
+        .set('Accept-Language', 'nl, fr;q=0.9')
+        .send({ url: 'https://example.com/a', title: 'A' })
+        .expect(201);
+      expect((await jobsOf((browser.body as LinkResponse).id))[0]?.language).toBe('fr');
+      await a.patch('/api/me/settings').send({ language: 'it' }).expect(200);
+      const ui = await save({ url: 'https://example.com/b' });
+      expect((await jobsOf(ui.id))[0]?.language).toBe('it');
+      await turnOn({ summaryLanguage: 'uk' });
+      const fixed = await save({ url: 'https://example.com/c' });
+      expect((await jobsOf(fixed.id))[0]?.language).toBe('uk');
+    });
+
+    it('skips a job past the monthly limit and shows it on the link', async () => {
+      await turnOn();
+      const now = new Date();
+      await t.db.prisma.aiUsage.create({
+        data: {
+          userId: users.owner.userId,
+          month: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)),
+          links: 50,
+        },
+      });
+      const saved = await save({});
+      await deferrer.flush();
+      expect((await jobsOf(saved.id))[0]).toMatchObject({ status: 'skipped', reason: 'quota' });
+      expect((await link(saved.id)).aiStatus).toBe('skipped');
+    });
+
+    it('fails a refusal and an invalid answer at once, nothing shown', async () => {
+      await turnOn();
+      const refused = await save({ url: 'https://example.com/ai-refuse' });
+      await deferrer.flush();
+      expect((await jobsOf(refused.id))[0]).toMatchObject({ status: 'failed', reason: 'rejected' });
+      expect(await link(refused.id)).toMatchObject({ aiStatus: 'failed', summary: null });
+
+      vi.spyOn(MockAiProvider.prototype, 'runLinkJob').mockResolvedValue({
+        type: 'output',
+        output: 'not json',
+      });
+      const invalid = await save({ url: 'https://example.com/invalid' });
+      await deferrer.flush();
+      expect((await jobsOf(invalid.id))[0]).toMatchObject({ status: 'failed', reason: 'rejected' });
+      expect(await suggestions(invalid.id)).toEqual([]);
+    });
+
+    it('retries an outage with growing delays, refunds the quota and fails after three attempts', async () => {
+      await turnOn();
+      const runner = t.app.get(AiRunnerService);
+      const saved = await save({ url: 'https://example.com/ai-fail' });
+      await deferrer.flush();
+      let [queued] = await jobsOf(saved.id);
+      expect(queued).toMatchObject({ status: 'pending', reason: 'unavailable', attempts: 1 });
+      const delay = (queued?.notBefore?.getTime() ?? 0) - Date.now();
+      expect(delay).toBeGreaterThan(25_000);
+      expect(delay).toBeLessThanOrEqual(30_000);
+      expect((await link(saved.id)).aiStatus).toBe('pending');
+      const usage = await t.db.prisma.aiUsage.findFirstOrThrow({
+        where: { userId: users.owner.userId },
+      });
+      expect(usage.links).toBe(0);
+      expect((await a.get(AI_ENDPOINT.Settings).expect(200)).body.providerStatus).toBe(
+        'unavailable',
+      );
+
+      await runner.run(queued?.id ?? '', users.owner.userId);
+      expect((await jobsOf(saved.id))[0]?.attempts).toBe(1);
+      await makeDue(queued?.id ?? '');
+      await runner.run(queued?.id ?? '', users.owner.userId);
+      [queued] = await jobsOf(saved.id);
+      expect(queued).toMatchObject({ status: 'pending', attempts: 2 });
+      expect((queued?.notBefore?.getTime() ?? 0) - Date.now()).toBeGreaterThan(100_000);
+      await makeDue(queued?.id ?? '');
+      await runner.run(queued?.id ?? '', users.owner.userId);
+      expect((await jobsOf(saved.id))[0]).toMatchObject({
+        status: 'failed',
+        reason: 'unavailable',
+        attempts: 3,
+      });
+      expect((await link(saved.id)).aiStatus).toBe('failed');
+    });
+
+    it('fails at once when the provider rejects the request, and treats a throw as an outage', async () => {
+      await turnOn();
+      vi.spyOn(MockAiProvider.prototype, 'runLinkJob').mockResolvedValueOnce({
+        type: 'error',
+        retryable: false,
+      });
+      const rejected = await save({ url: 'https://example.com/1' });
+      await deferrer.flush();
+      expect((await jobsOf(rejected.id))[0]).toMatchObject({
+        status: 'failed',
+        reason: 'unavailable',
+      });
+      vi.spyOn(MockAiProvider.prototype, 'runLinkJob').mockRejectedValueOnce(new Error('boom'));
+      const thrown = await save({ url: 'https://example.com/2' });
+      await deferrer.flush();
+      expect((await jobsOf(thrown.id))[0]).toMatchObject({ status: 'pending', attempts: 1 });
+    });
+
+    it('puts a job back in the queue when the database fails mid-run', async () => {
+      await turnOn();
+      const saved = await save({});
+      excerpts.load.mockRejectedValueOnce(new Error('db gone'));
+      await deferrer.flush();
+      expect((await jobsOf(saved.id))[0]).toMatchObject({
+        status: 'pending',
+        reason: 'unavailable',
+      });
+    });
+
+    it('discards the result of a job that finishes after AI was turned off', async () => {
+      await turnOn();
+      const original = MockAiProvider.prototype.runLinkJob;
+      vi.spyOn(MockAiProvider.prototype, 'runLinkJob').mockImplementation(async function (
+        this: MockAiProvider,
+        input,
+      ) {
+        await a.patch(AI_ENDPOINT.Settings).send({ enabled: false }).expect(200);
+        return original.call(this, input);
+      });
+      const saved = await save({});
+      await deferrer.flush();
+      expect((await jobsOf(saved.id))[0]).toMatchObject({ status: 'skipped', reason: 'off' });
+      expect(await link(saved.id)).toMatchObject({ aiStatus: 'skipped', summary: null });
+      expect(await suggestions(saved.id)).toEqual([]);
+    });
+
+    it('skips a queued job when AI was turned off before it ran', async () => {
+      await turnOn();
+      const saved = await save({});
+      await t.db.prisma.aiSettings.update({
+        where: { userId: users.owner.userId },
+        data: { enabled: false },
+      });
+      await deferrer.flush();
+      expect((await jobsOf(saved.id))[0]).toMatchObject({ status: 'skipped', reason: 'off' });
+    });
+
+    it('fails a job whose link is gone', async () => {
+      await turnOn();
+      const saved = await save({});
+      vi.spyOn(t.db.prisma.link, 'findFirst').mockResolvedValueOnce(null);
+      await deferrer.flush();
+      expect((await jobsOf(saved.id))[0]).toMatchObject({
+        status: 'failed',
+        reason: 'unavailable',
+      });
+    });
+
+    it('gives every link of a paste its own job and runs them after the response', async () => {
+      await turnOn();
+      const design = await folder('Design');
+      const pasted = (
+        await a
+          .post('/api/links/batch')
+          .set('Accept-Language', 'de')
+          .send({
+            items: [
+              { url: 'https://example.com/1', idempotencyKey: randomUUID() },
+              { url: 'https://example.com/2', idempotencyKey: randomUUID(), folderId: design },
+              { url: 'https://example.com/3', idempotencyKey: randomUUID(), tags: ['x'] },
+            ],
+          })
+          .expect(201)
+      ).body as CreateLinksBatchResponse;
+      expect(pasted.links.map((entry) => entry.aiStatus)).toEqual([
+        'pending',
+        'pending',
+        'pending',
+      ]);
+      const parts = await Promise.all(
+        pasted.links.map(async (entry) => (await jobsOf(entry.id))[0]),
+      );
+      expect(parts.map((entry) => entry?.parts)).toEqual([
+        ['tags', 'folder', 'summary'],
+        ['tags', 'summary'],
+        ['folder', 'summary'],
+      ]);
+      expect(parts.every((entry) => entry?.language === 'de')).toBe(true);
+      await deferrer.flush();
+      const done = await t.db.prisma.link.findMany({ where: { userId: users.owner.userId } });
+      expect(done.every((row) => row.aiStatus === 'done' && row.summarySource === 'ai')).toBe(true);
+    });
+
+    it('stops starting jobs of a deferred run once its budget is spent', async () => {
+      await turnOn();
+      const first = await save({ url: 'https://example.com/1' });
+      deferrer.clear();
+      const runner = t.app.get(AiRunnerService);
+      await runner.runMany(users.owner.userId, [(await jobsOf(first.id))[0]?.id ?? ''], 0);
+      expect((await jobsOf(first.id))[0]?.status).toBe('pending');
+      await runner.runMany(users.owner.userId, []);
+    });
+  });
+
+  describe('drafts', () => {
+    it('answers skipped without a job while AI is off or asks for nothing', async () => {
+      const draftId = randomUUID();
+      expect(await draft({ draftId })).toEqual({
+        id: draftId,
+        status: 'skipped',
+        reason: 'off',
+        suggestions: [],
+        summary: null,
+      });
+      await turnOn({ tagsMode: 'off', folderMode: 'off', summaries: false });
+      expect((await draft({ draftId })).reason).toBe('off');
+      expect(await t.db.prisma.aiJob.count()).toBe(0);
+    });
+
+    it('runs a draft before the save and the save picks up its result', async () => {
+      await turnOn({ folderMode: 'auto' });
+      const design = await folder('Design');
+      await tag('design');
+      const draftId = randomUUID();
+      const started = await draft({ draftId, description: 'About design', note: 'n' });
+      expect(started).toMatchObject({ status: 'pending', reason: null, suggestions: [] });
+      expect(await draft({ draftId })).toMatchObject({ id: started.id, status: 'pending' });
+      await deferrer.flush();
+
+      const ready = await job(started.id);
+      expect(ready.status).toBe('done');
+      expect(ready.summary).toBe('A page about Design systems.');
+      expect(ready.suggestions.map((entry) => [entry.kind, entry.tagName, entry.folderId])).toEqual(
+        [
+          ['folder', null, design],
+          ['tag', 'design', null],
+          ['new-tag', 'example', null],
+        ],
+      );
+      expect((await job(started.id)).suggestions).toEqual(ready.suggestions);
+
+      const saved = await save({ aiDraftId: draftId, tags: ['chosen'] });
+      expect(saved).toMatchObject({
+        folderId: design,
+        summary: 'A page about Design systems.',
+        summarySource: 'ai',
+        aiStatus: 'done',
+        tags: ['chosen'],
+      });
+      expect(deferrer.size).toBe(0);
+      const attached = await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: started.id } });
+      expect(attached).toMatchObject({
+        linkId: saved.id,
+        parts: ['folder', 'summary'],
+        result: null,
+      });
+      expect(await suggestions(saved.id)).toEqual([
+        { kind: 'folder', tagName: null, folderId: design, state: 'auto-applied' },
+      ]);
+      const polled = await job(started.id);
+      expect(polled.summary).toBe('A page about Design systems.');
+      expect(polled.suggestions).toEqual([
+        {
+          id: expect.any(String),
+          kind: 'folder',
+          state: 'auto-applied',
+          tagName: null,
+          folderId: design,
+        },
+      ]);
+    });
+
+    it('applies the result on the link when the draft finishes after the save', async () => {
+      await turnOn();
+      await tag('design');
+      const draftId = randomUUID();
+      const started = await draft({ draftId });
+      const saved = await save({ aiDraftId: draftId });
+      expect(saved.aiStatus).toBe('pending');
+      expect(await t.db.prisma.aiJob.count()).toBe(1);
+      await deferrer.flush();
+      const row = await link(saved.id);
+      expect(row).toMatchObject({ summarySource: 'ai', aiStatus: 'done' });
+      expect((await suggestions(saved.id)).map((entry) => entry.tagName)).toEqual([
+        'example',
+        'design',
+      ]);
+      expect(
+        await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: started.id } }),
+      ).toMatchObject({
+        status: 'done',
+        linkId: saved.id,
+        result: null,
+      });
+      const usage = await t.db.prisma.aiUsage.findFirstOrThrow({
+        where: { userId: users.owner.userId },
+      });
+      expect(usage.links).toBe(1);
+    });
+
+    it('runs the draft again on the saved link after an outage, and "Try again" retries it', async () => {
+      await turnOn();
+      const draftId = randomUUID();
+      const started = await draft({ draftId, url: 'https://example.com/ai-fail' });
+      await deferrer.flush();
+      await t.db.prisma.aiJob.update({
+        where: { id: started.id },
+        data: { status: 'failed', reason: 'unavailable' },
+      });
+      expect((await job(started.id)).reason).toBe('unavailable');
+      const again = await draft({ draftId, url: 'https://example.com/ok' });
+      expect(again).toMatchObject({ id: started.id, status: 'pending' });
+      await deferrer.flush();
+      expect((await job(started.id)).status).toBe('done');
+
+      const second = randomUUID();
+      const failing = await draft({ draftId: second, url: 'https://example.com/ai-fail' });
+      await deferrer.flush();
+      await t.db.prisma.aiJob.update({
+        where: { id: failing.id },
+        data: { status: 'failed', reason: 'unavailable' },
+      });
+      const saved = await save({ aiDraftId: second, url: 'https://example.com/fine' });
+      expect(saved.aiStatus).toBe('pending');
+      expect(deferrer.size).toBe(1);
+      await deferrer.flush();
+      expect((await link(saved.id)).aiStatus).toBe('done');
+    });
+
+    it('keeps a refused or quota-skipped draft as it is on the saved link', async () => {
+      await turnOn();
+      const refused = randomUUID();
+      await draft({ draftId: refused, url: 'https://example.com/ai-refuse' });
+      await deferrer.flush();
+      const saved = await save({ aiDraftId: refused, url: 'https://example.com/ai-refuse' });
+      expect(saved.aiStatus).toBe('failed');
+      expect(deferrer.size).toBe(0);
+    });
+
+    it('answers skipped with reason quota at the monthly limit', async () => {
+      await turnOn();
+      const now = new Date();
+      await t.db.prisma.aiUsage.create({
+        data: {
+          userId: users.owner.userId,
+          month: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)),
+          links: 50,
+        },
+      });
+      const skipped = await draft({ draftId: randomUUID() });
+      expect(skipped).toMatchObject({ status: 'skipped', reason: 'quota' });
+      expect(deferrer.size).toBe(0);
+      expect((await job(skipped.id)).reason).toBe('quota');
+    });
+
+    it('fails a draft that lost its dialog data and ignores a draft while AI is off at save', async () => {
+      await turnOn();
+      const draftId = randomUUID();
+      const started = await draft({ draftId });
+      deferrer.clear();
+      await t.app.get(AiRunnerService).run(started.id, users.owner.userId);
+      expect((await job(started.id)).reason).toBe('unavailable');
+
+      const other = randomUUID();
+      const pending = await draft({ draftId: other });
+      await deferrer.flush();
+      await a.patch(AI_ENDPOINT.Settings).send({ enabled: false }).expect(200);
+      const saved = await save({ aiDraftId: other });
+      expect(saved).toMatchObject({ aiStatus: null, summary: null });
+      expect(
+        (await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: pending.id } })).linkId,
+      ).toBeNull();
+    });
+
+    it('validates the draft body and the job id', async () => {
+      await turnOn();
+      for (const body of [
+        { draftId: 'nope', url: 'https://example.com' },
+        { draftId: randomUUID(), url: 'javascript:alert(1)' },
+        { draftId: randomUUID(), url: 'https://example.com', note: 'a\u0000b' },
+        { draftId: randomUUID(), url: 'https://example.com', extra: true },
+      ]) {
+        await a.post(AI_ENDPOINT.Drafts).send(body).expect(400);
+      }
+      await a
+        .post('/api/links')
+        .send({ url: 'https://example.com', aiDraftId: 'nope' })
+        .expect(400);
+      await a.get(AI_ENDPOINT.Job.replace(':id', 'nope')).expect(400);
+      const missing = await a.get(AI_ENDPOINT.Job.replace(':id', randomUUID())).expect(404);
+      expect(missing.body.message).toBe(AI_ERROR_MESSAGE.JobNotFound);
+    });
+  });
+
+  describe('data isolation', () => {
+    it("keeps a user's jobs to that user", async () => {
+      await turnOn();
+      await expectIsolated(t.app, users, {
+        create: async (owner) =>
+          (
+            (
+              await owner
+                .post(AI_ENDPOINT.Drafts)
+                .send({ draftId: randomUUID(), url: 'https://example.com/x' })
+                .expect(202)
+            ).body as AiJobResponse
+          ).id,
+        read: (agent, id) => agent.get(AI_ENDPOINT.Job.replace(':id', id)),
+        skip: {
+          update: 'jobs are written by the runner only',
+          remove: 'jobs are removed with their link or account',
+          list: 'there is no job list',
+          reference: 'a job is referenced only by its own draftId, covered below',
+        },
+      });
+    });
+
+    it("never attaches another user's draft and keeps draft ids per user", async () => {
+      await turnOn();
+      await turnOn({}, b);
+      const draftId = randomUUID();
+      const owners = await draft({ draftId });
+      const intruders = await draft({ draftId }, b);
+      expect(intruders.id).not.toBe(owners.id);
+      await deferrer.flush();
+      const saved = await save({ aiDraftId: draftId, url: 'https://example.com/b' }, b);
+      const ownerJob = await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: owners.id } });
+      expect(ownerJob.linkId).toBeNull();
+      expect(ownerJob.result).not.toBeNull();
+      expect((await jobsOf(saved.id)).map((row) => row.id)).toEqual([intruders.id]);
+    });
+
+    it("never puts another user's tags or folders into a prompt", async () => {
+      const inputs = captureInputs();
+      await turnOn();
+      await folder('Owner folder');
+      await tag('ownertag');
+      await folder('Intruder folder', b);
+      await tag('intrudertag', users.intruder.userId);
+      await save({});
+      await deferrer.flush();
+      expect(inputs).toHaveLength(1);
+      expect(inputs[0]?.tags).toEqual(['ownertag']);
+      expect(inputs[0]?.folders).toEqual([{ key: 'f1', path: 'Owner folder' }]);
+      expect(JSON.stringify(inputs[0])).not.toContain('intruder');
+      expect(JSON.stringify(inputs[0])).not.toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-/);
+    });
+  });
+});

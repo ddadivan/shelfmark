@@ -16,7 +16,7 @@
   },
   "functions": {
     "api/index.mjs": {
-      "maxDuration": 10,
+      "maxDuration": 30,
       "includeFiles": "{node_modules/swagger-ui-dist/**,node_modules/@prisma/client/runtime/query_compiler_fast_bg.postgresql.*,node_modules/@img/**}"
     }
   },

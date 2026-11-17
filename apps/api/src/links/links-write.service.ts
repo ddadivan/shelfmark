@@ -18,6 +18,8 @@ import {
   type OpenLinkResponse,
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
+import { AiJobsService } from '../ai/jobs/ai-jobs.service';
+import type { AiRequestContext } from '../ai/models/ai-request-context.interface';
 import { REQUEST_TIMEOUT_MS } from '../common/interceptors/models/request-timeout.const';
 import { FoldersService } from '../folders/folders.service';
 import { Prisma } from '../generated/prisma/client';
@@ -57,13 +59,18 @@ export class LinksWriteService {
     private readonly previews: LinkPreviewService,
     private readonly images: LinkImageCaptureService,
     private readonly rules: RulesService,
+    private readonly aiJobs: AiJobsService,
   ) {}
 
-  /** `isDemo` comes from the session (never the request): demo sandboxes have a lower link cap. */
+  /**
+   * `isDemo` comes from the session (never the request): demo sandboxes have a lower link cap.
+   * `context` carries what the AI step needs from the request (the summary language fallback).
+   */
   async create(
     userId: string,
     request: CreateLinkRequest,
     isDemo = false,
+    context: AiRequestContext = {},
   ): Promise<CreateLinkResult> {
     const startedAt = Date.now();
     this.normalize(request.url);
@@ -102,6 +109,7 @@ export class LinksWriteService {
     const finalTitle = title;
 
     let result: CreateLinkResult;
+    let aiJobIds: string[] = [];
     try {
       result = await this.prisma.$transaction(async (tx) => {
         // Folder lock first: it serializes this insert against folder moves and deletes and makes the
@@ -111,6 +119,11 @@ export class LinksWriteService {
           const replay = await this.findByKey(tx, userId, key);
           if (replay) return { link: replay, created: false };
         }
+        // The draft job row is locked after `folders:` and before `tags:` (ADR 0048 point 4).
+        const draft =
+          request.aiDraftId === undefined
+            ? null
+            : await this.aiJobs.lockDraft(tx, userId, request.aiDraftId);
         if (request.folderId !== undefined) {
           await this.requireFolder(tx, userId, request.folderId);
         }
@@ -138,7 +151,19 @@ export class LinksWriteService {
           },
           include: LINK_INCLUDE,
         });
-        return { link: toLinkResponse(row), created: true };
+        // AI (ADR 0048): attach the draft or enqueue a job; nothing while AI is off.
+        const ai = await this.aiJobs.afterCreate(
+          tx,
+          userId,
+          { linkId: row.id, folderSet: row.folderId !== null, tagsSet: tagIds.length > 0 },
+          draft,
+          context,
+        );
+        aiJobIds = ai.jobIds;
+        const saved = ai.touched
+          ? await tx.link.findFirstOrThrow({ where: { id: row.id, userId }, include: LINK_INCLUDE })
+          : row;
+        return { link: toLinkResponse(saved), created: true };
       });
     } catch (error) {
       if (key !== undefined && hasPrismaCode(error, PRISMA_ERROR_CODE.UniqueViolation)) {
@@ -149,7 +174,14 @@ export class LinksWriteService {
       throw this.mapVanished(error);
     }
     // After the commit and outside any transaction: the remote fetches must never hold a lock.
-    return this.attachImages(userId, result, { faviconSourceUrl, imageSourceUrl }, startedAt);
+    const withImages = await this.attachImages(
+      userId,
+      result,
+      { faviconSourceUrl, imageSourceUrl },
+      startedAt,
+    );
+    this.aiJobs.start(userId, aiJobIds);
+    return withImages;
   }
 
   /**
