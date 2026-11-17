@@ -28,6 +28,12 @@
       "parent": null,
       "colour": "amber",
       "highlighted": true
+    },
+    {
+      "key": "videos",
+      "name": "Videos",
+      "parent": null,
+      "colour": "plum"
     }
   ],
   "tags": [
@@ -256,6 +262,145 @@
       "lastOpenedDaysAgo": null,
       "suggestFolder": "work",
       "suggestTags": ["news"]
+    },
+    {
+      "url": "https://www.youtube.com/@Angular",
+      "title": "Angular on YouTube",
+      "folder": "videos",
+      "tags": ["angular"],
+      "isFavorite": false,
+      "createdDaysAgo": 12,
+      "lastOpenedDaysAgo": 4,
+      "summary": "The official Angular channel: release talks, live streams and short videos on new framework features."
+    },
+    {
+      "url": "https://www.youtube.com/@ChromeforDevelopers",
+      "title": "Chrome for Developers on YouTube",
+      "folder": "videos",
+      "tags": ["tutorial"],
+      "isFavorite": false,
+      "createdDaysAgo": 9,
+      "lastOpenedDaysAgo": 9,
+      "summary": "Talks and short explainers from the Chrome team on web platform features, performance and DevTools."
+    },
+    {
+      "url": "https://www.youtube.com/@Fireship",
+      "title": "Fireship",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 1,
+      "lastOpenedDaysAgo": null,
+      "summary": "Fast-paced explainers on web development tools and frameworks, most of them under ten minutes.",
+      "suggestFolder": "videos",
+      "suggestTags": ["tutorial"]
+    },
+    {
+      "url": "https://www.cos.com/",
+      "title": "COS",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 6,
+      "lastOpenedDaysAgo": null,
+      "summary": "A clothing brand with minimal, long-lasting pieces for women and men, plus a resell section.",
+      "suggestFolder": "clothes",
+      "suggestTags": ["shopping"]
+    },
+    {
+      "url": "https://www.arket.com/",
+      "title": "ARKET",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 5,
+      "lastOpenedDaysAgo": null,
+      "summary": "A modern-day market for clothes and home goods for the whole family, with a focus on durable basics.",
+      "suggestFolder": "clothes",
+      "suggestTags": ["shopping"]
+    },
+    {
+      "url": "https://www.seriouseats.com/",
+      "title": "Serious Eats",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 4,
+      "lastOpenedDaysAgo": null,
+      "summary": "Recipes and cooking guides that explain the science behind each technique, from ramen to roast chicken.",
+      "suggestFolder": "recipes",
+      "suggestTags": ["cooking"]
+    },
+    {
+      "url": "https://www.allrecipes.com/",
+      "title": "Allrecipes",
+      "folder": null,
+      "tags": ["cooking"],
+      "isFavorite": false,
+      "createdDaysAgo": 3,
+      "lastOpenedDaysAgo": null,
+      "summary": "A large collection of home cooks' recipes with ratings, reviews and step-by-step photos.",
+      "suggestFolder": "recipes",
+      "suggestTags": ["reading"]
+    },
+    {
+      "url": "https://www.typescriptlang.org/play",
+      "title": "TypeScript Playground",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 3,
+      "lastOpenedDaysAgo": null,
+      "summary": "An online editor that compiles TypeScript in the browser and shows the emitted JavaScript and types.",
+      "suggestFolder": "work",
+      "suggestTags": ["typescript", "reference"]
+    },
+    {
+      "url": "https://web.dev/learn/css",
+      "title": "Learn CSS",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 2,
+      "lastOpenedDaysAgo": null,
+      "summary": "A free course on modern CSS from the box model to grid, flexbox and custom properties.",
+      "suggestFolder": "courses",
+      "suggestTags": ["design", "tutorial"]
+    },
+    {
+      "url": "https://rxjs.dev/guide/overview",
+      "title": "RxJS overview",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 2,
+      "lastOpenedDaysAgo": null,
+      "summary": "An introduction to RxJS: observables, operators and subscriptions for composing asynchronous code.",
+      "suggestFolder": "angular",
+      "suggestTags": ["typescript"]
+    },
+    {
+      "url": "https://www.smashingmagazine.com/",
+      "title": "Smashing Magazine",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 1,
+      "lastOpenedDaysAgo": null,
+      "summary": "Articles and books on web design and front-end development, from accessibility to CSS layout.",
+      "suggestTags": ["design", "reading"]
+    },
+    {
+      "url": "https://frontendmasters.com/courses/",
+      "title": "Frontend Masters courses",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 0,
+      "lastOpenedDaysAgo": null,
+      "summary": "In-depth video courses on JavaScript, TypeScript, frameworks and web performance.",
+      "suggestFolder": "courses",
+      "suggestTags": ["tutorial"]
     }
   ],
   "rules": [
