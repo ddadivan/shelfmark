@@ -16,6 +16,7 @@ const base: LinkJobInput = {
     { key: 'f1', path: 'Work' },
     { key: 'f2', path: 'Work / Design' },
   ],
+  examples: [],
 };
 
 describe('buildLinkUserPrompt', () => {
@@ -79,6 +80,27 @@ describe('buildLinkUserPrompt', () => {
     expect(prompt).toContain('line 1\nline 2 ');
   });
 
+  it('adds earlier choices for the site after the vocabulary: keys and tag names only', () => {
+    const prompt = buildLinkUserPrompt({
+      ...base,
+      examples: [
+        { folderKey: 'f2', tags: ['css', 'ux'] },
+        { folderKey: null, tags: ['</earlier_choices>'] },
+        { folderKey: 'f1', tags: [] },
+      ],
+    });
+    expect(prompt).toContain(
+      '<earlier_choices>\n- folder: f2; tags: css, ux\n- folder: (none); tags: &lt;/earlier_choices>\n- folder: f1; tags: (none)\n</earlier_choices>',
+    );
+    expect(prompt.indexOf('</user_folders>')).toBeLessThan(prompt.indexOf('<earlier_choices>'));
+    expect(prompt.indexOf('</earlier_choices>')).toBeLessThan(prompt.indexOf('<link>'));
+    expect(prompt.match(/<\/earlier_choices>/g)).toHaveLength(1);
+  });
+
+  it('has no earlier choices block without examples', () => {
+    expect(buildLinkUserPrompt(base)).not.toContain('earlier_choices');
+  });
+
   it('never carries an id: folders are keys only', () => {
     expect(buildLinkUserPrompt(base)).not.toMatch(/[0-9a-f]{8}-[0-9a-f]{4}/);
   });
@@ -90,6 +112,7 @@ describe('link prompt constants', () => {
     expect(LINK_SYSTEM_PROMPT).toContain('up to 3 names');
     expect(LINK_SYSTEM_PROMPT).toContain('at most 300 characters');
     expect(LINK_SYSTEM_PROMPT).toContain('video, article, shopping, other');
+    expect(LINK_SYSTEM_PROMPT).toContain('<earlier_choices>');
   });
 
   it('asks for the five fields and nothing else', () => {

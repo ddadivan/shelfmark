@@ -858,5 +858,28 @@ describe('AI link jobs', () => {
       expect(JSON.stringify(inputs[0])).not.toContain('intruder');
       expect(JSON.stringify(inputs[0])).not.toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-/);
     });
+
+    it("passes the owner's earlier choices for the same site, never the other user's", async () => {
+      const inputs = captureInputs();
+      await turnOn();
+      const videos = await folder('Videos');
+      const theirs = await folder('Intruder videos', b);
+      await seedLink(t.db.prisma, users.owner.userId, {
+        url: 'https://www.youtube.com/watch?v=1',
+        folderId: videos,
+        tags: ['talks'],
+      });
+      await seedLink(t.db.prisma, users.intruder.userId, {
+        url: 'https://youtube.com/watch?v=2',
+        folderId: theirs,
+        tags: ['intrudertag'],
+      });
+      await save({ url: 'https://youtube.com/watch?v=3', title: 'A talk' });
+      await deferrer.flush();
+      expect(inputs).toHaveLength(1);
+      expect(inputs[0]?.folders).toEqual([{ key: 'f1', path: 'Videos' }]);
+      expect(inputs[0]?.examples).toEqual([{ folderKey: 'f1', tags: ['talks'] }]);
+      expect(JSON.stringify(inputs[0])).not.toContain('intruder');
+    });
   });
 });
