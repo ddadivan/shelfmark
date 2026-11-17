@@ -1,19 +1,15 @@
-import { computed, effect, inject, Injector, Service, signal, untracked } from '@angular/core';
+import { computed, effect, inject, Service, untracked } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  AI_APPLIED_PART,
   LINK_LIMIT,
   normalizeTagName,
   SUGGESTION_KIND,
-  type AiAppliedPart,
   type LinkSuggestion,
 } from '@shelfmark/contracts';
-import { TOAST_KIND, ToastService, UiDialogRef } from '@shelfmark/ui';
+import { UiDialogRef } from '@shelfmark/ui';
 import { LocaleService } from '../../../core/i18n/locale.service';
-import { pluralKey } from '../../../core/i18n/plural-key';
 import { APP_PATH } from '../../../models/app-path.const';
 import { FoldersStore } from '../../../stores/folders.store';
-import { LinksStore } from '../../../stores/links.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import type { AiChipView } from '../../ai/components/suggestion-rows/models/ai-chip-view.interface';
 import { AI_DRAFT_STATE } from '../../ai/models/ai-draft-state.const';
@@ -25,18 +21,15 @@ import { SETTINGS_PATH } from '../../settings/models/settings-path.const';
 import type { AddLinkResult } from '../models/add-link-result.type';
 import type { AiLineView } from '../models/ai-line-view.interface';
 import { PREVIEW_STATE } from '../models/preview-state.const';
+import { tagKey } from '../utils/tag-key';
 import { AddLinkFormService } from './add-link-form.service';
 import { AddLinkPreviewService } from './add-link-preview.service';
-
-function tagKey(name: string): string {
-  return normalizeTagName(name).toLowerCase();
-}
 
 /**
  * AI suggestions in the add-link dialog (provided by the dialog, `AiTags` mockup). Adding: once
  * the preview of an address has loaded, `AiDraftService` asks for a draft; the save sends its id.
- * Editing: `AiLinkStateService` brings the link's open suggestions and what Automatic mode applied
- * ("Moved by AI" with Undo). Builds the chips of the folder and tags rows (a folder the user chose
+ * Editing: `AiLinkStateService` brings the link's open suggestions (what Automatic mode applied,
+ * with Undo, is `AddLinkAiAppliedService`). Builds the chips of the folder and tags rows (a folder the user chose
  * turns the folder row into "Also fits"; tags already in the field are left out), applies a taken
  * chip to the form and the one AI line (limit, or "not available" with Try again once). Nothing at
  * all while AI is off.
@@ -50,17 +43,13 @@ export class AddLinkAiService {
   private readonly settings = inject(AiSettingsStore);
   private readonly folders = inject(FoldersStore);
   private readonly userSettings = inject(UserSettingsStore);
-  private readonly injector = inject(Injector);
   private readonly locale = inject(LocaleService);
-  private readonly toasts = inject(ToastService);
   private readonly router = inject(Router);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly editing = this.formState.editing;
 
   /** The rows show only while AI is on. */
   readonly on = this.settings.isOn;
-  /** An Undo of "Moved by AI" runs, by part. */
-  readonly undoing = signal<AiAppliedPart | null>(null);
 
   private readonly suggestions = computed<readonly LinkSuggestion[]>(() =>
     this.on() ? (this.editing ? this.linkState.suggestions() : this.draft.suggestions()) : [],
@@ -156,26 +145,6 @@ export class AddLinkAiService {
     return null;
   });
 
-  /** Edit link: the folder AI moved the link to, while the field still holds it. */
-  readonly folderApplied = computed(() => {
-    const folderId = this.linkState.autoApplied()?.folderId ?? null;
-    return this.editing && folderId !== null && this.formState.model().folderId === folderId;
-  });
-
-  /** Edit link: how many of the tags AI added are still in the field. */
-  readonly tagsApplied = computed(() => {
-    const added = this.linkState.autoApplied()?.tags ?? [];
-    const present = new Set(this.formState.model().tags.map(tagKey));
-    return this.editing ? added.filter((tag) => present.has(tagKey(tag))).length : 0;
-  });
-
-  /** "2 added by AI" for the tags mark. */
-  readonly tagsAppliedLabel = computed(() => {
-    this.formState.i18n();
-    const count = this.tagsApplied();
-    return this.t(pluralKey('ai.applied.tags', count), { count });
-  });
-
   constructor() {
     if (this.editing) {
       const link = this.formState.original;
@@ -241,28 +210,6 @@ export class AddLinkAiService {
     }
     this.ref.close();
     void this.router.navigateByUrl(`/${APP_PATH.Settings}/${SETTINGS_PATH.Ai}`);
-  }
-
-  /** Undo of "Moved by AI" / "added by AI": the field and the feed show the link as it is then. */
-  async undo(part: AiAppliedPart): Promise<void> {
-    const link = this.formState.original;
-    if (!link || this.undoing() !== null) {
-      return;
-    }
-    const removed = new Set((this.linkState.autoApplied()?.tags ?? []).map(tagKey));
-    this.undoing.set(part);
-    const saved = await this.linkState.undo(link.id, part);
-    this.undoing.set(null);
-    if (!saved) {
-      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('ai.applied.undoFailed') });
-      return;
-    }
-    this.formState.model.update((model) =>
-      part === AI_APPLIED_PART.Folder
-        ? { ...model, folderId: saved.folderId }
-        : { ...model, tags: model.tags.filter((tag) => !removed.has(tagKey(tag))) },
-    );
-    this.injector.get(LinksStore).applyEdit(saved);
   }
 
   /** The `aiDraftId` of the create request; `null` when there is no draft. */
