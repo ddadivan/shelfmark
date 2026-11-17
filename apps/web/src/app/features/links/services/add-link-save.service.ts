@@ -41,6 +41,11 @@ export class AddLinkSaveService {
   private readonly data = injectDialogData<AddLinkDialogData>();
 
   readonly saving = signal(false);
+  /**
+   * Name of a folder named in the dialog that could not be created: told once the link is saved,
+   * also when that takes a retry (the retry no longer has the pending folder).
+   */
+  private failedFolderName: string | null = null;
   /** Translation key of why the last save failed; `null` while nothing failed. */
   readonly saveError = signal<string | null>(null);
 
@@ -55,6 +60,7 @@ export class AddLinkSaveService {
     this.saving.set(true);
     this.saveError.set(null);
     const folder = await this.newFolder.resolve(this.formState.model().folderId);
+    this.failedFolderName = folder.failedName ?? this.failedFolderName;
     // The field shows what is saved: the new folder's id, or "Unsorted" when it was not created.
     this.formState.model.update((model) => ({ ...model, folderId: folder.folderId }));
     const value = this.formState.model();
@@ -67,7 +73,7 @@ export class AddLinkSaveService {
       if (Object.keys(changes).length === 0) {
         this.saving.set(false);
         this.ref.close();
-        this.warnFolderNotCreated(folder.failedName);
+        this.warnFolderNotCreated();
         return;
       }
       request$ = this.linksApi.update(this.formState.original.id, changes);
@@ -101,7 +107,7 @@ export class AddLinkSaveService {
       const saved = await pending;
       // `saving` stays on: the button keeps its spinner while the dialog leaves.
       this.ref.close(saved);
-      this.warnFolderNotCreated(folder.failedName);
+      this.warnFolderNotCreated();
     } catch (error) {
       this.saving.set(false);
       this.saveError.set(saveErrorKey(error));
@@ -109,7 +115,8 @@ export class AddLinkSaveService {
   }
 
   /** The folder named in the dialog could not be created: the link went without one. */
-  private warnFolderNotCreated(name: string | null): void {
+  private warnFolderNotCreated(): void {
+    const name = this.failedFolderName;
     if (name === null) {
       return;
     }
