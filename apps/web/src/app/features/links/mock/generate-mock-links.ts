@@ -38,6 +38,9 @@ export function generateMockLinks(): LinkResponse[] {
           : null,
       remindAt: null,
       tags: [TAGS[i % TAGS.length]],
+      summary: null,
+      summarySource: null,
+      aiStatus: null,
       createdAt: created,
       updatedAt: created,
     });

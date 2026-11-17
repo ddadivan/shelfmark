@@ -107,6 +107,9 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
           ? null
           : new Date(now + link.remindInHours * MS_PER_HOUR).toISOString(),
       tags: [...link.tags],
+      summary: null,
+      summarySource: null,
+      aiStatus: null,
       createdAt: created,
       updatedAt: created,
     };

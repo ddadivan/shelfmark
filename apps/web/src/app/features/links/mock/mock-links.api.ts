@@ -173,6 +173,9 @@ export class MockLinksApi implements LinksApi {
         lastOpenedAt: null,
         remindAt: null,
         tags: normalizeLinkTags(tags),
+        summary: null,
+        summarySource: null,
+        aiStatus: null,
         createdAt: now,
         updatedAt: now,
       };
@@ -447,6 +450,9 @@ export class MockLinksApi implements LinksApi {
           lastOpenedAt: null,
           remindAt: null,
           tags: normalizeLinkTags(tags),
+          summary: null,
+          summarySource: null,
+          aiStatus: null,
           createdAt: at,
           updatedAt: at,
         };

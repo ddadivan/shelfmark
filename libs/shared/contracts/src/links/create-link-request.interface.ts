@@ -35,4 +35,9 @@ export interface CreateLinkRequest {
    * showed the rule and the user removed it (a form sends what it showed, so nothing is applied twice).
    */
   applyRules?: boolean;
+  /**
+   * The Add link dialog's AI draft id (`CreateAiDraftRequest.draftId`, a UUID): the save picks up that
+   * draft's suggestions and summary instead of starting a new AI job. Separate from `idempotencyKey`.
+   */
+  aiDraftId?: string;
 }
