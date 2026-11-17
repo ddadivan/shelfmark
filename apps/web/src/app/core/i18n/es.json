@@ -3237,7 +3237,9 @@
     },
     "related": {
       "title": "Relacionados en tu estantería",
-      "why": "Cerca de: {{reasons}}"
+      "why": "Cerca de: {{reasons}}",
+      "show": "Mostrar relacionados",
+      "folders": "Carpetas relacionadas"
     }
   }
 }

@@ -3166,7 +3166,9 @@
     },
     "related": {
       "title": "Ähnliches in deinem Regal",
-      "why": "Nah an: {{reasons}}"
+      "why": "Nah an: {{reasons}}",
+      "show": "Ähnliches zeigen",
+      "folders": "Ähnliche Ordner"
     }
   }
 }

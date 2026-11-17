@@ -3166,7 +3166,9 @@
     },
     "related": {
       "title": "Related on your shelf",
-      "why": "Close to: {{reasons}}"
+      "why": "Close to: {{reasons}}",
+      "show": "Show related",
+      "folders": "Related folders"
     }
   }
 }

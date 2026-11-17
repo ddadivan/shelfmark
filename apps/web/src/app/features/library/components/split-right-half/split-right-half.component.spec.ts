@@ -9,6 +9,7 @@ import { LinkDragService } from '../../../links/services/link-drag.service';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { LibraryDragService } from '../../services/library-drag.service';
 import { SplitFeedStore } from '../../services/split-feed.store';
+import { SplitRelatedService } from '../../services/split-related.service';
 import { SplitViewService } from '../../services/split-view.service';
 import type { SplitTarget } from '../../models/split-target.type';
 import { SplitRightHalfComponent } from './split-right-half.component';
@@ -57,6 +58,10 @@ async function setup(...given: [SplitTarget?]) {
     providers: [
       provideTranslocoForTest(),
       { provide: SplitViewService, useValue: split },
+      {
+        provide: SplitRelatedService,
+        useValue: { pickerIds: () => [], pickerLabelKey: () => 'links.move.recent' },
+      },
       { provide: SplitFeedStore, useValue: feed },
       { provide: LinkDragService, useValue: { treeTargetId: treeTarget, grab: vi.fn() } },
       {

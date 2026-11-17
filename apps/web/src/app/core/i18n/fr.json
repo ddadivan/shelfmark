@@ -3237,7 +3237,9 @@
     },
     "related": {
       "title": "Proches sur votre étagère",
-      "why": "Proche de : {{reasons}}"
+      "why": "Proche de : {{reasons}}",
+      "show": "Afficher les liens proches",
+      "folders": "Dossiers proches"
     }
   }
 }

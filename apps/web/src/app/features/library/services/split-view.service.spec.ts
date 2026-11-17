@@ -184,7 +184,7 @@ describe('SplitViewService', () => {
 
       await service.openSplit();
       expect(router.navigate).toHaveBeenCalledWith([], {
-        queryParams: { split: '' },
+        queryParams: { split: '', related: null },
         queryParamsHandling: 'merge',
         replaceUrl: false,
       });
@@ -201,7 +201,7 @@ describe('SplitViewService', () => {
 
       await service.chooseRight(B);
       expect(router.navigate).toHaveBeenLastCalledWith([], {
-        queryParams: { split: B },
+        queryParams: { split: B, related: null },
         queryParamsHandling: 'merge',
         replaceUrl: true,
       });
@@ -209,7 +209,7 @@ describe('SplitViewService', () => {
       splitParam.set(B);
       await service.chooseRight(null);
       expect(router.navigate).toHaveBeenLastCalledWith([], {
-        queryParams: { split: 'unsorted' },
+        queryParams: { split: 'unsorted', related: null },
         queryParamsHandling: 'merge',
         replaceUrl: false,
       });
@@ -257,7 +257,7 @@ describe('SplitViewService', () => {
 
       await service.toggle();
       expect(router.navigate).toHaveBeenLastCalledWith([], {
-        queryParams: { split: '' },
+        queryParams: { split: '', related: null },
         queryParamsHandling: 'merge',
         replaceUrl: false,
       });
@@ -265,7 +265,7 @@ describe('SplitViewService', () => {
       splitParam.set(B);
       await service.toggle();
       expect(router.navigate).toHaveBeenLastCalledWith([], {
-        queryParams: { split: null },
+        queryParams: { split: null, related: null },
         queryParamsHandling: 'merge',
       });
     });
@@ -277,9 +277,25 @@ describe('SplitViewService', () => {
       await service.close();
 
       expect(router.navigate).toHaveBeenCalledWith([], {
-        queryParams: { split: null },
+        queryParams: { split: null, related: null },
         queryParamsHandling: 'merge',
       });
+    });
+
+    it('opens the picker for "Show related" with the link, only when wide', async () => {
+      const { service, router, viewportWide } = setup();
+
+      await service.showRelated('link-1');
+      expect(router.navigate).toHaveBeenLastCalledWith([], {
+        queryParams: { split: '', related: 'link-1' },
+        queryParamsHandling: 'merge',
+      });
+      expect(service.takePickerFocus()).toBe(true);
+
+      router.navigate.mockClear();
+      viewportWide.set(false);
+      await service.showRelated('link-1');
+      expect(router.navigate).not.toHaveBeenCalled();
     });
 
     it('changes the left feed and keeps the split', async () => {

@@ -17,4 +17,6 @@ export interface LibraryRouteInputs {
   readonly kind: Signal<unknown>;
   /** From the query (`?split=<folder id>`): the right half of the side-by-side view; see `parseSplitParam`. */
   readonly split?: Signal<unknown>;
+  /** From the query (`?related=<link id>`): "Show related" (AI-3); read by `SplitRelatedService`. */
+  readonly related?: Signal<unknown>;
 }

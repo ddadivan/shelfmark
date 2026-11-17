@@ -3237,7 +3237,9 @@
     },
     "related": {
       "title": "Relacionados na sua estante",
-      "why": "Perto de: {{reasons}}"
+      "why": "Perto de: {{reasons}}",
+      "show": "Mostrar relacionados",
+      "folders": "Pastas relacionadas"
     }
   }
 }
