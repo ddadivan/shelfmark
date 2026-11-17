@@ -1,0 +1,38 @@
+<ui-button
+  class="how-to__toggle"
+  [variant]="BUTTON_VARIANT.Ghost"
+  [size]="BUTTON_SIZE.Sm"
+  [iconRight]="open() ? 'chevron-down' : 'chevron-right'"
+  [ariaExpanded]="open()"
+  [ariaControls]="panelId"
+  (click)="toggle()"
+  >{{ 'ai.connect.howTo.toggle' | transloco }}</ui-button
+>
+
+@if (open()) {
+  <div class="how-to__panel" [id]="panelId">
+    <p class="how-to__text">{{ 'ai.connect.howTo.intro' | transloco }}</p>
+    @for (entry of clients(); track entry.client) {
+      <section class="how-to__client" [attr.aria-labelledby]="panelId + '-' + entry.client">
+        <div class="how-to__head">
+          <h3 class="how-to__title" [id]="panelId + '-' + entry.client">
+            {{ entry.key + '.title' | transloco }}
+          </h3>
+          <ui-button
+            iconLeft="copy"
+            [size]="BUTTON_SIZE.Sm"
+            [ariaLabel]="
+              'ai.connect.howTo.copyLabel'
+                | transloco: { client: (entry.key + '.title' | transloco) }
+            "
+            (click)="copy(entry.client, entry.setup)"
+            >{{ 'ai.connect.copy' | transloco }}</ui-button
+          >
+        </div>
+        <p class="how-to__text">{{ entry.key + '.hint' | transloco }}</p>
+        <pre class="how-to__code" tabindex="0"><code>{{ entry.setup }}</code></pre>
+      </section>
+    }
+    <p class="how-to__text">{{ 'ai.connect.howTo.oauth' | transloco }}</p>
+  </div>
+}

@@ -3128,6 +3128,101 @@
         "other": "{{count}} tag aggiunti dall’IA"
       },
       "undo": "Annulla"
+    },
+    "connect": {
+      "title": "Collega il tuo assistente",
+      "lead": "Permetti a Claude o a un altro assistente compatibile con MCP di cercare e leggere i tuoi link. Sola lettura: non può modificare né eliminare nulla.",
+      "pro": "Collegare un assistente fa parte di Pro. I token che hai già restano in elenco e puoi revocarli.",
+      "demo": "La demo non può collegare un assistente. Accedi con il tuo account per provarlo.",
+      "loadFailed": "Impossibile caricare i tuoi token.",
+      "retry": "Riprova",
+      "copy": "Copia",
+      "copyFailed": "Impossibile copiare. Seleziona il testo e copialo con la tastiera.",
+      "address": {
+        "title": "1. Indirizzo del server",
+        "copyLabel": "Copia l’indirizzo del server",
+        "copied": "Indirizzo del server copiato"
+      },
+      "token": {
+        "title": "2. Token personale",
+        "hint": "Un token per assistente, così puoi revocarli uno per uno.",
+        "limit": "Hai {{max}} token. Revocane uno per crearne un altro.",
+        "create": "Crea token"
+      },
+      "list": {
+        "title": "Collegati",
+        "last4": "Finisce con {{last4}}",
+        "used": "Ultimo uso {{when}}, chiamate questa settimana: {{calls}}",
+        "never": "Creato il {{date}}, mai usato",
+        "notes": "Con le note",
+        "revoke": "Revoca",
+        "revokeLabel": "Revoca {{name}}"
+      },
+      "empty": {
+        "title": "Nessun assistente collegato",
+        "text": "Crea un token, incollalo con l’indirizzo del server nelle impostazioni MCP del tuo assistente e chiedigli dei tuoi link."
+      },
+      "revoke": {
+        "title": "Revocare {{name}}?",
+        "message": "Smette subito di funzionare: l’assistente che lo usa non può più leggere i tuoi link.",
+        "confirm": "Revoca",
+        "cancel": "Annulla",
+        "done": "Token revocato",
+        "failed": "Impossibile revocare il token. Riprova."
+      },
+      "create": {
+        "title": "Crea un token",
+        "close": "Chiudi",
+        "name": "Nome",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Dai un nome al token.",
+        "tooLong": "Al massimo {{max}} caratteri.",
+        "notes": "Includi le mie note",
+        "notesHint": "Il tuo assistente vedrà anche le note dei tuoi link. Per cambiarlo in seguito, crea un nuovo token.",
+        "cancel": "Annulla",
+        "action": "Crea token",
+        "saving": "Creazione…",
+        "error": {
+          "limit": "Hai {{max}} token. Revocane uno per crearne un altro.",
+          "notAvailable": "Collegare un assistente fa parte di Pro.",
+          "save": "Impossibile creare il token. Riprova."
+        }
+      },
+      "secret": {
+        "title": "Token per {{name}}",
+        "label": "Token personale (mostrato una sola volta)",
+        "copyLabel": "Copia il token",
+        "copied": "Token copiato",
+        "warning": "Copialo ora: non lo vedrai più. Chiunque abbia questo token può leggere i tuoi link finché non lo revochi.",
+        "fallback": "Impossibile copiare. Il token è selezionato qui sopra: premi Ctrl+C o ⌘C per copiarlo.",
+        "field": "Token personale",
+        "done": "Fatto"
+      },
+      "howTo": {
+        "toggle": "Come collegarsi: Claude, Cursor, VS Code",
+        "intro": "Sostituisci <token> con il tuo token personale.",
+        "copyLabel": "Copia la configurazione per {{client}}",
+        "copied": "Configurazione per {{client}} copiata",
+        "oauth": "Gli assistenti che si collegano solo tramite un accesso (OAuth), come i connettori web, non possono ancora collegarsi.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Esegui questo in un terminale:"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Aggiungi questo a claude_desktop_config.json (Impostazioni › Sviluppatore › Modifica configurazione) e riavvia Claude Desktop. Richiede Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Aggiungi questo a ~/.cursor/mcp.json:"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Aggiungi questo a .vscode/mcp.json nel tuo progetto:"
+          }
+        }
+      }
     }
   }
 }

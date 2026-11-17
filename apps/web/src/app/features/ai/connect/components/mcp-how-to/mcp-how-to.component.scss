@@ -1,0 +1,58 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+  padding-block-start: var(--space-2);
+}
+
+.how-to__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+}
+
+.how-to__client {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-inline-size: 0;
+}
+
+.how-to__head {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.how-to__title {
+  @include type(label);
+
+  margin: 0;
+  color: var(--text);
+}
+
+.how-to__text {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.how-to__code {
+  @include type(mono);
+
+  overflow-x: auto;
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  white-space: pre;
+  background: var(--bg);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

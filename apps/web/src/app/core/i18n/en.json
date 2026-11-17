@@ -3064,6 +3064,101 @@
         "other": "{{count}} tags added by AI"
       },
       "undo": "Undo"
+    },
+    "connect": {
+      "title": "Connect your assistant",
+      "lead": "Let Claude or another assistant that supports MCP search and read your links. Read-only: it can’t change or delete anything.",
+      "pro": "Connecting an assistant is part of Pro. Tokens you already have stay listed, and you can revoke them.",
+      "demo": "The demo can’t connect an assistant. Sign in with your own account to try it.",
+      "loadFailed": "Couldn’t load your tokens.",
+      "retry": "Try again",
+      "copy": "Copy",
+      "copyFailed": "Couldn’t copy. Select the text and copy it with your keyboard.",
+      "address": {
+        "title": "1. Server address",
+        "copyLabel": "Copy the server address",
+        "copied": "Server address copied"
+      },
+      "token": {
+        "title": "2. Personal token",
+        "hint": "One token per assistant, so you can revoke each on its own.",
+        "limit": "You have {{max}} tokens. Revoke one to create another.",
+        "create": "Create token"
+      },
+      "list": {
+        "title": "Connected",
+        "last4": "Ends in {{last4}}",
+        "used": "Last used {{when}}, calls this week: {{calls}}",
+        "never": "Created {{date}}, never used",
+        "notes": "Includes notes",
+        "revoke": "Revoke",
+        "revokeLabel": "Revoke {{name}}"
+      },
+      "empty": {
+        "title": "No assistants connected",
+        "text": "Create a token, paste it into your assistant’s MCP settings with the server address, and ask it about your links."
+      },
+      "revoke": {
+        "title": "Revoke {{name}}?",
+        "message": "It stops working at once: the assistant that uses it can no longer read your links.",
+        "confirm": "Revoke",
+        "cancel": "Cancel",
+        "done": "Token revoked",
+        "failed": "Couldn’t revoke the token. Try again."
+      },
+      "create": {
+        "title": "Create a token",
+        "close": "Close",
+        "name": "Name",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Give the token a name.",
+        "tooLong": "Use at most {{max}} characters.",
+        "notes": "Include my notes",
+        "notesHint": "Your assistant will also see the notes on your links. To change this later, create a new token.",
+        "cancel": "Cancel",
+        "action": "Create token",
+        "saving": "Creating…",
+        "error": {
+          "limit": "You have {{max}} tokens. Revoke one to create another.",
+          "notAvailable": "Connecting an assistant is part of Pro.",
+          "save": "Couldn’t create the token. Try again."
+        }
+      },
+      "secret": {
+        "title": "Token for {{name}}",
+        "label": "Personal token (shown once)",
+        "copyLabel": "Copy the token",
+        "copied": "Token copied",
+        "warning": "Copy it now: you won’t see it again. Anyone with this token can read your links until you revoke it.",
+        "fallback": "Couldn’t copy. The token is selected above: press Ctrl+C or ⌘C to copy it.",
+        "field": "Personal token",
+        "done": "Done"
+      },
+      "howTo": {
+        "toggle": "How to connect: Claude, Cursor, VS Code",
+        "intro": "Replace <token> with your personal token.",
+        "copyLabel": "Copy the {{client}} setup",
+        "copied": "{{client}} setup copied",
+        "oauth": "Assistants that can only connect through a sign-in (OAuth), such as web-based connectors, can’t connect yet.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Run this in a terminal:"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Add this to claude_desktop_config.json (Settings › Developer › Edit Config), then restart Claude Desktop. Needs Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Add this to ~/.cursor/mcp.json:"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Add this to .vscode/mcp.json in your project:"
+          }
+        }
+      }
     }
   }
 }

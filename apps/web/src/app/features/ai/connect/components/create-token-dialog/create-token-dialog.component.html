@@ -1,0 +1,79 @@
+<form [formRoot]="form">
+  <ui-dialog [title]="title()" [closeLabel]="'ai.connect.create.close' | transloco">
+    <div class="token__body">
+      @if (shown()) {
+        <div class="token__value">
+          <div class="token__text">
+            <span class="token__label">{{ 'ai.connect.secret.label' | transloco }}</span>
+            <code class="token__code">{{ masked() }}</code>
+          </div>
+          <ui-button
+            iconLeft="copy"
+            [variant]="BUTTON_VARIANT.Primary"
+            [ariaLabel]="'ai.connect.secret.copyLabel' | transloco"
+            (click)="copy()"
+            >{{ 'ai.connect.copy' | transloco }}</ui-button
+          >
+        </div>
+        @if (copyFailed()) {
+          <ui-input
+            #secretField
+            readonly
+            [label]="'ai.connect.secret.field' | transloco"
+            [value]="secret()"
+          />
+          <ui-notice [kind]="NOTICE_KIND.Info">{{
+            'ai.connect.secret.fallback' | transloco
+          }}</ui-notice>
+        }
+        <ui-notice [kind]="NOTICE_KIND.Warning">{{
+          'ai.connect.secret.warning' | transloco
+        }}</ui-notice>
+      } @else {
+        <ui-input
+          [label]="'ai.connect.create.name' | transloco"
+          [placeholder]="'ai.connect.create.namePlaceholder' | transloco"
+          [formField]="form.name"
+        />
+        <ui-settings-row
+          align="top"
+          [title]="'ai.connect.create.notes' | transloco"
+          [description]="'ai.connect.create.notesHint' | transloco"
+        >
+          <ui-switch
+            [label]="'ai.connect.create.notes' | transloco"
+            [checked]="includeNotes()"
+            [disabled]="saving()"
+            (checkedChange)="setIncludeNotes($event)"
+          />
+        </ui-settings-row>
+        @if (error(); as reason) {
+          <ui-notice [kind]="NOTICE_KIND.Danger">{{
+            'ai.connect.create.error.' + reason | transloco: { max: MCP_LIMIT.TokensPerUserMax }
+          }}</ui-notice>
+        }
+      }
+    </div>
+
+    @if (!shown()) {
+      <ui-button slot="footer" [disabled]="saving()" (click)="cancel()">{{
+        'ai.connect.create.cancel' | transloco
+      }}</ui-button>
+    }
+    @if (shown()) {
+      <ui-button slot="footer" [variant]="BUTTON_VARIANT.Primary" (click)="done()">{{
+        'ai.connect.secret.done' | transloco
+      }}</ui-button>
+    } @else {
+      <ui-button
+        slot="footer"
+        [type]="BUTTON_TYPE.Submit"
+        [variant]="BUTTON_VARIANT.Primary"
+        [loading]="saving()"
+        >{{
+          (saving() ? 'ai.connect.create.saving' : 'ai.connect.create.action') | transloco
+        }}</ui-button
+      >
+    }
+  </ui-dialog>
+</form>

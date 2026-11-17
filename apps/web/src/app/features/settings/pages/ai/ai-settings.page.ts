@@ -38,6 +38,7 @@ import { FragmentTargetDirective } from '../../../../core/layout/fragment-target
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { AiUsageSectionComponent } from '../../../ai/components/ai-usage-section/ai-usage-section.component';
+import { ConnectAssistantComponent } from '../../../ai/connect/components/connect-assistant/connect-assistant.component';
 import { AI_MODE_LABEL_KEYS } from '../../../ai/models/ai-mode-label-keys.const';
 import { AiSettingsActions } from '../../../ai/services/ai-settings-actions.service';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
@@ -53,7 +54,8 @@ import { SETTINGS_PATH } from '../../models/settings-path.const';
  * while on, folder and tags mode (Suggest / Automatic / Off; on a phone a row per part opens the
  * full-label choices of MobileAi state 7), Summaries, "What is sent" (notes, summary language),
  * "This month" (usage, "Process existing links"). "Your AI data" (delete, the privacy policy) is
- * always there. Every choice saves at once and rolls back with a toast. The provider-status line
+ * always there, and "Connect your assistant" (the MCP server, #395) comes last, with AI on or off.
+ * Every choice saves at once and rolls back with a toast. The provider-status line
  * shows only while AI is on and the provider fails.
  */
 @Component({
@@ -63,6 +65,7 @@ import { SETTINGS_PATH } from '../../models/settings-path.const';
     AiLineComponent,
     AiUsageSectionComponent,
     ButtonComponent,
+    ConnectAssistantComponent,
     FragmentTargetDirective,
     NoticeComponent,
     SegmentedControlComponent,
