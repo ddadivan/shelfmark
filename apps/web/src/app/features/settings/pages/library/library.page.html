@@ -77,6 +77,21 @@
       (checkedChange)="saveLibrary({ fetchPreviews: $event })"
     />
   </ui-settings-row>
+  @if (extension.offered()) {
+  <ui-settings-row
+    [title]="'settings.library.saving.extension.label' | transloco"
+    [description]="'settings.library.saving.extension.hint' | transloco"
+  >
+    <ui-button
+      iconRight="external"
+      newTab
+      [href]="extension.storeUrl"
+      [ariaLabel]="'settings.library.saving.extension.actionLabel' | transloco"
+    >
+      {{ 'settings.library.saving.extension.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+  }
 </ui-settings-section>
 
 <app-rules-section />

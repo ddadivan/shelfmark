@@ -265,6 +265,14 @@ The store build can also be loaded unpacked (`dist/apps/extension`). It saves to
 
 Edge, Brave and Arc install straight from the Chrome Web Store (Edge asks once to allow extensions from other stores). A separate Edge Add-ons listing is optional and gets its own id, which then goes into `EXTENSION_ORIGINS` too.
 
+### 5.10 Extension store link in the web app (#455)
+
+The web app offers the browser extension (5.9) to signed-in people on a desktop Chrome, Edge, Brave or Arc (a banner in the library and a "Browser extension" row in Settings › Library › Saving). Both read one constant and render nothing while it is empty. The landing only mentions the extension, without a link.
+
+- [ ] After the Chrome Web Store item is published (5.9), copy its public URL (`https://chromewebstore.google.com/detail/<name>/<item id>`).
+- [ ] Put it into `EXTENSION_STORE_URL` in `apps/web/src/app/models/extension-store-url.const.ts` (a one-line PR into `stage`, or ask an agent to do it).
+- [ ] After the release, open the library and Settings › Library in desktop Chrome: Install opens the store page. In Firefox, Safari or on a phone nothing is shown.
+
 ## 6. Secrets policy
 
 | Secret | Lives in | Never in |
@@ -312,5 +320,6 @@ Prevention layers: gitleaks in the pre-commit hook (locally) and in CI (CI task)
 | 16 | Privacy policy URL, publish the Google app | Google Auth Platform | author | stage 7 |
 | 17 | `CRON_SECRET` (32+ characters) in Vercel Production for the demo cleanup cron | Vercel env | author | demo sign-in (#67) |
 | 18 | Chrome Web Store developer account ($5), item upload, `EXTENSION_ORIGINS` with the item id, listing, submit (section 5.9) | Chrome Web Store, Vercel env | author | browser extension (#445) |
+| 19 | Chrome Web Store URL of the published extension in `EXTENSION_STORE_URL` (section 5.10) | `apps/web` models | author | extension store link (#455) |
 
 The showcase builds only from `main`: `ignoreCommand` in `libs/ui/vercel.json` skips every other branch (issue #50), so PRs create no `shelfmark-ui` deployments and the Hobby deployment limit is spent on the app project. Storybook on PRs is checked by CI (`nx test-storybook ui`).

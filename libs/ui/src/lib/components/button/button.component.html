@@ -32,6 +32,8 @@
     [class]="classes()"
     [uiRipple]="rippleActive()"
     [attr.href]="inert() ? null : href()"
+    [attr.target]="newTab() && !inert() ? '_blank' : null"
+    [attr.rel]="newTab() && !inert() ? 'noopener noreferrer' : null"
     [attr.role]="inert() ? 'link' : null"
     [attr.aria-disabled]="inert() ? 'true' : null"
     [attr.aria-label]="ariaLabel() || null"

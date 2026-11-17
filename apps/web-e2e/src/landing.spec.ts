@@ -6,6 +6,7 @@ import { LANDING_HEADLINE } from './models/landing-headline.const';
 import { gotoLandingLoaded } from './support/landing';
 import { settled } from './support/settled';
 import { E2E_TAG } from './models/e2e-tag.const';
+import { isCompact } from './support/sidebar';
 
 test.describe('landing', () => {
   test(
@@ -17,11 +18,14 @@ test.describe('landing', () => {
       await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
       await expect(page.getByRole('main')).toBeVisible();
       // Auto-waits: the sections below the hero are deferred (on idle).
+      // The browser extension block (#455) is only on a desktop Chromium browser: the desktop
+      // project runs Chromium, the tablet and phone projects are below 64em.
       await expect(page.getByRole('heading', { level: 2 })).toHaveText([
         'Save once, find in seconds',
         'The same links, before and after',
         'Why this exists',
         "How it's built",
+        ...(isCompact(page) ? [] : ['Save the page you are on']),
         'Empty your Saved Messages.',
       ]);
     },

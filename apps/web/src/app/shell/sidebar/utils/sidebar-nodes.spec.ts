@@ -11,6 +11,7 @@ const LABELS: SidebarLabels = {
   trash: 'Trash',
   feedback: 'Send feedback',
   whatsNew: "What's new",
+  extension: 'Get the extension',
   whatsNewDot: 'new',
 };
 
@@ -45,6 +46,19 @@ describe('sidebar nodes', () => {
       name: "What's new",
       icon: 'gift',
       dot: 'new',
+    });
+  });
+
+  it('leads the footer with "Get the extension" once the banner was closed (#455)', () => {
+    expect(feedbackNodes(LABELS, false, true).map((node) => node.id)).toEqual([
+      'extension',
+      'whats-new',
+      'feedback',
+    ]);
+    expect(feedbackNodes(LABELS, false, true)[0]).toEqual({
+      id: 'extension',
+      name: 'Get the extension',
+      icon: 'download',
     });
   });
 

@@ -34,6 +34,10 @@
   <div class="landing__placeholder landing__placeholder--about"></div>
   } @loading {
   <div class="landing__placeholder landing__placeholder--about"></div>
+  } @defer (on timer(225ms); when sectionsRequested()) {
+  <!-- The browser extension (#455): renders nothing outside a desktop Chromium browser, so it has
+       no placeholder (a box would stay empty for everybody else). -->
+  <app-landing-extension />
   } @defer (on timer(300ms); when sectionsRequested()) {
   <app-landing-finale />
   } @placeholder {

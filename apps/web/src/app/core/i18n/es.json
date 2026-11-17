@@ -180,6 +180,13 @@
     "whatsNew": {
       "title": "Novedades",
       "all": "Ver todos los cambios"
+    },
+    "extension": {
+      "badge": "Extensión del navegador",
+      "title": "Guarda la página en la que estás",
+      "text": "Un clic en la barra de herramientas o Alt+Mayús+S. El título, tus reglas de carpetas y las carpetas recientes ya están rellenados: casi todas las páginas solo piden un clic más.",
+      "browsers": "Para Chrome, Edge, Brave y Arc. Instálala desde tu estantería al iniciar sesión.",
+      "alt": "La extensión de Shelfmark: Guardar en Shelfmark con el título de la página, la carpeta Ropa según una regla, etiquetas y una nota"
     }
   },
   "links": {
@@ -760,7 +767,8 @@
       "reorder": {
         "movedUp": "Movido hacia arriba, posición {{position}} de {{total}}",
         "movedDown": "Movido hacia abajo, posición {{position}} de {{total}}"
-      }
+      },
+      "extension": "Obtener la extensión"
     },
     "searchHint": "Busca en tus enlaces",
     "searchButton": "Buscar",
@@ -1172,6 +1180,13 @@
         "text": "Arrastra enlaces aquí desde la izquierda."
       },
       "moveToLeft": "Mover «{{title}}» a {{folder}}"
+    },
+    "extension": {
+      "title": "Guarda páginas directamente desde el navegador",
+      "text": "La extensión de Shelfmark guarda la página abierta con un clic o con Alt+Mayús+S, con carpetas y etiquetas ya rellenadas.",
+      "install": "Instalar extensión",
+      "installLabel": "Instalar extensión desde Chrome Web Store (se abre en una pestaña nueva)",
+      "dismiss": "Ahora no"
     }
   },
   "export": {
@@ -1512,6 +1527,12 @@
         "previews": {
           "label": "Obtener títulos y vistas previas",
           "hint": "Desactívalo para guardar solo la dirección"
+        },
+        "extension": {
+          "label": "Extensión del navegador",
+          "hint": "Guarda cualquier página con un clic desde Chrome, Edge, Brave o Arc",
+          "action": "Instalar",
+          "actionLabel": "Instalar la extensión del navegador desde Chrome Web Store (se abre en una pestaña nueva)"
         }
       },
       "failed": "No se pudo guardar el ajuste",

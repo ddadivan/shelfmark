@@ -180,6 +180,13 @@
     "whatsNew": {
       "title": "Novidades",
       "all": "Ver todas as mudanças"
+    },
+    "extension": {
+      "badge": "Extensão do navegador",
+      "title": "Salve a página em que você está",
+      "text": "Um clique na barra de ferramentas ou Alt+Shift+S. O título, suas regras de pastas e as pastas recentes já vêm preenchidos: a maioria das páginas pede só mais um clique.",
+      "browsers": "Para Chrome, Edge, Brave e Arc. Instale pela sua estante depois de entrar.",
+      "alt": "A extensão do Shelfmark: Salvar no Shelfmark com o título da página, a pasta Roupas de uma regra, tags e uma nota"
     }
   },
   "links": {
@@ -760,7 +767,8 @@
       "reorder": {
         "movedUp": "Movido para cima, posição {{position}} de {{total}}",
         "movedDown": "Movido para baixo, posição {{position}} de {{total}}"
-      }
+      },
+      "extension": "Baixar a extensão"
     },
     "searchHint": "Pesquise seus links",
     "searchButton": "Pesquisar",
@@ -1172,6 +1180,13 @@
         "text": "Arraste links para cá a partir da esquerda."
       },
       "moveToLeft": "Mover “{{title}}” para {{folder}}"
+    },
+    "extension": {
+      "title": "Salve páginas direto do navegador",
+      "text": "A extensão do Shelfmark salva a página aberta com um clique ou Alt+Shift+S, com pastas e tags já preenchidas.",
+      "install": "Instalar extensão",
+      "installLabel": "Instalar extensão pela Chrome Web Store (abre em uma nova aba)",
+      "dismiss": "Agora não"
     }
   },
   "export": {
@@ -1512,6 +1527,12 @@
         "previews": {
           "label": "Buscar títulos e prévias",
           "hint": "Desligue para salvar só o endereço"
+        },
+        "extension": {
+          "label": "Extensão do navegador",
+          "hint": "Salve qualquer página com um clique no Chrome, Edge, Brave ou Arc",
+          "action": "Instalar",
+          "actionLabel": "Instalar a extensão do navegador pela Chrome Web Store (abre em uma nova aba)"
         }
       },
       "failed": "Não foi possível salvar a configuração",

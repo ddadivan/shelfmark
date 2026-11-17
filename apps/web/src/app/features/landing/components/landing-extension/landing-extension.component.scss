@@ -1,0 +1,160 @@
+@use 'ui' as *;
+@use '../../landing' as landing;
+
+:host {
+  display: block;
+
+  @include landing.wrap;
+}
+
+// Landing mockup, "Save the page you are on" (#455): a surface card, the copy on the left and a
+// browser bar with the real popup on a sage disc on the right. The section reveals like the
+// others; the popup rises a little further as it does.
+.landing-extension {
+  @include landing.reveal;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(48px);
+  align-items: center;
+  padding: rem(48px);
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: rem(32px);
+  box-shadow: var(--shadow-card);
+}
+
+.landing-extension__copy {
+  display: flex;
+  flex: 1 1 rem(380px);
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.landing-extension__badge {
+  align-self: flex-start;
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  font-size: rem(13px);
+  line-height: rem(20px);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  border-radius: var(--radius-full);
+}
+
+.landing-extension__title {
+  @include landing.section-title;
+}
+
+.landing-extension__text {
+  max-width: rem(440px);
+  margin: 0;
+  font-size: rem(17px);
+  line-height: rem(26px);
+  color: var(--text-muted);
+}
+
+.landing-extension__browsers {
+  margin: 0;
+  font-size: rem(14px);
+  line-height: rem(20px);
+  color: var(--text-muted);
+}
+
+.landing-extension__visual {
+  position: relative;
+  flex: 1 1 rem(420px);
+  align-self: stretch;
+  min-height: rem(548px);
+}
+
+.landing-extension__disc {
+  position: absolute;
+  inset-block-start: rem(40px);
+  inset-inline-end: rem(-60px);
+  inline-size: rem(440px);
+  block-size: rem(440px);
+  background: var(--accent-bg);
+  border-radius: 50%;
+}
+
+.landing-extension__bar {
+  position: absolute;
+  inset-block-start: rem(24px);
+  inset-inline: 0 rem(-48px);
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  block-size: rem(44px);
+  padding-inline: rem(14px);
+  background: var(--bg);
+  border-radius: rem(14px) 0 0 rem(14px);
+  box-shadow: var(--shadow-card);
+}
+
+.landing-extension__dots {
+  display: flex;
+  gap: rem(6px);
+
+  i {
+    inline-size: rem(10px);
+    block-size: rem(10px);
+    background: var(--border-control);
+    border-radius: 50%;
+  }
+}
+
+.landing-extension__address {
+  flex: 1;
+  min-width: 0;
+  padding-inline: var(--space-3);
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: rem(12px);
+  line-height: rem(26px);
+  color: var(--text-muted);
+  white-space: nowrap;
+  background: var(--surface);
+  border-radius: var(--radius-full);
+}
+
+.landing-extension__button {
+  display: grid;
+  place-items: center;
+  inline-size: rem(30px);
+  block-size: rem(30px);
+  background: var(--accent-bg);
+  border-radius: rem(9px);
+  box-shadow: 0 0 0 2px var(--accent);
+
+  --ui-logo-size: #{rem(18px)};
+}
+
+.landing-extension__popup {
+  position: absolute;
+  inset-block-start: rem(80px);
+  inset-inline-end: rem(12px);
+  inline-size: rem(320px);
+  block-size: auto;
+  border-radius: rem(20px);
+  box-shadow: var(--shadow-float);
+  transition-timing-function: var(--ease-out);
+}
+
+.landing-reveal--pending .landing-extension__popup {
+  opacity: 0;
+  transform: translateY(rem(48px));
+}
+
+.landing-reveal--shown .landing-extension__popup {
+  transition-delay: 160ms;
+  transition-duration: var(--duration-slow);
+  transition-property: opacity, transform;
+}
+
+@include reduced-motion {
+  .landing-reveal--pending .landing-extension__popup {
+    opacity: 1;
+    transform: none;
+  }
+}

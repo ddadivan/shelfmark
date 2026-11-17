@@ -180,6 +180,13 @@
     "whatsNew": {
       "title": "Nouveautés",
       "all": "Voir tous les changements"
+    },
+    "extension": {
+      "badge": "Extension de navigateur",
+      "title": "Enregistrez la page que vous lisez",
+      "text": "Un clic dans la barre d’outils ou Alt+Maj+S. Le titre, vos règles de dossier et vos dossiers récents sont déjà remplis : la plupart des pages ne demandent qu’un clic de plus.",
+      "browsers": "Pour Chrome, Edge, Brave et Arc. Installez-la depuis votre étagère une fois connecté.",
+      "alt": "L’extension Shelfmark : Enregistrer dans Shelfmark avec le titre de la page, le dossier Vêtements issu d’une règle, des tags et une note"
     }
   },
   "links": {
@@ -760,7 +767,8 @@
       "reorder": {
         "movedUp": "Déplacé vers le haut, position {{position}} sur {{total}}",
         "movedDown": "Déplacé vers le bas, position {{position}} sur {{total}}"
-      }
+      },
+      "extension": "Obtenir l’extension"
     },
     "searchHint": "Rechercher dans vos liens",
     "searchButton": "Rechercher",
@@ -1172,6 +1180,13 @@
         "text": "Faites glisser des liens ici depuis la gauche."
       },
       "moveToLeft": "Déplacer « {{title}} » vers {{folder}}"
+    },
+    "extension": {
+      "title": "Enregistrez des pages directement depuis votre navigateur",
+      "text": "L’extension Shelfmark enregistre la page ouverte en un clic ou avec Alt+Maj+S, dossiers et tags déjà remplis.",
+      "install": "Installer l’extension",
+      "installLabel": "Installer l’extension depuis le Chrome Web Store (s’ouvre dans un nouvel onglet)",
+      "dismiss": "Plus tard"
     }
   },
   "export": {
@@ -1512,6 +1527,12 @@
         "previews": {
           "label": "Récupérer titres et aperçus",
           "hint": "Désactivez pour n’enregistrer que l’adresse"
+        },
+        "extension": {
+          "label": "Extension de navigateur",
+          "hint": "Enregistrez n’importe quelle page en un clic depuis Chrome, Edge, Brave ou Arc",
+          "action": "Installer",
+          "actionLabel": "Installer l’extension de navigateur depuis le Chrome Web Store (s’ouvre dans un nouvel onglet)"
         }
       },
       "failed": "Impossible d’enregistrer le paramètre",

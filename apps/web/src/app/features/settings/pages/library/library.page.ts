@@ -46,6 +46,7 @@ import { pluralKey } from '../../../../core/i18n/plural-key';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { TrashStore } from '../../../../stores/trash.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
+import { BrowserExtensionService } from '../../../../core/browser-extension/browser-extension.service';
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
 import { RulesSectionComponent } from '../../../rules/components/rules-section/rules-section.component';
 
@@ -57,7 +58,9 @@ import { RulesSectionComponent } from '../../../rules/components/rules-section/r
  * (7, 30 or 90 days) saves at once and rolls back with a toast when the request fails; "Trash"
  * shows how many items wait there and opens the page. Since #315 the duplicate notice is always
  * on, tracking parameters are always stripped, folder colours live in Appearance, and tags and
- * pins are managed where they are shown (sidebar, phone Library and Tags tab).
+ * pins are managed where they are shown (sidebar, phone Library and Tags tab). Saving ends with
+ * "Browser extension" and an Install link to the Chrome Web Store, only where it can work
+ * (`BrowserExtensionService.offered`, #455).
  */
 @Component({
   selector: 'app-settings-library-page',
@@ -86,6 +89,7 @@ export default class LibrarySettingsPage {
   private readonly dialogs = inject(DialogService);
   private readonly injector = inject(Injector);
   private readonly folders = inject(FoldersStore);
+  protected readonly extension = inject(BrowserExtensionService);
   private readonly control = viewChild<SegmentedControlComponent>('retention');
 
   protected readonly BUTTON_SIZE = BUTTON_SIZE;

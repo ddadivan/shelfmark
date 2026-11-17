@@ -82,6 +82,8 @@ export class ButtonComponent implements UiFocusTarget {
   readonly loading = input(false, { transform: booleanAttribute });
   /** Renders an inner `<a href>` instead of a `<button>` (`type` then does not apply). */
   readonly href = input<string>();
+  /** With `href`: opens it in a new tab (`target="_blank"`, `rel="noopener noreferrer"`); the feature says so in the label. */
+  readonly newTab = input(false, { transform: booleanAttribute });
   /**
    * Touch target of an icon-only button on `pointer: coarse`: `grow` (default) makes the button
    * 44px; `overlay` (for icon-only buttons only, ignored otherwise) keeps the visual size and adds an invisible hit area (a favorite star on a

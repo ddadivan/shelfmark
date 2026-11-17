@@ -1,3 +1,5 @@
+import { DOCUMENT } from '@angular/common';
+import { ExtensionBannerService } from '../../core/browser-extension/extension-banner.service';
 import {
   booleanAttribute,
   ChangeDetectionStrategy,
@@ -44,6 +46,7 @@ import { HowItWorksService } from '../../features/how-it-works/services/how-it-w
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/components/how-it-works-card/how-it-works-card.component';
 import { SIDEBAR_FEEDBACK_ID } from './models/sidebar-feedback-id.const';
+import { SIDEBAR_EXTENSION_ID } from './models/sidebar-extension-id.const';
 import { SIDEBAR_WHATS_NEW_ID } from './models/sidebar-whats-new-id.const';
 import { WhatsNewStore } from '../../features/changelog/services/whats-new.store';
 import { folderTreeNodes } from './utils/folder-tree-nodes';
@@ -139,6 +142,9 @@ export class SidebarComponent {
   );
 
   private readonly labels = injectSidebarLabels();
+  /** "Get the extension" in the footer once the library banner was closed (#455). */
+  private readonly extension = inject(ExtensionBannerService);
+  private readonly document = inject(DOCUMENT);
   /** The "..." button name with its `{name}` placeholder; `ui-tree` fills in the folder. */
   protected readonly menuLabel = computed(() => this.labels()?.actions);
 
@@ -159,7 +165,9 @@ export class SidebarComponent {
   /** "What's new" and "Send feedback" above the divider (not on the phone: the You list has them). */
   protected readonly feedbackNodes = computed<UiTreeNode[]>(() => {
     const labels = this.labels();
-    return !labels || this.phone() ? [] : feedbackNodes(labels, this.whatsNew.pending());
+    return !labels || this.phone()
+      ? []
+      : feedbackNodes(labels, this.whatsNew.pending(), this.extension.entryShown());
   });
 
   /** Trash under the divider; its count shows once the list has loaded and only while not empty. */
@@ -215,6 +223,10 @@ export class SidebarComponent {
   protected async footerSelected(node: UiTreeNode): Promise<void> {
     if (node.id === SIDEBAR_FEEDBACK_ID) {
       this.feedback.open();
+      return;
+    }
+    if (node.id === SIDEBAR_EXTENSION_ID) {
+      this.document.defaultView?.open(this.extension.storeUrl, '_blank', 'noopener,noreferrer');
       return;
     }
     if (node.id === SIDEBAR_WHATS_NEW_ID) {
