@@ -1,0 +1,40 @@
+# 0053. Shelfmark MCP server: a hand-written stateless Streamable HTTP handler at `/api/mcp`, personal read-only tokens hashed at rest, no OAuth in v1
+
+- Status: Proposed
+- Date: 2026-11-17
+- Source: issue #395 (F6), `docs/ai/IMPLEMENTATION-AI-6.md` section 1, `docs/ai/FEATURES.md` F6 and open question 10, `docs/design/screens/AiConnect.dc.html`, `docs/PROJECT.md` 5.4 and 5.8; builds on [0001](0001-nx-monorepo-and-dependency-pinning.md), [0020](0020-npm-install-scripts-policy.md), [0029](0029-global-session-guard-and-isolation-harness.md), [0031](0031-rate-limiting-and-request-interceptors.md), [0040](0040-public-collections-capability-token.md) and [0046](0046-browser-extension-auth.md)
+
+## Context
+
+- F6 lets the user's own assistant (Claude or another MCP client) search and read their library: read-only tools search, get link, list folders, list tags. Settings › AI › "Connect your assistant" shows the server address, a token shown once, connected clients with last use, and Revoke.
+- Every route is closed by `SessionAuthGuard` (cookie session, ADR 0029); a public route needs a `PUBLIC_ROUTES` entry and a reason. `CsrfGuard` rejects a foreign `Origin` or `Sec-Fetch-Site: cross-site` on unsafe methods and requires JSON bodies; requests without `Origin` pass (non-browser clients). Better Auth routes are allow-listed (`ALLOWED_AUTH_ROUTES`).
+- MCP's Streamable HTTP transport: the client POSTs JSON-RPC messages to one endpoint; the server may answer a request with `application/json` or an SSE stream, answers notifications with 202, may refuse GET with 405 and need not issue sessions; servers should validate `Origin`. Remote authorisation in the spec is OAuth 2.1; many clients (Claude Code, Cursor, VS Code, Claude Desktop through `mcp-remote`) also accept a static `Authorization` header.
+- The official TypeScript SDK (`@modelcontextprotocol/sdk`) implements the transport and OAuth helpers but brings a runtime dependency tree into the single Vercel Function and needs Node `req` / `res` handling and version tracking. The four tools need none of the server-to-client features (sampling, elicitation, notifications, resources).
+
+## Decision
+
+1. **Hand-written, stateless handler.** `POST /api/mcp` accepts one JSON-RPC 2.0 message (batches refused with `-32600`), implements `initialize` (version negotiated from a pinned `MCP_PROTOCOL_VERSIONS` list, capability `tools` only), `notifications/initialized` (202), `ping`, `tools/list`, `tools/call`; anything else is `-32601`. Responses are always `application/json`; no `Mcp-Session-Id`. `GET` and `DELETE /api/mcp` answer 405 with `Allow: POST`. A present `MCP-Protocol-Version` header with an unsupported value is a 400. Envelope and tool arguments go through narrowing parsers; each tool declares `inputSchema` and `outputSchema` and returns `structuredContent` plus the same JSON as text.
+2. **The SDK only as a test dependency.** `@modelcontextprotocol/sdk`, pinned exactly (ADR 0001), install scripts checked under ADR 0020, is a devDependency used by one conformance spec that connects its Streamable HTTP client to the test app and calls every tool. Nothing of it is in the API bundle or `api/index.mjs`.
+3. **Personal tokens.** `smk_live_` plus 32 random bytes in base64url, shown once at creation. Stored as a SHA-256 hex digest (unique index, lookup by digest; a 256-bit random secret needs no slow hash or pepper), with the last four characters, a name, "include my notes" (off by default, fixed per token) and `last_used_at`. At most 10 per user; revoking deletes the row and stops the token at once. Demo users cannot create tokens; the feature is Pro (`AI_FULL_ACCESS_EMAILS` in the private phase), checked on every call.
+4. **Bearer only, never cookies.** The three `/api/mcp` routes carry `@AllowAnonymous()` with `PUBLIC_ROUTES` entries ("MCP clients cannot hold a session cookie; authenticated by the personal-token guard on the handler; GET and DELETE return 405 without data"). A method-level `McpTokenGuard` reads only `Authorization: Bearer smk_live_…`; a cookie never authenticates these routes. Failure is 401 with `WWW-Authenticate: Bearer realm="shelfmark"`; a non-Pro account is 403.
+5. **No CSRF exemption.** Desktop and CLI clients send no `Origin`, so `CsrfGuard` passes them unchanged; a browser page with a foreign `Origin` stays a 403, which is the `Origin` validation the transport asks for; the body is JSON. With cookies ignored there is no ambient authority to forge.
+6. **Scope and audit of what is returned.** Every query uses the token's `userId`. Links leave through one allow-list mapper: id, URL, title, host, folder path, tag names, summary (with whether AI wrote it), kind, favourite, saved and last-opened dates, and the note only for tokens created with "include my notes". Never trashed links, images, reminders, share tokens, suggestions, account data or anything of another user. A response allow-list test pins the keys. Tool descriptions say that titles, notes and summaries are saved web content, data rather than instructions.
+7. **Limits.** `RATE_LIMIT.Mcp` 120 a minute per IP (the throttler runs before the guard), a daily cap of 2,000 calls per token counted in Postgres (429 with `Retry-After`), `last_used_at` written at most once a minute. Search by meaning inside the search tool uses the user's AI-3 allowance and only when their search is ready.
+8. **OAuth later.** The guard resolves the caller through an `McpAuthResolver` seam; OAuth through Better Auth (protected-resource metadata, a `resource_metadata` parameter in `WWW-Authenticate`, new `ALLOWED_AUTH_ROUTES` entries) can be added beside personal tokens without changing the tools.
+
+## Consequences
+
+- No new runtime dependency or Vercel entry change; the protocol surface is small enough to review line by line, and the conformance spec catches drift against the SDK's client.
+- New protocol versions or features (resources, OAuth, streaming results) are our work; adopting the SDK at runtime is the fallback if that grows.
+- Clients that only support OAuth (for example web-based connectors) cannot connect in v1; the how-to lists the clients that accept a header.
+- A leaked token gives read access to the library (and notes, if chosen) until revoked; it is shown once, never logged, prefixed so secret scanners can find it (a gitleaks rule), and revoked in one click.
+- One more set of public routes, each with a reason and a guard that fails closed.
+
+## Alternatives considered
+
+- **The SDK at runtime** — protocol coverage and OAuth helpers, but a dependency tree in the function, raw `req` / `res` handling beside Nest, and version churn for four read-only tools.
+- **OAuth through Better Auth in v1** — the spec's preferred path and needed for OAuth-only clients, but a full authorisation server (dynamic client registration, consent screen, token storage) and new auth routes; postponed behind the seam.
+- **Session cookies for MCP** — clients cannot hold them, and cookie auth would bring back CSRF exposure.
+- **Bcrypt or Argon2 for token hashes** — protects low-entropy passwords; a 256-bit random secret gains nothing and every call would pay the cost.
+- **A CSRF exemption for `/api/mcp`** — not needed: header-less clients already pass, and refusing foreign browser origins is required by the transport.
+- **A separate MCP function or subdomain** — isolation, but a second deployment, build and CSP for a few database reads.
