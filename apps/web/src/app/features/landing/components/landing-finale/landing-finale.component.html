@@ -5,21 +5,6 @@
         {{ 'landing.finale.title' | transloco }}
       </h2>
       <p class="landing-finale__lead">{{ 'landing.finale.lead' | transloco }}</p>
-      @if (extension.offered()) {
-        <p class="landing-finale__extension">
-          {{ 'landing.finale.extension' | transloco }}
-          <a
-            class="landing-finale__extension-link"
-            [attr.href]="extension.storeUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {{ 'landing.finale.extensionLink' | transloco }}
-            <ui-icon name="external" [size]="ICON_SIZE.Sm" />
-            <span class="landing-finale__hint">({{ 'landing.newTab' | transloco }})</span>
-          </a>
-        </p>
-      }
     </div>
     <div class="landing-finale__actions">
       @if (signedIn()) {

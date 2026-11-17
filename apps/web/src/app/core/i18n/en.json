@@ -166,9 +166,7 @@
       "title": "Empty your Saved Messages.",
       "lead": "Paste a link, give it a folder and a note. Everything you save from now on lands on one shelf, and any of it is two keystrokes away.",
       "demo": "Open the demo",
-      "signIn": "Sign in",
-      "extension": "Using Chrome, Edge, Brave or Arc? Save any page in one click.",
-      "extensionLink": "Get the browser extension"
+      "signIn": "Sign in"
     },
     "footer": {
       "copyright": "© 2026 Shelfmark",

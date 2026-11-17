@@ -166,9 +166,7 @@
       "title": "Esvazie suas Mensagens salvas.",
       "lead": "Cole um link, dê a ele uma pasta e uma nota. Tudo o que você salvar daqui em diante chega a uma estante só, a dois toques de tecla.",
       "demo": "Abrir a demo",
-      "signIn": "Entrar",
-      "extension": "Você usa Chrome, Edge, Brave ou Arc? Salve qualquer página com um clique.",
-      "extensionLink": "Baixar a extensão"
+      "signIn": "Entrar"
     },
     "footer": {
       "copyright": "© 2026 Shelfmark",

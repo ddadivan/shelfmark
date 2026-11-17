@@ -166,9 +166,7 @@
       "title": "Svuota i tuoi Messaggi salvati.",
       "lead": "Incolla un link, dagli una cartella e una nota. Tutto quello che salvi da ora finisce su un solo scaffale, a due tasti di distanza.",
       "demo": "Apri la demo",
-      "signIn": "Accedi",
-      "extension": "Usi Chrome, Edge, Brave o Arc? Salva qualsiasi pagina con un clic.",
-      "extensionLink": "Scarica l’estensione"
+      "signIn": "Accedi"
     },
     "footer": {
       "copyright": "© 2026 Shelfmark",

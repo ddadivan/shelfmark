@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Extension install · desktop</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+@keyframes x-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.x-banner{animation:x-in 320ms var(--ease-out) both}
+@media (prefers-reduced-motion: reduce){.x-banner{animation:none}}
+</style>
+</helmet>
+<!--
+  Install the browser extension (#455), for signed-in people only, desktop Chrome, Edge, Brave and Arc
+  (ViewportService.desktop + the browser check; rendered with @if, never hidden by CSS), and only once
+  EXTENSION_STORE_URL is set.
+  1. Library (/links): a banner at the top of the feed, under the toolbar, before the folder title. It must
+     stand out: accent tint, the real popup screenshot peeking in, a primary Install button. "Not now" (x)
+     hides it on this device (localStorage key in USER_STORAGE_KEYS, so it comes back for the next account).
+  2. Settings › Library › Saving: the permanent row to find it again (Install opens the store in a new tab).
+-->
+<div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 980px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 40px;">
+
+<section aria-label="1. Library banner" style="display: flex; gap: 12px; align-items: flex-start;">
+<aside aria-label="Library" style="flex: none; width: 248px; min-height: 520px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+<span class="sm-tree__row is-active">All links<span class="sm-tree__count">128</span></span>
+<span class="sm-tree__row">Unsorted<span class="sm-tree__count">9</span></span>
+<span class="sm-tree__row">Favorites<span class="sm-tree__count">14</span></span>
+<span class="sm-tree__row">Work<span class="sm-tree__count">34</span></span>
+<span class="sm-tree__row">Clothes<span class="sm-tree__count">21</span></span>
+</aside>
+<main style="flex: 1 1 auto; min-width: 0; padding: 6px 16px 0; display: flex; flex-direction: column; gap: 22px;">
+<div style="display: flex; align-items: center; gap: 10px;">
+<span class="sm-field__control" style="flex: 1 1 320px; max-width: 640px; border-radius: 999px; min-height: 48px; padding: 0 18px; background: var(--surface); border-color: transparent; box-shadow: var(--shadow-card); color: var(--text-muted); font-size: 15px;">Search, or describe it: coat from last week</span>
+<span style="flex: 1 1 0;"></span>
+<button class="sm-btn sm-btn--primary">Add link</button>
+<span class="sm-avatar">DD</span>
+</div>
+
+<sc-if value="{{showBanner}}" hint-placeholder-val="{{true}}">
+<section class="x-banner" aria-labelledby="ext-title" style="position: relative; overflow: hidden; background: var(--accent-bg); border-radius: 22px; padding: 22px 24px; display: flex; align-items: center; gap: 20px; min-height: 132px; box-sizing: border-box;">
+<span aria-hidden="true" style="flex: none; width: 52px; height: 52px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-card); display: grid; place-items: center;"><svg width="30" height="30" viewBox="0 0 32 32"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg></span>
+<div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; max-width: 520px;">
+<h2 id="ext-title" style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 600; color: var(--accent-text);">Save pages straight from your browser</h2>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: var(--text);">The Shelfmark extension saves the page you are on in one click or <span style="white-space: nowrap;"><span class="sm-kbd">Alt</span> <span class="sm-kbd">Shift</span> <span class="sm-kbd">S</span></span>, with your folders and tags filled in.</p>
+</div>
+<div style="flex: none; display: flex; gap: 8px; align-items: center; position: relative; z-index: 1; margin-right: 236px;">
+<a href="#" class="sm-btn sm-btn--primary" style="text-decoration: none;">Install extension<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8M17 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h4"/></svg></a>
+</div>
+<img src="{{popupSrc}}" alt="" aria-hidden="true" width="220" height="318" style="position: absolute; right: 56px; top: 18px; width: 220px; height: auto; border-radius: 16px; box-shadow: var(--shadow-float);">
+<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Not now" title="Not now" onClick="{{dismiss}}" style="position: absolute; top: 10px; right: 10px; z-index: 2; background: var(--surface);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+</section>
+</sc-if>
+
+<div style="display: flex; flex-direction: column; gap: 4px;"><h1 style="margin: 0; font-size: 34px; line-height: 38px; font-weight: 600; letter-spacing: -0.02em;">All links</h1><span style="font-size: 13px; color: var(--text-muted);">128 links</span></div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;">
+<div class="sm-card"><div class="sm-card__media" style="aspect-ratio: 16 / 9; background: var(--accent-bg);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">Y</span>youtube.com</div><div class="sm-card__title">Angular 22: everything about Signal Forms in 20 minutes</div></div></div>
+<div class="sm-card"><div class="sm-card__media" style="aspect-ratio: 16 / 9; background: var(--surface-hover);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">D</span>dev.to</div><div class="sm-card__title">NgRx SignalStore: patterns for real apps</div></div></div>
+<div class="sm-card"><div class="sm-card__media" style="aspect-ratio: 16 / 9; background: var(--surface-pressed);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">C</span>cos.com</div><div class="sm-card__title">Wool coat, straight cut</div></div></div>
+</div>
+</main>
+</section>
+
+<section aria-label="2. Settings row" style="max-width: 880px; display: flex; flex-direction: column; gap: 12px;">
+<div class="sm-panel sm-settings">
+<h2 class="sm-settings__title">Saving</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Fetch titles and previews</div><div class="sm-setting__desc">Turn off to save only the address</div></div><span class="sm-switch is-on" role="switch" aria-checked="true" aria-label="Fetch titles and previews"></span></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Browser extension</div><div class="sm-setting__desc">Save any page in one click from Chrome, Edge, Brave or Arc</div></div><a href="#" class="sm-btn sm-btn--secondary" style="text-decoration: none;">Install<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8M17 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h4"/></svg></a></div>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = this.props.dark ?? false;
+    return {
+      theme: dark ? 'dark' : 'light',
+      popupSrc: dark ? '../assets/extension/popup-form-dark.webp' : '../assets/extension/popup-form-light.webp',
+      showBanner: !(this.state || {}).dismissed,
+      dismiss: () => this.setState({ dismissed: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

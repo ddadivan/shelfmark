@@ -267,11 +267,11 @@ Edge, Brave and Arc install straight from the Chrome Web Store (Edge asks once t
 
 ### 5.10 Extension store link in the web app (#455)
 
-The web app offers the browser extension (5.9) with a "Browser extension" row in Settings › Library › Saving and a line in the landing's closing block, only on a desktop Chrome, Edge, Brave or Arc. Both read one constant and render nothing while it is empty.
+The web app offers the browser extension (5.9) to signed-in people on a desktop Chrome, Edge, Brave or Arc (a banner in the library and a "Browser extension" row in Settings › Library › Saving). Both read one constant and render nothing while it is empty. The landing only mentions the extension, without a link.
 
 - [ ] After the Chrome Web Store item is published (5.9), copy its public URL (`https://chromewebstore.google.com/detail/<name>/<item id>`).
 - [ ] Put it into `EXTENSION_STORE_URL` in `apps/web/src/app/models/extension-store-url.const.ts` (a one-line PR into `stage`, or ask an agent to do it).
-- [ ] After the release, open the landing and Settings › Library in desktop Chrome: the link opens the store page. In Firefox, Safari or on a phone nothing is shown.
+- [ ] After the release, open the library and Settings › Library in desktop Chrome: Install opens the store page. In Firefox, Safari or on a phone nothing is shown.
 
 ## 6. Secrets policy
 

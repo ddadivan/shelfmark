@@ -166,9 +166,7 @@
       "title": "Leere deine Gespeicherten Nachrichten.",
       "lead": "Link einfügen, Ordner und Notiz dazu. Alles, was du ab jetzt speicherst, landet in einem Regal, und alles davon ist zwei Tastendrücke entfernt.",
       "demo": "Demo öffnen",
-      "signIn": "Anmelden",
-      "extension": "Du nutzt Chrome, Edge, Brave oder Arc? Speichere jede Seite mit einem Klick.",
-      "extensionLink": "Erweiterung holen"
+      "signIn": "Anmelden"
     },
     "footer": {
       "copyright": "© 2026 Shelfmark",
