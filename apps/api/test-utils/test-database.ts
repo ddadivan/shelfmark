@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { PGlite } from '@electric-sql/pglite';
 import { pg_trgm } from '@electric-sql/pglite/contrib/pg_trgm';
+import { vector } from '@electric-sql/pglite-pgvector';
 import { ExchangeSocketServer } from './exchange-socket-server';
 import { PrismaService } from '../src/prisma/prisma.service';
 import type { TestDatabase } from './models/test-database.interface';
@@ -26,8 +27,9 @@ export function migrationFiles(dir: string = MIGRATIONS_DIR): string[] {
  * port and used through the same `PrismaService` as production. No Docker, no network.
  */
 export async function createTestDatabase(): Promise<TestDatabase> {
-  // pg_trgm must be loaded: the link_models migration runs `CREATE EXTENSION pg_trgm`.
-  const db = await PGlite.create({ extensions: { pg_trgm } });
+  // pg_trgm and vector must be loaded: the link_models migration runs `CREATE EXTENSION pg_trgm`,
+  // the ai_embeddings migration `CREATE EXTENSION vector` (pgvector 0.8, ADR 0050).
+  const db = await PGlite.create({ extensions: { pg_trgm, vector } });
   for (const file of migrationFiles()) {
     await db.exec(readFileSync(file, 'utf8'));
   }

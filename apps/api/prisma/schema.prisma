@@ -114,6 +114,7 @@ model User {
   aiBatches             AiBatch[]
   linkSuggestions       LinkSuggestion[]
   ruleOfferDismissals   RuleOfferDismissal[]
+  linkEmbeddings        LinkEmbedding[]
 
   @@map("users")
 }
@@ -264,6 +265,7 @@ model Link {
   images             LinkImage[]
   aiJobs             AiJob[]
   suggestions        LinkSuggestion[]
+  embeddings         LinkEmbedding[]
 
   @@unique([id, userId])
   @@unique([userId, idempotencyKey])
@@ -488,6 +490,13 @@ model AiSettings {
   backfillDone      Int       @default(0) @map("backfill_done")
   backfillUsed      Int       @default(0) @map("backfill_used")
   backfillStartedAt DateTime? @map("backfill_started_at") @db.Timestamptz(3)
+  // Search by meaning (AI-3, ADR 0050): the switch (rows that existed before AI-3 were set to false
+  // by the migration), the per-user embed pass lease and its retry backoff after a provider failure.
+  meaningSearch     Boolean   @default(true) @map("meaning_search")
+  embedLeaseUntil   DateTime? @map("embed_lease_until") @db.Timestamptz(3)
+  embedNotBefore    DateTime? @map("embed_not_before") @db.Timestamptz(3)
+  embedFailures     Int       @default(0) @map("embed_failures") @db.SmallInt
+  embedFailedAt     DateTime? @map("embed_failed_at") @db.Timestamptz(3)
   createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -498,10 +507,13 @@ model AiSettings {
 // Links processed per UTC month (counts only, never content). `month` is the first day of the month.
 // Reserved with one INSERT ... ON CONFLICT statement before the model call, refunded on a provider failure.
 model AiUsage {
-  userId String   @map("user_id") @db.Uuid
-  month  DateTime @db.Date
-  links  Int      @default(0)
-  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String   @map("user_id") @db.Uuid
+  month         DateTime @db.Date
+  links         Int      @default(0)
+  // Search by meaning (AI-3): link texts embedded and search queries embedded this month.
+  embeds        Int      @default(0)
+  searchQueries Int      @default(0) @map("search_queries")
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, month])
   @@map("ai_usage")
@@ -590,4 +602,27 @@ model LinkSuggestion {
   @@index([jobId])
   @@index([folderId])
   @@map("link_suggestions")
+}
+
+// The search-by-meaning vector of one link (AI-3, ADR 0050): user data, same-user composite FK with
+// cascade (purge and account deletion remove it; a trashed link keeps it for a restore). `inputHash` is
+// the SHA-256 of the embedded text, so an unchanged text never costs a call; `stale` is set by every
+// write path that changes title, note, tags or summary (`markStale`). The HNSW index
+// (`halfvec_cosine_ops`, m = 16, ef_construction = 64) lives only in the migration. Read and written
+// only through tagged `$queryRaw` / `$executeRaw`, always filtered by the session user.
+model LinkEmbedding {
+  linkId    String                       @id @map("link_id") @db.Uuid
+  userId    String                       @map("user_id") @db.Uuid
+  model     String                       @db.VarChar(32)
+  withNote  Boolean                      @map("with_note")
+  inputHash String                       @map("input_hash") @db.Char(64)
+  stale     Boolean                      @default(false)
+  embedding Unsupported("halfvec(1024)")
+  createdAt DateTime                     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime                     @default(now()) @map("updated_at") @db.Timestamptz(3)
+  user      User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  link      Link                         @relation(fields: [linkId, userId], references: [id, userId], onDelete: Cascade)
+
+  @@index([userId, stale])
+  @@map("link_embeddings")
 }

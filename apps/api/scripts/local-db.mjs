@@ -12,6 +12,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { PGlite } from '@electric-sql/pglite';
 import { pg_trgm } from '@electric-sql/pglite/contrib/pg_trgm';
+import { vector } from '@electric-sql/pglite-pgvector';
 import { PGLiteSocketServer } from '@electric-sql/pglite-socket';
 
 export const LOOPBACK_HOST = '127.0.0.1';
@@ -74,8 +75,9 @@ export function acquireLock(dataDir, alive = isProcessAlive, pid = process.pid) 
 }
 
 async function startDatabase(dataDir) {
-  // pg_trgm is loaded for the search of #71; it is harmless until `CREATE EXTENSION` runs.
-  const db = await PGlite.create({ dataDir, extensions: { pg_trgm } });
+  // pg_trgm is loaded for the search of #71, vector (pgvector) for the link embeddings of AI-3;
+  // both are harmless until `CREATE EXTENSION` runs.
+  const db = await PGlite.create({ dataDir, extensions: { pg_trgm, vector } });
   const server = new PGLiteSocketServer({
     db,
     host: LOOPBACK_HOST,

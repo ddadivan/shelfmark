@@ -48,8 +48,7 @@ export function toStoredAiSettings(row: AiSettingsRow | null): StoredAiSettings 
       summaryLanguage: isSummaryLanguage(row.summaryLanguage)
         ? row.summaryLanguage
         : AI_SETTINGS_DEFAULT.summaryLanguage,
-      // Until the column lands (AI-3 migration) search by meaning reads as off.
-      meaningSearch: false,
+      meaningSearch: row.meaningSearch,
     },
     enabledAt: row.enabledAt,
     introSeenAt: row.introSeenAt,

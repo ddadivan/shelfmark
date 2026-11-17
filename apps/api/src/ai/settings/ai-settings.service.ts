@@ -34,6 +34,7 @@ const SETTINGS_SELECT = {
   summaries: true,
   includeNotes: true,
   summaryLanguage: true,
+  meaningSearch: true,
   enabledAt: true,
   introSeenAt: true,
   backfillState: true,

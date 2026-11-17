@@ -8,6 +8,7 @@ const ROW = {
   summaries: false,
   includeNotes: true,
   summaryLanguage: 'fr',
+  meaningSearch: false,
   enabledAt: new Date('2026-11-01T00:00:00Z'),
   introSeenAt: new Date('2026-11-01T00:00:00Z'),
   backfillState: 'running',

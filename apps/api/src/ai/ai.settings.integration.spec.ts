@@ -74,6 +74,7 @@ describe('AI settings API', () => {
         summaries: true,
         includeNotes: false,
         summaryLanguage: 'app',
+        meaningSearch: true,
       },
       introSeen: false,
       entitlements: { plan: 'free', aiTier: 'free' },
@@ -87,6 +88,7 @@ describe('AI settings API', () => {
       providerStatus: 'ok',
       pendingJobs: 0,
       backfill: { state: 'idle', eligible: 0, total: 0, done: 0, estimatedMinutes: null },
+      search: { state: 'off', ready: 0, total: 0 },
     });
     expect(await t.db.prisma.aiSettings.count()).toBe(0);
   });
@@ -122,6 +124,7 @@ describe('AI settings API', () => {
       summaries: false,
       includeNotes: true,
       summaryLanguage: 'app',
+      meaningSearch: true,
     });
     expect(changed.introSeen).toBe(false);
   });
