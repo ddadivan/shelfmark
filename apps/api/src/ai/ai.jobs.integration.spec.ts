@@ -17,6 +17,9 @@ import type { IsolationUsers } from '../../test-utils/models/isolation-users.int
 import type { TestAgent } from '../../test-utils/models/test-agent.interface';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
+import { PrismaService } from '../prisma/prisma.service';
+import { TagsService } from '../tags/tags.service';
+import { AiApplyService } from './apply/ai-apply.service';
 import { AiBackgroundService } from './background/ai-background.service';
 import { AiExcerptService } from './excerpt/ai-excerpt.service';
 import { AI_ENV } from './models/ai-env.const';
@@ -112,6 +115,8 @@ describe('AI link jobs', () => {
     ).body as AiJobResponse;
   const job = async (id: string, agent: TestAgent = a): Promise<AiJobResponse> =>
     (await agent.get(AI_ENDPOINT.Job.replace(':id', id)).expect(200)).body as AiJobResponse;
+  const monthUsage = async (userId = users.owner.userId): Promise<number> =>
+    (await t.db.prisma.aiUsage.findFirst({ where: { userId } }))?.links ?? 0;
   const makeDue = (jobId: string) =>
     t.db.prisma.aiJob.update({
       where: { id: jobId },
@@ -403,6 +408,64 @@ describe('AI link jobs', () => {
         status: 'pending',
         reason: 'unavailable',
       });
+      // The reservation is given back: the retry reserves again.
+      expect(await monthUsage()).toBe(0);
+    });
+
+    it('refunds the quota when writing the answer fails, so the retry never counts twice', async () => {
+      await turnOn();
+      const saved = await save({});
+      vi.spyOn(AiApplyService.prototype, 'finish').mockRejectedValueOnce(new Error('db gone'));
+      await deferrer.flush();
+      const [queued] = await jobsOf(saved.id);
+      expect(queued).toMatchObject({ status: 'pending', reason: 'unavailable', attempts: 1 });
+      expect(await monthUsage()).toBe(0);
+      await makeDue(queued?.id ?? '');
+      await t.app.get(AiRunnerService).run(queued?.id ?? '', users.owner.userId);
+      expect((await jobsOf(saved.id))[0]?.status).toBe('done');
+      expect(await monthUsage()).toBe(1);
+    });
+
+    it('fails a job whose account cannot be read', async () => {
+      await turnOn();
+      const saved = await save({});
+      vi.spyOn(t.app.get(PrismaService).user, 'findUnique').mockResolvedValueOnce(null);
+      await deferrer.flush();
+      expect((await jobsOf(saved.id))[0]).toMatchObject({
+        status: 'failed',
+        reason: 'unavailable',
+      });
+      expect((await link(saved.id)).aiStatus).toBe('failed');
+    });
+
+    it('keeps tags the user added while the job ran: Automatic mode then only suggests', async () => {
+      await turnOn({ tagsMode: 'auto' });
+      await tag('design');
+      await tag('picked');
+      const saved = await save({});
+      const picked = await t.db.prisma.tag.findFirstOrThrow({
+        where: { userId: users.owner.userId, name: 'picked' },
+      });
+      // The user's tag write commits between the job's read of the link and its tags lock. The
+      // test database has one session, so the write goes through the job's own transaction: what
+      // matters is that it is visible once the lock is held (READ COMMITTED).
+      const original = TagsService.prototype.lockUserTags;
+      vi.spyOn(TagsService.prototype, 'lockUserTags').mockImplementationOnce(async function (
+        this: TagsService,
+        tx,
+        userId,
+      ) {
+        await tx.linkTag.create({ data: { linkId: saved.id, tagId: picked.id } });
+        return original.call(this, tx, userId);
+      });
+      await deferrer.flush();
+      expect((await link(saved.id)).tags.map((entry) => entry.tag.name)).toEqual(['picked']);
+      expect(await suggestions(saved.id)).toContainEqual({
+        kind: 'tag',
+        tagName: 'design',
+        folderId: null,
+        state: 'suggested',
+      });
     });
 
     it('discards the result of a job that finishes after AI was turned off', async () => {
@@ -604,15 +667,32 @@ describe('AI link jobs', () => {
       const second = randomUUID();
       const failing = await draft({ draftId: second, url: 'https://example.com/ai-fail' });
       await deferrer.flush();
+      // Every attempt used up before the save: the requeued job starts its attempts over.
+      await t.db.prisma.aiJob.update({
+        where: { id: failing.id },
+        data: { status: 'failed', reason: 'unavailable', attempts: 3 },
+      });
+      const saved = await save({ aiDraftId: second, url: 'https://example.com/fine' });
+      expect(saved.aiStatus).toBe('pending');
+      expect((await jobsOf(saved.id))[0]).toMatchObject({ status: 'pending', attempts: 0 });
+      expect(deferrer.size).toBe(1);
+      await deferrer.flush();
+      expect((await link(saved.id)).aiStatus).toBe('done');
+      expect((await jobsOf(saved.id))[0]).toMatchObject({ status: 'done', attempts: 1 });
+
+      // "Try again" for a draft the save already attached changes nothing.
       await t.db.prisma.aiJob.update({
         where: { id: failing.id },
         data: { status: 'failed', reason: 'unavailable' },
       });
-      const saved = await save({ aiDraftId: second, url: 'https://example.com/fine' });
-      expect(saved.aiStatus).toBe('pending');
-      expect(deferrer.size).toBe(1);
-      await deferrer.flush();
-      expect((await link(saved.id)).aiStatus).toBe('done');
+      await a
+        .post(AI_ENDPOINT.Drafts)
+        .send({ draftId: second, url: 'https://example.com/fine' })
+        .expect(202);
+      expect(deferrer.size).toBe(0);
+      expect(
+        await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: failing.id } }),
+      ).toMatchObject({ status: 'failed', linkId: saved.id });
     });
 
     it('keeps a refused or quota-skipped draft as it is on the saved link', async () => {
@@ -635,10 +715,55 @@ describe('AI link jobs', () => {
           links: 50,
         },
       });
-      const skipped = await draft({ draftId: randomUUID() });
-      expect(skipped).toMatchObject({ status: 'skipped', reason: 'quota' });
+      const draftId = randomUUID();
+      const skipped = await draft({ draftId });
+      expect(skipped).toMatchObject({ id: draftId, status: 'skipped', reason: 'quota' });
       expect(deferrer.size).toBe(0);
-      expect((await job(skipped.id)).reason).toBe('quota');
+      // No row without room.
+      expect(await t.db.prisma.aiJob.count()).toBe(0);
+    });
+
+    it('answers skipped without a row past the open drafts of a day', async () => {
+      await turnOn();
+      await t.db.prisma.aiJob.createMany({
+        data: Array.from({ length: 20 }, () => ({
+          userId: users.owner.userId,
+          draftId: randomUUID(),
+          source: 'draft',
+          status: 'done',
+          parts: ['summary'],
+          language: 'en',
+        })),
+      });
+      const draftId = randomUUID();
+      expect(await draft({ draftId })).toMatchObject({
+        id: draftId,
+        status: 'skipped',
+        reason: 'quota',
+      });
+      expect(await t.db.prisma.aiJob.count()).toBe(20);
+      // Another user's drafts do not count, nor do drafts older than the window.
+      await turnOn({}, b);
+      expect((await draft({ draftId: randomUUID() }, b)).status).toBe('pending');
+      await t.db.prisma.$executeRaw`UPDATE ai_jobs SET created_at = now() - interval '25 hours'`;
+      expect((await draft({ draftId })).status).toBe('pending');
+      deferrer.clear();
+    });
+
+    it('answers a job as skipped (off) without suggestions while AI is off', async () => {
+      await turnOn();
+      await tag('design');
+      const started = await draft({ draftId: randomUUID() });
+      await deferrer.flush();
+      expect((await job(started.id)).suggestions.length).toBeGreaterThan(0);
+      await a.patch(AI_ENDPOINT.Settings).send({ enabled: false }).expect(200);
+      expect(await job(started.id)).toEqual({
+        id: started.id,
+        status: 'skipped',
+        reason: 'off',
+        suggestions: [],
+        summary: null,
+      });
     });
 
     it('fails a draft that lost its dialog data and ignores a draft while AI is off at save', async () => {

@@ -20,6 +20,7 @@ import { savedUrl } from '../../links/link-save-prefs';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiApplyService } from '../apply/ai-apply.service';
 import { AiBackgroundService } from '../background/ai-background.service';
+import { AI_DRAFT_LIMIT } from '../models/ai-draft-limit.const';
 import { AI_JOB_SOURCE } from '../models/ai-job-source.const';
 import { AI_JOB_STATE } from '../models/ai-job-state.const';
 import type { AiDbClient } from '../models/ai-db-client.type';
@@ -110,7 +111,8 @@ export class AiJobsService {
 
   /**
    * `POST /api/ai/drafts`: creates the draft job (or answers the existing one for that `draftId`)
-   * and starts it with the dialog's data held in memory. Off, no part or no quota answer `skipped`.
+   * and starts it with the dialog's data held in memory. Off, no part, no quota or too many open
+   * drafts answer `skipped` without a row (the save then enqueues a normal job).
    */
   async createDraft(
     user: AuthUser,
@@ -126,19 +128,22 @@ export class AiJobsService {
     };
     const existing = await this.prisma.aiJob.findFirst({
       where: { userId, draftId: request.draftId },
-      select: { id: true, linkId: true, status: true, reason: true },
+      select: { id: true },
     });
     if (existing) {
-      // "Try again" after an outage: the same draft runs once more with the dialog's data.
-      if (
-        existing.linkId === null &&
-        existing.status === AI_JOB_STATE.Failed &&
-        existing.reason === AI_JOB_REASON.Unavailable
-      ) {
-        await this.prisma.aiJob.update({
-          where: { id: existing.id, userId },
-          data: { status: AI_JOB_STATE.Pending, reason: null, attempts: 0, notBefore: null },
-        });
+      // "Try again" after an outage: the same draft runs once more with the dialog's data. One
+      // conditional statement, so a save attaching the draft meanwhile is never undone.
+      const rearmed = await this.prisma.aiJob.updateMany({
+        where: {
+          id: existing.id,
+          userId,
+          linkId: null,
+          status: AI_JOB_STATE.Failed,
+          reason: AI_JOB_REASON.Unavailable,
+        },
+        data: { status: AI_JOB_STATE.Pending, reason: null, attempts: 0, notBefore: null },
+      });
+      if (rearmed.count > 0) {
         this.background.defer(() => this.runner.run(existing.id, userId, input));
       }
       return this.getJob(userId, existing.id);
@@ -149,8 +154,23 @@ export class AiJobsService {
     if (!stored.settings.enabled || parts.length === 0) {
       return this.skipped(request.draftId, AI_JOB_REASON.Off);
     }
+    // No row without room this month, and only so many open drafts a day (a dialog opened and
+    // closed over and over must not grow the table): both answer a synthetic `skipped`.
     const entitlements = await this.settings.entitlements(this.prisma, userId);
-    const room = await this.usage.hasRoom(userId, entitlements.aiTier);
+    if (!(await this.usage.hasRoom(userId, entitlements.aiTier))) {
+      return this.skipped(request.draftId, AI_JOB_REASON.Quota);
+    }
+    const openDrafts = await this.prisma.aiJob.count({
+      where: {
+        userId,
+        linkId: null,
+        draftId: { not: null },
+        createdAt: { gt: new Date(Date.now() - AI_DRAFT_LIMIT.WindowMs) },
+      },
+    });
+    if (openDrafts >= AI_DRAFT_LIMIT.OpenPerWindowMax) {
+      return this.skipped(request.draftId, AI_JOB_REASON.Quota);
+    }
     const language = await this.language(this.prisma, userId, stored, context);
     let jobId: string;
     try {
@@ -160,8 +180,6 @@ export class AiJobsService {
             userId,
             draftId: request.draftId,
             source: AI_JOB_SOURCE.Draft,
-            status: room ? AI_JOB_STATE.Pending : AI_JOB_STATE.Skipped,
-            reason: room ? null : AI_JOB_REASON.Quota,
             parts,
             language,
           },
@@ -177,17 +195,22 @@ export class AiJobsService {
       });
       return this.getJob(userId, winner.id);
     }
-    if (room) this.background.defer(() => this.runner.run(jobId, userId, input));
+    this.background.defer(() => this.runner.run(jobId, userId, input));
     return this.getJob(userId, jobId);
   }
 
-  /** `GET /api/ai/jobs/:id`: the user's job and its result so far; foreign or missing is 404. */
+  /**
+   * `GET /api/ai/jobs/:id`: the user's job and its result so far; foreign or missing is 404. While AI
+   * is off every job answers `skipped` (`off`) without suggestions or summary.
+   */
   async getJob(userId: string, id: string): Promise<AiJobResponse> {
     const job = await this.prisma.aiJob.findFirst({
       where: { id, userId },
       select: { id: true, linkId: true, status: true, reason: true, result: true },
     });
     if (!job) throw new NotFoundException(AI_ERROR_MESSAGE.JobNotFound);
+    const stored = await this.settings.read(this.prisma, userId);
+    if (!stored.settings.enabled) return this.skipped(job.id, AI_JOB_REASON.Off);
     const status = toAiJobStatus(job.status) ?? AI_JOB_STATUS.Pending;
     const response: AiJobResponse = {
       id: job.id,
@@ -269,9 +292,11 @@ export class AiJobsService {
     const requeue =
       draft.status === AI_JOB_STATE.Failed && draft.reason === AI_JOB_REASON.Unavailable;
     const status = requeue ? AI_JOB_STATE.Pending : draft.status;
+    // A requeued job starts its attempts over: the claim needs attempts below the maximum.
     await tx.$executeRaw`
       UPDATE ai_jobs SET link_id = ${linkId}::uuid, parts = ${parts}::text[], status = ${status},
-        reason = ${requeue ? null : draft.reason}, not_before = NULL, updated_at = now()
+        reason = ${requeue ? null : draft.reason}, not_before = NULL,
+        attempts = CASE WHEN ${requeue} THEN 0 ELSE attempts END, updated_at = now()
       WHERE id = ${draft.id}::uuid AND user_id = ${userId}::uuid`;
     await this.setLinkStatus(
       tx,
@@ -310,6 +335,36 @@ export class AiJobsService {
       UPDATE links SET ai_status = ${AI_JOB_STATE.Pending}
       WHERE user_id = ${userId}::uuid AND id = ANY(${linkIds}::uuid[])`;
     return { jobIds: rows.map((row) => row.id), touched: true };
+  }
+
+  /**
+   * A link's URL now points to another page (`PATCH`): its queued and running jobs are skipped (no
+   * reason; a running one's result is discarded by `AiApplyService`) and the open suggestions of the
+   * old page are deleted (not dismissed, so the new page may suggest the same names again). Call it
+   * after `folders:` and before `tags:`. Answers how many backfill jobs it skipped (for the run's
+   * progress, counted after the commit).
+   */
+  async supersede(tx: Tx, userId: string, linkId: string): Promise<number> {
+    const rows = await tx.$queryRaw<{ n: number }[]>`
+      WITH superseded AS (
+        UPDATE ai_jobs
+        SET status = ${AI_JOB_STATE.Skipped}, reason = NULL, lease_until = NULL, not_before = NULL,
+          result = NULL, updated_at = now()
+        WHERE user_id = ${userId}::uuid AND link_id = ${linkId}::uuid
+          AND status IN (${AI_JOB_STATE.Pending}, ${AI_JOB_STATE.Running})
+        RETURNING source
+      ), marked AS (
+        UPDATE links SET ai_status = ${AI_JOB_STATE.Skipped}
+        WHERE id = ${linkId}::uuid AND user_id = ${userId}::uuid
+          AND EXISTS (SELECT 1 FROM superseded)
+        RETURNING 1
+      )
+      SELECT (count(*) FILTER (WHERE source = ${AI_JOB_SOURCE.Backfill}))::int AS n
+      FROM superseded`;
+    await tx.linkSuggestion.deleteMany({
+      where: { userId, linkId, state: SUGGESTION_ROW_STATE.Suggested },
+    });
+    return rows[0]?.n ?? 0;
   }
 
   /** The summary language of a new job (setting, account language, request header, English). */

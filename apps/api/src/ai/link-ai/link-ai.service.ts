@@ -94,8 +94,14 @@ export class LinkAiService {
    * anything by itself. 409 while AI or summaries are off and while the summary is the user's.
    */
   async rewrite(userId: string, linkId: string, context: AiRequestContext): Promise<LinkAiState> {
-    const stored = await this.settings.read(this.prisma, userId);
     const jobIds = await this.prisma.$transaction(async (tx) => {
+      // The link row lock serialises two rewrites of one link: the second sees the first one's job.
+      const locked = await tx.$queryRaw<{ id: string }[]>`
+        SELECT id FROM links
+        WHERE id = ${linkId}::uuid AND user_id = ${userId}::uuid AND deleted_at IS NULL
+        FOR UPDATE`;
+      if (locked.length === 0) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
+      const stored = await this.settings.read(tx, userId);
       const link = await tx.link.findFirst({
         where: { id: linkId, userId, deletedAt: null },
         select: {

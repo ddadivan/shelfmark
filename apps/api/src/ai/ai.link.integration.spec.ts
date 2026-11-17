@@ -403,6 +403,35 @@ describe('AI link endpoints', () => {
       await a.patch(`/api/links/${link.id}`).send({ url: 'https://EXAMPLE.net/third' }).expect(200);
       expect(await t.db.prisma.aiJob.count({ where: { linkId: link.id } })).toBe(2);
     });
+
+    it('supersedes the jobs and open suggestions of the old page on a URL change', async () => {
+      const { link } = await processed();
+      await t.db.prisma.linkSuggestion.updateMany({
+        where: { linkId: link.id, kind: 'new-tag' },
+        data: { state: 'dismissed' },
+      });
+      // A job of the old page is still queued when the URL changes.
+      await rewrite(link.id).expect(200);
+      const [, old] = await t.db.prisma.aiJob.findMany({
+        where: { linkId: link.id },
+        orderBy: { createdAt: 'asc' },
+      });
+      await a.patch(`/api/links/${link.id}`).send({ url: 'https://example.org/other' }).expect(200);
+      expect(
+        await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: old?.id ?? '' } }),
+      ).toMatchObject({ status: 'skipped', reason: null });
+      const queued = await t.db.prisma.aiJob.findMany({
+        where: { linkId: link.id, status: { in: ['pending', 'running'] } },
+      });
+      expect(queued).toHaveLength(1);
+      expect(queued[0]?.source).toBe('save');
+      // Only the dismissal survives; the old page's open suggestions are gone.
+      expect(await rows(link.id)).toEqual([
+        { kind: 'new-tag', tagName: 'example', folderId: null, state: 'dismissed' },
+      ]);
+      await deferrer.flush();
+      expect((await row(link.id)).aiStatus).toBe('done');
+    });
   });
 
   describe('DELETE /api/ai/data', () => {

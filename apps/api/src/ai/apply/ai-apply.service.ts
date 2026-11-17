@@ -136,6 +136,8 @@ export class AiApplyService {
       },
     });
     if (!link) return false;
+    // A trashed link still gets its summary and suggestions (a restore brings them back with it, and
+    // the user paid for the answer); Automatic mode never moves or tags it while it is in Trash.
     const parts = new Set<string>(context.parts);
     const live = link.deletedAt === null && AUTO_SOURCES.includes(context.source);
     let produced = false;
@@ -243,21 +245,28 @@ export class AiApplyService {
     if (options.auto && candidates.length > 0) {
       // `folders:` and the job row are held; the tags lock comes last (ADR 0033 order).
       await this.tags.lockUserTags(tx, userId);
-      const own = await tx.tag.findMany({
-        where: {
-          userId,
-          OR: candidates.map((name) => ({
-            name: { equals: escapeLike(name), mode: 'insensitive' },
-          })),
-        },
-        select: { id: true, name: true },
-      });
-      if (own.length > 0) {
-        await tx.linkTag.createMany({
-          data: own.map((tag) => ({ linkId, tagId: tag.id })),
-          skipDuplicates: true,
+      // Under the tags lock (which every tag write of a link takes): a link the user tagged since
+      // it was read keeps the user's tags, and the candidates stay suggestions.
+      const tagged = await tx.linkTag.count({ where: { linkId } });
+      if (tagged === 0) {
+        const own = await tx.tag.findMany({
+          where: {
+            userId,
+            OR: candidates.map((name) => ({
+              name: { equals: escapeLike(name), mode: 'insensitive' },
+            })),
+          },
+          select: { id: true, name: true },
         });
-        for (const tag of own) applied.add(tag.name.toLowerCase());
+        // One own tag per name at most: tag names are unique ignoring case
+        // (`tags_user_id_lower_name_key`).
+        if (own.length > 0) {
+          await tx.linkTag.createMany({
+            data: own.map((tag) => ({ linkId, tagId: tag.id })),
+            skipDuplicates: true,
+          });
+          for (const tag of own) applied.add(tag.name.toLowerCase());
+        }
       }
     }
 

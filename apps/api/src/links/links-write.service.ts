@@ -227,6 +227,7 @@ export class LinksWriteService {
     this.assertTagNames(request.tags);
     const needsLock = typeof request.folderId === 'string' || request.pinnedInFolder === true;
     let aiJobIds: string[] = [];
+    let aiSuperseded = 0;
     let response: LinkResponse;
     try {
       response = await this.prisma.$transaction(async (tx) => {
@@ -261,6 +262,8 @@ export class LinksWriteService {
             data.kind = deriveLinkKind(request.url);
           }
         }
+        // Job rows after `folders:` and before `tags:` (ADR 0048 lock order).
+        aiSuperseded = await this.aiHooks.beforeUpdate(tx, userId, id, newPage);
 
         if (request.tags !== undefined) {
           // Held until commit, so a merge or a concurrent tag write cannot interleave with the swap.
@@ -301,7 +304,7 @@ export class LinksWriteService {
     } catch (error) {
       throw this.mapVanished(error);
     }
-    this.aiJobs.start(userId, aiJobIds);
+    await this.aiHooks.afterCommit(userId, aiJobIds, aiSuperseded);
     return response;
   }
 

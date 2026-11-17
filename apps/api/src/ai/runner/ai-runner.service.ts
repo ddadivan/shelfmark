@@ -15,6 +15,7 @@ import type { DraftInput } from '../models/draft-input.interface';
 import type { LinkJobInput } from '../models/link-job-input.interface';
 import type { LinkJobOutcome } from '../models/link-job-outcome.type';
 import type { PageExcerpt } from '../models/page-excerpt.interface';
+import type { Reservation } from '../models/reservation.interface';
 import { parseLinkOutput } from '../prompt/parse-link-output';
 import { AiProviderRegistry } from '../providers/ai-provider.registry';
 import { aiEntitlements } from '../settings/ai-entitlements';
@@ -71,12 +72,18 @@ export class AiRunnerService {
   async run(jobId: string, userId: string, draft?: DraftInput): Promise<void> {
     const job = await this.claim(jobId, userId);
     if (!job) return;
+    const reserved: Reservation = { month: null };
     try {
-      await this.process(job, draft);
+      await this.process(job, draft, reserved);
     } catch (error) {
       this.logger.error(
         `AI job ${job.id} errored (${error instanceof Error ? error.name : 'unknown'})`,
       );
+      // No result reached the link: give the month's link back, so a retry (which reserves again)
+      // or the final failure never costs the user twice or for nothing.
+      if (reserved.month !== null) {
+        await this.refund(job, reserved.month).catch(() => undefined);
+      }
       await this.retryOrFail(job).catch(() => undefined);
     }
   }
@@ -103,7 +110,11 @@ export class AiRunnerService {
     return row ? { ...row, parts: toAiParts(row.parts) } : null;
   }
 
-  private async process(job: ClaimedJob, draft: DraftInput | undefined): Promise<void> {
+  private async process(
+    job: ClaimedJob,
+    draft: DraftInput | undefined,
+    reserved: Reservation,
+  ): Promise<void> {
     const account = await this.prisma.user.findUnique({
       where: { id: job.userId },
       select: {
@@ -115,7 +126,7 @@ export class AiRunnerService {
         aiPack: true,
       },
     });
-    if (!account) return;
+    if (!account) return this.settle(job, AI_JOB_STATE.Failed, AI_JOB_REASON.Unavailable);
     const stored = await this.settings.read(this.prisma, job.userId);
     if (!stored.settings.enabled) {
       return this.settle(job, AI_JOB_STATE.Skipped, AI_JOB_REASON.Off);
@@ -126,6 +137,7 @@ export class AiRunnerService {
     const tier = aiEntitlements(account, readAiFullAccessEmails()).aiTier;
     const reservation = await this.reserve(job, tier);
     if (reservation === null) return this.settle(job, AI_JOB_STATE.Skipped, AI_JOB_REASON.Quota);
+    reserved.month = reservation;
 
     const page = account.fetchPreviews ? await this.excerpts.load(source.url) : NO_EXCERPT;
     const vocabulary = await loadLinkVocabulary(this.prisma, job.userId);
@@ -146,6 +158,8 @@ export class AiRunnerService {
       return this.settle(job, AI_JOB_STATE.Failed, AI_JOB_REASON.Rejected);
     }
     if (outcome.type === 'error') {
+      // Refunded here once; an error after this point must not refund again.
+      reserved.month = null;
       await this.refund(job, reservation);
       return outcome.retryable
         ? this.retryOrFail(job)
