@@ -400,6 +400,23 @@ describe('text-muted contrast (WCAG AA 4.5:1)', () => {
   });
 });
 
+describe('AI tokens contrast', () => {
+  it.each(['light', 'dark'] as const)('ai text-grade on bg, surface and ai-bg in %s', (theme) => {
+    expect(tokenHex(theme, 'ai')).toBe(theme === 'light' ? '#4c54b5' : '#a9aef2');
+    for (const surface of ['bg', 'surface', 'ai-bg']) {
+      const ratio = contrast(tokenHex(theme, 'ai'), tokenHex(theme, surface));
+      expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it.each(['light', 'dark'] as const)('ai-line keeps 3:1 on bg and surface in %s', (theme) => {
+    for (const surface of ['bg', 'surface']) {
+      const ratio = contrast(tokenHex(theme, 'ai-line'), tokenHex(theme, surface));
+      expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(3);
+    }
+  });
+});
+
 describe('highlight mark contrast (WCAG AA 4.5:1)', () => {
   it.each(['light', 'dark'] as const)('highlight-text on highlight-bg holds in %s', (theme) => {
     const ratio = contrast(tokenHex(theme, 'highlight-text'), tokenHex(theme, 'highlight-bg'));
