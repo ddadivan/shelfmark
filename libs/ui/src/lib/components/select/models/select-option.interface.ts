@@ -16,5 +16,7 @@ export interface SelectOption {
   readonly colour?: FolderColour | string;
   /** A folder's glyph or emoji for its tile (#418). */
   readonly icon?: IconName | string;
+  /** A short status shown as a badge after the name, in the list and the trigger ("New"). */
+  readonly badge?: string;
   readonly children?: readonly SelectOption[];
 }

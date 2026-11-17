@@ -217,7 +217,11 @@
         "label": "Ordner",
         "unsorted": "Ohne Ordner",
         "searchLabel": "Ordner suchen",
-        "noResults": "Keine Ordner gefunden"
+        "noResults": "Keine Ordner gefunden",
+        "create": "Ordner „{name}“ erstellen",
+        "newBadge": "Neu",
+        "notCreated": "Der Ordner „{{name}}“ konnte nicht erstellt werden",
+        "notCreatedDetail": "Der Link ist ohne Ordner gespeichert."
       },
       "tags": {
         "label": "Tags",
@@ -2770,6 +2774,12 @@
       },
       "folderStyleRace": {
         "text": "Wer den Stil eines Ordners schnell ändert, bekommt keine ältere Auswahl mehr zurück."
+      },
+      "newFolderInAddLink": {
+        "text": "Beim Hinzufügen eines Links kannst du einen Ordner anlegen: Gib im Feld „Ordner“ einen neuen Namen ein."
+      },
+      "emojiPickerTabs": {
+        "text": "Die Emoji-Auswahl ist so breit wie ihr Feld, und die Kategorie-Tabs sehen nicht mehr wie wählbare Emojis aus."
       }
     },
     "sections": {

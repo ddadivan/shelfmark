@@ -217,7 +217,11 @@
         "label": "Folder",
         "unsorted": "Unsorted",
         "searchLabel": "Search folders",
-        "noResults": "No folders found"
+        "noResults": "No folders found",
+        "create": "Create folder “{name}”",
+        "newBadge": "New",
+        "notCreated": "Couldn’t create the folder “{{name}}”",
+        "notCreatedDetail": "The link is saved without a folder."
       },
       "tags": {
         "label": "Tags",
@@ -2770,6 +2774,12 @@
       },
       "folderStyleRace": {
         "text": "Changing a folder's style quickly no longer brings back an older choice."
+      },
+      "newFolderInAddLink": {
+        "text": "Add link can create a folder: type a new name in the Folder field."
+      },
+      "emojiPickerTabs": {
+        "text": "The emoji picker is as wide as its field, and its category tabs no longer look like emoji to pick."
       }
     },
     "sections": {

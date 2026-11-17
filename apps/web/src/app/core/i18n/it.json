@@ -217,7 +217,11 @@
         "label": "Cartella",
         "unsorted": "Senza cartella",
         "searchLabel": "Cerca cartelle",
-        "noResults": "Nessuna cartella trovata"
+        "noResults": "Nessuna cartella trovata",
+        "create": "Crea la cartella “{name}”",
+        "newBadge": "Nuova",
+        "notCreated": "Impossibile creare la cartella “{{name}}”",
+        "notCreatedDetail": "Il link è salvato senza cartella."
       },
       "tags": {
         "label": "Tag",
@@ -2830,6 +2834,12 @@
       },
       "folderStyleRace": {
         "text": "Cambiare in fretta lo stile di una cartella non riporta più una scelta precedente."
+      },
+      "newFolderInAddLink": {
+        "text": "Aggiungi link può creare una cartella: scrivi un nuovo nome nel campo Cartella."
+      },
+      "emojiPickerTabs": {
+        "text": "Il selettore di emoji è largo quanto il suo campo e le schede delle categorie non sembrano più emoji da scegliere."
       }
     },
     "sections": {

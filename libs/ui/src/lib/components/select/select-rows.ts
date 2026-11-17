@@ -29,6 +29,7 @@ function visit(
       ...(option.lang ? { lang: option.lang } : {}),
       ...(option.colour ? { colour: option.colour } : {}),
       ...(option.icon ? { icon: option.icon } : {}),
+      ...(option.badge ? { badge: option.badge } : {}),
     },
     ...nested,
   ];
@@ -65,4 +66,24 @@ export function selectedRow(
     return emptyLabel ? { id: null, name: emptyLabel, path: emptyLabel, level: 0 } : undefined;
   }
   return selectRows(options, '', '').find((row) => row.id === value);
+}
+
+/**
+ * The name a "Create" row would create: the trimmed query, or `null` when it is empty or names an
+ * option already (any level, or the empty option; compared ignoring case).
+ */
+export function createName(
+  options: readonly SelectOption[],
+  query: string,
+  emptyLabel: string,
+): string | null {
+  const name = query.trim();
+  if (name === '') {
+    return null;
+  }
+  const wanted = fold(name);
+  const taken =
+    (emptyLabel !== '' && fold(emptyLabel) === wanted) ||
+    selectRows(options, '', '').some((row) => fold(row.name) === wanted);
+  return taken ? null : name;
 }
