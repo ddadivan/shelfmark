@@ -175,3 +175,19 @@ Transloco: `ai.*` (`settings`, `intro`, `suggest`, `summary`, `line`, `toast`, `
 5. **Demo.** Start demo sandboxes with AI on (mock provider, nothing leaves Shelfmark, intro already seen) so visitors see suggestions and summaries? Recommendation: yes.
 
 Author tasks outside the code: the Anthropic key in Vercel Production only, the $10 spend limit, `AI_FULL_ACCESS_EMAILS`, the provider retention period and region for the privacy page and the intro (`[PROVIDER]`, `[N] days`).
+
+## 10. Implementation notes (deviations from the plan)
+
+What the code on `feat/389-ai-foundation` does where it differs from sections 1–7:
+
+- **Draft input is not stored.** `POST /api/ai/drafts` keeps the URL, title, description and note only in the in-memory deferred task; the job row holds no input. A draft whose task was lost (the instance died) cannot be rerun by the tick or the sweep: it fails with `unavailable` and is re-armed by a repeat `POST /api/ai/drafts` with the same `draftId` or by the save that attaches it (`aiDraftId`). The tick and the sweep leave unattached drafts to their dialog; the sweep deletes them after 24 h.
+- **Draft suggestions cannot be dismissed on the server before the save.** They live in the job `result` (ids from `draftSuggestionId`), not in `link_suggestions`; the dialog hides them locally, and only stored suggestions of a saved link take `POST /api/ai/suggestions/:id/dismiss`.
+- **The tick and the sweep answer at once** (progress, or `{ failed, deletedDrafts, users }`) and do their work after the response through `AiBackgroundService` (6 s and 25 s budgets), so the 8 s request timeout never cuts them.
+- **Rewrite is refused (409) when summaries are off**, as well as with AI off or a user summary.
+- **`DELETE /api/ai/data` deletes the job rows** (not only their results), besides AI summaries and all suggestions; open batches and a running backfill are cancelled.
+- **The sweep is the only cross-user reader** in the AI module; every other query filters by the session `userId`.
+- **`AiProviderRegistry.forBatch()` may return `null`**: a stored real (Anthropic) batch is never answered by the mock, so without the real provider in that environment its jobs fail.
+- **`AiModule` does not import `RulesModule`** (nor `LinksModule`, which imports it): the link save passes which parts the user or a domain rule already filled, and those are not asked for.
+- **`AI_PROVIDER`** accepts `mock` or `anthropic` (the same as unset); any other value stops the boot. The SDK client sets no `baseURL`, so it calls its default host; `ANTHROPIC_BASE_URL` must never be set (`docs/SETUP.md` 5.11).
+- **`CreateAiDraftRequest`** is `{ draftId, url, title?, description?, note? }`: the dialog's folder and tags are not sent; the save decides what is still open.
+- **Settings nav:** there is no Notifications entry in `SETTINGS_NAV_ENTRIES`, so Settings › AI sits between Library and Language (web part, still to come).
