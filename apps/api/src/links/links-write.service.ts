@@ -20,7 +20,7 @@ import {
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
 import { AiJobsService } from '../ai/jobs/ai-jobs.service';
-import { AiSuggestionsService } from '../ai/suggestions/ai-suggestions.service';
+import { AiLinkHooksService } from '../ai/link-hooks/ai-link-hooks.service';
 import type { AiRequestContext } from '../ai/models/ai-request-context.interface';
 import { REQUEST_TIMEOUT_MS } from '../common/interceptors/models/request-timeout.const';
 import { FoldersService } from '../folders/folders.service';
@@ -48,13 +48,6 @@ function noteOrNull(note: string | null | undefined): string | null {
   return note === undefined || note === null || note.trim() === '' ? null : note;
 }
 
-/** Whether two tag name lists hold the same names, ignoring case and order. */
-function sameNames(a: readonly string[], b: readonly string[]): boolean {
-  const left = new Set(a.map((name) => name.toLowerCase()));
-  const right = new Set(b.map((name) => name.toLowerCase()));
-  return left.size === right.size && [...left].every((name) => right.has(name));
-}
-
 /**
  * Writes of the links API. Locks are always taken in the order `folders:` then `tags:` (ADR 0033);
  * the page fetch of a create runs before the transaction, never inside it.
@@ -69,7 +62,7 @@ export class LinksWriteService {
     private readonly images: LinkImageCaptureService,
     private readonly rules: RulesService,
     private readonly aiJobs: AiJobsService,
-    private readonly aiSuggestions: AiSuggestionsService,
+    private readonly aiHooks: AiLinkHooksService,
   ) {}
 
   /**
@@ -282,33 +275,26 @@ export class LinksWriteService {
           data: touched ? { ...data, updatedAt: new Date() } : data,
           include: LINK_INCLUDE,
         });
-        // AI (#390): the user's own folder or tag choice settles the suggestion marks.
-        const folderChanged =
-          request.folderId !== undefined && request.folderId !== current.folderId;
-        const tagsChanged =
-          request.tags !== undefined &&
-          !sameNames(
-            current.tags.map((entry) => entry.tag.name),
-            row.tags.map((entry) => entry.tag.name),
-          );
-        if (folderChanged || tagsChanged) {
-          await this.aiSuggestions.afterUserEdit(tx, userId, id, {
-            ...(folderChanged ? { folderId: row.folderId } : {}),
-            ...(tagsChanged ? { tags: row.tags.map((entry) => entry.tag.name) } : {}),
-          });
-        }
-        // A new page asks AI again, unless the summary is the user's (ADR 0048).
-        if (newPage && row.summarySource !== SUMMARY_SOURCE.User) {
-          const ai = await this.aiJobs.enqueue(
-            tx,
-            userId,
-            [{ linkId: id, folderSet: row.folderId !== null, tagsSet: row.tags.length > 0 }],
-            context,
-          );
-          aiJobIds = ai.jobIds;
-          if (ai.touched) {
-            row = await tx.link.findFirstOrThrow({ where: { id, userId }, include: LINK_INCLUDE });
-          }
+        // AI (#390, ADR 0048): settle the suggestion marks; a new page asks AI again.
+        const ai = await this.aiHooks.afterUpdate(
+          tx,
+          userId,
+          {
+            linkId: id,
+            folderSent: request.folderId !== undefined,
+            tagsSent: request.tags !== undefined,
+            folderBefore: current.folderId,
+            folderAfter: row.folderId,
+            tagsBefore: current.tags.map((entry) => entry.tag.name),
+            tagsAfter: row.tags.map((entry) => entry.tag.name),
+            newPage,
+            summarySource: row.summarySource,
+          },
+          context,
+        );
+        aiJobIds = ai.jobIds;
+        if (ai.touched) {
+          row = await tx.link.findFirstOrThrow({ where: { id, userId }, include: LINK_INCLUDE });
         }
         return toLinkResponse(row);
       });

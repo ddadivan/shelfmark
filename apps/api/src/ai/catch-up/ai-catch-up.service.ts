@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AI_BACKFILL_STATE, AI_JOB_REASON, type AiTickResponse } from '@shelfmark/contracts';
 import { PrismaService } from '../../prisma/prisma.service';
+import { AiBackfillResultsService } from '../backfill/ai-backfill-results.service';
 import { AiBackfillService } from '../backfill/ai-backfill.service';
 import { AiBackgroundService } from '../background/ai-background.service';
 import { AI_BATCH_STATE } from '../models/ai-batch-state.const';
@@ -28,6 +29,7 @@ export class AiCatchUpService {
     private readonly settings: AiSettingsService,
     private readonly runner: AiRunnerService,
     private readonly backfill: AiBackfillService,
+    private readonly backfillResults: AiBackfillResultsService,
     private readonly background: AiBackgroundService,
   ) {}
 
@@ -73,7 +75,7 @@ export class AiCatchUpService {
 
   /** One user's catch-up within the deadline. */
   async catchUp(userId: string, deadline: number): Promise<void> {
-    await this.backfill.poll(userId, deadline);
+    await this.backfillResults.poll(userId, deadline);
     const stale = await this.staleJobs(userId);
     if (stale.length > 0) await this.runner.runMany(userId, stale, deadline - Date.now());
     await this.backfill.advance(userId, deadline);
