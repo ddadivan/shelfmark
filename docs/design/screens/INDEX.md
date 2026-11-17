@@ -84,7 +84,7 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 - `SetFeedback.dc.html` — Settings › Your feedback (desktop)
 - `Languages.dc.html` — Language list and translation checks (desktop)
 - `Trash.dc.html` — Keyboard shortcuts dialog (press ?) (desktop)
-- `Privacy.dc.html` — Privacy policy page (desktop)
+- `Privacy.dc.html` — Privacy policy page, with the AI section (#476) (desktop)
 - `MobileSettings.dc.html` — You (settings) · phone (phone)
 
 ## 10 · Feedback: toasts, errors, rating
@@ -99,3 +99,23 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 - `Extension.dc.html` — Browser extension popup (Chrome, #445): form and Save, saved, opening, folder picker, already saved, signed out, page that cannot be saved, errors; light and dark
 - `ExtensionInstall.dc.html` — Install the extension from the app (#455): library banner and Settings row; desktop Chromium only; light and dark
 - `Landing.dc.html` also has the "Save the page you are on" block: a mention of the extension without a link (#455)
+
+## 12 · AI (#476)
+
+AI features F0–F8 (`docs/ai/FEATURES.md`, approved Nov 17, 2026; parent #388). Each board shows its states: off, suggesting / pending, limit reached, not available, empty. Rules: `BRAND.md` › AI; components `AiMark`, `Suggestion`, `AiSummary`, `StreamingAnswer`.
+
+- `AiIntro.dc.html` — First-run AI intro when AI is turned on: what it does, what is sent, no training, the provider, link to Settings › AI; desktop dialog and phone sheet
+- `AiSettings.dc.html` — Settings › AI: opt-in switch, Folder and Tags each Suggest / Automatic / Off (default Suggest), Summaries switch, what is sent (notes, summary language), this month's usage, process existing links, delete AI data; variants off, folder set to Automatic, limit reached, provider trouble, processing (desktop)
+- `AiTags.dc.html` — Tag and folder suggestions in Add link and Edit link: ready, suggesting, accepted, old link, limit reached, not available, off; chip anatomy; **proposal** rule offer after repeated corrections; you chose the folder (AI never overrides); Automatic mode applied with «Moved by AI» and Undo (desktop)
+- `AiSummary.dc.html` — Summaries on cards and rows, pending, kind-aware wording, Edit link written by AI and edited by you (desktop)
+- `AiTidy.dc.html` — **Proposal** Tidy Unsorted: entry point, review with everything selected, applied toast with Undo, empty (desktop)
+- `MobileAi.dc.html` — Phone at 360px: Add link sheet with suggestions, suggesting and limit states, feed with summaries, You › AI, Tidy Unsorted, the Folder mode sheet, Automatic mode toast with Undo (phone)
+
+- `Privacy.dc.html` (section 9) — now has the «AI features (optional)» section: provider as processor, data sent, retention, counts only, turning it off
+
+- `AiSearch.dc.html` — Search by meaning (F3) in ⌘K: word matches first, “Related by meaning” with “why it matched”, nothing matches the words, not ready, off; the Ask entry (desktop)
+- `AskShelf.dc.html` — Ask your shelf (F4) side panel: empty with starters, streaming, answer with cited sources, not in your links, daily limit, error (desktop)
+- `AiCleanup.dc.html` — Clean-up (F5): report with per-item choice and one Undo, entry card, checking, applied, nothing to clean (desktop)
+- `AiConnect.dc.html` — Connect your assistant (F6, MCP): server address, token shown once, connected clients, revoke, empty (desktop)
+- `AiDiscover.dc.html` — Related on your shelf in Edit link (F7); “From your shelf” weekly block with and without AI (F8) (desktop)
+- `MobileAiMore.dc.html` — Phone at 360px: Search · Ask segment, meaning results, Ask empty and answered (phone)

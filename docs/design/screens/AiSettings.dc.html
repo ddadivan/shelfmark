@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Settings › AI</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; min-height: 1400px; display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; box-sizing: border-box; align-items: flex-start;">
+<nav aria-label="Settings" style="flex: 1 1 220px; max-width: 248px; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+<a href="#" class="sm-btn sm-btn--ghost sm-btn--sm" style="text-decoration: none; align-self: flex-start; margin-bottom: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 6l-6 6 6 6"/></svg>Back to links</a>
+<div class="sm-tree__section" style="padding-top: 4px;">Settings</div>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Account</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Appearance</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Library</a>
+<a href="#" class="sm-tree__row is-active" aria-current="page" style="text-decoration: none;">AI</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Notifications and reminders</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Language</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Keyboard shortcuts</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Import and export</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Privacy and data</a>
+<a href="#" class="sm-tree__row" style="text-decoration: none;">Your feedback</a>
+</nav>
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start; padding: 8px 16px 40px;">
+<div style="flex: 1 1 520px; max-width: 680px; display: flex; flex-direction: column; gap: 18px;">
+<div><h1 style="margin: 0; font-size: 34px; line-height: 40px; font-weight: 600;">AI</h1><p style="margin: 4px 0 0; font-size: 14px; color: var(--text-muted);">Help with organising, only when you want it. Off until you turn it on.</p></div>
+<section class="sm-panel sm-settings" aria-labelledby="ai1">
+<h2 id="ai1" class="sm-settings__title">AI features</h2>
+<div class="sm-setting sm-setting--top"><div style="display: flex; gap: 12px; align-items: center;"><span class="sm-setting__icon"><span style="display: inline-flex; color: var(--text);"><svg class="sm-ai-spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4c.6 3.9 2.6 6 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5C8.4 10 10.4 7.9 11 4z"/><path d="M18.5 15v4M16.5 17h4"/></svg></span></span><div><div class="sm-setting__title">Use AI in Shelfmark</div><div class="sm-setting__desc">Sends a link’s address, title and a short excerpt of the page to our AI provider to suggest tags and write summaries. Never used to train models, never used for statistics.</div></div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Use AI in Shelfmark"></button></div>
+<div class="sm-setting sm-setting--top"><div><div class="sm-setting__title">Folder</div><div class="sm-setting__desc">Suggest: a chip you tap. Automatic: only when you leave a link in Unsorted, with Undo. A folder you pick is never changed.</div></div><div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Folder suggestions" style="--seg-n: 3; --seg-i: 0;"><button class="sm-seg__item is-active" role="radio" aria-checked="true" style="padding: 0 12px; font-size: 13px;">Suggest</button><button class="sm-seg__item" role="radio" aria-checked="false" aria-label="Apply automatically when I don’t choose" style="padding: 0 12px; font-size: 13px;">Automatic</button><button class="sm-seg__item" role="radio" aria-checked="false" style="padding: 0 12px; font-size: 13px;">Off</button></div></div>
+<div class="sm-setting sm-setting--top"><div><div class="sm-setting__title">Tags</div><div class="sm-setting__desc">Suggest: chips you tap. Automatic: only when you add no tags yourself, with Undo.</div></div><div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Tags suggestions" style="--seg-n: 3; --seg-i: 0;"><button class="sm-seg__item is-active" role="radio" aria-checked="true" style="padding: 0 12px; font-size: 13px;">Suggest</button><button class="sm-seg__item" role="radio" aria-checked="false" aria-label="Apply automatically when I don’t choose" style="padding: 0 12px; font-size: 13px;">Automatic</button><button class="sm-seg__item" role="radio" aria-checked="false" style="padding: 0 12px; font-size: 13px;">Off</button></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Summaries</div><div class="sm-setting__desc">One or two sentences on each link, so you remember why you saved it. Edit them any time.</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Summaries"></button></div>
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="ai2">
+<h2 id="ai2" class="sm-settings__title">What is sent</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Include my notes</div><div class="sm-setting__desc">Notes make suggestions more accurate. When off, your notes never leave Shelfmark.</div></div><button class="sm-switch" role="switch" aria-checked="false" aria-label="Include my notes"></button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Summary language</div><div class="sm-setting__desc">Summaries are written in this language, whatever the page is in.</div></div><button class="sm-btn sm-btn--secondary sm-btn--sm">Match the app (English)<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="ai3">
+<h2 id="ai3" class="sm-settings__title">This month</h2>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 4px 0 14px;">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 500;">38 of 100 links this month</span><span style="font-size: 13px; color: var(--text-muted);">Resets on Dec 1</span></div>
+<div class="sm-meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="38" aria-label="AI links used this month"><div class="sm-meter__fill" style="width: 38%;"></div></div>
+
+</div>
+<div class="sm-setting"><div><div class="sm-setting__title">Process existing links</div><div class="sm-setting__desc">212 links were saved before you turned AI on. Adds suggestions and summaries in the background, in about an hour; uses 212 of your links.</div></div><button class="sm-btn sm-btn--secondary sm-btn--sm">Process 212 links</button></div>
+</section>
+<section class="sm-panel sm-settings" aria-labelledby="ai4">
+<h2 id="ai4" class="sm-settings__title">Your AI data</h2>
+<div class="sm-setting"><div><div class="sm-setting__title">Delete AI data</div><div class="sm-setting__desc">Removes every summary and suggestion AI made. Your own edits, tags and folders stay.</div></div><button class="sm-btn sm-btn--secondary sm-btn--sm">Delete AI data</button></div>
+<div class="sm-setting"><div><div class="sm-setting__title">How AI works in Shelfmark</div><div class="sm-setting__desc">What is sent, to whom, how long it is kept, and how to turn it off</div></div><button class="sm-btn sm-btn--ghost sm-btn--sm">Read</button></div>
+</section>
+</div>
+<aside style="flex: 1 1 340px; max-width: 400px; display: flex; flex-direction: column; gap: 28px; padding-top: 64px;">
+<div class="a-state" style="max-width: none;"><h2 class="a-cap">Off (default)</h2><section class="sm-panel sm-settings" aria-labelledby="ai1">
+<h2 id="ai1" class="sm-settings__title">AI features</h2>
+<div class="sm-setting sm-setting--top"><div style="display: flex; gap: 12px; align-items: center;"><span class="sm-setting__icon"><span style="display: inline-flex; color: var(--text);"><svg class="sm-ai-spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4c.6 3.9 2.6 6 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5C8.4 10 10.4 7.9 11 4z"/><path d="M18.5 15v4M16.5 17h4"/></svg></span></span><div><div class="sm-setting__title">Use AI in Shelfmark</div><div class="sm-setting__desc">Sends a link’s address, title and a short excerpt of the page to our AI provider to suggest tags and write summaries. Never used to train models, never used for statistics.</div></div></div><button class="sm-switch" role="switch" aria-checked="false" aria-label="Use AI in Shelfmark"></button></div>
+
+</section><p class="a-note">Only the main switch and its description. Turning it on the first time opens the AI intro (AiIntro); after that it shows the feature choices and starts processing new links only.</p></div>
+<div class="a-state" style="max-width: none;"><h2 class="a-cap">Folder set to Automatic</h2><section class="sm-panel sm-settings" aria-labelledby="ai1">
+<h2 id="ai1" class="sm-settings__title">AI features</h2>
+<div class="sm-setting sm-setting--top"><div style="display: flex; gap: 12px; align-items: center;"><span class="sm-setting__icon"><span style="display: inline-flex; color: var(--text);"><svg class="sm-ai-spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4c.6 3.9 2.6 6 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5C8.4 10 10.4 7.9 11 4z"/><path d="M18.5 15v4M16.5 17h4"/></svg></span></span><div><div class="sm-setting__title">Use AI in Shelfmark</div><div class="sm-setting__desc">Sends a link’s address, title and a short excerpt of the page to our AI provider to suggest tags and write summaries. Never used to train models, never used for statistics.</div></div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Use AI in Shelfmark"></button></div>
+<div class="sm-setting sm-setting--top"><div><div class="sm-setting__title">Folder</div><div class="sm-setting__desc">Suggest: a chip you tap. Automatic: only when you leave a link in Unsorted, with Undo. A folder you pick is never changed.</div></div><div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Folder suggestions" style="--seg-n: 3; --seg-i: 1;"><button class="sm-seg__item" role="radio" aria-checked="false" style="padding: 0 12px; font-size: 13px;">Suggest</button><button class="sm-seg__item is-active" role="radio" aria-checked="true" aria-label="Apply automatically when I don’t choose" style="padding: 0 12px; font-size: 13px;">Automatic</button><button class="sm-seg__item" role="radio" aria-checked="false" style="padding: 0 12px; font-size: 13px;">Off</button></div></div>
+<div class="sm-setting sm-setting--top"><div><div class="sm-setting__title">Tags</div><div class="sm-setting__desc">Suggest: chips you tap. Automatic: only when you add no tags yourself, with Undo.</div></div><div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Tags suggestions" style="--seg-n: 3; --seg-i: 0;"><button class="sm-seg__item is-active" role="radio" aria-checked="true" style="padding: 0 12px; font-size: 13px;">Suggest</button><button class="sm-seg__item" role="radio" aria-checked="false" aria-label="Apply automatically when I don’t choose" style="padding: 0 12px; font-size: 13px;">Automatic</button><button class="sm-seg__item" role="radio" aria-checked="false" style="padding: 0 12px; font-size: 13px;">Off</button></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">Summaries</div><div class="sm-setting__desc">One or two sentences on each link, so you remember why you saved it. Edit them any time.</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Summaries"></button></div>
+</section><p class="a-note">"Automatic" reads in full as "Apply automatically when I don’t choose" in the radio’s accessible name and on the phone. Off by default; each choice is separate for folder and tags.</p></div>
+<div class="a-state" style="max-width: none;"><h2 class="a-cap">Limit reached</h2><section class="sm-panel sm-settings"><h2 class="sm-settings__title">This month</h2><div style="display: flex; flex-direction: column; gap: 8px; padding: 4px 0 14px;">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px;"><span style="font-size: 14px; font-weight: 500;">100 of 100 links this month</span><span style="font-size: 13px; color: var(--text-muted);">Resets on Dec 1</span></div>
+<div class="sm-meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-label="AI links used this month"><div class="sm-meter__fill" style="width: 100%; background: var(--warning);"></div></div>
+<div class="sm-notice sm-notice--warning" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>You used this month’s 100 links. New links save as usual, without suggestions or summaries, until Dec 1.</span></div>
+</div></section><p class="a-note">Warning colour on the meter plus words. Later, with monetisation: an "Upgrade" button here.</p></div>
+<div class="a-state" style="max-width: none;"><h2 class="a-cap">Provider trouble</h2><section class="sm-panel sm-settings"><h2 class="sm-settings__title">AI features</h2><div class="sm-notice sm-notice--warning" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>AI isn’t responding right now. Your links save as usual; suggestions and summaries catch up when it’s back.</span></div></section><p class="a-note">Shown at the top of the page while the provider fails. Nowhere else in the app.</p></div>
+<div class="a-state" style="max-width: none;"><h2 class="a-cap">Processing existing links</h2><section class="sm-panel sm-settings"><h2 class="sm-settings__title">This month</h2><div class="sm-setting"><div style="flex: 1;"><div class="sm-setting__title">Processing existing links</div><div class="sm-setting__desc">86 of 212 done. You can close Shelfmark; it continues in the background.</div><div class="sm-meter" style="margin-top: 10px;" role="progressbar" aria-valuenow="86" aria-valuemax="212" aria-label="Existing links processed"><div class="sm-meter__fill" style="width: 41%;"></div></div></div><button class="sm-btn sm-btn--ghost sm-btn--sm">Stop</button></div></section><p class="a-note">Uses the Batch API, so it can take an hour. Stop keeps what is done.</p></div>
+</aside>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

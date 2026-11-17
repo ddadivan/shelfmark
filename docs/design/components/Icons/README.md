@@ -13,3 +13,9 @@ Icons is Shelfmark's own outline set — 44 icons drawn for this product, delive
 
 Both follow the rules above (1.75px line, round caps and joins, converted to filled outlines, no `stroke`).
 
+## Added for AI (#476)
+
+- `spark` — a four-point star with concave sides and a small plus at its lower right (stroke source: `M11 4c.6 3.9 2.6 6 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5C8.4 10 10.4 7.9 11 4z M18.5 15v4 M16.5 17h4`): the AI mark (component AiMark).
+
+It follows the same rules (1.75px line, round caps and joins, converted to filled outlines, no `stroke`).
+

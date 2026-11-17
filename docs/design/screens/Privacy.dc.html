@@ -36,9 +36,19 @@ a{color:var(--accent)}a:hover{color:var(--text)}
 <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px;">
 <li>We don't sell or share your data and don't show ads.</li>
 <li>We don't read your links ourselves; previews are fetched automatically.</li>
+<li>We don't use your links, notes or summaries to train AI models, and we don't let our AI provider do so.</li>
 </ul>
 <h2 style="margin: 12px 0 0; font-size: 18px; font-weight: 600;">Where it lives</h2>
 <p style="margin: 0;">The app runs on Vercel and the database on Neon. [CHECK REGIONS AND ADD LINKS TO THEIR POLICIES]</p>
+<h2 id="ai" style="margin: 12px 0 0; font-size: 18px; font-weight: 600;">AI features (optional)</h2>
+<p style="margin: 0;">AI is off until you turn it on in Settings › AI. When it is on, it suggests tags and folders and writes short summaries. Everything it makes is marked with a small spark and may be inaccurate; nothing is applied unless you accept it or choose automatic mode.</p>
+<ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px;">
+<li><b style="font-weight: 600;">Who processes it:</b> [AI PROVIDER], as our processor, only to produce the result you asked for. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]</li>
+<li><b style="font-weight: 600;">What is sent:</b> a link's address, title, description and text extracted from the page, and the names of your tags and folders. Your notes only if you turn on "Include my notes". Never your other links, your account details or anyone else's data.</li>
+<li><b style="font-weight: 600;">How long it is kept:</b> the provider keeps the request for at most [N] days and doesn't use it for training. The results (tags, summaries) are stored with your links and deleted with them.</li>
+<li><b style="font-weight: 600;">What we count:</b> only the number of AI requests per account, for your monthly limit. As everywhere in Shelfmark, statistics use counts only, never what you saved.</li>
+<li><b style="font-weight: 600;">Turning it off:</b> switch off one feature or AI as a whole in Settings › AI; requests stop at once. "Delete AI data" there removes every summary and suggestion AI made.</li>
+</ul>
 <h2 style="margin: 12px 0 0; font-size: 18px; font-weight: 600;">Your control</h2>
 <p style="margin: 0;">You can delete any link at any time, or delete your whole account in Settings — everything is removed for good.</p>
 <h2 style="margin: 12px 0 0; font-size: 18px; font-weight: 600;">Contact</h2>
@@ -46,7 +56,7 @@ a{color:var(--accent)}a:hover{color:var(--text)}
 </article>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1400}}'>
 class Component extends DCLogic {
   renderVals() {
     return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
