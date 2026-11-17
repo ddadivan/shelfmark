@@ -63,6 +63,7 @@ Updated as work goes on — every session resumes from here.
     - rules by domain (#398, #421), in-app reminders (#275, #425; email reminders wait for a sending domain, no push), the update toast, What's new and the public `/changelog` with a real app version (#424, #426), a late folder-style answer no longer undoes a newer choice (#427, #428);
     - hotfixes 2.0.1–2.0.5 are in production and in `stage` (#409, #417).
   - Next: the author reviews `stage`. Then release 2.1.0: a chore PR into `stage` sets the version `2.1.0`, the changelog date and the What's new media; a `release/2.1` branch from `stage` with `git merge -s ours origin/main`; the release PR into `main` merged with "Create a merge commit".
+  - Nov 16, 2026: browser extension (#445), plan approved by the author. Design PR #446 (`docs/design/screens/Extension.dc.html`, one form with Save, then a Saved screen), code PR #447 stacked on it (`apps/extension`, `EXTENSION_ORIGINS` in the CSRF guard, `POST /api/links/lookup`, ADR 0046, SETUP.md 5.9, store materials in `docs/store/extension/`). Both drafts: the author tests the unpacked build locally before anything is merged; publishing in the Chrome Web Store is the author's step.
   - Backlog: #423 (`folderId: null` on POST /api/links answers 500), a rate limit on `/rules/:id/matches`, format characters in folder descriptions.
   - Ideas that are not planned (licence, launch, monetisation, legal, trademark, save by email) are in "Ideas to discuss (not planned)".
 
@@ -523,7 +524,7 @@ Source: [Better Auth — NestJS integration](https://better-auth.com/docs/integr
 
 ### 5.5 Ways to save links
 
-Stage 1: manual adding in the web interface only (a form with a URL field). Stage 2 added Paste many and the Share target. Import from browser bookmarks, Pocket, Raindrop.io and the Shelfmark JSON backup (#387), rules that put a link into a folder and tags by its domain (#398), the browser extension and import from Telegram are in the backlog. The API is designed so they can be plugged in later without rework.
+Stage 1: manual adding in the web interface only (a form with a URL field). Stage 2 added Paste many and the Share target. Import from browser bookmarks, Pocket, Raindrop.io and the Shelfmark JSON backup (#387), rules that put a link into a folder and tags by its domain (#398) and import from Telegram are in the backlog. The browser extension (#445, `apps/extension`, ADR 0046) saves the current tab from Chrome, Edge, Brave and Arc: `activeTab` plus host access to the Shelfmark API only, the browser's session cookie, no token. The API is designed so they can be plugged in later without rework.
 
 ### 5.6 AI features
 
@@ -593,10 +594,10 @@ Security is a mandatory requirement, not a wish: a task is not done until the it
 | **SSRF** when fetching previews (the main risk of the service) | Only `http`/`https`; block private and reserved IPs (localhost, 10.x, 172.16–31.x, 192.168.x, 169.254.x, IPv6 equivalents) after DNS resolution; timeout; limits on response size and number of redirects; no cookie forwarding |
 | **Access to other users' data (IDOR)** | Every request to links, folders, tags is filtered by the session `userId`; dedicated tests "user A cannot see or change user B's data" |
 | **XSS** | Angular escaping by default; `innerHTML` and `bypassSecurityTrust…` are forbidden; links with a `javascript:` / `data:` scheme are rejected on the backend |
-| **Sessions and CSRF** | httpOnly + Secure + SameSite cookies; Origin check; limited session lifetime; sign-out invalidates the session |
+| **Sessions and CSRF** | httpOnly + Secure + SameSite cookies; Origin check (the browser extension's `chrome-extension://<id>` origins from `EXTENSION_ORIGINS` are trusted in `CsrfGuard` only, ADR 0046); limited session lifetime; sign-out invalidates the session |
 | **Invalid data** | Validation of all DTOs; field length limits (URL, title, note, tag) |
 | **API abuse** | Rate limiting (`@nestjs/throttler`), stricter on adding links and fetching previews |
-| **Headers** | Helmet, Content-Security-Policy, HSTS; no CORS: web and API share one origin (ADR 0007) |
+| **Headers** | Helmet, Content-Security-Policy, HSTS; no CORS: web and API share one origin (ADR 0007); the browser extension needs none either (host permission, ADR 0046) |
 | **SQL injection** | Only parameterised Prisma queries; `$queryRawUnsafe` is forbidden |
 | **Secret leaks** | Secrets only in Vercel environment variables; `.env` in `.gitignore`; GitHub secret scanning + push protection; secrets and tokens are never written to logs |
 | **Vulnerable dependencies** | Dependabot; `npm audit` in CI; CodeQL (free for public repositories) |
@@ -704,6 +705,7 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 | `*` | `/api/auth/*` | Sign-in / sign-out with Google and GitHub (Better Auth) |
 | GET | `/api/auth/get-session` | Current user and session (Better Auth); `null` when signed out |
 | DELETE | `/api/me` | Delete the account and all data |
+| POST | `/api/links/lookup` | `{ url }` → `{ link: LinkResponse \| null }`: the user's newest live (not trashed) link whose normalized URL equals the URL without tracking parameters. Never fetches the page; rate limit as `POST /api/links` (browser extension, ADR 0046) |
 | POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill). With the account's `fetchPreviews` off no page is loaded (`fetched: false`, only the duplicate check); the URL is always checked and fetched without tracking parameters (#284, #315) |
 | GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `kind` (one of `video`, `article`, `shopping`, `other`; ADR 0038), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit`. With `folderId` the first page also returns `pinned`: the links pinned to the top of that folder in pin order (same filters), not repeated in `items` or later pages (ADR 0037) |
 | GET | `/api/links/recent` | Recently opened (by `lastOpenedAt`, only the last 30 days, `RECENT_LINKS_WINDOW_DAYS`), `limit` |

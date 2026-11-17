@@ -1,0 +1,82 @@
+{
+  "popup": {
+    "loading": "Carregando",
+    "openApp": "Abrir o Shelfmark",
+    "openInApp": "Abrir no Shelfmark",
+    "unsorted": "Sem pasta",
+    "form": {
+      "title": "Salvar no Shelfmark",
+      "folder": "Pasta",
+      "chooseFolder": "Pasta: {{folder}}. Alterar",
+      "ruleHint": "Pela sua regra para {{domain}}",
+      "recentFolders": "Pastas recentes",
+      "tags": "Tags",
+      "tagsPlaceholder": "Adicionar tag",
+      "tagsMax": "Até {{max}} tags",
+      "tagsCreate": "Criar tag",
+      "tagsRemove": "Remover tag",
+      "tagsAdded": "Tag adicionada",
+      "tagsRemoved": "Tag removida",
+      "tagsDuplicate": "Esta tag já foi adicionada",
+      "tagsList": "Sugestões de tags",
+      "note": "Nota",
+      "notePlaceholder": "Por que você está salvando isto?",
+      "save": "Salvar",
+      "newBadge": "nova"
+    },
+    "picker": {
+      "title": "Escolha uma pasta",
+      "back": "Voltar",
+      "search": "Encontrar uma pasta",
+      "list": "Pastas",
+      "noResults": "Nenhuma pasta com esse nome",
+      "newFolder": "Nova pasta"
+    },
+    "newFolder": {
+      "title": "Nova pasta",
+      "label": "Nome da pasta",
+      "placeholder": "Por exemplo, Receitas",
+      "hint": "A pasta é criada quando você salva a página.",
+      "create": "Criar"
+    },
+    "saved": {
+      "title": "Salvo em {{folder}}",
+      "done": "Concluir",
+      "folderNotCreated": "Não foi possível criar a pasta “{{name}}”, então o link foi salvo sem pasta."
+    },
+    "duplicate": {
+      "title": "Já está na sua biblioteca",
+      "notice": "Você salvou isto {{when}} em {{folder}}.",
+      "saveCopy": "Salvar uma cópia"
+    },
+    "signedOut": {
+      "title": "Entre para salvar esta página",
+      "text": "Entre uma vez neste navegador, e cada página fica a um clique de distância.",
+      "signIn": "Entrar no Shelfmark",
+      "privacy": "Só a página que você salva é enviada, nada mais do que você navega.",
+      "privacyLink": "Política de privacidade",
+      "cards": {
+        "grid": "O guia completo de CSS grid",
+        "nestjs": "NestJS para desenvolvedores frontend",
+        "icons": "Ícones grátis para projetos pessoais",
+        "ramen": "O melhor lámen para a semana",
+        "woolCoat": "Casaco de lã, corte reto",
+        "signalForms": "Signal Forms em 20 minutos"
+      }
+    },
+    "unsupported": {
+      "title": "Esta página não pode ser salva",
+      "text": "O Shelfmark salva páginas da web. Páginas do navegador, arquivos e a nova guia ficam de fora."
+    },
+    "error": {
+      "title": "Não foi possível salvar esta página",
+      "loadTitle": "Não foi possível acessar o Shelfmark",
+      "offline": "Sem conexão com o Shelfmark. Verifique a internet e tente de novo.",
+      "rateLimit": "Muitos salvamentos seguidos. Espere um minuto e tente de novo.",
+      "limit": "Sua biblioteca está cheia. Remova alguns links no Shelfmark para salvar novos.",
+      "demoLimit": "Uma demonstração guarda 100 links. Entre com Google ou GitHub para continuar salvando.",
+      "server": "Algo deu errado do nosso lado. Tente de novo daqui a pouco.",
+      "tryAgain": "Tentar de novo"
+    }
+  }
+}

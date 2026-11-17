@@ -1,0 +1,11 @@
+@use 'ui' as *;
+
+.opening__thumb {
+  background: var(--surface-pressed);
+}
+
+.opening__fields {
+  display: flex;
+  flex-direction: column;
+  gap: rem(12px);
+}

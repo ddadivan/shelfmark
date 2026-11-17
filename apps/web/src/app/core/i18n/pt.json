@@ -536,6 +536,11 @@
       "title": "Prévias de links",
       "body": "Quando você salva um link, nosso servidor visita a página para ler o título, o ícone e a imagem de prévia. Por isso o site vê o endereço IP do nosso servidor e o user agent \"ShelfmarkBot\", não o seu endereço IP."
     },
+    "extension": {
+      "title": "Extensão do navegador",
+      "body": "A extensão do Shelfmark para Chrome, Edge, Brave e Arc só age quando você clica no botão dela ou usa o atalho, nunca em segundo plano. Ela então envia ao Shelfmark o endereço daquela guia, para verificar se você já a salvou, e só salva o endereço e o título, com a pasta, as tags e a nota escolhidas, quando você toca em Salvar. Ela nunca vê seu histórico nem os outros sites que você visita.",
+      "access": "Ela usa o seu login do Shelfmark nesse navegador e não consegue ler o cookie de login. Só acessa o Shelfmark e guarda no seu dispositivo apenas as pastas usadas recentemente, para sugeri-las na próxima vez."
+    },
     "third": {
       "title": "Outros serviços",
       "signin": "O login passa pelo Google ou pelo GitHub. Eles ficam sabendo que você entra no Shelfmark, e cada um tem a própria política de privacidade:",

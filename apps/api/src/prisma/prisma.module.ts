@@ -12,7 +12,10 @@ import { PrismaService } from './prisma.service';
   providers: [
     {
       provide: PrismaService,
-      useFactory: (): PrismaService => new PrismaService(readDatabaseConfig().connectionString),
+      useFactory: (): PrismaService => {
+        const { connectionString, poolMax } = readDatabaseConfig();
+        return new PrismaService(connectionString, poolMax);
+      },
     },
   ],
   exports: [PrismaService],

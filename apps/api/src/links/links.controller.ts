@@ -40,6 +40,8 @@ import { LinksBatchService } from './links-batch.service';
 import { LinkImageRecaptureService } from './images/link-image-recapture.service';
 import { LinkImagesService } from './images/link-images.service';
 import { sendLinkImage } from './images/send-link-image';
+import { LinkLookupRequestDto } from './dto/link-lookup-request.dto';
+import { LinkLookupResponseDto } from './dto/link-lookup-response.dto';
 import { LinkPreviewRequestDto } from './dto/link-preview-request.dto';
 import { LinkPreviewResponseDto } from './dto/link-preview-response.dto';
 import { LinkResponseDto } from './dto/link-response.dto';
@@ -79,6 +81,24 @@ export class LinksController {
     @Body() body: LinkPreviewRequestDto,
   ): Promise<LinkPreviewResponseDto> {
     return this.links.preview(user.id, body.url);
+  }
+
+  // Declared before `:id` routes; a POST path never meets them, but keep the static routes together.
+  @Post('lookup')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.AddLink)
+  @ApiOkResponse({ type: LinkLookupResponseDto })
+  @ApiBadRequestResponse({ description: 'Not an http(s) URL' })
+  @ApiOperation({
+    summary: 'The own saved link for a URL, or null',
+    description:
+      'Matched by normalized URL without tracking parameters, trashed links ignored. The page is never fetched.',
+  })
+  lookup(
+    @CurrentUser() user: AuthUser,
+    @Body() body: LinkLookupRequestDto,
+  ): Promise<LinkLookupResponseDto> {
+    return this.links.lookup(user.id, body.url);
   }
 
   @Get()

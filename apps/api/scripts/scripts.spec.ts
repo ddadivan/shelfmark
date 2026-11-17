@@ -157,9 +157,14 @@ describe('local-db helpers', () => {
     expect(buildDatabaseEnv('a', 'b')).toEqual({
       DATABASE_URL: 'a',
       DATABASE_URL_UNPOOLED: 'a',
+      DATABASE_POOL_MAX: '1',
       SHADOW_DATABASE_URL: 'b',
     });
-    expect(buildDatabaseEnv('a')).toEqual({ DATABASE_URL: 'a', DATABASE_URL_UNPOOLED: 'a' });
+    expect(buildDatabaseEnv('a')).toEqual({
+      DATABASE_URL: 'a',
+      DATABASE_URL_UNPOOLED: 'a',
+      DATABASE_POOL_MAX: '1',
+    });
   });
 
   it('prints usage and exits 2 without a command', async () => {

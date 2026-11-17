@@ -35,6 +35,7 @@ describe('PrivacyPage', () => {
       'Cookies and browser storage',
       "What we don't do",
       'Link previews',
+      'Browser extension',
       'Other services',
       'Where it lives',
       'How long we keep it',

@@ -1,0 +1,18 @@
+@if (store.slow()) {
+  <div class="ext-screen__head">
+    <ui-logo variant="mark" />
+    <h1 class="ext-screen__title">{{ 'popup.form.title' | transloco }}</h1>
+  </div>
+  @if (store.page(); as page) {
+    <div class="ext-preview">
+      <span class="ext-preview__thumb opening__thumb" aria-hidden="true"></span>
+      <span class="ext-preview__text">
+        <span class="ext-preview__host">{{ page.host }}</span>
+        <span class="ext-preview__title">{{ page.title }}</span>
+      </span>
+    </div>
+  }
+  <div class="opening__fields" role="status" [attr.aria-label]="'popup.loading' | transloco">
+    <ui-skeleton shape="line" [count]="3" />
+  </div>
+}

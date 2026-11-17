@@ -1,0 +1,22 @@
+<div class="ext-screen__head">
+  <ui-button
+    iconOnly
+    iconLeft="chevron-left"
+    size="sm"
+    [variant]="BUTTON_VARIANT.Ghost"
+    [ariaLabel]="'popup.picker.back' | transloco"
+    (click)="store.openPicker()"
+  />
+  <h1 class="ext-screen__title">{{ 'popup.newFolder.title' | transloco }}</h1>
+</div>
+<ui-input
+  [label]="'popup.newFolder.label' | transloco"
+  [placeholder]="'popup.newFolder.placeholder' | transloco"
+  [hint]="'popup.newFolder.hint' | transloco"
+  [(value)]="name"
+/>
+<div class="ext-screen__foot">
+  <ui-button block [variant]="BUTTON_VARIANT.Primary" [disabled]="empty()" (click)="create()">{{
+    'popup.newFolder.create' | transloco
+  }}</ui-button>
+</div>

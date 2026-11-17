@@ -524,6 +524,11 @@
       "title": "Link previews",
       "body": "When you save a link, our server visits that page to read its title, icon and preview image. The site therefore sees our server's IP address and the user agent \"ShelfmarkBot\", not your IP address."
     },
+    "extension": {
+      "title": "Browser extension",
+      "body": "The Shelfmark extension for Chrome, Edge, Brave and Arc works only when you click its button or press its shortcut, never in the background. It then sends Shelfmark the address of that one tab, to check whether you saved it already, and saves its address and title, with the folder, tags and note you pick, only when you press Save. It never sees your history or the other sites you visit.",
+      "access": "It uses your Shelfmark sign-in in that browser and cannot read the sign-in cookie itself. It can reach Shelfmark only, and keeps just the folders you saved to most recently on your device, to offer them next time."
+    },
     "third": {
       "title": "Other services",
       "signin": "Sign-in goes through Google or GitHub. They receive the fact that you sign in to Shelfmark, and each has its own privacy policy:",

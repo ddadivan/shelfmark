@@ -10,6 +10,7 @@ import {
   LINK_ERROR_MESSAGE,
   type ListLinksQuery,
   type LinkDuplicate,
+  type LinkLookupResponse,
   type LinkPreviewResponse,
   type ListLinksResponse,
   type RecentLinksQuery,
@@ -63,6 +64,19 @@ export class LinksService {
       folderName: existing.folder?.name ?? null,
     };
     return { preview, duplicate, fetched };
+  }
+
+  /**
+   * The user's newest live link for an address (normalized, tracking parameters stripped), or null.
+   * Never loads the page: the browser extension asks it for every tab it opens.
+   */
+  async lookup(userId: string, sentUrl: string): Promise<LinkLookupResponse> {
+    const row = await this.prisma.link.findFirst({
+      where: { userId, deletedAt: null, normalizedUrl: normalizeUrl(savedUrl(sentUrl)) },
+      include: LINK_INCLUDE,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+    });
+    return { link: row && toLinkResponse(row) };
   }
 
   async list(userId: string, query: ListLinksQuery): Promise<ListLinksResponse> {

@@ -33,8 +33,13 @@ export function databaseUrl(connection) {
   return `postgresql://postgres@${connection}/postgres`;
 }
 
+// PGlite has one real connection: the multiplexer of the socket server lets parallel requests of
+// one API process trip over each other (500 and 401 at random), so the API keeps a single pooled
+// connection here and its queries queue. Production (Neon) keeps the default pool.
+const LOCAL_POOL_MAX = '1';
+
 export function buildDatabaseEnv(url, shadowUrl) {
-  const env = { DATABASE_URL: url, DATABASE_URL_UNPOOLED: url };
+  const env = { DATABASE_URL: url, DATABASE_URL_UNPOOLED: url, DATABASE_POOL_MAX: LOCAL_POOL_MAX };
   return shadowUrl ? { ...env, SHADOW_DATABASE_URL: shadowUrl } : env;
 }
 

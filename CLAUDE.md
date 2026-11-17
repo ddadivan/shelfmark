@@ -19,13 +19,14 @@ TypeScript 6.0 everywhere · Nx monorepo · Angular 22 (standalone, zoneless, si
 
 ## Monorepo
 
-| Project                 | What                                                        | Rules                                      |
-| ----------------------- | ----------------------------------------------------------- | ------------------------------------------ |
-| `apps/web`              | Angular app; features live in `apps/web/src/app/features/*` | [`apps/web/CLAUDE.md`](apps/web/CLAUDE.md) |
-| `apps/web-e2e`          | Playwright e2e (desktop, tablet, phone)                     |                                            |
-| `apps/api`              | NestJS REST API under `/api`                                | [`apps/api/CLAUDE.md`](apps/api/CLAUDE.md) |
-| `libs/ui`               | Own component library, tokens, Storybook                    | [`libs/ui/CLAUDE.md`](libs/ui/CLAUDE.md)   |
-| `libs/shared/contracts` | DTOs and types shared by web and api                        | contract first: change here before code    |
+| Project                 | What                                                        | Rules                                                  |
+| ----------------------- | ----------------------------------------------------------- | ------------------------------------------------------ |
+| `apps/web`              | Angular app; features live in `apps/web/src/app/features/*` | [`apps/web/CLAUDE.md`](apps/web/CLAUDE.md)             |
+| `apps/web-e2e`          | Playwright e2e (desktop, tablet, phone)                     |                                                        |
+| `apps/extension`        | Chrome MV3 extension popup (saves the current tab)          | [`apps/extension/CLAUDE.md`](apps/extension/CLAUDE.md) |
+| `apps/api`              | NestJS REST API under `/api`                                | [`apps/api/CLAUDE.md`](apps/api/CLAUDE.md)             |
+| `libs/ui`               | Own component library, tokens, Storybook                    | [`libs/ui/CLAUDE.md`](libs/ui/CLAUDE.md)               |
+| `libs/shared/contracts` | DTOs and types shared by web and api                        | contract first: change here before code                |
 
 ## Commands
 
@@ -36,6 +37,8 @@ npm ci                                   # install
 npm start                                # web on http://localhost:4200 (npx nx serve web; mock APIs)
 npm run start:api                        # api on http://localhost:3000/api (npx nx serve api)
 npm run start:all                        # web + api together (npx nx run-many -t serve -p web api)
+npm run extension:dev                    # browser extension, unpacked dev build (dist/apps/extension-dev, docs/SETUP.md 5.9)
+npm run extension:package                # browser extension store zip (dist/shelfmark-extension-<version>.zip)
 npm run lint:styles                      # stylelint on css/scss (rem/em rules)
 npm run format:check                     # prettier check
 npm run affected                         # what CI runs (npx nx affected -t lint typecheck test build)
