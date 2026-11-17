@@ -1,15 +1,20 @@
 @use '../../../styles/ui' as *;
 @use '../field/field-parts' as *;
 
-// Glass panel under the field (menus and listboxes: 18px corners, 6px padding). A fixed height,
-// so the panel neither jumps nor flips while the names load or a search shortens the list.
+// Glass panel under the field (menus and listboxes: 18px corners, 6px padding), as wide as the
+// field box (`--ui-emoji-picker-width`, set by `EmojiPickerOverlay`) but never narrower than the
+// eight columns need. A fixed height, so the panel neither jumps nor flips while the names load or
+// a search shortens the list.
 .ui-emoji-picker__panel {
   @include glass;
 
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  width: min(rem(360px), calc(100vw - #{rem(16px)}));
+  width: min(
+    max(rem(300px), var(--ui-emoji-picker-width, #{rem(360px)})),
+    calc(100vw - #{rem(16px)})
+  );
   height: min(rem(400px), calc(100dvh - #{rem(16px)}));
   padding: rem(6px);
   margin: var(--space-1) 0;
@@ -60,37 +65,65 @@
   min-height: 0;
 }
 
-// Nine tabs on one line; they shrink on a narrow sheet.
+// Nine tabs on one line; they shrink on a narrow sheet. They are navigation, not emoji to choose
+// (#454: a click on one only switches the grid), so they must not look like the grid: a sunken
+// track like the segmented control, smaller glyphs, the other categories grey and faded until
+// hovered, and the selected one lifted on the surface in colour.
 .ui-emoji-picker__tabs {
   display: flex;
   flex: none;
+  gap: rem(2px);
   justify-content: space-between;
-  padding-bottom: var(--space-1);
-  border-bottom: 1px solid var(--border);
+  padding: rem(3px);
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
 }
 
 .ui-emoji-picker__tab {
   display: grid;
-  flex: 0 1 rem(36px);
+  flex: 0 1 rem(34px);
   place-items: center;
-  min-width: rem(28px);
-  height: rem(36px);
+  min-width: rem(26px);
+  height: rem(30px);
   padding: 0;
-  font-size: rem(20px);
+  font-size: rem(16px);
   line-height: 1;
   cursor: pointer;
   background: transparent;
   border: 0;
-  border-radius: var(--radius-md);
-  transition: background-color var(--duration-fast) var(--ease-out);
+  border-radius: rem(9px);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+
+  // A non-text glyph may be dimmed (opacity rule): the category name is its tooltip and label.
+  > span {
+    opacity: 0.55;
+    filter: grayscale(1);
+    transition:
+      opacity var(--duration-fast) var(--ease-out),
+      filter var(--duration-fast) var(--ease-out);
+  }
 
   @include hover {
-    background: var(--surface-hover);
+    background: var(--surface-pressed);
+
+    > span {
+      opacity: 1;
+      filter: none;
+    }
   }
 
   &[aria-selected='true'] {
-    background: var(--accent-bg);
-    box-shadow: inset 0 -2px 0 var(--accent);
+    background: var(--surface);
+    box-shadow:
+      var(--shadow-card),
+      inset 0 -2px 0 var(--accent);
+
+    > span {
+      opacity: 1;
+      filter: none;
+    }
   }
 
   &:focus-visible {
@@ -98,7 +131,15 @@
   }
 
   @include coarse {
-    height: rem(44px);
+    height: rem(40px);
+  }
+
+  @include reduced-motion {
+    transition: none;
+
+    > span {
+      transition: none;
+    }
   }
 }
 

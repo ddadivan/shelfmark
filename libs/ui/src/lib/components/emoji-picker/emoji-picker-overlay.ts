@@ -18,13 +18,15 @@ import { mediaMatch } from '../../utils/media/media-match';
 import { PHONE_MEDIA_QUERY } from '../../utils/media/models/phone-media-query.const';
 import { SHEET_DRAG_END, SheetDragTracker } from '../../utils/sheet-drag';
 import type { EmojiPickerOverlayHost } from './models/emoji-picker-overlay-host.interface';
+import { EMOJI_PICKER_WIDTH_PROPERTY } from './models/emoji-picker-width-property.const';
 
 /** Tabbable stops of the open panel, in order (roving grids and tabs expose one each). */
 const PANEL_STOPS = 'input, button:not([tabindex="-1"]), [tabindex="0"]';
 
 /**
  * The open / close half of `ui-emoji-picker`: the `UiOverlay` pane (layer `menu`, anchored to the
- * field box; below 40em a full-width sheet at the bottom edge), focus on open (the search box, or
+ * field box and as wide as it, kept in sync through a `ResizeObserver`; below 40em a full-width
+ * sheet at the bottom edge), focus on open (the search box, or
  * the panel on a phone so the keyboard stays closed) and on close (`returnFocus`: no ring after a
  * pointer, no tooltip), closing on a press or focus outside (a toast does not count), Tab leaving
  * the panel, and the phone sheet's grip drag (`SheetDragTracker`). Create it in the component's
@@ -49,6 +51,8 @@ export class EmojiPickerOverlay {
   private overlaySheet = false;
   private detachSubscription: Subscription | null = null;
   private openedByPointer = false;
+  /** Keeps the panel as wide as the field box while the desktop panel is open. */
+  private resizeObserver: ResizeObserver | null = null;
   private readonly outsidePress = (event: Event): void => {
     if (event.target instanceof Node && !this.ownsOrIgnores(event.target)) {
       this.hide(false);
@@ -59,6 +63,7 @@ export class EmojiPickerOverlay {
     trackInputModality();
     inject(DestroyRef).onDestroy(() => {
       this.document.removeEventListener('pointerdown', this.outsidePress, true);
+      this.stopWidthSync();
       this.detachSubscription?.unsubscribe();
       this.overlay?.dispose();
       // The pane may still hold the popup element, which Angular no longer owns.
@@ -82,6 +87,10 @@ export class EmojiPickerOverlay {
       this.createOverlay(sheet);
     }
     this.attached.set(true);
+    if (!sheet) {
+      this.syncWidth();
+      this.watchWidth();
+    }
     this.document.addEventListener('pointerdown', this.outsidePress, true);
     afterNextRender(
       () => {
@@ -103,6 +112,7 @@ export class EmojiPickerOverlay {
     }
     this.open.set(false);
     this.document.removeEventListener('pointerdown', this.outsidePress, true);
+    this.stopWidthSync();
     if (restoreFocus) {
       returnFocus(this.host.field(), this.openedByPointer);
     }
@@ -203,13 +213,11 @@ export class EmojiPickerOverlay {
         )
       : this.overlays.connect(
           {
-            origin:
-              this.host.element.querySelector<HTMLElement>('.ui-field__control') ??
-              this.host.element,
+            origin: this.origin(),
             positions: menuPositions(MENU_ALIGN.Start),
             layer: OVERLAY_LAYER.Menu,
           },
-          { injector: this.injector },
+          { injector: this.injector, onPositionChange: () => this.syncWidth() },
         );
     this.overlay = overlay;
     this.overlaySheet = sheet;
@@ -220,6 +228,35 @@ export class EmojiPickerOverlay {
         this.open.set(false);
       }
     });
+  }
+
+  /** The field box: the desktop panel hangs from it and takes its width. */
+  private origin(): HTMLElement {
+    return this.host.element.querySelector<HTMLElement>('.ui-field__control') ?? this.host.element;
+  }
+
+  /** The panel is as wide as the field box (CSS keeps a minimum for the eight columns). */
+  private syncWidth(): void {
+    this.host
+      .popup()
+      .style.setProperty(EMOJI_PICKER_WIDTH_PROPERTY, `${this.origin().offsetWidth}px`);
+  }
+
+  private watchWidth(): void {
+    this.stopWidthSync();
+    if (typeof ResizeObserver === 'undefined') {
+      return;
+    }
+    this.resizeObserver = new ResizeObserver(() => {
+      this.syncWidth();
+      this.overlay?.updatePosition();
+    });
+    this.resizeObserver.observe(this.origin());
+  }
+
+  private stopWidthSync(): void {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
   }
 
   /**

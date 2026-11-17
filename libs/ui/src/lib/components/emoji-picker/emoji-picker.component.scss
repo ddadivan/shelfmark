@@ -12,6 +12,33 @@
   cursor: pointer;
 }
 
+// One emoji in the field is shown at the grid's glyph size, so a choice is plain to see (#454);
+// the field keeps the height of a text field (10px padding around a 20px line).
+.ui-emoji-picker__native--emoji {
+  block-size: rem(40px);
+  padding-block: 0;
+  font-size: rem(24px);
+  line-height: rem(40px);
+}
+
+// With its name beside it the input takes only the glyph's room.
+.ui-emoji-picker__native--named {
+  flex: none;
+  width: rem(36px);
+}
+
+.ui-emoji-picker__name {
+  @include type(body);
+
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
 .ui-emoji-picker__chevron {
   // 24px inside a dialog (`--icon-size-lg` from `ui-dialog`), 16px elsewhere.
   --ui-icon-size: var(--ui-dialog-icon-size);
