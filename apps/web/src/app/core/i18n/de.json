@@ -217,7 +217,11 @@
         "label": "Ordner",
         "unsorted": "Ohne Ordner",
         "searchLabel": "Ordner suchen",
-        "noResults": "Keine Ordner gefunden"
+        "noResults": "Keine Ordner gefunden",
+        "create": "Ordner „{name}“ erstellen",
+        "newBadge": "Neu",
+        "notCreated": "Der Ordner „{{name}}“ konnte nicht erstellt werden",
+        "notCreatedDetail": "Der Link ist ohne Ordner gespeichert."
       },
       "tags": {
         "label": "Tags",

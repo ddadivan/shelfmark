@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
-import type { LinkPreviewResponse, LinkResponse } from '@shelfmark/contracts';
-import { MOCK_LINKS } from '@shelfmark/contracts/testing';
-import { UI_DIALOG_DATA, UiDialogRef } from '@shelfmark/ui';
+import type { FolderResponse, LinkPreviewResponse, LinkResponse } from '@shelfmark/contracts';
+import { MOCK_FOLDERS, MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
+import { TOAST_KIND, ToastService, UI_DIALOG_DATA, UiDialogRef } from '@shelfmark/ui';
 import { of, throwError } from 'rxjs';
 import { AppTranslocoLoader } from '../../../core/i18n/app-transloco.loader';
 import { APP_LANG } from '../../../core/i18n/models/app-lang.const';
@@ -11,6 +11,10 @@ import { FOLDERS_API } from '../models/folders-api.const';
 import { LINKS_API } from '../models/links-api.const';
 import type { AddLinkDialogData } from '../models/add-link-dialog-data.interface';
 import type { LinksApi } from '../models/links-api.interface';
+import type { FoldersApi } from '../models/folders-api.interface';
+import { NEW_FOLDER_OPTION_ID } from '../models/new-folder-option-id.const';
+import { FoldersStore } from '../../../stores/folders.store';
+import { AddLinkNewFolderService } from './add-link-new-folder.service';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
 import { AddLinkFormService } from './add-link-form.service';
 import { AddLinkPreviewService } from './add-link-preview.service';
@@ -22,7 +26,18 @@ const NOT_FETCHED: LinkPreviewResponse = {
   fetched: false,
 };
 
-async function setup(link?: LinkResponse) {
+async function setup(link?: LinkResponse, folderFails = false) {
+  const foldersApi = {
+    list: vi.fn<FoldersApi['list']>(() =>
+      of({ items: [MOCK_FOLDERS[0]], counts: MOCK_LIBRARY_COUNTS }),
+    ),
+    create: vi.fn<FoldersApi['create']>((request) =>
+      folderFails
+        ? throwError(() => new Error('offline'))
+        : of<FolderResponse>({ ...MOCK_FOLDERS[0], id: 'created-id', name: request.name }),
+    ),
+  };
+  const toasts = { show: vi.fn() };
   const api = {
     preview: vi.fn<LinksApi['preview']>(() => of(NOT_FETCHED)),
     create: vi.fn<LinksApi['create']>((request) =>
@@ -41,12 +56,14 @@ async function setup(link?: LinkResponse) {
     providers: [
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
       { provide: LINKS_API, useValue: api },
-      { provide: FOLDERS_API, useValue: {} },
+      { provide: FOLDERS_API, useValue: foldersApi },
+      { provide: ToastService, useValue: toasts },
       { provide: UI_DIALOG_DATA, useValue: data },
       { provide: UiDialogRef, useValue: { close, locked: () => false } },
       AddLinkFormService,
       AddLinkPreviewService,
       AddLinkSaveService,
+      AddLinkNewFolderService,
     ],
   });
   await new Promise<void>((resolve) => {
@@ -56,8 +73,12 @@ async function setup(link?: LinkResponse) {
         resolve();
       });
   });
+  await TestBed.inject(FoldersStore).load();
   return {
     api,
+    foldersApi,
+    toasts,
+    newFolder: TestBed.inject(AddLinkNewFolderService),
     close,
     data,
     form: TestBed.inject(AddLinkFormService),
@@ -138,5 +159,57 @@ describe('AddLinkSaveService', () => {
     expect(close).not.toHaveBeenCalled();
     expect(save.saving()).toBe(false);
     expect(save.saveError()).not.toBeNull();
+  });
+
+  describe('a folder named in the dialog (#454)', () => {
+    it('is created first and the link goes into it; a retry does not create it again', async () => {
+      const { api, foldersApi, form, newFolder, save, toasts } = await setup();
+      api.create.mockImplementationOnce(() => throwError(() => new Error('boom')));
+      form.form.url().value.set('https://example.org/a');
+      form.form.folderId().value.set(newFolder.choose('Recipes'));
+      await save.save();
+      expect(foldersApi.create).toHaveBeenCalledWith({ name: 'Recipes' });
+      expect(api.create).toHaveBeenLastCalledWith(
+        expect.objectContaining({ folderId: 'created-id' }),
+      );
+      expect(form.model().folderId).toBe('created-id');
+      await save.save();
+      expect(foldersApi.create).toHaveBeenCalledTimes(1);
+      expect(api.create).toHaveBeenCalledTimes(2);
+      expect(toasts.show).not.toHaveBeenCalled();
+    });
+
+    it('saves the link without a folder and warns when the folder cannot be created', async () => {
+      const { api, close, form, newFolder, save, toasts } = await setup(undefined, true);
+      form.form.url().value.set('https://example.org/a');
+      form.form.folderId().value.set(newFolder.choose('Recipes'));
+      await save.save();
+      const request = api.create.mock.calls[0][0];
+      expect(request.folderId).toBeUndefined();
+      expect(close).toHaveBeenCalledWith(
+        expect.objectContaining({ action: ADD_LINK_ACTION.Saved }),
+      );
+      expect(toasts.show).toHaveBeenCalledWith({
+        kind: TOAST_KIND.Warn,
+        title: 'Couldn’t create the folder “Recipes”',
+        detail: 'The link is saved without a folder.',
+      });
+    });
+
+    it('moves an edited link into the new folder', async () => {
+      const link = MOCK_LINKS[0];
+      const { api, form, newFolder, save } = await setup(link);
+      form.form.folderId().value.set(newFolder.choose('Recipes'));
+      await save.save();
+      expect(api.update).toHaveBeenCalledWith(link.id, { folderId: 'created-id' });
+    });
+
+    it('never sends the placeholder id', async () => {
+      const { api, form, save } = await setup();
+      form.form.url().value.set('https://example.org/a');
+      form.form.folderId().value.set(NEW_FOLDER_OPTION_ID);
+      await save.save();
+      expect(api.create.mock.calls[0][0].folderId).toBeUndefined();
+    });
   });
 });

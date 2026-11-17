@@ -217,7 +217,11 @@
         "label": "Папка",
         "unsorted": "Несортовані",
         "searchLabel": "Пошук папок",
-        "noResults": "Папок не знайдено"
+        "noResults": "Папок не знайдено",
+        "create": "Створити папку «{name}»",
+        "newBadge": "Нова",
+        "notCreated": "Не вдалося створити папку «{{name}}»",
+        "notCreatedDetail": "Посилання збережено без папки."
       },
       "tags": {
         "label": "Теги",

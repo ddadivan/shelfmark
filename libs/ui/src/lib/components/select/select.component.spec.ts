@@ -28,8 +28,9 @@ const TREE: SelectOption[] = [
   template: `
     <ui-select
       label="Folder"
-      [options]="options"
+      [options]="options()"
       [searchable]="searchable()"
+      [createLabel]="createLabel()"
       emptyLabel="Unsorted"
       placeholder="Pick a folder"
       searchLabel="Find a folder"
@@ -39,13 +40,16 @@ const TREE: SelectOption[] = [
       [disabled]="disabled()"
       [(value)]="value"
       (touch)="touches.set(touches() + 1)"
+      (created)="created.set([...created(), $event])"
     />
     <button id="outside" type="button">Outside</button>
   `,
 })
 class HostComponent {
-  readonly options = TREE;
+  readonly options = signal<SelectOption[]>(TREE);
   readonly searchable = signal(false);
+  readonly createLabel = signal('');
+  readonly created = signal<string[]>([]);
   readonly error = signal('');
   readonly disabled = signal(false);
   readonly value = signal<string | null>(SELECT_FIXTURE_ID.Angular);
@@ -426,6 +430,69 @@ describe('SelectComponent', () => {
       await settle(fixture);
       expect(names()).toHaveLength(5);
       expect(status.textContent.trim()).toBe('');
+    });
+
+    describe('create row', () => {
+      async function creating() {
+        const ctx = await setup();
+        ctx.host.searchable.set(true);
+        ctx.host.createLabel.set('Create folder “{name}”');
+        await settle(ctx.fixture);
+        await ctx.open();
+        return ctx;
+      }
+
+      it('offers "Create" for a name no folder has; Enter emits it and keeps the value', async () => {
+        const { search, names, press, host, trigger, active, fixture } = await creating();
+        const field = search() as HTMLInputElement;
+        type(field, '  Reading ');
+        await settle(fixture);
+        expect(names()).toEqual(['Create folder “Reading”']);
+        expect(active()?.textContent.trim()).toBe('Create folder “Reading”');
+        expect(document.querySelector('.ui-select__status')?.textContent.trim()).toBe('');
+        await press(field, KEYBOARD_KEY.Enter);
+        expect(host.created()).toEqual(['Reading']);
+        expect(host.value()).toBe(SELECT_FIXTURE_ID.Angular);
+        expect(trigger.getAttribute('aria-expanded')).toBe('false');
+        expect(document.activeElement).toBe(trigger);
+      });
+
+      it('puts the row after partial matches and creates with a click; it opens again', async () => {
+        const { search, names, options, host, trigger, open, fixture } = await creating();
+        type(search() as HTMLInputElement, 'Wor');
+        await settle(fixture);
+        expect(names()).toEqual(['Work', 'Create folder “Wor”']);
+        options()[1].click();
+        await settle(fixture);
+        expect(host.created()).toEqual(['Wor']);
+        expect(host.value()).toBe(SELECT_FIXTURE_ID.Angular);
+        await open();
+        expect(trigger.getAttribute('aria-expanded')).toBe('true');
+        expect(names()).toHaveLength(5);
+      });
+
+      it('offers nothing for a known name (any case, nested or the empty option) or blanks', async () => {
+        const { search, names, fixture } = await creating();
+        const field = search() as HTMLInputElement;
+        for (const text of ['clothes', 'ANGULAR', 'unsorted', '   ']) {
+          type(field, text);
+          await settle(fixture);
+          expect(names().some((name) => name.startsWith('Create'))).toBe(false);
+        }
+      });
+
+      it('shows a badge on an option, in the list and in the trigger', async () => {
+        const { host, fixture, root, options } = await creating();
+        host.options.set([...TREE, { id: 'new', name: 'Reading', badge: 'New' }]);
+        host.value.set('new');
+        await settle(fixture);
+        expect(root.querySelector('.ui-select__value')?.textContent.trim()).toBe('Reading');
+        expect(root.querySelector('.ui-select__badge')?.textContent.trim()).toBe('New');
+        const row = options().find((o) => o.textContent.includes('Reading'));
+        expect(row?.querySelector('ui-badge')?.textContent.trim()).toBe('New');
+        expect(await axeViolations(root)).toEqual([]);
+        expect(await axeViolations(row?.closest('.ui-select__panel') as HTMLElement)).toEqual([]);
+      });
     });
 
     it('moves with the arrows and chooses with Enter', async () => {

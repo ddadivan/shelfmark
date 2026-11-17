@@ -217,7 +217,11 @@
         "label": "Pasta",
         "unsorted": "Sem pasta",
         "searchLabel": "Pesquisar pastas",
-        "noResults": "Nenhuma pasta encontrada"
+        "noResults": "Nenhuma pasta encontrada",
+        "create": "Criar a pasta “{name}”",
+        "newBadge": "Nova",
+        "notCreated": "Não foi possível criar a pasta “{{name}}”",
+        "notCreatedDetail": "O link foi salvo sem pasta."
       },
       "tags": {
         "label": "Tags",

@@ -117,6 +117,7 @@ const meta: Meta<SelectComponent> = {
     placeholder: 'Choose a folder',
     searchLabel: 'Find a folder',
     noResultsLabel: 'No folders found',
+    createLabel: '',
     hint: '',
     error: '',
     disabled: false,
@@ -135,6 +136,7 @@ const meta: Meta<SelectComponent> = {
           [placeholder]="placeholder"
           [searchLabel]="searchLabel"
           [noResultsLabel]="noResultsLabel"
+          [createLabel]="createLabel"
           [hint]="hint"
           [error]="error"
           [disabled]="disabled"
@@ -219,6 +221,25 @@ export const NoResults: Story = {
   play: async (context) => {
     await openPopup(context);
     await search('zzz');
+  },
+};
+
+/** A search that names no folder offers "Create folder “…”" after the partial matches. */
+export const CreateOption: Story = {
+  args: { searchable: true, createLabel: 'Create folder “{name}”' },
+  play: async (context) => {
+    await openPopup(context);
+    await search('Wor');
+  },
+};
+
+/** A folder the feature added from the create row: its "New" badge shows in the trigger. */
+export const NewOptionBadge: Story = {
+  args: {
+    searchable: true,
+    createLabel: 'Create folder “{name}”',
+    options: [...NESTED, { id: 'new-folder', name: 'Reading', badge: 'New' }],
+    value: 'new-folder',
   },
 };
 
