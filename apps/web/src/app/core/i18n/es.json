@@ -3128,6 +3128,47 @@
         "other": "{{count}} etiquetas añadidas por la IA"
       },
       "undo": "Deshacer"
+    },
+    "tidy": {
+      "entry": "Ordenar con sugerencias",
+      "back": "Sin carpeta",
+      "title": "Ordenar «Sin carpeta»",
+      "lead": {
+        "one": "Sugerencias para {{count}} enlace. Toca una etiqueta para dejarla fuera.",
+        "many": "Sugerencias para {{count}} enlaces. Toca una etiqueta para dejarla fuera.",
+        "other": "Sugerencias para {{count}} enlaces. Toca una etiqueta para dejarla fuera."
+      },
+      "cancel": "Cancelar",
+      "apply": {
+        "one": "Aplicar a {{count}} enlace",
+        "many": "Aplicar a {{count}} enlaces",
+        "other": "Aplicar a {{count}} enlaces"
+      },
+      "skip": "Omitir",
+      "skipped": "Omitido: se queda en «Sin carpeta»",
+      "undoSkip": "Deshacer omisión",
+      "rowLabel": "Cambios para {{title}}",
+      "listLabel": "Enlaces con sugerencias",
+      "barLabel": "Aplicar sugerencias",
+      "loading": "Cargando sugerencias",
+      "chip": {
+        "folder": "Mover a {{name}}",
+        "folderAdded": "Mover a {{name}}, elegido",
+        "tag": "Añadir la etiqueta {{name}}",
+        "tagAdded": "Añadir la etiqueta {{name}}, elegido",
+        "newTag": "Crear y añadir la etiqueta {{name}}",
+        "newTagAdded": "Crear y añadir la etiqueta {{name}}, elegido"
+      },
+      "more": {
+        "one": "Después de estos queda {{count}} enlace más. Los enlaces sin sugerencias no aparecen.",
+        "many": "Después de estos quedan {{count}} enlaces más. Los enlaces sin sugerencias no aparecen.",
+        "other": "Después de estos quedan {{count}} enlaces más. Los enlaces sin sugerencias no aparecen."
+      },
+      "empty": {
+        "title": "Nada que ordenar",
+        "text": "Cada enlace de aquí aún no tiene sugerencias o ya lo ordenaste. Los enlaces nuevos reciben sugerencias en menos de un minuto.",
+        "back": "Volver a «Sin carpeta»"
+      }
     }
   }
 }

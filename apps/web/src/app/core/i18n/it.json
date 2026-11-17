@@ -3128,6 +3128,47 @@
         "other": "{{count}} tag aggiunti dall’IA"
       },
       "undo": "Annulla"
+    },
+    "tidy": {
+      "entry": "Riordina con i suggerimenti",
+      "back": "Senza cartella",
+      "title": "Riordina «Senza cartella»",
+      "lead": {
+        "one": "Suggerimenti per {{count}} link. Tocca un chip per escluderlo.",
+        "many": "Suggerimenti per {{count}} link. Tocca un chip per escluderlo.",
+        "other": "Suggerimenti per {{count}} link. Tocca un chip per escluderlo."
+      },
+      "cancel": "Annulla",
+      "apply": {
+        "one": "Applica a {{count}} link",
+        "many": "Applica a {{count}} link",
+        "other": "Applica a {{count}} link"
+      },
+      "skip": "Salta",
+      "skipped": "Saltato — resta in «Senza cartella»",
+      "undoSkip": "Annulla salto",
+      "rowLabel": "Modifiche per {{title}}",
+      "listLabel": "Link con suggerimenti",
+      "barLabel": "Applica i suggerimenti",
+      "loading": "Caricamento dei suggerimenti",
+      "chip": {
+        "folder": "Sposta in {{name}}",
+        "folderAdded": "Sposta in {{name}}, scelto",
+        "tag": "Aggiungi il tag {{name}}",
+        "tagAdded": "Aggiungi il tag {{name}}, scelto",
+        "newTag": "Crea e aggiungi il tag {{name}}",
+        "newTagAdded": "Crea e aggiungi il tag {{name}}, scelto"
+      },
+      "more": {
+        "one": "Dopo questi c’è ancora {{count}} link. I link senza suggerimenti non sono elencati.",
+        "many": "Dopo questi ci sono ancora {{count}} link. I link senza suggerimenti non sono elencati.",
+        "other": "Dopo questi ci sono ancora {{count}} link. I link senza suggerimenti non sono elencati."
+      },
+      "empty": {
+        "title": "Niente da riordinare",
+        "text": "Ogni link qui non ha ancora suggerimenti oppure l’hai già sistemato. I nuovi link ricevono suggerimenti entro un minuto.",
+        "back": "Torna a «Senza cartella»"
+      }
     }
   }
 }

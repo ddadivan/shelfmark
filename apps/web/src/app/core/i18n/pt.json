@@ -3128,6 +3128,47 @@
         "other": "{{count}} tags adicionadas pela IA"
       },
       "undo": "Desfazer"
+    },
+    "tidy": {
+      "entry": "Organizar com sugestões",
+      "back": "Sem pasta",
+      "title": "Organizar “Sem pasta”",
+      "lead": {
+        "one": "Sugestões para {{count}} link. Toque em um chip para deixá-lo de fora.",
+        "many": "Sugestões para {{count}} links. Toque em um chip para deixá-lo de fora.",
+        "other": "Sugestões para {{count}} links. Toque em um chip para deixá-lo de fora."
+      },
+      "cancel": "Cancelar",
+      "apply": {
+        "one": "Aplicar a {{count}} link",
+        "many": "Aplicar a {{count}} links",
+        "other": "Aplicar a {{count}} links"
+      },
+      "skip": "Pular",
+      "skipped": "Pulado — fica em “Sem pasta”",
+      "undoSkip": "Desfazer",
+      "rowLabel": "Mudanças para {{title}}",
+      "listLabel": "Links com sugestões",
+      "barLabel": "Aplicar sugestões",
+      "loading": "Carregando sugestões",
+      "chip": {
+        "folder": "Mover para {{name}}",
+        "folderAdded": "Mover para {{name}}, escolhido",
+        "tag": "Adicionar a tag {{name}}",
+        "tagAdded": "Adicionar a tag {{name}}, escolhido",
+        "newTag": "Criar e adicionar a tag {{name}}",
+        "newTagAdded": "Criar e adicionar a tag {{name}}, escolhido"
+      },
+      "more": {
+        "one": "Depois destes, falta mais {{count}} link. Links sem sugestões não aparecem.",
+        "many": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem.",
+        "other": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem."
+      },
+      "empty": {
+        "title": "Nada para organizar",
+        "text": "Cada link aqui ainda não tem sugestões ou você já o organizou. Links novos recebem sugestões em menos de um minuto.",
+        "back": "Voltar para “Sem pasta”"
+      }
     }
   }
 }

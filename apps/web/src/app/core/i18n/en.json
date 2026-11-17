@@ -3064,6 +3064,44 @@
         "other": "{{count}} tags added by AI"
       },
       "undo": "Undo"
+    },
+    "tidy": {
+      "entry": "Tidy with suggestions",
+      "back": "Unsorted",
+      "title": "Tidy Unsorted",
+      "lead": {
+        "one": "Suggestions for {{count}} link. Tap a chip to leave it out.",
+        "other": "Suggestions for {{count}} links. Tap a chip to leave it out."
+      },
+      "cancel": "Cancel",
+      "apply": {
+        "one": "Apply to {{count}} link",
+        "other": "Apply to {{count}} links"
+      },
+      "skip": "Skip",
+      "skipped": "Skipped — stays in Unsorted",
+      "undoSkip": "Undo skip",
+      "rowLabel": "Changes for {{title}}",
+      "listLabel": "Links with suggestions",
+      "barLabel": "Apply suggestions",
+      "loading": "Loading suggestions",
+      "chip": {
+        "folder": "Move to {{name}}",
+        "folderAdded": "Move to {{name}}, added",
+        "tag": "Add tag {{name}}",
+        "tagAdded": "Add tag {{name}}, added",
+        "newTag": "Create and add tag {{name}}",
+        "newTagAdded": "Create and add tag {{name}}, added"
+      },
+      "more": {
+        "one": "{{count}} more link after these. Links without suggestions are not listed.",
+        "other": "{{count}} more links after these. Links without suggestions are not listed."
+      },
+      "empty": {
+        "title": "Nothing to tidy",
+        "text": "Every link here either has no suggestions yet or you already sorted it. New links get suggestions within a minute.",
+        "back": "Back to Unsorted"
+      }
     }
   }
 }

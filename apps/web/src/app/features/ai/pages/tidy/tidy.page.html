@@ -1,0 +1,78 @@
+<ui-progress-bar [active]="store.loading()" [label]="'ai.tidy.loading' | transloco" />
+@if (settings.isOn()) {
+<div class="tidy" [attr.aria-busy]="store.loading()">
+  <div class="tidy__top">
+    <ui-button
+      variant="ghost"
+      size="sm"
+      iconLeft="chevron-left"
+      [href]="unsortedHref"
+      (linkClick)="back($event)"
+    >
+      {{ 'ai.tidy.back' | transloco }}
+    </ui-button>
+  </div>
+  <header class="tidy__head">
+    <div class="tidy__heading">
+      <h1 class="tidy__title">{{ 'ai.tidy.title' | transloco }}</h1>
+      <!-- Always there (empty while the list loads) so the title block keeps its height. -->
+      <p class="tidy__lead">
+        @if (store.loaded() && !store.empty()) { {{ pluralKey('ai.tidy.lead', store.items().length)
+        | transloco: { count: store.items().length } }} }
+      </p>
+    </div>
+    @if (!compact() && store.loaded() && !store.empty()) {
+    <div class="tidy__actions">
+      <ng-container *ngTemplateOutlet="actions" />
+    </div>
+    }
+  </header>
+
+  @if (store.loaded()) { @if (store.empty()) {
+  <section class="tidy__empty">
+    <span class="tidy__empty-art" aria-hidden="true">
+      <ui-icon name="spark" [size]="ICON_SIZE.Lg" />
+    </span>
+    <h2 class="tidy__empty-title">{{ 'ai.tidy.empty.title' | transloco }}</h2>
+    <p class="tidy__empty-text">{{ 'ai.tidy.empty.text' | transloco }}</p>
+    <ui-button variant="secondary" [href]="unsortedHref" (linkClick)="back($event)">
+      {{ 'ai.tidy.empty.back' | transloco }}
+    </ui-button>
+  </section>
+  } @else {
+  <ul class="tidy__list" [attr.aria-label]="'ai.tidy.listLabel' | transloco">
+    @for (row of store.rows(); track row.link.id) {
+    <li class="tidy__item">
+      <app-tidy-row
+        [row]="row"
+        (toggled)="toggle($event)"
+        (dismissed)="store.dismiss($event)"
+        (skipped)="store.skip(row.link.id)"
+        (unskipped)="store.undoSkip(row.link.id)"
+      />
+    </li>
+    }
+  </ul>
+  @if (store.more() > 0) {
+  <p class="tidy__more">
+    {{ pluralKey('ai.tidy.more', store.more()) | transloco: { count: store.more() } }}
+  </p>
+  } @if (compact()) {
+  <div
+    class="tidy__bar"
+    appToastAbove
+    role="group"
+    [attr.aria-label]="'ai.tidy.barLabel' | transloco"
+  >
+    <ng-container *ngTemplateOutlet="actions" />
+  </div>
+  } } }
+</div>
+}
+
+<ng-template #actions>
+  <ui-button variant="secondary" (click)="back()">{{ 'ai.tidy.cancel' | transloco }}</ui-button>
+  <ui-button variant="primary" wrap [disabled]="store.applyCount() === 0">
+    {{ pluralKey('ai.tidy.apply', store.applyCount()) | transloco: { count: store.applyCount() } }}
+  </ui-button>
+</ng-template>

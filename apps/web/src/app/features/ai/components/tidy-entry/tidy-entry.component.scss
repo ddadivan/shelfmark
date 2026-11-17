@@ -1,0 +1,10 @@
+@use 'ui' as *;
+
+// No box of its own: the button sits in the toolbar of Unsorted, nothing is left when it hides.
+:host {
+  display: contents;
+}
+
+.tidy-entry__count {
+  margin-inline-start: var(--space-1);
+}

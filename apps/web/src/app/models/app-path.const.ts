@@ -6,6 +6,8 @@ export const APP_PATH = {
   Tags: 'tags',
   Links: 'links',
   Unsorted: 'unsorted',
+  /** Tidy Unsorted (AI-2): review the AI suggestions of the links in Unsorted; only while AI is on. */
+  Tidy: 'unsorted/tidy',
   Favorites: 'favorites',
   Folders: 'folders',
   /** Recently opened: a page; the phone opens the same list in a sheet. */

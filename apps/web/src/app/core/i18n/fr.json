@@ -3128,6 +3128,47 @@
         "other": "{{count}} tags ajoutés par l’IA"
       },
       "undo": "Annuler"
+    },
+    "tidy": {
+      "entry": "Ranger avec les suggestions",
+      "back": "Sans dossier",
+      "title": "Ranger « Sans dossier »",
+      "lead": {
+        "one": "Suggestions pour {{count}} lien. Touchez une puce pour l’écarter.",
+        "many": "Suggestions pour {{count}} liens. Touchez une puce pour l’écarter.",
+        "other": "Suggestions pour {{count}} liens. Touchez une puce pour l’écarter."
+      },
+      "cancel": "Annuler",
+      "apply": {
+        "one": "Appliquer à {{count}} lien",
+        "many": "Appliquer à {{count}} liens",
+        "other": "Appliquer à {{count}} liens"
+      },
+      "skip": "Passer",
+      "skipped": "Passé — reste dans « Sans dossier »",
+      "undoSkip": "Annuler",
+      "rowLabel": "Modifications pour {{title}}",
+      "listLabel": "Liens avec suggestions",
+      "barLabel": "Appliquer les suggestions",
+      "loading": "Chargement des suggestions",
+      "chip": {
+        "folder": "Déplacer vers {{name}}",
+        "folderAdded": "Déplacer vers {{name}}, retenu",
+        "tag": "Ajouter le tag {{name}}",
+        "tagAdded": "Ajouter le tag {{name}}, retenu",
+        "newTag": "Créer et ajouter le tag {{name}}",
+        "newTagAdded": "Créer et ajouter le tag {{name}}, retenu"
+      },
+      "more": {
+        "one": "Encore {{count}} lien après ceux-ci. Les liens sans suggestion ne sont pas listés.",
+        "many": "Encore {{count}} liens après ceux-ci. Les liens sans suggestion ne sont pas listés.",
+        "other": "Encore {{count}} liens après ceux-ci. Les liens sans suggestion ne sont pas listés."
+      },
+      "empty": {
+        "title": "Rien à ranger",
+        "text": "Chaque lien ici n’a pas encore de suggestion ou vous l’avez déjà classé. Les nouveaux liens reçoivent des suggestions en moins d’une minute.",
+        "back": "Retour à « Sans dossier »"
+      }
     }
   }
 }
