@@ -95,3 +95,21 @@ describe('store texts', () => {
     });
   });
 });
+
+describe('activeTab use the store can see (#478)', () => {
+  const service = readRepoFile(`${ROOT}/src/app/core/chrome/browser-tabs.service.ts`);
+
+  it.each(['chrome.tabs.query(', 'chrome.tabs.create('])('calls %s literally', (call) => {
+    expect(service).toContain(call);
+  });
+
+  it('does not reach the chrome global through Reflect or globalThis', () => {
+    expect(service).not.toMatch(/Reflect\.get\(globalThis|globalThis\.chrome/u);
+  });
+});
+
+describe('manifest versions', () => {
+  it('match between the production and development builds', () => {
+    expect(manifest('production')['version']).toBe(manifest('development')['version']);
+  });
+});
