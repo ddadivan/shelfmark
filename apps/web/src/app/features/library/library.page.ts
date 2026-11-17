@@ -70,6 +70,7 @@ import { LibraryFilterService } from './services/library-filter.service';
 import { provideLibraryPage } from './services/provide-library-page';
 import { FolderCoverComponent } from './components/folder-cover/folder-cover.component';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
+import { ExtensionBannerComponent } from './components/extension-banner/extension-banner.component';
 import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
 import { SplitViewService } from './services/split-view.service';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
@@ -103,6 +104,7 @@ const SKELETON_COUNT = 8;
     FolderCoverComponent,
     FolderIconComponent,
     FolderTileComponent,
+    ExtensionBannerComponent,
     InViewDirective,
     LibraryHotkeysDirective,
     ToastAboveDirective,

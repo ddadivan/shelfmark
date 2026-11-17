@@ -1,4 +1,5 @@
 import { LINKS_SCOPE } from '../../../features/links/models/links-scope.const';
+import { SIDEBAR_EXTENSION_ID } from '../models/sidebar-extension-id.const';
 import { SIDEBAR_FEEDBACK_ID } from '../models/sidebar-feedback-id.const';
 import { SIDEBAR_RECENT_ID } from '../models/sidebar-recent-id.const';
 import { SIDEBAR_REMINDERS_ID } from '../models/sidebar-reminders-id.const';
@@ -42,9 +43,19 @@ export function fixedNodes(
   ];
 }
 
-/** "What's new" (with a dot while a release is unseen, #424) and "Send feedback" above the divider. */
-export function feedbackNodes(labels: SidebarLabels, whatsNewUnseen = false): UiTreeNode[] {
+/**
+ * "What's new" (with a dot while a release is unseen, #424) and "Send feedback" above the divider,
+ * led by "Get the extension" once the library banner was closed (`extension`, #455).
+ */
+export function feedbackNodes(
+  labels: SidebarLabels,
+  whatsNewUnseen = false,
+  extension = false,
+): UiTreeNode[] {
   return [
+    ...(extension
+      ? [{ id: SIDEBAR_EXTENSION_ID, name: labels.extension, icon: 'download' as const }]
+      : []),
     {
       id: SIDEBAR_WHATS_NEW_ID,
       name: labels.whatsNew,

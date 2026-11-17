@@ -180,6 +180,13 @@
     "whatsNew": {
       "title": "Novità",
       "all": "Vedi tutte le modifiche"
+    },
+    "extension": {
+      "badge": "Estensione del browser",
+      "title": "Salva la pagina che stai leggendo",
+      "text": "Un clic sulla barra degli strumenti o Alt+Maiusc+S. Titolo, regole delle cartelle e cartelle recenti sono già compilati: per quasi tutte le pagine basta un altro clic.",
+      "browsers": "Per Chrome, Edge, Brave e Arc. Installala dalla tua libreria dopo l’accesso.",
+      "alt": "L’estensione Shelfmark: Salva in Shelfmark con il titolo della pagina, la cartella Abbigliamento da una regola, tag e una nota"
     }
   },
   "links": {
@@ -756,7 +763,8 @@
       "reorder": {
         "movedUp": "Spostato in alto, posizione {{position}} di {{total}}",
         "movedDown": "Spostato in basso, posizione {{position}} di {{total}}"
-      }
+      },
+      "extension": "Scarica l’estensione"
     },
     "searchHint": "Cerca nei tuoi link",
     "searchButton": "Cerca",
@@ -1168,6 +1176,13 @@
         "text": "Trascina qui i link da sinistra."
       },
       "moveToLeft": "Sposta “{{title}}” in {{folder}}"
+    },
+    "extension": {
+      "title": "Salva le pagine direttamente dal browser",
+      "text": "L’estensione Shelfmark salva la pagina aperta con un clic o con Alt+Maiusc+S, con cartelle e tag già compilati.",
+      "install": "Installa l’estensione",
+      "installLabel": "Installa l’estensione dal Chrome Web Store (si apre in una nuova scheda)",
+      "dismiss": "Non ora"
     }
   },
   "export": {

@@ -15,18 +15,31 @@
 <style>
 body{margin:0}
 a{color:inherit}a:hover{color:inherit}
-@keyframes x-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
-.x-banner{animation:x-in 320ms var(--ease-out) both}
-@media (prefers-reduced-motion: reduce){.x-banner{animation:none}}
+@keyframes x-in{from{opacity:0;transform:translateY(-8px)}}
+@keyframes x-rise{from{opacity:0;transform:translateY(8px)}}
+@keyframes x-pop{from{opacity:0;transform:scale(.8)}}
+@keyframes x-popup{from{opacity:0;transform:translateY(48px)}}
+.x-banner{animation:x-in 200ms var(--ease-out) both}
+.x-banner>span:first-child{animation:x-pop 320ms var(--ease-spring) 80ms both}
+.x-banner h2{animation:x-rise 320ms var(--ease-out) 120ms both}
+.x-banner p{animation:x-rise 320ms var(--ease-out) 180ms both}
+.x-banner a{animation:x-rise 320ms var(--ease-out) 240ms both}
+.x-banner img{animation:x-popup 320ms var(--ease-out) 160ms both}
+@media (prefers-reduced-motion: reduce){.x-banner,.x-banner *{animation-name:x-fade!important}}
+@keyframes x-fade{from{opacity:0}}
 </style>
 </helmet>
 <!--
   Install the browser extension (#455), for signed-in people only, desktop Chrome, Edge, Brave and Arc
   (ViewportService.desktop + the browser check; rendered with @if, never hidden by CSS), and only once
   EXTENSION_STORE_URL is set.
-  1. Library (/links): a banner at the top of the feed, under the toolbar, before the folder title. It must
-     stand out: accent tint, the real popup screenshot peeking in, a primary Install button. "Not now" (x)
-     hides it on this device (localStorage key in USER_STORAGE_KEYS, so it comes back for the next account).
+  1. Library (/links): a banner at the top of the feed, under the folder title and toolbar, above the saved
+     views. It must stand out: accent tint, the real popup screenshot peeking in (from 80em), a primary
+     Install button. Entrance (author's request, all within duration-slow): the band fades down, the logo pops,
+     title, text and button rise in one after another, the popup slides up into the band; reduced motion fades.
+     "Not now" (x) hides it on this device (localStorage key in USER_STORAGE_KEYS, so it comes back for the next
+     account); the sidebar footer then shows "Get the extension" (download icon) above What's new, so an
+     install button always stays on the main screen.
   2. Settings › Library › Saving: the permanent row to find it again (Install opens the store in a new tab).
 -->
 <div data-theme="{{theme}}" class="sm-root dir-a" style="min-height: 980px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 40px;">
@@ -38,6 +51,10 @@ a{color:inherit}a:hover{color:inherit}
 <span class="sm-tree__row">Favorites<span class="sm-tree__count">14</span></span>
 <span class="sm-tree__row">Work<span class="sm-tree__count">34</span></span>
 <span class="sm-tree__row">Clothes<span class="sm-tree__count">21</span></span>
+<span style="flex: 1;"></span>
+<sc-if value="{{showEntry}}" hint-placeholder-val="{{false}}"><span class="sm-tree__row" style="gap: 10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 19h14"/></svg>Get the extension</span></sc-if>
+<span class="sm-tree__row">What's new</span>
+<span class="sm-tree__row">Send feedback</span>
 </aside>
 <main style="flex: 1 1 auto; min-width: 0; padding: 6px 16px 0; display: flex; flex-direction: column; gap: 22px;">
 <div style="display: flex; align-items: center; gap: 10px;">
@@ -47,6 +64,8 @@ a{color:inherit}a:hover{color:inherit}
 <span class="sm-avatar">DD</span>
 </div>
 
+
+<div style="display: flex; flex-direction: column; gap: 4px;"><h1 style="margin: 0; font-size: 34px; line-height: 38px; font-weight: 600; letter-spacing: -0.02em;">All links</h1><span style="font-size: 13px; color: var(--text-muted);">128 links</span></div>
 <sc-if value="{{showBanner}}" hint-placeholder-val="{{true}}">
 <section class="x-banner" aria-labelledby="ext-title" style="position: relative; overflow: hidden; background: var(--accent-bg); border-radius: 22px; padding: 22px 24px; display: flex; align-items: center; gap: 20px; min-height: 132px; box-sizing: border-box;">
 <span aria-hidden="true" style="flex: none; width: 52px; height: 52px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-card); display: grid; place-items: center;"><svg width="30" height="30" viewBox="0 0 32 32"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg></span>
@@ -62,7 +81,6 @@ a{color:inherit}a:hover{color:inherit}
 </section>
 </sc-if>
 
-<div style="display: flex; flex-direction: column; gap: 4px;"><h1 style="margin: 0; font-size: 34px; line-height: 38px; font-weight: 600; letter-spacing: -0.02em;">All links</h1><span style="font-size: 13px; color: var(--text-muted);">128 links</span></div>
 <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;">
 <div class="sm-card"><div class="sm-card__media" style="aspect-ratio: 16 / 9; background: var(--accent-bg);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">Y</span>youtube.com</div><div class="sm-card__title">Angular 22: everything about Signal Forms in 20 minutes</div></div></div>
 <div class="sm-card"><div class="sm-card__media" style="aspect-ratio: 16 / 9; background: var(--surface-hover);"></div><div class="sm-card__body"><div class="sm-card__meta"><span class="sm-favicon">D</span>dev.to</div><div class="sm-card__title">NgRx SignalStore: patterns for real apps</div></div></div>
@@ -89,6 +107,7 @@ class Component extends DCLogic {
       theme: dark ? 'dark' : 'light',
       popupSrc: dark ? '../assets/extension/popup-form-dark.webp' : '../assets/extension/popup-form-light.webp',
       showBanner: !(this.state || {}).dismissed,
+      showEntry: !!(this.state || {}).dismissed,
       dismiss: () => this.setState({ dismissed: true })
     };
   }

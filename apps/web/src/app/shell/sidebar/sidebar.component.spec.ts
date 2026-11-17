@@ -25,6 +25,7 @@ import { USER_SETTINGS_API } from '../../features/settings/models/user-settings-
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
+import { ExtensionBannerService } from '../../core/browser-extension/extension-banner.service';
 import { SidebarComponent } from './sidebar.component';
 
 async function setup(url = '/links', waitForFolders = true) {
@@ -117,6 +118,28 @@ describe('SidebarComponent', () => {
     expect(names.slice(-2)).toEqual(['Send feedback', 'Trash']);
     await (await treeRow(fixture, 'Send feedback')).select();
     expect(open).toHaveBeenCalledTimes(1);
+  });
+
+  it('offers "Get the extension" once the library banner was closed, opening the store (#455)', async () => {
+    const entryShown = signal(false);
+    TestBed.overrideProvider(ExtensionBannerService, {
+      useValue: { entryShown, storeUrl: 'https://store.example/shelfmark' },
+    });
+    const { fixture } = await setup();
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+
+    expect(await rowNames(fixture)).not.toContain('Get the extension');
+
+    entryShown.set(true);
+    await fixture.whenStable();
+    await (await treeRow(fixture, 'Get the extension')).select();
+
+    expect(open).toHaveBeenCalledWith(
+      'https://store.example/shelfmark',
+      '_blank',
+      'noopener,noreferrer',
+    );
+    open.mockRestore();
   });
 
   it('leaves the "Send feedback" row out on a phone (it is in the You list)', async () => {

@@ -12,4 +12,6 @@ export interface SidebarLabels {
   whatsNew: string;
   /** Accessible name of the dot on "What's new" while a release is unseen. */
   whatsNewDot: string;
+  /** "Get the extension" (#455). */
+  extension: string;
 }

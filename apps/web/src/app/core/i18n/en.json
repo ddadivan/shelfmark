@@ -180,6 +180,13 @@
     "whatsNew": {
       "title": "What's new",
       "all": "See all changes"
+    },
+    "extension": {
+      "badge": "Browser extension",
+      "title": "Save the page you are on",
+      "text": "One click on the toolbar or Alt+Shift+S. The title, your folder rules and recent folders are already filled in, so most pages take one more click.",
+      "browsers": "For Chrome, Edge, Brave and Arc. Install it from your shelf after you sign in.",
+      "alt": "The Shelfmark extension: Save to Shelfmark with the page title, the folder Clothes from a rule, tags and a note"
     }
   },
   "links": {
@@ -743,7 +750,8 @@
       "reorder": {
         "movedUp": "Moved up, position {{position}} of {{total}}",
         "movedDown": "Moved down, position {{position}} of {{total}}"
-      }
+      },
+      "extension": "Get the extension"
     },
     "searchHint": "Search your links",
     "searchButton": "Search",
@@ -1146,6 +1154,13 @@
         "text": "Drag links here from the left."
       },
       "moveToLeft": "Move “{{title}}” to {{folder}}"
+    },
+    "extension": {
+      "title": "Save pages straight from your browser",
+      "text": "The Shelfmark extension saves the page you are on in one click or Alt+Shift+S, with your folders and tags filled in.",
+      "install": "Install extension",
+      "installLabel": "Install extension from the Chrome Web Store (opens in a new tab)",
+      "dismiss": "Not now"
     }
   },
   "export": {

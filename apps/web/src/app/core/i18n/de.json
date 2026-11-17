@@ -180,6 +180,13 @@
     "whatsNew": {
       "title": "Neuigkeiten",
       "all": "Alle Änderungen"
+    },
+    "extension": {
+      "badge": "Browsererweiterung",
+      "title": "Speichere die Seite, auf der du bist",
+      "text": "Ein Klick in der Symbolleiste oder Alt+Umschalt+S. Titel, deine Ordnerregeln und letzten Ordner sind schon ausgefüllt, für die meisten Seiten reicht ein weiterer Klick.",
+      "browsers": "Für Chrome, Edge, Brave und Arc. Nach der Anmeldung installierst du sie aus deinem Regal.",
+      "alt": "Die Shelfmark-Erweiterung: In Shelfmark speichern mit dem Seitentitel, dem Ordner Kleidung aus einer Regel, Tags und einer Notiz"
     }
   },
   "links": {
@@ -743,7 +750,8 @@
       "reorder": {
         "movedUp": "Nach oben verschoben, Position {{position}} von {{total}}",
         "movedDown": "Nach unten verschoben, Position {{position}} von {{total}}"
-      }
+      },
+      "extension": "Erweiterung holen"
     },
     "searchHint": "Deine Links durchsuchen",
     "searchButton": "Suchen",
@@ -1146,6 +1154,13 @@
         "text": "Ziehe Links von links hierher."
       },
       "moveToLeft": "„{{title}}“ nach {{folder}} verschieben"
+    },
+    "extension": {
+      "title": "Seiten direkt aus dem Browser speichern",
+      "text": "Die Shelfmark-Erweiterung speichert die geöffnete Seite mit einem Klick oder Alt+Umschalt+S, Ordner und Tags sind schon ausgefüllt.",
+      "install": "Erweiterung installieren",
+      "installLabel": "Erweiterung aus dem Chrome Web Store installieren (öffnet in einem neuen Tab)",
+      "dismiss": "Nicht jetzt"
     }
   },
   "export": {

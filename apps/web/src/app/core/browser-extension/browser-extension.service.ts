@@ -17,7 +17,11 @@ export class BrowserExtensionService {
   private readonly viewport = inject(ViewportService);
   private readonly supported = isExtensionBrowser(inject(DOCUMENT).defaultView?.navigator);
 
-  readonly offered = computed(
-    () => this.storeUrl !== '' && this.supported && this.viewport.desktop(),
-  );
+  /**
+   * The browser installs the extension and the window is desktop-wide, whether or not the store
+   * page is known: the landing mentions the extension (without a link) on this alone.
+   */
+  readonly fits = computed(() => this.supported && this.viewport.desktop());
+  /** `fits` and the store page is known: the install entries of the app. */
+  readonly offered = computed(() => this.storeUrl !== '' && this.fits());
 }
