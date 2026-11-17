@@ -225,7 +225,14 @@ export class LinksWriteService {
       sent.url === undefined ? sent : { ...sent, url: savedUrl(sent.url) };
     const data = this.updateData(request);
     this.assertTagNames(request.tags);
-    const needsLock = typeof request.folderId === 'string' || request.pinnedInFolder === true;
+    // `folders:` first whenever the job rows or tags may be touched: AI's apply takes `folders:` →
+    // job row → `tags:`, so a tag or address edit queues behind it instead of deadlocking on the
+    // link row and the tags lock in the opposite order (ADR 0048).
+    const needsLock =
+      typeof request.folderId === 'string' ||
+      request.pinnedInFolder === true ||
+      request.tags !== undefined ||
+      request.url !== undefined;
     let aiJobIds: string[] = [];
     let aiSuperseded = 0;
     let response: LinkResponse;
