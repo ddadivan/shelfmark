@@ -113,6 +113,7 @@ model User {
   aiJobs                AiJob[]
   aiBatches             AiBatch[]
   linkSuggestions       LinkSuggestion[]
+  mcpTokens             McpToken[]
 
   @@map("users")
 }
@@ -576,4 +577,39 @@ model LinkSuggestion {
   @@index([jobId])
   @@index([folderId])
   @@map("link_suggestions")
+}
+
+// Personal MCP tokens (#395, ADR 0053): read-only access for the user's own assistant. Only the
+// SHA-256 hex digest of the secret is stored (unique, the lookup key), with its last four characters
+// for the list. Revoke deletes the row, so the token stops at once and its usage rows cascade.
+// CHECKs in the migration keep the name to 1-40 characters, the digest to 64 hex characters and
+// last4 to four base64url characters.
+model McpToken {
+  id           String          @id @default(uuid(7)) @db.Uuid
+  userId       String          @map("user_id") @db.Uuid
+  name         String          @db.VarChar(40)
+  tokenHash    String          @unique @map("token_hash") @db.Char(64)
+  last4        String          @db.Char(4)
+  includeNotes Boolean         @default(false) @map("include_notes")
+  createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  // Written at most once a minute by the token guard (plain SQL).
+  lastUsedAt   DateTime?       @map("last_used_at") @db.Timestamptz(3)
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usage        McpTokenUsage[]
+
+  @@index([userId])
+  @@map("mcp_tokens")
+}
+
+// Calls of one personal MCP token per UTC day (counts only, never arguments or results). Reserved with
+// one INSERT ... ON CONFLICT statement per call, capped at MCP_LIMIT.CallsPerTokenPerDay; rows older
+// than 35 days are deleted by the first call of a day. "Calls this week" sums the last 7 days.
+model McpTokenUsage {
+  tokenId String   @map("token_id") @db.Uuid
+  day     DateTime @db.Date
+  calls   Int      @default(0)
+  token   McpToken @relation(fields: [tokenId], references: [id], onDelete: Cascade)
+
+  @@id([tokenId, day])
+  @@map("mcp_token_usage")
 }
