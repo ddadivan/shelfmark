@@ -2901,6 +2901,14 @@
       },
       "emojiPickerTabs": {
         "text": "Le sélecteur d’emoji est aussi large que son champ, et ses onglets de catégories ne ressemblent plus à des emoji à choisir."
+      },
+      "aiSuggestions": {
+        "title": "Suggestions IA (facultatives)",
+        "text": "Activez l'IA dans Paramètres › IA pour obtenir des suggestions de dossier et de tags à l'enregistrement. Désactivée par défaut ; rien ne change sans votre accord."
+      },
+      "aiSummaries": {
+        "title": "Résumés courts",
+        "text": "Avec l'IA activée, chaque lien reçoit un résumé d'une ou deux lignes sur sa carte. Modifiez-le et il vous appartient."
       }
     },
     "sections": {

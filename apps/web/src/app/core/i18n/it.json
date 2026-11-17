@@ -2901,6 +2901,14 @@
       },
       "emojiPickerTabs": {
         "text": "Il selettore di emoji è largo quanto il suo campo e le schede delle categorie non sembrano più emoji da scegliere."
+      },
+      "aiSuggestions": {
+        "title": "Suggerimenti IA (facoltativi)",
+        "text": "Attiva l'IA in Impostazioni › IA per ricevere suggerimenti di cartelle e tag mentre salvi. Disattivata per impostazione predefinita; nulla cambia senza la tua scelta."
+      },
+      "aiSummaries": {
+        "title": "Riassunti brevi",
+        "text": "Con l'IA attiva, i link ricevono un riassunto di una o due righe sulla scheda. Modificalo e diventa tuo."
       }
     },
     "sections": {

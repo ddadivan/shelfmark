@@ -2901,6 +2901,14 @@
       },
       "emojiPickerTabs": {
         "text": "O seletor de emoji tem a largura do campo, e as abas de categorias não parecem mais emojis para escolher."
+      },
+      "aiSuggestions": {
+        "title": "Sugestões de IA (opcionais)",
+        "text": "Ative a IA em Configurações › IA para receber sugestões de pasta e tags ao salvar. Desativada por padrão; nada muda sem a sua escolha."
+      },
+      "aiSummaries": {
+        "title": "Resumos curtos",
+        "text": "Com a IA ativada, os links ganham um resumo de uma ou duas linhas no cartão. Edite e ele passa a ser seu."
       }
     },
     "sections": {

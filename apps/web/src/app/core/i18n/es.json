@@ -2901,6 +2901,14 @@
       },
       "emojiPickerTabs": {
         "text": "El selector de emoji es tan ancho como su campo y sus pestañas de categorías ya no parecen emoji para elegir."
+      },
+      "aiSuggestions": {
+        "title": "Sugerencias de IA (opcionales)",
+        "text": "Activa la IA en Ajustes › IA para recibir sugerencias de carpeta y etiquetas al guardar. Desactivada por defecto; nada cambia sin tu decisión."
+      },
+      "aiSummaries": {
+        "title": "Resúmenes breves",
+        "text": "Con la IA activada, los enlaces reciben un resumen de una o dos líneas en su tarjeta. Si lo editas, es tuyo."
       }
     },
     "sections": {

@@ -11,6 +11,26 @@ import type { ChangelogRelease } from './changelog-release.interface';
  */
 export const CHANGELOG: readonly ChangelogRelease[] = [
   {
+    version: '2.2.0',
+    date: null,
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'aiSuggestions',
+        titleKey: 'changelog.items.aiSuggestions.title',
+        textKey: 'changelog.items.aiSuggestions.text',
+        priority: 1,
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'aiSummaries',
+        titleKey: 'changelog.items.aiSummaries.title',
+        textKey: 'changelog.items.aiSummaries.text',
+        priority: 2,
+      },
+    ],
+  },
+  {
     version: '2.1.0',
     date: '2026-11-17',
     items: [

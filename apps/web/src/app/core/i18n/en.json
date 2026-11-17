@@ -2841,6 +2841,14 @@
       },
       "emojiPickerTabs": {
         "text": "The emoji picker is as wide as its field, and its category tabs no longer look like emoji to pick."
+      },
+      "aiSuggestions": {
+        "title": "AI suggestions (optional)",
+        "text": "Turn on AI in Settings › AI to get folder and tag suggestions as you save. Off by default; nothing changes without your choice."
+      },
+      "aiSummaries": {
+        "title": "Short summaries",
+        "text": "With AI on, links get a one- or two-line summary on their card. Edit it and it's yours."
       }
     },
     "sections": {
