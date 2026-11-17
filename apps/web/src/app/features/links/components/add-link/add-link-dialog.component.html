@@ -7,7 +7,7 @@
   />
 } @else if (several()) {
   <!-- "Add several links" (#315): any text with links, read by the paste-many parser. -->
-  <form [formRoot]="severalForm" class="add-link" (keydown)="onSeveralKeydown($event)">
+  <form [formRoot]="severalForm" class="add-link" (keydown)="severalLinks.onSeveralKeydown($event)">
     <ui-dialog
       [title]="'links.add.several.title' | transloco"
       [closeLabel]="'links.add.close' | transloco"
@@ -29,7 +29,7 @@
         class="add-link__back"
         [variant]="BUTTON_VARIANT.Ghost"
         iconLeft="chevron-left"
-        (click)="showSingle()"
+        (click)="severalLinks.showSingle()"
         >{{ 'links.add.several.back' | transloco }}</ui-button
       >
       <ui-button
@@ -50,7 +50,7 @@
     >
       <div class="add-link__fields">
         <ui-input
-          (paste)="onUrlPaste($event)"
+          (paste)="severalLinks.onUrlPaste($event)"
           (focusout)="onUrlBlur()"
           [type]="INPUT_TYPE.Url"
           [label]="'links.add.url.label' | transloco"
@@ -67,7 +67,7 @@
               class="add-link__several-open"
               [variant]="BUTTON_VARIANT.Ghost"
               size="sm"
-              (click)="showSeveral()"
+              (click)="severalLinks.showSeveral()"
               >{{ 'links.add.several.open' | transloco }}</ui-button
             >
           </div>

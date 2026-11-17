@@ -20,6 +20,7 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { LINKS_API } from '../../links/models/links-api.const';
 import { toastFolder } from '../../links/utils/toast-folder';
 import { AI_API } from '../models/ai-api.const';
+import { AI_BATCH_FOLLOW_UP } from '../models/ai-batch-follow-up.const';
 import { AI_POLL_INTERVAL_MS } from '../models/ai-poll-interval.const';
 import { AiSettingsStore } from './ai-settings.store';
 
@@ -28,8 +29,9 @@ import { AiSettingsStore } from './ai-settings.store';
  * `GET /api/links/:id/ai` is polled for `AI_LIMIT.PendingSkeletonMs` (the card's skeleton
  * window). When it is done the link in the feed gets its summary; when Automatic mode moved or
  * tagged it, the feed gets the link as saved and a toast names the change with Undo (8 s, `POST
- * /api/links/:id/ai/undo`). Past the window the summary appears on the next load. The session end
- * stops every poll.
+ * /api/links/:id/ai/undo`). Past the window the summary appears on the next load. Links saved
+ * together (paste many) share one loop that reloads the feed until none of them is pending. The
+ * session end stops every poll.
  */
 @Service()
 export class AiFollowUpService {
@@ -41,13 +43,44 @@ export class AiFollowUpService {
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly watched = new Set<string>();
+  /** Pending links of paste-many saves, followed by the one batch loop. */
+  private readonly batch = new Set<string>();
+  private batchUntil = 0;
+  /** The running batch loop; `null` when none runs. */
+  private batchLoop: object | null = null;
   private epoch = 0;
 
   constructor() {
     inject(SessionScope).onEnd(() => {
       this.epoch++;
       this.watched.clear();
+      this.batch.clear();
+      this.batchLoop = null;
     });
+  }
+
+  /**
+   * Follows links saved together (paste many): their pending jobs reach the tick, and one loop at
+   * a time reloads the feed every `AI_BATCH_FOLLOW_UP.RefreshMs` until none of them is pending in
+   * it or the window (extended by each new batch) ends. No per-link polls, no toasts.
+   */
+  watchMany(links: readonly LinkResponse[]): void {
+    const pending = links.filter(
+      (link) => link.aiStatus === AI_JOB_STATUS.Pending && !this.watched.has(link.id),
+    );
+    if (pending.length === 0) {
+      return;
+    }
+    for (const link of pending) {
+      this.batch.add(link.id);
+    }
+    this.settings.jobQueued(pending.length);
+    this.batchUntil = Date.now() + AI_BATCH_FOLLOW_UP.WindowMs;
+    if (this.batchLoop === null) {
+      const loop = {};
+      this.batchLoop = loop;
+      void this.followBatch(loop, this.epoch);
+    }
   }
 
   /**
@@ -96,6 +129,35 @@ export class AiFollowUpService {
       // The link stays as saved; the next load shows what AI did.
     } finally {
       this.watched.delete(link.id);
+    }
+  }
+
+  private async followBatch(loop: object, epoch: number): Promise<void> {
+    try {
+      while (Date.now() < this.batchUntil) {
+        await new Promise((resolve) => setTimeout(resolve, AI_BATCH_FOLLOW_UP.RefreshMs));
+        if (epoch !== this.epoch) {
+          return;
+        }
+        // A link that left the feed, or is no longer pending in it, needs no more reloads.
+        const shown = this.links.entityMap();
+        for (const id of this.batch) {
+          if (shown[id]?.aiStatus !== AI_JOB_STATUS.Pending) {
+            this.batch.delete(id);
+          }
+        }
+        if (this.batch.size === 0) {
+          return;
+        }
+        this.links.refresh();
+      }
+    } finally {
+      if (this.batchLoop === loop) {
+        this.batchLoop = null;
+        if (Date.now() >= this.batchUntil) {
+          this.batch.clear();
+        }
+      }
     }
   }
 

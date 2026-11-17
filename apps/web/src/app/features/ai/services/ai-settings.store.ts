@@ -210,9 +210,9 @@ export const AiSettingsStore = signalStore(
         }
       },
 
-      /** A save queued an AI job (the tick runs while jobs are pending). */
-      jobQueued(): void {
-        patchResponse({ pendingJobs: store.pendingJobs() + 1 });
+      /** A save queued AI jobs, one by default (the tick runs while jobs are pending). */
+      jobQueued(count = 1): void {
+        patchResponse({ pendingJobs: store.pendingJobs() + count });
       },
 
       /** Deletes every AI summary and suggestion; reloads the settings after it. */

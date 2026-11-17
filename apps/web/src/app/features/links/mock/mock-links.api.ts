@@ -202,6 +202,8 @@ export class MockLinksApi implements LinksApi {
 
   list(query: ListLinksQuery = {}): Observable<ListLinksResponse> {
     return defer(() => {
+      // Jobs whose time has come finish on read, as the API's tick would have (paste many).
+      this.ai.settle();
       const scenario = readScenario();
       if (scenario === MOCK_LINKS_SCENARIO.Error) {
         return throwError(() => new Error('Mock: list failed'));

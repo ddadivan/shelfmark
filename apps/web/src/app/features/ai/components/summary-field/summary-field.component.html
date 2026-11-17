@@ -1,6 +1,6 @@
 <ui-textarea
   [label]="'ai.summary.label' | transloco"
-  [hint]="hintKey() | transloco"
+  [hint]="hintKey() | transloco: { disclaimer: ('ai.disclaimer' | transloco) }"
   [counterLabel]="'ai.summary.counter' | transloco"
   [rows]="2"
   [formField]="field()"

@@ -261,6 +261,8 @@ export class LinkActionsService {
       return;
     }
     this.store.addSavedMany(links);
+    // Their summaries arrive a few seconds later, through one refresh loop for the batch.
+    this.injector.get(AiFollowUpService).watchMany(links);
     void this.folders.refresh();
     void this.tags.noteLinkSaved();
     const undo = this.t('links.item.undo');

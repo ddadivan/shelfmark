@@ -25,6 +25,7 @@ import { FOLDERS_API } from '../../links/models/folders-api.const';
 import { LINKS_API } from '../../links/models/links-api.const';
 import { TAGS_API } from '../../links/models/tags-api.const';
 import { AI_API } from '../models/ai-api.const';
+import { AI_BATCH_FOLLOW_UP } from '../models/ai-batch-follow-up.const';
 import { AI_SETTINGS_DEFAULT } from '../models/ai-settings-default.const';
 import { AI_POLL_INTERVAL_MS } from '../models/ai-poll-interval.const';
 import { AiFollowUpService } from './ai-follow-up.service';
@@ -158,6 +159,49 @@ describe('AiFollowUpService', () => {
     expect(show.mock.calls[1]?.[0]).toEqual(
       expect.objectContaining({ kind: TOAST_KIND.Danger, title: 'Couldn’t undo the AI change' }),
     );
+  });
+
+  describe('links saved together (paste many)', () => {
+    const second: LinkResponse = { ...SAVED, id: 'second' };
+
+    async function batchSetup() {
+      const ai = fakeAiApi();
+      const ctx = await setup(ai);
+      const store = TestBed.inject(LinksStore);
+      let shown: Record<string, LinkResponse> = { [SAVED.id]: SAVED, [second.id]: second };
+      vi.spyOn(store, 'entityMap').mockImplementation(() => shown);
+      const refresh = vi.spyOn(store, 'refresh').mockImplementation(() => undefined);
+      return { ...ctx, refresh, show: (next: Record<string, LinkResponse>) => (shown = next) };
+    }
+
+    it('reloads the feed in one loop until none of them is pending, without per-link polls', async () => {
+      const { ai, service, refresh, show } = await batchSetup();
+      const pending = TestBed.inject(AiSettingsStore).pendingJobs();
+      service.watchMany([SAVED, second, { ...SAVED, id: 'done', aiStatus: AI_JOB_STATUS.Done }]);
+      service.watchMany([second]);
+      expect(TestBed.inject(AiSettingsStore).pendingJobs()).toBe(pending + 3);
+
+      await vi.advanceTimersByTimeAsync(AI_BATCH_FOLLOW_UP.RefreshMs);
+      expect(refresh).toHaveBeenCalledTimes(1);
+      show({ [SAVED.id]: { ...SAVED, aiStatus: AI_JOB_STATUS.Done } });
+      await vi.advanceTimersByTimeAsync(AI_BATCH_FOLLOW_UP.RefreshMs * 3);
+
+      expect(refresh).toHaveBeenCalledTimes(1);
+      expect(ai.getLinkAi).not.toHaveBeenCalled();
+    });
+
+    it('gives up after the window and stops when the session ends', async () => {
+      const { service, refresh } = await batchSetup();
+      service.watchMany([SAVED]);
+      await vi.advanceTimersByTimeAsync(AI_BATCH_FOLLOW_UP.WindowMs * 2);
+      const calls = refresh.mock.calls.length;
+      expect(calls).toBeLessThanOrEqual(AI_BATCH_FOLLOW_UP.WindowMs / AI_BATCH_FOLLOW_UP.RefreshMs);
+
+      service.watchMany([second]);
+      TestBed.inject(SessionScope).end();
+      await vi.advanceTimersByTimeAsync(AI_BATCH_FOLLOW_UP.RefreshMs * 2);
+      expect(refresh.mock.calls.length).toBe(calls);
+    });
   });
 
   it('stops following when the session ends', async () => {
