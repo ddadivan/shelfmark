@@ -166,7 +166,9 @@
       "title": "Videz vos Messages enregistrés.",
       "lead": "Collez un lien, donnez-lui un dossier et une note. Tout ce que vous enregistrez arrive désormais sur une seule étagère, à deux touches de distance.",
       "demo": "Ouvrir la démo",
-      "signIn": "Se connecter"
+      "signIn": "Se connecter",
+      "extension": "Vous utilisez Chrome, Edge, Brave ou Arc ? Enregistrez n’importe quelle page en un clic.",
+      "extensionLink": "Obtenir l’extension"
     },
     "footer": {
       "copyright": "© 2026 Shelfmark",
@@ -1503,6 +1505,12 @@
         "previews": {
           "label": "Récupérer titres et aperçus",
           "hint": "Désactivez pour n’enregistrer que l’adresse"
+        },
+        "extension": {
+          "label": "Extension de navigateur",
+          "hint": "Enregistrez n’importe quelle page en un clic depuis Chrome, Edge, Brave ou Arc",
+          "action": "Installer",
+          "actionLabel": "Installer l’extension de navigateur depuis le Chrome Web Store"
         }
       },
       "failed": "Impossible d’enregistrer le paramètre",

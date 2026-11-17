@@ -166,7 +166,9 @@
       "title": "Vacía tus Mensajes guardados.",
       "lead": "Pega un enlace, dale una carpeta y una nota. Todo lo que guardes a partir de ahora llega a una sola estantería, a dos pulsaciones de distancia.",
       "demo": "Abrir la demo",
-      "signIn": "Iniciar sesión"
+      "signIn": "Iniciar sesión",
+      "extension": "¿Usas Chrome, Edge, Brave o Arc? Guarda cualquier página con un clic.",
+      "extensionLink": "Obtener la extensión"
     },
     "footer": {
       "copyright": "© 2026 Shelfmark",
@@ -1503,6 +1505,12 @@
         "previews": {
           "label": "Obtener títulos y vistas previas",
           "hint": "Desactívalo para guardar solo la dirección"
+        },
+        "extension": {
+          "label": "Extensión del navegador",
+          "hint": "Guarda cualquier página con un clic desde Chrome, Edge, Brave o Arc",
+          "action": "Instalar",
+          "actionLabel": "Instalar la extensión del navegador desde Chrome Web Store"
         }
       },
       "failed": "No se pudo guardar el ajuste",

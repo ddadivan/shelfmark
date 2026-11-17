@@ -59,3 +59,23 @@
   flex-wrap: wrap;
   gap: rem(10px);
 }
+
+// "Using Chrome, Edge, Brave or Arc?" line (#455): only on a desktop Chromium browser.
+.landing-finale__extension {
+  margin: 0;
+  font-size: rem(14px);
+  line-height: rem(20px);
+  color: var(--text-muted);
+}
+
+.landing-finale__extension-link {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  color: var(--text);
+  text-underline-offset: rem(3px);
+}
+
+.landing-finale__hint {
+  @include visually-hidden;
+}

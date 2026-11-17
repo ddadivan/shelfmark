@@ -166,7 +166,9 @@
       "title": "Leere deine Gespeicherten Nachrichten.",
       "lead": "Link einfügen, Ordner und Notiz dazu. Alles, was du ab jetzt speicherst, landet in einem Regal, und alles davon ist zwei Tastendrücke entfernt.",
       "demo": "Demo öffnen",
-      "signIn": "Anmelden"
+      "signIn": "Anmelden",
+      "extension": "Du nutzt Chrome, Edge, Brave oder Arc? Speichere jede Seite mit einem Klick.",
+      "extensionLink": "Erweiterung holen"
     },
     "footer": {
       "copyright": "© 2026 Shelfmark",
@@ -1481,6 +1483,12 @@
         "previews": {
           "label": "Titel und Vorschauen abrufen",
           "hint": "Aus speichert nur die Adresse"
+        },
+        "extension": {
+          "label": "Browsererweiterung",
+          "hint": "Speichere jede Seite mit einem Klick aus Chrome, Edge, Brave oder Arc",
+          "action": "Installieren",
+          "actionLabel": "Browsererweiterung aus dem Chrome Web Store installieren"
         }
       },
       "failed": "Einstellung konnte nicht gespeichert werden",

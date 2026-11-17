@@ -231,6 +231,14 @@ The demo sign-in (#67) creates a 24 hour sandbox user per visitor. A Vercel Cron
 - [ ] Without the variable the route answers 401 to everyone (fails closed) and expired sandboxes are never deleted, though they stop working after 24 hours.
 - [ ] After the first deploy: Vercel → Settings → Cron Jobs shows `/api/cron/demo-cleanup`; use **Run** once and check the response `{ "deleted": …, "hasMore": false }` in the logs.
 
+### 5.10 Extension store link in the web app (#455)
+
+The web app offers the browser extension (5.9) with a "Browser extension" row in Settings › Library › Saving and a line in the landing's closing block, only on a desktop Chrome, Edge, Brave or Arc. Both read one constant and render nothing while it is empty.
+
+- [ ] After the Chrome Web Store item is published (5.9), copy its public URL (`https://chromewebstore.google.com/detail/<name>/<item id>`).
+- [ ] Put it into `EXTENSION_STORE_URL` in `apps/web/src/app/models/extension-store-url.const.ts` (a one-line PR into `stage`, or ask an agent to do it).
+- [ ] After the release, open the landing and Settings › Library in desktop Chrome: the link opens the store page. In Firefox, Safari or on a phone nothing is shown.
+
 ## 6. Secrets policy
 
 | Secret | Lives in | Never in |
@@ -277,5 +285,6 @@ Prevention layers: gitleaks in the pre-commit hook (locally) and in CI (CI task)
 | 15 | ~~Migration secret in a GitHub `production` environment~~ not needed (Vercel build migrates, ADR 0025) | GitHub Environments | - | dropped |
 | 16 | Privacy policy URL, publish the Google app | Google Auth Platform | author | stage 7 |
 | 17 | `CRON_SECRET` (32+ characters) in Vercel Production for the demo cleanup cron | Vercel env | author | demo sign-in (#67) |
+| 19 | Chrome Web Store URL of the published extension in `EXTENSION_STORE_URL` (section 5.10) | `apps/web` models | author | extension store link (#455) |
 
 The showcase builds only from `main`: `ignoreCommand` in `libs/ui/vercel.json` skips every other branch (issue #50), so PRs create no `shelfmark-ui` deployments and the Hobby deployment limit is spent on the app project. Storybook on PRs is checked by CI (`nx test-storybook ui`).

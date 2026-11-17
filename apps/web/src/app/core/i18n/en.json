@@ -166,7 +166,9 @@
       "title": "Empty your Saved Messages.",
       "lead": "Paste a link, give it a folder and a note. Everything you save from now on lands on one shelf, and any of it is two keystrokes away.",
       "demo": "Open the demo",
-      "signIn": "Sign in"
+      "signIn": "Sign in",
+      "extension": "Using Chrome, Edge, Brave or Arc? Save any page in one click.",
+      "extensionLink": "Get the browser extension"
     },
     "footer": {
       "copyright": "© 2026 Shelfmark",
@@ -1481,6 +1483,12 @@
         "previews": {
           "label": "Fetch titles and previews",
           "hint": "Turn off to save only the address"
+        },
+        "extension": {
+          "label": "Browser extension",
+          "hint": "Save any page in one click from Chrome, Edge, Brave or Arc",
+          "action": "Install",
+          "actionLabel": "Install the browser extension from the Chrome Web Store"
         }
       },
       "failed": "Couldn't save the setting",
