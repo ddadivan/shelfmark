@@ -3,6 +3,10 @@ import { FetcherModule } from '../fetcher/fetcher.module';
 import { FoldersModule } from '../folders/folders.module';
 import { TagsModule } from '../tags/tags.module';
 import { AiController } from './ai.controller';
+import { LinkAiController } from './link-ai.controller';
+import { LinkAiService } from './link-ai/link-ai.service';
+import { AiDataService } from './data/ai-data.service';
+import { AiSuggestionsService } from './suggestions/ai-suggestions.service';
 import { AiApplyService } from './apply/ai-apply.service';
 import { AiBackgroundService } from './background/ai-background.service';
 import { readAiConfig } from './config/ai-config';
@@ -22,7 +26,7 @@ import { AiUsageService } from './usage/ai-usage.service';
  */
 @Module({
   imports: [FetcherModule, FoldersModule, TagsModule],
-  controllers: [AiController],
+  controllers: [AiController, LinkAiController],
   providers: [
     // Read once at boot (the module is created when the app starts): never at import time.
     { provide: AI_CONFIG, useFactory: () => readAiConfig() },
@@ -35,7 +39,16 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiApplyService,
     AiRunnerService,
     AiJobsService,
+    AiSuggestionsService,
+    LinkAiService,
+    AiDataService,
   ],
-  exports: [AiProviderRegistry, AiSettingsService, AiUsageService, AiJobsService],
+  exports: [
+    AiProviderRegistry,
+    AiSettingsService,
+    AiUsageService,
+    AiJobsService,
+    AiSuggestionsService,
+  ],
 })
 export class AiModule {}

@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  AI_LIMIT,
   LINK_KIND,
   LINK_LIMIT,
   TAG_LIMIT,
@@ -81,6 +82,20 @@ export class UpdateLinkDto implements UpdateLinkRequest {
   @ValidateIf(present)
   @IsIn(Object.values(LINK_KIND))
   kind?: LinkKind;
+
+  @ApiPropertyOptional({
+    maxLength: AI_LIMIT.SummaryMax,
+    nullable: true,
+    type: String,
+    description:
+      'Your own summary (marked as yours, AI never replaces it); null or blank clears it, so AI may write one again',
+  })
+  @IsOptional()
+  @TrimString()
+  @IsString()
+  @NoControlChars(true)
+  @MaxLength(AI_LIMIT.SummaryMax)
+  summary?: string | null;
 
   @ApiPropertyOptional({ description: 'Pin to or unpin from the top of the link folder' })
   @ValidateIf(present)

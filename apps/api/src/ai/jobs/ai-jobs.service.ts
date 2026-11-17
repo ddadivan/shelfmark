@@ -37,6 +37,7 @@ import { requestedParts, toAiParts } from './requested-parts';
 import { resolveJobLanguage } from './resolve-job-language';
 import { toAiJobReason } from './to-ai-job-reason';
 import { toStoredLinkResult } from './to-stored-link-result';
+import { toLinkSuggestion } from '../suggestions/to-link-suggestion';
 
 type Tx = Prisma.TransactionClient;
 
@@ -227,16 +228,7 @@ export class AiJobsService {
     ]);
     return {
       ...response,
-      suggestions: rows.map((row) => ({
-        id: row.id,
-        kind: toSuggestionKind(row.kind),
-        state:
-          row.state === SUGGESTION_ROW_STATE.AutoApplied
-            ? SUGGESTION_STATE.AutoApplied
-            : SUGGESTION_STATE.Suggested,
-        tagName: row.tagName,
-        folderId: row.folderId,
-      })),
+      suggestions: rows.map(toLinkSuggestion),
       summary: link?.summarySource === SUMMARY_SOURCE.Ai ? link.summary : null,
     };
   }
@@ -320,7 +312,8 @@ export class AiJobsService {
     return { jobIds: rows.map((row) => row.id), touched: true };
   }
 
-  private async language(
+  /** The summary language of a new job (setting, account language, request header, English). */
+  async language(
     db: AiDbClient,
     userId: string,
     stored: StoredAiSettings,
@@ -363,14 +356,4 @@ export class AiJobsService {
       folderId,
     };
   }
-}
-
-const KINDS: readonly string[] = Object.values(SUGGESTION_KIND);
-
-function isSuggestionKind(value: string): value is SuggestionKind {
-  return KINDS.includes(value);
-}
-
-function toSuggestionKind(value: string): SuggestionKind {
-  return isSuggestionKind(value) ? value : SUGGESTION_KIND.Tag;
 }

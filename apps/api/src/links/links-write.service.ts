@@ -16,9 +16,11 @@ import {
   type CreateLinkRequest,
   type LinkResponse,
   type OpenLinkResponse,
+  SUMMARY_SOURCE,
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
 import { AiJobsService } from '../ai/jobs/ai-jobs.service';
+import { AiSuggestionsService } from '../ai/suggestions/ai-suggestions.service';
 import type { AiRequestContext } from '../ai/models/ai-request-context.interface';
 import { REQUEST_TIMEOUT_MS } from '../common/interceptors/models/request-timeout.const';
 import { FoldersService } from '../folders/folders.service';
@@ -46,6 +48,13 @@ function noteOrNull(note: string | null | undefined): string | null {
   return note === undefined || note === null || note.trim() === '' ? null : note;
 }
 
+/** Whether two tag name lists hold the same names, ignoring case and order. */
+function sameNames(a: readonly string[], b: readonly string[]): boolean {
+  const left = new Set(a.map((name) => name.toLowerCase()));
+  const right = new Set(b.map((name) => name.toLowerCase()));
+  return left.size === right.size && [...left].every((name) => right.has(name));
+}
+
 /**
  * Writes of the links API. Locks are always taken in the order `folders:` then `tags:` (ADR 0033);
  * the page fetch of a create runs before the transaction, never inside it.
@@ -60,6 +69,7 @@ export class LinksWriteService {
     private readonly images: LinkImageCaptureService,
     private readonly rules: RulesService,
     private readonly aiJobs: AiJobsService,
+    private readonly aiSuggestions: AiSuggestionsService,
   ) {}
 
   /**
@@ -207,28 +217,47 @@ export class LinksWriteService {
     return row ? { link: toLinkResponse(row), created: true } : result;
   }
 
-  async update(userId: string, id: string, sent: UpdateLinkRequest): Promise<LinkResponse> {
+  /**
+   * `context` carries what a re-enqueued AI job needs from the request (a new URL asks AI again
+   * unless the summary is the user's own).
+   */
+  async update(
+    userId: string,
+    id: string,
+    sent: UpdateLinkRequest,
+    context: AiRequestContext = {},
+  ): Promise<LinkResponse> {
     // A new address is stored like a new link's: without tracking parameters (#284, #315).
     const request: UpdateLinkRequest =
       sent.url === undefined ? sent : { ...sent, url: savedUrl(sent.url) };
     const data = this.updateData(request);
     this.assertTagNames(request.tags);
     const needsLock = typeof request.folderId === 'string' || request.pinnedInFolder === true;
+    let aiJobIds: string[] = [];
+    let response: LinkResponse;
     try {
-      return await this.prisma.$transaction(async (tx) => {
+      response = await this.prisma.$transaction(async (tx) => {
         if (needsLock) await this.folders.lockTree(tx, userId);
         if (typeof request.folderId === 'string') {
           await this.requireFolder(tx, userId, request.folderId);
         }
         const current = await tx.link.findFirst({
           where: { id, userId, deletedAt: null },
-          select: { id: true, normalizedUrl: true, folderId: true, pinnedInFolderAt: true },
+          select: {
+            id: true,
+            normalizedUrl: true,
+            folderId: true,
+            pinnedInFolderAt: true,
+            tags: { select: { tag: { select: { name: true } } } },
+          },
         });
         if (!current) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
         await this.applyFolderPin(tx, userId, current, request, data);
         // Only a really different page invalidates the captured images and the source hints (the
         // same URL written differently keeps them); the card then falls back to the site letter.
-        if (data.normalizedUrl !== undefined && data.normalizedUrl !== current.normalizedUrl) {
+        const newPage =
+          data.normalizedUrl !== undefined && data.normalizedUrl !== current.normalizedUrl;
+        if (newPage) {
           await tx.linkImage.deleteMany({ where: { linkId: id, userId } });
           data.faviconSourceUrl = null;
           data.imageSourceUrl = null;
@@ -248,16 +277,46 @@ export class LinksWriteService {
           await tx.linkTag.createMany({ data: tagIds.map((tagId) => ({ linkId: id, tagId })) });
         }
         const touched = Object.keys(data).length > 0 || request.tags !== undefined;
-        const row = await tx.link.update({
+        let row = await tx.link.update({
           where: { id, userId, deletedAt: null },
           data: touched ? { ...data, updatedAt: new Date() } : data,
           include: LINK_INCLUDE,
         });
+        // AI (#390): the user's own folder or tag choice settles the suggestion marks.
+        const folderChanged =
+          request.folderId !== undefined && request.folderId !== current.folderId;
+        const tagsChanged =
+          request.tags !== undefined &&
+          !sameNames(
+            current.tags.map((entry) => entry.tag.name),
+            row.tags.map((entry) => entry.tag.name),
+          );
+        if (folderChanged || tagsChanged) {
+          await this.aiSuggestions.afterUserEdit(tx, userId, id, {
+            ...(folderChanged ? { folderId: row.folderId } : {}),
+            ...(tagsChanged ? { tags: row.tags.map((entry) => entry.tag.name) } : {}),
+          });
+        }
+        // A new page asks AI again, unless the summary is the user's (ADR 0048).
+        if (newPage && row.summarySource !== SUMMARY_SOURCE.User) {
+          const ai = await this.aiJobs.enqueue(
+            tx,
+            userId,
+            [{ linkId: id, folderSet: row.folderId !== null, tagsSet: row.tags.length > 0 }],
+            context,
+          );
+          aiJobIds = ai.jobIds;
+          if (ai.touched) {
+            row = await tx.link.findFirstOrThrow({ where: { id, userId }, include: LINK_INCLUDE });
+          }
+        }
         return toLinkResponse(row);
       });
     } catch (error) {
       throw this.mapVanished(error);
     }
+    this.aiJobs.start(userId, aiJobIds);
+    return response;
   }
 
   /**
@@ -361,6 +420,12 @@ export class LinksWriteService {
     if (request.folderId !== undefined) data.folderId = request.folderId;
     if (request.isFavorite !== undefined) data.isFavorite = request.isFavorite;
     if (request.kind !== undefined) data.kind = request.kind;
+    if (request.summary !== undefined) {
+      // Any text is the user's; null or blank clears it, so AI may write one again.
+      const summary = request.summary?.trim() ?? '';
+      data.summary = summary === '' ? null : summary;
+      data.summarySource = summary === '' ? null : SUMMARY_SOURCE.User;
+    }
     return data;
   }
 

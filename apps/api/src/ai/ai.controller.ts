@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   HttpCode,
@@ -13,6 +14,7 @@ import {
 import {
   ApiAcceptedResponse,
   ApiBadRequestResponse,
+  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -28,6 +30,8 @@ import { CreateAiDraftDto } from './dto/create-ai-draft.dto';
 import { AiJobsService } from './jobs/ai-jobs.service';
 import { UpdateAiSettingsDto } from './dto/update-ai-settings.dto';
 import { AiSettingsService } from './settings/ai-settings.service';
+import { AiDataService } from './data/ai-data.service';
+import { AiSuggestionsService } from './suggestions/ai-suggestions.service';
 
 /** AI routes under `/api/ai` (`AI_ENDPOINT`). Thin: the services own the rules. */
 @ApiTags('ai')
@@ -36,6 +40,8 @@ export class AiController {
   constructor(
     private readonly settings: AiSettingsService,
     private readonly jobs: AiJobsService,
+    private readonly suggestions: AiSuggestionsService,
+    private readonly data: AiDataService,
   ) {}
 
   @Get('settings')
@@ -90,5 +96,31 @@ export class AiController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<AiJobResponseDto> {
     return this.jobs.getJob(user.id, id);
+  }
+
+  @Post('suggestions/:id/dismiss')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RateLimit(RATE_LIMIT.AiWrite)
+  @ApiNoContentResponse({ description: 'Dismissed (or already decided)' })
+  @ApiNotFoundResponse({ description: 'Unknown or foreign suggestion' })
+  @ApiOperation({ summary: 'Hide a suggestion for its link for good' })
+  async dismissSuggestion(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
+    await this.suggestions.dismiss(user.id, id);
+  }
+
+  @Delete('data')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RateLimit(RATE_LIMIT.AiDeleteData)
+  @ApiNoContentResponse({ description: 'AI summaries, suggestions and jobs deleted' })
+  @ApiOperation({
+    summary: 'Delete what AI generated',
+    description:
+      'Removes AI summaries, all suggestions and jobs, cancels open batches and a running backfill. Your own summaries, tags, folders, settings and usage counts stay.',
+  })
+  async deleteData(@CurrentUser() user: AuthUser): Promise<void> {
+    await this.data.deleteAll(user.id);
   }
 }

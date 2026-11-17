@@ -309,8 +309,9 @@ export class LinksController {
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpdateLinkDto,
+    @Headers('accept-language') acceptLanguage?: string,
   ): Promise<LinkResponseDto> {
-    return this.writes.update(user.id, id, body);
+    return this.writes.update(user.id, id, body, { acceptLanguage });
   }
 
   @Post(':id/open')

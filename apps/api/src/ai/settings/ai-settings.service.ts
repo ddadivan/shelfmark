@@ -145,7 +145,7 @@ export class AiSettingsService {
   }
 
   /** Best effort after the commit: a batch the provider cannot cancel just ends unread. */
-  private async cancelBatches(batches: readonly CanceledBatch[]): Promise<void> {
+  async cancelBatches(batches: readonly CanceledBatch[]): Promise<void> {
     let failed = 0;
     for (const batch of batches) {
       try {
