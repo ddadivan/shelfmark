@@ -233,7 +233,11 @@
         "label": "Carpeta",
         "unsorted": "Sin carpeta",
         "searchLabel": "Buscar carpetas",
-        "noResults": "No se encontraron carpetas"
+        "noResults": "No se encontraron carpetas",
+        "create": "Crear la carpeta «{name}»",
+        "newBadge": "Nueva",
+        "notCreated": "No se pudo crear la carpeta «{{name}}»",
+        "notCreatedDetail": "El enlace se guardó sin carpeta."
       },
       "tags": {
         "label": "Etiquetas",

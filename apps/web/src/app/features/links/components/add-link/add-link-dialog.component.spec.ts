@@ -47,6 +47,10 @@ const PLAIN: LinkPreviewResponse = {
   fetched: true,
 };
 
+function daysAgo(days: number): string {
+  return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+}
+
 const EDITED: LinkResponse = {
   ...MOCK_LINKS[0],
   url: 'https://example.org/saved',
@@ -54,8 +58,9 @@ const EDITED: LinkResponse = {
   note: 'A note',
   folderId: MOCK_ID.FolderAngular,
   tags: ['docs'],
-  createdAt: '2026-10-17T12:00:00Z',
-  lastOpenedAt: '2026-11-06T12:00:00Z',
+  // Relative to today: past 30 days the dialog shows a date instead of "Saved N days ago".
+  createdAt: daysAgo(5),
+  lastOpenedAt: daysAgo(2),
 };
 
 interface FakeApi extends Pick<LinksApi, 'preview' | 'create' | 'update'> {
@@ -450,6 +455,46 @@ describe('AddLinkDialogComponent', () => {
       kind: LINK_KIND.Article,
       idempotencyKey: expect.any(String),
     });
+    expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
+  });
+
+  it('names a new folder in the folder field and creates it only on Save (#454)', async () => {
+    const api = fakeApi(() => of(PLAIN));
+    const { result } = await setup(api);
+    const create = vi.spyOn(TestBed.inject(FOLDERS_API), 'create');
+    await type('Link', 'https://example.org/post');
+    const trigger = dialog().querySelector<HTMLButtonElement>('ui-select button[role="combobox"]');
+    if (!trigger) {
+      throw new Error('no folder field');
+    }
+    trigger.click();
+    const search = () => document.querySelector<HTMLInputElement>('.ui-select__search-input');
+    await until(() => {
+      expect(search()).not.toBeNull();
+    });
+    const box = search() as HTMLInputElement;
+    box.value = 'Weekend reads';
+    box.dispatchEvent(new Event('input', { bubbles: true }));
+    const createRow = () =>
+      [...document.querySelectorAll<HTMLElement>('[role="option"]')].find(
+        (option) => option.textContent?.trim() === 'Create folder “Weekend reads”',
+      );
+    await until(() => {
+      expect(createRow()).toBeDefined();
+    });
+    createRow()?.click();
+    await until(() => {
+      expect(trigger.textContent).toContain('Weekend reads');
+    });
+    expect(trigger.querySelector('ui-badge')?.textContent?.trim()).toBe('New');
+    expect(create).not.toHaveBeenCalled();
+
+    button('Save link').click();
+    const outcome = await result;
+    expect(create).toHaveBeenCalledWith({ name: 'Weekend reads' });
+    const folderId = api.create.mock.calls[0][0].folderId;
+    expect(folderId).toEqual(expect.any(String));
+    expect(folderId).not.toBe('add-link:new-folder');
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
   });
 

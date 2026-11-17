@@ -1,9 +1,5 @@
 @if (pasted(); as paste) {
-  <app-paste-many-list
-    [paste]="paste"
-    [folderId]="form.folderId().value()"
-    [tags]="form.tags().value()"
-  />
+  <app-paste-many-list [paste]="paste" [folderId]="pasteFolderId()" [tags]="form.tags().value()" />
 } @else if (several()) {
   <!-- "Add several links" (#315): any text with links, read by the paste-many parser. -->
   <form [formRoot]="severalForm" class="add-link" (keydown)="onSeveralKeydown($event)">
@@ -145,8 +141,10 @@
           [emptyLabel]="'links.add.folder.unsorted' | transloco"
           [searchLabel]="'links.add.folder.searchLabel' | transloco"
           [noResultsLabel]="'links.add.folder.noResults' | transloco"
+          [createLabel]="'links.add.folder.create' | transloco"
           searchable
           [formField]="form.folderId"
+          (created)="onFolderCreated($event)"
         />
 
         <ui-tag-input

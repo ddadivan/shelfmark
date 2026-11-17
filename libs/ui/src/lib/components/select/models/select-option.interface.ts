@@ -6,5 +6,7 @@ export interface SelectOption {
   readonly name: string;
   /** Language of `name` when it differs from the page (a language list: `Deutsch` is `de`). */
   readonly lang?: string;
+  /** A short status shown as a badge after the name, in the list and the trigger ("New"). */
+  readonly badge?: string;
   readonly children?: readonly SelectOption[];
 }
