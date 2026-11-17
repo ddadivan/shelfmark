@@ -1,3 +1,5 @@
+import { AiEmbedService } from '../ai/embeddings/ai-embed.service';
+import { markEmbeddingsStale } from '../ai/embeddings/mark-embeddings-stale';
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import {
   LINK_ERROR_MESSAGE,
@@ -48,6 +50,7 @@ export class LinksBulkService {
     private readonly prisma: PrismaService,
     private readonly folders: FoldersService,
     private readonly tags: TagsService,
+    private readonly aiEmbed: AiEmbedService,
   ) {}
 
   /**
@@ -83,8 +86,9 @@ export class LinksBulkService {
       throw new BadRequestException(LINKS_BATCH_ERROR_MESSAGE.TagAddedAndRemoved);
     }
 
+    const tagsChange = add.length > 0 || remove.length > 0;
     try {
-      return await this.prisma.$transaction(async (tx) => {
+      const result = await this.prisma.$transaction(async (tx) => {
         // Folder lock first (ADR 0033): a move must not race a folder delete or move, and the
         // folder must still be the user's and live when the links land in it.
         if (folderId !== undefined) {
@@ -103,6 +107,8 @@ export class LinksBulkService {
           await this.tags.lockUserTags(tx, userId);
           if (remove.length > 0) await this.removeTags(tx, userId, linkIds, remove);
           if (add.length > 0) await this.addTags(tx, userId, linkIds, add);
+          // Tag names are part of what search by meaning embeds.
+          await markEmbeddingsStale(tx, userId, { linkIds });
         }
 
         const data: Prisma.LinkUncheckedUpdateManyInput = { updatedAt: new Date() };
@@ -132,6 +138,8 @@ export class LinksBulkService {
           .filter((link): link is LinkResponse => link !== undefined);
         return { updated: links.length, links };
       });
+      if (tagsChange && result.updated > 0) await this.aiEmbed.kick(userId);
+      return result;
     } catch (error) {
       if (hasPrismaCode(error, PRISMA_ERROR_CODE.ForeignKeyViolation)) {
         throw new ConflictException(LINK_ERROR_MESSAGE.ChangedMeanwhile);

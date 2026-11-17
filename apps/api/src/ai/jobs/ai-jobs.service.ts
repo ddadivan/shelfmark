@@ -19,6 +19,8 @@ import { toAiJobStatus } from '../../links/to-link-response';
 import { savedUrl } from '../../links/link-save-prefs';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiApplyService } from '../apply/ai-apply.service';
+import { AiEmbedService } from '../embeddings/ai-embed.service';
+import { AI_EMBED_LIMIT } from '../models/ai-embed-limit.const';
 import { AiBackgroundService } from '../background/ai-background.service';
 import { AI_DRAFT_LIMIT } from '../models/ai-draft-limit.const';
 import { AI_JOB_SOURCE } from '../models/ai-job-source.const';
@@ -59,6 +61,7 @@ export class AiJobsService {
     private readonly apply: AiApplyService,
     private readonly runner: AiRunnerService,
     private readonly background: AiBackgroundService,
+    private readonly embed: AiEmbedService,
   ) {}
 
   /**
@@ -106,7 +109,12 @@ export class AiJobsService {
   /** Starts jobs after the commit (and after the response on Vercel). */
   start(userId: string, jobIds: readonly string[]): void {
     if (jobIds.length === 0) return;
-    this.background.defer(() => this.runner.runMany(userId, jobIds));
+    // Then the embed pass (search by meaning): it skipped these links while their jobs were pending
+    // and picks them up now, whatever the outcome.
+    this.background.defer(async () => {
+      await this.runner.runMany(userId, jobIds);
+      await this.embed.run(userId, AI_EMBED_LIMIT.KickBudgetMs);
+    });
   }
 
   /**

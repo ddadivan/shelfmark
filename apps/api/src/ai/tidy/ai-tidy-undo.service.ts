@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { LinkResponse, TidyUndoRequest, TidyUndoResponse } from '@shelfmark/contracts';
+import { AiEmbedService } from '../embeddings/ai-embed.service';
+import { markEmbeddingsStale } from '../embeddings/mark-embeddings-stale';
 import { FoldersService } from '../../folders/folders.service';
 import type { Prisma } from '../../generated/prisma/client';
 import { LINK_INCLUDE } from '../../links/models/link-include.const';
@@ -21,10 +23,13 @@ export class AiTidyUndoService {
     private readonly prisma: PrismaService,
     private readonly folders: FoldersService,
     private readonly tags: TagsService,
+    private readonly embed: AiEmbedService,
   ) {}
 
   async undo(userId: string, request: TidyUndoRequest): Promise<TidyUndoResponse> {
-    return this.prisma.$transaction((tx) => this.undoIn(tx, userId, request));
+    const response = await this.prisma.$transaction((tx) => this.undoIn(tx, userId, request));
+    if (response.links.length > 0) await this.embed.kick(userId);
+    return response;
   }
 
   private async undoIn(
@@ -70,6 +75,7 @@ export class AiTidyUndoService {
       if (pairs.length > 0) {
         const { count } = await tx.linkTag.deleteMany({ where: { OR: pairs } });
         if (count > 0) {
+          await markEmbeddingsStale(tx, userId, { linkIds: tagged.map((item) => item.linkId) });
           await tx.link.updateMany({
             where: { userId, deletedAt: null, id: { in: tagged.map((item) => item.linkId) } },
             data: { updatedAt: now },

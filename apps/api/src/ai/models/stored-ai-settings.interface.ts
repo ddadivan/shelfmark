@@ -9,4 +9,6 @@ export interface StoredAiSettings {
   backfillTotal: number;
   backfillDone: number;
   backfillUsed: number;
+  /** The last failed embed call (search by meaning), cleared by a success. */
+  embedFailedAt: Date | null;
 }

@@ -9,6 +9,7 @@ import {
   type LinkAiState,
   type LinkResponse,
 } from '@shelfmark/contracts';
+import { markEmbeddingsStale } from '../embeddings/mark-embeddings-stale';
 import { FoldersService } from '../../folders/folders.service';
 import { LINK_INCLUDE } from '../../links/models/link-include.const';
 import { toAiJobStatus, toLinkResponse, toSummarySource } from '../../links/to-link-response';
@@ -194,6 +195,7 @@ export class LinkAiService {
             DELETE FROM link_tags AS lt USING tags AS t
             WHERE lt.tag_id = t.id AND lt.link_id = ${linkId}::uuid
               AND t.user_id = ${userId}::uuid AND lower(t.name) = ANY(${names}::text[])`;
+          await markEmbeddingsStale(tx, userId, { linkIds: [linkId] });
           await tx.linkSuggestion.updateMany({
             where: { userId, id: { in: rows.map((row) => row.id) } },
             data: { state: SUGGESTION_ROW_STATE.Dismissed },

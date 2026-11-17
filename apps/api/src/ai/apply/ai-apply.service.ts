@@ -6,6 +6,7 @@ import {
   SUMMARY_SOURCE,
   type AiJobReason,
 } from '@shelfmark/contracts';
+import { markEmbeddingsStale } from '../embeddings/mark-embeddings-stale';
 import { escapeLike } from '../../common/util/escape-like';
 import { FoldersService } from '../../folders/folders.service';
 import { Prisma } from '../../generated/prisma/client';
@@ -155,6 +156,7 @@ export class AiApplyService {
         WHERE id = ${linkId}::uuid AND user_id = ${userId}::uuid
           AND (summary_source IS NULL OR summary_source = ${SUMMARY_SOURCE.Ai})`;
       produced = written > 0;
+      if (produced) await markEmbeddingsStale(tx, userId, { linkIds: [linkId] });
     }
 
     const existing = await tx.linkSuggestion.findMany({
@@ -266,6 +268,7 @@ export class AiApplyService {
             skipDuplicates: true,
           });
           for (const tag of own) applied.add(tag.name.toLowerCase());
+          await markEmbeddingsStale(tx, userId, { linkIds: [linkId] });
         }
       }
     }

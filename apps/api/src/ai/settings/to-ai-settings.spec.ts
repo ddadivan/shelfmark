@@ -15,6 +15,7 @@ const ROW = {
   backfillTotal: 10,
   backfillDone: 4,
   backfillUsed: 4,
+  embedFailedAt: null,
 };
 
 describe('toStoredAiSettings', () => {
@@ -27,6 +28,7 @@ describe('toStoredAiSettings', () => {
       backfillTotal: 0,
       backfillDone: 0,
       backfillUsed: 0,
+      embedFailedAt: null,
     });
     expect(AI_SETTINGS_DEFAULT.enabled).toBe(false);
   });
@@ -48,6 +50,7 @@ describe('toStoredAiSettings', () => {
       backfillTotal: 10,
       backfillDone: 4,
       backfillUsed: 4,
+      embedFailedAt: null,
     });
   });
 

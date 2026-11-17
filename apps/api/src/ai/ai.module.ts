@@ -17,6 +17,8 @@ import { AiApplyService } from './apply/ai-apply.service';
 import { AiBackgroundService } from './background/ai-background.service';
 import { readAiConfig } from './config/ai-config';
 import { AiExcerptService } from './excerpt/ai-excerpt.service';
+import { AiEmbedService } from './embeddings/ai-embed.service';
+import { AiSearchStatusService } from './embeddings/ai-search-status.service';
 import { AiJobsService } from './jobs/ai-jobs.service';
 import { AiLinkHooksService } from './link-hooks/ai-link-hooks.service';
 import { AI_CONFIG } from './models/ai-config.token';
@@ -58,6 +60,8 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiCatchUpService,
     AiTidyService,
     AiTidyUndoService,
+    AiSearchStatusService,
+    AiEmbedService,
   ],
   exports: [
     AiProviderRegistry,
@@ -66,6 +70,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiJobsService,
     AiSuggestionsService,
     AiLinkHooksService,
+    AiEmbedService,
   ],
 })
 export class AiModule {}

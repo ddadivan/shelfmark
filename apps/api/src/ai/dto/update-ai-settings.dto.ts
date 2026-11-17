@@ -44,4 +44,12 @@ export class UpdateAiSettingsDto implements UpdateAiSettingsRequest {
   @ValidateIf(present)
   @IsIn(AI_SUMMARY_LANGUAGES)
   summaryLanguage?: AiSummaryLanguage;
+
+  @ApiPropertyOptional({
+    description:
+      'Search by meaning and related links: title, tag names, summary (and the note with includeNotes) go to the embedding provider',
+  })
+  @ValidateIf(present)
+  @IsBoolean()
+  meaningSearch?: boolean;
 }

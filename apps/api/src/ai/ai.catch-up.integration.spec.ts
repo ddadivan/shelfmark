@@ -69,7 +69,8 @@ describe('AI tick, sweep and backfill', () => {
   const turnOn = (settings: object = {}, agent: TestAgent = a) =>
     agent
       .patch(AI_ENDPOINT.Settings)
-      .send({ enabled: true, ...settings })
+      // Search by meaning has its own specs (ai.embeddings.integration.spec.ts).
+      .send({ enabled: true, meaningSearch: false, ...settings })
       .expect(200);
   const save = async (body: object = {}, agent: TestAgent = a): Promise<LinkResponse> =>
     (
