@@ -37,6 +37,6 @@
 
 - **Vercel AI Gateway**: one bill, fallbacks across providers and spend reports, but a second processor in the data path and an extra layer for one provider. Can be added later behind `AiProvider`.
 - **Claude Opus 5.5 for chat**: better answers at about twice the Sonnet price (\~+$1 a month now); revisit if answers fall short.
-- **Self-hosted open model** (as Raindrop does): strongest privacy story, but a GPU server costs far more than $2 a month and is ours to run.
+- **Self-hosted open model**: strongest privacy story, but a GPU server costs far more than $2 a month and is ours to run.
 - **OpenAI embeddings**: similar price, but a third company; Voyage is the embeddings provider Anthropic recommends and is free at our volume.
 - **No embeddings, keyword search only**: drops F3, F4 retrieval, F5 near-duplicates and F7.

@@ -36,14 +36,9 @@ Approved by the author on Nov 17, 2026. Why: the EU AI Act (Article 50) requires
 6. **Privacy page.** An "AI features (optional)" section names the provider as a processor (placeholder until chosen), lists the data sent, the retention period (placeholder) and how to turn AI off per feature or entirely, consistent with "only counts for statistics". Screen `Privacy`.
 7. **No overdoing.** One quiet indigo for the mark, one small gradient tile in the intro, no promotional styling, no "AI-powered" badges: AI is a calm part of the app.
 
-## Competitors and how we differ
+## What makes Shelfmark's AI different
 
-Checked on Nov 17, 2026.
-
-- **mark-it.co** is AI-first: no folders and no manual tags. AI sorts every item (and learns when the user moves it), adds tags, writes summaries, shows related items, reads screenshots (OCR) and offers search by meaning and by chat. It saves URLs, screenshots, PDFs, notes and social posts through an extension, mobile share sheets and messaging apps. It also has reminders, shared spaces and MCP. Free includes AI but allows only 40 saves a month; new accounts get two months of Pro. It promises no training on user content, full export and instant deletion.
-- **raindrop.io** is a mature bookmark manager: collections with icons, tags, filters, batch actions, tag merge, highlights, four views, full-text search (pages, PDFs, YouTube speech), a web archive, a duplicate and broken-link finder, backups, collaboration, apps everywhere and an API. Its AI is Pro only: tag and collection suggestions, and "Stella", a beta chat assistant that searches by meaning, summarises, organises (nothing is applied without approval), surfaces forgotten bookmarks and cites its sources. Stella runs an open-source model on Raindrop's own servers, only on demand, with a cooldown instead of hard caps. MCP is Pro only. Free has unlimited bookmarks.
-
-**Where Shelfmark can be better** (proposals, reflected in the features below):
+Product choices behind the features below:
 
 1. **AI at the moment of saving.** Suggestions inline in Add link and Paste many, one tap, visibly separate from the user's own data (F1). When the user keeps correcting the same way, offer a plain rule instead of more AI ("youtube.com → Videos?", F1b), which connects AI with Rules without AI (#398).
 2. **Reviewable changes.** Clean-up and Tidy Unsorted show a diff with accept or reject per item and one Undo for the whole run (F1a, F5).
@@ -51,9 +46,9 @@ Checked on Nov 17, 2026.
 4. **One search.** Meaning-based results inside the existing search, no separate mode. Exact word matches stay first, and each meaning match says why it matched (F3).
 5. **Related links** on a link and in side by side (F7).
 6. **Rediscover** forgotten links through reminders and Read later (#396) (F8).
-7. **A generous Free tier.** Unlimited saves (mark-it: 40 a month) plus a small monthly AI allowance (Raindrop: AI only in Pro). The quota and "limit reached" states are shown honestly.
-8. **Privacy as a feature.** AI off by default, a switch per feature, a plain "what is sent" note, no training, and only counts kept for statistics. Zero-retention or EU-hosted providers are an open question (Raindrop's self-hosted model sets a high bar).
-9. **MCP is table stakes:** both competitors have it (F6).
+7. **A generous Free tier.** Unlimited saves plus a small monthly AI allowance, so AI can be tried without paying. The quota and "limit reached" states are shown honestly.
+8. **Privacy as a feature.** AI off by default, a switch per feature, a plain "what is sent" note, no training, and only counts kept for statistics. Zero-retention or EU-hosted providers are an open question.
+9. **Your own assistant:** an MCP server so Claude or another assistant can search the library (F6).
 10. **Later, not MVP:** OCR of images and screenshots, summaries from YouTube transcripts.
 
 What we already have to build on: nested folders with colours and icons, side by side, reminders, rules, the design and motion language, and a free unlimited core.
@@ -239,7 +234,7 @@ Full rules are in `docs/design/BRAND.md` › AI and the component specs `AiMark`
 
 Questions 1, 2, 4 (prices and limits), 7 and 9 are answered by ADR 0047 (`docs/adr/0047-ai-provider-models-and-cost.md`): Anthropic API (Claude Haiku 5.5 for link jobs, Claude Sonnet 5.5 for chat), Voyage `voyage-4-lite` embeddings in pgvector, `AI_FULL_ACCESS_EMAILS` for the private phase, keys only in the environment. Still open: 3 (job runner, in the #389 plan), 5, 6, 8, 10.
 
-1. **Provider and models.** Anthropic (Haiku-class for jobs, Sonnet-class for chat) vs others, or a self-hosted open model like Raindrop's; Vercel AI Gateway or a direct SDK; fallback model when the provider is down; an EU-hosted option. Zero data retention and "no training on API data" terms must be confirmed in writing for the privacy policy.
+1. **Provider and models.** Anthropic (Haiku-class for jobs, Sonnet-class for chat) vs others, or a self-hosted open model; Vercel AI Gateway or a direct SDK; fallback model when the provider is down; an EU-hosted option. Zero data retention and "no training on API data" terms must be confirmed in writing for the privacy policy.
 2. **Embeddings.** Which provider (Anthropic has no embeddings API; Voyage, OpenAI or an open model), dimensions, pgvector index type (HNSW vs IVFFlat) on the Neon plan, re-embedding when the model changes.
 3. **Job runner on Vercel.** Where background jobs run (Vercel Queues, Workflow, a cron that drains a table, or `waitUntil` after the response), retries, and the Batch API for backfill.
 4. **Cost and limits.** Real token counts per link with a page excerpt; the Free monthly link limit; the Ask daily limit and whether chat needs a cheaper model to stay under the AI pack price; the author's monthly spend cap.
