@@ -98,6 +98,8 @@ describe('AiIntroDialogComponent', () => {
     const body = await dialog.getBodyText();
     expect(body).toContain('Suggests tags and a folder');
     expect(body).toContain('Writes short summaries');
+    expect(body).toContain('Finds links by meaning');
+    expect(body).toContain('go to Voyage AI');
     expect(body).toContain('What is sent to the model');
     expect(body).toContain('Not used for training');
     expect(body).toContain('Settings › AI');

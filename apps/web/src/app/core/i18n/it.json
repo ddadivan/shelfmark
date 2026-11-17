@@ -588,6 +588,10 @@
       "off": {
         "term": "Disattivarla:",
         "text": "spegni una funzione o tutta l’IA in Impostazioni › IA; le richieste si fermano subito. «Elimina dati IA» lì rimuove ogni riassunto e suggerimento creato dall’IA."
+      },
+      "meaning": {
+        "term": "Ricerca per significato:",
+        "text": "finché è attiva (Impostazioni › IA), titolo, riepilogo e nomi dei tag di ogni link, la nota solo con «Includi le mie note», e le parole che cerchi vengono inviati a Voyage AI, il nostro secondo responsabile del trattamento, che li trasforma in vettori di numeri. Mai l’indirizzo, le tue cartelle o i dati di altre persone. I vettori sono salvati con i tuoi link ed eliminati con essi o con «Elimina dati IA»; ciò che cerchi non viene salvato. Voyage AI conserva le richieste per al massimo [N] giorni e non le usa per l’addestramento. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
       }
     },
     "retention": {
@@ -3019,7 +3023,7 @@
       "data": {
         "title": "I tuoi dati IA",
         "label": "Elimina dati IA",
-        "hint": "Rimuove tutti i riassunti e i suggerimenti dell’IA. Le tue modifiche, i tag e le cartelle restano.",
+        "hint": "Rimuove tutti i riepiloghi e i suggerimenti dell’IA e disattiva la ricerca per significato. Le tue modifiche, i tag e le cartelle restano.",
         "action": "Elimina dati IA"
       },
       "privacy": {
@@ -3031,7 +3035,14 @@
       "failed": "Impossibile salvare le impostazioni IA",
       "failedDetail": "La modifica è stata annullata. Riprova.",
       "loadFailed": "Impossibile caricare le impostazioni IA.",
-      "retry": "Riprova"
+      "retry": "Riprova",
+      "meaning": {
+        "title": "Ricerca per significato",
+        "text": "Trova i link in base all’argomento, non solo alle parole, e mostra link correlati. Invia a Voyage AI titolo, tag e riepilogo di ogni link (anche la nota, con «Includi le mie note») e ciò che cerchi.",
+        "ready": "Pronta",
+        "progress": "{{ready}} link pronti su {{total}}",
+        "quota": "In pausa fino al {{date}}: limite del mese raggiunto"
+      }
     },
     "backfill": {
       "title": "Elabora i link esistenti",
@@ -3053,7 +3064,7 @@
     "deleteData": {
       "confirm": {
         "title": "Eliminare i dati IA?",
-        "message": "Tutti i riassunti e i suggerimenti dell’IA vengono rimossi. Le tue modifiche, i tag e le cartelle restano. L’operazione non si può annullare.",
+        "message": "Tutti i riepiloghi e i suggerimenti dell’IA vengono rimossi e la ricerca per significato si disattiva. Le tue modifiche, i tag e le cartelle restano. Non si può annullare.",
         "confirm": "Elimina dati IA",
         "cancel": "Annulla",
         "close": "Chiudi"
@@ -3086,7 +3097,11 @@
       "policy": "Leggi l’informativa sulla privacy",
       "failed": "Impossibile attivare l’IA. Riprova.",
       "notNow": "Non ora",
-      "turnOn": "Attiva l’IA"
+      "turnOn": "Attiva l’IA",
+      "meaning": {
+        "title": "Trova i link per significato",
+        "text": "La ricerca e i link correlati tengono conto anche dell’argomento di un link. Per questo titoli, tag, riepiloghi e ciò che cerchi vanno a Voyage AI. Si disattiva a parte in Impostazioni › IA."
+      }
     },
     "suggest": {
       "label": "Suggeriti",
