@@ -1,6 +1,6 @@
 # AI features — feature list
 
-Nov 17, 2026 · draft for the author's review · issue #476, parent #388
+Nov 17, 2026 · approved by the author on Nov 17, 2026 (proposals included) · issue #476, parent #388
 
 This is the product step before any AI code. It expands `docs/PROJECT.md` 5.6 (rules from day one, capability table) into features the author can accept, cut or reorder. The screens are in `docs/design/screens/Ai*.dc.html` (see `docs/design/screens/INDEX.md`, section 12). The provider, models, embeddings and cost ADR come after this document is agreed; the questions for that step are at the end.
 
@@ -69,6 +69,10 @@ Monetisation is not built yet (backlog, "Ideas to discuss"). Until it is, every 
 | AI pack | +\~$30–50 / year (bundle \~$80) | Fair-use suggestions and summaries, the whole library processed, Ask your shelf daily limit, AI clean-up |
 
 The exact numbers are placeholders for the pricing discussion; the designs show them as "{n} of {limit}".
+
+**Private phase (author's decision, Nov 17, 2026).** Shelfmark has two users today. Both accounts get everything (Pro and the AI pack) through an allowlist of emails in the environment, the same way as `ADMIN_EMAILS`; every other account stays Free. The plan and quotas are still modelled on the account from the start, so Free / Pro / AI pack can be switched on later without rework. The provider console spend limit stays the safety net.
+
+**Model choice and cost (proposal for the provider ADR, prices checked Nov 17, 2026).** Anthropic API, pay as you go (separate from any Claude subscription): Claude Haiku 5.5 ($0.10 / $0.50 per million input / output tokens) for tags, folder, kind and summary; Claude Sonnet 5.5 ($2 / $10) for Ask your shelf; the Batch API (−50%) for processing existing links; prompt caching for the fixed instructions. Embeddings need a separate provider (open question 2). For two users (\~200 new links and \~60 questions a month) that is roughly $0.10 for suggestions and summaries, \~$1.30 for chat, cents for embeddings, and \~$0.50 once to process 2,000 existing links: about **$1–2 a month**, with a spend limit of $10 a month in the console.
 
 ## Assumptions for cost
 

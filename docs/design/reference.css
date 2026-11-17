@@ -536,5 +536,17 @@ button.sm-rating__item:active { transform: scale(.94); }
 .sm-ai-line > span { flex: 1 1 180px; min-width: 0; }
 .sm-ai-line .sm-btn { height: 28px; padding: 0 10px; font-size: 12px; }
 .sm-ai-chip-skel { height: 28px; border-radius: 999px; }
+.sm-ai-divider { display: flex; align-items: center; gap: 8px; padding: 12px 12px 4px; font: 500 12px/16px var(--font-sans); color: var(--text-muted); }
+.sm-ai-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.sm-why { display: flex; align-items: center; gap: 4px; font: 400 12px/16px var(--font-sans); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sm-bubble { align-self: flex-end; max-width: 85%; padding: 10px 14px; border-radius: 18px 18px 6px 18px; background: var(--surface-hover); color: var(--text); font: 400 14px/20px var(--font-sans); }
+.sm-answer { display: flex; flex-direction: column; gap: 10px; font: 400 15px/24px var(--font-sans); color: var(--text); }
+.sm-answer p { margin: 0; }
+.sm-cite { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 4px; margin: 0 1px; border: 0; border-radius: 6px; background: var(--surface-hover); color: var(--text); font: 600 11px/16px var(--font-sans); vertical-align: 2px; cursor: pointer; }
+.sm-cite:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+@media (hover: hover) { .sm-cite:hover { background: var(--surface-pressed); } }
+.sm-stream__caret { display: inline-block; width: 2px; height: 1.1em; margin-left: 2px; vertical-align: -3px; border-radius: 1px; background: var(--ai); animation: sm-caret 1s steps(2, start) infinite; }
+@keyframes sm-caret { to { visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .sm-root .sm-stream__caret { animation: none; } }
 @media (pointer: coarse) { .sm-suggest { position: relative; } .sm-suggest__apply::before { content: ""; position: absolute; inset: -8px 22px -8px 0; } .sm-suggest__dismiss::before { content: ""; position: absolute; inset: -8px -6px -8px auto; width: 30px; } }
 @media (prefers-reduced-motion: reduce) { .sm-root .sm-suggest.is-accepted { animation: none; } }

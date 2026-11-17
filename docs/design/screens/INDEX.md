@@ -102,7 +102,7 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 
 ## 12 · AI (#476)
 
-MVP of the AI features (`docs/ai/FEATURES.md`; parent #388). Each board shows its states: off, suggesting / pending, limit reached, not available, empty. Rules: `BRAND.md` › AI; components `AiMark`, `Suggestion`, `AiSummary`.
+AI features F0–F8 (`docs/ai/FEATURES.md`, approved Nov 17, 2026; parent #388). Each board shows its states: off, suggesting / pending, limit reached, not available, empty. Rules: `BRAND.md` › AI; components `AiMark`, `Suggestion`, `AiSummary`, `StreamingAnswer`.
 
 - `AiIntro.dc.html` — First-run AI intro when AI is turned on: what it does, what is sent, no training, the provider, link to Settings › AI; desktop dialog and phone sheet
 - `AiSettings.dc.html` — Settings › AI: opt-in switch, Folder and Tags each Suggest / Automatic / Off (default Suggest), Summaries switch, what is sent (notes, summary language), this month's usage, process existing links, delete AI data; variants off, folder set to Automatic, limit reached, provider trouble, processing (desktop)
@@ -113,4 +113,9 @@ MVP of the AI features (`docs/ai/FEATURES.md`; parent #388). Each board shows it
 
 - `Privacy.dc.html` (section 9) — now has the «AI features (optional)» section: provider as processor, data sent, retention, counts only, turning it off
 
-Not designed yet, waiting for the author’s feedback on the feature list: search by meaning (F3), Ask your shelf (F4), clean-up (F5), MCP connections (F6), related links (F7), rediscover (F8).
+- `AiSearch.dc.html` — Search by meaning (F3) in ⌘K: word matches first, “Related by meaning” with “why it matched”, nothing matches the words, not ready, off; the Ask entry (desktop)
+- `AskShelf.dc.html` — Ask your shelf (F4) side panel: empty with starters, streaming, answer with cited sources, not in your links, daily limit, error (desktop)
+- `AiCleanup.dc.html` — Clean-up (F5): report with per-item choice and one Undo, entry card, checking, applied, nothing to clean (desktop)
+- `AiConnect.dc.html` — Connect your assistant (F6, MCP): server address, token shown once, connected clients, revoke, empty (desktop)
+- `AiDiscover.dc.html` — Related on your shelf in Edit link (F7); “From your shelf” weekly block with and without AI (F8) (desktop)
+- `MobileAiMore.dc.html` — Phone at 360px: Search · Ask segment, meaning results, Ask empty and answered (phone)

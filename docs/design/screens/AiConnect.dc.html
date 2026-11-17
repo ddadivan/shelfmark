@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Connect your assistant (MCP)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="min-height: 1100px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<section class="a-state" style="flex-basis: 680px; max-width: 680px;">
+<h2 class="a-cap">1 · Settings › AI › Connect your assistant</h2>
+<section class="sm-panel sm-settings" aria-labelledby="mcp1">
+<h2 id="mcp1" class="sm-settings__title">Connect your assistant</h2>
+<p style="margin: 0 0 12px; font-size: 13px; line-height: 19px; color: var(--text-muted); max-width: 520px;">Let Claude or another assistant that supports MCP search and read your links. Read-only: it can’t change or delete anything.</p>
+<div class="sm-setting sm-setting--top"><div style="flex: 1; min-width: 0;"><div class="sm-setting__title">1. Server address</div><div style="display: flex; gap: 8px; align-items: center; margin-top: 8px;"><span style="font: 13px/20px var(--font-mono); background: var(--surface-hover); border-radius: 8px; padding: 6px 10px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">[APP URL]/api/mcp</span><button class="sm-btn sm-btn--secondary sm-btn--sm">Copy</button></div></div></div>
+<div class="sm-setting"><div><div class="sm-setting__title">2. Personal token</div><div class="sm-setting__desc">One token per assistant, so you can revoke each on its own.</div></div><button class="sm-btn sm-btn--secondary sm-btn--sm">Create token</button></div>
+<div style="padding: 14px 0 4px; font-size: 13px; font-weight: 500; color: var(--text-muted);">Connected</div>
+<div class="sm-setting"><div style="display: flex; gap: 12px; align-items: center;"><span class="sm-setting__icon" style="font-weight: 600;">C</span><div><div class="sm-setting__title">Claude Desktop</div><div class="sm-setting__desc">Last used 2 hours ago, 34 searches this week</div></div></div><button class="sm-btn sm-btn--ghost sm-btn--sm" style="color: var(--danger);">Revoke</button></div>
+<div class="sm-setting"><div style="display: flex; gap: 12px; align-items: center;"><span class="sm-setting__icon" style="font-weight: 600;">W</span><div><div class="sm-setting__title">Work laptop</div><div class="sm-setting__desc">Created Nov 12, never used</div></div></div><button class="sm-btn sm-btn--ghost sm-btn--sm" style="color: var(--danger);">Revoke</button></div>
+<div style="padding-top: 12px;"><a href="#" style="font-size: 13px; color: var(--text-muted);">How to connect: Claude, ChatGPT, others</a></div>
+</section>
+<p class="a-note">A group on the Settings › AI page (Pro). Read-only for v1. Revoke stops the token at once; a confirmation names the client.</p>
+</section>
+<section class="a-state" style="flex-basis: 560px; max-width: 560px;">
+<h2 class="a-cap">2 · Token created — shown once</h2>
+<div class="sm-dialog sm-dialog--md" role="dialog" aria-labelledby="tok" style="max-width: none; box-shadow: var(--shadow-popover); gap: 16px;">
+<div class="sm-dialog__head"><h3 id="tok" style="margin: 0; font-size: 20px; line-height: 28px; font-weight: 600;">Token for Claude Desktop</h3><button type="button" class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div style="display: flex; gap: 8px; align-items: center;"><span style="font: 13px/20px var(--font-mono); background: var(--surface-hover); border-radius: 8px; padding: 6px 10px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">smk_live_7Qh2…aX9c  (shown once)</span><button class="sm-btn sm-btn--secondary sm-btn--sm">Copy</button></div>
+<div class="sm-notice sm-notice--warning" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>Copy it now: you won’t see it again. Anyone with this token can read your links until you revoke it.</span></div>
+<div class="sm-dialog__foot"><button class="sm-btn sm-btn--primary">Done</button></div>
+</div>
+<p class="a-note">Prefixed token, copied with the button; the value is never shown again (only its last four characters in the list).</p>
+</section>
+<section class="a-state" style="flex-basis: 560px; max-width: 560px;">
+<h2 class="a-cap">3 · Nothing connected</h2>
+<section class="sm-panel sm-settings"><h2 class="sm-settings__title">Connect your assistant</h2><div class="sm-setting"><div><div class="sm-setting__title">No assistants connected</div><div class="sm-setting__desc">Create a token, paste it into your assistant’s MCP settings with the server address, and ask it about your links.</div></div><button class="sm-btn sm-btn--secondary sm-btn--sm">Create token</button></div></section>
+
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>
