@@ -143,6 +143,71 @@ describe('App', () => {
     });
   });
 
+  describe('new folder', () => {
+    async function typeName(fixture: PopupHarness['fixture'], name: string): Promise<void> {
+      const input = fixture.nativeElement.querySelector(
+        'ext-popup-new-folder input',
+      ) as HTMLInputElement;
+      input.value = name;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      await settle(fixture);
+    }
+
+    it('names a new folder from the picker; the form shows it as new and Save creates it', async () => {
+      const { fixture, api } = await createPopup();
+      const loader = await harness(fixture);
+      TestBed.inject(PopupStore).openPicker();
+      await settle(fixture);
+      await (await loader.getHarness(UiButtonHarness.with({ text: 'New folder' }))).click();
+      await settle(fixture);
+      const create = await loader.getHarness(UiButtonHarness.with({ text: 'Create' }));
+      expect(await create.isDisabled()).toBe(true);
+      await typeName(fixture, 'Clothes');
+      await create.click();
+      await settle(fixture);
+      expect(fixture.nativeElement.querySelector('ext-popup-form')).not.toBeNull();
+      expect(fixture.nativeElement.textContent).toContain('Clothes');
+      expect(fixture.nativeElement.textContent).toContain('new');
+      expect(api.createFolder).not.toHaveBeenCalled();
+      await (await loader.getHarness(UiButtonHarness.with({ text: 'Save' }))).click();
+      await settle(fixture);
+      expect(api.createFolder).toHaveBeenCalledWith({ name: 'Clothes' });
+    });
+
+    it('creates on Enter and goes back to the picker on Escape', async () => {
+      const { fixture } = await createPopup();
+      const store = TestBed.inject(PopupStore);
+      store.openNewFolder();
+      await settle(fixture);
+      const host = fixture.nativeElement.querySelector('ext-popup-new-folder') as HTMLElement;
+      host.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      await settle(fixture);
+      expect(fixture.nativeElement.querySelector('ext-popup-picker')).not.toBeNull();
+      store.openNewFolder();
+      await settle(fixture);
+      await typeName(fixture, 'Travel');
+      fixture.nativeElement
+        .querySelector('ext-popup-new-folder')
+        .dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      await settle(fixture);
+      expect(store.newFolderName()).toBe('Travel');
+    });
+
+    it('says on Saved when the folder could not be created', async () => {
+      const { fixture, api } = await createPopup();
+      api.createFolder.mockRejectedValue(http(409, 'Folder limit reached (500)'));
+      TestBed.inject(PopupStore).chooseNewFolder('Clothes');
+      await settle(fixture);
+      const loader = await harness(fixture);
+      await (await loader.getHarness(UiButtonHarness.with({ text: 'Save' }))).click();
+      await settle(fixture);
+      expect(fixture.nativeElement.textContent).toContain('Saved to Unsorted');
+      expect(fixture.nativeElement.textContent).toContain(
+        'Couldn’t create the folder “Clothes”, so the link is saved without a folder.',
+      );
+    });
+  });
+
   describe('saved', () => {
     async function saved(): Promise<PopupHarness> {
       const popup = await createPopup({

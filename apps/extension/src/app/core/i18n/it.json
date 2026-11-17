@@ -21,18 +21,28 @@
       "tagsList": "Suggerimenti di tag",
       "note": "Nota",
       "notePlaceholder": "Perché lo salvi?",
-      "save": "Salva"
+      "save": "Salva",
+      "newBadge": "nuova"
     },
     "picker": {
       "title": "Scegli una cartella",
       "back": "Indietro",
       "search": "Trova una cartella",
       "list": "Cartelle",
-      "noResults": "Nessuna cartella con questo nome"
+      "noResults": "Nessuna cartella con questo nome",
+      "newFolder": "Nuova cartella"
+    },
+    "newFolder": {
+      "title": "Nuova cartella",
+      "label": "Nome della cartella",
+      "placeholder": "Per esempio, Ricette",
+      "hint": "La cartella viene creata quando salvi la pagina.",
+      "create": "Crea"
     },
     "saved": {
       "title": "Salvato in {{folder}}",
-      "done": "Fatto"
+      "done": "Fatto",
+      "folderNotCreated": "Impossibile creare la cartella “{{name}}”: il link è salvato senza cartella."
     },
     "duplicate": {
       "title": "Già nella tua libreria",

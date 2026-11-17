@@ -2,6 +2,8 @@
 
 // The list takes the rest of the popup and scrolls inside it.
 .picker {
+  --ui-picker-list-max-height: none;
+
   display: flex;
   flex: 1;
   flex-direction: column;

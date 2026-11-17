@@ -21,18 +21,28 @@
       "tagsList": "Tag-Vorschläge",
       "note": "Notiz",
       "notePlaceholder": "Warum speichern Sie das?",
-      "save": "Speichern"
+      "save": "Speichern",
+      "newBadge": "neu"
     },
     "picker": {
       "title": "Ordner wählen",
       "back": "Zurück",
       "search": "Ordner suchen",
       "list": "Ordner",
-      "noResults": "Kein Ordner mit diesem Namen"
+      "noResults": "Kein Ordner mit diesem Namen",
+      "newFolder": "Neuer Ordner"
+    },
+    "newFolder": {
+      "title": "Neuer Ordner",
+      "label": "Ordnername",
+      "placeholder": "Zum Beispiel Rezepte",
+      "hint": "Der Ordner wird angelegt, wenn Sie die Seite speichern.",
+      "create": "Anlegen"
     },
     "saved": {
       "title": "In {{folder}} gespeichert",
-      "done": "Fertig"
+      "done": "Fertig",
+      "folderNotCreated": "Der Ordner „{{name}}“ konnte nicht angelegt werden, der Link ist ohne Ordner gespeichert."
     },
     "duplicate": {
       "title": "Schon in Ihrer Bibliothek",

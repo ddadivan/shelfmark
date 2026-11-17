@@ -21,18 +21,28 @@
       "tagsList": "Tag suggestions",
       "note": "Note",
       "notePlaceholder": "Why are you saving this?",
-      "save": "Save"
+      "save": "Save",
+      "newBadge": "new"
     },
     "picker": {
       "title": "Choose a folder",
       "back": "Back",
       "search": "Find a folder",
       "list": "Folders",
-      "noResults": "No folder with that name"
+      "noResults": "No folder with that name",
+      "newFolder": "New folder"
+    },
+    "newFolder": {
+      "title": "New folder",
+      "label": "Folder name",
+      "placeholder": "For example, Recipes",
+      "hint": "The folder is created when you save the page.",
+      "create": "Create"
     },
     "saved": {
       "title": "Saved to {{folder}}",
-      "done": "Done"
+      "done": "Done",
+      "folderNotCreated": "Couldn’t create the folder “{{name}}”, so the link is saved without a folder."
     },
     "duplicate": {
       "title": "Already in your library",

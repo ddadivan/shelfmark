@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, type OnInit } from '@angular/core';
 import { PopupDuplicateComponent } from './popup/components/popup-duplicate/popup-duplicate.component';
 import { PopupFormComponent } from './popup/components/popup-form/popup-form.component';
+import { PopupNewFolderComponent } from './popup/components/popup-new-folder/popup-new-folder.component';
 import { PopupMessageComponent } from './popup/components/popup-message/popup-message.component';
 import { PopupOpeningComponent } from './popup/components/popup-opening/popup-opening.component';
 import { PopupPickerComponent } from './popup/components/popup-picker/popup-picker.component';
@@ -18,6 +19,7 @@ import { PopupStore } from './popup/popup.store';
     PopupDuplicateComponent,
     PopupFormComponent,
     PopupMessageComponent,
+    PopupNewFolderComponent,
     PopupOpeningComponent,
     PopupPickerComponent,
     PopupSavedComponent,

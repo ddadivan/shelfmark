@@ -1,5 +1,6 @@
 import type { Provider } from '@angular/core';
 import type {
+  CreateFolderRequest,
   CreateLinkRequest,
   FolderResponse,
   GetSessionResponse,
@@ -16,7 +17,7 @@ import { vi, type Mock } from 'vitest';
 import { ShelfmarkApiService } from '../app/core/api/shelfmark-api.service';
 import { BrowserTabsService } from '../app/core/chrome/browser-tabs.service';
 import type { ActiveTab } from '../app/core/chrome/models/active-tab.interface';
-import { makeLink } from './fixtures';
+import { makeFolder, makeLink } from './fixtures';
 
 export const SIGNED_IN: NonNullable<GetSessionResponse> = {
   user: {
@@ -60,6 +61,7 @@ export interface FakePopupApi {
   tags: Mock<() => Promise<ListTagsResponse>>;
   rules: Mock<() => Promise<ListRulesResponse>>;
   lookup: Mock<(body: LinkLookupRequest) => Promise<LinkLookupResponse>>;
+  createFolder: Mock<(body: CreateFolderRequest) => Promise<FolderResponse>>;
   create: Mock<(body: CreateLinkRequest) => Promise<LinkResponse>>;
 }
 
@@ -85,6 +87,9 @@ export function fakePopupDeps(data: FakeData): FakePopupDeps {
     tags: vi.fn(() => Promise.resolve({ items: data.tags })),
     rules: vi.fn(() => Promise.resolve({ items: data.rules })),
     lookup: vi.fn(() => Promise.resolve(data.lookup)),
+    createFolder: vi.fn((body: CreateFolderRequest) =>
+      Promise.resolve(makeFolder({ id: 'new-folder', name: body.name })),
+    ),
     create: vi.fn(() => Promise.resolve(data.created)),
   };
   const tabs: FakePopupTabs = {

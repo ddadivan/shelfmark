@@ -21,18 +21,28 @@
       "tagsList": "Sugerencias de etiquetas",
       "note": "Nota",
       "notePlaceholder": "¿Por qué lo guardas?",
-      "save": "Guardar"
+      "save": "Guardar",
+      "newBadge": "nueva"
     },
     "picker": {
       "title": "Elige una carpeta",
       "back": "Atrás",
       "search": "Buscar una carpeta",
       "list": "Carpetas",
-      "noResults": "No hay ninguna carpeta con ese nombre"
+      "noResults": "No hay ninguna carpeta con ese nombre",
+      "newFolder": "Nueva carpeta"
+    },
+    "newFolder": {
+      "title": "Nueva carpeta",
+      "label": "Nombre de la carpeta",
+      "placeholder": "Por ejemplo, Recetas",
+      "hint": "La carpeta se crea cuando guardas la página.",
+      "create": "Crear"
     },
     "saved": {
       "title": "Guardado en {{folder}}",
-      "done": "Listo"
+      "done": "Listo",
+      "folderNotCreated": "No se pudo crear la carpeta «{{name}}», así que el enlace se guardó sin carpeta."
     },
     "duplicate": {
       "title": "Ya está en tu biblioteca",

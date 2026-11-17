@@ -21,18 +21,28 @@
       "tagsList": "Sugestões de tags",
       "note": "Nota",
       "notePlaceholder": "Por que você está salvando isto?",
-      "save": "Salvar"
+      "save": "Salvar",
+      "newBadge": "nova"
     },
     "picker": {
       "title": "Escolha uma pasta",
       "back": "Voltar",
       "search": "Encontrar uma pasta",
       "list": "Pastas",
-      "noResults": "Nenhuma pasta com esse nome"
+      "noResults": "Nenhuma pasta com esse nome",
+      "newFolder": "Nova pasta"
+    },
+    "newFolder": {
+      "title": "Nova pasta",
+      "label": "Nome da pasta",
+      "placeholder": "Por exemplo, Receitas",
+      "hint": "A pasta é criada quando você salva a página.",
+      "create": "Criar"
     },
     "saved": {
       "title": "Salvo em {{folder}}",
-      "done": "Concluir"
+      "done": "Concluir",
+      "folderNotCreated": "Não foi possível criar a pasta “{{name}}”, então o link foi salvo sem pasta."
     },
     "duplicate": {
       "title": "Já está na sua biblioteca",

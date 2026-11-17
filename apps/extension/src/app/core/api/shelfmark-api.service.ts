@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import type {
+  CreateFolderRequest,
   CreateLinkRequest,
+  FolderResponse,
   GetSessionResponse,
   LinkLookupRequest,
   LinkLookupResponse,
@@ -41,6 +43,10 @@ export class ShelfmarkApiService {
     return firstValueFrom(
       this.http.post<LinkLookupResponse>(url(SHELFMARK_ENDPOINT.LinkLookup), body),
     );
+  }
+
+  createFolder(body: CreateFolderRequest): Promise<FolderResponse> {
+    return firstValueFrom(this.http.post<FolderResponse>(url(SHELFMARK_ENDPOINT.Folders), body));
   }
 
   create(body: CreateLinkRequest): Promise<LinkResponse> {

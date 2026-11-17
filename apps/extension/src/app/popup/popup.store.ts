@@ -1,6 +1,7 @@
 import { computed, inject, Service, signal } from '@angular/core';
 import {
   findMatchingRule,
+  FOLDER_LIMIT,
   LINK_LIMIT,
   type FolderResponse,
   type LinkLookupResponse,
@@ -46,6 +47,10 @@ export class PopupStore {
   readonly saving = signal(false);
 
   readonly folderId = signal<string | null>(null);
+  /** A folder the user named in the popup: created only on Save, so closing leaves no empty folder. */
+  readonly newFolderName = signal<string | null>(null);
+  /** Save could not create `newFolderName`: the link went to Unsorted and Saved says so. */
+  readonly folderNotCreated = signal<string | null>(null);
   readonly chosenTags = signal<string[]>([]);
   readonly note = signal('');
 
@@ -90,6 +95,7 @@ export class PopupStore {
     this.saving.set(true);
     this.failure.set(null);
     try {
+      if (!(await this.createNewFolder())) return;
       const note = this.note().trim();
       const folderId = this.folderId();
       const link = await this.api.create({
@@ -142,6 +148,30 @@ export class PopupStore {
 
   chooseFolder(id: string | null): void {
     this.folderId.set(id);
+    this.newFolderName.set(null);
+    this.view.set(POPUP_VIEW.Form);
+  }
+
+  openNewFolder(): void {
+    this.view.set(POPUP_VIEW.NewFolder);
+  }
+
+  /**
+   * A new folder for this link, created on Save. A folder of that name (ignoring case) that exists
+   * already is chosen instead, so nothing is duplicated.
+   */
+  chooseNewFolder(name: string): void {
+    const trimmed = name.trim().slice(0, FOLDER_LIMIT.NameMax);
+    if (trimmed === '') return;
+    const existing = this.folders().find(
+      (folder) => folder.name.toLocaleLowerCase() === trimmed.toLocaleLowerCase(),
+    );
+    if (existing !== undefined) {
+      this.chooseFolder(existing.id);
+      return;
+    }
+    this.folderId.set(null);
+    this.newFolderName.set(trimmed);
     this.view.set(POPUP_VIEW.Form);
   }
 
@@ -193,6 +223,31 @@ export class PopupStore {
     } finally {
       clearTimeout(timer);
     }
+  }
+
+  /**
+   * Creates the folder the user named, if any, right before the link is saved. When that fails (the
+   * folder limit, a server error) the link is still saved, without a folder, and Saved tells the user;
+   * only a 401 stops the save (signed out). Answers whether the save goes on.
+   */
+  private async createNewFolder(): Promise<boolean> {
+    const name = this.newFolderName();
+    if (name === null) return true;
+    try {
+      const folder = await this.api.createFolder({ name });
+      this.folders.update((folders) => [...folders, folder]);
+      this.folderId.set(folder.id);
+    } catch (error: unknown) {
+      if (toPopupFailure(error, POPUP_STEP.Save) === 'signedOut') {
+        this.view.set(POPUP_VIEW.SignedOut);
+        return false;
+      }
+      this.folderNotCreated.set(name);
+      this.folderId.set(null);
+    }
+    // Created or given up: a retry of the link save must not create it again.
+    this.newFolderName.set(null);
+    return true;
   }
 
   /**

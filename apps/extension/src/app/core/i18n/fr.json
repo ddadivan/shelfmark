@@ -21,18 +21,28 @@
       "tagsList": "Suggestions de tags",
       "note": "Note",
       "notePlaceholder": "Pourquoi l’enregistrer ?",
-      "save": "Enregistrer"
+      "save": "Enregistrer",
+      "newBadge": "nouveau"
     },
     "picker": {
       "title": "Choisir un dossier",
       "back": "Retour",
       "search": "Trouver un dossier",
       "list": "Dossiers",
-      "noResults": "Aucun dossier de ce nom"
+      "noResults": "Aucun dossier de ce nom",
+      "newFolder": "Nouveau dossier"
+    },
+    "newFolder": {
+      "title": "Nouveau dossier",
+      "label": "Nom du dossier",
+      "placeholder": "Par exemple, Recettes",
+      "hint": "Le dossier est créé quand vous enregistrez la page.",
+      "create": "Créer"
     },
     "saved": {
       "title": "Enregistré dans {{folder}}",
-      "done": "Terminé"
+      "done": "Terminé",
+      "folderNotCreated": "Impossible de créer le dossier « {{name}} » : le lien est enregistré sans dossier."
     },
     "duplicate": {
       "title": "Déjà dans votre bibliothèque",

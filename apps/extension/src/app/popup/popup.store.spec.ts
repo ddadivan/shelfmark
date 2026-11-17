@@ -170,6 +170,82 @@ describe('PopupStore', () => {
   });
 
   describe('save', () => {
+    describe('a new folder', () => {
+      it('is only named until Save, then created and used for the link', async () => {
+        const { store, api } = setup();
+        await store.init();
+        store.chooseNewFolder('  Clothes  ');
+        expect(store.view()).toBe(POPUP_VIEW.Form);
+        expect(store.newFolderName()).toBe('Clothes');
+        expect(api.createFolder).not.toHaveBeenCalled();
+        await store.save();
+        expect(api.createFolder).toHaveBeenCalledWith({ name: 'Clothes' });
+        expect(api.create.mock.calls[0]?.[0]).toMatchObject({ folderId: 'new-folder' });
+        expect(store.folderNotCreated()).toBeNull();
+        expect(store.newFolderName()).toBeNull();
+      });
+
+      it('picks an existing folder of that name instead of creating another', async () => {
+        const { store, api } = setup({ folders: [makeFolder({ id: 'f1', name: 'Clothes' })] });
+        await store.init();
+        store.chooseNewFolder('clothes');
+        expect(store.folderId()).toBe('f1');
+        expect(store.newFolderName()).toBeNull();
+        await store.save();
+        expect(api.createFolder).not.toHaveBeenCalled();
+      });
+
+      it('ignores a blank name', async () => {
+        const { store } = setup();
+        await store.init();
+        store.chooseNewFolder('   ');
+        expect(store.newFolderName()).toBeNull();
+      });
+
+      it('still saves the link without a folder when the folder cannot be created', async () => {
+        const { store, api } = setup();
+        await store.init();
+        store.chooseNewFolder('Clothes');
+        api.createFolder.mockRejectedValue(http(409, 'Folder limit reached (500)'));
+        await store.save();
+        expect(api.create).toHaveBeenCalledTimes(1);
+        expect(api.create.mock.calls[0]?.[0]).not.toHaveProperty('folderId');
+        expect(store.view()).toBe(POPUP_VIEW.Saved);
+        expect(store.folderNotCreated()).toBe('Clothes');
+      });
+
+      it('signs out on a 401 from the folder and saves nothing', async () => {
+        const { store, api } = setup();
+        await store.init();
+        store.chooseNewFolder('Clothes');
+        api.createFolder.mockRejectedValue(http(401));
+        await store.save();
+        expect(store.view()).toBe(POPUP_VIEW.SignedOut);
+        expect(api.create).not.toHaveBeenCalled();
+        expect(store.saving()).toBe(false);
+      });
+
+      it('does not create the folder again when the link save is retried', async () => {
+        const { store, api } = setup();
+        await store.init();
+        store.chooseNewFolder('Clothes');
+        api.create.mockRejectedValueOnce(http(500));
+        await store.save();
+        expect(store.view()).toBe(POPUP_VIEW.Error);
+        await store.retry();
+        expect(api.createFolder).toHaveBeenCalledTimes(1);
+        expect(api.create.mock.calls[1]?.[0]).toMatchObject({ folderId: 'new-folder' });
+      });
+
+      it('a chosen folder replaces the named one', async () => {
+        const { store } = setup({ folders: [makeFolder({ id: 'f1' })] });
+        await store.init();
+        store.chooseNewFolder('Clothes');
+        store.chooseFolder('f1');
+        expect(store.newFolderName()).toBeNull();
+      });
+    });
+
     it('does nothing without a page', async () => {
       const { store, api } = setup({ tab: null });
       await store.init();

@@ -3,6 +3,11 @@
   <h1 class="ext-screen__center-title" role="status">
     {{ 'popup.saved.title' | transloco: { folder: folderName() } }}
   </h1>
+  @if (store.folderNotCreated(); as name) {
+    <ui-notice [kind]="NOTICE_KIND.Warning">{{
+      'popup.saved.folderNotCreated' | transloco: { name }
+    }}</ui-notice>
+  }
   @if (store.link(); as link) {
     <ext-popup-link-card class="saved__card" [link]="link" (activated)="store.openLinkFolder()" />
   }

@@ -3,6 +3,7 @@ export const POPUP_VIEW = {
   Opening: 'opening',
   Form: 'form',
   Picker: 'picker',
+  NewFolder: 'newFolder',
   Saved: 'saved',
   Duplicate: 'duplicate',
   SignedOut: 'signedOut',

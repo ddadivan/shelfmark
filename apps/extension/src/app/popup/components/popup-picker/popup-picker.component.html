@@ -19,3 +19,8 @@
   [noResultsLabel]="'popup.picker.noResults' | transloco"
   (chosen)="store.chooseFolder($event)"
 />
+<div class="ext-screen__foot">
+  <ui-button block iconLeft="folder-plus" (click)="store.openNewFolder()">{{
+    'popup.picker.newFolder' | transloco
+  }}</ui-button>
+</div>

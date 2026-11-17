@@ -9,6 +9,8 @@ import {
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LINK_LIMIT } from '@shelfmark/contracts';
 import {
+  BADGE_TONE,
+  BadgeComponent,
   BUTTON_VARIANT,
   ButtonComponent,
   CHIP_VARIANT,
@@ -33,6 +35,7 @@ import { PopupStore } from '../../popup.store';
     '(keydown.meta.enter)': 'saveFromKeyboard($event)',
   },
   imports: [
+    BadgeComponent,
     ButtonComponent,
     ChipComponent,
     FolderIconComponent,
@@ -45,6 +48,7 @@ import { PopupStore } from '../../popup.store';
 export class PopupFormComponent {
   protected readonly store = inject(PopupStore);
   private readonly transloco = inject(TranslocoService);
+  protected readonly BADGE_TONE = BADGE_TONE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly CHIP_VARIANT = CHIP_VARIANT;
   protected readonly LINK_LIMIT = LINK_LIMIT;
@@ -59,7 +63,10 @@ export class PopupFormComponent {
     this.store.tags().map((tag) => ({ name: tag.name })),
   );
   protected readonly folderName = computed(
-    () => this.store.folder()?.name ?? this.transloco.translate('popup.unsorted'),
+    () =>
+      this.store.newFolderName() ??
+      this.store.folder()?.name ??
+      this.transloco.translate('popup.unsorted'),
   );
 
   /** ⌘/Ctrl+Enter saves from anywhere in the form (Enter alone stays with the tag and note fields). */
