@@ -147,6 +147,10 @@ export class AddLinkDialogComponent {
   protected readonly previewHost = this.previewService.previewHost;
   protected readonly duplicate = this.previewService.duplicate;
 
+  private readonly ruleService = inject(AddLinkRuleService);
+  /** "Rule: youtube.com → Videos" while a domain rule filled folder or tags (#398). */
+  protected readonly ruleChip = this.ruleService.chip;
+
   /** The folders, plus one named in the field and created on Save ("New", #454). */
   protected readonly folderOptions = this.newFolder.options;
   /** The paste-many list has no pending folder: it starts in "Unsorted" then. */

@@ -2834,6 +2834,12 @@
       },
       "folderStyleRace": {
         "text": "Cambiare in fretta lo stile di una cartella non riporta più una scelta precedente."
+      },
+      "newFolderInAddLink": {
+        "text": "Aggiungi link può creare una cartella: scrivi un nuovo nome nel campo Cartella."
+      },
+      "emojiPickerTabs": {
+        "text": "Il selettore di emoji è largo quanto il suo campo e le schede delle categorie non sembrano più emoji da scegliere."
       }
     },
     "sections": {

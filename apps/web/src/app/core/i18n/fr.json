@@ -2834,6 +2834,12 @@
       },
       "folderStyleRace": {
         "text": "Changer vite le style d'un dossier ne ramène plus un ancien choix."
+      },
+      "newFolderInAddLink": {
+        "text": "Ajouter un lien peut créer un dossier : tape un nouveau nom dans le champ Dossier."
+      },
+      "emojiPickerTabs": {
+        "text": "Le sélecteur d’emoji est aussi large que son champ, et ses onglets de catégories ne ressemblent plus à des emoji à choisir."
       }
     },
     "sections": {
