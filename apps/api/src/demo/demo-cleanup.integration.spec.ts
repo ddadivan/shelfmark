@@ -56,6 +56,7 @@ describe('GET /api/cron/demo-cleanup', () => {
     linkTags: await t.db.prisma.linkTag.count(),
     aiSettings: await t.db.prisma.aiSettings.count(),
     linkSuggestions: await t.db.prisma.linkSuggestion.count(),
+    linkEmbeddings: await t.db.prisma.linkEmbedding.count(),
   });
 
   it('has the vercel.json cron path of the route', () => {
@@ -154,6 +155,7 @@ describe('GET /api/cron/demo-cleanup', () => {
       expect(seeded.links).toBeGreaterThan(0);
       expect(seeded.aiSettings).toBe(2);
       expect(seeded.linkSuggestions).toBeGreaterThan(0);
+      expect(seeded.linkEmbeddings).toBe(seeded.links);
       await expire([first.userId, second.userId]);
 
       await call(`Bearer ${SECRET}`).expect(200);
@@ -167,6 +169,7 @@ describe('GET /api/cron/demo-cleanup', () => {
         linkTags: 0,
         aiSettings: 0,
         linkSuggestions: 0,
+        linkEmbeddings: 0,
       });
     });
 

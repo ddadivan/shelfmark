@@ -12,6 +12,7 @@ import { SUGGESTION_ROW_STATE } from '../ai/models/suggestion-row-state.const';
 import type { Prisma } from '../generated/prisma/client';
 import { toLinkKind } from '../links/to-link-kind';
 import type { DemoSeed } from './models/demo-seed.interface';
+import { seedDemoEmbeddings } from './seed-demo-embeddings';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MS_PER_MINUTE = 60 * 1000;
@@ -31,7 +32,8 @@ function daysAgo(now: Date, days: number, order: number): Date {
  *
  * The sandbox starts with AI on (#389): an `ai_settings` row with the default modes, the intro
  * already seen, AI summaries (source `ai`, status `done`) on most links and pending suggestions on
- * some unsorted links, the same as the web mock's demo seed. Every row cascades with the user.
+ * some unsorted links, the same as the web mock's demo seed, and a mock vector per link for search by
+ * meaning (AI-3). Every row cascades with the user.
  */
 export async function seedDemoLibrary(
   tx: Prisma.TransactionClient,
@@ -74,8 +76,16 @@ export async function seedDemoLibrary(
   const linkRows: Prisma.LinkCreateManyInput[] = [];
   const linkTags: Prisma.LinkTagCreateManyInput[] = [];
   const suggestions: Prisma.LinkSuggestionCreateManyInput[] = [];
+  const embedded: Parameters<typeof seedDemoEmbeddings>[2][number][] = [];
   seed.links.forEach((link, order) => {
     const id = randomUUID();
+    embedded.push({
+      id,
+      title: link.title,
+      tagNames: link.tags.map(normalizeTagName),
+      summary: link.summary ?? null,
+      note: link.note ?? null,
+    });
     const suggested = seedSuggestions(link.suggestFolder, link.suggestTags ?? []).map(
       (suggestion) => ({ ...suggestion, userId, linkId: id }),
     );
@@ -111,6 +121,8 @@ export async function seedDemoLibrary(
   await tx.link.createMany({ data: linkRows });
   await tx.linkTag.createMany({ data: linkTags });
   await tx.linkSuggestion.createMany({ data: suggestions });
+  // Search by meaning is on for the sandbox (the default) and ready from the first search.
+  await seedDemoEmbeddings(tx, userId, embedded, AI_SETTINGS_DEFAULT.includeNotes);
   await tx.linkRule.createMany({
     data: seed.rules.map((rule) => ({
       userId,
