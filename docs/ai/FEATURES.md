@@ -18,6 +18,28 @@ These come from 5.6 and hold for every feature below.
 6. **Privacy.** Link content is sent only to the model provider, only for the feature the user turned on, and never used for statistics: Shelfmark counts AI calls (for quotas) and nothing else.
 7. **No real calls outside production.** A mock provider in dev, unit, e2e, CI and the demo; the demo seed has ready tags, summaries and canned answers.
 
+## Competitors and how we differ
+
+Checked on Nov 17, 2026.
+
+- **mark-it.co** is AI-first: no folders and no manual tags. AI sorts every item (and learns when the user moves it), adds tags, writes summaries, shows related items, reads screenshots (OCR) and offers search by meaning and by chat. It saves URLs, screenshots, PDFs, notes and social posts through an extension, mobile share sheets and messaging apps. It also has reminders, shared spaces and MCP. Free includes AI but allows only 40 saves a month; new accounts get two months of Pro. It promises no training on user content, full export and instant deletion.
+- **raindrop.io** is a mature bookmark manager: collections with icons, tags, filters, batch actions, tag merge, highlights, four views, full-text search (pages, PDFs, YouTube speech), a web archive, a duplicate and broken-link finder, backups, collaboration, apps everywhere and an API. Its AI is Pro only: tag and collection suggestions, and "Stella", a beta chat assistant that searches by meaning, summarises, organises (nothing is applied without approval), surfaces forgotten bookmarks and cites its sources. Stella runs an open-source model on Raindrop's own servers, only on demand, with a cooldown instead of hard caps. MCP is Pro only. Free has unlimited bookmarks.
+
+**Where Shelfmark can be better** (proposals, reflected in the features below):
+
+1. **AI at the moment of saving.** Suggestions inline in Add link and Paste many, one tap, visibly separate from the user's own data (F1). When the user keeps correcting the same way, offer a plain rule instead of more AI ("youtube.com → Videos?", F1b), which connects AI with Rules without AI (#398).
+2. **Reviewable changes.** Clean-up and Tidy Unsorted show a diff with accept or reject per item and one Undo for the whole run (F1a, F5).
+3. **Answers grounded in the library only.** Ask your shelf cites real link cards that open, go side by side or get a reminder, and it runs only when asked (F4).
+4. **One search.** Meaning-based results inside the existing search, no separate mode. Exact word matches stay first, and each meaning match says why it matched (F3).
+5. **Related links** on a link and in side by side (F7).
+6. **Rediscover** forgotten links through reminders and Read later (#396) (F8).
+7. **A generous Free tier.** Unlimited saves (mark-it: 40 a month) plus a small monthly AI allowance (Raindrop: AI only in Pro). The quota and "limit reached" states are shown honestly.
+8. **Privacy as a feature.** AI off by default, a switch per feature, a plain "what is sent" note, no training, and only counts kept for statistics. Zero-retention or EU-hosted providers are an open question (Raindrop's self-hosted model sets a high bar).
+9. **MCP is table stakes:** both competitors have it (F6).
+10. **Later, not MVP:** OCR of images and screenshots, summaries from YouTube transcripts.
+
+What we already have to build on: nested folders with colours and icons, side by side, reminders, rules, the design and motion language, and a free unlimited core.
+
 ## Tiers used below
 
 Monetisation is not built yet (backlog, "Ideas to discuss"). Until it is, every signed-in user who turns AI on gets the **AI pack** limits below, and the author's spend limit in the provider console is the safety net. The tiers are the target shape so that entitlements can be modelled on the account from the start (#389).
@@ -53,7 +75,7 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 
 - **Problem.** Organising is the chore that makes people stop: most saved links sit in Unsorted with no tags.
 - **What the user sees.** Under the Tags and Folder fields of Add link and Edit link, a "Suggested" row of dashed chips: up to three of the user's **existing** tags and one existing folder, plus at most one clearly marked **new** tag. Tap a chip to apply it (it turns into a normal sage tag); × dismisses it; "Add all" applies the row. While the job runs, two skeleton chips; nothing at all when AI is off, nothing found, or the provider fails. On cards and rows, a link with pending suggestions shows nothing extra (no badge clutter); suggestions surface in the dialog and in "Tidy Unsorted" (F1a).
-- **Entry points.** Desktop: Add link dialog (after the preview loads), Edit link dialog. Phone: the Add link sheet and the Edit sheet; the Share target quick form.
+- **Entry points.** Desktop: Add link dialog (after the preview loads), Edit link dialog, Paste many (a suggested folder per link in the review list). Phone: the Add link sheet and the Edit sheet; the Share target quick form.
 - **Free vs AI pack.** Free: new links up to the monthly limit. AI pack: fair use, plus processing the existing library (backfill through the Batch API).
 - **Privacy.** Sent: URL, page title, the site's description, a size-limited page text excerpt (fetched through the SSRF guard), and the **names** of the user's tags and folders. Not sent: notes (unless "Include my notes" is on), other links, account data.
 - **Cost.** \~$0.0004–0.001 per link (Haiku-class, structured output; one call shared with F2, see **Proposal** below). Typical \~$0.05–0.10 / month; backfill of 1,000 links \~$0.20–0.50 once with the Batch API.
@@ -61,6 +83,17 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 - **Order.** 1 (MVP).
 
 **Proposal — one call for F1 and F2.** Tags, folder and summary are produced by the same background job with one structured response (`{ tags, newTag, folder, summary, kind }`), so a link costs one call, not two, and both appear together. The two features keep separate switches; a switched-off part is simply not requested.
+
+### F1b. Learn from corrections, then offer a rule (**Proposal**, extends #390 and #398)
+
+- **Problem.** AI that keeps guessing wrong is annoying, and AI that keeps guessing right for the same site is wasted money.
+- **What the user sees.** Shelfmark notices patterns in what the user accepts, dismisses and moves: links from one site that always end up in one folder or with one tag. Corrections feed the next suggestions for that user (the last few choices are passed as examples). After the same choice three times, a toast offers a plain rule: "Always put youtube.com links in Videos?" with "Create rule" and "Not now". A rule needs no model and always wins over AI.
+- **Entry points.** The toast after a save or a move; the created rule shows in Settings › Library › Rules (#398).
+- **Free vs AI pack.** Free: rules are not AI.
+- **Privacy.** Only the user's own accept, dismiss and move events, kept with the user's data, never used for statistics.
+- **Cost.** Lowers cost: every rule removes model calls.
+- **Dependencies.** F1, Rules without AI (#398).
+- **Order.** 2, with F1a.
 
 ### F1a. Tidy Unsorted — review suggestions in bulk (**Proposal**, extends #390)
 
@@ -87,7 +120,7 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 ### F3. Smarter search (#392)
 
 - **Problem.** People remember what a link was about, not its words: "that talk about signals and performance", "the grey coat".
-- **What the user sees.** The same search (⌘K and the phone Search tab) finds by meaning as well as words; the search field's placeholder already says "Search, or describe it". Results get no new chrome: matches by meaning are mixed in after exact word matches, with a quiet "Related by meaning" divider and the spark mark. When embeddings are not ready (off, quota, not processed yet), search is exactly today's. Settings show "Search by meaning: 840 of 1,000 links ready".
+- **What the user sees.** The same search (⌘K and the phone Search tab) finds by meaning as well as words; the search field's placeholder already says "Search, or describe it". Results get no new chrome: matches by meaning are mixed in after exact word matches, with a quiet "Related by meaning" divider and the spark mark. Each meaning match shows a short "why it matched" line (the tag, folder or summary words that are close to the query), so results never feel random. When embeddings are not ready (off, quota, not processed yet), search is exactly today's. Settings show "Search by meaning: 840 of 1,000 links ready".
 - **Entry points.** Desktop: ⌘K search dialog and the header search. Phone: Search tab.
 - **Free vs AI pack.** Free (**Proposal**): embeddings are cheap and "find it again" is the product's core promise; it is a strong reason to turn AI on. Backfill of a large library may be AI pack only.
 - **Privacy.** Sent to the embeddings provider: title, summary, tag names and the note only if "Include my notes" is on. The query text is sent at search time. Vectors are stored in Neon (pgvector) next to the link and deleted with it.
@@ -98,7 +131,7 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 ### F4. Ask your shelf (#393)
 
 - **Problem.** Sometimes the question is not "where is that link" but "what did I save about X": "Which ramen recipes did I save?", "Compare the two coats I liked".
-- **What the user sees.** A chat panel that answers only from the user's links: the answer streams in as plain text with numbered citations, and every cited link is listed below as a row (favicon, title, folder) that opens the link. Suggested starter questions built from the user's own folders. A clear daily limit line ("12 questions left today"). Refuses to answer beyond the library ("I couldn't find that in your links"). No memory between sessions for v1 (**Proposal**: keeps privacy and cost simple).
+- **What the user sees.** A chat panel that answers only from the user's links: the answer streams in as plain text with numbered citations, and every cited link is listed below as a real link row (favicon, title, folder) with its usual actions: open, open side by side, remind me. It runs only when the user asks; nothing in the library is read in the background for chat. Suggested starter questions built from the user's own folders. A clear daily limit line ("12 questions left today"). Refuses to answer beyond the library ("I couldn't find that in your links"). No memory between sessions for v1 (**Proposal**: keeps privacy and cost simple).
 - **Entry points.** Desktop: an "Ask your shelf" item at the bottom of the ⌘K search results ("Ask: <query>") and a header button with the spark mark; the panel opens on the right as a side panel over the feed. Phone: a "Ask" segment on the Search tab (Search · Ask), full page.
 - **Free vs AI pack.** Free: a few questions a month (a taste). AI pack: fair-use daily limit.
 - **Privacy.** Sent: the question and the top \~10 retrieved links (title, URL, summary, tags; notes only with the switch). Answers are not stored server-side beyond the session (**Proposal**).
@@ -128,6 +161,28 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 - **Dependencies.** Personal tokens or OAuth on Better Auth, rate limits, ADR (transport, auth). Independent of F1–F5.
 - **Order.** 6 (can move earlier: it is the cheapest feature to run, and a good portfolio piece).
 
+### F7. Related links (**Proposal**)
+
+- **Problem.** A saved link is often one of several on the same topic, saved months apart in different folders.
+- **What the user sees.** In Edit link (and later a link detail), a "Related on your shelf" list of up to five links close in meaning, with the spark mark. In side by side, "Show related" fills the right half's picker with related links' folders.
+- **Entry points.** Desktop: Edit link, side by side. Phone: the Edit sheet.
+- **Free vs AI pack.** Free once embeddings exist (no model call: a vector query).
+- **Privacy.** Nothing new is sent; uses stored vectors.
+- **Cost.** Negligible.
+- **Dependencies.** F3.
+- **Order.** After F3.
+
+### F8. Rediscover (**Proposal**)
+
+- **Problem.** People save far more than they come back to.
+- **What the user sees.** A weekly "From your shelf" block (in the app and in the reminders digest, #275): three to five forgotten links grouped by a theme the user cares about now (from recent saves), each with "Remind me", "Read later" (#396) or "Not interested".
+- **Entry points.** Desktop and phone: top of All links once a week (dismissible), the weekly digest.
+- **Free vs AI pack.** Free with a plain "not opened for a long time" choice; the AI pack picks by theme.
+- **Privacy.** No data is sent beyond F3 vectors; the theme is computed from the user's own links.
+- **Cost.** Negligible.
+- **Dependencies.** F3, reminders, Read later (#396).
+- **Order.** After F4.
+
 ---
 
 ## Other proposals
@@ -142,9 +197,9 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 | Step | What | Why first |
 | --- | --- | --- |
 | AI-1 (MVP) | F0 foundation + Settings › AI, F1 tag and folder suggestions, F2 summaries (one job), demo seed | Visible in every save, cheapest, proves the whole pipeline (opt-in, jobs, quotas, mock, degradation) |
-| AI-2 | F1a Tidy Unsorted | Small, uses AI-1 output, pairs with Import (#387) |
-| AI-3 | F3 smarter search | Core promise "find it again"; needed by F4 and F5 |
-| AI-4 | F4 Ask your shelf | Most expensive and most visible; needs F3 |
+| AI-2 | F1a Tidy Unsorted, F1b rule offers | Small, uses AI-1 output, pairs with Import (#387) and Rules (#398) |
+| AI-3 | F3 smarter search, F7 related links | Core promise "find it again"; needed by F4 and F5 |
+| AI-4 | F4 Ask your shelf, F8 rediscover | Most expensive and most visible; needs F3 |
 | AI-5 | F5 clean-up | Needs F3 and #397 |
 | AI-6 | F6 MCP server | Independent; can run in parallel with any step |
 
@@ -160,7 +215,7 @@ Full rules are in `docs/design/BRAND.md` › AI and the component specs `AiMark`
 
 ## Open questions for the implementation step
 
-1. **Provider and models.** Anthropic (Haiku-class for jobs, Sonnet-class for chat) vs others; Vercel AI Gateway or a direct SDK; fallback model when the provider is down. Zero data retention and "no training on API data" terms must be confirmed in writing for the privacy policy.
+1. **Provider and models.** Anthropic (Haiku-class for jobs, Sonnet-class for chat) vs others, or a self-hosted open model like Raindrop's; Vercel AI Gateway or a direct SDK; fallback model when the provider is down; an EU-hosted option. Zero data retention and "no training on API data" terms must be confirmed in writing for the privacy policy.
 2. **Embeddings.** Which provider (Anthropic has no embeddings API; Voyage, OpenAI or an open model), dimensions, pgvector index type (HNSW vs IVFFlat) on the Neon plan, re-embedding when the model changes.
 3. **Job runner on Vercel.** Where background jobs run (Vercel Queues, Workflow, a cron that drains a table, or `waitUntil` after the response), retries, and the Batch API for backfill.
 4. **Cost and limits.** Real token counts per link with a page excerpt; the Free monthly link limit; the Ask daily limit and whether chat needs a cheaper model to stay under the AI pack price; the author's monthly spend cap.
