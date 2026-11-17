@@ -196,6 +196,20 @@ describe('AddLinkSaveService', () => {
       });
     });
 
+    it('still warns after a retry when the folder failed and the first link save too', async () => {
+      const { api, form, newFolder, save, toasts } = await setup(undefined, true);
+      api.create.mockImplementationOnce(() => throwError(() => new Error('boom')));
+      form.form.url().value.set('https://example.org/a');
+      form.form.folderId().value.set(newFolder.choose('Recipes'));
+      await save.save();
+      expect(toasts.show).not.toHaveBeenCalled();
+      await save.save();
+      expect(toasts.show).toHaveBeenCalledTimes(1);
+      expect(toasts.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Couldn’t create the folder “Recipes”' }),
+      );
+    });
+
     it('moves an edited link into the new folder', async () => {
       const link = MOCK_LINKS[0];
       const { api, form, newFolder, save } = await setup(link);
