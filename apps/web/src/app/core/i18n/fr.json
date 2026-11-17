@@ -3234,6 +3234,10 @@
       "why": "Proche de : {{reasons}}",
       "fromSummary": "Proche de : {{reasons}} (d’après le résumé)",
       "preparing": "La recherche par le sens se prépare : {{ready}} liens sur {{total}}. La recherche par mots marche comme d’habitude."
+    },
+    "related": {
+      "title": "Proches sur votre étagère",
+      "why": "Proche de : {{reasons}}"
     }
   }
 }

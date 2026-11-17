@@ -3163,6 +3163,10 @@
       "why": "Nah an: {{reasons}}",
       "fromSummary": "Nah an: {{reasons}} (aus der Zusammenfassung)",
       "preparing": "Die Suche nach Bedeutung wird vorbereitet: {{ready}} von {{total}} Links. Die Wortsuche funktioniert wie gewohnt."
+    },
+    "related": {
+      "title": "Ähnliches in deinem Regal",
+      "why": "Nah an: {{reasons}}"
     }
   }
 }

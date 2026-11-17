@@ -3234,6 +3234,10 @@
       "why": "Perto de: {{reasons}}",
       "fromSummary": "Perto de: {{reasons}} (do resumo)",
       "preparing": "A busca por significado está se preparando: {{ready}} de {{total}} links. A busca por palavras funciona como sempre."
+    },
+    "related": {
+      "title": "Relacionados na sua estante",
+      "why": "Perto de: {{reasons}}"
     }
   }
 }

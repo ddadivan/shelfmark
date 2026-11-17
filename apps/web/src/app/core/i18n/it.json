@@ -3234,6 +3234,10 @@
       "why": "Vicino a: {{reasons}}",
       "fromSummary": "Vicino a: {{reasons}} (dal riepilogo)",
       "preparing": "La ricerca per significato si sta preparando: {{ready}} link su {{total}}. La ricerca per parole funziona come sempre."
+    },
+    "related": {
+      "title": "Correlati nel tuo scaffale",
+      "why": "Vicino a: {{reasons}}"
     }
   }
 }

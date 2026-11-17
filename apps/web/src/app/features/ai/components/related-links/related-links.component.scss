@@ -1,0 +1,48 @@
+@use 'ui' as *;
+
+// "Related on your shelf" (AiDiscover 1): a caption heading and compact rows, under Folder in Edit
+// link. Fits the 360px phone sheet: titles and the "why" line truncate.
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.related-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.related-links__title {
+  @include type(caption);
+
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.related-links__list {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.related-links__why {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// The AI mark: 14px next to 12px text, in the `ai` colour.
+.related-links__spark {
+  --ui-icon-size: #{rem(14px)};
+
+  margin-inline-end: var(--space-1);
+  color: var(--ai);
+  vertical-align: text-bottom;
+}

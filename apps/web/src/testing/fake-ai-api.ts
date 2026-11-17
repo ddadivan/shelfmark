@@ -40,7 +40,10 @@ export function aiSettingsResponse(patch: Partial<AiSettingsResponse> = {}): AiS
   };
 }
 
-/** A fake `AI_API`: settings answer `settings`, every other method must be given by the spec. */
+/**
+ * A fake `AI_API`: settings answer `settings`, meaning search and related links answer nothing;
+ * every other method must be given by the spec.
+ */
 export function fakeAiApi(settings: AiSettingsResponse = aiSettingsResponse()): FakeAiApi {
   return {
     getSettings: vi.fn<AiApi['getSettings']>(() => of(settings)),
@@ -60,7 +63,7 @@ export function fakeAiApi(settings: AiSettingsResponse = aiSettingsResponse()): 
     getLinkAi: vi.fn<AiApi['getLinkAi']>(),
     rewriteSummary: vi.fn<AiApi['rewriteSummary']>(),
     undoApply: vi.fn<AiApi['undoApply']>(),
-    searchMeaning: vi.fn<AiApi['searchMeaning']>(),
-    related: vi.fn<AiApi['related']>(),
+    searchMeaning: vi.fn<AiApi['searchMeaning']>(() => of({ status: settings.search, items: [] })),
+    related: vi.fn<AiApi['related']>(() => of({ status: settings.search, items: [] })),
   };
 }

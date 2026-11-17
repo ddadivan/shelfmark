@@ -15,6 +15,7 @@ import {
   type LinkPreviewResponse,
   type LinkResponse,
   type LinkSuggestion,
+  MEANING_REASON_SOURCE,
 } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_LINKS, MOCK_NAME } from '@shelfmark/contracts/testing';
 import {
@@ -317,6 +318,47 @@ describe('AddLinkDialogComponent with AI (#390)', () => {
     await perf.dismiss();
     expect(ai.dismissSuggestion).toHaveBeenCalledWith('s-perf');
   });
+  it('Edit link: lists related links under Folder, opening in a new tab (AI-3)', async () => {
+    const ai = fakeAiApi();
+    ai.getLinkAi.mockReturnValue(
+      of({
+        aiStatus: null,
+        reason: null,
+        summary: null,
+        summarySource: null,
+        suggestions: [],
+        autoApplied: null,
+      }),
+    );
+    const related: LinkResponse = {
+      ...MOCK_LINKS[1],
+      title: 'Zoneless change detection',
+      url: 'https://angular.dev/guide/zoneless',
+    };
+    ai.related.mockReturnValue(
+      of({
+        status: aiSettingsResponse().search,
+        items: [{ link: related, why: [{ source: MEANING_REASON_SOURCE.Tag, text: 'angular' }] }],
+      }),
+    );
+    await setup(ai, { link: MOCK_LINKS[0] });
+    await until(() => expect(root()?.querySelector('app-related-links section')).not.toBeNull());
+    expect(ai.related).toHaveBeenCalledWith(MOCK_LINKS[0].id, 5);
+    const section = root()?.querySelector('app-related-links section');
+    expect(section?.querySelector('h3')?.textContent).toBe('Related on your shelf');
+    const anchor = section?.querySelector<HTMLAnchorElement>('a[href]');
+    expect(anchor?.getAttribute('href')).toBe(related.url);
+    expect(anchor?.getAttribute('target')).toBe('_blank');
+    expect(section?.textContent).toContain('Close to: angular');
+    // Under the folder field, before the tags.
+    const folder = root()?.querySelector('ui-select');
+    const order =
+      folder && section
+        ? folder.compareDocumentPosition(section)
+        : Node.DOCUMENT_POSITION_PRECEDING;
+    expect(order & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   describe('Edit link summary (#391)', () => {
     const LINK: LinkResponse = {
       ...MOCK_LINKS[0],

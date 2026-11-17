@@ -3163,6 +3163,10 @@
       "why": "Close to: {{reasons}}",
       "fromSummary": "Close to: {{reasons}} (from the summary)",
       "preparing": "Search by meaning is getting ready: {{ready}} of {{total}} links. Word matches work as usual."
+    },
+    "related": {
+      "title": "Related on your shelf",
+      "why": "Close to: {{reasons}}"
     }
   }
 }

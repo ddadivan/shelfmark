@@ -3234,6 +3234,10 @@
       "why": "Cerca de: {{reasons}}",
       "fromSummary": "Cerca de: {{reasons}} (del resumen)",
       "preparing": "La búsqueda por significado se está preparando: {{ready}} de {{total}} enlaces. La búsqueda por palabras funciona como siempre."
+    },
+    "related": {
+      "title": "Relacionados en tu estantería",
+      "why": "Cerca de: {{reasons}}"
     }
   }
 }
