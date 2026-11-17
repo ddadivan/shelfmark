@@ -142,6 +142,14 @@ export class MockAiData {
     this.settle();
     const known = [...this.jobs.values()].find((job) => job.draftId === draftId);
     if (known) {
+      // "Try again" after an outage: the server runs the same draft once more.
+      if (
+        known.linkId === null &&
+        known.status === AI_JOB_STATUS.Failed &&
+        known.reason === AI_JOB_REASON.Unavailable
+      ) {
+        Object.assign(known, { status: AI_JOB_STATUS.Pending, reason: null, queuedAt: Date.now() });
+      }
       return this.view(known);
     }
     return this.view(this.queue(url, title, draftId, null, !this.settings.enabled));

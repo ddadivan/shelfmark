@@ -152,8 +152,11 @@ describe('AiDraftService', () => {
     draft.retry();
     await vi.waitFor(() => expect(api.createDraft).toHaveBeenCalledTimes(3));
     await vi.waitFor(() => expect(draft.state()).toBe(AI_DRAFT_STATE.Unavailable));
-    // A retry is a new draft; and only one retry is offered.
-    expect(draft.draftId()).not.toBe(first);
+    // A retry resends the same draft (the server re-arms it); and only one retry is offered.
+    expect(draft.draftId()).toBe(first);
+    expect(api.createDraft.mock.calls[2]?.[0]).toEqual(
+      expect.objectContaining({ draftId: first, url: `${URL}/2` }),
+    );
     expect(draft.canRetry()).toBe(false);
     draft.retry();
     expect(api.createDraft).toHaveBeenCalledTimes(3);

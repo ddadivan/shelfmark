@@ -140,6 +140,47 @@ describe('AiFollowUpService', () => {
     expect(applyEdit).toHaveBeenLastCalledWith({ ...moved, folderId: null, tags: [] });
   });
 
+  describe('after an edit', () => {
+    const edited: LinkResponse = { ...SAVED, folderId: MOCK_ID.FolderAngular, tags: ['angular'] };
+
+    it('does not announce again what AI applied before the edit', async () => {
+      const ai = fakeAiApi();
+      ai.getLinkAi.mockReturnValue(
+        of(state({ autoApplied: { folderId: MOCK_ID.FolderAngular, tags: ['angular'] } })),
+      );
+      const { applyEdit, show, links, service } = await setup(ai, edited);
+      service.watch(edited);
+      await vi.advanceTimersByTimeAsync(AI_POLL_INTERVAL_MS);
+      expect(links.get).not.toHaveBeenCalled();
+      expect(applyEdit).toHaveBeenCalledWith(
+        expect.objectContaining({ id: SAVED.id, summary: 'In short.' }),
+      );
+      expect(show).not.toHaveBeenCalled();
+    });
+
+    it('announces only the tags this follow-up added', async () => {
+      const ai = fakeAiApi();
+      ai.getLinkAi.mockReturnValue(
+        of(
+          state({
+            autoApplied: { folderId: MOCK_ID.FolderAngular, tags: ['angular', 'signals'] },
+          }),
+        ),
+      );
+      ai.undoApply.mockReturnValue(of({ ...edited, tags: ['angular'] }));
+      const { show, service } = await setup(ai, { ...edited, tags: ['angular', 'signals'] });
+      service.watch(edited);
+      await vi.advanceTimersByTimeAsync(AI_POLL_INTERVAL_MS);
+      const toast = show.mock.calls[0]?.[0];
+      expect(toast?.kind).toBe(TOAST_KIND.Success);
+      expect(toast?.title).toBe('1 tag added by AI');
+      toast?.action?.run();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(ai.undoApply).toHaveBeenCalledTimes(1);
+      expect(ai.undoApply).toHaveBeenCalledWith(SAVED.id, { part: AI_APPLIED_PART.Tags });
+    });
+  });
+
   it('asks once for a new link whose draft was done while Automatic mode is on', async () => {
     const ai = fakeAiApi(
       aiSettingsResponse({
