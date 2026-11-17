@@ -53,7 +53,7 @@ Texts to paste into the Chrome Web Store developer dashboard (#445). The author 
 
 | Permission | Justification to paste |
 | --- | --- |
-| `activeTab` | Reads the address and title of the tab the user is on, only at the moment they click the extension button or press its shortcut, so that page can be saved. No access to other tabs, history or page content. |
+| `activeTab` | The popup calls `chrome.tabs.query({ active: true, currentWindow: true })` to read the address and title of the tab the user is on, only at the moment they click the extension button or press its shortcut, so that page can be saved. Without `activeTab` the tab comes back without its URL and title. No access to other tabs, history or page content; no `tabs` permission, no content scripts. |
 | Host permission `https://shelfmark-app.vercel.app/api/*` | The extension's only server: it loads the user's folders, tags and rules, checks whether the page is already saved and saves it, using the user's existing Shelfmark sign-in in the browser. It cannot reach any other site. |
 
 **Remote code:** No, I am not using remote code. (All scripts are in the package; the Content Security Policy is `script-src 'self'`.)
@@ -69,6 +69,8 @@ Then confirm all three statements:
 - I do not sell or transfer user data to third parties, outside of the approved use cases.
 - I do not use or transfer user data for purposes that are unrelated to my item's single purpose.
 - I do not use or transfer user data to determine creditworthiness or for lending purposes.
+
+> Note for a resubmission after the "Purple Potassium" (unused `activeTab`) rejection of 1.0.1: `activeTab` is used. In 1.0.1 the code reached the API through `Reflect.get(globalThis, 'chrome')`, so the scan did not see it; 1.0.2 calls `chrome.tabs.query` directly (in `main.js`) to read the URL and title of the tab the popup was opened on. Permissions are unchanged.
 
 > Note for the reviewer field, if asked: the extension acts only when the user opens it on a tab; that tab's URL goes to the user's own library on shelfmark-app.vercel.app (a duplicate check), and its URL and title are stored there only on Save. That is the single purpose, not collection.
 
