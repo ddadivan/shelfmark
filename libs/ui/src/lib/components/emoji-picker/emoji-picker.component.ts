@@ -137,6 +137,8 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
     const items = [...this.own(), ...this.recent(), ...this.categories().flatMap((c) => c.items)];
     return items.find((item) => item.emoji === emoji)?.name ?? '';
   });
+  /** The name beside the emoji; none in a disabled field (its dimmed text is no label to read). */
+  protected readonly shownName = computed(() => (this.disabled() ? '' : this.chosenName()));
   protected readonly results = computed(() =>
     resultsSection(this.ids, this.resultsLabel(), this.categories(), this.query(), this.own()),
   );

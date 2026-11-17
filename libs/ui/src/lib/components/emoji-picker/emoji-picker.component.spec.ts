@@ -275,6 +275,16 @@ describe('EmojiPickerComponent', () => {
     expect(await axeViolations(root)).toEqual([]);
   });
 
+  it('leaves the name out of a disabled field (its dimmed text would fail contrast)', async () => {
+    const { host, fixture, root } = await setup();
+    host.value.set('🍔');
+    await settle(fixture);
+    expect(root.querySelector('.ui-emoji-picker__name')?.textContent.trim()).toBe('food 1');
+    host.disabled.set(true);
+    await settle(fixture);
+    expect(root.querySelector('.ui-emoji-picker__name')).toBeNull();
+  });
+
   it('shows a typed emoji large too, plain text at the normal size', async () => {
     const { field, type } = await setup();
     await type(field, '🦩');
