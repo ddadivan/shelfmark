@@ -3061,6 +3061,31 @@
       "undoFolder": "Annulla lo spostamento dell’IA",
       "undoTags": "Annulla i tag aggiunti dall’IA",
       "undoFailed": "Impossibile annullare la modifica dell’IA"
+    },
+    "disclaimer": "Generato dall’IA, può essere impreciso",
+    "summary": {
+      "mark": "Riassunto generato dall’IA, può essere impreciso",
+      "pending": "Scrittura del riassunto",
+      "label": "Riassunto",
+      "counter": "caratteri",
+      "byAi": "Scritto dall’IA",
+      "byYou": "Modificato da te",
+      "rewrite": "Riscrivi",
+      "hintAi": "Generato dall’IA, può essere impreciso. Modificalo e diventa tuo: l’IA non riscrive mai il tuo testo.",
+      "hintUser": "Svuota il campo perché l’IA lo riscriva.",
+      "hintEmpty": "Lascialo vuoto e l’IA ne scriverà uno.",
+      "rewriteFailed": "Impossibile riscrivere il riassunto",
+      "rewriteFailedDetail": "Il tuo riassunto non è cambiato. Riprova più tardi.",
+      "tooLong": "Il riassunto deve restare sotto i {{max}} caratteri."
+    },
+    "toast": {
+      "moved": "Spostato in {{folder}} dall’IA",
+      "tagged": {
+        "one": "{{count}} tag aggiunto dall’IA",
+        "many": "{{count}} di tag aggiunti dall’IA",
+        "other": "{{count}} tag aggiunti dall’IA"
+      },
+      "undo": "Annulla"
     }
   }
 }

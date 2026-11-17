@@ -46,6 +46,8 @@ import { ReminderFormatService } from '../../../reminders/services/reminder-form
 import { AddLinkNewFolderService } from '../../services/add-link-new-folder.service';
 import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
 import { AddLinkAiService } from '../../services/add-link-ai.service';
+import { AddLinkSummaryService } from '../../services/add-link-summary.service';
+import { SummaryFieldComponent } from '../../../ai/components/summary-field/summary-field.component';
 import { AiDraftService } from '../../../ai/services/ai-draft.service';
 import { AiLinkStateService } from '../../../ai/services/ai-link-state.service';
 import { AiAppliedComponent } from '../../../ai/components/ai-applied/ai-applied.component';
@@ -87,6 +89,7 @@ import { AiSuggestionRowComponent } from '../../../ai/components/suggestion-rows
     PasteManyListComponent,
     SelectComponent,
     SkeletonComponent,
+    SummaryFieldComponent,
     TagInputComponent,
     TextareaComponent,
     TranslocoPipe,
@@ -103,6 +106,7 @@ import { AiSuggestionRowComponent } from '../../../ai/components/suggestion-rows
     AiDraftService,
     AiLinkStateService,
     AddLinkAiService,
+    AddLinkSummaryService,
   ],
   templateUrl: './add-link-dialog.component.html',
   styleUrl: './add-link-dialog.component.scss',
@@ -162,6 +166,8 @@ export class AddLinkDialogComponent {
 
   /** AI suggestion rows under Folder and Tags, the AI line and "Moved by AI" (#390). */
   protected readonly ai = inject(AddLinkAiService);
+  /** Edit link: the summary field (#391). */
+  protected readonly summary = inject(AddLinkSummaryService);
 
   private readonly ruleService = inject(AddLinkRuleService);
   /** "Rule: youtube.com → Videos" while a domain rule filled folder or tags (#398). */

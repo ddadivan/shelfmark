@@ -140,6 +140,16 @@
 
         <ui-input [label]="'links.add.titleField.label' | transloco" [formField]="form.title" />
 
+        @if (summary.shown()) {
+          <app-summary-field
+            [field]="form.summary"
+            [source]="summary.source()"
+            [canRewrite]="summary.canRewrite()"
+            [rewriting]="summary.rewriting()"
+            (rewrite)="summary.rewrite()"
+          />
+        }
+
         @if (ruleChip(); as chip) {
           <!-- A domain rule filled folder and tags (#398); removing the chip takes them out. -->
           <div class="add-link__rule">

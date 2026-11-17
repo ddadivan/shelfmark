@@ -3061,6 +3061,31 @@
       "undoFolder": "Annuler le déplacement par l’IA",
       "undoTags": "Annuler les tags ajoutés par l’IA",
       "undoFailed": "Impossible d’annuler le changement de l’IA"
+    },
+    "disclaimer": "Généré par l’IA, peut être inexact",
+    "summary": {
+      "mark": "Résumé généré par l’IA, peut être inexact",
+      "pending": "Rédaction du résumé",
+      "label": "Résumé",
+      "counter": "caractères",
+      "byAi": "Écrit par l’IA",
+      "byYou": "Modifié par vous",
+      "rewrite": "Réécrire",
+      "hintAi": "Généré par l’IA, peut être inexact. Modifiez-le et il devient le vôtre : l’IA ne réécrit jamais votre texte.",
+      "hintUser": "Videz le champ pour que l’IA le réécrive.",
+      "hintEmpty": "Laissez-le vide et l’IA en écrira un.",
+      "rewriteFailed": "Impossible de réécrire le résumé",
+      "rewriteFailedDetail": "Votre résumé n’a pas changé. Réessayez plus tard.",
+      "tooLong": "Le résumé doit faire moins de {{max}} caractères."
+    },
+    "toast": {
+      "moved": "Déplacé vers {{folder}} par l’IA",
+      "tagged": {
+        "one": "{{count}} tag ajouté par l’IA",
+        "many": "{{count}} de tags ajoutés par l’IA",
+        "other": "{{count}} tags ajoutés par l’IA"
+      },
+      "undo": "Annuler"
     }
   }
 }

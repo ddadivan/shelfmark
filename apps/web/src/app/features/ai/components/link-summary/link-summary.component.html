@@ -1,0 +1,23 @@
+@if (pending()) {
+  <span
+    class="link-summary__skeleton"
+    role="status"
+    aria-busy="true"
+    [attr.aria-label]="'ai.summary.pending' | transloco"
+  >
+    <ui-skeleton [count]="row() ? 1 : 2" />
+  </span>
+} @else if (text()) {
+  <span class="link-summary__body" [class.link-summary__body--reveal]="revealed()">
+    @if (byAi()) {
+      <ui-icon
+        class="link-summary__mark"
+        name="spark"
+        [size]="ICON_SIZE.Sm"
+        [label]="'ai.summary.mark' | transloco"
+        [attr.title]="'ai.summary.mark' | transloco"
+      />
+    }
+    <span class="link-summary__text">{{ text() }}</span>
+  </span>
+}

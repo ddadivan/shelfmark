@@ -21,8 +21,13 @@
   />
   <ui-favicon slot="leading" [src]="favicon()" [letter]="letter()" />
   <span slot="title">{{ link().title }}</span>
-  <span slot="meta" class="link-row__meta">
-    {{ host() }}
+  <!-- The summary replaces the domain line (one line); the domain moves to the tooltip (#391). -->
+  <span slot="meta" class="link-row__meta" [attr.title]="summarised() ? host() : null">
+    @if (summarised()) {
+      <app-link-summary class="link-row__summary" row [link]="link()" />
+    } @else {
+      {{ host() }}
+    }
     @if (folder(); as chip) {
       <ui-folder-chip
         class="link-row__folder"

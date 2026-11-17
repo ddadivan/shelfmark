@@ -3061,6 +3061,31 @@
       "undoFolder": "Desfazer a movimentação da IA",
       "undoTags": "Desfazer as tags adicionadas pela IA",
       "undoFailed": "Não foi possível desfazer a mudança da IA"
+    },
+    "disclaimer": "Gerado por IA, pode ser impreciso",
+    "summary": {
+      "mark": "Resumo gerado por IA, pode ser impreciso",
+      "pending": "Escrevendo um resumo",
+      "label": "Resumo",
+      "counter": "caracteres",
+      "byAi": "Escrito pela IA",
+      "byYou": "Editado por você",
+      "rewrite": "Reescrever",
+      "hintAi": "Gerado por IA, pode ser impreciso. Edite e ele passa a ser seu: a IA nunca reescreve seu texto.",
+      "hintUser": "Limpe o campo para a IA escrever de novo.",
+      "hintEmpty": "Deixe vazio e a IA escreve um.",
+      "rewriteFailed": "Não foi possível reescrever o resumo",
+      "rewriteFailedDetail": "Seu resumo não mudou. Tente de novo mais tarde.",
+      "tooLong": "O resumo deve ter menos de {{max}} caracteres."
+    },
+    "toast": {
+      "moved": "Movido para {{folder}} pela IA",
+      "tagged": {
+        "one": "{{count}} tag adicionada pela IA",
+        "many": "{{count}} de tags adicionadas pela IA",
+        "other": "{{count}} tags adicionadas pela IA"
+      },
+      "undo": "Desfazer"
     }
   }
 }

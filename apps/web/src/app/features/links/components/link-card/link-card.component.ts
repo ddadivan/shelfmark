@@ -1,4 +1,4 @@
-import { normalizeRuleDomain } from '@shelfmark/contracts';
+import { AI_JOB_STATUS, normalizeRuleDomain } from '@shelfmark/contracts';
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
@@ -19,6 +19,7 @@ import {
   TooltipDirective,
 } from '@shelfmark/ui';
 import type { LinkCardItem } from '../../models/link-card-item.type';
+import { LinkSummaryComponent } from '../../../ai/components/link-summary/link-summary.component';
 import type { FolderChipView } from '../../models/folder-chip-view.interface';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { linkKeyIntent } from '../../utils/link-select-keys';
@@ -56,6 +57,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
     ChipComponent,
     FaviconComponent,
     FolderChipComponent,
+    LinkSummaryComponent,
     MenuComponent,
     MenuItemComponent,
     MenuSeparatorComponent,
@@ -76,6 +78,7 @@ export class LinkCardComponent {
   private readonly reminders = inject(ReminderFormatService);
   private readonly now = Date.now();
   protected readonly BADGE_TONE = BADGE_TONE;
+  protected readonly AI_JOB_STATUS = AI_JOB_STATUS;
 
   readonly link = input.required<LinkCardItem>();
   /** No favorite button and no actions menu: a guest looks at someone else's link (#276). */

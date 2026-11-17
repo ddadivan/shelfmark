@@ -16,6 +16,7 @@ import { LINKS_API } from '../models/links-api.const';
 import { isLinkKind } from '../utils/link-kind';
 import { saveErrorKey } from '../utils/save-error-key';
 import { AddLinkAiService } from './add-link-ai.service';
+import { AddLinkSummaryService } from './add-link-summary.service';
 import { AddLinkFormService } from './add-link-form.service';
 import { AddLinkNewFolderService } from './add-link-new-folder.service';
 import { AddLinkPreviewService } from './add-link-preview.service';
@@ -38,6 +39,7 @@ export class AddLinkSaveService {
   private readonly newFolder = inject(AddLinkNewFolderService);
   // Optional: specs of the save flow alone run without AI.
   private readonly ai = inject(AddLinkAiService, { optional: true });
+  private readonly summary = inject(AddLinkSummaryService, { optional: true });
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
@@ -198,6 +200,7 @@ export class AddLinkSaveService {
     if (tags.length !== link.tags.length || tags.some((tag, index) => tag !== link.tags[index])) {
       changes.tags = tags;
     }
-    return changes;
+    // The summary field of Edit link (#391): only when its text changed.
+    return { ...changes, ...this.summary?.changes() };
   }
 }

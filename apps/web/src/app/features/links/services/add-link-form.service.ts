@@ -2,7 +2,7 @@ import { effect, inject, Service, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { form, maxLength, required, validate, type ValidationError } from '@angular/forms/signals';
 import { TranslocoService } from '@jsverse/transloco';
-import { isHttpUrl, LINK_LIMIT, withDefaultScheme } from '@shelfmark/contracts';
+import { AI_LIMIT, isHttpUrl, LINK_LIMIT, withDefaultScheme } from '@shelfmark/contracts';
 import { injectDialogData } from '@shelfmark/ui';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { normalizeTagNames } from '../../tags/utils/normalize-tag-names';
@@ -53,6 +53,7 @@ export class AddLinkFormService {
     note: this.original?.note ?? '',
     isFavorite: this.original?.isFavorite ?? false,
     kind: this.original?.kind ?? null,
+    summary: this.original?.summary ?? '',
   });
 
   private submitAction: () => Promise<undefined> = async () => undefined;
@@ -84,6 +85,9 @@ export class AddLinkFormService {
       });
       maxLength(path.note, LINK_LIMIT.NoteMax, {
         message: () => this.text('links.add.note.tooLong', { max: LINK_LIMIT.NoteMax }),
+      });
+      maxLength(path.summary, AI_LIMIT.SummaryMax, {
+        message: () => this.text('ai.summary.tooLong', { max: AI_LIMIT.SummaryMax }),
       });
     },
     {
