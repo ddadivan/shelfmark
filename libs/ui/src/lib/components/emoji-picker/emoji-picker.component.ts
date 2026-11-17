@@ -30,6 +30,7 @@ import { KEYBOARD_KEY } from '../../models/keyboard';
 import { emojiCellAction, firstGridStop, focusAfterRemoval, opensPanel } from './emoji-picker-keys';
 import { EmojiPickerOverlay } from './emoji-picker-overlay';
 import { categorySections, keptCategory, resultsSection } from './emoji-sections';
+import { loneEmoji } from './emoji-search';
 import type { EmojiPickerCategory } from './models/emoji-picker-category.interface';
 import type { EmojiPickerItem } from './models/emoji-picker-item.interface';
 import type { EmojiPickerSection } from './models/emoji-picker-section.interface';
@@ -124,6 +125,17 @@ export class EmojiPickerComponent extends UiFieldControl implements FormValueCon
   protected readonly category = linkedSignal<readonly EmojiPickerCategory[], string | undefined>({
     source: this.categories,
     computation: (categories, previous) => keptCategory(categories, previous?.value),
+  });
+  /** The value is one emoji (chosen, or typed / pasted): the field shows it large (#454). */
+  protected readonly chosen = computed(() => loneEmoji(this.value().trim()));
+  /** Name of the chosen emoji next to it, once the names are known ("Taco"). */
+  protected readonly chosenName = computed(() => {
+    const emoji = this.chosen();
+    if (emoji === null) {
+      return '';
+    }
+    const items = [...this.own(), ...this.recent(), ...this.categories().flatMap((c) => c.items)];
+    return items.find((item) => item.emoji === emoji)?.name ?? '';
   });
   protected readonly results = computed(() =>
     resultsSection(this.ids, this.resultsLabel(), this.categories(), this.query(), this.own()),

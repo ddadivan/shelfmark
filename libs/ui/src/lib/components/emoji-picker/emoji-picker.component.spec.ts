@@ -3,10 +3,12 @@ import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { form, FormField, validate } from '@angular/forms/signals';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../../testing/axe';
+import { compileScss } from '../../../testing/scss';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
 import { overlayLayerClass } from '../../services/overlay/overlay-layer';
 import { EmojiPickerComponent } from './emoji-picker.component';
+import { EMOJI_PICKER_WIDTH_PROPERTY } from './models/emoji-picker-width-property.const';
 import type { EmojiPickerCategory } from './models/emoji-picker-category.interface';
 import type { EmojiPickerItem } from './models/emoji-picker-item.interface';
 
@@ -256,6 +258,51 @@ describe('EmojiPickerComponent', () => {
     expect(panel()).toBeNull();
     expect(document.activeElement).toBe(field);
     expect(field.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('shows the chosen emoji large in the field with its name (#454)', async () => {
+    const { open, cells, field, root, fixture } = await setup();
+    expect(field.classList.contains('ui-emoji-picker__native--emoji')).toBe(false);
+    expect(root.querySelector('.ui-emoji-picker__name')).toBeNull();
+    await open();
+    cells()[1].click();
+    await settle(fixture);
+    expect(field.value).toBe('🍔');
+    expect(field.classList.contains('ui-emoji-picker__native--emoji')).toBe(true);
+    const name = root.querySelector('.ui-emoji-picker__name');
+    expect(name?.textContent.trim()).toBe('food 1');
+    expect(name?.getAttribute('aria-hidden')).toBe('true');
+    expect(await axeViolations(root)).toEqual([]);
+  });
+
+  it('shows a typed emoji large too, plain text at the normal size', async () => {
+    const { field, type } = await setup();
+    await type(field, '🦩');
+    expect(field.classList.contains('ui-emoji-picker__native--emoji')).toBe(true);
+    await type(field, 'ab');
+    expect(field.classList.contains('ui-emoji-picker__native--emoji')).toBe(false);
+  });
+
+  it('makes the desktop panel as wide as the field box (#454)', async () => {
+    const { open, root, fixture } = await setup();
+    const box = root.querySelector('.ui-field__control') as HTMLElement;
+    Object.defineProperty(box, 'offsetWidth', { configurable: true, value: 420 });
+    await open();
+    const popup = document.querySelector('.ui-emoji-picker__popup') as HTMLElement;
+    expect(popup.style.getPropertyValue(EMOJI_PICKER_WIDTH_PROPERTY)).toBe('420px');
+    const css = compileScss('lib/components/emoji-picker/emoji-picker.component.scss');
+    expect(css).toMatch(
+      /\.ui-emoji-picker__panel[^{]*\{[^}]*width:[^;]*var\(--ui-emoji-picker-width/,
+    );
+    fixture.destroy();
+  });
+
+  it('draws the category tabs unlike the emoji grid: grey glyphs until chosen (#454)', () => {
+    const css = compileScss('lib/components/emoji-picker/emoji-picker.component.scss');
+    expect(css).toMatch(/\.ui-emoji-picker__tab > span[^{]*\{[^}]*filter: grayscale\(1\)/);
+    expect(css).toMatch(
+      /\.ui-emoji-picker__tab\[aria-selected=["']?true["']?\] > span[^{]*\{[^}]*filter: none/,
+    );
   });
 
   it('marks the current emoji', async () => {

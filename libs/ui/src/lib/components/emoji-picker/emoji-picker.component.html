@@ -10,6 +10,8 @@
   <input
     #field
     class="ui-emoji-picker__native"
+    [class.ui-emoji-picker__native--emoji]="chosen() !== null"
+    [class.ui-emoji-picker__native--named]="chosenName() !== ''"
     type="text"
     autocomplete="off"
     spellcheck="false"
@@ -30,6 +32,12 @@
     (keydown)="onFieldKeydown($event)"
     (blur)="onFieldBlur($event)"
   />
+  @if (chosenName(); as name) {
+    <!-- The input already holds the emoji (announced by its own name); this is for the eye. -->
+    <span class="ui-emoji-picker__name" aria-hidden="true" (click)="onFieldClick()">{{
+      name
+    }}</span>
+  }
   <!-- Pointer only: the field itself opens the panel with a click, Enter or ArrowDown. -->
   <ui-icon
     class="ui-emoji-picker__chevron"
