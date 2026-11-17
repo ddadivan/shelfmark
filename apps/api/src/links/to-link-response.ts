@@ -35,6 +35,7 @@ export function toLinkResponse(row: LinkWithTags): LinkResponse {
     pinnedInFolderAt: row.pinnedInFolderAt?.toISOString() ?? null,
     pinned: row.pinnedPosition !== null,
     lastOpenedAt: row.lastOpenedAt?.toISOString() ?? null,
+    remindAt: row.remindAt?.toISOString() ?? null,
     tags: row.tags.map((entry) => entry.tag.name).sort((a, b) => a.localeCompare(b, 'en')),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),

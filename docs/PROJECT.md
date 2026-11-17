@@ -31,7 +31,7 @@ Updated as work goes on — every session resumes from here.
   - All stage-1 milestones have no open issues. Release security check closed (#110, `docs/security/release-check.md`); production checks done with the author (API boot fix #204, `CRON_SECRET`, Google OAuth app published, privacy page #202).
   - Author review of production fixed in #212 (#211): landing, sign-in, app shell scroll areas, view switch without layout shift, link card, menus, dialogs, overlays, search, tooltips, toasts (bottom centre by the author's decision), settings, favicon, 24px icons; icon sprite built from single SVG files (#210).
   - Left before stage 1 is formally complete (10.1): landing Lighthouse stable at ≥ 0.9 (#195, moved into stage 2), and the author's two weeks of daily use.
-- [x] Stage 2 (code done Nov 11, 2026, waiting for the release): scope chosen by the author on Nov 9, 2026 (see "Roadmap after stage 1" below). Started Nov 10, 2026 with the redesign.
+- [x] Stage 2: released to production on Nov 14, 2026 (release PR #378, `stage → main`). Scope chosen by the author on Nov 9, 2026 (see "Roadmap after stage 1" below). Started Nov 10, 2026 with the redesign.
   - Nov 10, 2026: the `stage` branch exists; the 2027 Refresh design is in `docs/design` (the stage 1 design in `docs/design-v1`), the migration plan in `docs/design/MIGRATION.md`; the work runs on `design/2027-refresh` from `stage`, one issue at a time, then one PR into `stage`.
   - First task of stage 2: switch to the release flow decided on Nov 9–10, 2026 (9.3 and 9.5): a `stage` integration branch without a staging environment, feature branches from `stage`, a To release column on the board, production changes only through a release PR at the end of a stage.
   - Then the redesign (an updated design with more convenient blocks, from the author's new mockups, which already cover the stage 2 screens), then the author reviews the redesigned app, and only then the stage 2 features start. Until then nothing from stage 2 is merged into `main`, so production stays as the author uses it.
@@ -55,8 +55,17 @@ Updated as work goes on — every session resumes from here.
     - the emoji picker for folders with search, categories, recent and own emoji (#363, PR #365);
     - refactors of the largest stores and components (#366, PRs #367–#370).
   - Nov 14, 2026, release preparation: the 16 migrations since the last release were applied in order to a database seeded on the `main` schema (PGlite, outside the repo). All apply cleanly, keep every row, backfill the link kind, starter views and folder positions, and copy the old feedback screenshot to `feedback_screenshots`. `nx run api:db-check` shows no drift from `schema.prisma`. None of them drops or renames a column that the code on `main` reads, so production keeps working between `prisma migrate deploy` and the switch to the new deployment. The security review of the release is in progress (#371).
-  - Next: the release waits for the author's command. Before it: #371 merged into `stage`, the promo videos re-recorded (#336), merge commits turned on for `main`. Then the release PR `stage → main` (merge commit) closes every issue in To release. After the release: production smoke (`BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e`), the Feedback inbox shows for the admin (`ADMIN_EMAILS`), the Trash cleanup cron shows in Vercel, and Dependabot's pending updates are re-opened against `stage` (#279 and #282 target `main`).
+  - Nov 14, 2026: released to production in #378. Before the release it waited for the author's command: #371 merged into `stage`, the promo videos re-recorded (#336), merge commits turned on for `main`. Then the release PR `stage → main` (merge commit) closes every issue in To release. After the release: production smoke (`BASE_URL=https://shelfmark-app.vercel.app npx nx e2e web-e2e`), the Feedback inbox shows for the admin (`ADMIN_EMAILS`), the Trash cleanup cron shows in Vercel, and Dependabot's pending updates are re-opened against `stage` (#279 and #282 target `main`).
 - [x] Motion in code (landing and app); promo video moved to stage 2
+- [ ] Stage 3: planned by the author on Nov 14, 2026 (see "Roadmap after stage 2" below). Only side-by-side (#386, design first). The other tasks of that planning are in the backlog with their issues: import (#387), read / unread and Read later (#396), AI (#388 with #389–#395), the dead-link check (#397), rules without AI (#398) and commands in ⌘K (#399). Milestone and board moves are listed in the docs PR for the author.
+  - Nov 14–15, 2026, merged into `stage` (cards in To release), waiting for release 2.1.0:
+    - side-by-side (#386), folder styling (#418), admin usage stats with small-group suppression (#333, #419, #420), Icon / Emoji tabs and the promo videos;
+    - rules by domain (#398, #421), in-app reminders (#275, #425; email reminders wait for a sending domain, no push), the update toast, What's new and the public `/changelog` with a real app version (#424, #426), a late folder-style answer no longer undoes a newer choice (#427, #428);
+    - hotfixes 2.0.1–2.0.5 are in production and in `stage` (#409, #417).
+  - Next: the author reviews `stage`. Then release 2.1.0: a chore PR into `stage` sets the version `2.1.0`, the changelog date and the What's new media; a `release/2.1` branch from `stage` with `git merge -s ours origin/main`; the release PR into `main` merged with "Create a merge commit".
+  - Nov 16, 2026: browser extension (#445), plan approved by the author. Design PR #446 (`docs/design/screens/Extension.dc.html`, one form with Save, then a Saved screen), code PR #447 stacked on it (`apps/extension`, `EXTENSION_ORIGINS` in the CSRF guard, `POST /api/links/lookup`, ADR 0046, SETUP.md 5.9, store materials in `docs/store/extension/`). Both drafts: the author tests the unpacked build locally before anything is merged; publishing in the Chrome Web Store is the author's step.
+  - Backlog: #423 (`folderId: null` on POST /api/links answers 500), a rate limit on `/rules/:id/matches`, format characters in folder descriptions.
+  - Ideas that are not planned (licence, launch, monetisation, legal, trademark, save by email) are in "Ideas to discuss (not planned)".
 
 ## 1. Problem and idea
 
@@ -285,7 +294,7 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
     - Phone: a tap opens the link, a long press selects it and enters selection mode (the link menu stays on the "…" button), and in selection mode taps add or remove links; the checkboxes are always visible on touch devices; the folder tree's own long press (folder menu) is unchanged.
     - A header over the top of the feed: "3 selected", "Select all 12" (the loaded links), the hints "Shift + click selects a range" and "Esc clears" (separate, desktop only) and "Done"; on the phone a Cancel button, the count and "Select all".
     - A glass bar at the bottom (above the phone tab bar; toasts move above it): Move (the folder picker, "Move 3 links"; Undo puts every link back into its own folder), Tags ("Add to all" and "Remove from all" with tag inputs), Favorite (on for all when any is off, else off), Open all (desktop; a new tab per link, a confirmation above 10, a toast when the browser blocked pop-ups), Copy links (the URLs, one per line), Share (phone, the system share sheet with the URLs; hidden without the Web Share API, Copy links shows instead) and Delete (confirmation, the links go to Trash at once, an Undo toast "3 links moved to Trash" with their titles restores them through Trash).
-    - Every change shows at once and rolls back with an error toast when it fails; folder, tag and saved view counts refresh. The selection is cleared when the view, filter, sort or page changes, and after Move and Delete. "Remind" is not built (reminders are in the backlog).
+    - Every change shows at once and rolls back with an error toast when it fails; folder, tag and saved view counts refresh. The selection is cleared when the view, filter, sort or page changes, and after Move and Delete. "Remind" (#275) sets one reminder for the selection (story 32).
 
 29. **Settings › Library in full.** As a user, I want to decide how my links are shown and how new ones are saved, on every device (#284, screen `SetLibrary`).
     - Viewing: "Default view" (Cards or List) is how a feed opens the first time; "Sort links by" (Newest first, Oldest first, Title A–Z) is the sort it starts with. After the person switches the view or the sort of a feed, that feed (a folder by its id, or All links, Unsorted, Favorites) remembers its own choice on the device (`localStorage` `sm-feed-memory`, at most 300 feeds); the URL names a sort only when it differs from the default. "Open links in" a new tab (default) or the same tab: the links of cards, rows, Recently opened rows and pinned links, and the "Open" menu item, follow it (`rel` keeps `noreferrer`; "Open in new tab" in Recently opened stays a new tab). "Show folder counts" off drops the link counts of the sidebar entries, folders and pinned folders (Trash keeps its item count).
@@ -305,6 +314,13 @@ Stage 1 is a personal responsive web app (desktop and phone): account, manual li
     - Saved on the account (`/api/me/settings`), optimistic with rollback and a toast; remembered in the browser for the first paint (`sm-language`). Existing accounts read as "Match my browser". A language chosen in the browser before the account kept one (a guest's choice) is kept and saved once.
     - Guests: the landing, sign-in, privacy and public collection pages follow the browser language or the choice made in the landing footer's language switcher.
     - Layout rules for translations (Languages board): strings run up to 40% longer; buttons grow and never cut their text (`ui-button wrap` where a label must wrap), toolbars and saved views wrap, sidebar rows and card titles truncate with "…", fixed-width controls (language select, segmented controls, tab labels) fit the longest language; plurals and dates come from `Intl`, never string concatenation. Out of scope: emails (there are none) and the promo video captions, which stay English.
+
+32. **Reminders in the app.** As a user, I want a saved link to come back on the day I choose (#275, v1 in the app only, author decision Nov 15, 2026; screens `Reminders`, `MobileReminders`, component `DatePicker`).
+    - "Remind me…" ("Change reminder…" when one is set) in the ⋯ menu of a card and a row, a reminder line with "Remind me" / "Change" in the edit dialog and "Remind" in the bulk bar open one dialog (a bottom sheet below 40em): presets that act at once (Later today 18:00 until 17:00, Tomorrow 9:00, This weekend Saturday 10:00 on weekdays, Next week Monday 9:00, In a month 9:00), each with its time, and "Pick date and time…" (the calendar from today, weeks from the Week starts setting, names in the interface language; an optional time, 9:00 when empty; a time that has passed is refused). Times are in the browser's time zone, which the dialog names. A set reminder can be removed. One reminder per link; a new one replaces it.
+    - A link is due once its time has passed (computed by the server on every read, no background job). Due links show an amber bell chip ("Due 3 hours ago") instead of the date on the card and in the row; upcoming ones a sage chip with the time.
+    - "Reminders" in the sidebar (and a tile on the phone Library page) counts the due links. The Reminders page lists "Due" first, then the upcoming ones by day (Today, Tomorrow, This week, Later); a row opens its link and has Done (clears the reminder), Snooze (the presets or the calendar). Empty and failed states as on the other pages.
+    - On app open, one gentle toast (warn, stays until handled) says when reminders became due since the last visit on this device (the title of one link, "Show" opens the page); the device keeps the latest due time it announced (`sm-reminders-seen`, a per-user key cleared at sign-out). No push, no email: delivery by email comes later with a sending domain.
+    - Trashed links keep their reminder but leave the list and the count; a restore brings it back. Setting a reminder is not an edit (`updatedAt` stays). The demo seeds one due and one upcoming reminder.
 
 ### Navigation (left sidebar)
 
@@ -377,6 +393,7 @@ CSR without SSR, zoneless, Transloco, strict-CSP build: ADR 0005; state: ADR 000
 | `/settings` | Settings, one page per section: `/settings/account` (profile, sign out, deletion), `/appearance` (theme incl. Custom, text and layout, cards, folder colours, animations, live preview), `/feedback` (Your feedback: send form and the user's messages), `/shortcuts` (the keyboard shortcut list), `/import-export` (export only), `/library` (viewing, saving, Trash retention and the Trash row), `/privacy` (Remember recently opened, the link to Export, the policy); from 1024px `/settings` goes to the first section, below it (phones and iPad portrait, #316) it is the You list | signed in | `features/settings` |
 | `/trash` | Trash: deleted links and folders, restore, delete forever, empty (the phone reaches it from the Library tab) | signed in | `features/trash` |
 | `/admin/feedback` | The author's feedback inbox: all messages, status filter, status and reply per message; `adminOnly` asks `GET /api/admin/status`, a non-admin is sent to `/links` | signed in, author only | `features/admin` |
+| `/admin/stats` | The author's usage stats (#333): number tiles, sign-ups chart, feature adoption, preferences, ratings; a "Feedback / Stats" switch on both admin pages | signed in, author only | `features/admin` |
 | `/share?url=&title=&text=` | Quick save from "Share" | signed in; guest goes to sign-in and back | `features/share` |
 | `/sign-in?returnUrl=&reason=` | Sign in with Google / GitHub | guest only | `features/auth` |
 | `/demo` | Creates a demo sandbox and goes to `/links` | everyone | `features/auth` |
@@ -507,11 +524,38 @@ Source: [Better Auth — NestJS integration](https://better-auth.com/docs/integr
 
 ### 5.5 Ways to save links
 
-Stage 1: manual adding in the web interface only (a form with a URL field). A browser extension and import from Telegram are in the backlog. The API is designed so they can be plugged in later without rework.
+Stage 1: manual adding in the web interface only (a form with a URL field). Stage 2 added Paste many and the Share target. Import from browser bookmarks, Pocket, Raindrop.io and the Shelfmark JSON backup (#387), rules that put a link into a folder and tags by its domain (#398) and import from Telegram are in the backlog. The browser extension (#445, `apps/extension`, ADR 0046) saves the current tab from Chrome, Edge, Brave and Arc: `activeTab` plus host access to the Shelfmark API only, the browser's session cookie, no token. The API is designed so they can be plugged in later without rework.
 
 ### 5.6 AI features
 
-Not part of stage 1. Auto-tags, short descriptions and smart search are planned for stage 3 (see "Roadmap after stage 1").
+Not part of stages 1–3. In the backlog with prepared issues (parent issue #388; see "Roadmap after stage 2"), not scheduled. `docs/design` has no AI screens yet, so every user-facing capability is designed first.
+
+**Capabilities**
+
+| Capability | What it does | Issue |
+| --- | --- | --- |
+| Foundation | Provider abstraction, mock provider, quotas, opt-in, background processing, contracts and ADR; comes first | #389 |
+| Auto-tags and auto-folder | Suggestion chips built from the user's existing tags and folders; nothing applied without a tap | #390 |
+| Short summaries | Aware of the link `kind` (video, article, shopping, other); editable by the user | #391 |
+| Semantic search | Embeddings + pgvector in Neon, hybrid with the current search, which stays the fallback | #392 |
+| Ask your shelf | RAG chat over the library, every answer with its source links | #393 |
+| Library clean-up | Near-duplicates, dead links, synonym tags; always a preview with Undo | #394 |
+| Shelfmark MCP server | A user's own AI assistant searches and reads their library | #395 |
+
+**Rules from day one** (part of done for every AI issue):
+
+- a mock AI provider for dev, unit, e2e and CI: no real calls there;
+- the demo makes no real calls: ready summaries and tags in the seed data, canned chat answers or a tiny limit;
+- per-user quotas, and a spend limit in the provider console (set by the author);
+- graceful degradation: without AI (off, no key, quota used, provider error) the app works as today;
+- opt-in in settings, described in the privacy policy;
+- background processing: saving a link never waits for the model;
+- prompt-injection defence: no tools with side effects, structured output, model output rendered as text only, the SSRF guard on any fetch;
+- self-hosting uses its own key.
+
+**Models and cost (estimates, Nov 2026):** Haiku for tags, summaries and folders (\~$0.0004 per link), Sonnet for chat (\~$0.013 per question), the Batch API (−50%) for background reprocessing; personal use \~$1–2 per month.
+
+**Data:** new fields (`summary`, `suggestedTags`, embedding, processing status) go into `libs/shared/contracts` first, with an ADR (#389).
 
 ### 5.7 Infrastructure and deployment
 
@@ -550,15 +594,15 @@ Security is a mandatory requirement, not a wish: a task is not done until the it
 | **SSRF** when fetching previews (the main risk of the service) | Only `http`/`https`; block private and reserved IPs (localhost, 10.x, 172.16–31.x, 192.168.x, 169.254.x, IPv6 equivalents) after DNS resolution; timeout; limits on response size and number of redirects; no cookie forwarding |
 | **Access to other users' data (IDOR)** | Every request to links, folders, tags is filtered by the session `userId`; dedicated tests "user A cannot see or change user B's data" |
 | **XSS** | Angular escaping by default; `innerHTML` and `bypassSecurityTrust…` are forbidden; links with a `javascript:` / `data:` scheme are rejected on the backend |
-| **Sessions and CSRF** | httpOnly + Secure + SameSite cookies; Origin check; limited session lifetime; sign-out invalidates the session |
+| **Sessions and CSRF** | httpOnly + Secure + SameSite cookies; Origin check (the browser extension's `chrome-extension://<id>` origins from `EXTENSION_ORIGINS` are trusted in `CsrfGuard` only, ADR 0046); limited session lifetime; sign-out invalidates the session |
 | **Invalid data** | Validation of all DTOs; field length limits (URL, title, note, tag) |
 | **API abuse** | Rate limiting (`@nestjs/throttler`), stricter on adding links and fetching previews |
-| **Headers** | Helmet, Content-Security-Policy, HSTS; no CORS: web and API share one origin (ADR 0007) |
+| **Headers** | Helmet, Content-Security-Policy, HSTS; no CORS: web and API share one origin (ADR 0007); the browser extension needs none either (host permission, ADR 0046) |
 | **SQL injection** | Only parameterised Prisma queries; `$queryRawUnsafe` is forbidden |
 | **Secret leaks** | Secrets only in Vercel environment variables; `.env` in `.gitignore`; GitHub secret scanning + push protection; secrets and tokens are never written to logs |
 | **Vulnerable dependencies** | Dependabot; `npm audit` in CI; CodeQL (free for public repositories) |
 | **Privacy** | Account deletion with all data; a privacy policy page (required for the Google sign-in screen) |
-| **Admin routes** | `/api/admin/*` is for the author only: `AdminGuard` checks the session email against `ADMIN_EMAILS` (case-insensitive, unset or empty = nobody, demo users never); everyone else, guests included, gets 404 so the routes do not reveal themselves. Admin queries are the only ones not filtered by the session `userId`; they touch message rows only |
+| **Admin routes** | `/api/admin/*` is for the author only: `AdminGuard` checks the session email against `ADMIN_EMAILS` (case-insensitive, unset or empty = nobody, demo users never); everyone else, guests included, gets 404 so the routes do not reveal themselves. Admin queries are the only ones not filtered by the session `userId`: the inbox touches message rows only; the usage stats (`GET /api/admin/stats`, ADR 0045) read aggregates over all real users' rows (demo and admin accounts excluded) and answer only counts, shares, means, medians and buckets under the minimum group size 3 (smaller buckets merge into "Other"; a share is `null` when its base or either side of the split is a group of 1 or 2; sign-up series are zero while there are fewer than 3 real users), never ids, names, emails, URLs, notes or per-user rows, enforced by a response allow-list test; computed on request, nothing stored, `no-store` |
 | **Uploads** | Feedback screenshots: up to 3 per message, one per request, PNG/JPEG/WebP only, at most 2 MB each, base64 canonical and magic bytes checked against the declared type, stored in Postgres, served with the stored type, `nosniff`, `inline`, `private, no-store` (error answers of the screenshot GET routes too) and the strict CSP; the larger body limit (3 MB) applies to the screenshot upload route only; per-user hourly message limit and per-user screenshot bytes per rolling 24 hours (20 MB, demo 6 MB) in Postgres |
 | **Test data** | Preview deployments run on a separate Neon database branch, not on production |
 | **Public collections** (ADR 0040) | The token is 128 random bits (base64url, 22 characters) and the only key to the page; the anonymous routes are in `PUBLIC_ROUTES`, one indexed lookup, the same 404 for unknown, turned-off and reset tokens and for anything outside the shared subtree; strict per-IP rate limits; only the owner's first name, folder names, link titles, URLs and same-origin image paths are exposed, notes only when the owner allows; `X-Robots-Tag: noindex` and `Cache-Control: no-store`; 10 public folders per user; no sharing for demo users |
@@ -595,6 +639,8 @@ Own fields on `User` for Settings › Appearance extras (#285, story 30), part o
 
 Own fields on `User` for Settings › Language (#274, story 31): `language` (text, default `browser`, CHECK `browser | en | fr | de | it | es | pt`), `dateFormat` (`date_format`, default `default`, CHECK `default | medium | dmy | mdy | iso`), `timeFormat` (`time_format`, default `default`, CHECK `default | h24 | h12`), `weekStart` (`week_start`, default `default`, CHECK `default | monday | sunday`), `languageSavedAt` (`language_saved_at`, timestamp, null until a language field is first written; answered as `languageSaved`). `spellcheck` (boolean, default true) is retired since #326 (spell-check in the note field is always on): the API neither reads nor writes it and `PATCH /api/me/settings` rejects it as an unknown field; the column stays until a later contract migration drops it (expand, then contract).
 
+Own field on `User`: `lastActiveOn` (column `last_active_on`, date, null; ADR 0045): the UTC day of the last authenticated request, written at most once a day per user after the session guard resolves a non-demo session (never for demo users, never on public routes; a failed write never fails the request). It feeds "active in 7 / 30 days" and "returned after a week / month" of the admin usage stats and goes with the user row. Backfilled once from sessions, link timestamps and `created_at` (estimated before the deploy).
+
 Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, null). Demo data is created from the seed set in `apps/api/src/demo/seed.json`.
 
 **Folder**: a folder (nesting via `parentId`)
@@ -627,8 +673,11 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 | `pinnedInFolderAt` | timestamp, null | Pinned to the top of its folder; pinned links come first in pin order (at most 20 per folder); cleared on a move and in Trash (ADR 0037) |
 | `pinnedPosition` | smallint, null | Place in the sidebar pins, shared with folders (see `Folder`); `null` = not pinned |
 | `deletedAt` | timestamp, null | `null` = live; set = in Trash (ADR 0036). Every live read filters `deletedAt IS NULL`; only the link image routes still serve a trashed link to its owner |
+| `remindAt` | timestamp, null | In-app reminder (#275): the link is due once it has passed; `null` = none. Done clears it; written with plain SQL, so `updatedAt` stays; partial index `(userId, remindAt) WHERE remindAt IS NOT NULL` |
 
 **SavedView** (ADR 0038): a saved filter shown as a chip above the feed: `id`, `userId` (cascade), `name` (≤ 40), `query` (jsonb, the normalized `SavedViewQuery` `{ scope: all | unsorted | favorites | folder, folderId, tags (≤ 5), kind, sort, order, q (≤ 200) }`, validated by the API), `position`. At most 20 per user. New users get "Videos" and "Articles" from a database trigger on `users` (existing users from the migration); "All" is the client's fixed chip, not a row.
+
+**LinkRule** (#398): a domain rule: `id`, `userId` (cascade), `domain` (≤ 253, `normalizeRuleDomain`: lower case, no `www.`, IDN in punycode; unique per user), `folderId` (FK → Folder, `ON DELETE SET NULL` like `Link.folderId`; the API checks it is a live folder of the user on write), `tagNames` (≤ 5 names, created on the first matching save). At most 50 per user. A rule matches its domain and every subdomain; the most specific domain wins. A save fills from it only what it left open (the folder when no `folderId` is sent, the tags when none are sent; `applyRules: false` skips it). Add link, the share page and Paste many show the matching rule before saving (a removable chip; in Paste many per line, with "Apply domain rules" for the batch: the rule's folder wins over the default "New links go to" unless the user chose the folder) and send what they show with `applyRules: false`; a batch item may carry its own `folderId` and `tags`; a folder in Trash is skipped (the rule is flagged, its tags still apply).
 
 **LinkImage** (ADR 0027): re-encoded copy of a link's favicon or preview image: `id`, `userId`, `linkId` (cascade), `kind` (`favicon` | `preview`), `contentType` (always `image/webp`), `bytes` (≤ 64 KB), `width`, `height`, `sha256`; unique per `linkId + kind`.
 
@@ -656,14 +705,15 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 | `*` | `/api/auth/*` | Sign-in / sign-out with Google and GitHub (Better Auth) |
 | GET | `/api/auth/get-session` | Current user and session (Better Auth); `null` when signed out |
 | DELETE | `/api/me` | Delete the account and all data |
+| POST | `/api/links/lookup` | `{ url }` → `{ link: LinkResponse \| null }`: the user's newest live (not trashed) link whose normalized URL equals the URL without tracking parameters. Never fetches the page; rate limit as `POST /api/links` (browser extension, ADR 0046) |
 | POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill). With the account's `fetchPreviews` off no page is loaded (`fetched: false`, only the duplicate check); the URL is always checked and fetched without tracking parameters (#284, #315) |
 | GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `kind` (one of `video`, `article`, `shopping`, `other`; ADR 0038), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit`. With `folderId` the first page also returns `pinned`: the links pinned to the top of that folder in pin order (same filters), not repeated in `items` or later pages (ADR 0037) |
 | GET | `/api/links/recent` | Recently opened (by `lastOpenedAt`, only the last 30 days, `RECENT_LINKS_WINDOW_DAYS`), `limit` |
 | DELETE | `/api/links/recent/:id` | Remove one link from the history (`lastOpenedAt` to null, the link stays); 204, idempotent, 404 for a foreign or missing link |
 | DELETE | `/api/links/recent` | Clear the whole history of the user (all own links' `lastOpenedAt` to null); 204 |
 | GET | `/api/links/:id` | One link |
-| POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically), `kind?` (from the preview; derived by the server when absent). `POST /api/links/preview` answers `preview.kind`. Tracking parameters are always stripped from `url` (also on `PATCH`; #315); `fetchPreviews` off means no page fetch and no image capture, image hints ignored (#284) |
-| POST | `/api/links/batch` | Paste many (#265): up to 100 `items` (`url`, `title?`, `idempotencyKey`, `faviconUrl?`, `imageUrl?`) with `folderId?` and `tags?` for all. One transaction under the ADR 0033 lock order, per-item idempotency keys (a replayed key returns its link; 200 when every key was replayed, else 201), the per-user link cap checked for the whole batch (409 whose message says how many more fit), a stricter rate limit (5 per minute). It fetches nothing: images, and the page title of links sent without one, come from the lazy capture (ADR 0027). Items whose normalised URL is too long or repeats an earlier item are skipped and listed in `errors` |
+| POST | `/api/links` | Create: `url`, `title?`, `note?`, `folderId?`, `tags?` (names; new tags are created automatically), `kind?` (from the preview; derived by the server when absent), `applyRules?` (default true: the matching domain rule fills the folder and tags the request leaves open, #398). `POST /api/links/preview` answers `preview.kind`. Tracking parameters are always stripped from `url` (also on `PATCH`; #315); `fetchPreviews` off means no page fetch and no image capture, image hints ignored (#284) |
+| POST | `/api/links/batch` | Paste many (#265): up to 100 `items` (`url`, `title?`, `idempotencyKey`, `faviconUrl?`, `imageUrl?`) with `folderId?` and `tags?` for all (domain rules fill each item's folder and tags when these are absent, #398). One transaction under the ADR 0033 lock order, per-item idempotency keys (a replayed key returns its link; 200 when every key was replayed, else 201), the per-user link cap checked for the whole batch (409 whose message says how many more fit), a stricter rate limit (5 per minute). It fetches nothing: images, and the page title of links sent without one, come from the lazy capture (ADR 0027). Items whose normalised URL is too long or repeats an earlier item are skipped and listed in `errors` |
 | PATCH | `/api/links/:id` | Change any fields, including `isFavorite`, `folderId`, `kind` (a new URL without `kind` recomputes it from the host) and `pinnedInFolder` (pin to the top of the folder: 400 in Unsorted, 409 beyond 20 per folder; a move unpins) |
 | POST | `/api/links/:id/open` | Record an open (updates `lastOpenedAt`); answers the link with `recorded: boolean`, `false` while the history is paused (nothing is written, #269) |
 | POST | `/api/links/:id/images/capture` | Re-capture favicon and preview image of a link whose URL changed (pending marker `?v=pending`); claims atomically with a 1 h cooldown, always 200 with the link, 404 for a foreign or missing one |
@@ -679,6 +729,11 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 | POST | `/api/pins` | `{ kind: 'folder' \| 'link', id }`: pins at the end (idempotent, answers the list); 404 for a foreign, missing or trashed target, 409 beyond 7 |
 | PUT | `/api/pins/order` | `{ items: [{ kind, id }] }`: every pinned item exactly once in the new order, else 400 |
 | DELETE | `/api/pins/:kind/:id` | Unpin; 204, idempotent; 404 for a foreign, missing or trashed target |
+| GET | `/api/reminders` | `{ due, upcoming }`: the user's live links with a reminder, due ones (`remindAt` passed) the longest due first, upcoming ones the soonest first, at most 200 each (#275) |
+| GET | `/api/reminders/count` | `{ due }`: how many live links are due (the sidebar badge; one indexed count) |
+| PUT | `/api/reminders/:linkId` | `{ remindAt }` (ISO time with an offset, in the future with one minute of clock skew, at most 1830 days ahead; else 400 with `REMINDER_ERROR_MESSAGE`): sets or changes the reminder (also snooze), answers the link; 404 for a foreign, missing or trashed link. `RATE_LIMIT.ReminderWrite` |
+| DELETE | `/api/reminders/:linkId` | Clears the reminder (Done); 204, idempotent; 404 for a foreign, missing or trashed link |
+| POST | `/api/reminders/batch` | `{ ids, remindAt \| null }` (1 to 100 distinct ids): the same reminder, or none, on the user's live links among them; foreign, missing and trashed ids are ignored; answers `{ updated, links }` in request order |
 | DELETE | `/api/folders/:id?mode=` | Move a folder with all subfolders to Trash (one shared `deletedAt`); `mode=delete-links` also trashes the links, `mode=move-to-unsorted` moves them to "Unsorted" |
 | GET | `/api/trash` | Trash entries, newest first (at most 500) with `total` and `retentionDays`: a link deleted on its own, or a folder standing for its subtree (`linkCount`); each has `deletedAt`, `expiresAt`, `fromFolderName` |
 | POST | `/api/trash/restore` | `{ items: [{ kind: 'link' \| 'folder', id }] }` (1 to 100): puts entries back (a link whose folder is not live goes to Unsorted, a folder whose parent is not live to the top level); entries not in Trash or foreign are skipped; answers `{ count }` |
@@ -688,6 +743,11 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 | POST | `/api/views` | `{ name, query }`: saves at the end (strict query, 400 otherwise; 404 for a foreign, missing or trashed folder; 409 beyond 20) |
 | PATCH | `/api/views/:id` | `{ name?, query? }`: rename or replace the query; 404 for a foreign or missing view |
 | PUT | `/api/views/order` | `{ ids }`: every view exactly once in the new order, else 400 |
+| GET | `/api/rules` | Domain rules (#398) sorted by domain, each `{ id, domain, folderId, folderAvailable, tags, createdAt }` (`folderAvailable` false only while the folder is in Trash) |
+| POST | `/api/rules` | `{ domain, folderId?, tags? }`: the domain may be a whole address (normalised); a folder or a tag is required (400); 404 for a foreign, missing or trashed folder; 409 for a taken domain or beyond 50 |
+| PATCH | `/api/rules/:id` | `{ domain?, folderId?, tags? }`; 404 for a foreign or missing rule |
+| DELETE | `/api/rules/:id` | Delete a rule (saved links stay); 204, 404 for a foreign or missing one |
+| GET | `/api/rules/:id/matches` | "Apply to existing links": the live links in Unsorted whose host matches, newest first, `{ items: [{ id, tags }] (≤ 100), total }`; the client files them with `POST /api/links/batch/update` and undoes it the same way |
 | DELETE | `/api/views/:id` | Delete a view (the links stay); 204, 404 for a foreign or missing one |
 | GET, PATCH | `/api/me/settings` | Account settings `{ trashRetentionDays: 7 \| 30 \| 90, folderColours: boolean, pauseHistory: boolean, theme: system \| light \| dark \| custom, customTheme: { base, accent, background, corners } (accent and background may be an own `#rrggbb`), customColours: `#rrggbb`[] (at most 12, no duplicates), motion: system \| full \| reduced, appearanceSaved: boolean, defaultView: cards \| list, defaultSort: newest \| oldest \| title, openLinksIn: new-tab \| same-tab, showFolderCounts: boolean, newLinksFolderId: uuid \| null, fetchPreviews: boolean, textSize: s \| m \| l \| xl, font: onest \| system \| readable, density: comfortable \| compact, cardPreview: large \| small \| off, cardSite: boolean, cardNotes: boolean, cardTags: boolean, language: browser \| en \| fr \| de \| it \| es \| pt, dateFormat: default \| medium \| dmy \| mdy \| iso, timeFormat: default \| h24 \| h12, weekStart: default \| monday \| sunday, languageSaved: boolean }` (#326: `spellcheck` is retired, an unknown field; #274: `languageSaved` false until a language field is first written, `users.language_saved_at`; #285: the layout fields are part of the appearance and mark it saved; #284: `newLinksFolderId` must be a live own folder, else 404 and nothing is saved, and reads as `null` once it is gone; `fetchPreviews` off means no page fetch and no image capture for the user's new links and a preview answer without a page; `keepQuery` off strips tracking parameters on create, update and preview; `appearanceSaved` false until the appearance is first written, `users.appearance_saved_at`; allow-lists in the contracts; `customTheme` is always sent whole and its background must belong to its base, #273; `customTheme.accent` is a curated name or an own colour as lower-case `#rrggbb`, #315); PATCH sends only the fields to change (400 for another value or an extra field); demo users too |
 | GET | `/api/me/stats?firstDay=1..7` | "Your shelf" on the Account page (#352): counts of live links, folders and tags (a tag counts only while it is on a live link), top 5 sites and tags, links per week for 12 weeks, member since, oldest live link, connected providers (`provider` and date only). `firstDay` is the ISO weekday the weeks start on (1 Monday … 7 Sunday, default 1; the web sends the user's week start, `LocaleService.firstDay`); weeks are UTC days. 400 for another `firstDay`. Computed on request from the user's own data, never stored |
@@ -707,6 +767,7 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 | GET | `/api/admin/feedback` | All users' feedback messages with `user: { name, email }`, newest first, keyset `cursor` / `limit` (≤ 100), optional `status` filter; `{ items, nextCursor }` |
 | PATCH | `/api/admin/feedback/:id` | `{ status?, reply? }` (reply ≤ 2000, `null` or blank clears; at least one key); answers the updated item; rate-limited, CSRF-guarded |
 | GET | `/api/admin/feedback/:id/screenshots/:position` | One screenshot of any message, same safe headers |
+| GET | `/api/admin/stats` | Usage stats for the author (ADR 0045): `AdminStatsResponse` with overview (real users, demo sandboxes now, onboarding, sign-ups per day for 30 days and per week for 12, active in 7 / 30 days, returned after a week / month), feature adoption, links per user, theme / language / Trash retention and ratings summaries; real users only, minimum group size 3; computed live, `no-store`, `RATE_LIMIT.Admin`; 404 for everyone but the admin |
 
 **General API rules:**
 
@@ -716,7 +777,7 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 
 **Additionally:** `POST /api/me/onboarding` marks onboarding as completed (one-way: `DELETE /api/me/onboarding` and "Show welcome again" were removed in #315); the user from `GET /api/auth/get-session` carries `onboardingCompletedAt` (#151).
 
-**Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag` (repeated, same AND semantics as the list), `q`, `kind`, the same filters as the list; each JSON link carries its `kind`) downloads the current folder (with its subfolders) or all data; `q` searches title, note and URL; the HTML file omits links whose URL is not http(s); receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
+**Demo, export, PWA:** `POST /api/demo` creates a demo sandbox and session (strict per-IP rate limit); `GET /api/export?format=json|html` (+ optional `folderId`, `tag` (repeated, same AND semantics as the list), `q`, `kind`, the same filters as the list; each JSON link carries its `kind`; a full JSON export also lists the domain rules, `rules: [{ domain, folderPath, tags, createdAt }]`, empty in a folder or filtered export, #398; there is no import yet, #387) downloads the current folder (with its subfolders) or all data; `q` searches title, note and URL; the HTML file omits links whose URL is not http(s); receiving a link from the "Share" menu (Web Share Target) needs no separate endpoint: the manifest opens the `/share?url=…` route (GET), and the page saves via `POST /api/links`.
 
 **App rating:** `GET /api/feedback/prompt` (no-store) returns `{ milestone: 'day3' | 'week1' | 'month1' | 'year1' | null }`, which dialog to show now (the latest reached milestone without a `Feedback` row, computed by the backend from `User.createdAt`; `null` for demo users and before onboarding is completed); `POST /api/feedback` `{ milestone, score | null, comment? }` answers 204 and saves a rating, feedback or a skip (a comment needs a score). Errors: 400 invalid body (or combined comment over 2000 characters), 403 demo user, 409 onboarding pending, milestone not reached yet, or a different score already stored for the milestone. Resubmitting for the same milestone with the same score appends the comment after a blank line. Rate-limited; the feedback text is stored as is and rendered only as text (no HTML).
 
@@ -1028,6 +1089,8 @@ The estimate assumes the bottleneck is PR review and fixes, not writing code. Hi
 - **No staging environment for now** (the author's choice): the stage is checked locally (`npm start`; on a real phone, `npm start -- --host 0.0.0.0` and the Mac's address on the same Wi-Fi). Nothing changes in Vercel or Neon: branch deployments stay off in `vercel.json`, production builds only from `main`, so production and its database migrations change only with a release. A staging URL can be switched on later with one line in `vercel.json` (allow the `stage` branch); the Neon integration then creates its database branch, and OAuth on that URL needs the callback set-up from ADR 0026 (the demo works without it). Worth it to test on a real phone without the local network, to share a stage by link, or to try database migrations in the cloud before a release.
 - **Board:** a **To release** column between In review and Done. `Closes #N` only acts on merges into the default branch, so an issue stays open when its PR merges into `stage`: the board workflow "Pull request merged" moves the card to To release. The release PR closes the issues, and "Item closed" moves them to Done.
 - **Hotfix** for production: a branch from `main`, a PR into `main`, then `main` is merged back into `stage`.
+- **Version** (decided by the author on Nov 15, 2026, #424): SemVer in the root `package.json` `version`, the single source; the web build reads it (`APP_VERSION`) for the Settings footer, `/about`, `/changelog` and feedback messages. The stage 2 release is **2.0.0**, its hotfixes into `main` (#406, #407, #413, #414, #416) are **2.0.1–2.0.5**, the next release is **2.1.0**. `stage` carries the next release with a `-dev` suffix (`2.1.0-dev`). The release bumps the **minor**: a `chore` PR into `stage` sets `x.y.0` (without `-dev`; `npm version x.y.0 --no-git-tag-version` writes `package.json` and `package-lock.json`, and the lock file is what invalidates the Nx cache) and the release date of its entry in the changelog data (`features/changelog/models/changelog.const.ts`, an entry without a date stays hidden), then the release PR `stage → main` follows; after it `stage` moves to the next `-dev`. A **hotfix** into `main` bumps the **patch** and adds its changelog entry; merging `main` back into `stage` keeps the `-dev` version of `stage`. CI fails a PR into `main` whose version is not plain SemVer greater than main's (`tools/ci/check-version-bump.mjs`, in the `static` job).
+- **Changelog and What's new media** (author rule, Nov 15, 2026, #424; priorities and sections, Nov 16, #442): every release is an entry of `apps/web/src/app/features/changelog/models/changelog.const.ts`, shown on the public `/changelog` in the sections New (features: title, text, screenshot), Improved and Fixed (one line each; an empty section is not shown). Improvements and fixes never appear in the "What's new" card. A feature that belongs in the card has a `priority` (1 is the most important): the card shows the priority 1 feature large with its screenshot, up to three more as small cards, and "And N more improvements and fixes" linking to `/changelog`. No video: screenshots only, one per theme, same-origin files under `apps/web/public/media/whats-new/<version>/` (CSP), generated from the mock data by `npm run whats-new-media` (apps/web/CLAUDE.md), made with the release.
 - **Setup checklist** ([ADR 0035](adr/0035-stage-integration-branch-release-flow.md)):
   - [ ] the author: the `stage` ruleset (required checks, PR only); allow a merge commit for the release PR into `main`; the To release column and the board workflows;
   - [x] the agents: create `stage` from `main` (Nov 10, 2026); CI on PRs into `stage` (#219); `CLAUDE.md`, the `github-workflow` skill, the agents' instructions, the PR template, Dependabot and the guard hook say "branch from `stage`, PR into `stage`" (#260).
@@ -1065,13 +1128,13 @@ Source: [Using Claude Code with your Pro or Max plan](https://support.claude.com
 
 ## Monetisation
 
-Discussed after stage 1 (roadmap, stage 5): pricing tiers, free plan limits, payment provider. Stage 1 only lays the groundwork: all data has an owner (`userId`), so per-tier limits can be introduced without reworking the model.
+Discussed after stage 1 (roadmap, stage 5): pricing tiers, free plan limits, payment provider. The options noted on Nov 14, 2026 are in "Ideas to discuss (not planned)". Stage 1 only lays the groundwork: all data has an owner (`userId`), so per-tier limits can be introduced without reworking the model.
 
 ## Roadmap after stage 1
 
-Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else stays in the backlog. Order inside a stage is decided when the stage starts.
+Chosen by the author on Nov 9, 2026; stage 3 re-planned on Nov 14, 2026 (only side-by-side) ("Roadmap after stage 2" below). Everything else stays in the backlog. Order inside a stage is decided when the stage starts.
 
-### Stage 2 (code done Nov 11, 2026)
+### Stage 2 (released to production Nov 14, 2026, #378)
 
 - [x] **First:** release flow with the `stage` integration branch (9.3): ADR, `stage` branch and ruleset, CI, To release column and board workflows, agent instructions; no staging environment for now
 - [x] **Second: redesign** (before the features below). An updated design rather than a new one: more convenient blocks and layouts on the existing design system. The author provides the new mockups in Claude Design, and they already include the screens of the stage 2 features, so those are built on the new design. Steps: update `docs/design` (screens, components, tokens if they change), then bring `libs/ui` and the existing screens up to it, keeping a11y, both themes, the phone and the e2e and Storybook suites green. Started Nov 10, 2026 with the "Shelfmark 2027 Refresh" design; plan and decisions in `docs/design/MIGRATION.md`
@@ -1098,15 +1161,31 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 
 ### Stage 3 (planned)
 
-- [ ] Browser extension for saving links in one click
-- [ ] AI: automatic tags and short descriptions of links
-- [ ] Smart search (AI)
-- [ ] Carrying data over from the demo sandbox into a real account on sign-in
+Re-planned by the author on Nov 14, 2026, after the stage 2 release: only side-by-side. The spec is in "Roadmap after stage 2" below.
+
+- [ ] Side-by-side: two feeds to move links between (#386)
 
 ### Backlog
 
+Prepared on Nov 14, 2026, with issues, not scheduled (details in "Roadmap after stage 2"):
+
+- [ ] Import links: browser bookmarks, Pocket, Raindrop.io, Shelfmark JSON backup (#387)
+- [ ] Read / unread status and Read later (#396)
+- [ ] AI: auto-tags and auto-folder, summaries, semantic (smart) search, "Ask your shelf", library clean-up, MCP server (#388, #389–#395; 5.6)
+- [ ] Dead-link check with a Wayback Machine copy (#397)
+- [ ] Rules without AI: domain → folder and / or tag (#398)
+- [ ] Commands in ⌘K (#399)
+
+Moved from stage 3 on Nov 14, 2026:
+
+- [ ] Browser extension for saving links in one click
+- [ ] Carrying data over from the demo sandbox into a real account on sign-in
+
+Earlier:
+
+
 - [ ] Email and password sign-in: email verification, password reset, an email sending service (#277; moved from stage 2 on Nov 10, 2026, needs a domain and an email provider first)
-- [ ] Reminders: come back to a saved link later (#275; moved from stage 2 on Nov 10, 2026): "Remind me" with a date picker, the badge on cards, the Reminders list, delivery in the app, by Web Push (VAPID, an external scheduler, as Vercel Hobby crons run once a day) and by email, quiet hours, the weekly digest and `SetNotifications`
+- [ ] Reminders beyond the app: come back to a saved link later (#275; v1 in the app is story 32; moved from stage 2 on Nov 10, 2026): "Remind me" with a date picker, the badge on cards, the Reminders list, delivery in the app, by Web Push (VAPID, an external scheduler, as Vercel Hobby crons run once a day) and by email, quiet hours, the weekly digest and `SetNotifications`
 - [ ] Sharing with people: invites by email, roles (can view, can add links), "Shared with me", "Save to my shelf" (moved from stage 2 on Nov 10, 2026)
 
 - [ ] Import of old links from Telegram "Saved Messages" (via Telegram Desktop export)
@@ -1114,6 +1193,45 @@ Chosen by the author on Nov 9, 2026. Stages 2 and 3 are planned; everything else
 - [ ] Subscriptions and monetisation (pricing tiers, free plan limits, payment provider)
 - [ ] Move to paid hosting
 - [ ] Interactive "How it works" guided tour (moved from stage 2; the promo video covers it for now): an animated cursor shows adding a link, folders and tags, search and export with captions, on an in-browser sandbox (never the user's data), steps calling the same store actions as real clicks, with Pause / Stop / chapters / Esc, a reduced-motion path and screen-reader text. Worth it only with many self-onboarding users who need a guided, localised walkthrough
+
+## Roadmap after stage 2
+
+Planned by the author on Nov 14, 2026, after stage 2 was released (#378). **Stage 3 is only side-by-side.** The other tasks have issues ready but stay in the backlog until the author schedules them; the numbers show the order they were discussed in. Each user-facing task is designed in `docs/design` first, and its user story with acceptance criteria is added to section 4 when it starts.
+
+### Stage 3: side-by-side
+
+1. **Side-by-side (#386).** Design first in `docs/design` (desktop layout, empty right half, picker, drag), then implementation, then the release.
+   - Desktop only, from `80em`; on narrower screens the entry point is absent (via `ViewportService`).
+   - Two feeds side by side; the sidebar stays.
+   - Opening keeps the current feed on the **left** (same view, sort, selection). The **right** half opens a folder picker (the same as "Move to": search, tree, recent) with the empty hint "Choose a folder to move links into" until a folder is chosen.
+   - Each half can be changed from a dropdown in its header; a "⇄" button swaps them.
+   - Left: any feed (folder, Unsorted, Favorites, tag, search results). Right: only a folder or Unsorted (a real move target).
+   - Drag one link or the selection into the other half (and back when the left is a folder or Unsorted), Undo in the toast; the bulk bar gets "Move to → <right folder>".
+   - State in the URL (for example `?split=<folderId>`), so reload and Back work.
+   - Equal halves for v1 (a draggable divider maybe later).
+   - Reuses the existing drag and drop, selection, bulk bar, folder picker and Undo.
+
+### Backlog with prepared issues
+
+2. **Import links (#387):** browser bookmarks HTML, Pocket export (CSV / HTML with tags), Raindrop.io (CSV with collections and tags), Shelfmark JSON backup. The design exists (`docs/design/screens/Import.dc.html`): source → review (duplicates, folder, structure) → progress, summary, Undo import. Only export exists today (on the Account page, "Your data"). Fixes with it: Paste many says "Bigger lists go to Import as text", but that screen does not exist; `SendFeedback.dc.html` already promises import from the Pocket export. Why now: Pocket shut down in 2025 and its users (\~10M) are looking for an alternative.
+3. **Read / unread status and Read later (#396):** postponed in stage 1; the core scenario for former Pocket users.
+4. **AI (#388, sub-issues #389–#395):** auto-tags and auto-folder, short summaries, semantic search, "Ask your shelf", library clean-up, a Shelfmark MCP server; the rules from day one, models and costs are in 5.6.
+5. **Dead-link check (#397)** and an offer of a Wayback Machine copy.
+6. **Rules without AI (#398):** domain → folder and / or tag (for example youtube.com → Videos).
+7. **Commands in ⌘K (#399):** not only search but actions (new folder, move selected, change theme).
+
+The browser extension and carrying demo data into a real account, planned for stage 3 on Nov 9, 2026, moved to the backlog as well.
+
+## Ideas to discuss (not planned)
+
+Notes from the author's planning on Nov 14, 2026. Nothing here is a decision: no issues and no roadmap changes until the author decides; significant choices get an ADR then.
+
+- **Licence.** There is no `LICENSE` file now, and `package.json` says `UNLICENSED`. Options: AGPL-3.0 (open source plus paid hosting, as Plausible and Linkwarden do); FSL / BSL (source-available, becomes open after 2 years); open core; closing the repository. Current leaning: keep the repository open and pick a licence before the launch. The choice cannot be undone for versions already released; outside pull requests would need a CLA. Later an ADR compares the options.
+- **Launch plan.** Free at first, to test interest. Channels: Product Hunt, Reddit (Pocket alternatives, r/selfhosted, r/productivity), Show HN. Simple privacy-friendly analytics (week and month retention); check the free-tier infrastructure limits. Optional donations (Ko-fi, Buy Me a Coffee or GitHub Sponsors): check payouts to Ukraine; donations to a sole proprietor count as income.
+- **Monetisation.** Markets: Europe and the US (Asia later, through regional pricing at the Merchant of Record). Main option: Free / Pro \~$40–50 per year / AI pack +\~$30–50 per year / Pro + AI bundle \~$80 per year. The AI pack with a trial and a fair-use chat limit; AI entitlements modelled on the account early. Benchmarks: Raindrop \~$28 per year, Linkwarden \~$48, mymind \~$80–155, Readwise \~$110–155. Estimate (assumes \~3% conversion): 10k registered users ≈ $500 per month; 10k paying users ≈ $26k per month.
+- **Legal.** The author is a Ukrainian sole proprietor: check the IT activity code and tax group 3. Payments through a Merchant of Record (Paddle, Lemon Squeezy or Polar; check Ukraine support); Stripe does not work directly with Ukraine. The group 3 limit (\~10M UAH per year) is about 5,000 paying users. A foreign company only with serious revenue. GDPR documents and Terms in English.
+- **Trademark.** For now only check that "Shelfmark" is free (TMview, WIPO, USPTO; classes 9 and 42) and secure the domain and social handles. Registration (EUIPO \~€850, USPTO \~$350 per class) once there is interest.
+- **Save by email.** Forward a link to a personal address to save it.
 
 ## 10. Success metrics and roadmap after stage 1
 
@@ -1135,12 +1253,12 @@ Vercel Analytics (no personal data): number of registered users; share of users 
 
 ### 10.3 Roadmap
 
-Decided by the author on Nov 9, 2026; the full lists are in "Roadmap after stage 1" above.
+Decided by the author on Nov 9, 2026, stage 3 re-planned on Nov 14, 2026 (only side-by-side); the full lists are in "Roadmap after stage 1" and "Roadmap after stage 2" above.
 
 | Stage | Goal | Contents |
-| 2 | Daily use and polish | Redesign (2027 Refresh), Trash, folder colours, icons and pinning, saved views, paste several links, email and password sign-in, reminders, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video with a "How it works" button that plays it |
-| 3 | Save faster, smarter | Browser extension, AI tags and descriptions, smart search, demo data carried into a real account |
-| Backlog | Later | Import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting, interactive guided tour |
+| 2 (released Nov 14, 2026) | Daily use and polish | Redesign (2027 Refresh), Trash, folder colours, icons and pinning, saved views, paste several links, sharing, custom themes, feedback form, drag & drop, selection and bulk actions, "Move to folder", sync between tabs, interface languages (not Ukrainian for now), landing for signed-in users, Lighthouse ≥ 0.9, dev Dependabot alerts, promo video with a "How it works" button that plays it |
+| 3 | Sort faster | Side-by-side: two feeds to move links between (desktop) |
+| Backlog | Later | Import (bookmarks, Pocket, Raindrop.io, JSON backup), read / unread and Read later, AI (tags and folders, summaries, semantic search, Ask your shelf, clean-up, MCP server), dead-link check with Wayback copies, rules without AI, commands in ⌘K, browser extension, demo data carried into a real account, import from Telegram, own authentication (learning format), subscriptions and monetisation, paid hosting, interactive guided tour |
 
 ## 11. Presentation in the CV and portfolio
 

@@ -1,6 +1,7 @@
 import { type Page } from '@playwright/test';
 import { expect, test } from './support/test';
-import { MOCK_USER } from './support/mock-session';
+import { demoUser, MOCK_USER, seedSession } from './support/mock-session';
+import { seedWhatsNewSeen } from './support/whats-new';
 import { E2E_TAG } from './models/e2e-tag.const';
 
 // Same values as REAL_AUTH_API_STORAGE_KEY and SESSION_HINT_STORAGE_KEY in apps/web/src/app/core/auth/models.
@@ -8,6 +9,7 @@ const REAL_AUTH_API_KEY = 'sm-real-auth-api';
 const SESSION_HINT_KEY = 'sm-session-hint';
 const SESSION_DELAY_MS = 400;
 const COLD_SESSION_MS = 8000;
+const BUNDLE_DELAY_MS = 600;
 const SESSION = {
   user: { ...MOCK_USER, onboardingCompletedAt: '2026-01-01T00:00:00.000Z' },
   session: { expiresAt: '2030-01-01T00:00:00.000Z' },
@@ -29,6 +31,7 @@ interface Frame {
 
 /** Records, on every animation frame, whether the skeleton, the shell or any page is in the DOM. */
 async function probeFrames(page: Page, hint: boolean): Promise<void> {
+  await seedWhatsNewSeen(page);
   // String script: this project has no DOM lib, and the code runs in the browser anyway.
   await page.addInitScript(`
     localStorage.setItem('${REAL_AUTH_API_KEY}', '1');
@@ -138,4 +141,144 @@ test.describe('app skeleton while a signed-in start loads (#410)', () => {
     // The attribute is never removed, so it also proves the skeleton was never shown.
     await expect(page.locator('html[data-boot-skeleton]')).toHaveCount(0);
   });
+});
+
+// The skeleton is an overlay above the app: when the app takes over, the title, the first card and
+// the banner must be where the skeleton had them (#440). Same box (x, y, height) within a pixel.
+interface Box {
+  x: number;
+  y: number;
+  height: number;
+}
+interface Geometry {
+  banner: Box | null;
+  title: Box | null;
+  card: Box | null;
+}
+
+/** Remembers the geometry of the skeleton on every frame it is in the DOM (the last one wins). */
+async function recordSkeletonGeometry(page: Page): Promise<void> {
+  await page.addInitScript(`
+    const box = (element) => {
+      if (!element) return null;
+      const r = element.getBoundingClientRect();
+      return { x: r.x, y: r.y, height: r.height };
+    };
+    const visible = (element) => (element && element.getClientRects().length > 0 ? element : null);
+    const frame = () => {
+      const root = document.querySelector('[data-app-skeleton], .boot--page');
+      if (root && getComputedStyle(root).display !== 'none') {
+        globalThis.__skeleton = {
+          banner: box(visible(root.querySelector('.boot__banner'))),
+          title: box(visible(root.querySelector('.boot__title'))),
+          card: box(visible(root.querySelector('.boot__card'))),
+        };
+      }
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  `);
+}
+
+async function readGeometry(page: Page): Promise<{ skeleton: Geometry; app: Geometry }> {
+  const skeleton = await page.evaluate<Geometry | undefined>(`globalThis.__skeleton`);
+  const app = await page.evaluate<Geometry>(`(() => {
+    const box = (element) => {
+      if (!element) return null;
+      const r = element.getBoundingClientRect();
+      return { x: r.x, y: r.y, height: r.height };
+    };
+    return {
+      banner: box(document.querySelector('app-demo-banner ui-notice')),
+      title: box(document.querySelector('app-shell h1')),
+      card: box(document.querySelector('app-shell ui-card')),
+    };
+  })()`);
+  expect(skeleton, 'the skeleton was drawn').toBeDefined();
+  return { skeleton: skeleton as Geometry, app };
+}
+
+/** Same place within a pixel; `size` also compares the height (the banner: placeholders of the title and the card only stand in for their size). */
+function expectSameBox(actual: Box | null, expected: Box | null, what: string, size = false): void {
+  expect(actual, `${what} (skeleton)`).not.toBeNull();
+  expect(expected, `${what} (app)`).not.toBeNull();
+  expect(Math.abs((actual?.x ?? 0) - (expected?.x ?? 0)), `${what} x`).toBeLessThanOrEqual(1);
+  expect(Math.abs((actual?.y ?? 0) - (expected?.y ?? 0)), `${what} y`).toBeLessThanOrEqual(1);
+  if (size) {
+    expect(
+      Math.abs((actual?.height ?? 0) - (expected?.height ?? 0)),
+      `${what} height`,
+    ).toBeLessThanOrEqual(1);
+  }
+}
+
+test.describe('the skeleton keeps the page still when the app takes over (#440, mock API)', () => {
+  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock library');
+  // The service worker would answer the delayed bundle request itself.
+  test.use({ serviceWorkers: 'block' });
+
+  /** Delays the app bundle, so the skeleton is on screen for a while before the app starts. */
+  async function slowBundle(page: Page): Promise<void> {
+    await page.route(/\/main[^/]*\.js$/, async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, BUNDLE_DELAY_MS));
+      await route.continue();
+    });
+  }
+
+  test(
+    'a demo start: the banner, the title and the first card stay where the skeleton drew them',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await seedWhatsNewSeen(page);
+      await recordSkeletonGeometry(page);
+      await slowBundle(page);
+      await page.goto('/demo');
+      await expect(page.locator('app-shell ui-card').first()).toBeVisible();
+      await expect(page.locator('[data-app-skeleton]')).toHaveCount(0);
+
+      const { skeleton, app } = await readGeometry(page);
+      expectSameBox(skeleton.banner, app.banner, 'banner', true);
+      expectSameBox(skeleton.title, app.title, 'title');
+      expectSameBox(skeleton.card, app.card, 'first card');
+    },
+  );
+
+  test(
+    'a returning demo session: the same, from the stored demo hint',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await seedSession(page, demoUser(24));
+      await page.addInitScript(`localStorage.setItem('${SESSION_HINT_KEY}', 'demo');`);
+      await recordSkeletonGeometry(page);
+      await slowBundle(page);
+      await page.goto('/links');
+      await expect(page.locator('app-shell ui-card').first()).toBeVisible();
+      await expect(page.locator('[data-app-skeleton]')).toHaveCount(0);
+
+      const { skeleton, app } = await readGeometry(page);
+      expect(skeleton.banner, 'the stored demo hint draws the banner').not.toBeNull();
+      expectSameBox(skeleton.banner, app.banner, 'banner', true);
+      expectSameBox(skeleton.title, app.title, 'title');
+      expectSameBox(skeleton.card, app.card, 'first card');
+    },
+  );
+
+  test(
+    'an own session start has no banner in the skeleton',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await seedSession(page);
+      await page.addInitScript(`localStorage.setItem('${SESSION_HINT_KEY}', '1');`);
+      await recordSkeletonGeometry(page);
+      await slowBundle(page);
+      await page.goto('/links');
+      await expect(page.locator('app-shell ui-card').first()).toBeVisible();
+
+      const { skeleton, app } = await readGeometry(page);
+      expect(skeleton.banner).toBeNull();
+      expect(app.banner).toBeNull();
+      expectSameBox(skeleton.title, app.title, 'title');
+      expectSameBox(skeleton.card, app.card, 'first card');
+    },
+  );
 });

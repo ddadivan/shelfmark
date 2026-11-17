@@ -1,0 +1,51 @@
+<figure class="ui-bar-chart__figure" role="img" [attr.aria-label]="name()">
+  <span class="ui-bar-chart__max" aria-hidden="true">{{ max() }}</span>
+  <svg
+    class="ui-bar-chart__svg"
+    aria-hidden="true"
+    focusable="false"
+    preserveAspectRatio="none"
+    [attr.viewBox]="'0 0 ' + width() + ' 100'"
+  >
+    @for (row of rows(); track $index) {
+      <rect
+        class="ui-bar-chart__bar"
+        [attr.x]="row.x"
+        y="0"
+        [attr.width]="BAR_WIDTH"
+        height="100"
+        [style.transform]="'scaleY(' + row.scale + ')'"
+      >
+        <title>{{ row.text }}</title>
+      </rect>
+    }
+  </svg>
+  <span class="ui-bar-chart__axis" aria-hidden="true">
+    @for (row of rows(); track $index) {
+      <span class="ui-bar-chart__tick">{{ row.showLabel ? row.label : '' }}</span>
+    }
+  </span>
+</figure>
+<div class="ui-bar-chart__data">
+  <table class="ui-bar-chart__table">
+    <caption>
+      {{
+        label()
+      }}
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">{{ labelHeader() }}</th>
+        <th scope="col">{{ valueHeader() }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track $index) {
+        <tr>
+          <th scope="row">{{ row.text }}</th>
+          <td>{{ row.value }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

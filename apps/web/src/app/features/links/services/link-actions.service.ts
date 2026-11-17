@@ -13,6 +13,8 @@ import {
   type ToastFolder,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../stores/folders.store';
+import { RecentFoldersStore } from '../../../stores/recent-folders.store';
+import { toastFolder } from '../utils/toast-folder';
 import { LinksStore } from '../../../stores/links.store';
 import { PinsStore } from '../../../stores/pins.store';
 import { TagsStore } from '../../../stores/tags.store';
@@ -20,6 +22,7 @@ import { TrashStore } from '../../../stores/trash.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { PinActionsService } from '../../pins/services/pin-actions.service';
 import { AddLinkDialogService } from './add-link-dialog.service';
+import { RuleActionsService } from '../../rules/services/rule-actions.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
 import type { AddLinkSavedMany } from '../models/add-link-saved-many.interface';
@@ -29,6 +32,8 @@ import { LINKS_API } from '../models/links-api.const';
 import { UndoToastService } from '../../../core/undo/undo-toast.service';
 import type { MovePickerData } from '../models/move-picker-data.interface';
 import { MovePickerComponent } from '../components/move-picker/move-picker.component';
+import { ReminderActionsService } from '../../reminders/services/reminder-actions.service';
+import { RemindersStore } from '../../../stores/reminders.store';
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,
@@ -40,6 +45,7 @@ import { MovePickerComponent } from '../components/move-picker/move-picker.compo
 export class LinkActionsService {
   private readonly store = inject(LinksStore);
   private readonly folders = inject(FoldersStore);
+  private readonly recent = inject(RecentFoldersStore);
   private readonly tags = inject(TagsStore);
   private readonly trash = inject(TrashStore);
   private readonly settings = inject(UserSettingsStore);
@@ -51,6 +57,7 @@ export class LinkActionsService {
   private readonly toasts = inject(ToastService);
   private readonly undoToast = inject(UndoToastService);
   private readonly addLinkDialog = inject(AddLinkDialogService);
+  private readonly ruleActions = inject(RuleActionsService);
   private readonly transloco = inject(TranslocoService);
   private readonly doc = inject(DOCUMENT);
 
@@ -133,6 +140,16 @@ export class LinkActionsService {
     this.store.attachUndo(link.id, () => toast.dismiss());
   }
 
+  /** "Remind me…" / "Change reminder" (#275): presets or a date and time. */
+  async remind(link: LinkResponse): Promise<void> {
+    await this.injector.get(ReminderActionsService).remind([link]);
+  }
+
+  /** "Create a rule for youtube.com…" (#398): the rule dialog with the link's domain. */
+  async createRule(link: LinkResponse): Promise<void> {
+    await this.ruleActions.create(link.url);
+  }
+
   /** "Move to folder…": a folder picker (a sheet below 64em); choosing a folder moves the link at once. */
   async move(link: LinkResponse): Promise<void> {
     await this.dialogs.open<MovePickerComponent, boolean, MovePickerData>(MovePickerComponent, {
@@ -166,6 +183,7 @@ export class LinkActionsService {
       return;
     }
     void this.folders.refresh();
+    this.recent.record(folderId);
     const undo = this.t('links.item.undo');
     this.toasts.show({
       kind: TOAST_KIND.Moved,
@@ -181,7 +199,7 @@ export class LinkActionsService {
   /** The folder tile of a `moved` toast: the folder's colour and icon, graphite for Unsorted. */
   private toastFolder(folderId: string | null): ToastFolder {
     const folder = folderId === null ? undefined : this.folders.entityMap()[folderId];
-    return folder ? { colour: this.settings.shownColour(folder.colour), icon: folder.icon } : {};
+    return toastFolder(folder, (colour) => this.settings.shownColour(colour));
   }
 
   private async moveBack(link: LinkResponse, folderId: string | null): Promise<void> {
@@ -228,7 +246,7 @@ export class LinkActionsService {
    * its second line instead of the "still loading" hint.
    */
   noteSavedMany(result: AddLinkSavedMany): void {
-    const { links, errors, folderId } = result;
+    const { links, errors } = result;
     if (links.length === 0) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
@@ -243,12 +261,20 @@ export class LinkActionsService {
     void this.folders.refresh();
     void this.tags.noteLinkSaved();
     const undo = this.t('links.item.undo');
+    // Domain rules (#398) may file the links in different folders: then no folder is named.
+    const landed = new Set(links.map((link) => link.folderId));
+    const shared = landed.size === 1 ? (links[0]?.folderId ?? null) : undefined;
     this.toasts.show({
       kind: errors.length > 0 ? TOAST_KIND.Warn : TOAST_KIND.Success,
-      title: this.t(pluralKey('links.many.saved', links.length), {
-        count: String(links.length),
-        folder: this.folderLabel(folderId),
-      }),
+      title:
+        shared === undefined
+          ? this.t(pluralKey('links.many.savedMixed', links.length), {
+              count: String(links.length),
+            })
+          : this.t(pluralKey('links.many.saved', links.length), {
+              count: String(links.length),
+              folder: this.folderLabel(shared),
+            }),
       detail:
         errors.length > 0
           ? this.t(pluralKey('links.many.skippedByServer', errors.length), {
@@ -295,6 +321,8 @@ export class LinkActionsService {
       });
     } else if (result?.action === ADD_LINK_ACTION.Delete) {
       await this.delete(result.link);
+    } else if (result?.action === ADD_LINK_ACTION.Remind) {
+      await this.remind(result.link);
     }
   }
 
@@ -321,6 +349,8 @@ export class LinkActionsService {
       void this.folders.refresh();
       void this.tags.noteLinkSaved();
       void this.trash.refresh();
+      // A deleted link's reminder leaves the badge and the Reminders list.
+      void this.injector.get(RemindersStore).refresh();
     } else {
       this.toasts.show({
         kind: TOAST_KIND.Danger,

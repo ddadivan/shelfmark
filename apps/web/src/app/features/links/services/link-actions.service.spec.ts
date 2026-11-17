@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { RECENT_FOLDERS_STORAGE_KEY } from '../../../core/auth/models/recent-folders-storage-key.const';
+import { RecentFoldersStore } from '../../../stores/recent-folders.store';
 import type { LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import {
@@ -103,7 +105,10 @@ async function setup(confirmed = true) {
 const ids = (store: InstanceType<typeof LinksStore>) => store.entities().map((item) => item.id);
 
 describe('LinkActionsService', () => {
-  beforeEach(() => vi.useFakeTimers());
+  beforeEach(() => {
+    localStorage.removeItem(RECENT_FOLDERS_STORAGE_KEY);
+    vi.useFakeTimers();
+  });
   afterEach(() => vi.useRealTimers());
 
   describe('delete', () => {
@@ -202,6 +207,7 @@ describe('LinkActionsService', () => {
         }),
       );
       expect(store.entityMap()['id-1']?.folderId).toBe(folderId);
+      expect(TestBed.inject(RecentFoldersStore).ids()).toEqual([folderId]);
 
       toasts[0]?.action?.run();
       await vi.runAllTicks();
@@ -414,6 +420,19 @@ describe('LinkActionsService', () => {
         duration: 8000,
         action: { label: 'Undo' },
       });
+    });
+
+    it('names no folder when domain rules filed the links in different folders (#398)', async () => {
+      const { actions, addLinkOpen, toasts } = await setup();
+      const mixed = savedMany();
+      addLinkOpen.mockResolvedValue({
+        ...mixed,
+        links: [{ ...link(7), folderId: 'videos' }, link(8), link(9)],
+      });
+
+      await actions.addLink();
+
+      expect(toasts[0]).toMatchObject({ title: '3 links saved to their folders' });
     });
 
     it('names the items the server skipped instead of the loading hint', async () => {

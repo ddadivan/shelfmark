@@ -35,6 +35,7 @@ import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/services/onboarding.store';
 import { RatingStore } from '../features/rating/services/rating.store';
+import { WhatsNewStore } from '../features/changelog/services/whats-new.store';
 import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
 import { ShortcutsDialogService } from '../features/shortcuts/services/shortcuts-dialog.service';
@@ -46,6 +47,7 @@ import { PinsStore } from '../stores/pins.store';
 import { UserSettingsStore } from '../stores/user-settings.store';
 import { ADMIN_PATH } from '../features/admin/models/admin-path.const';
 import { HowItWorksService } from '../features/how-it-works/services/how-it-works.service';
+import { ReminderNoticeService } from '../features/reminders/services/reminder-notice.service';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
@@ -169,6 +171,8 @@ export default class AppShellComponent {
   constructor() {
     void this.pins.load();
     void this.userSettings.load();
+    // The due reminders badge, and the note when some became due since the last visit (#275).
+    void inject(ReminderNoticeService).check();
   }
 
   /** The rating look starts for an eligible user (not demo, onboarding done) and stops otherwise. */
@@ -183,6 +187,18 @@ export default class AppShellComponent {
         this.rating.stop();
       }
     });
+  });
+
+  private readonly whatsNew = inject(WhatsNewStore);
+  /**
+   * "What's new" (#424): once the account told its last seen release, a new account is marked up to
+   * date and an existing one sees the dialog once when a newer release has highlights.
+   */
+  private readonly whatsNewWatch = effect(() => {
+    this.auth.user();
+    this.userSettings.whatsNewKnown();
+    this.userSettings.whatsNewSeen();
+    untracked(() => this.whatsNew.watch());
   });
 
   /** Switches between the fixed Light and Dark themes and saves the choice on the account. */
@@ -211,6 +227,10 @@ export default class AppShellComponent {
 
   protected async openFeedbackInbox(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.Admin}/${ADMIN_PATH.Feedback}`);
+  }
+
+  protected async openUsageStats(): Promise<void> {
+    await this.router.navigateByUrl(`/${APP_PATH.Admin}/${ADMIN_PATH.Stats}`);
   }
 
   /** "About Shelfmark": the landing page, with "Back to my shelf" and "What's new" (#270). */

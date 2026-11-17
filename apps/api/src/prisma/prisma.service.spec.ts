@@ -14,6 +14,10 @@ describe('PrismaService', () => {
     expect(disconnect).toHaveBeenCalledTimes(1);
   });
 
+  it('accepts a pool size (the local database passes 1)', () => {
+    expect(() => new PrismaService(UNREACHABLE_URL, 1)).not.toThrow();
+  });
+
   it('destroys cleanly when it never connected', async () => {
     await expect(new PrismaService(UNREACHABLE_URL).onModuleDestroy()).resolves.toBeUndefined();
   });

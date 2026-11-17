@@ -13,6 +13,18 @@ export interface FolderResponse {
   colour: FolderColour | HexColour;
   /** One of `FOLDER_ICON` or exactly one emoji (#335); `folder` until chosen. */
   icon: FolderIcon | FolderEmoji;
+  /** Shown with a soft background in the folder colour: its sidebar row and its page header (#440). */
+  highlighted: boolean;
+  /** Optional short description (#418): trimmed, 1 to `FOLDER_LIMIT.DescriptionMax` characters, or `null`. */
+  description: string | null;
+  /**
+   * The link whose preview image is the folder's cover (#418), or `null`. Only answered while it
+   * is a live link directly in this folder; otherwise `null` (the choice is kept and comes back
+   * when the link does).
+   */
+  coverLinkId: string | null;
+  /** Same-origin path of the cover link's preview image (`/api/links/:id/image?v=…`), or `null`. */
+  coverUrl: string | null;
   /**
    * Place among its siblings (the manual order of `PUT /api/folders/order`, 0 first). Lists are
    * sorted by it, then by name; a new or moved folder goes to the end of its parent.

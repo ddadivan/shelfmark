@@ -45,4 +45,9 @@ export interface UserSettingsResponse extends LibrarySettings, LayoutSettings, L
    * web app keeps (and saves once) a language the browser already had (a guest's choice).
    */
   languageSaved: boolean;
+  /**
+   * The newest release (`x.y.z`) whose "What's new" the user has seen (#424); `null` until the web
+   * app first writes it (at sign-up it writes the current release, so a new account sees none).
+   */
+  whatsNewSeen: string | null;
 }

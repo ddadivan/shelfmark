@@ -42,10 +42,14 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'sm-mock-admin',
   'Mock: feedback send failed',
   'Mock: admin update failed',
+  'sm-mock-admin-stats',
+  'Mock: admin stats failed',
   'Mock: export failed',
   'sm-mock-export',
   'mock-fail',
   'sm-mock-account-deletion',
   'sm-mock-shares',
   'sm-mock-trash-scenario',
+  // The reminders mock's batch message (#275).
+  'ids must hold 1 to 100 distinct ids',
 ] as const;

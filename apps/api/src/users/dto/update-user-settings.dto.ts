@@ -20,6 +20,7 @@ import {
   LIBRARY_VIEW,
   LINK_OPEN_TARGET,
   HEX_COLOUR_PATTERN,
+  RELEASE_VERSION_PATTERN,
   MOTION_PREFERENCE,
   USER_LIMIT,
   type FolderEmoji,
@@ -150,6 +151,15 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateIf(notNull)
   @IsUUID()
   newLinksFolderId?: string | null;
+
+  @ApiPropertyOptional({
+    example: '2.0.0',
+    pattern: RELEASE_VERSION_PATTERN.source,
+    description: "The newest release whose What's new was seen (x.y.z)",
+  })
+  @ValidateIf(present)
+  @Matches(RELEASE_VERSION_PATTERN)
+  whatsNewSeen?: string;
 
   @ApiPropertyOptional({
     example: true,

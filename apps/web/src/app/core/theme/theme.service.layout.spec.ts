@@ -107,6 +107,17 @@ describe('ThemeService text, layout and card options (#285)', () => {
     }
   });
 
+  it('reads a layout stored with the retired folderHighlight key without it (#440)', () => {
+    localStorage.setItem(
+      LAYOUT_STORAGE_KEY,
+      JSON.stringify({ ...ALL, folderHighlight: 'background' }),
+    );
+    const service = createService();
+    expect(service.layout()).toEqual(ALL);
+    expect(service.hasStoredAppearance()).toBe(true);
+    expect(document.documentElement.hasAttribute('data-folder-highlight')).toBe(false);
+  });
+
   it('follows a layout changed in another tab', () => {
     const service = createService();
     localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(ALL));

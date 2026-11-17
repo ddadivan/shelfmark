@@ -1,0 +1,65 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.remind-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  // Room for the focus ring of the controls at the edge of the scrolling body.
+  padding: rem(2px);
+}
+
+.remind-dialog__subtitle,
+.remind-dialog__current,
+.remind-dialog__zone {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.remind-dialog__subtitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remind-dialog__presets {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  padding: 0;
+  margin: 0 calc(-1 * var(--space-2));
+  list-style: none;
+}
+
+// The label takes the row, so the time sits at the end (MobileReminders).
+.remind-dialog__preset-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-align: start;
+  text-overflow: ellipsis;
+}
+
+.remind-dialog__preset-hint {
+  flex: none;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.remind-dialog__picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.remind-dialog__remove {
+  @include tablet-up {
+    margin-inline-end: auto;
+  }
+}

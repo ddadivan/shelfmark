@@ -4,7 +4,10 @@ import {
   type UpdateUserSettingsRequest,
 } from '@shelfmark/contracts';
 import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { UiButtonHarness } from '@shelfmark/ui/testing';
 import { Router } from '@angular/router';
 import { TRASH_ITEM_KIND } from '@shelfmark/contracts';
 import { DialogService, ToastService, TOAST_KIND } from '@shelfmark/ui';
@@ -15,7 +18,10 @@ import { TRASH_API } from '../../../trash/models/trash-api.const';
 import type { TrashApi } from '../../../trash/models/trash-api.interface';
 import { USER_SETTINGS_API } from '../../models/user-settings-api.const';
 import type { UserSettingsApi } from '../../models/user-settings-api.interface';
+import { BrowserExtensionService } from '../../../../core/browser-extension/browser-extension.service';
 import LibrarySettingsPage from './library.page';
+
+const STORE_URL = 'https://chromewebstore.google.com/detail/shelfmark/abc';
 
 /** The Settings › Library fields of a request, as the server would answer them. */
 function libraryPart(request: UpdateUserSettingsRequest): Partial<LibrarySettings> {
@@ -39,7 +45,13 @@ function switchNamed(root: HTMLElement, name: string): HTMLButtonElement {
 }
 
 async function setup(
-  options: { total?: number; failUpdate?: boolean; failGet?: boolean; confirm?: boolean } = {},
+  options: {
+    total?: number;
+    failUpdate?: boolean;
+    failGet?: boolean;
+    confirm?: boolean;
+    extension?: boolean;
+  } = {},
 ) {
   const settingsApi = {
     get: vi.fn<UserSettingsApi['get']>(() =>
@@ -100,6 +112,10 @@ async function setup(
       { provide: TRASH_API, useValue: trashApi },
       { provide: DialogService, useValue: { confirm, open } },
       {
+        provide: BrowserExtensionService,
+        useValue: { offered: signal(options.extension ?? false), storeUrl: STORE_URL },
+      },
+      {
         provide: ToastService,
         useValue: { show: (toast: (typeof toasts)[number]) => toasts.push(toast) },
       },
@@ -131,6 +147,7 @@ describe('LibrarySettingsPage', () => {
     expect([...root.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toEqual([
       'Viewing',
       'Saving',
+      'Rules',
       'Trash',
     ]);
     expect(root.textContent).toContain('Keep deleted items for');
@@ -317,8 +334,34 @@ describe('LibrarySettingsPage', () => {
     });
   });
 
+  describe('browser extension row (#455)', () => {
+    it('is not rendered where the extension is not offered', async () => {
+      const { root } = await setup();
+
+      expect(root.textContent).not.toContain('Browser extension');
+    });
+
+    it('links the Chrome Web Store from Saving on a desktop Chromium browser', async () => {
+      const { root, harness } = await setup({ extension: true });
+      const loader = TestbedHarnessEnvironment.loader(harness.fixture);
+      const install = await loader.getHarness(UiButtonHarness.with({ text: 'Install' }));
+
+      expect(root.textContent).toContain('Browser extension');
+      expect(root.textContent).toContain(
+        'Save any page in one click from Chrome, Edge, Brave or Arc',
+      );
+      expect(await install.getHref()).toBe(STORE_URL);
+      expect(await install.getName()).toBe(
+        'Install the browser extension from the Chrome Web Store (opens in a new tab)',
+      );
+      const link = root.querySelector<HTMLAnchorElement>(`a[href="${STORE_URL}"]`);
+      expect(link?.target).toBe('_blank');
+      expect(link?.rel).toBe('noopener noreferrer');
+    });
+  });
+
   it('has no axe violations', async () => {
-    const { root } = await setup({ total: 2 });
+    const { root } = await setup({ total: 2, extension: true });
 
     expect(await axeViolations(root)).toEqual([]);
   });

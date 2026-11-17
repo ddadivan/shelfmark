@@ -23,11 +23,70 @@
 :root[data-boot-skeleton] .boot,
 .boot--page {
   display: flex;
+}
+
+// Under the banner (when there is one) the body takes the rest of the screen, as `.shell__body`:
+// the page in a column on the mobile shell, the sidebar card and the content side by side on desktop.
+.boot__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
 
   @include desktop {
     flex-direction: row;
     gap: var(--space-3);
     padding: var(--space-3);
+  }
+}
+
+// The demo banner (shell/demo-banner, `ui-notice` banner), measured on the real page: 48px on one
+// line (the 13px text of 444px and the 32px button side by side, from 686px of width), 74px with
+// the button under a one-line text, 92px with the text on two lines (below 476px). Same padding,
+// gap, wrapping, `accent-bg`. Only for a demo start: `html[data-boot-demo]` (set by
+// `public/boot-skeleton.js`) or the demo start page itself (`.boot--page`).
+.boot__banner {
+  display: none;
+  flex: none;
+  flex-wrap: wrap;
+  gap: rem(8px) rem(12px);
+  align-items: center;
+  justify-content: center;
+  padding: rem(8px) rem(16px);
+  background: var(--accent-bg);
+}
+
+:root[data-boot-demo] .boot__banner,
+.boot--page .boot__banner {
+  display: flex;
+}
+
+.boot__banner-text,
+.boot__banner-button {
+  background: color-mix(in srgb, var(--accent-text) 18%, transparent);
+}
+
+.boot__banner-text {
+  flex: 0 1 auto;
+  inline-size: rem(444px);
+  max-inline-size: 100%;
+  block-size: rem(18px);
+
+  // The text wraps to a second line below 476px (444px and the 16px padding of both sides).
+  @media (width < 29.75em) {
+    block-size: rem(36px);
+  }
+}
+
+.boot__banner-button {
+  flex: none;
+  inline-size: rem(198px);
+  block-size: rem(32px);
+  border-radius: var(--radius-full);
+
+  // Touch: the small button has the 44px target, which makes the banner 12px taller.
+  @include coarse {
+    block-size: rem(44px);
   }
 }
 
@@ -177,6 +236,11 @@
 
   @include desktop {
     margin-block-start: rem(6px);
+  }
+
+  // Touch: the controls above the feed have 44px targets, 4px more room than with a mouse.
+  @include coarse {
+    margin-block-end: rem(76px);
   }
 }
 

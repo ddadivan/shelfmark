@@ -3,6 +3,7 @@ import { expect, test } from './support/test';
 import { AUTH_PROVIDER } from '@shelfmark/contracts';
 import { isCompact } from './support/sidebar';
 import { MOCK_USER, signOutFromUi } from './support/mock-session';
+import { seedWhatsNewSeen } from './support/whats-new';
 
 // Same value as REAL_AUTH_API_STORAGE_KEY in apps/web/src/app/core/auth/models/real-auth-api-storage-key.const.ts.
 const REAL_AUTH_API_KEY = 'sm-real-auth-api';
@@ -16,6 +17,7 @@ const SESSION = {
 /** Binds the real Better Auth client (instead of the mock) and answers get-session. */
 async function useRealAuthApi(page: Page, session: typeof SESSION | null): Promise<void> {
   await page.addInitScript((key) => localStorage.setItem(key, '1'), REAL_AUTH_API_KEY);
+  await seedWhatsNewSeen(page);
   await page.route('**/api/auth/get-session', (route) =>
     route.fulfill({ contentType: 'application/json', body: JSON.stringify(session) }),
   );

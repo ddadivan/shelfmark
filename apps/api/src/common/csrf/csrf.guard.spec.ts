@@ -1,4 +1,5 @@
 import { ForbiddenException, UnsupportedMediaTypeException } from '@nestjs/common';
+import type { ExtensionConfig } from '../../config/models/extension-config.interface';
 import { CsrfGuard } from './csrf.guard';
 
 const TRUSTED = 'https://app.example.test';
@@ -104,6 +105,69 @@ describe('CsrfGuard', () => {
       expect(() => run('PUT', { ...text, origin: 'https://evil.test' }, TUNNEL)).toThrow(
         ForbiddenException,
       );
+    });
+  });
+
+  describe('browser extension origins', () => {
+    const ID = 'abcdefghijklmnopabcdefghijklmnop';
+    const OTHER = 'ponmlkjihgfedcbaponmlkjihgfedcba';
+    const EXT = `chrome-extension://${ID}`;
+    const JSON_BODY = { 'content-length': '5', 'content-type': 'application/json' };
+
+    function runExt(
+      extension: ExtensionConfig,
+      headers: Record<string, string>,
+      method = 'POST',
+    ): boolean {
+      const context = {
+        switchToHttp: () => ({ getRequest: () => ({ method, headers, path: '/api/links' }) }),
+      } as never;
+      return new CsrfGuard([TRUSTED], extension).canActivate(context);
+    }
+
+    const production: ExtensionConfig = { origins: [EXT], allowAny: false };
+    const development: ExtensionConfig = { origins: [], allowAny: true };
+
+    it('passes a configured origin whatever Sec-Fetch-Site says', () => {
+      for (const site of [undefined, 'same-site', 'same-origin', 'cross-site', 'none']) {
+        const headers = { origin: EXT, ...JSON_BODY, ...(site ? { 'sec-fetch-site': site } : {}) };
+        expect(runExt(production, headers)).toBe(true);
+      }
+    });
+
+    it('rejects another extension id and a malformed one in production', () => {
+      for (const origin of [`chrome-extension://${OTHER}`, 'chrome-extension://short', 'null']) {
+        expect(() => runExt(production, { origin, ...JSON_BODY })).toThrow(ForbiddenException);
+      }
+    });
+
+    it('trusts no extension without configuration', () => {
+      expect(() => runExt({ origins: [], allowAny: false }, { origin: EXT })).toThrow(
+        ForbiddenException,
+      );
+      expect(() => run('POST', { origin: EXT })).toThrow(ForbiddenException);
+    });
+
+    it('still requires JSON for a body', () => {
+      expect(() =>
+        runExt(production, { origin: EXT, 'content-length': '5', 'content-type': 'text/plain' }),
+      ).toThrow(UnsupportedMediaTypeException);
+    });
+
+    it('accepts any well-formed extension origin in development, rejects malformed ones', () => {
+      expect(runExt(development, { origin: `chrome-extension://${OTHER}`, ...JSON_BODY })).toBe(
+        true,
+      );
+      expect(() => runExt(development, { origin: 'chrome-extension://nope' })).toThrow(
+        ForbiddenException,
+      );
+      expect(() => runExt(development, { origin: `chrome-extension://${ID}/x` })).toThrow(
+        ForbiddenException,
+      );
+    });
+
+    it('keeps the web origin working', () => {
+      expect(runExt(production, { origin: TRUSTED, ...JSON_BODY })).toBe(true);
     });
   });
 });

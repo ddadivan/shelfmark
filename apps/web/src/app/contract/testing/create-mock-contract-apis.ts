@@ -3,17 +3,20 @@ import { TestBed } from '@angular/core/testing';
 import type { ContractApis } from '@shelfmark/contract-tests';
 import { AuthStore } from '../../core/auth/auth.store';
 import { MOCK_SESSION_STORAGE_KEY } from '../../core/auth/models/mock-session-storage-key.const';
+import { MockAdminApi } from '../../features/admin/mock/mock-admin.api';
 import { MockFeedbackApi } from '../../features/feedback/mock/mock-feedback.api';
 import { MockFoldersApi } from '../../features/links/mock/mock-folders.api';
 import { MockLibraryData } from '../../features/links/mock/mock-library-data';
 import { MockLinksApi } from '../../features/links/mock/mock-links.api';
 import { MockTagsApi } from '../../features/links/mock/mock-tags.api';
 import { MockPinsApi } from '../../features/pins/mock/mock-pins.api';
+import { MockRemindersApi } from '../../features/reminders/mock/mock-reminders.api';
 import { MockMeStatsApi } from '../../features/settings/mock/mock-me-stats.api';
 import { MockUserSettingsApi } from '../../features/settings/mock/mock-user-settings.api';
 import { MockSharesApi } from '../../features/sharing/mock/mock-shares.api';
 import { MockTrashApi } from '../../features/trash/mock/mock-trash.api';
 import { MockSavedViewsApi } from '../../features/views/mock/mock-saved-views.api';
+import { MockRulesApi } from '../../features/rules/mock/mock-rules.api';
 import { MockExportApi } from '../../features/export/mock/mock-export.api';
 import { exportedFileName } from './exported-file-name';
 import { settle, settlePromise } from './settle';
@@ -44,20 +47,27 @@ export function createMockContractApis(): ContractApis {
   data.setTags([]);
   data.pins = [];
   data.trash = [];
+  data.rules = [];
 
   const links = TestBed.inject(MockLinksApi);
   const folders = TestBed.inject(MockFoldersApi);
   const tags = TestBed.inject(MockTagsApi);
   const pins = TestBed.inject(MockPinsApi);
+  const reminders = TestBed.inject(MockRemindersApi);
   const views = TestBed.inject(MockSavedViewsApi);
+  const rules = TestBed.inject(MockRulesApi);
   const trash = TestBed.inject(MockTrashApi);
   const settings = TestBed.inject(MockUserSettingsApi);
   const meStats = TestBed.inject(MockMeStatsApi);
   const shares = TestBed.inject(MockSharesApi);
   const feedback = TestBed.inject(MockFeedbackApi);
   const exporter = TestBed.inject(MockExportApi);
+  const admin = TestBed.inject(MockAdminApi);
 
   return {
+    admin: {
+      stats: () => settlePromise(admin.stats()),
+    },
     links: {
       create: (request) => settle(links.create(request)),
       list: (query) => settle(links.list(query)),
@@ -98,6 +108,20 @@ export function createMockContractApis(): ContractApis {
       update: (id, request) => settle(views.update(id, request)),
       remove: (id) => settle(views.remove(id)),
       reorder: (ids) => settle(views.reorder(ids)),
+    },
+    reminders: {
+      list: () => settle(reminders.list()),
+      count: () => settle(reminders.count()),
+      set: (linkId, remindAt) => settle(reminders.set(linkId, remindAt)),
+      clear: (linkId) => settle(reminders.clear(linkId)),
+      setMany: (request) => settle(reminders.setMany(request)),
+    },
+    rules: {
+      list: () => settle(rules.list()),
+      create: (request) => settle(rules.create(request)),
+      update: (id, request) => settle(rules.update(id, request)),
+      remove: (id) => settle(rules.remove(id)),
+      matches: (id) => settle(rules.matches(id)),
     },
     trash: {
       list: () => settle(trash.list()),

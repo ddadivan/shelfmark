@@ -1,7 +1,17 @@
 import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
+  BadgeComponent,
   BreadcrumbsComponent,
   BULK_BAR_LAYOUT,
   BulkBarComponent,
@@ -9,6 +19,9 @@ import {
   CheckboxComponent,
   ChipComponent,
   EmptyStateComponent,
+  FolderBannerComponent,
+  FolderIconComponent,
+  FOLDER_ICON_SIZE,
   ICON_SIZE,
   LoadMoreComponent,
   MenuComponent,
@@ -17,6 +30,7 @@ import {
   MenuSeparatorComponent,
   MenuTriggerDirective,
   NoticeComponent,
+  PickerMenuComponent,
   ProgressBarComponent,
   SegmentedControlComponent,
   SKELETON_SHAPE,
@@ -36,6 +50,7 @@ import { LinkDragService } from '../links/services/link-drag.service';
 import { HowItWorksService } from '../how-it-works/services/how-it-works.service';
 import { LinkCardComponent } from '../links/components/link-card/link-card.component';
 import { LinkRowComponent } from '../links/components/link-row/link-row.component';
+import { FolderChipsService } from '../links/services/folder-chips.service';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
 import type { LinksScope } from '../links/models/links-scope.type';
 import { APP_PATH } from '../../models/app-path.const';
@@ -53,7 +68,11 @@ import { LibraryBulkService } from './services/library-bulk.service';
 import { LibrarySelectionService } from './services/library-selection.service';
 import { LibraryFilterService } from './services/library-filter.service';
 import { provideLibraryPage } from './services/provide-library-page';
+import { FolderCoverComponent } from './components/folder-cover/folder-cover.component';
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
+import { ExtensionBannerComponent } from './components/extension-banner/extension-banner.component';
+import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
+import { SplitViewService } from './services/split-view.service';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
 
@@ -72,14 +91,20 @@ const SKELETON_COUNT = 8;
     CdkDragPlaceholder,
     CdkDragPreview,
     CdkDropList,
+    NgTemplateOutlet,
     TranslocoPipe,
+    BadgeComponent,
     BreadcrumbsComponent,
     BulkBarComponent,
     ButtonComponent,
     CheckboxComponent,
     ChipComponent,
     EmptyStateComponent,
+    FolderBannerComponent,
+    FolderCoverComponent,
+    FolderIconComponent,
     FolderTileComponent,
+    ExtensionBannerComponent,
     InViewDirective,
     LibraryHotkeysDirective,
     ToastAboveDirective,
@@ -94,13 +119,20 @@ const SKELETON_COUNT = 8;
     MenuSeparatorComponent,
     MenuTriggerDirective,
     NoticeComponent,
+    PickerMenuComponent,
     ProgressBarComponent,
     SavedViewChipsComponent,
     SegmentedControlComponent,
     SkeletonComponent,
+    SplitRightHalfComponent,
   ],
   templateUrl: './library.page.html',
-  styleUrls: ['./library.page.scss', './library-feed.scss', './library-selection.scss'],
+  styleUrls: [
+    './library.page.scss',
+    './library-head.scss',
+    './library-feed.scss',
+    './library-selection.scss',
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: provideLibraryPage(),
 })
@@ -121,6 +153,26 @@ export default class LibraryPage {
    * the stacked bulk bar over the tab bar, the share action.
    */
   protected readonly compact = inject(ViewportService).compact;
+  /** From 80em: the "Side by side" button and the right half (#386). */
+  protected readonly wide = inject(ViewportService).wide;
+  protected readonly splitView = inject(SplitViewService);
+  protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
+  protected readonly folderChips = inject(FolderChipsService);
+  /** Cards and rows name their folder in mixed feeds, not in a folder's own feed or Unsorted (#418). */
+  protected readonly showFolderChips = computed(
+    () =>
+      this.filters.scope() !== LINKS_SCOPE.Folder && this.filters.scope() !== LINKS_SCOPE.Unsorted,
+  );
+  /** The tinted folder header (#418): band or cover, big tile, description; only for a highlighted folder (#440), never in the split view. */
+  protected readonly folderBanner = computed(() => {
+    const banner = this.splitView.open() ? null : this.head.banner();
+    return banner?.highlighted ? banner : null;
+  });
+  /** A folder that is not highlighted: its description and cover beside the plain title (#440). */
+  protected readonly plainFolder = computed(() => {
+    const banner = this.splitView.open() ? null : this.head.banner();
+    return banner && !banner.highlighted ? banner : null;
+  });
   protected readonly selection = inject(LibrarySelectionService);
   protected readonly bulk = inject(LibraryBulkService);
   protected readonly drag = inject(LinkDragService);
@@ -140,6 +192,8 @@ export default class LibraryPage {
   readonly sort = input<unknown>();
   /** From the query (`?kind=video`): see `parseLinkKind`. */
   readonly kind = input<unknown>();
+  /** From the query (`?split=<folder id>`): the right half of the side-by-side view. */
+  readonly split = input<unknown>();
 
   protected readonly emptyIllustration = this.filters.emptyIllustration;
   protected readonly UI_VIEW = UI_VIEW;
@@ -154,6 +208,9 @@ export default class LibraryPage {
 
   protected readonly BULK_BAR_LAYOUT = BULK_BAR_LAYOUT;
 
+  /** The "Side by side" toggle: after the split closes it takes the focus the close control had. */
+  private readonly splitOpener = viewChild<ButtonComponent>('splitOpener');
+
   constructor() {
     this.filters.connect({
       scope: this.scope,
@@ -162,6 +219,14 @@ export default class LibraryPage {
       q: this.q,
       sort: this.sort,
       kind: this.kind,
+      split: this.split,
+    });
+    effect(() => {
+      const opener = this.splitOpener();
+      // After the split closes the button, which stays, takes the focus the close control had.
+      if (!this.splitView.open() && opener && this.splitView.takeOpenerFocus()) {
+        opener.focus();
+      }
     });
     void this.settings.load();
   }

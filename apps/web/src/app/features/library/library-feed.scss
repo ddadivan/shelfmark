@@ -69,6 +69,11 @@
   margin-bottom: var(--space-4);
 }
 
+// The extension banner (#455) renders nothing once closed, so its gap lives inside it.
+.library__extension:has(.extension-banner) {
+  margin-bottom: var(--space-4);
+}
+
 .library__filter {
   display: flex;
   flex-wrap: wrap;

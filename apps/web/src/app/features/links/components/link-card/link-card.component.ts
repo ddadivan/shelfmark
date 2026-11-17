@@ -1,3 +1,4 @@
+import { normalizeRuleDomain } from '@shelfmark/contracts';
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
@@ -7,6 +8,7 @@ import {
   CardComponent,
   ChipComponent,
   FaviconComponent,
+  FolderChipComponent,
   ICON_SIZE,
   LongPressDirective,
   MenuComponent,
@@ -17,11 +19,14 @@ import {
   TooltipDirective,
 } from '@shelfmark/ui';
 import type { LinkCardItem } from '../../models/link-card-item.type';
+import type { FolderChipView } from '../../models/folder-chip-view.interface';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { linkKeyIntent } from '../../utils/link-select-keys';
 import { LINK_KEY_INTENT } from '../../models/link-key-intent.const';
 import type { LinkSelectToggle } from '../../models/link-select-toggle.interface';
 import { LocaleService } from '../../../../core/i18n/locale.service';
+import { BADGE_TONE } from '@shelfmark/ui';
+import { ReminderFormatService } from '../../../reminders/services/reminder-format.service';
 import {
   linkAddress,
   linkHost,
@@ -50,6 +55,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
     CardComponent,
     ChipComponent,
     FaviconComponent,
+    FolderChipComponent,
     MenuComponent,
     MenuItemComponent,
     MenuSeparatorComponent,
@@ -67,13 +73,17 @@ export class LinkCardComponent {
   protected readonly viewport = inject(ViewportService);
   protected readonly ICON_SIZE = ICON_SIZE;
   private readonly locale = inject(LocaleService);
+  private readonly reminders = inject(ReminderFormatService);
   private readonly now = Date.now();
+  protected readonly BADGE_TONE = BADGE_TONE;
 
   readonly link = input.required<LinkCardItem>();
   /** No favorite button and no actions menu: a guest looks at someone else's link (#276). */
   readonly readOnly = input(false);
   /** Plays the fade-in of cards that replace the skeleton. */
   readonly reveal = input(false);
+  /** The link's folder as a chip, in mixed feeds only (#418); `null` for none. */
+  readonly folder = input<FolderChipView | null>(null);
 
   /** The link is shown inside a folder: its menu offers "Pin to top" (a pinned link leads the folder). */
   readonly pinnable = input(false);
@@ -95,6 +105,12 @@ export class LinkCardComponent {
   readonly editRequested = output<void>();
   /** "Move to folder…" from the actions menu. */
   readonly moveRequested = output<void>();
+  /** "Remind me…" from the actions menu (#275). */
+  readonly remindRequested = output<void>();
+  /** "Create a rule for youtube.com…" from the actions menu (#398). */
+  readonly ruleRequested = output<void>();
+  /** The domain a rule for this link would match; `null` hides the menu item. */
+  protected readonly ruleDomain = computed(() => normalizeRuleDomain(this.link().url));
   readonly deleteRequested = output<void>();
 
   /** A selection is in progress: a click toggles the link instead of opening it (#267). */
@@ -151,6 +167,13 @@ export class LinkCardComponent {
     return created ? this.locale.formatSaved(created, this.now) : '';
   });
   protected readonly image = computed(() => ownImageUrl(this.link().imageUrl));
+  /** The reminder chip in the meta line instead of the date: its time, or "Due …" once it came. */
+  protected readonly reminder = computed(() => {
+    const at = this.link().remindAt;
+    return at
+      ? { text: this.reminders.chip(at, this.now), due: this.reminders.isDue(at, this.now) }
+      : null;
+  });
   protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS));
   protected readonly hiddenTags = computed(() => Math.max(0, this.link().tags.length - MAX_TAGS));
 

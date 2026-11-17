@@ -3,7 +3,9 @@
     {
       "key": "work",
       "name": "Work",
-      "parent": null
+      "parent": null,
+      "colour": "ocean",
+      "highlighted": true
     },
     {
       "key": "angular",
@@ -23,7 +25,9 @@
     {
       "key": "recipes",
       "name": "Recipes",
-      "parent": null
+      "parent": null,
+      "colour": "amber",
+      "highlighted": true
     }
   ],
   "tags": [
@@ -103,7 +107,8 @@
       "tags": ["typescript", "reference"],
       "isFavorite": false,
       "createdDaysAgo": 11,
-      "lastOpenedDaysAgo": 3
+      "lastOpenedDaysAgo": 3,
+      "remindInHours": 72
     },
     {
       "url": "https://github.com/angular/angular",
@@ -169,6 +174,7 @@
       "isFavorite": false,
       "createdDaysAgo": 10,
       "lastOpenedDaysAgo": 4,
+      "remindInHours": -3,
       "note": "Repair before replacing."
     },
     {
@@ -229,6 +235,13 @@
       "isFavorite": false,
       "createdDaysAgo": 0,
       "lastOpenedDaysAgo": null
+    }
+  ],
+  "rules": [
+    {
+      "domain": "angular.dev",
+      "folder": "angular",
+      "tags": ["angular"]
     }
   ]
 }

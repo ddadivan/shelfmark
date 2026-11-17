@@ -1,6 +1,7 @@
 import { LINKS_SCOPE } from '../../../features/links/models/links-scope.const';
 import { APP_PATH } from '../../../models/app-path.const';
 import { SIDEBAR_RECENT_ID } from '../models/sidebar-recent-id.const';
+import { SIDEBAR_REMINDERS_ID } from '../models/sidebar-reminders-id.const';
 import { SIDEBAR_TRASH_ID } from '../models/sidebar-trash-id.const';
 
 /**
@@ -18,6 +19,8 @@ export function sidebarActiveId(url: string): string | null {
       return LINKS_SCOPE.Favorites;
     case APP_PATH.Recent:
       return SIDEBAR_RECENT_ID;
+    case APP_PATH.Reminders:
+      return SIDEBAR_REMINDERS_ID;
     case APP_PATH.Trash:
       return SIDEBAR_TRASH_ID;
     case APP_PATH.Folders:

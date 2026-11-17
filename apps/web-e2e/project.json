@@ -23,6 +23,14 @@
         "cwd": "{workspaceRoot}"
       }
     },
+    "whats-new-media": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "npx playwright test -c apps/web-e2e/whats-new-media/playwright.whats-new-media.config.mts",
+        "cwd": "{workspaceRoot}"
+      }
+    },
     "visual": {
       "executor": "nx:run-commands",
       "cache": false,

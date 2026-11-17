@@ -172,30 +172,21 @@
       "copyright": "© 2026 Shelfmark",
       "privacy": "Privacidade",
       "github": "GitHub",
-      "language": "Idioma"
+      "language": "Idioma",
+      "changelog": "Novidades"
     },
     "newTab": "abre em uma nova aba",
     "backToShelf": "Voltar para minha estante",
     "whatsNew": {
       "title": "Novidades",
-      "items": {
-        "trash": {
-          "title": "Lixeira",
-          "text": "Links e pastas excluídos ficam na lixeira, então nada some por acidente. Escolha por quanto tempo eles ficam nas Configurações."
-        },
-        "tabs": {
-          "title": "Suas abas ficam em sincronia",
-          "text": "Salve, edite ou exclua um link em uma aba e todas as outras abas abertas mostram a mudança."
-        },
-        "move": {
-          "title": "Mover para pasta e arrastar e soltar",
-          "text": "Mova um link pelo menu dele ou arraste-o para uma pasta na barra lateral."
-        },
-        "refresh": {
-          "title": "Um visual novo",
-          "text": "Cantos mais suaves, uma barra de abas flutuante no celular e avisos que dizem o que aconteceu."
-        }
-      }
+      "all": "Ver todas as mudanças"
+    },
+    "extension": {
+      "badge": "Extensão do navegador",
+      "title": "Salve a página em que você está",
+      "text": "Um clique na barra de ferramentas ou Alt+Shift+S. O título, suas regras de pastas e as pastas recentes já vêm preenchidos: a maioria das páginas pede só mais um clique.",
+      "browsers": "Para Chrome, Edge, Brave e Arc. Instale pela sua estante depois de entrar.",
+      "alt": "A extensão do Shelfmark: Salvar no Shelfmark com o título da página, a pasta Roupas de uma regra, tags e uma nota"
     }
   },
   "links": {
@@ -283,6 +274,10 @@
         "none": "Nenhum link encontrado neste texto",
         "back": "Um link",
         "find": "Encontrar links"
+      },
+      "rule": {
+        "chip": "Regra: {{domain}} → {{target}}",
+        "remove": "Não aplicar a regra de {{domain}}"
       }
     },
     "edit": {
@@ -296,7 +291,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "Na pasta"
     },
     "item": {
       "edit": "Editar",
@@ -329,7 +325,8 @@
       "unpinFromTop": "Desafixar do topo",
       "pinToSidebar": "Fixar na barra lateral",
       "unpinFromSidebar": "Desafixar da barra lateral",
-      "pinned": "Fixado"
+      "pinned": "Fixado",
+      "createRule": "Criar uma regra para {{domain}}…"
     },
     "recent": {
       "title": "Abertos recentemente",
@@ -423,7 +420,8 @@
       "moved": "Movido para {{folder}}",
       "failed": "Não foi possível mover o link",
       "failedDetail": "Ele voltou para onde estava",
-      "undoFailed": "Não foi possível devolver o link"
+      "undoFailed": "Não foi possível devolver o link",
+      "recent": "Recentes"
     },
     "many": {
       "title": {
@@ -484,7 +482,13 @@
       },
       "noneSaved": "Nenhum link foi salvo",
       "undoFailed": "Não foi possível desfazer",
-      "undoFailedDetail": "Os links continuam salvos"
+      "undoFailedDetail": "Os links continuam salvos",
+      "applyRules": "Aplicar regras de domínio",
+      "savedMixed": {
+        "one": "{{count}} link salvo",
+        "many": "{{count}} links salvos nas pastas deles",
+        "other": "{{count}} links salvos nas pastas deles"
+      }
     },
     "drag": {
       "moveHere": "Mover para cá",
@@ -504,7 +508,8 @@
         "favorites": "Não dá para soltar aqui — marque um link com estrela para adicioná-lo aos Favoritos",
         "recent": "Não dá para soltar aqui — «Abertos recentemente» enche ao abrir links",
         "trash": "Não dá para soltar aqui — use Excluir para mover um link para a lixeira",
-        "pinnedLink": "Não dá para soltar aqui — um link fixado não é uma pasta"
+        "pinnedLink": "Não dá para soltar aqui — um link fixado não é uma pasta",
+        "reminders": "Não dá para soltar aqui — use “Lembrar-me” no menu do link"
       }
     }
   },
@@ -513,7 +518,7 @@
     "home": "Shelfmark, início",
     "newTab": "(abre em uma nova aba)",
     "updated": "Última atualização: {{date}}",
-    "updatedDate": "13 de novembro de 2026",
+    "updatedDate": "16 de novembro de 2026",
     "intro": "O Shelfmark é um projeto pessoal que guarda os links que você salva. Esta página explica o que mantemos e por quê, em palavras simples.",
     "store": {
       "title": "O que guardamos",
@@ -521,7 +526,9 @@
       "content": "Seus links (endereço, título, nota, marcação de favorito, quando você abriu pela última vez), suas pastas e suas tags.",
       "images": "Para cada link, uma pequena cópia do ícone e da imagem de prévia do site, se ele tiver. Nosso servidor baixa e guarda essas imagens para que carreguem a partir do Shelfmark.",
       "feedback": "Suas respostas à avaliação no app, vinculadas à sua conta: uma nota de 1 a 10 e, se você escrever, um comentário.",
+      "promptViews": "O app também conta quantas vezes e quando o pedido de avaliação foi mostrado a você, para saber quais recebem resposta. Essas contagens pertencem à sua conta e são apagadas com ela.",
       "stats": "Os números de “Sua estante” na página Conta (totais, os sites e tags que você mais usa, links por semana) são calculados a partir dos seus próprios dados toda vez que você abre a página. Eles não são guardados nem compartilhados.",
+      "usage": "Para entender como o Shelfmark é usado, registramos o dia em que você usou o app pela última vez: só uma data, sem hora, página ou ação. O autor vê apenas totais calculados sobre todas as contas juntas, como quantas pessoas usam pastas ou tags ou quais temas são populares. Grupos com menos de três pessoas não são mostrados, e ninguém olha um por um os links, notas ou configurações de alguém. Esses totais são calculados quando pedidos e não são guardados. Quando você exclui sua conta, a data vai junto.",
       "sessions": "Para cada login: quando expira, além do endereço IP e do navegador (user agent) de onde foi iniciado, para manter as sessões seguras.",
       "logs": "Nossa API registra o método, o caminho, o status, a duração e um id da solicitação, sem conteúdo de links nem dados pessoais. Nossa hospedagem, a Vercel, mantém seus próprios registros padrão de solicitações, que incluem endereços IP, por tempo limitado."
     },
@@ -534,11 +541,16 @@
     "dont": {
       "title": "O que não fazemos",
       "sell": "Não vendemos nem compartilhamos seus dados e não mostramos anúncios.",
-      "read": "Não olhamos seus links salvos, exceto quando é necessário para o serviço, por exemplo para buscar uma prévia."
+      "read": "Não usamos o conteúdo dos seus links para estatísticas: só contagens (links, pastas, avaliações), nunca endereços ou títulos. Seus links ficam no nosso banco de dados para que o app possa mostrá-los, buscá-los e gerar prévias; só o autor do serviço tem acesso a ele."
     },
     "previews": {
       "title": "Prévias de links",
       "body": "Quando você salva um link, nosso servidor visita a página para ler o título, o ícone e a imagem de prévia. Por isso o site vê o endereço IP do nosso servidor e o user agent \"ShelfmarkBot\", não o seu endereço IP."
+    },
+    "extension": {
+      "title": "Extensão do navegador",
+      "body": "A extensão do Shelfmark para Chrome, Edge, Brave e Arc só age quando você clica no botão dela ou usa o atalho, nunca em segundo plano. Ela então envia ao Shelfmark o endereço daquela guia, para verificar se você já a salvou, e só salva o endereço e o título, com a pasta, as tags e a nota escolhidas, quando você toca em Salvar. Ela nunca vê seu histórico nem os outros sites que você visita.",
+      "access": "Ela usa o seu login do Shelfmark nesse navegador e não consegue ler o cookie de login. Só acessa o Shelfmark e guarda no seu dispositivo apenas as pastas usadas recentemente, para sugeri-las na próxima vez."
     },
     "third": {
       "title": "Outros serviços",
@@ -755,7 +767,8 @@
       "reorder": {
         "movedUp": "Movido para cima, posição {{position}} de {{total}}",
         "movedDown": "Movido para baixo, posição {{position}} de {{total}}"
-      }
+      },
+      "extension": "Baixar a extensão"
     },
     "searchHint": "Pesquise seus links",
     "searchButton": "Pesquisar",
@@ -765,7 +778,8 @@
     },
     "sendFeedback": "Enviar feedback",
     "feedbackInbox": "Caixa de feedback",
-    "about": "Sobre o Shelfmark"
+    "about": "Sobre o Shelfmark",
+    "usageStats": "Estatísticas de uso"
   },
   "folders": {
     "dialog": {
@@ -968,7 +982,27 @@
         "undo": "Desfazer"
       },
       "iconsShowAll": "Mostrar todos os ícones ({{count}})",
-      "iconsShowFewer": "Mostrar menos"
+      "iconsShowFewer": "Mostrar menos",
+      "description": {
+        "label": "Descrição",
+        "hint": "Opcional, até {{max}} caracteres. Aparece abaixo do nome da pasta.",
+        "placeholder": "O que tem nesta pasta?",
+        "tooLong": "No máximo {{max}} caracteres.",
+        "invalid": "Use texto simples em uma linha."
+      },
+      "highlight": {
+        "label": "Destacar com fundo",
+        "hint": "Dá à pasta um fundo suave da sua cor, na barra lateral e na própria página."
+      },
+      "cover": {
+        "label": "Capa",
+        "hint": "Uma imagem de prévia de um link desta pasta, atrás do cabeçalho da pasta.",
+        "none": "Sem capa",
+        "option": "Capa de “{{title}}”",
+        "current": "Capa atual",
+        "empty": "Links desta pasta com imagem de prévia podem ser a capa dela.",
+        "loading": "Carregando imagens"
+      }
     }
   },
   "library": {
@@ -1112,6 +1146,47 @@
       "label": "Ordenar, visualizar e exportar",
       "button": "Opções",
       "sortBy": "Ordenar por"
+    },
+    "split": {
+      "open": "Lado a lado",
+      "close": "Fechar o lado a lado",
+      "swap": "Trocar os lados",
+      "choose": {
+        "title": "Escolha uma pasta",
+        "heading": "Escolha uma pasta para onde mover links",
+        "text": "Depois arraste links para cá a partir da esquerda, ou selecione-os e use a barra abaixo.",
+        "search": "Encontrar uma pasta",
+        "list": "Pastas",
+        "noResults": "Nenhuma pasta encontrada"
+      },
+      "leftMenu": {
+        "label": "Mostrar à esquerda",
+        "search": "Encontrar uma pasta ou tag",
+        "list": "Listas",
+        "noResults": "Nada encontrado"
+      },
+      "rightMenu": {
+        "label": "Mostrar à direita"
+      },
+      "onLeft": "À esquerda",
+      "onRight": "À direita",
+      "leftTrigger": "Lista da esquerda: {{name}}. Alterar",
+      "rightTrigger": "Pasta da direita: {{name}}. Alterar",
+      "leftRegion": "Esquerda: {{name}}",
+      "rightRegion": "Direita: {{name}}",
+      "rightRegionEmpty": "Direita: escolha uma pasta",
+      "searchName": "Busca: {{query}}",
+      "empty": {
+        "text": "Arraste links para cá a partir da esquerda."
+      },
+      "moveToLeft": "Mover “{{title}}” para {{folder}}"
+    },
+    "extension": {
+      "title": "Salve páginas direto do navegador",
+      "text": "A extensão do Shelfmark salva a página aberta com um clique ou Alt+Shift+S, com pastas e tags já preenchidas.",
+      "install": "Instalar extensão",
+      "installLabel": "Instalar extensão pela Chrome Web Store (abre em uma nova aba)",
+      "dismiss": "Agora não"
     }
   },
   "export": {
@@ -1399,7 +1474,7 @@
     },
     "footer": {
       "privacy": "Política de privacidade",
-      "version": "Shelfmark v1.0"
+      "version": "Shelfmark {{version}}"
     },
     "delete": {
       "title": "Excluir conta",
@@ -1452,6 +1527,12 @@
         "previews": {
           "label": "Buscar títulos e prévias",
           "hint": "Desligue para salvar só o endereço"
+        },
+        "extension": {
+          "label": "Extensão do navegador",
+          "hint": "Salve qualquer página com um clique no Chrome, Edge, Brave ou Arc",
+          "action": "Instalar",
+          "actionLabel": "Instalar a extensão do navegador pela Chrome Web Store (abre em uma nova aba)"
         }
       },
       "failed": "Não foi possível salvar a configuração",
@@ -2117,6 +2198,109 @@
         "title": "Não foi possível salvar",
         "detail": "A mensagem voltou ao que era. Tente de novo."
       }
+    },
+    "nav": {
+      "label": "Páginas de administração",
+      "feedback": "Feedback",
+      "stats": "Estatísticas"
+    },
+    "stats": {
+      "title": "Estatísticas de uso",
+      "description": "Totais das contas reais, calculados agora. Contas demo e de administração ficam de fora; grupos com menos de {{min}} pessoas ficam ocultos.",
+      "updated": "Atualizado às {{time}}",
+      "refreshing": "Atualizando…",
+      "refresh": "Atualizar",
+      "refreshFailed": "Não foi possível atualizar. Estes são os últimos números.",
+      "error": "Não foi possível carregar as estatísticas.",
+      "retry": "Tentar de novo",
+      "loading": "Carregando as estatísticas",
+      "tooFew": "Ainda não há usuários suficientes: porcentagens e grupos aparecem a partir de {{min}} usuários reais.",
+      "notEnough": "Ainda não há usuários suficientes",
+      "fewer": "Menos de {{min}}",
+      "smallGroup": "Oculto: um grupo de menos de {{min}}",
+      "shareOf": "{{percent}} · {{count}} de {{base}}",
+      "countOf": "{{count}} de {{base}}",
+      "shareCount": "{{percent}} · {{count}}",
+      "activitySince": "A atividade é registrada desde {{date}}. Visitas anteriores são estimadas a partir dos links salvos e dos logins, então os números de atividade e de retorno que vão até antes disso podem sair altos.",
+      "activityEstimated": "Visitas anteriores ao registro de atividade são estimadas a partir dos links salvos e dos logins, então os números de atividade e de retorno podem sair altos.",
+      "overview": {
+        "title": "Visão geral"
+      },
+      "tiles": {
+        "realUsers": "Usuários reais",
+        "active7d": "Ativos nos últimos 7 dias",
+        "active30d": "Ativos nos últimos 30 dias",
+        "returnedWeek": "Voltaram após uma semana",
+        "returnedMonth": "Voltaram após um mês",
+        "onboarded": "Introdução concluída",
+        "demo": "Demos em andamento",
+        "demoHint": "Não contadas em nenhum outro lugar"
+      },
+      "signUps": {
+        "title": "Cadastros",
+        "unit": "Mostrar por",
+        "days": "Dias",
+        "weeks": "Semanas",
+        "chartDays": "Cadastros, últimos 30 dias",
+        "chartWeeks": "Cadastros, últimas 12 semanas",
+        "total": "{{count}} no período",
+        "day": "Dia",
+        "week": "Semana a partir de",
+        "count": "Cadastros",
+        "dayBar": "{{date}}: {{count}}",
+        "weekBar": "Semana a partir de {{date}}: {{count}}"
+      },
+      "links": {
+        "title": "Links por usuário",
+        "average": "Média {{mean}} · mediana {{median}}",
+        "chart": "Usuários reais por número de links salvos",
+        "bucket": "Links",
+        "users": "Usuários"
+      },
+      "features": {
+        "title": "Recursos",
+        "adoption": "Quem usa o quê"
+      },
+      "feature": {
+        "folders": "Pastas",
+        "nestedFolders": "Pastas dentro de pastas",
+        "tags": "Tags",
+        "favorites": "Favoritos",
+        "notes": "Notas",
+        "sidebarPins": "Fixados na barra lateral",
+        "folderPins": "Fixados em uma pasta",
+        "savedViews": "Visualizações salvas próprias",
+        "trash": "Itens na lixeira",
+        "publicCollections": "Coleções públicas",
+        "ownColours": "Cores próprias",
+        "ownEmoji": "Emoji próprios",
+        "openedRecently": "Abriu um link salvo em 30 dias",
+        "historyPaused": "Histórico pausado",
+        "previewsOff": "Prévias desativadas"
+      },
+      "preferences": {
+        "title": "Preferências",
+        "theme": "Tema",
+        "language": "Idioma",
+        "retention": "A lixeira guarda os itens por"
+      },
+      "bucket": {
+        "other": "Outros",
+        "never": "Nunca escolhido"
+      },
+      "ratings": {
+        "title": "Avaliações e mensagens",
+        "milestone": {
+          "day3": "Após 3 dias",
+          "week1": "Após uma semana",
+          "month1": "Após um mês",
+          "year1": "Após um ano"
+        },
+        "answered": "{{answered}} respondidas · {{skipped}} puladas",
+        "summary": "Média {{mean}} · mediana {{median}}",
+        "byKind": "Mensagens por tipo",
+        "byStatus": "Mensagens por status"
+      }
     }
   },
   "tabSync": {
@@ -2240,7 +2424,9 @@
       "openAll": "Abrir todos",
       "copy": "Copiar links",
       "share": "Compartilhar",
-      "delete": "Excluir"
+      "delete": "Excluir",
+      "moveToFolder": "Mover para {{folder}}",
+      "remind": "Lembrar"
     },
     "header": {
       "label": "Seleção",
@@ -2361,5 +2547,347 @@
       "failedDetail": "Eles voltaram para a lista",
       "undoFailed": "Não foi possível restaurar os links"
     }
+  },
+  "reminders": {
+    "title": "Lembretes",
+    "dueCount": {
+      "one": "{{count}} lembrete chegou",
+      "many": "{{count}} lembretes chegaram",
+      "other": "{{count}} lembretes chegaram"
+    },
+    "nothingDue": "Nada pendente agora",
+    "dueShort": {
+      "one": "{{count}} pendente",
+      "many": "{{count}} pendentes",
+      "other": "{{count}} pendentes"
+    },
+    "loading": "Carregando lembretes",
+    "loadFailed": {
+      "title": "Não foi possível carregar seus lembretes",
+      "text": "Verifique sua conexão e tente de novo.",
+      "retry": "Tentar de novo"
+    },
+    "empty": {
+      "title": "Nenhum lembrete ainda",
+      "text": "Escolha “Lembrar-me” no menu de um link e ele volta aqui no dia que você escolher."
+    },
+    "group": {
+      "due": "Pendentes",
+      "today": "Hoje",
+      "tomorrow": "Amanhã",
+      "this-week": "Esta semana",
+      "later": "Mais tarde"
+    },
+    "footer": "Os lembretes aparecem aqui, no contador da barra lateral e no cartão. Eles não são enviados por e-mail nem por notificação.",
+    "when": {
+      "today": "Hoje, {{time}}",
+      "tomorrow": "Amanhã, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Pendente {{when}}"
+    },
+    "preset": {
+      "later-today": "Mais tarde hoje",
+      "tomorrow": "Amanhã",
+      "weekend": "Neste fim de semana",
+      "next-week": "Semana que vem",
+      "in-month": "Daqui a um mês"
+    },
+    "dialog": {
+      "title": "Lembrar-me",
+      "titleMany": {
+        "one": "Lembrar-me de {{count}} link",
+        "many": "Lembrar-me de {{count}} links",
+        "other": "Lembrar-me de {{count}} links"
+      },
+      "close": "Fechar",
+      "current": "Lembrete atual: {{when}}",
+      "presets": "Opções rápidas",
+      "pick": "Escolher data e hora…",
+      "previousMonth": "Mês anterior",
+      "nextMonth": "Próximo mês",
+      "time": "Hora",
+      "timeHint": "Opcional; vazio é 9:00",
+      "past": "Esse horário já passou. Escolha um mais tarde.",
+      "timeZone": "Os horários estão no seu fuso horário, {{zone}}.",
+      "remove": "Remover lembrete",
+      "cancel": "Cancelar",
+      "confirm": "Lembrar-me {{when}}",
+      "confirmEmpty": "Escolha um dia"
+    },
+    "menu": {
+      "remind": "Lembrar-me…",
+      "change": "Alterar lembrete…"
+    },
+    "row": {
+      "done": "Concluído",
+      "doneItem": "Marcar o lembrete de {{title}} como concluído",
+      "snooze": "Adiar",
+      "snoozeItem": "Adiar o lembrete de {{title}}"
+    },
+    "toast": {
+      "failed": "Não foi possível salvar o lembrete",
+      "retry": "Tentar de novo",
+      "cleared": {
+        "one": "Lembrete removido",
+        "many": "{{count}} lembretes removidos",
+        "other": "{{count}} lembretes removidos"
+      },
+      "set": "Lembrete para {{when}}",
+      "due": {
+        "one": "Um lembrete chegou",
+        "many": "{{count}} lembretes chegaram",
+        "other": "{{count}} lembretes chegaram"
+      },
+      "show": "Ver"
+    },
+    "edit": {
+      "set": "Lembrete: {{when}}",
+      "none": "Sem lembrete",
+      "change": "Alterar",
+      "remind": "Lembrar-me"
+    }
+  },
+  "rules": {
+    "title": "Regras",
+    "intro": "Os links de um domínio vão para uma pasta e recebem tags quando você os salva. A pasta ou as tags que você escolhe sempre têm prioridade.",
+    "add": "Adicionar regra",
+    "list": "Regras",
+    "tags": "Tags",
+    "empty": "Ainda não há regras. Por exemplo, links de youtube.com podem ir para Vídeos com a tag video.",
+    "loadFailed": "Não foi possível carregar as regras.",
+    "retry": "Tentar novamente",
+    "folderTrashed": "Pasta na lixeira: só as tags são adicionadas",
+    "more": "Ações para {{domain}}",
+    "moreTooltip": "Mais ações",
+    "edit": "Editar",
+    "applyExisting": "Aplicar aos links existentes",
+    "delete": "Excluir regra",
+    "undo": "Desfazer",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Regra adicionada"
+    },
+    "saved": {
+      "title": "Regra salva"
+    },
+    "deleted": {
+      "title": "Regra excluída"
+    },
+    "deleteFailed": "Não foi possível excluir a regra",
+    "limit": {
+      "title": "Limite de regras atingido"
+    },
+    "apply": {
+      "title": "Aplicar a regra de {{domain}}?",
+      "message": {
+        "one": "{{count}} link em Sem pasta recebe a pasta e as tags desta regra: {{target}}.",
+        "many": "{{count}} links em Sem pasta recebem a pasta e as tags desta regra: {{target}}.",
+        "other": "{{count}} links em Sem pasta recebem a pasta e as tags desta regra: {{target}}."
+      },
+      "more": "São {{total}} no total. Aplique de novo para o restante.",
+      "confirm": {
+        "one": "Aplicar a {{count}} link",
+        "many": "Aplicar a {{count}} links",
+        "other": "Aplicar a {{count}} links"
+      },
+      "cancel": "Cancelar",
+      "none": "Nenhum link de {{domain}} em Sem pasta",
+      "done": {
+        "one": "Regra aplicada a {{count}} link",
+        "many": "Regra aplicada a {{count}} links",
+        "other": "Regra aplicada a {{count}} links"
+      },
+      "failed": "Não foi possível aplicar a regra",
+      "undoFailed": "Não foi possível desfazer a regra"
+    },
+    "dialog": {
+      "addTitle": "Adicionar regra",
+      "editTitle": "Editar regra",
+      "close": "Fechar",
+      "cancel": "Cancelar",
+      "save": "Salvar regra",
+      "saving": "Salvando…",
+      "domain": {
+        "label": "Domínio",
+        "placeholder": "youtube.com",
+        "hint": "Também vale para os subdomínios, como m.youtube.com",
+        "required": "Digite um domínio",
+        "invalid": "Digite um domínio como youtube.com"
+      },
+      "folder": {
+        "label": "Pasta",
+        "none": "Nenhuma pasta",
+        "search": "Buscar pastas",
+        "trashed": "A pasta desta regra está na lixeira. Escolha outra ou mantenha só as tags."
+      },
+      "tags": {
+        "label": "Tags",
+        "max": "Até {{max}} tags"
+      },
+      "nothing": "Escolha uma pasta ou adicione pelo menos uma tag.",
+      "taken": "Já existe uma regra para este domínio.",
+      "limit": "Você pode ter até {{max}} regras. Exclua uma primeiro.",
+      "missingFolder": "Esta pasta não existe mais. Escolha outra.",
+      "missing": "Esta regra foi excluída nesse meio-tempo.",
+      "failed": "Não foi possível salvar a regra. Tente novamente."
+    }
+  },
+  "changelog": {
+    "title": "Novidades",
+    "lead": "Todas as versões do Shelfmark, da mais recente para a mais antiga.",
+    "current": "Você está usando o Shelfmark {{version}}.",
+    "release": "Shelfmark {{version}}",
+    "home": "Shelfmark, início",
+    "items": {
+      "sideBySide": {
+        "title": "Lado a lado",
+        "text": "Abra duas listas uma ao lado da outra e arraste links de uma para a outra.",
+        "alt": "Dois feeds lado a lado no Shelfmark."
+      },
+      "folderStyle": {
+        "title": "Estilo das pastas",
+        "text": "Dê a uma pasta uma cor, um ícone ou emoji, uma descrição e uma capa, e destaque-a com um fundo na barra lateral.",
+        "alt": "Uma pasta com cor, ícone, descrição e capa próprios, ao lado da barra lateral."
+      },
+      "domainRules": {
+        "title": "Regras por site",
+        "text": "Envie os links de um site direto para a pasta que você escolher.",
+        "alt": "Uma regra que envia os links de um site para uma pasta."
+      },
+      "reminders": {
+        "title": "Lembretes",
+        "text": "Peça ao Shelfmark para lembrar você de um link mais tarde.",
+        "alt": "Um link guardado com um lembrete."
+      },
+      "colourPicker": {
+        "text": "Cores próprias: o botão + fica centralizado, e a cor escolhida é aplicada na hora num tom legível."
+      },
+      "phoneSignIn": {
+        "text": "Pequenos cartões voam para a estante enquanto você entra pelo celular."
+      },
+      "appSkeleton": {
+        "text": "Depois do login, o app toma forma na hora, em vez de uma tela preta."
+      },
+      "ukrainian": {
+        "text": "O Shelfmark agora fala ucraniano. Escolha em Configurações › Idioma."
+      },
+      "noHttps": {
+        "text": "Um link digitado como exemplo.com é salvo como qualquer outro."
+      },
+      "refresh": {
+        "title": "Um visual novo",
+        "text": "Cantos mais suaves, cores mais calmas, uma barra de abas flutuante no celular e avisos que dizem o que aconteceu."
+      },
+      "trash": {
+        "title": "Lixeira",
+        "text": "Links e pastas excluídos esperam na lixeira, então nada some por engano. Você escolhe por quanto tempo."
+      },
+      "folders": {
+        "title": "Cores, ícones e pastas fixadas",
+        "text": "Dê a uma pasta uma cor e um ícone ou emoji, e fixe na barra lateral as que você mais usa."
+      },
+      "savedViews": {
+        "title": "Visualizações salvas",
+        "text": "Deixe a um clique um filtro que você usa muito, como vídeos ou artigos para ler."
+      },
+      "sharing": {
+        "title": "Compartilhar uma pasta",
+        "text": "Transforme uma pasta numa página pública que qualquer pessoa com o link pode abrir. Pare de compartilhar quando quiser."
+      },
+      "pasteMany": {
+        "title": "Colar vários links",
+        "text": "Cole uma lista inteira de links e salve todos de uma vez."
+      },
+      "bulk": {
+        "title": "Selecionar vários links",
+        "text": "Mova, marque, favorite ou exclua vários links de uma vez."
+      },
+      "dragDrop": {
+        "title": "Arrastar e soltar",
+        "text": "Arraste um link para uma pasta na barra lateral ou reordene suas pastas."
+      },
+      "theme": {
+        "title": "Seu próprio tema",
+        "text": "Escolha seu destaque, fundo e cantos, e quanto o app se anima."
+      },
+      "languages": {
+        "title": "Seis idiomas",
+        "text": "Use o Shelfmark em inglês, francês, alemão, italiano, espanhol ou português."
+      },
+      "feedback": {
+        "title": "Enviar feedback",
+        "text": "Conte o que funciona e o que não funciona, com uma captura de tela se quiser, direto do app."
+      },
+      "fastLanding": {
+        "text": "Na primeira visita a página inicial abre na hora, sem uma pausa escura."
+      },
+      "phoneKeyboard": {
+        "text": "No celular o teclado não cobre mais a lista de pastas, os painéis, os diálogos e as sugestões."
+      },
+      "emptyExport": {
+        "text": "A exportação explica quando não há nada para exportar em vez de baixar um arquivo vazio."
+      },
+      "bulkBar": {
+        "text": "No celular a barra dos links selecionados volta a ficar logo acima da barra de abas."
+      },
+      "sheetDropdown": {
+        "text": "Um menu suspenso fecha assim que você arrasta um painel para baixo no celular."
+      },
+      "skeletonRows": {
+        "text": "A tela de carregamento combina com a página e mostra três fileiras de cards."
+      },
+      "feedbackActive": {
+        "text": "“Enviar feedback” não fica mais destacado depois de fechar."
+      },
+      "folderChips": {
+        "text": "Os cartões e as linhas mostram em que pasta está um link, com a cor da pasta."
+      },
+      "updatePrompt": {
+        "text": "Quando uma nova versão está pronta, o Shelfmark pergunta antes de recarregar."
+      },
+      "whatsNewCard": {
+        "text": "Um cartão de Novidades após cada atualização e uma página com todas as versões."
+      },
+      "privacyWording": {
+        "text": "A página de privacidade explica com mais clareza o que é guardado e quem pode ver."
+      },
+      "toastWraps": {
+        "text": "As notificações mostram o texto inteiro em vez de cortá-lo."
+      },
+      "folderStyleRace": {
+        "text": "Mudar depressa o estilo de uma pasta já não traz de volta uma escolha antiga."
+      },
+      "newFolderInAddLink": {
+        "text": "Adicionar link pode criar uma pasta: digite um nome novo no campo Pasta."
+      },
+      "emojiPickerTabs": {
+        "text": "O seletor de emoji tem a largura do campo, e as abas de categorias não parecem mais emojis para escolher."
+      }
+    },
+    "sections": {
+      "new": "Novidades",
+      "improved": "Melhorias",
+      "fixed": "Correções"
+    }
+  },
+  "whatsNew": {
+    "title": "Novidades do Shelfmark",
+    "lead": "Veja o que mudou desde a sua última visita.",
+    "seeAll": "Ver todas as mudanças",
+    "close": "Entendi",
+    "entry": "Novidades",
+    "unseen": "novo",
+    "more": {
+      "one": "E mais {{count}} melhoria ou correção",
+      "many": "E mais {{count}} melhorias e correções",
+      "other": "E mais {{count}} melhorias e correções"
+    }
+  },
+  "update": {
+    "available": "Uma nova versão do Shelfmark está pronta",
+    "reload": "Recarregar",
+    "later": "Depois"
   }
 }

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { THEME, THEME_ATTRIBUTE } from '../../models/theme';
 import { BulkBarComponent } from './bulk-bar.component';
 import type { BulkBarAction } from './models/bulk-bar-action.interface';
+import { BULK_BAR_ACTION_VARIANT } from './models/bulk-bar-action-variant.const';
 import { BULK_BAR_LAYOUT } from './models/bulk-bar-layout.const';
 
 const DESKTOP: BulkBarAction[] = [
@@ -67,6 +68,19 @@ export const TogglePressed: Story = {
   },
 };
 
+const SPLIT: BulkBarAction[] = [
+  {
+    id: 'move-to-split',
+    label: 'Move to Clothes',
+    variant: BULK_BAR_ACTION_VARIANT.Secondary,
+    folder: { colour: 'rose', icon: 'shirt' },
+  },
+  ...DESKTOP,
+];
+
+/** Side by side: the first action is a secondary button with the folder tile of the right half. */
+export const MoveToFolder: Story = { args: { actions: SPLIT } };
+
 /** An action that cannot run right now. */
 export const Disabled: Story = {
   args: {
@@ -78,12 +92,13 @@ export const Disabled: Story = {
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
-    props: { desktop: DESKTOP, phone: PHONE, themes: Object.values(THEME) },
+    props: { desktop: DESKTOP, split: SPLIT, phone: PHONE, themes: Object.values(THEME) },
     template: `
       <div class="ds-themes">
         @for (theme of themes; track theme) {
           <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
             <ui-bulk-bar [actions]="desktop" [ariaLabel]="'Actions, inline, ' + theme" />
+            <ui-bulk-bar [actions]="split" [ariaLabel]="'Actions, side by side, ' + theme" />
             <div style="max-width: 22.5rem">
               <ui-bulk-bar [actions]="phone" layout="stacked" [ariaLabel]="'Actions, stacked, ' + theme" />
             </div>

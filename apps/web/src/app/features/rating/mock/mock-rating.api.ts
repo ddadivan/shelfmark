@@ -73,6 +73,11 @@ export class MockRatingApi implements RatingApi {
     return Promise.resolve();
   }
 
+  /** The mock keeps no view counts: they are only read in the real database. */
+  recordPromptView(): Promise<void> {
+    return Promise.resolve();
+  }
+
   private eligible(): boolean {
     const raw = this.storage?.getItem(MOCK_SESSION_STORAGE_KEY);
     if (!raw) {

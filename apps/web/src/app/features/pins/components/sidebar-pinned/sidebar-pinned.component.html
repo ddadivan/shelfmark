@@ -26,6 +26,8 @@
           <li
             class="pinned__item"
             cdkDrag
+            [uiFolderColour]="row.folder ? settings.shownColour(row.folder.colour) : 'graphite'"
+            [attr.data-ui-folder-highlight]="row.folder?.highlighted ? '' : null"
             [cdkDragStartDelay]="DRAG_START_DELAY"
             [attr.data-pin]="row.key"
             [attr.data-link-drop-folder]="row.folder?.id ?? null"

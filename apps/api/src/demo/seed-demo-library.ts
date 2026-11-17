@@ -6,6 +6,7 @@ import type { DemoSeed } from './models/demo-seed.interface';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MS_PER_MINUTE = 60 * 1000;
+const MS_PER_HOUR = 60 * MS_PER_MINUTE;
 
 function daysAgo(now: Date, days: number, order: number): Date {
   // The index keeps the timestamps distinct, so ordering by date is stable.
@@ -44,6 +45,8 @@ export async function seedDemoLibrary(
         userId,
         name: folder.name,
         parentId: folder.parent === null ? null : idOfFolder(folder.parent),
+        colour: folder.colour,
+        highlighted: folder.highlighted ?? false,
       })),
     });
     for (const folder of ready) created.add(folder.key);
@@ -73,6 +76,10 @@ export async function seedDemoLibrary(
       createdAt: daysAgo(now, link.createdDaysAgo, order),
       lastOpenedAt:
         link.lastOpenedDaysAgo === null ? null : daysAgo(now, link.lastOpenedDaysAgo, order),
+      remindAt:
+        link.remindInHours === undefined
+          ? null
+          : new Date(now.getTime() + link.remindInHours * MS_PER_HOUR),
     });
     for (const name of link.tags) {
       const tagId = tagIds.get(normalizeTagName(name));
@@ -82,4 +89,12 @@ export async function seedDemoLibrary(
   });
   await tx.link.createMany({ data: linkRows });
   await tx.linkTag.createMany({ data: linkTags });
+  await tx.linkRule.createMany({
+    data: seed.rules.map((rule) => ({
+      userId,
+      domain: rule.domain,
+      folderId: rule.folder === null ? null : idOfFolder(rule.folder),
+      tagNames: rule.tags.map(normalizeTagName),
+    })),
+  });
 }

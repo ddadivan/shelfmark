@@ -1,0 +1,178 @@
+@use 'ui' as *;
+
+// Like the Feedback inbox: one column, the same width.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: rem(840px);
+  min-width: 0;
+
+  // Centred in the main column, as the author asked.
+  margin-inline: auto;
+
+  @include tablet-up {
+    gap: rem(18px);
+  }
+}
+
+.admin-stats__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-stats__muted {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// Two tiles a row on a phone, four from tablet up.
+.admin-stats__tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+
+  @include tablet-up {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.admin-stats__tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+}
+
+.admin-stats__tile-label {
+  @include type(caption);
+
+  order: 1;
+  color: var(--text-muted);
+}
+
+.admin-stats__tile-value {
+  @include type(title);
+
+  order: 0;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-stats__tile-hint {
+  @include type(caption);
+
+  order: 2;
+  margin: 0;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-stats__block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+
+  & + & {
+    margin-block-start: var(--space-6);
+  }
+}
+
+.admin-stats__unit {
+  align-self: flex-start;
+}
+
+.admin-stats__heading {
+  @include type(label);
+
+  margin: 0;
+}
+
+.admin-stats__rows,
+.admin-stats__milestones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.admin-stats__columns {
+  display: grid;
+  gap: var(--space-6);
+
+  @include tablet-up {
+    grid-template-columns: repeat(auto-fit, minmax(rem(220px), 1fr));
+  }
+
+  .admin-stats__block + .admin-stats__block {
+    margin-block-start: 0;
+  }
+}
+
+.admin-stats__milestones {
+  margin-block-end: var(--space-6);
+}
+
+.admin-stats__milestone {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  align-items: baseline;
+  padding-block-end: var(--space-3);
+  border-block-end: 1px solid var(--border);
+}
+
+.admin-stats__milestone-title {
+  @include type(label);
+
+  flex: 1 0 100%;
+
+  @include tablet-up {
+    flex-basis: rem(140px);
+    flex-grow: 0;
+  }
+}
+
+.admin-stats__milestone-summary {
+  @include type(body);
+
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-stats__counts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.admin-stats__count {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+
+  dt {
+    @include type(body);
+  }
+
+  dd {
+    @include type(body);
+
+    margin: 0;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+}

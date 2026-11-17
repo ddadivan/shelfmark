@@ -1,0 +1,27 @@
+@if (extension.fits()) {
+  <section class="landing-extension" appLandingReveal aria-labelledby="landing-extension-title">
+    <div class="landing-extension__copy">
+      <p class="landing-extension__badge">{{ 'landing.extension.badge' | transloco }}</p>
+      <h2 id="landing-extension-title" class="landing-extension__title">
+        {{ 'landing.extension.title' | transloco }}
+      </h2>
+      <p class="landing-extension__text">{{ 'landing.extension.text' | transloco }}</p>
+      <p class="landing-extension__browsers">{{ 'landing.extension.browsers' | transloco }}</p>
+    </div>
+    <div class="landing-extension__visual">
+      <span class="landing-extension__disc" aria-hidden="true"></span>
+      <span class="landing-extension__bar" aria-hidden="true">
+        <span class="landing-extension__dots"><i></i><i></i><i></i></span>
+        <span class="landing-extension__address">cos.com/wool-coat-straight-cut</span>
+        <span class="landing-extension__button"><ui-logo [variant]="LOGO_VARIANT.Mark" /></span>
+      </span>
+      <img
+        class="landing-extension__popup"
+        width="360"
+        height="520"
+        [ngSrc]="popupSrc()"
+        [alt]="'landing.extension.alt' | transloco"
+      />
+    </div>
+  </section>
+}

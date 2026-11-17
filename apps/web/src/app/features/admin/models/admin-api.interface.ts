@@ -1,5 +1,6 @@
 import {
   type AdminFeedbackItem,
+  type AdminStatsResponse,
   type ListAdminFeedbackResponse,
   type ListAdminFeedbackQuery,
   type UpdateAdminFeedbackRequest,
@@ -16,4 +17,6 @@ export interface AdminApi {
   listFeedback(query: ListAdminFeedbackQuery): Promise<ListAdminFeedbackResponse>;
   /** `PATCH /api/admin/feedback/:id`: sets the status and / or the reply; answers the message. */
   updateFeedback(id: string, request: UpdateAdminFeedbackRequest): Promise<AdminFeedbackItem>;
+  /** `GET /api/admin/stats`: usage aggregates over real users (#333). */
+  stats(): Promise<AdminStatsResponse>;
 }

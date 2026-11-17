@@ -5,4 +5,8 @@ export interface DemoSeedFolder {
   name: string;
   /** `key` of the parent folder, or `null` for a top-level folder. */
   parent: string | null;
+  /** One of `FOLDER_COLOUR` (checked by the seed spec; a JSON import is a plain string); graphite when left out. */
+  colour?: string;
+  /** Shown with a background in its colour (#440); false when left out. */
+  highlighted?: boolean;
 }

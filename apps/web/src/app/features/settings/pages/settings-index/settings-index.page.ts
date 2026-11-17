@@ -18,7 +18,9 @@ import { LocaleService } from '../../../../core/i18n/locale.service';
 import { LANGUAGE_NAMES } from '../../../../core/i18n/models/language-names.const';
 import { INTERFACE_LANGUAGE } from '@shelfmark/contracts';
 import { APP_PATH } from '../../../../models/app-path.const';
+import { APP_VERSION } from '../../../../models/app-version.const';
 import { HowItWorksService } from '../../../how-it-works/services/how-it-works.service';
+import { WhatsNewStore } from '../../../changelog/services/whats-new.store';
 import { SETTINGS_NAV_ENTRIES } from '../../models/settings-nav-entries.const';
 import { SETTINGS_PATH } from '../../models/settings-path.const';
 import { THEME_OPTION_KEYS } from '../../models/theme-option-keys.const';
@@ -45,10 +47,15 @@ export default class SettingsIndexPage {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly SETTINGS_PATH = SETTINGS_PATH;
+  protected readonly appVersion = APP_VERSION;
   protected readonly settingsPath = `/${APP_PATH.Settings}`;
   protected readonly adminFeedbackPath = ['/', APP_PATH.Admin, ADMIN_PATH.Feedback];
+  protected readonly adminStatsPath = ['/', APP_PATH.Admin, ADMIN_PATH.Stats];
   protected readonly privacyHref = `/${APP_PATH.Privacy}`;
   protected readonly aboutHref = `/${APP_PATH.About}`;
+  protected readonly changelogHref = `/${APP_PATH.Changelog}`;
+  /** "What's new" opens the dialog (the link to `/changelog` is the fallback), with a dot while unseen. */
+  protected readonly whatsNew = inject(WhatsNewStore);
   protected readonly howItWorks = inject(HowItWorksService);
   protected readonly rows = SETTINGS_NAV_ENTRIES.filter((entry) => entry.phone);
   /** The current theme, shown at the end of the Appearance row. */
@@ -70,6 +77,11 @@ export default class SettingsIndexPage {
       });
     }
   });
+
+  protected openWhatsNew(event: MouseEvent): void {
+    event.preventDefault();
+    void this.whatsNew.open();
+  }
 
   protected async signOut(): Promise<void> {
     await this.auth.signOutAndLeave();

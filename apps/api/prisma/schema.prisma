@@ -84,6 +84,12 @@ model User {
   // longer reads or writes spellcheck; a later migration drops it.
   spellcheck            Boolean       @default(true) @map("spellcheck")
   languageSavedAt       DateTime?     @map("language_saved_at") @db.Timestamptz(3)
+  // Admin usage stats (#333, ADR 0045): UTC day of the last authenticated non-demo request, written
+  // at most once a day by UserActivityService; backfilled once in the migration.
+  lastActiveOn          DateTime?     @map("last_active_on") @db.Date
+  // "What's new" (#424): the newest release (x.y.z) whose highlights the user has seen; NULL until the
+  // web app writes it. A CHECK in the migration keeps it to RELEASE_VERSION_PATTERN.
+  whatsNewSeen          String?       @map("whats_new_seen")
   createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]
@@ -93,8 +99,10 @@ model User {
   linkImages            LinkImage[]
   tags                  Tag[]
   feedback              Feedback[]
+  ratingPromptViews     RatingPromptView[]
   folderShares          FolderShare[]
   savedViews            SavedView[]
+  linkRules             LinkRule[]
 
   @@map("users")
 }
@@ -168,6 +176,13 @@ model Folder {
   // Style (#263, ADR 0037): one of FOLDER_COLOUR / FOLDER_ICON; a CHECK in the migration closes the colour set.
   colour         String       @default("graphite") @db.VarChar(16)
   icon           String       @default("folder") @db.VarChar(24)
+  // Shown with a soft background in its colour: sidebar row and page header (#440).
+  highlighted    Boolean      @default(false)
+  // Optional short description (#418), trimmed, 1 to FOLDER_LIMIT.DescriptionMax characters (a CHECK in the migration).
+  description    String?      @db.VarChar(140)
+  // The link whose preview image is the cover (#418). No foreign key: the API writes only a live own
+  // link of this folder and answers the cover only while that is still true (folder-covers.ts).
+  coverLinkId    String?      @map("cover_link_id") @db.Uuid
   // Manual order among the siblings (#314): PUT /api/folders/order; lists sort by it, then by name.
   position       Int          @default(0) @db.SmallInt
   // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the folder goes to Trash.
@@ -181,6 +196,7 @@ model Folder {
   children       Folder[]     @relation("FolderTree")
   links          Link[]
   share          FolderShare?
+  linkRules      LinkRule[]
 
   @@unique([id, userId])
   @@index([userId, parentId])
@@ -217,6 +233,9 @@ model Link {
   // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the link goes to Trash.
   pinnedPosition     Int?        @map("pinned_position") @db.SmallInt
   lastOpenedAt       DateTime?   @map("last_opened_at") @db.Timestamptz(3)
+  // In-app reminder (#275): the link is due once this time has passed; NULL = no reminder. Done
+  // clears it. Written with plain SQL so `updated_at` stays; the partial index lives in the migration.
+  remindAt           DateTime?   @map("remind_at") @db.Timestamptz(3)
   // Set when the link is in Trash (ADR 0036). The partial indexes for Trash live in the migration.
   deletedAt          DateTime?   @map("deleted_at") @db.Timestamptz(3)
   createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -316,6 +335,22 @@ model Feedback {
   @@map("feedback")
 }
 
+// How often the rating prompt was shown to a user (#437): one row per user and milestone, written by
+// `POST /api/feedback/rating-prompt/views` (an atomic upsert). Read only in the database, through the
+// view `admin_user_overview`; no API returns it. The milestone CHECK (same set as feedback) and
+// `shown_count > 0` live in the migration.
+model RatingPromptView {
+  userId       String   @map("user_id") @db.Uuid
+  milestone    String   @db.VarChar(10)
+  shownCount   Int      @default(1) @map("shown_count")
+  firstShownAt DateTime @default(now()) @map("first_shown_at") @db.Timestamptz(3)
+  lastShownAt  DateTime @default(now()) @map("last_shown_at") @db.Timestamptz(3)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, milestone])
+  @@map("rating_prompt_views")
+}
+
 // A screenshot of a feedback message (#352): at most three per message, `position` 0 to 2 in the
 // order they were attached; PNG, JPEG or WebP (`type`), 1 byte to 2 MB. Only message rows get them
 // (the API attaches to a message of the session user). Deleting the message (or the user) deletes
@@ -371,4 +406,28 @@ model SavedView {
 
   @@index([userId, position])
   @@map("saved_views")
+}
+
+// A domain rule (#398): a link saved from `domain` or one of its subdomains goes to `folderId` and
+// gets `tagNames`, unless the save chose them itself. `domain` is `normalizeRuleDomain` (lower case,
+// no `www.`, IDN in punycode), unique per user; at most RULE_LIMIT.PerUserMax rules per user.
+// `folderId` is a single-column FK with ON DELETE SET NULL like Link.folder (Prisma cannot generate
+// `SET NULL (folder_id)` on a composite key); the API checks that the folder is the user's on every
+// write and reads it with the userId filter. A folder in Trash keeps the reference (the rule is
+// flagged and adds only its tags); deleting it for good clears it. Tags are stored by name, so a
+// deleted tag is created again by the next matching save. CHECKs live in the migration.
+model LinkRule {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  domain    String   @db.VarChar(253)
+  folderId  String?  @map("folder_id") @db.Uuid
+  tagNames  String[] @default([]) @map("tag_names")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder    Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, domain])
+  @@index([folderId])
+  @@map("link_rules")
 }

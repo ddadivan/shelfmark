@@ -1,3 +1,4 @@
+import { MOCK_APPEARANCE_STORAGE_KEY } from '../../settings/models/mock-appearance-storage-key.const';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
@@ -20,6 +21,7 @@ import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { FoldersStore } from '../../../stores/folders.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { MockFoldersApi } from '../../links/mock/mock-folders.api';
+import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MockLinksApi } from '../../links/mock/mock-links.api';
 import { MockTagsApi } from '../../links/mock/mock-tags.api';
 import { FOLDERS_API } from '../../links/models/folders-api.const';
@@ -37,6 +39,9 @@ function overlayLoader() {
 }
 
 async function setup() {
+  // The mock settings API keeps its choices (own colours, own emoji) in localStorage; start clean so
+  // an earlier test (or a retry) cannot leak its own emoji into this one.
+  localStorage.removeItem(MOCK_APPEARANCE_STORAGE_KEY);
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
@@ -159,6 +164,110 @@ describe('FolderActionsService style', () => {
     expect(store.entityMap()[MOCK_ID.FolderReading]).toMatchObject({
       colour: 'clay',
       icon: 'star',
+    });
+  });
+
+  it('has a Highlight with background switch that saves through setStyle (#440)', async () => {
+    const { actions, store } = await setup();
+    expect(store.entityMap()[MOCK_ID.FolderReading].highlighted).toBe(false);
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const toggle = root.querySelector<HTMLButtonElement>(
+      'button[role="switch"][aria-label="Highlight with background"]',
+    );
+    expect(toggle?.getAttribute('aria-checked')).toBe('false');
+    toggle?.click();
+    TestBed.tick();
+    expect(toggle?.getAttribute('aria-checked')).toBe('true');
+    button('Save').click();
+    await closed();
+    await done;
+
+    await until(() => {
+      expect(store.entityMap()[MOCK_ID.FolderReading].highlighted).toBe(true);
+    });
+  });
+
+  it('opens with the switch on for a highlighted folder, and Reset turns it off (#440)', async () => {
+    const { actions, store } = await setup();
+    await store.setStyle(MOCK_ID.FolderReading, { colour: 'rose', highlighted: true });
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const toggle = root.querySelector<HTMLButtonElement>('button[role="switch"]');
+    expect(toggle?.getAttribute('aria-checked')).toBe('true');
+    button('Reset').click();
+    TestBed.tick();
+    expect(toggle?.getAttribute('aria-checked')).toBe('false');
+    button('Cancel').click();
+    await closed();
+    await done;
+    expect(store.entityMap()[MOCK_ID.FolderReading].highlighted).toBe(true);
+  });
+
+  it('saves a trimmed description and refuses one that is too long (#418)', async () => {
+    const { actions, store } = await setup();
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const field = root.querySelector<HTMLInputElement>('ui-input input');
+    if (!field) {
+      throw new Error('no description field');
+    }
+    field.value = 'x'.repeat(141);
+    field.dispatchEvent(new Event('input'));
+    TestBed.tick();
+    button('Save').click();
+    TestBed.tick();
+    expect(root.textContent).toContain('Keep it to 140 characters.');
+    expect(dialog()).not.toBeNull();
+
+    field.value = '  Weekend reads  ';
+    field.dispatchEvent(new Event('input'));
+    TestBed.tick();
+    button('Save').click();
+    await closed();
+    await done;
+
+    await until(() => {
+      expect(store.entityMap()[MOCK_ID.FolderReading].description).toBe('Weekend reads');
+    });
+  });
+
+  it('offers the previews of the folder links as covers and saves the chosen one (#418)', async () => {
+    const { actions, store } = await setup();
+    const data = TestBed.inject(MockLibraryData);
+    const inFolder = data.links.filter((link) => link.folderId === MOCK_ID.FolderReading);
+    data.links = data.links.map((link) =>
+      link.id === inFolder[0]?.id
+        ? { ...link, imageUrl: `/api/links/${link.id}/image?v=0123456789abcdef` }
+        : link,
+    );
+    const chosen = inFolder[0];
+    if (!chosen) {
+      throw new Error('no link in the folder');
+    }
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    await until(() => {
+      expect(root.querySelectorAll('[aria-labelledby="folder-style-cover"] input')).toHaveLength(2);
+    });
+    const option = root.querySelector<HTMLInputElement>(
+      `[aria-labelledby="folder-style-cover"] input[aria-label="Cover from “${chosen.title}”"]`,
+    );
+    option?.click();
+    TestBed.tick();
+    button('Save').click();
+    await closed();
+    await done;
+
+    await until(() => {
+      expect(store.entityMap()[MOCK_ID.FolderReading]).toMatchObject({
+        coverLinkId: chosen.id,
+        coverUrl: `/api/links/${chosen.id}/image?v=0123456789abcdef`,
+      });
     });
   });
 
@@ -368,6 +477,7 @@ describe('FolderActionsService style', () => {
     const { actions, store } = await setup();
     const settings = TestBed.inject(UserSettingsStore);
     await settings.load();
+    const seededAt = store.entityMap()[MOCK_ID.FolderReading].updatedAt;
 
     void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
     await opened();
@@ -384,7 +494,15 @@ describe('FolderActionsService style', () => {
     expect(await picker.getValue()).toBe('🍕');
     button('Save').click();
     await closed();
-    expect(store.entityMap()[MOCK_ID.FolderReading].icon).toBe('🍕');
+    // The save is optimistic: its answer replaces the folder a moment later, and an answer that
+    // arrives after the next save would put the first emoji back. Wait for it (`updatedAt` moves).
+    await until(() => {
+      expect(store.entityMap()[MOCK_ID.FolderReading]).toMatchObject({
+        icon: '🍕',
+        updatedAt: expect.not.stringMatching(seededAt),
+      });
+    });
+    const firstSavedAt = store.entityMap()[MOCK_ID.FolderReading].updatedAt;
     expect(settings.customEmoji()).toEqual([]);
 
     void actions.style(store.entityMap()[MOCK_ID.FolderReading]);
@@ -396,8 +514,14 @@ describe('FolderActionsService style', () => {
     await again.setValue('🦩');
     button('Save').click();
     await closed();
+    // The dialog closes at once; the folder and the own list answer a moment later (a folder
+    // answer after this point would be the stale one of the first save).
     await until(() => {
       expect(settings.customEmoji()).toEqual(['🦩']);
+      expect(store.entityMap()[MOCK_ID.FolderReading]).toMatchObject({
+        icon: '🦩',
+        updatedAt: expect.not.stringMatching(firstSavedAt),
+      });
     });
 
     // Worn by the folder: shown under Yours, but not removable.

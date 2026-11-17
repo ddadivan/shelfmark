@@ -2,11 +2,13 @@ import {
   isHttpUrl,
   LINK_KIND,
   LINK_LIMIT,
+  normalizeRuleDomain,
   normalizeTagName,
   normalizeUrl,
+  RULE_LIMIT,
   TAG_LIMIT,
 } from '@shelfmark/contracts';
-import { FOLDER_LIMIT } from '@shelfmark/contracts';
+import { FOLDER_COLOUR, FOLDER_LIMIT } from '@shelfmark/contracts';
 import { isStorableUrl } from '../links/dto/is-http-url.decorator';
 import { DEMO_SEED } from './demo-seed';
 
@@ -29,6 +31,18 @@ describe('demo seed (seed.json)', () => {
     );
   });
 
+  it('has valid domain rules on seed folders and tags', () => {
+    const tags = new Set(DEMO_SEED.tags.map(normalizeTagName));
+    expect(DEMO_SEED.rules.length).toBeLessThanOrEqual(RULE_LIMIT.PerUserMax);
+    for (const rule of DEMO_SEED.rules) {
+      expect(normalizeRuleDomain(rule.domain)).toBe(rule.domain);
+      if (rule.folder !== null) expect(folderKeys).toContain(rule.folder);
+      expect(rule.tags.length).toBeLessThanOrEqual(RULE_LIMIT.TagsMax);
+      expect(rule.folder !== null || rule.tags.length > 0).toBe(true);
+      for (const name of rule.tags) expect(tags.has(normalizeTagName(name))).toBe(true);
+    }
+  });
+
   it('gives only known kinds', () => {
     const kinds: readonly string[] = Object.values(LINK_KIND);
     for (const link of DEMO_SEED.links) {
@@ -45,6 +59,21 @@ describe('demo seed (seed.json)', () => {
         expect(folderKeys.slice(0, index)).toContain(folder.parent);
       }
     });
+  });
+
+  it('highlights one or two folders, each with a real colour (#440)', () => {
+    const highlighted = DEMO_SEED.folders.filter((folder) => folder.highlighted === true);
+    expect(highlighted.length).toBeGreaterThanOrEqual(1);
+    expect(highlighted.length).toBeLessThanOrEqual(2);
+    for (const folder of DEMO_SEED.folders) {
+      if (folder.colour !== undefined) {
+        expect(Object.values(FOLDER_COLOUR)).toContain(folder.colour);
+      }
+    }
+    for (const folder of highlighted) {
+      expect(folder.colour).toBeDefined();
+      expect(folder.colour).not.toBe(FOLDER_COLOUR.Graphite);
+    }
   });
 
   it('has valid, unique, storable http(s) URLs and bounded titles and notes', () => {

@@ -18,6 +18,7 @@ async function setup(record: RatingApi['record'] = () => Promise.resolve()) {
   const api = {
     prompt: vi.fn(() => Promise.resolve<FeedbackMilestone | null>(null)),
     record: vi.fn(record),
+    recordPromptView: vi.fn(() => Promise.resolve()),
   } satisfies RatingApi;
   TestBed.configureTestingModule({
     providers: [

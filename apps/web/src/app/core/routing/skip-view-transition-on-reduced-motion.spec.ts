@@ -13,7 +13,11 @@ function fakeTransition(skipTransition = vi.fn()) {
   };
 }
 
-function setup(reduced: boolean | null, visibilityState: DocumentVisibilityState = 'visible') {
+function setup(
+  reduced: boolean | null,
+  visibilityState: DocumentVisibilityState = 'visible',
+  routes: Partial<Pick<ViewTransitionInfo, 'from' | 'to'>> = {},
+) {
   const doc = {
     visibilityState,
     defaultView:
@@ -29,7 +33,10 @@ function setup(reduced: boolean | null, visibilityState: DocumentVisibilityState
   } as unknown as Document;
   TestBed.configureTestingModule({ providers: [{ provide: DOCUMENT, useValue: doc }] });
   const skipTransition = vi.fn();
-  const info = { transition: fakeTransition(skipTransition) } as unknown as ViewTransitionInfo;
+  const info = {
+    ...routes,
+    transition: fakeTransition(skipTransition),
+  } as unknown as ViewTransitionInfo;
   TestBed.runInInjectionContext(() => skipViewTransitionOnReducedMotion(info));
   return skipTransition;
 }
@@ -92,6 +99,16 @@ describe('skipViewTransitionOnReducedMotion', () => {
 
   it('skips the page transition with prefers-reduced-motion', () => {
     expect(setup(true)).toHaveBeenCalledTimes(1);
+  });
+
+  it('skips it when only ?split changes (the right half of the side-by-side view)', () => {
+    const route = { path: 'unsorted' };
+    const root = (queryParams: Record<string, string>) =>
+      ({
+        firstChild: { routeConfig: route, params: {}, queryParams, firstChild: null },
+      }) as unknown as ViewTransitionInfo['from'];
+    const skipTransition = setup(false, 'visible', { from: root({}), to: root({ split: '' }) });
+    expect(skipTransition).toHaveBeenCalledTimes(1);
   });
 
   it('lets the cross-fade run otherwise', () => {

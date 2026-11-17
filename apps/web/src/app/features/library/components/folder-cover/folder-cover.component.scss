@@ -1,0 +1,25 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+  inline-size: rem(128px);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+
+  @include phone {
+    inline-size: rem(96px);
+  }
+}
+
+:host(.folder-cover--failed) {
+  display: none;
+}
+
+.folder-cover__image {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}

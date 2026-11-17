@@ -10,6 +10,7 @@ import {
   LINK_KIND,
   type LinkPreviewResponse,
   type LinkResponse,
+  type RuleResponse,
 } from '@shelfmark/contracts';
 import {
   MOCK_APPEARANCE_DEFAULTS,
@@ -33,6 +34,7 @@ import { MockTagsApi } from '../../mock/mock-tags.api';
 import { AddLinkDialogService } from '../../services/add-link-dialog.service';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { USER_SETTINGS_API } from '../../../settings/models/user-settings-api.const';
+import { RULES_API } from '../../../rules/models/rules-api.const';
 
 const PLAIN: LinkPreviewResponse = {
   preview: {
@@ -86,6 +88,7 @@ async function setup(
   data?: Parameters<AddLinkDialogService['open']>[0],
   library?: Partial<LibrarySettings>,
   update?: (request: UpdateUserSettingsRequest) => Observable<UserSettingsResponse>,
+  rules?: RuleResponse[],
 ) {
   const account: UserSettingsResponse = {
     trashRetentionDays: 30,
@@ -106,6 +109,7 @@ async function setup(
       ...(library
         ? [{ provide: USER_SETTINGS_API, useValue: { get: () => of(account), update } }]
         : []),
+      ...(rules ? [{ provide: RULES_API, useValue: { list: () => of({ items: rules }) } }] : []),
     ],
   });
   if (library) {
@@ -1109,6 +1113,88 @@ describe('AddLinkDialogComponent', () => {
 
       const results = await axe.run(dialog(), { rules: { 'color-contrast': { enabled: false } } });
       expect(results.violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
+    });
+  });
+
+  describe('domain rules (#398)', () => {
+    const RULE: RuleResponse = {
+      id: 'rule-1',
+      domain: 'example.org',
+      folderId: MOCK_ID.FolderAngular,
+      folderAvailable: true,
+      tags: ['docs'],
+      createdAt: '2026-11-01T00:00:00.000Z',
+    };
+
+    async function typeMatchingLink(): Promise<void> {
+      await type('Link', 'https://www.example.org/post');
+      await until(() => {
+        expect(dialog().textContent).toContain('Rule: example.org → Angular, #docs');
+      });
+    }
+
+    it('shows the rule, fills folder and tags, and saves them without the server applying it again', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, {}, undefined, undefined, [RULE]);
+      await typeMatchingLink();
+      expect(dialog().textContent).toContain('docs');
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      button('Save link').click();
+      await result;
+      expect(api.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          folderId: MOCK_ID.FolderAngular,
+          tags: ['docs'],
+          applyRules: false,
+        }),
+      );
+    });
+
+    it('takes the rule out when its chip is removed', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, {}, undefined, undefined, [RULE]);
+      await typeMatchingLink();
+      const remove = dialog().querySelector<HTMLButtonElement>(
+        'button[aria-label="Don\'t apply the rule for example.org"]',
+      );
+      remove?.click();
+      await until(() => {
+        expect(dialog().textContent).not.toContain('Rule: example.org');
+      });
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      button('Save link').click();
+      await result;
+      const request = api.create.mock.calls[0]?.[0];
+      expect(request?.applyRules).toBe(false);
+      expect(request?.folderId).toBeUndefined();
+      expect(request?.tags).toBeUndefined();
+    });
+
+    it('keeps the folder the dialog was opened in and adds only the tags', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(
+        api,
+        { folderId: MOCK_ID.FolderReading },
+        undefined,
+        undefined,
+        [RULE],
+      );
+      await type('Link', 'https://example.org/post');
+      await until(() => {
+        expect(dialog().textContent).toContain('Rule: example.org → #docs');
+      });
+      await until(() => {
+        expect(input('Title').value).toBe('A fine post');
+      });
+      button('Save link').click();
+      await result;
+      expect(api.create).toHaveBeenCalledWith(
+        expect.objectContaining({ folderId: MOCK_ID.FolderReading, tags: ['docs'] }),
+      );
     });
   });
 

@@ -25,6 +25,7 @@ import { titleOrUrl } from './title-or-url';
 import { hasPrismaCode } from '../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
+import { RulesService } from '../rules/rules.service';
 import { TagsService } from '../tags/tags.service';
 import { LinkImageCaptureService } from './images/link-image-capture.service';
 import { LinkPreviewService } from './link-preview.service';
@@ -55,6 +56,7 @@ export class LinksWriteService {
     private readonly tags: TagsService,
     private readonly previews: LinkPreviewService,
     private readonly images: LinkImageCaptureService,
+    private readonly rules: RulesService,
   ) {}
 
   /** `isDemo` comes from the session (never the request): demo sandboxes have a lower link cap. */
@@ -113,11 +115,16 @@ export class LinksWriteService {
           await this.requireFolder(tx, userId, request.folderId);
         }
         await this.assertUnderLimit(tx, userId, isDemo);
-        const tagIds = await this.tags.resolveNames(userId, request.tags ?? [], tx);
+        // Domain rules (#398) fill what the save left open; read under the folders lock, so the
+        // rule's folder is live now. An explicit folder or tag list always wins.
+        const rule =
+          request.applyRules === false ? null : (await this.rules.matcher(tx, userId))(url);
+        const tagNames = request.tags?.length ? request.tags : (rule?.tags ?? []);
+        const tagIds = await this.tags.resolveNames(userId, tagNames, tx);
         const row = await tx.link.create({
           data: {
             userId,
-            folderId: request.folderId ?? null,
+            folderId: request.folderId ?? rule?.folderId ?? null,
             url,
             normalizedUrl,
             title: finalTitle,

@@ -155,10 +155,13 @@ export class MockLinksApi implements LinksApi {
       }
       const now = new Date().toISOString();
       const url = this.savedUrl(request.url);
+      // Domain rules (#398), like the API: they fill what the save left open.
+      const rule = request.applyRules === false ? null : this.data.ruleEffect(url);
+      const tags = request.tags?.length ? request.tags : (rule?.tags ?? []);
       const link: LinkResponse = {
         id: globalThis.crypto.randomUUID(),
         kind: request.kind ?? deriveLinkKind(url),
-        folderId: request.folderId ?? null,
+        folderId: request.folderId ?? rule?.folderId ?? null,
         url,
         title: request.title ?? url,
         note: request.note ?? null,
@@ -168,7 +171,8 @@ export class MockLinksApi implements LinksApi {
         pinnedInFolderAt: null,
         pinned: false,
         lastOpenedAt: null,
-        tags: normalizeLinkTags(request.tags ?? []),
+        remindAt: null,
+        tags: normalizeLinkTags(tags),
         createdAt: now,
         updatedAt: now,
       };
@@ -398,7 +402,8 @@ export class MockLinksApi implements LinksApi {
       if (problems.length > 0) {
         return throwError(() => mockHttpError(HttpStatusCode.BadRequest, problems));
       }
-      if (request.folderId !== undefined && !this.hasFolder(request.folderId)) {
+      const folderIds = [request.folderId, ...request.items.map((item) => item.folderId)];
+      if (folderIds.some((id) => id !== undefined && !this.hasFolder(id))) {
         return throwError(() => folderNotFound());
       }
       const links: LinkResponse[] = [];
@@ -424,9 +429,12 @@ export class MockLinksApi implements LinksApi {
         }
         // The first pasted link is the newest, as on the server.
         const at = new Date(now - fresh.length).toISOString();
+        // Like the API: the item's own folder and tags, else the batch's, else its domain rule.
+        const rule = request.applyRules === false ? null : this.data.ruleEffect(item.url);
+        const tags = item.tags ?? (request.tags?.length ? request.tags : (rule?.tags ?? []));
         const link: LinkResponse = {
           id: globalThis.crypto.randomUUID(),
-          folderId: request.folderId ?? null,
+          folderId: item.folderId ?? request.folderId ?? rule?.folderId ?? null,
           url: item.url,
           title: item.title ?? item.url,
           kind: deriveLinkKind(item.url),
@@ -437,7 +445,8 @@ export class MockLinksApi implements LinksApi {
           pinnedInFolderAt: null,
           pinned: false,
           lastOpenedAt: null,
-          tags: normalizeLinkTags(request.tags ?? []),
+          remindAt: null,
+          tags: normalizeLinkTags(tags),
           createdAt: at,
           updatedAt: at,
         };
@@ -447,7 +456,7 @@ export class MockLinksApi implements LinksApi {
         links.push(link);
       });
       this.links = [...fresh, ...this.links];
-      this.data.ensureTags(request.tags ?? []);
+      this.data.ensureTags(fresh.flatMap((link) => link.tags));
       return of<CreateLinksBatchResponse>({
         links: links.map((link) => this.withImages(link, this.pending.has(link.id))),
         errors,

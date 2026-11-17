@@ -9,12 +9,14 @@ import {
 import {
   ArrayMaxSize,
   IsArray,
+  IsBoolean,
   IsIn,
   IsOptional,
   IsString,
   IsUUID,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { TrimString } from '../../folders/dto/trim-string.decorator';
@@ -59,7 +61,8 @@ export class CreateLinkDto implements CreateLinkRequest {
   kind?: LinkKind;
 
   @ApiPropertyOptional({ format: 'uuid', description: 'One of your folders' })
-  @IsOptional()
+  // Absent means no folder (or the domain rule's folder); an explicit null is refused (#423).
+  @ValidateIf((_, value: unknown) => value !== undefined)
   @IsUUID()
   folderId?: string;
 
@@ -103,4 +106,13 @@ export class CreateLinkDto implements CreateLinkRequest {
   @TrimString()
   @IsHttpUrl()
   imageUrl?: string;
+
+  @ApiPropertyOptional({
+    default: true,
+    description:
+      'Domain rules: the matching rule fills the folder when folderId is absent and the tags when none are sent; false skips them',
+  })
+  @IsOptional()
+  @IsBoolean()
+  applyRules?: boolean;
 }

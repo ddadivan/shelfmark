@@ -15,4 +15,6 @@ export interface LibraryRouteInputs {
   readonly sort: Signal<unknown>;
   /** From the query (`?kind=video`): see `parseLinkKind`. */
   readonly kind: Signal<unknown>;
+  /** From the query (`?split=<folder id>`): the right half of the side-by-side view; see `parseSplitParam`. */
+  readonly split?: Signal<unknown>;
 }

@@ -12,6 +12,7 @@ import {
   shouldTrustProxyHeaders,
 } from '../common/rate-limit/rate-limit-options';
 import { readAuthConfig } from '../config/auth-config';
+import { readExtensionConfig } from '../config/extension-config';
 import { DemoModule } from '../demo/demo.module';
 import { FeedbackModule } from '../feedback/feedback.module';
 import { ExportModule } from '../export/export.module';
@@ -20,11 +21,14 @@ import { HealthModule } from '../health/health.module';
 import { LinksModule } from '../links/links.module';
 import { MonitoringModule } from '../monitoring/monitoring.module';
 import { PinsModule } from '../pins/pins.module';
+import { RemindersModule } from '../reminders/reminders.module';
 import { ViewsModule } from '../views/views.module';
+import { RulesModule } from '../rules/rules.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { SharesModule } from '../shares/shares.module';
 import { TagsModule } from '../tags/tags.module';
 import { TrashModule } from '../trash/trash.module';
+import { UserActivityService } from '../users/user-activity.service';
 import { UsersModule } from '../users/users.module';
 
 @Module({
@@ -45,6 +49,8 @@ import { UsersModule } from '../users/users.module';
     TrashModule,
     PinsModule,
     ViewsModule,
+    RemindersModule,
+    RulesModule,
     // Async so the environment is read at DI time, not at import time.
     ThrottlerModule.forRootAsync({
       useFactory: () => createRateLimitOptions(shouldTrustProxyHeaders()),
@@ -55,8 +61,13 @@ import { UsersModule } from '../users/users.module';
     // so a flood is rejected before anything else; then the CSRF check (cheap, no database); then the
     // session guard, which hits the database. Keep every global guard here, in one visible list.
     { provide: APP_GUARD, useClass: ThrottlerGuard },
-    { provide: APP_GUARD, useFactory: () => new CsrfGuard(readAuthConfig().trustedOrigins) },
+    {
+      provide: APP_GUARD,
+      useFactory: () => new CsrfGuard(readAuthConfig().trustedOrigins, readExtensionConfig()),
+    },
     { provide: APP_GUARD, useClass: SessionAuthGuard },
+    // Used by SessionAuthGuard to record the day of activity (ADR 0045).
+    UserActivityService,
     // The first interceptor is the outermost: logging sees the timeout's 504 as well.
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
     { provide: APP_INTERCEPTOR, useClass: TimeoutInterceptor },

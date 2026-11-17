@@ -4,6 +4,7 @@ import type {
   LinkResponse,
   ListFoldersResponse,
   ListLinksResponse,
+  ListRemindersResponse,
   ListTagsResponse,
 } from '@shelfmark/contracts';
 import request from 'supertest';
@@ -45,8 +46,23 @@ describe('demo library, limits and expiry', () => {
 
       expect(await t.db.prisma.link.count({ where })).toBe(DEMO_SEED.links.length);
       expect(await t.db.prisma.tag.count({ where })).toBe(DEMO_SEED.tags.length);
+      const rules = await t.db.prisma.linkRule.findMany({ where, include: { folder: true } });
+      expect(rules.map((rule) => [rule.domain, rule.folder?.name, rule.tagNames])).toEqual([
+        ['angular.dev', 'Angular', ['angular']],
+      ]);
       const folders = await t.db.prisma.folder.findMany({ where, include: { parent: true } });
       expect(folders).toHaveLength(DEMO_SEED.folders.length);
+      expect(
+        folders
+          .filter((folder) => folder.highlighted)
+          .map((folder) => folder.name)
+          .sort(),
+      ).toEqual(
+        DEMO_SEED.folders
+          .filter((folder) => folder.highlighted === true)
+          .map((folder) => folder.name)
+          .sort(),
+      );
       const nested = folders.filter((folder) => folder.parentId !== null);
       expect(nested).toHaveLength(1);
       expect(nested[0]?.parent?.name).toBe('Work');
@@ -65,6 +81,15 @@ describe('demo library, limits and expiry', () => {
       for (const link of links) {
         expect(link.titleSortKey).toBe(link.title.toLowerCase());
       }
+    });
+
+    it('seeds one due and one upcoming reminder (#275)', async () => {
+      const demo = await signInDemo(t.app, t.baseUrl);
+      const reminders = await asUser(t.app, demo).get('/api/reminders').expect(200);
+      const body = reminders.body as ListRemindersResponse;
+      expect(body.due.map((link) => link.title)).toEqual(['Patagonia Worn Wear']);
+      expect(body.upcoming.map((link) => link.title)).toEqual(['TypeScript Handbook']);
+      await asUser(t.app, demo).get('/api/reminders/count').expect(200, { due: 1 });
     });
 
     it('is readable through the API as the demo user, and each demo user has their own copy', async () => {

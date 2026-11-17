@@ -1,3 +1,5 @@
+import { DOCUMENT } from '@angular/common';
+import { ExtensionBannerService } from '../../core/browser-extension/extension-banner.service';
 import {
   booleanAttribute,
   ChangeDetectionStrategy,
@@ -35,6 +37,7 @@ import { SidebarTagsComponent } from '../../features/tags/components/sidebar-tag
 import { APP_PATH } from '../../models/app-path.const';
 import { FoldersStore } from '../../stores/folders.store';
 import { PinsStore } from '../../stores/pins.store';
+import { RemindersStore } from '../../stores/reminders.store';
 import { TagsStore } from '../../stores/tags.store';
 import { TrashStore } from '../../stores/trash.store';
 import { UserSettingsStore } from '../../stores/user-settings.store';
@@ -43,6 +46,9 @@ import { HowItWorksService } from '../../features/how-it-works/services/how-it-w
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/components/how-it-works-card/how-it-works-card.component';
 import { SIDEBAR_FEEDBACK_ID } from './models/sidebar-feedback-id.const';
+import { SIDEBAR_EXTENSION_ID } from './models/sidebar-extension-id.const';
+import { SIDEBAR_WHATS_NEW_ID } from './models/sidebar-whats-new-id.const';
+import { WhatsNewStore } from '../../features/changelog/services/whats-new.store';
 import { folderTreeNodes } from './utils/folder-tree-nodes';
 import { injectSidebarLabels } from './utils/inject-sidebar-labels';
 import { latched } from './utils/latched';
@@ -87,12 +93,14 @@ export class SidebarComponent {
   protected readonly folders = inject(FoldersStore);
   private readonly trash = inject(TrashStore);
   private readonly pins = inject(PinsStore);
+  private readonly reminders = inject(RemindersStore);
   protected readonly folderMenu = inject(SidebarFoldersService);
   private readonly settings = inject(UserSettingsStore);
   protected readonly drag = inject(LinkDragService);
   protected readonly howItWorks = inject(HowItWorksService);
   /** "Send feedback" in the sidebar footer opens the same dialog as the account menu (#315). */
   protected readonly feedback = inject(FeedbackDialogService);
+  private readonly whatsNew = inject(WhatsNewStore);
   private readonly tagsStore = inject(TagsStore);
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
@@ -134,6 +142,9 @@ export class SidebarComponent {
   );
 
   private readonly labels = injectSidebarLabels();
+  /** "Get the extension" in the footer once the library banner was closed (#455). */
+  private readonly extension = inject(ExtensionBannerService);
+  private readonly document = inject(DOCUMENT);
   /** The "..." button name with its `{name}` placeholder; `ui-tree` fills in the folder. */
   protected readonly menuLabel = computed(() => this.labels()?.actions);
 
@@ -146,13 +157,17 @@ export class SidebarComponent {
     // Settings › Library › Show folder counts: off drops the link counts (Trash keeps its own).
     const counts =
       this.folders.loaded() && this.settings.countsShown() ? this.folders.counts() : null;
-    return fixedNodes(labels, counts);
+    // The due reminders count shows whatever "Show folder counts" says: it asks for attention.
+    const due = this.reminders.dueCount();
+    return fixedNodes(labels, counts, due > 0 ? due : undefined);
   });
 
-  /** "Send feedback" above the divider (not on the phone, which has it in the You list). */
+  /** "What's new" and "Send feedback" above the divider (not on the phone: the You list has them). */
   protected readonly feedbackNodes = computed<UiTreeNode[]>(() => {
     const labels = this.labels();
-    return !labels || this.phone() ? [] : feedbackNodes(labels);
+    return !labels || this.phone()
+      ? []
+      : feedbackNodes(labels, this.whatsNew.pending(), this.extension.entryShown());
   });
 
   /** Trash under the divider; its count shows once the list has loaded and only while not empty. */
@@ -208,6 +223,14 @@ export class SidebarComponent {
   protected async footerSelected(node: UiTreeNode): Promise<void> {
     if (node.id === SIDEBAR_FEEDBACK_ID) {
       this.feedback.open();
+      return;
+    }
+    if (node.id === SIDEBAR_EXTENSION_ID) {
+      this.document.defaultView?.open(this.extension.storeUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    if (node.id === SIDEBAR_WHATS_NEW_ID) {
+      void this.whatsNew.open();
       return;
     }
     await this.router.navigate([`/${APP_PATH.Trash}`]);

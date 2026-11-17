@@ -2,8 +2,11 @@ import type { FolderResponse, LinkResponse, PinRef } from '@shelfmark/contracts'
 import { PIN_KIND } from '@shelfmark/contracts';
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
+import { MS_PER_HOUR } from '../../../core/models/ms-per-hour.const';
 import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
+import type { MockRule } from '../../rules/mock/models/mock-rule.interface';
+import { DEMO_FOLDER_KEY } from './models/demo-folder-key.const';
 import type { DemoFolderKey } from './models/demo-folder-key.type';
 import { DEMO_SEED_FOLDERS } from './models/demo-seed-folders.const';
 import { DEMO_SEED_LINKS } from './models/demo-seed-links.const';
@@ -13,6 +16,8 @@ export interface DemoLibrarySeed {
   folders: FolderResponse[];
   links: LinkResponse[];
   pins: PinRef[];
+  /** Domain rules (#398): one example, like the API's demo seed. */
+  rules: MockRule[];
 }
 
 const ID_PREFIX = '00000000-0000-4000-8000-';
@@ -65,6 +70,10 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
       name: folder.name,
       colour: folder.colour,
       icon: folder.icon,
+      highlighted: folder.highlighted === true,
+      description: null,
+      coverLinkId: null,
+      coverUrl: null,
       // Like the migration of #314: siblings start in name order.
       position: DEMO_SEED_FOLDERS.filter(
         (other) => other.parent === folder.parent && other.name.localeCompare(folder.name) < 0,
@@ -93,6 +102,10 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
         link.openedDaysAgo === null
           ? null
           : new Date(now - link.openedDaysAgo * MS_PER_DAY).toISOString(),
+      remindAt:
+        link.remindInHours === undefined
+          ? null
+          : new Date(now + link.remindInHours * MS_PER_HOUR).toISOString(),
       tags: [...link.tags],
       createdAt: created,
       updatedAt: created,
@@ -108,7 +121,17 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
       .filter((link) => link.pinned)
       .map((link): PinRef => ({ kind: PIN_KIND.Link, id: link.id })),
   ];
-  return { folders, links, pins };
+  // Like the API's seed.json: links from angular.dev go to Angular with the tag "angular".
+  const rules: MockRule[] = [
+    {
+      id: `${ID_PREFIX}r00000000001`,
+      domain: 'angular.dev',
+      folderId: ids.get(DEMO_FOLDER_KEY.Angular) ?? null,
+      tags: ['angular'],
+      createdAt: stamp,
+    },
+  ];
+  return { folders, links, pins, rules };
 }
 
 function folderSuffix(index: number): string {

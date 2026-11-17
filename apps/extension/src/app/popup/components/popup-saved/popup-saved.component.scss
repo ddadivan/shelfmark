@@ -1,0 +1,46 @@
+@use 'ui' as *;
+
+.saved {
+  gap: rem(12px);
+}
+
+// The saving moment scaled to the popup: the check pops in, the sage ring fades out around it.
+.saved__check {
+  --ui-icon-scale: 1.25;
+
+  display: grid;
+  place-items: center;
+  inline-size: rem(64px);
+  block-size: rem(64px);
+  color: var(--surface);
+  background: var(--accent);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 8px var(--accent-bg);
+  animation: saved-pop var(--duration-base) var(--ease-spring) both;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.saved__card {
+  animation: saved-land var(--duration-slow) var(--ease-out) var(--duration-fast) both;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+@keyframes saved-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes saved-land {
+  from {
+    opacity: 0;
+    transform: translateY(#{rem(12px)});
+  }
+}

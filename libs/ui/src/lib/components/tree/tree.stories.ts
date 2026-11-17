@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { MenuItemComponent } from '../menu/menu-item/menu-item.component';
 import { MenuSeparatorComponent } from '../menu/menu-separator/menu-separator.component';
 import { MenuComponent } from '../menu/menu.component';
+import type { UiTreeNode } from './models/tree-node.interface';
 import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.interface';
 import { TREE_STORY_ID } from './stories/tree-story-id.const';
 import { TREE_STORY_DEEP } from './stories/tree-story-deep.const';
@@ -10,6 +11,7 @@ import { TREE_STORY_FIXED } from './stories/tree-story-fixed.const';
 import { TREE_STORY_FLAT } from './stories/tree-story-flat.const';
 import { TREE_STORY_LONG } from './stories/tree-story-long.const';
 import { TREE_STORY_NESTED } from './stories/tree-story-nested.const';
+import { TREE_STORY_COLOURED } from './stories/tree-story-coloured.const';
 import {
   reorderDropLine,
   setReorderDropLine,
@@ -114,6 +116,17 @@ export const NoDropRows: Story = {
   render: (args) => ({ props: args, template }),
 };
 
+/** A fixed row with a dot ("What's new" until it is opened); the dot's label is read with the name. */
+export const WithDot: Story = {
+  args: {
+    fixedNodes: [
+      ...TREE_STORY_FIXED,
+      { id: 'whats-new', name: "What's new", icon: 'gift', dot: 'new' },
+    ],
+  },
+  render: (args) => ({ props: args, template }),
+};
+
 /** No fixed entries, no menu button (no `menuLabel`). */
 export const FoldersOnly: Story = {
   args: { fixedNodes: [], menuLabel: undefined, activeId: null },
@@ -204,6 +217,54 @@ export const ReorderLine: Story = {
       .join('')}`,
   }),
   play: async ({ canvasElement }) => drawReorderLines(canvasElement),
+};
+
+/**
+ * Coloured folders (#418) and the highlight (#440), in both themes: plain (the folder tile only),
+ * then the same folders with `highlighted` (a soft background in the folder colour even when the
+ * folder is not open, a stronger tint and bolder text on the open row, hover and focus a stronger
+ * tint of the same colour, never the grey hover). Graphite rows stay plain. Recipes has a
+ * description (its tooltip).
+ */
+export const FolderColours: Story = {
+  parameters: { layout: 'fullscreen' },
+  render: () => {
+    const light = (list: readonly UiTreeNode[]): UiTreeNode[] =>
+      list.map((node) => ({
+        ...node,
+        ...(node.colour !== undefined && { highlighted: true }),
+        ...(node.children && { children: light(node.children) }),
+      }));
+    return {
+      props: {
+        plain: TREE_STORY_COLOURED,
+        highlighted: light(TREE_STORY_COLOURED),
+        ids: TREE_STORY_ID,
+      },
+      template: `${Object.values(THEME)
+        .map(
+          (theme) => `
+          <div ${THEME_ATTRIBUTE}="${theme}" class="ts-panel ts-panel--variants">
+            <p class="ts-hint">${theme} theme: plain, highlighted (Angular is open)</p>
+            <div class="ts-row">
+              <div class="ts-sidebar">
+                <ui-tree ariaLabel="Folders, plain (${theme})" heading="Folders"
+                  menuLabel="Actions for {name}" [nodes]="plain" [activeId]="ids.Angular" />
+              </div>
+              <div class="ts-sidebar">
+                <ui-tree ariaLabel="Folders, highlighted (${theme})" heading="Folders"
+                  menuLabel="Actions for {name}" [nodes]="highlighted" [activeId]="ids.Angular" />
+              </div>
+              <div class="ts-sidebar">
+                <ui-tree ariaLabel="Folders, highlighted, none open (${theme})" heading="Folders"
+                  menuLabel="Actions for {name}" [nodes]="highlighted" />
+              </div>
+            </div>
+          </div>`,
+        )
+        .join('')}`,
+    };
+  },
 };
 
 const variants = (theme: Theme) => `

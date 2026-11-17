@@ -8,12 +8,12 @@ import { THEME_PREFERENCE } from '../users/theme-preference.const';
 import type { UserSettingsResponse } from '../users/user-settings-response.interface';
 
 /**
- * The appearance and language parts (never saved) of a new account's `UserSettingsResponse`
- * (spread it into fixtures).
+ * The appearance and language parts (never saved) of a new account's `UserSettingsResponse`, and
+ * its unwritten "What's new" release (#424); spread it into fixtures.
  */
 export const MOCK_APPEARANCE_DEFAULTS: Pick<
   UserSettingsResponse,
-  'theme' | 'customTheme' | 'motion' | 'appearanceSaved' | 'languageSaved'
+  'theme' | 'customTheme' | 'motion' | 'appearanceSaved' | 'languageSaved' | 'whatsNewSeen'
 > &
   LayoutSettings &
   LanguageSettings = {
@@ -24,4 +24,5 @@ export const MOCK_APPEARANCE_DEFAULTS: Pick<
   ...LAYOUT_SETTINGS_DEFAULT,
   ...LANGUAGE_SETTINGS_DEFAULT,
   languageSaved: false,
+  whatsNewSeen: null,
 };

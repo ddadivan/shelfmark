@@ -17,6 +17,7 @@ import { toRef, trashKey } from '../features/trash/utils/trash-key';
 import { FoldersStore } from './folders.store';
 import { LinksStore } from './links.store';
 import type { TrashState } from './models/trash-state.interface';
+import { RemindersStore } from './reminders.store';
 import { TagsStore } from './tags.store';
 import { UserSettingsStore } from './user-settings.store';
 
@@ -127,6 +128,8 @@ export const TrashStore = signalStore(
       injector.get(LinksStore).refresh();
       void injector.get(FoldersStore).refresh();
       void injector.get(TagsStore).noteLinkSaved();
+      // A restored link brings its reminder back.
+      void injector.get(RemindersStore).refresh();
     }
 
     /**

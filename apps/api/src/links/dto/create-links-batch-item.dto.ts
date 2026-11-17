@@ -1,6 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { LINK_LIMIT, type CreateLinksBatchItem } from '@shelfmark/contracts';
-import { IsOptional, IsString, IsUUID, MaxLength, MinLength } from 'class-validator';
+import { LINK_LIMIT, TAG_LIMIT, type CreateLinksBatchItem } from '@shelfmark/contracts';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  MinLength,
+  ValidateIf,
+} from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
 import { TrimString } from '../../folders/dto/trim-string.decorator';
 import { DefaultHttpsScheme } from './default-https-scheme.decorator';
@@ -50,4 +59,26 @@ export class CreateLinksBatchItemDto implements CreateLinksBatchItem {
   @TrimString()
   @IsHttpUrl()
   imageUrl?: string;
+
+  @ApiPropertyOptional({
+    format: 'uuid',
+    description: "This link's folder, in place of the batch folder",
+  })
+  // Absent means no folder (or the domain rule's folder); an explicit null is refused (#423).
+  @ValidateIf((_, value: unknown) => value !== undefined)
+  @IsUUID()
+  folderId?: string;
+
+  @ApiPropertyOptional({
+    type: [String],
+    maxItems: LINK_LIMIT.TagsMax,
+    description: "This link's tag names, in place of the batch tags",
+  })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(LINK_LIMIT.TagsMax)
+  @IsString({ each: true })
+  @NoControlChars(true, { each: true })
+  @MaxLength(4 * TAG_LIMIT.NameMax, { each: true })
+  tags?: string[];
 }

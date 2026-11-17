@@ -1,0 +1,38 @@
+@use 'functions' as *;
+@use 'media' as *;
+
+// The sidebar highlight of a folder row (#440, "Highlight with background" in the folder's style
+// dialog; it replaces the colour bars of #418). Include it in the row's rule. The row carries
+// `uiFolderColour` (`--ui-folder-ink` / `--ui-folder-tint`, `[data-ui-folder-colour]` while a
+// colour is chosen) and `data-ui-folder-highlight` when the folder is highlighted, so a graphite
+// or a plain row stays as it is. Tints are the tile colours, so the text keeps 4.5:1 on both bases.
+// - at rest: a soft tint of the folder colour, also when the folder is not open;
+// - hover and keyboard focus (`$focus`): a slightly stronger tint of the same colour, never the grey hover;
+// - open (`$current`, the selector suffix of the open row): the full tint, plain text colour, bolder text.
+@mixin folder-highlight($current: '[aria-current]', $focus: ':focus-visible') {
+  &[data-ui-folder-colour][data-ui-folder-highlight] {
+    background: color-mix(in srgb, var(--ui-folder-tint) 55%, transparent);
+
+    @include hover {
+      background: color-mix(in srgb, var(--ui-folder-tint) 80%, transparent);
+    }
+
+    &#{$focus} {
+      background: color-mix(in srgb, var(--ui-folder-tint) 80%, transparent);
+    }
+  }
+
+  &#{$current}[data-ui-folder-colour][data-ui-folder-highlight] {
+    font-weight: 600;
+    color: var(--text);
+    background: var(--ui-folder-tint);
+
+    @include hover {
+      background: color-mix(in srgb, var(--ui-folder-tint) 85%, var(--ui-folder-ink));
+    }
+
+    &#{$focus} {
+      background: color-mix(in srgb, var(--ui-folder-tint) 85%, var(--ui-folder-ink));
+    }
+  }
+}

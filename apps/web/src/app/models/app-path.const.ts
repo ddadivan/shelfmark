@@ -10,10 +10,12 @@ export const APP_PATH = {
   Folders: 'folders',
   /** Recently opened: a page; the phone opens the same list in a sheet. */
   Recent: 'recent',
+  /** Due and upcoming reminders (#275); reached from the sidebar and the phone Library. */
+  Reminders: 'reminders',
   /** Deleted links and folders waiting for their retention to pass; reached from the sidebar and the phone Library. */
   Trash: 'trash',
   Settings: 'settings',
-  /** The author's pages (`/admin/feedback`); behind `adminOnly`. */
+  /** The author's pages (`/admin/feedback`, `/admin/stats`); behind `adminOnly`. */
   Admin: 'admin',
   SignIn: 'sign-in',
   Demo: 'demo',
@@ -23,6 +25,8 @@ export const APP_PATH = {
   About: 'about',
   /** Public privacy policy: no guard, for guests and signed-in users. */
   Privacy: 'privacy',
+  /** Public list of releases (#424): no guard, for guests and signed-in users. */
+  Changelog: 'changelog',
   /** A public collection (`/c/:token`, #276): no guard, outside the app shell. */
   Collection: 'c',
 } as const;

@@ -10,12 +10,15 @@ describe('CONTRACT_SCENARIOS', () => {
   it('covers every domain of the issue', () => {
     const domains = new Set(CONTRACT_SCENARIOS.map((scenario) => scenario.name.split(':')[0]));
     expect([...domains].sort()).toEqual([
+      'admin',
       'export',
       'feedback',
       'folders',
       'links',
       'me',
       'pins',
+      'reminders',
+      'rules',
       'settings',
       'sharing',
       'tags',

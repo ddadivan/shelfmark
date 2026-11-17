@@ -36,6 +36,8 @@ import { relayKey } from './relay-key';
 import { createName, selectedRow, selectRows } from './select-rows';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
+import { FolderIconComponent } from '../folder-icon/folder-icon.component';
+import { FOLDER_ICON_SIZE } from '../folder-icon/models/folder-icon-size.const';
 
 /** Touch screens: opening the popup does not move focus into the search box (no keyboard). */
 const COARSE_POINTER = '(pointer: coarse)';
@@ -67,6 +69,7 @@ const COARSE_POINTER = '(pointer: coarse)';
   imports: [
     BadgeComponent,
     FieldShellComponent,
+    FolderIconComponent,
     IconComponent,
     RippleDirective,
     Combobox,
@@ -82,6 +85,7 @@ const COARSE_POINTER = '(pointer: coarse)';
 })
 export class SelectComponent extends UiFieldControl implements FormValueControl<string | null> {
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
   protected readonly BADGE_TONE = BADGE_TONE;
   protected readonly SELECT_CREATE_ID = SELECT_CREATE_ID;
   protected readonly SELECT_ICON = SELECT_ICON;

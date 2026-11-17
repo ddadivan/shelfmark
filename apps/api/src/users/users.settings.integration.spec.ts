@@ -45,6 +45,8 @@ const APPEARANCE_DEFAULTS = {
   // Not the appearance, but every whole-body expectation needs them too (#274).
   ...LANGUAGE_SETTINGS_DEFAULT,
   languageSaved: false,
+  // "What's new" (#424): not written yet.
+  whatsNewSeen: null,
 };
 
 describe('account settings', () => {
@@ -291,6 +293,7 @@ describe('account settings', () => {
         ...LIBRARY_SETTINGS_DEFAULT,
         ...LANGUAGE_SETTINGS_DEFAULT,
         languageSaved: false,
+        whatsNewSeen: null,
       });
       // Choosing another theme keeps the custom one for later.
       const light = await a
@@ -748,6 +751,11 @@ describe('account settings', () => {
       expect(body.cardTags).toBe(true);
     });
 
+    it('no longer takes the retired folderHighlight setting (#440)', async () => {
+      const a = asUser(t.app, users.owner);
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ folderHighlight: 'background' }).expect(400);
+    });
+
     it.each(Object.values(TEXT_SIZE))('saves the text size %s', async (textSize) => {
       const a = asUser(t.app, users.owner);
       const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ textSize }).expect(200);
@@ -936,6 +944,64 @@ describe('account settings', () => {
         data: { language: INTERFACE_LANGUAGE.Uk },
       });
       expect(row.language).toBe(INTERFACE_LANGUAGE.Uk);
+    });
+  });
+
+  describe("what's new (#424)", () => {
+    it('is null until written, then keeps the last seen release', async () => {
+      const a = asUser(t.app, users.owner);
+      expect((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body).toMatchObject({
+        whatsNewSeen: null,
+      });
+      const res = await a.patch(USER_SETTINGS_ENDPOINT).send({ whatsNewSeen: '2.0.5' }).expect(200);
+      expect((res.body as UserSettingsResponse).whatsNewSeen).toBe('2.0.5');
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ whatsNewSeen: '2.1.0' }).expect(200);
+      const row = await t.db.prisma.user.findUniqueOrThrow({ where: { id: users.owner.userId } });
+      expect(row.whatsNewSeen).toBe('2.1.0');
+      // Writing it is not choosing an appearance or a language.
+      expect(row.appearanceSavedAt).toBeNull();
+      expect(row.languageSavedAt).toBeNull();
+    });
+
+    it.each([['2.1.0-dev'], ['v2.0.0'], ['2.0'], [''], [null], [210], ['1234.0.0']])(
+      'rejects %j with 400 and changes nothing',
+      async (value) => {
+        const a = asUser(t.app, users.owner);
+        await a.patch(USER_SETTINGS_ENDPOINT).send({ whatsNewSeen: value }).expect(400);
+        const row = await t.db.prisma.user.findUniqueOrThrow({ where: { id: users.owner.userId } });
+        expect(row.whatsNewSeen).toBeNull();
+      },
+    );
+
+    it('is isolated: one user’s last seen release never reaches another', async () => {
+      const a = asUser(t.app, users.owner);
+      const b = asUser(t.app, users.intruder);
+      await a.patch(USER_SETTINGS_ENDPOINT).send({ whatsNewSeen: '2.0.5' }).expect(200);
+      expect(
+        ((await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .whatsNewSeen,
+      ).toBeNull();
+      await b.patch(USER_SETTINGS_ENDPOINT).send({ whatsNewSeen: '2.0.0' }).expect(200);
+      expect(
+        ((await a.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse)
+          .whatsNewSeen,
+      ).toBe('2.0.5');
+    });
+
+    it('needs a session', async () => {
+      await anonymous(t.app)
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ whatsNewSeen: '2.0.5' })
+        .expect(401);
+    });
+
+    it('is enforced by the database CHECK', async () => {
+      const id = users.owner.userId;
+      for (const whatsNewSeen of ['2.1.0-dev', 'latest', '2.0']) {
+        await expect(
+          t.db.prisma.user.update({ where: { id }, data: { whatsNewSeen } }),
+        ).rejects.toThrow();
+      }
     });
   });
 });

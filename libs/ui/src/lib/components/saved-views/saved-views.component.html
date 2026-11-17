@@ -17,8 +17,7 @@
         (click)="selected.emit(item.id)"
         (contextmenu)="requestMenu($event, item, body)"
       >
-        <span class="ui-saved-views__label">{{ item.label }}</span
-        >{{ ' ' }}
+        <span class="ui-saved-views__label">{{ item.label }}</span>{{ ' ' }}
         @if (item.count !== null) {
           <b class="ui-saved-views__count">{{ countText(item.count) }}</b>
         }

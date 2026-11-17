@@ -45,4 +45,31 @@ describe('pickerRows', () => {
     const rows = pickerRows(TREE, '', 'Unsorted', [null, 'clothes']);
     expect(rows.filter((row) => row.current).map((row) => row.id)).toEqual([null, 'clothes']);
   });
+
+  it('puts the recent rows first as flat copies, in the given order, without a query', () => {
+    const rows = pickerRows(
+      TREE,
+      '',
+      'Unsorted',
+      [],
+      ['clothes', null, 'angular', 'gone', 'clothes'],
+    );
+    expect(rows.slice(0, 3).map((row) => [row.id, row.level, row.recent])).toEqual([
+      ['clothes', 0, true],
+      [null, 0, true],
+      ['angular', 0, true],
+    ]);
+    expect(rows[2]?.path).toBe('Work / Angular');
+    expect(rows.filter((row) => !row.recent).map((row) => row.id)).toEqual([
+      null,
+      'work',
+      'angular',
+      'clothes',
+    ]);
+  });
+
+  it('shows no recent rows while a query filters the list', () => {
+    const rows = pickerRows(TREE, 'clo', 'Unsorted', [], ['clothes']);
+    expect(rows.map((row) => [row.id, row.recent])).toEqual([['clothes', false]]);
+  });
 });

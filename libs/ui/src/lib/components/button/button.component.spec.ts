@@ -30,6 +30,7 @@ import { BUTTON_HASPOPUP } from './models/button-haspopup.const';
       [ariaLabel]="ariaLabel()"
       [disabled]="disabled()"
       [href]="href()"
+      [newTab]="newTab()"
       [ripple]="ripple()"
       [ariaExpanded]="ariaExpanded()"
       [ariaControls]="ariaControls()"
@@ -57,6 +58,7 @@ class HostComponent {
   readonly clicks = signal(0);
   readonly linkClicks = signal(0);
   readonly href = signal<string | undefined>(undefined);
+  readonly newTab = signal(false);
   readonly ripple = signal(true);
   readonly ariaExpanded = signal<boolean | undefined>(undefined);
   readonly ariaControls = signal<string | undefined>(undefined);
@@ -375,6 +377,26 @@ describe('ButtonComponent', () => {
       expect(link().classList.contains('ui-button--lg')).toBe(true);
       expect(link().textContent?.trim()).toBe('Add link');
       expect(root.querySelectorAll('a, button')).toHaveLength(1);
+    });
+
+    it('opens the link in a new tab with newTab, and not while disabled', async () => {
+      const { host, link, settle } = await setup();
+      host.href.set('/links');
+      await settle();
+
+      expect(link().hasAttribute('target')).toBe(false);
+      expect(link().hasAttribute('rel')).toBe(false);
+
+      host.newTab.set(true);
+      await settle();
+
+      expect(link().getAttribute('target')).toBe('_blank');
+      expect(link().getAttribute('rel')).toBe('noopener noreferrer');
+
+      host.disabled.set(true);
+      await settle();
+
+      expect(link().hasAttribute('target')).toBe(false);
     });
 
     it('fires linkClick for plain left clicks only', async () => {

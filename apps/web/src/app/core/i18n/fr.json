@@ -172,30 +172,21 @@
       "copyright": "© 2026 Shelfmark",
       "privacy": "Confidentialité",
       "github": "GitHub",
-      "language": "Langue"
+      "language": "Langue",
+      "changelog": "Nouveautés"
     },
     "newTab": "s’ouvre dans un nouvel onglet",
     "backToShelf": "Retour à mon étagère",
     "whatsNew": {
       "title": "Nouveautés",
-      "items": {
-        "trash": {
-          "title": "Corbeille",
-          "text": "Les liens et dossiers supprimés attendent dans la corbeille, pour que rien ne disparaisse par erreur. Choisissez leur durée de conservation dans les paramètres."
-        },
-        "tabs": {
-          "title": "Vos onglets restent synchronisés",
-          "text": "Enregistrez, modifiez ou supprimez un lien dans un onglet : tous les autres onglets ouverts le montrent."
-        },
-        "move": {
-          "title": "Déplacer vers un dossier et glisser-déposer",
-          "text": "Déplacez un lien depuis son menu, ou faites-le glisser sur un dossier de la barre latérale."
-        },
-        "refresh": {
-          "title": "Un nouveau look",
-          "text": "Des coins plus doux, une barre d’onglets flottante sur téléphone et des notifications qui disent ce qui s’est passé."
-        }
-      }
+      "all": "Voir tous les changements"
+    },
+    "extension": {
+      "badge": "Extension de navigateur",
+      "title": "Enregistrez la page que vous lisez",
+      "text": "Un clic dans la barre d’outils ou Alt+Maj+S. Le titre, vos règles de dossier et vos dossiers récents sont déjà remplis : la plupart des pages ne demandent qu’un clic de plus.",
+      "browsers": "Pour Chrome, Edge, Brave et Arc. Installez-la depuis votre étagère une fois connecté.",
+      "alt": "L’extension Shelfmark : Enregistrer dans Shelfmark avec le titre de la page, le dossier Vêtements issu d’une règle, des tags et une note"
     }
   },
   "links": {
@@ -283,6 +274,10 @@
         "none": "Aucun lien trouvé dans ce texte",
         "back": "Un seul lien",
         "find": "Trouver les liens"
+      },
+      "rule": {
+        "chip": "Règle : {{domain}} → {{target}}",
+        "remove": "Ne pas appliquer la règle pour {{domain}}"
       }
     },
     "edit": {
@@ -296,7 +291,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "Dans le dossier"
     },
     "item": {
       "edit": "Modifier",
@@ -329,7 +325,8 @@
       "unpinFromTop": "Désépingler du haut",
       "pinToSidebar": "Épingler dans la barre latérale",
       "unpinFromSidebar": "Désépingler de la barre latérale",
-      "pinned": "Épinglé"
+      "pinned": "Épinglé",
+      "createRule": "Créer une règle pour {{domain}}…"
     },
     "recent": {
       "title": "Ouverts récemment",
@@ -423,7 +420,8 @@
       "moved": "Déplacé dans {{folder}}",
       "failed": "Impossible de déplacer le lien",
       "failedDetail": "Il est de retour à sa place",
-      "undoFailed": "Impossible de remettre le lien à sa place"
+      "undoFailed": "Impossible de remettre le lien à sa place",
+      "recent": "Récents"
     },
     "many": {
       "title": {
@@ -484,7 +482,13 @@
       },
       "noneSaved": "Aucun lien n’a été enregistré",
       "undoFailed": "Impossible d’annuler",
-      "undoFailedDetail": "Les liens restent enregistrés"
+      "undoFailedDetail": "Les liens restent enregistrés",
+      "applyRules": "Appliquer les règles de domaine",
+      "savedMixed": {
+        "one": "{{count}} lien enregistré",
+        "many": "{{count}} liens enregistrés dans leurs dossiers",
+        "other": "{{count}} liens enregistrés dans leurs dossiers"
+      }
     },
     "drag": {
       "moveHere": "Déplacer ici",
@@ -504,7 +508,8 @@
         "favorites": "Impossible de déposer ici — mettez un lien en favori pour l’ajouter aux Favoris",
         "recent": "Impossible de déposer ici — « Ouverts récemment » se remplit quand vous ouvrez des liens",
         "trash": "Impossible de déposer ici — utilisez Supprimer pour mettre un lien à la corbeille",
-        "pinnedLink": "Impossible de déposer ici — un lien épinglé n’est pas un dossier"
+        "pinnedLink": "Impossible de déposer ici — un lien épinglé n’est pas un dossier",
+        "reminders": "Impossible de déposer ici — utilisez « Me le rappeler » dans le menu du lien"
       }
     }
   },
@@ -513,7 +518,7 @@
     "home": "Shelfmark, accueil",
     "newTab": "(s’ouvre dans un nouvel onglet)",
     "updated": "Dernière mise à jour : {{date}}",
-    "updatedDate": "13 novembre 2026",
+    "updatedDate": "16 novembre 2026",
     "intro": "Shelfmark est un projet personnel qui stocke les liens que vous enregistrez. Cette page explique ce que nous conservons et pourquoi, en termes simples.",
     "store": {
       "title": "Ce que nous stockons",
@@ -521,7 +526,9 @@
       "content": "Vos liens (adresse, titre, note, marque de favori, dernière ouverture), vos dossiers et vos tags.",
       "images": "Pour chaque lien, une petite copie de l’icône et de l’image d’aperçu du site, s’il en a. Notre serveur les télécharge et les stocke pour qu’elles se chargent depuis Shelfmark.",
       "feedback": "Vos réponses à l’évaluation dans l’application, liées à votre compte : une note de 1 à 10 et, si vous en écrivez un, un commentaire.",
+      "promptViews": "L’app compte aussi combien de fois et quand la demande de note vous a été montrée, pour savoir lesquelles obtiennent une réponse. Ces nombres sont liés à votre compte et supprimés avec lui.",
       "stats": "Les chiffres de « Votre étagère » sur la page Compte (totaux, sites et tags les plus utilisés, liens par semaine) sont calculés à partir de vos propres données chaque fois que vous ouvrez la page. Ils ne sont ni stockés ni partagés.",
+      "usage": "Pour savoir comment Shelfmark est utilisé, nous enregistrons le jour où vous avez utilisé l’app pour la dernière fois : une date seulement, sans heure, page ni action. L’auteur ne voit que des totaux calculés sur l’ensemble des comptes, par exemple combien de personnes utilisent des dossiers ou des tags, ou quels thèmes sont populaires. Les groupes de moins de trois personnes ne sont pas affichés, et personne ne regarde un par un les liens, notes ou réglages de qui que ce soit. Ces totaux sont calculés à la demande et ne sont pas conservés. Quand vous supprimez votre compte, la date disparaît avec lui.",
       "sessions": "Pour chaque connexion : sa date d’expiration, ainsi que l’adresse IP et le navigateur (user agent) d’où elle a été ouverte, pour sécuriser les sessions.",
       "logs": "Notre API journalise la méthode, le chemin, le statut, la durée et un identifiant de requête, sans contenu de lien ni donnée personnelle. Notre hébergeur, Vercel, conserve ses propres journaux de requêtes standard, qui incluent les adresses IP, pendant une durée limitée."
     },
@@ -534,11 +541,16 @@
     "dont": {
       "title": "Ce que nous ne faisons pas",
       "sell": "Nous ne vendons ni ne partageons vos données et n’affichons pas de publicité.",
-      "read": "Nous ne regardons pas vos liens enregistrés, sauf quand c’est nécessaire au service, par exemple pour récupérer un aperçu."
+      "read": "Nous n’utilisons pas le contenu de vos liens pour les statistiques : seulement des nombres (liens, dossiers, notes), jamais d’adresses ni de titres. Vos liens sont stockés dans notre base de données pour que l’app puisse les afficher, les rechercher et en faire un aperçu ; seul l’auteur du service y a accès."
     },
     "previews": {
       "title": "Aperçus des liens",
       "body": "Quand vous enregistrez un lien, notre serveur visite la page pour lire son titre, son icône et son image d’aperçu. Le site voit donc l’adresse IP de notre serveur et le user agent « ShelfmarkBot », pas votre adresse IP."
+    },
+    "extension": {
+      "title": "Extension de navigateur",
+      "body": "L’extension Shelfmark pour Chrome, Edge, Brave et Arc ne s’active que lorsque vous cliquez sur son bouton ou utilisez son raccourci, jamais en arrière-plan. Elle envoie alors à Shelfmark l’adresse de cet onglet, pour vérifier s’il est déjà enregistré, et n’enregistre son adresse et son titre, avec le dossier, les tags et la note choisis, que lorsque vous appuyez sur Enregistrer. Elle ne voit ni votre historique ni les autres sites que vous visitez.",
+      "access": "Elle utilise votre connexion à Shelfmark dans ce navigateur et ne peut pas lire le cookie de connexion lui-même. Elle ne peut joindre que Shelfmark et garde seulement, sur votre appareil, les dossiers utilisés récemment pour vous les proposer la fois suivante."
     },
     "third": {
       "title": "Autres services",
@@ -755,7 +767,8 @@
       "reorder": {
         "movedUp": "Déplacé vers le haut, position {{position}} sur {{total}}",
         "movedDown": "Déplacé vers le bas, position {{position}} sur {{total}}"
-      }
+      },
+      "extension": "Obtenir l’extension"
     },
     "searchHint": "Rechercher dans vos liens",
     "searchButton": "Rechercher",
@@ -765,7 +778,8 @@
     },
     "sendFeedback": "Envoyer un avis",
     "feedbackInbox": "Boîte des avis",
-    "about": "À propos de Shelfmark"
+    "about": "À propos de Shelfmark",
+    "usageStats": "Statistiques d’usage"
   },
   "folders": {
     "dialog": {
@@ -968,7 +982,27 @@
         "undo": "Annuler"
       },
       "iconsShowAll": "Afficher toutes les icônes ({{count}})",
-      "iconsShowFewer": "Afficher moins"
+      "iconsShowFewer": "Afficher moins",
+      "description": {
+        "label": "Description",
+        "hint": "Facultatif, {{max}} caractères maximum. Affichée sous le nom du dossier.",
+        "placeholder": "Que contient ce dossier ?",
+        "tooLong": "{{max}} caractères maximum.",
+        "invalid": "Utilisez du texte simple sur une ligne."
+      },
+      "highlight": {
+        "label": "Mettre en évidence avec un fond",
+        "hint": "Donne au dossier un fond doux de sa couleur, dans la barre latérale et sur sa page."
+      },
+      "cover": {
+        "label": "Couverture",
+        "hint": "Une image d’aperçu d’un lien de ce dossier, derrière l’en-tête du dossier.",
+        "none": "Pas de couverture",
+        "option": "Couverture de « {{title}} »",
+        "current": "Couverture actuelle",
+        "empty": "Les liens de ce dossier avec une image d’aperçu peuvent servir de couverture.",
+        "loading": "Chargement des images"
+      }
     }
   },
   "library": {
@@ -1112,6 +1146,47 @@
       "label": "Trier, afficher et exporter",
       "button": "Options",
       "sortBy": "Trier par"
+    },
+    "split": {
+      "open": "Côte à côte",
+      "close": "Fermer l’affichage côte à côte",
+      "swap": "Inverser les côtés",
+      "choose": {
+        "title": "Choisir un dossier",
+        "heading": "Choisissez un dossier où déplacer des liens",
+        "text": "Faites ensuite glisser des liens ici depuis la gauche, ou sélectionnez-les et utilisez la barre en bas.",
+        "search": "Trouver un dossier",
+        "list": "Dossiers",
+        "noResults": "Aucun dossier trouvé"
+      },
+      "leftMenu": {
+        "label": "Afficher à gauche",
+        "search": "Trouver un dossier ou un tag",
+        "list": "Listes",
+        "noResults": "Aucun résultat"
+      },
+      "rightMenu": {
+        "label": "Afficher à droite"
+      },
+      "onLeft": "À gauche",
+      "onRight": "À droite",
+      "leftTrigger": "Liste de gauche : {{name}}. Changer",
+      "rightTrigger": "Dossier de droite : {{name}}. Changer",
+      "leftRegion": "Gauche : {{name}}",
+      "rightRegion": "Droite : {{name}}",
+      "rightRegionEmpty": "Droite : choisir un dossier",
+      "searchName": "Recherche : {{query}}",
+      "empty": {
+        "text": "Faites glisser des liens ici depuis la gauche."
+      },
+      "moveToLeft": "Déplacer « {{title}} » vers {{folder}}"
+    },
+    "extension": {
+      "title": "Enregistrez des pages directement depuis votre navigateur",
+      "text": "L’extension Shelfmark enregistre la page ouverte en un clic ou avec Alt+Maj+S, dossiers et tags déjà remplis.",
+      "install": "Installer l’extension",
+      "installLabel": "Installer l’extension depuis le Chrome Web Store (s’ouvre dans un nouvel onglet)",
+      "dismiss": "Plus tard"
     }
   },
   "export": {
@@ -1399,7 +1474,7 @@
     },
     "footer": {
       "privacy": "Politique de confidentialité",
-      "version": "Shelfmark v1.0"
+      "version": "Shelfmark {{version}}"
     },
     "delete": {
       "title": "Supprimer le compte",
@@ -1452,6 +1527,12 @@
         "previews": {
           "label": "Récupérer titres et aperçus",
           "hint": "Désactivez pour n’enregistrer que l’adresse"
+        },
+        "extension": {
+          "label": "Extension de navigateur",
+          "hint": "Enregistrez n’importe quelle page en un clic depuis Chrome, Edge, Brave ou Arc",
+          "action": "Installer",
+          "actionLabel": "Installer l’extension de navigateur depuis le Chrome Web Store (s’ouvre dans un nouvel onglet)"
         }
       },
       "failed": "Impossible d’enregistrer le paramètre",
@@ -2117,6 +2198,109 @@
         "title": "Enregistrement impossible",
         "detail": "Le message est revenu à son état précédent. Réessayez."
       }
+    },
+    "nav": {
+      "label": "Pages d’administration",
+      "feedback": "Retours",
+      "stats": "Statistiques"
+    },
+    "stats": {
+      "title": "Statistiques d’usage",
+      "description": "Totaux sur les vrais comptes, calculés maintenant. Les comptes démo et admin sont exclus ; les groupes de moins de {{min}} personnes sont masqués.",
+      "updated": "Mis à jour à {{time}}",
+      "refreshing": "Actualisation…",
+      "refresh": "Actualiser",
+      "refreshFailed": "Impossible d’actualiser. Voici les derniers chiffres.",
+      "error": "Impossible de charger les statistiques.",
+      "retry": "Réessayer",
+      "loading": "Chargement des statistiques",
+      "tooFew": "Pas encore assez d’utilisateurs : les parts et les groupes apparaissent à partir de {{min}} vrais utilisateurs.",
+      "notEnough": "Pas encore assez d’utilisateurs",
+      "fewer": "Moins de {{min}}",
+      "smallGroup": "Masqué : un groupe de moins de {{min}}",
+      "shareOf": "{{percent}} · {{count}} sur {{base}}",
+      "countOf": "{{count}} sur {{base}}",
+      "shareCount": "{{percent}} · {{count}}",
+      "activitySince": "L’activité est enregistrée depuis le {{date}}. Les visites antérieures sont estimées à partir des liens enregistrés et des connexions : les chiffres d’activité et de retour qui remontent avant cette date peuvent être surestimés.",
+      "activityEstimated": "Les visites antérieures au suivi de l’activité sont estimées à partir des liens enregistrés et des connexions : les chiffres d’activité et de retour peuvent être surestimés.",
+      "overview": {
+        "title": "Vue d’ensemble"
+      },
+      "tiles": {
+        "realUsers": "Vrais utilisateurs",
+        "active7d": "Actifs ces 7 derniers jours",
+        "active30d": "Actifs ces 30 derniers jours",
+        "returnedWeek": "Revenus après une semaine",
+        "returnedMonth": "Revenus après un mois",
+        "onboarded": "Prise en main terminée",
+        "demo": "Démos en cours",
+        "demoHint": "Comptées nulle part ailleurs"
+      },
+      "signUps": {
+        "title": "Inscriptions",
+        "unit": "Afficher par",
+        "days": "Jours",
+        "weeks": "Semaines",
+        "chartDays": "Inscriptions, 30 derniers jours",
+        "chartWeeks": "Inscriptions, 12 dernières semaines",
+        "total": "{{count}} sur la période",
+        "day": "Jour",
+        "week": "Semaine du",
+        "count": "Inscriptions",
+        "dayBar": "{{date}} : {{count}}",
+        "weekBar": "Semaine du {{date}} : {{count}}"
+      },
+      "links": {
+        "title": "Liens par utilisateur",
+        "average": "Moyenne {{mean}} · médiane {{median}}",
+        "chart": "Vrais utilisateurs selon le nombre de liens enregistrés",
+        "bucket": "Liens",
+        "users": "Utilisateurs"
+      },
+      "features": {
+        "title": "Fonctionnalités",
+        "adoption": "Qui utilise quoi"
+      },
+      "feature": {
+        "folders": "Dossiers",
+        "nestedFolders": "Dossiers dans des dossiers",
+        "tags": "Tags",
+        "favorites": "Favoris",
+        "notes": "Notes",
+        "sidebarPins": "Épinglés dans la barre latérale",
+        "folderPins": "Épinglés dans un dossier",
+        "savedViews": "Vues enregistrées perso",
+        "trash": "Éléments dans la corbeille",
+        "publicCollections": "Collections publiques",
+        "ownColours": "Couleurs perso",
+        "ownEmoji": "Emoji perso",
+        "openedRecently": "Lien enregistré ouvert en 30 jours",
+        "historyPaused": "Historique en pause",
+        "previewsOff": "Aperçus désactivés"
+      },
+      "preferences": {
+        "title": "Préférences",
+        "theme": "Thème",
+        "language": "Langue",
+        "retention": "La corbeille garde les éléments"
+      },
+      "bucket": {
+        "other": "Autre",
+        "never": "Jamais choisi"
+      },
+      "ratings": {
+        "title": "Notes et messages",
+        "milestone": {
+          "day3": "Après 3 jours",
+          "week1": "Après une semaine",
+          "month1": "Après un mois",
+          "year1": "Après un an"
+        },
+        "answered": "{{answered}} réponses · {{skipped}} ignorées",
+        "summary": "Moyenne {{mean}} · médiane {{median}}",
+        "byKind": "Messages par type",
+        "byStatus": "Messages par statut"
+      }
     }
   },
   "tabSync": {
@@ -2240,7 +2424,9 @@
       "openAll": "Tout ouvrir",
       "copy": "Copier les liens",
       "share": "Partager",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "moveToFolder": "Déplacer vers {{folder}}",
+      "remind": "Rappel"
     },
     "header": {
       "label": "Sélection",
@@ -2361,5 +2547,347 @@
       "failedDetail": "Ils sont de retour dans la liste",
       "undoFailed": "Impossible de restaurer les liens"
     }
+  },
+  "reminders": {
+    "title": "Rappels",
+    "dueCount": {
+      "one": "{{count}} rappel est arrivé",
+      "many": "{{count}} rappels sont arrivés",
+      "other": "{{count}} rappels sont arrivés"
+    },
+    "nothingDue": "Aucun rappel pour le moment",
+    "dueShort": {
+      "one": "{{count}} à revoir",
+      "many": "{{count}} à revoir",
+      "other": "{{count}} à revoir"
+    },
+    "loading": "Chargement des rappels",
+    "loadFailed": {
+      "title": "Impossible de charger vos rappels",
+      "text": "Vérifiez votre connexion et réessayez.",
+      "retry": "Réessayer"
+    },
+    "empty": {
+      "title": "Aucun rappel",
+      "text": "Choisissez « Me le rappeler » dans le menu d’un lien : il reviendra ici le jour choisi."
+    },
+    "group": {
+      "due": "À revoir",
+      "today": "Aujourd’hui",
+      "tomorrow": "Demain",
+      "this-week": "Cette semaine",
+      "later": "Plus tard"
+    },
+    "footer": "Les rappels s’affichent ici, sur le badge de la barre latérale et sur la carte. Ils ne sont envoyés ni par e-mail ni par notification.",
+    "when": {
+      "today": "Aujourd’hui, {{time}}",
+      "tomorrow": "Demain, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Arrivé {{when}}"
+    },
+    "preset": {
+      "later-today": "Plus tard aujourd’hui",
+      "tomorrow": "Demain",
+      "weekend": "Ce week-end",
+      "next-week": "La semaine prochaine",
+      "in-month": "Dans un mois"
+    },
+    "dialog": {
+      "title": "Me le rappeler",
+      "titleMany": {
+        "one": "Me rappeler {{count}} lien",
+        "many": "Me rappeler {{count}} liens",
+        "other": "Me rappeler {{count}} liens"
+      },
+      "close": "Fermer",
+      "current": "Rappel actuel : {{when}}",
+      "presets": "Choix rapides",
+      "pick": "Choisir la date et l’heure…",
+      "previousMonth": "Mois précédent",
+      "nextMonth": "Mois suivant",
+      "time": "Heure",
+      "timeHint": "Facultatif ; 9:00 si vide",
+      "past": "Cette heure est déjà passée. Choisissez-en une plus tard.",
+      "timeZone": "Les heures sont dans votre fuseau horaire, {{zone}}.",
+      "remove": "Supprimer le rappel",
+      "cancel": "Annuler",
+      "confirm": "Me le rappeler {{when}}",
+      "confirmEmpty": "Choisissez un jour"
+    },
+    "menu": {
+      "remind": "Me le rappeler…",
+      "change": "Modifier le rappel…"
+    },
+    "row": {
+      "done": "Terminé",
+      "doneItem": "Marquer le rappel de {{title}} comme terminé",
+      "snooze": "Reporter",
+      "snoozeItem": "Reporter le rappel de {{title}}"
+    },
+    "toast": {
+      "failed": "Impossible d’enregistrer le rappel",
+      "retry": "Réessayer",
+      "cleared": {
+        "one": "Rappel supprimé",
+        "many": "{{count}} rappels supprimés",
+        "other": "{{count}} rappels supprimés"
+      },
+      "set": "Rappel prévu {{when}}",
+      "due": {
+        "one": "Un rappel est arrivé",
+        "many": "{{count}} rappels sont arrivés",
+        "other": "{{count}} rappels sont arrivés"
+      },
+      "show": "Voir"
+    },
+    "edit": {
+      "set": "Rappel : {{when}}",
+      "none": "Aucun rappel",
+      "change": "Modifier",
+      "remind": "Me le rappeler"
+    }
+  },
+  "rules": {
+    "title": "Règles",
+    "intro": "Les liens d'un domaine vont dans un dossier et reçoivent des tags à l'enregistrement. Le dossier ou les tags que vous choisissez vous-même l'emportent toujours.",
+    "add": "Ajouter une règle",
+    "list": "Règles",
+    "tags": "Tags",
+    "empty": "Aucune règle pour le moment. Par exemple, les liens de youtube.com peuvent aller dans Vidéos avec le tag video.",
+    "loadFailed": "Impossible de charger les règles.",
+    "retry": "Réessayer",
+    "folderTrashed": "Dossier dans la corbeille : seuls les tags sont ajoutés",
+    "more": "Actions pour {{domain}}",
+    "moreTooltip": "Plus d'actions",
+    "edit": "Modifier",
+    "applyExisting": "Appliquer aux liens existants",
+    "delete": "Supprimer la règle",
+    "undo": "Annuler",
+    "describe": "{{domain}} : {{target}}",
+    "created": {
+      "title": "Règle ajoutée"
+    },
+    "saved": {
+      "title": "Règle enregistrée"
+    },
+    "deleted": {
+      "title": "Règle supprimée"
+    },
+    "deleteFailed": "Impossible de supprimer la règle",
+    "limit": {
+      "title": "Nombre maximal de règles atteint"
+    },
+    "apply": {
+      "title": "Appliquer la règle pour {{domain}} ?",
+      "message": {
+        "one": "{{count}} lien de « Sans dossier » reçoit le dossier et les tags de cette règle : {{target}}.",
+        "many": "{{count}} liens de « Sans dossier » reçoivent le dossier et les tags de cette règle : {{target}}.",
+        "other": "{{count}} liens de « Sans dossier » reçoivent le dossier et les tags de cette règle : {{target}}."
+      },
+      "more": "Il y en a {{total}} au total. Appliquez-la de nouveau pour le reste.",
+      "confirm": {
+        "one": "Appliquer à {{count}} lien",
+        "many": "Appliquer à {{count}} liens",
+        "other": "Appliquer à {{count}} liens"
+      },
+      "cancel": "Annuler",
+      "none": "Aucun lien de {{domain}} dans « Sans dossier »",
+      "done": {
+        "one": "Règle appliquée à {{count}} lien",
+        "many": "Règle appliquée à {{count}} liens",
+        "other": "Règle appliquée à {{count}} liens"
+      },
+      "failed": "Impossible d'appliquer la règle",
+      "undoFailed": "Impossible d'annuler la règle"
+    },
+    "dialog": {
+      "addTitle": "Ajouter une règle",
+      "editTitle": "Modifier la règle",
+      "close": "Fermer",
+      "cancel": "Annuler",
+      "save": "Enregistrer la règle",
+      "saving": "Enregistrement…",
+      "domain": {
+        "label": "Domaine",
+        "placeholder": "youtube.com",
+        "hint": "Inclut aussi ses sous-domaines, comme m.youtube.com",
+        "required": "Saisissez un domaine",
+        "invalid": "Saisissez un domaine comme youtube.com"
+      },
+      "folder": {
+        "label": "Dossier",
+        "none": "Aucun dossier",
+        "search": "Rechercher des dossiers",
+        "trashed": "Le dossier de cette règle est dans la corbeille. Choisissez-en un autre ou gardez seulement les tags."
+      },
+      "tags": {
+        "label": "Tags",
+        "max": "Jusqu'à {{max}} tags"
+      },
+      "nothing": "Choisissez un dossier ou ajoutez au moins un tag.",
+      "taken": "Une règle existe déjà pour ce domaine.",
+      "limit": "Vous pouvez avoir jusqu'à {{max}} règles. Supprimez-en une d'abord.",
+      "missingFolder": "Ce dossier n'existe plus. Choisissez-en un autre.",
+      "missing": "Cette règle a été supprimée entre-temps.",
+      "failed": "Impossible d'enregistrer la règle. Réessayez."
+    }
+  },
+  "changelog": {
+    "title": "Nouveautés",
+    "lead": "Toutes les versions de Shelfmark, de la plus récente à la plus ancienne.",
+    "current": "Vous utilisez Shelfmark {{version}}.",
+    "release": "Shelfmark {{version}}",
+    "home": "Shelfmark, accueil",
+    "items": {
+      "sideBySide": {
+        "title": "Côte à côte",
+        "text": "Ouvrez deux listes l'une à côté de l'autre et glissez des liens de l'une à l'autre.",
+        "alt": "Deux flux côte à côte dans Shelfmark."
+      },
+      "folderStyle": {
+        "title": "Style des dossiers",
+        "text": "Donnez à un dossier une couleur, une icône ou un emoji, une description et une couverture, et mettez-le en valeur avec un fond dans la barre latérale.",
+        "alt": "Un dossier avec sa couleur, son icône, sa description et sa couverture, à côté de la barre latérale."
+      },
+      "domainRules": {
+        "title": "Règles par site",
+        "text": "Envoyez les liens d'un site directement dans le dossier de votre choix.",
+        "alt": "Une règle qui envoie les liens d'un site vers un dossier."
+      },
+      "reminders": {
+        "title": "Rappels",
+        "text": "Demandez à Shelfmark de vous rappeler un lien plus tard.",
+        "alt": "Un lien enregistré avec un rappel."
+      },
+      "colourPicker": {
+        "text": "Couleurs personnalisées : le bouton + est centré, et la couleur choisie s'applique tout de suite dans une teinte lisible."
+      },
+      "phoneSignIn": {
+        "text": "De petites cartes s'envolent vers l'étagère pendant que vous vous connectez sur mobile."
+      },
+      "appSkeleton": {
+        "text": "Après la connexion, l'application prend forme tout de suite au lieu d'un écran noir."
+      },
+      "ukrainian": {
+        "text": "Shelfmark parle maintenant ukrainien. Choisissez-le dans Réglages › Langue."
+      },
+      "noHttps": {
+        "text": "Un lien saisi comme exemple.com s'enregistre comme les autres."
+      },
+      "refresh": {
+        "title": "Un nouveau look",
+        "text": "Des coins plus doux, des couleurs plus calmes, une barre d'onglets flottante sur mobile et des notifications qui disent ce qui s'est passé."
+      },
+      "trash": {
+        "title": "Corbeille",
+        "text": "Les liens et dossiers supprimés attendent dans la corbeille : rien ne disparaît par erreur. Vous choisissez combien de temps ils y restent."
+      },
+      "folders": {
+        "title": "Couleurs, icônes et épingles",
+        "text": "Donnez à un dossier une couleur et une icône ou un emoji, et épinglez ceux que vous utilisez le plus dans la barre latérale."
+      },
+      "savedViews": {
+        "title": "Vues enregistrées",
+        "text": "Gardez un filtre que vous utilisez souvent, comme les vidéos ou les articles à lire, à portée de clic."
+      },
+      "sharing": {
+        "title": "Partager un dossier",
+        "text": "Transformez un dossier en page publique que toute personne ayant le lien peut ouvrir. Arrêtez le partage quand vous voulez."
+      },
+      "pasteMany": {
+        "title": "Coller plusieurs liens",
+        "text": "Collez toute une liste de liens et enregistrez-les d'un coup."
+      },
+      "bulk": {
+        "title": "Sélectionner plusieurs liens",
+        "text": "Déplacez, étiquetez, mettez en favori ou supprimez plusieurs liens à la fois."
+      },
+      "dragDrop": {
+        "title": "Glisser-déposer",
+        "text": "Glissez un lien sur un dossier de la barre latérale, ou réorganisez vos dossiers."
+      },
+      "theme": {
+        "title": "Votre propre thème",
+        "text": "Choisissez votre accent, votre fond et vos coins, et le niveau d'animation."
+      },
+      "languages": {
+        "title": "Six langues",
+        "text": "Utilisez Shelfmark en anglais, français, allemand, italien, espagnol ou portugais."
+      },
+      "feedback": {
+        "title": "Envoyer un avis",
+        "text": "Dites-nous ce qui marche et ce qui ne marche pas, avec une capture si vous voulez, directement depuis l'application."
+      },
+      "fastLanding": {
+        "text": "À la première visite, la page d’accueil s’ouvre tout de suite, sans pause sombre."
+      },
+      "phoneKeyboard": {
+        "text": "Sur téléphone, le clavier ne cache plus la liste des dossiers, les panneaux, les dialogues ni les suggestions."
+      },
+      "emptyExport": {
+        "text": "L’export explique quand il n’y a rien à exporter au lieu de télécharger un fichier vide."
+      },
+      "bulkBar": {
+        "text": "Sur téléphone, la barre des liens sélectionnés se place de nouveau juste au-dessus de la barre d’onglets."
+      },
+      "sheetDropdown": {
+        "text": "Une liste déroulante se ferme dès que tu fais glisser un panneau vers le bas sur téléphone."
+      },
+      "skeletonRows": {
+        "text": "L’écran de chargement correspond à la page et montre trois rangées de cartes."
+      },
+      "feedbackActive": {
+        "text": "« Envoyer un avis » ne reste plus en surbrillance après fermeture."
+      },
+      "folderChips": {
+        "text": "Les cartes et les lignes montrent dans quel dossier se trouve un lien, avec la couleur du dossier."
+      },
+      "updatePrompt": {
+        "text": "Quand une nouvelle version est prête, Shelfmark demande avant de recharger."
+      },
+      "whatsNewCard": {
+        "text": "Une carte Nouveautés après chaque mise à jour, et une page qui liste toutes les versions."
+      },
+      "privacyWording": {
+        "text": "La page de confidentialité explique plus clairement ce qui est stocké et qui peut le voir."
+      },
+      "toastWraps": {
+        "text": "Les notifications affichent tout leur texte au lieu de le couper."
+      },
+      "folderStyleRace": {
+        "text": "Changer vite le style d'un dossier ne ramène plus un ancien choix."
+      },
+      "newFolderInAddLink": {
+        "text": "Ajouter un lien peut créer un dossier : tape un nouveau nom dans le champ Dossier."
+      },
+      "emojiPickerTabs": {
+        "text": "Le sélecteur d’emoji est aussi large que son champ, et ses onglets de catégories ne ressemblent plus à des emoji à choisir."
+      }
+    },
+    "sections": {
+      "new": "Nouveautés",
+      "improved": "Améliorations",
+      "fixed": "Corrections"
+    }
+  },
+  "whatsNew": {
+    "title": "Nouveautés de Shelfmark",
+    "lead": "Voici ce qui a changé depuis votre dernière visite.",
+    "seeAll": "Voir tous les changements",
+    "close": "Compris",
+    "entry": "Nouveautés",
+    "unseen": "nouveau",
+    "more": {
+      "one": "Et {{count}} autre amélioration ou correction",
+      "many": "Et {{count}} autres améliorations et corrections",
+      "other": "Et {{count}} autres améliorations et corrections"
+    }
+  },
+  "update": {
+    "available": "Une nouvelle version de Shelfmark est prête",
+    "reload": "Recharger",
+    "later": "Plus tard"
   }
 }

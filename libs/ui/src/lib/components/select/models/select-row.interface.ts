@@ -11,4 +11,7 @@ export interface SelectRow {
   readonly path: string;
   /** Depth; 0 for the root and the empty-value row. */
   readonly level: number;
+  /** The folder tile of the option (`SelectOption.colour` / `icon`), when it has one. */
+  readonly colour?: string;
+  readonly icon?: string;
 }

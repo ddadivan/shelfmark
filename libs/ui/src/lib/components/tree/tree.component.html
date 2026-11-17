@@ -25,6 +25,8 @@
         ngTreeItem
         class="ui-tree__row"
         [class.ui-tree__row--folder]="folder"
+        [attr.data-ui-folder-highlight]="folder && node.highlighted ? '' : null"
+        [uiFolderColour]="folder ? (node.colour ?? FOLDER_COLOUR.Graphite) : FOLDER_COLOUR.Graphite"
         [class.ui-tree__row--drop]="dropTargetId() === node.id"
         [class.ui-tree__row--no-drop]="noDropIds().includes(node.id)"
         [attr.aria-disabled]="noDropIds().includes(node.id) ? 'true' : null"
@@ -41,6 +43,9 @@
         [preserveContent]="true"
         [attr.aria-labelledby]="labelledBy(item.id(), node)"
         [attr.aria-owns]="node.children?.length ? item.id() + '-group' : null"
+        [uiTooltip]="folder ? (node.description ?? '') : ''"
+        [uiTooltipPointerTarget]="nameText"
+        [position]="MORE_TOOLTIP_SIDE"
         (expandedChange)="toggled.emit({ node, expanded: $event })"
         (contextmenu)="folder && menu.fromContextMenu($event, node, row)"
         (keydown)="onKeydown($event, node, row, folder)"
@@ -68,7 +73,12 @@
         } @else if (node.icon) {
           <ui-icon class="ui-tree__icon" [name]="node.icon" [size]="ICON_SIZE.Md" />
         }
-        <span class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
+        <span #nameText class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
+        @if (node.dot) {
+          <span class="ui-tree__dot" [id]="item.id() + '-dot'"
+            ><span class="ui-tree__dot-label">&ngsp;{{ node.dot }}</span></span
+          >
+        }
         @if (dropTargetId() === node.id && dropLabel()) {
           <span class="ui-tree__drop-badge" [id]="item.id() + '-drop'"
             >&ngsp;{{ dropLabel() }}</span

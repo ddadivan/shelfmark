@@ -79,4 +79,9 @@ describe('MockRatingApi', () => {
       MOCK_RATING_ERROR_MESSAGE,
     );
   });
+
+  it('accepts a view report and keeps nothing', async () => {
+    const api = TestBed.inject(MockRatingApi);
+    await expect(api.recordPromptView()).resolves.toBeUndefined();
+  });
 });

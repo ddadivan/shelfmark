@@ -8,6 +8,7 @@ import {
   inject,
   numberAttribute,
   input,
+  signal,
   model,
   output,
 } from '@angular/core';
@@ -27,7 +28,8 @@ import type { ChoiceOption } from './models/choice-option.interface';
 /**
  * Choose one of many small visual options: round colour swatches (`kind="swatch"`, each option
  * has its `colour`) or icon tiles (`kind="icon"`, each option has its `icon`, drawn in the tile
- * `colour` of the group). Native radios behind the drawing: the arrow keys move and select, Tab
+ * `colour` of the group) or 16:9 picture thumbnails (`kind="image"`, each option has its
+ * `image`, else its `icon`). Native radios behind the drawing: the arrow keys move and select, Tab
  * enters the checked option (the first when none is checked), and each option is named by its
  * `label`. Name the group with `ariaLabel` or `ariaLabelledby`. Bind with `[formField]` or
  * `[(value)]`. An option with a `removeLabel` (an own colour) can be deleted: see `removed`.
@@ -40,6 +42,7 @@ import type { ChoiceOption } from './models/choice-option.interface';
     class: 'ui-choice-grid',
     '[class.ui-choice-grid--swatch]': 'kind() === CHOICE_GRID_KIND.Swatch',
     '[class.ui-choice-grid--icon]': 'kind() === CHOICE_GRID_KIND.Icon',
+    '[class.ui-choice-grid--image]': 'kind() === CHOICE_GRID_KIND.Image',
     '[class.ui-choice-grid--disabled]': 'disabled()',
     '[class.ui-choice-grid--single-line]': 'singleLine()',
     '[class.ui-choice-grid--columns]': 'columns() > 0',
@@ -51,7 +54,7 @@ import type { ChoiceOption } from './models/choice-option.interface';
     '(focusout)': 'onFocusOut($event)',
   },
   templateUrl: './choice-grid.component.html',
-  styleUrl: './choice-grid.component.scss',
+  styleUrls: ['./choice-grid.component.scss', './choice-grid-image.scss'],
 })
 export class ChoiceGridComponent implements FormValueControl<string> {
   protected readonly CHOICE_GRID_KIND = CHOICE_GRID_KIND;
@@ -83,6 +86,12 @@ export class ChoiceGridComponent implements FormValueControl<string> {
   readonly removed = output<string>();
 
   protected readonly groupId = nextFieldId('ui-choice');
+  /** Pictures that failed to load: their options show the glyph instead. */
+  protected readonly failed = signal<readonly string[]>([]);
+
+  protected markFailed(value: string): void {
+    this.failed.update((list) => (list.includes(value) ? list : [...list, value]));
+  }
 
   /** Focuses the checked radio, or the first one when none is checked. */
   focus(options?: FocusOptions): void {

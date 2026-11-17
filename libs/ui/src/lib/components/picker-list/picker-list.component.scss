@@ -35,9 +35,13 @@
   @include field-native;
 }
 
-// Long lists scroll in the list itself; the search box stays above.
+// Long lists scroll in the list itself; the search box stays above. A host that gives the picker
+// a fixed height (the browser extension's full-popup picker) sets `--ui-picker-list-max-height: none`
+// and lets the list take the rest of that height.
 .ui-picker-list__list {
-  max-height: min(50dvh, #{rem(360px)});
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: var(--ui-picker-list-max-height, min(50dvh, #{rem(360px)}));
   overflow-y: auto;
   overscroll-behavior: contain;
 
@@ -82,6 +86,20 @@
     cursor: default;
     background: transparent;
   }
+}
+
+// The "Recent" group on top: a small title, then a rule before the whole list.
+.ui-picker-list__group {
+  @include type(caption);
+
+  padding: rem(6px) rem(12px) rem(2px);
+  color: var(--text-muted);
+}
+
+.ui-picker-list__rule {
+  block-size: 0;
+  margin: rem(4px) rem(12px);
+  border-block-start: 1px solid var(--border);
 }
 
 .ui-picker-list__empty-icon {

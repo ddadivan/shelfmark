@@ -20,6 +20,7 @@ import {
   type TrashRetentionDays,
   type FolderEmoji,
   type HexColour,
+  findMatchingRule,
 } from '@shelfmark/contracts';
 import { MOCK_FOLDERS, MOCK_TAGS } from '@shelfmark/contracts/testing';
 import type { MockTrashEntry } from '../../trash/mock/models/mock-trash-entry.interface';
@@ -29,8 +30,11 @@ import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { matchesQuery } from '../utils/search-query';
 import { buildDemoLibrarySeed, usesDemoLibrary } from './demo-library-seed';
 import { generateMockLinks } from './generate-mock-links';
+import { withMockPreviews } from './with-mock-previews';
 import type { MockSavedView } from '../../views/mock/models/mock-saved-view.interface';
 import { mockStarterViews } from '../../views/mock/mock-starter-views';
+import type { MockRule } from '../../rules/mock/models/mock-rule.interface';
+import type { MockRuleEffect } from '../../rules/mock/models/mock-rule-effect.interface';
 import {
   readMockLibrarySettings,
   writeMockLibrarySettings,
@@ -71,7 +75,7 @@ export class MockLibraryData {
    * mock session from the fixtures.
    */
   private readonly demo = usesDemoLibrary() ? buildDemoLibrarySeed() : null;
-  links: LinkResponse[] = this.demo?.links ?? generateMockLinks();
+  links: LinkResponse[] = withMockPreviews(this.demo?.links ?? generateMockLinks());
   private folders: FolderResponse[] =
     this.demo?.folders ?? MOCK_FOLDERS.map((folder) => ({ ...folder }));
   private tags: TagResponse[] = [
@@ -95,6 +99,8 @@ export class MockLibraryData {
   pins: PinRef[] = this.demo?.pins ?? [];
   /** The saved views in order; a new account starts with the starter views. */
   views: MockSavedView[] = mockStarterViews();
+  /** The domain rules (#398); the demo starts with one example. */
+  rules: MockRule[] = this.demo?.rules ?? [];
 
   /** Stored folders without counts; mutate through `setFolders`. */
   /**
@@ -130,14 +136,24 @@ export class MockLibraryData {
     );
   }
 
-  /** Folders with `linkCount` (links directly in the folder), by position, then name (the API order). */
+  /**
+   * Folders with `linkCount` (links directly in the folder) and the cover (#418: only while the
+   * cover link is still a live link of that folder, like the API), by position, then name.
+   */
   foldersView(): FolderResponse[] {
     return this.folders
-      .map((folder) => ({
-        ...folder,
-        pinned: this.isPinned(PIN_KIND.Folder, folder.id),
-        linkCount: this.links.filter((link) => link.folderId === folder.id).length,
-      }))
+      .map((folder) => {
+        const cover = this.links.find(
+          (link) => link.id === folder.coverLinkId && link.folderId === folder.id,
+        );
+        return {
+          ...folder,
+          coverLinkId: cover?.id ?? null,
+          coverUrl: cover?.imageUrl ?? null,
+          pinned: this.isPinned(PIN_KIND.Folder, folder.id),
+          linkCount: this.links.filter((link) => link.folderId === folder.id).length,
+        };
+      })
       .sort((a, b) => a.position - b.position || a.name.localeCompare(b.name));
   }
 
@@ -318,6 +334,33 @@ export class MockLibraryData {
       },
       ...this.trash,
     ];
+  }
+
+  /**
+   * The folder a rule refers to, like the API's `ON DELETE SET NULL`: kept while the folder is
+   * live or in Trash, `null` once it is deleted for good.
+   */
+  ruleFolderId(rule: MockRule): string | null {
+    const id = rule.folderId;
+    const known =
+      id !== null &&
+      (this.folders.some((folder) => folder.id === id) ||
+        this.trash.some((entry) => entry.folders.some((folder) => folder.id === id)));
+    return known ? id : null;
+  }
+
+  /**
+   * What the domain rule of `url` does to a link being saved (#398), like the API's matcher: the
+   * most specific domain wins; its folder only while it is live, its tags always.
+   */
+  ruleEffect(url: string): MockRuleEffect | null {
+    const rule = findMatchingRule(this.rules, url);
+    if (rule === null) {
+      return null;
+    }
+    const live =
+      rule.folderId !== null && this.folders.some((folder) => folder.id === rule.folderId);
+    return { folderId: live ? rule.folderId : null, tags: [...rule.tags] };
   }
 
   /** Name of the live folder `id`, or `null` (Unsorted, the top level, or a folder that is gone). */

@@ -5,6 +5,7 @@ import { LINK_KIND, LINK_LIMIT } from '@shelfmark/contracts';
 import {
   ButtonComponent,
   CheckboxComponent,
+  ChipComponent,
   DialogComponent,
   FaviconComponent,
   injectDialogData,
@@ -37,7 +38,10 @@ import { PasteManyListComponent } from '../paste-many/paste-many-list.component'
 import { AddLinkFormService } from '../../services/add-link-form.service';
 import { AddLinkSaveService } from '../../services/add-link-save.service';
 import { AddLinkPreviewService } from '../../services/add-link-preview.service';
+import { AddLinkRuleService } from '../../services/add-link-rule.service';
+import { RuleSuggestionService } from '../../../rules/services/rule-suggestion.service';
 import { AddSeveralLinksService } from '../../services/add-several-links.service';
+import { ReminderFormatService } from '../../../reminders/services/reminder-format.service';
 import { AddLinkNewFolderService } from '../../services/add-link-new-folder.service';
 import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
 
@@ -64,6 +68,7 @@ import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
   imports: [
     ButtonComponent,
     CheckboxComponent,
+    ChipComponent,
     DialogComponent,
     FaviconComponent,
     FormField,
@@ -82,6 +87,8 @@ import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
     AddLinkFormService,
     AddSeveralLinksService,
     AddLinkPreviewService,
+    AddLinkRuleService,
+    RuleSuggestionService,
     AddLinkSaveService,
     AddLinkNewFolderService,
   ],
@@ -108,6 +115,7 @@ export class AddLinkDialogComponent {
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
   private readonly localeService = inject(LocaleService);
+  private readonly reminderFormat = inject(ReminderFormatService);
   private readonly data = injectDialogData<AddLinkDialogData>();
 
   /** The link being edited; `undefined` when adding. */
@@ -139,6 +147,10 @@ export class AddLinkDialogComponent {
   protected readonly previewHost = this.previewService.previewHost;
   protected readonly duplicate = this.previewService.duplicate;
 
+  private readonly ruleService = inject(AddLinkRuleService);
+  /** "Rule: youtube.com → Videos" while a domain rule filled folder or tags (#398). */
+  protected readonly ruleChip = this.ruleService.chip;
+
   /** The folders, plus one named in the field and created on Save ("New", #454). */
   protected readonly folderOptions = this.newFolder.options;
   /** The paste-many list has no pending folder: it starts in "Unsorted" then. */
@@ -154,6 +166,13 @@ export class AddLinkDialogComponent {
         count: tag.linkCount,
       }),
     }));
+  });
+
+  /** Edit mode: the link's reminder ("Sat, 10:00", "Due 2 hours ago"), or `null` without one. */
+  protected readonly reminder = computed(() => {
+    this.formState.i18n();
+    const at = this.original?.remindAt;
+    return at ? this.reminderFormat.chip(at) : null;
   });
 
   /** "Saved X, last opened Y" under the form (edit mode). */
@@ -229,6 +248,19 @@ export class AddLinkDialogComponent {
 
   protected cancel(): void {
     this.ref.close();
+  }
+
+  /** "Remind me" / "Change": the caller opens the reminder dialog (unsaved edits are dropped, as Delete). */
+  protected requestRemind(): void {
+    if (this.original) {
+      this.ref.close({ action: ADD_LINK_ACTION.Remind, link: this.original });
+    }
+  }
+
+  /** The chip's remove: the rule leaves the form and focus goes to the folder it changed. */
+  protected dismissRule(): void {
+    this.ruleService.dismiss();
+    this.form.folderId().focusBoundControl();
   }
 
   protected requestDelete(): void {

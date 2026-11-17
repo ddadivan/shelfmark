@@ -259,7 +259,7 @@ describe('LinkCardComponent', () => {
     expect(violations.map((violation) => violation.id)).toEqual([]);
   });
 
-  it('lists Open, Edit, the favorite toggle, Pin to sidebar, Move and, after a separator, Delete', async () => {
+  it('lists Open, Edit, the favorite toggle, Pin to sidebar, Remind me, Move, Create a rule and, after a separator, Delete', async () => {
     const { fixture, element } = await setup();
 
     element
@@ -278,10 +278,33 @@ describe('LinkCardComponent', () => {
       'Edit',
       'Add to favorites',
       'Pin to sidebar',
+      'Remind me…',
       'Move to folder…',
+      'Create a rule for angular.dev…',
       '---',
       'Delete',
     ]);
+  });
+
+  it('asks for a rule for the domain from the menu, and offers none without a domain (#398)', async () => {
+    const { fixture, element } = await setup();
+    const asked = vi.fn();
+    fixture.componentInstance.ruleRequested.subscribe(asked);
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    menuItem('Create a rule for angular.dev').click();
+    await fixture.whenStable();
+    expect(asked).toHaveBeenCalledTimes(1);
+
+    fixture.componentRef.setInput('link', { ...LINK, url: 'http://127.0.0.1/x' });
+    await fixture.whenStable();
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    expect(document.body.textContent).not.toContain('Create a rule');
   });
 
   describe('pin menu', () => {
@@ -329,5 +352,48 @@ describe('LinkCardComponent', () => {
       menuItem('Unpin from top').click();
       expect(top).toHaveBeenCalledTimes(1);
     });
+  });
+});
+
+describe('LinkCardComponent reminder (#275)', () => {
+  const HOUR = 3_600_000;
+
+  it('shows no chip without a reminder and keeps the saved date', async () => {
+    const { element } = await setup({ ...LINK, remindAt: null });
+    expect(element.querySelector('.link-card__reminder')).toBeNull();
+  });
+
+  it('shows the upcoming time in an accent chip instead of the date', async () => {
+    const at = new Date(Date.now() + 2 * 24 * HOUR);
+    const { element } = await setup({ ...LINK, remindAt: at.toISOString() });
+    const chip = element.querySelector('.link-card__reminder');
+    expect(chip?.classList).toContain('ui-badge--accent');
+    expect(chip?.textContent?.trim()).not.toBe('');
+    expect(chip?.textContent).not.toContain('Due');
+  });
+
+  it('turns the chip amber with "Due" once the reminder has come', async () => {
+    const { element } = await setup({
+      ...LINK,
+      remindAt: new Date(Date.now() - 3 * HOUR).toISOString(),
+    });
+    const chip = element.querySelector('.link-card__reminder');
+    expect(chip?.classList).toContain('ui-badge--warning');
+    expect(chip?.textContent?.trim()).toBe('Due 3 hours ago');
+  });
+
+  it('offers "Change reminder…" for a link with one and emits remindRequested', async () => {
+    const { fixture, element } = await setup({
+      ...LINK,
+      remindAt: new Date(Date.now() + HOUR).toISOString(),
+    });
+    const requested = vi.fn();
+    fixture.componentInstance.remindRequested.subscribe(requested);
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+      ?.click();
+    await fixture.whenStable();
+    menuItem('Change reminder…').click();
+    expect(requested).toHaveBeenCalledOnce();
   });
 });

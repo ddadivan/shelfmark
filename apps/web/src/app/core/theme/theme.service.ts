@@ -40,6 +40,7 @@ import { CUSTOM_THEME_STORAGE_KEY } from './models/custom-theme-storage-key.cons
 import { LAYOUT_STORAGE_KEY } from './models/layout-storage-key.const';
 import { MOTION_STORAGE_KEY } from './models/motion-storage-key.const';
 import { THEME_STORAGE_KEY } from './models/theme-storage-key.const';
+import { wholeLayout } from './whole-layout';
 
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 /** The custom properties an own accent colour sets on `html` (#315). */
@@ -238,15 +239,7 @@ export class ThemeService {
 
   /** Text size, font, density and the card options, always whole. */
   setLayout(layout: LayoutSettings): void {
-    const next: LayoutSettings = {
-      textSize: layout.textSize,
-      font: layout.font,
-      density: layout.density,
-      cardPreview: layout.cardPreview,
-      cardSite: layout.cardSite,
-      cardNotes: layout.cardNotes,
-      cardTags: layout.cardTags,
-    };
+    const next = wholeLayout(layout);
     this.layoutState.set(next);
     this.store(LAYOUT_STORAGE_KEY, JSON.stringify(next));
   }
@@ -281,8 +274,7 @@ export class ThemeService {
       return true;
     }
     return (
-      this.parse(CUSTOM_THEME_STORAGE_KEY, isCustomTheme) !== null ||
-      this.parse(LAYOUT_STORAGE_KEY, isLayoutSettings) !== null
+      this.parse(CUSTOM_THEME_STORAGE_KEY, isCustomTheme) !== null || this.readLayout() !== null
     );
   }
 
@@ -294,6 +286,15 @@ export class ThemeService {
     } catch {
       return null;
     }
+  }
+
+  /**
+   * The stored layout. A copy saved with the retired `folderHighlight` key (#440) is read without
+   * it: the key is ignored, the rest of the layout stays.
+   */
+  private readLayout(): LayoutSettings | null {
+    const stored = this.parse(LAYOUT_STORAGE_KEY, isLayoutSettings);
+    return stored && wholeLayout(stored);
   }
 
   /** Takes every valid stored value; a missing or broken one keeps the current value. */
@@ -310,7 +311,7 @@ export class ThemeService {
     if (custom !== null) {
       this.customThemeState.set(custom);
     }
-    const layout = this.parse(LAYOUT_STORAGE_KEY, isLayoutSettings);
+    const layout = this.readLayout();
     if (layout !== null) {
       this.layoutState.set(layout);
     }

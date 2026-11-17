@@ -17,6 +17,8 @@ import {
 import { FEEDBACK_LOAD_STATE } from '../../../feedback/models/feedback-load-state.const';
 import { FEEDBACK_STATUS_VIEW } from '../../../feedback/models/feedback-status-view.const';
 import { SettingsPageHeaderComponent } from '../../../settings/components/settings-page-header/settings-page-header.component';
+import { AdminSwitchComponent } from '../../components/admin-switch/admin-switch.component';
+import { ADMIN_PATH } from '../../models/admin-path.const';
 import { AdminFeedbackItemComponent } from '../../components/admin-feedback-item/admin-feedback-item.component';
 import { AdminFeedbackStore } from '../../services/admin-feedback.store';
 
@@ -30,6 +32,7 @@ import { AdminFeedbackStore } from '../../services/admin-feedback.store';
   imports: [
     TranslocoPipe,
     AdminFeedbackItemComponent,
+    AdminSwitchComponent,
     ButtonComponent,
     EmptyStateComponent,
     LoadMoreComponent,
@@ -48,6 +51,7 @@ export default class AdminFeedbackPage {
   private readonly transloco = inject(TranslocoService);
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
+  protected readonly ADMIN_PATH = ADMIN_PATH;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly LOAD = FEEDBACK_LOAD_STATE;

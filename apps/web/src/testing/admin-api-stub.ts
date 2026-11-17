@@ -6,5 +6,6 @@ export function adminApiStub(admin = false): AdminApi {
     isAdmin: vi.fn(() => Promise.resolve(admin)),
     listFeedback: vi.fn(() => Promise.resolve({ items: [], nextCursor: null })),
     updateFeedback: vi.fn(() => Promise.reject(new Error('Not stubbed'))),
+    stats: vi.fn(() => Promise.reject(new Error('Not stubbed'))),
   };
 }

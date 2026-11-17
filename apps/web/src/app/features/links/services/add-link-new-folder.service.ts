@@ -4,6 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { FOLDER_LIMIT, type FolderResponse } from '@shelfmark/contracts';
 import type { SelectOption } from '@shelfmark/ui';
 import { FoldersStore } from '../../../stores/folders.store';
+import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { NEW_FOLDER_OPTION_ID } from '../models/new-folder-option-id.const';
 import type { NewFolderOutcome } from '../models/new-folder-outcome.interface';
 import { buildFolderOptions } from '../utils/folder-options';
@@ -19,6 +20,8 @@ import { buildFolderOptions } from '../utils/folder-options';
 export class AddLinkNewFolderService {
   private readonly folders = inject(FoldersStore);
   private readonly transloco = inject(TranslocoService);
+  /** Folder tiles in the select, as the account shows colours (#418). */
+  private readonly shownColour = inject(UserSettingsStore).shownColour;
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
   /** Name of the folder to create on Save; `null` while there is none. */
@@ -26,7 +29,7 @@ export class AddLinkNewFolderService {
 
   /** The folder tree, plus the pending folder (last, with its badge). */
   readonly options = computed<SelectOption[]>(() => {
-    const options = buildFolderOptions(this.folders.entities());
+    const options = buildFolderOptions(this.folders.entities(), this.shownColour);
     const name = this.name();
     if (name === null) {
       return options;

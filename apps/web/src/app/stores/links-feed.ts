@@ -1,6 +1,7 @@
-import type { LinkResponse } from '@shelfmark/contracts';
+import { LINK_SORT_FIELD, SORT_ORDER, type LinkResponse } from '@shelfmark/contracts';
 import type { LinksFilter } from '../features/links/models/links-filter.type';
 import { LINKS_SCOPE } from '../features/links/models/links-scope.const';
+import { inFilter } from '../features/links/utils/links-filter';
 
 /**
  * Whether an edited link still belongs in the open feed. A favorite flag never removes it (an
@@ -39,4 +40,91 @@ export function insertAt<T>(list: readonly T[], index: number, item: T): T[] {
   const copy = [...list];
   copy.splice(Math.min(index, copy.length), 0, item);
   return copy;
+}
+
+/** Where a link that has no remembered slot goes: after the links pinned to the top of a folder. */
+function afterPinned(entities: readonly LinkResponse[]): number {
+  const first = entities.findIndex((item) => item.pinnedInFolderAt === null);
+  return first < 0 ? entities.length : first;
+}
+
+/**
+ * Whether a link that moved into the feed (or was saved) and that the feed never held may be
+ * inserted at the top: the feed is in the default order (newest first), or it has no more pages
+ * (so nothing it skipped could belong above it). Otherwise it comes with the next load.
+ */
+export function takesNewcomers(filter: LinksFilter, hasMore: boolean): boolean {
+  const newestFirst = (filter.sort ?? LINK_SORT_FIELD.CreatedAt) === LINK_SORT_FIELD.CreatedAt;
+  const descending = (filter.order ?? SORT_ORDER.Desc) === SORT_ORDER.Desc;
+  return (newestFirst && descending) || !hasMore;
+}
+
+/**
+ * The feed `entities` of `filter` after `link` changed: a link that still belongs stays (replaced
+ * in place); one that left is removed and its slot remembered in `slots`; one that belongs again
+ * comes back at its remembered slot. With `newcomers`, a link the feed never held that now belongs
+ * to the open folder or Unsorted is inserted after the pinned links (other scopes, and changes
+ * that are no move or save, load it with the next page). Pure apart from `slots`; returns
+ * `entities` itself when nothing changes.
+ */
+export function placeLink(
+  entities: readonly LinkResponse[],
+  filter: LinksFilter,
+  link: LinkResponse,
+  slots: Map<string, number>,
+  newcomers = false,
+): readonly LinkResponse[] {
+  const index = entities.findIndex((item) => item.id === link.id);
+  if (index >= 0) {
+    if (staysAfterEdit(filter, link)) {
+      return entities.map((item, at) => (at === index ? link : item));
+    }
+    slots.set(link.id, index);
+    return entities.filter((item) => item.id !== link.id);
+  }
+  const slot = slots.get(link.id);
+  if (slot !== undefined) {
+    if (!inFilter(filter, link)) {
+      return entities;
+    }
+    slots.delete(link.id);
+    return insertAt(entities, slot, link);
+  }
+  const folderOrUnsorted =
+    filter.scope === LINKS_SCOPE.Folder || filter.scope === LINKS_SCOPE.Unsorted;
+  return newcomers && folderOrUnsorted && inFilter(filter, link)
+    ? insertAt(entities, afterPinned(entities), link)
+    : entities;
+}
+
+/**
+ * `placeLink` for links that changed together (a bulk move). Links that leave are taken out from
+ * the end of the feed backwards, so each remembers its slot in the feed as it was; links that come
+ * back go in from the first slot onwards, so each lands where it was; newcomers keep their order
+ * (newest first by `createdAt`, ties in the order given).
+ */
+export function placeLinks(
+  entities: readonly LinkResponse[],
+  filter: LinksFilter,
+  links: readonly LinkResponse[],
+  slots: Map<string, number>,
+  newcomers = false,
+): readonly LinkResponse[] {
+  const indexOf = new Map(entities.map((item, index) => [item.id, index]));
+  const held = links
+    .filter((link) => indexOf.has(link.id))
+    .sort((a, b) => (indexOf.get(b.id) ?? 0) - (indexOf.get(a.id) ?? 0));
+  const others = links.filter((link) => !indexOf.has(link.id));
+  const returning = others
+    .filter((link) => slots.has(link.id))
+    .sort((a, b) => (slots.get(a.id) ?? 0) - (slots.get(b.id) ?? 0));
+  // Each newcomer goes to the front, so the newest goes in last.
+  const fresh = others
+    .filter((link) => !slots.has(link.id))
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0))
+    .reverse();
+  return [...held, ...returning, ...fresh].reduce(
+    (list, link) => placeLink(list, filter, link, slots, newcomers),
+    entities,
+  );
 }

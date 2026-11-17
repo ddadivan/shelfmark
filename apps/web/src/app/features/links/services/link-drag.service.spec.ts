@@ -8,6 +8,7 @@ import { BulkLinkActionsService } from './bulk-link-actions.service';
 import { LinkActionsService } from './link-actions.service';
 import { LINKS_SCOPE } from '../models/links-scope.const';
 import { LINK_DROP_ATTRIBUTE } from '../models/link-drop-attribute.const';
+import { LINK_DROP_HALF_ATTRIBUTE } from '../models/link-drop-half-attribute.const';
 import { LinkDragService } from './link-drag.service';
 
 const FOLDER_A = MOCK_FOLDERS[0] as FolderResponse;
@@ -63,6 +64,45 @@ describe('LinkDragService', () => {
     expect(drag.treeTargetId()).toBeNull();
   });
 
+  it('makes a half of the side-by-side view the one target: no sidebar row, tile or pinned row with it', () => {
+    const { drag, moveTo, element, under } = setup();
+    under.mockReturnValue(
+      element({ [LINK_DROP_ATTRIBUTE]: FOLDER_B.id, [LINK_DROP_HALF_ATTRIBUTE]: '' }),
+    );
+
+    drag.start(link(FOLDER_A.id));
+    drag.move(1, 1);
+    expect(drag.halfTargetId()).toBe(FOLDER_B.id);
+    expect(drag.treeTargetId()).toBeNull();
+    expect(drag.folderTargetId()).toBeNull();
+
+    // The same folder through a sidebar row: the row is the target and the half stays quiet.
+    under.mockReturnValue(element({ 'data-ui-tree-id': FOLDER_B.id }));
+    drag.move(2, 2);
+    expect(drag.treeTargetId()).toBe(FOLDER_B.id);
+    expect(drag.halfTargetId()).toBeNull();
+
+    under.mockReturnValue(
+      element({ [LINK_DROP_ATTRIBUTE]: FOLDER_B.id, [LINK_DROP_HALF_ATTRIBUTE]: '' }),
+    );
+    drag.move(3, 3);
+    drag.drop();
+    expect(moveTo).toHaveBeenCalledWith(link(FOLDER_A.id), FOLDER_B.id);
+    expect(drag.halfTargetId()).toBeNull();
+  });
+
+  it('is no half target when the links are in that folder already', () => {
+    const { drag, element, under } = setup();
+    under.mockReturnValue(
+      element({ [LINK_DROP_ATTRIBUTE]: FOLDER_A.id, [LINK_DROP_HALF_ATTRIBUTE]: '' }),
+    );
+
+    drag.start(link(FOLDER_A.id));
+    drag.move(1, 1);
+
+    expect(drag.halfTargetId()).toBeNull();
+  });
+
   it('targets Unsorted in the tree as the null folder', () => {
     const { drag, moveTo, element, under } = setup();
     under.mockReturnValue(element({ 'data-ui-tree-id': LINKS_SCOPE.Unsorted }));
@@ -85,6 +125,66 @@ describe('LinkDragService', () => {
     drag.drop();
 
     expect(moveTo).toHaveBeenCalledWith(link(null), FOLDER_A.id);
+  });
+
+  it('reads the unsorted token of a drop half as the null folder', () => {
+    const { drag, moveTo, element, under } = setup();
+    under.mockReturnValue(element({ [LINK_DROP_ATTRIBUTE]: LINKS_SCOPE.Unsorted }));
+
+    drag.start(link(FOLDER_A.id));
+    drag.move(1, 1);
+    expect(drag.treeTargetId()).toBe(LINKS_SCOPE.Unsorted);
+    drag.drop();
+
+    expect(moveTo).toHaveBeenCalledWith(link(FOLDER_A.id), null);
+  });
+
+  it('moves a link dragged from the right half into a folder half on the left', () => {
+    const { drag, moveTo, bulkMoveTo, element, under } = setup();
+    under.mockReturnValue(element({ [LINK_DROP_ATTRIBUTE]: FOLDER_A.id }));
+
+    drag.start(link(FOLDER_B.id));
+    drag.move(1, 1);
+    expect(drag.treeTargetId()).toBe(FOLDER_A.id);
+    drag.drop();
+
+    expect(moveTo).toHaveBeenCalledWith(link(FOLDER_B.id), FOLDER_A.id);
+    expect(bulkMoveTo).not.toHaveBeenCalled();
+  });
+
+  it('is no target for a half that shows the folder the link is already in', () => {
+    const { drag, moveTo, element, under } = setup();
+    under.mockReturnValue(element({ [LINK_DROP_ATTRIBUTE]: FOLDER_B.id }));
+
+    drag.start(link(FOLDER_B.id));
+    drag.move(1, 1);
+    expect(drag.treeTargetId()).toBeNull();
+    drag.drop();
+
+    expect(moveTo).not.toHaveBeenCalled();
+  });
+
+  it('is no target for a half without a drop value (the picker)', () => {
+    const { drag, moveTo, element, under } = setup();
+    under.mockReturnValue(element({}));
+
+    drag.start(link(FOLDER_B.id));
+    drag.move(1, 1);
+    drag.drop();
+
+    expect(drag.treeTargetId()).toBeNull();
+    expect(moveTo).not.toHaveBeenCalled();
+  });
+
+  it('is no target for the unsorted token when the link is already unsorted', () => {
+    const { drag, moveTo, element, under } = setup();
+    under.mockReturnValue(element({ [LINK_DROP_ATTRIBUTE]: LINKS_SCOPE.Unsorted }));
+
+    drag.start(link(null));
+    drag.move(1, 1);
+    drag.drop();
+
+    expect(moveTo).not.toHaveBeenCalled();
   });
 
   it('lists the rows that cannot take links only while dragging (Unsorted can)', () => {

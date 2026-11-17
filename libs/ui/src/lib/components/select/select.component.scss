@@ -111,3 +111,8 @@
   @include leave(pop);
   @include origin;
 }
+
+// The chosen folder's tile in the trigger (#418).
+.ui-select__tile {
+  flex: none;
+}

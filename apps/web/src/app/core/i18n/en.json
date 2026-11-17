@@ -172,30 +172,21 @@
       "copyright": "© 2026 Shelfmark",
       "privacy": "Privacy",
       "github": "GitHub",
-      "language": "Language"
+      "language": "Language",
+      "changelog": "What's new"
     },
     "newTab": "opens in a new tab",
     "backToShelf": "Back to my shelf",
     "whatsNew": {
       "title": "What's new",
-      "items": {
-        "trash": {
-          "title": "Trash",
-          "text": "Deleted links and folders wait in Trash, so nothing is gone by accident. Choose how long they stay in Settings."
-        },
-        "tabs": {
-          "title": "Your tabs stay in step",
-          "text": "Save, edit or delete a link in one tab and every other open tab shows it."
-        },
-        "move": {
-          "title": "Move to folder and drag and drop",
-          "text": "Move a link from its menu, or drag it onto a folder in the sidebar."
-        },
-        "refresh": {
-          "title": "A fresh look",
-          "text": "Softer corners, a floating tab bar on phones and toasts that say what happened."
-        }
-      }
+      "all": "See all changes"
+    },
+    "extension": {
+      "badge": "Browser extension",
+      "title": "Save the page you are on",
+      "text": "One click on the toolbar or Alt+Shift+S. The title, your folder rules and recent folders are already filled in, so most pages take one more click.",
+      "browsers": "For Chrome, Edge, Brave and Arc. Install it from your shelf after you sign in.",
+      "alt": "The Shelfmark extension: Save to Shelfmark with the page title, the folder Clothes from a rule, tags and a note"
     }
   },
   "links": {
@@ -283,6 +274,10 @@
         "none": "No links found in this text",
         "back": "One link",
         "find": "Find links"
+      },
+      "rule": {
+        "chip": "Rule: {{domain}} → {{target}}",
+        "remove": "Don't apply the rule for {{domain}}"
       }
     },
     "edit": {
@@ -296,7 +291,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "In folder"
     },
     "item": {
       "edit": "Edit",
@@ -329,7 +325,8 @@
       "unpinFromTop": "Unpin from top",
       "pinToSidebar": "Pin to sidebar",
       "unpinFromSidebar": "Unpin from sidebar",
-      "pinned": "Pinned"
+      "pinned": "Pinned",
+      "createRule": "Create a rule for {{domain}}…"
     },
     "recent": {
       "title": "Recently opened",
@@ -422,7 +419,8 @@
       "moved": "Moved to {{folder}}",
       "failed": "Couldn't move the link",
       "failedDetail": "It is back where it was",
-      "undoFailed": "Couldn't move the link back"
+      "undoFailed": "Couldn't move the link back",
+      "recent": "Recent"
     },
     "many": {
       "title": {
@@ -475,7 +473,12 @@
       },
       "noneSaved": "No links were saved",
       "undoFailed": "Couldn't undo",
-      "undoFailedDetail": "The links are still saved"
+      "undoFailedDetail": "The links are still saved",
+      "applyRules": "Apply domain rules",
+      "savedMixed": {
+        "one": "{{count}} link saved",
+        "other": "{{count}} links saved to their folders"
+      }
     },
     "drag": {
       "moveHere": "Move here",
@@ -493,7 +496,8 @@
         "favorites": "Can't drop here — star a link to add it to Favorites",
         "recent": "Can't drop here — Recently opened fills as you open links",
         "trash": "Can't drop here — use Delete to move a link to Trash",
-        "pinnedLink": "Can't drop here — a pinned link is not a folder"
+        "pinnedLink": "Can't drop here — a pinned link is not a folder",
+        "reminders": "Can't drop here — use “Remind me” in the link's menu"
       }
     }
   },
@@ -502,7 +506,7 @@
     "home": "Shelfmark, home",
     "newTab": "(opens in a new tab)",
     "updated": "Last updated {{date}}",
-    "updatedDate": "13 November 2026",
+    "updatedDate": "16 November 2026",
     "intro": "Shelfmark is a personal project that stores the links you save. This page explains what we keep and why, in plain words.",
     "store": {
       "title": "What we store",
@@ -510,7 +514,9 @@
       "content": "Your links (address, title, note, favorite mark, when you last opened it), your folders and your tags.",
       "images": "For each link, a small copy of the site's icon and preview image, if the site has them. Our server downloads and stores them so they load from Shelfmark.",
       "feedback": "Your answers to the in-app rating, linked to your account: a score from 1 to 10 and, if you write one, a comment.",
+      "promptViews": "The app also counts how often the rating prompt was shown to you and when, to know which prompts get answered. These counts belong to your account and are deleted with it.",
       "stats": "The \"Your shelf\" numbers on the Account page (counts, the sites and tags you use most, links per week) are worked out from your own data each time you open the page. They are not stored and never shared.",
+      "usage": "To learn how Shelfmark is used, we record the day you last used the app: a date only, no time, page or action. The author sees only totals worked out from all accounts together, such as how many people use folders or tags or which themes are popular. Groups of fewer than three people are not shown, and no one's links, notes or settings are looked at one by one. These totals are worked out on request and are not stored. When you delete your account, the date goes with it.",
       "sessions": "For each sign-in: when it expires, plus the IP address and the browser (user agent) it was started from, to keep sessions secure.",
       "logs": "Our API logs the request method, path, status, duration and a request id, without link contents or personal data. Our host, Vercel, keeps its own standard request logs, which include IP addresses, for a limited time."
     },
@@ -523,11 +529,16 @@
     "dont": {
       "title": "What we don't do",
       "sell": "We don't sell or share your data and don't show ads.",
-      "read": "We don't look at your saved links except where needed to run the service, for example to fetch a preview."
+      "read": "We don't use the content of your links for statistics: only counts (links, folders, ratings), never addresses or titles. Your links are stored in our database so the app can show, search and preview them; only the author of the service has access to it."
     },
     "previews": {
       "title": "Link previews",
       "body": "When you save a link, our server visits that page to read its title, icon and preview image. The site therefore sees our server's IP address and the user agent \"ShelfmarkBot\", not your IP address."
+    },
+    "extension": {
+      "title": "Browser extension",
+      "body": "The Shelfmark extension for Chrome, Edge, Brave and Arc works only when you click its button or press its shortcut, never in the background. It then sends Shelfmark the address of that one tab, to check whether you saved it already, and saves its address and title, with the folder, tags and note you pick, only when you press Save. It never sees your history or the other sites you visit.",
+      "access": "It uses your Shelfmark sign-in in that browser and cannot read the sign-in cookie itself. It can reach Shelfmark only, and keeps just the folders you saved to most recently on your device, to offer them next time."
     },
     "third": {
       "title": "Other services",
@@ -743,7 +754,8 @@
       "reorder": {
         "movedUp": "Moved up, position {{position}} of {{total}}",
         "movedDown": "Moved down, position {{position}} of {{total}}"
-      }
+      },
+      "extension": "Get the extension"
     },
     "searchHint": "Search your links",
     "searchButton": "Search",
@@ -753,7 +765,8 @@
     },
     "sendFeedback": "Send feedback",
     "feedbackInbox": "Feedback inbox",
-    "about": "About Shelfmark"
+    "about": "About Shelfmark",
+    "usageStats": "Usage stats"
   },
   "folders": {
     "dialog": {
@@ -952,7 +965,27 @@
         "undo": "Undo"
       },
       "iconsShowAll": "Show all icons ({{count}})",
-      "iconsShowFewer": "Show fewer"
+      "iconsShowFewer": "Show fewer",
+      "description": {
+        "label": "Description",
+        "hint": "Optional, up to {{max}} characters. Shown under the folder name.",
+        "placeholder": "What’s in this folder?",
+        "tooLong": "Keep it to {{max}} characters.",
+        "invalid": "Use plain text on one line."
+      },
+      "highlight": {
+        "label": "Highlight with background",
+        "hint": "Gives the folder a soft background in its color, in the sidebar and on its page."
+      },
+      "cover": {
+        "label": "Cover",
+        "hint": "A preview picture from a link in this folder, behind the folder header.",
+        "none": "No cover",
+        "option": "Cover from “{{title}}”",
+        "current": "Current cover",
+        "empty": "Links in this folder with a preview picture can be its cover.",
+        "loading": "Loading pictures"
+      }
     }
   },
   "library": {
@@ -1091,6 +1124,47 @@
       "label": "Sort, view and export",
       "button": "Options",
       "sortBy": "Sort by"
+    },
+    "split": {
+      "open": "Side by side",
+      "close": "Close side by side",
+      "swap": "Swap sides",
+      "choose": {
+        "title": "Choose a folder",
+        "heading": "Choose a folder to move links into",
+        "text": "Then drag links here from the left, or select them and use the bar below.",
+        "search": "Find a folder",
+        "list": "Folders",
+        "noResults": "No folder found"
+      },
+      "leftMenu": {
+        "label": "Show on the left",
+        "search": "Find a folder or tag",
+        "list": "Feeds",
+        "noResults": "Nothing found"
+      },
+      "rightMenu": {
+        "label": "Show on the right"
+      },
+      "onLeft": "On the left",
+      "onRight": "On the right",
+      "leftTrigger": "Left feed: {{name}}. Change",
+      "rightTrigger": "Right folder: {{name}}. Change",
+      "leftRegion": "Left: {{name}}",
+      "rightRegion": "Right: {{name}}",
+      "rightRegionEmpty": "Right: choose a folder",
+      "searchName": "Search: {{query}}",
+      "empty": {
+        "text": "Drag links here from the left."
+      },
+      "moveToLeft": "Move “{{title}}” to {{folder}}"
+    },
+    "extension": {
+      "title": "Save pages straight from your browser",
+      "text": "The Shelfmark extension saves the page you are on in one click or Alt+Shift+S, with your folders and tags filled in.",
+      "install": "Install extension",
+      "installLabel": "Install extension from the Chrome Web Store (opens in a new tab)",
+      "dismiss": "Not now"
     }
   },
   "export": {
@@ -1378,7 +1452,7 @@
     },
     "footer": {
       "privacy": "Privacy policy",
-      "version": "Shelfmark v1.0"
+      "version": "Shelfmark {{version}}"
     },
     "delete": {
       "title": "Delete account",
@@ -1431,6 +1505,12 @@
         "previews": {
           "label": "Fetch titles and previews",
           "hint": "Turn off to save only the address"
+        },
+        "extension": {
+          "label": "Browser extension",
+          "hint": "Save any page in one click from Chrome, Edge, Brave or Arc",
+          "action": "Install",
+          "actionLabel": "Install the browser extension from the Chrome Web Store (opens in a new tab)"
         }
       },
       "failed": "Couldn't save the setting",
@@ -2080,6 +2160,109 @@
         "title": "Couldn't save",
         "detail": "The message is back as it was. Try again."
       }
+    },
+    "nav": {
+      "label": "Admin pages",
+      "feedback": "Feedback",
+      "stats": "Stats"
+    },
+    "stats": {
+      "title": "Usage stats",
+      "description": "Totals over real accounts, worked out now. Demo and admin accounts are left out; groups of fewer than {{min}} people are hidden.",
+      "updated": "Updated at {{time}}",
+      "refreshing": "Refreshing…",
+      "refresh": "Refresh",
+      "refreshFailed": "Couldn't refresh. These are the last numbers.",
+      "error": "Couldn't load the stats.",
+      "retry": "Try again",
+      "loading": "Loading the stats",
+      "tooFew": "Not enough users yet: shares and groups appear from {{min}} real users.",
+      "notEnough": "Not enough users yet",
+      "fewer": "Fewer than {{min}}",
+      "smallGroup": "Hidden: a group of fewer than {{min}}",
+      "shareOf": "{{percent}} · {{count}} of {{base}}",
+      "countOf": "{{count}} of {{base}}",
+      "shareCount": "{{percent}} · {{count}}",
+      "activitySince": "Activity is recorded from {{date}}. Earlier visits are estimated from saved links and sign-ins, so active and return numbers that reach back before then may read high.",
+      "activityEstimated": "Visits before activity tracking started are estimated from saved links and sign-ins, so active and return numbers may read high.",
+      "overview": {
+        "title": "Overview"
+      },
+      "tiles": {
+        "realUsers": "Real users",
+        "active7d": "Active in the last 7 days",
+        "active30d": "Active in the last 30 days",
+        "returnedWeek": "Came back after a week",
+        "returnedMonth": "Came back after a month",
+        "onboarded": "Finished onboarding",
+        "demo": "Demo sandboxes now",
+        "demoHint": "Not counted anywhere else"
+      },
+      "signUps": {
+        "title": "Sign-ups",
+        "unit": "Show by",
+        "days": "Days",
+        "weeks": "Weeks",
+        "chartDays": "Sign-ups, last 30 days",
+        "chartWeeks": "Sign-ups, last 12 weeks",
+        "total": "{{count}} in this period",
+        "day": "Day",
+        "week": "Week from",
+        "count": "Sign-ups",
+        "dayBar": "{{date}}: {{count}}",
+        "weekBar": "Week from {{date}}: {{count}}"
+      },
+      "links": {
+        "title": "Links per user",
+        "average": "Mean {{mean}} · median {{median}}",
+        "chart": "Real users by number of saved links",
+        "bucket": "Links",
+        "users": "Users"
+      },
+      "features": {
+        "title": "Features",
+        "adoption": "Who uses what"
+      },
+      "feature": {
+        "folders": "Folders",
+        "nestedFolders": "Folders inside folders",
+        "tags": "Tags",
+        "favorites": "Favorites",
+        "notes": "Notes",
+        "sidebarPins": "Pinned to the sidebar",
+        "folderPins": "Pinned in a folder",
+        "savedViews": "Own saved views",
+        "trash": "Items in Trash",
+        "publicCollections": "Public collections",
+        "ownColours": "Own colors",
+        "ownEmoji": "Own emoji",
+        "openedRecently": "Opened a saved link in 30 days",
+        "historyPaused": "History paused",
+        "previewsOff": "Previews turned off"
+      },
+      "preferences": {
+        "title": "Preferences",
+        "theme": "Theme",
+        "language": "Language",
+        "retention": "Trash keeps items for"
+      },
+      "bucket": {
+        "other": "Other",
+        "never": "Never chosen"
+      },
+      "ratings": {
+        "title": "Ratings and messages",
+        "milestone": {
+          "day3": "After 3 days",
+          "week1": "After a week",
+          "month1": "After a month",
+          "year1": "After a year"
+        },
+        "answered": "{{answered}} answered · {{skipped}} skipped",
+        "summary": "Mean {{mean}} · median {{median}}",
+        "byKind": "Messages by type",
+        "byStatus": "Messages by status"
+      }
     }
   },
   "tabSync": {
@@ -2200,7 +2383,9 @@
       "openAll": "Open all",
       "copy": "Copy links",
       "share": "Share",
-      "delete": "Delete"
+      "delete": "Delete",
+      "moveToFolder": "Move to {{folder}}",
+      "remind": "Remind"
     },
     "header": {
       "label": "Selection",
@@ -2310,5 +2495,338 @@
       "failedDetail": "They are back in the list",
       "undoFailed": "Couldn't restore the links"
     }
+  },
+  "reminders": {
+    "title": "Reminders",
+    "dueCount": {
+      "one": "{{count}} reminder is due",
+      "other": "{{count}} reminders are due"
+    },
+    "nothingDue": "Nothing is due right now",
+    "dueShort": {
+      "one": "{{count}} due",
+      "other": "{{count}} due"
+    },
+    "loading": "Loading reminders",
+    "loadFailed": {
+      "title": "Couldn't load your reminders",
+      "text": "Check your connection and try again.",
+      "retry": "Try again"
+    },
+    "empty": {
+      "title": "No reminders yet",
+      "text": "Choose “Remind me” in the menu of a link, and it comes back here on the day you pick."
+    },
+    "group": {
+      "due": "Due",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "this-week": "This week",
+      "later": "Later"
+    },
+    "footer": "Reminders show here, on the sidebar badge and on the card. They are not sent by email or notification.",
+    "when": {
+      "today": "Today, {{time}}",
+      "tomorrow": "Tomorrow, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Due {{when}}"
+    },
+    "preset": {
+      "later-today": "Later today",
+      "tomorrow": "Tomorrow",
+      "weekend": "This weekend",
+      "next-week": "Next week",
+      "in-month": "In a month"
+    },
+    "dialog": {
+      "title": "Remind me",
+      "titleMany": {
+        "one": "Remind me about {{count}} link",
+        "other": "Remind me about {{count}} links"
+      },
+      "close": "Close",
+      "current": "Current reminder: {{when}}",
+      "presets": "Quick choices",
+      "pick": "Pick date and time…",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "time": "Time",
+      "timeHint": "Optional; 9:00 when left empty",
+      "past": "This time has already passed. Pick a later one.",
+      "timeZone": "Times are in your time zone, {{zone}}.",
+      "remove": "Remove reminder",
+      "cancel": "Cancel",
+      "confirm": "Remind me {{when}}",
+      "confirmEmpty": "Pick a day"
+    },
+    "menu": {
+      "remind": "Remind me…",
+      "change": "Change reminder…"
+    },
+    "row": {
+      "done": "Done",
+      "doneItem": "Mark the reminder of {{title}} as done",
+      "snooze": "Snooze",
+      "snoozeItem": "Snooze the reminder of {{title}}"
+    },
+    "toast": {
+      "failed": "Couldn't save the reminder",
+      "retry": "Retry",
+      "cleared": {
+        "one": "Reminder removed",
+        "other": "{{count}} reminders removed"
+      },
+      "set": "Reminder set for {{when}}",
+      "due": {
+        "one": "A reminder is due",
+        "other": "{{count}} reminders are due"
+      },
+      "show": "Show"
+    },
+    "edit": {
+      "set": "Reminder: {{when}}",
+      "none": "No reminder",
+      "change": "Change",
+      "remind": "Remind me"
+    }
+  },
+  "rules": {
+    "title": "Rules",
+    "intro": "Links from a domain go to a folder and get tags when you save them. A folder or tags you choose yourself always win.",
+    "add": "Add rule",
+    "list": "Rules",
+    "tags": "Tags",
+    "empty": "No rules yet. For example, links from youtube.com can go to Videos with the tag video.",
+    "loadFailed": "Couldn't load the rules.",
+    "retry": "Try again",
+    "folderTrashed": "Folder in Trash: only tags are added",
+    "more": "Actions for {{domain}}",
+    "moreTooltip": "More actions",
+    "edit": "Edit",
+    "applyExisting": "Apply to existing links",
+    "delete": "Delete rule",
+    "undo": "Undo",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Rule added"
+    },
+    "saved": {
+      "title": "Rule saved"
+    },
+    "deleted": {
+      "title": "Rule deleted"
+    },
+    "deleteFailed": "Couldn't delete the rule",
+    "limit": {
+      "title": "Rules are full"
+    },
+    "apply": {
+      "title": "Apply the rule for {{domain}}?",
+      "message": {
+        "one": "{{count}} link in Unsorted gets the folder and tags of this rule: {{target}}.",
+        "other": "{{count}} links in Unsorted get the folder and tags of this rule: {{target}}."
+      },
+      "more": "There are {{total}} in all. Apply it again for the rest.",
+      "confirm": {
+        "one": "Apply to {{count}} link",
+        "other": "Apply to {{count}} links"
+      },
+      "cancel": "Cancel",
+      "none": "No links from {{domain}} in Unsorted",
+      "done": {
+        "one": "Rule applied to {{count}} link",
+        "other": "Rule applied to {{count}} links"
+      },
+      "failed": "Couldn't apply the rule",
+      "undoFailed": "Couldn't undo the rule"
+    },
+    "dialog": {
+      "addTitle": "Add rule",
+      "editTitle": "Edit rule",
+      "close": "Close",
+      "cancel": "Cancel",
+      "save": "Save rule",
+      "saving": "Saving…",
+      "domain": {
+        "label": "Domain",
+        "placeholder": "youtube.com",
+        "hint": "Also matches its subdomains, such as m.youtube.com",
+        "required": "Enter a domain",
+        "invalid": "Enter a domain such as youtube.com"
+      },
+      "folder": {
+        "label": "Folder",
+        "none": "No folder",
+        "search": "Search folders",
+        "trashed": "The folder of this rule is in Trash. Choose another one or keep only the tags."
+      },
+      "tags": {
+        "label": "Tags",
+        "max": "Up to {{max}} tags"
+      },
+      "nothing": "Choose a folder or add at least one tag.",
+      "taken": "There is a rule for this domain already.",
+      "limit": "You can have up to {{max}} rules. Delete one first.",
+      "missingFolder": "This folder is gone. Choose another one.",
+      "missing": "This rule was deleted meanwhile.",
+      "failed": "Couldn't save the rule. Try again."
+    }
+  },
+  "changelog": {
+    "title": "What's new",
+    "lead": "Every Shelfmark release, newest first.",
+    "current": "You're using Shelfmark {{version}}.",
+    "release": "Shelfmark {{version}}",
+    "home": "Shelfmark, home",
+    "items": {
+      "sideBySide": {
+        "title": "Side by side",
+        "text": "Open two feeds next to each other and drag links from one to the other.",
+        "alt": "Two feeds next to each other in Shelfmark."
+      },
+      "folderStyle": {
+        "title": "Folder styling",
+        "text": "Give a folder a color, an icon or emoji, a description and a cover, and highlight it with a background in the sidebar.",
+        "alt": "A folder with its own color, icon, description and cover, next to the sidebar."
+      },
+      "domainRules": {
+        "title": "Rules by site",
+        "text": "Send links from a site straight to the folder you choose.",
+        "alt": "A rule that sends links from one site to a folder."
+      },
+      "reminders": {
+        "title": "Reminders",
+        "text": "Ask Shelfmark to remind you about a link later.",
+        "alt": "A saved link with a reminder."
+      },
+      "colourPicker": {
+        "text": "Own colors: the + button is centered, and a picked color applies right away in a readable shade."
+      },
+      "phoneSignIn": {
+        "text": "Small cards fly onto the shelf while you sign in on a phone."
+      },
+      "appSkeleton": {
+        "text": "After you sign in, the app takes shape at once instead of showing a black screen."
+      },
+      "ukrainian": {
+        "text": "Shelfmark now speaks Ukrainian. Choose it in Settings › Language."
+      },
+      "noHttps": {
+        "text": "A link typed as example.com saves like any other."
+      },
+      "refresh": {
+        "title": "A fresh look",
+        "text": "Softer corners, calmer colors, a floating tab bar on phones and toasts that say what happened."
+      },
+      "trash": {
+        "title": "Trash",
+        "text": "Deleted links and folders wait in Trash, so nothing is gone by accident. You choose how long they stay."
+      },
+      "folders": {
+        "title": "Folder colors, icons and pins",
+        "text": "Give a folder a color and an icon or emoji, and pin the ones you use most to the sidebar."
+      },
+      "savedViews": {
+        "title": "Saved views",
+        "text": "Keep a filter you use often, like videos or articles to read, one click away."
+      },
+      "sharing": {
+        "title": "Share a folder",
+        "text": "Turn a folder into a public page anyone with the link can open. Stop sharing at any time."
+      },
+      "pasteMany": {
+        "title": "Paste many links",
+        "text": "Paste a whole list of links and save them in one go."
+      },
+      "bulk": {
+        "title": "Select several links",
+        "text": "Move, tag, favorite or delete many links at once."
+      },
+      "dragDrop": {
+        "title": "Drag and drop",
+        "text": "Drag a link onto a folder in the sidebar, or reorder your folders."
+      },
+      "theme": {
+        "title": "Your own theme",
+        "text": "Choose your own accent, background and corners, and how much the app animates."
+      },
+      "languages": {
+        "title": "Six languages",
+        "text": "Use Shelfmark in English, French, German, Italian, Spanish or Portuguese."
+      },
+      "feedback": {
+        "title": "Send feedback",
+        "text": "Tell us what works and what doesn't, with a screenshot if you like, right from the app."
+      },
+      "fastLanding": {
+        "text": "On a first visit the landing opens at once instead of after a dark pause."
+      },
+      "phoneKeyboard": {
+        "text": "On phones the keyboard no longer covers the folder list, sheets, dialogs and suggestions."
+      },
+      "emptyExport": {
+        "text": "Export explains when there is nothing to export instead of downloading an empty file."
+      },
+      "bulkBar": {
+        "text": "On phones the bar for selected links sits just above the tab bar again."
+      },
+      "sheetDropdown": {
+        "text": "A dropdown closes as soon as you drag a sheet down on a phone."
+      },
+      "skeletonRows": {
+        "text": "The loading screen matches the page and shows three rows of cards."
+      },
+      "feedbackActive": {
+        "text": "Send feedback no longer stays highlighted after you close it."
+      },
+      "folderChips": {
+        "text": "Cards and rows show which folder a link is in, in the folder's color."
+      },
+      "updatePrompt": {
+        "text": "When a new version is ready, Shelfmark asks before reloading."
+      },
+      "whatsNewCard": {
+        "text": "A What's new card after each update, and a page that lists every release."
+      },
+      "privacyWording": {
+        "text": "The privacy page says more clearly what is stored and who can see it."
+      },
+      "toastWraps": {
+        "text": "Notifications show their whole text instead of cutting it off."
+      },
+      "folderStyleRace": {
+        "text": "Changing a folder's style quickly no longer brings back an older choice."
+      },
+      "newFolderInAddLink": {
+        "text": "Add link can create a folder: type a new name in the Folder field."
+      },
+      "emojiPickerTabs": {
+        "text": "The emoji picker is as wide as its field, and its category tabs no longer look like emoji to pick."
+      }
+    },
+    "sections": {
+      "new": "New",
+      "improved": "Improved",
+      "fixed": "Fixed"
+    }
+  },
+  "whatsNew": {
+    "title": "What's new in Shelfmark",
+    "lead": "Here's what changed since your last visit.",
+    "seeAll": "See all changes",
+    "close": "Got it",
+    "entry": "What's new",
+    "unseen": "new",
+    "more": {
+      "one": "And {{count}} more improvement or fix",
+      "other": "And {{count}} more improvements and fixes"
+    }
+  },
+  "update": {
+    "available": "A new version of Shelfmark is ready",
+    "reload": "Reload",
+    "later": "Later"
   }
 }

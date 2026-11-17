@@ -1,0 +1,82 @@
+{
+  "popup": {
+    "loading": "Chargement",
+    "openApp": "Ouvrir Shelfmark",
+    "openInApp": "Ouvrir dans Shelfmark",
+    "unsorted": "Non classés",
+    "form": {
+      "title": "Enregistrer dans Shelfmark",
+      "folder": "Dossier",
+      "chooseFolder": "Dossier : {{folder}}. Changer",
+      "ruleHint": "Selon votre règle pour {{domain}}",
+      "recentFolders": "Dossiers récents",
+      "tags": "Tags",
+      "tagsPlaceholder": "Ajouter un tag",
+      "tagsMax": "Jusqu’à {{max}} tags",
+      "tagsCreate": "Créer le tag",
+      "tagsRemove": "Retirer le tag",
+      "tagsAdded": "Tag ajouté",
+      "tagsRemoved": "Tag retiré",
+      "tagsDuplicate": "Ce tag est déjà ajouté",
+      "tagsList": "Suggestions de tags",
+      "note": "Note",
+      "notePlaceholder": "Pourquoi l’enregistrer ?",
+      "save": "Enregistrer",
+      "newBadge": "nouveau"
+    },
+    "picker": {
+      "title": "Choisir un dossier",
+      "back": "Retour",
+      "search": "Trouver un dossier",
+      "list": "Dossiers",
+      "noResults": "Aucun dossier de ce nom",
+      "newFolder": "Nouveau dossier"
+    },
+    "newFolder": {
+      "title": "Nouveau dossier",
+      "label": "Nom du dossier",
+      "placeholder": "Par exemple, Recettes",
+      "hint": "Le dossier est créé quand vous enregistrez la page.",
+      "create": "Créer"
+    },
+    "saved": {
+      "title": "Enregistré dans {{folder}}",
+      "done": "Terminé",
+      "folderNotCreated": "Impossible de créer le dossier « {{name}} » : le lien est enregistré sans dossier."
+    },
+    "duplicate": {
+      "title": "Déjà dans votre bibliothèque",
+      "notice": "Vous l’avez enregistré {{when}} dans {{folder}}.",
+      "saveCopy": "Enregistrer une copie"
+    },
+    "signedOut": {
+      "title": "Connectez-vous pour enregistrer cette page",
+      "text": "Connectez-vous une fois dans ce navigateur, et chaque page sera ensuite à un clic.",
+      "signIn": "Se connecter à Shelfmark",
+      "privacy": "Seule la page enregistrée est envoyée, rien d’autre de votre navigation.",
+      "privacyLink": "Politique de confidentialité",
+      "cards": {
+        "grid": "Le guide complet de CSS grid",
+        "nestjs": "NestJS pour les développeurs frontend",
+        "icons": "Des icônes gratuites pour vos projets",
+        "ramen": "Le meilleur ramen de semaine",
+        "woolCoat": "Manteau en laine, coupe droite",
+        "signalForms": "Signal Forms en 20 minutes"
+      }
+    },
+    "unsupported": {
+      "title": "Impossible d’enregistrer cette page",
+      "text": "Shelfmark enregistre les pages web. Les pages du navigateur, les fichiers et le nouvel onglet en sont exclus."
+    },
+    "error": {
+      "title": "Impossible d’enregistrer cette page",
+      "loadTitle": "Impossible de joindre Shelfmark",
+      "offline": "Pas de connexion à Shelfmark. Vérifiez Internet et réessayez.",
+      "rateLimit": "Trop d’enregistrements d’affilée. Attendez une minute et réessayez.",
+      "limit": "Votre bibliothèque est pleine. Supprimez des liens dans Shelfmark pour en enregistrer d’autres.",
+      "demoLimit": "Une démo contient 100 liens. Connectez-vous avec Google ou GitHub pour continuer.",
+      "server": "Un problème est survenu de notre côté. Réessayez dans un instant.",
+      "tryAgain": "Réessayer"
+    }
+  }
+}

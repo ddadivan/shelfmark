@@ -8,4 +8,10 @@ export interface CreateLinksBatchRequest {
   folderId?: string;
   /** Tag names for every link, the same rules as `CreateLinkRequest.tags`. */
   tags?: string[];
+  /**
+   * Domain rules (#398), default `true`: for every item that leaves them open (no folder of its own or
+   * of the batch, no tags of its own or of the batch) the matching rule fills folder and tags.
+   * `false` when the client showed the rules per line and sends what it showed.
+   */
+  applyRules?: boolean;
 }

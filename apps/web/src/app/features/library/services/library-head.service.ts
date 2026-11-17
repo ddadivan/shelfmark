@@ -6,10 +6,13 @@ import type { BreadcrumbItem } from '@shelfmark/ui';
 import { switchMap } from 'rxjs';
 import { APP_PATH } from '../../../models/app-path.const';
 import { FoldersStore } from '../../../stores/folders.store';
+import { UserSettingsStore } from '../../../stores/user-settings.store';
+import { ownImageUrl } from '../../links/utils/link-view';
+import type { FolderBannerView } from '../models/folder-banner-view.interface';
 import { LibraryFilterService } from './library-filter.service';
 
 /**
- * The names of the library page: the breadcrumb trail of a folder page and the tab title
+ * The names of the library page: the breadcrumb trail and header of a folder page and the tab title
  * (restored to the brand when the page goes away). Page-scoped: the page provides it.
  */
 @Service({ autoProvided: false })
@@ -18,6 +21,7 @@ export class LibraryHeadService {
   private readonly title = inject(Title);
   private readonly folders = inject(FoldersStore);
   private readonly filters = inject(LibraryFilterService);
+  private readonly settings = inject(UserSettingsStore);
 
   /** The document title the app started with (the brand), the suffix of every page title. */
   private readonly appName = this.title.getTitle();
@@ -51,6 +55,25 @@ export class LibraryHeadService {
       ),
     ];
   });
+  /**
+   * The header of a folder page (#418): the folder's shown colour (the band), icon (the big
+   * tile), description and cover, and whether it is highlighted (#440: only then the tinted block);
+   * `null` outside a folder.
+   */
+  readonly banner = computed<FolderBannerView | null>(() => {
+    const folder = this.filters.folder();
+    if (!this.filters.isFolder() || !folder) {
+      return null;
+    }
+    return {
+      colour: this.settings.shownColour(folder.colour),
+      icon: folder.icon,
+      highlighted: folder.highlighted,
+      description: folder.description,
+      cover: ownImageUrl(folder.coverUrl) ?? null,
+    };
+  });
+
   /** The tab title: "<heading> · <app>", or "Search: <query> · <app>" while searching. */
   private readonly pageTitle = toSignal(
     toObservable(computed(() => ({ query: this.filters.query(), heading: this.heading() }))).pipe(

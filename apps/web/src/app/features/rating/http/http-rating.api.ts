@@ -11,8 +11,8 @@ import { skipErrorToast } from '../../../core/api/skip-error-toast';
 import type { RatingApi } from '../models/rating-api.interface';
 
 /**
- * `RatingApi` over `GET /api/feedback/prompt` and `POST /api/feedback`. The contract's
- * `FEEDBACK_ENDPOINT` already carries the `/api` prefix, so `API_BASE_URL` is not added. Both
+ * `RatingApi` over `GET /api/feedback/prompt`, `POST /api/feedback` and `POST /api/feedback/rating-prompt/views`. The contract's
+ * `FEEDBACK_ENDPOINT` already carries the `/api` prefix, so `API_BASE_URL` is not added. All
  * calls skip the global error toast: the prompt is a background request that fails silently, and
  * the dialog handles a failed record itself.
  */
@@ -32,6 +32,16 @@ export class HttpRatingApi implements RatingApi {
   async record(request: RecordFeedbackRequest): Promise<void> {
     await firstValueFrom(
       this.http.post<void>(FEEDBACK_ENDPOINT.Record, request, { context: skipErrorToast() }),
+    );
+  }
+
+  async recordPromptView(milestone: FeedbackMilestone): Promise<void> {
+    await firstValueFrom(
+      this.http.post<void>(
+        FEEDBACK_ENDPOINT.RatingPromptViews,
+        { milestone },
+        { context: skipErrorToast() },
+      ),
     );
   }
 }

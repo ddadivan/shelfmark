@@ -1,0 +1,115 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.rules__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-block-end: var(--space-3);
+}
+
+.rules__intro,
+.rules__empty {
+  @include type(caption);
+
+  flex: 1 1 rem(240px);
+  max-width: rem(560px);
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.rules__empty {
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.rules__list,
+.rules__tags {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Domain, then folder and tags, then the "…" button; below 40em the target goes under the domain.
+.rules__row {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) auto;
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--border);
+
+  @include phone {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.rules__domain {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.rules__domain-name {
+  @include type(label);
+
+  overflow: hidden;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rules__target {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+
+  @include phone {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+}
+
+.rules__folder {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.rules__folder-name {
+  @include type(body);
+
+  overflow: hidden;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rules__flag {
+  @include type(caption);
+
+  color: var(--warning);
+}
+
+.rules__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.rules__more {
+  @include phone {
+    grid-row: 1;
+    grid-column: 2;
+  }
+}

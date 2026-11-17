@@ -1,5 +1,10 @@
 @if (pasted(); as paste) {
-  <app-paste-many-list [paste]="paste" [folderId]="pasteFolderId()" [tags]="form.tags().value()" />
+  <app-paste-many-list
+    [paste]="paste"
+    [folderId]="pasteFolderId()"
+    [tags]="form.tags().value()"
+    [folderChosen]="form.folderId().dirty()"
+  />
 } @else if (several()) {
   <!-- "Add several links" (#315): any text with links, read by the paste-many parser. -->
   <form [formRoot]="severalForm" class="add-link" (keydown)="onSeveralKeydown($event)">
@@ -135,6 +140,20 @@
 
         <ui-input [label]="'links.add.titleField.label' | transloco" [formField]="form.title" />
 
+        @if (ruleChip(); as chip) {
+          <!-- A domain rule filled folder and tags (#398); removing the chip takes them out. -->
+          <div class="add-link__rule">
+            <ui-chip
+              variant="neutral"
+              icon="globe"
+              removable
+              [removeLabel]="'links.add.rule.remove' | transloco: { domain: chip.domain }"
+              (removed)="dismissRule()"
+              >{{ 'links.add.rule.chip' | transloco: chip }}</ui-chip
+            >
+          </div>
+        }
+
         <ui-select
           [label]="'links.add.folder.label' | transloco"
           [options]="folderOptions()"
@@ -184,6 +203,26 @@
           <ui-notice [kind]="NOTICE_KIND.Danger">{{
             key | transloco: { max: LINK_LIMIT.PerUserMax }
           }}</ui-notice>
+        }
+
+        @if (editing) {
+          <div class="add-link__reminder">
+            <span class="add-link__note">{{
+              reminder()
+                ? ('reminders.edit.set' | transloco: { when: reminder() })
+                : ('reminders.edit.none' | transloco)
+            }}</span>
+            <ui-button
+              size="sm"
+              [variant]="BUTTON_VARIANT.Ghost"
+              iconLeft="bell"
+              [disabled]="saving()"
+              (click)="requestRemind()"
+              >{{
+                (reminder() ? 'reminders.edit.change' : 'reminders.edit.remind') | transloco
+              }}</ui-button
+            >
+          </div>
         }
 
         @if (meta(); as text) {

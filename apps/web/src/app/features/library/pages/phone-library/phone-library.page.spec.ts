@@ -47,19 +47,20 @@ async function setup(phone = true) {
 }
 
 describe('PhoneLibraryPage', () => {
-  it('has the title, five tiles with their routes and the folder tree', async () => {
+  it('has the title, six tiles with their routes and the folder tree', async () => {
     const { element } = await setup();
 
     expect(element.querySelector('h1')?.textContent?.trim()).toBe('Library');
     const tiles = [...element.querySelectorAll<HTMLAnchorElement>('a.library-tile')];
     expect(
       tiles.map((tile) => tile.querySelector('.library-tile__label')?.textContent?.trim()),
-    ).toEqual(['All links', 'Unsorted', 'Favorites', 'Recently opened', 'Trash']);
+    ).toEqual(['All links', 'Unsorted', 'Favorites', 'Recently opened', 'Reminders', 'Trash']);
     expect(tiles.map((tile) => tile.getAttribute('href'))).toEqual([
       '/links',
       '/unsorted',
       '/favorites',
       '/recent',
+      '/reminders',
       '/trash',
     ]);
     expect(element.querySelector('nav[aria-label="Folders"] [role="tree"]')).not.toBeNull();

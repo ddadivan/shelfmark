@@ -1,0 +1,83 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+}
+
+// Title-sized ghost pill: folder tile, the name (one line, cut with an ellipsis), chevron.
+.ui-picker-menu__trigger {
+  @include type(title);
+
+  display: inline-flex;
+  gap: rem(10px);
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  min-height: rem(44px);
+  padding: 0 rem(12px) 0 rem(6px);
+  font-family: inherit;
+  color: var(--text);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-full);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.ui-picker-menu__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-picker-menu__chevron {
+  flex: none;
+  color: var(--text-muted);
+}
+
+// The popup element moves into the overlay pane while open (or leaving).
+.ui-picker-menu__popup {
+  display: none;
+}
+
+.ui-picker-menu__popup--shown {
+  display: block;
+}
+
+// Glass popover (Glass spec: menus and listboxes), 300px wide, its own scroll above 60% of the height.
+.ui-picker-menu__panel {
+  @include glass;
+
+  inline-size: min(rem(300px), calc(100vw - #{rem(16px)}));
+  max-height: 60dvh;
+  padding: rem(6px);
+  margin: var(--space-1) 0;
+  overflow-y: auto;
+  border-radius: rem(18px);
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+// `--ui-origin` is set on the overlay pane from the resolved position.
+.ui-picker-menu--enter {
+  @include enter(pop);
+  @include origin;
+}
+
+.ui-picker-menu--leave {
+  @include leave(pop);
+  @include origin;
+}

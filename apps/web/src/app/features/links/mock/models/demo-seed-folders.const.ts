@@ -14,6 +14,7 @@ export const DEMO_SEED_FOLDERS: readonly DemoSeedFolder[] = [
     name: 'Work',
     colour: FOLDER_COLOUR.Ocean,
     icon: FOLDER_ICON.Briefcase,
+    highlighted: true,
   },
   {
     key: DEMO_FOLDER_KEY.Angular,
@@ -57,5 +58,6 @@ export const DEMO_SEED_FOLDERS: readonly DemoSeedFolder[] = [
     name: 'Recipes',
     colour: FOLDER_COLOUR.Amber,
     icon: FOLDER_ICON.CookingPot,
+    highlighted: true,
   },
 ];

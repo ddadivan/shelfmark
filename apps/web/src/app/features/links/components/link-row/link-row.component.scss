@@ -23,3 +23,8 @@
   gap: var(--space-2);
   align-items: center;
 }
+
+// The folder of the link in mixed feeds (#418); a long name ends with "…".
+.link-row__folder {
+  max-inline-size: #{rem(160px)};
+}

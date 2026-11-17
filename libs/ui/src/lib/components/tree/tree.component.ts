@@ -19,6 +19,7 @@ import {
   viewChildren,
 } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
+import { FolderColourDirective } from '../../directives/folder-colour/folder-colour.directive';
 import { FolderIconComponent } from '../folder-icon/folder-icon.component';
 import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
 import { FOLDER_ICON_SIZE } from '../folder-icon/models/folder-icon-size.const';
@@ -63,6 +64,7 @@ import { indexTreeNodes } from './tree-nodes';
   selector: 'ui-tree',
   imports: [
     ButtonComponent,
+    FolderColourDirective,
     FolderIconComponent,
     IconComponent,
     LongPressDirective,
@@ -81,7 +83,12 @@ import { indexTreeNodes } from './tree-nodes';
     '(focusout)': 'focus.onFocusout($event)',
   },
   templateUrl: './tree.component.html',
-  styleUrls: ['./tree.component.scss', './tree-drop.scss', './tree-reorder.scss'],
+  styleUrls: [
+    './tree.component.scss',
+    './tree-drop.scss',
+    './tree-reorder.scss',
+    './tree-highlight.scss',
+  ],
 })
 export class TreeComponent {
   /** Folder tree, shown after the heading. Rows nest by `children`. */
@@ -247,14 +254,15 @@ export class TreeComponent {
     return node.count === undefined ? null : `${itemId}-count`;
   }
 
-  /** The row is named by its name, then its count or drop badge (never by its children). */
+  /** The row is named by its name, its dot label, then its count or drop badge (never by its children). */
   protected labelledBy(itemId: string, node: UiTreeNode): string {
     // The drop target's badge replaces the count, in the name too ("Recipes Move here").
     if (this.dropTargetId() === node.id && this.dropLabel()) {
       return `${itemId}-name ${itemId}-drop`;
     }
+    const name = node.dot ? `${itemId}-name ${itemId}-dot` : `${itemId}-name`;
     const count = this.countId(itemId, node);
-    return count ? `${itemId}-name ${count}` : `${itemId}-name`;
+    return count ? `${name} ${count}` : name;
   }
 
   protected menuButtonLabel(node: UiTreeNode): string {

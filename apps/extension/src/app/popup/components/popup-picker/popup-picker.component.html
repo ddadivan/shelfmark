@@ -1,0 +1,26 @@
+<div class="ext-screen__head">
+  <ui-button
+    iconOnly
+    iconLeft="chevron-left"
+    size="sm"
+    [variant]="BUTTON_VARIANT.Ghost"
+    [ariaLabel]="'popup.picker.back' | transloco"
+    (click)="store.closePicker()"
+  />
+  <h1 class="ext-screen__title">{{ 'popup.picker.title' | transloco }}</h1>
+</div>
+<ui-picker-list
+  class="picker"
+  [options]="store.folderOptions()"
+  [value]="store.folderId()"
+  [emptyLabel]="'popup.unsorted' | transloco"
+  [searchLabel]="'popup.picker.search' | transloco"
+  [listLabel]="'popup.picker.list' | transloco"
+  [noResultsLabel]="'popup.picker.noResults' | transloco"
+  (chosen)="store.chooseFolder($event)"
+/>
+<div class="ext-screen__foot">
+  <ui-button block iconLeft="folder-plus" (click)="store.openNewFolder()">{{
+    'popup.picker.newFolder' | transloco
+  }}</ui-button>
+</div>

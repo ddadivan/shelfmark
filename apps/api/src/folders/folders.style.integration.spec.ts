@@ -45,6 +45,7 @@ describe('folder colour and icon', () => {
       colour: FOLDER_DEFAULT_COLOUR,
       icon: FOLDER_DEFAULT_ICON,
       pinned: false,
+      highlighted: false,
     });
   });
 
@@ -130,6 +131,9 @@ describe('folder colour and icon', () => {
     [{ icon: 'chevron-down' }],
     [{ icon: null }],
     [{ icon: ['folder'] }],
+    [{ highlighted: 'yes' }],
+    [{ highlighted: 1 }],
+    [{ highlighted: null }],
     [{ pinned: true }],
     [{ pinnedPosition: 0 }],
   ])('rejects %j with 400 and changes nothing', async (body) => {
@@ -140,6 +144,7 @@ describe('folder colour and icon', () => {
       colour: FOLDER_DEFAULT_COLOUR,
       icon: FOLDER_DEFAULT_ICON,
       pinned: false,
+      highlighted: false,
     });
   });
 
@@ -152,5 +157,36 @@ describe('folder colour and icon', () => {
     expect(
       (await asUser(t.app, users.owner).get(`${FOLDERS}/${folder.id}`).expect(200)).body,
     ).toMatchObject({ colour: FOLDER_DEFAULT_COLOUR });
+  });
+
+  it('saves the highlight, keeps it across reads and lists, and turns it off again (#440)', async () => {
+    const folder = await create();
+    const a = asUser(t.app, users.owner);
+    const on = await a.patch(`${FOLDERS}/${folder.id}`).send({ highlighted: true }).expect(200);
+    expect((on.body as FolderResponse).highlighted).toBe(true);
+    expect((await a.get(`${FOLDERS}/${folder.id}`).expect(200)).body).toMatchObject({
+      highlighted: true,
+    });
+    const list = (await a.get(FOLDERS).expect(200)).body as { items: FolderResponse[] };
+    expect(list.items[0].highlighted).toBe(true);
+    // Another field alone leaves it as it is.
+    await a.patch(`${FOLDERS}/${folder.id}`).send({ colour: 'plum' }).expect(200);
+    expect((await a.get(`${FOLDERS}/${folder.id}`).expect(200)).body).toMatchObject({
+      highlighted: true,
+      colour: 'plum',
+    });
+    const off = await a.patch(`${FOLDERS}/${folder.id}`).send({ highlighted: false }).expect(200);
+    expect((off.body as FolderResponse).highlighted).toBe(false);
+  });
+
+  it("is isolated: another user cannot highlight a user's folder (404)", async () => {
+    const folder = await create();
+    await asUser(t.app, users.intruder)
+      .patch(`${FOLDERS}/${folder.id}`)
+      .send({ highlighted: true })
+      .expect(404);
+    expect(
+      (await asUser(t.app, users.owner).get(`${FOLDERS}/${folder.id}`).expect(200)).body,
+    ).toMatchObject({ highlighted: false });
   });
 });

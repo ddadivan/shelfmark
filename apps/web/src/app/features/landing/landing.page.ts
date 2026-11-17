@@ -16,6 +16,7 @@ import type { LandingScrollTarget } from './models/landing-scroll-target.type';
 import { LandingBentoComponent } from './components/landing-bento/landing-bento.component';
 import { LandingBeforeAfterComponent } from './components/landing-before-after/landing-before-after.component';
 import { LandingBuiltComponent } from './components/landing-built/landing-built.component';
+import { LandingExtensionComponent } from './components/landing-extension/landing-extension.component';
 import { LandingFinaleComponent } from './components/landing-finale/landing-finale.component';
 import { LandingFooterComponent } from './components/landing-footer/landing-footer.component';
 import { LandingWhatsNewComponent } from './components/landing-whats-new/landing-whats-new.component';
@@ -34,6 +35,7 @@ import { LandingWhyComponent } from './components/landing-why/landing-why.compon
     LandingBeforeAfterComponent,
     LandingWhyComponent,
     LandingBuiltComponent,
+    LandingExtensionComponent,
     LandingFinaleComponent,
     LandingFooterComponent,
     LandingWhatsNewComponent,

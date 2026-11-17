@@ -15,6 +15,10 @@ import { HttpPinsApi } from '../../pins/http/http-pins.api';
 import { MockPinsApi } from '../../pins/mock/mock-pins.api';
 import { PINS_API } from '../../pins/models/pins-api.const';
 import type { PinsApi } from '../../pins/models/pins-api.interface';
+import { HttpRemindersApi } from '../../reminders/http/http-reminders.api';
+import { MockRemindersApi } from '../../reminders/mock/mock-reminders.api';
+import { REMINDERS_API } from '../../reminders/models/reminders-api.const';
+import type { RemindersApi } from '../../reminders/models/reminders-api.interface';
 import { HttpTrashApi } from '../../trash/http/http-trash.api';
 import { MockTrashApi } from '../../trash/mock/mock-trash.api';
 import { TRASH_API } from '../../trash/models/trash-api.const';
@@ -23,6 +27,10 @@ import { HttpSavedViewsApi } from '../../views/http/http-saved-views.api';
 import { MockSavedViewsApi } from '../../views/mock/mock-saved-views.api';
 import { SAVED_VIEWS_API } from '../../views/models/saved-views-api.const';
 import type { SavedViewsApi } from '../../views/models/saved-views-api.interface';
+import { HttpRulesApi } from '../../rules/http/http-rules.api';
+import { MockRulesApi } from '../../rules/mock/mock-rules.api';
+import { RULES_API } from '../../rules/models/rules-api.const';
+import type { RulesApi } from '../../rules/models/rules-api.interface';
 import { HttpFoldersApi } from '../http/http-folders.api';
 import { HttpLinksApi } from '../http/http-links.api';
 import { HttpTagsApi } from '../http/http-tags.api';
@@ -45,6 +53,7 @@ import {
   tabSyncedLinksApi,
   tabSyncedTagsApi,
   tabSyncedPinsApi,
+  tabSyncedRemindersApi,
   tabSyncedTrashApi,
 } from '../../../core/sync/tab-synced-apis';
 import { TabSyncService } from '../../../core/sync/tab-sync.service';
@@ -114,6 +123,14 @@ export function provideLinksApi(): Provider[] {
         ),
     },
     {
+      provide: REMINDERS_API,
+      useFactory: (): RemindersApi =>
+        tabSyncedRemindersApi(
+          useRealApi() ? inject(HttpRemindersApi) : inject(MockRemindersApi),
+          inject(TabSyncService),
+        ),
+    },
+    {
       provide: USER_SETTINGS_API,
       useFactory: (): UserSettingsApi =>
         useRealApi() ? inject(HttpUserSettingsApi) : inject(MockUserSettingsApi),
@@ -127,6 +144,10 @@ export function provideLinksApi(): Provider[] {
       provide: SAVED_VIEWS_API,
       useFactory: (): SavedViewsApi =>
         useRealApi() ? inject(HttpSavedViewsApi) : inject(MockSavedViewsApi),
+    },
+    {
+      provide: RULES_API,
+      useFactory: (): RulesApi => (useRealApi() ? inject(HttpRulesApi) : inject(MockRulesApi)),
     },
     { provide: EXPORT_API, useExisting: MockExportApi },
   ];

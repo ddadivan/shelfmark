@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import type { LinkResponse } from '@shelfmark/contracts';
+import { normalizeRuleDomain, type LinkResponse } from '@shelfmark/contracts';
 import {
+  BADGE_TONE,
   BadgeComponent,
   ButtonComponent,
   CheckboxComponent,
   ChipComponent,
   FaviconComponent,
+  FolderChipComponent,
   LongPressDirective,
   ListItemComponent,
   MenuComponent,
@@ -19,7 +21,9 @@ import { ViewportService } from '../../../../core/layout/viewport.service';
 import { linkKeyIntent } from '../../utils/link-select-keys';
 import { LINK_KEY_INTENT } from '../../models/link-key-intent.const';
 import type { LinkSelectToggle } from '../../models/link-select-toggle.interface';
+import type { FolderChipView } from '../../models/folder-chip-view.interface';
 import { linkHost, ownImageUrl, safeHref, siteLetter } from '../../utils/link-view';
+import { ReminderFormatService } from '../../../reminders/services/reminder-format.service';
 
 const MAX_TAGS = 2;
 
@@ -36,6 +40,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
     LongPressDirective,
     ChipComponent,
     FaviconComponent,
+    FolderChipComponent,
     ListItemComponent,
     MenuComponent,
     MenuItemComponent,
@@ -53,10 +58,15 @@ export class LinkRowComponent {
   /** The tags are left out on a phone: the row has no room for them. */
   protected readonly viewport = inject(ViewportService);
   protected readonly phone = this.viewport.phone;
+  private readonly reminders = inject(ReminderFormatService);
+  private readonly now = Date.now();
+  protected readonly BADGE_TONE = BADGE_TONE;
 
   readonly link = input.required<LinkResponse>();
   /** Plays the fade-in of rows that replace the skeleton. */
   readonly reveal = input(false);
+  /** The link's folder as a chip, in mixed feeds only (#418); `null` for none. */
+  readonly folder = input<FolderChipView | null>(null);
 
   /** The link is shown inside a folder: its menu offers "Pin to top" (a pinned link leads the folder). */
   readonly pinnable = input(false);
@@ -78,6 +88,12 @@ export class LinkRowComponent {
   readonly editRequested = output<void>();
   /** "Move to folder…" from the actions menu. */
   readonly moveRequested = output<void>();
+  /** "Remind me…" from the actions menu (#275). */
+  readonly remindRequested = output<void>();
+  /** "Create a rule for youtube.com…" from the actions menu (#398). */
+  readonly ruleRequested = output<void>();
+  /** The domain a rule for this link would match; `null` hides the menu item. */
+  protected readonly ruleDomain = computed(() => normalizeRuleDomain(this.link().url));
   readonly deleteRequested = output<void>();
 
   /** A selection is in progress: a click toggles the link instead of opening it (#267). */
@@ -117,6 +133,13 @@ export class LinkRowComponent {
   protected readonly letter = computed(() => siteLetter(this.link().url));
   protected readonly favicon = computed(() => ownImageUrl(this.link().faviconUrl));
   protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS));
+  /** The reminder chip (#275): its time, or "Due …" once it came. */
+  protected readonly reminder = computed(() => {
+    const at = this.link().remindAt;
+    return at
+      ? { text: this.reminders.chip(at, this.now), due: this.reminders.isDue(at, this.now) }
+      : null;
+  });
 
   protected open(event?: MouseEvent): void {
     if (this.selecting()) {

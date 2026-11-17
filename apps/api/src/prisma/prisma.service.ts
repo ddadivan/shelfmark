@@ -1,8 +1,7 @@
 import type { OnModuleDestroy } from '@nestjs/common';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { DATABASE_POOL_LIMIT } from '../config/models/database-pool-limit.const';
 import { PrismaClient } from '../generated/prisma/client';
-
-const POOL_MAX = 5;
 
 /**
  * The single Prisma client of the API, created by the factory in `PrismaModule`. Nothing
@@ -10,8 +9,8 @@ const POOL_MAX = 5;
  * so app boot and `/api/health` never touch the database.
  */
 export class PrismaService extends PrismaClient implements OnModuleDestroy {
-  constructor(connectionString: string) {
-    super({ adapter: new PrismaPg({ connectionString, max: POOL_MAX }) });
+  constructor(connectionString: string, poolMax: number = DATABASE_POOL_LIMIT.Default) {
+    super({ adapter: new PrismaPg({ connectionString, max: poolMax }) });
   }
 
   async onModuleDestroy(): Promise<void> {

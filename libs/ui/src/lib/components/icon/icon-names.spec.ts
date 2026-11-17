@@ -22,11 +22,14 @@ const KEY_ICONS = ['key-command', 'key-enter', 'key-option', 'key-shift'];
 const APP_ICONS = [
   // Folder icons added in #335 (food, sport, travel, money, music, home, health, kids, pets, ...).
   'ball',
+  // The reminder chip and the Reminders entry (#275).
+  'bell',
   'bike',
   'book',
   'bulb',
   'calendar',
   'camera',
+  'columns',
   'car',
   'chart',
   'cloud',
@@ -72,6 +75,7 @@ const APP_ICONS = [
   'pin-off',
   'play',
   'shirt',
+  'swap',
 ];
 
 const sprite = readFileSync(SPRITE_PATH, 'utf8');

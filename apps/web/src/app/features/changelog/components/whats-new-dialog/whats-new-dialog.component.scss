@@ -1,0 +1,87 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.whats-new__lead {
+  @include type(body);
+
+  margin: 0 0 var(--space-4);
+  color: var(--text-muted);
+}
+
+.whats-new__top {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-block-end: var(--space-3);
+}
+
+.whats-new__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.whats-new__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.whats-new__media {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: rem(220px);
+  margin-block-end: var(--space-2);
+  object-fit: cover;
+  object-position: top left;
+  background: var(--surface-hover);
+  border-radius: var(--radius-lg);
+}
+
+.whats-new__name {
+  @include type(heading);
+
+  margin: 0;
+}
+
+.whats-new__name--top {
+  @include type(title);
+}
+
+.whats-new__text {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.whats-new__more {
+  @include type(label);
+
+  display: inline-block;
+  margin-block: var(--space-3) var(--space-1);
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: rem(3px);
+  border-radius: var(--radius-sm);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.whats-new__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  width: 100%;
+}

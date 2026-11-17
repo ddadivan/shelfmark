@@ -172,30 +172,21 @@
       "copyright": "© 2026 Shelfmark",
       "privacy": "Privacy",
       "github": "GitHub",
-      "language": "Lingua"
+      "language": "Lingua",
+      "changelog": "Novità"
     },
     "newTab": "si apre in una nuova scheda",
     "backToShelf": "Torna al mio scaffale",
     "whatsNew": {
       "title": "Novità",
-      "items": {
-        "trash": {
-          "title": "Cestino",
-          "text": "Link e cartelle eliminati restano nel cestino, così niente sparisce per errore. Scegli per quanto tempo restano nelle impostazioni."
-        },
-        "tabs": {
-          "title": "Le tue schede restano allineate",
-          "text": "Salva, modifica o elimina un link in una scheda e tutte le altre schede aperte lo mostrano."
-        },
-        "move": {
-          "title": "Sposta in una cartella e trascina",
-          "text": "Sposta un link dal suo menu o trascinalo su una cartella nella barra laterale."
-        },
-        "refresh": {
-          "title": "Un look nuovo",
-          "text": "Angoli più morbidi, una barra delle schede fluttuante sul telefono e notifiche che dicono cosa è successo."
-        }
-      }
+      "all": "Vedi tutte le modifiche"
+    },
+    "extension": {
+      "badge": "Estensione del browser",
+      "title": "Salva la pagina che stai leggendo",
+      "text": "Un clic sulla barra degli strumenti o Alt+Maiusc+S. Titolo, regole delle cartelle e cartelle recenti sono già compilati: per quasi tutte le pagine basta un altro clic.",
+      "browsers": "Per Chrome, Edge, Brave e Arc. Installala dalla tua libreria dopo l’accesso.",
+      "alt": "L’estensione Shelfmark: Salva in Shelfmark con il titolo della pagina, la cartella Abbigliamento da una regola, tag e una nota"
     }
   },
   "links": {
@@ -283,6 +274,10 @@
         "none": "Nessun link trovato in questo testo",
         "back": "Un solo link",
         "find": "Trova i link"
+      },
+      "rule": {
+        "chip": "Regola: {{domain}} → {{target}}",
+        "remove": "Non applicare la regola per {{domain}}"
       }
     },
     "edit": {
@@ -296,7 +291,8 @@
       }
     },
     "card": {
-      "moreTags": "+{{count}}"
+      "moreTags": "+{{count}}",
+      "inFolder": "Nella cartella"
     },
     "item": {
       "edit": "Modifica",
@@ -329,7 +325,8 @@
       "unpinFromTop": "Togli dall’alto",
       "pinToSidebar": "Fissa nella barra laterale",
       "unpinFromSidebar": "Togli dalla barra laterale",
-      "pinned": "Fissato"
+      "pinned": "Fissato",
+      "createRule": "Crea una regola per {{domain}}…"
     },
     "recent": {
       "title": "Aperti di recente",
@@ -423,7 +420,8 @@
       "moved": "Spostato in {{folder}}",
       "failed": "Impossibile spostare il link",
       "failedDetail": "È tornato al suo posto",
-      "undoFailed": "Impossibile rimettere il link al suo posto"
+      "undoFailed": "Impossibile rimettere il link al suo posto",
+      "recent": "Recenti"
     },
     "many": {
       "title": {
@@ -484,7 +482,13 @@
       },
       "noneSaved": "Nessun link è stato salvato",
       "undoFailed": "Impossibile annullare",
-      "undoFailedDetail": "I link restano salvati"
+      "undoFailedDetail": "I link restano salvati",
+      "applyRules": "Applica le regole di dominio",
+      "savedMixed": {
+        "one": "{{count}} link salvato",
+        "many": "{{count}} link salvati nelle loro cartelle",
+        "other": "{{count}} link salvati nelle loro cartelle"
+      }
     },
     "drag": {
       "moveHere": "Sposta qui",
@@ -504,7 +508,8 @@
         "favorites": "Non puoi rilasciarlo qui — aggiungi una stella a un link per metterlo nei Preferiti",
         "recent": "Non puoi rilasciarlo qui — «Aperti di recente» si riempie quando apri i link",
         "trash": "Non puoi rilasciarlo qui — usa Elimina per spostare un link nel cestino",
-        "pinnedLink": "Non puoi rilasciarlo qui — un link fissato non è una cartella"
+        "pinnedLink": "Non puoi rilasciarlo qui — un link fissato non è una cartella",
+        "reminders": "Non si può rilasciare qui — usa “Ricordamelo” nel menu del link"
       }
     }
   },
@@ -513,7 +518,7 @@
     "home": "Shelfmark, home",
     "newTab": "(si apre in una nuova scheda)",
     "updated": "Ultimo aggiornamento: {{date}}",
-    "updatedDate": "13 novembre 2026",
+    "updatedDate": "16 novembre 2026",
     "intro": "Shelfmark è un progetto personale che conserva i link che salvi. Questa pagina spiega in parole semplici cosa teniamo e perché.",
     "store": {
       "title": "Cosa conserviamo",
@@ -521,7 +526,9 @@
       "content": "I tuoi link (indirizzo, titolo, nota, preferito, ultima apertura), le tue cartelle e i tuoi tag.",
       "images": "Per ogni link, una piccola copia dell’icona e dell’immagine di anteprima del sito, se ne ha. Il nostro server le scarica e le conserva, così si caricano da Shelfmark.",
       "feedback": "Le tue risposte alla valutazione nell’app, collegate al tuo account: un punteggio da 1 a 10 e, se lo scrivi, un commento.",
+      "promptViews": "L’app conta anche quante volte e quando ti è stata mostrata la richiesta di valutazione, per sapere quali ricevono risposta. Questi conteggi appartengono al tuo account e vengono eliminati con esso.",
       "stats": "I numeri di «Il tuo scaffale» nella pagina Account (totali, siti e tag che usi di più, link per settimana) vengono calcolati dai tuoi dati ogni volta che apri la pagina. Non vengono salvati né condivisi.",
+      "usage": "Per capire come viene usato Shelfmark, registriamo il giorno in cui hai usato l’app l’ultima volta: solo una data, senza ora, pagina o azione. L’autore vede solo totali calcolati su tutti gli account insieme, per esempio quante persone usano cartelle o tag o quali temi sono più scelti. I gruppi con meno di tre persone non vengono mostrati e nessuno guarda uno per uno i link, le note o le impostazioni di qualcuno. Questi totali vengono calcolati su richiesta e non vengono conservati. Quando elimini il tuo account, la data viene eliminata con esso.",
       "sessions": "Per ogni accesso: quando scade, oltre all’indirizzo IP e al browser (user agent) da cui è iniziato, per tenere le sessioni al sicuro.",
       "logs": "La nostra API registra metodo, percorso, stato, durata e un id della richiesta, senza contenuti dei link né dati personali. Il nostro hosting, Vercel, conserva i propri log standard delle richieste, che includono gli indirizzi IP, per un periodo limitato."
     },
@@ -534,11 +541,16 @@
     "dont": {
       "title": "Cosa non facciamo",
       "sell": "Non vendiamo né condividiamo i tuoi dati e non mostriamo pubblicità.",
-      "read": "Non guardiamo i tuoi link salvati, se non quando serve al servizio, per esempio per recuperare un’anteprima."
+      "read": "Non usiamo il contenuto dei tuoi link per le statistiche: solo conteggi (link, cartelle, valutazioni), mai indirizzi o titoli. I tuoi link sono salvati nel nostro database perché l’app possa mostrarli, cercarli e generarne l’anteprima; solo l’autore del servizio vi ha accesso."
     },
     "previews": {
       "title": "Anteprime dei link",
       "body": "Quando salvi un link, il nostro server visita la pagina per leggerne titolo, icona e immagine di anteprima. Il sito vede quindi l’indirizzo IP del nostro server e lo user agent \"ShelfmarkBot\", non il tuo indirizzo IP."
+    },
+    "extension": {
+      "title": "Estensione del browser",
+      "body": "L’estensione Shelfmark per Chrome, Edge, Brave e Arc si attiva solo quando fai clic sul suo pulsante o usi la sua scorciatoia, mai in background. Invia allora a Shelfmark l’indirizzo di quella scheda, per controllare se l’hai già salvata, e ne salva indirizzo e titolo, con la cartella, i tag e la nota scelti, solo quando premi Salva. Non vede mai la tua cronologia né gli altri siti che visiti.",
+      "access": "Usa il tuo accesso a Shelfmark in quel browser e non può leggere il cookie di accesso. Può raggiungere solo Shelfmark e conserva sul tuo dispositivo solo le cartelle usate di recente, per proporle la volta successiva."
     },
     "third": {
       "title": "Altri servizi",
@@ -755,7 +767,8 @@
       "reorder": {
         "movedUp": "Spostato in alto, posizione {{position}} di {{total}}",
         "movedDown": "Spostato in basso, posizione {{position}} di {{total}}"
-      }
+      },
+      "extension": "Scarica l’estensione"
     },
     "searchHint": "Cerca nei tuoi link",
     "searchButton": "Cerca",
@@ -765,7 +778,8 @@
     },
     "sendFeedback": "Invia feedback",
     "feedbackInbox": "Feedback ricevuti",
-    "about": "Informazioni su Shelfmark"
+    "about": "Informazioni su Shelfmark",
+    "usageStats": "Statistiche d’uso"
   },
   "folders": {
     "dialog": {
@@ -968,7 +982,27 @@
         "undo": "Annulla"
       },
       "iconsShowAll": "Mostra tutte le icone ({{count}})",
-      "iconsShowFewer": "Mostra meno"
+      "iconsShowFewer": "Mostra meno",
+      "description": {
+        "label": "Descrizione",
+        "hint": "Facoltativa, fino a {{max}} caratteri. Appare sotto il nome della cartella.",
+        "placeholder": "Cosa c’è in questa cartella?",
+        "tooLong": "Massimo {{max}} caratteri.",
+        "invalid": "Usa testo semplice su una riga."
+      },
+      "highlight": {
+        "label": "Evidenzia con uno sfondo",
+        "hint": "Dà alla cartella uno sfondo tenue del suo colore, nella barra laterale e nella sua pagina."
+      },
+      "cover": {
+        "label": "Copertina",
+        "hint": "Un’immagine di anteprima di un link di questa cartella, dietro l’intestazione.",
+        "none": "Nessuna copertina",
+        "option": "Copertina da «{{title}}»",
+        "current": "Copertina attuale",
+        "empty": "I link di questa cartella con un’immagine di anteprima possono farle da copertina.",
+        "loading": "Caricamento immagini"
+      }
     }
   },
   "library": {
@@ -1112,6 +1146,47 @@
       "label": "Ordina, visualizza ed esporta",
       "button": "Opzioni",
       "sortBy": "Ordina per"
+    },
+    "split": {
+      "open": "Affiancati",
+      "close": "Chiudi la vista affiancata",
+      "swap": "Scambia i lati",
+      "choose": {
+        "title": "Scegli una cartella",
+        "heading": "Scegli una cartella in cui spostare i link",
+        "text": "Poi trascina qui i link da sinistra, oppure selezionali e usa la barra in basso.",
+        "search": "Trova una cartella",
+        "list": "Cartelle",
+        "noResults": "Nessuna cartella trovata"
+      },
+      "leftMenu": {
+        "label": "Mostra a sinistra",
+        "search": "Trova una cartella o un tag",
+        "list": "Elenchi",
+        "noResults": "Nessun risultato"
+      },
+      "rightMenu": {
+        "label": "Mostra a destra"
+      },
+      "onLeft": "A sinistra",
+      "onRight": "A destra",
+      "leftTrigger": "Elenco di sinistra: {{name}}. Cambia",
+      "rightTrigger": "Cartella di destra: {{name}}. Cambia",
+      "leftRegion": "Sinistra: {{name}}",
+      "rightRegion": "Destra: {{name}}",
+      "rightRegionEmpty": "Destra: scegli una cartella",
+      "searchName": "Ricerca: {{query}}",
+      "empty": {
+        "text": "Trascina qui i link da sinistra."
+      },
+      "moveToLeft": "Sposta “{{title}}” in {{folder}}"
+    },
+    "extension": {
+      "title": "Salva le pagine direttamente dal browser",
+      "text": "L’estensione Shelfmark salva la pagina aperta con un clic o con Alt+Maiusc+S, con cartelle e tag già compilati.",
+      "install": "Installa l’estensione",
+      "installLabel": "Installa l’estensione dal Chrome Web Store (si apre in una nuova scheda)",
+      "dismiss": "Non ora"
     }
   },
   "export": {
@@ -1399,7 +1474,7 @@
     },
     "footer": {
       "privacy": "Informativa sulla privacy",
-      "version": "Shelfmark v1.0"
+      "version": "Shelfmark {{version}}"
     },
     "delete": {
       "title": "Elimina account",
@@ -1452,6 +1527,12 @@
         "previews": {
           "label": "Recupera titoli e anteprime",
           "hint": "Disattiva per salvare solo l’indirizzo"
+        },
+        "extension": {
+          "label": "Estensione del browser",
+          "hint": "Salva qualsiasi pagina con un clic da Chrome, Edge, Brave o Arc",
+          "action": "Installa",
+          "actionLabel": "Installa l’estensione del browser dal Chrome Web Store (si apre in una nuova scheda)"
         }
       },
       "failed": "Impossibile salvare l’impostazione",
@@ -2117,6 +2198,109 @@
         "title": "Salvataggio non riuscito",
         "detail": "Il messaggio è tornato com’era. Riprova."
       }
+    },
+    "nav": {
+      "label": "Pagine di amministrazione",
+      "feedback": "Feedback",
+      "stats": "Statistiche"
+    },
+    "stats": {
+      "title": "Statistiche d’uso",
+      "description": "Totali sugli account reali, calcolati ora. Gli account demo e admin sono esclusi; i gruppi con meno di {{min}} persone sono nascosti.",
+      "updated": "Aggiornato alle {{time}}",
+      "refreshing": "Aggiornamento…",
+      "refresh": "Aggiorna",
+      "refreshFailed": "Impossibile aggiornare. Questi sono gli ultimi numeri.",
+      "error": "Impossibile caricare le statistiche.",
+      "retry": "Riprova",
+      "loading": "Caricamento delle statistiche",
+      "tooFew": "Non ci sono ancora abbastanza utenti: quote e gruppi compaiono da {{min}} utenti reali.",
+      "notEnough": "Non ci sono ancora abbastanza utenti",
+      "fewer": "Meno di {{min}}",
+      "smallGroup": "Nascosto: un gruppo di meno di {{min}}",
+      "shareOf": "{{percent}} · {{count}} su {{base}}",
+      "countOf": "{{count}} su {{base}}",
+      "shareCount": "{{percent}} · {{count}}",
+      "activitySince": "L’attività è registrata dal {{date}}. Le visite precedenti sono stimate dai link salvati e dagli accessi, quindi i numeri di attività e ritorno che risalgono a prima possono risultare alti.",
+      "activityEstimated": "Le visite precedenti alla registrazione dell’attività sono stimate dai link salvati e dagli accessi, quindi i numeri di attività e ritorno possono risultare alti.",
+      "overview": {
+        "title": "Panoramica"
+      },
+      "tiles": {
+        "realUsers": "Utenti reali",
+        "active7d": "Attivi negli ultimi 7 giorni",
+        "active30d": "Attivi negli ultimi 30 giorni",
+        "returnedWeek": "Tornati dopo una settimana",
+        "returnedMonth": "Tornati dopo un mese",
+        "onboarded": "Introduzione completata",
+        "demo": "Demo in corso",
+        "demoHint": "Non conteggiate altrove"
+      },
+      "signUps": {
+        "title": "Iscrizioni",
+        "unit": "Mostra per",
+        "days": "Giorni",
+        "weeks": "Settimane",
+        "chartDays": "Iscrizioni, ultimi 30 giorni",
+        "chartWeeks": "Iscrizioni, ultime 12 settimane",
+        "total": "{{count}} nel periodo",
+        "day": "Giorno",
+        "week": "Settimana dal",
+        "count": "Iscrizioni",
+        "dayBar": "{{date}}: {{count}}",
+        "weekBar": "Settimana dal {{date}}: {{count}}"
+      },
+      "links": {
+        "title": "Link per utente",
+        "average": "Media {{mean}} · mediana {{median}}",
+        "chart": "Utenti reali per numero di link salvati",
+        "bucket": "Link",
+        "users": "Utenti"
+      },
+      "features": {
+        "title": "Funzioni",
+        "adoption": "Chi usa cosa"
+      },
+      "feature": {
+        "folders": "Cartelle",
+        "nestedFolders": "Cartelle dentro cartelle",
+        "tags": "Tag",
+        "favorites": "Preferiti",
+        "notes": "Note",
+        "sidebarPins": "Fissati nella barra laterale",
+        "folderPins": "Fissati in una cartella",
+        "savedViews": "Viste salvate proprie",
+        "trash": "Elementi nel cestino",
+        "publicCollections": "Raccolte pubbliche",
+        "ownColours": "Colori propri",
+        "ownEmoji": "Emoji proprie",
+        "openedRecently": "Link salvato aperto in 30 giorni",
+        "historyPaused": "Cronologia in pausa",
+        "previewsOff": "Anteprime disattivate"
+      },
+      "preferences": {
+        "title": "Preferenze",
+        "theme": "Tema",
+        "language": "Lingua",
+        "retention": "Il cestino conserva gli elementi per"
+      },
+      "bucket": {
+        "other": "Altro",
+        "never": "Mai scelto"
+      },
+      "ratings": {
+        "title": "Valutazioni e messaggi",
+        "milestone": {
+          "day3": "Dopo 3 giorni",
+          "week1": "Dopo una settimana",
+          "month1": "Dopo un mese",
+          "year1": "Dopo un anno"
+        },
+        "answered": "{{answered}} risposte · {{skipped}} saltate",
+        "summary": "Media {{mean}} · mediana {{median}}",
+        "byKind": "Messaggi per tipo",
+        "byStatus": "Messaggi per stato"
+      }
     }
   },
   "tabSync": {
@@ -2240,7 +2424,9 @@
       "openAll": "Apri tutti",
       "copy": "Copia link",
       "share": "Condividi",
-      "delete": "Elimina"
+      "delete": "Elimina",
+      "moveToFolder": "Sposta in {{folder}}",
+      "remind": "Promemoria"
     },
     "header": {
       "label": "Selezione",
@@ -2361,5 +2547,347 @@
       "failedDetail": "Sono di nuovo nell’elenco",
       "undoFailed": "Impossibile ripristinare i link"
     }
+  },
+  "reminders": {
+    "title": "Promemoria",
+    "dueCount": {
+      "one": "{{count}} promemoria è arrivato",
+      "many": "{{count}} promemoria sono arrivati",
+      "other": "{{count}} promemoria sono arrivati"
+    },
+    "nothingDue": "Nessun promemoria per ora",
+    "dueShort": {
+      "one": "{{count}} da rivedere",
+      "many": "{{count}} da rivedere",
+      "other": "{{count}} da rivedere"
+    },
+    "loading": "Caricamento dei promemoria",
+    "loadFailed": {
+      "title": "Impossibile caricare i promemoria",
+      "text": "Controlla la connessione e riprova.",
+      "retry": "Riprova"
+    },
+    "empty": {
+      "title": "Ancora nessun promemoria",
+      "text": "Scegli “Ricordamelo” nel menu di un link: tornerà qui nel giorno che scegli."
+    },
+    "group": {
+      "due": "Da rivedere",
+      "today": "Oggi",
+      "tomorrow": "Domani",
+      "this-week": "Questa settimana",
+      "later": "Più avanti"
+    },
+    "footer": "I promemoria compaiono qui, sul badge della barra laterale e sulla scheda. Non vengono inviati via e-mail né come notifica.",
+    "when": {
+      "today": "Oggi, {{time}}",
+      "tomorrow": "Domani, {{time}}",
+      "day": "{{day}}, {{time}}"
+    },
+    "chip": {
+      "due": "Arrivato {{when}}"
+    },
+    "preset": {
+      "later-today": "Più tardi oggi",
+      "tomorrow": "Domani",
+      "weekend": "Questo fine settimana",
+      "next-week": "La prossima settimana",
+      "in-month": "Tra un mese"
+    },
+    "dialog": {
+      "title": "Ricordamelo",
+      "titleMany": {
+        "one": "Ricordami {{count}} link",
+        "many": "Ricordami {{count}} link",
+        "other": "Ricordami {{count}} link"
+      },
+      "close": "Chiudi",
+      "current": "Promemoria attuale: {{when}}",
+      "presets": "Scelte rapide",
+      "pick": "Scegli data e ora…",
+      "previousMonth": "Mese precedente",
+      "nextMonth": "Mese successivo",
+      "time": "Ora",
+      "timeHint": "Facoltativa; vuota vale 9:00",
+      "past": "Quest’ora è già passata. Scegline una più tarda.",
+      "timeZone": "Gli orari sono nel tuo fuso orario, {{zone}}.",
+      "remove": "Rimuovi promemoria",
+      "cancel": "Annulla",
+      "confirm": "Ricordamelo {{when}}",
+      "confirmEmpty": "Scegli un giorno"
+    },
+    "menu": {
+      "remind": "Ricordamelo…",
+      "change": "Modifica promemoria…"
+    },
+    "row": {
+      "done": "Fatto",
+      "doneItem": "Segna come fatto il promemoria di {{title}}",
+      "snooze": "Rimanda",
+      "snoozeItem": "Rimanda il promemoria di {{title}}"
+    },
+    "toast": {
+      "failed": "Impossibile salvare il promemoria",
+      "retry": "Riprova",
+      "cleared": {
+        "one": "Promemoria rimosso",
+        "many": "{{count}} promemoria rimossi",
+        "other": "{{count}} promemoria rimossi"
+      },
+      "set": "Promemoria per {{when}}",
+      "due": {
+        "one": "È arrivato un promemoria",
+        "many": "Sono arrivati {{count}} promemoria",
+        "other": "Sono arrivati {{count}} promemoria"
+      },
+      "show": "Mostra"
+    },
+    "edit": {
+      "set": "Promemoria: {{when}}",
+      "none": "Nessun promemoria",
+      "change": "Modifica",
+      "remind": "Ricordamelo"
+    }
+  },
+  "rules": {
+    "title": "Regole",
+    "intro": "I link di un dominio finiscono in una cartella e ricevono dei tag quando li salvi. La cartella o i tag che scegli tu hanno sempre la precedenza.",
+    "add": "Aggiungi regola",
+    "list": "Regole",
+    "tags": "Tag",
+    "empty": "Ancora nessuna regola. Per esempio, i link di youtube.com possono andare in Video con il tag video.",
+    "loadFailed": "Impossibile caricare le regole.",
+    "retry": "Riprova",
+    "folderTrashed": "Cartella nel cestino: vengono aggiunti solo i tag",
+    "more": "Azioni per {{domain}}",
+    "moreTooltip": "Altre azioni",
+    "edit": "Modifica",
+    "applyExisting": "Applica ai link esistenti",
+    "delete": "Elimina regola",
+    "undo": "Annulla",
+    "describe": "{{domain}}: {{target}}",
+    "created": {
+      "title": "Regola aggiunta"
+    },
+    "saved": {
+      "title": "Regola salvata"
+    },
+    "deleted": {
+      "title": "Regola eliminata"
+    },
+    "deleteFailed": "Impossibile eliminare la regola",
+    "limit": {
+      "title": "Numero massimo di regole raggiunto"
+    },
+    "apply": {
+      "title": "Applicare la regola per {{domain}}?",
+      "message": {
+        "one": "{{count}} link in «Senza cartella» riceve la cartella e i tag di questa regola: {{target}}.",
+        "many": "{{count}} link in «Senza cartella» ricevono la cartella e i tag di questa regola: {{target}}.",
+        "other": "{{count}} link in «Senza cartella» ricevono la cartella e i tag di questa regola: {{target}}."
+      },
+      "more": "In tutto sono {{total}}. Applicala di nuovo per gli altri.",
+      "confirm": {
+        "one": "Applica a {{count}} link",
+        "many": "Applica a {{count}} link",
+        "other": "Applica a {{count}} link"
+      },
+      "cancel": "Annulla",
+      "none": "Nessun link di {{domain}} in «Senza cartella»",
+      "done": {
+        "one": "Regola applicata a {{count}} link",
+        "many": "Regola applicata a {{count}} link",
+        "other": "Regola applicata a {{count}} link"
+      },
+      "failed": "Impossibile applicare la regola",
+      "undoFailed": "Impossibile annullare la regola"
+    },
+    "dialog": {
+      "addTitle": "Aggiungi regola",
+      "editTitle": "Modifica regola",
+      "close": "Chiudi",
+      "cancel": "Annulla",
+      "save": "Salva regola",
+      "saving": "Salvataggio…",
+      "domain": {
+        "label": "Dominio",
+        "placeholder": "youtube.com",
+        "hint": "Vale anche per i sottodomini, come m.youtube.com",
+        "required": "Inserisci un dominio",
+        "invalid": "Inserisci un dominio come youtube.com"
+      },
+      "folder": {
+        "label": "Cartella",
+        "none": "Nessuna cartella",
+        "search": "Cerca cartelle",
+        "trashed": "La cartella di questa regola è nel cestino. Scegline un’altra o tieni solo i tag."
+      },
+      "tags": {
+        "label": "Tag",
+        "max": "Fino a {{max}} tag"
+      },
+      "nothing": "Scegli una cartella o aggiungi almeno un tag.",
+      "taken": "Esiste già una regola per questo dominio.",
+      "limit": "Puoi avere fino a {{max}} regole. Eliminane prima una.",
+      "missingFolder": "Questa cartella non esiste più. Scegline un’altra.",
+      "missing": "Questa regola è stata eliminata nel frattempo.",
+      "failed": "Impossibile salvare la regola. Riprova."
+    }
+  },
+  "changelog": {
+    "title": "Novità",
+    "lead": "Tutte le versioni di Shelfmark, dalla più recente.",
+    "current": "Stai usando Shelfmark {{version}}.",
+    "release": "Shelfmark {{version}}",
+    "home": "Shelfmark, home",
+    "items": {
+      "sideBySide": {
+        "title": "Fianco a fianco",
+        "text": "Apri due elenchi uno accanto all'altro e trascina i link dall'uno all'altro.",
+        "alt": "Due feed affiancati in Shelfmark."
+      },
+      "folderStyle": {
+        "title": "Stile delle cartelle",
+        "text": "Dai a una cartella un colore, un'icona o un emoji, una descrizione e una copertina, ed evidenziala con uno sfondo nella barra laterale.",
+        "alt": "Una cartella con colore, icona, descrizione e copertina propri, accanto alla barra laterale."
+      },
+      "domainRules": {
+        "title": "Regole per sito",
+        "text": "Manda i link di un sito direttamente nella cartella che scegli.",
+        "alt": "Una regola che manda i link di un sito in una cartella."
+      },
+      "reminders": {
+        "title": "Promemoria",
+        "text": "Chiedi a Shelfmark di ricordarti un link più tardi.",
+        "alt": "Un link salvato con un promemoria."
+      },
+      "colourPicker": {
+        "text": "Colori personalizzati: il pulsante + è al centro e il colore scelto si applica subito in una tonalità leggibile."
+      },
+      "phoneSignIn": {
+        "text": "Piccole schede volano sullo scaffale mentre accedi dal telefono."
+      },
+      "appSkeleton": {
+        "text": "Dopo l'accesso l'app prende forma subito, invece di uno schermo nero."
+      },
+      "ukrainian": {
+        "text": "Shelfmark ora parla ucraino. Sceglilo in Impostazioni › Lingua."
+      },
+      "noHttps": {
+        "text": "Un link scritto come esempio.it si salva come tutti gli altri."
+      },
+      "refresh": {
+        "title": "Un nuovo look",
+        "text": "Angoli più morbidi, colori più calmi, una barra delle schede fluttuante sul telefono e avvisi che dicono cosa è successo."
+      },
+      "trash": {
+        "title": "Cestino",
+        "text": "I link e le cartelle eliminati restano nel cestino, così niente va perso per sbaglio. Decidi tu per quanto tempo."
+      },
+      "folders": {
+        "title": "Colori, icone e cartelle fissate",
+        "text": "Dai a una cartella un colore e un'icona o un'emoji, e fissa nella barra laterale quelle che usi di più."
+      },
+      "savedViews": {
+        "title": "Viste salvate",
+        "text": "Tieni a un clic un filtro che usi spesso, come video o articoli da leggere."
+      },
+      "sharing": {
+        "title": "Condividi una cartella",
+        "text": "Trasforma una cartella in una pagina pubblica che chiunque abbia il link può aprire. Interrompi quando vuoi."
+      },
+      "pasteMany": {
+        "title": "Incolla tanti link",
+        "text": "Incolla un intero elenco di link e salvali in una volta."
+      },
+      "bulk": {
+        "title": "Seleziona più link",
+        "text": "Sposta, etichetta, aggiungi ai preferiti o elimina tanti link insieme."
+      },
+      "dragDrop": {
+        "title": "Trascina e rilascia",
+        "text": "Trascina un link su una cartella della barra laterale o riordina le cartelle."
+      },
+      "theme": {
+        "title": "Il tuo tema",
+        "text": "Scegli accento, sfondo e angoli, e quanto si anima l'app."
+      },
+      "languages": {
+        "title": "Sei lingue",
+        "text": "Usa Shelfmark in inglese, francese, tedesco, italiano, spagnolo o portoghese."
+      },
+      "feedback": {
+        "title": "Invia un feedback",
+        "text": "Dicci cosa funziona e cosa no, anche con uno screenshot, direttamente dall'app."
+      },
+      "fastLanding": {
+        "text": "Alla prima visita la pagina iniziale si apre subito, senza una pausa scura."
+      },
+      "phoneKeyboard": {
+        "text": "Sul telefono la tastiera non copre più l’elenco delle cartelle, i pannelli, le finestre e i suggerimenti."
+      },
+      "emptyExport": {
+        "text": "L’esportazione spiega quando non c’è nulla da esportare invece di scaricare un file vuoto."
+      },
+      "bulkBar": {
+        "text": "Sul telefono la barra dei link selezionati torna appena sopra la barra delle schede."
+      },
+      "sheetDropdown": {
+        "text": "Un menu a tendina si chiude appena trascini un pannello verso il basso sul telefono."
+      },
+      "skeletonRows": {
+        "text": "La schermata di caricamento corrisponde alla pagina e mostra tre file di schede."
+      },
+      "feedbackActive": {
+        "text": "«Invia feedback» non resta più evidenziato dopo la chiusura."
+      },
+      "folderChips": {
+        "text": "Schede e righe mostrano in quale cartella si trova un link, con il colore della cartella."
+      },
+      "updatePrompt": {
+        "text": "Quando una nuova versione è pronta, Shelfmark chiede prima di ricaricare."
+      },
+      "whatsNewCard": {
+        "text": "Una scheda Novità dopo ogni aggiornamento e una pagina con tutte le versioni."
+      },
+      "privacyWording": {
+        "text": "La pagina sulla privacy spiega più chiaramente cosa viene conservato e chi può vederlo."
+      },
+      "toastWraps": {
+        "text": "Le notifiche mostrano tutto il testo invece di tagliarlo."
+      },
+      "folderStyleRace": {
+        "text": "Cambiare in fretta lo stile di una cartella non riporta più una scelta precedente."
+      },
+      "newFolderInAddLink": {
+        "text": "Aggiungi link può creare una cartella: scrivi un nuovo nome nel campo Cartella."
+      },
+      "emojiPickerTabs": {
+        "text": "Il selettore di emoji è largo quanto il suo campo e le schede delle categorie non sembrano più emoji da scegliere."
+      }
+    },
+    "sections": {
+      "new": "Novità",
+      "improved": "Miglioramenti",
+      "fixed": "Correzioni"
+    }
+  },
+  "whatsNew": {
+    "title": "Novità di Shelfmark",
+    "lead": "Ecco cosa è cambiato dalla tua ultima visita.",
+    "seeAll": "Vedi tutte le modifiche",
+    "close": "Ho capito",
+    "entry": "Novità",
+    "unseen": "nuovo",
+    "more": {
+      "one": "E {{count}} altro miglioramento o correzione",
+      "many": "E {{count}} altri miglioramenti e correzioni",
+      "other": "E {{count}} altri miglioramenti e correzioni"
+    }
+  },
+  "update": {
+    "available": "Una nuova versione di Shelfmark è pronta",
+    "reload": "Ricarica",
+    "later": "Più tardi"
   }
 }

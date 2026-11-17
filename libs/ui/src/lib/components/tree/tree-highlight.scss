@@ -1,0 +1,13 @@
+@use '../../../styles/ui' as *;
+
+// Highlighted folders (#440): a soft background in the folder colour, stronger when open.
+.ui-tree__row--folder {
+  @include folder-highlight;
+}
+
+.ui-tree__row--folder[aria-current][data-ui-folder-colour][data-ui-folder-highlight] {
+  .ui-tree__twist,
+  .ui-tree__count {
+    color: var(--text-muted);
+  }
+}

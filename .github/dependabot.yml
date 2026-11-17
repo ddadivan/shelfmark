@@ -39,9 +39,27 @@ updates:
         patterns: ['vitest', '@vitest/*']
       storybook:
         patterns: ['storybook', '@storybook/*']
+      # Everything else that is a dev dependency. A package of a family above never goes here, even
+      # when it is a dev dependency (`@angular/animations` was, #456): a family moves in one PR, or
+      # its exact peer ranges (animations needs the same `@angular/core`) break `npm ci`.
       dev-tooling:
         dependency-type: development
         update-types: ['minor', 'patch']
+        exclude-patterns:
+          - '@angular/*'
+          - '@angular-devkit/*'
+          - '@schematics/angular'
+          - '@ngrx/*'
+          - 'nx'
+          - '@nx/*'
+          - 'prisma'
+          - '@prisma/*'
+          - '@electric-sql/*'
+          - '@nestjs/*'
+          - 'vitest'
+          - '@vitest/*'
+          - 'storybook'
+          - '@storybook/*'
   # Isolated Lighthouse CI install, outside the root audit scope (ADR 0028).
   - package-ecosystem: npm
     directory: /tools/lighthouse

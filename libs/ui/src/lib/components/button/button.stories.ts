@@ -181,6 +181,9 @@ export const Link: Story = {
   args: { href: '#links', variant: BUTTON_VARIANT.Primary, iconRight: 'external' },
 };
 
+/** `newTab` opens the link in a new tab (`target="_blank"`, `rel="noopener noreferrer"`). */
+export const NewTabLink: Story = { args: { href: '#links', newTab: true, iconRight: 'external' } };
+
 export const GhostLink: Story = { args: { href: '#links', variant: BUTTON_VARIANT.Ghost } };
 
 /** A disabled link has no `href` and `aria-disabled="true"`; it is not activatable. */

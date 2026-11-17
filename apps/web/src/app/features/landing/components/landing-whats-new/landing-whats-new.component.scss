@@ -71,3 +71,19 @@
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
+
+.landing-whats-new__all {
+  @include type(label);
+
+  align-self: flex-start;
+  color: var(--accent-text);
+  border-radius: var(--radius-sm);
+
+  @include hover {
+    color: var(--text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

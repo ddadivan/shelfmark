@@ -14,4 +14,6 @@ export interface PickerRow {
   readonly colour: FolderColour | string;
   /** The row is in `currentIds`: marked and not choosable. */
   readonly current: boolean;
+  /** The row is a copy in the "Recent" group on top of the list (no search text). */
+  readonly recent: boolean;
 }

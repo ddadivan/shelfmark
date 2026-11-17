@@ -116,6 +116,20 @@ $more-column: rem(30px);
   white-space: nowrap;
 }
 
+// "Something new" after the name (#424): an accent dot; its label is for screen readers only.
+.ui-tree__dot {
+  flex: none;
+  width: rem(8px);
+  height: rem(8px);
+  margin-inline-start: var(--space-1);
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+
+.ui-tree__dot-label {
+  @include visually-hidden;
+}
+
 .ui-tree__count {
   @include type(caption);
 

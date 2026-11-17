@@ -25,6 +25,7 @@ import { USER_SETTINGS_API } from '../../features/settings/models/user-settings-
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
+import { ExtensionBannerService } from '../../core/browser-extension/extension-banner.service';
 import { SidebarComponent } from './sidebar.component';
 
 async function setup(url = '/links', waitForFolders = true) {
@@ -119,6 +120,28 @@ describe('SidebarComponent', () => {
     expect(open).toHaveBeenCalledTimes(1);
   });
 
+  it('offers "Get the extension" once the library banner was closed, opening the store (#455)', async () => {
+    const entryShown = signal(false);
+    TestBed.overrideProvider(ExtensionBannerService, {
+      useValue: { entryShown, storeUrl: 'https://store.example/shelfmark' },
+    });
+    const { fixture } = await setup();
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+
+    expect(await rowNames(fixture)).not.toContain('Get the extension');
+
+    entryShown.set(true);
+    await fixture.whenStable();
+    await (await treeRow(fixture, 'Get the extension')).select();
+
+    expect(open).toHaveBeenCalledWith(
+      'https://store.example/shelfmark',
+      '_blank',
+      'noopener,noreferrer',
+    );
+    open.mockRestore();
+  });
+
   it('leaves the "Send feedback" row out on a phone (it is in the You list)', async () => {
     TestBed.configureTestingModule({
       providers: [
@@ -187,6 +210,36 @@ describe('SidebarComponent', () => {
 
     const tile = row(element, MOCK_NAME.FolderReading).querySelector('ui-folder-icon');
     expect(tile?.classList).toContain('ui-folder-icon--graphite');
+  });
+
+  it('tints only the rows of highlighted coloured folders, and the open one too (#440)', async () => {
+    const { element, router } = await setup();
+    const store = TestBed.inject(FoldersStore);
+    const id = MOCK_ID.FolderReading;
+
+    expect(row(element, MOCK_NAME.FolderReading).hasAttribute('data-ui-folder-highlight')).toBe(
+      false,
+    );
+    await store.setStyle(id, { colour: 'rose', highlighted: true });
+    TestBed.tick();
+    const lit = row(element, MOCK_NAME.FolderReading);
+    expect(lit.hasAttribute('data-ui-folder-highlight')).toBe(true);
+    expect(lit.hasAttribute('data-ui-folder-colour')).toBe(true);
+    expect(lit.hasAttribute('aria-current')).toBe(false);
+    expect(row(element, 'All links').hasAttribute('data-ui-folder-highlight')).toBe(false);
+
+    await router.navigateByUrl(`/folders/${id}`);
+    TestBed.tick();
+    expect(row(element, MOCK_NAME.FolderReading).hasAttribute('aria-current')).toBe(true);
+    expect(row(element, MOCK_NAME.FolderReading).hasAttribute('data-ui-folder-highlight')).toBe(
+      true,
+    );
+
+    await store.setStyle(id, { highlighted: false });
+    TestBed.tick();
+    expect(row(element, MOCK_NAME.FolderReading).hasAttribute('data-ui-folder-highlight')).toBe(
+      false,
+    );
   });
 
   it('opens the Recently opened page from its row and marks it', async () => {

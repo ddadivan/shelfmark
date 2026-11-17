@@ -57,6 +57,7 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 - `Tags.dc.html` — Tags: create, rename, delete (desktop)
 - `Bulk.dc.html` — Select and bulk actions (desktop)
 - `TrashView.dc.html` — Trash · desktop (desktop)
+- `SideBySide.dc.html` — Side by side: two feeds, the folder picker in the right half, drag between halves, Move to the right folder (desktop, from 80em; `state`: picker, half menu, drag one, drag selection, bulk bar, moved)
 - `MobileBulk.dc.html` — Select links · phone (phone)
 - `MobileTrash.dc.html` — Trash · phone (phone)
 
@@ -95,4 +96,6 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 
 ## 11 · Browser extension
 
-- `Extension.dc.html` — Browser extension (desktop)
+- `Extension.dc.html` — Browser extension popup (Chrome, #445): form and Save, saved, opening, folder picker, already saved, signed out, page that cannot be saved, errors; light and dark
+- `ExtensionInstall.dc.html` — Install the extension from the app (#455): library banner and Settings row; desktop Chromium only; light and dark
+- `Landing.dc.html` also has the "Save the page you are on" block: a mention of the extension without a link (#455)

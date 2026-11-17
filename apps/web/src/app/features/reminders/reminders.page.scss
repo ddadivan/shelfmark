@@ -1,0 +1,48 @@
+@use 'ui' as *;
+
+// The page fills the column of the shell, so an empty state can take the free height.
+:host {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+.reminders-page {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--space-6);
+  max-width: rem(960px);
+  padding-block: var(--space-2) var(--space-8);
+  margin-inline: auto;
+}
+
+// Phone: the way back to the Library above the title (as Trash).
+.reminders-page__top {
+  display: flex;
+  align-items: center;
+  margin-block-end: calc(-1 * var(--space-3));
+}
+
+.reminders-page__title {
+  @include type(title);
+
+  margin: 0;
+}
+
+// Always there (empty while the list loads) so the title block keeps its height.
+.reminders-page__count {
+  @include type(caption);
+
+  min-height: 1lh;
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+}
+
+.reminders-page__note {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}

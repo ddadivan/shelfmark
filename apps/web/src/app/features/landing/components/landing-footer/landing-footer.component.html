@@ -1,6 +1,9 @@
 <footer class="landing-footer">
   <span>{{ 'landing.footer.copyright' | transloco }}</span>
   <span class="landing-footer__links">
+    <a class="landing-footer__link" [routerLink]="LANDING_LINKS.Changelog">{{
+      'landing.footer.changelog' | transloco
+    }}</a>
     <a class="landing-footer__link" [routerLink]="LANDING_LINKS.Privacy">{{
       'landing.footer.privacy' | transloco
     }}</a>

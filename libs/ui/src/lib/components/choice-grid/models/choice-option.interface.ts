@@ -8,8 +8,10 @@ export interface ChoiceOption {
   readonly label: string;
   /** Swatches: the colour drawn. */
   readonly colour?: FolderColour | string;
-  /** Icons: the glyph drawn. */
+  /** Icons: the glyph drawn. Pictures: the glyph of an option without a picture (or when it fails). */
   readonly icon?: IconName;
+  /** Pictures: a same-origin image URL drawn as a 16:9 thumbnail (decorative; `label` names it). */
+  readonly image?: string;
   /**
    * An own option that can be deleted (an own colour): the translated action name ("Remove colour
    * #a33a5b"). Shows a small "×" on hover and focus (always on touch); Delete or Backspace on the

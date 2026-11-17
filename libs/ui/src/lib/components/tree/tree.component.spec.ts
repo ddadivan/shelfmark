@@ -445,6 +445,22 @@ describe('TreeComponent', () => {
       expect(labelled(TREE_STORY_NAME.Work)).toBe('Work 34');
     });
 
+    it('draws a dot after the name of a row that has one and reads its label with the name', async () => {
+      const { host, fixture, item, root } = await setup();
+      host.fixed.set([...TREE_STORY_FIXED, { id: 'news', name: "What's new", dot: 'new' }]);
+      await settle(fixture);
+      const labelled = (id: string) =>
+        (item(id).getAttribute('aria-labelledby') ?? '')
+          .split(' ')
+          .map((ref) => root.querySelector(`[id="${ref}"]`)?.textContent?.trim())
+          .join(' ');
+
+      expect(item("What's new").querySelector('.ui-tree__dot')).not.toBeNull();
+      expect(labelled("What's new")).toBe("What's new new");
+      expect(item(TREE_STORY_NAME.All).querySelector('.ui-tree__dot')).toBeNull();
+      expect(labelled(TREE_STORY_NAME.All)).toBe('All links 248');
+    });
+
     it('indents each level by one step through the level variable', async () => {
       const { row } = await setup();
       expect(row(TREE_STORY_NAME.Work).style.getPropertyValue('--ui-tree-level')).toBe('1');
@@ -914,6 +930,101 @@ describe('TreeComponent', () => {
       host.menuLabel.set(undefined);
       await settle(fixture);
       expect(root.querySelector('ui-button')).toBeNull();
+    });
+  });
+
+  describe('description (#418)', () => {
+    it('describes a folder row through its tooltip and leaves the others alone', async () => {
+      const { fixture, host, item } = await setup();
+
+      host.nodes.set(
+        TREE_STORY_NESTED.map((node) =>
+          node.id === TREE_STORY_ID.Recipes ? { ...node, description: 'Weeknight food' } : node,
+        ),
+      );
+      await settle(fixture);
+
+      expect(item(TREE_STORY_NAME.Recipes).getAttribute('aria-description')).toBe('Weeknight food');
+      expect(item(TREE_STORY_NAME.Work).hasAttribute('aria-description')).toBe(false);
+      expect(item(TREE_STORY_NAME.Favorites).hasAttribute('aria-description')).toBe(false);
+    });
+  });
+
+  describe('folder colour and highlight (#418, #440)', () => {
+    it('marks coloured folder rows only, with their colour as custom properties', async () => {
+      const { fixture, host, item } = await setup();
+
+      host.nodes.set(
+        TREE_STORY_NESTED.map((node) =>
+          node.id === TREE_STORY_ID.Recipes ? { ...node, colour: 'rose' } : node,
+        ),
+      );
+      await settle(fixture);
+
+      const recipes = item(TREE_STORY_NAME.Recipes);
+      expect(recipes.hasAttribute('data-ui-folder-colour')).toBe(true);
+      expect(recipes.style.getPropertyValue('--ui-folder-ink')).toBe('var(--folder-rose)');
+      expect(item(TREE_STORY_NAME.Work).hasAttribute('data-ui-folder-colour')).toBe(false);
+      expect(item(TREE_STORY_NAME.Favorites).hasAttribute('data-ui-folder-colour')).toBe(false);
+    });
+
+    it('marks a highlighted coloured folder row, and nothing else (#440)', async () => {
+      const { fixture, host, item } = await setup();
+
+      host.nodes.set(
+        TREE_STORY_NESTED.map((node) => {
+          if (node.id === TREE_STORY_ID.Recipes) {
+            return { ...node, colour: 'rose', highlighted: true };
+          }
+          if (node.id === TREE_STORY_ID.Work) return { ...node, colour: 'ocean' };
+          return node;
+        }),
+      );
+      await settle(fixture);
+
+      expect(item(TREE_STORY_NAME.Recipes).hasAttribute('data-ui-folder-highlight')).toBe(true);
+      // Coloured but not highlighted, and a fixed row: plain.
+      expect(item(TREE_STORY_NAME.Work).hasAttribute('data-ui-folder-highlight')).toBe(false);
+      expect(item(TREE_STORY_NAME.Favorites).hasAttribute('data-ui-folder-highlight')).toBe(false);
+    });
+
+    it('ignores highlighted on a fixed row (#440)', async () => {
+      const { fixture, host, item } = await setup();
+
+      host.fixed.set(
+        TREE_STORY_FIXED.map((node) => ({ ...node, colour: 'rose', highlighted: true })),
+      );
+      await settle(fixture);
+
+      expect(item(TREE_STORY_NAME.Favorites).hasAttribute('data-ui-folder-highlight')).toBe(false);
+    });
+
+    it('tints a highlighted row at rest, stronger on hover and focus without the grey hover, and the open row most (#440)', () => {
+      const css = compileScss('lib/components/tree/tree-highlight.scss');
+      const rule = (selector: RegExp): string => selector.exec(css)?.[0] ?? '';
+      const rest = rule(
+        /\.ui-tree__row--folder\[data-ui-folder-colour\]\[data-ui-folder-highlight\]\s*\{[^}]*\}/,
+      );
+      expect(rest).toMatch(/color-mix\(in srgb, var\(--ui-folder-tint\) 55%, transparent\)/);
+      const hover = rule(
+        /\.ui-tree__row--folder\[data-ui-folder-colour\]\[data-ui-folder-highlight\]:hover\s*\{[^}]*\}/,
+      );
+      expect(hover).toMatch(/var\(--ui-folder-tint\) 80%/);
+      expect(hover).not.toContain('--surface-hover');
+      expect(css).toMatch(
+        /\[data-ui-folder-highlight\]:focus-visible\s*\{[^}]*var\(--ui-folder-tint\) 80%/,
+      );
+      const open = rule(
+        /\.ui-tree__row--folder\[aria-current\]\[data-ui-folder-colour\]\[data-ui-folder-highlight\]\s*\{[^}]*\}/,
+      );
+      expect(open).toContain('font-weight: 600');
+      expect(open).toMatch(/background: var\(--ui-folder-tint\)/);
+    });
+
+    it('has no colour bar or setting-dependent rule any more (#440)', () => {
+      const css = compileScss('lib/components/tree/tree.component.scss');
+      expect(css).not.toContain('data-folder-highlight');
+      expect(compileScss('lib/components/tree/tree-highlight.scss')).not.toContain('::before');
     });
   });
 });

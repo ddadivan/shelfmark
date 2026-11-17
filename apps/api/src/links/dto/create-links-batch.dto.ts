@@ -5,10 +5,12 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsOptional,
   IsString,
   IsUUID,
   MaxLength,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { NoControlChars } from '../../common/validation/no-control-chars.decorator';
@@ -31,7 +33,8 @@ export class CreateLinksBatchDto implements CreateLinksBatchRequest {
   items!: CreateLinksBatchItemDto[];
 
   @ApiPropertyOptional({ format: 'uuid', description: 'One of your folders, for every link' })
-  @IsOptional()
+  // Absent means no folder (or the domain rule's folder); an explicit null is refused (#423).
+  @ValidateIf((_, value: unknown) => value !== undefined)
   @IsUUID()
   folderId?: string;
 
@@ -47,4 +50,13 @@ export class CreateLinksBatchDto implements CreateLinksBatchRequest {
   @NoControlChars(true, { each: true })
   @MaxLength(RAW_TAG_MAX, { each: true })
   tags?: string[];
+
+  @ApiPropertyOptional({
+    default: true,
+    description:
+      'Domain rules fill folder and tags of items that leave them open; false skips them',
+  })
+  @IsOptional()
+  @IsBoolean()
+  applyRules?: boolean;
 }

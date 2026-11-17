@@ -106,6 +106,15 @@
   overflow-wrap: anywhere;
 }
 
+// Edit mode (#275): the link's reminder and the button that sets or changes it.
+.add-link__reminder {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
 .add-link__note {
   @include type(caption);
 
@@ -163,5 +172,15 @@
     color: var(--text-muted);
     background: var(--surface-hover);
     border-radius: var(--radius-sm);
+  }
+}
+
+// The rule chip (#398) sits on its own line above the folder field; long names wrap.
+.add-link__rule {
+  display: flex;
+  min-width: 0;
+
+  ui-chip {
+    max-width: 100%;
   }
 }

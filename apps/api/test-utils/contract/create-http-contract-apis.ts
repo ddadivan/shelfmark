@@ -1,12 +1,24 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import {
+  ADMIN_ENDPOINT,
+  type AdminStatsResponse,
   FEEDBACK_ENDPOINT,
   feedbackScreenshotsPath,
   LINKS_BATCH_ENDPOINT,
   LINKS_BATCH_UPDATE_ENDPOINT,
   PIN_ENDPOINT,
+  REMINDER_ENDPOINT,
+  type ListRemindersResponse,
+  type ReminderCountResponse,
+  type SetRemindersBatchResponse,
   RECENT_LINKS_ENDPOINT,
   SAVED_VIEW_ENDPOINT,
+  RULE_ENDPOINT,
+  type CreateRuleRequest,
+  type ListRulesResponse,
+  type RuleMatchesResponse,
+  type RuleResponse,
+  type UpdateRuleRequest,
   TRASH_ENDPOINT,
   USER_SETTINGS_ENDPOINT,
   ME_STATS_ENDPOINT,
@@ -120,6 +132,15 @@ export function createHttpContractApis(app: NestExpressApplication, cookie: stri
           items: refs.map(({ kind, id }) => ({ kind, id })),
         }),
     },
+    reminders: {
+      list: () => http.send<ListRemindersResponse>('get', REMINDER_ENDPOINT.Base),
+      count: () => http.send<ReminderCountResponse>('get', REMINDER_ENDPOINT.Count),
+      set: (linkId, remindAt) =>
+        http.send<LinkResponse>('put', `${REMINDER_ENDPOINT.Base}/${enc(linkId)}`, { remindAt }),
+      clear: (linkId) => http.send<void>('delete', `${REMINDER_ENDPOINT.Base}/${enc(linkId)}`),
+      setMany: (request) =>
+        http.send<SetRemindersBatchResponse>('post', REMINDER_ENDPOINT.Batch, request),
+    },
     views: {
       list: (feed?: ListSavedViewsQuery) =>
         http.send<ListSavedViewsResponse>(
@@ -134,6 +155,15 @@ export function createHttpContractApis(app: NestExpressApplication, cookie: stri
       reorder: (ids) =>
         http.send<ListSavedViewsResponse>('put', `${SAVED_VIEW_ENDPOINT}/order`, { ids: [...ids] }),
     },
+    rules: {
+      list: () => http.send<ListRulesResponse>('get', RULE_ENDPOINT),
+      create: (request: CreateRuleRequest) =>
+        http.send<RuleResponse>('post', RULE_ENDPOINT, request),
+      update: (id, request: UpdateRuleRequest) =>
+        http.send<RuleResponse>('patch', `${RULE_ENDPOINT}/${enc(id)}`, request),
+      remove: (id) => http.send<void>('delete', `${RULE_ENDPOINT}/${enc(id)}`),
+      matches: (id) => http.send<RuleMatchesResponse>('get', `${RULE_ENDPOINT}/${enc(id)}/matches`),
+    },
     trash: {
       list: () => http.send<ListTrashResponse>('get', TRASH_ENDPOINT.Base),
       restore: (items: readonly TrashItemRef[]) =>
@@ -141,6 +171,9 @@ export function createHttpContractApis(app: NestExpressApplication, cookie: stri
       deleteForever: (items: readonly TrashItemRef[]) =>
         http.send<TrashActionResponse>('post', TRASH_ENDPOINT.Delete, { items: [...items] }),
       empty: () => http.send<TrashActionResponse>('delete', TRASH_ENDPOINT.Base),
+    },
+    admin: {
+      stats: () => http.send<AdminStatsResponse>('get', ADMIN_ENDPOINT.Stats),
     },
     me: {
       stats: (query?: MeStatsQuery) =>

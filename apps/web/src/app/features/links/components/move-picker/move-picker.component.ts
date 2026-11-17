@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { TranslocoPipe } from '@jsverse/transloco';
 import { injectDialogData, PickerListComponent, SheetComponent, UiDialogRef } from '@shelfmark/ui';
 import { FoldersStore } from '../../../../stores/folders.store';
+import { RecentFoldersStore } from '../../../../stores/recent-folders.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import type { MovePickerData } from '../../models/move-picker-data.interface';
 import { buildFolderPickerOptions } from '../../utils/folder-picker-options';
@@ -23,6 +24,7 @@ export class MovePickerComponent {
   private readonly ref = inject<UiDialogRef<boolean>>(UiDialogRef);
   private readonly folders = inject(FoldersStore);
   private readonly settings = inject(UserSettingsStore);
+  protected readonly recent = inject(RecentFoldersStore).targets;
   protected readonly data = injectDialogData<MovePickerData>();
 
   protected readonly options = computed(() =>
