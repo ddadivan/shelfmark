@@ -14,6 +14,7 @@ const input = (overrides: Partial<LinkJobInput> = {}): LinkJobInput => ({
     { key: 'f1', path: 'Recipes' },
     { key: 'f2', path: 'Work / Design' },
   ],
+  examples: [],
   ...overrides,
 });
 

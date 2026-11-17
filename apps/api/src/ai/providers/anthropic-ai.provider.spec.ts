@@ -12,6 +12,7 @@ const input: LinkJobInput = {
   excerpt: 'Some page text',
   tags: ['css'],
   folders: [{ key: 'f1', path: 'Work' }],
+  examples: [],
 };
 
 const message = (text: string, stopReason = 'end_turn') => ({

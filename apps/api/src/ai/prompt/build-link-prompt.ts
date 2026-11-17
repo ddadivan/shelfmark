@@ -18,7 +18,8 @@ function block(name: string, body: string): string {
 
 /**
  * The user message of a link job: the task, the user's own vocabulary and the page as untrusted data.
- * Folders appear as short keys only (`f1: Work / Design`), never ids. The note is included only when
+ * Folders appear as short keys only (`f1: Work / Design`), never ids. Earlier choices for the same
+ * site (AI-2) follow the vocabulary as folder keys and the user's own tag names, nothing else. The note is included only when
  * the input carries one (the switch "Include my notes" decides before the input is built).
  */
 export function buildLinkUserPrompt(input: LinkJobInput): string {
@@ -42,6 +43,23 @@ export function buildLinkUserPrompt(input: LinkJobInput): string {
         ? input.folders.map((folder) => `${folder.key}: ${clean(folder.path, false)}`).join('\n')
         : '(none)',
     ),
+    ...(input.examples.length > 0
+      ? [
+          block(
+            LINK_PROMPT_BLOCK.Examples,
+            input.examples
+              .map(
+                (example) =>
+                  `- folder: ${example.folderKey ?? '(none)'}; tags: ${
+                    example.tags.length > 0
+                      ? example.tags.map((tag) => clean(tag, false)).join(', ')
+                      : '(none)'
+                  }`,
+              )
+              .join('\n'),
+          ),
+        ]
+      : []),
     block(
       LINK_PROMPT_BLOCK.Link,
       [
