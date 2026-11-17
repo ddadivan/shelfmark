@@ -1,0 +1,7 @@
+<ui-icon class="ui-ai-line__mark" name="spark" [size]="ICON_SIZE.Sm" />
+<span class="ui-ai-line__text">{{ text() }}</span>
+@if (actionLabel(); as label) {
+  <ui-button [variant]="BUTTON_VARIANT.Ghost" [size]="BUTTON_SIZE.Sm" (click)="action.emit()">
+    {{ label }}
+  </ui-button>
+}

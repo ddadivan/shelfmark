@@ -174,6 +174,8 @@ describe('Custom theme tokens', () => {
       check('--accent', ['--surface-hover', '--surface-pressed', '--accent-bg'], 3);
       check('--focus-ring', ['--bg', '--surface', '--surface-hover', '--accent-bg'], 3);
       check('--border-control', ['--bg', '--surface'], 3);
+      check('--ai', ['--bg', '--surface'], 4.5);
+      check('--ai-line', ['--bg', '--surface'], 3);
       expect(failures).toEqual([]);
     },
   );

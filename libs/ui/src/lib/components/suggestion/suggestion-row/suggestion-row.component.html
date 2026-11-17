@@ -1,0 +1,22 @@
+<span class="ui-suggestion-row__label">
+  <ui-icon class="ui-suggestion-row__mark" name="spark" [size]="ICON_SIZE.Sm" />
+  {{ loading() ? loadingLabel() : label() }}
+</span>
+@if (loading()) {
+  @for (n of skeletons(); track n) {
+    <span class="ui-suggestion-row__skeleton" aria-hidden="true"></span>
+  }
+} @else {
+  <ng-content />
+  @if (addAll()) {
+    <button
+      ngToolbarWidget
+      type="button"
+      class="ui-suggestion-row__add-all"
+      (click)="acceptAll.emit()"
+    >
+      {{ addAllLabel() }}
+    </button>
+  }
+}
+<span class="ui-suggestion-row__live" aria-live="polite">{{ announcement() }}</span>

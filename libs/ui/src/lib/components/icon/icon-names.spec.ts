@@ -76,6 +76,8 @@ const APP_ICONS = [
   'play',
   'shirt',
   'swap',
+  // The AI mark (#476).
+  'spark',
 ];
 
 const sprite = readFileSync(SPRITE_PATH, 'utf8');

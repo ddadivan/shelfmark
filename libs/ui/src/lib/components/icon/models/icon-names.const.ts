@@ -92,6 +92,7 @@ export const ICON_NAMES = [
   'shirt',
   'shopping-bag',
   'sort',
+  'spark',
   'star',
   'star-filled',
   'sun',

@@ -1,0 +1,38 @@
+<span
+  class="ui-suggestion__chip"
+  [class.ui-suggestion__chip--accepted]="isAccepted()"
+  [class.ui-suggestion__chip--swell]="isSwelling()"
+>
+  <button
+    ngToolbarWidget
+    type="button"
+    class="ui-suggestion__apply"
+    [attr.aria-label]="ariaLabel()"
+    [attr.aria-pressed]="isReview() ? isAccepted() : null"
+    (click)="apply()"
+  >
+    <ui-icon
+      class="ui-suggestion__plus"
+      [name]="isAccepted() ? 'check' : 'add'"
+      [size]="ICON_SIZE.Sm"
+    />
+    @if (kind() === SUGGESTION_KIND.Folder) {
+      <ui-folder-icon [size]="FOLDER_ICON_SIZE.Sm" [icon]="folderIcon()" [colour]="folderColor()" />
+    }
+    <span class="ui-suggestion__label">{{ label() }}</span>
+    @if (kind() === SUGGESTION_KIND.NewTag) {
+      <span class="ui-suggestion__new">{{ newLabel() }}</span>
+    }
+  </button>
+  @if (showDismiss()) {
+    <button
+      ngToolbarWidget
+      type="button"
+      class="ui-suggestion__dismiss"
+      [attr.aria-label]="dismissLabel()"
+      (click)="dismissed.emit()"
+    >
+      <ui-icon name="close" [size]="ICON_SIZE.Sm" />
+    </button>
+  }
+</span>
