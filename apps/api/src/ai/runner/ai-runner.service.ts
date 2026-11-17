@@ -22,6 +22,7 @@ import { aiEntitlements } from '../settings/ai-entitlements';
 import { AiSettingsService } from '../settings/ai-settings.service';
 import { AiUsageService } from '../usage/ai-usage.service';
 import { loadLinkVocabulary } from './load-link-vocabulary';
+import { loadSiteExamples } from './load-site-examples';
 
 const NO_EXCERPT: PageExcerpt = { excerpt: null, description: null };
 
@@ -141,6 +142,12 @@ export class AiRunnerService {
 
     const page = account.fetchPreviews ? await this.excerpts.load(source.url) : NO_EXCERPT;
     const vocabulary = await loadLinkVocabulary(this.prisma, job.userId);
+    const [examples = []] = await loadSiteExamples(
+      this.prisma,
+      job.userId,
+      [{ url: source.url, linkId: job.linkId }],
+      vocabulary.folderIdByKey,
+    );
     const input: LinkJobInput = {
       parts: job.parts,
       language: job.language,
@@ -151,6 +158,7 @@ export class AiRunnerService {
       excerpt: page.excerpt,
       tags: vocabulary.tags,
       folders: vocabulary.folders,
+      examples,
     };
     const outcome = await this.call(this.registry.for(account), input);
 

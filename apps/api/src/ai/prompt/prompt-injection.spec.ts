@@ -38,6 +38,7 @@ describe('prompt injection through a hostile page', () => {
     excerpt,
     tags: OWN_TAGS,
     folders: OWN_FOLDERS,
+    examples: [],
   };
 
   it('keeps the script out of the excerpt and the page text inside its block', () => {
