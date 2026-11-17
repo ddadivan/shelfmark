@@ -160,6 +160,7 @@ export function createAnthropicProvider(config: AiConfig): AiProvider {
   return new AnthropicAiProvider(
     new Anthropic({
       apiKey: config.apiKey,
+      baseURL: ANTHROPIC_LIMIT.BaseUrl,
       maxRetries: ANTHROPIC_LIMIT.MaxRetries,
       timeout: ANTHROPIC_LIMIT.TimeoutMs,
     }),
