@@ -28,5 +28,5 @@ Exported from Claude Design. This folder is the source of truth for how the UI l
 - One signature animation (saving a link). Everything else is quiet; see Motion.
 - Glass only on floating layers (menus, toasts, phone tab bar, bulk bar, sign-in card).
 - Light and Dark themes are fixed; only the Custom theme changes token values.
-- No AI features yet — none are designed.
+- AI features: the MVP is designed (#476) — `screens/AiSettings`, `AiTags`, `AiSummary`, `AiTidy` (proposal), `MobileAi`; rules in `BRAND.md` › AI and the components `AiMark`, `Suggestion`, `AiSummary`. Search by meaning, Ask your shelf and clean-up are not designed yet (`docs/ai/FEATURES.md`).
 - Never use icons from another set.

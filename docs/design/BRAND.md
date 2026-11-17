@@ -70,9 +70,20 @@ One indicator per wait, chosen by what is loading (full rules in the Loading com
 - Website favicons are shown as provided at 16px inside a `radius-sm` square; a missing favicon falls back to a link icon in `text-muted`.
 - Logo: the card-with-bookmark mark (assets › Logos) followed by «Shelfmark» in Onest 600 in `text`. Use `shelfmark-mark-light.svg` on light grounds and `shelfmark-mark-dark.svg` on dark; the header shows the lockup, the favicon shows `shelfmark-app-icon.svg`.
 
+## AI
+
+AI in Shelfmark is a quiet helper, off until the person turns it on (Settings › AI). Feature list and tiers: `docs/ai/FEATURES.md`. Components: AiMark, Suggestion, AiSummary.
+
+- **One mark.** The `spark` icon (AiMark) marks everything the model made. No gradients, no purple, no glow, no robot or wand: AI uses the graphite palette like the rest of the app.
+- **Suggested is dashed, yours is solid.** Suggestions are dashed, uncoloured chips (dashed already means "not there yet" in «Save this view»); accepting one turns it into the ordinary solid thing. Sage stays the person's own signal: AI never fills anything with `accent`.
+- **Nothing happens without a tap.** The model proposes; the person applies. Bulk applies always have Undo.
+- **Quiet when absent.** Off, failed, nothing found: the space collapses, no placeholder, no error toast. Limits and outages are one muted line (AiLine) where the content would be, and a warning notice only in Settings › AI.
+- **AI text is the person's once edited.** An edited summary loses the mark and is never rewritten.
+- Copy names the result, not the technology: «Suggested», «Summary», «Suggesting…»; «AI» appears in settings, badges («Written by AI») and the privacy text, not on every control.
+
 ## Settings
 
-- One page per section, listed in a settings nav (`sm-tree__row`): Account, Appearance, Library, Notifications and reminders, Language, Keyboard shortcuts, Import and export, Privacy and data, Your feedback.
+- One page per section, listed in a settings nav (`sm-tree__row`): Account, Appearance, Library, AI, Notifications and reminders, Language, Keyboard shortcuts, Import and export, Privacy and data, Your feedback.
 - Each page is a stack of `sm-panel sm-settings` groups made of `SettingsRow`s. Changes apply at once and sync; no Save button except in forms (name, feedback).
 - Destructive actions live only in Account, in their own red-ringed panel, never next to toggles.
 

@@ -503,3 +503,35 @@ button.sm-rating__item:active { transform: scale(.94); }
 /* Sheet header */
 .sm-sheet__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .sm-sheet__title { margin: 0; font: 600 22px/28px var(--font-sans); color: var(--text); }
+
+/* ===== AI layer (#476) =====
+   Everything the model produced: the spark mark, dashed suggestion chips, the AI summary line,
+   quiet status lines. Graphite only: AI never uses sage fills (sage is the user's signal),
+   never gradients or glow. Spec: components/AiMark, Suggestion, AiSummary; BRAND.md › AI. */
+.sm-ai-mark { display: inline-flex; flex: none; color: var(--text-muted); }
+.sm-suggest-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.sm-suggest-row__label { display: inline-flex; align-items: center; gap: 4px; margin-right: 2px; font: 500 12px/16px var(--font-sans); color: var(--text-muted); }
+.sm-suggest { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 4px 0 8px; border-radius: 999px; border: 1px dashed var(--border-control); background: transparent; color: var(--text); font: 500 12px/16px var(--font-sans); white-space: nowrap; cursor: pointer; transition: background-color var(--duration-fast), border-color var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out); }
+.sm-suggest__apply { display: inline-flex; align-items: center; gap: 4px; height: 100%; padding: 0 2px 0 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.sm-suggest:has(.sm-suggest__apply:focus-visible) { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.sm-suggest__apply:focus-visible { outline: none; }
+.sm-suggest__plus { display: inline-flex; color: var(--text-muted); }
+.sm-suggest__new { font: 500 11px/16px var(--font-sans); color: var(--text-muted); }
+.sm-suggest__dismiss { width: 22px; height: 22px; flex: none; display: inline-grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--text-muted); cursor: pointer; padding: 0; }
+.sm-suggest .sm-fic--sm { width: 18px; height: 18px; border-radius: 6px; margin-left: -2px; }
+.sm-suggest.is-accepted { border-style: solid; border-color: transparent; background: var(--accent-bg); color: var(--accent-text); padding-right: 10px; animation: sm-suggest-accept var(--duration-base) var(--ease-spring); }
+.sm-suggest.is-accepted .sm-suggest__plus { color: var(--accent-text); }
+.sm-suggest.is-accepted:focus-visible, .sm-suggest__dismiss:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+@media (hover: hover) { .sm-suggest:hover { background: var(--surface-hover); } .sm-suggest.is-accepted:hover { background: var(--accent-bg); } .sm-suggest__dismiss:hover { background: var(--surface-pressed); color: var(--text); } }
+@keyframes sm-suggest-accept { 50% { scale: 1.06; } }
+.sm-ai-summary { display: flex; gap: 6px; align-items: flex-start; margin: 0; font: 400 13px/18px var(--font-sans); color: var(--text-muted); }
+.sm-ai-summary .sm-ai-mark { margin-top: 2px; }
+.sm-ai-summary__text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sm-ai-summary--row .sm-ai-summary__text { -webkit-line-clamp: 1; }
+.sm-ai-line { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; margin: 0; font: 400 12px/16px var(--font-sans); color: var(--text-muted); }
+.sm-ai-line > svg { flex: none; margin-top: 1px; }
+.sm-ai-line > span { flex: 1 1 180px; min-width: 0; }
+.sm-ai-line .sm-btn { height: 28px; padding: 0 10px; font-size: 12px; }
+.sm-ai-chip-skel { height: 28px; border-radius: 999px; }
+@media (pointer: coarse) { .sm-suggest { position: relative; } .sm-suggest__apply::before { content: ""; position: absolute; inset: -8px 22px -8px 0; } .sm-suggest__dismiss::before { content: ""; position: absolute; inset: -8px -6px -8px auto; width: 30px; } }
+@media (prefers-reduced-motion: reduce) { .sm-root .sm-suggest.is-accepted { animation: none; } }

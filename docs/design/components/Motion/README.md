@@ -32,6 +32,8 @@ Motion defines Shelfmark's few animations. The one signature moment is saving a 
 | Toast | slides up 12 px + fade; out: down 8 px + fade | 320 / 120 ms |
 | **Save link** | new card drops in (`sm-card--landed`, 320 ms `ease-spring`), the rest shift one slot (FLIP, 320 ms `ease-in-out`), sage ring fades over 1.8 s. In list view the new row slides down and holds `accent-bg` for 1.5 s | — |
 | Favorite | star scales 1→1.25→1, turns sage; un-favorite has no animation | 200 ms `ease-spring` |
+| Accept a suggestion (AI) | the dashed chip turns solid sage and pulses 1→1.06→1, then moves into the field as a tag; × fades the chip out | 200 ms `ease-spring` / 120 ms |
+| AI content arrives | skeleton chips or summary lines (loader), then the content fades in (`sm-reveal`); no typing effect for summaries | 200 ms |
 | Delete | card fades and collapses, neighbours close the gap (FLIP) | 200 ms |
 | Tree expand | chevron rotates, children open by height | 120 / 200 ms `ease-in-out` |
 | Spinner | grows in from 40%, label makes room; leaves the same way | 200 / 120 ms |
