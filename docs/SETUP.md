@@ -242,7 +242,9 @@ The extension is `apps/extension`, a Chrome Manifest V3 popup. It asks for `acti
 
 **Try it locally (unpacked development build).** Outside production the API trusts any extension id, so no variable is needed.
 
-1. Start the app with its API: `npm run start:all`, then open http://localhost:4200 in Chrome and sign in (local OAuth app or **Try demo**).
+1. Start the app with its API on the real local database (section 1, "Mock or real data"): export `BETTER_AUTH_SECRET`, run `npx nx run api:db-migrate` once for a new checkout or worktree (an empty local database answers 500), then `npm run start:all`.
+   - Open http://localhost:4200 in the same Chrome profile, run `localStorage.setItem('sm-real-auth-api', '1')` in the console and reload. Without it the web app signs in on its in-browser mocks, no session cookie is set and the extension shows "Sign in".
+   - Sign in with **Try demo** (at most 5 demo sessions per hour) or a local OAuth app.
 2. Build: `npm run extension:dev`, or keep `npm run extension:watch` running while you test.
 3. Open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and choose `dist/apps/extension-dev`. Pin "Shelfmark (dev)" in the toolbar puzzle menu.
 4. Open any web page and click the icon, or press **Alt+Shift+S** (change it at `chrome://extensions/shortcuts`).
