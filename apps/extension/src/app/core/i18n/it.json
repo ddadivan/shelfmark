@@ -1,0 +1,82 @@
+{
+  "popup": {
+    "loading": "Caricamento",
+    "openApp": "Apri Shelfmark",
+    "openInApp": "Apri in Shelfmark",
+    "unsorted": "Non ordinati",
+    "form": {
+      "title": "Salva in Shelfmark",
+      "folder": "Cartella",
+      "chooseFolder": "Cartella: {{folder}}. Cambia",
+      "ruleHint": "Dalla tua regola per {{domain}}",
+      "recentFolders": "Cartelle recenti",
+      "tags": "Tag",
+      "tagsPlaceholder": "Aggiungi tag",
+      "tagsMax": "Fino a {{max}} tag",
+      "tagsCreate": "Crea tag",
+      "tagsRemove": "Rimuovi tag",
+      "tagsAdded": "Tag aggiunto",
+      "tagsRemoved": "Tag rimosso",
+      "tagsDuplicate": "Questo tag è già aggiunto",
+      "tagsList": "Suggerimenti di tag",
+      "note": "Nota",
+      "notePlaceholder": "Perché lo salvi?",
+      "save": "Salva",
+      "newBadge": "nuova"
+    },
+    "picker": {
+      "title": "Scegli una cartella",
+      "back": "Indietro",
+      "search": "Trova una cartella",
+      "list": "Cartelle",
+      "noResults": "Nessuna cartella con questo nome",
+      "newFolder": "Nuova cartella"
+    },
+    "newFolder": {
+      "title": "Nuova cartella",
+      "label": "Nome della cartella",
+      "placeholder": "Per esempio, Ricette",
+      "hint": "La cartella viene creata quando salvi la pagina.",
+      "create": "Crea"
+    },
+    "saved": {
+      "title": "Salvato in {{folder}}",
+      "done": "Fatto",
+      "folderNotCreated": "Impossibile creare la cartella “{{name}}”: il link è salvato senza cartella."
+    },
+    "duplicate": {
+      "title": "Già nella tua libreria",
+      "notice": "L’hai salvato {{when}} in {{folder}}.",
+      "saveCopy": "Salva una copia"
+    },
+    "signedOut": {
+      "title": "Accedi per salvare questa pagina",
+      "text": "Accedi una volta in questo browser e ogni pagina sarà a un clic di distanza.",
+      "signIn": "Accedi a Shelfmark",
+      "privacy": "Viene inviata solo la pagina che salvi, nient’altro di ciò che navighi.",
+      "privacyLink": "Privacy",
+      "cards": {
+        "grid": "La guida completa a CSS grid",
+        "nestjs": "NestJS per sviluppatori frontend",
+        "icons": "Icone gratuite per i progetti personali",
+        "ramen": "Il miglior ramen infrasettimanale",
+        "woolCoat": "Cappotto di lana, taglio dritto",
+        "signalForms": "Signal Forms in 20 minuti"
+      }
+    },
+    "unsupported": {
+      "title": "Questa pagina non si può salvare",
+      "text": "Shelfmark salva pagine web. Le pagine del browser, i file e la nuova scheda restano fuori."
+    },
+    "error": {
+      "title": "Impossibile salvare questa pagina",
+      "loadTitle": "Impossibile raggiungere Shelfmark",
+      "offline": "Nessuna connessione a Shelfmark. Controlla internet e riprova.",
+      "rateLimit": "Troppi salvataggi di fila. Aspetta un minuto e riprova.",
+      "limit": "La tua libreria è piena. Rimuovi alcuni link in Shelfmark per salvarne di nuovi.",
+      "demoLimit": "Una demo contiene 100 link. Accedi con Google o GitHub per continuare a salvare.",
+      "server": "Qualcosa è andato storto da parte nostra. Riprova tra poco.",
+      "tryAgain": "Riprova"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+@use 'ui' as *;
+
+// The card keeps its library look but never pushes the footer out of the fixed popup.
+.duplicate__card {
+  min-height: 0;
+  overflow: hidden;
+}

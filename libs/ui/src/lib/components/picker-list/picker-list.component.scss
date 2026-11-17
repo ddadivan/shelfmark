@@ -35,9 +35,13 @@
   @include field-native;
 }
 
-// Long lists scroll in the list itself; the search box stays above.
+// Long lists scroll in the list itself; the search box stays above. A host that gives the picker
+// a fixed height (the browser extension's full-popup picker) sets `--ui-picker-list-max-height: none`
+// and lets the list take the rest of that height.
 .ui-picker-list__list {
-  max-height: min(50dvh, #{rem(360px)});
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: var(--ui-picker-list-max-height, min(50dvh, #{rem(360px)}));
   overflow-y: auto;
   overscroll-behavior: contain;
 

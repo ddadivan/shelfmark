@@ -1,0 +1,17 @@
+<div class="ext-screen__head">
+  <h1 class="ext-screen__title">{{ 'popup.duplicate.title' | transloco }}</h1>
+</div>
+@if (store.link(); as link) {
+  <ext-popup-link-card class="duplicate__card" [link]="link" (activated)="store.openLinkFolder()" />
+}
+<ui-notice [kind]="NOTICE_KIND.Warning">{{
+  'popup.duplicate.notice' | transloco: { when: when(), folder: folderName() }
+}}</ui-notice>
+<div class="ext-screen__foot">
+  <ui-button [variant]="BUTTON_VARIANT.Ghost" (click)="store.saveCopy()">{{
+    'popup.duplicate.saveCopy' | transloco
+  }}</ui-button>
+  <ui-button [variant]="BUTTON_VARIANT.Primary" (click)="store.openLinkFolder()">{{
+    'popup.openInApp' | transloco
+  }}</ui-button>
+</div>

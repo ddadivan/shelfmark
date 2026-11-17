@@ -1,0 +1,56 @@
+<div class="strip" aria-hidden="true" inert>
+  @for (card of cards(); track card.id) {
+    <div
+      class="strip__card strip__card--{{ card.layer }}"
+      [style.--x.rem]="card.x / 16"
+      [style.--y.rem]="card.y / 16"
+      [style.--s]="card.scale"
+      [style.--r.deg]="card.rotate"
+      [style.--spin.deg]="card.spin"
+      [style.--t.s]="card.duration"
+      [style.--d.s]="card.delay"
+      [style.--ax.rem]="card.ampX / 16"
+      [style.--ay.rem]="card.ampY / 16"
+      [style.--w]="card.wave"
+    >
+      <div class="strip__fly">
+        <div class="strip__float">
+          <div class="strip__size">
+            <ui-card [placeholderTone]="card.tone" [headingLevel]="3">
+              <span slot="title">{{ 'popup.signedOut.cards.' + card.id | transloco }}</span>
+              <span slot="meta" class="strip__site">
+                <ui-favicon [letter]="card.letter" />
+                <span class="strip__host">{{ card.host }}</span>
+              </span>
+              <span slot="date">{{ card.saved }}</span>
+              <ul class="strip__tags">
+                @for (tag of card.tags; track tag) {
+                  <li>
+                    <ui-chip>{{ tag }}</ui-chip>
+                  </li>
+                }
+              </ul>
+            </ui-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<div class="signin">
+  <ui-logo />
+  <div class="signin__intro">
+    <h1 class="signin__title">{{ 'popup.signedOut.title' | transloco }}</h1>
+    <p class="ext-screen__text">{{ 'popup.signedOut.text' | transloco }}</p>
+  </div>
+  <ui-button block [variant]="BUTTON_VARIANT.Primary" (click)="store.openSignIn()">{{
+    'popup.signedOut.signIn' | transloco
+  }}</ui-button>
+  <p class="signin__privacy">
+    {{ 'popup.signedOut.privacy' | transloco }}
+    <ui-button size="sm" [variant]="BUTTON_VARIANT.Ghost" (click)="store.openPrivacy()">{{
+      'popup.signedOut.privacyLink' | transloco
+    }}</ui-button>
+  </p>
+</div>

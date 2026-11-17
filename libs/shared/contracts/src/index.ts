@@ -11,6 +11,8 @@ export type { LinkPreview } from './links/link-preview.interface';
 export type { LinkPreviewRequest } from './links/link-preview-request.interface';
 export type { LinkPreviewResponse } from './links/link-preview-response.interface';
 export type { LinkDuplicate } from './links/link-duplicate.interface';
+export type { LinkLookupRequest } from './links/link-lookup-request.interface';
+export type { LinkLookupResponse } from './links/link-lookup-response.interface';
 export type { LinkResponse } from './links/link-response.interface';
 export type { CreateLinkRequest } from './links/create-link-request.interface';
 export type { UpdateLinkRequest } from './links/update-link-request.interface';

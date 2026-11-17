@@ -1,0 +1,30 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+  inline-size: 100%;
+  text-align: start;
+}
+
+.card__site {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.card__host {
+  @include type(caption);
+  @include line-clamp(1);
+
+  color: var(--text-muted);
+}
+
+.card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: 0;
+  margin: var(--space-2) 0 0;
+  list-style: none;
+}

@@ -1,0 +1,30 @@
+<div class="ext-screen__center">
+  <ui-illustration motion="once" [name]="illustration()" />
+  <h1 class="ext-screen__center-title">{{ titleKey() | transloco }}</h1>
+  <p class="ext-screen__text" [attr.role]="unsupported() ? null : 'alert'">
+    {{ textKey() | transloco }}
+  </p>
+</div>
+@if (!unsupported() && store.page(); as page) {
+  <div class="ext-preview">
+    <span class="ext-preview__thumb" aria-hidden="true"></span>
+    <span class="ext-preview__text">
+      <span class="ext-preview__host">{{ page.host }}</span>
+      <span class="ext-preview__title">{{ page.title }}</span>
+    </span>
+  </div>
+}
+<div class="ext-screen__foot">
+  @if (canRetry()) {
+    <ui-button block [variant]="BUTTON_VARIANT.Primary" (click)="store.retry()">{{
+      'popup.error.tryAgain' | transloco
+    }}</ui-button>
+  } @else {
+    <ui-button
+      block
+      [variant]="unsupported() ? BUTTON_VARIANT.Secondary : BUTTON_VARIANT.Primary"
+      (click)="store.openApp()"
+      >{{ 'popup.openApp' | transloco }}</ui-button
+    >
+  }
+</div>
