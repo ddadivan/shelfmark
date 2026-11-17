@@ -54,7 +54,7 @@ test.describe('Connect your assistant (#395, mock API)', () => {
 
     await dialog.getByRole('button', { name: 'Copy the token' }).click();
     await expect(page.getByText('Token copied')).toBeVisible();
-    const secret = await page.evaluate(() => navigator.clipboard.readText());
+    const secret = await page.evaluate<string>('navigator.clipboard.readText()');
     expect(secret).toMatch(MOCK_SECRET);
     // The secret never reaches storage: the mock keeps the summary only.
     const stored = await page.evaluate(() =>
@@ -118,8 +118,8 @@ test.describe('Connect your assistant on touch (#395, mock API)', { tag: E2E_TAG
 
     const item = group.getByRole('listitem').filter({ hasText: 'Phone' });
     await expect(item).toContainText('never used');
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    const overflow = await page.evaluate<number>(
+      'document.documentElement.scrollWidth - document.documentElement.clientWidth',
     );
     expect(overflow).toBeLessThanOrEqual(0);
 
