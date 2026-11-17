@@ -55,4 +55,6 @@ export const RATE_LIMIT = {
   AiBackfill: { limit: 20, ttl: MINUTE_MS },
   AiTick: { limit: 10, ttl: MINUTE_MS },
   AiDeleteData: { limit: 5, ttl: MINUTE_MS },
+  // Personal MCP token create and revoke (#395, ADR 0053): a person creates a handful, ever.
+  McpTokenWrite: { limit: 10, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;

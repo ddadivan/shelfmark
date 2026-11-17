@@ -20,6 +20,7 @@ import { ExportModule } from '../export/export.module';
 import { FoldersModule } from '../folders/folders.module';
 import { HealthModule } from '../health/health.module';
 import { LinksModule } from '../links/links.module';
+import { McpModule } from '../mcp/mcp.module';
 import { MonitoringModule } from '../monitoring/monitoring.module';
 import { PinsModule } from '../pins/pins.module';
 import { RemindersModule } from '../reminders/reminders.module';
@@ -53,6 +54,7 @@ import { UsersModule } from '../users/users.module';
     RemindersModule,
     RulesModule,
     AiModule,
+    McpModule,
     // Async so the environment is read at DI time, not at import time.
     ThrottlerModule.forRootAsync({
       useFactory: () => createRateLimitOptions(shouldTrustProxyHeaders()),

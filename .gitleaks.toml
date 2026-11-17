@@ -6,3 +6,9 @@ useDefault = true
 [[allowlists]]
 description = "Lockfile hashes and design assets are not secrets"
 paths = ['''^package-lock\.json$''', '''^docs/design/assets/.*''', '''^docs/design-v1/assets/.*''']
+
+[[rules]]
+id = "shelfmark-mcp-token"
+description = "Shelfmark personal MCP token (ADR 0053)"
+regex = '''smk_live_[A-Za-z0-9_-]{43}'''
+keywords = ["smk_live_"]
