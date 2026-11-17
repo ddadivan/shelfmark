@@ -260,6 +260,7 @@ describe('motion mixins', () => {
       'ui-ripple-fade',
       'ui-land',
       'ui-land-ring',
+      'ui-suggest-accept',
     ]);
     expect(out).not.toMatch(/\d+px/);
   });
