@@ -2909,6 +2909,10 @@
       "aiSummaries": {
         "title": "Resumos curtos",
         "text": "Com a IA ativada, os links ganham um resumo de uma ou duas linhas no cartão. Edite e ele passa a ser seu."
+      },
+      "mcp": {
+        "title": "Conecte seu assistente",
+        "text": "No Pro, o Claude e outros assistentes MCP podem pesquisar e ler seus links com um token pessoal. Somente leitura, e você pode revogá-lo quando quiser."
       }
     },
     "sections": {

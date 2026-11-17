@@ -2909,6 +2909,10 @@
       "aiSummaries": {
         "title": "Riassunti brevi",
         "text": "Con l'IA attiva, i link ricevono un riassunto di una o due righe sulla scheda. Modificalo e diventa tuo."
+      },
+      "mcp": {
+        "title": "Collega il tuo assistente",
+        "text": "Con Pro, Claude e altri assistenti MCP possono cercare e leggere i tuoi link con un token personale. Sola lettura, revocabile in qualsiasi momento."
       }
     },
     "sections": {

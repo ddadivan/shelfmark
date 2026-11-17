@@ -2849,6 +2849,10 @@
       "aiSummaries": {
         "title": "Kurze Zusammenfassungen",
         "text": "Mit KI bekommen Links eine Zusammenfassung von ein bis zwei Zeilen auf ihrer Karte. Bearbeitest du sie, gehört sie dir."
+      },
+      "mcp": {
+        "title": "Assistenten verbinden",
+        "text": "Mit Pro können Claude und andere MCP-Assistenten deine Links mit einem persönlichen Token durchsuchen und lesen. Nur Lesezugriff, jederzeit widerrufbar."
       }
     },
     "sections": {

@@ -2849,6 +2849,10 @@
       "aiSummaries": {
         "title": "Short summaries",
         "text": "With AI on, links get a one- or two-line summary on their card. Edit it and it's yours."
+      },
+      "mcp": {
+        "title": "Connect your assistant",
+        "text": "On Pro, Claude and other MCP assistants can search and read your links with a personal token. Read-only, and you can revoke it any time."
       }
     },
     "sections": {

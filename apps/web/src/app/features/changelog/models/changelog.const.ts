@@ -28,6 +28,12 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
         textKey: 'changelog.items.aiSummaries.text',
         priority: 2,
       },
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'mcp',
+        titleKey: 'changelog.items.mcp.title',
+        textKey: 'changelog.items.mcp.text',
+      },
     ],
   },
   {

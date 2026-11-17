@@ -115,3 +115,22 @@ Settings › AI page places the group last (desktop) and on You › AI (phone, s
 8. **Search by meaning in the tool.** Default: yes when the user's search is ready, counted against their search allowance.
 9. **"Searches this week" in the design.** Default: "calls this week" (every tool call counts), from the daily usage rows.
 10. **Write tools.** Default: none in v1 (FEATURES); `tools/list` is pinned to four read-only tools by a spec.
+
+## 10. Implementation notes (deviations from the plan)
+
+**Defaults used.** Every open question in section 9 took its default: personal read-only tokens now, OAuth later behind `McpAuthResolver` (1); own stateless JSON-RPC handler, the SDK pinned as a devDependency for the conformance spec only (2); "Include my notes" per token, off, fixed at creation (3); Pro, with the group visible to Free and demo accounts and Create turned off (4); works with the AI main switch off (5); no expiry (6); 10 tokens per user, 2,000 calls per token per UTC day, 120 requests a minute per IP (7); "calls this week" from the daily usage rows (9); no write tools (10).
+
+**API.**
+
+- `search_links` searches by words only. Meaning matches (open question 8) sit behind the `MCP_MEANING_SEARCH` seam, which answers no matches until AI-3 provides the meaning search service; the `match: 'meaning'` value is reserved for it.
+- `McpModule` does not import `AiModule`: it reads the entitlement through the shared `aiEntitlements` function and needs nothing else from the AI module until the meaning search lands.
+- Every authenticated `POST /api/mcp` counts toward the daily cap (the guard reserves the call before dispatch), including `initialize`, `ping` and `tools/list`, not only `tools/call`; "calls this week" counts the same way.
+
+**Web.**
+
+- The feature lives in `features/ai/connect/` as planned. "Include my notes" is a `ui-switch` (like the other on / off settings), not a checkbox. The create dialog is a `ui-dialog`, which is a bottom sheet below 40em on its own; no separate `ui-sheet`.
+- The shown-once view prints the masked token (`smk_live_7Qh2…aX9c`); Copy copies the whole value. Only when the clipboard refuses does a read-only field show the whole value, selected. The secret is held in the dialog's signal and cleared on Done and when the dialog is destroyed (Esc, close button, scrim); the store, the mock and the list keep summaries only.
+- The how-to lists Claude Code, Claude Desktop (through `mcp-remote`), Cursor and VS Code as separate entries (their `mcp.json` shapes differ), each with Copy; the setups are code from `utils/mcp-client-setup.ts`, not translated. The usage line reads "Last used {when}, calls this week: {n}" to avoid plural forms in seven languages.
+- The mock is available unless the user is the demo or the mock AI tier (`sm-mock-ai`) is Free; the e2e Free case seeds that tier.
+- e2e is `apps/web-e2e/src/mcp-connect.spec.ts` (desktop, `@mobile` on tablet and phone); no visual baselines yet.
+- Not done in this branch: the privacy page paragraph "Connected assistants" (section 5) and `privacy.mcp.*` keys.

@@ -2909,6 +2909,10 @@
       "aiSummaries": {
         "title": "Résumés courts",
         "text": "Avec l'IA activée, chaque lien reçoit un résumé d'une ou deux lignes sur sa carte. Modifiez-le et il vous appartient."
+      },
+      "mcp": {
+        "title": "Connecter votre assistant",
+        "text": "Avec Pro, Claude et d’autres assistants MCP peuvent rechercher et lire vos liens avec un jeton personnel. Lecture seule, révocable à tout moment."
       }
     },
     "sections": {
