@@ -1,10 +1,8 @@
-/** What one Tidy apply item will change on its link. */
+/** What one Tidy apply item is meant to change on its link, before the writes say what did. */
 export interface TidyLinkPlan {
   linkId: string;
-  /** The folder to set, or `null` when the folder stays. */
-  folderId: string | null;
-  /** Tag names to add (each new on the link, within `LINK_LIMIT.TagsMax`). */
-  tags: string[];
-  /** The suggestion ids applied. */
-  suggestionIds: string[];
+  /** The folder to set and its suggestion, or `null` when the folder stays. */
+  folder: { folderId: string; suggestionId: string } | null;
+  /** Tags to add (each new on the link when read, within `LINK_LIMIT.TagsMax`) and their rows. */
+  tags: { name: string; suggestionId: string }[];
 }

@@ -140,3 +140,29 @@ The link job input gains `examples: readonly { folderKey: string | null; tags: r
 3. **Tag offers.** F1b says "one folder or one tag"; the design only shows the folder toast. Default: folder offers only in AI-2; a tag offer ("Always tag github.com links with code?") later on the same check.
 4. **Paste many review chips** (AI-1 answer 4 moved them to AI-2). Pre-save chips mean up to 100 model calls before saving. Default: no pre-save chips; when the pasted links' jobs finish (`AiFollowUpService.watchMany`) and some in Unsorted have suggestions, a status toast "Suggestions ready for {n} links" with "Review" opens Tidy.
 5. **Offer copy.** The design says "You moved the last 3 there"; derived detection cannot tell a move from a save into the folder. Default: "Your last 3 links from this site are there. A rule works without AI."
+
+## 9. Implementation notes
+
+What the code does differently from sections 1–7, and the defaults taken for section 8 (Nov 17, 2026, branch `feat/390-ai-tidy-rules`).
+
+**Deviations**
+
+- **Offer count.** `RuleOffer.count` is not fixed at 3: `detectRuleOffer` counts how many of the site's newest links in a row share the folder (at least `SameChoiceMin`, at most `CandidatesMax`), so the toast can say "Your last 7 links from this site are there".
+- **Apply re-checks rules.** Tidy apply runs the same filter as the list under its locks, so a rule created between list and apply keeps the folder (the folder row stays `suggested`, the tags still apply). Apply answers and its `undo` payload carry only what the writes changed (`updateManyAndReturn` for moves, `createManyAndReturn` for tags); a part that did not apply leaves its row open.
+- **Filter file name.** The list filter is `apps/api/src/ai/tidy/filter-tidy-suggestions.ts` (not `to-tidy-item.ts`): it filters the stored rows; the item is assembled in `AiTidyService`.
+- **Paging.** `GET /api/ai/tidy` takes `?after=<linkId>` (contract `TidyListQuery`): the web reads the next page after the last listed link once an apply leaves more, or from "Show the next links" when every link on the page is skipped or left out, so skipped links never hold the page. `total` counts from the page on. List and count read at most `TIDY_SCAN.RowsMax` (500) rows and have their own rate limit (`AiTidyRead`, 60 a minute).
+- **Prompt.** The examples block is `<earlier_choices>`, and the system prompt gained one line on how to use it (prefer the same folder and tags when they fit, only keys and tags from the vocabulary). Example tags are kept only when they are in the prompt's tag vocabulary.
+- **Rule offers.** Candidates are read in batches (`RULE_OFFER_SCAN`) and filtered by the exact host before the `CandidatesMax` cut, so addresses that merely contain the host cannot push the site's links out. "Not now" is capped at 500 sites per user (`RULE_OFFER_DISMISSAL_LIMIT`, the oldest go first). The web merges filings that come while a check waits into the newest one and skips a check while an offer toast is up.
+- **Empty state.** The "Nothing to tidy" tile (spark on `ai-bg`) is drawn in the Tidy page, not a `libs/ui` component (one use).
+- **Row label.** The row's chip group is labelled "Changes for {title}" for assistive tech only; the visible row shows the spark on the chips, no text label.
+- **Load error.** A failed list load shows the empty state (no AI error toasts, ever), with the way back to Unsorted.
+- **Mock "Not now".** The mock keeps dismissed sites in memory (`MockLibraryData.ruleOfferDismissals`), so a reload forgets them; the API stores them.
+- **Nothing applied.** An apply that changed nothing (everything decided, moved or ruled meanwhile) shows an info toast "Nothing to apply" and the page reloads.
+
+**Defaults taken for section 8**
+
+1. Apply per row: the design. One "Apply to {n} links", one Undo; Skip and chip toggles cover per-row choice.
+2. Rule offers with AI off: offers only while AI is on; the server endpoints do not read AI settings.
+3. Tag offers: folder offers only; tag offers later on the same check.
+4. Paste many review chips: no pre-save chips. The "Suggestions ready for {n} links" toast after a paste is not built in AI-2; links from Paste many reach Tidy through the Unsorted button, and the route is ready for that toast (and for the Import summary, #387).
+5. Offer copy: "Your last {count} links from this site are there. A rule works without AI."

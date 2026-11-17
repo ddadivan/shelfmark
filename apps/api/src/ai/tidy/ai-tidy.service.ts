@@ -12,6 +12,7 @@ import {
   type TidyCountResponse,
   type TidyItem,
   type TidyListResponse,
+  type TidyUndoItem,
 } from '@shelfmark/contracts';
 import { AiEmbedService } from '../embeddings/ai-embed.service';
 import { markEmbeddingsStale } from '../embeddings/mark-embeddings-stale';
@@ -29,6 +30,7 @@ import { SUGGESTION_ROW_STATE } from '../models/suggestion-row-state.const';
 import type { TidyFilterContext } from '../models/tidy-filter-context.interface';
 import type { TidyLinkPlan } from '../models/tidy-link-plan.interface';
 import type { TidyLinkRow } from '../models/tidy-link-row.interface';
+import { TIDY_SCAN } from '../models/tidy-scan.const';
 import { AiSettingsService } from '../settings/ai-settings.service';
 import { filterTidySuggestions } from './filter-tidy-suggestions';
 
@@ -43,6 +45,11 @@ const TIDY_LINK_SELECT = {
     select: { id: true, kind: true, tagName: true, folderId: true },
   },
 } as const satisfies Prisma.LinkSelect;
+
+/** The apply answer when nothing was applied. */
+function emptyApply(skipped: number): TidyApplyResponse {
+  return { links: [], applied: 0, folders: 0, tagsAdded: 0, skipped, undo: { items: [] } };
+}
 
 /**
  * Tidy Unsorted (AI-2, #390): the review list over the stored suggestions of the user's links in
@@ -62,9 +69,12 @@ export class AiTidyService {
     private readonly embed: AiEmbedService,
   ) {}
 
-  /** `GET /api/ai/tidy`: newest first, at most `TIDY_LIMIT.PageMax`; empty while AI is off. */
-  async list(userId: string): Promise<TidyListResponse> {
-    const reviewable = await this.reviewable(userId);
+  /**
+   * `GET /api/ai/tidy`: newest first, at most `TIDY_LIMIT.PageMax`, after the link `after` when it
+   * is one of the user's (the next page); empty while AI is off.
+   */
+  async list(userId: string, after?: string): Promise<TidyListResponse> {
+    const reviewable = await this.reviewable(userId, after);
     const page = reviewable.slice(0, TIDY_LIMIT.PageMax);
     if (page.length === 0) return { items: [], total: reviewable.length };
     const rows = await this.prisma.link.findMany({
@@ -89,8 +99,8 @@ export class AiTidyService {
    * `POST /api/ai/tidy/apply`: one transaction for the whole run. Per item only the selected
    * `suggested` rows of the user's live link count; a folder only while the link is still in
    * Unsorted (a folder the user chose meanwhile is never replaced); tags past `LINK_LIMIT.TagsMax`
-   * are left off and counted as skipped. Applied rows become `accepted`, the rest stay. 409 while
-   * AI is off.
+   * are left off and counted as skipped. Applied rows become `accepted`, the rest stay. The answer
+   * and its `undo` payload hold only what the writes really changed. 409 while AI is off.
    */
   async apply(userId: string, request: TidyApplyRequest): Promise<TidyApplyResponse> {
     const stored = await this.settings.read(this.prisma, userId);
@@ -129,11 +139,10 @@ export class AiTidyService {
       const open = filterTidySuggestions(row.suggestions, contextOf(row)).filter((suggestion) =>
         selected.has(suggestion.id),
       );
-      const plan: TidyLinkPlan = { linkId: row.id, folderId: null, tags: [], suggestionIds: [] };
+      const plan: TidyLinkPlan = { linkId: row.id, folder: null, tags: [] };
       const folder = open.find((suggestion) => suggestion.kind === SUGGESTION_KIND.Folder);
       if (row.folderId === null && folder?.folderId) {
-        plan.folderId = folder.folderId;
-        plan.suggestionIds.push(folder.id);
+        plan.folder = { folderId: folder.folderId, suggestionId: folder.id };
       }
       let room = LINK_LIMIT.TagsMax - row.tags.length;
       const seen = new Set<string>();
@@ -147,50 +156,41 @@ export class AiTidyService {
           continue;
         }
         room -= 1;
-        plan.tags.push(suggestion.tagName);
-        plan.suggestionIds.push(suggestion.id);
+        plan.tags.push({ name: suggestion.tagName, suggestionId: suggestion.id });
       }
-      if (plan.suggestionIds.length > 0) plans.push(plan);
+      if (plan.folder !== null || plan.tags.length > 0) plans.push(plan);
     }
-    if (plans.length === 0) {
-      return { links: [], applied: 0, folders: 0, tagsAdded: 0, skipped, undo: { items: [] } };
-    }
+    if (plans.length === 0) return emptyApply(skipped);
 
     const now = new Date();
-    const byFolder = new Map<string, string[]>();
+    const moved = await this.moveAll(tx, userId, plans, now);
+    const added = await this.tagAll(tx, userId, plans, now);
+
+    // Only what the writes did counts: a link moved or tagged meanwhile (outside these locks) keeps
+    // its state, its rows stay open and the answer and the undo payload leave that part out.
+    const undo: TidyUndoItem[] = [];
     for (const plan of plans) {
-      if (plan.folderId === null) continue;
-      byFolder.set(plan.folderId, [...(byFolder.get(plan.folderId) ?? []), plan.linkId]);
-    }
-    for (const [folderId, linkIds] of byFolder) {
-      await tx.link.updateMany({
-        where: { userId, deletedAt: null, folderId: null, id: { in: linkIds } },
-        data: { folderId, updatedAt: now },
-      });
-    }
-    const tagged = plans.filter((plan) => plan.tags.length > 0);
-    if (tagged.length > 0) {
-      const names = tagged.flatMap((plan) => plan.tags);
-      const ids = await this.tags.resolveNames(userId, names, tx);
-      const idOf = await this.tagIdsByKey(tx, userId, ids);
-      const pairs = tagged.flatMap((plan) =>
-        plan.tags.flatMap((name) => {
-          const tagId = idOf.get(normalizeTagName(name).toLowerCase());
-          return tagId === undefined ? [] : [{ linkId: plan.linkId, tagId }];
-        }),
+      const folderId = plan.folder !== null && moved.has(plan.linkId) ? plan.folder : null;
+      const tags = plan.tags.filter((tag) =>
+        added.get(plan.linkId)?.has(normalizeTagName(tag.name).toLowerCase()),
       );
-      await tx.linkTag.createMany({ data: pairs, skipDuplicates: true });
-      await markEmbeddingsStale(tx, userId, { linkIds: tagged.map((plan) => plan.linkId) });
-      await tx.link.updateMany({
-        where: { userId, deletedAt: null, id: { in: tagged.map((plan) => plan.linkId) } },
-        data: { updatedAt: now },
+      if (folderId === null && tags.length === 0) continue;
+      undo.push({
+        linkId: plan.linkId,
+        folderId: folderId?.folderId ?? null,
+        tags: tags.map((tag) => tag.name),
+        suggestionIds: [
+          ...(folderId === null ? [] : [folderId.suggestionId]),
+          ...tags.map((tag) => tag.suggestionId),
+        ],
       });
     }
+    if (undo.length === 0) return emptyApply(skipped);
     await tx.linkSuggestion.updateMany({
       where: {
         userId,
         state: SUGGESTION_ROW_STATE.Suggested,
-        id: { in: plans.flatMap((plan) => plan.suggestionIds) },
+        id: { in: undo.flatMap((item) => item.suggestionIds) },
       },
       data: { state: SUGGESTION_ROW_STATE.Accepted },
     });
@@ -198,32 +198,122 @@ export class AiTidyService {
     const links = await this.responses(
       tx,
       userId,
-      plans.map((plan) => plan.linkId),
+      undo.map((item) => item.linkId),
     );
     return {
       links,
-      applied: plans.length,
-      folders: plans.filter((plan) => plan.folderId !== null).length,
-      tagsAdded: tagged.reduce((sum, plan) => sum + plan.tags.length, 0),
+      applied: undo.length,
+      folders: undo.filter((item) => item.folderId !== null).length,
+      tagsAdded: undo.reduce((sum, item) => sum + item.tags.length, 0),
       skipped,
-      undo: { items: plans },
+      undo: { items: undo },
     };
   }
 
-  /** The user's links in Unsorted with something to review, newest first (`[]` while AI is off). */
+  /** Sets the planned folders on links still in Unsorted; answers the ids that moved. */
+  private async moveAll(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    plans: readonly TidyLinkPlan[],
+    now: Date,
+  ): Promise<Set<string>> {
+    const byFolder = new Map<string, string[]>();
+    for (const plan of plans) {
+      if (plan.folder === null) continue;
+      const { folderId } = plan.folder;
+      byFolder.set(folderId, [...(byFolder.get(folderId) ?? []), plan.linkId]);
+    }
+    const moved = new Set<string>();
+    for (const [folderId, linkIds] of byFolder) {
+      const rows = await tx.link.updateManyAndReturn({
+        where: { userId, deletedAt: null, folderId: null, id: { in: linkIds } },
+        data: { folderId, updatedAt: now },
+        select: { id: true },
+      });
+      for (const row of rows) moved.add(row.id);
+    }
+    return moved;
+  }
+
+  /**
+   * Adds the planned tags (a new tag is created); answers per link the lower-cased names that were
+   * really added (a tag put on the link meanwhile is not).
+   */
+  private async tagAll(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    plans: readonly TidyLinkPlan[],
+    now: Date,
+  ): Promise<Map<string, Set<string>>> {
+    const added = new Map<string, Set<string>>();
+    const tagged = plans.filter((plan) => plan.tags.length > 0);
+    if (tagged.length === 0) return added;
+    const ids = await this.tags.resolveNames(
+      userId,
+      tagged.flatMap((plan) => plan.tags.map((tag) => tag.name)),
+      tx,
+    );
+    const idOf = await this.tagIdsByKey(tx, userId, ids);
+    const keyOf = new Map([...idOf].map(([key, id]) => [id, key]));
+    const pairs = tagged.flatMap((plan) =>
+      plan.tags.flatMap((tag) => {
+        const tagId = idOf.get(normalizeTagName(tag.name).toLowerCase());
+        return tagId === undefined ? [] : [{ linkId: plan.linkId, tagId }];
+      }),
+    );
+    if (pairs.length === 0) return added;
+    const created = await tx.linkTag.createManyAndReturn({
+      data: pairs,
+      skipDuplicates: true,
+      select: { linkId: true, tagId: true },
+    });
+    for (const pair of created) {
+      const key = keyOf.get(pair.tagId);
+      if (key === undefined) continue;
+      added.set(pair.linkId, (added.get(pair.linkId) ?? new Set<string>()).add(key));
+    }
+    if (added.size > 0) {
+      await markEmbeddingsStale(tx, userId, { linkIds: [...added.keys()] });
+      await tx.link.updateMany({
+        where: { userId, deletedAt: null, id: { in: [...added.keys()] } },
+        data: { updatedAt: now },
+      });
+    }
+    return added;
+  }
+
+  /**
+   * The user's links in Unsorted with something to review, newest first, older than the user's link
+   * `after` when given, at most `TIDY_SCAN.RowsMax` read (`[]` while AI is off).
+   */
   private async reviewable(
     userId: string,
+    after?: string,
   ): Promise<{ id: string; suggestions: TidyItem['suggestions'] }[]> {
     const stored = await this.settings.read(this.prisma, userId);
     if (!stored.settings.enabled) return [];
+    const cursor =
+      after === undefined
+        ? null
+        : await this.prisma.link.findFirst({
+            where: { id: after, userId },
+            select: { id: true, createdAt: true },
+          });
     const rows = await this.prisma.link.findMany({
       where: {
         userId,
         deletedAt: null,
         folderId: null,
         suggestions: { some: { userId, state: SUGGESTION_ROW_STATE.Suggested } },
+        ...(cursor !== null && {
+          OR: [
+            { createdAt: { lt: cursor.createdAt } },
+            { createdAt: cursor.createdAt, id: { lt: cursor.id } },
+          ],
+        }),
       },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: TIDY_SCAN.RowsMax,
       select: TIDY_LINK_SELECT,
     });
     const contextOf = await this.contexts(this.prisma, userId, rows);

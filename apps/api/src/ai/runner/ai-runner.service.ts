@@ -147,6 +147,7 @@ export class AiRunnerService {
       job.userId,
       [{ url: source.url, linkId: job.linkId }],
       vocabulary.folderIdByKey,
+      vocabulary.tags,
     );
     const input: LinkJobInput = {
       parts: job.parts,

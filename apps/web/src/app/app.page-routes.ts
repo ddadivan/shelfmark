@@ -5,6 +5,7 @@ import { authOnly, guestOnly, landingGuestOnly, redirectToSignIn } from './core/
 import { loadLibraryPage } from './features/library/load-library-page';
 import { loadLandingPage } from './features/landing/load-landing-page';
 import { adminOnly } from './features/admin/admin.guard';
+import { tidyAiOn } from './features/ai/pages/tidy/tidy.guard';
 
 const libraryPage = loadLibraryPage;
 const settingsRoutes = () => import('./features/settings/settings.routes');
@@ -15,6 +16,7 @@ const trashPage = () => import('./features/trash/trash.page');
 const remindersPage = () => import('./features/reminders/reminders.page');
 const tagsPage = () => import('./features/tags/pages/tags-page/tags.page');
 const sharePage = () => import('./features/share/share.page');
+const tidyPage = () => import('./features/ai/pages/tidy/tidy.page');
 
 /** The real pages. `app.routes.ts` serves them as they are; the e2e build adds a test page. */
 export const pageRoutes: Routes = [
@@ -41,6 +43,7 @@ export const pageRoutes: Routes = [
         loadComponent: libraryPage,
         data: { scope: LINKS_SCOPE.Unsorted },
       },
+      { path: APP_PATH.Tidy, canActivate: [tidyAiOn], loadComponent: tidyPage },
       {
         path: APP_PATH.Favorites,
         loadComponent: libraryPage,
@@ -79,6 +82,7 @@ export const pageRoutes: Routes = [
   { path: APP_PATH.Tags, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Links, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Unsorted, canActivate: [redirectToSignIn], children: [] },
+  { path: APP_PATH.Tidy, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Favorites, canActivate: [redirectToSignIn], children: [] },
   { path: `${APP_PATH.Folders}/:folderId`, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Recent, canActivate: [redirectToSignIn], children: [] },

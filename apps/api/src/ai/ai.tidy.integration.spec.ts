@@ -2,6 +2,7 @@ import {
   AI_ENDPOINT,
   AI_ERROR_MESSAGE,
   LINK_LIMIT,
+  TIDY_LIMIT,
   type TidyApplyResponse,
   type TidyListResponse,
   type TidyUndoResponse,
@@ -159,6 +160,36 @@ describe('Tidy Unsorted (AI-2)', () => {
       expect((await list()).items[0]?.link.id).toBe(link);
     });
 
+    it('pages past `PageMax` with `after`, and ignores a cursor that is not the user’s', async () => {
+      await turnOn();
+      const owner = users.owner.userId;
+      const ids: string[] = [];
+      for (let i = 0; i <= TIDY_LIMIT.PageMax; i += 1) {
+        const link = await seedLink(t.db.prisma, owner, {
+          url: `https://example.test/${i}`,
+          createdAt: new Date(Date.UTC(2026, 0, 1, 0, 0, i)),
+        });
+        await suggest(owner, link, { tagName: 'css' });
+        ids.push(link);
+      }
+      const first = await list();
+      expect(first.items).toHaveLength(TIDY_LIMIT.PageMax);
+      expect(first.total).toBe(TIDY_LIMIT.PageMax + 1);
+      expect(first.items[0]?.link.id).toBe(ids[TIDY_LIMIT.PageMax]);
+      const last = first.items.at(-1)?.link.id ?? '';
+      const next = (await a.get(AI_ENDPOINT.Tidy).query({ after: last }).expect(200))
+        .body as TidyListResponse;
+      expect(next).toMatchObject({ total: 1 });
+      expect(next.items.map((item) => item.link.id)).toEqual([ids[0]]);
+      expect(await count()).toBe(TIDY_LIMIT.PageMax + 1);
+
+      const theirs = await seedLink(t.db.prisma, users.intruder.userId);
+      const foreign = (await a.get(AI_ENDPOINT.Tidy).query({ after: theirs }).expect(200))
+        .body as TidyListResponse;
+      expect(foreign.total).toBe(TIDY_LIMIT.PageMax + 1);
+      await a.get(AI_ENDPOINT.Tidy).query({ after: 'nope' }).expect(400);
+    });
+
     it('reads a new tag whose name exists now as a tag', async () => {
       await turnOn();
       const { fresh } = await seeded();
@@ -201,6 +232,40 @@ describe('Tidy Unsorted (AI-2)', () => {
       expect((await linkRow(link)).folderId).toBe(reading);
       expect(await tagNamesOf(link)).toEqual(['css']);
       expect(await stateOf(f)).toBe('suggested');
+    });
+
+    it('lets a rule created between list and apply keep the folder, still adding the tags', async () => {
+      await turnOn();
+      const owner = users.owner.userId;
+      const { link, f, css } = await seeded(owner, 'https://www.youtube.com/watch?v=1');
+      expect((await list()).items[0]?.suggestions.map((s) => s.id)).toContain(f);
+      const music = await folder(owner, 'Music');
+      await t.db.prisma.linkRule.create({
+        data: { userId: owner, domain: 'youtube.com', folderId: music },
+      });
+      const body = (await apply([{ linkId: link, suggestionIds: [f, css] }]).expect(200))
+        .body as TidyApplyResponse;
+      expect(body).toMatchObject({ applied: 1, folders: 0, tagsAdded: 1 });
+      expect(body.undo.items).toEqual([
+        { linkId: link, folderId: null, tags: ['css'], suggestionIds: [css] },
+      ]);
+      expect((await linkRow(link)).folderId).toBeNull();
+      expect(await stateOf(f)).toBe('suggested');
+      expect(await stateOf(css)).toBe('accepted');
+    });
+
+    it('applies a run once when the same run is sent twice at the same time', async () => {
+      await turnOn();
+      const { videos, link, f, css } = await seeded();
+      const run = [{ linkId: link, suggestionIds: [f, css] }];
+      const [one, two] = await Promise.all([apply(run), apply(run)]);
+      const bodies = [one.body as TidyApplyResponse, two.body as TidyApplyResponse];
+      expect([one.status, two.status]).toEqual([200, 200]);
+      expect(bodies.map((body) => body.applied).sort()).toEqual([0, 1]);
+      expect(bodies.map((body) => body.undo.items.length).sort()).toEqual([0, 1]);
+      expect(bodies.reduce((sum, body) => sum + body.tagsAdded, 0)).toBe(1);
+      expect((await linkRow(link)).folderId).toBe(videos);
+      expect(await tagNamesOf(link)).toEqual(['css']);
     });
 
     it('leaves tags past the per-link limit off and counts them as skipped', async () => {
@@ -310,6 +375,42 @@ describe('Tidy Unsorted (AI-2)', () => {
       const row = await linkRow(link);
       expect(row.folderId).toBe(reading);
       expect(await tagNamesOf(link)).toEqual([]);
+    });
+
+    it('removes only the tags still on the link when the user removed one meanwhile', async () => {
+      await turnOn();
+      const { link, css, fresh } = await seeded();
+      const applied = (await apply([{ linkId: link, suggestionIds: [css, fresh] }]).expect(200))
+        .body as TidyApplyResponse;
+      expect(applied).toMatchObject({ folders: 0, tagsAdded: 2 });
+      const cssTag = await t.db.prisma.tag.findFirstOrThrow({
+        where: { userId: users.owner.userId, name: 'css' },
+      });
+      await t.db.prisma.linkTag.deleteMany({ where: { linkId: link, tagId: cssTag.id } });
+      const body = (await undo(applied.undo).expect(200)).body as TidyUndoResponse;
+      expect(body.links[0]).toMatchObject({ id: link, folderId: null, tags: [] });
+      expect(await tagNamesOf(link)).toEqual([]);
+      expect([await stateOf(css), await stateOf(fresh)]).toEqual(['suggested', 'suggested']);
+    });
+
+    it('is idempotent: the same payload twice changes nothing more', async () => {
+      await turnOn();
+      const { link, f, css, fresh } = await seeded();
+      const applied = (await apply([{ linkId: link, suggestionIds: [f, css] }]).expect(200))
+        .body as TidyApplyResponse;
+      await undo(applied.undo).expect(200);
+      const before = await linkRow(link);
+      await undo(applied.undo).expect(200);
+      const after = await linkRow(link);
+      expect(after.folderId).toBeNull();
+      expect(after.updatedAt).toEqual(before.updatedAt);
+      expect(await tagNamesOf(link)).toEqual([]);
+      expect([await stateOf(f), await stateOf(css), await stateOf(fresh)]).toEqual([
+        'suggested',
+        'suggested',
+        'suggested',
+      ]);
+      expect(await count()).toBe(1);
     });
 
     it('validates the body', async () => {

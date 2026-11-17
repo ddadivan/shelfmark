@@ -1,4 +1,5 @@
 @use 'ui' as *;
+@use 'shell-metrics' as *;
 
 :host {
   display: flex;
@@ -136,10 +137,11 @@
   padding: var(--space-6) var(--space-4);
 
   // The one scroll area of the mobile shell (#352): the page scrolls here, under the floating tab
-  // bar, never the document. Room below the last row for the tab bar (110px, TabBar spec).
+  // bar, never the document. Room below the last row for the tab bar (`$shell-tab-bar-room`,
+  // TabBar spec).
   @include compact {
     min-height: 0;
-    padding-block-end: calc(rem(110px) + env(safe-area-inset-bottom));
+    padding-block-end: calc(#{$shell-tab-bar-room} + env(safe-area-inset-bottom));
     overflow-y: auto;
     overscroll-behavior: contain;
   }
