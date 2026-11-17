@@ -2922,6 +2922,10 @@
       "aiSummaries": {
         "title": "Résumés courts",
         "text": "Avec l'IA activée, chaque lien reçoit un résumé d'une ou deux lignes sur sa carte. Modifiez-le et il vous appartient."
+      },
+      "aiTidy": {
+        "title": "Ranger « Sans dossier » avec l’IA",
+        "text": "Passez en revue sur une seule page les suggestions de l’IA pour tout ce qui est dans « Sans dossier » et appliquez-les avec une seule annulation. Rangez plusieurs fois les liens d’un site dans le même dossier et Shelfmark propose une règle."
       }
     },
     "sections": {

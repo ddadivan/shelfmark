@@ -2922,6 +2922,10 @@
       "aiSummaries": {
         "title": "Resumos curtos",
         "text": "Com a IA ativada, os links ganham um resumo de uma ou duas linhas no cartão. Edite e ele passa a ser seu."
+      },
+      "aiTidy": {
+        "title": "Organizar “Sem pasta” com IA",
+        "text": "Revise numa única página as sugestões de IA para tudo em “Sem pasta” e aplique-as com um só Desfazer. Se você guardar links de um site na mesma pasta algumas vezes, o Shelfmark oferece uma regra."
       }
     },
     "sections": {

@@ -2861,6 +2861,10 @@
       "aiSummaries": {
         "title": "Short summaries",
         "text": "With AI on, links get a one- or two-line summary on their card. Edit it and it's yours."
+      },
+      "aiTidy": {
+        "title": "Tidy Unsorted with AI",
+        "text": "Review the AI suggestions for everything in Unsorted on one page and apply them with one Undo. File a site's links into the same folder a few times and Shelfmark offers a rule."
       }
     },
     "sections": {

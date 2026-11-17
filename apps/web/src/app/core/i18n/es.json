@@ -2922,6 +2922,10 @@
       "aiSummaries": {
         "title": "Resúmenes breves",
         "text": "Con la IA activada, los enlaces reciben un resumen de una o dos líneas en su tarjeta. Si lo editas, es tuyo."
+      },
+      "aiTidy": {
+        "title": "Ordenar «Sin carpeta» con IA",
+        "text": "Revisa en una sola página las sugerencias de IA para todo lo que está en «Sin carpeta» y aplícalas con un solo Deshacer. Si guardas varias veces enlaces de un sitio en la misma carpeta, Shelfmark te ofrece una regla."
       }
     },
     "sections": {
