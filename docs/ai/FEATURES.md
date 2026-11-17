@@ -12,7 +12,13 @@ These come from 5.6 and hold for every feature below.
 
 1. **Opt-in.** AI is off by default. One switch in Settings › AI turns it on; off means no link data leaves Shelfmark for a model provider.
 2. **The app works the same without AI.** Off, quota used, provider down or not processed yet: every screen looks and behaves as it does today. No error toasts on save, ever.
-3. **Suggestions, never actions.** The model proposes; the user taps to accept. Nothing is applied, moved, merged or deleted without a user action, and every bulk change has Undo.
+3. **The user always keeps the choice** (author's decision, Nov 17, 2026). People sometimes put a link in a place on purpose, and AI never decides for them:
+   - By default AI only suggests: chips inline in Add link and Paste many, applied on a tap.
+   - A folder or tags the user picked are never overridden or moved by AI. A quiet suggestion may still show; nothing is applied.
+   - Auto-apply is optional and off by default, set per feature in Settings › AI: folder and tags each have **Suggest** (default), **Apply automatically when I don't choose** and **Off**.
+   - Anything auto-applied carries the AI mark and is undoable in one step ("Moved to Videos", Undo).
+   - Learning from moves only changes future suggestions. Existing links are never re-sorted silently; re-sorting happens only through Tidy Unsorted with a preview.
+   - Merges and deletions (clean-up) are never automatic; every bulk change has Undo.
 4. **Background only.** Saving a link never waits for a model.
 5. **Text only.** Model output is rendered as plain text, schema-validated, never as HTML or Markdown; page text is untrusted input; no tools with side effects.
 6. **Privacy.** Link content is sent only to the model provider, only for the feature the user turned on, and never used for statistics: Shelfmark counts AI calls (for quotas) and nothing else.
@@ -63,7 +69,7 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 ### F0. AI foundation and Settings › AI (#389)
 
 - **Problem.** Every AI feature needs the same opt-in, quotas, background jobs, mock provider and degradation; built once, it cannot be forgotten in one feature.
-- **What the user sees.** A new settings page **Settings › AI**: one main switch with a plain description of what is sent and to whom; per-feature switches (suggestions, summaries, smarter search, Ask your shelf); "Include my notes" (off by default, **Proposal**); this month's usage as a meter ("38 of 100 links"); a status row when the provider is down or the limit is reached; "Process my existing links" (backfill) with a count and a time estimate; a link to the privacy policy. The privacy policy and Settings › Privacy and data get an AI paragraph.
+- **What the user sees.** A new settings page **Settings › AI**: one main switch with a plain description of what is sent and to whom; a choice per feature for the folder and for tags (Suggest / Apply automatically when I don't choose / Off, default Suggest); switches for summaries and, later, smarter search and Ask your shelf; "Include my notes" (off by default, **Proposal**); this month's usage as a meter ("38 of 100 links"); a status row when the provider is down or the limit is reached; "Process my existing links" (backfill) with a count and a time estimate; a link to the privacy policy. The privacy policy and Settings › Privacy and data get an AI paragraph.
 - **Entry points.** Desktop: settings nav item "AI" (between Library and Notifications). Phone: You › AI. A first-time hint in Unsorted and in the Add link dialog is **not** planned: discovery happens through the settings page and the landing page, so people who keep AI off never see AI.
 - **Free vs AI pack.** Same page for both; the meter shows the tier's limit and, at the limit, the date it resets (and later an upgrade button).
 - **Privacy.** Nothing is sent by the page itself. The switch is the consent; turning it off stops all jobs at once and keeps what was already generated (with "Delete AI data" to clear summaries, suggestions and embeddings, **Proposal**).
@@ -74,7 +80,7 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 ### F1. Tag and folder suggestions (#390)
 
 - **Problem.** Organising is the chore that makes people stop: most saved links sit in Unsorted with no tags.
-- **What the user sees.** Under the Tags and Folder fields of Add link and Edit link, a "Suggested" row of dashed chips: up to three of the user's **existing** tags and one existing folder, plus at most one clearly marked **new** tag. Tap a chip to apply it (it turns into a normal sage tag); × dismisses it; "Add all" applies the row. While the job runs, two skeleton chips; nothing at all when AI is off, nothing found, or the provider fails. On cards and rows, a link with pending suggestions shows nothing extra (no badge clutter); suggestions surface in the dialog and in "Tidy Unsorted" (F1a).
+- **What the user sees.** Under the Tags and Folder fields of Add link and Edit link, a "Suggested" row of dashed chips: up to three of the user's **existing** tags and one existing folder, plus at most one clearly marked **new** tag. Tap a chip to apply it (it turns into a normal sage tag); × dismisses it; "Add all" applies the row. While the job runs, two skeleton chips; nothing at all when AI is off, nothing found, or the provider fails. When the user has already picked a folder, the folder suggestion is only a quiet chip and is never applied for them; the same for tags. With **Apply automatically when I don't choose** on, a link saved to Unsorted (or with no tags) gets the suggestion applied in the background; a toast says so with Undo ("Moved to Videos"), and the folder or tag carries the AI mark ("Chosen by AI" in Edit link) until the user touches it. On cards and rows, a link with pending suggestions shows nothing extra (no badge clutter); suggestions surface in the dialog and in "Tidy Unsorted" (F1a).
 - **Entry points.** Desktop: Add link dialog (after the preview loads), Edit link dialog, Paste many (a suggested folder per link in the review list). Phone: the Add link sheet and the Edit sheet; the Share target quick form.
 - **Free vs AI pack.** Free: new links up to the monthly limit. AI pack: fair use, plus processing the existing library (backfill through the Batch API).
 - **Privacy.** Sent: URL, page title, the site's description, a size-limited page text excerpt (fetched through the SSRF guard), and the **names** of the user's tags and folders. Not sent: notes (unless "Include my notes" is on), other links, account data.
@@ -87,7 +93,7 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 ### F1b. Learn from corrections, then offer a rule (**Proposal**, extends #390 and #398)
 
 - **Problem.** AI that keeps guessing wrong is annoying, and AI that keeps guessing right for the same site is wasted money.
-- **What the user sees.** Shelfmark notices patterns in what the user accepts, dismisses and moves: links from one site that always end up in one folder or with one tag. Corrections feed the next suggestions for that user (the last few choices are passed as examples). After the same choice three times, a toast offers a plain rule: "Always put youtube.com links in Videos?" with "Create rule" and "Not now". A rule needs no model and always wins over AI.
+- **What the user sees.** Shelfmark notices patterns in what the user accepts, dismisses and moves: links from one site that always end up in one folder or with one tag. Corrections feed the next suggestions for that user (the last few choices are passed as examples). Learning only changes future suggestions: links already saved are never re-sorted on their own; to re-sort, the user opens Tidy Unsorted and reviews a preview. After the same choice three times, a toast offers a plain rule: "Always put youtube.com links in Videos?" with "Create rule" and "Not now". A rule needs no model and always wins over AI.
 - **Entry points.** The toast after a save or a move; the created rule shows in Settings › Library › Rules (#398).
 - **Free vs AI pack.** Free: rules are not AI.
 - **Privacy.** Only the user's own accept, dismiss and move events, kept with the user's data, never used for statistics.

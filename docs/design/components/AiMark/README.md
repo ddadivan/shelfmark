@@ -9,4 +9,4 @@ AiMark is the one sign that something was made by AI: a suggestion row, a summar
 - One mark everywhere. No second "AI" glyph, no robot, no wand.
 - Colour of its text: `text-muted` next to AI text, `text` in the settings switch row. Never `accent`, never a gradient, never animated on its own.
 - 14px next to 12–13px text, 16px in controls and settings, 18px in a settings tile, 32px in the empty-state tile (the largest size).
-- The mark leaves when the content becomes the user's: an edited summary has no mark.
+- The mark leaves when the content becomes the user's: an edited summary has no mark, an auto-applied folder or tag loses its «Chosen by AI» mark once the user edits it.

@@ -76,7 +76,7 @@ AI in Shelfmark is a quiet helper, off until the person turns it on (Settings �
 
 - **One mark.** The `spark` icon (AiMark) marks everything the model made. No gradients, no purple, no glow, no robot or wand: AI uses the graphite palette like the rest of the app.
 - **Suggested is dashed, yours is solid.** Suggestions are dashed, uncoloured chips (dashed already means "not there yet" in «Save this view»); accepting one turns it into the ordinary solid thing. Sage stays the person's own signal: AI never fills anything with `accent`.
-- **Nothing happens without a tap.** The model proposes; the person applies. Bulk applies always have Undo.
+- **The person keeps the choice.** The model proposes; the person applies. A folder or tags the person picked are never overridden or moved. Auto-apply exists only as an opt-in per feature (Settings › AI: Suggest, Apply automatically when I don't choose, Off), only fills what the person left empty, always shows the spark («Chosen by AI») and a toast with Undo. Learning from corrections changes future suggestions only; existing links are re-sorted only through Tidy with a preview.
 - **Quiet when absent.** Off, failed, nothing found: the space collapses, no placeholder, no error toast. Limits and outages are one muted line (AiLine) where the content would be, and a warning notice only in Settings › AI.
 - **AI text is the person's once edited.** An edited summary loses the mark and is never rewritten.
 - Copy names the result, not the technology: «Suggested», «Summary», «Suggesting…»; «AI» appears in settings, badges («Written by AI») and the privacy text, not on every control.

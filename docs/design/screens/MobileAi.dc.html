@@ -17,7 +17,7 @@ body{margin:0}
 a{color:inherit}a:hover{color:inherit}
 </style>
 </helmet>
-<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="min-height: 1800px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="min-height: 2600px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
 <section class="a-state">
 <h2 class="a-cap">1 · Add link sheet — suggestions</h2>
 <div style="width: 360px; height: 760px; overflow: hidden; position: relative; border-radius: 32px; background: var(--bg); box-shadow: var(--shadow-card), 0 0 0 1px var(--border); display: flex; flex-direction: column;">
@@ -121,7 +121,8 @@ a{color:inherit}a:hover{color:inherit}
 <div><h1 style="margin: 0; font-size: 30px; line-height: 36px; font-weight: 600;">AI</h1><p style="margin: 4px 0 0; font-size: 14px; line-height: 20px; color: var(--text-muted);">Help with organising, only when you want it.</p></div>
 <section class="sm-panel sm-settings" style="padding: 18px;">
 <div class="sm-setting sm-setting--top" style="flex-wrap: nowrap;"><div><div class="sm-setting__title" style="display: flex; align-items: center; gap: 8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4c.6 3.9 2.6 6 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5C8.4 10 10.4 7.9 11 4z"/><path d="M18.5 15v4M16.5 17h4"/></svg>Use AI in Shelfmark</div><div class="sm-setting__desc">Sends a link’s address, title and a short excerpt of the page to our AI provider to suggest tags and write summaries. Never used to train models, never used for statistics.</div></div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Use AI in Shelfmark"></button></div>
-<div class="sm-setting" style="flex-wrap: nowrap;"><div class="sm-setting__title">Tag and folder suggestions</div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Tag and folder suggestions"></button></div>
+<a href="#" class="sm-setting" style="flex-wrap: nowrap; text-decoration: none;"><div class="sm-setting__title">Folder</div><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 14px; color: var(--text-muted);">Suggest<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6l6 6-6 6"/></svg></span></a>
+<a href="#" class="sm-setting" style="flex-wrap: nowrap; text-decoration: none;"><div class="sm-setting__title">Tags</div><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 14px; color: var(--text-muted);">Suggest<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6l6 6-6 6"/></svg></span></a>
 <div class="sm-setting" style="flex-wrap: nowrap;"><div class="sm-setting__title">Summaries</div><button class="sm-switch" role="switch" aria-checked="true" aria-label="Summaries"></button></div>
 <div class="sm-setting" style="flex-wrap: nowrap;"><div class="sm-setting__title">Include my notes</div><button class="sm-switch" role="switch" aria-checked="false" aria-label="Include my notes"></button></div>
 </section>
@@ -160,9 +161,55 @@ a{color:inherit}a:hover{color:inherit}
 </div>
 <p class="a-note">One card per link; the apply bar is glass and floats where the tab bar is (the page is pushed, so the tab bar hides).</p>
 </section>
+<section class="a-state">
+<h2 class="a-cap">7 · You › AI › Folder</h2>
+<div style="width: 360px; height: 760px; overflow: hidden; position: relative; border-radius: 32px; background: var(--bg); box-shadow: var(--shadow-card), 0 0 0 1px var(--border); display: flex; flex-direction: column;">
+<div aria-hidden="true" style="padding: 20px 16px; display: flex; flex-direction: column; gap: 14px;">
+<div style="height: 38px; width: 160px; border-radius: 12px; background: var(--surface-hover);"></div>
+<div style="height: 220px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-card);"></div>
+<div style="height: 220px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-card);"></div>
+</div>
+<div class="sm-scrim" style="position: absolute; inset: 0; padding: 0; align-items: flex-end;">
+<div class="sm-sheet" role="dialog" aria-modal="true" aria-label="Folder" style="padding: 12px 16px 28px; gap: 14px;">
+<div class="sm-sheet__grip"></div>
+<div class="sm-sheet__head"><h2 class="sm-sheet__title">Folder</h2><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<div class="sm-radio-group" role="radiogroup" aria-label="Folder suggestions">
+<label class="sm-radio is-checked"><span class="sm-radio__dot"></span><span style="display: flex; flex-direction: column; gap: 2px;"><span class="sm-radio__title">Suggest</span><span class="sm-radio__desc">A chip you tap. Nothing changes until you do.</span></span></label>
+<label class="sm-radio"><span class="sm-radio__dot"></span><span style="display: flex; flex-direction: column; gap: 2px;"><span class="sm-radio__title">Apply automatically when I don’t choose</span><span class="sm-radio__desc">Only for links left in Unsorted. You see it and can undo it.</span></span></label>
+<label class="sm-radio"><span class="sm-radio__dot"></span><span style="display: flex; flex-direction: column; gap: 2px;"><span class="sm-radio__title">Off</span><span class="sm-radio__desc">No folder suggestions.</span></span></label>
+</div>
+<p class="a-note" style="font-size: 13px; line-height: 19px;">A folder you pick yourself is never changed by AI.</p>
+</div>
+</div>
+</div>
+<p class="a-note">Full labels on the phone. Same choice for Tags. Default Suggest.</p>
+</section>
+<section class="a-state">
+<h2 class="a-cap">8 · Automatic mode — applied with Undo</h2>
+<div style="width: 360px; height: 760px; overflow: hidden; position: relative; border-radius: 32px; background: var(--bg); box-shadow: var(--shadow-card), 0 0 0 1px var(--border); display: flex; flex-direction: column;">
+<div style="padding: 20px 16px 110px; display: flex; flex-direction: column; gap: 14px; overflow: hidden;">
+<h1 style="margin: 0; font-size: 30px; line-height: 36px; font-weight: 600;">All links</h1>
+<a href="#" class="sm-card" style="text-decoration: none;">
+<span class="sm-card__actions"><button class="sm-btn sm-btn--secondary sm-btn--icon sm-btn--sm" aria-label="More actions"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/></svg></button></span>
+<div class="sm-card__media"><div class="sm-card__img" style="background: var(--accent-bg);"><svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice" width="100%" height="100%" aria-hidden="true"><circle cx="132" cy="16" r="38" style="fill: var(--surface); opacity: .4"/><rect x="18" y="26" width="88" height="54" rx="10" style="fill: var(--surface); opacity: .75"/><rect x="30" y="38" width="44" height="7" rx="3.5" style="fill: var(--text-muted); opacity: .45"/><rect x="30" y="52" width="62" height="5" rx="2.5" style="fill: var(--text-muted); opacity: .3"/></svg></div></div>
+<div class="sm-card__body">
+<div class="sm-card__meta"><span class="sm-favicon">Y</span>youtube.com<span class="sm-card__date">Just now</span></div>
+<h2 class="sm-card__title" style="margin: 0;">NgRx SignalStore in practice: state for real apps</h2>
+
+<div class="sm-card__tags"><span class="sm-chip">angular</span></div>
+</div>
+</a>
+</div>
+<div style="position: absolute; left: 12px; right: 12px; bottom: 96px; display: flex; justify-content: center;"><div class="sm-toast" style="min-width: 0; max-width: 336px;" role="status"><span class="sm-fic fc-clay" style="width: 32px; height: 32px; border-radius: 10px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4M13 6l-2 12"/></svg></span><span class="sm-toast__text">Moved to Angular<small>Chosen by AI</small></span><button class="sm-toast__action">Undo</button><button class="sm-toast__close" aria-label="Dismiss"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button><span class="sm-toast__timer" style="--dur: 8s;" aria-hidden="true"></span></div></div>
+<nav aria-label="Main" class="sm-glass" style="position: absolute; left: 12px; right: 12px; bottom: 16px; height: 68px; border-radius: 26px; display: flex; align-items: center; justify-content: space-between; padding: 0 6px;">
+<a href="#" class="sm-tab is-on" aria-current="page"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="3"/><path d="M14 5v7l2-1.6 2 1.6V5"/></svg>Library</a><a href="#" class="sm-tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>Search</a><button class="sm-btn sm-btn--primary" aria-label="Add link" style="width: 56px; height: 56px; padding: 0; border-radius: 20px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button><a href="#" class="sm-tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h5.6a2 2 0 0 1 1.4.6l7.4 7.4a2 2 0 0 1 0 2.8l-5 5a2 2 0 0 1-2.8 0L4.6 12.4A2 2 0 0 1 4 11z"/><circle cx="8.5" cy="8.5" r="1.25" fill="currentColor" stroke="none"/></svg>Tags</a><a href="#" class="sm-tab"><span class="sm-avatar sm-avatar--sm">DD</span>You</a>
+</nav>
+</div>
+<p class="a-note">Only when the user left the folder empty. The toast sits 12px above the tab bar; Undo puts the link back in Unsorted.</p>
+</section>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2600}}'>
 class Component extends DCLogic {
   renderVals() {
     return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
