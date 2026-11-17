@@ -173,4 +173,32 @@ describe('MCP server authentication', () => {
     }
     await post(bearer()).send(PING).expect(429);
   });
+
+  it('initializes with a negotiated version and refuses an unsupported version header', async () => {
+    const res = await post(bearer())
+      .send({
+        jsonrpc: '2.0',
+        id: 0,
+        method: 'initialize',
+        params: { protocolVersion: '2024-11-05' },
+      })
+      .expect(200);
+    expect(res.body.result.protocolVersion).toBe('2025-11-25');
+    expect(res.body.result.capabilities).toEqual({ tools: { listChanged: false } });
+    expect(res.headers['mcp-session-id']).toBeUndefined();
+
+    await post(bearer()).set('MCP-Protocol-Version', '2025-06-18').send(PING).expect(200);
+    const refused = await post(bearer()).set('MCP-Protocol-Version', '1999-01-01').send(PING);
+    expect(refused.status).toBe(400);
+    expect(Object.keys(refused.body).sort()).toEqual(API_ERROR_KEYS);
+  });
+
+  it('refuses batches with -32600', async () => {
+    const res = await post(bearer()).send([PING, PING]).expect(200);
+    expect(res.body).toEqual({
+      jsonrpc: '2.0',
+      id: null,
+      error: { code: -32600, message: 'Batches are not supported' },
+    });
+  });
 });

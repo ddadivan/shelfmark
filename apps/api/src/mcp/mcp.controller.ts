@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Delete,
   Get,
@@ -12,6 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiExcludeEndpoint,
   ApiForbiddenResponse,
   ApiOkResponse,
@@ -24,8 +26,10 @@ import type { Response } from 'express';
 import { AllowAnonymous } from '../common/auth/allow-anonymous.decorator';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
+import { isSupportedProtocolHeader } from './json-rpc/protocol-version';
 import { McpTokenGuard } from './mcp-token.guard';
 import { McpServerService } from './mcp-server.service';
+import { MCP_PROTOCOL_VERSION_HEADER } from './models/mcp-protocol-version-header.const';
 import type { McpRequest } from './models/mcp-request.interface';
 
 const ALLOW_HEADER = 'Allow';
@@ -53,13 +57,18 @@ export class McpController {
       'One JSON-RPC 2.0 message per request with `Authorization: Bearer smk_live_…`. Answers 200 with a JSON-RPC response, or 202 for notifications.',
   })
   @ApiOkResponse({ description: 'A JSON-RPC response' })
+  @ApiBadRequestResponse({ description: 'Unsupported MCP-Protocol-Version header' })
   @ApiUnauthorizedResponse({ description: 'Missing, malformed, unknown or revoked token' })
   @ApiForbiddenResponse({ description: 'Not Pro, a demo account, or a foreign Origin' })
   @ApiTooManyRequestsResponse({ description: 'Rate limit or daily call cap reached' })
   async handle(@Req() req: McpRequest, @Res() res: Response): Promise<void> {
+    const principal = req.mcp;
     // Set by McpTokenGuard; a missing principal means the guard did not run: fail closed.
-    if (!req.mcp) throw new UnauthorizedException();
-    const answer = await this.server.handle(req.body);
+    if (!principal) throw new UnauthorizedException();
+    if (!isSupportedProtocolHeader(req.headers[MCP_PROTOCOL_VERSION_HEADER])) {
+      throw new BadRequestException('Unsupported MCP-Protocol-Version');
+    }
+    const answer = await this.server.handle(req.body, principal);
     if (answer.body === null) {
       res.status(answer.status).end();
       return;

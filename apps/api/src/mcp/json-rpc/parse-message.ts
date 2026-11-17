@@ -4,15 +4,12 @@ import type { JsonRpcId } from '../models/json-rpc-id.type';
 import { JSON_RPC_MESSAGE_KIND } from '../models/json-rpc-message-kind.const';
 import type { ParsedMessage } from '../models/parsed-message.type';
 import { jsonRpcError } from './errors';
+import { isJsonObject } from './is-json-object';
 
 const JSON_RPC_VERSION = '2.0';
 
 function isId(value: unknown): value is JsonRpcId {
   return typeof value === 'string' || (typeof value === 'number' && Number.isSafeInteger(value));
-}
-
-function isObject(value: unknown): value is Record<string, unknown> {
-  return isRecord(value) && !Array.isArray(value);
 }
 
 function invalid(id: JsonRpcId | null, code: number, message: string): ParsedMessage {
@@ -52,7 +49,7 @@ export function parseMessage(raw: string): ParsedMessage {
     return invalid(id, JSON_RPC_ERROR_CODE.InvalidRequest, 'Invalid request');
   }
   const params = value['params'];
-  if (params !== undefined && !isObject(params)) {
+  if (params !== undefined && !isJsonObject(params)) {
     return invalid(id, JSON_RPC_ERROR_CODE.InvalidParams, 'Invalid params');
   }
   if (id === null) return { kind: JSON_RPC_MESSAGE_KIND.Notification, method };

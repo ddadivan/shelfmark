@@ -6,6 +6,7 @@ import { McpServerService } from './mcp-server.service';
 import { McpTokenGuard } from './mcp-token.guard';
 import { McpTokensController } from './mcp-tokens.controller';
 import { MCP_AUTH_RESOLVER } from './models/mcp-auth-resolver.token';
+import { McpToolRegistry } from './tools/mcp-tool.registry';
 import { McpTokensService } from './tokens/mcp-tokens.service';
 import { McpUsageService } from './usage/mcp-usage.service';
 
@@ -21,6 +22,7 @@ import { McpUsageService } from './usage/mcp-usage.service';
     // The OAuth seam (ADR 0053 point 8): personal tokens are the only resolver today.
     { provide: MCP_AUTH_RESOLVER, useClass: PersonalTokenResolver },
     McpTokenGuard,
+    McpToolRegistry,
     McpDispatcher,
     McpServerService,
   ],
