@@ -72,7 +72,13 @@
 
 <ng-template #actions>
   <ui-button variant="secondary" (click)="back()">{{ 'ai.tidy.cancel' | transloco }}</ui-button>
-  <ui-button variant="primary" wrap [disabled]="store.applyCount() === 0">
+  <ui-button
+    variant="primary"
+    wrap
+    [disabled]="store.applyCount() === 0"
+    [loading]="store.applying()"
+    (click)="store.apply()"
+  >
     {{ pluralKey('ai.tidy.apply', store.applyCount()) | transloco: { count: store.applyCount() } }}
   </ui-button>
 </ng-template>

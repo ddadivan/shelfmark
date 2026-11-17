@@ -19,6 +19,7 @@ import { FOLDERS_API } from '../../../links/models/folders-api.const';
 import { AI_API } from '../../models/ai-api.const';
 import { AI_SETTINGS_DEFAULT } from '../../models/ai-settings-default.const';
 import { AiSettingsStore } from '../../services/ai-settings.store';
+import { TidyApplyService } from '../../services/tidy-apply.service';
 import TidyPage from './tidy.page';
 import { tidyAiOn } from './tidy.guard';
 
@@ -27,12 +28,14 @@ async function setup(items = tidyItems(), on = true) {
     aiSettingsResponse(on ? {} : { settings: { ...AI_SETTINGS_DEFAULT, enabled: false } }),
   );
   api.getTidy.mockReturnValue(of({ items, total: items.length }));
+  const applier = { apply: vi.fn<TidyApplyService['apply']>(async () => true) };
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
       { provide: AI_API, useValue: api },
       { provide: FOLDERS_API, useValue: { list: () => of(MOCK_LIST_FOLDERS_RESPONSE) } },
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+      { provide: TidyApplyService, useValue: applier },
     ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -48,7 +51,14 @@ async function setup(items = tidyItems(), on = true) {
   }
   await fixture.whenStable();
   const loader = TestbedHarnessEnvironment.loader(fixture);
-  return { api, fixture, loader, navigate, element: fixture.nativeElement as HTMLElement };
+  return {
+    api,
+    applier,
+    fixture,
+    loader,
+    navigate,
+    element: fixture.nativeElement as HTMLElement,
+  };
 }
 
 describe('TidyPage', () => {
@@ -80,6 +90,18 @@ describe('TidyPage', () => {
     expect(await pasta.isAccepted()).toBe(false);
     expect(await pasta.getAriaLabel()).toBe('Create and add tag pasta, New');
     expect(await loader.getHarness(UiButtonHarness.with({ text: 'Apply to 1 link' }))).toBeTruthy();
+  });
+
+  it('applies the selection in one run from the one primary button', async () => {
+    const { applier, loader } = await setup();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Apply to 2 links' }))).click();
+    expect(applier.apply).toHaveBeenCalledWith(
+      [
+        { linkId: TIDY_LINK.id, suggestionIds: ['f1', 't1'] },
+        { linkId: 'l2', suggestionIds: ['n2'] },
+      ],
+      expect.any(Function),
+    );
   });
 
   it('skips a link with Undo skip, and dismisses a left-out chip', async () => {

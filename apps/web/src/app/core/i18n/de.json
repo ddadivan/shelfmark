@@ -3101,7 +3101,27 @@
         "title": "Nichts aufzuräumen",
         "text": "Jeder Link hier hat entweder noch keine Vorschläge oder du hast ihn schon einsortiert. Neue Links bekommen innerhalb einer Minute Vorschläge.",
         "back": "Zurück zu „Ohne Ordner“"
-      }
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} Link aufgeräumt",
+          "other": "{{count}} Links aufgeräumt"
+        },
+        "folders": {
+          "one": "In {{count}} Ordner verschoben",
+          "other": "In {{count}} Ordner verschoben"
+        },
+        "tags": {
+          "one": "{{count}} Tag hinzugefügt",
+          "other": "{{count}} Tags hinzugefügt"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Rückgängig",
+        "failed": "Links konnten nicht aufgeräumt werden",
+        "failedDetail": "Es wurde nichts geändert. Versuche es noch einmal."
+      },
+      "undone": "Aufräumen rückgängig gemacht",
+      "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden"
     }
   }
 }

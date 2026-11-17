@@ -7,6 +7,7 @@ import { TIDY_LINK, tidyItems } from '../../../../testing/tidy-items';
 import { FoldersStore } from '../../../stores/folders.store';
 import { FOLDERS_API } from '../../links/models/folders-api.const';
 import { AI_API } from '../models/ai-api.const';
+import { TidyApplyService } from './tidy-apply.service';
 import { TidyStore } from './tidy.store';
 
 const LINK = TIDY_LINK;
@@ -14,18 +15,20 @@ const TIDY_ITEMS = tidyItems();
 
 async function setup(total = 2) {
   const api = fakeAiApi();
+  const applier = { apply: vi.fn<TidyApplyService['apply']>(async () => true) };
   api.getTidy.mockReturnValue(of({ items: TIDY_ITEMS, total }));
   TestBed.configureTestingModule({
     providers: [
       TidyStore,
       { provide: AI_API, useValue: api },
       { provide: FOLDERS_API, useValue: { list: () => of(MOCK_LIST_FOLDERS_RESPONSE) } },
+      { provide: TidyApplyService, useValue: applier },
     ],
   });
   await TestBed.inject(FoldersStore).load();
   const store = TestBed.inject(TidyStore);
   await store.load();
-  return { api, store };
+  return { api, applier, store };
 }
 
 describe('TidyStore', () => {
@@ -95,10 +98,38 @@ describe('TidyStore', () => {
   it('reads as empty when the list fails to load', async () => {
     const api = fakeAiApi();
     api.getTidy.mockReturnValue(throwError(() => new Error('down')));
-    TestBed.configureTestingModule({ providers: [TidyStore, { provide: AI_API, useValue: api }] });
+    TestBed.configureTestingModule({
+      providers: [
+        TidyStore,
+        { provide: AI_API, useValue: api },
+        { provide: TidyApplyService, useValue: {} },
+      ],
+    });
     const store = TestBed.inject(TidyStore);
     await store.load();
     expect(store.loaded()).toBe(true);
     expect(store.empty()).toBe(true);
+  });
+
+  it('applies what is selected in one run and reads the list again, also after Undo', async () => {
+    const { api, applier, store } = await setup();
+    store.toggle('t1', false);
+    api.getTidy.mockClear();
+    await store.apply();
+    expect(applier.apply).toHaveBeenCalledWith(
+      [
+        { linkId: LINK.id, suggestionIds: ['f1'] },
+        { linkId: 'l2', suggestionIds: ['n2'] },
+      ],
+      expect.any(Function),
+    );
+    expect(store.applying()).toBe(false);
+    expect(api.getTidy).toHaveBeenCalledTimes(1);
+    applier.apply.mock.calls[0]?.[1]?.();
+    expect(api.getTidy).toHaveBeenCalledTimes(2);
+
+    applier.apply.mockResolvedValueOnce(false);
+    await store.apply();
+    expect(api.getTidy).toHaveBeenCalledTimes(2);
   });
 });

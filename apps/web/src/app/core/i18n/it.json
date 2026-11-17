@@ -3168,7 +3168,30 @@
         "title": "Niente da riordinare",
         "text": "Ogni link qui non ha ancora suggerimenti oppure l’hai già sistemato. I nuovi link ricevono suggerimenti entro un minuto.",
         "back": "Torna a «Senza cartella»"
-      }
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} link riordinato",
+          "many": "{{count}} link riordinati",
+          "other": "{{count}} link riordinati"
+        },
+        "folders": {
+          "one": "Spostati in {{count}} cartella",
+          "many": "Spostati in {{count}} cartelle",
+          "other": "Spostati in {{count}} cartelle"
+        },
+        "tags": {
+          "one": "{{count}} tag aggiunto",
+          "many": "{{count}} tag aggiunti",
+          "other": "{{count}} tag aggiunti"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Annulla",
+        "failed": "Impossibile riordinare i link",
+        "failedDetail": "Non è cambiato nulla. Riprova."
+      },
+      "undone": "Riordino annullato",
+      "undoFailed": "Impossibile annullare il riordino"
     }
   }
 }

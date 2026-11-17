@@ -3168,7 +3168,30 @@
         "title": "Nada que ordenar",
         "text": "Cada enlace de aquí aún no tiene sugerencias o ya lo ordenaste. Los enlaces nuevos reciben sugerencias en menos de un minuto.",
         "back": "Volver a «Sin carpeta»"
-      }
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} enlace ordenado",
+          "many": "{{count}} enlaces ordenados",
+          "other": "{{count}} enlaces ordenados"
+        },
+        "folders": {
+          "one": "Movidos a {{count}} carpeta",
+          "many": "Movidos a {{count}} carpetas",
+          "other": "Movidos a {{count}} carpetas"
+        },
+        "tags": {
+          "one": "{{count}} etiqueta añadida",
+          "many": "{{count}} etiquetas añadidas",
+          "other": "{{count}} etiquetas añadidas"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Deshacer",
+        "failed": "No se pudieron ordenar los enlaces",
+        "failedDetail": "No se cambió nada. Inténtalo de nuevo."
+      },
+      "undone": "Orden deshecho",
+      "undoFailed": "No se pudo deshacer el orden"
     }
   }
 }

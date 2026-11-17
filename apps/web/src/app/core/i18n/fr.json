@@ -3168,7 +3168,30 @@
         "title": "Rien à ranger",
         "text": "Chaque lien ici n’a pas encore de suggestion ou vous l’avez déjà classé. Les nouveaux liens reçoivent des suggestions en moins d’une minute.",
         "back": "Retour à « Sans dossier »"
-      }
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} lien rangé",
+          "many": "{{count}} liens rangés",
+          "other": "{{count}} liens rangés"
+        },
+        "folders": {
+          "one": "Déplacé dans {{count}} dossier",
+          "many": "Déplacés dans {{count}} dossiers",
+          "other": "Déplacés dans {{count}} dossiers"
+        },
+        "tags": {
+          "one": "{{count}} tag ajouté",
+          "many": "{{count}} tags ajoutés",
+          "other": "{{count}} tags ajoutés"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Annuler",
+        "failed": "Impossible de ranger les liens",
+        "failedDetail": "Rien n’a été modifié. Réessayez."
+      },
+      "undone": "Rangement annulé",
+      "undoFailed": "Impossible d’annuler le rangement"
     }
   }
 }

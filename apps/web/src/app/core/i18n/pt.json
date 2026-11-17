@@ -3168,7 +3168,30 @@
         "title": "Nada para organizar",
         "text": "Cada link aqui ainda não tem sugestões ou você já o organizou. Links novos recebem sugestões em menos de um minuto.",
         "back": "Voltar para “Sem pasta”"
-      }
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} link organizado",
+          "many": "{{count}} links organizados",
+          "other": "{{count}} links organizados"
+        },
+        "folders": {
+          "one": "Movidos para {{count}} pasta",
+          "many": "Movidos para {{count}} pastas",
+          "other": "Movidos para {{count}} pastas"
+        },
+        "tags": {
+          "one": "{{count}} tag adicionada",
+          "many": "{{count}} tags adicionadas",
+          "other": "{{count}} tags adicionadas"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Desfazer",
+        "failed": "Não foi possível organizar os links",
+        "failedDetail": "Nada foi alterado. Tente de novo."
+      },
+      "undone": "Organização desfeita",
+      "undoFailed": "Não foi possível desfazer a organização"
     }
   }
 }
