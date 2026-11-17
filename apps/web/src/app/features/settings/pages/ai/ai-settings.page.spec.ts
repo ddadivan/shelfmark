@@ -148,6 +148,8 @@ describe('AiSettingsPage', () => {
       'AI features',
       'Your AI data',
     ]);
+    // Privacy and data links here: /settings/ai#ai-data.
+    expect(root.querySelector('#ai-data h2')?.textContent?.trim()).toBe('Your AI data');
     expect(await axeViolations(root)).toEqual([]);
   });
 

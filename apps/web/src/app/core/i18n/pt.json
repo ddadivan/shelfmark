@@ -541,7 +541,8 @@
     "dont": {
       "title": "O que não fazemos",
       "sell": "Não vendemos nem compartilhamos seus dados e não mostramos anúncios.",
-      "read": "Não usamos o conteúdo dos seus links para estatísticas: só contagens (links, pastas, avaliações), nunca endereços ou títulos. Seus links ficam no nosso banco de dados para que o app possa mostrá-los, buscá-los e gerar prévias; só o autor do serviço tem acesso a ele."
+      "read": "Não usamos o conteúdo dos seus links para estatísticas: só contagens (links, pastas, avaliações), nunca endereços ou títulos. Seus links ficam no nosso banco de dados para que o app possa mostrá-los, buscá-los e gerar prévias; só o autor do serviço tem acesso a ele.",
+      "training": "Não usamos seus links, notas ou resumos para treinar modelos de IA, nem deixamos nosso provedor de IA fazer isso."
     },
     "previews": {
       "title": "Prévias de links",
@@ -564,6 +565,30 @@
     "where": {
       "title": "Onde fica",
       "hosting": "A API roda na Vercel na região fra1 (Frankfurt) e o banco de dados na Neon em eu-central-1 (Frankfurt). Os arquivos estáticos do app são servidos pela rede global da Vercel."
+    },
+    "ai": {
+      "title": "Recursos de IA (opcionais)",
+      "intro": "A IA fica desligada até você ativá-la em Configurações › IA. Quando ligada, ela sugere tags e pastas e escreve resumos curtos. Tudo o que ela cria leva uma pequena faísca e pode ser impreciso; nada é aplicado a menos que você aceite ou escolha o modo automático.",
+      "processor": {
+        "term": "Quem processa:",
+        "text": "[PROVIDER], como nosso operador, apenas para gerar o resultado que você pediu. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+      },
+      "sent": {
+        "term": "O que é enviado:",
+        "text": "o endereço, o título, a descrição e o texto extraído da página de um link, e os nomes das suas tags e pastas. Suas notas só se você ativar \"Incluir minhas notas\". Nunca seus outros links, os dados da sua conta ou dados de outras pessoas."
+      },
+      "kept": {
+        "term": "Por quanto tempo fica guardado:",
+        "text": "o provedor guarda a solicitação por no máximo [N] dias e não a usa para treinamento. Os resultados (tags, resumos) ficam salvos com seus links e são excluídos com eles."
+      },
+      "counted": {
+        "term": "O que contamos:",
+        "text": "apenas o número de solicitações de IA por conta, para seu limite mensal. Como em todo o Shelfmark, as estatísticas usam só contagens, nunca o que você salvou."
+      },
+      "off": {
+        "term": "Como desligar:",
+        "text": "desligue um recurso ou a IA inteira em Configurações › IA; as solicitações param na hora. \"Excluir dados de IA\" ali remove todos os resumos e sugestões da IA."
+      }
     },
     "retention": {
       "title": "Por quanto tempo guardamos",
@@ -1472,6 +1497,16 @@
       },
       "kept": {
         "title": "O que guardamos"
+      },
+      "ai": {
+        "title": "Recursos de IA",
+        "body": "A IA é opcional e fica desligada até você ativá-la. Quando ligada, o endereço, o título e o texto da página de um link vão para nosso provedor de IA para sugerir tags e pastas e escrever resumos. Nunca usados para treinar modelos nem para estatísticas.",
+        "delete": {
+          "label": "Excluir dados de IA",
+          "hint": "Remove todos os resumos e sugestões da IA, em Configurações › IA",
+          "action": "Abrir",
+          "actionLabel": "Abrir \"Excluir dados de IA\" em Configurações › IA"
+        }
       }
     },
     "footer": {

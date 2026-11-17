@@ -541,7 +541,8 @@
     "dont": {
       "title": "Lo que no hacemos",
       "sell": "No vendemos ni compartimos tus datos y no mostramos anuncios.",
-      "read": "No usamos el contenido de tus enlaces para estadísticas: solo cifras (enlaces, carpetas, valoraciones), nunca direcciones ni títulos. Tus enlaces se guardan en nuestra base de datos para que la app pueda mostrarlos, buscarlos y generar vistas previas; solo el autor del servicio tiene acceso a ella."
+      "read": "No usamos el contenido de tus enlaces para estadísticas: solo cifras (enlaces, carpetas, valoraciones), nunca direcciones ni títulos. Tus enlaces se guardan en nuestra base de datos para que la app pueda mostrarlos, buscarlos y generar vistas previas; solo el autor del servicio tiene acceso a ella.",
+      "training": "No usamos tus enlaces, notas ni resúmenes para entrenar modelos de IA, ni dejamos que nuestro proveedor de IA lo haga."
     },
     "previews": {
       "title": "Vistas previas de enlaces",
@@ -564,6 +565,30 @@
     "where": {
       "title": "Dónde se aloja",
       "hosting": "La API funciona en Vercel en la región fra1 (Fráncfort) y la base de datos en Neon en eu-central-1 (Fráncfort). Los archivos estáticos de la app se sirven desde la red global de Vercel."
+    },
+    "ai": {
+      "title": "Funciones de IA (opcionales)",
+      "intro": "La IA está desactivada hasta que la actives en Ajustes › IA. Cuando está activada, sugiere etiquetas y carpetas y escribe resúmenes breves. Todo lo que crea lleva una pequeña chispa y puede ser inexacto; no se aplica nada salvo que lo aceptes o elijas el modo automático.",
+      "processor": {
+        "term": "Quién lo procesa:",
+        "text": "[PROVIDER], como nuestro encargado del tratamiento, solo para producir el resultado que pediste. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+      },
+      "sent": {
+        "term": "Qué se envía:",
+        "text": "la dirección, el título, la descripción y el texto extraído de la página de un enlace, y los nombres de tus etiquetas y carpetas. Tus notas solo si activas «Incluir mis notas». Nunca tus otros enlaces, los datos de tu cuenta ni datos de otras personas."
+      },
+      "kept": {
+        "term": "Cuánto tiempo se guarda:",
+        "text": "el proveedor guarda la solicitud [N] días como máximo y no la usa para entrenar. Los resultados (etiquetas, resúmenes) se guardan con tus enlaces y se eliminan con ellos."
+      },
+      "counted": {
+        "term": "Qué contamos:",
+        "text": "solo el número de solicitudes de IA por cuenta, para tu límite mensual. Como en todo Shelfmark, las estadísticas usan solo cifras, nunca lo que guardaste."
+      },
+      "off": {
+        "term": "Desactivarla:",
+        "text": "desactiva una función o toda la IA en Ajustes › IA; las solicitudes se detienen al instante. «Eliminar datos de IA» allí borra todos los resúmenes y sugerencias de la IA."
+      }
     },
     "retention": {
       "title": "Cuánto tiempo lo conservamos",
@@ -1472,6 +1497,16 @@
       },
       "kept": {
         "title": "Lo que guardamos"
+      },
+      "ai": {
+        "title": "Funciones de IA",
+        "body": "La IA es opcional y está desactivada hasta que la actives. Cuando está activada, la dirección, el título y el texto de la página de un enlace se envían a nuestro proveedor de IA para sugerir etiquetas y carpetas y escribir resúmenes. Nunca se usan para entrenar modelos ni para estadísticas.",
+        "delete": {
+          "label": "Eliminar datos de IA",
+          "hint": "Borra todos los resúmenes y sugerencias de la IA, en Ajustes › IA",
+          "action": "Abrir",
+          "actionLabel": "Abrir «Eliminar datos de IA» en Ajustes › IA"
+        }
       }
     },
     "footer": {

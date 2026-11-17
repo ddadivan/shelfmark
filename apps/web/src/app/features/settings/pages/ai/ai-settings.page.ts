@@ -34,6 +34,7 @@ import {
 } from '@shelfmark/ui';
 import { activeLang } from '../../../../core/i18n/active-lang';
 import { LANGUAGE_NAMES } from '../../../../core/i18n/models/language-names.const';
+import { FragmentTargetDirective } from '../../../../core/layout/fragment-target.directive';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { AiUsageSectionComponent } from '../../../ai/components/ai-usage-section/ai-usage-section.component';
@@ -44,6 +45,7 @@ import { AiTickService } from '../../../ai/services/ai-tick.service';
 import { isAiFeatureMode, isAiSummaryLanguage } from '../../../ai/utils/ai-setting-values';
 import { PRIVACY_AI_FRAGMENT } from '../../../privacy/models/privacy-ai-fragment.const';
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
+import { AI_DATA_FRAGMENT } from '../../models/ai-data-fragment.const';
 import { SETTINGS_PATH } from '../../models/settings-path.const';
 
 /**
@@ -61,6 +63,7 @@ import { SETTINGS_PATH } from '../../models/settings-path.const';
     AiLineComponent,
     AiUsageSectionComponent,
     ButtonComponent,
+    FragmentTargetDirective,
     NoticeComponent,
     SegmentedControlComponent,
     SelectComponent,
@@ -85,6 +88,7 @@ export default class AiSettingsPage {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly AI_MODE_LABEL_KEYS = AI_MODE_LABEL_KEYS;
+  protected readonly AI_DATA_FRAGMENT = AI_DATA_FRAGMENT;
   protected readonly privacyHref = `/${APP_PATH.Privacy}#${PRIVACY_AI_FRAGMENT}`;
 
   /** The folder and tags rows: their keys, current mode and phone page. */

@@ -529,7 +529,8 @@
     "dont": {
       "title": "Was wir nicht tun",
       "sell": "Wir verkaufen oder teilen deine Daten nicht und zeigen keine Werbung.",
-      "read": "Wir nutzen den Inhalt deiner Links nicht für Statistiken: nur Anzahlen (Links, Ordner, Bewertungen), nie Adressen oder Titel. Deine Links liegen in unserer Datenbank, damit die App sie anzeigen, durchsuchen und mit Vorschau zeigen kann; Zugriff darauf hat nur der Autor des Dienstes."
+      "read": "Wir nutzen den Inhalt deiner Links nicht für Statistiken: nur Anzahlen (Links, Ordner, Bewertungen), nie Adressen oder Titel. Deine Links liegen in unserer Datenbank, damit die App sie anzeigen, durchsuchen und mit Vorschau zeigen kann; Zugriff darauf hat nur der Autor des Dienstes.",
+      "training": "Wir nutzen deine Links, Notizen und Zusammenfassungen nicht zum Training von KI-Modellen und erlauben das auch unserem KI-Anbieter nicht."
     },
     "previews": {
       "title": "Link-Vorschauen",
@@ -552,6 +553,30 @@
     "where": {
       "title": "Wo die Daten liegen",
       "hosting": "Die API läuft bei Vercel in der Region fra1 (Frankfurt), die Datenbank bei Neon in eu-central-1 (Frankfurt). Die statischen Dateien der App kommen aus dem globalen Netzwerk von Vercel."
+    },
+    "ai": {
+      "title": "KI-Funktionen (optional)",
+      "intro": "KI ist aus, bis du sie unter Einstellungen › KI einschaltest. Ist sie an, schlägt sie Tags und Ordner vor und schreibt kurze Zusammenfassungen. Alles, was sie erstellt, trägt einen kleinen Funken und kann ungenau sein; nichts wird übernommen, solange du es nicht annimmst oder den automatischen Modus wählst.",
+      "processor": {
+        "term": "Wer es verarbeitet:",
+        "text": "[PROVIDER] als unser Auftragsverarbeiter, nur um das Ergebnis zu erzeugen, das du angefragt hast. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+      },
+      "sent": {
+        "term": "Was gesendet wird:",
+        "text": "Adresse, Titel, Beschreibung und aus der Seite extrahierter Text eines Links sowie die Namen deiner Tags und Ordner. Deine Notizen nur, wenn du „Meine Notizen einbeziehen“ einschaltest. Nie deine anderen Links, deine Kontodaten oder Daten anderer Personen."
+      },
+      "kept": {
+        "term": "Wie lange es gespeichert wird:",
+        "text": "Der Anbieter bewahrt die Anfrage höchstens [N] Tage auf und nutzt sie nicht zum Training. Die Ergebnisse (Tags, Zusammenfassungen) werden mit deinen Links gespeichert und mit ihnen gelöscht."
+      },
+      "counted": {
+        "term": "Was wir zählen:",
+        "text": "Nur die Zahl der KI-Anfragen pro Konto, für dein Monatslimit. Wie überall in Shelfmark nutzen Statistiken nur Zahlen, nie das, was du gespeichert hast."
+      },
+      "off": {
+        "term": "Ausschalten:",
+        "text": "Schalte unter Einstellungen › KI eine Funktion oder die KI ganz aus; Anfragen enden sofort. „KI-Daten löschen“ dort entfernt jede Zusammenfassung und jeden Vorschlag der KI."
+      }
     },
     "retention": {
       "title": "Wie lange wir sie aufbewahren",
@@ -1450,6 +1475,16 @@
       },
       "kept": {
         "title": "Was wir speichern"
+      },
+      "ai": {
+        "title": "KI-Funktionen",
+        "body": "KI ist optional und aus, bis du sie einschaltest. Ist sie an, gehen Adresse, Titel und Seitentext eines Links an unseren KI-Anbieter, um Tags und Ordner vorzuschlagen und Zusammenfassungen zu schreiben. Nie zum Training von Modellen genutzt, nie für Statistiken.",
+        "delete": {
+          "label": "KI-Daten löschen",
+          "hint": "Entfernt jede Zusammenfassung und jeden Vorschlag der KI, unter Einstellungen › KI",
+          "action": "Öffnen",
+          "actionLabel": "„KI-Daten löschen“ unter Einstellungen › KI öffnen"
+        }
       }
     },
     "footer": {

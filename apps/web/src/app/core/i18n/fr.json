@@ -541,7 +541,8 @@
     "dont": {
       "title": "Ce que nous ne faisons pas",
       "sell": "Nous ne vendons ni ne partageons vos données et n’affichons pas de publicité.",
-      "read": "Nous n’utilisons pas le contenu de vos liens pour les statistiques : seulement des nombres (liens, dossiers, notes), jamais d’adresses ni de titres. Vos liens sont stockés dans notre base de données pour que l’app puisse les afficher, les rechercher et en faire un aperçu ; seul l’auteur du service y a accès."
+      "read": "Nous n’utilisons pas le contenu de vos liens pour les statistiques : seulement des nombres (liens, dossiers, notes), jamais d’adresses ni de titres. Vos liens sont stockés dans notre base de données pour que l’app puisse les afficher, les rechercher et en faire un aperçu ; seul l’auteur du service y a accès.",
+      "training": "Nous n’utilisons pas vos liens, notes ou résumés pour entraîner des modèles d’IA, et nous ne laissons pas notre fournisseur d’IA le faire."
     },
     "previews": {
       "title": "Aperçus des liens",
@@ -564,6 +565,30 @@
     "where": {
       "title": "Où sont les données",
       "hosting": "L’API tourne sur Vercel dans la région fra1 (Francfort) et la base de données sur Neon dans eu-central-1 (Francfort). Les fichiers statiques de l’application sont servis par le réseau mondial de Vercel."
+    },
+    "ai": {
+      "title": "Fonctions d’IA (facultatives)",
+      "intro": "L’IA reste désactivée tant que vous ne l’activez pas dans Paramètres › IA. Une fois activée, elle suggère des tags et des dossiers et rédige de courts résumés. Tout ce qu’elle produit porte une petite étincelle et peut être inexact ; rien n’est appliqué sans votre accord ou le mode automatique.",
+      "processor": {
+        "term": "Qui les traite :",
+        "text": "[PROVIDER], en tant que sous-traitant, uniquement pour produire le résultat demandé. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+      },
+      "sent": {
+        "term": "Ce qui est envoyé :",
+        "text": "l’adresse, le titre, la description et le texte extrait de la page d’un lien, ainsi que les noms de vos tags et dossiers. Vos notes seulement si vous activez « Inclure mes notes ». Jamais vos autres liens, les détails de votre compte ni les données d’autres personnes."
+      },
+      "kept": {
+        "term": "Durée de conservation :",
+        "text": "le fournisseur conserve la requête [N] jours au maximum et ne l’utilise pas pour l’entraînement. Les résultats (tags, résumés) sont stockés avec vos liens et supprimés avec eux."
+      },
+      "counted": {
+        "term": "Ce que nous comptons :",
+        "text": "uniquement le nombre de requêtes d’IA par compte, pour votre limite mensuelle. Comme partout dans Shelfmark, les statistiques n’utilisent que des nombres, jamais ce que vous avez enregistré."
+      },
+      "off": {
+        "term": "Désactiver :",
+        "text": "désactivez une fonction ou l’IA entière dans Paramètres › IA ; les requêtes s’arrêtent aussitôt. « Supprimer les données d’IA » y retire tous les résumés et suggestions de l’IA."
+      }
     },
     "retention": {
       "title": "Durée de conservation",
@@ -1472,6 +1497,16 @@
       },
       "kept": {
         "title": "Ce que nous conservons"
+      },
+      "ai": {
+        "title": "Fonctions d’IA",
+        "body": "L’IA est facultative et désactivée tant que vous ne l’activez pas. Une fois activée, l’adresse, le titre et le texte de la page d’un lien sont envoyés à notre fournisseur d’IA pour suggérer des tags et des dossiers et rédiger des résumés. Jamais utilisés pour entraîner des modèles ni pour des statistiques.",
+        "delete": {
+          "label": "Supprimer les données d’IA",
+          "hint": "Retire tous les résumés et suggestions de l’IA, dans Paramètres › IA",
+          "action": "Ouvrir",
+          "actionLabel": "Ouvrir « Supprimer les données d’IA » dans Paramètres › IA"
+        }
       }
     },
     "footer": {

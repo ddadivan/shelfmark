@@ -74,6 +74,19 @@ describe('PrivacyDataPage', () => {
     expect(root.textContent).toContain("We don't sell or share your data");
   });
 
+  it('explains what AI sends and links Delete AI data in Settings › AI (#389)', async () => {
+    const { root, harness } = await setup();
+    const link = root.querySelector<HTMLElement>('a[href="/settings/ai#ai-data"]');
+
+    expect(root.textContent).toContain('AI is optional and off until you turn it on.');
+    expect(link?.getAttribute('aria-label')).toBe('Open Delete AI data in Settings › AI');
+
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    link?.click();
+    await harness.fixture.whenStable();
+    expect(navigate).toHaveBeenCalledWith('/settings/ai#ai-data');
+  });
+
   it('opens the policy in the app, without a page load', async () => {
     const { root, harness } = await setup();
 

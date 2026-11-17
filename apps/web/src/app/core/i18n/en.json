@@ -529,7 +529,8 @@
     "dont": {
       "title": "What we don't do",
       "sell": "We don't sell or share your data and don't show ads.",
-      "read": "We don't use the content of your links for statistics: only counts (links, folders, ratings), never addresses or titles. Your links are stored in our database so the app can show, search and preview them; only the author of the service has access to it."
+      "read": "We don't use the content of your links for statistics: only counts (links, folders, ratings), never addresses or titles. Your links are stored in our database so the app can show, search and preview them; only the author of the service has access to it.",
+      "training": "We don't use your links, notes or summaries to train AI models, and we don't let our AI provider do so."
     },
     "previews": {
       "title": "Link previews",
@@ -552,6 +553,30 @@
     "where": {
       "title": "Where it lives",
       "hosting": "The API runs on Vercel in the fra1 region (Frankfurt) and the database on Neon in eu-central-1 (Frankfurt). The app's static files are served from Vercel's global network."
+    },
+    "ai": {
+      "title": "AI features (optional)",
+      "intro": "AI is off until you turn it on in Settings › AI. When it is on, it suggests tags and folders and writes short summaries. Everything it makes is marked with a small spark and may be inaccurate; nothing is applied unless you accept it or choose automatic mode.",
+      "processor": {
+        "term": "Who processes it:",
+        "text": "[PROVIDER], as our processor, only to produce the result you asked for. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+      },
+      "sent": {
+        "term": "What is sent:",
+        "text": "a link's address, title, description and text extracted from the page, and the names of your tags and folders. Your notes only if you turn on \"Include my notes\". Never your other links, your account details or anyone else's data."
+      },
+      "kept": {
+        "term": "How long it is kept:",
+        "text": "the provider keeps the request for at most [N] days and doesn't use it for training. The results (tags, summaries) are stored with your links and deleted with them."
+      },
+      "counted": {
+        "term": "What we count:",
+        "text": "only the number of AI requests per account, for your monthly limit. As everywhere in Shelfmark, statistics use counts only, never what you saved."
+      },
+      "off": {
+        "term": "Turning it off:",
+        "text": "switch off one feature or AI as a whole in Settings › AI; requests stop at once. \"Delete AI data\" there removes every summary and suggestion AI made."
+      }
     },
     "retention": {
       "title": "How long we keep it",
@@ -1450,6 +1475,16 @@
       },
       "kept": {
         "title": "What we keep"
+      },
+      "ai": {
+        "title": "AI features",
+        "body": "AI is optional and off until you turn it on. When it is on, a link's address, title and page text go to our AI provider to suggest tags and folders and write summaries. Never used to train models, never used for statistics.",
+        "delete": {
+          "label": "Delete AI data",
+          "hint": "Removes every summary and suggestion AI made, in Settings › AI",
+          "action": "Open",
+          "actionLabel": "Open Delete AI data in Settings › AI"
+        }
       }
     },
     "footer": {

@@ -109,7 +109,10 @@
 
 <app-ai-usage-section />
 } @if (store.loaded()) {
-<ui-settings-section [title]="'ai.settings.data.title' | transloco">
+<ui-settings-section
+  [title]="'ai.settings.data.title' | transloco"
+  [appFragmentTarget]="AI_DATA_FRAGMENT"
+>
   <ui-settings-row
     [title]="'ai.settings.data.label' | transloco"
     [description]="'ai.settings.data.hint' | transloco"
