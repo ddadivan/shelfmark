@@ -82,11 +82,27 @@
               role="group"
               [attr.aria-labelledby]="group.headingId"
             >
-              <div
-                class="ui-command-list__heading"
-                [id]="group.headingId"
-                [textContent]="group.heading()"
-              ></div>
+              @if (group.lead(); as lead) {
+                <div class="ui-command-list__lead" [textContent]="lead"></div>
+              }
+              @if (group.icon(); as icon) {
+                <div
+                  class="ui-command-list__heading ui-command-list__heading--divider"
+                  [id]="group.headingId"
+                >
+                  <ui-icon
+                    class="ui-command-list__heading-icon"
+                    [name]="icon"
+                    [size]="ICON_SIZE.Sm"
+                  /><span [textContent]="group.heading()"></span>
+                </div>
+              } @else {
+                <div
+                  class="ui-command-list__heading"
+                  [id]="group.headingId"
+                  [textContent]="group.heading()"
+                ></div>
+              }
               @for (item of section.items; track item.id) {
                 <ng-container
                   [ngTemplateOutlet]="option"

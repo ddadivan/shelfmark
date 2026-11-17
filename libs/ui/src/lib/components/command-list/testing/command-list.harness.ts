@@ -97,6 +97,16 @@ export class UiCommandListHarness extends ComponentHarness {
     return Promise.all(headings.map(async (heading) => (await heading.text()).trim()));
   }
 
+  /** Headings drawn as a divider with an icon (`ui-command-group` `icon`), in order. */
+  async getDividerHeadings(): Promise<string[]> {
+    return this.textsIn('[role="group"] > .ui-command-list__heading--divider');
+  }
+
+  /** Muted lines above group headings (`ui-command-group` `lead`), in order. */
+  async getGroupLeads(): Promise<string[]> {
+    return this.textsIn('[role="group"] > .ui-command-list__lead');
+  }
+
   /** The rows, optionally filtered (`text` is the whole row text: title, meta and trailing). */
   async getOptions(filters: OptionHarnessFilters = {}): Promise<UiOptionHarness[]> {
     const id = await this.listId();
@@ -140,6 +150,17 @@ export class UiCommandListHarness extends ComponentHarness {
   /** Sends keys to the input (arrows, Home / End, Esc). */
   async sendKeys(...keys: (string | TestKey)[]): Promise<void> {
     return (await this.input()).sendKeys(...keys);
+  }
+
+  private async textsIn(selector: string): Promise<string[]> {
+    const id = await this.listId();
+    if (id === null) {
+      return [];
+    }
+    const elements = await this.documentRootLocatorFactory().locatorForAll(
+      `[id="${id}"] ${selector}`,
+    )();
+    return Promise.all(elements.map(async (element) => (await element.text()).trim()));
   }
 
   private async listId(): Promise<string | null> {
