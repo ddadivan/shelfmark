@@ -84,7 +84,7 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 - `SetFeedback.dc.html` — Settings › Your feedback (desktop)
 - `Languages.dc.html` — Language list and translation checks (desktop)
 - `Trash.dc.html` — Keyboard shortcuts dialog (press ?) (desktop)
-- `Privacy.dc.html` — Privacy policy page (desktop)
+- `Privacy.dc.html` — Privacy policy page, with the AI section (#476) (desktop)
 - `MobileSettings.dc.html` — You (settings) · phone (phone)
 
 ## 10 · Feedback: toasts, errors, rating
@@ -104,10 +104,13 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 
 MVP of the AI features (`docs/ai/FEATURES.md`; parent #388). Each board shows its states: off, suggesting / pending, limit reached, not available, empty. Rules: `BRAND.md` › AI; components `AiMark`, `Suggestion`, `AiSummary`.
 
+- `AiIntro.dc.html` — First-run AI intro when AI is turned on: what it does, what is sent, no training, the provider, link to Settings › AI; desktop dialog and phone sheet
 - `AiSettings.dc.html` — Settings › AI: opt-in switch, Folder and Tags each Suggest / Automatic / Off (default Suggest), Summaries switch, what is sent (notes, summary language), this month's usage, process existing links, delete AI data; variants off, folder set to Automatic, limit reached, provider trouble, processing (desktop)
-- `AiTags.dc.html` — Tag and folder suggestions in Add link and Edit link: ready, suggesting, accepted, old link, limit reached, not available, off; chip anatomy; **proposal** rule offer after repeated corrections; you chose the folder (AI never overrides); Automatic mode applied with Undo and the «Chosen by AI» mark (desktop)
+- `AiTags.dc.html` — Tag and folder suggestions in Add link and Edit link: ready, suggesting, accepted, old link, limit reached, not available, off; chip anatomy; **proposal** rule offer after repeated corrections; you chose the folder (AI never overrides); Automatic mode applied with «Moved by AI» and Undo (desktop)
 - `AiSummary.dc.html` — Summaries on cards and rows, pending, kind-aware wording, Edit link written by AI and edited by you (desktop)
 - `AiTidy.dc.html` — **Proposal** Tidy Unsorted: entry point, review with everything selected, applied toast with Undo, empty (desktop)
 - `MobileAi.dc.html` — Phone at 360px: Add link sheet with suggestions, suggesting and limit states, feed with summaries, You › AI, Tidy Unsorted, the Folder mode sheet, Automatic mode toast with Undo (phone)
+
+- `Privacy.dc.html` (section 9) — now has the «AI features (optional)» section: provider as processor, data sent, retention, counts only, turning it off
 
 Not designed yet, waiting for the author’s feedback on the feature list: search by meaning (F3), Ask your shelf (F4), clean-up (F5), MCP connections (F6), related links (F7), rediscover (F8).

@@ -16,7 +16,7 @@ Behaviour:
 The user's choice wins (author's decision, Nov 17, 2026):
 
 - A folder or tags the user picked are never replaced. The folder row then reads "Also fits" and stays a quiet chip; Automatic mode does not apply to it.
-- **Automatic mode** (opt-in per feature in Settings › AI, off by default) applies the top suggestion in the background only to what the user left empty: Unsorted for the folder, no tags for tags. It always shows a toast naming the change with Undo (8 s, `sm-toast__timer`), and marks the result: a "Chosen by AI" badge on the Folder field and a spark inside each auto-added tag chip in Edit link, until the user edits them.
+- **Automatic mode** (opt-in per feature in Settings › AI, off by default) applies the top suggestion in the background only to what the user left empty: Unsorted for the folder, no tags for tags. It always shows a toast naming the change with Undo (8 s, `sm-toast__timer`), and marks the result while it can be undone: a "Moved by AI" badge with Undo on the Folder field and a spark inside each auto-added tag chip in Edit link, until the user keeps or changes them.
 - Learning from accepts, dismissals and moves only changes future suggestions. Existing links are never moved on their own; re-sorting goes through Tidy Unsorted (review with preview).
 
 Accessibility:
