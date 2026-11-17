@@ -1220,6 +1220,7 @@
       "account": "Conta",
       "appearance": "Aparência",
       "library": "Biblioteca",
+      "ai": "IA",
       "language": "Idioma",
       "privacy": "Privacidade e dados",
       "shortcuts": "Atalhos de teclado",
@@ -1229,6 +1230,7 @@
       "account": "Seu perfil, sua estante e seus dados.",
       "appearance": "Salvo na hora e sincronizado em todos os seus dispositivos.",
       "library": "Como os links são mostrados, salvos e mantidos.",
+      "ai": "Ajuda para organizar, só quando você quiser. Desligada até você ativar.",
       "language": "O idioma da interface. Os formatos de data e hora ficam em Aparência.",
       "privacy": "O que guardamos e como levar com você.",
       "shortcuts": "Trabalhe sem o mouse.",
@@ -2889,5 +2891,142 @@
     "available": "Uma nova versão do Shelfmark está pronta",
     "reload": "Recarregar",
     "later": "Depois"
+  },
+  "ai": {
+    "settings": {
+      "features": {
+        "title": "Recursos de IA"
+      },
+      "enabled": {
+        "label": "Usar IA no Shelfmark",
+        "hint": "Envia o endereço, o título e um pequeno trecho da página de um link ao nosso provedor de IA para sugerir tags e escrever resumos. Nunca usado para treinar modelos nem para estatísticas."
+      },
+      "unavailable": "A IA não está respondendo agora. Seus links são salvos normalmente; sugestões e resumos chegam quando ela voltar.",
+      "folder": {
+        "label": "Pasta",
+        "hint": "Sugerir: um chip que você toca. Automático: só quando você deixa um link em Sem pasta, com Desfazer. Uma pasta que você escolhe nunca é alterada."
+      },
+      "tags": {
+        "label": "Tags",
+        "hint": "Sugerir: chips que você toca. Automático: só quando você não adiciona nenhuma tag, com Desfazer."
+      },
+      "mode": {
+        "suggest": "Sugerir",
+        "auto": "Automático",
+        "off": "Desligado"
+      },
+      "modePage": {
+        "open": "{{label}}: {{mode}}",
+        "auto": "Aplicar automaticamente quando eu não escolher",
+        "folder": {
+          "groupLabel": "Sugestões de pasta",
+          "suggestHint": "Um chip que você toca. Nada muda até você tocar.",
+          "autoHint": "Só para links deixados em Sem pasta. Você vê e pode desfazer.",
+          "offHint": "Sem sugestões de pasta.",
+          "note": "A IA nunca altera uma pasta que você mesmo escolheu."
+        },
+        "tags": {
+          "groupLabel": "Sugestões de tags",
+          "suggestHint": "Chips que você toca. Nada muda até você tocar.",
+          "autoHint": "Só para links salvos sem tags. Você vê e pode desfazer.",
+          "offHint": "Sem sugestões de tags.",
+          "note": "A IA nunca remove as tags que você mesmo adicionou."
+        }
+      },
+      "summaries": {
+        "label": "Resumos",
+        "hint": "Uma ou duas frases sobre cada link, para lembrar por que você o salvou. Edite quando quiser."
+      },
+      "sent": {
+        "title": "O que é enviado"
+      },
+      "notes": {
+        "label": "Incluir minhas notas",
+        "hint": "Notas deixam as sugestões mais precisas. Desligado, suas notas nunca saem do Shelfmark."
+      },
+      "language": {
+        "label": "Idioma dos resumos",
+        "hint": "Os resumos são escritos neste idioma, seja qual for o da página.",
+        "app": "Igual ao app ({{language}})"
+      },
+      "usage": {
+        "title": "Este mês",
+        "count": "{{used}} de {{limit}} links este mês",
+        "resets": "Reinicia em {{date}}",
+        "meterLabel": "Links processados pela IA este mês",
+        "limit": "Você usou os {{limit}} links deste mês. Novos links são salvos normalmente, sem sugestões nem resumos, até {{date}}."
+      },
+      "data": {
+        "title": "Seus dados de IA",
+        "label": "Excluir dados de IA",
+        "hint": "Remove todos os resumos e sugestões feitos pela IA. Suas edições, tags e pastas ficam.",
+        "action": "Excluir dados de IA"
+      },
+      "privacy": {
+        "label": "Como a IA funciona no Shelfmark",
+        "hint": "O que é enviado, para quem, por quanto tempo fica guardado e como desligar",
+        "action": "Ler",
+        "actionLabel": "Ler como a IA funciona no Shelfmark"
+      },
+      "failed": "Não foi possível salvar as configurações de IA",
+      "failedDetail": "A alteração foi desfeita. Tente de novo.",
+      "loadFailed": "Não foi possível carregar as configurações de IA.",
+      "retry": "Tentar de novo"
+    },
+    "backfill": {
+      "title": "Processar links existentes",
+      "hint": {
+        "one": "{{count}} link foi salvo antes de você ligar a IA. Adiciona sugestões e resumos em segundo plano: mais rápido com o Shelfmark aberto, senão em até um dia.",
+        "many": "{{count}} de links foram salvos antes de você ligar a IA. Adiciona sugestões e resumos em segundo plano: mais rápido com o Shelfmark aberto, senão em até um dia.",
+        "other": "{{count}} links foram salvos antes de você ligar a IA. Adiciona sugestões e resumos em segundo plano: mais rápido com o Shelfmark aberto, senão em até um dia."
+      },
+      "start": "Iniciar",
+      "running": "Processando links existentes",
+      "progress": "{{done}} de {{total}} prontos. Mais rápido com o Shelfmark aberto; senão termina em até um dia.",
+      "meterLabel": "Links existentes processados",
+      "estimate": "Cerca de {{minutes}} min restantes",
+      "stop": "Parar",
+      "done": "Todos os links existentes foram processados.",
+      "startFailed": "Não foi possível começar a processar seus links",
+      "stopFailed": "Não foi possível parar o processamento. Tente de novo."
+    },
+    "deleteData": {
+      "confirm": {
+        "title": "Excluir dados de IA?",
+        "message": "Todos os resumos e sugestões feitos pela IA são removidos. Suas edições, tags e pastas ficam. Não dá para desfazer.",
+        "confirm": "Excluir dados de IA",
+        "cancel": "Cancelar",
+        "close": "Fechar"
+      },
+      "done": "Dados de IA excluídos",
+      "failed": "Não foi possível excluir os dados de IA",
+      "failedDetail": "Nada foi removido. Tente de novo."
+    },
+    "intro": {
+      "title": "Ligar a IA no Shelfmark?",
+      "titleShort": "Ligar a IA?",
+      "close": "Fechar",
+      "suggest": {
+        "title": "Sugere tags e uma pasta",
+        "text": "Entre as que você já tem. Você decide: nada é aplicado até você tocar ou escolher Automático nas configurações."
+      },
+      "summaries": {
+        "title": "Escreve resumos curtos",
+        "text": "Uma ou duas frases por link. Marcados como feitos por IA e podem ser imprecisos; edite quando quiser."
+      },
+      "sent": {
+        "title": "O que é enviado ao modelo",
+        "text": "O endereço, o título, a descrição de um link e texto extraído da página. Nunca seus outros links, suas notas (a menos que você permita) ou dados de outras pessoas."
+      },
+      "training": {
+        "title": "Não usado para treinamento",
+        "text": "Seu conteúdo nunca é usado para treinar modelos. O provedor, [PROVIDER], processa para nós e guarda por no máximo [N] dias."
+      },
+      "details": "Você pode desligar a IA, ou um recurso por vez, em Configurações › IA.",
+      "policy": "Ler a política de privacidade",
+      "failed": "Não foi possível ligar a IA. Tente de novo.",
+      "notNow": "Agora não",
+      "turnOn": "Ligar a IA"
+    }
   }
 }

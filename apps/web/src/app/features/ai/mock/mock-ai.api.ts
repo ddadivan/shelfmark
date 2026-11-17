@@ -2,7 +2,6 @@ import { HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
   AI_APPLIED_PART,
-  AI_FEATURE_MODE,
   type AiBackfillStatus,
   type AiJobResponse,
   type AiSettingsResponse,
@@ -17,14 +16,11 @@ import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { mockHttpError } from '../../../core/api/mock-http-error';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { AiApi } from '../models/ai-api.interface';
+import { isAiFeatureMode } from '../utils/ai-setting-values';
 import { MockAiData } from './mock-ai-data';
 
 function failure(status: number, message?: string | string[]): Observable<never> {
   return throwError(() => mockHttpError(status, message));
-}
-
-function isMode(value: unknown): boolean {
-  return Object.values<unknown>(AI_FEATURE_MODE).includes(value);
 }
 
 /** What the API's `UpdateAiSettingsDto` would reject: nothing to change, or a wrong value. */
@@ -33,10 +29,10 @@ function settingsProblems(request: UpdateAiSettingsRequest): string[] {
   if (Object.keys(request).length === 0) {
     problems.push('at least one setting is required');
   }
-  if (request.folderMode !== undefined && !isMode(request.folderMode)) {
+  if (request.folderMode !== undefined && !isAiFeatureMode(request.folderMode)) {
     problems.push('folderMode is invalid');
   }
-  if (request.tagsMode !== undefined && !isMode(request.tagsMode)) {
+  if (request.tagsMode !== undefined && !isAiFeatureMode(request.tagsMode)) {
     problems.push('tagsMode is invalid');
   }
   return problems;

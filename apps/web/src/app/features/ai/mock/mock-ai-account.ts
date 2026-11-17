@@ -1,14 +1,6 @@
-import {
-  AI_FEATURE_MODE,
-  AI_SUMMARY_LANGUAGE_APP,
-  AI_TIER,
-  INTERFACE_LANGUAGE,
-  type AiFeatureMode,
-  type AiSettings,
-  type AiSummaryLanguage,
-  type AiTier,
-} from '@shelfmark/contracts';
+import { AI_TIER, type AiSettings, type AiTier } from '@shelfmark/contracts';
 import { AI_SETTINGS_DEFAULT } from '../models/ai-settings-default.const';
+import { isAiFeatureMode, isAiSummaryLanguage } from '../utils/ai-setting-values';
 import type { MockAiAccount } from './models/mock-ai-account.interface';
 import { MOCK_AI_STORAGE_KEY } from './models/mock-ai-storage-key.const';
 
@@ -25,18 +17,6 @@ export function nextUtcMonthStart(now: number): string {
     .slice(0, 10);
 }
 
-function isMode(value: unknown): value is AiFeatureMode {
-  return Object.values<unknown>(AI_FEATURE_MODE).includes(value);
-}
-
-function isSummaryLanguage(value: unknown): value is AiSummaryLanguage {
-  return (
-    value === AI_SUMMARY_LANGUAGE_APP ||
-    (value !== INTERFACE_LANGUAGE.Browser &&
-      Object.values<unknown>(INTERFACE_LANGUAGE).includes(value))
-  );
-}
-
 function isTier(value: unknown): value is AiTier {
   return Object.values<unknown>(AI_TIER).includes(value);
 }
@@ -50,12 +30,12 @@ function readSettings(value: unknown, fallback: AiSettings): AiSettings {
     typeof value === 'object' && value !== null ? value : {};
   return {
     enabled: typeof stored.enabled === 'boolean' ? stored.enabled : fallback.enabled,
-    folderMode: isMode(stored.folderMode) ? stored.folderMode : fallback.folderMode,
-    tagsMode: isMode(stored.tagsMode) ? stored.tagsMode : fallback.tagsMode,
+    folderMode: isAiFeatureMode(stored.folderMode) ? stored.folderMode : fallback.folderMode,
+    tagsMode: isAiFeatureMode(stored.tagsMode) ? stored.tagsMode : fallback.tagsMode,
     summaries: typeof stored.summaries === 'boolean' ? stored.summaries : fallback.summaries,
     includeNotes:
       typeof stored.includeNotes === 'boolean' ? stored.includeNotes : fallback.includeNotes,
-    summaryLanguage: isSummaryLanguage(stored.summaryLanguage)
+    summaryLanguage: isAiSummaryLanguage(stored.summaryLanguage)
       ? stored.summaryLanguage
       : fallback.summaryLanguage,
   };

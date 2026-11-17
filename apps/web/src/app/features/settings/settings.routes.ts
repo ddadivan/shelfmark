@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { Router, type Routes } from '@angular/router';
+import { AI_APPLIED_PART } from '@shelfmark/contracts';
 import { APP_PATH } from '../../models/app-path.const';
 import { YOUR_DATA_FRAGMENT } from './models/your-data-fragment.const';
 import { SETTINGS_PATH } from './models/settings-path.const';
@@ -25,6 +26,16 @@ export default [
     path: SETTINGS_PATH.Library,
     loadComponent: () => import('./pages/library/library.page'),
   },
+  {
+    path: SETTINGS_PATH.Ai,
+    loadComponent: () => import('./pages/ai/ai-settings.page'),
+  },
+  // Phone: the full-label choices of folder and tags mode (MobileAi state 7).
+  ...Object.values(AI_APPLIED_PART).map((part) => ({
+    path: `${SETTINGS_PATH.Ai}/${part}`,
+    data: { part },
+    loadComponent: () => import('./pages/ai-mode/ai-mode.page'),
+  })),
   {
     path: SETTINGS_PATH.Language,
     loadComponent: () => import('./pages/language/language.page'),

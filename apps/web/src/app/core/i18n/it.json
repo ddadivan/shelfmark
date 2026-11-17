@@ -1220,6 +1220,7 @@
       "account": "Account",
       "appearance": "Aspetto",
       "library": "Libreria",
+      "ai": "IA",
       "language": "Lingua",
       "privacy": "Privacy e dati",
       "shortcuts": "Scorciatoie da tastiera",
@@ -1229,6 +1230,7 @@
       "account": "Il tuo profilo, il tuo scaffale e i tuoi dati.",
       "appearance": "Salvato mentre lo cambi e sincronizzato su tutti i tuoi dispositivi.",
       "library": "Come i link vengono mostrati, salvati e conservati.",
+      "ai": "Un aiuto per organizzare, solo quando lo vuoi. Spenta finché non la attivi.",
       "language": "La lingua dell’interfaccia. I formati di data e ora sono in Aspetto.",
       "privacy": "Cosa conserviamo e come portarlo con te.",
       "shortcuts": "Lavora senza mouse.",
@@ -2889,5 +2891,142 @@
     "available": "Una nuova versione di Shelfmark è pronta",
     "reload": "Ricarica",
     "later": "Più tardi"
+  },
+  "ai": {
+    "settings": {
+      "features": {
+        "title": "Funzioni IA"
+      },
+      "enabled": {
+        "label": "Usa l’IA in Shelfmark",
+        "hint": "Invia indirizzo, titolo e un breve estratto della pagina di un link al nostro fornitore di IA per suggerire tag e scrivere riassunti. Mai usato per addestrare modelli, mai per statistiche."
+      },
+      "unavailable": "L’IA non risponde in questo momento. I tuoi link si salvano come sempre; suggerimenti e riassunti arriveranno quando tornerà.",
+      "folder": {
+        "label": "Cartella",
+        "hint": "Suggerisci: un chip da toccare. Automatico: solo se lasci un link in Senza cartella, con Annulla. Una cartella che scegli non viene mai cambiata."
+      },
+      "tags": {
+        "label": "Tag",
+        "hint": "Suggerisci: chip da toccare. Automatico: solo se non aggiungi tu nessun tag, con Annulla."
+      },
+      "mode": {
+        "suggest": "Suggerisci",
+        "auto": "Automatico",
+        "off": "No"
+      },
+      "modePage": {
+        "open": "{{label}}: {{mode}}",
+        "auto": "Applica automaticamente se non scelgo",
+        "folder": {
+          "groupLabel": "Suggerimenti di cartella",
+          "suggestHint": "Un chip da toccare. Non cambia nulla finché non lo fai.",
+          "autoHint": "Solo per i link lasciati in Senza cartella. Lo vedi e puoi annullarlo.",
+          "offHint": "Nessun suggerimento di cartella.",
+          "note": "Una cartella che scegli tu non viene mai cambiata dall’IA."
+        },
+        "tags": {
+          "groupLabel": "Suggerimenti di tag",
+          "suggestHint": "Chip da toccare. Non cambia nulla finché non lo fai.",
+          "autoHint": "Solo per i link salvati senza tag. Lo vedi e puoi annullarlo.",
+          "offHint": "Nessun suggerimento di tag.",
+          "note": "I tag che aggiungi tu non vengono mai rimossi dall’IA."
+        }
+      },
+      "summaries": {
+        "label": "Riassunti",
+        "hint": "Una o due frasi su ogni link, per ricordarti perché l’hai salvato. Modificabili in qualsiasi momento."
+      },
+      "sent": {
+        "title": "Cosa viene inviato"
+      },
+      "notes": {
+        "label": "Includi le mie note",
+        "hint": "Le note rendono i suggerimenti più precisi. Se disattivato, le tue note non lasciano mai Shelfmark."
+      },
+      "language": {
+        "label": "Lingua dei riassunti",
+        "hint": "I riassunti sono scritti in questa lingua, qualunque sia quella della pagina.",
+        "app": "Come l’app ({{language}})"
+      },
+      "usage": {
+        "title": "Questo mese",
+        "count": "{{used}} di {{limit}} link questo mese",
+        "resets": "Si azzera il {{date}}",
+        "meterLabel": "Link elaborati dall’IA questo mese",
+        "limit": "Hai usato i {{limit}} link di questo mese. I nuovi link si salvano come sempre, senza suggerimenti né riassunti, fino al {{date}}."
+      },
+      "data": {
+        "title": "I tuoi dati IA",
+        "label": "Elimina dati IA",
+        "hint": "Rimuove tutti i riassunti e i suggerimenti dell’IA. Le tue modifiche, i tag e le cartelle restano.",
+        "action": "Elimina dati IA"
+      },
+      "privacy": {
+        "label": "Come funziona l’IA in Shelfmark",
+        "hint": "Cosa viene inviato, a chi, per quanto viene conservato e come disattivarla",
+        "action": "Leggi",
+        "actionLabel": "Leggi come funziona l’IA in Shelfmark"
+      },
+      "failed": "Impossibile salvare le impostazioni IA",
+      "failedDetail": "La modifica è stata annullata. Riprova.",
+      "loadFailed": "Impossibile caricare le impostazioni IA.",
+      "retry": "Riprova"
+    },
+    "backfill": {
+      "title": "Elabora i link esistenti",
+      "hint": {
+        "one": "{{count}} link è stato salvato prima di attivare l’IA. Aggiunge suggerimenti e riassunti in background: più veloce con Shelfmark aperto, altrimenti entro un giorno.",
+        "many": "{{count}} di link sono stati salvati prima di attivare l’IA. Aggiunge suggerimenti e riassunti in background: più veloce con Shelfmark aperto, altrimenti entro un giorno.",
+        "other": "{{count}} link sono stati salvati prima di attivare l’IA. Aggiunge suggerimenti e riassunti in background: più veloce con Shelfmark aperto, altrimenti entro un giorno."
+      },
+      "start": "Avvia",
+      "running": "Elaborazione dei link esistenti",
+      "progress": "{{done}} di {{total}} completati. Più veloce con Shelfmark aperto; altrimenti finisce entro un giorno.",
+      "meterLabel": "Link esistenti elaborati",
+      "estimate": "Circa {{minutes}} min rimanenti",
+      "stop": "Interrompi",
+      "done": "Tutti i link esistenti sono stati elaborati.",
+      "startFailed": "Impossibile avviare l’elaborazione dei link",
+      "stopFailed": "Impossibile interrompere l’elaborazione. Riprova."
+    },
+    "deleteData": {
+      "confirm": {
+        "title": "Eliminare i dati IA?",
+        "message": "Tutti i riassunti e i suggerimenti dell’IA vengono rimossi. Le tue modifiche, i tag e le cartelle restano. L’operazione non si può annullare.",
+        "confirm": "Elimina dati IA",
+        "cancel": "Annulla",
+        "close": "Chiudi"
+      },
+      "done": "Dati IA eliminati",
+      "failed": "Impossibile eliminare i dati IA",
+      "failedDetail": "Non è stato rimosso nulla. Riprova."
+    },
+    "intro": {
+      "title": "Attivare l’IA in Shelfmark?",
+      "titleShort": "Attivare l’IA?",
+      "close": "Chiudi",
+      "suggest": {
+        "title": "Suggerisce tag e una cartella",
+        "text": "Tra quelli che hai già. Decidi tu: non viene applicato nulla finché non lo tocchi o scegli Automatico nelle impostazioni."
+      },
+      "summaries": {
+        "title": "Scrive brevi riassunti",
+        "text": "Una o due frasi per link. Indicati come creati dall’IA e forse imprecisi; modificabili in qualsiasi momento."
+      },
+      "sent": {
+        "title": "Cosa viene inviato al modello",
+        "text": "Indirizzo, titolo, descrizione di un link e testo estratto dalla pagina. Mai gli altri tuoi link, le tue note (salvo tuo consenso) o dati di altri."
+      },
+      "training": {
+        "title": "Non usato per l’addestramento",
+        "text": "I tuoi contenuti non vengono mai usati per addestrare modelli. Il fornitore, [PROVIDER], li elabora per noi e li conserva al massimo [N] giorni."
+      },
+      "details": "Puoi disattivare l’IA, o una funzione alla volta, in Impostazioni › IA.",
+      "policy": "Leggi l’informativa sulla privacy",
+      "failed": "Impossibile attivare l’IA. Riprova.",
+      "notNow": "Non ora",
+      "turnOn": "Attiva l’IA"
+    }
   }
 }

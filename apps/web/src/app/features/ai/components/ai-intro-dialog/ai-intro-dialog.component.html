@@ -1,0 +1,53 @@
+<ui-dialog
+  size="md"
+  [title]="(phone() ? 'ai.intro.titleShort' : 'ai.intro.title') | transloco"
+  [closeLabel]="'ai.intro.close' | transloco"
+>
+  <div class="ai-intro">
+    <span class="ai-intro__tile" aria-hidden="true">
+      <ui-icon name="spark" [size]="ICON_SIZE.Lg" />
+    </span>
+    <ul class="ai-intro__points">
+      @for (point of POINTS; track point.key) {
+        <li class="ai-intro__point">
+          <span class="ai-intro__icon" aria-hidden="true">
+            <ui-icon [name]="point.icon" [size]="ICON_SIZE.Sm" />
+          </span>
+          <span class="ai-intro__text">
+            <strong class="ai-intro__title">{{ point.key + '.title' | transloco }}</strong>
+            <span class="ai-intro__desc">{{ point.key + '.text' | transloco }}</span>
+          </span>
+        </li>
+      }
+    </ul>
+    <p class="ai-intro__details">
+      {{ 'ai.intro.details' | transloco }}
+      <ui-button
+        class="ai-intro__policy"
+        newTab
+        [variant]="BUTTON_VARIANT.Ghost"
+        [size]="BUTTON_SIZE.Sm"
+        [href]="privacyHref"
+      >
+        {{ 'ai.intro.policy' | transloco }}
+      </ui-button>
+    </p>
+    @if (failed()) {
+      <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'ai.intro.failed' | transloco }}</ui-notice>
+    }
+  </div>
+
+  <div slot="footer" class="ai-intro__foot">
+    <ui-button [variant]="BUTTON_VARIANT.Secondary" [block]="phone()" (click)="notNow()">
+      {{ 'ai.intro.notNow' | transloco }}
+    </ui-button>
+    <ui-button
+      [variant]="BUTTON_VARIANT.Primary"
+      [block]="phone()"
+      [loading]="saving()"
+      (click)="turnOn()"
+    >
+      {{ 'ai.intro.turnOn' | transloco }}
+    </ui-button>
+  </div>
+</ui-dialog>

@@ -4,11 +4,11 @@
     variant="ghost"
     size="sm"
     iconLeft="chevron-left"
-    [ariaLabel]="'settings.backToList' | transloco"
-    [href]="listHref"
+    [ariaLabel]="backLabel() ? undefined : ('settings.backToList' | transloco)"
+    [href]="backHref()"
     (linkClick)="back($event)"
   >
-    {{ 'settings.phoneTitle' | transloco }}
+    {{ backLabel() ?? ('settings.phoneTitle' | transloco) }}
   </ui-button>
 }
 <h1 class="settings-header__title">{{ title() }}</h1>

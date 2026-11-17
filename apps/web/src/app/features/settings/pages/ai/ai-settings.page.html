@@ -1,0 +1,139 @@
+<app-settings-page-header
+  [title]="'settings.nav.ai' | transloco"
+  [description]="'settings.description.ai' | transloco"
+/>
+
+@if (store.error()) {
+<ui-notice [kind]="NOTICE_KIND.Danger">
+  {{ 'ai.settings.loadFailed' | transloco }}
+  <ui-button [size]="BUTTON_SIZE.Sm" (click)="store.load()">
+    {{ 'ai.settings.retry' | transloco }}
+  </ui-button>
+</ui-notice>
+} @if (store.isOn() && store.providerUnavailable()) {
+<ui-ai-line class="ai-settings__status" [text]="'ai.settings.unavailable' | transloco" />
+}
+
+<ui-settings-section [title]="'ai.settings.features.title' | transloco">
+  <ui-settings-row
+    icon="spark"
+    align="top"
+    [title]="'ai.settings.enabled.label' | transloco"
+    [description]="'ai.settings.enabled.hint' | transloco"
+  >
+    <ui-switch
+      #enabledSwitch
+      [label]="'ai.settings.enabled.label' | transloco"
+      [checked]="store.isOn()"
+      [disabled]="!store.loaded()"
+      (checkedChange)="setEnabled($event, enabledSwitch)"
+    />
+  </ui-settings-row>
+  @if (store.isOn()) { @for (row of parts(); track row.part) { @if (viewport.phone()) {
+  <ui-settings-row [title]="row.key + '.label' | transloco">
+    <ui-button
+      iconRight="chevron-right"
+      [variant]="BUTTON_VARIANT.Ghost"
+      [size]="BUTTON_SIZE.Sm"
+      [href]="row.href"
+      [ariaLabel]="
+              'ai.settings.modePage.open'
+                | transloco
+                  : {
+                      label: (row.key + '.label' | transloco),
+                      mode: (AI_MODE_LABEL_KEYS[row.mode] | transloco),
+                    }
+            "
+      (linkClick)="open($event, row.href)"
+    >
+      {{ AI_MODE_LABEL_KEYS[row.mode] | transloco }}
+    </ui-button>
+  </ui-settings-row>
+  } @else {
+  <ui-settings-row
+    #modeRow
+    align="top"
+    [title]="row.key + '.label' | transloco"
+    [description]="row.key + '.hint' | transloco"
+  >
+    <ui-segmented-control
+      #modeControl
+      [ariaLabelledby]="modeRow.titleId"
+      [options]="modeOptions()"
+      [value]="row.mode"
+      (valueChange)="setMode(row.part, $event, modeControl)"
+    />
+  </ui-settings-row>
+  } }
+  <ui-settings-row
+    [title]="'ai.settings.summaries.label' | transloco"
+    [description]="viewport.phone() ? undefined : ('ai.settings.summaries.hint' | transloco)"
+  >
+    <ui-switch
+      #summariesSwitch
+      [label]="'ai.settings.summaries.label' | transloco"
+      [checked]="store.settings().summaries"
+      (checkedChange)="setSwitch('summaries', $event, summariesSwitch)"
+    />
+  </ui-settings-row>
+  }
+</ui-settings-section>
+
+@if (store.isOn()) {
+<ui-settings-section [title]="'ai.settings.sent.title' | transloco">
+  <ui-settings-row
+    [title]="'ai.settings.notes.label' | transloco"
+    [description]="'ai.settings.notes.hint' | transloco"
+  >
+    <ui-switch
+      #notesSwitch
+      [label]="'ai.settings.notes.label' | transloco"
+      [checked]="store.settings().includeNotes"
+      (checkedChange)="setSwitch('includeNotes', $event, notesSwitch)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'ai.settings.language.label' | transloco"
+    [description]="'ai.settings.language.hint' | transloco"
+  >
+    <ui-select
+      class="ai-settings__select"
+      compact
+      [label]="'ai.settings.language.label' | transloco"
+      [options]="languageOptions()"
+      [value]="store.settings().summaryLanguage"
+      (valueChange)="setLanguage($event)"
+    />
+  </ui-settings-row>
+</ui-settings-section>
+
+<app-ai-usage-section />
+} @if (store.loaded()) {
+<ui-settings-section [title]="'ai.settings.data.title' | transloco">
+  <ui-settings-row
+    [title]="'ai.settings.data.label' | transloco"
+    [description]="'ai.settings.data.hint' | transloco"
+  >
+    <ui-button
+      [variant]="BUTTON_VARIANT.Danger"
+      [size]="BUTTON_SIZE.Sm"
+      (click)="actions.deleteData()"
+    >
+      {{ 'ai.settings.data.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'ai.settings.privacy.label' | transloco"
+    [description]="'ai.settings.privacy.hint' | transloco"
+  >
+    <ui-button
+      [size]="BUTTON_SIZE.Sm"
+      [href]="privacyHref"
+      [ariaLabel]="'ai.settings.privacy.actionLabel' | transloco"
+      (linkClick)="open($event, privacyHref)"
+    >
+      {{ 'ai.settings.privacy.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+}
