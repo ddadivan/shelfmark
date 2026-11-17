@@ -14,4 +14,10 @@ export interface DemoSeedLink {
   lastOpenedDaysAgo: number | null;
   /** Reminder (#275) this many hours after the demo is created; negative = already due. */
   remindInHours?: number;
+  /** AI summary (#391), stored with source `ai`; same text as the web mock's demo seed for the same URL. */
+  summary?: string;
+  /** Pending AI folder suggestion (#390) on an unsorted link: `key` of a seed folder. */
+  suggestFolder?: string;
+  /** Pending AI tag suggestions (#390): a seed tag is `tag`, any other name `new-tag` (at most one). */
+  suggestTags?: string[];
 }

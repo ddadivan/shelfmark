@@ -1,6 +1,17 @@
-import { AUTH_ENDPOINT, DEMO_LIMIT } from '@shelfmark/contracts';
+import {
+  AI_ENDPOINT,
+  AI_FEATURE_MODE,
+  AI_JOB_STATUS,
+  AUTH_ENDPOINT,
+  DEMO_LIMIT,
+  SUGGESTION_KIND,
+  SUGGESTION_STATE,
+  SUMMARY_SOURCE,
+} from '@shelfmark/contracts';
 import type {
+  AiSettingsResponse,
   GetSessionResponse,
+  LinkAiState,
   LinkResponse,
   ListFoldersResponse,
   ListLinksResponse,
@@ -8,6 +19,7 @@ import type {
   ListTagsResponse,
 } from '@shelfmark/contracts';
 import request from 'supertest';
+import { AwaitableDeferrer } from '../../test-utils/awaitable-deferrer';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import { createIsolationUsers } from '../../test-utils/isolation/create-isolation-users';
 import { expectIsolated } from '../../test-utils/isolation/expect-isolated';
@@ -17,6 +29,8 @@ import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
 import { signInAs } from '../../test-utils/sign-in-as';
 import { signInDemo } from '../../test-utils/sign-in-demo';
+import { AiBackgroundService } from '../ai/background/ai-background.service';
+import { AiExcerptService } from '../ai/excerpt/ai-excerpt.service';
 import { DEMO_SEED } from './demo-seed';
 
 const LINKS = '/api/links';
@@ -24,12 +38,21 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 describe('demo library, limits and expiry', () => {
   let t: AuthTestApp;
+  // Demo users start with AI on, so saves queue jobs: they run only when a spec flushes them.
+  const deferrer = new AwaitableDeferrer();
+  const excerpts = { load: vi.fn(() => Promise.resolve({ excerpt: null, description: null })) };
 
   beforeAll(async () => {
-    t = await createAuthTestApp();
+    t = await createAuthTestApp({
+      overrides: [
+        { provide: AiBackgroundService, useValue: deferrer },
+        { provide: AiExcerptService, useValue: excerpts },
+      ],
+    });
   });
 
   afterEach(async () => {
+    deferrer.clear();
     await t.db.truncateAll();
     resetRateLimits(t.app);
   });
@@ -90,6 +113,103 @@ describe('demo library, limits and expiry', () => {
       expect(body.due.map((link) => link.title)).toEqual(['Patagonia Worn Wear']);
       expect(body.upcoming.map((link) => link.title)).toEqual(['TypeScript Handbook']);
       await asUser(t.app, demo).get('/api/reminders/count').expect(200, { due: 1 });
+    });
+
+    it('starts with AI on: settings row, intro seen, default modes (#389)', async () => {
+      const before = Date.now();
+      const demo = await signInDemo(t.app, t.baseUrl);
+      const row = await t.db.prisma.aiSettings.findUniqueOrThrow({
+        where: { userId: demo.userId },
+      });
+      expect(row.enabled).toBe(true);
+      expect(row.enabledAt?.getTime()).toBeGreaterThanOrEqual(before - 1000);
+      expect(row.introSeenAt?.getTime()).toBe(row.enabledAt?.getTime());
+      const res = await asUser(t.app, demo).get(AI_ENDPOINT.Settings).expect(200);
+      const body = res.body as AiSettingsResponse;
+      expect(body.settings).toMatchObject({
+        enabled: true,
+        folderMode: AI_FEATURE_MODE.Suggest,
+        tagsMode: AI_FEATURE_MODE.Suggest,
+        summaries: true,
+      });
+      expect(body.introSeen).toBe(true);
+      expect(body.pendingJobs).toBe(0);
+    });
+
+    it('seeds AI summaries (source ai, status done) as in seed.json (#391)', async () => {
+      const demo = await signInDemo(t.app, t.baseUrl);
+      const res = await asUser(t.app, demo).get(`${LINKS}?limit=100`).expect(200);
+      const items = (res.body as ListLinksResponse).items;
+      for (const link of DEMO_SEED.links) {
+        const item = items.find((candidate) => candidate.url === link.url);
+        expect(item?.summary).toBe(link.summary ?? null);
+        expect(item?.summarySource).toBe(link.summary === undefined ? null : SUMMARY_SOURCE.Ai);
+        if (link.summary !== undefined) expect(item?.aiStatus).toBe(AI_JOB_STATUS.Done);
+      }
+      expect(await t.db.prisma.aiJob.count({ where: { userId: demo.userId } })).toBe(0);
+    });
+
+    it('seeds pending suggestions on unsorted links: seed folders, seed tags and one new tag (#390)', async () => {
+      const demo = await signInDemo(t.app, t.baseUrl);
+      const links = await t.db.prisma.link.findMany({
+        where: { userId: demo.userId },
+        include: { folder: true },
+      });
+      const folders = await t.db.prisma.folder.findMany({ where: { userId: demo.userId } });
+      const nameOfFolder = new Map(folders.map((folder) => [folder.id, folder.name]));
+      const suggesting = DEMO_SEED.links.filter(
+        (link) => link.suggestFolder !== undefined || (link.suggestTags?.length ?? 0) > 0,
+      );
+      expect(suggesting.length).toBeGreaterThan(0);
+      for (const seedLink of suggesting) {
+        const link = links.find((candidate) => candidate.url === seedLink.url);
+        expect(link?.folderId).toBeNull();
+        expect(link?.aiStatus).toBe(AI_JOB_STATUS.Done);
+        const res = await asUser(t.app, demo)
+          .get(AI_ENDPOINT.LinkAi.replace(':id', link?.id ?? ''))
+          .expect(200);
+        const state = res.body as LinkAiState;
+        expect(state.aiStatus).toBe(AI_JOB_STATUS.Done);
+        expect(state.autoApplied).toBeNull();
+        for (const suggestion of state.suggestions) {
+          expect(suggestion.state).toBe(SUGGESTION_STATE.Suggested);
+        }
+        const folderNames = state.suggestions
+          .filter((suggestion) => suggestion.kind === SUGGESTION_KIND.Folder)
+          .map((suggestion) => nameOfFolder.get(suggestion.folderId ?? ''));
+        const seedFolder = DEMO_SEED.folders.find(
+          (folder) => folder.key === seedLink.suggestFolder,
+        );
+        expect(folderNames).toEqual(seedFolder === undefined ? [] : [seedFolder.name]);
+        expect(
+          state.suggestions
+            .filter((suggestion) => suggestion.kind !== SUGGESTION_KIND.Folder)
+            .map((suggestion) => suggestion.tagName),
+        ).toEqual(seedLink.suggestTags ?? []);
+      }
+      const newTags = await t.db.prisma.linkSuggestion.findMany({
+        where: { userId: demo.userId, kind: SUGGESTION_KIND.NewTag },
+      });
+      expect(newTags).toHaveLength(1);
+      expect(await t.db.prisma.tag.count({ where: { userId: demo.userId } })).toBe(
+        DEMO_SEED.tags.length,
+      );
+    });
+
+    it('runs a new save of a demo user through the mock provider (#389)', async () => {
+      const demo = await signInDemo(t.app, t.baseUrl);
+      const saved = (
+        await asUser(t.app, demo)
+          .post(LINKS)
+          .send({ url: 'https://example.com/new', title: 'Fresh page' })
+          .expect(201)
+      ).body as LinkResponse;
+      expect(saved.aiStatus).toBe(AI_JOB_STATUS.Pending);
+      await deferrer.flush();
+      const row = await t.db.prisma.link.findUniqueOrThrow({ where: { id: saved.id } });
+      expect(row.summary).toBe('A page about Fresh page.');
+      expect(row.summarySource).toBe(SUMMARY_SOURCE.Ai);
+      expect(row.aiStatus).toBe(AI_JOB_STATUS.Done);
     });
 
     it('is readable through the API as the demo user, and each demo user has their own copy', async () => {
