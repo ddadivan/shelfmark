@@ -76,7 +76,7 @@ a{color:inherit}a:hover{color:inherit}
 <div class="ex-pop" role="dialog" aria-labelledby="ex-h" style="position: absolute; right: 16px; top: 8px;">
 <div class="ex-head"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><h3 id="ex-h">Save to Shelfmark</h3></div>
 <div class="ex-preview"><span class="ex-thumb"></span><span style="min-width: 0;"><span class="ex-host">cos.com</span><span class="ex-title">Wool coat, straight cut, graphite</span></span></div>
-<div class="sm-field"><label class="sm-field__label" for="ex-f">Folder</label><button class="sm-field__control" id="ex-f" aria-haspopup="dialog" aria-expanded="false" style="text-align: left; font: inherit; color: inherit; cursor: pointer;"><span class="sm-fic sm-fic--sm fc-clay" aria-hidden="true"></span><span class="sm-select__value" style="flex: 1;">Clothes</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+<div class="sm-field"><label class="sm-field__label" for="ex-f">Folder</label><button class="sm-field__control" id="ex-f" aria-haspopup="dialog" aria-expanded="false" style="text-align: left; font: inherit; color: inherit; cursor: pointer;"><span class="sm-fic sm-fic--sm fc-clay" aria-hidden="true"></span><span class="sm-select__value" style="flex: 1;">Clothes</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
 <span class="sm-field__hint">From your rule for cos.com</span>
 <div style="display: flex; gap: 6px; flex-wrap: wrap;" aria-label="Recent folders"><button class="sm-chip sm-chip--neutral sm-chip--clickable">Unsorted</button><button class="sm-chip sm-chip--clickable" aria-pressed="true">Clothes</button><button class="sm-chip sm-chip--neutral sm-chip--clickable">Angular</button></div></div>
 <div class="sm-field"><label class="sm-field__label" for="ex-t">Tags</label><div class="sm-field__control sm-taginput"><span class="sm-chip">winter<button class="sm-chip__remove" aria-label="Remove tag winter">×</button></span><input id="ex-t" placeholder="Add tag"></div></div>
@@ -129,8 +129,19 @@ a{color:inherit}a:hover{color:inherit}
 <div class="sm-menu__item" role="option"><span class="sm-fic sm-fic--sm fc-amber" aria-hidden="true"></span>Reading</div>
 <div class="sm-menu__item" role="option"><span class="sm-fic sm-fic--sm fc-plum" aria-hidden="true"></span>Gifts</div>
 </div>
+<div class="ex-foot"><button class="sm-btn sm-btn--secondary" style="flex: 1;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M12 11v5M9.5 13.5h5"/></svg>New folder</button></div>
 </div>
-<p class="a-note">The same picker list as Move to folder, filling the popup instead of a menu (a popup has no room for a popover); the list scrolls inside. Opening it focuses the search; choosing a row moves the link and goes back. Esc or Back returns without a change.</p>
+<p class="a-note">The same picker list as Move to folder, filling the popup instead of a menu (a popup has no room for a popover); the list scrolls inside. Opening it focuses the search; choosing a row moves the link and goes back. Esc or Back returns without a change. New folder, at the bottom, opens state 4b.</p>
+</section>
+
+<section class="a-state">
+<h2 class="a-cap">4b · New folder</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="ex-new-h">
+<div class="ex-head"><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h3 id="ex-new-h">New folder</h3></div>
+<div class="sm-field"><label class="sm-field__label" for="ex-nf">Folder name</label><div class="sm-field__control"><input id="ex-nf" value="Bookmark tools"></div><span class="sm-field__hint">The folder is created when you save the page.</span></div>
+<div class="ex-foot"><button class="sm-btn sm-btn--primary" style="flex: 1;">Create</button></div>
+</div>
+<p class="a-note">Create (or Enter) goes back to the form, where the folder shows with a "new" badge and a folder-plus tile; it is created only on Save, so closing the popup leaves no empty folder. A name that exists already (ignoring case) picks that folder instead. If the folder cannot be created on Save (the folder limit, a server error), the link is still saved, without a folder, and Saved shows a warning notice above the card: "Couldn't create the folder “Bookmark tools”, so the link is saved without a folder."</p>
 </section>
 
 <section class="a-state">
