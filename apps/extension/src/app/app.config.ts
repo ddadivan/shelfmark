@@ -9,6 +9,7 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { credentialsInterceptor } from './core/api/credentials.interceptor';
+import { timeoutInterceptor } from './core/api/timeout.interceptor';
 import { ExtTranslocoLoader } from './core/i18n/ext-transloco.loader';
 import { EXT_LANG } from './core/i18n/models/ext-lang.const';
 import { resolveExtLang } from './core/i18n/resolve-ext-lang';
@@ -17,7 +18,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideHttpClient(withFetch(), withInterceptors([credentialsInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([credentialsInterceptor, timeoutInterceptor])),
     provideTransloco({
       config: {
         availableLangs: Object.values(EXT_LANG),
