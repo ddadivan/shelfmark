@@ -36,10 +36,18 @@ describe('AiProviderRegistry', () => {
     expect(factory).toHaveBeenCalledWith(config);
   });
 
-  it('reads a stored mock batch with the mock and any other with the user provider', () => {
+  it('reads a stored mock batch with the mock and a real batch with the real provider', () => {
     const { registry, real } = setup({ apiKey: 'sk-ant-test-0123456789', useRealProvider: true });
-    expect(registry.forBatch('mock').name).toBe('mock');
+    expect(registry.forBatch('mock')?.name).toBe('mock');
     expect(registry.forBatch('mock')).not.toBe(real);
     expect(registry.forBatch('anthropic')).toBe(real);
+    expect(registry.forBatch('other')).toBeNull();
+  });
+
+  it('never answers a real batch with the mock when the real provider is not available', () => {
+    const { registry, factory } = setup({ apiKey: null, useRealProvider: false });
+    expect(registry.forBatch('anthropic')).toBeNull();
+    expect(registry.forBatch('mock')?.name).toBe('mock');
+    expect(factory).not.toHaveBeenCalled();
   });
 });

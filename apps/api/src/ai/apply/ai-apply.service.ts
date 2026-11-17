@@ -8,7 +8,7 @@ import {
 } from '@shelfmark/contracts';
 import { escapeLike } from '../../common/util/escape-like';
 import { FoldersService } from '../../folders/folders.service';
-import type { Prisma } from '../../generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TagsService } from '../../tags/tags.service';
 import { AI_JOB_SOURCE } from '../models/ai-job-source.const';
@@ -93,6 +93,8 @@ export class AiApplyService {
           status: AI_JOB_STATE.Done,
           reason: produced ? null : AI_JOB_REASON.NothingFound,
           leaseUntil: null,
+          // A backfill job kept its folder keys here while its batch ran.
+          result: Prisma.DbNull,
         },
       });
     });

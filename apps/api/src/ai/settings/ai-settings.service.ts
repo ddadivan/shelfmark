@@ -7,6 +7,7 @@ import {
   type AiEntitlements,
   type AiProviderStatus,
   type AiSettingsResponse,
+  type AiTickResponse,
   type UpdateAiSettingsRequest,
 } from '@shelfmark/contracts';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -149,7 +150,8 @@ export class AiSettingsService {
     let failed = 0;
     for (const batch of batches) {
       try {
-        await this.registry.forBatch(batch.provider).cancelLinkBatch(batch.providerBatchId);
+        // A batch whose provider is not available here cannot be cancelled: it ends unread.
+        await this.registry.forBatch(batch.provider)?.cancelLinkBatch(batch.providerBatchId);
       } catch {
         failed += 1;
       }
@@ -181,6 +183,16 @@ export class AiSettingsService {
     return recent ? AI_PROVIDER_STATUS.Unavailable : AI_PROVIDER_STATUS.Ok;
   }
 
+  /** Pending jobs and the backfill block (`POST /api/ai/tick`, backfill routes). */
+  async progress(userId: string): Promise<AiTickResponse> {
+    const stored = await this.read(this.prisma, userId);
+    const [pendingJobs, eligible] = await Promise.all([
+      this.pendingJobs(userId),
+      this.eligibleForBackfill(userId, stored.enabledAt),
+    ]);
+    return { pendingJobs, backfill: toBackfillStatus(stored, eligible) };
+  }
+
   private pendingJobs(userId: string): Promise<number> {
     return this.prisma.aiJob.count({
       where: { userId, status: { in: [AI_JOB_STATE.Pending, AI_JOB_STATE.Running] } },
@@ -188,7 +200,7 @@ export class AiSettingsService {
   }
 
   /** Live links saved before AI was turned on that have no AI result (none, failed or skipped). */
-  private eligibleForBackfill(userId: string, enabledAt: Date | null): Promise<number> {
+  eligibleForBackfill(userId: string, enabledAt: Date | null): Promise<number> {
     return this.prisma.link.count({
       where: {
         userId,

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AI_QUOTA, type AiTier, type AiUsage } from '@shelfmark/contracts';
 import { PrismaService } from '../../prisma/prisma.service';
+import type { AiDbClient } from '../models/ai-db-client.type';
 import { usageMonth, usageResetsOn } from './usage-month';
 
 /**
@@ -63,12 +64,18 @@ export class AiUsageService {
 
   /**
    * Takes up to `wanted` links from the one-time backfill allowance and answers how many were
-   * granted (0 when it is used up or the user has no settings row).
+   * granted (0 when it is used up or the user has no settings row). Pass the transaction that holds
+   * the settings row lock, if any.
    */
-  async reserveBackfill(userId: string, tier: AiTier, wanted: number): Promise<number> {
+  async reserveBackfill(
+    userId: string,
+    tier: AiTier,
+    wanted: number,
+    db: AiDbClient = this.prisma,
+  ): Promise<number> {
     const limit = AI_QUOTA[tier].backfillLinks;
     if (limit <= 0 || wanted <= 0) return 0;
-    const rows = await this.prisma.$queryRaw<{ granted: number }[]>`
+    const rows = await db.$queryRaw<{ granted: number }[]>`
       WITH current AS (
         SELECT backfill_used FROM ai_settings WHERE user_id = ${userId}::uuid FOR UPDATE
       )

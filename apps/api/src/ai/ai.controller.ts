@@ -14,6 +14,7 @@ import {
 import {
   ApiAcceptedResponse,
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -31,6 +32,10 @@ import { AiJobsService } from './jobs/ai-jobs.service';
 import { UpdateAiSettingsDto } from './dto/update-ai-settings.dto';
 import { AiSettingsService } from './settings/ai-settings.service';
 import { AiDataService } from './data/ai-data.service';
+import { AiBackfillService } from './backfill/ai-backfill.service';
+import { AiCatchUpService } from './catch-up/ai-catch-up.service';
+import { AiBackfillStatusDto } from './dto/ai-backfill-status.dto';
+import { AiTickResponseDto } from './dto/ai-tick-response.dto';
 import { AiSuggestionsService } from './suggestions/ai-suggestions.service';
 
 /** AI routes under `/api/ai` (`AI_ENDPOINT`). Thin: the services own the rules. */
@@ -42,7 +47,51 @@ export class AiController {
     private readonly jobs: AiJobsService,
     private readonly suggestions: AiSuggestionsService,
     private readonly data: AiDataService,
+    private readonly backfill: AiBackfillService,
+    private readonly catchUp: AiCatchUpService,
   ) {}
+
+  @Get('backfill')
+  @ApiOkResponse({ type: AiBackfillStatusDto })
+  @ApiOperation({ summary: 'Status of "Process existing links"' })
+  getBackfill(@CurrentUser() user: AuthUser): Promise<AiBackfillStatusDto> {
+    return this.backfill.status(user.id);
+  }
+
+  @Post('backfill')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.AiBackfill)
+  @ApiOkResponse({ type: AiBackfillStatusDto })
+  @ApiConflictResponse({ description: 'No AI pack, AI is off, or a run is in progress' })
+  @ApiOperation({
+    summary: 'Start "Process existing links"',
+    description:
+      'Links saved before AI was turned on without an AI result, up to the one-time allowance; results never move or tag a link. Advanced by the tick and the daily sweep.',
+  })
+  startBackfill(@CurrentUser() user: AuthUser): Promise<AiBackfillStatusDto> {
+    return this.backfill.start(user.id);
+  }
+
+  @Delete('backfill')
+  @RateLimit(RATE_LIMIT.AiBackfill)
+  @ApiOkResponse({ type: AiBackfillStatusDto })
+  @ApiOperation({ summary: 'Stop "Process existing links" (keeps what is done)' })
+  stopBackfill(@CurrentUser() user: AuthUser): Promise<AiBackfillStatusDto> {
+    return this.backfill.stop(user.id);
+  }
+
+  @Post('tick')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.AiTick)
+  @ApiOkResponse({ type: AiTickResponseDto })
+  @ApiOperation({
+    summary: 'Catch up on queued AI work',
+    description:
+      "Starts the session user's catch-up after the response (open batches, stale jobs, backfill; 6 s budget) and answers the progress as it is now.",
+  })
+  tick(@CurrentUser() user: AuthUser): Promise<AiTickResponseDto> {
+    return this.catchUp.tick(user.id);
+  }
 
   @Get('settings')
   @ApiOkResponse({ type: AiSettingsResponseDto })

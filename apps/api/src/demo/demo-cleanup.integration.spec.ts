@@ -61,7 +61,11 @@ describe('GET /api/cron/demo-cleanup', () => {
       readFileSync(resolve(import.meta.dirname, '../../../../vercel.json'), 'utf8'),
     );
     const crons = (config as { crons?: { path: string; schedule: string }[] }).crons ?? [];
-    expect(crons.map((cron) => cron.path)).toEqual([CRON_ROUTE.Path, CRON_ROUTE.TrashCleanupPath]);
+    expect(crons.map((cron) => cron.path)).toEqual([
+      CRON_ROUTE.Path,
+      CRON_ROUTE.TrashCleanupPath,
+      CRON_ROUTE.AiSweepPath,
+    ]);
     // Hobby allows one run per day: a fixed minute and hour, nothing more frequent.
     for (const cron of crons) expect(cron.schedule).toMatch(/^\d{1,2} \d{1,2} \* \* \*$/);
   });

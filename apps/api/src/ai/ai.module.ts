@@ -4,6 +4,9 @@ import { FoldersModule } from '../folders/folders.module';
 import { TagsModule } from '../tags/tags.module';
 import { AiController } from './ai.controller';
 import { LinkAiController } from './link-ai.controller';
+import { AiSweepController } from './ai-sweep.controller';
+import { AiBackfillService } from './backfill/ai-backfill.service';
+import { AiCatchUpService } from './catch-up/ai-catch-up.service';
 import { LinkAiService } from './link-ai/link-ai.service';
 import { AiDataService } from './data/ai-data.service';
 import { AiSuggestionsService } from './suggestions/ai-suggestions.service';
@@ -26,7 +29,7 @@ import { AiUsageService } from './usage/ai-usage.service';
  */
 @Module({
   imports: [FetcherModule, FoldersModule, TagsModule],
-  controllers: [AiController, LinkAiController],
+  controllers: [AiController, LinkAiController, AiSweepController],
   providers: [
     // Read once at boot (the module is created when the app starts): never at import time.
     { provide: AI_CONFIG, useFactory: () => readAiConfig() },
@@ -42,6 +45,8 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiSuggestionsService,
     LinkAiService,
     AiDataService,
+    AiBackfillService,
+    AiCatchUpService,
   ],
   exports: [
     AiProviderRegistry,

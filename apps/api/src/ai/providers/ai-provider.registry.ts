@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AI_CONFIG } from '../models/ai-config.token';
+import { AI_PROVIDER_NAME } from '../models/ai-provider-name.const';
 import { REAL_AI_PROVIDER_FACTORY } from '../models/real-ai-provider-factory.token';
 import { MockAiProvider } from './mock-ai.provider';
 import type { AiConfig } from '../models/ai-config.interface';
@@ -28,8 +29,13 @@ export class AiProviderRegistry {
     return this.real;
   }
 
-  /** The provider that holds a stored batch (backfill users are never demo users). */
-  forBatch(provider: string): AiProvider {
-    return provider === this.mock.name ? this.mock : this.for({ isDemo: false });
+  /**
+   * The provider that holds a stored batch. A real batch is never answered by the mock: without the
+   * real provider here (no key, not production) it is `null`, and the caller fails its jobs.
+   */
+  forBatch(provider: string): AiProvider | null {
+    if (provider === this.mock.name) return this.mock;
+    if (provider !== AI_PROVIDER_NAME.Anthropic || !this.config.useRealProvider) return null;
+    return this.for({ isDemo: false });
   }
 }
