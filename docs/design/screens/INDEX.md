@@ -5,6 +5,7 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 ## 1 · Landing and sign in
 
 - `Landing.dc.html` — Landing · desktop · redesigned (desktop)
+- `LandingAi.dc.html` — Landing block «Optional AI» (#481): desktop (also placed in `Landing.dc.html`, after «Save once, find in seconds») and phone at 360px; ships with the first AI release
 - `SignIn.dc.html` — Sign in · redesigned (desktop)
 - `AuthEmail.dc.html` — Email sign in, sign up, reset (desktop)
 - `Emails.dc.html` — Emails (desktop)
