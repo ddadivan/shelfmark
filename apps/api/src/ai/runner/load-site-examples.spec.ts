@@ -62,6 +62,7 @@ describe('loadSiteExamples', () => {
       userId,
       [{ url: 'https://youtube.com/7', linkId: self }],
       keys,
+      ['a', 'b', 'music'],
     );
     expect(examples).toEqual([
       { folderKey: null, tags: ['music'] },
@@ -86,6 +87,7 @@ describe('loadSiteExamples', () => {
       userId,
       [{ url: 'https://youtube.com/3', linkId: null }],
       new Map([['f1', videos]]),
+      ['ai'],
     );
     expect(examples).toEqual([]);
   });
@@ -103,8 +105,22 @@ describe('loadSiteExamples', () => {
         { url: 'mailto:someone@example.test', linkId: null },
       ],
       new Map(),
+      ['code', 'secret'],
     );
     expect(result).toEqual([[], [{ folderKey: null, tags: ['code'] }], []]);
+  });
+
+  it('keeps only the tags the prompt offers', async () => {
+    await link(userId, 'https://youtube.com/1', { tags: ['Music', 'rare'] });
+    await link(userId, 'https://youtube.com/2', { tags: ['rare'] });
+    const [examples] = await loadSiteExamples(
+      database.prisma,
+      userId,
+      [{ url: 'https://youtube.com/3', linkId: null }],
+      new Map(),
+      ['music'],
+    );
+    expect(examples).toEqual([{ folderKey: null, tags: ['Music'] }]);
   });
 
   it('answers nothing without an http(s) host', async () => {
@@ -114,6 +130,7 @@ describe('loadSiteExamples', () => {
         userId,
         [{ url: 'ftp://x', linkId: null }],
         new Map(),
+        [],
       ),
     ).toEqual([[]]);
   });

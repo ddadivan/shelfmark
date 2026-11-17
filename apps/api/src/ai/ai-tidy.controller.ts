@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -13,6 +13,7 @@ import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { TidyApplyResponseDto } from './dto/tidy-apply-response.dto';
 import { TidyApplyDto } from './dto/tidy-apply.dto';
 import { TidyCountResponseDto } from './dto/tidy-count-response.dto';
+import { TidyListQueryDto } from './dto/tidy-list-query.dto';
 import { TidyListResponseDto } from './dto/tidy-list-response.dto';
 import { TidyUndoResponseDto } from './dto/tidy-undo-response.dto';
 import { TidyUndoDto } from './dto/tidy-undo.dto';
@@ -29,17 +30,23 @@ export class AiTidyController {
   ) {}
 
   @Get()
+  @RateLimit(RATE_LIMIT.AiTidyRead)
   @ApiOkResponse({ type: TidyListResponseDto })
+  @ApiBadRequestResponse({ description: 'Invalid query' })
   @ApiOperation({
     summary: 'Links in Unsorted with suggestions to review',
     description:
-      'Newest first, one page; only suggestions still worth showing (a rule decides the folder over AI). Empty while AI is off.',
+      'Newest first, one page (after the given link of the previous page); only suggestions still worth showing (a rule decides the folder over AI). Empty while AI is off.',
   })
-  list(@CurrentUser() user: AuthUser): Promise<TidyListResponseDto> {
-    return this.tidy.list(user.id);
+  list(
+    @CurrentUser() user: AuthUser,
+    @Query() query: TidyListQueryDto,
+  ): Promise<TidyListResponseDto> {
+    return this.tidy.list(user.id, query.after);
   }
 
   @Get('count')
+  @RateLimit(RATE_LIMIT.AiTidyRead)
   @ApiOkResponse({ type: TidyCountResponseDto })
   @ApiOperation({ summary: 'How many links Tidy would list' })
   count(@CurrentUser() user: AuthUser): Promise<TidyCountResponseDto> {

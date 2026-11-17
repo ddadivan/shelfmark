@@ -12,6 +12,7 @@ import type { IsolationUsers } from '../../../test-utils/models/isolation-users.
 import type { TestAgent } from '../../../test-utils/models/test-agent.interface';
 import { resetRateLimits } from '../../../test-utils/reset-rate-limits';
 import { seedLink } from '../../../test-utils/seed-link';
+import { RULE_OFFER_DISMISSAL_LIMIT } from '../models/rule-offer-dismissal-limit.const';
 
 describe('rule offers (AI-2)', () => {
   let t: AuthTestApp;
@@ -144,6 +145,44 @@ describe('rule offers (AI-2)', () => {
     expect(await t.db.prisma.ruleOfferDismissal.count()).toBe(1);
     await dismiss('localhost').expect(400);
     await a.post(RULE_OFFER_ENDPOINT.Dismiss).send({}).expect(400);
+  });
+
+  it('is not crowded out by newer addresses that only contain the site', async () => {
+    const owner = users.owner.userId;
+    const videos = await folder(owner);
+    const other = await folder(owner, 'Other');
+    const ids = await file(owner, videos, 3);
+    // Newer than the site's own links and more than `CandidatesMax` of them.
+    await file(owner, other, 30, 'https://notyoutube.com/?v=');
+    await file(owner, null, 5, 'https://example.test/?ref=youtube.com&v=');
+    expect(await check([ids[2] ?? ''])).toEqual({
+      offer: { domain: 'youtube.com', folderId: videos, count: 3 },
+    });
+  });
+
+  it('keeps at most the cap of "Not now" answers per user, dropping the oldest', async () => {
+    const owner = users.owner.userId;
+    const old = new Date('2026-01-01T00:00:00Z');
+    await t.db.prisma.ruleOfferDismissal.createMany({
+      data: Array.from({ length: RULE_OFFER_DISMISSAL_LIMIT.PerUserMax }, (_, i) => ({
+        userId: owner,
+        domain: `site${i}.example`,
+        createdAt: new Date(old.getTime() + i * 1000),
+      })),
+    });
+    await dismiss('intruder-keeps.example', b).expect(204);
+    await dismiss('youtube.com').expect(204);
+    expect(await t.db.prisma.ruleOfferDismissal.count({ where: { userId: owner } })).toBe(
+      RULE_OFFER_DISMISSAL_LIMIT.PerUserMax,
+    );
+    const kept = await t.db.prisma.ruleOfferDismissal.findMany({
+      where: { userId: owner, domain: { in: ['site0.example', 'site1.example', 'youtube.com'] } },
+      select: { domain: true },
+    });
+    expect(kept.map((row) => row.domain).sort()).toEqual(['site1.example', 'youtube.com']);
+    expect(
+      await t.db.prisma.ruleOfferDismissal.count({ where: { userId: users.intruder.userId } }),
+    ).toBe(1);
   });
 
   it('validates the check body', async () => {

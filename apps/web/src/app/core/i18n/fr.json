@@ -2769,6 +2769,19 @@
       "missingFolder": "Ce dossier n'existe plus. Choisissez-en un autre.",
       "missing": "Cette règle a été supprimée entre-temps.",
       "failed": "Impossible d'enregistrer la règle. Réessayez."
+    },
+    "offer": {
+      "title": "Toujours ranger les liens de {{domain}} dans {{folder}} ?",
+      "detail": {
+        "one": "Votre dernier lien de ce site y est. Une règle fonctionne sans IA.",
+        "many": "Vos {{count}} derniers liens de ce site y sont. Une règle fonctionne sans IA.",
+        "other": "Vos {{count}} derniers liens de ce site y sont. Une règle fonctionne sans IA."
+      },
+      "create": "Créer la règle",
+      "notNow": "Pas maintenant",
+      "created": "Règle créée",
+      "applyExisting": "Appliquer à « Sans dossier »",
+      "failed": "Impossible de créer la règle"
     }
   },
   "changelog": {
@@ -2909,6 +2922,10 @@
       "aiSummaries": {
         "title": "Résumés courts",
         "text": "Avec l'IA activée, chaque lien reçoit un résumé d'une ou deux lignes sur sa carte. Modifiez-le et il vous appartient."
+      },
+      "aiTidy": {
+        "title": "Ranger « Sans dossier » avec l’IA",
+        "text": "Passez en revue sur une seule page les suggestions de l’IA pour tout ce qui est dans « Sans dossier » et appliquez-les avec une seule annulation. Rangez plusieurs fois les liens d’un site dans le même dossier et Shelfmark propose une règle."
       }
     },
     "sections": {
@@ -3128,6 +3145,73 @@
         "other": "{{count}} tags ajoutés par l’IA"
       },
       "undo": "Annuler"
+    },
+    "tidy": {
+      "entry": "Ranger avec les suggestions",
+      "back": "Sans dossier",
+      "title": "Ranger « Sans dossier »",
+      "lead": {
+        "one": "Suggestions pour {{count}} lien. Touchez une puce pour l’écarter.",
+        "many": "Suggestions pour {{count}} liens. Touchez une puce pour l’écarter.",
+        "other": "Suggestions pour {{count}} liens. Touchez une puce pour l’écarter."
+      },
+      "cancel": "Annuler",
+      "apply": {
+        "one": "Appliquer à {{count}} lien",
+        "many": "Appliquer à {{count}} liens",
+        "other": "Appliquer à {{count}} liens"
+      },
+      "skip": "Passer",
+      "skipped": "Passé — reste dans « Sans dossier »",
+      "undoSkip": "Annuler",
+      "rowLabel": "Modifications pour {{title}}",
+      "listLabel": "Liens avec suggestions",
+      "barLabel": "Appliquer les suggestions",
+      "loading": "Chargement des suggestions",
+      "chip": {
+        "folder": "Déplacer vers {{name}}",
+        "folderAdded": "Déplacer vers {{name}}, retenu",
+        "tag": "Ajouter le tag {{name}}",
+        "tagAdded": "Ajouter le tag {{name}}, retenu",
+        "newTag": "Créer et ajouter le tag {{name}}",
+        "newTagAdded": "Créer et ajouter le tag {{name}}, retenu"
+      },
+      "more": {
+        "one": "Encore {{count}} lien après ceux-ci. Les liens sans suggestion ne sont pas listés.",
+        "many": "Encore {{count}} liens après ceux-ci. Les liens sans suggestion ne sont pas listés.",
+        "other": "Encore {{count}} liens après ceux-ci. Les liens sans suggestion ne sont pas listés."
+      },
+      "next": "Afficher les liens suivants",
+      "empty": {
+        "title": "Rien à ranger",
+        "text": "Chaque lien ici n’a pas encore de suggestion ou vous l’avez déjà classé. Les nouveaux liens reçoivent des suggestions en moins d’une minute.",
+        "back": "Retour à « Sans dossier »"
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} lien rangé",
+          "many": "{{count}} liens rangés",
+          "other": "{{count}} liens rangés"
+        },
+        "folders": {
+          "one": "Déplacé dans {{count}} dossier",
+          "many": "Déplacés dans {{count}} dossiers",
+          "other": "Déplacés dans {{count}} dossiers"
+        },
+        "tags": {
+          "one": "{{count}} tag ajouté",
+          "many": "{{count}} tags ajoutés",
+          "other": "{{count}} tags ajoutés"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Annuler",
+        "failed": "Impossible de ranger les liens",
+        "failedDetail": "Rien n’a été modifié. Réessayez.",
+        "nothing": "Rien à appliquer",
+        "nothingDetail": "Les suggestions ont changé entre-temps."
+      },
+      "undone": "Rangement annulé",
+      "undoFailed": "Impossible d’annuler le rangement"
     }
   }
 }

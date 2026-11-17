@@ -43,6 +43,24 @@ describe('HttpAiApi', () => {
       [() => api.stopBackfill().subscribe(), 'DELETE', '/api/ai/backfill', null],
       [() => api.tick().subscribe(), 'POST', '/api/ai/tick', null],
       [() => api.deleteData().subscribe(), 'DELETE', '/api/ai/data', null],
+      [() => api.getTidy().subscribe(), 'GET', '/api/ai/tidy', null],
+      [() => api.getTidy('l9').subscribe(), 'GET', '/api/ai/tidy?after=l9', null],
+      [() => api.getTidyCount().subscribe(), 'GET', '/api/ai/tidy/count', null],
+      [
+        () => api.applyTidy({ items: [{ linkId: 'l1', suggestionIds: ['s1'] }] }).subscribe(),
+        'POST',
+        '/api/ai/tidy/apply',
+        { items: [{ linkId: 'l1', suggestionIds: ['s1'] }] },
+      ],
+      [
+        () =>
+          api
+            .undoTidy({ items: [{ linkId: 'l1', folderId: 'f1', tags: [], suggestionIds: [] }] })
+            .subscribe(),
+        'POST',
+        '/api/ai/tidy/undo',
+        { items: [{ linkId: 'l1', folderId: 'f1', tags: [], suggestionIds: [] }] },
+      ],
       [() => api.getLinkAi('l1').subscribe(), 'GET', '/api/links/l1/ai', null],
       [() => api.rewriteSummary('l1').subscribe(), 'POST', '/api/links/l1/ai/rewrite', null],
       [

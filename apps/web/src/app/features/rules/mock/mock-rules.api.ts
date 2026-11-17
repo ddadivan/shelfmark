@@ -12,6 +12,7 @@ import {
   type CreateRuleRequest,
   type ListRulesResponse,
   type RuleMatchesResponse,
+  type RuleOfferResponse,
   type RuleResponse,
   type UpdateRuleRequest,
 } from '@shelfmark/contracts';
@@ -20,7 +21,9 @@ import { mockHttpError } from '../../../core/api/mock-http-error';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { RulesApi } from '../models/rules-api.interface';
+import { MockAiData } from '../../ai/mock/mock-ai-data';
 import type { MockRule } from './models/mock-rule.interface';
+import { mockRuleOffer } from './mock-rule-offer';
 
 function failure(status: number, message?: string | string[]): Observable<never> {
   return throwError(() => mockHttpError(status, message));
@@ -52,6 +55,7 @@ const FAILING_DOMAIN = 'save-fails.example';
 @Service()
 export class MockRulesApi implements RulesApi {
   private readonly data = inject(MockLibraryData);
+  private readonly ai = inject(MockAiData);
 
   list(): Observable<ListRulesResponse> {
     return defer(() => of({ items: this.sorted().map((rule) => this.view(rule)) })).pipe(
@@ -134,6 +138,35 @@ export class MockRulesApi implements RulesApi {
           .map((link) => ({ id: link.id, tags: [...link.tags] })),
       });
     }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
+  checkOffer(linkIds: readonly string[]): Observable<RuleOfferResponse> {
+    return defer(() => {
+      if (linkIds.length < 1 || linkIds.length > LINK_LIMIT.BatchMax) {
+        return failure(HttpStatusCode.BadRequest, ['linkIds are invalid']);
+      }
+      const offer = mockRuleOffer(linkIds, {
+        links: this.data.links,
+        rules: this.data.rules,
+        dismissed: this.data.ruleOfferDismissals,
+        liveFolder: (id) => this.data.folderList.some((folder) => folder.id === id),
+        autoAppliedFolder: (id) => this.ai.autoAppliedFolder(id),
+      });
+      return of({ offer });
+    }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
+  dismissOffer(domain: string): Observable<void> {
+    return defer(() => {
+      const normalized = normalizeRuleDomain(domain);
+      if (normalized === null) {
+        return failure(HttpStatusCode.BadRequest, [RULE_ERROR_MESSAGE.InvalidDomain]);
+      }
+      if (!this.data.ruleOfferDismissals.includes(normalized)) {
+        this.data.ruleOfferDismissals = [...this.data.ruleOfferDismissals, normalized];
+      }
+      return of(undefined);
+    }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
   /** The error the API would answer for these values, or `null`. */

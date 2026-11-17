@@ -3,6 +3,7 @@ import type {
   CreateRuleRequest,
   ListRulesResponse,
   RuleMatchesResponse,
+  RuleOfferResponse,
   RuleResponse,
   UpdateRuleRequest,
 } from '@shelfmark/contracts';
@@ -19,4 +20,8 @@ export interface RulesApi {
   remove(id: string): Observable<void>;
   /** `GET /api/rules/:id/matches`: the links in Unsorted the rule would file. */
   matches(id: string): Observable<RuleMatchesResponse>;
+  /** `POST /api/rules/offers/check`: a rule to offer for links the user just filed (AI-2), or none. */
+  checkOffer(linkIds: readonly string[]): Observable<RuleOfferResponse>;
+  /** `POST /api/rules/offers/dismiss` (204): "Not now" for a domain, remembered. */
+  dismissOffer(domain: string): Observable<void>;
 }

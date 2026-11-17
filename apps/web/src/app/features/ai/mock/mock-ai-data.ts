@@ -251,6 +251,21 @@ export class MockAiData {
     return found;
   }
 
+  /** The stored suggestions of a link, as the mock Tidy reads them (call `settle` first). */
+  suggestionsOf(linkId: string): readonly LinkSuggestion[] {
+    return this.suggestions.get(linkId) ?? [];
+  }
+
+  /** Replaces the stored suggestions of a link (the mock Tidy's apply and undo). */
+  setSuggestions(linkId: string, list: readonly LinkSuggestion[]): void {
+    this.suggestions.set(linkId, [...list]);
+  }
+
+  /** The folder Automatic mode put the link in while its mark is open, else `null`. */
+  autoAppliedFolder(linkId: string): string | null {
+    return this.applied.get(linkId)?.folderId ?? null;
+  }
+
   /**
    * `POST /api/links/:id/ai/rewrite`: a new AI summary at once (counts against the month). `null`
    * for a missing link; `conflict` while the summary is the user's or AI is off; `quota` at the limit.

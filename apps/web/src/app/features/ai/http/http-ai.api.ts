@@ -9,6 +9,12 @@ import {
   type CreateAiDraftRequest,
   type LinkAiState,
   type LinkResponse,
+  type TidyApplyRequest,
+  type TidyApplyResponse,
+  type TidyCountResponse,
+  type TidyListResponse,
+  type TidyUndoRequest,
+  type TidyUndoResponse,
   type UndoAiApplyRequest,
   type UpdateAiSettingsRequest,
 } from '@shelfmark/contracts';
@@ -79,6 +85,29 @@ export class HttpAiApi implements AiApi {
 
   deleteData(): Observable<void> {
     return this.http.delete<void>(AI_ENDPOINT.Data, { context: skipErrorToast() });
+  }
+
+  getTidy(after?: string): Observable<TidyListResponse> {
+    return this.http.get<TidyListResponse>(AI_ENDPOINT.Tidy, {
+      context: skipErrorToast(),
+      ...(after !== undefined && { params: { after } }),
+    });
+  }
+
+  getTidyCount(): Observable<TidyCountResponse> {
+    return this.http.get<TidyCountResponse>(AI_ENDPOINT.TidyCount, { context: skipErrorToast() });
+  }
+
+  applyTidy(request: TidyApplyRequest): Observable<TidyApplyResponse> {
+    return this.http.post<TidyApplyResponse>(AI_ENDPOINT.TidyApply, request, {
+      context: skipErrorToast(),
+    });
+  }
+
+  undoTidy(request: TidyUndoRequest): Observable<TidyUndoResponse> {
+    return this.http.post<TidyUndoResponse>(AI_ENDPOINT.TidyUndo, request, {
+      context: skipErrorToast(),
+    });
   }
 
   getLinkAi(linkId: string): Observable<LinkAiState> {

@@ -54,6 +54,7 @@ import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
 import { phoneTabForUrl } from './phone-tab-for-url';
+import { isPushedUrl } from './pushed-url';
 import { SettingsNavComponent } from '../features/settings/components/settings-nav/settings-nav.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ToastAreaDirective } from '../core/layout/toast-area.directive';
@@ -113,6 +114,8 @@ export default class AppShellComponent {
   );
   /** The tab of the current page (the tab bar marks it with `aria-current`). */
   protected readonly activeTab = computed(() => phoneTabForUrl(this.url()));
+  /** A pushed page with its own bottom bar (Tidy Unsorted): the mobile shell hides the tab bar. */
+  protected readonly pushed = computed(() => isPushedUrl(this.url()));
   /** On the settings pages the settings nav takes the place of the sidebar (tablet and up). */
   protected readonly inSettings = computed(() => this.activeTab() === PHONE_TAB.You);
   private readonly tabLabels = toSignal(
