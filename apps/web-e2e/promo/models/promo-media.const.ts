@@ -11,5 +11,5 @@ export const PROMO_MEDIA = {
   /** VP9 quality for the WebM (constant quality mode). */
   Vp9Crf: '46',
   /** WebP quality of the poster. */
-  PosterQuality: '80',
+  PosterQuality: 80,
 } as const;

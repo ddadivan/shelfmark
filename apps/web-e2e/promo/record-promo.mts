@@ -95,7 +95,7 @@ for (const variant of PROMO_VARIANTS) {
     mkdirSync(outDir, { recursive: true });
     const file = (extension: string): string => join(outDir, `${name}.${extension}`);
     encodeVideo(raw, trimStart, rawDuration, cuts, { mp4: file('mp4'), webm: file('webm') });
-    encodePoster(posterPng, variant.width, variant.height, file('webp'));
+    await encodePoster(posterPng, variant.width, variant.height, file('webp'));
     writeFileSync(file('vtt'), toWebVtt(cues));
 
     const report = {

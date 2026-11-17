@@ -60,9 +60,10 @@ about 2:40; the MP4s stay near 4 MB and 2.5 MB (CRF 34 / VP9 46). Commit the fil
 fits the layout (`ViewportService.phone`), shows only the poster under reduced motion and starts
 playing on request.
 
-**Requires a full ffmpeg** with `libx264`, `libvpx-vp9` and `libwebp` (macOS: `brew install ffmpeg`;
-or set `FFMPEG_PATH`). Playwright's bundled ffmpeg only writes the raw VP8 recording, so the
-script checks for the encoders first and stops with the fix.
+**Requires a full ffmpeg** with `libx264` and `libvpx-vp9` (macOS: `brew install ffmpeg`; or set
+`FFMPEG_PATH`). Playwright's bundled ffmpeg only writes the raw VP8 recording, so the script checks
+for the encoders first and stops with the fix. The WebP poster is written by `sharp` (#465:
+Homebrew's ffmpeg no longer ships `libwebp`).
 
 ## How it works
 

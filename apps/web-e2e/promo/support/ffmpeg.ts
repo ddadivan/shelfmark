@@ -1,9 +1,13 @@
 import { execFileSync } from 'node:child_process';
+import sharp from 'sharp';
 import type { PromoCut } from '../models/promo-cut.interface';
 import { PROMO_MEDIA } from '../models/promo-media.const';
 
-/** Encoders the promo needs; Playwright's bundled ffmpeg only has VP8, so a full build is required. */
-const REQUIRED_ENCODERS = ['libx264', 'libvpx-vp9', 'libwebp'] as const;
+/**
+ * Encoders the promo needs; Playwright's bundled ffmpeg only has VP8, so a full build is required.
+ * The poster is written by sharp (#465: Homebrew's ffmpeg no longer ships libwebp).
+ */
+const REQUIRED_ENCODERS = ['libx264', 'libvpx-vp9'] as const;
 
 /** The ffmpeg binary: `FFMPEG_PATH`, else `ffmpeg` on the PATH. */
 export function ffmpegBinary(): string {
@@ -121,17 +125,14 @@ export function encodeVideo(
 }
 
 /** The poster: a PNG screenshot scaled to the video size, as WebP. */
-export function encodePoster(png: string, width: number, height: number, webp: string): void {
-  run([
-    '-y',
-    '-i',
-    png,
-    '-vf',
-    `scale=${width}:${height}:flags=lanczos`,
-    '-c:v',
-    'libwebp',
-    '-quality',
-    PROMO_MEDIA.PosterQuality,
-    webp,
-  ]);
+export async function encodePoster(
+  png: string,
+  width: number,
+  height: number,
+  webp: string,
+): Promise<void> {
+  await sharp(png)
+    .resize(width, height, { kernel: 'lanczos3' })
+    .webp({ quality: PROMO_MEDIA.PosterQuality })
+    .toFile(webp);
 }
