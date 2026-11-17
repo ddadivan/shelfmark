@@ -217,7 +217,11 @@
         "label": "Pasta",
         "unsorted": "Sem pasta",
         "searchLabel": "Pesquisar pastas",
-        "noResults": "Nenhuma pasta encontrada"
+        "noResults": "Nenhuma pasta encontrada",
+        "create": "Criar a pasta “{name}”",
+        "newBadge": "Nova",
+        "notCreated": "Não foi possível criar a pasta “{{name}}”",
+        "notCreatedDetail": "O link foi salvo sem pasta."
       },
       "tags": {
         "label": "Tags",
@@ -2830,6 +2834,12 @@
       },
       "folderStyleRace": {
         "text": "Mudar depressa o estilo de uma pasta já não traz de volta uma escolha antiga."
+      },
+      "newFolderInAddLink": {
+        "text": "Adicionar link pode criar uma pasta: digite um nome novo no campo Pasta."
+      },
+      "emojiPickerTabs": {
+        "text": "O seletor de emoji tem a largura do campo, e as abas de categorias não parecem mais emojis para escolher."
       }
     },
     "sections": {

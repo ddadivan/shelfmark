@@ -7,7 +7,7 @@ import type { ChangelogRelease } from './changelog-release.interface';
  * into `main` adds a patch entry with one-line fixes. Media rules (PROJECT.md 9.3): improvements
  * and fixes are one line of text; features get a short text and, when they have a `priority`, a
  * screenshot per theme (`public/media/whats-new/<version>/`, made by the generator, no video).
- * The draft lists the 2.1.0 changes since 2.0.0; hotfixes 2.0.1 to 2.0.7 are not repeated.
+ * The draft lists the 2.1.0 changes since 2.0.0; hotfixes 2.0.1 to 2.0.8 are not repeated.
  */
 export const CHANGELOG: readonly ChangelogRelease[] = [
   {
@@ -94,6 +94,22 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
         kind: CHANGELOG_ITEM_KIND.Fix,
         id: 'folderStyleRace',
         textKey: 'changelog.items.folderStyleRace.text',
+      },
+    ],
+  },
+  {
+    version: '2.0.8',
+    date: '2026-11-17',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'newFolderInAddLink',
+        textKey: 'changelog.items.newFolderInAddLink.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'emojiPickerTabs',
+        textKey: 'changelog.items.emojiPickerTabs.text',
       },
     ],
   },

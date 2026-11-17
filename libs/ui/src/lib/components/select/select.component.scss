@@ -64,6 +64,10 @@
   white-space: nowrap;
 }
 
+.ui-select__badge {
+  flex: none;
+}
+
 .ui-select__value--placeholder {
   color: var(--text-muted);
 }

@@ -1,7 +1,7 @@
 @if (pasted(); as paste) {
   <app-paste-many-list
     [paste]="paste"
-    [folderId]="form.folderId().value()"
+    [folderId]="pasteFolderId()"
     [tags]="form.tags().value()"
     [folderChosen]="form.folderId().dirty()"
   />
@@ -160,8 +160,10 @@
           [emptyLabel]="'links.add.folder.unsorted' | transloco"
           [searchLabel]="'links.add.folder.searchLabel' | transloco"
           [noResultsLabel]="'links.add.folder.noResults' | transloco"
+          [createLabel]="'links.add.folder.create' | transloco"
           searchable
           [formField]="form.folderId"
+          (created)="onFolderCreated($event)"
         />
 
         <ui-tag-input

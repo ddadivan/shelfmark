@@ -217,7 +217,11 @@
         "label": "Carpeta",
         "unsorted": "Sin carpeta",
         "searchLabel": "Buscar carpetas",
-        "noResults": "No se encontraron carpetas"
+        "noResults": "No se encontraron carpetas",
+        "create": "Crear la carpeta «{name}»",
+        "newBadge": "Nueva",
+        "notCreated": "No se pudo crear la carpeta «{{name}}»",
+        "notCreatedDetail": "El enlace se guardó sin carpeta."
       },
       "tags": {
         "label": "Etiquetas",
@@ -2830,6 +2834,12 @@
       },
       "folderStyleRace": {
         "text": "Cambiar rápido el estilo de una carpeta ya no devuelve una elección anterior."
+      },
+      "newFolderInAddLink": {
+        "text": "Añadir enlace puede crear una carpeta: escribe un nombre nuevo en el campo Carpeta."
+      },
+      "emojiPickerTabs": {
+        "text": "El selector de emoji es tan ancho como su campo y sus pestañas de categorías ya no parecen emoji para elegir."
       }
     },
     "sections": {

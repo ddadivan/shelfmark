@@ -14,6 +14,7 @@ import {
   Injector,
   input,
   model,
+  output,
   signal,
   untracked,
   viewChild,
@@ -22,13 +23,17 @@ import type { FormValueControl } from '@angular/forms/signals';
 import { UiFieldControl } from '../field/field-control.directive';
 import { FieldShellComponent } from '../field/field-shell.component';
 import { IconComponent } from '../icon/icon.component';
+import { BadgeComponent } from '../badge/badge.component';
+import { BADGE_TONE } from '../badge/models/badge-tone.const';
+import { fillName } from '../tag-input/tag-input-rows';
 import { FieldPopup } from '../../services/overlay/field-popup';
 import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import type { SelectOption } from './models/select-option.interface';
 import type { SelectIcon } from './models/select-icon.type';
 import { SELECT_ICON } from './models/select-icon.const';
+import { SELECT_CREATE_ID } from './models/select-create-id.const';
 import { relayKey } from './relay-key';
-import { selectedRow, selectRows } from './select-rows';
+import { createName, selectedRow, selectRows } from './select-rows';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { FolderIconComponent } from '../folder-icon/folder-icon.component';
@@ -53,10 +58,16 @@ const COARSE_POINTER = '(pointer: coarse)';
  * while the box is empty (or with Ctrl / Cmd) so they still edit the text otherwise. Without
  * search, typing jumps to an option (typeahead). Esc closes and keeps the value; focus returns to
  * the trigger. The overlay lives in `<body>` and takes the theme of `<html>`.
+ *
+ * With `createLabel` (searchable only) a search that names no option offers a last row
+ * "Create “name”"; choosing it emits `created` with the trimmed name and leaves the value to the
+ * feature (which may add the option, marked with a `badge`, and choose it). An option's `badge`
+ * shows after its name in the list and in the trigger.
  */
 @Component({
   selector: 'ui-select',
   imports: [
+    BadgeComponent,
     FieldShellComponent,
     FolderIconComponent,
     IconComponent,
@@ -75,6 +86,9 @@ const COARSE_POINTER = '(pointer: coarse)';
 export class SelectComponent extends UiFieldControl implements FormValueControl<string | null> {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
+  protected readonly BADGE_TONE = BADGE_TONE;
+  protected readonly SELECT_CREATE_ID = SELECT_CREATE_ID;
+  protected readonly SELECT_ICON = SELECT_ICON;
   /** Id of the chosen option, or `null` for the empty option or no choice. */
   readonly value = model<string | null>(null);
   /** The option tree. */
@@ -89,6 +103,13 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   readonly searchLabel = input('');
   /** Text shown when the search finds nothing. */
   readonly noResultsLabel = input('');
+  /**
+   * Text of the "Create" row of a searchable select, for example `Create folder “{name}”`; no row
+   * without it. The row shows while the search names no option (ignoring case).
+   */
+  readonly createLabel = input('');
+  /** The "Create" row was chosen: the trimmed search text. The value is left to the feature. */
+  readonly created = output<string>();
 
   private readonly injector = inject(Injector);
   private readonly document = inject(DOCUMENT);
@@ -107,6 +128,18 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   protected readonly rows = computed(() =>
     selectRows(this.options(), this.searchable() ? this.query() : '', this.emptyLabel()),
   );
+  /** The name the "Create" row offers, or `null` (no label, no search text, or a known name). */
+  protected readonly createText = computed(() =>
+    this.searchable() && this.createLabel()
+      ? createName(this.options(), this.query(), this.emptyLabel())
+      : null,
+  );
+  protected readonly createRowLabel = computed(() => {
+    const name = this.createText();
+    return name === null ? '' : fillName(this.createLabel(), name);
+  });
+  /** Something to show in the list: matching options or the "Create" row. */
+  protected readonly hasRows = computed(() => this.rows().length > 0 || this.createText() !== null);
   protected readonly selection = computed(() => [this.value()]);
   protected readonly chosen = computed(() =>
     selectedRow(this.options(), this.value(), this.emptyLabel()),
@@ -199,6 +232,10 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   }
 
   protected onListValue(selected: readonly (string | null)[]): void {
+    if (selected[selected.length - 1] === SELECT_CREATE_ID) {
+      this.chooseCreate();
+      return;
+    }
     if (selected.length > 0) {
       this.value.set(selected[selected.length - 1] ?? null);
     } else if (!this.rows().some((row) => row.id === this.value())) {
@@ -243,7 +280,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
         // the first option is activated after it. Covered by the spec "filters while typing, keeps
         // ancestors and activates the first match".
         queueMicrotask(() => {
-          if (this.open() && this.rows().length > 0) {
+          if (this.open() && this.hasRows()) {
             this.listbox()?.gotoFirst();
           }
           this.pane.updatePosition();
@@ -278,6 +315,16 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
         break;
       default:
         break;
+    }
+  }
+
+  /** The "Create" row: hands the name to the feature; Aria's own selection goes back to the value. */
+  private chooseCreate(): void {
+    const name = this.createText();
+    this.listbox()?.value.set(this.selection());
+    this.hide(true);
+    if (name !== null) {
+      this.created.emit(name);
     }
   }
 

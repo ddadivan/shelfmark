@@ -4,7 +4,8 @@ import {
   type LinkResponse,
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
-import { injectDialogData, UiDialogRef } from '@shelfmark/ui';
+import { TranslocoService } from '@jsverse/transloco';
+import { injectDialogData, TOAST_KIND, ToastService, UiDialogRef } from '@shelfmark/ui';
 import { firstValueFrom, type Observable } from 'rxjs';
 import { normalizeTagNames } from '../../tags/utils/normalize-tag-names';
 import { ADD_LINK_ACTION } from '../models/add-link-action.const';
@@ -15,6 +16,7 @@ import { LINKS_API } from '../models/links-api.const';
 import { isLinkKind } from '../utils/link-kind';
 import { saveErrorKey } from '../utils/save-error-key';
 import { AddLinkFormService } from './add-link-form.service';
+import { AddLinkNewFolderService } from './add-link-new-folder.service';
 import { AddLinkPreviewService } from './add-link-preview.service';
 import { AddLinkRuleService } from './add-link-rule.service';
 
@@ -22,7 +24,8 @@ import { AddLinkRuleService } from './add-link-rule.service';
  * The save flow of the add-link dialog (provided by the dialog component): builds the create
  * request (with an idempotency key that survives retries) or, in edit mode, the changed fields
  * only, sends it and closes the dialog with the result. Registers itself as the submit action of
- * the form.
+ * the form. A folder named in the dialog (#454) is created first; when that fails the link is saved
+ * without a folder and a warning toast says so.
  */
 @Service({ autoProvided: false })
 export class AddLinkSaveService {
@@ -31,10 +34,18 @@ export class AddLinkSaveService {
   private readonly previewService = inject(AddLinkPreviewService);
   // Optional: specs of the save flow alone run without rules.
   private readonly ruleService = inject(AddLinkRuleService, { optional: true });
+  private readonly newFolder = inject(AddLinkNewFolderService);
+  private readonly toasts = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly data = injectDialogData<AddLinkDialogData>();
 
   readonly saving = signal(false);
+  /**
+   * Name of a folder named in the dialog that could not be created: told once the link is saved,
+   * also when that takes a retry (the retry no longer has the pending folder).
+   */
+  private failedFolderName: string | null = null;
   /** Translation key of why the last save failed; `null` while nothing failed. */
   readonly saveError = signal<string | null>(null);
 
@@ -46,6 +57,12 @@ export class AddLinkSaveService {
     if (this.saving()) {
       return;
     }
+    this.saving.set(true);
+    this.saveError.set(null);
+    const folder = await this.newFolder.resolve(this.formState.model().folderId);
+    this.failedFolderName = folder.failedName ?? this.failedFolderName;
+    // The field shows what is saved: the new folder's id, or "Unsorted" when it was not created.
+    this.formState.model.update((model) => ({ ...model, folderId: folder.folderId }));
     const value = this.formState.model();
     const title = value.title.trim();
     const note = value.note.trim();
@@ -54,7 +71,9 @@ export class AddLinkSaveService {
     if (this.formState.original) {
       const changes = this.changes();
       if (Object.keys(changes).length === 0) {
+        this.saving.set(false);
         this.ref.close();
+        this.warnFolderNotCreated();
         return;
       }
       request$ = this.linksApi.update(this.formState.original.id, changes);
@@ -78,8 +97,6 @@ export class AddLinkSaveService {
         idempotencyKey: this.keyFor(this.fingerprint(payload)),
       });
     }
-    this.saving.set(true);
-    this.saveError.set(null);
     try {
       const pending = firstValueFrom(request$).then((link): AddLinkSaved => ({
         action: ADD_LINK_ACTION.Saved,
@@ -90,10 +107,24 @@ export class AddLinkSaveService {
       const saved = await pending;
       // `saving` stays on: the button keeps its spinner while the dialog leaves.
       this.ref.close(saved);
+      this.warnFolderNotCreated();
     } catch (error) {
       this.saving.set(false);
       this.saveError.set(saveErrorKey(error));
     }
+  }
+
+  /** The folder named in the dialog could not be created: the link went without one. */
+  private warnFolderNotCreated(): void {
+    const name = this.failedFolderName;
+    if (name === null) {
+      return;
+    }
+    this.toasts.show({
+      kind: TOAST_KIND.Warn,
+      title: this.transloco.translate('links.add.folder.notCreated', { name }),
+      detail: this.transloco.translate('links.add.folder.notCreatedDetail'),
+    });
   }
 
   /**

@@ -217,7 +217,11 @@
         "label": "Dossier",
         "unsorted": "Sans dossier",
         "searchLabel": "Rechercher des dossiers",
-        "noResults": "Aucun dossier trouvé"
+        "noResults": "Aucun dossier trouvé",
+        "create": "Créer le dossier « {name} »",
+        "newBadge": "Nouveau",
+        "notCreated": "Impossible de créer le dossier « {{name}} »",
+        "notCreatedDetail": "Le lien est enregistré sans dossier."
       },
       "tags": {
         "label": "Tags",
@@ -2830,6 +2834,12 @@
       },
       "folderStyleRace": {
         "text": "Changer vite le style d'un dossier ne ramène plus un ancien choix."
+      },
+      "newFolderInAddLink": {
+        "text": "Ajouter un lien peut créer un dossier : tape un nouveau nom dans le champ Dossier."
+      },
+      "emojiPickerTabs": {
+        "text": "Le sélecteur d’emoji est aussi large que son champ, et ses onglets de catégories ne ressemblent plus à des emoji à choisir."
       }
     },
     "sections": {

@@ -144,8 +144,11 @@ test.describe('folder field on a touch screen (mock API)', () => {
       // Tapping the search box is the way to type, and the list still answers.
       await search.tap();
       await expect(search).toBeFocused();
+      // A name no folder has offers to create it (#454).
       await search.fill('zzz-no-such-folder');
-      await expect(page.getByText('No folders found').first()).toBeVisible();
+      await expect(
+        page.getByRole('option', { name: 'Create folder “zzz-no-such-folder”' }),
+      ).toBeVisible();
     },
   );
 
