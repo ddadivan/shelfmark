@@ -15,6 +15,12 @@ export interface DemoSeedLink {
   openedDaysAgo: number | null;
   favorite?: true;
   note?: string;
+  /** AI summary (#391), shown with the AI mark; the demo starts with AI on (author's answer 5). */
+  summary?: string;
+  /** A pending AI folder suggestion (Unsorted links only). */
+  suggestFolder?: DemoFolderKey;
+  /** Pending AI tag suggestions; a name that is not a tag yet is a new-tag suggestion. */
+  suggestTags?: readonly string[];
   /** Pinned to the sidebar (the "Pinned" section of the Main mockup). */
   pinned?: true;
   /** Pinned to the top of its folder (the card with the "Pinned" badge). */

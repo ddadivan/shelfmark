@@ -4,11 +4,12 @@ import { MOCK_ID } from '@shelfmark/contracts/testing';
 import { firstValueFrom } from 'rxjs';
 import { MOCK_TAG_NAME } from '../models/mock-tag-name.const';
 import { MockLibraryData } from './mock-library-data';
+import { MockAiData } from '../../ai/mock/mock-ai-data';
 import { MockLinksApi } from './mock-links.api';
 import { MockTagsApi } from './mock-tags.api';
 
 function create() {
-  const injector = Injector.create({ providers: [MockLibraryData] });
+  const injector = Injector.create({ providers: [MockLibraryData, MockAiData] });
   return runInInjectionContext(injector, () => ({
     tags: new MockTagsApi(),
     links: new MockLinksApi(),

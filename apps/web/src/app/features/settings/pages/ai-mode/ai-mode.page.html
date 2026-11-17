@@ -1,0 +1,18 @@
+<app-settings-page-header
+  [title]="titleKey() | transloco"
+  [backHref]="backHref"
+  [backLabel]="'settings.nav.ai' | transloco"
+/>
+
+<ui-settings-section [title]="key() + '.groupLabel' | transloco">
+  <ui-radio-group
+    #modes
+    [ariaLabel]="key() + '.groupLabel' | transloco"
+    [options]="options()"
+    [value]="value()"
+    [disabled]="!store.isOn()"
+    (valueChange)="set($event, modes)"
+  />
+</ui-settings-section>
+
+<p class="ai-mode__note">{{ key() + '.note' | transloco }}</p>

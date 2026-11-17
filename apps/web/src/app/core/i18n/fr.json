@@ -541,7 +541,8 @@
     "dont": {
       "title": "Ce que nous ne faisons pas",
       "sell": "Nous ne vendons ni ne partageons vos données et n’affichons pas de publicité.",
-      "read": "Nous n’utilisons pas le contenu de vos liens pour les statistiques : seulement des nombres (liens, dossiers, notes), jamais d’adresses ni de titres. Vos liens sont stockés dans notre base de données pour que l’app puisse les afficher, les rechercher et en faire un aperçu ; seul l’auteur du service y a accès."
+      "read": "Nous n’utilisons pas le contenu de vos liens pour les statistiques : seulement des nombres (liens, dossiers, notes), jamais d’adresses ni de titres. Vos liens sont stockés dans notre base de données pour que l’app puisse les afficher, les rechercher et en faire un aperçu ; seul l’auteur du service y a accès.",
+      "training": "Nous n’utilisons pas vos liens, notes ou résumés pour entraîner des modèles d’IA, et nous ne laissons pas notre fournisseur d’IA le faire."
     },
     "previews": {
       "title": "Aperçus des liens",
@@ -564,6 +565,30 @@
     "where": {
       "title": "Où sont les données",
       "hosting": "L’API tourne sur Vercel dans la région fra1 (Francfort) et la base de données sur Neon dans eu-central-1 (Francfort). Les fichiers statiques de l’application sont servis par le réseau mondial de Vercel."
+    },
+    "ai": {
+      "title": "Fonctions d’IA (facultatives)",
+      "intro": "L’IA reste désactivée tant que vous ne l’activez pas dans Paramètres › IA. Une fois activée, elle suggère des tags et des dossiers et rédige de courts résumés. Tout ce qu’elle produit porte une petite étincelle et peut être inexact ; rien n’est appliqué sans votre accord ou le mode automatique.",
+      "processor": {
+        "term": "Qui les traite :",
+        "text": "[PROVIDER], en tant que sous-traitant, uniquement pour produire le résultat demandé. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+      },
+      "sent": {
+        "term": "Ce qui est envoyé :",
+        "text": "l’adresse, le titre, la description et le texte extrait de la page d’un lien, ainsi que les noms de vos tags et dossiers. Vos notes seulement si vous activez « Inclure mes notes ». Jamais vos autres liens, les détails de votre compte ni les données d’autres personnes."
+      },
+      "kept": {
+        "term": "Durée de conservation :",
+        "text": "le fournisseur conserve la requête [N] jours au maximum et ne l’utilise pas pour l’entraînement. Les résultats (tags, résumés) sont stockés avec vos liens et supprimés avec eux."
+      },
+      "counted": {
+        "term": "Ce que nous comptons :",
+        "text": "uniquement le nombre de requêtes d’IA par compte, pour votre limite mensuelle. Comme partout dans Shelfmark, les statistiques n’utilisent que des nombres, jamais ce que vous avez enregistré."
+      },
+      "off": {
+        "term": "Désactiver :",
+        "text": "désactivez une fonction ou l’IA entière dans Paramètres › IA ; les requêtes s’arrêtent aussitôt. « Supprimer les données d’IA » y retire tous les résumés et suggestions de l’IA."
+      }
     },
     "retention": {
       "title": "Durée de conservation",
@@ -1220,6 +1245,7 @@
       "account": "Compte",
       "appearance": "Apparence",
       "library": "Bibliothèque",
+      "ai": "IA",
       "language": "Langue",
       "privacy": "Confidentialité et données",
       "shortcuts": "Raccourcis clavier",
@@ -1229,6 +1255,7 @@
       "account": "Votre profil, votre étagère et vos données.",
       "appearance": "Enregistré au fur et à mesure et synchronisé sur tous vos appareils.",
       "library": "Comment les liens sont affichés, enregistrés et conservés.",
+      "ai": "De l’aide pour organiser, seulement quand vous le voulez. Désactivée tant que vous ne l’activez pas.",
       "language": "La langue de l’interface. Les formats de date et d’heure sont dans Apparence.",
       "privacy": "Ce que nous conservons, et comment le récupérer.",
       "shortcuts": "Travaillez sans la souris.",
@@ -1470,6 +1497,16 @@
       },
       "kept": {
         "title": "Ce que nous conservons"
+      },
+      "ai": {
+        "title": "Fonctions d’IA",
+        "body": "L’IA est facultative et désactivée tant que vous ne l’activez pas. Une fois activée, l’adresse, le titre et le texte de la page d’un lien sont envoyés à notre fournisseur d’IA pour suggérer des tags et des dossiers et rédiger des résumés. Jamais utilisés pour entraîner des modèles ni pour des statistiques.",
+        "delete": {
+          "label": "Supprimer les données d’IA",
+          "hint": "Retire tous les résumés et suggestions de l’IA, dans Paramètres › IA",
+          "action": "Ouvrir",
+          "actionLabel": "Ouvrir « Supprimer les données d’IA » dans Paramètres › IA"
+        }
       }
     },
     "footer": {
@@ -2889,5 +2926,200 @@
     "available": "Une nouvelle version de Shelfmark est prête",
     "reload": "Recharger",
     "later": "Plus tard"
+  },
+  "ai": {
+    "settings": {
+      "features": {
+        "title": "Fonctions d’IA"
+      },
+      "enabled": {
+        "label": "Utiliser l’IA dans Shelfmark",
+        "hint": "Envoie l’adresse, le titre et un court extrait de la page d’un lien à notre fournisseur d’IA pour suggérer des tags et rédiger des résumés. Jamais utilisé pour entraîner des modèles ni pour des statistiques."
+      },
+      "unavailable": "L’IA ne répond pas pour le moment. Vos liens s’enregistrent normalement ; suggestions et résumés suivront dès son retour.",
+      "folder": {
+        "label": "Dossier",
+        "hint": "Suggérer : une puce à toucher. Automatique : seulement si vous laissez un lien dans Sans dossier, avec Annuler. Un dossier que vous choisissez n’est jamais changé."
+      },
+      "tags": {
+        "label": "Tags",
+        "hint": "Suggérer : des puces à toucher. Automatique : seulement si vous n’ajoutez aucun tag vous-même, avec Annuler."
+      },
+      "mode": {
+        "suggest": "Suggérer",
+        "auto": "Automatique",
+        "off": "Désactivé"
+      },
+      "modePage": {
+        "open": "{{label}} : {{mode}}",
+        "auto": "Appliquer automatiquement si je ne choisis pas",
+        "folder": {
+          "groupLabel": "Suggestions de dossier",
+          "suggestHint": "Une puce à toucher. Rien ne change tant que vous ne le faites pas.",
+          "autoHint": "Seulement pour les liens laissés dans Sans dossier. Vous le voyez et pouvez l’annuler.",
+          "offHint": "Aucune suggestion de dossier.",
+          "note": "Un dossier que vous choisissez vous-même n’est jamais changé par l’IA."
+        },
+        "tags": {
+          "groupLabel": "Suggestions de tags",
+          "suggestHint": "Des puces à toucher. Rien ne change tant que vous ne le faites pas.",
+          "autoHint": "Seulement pour les liens enregistrés sans tags. Vous le voyez et pouvez l’annuler.",
+          "offHint": "Aucune suggestion de tags.",
+          "note": "Les tags que vous ajoutez vous-même ne sont jamais retirés par l’IA."
+        }
+      },
+      "summaries": {
+        "label": "Résumés",
+        "hint": "Une ou deux phrases sur chaque lien, pour vous rappeler pourquoi vous l’avez gardé. Modifiables à tout moment."
+      },
+      "sent": {
+        "title": "Ce qui est envoyé"
+      },
+      "notes": {
+        "label": "Inclure mes notes",
+        "hint": "Les notes rendent les suggestions plus précises. Désactivé, vos notes ne quittent jamais Shelfmark."
+      },
+      "language": {
+        "label": "Langue des résumés",
+        "hint": "Les résumés sont rédigés dans cette langue, quelle que soit celle de la page.",
+        "app": "Comme l’app ({{language}})"
+      },
+      "usage": {
+        "title": "Ce mois-ci",
+        "count": "{{used}} liens sur {{limit}} ce mois-ci",
+        "resets": "Remise à zéro le {{date}}",
+        "meterLabel": "Liens traités par l’IA ce mois-ci",
+        "limit": "Vous avez utilisé les {{limit}} liens de ce mois. Les nouveaux liens s’enregistrent normalement, sans suggestions ni résumés, jusqu’au {{date}}."
+      },
+      "data": {
+        "title": "Vos données d’IA",
+        "label": "Supprimer les données d’IA",
+        "hint": "Supprime tous les résumés et suggestions faits par l’IA. Vos modifications, tags et dossiers restent.",
+        "action": "Supprimer les données d’IA"
+      },
+      "privacy": {
+        "label": "Comment l’IA fonctionne dans Shelfmark",
+        "hint": "Ce qui est envoyé, à qui, combien de temps c’est gardé et comment la désactiver",
+        "action": "Lire",
+        "actionLabel": "Lire comment l’IA fonctionne dans Shelfmark"
+      },
+      "failed": "Impossible d’enregistrer vos paramètres d’IA",
+      "failedDetail": "La modification a été annulée. Réessayez.",
+      "loadFailed": "Impossible de charger vos paramètres d’IA.",
+      "retry": "Réessayer"
+    },
+    "backfill": {
+      "title": "Traiter les liens existants",
+      "hint": {
+        "one": "{{count}} lien a été enregistré avant l’activation de l’IA. Ajoute suggestions et résumés en arrière-plan : plus vite si Shelfmark est ouvert, sinon en un jour.",
+        "many": "{{count}} de liens ont été enregistrés avant l’activation de l’IA. Ajoute suggestions et résumés en arrière-plan : plus vite si Shelfmark est ouvert, sinon en un jour.",
+        "other": "{{count}} liens ont été enregistrés avant l’activation de l’IA. Ajoute suggestions et résumés en arrière-plan : plus vite si Shelfmark est ouvert, sinon en un jour."
+      },
+      "start": "Lancer",
+      "running": "Traitement des liens existants",
+      "progress": "{{done}} sur {{total}} traités. Plus rapide si Shelfmark est ouvert ; sinon terminé en un jour.",
+      "meterLabel": "Liens existants traités",
+      "estimate": "Environ {{minutes}} min restantes",
+      "stop": "Arrêter",
+      "done": "Tous les liens existants ont été traités.",
+      "startFailed": "Impossible de lancer le traitement de vos liens",
+      "stopFailed": "Impossible d’arrêter le traitement. Réessayez."
+    },
+    "deleteData": {
+      "confirm": {
+        "title": "Supprimer les données d’IA ?",
+        "message": "Tous les résumés et suggestions faits par l’IA sont supprimés. Vos modifications, tags et dossiers restent. Action irréversible.",
+        "confirm": "Supprimer les données d’IA",
+        "cancel": "Annuler",
+        "close": "Fermer"
+      },
+      "done": "Données d’IA supprimées",
+      "failed": "Impossible de supprimer les données d’IA",
+      "failedDetail": "Rien n’a été supprimé. Réessayez."
+    },
+    "intro": {
+      "title": "Activer l’IA dans Shelfmark ?",
+      "titleShort": "Activer l’IA ?",
+      "close": "Fermer",
+      "suggest": {
+        "title": "Suggère des tags et un dossier",
+        "text": "Parmi ceux que vous avez déjà. C’est vous qui décidez : rien n’est appliqué sans que vous touchiez la suggestion ou choisissiez Automatique dans les paramètres."
+      },
+      "summaries": {
+        "title": "Rédige de courts résumés",
+        "text": "Une ou deux phrases par lien. Signalés comme faits par l’IA, ils peuvent être inexacts ; modifiables à tout moment."
+      },
+      "sent": {
+        "title": "Ce qui est envoyé au modèle",
+        "text": "L’adresse, le titre, la description d’un lien et le texte extrait de la page. Jamais vos autres liens, vos notes (sauf si vous l’autorisez) ni les données de quelqu’un d’autre."
+      },
+      "training": {
+        "title": "Pas utilisé pour l’entraînement",
+        "text": "Votre contenu n’est jamais utilisé pour entraîner des modèles. Le fournisseur, [PROVIDER], le traite pour nous et le conserve [N] jours au maximum."
+      },
+      "details": "Vous pouvez désactiver l’IA, ou une fonction à la fois, dans Paramètres › IA.",
+      "policy": "Lire la politique de confidentialité",
+      "failed": "Impossible d’activer l’IA. Réessayez.",
+      "notNow": "Pas maintenant",
+      "turnOn": "Activer l’IA"
+    },
+    "suggest": {
+      "label": "Suggéré",
+      "alsoFits": "Convient aussi",
+      "loading": "Suggestions…",
+      "folderRow": "Dossier suggéré",
+      "tagsRow": "Tags suggérés",
+      "addAll": "Tout ajouter",
+      "addedAll": "Tags suggérés ajoutés",
+      "new": "Nouveau",
+      "addTag": "Ajouter le tag {{name}}",
+      "createTag": "Créer et ajouter le tag {{name}}",
+      "moveTo": "Déplacer vers {{name}}",
+      "dismiss": "Ignorer la suggestion {{name}}",
+      "tagAdded": "Tag {{name}} ajouté",
+      "folderChosen": "Dossier {{name}} choisi"
+    },
+    "line": {
+      "limit": "Suggestions en pause jusqu’au {{date}}. Vous avez utilisé les {{limit}} liens de ce mois.",
+      "unavailable": "Les suggestions ne sont pas disponibles pour le moment. Votre lien s’enregistre normalement.",
+      "retry": "Réessayer",
+      "settings": "Réglages IA"
+    },
+    "applied": {
+      "folder": "Déplacé par l’IA",
+      "tags": {
+        "one": "{{count}} ajouté par l’IA",
+        "many": "{{count}} ajoutés par l’IA",
+        "other": "{{count}} ajoutés par l’IA"
+      },
+      "undo": "Annuler",
+      "undoFolder": "Annuler le déplacement par l’IA",
+      "undoTags": "Annuler les tags ajoutés par l’IA",
+      "undoFailed": "Impossible d’annuler le changement de l’IA"
+    },
+    "disclaimer": "Généré par l’IA, peut être inexact",
+    "summary": {
+      "pending": "Rédaction du résumé",
+      "label": "Résumé",
+      "counter": "caractères",
+      "byAi": "Écrit par l’IA",
+      "byYou": "Modifié par vous",
+      "rewrite": "Réécrire",
+      "hintAi": "{{disclaimer}}. Modifiez-le et il devient le vôtre : l’IA ne réécrit jamais votre texte.",
+      "hintUser": "Videz le champ pour que l’IA le réécrive.",
+      "hintEmpty": "Laissez-le vide et l’IA en écrira un.",
+      "rewriteFailed": "Impossible de réécrire le résumé",
+      "rewriteFailedDetail": "Votre résumé n’a pas changé. Réessayez plus tard.",
+      "tooLong": "Le résumé doit faire moins de {{max}} caractères."
+    },
+    "toast": {
+      "moved": "Déplacé vers {{folder}} par l’IA",
+      "tagged": {
+        "one": "{{count}} tag ajouté par l’IA",
+        "many": "{{count}} de tags ajoutés par l’IA",
+        "other": "{{count}} tags ajoutés par l’IA"
+      },
+      "undo": "Annuler"
+    }
   }
 }

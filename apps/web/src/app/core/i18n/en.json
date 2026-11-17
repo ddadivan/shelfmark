@@ -529,7 +529,8 @@
     "dont": {
       "title": "What we don't do",
       "sell": "We don't sell or share your data and don't show ads.",
-      "read": "We don't use the content of your links for statistics: only counts (links, folders, ratings), never addresses or titles. Your links are stored in our database so the app can show, search and preview them; only the author of the service has access to it."
+      "read": "We don't use the content of your links for statistics: only counts (links, folders, ratings), never addresses or titles. Your links are stored in our database so the app can show, search and preview them; only the author of the service has access to it.",
+      "training": "We don't use your links, notes or summaries to train AI models, and we don't let our AI provider do so."
     },
     "previews": {
       "title": "Link previews",
@@ -552,6 +553,30 @@
     "where": {
       "title": "Where it lives",
       "hosting": "The API runs on Vercel in the fra1 region (Frankfurt) and the database on Neon in eu-central-1 (Frankfurt). The app's static files are served from Vercel's global network."
+    },
+    "ai": {
+      "title": "AI features (optional)",
+      "intro": "AI is off until you turn it on in Settings › AI. When it is on, it suggests tags and folders and writes short summaries. Everything it makes is marked with a small spark and may be inaccurate; nothing is applied unless you accept it or choose automatic mode.",
+      "processor": {
+        "term": "Who processes it:",
+        "text": "[PROVIDER], as our processor, only to produce the result you asked for. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+      },
+      "sent": {
+        "term": "What is sent:",
+        "text": "a link's address, title, description and text extracted from the page, and the names of your tags and folders. Your notes only if you turn on \"Include my notes\". Never your other links, your account details or anyone else's data."
+      },
+      "kept": {
+        "term": "How long it is kept:",
+        "text": "the provider keeps the request for at most [N] days and doesn't use it for training. The results (tags, summaries) are stored with your links and deleted with them."
+      },
+      "counted": {
+        "term": "What we count:",
+        "text": "only the number of AI requests per account, for your monthly limit. As everywhere in Shelfmark, statistics use counts only, never what you saved."
+      },
+      "off": {
+        "term": "Turning it off:",
+        "text": "switch off one feature or AI as a whole in Settings › AI; requests stop at once. \"Delete AI data\" there removes every summary and suggestion AI made."
+      }
     },
     "retention": {
       "title": "How long we keep it",
@@ -1198,6 +1223,7 @@
       "account": "Account",
       "appearance": "Appearance",
       "library": "Library",
+      "ai": "AI",
       "language": "Language",
       "privacy": "Privacy and data",
       "shortcuts": "Keyboard shortcuts",
@@ -1207,6 +1233,7 @@
       "account": "Your profile, your shelf and your data.",
       "appearance": "Saved as you go and synced to all your devices.",
       "library": "How links are shown, saved and kept.",
+      "ai": "Help with organising, only when you want it. Off until you turn it on.",
       "language": "The language of the interface. Date and time formats are in Appearance.",
       "privacy": "What we keep, and how to take it with you.",
       "shortcuts": "Work without the mouse.",
@@ -1448,6 +1475,16 @@
       },
       "kept": {
         "title": "What we keep"
+      },
+      "ai": {
+        "title": "AI features",
+        "body": "AI is optional and off until you turn it on. When it is on, a link's address, title and page text go to our AI provider to suggest tags and folders and write summaries. Never used to train models, never used for statistics.",
+        "delete": {
+          "label": "Delete AI data",
+          "hint": "Removes every summary and suggestion AI made, in Settings › AI",
+          "action": "Open",
+          "actionLabel": "Open Delete AI data in Settings › AI"
+        }
       }
     },
     "footer": {
@@ -2828,5 +2865,197 @@
     "available": "A new version of Shelfmark is ready",
     "reload": "Reload",
     "later": "Later"
+  },
+  "ai": {
+    "settings": {
+      "features": {
+        "title": "AI features"
+      },
+      "enabled": {
+        "label": "Use AI in Shelfmark",
+        "hint": "Sends a link’s address, title and a short excerpt of the page to our AI provider to suggest tags and write summaries. Never used to train models, never used for statistics."
+      },
+      "unavailable": "AI isn’t responding right now. Your links save as usual; suggestions and summaries catch up when it’s back.",
+      "folder": {
+        "label": "Folder",
+        "hint": "Suggest: a chip you tap. Automatic: only when you leave a link in Unsorted, with Undo. A folder you pick is never changed."
+      },
+      "tags": {
+        "label": "Tags",
+        "hint": "Suggest: chips you tap. Automatic: only when you add no tags yourself, with Undo."
+      },
+      "mode": {
+        "suggest": "Suggest",
+        "auto": "Automatic",
+        "off": "Off"
+      },
+      "modePage": {
+        "open": "{{label}}: {{mode}}",
+        "auto": "Apply automatically when I don’t choose",
+        "folder": {
+          "groupLabel": "Folder suggestions",
+          "suggestHint": "A chip you tap. Nothing changes until you do.",
+          "autoHint": "Only for links left in Unsorted. You see it and can undo it.",
+          "offHint": "No folder suggestions.",
+          "note": "A folder you pick yourself is never changed by AI."
+        },
+        "tags": {
+          "groupLabel": "Tag suggestions",
+          "suggestHint": "Chips you tap. Nothing changes until you do.",
+          "autoHint": "Only for links you save without tags. You see it and can undo it.",
+          "offHint": "No tag suggestions.",
+          "note": "Tags you add yourself are never removed by AI."
+        }
+      },
+      "summaries": {
+        "label": "Summaries",
+        "hint": "One or two sentences on each link, so you remember why you saved it. Edit them any time."
+      },
+      "sent": {
+        "title": "What is sent"
+      },
+      "notes": {
+        "label": "Include my notes",
+        "hint": "Notes make suggestions more accurate. When off, your notes never leave Shelfmark."
+      },
+      "language": {
+        "label": "Summary language",
+        "hint": "Summaries are written in this language, whatever the page is in.",
+        "app": "Match the app ({{language}})"
+      },
+      "usage": {
+        "title": "This month",
+        "count": "{{used}} of {{limit}} links this month",
+        "resets": "Resets on {{date}}",
+        "meterLabel": "AI links used this month",
+        "limit": "You used this month’s {{limit}} links. New links save as usual, without suggestions or summaries, until {{date}}."
+      },
+      "data": {
+        "title": "Your AI data",
+        "label": "Delete AI data",
+        "hint": "Removes every summary and suggestion AI made. Your own edits, tags and folders stay.",
+        "action": "Delete AI data"
+      },
+      "privacy": {
+        "label": "How AI works in Shelfmark",
+        "hint": "What is sent, to whom, how long it is kept, and how to turn it off",
+        "action": "Read",
+        "actionLabel": "Read how AI works in Shelfmark"
+      },
+      "failed": "Couldn’t save your AI settings",
+      "failedDetail": "The change was undone. Try again.",
+      "loadFailed": "Couldn’t load your AI settings.",
+      "retry": "Try again"
+    },
+    "backfill": {
+      "title": "Process existing links",
+      "hint": {
+        "one": "{{count}} link was saved before you turned AI on. Adds suggestions and summaries in the background: faster while Shelfmark is open, within a day otherwise.",
+        "other": "{{count}} links were saved before you turned AI on. Adds suggestions and summaries in the background: faster while Shelfmark is open, within a day otherwise."
+      },
+      "start": "Start",
+      "running": "Processing existing links",
+      "progress": "{{done}} of {{total}} done. Faster while Shelfmark is open; otherwise it finishes within a day.",
+      "meterLabel": "Existing links processed",
+      "estimate": "About {{minutes}} min left",
+      "stop": "Stop",
+      "done": "Every existing link has been processed.",
+      "startFailed": "Couldn’t start processing your links",
+      "stopFailed": "Couldn’t stop processing. Try again."
+    },
+    "deleteData": {
+      "confirm": {
+        "title": "Delete AI data?",
+        "message": "Every summary and suggestion AI made is removed. Your own edits, tags and folders stay. This can’t be undone.",
+        "confirm": "Delete AI data",
+        "cancel": "Cancel",
+        "close": "Close"
+      },
+      "done": "AI data deleted",
+      "failed": "Couldn’t delete AI data",
+      "failedDetail": "Nothing was removed. Try again."
+    },
+    "intro": {
+      "title": "Turn on AI in Shelfmark?",
+      "titleShort": "Turn on AI?",
+      "close": "Close",
+      "suggest": {
+        "title": "Suggests tags and a folder",
+        "text": "From the ones you already have. You decide: nothing is applied unless you tap it or choose Automatic in settings."
+      },
+      "summaries": {
+        "title": "Writes short summaries",
+        "text": "One or two sentences per link. Marked as made by AI and may be inaccurate; edit them any time."
+      },
+      "sent": {
+        "title": "What is sent to the model",
+        "text": "A link’s address, title, description and text extracted from the page. Never your other links, your notes (unless you allow it) or anyone else’s data."
+      },
+      "training": {
+        "title": "Not used for training",
+        "text": "Your content is never used to train models. The provider, [PROVIDER], processes it for us and keeps it for [N] days at most."
+      },
+      "details": "You can turn AI off, or one feature at a time, in Settings › AI.",
+      "policy": "Read the privacy policy",
+      "failed": "Couldn’t turn on AI. Try again.",
+      "notNow": "Not now",
+      "turnOn": "Turn on AI"
+    },
+    "suggest": {
+      "label": "Suggested",
+      "alsoFits": "Also fits",
+      "loading": "Suggesting…",
+      "folderRow": "Suggested folder",
+      "tagsRow": "Suggested tags",
+      "addAll": "Add all",
+      "addedAll": "Suggested tags added",
+      "new": "New",
+      "addTag": "Add tag {{name}}",
+      "createTag": "Create and add tag {{name}}",
+      "moveTo": "Move to {{name}}",
+      "dismiss": "Dismiss suggestion {{name}}",
+      "tagAdded": "Tag {{name}} added",
+      "folderChosen": "Folder {{name}} chosen"
+    },
+    "line": {
+      "limit": "Suggestions are paused until {{date}}. You used this month’s {{limit}} links.",
+      "unavailable": "Suggestions aren’t available right now. Your link saves as usual.",
+      "retry": "Try again",
+      "settings": "AI settings"
+    },
+    "applied": {
+      "folder": "Moved by AI",
+      "tags": {
+        "one": "{{count}} added by AI",
+        "other": "{{count}} added by AI"
+      },
+      "undo": "Undo",
+      "undoFolder": "Undo the move by AI",
+      "undoTags": "Undo the tags added by AI",
+      "undoFailed": "Couldn’t undo the AI change"
+    },
+    "disclaimer": "Generated by AI, may be inaccurate",
+    "summary": {
+      "pending": "Writing a summary",
+      "label": "Summary",
+      "counter": "characters",
+      "byAi": "Written by AI",
+      "byYou": "Edited by you",
+      "rewrite": "Rewrite",
+      "hintAi": "{{disclaimer}}. Edit it and it becomes yours: AI never rewrites your text.",
+      "hintUser": "Clear the field to let AI write it again.",
+      "hintEmpty": "Leave it empty and AI writes one.",
+      "rewriteFailed": "Couldn’t rewrite the summary",
+      "rewriteFailedDetail": "Your summary is unchanged. Try again later.",
+      "tooLong": "Keep the summary under {{max}} characters."
+    },
+    "toast": {
+      "moved": "Moved to {{folder}} by AI",
+      "tagged": {
+        "one": "{{count}} tag added by AI",
+        "other": "{{count}} tags added by AI"
+      },
+      "undo": "Undo"
+    }
   }
 }

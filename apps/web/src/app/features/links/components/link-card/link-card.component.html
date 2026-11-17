@@ -75,6 +75,9 @@
   <!-- The note and the bottom row always take their room, so every card is the same height (#335). -->
   @if (link().note; as note) {
     <p class="link-card__note">{{ note }}</p>
+  } @else if (link().summary || link().aiStatus === AI_JOB_STATUS.Pending) {
+    <!-- The user's note wins the slot; else the summary, or its skeleton right after a save (#391). -->
+    <app-link-summary class="link-card__note" [link]="link()" />
   } @else {
     <p class="link-card__note" aria-hidden="true"></p>
   }

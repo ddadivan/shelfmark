@@ -15,6 +15,7 @@ import {
   PAGE_LIMIT,
   RECENT_LINKS_WINDOW_DAYS,
   SORT_ORDER,
+  SUMMARY_SOURCE,
   normalizeTagName,
   type CaptureLinkImagesResponse,
   type CreateLinkRequest,
@@ -44,6 +45,7 @@ import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import type { LinksApi } from '../models/links-api.interface';
 import { linkFieldsProblems } from './link-fields-problems';
+import { MockAiData } from '../../ai/mock/mock-ai-data';
 import { MockLibraryData } from './mock-library-data';
 import { normalizeLinkTags } from './normalize-link-tags';
 
@@ -59,6 +61,8 @@ const DAY_MS = 86_400_000;
 @Service()
 export class MockLinksApi implements LinksApi {
   private readonly data = inject(MockLibraryData);
+  /** The mock AI: queues a job per saved link and picks up the draft of Add link (#389). */
+  private readonly ai = inject(MockAiData);
   /** Links created per `idempotencyKey`: the same key answers the same link, like the server. */
   private readonly created = new Map<string, LinkResponse>();
   /** Ids whose images were "captured" by `captureImages`. */
@@ -158,7 +162,7 @@ export class MockLinksApi implements LinksApi {
       // Domain rules (#398), like the API: they fill what the save left open.
       const rule = request.applyRules === false ? null : this.data.ruleEffect(url);
       const tags = request.tags?.length ? request.tags : (rule?.tags ?? []);
-      const link: LinkResponse = {
+      const saved: LinkResponse = {
         id: globalThis.crypto.randomUUID(),
         kind: request.kind ?? deriveLinkKind(url),
         folderId: request.folderId ?? rule?.folderId ?? null,
@@ -179,7 +183,10 @@ export class MockLinksApi implements LinksApi {
         createdAt: now,
         updatedAt: now,
       };
-      this.links = [link, ...this.links];
+      this.links = [saved, ...this.links];
+      // Like the API: the draft's result, or a new AI job, inside the save (#389).
+      const link = this.ai.linkCreated(saved, request.aiDraftId);
+      this.links = this.links.map((item) => (item.id === link.id ? link : item));
       this.data.ensureTags(link.tags);
       if (request.idempotencyKey !== undefined) {
         this.created.set(request.idempotencyKey, link);
@@ -195,6 +202,8 @@ export class MockLinksApi implements LinksApi {
 
   list(query: ListLinksQuery = {}): Observable<ListLinksResponse> {
     return defer(() => {
+      // Jobs whose time has come finish on read, as the API's tick would have (paste many).
+      this.ai.settle();
       const scenario = readScenario();
       if (scenario === MOCK_LINKS_SCENARIO.Error) {
         return throwError(() => new Error('Mock: list failed'));
@@ -325,9 +334,11 @@ export class MockLinksApi implements LinksApi {
         (fields.url !== undefined && normalizeUrl(fields.url) !== normalizeUrl(current.url)
           ? deriveLinkKind(fields.url)
           : current.kind);
+      const { summary, ...rest } = fields;
       const updated: LinkResponse = {
         ...current,
-        ...fields,
+        ...rest,
+        ...summaryFields(current, summary),
         tags: fields.tags === undefined ? current.tags : normalizeLinkTags(fields.tags),
         kind,
         pinnedInFolderAt,
@@ -335,7 +346,17 @@ export class MockLinksApi implements LinksApi {
       };
       this.links = this.links.map((link) => (link.id === id ? updated : link));
       this.data.ensureTags(updated.tags);
-      return of(this.data.linkView(updated));
+      const saved =
+        fields.url !== undefined && normalizeUrl(fields.url) !== normalizeUrl(current.url)
+          ? this.ai.linkUrlChanged(updated)
+          : updated;
+      this.ai.linkEdited(
+        id,
+        updated.folderId !== current.folderId,
+        fields.tags !== undefined &&
+          updated.tags.join('\n') !== normalizeLinkTags(current.tags).join('\n'),
+      );
+      return of(this.data.linkView(saved));
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
@@ -463,6 +484,12 @@ export class MockLinksApi implements LinksApi {
       });
       this.links = [...fresh, ...this.links];
       this.data.ensureTags(fresh.flatMap((link) => link.tags));
+      // Like the API: one AI job per created link, after the save (no pre-save suggestions in AI-1).
+      for (const link of fresh) {
+        const queued = this.ai.linkCreated(link, undefined);
+        this.links = this.links.map((item) => (item.id === queued.id ? queued : item));
+        links.splice(links.indexOf(link), 1, queued);
+      }
       return of<CreateLinksBatchResponse>({
         links: links.map((link) => this.withImages(link, this.pending.has(link.id))),
         errors,
@@ -657,4 +684,21 @@ function readScenario(): string | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * The summary fields after an update, like the API (#391): any text is the user's summary (trimmed),
+ * `null` or blank clears it so AI may write again; `undefined` keeps what is there.
+ */
+function summaryFields(
+  current: LinkResponse,
+  summary: string | null | undefined,
+): Pick<LinkResponse, 'summary' | 'summarySource'> {
+  if (summary === undefined) {
+    return { summary: current.summary, summarySource: current.summarySource };
+  }
+  const text = summary?.trim() ?? '';
+  return text === ''
+    ? { summary: null, summarySource: null }
+    : { summary: text, summarySource: SUMMARY_SOURCE.User };
 }

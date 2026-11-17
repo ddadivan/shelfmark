@@ -1,0 +1,59 @@
+<ui-settings-section [title]="'ai.settings.usage.title' | transloco">
+  <div class="ai-usage">
+    <div class="ai-usage__line">
+      <span class="ai-usage__count">{{ 'ai.settings.usage.count' | transloco: used() }}</span>
+      @if (resetDate(); as date) {
+        <span class="ai-usage__reset">{{ 'ai.settings.usage.resets' | transloco: { date } }}</span>
+      }
+    </div>
+    <ui-meter [value]="usedPercent()" [label]="'ai.settings.usage.meterLabel' | transloco" />
+    @if (store.limitReached()) {
+      <ui-notice [kind]="NOTICE_KIND.Warning">
+        {{ 'ai.settings.usage.limit' | transloco: { limit: used().limit, date: resetDate() } }}
+      </ui-notice>
+    }
+  </div>
+
+  @if (store.backfillAvailable()) {
+    @if (backfill(); as status) {
+      @if (status.state === AI_BACKFILL_STATE.Running) {
+        <ui-settings-row
+          [title]="'ai.backfill.running' | transloco"
+          [description]="'ai.backfill.progress' | transloco: progress()"
+        >
+          <ui-button [size]="BUTTON_SIZE.Sm" (click)="actions.stopBackfill()">
+            {{ 'ai.backfill.stop' | transloco }}
+          </ui-button>
+        </ui-settings-row>
+        <div class="ai-usage__progress">
+          <ui-meter [value]="progress().percent" [label]="'ai.backfill.meterLabel' | transloco" />
+          @if (status.estimatedMinutes !== null) {
+            <span class="ai-usage__reset">
+              {{ 'ai.backfill.estimate' | transloco: { minutes: progress().minutes } }}
+            </span>
+          }
+        </div>
+      } @else if (status.eligible > 0) {
+        <ui-settings-row
+          [title]="'ai.backfill.title' | transloco"
+          [description]="
+            pluralKey('ai.backfill.hint', status.eligible) | transloco: { count: status.eligible }
+          "
+        >
+          <ui-button
+            [size]="BUTTON_SIZE.Sm"
+            [disabled]="!store.isOn()"
+            (click)="actions.startBackfill()"
+          >
+            {{ 'ai.backfill.start' | transloco }}
+          </ui-button>
+        </ui-settings-row>
+      } @else {
+        <ui-settings-row
+          [title]="'ai.backfill.title' | transloco"
+          [description]="'ai.backfill.done' | transloco"
+        />
+      }
+    }
+  }
+</ui-settings-section>

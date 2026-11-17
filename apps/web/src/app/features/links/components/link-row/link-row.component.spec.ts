@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import type { LinkResponse } from '@shelfmark/contracts';
+import { AI_JOB_STATUS, SUMMARY_SOURCE, type LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
 import { ViewportService } from '../../../../core/layout/viewport.service';
@@ -41,6 +41,19 @@ function menuItem(label: string): HTMLElement {
 }
 
 describe('LinkRowComponent', () => {
+  it('shows the summary in place of the domain, which moves to the tooltip (#391)', async () => {
+    const { element } = await setup({
+      ...LINK,
+      summary: 'Five patterns for SignalStore.',
+      summarySource: SUMMARY_SOURCE.Ai,
+      aiStatus: AI_JOB_STATUS.Done,
+    });
+    const meta = element.querySelector('.link-row__meta');
+    expect(meta?.textContent).toContain('Five patterns for SignalStore.');
+    expect(meta?.textContent).not.toContain('angular.dev');
+    expect(meta?.getAttribute('title')).toBe('angular.dev');
+  });
+
   it('renders the tags on a desktop and leaves them out of the DOM on a phone', async () => {
     const desktop = await setup();
     expect(desktop.element.querySelector('.link-row__tags')).not.toBeNull();

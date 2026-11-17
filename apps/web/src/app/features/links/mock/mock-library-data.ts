@@ -11,6 +11,7 @@ import {
   type LibraryCounts,
   type LibrarySettings,
   type LinkResponse,
+  type LinkSuggestion,
   type ListLinksQuery,
   type ListPinsResponse,
   type PinKind,
@@ -101,6 +102,9 @@ export class MockLibraryData {
   views: MockSavedView[] = mockStarterViews();
   /** The domain rules (#398); the demo starts with one example. */
   rules: MockRule[] = this.demo?.rules ?? [];
+  /** AI suggestions the demo starts with, per link id (read once by the mock AI). */
+  readonly demoSuggestions: ReadonlyMap<string, LinkSuggestion[]> =
+    this.demo?.suggestions ?? new Map();
 
   /** Stored folders without counts; mutate through `setFolders`. */
   /**

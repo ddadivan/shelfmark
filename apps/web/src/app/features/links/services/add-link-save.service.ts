@@ -15,6 +15,8 @@ import type { AddLinkSaved } from '../models/add-link-saved.interface';
 import { LINKS_API } from '../models/links-api.const';
 import { isLinkKind } from '../utils/link-kind';
 import { saveErrorKey } from '../utils/save-error-key';
+import { AddLinkAiService } from './add-link-ai.service';
+import { AddLinkSummaryService } from './add-link-summary.service';
 import { AddLinkFormService } from './add-link-form.service';
 import { AddLinkNewFolderService } from './add-link-new-folder.service';
 import { AddLinkPreviewService } from './add-link-preview.service';
@@ -35,6 +37,9 @@ export class AddLinkSaveService {
   // Optional: specs of the save flow alone run without rules.
   private readonly ruleService = inject(AddLinkRuleService, { optional: true });
   private readonly newFolder = inject(AddLinkNewFolderService);
+  // Optional: specs of the save flow alone run without AI.
+  private readonly ai = inject(AddLinkAiService, { optional: true });
+  private readonly summary = inject(AddLinkSummaryService, { optional: true });
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
@@ -79,6 +84,7 @@ export class AddLinkSaveService {
       request$ = this.linksApi.update(this.formState.original.id, changes);
     } else {
       const fetched = this.previewService.fetchedPreview();
+      const aiDraftId = this.ai?.draftId();
       const payload: CreateLinkRequest = {
         url: this.formState.url(),
         ...(title && { title }),
@@ -91,6 +97,8 @@ export class AddLinkSaveService {
         ...(fetched && { kind: fetched.kind }),
         // The form already shows what the domain rule does (#398): the server must not add it again.
         ...(this.ruleService?.handled() && { applyRules: false }),
+        // The draft suggestions asked for in the dialog (#390): the server picks up their result.
+        ...(aiDraftId && { aiDraftId }),
       };
       request$ = this.linksApi.create({
         ...payload,
@@ -192,6 +200,7 @@ export class AddLinkSaveService {
     if (tags.length !== link.tags.length || tags.some((tag, index) => tag !== link.tags[index])) {
       changes.tags = tags;
     }
-    return changes;
+    // The summary field of Edit link (#391): only when its text changed.
+    return { ...changes, ...this.summary?.changes() };
   }
 }

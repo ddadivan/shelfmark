@@ -184,3 +184,11 @@
     max-width: 100%;
   }
 }
+
+// A field with its AI suggestion row, "Moved by AI" mark or AI line right under it (#390).
+.add-link__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}

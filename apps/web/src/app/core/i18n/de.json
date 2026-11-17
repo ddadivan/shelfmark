@@ -529,7 +529,8 @@
     "dont": {
       "title": "Was wir nicht tun",
       "sell": "Wir verkaufen oder teilen deine Daten nicht und zeigen keine Werbung.",
-      "read": "Wir nutzen den Inhalt deiner Links nicht für Statistiken: nur Anzahlen (Links, Ordner, Bewertungen), nie Adressen oder Titel. Deine Links liegen in unserer Datenbank, damit die App sie anzeigen, durchsuchen und mit Vorschau zeigen kann; Zugriff darauf hat nur der Autor des Dienstes."
+      "read": "Wir nutzen den Inhalt deiner Links nicht für Statistiken: nur Anzahlen (Links, Ordner, Bewertungen), nie Adressen oder Titel. Deine Links liegen in unserer Datenbank, damit die App sie anzeigen, durchsuchen und mit Vorschau zeigen kann; Zugriff darauf hat nur der Autor des Dienstes.",
+      "training": "Wir nutzen deine Links, Notizen und Zusammenfassungen nicht zum Training von KI-Modellen und erlauben das auch unserem KI-Anbieter nicht."
     },
     "previews": {
       "title": "Link-Vorschauen",
@@ -552,6 +553,30 @@
     "where": {
       "title": "Wo die Daten liegen",
       "hosting": "Die API läuft bei Vercel in der Region fra1 (Frankfurt), die Datenbank bei Neon in eu-central-1 (Frankfurt). Die statischen Dateien der App kommen aus dem globalen Netzwerk von Vercel."
+    },
+    "ai": {
+      "title": "KI-Funktionen (optional)",
+      "intro": "KI ist aus, bis du sie unter Einstellungen › KI einschaltest. Ist sie an, schlägt sie Tags und Ordner vor und schreibt kurze Zusammenfassungen. Alles, was sie erstellt, trägt einen kleinen Funken und kann ungenau sein; nichts wird übernommen, solange du es nicht annimmst oder den automatischen Modus wählst.",
+      "processor": {
+        "term": "Wer es verarbeitet:",
+        "text": "[PROVIDER] als unser Auftragsverarbeiter, nur um das Ergebnis zu erzeugen, das du angefragt hast. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+      },
+      "sent": {
+        "term": "Was gesendet wird:",
+        "text": "Adresse, Titel, Beschreibung und aus der Seite extrahierter Text eines Links sowie die Namen deiner Tags und Ordner. Deine Notizen nur, wenn du „Meine Notizen einbeziehen“ einschaltest. Nie deine anderen Links, deine Kontodaten oder Daten anderer Personen."
+      },
+      "kept": {
+        "term": "Wie lange es gespeichert wird:",
+        "text": "Der Anbieter bewahrt die Anfrage höchstens [N] Tage auf und nutzt sie nicht zum Training. Die Ergebnisse (Tags, Zusammenfassungen) werden mit deinen Links gespeichert und mit ihnen gelöscht."
+      },
+      "counted": {
+        "term": "Was wir zählen:",
+        "text": "Nur die Zahl der KI-Anfragen pro Konto, für dein Monatslimit. Wie überall in Shelfmark nutzen Statistiken nur Zahlen, nie das, was du gespeichert hast."
+      },
+      "off": {
+        "term": "Ausschalten:",
+        "text": "Schalte unter Einstellungen › KI eine Funktion oder die KI ganz aus; Anfragen enden sofort. „KI-Daten löschen“ dort entfernt jede Zusammenfassung und jeden Vorschlag der KI."
+      }
     },
     "retention": {
       "title": "Wie lange wir sie aufbewahren",
@@ -1198,6 +1223,7 @@
       "account": "Konto",
       "appearance": "Darstellung",
       "library": "Bibliothek",
+      "ai": "KI",
       "language": "Sprache",
       "privacy": "Datenschutz und Daten",
       "shortcuts": "Tastenkürzel",
@@ -1207,6 +1233,7 @@
       "account": "Dein Profil, dein Regal und deine Daten.",
       "appearance": "Wird sofort gespeichert und auf all deinen Geräten synchronisiert.",
       "library": "Wie Links gezeigt, gespeichert und aufbewahrt werden.",
+      "ai": "Hilfe beim Ordnen, nur wenn du sie willst. Aus, bis du sie einschaltest.",
       "language": "Die Sprache der Oberfläche. Datums- und Zeitformate findest du unter Darstellung.",
       "privacy": "Was wir speichern und wie du es mitnimmst.",
       "shortcuts": "Arbeite ohne Maus.",
@@ -1448,6 +1475,16 @@
       },
       "kept": {
         "title": "Was wir speichern"
+      },
+      "ai": {
+        "title": "KI-Funktionen",
+        "body": "KI ist optional und aus, bis du sie einschaltest. Ist sie an, gehen Adresse, Titel und Seitentext eines Links an unseren KI-Anbieter, um Tags und Ordner vorzuschlagen und Zusammenfassungen zu schreiben. Nie zum Training von Modellen genutzt, nie für Statistiken.",
+        "delete": {
+          "label": "KI-Daten löschen",
+          "hint": "Entfernt jede Zusammenfassung und jeden Vorschlag der KI, unter Einstellungen › KI",
+          "action": "Öffnen",
+          "actionLabel": "„KI-Daten löschen“ unter Einstellungen › KI öffnen"
+        }
       }
     },
     "footer": {
@@ -2828,5 +2865,197 @@
     "available": "Eine neue Version von Shelfmark ist bereit",
     "reload": "Neu laden",
     "later": "Später"
+  },
+  "ai": {
+    "settings": {
+      "features": {
+        "title": "KI-Funktionen"
+      },
+      "enabled": {
+        "label": "KI in Shelfmark nutzen",
+        "hint": "Sendet Adresse, Titel und einen kurzen Auszug der Seite eines Links an unseren KI-Anbieter, um Tags vorzuschlagen und Zusammenfassungen zu schreiben. Nie zum Training von Modellen, nie für Statistiken genutzt."
+      },
+      "unavailable": "Die KI antwortet gerade nicht. Deine Links werden wie gewohnt gespeichert; Vorschläge und Zusammenfassungen folgen, sobald sie wieder da ist.",
+      "folder": {
+        "label": "Ordner",
+        "hint": "Vorschlagen: ein Chip zum Antippen. Automatisch: nur wenn du einen Link in „Ohne Ordner“ lässt, mit Rückgängig. Ein Ordner, den du wählst, wird nie geändert."
+      },
+      "tags": {
+        "label": "Tags",
+        "hint": "Vorschlagen: Chips zum Antippen. Automatisch: nur wenn du selbst keine Tags hinzufügst, mit Rückgängig."
+      },
+      "mode": {
+        "suggest": "Vorschlagen",
+        "auto": "Automatisch",
+        "off": "Aus"
+      },
+      "modePage": {
+        "open": "{{label}}: {{mode}}",
+        "auto": "Automatisch anwenden, wenn ich nicht wähle",
+        "folder": {
+          "groupLabel": "Ordnervorschläge",
+          "suggestHint": "Ein Chip zum Antippen. Nichts ändert sich, bis du es tust.",
+          "autoHint": "Nur für Links, die in „Ohne Ordner“ bleiben. Du siehst es und kannst es rückgängig machen.",
+          "offHint": "Keine Ordnervorschläge.",
+          "note": "Einen Ordner, den du selbst wählst, ändert die KI nie."
+        },
+        "tags": {
+          "groupLabel": "Tag-Vorschläge",
+          "suggestHint": "Chips zum Antippen. Nichts ändert sich, bis du es tust.",
+          "autoHint": "Nur für Links, die du ohne Tags speicherst. Du siehst es und kannst es rückgängig machen.",
+          "offHint": "Keine Tag-Vorschläge.",
+          "note": "Tags, die du selbst hinzufügst, entfernt die KI nie."
+        }
+      },
+      "summaries": {
+        "label": "Zusammenfassungen",
+        "hint": "Ein oder zwei Sätze zu jedem Link, damit du weißt, warum du ihn gespeichert hast. Jederzeit bearbeitbar."
+      },
+      "sent": {
+        "title": "Was gesendet wird"
+      },
+      "notes": {
+        "label": "Meine Notizen einbeziehen",
+        "hint": "Notizen machen Vorschläge genauer. Wenn aus, verlassen deine Notizen Shelfmark nie."
+      },
+      "language": {
+        "label": "Sprache der Zusammenfassungen",
+        "hint": "Zusammenfassungen werden in dieser Sprache geschrieben, egal in welcher Sprache die Seite ist.",
+        "app": "Wie die App ({{language}})"
+      },
+      "usage": {
+        "title": "Dieser Monat",
+        "count": "{{used}} von {{limit}} Links in diesem Monat",
+        "resets": "Zurückgesetzt am {{date}}",
+        "meterLabel": "In diesem Monat von der KI verarbeitete Links",
+        "limit": "Du hast die {{limit}} Links dieses Monats verbraucht. Neue Links werden wie gewohnt gespeichert, ohne Vorschläge oder Zusammenfassungen, bis zum {{date}}."
+      },
+      "data": {
+        "title": "Deine KI-Daten",
+        "label": "KI-Daten löschen",
+        "hint": "Entfernt alle Zusammenfassungen und Vorschläge der KI. Deine eigenen Änderungen, Tags und Ordner bleiben.",
+        "action": "KI-Daten löschen"
+      },
+      "privacy": {
+        "label": "Wie KI in Shelfmark funktioniert",
+        "hint": "Was gesendet wird, an wen, wie lange es aufbewahrt wird und wie du sie ausschaltest",
+        "action": "Lesen",
+        "actionLabel": "Lesen, wie KI in Shelfmark funktioniert"
+      },
+      "failed": "KI-Einstellungen konnten nicht gespeichert werden",
+      "failedDetail": "Die Änderung wurde zurückgenommen. Versuch es noch einmal.",
+      "loadFailed": "KI-Einstellungen konnten nicht geladen werden.",
+      "retry": "Erneut versuchen"
+    },
+    "backfill": {
+      "title": "Vorhandene Links verarbeiten",
+      "hint": {
+        "one": "{{count}} Link wurde gespeichert, bevor du die KI eingeschaltet hast. Ergänzt Vorschläge und Zusammenfassungen im Hintergrund: schneller, solange Shelfmark offen ist, sonst innerhalb eines Tages.",
+        "other": "{{count}} Links wurden gespeichert, bevor du die KI eingeschaltet hast. Ergänzt Vorschläge und Zusammenfassungen im Hintergrund: schneller, solange Shelfmark offen ist, sonst innerhalb eines Tages."
+      },
+      "start": "Starten",
+      "running": "Vorhandene Links werden verarbeitet",
+      "progress": "{{done}} von {{total}} erledigt. Schneller, solange Shelfmark offen ist; sonst fertig innerhalb eines Tages.",
+      "meterLabel": "Verarbeitete vorhandene Links",
+      "estimate": "Noch etwa {{minutes}} Min.",
+      "stop": "Stoppen",
+      "done": "Alle vorhandenen Links sind verarbeitet.",
+      "startFailed": "Verarbeitung deiner Links konnte nicht gestartet werden",
+      "stopFailed": "Verarbeitung konnte nicht gestoppt werden. Versuch es noch einmal."
+    },
+    "deleteData": {
+      "confirm": {
+        "title": "KI-Daten löschen?",
+        "message": "Alle Zusammenfassungen und Vorschläge der KI werden entfernt. Deine eigenen Änderungen, Tags und Ordner bleiben. Das lässt sich nicht rückgängig machen.",
+        "confirm": "KI-Daten löschen",
+        "cancel": "Abbrechen",
+        "close": "Schließen"
+      },
+      "done": "KI-Daten gelöscht",
+      "failed": "KI-Daten konnten nicht gelöscht werden",
+      "failedDetail": "Es wurde nichts entfernt. Versuch es noch einmal."
+    },
+    "intro": {
+      "title": "KI in Shelfmark einschalten?",
+      "titleShort": "KI einschalten?",
+      "close": "Schließen",
+      "suggest": {
+        "title": "Schlägt Tags und einen Ordner vor",
+        "text": "Aus denen, die du schon hast. Du entscheidest: Nichts wird angewendet, solange du es nicht antippst oder in den Einstellungen Automatisch wählst."
+      },
+      "summaries": {
+        "title": "Schreibt kurze Zusammenfassungen",
+        "text": "Ein oder zwei Sätze pro Link. Als KI-generiert gekennzeichnet und möglicherweise ungenau; jederzeit bearbeitbar."
+      },
+      "sent": {
+        "title": "Was an das Modell gesendet wird",
+        "text": "Adresse, Titel und Beschreibung eines Links und Text aus der Seite. Nie deine anderen Links, deine Notizen (außer du erlaubst es) oder Daten anderer."
+      },
+      "training": {
+        "title": "Nicht für Training genutzt",
+        "text": "Deine Inhalte werden nie zum Training von Modellen genutzt. Der Anbieter, [PROVIDER], verarbeitet sie für uns und bewahrt sie höchstens [N] Tage auf."
+      },
+      "details": "Du kannst die KI oder einzelne Funktionen unter Einstellungen › KI ausschalten.",
+      "policy": "Datenschutzerklärung lesen",
+      "failed": "KI konnte nicht eingeschaltet werden. Versuch es noch einmal.",
+      "notNow": "Nicht jetzt",
+      "turnOn": "KI einschalten"
+    },
+    "suggest": {
+      "label": "Vorgeschlagen",
+      "alsoFits": "Passt auch",
+      "loading": "Schlägt vor…",
+      "folderRow": "Vorgeschlagener Ordner",
+      "tagsRow": "Vorgeschlagene Tags",
+      "addAll": "Alle hinzufügen",
+      "addedAll": "Vorgeschlagene Tags hinzugefügt",
+      "new": "Neu",
+      "addTag": "Tag {{name}} hinzufügen",
+      "createTag": "Tag {{name}} erstellen und hinzufügen",
+      "moveTo": "Nach {{name}} verschieben",
+      "dismiss": "Vorschlag {{name}} verwerfen",
+      "tagAdded": "Tag {{name}} hinzugefügt",
+      "folderChosen": "Ordner {{name}} gewählt"
+    },
+    "line": {
+      "limit": "Vorschläge pausieren bis {{date}}. Du hast die {{limit}} Links dieses Monats genutzt.",
+      "unavailable": "Vorschläge sind gerade nicht verfügbar. Dein Link wird wie gewohnt gespeichert.",
+      "retry": "Erneut versuchen",
+      "settings": "KI-Einstellungen"
+    },
+    "applied": {
+      "folder": "Von KI verschoben",
+      "tags": {
+        "one": "{{count}} von KI hinzugefügt",
+        "other": "{{count}} von KI hinzugefügt"
+      },
+      "undo": "Rückgängig",
+      "undoFolder": "Verschieben durch KI rückgängig machen",
+      "undoTags": "Von KI hinzugefügte Tags rückgängig machen",
+      "undoFailed": "KI-Änderung konnte nicht rückgängig gemacht werden"
+    },
+    "disclaimer": "Von KI erstellt, kann ungenau sein",
+    "summary": {
+      "pending": "Zusammenfassung wird geschrieben",
+      "label": "Zusammenfassung",
+      "counter": "Zeichen",
+      "byAi": "Von KI geschrieben",
+      "byYou": "Von dir bearbeitet",
+      "rewrite": "Neu schreiben",
+      "hintAi": "{{disclaimer}}. Bearbeite sie und sie gehört dir: KI schreibt deinen Text nie um.",
+      "hintUser": "Leere das Feld, damit KI sie neu schreibt.",
+      "hintEmpty": "Lass es leer, dann schreibt KI eine.",
+      "rewriteFailed": "Zusammenfassung konnte nicht neu geschrieben werden",
+      "rewriteFailedDetail": "Deine Zusammenfassung bleibt unverändert. Versuch es später noch einmal.",
+      "tooLong": "Die Zusammenfassung darf höchstens {{max}} Zeichen haben."
+    },
+    "toast": {
+      "moved": "Von KI nach {{folder}} verschoben",
+      "tagged": {
+        "one": "{{count}} Tag von KI hinzugefügt",
+        "other": "{{count}} Tags von KI hinzugefügt"
+      },
+      "undo": "Rückgängig"
+    }
   }
 }

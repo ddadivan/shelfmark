@@ -97,3 +97,7 @@ a {
 .visually-hidden {
   @include visually-hidden;
 }
+
+.term {
+  font-weight: 600;
+}
