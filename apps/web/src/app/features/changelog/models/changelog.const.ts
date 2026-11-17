@@ -12,7 +12,7 @@ import type { ChangelogRelease } from './changelog-release.interface';
 export const CHANGELOG: readonly ChangelogRelease[] = [
   {
     version: '2.1.0',
-    date: null,
+    date: '2026-11-17',
     items: [
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
@@ -89,6 +89,11 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
         kind: CHANGELOG_ITEM_KIND.Improvement,
         id: 'privacyWording',
         textKey: 'changelog.items.privacyWording.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'toastWraps',
+        textKey: 'changelog.items.toastWraps.text',
       },
       {
         kind: CHANGELOG_ITEM_KIND.Fix,

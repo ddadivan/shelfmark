@@ -126,15 +126,14 @@ describe('WhatsNewStore', () => {
     expect(dialogs.open).not.toHaveBeenCalled();
   });
 
-  it('never opens for releases that brought only fixes', async () => {
-    // 2.0.0 had highlights; 2.0.1 to 2.0.5 are fixes only.
+  it('opens once for the newest release with highlights, past the fix-only ones', async () => {
+    // 2.0.1 to 2.0.8 are fixes only; 2.1.0 has highlights, so the card opens once.
     const { store, dialogs } = await setup('2.0.0');
 
     store.watch();
     await vi.advanceTimersByTimeAsync(WHATS_NEW_DELAY.Show * 2);
 
-    expect(store.pending()).toBe(false);
-    expect(dialogs.open).not.toHaveBeenCalled();
+    expect(dialogs.open).toHaveBeenCalledTimes(1);
   });
 
   it('waits while a dialog is open or a field has focus', async () => {

@@ -2853,6 +2853,9 @@
       "privacyWording": {
         "text": "A página de privacidade explica com mais clareza o que é guardado e quem pode ver."
       },
+      "toastWraps": {
+        "text": "As notificações mostram o texto inteiro em vez de cortá-lo."
+      },
       "folderStyleRace": {
         "text": "Mudar depressa o estilo de uma pasta já não traz de volta uma escolha antiga."
       },

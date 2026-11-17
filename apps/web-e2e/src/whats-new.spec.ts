@@ -23,7 +23,7 @@ function entry(page: Page, withDot: boolean) {
 
 test.describe('public changelog', () => {
   test(
-    'a guest opens /changelog: releases newest first, no draft, its own title',
+    'a guest opens /changelog: releases newest first, its own title',
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       const response = await page.goto('/changelog');
@@ -43,7 +43,14 @@ test.describe('public changelog', () => {
       await expect(
         page.getByText('A link typed as example.com saves like any other.'),
       ).toBeVisible();
-      await expect(page.getByText('Side by side')).toHaveCount(0);
+      // The 2.1.0 release (#464) leads the page with its highlights.
+      await expect(releases.first()).toHaveText('Shelfmark 2.1.0');
+      await expect(
+        page.getByRole('region', { name: 'Shelfmark 2.1.0' }).getByRole('heading', {
+          level: 4,
+          name: 'Side by side',
+        }),
+      ).toBeVisible();
       await expect(page.getByText(/You're using Shelfmark \d+\.\d+\.\d+/)).toBeVisible();
 
       const overflow = await page.evaluate<number>(

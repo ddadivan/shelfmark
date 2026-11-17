@@ -10,12 +10,7 @@ describe('LandingWhatsNewComponent', () => {
     const root = (await createTranslated(LandingWhatsNewComponent)).nativeElement as HTMLElement;
     const names = [...root.querySelectorAll('h3')].map((h) => h.textContent?.trim());
 
-    expect(names).toEqual([
-      'A fresh look',
-      'Trash',
-      'Folder colors, icons and pins',
-      'Saved views',
-    ]);
+    expect(names).toEqual(['Side by side', 'Folder styling', 'Rules by site', 'Reminders']);
     expect(root.querySelector('a')?.getAttribute('href')).toBe('/changelog');
     expect(root.querySelector('a')?.textContent?.trim()).toBe('See all changes');
   });

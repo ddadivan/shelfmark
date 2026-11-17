@@ -14,7 +14,7 @@ describe('ChangelogPage', () => {
     document.title = 'Shelfmark';
   });
 
-  it('lists the shipped releases newest first, without the draft of the next one', async () => {
+  it('lists the shipped releases newest first', async () => {
     const root = (await createTranslated(ChangelogPage)).nativeElement as HTMLElement;
     const headings = [...root.querySelectorAll('h2')].map((h) => h.textContent?.trim());
 
@@ -22,8 +22,7 @@ describe('ChangelogPage', () => {
     expect(headings).toEqual(
       releasedChangelog(CHANGELOG).map((release) => `Shelfmark ${release.version}`),
     );
-    expect(headings).not.toContain('Shelfmark 2.1.0');
-    expect(root.textContent).not.toContain('Side by side');
+    expect(headings[0]).toBe('Shelfmark 2.1.0');
   });
 
   it('shows the current version, the dates and a release heading per shipped release', async () => {
@@ -62,7 +61,7 @@ describe('ChangelogPage', () => {
   it('shows a feature as a title and a text under a heading level 4', async () => {
     const root = (await createTranslated(ChangelogPage)).nativeElement as HTMLElement;
 
-    expect(root.querySelector('h4')?.textContent).toBe('A fresh look');
+    expect(root.querySelector('h4')?.textContent).toBe('Side by side');
   });
 
   it('sets the document title and puts it back on leave', async () => {
