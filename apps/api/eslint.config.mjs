@@ -19,8 +19,38 @@ const anthropicAllowedFiles = [
   'src/ai/providers/real-client.guard.spec.ts',
 ];
 
+// ADR 0050: Voyage embeddings are one POST to a pinned host with plain `fetch`, so `fetch` is confined
+// to that provider and the Sentry tunnel; every other outbound request goes through SafeFetcherService.
+const fetchAllowedFiles = [
+  'src/ai/providers/voyage-embedding.provider.ts',
+  'src/monitoring/monitoring.service.ts',
+];
+
 export default [
   ...base,
+  {
+    files: ['src/**/*.ts'],
+    ignores: ['src/**/*.spec.ts', ...fetchAllowedFiles],
+    rules: {
+      'no-restricted-globals': [
+        'error',
+        {
+          name: 'fetch',
+          message:
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0048, ADR 0050).',
+        },
+      ],
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'globalThis',
+          property: 'fetch',
+          message:
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0048, ADR 0050).',
+        },
+      ],
+    },
+  },
   {
     // ADR 0029: feature modules get the user through `@CurrentUser()` and open routes through our
     // `@AllowAnonymous()`. The integration's own `Session`, `OptionalAuth`, `Public` and `Roles`

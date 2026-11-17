@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { NODE_ENV } from './src/config/models/node-env.const';
+import { installVoyageFetchGuard, takeVoyageAttempts } from './test-utils/voyage-fetch-guard';
 
 // Existing `createApp()` specs boot the whole app, which now validates the database and auth
 // configuration. Prisma connects lazily, so the loopback URL below is never dialled; the secret is
@@ -26,4 +27,15 @@ vi.mock('@anthropic-ai/sdk', () => {
     }
   }
   return { default: Anthropic, Anthropic };
+});
+
+// ADR 0050: the Voyage embeddings provider calls `fetch` itself (no SDK to mock). Any request to its
+// host throws, and a spec that attempted one fails in `afterEach` even when the provider turned the
+// error into a retryable outcome (`real-client.guard.spec.ts` pins this).
+installVoyageFetchGuard();
+afterEach(() => {
+  const attempts = takeVoyageAttempts();
+  if (attempts.length > 0) {
+    throw new Error(`A spec reached for the Voyage embeddings API: ${attempts.join(', ')}`);
+  }
 });
