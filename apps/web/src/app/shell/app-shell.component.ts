@@ -48,6 +48,8 @@ import { UserSettingsStore } from '../stores/user-settings.store';
 import { ADMIN_PATH } from '../features/admin/models/admin-path.const';
 import { HowItWorksService } from '../features/how-it-works/services/how-it-works.service';
 import { ReminderNoticeService } from '../features/reminders/services/reminder-notice.service';
+import { AiSettingsStore } from '../features/ai/services/ai-settings.store';
+import { AiTickService } from '../features/ai/services/ai-tick.service';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
@@ -173,6 +175,9 @@ export default class AppShellComponent {
     void this.userSettings.load();
     // The due reminders badge, and the note when some became due since the last visit (#275).
     void inject(ReminderNoticeService).check();
+    // AI (#389): the switches the dialogs and cards follow, and the catch-up tick while jobs wait.
+    void inject(AiSettingsStore).load();
+    inject(AiTickService);
   }
 
   /** The rating look starts for an eligible user (not demo, onboarding done) and stops otherwise. */

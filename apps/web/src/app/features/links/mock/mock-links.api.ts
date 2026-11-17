@@ -344,13 +344,17 @@ export class MockLinksApi implements LinksApi {
       };
       this.links = this.links.map((link) => (link.id === id ? updated : link));
       this.data.ensureTags(updated.tags);
+      const saved =
+        fields.url !== undefined && normalizeUrl(fields.url) !== normalizeUrl(current.url)
+          ? this.ai.linkUrlChanged(updated)
+          : updated;
       this.ai.linkEdited(
         id,
         updated.folderId !== current.folderId,
         fields.tags !== undefined &&
           updated.tags.join('\n') !== normalizeLinkTags(current.tags).join('\n'),
       );
-      return of(this.data.linkView(updated));
+      return of(this.data.linkView(saved));
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 

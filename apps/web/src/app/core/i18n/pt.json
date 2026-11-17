@@ -3027,6 +3027,40 @@
       "failed": "Não foi possível ligar a IA. Tente de novo.",
       "notNow": "Agora não",
       "turnOn": "Ligar a IA"
+    },
+    "suggest": {
+      "label": "Sugerido",
+      "alsoFits": "Também combina",
+      "loading": "Sugerindo…",
+      "folderRow": "Pasta sugerida",
+      "tagsRow": "Tags sugeridas",
+      "addAll": "Adicionar todas",
+      "addedAll": "Tags sugeridas adicionadas",
+      "new": "Nova",
+      "addTag": "Adicionar a tag {{name}}",
+      "createTag": "Criar e adicionar a tag {{name}}",
+      "moveTo": "Mover para {{name}}",
+      "dismiss": "Dispensar a sugestão {{name}}",
+      "tagAdded": "Tag {{name}} adicionada",
+      "folderChosen": "Pasta {{name}} escolhida"
+    },
+    "line": {
+      "limit": "Sugestões pausadas até {{date}}. Você usou os {{limit}} links deste mês.",
+      "unavailable": "As sugestões não estão disponíveis agora. Seu link é salvo normalmente.",
+      "retry": "Tentar de novo",
+      "settings": "Configurações de IA"
+    },
+    "applied": {
+      "folder": "Movido pela IA",
+      "tags": {
+        "one": "{{count}} adicionada pela IA",
+        "many": "{{count}} adicionadas pela IA",
+        "other": "{{count}} adicionadas pela IA"
+      },
+      "undo": "Desfazer",
+      "undoFolder": "Desfazer a movimentação da IA",
+      "undoTags": "Desfazer as tags adicionadas pela IA",
+      "undoFailed": "Não foi possível desfazer a mudança da IA"
     }
   }
 }

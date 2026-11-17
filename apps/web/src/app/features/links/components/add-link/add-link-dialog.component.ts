@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { LINK_KIND, LINK_LIMIT } from '@shelfmark/contracts';
+import { AI_APPLIED_PART, LINK_KIND, LINK_LIMIT } from '@shelfmark/contracts';
 import {
+  AiLineComponent,
   ButtonComponent,
   CheckboxComponent,
   ChipComponent,
@@ -44,6 +45,11 @@ import { AddSeveralLinksService } from '../../services/add-several-links.service
 import { ReminderFormatService } from '../../../reminders/services/reminder-format.service';
 import { AddLinkNewFolderService } from '../../services/add-link-new-folder.service';
 import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
+import { AddLinkAiService } from '../../services/add-link-ai.service';
+import { AiDraftService } from '../../../ai/services/ai-draft.service';
+import { AiLinkStateService } from '../../../ai/services/ai-link-state.service';
+import { AiAppliedComponent } from '../../../ai/components/ai-applied/ai-applied.component';
+import { AiSuggestionRowComponent } from '../../../ai/components/suggestion-rows/ai-suggestion-row.component';
 
 /**
  * Content of the add-link dialog (`openAddLinkDialog()`): paste a URL, the preview fills the
@@ -66,6 +72,9 @@ import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
 @Component({
   selector: 'app-add-link-dialog',
   imports: [
+    AiAppliedComponent,
+    AiLineComponent,
+    AiSuggestionRowComponent,
     ButtonComponent,
     CheckboxComponent,
     ChipComponent,
@@ -91,6 +100,9 @@ import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
     RuleSuggestionService,
     AddLinkSaveService,
     AddLinkNewFolderService,
+    AiDraftService,
+    AiLinkStateService,
+    AddLinkAiService,
   ],
   templateUrl: './add-link-dialog.component.html',
   styleUrl: './add-link-dialog.component.scss',
@@ -103,6 +115,7 @@ export class AddLinkDialogComponent {
   protected readonly PREVIEW_STATE = PREVIEW_STATE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly LINK_LIMIT = LINK_LIMIT;
+  protected readonly AI_APPLIED_PART = AI_APPLIED_PART;
   /** Cmd (macOS) or Ctrl: the key of the "save" shortcut shown in the footer. */
   protected readonly mac = isMacPlatform();
 
@@ -146,6 +159,9 @@ export class AddLinkDialogComponent {
   protected readonly previewData = this.previewService.previewData;
   protected readonly previewHost = this.previewService.previewHost;
   protected readonly duplicate = this.previewService.duplicate;
+
+  /** AI suggestion rows under Folder and Tags, the AI line and "Moved by AI" (#390). */
+  protected readonly ai = inject(AddLinkAiService);
 
   private readonly ruleService = inject(AddLinkRuleService);
   /** "Rule: youtube.com → Videos" while a domain rule filled folder or tags (#398). */
@@ -261,6 +277,15 @@ export class AddLinkDialogComponent {
   protected dismissRule(): void {
     this.ruleService.dismiss();
     this.form.folderId().focusBoundControl();
+  }
+
+  /** The folder row is gone after a take or a dismiss: focus goes to the field. */
+  protected focusFolder(): void {
+    this.form.folderId().focusBoundControl();
+  }
+
+  protected focusTags(): void {
+    this.form.tags().focusBoundControl();
   }
 
   protected requestDelete(): void {

@@ -3027,6 +3027,40 @@
       "failed": "Impossible d’activer l’IA. Réessayez.",
       "notNow": "Pas maintenant",
       "turnOn": "Activer l’IA"
+    },
+    "suggest": {
+      "label": "Suggéré",
+      "alsoFits": "Convient aussi",
+      "loading": "Suggestions…",
+      "folderRow": "Dossier suggéré",
+      "tagsRow": "Tags suggérés",
+      "addAll": "Tout ajouter",
+      "addedAll": "Tags suggérés ajoutés",
+      "new": "Nouveau",
+      "addTag": "Ajouter le tag {{name}}",
+      "createTag": "Créer et ajouter le tag {{name}}",
+      "moveTo": "Déplacer vers {{name}}",
+      "dismiss": "Ignorer la suggestion {{name}}",
+      "tagAdded": "Tag {{name}} ajouté",
+      "folderChosen": "Dossier {{name}} choisi"
+    },
+    "line": {
+      "limit": "Suggestions en pause jusqu’au {{date}}. Vous avez utilisé les {{limit}} liens de ce mois.",
+      "unavailable": "Les suggestions ne sont pas disponibles pour le moment. Votre lien s’enregistre normalement.",
+      "retry": "Réessayer",
+      "settings": "Réglages IA"
+    },
+    "applied": {
+      "folder": "Déplacé par l’IA",
+      "tags": {
+        "one": "{{count}} ajouté par l’IA",
+        "many": "{{count}} ajoutés par l’IA",
+        "other": "{{count}} ajoutés par l’IA"
+      },
+      "undo": "Annuler",
+      "undoFolder": "Annuler le déplacement par l’IA",
+      "undoTags": "Annuler les tags ajoutés par l’IA",
+      "undoFailed": "Impossible d’annuler le changement de l’IA"
     }
   }
 }

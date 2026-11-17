@@ -3027,6 +3027,40 @@
       "failed": "No se pudo activar la IA. Inténtalo de nuevo.",
       "notNow": "Ahora no",
       "turnOn": "Activar la IA"
+    },
+    "suggest": {
+      "label": "Sugerido",
+      "alsoFits": "También encaja",
+      "loading": "Sugiriendo…",
+      "folderRow": "Carpeta sugerida",
+      "tagsRow": "Etiquetas sugeridas",
+      "addAll": "Añadir todas",
+      "addedAll": "Etiquetas sugeridas añadidas",
+      "new": "Nueva",
+      "addTag": "Añadir la etiqueta {{name}}",
+      "createTag": "Crear y añadir la etiqueta {{name}}",
+      "moveTo": "Mover a {{name}}",
+      "dismiss": "Descartar la sugerencia {{name}}",
+      "tagAdded": "Etiqueta {{name}} añadida",
+      "folderChosen": "Carpeta {{name}} elegida"
+    },
+    "line": {
+      "limit": "Sugerencias en pausa hasta el {{date}}. Has usado los {{limit}} enlaces de este mes.",
+      "unavailable": "Las sugerencias no están disponibles ahora mismo. Tu enlace se guarda como siempre.",
+      "retry": "Reintentar",
+      "settings": "Ajustes de IA"
+    },
+    "applied": {
+      "folder": "Movido por la IA",
+      "tags": {
+        "one": "{{count}} añadida por la IA",
+        "many": "{{count}} añadidas por la IA",
+        "other": "{{count}} añadidas por la IA"
+      },
+      "undo": "Deshacer",
+      "undoFolder": "Deshacer el movimiento de la IA",
+      "undoTags": "Deshacer las etiquetas añadidas por la IA",
+      "undoFailed": "No se pudo deshacer el cambio de la IA"
     }
   }
 }

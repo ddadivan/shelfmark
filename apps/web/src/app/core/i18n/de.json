@@ -2965,6 +2965,39 @@
       "failed": "KI konnte nicht eingeschaltet werden. Versuch es noch einmal.",
       "notNow": "Nicht jetzt",
       "turnOn": "KI einschalten"
+    },
+    "suggest": {
+      "label": "Vorgeschlagen",
+      "alsoFits": "Passt auch",
+      "loading": "Schlägt vor…",
+      "folderRow": "Vorgeschlagener Ordner",
+      "tagsRow": "Vorgeschlagene Tags",
+      "addAll": "Alle hinzufügen",
+      "addedAll": "Vorgeschlagene Tags hinzugefügt",
+      "new": "Neu",
+      "addTag": "Tag {{name}} hinzufügen",
+      "createTag": "Tag {{name}} erstellen und hinzufügen",
+      "moveTo": "Nach {{name}} verschieben",
+      "dismiss": "Vorschlag {{name}} verwerfen",
+      "tagAdded": "Tag {{name}} hinzugefügt",
+      "folderChosen": "Ordner {{name}} gewählt"
+    },
+    "line": {
+      "limit": "Vorschläge pausieren bis {{date}}. Du hast die {{limit}} Links dieses Monats genutzt.",
+      "unavailable": "Vorschläge sind gerade nicht verfügbar. Dein Link wird wie gewohnt gespeichert.",
+      "retry": "Erneut versuchen",
+      "settings": "KI-Einstellungen"
+    },
+    "applied": {
+      "folder": "Von KI verschoben",
+      "tags": {
+        "one": "{{count}} von KI hinzugefügt",
+        "other": "{{count}} von KI hinzugefügt"
+      },
+      "undo": "Rückgängig",
+      "undoFolder": "Verschieben durch KI rückgängig machen",
+      "undoTags": "Von KI hinzugefügte Tags rückgängig machen",
+      "undoFailed": "KI-Änderung konnte nicht rückgängig gemacht werden"
     }
   }
 }

@@ -154,32 +154,90 @@
           </div>
         }
 
-        <ui-select
-          [label]="'links.add.folder.label' | transloco"
-          [options]="folderOptions()"
-          [emptyLabel]="'links.add.folder.unsorted' | transloco"
-          [searchLabel]="'links.add.folder.searchLabel' | transloco"
-          [noResultsLabel]="'links.add.folder.noResults' | transloco"
-          [createLabel]="'links.add.folder.create' | transloco"
-          searchable
-          [formField]="form.folderId"
-          (created)="onFolderCreated($event)"
-        />
+        <div class="add-link__group">
+          <ui-select
+            [label]="'links.add.folder.label' | transloco"
+            [options]="folderOptions()"
+            [emptyLabel]="'links.add.folder.unsorted' | transloco"
+            [searchLabel]="'links.add.folder.searchLabel' | transloco"
+            [noResultsLabel]="'links.add.folder.noResults' | transloco"
+            [createLabel]="'links.add.folder.create' | transloco"
+            searchable
+            [formField]="form.folderId"
+            (created)="onFolderCreated($event)"
+          />
+          @if (ai.on()) {
+            @if (ai.folderApplied()) {
+              <app-ai-applied
+                [label]="'ai.applied.folder' | transloco"
+                [undoLabel]="'ai.applied.undo' | transloco"
+                [undoAriaLabel]="'ai.applied.undoFolder' | transloco"
+                [busy]="ai.undoing() === AI_APPLIED_PART.Folder"
+                (undo)="ai.undo(AI_APPLIED_PART.Folder)"
+              />
+            }
+            <app-ai-suggestion-row
+              [chips]="ai.folderChips()"
+              [label]="ai.folderRowLabel()"
+              [ariaLabel]="'ai.suggest.folderRow' | transloco"
+              (accepted)="ai.accept($event)"
+              (dismissed)="ai.dismiss($event)"
+              (cleared)="focusFolder()"
+            />
+          }
+        </div>
 
-        <ui-tag-input
-          [label]="'links.add.tags.label' | transloco"
-          [placeholder]="'links.add.tags.placeholder' | transloco"
-          [suggestions]="tagSuggestions()"
-          [maxTags]="LINK_LIMIT.TagsMax"
-          [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
-          [createLabel]="'links.add.tags.create' | transloco"
-          [removeLabel]="'links.add.tags.remove' | transloco"
-          [addedLabel]="'links.add.tags.added' | transloco"
-          [removedLabel]="'links.add.tags.removed' | transloco"
-          [duplicateLabel]="'links.add.tags.duplicate' | transloco"
-          [listLabel]="'links.add.tags.list' | transloco"
-          [formField]="form.tags"
-        />
+        <div class="add-link__group">
+          <ui-tag-input
+            [label]="'links.add.tags.label' | transloco"
+            [placeholder]="'links.add.tags.placeholder' | transloco"
+            [suggestions]="tagSuggestions()"
+            [maxTags]="LINK_LIMIT.TagsMax"
+            [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
+            [createLabel]="'links.add.tags.create' | transloco"
+            [removeLabel]="'links.add.tags.remove' | transloco"
+            [addedLabel]="'links.add.tags.added' | transloco"
+            [removedLabel]="'links.add.tags.removed' | transloco"
+            [duplicateLabel]="'links.add.tags.duplicate' | transloco"
+            [listLabel]="'links.add.tags.list' | transloco"
+            [formField]="form.tags"
+          />
+          @if (ai.on()) {
+            @if (ai.tagsApplied() > 0) {
+              <app-ai-applied
+                [label]="ai.tagsAppliedLabel()"
+                [undoLabel]="'ai.applied.undo' | transloco"
+                [undoAriaLabel]="'ai.applied.undoTags' | transloco"
+                [busy]="ai.undoing() === AI_APPLIED_PART.Tags"
+                (undo)="ai.undo(AI_APPLIED_PART.Tags)"
+              />
+            }
+            @if (ai.line(); as line) {
+              <ui-ai-line
+                role="status"
+                [text]="line.text"
+                [actionLabel]="line.actionLabel"
+                (action)="ai.lineAction()"
+              />
+            } @else {
+              <app-ai-suggestion-row
+                [chips]="ai.tagChips()"
+                [label]="'ai.suggest.label' | transloco"
+                [ariaLabel]="'ai.suggest.tagsRow' | transloco"
+                [loading]="ai.loading()"
+                [loadingLabel]="'ai.suggest.loading' | transloco"
+                [allowAddAll]="true"
+                [addAllLabel]="'ai.suggest.addAll' | transloco"
+                [addedAllMessage]="'ai.suggest.addedAll' | transloco"
+                [newLabel]="'ai.suggest.new' | transloco"
+                (accepted)="ai.accept($event)"
+                (dismissed)="ai.dismiss($event)"
+                (acceptedAll)="ai.acceptAllTags()"
+                (cleared)="focusTags()"
+              />
+            }
+          }
+        </div>
 
         <ui-textarea
           [label]="'links.add.note.label' | transloco"

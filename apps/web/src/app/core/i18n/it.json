@@ -3027,6 +3027,40 @@
       "failed": "Impossibile attivare l’IA. Riprova.",
       "notNow": "Non ora",
       "turnOn": "Attiva l’IA"
+    },
+    "suggest": {
+      "label": "Suggeriti",
+      "alsoFits": "Va bene anche",
+      "loading": "Suggerimenti…",
+      "folderRow": "Cartella suggerita",
+      "tagsRow": "Tag suggeriti",
+      "addAll": "Aggiungi tutti",
+      "addedAll": "Tag suggeriti aggiunti",
+      "new": "Nuovo",
+      "addTag": "Aggiungi il tag {{name}}",
+      "createTag": "Crea e aggiungi il tag {{name}}",
+      "moveTo": "Sposta in {{name}}",
+      "dismiss": "Ignora il suggerimento {{name}}",
+      "tagAdded": "Tag {{name}} aggiunto",
+      "folderChosen": "Cartella {{name}} scelta"
+    },
+    "line": {
+      "limit": "Suggerimenti in pausa fino al {{date}}. Hai usato i {{limit}} link di questo mese.",
+      "unavailable": "I suggerimenti non sono disponibili al momento. Il link viene salvato come sempre.",
+      "retry": "Riprova",
+      "settings": "Impostazioni IA"
+    },
+    "applied": {
+      "folder": "Spostato dall’IA",
+      "tags": {
+        "one": "{{count}} aggiunto dall’IA",
+        "many": "{{count}} aggiunti dall’IA",
+        "other": "{{count}} aggiunti dall’IA"
+      },
+      "undo": "Annulla",
+      "undoFolder": "Annulla lo spostamento dell’IA",
+      "undoTags": "Annulla i tag aggiunti dall’IA",
+      "undoFailed": "Impossibile annullare la modifica dell’IA"
     }
   }
 }

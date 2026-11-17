@@ -267,4 +267,23 @@ describe('MockAiApi', () => {
     );
     expect(await statusOf(ai.getLinkAi('missing'))).toBe(404);
   });
+  it("queues a new job when the address of a link changes, unless the summary is the user's", async () => {
+    const { ai, links, data } = setup();
+    await run(ai.updateSettings({ enabled: true }));
+    const link = await run(
+      links.create({ url: 'https://first.example/', title: namedTitle(data) }),
+    );
+    await vi.advanceTimersByTimeAsync(MOCK_AI_TIMING.JobMs);
+    expect((await run(ai.getLinkAi(link.id))).aiStatus).toBe(AI_JOB_STATUS.Done);
+
+    const moved = await run(links.update(link.id, { url: 'https://second.example/' }));
+    expect(moved.aiStatus).toBe(AI_JOB_STATUS.Pending);
+    await vi.advanceTimersByTimeAsync(MOCK_AI_TIMING.JobMs);
+    expect((await run(ai.getLinkAi(link.id))).aiStatus).toBe(AI_JOB_STATUS.Done);
+
+    await run(links.update(link.id, { summary: 'Mine.' }));
+    const again = await run(links.update(link.id, { url: 'https://third.example/' }));
+    expect(again.aiStatus).toBe(AI_JOB_STATUS.Done);
+    expect(again.summary).toBe('Mine.');
+  });
 });

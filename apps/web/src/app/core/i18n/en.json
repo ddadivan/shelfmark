@@ -2965,6 +2965,39 @@
       "failed": "Couldn’t turn on AI. Try again.",
       "notNow": "Not now",
       "turnOn": "Turn on AI"
+    },
+    "suggest": {
+      "label": "Suggested",
+      "alsoFits": "Also fits",
+      "loading": "Suggesting…",
+      "folderRow": "Suggested folder",
+      "tagsRow": "Suggested tags",
+      "addAll": "Add all",
+      "addedAll": "Suggested tags added",
+      "new": "New",
+      "addTag": "Add tag {{name}}",
+      "createTag": "Create and add tag {{name}}",
+      "moveTo": "Move to {{name}}",
+      "dismiss": "Dismiss suggestion {{name}}",
+      "tagAdded": "Tag {{name}} added",
+      "folderChosen": "Folder {{name}} chosen"
+    },
+    "line": {
+      "limit": "Suggestions are paused until {{date}}. You used this month’s {{limit}} links.",
+      "unavailable": "Suggestions aren’t available right now. Your link saves as usual.",
+      "retry": "Try again",
+      "settings": "AI settings"
+    },
+    "applied": {
+      "folder": "Moved by AI",
+      "tags": {
+        "one": "{{count}} added by AI",
+        "other": "{{count}} added by AI"
+      },
+      "undo": "Undo",
+      "undoFolder": "Undo the move by AI",
+      "undoTags": "Undo the tags added by AI",
+      "undoFailed": "Couldn’t undo the AI change"
     }
   }
 }

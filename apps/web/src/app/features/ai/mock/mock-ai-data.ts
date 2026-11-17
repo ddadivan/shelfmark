@@ -195,6 +195,20 @@ export class MockAiData {
     }
   }
 
+  /**
+   * The AI side of a new address on `PATCH /api/links/:id`: like the API, a job is queued again
+   * when AI is on and the summary is not the user's. Answers the link as it is saved then.
+   */
+  linkUrlChanged(link: LinkResponse): LinkResponse {
+    if (!this.settings.enabled || link.summarySource === SUMMARY_SOURCE.User) {
+      return link;
+    }
+    const job = this.queue(link.url, link.title, null, link.id);
+    const next = { ...link, aiStatus: job.status };
+    this.replace(next);
+    return next;
+  }
+
   /** `GET /api/links/:id/ai`, or `null` (404). */
   linkState(id: string): LinkAiState | null {
     this.settle();
