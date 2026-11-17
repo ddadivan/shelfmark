@@ -6,7 +6,10 @@ const DAY_MS = 24 * HOUR_MS;
 export function relativeDay(iso: string, lang: string, now: number = Date.now()): string {
   const format = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' });
   const diff = new Date(iso).getTime() - now;
-  if (Math.abs(diff) < HOUR_MS) return format.format(Math.round(diff / MINUTE_MS), 'minute');
+  // At least one minute ago: "this minute" or "now" reads badly in "You saved this … in …".
+  if (Math.abs(diff) < HOUR_MS) {
+    return format.format(Math.min(-1, Math.round(diff / MINUTE_MS)), 'minute');
+  }
   if (Math.abs(diff) < DAY_MS) return format.format(Math.round(diff / HOUR_MS), 'hour');
   const days = Math.round(diff / DAY_MS);
   if (Math.abs(days) < 30) return format.format(days, 'day');

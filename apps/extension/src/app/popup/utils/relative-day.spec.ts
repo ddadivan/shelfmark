@@ -7,6 +7,11 @@ const HOUR = 60 * MIN;
 const DAY = 24 * HOUR;
 
 describe('relativeDay', () => {
+  it('says a link saved seconds ago was saved 1 minute ago', () => {
+    expect(relativeDay(ago(10_000), 'en', NOW)).toBe('1 minute ago');
+    expect(relativeDay(ago(0), 'en', NOW)).toBe('1 minute ago');
+  });
+
   it('uses minutes below an hour', () => {
     expect(relativeDay(ago(5 * MIN), 'en', NOW)).toBe('5 minutes ago');
   });
