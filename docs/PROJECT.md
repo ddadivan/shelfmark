@@ -528,7 +528,7 @@ Stage 1: manual adding in the web interface only (a form with a URL field). Stag
 
 ### 5.6 AI features
 
-Not part of stages 1–3. In the backlog with prepared issues (parent issue #388; see "Roadmap after stage 2"), not scheduled. Every user-facing capability is designed first. The feature list (problem, UI, entry points, tiers, privacy, cost, order, open questions) is [`docs/ai/FEATURES.md`](ai/FEATURES.md) (#476); the screens are `docs/design/screens/Ai*.dc.html`.
+Not part of stages 1–3. In the backlog with prepared issues (parent issue #388; see "Roadmap after stage 2"), not scheduled. Every user-facing capability is designed first. The feature list (problem, UI, entry points, tiers, privacy, cost, order, open questions) is [`docs/ai/FEATURES.md`](ai/FEATURES.md) (#476); the screens are `docs/design/screens/Ai*.dc.html`; provider, models and cost are in ADR 0047.
 
 **Capabilities**
 

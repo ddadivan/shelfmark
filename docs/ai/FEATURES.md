@@ -72,7 +72,7 @@ The exact numbers are placeholders for the pricing discussion; the designs show 
 
 **Private phase (author's decision, Nov 17, 2026).** Shelfmark has two users today. Both accounts get everything (Pro and the AI pack) through an allowlist of emails in the environment, the same way as `ADMIN_EMAILS`; every other account stays Free. The plan and quotas are still modelled on the account from the start, so Free / Pro / AI pack can be switched on later without rework. The provider console spend limit stays the safety net.
 
-**Model choice and cost (proposal for the provider ADR, prices checked Nov 17, 2026).** Anthropic API, pay as you go (separate from any Claude subscription): Claude Haiku 5.5 ($0.10 / $0.50 per million input / output tokens) for tags, folder, kind and summary; Claude Sonnet 5.5 ($2 / $10) for Ask your shelf; the Batch API (−50%) for processing existing links; prompt caching for the fixed instructions. Embeddings need a separate provider (open question 2). For two users (\~200 new links and \~60 questions a month) that is roughly $0.10 for suggestions and summaries, \~$1.30 for chat, cents for embeddings, and \~$0.50 once to process 2,000 existing links: about **$1–2 a month**, with a spend limit of $10 a month in the console.
+**Model choice and cost (decided in ADR 0047, prices checked Nov 17, 2026).** Anthropic API, pay as you go (separate from any Claude subscription): Claude Haiku 5.5 ($0.10 / $0.50 per million input / output tokens) for tags, folder, kind and summary; Claude Sonnet 5.5 ($2 / $10) for Ask your shelf; the Batch API (−50%) for processing existing links; prompt caching for the fixed instructions. Embeddings need a separate provider (open question 2). For two users (\~200 new links and \~60 questions a month) that is roughly $0.10 for suggestions and summaries, \~$1.30 for chat, cents for embeddings, and \~$0.50 once to process 2,000 existing links: about **$1–2 a month**, with a spend limit of $10 a month in the console.
 
 ## Assumptions for cost
 
@@ -236,6 +236,8 @@ Full rules are in `docs/design/BRAND.md` › AI and the component specs `AiMark`
 - **Always undoable.** Single accepts are one tap to remove; bulk applies have Undo.
 
 ## Open questions for the implementation step
+
+Questions 1, 2, 4 (prices and limits), 7 and 9 are answered by ADR 0047 (`docs/adr/0047-ai-provider-models-and-cost.md`): Anthropic API (Claude Haiku 5.5 for link jobs, Claude Sonnet 5.5 for chat), Voyage `voyage-4-lite` embeddings in pgvector, `AI_FULL_ACCESS_EMAILS` for the private phase, keys only in the environment. Still open: 3 (job runner, in the #389 plan), 5, 6, 8, 10.
 
 1. **Provider and models.** Anthropic (Haiku-class for jobs, Sonnet-class for chat) vs others, or a self-hosted open model like Raindrop's; Vercel AI Gateway or a direct SDK; fallback model when the provider is down; an EU-hosted option. Zero data retention and "no training on API data" terms must be confirmed in writing for the privacy policy.
 2. **Embeddings.** Which provider (Anthropic has no embeddings API; Voyage, OpenAI or an open model), dimensions, pgvector index type (HNSW vs IVFFlat) on the Neon plan, re-embedding when the model changes.
