@@ -2769,6 +2769,19 @@
       "missingFolder": "Esta carpeta ya no existe. Elige otra.",
       "missing": "Esta regla se eliminó mientras tanto.",
       "failed": "No se pudo guardar la regla. Inténtalo de nuevo."
+    },
+    "offer": {
+      "title": "¿Guardar siempre los enlaces de {{domain}} en {{folder}}?",
+      "detail": {
+        "one": "Tu último enlace de este sitio está ahí. Una regla funciona sin IA.",
+        "many": "Tus últimos {{count}} enlaces de este sitio están ahí. Una regla funciona sin IA.",
+        "other": "Tus últimos {{count}} enlaces de este sitio están ahí. Una regla funciona sin IA."
+      },
+      "create": "Crear regla",
+      "notNow": "Ahora no",
+      "created": "Regla creada",
+      "applyExisting": "Aplicar a «Sin carpeta»",
+      "failed": "No se pudo crear la regla"
     }
   },
   "changelog": {

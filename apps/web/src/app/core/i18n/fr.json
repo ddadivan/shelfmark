@@ -2769,6 +2769,19 @@
       "missingFolder": "Ce dossier n'existe plus. Choisissez-en un autre.",
       "missing": "Cette règle a été supprimée entre-temps.",
       "failed": "Impossible d'enregistrer la règle. Réessayez."
+    },
+    "offer": {
+      "title": "Toujours ranger les liens de {{domain}} dans {{folder}} ?",
+      "detail": {
+        "one": "Votre dernier lien de ce site y est. Une règle fonctionne sans IA.",
+        "many": "Vos {{count}} derniers liens de ce site y sont. Une règle fonctionne sans IA.",
+        "other": "Vos {{count}} derniers liens de ce site y sont. Une règle fonctionne sans IA."
+      },
+      "create": "Créer la règle",
+      "notNow": "Pas maintenant",
+      "created": "Règle créée",
+      "applyExisting": "Appliquer à « Sans dossier »",
+      "failed": "Impossible de créer la règle"
     }
   },
   "changelog": {

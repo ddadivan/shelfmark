@@ -2769,6 +2769,19 @@
       "missingFolder": "Questa cartella non esiste più. Scegline un’altra.",
       "missing": "Questa regola è stata eliminata nel frattempo.",
       "failed": "Impossibile salvare la regola. Riprova."
+    },
+    "offer": {
+      "title": "Mettere sempre i link di {{domain}} in {{folder}}?",
+      "detail": {
+        "one": "Il tuo ultimo link da questo sito è lì. Una regola funziona senza IA.",
+        "many": "I tuoi ultimi {{count}} link da questo sito sono lì. Una regola funziona senza IA.",
+        "other": "I tuoi ultimi {{count}} link da questo sito sono lì. Una regola funziona senza IA."
+      },
+      "create": "Crea regola",
+      "notNow": "Non ora",
+      "created": "Regola creata",
+      "applyExisting": "Applica a «Senza cartella»",
+      "failed": "Impossibile creare la regola"
     }
   },
   "changelog": {

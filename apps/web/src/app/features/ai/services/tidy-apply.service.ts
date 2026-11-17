@@ -16,6 +16,7 @@ import { SavedViewsStore } from '../../../stores/saved-views.store';
 import { TagsStore } from '../../../stores/tags.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { toastFolder } from '../../links/utils/toast-folder';
+import { RuleOfferService } from '../../rules/services/rule-offer.service';
 import { AI_API } from '../models/ai-api.const';
 import { TidyCountStore } from './tidy-count.store';
 
@@ -65,7 +66,7 @@ export class TidyApplyService {
 
   private announce(response: TidyApplyResponse, undone?: () => void): void {
     const undo = this.t('ai.tidy.toast.undo');
-    this.toasts.show({
+    const toast = this.toasts.show({
       kind: response.folders > 0 ? TOAST_KIND.Moved : TOAST_KIND.Success,
       title: this.plural('ai.tidy.toast.title', response.applied),
       detail: this.detail(response),
@@ -74,6 +75,14 @@ export class TidyApplyService {
       actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
       action: { label: undo, run: () => void this.undo(response.undo, undone) },
     });
+    const filed = response.undo.items.filter((item) => item.folderId !== null);
+    if (filed.length > 0) {
+      // Accepted folder suggestions are the user's choice: a rule may be offered.
+      this.injector.get(RuleOfferService).afterFiling(
+        filed.map((item) => item.linkId),
+        toast,
+      );
+    }
   }
 
   /** Undo from the toast: what the run changed and is still there goes back. */

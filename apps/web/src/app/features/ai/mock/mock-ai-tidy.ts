@@ -27,7 +27,7 @@ function sameName(a: string, b: string): boolean {
  * at least one `suggested` row after filtering (a folder only while it is live and no rule decides
  * the folder, tags not yet on the link, a new tag whose name exists now reads as a tag). Apply
  * writes only the selected own rows, never a folder over one the user chose meanwhile, at most
- * `LINK_LIMIT.TagsMax` tags; applied rows leave the list (accepted) and Undo brings them back.
+ * `LINK_LIMIT.TagsMax` tags, no folder where a rule decides it (checked again at apply); applied rows leave the list (accepted) and Undo brings them back.
  */
 @Service()
 export class MockAiTidy {
@@ -71,7 +71,10 @@ export class MockAiTidy {
       );
       const folderRow = chosen.find((row) => row.kind === SUGGESTION_KIND.Folder);
       const folderId =
-        folderRow?.folderId && link.folderId === null && this.liveFolder(folderRow.folderId)
+        folderRow?.folderId &&
+        link.folderId === null &&
+        this.liveFolder(folderRow.folderId) &&
+        this.library.ruleEffect(link.url)?.folderId == null
           ? folderRow.folderId
           : null;
       const tags = [...link.tags];

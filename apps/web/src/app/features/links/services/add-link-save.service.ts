@@ -106,9 +106,15 @@ export class AddLinkSaveService {
       });
     }
     try {
+      // Not a folder the dialog started with or a domain rule put there (AI-2 rule offers).
+      const folderChosen =
+        !this.formState.original &&
+        value.folderId !== null &&
+        this.formState.form.folderId().dirty();
       const pending = firstValueFrom(request$).then((link): AddLinkSaved => ({
         action: ADD_LINK_ACTION.Saved,
         link,
+        ...(folderChosen && { folderChosen }),
       }));
       // Kept for the service: the caller gets the result even if the dialog was dismissed meanwhile.
       this.data.session.saving = pending.catch(() => undefined);

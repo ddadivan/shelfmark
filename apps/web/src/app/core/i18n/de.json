@@ -2709,6 +2709,18 @@
       "missingFolder": "Dieser Ordner existiert nicht mehr. Wähle einen anderen.",
       "missing": "Diese Regel wurde inzwischen gelöscht.",
       "failed": "Die Regel konnte nicht gespeichert werden. Versuche es erneut."
+    },
+    "offer": {
+      "title": "Links von {{domain}} immer in {{folder}} ablegen?",
+      "detail": {
+        "one": "Dein letzter {{count}} Link von dieser Website liegt dort. Eine Regel funktioniert ohne KI.",
+        "other": "Deine letzten {{count}} Links von dieser Website liegen dort. Eine Regel funktioniert ohne KI."
+      },
+      "create": "Regel erstellen",
+      "notNow": "Nicht jetzt",
+      "created": "Regel erstellt",
+      "applyExisting": "Auf „Ohne Ordner“ anwenden",
+      "failed": "Regel konnte nicht erstellt werden"
     }
   },
   "changelog": {

@@ -2769,6 +2769,19 @@
       "missingFolder": "Esta pasta não existe mais. Escolha outra.",
       "missing": "Esta regra foi excluída nesse meio-tempo.",
       "failed": "Não foi possível salvar a regra. Tente novamente."
+    },
+    "offer": {
+      "title": "Sempre colocar os links de {{domain}} em {{folder}}?",
+      "detail": {
+        "one": "Seu último link deste site está lá. Uma regra funciona sem IA.",
+        "many": "Seus últimos {{count}} links deste site estão lá. Uma regra funciona sem IA.",
+        "other": "Seus últimos {{count}} links deste site estão lá. Uma regra funciona sem IA."
+      },
+      "create": "Criar regra",
+      "notNow": "Agora não",
+      "created": "Regra criada",
+      "applyExisting": "Aplicar a “Sem pasta”",
+      "failed": "Não foi possível criar a regra"
     }
   },
   "changelog": {

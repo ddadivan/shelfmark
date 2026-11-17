@@ -2709,6 +2709,18 @@
       "missingFolder": "This folder is gone. Choose another one.",
       "missing": "This rule was deleted meanwhile.",
       "failed": "Couldn't save the rule. Try again."
+    },
+    "offer": {
+      "title": "Always put {{domain}} links in {{folder}}?",
+      "detail": {
+        "one": "Your last {{count}} link from this site is there. A rule works without AI.",
+        "other": "Your last {{count}} links from this site are there. A rule works without AI."
+      },
+      "create": "Create rule",
+      "notNow": "Not now",
+      "created": "Rule created",
+      "applyExisting": "Apply to Unsorted",
+      "failed": "Couldn’t create the rule"
     }
   },
   "changelog": {
