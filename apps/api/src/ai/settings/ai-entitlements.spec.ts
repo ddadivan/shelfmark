@@ -1,6 +1,12 @@
 import { aiEntitlements } from './ai-entitlements';
 
-const FREE = { email: 'ada@example.com', plan: 'free', aiPack: false };
+const FREE = {
+  email: 'ada@example.com',
+  emailVerified: true,
+  isDemo: false,
+  plan: 'free',
+  aiPack: false,
+};
 
 describe('aiEntitlements', () => {
   it('is free without a pack, a plan or full access', () => {
@@ -30,5 +36,28 @@ describe('aiEntitlements', () => {
     expect(
       aiEntitlements({ ...FREE, email: 'ädä@example.com' }, new Set(['ädä@example.com'])),
     ).toEqual({ plan: 'free', aiTier: 'free' });
+  });
+
+  it('ignores a full-access email the provider did not verify', () => {
+    const account = { ...FREE, emailVerified: false };
+    expect(aiEntitlements(account, new Set(['ada@example.com']))).toEqual({
+      plan: 'free',
+      aiTier: 'free',
+    });
+  });
+
+  it('never gives full access to a demo user', () => {
+    const account = { ...FREE, isDemo: true };
+    expect(aiEntitlements(account, new Set(['ada@example.com']))).toEqual({
+      plan: 'free',
+      aiTier: 'free',
+    });
+  });
+
+  it('keeps a stored AI pack for an unverified email', () => {
+    expect(aiEntitlements({ ...FREE, emailVerified: false, aiPack: true }, new Set())).toEqual({
+      plan: 'free',
+      aiTier: 'ai-pack',
+    });
   });
 });

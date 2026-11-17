@@ -65,7 +65,7 @@ export class AiSettingsService {
   async entitlements(db: AiDbClient, userId: string): Promise<AiEntitlements> {
     const account = await db.user.findUnique({
       where: { id: userId },
-      select: { email: true, plan: true, aiPack: true },
+      select: { email: true, emailVerified: true, isDemo: true, plan: true, aiPack: true },
     });
     if (!account) throw new NotFoundException();
     return aiEntitlements(account, readAiFullAccessEmails());

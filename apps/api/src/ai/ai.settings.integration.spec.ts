@@ -156,6 +156,20 @@ describe('AI settings API', () => {
     expect((await get()).entitlements).toEqual({ plan: 'free', aiTier: 'free' });
   });
 
+  it('ignores AI_FULL_ACCESS_EMAILS for an unverified or demo account', async () => {
+    process.env[AI_ENV.FullAccessEmails] = 'owner@example.com';
+    await t.db.prisma.user.update({
+      where: { id: users.owner.userId },
+      data: { emailVerified: false },
+    });
+    expect((await get()).entitlements).toEqual({ plan: 'free', aiTier: 'free' });
+    await t.db.prisma.user.update({
+      where: { id: users.owner.userId },
+      data: { emailVerified: true, isDemo: true, demoExpiresAt: new Date(Date.now() + 3_600_000) },
+    });
+    expect((await get()).entitlements).toEqual({ plan: 'free', aiTier: 'free' });
+  });
+
   it('reads the stored AI pack and the month usage', async () => {
     await t.db.prisma.user.update({ where: { id: users.owner.userId }, data: { aiPack: true } });
     const now = new Date();

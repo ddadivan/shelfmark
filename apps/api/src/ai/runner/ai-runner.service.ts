@@ -106,7 +106,14 @@ export class AiRunnerService {
   private async process(job: ClaimedJob, draft: DraftInput | undefined): Promise<void> {
     const account = await this.prisma.user.findUnique({
       where: { id: job.userId },
-      select: { isDemo: true, fetchPreviews: true, email: true, plan: true, aiPack: true },
+      select: {
+        isDemo: true,
+        fetchPreviews: true,
+        email: true,
+        emailVerified: true,
+        plan: true,
+        aiPack: true,
+      },
     });
     if (!account) return;
     const stored = await this.settings.read(this.prisma, job.userId);
