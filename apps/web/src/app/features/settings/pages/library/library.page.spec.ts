@@ -352,8 +352,11 @@ describe('LibrarySettingsPage', () => {
       );
       expect(await install.getHref()).toBe(STORE_URL);
       expect(await install.getName()).toBe(
-        'Install the browser extension from the Chrome Web Store',
+        'Install the browser extension from the Chrome Web Store (opens in a new tab)',
       );
+      const link = root.querySelector<HTMLAnchorElement>(`a[href="${STORE_URL}"]`);
+      expect(link?.target).toBe('_blank');
+      expect(link?.rel).toBe('noopener noreferrer');
     });
   });
 

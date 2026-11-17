@@ -1488,7 +1488,7 @@
           "label": "Browsererweiterung",
           "hint": "Speichere jede Seite mit einem Klick aus Chrome, Edge, Brave oder Arc",
           "action": "Installieren",
-          "actionLabel": "Browsererweiterung aus dem Chrome Web Store installieren"
+          "actionLabel": "Browsererweiterung aus dem Chrome Web Store installieren (öffnet in einem neuen Tab)"
         }
       },
       "failed": "Einstellung konnte nicht gespeichert werden",

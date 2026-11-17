@@ -1510,7 +1510,7 @@
           "label": "Estensione del browser",
           "hint": "Salva qualsiasi pagina con un clic da Chrome, Edge, Brave o Arc",
           "action": "Installa",
-          "actionLabel": "Installa l’estensione del browser dal Chrome Web Store"
+          "actionLabel": "Installa l’estensione del browser dal Chrome Web Store (si apre in una nuova scheda)"
         }
       },
       "failed": "Impossibile salvare l’impostazione",

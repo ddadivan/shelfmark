@@ -1488,7 +1488,7 @@
           "label": "Browser extension",
           "hint": "Save any page in one click from Chrome, Edge, Brave or Arc",
           "action": "Install",
-          "actionLabel": "Install the browser extension from the Chrome Web Store"
+          "actionLabel": "Install the browser extension from the Chrome Web Store (opens in a new tab)"
         }
       },
       "failed": "Couldn't save the setting",

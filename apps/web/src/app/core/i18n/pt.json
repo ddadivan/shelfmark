@@ -167,7 +167,7 @@
       "lead": "Cole um link, dê a ele uma pasta e uma nota. Tudo o que você salvar daqui em diante chega a uma estante só, a dois toques de tecla.",
       "demo": "Abrir a demo",
       "signIn": "Entrar",
-      "extension": "Usa Chrome, Edge, Brave ou Arc? Salve qualquer página com um clique.",
+      "extension": "Você usa Chrome, Edge, Brave ou Arc? Salve qualquer página com um clique.",
       "extensionLink": "Baixar a extensão"
     },
     "footer": {
@@ -1510,7 +1510,7 @@
           "label": "Extensão do navegador",
           "hint": "Salve qualquer página com um clique no Chrome, Edge, Brave ou Arc",
           "action": "Instalar",
-          "actionLabel": "Instalar a extensão do navegador pela Chrome Web Store"
+          "actionLabel": "Instalar a extensão do navegador pela Chrome Web Store (abre em uma nova aba)"
         }
       },
       "failed": "Não foi possível salvar a configuração",

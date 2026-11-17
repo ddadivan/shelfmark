@@ -1510,7 +1510,7 @@
           "label": "Extension de navigateur",
           "hint": "Enregistrez n’importe quelle page en un clic depuis Chrome, Edge, Brave ou Arc",
           "action": "Installer",
-          "actionLabel": "Installer l’extension de navigateur depuis le Chrome Web Store"
+          "actionLabel": "Installer l’extension de navigateur depuis le Chrome Web Store (s’ouvre dans un nouvel onglet)"
         }
       },
       "failed": "Impossible d’enregistrer le paramètre",

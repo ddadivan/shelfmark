@@ -1510,7 +1510,7 @@
           "label": "Extensión del navegador",
           "hint": "Guarda cualquier página con un clic desde Chrome, Edge, Brave o Arc",
           "action": "Instalar",
-          "actionLabel": "Instalar la extensión del navegador desde Chrome Web Store"
+          "actionLabel": "Instalar la extensión del navegador desde Chrome Web Store (se abre en una pestaña nueva)"
         }
       },
       "failed": "No se pudo guardar el ajuste",
