@@ -87,8 +87,11 @@ export class HttpAiApi implements AiApi {
     return this.http.delete<void>(AI_ENDPOINT.Data, { context: skipErrorToast() });
   }
 
-  getTidy(): Observable<TidyListResponse> {
-    return this.http.get<TidyListResponse>(AI_ENDPOINT.Tidy, { context: skipErrorToast() });
+  getTidy(after?: string): Observable<TidyListResponse> {
+    return this.http.get<TidyListResponse>(AI_ENDPOINT.Tidy, {
+      context: skipErrorToast(),
+      ...(after !== undefined && { params: { after } }),
+    });
   }
 
   getTidyCount(): Observable<TidyCountResponse> {

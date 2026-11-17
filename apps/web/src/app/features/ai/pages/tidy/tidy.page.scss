@@ -1,4 +1,5 @@
 @use 'ui' as *;
+@use '../../../../shell/shell-metrics' as *;
 
 // The page fills the column of the shell, so the empty state and the phone bar sit at its end.
 :host {
@@ -81,25 +82,35 @@
 }
 
 .tidy__more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.tidy__more-text {
   @include type(caption);
 
   margin: 0;
   color: var(--text-muted);
 }
 
-// The glass bar floats where the tab bar is (`MobileAi` 6): the shell's main column keeps 110px
-// of end padding for the tab bar, so the sticky offset is what puts the bar 20px above the edge.
+// The glass bar floats where the tab bar is (`MobileAi` 6): the shell's main column keeps
+// `$shell-tab-bar-room` of end padding for the tab bar, so the offset puts the bar 20px above the
+// edge.
+$tidy-bar-offset: rem(20px) - $shell-tab-bar-room;
+
 .tidy__bar {
   @include glass;
 
   position: sticky;
-  inset-block-end: #{rem(20px - 110px)};
+  inset-block-end: #{$tidy-bar-offset};
   z-index: 3;
   display: flex;
   gap: var(--space-2);
   justify-content: flex-end;
   padding: var(--space-3);
-  margin-block: auto #{rem(20px - 110px)};
+  margin-block: auto #{$tidy-bar-offset};
   border-radius: var(--radius-lg);
 
   @include tablet {

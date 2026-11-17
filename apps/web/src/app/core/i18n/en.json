@@ -3109,6 +3109,7 @@
         "one": "{{count}} more link after these. Links without suggestions are not listed.",
         "other": "{{count}} more links after these. Links without suggestions are not listed."
       },
+      "next": "Show the next links",
       "empty": {
         "title": "Nothing to tidy",
         "text": "Every link here either has no suggestions yet or you already sorted it. New links get suggestions within a minute.",
@@ -3130,7 +3131,9 @@
         "detail": "{{folders}}, {{tags}}",
         "undo": "Undo",
         "failed": "Couldn’t tidy the links",
-        "failedDetail": "Nothing was changed. Try again."
+        "failedDetail": "Nothing was changed. Try again.",
+        "nothing": "Nothing to apply",
+        "nothingDetail": "The suggestions changed meanwhile."
       },
       "undone": "Tidy undone",
       "undoFailed": "Couldn’t undo the tidy"

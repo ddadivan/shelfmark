@@ -3177,6 +3177,7 @@
         "many": "Después de estos quedan {{count}} enlaces más. Los enlaces sin sugerencias no aparecen.",
         "other": "Después de estos quedan {{count}} enlaces más. Los enlaces sin sugerencias no aparecen."
       },
+      "next": "Mostrar los siguientes enlaces",
       "empty": {
         "title": "Nada que ordenar",
         "text": "Cada enlace de aquí aún no tiene sugerencias o ya lo ordenaste. Los enlaces nuevos reciben sugerencias en menos de un minuto.",
@@ -3201,7 +3202,9 @@
         "detail": "{{folders}}, {{tags}}",
         "undo": "Deshacer",
         "failed": "No se pudieron ordenar los enlaces",
-        "failedDetail": "No se cambió nada. Inténtalo de nuevo."
+        "failedDetail": "No se cambió nada. Inténtalo de nuevo.",
+        "nothing": "Nada que aplicar",
+        "nothingDetail": "Las sugerencias cambiaron mientras tanto."
       },
       "undone": "Orden deshecho",
       "undoFailed": "No se pudo deshacer el orden"

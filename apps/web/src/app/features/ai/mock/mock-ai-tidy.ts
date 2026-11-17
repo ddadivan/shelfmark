@@ -22,6 +22,14 @@ function sameName(a: string, b: string): boolean {
   return a.toLowerCase() === b.toLowerCase();
 }
 
+/** Newest first, like the API (`created_at DESC, id DESC`): > 0 when `a` comes after `b`. */
+function newestFirst(
+  a: Pick<LinkResponse, 'createdAt' | 'id'>,
+  b: Pick<LinkResponse, 'createdAt' | 'id'>,
+): number {
+  return b.createdAt.localeCompare(a.createdAt) || b.id.localeCompare(a.id);
+}
+
 /**
  * Tidy Unsorted in the mock (AI-2), like the API: the list holds the live links in Unsorted with
  * at least one `suggested` row after filtering (a folder only while it is live and no rule decides
@@ -36,9 +44,11 @@ export class MockAiTidy {
   /** Rows a run accepted, per link: Undo makes them `suggested` again. */
   private readonly accepted = new Map<string, LinkSuggestion[]>();
 
-  /** `GET /api/ai/tidy`; AI off answers an empty list. */
-  list(): TidyListResponse {
-    const items = this.items();
+  /** `GET /api/ai/tidy`, after the link `after` when it is listed or known; AI off answers []. */
+  list(after?: string): TidyListResponse {
+    const all = this.items();
+    const cursor = this.library.links.find((link) => link.id === after);
+    const items = cursor ? all.filter((item) => newestFirst(item.link, cursor) > 0) : all;
     return { items: items.slice(0, TIDY_LIMIT.PageMax), total: items.length };
   }
 
@@ -84,8 +94,8 @@ export class MockAiTidy {
         if (row.kind === SUGGESTION_KIND.Folder || row.tagName === null) {
           continue;
         }
+        // Already on the link (or picked twice): the row stays suggested and is not counted.
         if (tags.some((tag) => sameName(tag, row.tagName ?? ''))) {
-          used.push(row);
           continue;
         }
         if (tags.length >= LINK_LIMIT.TagsMax) {
@@ -170,7 +180,7 @@ export class MockAiTidy {
     this.ai.settle();
     return this.library.links
       .filter((link) => link.folderId === null)
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt) || b.id.localeCompare(a.id))
+      .sort(newestFirst)
       .flatMap((link): TidyItem[] => {
         const suggestions = this.open(link);
         return suggestions.length > 0 ? [{ link: this.library.linkView(link), suggestions }] : [];

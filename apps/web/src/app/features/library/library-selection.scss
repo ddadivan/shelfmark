@@ -1,4 +1,5 @@
 @use 'ui' as *;
+@use '../../shell/shell-metrics' as *;
 
 // Selection header (Bulk.dc.html): "3 selected", "Select all 12", the hints and Done. It lies over
 // the room of the breadcrumb trail (phone: over the title), so starting a selection never moves
@@ -89,15 +90,16 @@
   padding-block-start: var(--space-4);
   margin-block-start: auto;
 
-  // The mobile shell's scroll area (app-shell `.shell__main`) already keeps 110px (plus the safe
-  // area) of end padding for the tab bar, and a sticky inset counts from inside that padding: the
-  // bar's own offset is what is left to stand 12px above the tab bar (20px gap + 68px bar + 12px,
-  // minus the 110px padding; the safe areas cancel out). A short feed leaves the bar where it is
-  // laid out, at the end of the content: the same negative margin puts it on the same line there.
+  // The mobile shell's scroll area (app-shell `.shell__main`) already keeps
+  // `$shell-tab-bar-room` (plus the safe area) of end padding for the tab bar, and a sticky inset
+  // counts from inside that padding: the bar's own offset is what is left to stand 12px above the
+  // tab bar (20px gap + 68px bar + 12px, minus that padding; the safe areas cancel out). A short
+  // feed leaves the bar where it is laid out, at the end of the content: the same negative margin
+  // puts it on the same line there.
   @include compact {
-    inset-block-end: #{rem(20px + 68px + 12px - 110px)};
+    inset-block-end: #{rem(20px + 68px + 12px) - $shell-tab-bar-room};
     align-self: stretch;
-    margin-block-end: #{rem(20px + 68px + 12px - 110px)};
+    margin-block-end: #{rem(20px + 68px + 12px) - $shell-tab-bar-room};
   }
 
   // A tablet keeps the stacked bar as wide as the centred tab bar under it (560px, #316).

@@ -18,7 +18,9 @@ import { TidyStore } from '../../services/tidy.store';
  * every chip selected; a tap leaves a chip out, Skip keeps a link as it is, one "Apply to {n}
  * links" sends the run. Desktop has Cancel and Apply in the header; the mobile shell a glass bar
  * where the tab bar is (the shell hides it on this page). "Nothing to tidy" when the list is
- * empty or every link is skipped. Renders nothing while AI is off and leaves for Unsorted.
+ * empty or every link is skipped and no page follows; with more links after these and nothing
+ * left to apply here, "Show the next links" reads the next page. Renders nothing while AI is off
+ * and leaves for Unsorted.
  */
 @Component({
   selector: 'app-tidy-page',

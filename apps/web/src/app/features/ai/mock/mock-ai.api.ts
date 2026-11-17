@@ -46,10 +46,25 @@ function settingsProblems(request: UpdateAiSettingsRequest): string[] {
   return problems;
 }
 
-/** What the API's Tidy DTOs would reject: 1 to `PageMax` items with distinct link ids. */
-function tidyProblems(items: ReadonlyArray<{ linkId: string }>): string[] {
+/**
+ * What the API's Tidy DTOs would reject: 1 to `PageMax` items with distinct link ids, each with
+ * `idsMin` to `SuggestionIdsPerLinkMax` distinct suggestion ids (1 for apply, 0 for undo).
+ */
+function tidyProblems(
+  items: ReadonlyArray<{ linkId: string; suggestionIds: readonly string[] }>,
+  idsMin: number,
+): string[] {
   const ids = new Set(items.map((item) => item.linkId));
-  return items.length < 1 || items.length > TIDY_LIMIT.PageMax || ids.size !== items.length
+  const badIds = items.some(
+    (item) =>
+      item.suggestionIds.length < idsMin ||
+      item.suggestionIds.length > TIDY_LIMIT.SuggestionIdsPerLinkMax ||
+      new Set(item.suggestionIds).size !== item.suggestionIds.length,
+  );
+  return items.length < 1 ||
+    items.length > TIDY_LIMIT.PageMax ||
+    ids.size !== items.length ||
+    badIds
     ? ['items are invalid']
     : [];
 }
@@ -125,8 +140,8 @@ export class MockAiApi implements AiApi {
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
-  getTidy(): Observable<TidyListResponse> {
-    return defer(() => of(this.tidy.list())).pipe(delay(MOCK_LATENCY_MS.List));
+  getTidy(after?: string): Observable<TidyListResponse> {
+    return defer(() => of(this.tidy.list(after))).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
   getTidyCount(): Observable<TidyCountResponse> {
@@ -135,7 +150,7 @@ export class MockAiApi implements AiApi {
 
   applyTidy(request: TidyApplyRequest): Observable<TidyApplyResponse> {
     return defer(() => {
-      const problems = tidyProblems(request.items);
+      const problems = tidyProblems(request.items, 1);
       if (problems.length > 0) {
         return failure(HttpStatusCode.BadRequest, problems);
       }
@@ -146,7 +161,7 @@ export class MockAiApi implements AiApi {
 
   undoTidy(request: TidyUndoRequest): Observable<TidyUndoResponse> {
     return defer(() => {
-      const problems = tidyProblems(request.items);
+      const problems = tidyProblems(request.items, 0);
       return problems.length > 0
         ? failure(HttpStatusCode.BadRequest, problems)
         : of(this.tidy.undo(request));

@@ -1,6 +1,6 @@
 import { inject, Injector, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import type { RuleOffer } from '@shelfmark/contracts';
+import { LINK_LIMIT, type RuleOffer } from '@shelfmark/contracts';
 import {
   TOAST_CLOSE_REASON,
   TOAST_DURATION_MS,
@@ -25,9 +25,11 @@ import { RuleActionsService } from './rule-actions.service';
  * folder they chose) the server is asked whether the newest links of one site share a folder;
  * then a sticky toast offers "Always put {domain} links in {folder}?" with Create rule and Not now.
  * Only while AI is on. When the filing showed an Undo toast, the offer waits until that toast
- * closes for a reason other than Undo, so it never pushes an Undo away. Not now and the close
- * button are remembered by the server; a replaced or timed-out toast stores nothing. At most one
- * check runs at a time, and a domain is not offered again in this session after an answer.
+ * closes for a reason other than Undo, so it never pushes an Undo away. Filings that come while a
+ * check waits are merged into the newest one (their toasts replaced each other), so no filing is
+ * dropped; while an offer toast is up, a new check is skipped (one question at a time, and an offer
+ * never replaces another). Not now and the close button are remembered by the server; a replaced
+ * or timed-out toast stores nothing. A domain is not offered again in this session after an answer.
  */
 @Service()
 export class RuleOfferService {
@@ -40,34 +42,53 @@ export class RuleOfferService {
   private readonly transloco = inject(TranslocoService);
   /** Domains answered in this session. */
   private readonly answered = new Set<string>();
-  private busy = false;
+  /** Filed link ids not checked yet (merged across filings that came while a check waited). */
+  private readonly pending = new Set<string>();
+  /** The newest filing: only it asks the server. */
+  private latest = 0;
+  /** The offer toast is up. */
+  private offering = false;
   private epoch = 0;
 
   constructor() {
     inject(SessionScope).onEnd(() => {
       this.epoch++;
       this.answered.clear();
-      this.busy = false;
+      this.pending.clear();
+      this.offering = false;
     });
   }
 
   /** The user filed `linkIds` (`toast`: the Undo toast of that filing, if any). */
   afterFiling(linkIds: readonly string[], toast?: ToastRef): void {
-    if (!this.ai.isOn() || linkIds.length === 0 || this.busy) {
+    if (!this.ai.isOn() || linkIds.length === 0) {
       return;
     }
-    this.busy = true;
-    const epoch = this.epoch;
-    void this.check([...linkIds], toast).finally(() => {
-      if (epoch === this.epoch) {
-        this.busy = false;
-      }
-    });
+    for (const id of linkIds) {
+      this.pending.add(id);
+    }
+    void this.check(++this.latest, [...linkIds], toast);
   }
 
-  private async check(linkIds: string[], toast?: ToastRef): Promise<void> {
+  private async check(turn: number, own: readonly string[], toast?: ToastRef): Promise<void> {
     const epoch = this.epoch;
-    if (toast && (await toast.closed) === TOAST_CLOSE_REASON.Action) {
+    const reason = toast ? await toast.closed : null;
+    if (epoch !== this.epoch) {
+      return;
+    }
+    if (reason === TOAST_CLOSE_REASON.Action) {
+      // This filing was undone: its links no longer count.
+      for (const id of own) {
+        this.pending.delete(id);
+      }
+    }
+    // A newer filing asks for all pending links once its own toast is gone.
+    if (turn !== this.latest) {
+      return;
+    }
+    const linkIds = [...this.pending].slice(-LINK_LIMIT.BatchMax);
+    this.pending.clear();
+    if (linkIds.length === 0 || this.offering) {
       return;
     }
     let offer: RuleOffer | null;
@@ -76,13 +97,21 @@ export class RuleOfferService {
     } catch {
       return;
     }
-    if (!offer || epoch !== this.epoch || !this.ai.isOn() || this.answered.has(offer.domain)) {
+    if (
+      !offer ||
+      epoch !== this.epoch ||
+      !this.ai.isOn() ||
+      this.offering ||
+      this.answered.has(offer.domain)
+    ) {
       return;
     }
     await this.offer(offer);
   }
 
   private async offer(offer: RuleOffer): Promise<void> {
+    const epoch = this.epoch;
+    this.offering = true;
     const folder = this.folders.entityMap()[offer.folderId];
     const ref = this.toasts.show({
       kind: TOAST_KIND.Moved,
@@ -93,8 +122,12 @@ export class RuleOfferService {
       action: { label: this.t('rules.offer.create'), run: () => void this.create(offer) },
       secondary: { label: this.t('rules.offer.notNow'), run: () => void this.notNow(offer) },
     });
+    const reason = await ref.closed;
+    if (epoch === this.epoch) {
+      this.offering = false;
+    }
     // The close button (or Esc) means "Not now" too; a replaced toast stores nothing.
-    if ((await ref.closed) === TOAST_CLOSE_REASON.Dismissed) {
+    if (reason === TOAST_CLOSE_REASON.Dismissed) {
       await this.notNow(offer);
     }
   }

@@ -60,6 +60,13 @@ export class TidyApplyService {
     this.refreshCounts();
     if (response.applied > 0) {
       this.announce(response, undone);
+    } else {
+      // Every selected suggestion was decided, moved or ruled meanwhile: say so; the page reloads.
+      this.toasts.show({
+        kind: TOAST_KIND.Info,
+        title: this.t('ai.tidy.toast.nothing'),
+        detail: this.t('ai.tidy.toast.nothingDetail'),
+      });
     }
     return true;
   }

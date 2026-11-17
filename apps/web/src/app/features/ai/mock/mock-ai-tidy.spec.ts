@@ -140,4 +140,21 @@ describe('MockAiTidy', () => {
       setup(false).tidy.apply({ items: [{ linkId: MOCK_ID.LinkPasta, suggestionIds: ['s1'] }] }),
     ).toBeNull();
   });
+
+  it('leaves a tag already on the link (or picked twice) suggested and does not count it', () => {
+    const { tidy, ai, pasta } = setup();
+    const response = tidy.apply({
+      items: [{ linkId: MOCK_ID.LinkPasta, suggestionIds: ['s2', 's4', 's5'] }],
+    });
+    expect(response).toMatchObject({ applied: 1, folders: 0, tagsAdded: 1 });
+    expect(response?.undo.items[0]?.suggestionIds).toEqual(['s2']);
+    expect(pasta()?.tags).toHaveLength(2);
+    expect(ai.suggestionsOf(MOCK_ID.LinkPasta).map((s) => s.id)).toEqual(['s1', 's3', 's4', 's5']);
+  });
+
+  it('reads the page after a given link, like the API', () => {
+    const { tidy } = setup();
+    expect(tidy.list(MOCK_ID.LinkPasta)).toEqual({ items: [], total: 0 });
+    expect(tidy.list('unknown').total).toBe(1);
+  });
 });

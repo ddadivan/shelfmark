@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import type { TidyItem } from '@shelfmark/contracts';
 import { MOCK_LIST_FOLDERS_RESPONSE } from '@shelfmark/contracts/testing';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { fakeAiApi } from '../../../../testing/fake-ai-api';
 import { TIDY_LINK, tidyItems } from '../../../../testing/tidy-items';
 import { FoldersStore } from '../../../stores/folders.store';
@@ -93,6 +93,51 @@ describe('TidyStore', () => {
     api.dismissSuggestion.mockReturnValue(throwError(() => new Error('down')));
     await store.dismiss('t1');
     expect(store.rows()[0]?.chips.map((chip) => chip.id)).toEqual(['f1', 't1']);
+  });
+
+  it('puts back only the failed chip over newer changes, and reads again after a reload', async () => {
+    const { api, store } = await setup();
+    const failing = new Subject<void>();
+    api.dismissSuggestion.mockReturnValueOnce(failing.asObservable());
+    const pending = store.dismiss('t1');
+    await store.dismiss('n2');
+    failing.error(new Error('down'));
+    await pending;
+    expect(store.rows().map((row) => row.chips.map((chip) => chip.id))).toEqual([['f1', 't1']]);
+
+    const late = new Subject<void>();
+    api.dismissSuggestion.mockReturnValueOnce(late.asObservable());
+    const after = store.dismiss('f1');
+    await store.load();
+    api.getTidy.mockClear();
+    late.error(new Error('down'));
+    await after;
+    expect(api.getTidy).toHaveBeenCalledTimes(1);
+  });
+
+  it('with more links after these, all skipped is not empty: the next page reads after the last', async () => {
+    const { api, store } = await setup(130);
+    store.skip(LINK.id);
+    store.skip('l2');
+    expect(store.empty()).toBe(false);
+    expect(store.canNext()).toBe(true);
+    api.getTidy.mockClear();
+    await store.next();
+    expect(api.getTidy).toHaveBeenCalledWith('l2');
+    expect(store.after()).toBe('l2');
+    expect(store.skipped()).toEqual([]);
+  });
+
+  it('reads the next page after an apply when more remain, and the first page after Undo', async () => {
+    const { api, applier, store } = await setup(130);
+    store.skip('l2');
+    expect(store.canNext()).toBe(false);
+    api.getTidy.mockClear();
+    await store.apply();
+    expect(api.getTidy).toHaveBeenLastCalledWith('l2');
+    applier.apply.mock.calls[0]?.[1]?.();
+    expect(api.getTidy).toHaveBeenLastCalledWith(undefined);
+    expect(store.after()).toBeNull();
   });
 
   it('reads as empty when the list fails to load', async () => {

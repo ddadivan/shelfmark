@@ -62,6 +62,17 @@ describe('mockRuleOffer', () => {
     expect(mockRuleOffer(['a'], source({ liveFolder: () => false }))).toBeNull();
   });
 
+  it('skips hosts a rule cannot store, and stops the count at an AI mark like the API', () => {
+    const ips = [1, 2, 3].map((n) => link(`ip${n}`, `http://192.168.0.1/${n}`, 'videos', 20 + n));
+    expect(mockRuleOffer(['ip3'], source({ links: [...ips, ...LINKS] }))).toBeNull();
+    const more = [...LINKS, link('g', 'https://youtube.com/watch?v=5', 'videos', 1)];
+    const marked = source({
+      links: more.map((item) => (item.id === 'd' ? { ...item, folderId: 'videos' } : item)),
+      autoAppliedFolder: (id) => (id === 'd' ? 'videos' : null),
+    });
+    expect(mockRuleOffer(['a'], marked)?.count).toBe(3);
+  });
+
   it('checks the next site when the first does not qualify', () => {
     expect(mockRuleOffer(['e', 'a'], source())?.domain).toBe('youtube.com');
   });

@@ -44,6 +44,7 @@ describe('HttpAiApi', () => {
       [() => api.tick().subscribe(), 'POST', '/api/ai/tick', null],
       [() => api.deleteData().subscribe(), 'DELETE', '/api/ai/data', null],
       [() => api.getTidy().subscribe(), 'GET', '/api/ai/tidy', null],
+      [() => api.getTidy('l9').subscribe(), 'GET', '/api/ai/tidy?after=l9', null],
       [() => api.getTidyCount().subscribe(), 'GET', '/api/ai/tidy/count', null],
       [
         () => api.applyTidy({ items: [{ linkId: 'l1', suggestionIds: ['s1'] }] }).subscribe(),

@@ -3177,6 +3177,7 @@
         "many": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem.",
         "other": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem."
       },
+      "next": "Mostrar os próximos links",
       "empty": {
         "title": "Nada para organizar",
         "text": "Cada link aqui ainda não tem sugestões ou você já o organizou. Links novos recebem sugestões em menos de um minuto.",
@@ -3201,7 +3202,9 @@
         "detail": "{{folders}}, {{tags}}",
         "undo": "Desfazer",
         "failed": "Não foi possível organizar os links",
-        "failedDetail": "Nada foi alterado. Tente de novo."
+        "failedDetail": "Nada foi alterado. Tente de novo.",
+        "nothing": "Nada para aplicar",
+        "nothingDetail": "As sugestões mudaram nesse meio-tempo."
       },
       "undone": "Organização desfeita",
       "undoFailed": "Não foi possível desfazer a organização"

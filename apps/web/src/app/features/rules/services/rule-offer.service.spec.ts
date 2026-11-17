@@ -132,6 +132,48 @@ describe('RuleOfferService', () => {
     await vi.waitFor(() => expect(shown).toHaveLength(1));
   });
 
+  it('merges filings that come while a check waits, instead of dropping them', async () => {
+    const { rulesApi, service } = await setup();
+    const first = undoToast();
+    const second = undoToast();
+    service.afterFiling(['l1'], first.ref);
+    service.afterFiling(['l2'], second.ref);
+    // The second filing's toast replaced the first one's: only the newest asks.
+    first.close(TOAST_CLOSE_REASON.Replaced);
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(rulesApi.checkOffer).not.toHaveBeenCalled();
+    second.close(TOAST_CLOSE_REASON.Timeout);
+    await vi.waitFor(() => expect(rulesApi.checkOffer).toHaveBeenCalledTimes(1));
+    expect(rulesApi.checkOffer).toHaveBeenCalledWith(['l1', 'l2']);
+  });
+
+  it('leaves out an undone filing but still asks for the earlier one', async () => {
+    const { rulesApi, service } = await setup();
+    const first = undoToast();
+    const second = undoToast();
+    service.afterFiling(['l1'], first.ref);
+    service.afterFiling(['l2'], second.ref);
+    first.close(TOAST_CLOSE_REASON.Replaced);
+    second.close(TOAST_CLOSE_REASON.Action);
+    await vi.waitFor(() => expect(rulesApi.checkOffer).toHaveBeenCalledWith(['l1']));
+  });
+
+  it('asks again after the server answered, and skips a check while an offer is up', async () => {
+    const { shown, rulesApi, service } = await setup();
+    rulesApi.checkOffer.mockReturnValueOnce(of({ offer: null }));
+    service.afterFiling(['l1']);
+    await vi.waitFor(() => expect(rulesApi.checkOffer).toHaveBeenCalledTimes(1));
+    service.afterFiling(['l2']);
+    await vi.waitFor(() => expect(shown).toHaveLength(1));
+    expect(rulesApi.checkOffer).toHaveBeenLastCalledWith(['l2']);
+    // The offer toast is up: the next filing asks nothing and shows no second offer.
+    service.afterFiling(['l3']);
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(rulesApi.checkOffer).toHaveBeenCalledTimes(2);
+    expect(shown).toHaveLength(1);
+    TestBed.inject(SessionScope).end();
+  });
+
   it('remembers Not now and the close button, not a replaced toast', async () => {
     const { shown, rulesApi, service } = await setup();
     service.afterFiling(['l1']);

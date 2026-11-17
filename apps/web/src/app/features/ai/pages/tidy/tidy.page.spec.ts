@@ -23,11 +23,11 @@ import { TidyApplyService } from '../../services/tidy-apply.service';
 import TidyPage from './tidy.page';
 import { tidyAiOn } from './tidy.guard';
 
-async function setup(items = tidyItems(), on = true) {
+async function setup(items = tidyItems(), on = true, total = items.length) {
   const api = fakeAiApi(
     aiSettingsResponse(on ? {} : { settings: { ...AI_SETTINGS_DEFAULT, enabled: false } }),
   );
-  api.getTidy.mockReturnValue(of({ items, total: items.length }));
+  api.getTidy.mockReturnValue(of({ items, total }));
   const applier = { apply: vi.fn<TidyApplyService['apply']>(async () => true) };
   TestBed.configureTestingModule({
     providers: [
@@ -130,6 +130,23 @@ describe('TidyPage', () => {
     expect(await axeViolations(element)).toEqual([]);
     await (await loader.getHarness(UiButtonHarness.with({ text: 'Back to Unsorted' }))).click();
     expect(navigate).toHaveBeenCalledWith('/unsorted');
+  });
+
+  it('offers the next links when everything here is skipped and more follow', async () => {
+    const { api, element, fixture, loader } = await setup(tidyItems(), true, 130);
+    expect(element.textContent).toContain('128 more links after these.');
+    expect(
+      await loader.getAllHarnesses(UiButtonHarness.with({ text: 'Show the next links' })),
+    ).toHaveLength(0);
+    for (const skip of await loader.getAllHarnesses(UiButtonHarness.with({ text: 'Skip' }))) {
+      await skip.click();
+    }
+    expect(element.textContent).not.toContain('Nothing to tidy');
+    api.getTidy.mockClear();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Show the next links' }))).click();
+    await fixture.whenStable();
+    expect(api.getTidy).toHaveBeenCalledWith('l2');
+    expect(await axeViolations(element)).toEqual([]);
   });
 
   it('renders nothing AI and leaves for Unsorted while AI is off', async () => {

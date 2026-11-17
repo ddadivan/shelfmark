@@ -3177,6 +3177,7 @@
         "many": "Encore {{count}} liens après ceux-ci. Les liens sans suggestion ne sont pas listés.",
         "other": "Encore {{count}} liens après ceux-ci. Les liens sans suggestion ne sont pas listés."
       },
+      "next": "Afficher les liens suivants",
       "empty": {
         "title": "Rien à ranger",
         "text": "Chaque lien ici n’a pas encore de suggestion ou vous l’avez déjà classé. Les nouveaux liens reçoivent des suggestions en moins d’une minute.",
@@ -3201,7 +3202,9 @@
         "detail": "{{folders}}, {{tags}}",
         "undo": "Annuler",
         "failed": "Impossible de ranger les liens",
-        "failedDetail": "Rien n’a été modifié. Réessayez."
+        "failedDetail": "Rien n’a été modifié. Réessayez.",
+        "nothing": "Rien à appliquer",
+        "nothingDetail": "Les suggestions ont changé entre-temps."
       },
       "undone": "Rangement annulé",
       "undoFailed": "Impossible d’annuler le rangement"

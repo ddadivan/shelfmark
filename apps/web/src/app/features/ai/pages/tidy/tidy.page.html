@@ -54,9 +54,16 @@
     }
   </ul>
   @if (store.more() > 0) {
-  <p class="tidy__more">
-    {{ pluralKey('ai.tidy.more', store.more()) | transloco: { count: store.more() } }}
-  </p>
+  <div class="tidy__more">
+    <p class="tidy__more-text">
+      {{ pluralKey('ai.tidy.more', store.more()) | transloco: { count: store.more() } }}
+    </p>
+    @if (store.canNext()) {
+    <ui-button variant="secondary" size="sm" (click)="store.next()">
+      {{ 'ai.tidy.next' | transloco }}
+    </ui-button>
+    }
+  </div>
   } @if (compact()) {
   <div
     class="tidy__bar"

@@ -128,4 +128,21 @@ describe('TidyApplyService', () => {
     expect(await service.apply([])).toBe(false);
     expect(api.applyTidy).toHaveBeenCalledTimes(1);
   });
+
+  it('says there was nothing to apply when the suggestions changed meanwhile', async () => {
+    const { api, toasts, links, service } = await setup();
+    api.applyTidy.mockReturnValue(
+      of({ links: [], applied: 0, folders: 0, tagsAdded: 0, skipped: 0, undo: { items: [] } }),
+    );
+    expect(await service.apply(ITEMS)).toBe(true);
+    expect(links.patchLinks).toHaveBeenCalledWith([], false);
+    expect(toasts).toEqual([
+      expect.objectContaining({
+        kind: TOAST_KIND.Info,
+        title: 'Nothing to apply',
+        detail: 'The suggestions changed meanwhile.',
+      }),
+    ]);
+    expect(toasts[0]?.action).toBeUndefined();
+  });
 });

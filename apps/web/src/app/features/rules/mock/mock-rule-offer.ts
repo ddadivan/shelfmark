@@ -1,5 +1,6 @@
 import {
   findMatchingRule,
+  normalizeRuleDomain,
   RULE_LIMIT,
   RULE_OFFER_LIMIT,
   ruleHost,
@@ -14,7 +15,7 @@ function newestFirst(a: LinkResponse, b: LinkResponse): number {
 
 /**
  * The rule offer of `POST /api/rules/offers/check` in the mock (AI-2, ADR 0049), like the API:
- * the sites of the filed links (at most `HostsPerCheckMax`), skipping a dismissed one, one a rule
+ * the sites of the filed links that a rule can store (at most `HostsPerCheckMax`), skipping a dismissed one, one a rule
  * already matches, or every site once the rules are full; the newest `SameChoiceMin` links of the
  * site must share one live folder and none may carry an open "Moved by AI" mark. `count` is how
  * many of the newest links in a row are in that folder.
@@ -32,7 +33,8 @@ export function mockRuleOffer(
       source.links
         .filter((link) => wanted.has(link.id) && link.folderId !== null)
         .map((link) => ruleHost(link.url))
-        .filter((host) => host !== null),
+        // Only a host a rule can store (no IP address, no single label), like the API.
+        .filter((host): host is string => host !== null && normalizeRuleDomain(host) === host),
     ),
   ].slice(0, RULE_OFFER_LIMIT.HostsPerCheckMax);
   for (const host of hosts) {
@@ -58,7 +60,9 @@ export function mockRuleOffer(
     if (!qualifies) {
       continue;
     }
-    const run = candidates.findIndex((link) => link.folderId !== folderId);
+    const run = candidates.findIndex(
+      (link) => link.folderId !== folderId || source.autoAppliedFolder(link.id) !== null,
+    );
     return { domain: host, folderId, count: run === -1 ? candidates.length : run };
   }
   return null;

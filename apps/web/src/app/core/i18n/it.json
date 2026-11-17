@@ -3177,6 +3177,7 @@
         "many": "Dopo questi ci sono ancora {{count}} link. I link senza suggerimenti non sono elencati.",
         "other": "Dopo questi ci sono ancora {{count}} link. I link senza suggerimenti non sono elencati."
       },
+      "next": "Mostra i link successivi",
       "empty": {
         "title": "Niente da riordinare",
         "text": "Ogni link qui non ha ancora suggerimenti oppure l’hai già sistemato. I nuovi link ricevono suggerimenti entro un minuto.",
@@ -3201,7 +3202,9 @@
         "detail": "{{folders}}, {{tags}}",
         "undo": "Annulla",
         "failed": "Impossibile riordinare i link",
-        "failedDetail": "Non è cambiato nulla. Riprova."
+        "failedDetail": "Non è cambiato nulla. Riprova.",
+        "nothing": "Niente da applicare",
+        "nothingDetail": "Nel frattempo i suggerimenti sono cambiati."
       },
       "undone": "Riordino annullato",
       "undoFailed": "Impossibile annullare il riordino"

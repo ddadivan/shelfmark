@@ -3109,6 +3109,7 @@
         "one": "Danach folgt noch {{count}} Link. Links ohne Vorschläge werden nicht aufgeführt.",
         "other": "Danach folgen noch {{count}} Links. Links ohne Vorschläge werden nicht aufgeführt."
       },
+      "next": "Nächste Links zeigen",
       "empty": {
         "title": "Nichts aufzuräumen",
         "text": "Jeder Link hier hat entweder noch keine Vorschläge oder du hast ihn schon einsortiert. Neue Links bekommen innerhalb einer Minute Vorschläge.",
@@ -3130,7 +3131,9 @@
         "detail": "{{folders}}, {{tags}}",
         "undo": "Rückgängig",
         "failed": "Links konnten nicht aufgeräumt werden",
-        "failedDetail": "Es wurde nichts geändert. Versuche es noch einmal."
+        "failedDetail": "Es wurde nichts geändert. Versuche es noch einmal.",
+        "nothing": "Nichts anzuwenden",
+        "nothingDetail": "Die Vorschläge haben sich inzwischen geändert."
       },
       "undone": "Aufräumen rückgängig gemacht",
       "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden"

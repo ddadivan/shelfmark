@@ -39,8 +39,11 @@ export interface AiApi {
   tick(): Observable<AiTickResponse>;
   /** `DELETE /api/ai/data` (204): every AI summary and suggestion; user edits stay. */
   deleteData(): Observable<void>;
-  /** `GET /api/ai/tidy`: links in Unsorted with suggestions to review, newest first (AI-2). */
-  getTidy(): Observable<TidyListResponse>;
+  /**
+   * `GET /api/ai/tidy`: links in Unsorted with suggestions to review, newest first (AI-2); `after`
+   * (the last link of the previous page) reads the next page.
+   */
+  getTidy(after?: string): Observable<TidyListResponse>;
   /** `GET /api/ai/tidy/count`: how many links Tidy would list (the Unsorted button). */
   getTidyCount(): Observable<TidyCountResponse>;
   /** `POST /api/ai/tidy/apply`: one run of the selected suggestions (409 while AI is off). */
