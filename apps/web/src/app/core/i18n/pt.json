@@ -3227,6 +3227,13 @@
       },
       "undone": "Organização desfeita",
       "undoFailed": "Não foi possível desfazer a organização"
+    },
+    "search": {
+      "related": "Relacionados pelo significado",
+      "noWordMatches": "Nenhum link com essas palavras",
+      "why": "Perto de: {{reasons}}",
+      "fromSummary": "Perto de: {{reasons}} (do resumo)",
+      "preparing": "A busca por significado está se preparando: {{ready}} de {{total}} links. A busca por palavras funciona como sempre."
     }
   }
 }

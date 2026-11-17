@@ -13,11 +13,13 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
+  AiLineComponent,
   CommandGroupComponent,
   CommandItemComponent,
   CommandListComponent,
   FaviconComponent,
   HighlightComponent,
+  ICON_SIZE,
   IconComponent,
   type CommandSelection,
 } from '@shelfmark/ui';
@@ -45,6 +47,7 @@ import { SEARCH_LINK_LIMIT } from '../../models/search-link-limit.const';
 import { SEARCH_RESULT_KIND } from '../../models/search-result-kind.const';
 import type { SearchState } from '../../models/search-state.interface';
 import { LinkOpener } from '../../services/link-opener.service';
+import { MeaningSearch } from '../../services/meaning-search';
 import { matchFolders, matchTags } from '../../utils/search-match';
 import { isMacPlatform } from '../../utils/is-mac-platform';
 import { pluralKey } from '../../../../core/i18n/plural-key';
@@ -61,13 +64,15 @@ const IDLE: SearchState = { query: '', links: [], more: false, failed: false };
  *
  * Enter opens a link in a new tab and finishes the search (`done`); Cmd or Ctrl + Enter opens it
  * in the background and keeps the list. A folder or a tag opens its page, "Show all results" the
- * library page with the query. In `popup` mode the finished search also clears the field after
+ * library page with the query. Meaning matches (AI-3, `MeaningSearch`) follow the word matches
+ * under "Related by meaning" and open like links. In `popup` mode the finished search also clears the field after
  * a navigation (a link opened in a new tab leaves the text, so it can be searched again).
  */
 @Component({
   selector: 'app-search-results',
   imports: [
     TranslocoPipe,
+    AiLineComponent,
     CommandGroupComponent,
     CommandItemComponent,
     CommandListComponent,
@@ -75,6 +80,7 @@ const IDLE: SearchState = { query: '', links: [], more: false, failed: false };
     HighlightComponent,
     IconComponent,
   ],
+  providers: [MeaningSearch],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './search-results.component.html',
   styleUrl: './search-results.component.scss',
@@ -92,8 +98,11 @@ export class SearchResultsComponent {
   private readonly actions = inject(LinkActionsService);
   private readonly router = inject(Router);
   private readonly opener = inject(LinkOpener);
+  /** Meaning matches after the word matches (AI-3); nothing while search by meaning is off. */
+  protected readonly meaning = inject(MeaningSearch);
 
   protected readonly SEARCH_RESULT_KIND = SEARCH_RESULT_KIND;
+  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly pluralKey = pluralKey;
   protected readonly linkHost = linkHost;
   protected readonly siteLetter = siteLetter;
@@ -132,17 +141,24 @@ export class SearchResultsComponent {
     () => this.folderMatches().length > 0 || this.tagMatches().length > 0,
   );
   protected readonly linkCount = computed(() => this.state().links.length);
-  /** Everything listed: links, folders and tags. */
+  /** Everything listed: links, meaning matches, folders and tags. */
   protected readonly resultCount = computed(
-    () => this.linkCount() + this.folderMatches().length + this.tagMatches().length,
+    () =>
+      this.linkCount() +
+      this.meaning.rows().length +
+      this.folderMatches().length +
+      this.tagMatches().length,
   );
   /** The results on screen are final for a query: the status region may announce them. */
-  protected readonly settled = computed(() => this.parsed() !== '' && !this.busy());
+  protected readonly settled = computed(
+    () => this.parsed() !== '' && !this.busy() && !this.meaning.pending(),
+  );
 
   constructor() {
     // Folders and tags are shared with the sidebar; the calls are no-ops once loaded.
     void this.folders.load();
     void this.tags.load();
+    this.meaning.connect({ text: this.parsed, words: this.state });
   }
 
   protected folderName(id: string | null): string | undefined {
@@ -171,6 +187,7 @@ export class SearchResultsComponent {
     const id = separator < 0 ? '' : selection.value.slice(separator + 1);
     switch (kind) {
       case SEARCH_RESULT_KIND.Link:
+      case SEARCH_RESULT_KIND.Meaning:
         this.openLink(id, selection.background);
         break;
       case SEARCH_RESULT_KIND.Folder:
@@ -193,7 +210,9 @@ export class SearchResultsComponent {
   }
 
   private openLink(id: string, background: boolean): void {
-    const link = this.state().links.find((candidate) => candidate.id === id);
+    const link =
+      this.state().links.find((candidate) => candidate.id === id) ??
+      this.meaning.rows().find((row) => row.link.id === id)?.link;
     const href = link ? safeHref(link.url) : undefined;
     if (!link || href === undefined) {
       return;

@@ -3156,6 +3156,13 @@
       },
       "undone": "Tidy undone",
       "undoFailed": "Couldn’t undo the tidy"
+    },
+    "search": {
+      "related": "Related by meaning",
+      "noWordMatches": "No links with these words",
+      "why": "Close to: {{reasons}}",
+      "fromSummary": "Close to: {{reasons}} (from the summary)",
+      "preparing": "Search by meaning is getting ready: {{ready}} of {{total}} links. Word matches work as usual."
     }
   }
 }

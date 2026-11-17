@@ -3227,6 +3227,13 @@
       },
       "undone": "Orden deshecho",
       "undoFailed": "No se pudo deshacer el orden"
+    },
+    "search": {
+      "related": "Relacionados por significado",
+      "noWordMatches": "Ningún enlace con estas palabras",
+      "why": "Cerca de: {{reasons}}",
+      "fromSummary": "Cerca de: {{reasons}} (del resumen)",
+      "preparing": "La búsqueda por significado se está preparando: {{ready}} de {{total}} enlaces. La búsqueda por palabras funciona como siempre."
     }
   }
 }

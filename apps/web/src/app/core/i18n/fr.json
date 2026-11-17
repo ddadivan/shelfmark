@@ -3227,6 +3227,13 @@
       },
       "undone": "Rangement annulé",
       "undoFailed": "Impossible d’annuler le rangement"
+    },
+    "search": {
+      "related": "Proches par le sens",
+      "noWordMatches": "Aucun lien avec ces mots",
+      "why": "Proche de : {{reasons}}",
+      "fromSummary": "Proche de : {{reasons}} (d’après le résumé)",
+      "preparing": "La recherche par le sens se prépare : {{ready}} liens sur {{total}}. La recherche par mots marche comme d’habitude."
     }
   }
 }

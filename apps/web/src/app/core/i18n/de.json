@@ -3156,6 +3156,13 @@
       },
       "undone": "Aufräumen rückgängig gemacht",
       "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden"
+    },
+    "search": {
+      "related": "Ähnlich nach Bedeutung",
+      "noWordMatches": "Keine Links mit diesen Wörtern",
+      "why": "Nah an: {{reasons}}",
+      "fromSummary": "Nah an: {{reasons}} (aus der Zusammenfassung)",
+      "preparing": "Die Suche nach Bedeutung wird vorbereitet: {{ready}} von {{total}} Links. Die Wortsuche funktioniert wie gewohnt."
     }
   }
 }
