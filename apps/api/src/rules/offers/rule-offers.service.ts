@@ -13,6 +13,8 @@ import { domainToUnicode } from 'node:url';
 import { escapeLike } from '../../common/util/escape-like';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { RuleOfferCandidate } from '../models/rule-offer-candidate.interface';
+import { RULE_OFFER_DISMISSAL_LIMIT } from '../models/rule-offer-dismissal-limit.const';
+import { RULE_OFFER_SCAN } from '../models/rule-offer-scan.const';
 import { detectRuleOffer } from './detect-rule-offer';
 
 /**
@@ -67,44 +69,71 @@ export class RuleOffersService {
     return { offer: null };
   }
 
-  /** `POST /api/rules/offers/dismiss` ("Not now"): remembered per site, idempotent. */
+  /**
+   * `POST /api/rules/offers/dismiss` ("Not now"): remembered per site, idempotent. At most
+   * `RULE_OFFER_DISMISSAL_LIMIT.PerUserMax` sites are kept; past it the oldest answers go.
+   */
   async dismiss(userId: string, domain: string): Promise<void> {
     await this.prisma.ruleOfferDismissal.createMany({
       data: [{ userId, domain }],
       skipDuplicates: true,
     });
+    const overflow = await this.prisma.ruleOfferDismissal.findMany({
+      where: { userId },
+      orderBy: [{ createdAt: 'desc' }, { domain: 'asc' }],
+      skip: RULE_OFFER_DISMISSAL_LIMIT.PerUserMax,
+      select: { domain: true },
+    });
+    if (overflow.length > 0) {
+      await this.prisma.ruleOfferDismissal.deleteMany({
+        where: { userId, domain: { in: overflow.map((row) => row.domain) } },
+      });
+    }
   }
 
   /**
-   * The user's newest live links whose address contains the host (escaped `ILIKE`; a punycode host
-   * may be stored in Unicode, so both spellings are searched), at most `CandidatesMax`.
+   * The user's newest live links of exactly this site, at most `CandidatesMax`. The address match
+   * (escaped `ILIKE`; a punycode host may be stored in Unicode, so both spellings are searched) is
+   * wider than the site, so rows are read in batches and kept only when `ruleHost` equals the host:
+   * other addresses that merely contain it never push the site's own links out
+   * (`RULE_OFFER_SCAN`).
    */
   private async candidates(userId: string, host: string): Promise<RuleOfferCandidate[]> {
     const spellings = [...new Set([host, domainToUnicode(host)].filter((name) => name !== ''))];
-    const rows = await this.prisma.link.findMany({
-      where: {
-        userId,
-        deletedAt: null,
-        OR: spellings.map((name) => ({
-          url: { contains: escapeLike(name), mode: 'insensitive' as const },
-        })),
-      },
-      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-      take: RULE_OFFER_LIMIT.CandidatesMax,
-      select: {
-        url: true,
-        folderId: true,
-        suggestions: {
-          where: { kind: SUGGESTION_KIND.Folder, state: SUGGESTION_STATE.AutoApplied },
-          select: { id: true },
-          take: 1,
+    const found: RuleOfferCandidate[] = [];
+    for (let read = 0; read < RULE_OFFER_SCAN.RowsMax; read += RULE_OFFER_SCAN.BatchSize) {
+      const rows = await this.prisma.link.findMany({
+        where: {
+          userId,
+          deletedAt: null,
+          OR: spellings.map((name) => ({
+            url: { contains: escapeLike(name), mode: 'insensitive' as const },
+          })),
         },
-      },
-    });
-    return rows.map((row) => ({
-      url: row.url,
-      folderId: row.folderId,
-      autoFiled: row.suggestions.length > 0,
-    }));
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        skip: read,
+        take: RULE_OFFER_SCAN.BatchSize,
+        select: {
+          url: true,
+          folderId: true,
+          suggestions: {
+            where: { kind: SUGGESTION_KIND.Folder, state: SUGGESTION_STATE.AutoApplied },
+            select: { id: true },
+            take: 1,
+          },
+        },
+      });
+      for (const row of rows) {
+        if (ruleHost(row.url) !== host) continue;
+        found.push({
+          url: row.url,
+          folderId: row.folderId,
+          autoFiled: row.suggestions.length > 0,
+        });
+        if (found.length === RULE_OFFER_LIMIT.CandidatesMax) return found;
+      }
+      if (rows.length < RULE_OFFER_SCAN.BatchSize) break;
+    }
+    return found;
   }
 }

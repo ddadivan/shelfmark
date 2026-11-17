@@ -271,6 +271,7 @@ export class AiBackfillService {
       userId,
       chunk.map((job) => ({ url: job.url, linkId: job.linkId })),
       vocabulary.folderIdByKey,
+      vocabulary.tags,
     );
     const pages = await mapLimit(chunk, AI_BACKFILL_LIMIT.ExcerptConcurrency, (job) =>
       account.fetchPreviews && deadline - Date.now() > AI_BACKFILL_LIMIT.ExcerptMarginMs
