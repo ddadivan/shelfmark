@@ -171,3 +171,28 @@ describe('CsrfGuard', () => {
     });
   });
 });
+
+describe('CsrfGuard on the MCP server (ADR 0053: no exemption)', () => {
+  const MCP = '/api/mcp';
+  const json = { 'content-length': '40', 'content-type': 'application/json' };
+
+  it('lets header-less desktop and CLI clients through', () => {
+    expect(run('POST', json, MCP)).toBe(true);
+  });
+
+  it('refuses a foreign browser Origin and a cross-site fetch', () => {
+    expect(() => run('POST', { ...json, origin: 'https://evil.test' }, MCP)).toThrow(
+      ForbiddenException,
+    );
+    expect(() => run('POST', { ...json, 'sec-fetch-site': 'cross-site' }, MCP)).toThrow(
+      ForbiddenException,
+    );
+    expect(() => run('DELETE', { origin: 'https://evil.test' }, MCP)).toThrow(ForbiddenException);
+  });
+
+  it('requires a JSON body', () => {
+    expect(() =>
+      run('POST', { 'content-length': '40', 'content-type': 'text/plain' }, MCP),
+    ).toThrow(UnsupportedMediaTypeException);
+  });
+});

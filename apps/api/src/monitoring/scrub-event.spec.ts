@@ -107,4 +107,20 @@ describe('scrubEvent', () => {
   it('handles an event without optional parts', () => {
     expect(scrubEvent({ type: undefined })).toEqual({ type: undefined });
   });
+
+  it('drops the bearer token and the JSON-RPC body of an MCP request (ADR 0053)', () => {
+    const secret = ['smk', 'live', 'x'.repeat(43)].join('_');
+    const event: ErrorEvent = {
+      type: undefined,
+      transaction: 'POST /api/mcp',
+      request: {
+        url: 'https://shelfmark.app/api/mcp',
+        headers: { authorization: `Bearer ${secret}` },
+        data: '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"arguments":{"query":"x"}}}',
+      },
+    };
+    const scrubbed = JSON.stringify(scrubEvent(event));
+    expect(scrubbed).not.toContain(secret);
+    expect(scrubbed).not.toContain('tools/call');
+  });
 });

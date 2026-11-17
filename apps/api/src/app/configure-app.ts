@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ThrottlerStorage } from '@nestjs/throttler';
 import helmet from 'helmet';
 import { createFeedbackScreenshotBodyParser } from '../feedback/feedback-screenshot-body-parser';
+import { mcpBodyParser } from '../mcp/mcp-body-parser';
 import { authAllowListMiddleware } from '../auth/auth-allow-list.middleware';
 import { AllExceptionsFilter } from '../common/errors/all-exceptions.filter';
 import { createAuthRateLimitMiddleware } from '../common/rate-limit/auth-rate-limit.middleware';
@@ -48,6 +49,9 @@ export function configureApp(app: NestExpressApplication, options: ConfigureAppO
       shouldTrustProxyHeaders(),
     ),
   );
+  // `POST /api/mcp` reads its JSON body as text (100kb), so malformed JSON is a JSON-RPC -32700
+  // answered after the token guard (ADR 0053); the global parser skips the already read body.
+  app.use(mcpBodyParser);
   app.useBodyParser('json', { limit: '100kb' });
   app.setGlobalPrefix(API_GLOBAL_PREFIX);
   app.useGlobalPipes(
