@@ -5,7 +5,6 @@
 export const MOCK_EMBEDDING_LIMIT = {
   Model: 'mock-embed-1',
   HashesPerStem: 4,
-  MinStemLength: 3,
   MinSimilarity: 0.15,
   FailMarker: 'ai-fail',
 } as const;

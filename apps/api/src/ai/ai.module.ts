@@ -20,6 +20,8 @@ import { AiExcerptService } from './excerpt/ai-excerpt.service';
 import { AiEmbedService } from './embeddings/ai-embed.service';
 import { AiSearchStatusService } from './embeddings/ai-search-status.service';
 import { AiJobsService } from './jobs/ai-jobs.service';
+import { MeaningSearchService } from './search/meaning-search.service';
+import { QueryEmbeddingCache } from './search/query-embedding-cache.service';
 import { AiLinkHooksService } from './link-hooks/ai-link-hooks.service';
 import { AI_CONFIG } from './models/ai-config.token';
 import { REAL_AI_PROVIDER_FACTORY } from './models/real-ai-provider-factory.token';
@@ -62,6 +64,8 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiTidyUndoService,
     AiSearchStatusService,
     AiEmbedService,
+    QueryEmbeddingCache,
+    MeaningSearchService,
   ],
   exports: [
     AiProviderRegistry,
