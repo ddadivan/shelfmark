@@ -6,12 +6,13 @@ import { firstValueFrom } from 'rxjs';
 import { MockUserSettingsApi } from '../../settings/mock/mock-user-settings.api';
 import { MockFoldersApi } from '../../links/mock/mock-folders.api';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
+import { MockAiData } from '../../ai/mock/mock-ai-data';
 import { MockLinksApi } from '../../links/mock/mock-links.api';
 import { MockTrashApi } from './mock-trash.api';
 
 function create() {
   const injector = Injector.create({
-    providers: [MockLibraryData, { provide: DOCUMENT, useValue: document }],
+    providers: [MockLibraryData, MockAiData, { provide: DOCUMENT, useValue: document }],
   });
   return runInInjectionContext(injector, () => ({
     trash: new MockTrashApi(),

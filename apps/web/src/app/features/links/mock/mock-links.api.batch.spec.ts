@@ -3,10 +3,11 @@ import { Injector, runInInjectionContext } from '@angular/core';
 import { LINK_LIMIT } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { MockLibraryData } from './mock-library-data';
+import { MockAiData } from '../../ai/mock/mock-ai-data';
 import { MockLinksApi } from './mock-links.api';
 
 function createApi(): { api: MockLinksApi; data: MockLibraryData } {
-  const injector = Injector.create({ providers: [MockLibraryData] });
+  const injector = Injector.create({ providers: [MockLibraryData, MockAiData] });
   const api = runInInjectionContext(injector, () => new MockLinksApi());
   return { api, data: injector.get(MockLibraryData) };
 }

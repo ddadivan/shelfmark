@@ -1,4 +1,4 @@
-import { isHttpUrl, LINK_LIMIT } from '@shelfmark/contracts';
+import { AI_LIMIT, isHttpUrl, LINK_LIMIT } from '@shelfmark/contracts';
 
 /** The link fields a create or an update may carry; every one is optional here. */
 interface LinkFields {
@@ -6,11 +6,12 @@ interface LinkFields {
   readonly title?: string;
   readonly note?: string | null;
   readonly tags?: readonly string[];
+  readonly summary?: string | null;
 }
 
 /**
  * What the API's validation (`CreateLinkDto`, `UpdateLinkDto`) would reject in these fields:
- * a URL that is not http(s) or is too long, an empty or too long title, a too long note, too many
+ * a URL that is not http(s) or is too long, an empty or too long title, a too long note or summary, too many
  * tags. Empty list: valid.
  */
 export function linkFieldsProblems(fields: LinkFields): string[] {
@@ -29,6 +30,9 @@ export function linkFieldsProblems(fields: LinkFields): string[] {
   }
   if (typeof fields.note === 'string' && fields.note.length > LINK_LIMIT.NoteMax) {
     problems.push('note is too long');
+  }
+  if (typeof fields.summary === 'string' && fields.summary.trim().length > AI_LIMIT.SummaryMax) {
+    problems.push('summary is too long');
   }
   if (fields.tags !== undefined && fields.tags.length > LINK_LIMIT.TagsMax) {
     problems.push('too many tags');

@@ -1,4 +1,10 @@
-import { FOLDER_ICON, PIN_KIND } from '@shelfmark/contracts';
+import {
+  AI_JOB_STATUS,
+  FOLDER_ICON,
+  PIN_KIND,
+  SUGGESTION_KIND,
+  SUMMARY_SOURCE,
+} from '@shelfmark/contracts';
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
 import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
@@ -58,6 +64,39 @@ describe('demo library seed', () => {
       'Angular 22: everything about Signal Forms in 20 minutes',
     ]);
     expect(onTop[0]?.folderId).toBe(angular?.id);
+  });
+
+  it('gives most links an AI summary, like the API demo seed (AI on in the demo)', () => {
+    const { links } = buildDemoLibrarySeed(NOW);
+    const summarised = links.filter((link) => link.summary !== null);
+    expect(summarised.length / links.length).toBeGreaterThan(0.75);
+    for (const link of summarised) {
+      expect(link.summarySource).toBe(SUMMARY_SOURCE.Ai);
+      expect(link.aiStatus).toBe(AI_JOB_STATUS.Done);
+      expect(link.summary?.length).toBeLessThanOrEqual(300);
+    }
+    expect(
+      links.filter((link) => link.summary === null).every((l) => l.summarySource === null),
+    ).toBe(true);
+  });
+
+  it('seeds folder and tag suggestions on some Unsorted links, own folders only', () => {
+    const { folders, links, suggestions } = buildDemoLibrarySeed(NOW);
+    expect(suggestions.size).toBeGreaterThan(0);
+    const folderIds = new Set(folders.map((folder) => folder.id));
+    for (const [id, list] of suggestions) {
+      expect(links.find((link) => link.id === id)?.folderId).toBeNull();
+      for (const item of list) {
+        if (item.kind === SUGGESTION_KIND.Folder) {
+          expect(folderIds.has(item.folderId ?? '')).toBe(true);
+        }
+      }
+    }
+    const playwright = links.find((link) => link.title === 'Playwright on GitHub');
+    expect(suggestions.get(playwright?.id ?? '')?.map((item) => item.kind)).toEqual([
+      SUGGESTION_KIND.Folder,
+      SUGGESTION_KIND.NewTag,
+    ]);
   });
 
   it('recognises the demo session only', () => {

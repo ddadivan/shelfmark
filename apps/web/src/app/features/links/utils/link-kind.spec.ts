@@ -6,6 +6,7 @@ import { buildExportUrl, exportScopeOf } from '../../export/utils/export-url';
 import { isLinkKind, parseLinkKind } from './link-kind';
 import { inFilter, linksQuery } from './links-filter';
 import { MockLibraryData } from '../mock/mock-library-data';
+import { MockAiData } from '../../ai/mock/mock-ai-data';
 import { MockLinksApi } from '../mock/mock-links.api';
 import { LINKS_SCOPE } from '../models/links-scope.const';
 
@@ -33,7 +34,7 @@ describe('link kind', () => {
 
   it('the mock API derives, recomputes and filters by kind like the server', async () => {
     const api = runInInjectionContext(
-      Injector.create({ providers: [MockLibraryData] }),
+      Injector.create({ providers: [MockLibraryData, MockAiData] }),
       () => new MockLinksApi(),
     );
     expect((await firstValueFrom(api.preview('https://youtu.be/x'))).preview.kind).toBe(

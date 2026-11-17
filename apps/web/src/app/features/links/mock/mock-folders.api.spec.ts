@@ -5,10 +5,11 @@ import { firstValueFrom } from 'rxjs';
 import { MOCK_FOLDER_NAME } from '../models/mock-folder-name.const';
 import { MockFoldersApi } from './mock-folders.api';
 import { MockLibraryData } from './mock-library-data';
+import { MockAiData } from '../../ai/mock/mock-ai-data';
 import { MockLinksApi } from './mock-links.api';
 
 function create() {
-  const injector = Injector.create({ providers: [MockLibraryData] });
+  const injector = Injector.create({ providers: [MockLibraryData, MockAiData] });
   return runInInjectionContext(injector, () => ({
     folders: new MockFoldersApi(),
     links: new MockLinksApi(),

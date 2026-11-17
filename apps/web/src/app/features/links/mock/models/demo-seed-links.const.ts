@@ -11,6 +11,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Angular,
     url: 'https://www.youtube.com/watch?v=signal-forms-22',
     title: 'Angular 22: everything about Signal Forms in 20 minutes',
+    summary:
+      'A 20-minute walkthrough of Signal Forms in Angular 22: building a form model, schema validation and wiring custom controls.',
     kind: LINK_KIND.Video,
     tags: ['angular', 'video'],
     daysAgo: 2,
@@ -22,6 +24,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Angular,
     url: 'https://dev.to/ngrx/signalstore-patterns-for-real-apps',
     title: 'NgRx SignalStore: patterns for real apps',
+    summary:
+      'Practical NgRx SignalStore patterns: entity collections, computed selectors, optimistic updates with rollback and sharing stores between features.',
     kind: LINK_KIND.Article,
     tags: ['angular', 'reading'],
     daysAgo: 8,
@@ -31,6 +35,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Angular,
     url: 'https://angular.dev/guide/zoneless',
     title: 'Zoneless change detection, explained',
+    summary:
+      'How Angular runs change detection without zone.js, what triggers a render with signals, and the steps to migrate an existing app.',
     kind: LINK_KIND.Article,
     tags: ['angular', 'docs'],
     daysAgo: 9,
@@ -41,6 +47,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Angular,
     url: 'https://blog.angular.dev/building-accessible-menus-with-angular-aria',
     title: 'Building accessible menus with Angular Aria',
+    summary:
+      'Builds a keyboard-friendly menu with Angular Aria: roles, focus handling and typeahead, with notes on testing it with a screen reader.',
     kind: LINK_KIND.Article,
     tags: ['angular', 'a11y'],
     daysAgo: 14,
@@ -51,6 +59,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Angular,
     url: 'https://medium.com/signals-vs-rxjs-when-to-use-which',
     title: 'Signals vs RxJS: when to use which',
+    summary:
+      'Compares signals and RxJS: signals for synchronous state in templates, RxJS for streams over time such as search input and websockets.',
     kind: LINK_KIND.Article,
     tags: ['angular', 'reading'],
     daysAgo: 28,
@@ -60,6 +70,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Angular,
     url: 'https://angular.dev/tools/cli',
     title: 'Angular CLI reference',
+    summary:
+      'Reference for the Angular CLI commands: generate, build, serve, test and update, with their most useful options.',
     kind: LINK_KIND.Article,
     tags: ['angular', 'docs'],
     daysAgo: 35,
@@ -69,6 +81,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Signals,
     url: 'https://angular.dev/guide/signals',
     title: 'Angular signals: the guide',
+    summary:
+      'The official guide to signals: writable signals, computed values, effects and how they drive rendering.',
     kind: LINK_KIND.Article,
     tags: ['angular', 'docs'],
     daysAgo: 3,
@@ -79,6 +93,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Signals,
     url: 'https://angular.dev/guide/signals/resource',
     title: 'Loading data with resource()',
+    summary:
+      'Loading async data with resource() and httpResource: request signals, loading and error states, and reloading.',
     kind: LINK_KIND.Article,
     tags: ['angular', 'docs'],
     daysAgo: 12,
@@ -88,6 +104,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Signals,
     url: 'https://www.youtube.com/watch?v=linked-signal',
     title: 'linkedSignal in practice',
+    summary:
+      'Shows linkedSignal for state that resets when its source changes, such as a selected item that follows a filtered list.',
     kind: LINK_KIND.Video,
     tags: ['angular', 'video'],
     daysAgo: 21,
@@ -97,6 +115,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Signals,
     url: 'https://github.com/ngrx/platform',
     title: 'ngrx/platform on GitHub',
+    summary:
+      'The NgRx repository: SignalStore, Store, Effects and the related libraries, with issues, releases and the source.',
     kind: LINK_KIND.Other,
     tags: ['angular', 'tools'],
     daysAgo: 40,
@@ -106,6 +126,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Forms,
     url: 'https://angular.dev/guide/forms/signals',
     title: 'Signal Forms: getting started',
+    summary:
+      'Getting started with Signal Forms: create a form from a signal model, bind fields and add schema validators.',
     kind: LINK_KIND.Article,
     tags: ['angular', 'docs'],
     daysAgo: 4,
@@ -116,6 +138,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Forms,
     url: 'https://dev.to/forms/validation-without-reactive-forms',
     title: 'Validation without Reactive Forms',
+    summary:
+      'Field and cross-field validation with Signal Forms instead of Reactive Forms, including async checks and error messages.',
     kind: LINK_KIND.Article,
     tags: ['angular', 'reading'],
     daysAgo: 17,
@@ -125,6 +149,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Forms,
     url: 'https://www.youtube.com/watch?v=form-fields',
     title: 'Custom form controls with signals',
+    summary:
+      'Builds custom form controls that plug into Signal Forms, with value, touched and disabled state handled through signals.',
     kind: LINK_KIND.Video,
     tags: ['angular', 'video'],
     daysAgo: 26,
@@ -134,6 +160,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Courses,
     url: 'https://frontendmasters.com/courses/angular/',
     title: 'Angular: from zero to production',
+    summary:
+      'A full Angular course from components and routing to state, testing and a production deployment.',
     kind: LINK_KIND.Other,
     tags: ['courses', 'angular'],
     daysAgo: 6,
@@ -143,6 +171,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Courses,
     url: 'https://www.udemy.com/course/typescript-the-complete-developers-guide/',
     title: "TypeScript: the complete developer's guide",
+    summary:
+      'Covers TypeScript from the type system basics to generics, decorators and structuring larger projects.',
     kind: LINK_KIND.Other,
     tags: ['courses'],
     daysAgo: 19,
@@ -153,6 +183,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Courses,
     url: 'https://egghead.io/courses/rxjs-basics',
     title: 'RxJS basics',
+    summary: 'Short lessons on RxJS observables, common operators and how to combine streams.',
     kind: LINK_KIND.Other,
     tags: ['courses'],
     daysAgo: 31,
@@ -162,6 +193,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Courses,
     url: 'https://web.dev/learn/accessibility',
     title: 'Learn accessibility',
+    summary:
+      'A free course on web accessibility: semantics, focus, colour contrast, ARIA and testing with assistive technology.',
     kind: LINK_KIND.Article,
     tags: ['courses', 'a11y'],
     daysAgo: 45,
@@ -171,6 +204,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Work,
     url: 'https://nx.dev/blog/nx-23-release',
     title: 'Nx 23: monorepo setup for Angular and NestJS',
+    summary:
+      'What is new in Nx 23 and how to set up a monorepo with an Angular app and a NestJS API sharing typed contracts.',
     kind: LINK_KIND.Article,
     tags: ['tools', 'reading'],
     daysAgo: 15,
@@ -180,6 +215,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Work,
     url: 'https://neon.com/docs/introduction/plans',
     title: 'Neon free plan limits',
+    summary:
+      'The limits of the Neon free plan: storage, compute hours, branches and what happens when a project goes idle.',
     kind: LINK_KIND.Article,
     tags: ['tools', 'docs'],
     daysAgo: 11,
@@ -190,6 +227,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Work,
     url: 'https://vercel.com/docs/deployments/overview',
     title: 'Vercel deployments overview',
+    summary:
+      'How Vercel deployments work: preview and production environments, build steps, promotions and rollbacks.',
     kind: LINK_KIND.Article,
     tags: ['tools', 'docs'],
     daysAgo: 24,
@@ -199,6 +238,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Work,
     url: 'https://docs.nestjs.com/techniques/validation',
     title: 'NestJS validation and DTOs',
+    summary:
+      'Validating request bodies in NestJS with DTO classes, class-validator decorators and the global ValidationPipe.',
     kind: LINK_KIND.Article,
     tags: ['docs'],
     daysAgo: 38,
@@ -220,6 +261,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Clothes,
     url: 'https://www.cosstores.com/en/men/knitwear/merino-crew-neck-jumper',
     title: 'Merino crew neck jumper',
+    summary: 'A fine merino wool crew neck jumper in a regular fit, available in several colours.',
     kind: LINK_KIND.Shopping,
     tags: ['clothes'],
     daysAgo: 13,
@@ -229,6 +271,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Clothes,
     url: 'https://www.patagonia.com/product/nano-puff-jacket',
     title: 'Nano Puff jacket',
+    summary: 'A light, packable insulated jacket with recycled fill that keeps warm when wet.',
     kind: LINK_KIND.Shopping,
     tags: ['clothes'],
     daysAgo: 22,
@@ -238,6 +281,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Clothes,
     url: 'https://www.zalando.com/white-leather-sneakers',
     title: 'White leather sneakers',
+    summary: 'Minimal white leather sneakers with a rubber sole, for everyday wear.',
     kind: LINK_KIND.Shopping,
     tags: ['clothes'],
     daysAgo: 33,
@@ -247,6 +291,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Clothes,
     url: 'https://www.arket.com/en/women/knitwear/cashmere-scarf',
     title: 'Cashmere scarf',
+    summary: 'A soft cashmere scarf in a long, wide cut, with care instructions.',
     kind: LINK_KIND.Shopping,
     tags: ['clothes'],
     daysAgo: 42,
@@ -256,6 +301,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Recipes,
     url: 'https://cooking.nytimes.com/recipes/cacio-e-pepe',
     title: 'Cacio e pepe, the easy way',
+    summary:
+      'A simple cacio e pepe with pecorino, black pepper and starchy pasta water, ready in about 20 minutes.',
     kind: LINK_KIND.Article,
     tags: ['recipes'],
     daysAgo: 5,
@@ -266,6 +313,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Recipes,
     url: 'https://www.bbcgoodfood.com/recipes/one-pot-chicken-rice',
     title: 'One-pot chicken and rice',
+    summary: 'A one-pot dinner of chicken thighs and rice cooked with stock, peas and spices.',
     kind: LINK_KIND.Article,
     tags: ['recipes'],
     daysAgo: 10,
@@ -275,6 +323,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Recipes,
     url: 'https://www.youtube.com/watch?v=sourdough-basics',
     title: 'Sourdough for beginners',
+    summary:
+      "A beginner's guide to sourdough: feeding a starter, mixing, folding, shaping and baking the first loaf.",
     kind: LINK_KIND.Video,
     tags: ['recipes', 'video'],
     daysAgo: 18,
@@ -284,6 +334,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: DEMO_FOLDER_KEY.Recipes,
     url: 'https://smittenkitchen.com/lemon-ricotta-pancakes',
     title: 'Lemon ricotta pancakes',
+    summary: 'Fluffy pancakes made with ricotta and lemon zest, with tips for keeping them light.',
     kind: LINK_KIND.Article,
     tags: ['recipes'],
     daysAgo: 29,
@@ -293,6 +344,8 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: null,
     url: 'https://www.nngroup.com/articles/progressive-disclosure/',
     title: 'Progressive disclosure',
+    summary:
+      'Explains progressive disclosure: show the essentials first and reveal advanced options only when people need them.',
     kind: LINK_KIND.Article,
     tags: ['design', 'reading'],
     daysAgo: 1,
@@ -302,15 +355,20 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: null,
     url: 'https://m3.material.io/foundations/accessible-design/overview',
     title: 'Accessible design overview',
+    summary:
+      'Material Design guidance on accessible design: contrast, touch targets, text scaling and clear structure.',
     kind: LINK_KIND.Article,
     tags: ['design', 'a11y'],
     daysAgo: 16,
     openedDaysAgo: null,
+    suggestFolder: DEMO_FOLDER_KEY.Courses,
   },
   {
     folder: null,
     url: 'https://www.youtube.com/watch?v=design-systems-talk',
     title: 'Design systems that last',
+    summary:
+      'A talk on keeping a design system useful over years: ownership, versioning, documentation and adoption.',
     kind: LINK_KIND.Video,
     tags: ['design', 'video'],
     daysAgo: 23,
@@ -320,10 +378,13 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     folder: null,
     url: 'https://css-tricks.com/a-complete-guide-to-grid/',
     title: 'A complete guide to CSS Grid',
+    summary:
+      'A visual reference for CSS Grid: container and item properties, template areas, alignment and common layouts.',
     kind: LINK_KIND.Article,
     tags: ['design', 'docs'],
     daysAgo: 37,
     openedDaysAgo: null,
+    suggestFolder: DEMO_FOLDER_KEY.Courses,
   },
   {
     folder: null,
@@ -342,5 +403,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     tags: ['tools'],
     daysAgo: 27,
     openedDaysAgo: null,
+    suggestFolder: DEMO_FOLDER_KEY.Work,
+    suggestTags: ['github'],
   },
 ];
