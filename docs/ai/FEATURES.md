@@ -1,0 +1,172 @@
+# AI features — feature list
+
+Nov 17, 2026 · draft for the author's review · issue #476, parent #388
+
+This is the product step before any AI code. It expands `docs/PROJECT.md` 5.6 (rules from day one, capability table) into features the author can accept, cut or reorder. The screens are in `docs/design/screens/Ai*.dc.html` (see `docs/design/screens/INDEX.md`, section 12). The provider, models, embeddings and cost ADR come after this document is agreed; the questions for that step are at the end.
+
+Items marked **Proposal** are new ideas or changes to the issues #389–#395, not decisions.
+
+## Principles
+
+These come from 5.6 and hold for every feature below.
+
+1. **Opt-in.** AI is off by default. One switch in Settings › AI turns it on; off means no link data leaves Shelfmark for a model provider.
+2. **The app works the same without AI.** Off, quota used, provider down or not processed yet: every screen looks and behaves as it does today. No error toasts on save, ever.
+3. **Suggestions, never actions.** The model proposes; the user taps to accept. Nothing is applied, moved, merged or deleted without a user action, and every bulk change has Undo.
+4. **Background only.** Saving a link never waits for a model.
+5. **Text only.** Model output is rendered as plain text, schema-validated, never as HTML or Markdown; page text is untrusted input; no tools with side effects.
+6. **Privacy.** Link content is sent only to the model provider, only for the feature the user turned on, and never used for statistics: Shelfmark counts AI calls (for quotas) and nothing else.
+7. **No real calls outside production.** A mock provider in dev, unit, e2e, CI and the demo; the demo seed has ready tags, summaries and canned answers.
+
+## Tiers used below
+
+Monetisation is not built yet (backlog, "Ideas to discuss"). Until it is, every signed-in user who turns AI on gets the **AI pack** limits below, and the author's spend limit in the provider console is the safety net. The tiers are the target shape so that entitlements can be modelled on the account from the start (#389).
+
+| Tier | Price idea (from "Ideas to discuss") | AI in short |
+| --- | --- | --- |
+| Free | $0 | A taste: suggestions and summaries for a small number of new links per month, semantic search, a few questions |
+| Pro | \~$40–50 / year | No extra model cost: the MCP server (**Proposal**), non-AI clean-up checks |
+| AI pack | +\~$30–50 / year (bundle \~$80) | Fair-use suggestions and summaries, the whole library processed, Ask your shelf daily limit, AI clean-up |
+
+The exact numbers are placeholders for the pricing discussion; the designs show them as "{n} of {limit}".
+
+## Assumptions for cost
+
+Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider ADR. A **typical** user saves \~100 links a month, has \~1,000 links and asks \~30 questions a month. A **heavy** user saves \~500 links a month, has \~5,000 links and asks \~15 questions a day.
+
+---
+
+## Feature list
+
+### F0. AI foundation and Settings › AI (#389)
+
+- **Problem.** Every AI feature needs the same opt-in, quotas, background jobs, mock provider and degradation; built once, it cannot be forgotten in one feature.
+- **What the user sees.** A new settings page **Settings › AI**: one main switch with a plain description of what is sent and to whom; per-feature switches (suggestions, summaries, smarter search, Ask your shelf); "Include my notes" (off by default, **Proposal**); this month's usage as a meter ("38 of 100 links"); a status row when the provider is down or the limit is reached; "Process my existing links" (backfill) with a count and a time estimate; a link to the privacy policy. The privacy policy and Settings › Privacy and data get an AI paragraph.
+- **Entry points.** Desktop: settings nav item "AI" (between Library and Notifications). Phone: You › AI. A first-time hint in Unsorted and in the Add link dialog is **not** planned: discovery happens through the settings page and the landing page, so people who keep AI off never see AI.
+- **Free vs AI pack.** Same page for both; the meter shows the tier's limit and, at the limit, the date it resets (and later an upgrade button).
+- **Privacy.** Nothing is sent by the page itself. The switch is the consent; turning it off stops all jobs at once and keeps what was already generated (with "Delete AI data" to clear summaries, suggestions and embeddings, **Proposal**).
+- **Cost.** None by itself.
+- **Dependencies.** Contracts and Prisma fields, quota storage, job runner on Vercel, privacy policy text, ADR (provider and jobs).
+- **Order.** 1, with F1.
+
+### F1. Tag and folder suggestions (#390)
+
+- **Problem.** Organising is the chore that makes people stop: most saved links sit in Unsorted with no tags.
+- **What the user sees.** Under the Tags and Folder fields of Add link and Edit link, a "Suggested" row of dashed chips: up to three of the user's **existing** tags and one existing folder, plus at most one clearly marked **new** tag. Tap a chip to apply it (it turns into a normal sage tag); × dismisses it; "Add all" applies the row. While the job runs, two skeleton chips; nothing at all when AI is off, nothing found, or the provider fails. On cards and rows, a link with pending suggestions shows nothing extra (no badge clutter); suggestions surface in the dialog and in "Tidy Unsorted" (F1a).
+- **Entry points.** Desktop: Add link dialog (after the preview loads), Edit link dialog. Phone: the Add link sheet and the Edit sheet; the Share target quick form.
+- **Free vs AI pack.** Free: new links up to the monthly limit. AI pack: fair use, plus processing the existing library (backfill through the Batch API).
+- **Privacy.** Sent: URL, page title, the site's description, a size-limited page text excerpt (fetched through the SSRF guard), and the **names** of the user's tags and folders. Not sent: notes (unless "Include my notes" is on), other links, account data.
+- **Cost.** \~$0.0004–0.001 per link (Haiku-class, structured output; one call shared with F2, see **Proposal** below). Typical \~$0.05–0.10 / month; backfill of 1,000 links \~$0.20–0.50 once with the Batch API.
+- **Dependencies.** F0. Rules without AI (#398) are complementary: a domain rule applies first and the model is not asked about what a rule already decided (**Proposal**).
+- **Order.** 1 (MVP).
+
+**Proposal — one call for F1 and F2.** Tags, folder and summary are produced by the same background job with one structured response (`{ tags, newTag, folder, summary, kind }`), so a link costs one call, not two, and both appear together. The two features keep separate switches; a switched-off part is simply not requested.
+
+### F1a. Tidy Unsorted — review suggestions in bulk (**Proposal**, extends #390)
+
+- **Problem.** Suggestions in the edit dialog help one link at a time; the real pile is Unsorted (17 links in the demo, hundreds after an import from Pocket).
+- **What the user sees.** In Unsorted, a "Tidy with suggestions" button above the feed when at least one link has suggestions. It opens a review page: one row per link with its suggested folder and tags as dashed chips, each chip toggles; "Apply" per row, "Apply all" at the top, "Skip" to leave a link. Applying moves links and adds tags in one step, with Undo in the toast (the same pattern as bulk actions). Empty state: "Nothing to tidy — every link here already has a home."
+- **Entry points.** Desktop: Unsorted page header; after an import's summary ("Tidy the imported links"). Phone: Unsorted page header; the review is a full page with one card per link.
+- **Free vs AI pack.** Works on whatever already has suggestions; the backfill that fills it for old links is AI pack.
+- **Privacy.** No extra data; uses F1 results.
+- **Cost.** None beyond F1.
+- **Dependencies.** F1; bulk move and tag actions (exist); Import (#387) makes it far more useful.
+- **Order.** 2 (right after F1; small, high value).
+
+### F2. Short summaries (#391)
+
+- **Problem.** Months later, a title like "Untitled" or "Watch this" says nothing about why the link was saved.
+- **What the user sees.** One or two sentences under the title on cards (`sm-card__note` slot, two lines) and in list rows (one line), with a small spark mark until the user edits it. Kind-aware: an article's gist, a video's topic, a product's key facts (price is never invented, only taken from the page). In Edit link, a "Summary" field the user can edit, clear or regenerate; an edited summary is the user's and is never overwritten. The user's note always wins the card slot when both exist; the summary then shows in the edit dialog and in search results. Pending: a one-line skeleton on the card for a few seconds after save, then the summary fades in. Failed or off: nothing, as today.
+- **Entry points.** Desktop and phone: cards, rows, Edit link, search results.
+- **Free vs AI pack.** Same limits as F1 (one job).
+- **Privacy.** Same data as F1, no tag names needed. Summaries are written in the user's interface language (**Proposal**).
+- **Cost.** Included in the F1 call; alone \~$0.0004–0.001 per link.
+- **Dependencies.** F0; `summary` and `summarySource: 'ai' | 'user'` in the contracts.
+- **Order.** 1 (MVP, with F1).
+
+### F3. Smarter search (#392)
+
+- **Problem.** People remember what a link was about, not its words: "that talk about signals and performance", "the grey coat".
+- **What the user sees.** The same search (⌘K and the phone Search tab) finds by meaning as well as words; the search field's placeholder already says "Search, or describe it". Results get no new chrome: matches by meaning are mixed in after exact word matches, with a quiet "Related by meaning" divider and the spark mark. When embeddings are not ready (off, quota, not processed yet), search is exactly today's. Settings show "Search by meaning: 840 of 1,000 links ready".
+- **Entry points.** Desktop: ⌘K search dialog and the header search. Phone: Search tab.
+- **Free vs AI pack.** Free (**Proposal**): embeddings are cheap and "find it again" is the product's core promise; it is a strong reason to turn AI on. Backfill of a large library may be AI pack only.
+- **Privacy.** Sent to the embeddings provider: title, summary, tag names and the note only if "Include my notes" is on. The query text is sent at search time. Vectors are stored in Neon (pgvector) next to the link and deleted with it.
+- **Cost.** Embeddings \~$0.00002 per link; queries are negligible. Typical well under $0.01 / month.
+- **Dependencies.** F0, pgvector migration, ADR (embedding model, dimensions, index, ranking merge). Better with F2 (summaries make embeddings better).
+- **Order.** 3.
+
+### F4. Ask your shelf (#393)
+
+- **Problem.** Sometimes the question is not "where is that link" but "what did I save about X": "Which ramen recipes did I save?", "Compare the two coats I liked".
+- **What the user sees.** A chat panel that answers only from the user's links: the answer streams in as plain text with numbered citations, and every cited link is listed below as a row (favicon, title, folder) that opens the link. Suggested starter questions built from the user's own folders. A clear daily limit line ("12 questions left today"). Refuses to answer beyond the library ("I couldn't find that in your links"). No memory between sessions for v1 (**Proposal**: keeps privacy and cost simple).
+- **Entry points.** Desktop: an "Ask your shelf" item at the bottom of the ⌘K search results ("Ask: <query>") and a header button with the spark mark; the panel opens on the right as a side panel over the feed. Phone: a "Ask" segment on the Search tab (Search · Ask), full page.
+- **Free vs AI pack.** Free: a few questions a month (a taste). AI pack: fair-use daily limit.
+- **Privacy.** Sent: the question and the top \~10 retrieved links (title, URL, summary, tags; notes only with the switch). Answers are not stored server-side beyond the session (**Proposal**).
+- **Cost.** \~$0.013 per question (Sonnet-class). Typical \~$0.40 / month; heavy (15 a day) \~$6 / month, which is above the AI pack price, so the fair-use limit or a cheaper answer model is needed (open question).
+- **Dependencies.** F0, F3 (retrieval), streaming from the API (Vercel functions stream on Node), prompt-injection tests.
+- **Order.** 4.
+
+### F5. Library clean-up (#394)
+
+- **Problem.** Big libraries rot: the same page saved three times under different URLs, links that 404, "js" next to "javascript".
+- **What the user sees.** Settings › AI or the Library page: "Clean up your library" opens a report with three groups — duplicates (keep one, the rest go to Trash), dead links (offer the Wayback copy, from #397) and similar tags (merge into one). Every group is a preview with checkboxes; "Apply selected" runs it in one step with Undo; deletions go through Trash.
+- **Entry points.** Desktop: Settings › Library › "Clean up", and a quiet card on All links when the report finds something (**Proposal**: at most once a month, dismissible). Phone: You › Library › Clean up, full page.
+- **Free vs AI pack.** **Proposal — split:** exact duplicates (same normalised URL) and dead links need no model and go to Pro / Free; near-duplicates (embeddings) and tag synonyms (model) are AI pack.
+- **Privacy.** Tag synonyms send only tag names. Near-duplicates use stored vectors; nothing new is sent.
+- **Cost.** \~$0.01 per run for 1,000 links; negligible.
+- **Dependencies.** F0, F3 (vectors), dead-link check (#397), Trash (exists), Undo of a multi-change run.
+- **Order.** 5.
+
+### F6. Shelfmark MCP server (#395)
+
+- **Problem.** People already use Claude or another assistant; they want it to search their saved links without copy-paste.
+- **What the user sees.** Settings › AI › "Connect your assistant": a short how-to per client, a personal token (create, copy once, revoke) or an OAuth connection, and a list of connected clients with last use. Read-only for v1: search, read a link, list folders and tags.
+- **Entry points.** Desktop and phone: Settings › AI. Landing page mention later.
+- **Free vs AI pack.** **Proposal:** Pro, not the AI pack: the user's own assistant pays for its model, so Shelfmark has no model cost.
+- **Privacy.** The user's assistant receives what its tools return; the token is scoped to one user and read-only; revoking stops it at once.
+- **Cost.** No model cost; API compute only.
+- **Dependencies.** Personal tokens or OAuth on Better Auth, rate limits, ADR (transport, auth). Independent of F1–F5.
+- **Order.** 6 (can move earlier: it is the cheapest feature to run, and a good portfolio piece).
+
+---
+
+## Other proposals
+
+- **Describe a view (later).** "Save this view" accepts a sentence ("videos about Angular I haven't opened") and turns it into the existing saved-view filters, shown for review before saving. Cheap (one small call), reuses saved views (ADR 0038). Not designed now.
+- **Kind detection.** The F1 call also returns the link `kind` when the URL rules (ADR 0038) say "other", so saved views like Videos and Articles get more accurate. No extra cost.
+- **Cut from MVP:** creating new folders from suggestions (only existing folders are suggested; new tags only as one marked chip), chat memory, write access in MCP.
+- **Postpone:** AI clean-up until the dead-link check (#397) exists, so there is no second checker.
+
+## Suggested order
+
+| Step | What | Why first |
+| --- | --- | --- |
+| AI-1 (MVP) | F0 foundation + Settings › AI, F1 tag and folder suggestions, F2 summaries (one job), demo seed | Visible in every save, cheapest, proves the whole pipeline (opt-in, jobs, quotas, mock, degradation) |
+| AI-2 | F1a Tidy Unsorted | Small, uses AI-1 output, pairs with Import (#387) |
+| AI-3 | F3 smarter search | Core promise "find it again"; needed by F4 and F5 |
+| AI-4 | F4 Ask your shelf | Most expensive and most visible; needs F3 |
+| AI-5 | F5 clean-up | Needs F3 and #397 |
+| AI-6 | F6 MCP server | Independent; can run in parallel with any step |
+
+## AI identity (design summary)
+
+Full rules are in `docs/design/BRAND.md` › AI and the component specs `AiMark`, `Suggestion`, `AiSummary`.
+
+- **One mark.** A new `spark` icon (four-point star, same 1.75px line as the set) marks everything the model produced. No gradients, no purple, no glow: AI uses the graphite palette like the rest of the app.
+- **Suggested ≠ yours.** The user's data is solid (sage tag chips, normal text). AI suggestions are dashed and uncoloured (dashed already means "not there yet" in "Save this view"). Accepting turns a dashed chip into a solid one.
+- **Sage stays the user's signal.** AI never uses `accent` fills.
+- **Quiet when absent.** Off, failed or empty: the space collapses, no placeholder, no error toast.
+- **Always undoable.** Single accepts are one tap to remove; bulk applies have Undo.
+
+## Open questions for the implementation step
+
+1. **Provider and models.** Anthropic (Haiku-class for jobs, Sonnet-class for chat) vs others; Vercel AI Gateway or a direct SDK; fallback model when the provider is down. Zero data retention and "no training on API data" terms must be confirmed in writing for the privacy policy.
+2. **Embeddings.** Which provider (Anthropic has no embeddings API; Voyage, OpenAI or an open model), dimensions, pgvector index type (HNSW vs IVFFlat) on the Neon plan, re-embedding when the model changes.
+3. **Job runner on Vercel.** Where background jobs run (Vercel Queues, Workflow, a cron that drains a table, or `waitUntil` after the response), retries, and the Batch API for backfill.
+4. **Cost and limits.** Real token counts per link with a page excerpt; the Free monthly link limit; the Ask daily limit and whether chat needs a cheaper model to stay under the AI pack price; the author's monthly spend cap.
+5. **Page text.** How much page text to fetch and send (excerpt size), readability extraction, and sites that block fetching (the preview proxy already handles some).
+6. **Notes.** Is "Include my notes" off by default acceptable, or do notes go in by default for better tags?
+7. **Entitlements.** The account model for tiers and quotas before payments exist (who gets what during the free period).
+8. **Demo.** Canned data in the seed vs a tiny real limit for the public demo (5.6 says no real calls).
+9. **Self-hosting.** The "own key" setting: environment variable only, or a field in settings.
+10. **MCP auth.** Personal tokens vs OAuth through Better Auth; read-only v1 confirmed.
