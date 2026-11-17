@@ -29,7 +29,7 @@ Baselines live in `__screenshots__/<project>/<spec file>/<screen>.png`.
 ## Why the baselines come from CI
 
 Text rendering depends on the OS fonts and the Chromium build. The baselines are generated in the
-CI container `mcr.microsoft.com/playwright:v1.65.0-noble` and compared there. A run on macOS or
+CI container `mcr.microsoft.com/playwright:v1.65.1-noble` and compared there. A run on macOS or
 on another Linux differs in anti-aliasing and will fail against them: use local runs for
 debugging only and never commit baselines made outside that image.
 
@@ -76,7 +76,7 @@ is a regression to fix.
 Or run the same inside the image, from the repo root:
 
 ```bash
-docker run --rm -it -v "$PWD":/work -w /work --ipc=host mcr.microsoft.com/playwright:v1.65.0-noble \
+docker run --rm -it -v "$PWD":/work -w /work --ipc=host mcr.microsoft.com/playwright:v1.65.1-noble \
   bash -c "npm ci && npx nx run web:build:e2e && npm run e2e:visual:update"
 ```
 
