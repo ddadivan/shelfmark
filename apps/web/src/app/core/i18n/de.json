@@ -2793,6 +2793,9 @@
       "privacyWording": {
         "text": "Die Datenschutzseite erklärt klarer, was gespeichert wird und wer es sehen kann."
       },
+      "toastWraps": {
+        "text": "Benachrichtigungen zeigen ihren ganzen Text, statt ihn abzuschneiden."
+      },
       "folderStyleRace": {
         "text": "Wer den Stil eines Ordners schnell ändert, bekommt keine ältere Auswahl mehr zurück."
       },

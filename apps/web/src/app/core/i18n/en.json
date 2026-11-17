@@ -2793,6 +2793,9 @@
       "privacyWording": {
         "text": "The privacy page says more clearly what is stored and who can see it."
       },
+      "toastWraps": {
+        "text": "Notifications show their whole text instead of cutting it off."
+      },
       "folderStyleRace": {
         "text": "Changing a folder's style quickly no longer brings back an older choice."
       },

@@ -2853,6 +2853,9 @@
       "privacyWording": {
         "text": "La page de confidentialité explique plus clairement ce qui est stocké et qui peut le voir."
       },
+      "toastWraps": {
+        "text": "Les notifications affichent tout leur texte au lieu de le couper."
+      },
       "folderStyleRace": {
         "text": "Changer vite le style d'un dossier ne ramène plus un ancien choix."
       },
