@@ -654,6 +654,8 @@ Own field on `User`: `lastActiveOn` (column `last_active_on`, date, null; ADR 00
 
 Own fields on `User` for AI (#389, ADR 0047): `plan` (varchar 8, default `free`, CHECK `free | pro`) and `aiPack` (`ai_pack`, boolean, default false). Stored defaults only: the effective tier (`free | ai-pack`) and plan also count `AI_FULL_ACCESS_EMAILS`, computed per request and never written from the environment.
 
+Personal MCP tokens (#395, ADR 0053): **McpToken** (`mcp_tokens`: `id`, `userId` FK → User cascade, `name` varchar 40 with a CHECK of 1–40 characters after trimming, `tokenHash` char 64 unique = SHA-256 hex of the secret (the secret itself is never stored), `last4` char 4, `includeNotes` boolean default false (fixed per token), `createdAt`, `lastUsedAt` null, written at most once a minute) and **McpTokenUsage** (`mcp_token_usage`: `tokenId` FK → McpToken cascade, `day` date (UTC), `calls` int ≥ 0; PK `(tokenId, day)`; rows older than 35 days are deleted by the token's first call of a day). Revoke deletes the token row; account deletion and the demo cleanup cascade; `DELETE /api/ai/data` leaves tokens alone.
+
 Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, null). Demo data is created from the seed set in `apps/api/src/demo/seed.json`.
 
 **Folder**: a folder (nesting via `parentId`)
@@ -723,7 +725,7 @@ Demo users: `User` fields `isDemo` (boolean) and `demoExpiresAt` (timestamp, nul
 
 ### 6.2 REST API
 
-All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUTES`: health, monitoring, demo, cron, public collections) require a session and work only with the current user's data. Contracts (DTOs) are in `libs/shared/contracts`; documentation is Swagger.
+All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUTES`: health, monitoring, demo, cron, public collections, the MCP server) require a session and work only with the current user's data. Contracts (DTOs) are in `libs/shared/contracts`; documentation is Swagger.
 
 | Method | Path | Purpose |
 | `*` | `/api/auth/*` | Sign-in / sign-out with Google and GitHub (Better Auth) |
@@ -787,6 +789,11 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 | POST | `/api/ai/tick` | Catch-up for the session user while the web app has pending jobs or a running backfill: answers the progress at once, then polls open batches, runs stale jobs and advances the backfill after the response (6 s budget). 10 a minute |
 | DELETE | `/api/ai/data` | Deletes AI summaries (`summarySource = ai`), all suggestions and all job rows, cancels open batches and a running backfill; the user's own summaries, tags, folders, settings and usage counts stay; 204. 5 a minute |
 | GET | `/api/cron/ai-sweep` | Vercel Cron only (`CRON_SECRET` bearer, 401 otherwise, no-store), daily: fails jobs whose attempts are used up, deletes unattached drafts older than 24 h, answers `{ failed, deletedDrafts, users }` and then runs the catch-up of every user with work (at most 200) within 25 s after the response (ADR 0048) |
+| GET | `/api/mcp/tokens` | Personal MCP tokens of the user (#395, ADR 0053): `McpTokensResponse` = `available` (Pro and not demo) and `items` newest first (`McpTokenSummary`: `id`, `name`, `last4`, `includeNotes`, `createdAt`, `lastUsedAt`, `callsThisWeek` = calls in the last 7 UTC days); never a secret |
+| POST | `/api/mcp/tokens` | `{ name (trimmed, 1–40, no control characters), includeNotes }` → 201 `CreateMcpTokenResponse` `{ token, secret }`: the only response that carries the secret (`smk_live_` + 43 base64url characters), stored as a SHA-256 digest; 403 for demo or non-Pro accounts, 409 at 10 tokens; 10 a minute |
+| DELETE | `/api/mcp/tokens/:id` | Revoke: deletes the token, the next call with it is a 401; 204, 404 for a foreign or missing one; 10 a minute |
+| POST | `/api/mcp` | The MCP server (stateless Streamable HTTP, JSON-RPC 2.0, one message per request): public route authenticated only by `Authorization: Bearer smk_live_…` (cookies are never read); `initialize` (versions 2025-11-25, 2025-06-18, 2025-03-26), `ping`, `tools/list`, `tools/call` with four read-only tools (`search_links`, `get_link`, `list_folders`, `list_tags`; allow-listed link fields, notes only for tokens with notes); 200 for every JSON-RPC answer, 202 for notifications, 400 for an unsupported `MCP-Protocol-Version`, 401 with `WWW-Authenticate` for a missing, malformed, unknown or revoked token, 403 for demo or non-Pro accounts or a foreign `Origin`, 429 + `Retry-After` past 2,000 calls per token per UTC day; 120 a minute per IP |
+| GET, DELETE | `/api/mcp` | 405 with `Allow: POST`, no body (no server stream, no sessions); 120 a minute per IP |
 | GET, POST, GET /:id, PATCH /:id, DELETE /:id, POST /:id/merge | `/api/tags` | The user's tags with link counts, sorted by link count descending, then name; read one tag with its count (404 if unknown or foreign); create an empty tag (409 if the name is taken or at the per-user cap of 1000), rename (409 if the name is taken; changing only the case of its own name is allowed), delete (links remain), merge with another tag (merging into itself is a 400). Names are normalized with `normalizeTagName` (trim, whitespace runs become one hyphen) on create and rename |
 | GET | `/api/feedback/prompt` | Which rating dialog to show now: `{ milestone }`, the latest reached milestone without a row, `null` for demo users and before onboarding (no-store) |
 | GET, POST, PATCH, DELETE | `/api/folders/:id/share` | The public link of a folder (#276): read (`enabled: false` when not shared), turn on (idempotent, 200; 403 demo, 409 at 10 public folders), `{ showNotes }`, turn off (204, idempotent); 404 for a foreign or missing folder |
