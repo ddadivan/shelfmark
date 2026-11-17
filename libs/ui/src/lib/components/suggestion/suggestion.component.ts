@@ -22,7 +22,8 @@ import type { SuggestionKind } from './models/suggestion-kind.type';
  * click emits `toggled` with the new value and nothing else changes until the page's Apply.
  *
  * Presentational: every string comes in as an input; `ariaLabel` says what happens ("Add tag
- * signals", "Create and add tag state management", "Move to Angular") and contains the label.
+ * signals", "Create and add tag state management", "Move to Angular") and contains the label; a new
+ * tag's button name ends with `, {newLabel}`.
  */
 @Component({
   selector: 'ui-suggestion',
@@ -69,6 +70,15 @@ export class SuggestionComponent {
   protected readonly isAccepted = computed(() => this.selected() === true || this.taken());
   protected readonly isSwelling = computed(() => this.touched() && this.isAccepted());
   protected readonly showDismiss = computed(() => !!this.dismissLabel() && !this.isAccepted());
+  /**
+   * The main button's name. A new tag's visible "New" joins it, so the name holds all the visible
+   * text (WCAG 2.5.3, axe `label-content-name-mismatch`).
+   */
+  protected readonly buttonName = computed(() =>
+    this.kind() === SUGGESTION_KIND.NewTag
+      ? `${this.ariaLabel()}, ${this.newLabel()}`
+      : this.ariaLabel(),
+  );
 
   protected apply(): void {
     this.touched.set(true);

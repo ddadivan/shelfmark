@@ -196,7 +196,7 @@ describe('AddLinkDialogComponent with AI (#390)', () => {
     expect(labels).toEqual([
       'Add tag angular',
       'Add tag signals',
-      'Create and add tag state management',
+      'Create and add tag state management, New',
     ]);
   });
 

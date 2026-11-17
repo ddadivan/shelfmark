@@ -93,6 +93,12 @@ describe('ui-suggestion', () => {
     const { host, update } = setup();
     expect(host.querySelectorAll('.ui-suggestion__new')).toHaveLength(1);
     expect(host.querySelector('.ui-suggestion__new')?.textContent?.trim()).toBe('New');
+    // The visible "New" is part of the button's name (axe label-content-name-mismatch).
+    const newTagButton = host.querySelectorAll('.ui-suggestion__apply')[1];
+    expect(newTagButton?.getAttribute('aria-label')).toBe(
+      'Create and add tag state management, New',
+    );
+    expect(newTagButton?.textContent?.replace(/\s+/g, ' ').trim()).toBe('state management New');
     expect(host.querySelector('ui-folder-icon')).toBeNull();
 
     update((c) => c.second.set({ label: 'Angular', kind: SUGGESTION_KIND.Folder }));

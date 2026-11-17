@@ -7,7 +7,7 @@
     ngToolbarWidget
     type="button"
     class="ui-suggestion__apply"
-    [attr.aria-label]="ariaLabel()"
+    [attr.aria-label]="buttonName()"
     [attr.aria-pressed]="isReview() ? isAccepted() : null"
     (click)="apply()"
   >
@@ -21,7 +21,8 @@
     }
     <span class="ui-suggestion__label">{{ label() }}</span>
     @if (kind() === SUGGESTION_KIND.NewTag) {
-      <span class="ui-suggestion__new">{{ newLabel() }}</span>
+      <!-- The leading space keeps "name New" apart in the text that axe compares with the name. -->
+      <span class="ui-suggestion__new"> {{ newLabel() }}</span>
     }
   </button>
   @if (showDismiss()) {
