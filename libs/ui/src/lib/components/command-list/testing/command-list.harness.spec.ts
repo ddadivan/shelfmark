@@ -44,6 +44,9 @@ const LINKS = ['Signal Forms', 'NgRx SignalStore', 'Signals vs RxJS'] as const;
         </ui-command-group>
       }
       <p slot="empty">Nothing found</p>
+      @if (related()) {
+        <span slot="note">Search by meaning is getting ready</span>
+      }
     </ui-command-list>
   `,
 })
@@ -97,11 +100,13 @@ describe('UiCommandListHarness', () => {
     expect(await list.getActiveOptionText()).toBe('Signal Forms youtube.com');
   });
 
-  it('reads divider headings and the lines above headings', async () => {
+  it('reads divider headings, the lines above headings and the note', async () => {
     const { list, host } = await setup();
     expect(await list.getDividerHeadings()).toEqual([]);
     expect(await list.getGroupLeads()).toEqual([]);
+    expect(await list.getNoteText()).toBe('');
     host.related.set(true);
+    expect(await list.getNoteText()).toBe('Search by meaning is getting ready');
     expect(await list.getGroupHeadings()).toEqual(['Links', 'Related by meaning']);
     expect(await list.getDividerHeadings()).toEqual(['Related by meaning']);
     expect(await list.getGroupLeads()).toEqual(['No links with these words']);

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { AiLineComponent } from '../ai-line/ai-line.component';
 import { ButtonComponent } from '../button/button.component';
 import { DialogComponent } from '../dialog/dialog.component';
 import { DialogService } from '../../services/dialog/dialog.service';
@@ -280,6 +281,7 @@ const imports = [
   HighlightComponent,
   IconComponent,
   FaviconComponent,
+  AiLineComponent,
 ];
 
 /** Type to filter; the matching part is marked. Enter or a click chooses, the demo ignores it. */
@@ -367,6 +369,34 @@ export const RelatedByMeaning: Story = {
           </ui-command-group>
         </ui-command-list>
       `)}</div>`,
+  }),
+};
+
+/**
+ * The `note` slot: a muted line after the results, for example the spark and "Search by meaning is
+ * getting ready" while the word matches show as usual.
+ */
+export const WithNote: Story = {
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports },
+    template: box(`
+      <ui-command-list [inputLabel]="inputLabel" listLabel="Search results" query="coat">
+        <ui-command-group heading="2 links">
+          <ui-command-item value="a">
+            <ui-favicon slot="leading" letter="c" />
+            <ui-highlight text="Wool coat, straight cut, graphite" query="coat" />
+            <span slot="meta">cos.com, in Clothes</span>
+          </ui-command-item>
+          <ui-command-item value="b">
+            <ui-favicon slot="leading" letter="r" />
+            <ui-highlight text="Rain coat, packable" query="coat" />
+            <span slot="meta">rains.com, in Clothes</span>
+          </ui-command-item>
+        </ui-command-group>
+        <ui-ai-line slot="note" text="Search by meaning is getting ready: 840 of 1,000 links. Word matches work as usual." />
+        <span slot="footer"><kbd>↑</kbd> <kbd>↓</kbd> move</span>
+      </ui-command-list>`),
   }),
 };
 

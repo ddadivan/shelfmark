@@ -85,6 +85,18 @@ export class UiCommandListHarness extends ComponentHarness {
     return status ? (await status.text()).replace(/\s+/g, ' ').trim() : '';
   }
 
+  /** Text of the note slot after the results, `''` when there is none. */
+  async getNoteText(): Promise<string> {
+    const id = await this.listId();
+    if (id === null) {
+      return '';
+    }
+    const note = await this.documentRootLocatorFactory().locatorForOptional(
+      `[id="${id}"] ~ .ui-command-list__note`,
+    )();
+    return note ? (await note.text()).replace(/\s+/g, ' ').trim() : '';
+  }
+
   /** Group headings in order. */
   async getGroupHeadings(): Promise<string[]> {
     const id = await this.listId();

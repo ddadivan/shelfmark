@@ -59,11 +59,15 @@ import type { CommandSelection } from './models/command-selection.interface';
         <ui-command-item [value]="value">{{ value }}</ui-command-item>
       }
       <p slot="empty">Nothing found</p>
+      @if (showNote()) {
+        <span slot="note">Search by meaning is getting ready</span>
+      }
       <span slot="footer"><kbd>↵</kbd> open</span>
     </ui-command-list>
   `,
 })
 class HostComponent {
+  readonly showNote = signal(false);
   readonly query = signal('');
   readonly busy = signal(false);
   readonly showLinks = signal(true);
@@ -155,6 +159,20 @@ describe('CommandListComponent', () => {
     expect(groups[0].querySelector('.ui-command-list__lead')).toBeNull();
     expect(groups[0].querySelector('.ui-command-list__heading ui-icon')).toBeNull();
     expect(await axeViolations(el)).toEqual([]);
+  });
+
+  it('shows the note slot after the list, outside the listbox and the status region', async () => {
+    const note = () => el.querySelector('.ui-command-list__note');
+    expect(note()?.textContent).toBe('');
+    host.showNote.set(true);
+    await settle(fixture);
+    expect(note()?.textContent).toBe('Search by meaning is getting ready');
+    expect(note()?.closest('[role="listbox"], [role="status"]')).toBeNull();
+    expect(note()?.previousElementSibling?.getAttribute('role')).toBe('listbox');
+    host.showLinks.set(false);
+    host.showFolders.set(false);
+    await settle(fixture);
+    expect(note()?.textContent).toBe('Search by meaning is getting ready');
   });
 
   it('shows the input-end and footer slots and styles nothing in the empty region', () => {
@@ -582,6 +600,11 @@ describe('CommandListComponent styles', () => {
       /\.ui-command-list__heading--divider::after\s*{[^}]*border-top:\s*1px solid var\(--border\)/,
     );
     expect(css).toMatch(/\.ui-command-list__heading-icon\s*{[^}]*color:\s*var\(--ai\)/);
+  });
+
+  it('hides an empty note slot', () => {
+    const rows = compileScss('lib/components/command-list/command-list-rows.scss');
+    expect(rows).toMatch(/\.ui-command-list__note:empty\s*{[^}]*display:\s*none/);
   });
 
   it('uses 44px targets on coarse pointers', () => {
