@@ -233,7 +233,11 @@
         "label": "Folder",
         "unsorted": "Unsorted",
         "searchLabel": "Search folders",
-        "noResults": "No folders found"
+        "noResults": "No folders found",
+        "create": "Create folder “{name}”",
+        "newBadge": "New",
+        "notCreated": "Couldn’t create the folder “{{name}}”",
+        "notCreatedDetail": "The link is saved without a folder."
       },
       "tags": {
         "label": "Tags",

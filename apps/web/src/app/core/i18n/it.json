@@ -233,7 +233,11 @@
         "label": "Cartella",
         "unsorted": "Senza cartella",
         "searchLabel": "Cerca cartelle",
-        "noResults": "Nessuna cartella trovata"
+        "noResults": "Nessuna cartella trovata",
+        "create": "Crea la cartella “{name}”",
+        "newBadge": "Nuova",
+        "notCreated": "Impossibile creare la cartella “{{name}}”",
+        "notCreatedDetail": "Il link è salvato senza cartella."
       },
       "tags": {
         "label": "Tag",

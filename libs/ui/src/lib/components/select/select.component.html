@@ -31,6 +31,9 @@
       [attr.lang]="chosen()?.lang ?? null"
       >{{ triggerText() }}</span
     >
+    @if (chosen()?.badge; as badge) {
+      <ui-badge class="ui-select__badge" [tone]="BADGE_TONE.Accent">{{ badge }}</ui-badge>
+    }
     <ui-icon class="ui-select__chevron" name="chevron-down" [size]="ICON_SIZE.Md" />
   </button>
 </ui-field-shell>
@@ -81,7 +84,7 @@
         [attr.aria-label]="label()"
         [activeDescendant]="searchable() ? undefined : list.activeDescendant()"
         [value]="selection()"
-        [hidden]="rows().length === 0"
+        [hidden]="!hasRows()"
         (valueChange)="onListValue($event)"
       >
         @for (row of rows(); track row.id) {
@@ -103,18 +106,33 @@
             <span class="ui-select__option-label" [attr.lang]="row.lang ?? null">{{
               row.name
             }}</span>
+            @if (row.badge) {
+              <ui-badge [tone]="BADGE_TONE.Accent">{{ row.badge }}</ui-badge>
+            }
             @if (row.id === value()) {
               <ui-icon class="ui-select__check" name="check" [size]="ICON_SIZE.Md" />
             }
           </div>
         }
+        @if (createText() !== null) {
+          <div
+            ngOption
+            uiRipple
+            class="ui-select__option ui-select__option--create"
+            [value]="SELECT_CREATE_ID"
+            [label]="createRowLabel()"
+          >
+            <ui-icon
+              class="ui-select__option-icon"
+              [name]="SELECT_ICON.Create"
+              [size]="ICON_SIZE.Md"
+            />
+            <span class="ui-select__option-label">{{ createRowLabel() }}</span>
+          </div>
+        }
       </div>
-      <div
-        class="ui-select__status"
-        [class.ui-select__status--filled]="rows().length === 0"
-        role="status"
-      >
-        @if (rows().length === 0) {
+      <div class="ui-select__status" [class.ui-select__status--filled]="!hasRows()" role="status">
+        @if (!hasRows()) {
           {{ noResultsLabel() }}
         }
       </div>

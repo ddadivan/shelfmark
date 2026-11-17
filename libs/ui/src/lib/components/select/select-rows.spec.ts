@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SelectOption } from './models/select-option.interface';
-import { selectedRow, selectRows } from './select-rows';
+import { createName, selectedRow, selectRows } from './select-rows';
 import { SELECT_FIXTURE_ID } from './models/select-fixture-id.const';
 
 const tree: SelectOption[] = [
@@ -70,5 +70,22 @@ describe('selectRows', () => {
     expect(selectedRow(tree, null, 'Unsorted')?.name).toBe('Unsorted');
     expect(selectedRow(tree, null, '')).toBeUndefined();
     expect(selectedRow(tree, 'gone', '')).toBeUndefined();
+  });
+});
+
+describe('createName', () => {
+  it('is the trimmed query when no option has that name', () => {
+    expect(createName(tree, '  Reading ', 'Unsorted')).toBe('Reading');
+  });
+
+  it('is null for a blank query or a known name, ignoring case, at any level', () => {
+    expect(createName(tree, '   ', 'Unsorted')).toBeNull();
+    expect(createName(tree, 'work', 'Unsorted')).toBeNull();
+    expect(createName(tree, 'ANGULAR', 'Unsorted')).toBeNull();
+    expect(createName(tree, 'unsorted', 'Unsorted')).toBeNull();
+  });
+
+  it('offers a name that only partly matches', () => {
+    expect(createName(tree, 'Wor', '')).toBe('Wor');
   });
 });

@@ -38,7 +38,8 @@ import { AddLinkFormService } from '../../services/add-link-form.service';
 import { AddLinkSaveService } from '../../services/add-link-save.service';
 import { AddLinkPreviewService } from '../../services/add-link-preview.service';
 import { AddSeveralLinksService } from '../../services/add-several-links.service';
-import { buildFolderOptions } from '../../utils/folder-options';
+import { AddLinkNewFolderService } from '../../services/add-link-new-folder.service';
+import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
 
 /**
  * Content of the add-link dialog (`openAddLinkDialog()`): paste a URL, the preview fills the
@@ -82,6 +83,7 @@ import { buildFolderOptions } from '../../utils/folder-options';
     AddSeveralLinksService,
     AddLinkPreviewService,
     AddLinkSaveService,
+    AddLinkNewFolderService,
   ],
   templateUrl: './add-link-dialog.component.html',
   styleUrl: './add-link-dialog.component.scss',
@@ -101,6 +103,7 @@ export class AddLinkDialogComponent {
   protected readonly phone = inject(ViewportService).phone;
   private readonly formState = inject(AddLinkFormService);
   private readonly folders = inject(FoldersStore);
+  private readonly newFolder = inject(AddLinkNewFolderService);
   private readonly tagStore = inject(TagsStore);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
@@ -136,7 +139,13 @@ export class AddLinkDialogComponent {
   protected readonly previewHost = this.previewService.previewHost;
   protected readonly duplicate = this.previewService.duplicate;
 
-  protected readonly folderOptions = computed(() => buildFolderOptions(this.folders.entities()));
+  /** The folders, plus one named in the field and created on Save ("New", #454). */
+  protected readonly folderOptions = this.newFolder.options;
+  /** The paste-many list has no pending folder: it starts in "Unsorted" then. */
+  protected readonly pasteFolderId = computed(() => {
+    const id = this.form.folderId().value();
+    return id === NEW_FOLDER_OPTION_ID ? null : id;
+  });
   protected readonly tagSuggestions = computed<TagSuggestion[]>(() => {
     this.formState.i18n();
     return this.tagStore.entities().map((tag) => ({
@@ -188,6 +197,14 @@ export class AddLinkDialogComponent {
   /** Leaving the address shows it as it will be saved (`https://` added, #405). */
   protected onUrlBlur(): void {
     this.formState.normalizeUrlField();
+  }
+
+  /** "Create folder “X”" in the folder field: an existing folder of that name, else a new one. */
+  protected onFolderCreated(name: string): void {
+    const id = this.newFolder.choose(name);
+    if (id !== null) {
+      this.form.folderId().value.set(id);
+    }
   }
 
   protected showSeveral(): void {
