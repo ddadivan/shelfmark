@@ -1163,7 +1163,7 @@
       "title": "Seiten direkt aus dem Browser speichern",
       "text": "Die Shelfmark-Erweiterung speichert die geöffnete Seite mit einem Klick oder Alt+Umschalt+S, Ordner und Tags sind schon ausgefüllt.",
       "install": "Erweiterung installieren",
-      "installLabel": "Erweiterung aus dem Chrome Web Store installieren (öffnet in einem neuen Tab)",
+      "installLabel": "Erweiterung installieren, aus dem Chrome Web Store (öffnet in einem neuen Tab)",
       "dismiss": "Nicht jetzt"
     }
   },
@@ -1510,7 +1510,7 @@
           "label": "Browsererweiterung",
           "hint": "Speichere jede Seite mit einem Klick aus Chrome, Edge, Brave oder Arc",
           "action": "Installieren",
-          "actionLabel": "Browsererweiterung aus dem Chrome Web Store installieren (öffnet in einem neuen Tab)"
+          "actionLabel": "Installieren: Browsererweiterung aus dem Chrome Web Store (öffnet in einem neuen Tab)"
         }
       },
       "failed": "Einstellung konnte nicht gespeichert werden",
