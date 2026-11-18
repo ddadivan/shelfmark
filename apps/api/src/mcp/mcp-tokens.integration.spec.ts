@@ -138,6 +138,26 @@ describe('MCP tokens API', () => {
     await create(b);
   });
 
+  it('keeps the cap under concurrent creates', async () => {
+    await t.db.prisma.mcpToken.createMany({
+      data: Array.from({ length: MCP_LIMIT.TokensPerUserMax - 2 }, (_, index) => ({
+        userId: users.owner.userId,
+        name: `T${index}`,
+        tokenHash: hashToken(`seed-${index}`),
+        last4: 'abcd',
+      })),
+    });
+    const statuses = await Promise.all(
+      Array.from({ length: 5 }, (_, index) =>
+        a.post(TOKENS).send({ name: `Race ${index}`, includeNotes: false }),
+      ),
+    ).then((responses) => responses.map((res) => res.status).sort());
+    expect(statuses).toEqual([201, 201, 409, 409, 409]);
+    expect(await t.db.prisma.mcpToken.count({ where: { userId: users.owner.userId } })).toBe(
+      MCP_LIMIT.TokensPerUserMax,
+    );
+  });
+
   it('refuses accounts without Pro, but still lists and revokes their tokens', async () => {
     const created = await create();
     await t.db.prisma.user.update({ where: { id: users.owner.userId }, data: { plan: 'free' } });

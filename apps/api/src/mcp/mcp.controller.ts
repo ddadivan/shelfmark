@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Controller,
   Delete,
   Get,
@@ -26,10 +25,8 @@ import type { Response } from 'express';
 import { AllowAnonymous } from '../common/auth/allow-anonymous.decorator';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
-import { isSupportedProtocolHeader } from './json-rpc/protocol-version';
 import { McpTokenGuard } from './mcp-token.guard';
 import { McpServerService } from './mcp-server.service';
-import { MCP_PROTOCOL_VERSION_HEADER } from './models/mcp-protocol-version-header.const';
 import type { McpRequest } from './models/mcp-request.interface';
 
 const ALLOW_HEADER = 'Allow';
@@ -65,9 +62,7 @@ export class McpController {
     const principal = req.mcp;
     // Set by McpTokenGuard; a missing principal means the guard did not run: fail closed.
     if (!principal) throw new UnauthorizedException();
-    if (!isSupportedProtocolHeader(req.headers[MCP_PROTOCOL_VERSION_HEADER])) {
-      throw new BadRequestException('Unsupported MCP-Protocol-Version');
-    }
+    // The MCP-Protocol-Version header is checked by McpTokenGuard, before the call is counted.
     const answer = await this.server.handle(req.body, principal);
     if (answer.body === null) {
       res.status(answer.status).end();

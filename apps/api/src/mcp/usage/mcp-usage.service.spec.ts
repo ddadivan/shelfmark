@@ -1,7 +1,13 @@
 import { MCP_LIMIT } from '@shelfmark/contracts';
 import { createTestDatabase } from '../../../test-utils/test-database';
 import type { TestDatabase } from '../../../test-utils/models/test-database.interface';
+import type { PrismaService } from '../../prisma/prisma.service';
+import { MCP_USAGE_OUTCOME } from '../models/mcp-usage-outcome.const';
 import { McpUsageService } from './mcp-usage.service';
+
+const counted = (calls: number) => ({ kind: MCP_USAGE_OUTCOME.Counted, calls });
+const CAPPED = { kind: MCP_USAGE_OUTCOME.Capped };
+const REVOKED = { kind: MCP_USAGE_OUTCOME.Revoked };
 
 describe('McpUsageService', () => {
   let database: TestDatabase;
@@ -36,9 +42,9 @@ describe('McpUsageService', () => {
 
   it('counts calls per UTC day', async () => {
     const now = new Date('2026-12-02T10:00:00Z');
-    expect(await usage.reserve(tokenId, now)).toBe(1);
-    expect(await usage.reserve(tokenId, now)).toBe(2);
-    expect(await usage.reserve(tokenId, new Date('2026-12-03T00:00:01Z'))).toBe(1);
+    expect(await usage.reserve(tokenId, now)).toEqual(counted(1));
+    expect(await usage.reserve(tokenId, now)).toEqual(counted(2));
+    expect(await usage.reserve(tokenId, new Date('2026-12-03T00:00:01Z'))).toEqual(counted(1));
     expect((await rows()).map((row) => row.calls)).toEqual([2, 1]);
   });
 
@@ -47,8 +53,8 @@ describe('McpUsageService', () => {
     await database.prisma.mcpTokenUsage.create({
       data: { tokenId, day: new Date('2026-12-02'), calls: MCP_LIMIT.CallsPerTokenPerDay - 1 },
     });
-    expect(await usage.reserve(tokenId, now)).toBe(MCP_LIMIT.CallsPerTokenPerDay);
-    expect(await usage.reserve(tokenId, now)).toBeNull();
+    expect(await usage.reserve(tokenId, now)).toEqual(counted(MCP_LIMIT.CallsPerTokenPerDay));
+    expect(await usage.reserve(tokenId, now)).toEqual(CAPPED);
     expect((await rows())[0].calls).toBe(MCP_LIMIT.CallsPerTokenPerDay);
   });
 
@@ -88,7 +94,31 @@ describe('McpUsageService', () => {
       where: { tokenId_day: { tokenId, day: new Date('2026-12-02') } },
       data: { calls: MCP_LIMIT.CallsPerTokenPerDay },
     });
-    expect(await usage.reserve(tokenId, new Date('2026-12-02T11:00:00Z'))).toBeNull();
+    expect(await usage.reserve(tokenId, new Date('2026-12-02T11:00:00Z'))).toEqual(CAPPED);
     expect(await lastUsed()).toEqual(later);
+  });
+
+  it('counts nothing for a token revoked after the guard resolved it', async () => {
+    await database.prisma.mcpToken.delete({ where: { id: tokenId } });
+    expect(await usage.reserve(tokenId, new Date('2026-12-02T10:00:00Z'))).toEqual(REVOKED);
+    expect(await database.prisma.mcpTokenUsage.count()).toBe(0);
+  });
+
+  it('reads a foreign key error of a revoke racing the statement as revoked', async () => {
+    const raceFk = Object.assign(new Error('fk'), {
+      code: 'P2010',
+      meta: { driverAdapterError: { cause: { originalCode: '23503' } } },
+    });
+    const racing = (error: unknown) =>
+      new McpUsageService({
+        $queryRaw: vi.fn().mockRejectedValue(error),
+      } as unknown as PrismaService);
+    expect(await racing(raceFk).reserve(tokenId)).toEqual(REVOKED);
+    expect(
+      await racing(Object.assign(new Error('fk'), { code: 'P2003' })).reserve(tokenId),
+    ).toEqual(REVOKED);
+    const other = Object.assign(new Error('down'), { code: 'P1001' });
+    await expect(racing(other).reserve(tokenId)).rejects.toBe(other);
+    await expect(racing('boom').reserve(tokenId)).rejects.toBe('boom');
   });
 });

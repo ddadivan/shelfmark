@@ -11,11 +11,14 @@ import { seedMcpToken } from '../../test-utils/seed-mcp-token';
 import { signInDemo } from '../../test-utils/sign-in-demo';
 import { AI_ENV } from '../ai/models/ai-env.const';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
+import { MCP_USAGE_OUTCOME } from './models/mcp-usage-outcome.const';
+import { McpUsageService } from './usage/mcp-usage.service';
 
 const SERVER = MCP_ENDPOINT.Server;
 const PING = { jsonrpc: '2.0', id: 1, method: 'ping' };
 const API_ERROR_KEYS = ['error', 'message', 'requestId', 'statusCode'];
 const WWW_AUTHENTICATE = 'Bearer realm="shelfmark"';
+const NO_STORE = 'no-store';
 
 describe('MCP server authentication', () => {
   let t: AuthTestApp;
@@ -51,6 +54,7 @@ describe('MCP server authentication', () => {
   const expectUnauthorized = (res: request.Response) => {
     expect(res.status).toBe(401);
     expect(res.headers['www-authenticate']).toBe(WWW_AUTHENTICATE);
+    expect(res.headers['cache-control']).toBe(NO_STORE);
     expect(Object.keys(res.body).sort()).toEqual(API_ERROR_KEYS);
     expect(res.body.message).toBe(MCP_ERROR_MESSAGE.Unauthorized);
   };
@@ -95,6 +99,7 @@ describe('MCP server authentication', () => {
     await t.db.prisma.user.update({ where: { id: users.owner.userId }, data: { plan: 'free' } });
     const res = await post(bearer()).send(PING).expect(403);
     expect(res.body.message).toBe(MCP_ERROR_MESSAGE.NotAvailable);
+    expect(res.headers['cache-control']).toBe(NO_STORE);
     expect(await t.db.prisma.mcpTokenUsage.count()).toBe(0);
   });
 
@@ -119,6 +124,7 @@ describe('MCP server authentication', () => {
     });
     const res = await post(bearer()).send(PING).expect(429);
     expect(res.body.message).toBe(MCP_ERROR_MESSAGE.DailyCapReached);
+    expect(res.headers['cache-control']).toBe(NO_STORE);
     expect(Number(res.headers['retry-after'])).toBeGreaterThan(0);
     expect(Number(res.headers['retry-after'])).toBeLessThanOrEqual(86_400);
   });
@@ -126,6 +132,7 @@ describe('MCP server authentication', () => {
   it.each(['get', 'delete'] as const)('answers %s with 405 and Allow: POST', async (method) => {
     const res = await request(t.app.getHttpServer())[method](SERVER).expect(405);
     expect(res.headers['allow']).toBe('POST');
+    expect(res.headers['cache-control']).toBe(NO_STORE);
     expect(res.text).toBe('');
   });
 
@@ -140,6 +147,10 @@ describe('MCP server authentication', () => {
       .send({ jsonrpc: '2.0', method: 'notifications/initialized' })
       .expect(202);
     expect(notification.text).toBe('');
+    const oddParams = await post(bearer())
+      .send({ jsonrpc: '2.0', method: 'notifications/cancelled', params: [1] })
+      .expect(202);
+    expect(oddParams.text).toBe('');
     await post(bearer()).send({ jsonrpc: '2.0', id: 9, result: {} }).expect(202);
   });
 
@@ -171,7 +182,8 @@ describe('MCP server authentication', () => {
     for (let index = 0; index < RATE_LIMIT.Mcp.limit; index++) {
       await post().send(PING).expect(401);
     }
-    await post(bearer()).send(PING).expect(429);
+    const limited = await post(bearer()).send(PING).expect(429);
+    expect(limited.headers['cache-control']).toBe(NO_STORE);
   });
 
   it('initializes with a negotiated version and refuses an unsupported version header', async () => {
@@ -188,9 +200,33 @@ describe('MCP server authentication', () => {
     expect(res.headers['mcp-session-id']).toBeUndefined();
 
     await post(bearer()).set('MCP-Protocol-Version', '2025-06-18').send(PING).expect(200);
+    const callsBefore = await t.db.prisma.mcpTokenUsage.aggregate({ _sum: { calls: true } });
     const refused = await post(bearer()).set('MCP-Protocol-Version', '1999-01-01').send(PING);
     expect(refused.status).toBe(400);
     expect(Object.keys(refused.body).sort()).toEqual(API_ERROR_KEYS);
+    expect(refused.headers['cache-control']).toBe(NO_STORE);
+    // A refused version does not use up the daily cap.
+    const callsAfter = await t.db.prisma.mcpTokenUsage.aggregate({ _sum: { calls: true } });
+    expect(callsAfter._sum.calls).toBe(callsBefore._sum.calls);
+    // 2025-03-26 requires batches, which are refused: not offered.
+    await post(bearer()).set('MCP-Protocol-Version', '2025-03-26').send(PING).expect(400);
+  });
+
+  it('is a 401 when the token is revoked while the call is checked', async () => {
+    vi.spyOn(t.app.get(McpUsageService), 'reserve').mockResolvedValue({
+      kind: MCP_USAGE_OUTCOME.Revoked,
+    });
+    expectUnauthorized(await post(bearer()).send(PING));
+  });
+
+  it('answers a body just over 100kb with 413, without counting', async () => {
+    const padding = 'x'.repeat(100 * 1024);
+    const res = await post(bearer())
+      .set('Content-Type', 'application/json')
+      .send(JSON.stringify({ ...PING, params: { padding } }))
+      .expect(413);
+    expect(res.headers['cache-control']).toBe(NO_STORE);
+    expect(await t.db.prisma.mcpTokenUsage.count()).toBe(0);
   });
 
   it('refuses batches with -32600', async () => {

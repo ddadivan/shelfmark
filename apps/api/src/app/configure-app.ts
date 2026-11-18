@@ -49,8 +49,9 @@ export function configureApp(app: NestExpressApplication, options: ConfigureAppO
       shouldTrustProxyHeaders(),
     ),
   );
-  // `POST /api/mcp` reads its JSON body as text (100kb), so malformed JSON is a JSON-RPC -32700
-  // answered after the token guard (ADR 0053); the global parser skips the already read body.
+  // `/api/mcp` answers are `no-store`, errors included; `POST /api/mcp` reads its JSON body as text
+  // (100kb), so malformed JSON is a JSON-RPC -32700 answered after the token guard (ADR 0053); the
+  // global parser skips the already read body.
   app.use(mcpBodyParser);
   app.useBodyParser('json', { limit: '100kb' });
   app.setGlobalPrefix(API_GLOBAL_PREFIX);
