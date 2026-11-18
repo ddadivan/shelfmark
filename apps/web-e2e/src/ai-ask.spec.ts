@@ -33,7 +33,7 @@ async function openLibrary(page: Page): Promise<void> {
   await expect(page.locator('ui-card').first()).toBeVisible();
 }
 
-/** Opens the Ask drawer from the header spark button. */
+/** Opens the Ask drawer from the header Ask pill. */
 async function openPanel(page: Page): Promise<Locator> {
   await page.getByRole('button', { name: 'Ask your shelf' }).click();
   const panel = page.getByRole('dialog', { name: 'Ask your shelf' });

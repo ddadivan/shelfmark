@@ -3303,7 +3303,8 @@
       "off": "Frag deine Links ist unter Einstellungen › KI ausgeschaltet.",
       "retry": "Erneut versuchen",
       "truncated": "Die Antwort wurde abgeschnitten.",
-      "stopped": "Gestoppt."
+      "stopped": "Gestoppt.",
+      "button": "Fragen"
     },
     "connect": {
       "title": "Assistenten verbinden",

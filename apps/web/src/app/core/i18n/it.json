@@ -3376,7 +3376,8 @@
       "off": "Chiedi ai tuoi link è disattivato in Impostazioni › IA.",
       "retry": "Riprova",
       "truncated": "La risposta è stata interrotta.",
-      "stopped": "Interrotto."
+      "stopped": "Interrotto.",
+      "button": "Chiedi"
     },
     "connect": {
       "title": "Collega il tuo assistente",

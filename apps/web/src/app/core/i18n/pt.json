@@ -3376,7 +3376,8 @@
       "off": "Pergunte aos seus links está desativado em Configurações › IA.",
       "retry": "Tentar de novo",
       "truncated": "A resposta foi interrompida.",
-      "stopped": "Parado."
+      "stopped": "Parado.",
+      "button": "Perguntar"
     },
     "connect": {
       "title": "Conecte seu assistente",

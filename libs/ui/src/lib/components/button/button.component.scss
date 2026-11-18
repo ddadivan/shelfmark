@@ -119,11 +119,12 @@ a.ui-button {
 
 // The one AI action ("Fill in with AI", BRAND › AI): a quiet indigo fill (`ai-fill`), no edge,
 // the label in `text`, the icon (the spark) 20px in `ai`, also inside a dialog. Never sage, never
-// a gradient.
+// a gradient. A feature that needs an edge sets `--ui-button-ai-border` (the header's Ask pill).
 .ui-button--ai {
   --ui-icon-size: var(--icon-size-md);
 
   background: var(--ai-fill);
+  border-color: var(--ui-button-ai-border, transparent);
 
   ui-icon {
     color: var(--ai);
