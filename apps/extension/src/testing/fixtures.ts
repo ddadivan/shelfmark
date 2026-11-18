@@ -12,6 +12,9 @@ import {
   type AiSettings,
   type AiSettingsResponse,
   type AiUsage,
+  type LinkSuggestion,
+  SUGGESTION_STATE,
+  type SuggestionKind,
   type FolderResponse,
   type LinkResponse,
   type RuleResponse,
@@ -126,5 +129,19 @@ export function makeAiJob(overrides: Partial<AiJobResponse> = {}): AiJobResponse
     suggestions: [],
     summary: null,
     ...overrides,
+  };
+}
+
+export function makeSuggestion(
+  id: string,
+  kind: SuggestionKind,
+  fields: { tagName?: string; folderId?: string },
+): LinkSuggestion {
+  return {
+    id,
+    kind,
+    state: SUGGESTION_STATE.Suggested,
+    tagName: fields.tagName ?? null,
+    folderId: fields.folderId ?? null,
   };
 }

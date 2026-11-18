@@ -583,7 +583,7 @@
     },
     "extension": {
       "title": "Extensão do navegador",
-      "body": "A extensão do Shelfmark para Chrome, Edge, Brave e Arc só age quando você clica no botão dela ou usa o atalho, nunca em segundo plano. Ela então envia ao Shelfmark o endereço daquela guia, para verificar se você já a salvou, e só salva o endereço e o título, com a pasta, as tags e a nota escolhidas, quando você toca em Salvar. Ela nunca vê seu histórico nem os outros sites que você visita.",
+      "body": "A extensão do Shelfmark para Chrome, Edge, Brave e Arc só age quando você clica no botão dela ou usa o atalho, nunca em segundo plano. Ela então envia ao Shelfmark o endereço daquela guia, para verificar se você já a salvou, e só salva o endereço e o título, com a pasta, as tags e a nota escolhidas, quando você toca em Salvar. Ela nunca vê seu histórico nem os outros sites que você visita. Se clicar em «Preencher com IA» e a IA estiver ativada na sua conta, também envia esse endereço ao Shelfmark para obter sugestões da IA, tratadas ao abrigo dos mesmos termos de IA da aplicação.",
       "access": "Ela usa o seu login do Shelfmark nesse navegador e não consegue ler o cookie de login. Só acessa o Shelfmark e guarda no seu dispositivo apenas as pastas usadas recentemente, para sugeri-las na próxima vez."
     },
     "third": {

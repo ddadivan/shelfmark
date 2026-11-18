@@ -92,7 +92,7 @@ export class PopupFormComponent {
     });
   });
 
-  /** "1 December", in the popup's language, for the ISO date the monthly count resets. */
+  /** "December 1", in the popup's language, for the ISO date the monthly count resets. */
   private resetDate(iso: string): string {
     const date = new Date(`${iso}T00:00:00Z`);
     return Number.isNaN(date.getTime())
