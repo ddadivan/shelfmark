@@ -1,9 +1,11 @@
 @use 'ui' as *;
 
 // ExtensionInstall mockup (#455). The entrance is the author's call (a banner that should be
-// noticed): the band fades down, the popup screenshot slides up into it, the logo, the copy and
-// the button rise in one after another. Every step stays within `duration-slow`; under reduced
-// motion everything only fades.
+// noticed), once per appearance: the band itself stays put (it takes the place of the app
+// skeleton's placeholder of the same size, #490, so nothing blinks), the popup screenshot slides
+// up into it from below its bottom edge, and the logo, title, text and button rise in one after
+// another. Only transform and opacity move, inside the band's clip, so its 188px height never
+// changes. Every step stays within `duration-slow`; under reduced motion nothing animates.
 
 :host {
   display: block;
@@ -96,7 +98,9 @@
 
 // Entrance, step by step.
 .extension-banner--enter {
-  animation: extension-band var(--duration-base) var(--ease-out) both;
+  // Draws nothing: Angular removes the enter class when the element's own animation ends, so this
+  // one lasts as long as the longest step below (the popup, 200ms delay plus `duration-slow`).
+  animation: extension-hold calc(var(--duration-slow) + 200ms) linear both;
 
   .extension-banner__logo {
     animation: extension-pop var(--duration-slow) var(--ease-spring) 80ms both;
@@ -121,7 +125,7 @@
   }
 
   .extension-banner__popup {
-    animation: extension-popup var(--duration-slow) var(--ease-out) 160ms both;
+    animation: extension-popup var(--duration-slow) var(--ease-out) 200ms both;
   }
 }
 
@@ -136,8 +140,7 @@
   .extension-banner--enter .extension-banner__text,
   .extension-banner--enter .extension-banner__install,
   .extension-banner--enter .extension-banner__popup {
-    animation-name: extension-fade;
-    animation-timing-function: var(--ease-out);
+    animation: none;
   }
 
   .extension-banner--leave {
@@ -145,10 +148,9 @@
   }
 }
 
-@keyframes extension-band {
+@keyframes extension-hold {
   from {
-    opacity: 0;
-    transform: translateY(-0.5rem);
+    opacity: 1;
   }
 }
 
@@ -168,8 +170,7 @@
 
 @keyframes extension-popup {
   from {
-    opacity: 0;
-    transform: translateY(3rem);
+    transform: translateY(calc(100% + #{rem(16px)}));
   }
 }
 
@@ -177,12 +178,6 @@
   to {
     opacity: 0;
     transform: translateY(-0.5rem);
-  }
-}
-
-@keyframes extension-fade {
-  from {
-    opacity: 0;
   }
 }
 
