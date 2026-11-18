@@ -6,11 +6,13 @@ import {
   normalizeRuleDomain,
   normalizeTagName,
   normalizeUrl,
+  REDISCOVER_LIMIT,
   RULE_LIMIT,
   ruleHost,
   TAG_LIMIT,
 } from '@shelfmark/contracts';
 import { FOLDER_COLOUR, FOLDER_LIMIT } from '@shelfmark/contracts';
+import { MOCK_ASK_THEMES } from '../ai/models/mock-ask-themes.const';
 import { isStorableUrl } from '../links/dto/is-http-url.decorator';
 import { DEMO_SEED } from './demo-seed';
 
@@ -171,5 +173,38 @@ describe('demo seed (seed.json)', () => {
     const unsorted = youtube.filter((link) => link.folder === null);
     expect(unsorted.map((link) => link.suggestFolder)).toEqual(['videos']);
     expect(DEMO_SEED.rules.some((rule) => rule.domain === 'youtube.com')).toBe(false);
+  });
+
+  it('grounds the canned Ask themes of the mock in seed links (AI-4)', () => {
+    const text = (link: (typeof DEMO_SEED.links)[number]): Set<string> =>
+      new Set(
+        `${link.title} ${link.tags.join(' ')} ${link.summary ?? ''}`
+          .toLowerCase()
+          .split(/[^\p{L}\p{N}]+/u),
+      );
+    for (const theme of MOCK_ASK_THEMES) {
+      const matching = DEMO_SEED.links.filter((link) =>
+        theme.sourceWords.some((word) => text(link).has(word)),
+      );
+      expect(matching.length).toBeGreaterThanOrEqual(1);
+    }
+    const ramen = DEMO_SEED.links.filter((link) => /ramen/i.test(link.title));
+    expect(ramen.every((link) => link.folder === 'recipes')).toBe(true);
+    expect(ramen.length).toBeGreaterThanOrEqual(3);
+    const coats = DEMO_SEED.links.filter((link) => /coat|parka/i.test(link.title));
+    expect(coats.every((link) => link.folder === 'clothes')).toBe(true);
+    expect(coats).toHaveLength(2);
+  });
+
+  it('has enough older, unopened links without a reminder for From your shelf (AI-4)', () => {
+    const candidates = DEMO_SEED.links.filter(
+      (link) =>
+        link.createdDaysAgo >= REDISCOVER_LIMIT.SavedDaysMin &&
+        (link.lastOpenedDaysAgo === null ||
+          link.lastOpenedDaysAgo >= REDISCOVER_LIMIT.OpenedDaysMin) &&
+        (link.remindInHours === undefined || link.remindInHours <= 0),
+    );
+    expect(candidates.length).toBeGreaterThanOrEqual(REDISCOVER_LIMIT.ItemsMin);
+    expect(candidates.length).toBeLessThanOrEqual(REDISCOVER_LIMIT.ItemsMax);
   });
 });

@@ -7,6 +7,7 @@ import request from 'supertest';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import type { AuthTestApp } from '../../test-utils/models/auth-test-app.interface';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
+import { asUser } from '../../test-utils/isolation/test-agent';
 import { seedLink } from '../../test-utils/seed-link';
 import { signInDemo } from '../../test-utils/sign-in-demo';
 import { DemoCleanupService } from './demo-cleanup.service';
@@ -57,6 +58,9 @@ describe('GET /api/cron/demo-cleanup', () => {
     aiSettings: await t.db.prisma.aiSettings.count(),
     linkSuggestions: await t.db.prisma.linkSuggestion.count(),
     linkEmbeddings: await t.db.prisma.linkEmbedding.count(),
+    aiAskUsage: await t.db.prisma.aiAskUsage.count(),
+    rediscoverHidden: await t.db.prisma.rediscoverHidden.count(),
+    rediscoverState: await t.db.prisma.rediscoverState.count(),
   });
 
   it('has the vercel.json cron path of the route', () => {
@@ -151,11 +155,19 @@ describe('GET /api/cron/demo-cleanup', () => {
       await t.db.prisma.account.create({
         data: { accountId: 'a1', providerId: 'github', userId: first.userId },
       });
+      // AI-4 state: a question counted today, a hidden link and a dismissed Rediscover week.
+      await t.db.prisma.aiAskUsage.create({
+        data: { userId: first.userId, day: new Date(), questions: 1 },
+      });
+      const hidden = await t.db.prisma.link.findFirstOrThrow({ where: { userId: first.userId } });
+      await asUser(t.app, first).post(`/api/rediscover/links/${hidden.id}/hide`).expect(204);
+      await asUser(t.app, second).post('/api/rediscover/dismiss').expect(204);
       const seeded = await rowCounts();
       expect(seeded.links).toBeGreaterThan(0);
       expect(seeded.aiSettings).toBe(2);
       expect(seeded.linkSuggestions).toBeGreaterThan(0);
       expect(seeded.linkEmbeddings).toBe(seeded.links);
+      expect(seeded).toMatchObject({ aiAskUsage: 1, rediscoverHidden: 1, rediscoverState: 1 });
       await expire([first.userId, second.userId]);
 
       await call(`Bearer ${SECRET}`).expect(200);
@@ -170,6 +182,9 @@ describe('GET /api/cron/demo-cleanup', () => {
         aiSettings: 0,
         linkSuggestions: 0,
         linkEmbeddings: 0,
+        aiAskUsage: 0,
+        rediscoverHidden: 0,
+        rediscoverState: 0,
       });
     });
 
