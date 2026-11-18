@@ -28,9 +28,9 @@ import { SidebarTagsComponent } from '../../../tags/components/sidebar-tags/side
 import { LibraryTileComponent } from './library-tile.component';
 
 /**
- * The Library tab of the phone (MobileMenu): tiles for All links, Unsorted, Favorites and
- * Recently opened (a bottom sheet with the same list as `/recent`), and Trash (a page of its own), then the folder tree with its
- * menus, and the tags while Ask has their tab (#499). From the tablet width the sidebar does this job, so the page leaves for All links.
+ * The Library tab of the phone (MobileMenu): Pinned, the folder tree with its menus (#512), then
+ * tiles for All links, Unsorted, Favorites, Recently opened (a bottom sheet with the same list as
+ * `/recent`), Reminders and Trash (a page of its own), and the tags while Ask has their tab (#499). From the tablet width the sidebar does this job, so the page leaves for All links.
  */
 @Component({
   selector: 'app-phone-library-page',

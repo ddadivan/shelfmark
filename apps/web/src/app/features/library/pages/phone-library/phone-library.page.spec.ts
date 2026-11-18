@@ -92,6 +92,17 @@ describe('PhoneLibraryPage', () => {
     expect(element.querySelector('app-sidebar-tags')).toBeNull();
   });
 
+  it('orders Pinned, Folders, then the tiles (#512)', async () => {
+    const { element } = await setup();
+    const pinned = element.querySelector('app-sidebar-pinned');
+    const folders = element.querySelector('app-sidebar');
+    const tiles = element.querySelector('.phone-library__tiles');
+    const follows = (a: Element | null, b: Element | null): boolean =>
+      !!a && !!b && !!(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(follows(pinned, folders)).toBe(true);
+    expect(follows(folders, tiles)).toBe(true);
+  });
+
   it('shows the tags under the folders while Ask has the Tags tab (#499)', async () => {
     const ai = fakeAiApi(
       aiSettingsResponse({ settings: { ...AI_SETTINGS_DEFAULT, enabled: true, ask: true } }),

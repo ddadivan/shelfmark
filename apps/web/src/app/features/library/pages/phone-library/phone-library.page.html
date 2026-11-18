@@ -3,6 +3,8 @@
 
   <app-sidebar-pinned card />
 
+  <app-sidebar foldersOnly />
+
   <div class="phone-library__tiles">
     <app-library-tile
       [href]="'/' + APP_PATH.Links"
@@ -45,8 +47,6 @@
       [meta]="trashMeta()"
     />
   </div>
-
-  <app-sidebar foldersOnly />
 
   <!-- While Ask takes the Tags place in the tab bar, the tags live here (#499). -->
   @if (askTab()) {

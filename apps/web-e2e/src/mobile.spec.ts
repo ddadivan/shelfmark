@@ -142,7 +142,7 @@ test.describe('mobile layout (mock API)', () => {
   );
 
   test(
-    'the Library page has the four tiles with counts, then the folders',
+    'the Library page has Pinned and the folders, then the tiles with counts',
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       await page.goto('/links');
