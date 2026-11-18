@@ -5,4 +5,6 @@ export interface FoundRoute {
   isPublic: boolean;
   optional: boolean;
   usesCurrentUser: boolean;
+  /** Carries `@LongRunning()` (skipped by `TimeoutInterceptor`). */
+  longRunning: boolean;
 }
