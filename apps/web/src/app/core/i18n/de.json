@@ -2804,6 +2804,9 @@
       },
       "emojiPickerTabs": {
         "text": "Die Emoji-Auswahl ist so breit wie ihr Feld, und die Kategorie-Tabs sehen nicht mehr wie wählbare Emojis aus."
+      },
+      "extensionInStore": {
+        "text": "Die Shelfmark-Browsererweiterung ist im Chrome Web Store: Installiere sie über das Banner in deinem Regal oder unter Einstellungen › Bibliothek."
       }
     },
     "sections": {

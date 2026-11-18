@@ -2864,6 +2864,9 @@
       },
       "emojiPickerTabs": {
         "text": "O seletor de emoji tem a largura do campo, e as abas de categorias não parecem mais emojis para escolher."
+      },
+      "extensionInStore": {
+        "text": "A extensão do Shelfmark está na Chrome Web Store: instale-a pelo aviso da sua estante ou em Configurações › Biblioteca."
       }
     },
     "sections": {
