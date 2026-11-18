@@ -2911,11 +2911,13 @@
       },
       "aiSuggestions": {
         "title": "AI suggestions (optional)",
-        "text": "Turn on AI in Settings › AI to get folder and tag suggestions as you save. Off by default; nothing changes without your choice."
+        "text": "Press Fill in with AI in Add link and one click fills in the title, folder, tags and a short summary. You can change anything. It works in the browser extension too. AI is off by default; turn it on in Settings › AI.",
+        "alt": "The Add link dialog with a YouTube address, filled in by AI: title, folder, tags and a summary."
       },
       "aiSummaries": {
         "title": "Short summaries",
-        "text": "With AI on, links get a one- or two-line summary on their card. Edit it and it's yours."
+        "text": "With AI on, links get a one- or two-line summary on their card. Edit it and it's yours.",
+        "alt": "Link cards with a short AI summary under each title."
       },
       "aiTidy": {
         "title": "Tidy Unsorted with AI",
@@ -2923,7 +2925,8 @@
       },
       "aiAsk": {
         "title": "Ask your shelf",
-        "text": "Ask a question in your own words and get a short answer from the links you saved, with every source listed. Plus “From your shelf”: older links you never opened, once a week."
+        "text": "Ask a question in your own words and get a short answer from the links you saved, with every source listed.",
+        "alt": "The Ask drawer with a question, a short answer and the links it comes from."
       },
       "aiCleanup": {
         "title": "Library clean-up",
@@ -2935,10 +2938,30 @@
       },
       "aiSearch": {
         "title": "Search by meaning",
-        "text": "Search finds links that match what you mean, not only your words, and says why each one matched. Edit link shows related links from your shelf, and Side by side can offer their folders."
+        "text": "Search finds links that match what you mean, not only your words, and says why each one matched. Edit link shows related links from your shelf, and Side by side can offer their folders.",
+        "alt": "Search results with a Related by meaning group below the word matches."
       },
       "extensionInStore": {
         "text": "The Shelfmark browser extension is in the Chrome Web Store: install it from the banner on your shelf or from Settings › Library."
+      },
+      "forgotten": {
+        "title": "Forgotten links",
+        "text": "Links you saved and never opened wait in Recently opened › Forgotten. The count shows next to Recently opened."
+      },
+      "cardTags": {
+        "text": "Link cards show whole tags and a “+N” for the rest instead of cutting a tag off."
+      },
+      "phoneFolders": {
+        "text": "On phones the Library lists Folders right under Pinned."
+      },
+      "dialogButtons": {
+        "text": "In dialogs on phones the main action sits alone at the bottom."
+      },
+      "textFields": {
+        "text": "Text fields grow with what you type."
+      },
+      "landingHeadline": {
+        "text": "The landing page headline fits every language."
       }
     },
     "sections": {

@@ -2973,11 +2973,13 @@
       },
       "aiSuggestions": {
         "title": "Sugerencias de IA (opcionales)",
-        "text": "Activa la IA en Ajustes › IA para recibir sugerencias de carpeta y etiquetas al guardar. Desactivada por defecto; nada cambia sin tu decisión."
+        "text": "Pulsa Rellenar con IA en Añadir enlace y un clic rellena el título, la carpeta, las etiquetas y un resumen breve. Puedes cambiar lo que quieras. También funciona en la extensión del navegador. La IA viene desactivada; actívala en Ajustes › IA.",
+        "alt": "El diálogo Añadir enlace con una dirección de YouTube rellenada por la IA: título, carpeta, etiquetas y resumen."
       },
       "aiSummaries": {
         "title": "Resúmenes breves",
-        "text": "Con la IA activada, los enlaces reciben un resumen de una o dos líneas en su tarjeta. Si lo editas, es tuyo."
+        "text": "Con la IA activada, los enlaces reciben un resumen de una o dos líneas en su tarjeta. Si lo editas, es tuyo.",
+        "alt": "Tarjetas de enlaces con un resumen breve de la IA bajo cada título."
       },
       "aiTidy": {
         "title": "Ordenar «Sin carpeta» con IA",
@@ -2985,7 +2987,8 @@
       },
       "aiAsk": {
         "title": "Pregunta a tus enlaces",
-        "text": "Haz una pregunta con tus propias palabras y recibe una respuesta breve a partir de los enlaces que guardaste, con cada fuente. Además, «De tus enlaces»: una vez por semana, enlaces antiguos que nunca abriste."
+        "text": "Haz una pregunta con tus propias palabras y recibe una respuesta breve a partir de los enlaces que guardaste, con cada fuente.",
+        "alt": "El panel Preguntar con una pregunta, una respuesta breve y los enlaces de los que sale."
       },
       "aiCleanup": {
         "title": "Limpieza de la biblioteca",
@@ -2997,10 +3000,30 @@
       },
       "aiSearch": {
         "title": "Búsqueda por significado",
-        "text": "La búsqueda encuentra enlaces que coinciden con lo que quieres decir, no solo con tus palabras, y explica por qué coincide cada uno. «Editar enlace» muestra enlaces relacionados de tu estantería, y «Lado a lado» puede ofrecer sus carpetas."
+        "text": "La búsqueda encuentra enlaces que coinciden con lo que quieres decir, no solo con tus palabras, y explica por qué coincide cada uno. «Editar enlace» muestra enlaces relacionados de tu estantería, y «Lado a lado» puede ofrecer sus carpetas.",
+        "alt": "Resultados de búsqueda con un grupo «Relacionados por significado» bajo las coincidencias de palabras."
       },
       "extensionInStore": {
         "text": "La extensión de Shelfmark ya está en Chrome Web Store: instálala desde el aviso de tu estantería o desde Ajustes › Biblioteca."
+      },
+      "forgotten": {
+        "title": "Enlaces olvidados",
+        "text": "Los enlaces que guardaste y nunca abriste esperan en Abiertos recientemente › Olvidados. El número aparece junto a Abiertos recientemente."
+      },
+      "cardTags": {
+        "text": "Las tarjetas muestran etiquetas enteras y un «+N» para el resto, en vez de cortar una etiqueta."
+      },
+      "phoneFolders": {
+        "text": "En el móvil, la Biblioteca muestra las Carpetas justo debajo de Fijados."
+      },
+      "dialogButtons": {
+        "text": "En los diálogos del móvil, la acción principal queda sola abajo."
+      },
+      "textFields": {
+        "text": "Los campos de texto crecen con lo que escribes."
+      },
+      "landingHeadline": {
+        "text": "El titular de la página de inicio cabe en todos los idiomas."
       }
     },
     "sections": {

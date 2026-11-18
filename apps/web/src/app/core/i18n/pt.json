@@ -2973,11 +2973,13 @@
       },
       "aiSuggestions": {
         "title": "Sugestões de IA (opcionais)",
-        "text": "Ative a IA em Configurações › IA para receber sugestões de pasta e tags ao salvar. Desativada por padrão; nada muda sem a sua escolha."
+        "text": "Toque em Preencher com IA em Adicionar link e um clique preenche título, pasta, tags e um resumo curto. Você pode mudar qualquer coisa. Também funciona na extensão do navegador. A IA vem desativada; ative em Configurações › IA.",
+        "alt": "A caixa Adicionar link com um endereço do YouTube preenchido pela IA: título, pasta, tags e resumo."
       },
       "aiSummaries": {
         "title": "Resumos curtos",
-        "text": "Com a IA ativada, os links ganham um resumo de uma ou duas linhas no cartão. Edite e ele passa a ser seu."
+        "text": "Com a IA ativada, os links ganham um resumo de uma ou duas linhas no cartão. Edite e ele passa a ser seu.",
+        "alt": "Cartões de link com um resumo curto da IA sob cada título."
       },
       "aiTidy": {
         "title": "Organizar “Sem pasta” com IA",
@@ -2985,7 +2987,8 @@
       },
       "aiAsk": {
         "title": "Pergunte aos seus links",
-        "text": "Faça uma pergunta com suas próprias palavras e receba uma resposta curta a partir dos links que você salvou, com cada fonte listada. E mais “Dos seus links”: uma vez por semana, links antigos que você nunca abriu."
+        "text": "Faça uma pergunta com suas próprias palavras e receba uma resposta curta a partir dos links que você salvou, com cada fonte listada.",
+        "alt": "O painel Perguntar com uma pergunta, uma resposta curta e os links de onde ela vem."
       },
       "aiCleanup": {
         "title": "Limpeza da biblioteca",
@@ -2997,10 +3000,30 @@
       },
       "aiSearch": {
         "title": "Busca por significado",
-        "text": "A busca encontra links que correspondem ao que você quer dizer, não só às suas palavras, e diz por que cada um corresponde. “Editar link” mostra links relacionados na sua estante, e “Lado a lado” pode sugerir as pastas deles."
+        "text": "A busca encontra links que correspondem ao que você quer dizer, não só às suas palavras, e diz por que cada um corresponde. “Editar link” mostra links relacionados na sua estante, e “Lado a lado” pode sugerir as pastas deles.",
+        "alt": "Resultados de busca com um grupo “Relacionados por significado” abaixo das correspondências de palavras."
       },
       "extensionInStore": {
         "text": "A extensão do Shelfmark está na Chrome Web Store: instale-a pelo aviso da sua estante ou em Configurações › Biblioteca."
+      },
+      "forgotten": {
+        "title": "Links esquecidos",
+        "text": "Os links que você salvou e nunca abriu esperam em Abertos recentemente › Esquecidos. O número aparece ao lado de Abertos recentemente."
+      },
+      "cardTags": {
+        "text": "Os cartões de link mostram tags inteiras e um “+N” para o resto, em vez de cortar uma tag."
+      },
+      "phoneFolders": {
+        "text": "No celular, a Biblioteca lista as Pastas logo abaixo de Fixados."
+      },
+      "dialogButtons": {
+        "text": "Nas caixas de diálogo no celular, a ação principal fica sozinha embaixo."
+      },
+      "textFields": {
+        "text": "Os campos de texto crescem com o que você digita."
+      },
+      "landingHeadline": {
+        "text": "O título da página inicial cabe em todos os idiomas."
       }
     },
     "sections": {

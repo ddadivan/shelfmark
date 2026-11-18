@@ -2973,11 +2973,13 @@
       },
       "aiSuggestions": {
         "title": "Suggerimenti IA (facoltativi)",
-        "text": "Attiva l'IA in Impostazioni › IA per ricevere suggerimenti di cartelle e tag mentre salvi. Disattivata per impostazione predefinita; nulla cambia senza la tua scelta."
+        "text": "Premi Compila con l’IA in Aggiungi link e un clic compila titolo, cartella, tag e un breve riassunto. Puoi cambiare tutto. Funziona anche nell’estensione del browser. L’IA è disattivata per impostazione predefinita; attivala in Impostazioni › IA.",
+        "alt": "La finestra Aggiungi link con un indirizzo YouTube compilato dall’IA: titolo, cartella, tag e riassunto."
       },
       "aiSummaries": {
         "title": "Riassunti brevi",
-        "text": "Con l'IA attiva, i link ricevono un riassunto di una o due righe sulla scheda. Modificalo e diventa tuo."
+        "text": "Con l'IA attiva, i link ricevono un riassunto di una o due righe sulla scheda. Modificalo e diventa tuo.",
+        "alt": "Schede dei link con un breve riassunto dell’IA sotto ogni titolo."
       },
       "aiTidy": {
         "title": "Riordina «Senza cartella» con l’IA",
@@ -2985,7 +2987,8 @@
       },
       "aiAsk": {
         "title": "Chiedi ai tuoi link",
-        "text": "Fai una domanda con parole tue e ricevi una risposta breve dai link che hai salvato, con ogni fonte elencata. In più «Dai tuoi link»: una volta a settimana, link meno recenti che non hai mai aperto."
+        "text": "Fai una domanda con parole tue e ricevi una risposta breve dai link che hai salvato, con ogni fonte elencata.",
+        "alt": "Il pannello Chiedi con una domanda, una risposta breve e i link da cui deriva."
       },
       "aiCleanup": {
         "title": "Riordino della libreria",
@@ -2997,10 +3000,30 @@
       },
       "aiSearch": {
         "title": "Ricerca per significato",
-        "text": "La ricerca trova i link che corrispondono a ciò che intendi, non solo alle tue parole, e spiega perché ognuno corrisponde. «Modifica link» mostra link correlati nel tuo scaffale e «Affiancati» può proporre le loro cartelle."
+        "text": "La ricerca trova i link che corrispondono a ciò che intendi, non solo alle tue parole, e spiega perché ognuno corrisponde. «Modifica link» mostra link correlati nel tuo scaffale e «Affiancati» può proporre le loro cartelle.",
+        "alt": "Risultati di ricerca con un gruppo «Correlati per significato» sotto le corrispondenze di parole."
       },
       "extensionInStore": {
         "text": "L’estensione di Shelfmark è sul Chrome Web Store: installala dal banner del tuo scaffale o da Impostazioni › Libreria."
+      },
+      "forgotten": {
+        "title": "Link dimenticati",
+        "text": "I link che hai salvato e non hai mai aperto aspettano in Aperti di recente › Dimenticati. Il numero compare accanto a Aperti di recente."
+      },
+      "cardTags": {
+        "text": "Le schede dei link mostrano tag interi e un «+N» per il resto, invece di tagliare un tag."
+      },
+      "phoneFolders": {
+        "text": "Sul telefono la Libreria elenca le Cartelle subito sotto Fissati."
+      },
+      "dialogButtons": {
+        "text": "Nelle finestre di dialogo sul telefono l’azione principale sta da sola in basso."
+      },
+      "textFields": {
+        "text": "I campi di testo crescono con quello che scrivi."
+      },
+      "landingHeadline": {
+        "text": "Il titolo della pagina iniziale sta bene in ogni lingua."
       }
     },
     "sections": {
