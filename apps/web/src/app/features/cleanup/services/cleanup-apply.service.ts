@@ -16,6 +16,7 @@ import { SavedViewsStore } from '../../../stores/saved-views.store';
 import { TagsStore } from '../../../stores/tags.store';
 import { TrashStore } from '../../../stores/trash.store';
 import { CLEANUP_API } from '../models/cleanup-api.const';
+import { CleanupSummaryStore } from './cleanup-summary.store';
 
 /**
  * One clean-up run (AI-5): sends the selected rows in one request, takes the trashed copies out of
@@ -118,6 +119,7 @@ export class CleanupApplyService {
     void this.injector.get(TrashStore).refresh();
     void this.injector.get(PinsStore).refresh();
     void this.injector.get(RemindersStore).refresh();
+    void this.injector.get(CleanupSummaryStore).refresh();
   }
 
   private plural(base: string, count: number): string {
