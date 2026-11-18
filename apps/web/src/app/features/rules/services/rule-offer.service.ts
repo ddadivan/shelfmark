@@ -21,7 +21,7 @@ import { RULES_API } from '../models/rules-api.const';
 import { RuleActionsService } from './rule-actions.service';
 
 /**
- * Rule offers (AI-2, ADR 0049): after the user filed links (Tidy, a move, an edit or a save into a
+ * Rule offers (AI-2, ADR 0050): after the user filed links (Tidy, a move, an edit or a save into a
  * folder they chose) the server is asked whether the newest links of one site share a folder;
  * then a sticky toast offers "Always put {domain} links in {folder}?" with Create rule and Not now.
  * Only while AI is on. When the filing showed an Undo toast, the offer waits until that toast

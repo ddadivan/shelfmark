@@ -559,7 +559,7 @@
       "intro": "AI is off until you turn it on in Settings › AI. When it is on, it suggests tags and folders and writes short summaries. Everything it makes is marked with a small spark and may be inaccurate; nothing is applied unless you accept it or choose automatic mode.",
       "processor": {
         "term": "Who processes it:",
-        "text": "[PROVIDER], as our processor, only to produce the result you asked for. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+        "text": "Anthropic PBC (USA), as our processor, only to produce the result you asked for."
       },
       "sent": {
         "term": "What is sent:",
@@ -567,7 +567,7 @@
       },
       "kept": {
         "term": "How long it is kept:",
-        "text": "the provider keeps the request for at most [N] days and doesn't use it for training. The results (tags, summaries) are stored with your links and deleted with them."
+        "text": "Anthropic deletes the request within 30 days and doesn't use it for training; only content its safety systems flag may be kept longer (up to 2 years), or where the law requires it. The results (tags, summaries) are stored with your links and deleted with them."
       },
       "counted": {
         "term": "What we count:",
@@ -2873,6 +2873,9 @@
       "aiSearch": {
         "title": "Search by meaning",
         "text": "Search finds links that match what you mean, not only your words, and says why each one matched. Edit link shows related links from your shelf, and Side by side can offer their folders."
+      },
+      "extensionInStore": {
+        "text": "The Shelfmark browser extension is in the Chrome Web Store: install it from the banner on your shelf or from Settings › Library."
       }
     },
     "sections": {
@@ -3032,7 +3035,7 @@
       },
       "training": {
         "title": "Not used for training",
-        "text": "Your content is never used to train models. The provider, [PROVIDER], processes it for us and keeps it for [N] days at most."
+        "text": "Your content is never used to train models. Anthropic processes it for us and deletes it within 30 days."
       },
       "details": "You can turn AI off, or one feature at a time, in Settings › AI.",
       "policy": "Read the privacy policy",

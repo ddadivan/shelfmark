@@ -1,5 +1,5 @@
 /**
- * The Voyage embeddings call (ADR 0050 point 1): plain HTTPS to a pinned URL (no base-URL variable,
+ * The Voyage embeddings call (ADR 0051 point 1): plain HTTPS to a pinned URL (no base-URL variable,
  * never derived from input), redirects refused, a timeout per input type, the response size-capped.
  */
 export const VOYAGE_LIMIT = {

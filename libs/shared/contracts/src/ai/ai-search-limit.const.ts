@@ -1,5 +1,5 @@
 /**
- * Search by meaning and related links limits (AI-3, ADR 0050): query length, result counts and the
+ * Search by meaning and related links limits (AI-3, ADR 0051): query length, result counts and the
  * "why it matched" caps.
  */
 export const AI_SEARCH_LIMIT = {

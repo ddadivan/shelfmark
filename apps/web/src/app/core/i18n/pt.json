@@ -571,7 +571,7 @@
       "intro": "A IA fica desligada até você ativá-la em Configurações › IA. Quando ligada, ela sugere tags e pastas e escreve resumos curtos. Tudo o que ela cria leva uma pequena faísca e pode ser impreciso; nada é aplicado a menos que você aceite ou escolha o modo automático.",
       "processor": {
         "term": "Quem processa:",
-        "text": "[PROVIDER], como nosso operador, apenas para gerar o resultado que você pediu. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+        "text": "Anthropic PBC (EUA), como nosso operador, apenas para gerar o resultado que você pediu."
       },
       "sent": {
         "term": "O que é enviado:",
@@ -579,7 +579,7 @@
       },
       "kept": {
         "term": "Por quanto tempo fica guardado:",
-        "text": "o provedor guarda a solicitação por no máximo [N] dias e não a usa para treinamento. Os resultados (tags, resumos) ficam salvos com seus links e são excluídos com eles."
+        "text": "A Anthropic exclui a solicitação em até 30 dias e não a usa para treinamento; só o conteúdo sinalizado pelos seus sistemas de segurança pode ser guardado por mais tempo (até 2 anos), ou quando a lei exige. Os resultados (tags, resumos) ficam salvos com seus links e são excluídos com eles."
       },
       "counted": {
         "term": "O que contamos:",
@@ -2934,6 +2934,9 @@
       "aiSearch": {
         "title": "Busca por significado",
         "text": "A busca encontra links que correspondem ao que você quer dizer, não só às suas palavras, e diz por que cada um corresponde. “Editar link” mostra links relacionados na sua estante, e “Lado a lado” pode sugerir as pastas deles."
+      },
+      "extensionInStore": {
+        "text": "A extensão do Shelfmark está na Chrome Web Store: instale-a pelo aviso da sua estante ou em Configurações › Biblioteca."
       }
     },
     "sections": {
@@ -3095,7 +3098,7 @@
       },
       "training": {
         "title": "Não usado para treinamento",
-        "text": "Seu conteúdo nunca é usado para treinar modelos. O provedor, [PROVIDER], processa para nós e guarda por no máximo [N] dias."
+        "text": "Seu conteúdo nunca é usado para treinar modelos. A Anthropic processa para nós e o exclui em até 30 dias."
       },
       "details": "Você pode desligar a IA, ou um recurso por vez, em Configurações › IA.",
       "policy": "Ler a política de privacidade",

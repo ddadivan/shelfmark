@@ -233,11 +233,13 @@ test.describe('links feed (mock API)', () => {
     }
     expect(await page.evaluate('document.documentElement.scrollHeight')).toBeLessThanOrEqual(900);
 
-    // The state is the page card (#315): it fills the free space under the toolbar down to the
-    // bottom padding of the column, and its content sits in the middle of it.
+    // The state is the page card (#315): it fills the free space under the toolbar (and under the
+    // extension banner, #490, which desktop Chromium shows) down to the bottom padding of the
+    // column, and its content sits in the middle of it.
     const state = await box('ui-empty-state');
     const toolbar = await box('.library__toolbar');
-    const freeTop = toolbar.y + toolbar.height;
+    const banner = await page.locator('app-extension-banner section').boundingBox();
+    const freeTop = Math.max(toolbar.y + toolbar.height, banner ? banner.y + banner.height : 0);
     const freeBottom = main.y + main.height;
     expect(state.y).toBeGreaterThanOrEqual(freeTop);
     expect(freeBottom - (state.y + state.height)).toBeLessThanOrEqual(32);

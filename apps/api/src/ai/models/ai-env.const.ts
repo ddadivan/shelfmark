@@ -2,7 +2,7 @@
 export const AI_ENV = {
   /** The provider key. Production only (Vercel, Sensitive); unset means the mock provider. */
   AnthropicApiKey: 'ANTHROPIC_API_KEY',
-  /** The embeddings key (Voyage AI, ADR 0050). Production only (Vercel, Sensitive); unset means the mock. */
+  /** The embeddings key (Voyage AI, ADR 0051). Production only (Vercel, Sensitive); unset means the mock. */
   VoyageApiKey: 'VOYAGE_API_KEY',
   /** `mock` forces the mock providers (language model and embeddings) even with a key (self-hosting, a production smoke test). */
   Provider: 'AI_PROVIDER',

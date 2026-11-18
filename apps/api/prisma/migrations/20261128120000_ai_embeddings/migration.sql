@@ -1,4 +1,4 @@
--- AI-3 search by meaning and related links (#392, ADR 0050): pgvector, one vector per link, the
+-- AI-3 search by meaning and related links (#392, ADR 0051): pgvector, one vector per link, the
 -- "Search by meaning" switch, the per-user embed pass lease and the monthly embeds / search counters.
 
 -- pgvector (Neon ships 0.8.x; PGlite loads @electric-sql/pglite-pgvector in tests and local dev).
@@ -38,7 +38,7 @@ CREATE TABLE "link_embeddings" (
 -- CreateIndex
 CREATE INDEX "link_embeddings_user_id_stale_idx" ON "link_embeddings"("user_id", "stale");
 
--- Approximate nearest neighbours by cosine distance (ADR 0050 point 3). Not in schema.prisma: Prisma
+-- Approximate nearest neighbours by cosine distance (ADR 0051 point 3). Not in schema.prisma: Prisma
 -- cannot describe an HNSW index, and its drift check ignores partial indexes (like the Trash ones).
 -- Hence the predicate, which is always true (`model` is never empty) and which every KNN query repeats
 -- verbatim (`embedding-sql.ts`) so the planner may use the index. (`embedding IS NOT NULL` would not

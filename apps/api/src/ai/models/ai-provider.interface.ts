@@ -7,7 +7,7 @@ import type { LinkJobInput } from './link-job-input.interface';
 import type { LinkJobOutcome } from './link-job-outcome.type';
 
 /**
- * The server-side seam to a language model (ADR 0047 point 1, ADR 0048 point 9): the web app never
+ * The server-side seam to a language model (ADR 0047 point 1, ADR 0049 point 9): the web app never
  * sees these shapes. Implementations never throw for a provider failure; they answer an outcome.
  * They never log the prompt, the page text, the output or the key.
  */

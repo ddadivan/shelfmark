@@ -28,7 +28,7 @@ export function migrationFiles(dir: string = MIGRATIONS_DIR): string[] {
  */
 export async function createTestDatabase(): Promise<TestDatabase> {
   // pg_trgm and vector must be loaded: the link_models migration runs `CREATE EXTENSION pg_trgm`,
-  // the ai_embeddings migration `CREATE EXTENSION vector` (pgvector 0.8, ADR 0050).
+  // the ai_embeddings migration `CREATE EXTENSION vector` (pgvector 0.8, ADR 0051).
   const db = await PGlite.create({ extensions: { pg_trgm, vector } });
   for (const file of migrationFiles()) {
     await db.exec(readFileSync(file, 'utf8'));

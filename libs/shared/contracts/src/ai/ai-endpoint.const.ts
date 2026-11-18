@@ -1,4 +1,4 @@
-/** AI routes (#389–#391, ADR 0048). `:id` is a job, suggestion or link id as named. */
+/** AI routes (#389–#391, ADR 0049). `:id` is a job, suggestion or link id as named. */
 export const AI_ENDPOINT = {
   /** `GET` the settings with usage, entitlements and status; `PATCH` to change them. */
   Settings: '/api/ai/settings',

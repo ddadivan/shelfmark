@@ -203,7 +203,7 @@ export class LinksBatchService {
       ).map((tagId) => ({ linkId: row.id, tagId })),
     );
     if (pairs.length > 0) await tx.linkTag.createMany({ data: pairs });
-    // AI (ADR 0048): one job per new link whose parts are open; nothing while AI is off.
+    // AI (ADR 0049): one job per new link whose parts are open; nothing while AI is off.
     const filledById = new Map(
       rows.map((row) => {
         const target = fresh.find(

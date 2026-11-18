@@ -86,7 +86,7 @@ export function parseVoyageResponse(
 }
 
 /**
- * Voyage AI embeddings over plain HTTPS (ADR 0050 point 1; the fixed-host exception of
+ * Voyage AI embeddings over plain HTTPS (ADR 0051 point 1; the fixed-host exception of
  * `apps/api/CLAUDE.md`): a POST to the pinned `VOYAGE_LIMIT.Url`, redirects refused, a timeout per
  * input type, the answer size-capped and narrowed. Never throws; never logs or returns the texts,
  * the vectors or the key (failures carry no response data). This is the only file in `src` that may

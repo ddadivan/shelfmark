@@ -6,12 +6,12 @@ const betterAuthPath = {
   message: 'Use @CurrentUser() and @AllowAnonymous() from src/common/auth instead (ADR 0029).',
 };
 
-// ADR 0048 point 10: the provider SDK makes its own HTTPS calls to a fixed host, so it is confined to
+// ADR 0049 point 10: the provider SDK makes its own HTTPS calls to a fixed host, so it is confined to
 // one file (and the spec that proves no real client is built in tests).
 const anthropicPath = {
   name: '@anthropic-ai/sdk',
   message:
-    'Only src/ai/providers/anthropic-ai.provider.ts may import the provider SDK (ADR 0048); every other outbound call goes through SafeFetcherService.',
+    'Only src/ai/providers/anthropic-ai.provider.ts may import the provider SDK (ADR 0049); every other outbound call goes through SafeFetcherService.',
 };
 
 const anthropicAllowedFiles = [
@@ -19,7 +19,7 @@ const anthropicAllowedFiles = [
   'src/ai/providers/real-client.guard.spec.ts',
 ];
 
-// ADR 0050: Voyage embeddings are one POST to a pinned host with plain `fetch`, so `fetch` is confined
+// ADR 0051: Voyage embeddings are one POST to a pinned host with plain `fetch`, so `fetch` is confined
 // to that provider and the Sentry tunnel; every other outbound request goes through SafeFetcherService.
 const fetchAllowedFiles = [
   'src/ai/providers/voyage-embedding.provider.ts',
@@ -30,7 +30,7 @@ const fetchAllowedFiles = [
 // requests with `node:http` / `node:https` (types and `STATUS_CODES` stay free), and `undici` is not
 // imported at all. A separate rule name, so it stacks with the import rules below.
 const networkMessage =
-  'Outbound HTTP goes through SafeFetcherService (PROJECT.md 5.8, ADR 0048, ADR 0050).';
+  'Outbound HTTP goes through SafeFetcherService (PROJECT.md 5.8, ADR 0049, ADR 0051).';
 const networkClientNames = ['default', 'request', 'get', 'Agent', 'globalAgent'];
 const networkPaths = [
   ...['http', 'https', 'node:http', 'node:https'].map((name) => ({
@@ -53,7 +53,7 @@ export default [
         {
           name: 'fetch',
           message:
-            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0048, ADR 0050).',
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0049, ADR 0051).',
         },
       ],
       'no-restricted-properties': [
@@ -62,13 +62,13 @@ export default [
           object: 'globalThis',
           property: 'fetch',
           message:
-            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0048, ADR 0050).',
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0049, ADR 0051).',
         },
         {
           object: 'global',
           property: 'fetch',
           message:
-            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0048, ADR 0050).',
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0049, ADR 0051).',
         },
       ],
     },

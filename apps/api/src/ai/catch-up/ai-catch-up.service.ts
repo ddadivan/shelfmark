@@ -15,13 +15,13 @@ import { AiSettingsService } from '../settings/ai-settings.service';
 import { AiEmbedService } from '../embeddings/ai-embed.service';
 
 /**
- * Catch-up without frequent crons (ADR 0048 point 4). `tick` (the session user, while the web app
+ * Catch-up without frequent crons (ADR 0049 point 4). `tick` (the session user, while the web app
  * has pending jobs or a running backfill) and the daily `sweep` (every user with work) answer at once
  * and run the work after the response within their budget: poll open batches, run stale jobs
  * (pending past 30 s or a lease that expired; drafts not yet attached are left to their dialog),
  * advance the backfill. The sweep also fails jobs whose attempts are used up and deletes unattached
  * drafts older than a day. Both fail backfill chunks orphaned by a dead instance and end with the
- * embed pass (search by meaning, ADR 0050). Logs carry counts only.
+ * embed pass (search by meaning, ADR 0051). Logs carry counts only.
  */
 @Injectable()
 export class AiCatchUpService {

@@ -27,7 +27,7 @@ export function normalizeMeaningQuery(q: string): string {
 }
 
 /**
- * `GET /api/ai/search` (F3, ADR 0050 point 6): only links found by meaning that are not word matches
+ * `GET /api/ai/search` (F3, ADR 0051 point 6): only links found by meaning that are not word matches
  * for the same query, best first, each with "why it matched". Always answers; anything but a ready
  * search (AI or the switch off, under 80% of links ready, a used-up allowance, a provider failure)
  * answers no items and the status, so the web keeps today's word search. The query vector comes

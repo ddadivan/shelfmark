@@ -36,7 +36,7 @@ import { AiTidyService } from './tidy/ai-tidy.service';
 import { AiUsageService } from './usage/ai-usage.service';
 
 /**
- * AI (#389–#391, ADR 0047 / 0048). `LinksModule` imports this module (enqueue and draft attach in
+ * AI (#389–#391, ADR 0047 / 0049). `LinksModule` imports this module (enqueue and draft attach in
  * the create transaction), so it must never import `LinksModule`. It imports `RulesModule` (no imports
  * of its own, so no cycle) for `RulesService.matcher`: a rule wins over AI in Tidy.
  */

@@ -61,7 +61,7 @@ export function mockVector(text: string): number[] {
 }
 
 /**
- * The embedding provider outside production and for demo users (ADR 0050 point 1): deterministic,
+ * The embedding provider outside production and for demo users (ADR 0051 point 1): deterministic,
  * stateless, no network. Shared stems (and the synonym table) make texts close; a query containing
  * `ai-fail` answers a retryable failure for the e2e journeys.
  */

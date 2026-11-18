@@ -5,7 +5,7 @@ import { AI_MEANING_LIMIT } from '../models/ai-meaning-limit.const';
 import type { KnnHit } from '../models/knn-hit.interface';
 
 /**
- * The user's live links nearest to a vector, best first (ADR 0050 point 3): only the session user's
+ * The user's live links nearest to a vector, best first (ADR 0051 point 3): only the session user's
  * rows of the current model, cosine distance through the HNSW index (its predicate is repeated), in
  * one transaction with iterative scans. The index scan runs alone in a materialized CTE ordered by
  * distance (no join the planner could move into it); trashed links are removed afterwards and the

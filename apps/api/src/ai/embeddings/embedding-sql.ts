@@ -24,7 +24,7 @@ export function toVectorLiteral(vector: readonly number[]): string {
 }
 
 /**
- * Settings for the KNN queries of one transaction (ADR 0050 point 3): iterative index scans so the
+ * Settings for the KNN queries of one transaction (ADR 0051 point 3): iterative index scans so the
  * per-user filter still returns enough rows from the global HNSW index, and a wider candidate list.
  */
 export async function useHnswSettings(tx: AiDbClient): Promise<void> {

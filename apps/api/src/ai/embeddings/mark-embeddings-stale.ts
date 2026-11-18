@@ -3,7 +3,7 @@ import type { StaleTarget } from '../models/stale-target.type';
 
 /**
  * Flags the user's vectors of these links (or of the links carrying these tags) as `stale`, so the
- * next embed pass rebuilds them (ADR 0050 point 4). One set-based statement on the session user's
+ * next embed pass rebuilds them (ADR 0051 point 4). One set-based statement on the session user's
  * rows only: ids of another user change nothing. Every write path that changes a link's title, note,
  * tags or summary calls it on its transaction (tag deletes and merges before the tag rows go).
  * `updated_at` moves too, so a pass that read the old text keeps the flag.

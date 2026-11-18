@@ -18,7 +18,7 @@ import { RULE_OFFER_SCAN } from '../models/rule-offer-scan.const';
 import { detectRuleOffer } from './detect-rule-offer';
 
 /**
- * Rule offers (AI-2, #390, ADR 0049): "Always put youtube.com links in Videos?" when the user's
+ * Rule offers (AI-2, #390, ADR 0050): "Always put youtube.com links in Videos?" when the user's
  * newest links of a site share one folder. Derived from the user's own links on request; nothing is
  * recorded about what the user did, only "Not now" per site. Rules are not AI: AI settings are not
  * read here. Every statement filters by the session `userId`.

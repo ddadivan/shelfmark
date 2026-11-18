@@ -455,7 +455,7 @@ model LinkRule {
   @@map("link_rules")
 }
 
-// "Not now" on a rule offer (AI-2, ADR 0049): one row per user and site (`ruleHost`), read by the
+// "Not now" on a rule offer (AI-2, ADR 0050): one row per user and site (`ruleHost`), read by the
 // offer check. Rules data, not AI data: deleting AI data keeps it; it cascades with the account.
 model RuleOfferDismissal {
   userId    String   @map("user_id") @db.Uuid
@@ -467,7 +467,7 @@ model RuleOfferDismissal {
   @@map("rule_offer_dismissals")
 }
 
-// AI settings (#389, ADR 0047/0048), one row per user; a missing row means the defaults and AI off.
+// AI settings (#389, ADR 0047/0049), one row per user; a missing row means the defaults and AI off.
 // `enabledAt` is the first time AI was turned on and `introSeenAt` the intro (turning AI on is the
 // intro's button). The backfill ("Process existing links") state lives here: a keyset cursor over the
 // user's live links created before `enabledAt`, the size of the run, how many links it has done and
@@ -490,7 +490,7 @@ model AiSettings {
   backfillDone      Int       @default(0) @map("backfill_done")
   backfillUsed      Int       @default(0) @map("backfill_used")
   backfillStartedAt DateTime? @map("backfill_started_at") @db.Timestamptz(3)
-  // Search by meaning (AI-3, ADR 0050): the switch (rows that existed before AI-3 were set to false
+  // Search by meaning (AI-3, ADR 0051): the switch (rows that existed before AI-3 were set to false
   // by the migration), the per-user embed pass lease and its retry backoff after a provider failure.
   meaningSearch     Boolean   @default(true) @map("meaning_search")
   embedLeaseUntil   DateTime? @map("embed_lease_until") @db.Timestamptz(3)
@@ -604,7 +604,7 @@ model LinkSuggestion {
   @@map("link_suggestions")
 }
 
-// The search-by-meaning vector of one link (AI-3, ADR 0050): user data, same-user composite FK with
+// The search-by-meaning vector of one link (AI-3, ADR 0051): user data, same-user composite FK with
 // cascade (purge and account deletion remove it; a trashed link keeps it for a restore). `inputHash` is
 // the SHA-256 of the embedded text, so an unchanged text never costs a call; `stale` is set by every
 // write path that changes title, note, tags or summary (`markStale`). The HNSW index

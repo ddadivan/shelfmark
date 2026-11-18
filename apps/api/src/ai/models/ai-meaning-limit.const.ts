@@ -1,5 +1,5 @@
 /**
- * Meaning search and related links (ADR 0050 point 6): `KnnLimit` nearest vectors of live links are
+ * Meaning search and related links (ADR 0051 point 6): `KnnLimit` nearest vectors of live links are
  * read (more than a page shows, so word matches removed first still leave meaning matches); the read
  * over-fetches by the user's trashed links with a vector, at most `KnnFetchMax` rows in all, so
  * trashed links never shrink the result. Those below the provider's `minSimilarity` or more than

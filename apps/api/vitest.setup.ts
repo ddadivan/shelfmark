@@ -17,7 +17,7 @@ process.env['TRUST_PROXY_HEADERS'] = '1';
 process.env['NODE_ENV'] = NODE_ENV.Development;
 delete process.env['TEST'];
 
-// ADR 0047 point 5 / ADR 0048: no spec may reach a real model. The provider SDK is replaced by a
+// ADR 0047 point 5 / ADR 0049: no spec may reach a real model. The provider SDK is replaced by a
 // client whose constructor throws, so a code path that builds one fails the test instead of calling
 // the network (`src/ai/providers/real-client.guard.spec.ts` pins this).
 vi.mock('@anthropic-ai/sdk', () => {
@@ -29,7 +29,7 @@ vi.mock('@anthropic-ai/sdk', () => {
   return { default: Anthropic, Anthropic };
 });
 
-// ADR 0050: the Voyage embeddings provider calls `fetch` itself (no SDK to mock). Any request to its
+// ADR 0051: the Voyage embeddings provider calls `fetch` itself (no SDK to mock). Any request to its
 // host throws, and a spec that attempted one fails in `afterEach` even when the provider turned the
 // error into a retryable outcome (`real-client.guard.spec.ts` pins this).
 installVoyageFetchGuard();
