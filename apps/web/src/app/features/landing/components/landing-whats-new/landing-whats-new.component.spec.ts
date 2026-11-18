@@ -11,7 +11,7 @@ describe('LandingWhatsNewComponent', () => {
     const names = [...root.querySelectorAll('h3')].map((h) => h.textContent?.trim());
 
     expect(names).toEqual([
-      'AI suggestions (optional)',
+      'Fill in with AI',
       'Ask your shelf',
       'Search by meaning',
       'Short summaries',

@@ -61,7 +61,7 @@ describe('ChangelogPage', () => {
   it('shows a feature as a title and a text under a heading level 4', async () => {
     const root = (await createTranslated(ChangelogPage)).nativeElement as HTMLElement;
 
-    expect(root.querySelector('h4')?.textContent).toBe('AI suggestions (optional)');
+    expect(root.querySelector('h4')?.textContent).toBe('Fill in with AI');
   });
 
   it('sets the document title and puts it back on leave', async () => {
