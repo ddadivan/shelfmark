@@ -5,4 +5,5 @@ export const APP_PATH = {
   Unsorted: '/unsorted',
   Folders: '/folders',
   Privacy: '/privacy',
+  AiSettings: '/settings/ai',
 } as const;

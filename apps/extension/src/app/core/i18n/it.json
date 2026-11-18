@@ -77,6 +77,19 @@
       "demoLimit": "Una demo contiene 100 link. Accedi con Google o GitHub per continuare a salvare.",
       "server": "Qualcosa è andato storto da parte nostra. Riprova tra poco.",
       "tryAgain": "Riprova"
+    },
+    "ai": {
+      "button": "Compila con l’IA",
+      "done": "Compilato con i suggerimenti dell’IA",
+      "disclaimer": "Generato dall’IA, può essere impreciso",
+      "limit": "Suggerimenti in pausa fino al {{date}}. Hai usato i {{limit}} link di questo mese.",
+      "unavailable": "I suggerimenti non sono disponibili al momento. Il link viene salvato come sempre.",
+      "settings": "Impostazioni IA",
+      "suggested": "Suggeriti",
+      "tagsRow": "Tag suggeriti",
+      "new": "Nuovo",
+      "createTag": "Crea e aggiungi il tag {{name}}",
+      "dismiss": "Ignora il suggerimento {{name}}"
     }
   }
 }

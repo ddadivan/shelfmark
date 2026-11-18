@@ -77,6 +77,19 @@
       "demoLimit": "Eine Demo fasst 100 Links. Melden Sie sich mit Google oder GitHub an, um weiter zu speichern.",
       "server": "Bei uns ist etwas schiefgelaufen. Versuchen Sie es gleich noch einmal.",
       "tryAgain": "Erneut versuchen"
+    },
+    "ai": {
+      "button": "Mit KI ausfüllen",
+      "done": "Mit den Vorschlägen der KI ausgefüllt",
+      "disclaimer": "Von KI erstellt, kann ungenau sein",
+      "limit": "Vorschläge pausieren bis {{date}}. Du hast die {{limit}} Links dieses Monats genutzt.",
+      "unavailable": "Vorschläge sind gerade nicht verfügbar. Dein Link wird wie gewohnt gespeichert.",
+      "settings": "KI-Einstellungen",
+      "suggested": "Vorgeschlagen",
+      "tagsRow": "Vorgeschlagene Tags",
+      "new": "Neu",
+      "createTag": "Tag {{name}} erstellen und hinzufügen",
+      "dismiss": "Vorschlag {{name}} verwerfen"
     }
   }
 }

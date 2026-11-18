@@ -77,6 +77,19 @@
       "demoLimit": "Une démo contient 100 liens. Connectez-vous avec Google ou GitHub pour continuer.",
       "server": "Un problème est survenu de notre côté. Réessayez dans un instant.",
       "tryAgain": "Réessayer"
+    },
+    "ai": {
+      "button": "Remplir avec l’IA",
+      "done": "Rempli avec les suggestions de l’IA",
+      "disclaimer": "Généré par l’IA, peut être inexact",
+      "limit": "Suggestions en pause jusqu’au {{date}}. Vous avez utilisé les {{limit}} liens de ce mois.",
+      "unavailable": "Les suggestions ne sont pas disponibles pour le moment. Votre lien s’enregistre normalement.",
+      "settings": "Réglages IA",
+      "suggested": "Suggéré",
+      "tagsRow": "Tags suggérés",
+      "new": "Nouveau",
+      "createTag": "Créer et ajouter le tag {{name}}",
+      "dismiss": "Ignorer la suggestion {{name}}"
     }
   }
 }
