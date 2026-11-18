@@ -9,7 +9,7 @@ import {
 } from '@shelfmark/contracts';
 import { MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { UiCommandListHarness } from '@shelfmark/ui/testing';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
 import { aiSettingsResponse, fakeAiApi } from '../../../../../testing/fake-ai-api';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
@@ -134,6 +134,23 @@ describe('SearchResultsComponent with search by meaning (AI-3)', () => {
     expect(await list.getGroupHeadings()).toEqual(['Related by meaning']);
     expect(await list.isEmpty()).toBe(false);
     expect(await list.getOptions()).toHaveLength(3);
+  });
+
+  it('shows the word empty state at once and appends the meaning matches when they arrive', async () => {
+    const late = new Subject<MeaningSearchResponse>();
+    const { list, element } = await setup({ words: [], meaning: () => late });
+    await list.setQuery('that ramen place');
+    await vi.waitFor(() => {
+      expect(element.querySelector('.search-results__empty-title')?.textContent).toContain(
+        'that ramen place',
+      );
+    }, WAIT);
+    expect(element.textContent).not.toContain('Searching');
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    late.next(MEANING);
+    await vi.waitFor(async () => expect(await list.getOptions()).toHaveLength(3), WAIT);
+    expect(await list.isEmpty()).toBe(false);
+    expect(await list.getGroupLeads()).toEqual(['No links with these words']);
   });
 
   it('opens a meaning match like a link', async () => {

@@ -81,6 +81,17 @@ export const AiSettingsStore = signalStore(
       searchProcessing: computed(
         () => meaningSearchOn() && searchStatus()?.state === AI_SEARCH_STATE.Processing,
       ),
+      /**
+       * The embed pass still has work: processing, or `unavailable` after a provider failure (the
+       * pass backs off and resumes on a tick, so the status leaves `unavailable` once it recovers).
+       */
+      searchPending: computed(() => {
+        const state = searchStatus()?.state;
+        return (
+          meaningSearchOn() &&
+          (state === AI_SEARCH_STATE.Processing || state === AI_SEARCH_STATE.Unavailable)
+        );
+      }),
     };
   }),
   withMethods((store) => {

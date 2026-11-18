@@ -166,4 +166,20 @@ describe('MeaningSearch', () => {
     expect(meaning.hint()).toBeNull();
     expect(TestBed.inject(MeaningHintService).claim()).toBe(false);
   });
+
+  it('does not use up the getting-ready line for an answer that never shows', async () => {
+    const { api, meaning, text, state, settle } = await setup();
+    const processing = { state: AI_SEARCH_STATE.Processing, ready: 3, total: 10 };
+    const late = new Subject<MeaningSearchResponse>();
+    api.searchMeaning.mockImplementation(() => late);
+    settle('signals');
+    await wait(MEANING_DEBOUNCE_MS);
+    // The words move on before the meaning answer arrives: it is not the one on screen.
+    text.set('signalsx');
+    state.set(words('signalsx'));
+    late.next(answer([], processing));
+    TestBed.tick();
+    expect(meaning.hint()).toBeNull();
+    expect(TestBed.inject(MeaningHintService).claim()).toBe(true);
+  });
 });

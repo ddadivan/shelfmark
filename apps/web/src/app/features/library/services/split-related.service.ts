@@ -1,10 +1,12 @@
 import { computed, inject, Injector, Service } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AI_SEARCH_STATE } from '@shelfmark/contracts';
-import { catchError, of } from 'rxjs';
+import { catchError, of, switchMap, timer } from 'rxjs';
 import { FoldersStore } from '../../../stores/folders.store';
+import { LinksStore } from '../../../stores/links.store';
 import { AI_API } from '../../ai/models/ai-api.const';
 import { AiSettingsStore } from '../../ai/services/ai-settings.store';
+import { RELATED_REFRESH_DELAY_MS } from '../models/related-refresh-delay-ms.const';
 import { SPLIT_RELATED_LIMIT } from '../models/split-related-limit.const';
 import { relatedFolderIds } from '../utils/related-folder-ids';
 import { LibraryFilterService } from './library-filter.service';
@@ -14,14 +16,16 @@ import { SplitViewService } from './split-view.service';
  * "Show related" in side by side (AI-3): while the right half shows its picker and `?related`
  * names a link, the folders of up to `SPLIT_RELATED_LIMIT` related links (best first, Unsorted as
  * `null`) take the place of the picker's "Recent" group, as "Related folders". Nothing changes while
- * search by meaning is not ready, the link has no related links or the request fails.
- * Page-scoped: the page provides it (`provideLibraryPage()`).
+ * search by meaning is not ready, the link has no related links or the request fails. When the
+ * related link's title, note, tags or summary change (an Edit link save), it asks again after
+ * `RELATED_REFRESH_DELAY_MS`, once the vector was rebuilt. Page-scoped: the page provides it (`provideLibraryPage()`).
  */
 @Service({ autoProvided: false })
 export class SplitRelatedService {
   private readonly filters = inject(LibraryFilterService);
   private readonly split = inject(SplitViewService);
   private readonly folders = inject(FoldersStore);
+  private readonly links = inject(LinksStore);
   private readonly ai = inject(AiSettingsStore);
   // Read when asked only: a library page without AI never needs the AI seam.
   private readonly injector = inject(Injector);
@@ -40,13 +44,36 @@ export class SplitRelatedService {
       : undefined;
   });
 
+  /** What the related link's vector is built from, as far as the loaded list knows it. */
+  private readonly embedded = computed(() => {
+    const id = this.linkId();
+    const link = id === undefined ? undefined : this.links.entityMap()[id];
+    return link === undefined
+      ? ''
+      : JSON.stringify([
+          link.title,
+          link.note,
+          link.summary,
+          [...link.tags].sort((a, b) => a.localeCompare(b, 'en')),
+        ]);
+  });
+
+  private lastAsked: { id: string; embedded: string } | null = null;
+
   private readonly related = rxResource({
-    params: () => this.linkId(),
-    stream: ({ params }) =>
-      this.injector
-        .get(AI_API)
-        .related(params, SPLIT_RELATED_LIMIT)
-        .pipe(catchError(() => of(null))),
+    params: () => {
+      const id = this.linkId();
+      return id === undefined ? undefined : { id, embedded: this.embedded() };
+    },
+    stream: ({ params }) => {
+      const refresh =
+        this.lastAsked?.id === params.id && this.lastAsked.embedded !== params.embedded;
+      this.lastAsked = params;
+      const ask = () => this.injector.get(AI_API).related(params.id, SPLIT_RELATED_LIMIT);
+      return (refresh ? timer(RELATED_REFRESH_DELAY_MS).pipe(switchMap(ask)) : ask()).pipe(
+        catchError(() => of(null)),
+      );
+    },
   });
 
   /** The related folders, best first; empty while there are none. */

@@ -97,6 +97,15 @@ describe('AiTickService', () => {
     expect(service.active()).toBe(false);
   });
 
+  it('ticks while search by meaning reads unavailable, so it recovers without a reload', async () => {
+    const { service, tick } = await setup(response(0, true, AI_SEARCH_STATE.Unavailable));
+    expect(service.active()).toBe(true);
+    await vi.advanceTimersByTimeAsync(AI_TICK_INTERVAL_MS);
+    expect(tick).toHaveBeenCalledTimes(1);
+    TestBed.tick();
+    expect(service.active()).toBe(false);
+  });
+
   it('pauses while the page is hidden', async () => {
     const { service } = await setup(response(1));
     const doc = TestBed.inject(DOCUMENT);
