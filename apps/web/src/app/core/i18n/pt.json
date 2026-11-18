@@ -187,6 +187,37 @@
       "text": "Um clique na barra de ferramentas ou Alt+Shift+S. O título, suas regras de pastas e as pastas recentes já vêm preenchidos: a maioria das páginas pede só mais um clique.",
       "browsers": "Para Chrome, Edge, Brave e Arc. Instale pela sua estante depois de entrar.",
       "alt": "A extensão do Shelfmark: Salvar no Shelfmark com o título da página, a pasta Roupas de uma regra, tags e uma nota"
+    },
+    "ai": {
+      "badge": "IA opcional",
+      "title": "Ajuda para organizar, quando você quiser",
+      "text": "Ative a IA e cada link novo chega com tags, uma pasta e um resumo de duas linhas sugeridos. Nada muda de lugar até você tocar.",
+      "points": {
+        "suggest": {
+          "title": "Sugestões que você aceita",
+          "text": "Tags e pastas entre as que você já tem, com um toque."
+        },
+        "meaning": {
+          "title": "Encontre pelo assunto",
+          "text": "“Aquela palestra sobre signals” encontra o vídeo, mesmo sem essas palavras."
+        },
+        "ask": {
+          "title": "Pergunte à sua estante",
+          "text": "Uma pergunta com suas palavras, uma resposta dos seus links com as fontes."
+        }
+      },
+      "note": "Desligada até você ativar. Seus links nunca são usados para treinar modelos de IA.",
+      "privacy": "Como a IA funciona no Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore na prática",
+        "newTag": "gerenciamento de estado",
+        "query": "palestra sobre signals e desempenho",
+        "related": "Relacionados pelo sentido",
+        "result": "Detecção de mudanças sem zone, explicada",
+        "why": "Próximo de: renderização mais rápida",
+        "recipe": "O melhor lámen para o dia a dia",
+        "summary": "Um lámen em 30 minutos com caldo pronto, ovos moles e picles rápidos."
+      }
     }
   },
   "links": {
@@ -571,7 +602,7 @@
       "intro": "A IA fica desligada até você ativá-la em Configurações › IA. Quando ligada, ela sugere tags e pastas e escreve resumos curtos. Tudo o que ela cria leva uma pequena faísca e pode ser impreciso; nada é aplicado a menos que você aceite ou escolha o modo automático.",
       "processor": {
         "term": "Quem processa:",
-        "text": "[PROVIDER], como nosso operador, apenas para gerar o resultado que você pediu. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+        "text": "Anthropic PBC (EUA), como nosso operador, apenas para gerar o resultado que você pediu."
       },
       "sent": {
         "term": "O que é enviado:",
@@ -579,7 +610,7 @@
       },
       "kept": {
         "term": "Por quanto tempo fica guardado:",
-        "text": "o provedor guarda a solicitação por no máximo [N] dias e não a usa para treinamento. Os resultados (tags, resumos) ficam salvos com seus links e são excluídos com eles."
+        "text": "A Anthropic exclui a solicitação em até 30 dias e não a usa para treinamento; só o conteúdo sinalizado pelos seus sistemas de segurança pode ser guardado por mais tempo (até 2 anos), ou quando a lei exige. Os resultados (tags, resumos) ficam salvos com seus links e são excluídos com eles."
       },
       "counted": {
         "term": "O que contamos:",
@@ -591,7 +622,7 @@
       },
       "meaning": {
         "term": "Busca por significado:",
-        "text": "enquanto estiver ativada (Configurações › IA), o título, o resumo e os nomes das tags de cada link, sua nota só com “Incluir minhas notas”, e as palavras que você busca são enviados à Voyage AI, nosso segundo operador, que os transforma em vetores de números. Nunca o endereço, suas pastas ou dados de outras pessoas. Os vetores ficam guardados com seus links e são excluídos com eles ou com “Excluir dados de IA”; sua busca não é guardada. A Voyage AI mantém as solicitações por no máximo [N] dias e não as usa para treinamento. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+        "text": "enquanto estiver ativada (Configurações › IA), o título, o resumo e os nomes das tags de cada link, sua nota só com “Incluir minhas notas”, e as palavras que você busca são enviados à Voyage AI, nosso segundo operador, que os transforma em vetores de números. Nunca o endereço, suas pastas ou dados de outras pessoas. Os vetores ficam guardados com seus links e são excluídos com eles ou com “Excluir dados de IA”; sua busca não é guardada. A Voyage AI by MongoDB (EUA) exclui cada solicitação logo após processá-la (retenção zero) e não a usa para treinamento."
       },
       "ask": {
         "term": "Pergunte aos seus links:",
@@ -2955,6 +2986,17 @@
       "aiCleanup": {
         "title": "Limpeza da biblioteca",
         "text": "Encontre links salvos mais de uma vez e tags que significam a mesma coisa, revise cada mudança e aplique tudo em um passo, com um único Desfazer. As cópias vão para a lixeira."
+      },
+      "mcp": {
+        "title": "Conecte seu assistente",
+        "text": "No Pro, o Claude e outros assistentes MCP podem pesquisar e ler seus links com um token pessoal. Somente leitura, e você pode revogá-lo quando quiser."
+      },
+      "aiSearch": {
+        "title": "Busca por significado",
+        "text": "A busca encontra links que correspondem ao que você quer dizer, não só às suas palavras, e diz por que cada um corresponde. “Editar link” mostra links relacionados na sua estante, e “Lado a lado” pode sugerir as pastas deles."
+      },
+      "extensionInStore": {
+        "text": "A extensão do Shelfmark está na Chrome Web Store: instale-a pelo aviso da sua estante ou em Configurações › Biblioteca."
       }
     },
     "sections": {
@@ -3120,7 +3162,7 @@
       },
       "training": {
         "title": "Não usado para treinamento",
-        "text": "Seu conteúdo nunca é usado para treinar modelos. O provedor, [PROVIDER], processa para nós e guarda por no máximo [N] dias."
+        "text": "Seu conteúdo nunca é usado para treinar modelos. A Anthropic processa para nós e o exclui em até 30 dias."
       },
       "details": "Você pode desligar a IA, ou um recurso por vez, em Configurações › IA.",
       "policy": "Ler a política de privacidade",
@@ -3325,6 +3367,101 @@
       "retry": "Tentar de novo",
       "truncated": "A resposta foi interrompida.",
       "stopped": "Parado."
+    },
+    "connect": {
+      "title": "Conecte seu assistente",
+      "lead": "Deixe o Claude ou outro assistente compatível com MCP pesquisar e ler seus links. Somente leitura: ele não pode alterar nem excluir nada.",
+      "pro": "Conectar um assistente faz parte do Pro. Os tokens que você já tem continuam na lista e podem ser revogados.",
+      "demo": "A demo não pode conectar um assistente. Entre com sua própria conta para experimentar.",
+      "loadFailed": "Não foi possível carregar seus tokens.",
+      "retry": "Tentar de novo",
+      "copy": "Copiar",
+      "copyFailed": "Não foi possível copiar. Selecione o texto e copie com o teclado.",
+      "address": {
+        "title": "1. Endereço do servidor",
+        "copyLabel": "Copiar o endereço do servidor",
+        "copied": "Endereço do servidor copiado"
+      },
+      "token": {
+        "title": "2. Token pessoal",
+        "hint": "Um token por assistente, para revogar cada um separadamente.",
+        "limit": "Você tem {{max}} tokens. Revogue um para criar outro.",
+        "create": "Criar token"
+      },
+      "list": {
+        "title": "Conectados",
+        "last4": "Termina em {{last4}}",
+        "used": "Último uso {{when}}, chamadas nesta semana: {{calls}}",
+        "never": "Criado em {{date}}, nunca usado",
+        "notes": "Com notas",
+        "revoke": "Revogar",
+        "revokeLabel": "Revogar {{name}}"
+      },
+      "empty": {
+        "title": "Nenhum assistente conectado",
+        "text": "Crie um token, cole-o com o endereço do servidor nas configurações MCP do seu assistente e pergunte a ele sobre seus links."
+      },
+      "revoke": {
+        "title": "Revogar {{name}}?",
+        "message": "Ele para de funcionar na hora: o assistente que o usa não consegue mais ler seus links.",
+        "confirm": "Revogar",
+        "cancel": "Cancelar",
+        "done": "Token revogado",
+        "failed": "Não foi possível revogar o token. Tente de novo."
+      },
+      "create": {
+        "title": "Criar um token",
+        "close": "Fechar",
+        "name": "Nome",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Dê um nome ao token.",
+        "tooLong": "No máximo {{max}} caracteres.",
+        "notes": "Incluir minhas notas",
+        "notesHint": "Seu assistente também verá as notas dos seus links. Para mudar isso depois, crie um novo token.",
+        "cancel": "Cancelar",
+        "action": "Criar token",
+        "saving": "Criando…",
+        "error": {
+          "limit": "Você tem {{max}} tokens. Revogue um para criar outro.",
+          "notAvailable": "Conectar um assistente faz parte do Pro.",
+          "save": "Não foi possível criar o token. Tente de novo."
+        }
+      },
+      "secret": {
+        "title": "Token para {{name}}",
+        "label": "Token pessoal (mostrado uma vez)",
+        "copyLabel": "Copiar o token",
+        "copied": "Token copiado",
+        "warning": "Copie agora: você não vai vê-lo de novo. Qualquer pessoa com este token pode ler seus links até você revogá-lo.",
+        "fallback": "Não foi possível copiar. O token está selecionado acima: pressione Ctrl+C ou ⌘C para copiá-lo.",
+        "field": "Token pessoal",
+        "done": "Concluir"
+      },
+      "howTo": {
+        "toggle": "Como conectar: Claude, Cursor, VS Code",
+        "intro": "Substitua <token> pelo seu token pessoal.",
+        "copyLabel": "Copiar a configuração do {{client}}",
+        "copied": "Configuração do {{client}} copiada",
+        "oauth": "Assistentes que só se conectam por login (OAuth), como conectores na web, ainda não podem se conectar.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Execute isto em um terminal:"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Adicione isto ao claude_desktop_config.json (Configurações › Desenvolvedor › Editar configuração) e reinicie o Claude Desktop. Requer Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Adicione isto ao ~/.cursor/mcp.json:"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Adicione isto ao .vscode/mcp.json do seu projeto:"
+          }
+        }
+      }
     }
   },
   "rediscover": {

@@ -1,6 +1,6 @@
 import type { CleanupSource, DuplicateReason } from '@shelfmark/contracts';
 
-/** A duplicate group as stored in the report: ids only (ADR 0052 point 1). */
+/** A duplicate group as stored in the report: ids only (ADR 0053 point 1). */
 export interface StoredDuplicateGroup {
   id: string;
   reason: DuplicateReason;

@@ -8,11 +8,12 @@ import {
 import { markEmbeddingsStale } from '../ai/embeddings/mark-embeddings-stale';
 import { FoldersService } from '../folders/folders.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { TagChangeHooks } from '../tags/tag-change-hooks.service';
 import { TagsService } from '../tags/tags.service';
 import { readStoredUndo } from './read-stored-undo';
 
 /**
- * Undo of one clean-up run (ADR 0052 point 5) by its run id. What to revert is held on the session
+ * Undo of one clean-up run (ADR 0053 point 5) by its run id. What to revert is held on the session
  * user's report row (`undo_data`, written by apply): single-use (cleared here), valid until
  * `undo_until` and only for the latest run, so a replay, an old run id or another user's id is a 409
  * that changes nothing. Lock order as apply: `folders:`, then the report row (`FOR UPDATE`), then
@@ -30,10 +31,13 @@ export class CleanupUndoService {
     private readonly prisma: PrismaService,
     private readonly folders: FoldersService,
     private readonly tags: TagsService,
+    private readonly tagHooks: TagChangeHooks,
   ) {}
 
   async undo(userId: string, request: CleanupUndoRequest): Promise<CleanupUndoResponse> {
+    let staled = 0;
     const result = await this.prisma.$transaction(async (tx) => {
+      staled = 0;
       await this.folders.lockTree(tx, userId);
       const [row] = await tx.$queryRaw<{ undoData: unknown }[]>`
         SELECT undo_data AS "undoData" FROM cleanup_reports
@@ -70,7 +74,7 @@ export class CleanupUndoService {
           data: own.map((link) => ({ linkId: link.id, tagId: mergedId })),
           skipDuplicates: true,
         });
-        await markEmbeddingsStale(tx, userId, {
+        staled += await markEmbeddingsStale(tx, userId, {
           linkIds: [...merge.linkIds, ...merge.addedLinkIds],
         });
         await tx.linkTag.deleteMany({
@@ -90,6 +94,8 @@ export class CleanupUndoService {
       }
       return { restored, unmerged };
     });
+    // Restored tags marked search vectors stale (AI-3): kick the embed pass after commit.
+    if (staled > 0) await this.tagHooks.linksChanged(userId);
     this.logger.log(`Clean-up undo: ${result.restored} restored, ${result.unmerged} unmerged`);
     return result;
   }

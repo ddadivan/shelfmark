@@ -1,5 +1,5 @@
 /**
- * Ask your shelf limits (AI-4, ADR 0051): question length (after trimming and collapsing
+ * Ask your shelf limits (AI-4, ADR 0052): question length (after trimming and collapsing
  * whitespace), links sent as context, the server-side answer cap, the deadlines for the first
  * model text and the hard stop (inside the 30 s `maxDuration`), and the starters shown.
  */

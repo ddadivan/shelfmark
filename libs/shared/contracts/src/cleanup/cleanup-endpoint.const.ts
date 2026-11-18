@@ -1,4 +1,4 @@
-/** Library clean-up routes (F5, ADR 0052). */
+/** Library clean-up routes (F5, ADR 0053). */
 export const CLEANUP_ENDPOINT = {
   /** `GET` the stored report, read live. */
   Report: '/api/cleanup',

@@ -273,7 +273,12 @@ describe('AiSettingsStore', () => {
     expect(store.searchStatus()).toEqual(processing);
     expect(store.meaningReady()).toBe(false);
     expect(store.searchProcessing()).toBe(true);
+    expect(store.searchPending()).toBe(true);
+    store.searchStatusSeen({ state: AI_SEARCH_STATE.Unavailable, ready: 6, total: 10 });
+    expect(store.searchProcessing()).toBe(false);
+    expect(store.searchPending()).toBe(true);
     store.searchStatusSeen({ state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 });
+    expect(store.searchPending()).toBe(false);
     expect(store.meaningReady()).toBe(true);
     const off = { ...on, meaningSearch: false };
     api.updateSettings.mockReturnValue(of(response({ settings: off })));

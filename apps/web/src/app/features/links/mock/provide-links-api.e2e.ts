@@ -55,6 +55,10 @@ import { MockCleanupApi } from '../../cleanup/mock/mock-cleanup.api';
 import { CLEANUP_API } from '../../cleanup/models/cleanup-api.const';
 import type { CleanupApi } from '../../cleanup/models/cleanup-api.interface';
 import type { AiApi } from '../../ai/models/ai-api.interface';
+import { HttpMcpApi } from '../../ai/connect/http/http-mcp.api';
+import { MockMcpApi } from '../../ai/connect/mock/mock-mcp.api';
+import { MCP_API } from '../../ai/connect/models/mcp-api.const';
+import type { McpApi } from '../../ai/connect/models/mcp-api.interface';
 import { HttpSharesApi } from '../../sharing/http/http-shares.api';
 import { MockSharesApi } from '../../sharing/mock/mock-shares.api';
 import { PUBLIC_COLLECTION_ORIGIN } from '../../sharing/models/public-collection-origin.const';
@@ -164,6 +168,10 @@ export function provideLinksApi(): Provider[] {
     {
       provide: AI_API,
       useFactory: (): AiApi => (useRealApi() ? inject(HttpAiApi) : inject(MockAiApi)),
+    },
+    {
+      provide: MCP_API,
+      useFactory: (): McpApi => (useRealApi() ? inject(HttpMcpApi) : inject(MockMcpApi)),
     },
     {
       provide: REDISCOVER_API,

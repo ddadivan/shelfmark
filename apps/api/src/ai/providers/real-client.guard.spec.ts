@@ -28,7 +28,7 @@ describe('no real AI client in tests', () => {
   });
 });
 
-// ADR 0050: Voyage is called with plain `fetch`; `vitest.setup.ts` installs a guard that makes any
+// ADR 0052: Voyage is called with plain `fetch`; `vitest.setup.ts` installs a guard that makes any
 // request to its host throw and fails the spec afterwards.
 describe('no real embeddings call in tests', () => {
   it('throws for a request to the Voyage host and records the attempt', () => {

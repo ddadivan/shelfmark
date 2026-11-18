@@ -1,0 +1,388 @@
+@use 'ui' as *;
+@use '../../landing' as landing;
+
+:host {
+  display: block;
+
+  @include landing.wrap;
+}
+
+// LandingAi mockup (#481): the frame of the extension block (surface, 32px corners, 48px padding),
+// the copy on the left and three AI cards on an `ai-bg` disc on the right. Phones stack the copy
+// and two cards.
+.landing-ai {
+  @include landing.reveal;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(28px);
+  align-items: center;
+  padding: rem(28px) rem(20px);
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: rem(28px);
+  box-shadow: var(--shadow-card);
+
+  @include tablet-up {
+    gap: rem(48px);
+    padding: rem(48px);
+    border-radius: rem(32px);
+  }
+}
+
+.landing-ai__copy {
+  display: flex;
+  flex: 1 1 rem(380px);
+  flex-direction: column;
+  gap: rem(14px);
+  min-width: 0;
+
+  @include tablet-up {
+    gap: var(--space-4);
+  }
+}
+
+// Neutral pill with the indigo spark: sage stays the person's colour (BRAND › AI).
+.landing-ai__badge {
+  display: inline-flex;
+  gap: rem(6px);
+  align-items: center;
+  align-self: flex-start;
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  font-size: rem(13px);
+  line-height: rem(20px);
+  color: var(--text);
+  background: var(--surface-hover);
+  border-radius: var(--radius-full);
+}
+
+.landing-ai__spark {
+  --ui-icon-size: #{rem(14px)};
+
+  flex: none;
+  color: var(--ai);
+}
+
+.landing-ai__title {
+  margin: 0;
+  font-size: rem(28px);
+  font-weight: 600;
+  line-height: rem(34px);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+
+  @include tablet-up {
+    font-size: rem(36px);
+    line-height: rem(42px);
+  }
+}
+
+.landing-ai__text {
+  max-width: rem(460px);
+  margin: 0;
+  font-size: rem(15px);
+  line-height: rem(22px);
+  color: var(--text-muted);
+
+  @include tablet-up {
+    font-size: rem(17px);
+    line-height: rem(26px);
+  }
+}
+
+.landing-ai__points {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-ai__point {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.landing-ai__point-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: rem(36px);
+  block-size: rem(36px);
+  color: var(--text);
+  background: var(--surface-hover);
+  border-radius: rem(12px);
+
+  --ui-icon-size: #{rem(18px)};
+}
+
+.landing-ai__point-body {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  min-width: 0;
+}
+
+.landing-ai__point-title {
+  font-size: rem(15px);
+  font-weight: 600;
+  line-height: rem(22px);
+}
+
+.landing-ai__point-text,
+.landing-ai__note {
+  font-size: rem(14px);
+  line-height: rem(20px);
+  color: var(--text-muted);
+}
+
+.landing-ai__note {
+  margin: var(--space-1) 0 0;
+}
+
+.landing-ai__link {
+  font-weight: 500;
+  color: var(--text);
+}
+
+// The visual: phones stack the cards, wider screens place them over the disc.
+.landing-ai__visual {
+  display: flex;
+  flex: 1 1 rem(420px);
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+
+  @include tablet-up {
+    position: relative;
+    display: block;
+    align-self: stretch;
+    min-height: rem(470px);
+  }
+}
+
+.landing-ai__disc {
+  display: none;
+
+  @include tablet-up {
+    position: absolute;
+    inset-block-start: rem(30px);
+    inset-inline-end: rem(-70px);
+    display: block;
+    inline-size: rem(420px);
+    block-size: rem(420px);
+    background: var(--ai-bg);
+    border-radius: 50%;
+  }
+}
+
+.landing-ai__card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-radius: rem(22px);
+  transition-timing-function: var(--ease-out);
+
+  @include tablet-up {
+    position: absolute;
+  }
+}
+
+.landing-ai__card--suggest {
+  gap: var(--space-3);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-float);
+
+  @include tablet-up {
+    inset-block-start: rem(8px);
+    inset-inline: 0 rem(40px);
+  }
+}
+
+// The search card is left out on phones (mockup).
+.landing-ai__card--search {
+  @include glass;
+
+  display: none;
+  gap: var(--space-1);
+  padding: rem(10px);
+
+  @include tablet-up {
+    inset-block-start: rem(196px);
+    inset-inline: rem(60px) 0;
+    display: flex;
+  }
+}
+
+.landing-ai__card--summary {
+  gap: rem(6px);
+  padding: rem(14px) var(--space-4);
+  box-shadow: var(--shadow-card);
+
+  @include tablet-up {
+    inset-block-start: rem(340px);
+    inset-inline: rem(20px) rem(90px);
+  }
+}
+
+.landing-ai__link-head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.landing-ai__thumb {
+  flex: none;
+  inline-size: rem(84px);
+  aspect-ratio: 16 / 10;
+  background: var(--accent-bg);
+  border-radius: rem(10px);
+}
+
+.landing-ai__link-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.landing-ai__site {
+  display: flex;
+  gap: rem(6px);
+  align-items: center;
+  font-size: rem(12px);
+  line-height: rem(16px);
+  color: var(--text-muted);
+}
+
+.landing-ai__link-title {
+  font-size: rem(14px);
+  font-weight: 600;
+  line-height: rem(19px);
+}
+
+.landing-ai__query {
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  padding: rem(6px) var(--space-2);
+  font-size: rem(14px);
+  line-height: rem(20px);
+
+  ui-icon {
+    color: var(--text-muted);
+  }
+}
+
+.landing-ai__divider,
+.landing-ai__why {
+  display: flex;
+  gap: rem(6px);
+  align-items: center;
+  font-size: rem(12px);
+  line-height: rem(16px);
+  color: var(--text-muted);
+
+  .landing-ai__spark {
+    --ui-icon-size: #{rem(12px)};
+  }
+}
+
+.landing-ai__divider {
+  padding: var(--space-1) var(--space-2) rem(2px);
+}
+
+.landing-ai__row {
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  padding: rem(6px) var(--space-2);
+}
+
+.landing-ai__row-thumb {
+  flex: none;
+  inline-size: rem(44px);
+  block-size: rem(30px);
+  background: var(--surface-pressed);
+  border-radius: rem(8px);
+}
+
+.landing-ai__row-title {
+  overflow: hidden;
+  font-size: rem(13px);
+  font-weight: 500;
+  line-height: rem(18px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.landing-ai__summary-title {
+  font-size: rem(15px);
+  font-weight: 600;
+  line-height: rem(20px);
+}
+
+.landing-ai__summary {
+  display: block;
+  font-size: rem(14px);
+  line-height: rem(20px);
+  color: var(--text-muted);
+
+  .landing-ai__spark {
+    margin-inline-end: var(--space-1);
+    vertical-align: -0.125em;
+  }
+}
+
+// Motion (LandingAi mockup): once the block is revealed, the cards rise in (16px, staggered by
+// 90ms) and the chips follow one by one. Only the reveal directive's `--pending` class hides
+// anything, never under reduced motion.
+.landing-ai__chips ui-suggestion {
+  transition-timing-function: var(--ease-out);
+}
+
+.landing-reveal--pending {
+  .landing-ai__card,
+  .landing-ai__chips ui-suggestion {
+    opacity: 0;
+    transform: translateY(rem(16px));
+  }
+}
+
+.landing-reveal--shown {
+  .landing-ai__card {
+    transition-duration: 420ms;
+    transition-property: opacity, transform;
+  }
+
+  .landing-ai__card--search {
+    transition-delay: 90ms;
+  }
+
+  .landing-ai__card--summary {
+    transition-delay: 180ms;
+  }
+
+  .landing-ai__chips ui-suggestion {
+    transition-duration: var(--duration-slow);
+    transition-property: opacity, transform;
+
+    @for $i from 1 through 4 {
+      &:nth-of-type(#{$i}) {
+        transition-delay: #{160 + ($i - 1) * 80}ms;
+      }
+    }
+  }
+}
+
+@include reduced-motion {
+  .landing-reveal--pending {
+    .landing-ai__card,
+    .landing-ai__chips ui-suggestion {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

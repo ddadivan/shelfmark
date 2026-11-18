@@ -4,7 +4,7 @@ const SEPARATORS = /[-_ .]+/g;
 const STEM_MIN = 4;
 
 /**
- * The rule key of a tag name, as the API's `tagVariantKey` (ADR 0052 point 2): lower case,
+ * The rule key of a tag name, as the API's `tagVariantKey` (ADR 0053 point 2): lower case,
  * diacritics and separators removed, one trailing `s` dropped (not after `s`, and only when four
  * characters stay). Two tags with the same non-empty key are "similar by rule".
  */

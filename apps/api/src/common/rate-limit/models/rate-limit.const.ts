@@ -59,6 +59,8 @@ export const RATE_LIMIT = {
   AiTidy: { limit: 20, ttl: MINUTE_MS },
   // AI-3 search by meaning: one call per settled query in the search dialog (debounced by the web).
   AiSearch: { limit: 60, ttl: MINUTE_MS },
+  // AI-3 related links: one stored-vector lookup per opened link (Show related, the link page).
+  AiRelated: { limit: 60, ttl: MINUTE_MS },
   // Tidy list and count (each a bounded scan of Unsorted): the page, the Unsorted button and its
   // refresh after jobs finish.
   AiTidyRead: { limit: 60, ttl: MINUTE_MS },
@@ -68,6 +70,11 @@ export const RATE_LIMIT = {
   RediscoverWrite: { limit: 30, ttl: MINUTE_MS },
   // Rule offer check (AI-2): read-only, asked after each filing by the user.
   RuleOffer: { limit: 60, ttl: MINUTE_MS },
+  // The MCP server (#395, ADR 0054), per client IP before the token guard; each token also has a
+  // daily cap in Postgres (MCP_LIMIT.CallsPerTokenPerDay).
+  Mcp: { limit: 120, ttl: MINUTE_MS },
+  // Personal MCP token create and revoke (#395, ADR 0054): a person creates a handful, ever.
+  McpTokenWrite: { limit: 10, ttl: MINUTE_MS },
   // AI-5 library clean-up: a run (rule checks in the request, AI checks deferred) and the card
   // dismissal; apply and its Undo (up to 100 groups and 20 merges in one transaction).
   CleanupRun: { limit: 6, ttl: MINUTE_MS },

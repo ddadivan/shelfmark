@@ -1,4 +1,4 @@
-import { computed, inject, Injector, Service, signal } from '@angular/core';
+import { computed, effect, inject, Injector, Service, signal, untracked } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { AI_SEARCH_LIMIT, AI_SEARCH_STATE, type MeaningSearchResponse } from '@shelfmark/contracts';
 import {
@@ -23,7 +23,7 @@ import type { MeaningSource } from '../models/meaning-source.interface';
 import { meaningWhy } from '../utils/meaning-why';
 import { MeaningHintService } from './meaning-hint.service';
 
-const IDLE: MeaningSearchState = { query: '', items: [], status: null, hint: false };
+const IDLE: MeaningSearchState = { query: '', items: [], status: null, waiting: false };
 
 /**
  * Meaning matches for the search (AI-3, scoped to `app-search-results`). It asks
@@ -90,10 +90,13 @@ export class MeaningSearch {
       .map((match) => ({ link: match.link, why: meaningWhy(match.why) }));
   });
 
+  /** The query whose answer claimed the once-per-session "getting ready" line. */
+  private readonly hintFor = signal<string | null>(null);
+
   /** "Getting ready: {ready} of {total} links", once per session, or `null`. */
   readonly hint = computed<MeaningHint | null>(() => {
     const state = this.current();
-    return state?.hint && state.status
+    return state?.waiting && state.status && this.hintFor() === state.query
       ? {
           ready: this.locale.formatNumber(state.status.ready),
           total: this.locale.formatNumber(state.status.total),
@@ -114,6 +117,22 @@ export class MeaningSearch {
       this.state().query !== query
     );
   });
+
+  constructor() {
+    // The line is claimed only when an answer that may show it is the one on screen (`current`),
+    // so an answer dropped by a newer query or a closed dialog does not use up the session's line.
+    effect(() => {
+      const state = this.current();
+      if (
+        state?.waiting === true &&
+        state.status !== null &&
+        untracked(this.hintFor) === null &&
+        untracked(() => this.hints.claim())
+      ) {
+        this.hintFor.set(state.query);
+      }
+    });
+  }
 
   /** Follows the text and the word answer of one search field. */
   connect(source: MeaningSource): void {
@@ -136,12 +155,11 @@ export class MeaningSearch {
 
   private settle(query: string, response: MeaningSearchResponse): MeaningSearchState {
     const state = response.status.state;
-    const waiting = state === AI_SEARCH_STATE.Processing || state === AI_SEARCH_STATE.Quota;
     return {
       query,
       items: state === AI_SEARCH_STATE.Ready ? response.items : [],
       status: response.status,
-      hint: waiting && this.hints.claim(),
+      waiting: state === AI_SEARCH_STATE.Processing || state === AI_SEARCH_STATE.Quota,
     };
   }
 }

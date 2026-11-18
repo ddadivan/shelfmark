@@ -2,7 +2,7 @@ import { CLEANUP_STATE } from '@shelfmark/contracts';
 import type { CleanupDbClient } from './models/cleanup-db-client.type';
 
 /**
- * Gives back the AI clean-up run the user's report counted (ADR 0052 point 3): the month stored on
+ * Gives back the AI clean-up run the user's report counted (ADR 0053 point 3): the month stored on
  * the row at the run (`ai_run_month`, so a pass that crosses a month boundary refunds the right one),
  * only while the pass still holds `lease` on a `running` report, and at most once (the month is
  * cleared in the same statement). Answers whether a run was given back.

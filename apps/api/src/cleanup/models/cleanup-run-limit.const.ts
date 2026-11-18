@@ -1,5 +1,5 @@
 /**
- * The clean-up run (ADR 0052 point 3): a `running` report with no progress for `StallHours` becomes
+ * The clean-up run (ADR 0053 point 3): a `running` report with no progress for `StallHours` becomes
  * `failed` (what it found is kept) and no longer blocks a new run. The deferred pass works for
  * `BudgetMs` per start, holds a `LeaseMs` lease on the report row and scans `ChunkSize` links per
  * step by keyset cursor.

@@ -16,10 +16,12 @@ import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { UiButtonHarness } from '@shelfmark/ui/testing';
 import { of, throwError } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
+import { fakeMcpApi } from '../../../../../testing/fake-mcp-api';
 import { setupSettingsPage } from '../../../../../testing/settings-page-testbed';
 import { LinksStore } from '../../../../stores/links.store';
 import { AiIntroDialogComponent } from '../../../ai/components/ai-intro-dialog/ai-intro-dialog.component';
 import { AI_API } from '../../../ai/models/ai-api.const';
+import { MCP_API } from '../../../ai/connect/models/mcp-api.const';
 import { AI_SETTINGS_DEFAULT } from '../../../ai/models/ai-settings-default.const';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
 import AiSettingsPage from './ai-settings.page';
@@ -107,6 +109,7 @@ async function setup(
   TestBed.configureTestingModule({
     providers: [
       { provide: AI_API, useValue: api },
+      { provide: MCP_API, useValue: fakeMcpApi() },
       { provide: DialogService, useValue: { confirm, open } },
       { provide: LinksStore, useValue: { refresh } },
       {
@@ -180,6 +183,7 @@ describe('AiSettingsPage', () => {
     expect([...root.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toEqual([
       'AI features',
       'Your AI data',
+      'Connect your assistant',
     ]);
     // Privacy and data links here: /settings/ai#ai-data.
     expect(root.querySelector('#ai-data h2')?.textContent?.trim()).toBe('Your AI data');

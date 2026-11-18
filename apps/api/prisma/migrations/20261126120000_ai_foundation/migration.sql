@@ -1,4 +1,4 @@
--- AI foundation (#389, ADR 0047/0048): account plan and AI pack, summaries on links, AI settings, usage,
+-- AI foundation (#389, ADR 0047/0049): account plan and AI pack, summaries on links, AI settings, usage,
 -- jobs, batches and suggestions. Expand only: new columns with defaults and new tables.
 
 -- AlterTable

@@ -1,7 +1,7 @@
 import { createTestDatabase } from '../../test-utils/test-database';
 import type { TestDatabase } from '../../test-utils/models/test-database.interface';
 
-describe('Clean-up schema (AI-5, ADR 0052)', () => {
+describe('Clean-up schema (AI-5, ADR 0053)', () => {
   let database: TestDatabase;
 
   beforeAll(async () => {

@@ -16,7 +16,7 @@ import { AskRequestDto } from '../dto/ask-request.dto';
 import { AskService } from './ask.service';
 import { SseWriter } from './sse-writer';
 
-/** `POST /api/ai/ask` (F4, ADR 0051). Thin: `AskService` owns the rules. */
+/** `POST /api/ai/ask` (F4, ADR 0052). Thin: `AskService` owns the rules. */
 @ApiTags('ai')
 @Controller('ai')
 export class AskController {

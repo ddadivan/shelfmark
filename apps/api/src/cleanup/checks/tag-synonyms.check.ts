@@ -12,7 +12,7 @@ import { refundCleanupRun } from '../refund-cleanup-run';
 import { loadTagUsage } from './load-tag-usage';
 
 /**
- * Similar tags by the model (ADR 0052 point 2): one call with up to `TagsSentMax` of the user's own
+ * Similar tags by the model (ADR 0053 point 2): one call with up to `TagsSentMax` of the user's own
  * tags on live links (most used first) as keys `t1…`, names only. The answer is narrowed against the
  * keys sent and the pairs the rule step found; the report keeps at most `TagPairsMax` pairs in all. A
  * refusal or invalid output leaves the group empty; a provider failure also gives back the run the

@@ -10,8 +10,10 @@ import { MOCK_FOLDERS, MOCK_ID, MOCK_LINKS } from '@shelfmark/contracts/testing'
 import { of, throwError } from 'rxjs';
 import { fakeAiApi } from '../../../../testing/fake-ai-api';
 import { FoldersStore } from '../../../stores/folders.store';
+import { LinksStore } from '../../../stores/links.store';
 import { AI_API } from '../../ai/models/ai-api.const';
 import { AiSettingsStore } from '../../ai/services/ai-settings.store';
+import { RELATED_REFRESH_DELAY_MS } from '../models/related-refresh-delay-ms.const';
 import { LibraryFilterService } from './library-filter.service';
 import { SplitRelatedService } from './split-related.service';
 import { SplitViewService } from './split-view.service';
@@ -37,6 +39,7 @@ function setup(answer: () => ReturnType<ReturnType<typeof fakeAiApi>['related']>
   const wide = signal(true);
   const meaningReady = signal(true);
   const entityMap = Object.fromEntries(MOCK_FOLDERS.map((folder) => [folder.id, folder]));
+  const linkMap = signal<Record<string, LinkResponse>>({});
   TestBed.configureTestingModule({
     providers: [
       SplitRelatedService,
@@ -47,6 +50,7 @@ function setup(answer: () => ReturnType<ReturnType<typeof fakeAiApi>['related']>
         useValue: { open, rightTarget, canOpen: wide, rightRecent: computed(() => [null]) },
       },
       { provide: FoldersStore, useValue: { entityMap: () => entityMap } },
+      { provide: LinksStore, useValue: { entityMap: linkMap } },
       { provide: AiSettingsStore, useValue: { meaningReady } },
     ],
   });
@@ -57,6 +61,7 @@ function setup(answer: () => ReturnType<ReturnType<typeof fakeAiApi>['related']>
     rightTarget,
     wide,
     meaningReady,
+    linkMap,
   };
 }
 
@@ -107,5 +112,33 @@ describe('SplitRelatedService', () => {
     await settle();
     expect(failed.service.pickerIds()).toEqual([null]);
     expect(failed.service.pickerLabelKey()).toBe('links.move.recent');
+  });
+
+  it('asks again after an edit changed what the related link embeds, once the vector was rebuilt', async () => {
+    vi.useFakeTimers();
+    try {
+      const { ai, service, relatedParam, linkMap } = setup(() => of(related([null])));
+      const link: LinkResponse = { ...MOCK_LINKS[0], id: MOCK_ID.LinkAngular };
+      linkMap.set({ [link.id]: link });
+      relatedParam.set(link.id);
+      await vi.advanceTimersByTimeAsync(0);
+      await settle();
+      expect(ai.related).toHaveBeenCalledTimes(1);
+
+      linkMap.set({ [link.id]: { ...link, isFavorite: !link.isFavorite } });
+      await settle();
+      await vi.advanceTimersByTimeAsync(RELATED_REFRESH_DELAY_MS);
+      expect(ai.related).toHaveBeenCalledTimes(1);
+
+      linkMap.set({ [link.id]: { ...link, title: 'Renamed', tags: ['new'] } });
+      await settle();
+      await vi.advanceTimersByTimeAsync(RELATED_REFRESH_DELAY_MS - 10);
+      expect(ai.related).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(20);
+      expect(ai.related).toHaveBeenCalledTimes(2);
+      expect(service.folderIds()).toEqual([null]);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

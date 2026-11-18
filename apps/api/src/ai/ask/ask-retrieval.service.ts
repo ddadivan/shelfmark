@@ -23,7 +23,7 @@ function siteOf(url: string): { host: string; path: string } {
 }
 
 /**
- * Ask retrieval without a model (ADR 0051 point 3), every query on the session user's live links:
+ * Ask retrieval without a model (ADR 0052 point 3), every query on the session user's live links:
  * meaning matches (the AI-3 query vector from the shared cache or one counted embedding, KNN above
  * the provider's floor) only while search by meaning is `ready`, and word matches (topic words of
  * the question over title, URL, summary, tag names and, with `includeNotes`, the note), fused by reciprocal rank, at most

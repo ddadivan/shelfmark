@@ -14,7 +14,7 @@ function newestFirst(a: LinkResponse, b: LinkResponse): number {
 }
 
 /**
- * The rule offer of `POST /api/rules/offers/check` in the mock (AI-2, ADR 0049), like the API:
+ * The rule offer of `POST /api/rules/offers/check` in the mock (AI-2, ADR 0050), like the API:
  * the sites of the filed links that a rule can store (at most `HostsPerCheckMax`), skipping a dismissed one, one a rule
  * already matches, or every site once the rules are full; the newest `SameChoiceMin` links of the
  * site must share one live folder and none may carry an open "Moved by AI" mark. `count` is how

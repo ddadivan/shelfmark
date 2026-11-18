@@ -16,7 +16,7 @@ import { CLEANUP_CHECKS } from './models/cleanup-checks.token';
 import type { CleanupCheck } from './models/cleanup-check.interface';
 
 /**
- * Library clean-up (F5, ADR 0052). Imports `AiModule` (settings, entitlements, usage, search status);
+ * Library clean-up (F5, ADR 0053). Imports `AiModule` (settings, entitlements, usage, search status);
  * `AiModule` never imports this module; the AI tick and sweep reach the runner through
  * `CLEANUP_TICK_HOOK`. `CLEANUP_CHECKS` is the check registry, in run order.
  */

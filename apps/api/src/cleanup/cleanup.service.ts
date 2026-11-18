@@ -58,7 +58,7 @@ export function isStalled(row: Pick<CleanupReportRow, 'progressAt'>, now: Date):
 }
 
 /**
- * Library clean-up (F5, ADR 0052): the stored report, read live, and new runs. Rule checks run in the
+ * Library clean-up (F5, ADR 0053): the stored report, read live, and new runs. Rule checks run in the
  * request; AI checks need AI on, the AI pack and a clean-up run left this month. The report holds ids
  * only; titles and names are joined live here, so trashed links and deleted tags drop out. Every
  * query is on the session user's rows.

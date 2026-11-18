@@ -12,7 +12,7 @@ export function askDay(now: Date): string {
 }
 
 /**
- * Ask question counts and the one-question lease (ADR 0051 point 7). Counts only, per user and UTC
+ * Ask question counts and the one-question lease (ADR 0052 point 7). Counts only, per user and UTC
  * day; the month is the sum of its days. Every statement runs on the session user's rows.
  */
 @Injectable()

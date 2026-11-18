@@ -95,7 +95,7 @@ export class AiUsageService {
       WHERE user_id = ${userId}::uuid`;
   }
 
-  /** Link texts embedded this month (search by meaning, ADR 0050 point 5). */
+  /** Link texts embedded this month (search by meaning, ADR 0052 point 5). */
   async embedsUsed(userId: string, now = new Date()): Promise<number> {
     const rows = await this.prisma.$queryRaw<{ embeds: number }[]>`
       SELECT embeds FROM ai_usage WHERE user_id = ${userId}::uuid AND month = ${usageMonth(now)}::date`;
@@ -160,7 +160,7 @@ export class AiUsageService {
       UPDATE ai_usage SET search_queries = search_queries - 1
       WHERE user_id = ${userId}::uuid AND month = ${month}::date AND search_queries > 0`;
   }
-  /** AI clean-up runs left this month (ADR 0052 point 3; a cheap read, `reserveCleanupRun` decides). */
+  /** AI clean-up runs left this month (ADR 0053 point 3; a cheap read, `reserveCleanupRun` decides). */
   async cleanupRunsLeft(userId: string, tier: AiTier, now = new Date()): Promise<number> {
     const rows = await this.prisma.$queryRaw<{ n: number }[]>`
       SELECT cleanup_runs AS n FROM ai_usage

@@ -54,7 +54,7 @@ function readDismissedAt(): number | null {
 }
 
 /**
- * The library clean-up in the mock (AI-5, ADR 0052), like the API: rule checks (exact duplicates,
+ * The library clean-up in the mock (AI-5, ADR 0053), like the API: rule checks (exact duplicates,
  * tag variants) in the run request; with AI checks (AI on, AI pack, a run left this month) a
  * deferred pass of `MOCK_CLEANUP_TIMING.PassMs` adds "Same page" groups (the mock vectors: same
  * title, tags and summary on the same host family) and tag synonyms (`MOCK_TAG_SYNONYMS`). The

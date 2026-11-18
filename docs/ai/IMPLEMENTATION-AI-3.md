@@ -1,6 +1,6 @@
 # AI-3 implementation plan: search by meaning and related links
 
-Nov 17, 2026 · architect plan for F3 "Smarter search" (#392) and F7 "Related links", one branch `feat/392-ai-search` (stacked on AI-2 `feat/390-ai-tidy-rules`, which stacks on AI-1), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F3, F7, principles, disclosure), `docs/design/screens/AiSearch.dc.html`, `Search.dc.html`, `MobileSearch.dc.html`, `MobileAiMore.dc.html` 1, `AiDiscover.dc.html` 1, the AI-1 code (`apps/api/src/ai/**`), `apps/api/src/links/link-where.ts`, `apps/web/src/app/features/search/`, ADR 0047 / 0048, new ADR 0050.
+Nov 17, 2026 · architect plan for F3 "Smarter search" (#392) and F7 "Related links", one branch `feat/392-ai-search` (stacked on AI-2 `feat/390-ai-tidy-rules`, which stacks on AI-1), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F3, F7, principles, disclosure), `docs/design/screens/AiSearch.dc.html`, `Search.dc.html`, `MobileSearch.dc.html`, `MobileAiMore.dc.html` 1, `AiDiscover.dc.html` 1, the AI-1 code (`apps/api/src/ai/**`), `apps/api/src/links/link-where.ts`, `apps/web/src/app/features/search/`, ADR 0047 / 0049, new ADR 0051.
 
 **In scope.** Embeddings for every live link of a user who has AI and "Search by meaning" on; meaning matches inside the existing search (⌘K dialog, header search, phone Search tab) after the word matches, under "Related by meaning", each with a "why it matched" line; the "getting ready" line; Settings › AI "Search by meaning" switch with "N of M links ready"; "Related on your shelf" (up to five) in Edit link on desktop and phone; "Show related" in side by side; Delete AI data and link deletion remove vectors.
 
@@ -8,7 +8,7 @@ Nov 17, 2026 · architect plan for F3 "Smarter search" (#392) and F7 "Related li
 
 Principles enforced: search never waits for a model (the meaning request is separate from the word request); no embeddings, quota used or provider down means exactly today's search; the real provider only in production for non-demo users; vectors are queried only with the session `userId`; meaning results always carry the AI mark.
 
-## 1. Decisions (ADR 0050)
+## 1. Decisions (ADR 0051)
 
 1. **Provider seam.** A second server-side interface `EmbeddingProvider` (`apps/api/src/ai/models/embedding-provider.interface.ts`), separate from `AiProvider`: `name`, `model`, `dimensions`, `minSimilarity`, `embed(texts: readonly string[], inputType: EmbeddingInputType): Promise<EmbedOutcome>` (`EmbedOutcome` = `{ ok: true; vectors: number[][]; tokens: number } | { ok: false; retryable: boolean }`; never throws, never logs input, output or key).
    - `providers/voyage-embedding.provider.ts`: **plain HTTPS, no SDK** (no new dependency, nothing new in `api/index.mjs`). `fetch` to the pinned `VOYAGE_LIMIT.Url = 'https://api.voyageai.com/v1/embeddings'` (no base-URL variable), body `{ input, model: 'voyage-4-lite', input_type: 'document' | 'query', output_dimension: 1024, output_dtype: 'float', truncation: true }`, `redirect: 'error'`, `AbortSignal.timeout` (documents 8 s, query 1.5 s), response read with a 4 MB cap, then narrowed (one vector per input, 1,024 finite numbers each). 429 / 5xx / timeout / network → `retryable`.
@@ -17,7 +17,7 @@ Principles enforced: search never waits for a model (the meaning request is sepa
    - Enforcement: an ESLint `no-restricted-globals` rule for `fetch` in `apps/api/src/**` with exceptions only for the Voyage provider and `monitoring.service.ts`; `vitest.setup.ts` wraps `globalThis.fetch` so any request to `api.voyageai.com` throws ("must never be called in tests"); `real-client.guard.spec.ts` pins it. `apps/api/CLAUDE.md` adds Voyage to the fixed-host exception.
 2. **What is embedded** (`embeddings/build-embedding-text.ts`): title, tag names, summary (AI or user), and the note only while "Include my notes" is on; never the URL, folder names or other links. Plain lines (`Title`, `Tags`, `Summary`, `Note`), at most `AI_EMBED_LIMIT.TextMax = 2000` characters. SHA-256 of the text is stored, so an unchanged text never costs a call.
 3. **Storage: `halfvec(1024)` with an HNSW index, cosine distance.** 1,024 dimensions as ADR 0047; `halfvec` halves storage and index size (2 KB per link instead of 4 KB; Neon storage is the limit that matters) with no measurable recall loss at this scale. **HNSW over IVFFlat**: it builds incrementally on an empty, growing table (IVFFlat needs training data and rebuilds as lists drift), gives better recall per millisecond, and pgvector 0.8 (Neon ships 0.8.x; PGlite's `pgvector` is 0.8.7, checked) has iterative index scans, so a global index plus `WHERE user_id = $1` still returns enough rows. Every query runs in a transaction with `set_config('hnsw.iterative_scan', 'relaxed_order', true)` and `hnsw.ef_search = 100`. Index `WITH (m = 16, ef_construction = 64)`.
-4. **Freshness without one job row per link.** Instead of `ai_jobs` rows with `kind: embed`, an **embed pass** per user works on a derived set: live links with no vector, a `stale` vector, another model, or a vector whose note inclusion differs from the current setting. Hooks only flip `stale`; new links simply have no row. One mechanism covers new links, edits, tag renames and backfill, and "N of M links ready" is a count, not bookkeeping. The pass holds a per-user lease on `ai_settings` and runs inside the ADR 0048 machinery (`waitUntil`, tick, sweep). `ai_jobs.kind` keeps `link` only.
+4. **Freshness without one job row per link.** Instead of `ai_jobs` rows with `kind: embed`, an **embed pass** per user works on a derived set: live links with no vector, a `stale` vector, another model, or a vector whose note inclusion differs from the current setting. Hooks only flip `stale`; new links simply have no row. One mechanism covers new links, edits, tag renames and backfill, and "N of M links ready" is a count, not bookkeeping. The pass holds a per-user lease on `ai_settings` and runs inside the ADR 0049 machinery (`waitUntil`, tick, sweep). `ai_jobs.kind` keeps `link` only.
 5. **Allowance.** Embeddings are about 1/1,000 of a link job, so they never touch the link quota or the one-time 5,000 link backfill. A separate monthly counter: `embedsPerMonth` Free 2,000 / AI pack 20,000 and `searchQueriesPerMonth` Free 1,000 / AI pack 10,000 (`ai_usage.embeds`, `ai_usage.search_queries`). F3 and F7 are Free (FEATURES proposal). Backfill starts by itself when the switch is on; no button.
 6. **Ranking: words first, then meaning.** The word search is unchanged. A separate `GET /api/ai/search` answers only meaning matches that are **not** word matches, above the provider's `minSimilarity` and within `RelativeWindow` of the best match, at most 3 in the dialog. "Why it matched" is computed without a model: the link's tag names, folder name and summary clauses that share stems with the query (at most two), else its tags, else its folder, else the first summary clause marked "from the summary".
 
@@ -36,7 +36,7 @@ Principles enforced: search never waits for a model (the meaning request is sepa
 | `related-links-response.interface.ts` | `{ status: AiSearchStatus; items: MeaningMatch[] }` |
 | `ai-search-limit.const.ts` | `AI_SEARCH_LIMIT = { QueryMinChars: 3, QueryMax: 200, MeaningDefault: 3, MeaningMax: 10, RelatedDefault: 5, RelatedMax: 10, WhyMax: 2, WhyTextMax: 80 }` |
 
-Changes: `AiSettings` + `meaningSearch: boolean`; `AiSettingsResponse` and `AiTickResponse` + `search: AiSearchStatus`; `AiQuotaLimits` + `embedsPerMonth`, `searchQueriesPerMonth` (and `AI_QUOTA` values from 1.5); `AI_ENDPOINT` + `MeaningSearch: '/api/ai/search'`, `RelatedLinks: '/api/links/:id/related'`. `UpdateAiSettingsRequest` follows `AiSettings`. Server-only shapes (`EmbeddingProvider`, `EmbedOutcome`, `EmbeddingInputType`) stay in `apps/api/src/ai/models/` (ADR 0048 point 9).
+Changes: `AiSettings` + `meaningSearch: boolean`; `AiSettingsResponse` and `AiTickResponse` + `search: AiSearchStatus`; `AiQuotaLimits` + `embedsPerMonth`, `searchQueriesPerMonth` (and `AI_QUOTA` values from 1.5); `AI_ENDPOINT` + `MeaningSearch: '/api/ai/search'`, `RelatedLinks: '/api/links/:id/related'`. `UpdateAiSettingsRequest` follows `AiSettings`. Server-only shapes (`EmbeddingProvider`, `EmbedOutcome`, `EmbeddingInputType`) stay in `apps/api/src/ai/models/` (ADR 0049 point 9).
 
 ## 3. Schema and migration `20261128120000_ai_embeddings`
 
@@ -66,7 +66,7 @@ Changed: `GET` / `PATCH /api/ai/settings` (`meaningSearch`, `search`); `POST /ap
 
 ## 5. Web and `libs/ui`
 
-**`libs/ui`** (`ui-dev`): `ui-command-group` gets an optional `icon` input (the spark next to "Related by meaning", `ai` colour, `aria-hidden`), story and harness. Nothing else: the related list uses `ui-favicon`, `ui-icon`, `ui-tooltip`.
+**`libs/ui`** (`ui-dev`): `ui-command-group` gets an optional `icon` input (the spark next to "Related by meaning", `ai` colour, `aria-hidden`) and an optional `lead` input (a muted line above the heading, "No links with these words" when the word search found nothing); `ui-command-list` gets a `note` slot under the results (the "getting ready" `ui-ai-line`). Stories, specs and harness readers for all three. Nothing else: the related list uses `ui-favicon`, `ui-icon`, `ui-tooltip`.
 
 **`features/ai/`** (`frontend-dev`): the `AI_API` seam + HTTP + mock gain `searchMeaning(q, limit)` and `related(linkId, limit)`; the mock uses word overlap plus the same synonym list over the mock library, honours `ai-fail` and a seeded "processing" toggle for e2e. `AiSettingsStore`: `meaningSearchOn`, `searchStatus`; the follow-up tick condition adds `processing`. `components/related-links/` ("Related on your shelf": up to five rows, favicon, title, "Close to: …" with the spark and tooltip `ai.disclaimer`; opens in a new tab; hidden unless `ready` and non-empty).
 
@@ -88,11 +88,11 @@ Changed: `GET` / `PATCH /api/ai/settings` (`meaningSearch`, `search`); `POST /ap
 
 ## 7. Docs
 
-`docs/PROJECT.md`: 5.6 status (AI-3), 6.1 `link_embeddings` and the new columns, 6.2 the two endpoints and the changed ones, 5.8 AI row (vectors filtered by `userId`, raw SQL only as tagged templates, Voyage as a fixed-host exception, query text never stored). `docs/SETUP.md`: 5.3 row `VOYAGE_API_KEY` (Production only, Sensitive; already set), 5.11 Voyage account, usage alert, retention terms for the privacy page. `apps/api/CLAUDE.md` (embeddings, the pass, `markStale` duty for any new tag or title write path, the fetch exception), `apps/web/CLAUDE.md` (meaning search, related links). ADR 0050 and its row. Changelog draft entry.
+`docs/PROJECT.md`: 5.6 status (AI-3), 6.1 `link_embeddings` and the new columns, 6.2 the two endpoints and the changed ones, 5.8 AI row (vectors filtered by `userId`, raw SQL only as tagged templates, Voyage as a fixed-host exception, query text never stored). `docs/SETUP.md`: 5.3 row `VOYAGE_API_KEY` (Production only, Sensitive; already set), 5.11 Voyage account, usage alert, retention terms for the privacy page. `apps/api/CLAUDE.md` (embeddings, the pass, `markStale` duty for any new tag or title write path, the fetch exception), `apps/web/CLAUDE.md` (meaning search, related links). ADR 0051 and its row. Changelog draft entry.
 
 ## 8. Commits (each builds and passes `npm run affected`)
 
-1. `docs(ai): AI-3 implementation plan` (architect): this file and ADR 0050.
+1. `docs(ai): AI-3 implementation plan` (architect): this file and ADR 0051.
 2. `feat(contracts): search by meaning and related links types`: section 2.
 3. `feat(api): pgvector, link embeddings table and AI-3 columns`: migration, schema spec, PGlite `vector` in tests and local DB, CI image.
 4. `feat(api): embedding provider seam, Voyage over HTTPS and mock`: config, registry, ESLint rule, fetch guard.
@@ -124,3 +124,33 @@ Changed: `GET` / `PATCH /api/ai/settings` (`meaningSearch`, `search`); `POST /ap
 7. **Settings design gap.** `AiSettings.dc.html` has no Search by meaning row. Default: the existing switch-row pattern plus a muted status line, reviewed later.
 8. **Related links in the Edit dialog cannot be dragged** to side by side (the dialog is modal), unlike the design note. Default: open in a new tab; "Show related" covers side by side.
 9. **Word search over summaries and tags.** Today words match title, note and URL only. Default: unchanged in AI-3; meaning results cover summary and tag words.
+
+## 10. Implementation notes
+
+Deviations from this plan and from the backend and web reports, as built on `feat/392-ai-search`:
+
+- **No embed job rows.** As decided (ADR 0052 point 4): the pass works on the derived set; `ai_jobs.kind` keeps `link` only, and readiness is a count.
+- **Partial HNSW index.** The index is `WHERE model <> ''` (always true) so Prisma's drift check ignores it; every KNN query repeats the predicate (`HNSW_INDEX_PREDICATE`) so the planner may use it. The KNN runs the index scan alone in a materialized CTE ordered by distance, then removes trashed links; it over-fetches by the user's trashed links with a vector (at most `KnnFetchMax` = 200 rows), so they never shrink the 40-row result.
+- **CI image.** The migration check runs on `pgvector/pgvector:0.8.7-pg17`, pinned by digest (PGlite runs the same pgvector 0.8.7).
+- **Voyage request fields unverified.** `output_dimension`, `output_dtype` and `truncation` follow the plan; the agent proxy blocked Voyage's API reference, so the author checks them against the current docs before the first production call (the provider narrows the answer either way: one 1,024-number finite vector per input, else a failure).
+- **Tag paths.** Tag rename, delete and merge first only flagged vectors stale (the next save, tick or sweep rebuilt them); after review they also kick the pass through `TagChangeHooks` (`src/tags/`), because `TagsModule` cannot import `AiModule`. Edit link's AI tag undo kicks too.
+- **Review hardening.** A vector is written (or a stale flag cleared) only while AI and the switch are still on, under a `FOR SHARE` check on the settings row; the write compares the sent title, note, summary and tags with the current rows and stores a changed link as stale; lease renew and release match the lease value; a malformed vector refunds and backs off; 3 failures in a row that cannot be retried back off for 6 hours with one warning; word matches are removed before the relative window; related links have their own rate limit (`AiRelated`, 60 a minute).
+- **Related during processing.** `GET /api/links/:id/related` answers items whenever the link has a vector of the current model, also while the status is `processing` (no model call, so nothing to save); only `off` answers none. The web asks only while the status is `ready`.
+- **Show related from 80em.** The menu item is shown only where side by side can open (`SplitViewService.canOpen`, 80em) and while search by meaning is ready; it uses up to `SPLIT_RELATED_LIMIT` related links and asks again after the related link's embedded fields change.
+- **Meaning row meta.** Each meaning row shows the host and the "Close to: …" line (with "(from the summary)" when every reason is a summary clause), the spark as the AI mark.
+- **Readiness line.** Settings › AI shows "{ready} of {total} links ready" / "Ready" / the quota line next to the switch (`meaning-search-control`), not as a separate row.
+- **Opens count.** A related row opens in a new tab and records the open through `LinksStore.recordOpen`, like any other open (Recent, history).
+- **Search empty state.** "No links with these words" shows as soon as the word answer is empty; meaning rows append under it when they arrive (no "Searching…" during the meaning debounce). The once-per-session "getting ready" line is claimed only when the answer that shows it is on screen.
+- **Tick.** The web also ticks while the status reads `unavailable`, so it recovers without a reload.
+
+**Defaults taken for section 9**
+
+1. Existing AI users: the switch is on for settings rows created from now on and off for rows that existed before the migration.
+2. Meaning results from 80% of live links ready; below, the "getting ready" line once per session and today's results.
+3. Delete AI data also turns "Search by meaning" off; the dialog says so.
+4. Library page `?q=`: words only.
+5. `halfvec(1024)`.
+6. Free 2,000 embeddings and 1,000 searches a month; AI pack 20,000 and 10,000.
+7. Settings: the existing switch-row pattern with the readiness line, to be reviewed in design.
+8. Related links in Edit link open in a new tab; "Show related" covers side by side.
+9. Word search over summaries and tags: unchanged.

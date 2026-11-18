@@ -16,6 +16,7 @@ import type { TestAgent } from '../../test-utils/models/test-agent.interface';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
 import { AiBackgroundService } from './background/ai-background.service';
+import { AiEmbedService } from './embeddings/ai-embed.service';
 import { AiExcerptService } from './excerpt/ai-excerpt.service';
 import { AI_ENV } from './models/ai-env.const';
 
@@ -300,6 +301,43 @@ describe('AI link endpoints', () => {
         { kind: 'tag', tagName: 'design', folderId: null, state: 'dismissed' },
       ]);
       expect((await stateOf(link.id)).autoApplied).toBeNull();
+    });
+
+    it('flags the vector stale on AI apply and on tag undo, and starts the embed pass (AI-3)', async () => {
+      const { link } = await processed({
+        folderMode: 'auto',
+        tagsMode: 'auto',
+        summaries: true,
+        meaningSearch: true,
+      });
+      const staleOf = async () =>
+        (
+          await t.db.prisma.$queryRaw<{ stale: boolean }[]>`
+            SELECT stale FROM link_embeddings WHERE link_id = ${link.id}::uuid`
+        )[0]?.stale;
+      // The job's own pass embedded the link with its summary and the tags AI added.
+      expect(await staleOf()).toBe(false);
+      // From here the pass is observed, not run, so the flags stay visible.
+      const pass = vi.spyOn(t.app.get(AiEmbedService), 'run').mockResolvedValue();
+
+      // AI apply: a rewrite stores a new summary and flags the vector.
+      await t.db.prisma.link.update({
+        where: { id: link.id },
+        data: { summary: 'Old AI text', summarySource: 'ai' },
+      });
+      await rewrite(link.id).expect(200);
+      await deferrer.flush();
+      expect((await row(link.id)).summary).toBe('A page about Design systems.');
+      expect(await staleOf()).toBe(true);
+      expect(pass).toHaveBeenCalled();
+
+      // Tag undo: the tags AI added go, the vector is flagged and the pass is kicked.
+      await t.db.prisma.$executeRaw`UPDATE link_embeddings SET stale = false`;
+      pass.mockClear();
+      await undo(link.id, 'tags').expect(200);
+      expect(await staleOf()).toBe(true);
+      await deferrer.flush();
+      expect(pass).toHaveBeenCalledTimes(1);
     });
 
     it('never undoes a folder the user chose meanwhile', async () => {

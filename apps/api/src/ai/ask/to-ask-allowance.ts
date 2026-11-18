@@ -9,7 +9,7 @@ export function askDayResetsOn(now: Date): string {
 }
 
 /**
- * The allowance line from today's and this month's counts (ADR 0051 point 7): the limit with fewer
+ * The allowance line from today's and this month's counts (ADR 0052 point 7): the limit with fewer
  * questions left wins; on a tie the month (it resets later, so it is the one that binds).
  */
 export function toAskAllowance(

@@ -1,5 +1,5 @@
 /**
- * One retrieved link of the session user as the model sees it (ADR 0051 point 4): stored fields only,
+ * One retrieved link of the session user as the model sees it (ADR 0052 point 4): stored fields only,
  * capped by `buildAskUserPrompt`; never ids, full URLs or page text.
  */
 export interface AskPromptSource {

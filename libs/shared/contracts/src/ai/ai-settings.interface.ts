@@ -22,7 +22,7 @@ export interface AiSettings {
    */
   meaningSearch: boolean;
   /**
-   * Ask your shelf (AI-4, ADR 0051): the question and the matching links go to the model when the
+   * Ask your shelf (AI-4, ADR 0052): the question and the matching links go to the model when the
    * user asks; nothing is stored. Default on, existing rows too.
    */
   ask: boolean;

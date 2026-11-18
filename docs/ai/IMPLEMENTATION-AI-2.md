@@ -1,6 +1,6 @@
 # AI-2 implementation plan: Tidy Unsorted and rule offers
 
-Nov 17, 2026 · architect plan for F1a "Tidy Unsorted — review suggestions in bulk" and F1b "Learn from corrections, then offer a rule" (#390, extends #398), one branch `feat/390-ai-tidy-rules` (from the AI-1 tip, PR #483), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F1a, F1b, principle 3, disclosure), `docs/design/screens/AiTidy.dc.html`, `AiTags.dc.html` 9 (rule offer), `MobileAi.dc.html` 6 (Tidy on the phone), component `Suggestion` (review-list mode), the AI-1 code (`apps/api/src/ai/**`, `apps/api/src/rules/**`, `links-bulk.service.ts`, `apps/web/src/app/features/{ai,rules,library}/`), ADR 0047 / 0048, new ADR 0049.
+Nov 17, 2026 · architect plan for F1a "Tidy Unsorted — review suggestions in bulk" and F1b "Learn from corrections, then offer a rule" (#390, extends #398), one branch `feat/390-ai-tidy-rules` (from the AI-1 tip, PR #483), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F1a, F1b, principle 3, disclosure), `docs/design/screens/AiTidy.dc.html`, `AiTags.dc.html` 9 (rule offer), `MobileAi.dc.html` 6 (Tidy on the phone), component `Suggestion` (review-list mode), the AI-1 code (`apps/api/src/ai/**`, `apps/api/src/rules/**`, `links-bulk.service.ts`, `apps/web/src/app/features/{ai,rules,library}/`), ADR 0047 / 0049, new ADR 0050.
 
 **In scope.** The Tidy review page (desktop and phone) over the stored AI-1 suggestions of links in Unsorted, its entry in the Unsorted header, one apply request per run with one Undo; rule offers ("Always put youtube.com links in Videos?") detected from the user's own links, Create rule through the existing rules API, "Not now" remembered per domain; earlier choices for the same site passed to the model as examples (the "learning" half of F1b).
 
@@ -8,7 +8,7 @@ Nov 17, 2026 · architect plan for F1a "Tidy Unsorted — review suggestions in 
 
 Principles this plan enforces: AI never re-sorts silently (nothing here runs without a click); Tidy applies only suggestions the user left selected, and never over a folder the user chose meanwhile; a rule always wins over AI (also inside Tidy); one Undo reverts a whole apply run.
 
-## 1. Data model (decision, ADR 0049)
+## 1. Data model (decision, ADR 0050)
 
 **No correction-event log.** The pattern behind a rule offer ("the same choice three times") and the examples for the prompt are derived on demand from data Shelfmark already keeps: the user's live links of one site (`ruleHost(url)`), their folders and tags, and the `link_suggestions` states (an open `auto-applied` folder is AI's choice, not the user's, so it does not count). An accepted suggestion is the user's data (disclosure rule 2), so it counts like a manual move. Nothing new is recorded about what the user did, there is no history to export, delete or leak, and "never used for statistics" holds by construction. Consequence: the offer reads "your last 3 links from this site are in Videos", not "you moved 3 links" (a link saved straight into Videos counts too, which is the same intent).
 
@@ -16,7 +16,7 @@ Principles this plan enforces: AI never re-sorts silently (nothing here runs wit
 
 **One index:** `link_suggestions @@index([userId, state])` for the Tidy list and count (same migration).
 
-Alternatives (in ADR 0049): an append-only `ai_corrections` table (exact "you moved" wording, but a behaviour log that needs retention, export and deletion rules, for no better offers); a counter per `(user, host, folder)` (cheap, but drifts from reality when links are deleted, moved back or trashed); dismissed domains as an array on `ai_settings` (ties a rules feature to AI settings and has no natural cap).
+Alternatives (in ADR 0050): an append-only `ai_corrections` table (exact "you moved" wording, but a behaviour log that needs retention, export and deletion rules, for no better offers); a counter per `(user, host, folder)` (cheap, but drifts from reality when links are deleted, moved back or trashed); dismissed domains as an array on `ai_settings` (ties a rules feature to AI settings and has no natural cap).
 
 ## 2. Contracts (one type per file, `as const` + derived union)
 
@@ -110,11 +110,11 @@ The link job input gains `examples: readonly { folderKey: string | null; tags: r
 
 ## 6. Docs
 
-`docs/PROJECT.md`: 5.6 status (AI-2), 6.1 `rule_offer_dismissals` and the index, 6.2 the six endpoints, 5.8 AI row: "Tidy applies only stored suggestions the user selected; rule offers read only the user's own links, no event log". `apps/api/CLAUDE.md` (Tidy, rule offers, `AiModule` imports `RulesModule`), `apps/web/CLAUDE.md` (Tidy page, count store, rule-offer service and its triggers). `docs/ai/FEATURES.md` stays as approved. ADR 0049 and its row in `docs/adr/README.md`. Changelog draft entry (`features/changelog/models/changelog.const.ts`).
+`docs/PROJECT.md`: 5.6 status (AI-2), 6.1 `rule_offer_dismissals` and the index, 6.2 the six endpoints, 5.8 AI row: "Tidy applies only stored suggestions the user selected; rule offers read only the user's own links, no event log". `apps/api/CLAUDE.md` (Tidy, rule offers, `AiModule` imports `RulesModule`), `apps/web/CLAUDE.md` (Tidy page, count store, rule-offer service and its triggers). `docs/ai/FEATURES.md` stays as approved. ADR 0050 and its row in `docs/adr/README.md`. Changelog draft entry (`features/changelog/models/changelog.const.ts`).
 
 ## 7. Commits (each builds and passes `npm run affected`)
 
-1. `docs(ai): AI-2 implementation plan` (architect) — this file and ADR 0049.
+1. `docs(ai): AI-2 implementation plan` (architect) — this file and ADR 0050.
 2. `feat(contracts): tidy and rule-offer types` — section 2.
 3. `feat(api): rule offer dismissals table and suggestion state index` — migration, schema spec.
 4. `feat(api): Tidy list, count, apply and undo` — 3.1, `RATE_LIMIT.AiTidy`.
@@ -128,6 +128,16 @@ The link job input gains `examples: readonly { folderKey: string | null; tags: r
 12. `feat(web): translations` (if not already in 9–11; every key in seven files in the commit that adds it is preferred).
 13. `test: Tidy and rule-offer isolation and e2e journeys` (most tests land with their commits).
 14. `docs: PROJECT 5.6 / 5.8 / 6, CLAUDE files, changelog`.
+
+## 7a. Added Nov 18, 2026: links from a screenshot (F9)
+
+The author added F9 to AI-2 (`docs/ai/FEATURES.md` › F9). To plan before AI-2 starts:
+
+- Provider: an image block in the link job request (Claude Haiku 5.5 reads images); structured output `{ urls[], title?, note? }`, validated like `parseLinkOutput`; URLs only `http(s)`, de-duplicated, at most 20.
+- API: `POST /api/ai/screenshot` (multipart or base64, size and type limits, rate limit, quota = one link); the image is held in memory for the call only, never written to the database, logs or storage.
+- Web: paste / drop an image in Add link and Paste many → the Paste many review list; phone Share target accepts `image/*`.
+- Design: a screen in `docs/design` (desktop and phone, states: reading, found links, no address → title and note, no text, limit, not available).
+- Privacy page and AI intro: images are sent for that request and never stored.
 
 ## 8. Risks and open questions
 

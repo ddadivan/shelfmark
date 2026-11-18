@@ -4,7 +4,7 @@ const SEPARATORS = /[-_ .]+/g;
 const STEM_MIN = 4;
 
 /**
- * The rule key of a tag name (ADR 0052 point 2, no model): lower case, diacritics removed, separators
+ * The rule key of a tag name (ADR 0053 point 2, no model): lower case, diacritics removed, separators
  * removed and one trailing `s` dropped (not after `s`, and only when four characters stay). Two tags
  * with the same non-empty key are "similar by rule" (`recipe` / `Recipes`, `front-end` / `frontend`).
  */

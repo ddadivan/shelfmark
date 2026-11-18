@@ -1,4 +1,4 @@
-/** The live facts of one duplicate the keep rule compares (ADR 0052, plan 1.3). */
+/** The live facts of one duplicate the keep rule compares (ADR 0053, plan 1.3). */
 export interface KeepCandidate {
   id: string;
   /** In a live folder (not Unsorted). */

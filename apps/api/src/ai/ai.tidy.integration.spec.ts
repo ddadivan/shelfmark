@@ -19,6 +19,7 @@ import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
 import { AiBackgroundService } from './background/ai-background.service';
 import { AI_ENV } from './models/ai-env.const';
+import { EMBEDDING_LIMIT } from './models/embedding-limit.const';
 
 describe('Tidy Unsorted (AI-2)', () => {
   let t: AuthTestApp;
@@ -428,6 +429,36 @@ describe('Tidy Unsorted (AI-2)', () => {
           }).expect(200)
         ).body,
       ).toEqual({ links: [] });
+    });
+  });
+
+  describe('search by meaning (AI-3)', () => {
+    it('flags the link’s vector stale and starts the embed pass after apply and after undo', async () => {
+      await a.patch(AI_ENDPOINT.Settings).send({ enabled: true, meaningSearch: true }).expect(200);
+      const { link, f, css, fresh } = await seeded();
+      const vector = `[${Array.from({ length: EMBEDDING_LIMIT.Dimensions }, (_, i) => (i === 0 ? 1 : 0)).join(',')}]`;
+      await t.db.prisma.$executeRaw`
+        INSERT INTO link_embeddings
+          (link_id, user_id, model, with_note, input_hash, stale, embedding, created_at, updated_at)
+        VALUES (${link}::uuid, ${users.owner.userId}::uuid, 'test-model', false, 'h', false,
+          ${vector}::halfvec, now(), now())`;
+      const staleOf = async () =>
+        (
+          await t.db.prisma.$queryRaw<{ stale: boolean }[]>`
+            SELECT stale FROM link_embeddings WHERE link_id = ${link}::uuid`
+        )[0]?.stale;
+      deferrer.clear();
+
+      const applied = (await apply([{ linkId: link, suggestionIds: [f, css, fresh] }]).expect(200))
+        .body as TidyApplyResponse;
+      expect(await staleOf()).toBe(true);
+      expect(deferrer.size).toBe(1);
+
+      deferrer.clear();
+      await t.db.prisma.$executeRaw`UPDATE link_embeddings SET stale = false`;
+      await a.post(AI_ENDPOINT.TidyUndo).send(applied.undo).expect(200);
+      expect(await staleOf()).toBe(true);
+      expect(deferrer.size).toBe(1);
     });
   });
 

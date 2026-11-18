@@ -71,7 +71,7 @@ function tagSynonymsParamsFor(input: TagSynonymsInput): MessageParams {
 }
 
 /**
- * An Ask answer (ADR 0051 point 4): Sonnet at medium effort, plain text, no tools, no thinking (the
+ * An Ask answer (ADR 0052 point 4): Sonnet at medium effort, plain text, no tools, no thinking (the
  * first text must arrive within `ASK_LIMIT.FirstTokenMs`), the fixed system prompt first with a cache
  * breakpoint.
  */
@@ -125,7 +125,7 @@ function outcomeOfError(error: unknown): LinkJobOutcome {
 /**
  * The real provider: Claude Haiku 5.5 at low effort, structured output through
  * `output_config.format`, a `refusal` stop reason answered as a refusal, Message Batches for the
- * backfill. The only file that imports the SDK (ADR 0048 point 10); the SDK calls its own fixed host.
+ * backfill. The only file that imports the SDK (ADR 0049 point 10); the SDK calls its own fixed host.
  * Never throws for a provider failure, never logs the prompt, the page text, the output or the key.
  */
 export class AnthropicAiProvider implements AiProvider {

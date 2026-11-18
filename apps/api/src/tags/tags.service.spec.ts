@@ -1,10 +1,11 @@
 import { NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../prisma/prisma.service';
+import { TagChangeHooks } from './tag-change-hooks.service';
 import { TagsService } from './tags.service';
 
 function serviceFailingWith(error: unknown): TagsService {
   const prisma = { $transaction: () => Promise.reject(error) } as unknown as PrismaService;
-  return new TagsService(prisma);
+  return new TagsService(prisma, new TagChangeHooks());
 }
 
 describe('TagsService merge errors', () => {

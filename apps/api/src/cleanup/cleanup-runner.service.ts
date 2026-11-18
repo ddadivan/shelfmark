@@ -14,7 +14,7 @@ import { readStoredFindings, toFindingsJson } from './read-stored-findings';
 import { toCleanupState } from './to-cleanup-state';
 
 /**
- * The deferred clean-up pass (ADR 0052 point 3). Started after a run with AI checks, continued by the
+ * The deferred clean-up pass (ADR 0053 point 3). Started after a run with AI checks, continued by the
  * AI tick while the report is `running` (`CleanupTickHook`) and by the daily sweep. One instance at a
  * time per user: a `LeaseMs` lease on the report row, renewed after every step and checked by its
  * exact value, so a lost lease, a new run or "Delete AI data" stops the pass. Each step stores the

@@ -115,6 +115,7 @@ model User {
   linkSuggestions       LinkSuggestion[]
   ruleOfferDismissals   RuleOfferDismissal[]
   linkEmbeddings        LinkEmbedding[]
+  mcpTokens             McpToken[]
   aiAskUsage            AiAskUsage[]
   rediscoverHidden      RediscoverHidden[]
   rediscoverState       RediscoverState?
@@ -460,7 +461,7 @@ model LinkRule {
   @@map("link_rules")
 }
 
-// "Not now" on a rule offer (AI-2, ADR 0049): one row per user and site (`ruleHost`), read by the
+// "Not now" on a rule offer (AI-2, ADR 0050): one row per user and site (`ruleHost`), read by the
 // offer check. Rules data, not AI data: deleting AI data keeps it; it cascades with the account.
 model RuleOfferDismissal {
   userId    String   @map("user_id") @db.Uuid
@@ -472,7 +473,7 @@ model RuleOfferDismissal {
   @@map("rule_offer_dismissals")
 }
 
-// AI settings (#389, ADR 0047/0048), one row per user; a missing row means the defaults and AI off.
+// AI settings (#389, ADR 0047/0049), one row per user; a missing row means the defaults and AI off.
 // `enabledAt` is the first time AI was turned on and `introSeenAt` the intro (turning AI on is the
 // intro's button). The backfill ("Process existing links") state lives here: a keyset cursor over the
 // user's live links created before `enabledAt`, the size of the run, how many links it has done and
@@ -495,14 +496,14 @@ model AiSettings {
   backfillDone      Int       @default(0) @map("backfill_done")
   backfillUsed      Int       @default(0) @map("backfill_used")
   backfillStartedAt DateTime? @map("backfill_started_at") @db.Timestamptz(3)
-  // Search by meaning (AI-3, ADR 0050): the switch (rows that existed before AI-3 were set to false
+  // Search by meaning (AI-3, ADR 0052): the switch (rows that existed before AI-3 were set to false
   // by the migration), the per-user embed pass lease and its retry backoff after a provider failure.
   meaningSearch     Boolean   @default(true) @map("meaning_search")
   embedLeaseUntil   DateTime? @map("embed_lease_until") @db.Timestamptz(3)
   embedNotBefore    DateTime? @map("embed_not_before") @db.Timestamptz(3)
   embedFailures     Int       @default(0) @map("embed_failures") @db.SmallInt
   embedFailedAt     DateTime? @map("embed_failed_at") @db.Timestamptz(3)
-  // Ask your shelf (AI-4, ADR 0051): the switch (on for every row, existing ones too) and the
+  // Ask your shelf (AI-4, ADR 0052): the switch (on for every row, existing ones too) and the
   // one-question-at-a-time lease (30 s, released when the answer ends).
   ask               Boolean   @default(true)
   askLeaseUntil     DateTime? @map("ask_lease_until") @db.Timestamptz(3)
@@ -522,7 +523,7 @@ model AiUsage {
   // Search by meaning (AI-3): link texts embedded and search queries embedded this month.
   embeds        Int      @default(0)
   searchQueries Int      @default(0) @map("search_queries")
-  // Library clean-up runs with AI checks this month (AI-5, ADR 0052 point 3).
+  // Library clean-up runs with AI checks this month (AI-5, ADR 0053 point 3).
   cleanupRuns   Int      @default(0) @map("cleanup_runs")
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -530,7 +531,7 @@ model AiUsage {
   @@map("ai_usage")
 }
 
-// Ask your shelf questions per UTC day (AI-4, ADR 0051 point 7): counts only, never a question or an
+// Ask your shelf questions per UTC day (AI-4, ADR 0052 point 7): counts only, never a question or an
 // answer. Reserved under the advisory lock `ai-ask:<userId>` before the model call, refunded when the
 // stream fails before any text; the AI sweep deletes rows older than 62 days.
 model AiAskUsage {
@@ -565,7 +566,7 @@ model RediscoverState {
   @@map("rediscover_state")
 }
 
-// The user's library clean-up report (AI-5, ADR 0052): one row, replaced by each run. `findings` holds
+// The user's library clean-up report (AI-5, ADR 0053): one row, replaced by each run. `findings` holds
 // group ids, reasons and link or tag ids only, never titles, URLs or names (read back with a narrowing
 // parser). `cursor` and `leaseUntil` drive the deferred near-duplicate pass.
 model CleanupReport {
@@ -679,7 +680,7 @@ model LinkSuggestion {
   @@map("link_suggestions")
 }
 
-// The search-by-meaning vector of one link (AI-3, ADR 0050): user data, same-user composite FK with
+// The search-by-meaning vector of one link (AI-3, ADR 0052): user data, same-user composite FK with
 // cascade (purge and account deletion remove it; a trashed link keeps it for a restore). `inputHash` is
 // the SHA-256 of the embedded text, so an unchanged text never costs a call; `stale` is set by every
 // write path that changes title, note, tags or summary (`markStale`). The HNSW index
@@ -700,4 +701,39 @@ model LinkEmbedding {
 
   @@index([userId, stale])
   @@map("link_embeddings")
+}
+
+// Personal MCP tokens (#395, ADR 0054): read-only access for the user's own assistant. Only the
+// SHA-256 hex digest of the secret is stored (unique, the lookup key), with its last four characters
+// for the list. Revoke deletes the row, so the token stops at once and its usage rows cascade.
+// CHECKs in the migration keep the name to 1-40 characters, the digest to 64 hex characters and
+// last4 to four base64url characters.
+model McpToken {
+  id           String          @id @default(uuid(7)) @db.Uuid
+  userId       String          @map("user_id") @db.Uuid
+  name         String          @db.VarChar(40)
+  tokenHash    String          @unique @map("token_hash") @db.Char(64)
+  last4        String          @db.Char(4)
+  includeNotes Boolean         @default(false) @map("include_notes")
+  createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  // Written at most once a minute by the token guard (plain SQL).
+  lastUsedAt   DateTime?       @map("last_used_at") @db.Timestamptz(3)
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usage        McpTokenUsage[]
+
+  @@index([userId])
+  @@map("mcp_tokens")
+}
+
+// Calls of one personal MCP token per UTC day (counts only, never arguments or results). Reserved with
+// one INSERT ... ON CONFLICT statement per call, capped at MCP_LIMIT.CallsPerTokenPerDay; rows older
+// than 35 days are deleted by the first call of a day. "Calls this week" sums the last 7 days.
+model McpTokenUsage {
+  tokenId String   @map("token_id") @db.Uuid
+  day     DateTime @db.Date
+  calls   Int      @default(0)
+  token   McpToken @relation(fields: [tokenId], references: [id], onDelete: Cascade)
+
+  @@id([tokenId, day])
+  @@map("mcp_token_usage")
 }

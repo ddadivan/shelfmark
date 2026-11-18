@@ -1,5 +1,5 @@
 /**
- * Near-duplicates (ADR 0052 point 2, plan 1.3): the `NeighboursPerLink` nearest own live links of
+ * Near-duplicates (ADR 0053 point 2, plan 1.3): the `NeighboursPerLink` nearest own live links of
  * each link with a vector count when cosine similarity is at least `SimilarityMin` and the hosts are
  * one family or the title stems overlap by at least `TitleOverlapMin` (Jaccard).
  */

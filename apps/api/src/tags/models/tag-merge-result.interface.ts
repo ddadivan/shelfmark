@@ -7,4 +7,6 @@ export interface TagMergeResult {
   linkIds: string[];
   /** Of those, the links that did not carry the target before. */
   addedLinkIds: string[];
+  /** Links whose search vectors were marked stale; when above 0 the caller kicks the embed pass after commit. */
+  staled: number;
 }

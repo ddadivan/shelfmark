@@ -187,6 +187,37 @@
       "text": "Un clic sulla barra degli strumenti o Alt+Maiusc+S. Titolo, regole delle cartelle e cartelle recenti sono già compilati: per quasi tutte le pagine basta un altro clic.",
       "browsers": "Per Chrome, Edge, Brave e Arc. Installala dalla tua libreria dopo l’accesso.",
       "alt": "L’estensione Shelfmark: Salva in Shelfmark con il titolo della pagina, la cartella Abbigliamento da una regola, tag e una nota"
+    },
+    "ai": {
+      "badge": "IA facoltativa",
+      "title": "Un aiuto a riordinare, quando lo vuoi",
+      "text": "Attiva l’IA e ogni nuovo link arriva con tag, una cartella e un riassunto di due righe suggeriti. Niente si sposta finché non tocchi.",
+      "points": {
+        "suggest": {
+          "title": "Suggerimenti che accetti",
+          "text": "Tag e cartelle tra quelli che hai già, con un tocco."
+        },
+        "meaning": {
+          "title": "Trovalo per argomento",
+          "text": "«Quel talk sui signals» trova il video, anche senza quelle parole."
+        },
+        "ask": {
+          "title": "Chiedi alla tua libreria",
+          "text": "Una domanda con parole tue, una risposta dai tuoi link con le fonti."
+        }
+      },
+      "note": "Spenta finché non la attivi. I tuoi link non vengono mai usati per addestrare modelli di IA.",
+      "privacy": "Come funziona l’IA in Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore in pratica",
+        "newTag": "gestione dello stato",
+        "query": "talk su signals e prestazioni",
+        "related": "Simili per significato",
+        "result": "Change detection zoneless, spiegata",
+        "why": "Vicino a: rendering più veloce",
+        "recipe": "Il miglior ramen infrasettimanale",
+        "summary": "Un ramen in 30 minuti con brodo pronto, uova morbide e sottaceti veloci."
+      }
     }
   },
   "links": {
@@ -571,7 +602,7 @@
       "intro": "L’IA resta spenta finché non la attivi in Impostazioni › IA. Quando è attiva, suggerisce tag e cartelle e scrive brevi riassunti. Tutto ciò che crea porta una piccola scintilla e può essere impreciso; nulla viene applicato se non lo accetti o non scegli la modalità automatica.",
       "processor": {
         "term": "Chi li elabora:",
-        "text": "[PROVIDER], come nostro responsabile del trattamento, solo per produrre il risultato richiesto. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+        "text": "Anthropic PBC (USA), come nostro responsabile del trattamento, solo per produrre il risultato richiesto."
       },
       "sent": {
         "term": "Cosa viene inviato:",
@@ -579,7 +610,7 @@
       },
       "kept": {
         "term": "Per quanto tempo:",
-        "text": "il fornitore conserva la richiesta al massimo [N] giorni e non la usa per l’addestramento. I risultati (tag, riassunti) sono salvati con i tuoi link ed eliminati con essi."
+        "text": "Anthropic elimina la richiesta entro 30 giorni e non la usa per l’addestramento; solo i contenuti segnalati dai suoi sistemi di sicurezza possono essere conservati più a lungo (fino a 2 anni), o quando la legge lo richiede. I risultati (tag, riassunti) sono salvati con i tuoi link ed eliminati con essi."
       },
       "counted": {
         "term": "Cosa contiamo:",
@@ -591,7 +622,7 @@
       },
       "meaning": {
         "term": "Ricerca per significato:",
-        "text": "finché è attiva (Impostazioni › IA), titolo, riepilogo e nomi dei tag di ogni link, la nota solo con «Includi le mie note», e le parole che cerchi vengono inviati a Voyage AI, il nostro secondo responsabile del trattamento, che li trasforma in vettori di numeri. Mai l’indirizzo, le tue cartelle o i dati di altre persone. I vettori sono salvati con i tuoi link ed eliminati con essi o con «Elimina dati IA»; ciò che cerchi non viene salvato. Voyage AI conserva le richieste per al massimo [N] giorni e non le usa per l’addestramento. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+        "text": "finché è attiva (Impostazioni › IA), titolo, riepilogo e nomi dei tag di ogni link, la nota solo con «Includi le mie note», e le parole che cerchi vengono inviati a Voyage AI, il nostro secondo responsabile del trattamento, che li trasforma in vettori di numeri. Mai l’indirizzo, le tue cartelle o i dati di altre persone. I vettori sono salvati con i tuoi link ed eliminati con essi o con «Elimina dati IA»; ciò che cerchi non viene salvato. Voyage AI by MongoDB (USA) elimina ogni richiesta subito dopo averla elaborata (conservazione zero) e non la usa per l’addestramento."
       },
       "ask": {
         "term": "Chiedi ai tuoi link:",
@@ -2955,6 +2986,17 @@
       "aiCleanup": {
         "title": "Riordino della libreria",
         "text": "Trova i link salvati più volte e i tag con lo stesso significato, controlla ogni modifica e applicale in un passaggio, con un solo Annulla. Le copie vanno nel cestino."
+      },
+      "mcp": {
+        "title": "Collega il tuo assistente",
+        "text": "Con Pro, Claude e altri assistenti MCP possono cercare e leggere i tuoi link con un token personale. Sola lettura, revocabile in qualsiasi momento."
+      },
+      "aiSearch": {
+        "title": "Ricerca per significato",
+        "text": "La ricerca trova i link che corrispondono a ciò che intendi, non solo alle tue parole, e spiega perché ognuno corrisponde. «Modifica link» mostra link correlati nel tuo scaffale e «Affiancati» può proporre le loro cartelle."
+      },
+      "extensionInStore": {
+        "text": "L’estensione di Shelfmark è sul Chrome Web Store: installala dal banner del tuo scaffale o da Impostazioni › Libreria."
       }
     },
     "sections": {
@@ -3120,7 +3162,7 @@
       },
       "training": {
         "title": "Non usato per l’addestramento",
-        "text": "I tuoi contenuti non vengono mai usati per addestrare modelli. Il fornitore, [PROVIDER], li elabora per noi e li conserva al massimo [N] giorni."
+        "text": "I tuoi contenuti non vengono mai usati per addestrare modelli. Anthropic li elabora per noi e li elimina entro 30 giorni."
       },
       "details": "Puoi disattivare l’IA, o una funzione alla volta, in Impostazioni › IA.",
       "policy": "Leggi l’informativa sulla privacy",
@@ -3325,6 +3367,101 @@
       "retry": "Riprova",
       "truncated": "La risposta è stata interrotta.",
       "stopped": "Interrotto."
+    },
+    "connect": {
+      "title": "Collega il tuo assistente",
+      "lead": "Permetti a Claude o a un altro assistente compatibile con MCP di cercare e leggere i tuoi link. Sola lettura: non può modificare né eliminare nulla.",
+      "pro": "Collegare un assistente fa parte di Pro. I token che hai già restano in elenco e puoi revocarli.",
+      "demo": "La demo non può collegare un assistente. Accedi con il tuo account per provarlo.",
+      "loadFailed": "Impossibile caricare i tuoi token.",
+      "retry": "Riprova",
+      "copy": "Copia",
+      "copyFailed": "Impossibile copiare. Seleziona il testo e copialo con la tastiera.",
+      "address": {
+        "title": "1. Indirizzo del server",
+        "copyLabel": "Copia l’indirizzo del server",
+        "copied": "Indirizzo del server copiato"
+      },
+      "token": {
+        "title": "2. Token personale",
+        "hint": "Un token per assistente, così puoi revocarli uno per uno.",
+        "limit": "Hai {{max}} token. Revocane uno per crearne un altro.",
+        "create": "Crea token"
+      },
+      "list": {
+        "title": "Collegati",
+        "last4": "Finisce con {{last4}}",
+        "used": "Ultimo uso {{when}}, chiamate questa settimana: {{calls}}",
+        "never": "Creato il {{date}}, mai usato",
+        "notes": "Con le note",
+        "revoke": "Revoca",
+        "revokeLabel": "Revoca {{name}}"
+      },
+      "empty": {
+        "title": "Nessun assistente collegato",
+        "text": "Crea un token, incollalo con l’indirizzo del server nelle impostazioni MCP del tuo assistente e chiedigli dei tuoi link."
+      },
+      "revoke": {
+        "title": "Revocare {{name}}?",
+        "message": "Smette subito di funzionare: l’assistente che lo usa non può più leggere i tuoi link.",
+        "confirm": "Revoca",
+        "cancel": "Annulla",
+        "done": "Token revocato",
+        "failed": "Impossibile revocare il token. Riprova."
+      },
+      "create": {
+        "title": "Crea un token",
+        "close": "Chiudi",
+        "name": "Nome",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Dai un nome al token.",
+        "tooLong": "Al massimo {{max}} caratteri.",
+        "notes": "Includi le mie note",
+        "notesHint": "Il tuo assistente vedrà anche le note dei tuoi link. Per cambiarlo in seguito, crea un nuovo token.",
+        "cancel": "Annulla",
+        "action": "Crea token",
+        "saving": "Creazione…",
+        "error": {
+          "limit": "Hai {{max}} token. Revocane uno per crearne un altro.",
+          "notAvailable": "Collegare un assistente fa parte di Pro.",
+          "save": "Impossibile creare il token. Riprova."
+        }
+      },
+      "secret": {
+        "title": "Token per {{name}}",
+        "label": "Token personale (mostrato una sola volta)",
+        "copyLabel": "Copia il token",
+        "copied": "Token copiato",
+        "warning": "Copialo ora: non lo vedrai più. Chiunque abbia questo token può leggere i tuoi link finché non lo revochi.",
+        "fallback": "Impossibile copiare. Il token è selezionato qui sopra: premi Ctrl+C o ⌘C per copiarlo.",
+        "field": "Token personale",
+        "done": "Fatto"
+      },
+      "howTo": {
+        "toggle": "Come collegarsi: Claude, Cursor, VS Code",
+        "intro": "Sostituisci <token> con il tuo token personale.",
+        "copyLabel": "Copia la configurazione per {{client}}",
+        "copied": "Configurazione per {{client}} copiata",
+        "oauth": "Gli assistenti che si collegano solo tramite un accesso (OAuth), come i connettori web, non possono ancora collegarsi.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Esegui questo in un terminale:"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Aggiungi questo a claude_desktop_config.json (Impostazioni › Sviluppatore › Modifica configurazione) e riavvia Claude Desktop. Richiede Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Aggiungi questo a ~/.cursor/mcp.json:"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Aggiungi questo a .vscode/mcp.json nel tuo progetto:"
+          }
+        }
+      }
     }
   },
   "rediscover": {

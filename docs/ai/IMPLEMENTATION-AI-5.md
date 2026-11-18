@@ -1,6 +1,6 @@
 # AI-5 implementation plan: library clean-up
 
-Nov 17, 2026 · architect plan for F5 "Library clean-up" (#394), one branch `feat/394-library-cleanup` (stacked on AI-4 `feat/393-ask-your-shelf`; it needs only AI-3, so it can rebase onto AI-3 if AI-4 lags), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F5, principle 3, disclosure), `docs/design/screens/AiCleanup.dc.html`, `MobileAiMore.dc.html` (note: the desktop page in one column), the AI-1 code (`apps/api/src/ai/**`), `apps/api/src/tags/tags.service.ts` (merge), `apps/api/src/trash/**`, `apps/api/src/links/links-bulk.service.ts`, the AI-2 and AI-3 plans, ADR 0036 / 0048 / 0049 / 0050, new ADR 0052.
+Nov 17, 2026 · architect plan for F5 "Library clean-up" (#394), one branch `feat/394-library-cleanup` (stacked on AI-4 `feat/393-ask-your-shelf`; it needs only AI-3, so it can rebase onto AI-3 if AI-4 lags), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F5, principle 3, disclosure), `docs/design/screens/AiCleanup.dc.html`, `MobileAiMore.dc.html` (note: the desktop page in one column), the AI-1 code (`apps/api/src/ai/**`), `apps/api/src/tags/tags.service.ts` (merge), `apps/api/src/trash/**`, `apps/api/src/links/links-bulk.service.ts`, the AI-2 and AI-3 plans, ADR 0036 / 0049 / 0050 / 0051, new ADR 0053.
 
 **In scope.** The clean-up report page (desktop, tablet, phone) with three groups: duplicates (exact by normalised URL, near by AI-3 vectors), similar tags (by rule and by the model); per-row checkboxes; "Apply {n} changes" in one step with one Undo; deletions through Trash; the checking, applied and "nothing to clean" states; the monthly entry card on All links; entries in Settings › Library and You › Library.
 
@@ -8,7 +8,7 @@ Nov 17, 2026 · architect plan for F5 "Library clean-up" (#394), one branch `fea
 
 Principles enforced: nothing changes without "Apply"; unchecked rows are left alone; deletions go to Trash; one Undo reverts the run; AI groups are marked "Found by AI" and follow the opt-in and tier; near-duplicates send nothing new; tag synonyms send only tag names; the mock is the only provider outside production and for demo users.
 
-## 1. Decisions (ADR 0052)
+## 1. Decisions (ADR 0053)
 
 1. **Split (FEATURES proposal).** For everyone, AI on or off: **exact duplicates** (`links.normalized_url`, index `(user_id, normalized_url)`) and **similar tags by rule** (equal after lower case, diacritics removed, separators `-_ .` removed and one trailing `s` dropped; no model). For AI on and the AI pack: **near-duplicates** (search status `ready`, nothing sent) and **similar tags by the model** (one Haiku call, tag names only, counts one `cleanup_runs`).
 2. **Stored report, ids only** (`cleanup_reports`, one row per user, replaced by each run): findings hold group ids, reasons and link or tag ids, never titles, URLs or names; the read joins live rows, so trashed links and deleted tags drop out and renames show.
@@ -46,7 +46,7 @@ Principles enforced: nothing changes without "Apply"; unchecked rows are left al
 
 Changes: `AiQuotaLimits` + `cleanupAiRunsPerMonth` (`AI_QUOTA`: Free 0, AI pack 10); `AiTickResponse` + `cleanup: CleanupState`. Server-only (`apps/api/src/cleanup/models/`, `apps/api/src/ai/models/`): `CleanupCheck`, `CleanupCheckProgress`, `StoredCleanupFindings` (with its narrowing reader), `TagSynonymsInput`, `TagSynonymsOutcome`; `NearSimilarityMin`, `TitleOverlapMin`, `TagsSentMax` stay server constants.
 
-## 3. Schema and migration `20261201120000_cleanup_reports`
+## 3. Schema and migration `20261204120000_cleanup_reports`
 
 - **`cleanup_reports`**: `user_id uuid PRIMARY KEY` (FK `users` cascade), `state varchar(8)` (CHECK), `include_ai boolean`, `checked int`, `total int`, `cursor uuid`, `lease_until timestamptz`, `findings jsonb NOT NULL DEFAULT '{}'` (ids only, read back with a narrowing parser like `parseStoredQuery`), `started_at`, `finished_at`, `applied_at`, `card_dismissed_at`.
 - **`ai_usage`** + `cleanup_runs int NOT NULL DEFAULT 0` (the same one-statement reserve).
@@ -87,11 +87,11 @@ Changes: `AiQuotaLimits` + `cleanupAiRunsPerMonth` (`AI_QUOTA`: Free 0, AI pack 
 
 ## 7. Docs
 
-`docs/PROJECT.md`: 5.6 status (AI-5), 6.1 `cleanup_reports` and `ai_usage.cleanup_runs`, 6.2 the endpoints, 5.8 AI row (clean-up: ids-only report, apply validated against it, deletions through Trash, tag names only to the model). `apps/api/CLAUDE.md` (`CleanupModule`, the check seam, the tick hook), `apps/web/CLAUDE.md` (clean-up page, card). ADR 0052 and its row. Changelog draft entry.
+`docs/PROJECT.md`: 5.6 status (AI-5), 6.1 `cleanup_reports` and `ai_usage.cleanup_runs`, 6.2 the endpoints, 5.8 AI row (clean-up: ids-only report, apply validated against it, deletions through Trash, tag names only to the model). `apps/api/CLAUDE.md` (`CleanupModule`, the check seam, the tick hook), `apps/web/CLAUDE.md` (clean-up page, card). ADR 0053 and its row. Changelog draft entry.
 
 ## 8. Commits (each builds and passes `npm run affected`)
 
-1. `docs(ai): AI-5 implementation plan` (architect): this file and ADR 0052.
+1. `docs(ai): AI-5 implementation plan` (architect): this file and ADR 0053.
 2. `feat(contracts): clean-up types`.
 3. `feat(api): clean-up report table and allowance column`: migration, schema spec.
 4. `feat(api): exact duplicates and rule-based tag variants`: checks, keep rule, `GET` / `POST run`.
@@ -127,7 +127,7 @@ Changes: `AiQuotaLimits` + `cleanupAiRunsPerMonth` (`AI_QUOTA`: Free 0, AI pack 
 
 Nov 18, 2026 · backend, commits 2–8 on `feat/394-ai-cleanup`. Contracts in `libs/shared/contracts/src/cleanup/` as in section 2, plus `CLEANUP_ERROR_MESSAGE` (`Running`, `EmptyApply`, `UndoGone`) and `CLEANUP_LIMIT.UndoWindowMinutes` (10). Review fixes: `CleanupUndoRequest` is `{ runId }`, `CleanupApplyResponse` is `{ trashed, merged, skipped, trashedIds, undo: { runId } | null }`, and `CleanupUndoMerge` left the contracts (the server-side `StoredUndoMerge`); `AI_QUOTA.*.cleanupAiRunsPerMonth` (Free 0, AI pack 10); `AiTickResponse.cleanup`.
 
-**Schema** (`20261201120000_cleanup_reports`): `cleanup_reports` as section 3 plus `progress_at` (the 24 h stall rule); CHECKs on `state`, non-negative counts and `jsonb_typeof(findings) = 'object'`; `ai_usage.cleanup_runs`. Migration `20261203120000_cleanup_undo` (review fixes) adds `ai_run_month` (the month the run's AI allowance was counted in) and the held Undo `undo_run_id`, `undo_data` (jsonb object: `{ deletedAt, trashedIds, merges: [{ keptTagId, mergedName, linkIds, addedLinkIds }] }`, read back by `readStoredUndo`), `undo_until`, all three set or all null (CHECK). Findings: `{ duplicates: [{ id, reason, source, linkIds }], similarTags: [{ id, source, tagIds: [a, b] }], pending: [checkKey], nearPairs: [[a, b]] }`, ids only, read back by `readStoredFindings` (malformed items dropped one by one). Group and pair ids are 12-character random base64url strings, new on every run. `DELETE /api/ai/data` deletes the row.
+**Schema** (`20261204120000_cleanup_reports`): `cleanup_reports` as section 3 plus `progress_at` (the 24 h stall rule); CHECKs on `state`, non-negative counts and `jsonb_typeof(findings) = 'object'`; `ai_usage.cleanup_runs`. Migration `20261205120000_cleanup_undo` (review fixes) adds `ai_run_month` (the month the run's AI allowance was counted in) and the held Undo `undo_run_id`, `undo_data` (jsonb object: `{ deletedAt, trashedIds, merges: [{ keptTagId, mergedName, linkIds, addedLinkIds }] }`, read back by `readStoredUndo`), `undo_until`, all three set or all null (CHECK). Findings: `{ duplicates: [{ id, reason, source, linkIds }], similarTags: [{ id, source, tagIds: [a, b] }], pending: [checkKey], nearPairs: [[a, b]] }`, ids only, read back by `readStoredFindings` (malformed items dropped one by one). Group and pair ids are 12-character random base64url strings, new on every run. `DELETE /api/ai/data` deletes the row.
 
 **Endpoints** (all session-only, every query on the session user):
 

@@ -10,6 +10,7 @@ import {
 import type { Prisma } from '../generated/prisma/client';
 import { FoldersService } from '../folders/folders.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { TagChangeHooks } from '../tags/tag-change-hooks.service';
 import { TagsService } from '../tags/tags.service';
 import type { StoredCleanupFindings } from './models/stored-cleanup-findings.interface';
 import type { StoredCleanupUndo } from './models/stored-cleanup-undo.interface';
@@ -17,7 +18,7 @@ import type { StoredUndoMerge } from './models/stored-undo-merge.interface';
 import { readStoredFindings } from './read-stored-findings';
 
 /**
- * "Apply {n} changes" (ADR 0052 point 4), validated against the stored report and the session user:
+ * "Apply {n} changes" (ADR 0053 point 4), validated against the stored report and the session user:
  * a group or pair id must be in the stored findings, trashed ids must be members of their group and
  * live links of the user, at least one member of a group always stays live, a kept tag must be one of
  * its pair and both tags still the user's. Everything else is skipped, never an error. One
@@ -35,13 +36,16 @@ export class CleanupApplyService {
     private readonly prisma: PrismaService,
     private readonly folders: FoldersService,
     private readonly tags: TagsService,
+    private readonly tagHooks: TagChangeHooks,
   ) {}
 
   async apply(userId: string, request: CleanupApplyRequest): Promise<CleanupApplyResponse> {
     if (request.duplicates.length + request.tagMerges.length === 0) {
       throw new BadRequestException(CLEANUP_ERROR_MESSAGE.EmptyApply);
     }
+    let staled = 0;
     const result = await this.prisma.$transaction(async (tx) => {
+      staled = 0;
       await this.folders.lockTree(tx, userId);
       const rows = await tx.$queryRaw<{ findings: unknown }[]>`
         SELECT findings FROM cleanup_reports WHERE user_id = ${userId}::uuid FOR UPDATE`;
@@ -61,9 +65,12 @@ export class CleanupApplyService {
               RETURNING id::text AS id`;
       const merges: StoredUndoMerge[] = [];
       for (const item of request.tagMerges) {
-        const merge = await this.mergeOne(tx, userId, findings, item);
-        if (merge === null) skipped += 1;
-        else merges.push(merge);
+        const outcome = await this.mergeOne(tx, userId, findings, item);
+        if (outcome === null) skipped += 1;
+        else {
+          merges.push(outcome.merge);
+          staled += outcome.staled;
+        }
       }
       const trashedIds = trashed.map((row) => row.id);
       if (trashedIds.length === 0 && merges.length === 0) {
@@ -90,6 +97,8 @@ export class CleanupApplyService {
         undo: { runId },
       };
     });
+    // Merges marked search vectors stale (AI-3): kick the embed pass once the transaction is in.
+    if (staled > 0) await this.tagHooks.linksChanged(userId);
     this.logger.log(
       `Clean-up apply: ${result.trashed} trashed, ${result.merged} merged, ${result.skipped} skipped`,
     );
@@ -140,7 +149,7 @@ export class CleanupApplyService {
     userId: string,
     findings: StoredCleanupFindings,
     item: CleanupApplyRequest['tagMerges'][number],
-  ): Promise<StoredUndoMerge | null> {
+  ): Promise<{ merge: StoredUndoMerge; staled: number } | null> {
     const pair = findings.similarTags.find((entry) => entry.id === item.pairId);
     if (pair === undefined || !pair.tagIds.includes(item.keepTagId)) return null;
     const sourceId = pair.tagIds[0] === item.keepTagId ? pair.tagIds[1] : pair.tagIds[0];
@@ -152,10 +161,13 @@ export class CleanupApplyService {
     if (source === undefined || tags.length < 2) return null;
     const result = await this.tags.mergeInTransaction(tx, userId, sourceId, item.keepTagId);
     return {
-      keptTagId: item.keepTagId,
-      mergedName: source.name,
-      linkIds: result.linkIds,
-      addedLinkIds: result.addedLinkIds,
+      merge: {
+        keptTagId: item.keepTagId,
+        mergedName: source.name,
+        linkIds: result.linkIds,
+        addedLinkIds: result.addedLinkIds,
+      },
+      staled: result.staled,
     };
   }
 }

@@ -3,7 +3,7 @@ import type { StoredDuplicateGroup } from './stored-duplicate-group.interface';
 import type { StoredTagPair } from './stored-tag-pair.interface';
 
 /**
- * `cleanup_reports.findings` (ADR 0052 point 1): group ids, reasons and link or tag ids only, never
+ * `cleanup_reports.findings` (ADR 0053 point 1): group ids, reasons and link or tag ids only, never
  * titles, URLs or names. Read back through `readStoredFindings`, which narrows anything else away.
  */
 export interface StoredCleanupFindings {

@@ -36,14 +36,16 @@ export class AiDataService {
       await tx.$executeRaw`
         UPDATE ai_settings SET backfill_state = ${AI_BACKFILL_STATE.Stopped}, backfill_cursor = NULL
         WHERE user_id = ${userId}::uuid AND backfill_state = ${AI_BACKFILL_STATE.Running}`;
-      // Search by meaning (ADR 0050): every vector goes, and the switch turns off so they are not
-      // rebuilt at once (open question 3); a pass that is running finds the switch off and stops.
-      await tx.$executeRaw`DELETE FROM link_embeddings WHERE user_id = ${userId}::uuid`;
+      // Search by meaning (ADR 0052): the switch turns off so the vectors are not rebuilt at once
+      // (open question 3), then every vector goes. The order matters: the settings row lock comes
+      // first, so a pass writing during the provider call either waits and finds the switch off or
+      // has committed before the delete reads the table (`AiEmbedService.searchStillOn`).
       await tx.$executeRaw`
         UPDATE ai_settings SET meaning_search = false, embed_lease_until = NULL,
           embed_not_before = NULL, embed_failures = 0, embed_failed_at = NULL
         WHERE user_id = ${userId}::uuid`;
-      // Library clean-up (ADR 0052): the stored report goes; a deferred pass finds no row and stops.
+      await tx.$executeRaw`DELETE FROM link_embeddings WHERE user_id = ${userId}::uuid`;
+      // Library clean-up (ADR 0053): the stored report goes; a deferred pass finds no row and stops.
       await tx.$executeRaw`DELETE FROM cleanup_reports WHERE user_id = ${userId}::uuid`;
       return batches;
     });

@@ -21,7 +21,7 @@ function parseBlock(block: string): AskEvent | null {
 }
 
 /**
- * A reader for the Ask stream (ADR 0051, plan 10.1): events are `data: <json>` lines ended by a
+ * A reader for the Ask stream (ADR 0052, plan 10.1): events are `data: <json>` lines ended by a
  * blank line. Text may arrive split anywhere, several events in one chunk or one event over many;
  * lines without `data:` (comments, other fields), broken JSON and unknown event types are skipped.
  */

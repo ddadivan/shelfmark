@@ -17,7 +17,7 @@ import { nearestLinks } from './nearest-links';
 import { rankMeaning } from './rank-meaning';
 
 /**
- * `GET /api/links/:id/related` (F7, ADR 0050): the closest other live links of the session user by
+ * `GET /api/links/:id/related` (F7, ADR 0052): the closest other live links of the session user by
  * the link's own stored vector, with the same floor and window as meaning search, without a model
  * call. A trashed, foreign or missing link is 404; with search by meaning off or no current vector
  * for the link the answer has no items, only the status.

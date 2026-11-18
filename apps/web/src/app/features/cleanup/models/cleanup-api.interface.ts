@@ -9,7 +9,7 @@ import type {
 } from '@shelfmark/contracts';
 import type { Observable } from 'rxjs';
 
-/** Seam for the library clean-up routes (`CLEANUP_ENDPOINT`, F5, ADR 0052): one method per route. */
+/** Seam for the library clean-up routes (`CLEANUP_ENDPOINT`, F5, ADR 0053): one method per route. */
 export interface CleanupApi {
   /** `GET /api/cleanup`: the stored report, read live (`none` before the first run). */
   getReport(): Observable<CleanupReport>;

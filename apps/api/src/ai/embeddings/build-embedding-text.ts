@@ -7,7 +7,7 @@ function clean(value: string | null): string {
 }
 
 /**
- * The text embedded for a link (ADR 0050 point 2): plain lines `Title`, `Tags` (sorted, so the order
+ * The text embedded for a link (ADR 0052 point 2): plain lines `Title`, `Tags` (sorted, so the order
  * they were added in never changes the hash), `Summary` (AI or the user's) and `Note` only while
  * "Include my notes" is on; never the URL, folder names or other links. Empty parts are left out;
  * at most `AI_EMBED_LIMIT.TextMax` characters.
