@@ -271,6 +271,21 @@ describe('AiSettingsPage', () => {
     expect(meaningRow(root).textContent).not.toContain('links ready');
   });
 
+  it('saves Ask your shelf at once and shows the questions left', async () => {
+    const { root, api, settle } = await setup({ initial: response(ON) });
+    const askSwitch = (): HTMLButtonElement | null =>
+      root.querySelector<HTMLButtonElement>('button[role="switch"][aria-label="Ask your shelf"]');
+    const row = askSwitch()?.closest('ui-settings-row');
+    expect(row?.textContent).toContain('Uses Claude by Anthropic');
+    expect(row?.textContent).toContain('nothing is stored');
+    expect(row?.textContent).toContain('12 questions left today');
+    askSwitch()?.click();
+    await settle();
+    expect(api.updateSettings).toHaveBeenLastCalledWith({ ask: false });
+    expect(askSwitch()?.getAttribute('aria-checked')).toBe('false');
+    expect(askSwitch()?.closest('ui-settings-row')?.textContent).not.toContain('questions left');
+  });
+
   it('says Ready, or paused until the reset day at the limit', async () => {
     const ready = await setup({ initial: response(ON) });
     expect(meaningRow(ready.root).textContent).toContain('Ready');

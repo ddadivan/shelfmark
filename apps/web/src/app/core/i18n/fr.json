@@ -592,6 +592,10 @@
       "meaning": {
         "term": "Recherche par le sens :",
         "text": "tant qu’elle est activée (Paramètres › IA), le titre, le résumé et les noms de tags de chaque lien, votre note seulement avec « Inclure mes notes », et les mots que vous cherchez sont envoyés à Voyage AI, notre second sous-traitant, qui les transforme en vecteurs de nombres. Jamais l’adresse, vos dossiers ni les données d’autres personnes. Les vecteurs sont conservés avec vos liens et supprimés avec eux ou avec « Supprimer les données d’IA » ; votre recherche n’est pas conservée. Voyage AI conserve les requêtes [N] jours au maximum et ne les utilise pas pour l’entraînement. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+      },
+      "ask": {
+        "term": "Interroger mes liens :",
+        "text": "uniquement quand vous posez une question, votre question et jusqu’à 10 de vos liens correspondants (titre, adresse sans paramètres, noms des dossiers et des tags, résumé, votre note seulement avec « Inclure mes notes ») sont envoyés à [PROVIDER]. La réponse ne cite que ces liens. Ni la question ni la réponse ne sont conservées ; nous ne comptons que le nombre de questions par jour et par mois, pour votre limite."
       }
     },
     "retention": {
@@ -3049,6 +3053,10 @@
         "ready": "Prête",
         "progress": "{{ready}} liens prêts sur {{total}}",
         "quota": "En pause jusqu’au {{date}} : limite du mois atteinte"
+      },
+      "ask": {
+        "title": "Interroger mes liens",
+        "text": "Répond aux questions à partir de vos propres liens. Utilise Claude d’Anthropic : votre question et les liens correspondants sont envoyés, rien n’est conservé."
       }
     },
     "backfill": {
@@ -3108,6 +3116,10 @@
       "meaning": {
         "title": "Trouve les liens par le sens",
         "text": "La recherche et les liens proches tiennent aussi compte du sujet d’un lien. Pour cela, les titres, tags, résumés et votre recherche sont envoyés à Voyage AI. Désactivable à part dans Paramètres › IA."
+      },
+      "ask": {
+        "title": "Répond à vos questions à partir de vos liens",
+        "text": "Seulement quand vous posez une question : votre question et les liens correspondants sont envoyés au modèle. La réponse indique ses sources et rien n’est conservé. Désactivez-le séparément dans Réglages › IA."
       }
     },
     "suggest": {

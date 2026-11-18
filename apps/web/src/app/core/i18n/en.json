@@ -580,6 +580,10 @@
       "meaning": {
         "term": "Search by meaning:",
         "text": "while it is on (Settings › AI), the title, summary and tag names of each link, your note only with \"Include my notes\", and the words you search for are sent to Voyage AI, our second processor, which turns them into number vectors. Never the address, your folders or anyone else's data. The vectors are stored with your links and deleted with them or with \"Delete AI data\"; your search text is not stored. Voyage AI keeps requests for at most [N] days and doesn't use them for training. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+      },
+      "ask": {
+        "term": "Ask your shelf:",
+        "text": "only when you ask a question, your question and up to 10 of your links that match it (title, address without its query, folder and tag names, summary, your note only with \"Include my notes\") are sent to [PROVIDER]. The answer cites only those links. Neither the question nor the answer is stored; we count only the number of questions per day and month, for your limit."
       }
     },
     "retention": {
@@ -2987,6 +2991,10 @@
         "ready": "Ready",
         "progress": "{{ready}} of {{total}} links ready",
         "quota": "Paused until {{date}}: this month’s limit"
+      },
+      "ask": {
+        "title": "Ask your shelf",
+        "text": "Answers questions from your own links. Uses Claude by Anthropic: your question and the matching links are sent, nothing is stored."
       }
     },
     "backfill": {
@@ -3045,6 +3053,10 @@
       "meaning": {
         "title": "Finds links by meaning",
         "text": "Search and related links also match what a link is about. For this, titles, tags, summaries and your search text go to Voyage AI. Turn it off on its own in Settings › AI."
+      },
+      "ask": {
+        "title": "Answers questions from your links",
+        "text": "Only when you ask: your question and the matching links go to the model. The answer lists its sources and nothing is stored. Turn it off on its own in Settings › AI."
       }
     },
     "suggest": {

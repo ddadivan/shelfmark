@@ -580,6 +580,10 @@
       "meaning": {
         "term": "Suche nach Bedeutung:",
         "text": "solange sie eingeschaltet ist (Einstellungen › KI), werden Titel, Zusammenfassung und Tag-Namen jedes Links, die Notiz nur mit „Meine Notizen einbeziehen“, und die Wörter deiner Suche an Voyage AI gesendet, unseren zweiten Auftragsverarbeiter, der daraus Zahlenvektoren macht. Nie die Adresse, deine Ordner oder Daten anderer. Die Vektoren werden mit deinen Links gespeichert und mit ihnen oder mit „KI-Daten löschen“ gelöscht; deine Suche wird nicht gespeichert. Voyage AI bewahrt Anfragen höchstens [N] Tage auf und nutzt sie nicht zum Training. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+      },
+      "ask": {
+        "term": "Frag deine Links:",
+        "text": "nur wenn du eine Frage stellst, werden deine Frage und bis zu 10 passende Links (Titel, Adresse ohne Parameter, Ordner- und Tag-Namen, Zusammenfassung, deine Notiz nur mit „Meine Notizen einbeziehen“) an [PROVIDER] gesendet. Die Antwort zitiert nur diese Links. Weder Frage noch Antwort werden gespeichert; wir zählen nur die Anzahl der Fragen pro Tag und Monat, für dein Limit."
       }
     },
     "retention": {
@@ -2987,6 +2991,10 @@
         "ready": "Bereit",
         "progress": "{{ready}} von {{total}} Links bereit",
         "quota": "Pausiert bis {{date}}: Monatslimit erreicht"
+      },
+      "ask": {
+        "title": "Frag deine Links",
+        "text": "Beantwortet Fragen aus deinen eigenen Links. Nutzt Claude von Anthropic: Deine Frage und die passenden Links werden gesendet, nichts wird gespeichert."
       }
     },
     "backfill": {
@@ -3045,6 +3053,10 @@
       "meaning": {
         "title": "Findet Links nach Bedeutung",
         "text": "Suche und ähnliche Links berücksichtigen auch, worum es in einem Link geht. Dafür gehen Titel, Tags, Zusammenfassungen und deine Suche an Voyage AI. Einzeln abschaltbar unter Einstellungen › KI."
+      },
+      "ask": {
+        "title": "Beantwortet Fragen aus deinen Links",
+        "text": "Nur wenn du fragst: Deine Frage und die passenden Links gehen an das Modell. Die Antwort nennt ihre Quellen, nichts wird gespeichert. Einzeln ausschaltbar unter Einstellungen › KI."
       }
     },
     "suggest": {

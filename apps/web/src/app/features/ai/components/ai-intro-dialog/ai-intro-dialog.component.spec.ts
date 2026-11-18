@@ -105,6 +105,7 @@ describe('AiIntroDialogComponent', () => {
     expect(body).toContain('Writes short summaries');
     expect(body).toContain('Finds links by meaning');
     expect(body).toContain('go to Voyage AI');
+    expect(body).toContain('Answers questions from your links');
     expect(body).toContain('What is sent to the model');
     expect(body).toContain('Not used for training');
     expect(body).toContain('Settings › AI');

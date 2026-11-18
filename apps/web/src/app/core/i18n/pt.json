@@ -592,6 +592,10 @@
       "meaning": {
         "term": "Busca por significado:",
         "text": "enquanto estiver ativada (Configurações › IA), o título, o resumo e os nomes das tags de cada link, sua nota só com “Incluir minhas notas”, e as palavras que você busca são enviados à Voyage AI, nosso segundo operador, que os transforma em vetores de números. Nunca o endereço, suas pastas ou dados de outras pessoas. Os vetores ficam guardados com seus links e são excluídos com eles ou com “Excluir dados de IA”; sua busca não é guardada. A Voyage AI mantém as solicitações por no máximo [N] dias e não as usa para treinamento. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+      },
+      "ask": {
+        "term": "Pergunte aos seus links:",
+        "text": "só quando você faz uma pergunta, sua pergunta e até 10 links relacionados (título, endereço sem parâmetros, nomes de pastas e tags, resumo, sua nota só com “Incluir minhas notas”) são enviados para [PROVIDER]. A resposta cita apenas esses links. Nem a pergunta nem a resposta são guardadas; contamos só o número de perguntas por dia e por mês, para o seu limite."
       }
     },
     "retention": {
@@ -3049,6 +3053,10 @@
         "ready": "Pronta",
         "progress": "{{ready}} de {{total}} links prontos",
         "quota": "Pausada até {{date}}: limite do mês atingido"
+      },
+      "ask": {
+        "title": "Pergunte aos seus links",
+        "text": "Responde perguntas com base nos seus próprios links. Usa o Claude da Anthropic: sua pergunta e os links relacionados são enviados, nada é guardado."
       }
     },
     "backfill": {
@@ -3108,6 +3116,10 @@
       "meaning": {
         "title": "Encontra links pelo significado",
         "text": "A busca e os links relacionados também consideram o assunto de um link. Para isso, títulos, tags, resumos e o que você busca vão para a Voyage AI. Desative separadamente em Configurações › IA."
+      },
+      "ask": {
+        "title": "Responde perguntas com seus links",
+        "text": "Só quando você pergunta: sua pergunta e os links relacionados vão para o modelo. A resposta lista as fontes e nada é guardado. Desative separadamente em Configurações › IA."
       }
     },
     "suggest": {

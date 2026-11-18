@@ -39,6 +39,7 @@ import { ViewportService } from '../../../../core/layout/viewport.service';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { AiUsageSectionComponent } from '../../../ai/components/ai-usage-section/ai-usage-section.component';
 import { MeaningSearchControlComponent } from '../../../ai/components/meaning-search-control/meaning-search-control.component';
+import { AskControlComponent } from '../../../ai/components/ask-control/ask-control.component';
 import { AI_MODE_LABEL_KEYS } from '../../../ai/models/ai-mode-label-keys.const';
 import { AiSettingsActions } from '../../../ai/services/ai-settings-actions.service';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
@@ -67,6 +68,7 @@ import { SETTINGS_PATH } from '../../models/settings-path.const';
     ButtonComponent,
     FragmentTargetDirective,
     MeaningSearchControlComponent,
+    AskControlComponent,
     NoticeComponent,
     SegmentedControlComponent,
     SelectComponent,
