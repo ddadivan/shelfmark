@@ -61,4 +61,15 @@ describe('buildLinkWhere', () => {
       },
     ]);
   });
+
+  it('leaves the note out of the text match with searchNotes false', () => {
+    expect(buildLinkWhere(USER, { q: 'coat' }, { searchNotes: false }).AND).toEqual([
+      {
+        OR: [
+          { title: { contains: 'coat', mode: 'insensitive' } },
+          { url: { contains: 'coat', mode: 'insensitive' } },
+        ],
+      },
+    ]);
+  });
 });
