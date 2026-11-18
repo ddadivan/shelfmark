@@ -2,13 +2,17 @@ import { HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
   AI_APPLIED_PART,
+  AI_SEARCH_LIMIT,
   type AiBackfillStatus,
   type AiJobResponse,
   type AiSettingsResponse,
   type AiTickResponse,
+  type AskEvent,
   type CreateAiDraftRequest,
   type LinkAiState,
   type LinkResponse,
+  type MeaningSearchResponse,
+  type RelatedLinksResponse,
   type TidyApplyRequest,
   type TidyApplyResponse,
   type TidyCountResponse,
@@ -24,7 +28,9 @@ import { mockHttpError } from '../../../core/api/mock-http-error';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { AiApi } from '../models/ai-api.interface';
 import { isAiFeatureMode } from '../utils/ai-setting-values';
+import { MockAiAsk } from './mock-ai-ask';
 import { MockAiData } from './mock-ai-data';
+import { meaningQueryProblems, MockAiMeaning } from './mock-ai-meaning';
 import { MockAiTidy } from './mock-ai-tidy';
 
 function failure(status: number, message?: string | string[]): Observable<never> {
@@ -78,6 +84,8 @@ function tidyProblems(
 export class MockAiApi implements AiApi {
   private readonly data = inject(MockAiData);
   private readonly tidy = inject(MockAiTidy);
+  private readonly meaning = inject(MockAiMeaning);
+  private readonly asking = inject(MockAiAsk);
 
   getSettings(): Observable<AiSettingsResponse> {
     return defer(() => of(this.data.settingsResponse())).pipe(delay(MOCK_LATENCY_MS.List));
@@ -129,7 +137,11 @@ export class MockAiApi implements AiApi {
   tick(): Observable<AiTickResponse> {
     return defer(() => {
       this.data.settle();
-      return of({ pendingJobs: this.data.pendingJobs(), backfill: this.data.backfillStatus() });
+      return of({
+        pendingJobs: this.data.pendingJobs(),
+        backfill: this.data.backfillStatus(),
+        search: this.data.searchStatus(),
+      });
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
@@ -193,5 +205,35 @@ export class MockAiApi implements AiApi {
       const link = this.data.undo(linkId, request.part);
       return link ? of(link) : failure(HttpStatusCode.NotFound);
     }).pipe(delay(MOCK_LATENCY_MS.Create));
+  }
+
+  searchMeaning(
+    q: string,
+    limit: number = AI_SEARCH_LIMIT.MeaningDefault,
+  ): Observable<MeaningSearchResponse> {
+    return defer(() => {
+      const problems = meaningQueryProblems(q, limit, AI_SEARCH_LIMIT.MeaningMax);
+      return problems
+        ? failure(HttpStatusCode.BadRequest, problems)
+        : of(this.meaning.search(q, limit));
+    }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
+  related(
+    linkId: string,
+    limit: number = AI_SEARCH_LIMIT.RelatedDefault,
+  ): Observable<RelatedLinksResponse> {
+    return defer(() => {
+      const problems = meaningQueryProblems(undefined, limit, AI_SEARCH_LIMIT.RelatedMax);
+      if (problems) {
+        return failure(HttpStatusCode.BadRequest, problems);
+      }
+      const response = this.meaning.related(linkId, limit);
+      return response ? of(response) : failure(HttpStatusCode.NotFound);
+    }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
+  ask(question: string): Observable<AskEvent> {
+    return this.asking.ask(question);
   }
 }

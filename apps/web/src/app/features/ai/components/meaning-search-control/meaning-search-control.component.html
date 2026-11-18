@@ -1,0 +1,9 @@
+@if (line(); as status) {
+  <span class="meaning-search-control__status">{{ status.key | transloco: status.params }}</span>
+}
+<ui-switch
+  #control
+  [label]="'ai.settings.meaning.title' | transloco"
+  [checked]="store.settings().meaningSearch"
+  (checkedChange)="set($event, control)"
+/>

@@ -159,6 +159,20 @@ export const EndSide: Story = {
   }),
 };
 
+/** `width="wide"`: a 440px panel from the inline-end edge (Ask your shelf). */
+export const Wide: Story = {
+  render: () => ({
+    moduleMetadata: { imports: [DrawerComponent] },
+    template: `
+      <div class="drs-scrim">
+        <ui-drawer closeLabel="Close panel" side="end" width="wide">
+          <span slot="head" class="drs-title">Ask your shelf</span>
+          <p class="drs-paragraph">Ask in your own words. The answer comes from the links you saved.</p>
+        </ui-drawer>
+      </div>`,
+  }),
+};
+
 /** The body scrolls; the header and footer stay put. */
 export const LongContent: Story = {
   render: () => ({

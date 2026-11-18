@@ -8,6 +8,8 @@ import {
   AI_TIER,
   type AiSettingsResponse,
   type UpdateAiSettingsRequest,
+  AI_SEARCH_STATE,
+  ASK_PERIOD,
 } from '@shelfmark/contracts';
 import { ToastService } from '@shelfmark/ui';
 import { of, throwError } from 'rxjs';
@@ -36,6 +38,11 @@ const RESPONSE: AiSettingsResponse = {
     total: 0,
     done: 0,
     estimatedMinutes: null,
+  },
+  search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
+  ask: {
+    available: true,
+    allowance: { questionsLeft: 12, period: ASK_PERIOD.Day, resetsOn: '2026-11-19' },
   },
 };
 

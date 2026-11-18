@@ -179,6 +179,10 @@
           <app-add-link-ai-folder />
         </div>
 
+        @if (original; as link) {
+          <app-related-links [linkId]="link.id" />
+        }
+
         <div class="add-link__group">
           <ui-tag-input
             [label]="'links.add.tags.label' | transloco"

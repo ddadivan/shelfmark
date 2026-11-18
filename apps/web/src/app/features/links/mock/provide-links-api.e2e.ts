@@ -46,6 +46,10 @@ import { MockTagsApi } from './mock-tags.api';
 import { HttpAiApi } from '../../ai/http/http-ai.api';
 import { MockAiApi } from '../../ai/mock/mock-ai.api';
 import { AI_API } from '../../ai/models/ai-api.const';
+import { HttpRediscoverApi } from '../../rediscover/http/http-rediscover.api';
+import { MockRediscoverApi } from '../../rediscover/mock/mock-rediscover.api';
+import { REDISCOVER_API } from '../../rediscover/models/rediscover-api.const';
+import type { RediscoverApi } from '../../rediscover/models/rediscover-api.interface';
 import type { AiApi } from '../../ai/models/ai-api.interface';
 import { HttpSharesApi } from '../../sharing/http/http-shares.api';
 import { MockSharesApi } from '../../sharing/mock/mock-shares.api';
@@ -156,6 +160,11 @@ export function provideLinksApi(): Provider[] {
     {
       provide: AI_API,
       useFactory: (): AiApi => (useRealApi() ? inject(HttpAiApi) : inject(MockAiApi)),
+    },
+    {
+      provide: REDISCOVER_API,
+      useFactory: (): RediscoverApi =>
+        useRealApi() ? inject(HttpRediscoverApi) : inject(MockRediscoverApi),
     },
     { provide: EXPORT_API, useExisting: MockExportApi },
   ];

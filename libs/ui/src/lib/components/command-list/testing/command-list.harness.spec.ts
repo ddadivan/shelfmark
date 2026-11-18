@@ -34,13 +34,26 @@ const LINKS = ['Signal Forms', 'NgRx SignalStore', 'Signals vs RxJS'] as const;
           }
         </ui-command-group>
       }
+      @if (related()) {
+        <ui-command-group
+          heading="Related by meaning"
+          icon="spark"
+          lead="No links with these words"
+        >
+          <ui-command-item value="related">Zoneless change detection</ui-command-item>
+        </ui-command-group>
+      }
       <p slot="empty">Nothing found</p>
+      @if (related()) {
+        <span slot="note">Search by meaning is getting ready</span>
+      }
     </ui-command-list>
   `,
 })
 class HostComponent {
   readonly query = signal('');
   readonly busy = signal(false);
+  readonly related = signal(false);
   readonly disabledTitle = LINKS[2];
   readonly chosen = signal<CommandSelection[]>([]);
 
@@ -85,6 +98,18 @@ describe('UiCommandListHarness', () => {
     expect(await options[2]?.isDisabled()).toBe(true);
     expect(await list.getOptions({ disabled: false })).toHaveLength(2);
     expect(await list.getActiveOptionText()).toBe('Signal Forms youtube.com');
+  });
+
+  it('reads divider headings, the lines above headings and the note', async () => {
+    const { list, host } = await setup();
+    expect(await list.getDividerHeadings()).toEqual([]);
+    expect(await list.getGroupLeads()).toEqual([]);
+    expect(await list.getNoteText()).toBe('');
+    host.related.set(true);
+    expect(await list.getNoteText()).toBe('Search by meaning is getting ready');
+    expect(await list.getGroupHeadings()).toEqual(['Links', 'Related by meaning']);
+    expect(await list.getDividerHeadings()).toEqual(['Related by meaning']);
+    expect(await list.getGroupLeads()).toEqual(['No links with these words']);
   });
 
   it('types a query, shows the empty state and clears it', async () => {

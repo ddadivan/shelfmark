@@ -588,6 +588,14 @@
       "off": {
         "term": "Disattivarla:",
         "text": "spegni una funzione o tutta l’IA in Impostazioni › IA; le richieste si fermano subito. «Elimina dati IA» lì rimuove ogni riassunto e suggerimento creato dall’IA."
+      },
+      "meaning": {
+        "term": "Ricerca per significato:",
+        "text": "finché è attiva (Impostazioni › IA), titolo, riepilogo e nomi dei tag di ogni link, la nota solo con «Includi le mie note», e le parole che cerchi vengono inviati a Voyage AI, il nostro secondo responsabile del trattamento, che li trasforma in vettori di numeri. Mai l’indirizzo, le tue cartelle o i dati di altre persone. I vettori sono salvati con i tuoi link ed eliminati con essi o con «Elimina dati IA»; ciò che cerchi non viene salvato. Voyage AI conserva le richieste per al massimo [N] giorni e non le usa per l’addestramento. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+      },
+      "ask": {
+        "term": "Chiedi ai tuoi link:",
+        "text": "solo quando fai una domanda, la domanda e fino a 10 dei tuoi link pertinenti (titolo, indirizzo senza parametri, nomi di cartelle e tag, riassunto, la tua nota solo con «Includi le mie note») vengono inviati a [PROVIDER]. La risposta cita solo quei link. Né la domanda né la risposta vengono conservate; contiamo solo il numero di domande al giorno e al mese, per il tuo limite."
       }
     },
     "retention": {
@@ -1824,7 +1832,14 @@
       "move": "sposta",
       "open": "apri",
       "background": "apri in background"
-    }
+    },
+    "askRow": "Chiedi ai tuoi link: «{{query}}»",
+    "mode": {
+      "label": "Cerca o chiedi",
+      "search": "Cerca",
+      "ask": "Chiedi"
+    },
+    "askRowCompact": "Chiedi ai tuoi link su questo"
   },
   "share": {
     "title": "Salva in Shelfmark",
@@ -3019,7 +3034,7 @@
       "data": {
         "title": "I tuoi dati IA",
         "label": "Elimina dati IA",
-        "hint": "Rimuove tutti i riassunti e i suggerimenti dell’IA. Le tue modifiche, i tag e le cartelle restano.",
+        "hint": "Rimuove tutti i riepiloghi e i suggerimenti dell’IA e disattiva la ricerca per significato. Le tue modifiche, i tag e le cartelle restano.",
         "action": "Elimina dati IA"
       },
       "privacy": {
@@ -3031,7 +3046,18 @@
       "failed": "Impossibile salvare le impostazioni IA",
       "failedDetail": "La modifica è stata annullata. Riprova.",
       "loadFailed": "Impossibile caricare le impostazioni IA.",
-      "retry": "Riprova"
+      "retry": "Riprova",
+      "meaning": {
+        "title": "Ricerca per significato",
+        "text": "Trova i link in base all’argomento, non solo alle parole, e mostra link correlati. Invia a Voyage AI titolo, tag e riepilogo di ogni link (anche la nota, con «Includi le mie note») e ciò che cerchi.",
+        "ready": "Pronta",
+        "progress": "{{ready}} link pronti su {{total}}",
+        "quota": "In pausa fino al {{date}}: limite del mese raggiunto"
+      },
+      "ask": {
+        "title": "Chiedi ai tuoi link",
+        "text": "Risponde alle domande a partire dai tuoi link. Usa Claude di Anthropic: vengono inviati la domanda e i link pertinenti, non viene conservato nulla."
+      }
     },
     "backfill": {
       "title": "Elabora i link esistenti",
@@ -3053,7 +3079,7 @@
     "deleteData": {
       "confirm": {
         "title": "Eliminare i dati IA?",
-        "message": "Tutti i riassunti e i suggerimenti dell’IA vengono rimossi. Le tue modifiche, i tag e le cartelle restano. L’operazione non si può annullare.",
+        "message": "Tutti i riepiloghi e i suggerimenti dell’IA vengono rimossi e la ricerca per significato si disattiva. Le tue modifiche, i tag e le cartelle restano. Non si può annullare.",
         "confirm": "Elimina dati IA",
         "cancel": "Annulla",
         "close": "Chiudi"
@@ -3086,7 +3112,15 @@
       "policy": "Leggi l’informativa sulla privacy",
       "failed": "Impossibile attivare l’IA. Riprova.",
       "notNow": "Non ora",
-      "turnOn": "Attiva l’IA"
+      "turnOn": "Attiva l’IA",
+      "meaning": {
+        "title": "Trova i link per significato",
+        "text": "La ricerca e i link correlati tengono conto anche dell’argomento di un link. Per questo titoli, tag, riepiloghi e ciò che cerchi vanno a Voyage AI. Si disattiva a parte in Impostazioni › IA."
+      },
+      "ask": {
+        "title": "Risponde alle domande dai tuoi link",
+        "text": "Solo quando chiedi: la domanda e i link pertinenti vanno al modello. La risposta indica le fonti e non viene conservato nulla. Puoi disattivarlo da solo in Impostazioni › IA."
+      }
     },
     "suggest": {
       "label": "Suggeriti",
@@ -3212,6 +3246,82 @@
       },
       "undone": "Riordino annullato",
       "undoFailed": "Impossibile annullare il riordino"
+    },
+    "search": {
+      "related": "Correlati per significato",
+      "noWordMatches": "Nessun link con queste parole",
+      "why": "Vicino a: {{reasons}}",
+      "fromSummary": "Vicino a: {{reasons}} (dal riepilogo)",
+      "preparing": "La ricerca per significato si sta preparando: {{ready}} link su {{total}}. La ricerca per parole funziona come sempre."
+    },
+    "related": {
+      "title": "Correlati nel tuo scaffale",
+      "why": "Vicino a: {{reasons}}",
+      "show": "Mostra correlati",
+      "folders": "Cartelle correlate"
+    },
+    "ask": {
+      "title": "Chiedi ai tuoi link",
+      "open": "Chiedi ai tuoi link",
+      "close": "Chiudi Chiedi ai tuoi link",
+      "newQuestion": "Nuova domanda",
+      "emptyTitle": "Cosa vuoi sapere?",
+      "lead": "Chiedi con parole tue. La risposta arriva dai link che hai salvato, con ogni fonte indicata.",
+      "starters": {
+        "saved": "Cosa ho salvato su {{folder}}?",
+        "ideas": "Quali sono le idee principali in {{folder}}?",
+        "recent": "Cosa ho aggiunto a {{folder}} di recente?",
+        "generic": "Cosa ho salvato questo mese?"
+      },
+      "label": "Chiedi sui tuoi link",
+      "placeholder": "Chiedi sui tuoi link",
+      "send": "Chiedi",
+      "stop": "Interrompi",
+      "left": {
+        "day": {
+          "one": "{{count}} domanda rimasta oggi",
+          "many": "{{count}} di domande rimaste oggi",
+          "other": "{{count}} domande rimaste oggi"
+        },
+        "month": {
+          "one": "{{count}} domanda rimasta questo mese",
+          "many": "{{count}} di domande rimaste questo mese",
+          "other": "{{count}} domande rimaste questo mese"
+        }
+      },
+      "footer": "Le risposte usano solo i tuoi link. Nella tua libreria non cambia nulla.",
+      "sources": "Fonti dai tuoi link",
+      "source": "Fonte {{n}}",
+      "sideBySide": "Apri affiancato",
+      "remind": "Ricordamelo",
+      "notFound": {
+        "text": "Nei tuoi link non c’è una risposta.",
+        "search": "Cerca «{{query}}»",
+        "add": "Aggiungi un link"
+      },
+      "limit": {
+        "day": "Hai usato le domande di oggi. Riprova domani; la ricerca funziona come sempre.",
+        "month": "Hai usato le domande di questo mese. Riprova il {{date}}; la ricerca funziona come sempre."
+      },
+      "error": "Al momento non è possibile rispondere. Questa domanda non è stata conteggiata.",
+      "rejected": "Non è possibile rispondere a questa domanda. Non è stata conteggiata.",
+      "busy": "C’è ancora un’altra domanda in corso. Riprova tra un momento.",
+      "off": "Chiedi ai tuoi link è disattivato in Impostazioni › IA.",
+      "retry": "Riprova",
+      "truncated": "La risposta è stata interrotta.",
+      "stopped": "Interrotto."
     }
+  },
+  "rediscover": {
+    "title": "Dai tuoi link",
+    "lead": {
+      "theme": "Stai salvando molto su {{theme}}. Questi sono link più vecchi che non hai aperto.",
+      "forgotten": "Salvati tempo fa e mai aperti."
+    },
+    "dismiss": "Nascondi fino alla prossima settimana",
+    "saved": "Salvato a {{month}}, non aperto di recente",
+    "remind": "Ricordamelo",
+    "readLater": "Leggi dopo",
+    "notInterested": "Non mi interessa"
   }
 }

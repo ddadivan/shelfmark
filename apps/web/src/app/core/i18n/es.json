@@ -588,6 +588,14 @@
       "off": {
         "term": "Desactivarla:",
         "text": "desactiva una función o toda la IA en Ajustes › IA; las solicitudes se detienen al instante. «Eliminar datos de IA» allí borra todos los resúmenes y sugerencias de la IA."
+      },
+      "meaning": {
+        "term": "Búsqueda por significado:",
+        "text": "mientras está activada (Ajustes › IA), el título, el resumen y los nombres de etiquetas de cada enlace, tu nota solo con «Incluir mis notas», y las palabras que buscas se envían a Voyage AI, nuestro segundo encargado del tratamiento, que los convierte en vectores de números. Nunca la dirección, tus carpetas ni datos de otras personas. Los vectores se guardan con tus enlaces y se eliminan con ellos o con «Eliminar datos de IA»; tu búsqueda no se guarda. Voyage AI conserva las solicitudes [N] días como máximo y no las usa para entrenar. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+      },
+      "ask": {
+        "term": "Pregunta a tus enlaces:",
+        "text": "solo cuando haces una pregunta, se envían a [PROVIDER] tu pregunta y hasta 10 enlaces relacionados (título, dirección sin parámetros, nombres de carpetas y etiquetas, resumen, tu nota solo con «Incluir mis notas»). La respuesta cita solo esos enlaces. No se guardan ni la pregunta ni la respuesta; solo contamos el número de preguntas por día y por mes, para tu límite."
       }
     },
     "retention": {
@@ -1824,7 +1832,14 @@
       "move": "moverse",
       "open": "abrir",
       "background": "abrir en segundo plano"
-    }
+    },
+    "askRow": "Pregunta a tus enlaces: «{{query}}»",
+    "mode": {
+      "label": "Buscar o preguntar",
+      "search": "Buscar",
+      "ask": "Preguntar"
+    },
+    "askRowCompact": "Pregunta a tus enlaces sobre esto"
   },
   "share": {
     "title": "Guardar en Shelfmark",
@@ -3019,7 +3034,7 @@
       "data": {
         "title": "Tus datos de IA",
         "label": "Eliminar datos de IA",
-        "hint": "Quita todos los resúmenes y sugerencias de la IA. Tus cambios, etiquetas y carpetas se quedan.",
+        "hint": "Elimina todos los resúmenes y sugerencias de la IA y desactiva la búsqueda por significado. Tus cambios, etiquetas y carpetas se mantienen.",
         "action": "Eliminar datos de IA"
       },
       "privacy": {
@@ -3031,7 +3046,18 @@
       "failed": "No se pudieron guardar los ajustes de IA",
       "failedDetail": "El cambio se ha deshecho. Inténtalo de nuevo.",
       "loadFailed": "No se pudieron cargar los ajustes de IA.",
-      "retry": "Reintentar"
+      "retry": "Reintentar",
+      "meaning": {
+        "title": "Búsqueda por significado",
+        "text": "Encuentra enlaces por su tema, no solo por sus palabras, y muestra enlaces relacionados. Envía a Voyage AI el título, las etiquetas y el resumen de cada enlace (también tu nota, con «Incluir mis notas») y lo que buscas.",
+        "ready": "Lista",
+        "progress": "{{ready}} de {{total}} enlaces listos",
+        "quota": "En pausa hasta el {{date}}: límite del mes alcanzado"
+      },
+      "ask": {
+        "title": "Pregunta a tus enlaces",
+        "text": "Responde preguntas a partir de tus propios enlaces. Usa Claude de Anthropic: se envían tu pregunta y los enlaces relacionados, no se guarda nada."
+      }
     },
     "backfill": {
       "title": "Procesar enlaces existentes",
@@ -3053,7 +3079,7 @@
     "deleteData": {
       "confirm": {
         "title": "¿Eliminar los datos de IA?",
-        "message": "Se quitan todos los resúmenes y sugerencias de la IA. Tus cambios, etiquetas y carpetas se quedan. No se puede deshacer.",
+        "message": "Se eliminan todos los resúmenes y sugerencias de la IA y se desactiva la búsqueda por significado. Tus cambios, etiquetas y carpetas se mantienen. No se puede deshacer.",
         "confirm": "Eliminar datos de IA",
         "cancel": "Cancelar",
         "close": "Cerrar"
@@ -3086,7 +3112,15 @@
       "policy": "Leer la política de privacidad",
       "failed": "No se pudo activar la IA. Inténtalo de nuevo.",
       "notNow": "Ahora no",
-      "turnOn": "Activar la IA"
+      "turnOn": "Activar la IA",
+      "meaning": {
+        "title": "Encuentra enlaces por significado",
+        "text": "La búsqueda y los enlaces relacionados también tienen en cuenta el tema de un enlace. Para ello, los títulos, etiquetas, resúmenes y tu búsqueda van a Voyage AI. Se desactiva por separado en Ajustes › IA."
+      },
+      "ask": {
+        "title": "Responde preguntas con tus enlaces",
+        "text": "Solo cuando preguntas: tu pregunta y los enlaces relacionados van al modelo. La respuesta indica sus fuentes y no se guarda nada. Desactívalo por separado en Ajustes › IA."
+      }
     },
     "suggest": {
       "label": "Sugerido",
@@ -3212,6 +3246,82 @@
       },
       "undone": "Orden deshecho",
       "undoFailed": "No se pudo deshacer el orden"
+    },
+    "search": {
+      "related": "Relacionados por significado",
+      "noWordMatches": "Ningún enlace con estas palabras",
+      "why": "Cerca de: {{reasons}}",
+      "fromSummary": "Cerca de: {{reasons}} (del resumen)",
+      "preparing": "La búsqueda por significado se está preparando: {{ready}} de {{total}} enlaces. La búsqueda por palabras funciona como siempre."
+    },
+    "related": {
+      "title": "Relacionados en tu estantería",
+      "why": "Cerca de: {{reasons}}",
+      "show": "Mostrar relacionados",
+      "folders": "Carpetas relacionadas"
+    },
+    "ask": {
+      "title": "Pregunta a tus enlaces",
+      "open": "Pregunta a tus enlaces",
+      "close": "Cerrar Pregunta a tus enlaces",
+      "newQuestion": "Nueva pregunta",
+      "emptyTitle": "¿Qué quieres saber?",
+      "lead": "Pregunta con tus propias palabras. La respuesta sale de los enlaces que guardaste, con cada fuente.",
+      "starters": {
+        "saved": "¿Qué guardé sobre {{folder}}?",
+        "ideas": "¿Cuáles son las ideas principales en {{folder}}?",
+        "recent": "¿Qué añadí a {{folder}} últimamente?",
+        "generic": "¿Qué guardé este mes?"
+      },
+      "label": "Pregunta sobre tus enlaces",
+      "placeholder": "Pregunta sobre tus enlaces",
+      "send": "Preguntar",
+      "stop": "Detener",
+      "left": {
+        "day": {
+          "one": "Te queda {{count}} pregunta hoy",
+          "many": "Te quedan {{count}} de preguntas hoy",
+          "other": "Te quedan {{count}} preguntas hoy"
+        },
+        "month": {
+          "one": "Te queda {{count}} pregunta este mes",
+          "many": "Te quedan {{count}} de preguntas este mes",
+          "other": "Te quedan {{count}} preguntas este mes"
+        }
+      },
+      "footer": "Las respuestas usan solo tus enlaces. No se cambia nada en tu biblioteca.",
+      "sources": "Fuentes de tus enlaces",
+      "source": "Fuente {{n}}",
+      "sideBySide": "Abrir en paralelo",
+      "remind": "Recordarme",
+      "notFound": {
+        "text": "Nada en tus enlaces responde a esto.",
+        "search": "Buscar «{{query}}»",
+        "add": "Añadir un enlace"
+      },
+      "limit": {
+        "day": "Has usado las preguntas de hoy. Vuelve a preguntar mañana; la búsqueda funciona como siempre.",
+        "month": "Has usado las preguntas de este mes. Vuelve a preguntar el {{date}}; la búsqueda funciona como siempre."
+      },
+      "error": "No se pudo obtener una respuesta ahora. Esta pregunta no se ha contado.",
+      "rejected": "No se puede responder a esta pregunta. No se ha contado.",
+      "busy": "Todavía se está respondiendo otra pregunta. Inténtalo de nuevo en un momento.",
+      "off": "Pregunta a tus enlaces está desactivado en Ajustes › IA.",
+      "retry": "Reintentar",
+      "truncated": "La respuesta se cortó.",
+      "stopped": "Detenido."
     }
+  },
+  "rediscover": {
+    "title": "De tus enlaces",
+    "lead": {
+      "theme": "Últimamente guardas mucho sobre {{theme}}. Estos son enlaces más antiguos que no has abierto.",
+      "forgotten": "Guardados hace tiempo y nunca abiertos."
+    },
+    "dismiss": "Ocultar hasta la próxima semana",
+    "saved": "Guardado en {{month}}, sin abrir últimamente",
+    "remind": "Recordarme",
+    "readLater": "Leer más tarde",
+    "notInterested": "No me interesa"
   }
 }

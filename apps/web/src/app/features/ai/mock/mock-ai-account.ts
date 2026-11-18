@@ -9,6 +9,11 @@ export function utcMonth(now: number): string {
   return new Date(now).toISOString().slice(0, 7);
 }
 
+/** The UTC day (`YYYY-MM-DD`) of `now`. */
+export function utcDay(now: number): string {
+  return new Date(now).toISOString().slice(0, 10);
+}
+
 /** The first day (`YYYY-MM-DD`) of the UTC month after `now`: when the monthly count resets. */
 export function nextUtcMonthStart(now: number): string {
   const date = new Date(now);
@@ -38,6 +43,9 @@ function readSettings(value: unknown, fallback: AiSettings): AiSettings {
     summaryLanguage: isAiSummaryLanguage(stored.summaryLanguage)
       ? stored.summaryLanguage
       : fallback.summaryLanguage,
+    meaningSearch:
+      typeof stored.meaningSearch === 'boolean' ? stored.meaningSearch : fallback.meaningSearch,
+    ask: typeof stored.ask === 'boolean' ? stored.ask : fallback.ask,
   };
 }
 
@@ -61,6 +69,7 @@ export function readMockAiAccount(
     // Missing, blocked or broken storage: the defaults below.
   }
   const month = utcMonth(now);
+  const day = utcDay(now);
   return {
     settings: readSettings(stored.settings, { ...AI_SETTINGS_DEFAULT, enabled: demo }),
     introSeen: typeof stored.introSeen === 'boolean' ? stored.introSeen : demo,
@@ -68,6 +77,10 @@ export function readMockAiAccount(
     month,
     linksUsed: stored.month === month ? count(stored.linksUsed) : 0,
     backfillUsed: count(stored.backfillUsed),
+    searchProcessing: stored.searchProcessing === true,
+    askDay: day,
+    askDayUsed: stored.askDay === day ? count(stored.askDayUsed) : 0,
+    askMonthUsed: stored.month === month ? count(stored.askMonthUsed) : 0,
   };
 }
 

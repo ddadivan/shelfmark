@@ -69,6 +69,20 @@ describe('HttpAiApi', () => {
         '/api/links/l1/ai/undo',
         { part: 'folder' },
       ],
+      [
+        () => api.searchMeaning('warm coat').subscribe(),
+        'GET',
+        '/api/ai/search?q=warm%20coat',
+        null,
+      ],
+      [
+        () => api.searchMeaning('warm coat', 3).subscribe(),
+        'GET',
+        '/api/ai/search?q=warm%20coat&limit=3',
+        null,
+      ],
+      [() => api.related('l/1').subscribe(), 'GET', '/api/links/l%2F1/related', null],
+      [() => api.related('l1', 5).subscribe(), 'GET', '/api/links/l1/related?limit=5', null],
     ];
     for (const [call, method, url, body] of calls) {
       call();
@@ -78,5 +92,22 @@ describe('HttpAiApi', () => {
       expect(request.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
       request.flush({});
     }
+  });
+
+  it('asks over fetch with the question as JSON, outside HttpClient', async () => {
+    const { api } = setup();
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response('data: {"type":"text","text":"Hi"}\n\n', { status: 200 }));
+    const events = await new Promise<unknown[]>((resolve) => {
+      const seen: unknown[] = [];
+      api.ask('ramen?').subscribe({ next: (e) => seen.push(e), complete: () => resolve(seen) });
+    });
+    expect(events).toEqual([{ type: 'text', text: 'Hi' }]);
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/api/ai/ask',
+      expect.objectContaining({ method: 'POST', body: '{"question":"ramen?"}' }),
+    );
+    fetchSpy.mockRestore();
   });
 });

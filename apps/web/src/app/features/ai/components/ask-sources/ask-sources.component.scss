@@ -1,0 +1,46 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ask-sources__heading {
+  @include type(caption);
+
+  margin: 0;
+  padding-inline: var(--space-1);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.ask-sources__list {
+  margin: 0 calc(var(--space-2) * -1);
+  padding: 0;
+  list-style: none;
+}
+
+.ask-sources__lead {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+// The citation number of the row (`sm-cite`, not a button here).
+.ask-sources__n {
+  display: inline-grid;
+  place-items: center;
+  min-width: rem(18px);
+  height: rem(18px);
+  padding: 0 rem(4px);
+  font: 600 #{rem(11px)} / #{rem(16px)} var(--font-sans);
+  color: var(--text);
+  background: var(--surface-hover);
+  border-radius: rem(6px);
+}
+
+.ask-sources__actions {
+  display: inline-flex;
+  gap: var(--space-1);
+}

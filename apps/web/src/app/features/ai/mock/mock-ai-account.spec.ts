@@ -21,11 +21,28 @@ describe('mock AI account', () => {
       month: '2026-11',
       linksUsed: 0,
       backfillUsed: 0,
+      searchProcessing: false,
+      askDay: '2026-11-17',
+      askDayUsed: 0,
+      askMonthUsed: 0,
     });
     const demo = readMockAiAccount(localStorage, true, NOW);
     expect(demo.settings.enabled).toBe(true);
     expect(demo.introSeen).toBe(true);
     expect(demo.tier).toBe(AI_TIER.Free);
+  });
+
+  it('counts Ask questions per UTC day and month', () => {
+    const account = readMockAiAccount(localStorage, false, NOW);
+    writeMockAiAccount(localStorage, { ...account, askDayUsed: 2, askMonthUsed: 4 });
+    expect(readMockAiAccount(localStorage, false, NOW)).toMatchObject({
+      askDayUsed: 2,
+      askMonthUsed: 4,
+    });
+    const tomorrow = readMockAiAccount(localStorage, false, NOW + 86_400_000);
+    expect(tomorrow).toMatchObject({ askDay: '2026-11-18', askDayUsed: 0, askMonthUsed: 4 });
+    const nextMonth = readMockAiAccount(localStorage, false, Date.UTC(2026, 11, 2));
+    expect(nextMonth).toMatchObject({ askDayUsed: 0, askMonthUsed: 0 });
   });
 
   it('keeps what was written and resets the monthly count in a new month', () => {
@@ -39,6 +56,8 @@ describe('mock AI account', () => {
     const again = readMockAiAccount(localStorage, false, NOW);
     expect(again.settings.tagsMode).toBe(AI_FEATURE_MODE.Auto);
     expect(again.linksUsed).toBe(7);
+    expect(again.settings.meaningSearch).toBe(true);
+    expect(again.searchProcessing).toBe(false);
     const next = readMockAiAccount(localStorage, false, Date.UTC(2026, 11, 1));
     expect(next.linksUsed).toBe(0);
     expect(next.backfillUsed).toBe(3);
@@ -55,6 +74,16 @@ describe('mock AI account', () => {
     localStorage.setItem(MOCK_AI_STORAGE_KEY, '{');
     expect(readMockAiAccount(localStorage, false, NOW).settings).toEqual(AI_SETTINGS_DEFAULT);
     expect(readMockAiAccount(undefined, false, NOW).introSeen).toBe(false);
+  });
+
+  it('reads the search by meaning switch and the processing toggle', () => {
+    localStorage.setItem(
+      MOCK_AI_STORAGE_KEY,
+      JSON.stringify({ settings: { meaningSearch: false }, searchProcessing: true }),
+    );
+    const account = readMockAiAccount(localStorage, false, NOW);
+    expect(account.settings.meaningSearch).toBe(false);
+    expect(account.searchProcessing).toBe(true);
   });
 
   it('names the UTC month and the first day of the next one', () => {

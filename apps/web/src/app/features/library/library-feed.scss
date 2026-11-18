@@ -74,6 +74,11 @@
   margin-bottom: var(--space-4);
 }
 
+// "From your shelf" (F8) renders nothing without a block, so the gap follows its panel.
+.library__rediscover:has(ui-panel) {
+  margin-bottom: var(--space-4);
+}
+
 .library__filter {
   display: flex;
   flex-wrap: wrap;

@@ -8,6 +8,8 @@ import {
   AI_PROVIDER_STATUS,
   AI_TIER,
   type AiSettingsResponse,
+  AI_SEARCH_STATE,
+  ASK_PERIOD,
 } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import { UiButtonHarness, UiDialogHarness } from '@shelfmark/ui/testing';
@@ -44,6 +46,11 @@ const RESPONSE: AiSettingsResponse = {
     total: 0,
     done: 0,
     estimatedMinutes: null,
+  },
+  search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
+  ask: {
+    available: true,
+    allowance: { questionsLeft: 12, period: ASK_PERIOD.Day, resetsOn: '2026-11-19' },
   },
 };
 
@@ -96,6 +103,9 @@ describe('AiIntroDialogComponent', () => {
     const body = await dialog.getBodyText();
     expect(body).toContain('Suggests tags and a folder');
     expect(body).toContain('Writes short summaries');
+    expect(body).toContain('Finds links by meaning');
+    expect(body).toContain('go to Voyage AI');
+    expect(body).toContain('Answers questions from your links');
     expect(body).toContain('What is sent to the model');
     expect(body).toContain('Not used for training');
     expect(body).toContain('Settings › AI');

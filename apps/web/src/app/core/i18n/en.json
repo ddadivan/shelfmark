@@ -576,6 +576,14 @@
       "off": {
         "term": "Turning it off:",
         "text": "switch off one feature or AI as a whole in Settings › AI; requests stop at once. \"Delete AI data\" there removes every summary and suggestion AI made."
+      },
+      "meaning": {
+        "term": "Search by meaning:",
+        "text": "while it is on (Settings › AI), the title, summary and tag names of each link, your note only with \"Include my notes\", and the words you search for are sent to Voyage AI, our second processor, which turns them into number vectors. Never the address, your folders or anyone else's data. The vectors are stored with your links and deleted with them or with \"Delete AI data\"; your search text is not stored. Voyage AI keeps requests for at most [N] days and doesn't use them for training. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+      },
+      "ask": {
+        "term": "Ask your shelf:",
+        "text": "only when you ask a question, your question and up to 10 of your links that match it (title, address without its query, folder and tag names, summary, your note only with \"Include my notes\") are sent to [PROVIDER]. The answer cites only those links. Neither the question nor the answer is stored; we count only the number of questions per day and month, for your limit."
       }
     },
     "retention": {
@@ -1795,7 +1803,14 @@
       "move": "move",
       "open": "open",
       "background": "open in background"
-    }
+    },
+    "askRow": "Ask your shelf: “{{query}}”",
+    "mode": {
+      "label": "Search or ask",
+      "search": "Search",
+      "ask": "Ask"
+    },
+    "askRowCompact": "Ask your shelf about this"
   },
   "share": {
     "title": "Save to Shelfmark",
@@ -2957,7 +2972,7 @@
       "data": {
         "title": "Your AI data",
         "label": "Delete AI data",
-        "hint": "Removes every summary and suggestion AI made. Your own edits, tags and folders stay.",
+        "hint": "Removes every summary and suggestion AI made and turns search by meaning off. Your own edits, tags and folders stay.",
         "action": "Delete AI data"
       },
       "privacy": {
@@ -2969,7 +2984,18 @@
       "failed": "Couldn’t save your AI settings",
       "failedDetail": "The change was undone. Try again.",
       "loadFailed": "Couldn’t load your AI settings.",
-      "retry": "Try again"
+      "retry": "Try again",
+      "meaning": {
+        "title": "Search by meaning",
+        "text": "Finds links by what they’re about, not only by their words, and shows related links. Sends each link’s title, tags and summary (your note too, with “Include my notes”) and what you search for to Voyage AI.",
+        "ready": "Ready",
+        "progress": "{{ready}} of {{total}} links ready",
+        "quota": "Paused until {{date}}: this month’s limit"
+      },
+      "ask": {
+        "title": "Ask your shelf",
+        "text": "Answers questions from your own links. Uses Claude by Anthropic: your question and the matching links are sent, nothing is stored."
+      }
     },
     "backfill": {
       "title": "Process existing links",
@@ -2990,7 +3016,7 @@
     "deleteData": {
       "confirm": {
         "title": "Delete AI data?",
-        "message": "Every summary and suggestion AI made is removed. Your own edits, tags and folders stay. This can’t be undone.",
+        "message": "Every summary and suggestion AI made is removed, and search by meaning turns off. Your own edits, tags and folders stay. This can’t be undone.",
         "confirm": "Delete AI data",
         "cancel": "Cancel",
         "close": "Close"
@@ -3023,7 +3049,15 @@
       "policy": "Read the privacy policy",
       "failed": "Couldn’t turn on AI. Try again.",
       "notNow": "Not now",
-      "turnOn": "Turn on AI"
+      "turnOn": "Turn on AI",
+      "meaning": {
+        "title": "Finds links by meaning",
+        "text": "Search and related links also match what a link is about. For this, titles, tags, summaries and your search text go to Voyage AI. Turn it off on its own in Settings › AI."
+      },
+      "ask": {
+        "title": "Answers questions from your links",
+        "text": "Only when you ask: your question and the matching links go to the model. The answer lists its sources and nothing is stored. Turn it off on its own in Settings › AI."
+      }
     },
     "suggest": {
       "label": "Suggested",
@@ -3141,6 +3175,80 @@
       },
       "undone": "Tidy undone",
       "undoFailed": "Couldn’t undo the tidy"
+    },
+    "search": {
+      "related": "Related by meaning",
+      "noWordMatches": "No links with these words",
+      "why": "Close to: {{reasons}}",
+      "fromSummary": "Close to: {{reasons}} (from the summary)",
+      "preparing": "Search by meaning is getting ready: {{ready}} of {{total}} links. Word matches work as usual."
+    },
+    "related": {
+      "title": "Related on your shelf",
+      "why": "Close to: {{reasons}}",
+      "show": "Show related",
+      "folders": "Related folders"
+    },
+    "ask": {
+      "title": "Ask your shelf",
+      "open": "Ask your shelf",
+      "close": "Close Ask your shelf",
+      "newQuestion": "New question",
+      "emptyTitle": "What do you want to find out?",
+      "lead": "Ask in your own words. The answer comes from the links you saved, with each source listed.",
+      "starters": {
+        "saved": "What did I save about {{folder}}?",
+        "ideas": "What are the main ideas in {{folder}}?",
+        "recent": "What did I add to {{folder}} lately?",
+        "generic": "What did I save this month?"
+      },
+      "label": "Ask about your links",
+      "placeholder": "Ask about your links",
+      "send": "Ask",
+      "stop": "Stop",
+      "left": {
+        "day": {
+          "one": "{{count}} question left today",
+          "other": "{{count}} questions left today"
+        },
+        "month": {
+          "one": "{{count}} question left this month",
+          "other": "{{count}} questions left this month"
+        }
+      },
+      "footer": "Answers use only your links. Nothing is changed in your library.",
+      "sources": "Sources from your shelf",
+      "source": "Source {{n}}",
+      "sideBySide": "Open side by side",
+      "remind": "Remind me",
+      "notFound": {
+        "text": "Nothing in your links answers this.",
+        "search": "Search “{{query}}”",
+        "add": "Add a link"
+      },
+      "limit": {
+        "day": "You’ve used today’s questions. Ask again tomorrow; search works as usual.",
+        "month": "You’ve used this month’s questions. Ask again on {{date}}; search works as usual."
+      },
+      "error": "Couldn’t get an answer right now. This question didn’t count toward your limit.",
+      "rejected": "This question couldn’t be answered. It didn’t count toward your limit.",
+      "busy": "Another question is still being answered. Try again in a moment.",
+      "off": "Ask your shelf is turned off in Settings › AI.",
+      "retry": "Try again",
+      "truncated": "The answer was cut short.",
+      "stopped": "Stopped."
     }
+  },
+  "rediscover": {
+    "title": "From your shelf",
+    "lead": {
+      "theme": "You’ve been saving a lot about {{theme}}. These are older ones you haven’t opened.",
+      "forgotten": "Saved a while ago and never opened."
+    },
+    "dismiss": "Hide until next week",
+    "saved": "Saved in {{month}}, not opened lately",
+    "remind": "Remind me",
+    "readLater": "Read later",
+    "notInterested": "Not interested"
   }
 }

@@ -50,6 +50,37 @@
     </ui-command-group>
   }
 
+  @if (meaning.rows().length > 0) {
+    <ui-command-group
+      icon="spark"
+      [heading]="'ai.search.related' | transloco"
+      [lead]="linkCount() === 0 ? ('ai.search.noWordMatches' | transloco) : undefined"
+    >
+      @for (row of meaning.rows(); track row.link.id) {
+        <ui-command-item [value]="SEARCH_RESULT_KIND.Meaning + ':' + row.link.id">
+          <ui-favicon
+            slot="leading"
+            [src]="row.link.faviconUrl ?? undefined"
+            [letter]="siteLetter(row.link.url)"
+          />
+          {{ row.link.title }}
+          <span slot="meta" class="search-results__why">
+            {{ linkHost(row.link.url) }}
+            @if (row.why; as why) {
+              <ui-icon
+                class="search-results__spark"
+                name="spark"
+                [size]="ICON_SIZE.Sm"
+                [label]="'ai.disclaimer' | transloco"
+                [attr.title]="'ai.disclaimer' | transloco"
+              />{{ why.key | transloco: { reasons: why.reasons } }}
+            }
+          </span>
+        </ui-command-item>
+      }
+    </ui-command-group>
+  }
+
   @if (hasLocal()) {
     <ui-command-group [heading]="'search.foldersAndTags' | transloco">
       @for (match of folderMatches(); track match.folder.id) {
@@ -74,6 +105,19 @@
     </ui-command-group>
   }
 
+  @if (askRow()) {
+    <ui-command-group [heading]="'ai.ask.title' | transloco">
+      <ui-command-item [value]="SEARCH_RESULT_KIND.Ask">
+        <ui-icon slot="leading" class="search-results__ask-icon" name="spark" />
+        {{
+          compact()
+            ? ('search.askRowCompact' | transloco)
+            : ('search.askRow' | transloco: { query: query().trim() })
+        }}
+      </ui-command-item>
+    </ui-command-group>
+  }
+
   <div slot="empty" class="search-results__empty">
     <span class="search-results__empty-icon" aria-hidden="true"
       ><ui-icon name="search" [size]="20"
@@ -81,7 +125,7 @@
     @if (parsed() === '') {
       <span class="search-results__empty-title">{{ 'search.hintTitle' | transloco }}</span>
       <span class="search-results__empty-text">{{ 'search.hint' | transloco }}</span>
-    } @else if (busy()) {
+    } @else if (busy() || meaning.pending()) {
       <span class="search-results__empty-text">{{ 'search.searching' | transloco }}</span>
     } @else if (state().failed) {
       <span class="search-results__empty-title">{{ 'search.failed' | transloco }}</span>
@@ -92,6 +136,10 @@
       <span class="search-results__empty-text">{{ 'search.emptyText' | transloco }}</span>
     }
   </div>
+
+  @if (meaning.hint(); as hint) {
+    <ui-ai-line slot="note" [text]="'ai.search.preparing' | transloco: hint" />
+  }
 
   <span slot="footer"
     ><kbd

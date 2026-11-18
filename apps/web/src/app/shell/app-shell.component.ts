@@ -49,6 +49,7 @@ import { ADMIN_PATH } from '../features/admin/models/admin-path.const';
 import { HowItWorksService } from '../features/how-it-works/services/how-it-works.service';
 import { ReminderNoticeService } from '../features/reminders/services/reminder-notice.service';
 import { AiSettingsStore } from '../features/ai/services/ai-settings.store';
+import { AskHeaderButtonComponent } from '../features/ai/components/ask-header-button/ask-header-button.component';
 import { AiTickService } from '../features/ai/services/ai-tick.service';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
@@ -81,6 +82,7 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
     MenuSeparatorComponent,
     MenuTriggerDirective,
     HeaderSearchComponent,
+    AskHeaderButtonComponent,
     SettingsNavComponent,
     SidebarComponent,
     TabBarComponent,
