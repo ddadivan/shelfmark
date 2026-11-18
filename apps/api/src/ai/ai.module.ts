@@ -102,6 +102,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiSuggestionsService,
     AiLinkHooksService,
     AiEmbedService,
+    AiSearchStatusService,
   ],
 })
 export class AiModule {}
