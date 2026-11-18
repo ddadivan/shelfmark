@@ -33,6 +33,7 @@ import { AiRunnerService } from './runner/ai-runner.service';
 import { AiSettingsService } from './settings/ai-settings.service';
 import { AiTidyUndoService } from './tidy/ai-tidy-undo.service';
 import { AiTidyService } from './tidy/ai-tidy.service';
+import { AskRetrievalService } from './ask/ask-retrieval.service';
 import { AiUsageService } from './usage/ai-usage.service';
 
 /**
@@ -75,6 +76,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     QueryEmbeddingCache,
     MeaningSearchService,
     RelatedLinksService,
+    AskRetrievalService,
   ],
   exports: [
     AiProviderRegistry,
