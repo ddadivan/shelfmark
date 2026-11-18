@@ -139,6 +139,12 @@ $more-column: rem(30px);
   color: var(--text-muted);
 }
 
+// A note ("5 forgotten") instead of a number: the accent tone, not tabular.
+.ui-tree__count--note {
+  font-variant-numeric: normal;
+  color: var(--accent-text);
+}
+
 .ui-tree__section {
   @include type(caption);
 

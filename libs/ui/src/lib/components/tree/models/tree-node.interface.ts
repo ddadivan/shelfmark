@@ -24,6 +24,11 @@ export interface UiTreeNode {
   /** Number shown on the right. */
   readonly count?: number;
   /**
+   * Short text on the right in the accent tone instead of the count ("5 forgotten"): something
+   * waits behind the row. It is read with the name like a count. Only for fixed rows.
+   */
+  readonly note?: string;
+  /**
    * A small accent dot after the name: something new waits behind the row ("What's new" until it
    * is opened). The string is its accessible name ("new"), read with the row's name.
    */

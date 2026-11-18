@@ -251,7 +251,7 @@ export class TreeComponent {
 
   /** `id` of the count element of a row, or `null` for a row without a count. */
   protected countId(itemId: string, node: UiTreeNode): string | null {
-    return node.count === undefined ? null : `${itemId}-count`;
+    return node.count === undefined && !node.note ? null : `${itemId}-count`;
   }
 
   /** The row is named by its name, its dot label, then its count or drop badge (never by its children). */
