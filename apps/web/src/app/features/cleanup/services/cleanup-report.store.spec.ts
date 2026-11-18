@@ -121,6 +121,18 @@ describe('CleanupReportStore', () => {
     expect(ai.tick).toHaveBeenCalledTimes(1);
   });
 
+  it('tells a failed check with no rows from a tidy library, and keeps rows of a failed one', async () => {
+    const empty = { duplicates: [], similarTags: [] };
+    const failed = await setup(cleanupReport({ ...empty, state: CLEANUP_STATE.Failed }));
+    expect(failed.store.view()).toBe(CLEANUP_VIEW.Failed);
+    TestBed.resetTestingModule();
+    const partial = await setup(cleanupReport({ state: CLEANUP_STATE.Failed }));
+    expect(partial.store.view()).toBe(CLEANUP_VIEW.Report);
+    TestBed.resetTestingModule();
+    const tidy = await setup(cleanupReport({ ...empty, state: CLEANUP_STATE.Ready }));
+    expect(tidy.store.view()).toBe(CLEANUP_VIEW.Tidy);
+  });
+
   it('shows the error view when the first read fails', async () => {
     const api = fakeCleanupApi();
     api.getReport.mockReturnValue(throwError(() => new Error('down')));

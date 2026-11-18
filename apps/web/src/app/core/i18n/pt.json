@@ -3419,6 +3419,10 @@
       "title": "Sua biblioteca está em ordem",
       "text": "Nenhum duplicado ou tag parecida encontrado."
     },
+    "checkFailed": {
+      "title": "A verificação não terminou",
+      "text": "Parou antes de encontrar algo e nada foi alterado. Tente de novo."
+    },
     "applied": {
       "title": "Tudo organizado",
       "text": "As mudanças escolhidas foram feitas. As cópias removidas esperam na lixeira."

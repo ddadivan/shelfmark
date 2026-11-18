@@ -12,6 +12,8 @@ export const CLEANUP_VIEW = {
   Report: 'report',
   /** A finished run found nothing: "Your library is tidy". */
   Tidy: 'tidy',
+  /** The check failed before it found anything: "The check didn't finish" and "Try again". */
+  Failed: 'failed',
   /** The report was applied: the done state and "Check again". */
   Applied: 'applied',
 } as const;

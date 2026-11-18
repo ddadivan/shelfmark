@@ -3419,6 +3419,10 @@
       "title": "La tua libreria è in ordine",
       "text": "Nessun duplicato o tag simile trovato."
     },
+    "checkFailed": {
+      "title": "Il controllo non è terminato",
+      "text": "Si è interrotto prima di trovare qualcosa e non è stato modificato nulla. Riprova."
+    },
     "applied": {
       "title": "Tutto riordinato",
       "text": "Le modifiche scelte sono fatte. Le copie rimosse aspettano nel cestino."

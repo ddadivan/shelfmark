@@ -3342,6 +3342,10 @@
       "title": "Your library is tidy",
       "text": "No duplicates or similar tags found."
     },
+    "checkFailed": {
+      "title": "The check didn’t finish",
+      "text": "It stopped before it found anything, and nothing was changed. Try checking again."
+    },
     "applied": {
       "title": "All cleaned up",
       "text": "The changes you picked are done. Copies you removed wait in Trash."

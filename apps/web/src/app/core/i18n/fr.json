@@ -3419,6 +3419,10 @@
       "title": "Votre bibliothèque est en ordre",
       "text": "Aucun doublon ni tag similaire trouvé."
     },
+    "checkFailed": {
+      "title": "La vérification n’a pas abouti",
+      "text": "Elle s’est arrêtée avant de trouver quoi que ce soit, et rien n’a été modifié. Réessayez."
+    },
     "applied": {
       "title": "Nettoyage terminé",
       "text": "Les changements choisis sont faits. Les copies retirées attendent dans la corbeille."

@@ -3342,6 +3342,10 @@
       "title": "Deine Bibliothek ist aufgeräumt",
       "text": "Keine Duplikate oder ähnlichen Tags gefunden."
     },
+    "checkFailed": {
+      "title": "Die Prüfung wurde nicht abgeschlossen",
+      "text": "Sie hat abgebrochen, bevor sie etwas gefunden hat, und nichts wurde geändert. Versuch es noch einmal."
+    },
     "applied": {
       "title": "Alles aufgeräumt",
       "text": "Die gewählten Änderungen sind erledigt. Entfernte Kopien warten im Papierkorb."

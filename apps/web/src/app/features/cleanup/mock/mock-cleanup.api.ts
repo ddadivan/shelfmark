@@ -17,9 +17,7 @@ import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { CleanupApi } from '../models/cleanup-api.interface';
 import { MockCleanupData } from './mock-cleanup-data';
 
-/** Undo body limits of the API's `CleanupUndoDto`. */
-const UNDO_TRASHED_MAX = 500;
-const UNDO_NAME_MAX = 50;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function failure(status: number, message?: string | string[]): Observable<never> {
   return throwError(() => mockHttpError(status, message));
@@ -42,22 +40,13 @@ function applyProblems(request: CleanupApplyRequest): string | string[] | null {
 
 /** What the API's `CleanupUndoDto` would reject. */
 function undoProblems(request: CleanupUndoRequest): string[] | null {
-  const badName = request.merges.some(
-    (merge) =>
-      merge.mergedName.length < 1 ||
-      merge.mergedName.length > UNDO_NAME_MAX ||
-      [...merge.mergedName].some((char) => (char.codePointAt(0) ?? 0) < 32),
-  );
-  return request.trashedIds.length > UNDO_TRASHED_MAX ||
-    request.merges.length > CLEANUP_LIMIT.ApplyTagMergesMax ||
-    badName
-    ? ['request is invalid']
-    : null;
+  return UUID.test(request.runId) ? null : ['runId must be a UUID'];
 }
 
 /**
  * `CleanupApi` over `MockCleanupData` with simulated latency (mock builds only). Like the API: 409
- * `Running` for a run while one progresses, 400 for an empty or oversized apply or Undo body.
+ * `Running` for a run while one progresses, 400 for an empty or oversized apply or a bad Undo body,
+ * 409 `UndoGone` for an Undo that is used, expired or not the latest run.
  */
 @Service()
 export class MockCleanupApi implements CleanupApi {
@@ -84,7 +73,13 @@ export class MockCleanupApi implements CleanupApi {
   undo(request: CleanupUndoRequest): Observable<CleanupUndoResponse> {
     return defer(() => {
       const problems = undoProblems(request);
-      return problems ? failure(HttpStatusCode.BadRequest, problems) : of(this.data.undo(request));
+      if (problems) {
+        return failure(HttpStatusCode.BadRequest, problems);
+      }
+      const response = this.data.undo(request);
+      return response
+        ? of(response)
+        : failure(HttpStatusCode.Conflict, CLEANUP_ERROR_MESSAGE.UndoGone);
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 

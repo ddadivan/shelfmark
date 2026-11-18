@@ -1,6 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injector } from '@angular/core';
-import { AI_TIER, CLEANUP_SOURCE, CLEANUP_STATE, DUPLICATE_REASON } from '@shelfmark/contracts';
+import {
+  AI_TIER,
+  CLEANUP_LIMIT,
+  CLEANUP_SOURCE,
+  CLEANUP_STATE,
+  DUPLICATE_REASON,
+} from '@shelfmark/contracts';
 import { firstValueFrom, type Observable } from 'rxjs';
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
 import { MockAiData } from '../../ai/mock/mock-ai-data';
@@ -111,13 +117,40 @@ describe('MockCleanupApi', () => {
     expect(library.tagList.some((tag) => tag.name === 'javascript')).toBe(false);
     expect((await run(api.getReport())).state).toBe(CLEANUP_STATE.Applied);
 
-    expect(await run(api.undo(response.undo))).toEqual({ restored: 3, unmerged: 1 });
+    const request = response.undo;
+    if (request === null) throw new Error('no undo');
+    expect(Object.keys(request)).toEqual(['runId']);
+    expect(await run(api.undo(request))).toEqual({ restored: 3, unmerged: 1 });
     expect(library.links).toHaveLength(before);
     expect(library.trash).toHaveLength(0);
     const tagged = library.links.filter((link) => link.tags.includes('javascript'));
     expect(tagged).toHaveLength(2);
     expect(library.links.filter((link) => link.tags.includes('js'))).toHaveLength(1);
     expect((await run(api.getReport())).state).toBe(CLEANUP_STATE.Ready);
+    // Single-use: the replay is a 409 and changes nothing.
+    expect((await failure(api.undo(request))).status).toBe(409);
+    expect((await failure(api.undo({ runId: 'nope' }))).status).toBe(400);
+  });
+
+  it('refuses an Undo of an older run or after its window', async () => {
+    const { api } = setup();
+    const [group] = (await run(api.run({ includeAi: false }))).duplicates;
+    const [one, two] = group?.copies ?? [];
+    const applyOne = async (id: string | undefined) =>
+      (
+        await run(
+          api.apply({
+            duplicates: [{ groupId: group?.id ?? '', trashIds: [id ?? ''] }],
+            tagMerges: [],
+          }),
+        )
+      ).undo;
+    const first = await applyOne(one?.id);
+    const second = await applyOne(two?.id);
+    if (first === null || second === null) throw new Error('no undo');
+    expect((await failure(api.undo(first))).status).toBe(409);
+    await vi.advanceTimersByTimeAsync(CLEANUP_LIMIT.UndoWindowMinutes * 60_000 + 1);
+    expect((await failure(api.undo(second))).status).toBe(409);
   });
 
   it('skips items outside the report and never trashes every member; 400 for an empty apply', async () => {
@@ -134,7 +167,7 @@ describe('MockCleanupApi', () => {
       }),
     );
     expect(response).toMatchObject({ trashed: 0, merged: 0, skipped: 3 });
-    expect(response.undo.deletedAt).toBeNull();
+    expect(response).toMatchObject({ trashedIds: [], undo: null });
     expect((await failure(api.apply({ duplicates: [], tagMerges: [] }))).status).toBe(400);
   });
 

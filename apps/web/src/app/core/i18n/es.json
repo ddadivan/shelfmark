@@ -3419,6 +3419,10 @@
       "title": "Tu biblioteca está en orden",
       "text": "No se encontraron duplicados ni etiquetas parecidas."
     },
+    "checkFailed": {
+      "title": "La revisión no terminó",
+      "text": "Se detuvo antes de encontrar nada y no se cambió nada. Inténtalo de nuevo."
+    },
     "applied": {
       "title": "Todo ordenado",
       "text": "Los cambios elegidos están hechos. Las copias quitadas esperan en la papelera."

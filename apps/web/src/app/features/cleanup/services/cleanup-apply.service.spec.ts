@@ -18,11 +18,8 @@ const RESPONSE: CleanupApplyResponse = {
   trashed: 2,
   merged: 1,
   skipped: 0,
-  undo: {
-    deletedAt: '2026-11-18T10:00:00.000Z',
-    trashedIds: ['hn2', 'hn3'],
-    merges: [{ keptTagId: 't1', mergedName: 'js', linkIds: ['l1'], addedLinkIds: ['l1'] }],
-  },
+  trashedIds: ['hn2', 'hn3'],
+  undo: { runId: '0196a1b2-0000-7000-8000-000000000001' },
 };
 const REQUEST = {
   duplicates: [{ groupId: 'g1', trashIds: ['hn2', 'hn3'] }],
@@ -120,6 +117,14 @@ describe('CleanupApplyService', () => {
     await vi.waitFor(() => expect(toasts.at(-1)?.title).toBe('Couldn’t undo the clean-up'));
   });
 
+  it('confirms without an Undo action when the server holds no Undo', async () => {
+    const { api, toasts, service } = await setup();
+    api.apply.mockReturnValue(of({ ...RESPONSE, undo: null }));
+    await service.apply(REQUEST);
+    expect(toasts[0]).toEqual(expect.objectContaining({ title: 'Cleaned up 3 things' }));
+    expect(toasts[0]?.action).toBeUndefined();
+  });
+
   it('says there was nothing to apply when every row changed meanwhile', async () => {
     const { api, toasts, links, service } = await setup();
     api.apply.mockReturnValue(
@@ -127,7 +132,8 @@ describe('CleanupApplyService', () => {
         trashed: 0,
         merged: 0,
         skipped: 2,
-        undo: { deletedAt: null, trashedIds: [], merges: [] },
+        trashedIds: [],
+        undo: null,
       }),
     );
     expect(await service.apply(REQUEST)).toBe(true);

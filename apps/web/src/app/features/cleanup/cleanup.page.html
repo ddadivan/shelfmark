@@ -62,6 +62,16 @@
     />
     <ng-container *ngTemplateOutlet="runControls; context: { $implicit: 'cleanup.runAgain' }" />
   </ui-panel>
+  } @case (CLEANUP_VIEW.Failed) {
+  <ui-panel class="cleanup__panel">
+    <ui-empty-state
+      class="cleanup__empty"
+      icon="warning"
+      [heading]="'cleanup.checkFailed.title' | transloco"
+      [text]="'cleanup.checkFailed.text' | transloco"
+    />
+    <ng-container *ngTemplateOutlet="runControls; context: { $implicit: 'cleanup.retry' }" />
+  </ui-panel>
   } @case (CLEANUP_VIEW.Applied) {
   <ui-panel class="cleanup__panel">
     <ui-empty-state

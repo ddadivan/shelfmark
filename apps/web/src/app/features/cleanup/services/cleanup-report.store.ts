@@ -61,8 +61,13 @@ export const CleanupReportStore = signalStore(
           return CLEANUP_VIEW.Checking;
         case CLEANUP_STATE.Applied:
           return CLEANUP_VIEW.Applied;
-        default:
-          return duplicates().length + tags().length > 0 ? CLEANUP_VIEW.Report : CLEANUP_VIEW.Tidy;
+        default: {
+          if (duplicates().length + tags().length > 0) {
+            return CLEANUP_VIEW.Report;
+          }
+          // A failed run with no rows did not prove the library tidy.
+          return report.state === CLEANUP_STATE.Failed ? CLEANUP_VIEW.Failed : CLEANUP_VIEW.Tidy;
+        }
       }
     });
     return {

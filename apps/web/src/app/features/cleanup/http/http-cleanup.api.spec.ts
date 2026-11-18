@@ -14,7 +14,7 @@ describe('HttpCleanupApi', () => {
     const api = TestBed.inject(HttpCleanupApi);
     const http = TestBed.inject(HttpTestingController);
     const apply = { duplicates: [{ groupId: 'g1', trashIds: ['l2'] }], tagMerges: [] };
-    const undo = { deletedAt: null, trashedIds: [], merges: [] };
+    const undo = { runId: '0196a1b2-0000-7000-8000-000000000001' };
     const calls: Array<[() => void, string, string, unknown]> = [
       [() => api.getReport().subscribe(), 'GET', '/api/cleanup', null],
       [

@@ -16,7 +16,6 @@ import {
   type CleanupSummary,
   type CleanupTag,
   type CleanupTagPair,
-  type CleanupUndoMerge,
   type CleanupUndoRequest,
   type CleanupUndoResponse,
   type TagResponse,
@@ -30,11 +29,15 @@ import { exactDuplicateIds, nearDuplicateIds } from './find-duplicates';
 import type { MockCleanupGroup } from './models/mock-cleanup-group.interface';
 import type { MockCleanupPair } from './models/mock-cleanup-pair.interface';
 import type { MockCleanupRun } from './models/mock-cleanup-run.interface';
+import type { MockCleanupUndo } from './models/mock-cleanup-undo.interface';
+import type { MockUndoMerge } from './models/mock-undo-merge.interface';
 import { MOCK_CLEANUP_STORAGE_KEY } from './models/mock-cleanup-storage-key.const';
 import { MOCK_CLEANUP_TIMING } from './models/mock-cleanup-timing.const';
 import { MOCK_TAG_SYNONYMS } from './models/mock-tag-synonyms.const';
 import { pickKeep } from './pick-keep';
 import { tagVariantKey } from './tag-variant-key';
+
+const MS_PER_MINUTE = 60_000;
 
 /** A 12-character id like the API's (new on every run). */
 function newId(): string {
@@ -56,7 +59,8 @@ function readDismissedAt(): number | null {
  * deferred pass of `MOCK_CLEANUP_TIMING.PassMs` adds "Same page" groups (the mock vectors: same
  * title, tags and summary on the same host family) and tag synonyms (`MOCK_TAG_SYNONYMS`). The
  * report stores ids only and is read live; apply trashes copies with one shared time and merges
- * tags; Undo reverts what is still as the run left it.
+ * tags; it holds the latest run's Undo (single-use, `UndoWindowMinutes`), and Undo by run id
+ * reverts what is still as the run left it.
  */
 @Service()
 export class MockCleanupData {
@@ -64,6 +68,7 @@ export class MockCleanupData {
   private readonly ai = inject(MockAiData);
   private report: MockCleanupRun | null = null;
   private runs = { month: '', used: 0 };
+  private pendingUndo: MockCleanupUndo | null = null;
 
   /** `GET /api/cleanup`. */
   read(now: number = Date.now()): CleanupReport {
@@ -137,7 +142,7 @@ export class MockCleanupData {
     const run = this.report;
     const deletedAt = new Date(now).toISOString();
     const trashedIds: string[] = [];
-    const merges: CleanupUndoMerge[] = [];
+    const merges: MockUndoMerge[] = [];
     let skipped = 0;
     for (const item of request.duplicates) {
       const group = run?.duplicates.find((entry) => entry.id === item.groupId);
@@ -177,25 +182,45 @@ export class MockCleanupData {
       }
       merges.push(this.merge(other, keep));
     }
-    if (run && (trashedIds.length > 0 || merges.length > 0)) {
+    if (trashedIds.length === 0 && merges.length === 0) {
+      return { trashed: 0, merged: 0, skipped, trashedIds, undo: null };
+    }
+    if (run) {
       run.state = CLEANUP_STATE.Applied;
     }
+    const runId = globalThis.crypto.randomUUID();
+    this.pendingUndo = {
+      runId,
+      until: now + CLEANUP_LIMIT.UndoWindowMinutes * MS_PER_MINUTE,
+      deletedAt: trashedIds.length > 0 ? deletedAt : null,
+      trashedIds,
+      merges,
+    };
     return {
       trashed: trashedIds.length,
       merged: merges.length,
       skipped,
-      undo: { deletedAt: trashedIds.length > 0 ? deletedAt : null, trashedIds, merges },
+      trashedIds,
+      undo: { runId },
     };
   }
 
-  /** `POST /api/cleanup/undo` (validated by the caller); works with AI off. */
-  undo(request: CleanupUndoRequest): CleanupUndoResponse {
-    const ids = new Set(request.trashedIds);
+  /**
+   * `POST /api/cleanup/undo` (validated by the caller); works with AI off. `null` (409) unless it
+   * names the latest run within its window; single-use.
+   */
+  undo(request: CleanupUndoRequest, now: number = Date.now()): CleanupUndoResponse | null {
+    const stored = this.pendingUndo;
+    if (stored === null || stored.runId !== request.runId || now > stored.until) {
+      return null;
+    }
+    this.pendingUndo = null;
+    const ids = new Set(stored.trashedIds);
     const back = this.library.trash.filter(
       (entry) =>
         entry.kind === TRASH_ITEM_KIND.Link &&
         ids.has(entry.id) &&
-        entry.deletedAt === request.deletedAt &&
+        entry.deletedAt === stored.deletedAt &&
         entry.link,
     );
     for (const entry of back) {
@@ -209,13 +234,13 @@ export class MockCleanupData {
       }
     }
     this.library.trash = this.library.trash.filter((entry) => !back.includes(entry));
-    for (const merge of request.merges) {
+    for (const merge of stored.merges) {
       this.unmerge(merge);
     }
     if (this.report?.state === CLEANUP_STATE.Applied) {
       this.report.state = CLEANUP_STATE.Ready;
     }
-    return { restored: back.length, unmerged: request.merges.length };
+    return { restored: back.length, unmerged: stored.merges.length };
   }
 
   /** `GET /api/cleanup/summary`. */
@@ -398,7 +423,7 @@ export class MockCleanupData {
   }
 
   /** Merges `source` into `target` like the tag merge, answering what Undo needs. */
-  private merge(source: TagResponse, target: TagResponse): CleanupUndoMerge {
+  private merge(source: TagResponse, target: TagResponse): MockUndoMerge {
     const carrying = this.library.links.filter((link) => link.tags.includes(source.name));
     const added = carrying.filter((link) => !link.tags.includes(target.name));
     this.library.setTags(this.library.tagList.filter((tag) => tag.id !== source.id));
@@ -412,7 +437,7 @@ export class MockCleanupData {
   }
 
   /** Puts a merged tag back on its links and takes the kept tag off the links that got it. */
-  private unmerge(merge: CleanupUndoMerge): void {
+  private unmerge(merge: MockUndoMerge): void {
     this.library.ensureTags([merge.mergedName]);
     const name =
       this.library.tagList.find((tag) => tag.name.toLowerCase() === merge.mergedName.toLowerCase())

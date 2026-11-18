@@ -136,6 +136,22 @@ describe('CleanupPage', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
+  it('says a failed check found nothing yet and offers Try again, not "tidy"', async () => {
+    const { api, element, loader } = await setup(
+      cleanupReport({
+        state: CLEANUP_STATE.Failed,
+        duplicates: [],
+        similarTags: [],
+        aiAvailable: false,
+      }),
+    );
+    expect(element.textContent).toContain('The check didn’t finish');
+    expect(element.textContent).not.toContain('Your library is tidy');
+    expect(await axeViolations(element)).toEqual([]);
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Try again' }))).click();
+    expect(api.run).toHaveBeenCalledWith({ includeAi: false });
+  });
+
   it('shows the applied state after a run was applied', async () => {
     const { element } = await setup(cleanupReport({ state: CLEANUP_STATE.Applied }));
     expect(element.textContent).toContain('All cleaned up');
