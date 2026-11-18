@@ -10,6 +10,7 @@ export interface AiSettingsRow {
   ask: boolean;
   enabledAt: Date | null;
   introSeenAt: Date | null;
+  announcementSeenAt: Date | null;
   backfillState: string;
   backfillTotal: number;
   backfillDone: number;

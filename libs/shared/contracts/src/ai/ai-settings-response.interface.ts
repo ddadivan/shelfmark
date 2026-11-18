@@ -11,6 +11,8 @@ export interface AiSettingsResponse {
   settings: AiSettings;
   /** `true` once AI was turned on through the first-run intro; until then turning it on opens the intro. */
   introSeen: boolean;
+  /** `true` once the one-time AI announcement dialog was closed or answered (#507). */
+  announcementSeen: boolean;
   entitlements: AiEntitlements;
   usage: AiUsage;
   providerStatus: AiProviderStatus;

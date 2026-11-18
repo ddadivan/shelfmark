@@ -45,6 +45,7 @@ describe('AI schema (#389)', () => {
       backfillState: 'idle',
       enabledAt: null,
       introSeenAt: null,
+      announcementSeenAt: null,
     });
   });
 

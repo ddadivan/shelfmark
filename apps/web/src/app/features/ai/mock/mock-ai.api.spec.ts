@@ -84,6 +84,16 @@ describe('MockAiApi', () => {
     expect(await statusOf(ai.updateSettings({}))).toBe(400);
   });
 
+  it('has the AI announcement unseen until a PATCH marks it, without touching the settings (#507)', async () => {
+    const { ai } = setup();
+    const before = await run(ai.getSettings());
+    expect(before.announcementSeen).toBe(false);
+    const after = await run(ai.updateSettings({ announcementSeen: true }));
+    expect(after.announcementSeen).toBe(true);
+    expect(after.settings).toEqual(before.settings);
+    expect((await run(ai.getSettings())).announcementSeen).toBe(true);
+  });
+
   it('answers a draft later with own suggestions and a summary; a repeat is the same job', async () => {
     const { ai, data } = setup();
     await run(ai.updateSettings({ enabled: true }));

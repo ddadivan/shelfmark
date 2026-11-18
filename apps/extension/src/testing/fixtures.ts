@@ -95,6 +95,7 @@ export function makeAiSettings(
       ...overrides.settings,
     },
     introSeen: true,
+    announcementSeen: true,
     entitlements: { plan: ACCOUNT_PLAN.Free, aiTier: AI_TIER.Free },
     usage: {
       linksUsed: 0,

@@ -3401,6 +3401,30 @@
           }
         }
       }
+    },
+    "announce": {
+      "title": "Shelfmark can now help with AI",
+      "lead": "It’s off until you turn it on. Your choice always wins, and every suggestion can be undone.",
+      "close": "Close",
+      "folder": {
+        "title": "Folder and tags",
+        "text": "Suggested as you save, one click to fill in"
+      },
+      "summaries": {
+        "title": "Short summaries",
+        "text": "Two lines on each card, so you know why you saved it"
+      },
+      "meaning": {
+        "title": "Search by meaning",
+        "text": "Finds links even when the words don’t match"
+      },
+      "ask": {
+        "title": "Ask your shelf",
+        "text": "Questions answered from your links, with sources"
+      },
+      "turnOn": "Turn on AI…",
+      "notNow": "Not now",
+      "note": "Next you’ll see what is sent and where, then choose. You can turn it off any time in Settings › AI."
     }
   },
   "rediscover": {

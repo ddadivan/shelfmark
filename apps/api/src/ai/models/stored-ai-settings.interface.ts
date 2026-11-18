@@ -5,6 +5,7 @@ export interface StoredAiSettings {
   settings: AiSettings;
   enabledAt: Date | null;
   introSeenAt: Date | null;
+  announcementSeenAt: Date | null;
   backfillState: AiBackfillState;
   backfillTotal: number;
   backfillDone: number;

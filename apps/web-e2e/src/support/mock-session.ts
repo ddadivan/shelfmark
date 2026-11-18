@@ -9,6 +9,9 @@ const SEEDED_FLAG = 'seeded';
 const MOCK_WHATS_NEW_KEY = 'sm-mock-whats-new-seen';
 /** Newer than any release: the mock account has seen every "What's new" (#424). */
 const SEEN_EVERYTHING = '999.999.999';
+// Same value as MOCK_AI_ANNOUNCEMENT_STORAGE_KEY (apps/web/src/app/features/ai/mock/models): the
+// one-time AI announcement (#507) would open over every spec, so the seeded account has seen it.
+const MOCK_AI_ANNOUNCEMENT_KEY = 'sm-mock-ai-announcement';
 
 export const MOCK_USER = {
   id: 'e2e',
@@ -39,7 +42,7 @@ export async function seedSession(
   user: Record<string, unknown> = MOCK_USER,
 ): Promise<void> {
   await page.addInitScript(
-    ([key, user, flag, whatsNewKey, seen]) => {
+    ([key, user, flag, whatsNewKey, seen, announcementKey]) => {
       // Seed once: sign-out clears the key and a reload must not bring the session back.
       if (!sessionStorage.getItem(flag)) {
         sessionStorage.setItem(flag, '1');
@@ -49,9 +52,19 @@ export async function seedSession(
         if (localStorage.getItem(whatsNewKey) === null) {
           localStorage.setItem(whatsNewKey, seen);
         }
+        if (localStorage.getItem(announcementKey) === null) {
+          localStorage.setItem(announcementKey, '1');
+        }
       }
     },
-    [MOCK_SESSION_KEY, JSON.stringify(user), SEEDED_FLAG, MOCK_WHATS_NEW_KEY, SEEN_EVERYTHING],
+    [
+      MOCK_SESSION_KEY,
+      JSON.stringify(user),
+      SEEDED_FLAG,
+      MOCK_WHATS_NEW_KEY,
+      SEEN_EVERYTHING,
+      MOCK_AI_ANNOUNCEMENT_KEY,
+    ],
   );
 }
 

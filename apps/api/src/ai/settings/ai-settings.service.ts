@@ -41,6 +41,7 @@ const SETTINGS_SELECT = {
   ask: true,
   enabledAt: true,
   introSeenAt: true,
+  announcementSeenAt: true,
   backfillState: true,
   backfillTotal: true,
   backfillDone: true,
@@ -96,6 +97,7 @@ export class AiSettingsService {
     return {
       settings: stored.settings,
       introSeen: stored.introSeenAt !== null,
+      announcementSeen: stored.announcementSeenAt !== null,
       entitlements,
       usage,
       providerStatus,
@@ -140,6 +142,10 @@ export class AiSettingsService {
           : { summaryLanguage: request.summaryLanguage }),
         ...(request.meaningSearch === undefined ? {} : { meaningSearch: request.meaningSearch }),
         ...(request.ask === undefined ? {} : { ask: request.ask }),
+        // Once seen, always seen: the first time is kept.
+        ...(request.announcementSeen === true && current.announcementSeenAt === null
+          ? { announcementSeenAt: now }
+          : {}),
         ...(searchOn ? {} : { embedLeaseUntil: null }),
         // The intro's "Turn on AI" is the first `enabled: true`: it records both moments.
         ...(request.enabled === true && current.enabledAt === null ? { enabledAt: now } : {}),

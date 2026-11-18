@@ -35,6 +35,7 @@ import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/services/onboarding.store';
 import { RatingStore } from '../features/rating/services/rating.store';
+import { AiAnnouncementService } from '../features/ai/services/ai-announcement.service';
 import { WhatsNewStore } from '../features/changelog/services/whats-new.store';
 import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
@@ -189,6 +190,8 @@ export default class AppShellComponent {
     // AI (#389): the switches the dialogs and cards follow, and the catch-up tick while jobs wait.
     void this.ai.load();
     inject(AiTickService);
+    // The one-time AI announcement (#507) plans itself once the account's AI side is loaded.
+    inject(AiAnnouncementService);
   }
 
   /** The rating look starts for an eligible user (not demo, onboarding done) and stops otherwise. */

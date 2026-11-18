@@ -3474,6 +3474,30 @@
           }
         }
       }
+    },
+    "announce": {
+      "title": "O Shelfmark agora pode ajudar com IA",
+      "lead": "Ela fica desligada até você ligar. A decisão é sempre sua, e cada sugestão pode ser desfeita.",
+      "close": "Fechar",
+      "folder": {
+        "title": "Pasta e tags",
+        "text": "Sugeridas ao salvar, preenchidas com um clique"
+      },
+      "summaries": {
+        "title": "Resumos curtos",
+        "text": "Duas linhas em cada cartão, para lembrar por que você salvou"
+      },
+      "meaning": {
+        "title": "Busca por significado",
+        "text": "Encontra links mesmo quando as palavras não coincidem"
+      },
+      "ask": {
+        "title": "Pergunte à sua estante",
+        "text": "Respostas a partir dos seus links, com fontes"
+      },
+      "turnOn": "Ativar a IA…",
+      "notNow": "Agora não",
+      "note": "Em seguida você verá o que é enviado e para onde, e então escolhe. Você pode desativar a qualquer momento em Configurações › IA."
     }
   },
   "rediscover": {

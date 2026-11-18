@@ -1,0 +1,192 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.ai-announce {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  isolation: isolate;
+}
+
+// A soft `ai-fill` glow behind the tile; it breathes slowly and holds still under reduced motion.
+.ai-announce__glow {
+  position: absolute;
+  inset-block-start: rem(-40px);
+  inset-inline: 50%;
+  z-index: -1;
+  width: rem(360px);
+  height: rem(220px);
+  margin-inline: rem(-180px);
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--ai-fill), transparent);
+  border-radius: 50%;
+  animation: ai-announce-glow calc(var(--duration-slow) * 9) var(--ease-in-out) infinite;
+}
+
+.ai-announce__close {
+  position: absolute;
+  inset-block-start: calc(var(--space-2) * -1);
+  inset-inline-end: calc(var(--space-2) * -1);
+}
+
+.ai-announce__tile {
+  display: grid;
+  place-items: center;
+  align-self: center;
+  width: rem(80px);
+  height: rem(80px);
+  color: var(--ai);
+  background: var(--ai-fill);
+  border: 1px solid var(--ai-line);
+  border-radius: rem(24px);
+
+  --ui-icon-size: #{rem(44px)};
+
+  animation: ai-announce-spark calc(var(--duration-slow) * 3) var(--ease-spring) both;
+}
+
+.ai-announce__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: center;
+  animation: ai-announce-rise calc(var(--duration-slow) * 1.5) var(--ease-out)
+    calc(var(--duration-slow) * 0.8) both;
+}
+
+.ai-announce__heading {
+  @include type(title);
+
+  margin: 0;
+  font-size: rem(28px);
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.ai-announce__lead {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.ai-announce__points {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  // Below 360px of room a card is too narrow for two columns.
+  @include phone {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ai-announce__point {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  animation: ai-announce-chip var(--duration-slow) var(--ease-out)
+    calc(var(--duration-slow) * 1.6 + var(--i, 0) * var(--duration-fast)) both;
+}
+
+.ai-announce__point-title {
+  @include type(label);
+
+  color: var(--text);
+}
+
+.ai-announce__point-text {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.ai-announce__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  animation: ai-announce-rise calc(var(--duration-slow) * 1.5) var(--ease-out)
+    calc(var(--duration-slow) * 3.4) both;
+}
+
+.ai-announce__note {
+  @include type(caption);
+
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+@keyframes ai-announce-spark {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) rotate(-20deg);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.08) rotate(4deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ai-announce-rise {
+  from {
+    opacity: 0;
+    transform: translateY(#{rem(16px)});
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ai-announce-chip {
+  from {
+    opacity: 0;
+    transform: translateY(#{rem(10px)}) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ai-announce-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
+}
+
+// Nothing moves: everything is there at once.
+@include reduced-motion {
+  .ai-announce__glow,
+  .ai-announce__tile,
+  .ai-announce__intro,
+  .ai-announce__point,
+  .ai-announce__actions {
+    animation: none;
+  }
+}

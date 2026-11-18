@@ -3174,7 +3174,7 @@
       },
       "ask": {
         "title": "Répond à vos questions à partir de vos liens",
-        "text": "Seulement quand vous posez une question : votre question et les liens correspondants sont envoyés au modèle. La réponse indique ses sources et rien n’est conservé. Désactivez-le séparément dans Réglages › IA."
+        "text": "Seulement quand vous posez une question : votre question et les liens correspondants sont envoyés au modèle. La réponse indique ses sources et rien n’est conservé. Désactivez-le séparément dans Paramètres › IA."
       }
     },
     "suggest": {
@@ -3373,7 +3373,7 @@
       "rejected": "Impossible de répondre à cette question. Elle n’a pas été comptée.",
       "busy": "Une autre question est encore en cours. Réessayez dans un instant.",
       "rateLimited": "Trop de questions en peu de temps. Réessayez dans une minute ; celle-ci n’a pas été comptée dans votre limite.",
-      "off": "Interroger mes liens est désactivé dans Réglages › IA.",
+      "off": "Interroger mes liens est désactivé dans Paramètres › IA.",
       "retry": "Réessayer",
       "truncated": "La réponse a été interrompue.",
       "stopped": "Arrêté.",
@@ -3474,6 +3474,30 @@
           }
         }
       }
+    },
+    "announce": {
+      "title": "Shelfmark peut désormais vous aider avec l’IA",
+      "lead": "Elle reste désactivée tant que vous ne l’activez pas. C’est toujours vous qui décidez, et chaque suggestion peut être annulée.",
+      "close": "Fermer",
+      "folder": {
+        "title": "Dossier et étiquettes",
+        "text": "Proposés pendant l’enregistrement, remplis en un clic"
+      },
+      "summaries": {
+        "title": "Résumés courts",
+        "text": "Deux lignes sur chaque carte pour se rappeler pourquoi vous l’avez gardé"
+      },
+      "meaning": {
+        "title": "Recherche par sens",
+        "text": "Trouve des liens même quand les mots ne correspondent pas"
+      },
+      "ask": {
+        "title": "Interroger votre étagère",
+        "text": "Des réponses tirées de vos liens, avec les sources"
+      },
+      "turnOn": "Activer l’IA…",
+      "notNow": "Plus tard",
+      "note": "Vous verrez ensuite ce qui est envoyé et où, puis vous déciderez. Vous pouvez la désactiver à tout moment dans Paramètres › IA."
     }
   },
   "rediscover": {

@@ -480,36 +480,38 @@ model RuleOfferDismissal {
 // `backfillUsed`, the links ever processed against the one-time allowance (AI_QUOTA.backfillLinks).
 // CHECKs in the migration keep the modes and the state to the contract allow-lists.
 model AiSettings {
-  userId            String    @id @map("user_id") @db.Uuid
-  enabled           Boolean   @default(false)
-  folderMode        String    @default("suggest") @map("folder_mode") @db.VarChar(8)
-  tagsMode          String    @default("suggest") @map("tags_mode") @db.VarChar(8)
-  summaries         Boolean   @default(true)
-  includeNotes      Boolean   @default(false) @map("include_notes")
+  userId             String    @id @map("user_id") @db.Uuid
+  enabled            Boolean   @default(false)
+  folderMode         String    @default("suggest") @map("folder_mode") @db.VarChar(8)
+  tagsMode           String    @default("suggest") @map("tags_mode") @db.VarChar(8)
+  summaries          Boolean   @default(true)
+  includeNotes       Boolean   @default(false) @map("include_notes")
   // `app` (the interface language) or a supported interface language code.
-  summaryLanguage   String    @default("app") @map("summary_language") @db.VarChar(8)
-  enabledAt         DateTime? @map("enabled_at") @db.Timestamptz(3)
-  introSeenAt       DateTime? @map("intro_seen_at") @db.Timestamptz(3)
-  backfillState     String    @default("idle") @map("backfill_state") @db.VarChar(8)
-  backfillCursor    String?   @map("backfill_cursor") @db.Uuid
-  backfillTotal     Int       @default(0) @map("backfill_total")
-  backfillDone      Int       @default(0) @map("backfill_done")
-  backfillUsed      Int       @default(0) @map("backfill_used")
-  backfillStartedAt DateTime? @map("backfill_started_at") @db.Timestamptz(3)
+  summaryLanguage    String    @default("app") @map("summary_language") @db.VarChar(8)
+  enabledAt          DateTime? @map("enabled_at") @db.Timestamptz(3)
+  introSeenAt        DateTime? @map("intro_seen_at") @db.Timestamptz(3)
+  // The one-time "Shelfmark can now help with AI" dialog (#507): set when it was closed or answered.
+  announcementSeenAt DateTime? @map("announcement_seen_at") @db.Timestamptz(3)
+  backfillState      String    @default("idle") @map("backfill_state") @db.VarChar(8)
+  backfillCursor     String?   @map("backfill_cursor") @db.Uuid
+  backfillTotal      Int       @default(0) @map("backfill_total")
+  backfillDone       Int       @default(0) @map("backfill_done")
+  backfillUsed       Int       @default(0) @map("backfill_used")
+  backfillStartedAt  DateTime? @map("backfill_started_at") @db.Timestamptz(3)
   // Search by meaning (AI-3, ADR 0052): the switch (rows that existed before AI-3 were set to false
   // by the migration), the per-user embed pass lease and its retry backoff after a provider failure.
-  meaningSearch     Boolean   @default(true) @map("meaning_search")
-  embedLeaseUntil   DateTime? @map("embed_lease_until") @db.Timestamptz(3)
-  embedNotBefore    DateTime? @map("embed_not_before") @db.Timestamptz(3)
-  embedFailures     Int       @default(0) @map("embed_failures") @db.SmallInt
-  embedFailedAt     DateTime? @map("embed_failed_at") @db.Timestamptz(3)
+  meaningSearch      Boolean   @default(true) @map("meaning_search")
+  embedLeaseUntil    DateTime? @map("embed_lease_until") @db.Timestamptz(3)
+  embedNotBefore     DateTime? @map("embed_not_before") @db.Timestamptz(3)
+  embedFailures      Int       @default(0) @map("embed_failures") @db.SmallInt
+  embedFailedAt      DateTime? @map("embed_failed_at") @db.Timestamptz(3)
   // Ask your shelf (AI-4, ADR 0052): the switch (on for every row, existing ones too) and the
   // one-question-at-a-time lease (30 s, released when the answer ends).
-  ask               Boolean   @default(true)
-  askLeaseUntil     DateTime? @map("ask_lease_until") @db.Timestamptz(3)
-  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
-  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ask                Boolean   @default(true)
+  askLeaseUntil      DateTime? @map("ask_lease_until") @db.Timestamptz(3)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("ai_settings")
 }

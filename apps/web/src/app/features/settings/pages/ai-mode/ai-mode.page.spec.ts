@@ -22,6 +22,7 @@ import AiModePage from './ai-mode.page';
 const RESPONSE: AiSettingsResponse = {
   settings: { ...AI_SETTINGS_DEFAULT, enabled: true, tagsMode: AI_FEATURE_MODE.Off },
   introSeen: true,
+  announcementSeen: true,
   entitlements: { plan: ACCOUNT_PLAN.Free, aiTier: AI_TIER.Free },
   usage: {
     linksUsed: 0,

@@ -3401,6 +3401,30 @@
           }
         }
       }
+    },
+    "announce": {
+      "title": "Shelfmark kann dir jetzt mit KI helfen",
+      "lead": "Sie bleibt aus, bis du sie einschaltest. Du entscheidest immer selbst, und jeder Vorschlag lässt sich rückgängig machen.",
+      "close": "Schließen",
+      "folder": {
+        "title": "Ordner und Tags",
+        "text": "Beim Speichern vorgeschlagen, mit einem Klick übernommen"
+      },
+      "summaries": {
+        "title": "Kurze Zusammenfassungen",
+        "text": "Zwei Zeilen auf jeder Karte, damit du weißt, warum du den Link gespeichert hast"
+      },
+      "meaning": {
+        "title": "Suche nach Bedeutung",
+        "text": "Findet Links auch, wenn die Wörter nicht passen"
+      },
+      "ask": {
+        "title": "Frag dein Regal",
+        "text": "Antworten aus deinen Links, mit Quellen"
+      },
+      "turnOn": "KI einschalten …",
+      "notNow": "Nicht jetzt",
+      "note": "Als Nächstes siehst du, was wohin gesendet wird, und entscheidest dann. Du kannst sie jederzeit unter Einstellungen › KI ausschalten."
     }
   },
   "rediscover": {

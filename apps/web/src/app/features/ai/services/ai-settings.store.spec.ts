@@ -30,6 +30,7 @@ function response(patch: Partial<AiSettingsResponse> = {}): AiSettingsResponse {
   return {
     settings: { ...AI_SETTINGS_DEFAULT },
     introSeen: false,
+    announcementSeen: true,
     entitlements: { plan: ACCOUNT_PLAN.Pro, aiTier: AI_TIER.AiPack },
     usage: {
       linksUsed: 3,
@@ -108,6 +109,7 @@ describe('AiSettingsStore', () => {
       response({
         settings: { ...AI_SETTINGS_DEFAULT, enabled: true, folderMode: AI_FEATURE_MODE.Auto },
         introSeen: true,
+        announcementSeen: true,
       }),
     );
     expect(store.isOn()).toBe(false);
@@ -173,6 +175,7 @@ describe('AiSettingsStore', () => {
       response({
         settings: { ...AI_SETTINGS_DEFAULT, enabled: true },
         introSeen: true,
+        announcementSeen: true,
         pendingJobs: 2,
       }),
     );

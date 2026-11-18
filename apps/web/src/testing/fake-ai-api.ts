@@ -19,6 +19,7 @@ export function aiSettingsResponse(patch: Partial<AiSettingsResponse> = {}): AiS
   return {
     settings: { ...AI_SETTINGS_DEFAULT, enabled: true },
     introSeen: true,
+    announcementSeen: true,
     entitlements: { plan: ACCOUNT_PLAN.Pro, aiTier: AI_TIER.AiPack },
     usage: {
       linksUsed: 3,
