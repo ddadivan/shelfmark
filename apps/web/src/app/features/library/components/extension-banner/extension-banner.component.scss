@@ -99,33 +99,33 @@
 // Entrance, step by step.
 .extension-banner--enter {
   // Draws nothing: Angular removes the enter class when the element's own animation ends, so this
-  // one lasts as long as the longest step below (the popup, 600ms delay plus `duration-slow`).
-  animation: extension-hold calc(var(--duration-slow) + 600ms) linear both;
+  // one lasts as long as the longest step below (the popup: 520ms delay plus three `duration-slow`).
+  animation: extension-hold calc(var(--duration-slow) * 3 + 520ms) linear both;
 
   .extension-banner__logo {
-    animation: extension-pop var(--duration-slow) var(--ease-spring) 480ms both;
+    animation: extension-pop calc(var(--duration-slow) * 2) var(--ease-out) 480ms both;
   }
 
   .extension-banner__title,
   .extension-banner__text,
   .extension-banner__install {
-    animation: extension-rise var(--duration-slow) var(--ease-out) both;
+    animation: extension-rise calc(var(--duration-slow) * 2) var(--ease-out) both;
   }
 
   .extension-banner__title {
-    animation-delay: 520ms;
+    animation-delay: 560ms;
   }
 
   .extension-banner__text {
-    animation-delay: 580ms;
-  }
-
-  .extension-banner__install {
     animation-delay: 640ms;
   }
 
+  .extension-banner__install {
+    animation-delay: 720ms;
+  }
+
   .extension-banner__popup {
-    animation: extension-popup var(--duration-slow) var(--ease-out) 600ms both;
+    animation: extension-popup calc(var(--duration-slow) * 3) var(--ease-drawer) 520ms both;
   }
 }
 
@@ -157,14 +157,14 @@
 @keyframes extension-pop {
   from {
     opacity: 0;
-    transform: scale(0.8);
+    transform: scale(0.92);
   }
 }
 
 @keyframes extension-rise {
   from {
     opacity: 0;
-    transform: translateY(0.5rem);
+    transform: translateY(0.75rem);
   }
 }
 
