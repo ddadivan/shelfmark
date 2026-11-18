@@ -6,6 +6,7 @@ import {
   type AiJobResponse,
   type AiSettingsResponse,
   type AiTickResponse,
+  type AskEvent,
   type CreateAiDraftRequest,
   type LinkAiState,
   type LinkResponse,
@@ -23,6 +24,7 @@ import {
 import type { Observable } from 'rxjs';
 import { skipErrorToast } from '../../../core/api/skip-error-toast';
 import type { AiApi } from '../models/ai-api.interface';
+import { fetchAskEvents } from './fetch-ask-events';
 
 /** `path` with its `:id` replaced by the encoded `id`. */
 function withId(path: string, id: string): string {
@@ -142,5 +144,9 @@ export class HttpAiApi implements AiApi {
       context: skipErrorToast(),
       ...(limit !== undefined && { params: { limit } }),
     });
+  }
+
+  ask(question: string): Observable<AskEvent> {
+    return fetchAskEvents(AI_ENDPOINT.Ask, { question });
   }
 }

@@ -93,4 +93,21 @@ describe('HttpAiApi', () => {
       request.flush({});
     }
   });
+
+  it('asks over fetch with the question as JSON, outside HttpClient', async () => {
+    const { api } = setup();
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response('data: {"type":"text","text":"Hi"}\n\n', { status: 200 }));
+    const events = await new Promise<unknown[]>((resolve) => {
+      const seen: unknown[] = [];
+      api.ask('ramen?').subscribe({ next: (e) => seen.push(e), complete: () => resolve(seen) });
+    });
+    expect(events).toEqual([{ type: 'text', text: 'Hi' }]);
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/api/ai/ask',
+      expect.objectContaining({ method: 'POST', body: '{"question":"ramen?"}' }),
+    );
+    fetchSpy.mockRestore();
+  });
 });

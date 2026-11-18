@@ -6,6 +6,7 @@ import {
   AI_PROVIDER_STATUS,
   AI_TIER,
   AI_SEARCH_STATE,
+  ASK_PERIOD,
   type AiSearchState,
   type AiSettingsResponse,
 } from '@shelfmark/contracts';
@@ -42,6 +43,10 @@ function response(
       estimatedMinutes: null,
     },
     search: { state: search, ready: 6, total: 10 },
+    ask: {
+      available: true,
+      allowance: { questionsLeft: 12, period: ASK_PERIOD.Day, resetsOn: '2026-11-19' },
+    },
   };
 }
 

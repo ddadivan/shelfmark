@@ -4,6 +4,7 @@ import {
   AI_PROVIDER_STATUS,
   AI_SEARCH_STATE,
   AI_TIER,
+  ASK_PERIOD,
   type AiSettingsResponse,
 } from '@shelfmark/contracts';
 import { of } from 'rxjs';
@@ -36,6 +37,10 @@ export function aiSettingsResponse(patch: Partial<AiSettingsResponse> = {}): AiS
       estimatedMinutes: null,
     },
     search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
+    ask: {
+      available: true,
+      allowance: { questionsLeft: 12, period: ASK_PERIOD.Day, resetsOn: '2026-11-19' },
+    },
     ...patch,
   };
 }
@@ -65,5 +70,6 @@ export function fakeAiApi(settings: AiSettingsResponse = aiSettingsResponse()): 
     undoApply: vi.fn<AiApi['undoApply']>(),
     searchMeaning: vi.fn<AiApi['searchMeaning']>(() => of({ status: settings.search, items: [] })),
     related: vi.fn<AiApi['related']>(() => of({ status: settings.search, items: [] })),
+    ask: vi.fn<AiApi['ask']>(),
   };
 }

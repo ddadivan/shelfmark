@@ -9,6 +9,7 @@ import {
   type AiSettingsResponse,
   type UpdateAiSettingsRequest,
   AI_SEARCH_STATE,
+  ASK_PERIOD,
 } from '@shelfmark/contracts';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { UiButtonHarness } from '@shelfmark/ui/testing';
@@ -44,6 +45,10 @@ function response(patch: Partial<AiSettingsResponse> = {}): AiSettingsResponse {
       estimatedMinutes: 60,
     },
     search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
+    ask: {
+      available: true,
+      allowance: { questionsLeft: 12, period: ASK_PERIOD.Day, resetsOn: '2026-11-19' },
+    },
     ...patch,
   };
 }

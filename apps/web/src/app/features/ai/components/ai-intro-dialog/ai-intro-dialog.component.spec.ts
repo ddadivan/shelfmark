@@ -9,6 +9,7 @@ import {
   AI_TIER,
   type AiSettingsResponse,
   AI_SEARCH_STATE,
+  ASK_PERIOD,
 } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import { UiButtonHarness, UiDialogHarness } from '@shelfmark/ui/testing';
@@ -47,6 +48,10 @@ const RESPONSE: AiSettingsResponse = {
     estimatedMinutes: null,
   },
   search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
+  ask: {
+    available: true,
+    allowance: { questionsLeft: 12, period: ASK_PERIOD.Day, resetsOn: '2026-11-19' },
+  },
 };
 
 async function setup(options: { fail?: boolean; phone?: boolean } = {}) {
