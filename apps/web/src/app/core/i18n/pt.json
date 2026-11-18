@@ -3504,16 +3504,30 @@
     }
   },
   "rediscover": {
-    "title": "Dos seus links",
     "lead": {
       "theme": "Você tem salvado muito sobre {{theme}}. Estes são links mais antigos que você não abriu.",
-      "forgotten": "Salvos há algum tempo e nunca abertos."
+      "forgotten": "Alguns links que você salvou e nunca reabriu. Abra um, defina um lembrete ou deixe para lá."
     },
     "dismiss": "Ocultar até a próxima semana",
     "saved": "Salvo em {{month}}, não aberto recentemente",
     "remind": "Lembrar-me",
     "readLater": "Ler depois",
-    "notInterested": "Não tenho interesse"
+    "notInterested": "Não tenho interesse",
+    "count": {
+      "one": "{{count}} link salvo há algum tempo e nunca aberto",
+      "many": "{{count}} links salvos há algum tempo e nunca abertos",
+      "other": "{{count}} links salvos há algum tempo e nunca abertos"
+    },
+    "segment": {
+      "label": "Mostrar",
+      "opened": "Abertos",
+      "forgotten": "Esquecidos",
+      "forgottenCount": "Esquecidos {{count}}"
+    },
+    "empty": {
+      "title": "Nada esquecido",
+      "text": "Os links que você salvar e nunca abrir esperarão aqui."
+    }
   },
   "cleanup": {
     "title": "Organize sua biblioteca",

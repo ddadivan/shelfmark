@@ -3504,16 +3504,30 @@
     }
   },
   "rediscover": {
-    "title": "Dai tuoi link",
     "lead": {
       "theme": "Stai salvando molto su {{theme}}. Questi sono link più vecchi che non hai aperto.",
-      "forgotten": "Salvati tempo fa e mai aperti."
+      "forgotten": "Alcuni link che hai salvato e non hai mai riaperto. Aprine uno, imposta un promemoria o lascialo andare."
     },
     "dismiss": "Nascondi fino alla prossima settimana",
     "saved": "Salvato a {{month}}, non aperto di recente",
     "remind": "Ricordamelo",
     "readLater": "Leggi dopo",
-    "notInterested": "Non mi interessa"
+    "notInterested": "Non mi interessa",
+    "count": {
+      "one": "{{count}} link salvato tempo fa e mai aperto",
+      "many": "{{count}} link salvati tempo fa e mai aperti",
+      "other": "{{count}} link salvati tempo fa e mai aperti"
+    },
+    "segment": {
+      "label": "Mostra",
+      "opened": "Aperti",
+      "forgotten": "Dimenticati",
+      "forgottenCount": "Dimenticati {{count}}"
+    },
+    "empty": {
+      "title": "Niente dimenticato",
+      "text": "I link che salvi e non apri mai aspetteranno qui."
+    }
   },
   "cleanup": {
     "title": "Riordina la tua libreria",

@@ -3431,16 +3431,29 @@
     }
   },
   "rediscover": {
-    "title": "Aus deinen Links",
     "lead": {
       "theme": "Du speicherst gerade viel zu {{theme}}. Das sind ältere Links, die du nicht geöffnet hast.",
-      "forgotten": "Vor einer Weile gespeichert und nie geöffnet."
+      "forgotten": "Ein paar Links, die du gespeichert und nie wieder geöffnet hast. Öffne einen, setze eine Erinnerung oder lass ihn los."
     },
     "dismiss": "Bis nächste Woche ausblenden",
     "saved": "Gespeichert im {{month}}, länger nicht geöffnet",
     "remind": "Erinnern",
     "readLater": "Später lesen",
-    "notInterested": "Kein Interesse"
+    "notInterested": "Kein Interesse",
+    "count": {
+      "one": "{{count}} Link, vor einer Weile gespeichert und nie geöffnet",
+      "other": "{{count}} Links, vor einer Weile gespeichert und nie geöffnet"
+    },
+    "segment": {
+      "label": "Anzeigen",
+      "opened": "Geöffnet",
+      "forgotten": "Vergessen",
+      "forgottenCount": "Vergessen {{count}}"
+    },
+    "empty": {
+      "title": "Nichts vergessen",
+      "text": "Links, die du speicherst und nie öffnest, warten hier."
+    }
   },
   "cleanup": {
     "title": "Bibliothek aufräumen",

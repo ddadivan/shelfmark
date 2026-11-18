@@ -3504,16 +3504,30 @@
     }
   },
   "rediscover": {
-    "title": "De tus enlaces",
     "lead": {
       "theme": "Últimamente guardas mucho sobre {{theme}}. Estos son enlaces más antiguos que no has abierto.",
-      "forgotten": "Guardados hace tiempo y nunca abiertos."
+      "forgotten": "Algunos enlaces que guardaste y nunca volviste a abrir. Abre uno, pon un recordatorio o déjalo ir."
     },
     "dismiss": "Ocultar hasta la próxima semana",
     "saved": "Guardado en {{month}}, sin abrir últimamente",
     "remind": "Recordarme",
     "readLater": "Leer más tarde",
-    "notInterested": "No me interesa"
+    "notInterested": "No me interesa",
+    "count": {
+      "one": "{{count}} enlace guardado hace tiempo y nunca abierto",
+      "many": "{{count}} enlaces guardados hace tiempo y nunca abiertos",
+      "other": "{{count}} enlaces guardados hace tiempo y nunca abiertos"
+    },
+    "segment": {
+      "label": "Mostrar",
+      "opened": "Abiertos",
+      "forgotten": "Olvidados",
+      "forgottenCount": "Olvidados {{count}}"
+    },
+    "empty": {
+      "title": "Nada olvidado",
+      "text": "Los enlaces que guardes y nunca abras esperarán aquí."
+    }
   },
   "cleanup": {
     "title": "Ordena tu biblioteca",

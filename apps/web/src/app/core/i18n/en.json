@@ -3431,16 +3431,29 @@
     }
   },
   "rediscover": {
-    "title": "From your shelf",
     "lead": {
       "theme": "You’ve been saving a lot about {{theme}}. These are older ones you haven’t opened.",
-      "forgotten": "Saved a while ago and never opened."
+      "forgotten": "A few links you saved and never came back to. Open one, set a reminder, or let it go."
     },
     "dismiss": "Hide until next week",
     "saved": "Saved in {{month}}, not opened lately",
     "remind": "Remind me",
     "readLater": "Read later",
-    "notInterested": "Not interested"
+    "notInterested": "Not interested",
+    "count": {
+      "one": "{{count}} link saved a while ago and never opened",
+      "other": "{{count}} links saved a while ago and never opened"
+    },
+    "segment": {
+      "label": "Show",
+      "opened": "Opened",
+      "forgotten": "Forgotten",
+      "forgottenCount": "Forgotten {{count}}"
+    },
+    "empty": {
+      "title": "Nothing forgotten",
+      "text": "Links you save and never open will wait here."
+    }
   },
   "cleanup": {
     "title": "Clean up your library",

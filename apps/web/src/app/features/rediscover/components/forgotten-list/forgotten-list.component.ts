@@ -3,6 +3,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { REDISCOVER_MODE, type LinkResponse } from '@shelfmark/contracts';
 import {
   ButtonComponent,
+  EmptyStateComponent,
   FaviconComponent,
   IconComponent,
   ICON_SIZE,
@@ -17,26 +18,28 @@ import { READ_LATER } from '../../models/read-later.const';
 import { RediscoverStore } from '../../services/rediscover.store';
 
 /**
- * "From your shelf" (F8, AiDiscover 2–3) at the top of All links: 3 to 5 older links not opened
- * for a long time, with Remind me and Not interested, and a × that hides the block until next
- * week. In `theme` mode the lead names the recent theme with the spark (AI); in `forgotten` mode
- * there is no mark. Read later waits for #396. Renders nothing without items.
+ * The Forgotten view of Recently opened (F8, #512; the phone sheet shows the same one): 3 to 5
+ * older links not opened for a long time, with Remind me and Not interested, and a × that hides
+ * the block until next week. In `theme` mode the lead names the recent theme with the spark (AI);
+ * in `forgotten` mode there is no mark. Read later renders only when #396 provides it. Without
+ * items (or once the block is gone) a small empty state.
  */
 @Component({
-  selector: 'app-from-your-shelf',
+  selector: 'app-forgotten-list',
   imports: [
     TranslocoPipe,
     ButtonComponent,
+    EmptyStateComponent,
     FaviconComponent,
     IconComponent,
     PanelComponent,
     TooltipDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './from-your-shelf.component.html',
-  styleUrl: './from-your-shelf.component.scss',
+  templateUrl: './forgotten-list.component.html',
+  styleUrl: './forgotten-list.component.scss',
 })
-export class FromYourShelfComponent {
+export class ForgottenListComponent {
   protected readonly store = inject(RediscoverStore);
   private readonly locale = inject(LocaleService);
   private readonly actions = inject(LinkActionsService);
