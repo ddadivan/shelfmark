@@ -207,6 +207,24 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     });
   });
 
+  it('takes back what it filled when another address is pasted, keeping what the user added (#510)', async () => {
+    const ai = withDraft([FOLDER, ANGULAR, SIGNALS]);
+    const { loader } = await setup(ai);
+    await typeUrl(URL);
+    const fill = await vi.waitFor(() => loader.getHarness(UiButtonHarness.with({ text: FILL })));
+    await fill.click();
+    const tags = await loader.getHarness(UiTagInputHarness);
+    await until(async () => expect(await tags.getTags()).toEqual(['angular', 'signals']));
+    await tags.addTag('mine');
+    ai.createDraft.mockReturnValue(of(job([])));
+
+    await typeUrl('https://example.org/another-page');
+
+    await until(async () => expect(await tags.getTags()).toEqual(['mine']));
+    const select = await loader.getHarness(UiSelectHarness.with({ label: 'Folder' }));
+    expect(await select.getValueText()).not.toContain(MOCK_NAME.FolderAngular);
+  });
+
   it('never replaces a folder already chosen and only adds tags', async () => {
     const ai = withDraft([FOLDER, ANGULAR]);
     const { loader } = await setup(ai, { folderId: MOCK_ID.FolderReading });

@@ -1,5 +1,7 @@
 import { computed, effect, inject, Service, signal, untracked } from '@angular/core';
 import { LINK_LIMIT } from '@shelfmark/contracts';
+import type { AddLinkFilledValues } from '../models/add-link-filled-values.interface';
+import type { AddLinkFormModel } from '../models/add-link-form-model.interface';
 import { AI_FILL_SHORTCUT } from '../models/ai-fill-shortcut.const';
 import { PREVIEW_STATE } from '../models/preview-state.const';
 import { AddLinkAiService } from './add-link-ai.service';
@@ -17,7 +19,9 @@ import { AddLinkSummaryService } from './add-link-summary.service';
  * until the Link field holds a valid address. If the draft is still running the press starts a
  * busy state: Link, Folder, Tags and Summary are locked and Create link is inactive until the draft
  * arrives (or is too slow, fails, or finds nothing), then what came is applied and the fields
- * unlock. Closing the dialog ends it (nothing applied).
+ * unlock. Closing the dialog ends it (nothing applied). A new address after a fill (#510) takes
+ * back what the fill put in and the user has not changed since (folder, tags, summary, title), so
+ * the next page does not inherit the previous page's suggestions; the user's own values stay.
  */
 @Service({ autoProvided: false })
 export class AddLinkAiFillService {
@@ -34,6 +38,9 @@ export class AddLinkAiFillService {
 
   /** The button shows while AI is on. */
   readonly available = computed(() => this.ai.on());
+
+  /** What the last fill put in (Add link), to take back when the address changes. */
+  private filled: AddLinkFilledValues | null = null;
 
   /** Add link without a valid address yet: the button is inactive (`aria-disabled`). */
   readonly needsLink = computed(
@@ -53,6 +60,15 @@ export class AddLinkAiFillService {
     });
     // The lock lives in the form service, which owns the fields.
     effect(() => this.formState.locked.set(this.busy()));
+    // Another address after a fill: what the fill put in goes again.
+    effect(() => {
+      const url = this.preview.previewUrl();
+      untracked(() => {
+        if (this.filled !== null && url !== this.filled.url) {
+          this.takeBack(this.filled);
+        }
+      });
+    });
   }
 
   /**
@@ -105,6 +121,7 @@ export class AddLinkAiFillService {
 
   /** Applies what is available; `true` when something was put in a field. */
   private apply(): boolean {
+    const before = this.formState.model();
     let applied = this.ai.fill();
     if (this.formState.editing) {
       return this.summary.fill() || applied;
@@ -117,6 +134,37 @@ export class AddLinkAiFillService {
       field.value.set(title.slice(0, LINK_LIMIT.TitleMax));
       applied = true;
     }
+    if (applied) {
+      this.remember(before);
+    }
     return applied;
+  }
+
+  /** Notes what the fill changed compared with `before`. */
+  private remember(before: AddLinkFormModel): void {
+    const after = this.formState.model();
+    const known = new Set(before.tags.map((tag) => tag.toLowerCase()));
+    this.filled = {
+      url: this.preview.previewUrl(),
+      folderId: after.folderId !== before.folderId ? after.folderId : null,
+      tags: after.tags.filter((tag) => !known.has(tag.toLowerCase())),
+      summary: after.summary !== before.summary ? after.summary : null,
+      title: after.title !== before.title ? after.title : null,
+    };
+  }
+
+  /** Takes back the filled values the user has not changed since. */
+  private takeBack(filled: AddLinkFilledValues): void {
+    this.filled = null;
+    const added = new Set(filled.tags);
+    this.formState.model.update((model) => ({
+      ...model,
+      folderId:
+        filled.folderId !== null && model.folderId === filled.folderId ? null : model.folderId,
+      tags: model.tags.filter((tag) => !added.has(tag)),
+      summary: filled.summary !== null && model.summary === filled.summary ? '' : model.summary,
+      title: filled.title !== null && model.title === filled.title ? '' : model.title,
+    }));
+    this.summary.forgetDraft();
   }
 }
