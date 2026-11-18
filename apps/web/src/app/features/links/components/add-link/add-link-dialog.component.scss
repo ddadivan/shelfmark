@@ -162,6 +162,18 @@
   }
 }
 
+// Cancel and the main action (and "Open saved") stay together: the footer wraps around the group,
+// never through it. On the phone the group stacks like the footer (main action on top).
+.add-link__confirm {
+  display: flex;
+  flex: none;
+  gap: var(--space-4);
+
+  @include phone {
+    flex-flow: column-reverse nowrap;
+  }
+}
+
 // The "save" shortcut at the start of the footer; a phone has no keyboard to press it.
 .add-link__shortcut {
   @include type(caption);
