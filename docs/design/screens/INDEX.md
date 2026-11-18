@@ -107,10 +107,10 @@ AI features F0–F8 (`docs/ai/FEATURES.md`, approved Nov 17, 2026; parent #388).
 
 - `AiIntro.dc.html` — First-run AI intro when AI is turned on: what it does, what is sent, no training, the provider, link to Settings › AI; desktop dialog and phone sheet
 - `AiSettings.dc.html` — Settings › AI: opt-in switch, Folder and Tags each Suggest / Automatic / Off (default Suggest), Summaries switch, what is sent (notes, summary language), this month's usage, process existing links, delete AI data; variants off, folder set to Automatic, limit reached, provider trouble, processing (desktop)
-- `AiTags.dc.html` — Tag and folder suggestions in Add link and Edit link: ready, suggesting, accepted, old link, limit reached, not available, off; chip anatomy; **proposal** rule offer after repeated corrections; you chose the folder (AI never overrides); Automatic mode applied with «Moved by AI» and Undo (desktop)
+- `AiTags.dc.html` — Tag and folder suggestions in Add link and Edit link: ready, suggesting, accepted, old link, limit reached, not available, off; chip anatomy; **proposal** rule offer after repeated corrections; you chose the folder (AI never overrides); Automatic mode applied with «Moved by AI» and Undo; **Fill in with AI** (F1c): the button and its shortcut, after the click, with a folder you already chose (desktop)
 - `AiSummary.dc.html` — Summaries on cards and rows, pending, kind-aware wording, Edit link written by AI and edited by you (desktop)
 - `AiTidy.dc.html` — **Proposal** Tidy Unsorted: entry point, review with everything selected, applied toast with Undo, empty (desktop)
-- `MobileAi.dc.html` — Phone at 360px: Add link sheet with suggestions, suggesting and limit states, feed with summaries, You › AI, Tidy Unsorted, the Folder mode sheet, Automatic mode toast with Undo (phone)
+- `MobileAi.dc.html` — Phone at 360px: Add link sheet with suggestions, suggesting and limit states, feed with summaries, You › AI, Tidy Unsorted, the Folder mode sheet, Automatic mode toast with Undo; Fill in with AI in the Add link sheet, before and after (phone)
 
 - `Privacy.dc.html` (section 9) — now has the «AI features (optional)» section: provider as processor, data sent, retention, counts only, turning it off
 
@@ -119,4 +119,4 @@ AI features F0–F8 (`docs/ai/FEATURES.md`, approved Nov 17, 2026; parent #388).
 - `AiCleanup.dc.html` — Clean-up (F5): report with per-item choice and one Undo, entry card, checking, applied, nothing to clean (desktop)
 - `AiConnect.dc.html` — Connect your assistant (F6, MCP): server address, token shown once, connected clients, revoke, empty (desktop)
 - `AiDiscover.dc.html` — Related on your shelf in Edit link (F7); “From your shelf” weekly block with and without AI (F8) (desktop)
-- `MobileAiMore.dc.html` — Phone at 360px: Search · Ask segment, meaning results, Ask empty and answered (phone)
+- `MobileAiMore.dc.html` — Phone at 360px: the Ask tab replaces Tags while Ask is on; search with meaning results and the Ask row; Ask full screen (empty, answered) with Back; Library with the Tags section next to folders; AI off keeps the Tags tab (phone)
