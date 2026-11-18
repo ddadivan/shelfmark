@@ -5,7 +5,9 @@ import { UiButtonHarness } from '@shelfmark/ui/testing';
 import { stubClipboard } from '../../../../../../testing/stub-clipboard';
 import { axeViolations } from '../../../../../../testing/axe';
 import { loadEnglish, provideTranslocoForTest } from '../../../../../testing/transloco-testing';
+import { MCP_CLIENT } from '../../models/mcp-client.const';
 import { MCP_SERVER_URL } from '../../models/mcp-server-url.const';
+import { mcpClientSetup } from '../../utils/mcp-client-setup';
 import { McpHowToComponent } from './mcp-how-to.component';
 
 const URL = 'https://shelfmark.example/api/mcp';
@@ -54,8 +56,10 @@ describe('McpHowToComponent', () => {
       'VS Code',
     ]);
     const code = [...element.querySelectorAll('pre')].map((pre) => pre.textContent ?? '');
-    expect(code).toHaveLength(4);
-    expect(code.every((text) => text.includes(URL) && text.includes('<token>'))).toBe(true);
+    // Each block is exactly the setup for its assistant (address and `<token>` placeholder included).
+    expect(code.map((text) => text.trim())).toEqual(
+      Object.values(MCP_CLIENT).map((client) => mcpClientSetup(client, URL)),
+    );
     expect(element.textContent).toContain('can’t connect yet');
     expect(await axeViolations(element)).toEqual([]);
   });
