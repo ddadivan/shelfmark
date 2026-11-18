@@ -1,5 +1,5 @@
 @if (viewport.wide()) {
-  <app-search-results popup />
+  <app-search-results popup (ask)="askPanel.open($event)" />
 } @else {
   <ui-button
     [variant]="BUTTON_VARIANT.Secondary"

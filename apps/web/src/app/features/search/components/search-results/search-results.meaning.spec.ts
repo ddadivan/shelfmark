@@ -53,6 +53,7 @@ interface Options {
   words?: LinkResponse[];
   meaning?: () => ReturnType<ReturnType<typeof fakeAiApi>['searchMeaning']>;
   meaningSearch?: boolean;
+  ask?: boolean;
 }
 
 async function setup(options: Options = {}) {
@@ -62,6 +63,7 @@ async function setup(options: Options = {}) {
         ...AI_SETTINGS_DEFAULT,
         enabled: true,
         meaningSearch: options.meaningSearch ?? true,
+        ask: options.ask ?? false,
       },
     }),
   );
@@ -185,5 +187,24 @@ describe('SearchResultsComponent with search by meaning (AI-3)', () => {
     await vi.waitFor(async () => expect(await list.getOptions()).toHaveLength(1), WAIT);
     await new Promise((resolve) => setTimeout(resolve, 700));
     expect(await list.getNoteText()).toBe('');
+  });
+
+  it('ends with the Ask row for a query of 3+ characters and hands the text to Ask', async () => {
+    const { list, fixture } = await setup({ ask: true });
+    const asked = vi.fn();
+    fixture.componentInstance.ask.subscribe(asked);
+    await list.setQuery('ra');
+    await vi.waitFor(async () => {
+      expect(await list.getGroupHeadings()).not.toContain('Ask your shelf');
+    }, WAIT);
+    await list.setQuery('ramen recipes');
+    await vi.waitFor(async () => {
+      expect((await list.getGroupHeadings()).at(-1)).toBe('Ask your shelf');
+    }, WAIT);
+    const options = await list.getOptions();
+    const last = options.at(-1);
+    expect(await last?.getText()).toContain('Ask your shelf: “ramen recipes”');
+    await last?.click();
+    expect(asked).toHaveBeenCalledWith('ramen recipes');
   });
 });

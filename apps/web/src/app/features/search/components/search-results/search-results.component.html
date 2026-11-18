@@ -105,6 +105,15 @@
     </ui-command-group>
   }
 
+  @if (askRow()) {
+    <ui-command-group [heading]="'ai.ask.title' | transloco">
+      <ui-command-item [value]="SEARCH_RESULT_KIND.Ask">
+        <ui-icon slot="leading" class="search-results__ask-icon" name="spark" />
+        {{ 'search.askRow' | transloco: { query: query().trim() } }}
+      </ui-command-item>
+    </ui-command-group>
+  }
+
   <div slot="empty" class="search-results__empty">
     <span class="search-results__empty-icon" aria-hidden="true"
       ><ui-icon name="search" [size]="20"

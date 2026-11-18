@@ -1828,7 +1828,8 @@
       "move": "se déplacer",
       "open": "ouvrir",
       "background": "ouvrir en arrière-plan"
-    }
+    },
+    "askRow": "Interroger mes liens : « {{query}} »"
   },
   "share": {
     "title": "Enregistrer dans Shelfmark",
@@ -3240,6 +3241,57 @@
       "why": "Proche de : {{reasons}}",
       "show": "Afficher les liens proches",
       "folders": "Dossiers proches"
+    },
+    "ask": {
+      "title": "Interroger mes liens",
+      "open": "Interroger mes liens",
+      "close": "Fermer Interroger mes liens",
+      "newQuestion": "Nouvelle question",
+      "emptyTitle": "Que voulez-vous savoir ?",
+      "lead": "Posez votre question avec vos mots. La réponse vient des liens que vous avez enregistrés, avec chaque source.",
+      "starters": {
+        "saved": "Qu’ai-je enregistré sur {{folder}} ?",
+        "ideas": "Quelles sont les idées principales dans {{folder}} ?",
+        "recent": "Qu’ai-je ajouté à {{folder}} récemment ?",
+        "generic": "Qu’ai-je enregistré ce mois-ci ?"
+      },
+      "label": "Posez une question sur vos liens",
+      "placeholder": "Posez une question sur vos liens",
+      "send": "Demander",
+      "stop": "Arrêter",
+      "left": {
+        "day": {
+          "one": "{{count}} question restante aujourd’hui",
+          "many": "{{count}} de questions restantes aujourd’hui",
+          "other": "{{count}} questions restantes aujourd’hui"
+        },
+        "month": {
+          "one": "{{count}} question restante ce mois-ci",
+          "many": "{{count}} de questions restantes ce mois-ci",
+          "other": "{{count}} questions restantes ce mois-ci"
+        }
+      },
+      "footer": "Les réponses n’utilisent que vos liens. Rien n’est modifié dans votre bibliothèque.",
+      "sources": "Sources de vos liens",
+      "source": "Source {{n}}",
+      "sideBySide": "Ouvrir côte à côte",
+      "remind": "Me le rappeler",
+      "notFound": {
+        "text": "Rien dans vos liens ne répond à cette question.",
+        "search": "Rechercher « {{query}} »",
+        "add": "Ajouter un lien"
+      },
+      "limit": {
+        "day": "Vous avez utilisé les questions du jour. Réessayez demain ; la recherche fonctionne normalement.",
+        "month": "Vous avez utilisé les questions du mois. Réessayez le {{date}} ; la recherche fonctionne normalement."
+      },
+      "error": "Impossible d’obtenir une réponse pour le moment. Cette question n’a pas été comptée.",
+      "rejected": "Impossible de répondre à cette question. Elle n’a pas été comptée.",
+      "busy": "Une autre question est encore en cours. Réessayez dans un instant.",
+      "off": "Interroger mes liens est désactivé dans Réglages › IA.",
+      "retry": "Réessayer",
+      "truncated": "La réponse a été interrompue.",
+      "stopped": "Arrêté."
     }
   }
 }

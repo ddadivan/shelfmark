@@ -51,6 +51,8 @@ import { MeaningSearch } from '../../services/meaning-search';
 import { matchFolders, matchTags } from '../../utils/search-match';
 import { isMacPlatform } from '../../utils/is-mac-platform';
 import { pluralKey } from '../../../../core/i18n/plural-key';
+import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
+import { ASK_LIMIT } from '@shelfmark/contracts';
 
 const IDLE: SearchState = { query: '', links: [], more: false, failed: false };
 
@@ -90,6 +92,8 @@ export class SearchResultsComponent {
   readonly popup = input(false, { transform: booleanAttribute });
   /** The search is finished (a link opened, a page chosen): the dialog closes. */
   readonly done = output<void>();
+  /** "Ask your shelf" with the query (AI-4): the shell hands it to Ask. */
+  readonly ask = output<string>();
 
   private readonly list = viewChild.required(CommandListComponent);
   private readonly api = inject(LINKS_API);
@@ -100,6 +104,11 @@ export class SearchResultsComponent {
   private readonly opener = inject(LinkOpener);
   /** Meaning matches after the word matches (AI-3); nothing while search by meaning is off. */
   protected readonly meaning = inject(MeaningSearch);
+  /** The last row asks the query (AI-4): Ask on and at least `ASK_LIMIT.QuestionMin` characters. */
+  protected readonly askRow = computed(
+    () => this.ai.askOn() && this.query().trim().length >= ASK_LIMIT.QuestionMin,
+  );
+  private readonly ai = inject(AiSettingsStore);
 
   protected readonly SEARCH_RESULT_KIND = SEARCH_RESULT_KIND;
   protected readonly ICON_SIZE = ICON_SIZE;
@@ -195,6 +204,12 @@ export class SearchResultsComponent {
         break;
       case SEARCH_RESULT_KIND.Tag:
         void this.go([`/${APP_PATH.Links}`], { [TAG_QUERY_PARAM]: id });
+        break;
+      case SEARCH_RESULT_KIND.Ask:
+        this.ask.emit(this.query().trim());
+        if (this.popup()) {
+          this.query.set('');
+        }
         break;
       case SEARCH_RESULT_KIND.All:
         void this.go([`/${APP_PATH.Links}`], { [SEARCH_QUERY_PARAM]: this.state().query });

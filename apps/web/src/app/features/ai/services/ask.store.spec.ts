@@ -1,0 +1,94 @@
+import { TestBed } from '@angular/core/testing';
+import { ASK_PERIOD, type AskEvent } from '@shelfmark/contracts';
+import { Subject } from 'rxjs';
+import { aiSettingsResponse, fakeAiApi } from '../../../../testing/fake-ai-api';
+import { AI_API } from '../models/ai-api.const';
+import { AiSettingsStore } from './ai-settings.store';
+import { AskStore } from './ask.store';
+
+const ALLOWANCE = { questionsLeft: 7, period: ASK_PERIOD.Day, resetsOn: '2026-11-19' };
+
+async function setup() {
+  const api = fakeAiApi(aiSettingsResponse());
+  const streams: Subject<AskEvent>[] = [];
+  api.ask.mockImplementation(() => {
+    const stream = new Subject<AskEvent>();
+    streams.push(stream);
+    return stream;
+  });
+  TestBed.configureTestingModule({ providers: [{ provide: AI_API, useValue: api }, AskStore] });
+  const settings = TestBed.inject(AiSettingsStore);
+  await settings.load();
+  return { api, streams, settings, store: TestBed.inject(AskStore) };
+}
+
+describe('AskStore', () => {
+  it('streams one question at a time and feeds the allowance to the settings', async () => {
+    const { api, streams, settings, store } = await setup();
+    expect(store.ask('  Which   ramen? ')).toBe(true);
+    expect(api.ask).toHaveBeenCalledWith('Which ramen?');
+    expect(store.streaming()).toBe(true);
+    expect(store.ask('another one')).toBe(false);
+    expect(store.ask('no')).toBe(false);
+
+    streams[0]?.next({ type: 'meta', allowance: ALLOWANCE, retrieved: 3 });
+    expect(settings.askAllowance()).toEqual(ALLOWANCE);
+    streams[0]?.next({ type: 'text', text: 'Hi ' });
+    streams[0]?.next({ type: 'cite', n: 1 });
+    streams[0]?.next({
+      type: 'done',
+      sources: [],
+      notFound: false,
+      truncated: false,
+      allowance: ALLOWANCE,
+    });
+    streams[0]?.complete();
+    expect(store.streaming()).toBe(false);
+    expect(store.entries()[0]).toMatchObject({
+      state: 'done',
+      segments: [{ text: 'Hi ' }, { cite: 1 }],
+    });
+  });
+
+  it('stops keeping what arrived, and the stream is unsubscribed', async () => {
+    const { streams, store } = await setup();
+    store.ask('ramen recipes');
+    streams[0]?.next({ type: 'text', text: 'Partial' });
+    store.stop();
+    expect(streams[0]?.observed).toBe(false);
+    expect(store.entries()[0]).toMatchObject({ state: 'done', truncated: true });
+  });
+
+  it('retries a failed question in place and resets the conversation', async () => {
+    const { api, streams, store } = await setup();
+    store.ask('ramen recipes');
+    streams[0]?.next({
+      type: 'error',
+      reason: 'unavailable',
+      counted: false,
+      allowance: ALLOWANCE,
+    });
+    streams[0]?.complete();
+    expect(store.entries()[0]?.state).toBe('error');
+    const id = store.entries()[0]?.id ?? 0;
+    store.retry(id);
+    expect(api.ask).toHaveBeenCalledTimes(2);
+    expect(store.entries()).toHaveLength(1);
+    expect(store.entries()[0]?.state).toBe('streaming');
+    store.retry(id);
+    expect(api.ask).toHaveBeenCalledTimes(2);
+    store.reset();
+    expect(store.entries()).toEqual([]);
+    expect(streams[1]?.observed).toBe(false);
+  });
+
+  it('ends a broken stream as an error and refreshes the settings on off', async () => {
+    const { api, streams, store } = await setup();
+    store.ask('ramen recipes');
+    streams[0]?.error(new Error('network'));
+    expect(store.entries()[0]).toMatchObject({ state: 'error', reason: 'unavailable' });
+    store.ask('ramen again');
+    streams[1]?.next({ type: 'error', reason: 'off', counted: false, allowance: null });
+    expect(api.getSettings).toHaveBeenCalledTimes(2);
+  });
+});

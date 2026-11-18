@@ -1828,7 +1828,8 @@
       "move": "sposta",
       "open": "apri",
       "background": "apri in background"
-    }
+    },
+    "askRow": "Chiedi ai tuoi link: «{{query}}»"
   },
   "share": {
     "title": "Salva in Shelfmark",
@@ -3240,6 +3241,57 @@
       "why": "Vicino a: {{reasons}}",
       "show": "Mostra correlati",
       "folders": "Cartelle correlate"
+    },
+    "ask": {
+      "title": "Chiedi ai tuoi link",
+      "open": "Chiedi ai tuoi link",
+      "close": "Chiudi Chiedi ai tuoi link",
+      "newQuestion": "Nuova domanda",
+      "emptyTitle": "Cosa vuoi sapere?",
+      "lead": "Chiedi con parole tue. La risposta arriva dai link che hai salvato, con ogni fonte indicata.",
+      "starters": {
+        "saved": "Cosa ho salvato su {{folder}}?",
+        "ideas": "Quali sono le idee principali in {{folder}}?",
+        "recent": "Cosa ho aggiunto a {{folder}} di recente?",
+        "generic": "Cosa ho salvato questo mese?"
+      },
+      "label": "Chiedi sui tuoi link",
+      "placeholder": "Chiedi sui tuoi link",
+      "send": "Chiedi",
+      "stop": "Interrompi",
+      "left": {
+        "day": {
+          "one": "{{count}} domanda rimasta oggi",
+          "many": "{{count}} di domande rimaste oggi",
+          "other": "{{count}} domande rimaste oggi"
+        },
+        "month": {
+          "one": "{{count}} domanda rimasta questo mese",
+          "many": "{{count}} di domande rimaste questo mese",
+          "other": "{{count}} domande rimaste questo mese"
+        }
+      },
+      "footer": "Le risposte usano solo i tuoi link. Nella tua libreria non cambia nulla.",
+      "sources": "Fonti dai tuoi link",
+      "source": "Fonte {{n}}",
+      "sideBySide": "Apri affiancato",
+      "remind": "Ricordamelo",
+      "notFound": {
+        "text": "Nei tuoi link non c’è una risposta.",
+        "search": "Cerca «{{query}}»",
+        "add": "Aggiungi un link"
+      },
+      "limit": {
+        "day": "Hai usato le domande di oggi. Riprova domani; la ricerca funziona come sempre.",
+        "month": "Hai usato le domande di questo mese. Riprova il {{date}}; la ricerca funziona come sempre."
+      },
+      "error": "Al momento non è possibile rispondere. Questa domanda non è stata conteggiata.",
+      "rejected": "Non è possibile rispondere a questa domanda. Non è stata conteggiata.",
+      "busy": "C’è ancora un’altra domanda in corso. Riprova tra un momento.",
+      "off": "Chiedi ai tuoi link è disattivato in Impostazioni › IA.",
+      "retry": "Riprova",
+      "truncated": "La risposta è stata interrotta.",
+      "stopped": "Interrotto."
     }
   }
 }

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject } fr
 import { TranslocoPipe } from '@jsverse/transloco';
 import { DialogComponent, KEYBOARD_KEY, UiDialogRef } from '@shelfmark/ui';
 import { SearchResultsComponent } from '../search-results/search-results.component';
+import { AskPanelService } from '../../../ai/services/ask-panel.service';
 
 /**
  * The search dialog (Cmd or Ctrl + K below 80em, the Search tab on phones and tablets): the
@@ -16,6 +17,7 @@ import { SearchResultsComponent } from '../search-results/search-results.compone
 })
 export class SearchDialogComponent {
   private readonly ref = inject<UiDialogRef<undefined>>(UiDialogRef);
+  private readonly askPanel = inject(AskPanelService);
 
   constructor() {
     // The combobox consumes Esc (`defaultPrevented`, maybe more), which the dialog service then
@@ -33,5 +35,11 @@ export class SearchDialogComponent {
 
   protected close(): void {
     this.ref.close();
+  }
+
+  /** "Ask your shelf" row: the dialog closes and the Ask panel asks the query. */
+  protected ask(question: string): void {
+    this.ref.close();
+    this.askPanel.open(question);
   }
 }

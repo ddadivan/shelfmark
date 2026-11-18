@@ -1828,7 +1828,8 @@
       "move": "moverse",
       "open": "abrir",
       "background": "abrir en segundo plano"
-    }
+    },
+    "askRow": "Pregunta a tus enlaces: «{{query}}»"
   },
   "share": {
     "title": "Guardar en Shelfmark",
@@ -3240,6 +3241,57 @@
       "why": "Cerca de: {{reasons}}",
       "show": "Mostrar relacionados",
       "folders": "Carpetas relacionadas"
+    },
+    "ask": {
+      "title": "Pregunta a tus enlaces",
+      "open": "Pregunta a tus enlaces",
+      "close": "Cerrar Pregunta a tus enlaces",
+      "newQuestion": "Nueva pregunta",
+      "emptyTitle": "¿Qué quieres saber?",
+      "lead": "Pregunta con tus propias palabras. La respuesta sale de los enlaces que guardaste, con cada fuente.",
+      "starters": {
+        "saved": "¿Qué guardé sobre {{folder}}?",
+        "ideas": "¿Cuáles son las ideas principales en {{folder}}?",
+        "recent": "¿Qué añadí a {{folder}} últimamente?",
+        "generic": "¿Qué guardé este mes?"
+      },
+      "label": "Pregunta sobre tus enlaces",
+      "placeholder": "Pregunta sobre tus enlaces",
+      "send": "Preguntar",
+      "stop": "Detener",
+      "left": {
+        "day": {
+          "one": "Te queda {{count}} pregunta hoy",
+          "many": "Te quedan {{count}} de preguntas hoy",
+          "other": "Te quedan {{count}} preguntas hoy"
+        },
+        "month": {
+          "one": "Te queda {{count}} pregunta este mes",
+          "many": "Te quedan {{count}} de preguntas este mes",
+          "other": "Te quedan {{count}} preguntas este mes"
+        }
+      },
+      "footer": "Las respuestas usan solo tus enlaces. No se cambia nada en tu biblioteca.",
+      "sources": "Fuentes de tus enlaces",
+      "source": "Fuente {{n}}",
+      "sideBySide": "Abrir en paralelo",
+      "remind": "Recordarme",
+      "notFound": {
+        "text": "Nada en tus enlaces responde a esto.",
+        "search": "Buscar «{{query}}»",
+        "add": "Añadir un enlace"
+      },
+      "limit": {
+        "day": "Has usado las preguntas de hoy. Vuelve a preguntar mañana; la búsqueda funciona como siempre.",
+        "month": "Has usado las preguntas de este mes. Vuelve a preguntar el {{date}}; la búsqueda funciona como siempre."
+      },
+      "error": "No se pudo obtener una respuesta ahora. Esta pregunta no se ha contado.",
+      "rejected": "No se puede responder a esta pregunta. No se ha contado.",
+      "busy": "Todavía se está respondiendo otra pregunta. Inténtalo de nuevo en un momento.",
+      "off": "Pregunta a tus enlaces está desactivado en Ajustes › IA.",
+      "retry": "Reintentar",
+      "truncated": "La respuesta se cortó.",
+      "stopped": "Detenido."
     }
   }
 }

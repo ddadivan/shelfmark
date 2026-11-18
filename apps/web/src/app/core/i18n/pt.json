@@ -1828,7 +1828,8 @@
       "move": "mover",
       "open": "abrir",
       "background": "abrir em segundo plano"
-    }
+    },
+    "askRow": "Pergunte aos seus links: “{{query}}”"
   },
   "share": {
     "title": "Salvar no Shelfmark",
@@ -3240,6 +3241,57 @@
       "why": "Perto de: {{reasons}}",
       "show": "Mostrar relacionados",
       "folders": "Pastas relacionadas"
+    },
+    "ask": {
+      "title": "Pergunte aos seus links",
+      "open": "Pergunte aos seus links",
+      "close": "Fechar Pergunte aos seus links",
+      "newQuestion": "Nova pergunta",
+      "emptyTitle": "O que você quer saber?",
+      "lead": "Pergunte com suas palavras. A resposta vem dos links que você salvou, com cada fonte listada.",
+      "starters": {
+        "saved": "O que eu salvei sobre {{folder}}?",
+        "ideas": "Quais são as ideias principais em {{folder}}?",
+        "recent": "O que eu adicionei a {{folder}} recentemente?",
+        "generic": "O que eu salvei este mês?"
+      },
+      "label": "Pergunte sobre seus links",
+      "placeholder": "Pergunte sobre seus links",
+      "send": "Perguntar",
+      "stop": "Parar",
+      "left": {
+        "day": {
+          "one": "{{count}} pergunta restante hoje",
+          "many": "{{count}} de perguntas restantes hoje",
+          "other": "{{count}} perguntas restantes hoje"
+        },
+        "month": {
+          "one": "{{count}} pergunta restante este mês",
+          "many": "{{count}} de perguntas restantes este mês",
+          "other": "{{count}} perguntas restantes este mês"
+        }
+      },
+      "footer": "As respostas usam apenas seus links. Nada muda na sua biblioteca.",
+      "sources": "Fontes dos seus links",
+      "source": "Fonte {{n}}",
+      "sideBySide": "Abrir lado a lado",
+      "remind": "Lembrar-me",
+      "notFound": {
+        "text": "Nada nos seus links responde a isso.",
+        "search": "Pesquisar “{{query}}”",
+        "add": "Adicionar um link"
+      },
+      "limit": {
+        "day": "Você usou as perguntas de hoje. Pergunte de novo amanhã; a pesquisa funciona normalmente.",
+        "month": "Você usou as perguntas deste mês. Pergunte de novo em {{date}}; a pesquisa funciona normalmente."
+      },
+      "error": "Não foi possível obter uma resposta agora. Esta pergunta não foi contada.",
+      "rejected": "Não é possível responder a esta pergunta. Ela não foi contada.",
+      "busy": "Outra pergunta ainda está sendo respondida. Tente de novo em instantes.",
+      "off": "Pergunte aos seus links está desativado em Configurações › IA.",
+      "retry": "Tentar de novo",
+      "truncated": "A resposta foi interrompida.",
+      "stopped": "Parado."
     }
   }
 }

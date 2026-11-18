@@ -1,0 +1,21 @@
+@if (store.entries().length === 0) {
+  <div class="ask-conversation__empty">
+    <h3 class="ask-conversation__title">{{ 'ai.ask.emptyTitle' | transloco }}</h3>
+    <p class="ask-conversation__lead">{{ 'ai.ask.lead' | transloco }}</p>
+    <div class="ask-conversation__starters">
+      @for (starter of starters(); track starter.key) {
+        @let text = starter.key | transloco: { folder: starter.folder };
+        <ui-button wrap (click)="store.ask(text)">{{ text }}</ui-button>
+      }
+    </div>
+  </div>
+} @else {
+  @for (entry of store.entries(); track entry.id) {
+    <app-ask-entry
+      [entry]="entry"
+      (retry)="store.retry(entry.id)"
+      (searchRequested)="search($event)"
+      (addRequested)="add()"
+    />
+  }
+}

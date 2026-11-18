@@ -1,0 +1,46 @@
+<p class="ask-sources__heading" [id]="idPrefix() + '-heading'">
+  {{ 'ai.ask.sources' | transloco }}
+</p>
+<ul class="ask-sources__list" [attr.aria-labelledby]="idPrefix() + '-heading'">
+  @for (source of sources(); track source.n) {
+    <li [id]="idPrefix() + '-' + source.n">
+      <ui-list-item
+        compact
+        [href]="safeHref(source.link.url)"
+        [newTab]="newTab()"
+        [selected]="highlighted() === source.n"
+        (activated)="actions.opened(source.link)"
+      >
+        <span slot="leading" class="ask-sources__lead">
+          <span class="ask-sources__n" aria-hidden="true">{{ source.n }}</span>
+          <ui-favicon
+            [src]="ownImageUrl(source.link.faviconUrl)"
+            [letter]="siteLetter(source.link.url)"
+          />
+        </span>
+        <span slot="title">{{ source.link.title }}</span>
+        <span slot="meta">{{ linkHost(source.link.url) }}</span>
+        <span slot="trailing" class="ask-sources__actions">
+          @if (viewport.wide()) {
+            <ui-button
+              variant="ghost"
+              size="sm"
+              iconOnly
+              iconLeft="columns"
+              [ariaLabel]="'ai.ask.sideBySide' | transloco"
+              (click)="sideBySide(source)"
+            />
+          }
+          <ui-button
+            variant="ghost"
+            size="sm"
+            iconOnly
+            iconLeft="clock"
+            [ariaLabel]="'ai.ask.remind' | transloco"
+            (click)="actions.remind(source.link)"
+          />
+        </span>
+      </ui-list-item>
+    </li>
+  }
+</ul>

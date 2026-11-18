@@ -1,0 +1,25 @@
+<form class="ask-composer__form" (submit)="send($event)">
+  <ui-input
+    class="ask-composer__field"
+    compact
+    [label]="'ai.ask.label' | transloco"
+    [placeholder]="'ai.ask.placeholder' | transloco"
+    [disabled]="store.streaming() || limited()"
+    [(value)]="text"
+  />
+  @if (store.streaming()) {
+    <ui-button variant="secondary" (click)="store.stop()">{{
+      'ai.ask.stop' | transloco
+    }}</ui-button>
+  } @else {
+    <ui-button
+      type="submit"
+      variant="primary"
+      iconOnly
+      iconLeft="key-enter"
+      [ariaLabel]="'ai.ask.send' | transloco"
+      [disabled]="!canSend()"
+    />
+  }
+</form>
+<p class="ask-composer__footer">{{ 'ai.ask.footer' | transloco }}</p>

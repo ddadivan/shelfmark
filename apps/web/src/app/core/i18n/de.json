@@ -1799,7 +1799,8 @@
       "move": "bewegen",
       "open": "öffnen",
       "background": "im Hintergrund öffnen"
-    }
+    },
+    "askRow": "Frag deine Links: „{{query}}“"
   },
   "share": {
     "title": "In Shelfmark speichern",
@@ -3169,6 +3170,55 @@
       "why": "Nah an: {{reasons}}",
       "show": "Ähnliches zeigen",
       "folders": "Ähnliche Ordner"
+    },
+    "ask": {
+      "title": "Frag deine Links",
+      "open": "Frag deine Links",
+      "close": "Frag deine Links schließen",
+      "newQuestion": "Neue Frage",
+      "emptyTitle": "Was möchtest du wissen?",
+      "lead": "Frag in deinen eigenen Worten. Die Antwort stammt aus deinen gespeicherten Links, mit allen Quellen.",
+      "starters": {
+        "saved": "Was habe ich zu {{folder}} gespeichert?",
+        "ideas": "Was sind die wichtigsten Ideen in {{folder}}?",
+        "recent": "Was habe ich zuletzt zu {{folder}} hinzugefügt?",
+        "generic": "Was habe ich diesen Monat gespeichert?"
+      },
+      "label": "Frag zu deinen Links",
+      "placeholder": "Frag zu deinen Links",
+      "send": "Fragen",
+      "stop": "Stoppen",
+      "left": {
+        "day": {
+          "one": "Heute noch {{count}} Frage",
+          "other": "Heute noch {{count}} Fragen"
+        },
+        "month": {
+          "one": "Diesen Monat noch {{count}} Frage",
+          "other": "Diesen Monat noch {{count}} Fragen"
+        }
+      },
+      "footer": "Antworten nutzen nur deine Links. In deiner Bibliothek wird nichts geändert.",
+      "sources": "Quellen aus deinen Links",
+      "source": "Quelle {{n}}",
+      "sideBySide": "Nebeneinander öffnen",
+      "remind": "Erinnern",
+      "notFound": {
+        "text": "Nichts in deinen Links beantwortet das.",
+        "search": "„{{query}}“ suchen",
+        "add": "Link hinzufügen"
+      },
+      "limit": {
+        "day": "Du hast die Fragen für heute aufgebraucht. Frag morgen wieder; die Suche funktioniert wie gewohnt.",
+        "month": "Du hast die Fragen für diesen Monat aufgebraucht. Frag ab {{date}} wieder; die Suche funktioniert wie gewohnt."
+      },
+      "error": "Gerade keine Antwort möglich. Diese Frage zählt nicht für dein Limit.",
+      "rejected": "Diese Frage kann nicht beantwortet werden. Sie zählt nicht für dein Limit.",
+      "busy": "Eine andere Frage wird noch beantwortet. Versuch es gleich noch einmal.",
+      "off": "Frag deine Links ist unter Einstellungen › KI ausgeschaltet.",
+      "retry": "Erneut versuchen",
+      "truncated": "Die Antwort wurde abgeschnitten.",
+      "stopped": "Gestoppt."
     }
   }
 }

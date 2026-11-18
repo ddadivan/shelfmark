@@ -1799,7 +1799,8 @@
       "move": "move",
       "open": "open",
       "background": "open in background"
-    }
+    },
+    "askRow": "Ask your shelf: “{{query}}”"
   },
   "share": {
     "title": "Save to Shelfmark",
@@ -3169,6 +3170,55 @@
       "why": "Close to: {{reasons}}",
       "show": "Show related",
       "folders": "Related folders"
+    },
+    "ask": {
+      "title": "Ask your shelf",
+      "open": "Ask your shelf",
+      "close": "Close Ask your shelf",
+      "newQuestion": "New question",
+      "emptyTitle": "What do you want to find out?",
+      "lead": "Ask in your own words. The answer comes from the links you saved, with each source listed.",
+      "starters": {
+        "saved": "What did I save about {{folder}}?",
+        "ideas": "What are the main ideas in {{folder}}?",
+        "recent": "What did I add to {{folder}} lately?",
+        "generic": "What did I save this month?"
+      },
+      "label": "Ask about your links",
+      "placeholder": "Ask about your links",
+      "send": "Ask",
+      "stop": "Stop",
+      "left": {
+        "day": {
+          "one": "{{count}} question left today",
+          "other": "{{count}} questions left today"
+        },
+        "month": {
+          "one": "{{count}} question left this month",
+          "other": "{{count}} questions left this month"
+        }
+      },
+      "footer": "Answers use only your links. Nothing is changed in your library.",
+      "sources": "Sources from your shelf",
+      "source": "Source {{n}}",
+      "sideBySide": "Open side by side",
+      "remind": "Remind me",
+      "notFound": {
+        "text": "Nothing in your links answers this.",
+        "search": "Search “{{query}}”",
+        "add": "Add a link"
+      },
+      "limit": {
+        "day": "You’ve used today’s questions. Ask again tomorrow; search works as usual.",
+        "month": "You’ve used this month’s questions. Ask again on {{date}}; search works as usual."
+      },
+      "error": "Couldn’t get an answer right now. This question didn’t count toward your limit.",
+      "rejected": "This question couldn’t be answered. It didn’t count toward your limit.",
+      "busy": "Another question is still being answered. Try again in a moment.",
+      "off": "Ask your shelf is turned off in Settings › AI.",
+      "retry": "Try again",
+      "truncated": "The answer was cut short.",
+      "stopped": "Stopped."
     }
   }
 }
