@@ -4,6 +4,7 @@ import {
   AI_ERROR_MESSAGE,
   AI_JOB_REASON,
   AI_PROVIDER_STATUS,
+  CLEANUP_STATE,
   type AiEntitlements,
   type AiProviderStatus,
   type AiSettingsResponse,
@@ -237,7 +238,13 @@ export class AiSettingsService {
       this.eligibleForBackfill(userId, stored.enabledAt),
       this.searchStatus.status(userId, stored, entitlements.aiTier),
     ]);
-    return { pendingJobs, backfill: toBackfillStatus(stored, eligible), search };
+    // The clean-up state is filled in by the tick (`CleanupTickHook`, AI-5).
+    return {
+      pendingJobs,
+      backfill: toBackfillStatus(stored, eligible),
+      search,
+      cleanup: CLEANUP_STATE.None,
+    };
   }
 
   private pendingJobs(userId: string): Promise<number> {
