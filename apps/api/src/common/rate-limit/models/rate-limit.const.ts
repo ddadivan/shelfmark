@@ -68,4 +68,8 @@ export const RATE_LIMIT = {
   RediscoverWrite: { limit: 30, ttl: MINUTE_MS },
   // Rule offer check (AI-2): read-only, asked after each filing by the user.
   RuleOffer: { limit: 60, ttl: MINUTE_MS },
+  // AI-5 library clean-up: a run (rule checks in the request, AI checks deferred) and the card
+  // dismissal; apply and its Undo (up to 100 groups and 20 merges in one transaction).
+  CleanupRun: { limit: 6, ttl: MINUTE_MS },
+  CleanupApply: { limit: 10, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;
