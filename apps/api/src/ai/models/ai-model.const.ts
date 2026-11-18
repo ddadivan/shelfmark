@@ -1,7 +1,7 @@
 /** Models by job (ADR 0047 point 2): named constants, never string literals in services. */
 export const AI_MODEL = {
   LinkJob: 'claude-haiku-5-5',
-  /** Ask your shelf answers (ADR 0051): Sonnet, streamed, no tools. */
+  /** Ask your shelf answers (ADR 0052): Sonnet, streamed, no tools. */
   Ask: 'claude-sonnet-5-5',
 } as const;
 

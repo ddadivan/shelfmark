@@ -34,7 +34,7 @@ describe('TimeoutInterceptor', () => {
     vi.useRealTimers();
   });
 
-  it('stays at 8 seconds, below the Vercel maxDuration of 30 seconds (ADR 0048)', () => {
+  it('stays at 8 seconds, below the Vercel maxDuration of 30 seconds (ADR 0049)', () => {
     const config = JSON.parse(
       readFileSync(resolve(import.meta.dirname, '../../../../../vercel.json'), 'utf8'),
     ) as { functions: Record<string, { maxDuration: number }> };

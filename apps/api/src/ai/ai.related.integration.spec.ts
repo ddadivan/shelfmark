@@ -8,6 +8,7 @@ import type { IsolationUsers } from '../../test-utils/models/isolation-users.int
 import type { TestAgent } from '../../test-utils/models/test-agent.interface';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
+import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { AiBackgroundService } from './background/ai-background.service';
 import { AI_ENV } from './models/ai-env.const';
 import { AiProviderRegistry } from './providers/ai-provider.registry';
@@ -122,6 +123,14 @@ describe('GET /api/links/:id/related (AI-3)', () => {
       status: { state: 'processing', ready: 0, total: 4 },
       items: [],
     });
+  });
+
+  it('limits the lookups per client (RATE_LIMIT.AiRelated)', async () => {
+    const unknown = '00000000-0000-4000-8000-000000000000';
+    for (let i = 0; i < RATE_LIMIT.AiRelated.limit; i += 1) {
+      await a.get(related(unknown)).expect(404);
+    }
+    await a.get(related(unknown)).expect(429);
   });
 
   describe('data isolation', () => {

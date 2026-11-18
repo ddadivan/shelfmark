@@ -10,7 +10,7 @@ export function nextUtcDayStart(now: number): string {
 }
 
 /**
- * The Ask allowance like the API (ADR 0051 point 8): the limit with fewer questions left wins, the
+ * The Ask allowance like the API (ADR 0052 point 8): the limit with fewer questions left wins, the
  * month on a tie.
  */
 export function mockAskAllowance(

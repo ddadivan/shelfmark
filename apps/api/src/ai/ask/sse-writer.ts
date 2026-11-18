@@ -3,7 +3,7 @@ import type { Response } from 'express';
 import type { AskSink } from '../models/ask-sink.interface';
 
 /**
- * The Ask stream over SSE framing (ADR 0051 point 1): `text/event-stream`, never cached or
+ * The Ask stream over SSE framing (ADR 0052 point 1): `text/event-stream`, never cached or
  * transformed, not buffered by proxies, headers flushed at once. Each event is one `data:` line of
  * `JSON.stringify` (a newline inside text is escaped, so it cannot break the framing). Writes after
  * the client went away or after `end()` are ignored.

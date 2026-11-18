@@ -1,4 +1,4 @@
-/** AI routes (#389–#391, ADR 0048). `:id` is a job, suggestion or link id as named. */
+/** AI routes (#389–#391, ADR 0049). `:id` is a job, suggestion or link id as named. */
 export const AI_ENDPOINT = {
   /** `GET` the settings with usage, entitlements and status; `PATCH` to change them. */
   Settings: '/api/ai/settings',
@@ -32,7 +32,7 @@ export const AI_ENDPOINT = {
   MeaningSearch: '/api/ai/search',
   /** `GET` up to five related links by the link's stored vector (AI-3). */
   RelatedLinks: '/api/links/:id/related',
-  /** `POST` a question; answers a `text/event-stream` of `AskEvent`s (AI-4, ADR 0051). */
+  /** `POST` a question; answers a `text/event-stream` of `AskEvent`s (AI-4, ADR 0052). */
   Ask: '/api/ai/ask',
   /** Daily Vercel Cron sweep (`CRON_SECRET` bearer). */
   Sweep: '/api/cron/ai-sweep',

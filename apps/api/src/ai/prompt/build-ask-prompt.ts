@@ -47,7 +47,7 @@ function sourceBlock(source: AskPromptSource, includeNotes: boolean): string {
 }
 
 /**
- * The user message of an Ask answer (ADR 0051 point 4): the numbered sources as delimited data, then
+ * The user message of an Ask answer (ADR 0052 point 4): the numbered sources as delimited data, then
  * the question. Only stored fields of the user's own retrieved links; the note only with "Include my
  * notes"; never ids, query strings or page text.
  */

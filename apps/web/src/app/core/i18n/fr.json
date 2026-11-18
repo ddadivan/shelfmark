@@ -187,6 +187,37 @@
       "text": "Un clic dans la barre d’outils ou Alt+Maj+S. Le titre, vos règles de dossier et vos dossiers récents sont déjà remplis : la plupart des pages ne demandent qu’un clic de plus.",
       "browsers": "Pour Chrome, Edge, Brave et Arc. Installez-la depuis votre étagère une fois connecté.",
       "alt": "L’extension Shelfmark : Enregistrer dans Shelfmark avec le titre de la page, le dossier Vêtements issu d’une règle, des tags et une note"
+    },
+    "ai": {
+      "badge": "IA facultative",
+      "title": "De l’aide pour ranger, quand vous le voulez",
+      "text": "Activez l’IA et chaque nouveau lien arrive avec des tags, un dossier et un résumé de deux lignes suggérés. Rien ne bouge tant que vous ne touchez pas.",
+      "points": {
+        "suggest": {
+          "title": "Des suggestions que vous acceptez",
+          "text": "Des tags et dossiers parmi ceux que vous avez déjà, d’un seul geste."
+        },
+        "meaning": {
+          "title": "Retrouvez-le par son sujet",
+          "text": "« Cette conférence sur les signals » trouve la vidéo, même sans ces mots."
+        },
+        "ask": {
+          "title": "Interrogez votre étagère",
+          "text": "Une question avec vos mots, une réponse tirée de vos liens, avec les sources."
+        }
+      },
+      "note": "Désactivée tant que vous ne l’activez pas. Vos liens ne servent jamais à entraîner des modèles d’IA.",
+      "privacy": "Comment l’IA fonctionne dans Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore en pratique",
+        "newTag": "gestion d’état",
+        "query": "conférence sur les signals et la performance",
+        "related": "Liés par le sens",
+        "result": "La détection des changements sans zone, expliquée",
+        "why": "Proche de : rendu plus rapide",
+        "recipe": "Le meilleur ramen de semaine",
+        "summary": "Un ramen en 30 minutes avec un bouillon du commerce, des œufs mollets et des pickles express."
+      }
     }
   },
   "links": {
@@ -571,7 +602,7 @@
       "intro": "L’IA reste désactivée tant que vous ne l’activez pas dans Paramètres › IA. Une fois activée, elle suggère des tags et des dossiers et rédige de courts résumés. Tout ce qu’elle produit porte une petite étincelle et peut être inexact ; rien n’est appliqué sans votre accord ou le mode automatique.",
       "processor": {
         "term": "Qui les traite :",
-        "text": "[PROVIDER], en tant que sous-traitant, uniquement pour produire le résultat demandé. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+        "text": "Anthropic PBC (États-Unis), en tant que sous-traitant, uniquement pour produire le résultat demandé."
       },
       "sent": {
         "term": "Ce qui est envoyé :",
@@ -579,7 +610,7 @@
       },
       "kept": {
         "term": "Durée de conservation :",
-        "text": "le fournisseur conserve la requête [N] jours au maximum et ne l’utilise pas pour l’entraînement. Les résultats (tags, résumés) sont stockés avec vos liens et supprimés avec eux."
+        "text": "Anthropic supprime la requête sous 30 jours et ne l’utilise pas pour l’entraînement ; seul le contenu signalé par ses systèmes de sécurité peut être conservé plus longtemps (jusqu’à 2 ans), ou lorsque la loi l’exige. Les résultats (tags, résumés) sont stockés avec vos liens et supprimés avec eux."
       },
       "counted": {
         "term": "Ce que nous comptons :",
@@ -591,7 +622,7 @@
       },
       "meaning": {
         "term": "Recherche par le sens :",
-        "text": "tant qu’elle est activée (Paramètres › IA), le titre, le résumé et les noms de tags de chaque lien, votre note seulement avec « Inclure mes notes », et les mots que vous cherchez sont envoyés à Voyage AI, notre second sous-traitant, qui les transforme en vecteurs de nombres. Jamais l’adresse, vos dossiers ni les données d’autres personnes. Les vecteurs sont conservés avec vos liens et supprimés avec eux ou avec « Supprimer les données d’IA » ; votre recherche n’est pas conservée. Voyage AI conserve les requêtes [N] jours au maximum et ne les utilise pas pour l’entraînement. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+        "text": "tant qu’elle est activée (Paramètres › IA), le titre, le résumé et les noms de tags de chaque lien, votre note seulement avec « Inclure mes notes », et les mots que vous cherchez sont envoyés à Voyage AI, notre second sous-traitant, qui les transforme en vecteurs de nombres. Jamais l’adresse, vos dossiers ni les données d’autres personnes. Les vecteurs sont conservés avec vos liens et supprimés avec eux ou avec « Supprimer les données d’IA » ; votre recherche n’est pas conservée. Voyage AI by MongoDB (États-Unis) supprime chaque requête juste après l’avoir traitée (rétention zéro) et ne l’utilise pas pour l’entraînement."
       },
       "ask": {
         "term": "Interroger mes liens :",
@@ -2945,6 +2976,17 @@
       "aiAsk": {
         "title": "Interroger mes liens",
         "text": "Posez une question avec vos propres mots et obtenez une réponse courte tirée des liens que vous avez enregistrés, chaque source listée. Et « Dans vos liens » : une fois par semaine, d’anciens liens jamais ouverts."
+      },
+      "mcp": {
+        "title": "Connecter votre assistant",
+        "text": "Avec Pro, Claude et d’autres assistants MCP peuvent rechercher et lire vos liens avec un jeton personnel. Lecture seule, révocable à tout moment."
+      },
+      "aiSearch": {
+        "title": "Recherche par le sens",
+        "text": "La recherche trouve les liens qui correspondent à ce que vous voulez dire, pas seulement à vos mots, et explique pourquoi chacun correspond. « Modifier le lien » affiche des liens proches sur votre étagère, et « Côte à côte » peut proposer leurs dossiers."
+      },
+      "extensionInStore": {
+        "text": "L’extension Shelfmark est sur le Chrome Web Store : installez-la depuis le bandeau de votre étagère ou depuis Paramètres › Bibliothèque."
       }
     },
     "sections": {
@@ -3110,7 +3152,7 @@
       },
       "training": {
         "title": "Pas utilisé pour l’entraînement",
-        "text": "Votre contenu n’est jamais utilisé pour entraîner des modèles. Le fournisseur, [PROVIDER], le traite pour nous et le conserve [N] jours au maximum."
+        "text": "Votre contenu n’est jamais utilisé pour entraîner des modèles. Anthropic le traite pour nous et le supprime sous 30 jours."
       },
       "details": "Vous pouvez désactiver l’IA, ou une fonction à la fois, dans Paramètres › IA.",
       "policy": "Lire la politique de confidentialité",
@@ -3315,6 +3357,101 @@
       "retry": "Réessayer",
       "truncated": "La réponse a été interrompue.",
       "stopped": "Arrêté."
+    },
+    "connect": {
+      "title": "Connecter votre assistant",
+      "lead": "Laissez Claude ou un autre assistant compatible MCP rechercher et lire vos liens. Lecture seule : il ne peut rien modifier ni supprimer.",
+      "pro": "Connecter un assistant fait partie de Pro. Les jetons que vous avez déjà restent listés et vous pouvez les révoquer.",
+      "demo": "La démo ne peut pas connecter d’assistant. Connectez-vous avec votre propre compte pour l’essayer.",
+      "loadFailed": "Impossible de charger vos jetons.",
+      "retry": "Réessayer",
+      "copy": "Copier",
+      "copyFailed": "Copie impossible. Sélectionnez le texte et copiez-le avec le clavier.",
+      "address": {
+        "title": "1. Adresse du serveur",
+        "copyLabel": "Copier l’adresse du serveur",
+        "copied": "Adresse du serveur copiée"
+      },
+      "token": {
+        "title": "2. Jeton personnel",
+        "hint": "Un jeton par assistant, pour pouvoir révoquer chacun séparément.",
+        "limit": "Vous avez {{max}} jetons. Révoquez-en un pour en créer un autre.",
+        "create": "Créer un jeton"
+      },
+      "list": {
+        "title": "Connectés",
+        "last4": "Se termine par {{last4}}",
+        "used": "Dernière utilisation {{when}}, appels cette semaine : {{calls}}",
+        "never": "Créé le {{date}}, jamais utilisé",
+        "notes": "Avec les notes",
+        "revoke": "Révoquer",
+        "revokeLabel": "Révoquer {{name}}"
+      },
+      "empty": {
+        "title": "Aucun assistant connecté",
+        "text": "Créez un jeton, collez-le avec l’adresse du serveur dans les réglages MCP de votre assistant, puis interrogez-le sur vos liens."
+      },
+      "revoke": {
+        "title": "Révoquer {{name}} ?",
+        "message": "Il cesse de fonctionner immédiatement : l’assistant qui l’utilise ne peut plus lire vos liens.",
+        "confirm": "Révoquer",
+        "cancel": "Annuler",
+        "done": "Jeton révoqué",
+        "failed": "Impossible de révoquer le jeton. Réessayez."
+      },
+      "create": {
+        "title": "Créer un jeton",
+        "close": "Fermer",
+        "name": "Nom",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Donnez un nom au jeton.",
+        "tooLong": "{{max}} caractères au maximum.",
+        "notes": "Inclure mes notes",
+        "notesHint": "Votre assistant verra aussi les notes de vos liens. Pour changer cela plus tard, créez un nouveau jeton.",
+        "cancel": "Annuler",
+        "action": "Créer le jeton",
+        "saving": "Création…",
+        "error": {
+          "limit": "Vous avez {{max}} jetons. Révoquez-en un pour en créer un autre.",
+          "notAvailable": "Connecter un assistant fait partie de Pro.",
+          "save": "Impossible de créer le jeton. Réessayez."
+        }
+      },
+      "secret": {
+        "title": "Jeton pour {{name}}",
+        "label": "Jeton personnel (affiché une seule fois)",
+        "copyLabel": "Copier le jeton",
+        "copied": "Jeton copié",
+        "warning": "Copiez-le maintenant : vous ne le reverrez plus. Toute personne qui a ce jeton peut lire vos liens jusqu’à ce que vous le révoquiez.",
+        "fallback": "Copie impossible. Le jeton est sélectionné ci-dessus : appuyez sur Ctrl+C ou ⌘C pour le copier.",
+        "field": "Jeton personnel",
+        "done": "Terminé"
+      },
+      "howTo": {
+        "toggle": "Comment se connecter : Claude, Cursor, VS Code",
+        "intro": "Remplacez <token> par votre jeton personnel.",
+        "copyLabel": "Copier la configuration pour {{client}}",
+        "copied": "Configuration pour {{client}} copiée",
+        "oauth": "Les assistants qui ne se connectent que par une connexion (OAuth), comme les connecteurs web, ne peuvent pas encore se connecter.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Exécutez ceci dans un terminal :"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Ajoutez ceci à claude_desktop_config.json (Réglages › Développeur › Modifier la config), puis redémarrez Claude Desktop. Nécessite Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Ajoutez ceci à ~/.cursor/mcp.json :"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Ajoutez ceci à .vscode/mcp.json dans votre projet :"
+          }
+        }
+      }
     }
   },
   "rediscover": {

@@ -1,4 +1,4 @@
-/** Caps of the fields sent per source to the Ask model (ADR 0051 point 4), in characters. */
+/** Caps of the fields sent per source to the Ask model (ADR 0052 point 4), in characters. */
 export const ASK_PROMPT_LIMIT = {
   TitleMax: 200,
   SiteMax: 120,

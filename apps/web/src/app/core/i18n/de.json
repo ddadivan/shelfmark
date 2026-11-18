@@ -187,6 +187,37 @@
       "text": "Ein Klick in der Symbolleiste oder Alt+Umschalt+S. Titel, deine Ordnerregeln und letzten Ordner sind schon ausgefüllt, für die meisten Seiten reicht ein weiterer Klick.",
       "browsers": "Für Chrome, Edge, Brave und Arc. Nach der Anmeldung installierst du sie aus deinem Regal.",
       "alt": "Die Shelfmark-Erweiterung: In Shelfmark speichern mit dem Seitentitel, dem Ordner Kleidung aus einer Regel, Tags und einer Notiz"
+    },
+    "ai": {
+      "badge": "Optionale KI",
+      "title": "Hilfe beim Sortieren, wenn du sie willst",
+      "text": "Schalte KI ein, und jeder neue Link kommt mit vorgeschlagenen Tags, einem Ordner und einer zweizeiligen Zusammenfassung. Nichts bewegt sich, bevor du tippst.",
+      "points": {
+        "suggest": {
+          "title": "Vorschläge, die du annimmst",
+          "text": "Tags und Ordner aus denen, die du schon hast, mit einem Tipp."
+        },
+        "meaning": {
+          "title": "Finden, worum es geht",
+          "text": "„Der Vortrag über Signals“ findet das Video, auch ohne diese Wörter."
+        },
+        "ask": {
+          "title": "Frag dein Regal",
+          "text": "Eine Frage in deinen Worten, eine Antwort aus deinen Links mit Quellen."
+        }
+      },
+      "note": "Aus, bis du sie einschaltest. Deine Links werden nie zum Trainieren von KI-Modellen verwendet.",
+      "privacy": "So funktioniert KI in Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore in der Praxis",
+        "newTag": "State-Management",
+        "query": "Vortrag über Signals und Performance",
+        "related": "Ähnlich im Inhalt",
+        "result": "Zoneless Change Detection erklärt",
+        "why": "Nah an: schnelleres Rendern",
+        "recipe": "Das beste Ramen für unter der Woche",
+        "summary": "Ein Ramen in 30 Minuten mit gekaufter Brühe, weichen Eiern und schnellen Pickles."
+      }
     }
   },
   "links": {
@@ -559,7 +590,7 @@
       "intro": "KI ist aus, bis du sie unter Einstellungen › KI einschaltest. Ist sie an, schlägt sie Tags und Ordner vor und schreibt kurze Zusammenfassungen. Alles, was sie erstellt, trägt einen kleinen Funken und kann ungenau sein; nichts wird übernommen, solange du es nicht annimmst oder den automatischen Modus wählst.",
       "processor": {
         "term": "Wer es verarbeitet:",
-        "text": "[PROVIDER] als unser Auftragsverarbeiter, nur um das Ergebnis zu erzeugen, das du angefragt hast. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+        "text": "Anthropic PBC (USA) als unser Auftragsverarbeiter, nur um das Ergebnis zu erzeugen, das du angefragt hast."
       },
       "sent": {
         "term": "Was gesendet wird:",
@@ -567,7 +598,7 @@
       },
       "kept": {
         "term": "Wie lange es gespeichert wird:",
-        "text": "Der Anbieter bewahrt die Anfrage höchstens [N] Tage auf und nutzt sie nicht zum Training. Die Ergebnisse (Tags, Zusammenfassungen) werden mit deinen Links gespeichert und mit ihnen gelöscht."
+        "text": "Anthropic löscht die Anfrage innerhalb von 30 Tagen und nutzt sie nicht zum Training; nur Inhalte, die die Sicherheitssysteme markieren, können länger aufbewahrt werden (bis zu 2 Jahre), oder wenn das Gesetz es verlangt. Die Ergebnisse (Tags, Zusammenfassungen) werden mit deinen Links gespeichert und mit ihnen gelöscht."
       },
       "counted": {
         "term": "Was wir zählen:",
@@ -579,7 +610,7 @@
       },
       "meaning": {
         "term": "Suche nach Bedeutung:",
-        "text": "solange sie eingeschaltet ist (Einstellungen › KI), werden Titel, Zusammenfassung und Tag-Namen jedes Links, die Notiz nur mit „Meine Notizen einbeziehen“, und die Wörter deiner Suche an Voyage AI gesendet, unseren zweiten Auftragsverarbeiter, der daraus Zahlenvektoren macht. Nie die Adresse, deine Ordner oder Daten anderer. Die Vektoren werden mit deinen Links gespeichert und mit ihnen oder mit „KI-Daten löschen“ gelöscht; deine Suche wird nicht gespeichert. Voyage AI bewahrt Anfragen höchstens [N] Tage auf und nutzt sie nicht zum Training. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+        "text": "solange sie eingeschaltet ist (Einstellungen › KI), werden Titel, Zusammenfassung und Tag-Namen jedes Links, die Notiz nur mit „Meine Notizen einbeziehen“, und die Wörter deiner Suche an Voyage AI gesendet, unseren zweiten Auftragsverarbeiter, der daraus Zahlenvektoren macht. Nie die Adresse, deine Ordner oder Daten anderer. Die Vektoren werden mit deinen Links gespeichert und mit ihnen oder mit „KI-Daten löschen“ gelöscht; deine Suche wird nicht gespeichert. Voyage AI by MongoDB (USA) löscht jede Anfrage direkt nach der Verarbeitung (Zero-Day-Retention) und nutzt sie nicht zum Training."
       },
       "ask": {
         "term": "Frag deine Links:",
@@ -1196,7 +1227,7 @@
       "title": "Seiten direkt aus dem Browser speichern",
       "text": "Die Shelfmark-Erweiterung speichert die geöffnete Seite mit einem Klick oder Alt+Umschalt+S, Ordner und Tags sind schon ausgefüllt.",
       "install": "Erweiterung installieren",
-      "installLabel": "Erweiterung aus dem Chrome Web Store installieren (öffnet in einem neuen Tab)",
+      "installLabel": "Erweiterung installieren, aus dem Chrome Web Store (öffnet in einem neuen Tab)",
       "dismiss": "Nicht jetzt"
     }
   },
@@ -1555,7 +1586,7 @@
           "label": "Browsererweiterung",
           "hint": "Speichere jede Seite mit einem Klick aus Chrome, Edge, Brave oder Arc",
           "action": "Installieren",
-          "actionLabel": "Browsererweiterung aus dem Chrome Web Store installieren (öffnet in einem neuen Tab)"
+          "actionLabel": "Installieren: Browsererweiterung aus dem Chrome Web Store (öffnet in einem neuen Tab)"
         }
       },
       "failed": "Einstellung konnte nicht gespeichert werden",
@@ -2884,6 +2915,17 @@
       "aiAsk": {
         "title": "Frag deine Links",
         "text": "Stell eine Frage in deinen eigenen Worten und erhalte eine kurze Antwort aus den Links, die du gespeichert hast, mit jeder Quelle. Dazu „Aus deinen Links“: einmal pro Woche ältere Links, die du nie geöffnet hast."
+      },
+      "mcp": {
+        "title": "Assistenten verbinden",
+        "text": "Mit Pro können Claude und andere MCP-Assistenten deine Links mit einem persönlichen Token durchsuchen und lesen. Nur Lesezugriff, jederzeit widerrufbar."
+      },
+      "aiSearch": {
+        "title": "Suche nach Bedeutung",
+        "text": "Die Suche findet Links, die zu dem passen, was du meinst, nicht nur zu deinen Wörtern, und sagt, warum jeder passt. „Link bearbeiten“ zeigt Ähnliches aus deinem Regal, und „Nebeneinander“ kann dessen Ordner anbieten."
+      },
+      "extensionInStore": {
+        "text": "Die Shelfmark-Browsererweiterung ist im Chrome Web Store: Installiere sie über das Banner in deinem Regal oder unter Einstellungen › Bibliothek."
       }
     },
     "sections": {
@@ -3047,7 +3089,7 @@
       },
       "training": {
         "title": "Nicht für Training genutzt",
-        "text": "Deine Inhalte werden nie zum Training von Modellen genutzt. Der Anbieter, [PROVIDER], verarbeitet sie für uns und bewahrt sie höchstens [N] Tage auf."
+        "text": "Deine Inhalte werden nie zum Training von Modellen genutzt. Anthropic verarbeitet sie für uns und löscht sie innerhalb von 30 Tagen."
       },
       "details": "Du kannst die KI oder einzelne Funktionen unter Einstellungen › KI ausschalten.",
       "policy": "Datenschutzerklärung lesen",
@@ -3242,6 +3284,101 @@
       "retry": "Erneut versuchen",
       "truncated": "Die Antwort wurde abgeschnitten.",
       "stopped": "Gestoppt."
+    },
+    "connect": {
+      "title": "Assistenten verbinden",
+      "lead": "Lass Claude oder einen anderen Assistenten mit MCP-Unterstützung deine Links durchsuchen und lesen. Nur Lesezugriff: Er kann nichts ändern oder löschen.",
+      "pro": "Einen Assistenten zu verbinden ist Teil von Pro. Vorhandene Tokens bleiben aufgelistet und du kannst sie widerrufen.",
+      "demo": "In der Demo lässt sich kein Assistent verbinden. Melde dich mit deinem eigenen Konto an, um es auszuprobieren.",
+      "loadFailed": "Deine Tokens konnten nicht geladen werden.",
+      "retry": "Erneut versuchen",
+      "copy": "Kopieren",
+      "copyFailed": "Kopieren nicht möglich. Markiere den Text und kopiere ihn mit der Tastatur.",
+      "address": {
+        "title": "1. Serveradresse",
+        "copyLabel": "Serveradresse kopieren",
+        "copied": "Serveradresse kopiert"
+      },
+      "token": {
+        "title": "2. Persönliches Token",
+        "hint": "Ein Token pro Assistent, damit du jedes einzeln widerrufen kannst.",
+        "limit": "Du hast {{max}} Tokens. Widerrufe eines, um ein neues zu erstellen.",
+        "create": "Token erstellen"
+      },
+      "list": {
+        "title": "Verbunden",
+        "last4": "Endet auf {{last4}}",
+        "used": "Zuletzt genutzt {{when}}, Aufrufe diese Woche: {{calls}}",
+        "never": "Erstellt am {{date}}, nie genutzt",
+        "notes": "Mit Notizen",
+        "revoke": "Widerrufen",
+        "revokeLabel": "{{name}} widerrufen"
+      },
+      "empty": {
+        "title": "Keine Assistenten verbunden",
+        "text": "Erstelle ein Token, füge es mit der Serveradresse in die MCP-Einstellungen deines Assistenten ein und frag ihn nach deinen Links."
+      },
+      "revoke": {
+        "title": "{{name}} widerrufen?",
+        "message": "Das Token funktioniert sofort nicht mehr: Der Assistent, der es nutzt, kann deine Links nicht mehr lesen.",
+        "confirm": "Widerrufen",
+        "cancel": "Abbrechen",
+        "done": "Token widerrufen",
+        "failed": "Das Token konnte nicht widerrufen werden. Versuch es noch einmal."
+      },
+      "create": {
+        "title": "Token erstellen",
+        "close": "Schließen",
+        "name": "Name",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Gib dem Token einen Namen.",
+        "tooLong": "Höchstens {{max}} Zeichen.",
+        "notes": "Meine Notizen einbeziehen",
+        "notesHint": "Dein Assistent sieht dann auch die Notizen zu deinen Links. Um das später zu ändern, erstelle ein neues Token.",
+        "cancel": "Abbrechen",
+        "action": "Token erstellen",
+        "saving": "Wird erstellt…",
+        "error": {
+          "limit": "Du hast {{max}} Tokens. Widerrufe eines, um ein neues zu erstellen.",
+          "notAvailable": "Einen Assistenten zu verbinden ist Teil von Pro.",
+          "save": "Das Token konnte nicht erstellt werden. Versuch es noch einmal."
+        }
+      },
+      "secret": {
+        "title": "Token für {{name}}",
+        "label": "Persönliches Token (nur einmal angezeigt)",
+        "copyLabel": "Token kopieren",
+        "copied": "Token kopiert",
+        "warning": "Kopiere es jetzt: Du siehst es nicht noch einmal. Wer dieses Token hat, kann deine Links lesen, bis du es widerrufst.",
+        "fallback": "Kopieren nicht möglich. Das Token ist oben markiert: Drücke Strg+C oder ⌘C, um es zu kopieren.",
+        "field": "Persönliches Token",
+        "done": "Fertig"
+      },
+      "howTo": {
+        "toggle": "So verbindest du: Claude, Cursor, VS Code",
+        "intro": "Ersetze <token> durch dein persönliches Token.",
+        "copyLabel": "Einrichtung für {{client}} kopieren",
+        "copied": "Einrichtung für {{client}} kopiert",
+        "oauth": "Assistenten, die sich nur über eine Anmeldung (OAuth) verbinden, etwa webbasierte Connectors, können sich noch nicht verbinden.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Führe das in einem Terminal aus:"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Füge das in claude_desktop_config.json ein (Einstellungen › Entwickler › Konfiguration bearbeiten) und starte Claude Desktop neu. Benötigt Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Füge das in ~/.cursor/mcp.json ein:"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Füge das in .vscode/mcp.json in deinem Projekt ein:"
+          }
+        }
+      }
     }
   },
   "rediscover": {

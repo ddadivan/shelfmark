@@ -9,7 +9,7 @@ import type { LinkJobInput } from './link-job-input.interface';
 import type { LinkJobOutcome } from './link-job-outcome.type';
 
 /**
- * The server-side seam to a language model (ADR 0047 point 1, ADR 0048 point 9): the web app never
+ * The server-side seam to a language model (ADR 0047 point 1, ADR 0049 point 9): the web app never
  * sees these shapes. Implementations never throw for a provider failure; they answer an outcome.
  * They never log the prompt, the page text, the output or the key.
  */
@@ -23,7 +23,7 @@ export interface AiProvider {
   readLinkBatchResults(providerBatchId: string): Promise<LinkBatchItem[]>;
   cancelLinkBatch(providerBatchId: string): Promise<void>;
   /**
-   * One Ask answer as a stream (ADR 0051): `text` chunks, then exactly one `end` or `error`. Never
+   * One Ask answer as a stream (ADR 0052): `text` chunks, then exactly one `end` or `error`. Never
    * throws; stops promptly when `signal` aborts (the client went away or a deadline passed).
    */
   askStream(input: AskInput, signal: AbortSignal): AsyncIterable<AskChunk>;

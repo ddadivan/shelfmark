@@ -95,7 +95,7 @@ export class AiUsageService {
       WHERE user_id = ${userId}::uuid`;
   }
 
-  /** Link texts embedded this month (search by meaning, ADR 0050 point 5). */
+  /** Link texts embedded this month (search by meaning, ADR 0052 point 5). */
   async embedsUsed(userId: string, now = new Date()): Promise<number> {
     const rows = await this.prisma.$queryRaw<{ embeds: number }[]>`
       SELECT embeds FROM ai_usage WHERE user_id = ${userId}::uuid AND month = ${usageMonth(now)}::date`;

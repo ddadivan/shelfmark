@@ -8,6 +8,7 @@ import { anonymous, asUser } from '../../test-utils/isolation/test-agent';
 import type { AuthTestApp } from '../../test-utils/models/auth-test-app.interface';
 import type { IsolationUsers } from '../../test-utils/models/isolation-users.interface';
 import type { TestAgent } from '../../test-utils/models/test-agent.interface';
+import { TagChangeHooks } from './tag-change-hooks.service';
 import { TagsService } from './tags.service';
 
 describe('Tags API', () => {
@@ -241,7 +242,7 @@ describe('Tags API', () => {
   });
 
   describe('resolveNames', () => {
-    const service = (): TagsService => new TagsService(t.db.prisma);
+    const service = (): TagsService => new TagsService(t.db.prisma, new TagChangeHooks());
 
     it('normalizes, de-duplicates case-insensitively, reuses and creates', async () => {
       const existing = await createTag(owner, 'Reading');

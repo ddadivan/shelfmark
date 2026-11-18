@@ -1,4 +1,4 @@
-/** The embeddings host that no spec may reach (ADR 0050). */
+/** The embeddings host that no spec may reach (ADR 0052). */
 export const VOYAGE_TEST_GUARD_HOST = 'api.voyageai.com';
 
 const attempts: string[] = [];

@@ -13,6 +13,7 @@ import { LandingMotionService } from './services/landing-motion.service';
 import { LANDING_LINKS } from './models/landing-links.const';
 import { LANDING_SCROLL_TARGET } from './models/landing-scroll-target.const';
 import type { LandingScrollTarget } from './models/landing-scroll-target.type';
+import { LandingAiComponent } from './components/landing-ai/landing-ai.component';
 import { LandingBentoComponent } from './components/landing-bento/landing-bento.component';
 import { LandingBeforeAfterComponent } from './components/landing-before-after/landing-before-after.component';
 import { LandingBuiltComponent } from './components/landing-built/landing-built.component';
@@ -32,6 +33,7 @@ import { LandingWhyComponent } from './components/landing-why/landing-why.compon
     LandingHeaderComponent,
     LandingHeroComponent,
     LandingBentoComponent,
+    LandingAiComponent,
     LandingBeforeAfterComponent,
     LandingWhyComponent,
     LandingBuiltComponent,

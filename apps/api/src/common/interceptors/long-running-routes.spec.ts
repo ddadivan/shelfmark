@@ -1,5 +1,5 @@
 /**
- * The request timeout exemption (ADR 0051 point 2): exactly the routes of `LONG_RUNNING_ROUTES` carry
+ * The request timeout exemption (ADR 0052 point 2): exactly the routes of `LONG_RUNNING_ROUTES` carry
  * `@LongRunning()`, each with a reason; every other handler is still cut at `REQUEST_TIMEOUT_MS`.
  */
 import { Controller, Get, Post } from '@nestjs/common';

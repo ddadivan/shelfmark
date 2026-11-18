@@ -11,7 +11,7 @@ const MARKER = /^\[(\d{1,2})\]/u;
 const PARTIAL = /^\[\d{0,2}$/u;
 
 /**
- * Turns the model's text deltas into `text` and `cite` events (ADR 0051 point 4). A `[n]` with `n`
+ * Turns the model's text deltas into `text` and `cite` events (ADR 0052 point 4). A `[n]` with `n`
  * between 1 and the number of retrieved sources becomes a `cite`, renumbered by first appearance;
  * everything else, other brackets included ("[2024]", "[11]" with ten sources), passes as text. A
  * marker split across deltas is held back (a few characters at most). Text stops at

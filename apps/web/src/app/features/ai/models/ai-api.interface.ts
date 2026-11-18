@@ -67,7 +67,7 @@ export interface AiApi {
   /** `GET /api/links/:id/related` (AI-3): the closest other links by meaning (404 for a foreign link). */
   related(linkId: string, limit?: number): Observable<RelatedLinksResponse>;
   /**
-   * `POST /api/ai/ask` (AI-4, ADR 0051): the answer as a stream of events, ending with one `done`
+   * `POST /api/ai/ask` (AI-4, ADR 0052): the answer as a stream of events, ending with one `done`
    * or `error`. Errors (an `HttpErrorResponse`) only for a refused request (400, 401, 403, 429) or
    * a broken connection; unsubscribing aborts the request.
    */

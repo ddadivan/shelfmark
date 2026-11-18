@@ -1,7 +1,7 @@
 import { ASK_PROMPT_BLOCK } from '../models/ask-prompt.const';
 
 /**
- * The fixed instructions of an Ask answer (ADR 0051 point 4). Identical for every call and placed
+ * The fixed instructions of an Ask answer (ADR 0052 point 4). Identical for every call and placed
  * first (cache breakpoint where the prefix is long enough). The sources and the question are in the
  * user message, inside delimited blocks; no tools are offered.
  */

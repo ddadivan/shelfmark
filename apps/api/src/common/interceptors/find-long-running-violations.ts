@@ -3,7 +3,7 @@ import { LONG_RUNNING_ROUTES } from './models/long-running-route.const';
 import type { LongRunningRoute } from './models/long-running-route.interface';
 
 /**
- * The ways a scan breaks ADR 0051 point 2, as `tag: subject` strings (empty when clean):
+ * The ways a scan breaks ADR 0052 point 2, as `tag: subject` strings (empty when clean):
  * `long-running-mismatch` (a `@LongRunning()` handler that is not listed, or a listed route without
  * the marker) and `empty-reason`.
  */

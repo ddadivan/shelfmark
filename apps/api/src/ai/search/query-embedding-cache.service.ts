@@ -4,7 +4,7 @@ import { AI_MEANING_LIMIT } from '../models/ai-meaning-limit.const';
 import type { QueryCacheEntry as Entry } from '../models/query-cache-entry.interface';
 
 /**
- * Query vectors of this instance (ADR 0050 point 6): an LRU of `AI_MEANING_LIMIT.CacheSize` entries
+ * Query vectors of this instance (ADR 0052 point 6): an LRU of `AI_MEANING_LIMIT.CacheSize` entries
  * for `CacheTtlMs`, keyed by a SHA-256 of user id, model and the normalised query, so two users
  * never share an entry and the query text is not kept as a key. Memory only, nothing at rest.
  */

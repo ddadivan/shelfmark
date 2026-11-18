@@ -48,7 +48,7 @@ function trackProgress(sink: AskSink, progress: AskProgress): AskSink {
 }
 
 /**
- * `POST /api/ai/ask` (F4, ADR 0051): one single-turn answer from the session user's own links,
+ * `POST /api/ai/ask` (F4, ADR 0052): one single-turn answer from the session user's own links,
  * streamed as events. Order: AI and Ask on (else `off`) → the lease (else `busy`) → retrieval →
  * nothing found → `done` `notFound` (no model call, not counted) → reserve a question (else `quota`)
  * → `meta` → the provider stream through `CitationStream` → `done` → release the lease. The question

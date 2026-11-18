@@ -36,9 +36,32 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'mcp',
+        titleKey: 'changelog.items.mcp.title',
+        textKey: 'changelog.items.mcp.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'aiSearch',
+        titleKey: 'changelog.items.aiSearch.title',
+        textKey: 'changelog.items.aiSearch.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'aiAsk',
         titleKey: 'changelog.items.aiAsk.title',
         textKey: 'changelog.items.aiAsk.text',
+      },
+    ],
+  },
+  {
+    version: '2.1.1',
+    date: '2026-11-18',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'extensionInStore',
+        textKey: 'changelog.items.extensionInStore.text',
       },
     ],
   },

@@ -8,7 +8,7 @@ import type { SiteExampleTarget } from '../models/site-example-target.interface'
 import { SUGGESTION_ROW_STATE } from '../models/suggestion-row-state.const';
 
 /**
- * Earlier choices for the same site as examples for the prompt (AI-2, F1b, ADR 0049): per target,
+ * Earlier choices for the same site as examples for the prompt (AI-2, F1b, ADR 0050): per target,
  * up to `AI_RUNNER_LIMIT.PromptExamplesMax` of the user's other live links with the same
  * `ruleHost`, newest first, that have a folder or tags. What AI applied and the user has not
  * confirmed (open `auto-applied` marks) is left out. Folders appear as keys of the prompt's

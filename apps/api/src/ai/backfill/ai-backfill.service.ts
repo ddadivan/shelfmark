@@ -36,7 +36,7 @@ const NO_EXCERPT: PageExcerpt = { excerpt: null, description: null };
 const REDO_STATES: string[] = [AI_JOB_STATE.Failed, AI_JOB_STATE.Skipped];
 
 /**
- * "Process existing links" (ADR 0048 point 6, AI pack only): a keyset run over the user's live links
+ * "Process existing links" (ADR 0049 point 6, AI pack only): a keyset run over the user's live links
  * saved before AI was turned on that have no AI result, in chunks of up to 40, one provider batch per
  * chunk (`custom_id` = job id) recorded in `ai_batches`, counted against the one-time allowance
  * (`ai_settings.backfill_used`). This service starts, stops, claims and submits; results are polled

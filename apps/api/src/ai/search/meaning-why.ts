@@ -59,7 +59,7 @@ function matching(source: WhySource, stems: ReadonlySet<string>): MeaningReason[
 }
 
 /**
- * "Why it matched" for a meaning search result, without a model (ADR 0050 point 6): the link's tag
+ * "Why it matched" for a meaning search result, without a model (ADR 0052 point 6): the link's tag
  * names, folder name and summary clauses that share stems with the query (at most two), else the
  * fallback.
  */

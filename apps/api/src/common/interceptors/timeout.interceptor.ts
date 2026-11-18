@@ -15,7 +15,7 @@ import { REQUEST_TIMEOUT_MS } from './models/request-timeout.const';
  * renders it as a generic `ApiError`. Other errors pass through untouched. The timer does not
  * cancel the underlying work, it only stops waiting for it. A handler marked `@LongRunning()` (only
  * the routes of `LONG_RUNNING_ROUTES`, spec-enforced) is skipped: it streams and keeps its own
- * deadlines, and a 504 cannot be sent once a stream has started (ADR 0051 point 2).
+ * deadlines, and a 504 cannot be sent once a stream has started (ADR 0052 point 2).
  */
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {

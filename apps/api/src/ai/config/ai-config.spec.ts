@@ -81,7 +81,7 @@ describe('readAiConfig', () => {
     );
   });
 
-  describe('Voyage embeddings (ADR 0050)', () => {
+  describe('Voyage embeddings (ADR 0052)', () => {
     const VOYAGE = 'voyage'.padEnd(20, 'x');
 
     it('uses real embeddings only in production, not a preview, with a key and not forced to mock', () => {

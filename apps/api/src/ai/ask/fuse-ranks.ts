@@ -1,4 +1,4 @@
-/** Reciprocal rank fusion constant (ADR 0051 point 3). */
+/** Reciprocal rank fusion constant (ADR 0052 point 3). */
 const RRF_K = 60;
 
 /**

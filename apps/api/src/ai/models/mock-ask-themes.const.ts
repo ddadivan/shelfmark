@@ -1,6 +1,6 @@
 import type { MockAskTheme } from './mock-ask-theme.interface';
 
-/** Canned answers for the demo seed themes (ADR 0051 point 9); the citations are added per source. */
+/** Canned answers for the demo seed themes (ADR 0052 point 9); the citations are added per source. */
 export const MOCK_ASK_THEMES: readonly MockAskTheme[] = [
   {
     triggers: ['ramen', 'noodle'],

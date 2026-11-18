@@ -2,6 +2,7 @@ import { LINK_LIMIT } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
 import { escapeLike } from '../common/util/escape-like';
 import type { LinkFilter } from './models/link-filter.interface';
+import type { LinkWhereOptions } from './models/link-where-options.interface';
 
 /** The words of a search text: split on whitespace, at most `LINK_LIMIT.QueryTermsMax` are used. */
 export function searchTerms(q: string | undefined): string[] {
@@ -23,12 +24,13 @@ function termCondition(term: string, searchNotes: boolean): Prisma.LinkWhereInpu
 /**
  * The `where` of a link query. `userId` always comes first and is never optional: every caller
  * passes the session user. Trashed links are never matched (ADR 0036). All parts are combined with AND.
- * `searchNotes: false` keeps the note out of the text match (Ask with its notes switch off).
+ * The search text matches title, note and URL; `options.searchNotes: false` leaves the note out (an
+ * MCP token without "Include my notes" must not learn note contents from which links match, ADR 0054).
  */
 export function buildLinkWhere(
   userId: string,
   filter: LinkFilter,
-  options: { searchNotes?: boolean } = {},
+  options: LinkWhereOptions = {},
 ): Prisma.LinkWhereInput {
   const searchNotes = options.searchNotes ?? true;
   const and: Prisma.LinkWhereInput[] = [];

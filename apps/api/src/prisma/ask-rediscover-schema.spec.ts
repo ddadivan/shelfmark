@@ -1,7 +1,7 @@
 import { createTestDatabase } from '../../test-utils/test-database';
 import type { TestDatabase } from '../../test-utils/models/test-database.interface';
 
-describe('Ask and Rediscover schema (AI-4, ADR 0051)', () => {
+describe('Ask and Rediscover schema (AI-4, ADR 0052)', () => {
   let database: TestDatabase;
 
   beforeAll(async () => {

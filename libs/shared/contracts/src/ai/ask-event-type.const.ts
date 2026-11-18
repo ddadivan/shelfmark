@@ -1,5 +1,5 @@
 /**
- * Event types of the `POST /api/ai/ask` stream (AI-4, ADR 0051): one JSON object per SSE `data:`
+ * Event types of the `POST /api/ai/ask` stream (AI-4, ADR 0052): one JSON object per SSE `data:`
  * line. `meta` after retrieval, `text` and `cite` while the answer streams, then exactly one `done`
  * or `error` ends the stream.
  */

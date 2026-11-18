@@ -7,6 +7,6 @@ export interface MeaningSearchState {
   readonly items: readonly MeaningMatch[];
   /** `null` when nothing was asked (off, too short) or the request failed. */
   readonly status: AiSearchStatus | null;
-  /** This answer shows the "getting ready" line (the first one of the session that may). */
-  readonly hint: boolean;
+  /** Search by meaning is getting ready (processing or quota): this answer may show the line. */
+  readonly waiting: boolean;
 }

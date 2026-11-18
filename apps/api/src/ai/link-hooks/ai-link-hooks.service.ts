@@ -23,7 +23,7 @@ function sameNames(a: readonly string[], b: readonly string[]): boolean {
  * The AI steps of a link edit (`LinksWriteService.update`), inside its transaction: a new page
  * supersedes the old page's jobs and open suggestions, the user's own folder or tag choice settles
  * the suggestion marks (#390), and a new page asks AI again unless the summary is the user's
- * (ADR 0048). Every statement filters by the session `userId`.
+ * (ADR 0049). Every statement filters by the session `userId`.
  */
 @Injectable()
 export class AiLinkHooksService {
