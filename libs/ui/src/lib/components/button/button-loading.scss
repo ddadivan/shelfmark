@@ -28,3 +28,65 @@
 .ui-button[aria-disabled='true'] {
   filter: none;
 }
+
+// `ai` variant, busy ("Fill in with AI" while the draft is awaited): no spinner. The spark keeps
+// its place and pulses (scale 0.85 to 1.12, opacity 0.55 to 1, 1.2 s), and a soft light of `ai`
+// sweeps across the button (a clipped pseudo-element, 40% wide, 1.6 s). Both stand still under
+// reduced motion; the label ("Filling…") and `aria-busy` say the rest.
+.ui-button--ai-busy {
+  position: relative;
+  overflow: hidden;
+
+  ui-icon {
+    animation: ui-button-ai-pulse calc(var(--duration-slow) * 3.75) var(--ease-in-out) infinite;
+  }
+
+  &::after {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 40%;
+    pointer-events: none;
+    content: '';
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--ai) 22%, transparent),
+      transparent
+    );
+    animation: ui-button-ai-sweep calc(var(--duration-slow) * 5) var(--ease-in-out) infinite;
+  }
+
+  @include reduced-motion {
+    ui-icon {
+      animation: none;
+    }
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+@keyframes ui-button-ai-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.85);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes ui-button-ai-sweep {
+  from {
+    transform: translateX(-120%);
+  }
+
+  to {
+    transform: translateX(320%);
+  }
+}
