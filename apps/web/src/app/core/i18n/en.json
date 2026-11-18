@@ -236,7 +236,7 @@
         "cmd": "⌘",
         "ctrl": "Ctrl",
         "enter": "Enter",
-        "save": "to save"
+        "create": "to create"
       },
       "preview": {
         "loading": "Loading preview",
@@ -290,7 +290,9 @@
       "actions": {
         "cancel": "Cancel",
         "openSaved": "Open saved",
-        "save": "Save link",
+        "create": "Create link",
+        "createAnyway": "Create anyway",
+        "creating": "Creating…",
         "saveAnyway": "Save anyway",
         "saving": "Saving…"
       },

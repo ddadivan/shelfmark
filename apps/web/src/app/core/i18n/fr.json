@@ -236,7 +236,7 @@
         "cmd": "⌘",
         "ctrl": "Ctrl",
         "enter": "Entrée",
-        "save": "pour enregistrer"
+        "create": "pour créer"
       },
       "preview": {
         "loading": "Chargement de l’aperçu",
@@ -290,7 +290,9 @@
       "actions": {
         "cancel": "Annuler",
         "openSaved": "Ouvrir l’existant",
-        "save": "Enregistrer le lien",
+        "create": "Créer le lien",
+        "createAnyway": "Créer quand même",
+        "creating": "Création…",
         "saveAnyway": "Enregistrer quand même",
         "saving": "Enregistrement…"
       },

@@ -140,8 +140,6 @@
 
         <ui-input [label]="'links.add.titleField.label' | transloco" [formField]="form.title" />
 
-        <app-add-link-ai-fill />
-
         @if (summary.shown()) {
           <app-summary-field
             [field]="form.summary"
@@ -264,11 +262,12 @@
         >
       }
 
-      @if (!editing && !phone()) {
+      <!-- The save hint makes room for "Fill in with AI" while it shows (the row stays one line). -->
+      @if (!editing && !phone() && !aiFill.available()) {
         <span slot="footer" class="add-link__shortcut">
           <kbd>{{ (mac ? 'links.add.shortcut.cmd' : 'links.add.shortcut.ctrl') | transloco }}</kbd>
           <kbd>{{ 'links.add.shortcut.enter' | transloco }}</kbd>
-          {{ 'links.add.shortcut.save' | transloco }}
+          {{ 'links.add.shortcut.create' | transloco }}
         </span>
       }
       @if (editing || !phone()) {
@@ -285,6 +284,8 @@
           'links.add.actions.openSaved' | transloco
         }}</ui-button>
       }
+      <!-- Fill in with AI (F1c): a footer action left of the primary one, nothing while hidden. -->
+      <app-add-link-ai-fill slot="footer" />
       <ui-button
         slot="footer"
         class="add-link__action"
@@ -292,13 +293,15 @@
         [variant]="BUTTON_VARIANT.Primary"
         [loading]="saving()"
         >{{
-          (saving()
-            ? 'links.add.actions.saving'
-            : editing
-              ? 'links.edit.actions.save'
+          (editing
+            ? saving()
+              ? 'links.add.actions.saving'
+              : 'links.edit.actions.save'
+            : saving()
+              ? 'links.add.actions.creating'
               : duplicate()
-                ? 'links.add.actions.saveAnyway'
-                : 'links.add.actions.save'
+                ? 'links.add.actions.createAnyway'
+                : 'links.add.actions.create'
           ) | transloco
         }}</ui-button
       >

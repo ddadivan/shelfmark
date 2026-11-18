@@ -1,30 +1,16 @@
 @use 'ui' as *;
 
-// No box of its own: the row takes the gap of the dialog's fields and nothing is left when it hides.
+// No box of its own: the button is a footer action of the dialog (left of the primary one), and
+// nothing is left when it hides.
 :host {
   display: contents;
 }
 
+// Phone sheet: the footer stacks its actions bottom-up (`column-reverse`, primary on top), so a
+// higher order puts this button directly above the primary one.
 .add-link-ai-fill {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-3);
-  align-items: center;
-}
-
-.add-link-ai-fill__keys {
-  display: inline-flex;
-  gap: var(--space-1);
-  align-items: center;
-
-  kbd {
-    @include type(caption);
-
-    padding: 0 var(--space-1);
-    font-family: var(--font-mono);
-    color: var(--text-muted);
-    background: var(--surface-hover);
-    border-radius: var(--radius-sm);
+  @include phone {
+    order: 1;
   }
 }
 

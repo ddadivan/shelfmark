@@ -169,7 +169,11 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     const { loader, links, result } = await setup(ai);
     await typeUrl(URL);
     const fill = await vi.waitFor(() => loader.getHarness(UiButtonHarness.with({ text: FILL })));
-    expect(root()?.querySelector('.add-link-ai-fill__keys')?.textContent).toContain('F');
+    // A footer action, right before the primary button (F1c, AiTags 12).
+    const footer = [...(root()?.querySelectorAll('[slot="footer"]') ?? [])];
+    const fillAt = footer.findIndex((el) => el.tagName === 'APP-ADD-LINK-AI-FILL');
+    expect(fillAt).toBeGreaterThan(-1);
+    expect(footer[fillAt + 1]?.textContent?.trim()).toBe('Create link');
     await fill.click();
 
     const select = await loader.getHarness(UiSelectHarness.with({ label: 'Folder' }));
@@ -186,7 +190,7 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     // Ordinary values: no "Moved by AI" mark.
     expect(root()?.textContent).not.toContain('Moved by AI');
 
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Save link' }))).click();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Create link' }))).click();
     await result;
     expect(links.create.mock.calls[0]?.[0]).toMatchObject({
       folderId: MOCK_ID.FolderAngular,

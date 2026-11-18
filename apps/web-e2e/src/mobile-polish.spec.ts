@@ -139,7 +139,7 @@ test.describe('mobile polish (mock API)', () => {
       await expect(dialog).toBeVisible();
       await settled(page);
 
-      await expect(dialog.getByRole('button', { name: 'Save link' })).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Create link' })).toBeVisible();
       await expect(dialog.getByRole('button', { name: 'Cancel' })).toBeHidden();
 
       await dialog.getByRole('button', { name: 'Close' }).click();

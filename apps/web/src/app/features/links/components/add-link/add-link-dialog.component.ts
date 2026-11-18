@@ -179,7 +179,8 @@ export class AddLinkDialogComponent {
     void this.tagStore.load();
   }
 
-  private readonly aiFill = inject(AddLinkAiFillService);
+  /** Fill in with AI (F1c): the footer drops the save hint while its button shows. */
+  protected readonly aiFill = inject(AddLinkAiFillService);
   private readonly saveFlow = inject(AddLinkSaveService);
   protected readonly saving = this.saveFlow.saving;
   protected readonly saveError = this.saveFlow.saveError;

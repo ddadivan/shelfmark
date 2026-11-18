@@ -236,7 +236,7 @@
         "cmd": "⌘",
         "ctrl": "Strg",
         "enter": "Enter",
-        "save": "zum Speichern"
+        "create": "zum Erstellen"
       },
       "preview": {
         "loading": "Vorschau wird geladen",
@@ -290,7 +290,9 @@
       "actions": {
         "cancel": "Abbrechen",
         "openSaved": "Gespeicherten öffnen",
-        "save": "Link speichern",
+        "create": "Link erstellen",
+        "createAnyway": "Trotzdem erstellen",
+        "creating": "Wird erstellt…",
         "saveAnyway": "Trotzdem speichern",
         "saving": "Wird gespeichert…"
       },
