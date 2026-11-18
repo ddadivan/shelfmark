@@ -583,6 +583,12 @@ model CleanupReport {
   finishedAt      DateTime? @map("finished_at") @db.Timestamptz(3)
   appliedAt       DateTime? @map("applied_at") @db.Timestamptz(3)
   cardDismissedAt DateTime? @map("card_dismissed_at") @db.Timestamptz(3)
+  // The month whose AI clean-up run this report counted (refunded at most once, under the lease).
+  aiRunMonth      DateTime? @map("ai_run_month") @db.Date
+  // Undo of the last apply, held here (ids only), single-use and valid until `undoUntil`.
+  undoRunId       String?   @map("undo_run_id") @db.Uuid
+  undoData        Json?     @map("undo_data")
+  undoUntil       DateTime? @map("undo_until") @db.Timestamptz(3)
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("cleanup_reports")

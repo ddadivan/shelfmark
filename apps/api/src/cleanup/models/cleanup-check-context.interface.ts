@@ -12,4 +12,6 @@ export interface CleanupCheckContext {
   cursor: string | null;
   /** Links checked by a chunked check so far. */
   checked: number;
+  /** The deferred pass's current lease on the report (`null` for the rule checks of a run). */
+  lease: Date | null;
 }

@@ -108,6 +108,7 @@ export class CleanupRunnerService implements CleanupTickHook {
       findings: readStoredFindings(row.findings),
       cursor: row.cursor,
       checked: row.checked,
+      lease,
     };
     // AI turned off meanwhile: the AI checks are dropped and the report completes with the rest.
     const stored = await this.settings.read(this.prisma, userId);
@@ -126,6 +127,7 @@ export class CleanupRunnerService implements CleanupTickHook {
         const next = this.nextLease();
         if (!(await this.save(userId, lease, next, ctx))) return;
         lease = next;
+        ctx.lease = next;
       }
       if (ctx.findings.pending.length === 0) {
         await this.finish(userId, lease, finishFindings(ctx.findings));

@@ -1,16 +1,19 @@
+import { randomUUID } from 'node:crypto';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import {
   CLEANUP_ERROR_MESSAGE,
+  CLEANUP_LIMIT,
   CLEANUP_STATE,
   type CleanupApplyRequest,
   type CleanupApplyResponse,
-  type CleanupUndoMerge,
 } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
 import { FoldersService } from '../folders/folders.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { TagsService } from '../tags/tags.service';
 import type { StoredCleanupFindings } from './models/stored-cleanup-findings.interface';
+import type { StoredCleanupUndo } from './models/stored-cleanup-undo.interface';
+import type { StoredUndoMerge } from './models/stored-undo-merge.interface';
 import { readStoredFindings } from './read-stored-findings';
 
 /**
@@ -20,7 +23,9 @@ import { readStoredFindings } from './read-stored-findings';
  * its pair and both tags still the user's. Everything else is skipped, never an error. One
  * transaction, `folders:` before `tags:`: copies go to Trash with one shared `deleted_at` (pins
  * cleared, plain SQL so `updated_at` stays, ADR 0036); merges go through
- * `TagsService.mergeInTransaction` (vectors marked stale there). The answer carries the Undo payload.
+ * `TagsService.mergeInTransaction` (vectors marked stale there). What Undo needs is held on the
+ * report row (`undo_data`, replacing an earlier run's) for `UndoWindowMinutes`; the answer carries
+ * only its run id, so the Undo request stays small however many links a merged tag was on.
  */
 @Injectable()
 export class CleanupApplyService {
@@ -54,26 +59,35 @@ export class CleanupApplyService {
               WHERE user_id = ${userId}::uuid AND deleted_at IS NULL
                 AND id = ANY(${trash.ids}::uuid[])
               RETURNING id::text AS id`;
-      const merges: CleanupUndoMerge[] = [];
+      const merges: StoredUndoMerge[] = [];
       for (const item of request.tagMerges) {
         const merge = await this.mergeOne(tx, userId, findings, item);
         if (merge === null) skipped += 1;
         else merges.push(merge);
       }
-      if (trashed.length > 0 || merges.length > 0) {
-        await tx.$executeRaw`
-          UPDATE cleanup_reports SET state = ${CLEANUP_STATE.Applied}, applied_at = now()
-          WHERE user_id = ${userId}::uuid AND state <> ${CLEANUP_STATE.Running}`;
+      const trashedIds = trashed.map((row) => row.id);
+      if (trashedIds.length === 0 && merges.length === 0) {
+        return { trashed: 0, merged: 0, skipped, trashedIds, undo: null };
       }
+      const runId = randomUUID();
+      const undo: StoredCleanupUndo = {
+        deletedAt: trashedIds.length > 0 ? deletedAt.toISOString() : null,
+        trashedIds,
+        merges,
+      };
+      await tx.$executeRaw`
+        UPDATE cleanup_reports SET
+          state = CASE WHEN state = ${CLEANUP_STATE.Running} THEN state ELSE ${CLEANUP_STATE.Applied} END,
+          applied_at = CASE WHEN state = ${CLEANUP_STATE.Running} THEN applied_at ELSE now() END,
+          undo_run_id = ${runId}::uuid, undo_data = ${JSON.stringify(undo)}::jsonb,
+          undo_until = now() + make_interval(mins => ${CLEANUP_LIMIT.UndoWindowMinutes})
+        WHERE user_id = ${userId}::uuid`;
       return {
-        trashed: trashed.length,
+        trashed: trashedIds.length,
         merged: merges.length,
         skipped,
-        undo: {
-          deletedAt: trashed.length > 0 ? deletedAt.toISOString() : null,
-          trashedIds: trashed.map((row) => row.id),
-          merges,
-        },
+        trashedIds,
+        undo: { runId },
       };
     });
     this.logger.log(
@@ -126,7 +140,7 @@ export class CleanupApplyService {
     userId: string,
     findings: StoredCleanupFindings,
     item: CleanupApplyRequest['tagMerges'][number],
-  ): Promise<CleanupUndoMerge | null> {
+  ): Promise<StoredUndoMerge | null> {
     const pair = findings.similarTags.find((entry) => entry.id === item.pairId);
     if (pair === undefined || !pair.tagIds.includes(item.keepTagId)) return null;
     const sourceId = pair.tagIds[0] === item.keepTagId ? pair.tagIds[1] : pair.tagIds[0];

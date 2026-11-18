@@ -170,7 +170,8 @@ export class AiUsageService {
 
   /**
    * Counts one AI clean-up run against this month's allowance in one statement; answers the month
-   * (for a refund) or `null` when none is left. Pass the transaction of the run, if any.
+   * (stored on the report for a refund, see `refundCleanupRun` in cleanup) or `null` when none is
+   * left. Pass the transaction of the run, if any.
    */
   async reserveCleanupRun(
     userId: string,
@@ -187,12 +188,5 @@ export class AiUsageService {
       WHERE ai_usage.cleanup_runs < ${limit}
       RETURNING cleanup_runs AS n`;
     return rows.length > 0 ? month : null;
-  }
-
-  /** Gives back an AI clean-up run whose model call produced no answer. */
-  async refundCleanupRun(userId: string, month: string): Promise<void> {
-    await this.prisma.$executeRaw`
-      UPDATE ai_usage SET cleanup_runs = cleanup_runs - 1
-      WHERE user_id = ${userId}::uuid AND month = ${month}::date AND cleanup_runs > 0`;
   }
 }

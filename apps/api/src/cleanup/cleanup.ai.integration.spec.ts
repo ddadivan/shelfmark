@@ -19,6 +19,7 @@ import { usageMonth } from '../ai/usage/usage-month';
 import { MockAiProvider } from '../ai/providers/mock-ai.provider';
 import type { TagSynonymsInput } from '../ai/models/tag-synonyms-input.interface';
 import { CleanupRunnerService } from './cleanup-runner.service';
+import { refundCleanupRun } from './refund-cleanup-run';
 
 const DAY = 86_400_000;
 
@@ -296,6 +297,85 @@ describe('Clean-up AI checks: near-duplicates and the deferred pass (AI-5)', () 
       expect(await report()).toMatchObject({ state: 'ready', similarTags: [] });
       const usage = await t.db.prisma.aiUsage.findFirstOrThrow({ where: { userId: owner() } });
       expect(usage.cleanupRuns).toBe(0);
+    });
+
+    it('keeps at most 20 similar tags in all: rule pairs first, the model fills the room', async () => {
+      for (let n = 1; n <= 18; n += 1) await tagged(owner(), [`topic${n}`, `topic${n}s`]);
+      await tagged(owner(), ['solo-a', 'lone-b', 'solo-c', 'lone-d', 'solo-e', 'lone-f']);
+      vi.spyOn(MockAiProvider.prototype, 'findTagSynonyms').mockImplementation(async (input) => {
+        const key = (name: string) => input.tags.find((tag) => tag.name === name)?.key ?? '';
+        return {
+          type: 'output',
+          output: {
+            pairs: [
+              { keep: key('solo-a'), merge: key('lone-b') },
+              { keep: key('solo-c'), merge: key('lone-d') },
+              { keep: key('solo-e'), merge: key('lone-f') },
+            ],
+          },
+        };
+      });
+      await turnOn(a, owner());
+      expect((await run()).similarTags).toHaveLength(18);
+      await deferrer.flush();
+      const res = await report();
+      expect(res.similarTags).toHaveLength(20);
+      expect(res.similarTags.filter((pair) => pair.source === 'ai')).toHaveLength(2);
+    });
+
+    it('asks no model when the rule pairs already fill the 20', async () => {
+      const spy = vi.spyOn(MockAiProvider.prototype, 'findTagSynonyms');
+      for (let n = 1; n <= 22; n += 1) await tagged(owner(), [`topic${n}`, `topic${n}s`]);
+      await turnOn(a, owner());
+      expect((await run()).similarTags).toHaveLength(20);
+      await deferrer.flush();
+      expect(spy).not.toHaveBeenCalled();
+      expect((await report()).similarTags).toHaveLength(20);
+    });
+
+    it('gives back the month the run counted, not the current one', async () => {
+      await tagged(owner(), ['ai-fail', 'js', 'javascript']);
+      await turnOn(a, owner());
+      await run();
+      const current = usageMonth(new Date());
+      const earlier = new Date(`${current}T00:00:00.000Z`);
+      earlier.setUTCMonth(earlier.getUTCMonth() - 1);
+      await t.db.prisma.aiUsage.create({
+        data: { userId: owner(), month: earlier, cleanupRuns: 2 },
+      });
+      await t.db.prisma.cleanupReport.update({
+        where: { userId: owner() },
+        data: { aiRunMonth: earlier },
+      });
+      await deferrer.flush();
+      const rows = await t.db.prisma.aiUsage.findMany({
+        where: { userId: owner() },
+        orderBy: { month: 'asc' },
+      });
+      expect(rows.map((row) => row.cleanupRuns)).toEqual([1, 1]);
+    });
+
+    it('gives a run back only under the lease and at most once', async () => {
+      await tagged(owner(), ['js', 'javascript']);
+      await turnOn(a, owner());
+      await run();
+      const used = async () =>
+        (await t.db.prisma.aiUsage.findFirstOrThrow({ where: { userId: owner() } })).cleanupRuns;
+      const lease = new Date(Date.now() + 60_000);
+      expect(await refundCleanupRun(t.db.prisma, owner(), lease)).toBe(false);
+      await t.db.prisma.cleanupReport.update({
+        where: { userId: owner() },
+        data: { leaseUntil: lease },
+      });
+      expect(await refundCleanupRun(t.db.prisma, intruder(), lease)).toBe(false);
+      expect(await refundCleanupRun(t.db.prisma, owner(), new Date(lease.getTime() + 1))).toBe(
+        false,
+      );
+      expect(await used()).toBe(1);
+      expect(await refundCleanupRun(t.db.prisma, owner(), lease)).toBe(true);
+      expect(await used()).toBe(0);
+      expect(await refundCleanupRun(t.db.prisma, owner(), lease)).toBe(false);
+      expect(await used()).toBe(0);
     });
 
     it('completes with no AI pairs on a refusal and keeps the run counted', async () => {

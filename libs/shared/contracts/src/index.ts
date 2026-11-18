@@ -446,7 +446,6 @@ export type { CleanupSummary } from './cleanup/cleanup-summary.interface';
 export type { CleanupApplyDuplicate } from './cleanup/cleanup-apply-duplicate.interface';
 export type { CleanupApplyTagMerge } from './cleanup/cleanup-apply-tag-merge.interface';
 export type { CleanupApplyRequest } from './cleanup/cleanup-apply-request.interface';
-export type { CleanupUndoMerge } from './cleanup/cleanup-undo-merge.interface';
 export type { CleanupUndoRequest } from './cleanup/cleanup-undo-request.interface';
 export type { CleanupApplyResponse } from './cleanup/cleanup-apply-response.interface';
 export type { CleanupUndoResponse } from './cleanup/cleanup-undo-response.interface';

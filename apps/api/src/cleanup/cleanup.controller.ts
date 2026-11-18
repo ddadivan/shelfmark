@@ -85,7 +85,7 @@ export class CleanupController {
   @ApiOperation({
     summary: 'Apply the selected rows in one step',
     description:
-      'Only ids of the stored report and live rows of the user count; others are skipped. Copies go to Trash with one shared time, merges use the tag merge. Answers the Undo payload.',
+      'Only ids of the stored report and live rows of the user count; others are skipped. Copies go to Trash with one shared time, merges use the tag merge. Answers the run id for Undo (the server holds the rest).',
   })
   apply(
     @CurrentUser() user: AuthUser,
@@ -98,10 +98,11 @@ export class CleanupController {
   @HttpCode(HttpStatus.OK)
   @RateLimit(RATE_LIMIT.CleanupApply)
   @ApiOkResponse({ type: CleanupUndoResponseDto })
+  @ApiConflictResponse({ description: 'Already undone, expired or not the latest run' })
   @ApiOperation({
     summary: 'Undo a clean-up run',
     description:
-      'The undo payload of the apply answer, unchanged. Conditional on the current state; foreign ids change nothing. Works with AI off.',
+      'The undo of the apply answer (run id only). Single-use, for the latest run and within the Undo window, else 409. Conditional on the current state. Works with AI off.',
   })
   undo(
     @CurrentUser() user: AuthUser,

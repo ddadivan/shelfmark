@@ -115,15 +115,15 @@ export class CleanupService {
       const findings = emptyFindings();
       for (const check of this.checks.filter((entry) => !entry.needsAi)) {
         await check.run(
-          { db: tx, userId, isDemo: user.isDemo, findings, cursor: null, checked: 0 },
+          { db: tx, userId, isDemo: user.isDemo, findings, cursor: null, checked: 0, lease: null },
           Number.POSITIVE_INFINITY,
         );
       }
-      const withAi =
-        includeAi &&
-        access.available &&
-        aiChecks.length > 0 &&
-        (await this.usage.reserveCleanupRun(userId, access.tier, now, tx)) !== null;
+      const aiRunMonth =
+        includeAi && access.available && aiChecks.length > 0
+          ? await this.usage.reserveCleanupRun(userId, access.tier, now, tx)
+          : null;
+      const withAi = aiRunMonth !== null;
       if (withAi) findings.pending = aiChecks.map((check) => check.key);
       const total =
         withAi && access.vectorsReady
@@ -132,6 +132,7 @@ export class CleanupService {
       await this.store(tx, userId, findings, {
         state: withAi ? CLEANUP_STATE.Running : CLEANUP_STATE.Ready,
         includeAi: withAi,
+        aiRunMonth,
         total,
         now,
       });
@@ -236,7 +237,13 @@ export class CleanupService {
     db: CleanupDbClient,
     userId: string,
     findings: StoredCleanupFindings,
-    run: { state: CleanupState; includeAi: boolean; total: number; now: Date },
+    run: {
+      state: CleanupState;
+      includeAi: boolean;
+      aiRunMonth: string | null;
+      total: number;
+      now: Date;
+    },
   ): Promise<void> {
     const finished = run.state === CLEANUP_STATE.Running ? null : run.now;
     await db.cleanupReport.update({
@@ -244,6 +251,7 @@ export class CleanupService {
       data: {
         state: run.state,
         includeAi: run.includeAi,
+        aiRunMonth: run.aiRunMonth === null ? null : new Date(run.aiRunMonth),
         checked: 0,
         total: run.total,
         cursor: null,
