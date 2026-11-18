@@ -8,6 +8,9 @@ import {
   type CleanupDuplicateGroup,
   type CleanupReport,
   type CleanupState,
+  type CleanupSummary,
+  CLEANUP_LIMIT,
+  DUPLICATE_REASON,
   type CleanupTag,
   type CleanupTagPair,
 } from '@shelfmark/contracts';
@@ -137,6 +140,57 @@ export class CleanupService {
     this.logger.log(`Clean-up run: ai=${result.withAi}, ${Date.now() - started} ms`);
     if (result.withAi) this.runner.start(userId);
     return this.report(userId, now);
+  }
+
+  /**
+   * `GET /api/cleanup/summary`: the entry card on All links. Exact duplicates now (one grouped
+   * count, no run needed) plus the stored report's other groups while it is not applied; shown when
+   * something was found and the card was not dismissed in the last `CardIntervalDays`.
+   */
+  async summary(userId: string, now: Date = new Date()): Promise<CleanupSummary> {
+    const [[exact], row] = await Promise.all([
+      this.prisma.$queryRaw<{ n: number }[]>`
+        SELECT count(*)::int AS n FROM (
+          SELECT 1 FROM links WHERE user_id = ${userId}::uuid AND deleted_at IS NULL
+          GROUP BY normalized_url HAVING count(*) > 1
+          LIMIT ${CLEANUP_LIMIT.DuplicateGroupsMax}
+        ) groups`,
+      this.prisma.cleanupReport.findUnique({ where: { userId }, select: REPORT_SELECT }),
+    ]);
+    let near = 0;
+    let similarTags = 0;
+    const state = toCleanupState(row?.state);
+    if (row !== null && (state === CLEANUP_STATE.Ready || state === CLEANUP_STATE.Failed)) {
+      const findings = readStoredFindings(row.findings);
+      findings.duplicates = findings.duplicates.filter(
+        (group) => group.reason !== DUPLICATE_REASON.SameAddress,
+      );
+      const [groups, pairs] = await Promise.all([
+        this.liveDuplicates(userId, findings),
+        this.liveTagPairs(userId, findings),
+      ]);
+      near = groups.length;
+      similarTags = pairs.length;
+    }
+    const duplicates = (exact?.n ?? 0) + near;
+    const dismissedUntil =
+      row?.cardDismissedAt == null
+        ? 0
+        : row.cardDismissedAt.getTime() + CLEANUP_LIMIT.CardIntervalDays * 24 * HOUR_MS;
+    return {
+      show: duplicates + similarTags > 0 && now.getTime() >= dismissedUntil,
+      duplicates,
+      similarTags,
+    };
+  }
+
+  /** Hides the entry card for `CardIntervalDays` (idempotent; creates the row when needed). */
+  async dismissCard(userId: string): Promise<void> {
+    await this.prisma.cleanupReport.upsert({
+      where: { userId },
+      create: { userId, cardDismissedAt: new Date() },
+      update: { cardDismissedAt: new Date() },
+    });
   }
 
   /** The state of the user's report (`none` without a row). */

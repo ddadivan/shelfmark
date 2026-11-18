@@ -1,4 +1,4 @@
-import { CLEANUP_ENDPOINT, type CleanupReport } from '@shelfmark/contracts';
+import { CLEANUP_ENDPOINT, type CleanupReport, type CleanupSummary } from '@shelfmark/contracts';
 import { AwaitableDeferrer } from '../../test-utils/awaitable-deferrer';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import { createIsolationUsers } from '../../test-utils/isolation/create-isolation-users';
@@ -222,6 +222,54 @@ describe('Clean-up report and rule checks (AI-5)', () => {
         remove: 'the report has no delete route; DELETE /api/ai/data is covered in the AI specs',
         reference: 'no other resource refers to a clean-up report',
       },
+    });
+  });
+  describe('entry card', () => {
+    const summary = async (agent: TestAgent = a) =>
+      (await agent.get(CLEANUP_ENDPOINT.Summary).expect(200)).body as CleanupSummary;
+
+    it('needs a session', async () => {
+      await anonymous(t.app).get(CLEANUP_ENDPOINT.Summary).expect(401);
+      await anonymous(t.app).post(CLEANUP_ENDPOINT.DismissCard).expect(401);
+    });
+
+    it('counts exact duplicates without a run and stored tag pairs until applied', async () => {
+      expect(await summary()).toEqual({ show: false, duplicates: 0, similarTags: 0 });
+      await coat(owner());
+      await coat(owner());
+      expect(await summary()).toEqual({ show: true, duplicates: 1, similarTags: 0 });
+      await seedLink(t.db.prisma, owner(), { tags: ['recipe'] });
+      await seedLink(t.db.prisma, owner(), { tags: ['recipes'] });
+      await run();
+      expect(await summary()).toEqual({ show: true, duplicates: 1, similarTags: 1 });
+      await t.db.prisma.cleanupReport.update({
+        where: { userId: owner() },
+        data: { state: 'applied' },
+      });
+      expect((await summary()).similarTags).toBe(0);
+    });
+
+    it('hides the card for 30 days after a dismissal', async () => {
+      await coat(owner());
+      await coat(owner());
+      await a.post(CLEANUP_ENDPOINT.DismissCard).expect(204);
+      await a.post(CLEANUP_ENDPOINT.DismissCard).expect(204);
+      expect(await summary()).toEqual({ show: false, duplicates: 1, similarTags: 0 });
+      expect((await report()).state).toBe('none');
+      await t.db.prisma.cleanupReport.update({
+        where: { userId: owner() },
+        data: { cardDismissedAt: daysAgo(31) },
+      });
+      expect((await summary()).show).toBe(true);
+    });
+
+    it("never counts or dismisses another user's rows", async () => {
+      await coat(intruder());
+      await coat(intruder());
+      expect(await summary()).toEqual({ show: false, duplicates: 0, similarTags: 0 });
+      await a.post(CLEANUP_ENDPOINT.DismissCard).expect(204);
+      expect((await summary(b)).show).toBe(true);
+      expect(await t.db.prisma.cleanupReport.count({ where: { userId: intruder() } })).toBe(0);
     });
   });
 });

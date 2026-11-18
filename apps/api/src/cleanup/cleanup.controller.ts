@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/commo
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -16,6 +17,7 @@ import { CleanupReportDto } from './dto/cleanup-report.dto';
 import { CleanupUndoResponseDto } from './dto/cleanup-undo-response.dto';
 import { CleanupUndoDto } from './dto/cleanup-undo.dto';
 import { CleanupRunDto } from './dto/cleanup-run.dto';
+import { CleanupSummaryDto } from './dto/cleanup-summary.dto';
 import { CleanupApplyService } from './cleanup-apply.service';
 import { CleanupUndoService } from './cleanup-undo.service';
 import { CleanupService } from './cleanup.service';
@@ -39,6 +41,26 @@ export class CleanupController {
   })
   report(@CurrentUser() user: AuthUser): Promise<CleanupReportDto> {
     return this.cleanup.report(user.id);
+  }
+
+  @Get('summary')
+  @ApiOkResponse({ type: CleanupSummaryDto })
+  @ApiOperation({
+    summary: 'The entry card on All links',
+    description:
+      'Exact duplicates now plus the unapplied groups of the stored report; show only when something was found and the card was not dismissed in the last 30 days. No check is started.',
+  })
+  summary(@CurrentUser() user: AuthUser): Promise<CleanupSummaryDto> {
+    return this.cleanup.summary(user.id);
+  }
+
+  @Post('card/dismiss')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RateLimit(RATE_LIMIT.CleanupRun)
+  @ApiNoContentResponse({ description: 'Hidden for 30 days' })
+  @ApiOperation({ summary: 'Dismiss the entry card' })
+  async dismissCard(@CurrentUser() user: AuthUser): Promise<void> {
+    await this.cleanup.dismissCard(user.id);
   }
 
   @Post('run')
