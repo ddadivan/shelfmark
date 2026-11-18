@@ -87,8 +87,8 @@ describe('PrivacyPage', () => {
       'What we count:',
       'Turning it off:',
     ]);
-    expect(element.textContent).toContain('[PROVIDER], as our processor');
-    expect(element.textContent).toContain('at most [N] days');
+    expect(element.textContent).toContain('Anthropic PBC (USA), as our processor');
+    expect(element.textContent).toContain('deletes the request within 30 days');
     expect(element.textContent).toContain('to train AI models');
   });
 
