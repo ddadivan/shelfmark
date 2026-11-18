@@ -22,6 +22,10 @@
 .sm-btn--ghost.is-hover { background: var(--surface-hover); }
 @media (hover: hover) { .sm-btn--ghost:hover { background: var(--surface-hover); } }
 .sm-btn--ghost:active, .sm-btn--ghost.is-pressed { background: var(--surface-pressed); }
+.sm-btn--ai { background: var(--ai-fill); color: var(--text); }
+.sm-btn--ai > svg { width: 20px; height: 20px; color: var(--ai); }
+.sm-btn--ai.is-hover { background: var(--ai-fill-hover); }
+.sm-btn--ai:active, .sm-btn--ai.is-pressed { background: var(--ai-fill-pressed); }
 .sm-btn--danger { background: var(--danger); color: var(--on-primary); }
 .sm-btn--danger.is-hover { filter: brightness(.92); }
 @media (hover: hover) { .sm-btn--danger:hover { filter: brightness(.92); } }
