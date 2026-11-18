@@ -3527,6 +3527,11 @@
     "empty": {
       "title": "Niente dimenticato",
       "text": "I link che salvi e non apri mai aspetteranno qui."
+    },
+    "note": {
+      "one": "{{count}} dimenticato",
+      "many": "{{count}} dimenticati",
+      "other": "{{count}} dimenticati"
     }
   },
   "cleanup": {

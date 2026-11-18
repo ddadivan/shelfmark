@@ -3527,6 +3527,11 @@
     "empty": {
       "title": "Rien d’oublié",
       "text": "Les liens que vous enregistrez sans jamais les ouvrir attendront ici."
+    },
+    "note": {
+      "one": "{{count}} oublié",
+      "many": "{{count}} oubliés",
+      "other": "{{count}} oubliés"
     }
   },
   "cleanup": {

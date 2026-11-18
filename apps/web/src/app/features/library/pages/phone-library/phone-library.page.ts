@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { activeLang } from '../../../../core/i18n/active-lang';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
 import { ViewportService } from '../../../../core/layout/viewport.service';
@@ -16,6 +17,7 @@ import { SidebarPinnedComponent } from '../../../pins/components/sidebar-pinned/
 import { SidebarComponent } from '../../../../shell/sidebar/sidebar.component';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { LinksStore } from '../../../../stores/links.store';
+import { RediscoverStore } from '../../../rediscover/services/rediscover.store';
 import { TrashStore } from '../../../../stores/trash.store';
 import { RemindersStore } from '../../../../stores/reminders.store';
 import { groupByDay } from '../../../links/utils/history-days';
@@ -48,6 +50,7 @@ export default class PhoneLibraryPage {
   private readonly links = inject(LinksStore);
   private readonly trash = inject(TrashStore);
   private readonly reminders = inject(RemindersStore);
+  private readonly rediscover = inject(RediscoverStore);
   private readonly transloco = inject(TranslocoService);
   private readonly dialogs = inject(DialogService);
   private readonly router = inject(Router);
@@ -88,8 +91,25 @@ export default class PhoneLibraryPage {
     return today?.links.length ?? 0;
   });
 
+  /** How many forgotten links wait (Recently opened › Forgotten, #512). */
+  protected readonly forgotten = this.rediscover.count;
+
+  /** "5 forgotten" while some wait, else "2 today" once the history has loaded. */
+  protected readonly recentMeta = computed(() => {
+    activeLang(); // re-translate on a language switch
+    const waiting = this.forgotten();
+    if (waiting > 0) {
+      return this.transloco.translate(pluralKey('rediscover.note', waiting), { count: waiting });
+    }
+    const today = this.openedToday();
+    return today
+      ? this.transloco.translate('library.phone.openedToday', { count: today })
+      : undefined;
+  });
+
   constructor() {
     void this.folders.load();
+    void this.rediscover.load();
     void this.links.loadRecent();
     void this.trash.load();
     effect(() => {

@@ -21,6 +21,8 @@ export class LibraryTileComponent {
   readonly label = input.required<string>();
   /** The second line; hidden while empty (the count has not loaded yet). */
   readonly meta = input<string>();
+  /** The second line is in the accent tone: something waits behind the tile ("5 forgotten"). */
+  readonly attention = input(false, { transform: booleanAttribute });
   /** The icon is sage: the favorites star. */
   readonly accent = input(false, { transform: booleanAttribute });
   /** A plain click opens something over the page (a sheet) instead of navigating. */

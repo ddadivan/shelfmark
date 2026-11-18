@@ -3453,6 +3453,10 @@
     "empty": {
       "title": "Nichts vergessen",
       "text": "Links, die du speicherst und nie öffnest, warten hier."
+    },
+    "note": {
+      "one": "{{count}} vergessen",
+      "other": "{{count}} vergessen"
     }
   },
   "cleanup": {

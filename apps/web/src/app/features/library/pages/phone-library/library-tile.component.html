@@ -18,6 +18,8 @@
   <span class="library-tile__text">
     <span class="library-tile__label">{{ label() }}</span>
     <!-- Always there (empty until the count loads) so the tile keeps its height. -->
-    <span class="library-tile__meta">{{ meta() }}</span>
+    <span class="library-tile__meta" [class.library-tile__meta--attention]="attention()">{{
+      meta()
+    }}</span>
   </span>
 </ng-template>

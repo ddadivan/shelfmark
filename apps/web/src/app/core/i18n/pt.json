@@ -3527,6 +3527,11 @@
     "empty": {
       "title": "Nada esquecido",
       "text": "Os links que você salvar e nunca abrir esperarão aqui."
+    },
+    "note": {
+      "one": "{{count}} esquecido",
+      "many": "{{count}} esquecidos",
+      "other": "{{count}} esquecidos"
     }
   },
   "cleanup": {

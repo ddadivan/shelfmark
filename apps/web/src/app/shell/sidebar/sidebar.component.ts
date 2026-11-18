@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   BUTTON_SIZE,
   ButtonComponent,
@@ -32,6 +32,8 @@ import {
 } from '@shelfmark/ui';
 import { filter, map } from 'rxjs';
 import { ViewportService } from '../../core/layout/viewport.service';
+import { pluralKey } from '../../core/i18n/plural-key';
+import { RediscoverStore } from '../../features/rediscover/services/rediscover.store';
 import { SidebarPinnedComponent } from '../../features/pins/components/sidebar-pinned/sidebar-pinned.component';
 import { SidebarTagsComponent } from '../../features/tags/components/sidebar-tags/sidebar-tags.component';
 import { APP_PATH } from '../../models/app-path.const';
@@ -94,6 +96,8 @@ export class SidebarComponent {
   private readonly trash = inject(TrashStore);
   private readonly pins = inject(PinsStore);
   private readonly reminders = inject(RemindersStore);
+  private readonly rediscover = inject(RediscoverStore);
+  private readonly transloco = inject(TranslocoService);
   protected readonly folderMenu = inject(SidebarFoldersService);
   private readonly settings = inject(UserSettingsStore);
   protected readonly drag = inject(LinkDragService);
@@ -159,7 +163,13 @@ export class SidebarComponent {
       this.folders.loaded() && this.settings.countsShown() ? this.folders.counts() : null;
     // The due reminders count shows whatever "Show folder counts" says: it asks for attention.
     const due = this.reminders.dueCount();
-    return fixedNodes(labels, counts, due > 0 ? due : undefined);
+    // "N forgotten" on Recently opened likewise (#512); the language is read through `pluralKey`.
+    const forgotten = this.rediscover.count();
+    const note =
+      forgotten > 0
+        ? this.transloco.translate(pluralKey('rediscover.note', forgotten), { count: forgotten })
+        : undefined;
+    return fixedNodes(labels, counts, due > 0 ? due : undefined, note);
   });
 
   /** "What's new" and "Send feedback" above the divider (not on the phone: the You list has them). */
@@ -202,6 +212,8 @@ export class SidebarComponent {
     void this.folders.load();
     void this.trash.load();
     void this.pins.load();
+    // The once-per-session load of Rediscover: the Recently opened row shows how many wait.
+    void this.rediscover.load();
     void this.tagsStore.load();
     void this.settings.load();
     effect((onCleanup) => {

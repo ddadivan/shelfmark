@@ -32,6 +32,13 @@ describe('sidebar nodes', () => {
     expect(reminders).toMatchObject({ name: 'Reminders', icon: 'bell', count: 2 });
   });
 
+  it('puts the forgotten note on the Recently opened row only while there is one', () => {
+    const recent = (note?: string) =>
+      fixedNodes(LABELS, null, undefined, note).find((node) => node.id === 'recent');
+    expect(recent('5 forgotten')).toMatchObject({ note: '5 forgotten' });
+    expect(recent()).not.toHaveProperty('note');
+  });
+
   it('leaves the counts out without counts', () => {
     expect(fixedNodes(LABELS, null).every((node) => !('count' in node))).toBe(true);
   });
