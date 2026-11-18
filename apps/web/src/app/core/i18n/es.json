@@ -3646,23 +3646,6 @@
       "nothingDetail": "Estos elementos cambiaron mientras tanto."
     },
     "undone": "Limpieza deshecha",
-    "undoFailed": "No se pudo deshacer la limpieza",
-    "card": {
-      "title": "Tu biblioteca necesita un repaso",
-      "duplicates": {
-        "one": "{{count}} duplicado",
-        "many": "{{count}} duplicados",
-        "other": "{{count}} duplicados"
-      },
-      "similarTags": {
-        "one": "{{count}} par de etiquetas parecidas",
-        "many": "{{count}} pares de etiquetas parecidas",
-        "other": "{{count}} pares de etiquetas parecidas"
-      },
-      "text": "{{items}}. Nada cambia hasta que lo revises.",
-      "review": "Revisar",
-      "dismiss": "Ocultar durante un mes",
-      "label": "Limpieza de la biblioteca"
-    }
+    "undoFailed": "No se pudo deshacer la limpieza"
   }
 }

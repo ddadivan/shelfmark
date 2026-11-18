@@ -3646,23 +3646,6 @@
       "nothingDetail": "Questi elementi sono cambiati nel frattempo."
     },
     "undone": "Riordino annullato",
-    "undoFailed": "Impossibile annullare il riordino",
-    "card": {
-      "title": "La tua libreria ha bisogno di una sistemata",
-      "duplicates": {
-        "one": "{{count}} duplicato",
-        "many": "{{count}} duplicati",
-        "other": "{{count}} duplicati"
-      },
-      "similarTags": {
-        "one": "{{count}} coppia di tag simili",
-        "many": "{{count}} coppie di tag simili",
-        "other": "{{count}} coppie di tag simili"
-      },
-      "text": "{{items}}. Nulla cambia finché non controlli.",
-      "review": "Rivedi",
-      "dismiss": "Nascondi per un mese",
-      "label": "Riordino della libreria"
-    }
+    "undoFailed": "Impossibile annullare il riordino"
   }
 }

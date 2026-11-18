@@ -3564,21 +3564,6 @@
       "nothingDetail": "Diese Einträge haben sich inzwischen geändert."
     },
     "undone": "Aufräumen rückgängig gemacht",
-    "undoFailed": "Das Aufräumen konnte nicht rückgängig gemacht werden",
-    "card": {
-      "title": "Deine Bibliothek könnte etwas Ordnung vertragen",
-      "duplicates": {
-        "one": "{{count}} Duplikat",
-        "other": "{{count}} Duplikate"
-      },
-      "similarTags": {
-        "one": "{{count}} Paar ähnlicher Tags",
-        "other": "{{count}} Paare ähnlicher Tags"
-      },
-      "text": "{{items}}. Nichts ändert sich, bevor du prüfst.",
-      "review": "Ansehen",
-      "dismiss": "Einen Monat ausblenden",
-      "label": "Bibliothek aufräumen"
-    }
+    "undoFailed": "Das Aufräumen konnte nicht rückgängig gemacht werden"
   }
 }

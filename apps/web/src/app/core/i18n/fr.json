@@ -3646,23 +3646,6 @@
       "nothingDetail": "Ces éléments ont changé entre-temps."
     },
     "undone": "Nettoyage annulé",
-    "undoFailed": "Impossible d’annuler le nettoyage",
-    "card": {
-      "title": "Votre bibliothèque mérite un petit rangement",
-      "duplicates": {
-        "one": "{{count}} doublon",
-        "many": "{{count}} doublons",
-        "other": "{{count}} doublons"
-      },
-      "similarTags": {
-        "one": "{{count}} paire de tags similaires",
-        "many": "{{count}} paires de tags similaires",
-        "other": "{{count}} paires de tags similaires"
-      },
-      "text": "{{items}}. Rien ne change avant votre validation.",
-      "review": "Voir",
-      "dismiss": "Masquer pendant un mois",
-      "label": "Nettoyage de la bibliothèque"
-    }
+    "undoFailed": "Impossible d’annuler le nettoyage"
   }
 }

@@ -3564,21 +3564,6 @@
       "nothingDetail": "These items changed meanwhile."
     },
     "undone": "Clean-up undone",
-    "undoFailed": "Couldn’t undo the clean-up",
-    "card": {
-      "title": "Your library could use a tidy-up",
-      "duplicates": {
-        "one": "{{count}} duplicate",
-        "other": "{{count}} duplicates"
-      },
-      "similarTags": {
-        "one": "{{count}} pair of similar tags",
-        "other": "{{count}} pairs of similar tags"
-      },
-      "text": "{{items}}. Nothing changes until you review.",
-      "review": "Review",
-      "dismiss": "Hide for a month",
-      "label": "Library clean-up"
-    }
+    "undoFailed": "Couldn’t undo the clean-up"
   }
 }

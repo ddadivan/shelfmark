@@ -3646,23 +3646,6 @@
       "nothingDetail": "Esses itens mudaram nesse meio-tempo."
     },
     "undone": "Limpeza desfeita",
-    "undoFailed": "Não foi possível desfazer a limpeza",
-    "card": {
-      "title": "Sua biblioteca pode ser organizada",
-      "duplicates": {
-        "one": "{{count}} duplicado",
-        "many": "{{count}} duplicados",
-        "other": "{{count}} duplicados"
-      },
-      "similarTags": {
-        "one": "{{count}} par de tags parecidas",
-        "many": "{{count}} pares de tags parecidas",
-        "other": "{{count}} pares de tags parecidas"
-      },
-      "text": "{{items}}. Nada muda até você revisar.",
-      "review": "Revisar",
-      "dismiss": "Ocultar por um mês",
-      "label": "Limpeza da biblioteca"
-    }
+    "undoFailed": "Não foi possível desfazer a limpeza"
   }
 }
