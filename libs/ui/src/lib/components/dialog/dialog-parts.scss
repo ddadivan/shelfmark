@@ -96,13 +96,13 @@
   justify-content: flex-end;
   margin-block-start: var(--space-2);
 
-  // Phone: the actions stack at full width. The DOM order is "secondary first, primary last" (the
-  // order of a desktop row, right-aligned), so `column-reverse` puts the primary action on top,
-  // then Cancel; a separate destructive action (Delete in the edit dialog, first in the DOM)
-  // lands at the bottom. The width of the slotted children is set in the global `dialog-layout`
-  // (they belong to the feature's view, not to this one).
+  // Phone (#512): the main action, the last in the DOM, is alone on the bottom row at full width;
+  // every other action shares one row above it in equal widths (two: halves, three: thirds). A
+  // single other action is simply a second full-width row. A plain Cancel next to the close
+  // button is left out (`uiDialogCancel`). The flex of the slotted children is set in the global
+  // `dialog-layout` (they belong to the feature's view, not to this one).
   @include phone {
-    flex-flow: column-reverse nowrap;
+    flex-flow: row wrap;
     align-items: stretch;
   }
 

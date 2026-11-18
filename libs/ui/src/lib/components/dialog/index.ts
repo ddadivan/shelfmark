@@ -1,3 +1,4 @@
+export { DialogCancelDirective } from './dialog-cancel.directive';
 export { DialogComponent } from './dialog.component';
 export type { ConfirmDialogConfig } from './models/confirm-config.interface';
 export { DIALOG_SIZE } from './models/dialog-size.const';
