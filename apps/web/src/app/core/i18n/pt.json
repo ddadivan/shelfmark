@@ -1614,6 +1614,12 @@
           "cancel": "Cancelar",
           "close": "Fechar"
         }
+      },
+      "cleanup": {
+        "title": "Limpeza",
+        "label": "Organize sua biblioteca",
+        "hint": "Encontre duplicados e tags parecidas e corrija tudo em um passo.",
+        "action": "Revisar"
       }
     },
     "language": {
@@ -3323,5 +3329,132 @@
     "remind": "Lembrar-me",
     "readLater": "Ler depois",
     "notInterested": "Não tenho interesse"
+  },
+  "cleanup": {
+    "title": "Organize sua biblioteca",
+    "lead": "Encontre links que você salvou mais de uma vez e tags que significam a mesma coisa. Nada muda até você aplicar.",
+    "checkedOn": "Verificada {{when}}. Nada muda até você aplicar; dá para desfazer tudo de uma vez.",
+    "intro": "O Shelfmark procura cópias extras do mesmo link e tags que significam a mesma coisa. Você revisa cada mudança, e um único Desfazer reverte tudo.",
+    "loading": "Carregando o relatório de limpeza",
+    "loadFailed": "Não foi possível carregar o relatório de limpeza.",
+    "retry": "Tentar de novo",
+    "run": "Verificar minha biblioteca",
+    "runAgain": "Verificar de novo",
+    "runFailed": "Não foi possível iniciar a verificação. Tente de novo.",
+    "includeAi": {
+      "label": "Incluir verificações com IA",
+      "hint": "Também encontra a mesma página em outro endereço e tags com o mesmo significado."
+    },
+    "checking": {
+      "title": "Verificando sua biblioteca…",
+      "text": "Você pode sair desta página; vamos guardar o relatório.",
+      "progress": "{{checked}} de {{total}} links. Você pode sair desta página; vamos guardar o relatório.",
+      "label": "Progresso da limpeza"
+    },
+    "apply": {
+      "one": "Aplicar {{count}} mudança",
+      "many": "Aplicar {{count}} mudanças",
+      "other": "Aplicar {{count}} mudanças"
+    },
+    "cancel": "Cancelar",
+    "barLabel": "Ações de limpeza",
+    "groups": {
+      "duplicates": {
+        "title": "Duplicados",
+        "hint": "Cópias extras vão para a lixeira"
+      },
+      "similarTags": {
+        "title": "Tags parecidas",
+        "hint": "Mescladas na primeira"
+      }
+    },
+    "reason": {
+      "sameAddress": "Mesmo endereço",
+      "samePage": "Mesma página"
+    },
+    "duplicate": {
+      "sameAddress": {
+        "one": "Salvo {{saved}} vezes: manter o de {{place}} ({{why}}), mover {{count}} cópia para a lixeira",
+        "many": "Salvo {{saved}} vezes: manter o de {{place}} ({{why}}), mover {{count}} cópias para a lixeira",
+        "other": "Salvo {{saved}} vezes: manter o de {{place}} ({{why}}), mover {{count}} cópias para a lixeira"
+      },
+      "samePage": {
+        "one": "{{hosts}}: manter {{keep}} ({{why}}), mover {{count}} cópia para a lixeira",
+        "many": "{{hosts}}: manter {{keep}} ({{why}}), mover {{count}} cópias para a lixeira",
+        "other": "{{hosts}}: manter {{keep}} ({{why}}), mover {{count}} cópias para a lixeira"
+      }
+    },
+    "unsorted": "Sem pasta",
+    "keep": {
+      "in-folder": "está em uma pasta",
+      "has-note": "tem uma nota",
+      "has-reminder": "tem um lembrete",
+      "more-tags": "tem mais tags",
+      "favorite": "é um favorito",
+      "recently-opened": "aberto por último",
+      "oldest": "salvo primeiro"
+    },
+    "tagPair": {
+      "title": "{{keep}} ← {{merge}}",
+      "detail": {
+        "one": "{{count}} link recebe “{{keep}}”; “{{merge}}” é removida",
+        "many": "{{count}} links recebem “{{keep}}”; “{{merge}}” é removida",
+        "other": "{{count}} links recebem “{{keep}}”; “{{merge}}” é removida"
+      },
+      "swap": "Manter “{{merge}}” no lugar"
+    },
+    "foundByAi": "Encontrado pela IA",
+    "footer": "Grupos marcados com “Encontrado pela IA” são sugestões e podem não ser precisos. Duplicados exatos são verificados sem IA.",
+    "failed": "A verificação parou antes de terminar. Veja o que ela encontrou.",
+    "empty": {
+      "title": "Sua biblioteca está em ordem",
+      "text": "Nenhum duplicado ou tag parecida encontrado."
+    },
+    "applied": {
+      "title": "Tudo organizado",
+      "text": "As mudanças escolhidas foram feitas. As cópias removidas esperam na lixeira."
+    },
+    "toast": {
+      "title": {
+        "one": "{{count}} item organizado",
+        "many": "{{count}} itens organizados",
+        "other": "{{count}} itens organizados"
+      },
+      "copies": {
+        "one": "{{count}} cópia na lixeira",
+        "many": "{{count}} cópias na lixeira",
+        "other": "{{count}} cópias na lixeira"
+      },
+      "tags": {
+        "one": "{{count}} tag mesclada",
+        "many": "{{count}} tags mescladas",
+        "other": "{{count}} tags mescladas"
+      },
+      "detail": "{{copies}}, {{tags}}",
+      "undo": "Desfazer",
+      "failed": "Não foi possível aplicar as mudanças",
+      "failedDetail": "Nada foi alterado. Tente de novo.",
+      "nothing": "Nada para aplicar",
+      "nothingDetail": "Esses itens mudaram nesse meio-tempo."
+    },
+    "undone": "Limpeza desfeita",
+    "undoFailed": "Não foi possível desfazer a limpeza",
+    "card": {
+      "title": "Sua biblioteca pode ser organizada",
+      "duplicates": {
+        "one": "{{count}} duplicado",
+        "many": "{{count}} duplicados",
+        "other": "{{count}} duplicados"
+      },
+      "similarTags": {
+        "one": "{{count}} par de tags parecidas",
+        "many": "{{count}} pares de tags parecidas",
+        "other": "{{count}} pares de tags parecidas"
+      },
+      "text": "{{items}}. Nada muda até você revisar.",
+      "review": "Revisar",
+      "dismiss": "Ocultar por um mês",
+      "label": "Limpeza da biblioteca"
+    }
   }
 }

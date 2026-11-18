@@ -96,6 +96,17 @@
 
 <app-rules-section />
 
+<ui-settings-section [title]="'settings.library.cleanup.title' | transloco">
+  <ui-settings-row
+    [title]="'settings.library.cleanup.label' | transloco"
+    [description]="'settings.library.cleanup.hint' | transloco"
+  >
+    <ui-button [size]="BUTTON_SIZE.Sm" [href]="cleanupHref" (linkClick)="openCleanup($event)">
+      {{ 'settings.library.cleanup.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+
 <ui-settings-section [title]="'settings.library.trash.title' | transloco">
   <ui-settings-row
     #row

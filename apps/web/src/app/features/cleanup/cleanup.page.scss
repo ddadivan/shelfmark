@@ -1,0 +1,135 @@
+@use 'ui' as *;
+
+// The page fills the settings column, so the phone bar sits at its end.
+:host {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+.cleanup {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+
+  @include compact {
+    gap: var(--space-4);
+  }
+}
+
+.cleanup__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.cleanup__header {
+  flex: 1 1 rem(320px);
+  min-width: 0;
+}
+
+.cleanup__actions,
+.cleanup__run {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.cleanup__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.cleanup__intro {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.cleanup__checking {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.cleanup__checking-title {
+  @include type(label);
+
+  margin: 0;
+  color: var(--text);
+}
+
+.cleanup__checking-text {
+  @include type(caption);
+
+  margin: 0;
+}
+
+.cleanup__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cleanup__group-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  align-items: baseline;
+  justify-content: space-between;
+  padding-inline: var(--space-1);
+}
+
+.cleanup__group-title {
+  @include type(label);
+
+  margin: 0;
+  font-weight: 600;
+}
+
+.cleanup__group-hint {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+// One surface per group with a row per change (`AiCleanup` 1).
+.cleanup__rows {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  padding: var(--space-1);
+  margin: 0;
+  list-style: none;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+// The mobile shell: Cancel and Apply in a glass bar just above the tab bar (the main column keeps
+// `$shell-tab-bar-room` of end padding for it, so the sticky offset starts above the tab bar).
+.cleanup__bar {
+  @include glass;
+
+  position: sticky;
+  inset-block-end: var(--space-3);
+  z-index: 3;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  padding: var(--space-3);
+  margin-block-start: auto;
+  border-radius: var(--radius-lg);
+
+  @include tablet {
+    align-self: center;
+    inline-size: min(100%, #{rem(560px)});
+  }
+}

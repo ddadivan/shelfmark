@@ -44,6 +44,7 @@ import { UI_VIEW } from '../../../../stores/models/ui-view.const';
 import { MS_PER_DAY } from '../../../../core/models/ms-per-day.const';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { APP_PATH } from '../../../../models/app-path.const';
+import { CLEANUP_HREF } from '../../../cleanup/models/cleanup-href.const';
 import { TrashStore } from '../../../../stores/trash.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { BrowserExtensionService } from '../../../../core/browser-extension/browser-extension.service';
@@ -96,6 +97,7 @@ export default class LibrarySettingsPage {
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly pluralKey = pluralKey;
   protected readonly trashHref = `/${APP_PATH.Trash}`;
+  protected readonly cleanupHref = CLEANUP_HREF;
 
   protected readonly options = computed<SegmentedOption[]>(() => {
     // Re-runs on a language switch (`translate` itself is not reactive).
@@ -247,5 +249,10 @@ export default class LibrarySettingsPage {
   protected async openTrash(event: MouseEvent): Promise<void> {
     event.preventDefault();
     await this.router.navigateByUrl(this.trashHref);
+  }
+
+  protected async openCleanup(event: MouseEvent): Promise<void> {
+    event.preventDefault();
+    await this.router.navigateByUrl(this.cleanupHref);
   }
 }

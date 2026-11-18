@@ -1614,6 +1614,12 @@
           "cancel": "Annulla",
           "close": "Chiudi"
         }
+      },
+      "cleanup": {
+        "title": "Riordino",
+        "label": "Riordina la tua libreria",
+        "hint": "Trova duplicati e tag simili e sistemali in un solo passaggio.",
+        "action": "Rivedi"
       }
     },
     "language": {
@@ -3323,5 +3329,132 @@
     "remind": "Ricordamelo",
     "readLater": "Leggi dopo",
     "notInterested": "Non mi interessa"
+  },
+  "cleanup": {
+    "title": "Riordina la tua libreria",
+    "lead": "Trova i link salvati più volte e i tag con lo stesso significato. Nulla cambia finché non applichi.",
+    "checkedOn": "Controllata {{when}}. Nulla cambia finché non applichi; puoi annullare l’intera operazione.",
+    "intro": "Shelfmark cerca le copie in più dello stesso link e i tag con lo stesso significato. Controlli ogni modifica, e un solo Annulla ripristina tutto.",
+    "loading": "Caricamento del rapporto di riordino",
+    "loadFailed": "Impossibile caricare il rapporto di riordino.",
+    "retry": "Riprova",
+    "run": "Controlla la libreria",
+    "runAgain": "Controlla di nuovo",
+    "runFailed": "Impossibile avviare il controllo. Riprova.",
+    "includeAi": {
+      "label": "Includi i controlli IA",
+      "hint": "Trova anche la stessa pagina a un altro indirizzo e i tag con lo stesso significato."
+    },
+    "checking": {
+      "title": "Controllo della libreria…",
+      "text": "Puoi lasciare questa pagina; il rapporto verrà conservato.",
+      "progress": "{{checked}} link su {{total}}. Puoi lasciare questa pagina; il rapporto verrà conservato.",
+      "label": "Avanzamento del riordino"
+    },
+    "apply": {
+      "one": "Applica {{count}} modifica",
+      "many": "Applica {{count}} modifiche",
+      "other": "Applica {{count}} modifiche"
+    },
+    "cancel": "Annulla",
+    "barLabel": "Azioni di riordino",
+    "groups": {
+      "duplicates": {
+        "title": "Duplicati",
+        "hint": "Le copie in più vanno nel cestino"
+      },
+      "similarTags": {
+        "title": "Tag simili",
+        "hint": "Uniti nel primo"
+      }
+    },
+    "reason": {
+      "sameAddress": "Stesso indirizzo",
+      "samePage": "Stessa pagina"
+    },
+    "duplicate": {
+      "sameAddress": {
+        "one": "Salvato {{saved}} volte: tieni quello in {{place}} ({{why}}), sposta {{count}} copia nel cestino",
+        "many": "Salvato {{saved}} volte: tieni quello in {{place}} ({{why}}), sposta {{count}} copie nel cestino",
+        "other": "Salvato {{saved}} volte: tieni quello in {{place}} ({{why}}), sposta {{count}} copie nel cestino"
+      },
+      "samePage": {
+        "one": "{{hosts}}: tieni {{keep}} ({{why}}), sposta {{count}} copia nel cestino",
+        "many": "{{hosts}}: tieni {{keep}} ({{why}}), sposta {{count}} copie nel cestino",
+        "other": "{{hosts}}: tieni {{keep}} ({{why}}), sposta {{count}} copie nel cestino"
+      }
+    },
+    "unsorted": "Non ordinati",
+    "keep": {
+      "in-folder": "è in una cartella",
+      "has-note": "ha una nota",
+      "has-reminder": "ha un promemoria",
+      "more-tags": "ha più tag",
+      "favorite": "è un preferito",
+      "recently-opened": "aperto per ultimo",
+      "oldest": "salvato per primo"
+    },
+    "tagPair": {
+      "title": "{{keep}} ← {{merge}}",
+      "detail": {
+        "one": "{{count}} link riceve «{{keep}}»; «{{merge}}» viene rimosso",
+        "many": "{{count}} link ricevono «{{keep}}»; «{{merge}}» viene rimosso",
+        "other": "{{count}} link ricevono «{{keep}}»; «{{merge}}» viene rimosso"
+      },
+      "swap": "Tieni invece «{{merge}}»"
+    },
+    "foundByAi": "Trovato dall’IA",
+    "footer": "I gruppi segnati con «Trovato dall’IA» sono suggerimenti e possono essere imprecisi. I duplicati esatti sono controllati senza IA.",
+    "failed": "Il controllo si è fermato prima della fine. Ecco cosa ha trovato.",
+    "empty": {
+      "title": "La tua libreria è in ordine",
+      "text": "Nessun duplicato o tag simile trovato."
+    },
+    "applied": {
+      "title": "Tutto riordinato",
+      "text": "Le modifiche scelte sono fatte. Le copie rimosse aspettano nel cestino."
+    },
+    "toast": {
+      "title": {
+        "one": "{{count}} elemento riordinato",
+        "many": "{{count}} elementi riordinati",
+        "other": "{{count}} elementi riordinati"
+      },
+      "copies": {
+        "one": "{{count}} copia nel cestino",
+        "many": "{{count}} copie nel cestino",
+        "other": "{{count}} copie nel cestino"
+      },
+      "tags": {
+        "one": "{{count}} tag unito",
+        "many": "{{count}} tag uniti",
+        "other": "{{count}} tag uniti"
+      },
+      "detail": "{{copies}}, {{tags}}",
+      "undo": "Annulla",
+      "failed": "Impossibile applicare le modifiche",
+      "failedDetail": "Non è stato modificato nulla. Riprova.",
+      "nothing": "Niente da applicare",
+      "nothingDetail": "Questi elementi sono cambiati nel frattempo."
+    },
+    "undone": "Riordino annullato",
+    "undoFailed": "Impossibile annullare il riordino",
+    "card": {
+      "title": "La tua libreria ha bisogno di una sistemata",
+      "duplicates": {
+        "one": "{{count}} duplicato",
+        "many": "{{count}} duplicati",
+        "other": "{{count}} duplicati"
+      },
+      "similarTags": {
+        "one": "{{count}} coppia di tag simili",
+        "many": "{{count}} coppie di tag simili",
+        "other": "{{count}} coppie di tag simili"
+      },
+      "text": "{{items}}. Nulla cambia finché non controlli.",
+      "review": "Rivedi",
+      "dismiss": "Nascondi per un mese",
+      "label": "Riordino della libreria"
+    }
   }
 }

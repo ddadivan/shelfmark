@@ -148,6 +148,7 @@ describe('LibrarySettingsPage', () => {
       'Viewing',
       'Saving',
       'Rules',
+      'Clean up',
       'Trash',
     ]);
     expect(root.textContent).toContain('Keep deleted items for');
@@ -249,6 +250,15 @@ describe('LibrarySettingsPage', () => {
     root.querySelector<HTMLAnchorElement>('a[href="/trash"]')?.click();
 
     expect(navigate).toHaveBeenCalledWith('/trash');
+  });
+
+  it('opens the clean-up page from its row (AI-5)', async () => {
+    const { root } = await setup();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    const link = root.querySelector<HTMLAnchorElement>('a[href="/settings/library/cleanup"]');
+    expect(link?.textContent).toContain('Review');
+    link?.click();
+    expect(navigate).toHaveBeenCalledWith('/settings/library/cleanup');
   });
 
   it('says Nothing in Trash when it is empty', async () => {
