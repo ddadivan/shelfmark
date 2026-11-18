@@ -106,7 +106,7 @@ describe('McpDispatcher', () => {
     expect(call).toHaveBeenCalledWith('echo', PRINCIPAL, {});
   });
 
-  it('answers -32602 for bad params, unknown tools and invalid arguments', async () => {
+  it('answers -32602 for bad params and unknown tools', async () => {
     for (const params of [{}, { name: 3 }, { name: 'echo', arguments: [1] }]) {
       expect(await ok.dispatch(request('tools/call', params), PRINCIPAL)).toMatchObject({
         error: { code: -32602, message: 'Invalid params' },
@@ -117,13 +117,20 @@ describe('McpDispatcher', () => {
       await unknown.dispatch(request('tools/call', { name: 'delete_link' }), PRINCIPAL),
     ).toMatchObject({ error: { code: -32602, message: 'Unknown tool' } });
     expect(logs.at(-1)).toMatch(/^tools\/call unknown-tool error -32602/);
+  });
 
+  it('returns invalid arguments of a known tool as a result with isError', async () => {
     const invalid = dispatcher(() =>
       Promise.resolve({ kind: MCP_TOOL_CALL_KIND.Invalid, message: 'id must be a UUID' }),
     );
     expect(
       await invalid.dispatch(request('tools/call', { name: 'echo', arguments: {} }), PRINCIPAL),
-    ).toMatchObject({ error: { code: -32602, message: 'id must be a UUID' } });
+    ).toEqual({
+      jsonrpc: '2.0',
+      id: 7,
+      result: { content: [{ type: 'text', text: 'id must be a UUID' }], isError: true },
+    });
+    expect(logs.at(-1)).toMatch(/^tools\/call echo ok \d+ms$/);
   });
 
   it('returns tool errors as results with isError', async () => {

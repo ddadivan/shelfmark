@@ -19,7 +19,8 @@ const TEXT_CONTENT = 'text';
 /**
  * Answers one JSON-RPC request of the MCP server for the principal of the token: `initialize`
  * (version negotiation, capability `tools` only), `ping`, `tools/list`, `tools/call`; anything else
- * is `-32601`. A tool failure the assistant should see is a result with `isError: true`; an
+ * is `-32601`. A tool failure the assistant should see (invalid arguments of a known tool, a missing
+ * link) is a result with `isError: true`; an unknown tool or a malformed `tools/call` is `-32602`; an
  * unexpected error is `-32603` without details. Logs the method, tool name, outcome, duration and
  * item count only: never the token, the arguments or the results.
  */
@@ -96,20 +97,17 @@ export class McpDispatcher {
         response: jsonRpcError(request.id, JSON_RPC_ERROR_CODE.InvalidParams, 'Invalid params'),
       };
     }
-    const known = this.tools.definitions().some((definition) => definition.name === name);
-    const tool = known ? name : UNKNOWN_TOOL;
     const call = await this.tools.call(name, principal, args);
+    // The name is client input: logged only once the registry resolved it to a tool.
+    const tool = call.kind === MCP_TOOL_CALL_KIND.Unknown ? UNKNOWN_TOOL : name;
     switch (call.kind) {
       case MCP_TOOL_CALL_KIND.Unknown:
         return {
           tool,
           response: jsonRpcError(request.id, JSON_RPC_ERROR_CODE.InvalidParams, 'Unknown tool'),
         };
+      // Invalid arguments of a known tool are a tool result the model can correct (SEP-1303).
       case MCP_TOOL_CALL_KIND.Invalid:
-        return {
-          tool,
-          response: jsonRpcError(request.id, JSON_RPC_ERROR_CODE.InvalidParams, call.message),
-        };
       case MCP_TOOL_CALL_KIND.Error:
         return {
           tool,

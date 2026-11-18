@@ -52,6 +52,13 @@ describe('parseMessage', () => {
       kind: JSON_RPC_MESSAGE_KIND.Notification,
       method: 'notifications/initialized',
     });
+    // A notification stays one (202, no body) even with params that are not an object.
+    for (const params of [[1], 'x', 3, null]) {
+      expect(parse({ jsonrpc: '2.0', method: 'notifications/x', params })).toEqual({
+        kind: JSON_RPC_MESSAGE_KIND.Notification,
+        method: 'notifications/x',
+      });
+    }
   });
 
   it('accepts client responses', () => {

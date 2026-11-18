@@ -9,7 +9,8 @@ describe('MCP protocol version', () => {
 
   it("answers the client's version when supported, else the newest", () => {
     expect(negotiateProtocolVersion('2025-06-18')).toBe('2025-06-18');
-    expect(negotiateProtocolVersion('2025-03-26')).toBe('2025-03-26');
+    // 2025-03-26 requires batches, which are refused: not offered.
+    expect(negotiateProtocolVersion('2025-03-26')).toBe('2025-11-25');
     expect(negotiateProtocolVersion('2024-11-05')).toBe('2025-11-25');
     expect(negotiateProtocolVersion('2099-01-01')).toBe('2025-11-25');
     expect(negotiateProtocolVersion(undefined)).toBe('2025-11-25');
@@ -20,6 +21,7 @@ describe('MCP protocol version', () => {
     expect(isSupportedProtocolHeader(undefined)).toBe(true);
     expect(isSupportedProtocolHeader('2025-11-25')).toBe(true);
     expect(isSupportedProtocolHeader('2024-11-05')).toBe(false);
+    expect(isSupportedProtocolHeader('2025-03-26')).toBe(false);
     expect(isSupportedProtocolHeader('')).toBe(false);
     expect(isSupportedProtocolHeader(['2025-11-25'])).toBe(false);
   });

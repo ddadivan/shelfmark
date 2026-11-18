@@ -198,7 +198,7 @@ describe('MCP tools', () => {
     expect((await items(withNotes, { query: 'zanzibar' })).map((item) => item['id'])).toEqual([id]);
   });
 
-  it('refuses invalid arguments with -32602', async () => {
+  it('answers invalid arguments of a known tool with an isError result', async () => {
     for (const [name, args] of [
       ['search_links', {}],
       ['search_links', { query: '' }],
@@ -217,10 +217,23 @@ describe('MCP tools', () => {
       ['get_link', { id: randomUuidV7(), extra: 1 }],
       ['list_folders', { any: 1 }],
       ['list_tags', { any: 1 }],
-      ['delete_link', { id: randomUuidV7() }],
     ] as const) {
       const body = await rpc(mine, 'tools/call', { name, arguments: args });
-      expect(body.error?.code, `${name} ${JSON.stringify(args)}`).toBe(-32602);
+      const result = body.result as unknown as ToolResult | undefined;
+      expect(result?.isError, `${name} ${JSON.stringify(args)}`).toBe(true);
+      expect(result?.content).toEqual([{ type: 'text', text: expect.any(String) }]);
+      expect(result?.structuredContent).toBeUndefined();
+    }
+  });
+
+  it('refuses an unknown tool and a malformed call with -32602', async () => {
+    for (const params of [
+      { name: 'delete_link', arguments: { id: randomUuidV7() } },
+      { arguments: {} },
+      { name: 'search_links', arguments: [1] },
+    ]) {
+      const body = await rpc(mine, 'tools/call', params);
+      expect(body.error?.code, JSON.stringify(params)).toBe(-32602);
     }
   });
 
