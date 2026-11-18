@@ -235,7 +235,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     poster: true,
     run: async ({ page, director }) => {
       const dialog = addDialog(page);
-      await director.press(dialog.getByRole('button', { name: 'Save link' }));
+      await director.press(dialog.getByRole('button', { name: 'Create link' }));
       await expect(dialog).toBeHidden();
       await expect(cards(page).filter({ hasText: LINK_TITLE }).first()).toBeVisible();
       await director.parkPointer();

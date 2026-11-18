@@ -4,4 +4,6 @@ export const BUTTON_VARIANT = {
   Secondary: 'secondary',
   Ghost: 'ghost',
   Danger: 'danger',
+  /** The one AI action ("Fill in with AI"): `ai-fill`, no edge, a 20px spark in `ai`. */
+  Ai: 'ai',
 } as const;

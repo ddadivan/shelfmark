@@ -110,6 +110,6 @@ export function cardOf(page: Page, title: string): Locator {
 
 /** Saves the open Add link dialog (the sheet on a phone has no Cancel, the button is the same). */
 export async function saveLink(dialog: Locator): Promise<void> {
-  await dialog.getByRole('button', { name: /^Save( link| anyway)$/ }).click();
+  await dialog.getByRole('button', { name: /^Create( link| anyway)$/ }).click();
   await expect(dialog).toBeHidden();
 }

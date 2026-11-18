@@ -12,6 +12,7 @@ describe('phoneTabForUrl', () => {
     ['/recent', PHONE_TAB.Library],
     ['/tags', PHONE_TAB.Tags],
     ['/tags?x=1', PHONE_TAB.Tags],
+    ['/ask', PHONE_TAB.Ask],
     ['/settings', PHONE_TAB.You],
     ['/settings#appearance', PHONE_TAB.You],
   ])('%s is under %s', (url, tab) => {

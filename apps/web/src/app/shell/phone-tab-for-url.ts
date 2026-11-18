@@ -3,7 +3,7 @@ import { PHONE_TAB } from './models/phone-tab.const';
 import type { PhoneTab } from './models/phone-tab.type';
 
 /**
- * The tab a URL belongs to: Tags and You have their own page, every other signed-in page (the
+ * The tab a URL belongs to: Tags, Ask and You have their own page, every other signed-in page (the
  * feed, a folder, Recently opened, the Library page) is under Library. Search opens over the page
  * and is never the current tab.
  */
@@ -12,6 +12,8 @@ export function phoneTabForUrl(url: string): PhoneTab {
   switch (first) {
     case APP_PATH.Tags:
       return PHONE_TAB.Tags;
+    case APP_PATH.Ask:
+      return PHONE_TAB.Ask;
     case APP_PATH.Settings:
       return PHONE_TAB.You;
     default:

@@ -46,4 +46,9 @@
   </div>
 
   <app-sidebar foldersOnly />
+
+  <!-- While Ask takes the Tags place in the tab bar, the tags live here (#499). -->
+  @if (askTab()) {
+  <app-sidebar-tags class="phone-library__tags" />
+  }
 </section>

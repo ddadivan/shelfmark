@@ -30,10 +30,11 @@ Motion defines Shelfmark's few animations. The one signature moment is saving a 
 | Dialog | scrim fades, panel fade + scale 0.96→1; out: `sm-pop-out` | 200 / 120 ms |
 | Bottom sheet (phone) | slides up from below the screen; drag follows the finger, release past 30% or a fast flick closes | 320 ms `ease-drawer` / 200 ms `ease-in` |
 | Toast | slides up 12 px + fade; out: down 8 px + fade | 320 / 120 ms |
-| **Save link** | new card drops in (`sm-card--landed`, 320 ms `ease-spring`), the rest shift one slot (FLIP, 320 ms `ease-in-out`), sage ring fades over 1.8 s. In list view the new row slides down and holds `accent-bg` for 1.5 s | — |
+| **Create link** | new card drops in (`sm-card--landed`, 320 ms `ease-spring`), the rest shift one slot (FLIP, 320 ms `ease-in-out`), sage ring fades over 1.8 s. In list view the new row slides down and holds `accent-bg` for 1.5 s | — |
 | Favorite | star scales 1→1.25→1, turns sage; un-favorite has no animation | 200 ms `ease-spring` |
 | Accept a suggestion (AI) | the dashed chip turns solid sage and pulses 1→1.06→1, then moves into the field as a tag; × fades the chip out | 200 ms `ease-spring` / 120 ms |
 | Ask answer streams (AI) | text appends in place with a 2px `ai` caret blinking (1 s steps); sources fade in when complete; reduced motion: no blink, text in chunks | — |
+| «Fill in with AI» appears (AI) | when suggestions become ready the button fades in and grows 0.96→1, once per appearance (`animate.enter`); it leaves with a fade (`animate.leave`); no loop, shimmer or pulse; reduced motion: fade only | 200 ms `ease-out` / 120 ms `ease-in` |
 | AI content arrives | skeleton chips or summary lines (loader), then the content fades in (`sm-reveal`); no typing effect for summaries | 200 ms |
 | Delete | card fades and collapses, neighbours close the gap (FLIP) | 200 ms |
 | Tree expand | chevron rotates, children open by height | 120 / 200 ms `ease-in-out` |
@@ -51,4 +52,4 @@ Feed shifts and deletes use FLIP: measure positions before and after, then anima
 
 ## Button loading
 
-When `ui-button` enters `loading`, it locks its current width first, so “Save link” → “Saving…” never makes the button jump. The width is released after the spinner leaves.
+When `ui-button` enters `loading`, it locks its current width first, so “Create link” → “Creating…” never makes the button jump. The width is released after the spinner leaves.

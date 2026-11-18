@@ -26,6 +26,7 @@ import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import type { IconSize } from '../icon/models/icon-size.type';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { BUTTON_FAB_ICON_SIZE } from './models/button-fab-icon-size.const';
 import { BUTTON_ICON_SIZE } from './models/button-icon-size.const';
 import { BUTTON_HIT_AREA } from './models/button-hit-area.const';
@@ -154,9 +155,17 @@ export class ButtonComponent implements UiFocusTarget {
     return classes.join(' ');
   });
 
-  protected readonly iconSizePx = computed(
-    () => this.iconSize() ?? (this.fab() ? BUTTON_FAB_ICON_SIZE : BUTTON_ICON_SIZE[this.size()]),
-  );
+  /** The `ai` variant draws its spark at 20px whatever the size (BRAND › AI). */
+  protected readonly iconSizePx = computed(() => {
+    const own = this.iconSize();
+    if (own !== undefined) {
+      return own;
+    }
+    if (this.fab()) {
+      return BUTTON_FAB_ICON_SIZE;
+    }
+    return this.variant() === BUTTON_VARIANT.Ai ? ICON_SIZE.Md : BUTTON_ICON_SIZE[this.size()];
+  });
   /**
    * An icon-only button names itself with a tooltip: the text is the accessible name, so the two
    * never drift. A `uiTooltip` set on `<ui-button>` wins (no second tooltip).

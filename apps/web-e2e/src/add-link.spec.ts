@@ -37,7 +37,7 @@ test.describe('add link dialog (mock API)', () => {
       await expect(dialog.getByText('Filled in from the page')).toBeVisible();
 
       await dialog.getByLabel('Note').fill('Read on the weekend');
-      await dialog.getByRole('button', { name: 'Save link' }).click();
+      await dialog.getByRole('button', { name: 'Create link' }).click();
 
       await expect(dialog).toBeHidden();
       await expect(page.locator('#outcome')).toHaveText(
@@ -52,7 +52,7 @@ test.describe('add link dialog (mock API)', () => {
     await page.setViewportSize({ width: 360, height: 780 });
     const dialog = await open(page);
     await dialog.getByLabel('Link', { exact: true }).fill(duplicateUrl);
-    await expect(dialog.getByRole('button', { name: 'Save anyway' })).toBeInViewport();
+    await expect(dialog.getByRole('button', { name: 'Create anyway' })).toBeInViewport();
 
     const overflow = await page.evaluate<number>(
       '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
@@ -79,7 +79,7 @@ test.describe('a link typed without https:// (#405, mock API)', () => {
       await field.blur();
       await expect(field).toHaveValue('https://example.com');
 
-      await dialog.getByRole('button', { name: 'Save link' }).click();
+      await dialog.getByRole('button', { name: 'Create link' }).click();
       await expect(dialog).toBeHidden();
       const card = page.locator('ui-card').first();
       await expect(card).toContainText('Page on example.com');

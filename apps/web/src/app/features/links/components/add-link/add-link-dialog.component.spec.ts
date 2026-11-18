@@ -303,7 +303,7 @@ describe('AddLinkDialogComponent', () => {
     const api = fakeApi(() => of(PLAIN));
     await setup(api);
 
-    button('Save link').click();
+    button('Create link').click();
     await until(() => {
       expect(dialog().textContent).toContain('Enter a link');
     });
@@ -363,8 +363,8 @@ describe('AddLinkDialogComponent', () => {
         'You already saved this link in Angular',
       );
     });
-    expect(() => button('Save link')).toThrow();
-    button('Save anyway');
+    expect(() => button('Create link')).toThrow();
+    button('Create anyway');
 
     button('Open saved').click();
     const outcome = await result;
@@ -401,9 +401,9 @@ describe('AddLinkDialogComponent', () => {
 
     await type('Link', MOCK_LINK_PREVIEW_DUPLICATE.preview.url);
     await until(() => {
-      expect(() => button('Save anyway')).not.toThrow();
+      expect(() => button('Create anyway')).not.toThrow();
     });
-    button('Save anyway').click();
+    button('Create anyway').click();
 
     const outcome = await result;
     expect(outcome?.action).toBe(ADD_LINK_ACTION.Saved);
@@ -421,7 +421,7 @@ describe('AddLinkDialogComponent', () => {
     });
     expect(dialog().textContent).toContain("Couldn't load a preview");
 
-    button('Save link').click();
+    button('Create link').click();
     const outcome = await result;
     expect(api.create).toHaveBeenCalledWith({
       url: 'https://intranet.example/doc/42',
@@ -448,7 +448,7 @@ describe('AddLinkDialogComponent', () => {
       expect(input('Title').value).toBe('A fine post');
     });
 
-    button('Save link').click();
+    button('Create link').click();
     const outcome: AddLinkResult | undefined = await result;
     expect(api.create).toHaveBeenCalledWith({
       url: 'https://example.org/post',
@@ -493,7 +493,7 @@ describe('AddLinkDialogComponent', () => {
     expect(trigger.querySelector('ui-badge')?.textContent?.trim()).toBe('New');
     expect(create).not.toHaveBeenCalled();
 
-    button('Save link').click();
+    button('Create link').click();
     const outcome = await result;
     expect(create).toHaveBeenCalledWith({ name: 'Weekend reads' });
     const folderId = api.create.mock.calls[0][0].folderId;
@@ -505,7 +505,7 @@ describe('AddLinkDialogComponent', () => {
   it('saves with Ctrl + Enter from a field and shows the shortcut in the footer', async () => {
     const api = fakeApi(() => of(PLAIN));
     const { result } = await setup(api);
-    expect(dialog().querySelector('.add-link__shortcut')?.textContent).toContain('to save');
+    expect(dialog().querySelector('.add-link__shortcut')?.textContent).toContain('to create');
 
     await type('Link', 'https://example.org/post');
     await until(() => {
@@ -542,7 +542,7 @@ describe('AddLinkDialogComponent', () => {
         expect(dialog().querySelector('ui-tag-input')?.textContent).toContain('winter-sale');
         expect(input('Title').value).toBe('A fine post');
       });
-      button('Save link').click();
+      button('Create link').click();
       await result;
 
       expect(api.create).toHaveBeenCalledWith(expect.objectContaining({ tags: ['winter-sale'] }));
@@ -595,11 +595,11 @@ describe('AddLinkDialogComponent', () => {
     await setup(api);
 
     await type('Link', 'https://example.org/post');
-    button('Save link').click();
+    button('Create link').click();
     await until(() => {
       expect(dialog().textContent).toContain("Couldn't save the link");
     });
-    expect(button('Save link').disabled).toBe(false);
+    expect(button('Create link').disabled).toBe(false);
   });
 
   describe('idempotency key', () => {
@@ -608,9 +608,9 @@ describe('AddLinkDialogComponent', () => {
     }
 
     async function save(): Promise<void> {
-      button('Save link').click();
+      button('Create link').click();
       await until(() => {
-        expect(button('Save link').disabled).toBe(false);
+        expect(button('Create link').disabled).toBe(false);
       });
     }
 
@@ -704,7 +704,7 @@ describe('AddLinkDialogComponent', () => {
       await until(() => {
         expect(input('Title').value).toBe('A fine post');
       });
-      button('Save link').click();
+      button('Create link').click();
       await result;
 
       const next = TestBed.inject(AddLinkDialogService).open();
@@ -715,7 +715,7 @@ describe('AddLinkDialogComponent', () => {
       await until(() => {
         expect(input('Title').value).toBe('A fine post');
       });
-      button('Save link').click();
+      button('Create link').click();
       await next;
 
       expect(api.create).toHaveBeenCalledTimes(2);
@@ -769,7 +769,7 @@ describe('AddLinkDialogComponent', () => {
       await until(() => {
         expect(dialog().textContent).toContain('No preview is available');
       });
-      button('Save anyway').click();
+      button('Create anyway').click();
       await result;
 
       expect(api.create).toHaveBeenCalledWith({
@@ -795,7 +795,7 @@ describe('AddLinkDialogComponent', () => {
       await until(() => {
         expect(input('Title').value).toBe('A fine post');
       });
-      button('Save link').click();
+      button('Create link').click();
       await result;
 
       expect(api.create).toHaveBeenCalledWith(
@@ -825,7 +825,7 @@ describe('AddLinkDialogComponent', () => {
       await setup(api);
 
       await type('Link', 'https://example.org/post');
-      button('Save link').click();
+      button('Create link').click();
 
       await until(() => {
         expect(dialog().textContent).toContain(copy);
@@ -896,7 +896,7 @@ describe('AddLinkDialogComponent', () => {
     const api = fakeApi(() => of(PLAIN));
     await setup(api);
 
-    button('Save link').click();
+    button('Create link').click();
     await until(() => {
       expect(document.activeElement).toBe(input('Link'));
     });
@@ -926,7 +926,7 @@ describe('AddLinkDialogComponent', () => {
     const { result } = await setup(api);
 
     await type('Link', 'https://example.org/post');
-    button('Save link').click();
+    button('Create link').click();
     await until(() => {
       expect(button('Cancel').disabled).toBe(true);
     });
@@ -1141,7 +1141,7 @@ describe('AddLinkDialogComponent', () => {
       await until(() => {
         expect(input('Title').value).toBe('A fine post');
       });
-      button('Save link').click();
+      button('Create link').click();
       await result;
       expect(api.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -1166,7 +1166,7 @@ describe('AddLinkDialogComponent', () => {
       await until(() => {
         expect(input('Title').value).toBe('A fine post');
       });
-      button('Save link').click();
+      button('Create link').click();
       await result;
       const request = api.create.mock.calls[0]?.[0];
       expect(request?.applyRules).toBe(false);
@@ -1190,7 +1190,7 @@ describe('AddLinkDialogComponent', () => {
       await until(() => {
         expect(input('Title').value).toBe('A fine post');
       });
-      button('Save link').click();
+      button('Create link').click();
       await result;
       expect(api.create).toHaveBeenCalledWith(
         expect.objectContaining({ folderId: MOCK_ID.FolderReading, tags: ['docs'] }),
@@ -1207,7 +1207,7 @@ describe('AddLinkDialogComponent', () => {
       await until(() => {
         expect(input('Title').value).toBe('A fine post');
       });
-      button('Save link').click();
+      button('Create link').click();
       await result;
       expect(api.create).toHaveBeenCalledWith(
         expect.objectContaining({ folderId: MOCK_ID.FolderAngular }),
@@ -1226,7 +1226,7 @@ describe('AddLinkDialogComponent', () => {
       await until(() => {
         expect(input('Title').value).toBe('A fine post');
       });
-      button('Save link').click();
+      button('Create link').click();
       await result;
       expect(api.create).toHaveBeenCalledWith(
         expect.objectContaining({ folderId: MOCK_ID.FolderReading }),

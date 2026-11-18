@@ -14,9 +14,13 @@ import { TAGS_API } from '../../../links/models/tags-api.const';
 import { MockTrashApi } from '../../../trash/mock/mock-trash.api';
 import { TRASH_API } from '../../../trash/models/trash-api.const';
 import { RecentSheetComponent } from '../../../links/components/recent-sheet/recent-sheet.component';
+import { aiSettingsResponse, fakeAiApi, type FakeAiApi } from '../../../../../testing/fake-ai-api';
+import { AI_API } from '../../../ai/models/ai-api.const';
+import { AI_SETTINGS_DEFAULT } from '../../../ai/models/ai-settings-default.const';
+import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
 import PhoneLibraryPage from './phone-library.page';
 
-async function setup(phone = true) {
+async function setup(phone = true, ai?: FakeAiApi) {
   const open = vi.fn();
   TestBed.configureTestingModule({
     providers: [
@@ -32,9 +36,13 @@ async function setup(phone = true) {
       { provide: TRASH_API, useClass: MockTrashApi },
       { provide: DialogService, useValue: { open } },
       { provide: ViewportService, useValue: { phone: signal(phone), compact: signal(phone) } },
+      ...(ai ? [{ provide: AI_API, useValue: ai }] : []),
     ],
   });
   await loadEnglish();
+  if (ai) {
+    await TestBed.inject(AiSettingsStore).load();
+  }
   const fixture = TestBed.createComponent(PhoneLibraryPage);
   await vi.waitFor(() => {
     TestBed.tick();
@@ -66,6 +74,20 @@ describe('PhoneLibraryPage', () => {
     expect(element.querySelector('nav[aria-label="Folders"] [role="tree"]')).not.toBeNull();
     // Folders only: no fixed rows and no tags inside the card.
     expect(element.querySelector('app-sidebar-tags')).toBeNull();
+  });
+
+  it('shows the tags under the folders while Ask has the Tags tab (#499)', async () => {
+    const ai = fakeAiApi(
+      aiSettingsResponse({ settings: { ...AI_SETTINGS_DEFAULT, enabled: true, ask: true } }),
+    );
+    const { element } = await setup(true, ai);
+    const tags = element.querySelector('app-sidebar-tags');
+    expect(tags?.querySelector('h2')?.textContent?.trim()).toBe('Tags');
+    // After the folder tree.
+    const tree = element.querySelector('app-sidebar');
+    expect(
+      tree && tags ? tree.compareDocumentPosition(tags) & Node.DOCUMENT_POSITION_FOLLOWING : 0,
+    ).toBeTruthy();
   });
 
   it('opens Recently opened in a sheet and does not navigate', async () => {

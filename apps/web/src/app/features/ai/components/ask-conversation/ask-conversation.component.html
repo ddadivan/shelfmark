@@ -1,6 +1,10 @@
 @if (store.entries().length === 0) {
   <div class="ask-conversation__empty">
-    <h3 class="ask-conversation__title">{{ 'ai.ask.emptyTitle' | transloco }}</h3>
+    @if (onPage()) {
+      <h2 class="ask-conversation__title">{{ 'ai.ask.emptyTitle' | transloco }}</h2>
+    } @else {
+      <h3 class="ask-conversation__title">{{ 'ai.ask.emptyTitle' | transloco }}</h3>
+    }
     <p class="ask-conversation__lead">{{ 'ai.ask.lead' | transloco }}</p>
     <div class="ask-conversation__starters">
       @for (starter of starters(); track starter.key) {

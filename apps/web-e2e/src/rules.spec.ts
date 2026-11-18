@@ -22,7 +22,7 @@ async function saveLink(page: Page, url: string): Promise<void> {
   const dialog = await openAddLink(page);
   await dialog.getByLabel('Link', { exact: true }).fill(url);
   await expect(dialog.getByLabel('Title', { exact: true })).not.toHaveValue('');
-  await dialog.getByRole('button', { name: 'Save link' }).click();
+  await dialog.getByRole('button', { name: 'Create link' }).click();
   await expect(dialog).toBeHidden();
 }
 
@@ -63,7 +63,7 @@ test.describe('domain rules (mock API)', () => {
       await dialog.getByLabel('Link', { exact: true }).fill('https://m.youtube.com/watch?v=second');
       await expect(dialog.getByText(`Rule: youtube.com → ${READING}, #video`)).toBeVisible();
       await expect(dialog.getByLabel('Title', { exact: true })).not.toHaveValue('');
-      await dialog.getByRole('button', { name: 'Save link' }).click();
+      await dialog.getByRole('button', { name: 'Create link' }).click();
       await expect(dialog).toBeHidden();
 
       await expect(
@@ -87,7 +87,7 @@ test.describe('domain rules (mock API)', () => {
       await dialog.getByLabel('Link', { exact: true }).fill('https://youtube.com/watch?v=third');
       await expect(dialog.getByText('Rule: youtube.com → #video')).toBeVisible();
       await expect(dialog.getByLabel('Title', { exact: true })).not.toHaveValue('');
-      await dialog.getByRole('button', { name: 'Save link' }).click();
+      await dialog.getByRole('button', { name: 'Create link' }).click();
       await expect(dialog).toBeHidden();
 
       await expect(

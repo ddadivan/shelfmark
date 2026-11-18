@@ -236,7 +236,7 @@
         "cmd": "⌘",
         "ctrl": "Ctrl",
         "enter": "Invio",
-        "save": "per salvare"
+        "create": "per creare"
       },
       "preview": {
         "loading": "Caricamento anteprima",
@@ -290,7 +290,9 @@
       "actions": {
         "cancel": "Annulla",
         "openSaved": "Apri il salvato",
-        "save": "Salva link",
+        "create": "Crea link",
+        "createAnyway": "Crea comunque",
+        "creating": "Creazione…",
         "saveAnyway": "Salva comunque",
         "saving": "Salvataggio…"
       },
@@ -792,6 +794,7 @@
       "library": "Link",
       "search": "Cerca",
       "tags": "Tag",
+      "ask": "Chiedi",
       "you": "Tu"
     },
     "sidebar": {
@@ -1713,6 +1716,7 @@
       "undo": "Annulla l’ultima azione",
       "toastAction": "Vai al pulsante di una notifica",
       "save": "Salva il link",
+      "aiFill": "Compila con l’IA nella finestra del link",
       "results": "Scorri i risultati della ricerca",
       "openResult": "Apri il risultato",
       "openBackground": "Aprilo in una scheda in background",
@@ -1871,11 +1875,6 @@
       "background": "apri in background"
     },
     "askRow": "Chiedi ai tuoi link: «{{query}}»",
-    "mode": {
-      "label": "Cerca o chiedi",
-      "search": "Cerca",
-      "ask": "Chiedi"
-    },
     "askRowCompact": "Chiedi ai tuoi link su questo"
   },
   "share": {
@@ -3194,6 +3193,16 @@
       "tagAdded": "Tag {{name}} aggiunto",
       "folderChosen": "Cartella {{name}} scelta"
     },
+    "fill": {
+      "button": "Compila con l’IA",
+      "done": "Compilato con i suggerimenti dell’IA",
+      "keys": {
+        "option": "⌥",
+        "alt": "Alt",
+        "shiftMac": "⇧",
+        "shift": "Shift"
+      }
+    },
     "line": {
       "limit": "Suggerimenti in pausa fino al {{date}}. Hai usato i {{limit}} link di questo mese.",
       "unavailable": "I suggerimenti non sono disponibili al momento. Il link viene salvato come sempre.",
@@ -3321,6 +3330,7 @@
       "open": "Chiedi ai tuoi link",
       "close": "Chiudi Chiedi ai tuoi link",
       "newQuestion": "Nuova domanda",
+      "back": "Indietro",
       "emptyTitle": "Cosa vuoi sapere?",
       "lead": "Chiedi con parole tue. La risposta arriva dai link che hai salvato, con ogni fonte indicata.",
       "starters": {

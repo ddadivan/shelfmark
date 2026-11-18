@@ -254,6 +254,7 @@
         <ui-button
           slot="footer"
           class="add-link__delete"
+          [class.add-link__delete--with-fill]="aiFill.available()"
           [variant]="BUTTON_VARIANT.Ghost"
           iconLeft="trash"
           [disabled]="saving()"
@@ -262,11 +263,16 @@
         >
       }
 
-      @if (!editing && !phone()) {
+      <!-- Fill in with AI (F1c): first in the footer (after Delete), Cancel and the primary action
+           stay on the right; nothing while hidden. -->
+      <app-add-link-ai-fill slot="footer" />
+
+      <!-- The save hint makes room for "Fill in with AI" while it shows (the row stays one line). -->
+      @if (!editing && !phone() && !aiFill.available()) {
         <span slot="footer" class="add-link__shortcut">
           <kbd>{{ (mac ? 'links.add.shortcut.cmd' : 'links.add.shortcut.ctrl') | transloco }}</kbd>
           <kbd>{{ 'links.add.shortcut.enter' | transloco }}</kbd>
-          {{ 'links.add.shortcut.save' | transloco }}
+          {{ 'links.add.shortcut.create' | transloco }}
         </span>
       }
       @if (editing || !phone()) {
@@ -290,13 +296,15 @@
         [variant]="BUTTON_VARIANT.Primary"
         [loading]="saving()"
         >{{
-          (saving()
-            ? 'links.add.actions.saving'
-            : editing
-              ? 'links.edit.actions.save'
+          (editing
+            ? saving()
+              ? 'links.add.actions.saving'
+              : 'links.edit.actions.save'
+            : saving()
+              ? 'links.add.actions.creating'
               : duplicate()
-                ? 'links.add.actions.saveAnyway'
-                : 'links.add.actions.save'
+                ? 'links.add.actions.createAnyway'
+                : 'links.add.actions.create'
           ) | transloco
         }}</ui-button
       >

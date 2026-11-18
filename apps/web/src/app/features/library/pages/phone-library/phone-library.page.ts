@@ -21,16 +21,24 @@ import { RemindersStore } from '../../../../stores/reminders.store';
 import { groupByDay } from '../../../links/utils/history-days';
 import { HISTORY_DAY_KIND } from '../../../links/models/history-day-kind.const';
 import { RecentSheetComponent } from '../../../links/components/recent-sheet/recent-sheet.component';
+import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
+import { SidebarTagsComponent } from '../../../tags/components/sidebar-tags/sidebar-tags.component';
 import { LibraryTileComponent } from './library-tile.component';
 
 /**
  * The Library tab of the phone (MobileMenu): tiles for All links, Unsorted, Favorites and
  * Recently opened (a bottom sheet with the same list as `/recent`), and Trash (a page of its own), then the folder tree with its
- * menus. From the tablet width the sidebar does this job, so the page leaves for All links.
+ * menus, and the tags while Ask has their tab (#499). From the tablet width the sidebar does this job, so the page leaves for All links.
  */
 @Component({
   selector: 'app-phone-library-page',
-  imports: [LibraryTileComponent, SidebarComponent, SidebarPinnedComponent, TranslocoPipe],
+  imports: [
+    LibraryTileComponent,
+    SidebarComponent,
+    SidebarPinnedComponent,
+    SidebarTagsComponent,
+    TranslocoPipe,
+  ],
   templateUrl: './phone-library.page.html',
   styleUrl: './phone-library.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,6 +54,8 @@ export default class PhoneLibraryPage {
   private readonly viewport = inject(ViewportService);
 
   protected readonly APP_PATH = APP_PATH;
+  /** Ask has the Tags place in the tab bar: the tags section shows under the folders. */
+  protected readonly askTab = inject(AiSettingsStore).askOn;
   protected readonly counts = computed(() =>
     this.folders.loaded() ? this.folders.counts() : null,
   );

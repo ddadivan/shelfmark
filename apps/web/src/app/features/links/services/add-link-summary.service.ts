@@ -52,6 +52,33 @@ export class AddLinkSummaryService {
     () => this.settings.summariesOn() && this.source() === SUMMARY_SOURCE.Ai,
   );
 
+  /**
+   * Fill in with AI (F1c): AI's summary for an empty field, the one that came in since the
+   * dialog opened or the saved one the user cleared; never over text in the field.
+   */
+  readonly fillSummary = computed<string | null>(() => {
+    if (!this.shown() || this.formState.model().summary.trim() !== '') {
+      return null;
+    }
+    const state = this.linkState.state();
+    if (state?.summary && state.summarySource === SUMMARY_SOURCE.Ai) {
+      return state.summary;
+    }
+    const saved = this.saved();
+    return saved !== null && this.savedSource() === SUMMARY_SOURCE.Ai ? saved : null;
+  });
+
+  /** Puts `fillSummary` into the field; it is the saved AI text, so the save sends nothing for it. */
+  fill(): void {
+    const text = this.fillSummary();
+    if (text === null) {
+      return;
+    }
+    this.saved.set(text);
+    this.savedSource.set(SUMMARY_SOURCE.Ai);
+    this.formState.model.update((model) => ({ ...model, summary: text }));
+  }
+
   /** A new AI summary in the field; a refusal or failure keeps the text and says so. */
   async rewrite(): Promise<void> {
     const link = this.original;

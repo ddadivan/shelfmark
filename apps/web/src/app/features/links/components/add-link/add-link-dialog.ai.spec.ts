@@ -219,7 +219,7 @@ describe('AddLinkDialogComponent with AI (#390)', () => {
       await loader.getAllHarnesses(UiSuggestionRowHarness.with({ ariaLabel: 'Suggested folder' })),
     ).toEqual([]);
 
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Save link' }))).click();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Create link' }))).click();
     await result;
     const request = links.create.mock.calls[0]?.[0];
     expect(request?.aiDraftId).toBe(ai.createDraft.mock.calls[0]?.[0].draftId);
