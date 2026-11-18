@@ -1,18 +1,34 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiConflictResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { AuthUser } from '@shelfmark/contracts';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
+import { CleanupApplyResponseDto } from './dto/cleanup-apply-response.dto';
+import { CleanupApplyDto } from './dto/cleanup-apply.dto';
 import { CleanupReportDto } from './dto/cleanup-report.dto';
+import { CleanupUndoResponseDto } from './dto/cleanup-undo-response.dto';
+import { CleanupUndoDto } from './dto/cleanup-undo.dto';
 import { CleanupRunDto } from './dto/cleanup-run.dto';
+import { CleanupApplyService } from './cleanup-apply.service';
+import { CleanupUndoService } from './cleanup-undo.service';
 import { CleanupService } from './cleanup.service';
 
 /** Library clean-up (F5, `CLEANUP_ENDPOINT`). Thin: the services own the rules. */
 @ApiTags('cleanup')
 @Controller('cleanup')
 export class CleanupController {
-  constructor(private readonly cleanup: CleanupService) {}
+  constructor(
+    private readonly cleanup: CleanupService,
+    private readonly applyService: CleanupApplyService,
+    private readonly undoService: CleanupUndoService,
+  ) {}
 
   @Get()
   @ApiOkResponse({ type: CleanupReportDto })
@@ -37,5 +53,38 @@ export class CleanupController {
   })
   run(@CurrentUser() user: AuthUser, @Body() body: CleanupRunDto): Promise<CleanupReportDto> {
     return this.cleanup.run(user, body.includeAi);
+  }
+
+  @Post('apply')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.CleanupApply)
+  @ApiOkResponse({ type: CleanupApplyResponseDto })
+  @ApiBadRequestResponse({ description: 'Invalid body or nothing selected' })
+  @ApiOperation({
+    summary: 'Apply the selected rows in one step',
+    description:
+      'Only ids of the stored report and live rows of the user count; others are skipped. Copies go to Trash with one shared time, merges use the tag merge. Answers the Undo payload.',
+  })
+  apply(
+    @CurrentUser() user: AuthUser,
+    @Body() body: CleanupApplyDto,
+  ): Promise<CleanupApplyResponseDto> {
+    return this.applyService.apply(user.id, body);
+  }
+
+  @Post('undo')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.CleanupApply)
+  @ApiOkResponse({ type: CleanupUndoResponseDto })
+  @ApiOperation({
+    summary: 'Undo a clean-up run',
+    description:
+      'The undo payload of the apply answer, unchanged. Conditional on the current state; foreign ids change nothing. Works with AI off.',
+  })
+  undo(
+    @CurrentUser() user: AuthUser,
+    @Body() body: CleanupUndoDto,
+  ): Promise<CleanupUndoResponseDto> {
+    return this.undoService.undo(user.id, body);
   }
 }

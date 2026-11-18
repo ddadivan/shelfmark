@@ -15,6 +15,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { TAG_LOCK_PREFIX } from './models/tag-advisory-lock.const';
 import type { TagDbClient } from './models/tag-db-client.type';
 import type { TagWithCount } from './models/tag-with-count.interface';
+import type { TagMergeResult } from './models/tag-merge-result.interface';
+import type { Prisma } from '../generated/prisma/client';
 
 function isUniqueViolation(error: unknown): boolean {
   return hasPrismaCode(error, PRISMA_ERROR_CODE.UniqueViolation);
@@ -110,7 +112,10 @@ export class TagsService {
   /** Moves the links of `sourceId` onto `targetId` and deletes the source, in one transaction. */
   async merge(userId: string, sourceId: string, targetId: string): Promise<TagResponse> {
     try {
-      return await this.mergeInTransaction(userId, sourceId, targetId);
+      const result = await this.prisma.$transaction((tx) =>
+        this.mergeInTransaction(tx, userId, sourceId, targetId),
+      );
+      return result.target;
     } catch (error) {
       // A concurrent delete of the target between the lookup and the insert: the target is gone.
       if (isVanishedRecord(error)) throw new NotFoundException(TAG_ERROR_MESSAGE.NotFound);
@@ -118,32 +123,42 @@ export class TagsService {
     }
   }
 
-  private mergeInTransaction(
+  /**
+   * The merge on the caller's transaction (also used by the library clean-up, AI-5): takes the tags
+   * lock (so a caller holding `folders:` keeps the lock order), 404 for a foreign or missing tag, 400
+   * for the same tag. Answers the target and, for an Undo, the links that carried the source and the
+   * links that got the target only through the merge.
+   */
+  async mergeInTransaction(
+    tx: Prisma.TransactionClient,
     userId: string,
     sourceId: string,
     targetId: string,
-  ): Promise<TagResponse> {
-    return this.prisma.$transaction(async (tx) => {
-      // Same lock as create and resolveNames: opposite merges and tag creation run one at a time.
-      await this.lockUserTags(tx, userId);
-      // Both lookups come first: a foreign or missing tag is a 404 even when the ids are equal.
-      await this.read(tx, userId, sourceId);
-      await this.read(tx, userId, targetId);
-      if (sourceId === targetId) throw new BadRequestException(TAG_ERROR_MESSAGE.MergeIntoItself);
-      // Trashed links move too (no deletedAt filter): the source tag is deleted, and a restored link
-      // must not lose it.
-      await markEmbeddingsStale(tx, userId, { tagIds: [sourceId] });
-      const moved = await tx.linkTag.findMany({
-        where: { tagId: sourceId, link: { userId } },
-        select: { linkId: true },
-      });
-      await tx.linkTag.createMany({
-        data: moved.map(({ linkId }) => ({ linkId, tagId: targetId })),
-        skipDuplicates: true,
-      });
-      await tx.tag.delete({ where: { id: sourceId } });
-      return this.read(tx, userId, targetId);
+  ): Promise<TagMergeResult> {
+    // Same lock as create and resolveNames: opposite merges and tag creation run one at a time.
+    await this.lockUserTags(tx, userId);
+    // Both lookups come first: a foreign or missing tag is a 404 even when the ids are equal.
+    await this.read(tx, userId, sourceId);
+    await this.read(tx, userId, targetId);
+    if (sourceId === targetId) throw new BadRequestException(TAG_ERROR_MESSAGE.MergeIntoItself);
+    // Trashed links move too (no deletedAt filter): the source tag is deleted, and a restored link
+    // must not lose it.
+    await markEmbeddingsStale(tx, userId, { tagIds: [sourceId] });
+    const moved = await tx.linkTag.findMany({
+      where: { tagId: sourceId, link: { userId } },
+      select: { linkId: true },
     });
+    const added = await tx.linkTag.createManyAndReturn({
+      data: moved.map(({ linkId }) => ({ linkId, tagId: targetId })),
+      skipDuplicates: true,
+      select: { linkId: true },
+    });
+    await tx.tag.delete({ where: { id: sourceId } });
+    return {
+      target: await this.read(tx, userId, targetId),
+      linkIds: moved.map((row) => row.linkId),
+      addedLinkIds: added.map((row) => row.linkId),
+    };
   }
 
   /**
