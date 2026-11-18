@@ -16,19 +16,22 @@ describe('mobile polish styles', () => {
     expect(source).toMatch(/html\s*\{[^}]*-webkit-tap-highlight-color:\s*transparent/);
   });
 
-  it('stacks the dialog footer on a phone, primary on top, destructive last', () => {
+  it('wraps the dialog footer on a phone: the main action on its own row below the others (#512)', () => {
     const css = compileScss('lib/components/dialog/dialog.component.scss');
     const phone = mediaBlocks(css, PHONE).join('\n');
-    expect(phone).toMatch(/\.ui-dialog__foot\s*\{[^}]*flex-flow:\s*column-reverse nowrap/);
+    expect(phone).toMatch(/\.ui-dialog__foot\s*\{[^}]*flex-flow:\s*row wrap/);
     expect(phone).toMatch(/\.ui-dialog__foot\s*\{[^}]*align-items:\s*stretch/);
-    expect(withoutMedia(css, PHONE)).not.toContain('column-reverse');
+    expect(withoutMedia(css, PHONE)).not.toContain('row wrap');
+    expect(css).not.toContain('column-reverse');
   });
 
-  it('makes the slotted footer actions full width on a phone only', () => {
+  it('shares the row above the main action in equal widths on a phone only (#512)', () => {
     const css = dialogLayoutCss();
     const phone = mediaBlocks(css, PHONE).join('\n');
-    expect(phone).toMatch(/\.ui-dialog__foot > \*\s*\{[^}]*inline-size:\s*100%/);
+    expect(phone).toMatch(/\.ui-dialog__foot > \*\s*\{[^}]*flex:\s*1 1 0/);
+    expect(phone).toMatch(/\.ui-dialog__foot > :last-child\s*\{[^}]*flex:\s*0 0 100%/);
     expect(phone).toMatch(/\.ui-dialog__foot > ui-button \.ui-button\s*\{[^}]*100%/);
+    expect(phone).toMatch(/ui-dialog-cancel--with-close[^{]*\{[^}]*display:\s*none/);
     expect(withoutMedia(css, PHONE)).not.toContain('ui-dialog__foot');
   });
 

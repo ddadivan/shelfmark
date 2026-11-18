@@ -25,10 +25,6 @@ async function openLinks(page: Page, ai = true): Promise<void> {
   await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
 }
 
-function card(page: Page): Locator {
-  return page.locator('app-cleanup-card');
-}
-
 function toast(page: Page, text: string | RegExp): Locator {
   return page.locator('ui-toast').filter({ hasText: text });
 }
@@ -51,10 +47,9 @@ test.describe('Library clean-up (AI-5, mock API)', () => {
     page,
   }) => {
     await openLinks(page);
-    // The card counts the exact duplicates without a run.
-    await expect(card(page)).toContainText('1 duplicate. Nothing changes until you review.');
-    await card(page).getByRole('link', { name: 'Review' }).click();
-    await expect(page).toHaveURL('/settings/library/cleanup');
+    // Clean-up is no card above the feed (#512): it lives in Settings › Library.
+    await expect(page.locator('app-cleanup-card')).toHaveCount(0);
+    await openCleanup(page);
 
     await expect(page.getByRole('switch', { name: 'Include AI checks' })).toHaveAttribute(
       'aria-checked',
@@ -95,14 +90,8 @@ test.describe('Library clean-up (AI-5, mock API)', () => {
     await expect(page.getByRole('checkbox', { name: 'javascript ← js' })).toHaveCount(0);
   });
 
-  test('AI off: exact duplicates only, nothing AI; the card hides for a month', async ({
-    page,
-  }) => {
+  test('AI off: exact duplicates only, nothing AI', async ({ page }) => {
     await openLinks(page, false);
-    await expect(card(page)).toBeVisible();
-    await card(page).getByRole('button', { name: 'Hide for a month' }).click();
-    await expect(card(page)).toBeEmpty();
-
     await openCleanup(page);
     await expect(page.getByRole('switch', { name: 'Include AI checks' })).toHaveCount(0);
     await page.getByRole('button', { name: 'Check my library' }).click();

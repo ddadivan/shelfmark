@@ -12,12 +12,14 @@ import { sidebarCount } from './sidebar-count';
 
 /**
  * "All links", "Unsorted", "Favorites", "Recently opened", "Reminders"; `counts` null leaves the
- * link counts out. `dueReminders` (undefined = none) is the count of the Reminders row (#275).
+ * link counts out. `dueReminders` (undefined = none) is the count of the Reminders row (#275);
+ * `forgottenNote` ("5 forgotten", undefined = none) is the note of the Recently opened row (#512).
  */
 export function fixedNodes(
   labels: SidebarLabels,
   counts: Readonly<SidebarCounts> | null,
   dueReminders?: number,
+  forgottenNote?: string,
 ): UiTreeNode[] {
   return [
     { id: LINKS_SCOPE.All, name: labels.all, icon: 'bookmark', ...sidebarCount(counts?.all) },
@@ -33,7 +35,12 @@ export function fixedNodes(
       icon: 'star',
       ...sidebarCount(counts?.favorites),
     },
-    { id: SIDEBAR_RECENT_ID, name: labels.recent, icon: 'clock' },
+    {
+      id: SIDEBAR_RECENT_ID,
+      name: labels.recent,
+      icon: 'clock',
+      ...(forgottenNote ? { note: forgottenNote } : {}),
+    },
     {
       id: SIDEBAR_REMINDERS_ID,
       name: labels.reminders,

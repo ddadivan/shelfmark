@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { axeViolations } from '../../../testing/axe';
 import { compileScss, mediaBlocks, withoutMedia } from '../../../testing/scss';
+import { DialogCancelDirective } from './dialog-cancel.directive';
 import { DialogComponent } from './dialog.component';
 import { DialogService } from '../../services/dialog/dialog.service';
 import type { DialogSize } from './models/dialog-size.type';
@@ -372,5 +373,31 @@ describe('DialogComponent command variant styles', () => {
   it('keeps the enter and leave animations', () => {
     expect(css).toMatch(/\.ui-dialog--enter\s*{[^}]*animation/);
     expect(css).toMatch(/\.ui-dialog--leave\s*{[^}]*animation/);
+  });
+});
+
+@Component({
+  imports: [DialogComponent, DialogCancelDirective],
+  template: `
+    <ui-dialog title="With x" [closeLabel]="closeLabel()">
+      <button slot="footer" type="button" uiDialogCancel>Cancel</button>
+      <button slot="footer" type="button">Save</button>
+    </ui-dialog>
+  `,
+})
+class CancelHostComponent {
+  readonly closeLabel = signal<string | undefined>('Close');
+}
+
+describe('DialogCancelDirective (#512)', () => {
+  it('marks Cancel for the sheet only while the dialog has its own close button', async () => {
+    const fixture = TestBed.createComponent(CancelHostComponent);
+    await fixture.whenStable();
+    const cancel = (fixture.nativeElement as HTMLElement).querySelector('button[uiDialogCancel]');
+    expect(cancel?.classList).toContain('ui-dialog-cancel--with-close');
+
+    fixture.componentInstance.closeLabel.set(undefined);
+    await fixture.whenStable();
+    expect(cancel?.classList).not.toContain('ui-dialog-cancel--with-close');
   });
 });

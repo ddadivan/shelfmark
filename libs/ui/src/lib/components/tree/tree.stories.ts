@@ -127,6 +127,17 @@ export const WithDot: Story = {
   render: (args) => ({ props: args, template }),
 };
 
+/** A fixed row with a note instead of the count ("5 forgotten"): the accent tone, read with the name. */
+export const WithNote: Story = {
+  args: {
+    fixedNodes: [
+      ...TREE_STORY_FIXED,
+      { id: 'recent', name: 'Recently opened', icon: 'clock', note: '5 forgotten' },
+    ],
+  },
+  render: (args) => ({ props: args, template }),
+};
+
 /** No fixed entries, no menu button (no `menuLabel`). */
 export const FoldersOnly: Story = {
   args: { fixedNodes: [], menuLabel: undefined, activeId: null },

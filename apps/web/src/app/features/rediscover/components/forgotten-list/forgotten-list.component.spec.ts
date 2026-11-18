@@ -11,7 +11,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { LinkActionsService } from '../../../links/services/link-actions.service';
 import { READ_LATER } from '../../models/read-later.const';
 import { REDISCOVER_API } from '../../models/rediscover-api.const';
-import { FromYourShelfComponent } from './from-your-shelf.component';
+import { ForgottenListComponent } from './forgotten-list.component';
 
 function link(n: number): LinkResponse {
   return {
@@ -42,7 +42,7 @@ async function setup(block: RediscoverResponse, readLater = false) {
     ],
   });
   await loadEnglish();
-  const fixture = TestBed.createComponent(FromYourShelfComponent);
+  const fixture = TestBed.createComponent(ForgottenListComponent);
   await vi.waitFor(async () => {
     await fixture.whenStable();
     expect(api.getBlock).toHaveBeenCalled();
@@ -65,11 +65,10 @@ const FORGOTTEN: RediscoverResponse = {
   items: [link(1), link(2), link(3)],
 };
 
-describe('FromYourShelfComponent', () => {
+describe('ForgottenListComponent', () => {
   it('lists old links without the AI mark in forgotten mode, without axe violations', async () => {
     const { element } = await setup(FORGOTTEN);
-    expect(element.textContent).toContain('From your shelf');
-    expect(element.textContent).toContain('Saved a while ago and never opened.');
+    expect(element.textContent).toContain('A few links you saved and never came back to.');
     expect(element.textContent).toContain('Saved in June 2026');
     expect(element.querySelectorAll('li')).toHaveLength(3);
     expect(element.querySelector('ui-icon[name="spark"]')).toBeNull();
@@ -84,7 +83,7 @@ describe('FromYourShelfComponent', () => {
       theme: 'Angular',
     });
     expect(element.textContent).toContain('You’ve been saving a lot about Angular.');
-    expect(element.querySelector('.from-your-shelf__spark')).not.toBeNull();
+    expect(element.querySelector('.forgotten-list__spark')).not.toBeNull();
   });
 
   it('reminds, hides a link, offers Read later only when provided, and dismisses', async () => {
@@ -105,10 +104,12 @@ describe('FromYourShelfComponent', () => {
     await fixture.whenStable();
     expect(api.dismiss).toHaveBeenCalled();
     expect(element.querySelector('ui-panel')).toBeNull();
+    expect(element.querySelector('ui-empty-state')).not.toBeNull();
   });
 
-  it('renders nothing without items', async () => {
+  it('shows a small empty state without items', async () => {
     const { element } = await setup({ ...FORGOTTEN, mode: null, items: [] });
     expect(element.querySelector('ui-panel')).toBeNull();
+    expect(element.textContent).toContain('Nothing forgotten');
   });
 });

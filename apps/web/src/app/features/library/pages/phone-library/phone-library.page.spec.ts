@@ -1,7 +1,11 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { REDISCOVER_MODE } from '@shelfmark/contracts';
+import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { DialogService } from '@shelfmark/ui';
+import { of } from 'rxjs';
+import { REDISCOVER_API } from '../../../rediscover/models/rediscover-api.const';
 import axe from 'axe-core';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
@@ -20,7 +24,7 @@ import { AI_SETTINGS_DEFAULT } from '../../../ai/models/ai-settings-default.cons
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
 import PhoneLibraryPage from './phone-library.page';
 
-async function setup(phone = true, ai?: FakeAiApi) {
+async function setup(phone = true, ai?: FakeAiApi, forgotten = 0) {
   const open = vi.fn();
   TestBed.configureTestingModule({
     providers: [
@@ -37,6 +41,18 @@ async function setup(phone = true, ai?: FakeAiApi) {
       { provide: DialogService, useValue: { open } },
       { provide: ViewportService, useValue: { phone: signal(phone), compact: signal(phone) } },
       ...(ai ? [{ provide: AI_API, useValue: ai }] : []),
+      {
+        provide: REDISCOVER_API,
+        useValue: {
+          getBlock: () =>
+            of({
+              week: '2026-W47',
+              mode: REDISCOVER_MODE.Forgotten,
+              theme: null,
+              items: MOCK_LINKS.slice(0, forgotten),
+            }),
+        },
+      },
     ],
   });
   await loadEnglish();
@@ -76,6 +92,17 @@ describe('PhoneLibraryPage', () => {
     expect(element.querySelector('app-sidebar-tags')).toBeNull();
   });
 
+  it('orders Pinned, Folders, then the tiles (#512)', async () => {
+    const { element } = await setup();
+    const pinned = element.querySelector('app-sidebar-pinned');
+    const folders = element.querySelector('app-sidebar');
+    const tiles = element.querySelector('.phone-library__tiles');
+    const follows = (a: Element | null, b: Element | null): boolean =>
+      !!a && !!b && !!(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(follows(pinned, folders)).toBe(true);
+    expect(follows(folders, tiles)).toBe(true);
+  });
+
   it('shows the tags under the folders while Ask has the Tags tab (#499)', async () => {
     const ai = fakeAiApi(
       aiSettingsResponse({ settings: { ...AI_SETTINGS_DEFAULT, enabled: true, ask: true } }),
@@ -88,6 +115,18 @@ describe('PhoneLibraryPage', () => {
     expect(
       tree && tags ? tree.compareDocumentPosition(tags) & Node.DOCUMENT_POSITION_FOLLOWING : 0,
     ).toBeTruthy();
+  });
+
+  it('captions Recently opened with the forgotten count in the accent tone (#512)', async () => {
+    const { element } = await setup(true, undefined, 2);
+    await vi.waitFor(() => {
+      TestBed.tick();
+      const meta = [...element.querySelectorAll('.library-tile')]
+        .find((tile) => tile.textContent?.includes('Recently opened'))
+        ?.querySelector('.library-tile__meta');
+      expect(meta?.textContent?.trim()).toBe('2 forgotten');
+      expect(meta?.classList.contains('library-tile__meta--attention')).toBe(true);
+    });
   });
 
   it('opens Recently opened in a sheet and does not navigate', async () => {

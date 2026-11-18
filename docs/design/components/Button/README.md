@@ -1,6 +1,6 @@
 Button triggers an action; one `primary` per view (usually “Add link”), everything else `secondary` or `ghost`.
 
-**Angular:** `ui-button` — inputs `variant: 'primary' | 'secondary' | 'ghost' | 'danger' | 'ai'` (default `secondary`), `size: 'sm' | 'md' | 'lg'` (default `md`), `iconLeft`, `iconRight`, `iconOnly` (requires `ariaLabel`), `loading`, `disabled`, `type`. Content: the label text.
+**Angular:** `ui-button` — inputs `variant: 'primary' | 'secondary' | 'ghost' | 'danger' | 'ai' | 'ai-ghost'` (default `secondary`), `size: 'sm' | 'md' | 'lg'` (default `md`), `iconLeft`, `iconRight`, `iconOnly` (requires `ariaLabel`), `loading`, `disabled`, `type`. Content: the label text.
 
 **Classes:** `sm-btn` + `sm-btn--{variant}`, `sm-btn--sm|lg`, `sm-btn--icon`; loading = `aria-busy="true"` + `sm-spinner`.
 
@@ -12,5 +12,6 @@ Button triggers an action; one `primary` per view (usually “Add link”), ever
 - `loading` locks the button's width before the label changes, so it never jumps; the spinner grows in (see Loading, Motion).
 - Hit area: at least 24×24 px everywhere (WCAG 2.5.8); on touch screens (`pointer: coarse`) icon buttons grow to 44×44 and the star and chip-remove targets are widened with an invisible `::after`, so small glyphs stay easy to tap without changing the layout.
 
+- `ai-ghost` (`sm-btn--ai-ghost`, #512) is the quiet AI action next to text («Rewrite» under a summary): transparent at rest, label in `text`, the spark 20px in `ai`; hover brings `ai-fill`, press `ai-fill-hover`. `loading` is the same pulsing spark as `ai`.
 - `ariaDisabled` (#507): `aria-disabled="true"`, the disabled look, activation blocked, but the button stays in the tab order and keeps its tooltip (for an action that waits for something the user can do, such as «Fill in with AI» before a link is pasted: tooltip «Paste a link first»). Hover and press do not tint it.
 - `loading` on the `ai` variant (#507): no spinner. The spark keeps its place and pulses (scale 0.85 to 1.12, opacity 0.55 to 1, 1.2 s, ease-in-out, infinite), and a soft light of `ai` (22%, a clipped pseudo-element 40% wide) sweeps across the button (1.6 s, infinite); the width is locked, `aria-busy="true"`, the label changes to the -ing form («Filling…»). Both stand still under reduced motion.

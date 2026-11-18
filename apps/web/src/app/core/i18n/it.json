@@ -325,7 +325,12 @@
     },
     "card": {
       "moreTags": "+{{count}}",
-      "inFolder": "Nella cartella"
+      "inFolder": "Nella cartella",
+      "moreTagsLabel": {
+        "one": "{{count}} altro tag: {{list}}",
+        "many": "{{count}} altri tag: {{list}}",
+        "other": "{{count}} altri tag: {{list}}"
+      }
     },
     "item": {
       "edit": "Modifica",
@@ -3204,7 +3209,8 @@
       },
       "filling": "Compilazione…",
       "needLink": "Incolla prima un link",
-      "nothing": "L’IA non ha nulla da compilare per questo link"
+      "nothing": "L’IA non ha nulla da compilare per questo link",
+      "short": "Compila"
     },
     "line": {
       "limit": "Suggerimenti in pausa fino al {{date}}. Hai usato i {{limit}} link di questo mese.",
@@ -3504,16 +3510,35 @@
     }
   },
   "rediscover": {
-    "title": "Dai tuoi link",
     "lead": {
       "theme": "Stai salvando molto su {{theme}}. Questi sono link più vecchi che non hai aperto.",
-      "forgotten": "Salvati tempo fa e mai aperti."
+      "forgotten": "Alcuni link che hai salvato e non hai mai riaperto. Aprine uno, imposta un promemoria o lascialo andare."
     },
     "dismiss": "Nascondi fino alla prossima settimana",
     "saved": "Salvato a {{month}}, non aperto di recente",
     "remind": "Ricordamelo",
     "readLater": "Leggi dopo",
-    "notInterested": "Non mi interessa"
+    "notInterested": "Non mi interessa",
+    "count": {
+      "one": "{{count}} link salvato tempo fa e mai aperto",
+      "many": "{{count}} link salvati tempo fa e mai aperti",
+      "other": "{{count}} link salvati tempo fa e mai aperti"
+    },
+    "segment": {
+      "label": "Mostra",
+      "opened": "Aperti",
+      "forgotten": "Dimenticati",
+      "forgottenCount": "Dimenticati {{count}}"
+    },
+    "empty": {
+      "title": "Niente dimenticato",
+      "text": "I link che salvi e non apri mai aspetteranno qui."
+    },
+    "note": {
+      "one": "{{count}} dimenticato",
+      "many": "{{count}} dimenticati",
+      "other": "{{count}} dimenticati"
+    }
   },
   "cleanup": {
     "title": "Riordina la tua libreria",
@@ -3627,23 +3652,6 @@
       "nothingDetail": "Questi elementi sono cambiati nel frattempo."
     },
     "undone": "Riordino annullato",
-    "undoFailed": "Impossibile annullare il riordino",
-    "card": {
-      "title": "La tua libreria ha bisogno di una sistemata",
-      "duplicates": {
-        "one": "{{count}} duplicato",
-        "many": "{{count}} duplicati",
-        "other": "{{count}} duplicati"
-      },
-      "similarTags": {
-        "one": "{{count}} coppia di tag simili",
-        "many": "{{count}} coppie di tag simili",
-        "other": "{{count}} coppie di tag simili"
-      },
-      "text": "{{items}}. Nulla cambia finché non controlli.",
-      "review": "Rivedi",
-      "dismiss": "Nascondi per un mese",
-      "label": "Riordino della libreria"
-    }
+    "undoFailed": "Impossibile annullare il riordino"
   }
 }

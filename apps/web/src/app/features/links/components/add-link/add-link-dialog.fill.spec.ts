@@ -178,7 +178,11 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     const fill = await vi.waitFor(() => loader.getHarness(UiButtonHarness.with({ text: FILL })));
     // The tinted AI button first in the footer, Cancel and Create link after it (AiTags 12); the
     // save hint steps aside while it shows.
-    const footer = [...(root()?.querySelectorAll('[slot="footer"]') ?? [])];
+    const footer = [
+      ...(root()?.querySelectorAll(
+        '[slot="footer"]:not(.add-link__confirm), .add-link__confirm > *',
+      ) ?? []),
+    ];
     expect(footer.map((el) => el.textContent?.trim())).toEqual([FILL, 'Cancel', 'Create link']);
     expect(root()?.querySelector('app-add-link-ai-fill button')?.classList).toContain(
       'ui-button--ai',
@@ -357,6 +361,30 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     await until(() => expect(links.preview).toHaveBeenCalled());
     await new Promise((resolve) => setTimeout(resolve, 50));
     expect(await loader.getAllHarnesses(UiButtonHarness.with({ text: FILL }))).toEqual([]);
+  });
+
+  it('Edit link: Delete is icon-only while Fill shows, and Cancel with Save stay one group (#512)', async () => {
+    const ai = fakeAiApi();
+    const link: LinkResponse = { ...MOCK_LINKS[0], summary: null, summarySource: null, tags: [] };
+    ai.getLinkAi.mockReturnValue(of(linkState({ suggestions: [ANGULAR] })));
+    const { loader } = await setup(ai, { link });
+    await vi.waitFor(() => loader.getHarness(UiButtonHarness.with({ text: FILL })));
+    const remove = root()?.querySelector<HTMLElement>('.add-link__delete button');
+    expect(remove?.getAttribute('aria-label')).toBe('Delete');
+    expect(remove?.textContent?.trim()).toBe('');
+    const group = root()?.querySelector('.add-link__confirm');
+    expect([...(group?.children ?? [])].map((el) => el.textContent?.trim())).toEqual([
+      'Cancel',
+      'Save changes',
+    ]);
+  });
+
+  it('Edit link: Delete keeps its label while AI is off (#512)', async () => {
+    const ai = fakeAiApi(aiSettingsResponse({ settings: { ...AI_SETTINGS_DEFAULT } }));
+    const link: LinkResponse = { ...MOCK_LINKS[0], tags: [] };
+    await setup(ai, { link });
+    const remove = root()?.querySelector<HTMLElement>('.add-link__delete button');
+    expect(remove?.textContent?.trim()).toBe('Delete');
   });
 
   it('Edit link: puts a newly written AI summary into the empty field without sending it', async () => {

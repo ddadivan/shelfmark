@@ -3,6 +3,8 @@
 
   <app-sidebar-pinned card />
 
+  <app-sidebar foldersOnly />
+
   <div class="phone-library__tiles">
     <app-library-tile
       [href]="'/' + APP_PATH.Links"
@@ -28,7 +30,8 @@
       icon="clock"
       popup
       [label]="'links.recent.title' | transloco"
-      [meta]="openedToday() ? ('library.phone.openedToday' | transloco: { count: openedToday() }) : undefined"
+      [meta]="recentMeta()"
+      [attention]="forgotten() > 0"
       (activated)="openRecent()"
     />
     <app-library-tile
@@ -44,8 +47,6 @@
       [meta]="trashMeta()"
     />
   </div>
-
-  <app-sidebar foldersOnly />
 
   <!-- While Ask takes the Tags place in the tab bar, the tags live here (#499). -->
   @if (askTab()) {

@@ -325,7 +325,12 @@
     },
     "card": {
       "moreTags": "+{{count}}",
-      "inFolder": "Na pasta"
+      "inFolder": "Na pasta",
+      "moreTagsLabel": {
+        "one": "mais {{count}} tag: {{list}}",
+        "many": "mais {{count}} tags: {{list}}",
+        "other": "mais {{count}} tags: {{list}}"
+      }
     },
     "item": {
       "edit": "Editar",
@@ -3204,7 +3209,8 @@
       },
       "filling": "Preenchendo…",
       "needLink": "Cole um link primeiro",
-      "nothing": "A IA não tem nada para preencher neste link"
+      "nothing": "A IA não tem nada para preencher neste link",
+      "short": "Preencher"
     },
     "line": {
       "limit": "Sugestões pausadas até {{date}}. Você usou os {{limit}} links deste mês.",
@@ -3504,16 +3510,35 @@
     }
   },
   "rediscover": {
-    "title": "Dos seus links",
     "lead": {
       "theme": "Você tem salvado muito sobre {{theme}}. Estes são links mais antigos que você não abriu.",
-      "forgotten": "Salvos há algum tempo e nunca abertos."
+      "forgotten": "Alguns links que você salvou e nunca reabriu. Abra um, defina um lembrete ou deixe para lá."
     },
     "dismiss": "Ocultar até a próxima semana",
     "saved": "Salvo em {{month}}, não aberto recentemente",
     "remind": "Lembrar-me",
     "readLater": "Ler depois",
-    "notInterested": "Não tenho interesse"
+    "notInterested": "Não tenho interesse",
+    "count": {
+      "one": "{{count}} link salvo há algum tempo e nunca aberto",
+      "many": "{{count}} links salvos há algum tempo e nunca abertos",
+      "other": "{{count}} links salvos há algum tempo e nunca abertos"
+    },
+    "segment": {
+      "label": "Mostrar",
+      "opened": "Abertos",
+      "forgotten": "Esquecidos",
+      "forgottenCount": "Esquecidos {{count}}"
+    },
+    "empty": {
+      "title": "Nada esquecido",
+      "text": "Os links que você salvar e nunca abrir esperarão aqui."
+    },
+    "note": {
+      "one": "{{count}} esquecido",
+      "many": "{{count}} esquecidos",
+      "other": "{{count}} esquecidos"
+    }
   },
   "cleanup": {
     "title": "Organize sua biblioteca",
@@ -3627,23 +3652,6 @@
       "nothingDetail": "Esses itens mudaram nesse meio-tempo."
     },
     "undone": "Limpeza desfeita",
-    "undoFailed": "Não foi possível desfazer a limpeza",
-    "card": {
-      "title": "Sua biblioteca pode ser organizada",
-      "duplicates": {
-        "one": "{{count}} duplicado",
-        "many": "{{count}} duplicados",
-        "other": "{{count}} duplicados"
-      },
-      "similarTags": {
-        "one": "{{count}} par de tags parecidas",
-        "many": "{{count}} pares de tags parecidas",
-        "other": "{{count}} pares de tags parecidas"
-      },
-      "text": "{{items}}. Nada muda até você revisar.",
-      "review": "Revisar",
-      "dismiss": "Ocultar por um mês",
-      "label": "Limpeza da biblioteca"
-    }
+    "undoFailed": "Não foi possível desfazer a limpeza"
   }
 }

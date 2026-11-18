@@ -253,16 +253,24 @@
       </div>
 
       @if (editing) {
+        <!-- Icon-only (its name is the tooltip) while "Fill in with AI" shares the row on a tablet
+             and wider; with AI off, and on the phone sheet, it keeps its label. -->
+        @let deleteIcon = !phone() && aiFill.available();
         <ui-button
           slot="footer"
           class="add-link__delete"
           [class.add-link__delete--with-fill]="aiFill.available()"
           [variant]="BUTTON_VARIANT.Ghost"
           iconLeft="trash"
+          [iconOnly]="deleteIcon"
+          [ariaLabel]="'links.edit.actions.delete' | transloco"
           [disabled]="saving()"
           (click)="requestDelete()"
-          >{{ 'links.edit.actions.delete' | transloco }}</ui-button
         >
+          @if (!deleteIcon) {
+            {{ 'links.edit.actions.delete' | transloco }}
+          }
+        </ui-button>
       }
 
       <!-- Fill in with AI (F1c): first in the footer (after Delete), Cancel and the primary action
@@ -277,40 +285,43 @@
           {{ 'links.add.shortcut.create' | transloco }}
         </span>
       }
-      @if (editing || !phone()) {
+      <!-- Cancel and the main action are one group that never splits across rows. -->
+      <div slot="footer" class="add-link__confirm">
+        <!-- Left out on the sheet: its x does the same (`uiDialogCancel`). -->
         <ui-button
-          slot="footer"
           class="add-link__action"
+          uiDialogCancel
+          [block]="phone()"
           [disabled]="saving()"
           (click)="cancel()"
           >{{ 'links.add.actions.cancel' | transloco }}</ui-button
         >
-      }
-      @if (duplicate() && !editing) {
-        <ui-button slot="footer" class="add-link__action" (click)="openExisting()">{{
-          'links.add.actions.openSaved' | transloco
-        }}</ui-button>
-      }
-      <ui-button
-        slot="footer"
-        class="add-link__action"
-        [type]="BUTTON_TYPE.Submit"
-        [variant]="BUTTON_VARIANT.Primary"
-        [loading]="saving()"
-        [disabled]="aiFill.busy()"
-        >{{
-          (editing
-            ? saving()
-              ? 'links.add.actions.saving'
-              : 'links.edit.actions.save'
-            : saving()
-              ? 'links.add.actions.creating'
-              : duplicate()
-                ? 'links.add.actions.createAnyway'
-                : 'links.add.actions.create'
-          ) | transloco
-        }}</ui-button
-      >
+        @if (duplicate() && !editing) {
+          <ui-button class="add-link__action" [block]="phone()" (click)="openExisting()">{{
+            'links.add.actions.openSaved' | transloco
+          }}</ui-button>
+        }
+        <ui-button
+          class="add-link__action"
+          [block]="phone()"
+          [type]="BUTTON_TYPE.Submit"
+          [variant]="BUTTON_VARIANT.Primary"
+          [loading]="saving()"
+          [disabled]="aiFill.busy()"
+          >{{
+            (editing
+              ? saving()
+                ? 'links.add.actions.saving'
+                : 'links.edit.actions.save'
+              : saving()
+                ? 'links.add.actions.creating'
+                : duplicate()
+                  ? 'links.add.actions.createAnyway'
+                  : 'links.add.actions.create'
+            ) | transloco
+          }}</ui-button
+        >
+      </div>
     </ui-dialog>
   </form>
 }

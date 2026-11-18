@@ -325,7 +325,11 @@
     },
     "card": {
       "moreTags": "+{{count}}",
-      "inFolder": "Im Ordner"
+      "inFolder": "Im Ordner",
+      "moreTagsLabel": {
+        "one": "{{count}} weiterer Tag: {{list}}",
+        "other": "{{count}} weitere Tags: {{list}}"
+      }
     },
     "item": {
       "edit": "Bearbeiten",
@@ -3141,7 +3145,8 @@
       },
       "filling": "Wird ausgefüllt …",
       "needLink": "Füge zuerst einen Link ein",
-      "nothing": "Die KI hat für diesen Link nichts auszufüllen"
+      "nothing": "Die KI hat für diesen Link nichts auszufüllen",
+      "short": "Ausfüllen"
     },
     "line": {
       "limit": "Vorschläge pausieren bis {{date}}. Du hast die {{limit}} Links dieses Monats genutzt.",
@@ -3431,16 +3436,33 @@
     }
   },
   "rediscover": {
-    "title": "Aus deinen Links",
     "lead": {
       "theme": "Du speicherst gerade viel zu {{theme}}. Das sind ältere Links, die du nicht geöffnet hast.",
-      "forgotten": "Vor einer Weile gespeichert und nie geöffnet."
+      "forgotten": "Ein paar Links, die du gespeichert und nie wieder geöffnet hast. Öffne einen, setze eine Erinnerung oder lass ihn los."
     },
     "dismiss": "Bis nächste Woche ausblenden",
     "saved": "Gespeichert im {{month}}, länger nicht geöffnet",
     "remind": "Erinnern",
     "readLater": "Später lesen",
-    "notInterested": "Kein Interesse"
+    "notInterested": "Kein Interesse",
+    "count": {
+      "one": "{{count}} Link, vor einer Weile gespeichert und nie geöffnet",
+      "other": "{{count}} Links, vor einer Weile gespeichert und nie geöffnet"
+    },
+    "segment": {
+      "label": "Anzeigen",
+      "opened": "Geöffnet",
+      "forgotten": "Vergessen",
+      "forgottenCount": "Vergessen {{count}}"
+    },
+    "empty": {
+      "title": "Nichts vergessen",
+      "text": "Links, die du speicherst und nie öffnest, warten hier."
+    },
+    "note": {
+      "one": "{{count}} vergessen",
+      "other": "{{count}} vergessen"
+    }
   },
   "cleanup": {
     "title": "Bibliothek aufräumen",
@@ -3547,21 +3569,6 @@
       "nothingDetail": "Diese Einträge haben sich inzwischen geändert."
     },
     "undone": "Aufräumen rückgängig gemacht",
-    "undoFailed": "Das Aufräumen konnte nicht rückgängig gemacht werden",
-    "card": {
-      "title": "Deine Bibliothek könnte etwas Ordnung vertragen",
-      "duplicates": {
-        "one": "{{count}} Duplikat",
-        "other": "{{count}} Duplikate"
-      },
-      "similarTags": {
-        "one": "{{count}} Paar ähnlicher Tags",
-        "other": "{{count}} Paare ähnlicher Tags"
-      },
-      "text": "{{items}}. Nichts ändert sich, bevor du prüfst.",
-      "review": "Ansehen",
-      "dismiss": "Einen Monat ausblenden",
-      "label": "Bibliothek aufräumen"
-    }
+    "undoFailed": "Das Aufräumen konnte nicht rückgängig gemacht werden"
   }
 }

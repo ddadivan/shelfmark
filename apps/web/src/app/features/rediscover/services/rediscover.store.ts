@@ -5,10 +5,10 @@ import { SessionScope } from '../../../core/auth/session-scope.service';
 import { REDISCOVER_API } from '../models/rediscover-api.const';
 import type { RediscoverState } from '../models/rediscover-state.interface';
 
-const initialState: RediscoverState = { block: null };
+const initialState: RediscoverState = { block: null, loaded: false };
 
 /**
- * This week's "From your shelf" block (F8), loaded once per session (nothing is cached on the
+ * This week's Rediscover block (F8: the Forgotten view of Recently opened), loaded once per session (nothing is cached on the
  * server). Dismiss and "Not interested" change the block at once; a failed request puts back only
  * what it removed (one link, or the links not hidden meanwhile), and nothing after the session end,
  * which forgets the block.
@@ -19,6 +19,8 @@ export const RediscoverStore = signalStore(
   withComputed(({ block }) => ({
     /** The links to show; empty = no block. */
     items: computed(() => block()?.items ?? []),
+    /** How many links wait (the "N forgotten" of the sidebar row and the segment). */
+    count: computed(() => block()?.items.length ?? 0),
   })),
   withMethods((store) => {
     const injector = inject(Injector);
@@ -41,7 +43,7 @@ export const RediscoverStore = signalStore(
     return {
       /** Loads the block once per session; a failure shows no block. */
       load(): Promise<void> {
-        if (store.block() !== null) {
+        if (store.loaded()) {
           return Promise.resolve();
         }
         const source = injector.get(REDISCOVER_API, null);
@@ -52,10 +54,14 @@ export const RediscoverStore = signalStore(
         loading ??= firstValueFrom(source.getBlock())
           .then((block) => {
             if (started === epoch) {
-              patchState(store, { block });
+              patchState(store, { block, loaded: true });
             }
           })
-          .catch(() => undefined);
+          .catch(() => {
+            if (started === epoch) {
+              patchState(store, { loaded: true });
+            }
+          });
         return loading;
       },
 

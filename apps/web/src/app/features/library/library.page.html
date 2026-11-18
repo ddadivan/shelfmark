@@ -290,10 +290,6 @@
       @if (!splitView.open() && !selection.selecting()) {
       <!-- Install the extension (#455): renders nothing unless offered and not closed. -->
       <app-extension-banner class="library__extension" />
-      } @if (rediscover()) {
-      <app-from-your-shelf class="library__rediscover" />
-      <!-- Library clean-up (AI-5): renders nothing unless something was found and not dismissed. -->
-      <app-cleanup-card class="library__cleanup" />
       } @if (!feed.emptyLibrary()) {
       <app-saved-view-chips class="library__views" [filter]="filters.filter()" />
       } @if (filters.filtered()) {

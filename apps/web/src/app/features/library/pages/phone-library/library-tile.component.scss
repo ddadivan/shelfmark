@@ -62,4 +62,8 @@
 
   min-height: 1lh;
   color: var(--text-muted);
+
+  &--attention {
+    color: var(--accent-text);
+  }
 }

@@ -162,6 +162,22 @@
   }
 }
 
+// Cancel and the main action (and "Open saved") stay together: the footer wraps around the group,
+// never through it. On the phone sheet it is the main row of the footer (#512); what is left in it
+// ("Open saved" next to Create anyway) stacks above the main action.
+.add-link__confirm {
+  display: flex;
+  gap: var(--space-4);
+
+  @include tablet-up {
+    flex: none;
+  }
+
+  @include phone {
+    flex-direction: column;
+  }
+}
+
 // The "save" shortcut at the start of the footer; a phone has no keyboard to press it.
 .add-link__shortcut {
   @include type(caption);

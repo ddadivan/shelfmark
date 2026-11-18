@@ -325,7 +325,12 @@
     },
     "card": {
       "moreTags": "+{{count}}",
-      "inFolder": "Dans le dossier"
+      "inFolder": "Dans le dossier",
+      "moreTagsLabel": {
+        "one": "{{count}} autre tag : {{list}}",
+        "many": "{{count}} autres tags : {{list}}",
+        "other": "{{count}} autres tags : {{list}}"
+      }
     },
     "item": {
       "edit": "Modifier",
@@ -3204,7 +3209,8 @@
       },
       "filling": "Remplissage…",
       "needLink": "Collez d’abord un lien",
-      "nothing": "L’IA n’a rien à remplir pour ce lien"
+      "nothing": "L’IA n’a rien à remplir pour ce lien",
+      "short": "Remplir"
     },
     "line": {
       "limit": "Suggestions en pause jusqu’au {{date}}. Vous avez utilisé les {{limit}} liens de ce mois.",
@@ -3504,16 +3510,35 @@
     }
   },
   "rediscover": {
-    "title": "Dans vos liens",
     "lead": {
       "theme": "Vous enregistrez beaucoup sur {{theme}}. Voici des liens plus anciens que vous n’avez pas ouverts.",
-      "forgotten": "Enregistrés il y a un moment et jamais ouverts."
+      "forgotten": "Quelques liens enregistrés et jamais rouverts. Ouvrez-en un, programmez un rappel ou laissez-le de côté."
     },
     "dismiss": "Masquer jusqu’à la semaine prochaine",
     "saved": "Enregistré en {{month}}, pas ouvert récemment",
     "remind": "Me le rappeler",
     "readLater": "Lire plus tard",
-    "notInterested": "Pas intéressé"
+    "notInterested": "Pas intéressé",
+    "count": {
+      "one": "{{count}} lien enregistré il y a un moment et jamais ouvert",
+      "many": "{{count}} liens enregistrés il y a un moment et jamais ouverts",
+      "other": "{{count}} liens enregistrés il y a un moment et jamais ouverts"
+    },
+    "segment": {
+      "label": "Afficher",
+      "opened": "Ouverts",
+      "forgotten": "Oubliés",
+      "forgottenCount": "Oubliés {{count}}"
+    },
+    "empty": {
+      "title": "Rien d’oublié",
+      "text": "Les liens que vous enregistrez sans jamais les ouvrir attendront ici."
+    },
+    "note": {
+      "one": "{{count}} oublié",
+      "many": "{{count}} oubliés",
+      "other": "{{count}} oubliés"
+    }
   },
   "cleanup": {
     "title": "Nettoyer votre bibliothèque",
@@ -3627,23 +3652,6 @@
       "nothingDetail": "Ces éléments ont changé entre-temps."
     },
     "undone": "Nettoyage annulé",
-    "undoFailed": "Impossible d’annuler le nettoyage",
-    "card": {
-      "title": "Votre bibliothèque mérite un petit rangement",
-      "duplicates": {
-        "one": "{{count}} doublon",
-        "many": "{{count}} doublons",
-        "other": "{{count}} doublons"
-      },
-      "similarTags": {
-        "one": "{{count}} paire de tags similaires",
-        "many": "{{count}} paires de tags similaires",
-        "other": "{{count}} paires de tags similaires"
-      },
-      "text": "{{items}}. Rien ne change avant votre validation.",
-      "review": "Voir",
-      "dismiss": "Masquer pendant un mois",
-      "label": "Nettoyage de la bibliothèque"
-    }
+    "undoFailed": "Impossible d’annuler le nettoyage"
   }
 }

@@ -75,8 +75,6 @@ import { SplitRightHalfComponent } from './components/split-right-half/split-rig
 import { SplitRelatedService } from './services/split-related.service';
 import { SplitViewService } from './services/split-view.service';
 import { TidyEntryComponent } from '../ai/components/tidy-entry/tidy-entry.component';
-import { FromYourShelfComponent } from '../rediscover/components/from-your-shelf/from-your-shelf.component';
-import { CleanupCardComponent } from '../cleanup/components/cleanup-card/cleanup-card.component';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
 
@@ -130,8 +128,6 @@ const SKELETON_COUNT = 8;
     SkeletonComponent,
     SplitRightHalfComponent,
     TidyEntryComponent,
-    FromYourShelfComponent,
-    CleanupCardComponent,
   ],
   templateUrl: './library.page.html',
   styleUrls: [
@@ -185,17 +181,6 @@ export default class LibraryPage {
   /** "Tidy with suggestions" (AI-2): only in Unsorted, not in the split view; it hides itself while AI is off. */
   protected readonly tidyEntry = computed(
     () => this.filters.scope() === LINKS_SCOPE.Unsorted && !this.splitView.open(),
-  );
-  /**
-   * "From your shelf" (F8) and the clean-up card under it (AI-5): on unfiltered All links, not in
-   * the split view or while selecting.
-   */
-  protected readonly rediscover = computed(
-    () =>
-      this.filters.scope() === LINKS_SCOPE.All &&
-      !this.filters.filtered() &&
-      !this.splitView.open() &&
-      !this.selection.selecting(),
   );
   protected readonly selection = inject(LibrarySelectionService);
   protected readonly bulk = inject(LibraryBulkService);

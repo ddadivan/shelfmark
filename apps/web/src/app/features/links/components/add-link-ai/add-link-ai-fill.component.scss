@@ -7,13 +7,14 @@
 }
 
 // Desktop: the first thing in the footer, Cancel and the primary action stay on the right. Phone
-// sheet: the footer stacks its actions bottom-up (`column-reverse`, primary on top), so a higher
-// order puts this button directly above the primary one.
+// sheet: the main action has the bottom row and this button shares the row above it.
 .add-link-ai-fill {
   margin-inline-end: auto;
 
+  // The phone sheet footer shares one row between the actions above the main one (#512).
   @include phone {
-    order: 1;
+    flex: 1 1 0;
+    min-inline-size: 0;
     margin-inline-end: 0;
   }
 }

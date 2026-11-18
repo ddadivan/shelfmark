@@ -1,0 +1,79 @@
+@if (store.loaded()) {
+  @if (store.items().length > 0) {
+    <section class="forgotten-list" [attr.aria-label]="'rediscover.segment.forgotten' | transloco">
+      <div class="forgotten-list__head">
+        <p class="forgotten-list__lead">
+          @if (theme(); as theme) {
+            <ui-icon
+              class="forgotten-list__spark"
+              name="spark"
+              [size]="ICON_SIZE.Sm"
+              [label]="'ai.disclaimer' | transloco"
+              [uiTooltip]="'ai.disclaimer' | transloco"
+            />
+            {{ 'rediscover.lead.theme' | transloco: { theme } }}
+          } @else {
+            {{ 'rediscover.lead.forgotten' | transloco }}
+          }
+        </p>
+        <ui-button
+          variant="ghost"
+          size="sm"
+          iconOnly
+          iconLeft="close"
+          [ariaLabel]="'rediscover.dismiss' | transloco"
+          [uiTooltip]="'rediscover.dismiss' | transloco"
+          (click)="store.dismiss()"
+        />
+      </div>
+      <ui-panel>
+        <ul class="forgotten-list__list">
+          @for (link of store.items(); track link.id) {
+            <li class="forgotten-list__row">
+              <div class="forgotten-list__main">
+                <span class="forgotten-list__site">
+                  <ui-favicon
+                    [src]="ownImageUrl(link.faviconUrl)"
+                    [letter]="siteLetter(link.url)"
+                  />
+                  {{ linkHost(link.url) }}
+                </span>
+                <a
+                  class="forgotten-list__link"
+                  [href]="safeHref(link.url)"
+                  [attr.target]="newTab() ? '_blank' : null"
+                  rel="noopener noreferrer"
+                  (click)="opened(link)"
+                  >{{ link.title }}</a
+                >
+                <span class="forgotten-list__meta">{{
+                  'rediscover.saved' | transloco: { month: savedMonth(link) }
+                }}</span>
+              </div>
+              <div class="forgotten-list__actions">
+                <ui-button variant="ghost" size="sm" (click)="remind(link)">
+                  {{ 'rediscover.remind' | transloco }}
+                </ui-button>
+                @if (readLater; as later) {
+                  <ui-button variant="ghost" size="sm" (click)="later.add(link)">
+                    {{ 'rediscover.readLater' | transloco }}
+                  </ui-button>
+                }
+                <ui-button variant="ghost" size="sm" (click)="store.hide(link.id)">
+                  {{ 'rediscover.notInterested' | transloco }}
+                </ui-button>
+              </div>
+            </li>
+          }
+        </ul>
+      </ui-panel>
+    </section>
+  } @else {
+    <ui-empty-state
+      class="forgotten-list__empty"
+      illustration="empty-recent"
+      [heading]="'rediscover.empty.title' | transloco"
+      [text]="'rediscover.empty.text' | transloco"
+    />
+  }
+}

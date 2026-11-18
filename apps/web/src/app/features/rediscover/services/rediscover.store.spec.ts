@@ -32,6 +32,8 @@ describe('RediscoverStore', () => {
     await store.load();
     expect(api.getBlock).toHaveBeenCalledTimes(1);
     expect(store.items()).toHaveLength(3);
+    expect(store.count()).toBe(3);
+    expect(store.loaded()).toBe(true);
     await store.hide('b');
     expect(api.hide).toHaveBeenCalledWith('b');
     expect(store.items().map((l) => l.id)).toEqual(['a', 'c']);
@@ -49,8 +51,10 @@ describe('RediscoverStore', () => {
     expect(store.items()).toHaveLength(3);
     TestBed.resetTestingModule();
     const broken = setup({ getBlock: vi.fn(failing) });
+    expect(broken.store.loaded()).toBe(false);
     await broken.store.load();
     expect(broken.store.items()).toEqual([]);
+    expect(broken.store.loaded()).toBe(true);
   });
 
   it('puts back only the link whose hide failed, keeping a later hide', async () => {

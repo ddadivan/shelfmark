@@ -3,28 +3,31 @@ import { FormField, type FieldTree } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { SUMMARY_SOURCE, type SummarySource } from '@shelfmark/contracts';
 import {
-  BadgeComponent,
   BUTTON_SIZE,
   BUTTON_VARIANT,
   ButtonComponent,
+  ICON_SIZE,
+  IconComponent,
   TextareaComponent,
 } from '@shelfmark/ui';
 
 /**
- * The "Summary" field of Edit link (`AiSummary` 4–5, #391): the editable text, a badge ("Written
- * by AI" with the spark, or "Edited by you"), Rewrite while the text is AI's, and the hint (the
+ * The "Summary" field of Edit link (`AiSummary` 4–5, #391): the editable text, a plain caption
+ * mark ("Written by AI" with the spark, or "Edited by you": text, not a button), Rewrite (the quiet
+ * AI button) while the text is AI's, and the hint (the
  * visible disclaimer for AI's text, "clear it to let AI write again" for the user's). The flow
  * lives in `AddLinkSummaryService`; this only renders.
  */
 @Component({
   selector: 'app-summary-field',
-  imports: [BadgeComponent, ButtonComponent, FormField, TextareaComponent, TranslocoPipe],
+  imports: [ButtonComponent, FormField, IconComponent, TextareaComponent, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './summary-field.component.html',
   styleUrl: './summary-field.component.scss',
 })
 export class SummaryFieldComponent {
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
+  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly SUMMARY_SOURCE = SUMMARY_SOURCE;
 
