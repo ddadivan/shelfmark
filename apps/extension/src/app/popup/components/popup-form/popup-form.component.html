@@ -15,7 +15,17 @@
 
 <div class="form">
   <div class="form__folder">
-    <span class="form__label" aria-hidden="true">{{ 'popup.form.folder' | transloco }}</span>
+    <span class="form__label-row">
+      <span class="form__label" aria-hidden="true">{{ 'popup.form.folder' | transloco }}</span>
+      @if (store.ai.folderMarked()) {
+        <ui-icon
+          name="spark"
+          [size]="ICON_SIZE.Sm"
+          [label]="'popup.ai.disclaimer' | transloco"
+          [attr.title]="'popup.ai.disclaimer' | transloco"
+        />
+      }
+    </span>
     <ui-button
       block
       iconRight="chevron-right"
@@ -80,15 +90,71 @@
     [(value)]="store.chosenTags"
   />
 
+  @if (store.ai.tagsMarked() || store.ai.chips().length > 0) {
+    <div class="form__ai">
+      @if (store.ai.tagsMarked()) {
+        <ui-icon
+          name="spark"
+          [size]="ICON_SIZE.Sm"
+          [label]="'popup.ai.disclaimer' | transloco"
+          [attr.title]="'popup.ai.disclaimer' | transloco"
+        />
+      }
+      @if (store.ai.chips().length > 0) {
+        <ui-suggestion-row
+          [label]="'popup.ai.suggested' | transloco"
+          [ariaLabel]="'popup.ai.tagsRow' | transloco"
+        >
+          @for (chip of store.ai.chips(); track chip.id) {
+            <ui-suggestion
+              [kind]="SUGGESTION_KIND.NewTag"
+              [label]="chip.name"
+              [newLabel]="'popup.ai.new' | transloco"
+              [ariaLabel]="'popup.ai.createTag' | transloco: { name: chip.name }"
+              [dismissLabel]="'popup.ai.dismiss' | transloco: { name: chip.name }"
+              (accepted)="store.ai.accept(chip)"
+              (dismissed)="store.ai.dismiss(chip)"
+            />
+          }
+        </ui-suggestion-row>
+      }
+    </div>
+  }
+
   <ui-input
     [label]="'popup.form.note' | transloco"
     [placeholder]="'popup.form.notePlaceholder' | transloco"
     [disabled]="store.saving()"
     [(value)]="store.note"
   />
+
+  @if (store.ai.line(); as line) {
+    <ui-ai-line
+      role="status"
+      [text]="lineText()"
+      [actionLabel]="line.kind === AI_LINE_KIND.Limit ? ('popup.ai.settings' | transloco) : ''"
+      (action)="store.openAiSettings()"
+    />
+  }
 </div>
 
+<span class="form__live" aria-live="polite">{{
+  store.ai.filled() ? ('popup.ai.done' | transloco) : ''
+}}</span>
+
 <div class="ext-screen__foot form__foot">
+  @if (store.ai.buttonShown()) {
+    <ui-button
+      class="form__ai-button"
+      block
+      [variant]="BUTTON_VARIANT.Ai"
+      iconLeft="spark"
+      [loading]="store.ai.busy()"
+      [disabled]="store.saving()"
+      (click)="store.fillWithAi()"
+      >{{ 'popup.ai.button' | transloco }}</ui-button
+    >
+  }
   <ui-button [variant]="BUTTON_VARIANT.Ghost" (click)="store.openApp()">{{
     'popup.openApp' | transloco
   }}</ui-button>

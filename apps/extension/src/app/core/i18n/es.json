@@ -77,6 +77,19 @@
       "demoLimit": "Una demo guarda 100 enlaces. Inicia sesión con Google o GitHub para seguir guardando.",
       "server": "Algo salió mal por nuestra parte. Inténtalo de nuevo en un momento.",
       "tryAgain": "Reintentar"
+    },
+    "ai": {
+      "button": "Rellenar con IA",
+      "done": "Rellenado con las sugerencias de la IA",
+      "disclaimer": "Generado por IA, puede ser inexacto",
+      "limit": "Sugerencias en pausa hasta el {{date}}. Has usado los {{limit}} enlaces de este mes.",
+      "unavailable": "Las sugerencias no están disponibles ahora mismo. Tu enlace se guarda como siempre.",
+      "settings": "Ajustes de IA",
+      "suggested": "Sugerido",
+      "tagsRow": "Etiquetas sugeridas",
+      "new": "Nueva",
+      "createTag": "Crear y añadir la etiqueta {{name}}",
+      "dismiss": "Descartar la sugerencia {{name}}"
     }
   }
 }

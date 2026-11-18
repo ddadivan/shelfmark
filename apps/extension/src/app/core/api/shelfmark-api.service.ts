@@ -1,6 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import type {
+  AiJobResponse,
+  AiSettingsResponse,
+  CreateAiDraftRequest,
   CreateFolderRequest,
   CreateLinkRequest,
   FolderResponse,
@@ -51,5 +54,18 @@ export class ShelfmarkApiService {
 
   create(body: CreateLinkRequest): Promise<LinkResponse> {
     return firstValueFrom(this.http.post<LinkResponse>(url(SHELFMARK_ENDPOINT.Links), body));
+  }
+
+  aiSettings(): Promise<AiSettingsResponse> {
+    return firstValueFrom(this.http.get<AiSettingsResponse>(url(SHELFMARK_ENDPOINT.AiSettings)));
+  }
+
+  createAiDraft(body: CreateAiDraftRequest): Promise<AiJobResponse> {
+    return firstValueFrom(this.http.post<AiJobResponse>(url(SHELFMARK_ENDPOINT.AiDrafts), body));
+  }
+
+  aiJob(id: string): Promise<AiJobResponse> {
+    const path = SHELFMARK_ENDPOINT.AiJob.replace(':id', encodeURIComponent(id));
+    return firstValueFrom(this.http.get<AiJobResponse>(url(path)));
   }
 }

@@ -571,7 +571,7 @@
     },
     "extension": {
       "title": "Browser extension",
-      "body": "The Shelfmark extension for Chrome, Edge, Brave and Arc works only when you click its button or press its shortcut, never in the background. It then sends Shelfmark the address of that one tab, to check whether you saved it already, and saves its address and title, with the folder, tags and note you pick, only when you press Save. It never sees your history or the other sites you visit.",
+      "body": "The Shelfmark extension for Chrome, Edge, Brave and Arc works only when you click its button or press its shortcut, never in the background. It then sends Shelfmark the address of that one tab, to check whether you saved it already, and saves its address and title, with the folder, tags and note you pick, only when you press Save. It never sees your history or the other sites you visit. If you click “Fill in with AI” and AI is on in your account, it also sends Shelfmark that address and title, and your note when AI may read notes, to get AI suggestions, handled under the same AI terms as in the app.",
       "access": "It uses your Shelfmark sign-in in that browser and cannot read the sign-in cookie itself. It can reach Shelfmark only, and keeps just the folders you saved to most recently on your device, to offer them next time."
     },
     "third": {

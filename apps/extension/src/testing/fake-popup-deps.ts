@@ -1,5 +1,8 @@
 import type { Provider } from '@angular/core';
 import type {
+  AiJobResponse,
+  AiSettingsResponse,
+  CreateAiDraftRequest,
   CreateFolderRequest,
   CreateLinkRequest,
   FolderResponse,
@@ -17,7 +20,7 @@ import { vi, type Mock } from 'vitest';
 import { ShelfmarkApiService } from '../app/core/api/shelfmark-api.service';
 import { BrowserTabsService } from '../app/core/chrome/browser-tabs.service';
 import type { ActiveTab } from '../app/core/chrome/models/active-tab.interface';
-import { makeFolder, makeLink } from './fixtures';
+import { makeAiJob, makeAiSettings, makeFolder, makeLink } from './fixtures';
 
 export const SIGNED_IN: NonNullable<GetSessionResponse> = {
   user: {
@@ -40,6 +43,8 @@ export interface FakeData {
   rules: RuleResponse[];
   lookup: LinkLookupResponse;
   created: LinkResponse;
+  ai: AiSettingsResponse;
+  draft: AiJobResponse;
 }
 
 export function fakeData(overrides: Partial<FakeData> = {}): FakeData {
@@ -51,6 +56,8 @@ export function fakeData(overrides: Partial<FakeData> = {}): FakeData {
     rules: [],
     lookup: { link: null },
     created: makeLink(),
+    ai: makeAiSettings(),
+    draft: makeAiJob(),
     ...overrides,
   };
 }
@@ -63,6 +70,9 @@ export interface FakePopupApi {
   lookup: Mock<(body: LinkLookupRequest) => Promise<LinkLookupResponse>>;
   createFolder: Mock<(body: CreateFolderRequest) => Promise<FolderResponse>>;
   create: Mock<(body: CreateLinkRequest) => Promise<LinkResponse>>;
+  aiSettings: Mock<() => Promise<AiSettingsResponse>>;
+  createAiDraft: Mock<(body: CreateAiDraftRequest) => Promise<AiJobResponse>>;
+  aiJob: Mock<(id: string) => Promise<AiJobResponse>>;
 }
 
 export interface FakePopupTabs {
@@ -91,6 +101,9 @@ export function fakePopupDeps(data: FakeData): FakePopupDeps {
       Promise.resolve(makeFolder({ id: 'new-folder', name: body.name })),
     ),
     create: vi.fn(() => Promise.resolve(data.created)),
+    aiSettings: vi.fn(() => Promise.resolve(data.ai)),
+    createAiDraft: vi.fn(() => Promise.resolve(data.draft)),
+    aiJob: vi.fn(() => Promise.resolve(data.draft)),
   };
   const tabs: FakePopupTabs = {
     active: vi.fn(() => Promise.resolve(data.tab)),
