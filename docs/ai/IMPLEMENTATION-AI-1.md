@@ -25,7 +25,7 @@ Alternatives:
 - **Synchronous call inside the save** — simplest, but breaks principle 4 (save waits up to 15 s) and the 8 s request timeout.
 - **External scheduler (GitHub Actions cron every 15 min hitting the sweep)** — makes "you can close Shelfmark" literally true, but adds `CRON_SECRET` to GitHub and best-effort timing; see open question 2.
 
-An ADR 0048 "AI job runner on Vercel" records this (and the `maxDuration` change that amends ADR 0019 / 0031) in the first commit.
+An ADR 0049 "AI job runner on Vercel" records this (and the `maxDuration` change that amends ADR 0019 / 0031) in the first commit.
 
 ## 2. Contracts (`libs/shared/contracts/src/ai/`, one type per file, `as const` + derived union)
 
@@ -122,11 +122,11 @@ Transloco: `ai.*` (`settings`, `intro`, `suggest`, `summary`, `line`, `toast`, `
 
 - `docs/SETUP.md`: 5.3 table rows `ANTHROPIC_API_KEY` (Production only, Sensitive, never Preview / Development), `AI_FULL_ACCESS_EMAILS` (Production), optional `AI_PROVIDER`; new 5.11 "AI provider": Anthropic Console account, API key, $10 monthly spend limit, data-retention terms to copy into the privacy page, check Fluid compute and the 30 s `maxDuration`; checklist rows.
 - `docs/PROJECT.md`: 6.1 new tables and fields, 6.2 the endpoints above, 5.6 status, 5.8 an "AI" row (opt-in, mock outside production, schema-validated text output, untrusted page text, provider SDK as the only non-fetcher outbound call to a fixed host).
-- `apps/api/CLAUDE.md`, `apps/web/CLAUDE.md`, `libs/ui/CLAUDE.md`: the AI module, the SDK exception, the feature folder, the components. ADR 0048. A changelog draft entry (`features/changelog/models/changelog.const.ts`).
+- `apps/api/CLAUDE.md`, `apps/web/CLAUDE.md`, `libs/ui/CLAUDE.md`: the AI module, the SDK exception, the feature folder, the components. ADR 0049. A changelog draft entry (`features/changelog/models/changelog.const.ts`).
 
 ## 8. Commits (each builds and passes `npm run affected`)
 
-1. `docs(adr): 0048 AI job runner` (architect) — and this plan.
+1. `docs(adr): 0049 AI job runner` (architect) — and this plan.
 2. `feat(contracts): AI types and link AI fields` — section 2.
 3. `feat(api): AI schema and migration` — section 3, schema spec.
 4. `feat(api): AI config, provider interface and mock provider` — registry, no-real-client setup guard, deps `@anthropic-ai/sdk` and `@vercel/functions` pinned (ADR 0001 / 0020), static imports in `api/index.mjs` (`vercel-entry.spec`).
@@ -153,8 +153,8 @@ Transloco: `ai.*` (`settings`, `intro`, `suggest`, `summary`, `line`, `toast`, `
 **Contradictions found in the repo (decided here, flag for review).**
 
 1. `apps/api/CLAUDE.md` says the SSRF-safe fetcher is "the only allowed way to make an outbound request"; the Anthropic SDK makes its own HTTPS calls. Precedent: `monitoring.service.ts` calls the fixed Sentry host with `fetch`. Plan: a documented exception for fixed provider hosts, SDK import confined to one file by ESLint.
-2. ADR 0047 point 1 puts the `AiProvider` interface "in `libs/shared/contracts`". It is server-only (the web must never see provider shapes); the plan keeps it in `apps/api/src/ai/models/` and puts only DTOs in contracts. ADR 0048 notes the deviation.
-3. ADR 0019 / 0031 fix `maxDuration` at 10 s; the runner needs 30 s (ADR 0048 amends; HTTP timeout unchanged).
+2. ADR 0047 point 1 puts the `AiProvider` interface "in `libs/shared/contracts`". It is server-only (the web must never see provider shapes); the plan keeps it in `apps/api/src/ai/models/` and puts only DTOs in contracts. ADR 0049 notes the deviation.
+3. ADR 0019 / 0031 fix `maxDuration` at 10 s; the runner needs 30 s (ADR 0049 amends; HTTP timeout unchanged).
 4. `AiSettings.dc.html` says backfill "uses 212 of your links" and "you can close Shelfmark; it continues in the background", which meets two limits: the monthly quota (question 1) and daily-only crons (question 2).
 5. Design placeholders show "38 of 100 links"; ADR 0047 sets 50 / 1,000. The UI uses `{n} of {limit}` from the API, so nothing to change.
 

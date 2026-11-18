@@ -1,4 +1,4 @@
--- AI-2 (#390, ADR 0049): "Not now" on a rule offer, one row per user and site (as `ruleHost`
+-- AI-2 (#390, ADR 0050): "Not now" on a rule offer, one row per user and site (as `ruleHost`
 -- returns it). Rules data, not AI data: it cascades with the account, not with DELETE /api/ai/data.
 CREATE TABLE "rule_offer_dismissals" (
     "user_id" UUID NOT NULL,

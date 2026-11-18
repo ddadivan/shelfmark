@@ -101,6 +101,24 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 
 **Proposal — one call for F1 and F2.** Tags, folder and summary are produced by the same background job with one structured response (`{ tags, newTag, folder, summary, kind }`), so a link costs one call, not two, and both appear together. The two features keep separate switches; a switched-off part is simply not requested.
 
+### F1c. Fill in with AI (author's decision, Nov 18, 2026; extends #390)
+
+- **Problem.** Accepting chips one by one is slow, especially on a phone.
+- **What the user sees.** In Add link and Edit link, once suggestions are ready, a **Fill in with AI** button (spark) applies everything AI proposes in one click: the suggested folder, the existing tags and the summary. A new tag stays a chip; a folder or tags the user already chose are never replaced. Every field stays editable, and the applied values are ordinary user data after the click (no "Moved by AI" mark: the click is the user's choice). Desktop shortcut; on the phone the button sits in the Add link sheet. The same one-click idea already exists as "Apply to N links" in Tidy Unsorted and "Apply selected" in clean-up, and comes to the Paste many and Import review lists with AI-2 ("Use suggested folders").
+- **Free vs AI pack, privacy, cost.** Nothing new: it applies F1 and F2 results.
+- **Order.** AI-1.1, right after AI-1 (small: one button, one shortcut).
+
+### F9. Links from a screenshot (author's decision, Nov 18, 2026)
+
+- **Problem.** Many things are saved as screenshots (a post, a product, a video) because the app they came from has no shareable link.
+- **What the user sees.** Paste, drop or (on the phone) share a screenshot to Shelfmark. AI reads the image and offers the addresses it finds as a review list (like Paste many); when there is no address, it offers a title and a short note (for example a product and the shop) to save as a link-less reminder or to search for. Nothing is saved until the user confirms.
+- **Entry points.** Desktop: Add link (paste or drop an image), Paste many. Phone: the Share target accepts images, and the Add link sheet has "From a screenshot".
+- **Free vs AI pack.** Same monthly limit as F1 (one image counts as one link).
+- **Privacy.** The image goes to the model provider for this one request; **Shelfmark never stores the screenshot**, only what the user saves from it. The AI intro and the privacy page say so.
+- **Cost.** One image is about $0.0002–0.0005 with Claude Haiku 5.5.
+- **Dependencies.** F0, the Share target (exists), image input in the provider. No embeddings.
+- **Order.** AI-2.
+
 ### F1b. Learn from corrections, then offer a rule (**Proposal**, extends #390 and #398)
 
 - **Problem.** AI that keeps guessing wrong is annoying, and AI that keeps guessing right for the same site is wasted money.
@@ -149,7 +167,7 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 
 - **Problem.** Sometimes the question is not "where is that link" but "what did I save about X": "Which ramen recipes did I save?", "Compare the two coats I liked".
 - **What the user sees.** A chat panel that answers only from the user's links: the answer streams in as plain text with numbered citations, and every cited link is listed below as a real link row (favicon, title, folder) with its usual actions: open, open side by side, remind me. It runs only when the user asks; nothing in the library is read in the background for chat. Suggested starter questions built from the user's own folders. A clear daily limit line ("12 questions left today"). Refuses to answer beyond the library ("I couldn't find that in your links"). No memory between sessions for v1 (**Proposal**: keeps privacy and cost simple).
-- **Entry points.** Desktop: an "Ask your shelf" item at the bottom of the ⌘K search results ("Ask: <query>") and a header button with the spark mark; the panel opens on the right as a side panel over the feed. Phone: a "Ask" segment on the Search tab (Search · Ask), full page.
+- **Entry points.** Desktop: an "Ask your shelf" item at the bottom of the ⌘K search results ("Ask: <query>") and a header button with the spark mark; the panel opens on the right as a side panel over the feed. Phone (author's decision, Nov 18, 2026): an **Ask** tab with the spark replaces **Tags** in the tab bar while AI is on (tags move into Library as their own section next to folders; with AI off the bar keeps Tags), and the chat opens full screen.
 - **Free vs AI pack.** Free: a few questions a month (a taste). AI pack: fair-use daily limit.
 - **Privacy.** Sent: the question and the top \~10 retrieved links (title, URL, summary, tags; notes only with the switch). Answers are not stored server-side beyond the session (**Proposal**).
 - **Cost.** \~$0.013 per question (Sonnet-class). Typical \~$0.40 / month; heavy (15 a day) \~$6 / month, which is above the AI pack price, so the fair-use limit or a cheaper answer model is needed (open question).
@@ -214,7 +232,8 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 | Step | What | Why first |
 | --- | --- | --- |
 | AI-1 (MVP) | F0 foundation + Settings › AI, F1 tag and folder suggestions, F2 summaries (one job), demo seed | Visible in every save, cheapest, proves the whole pipeline (opt-in, jobs, quotas, mock, degradation) |
-| AI-2 | F1a Tidy Unsorted, F1b rule offers | Small, uses AI-1 output, pairs with Import (#387) and Rules (#398) |
+| AI-1.1 | F1c Fill in with AI | One button; uses AI-1 output |
+| AI-2 | F1a Tidy Unsorted, F1b rule offers, F9 links from a screenshot | Small, uses AI-1 output, pairs with Import (#387) and Rules (#398); no embeddings needed |
 | AI-3 | F3 smarter search, F7 related links | Core promise "find it again"; needed by F4 and F5 |
 | AI-4 | F4 Ask your shelf, F8 rediscover | Most expensive and most visible; needs F3 |
 | AI-5 | F5 clean-up | Needs F3 and #397 |

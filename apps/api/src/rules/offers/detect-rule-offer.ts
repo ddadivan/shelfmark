@@ -2,7 +2,7 @@ import { RULE_OFFER_LIMIT, ruleHost } from '@shelfmark/contracts';
 import type { RuleOfferCandidate } from '../models/rule-offer-candidate.interface';
 
 /**
- * The folder to offer for `host` (AI-2, ADR 0049): among the candidates (newest first) whose
+ * The folder to offer for `host` (AI-2, ADR 0050): among the candidates (newest first) whose
  * `ruleHost` is exactly `host`, the newest `RULE_OFFER_LIMIT.SameChoiceMin` must share one folder
  * and none may have been filed by AI. Answers the folder and how many of the newest links in a row
  * are there, else `null`. Whether the folder is live is the caller's check.

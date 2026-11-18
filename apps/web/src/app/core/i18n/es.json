@@ -571,7 +571,7 @@
       "intro": "La IA está desactivada hasta que la actives en Ajustes › IA. Cuando está activada, sugiere etiquetas y carpetas y escribe resúmenes breves. Todo lo que crea lleva una pequeña chispa y puede ser inexacto; no se aplica nada salvo que lo aceptes o elijas el modo automático.",
       "processor": {
         "term": "Quién lo procesa:",
-        "text": "[PROVIDER], como nuestro encargado del tratamiento, solo para producir el resultado que pediste. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+        "text": "Anthropic PBC (EE. UU.), como nuestro encargado del tratamiento, solo para producir el resultado que pediste."
       },
       "sent": {
         "term": "Qué se envía:",
@@ -579,7 +579,7 @@
       },
       "kept": {
         "term": "Cuánto tiempo se guarda:",
-        "text": "el proveedor guarda la solicitud [N] días como máximo y no la usa para entrenar. Los resultados (etiquetas, resúmenes) se guardan con tus enlaces y se eliminan con ellos."
+        "text": "Anthropic elimina la solicitud en un plazo de 30 días y no la usa para entrenar; solo el contenido que marcan sus sistemas de seguridad puede conservarse más tiempo (hasta 2 años), o cuando la ley lo exige. Los resultados (etiquetas, resúmenes) se guardan con tus enlaces y se eliminan con ellos."
       },
       "counted": {
         "term": "Qué contamos:",
@@ -2926,6 +2926,9 @@
       "aiTidy": {
         "title": "Ordenar «Sin carpeta» con IA",
         "text": "Revisa en una sola página las sugerencias de IA para todo lo que está en «Sin carpeta» y aplícalas con un solo Deshacer. Si guardas varias veces enlaces de un sitio en la misma carpeta, Shelfmark te ofrece una regla."
+      },
+      "extensionInStore": {
+        "text": "La extensión de Shelfmark ya está en Chrome Web Store: instálala desde el aviso de tu estantería o desde Ajustes › Biblioteca."
       }
     },
     "sections": {
@@ -3080,7 +3083,7 @@
       },
       "training": {
         "title": "No se usa para entrenar",
-        "text": "Tu contenido nunca se usa para entrenar modelos. El proveedor, [PROVIDER], lo procesa por nosotros y lo guarda [N] días como máximo."
+        "text": "Tu contenido nunca se usa para entrenar modelos. Anthropic lo procesa por nosotros y lo elimina en un plazo de 30 días."
       },
       "details": "Puedes desactivar la IA, o una función cada vez, en Ajustes › IA.",
       "policy": "Leer la política de privacidad",

@@ -63,7 +63,7 @@ A task is not done until every item that applies to it is checked. Reviewers cit
 
 ## 10. Dependencies
 
-- [ ] `npm audit --audit-level=high` clean; no new deps without reason
+- [ ] `node tools/ci/audit-runtime.mjs` clean (run-time dependencies, the required gate, ADR 0048); `npm audit --audit-level=high` on the full tree reviewed (dev tooling warns); no new deps without reason
 - [ ] No new install scripts: `npm install-scripts ls` is clean; new ones are denied in `allowScripts` unless approved with a reason in the PR and ADR 0020
 - [ ] CodeQL and Dependabot alerts addressed
 

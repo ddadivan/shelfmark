@@ -11,7 +11,7 @@ import { AiSweepResponseDto } from './dto/ai-sweep-response.dto';
 export class AiSweepController {
   constructor(private readonly catchUp: AiCatchUpService) {}
 
-  // A state-changing GET like the other crons (ADR 0034, 0048): Vercel Cron can only send GET.
+  // A state-changing GET like the other crons (ADR 0034, 0049): Vercel Cron can only send GET.
   // Public to the session guard because there is no user; `CronSecretGuard` (method level, so it
   // can never be skipped by moving the marker) requires the bearer secret and fails closed.
   @Get(CRON_ROUTE.AiSweep)

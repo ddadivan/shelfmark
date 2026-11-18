@@ -1,7 +1,7 @@
 import { createTestDatabase } from '../../test-utils/test-database';
 import type { TestDatabase } from '../../test-utils/models/test-database.interface';
 
-describe('rule offer dismissals schema (AI-2, ADR 0049)', () => {
+describe('rule offer dismissals schema (AI-2, ADR 0050)', () => {
   let database: TestDatabase;
 
   beforeAll(async () => {
