@@ -12,6 +12,7 @@ import {
   type CleanupTagPair,
 } from '@shelfmark/contracts';
 import { AiSearchStatusService } from '../ai/embeddings/ai-search-status.service';
+import { AiProviderRegistry } from '../ai/providers/ai-provider.registry';
 import { AiSettingsService } from '../ai/settings/ai-settings.service';
 import { AiUsageService } from '../ai/usage/ai-usage.service';
 import { LINK_INCLUDE } from '../links/models/link-include.const';
@@ -25,6 +26,7 @@ import type { CleanupCheck } from './models/cleanup-check.interface';
 import type { CleanupDbClient } from './models/cleanup-db-client.type';
 import type { CleanupReportRow } from './models/cleanup-report-row.interface';
 import type { StoredCleanupFindings } from './models/stored-cleanup-findings.interface';
+import { CleanupRunnerService } from './cleanup-runner.service';
 import { pickKeep } from './pick-keep';
 import { toCleanupState } from './to-cleanup-state';
 import { emptyFindings, readStoredFindings, toFindingsJson } from './read-stored-findings';
@@ -67,6 +69,8 @@ export class CleanupService {
     private readonly settings: AiSettingsService,
     private readonly usage: AiUsageService,
     private readonly searchStatus: AiSearchStatusService,
+    private readonly registry: AiProviderRegistry,
+    private readonly runner: CleanupRunnerService,
     @Inject(CLEANUP_CHECKS) private readonly checks: readonly CleanupCheck[],
   ) {}
 
@@ -118,7 +122,10 @@ export class CleanupService {
         aiChecks.length > 0 &&
         (await this.usage.reserveCleanupRun(userId, access.tier, now, tx)) !== null;
       if (withAi) findings.pending = aiChecks.map((check) => check.key);
-      const total = withAi && access.vectorsReady ? await this.vectorTotal(tx, userId) : 0;
+      const total =
+        withAi && access.vectorsReady
+          ? await this.vectorTotal(tx, userId, this.registry.embeddingsFor(user).model)
+          : 0;
       await this.store(tx, userId, findings, {
         state: withAi ? CLEANUP_STATE.Running : CLEANUP_STATE.Ready,
         includeAi: withAi,
@@ -128,6 +135,7 @@ export class CleanupService {
       return { withAi };
     });
     this.logger.log(`Clean-up run: ai=${result.withAi}, ${Date.now() - started} ms`);
+    if (result.withAi) this.runner.start(userId);
     return this.report(userId, now);
   }
 
@@ -161,12 +169,12 @@ export class CleanupService {
     };
   }
 
-  /** Live links of the user with a vector of any model (the denominator of the progress). */
-  private async vectorTotal(db: CleanupDbClient, userId: string): Promise<number> {
+  /** Live links of the user with a vector of the current model (the denominator of the progress). */
+  private async vectorTotal(db: CleanupDbClient, userId: string, model: string): Promise<number> {
     const [row] = await db.$queryRaw<{ n: number }[]>`
       SELECT count(*)::int AS n FROM link_embeddings e
       JOIN links l ON l.id = e.link_id AND l.user_id = e.user_id
-      WHERE e.user_id = ${userId}::uuid AND l.deleted_at IS NULL`;
+      WHERE e.user_id = ${userId}::uuid AND e.model = ${model} AND l.deleted_at IS NULL`;
     return row?.n ?? 0;
   }
 

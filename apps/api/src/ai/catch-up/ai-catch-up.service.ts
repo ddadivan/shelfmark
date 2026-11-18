@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { AI_BACKFILL_STATE, AI_JOB_REASON, type AiTickResponse } from '@shelfmark/contracts';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiBackfillResultsService } from '../backfill/ai-backfill-results.service';
@@ -6,6 +7,8 @@ import { AiBackfillService } from '../backfill/ai-backfill.service';
 import { AiBackgroundService } from '../background/ai-background.service';
 import { AI_BATCH_STATE } from '../models/ai-batch-state.const';
 import { AI_CATCH_UP_LIMIT } from '../models/ai-catch-up-limit.const';
+import { CLEANUP_TICK_HOOK } from '../models/cleanup-tick-hook.token';
+import type { CleanupTickHook } from '../models/cleanup-tick-hook.interface';
 import { AI_JOB_SOURCE } from '../models/ai-job-source.const';
 import { AI_JOB_STATE } from '../models/ai-job-state.const';
 import { AI_RUNNER_LIMIT } from '../models/ai-runner-limit.const';
@@ -35,13 +38,33 @@ export class AiCatchUpService {
     private readonly backfillResults: AiBackfillResultsService,
     private readonly background: AiBackgroundService,
     private readonly embed: AiEmbedService,
+    private readonly moduleRef: ModuleRef,
   ) {}
+
+  private cleanupHook: CleanupTickHook | null | undefined;
+
+  /** The clean-up hook of `CleanupModule`, resolved once (absent in apps without that module). */
+  private cleanup(): CleanupTickHook | null {
+    if (this.cleanupHook === undefined) {
+      try {
+        this.cleanupHook = this.moduleRef.get<CleanupTickHook>(CLEANUP_TICK_HOOK, {
+          strict: false,
+        });
+      } catch {
+        this.cleanupHook = null;
+      }
+    }
+    return this.cleanupHook;
+  }
 
   /** `POST /api/ai/tick`: starts the user's catch-up and answers the progress as it is now. */
   async tick(userId: string): Promise<AiTickResponse> {
     const deadline = Date.now() + AI_CATCH_UP_LIMIT.TickBudgetMs;
     this.background.defer(() => this.catchUp(userId, deadline));
-    return this.settings.progress(userId);
+    const progress = await this.settings.progress(userId);
+    // Library clean-up (AI-5): the report state, and a running report continues after the response.
+    const hook = this.cleanup();
+    return hook === null ? progress : { ...progress, cleanup: await hook.tick(userId) };
   }
 
   /** `GET /api/cron/ai-sweep` (no session: the only AI code that touches every user's rows). */
@@ -71,6 +94,9 @@ export class AiCatchUpService {
       if (!known.has(userId)) users.push({ userId });
     }
     const deadline = Date.now() + AI_CATCH_UP_LIMIT.SweepBudgetMs;
+    const hook = this.cleanup();
+    // Library clean-up (AI-5): stalled runs fail, abandoned ones continue.
+    if (hook !== null) this.background.defer(() => hook.sweep(deadline));
     this.background.defer(async () => {
       let errors = 0;
       for (const { userId } of users) {
