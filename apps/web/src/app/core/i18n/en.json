@@ -2869,6 +2869,10 @@
       "aiTidy": {
         "title": "Tidy Unsorted with AI",
         "text": "Review the AI suggestions for everything in Unsorted on one page and apply them with one Undo. File a site's links into the same folder a few times and Shelfmark offers a rule."
+      },
+      "aiSearch": {
+        "title": "Search by meaning",
+        "text": "Search finds links that match what you mean, not only your words, and says why each one matched. Edit link shows related links from your shelf, and Side by side can offer their folders."
       }
     },
     "sections": {

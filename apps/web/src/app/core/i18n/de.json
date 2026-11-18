@@ -2869,6 +2869,10 @@
       "aiTidy": {
         "title": "„Ohne Ordner“ mit KI aufräumen",
         "text": "Prüfe die KI-Vorschläge für alles in „Ohne Ordner“ auf einer Seite und wende sie mit einem Rückgängig an. Legst du Links einer Website mehrmals in denselben Ordner, schlägt Shelfmark eine Regel vor."
+      },
+      "aiSearch": {
+        "title": "Suche nach Bedeutung",
+        "text": "Die Suche findet Links, die zu dem passen, was du meinst, nicht nur zu deinen Wörtern, und sagt, warum jeder passt. „Link bearbeiten“ zeigt Ähnliches aus deinem Regal, und „Nebeneinander“ kann dessen Ordner anbieten."
       }
     },
     "sections": {

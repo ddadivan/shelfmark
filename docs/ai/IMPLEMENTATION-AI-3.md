@@ -66,7 +66,7 @@ Changed: `GET` / `PATCH /api/ai/settings` (`meaningSearch`, `search`); `POST /ap
 
 ## 5. Web and `libs/ui`
 
-**`libs/ui`** (`ui-dev`): `ui-command-group` gets an optional `icon` input (the spark next to "Related by meaning", `ai` colour, `aria-hidden`), story and harness. Nothing else: the related list uses `ui-favicon`, `ui-icon`, `ui-tooltip`.
+**`libs/ui`** (`ui-dev`): `ui-command-group` gets an optional `icon` input (the spark next to "Related by meaning", `ai` colour, `aria-hidden`) and an optional `lead` input (a muted line above the heading, "No links with these words" when the word search found nothing); `ui-command-list` gets a `note` slot under the results (the "getting ready" `ui-ai-line`). Stories, specs and harness readers for all three. Nothing else: the related list uses `ui-favicon`, `ui-icon`, `ui-tooltip`.
 
 **`features/ai/`** (`frontend-dev`): the `AI_API` seam + HTTP + mock gain `searchMeaning(q, limit)` and `related(linkId, limit)`; the mock uses word overlap plus the same synonym list over the mock library, honours `ai-fail` and a seeded "processing" toggle for e2e. `AiSettingsStore`: `meaningSearchOn`, `searchStatus`; the follow-up tick condition adds `processing`. `components/related-links/` ("Related on your shelf": up to five rows, favicon, title, "Close to: …" with the spark and tooltip `ai.disclaimer`; opens in a new tab; hidden unless `ready` and non-empty).
 
@@ -124,3 +124,33 @@ Changed: `GET` / `PATCH /api/ai/settings` (`meaningSearch`, `search`); `POST /ap
 7. **Settings design gap.** `AiSettings.dc.html` has no Search by meaning row. Default: the existing switch-row pattern plus a muted status line, reviewed later.
 8. **Related links in the Edit dialog cannot be dragged** to side by side (the dialog is modal), unlike the design note. Default: open in a new tab; "Show related" covers side by side.
 9. **Word search over summaries and tags.** Today words match title, note and URL only. Default: unchanged in AI-3; meaning results cover summary and tag words.
+
+## 10. Implementation notes
+
+Deviations from this plan and from the backend and web reports, as built on `feat/392-ai-search`:
+
+- **No embed job rows.** As decided (ADR 0050 point 4): the pass works on the derived set; `ai_jobs.kind` keeps `link` only, and readiness is a count.
+- **Partial HNSW index.** The index is `WHERE model <> ''` (always true) so Prisma's drift check ignores it; every KNN query repeats the predicate (`HNSW_INDEX_PREDICATE`) so the planner may use it. The KNN runs the index scan alone in a materialized CTE ordered by distance, then removes trashed links; it over-fetches by the user's trashed links with a vector (at most `KnnFetchMax` = 200 rows), so they never shrink the 40-row result.
+- **CI image.** The migration check runs on `pgvector/pgvector:0.8.7-pg17`, pinned by digest (PGlite runs the same pgvector 0.8.7).
+- **Voyage request fields unverified.** `output_dimension`, `output_dtype` and `truncation` follow the plan; the agent proxy blocked Voyage's API reference, so the author checks them against the current docs before the first production call (the provider narrows the answer either way: one 1,024-number finite vector per input, else a failure).
+- **Tag paths.** Tag rename, delete and merge first only flagged vectors stale (the next save, tick or sweep rebuilt them); after review they also kick the pass through `TagChangeHooks` (`src/tags/`), because `TagsModule` cannot import `AiModule`. Edit link's AI tag undo kicks too.
+- **Review hardening.** A vector is written (or a stale flag cleared) only while AI and the switch are still on, under a `FOR SHARE` check on the settings row; the write compares the sent title, note, summary and tags with the current rows and stores a changed link as stale; lease renew and release match the lease value; a malformed vector refunds and backs off; 3 failures in a row that cannot be retried back off for 6 hours with one warning; word matches are removed before the relative window; related links have their own rate limit (`AiRelated`, 60 a minute).
+- **Related during processing.** `GET /api/links/:id/related` answers items whenever the link has a vector of the current model, also while the status is `processing` (no model call, so nothing to save); only `off` answers none. The web asks only while the status is `ready`.
+- **Show related from 80em.** The menu item is shown only where side by side can open (`SplitViewService.canOpen`, 80em) and while search by meaning is ready; it uses up to `SPLIT_RELATED_LIMIT` related links and asks again after the related link's embedded fields change.
+- **Meaning row meta.** Each meaning row shows the host and the "Close to: …" line (with "(from the summary)" when every reason is a summary clause), the spark as the AI mark.
+- **Readiness line.** Settings › AI shows "{ready} of {total} links ready" / "Ready" / the quota line next to the switch (`meaning-search-control`), not as a separate row.
+- **Opens count.** A related row opens in a new tab and records the open through `LinksStore.recordOpen`, like any other open (Recent, history).
+- **Search empty state.** "No links with these words" shows as soon as the word answer is empty; meaning rows append under it when they arrive (no "Searching…" during the meaning debounce). The once-per-session "getting ready" line is claimed only when the answer that shows it is on screen.
+- **Tick.** The web also ticks while the status reads `unavailable`, so it recovers without a reload.
+
+**Defaults taken for section 9**
+
+1. Existing AI users: the switch is on for settings rows created from now on and off for rows that existed before the migration.
+2. Meaning results from 80% of live links ready; below, the "getting ready" line once per session and today's results.
+3. Delete AI data also turns "Search by meaning" off; the dialog says so.
+4. Library page `?q=`: words only.
+5. `halfvec(1024)`.
+6. Free 2,000 embeddings and 1,000 searches a month; AI pack 20,000 and 10,000.
+7. Settings: the existing switch-row pattern with the readiness line, to be reviewed in design.
+8. Related links in Edit link open in a new tab; "Show related" covers side by side.
+9. Word search over summaries and tags: unchanged.

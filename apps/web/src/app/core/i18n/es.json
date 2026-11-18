@@ -2930,6 +2930,10 @@
       "aiTidy": {
         "title": "Ordenar «Sin carpeta» con IA",
         "text": "Revisa en una sola página las sugerencias de IA para todo lo que está en «Sin carpeta» y aplícalas con un solo Deshacer. Si guardas varias veces enlaces de un sitio en la misma carpeta, Shelfmark te ofrece una regla."
+      },
+      "aiSearch": {
+        "title": "Búsqueda por significado",
+        "text": "La búsqueda encuentra enlaces que coinciden con lo que quieres decir, no solo con tus palabras, y explica por qué coincide cada uno. «Editar enlace» muestra enlaces relacionados de tu estantería, y «Lado a lado» puede ofrecer sus carpetas."
       }
     },
     "sections": {
