@@ -55,9 +55,9 @@ export const RATE_LIMIT = {
   AiBackfill: { limit: 20, ttl: MINUTE_MS },
   AiTick: { limit: 10, ttl: MINUTE_MS },
   AiDeleteData: { limit: 5, ttl: MINUTE_MS },
-  // The MCP server (#395, ADR 0053), per client IP before the token guard; each token also has a
+  // The MCP server (#395, ADR 0054), per client IP before the token guard; each token also has a
   // daily cap in Postgres (MCP_LIMIT.CallsPerTokenPerDay).
   Mcp: { limit: 120, ttl: MINUTE_MS },
-  // Personal MCP token create and revoke (#395, ADR 0053): a person creates a handful, ever.
+  // Personal MCP token create and revoke (#395, ADR 0054): a person creates a handful, ever.
   McpTokenWrite: { limit: 10, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;

@@ -1,4 +1,4 @@
--- MCP server (#395, ADR 0053): personal read-only tokens, stored as a SHA-256 digest, and their daily
+-- MCP server (#395, ADR 0054): personal read-only tokens, stored as a SHA-256 digest, and their daily
 -- call counts. Expand only: two new tables.
 
 -- CreateTable

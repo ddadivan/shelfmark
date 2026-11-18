@@ -27,7 +27,7 @@ const WWW_AUTHENTICATE_HEADER = 'WWW-Authenticate';
 const UNSUPPORTED_PROTOCOL_VERSION = 'Unsupported MCP-Protocol-Version';
 
 /**
- * Authenticates `POST /api/mcp` (ADR 0053 point 5), method level so moving the public marker can
+ * Authenticates `POST /api/mcp` (ADR 0054 point 5), method level so moving the public marker can
  * never skip it; runs after the throttler and `CsrfGuard`. Missing, malformed, unknown or revoked
  * token → 401 with `WWW-Authenticate`; a demo or non-Pro account → 403 (tokens stay listed and
  * revocable); an unsupported `MCP-Protocol-Version` header → 400, before anything is counted; past

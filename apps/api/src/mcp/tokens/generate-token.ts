@@ -5,7 +5,7 @@ import { MCP_TOKEN_BYTES } from '../models/mcp-token-bytes.const';
 import { hashToken } from './hash-token';
 
 /**
- * A new personal MCP token (ADR 0053): `MCP_TOKEN_PREFIX` plus `MCP_TOKEN_BYTES` (32) bytes from the
+ * A new personal MCP token (ADR 0054): `MCP_TOKEN_PREFIX` plus `MCP_TOKEN_BYTES` (32) bytes from the
  * CSPRNG as unpadded base64url (43 characters, 256 bits). Only `hash` and `last4` are stored; the
  * secret is answered once by the create call and must never be logged.
  */

@@ -71,23 +71,23 @@ export const PUBLIC_ROUTES: readonly PublicRoute[] = [
     method: HTTP_METHOD.Get,
     path: CRON_ENDPOINT.AiSweep,
     reason:
-      'Vercel Cron cannot send a session: authenticated by the CRON_SECRET bearer guard on the handler, fails closed (ADR 0048)',
+      'Vercel Cron cannot send a session: authenticated by the CRON_SECRET bearer guard on the handler, fails closed (ADR 0049)',
   },
   {
     method: HTTP_METHOD.Post,
     path: MCP_ENDPOINT.Server,
     reason:
-      'MCP clients cannot hold a session cookie: authenticated by the personal-token guard (McpTokenGuard) on the handler, fails closed; cookies are never read; read-only tools, per-IP limit and per-token daily cap (ADR 0053)',
+      'MCP clients cannot hold a session cookie: authenticated by the personal-token guard (McpTokenGuard) on the handler, fails closed; cookies are never read; read-only tools, per-IP limit and per-token daily cap (ADR 0054)',
   },
   {
     method: HTTP_METHOD.Get,
     path: MCP_ENDPOINT.Server,
-    reason: 'the MCP transport probes GET for a server stream: answers 405 without data (ADR 0053)',
+    reason: 'the MCP transport probes GET for a server stream: answers 405 without data (ADR 0054)',
   },
   {
     method: HTTP_METHOD.Delete,
     path: MCP_ENDPOINT.Server,
     reason:
-      'the MCP transport may DELETE a session: there are none, answers 405 without data (ADR 0053)',
+      'the MCP transport may DELETE a session: there are none, answers 405 without data (ADR 0054)',
   },
 ];

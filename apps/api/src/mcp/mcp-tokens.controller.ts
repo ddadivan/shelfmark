@@ -31,7 +31,7 @@ import { McpTokensResponseDto } from './dto/mcp-tokens-response.dto';
 import { McpTokensService } from './tokens/mcp-tokens.service';
 
 /**
- * Personal MCP tokens of the signed-in user (#395, ADR 0053). Session only (the MCP server itself
+ * Personal MCP tokens of the signed-in user (#395, ADR 0054). Session only (the MCP server itself
  * takes the token, never a cookie); the global CSRF guard covers the unsafe methods.
  */
 @ApiTags('mcp')

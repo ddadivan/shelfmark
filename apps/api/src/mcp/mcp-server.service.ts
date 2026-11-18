@@ -6,7 +6,7 @@ import type { McpHttpAnswer } from './models/mcp-http-answer.interface';
 import type { McpPrincipal } from './models/mcp-principal.interface';
 
 /**
- * The stateless Streamable HTTP subset of ADR 0053: one JSON-RPC message per POST, answered with
+ * The stateless Streamable HTTP subset of ADR 0054: one JSON-RPC message per POST, answered with
  * `application/json` (200) or, for notifications and client responses, 202 without a body.
  */
 @Injectable()

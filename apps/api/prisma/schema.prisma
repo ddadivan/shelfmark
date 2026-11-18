@@ -453,7 +453,7 @@ model LinkRule {
   @@map("link_rules")
 }
 
-// AI settings (#389, ADR 0047/0048), one row per user; a missing row means the defaults and AI off.
+// AI settings (#389, ADR 0047/0049), one row per user; a missing row means the defaults and AI off.
 // `enabledAt` is the first time AI was turned on and `introSeenAt` the intro (turning AI on is the
 // intro's button). The backfill ("Process existing links") state lives here: a keyset cursor over the
 // user's live links created before `enabledAt`, the size of the run, how many links it has done and
@@ -579,7 +579,7 @@ model LinkSuggestion {
   @@map("link_suggestions")
 }
 
-// Personal MCP tokens (#395, ADR 0053): read-only access for the user's own assistant. Only the
+// Personal MCP tokens (#395, ADR 0054): read-only access for the user's own assistant. Only the
 // SHA-256 hex digest of the secret is stored (unique, the lookup key), with its last four characters
 // for the list. Revoke deletes the row, so the token stops at once and its usage rows cascade.
 // CHECKs in the migration keep the name to 1-40 characters, the digest to 64 hex characters and

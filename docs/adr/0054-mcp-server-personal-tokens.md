@@ -1,4 +1,4 @@
-# 0053. Shelfmark MCP server: a hand-written stateless Streamable HTTP handler at `/api/mcp`, personal read-only tokens hashed at rest, no OAuth in v1
+# 0054. Shelfmark MCP server: a hand-written stateless Streamable HTTP handler at `/api/mcp`, personal read-only tokens hashed at rest, no OAuth in v1
 
 - Status: Proposed
 - Date: 2026-11-17

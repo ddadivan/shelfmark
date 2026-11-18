@@ -14,7 +14,7 @@ import { AiRunnerService } from '../runner/ai-runner.service';
 import { AiSettingsService } from '../settings/ai-settings.service';
 
 /**
- * Catch-up without frequent crons (ADR 0048 point 4). `tick` (the session user, while the web app
+ * Catch-up without frequent crons (ADR 0049 point 4). `tick` (the session user, while the web app
  * has pending jobs or a running backfill) and the daily `sweep` (every user with work) answer at once
  * and run the work after the response within their budget: poll open batches, run stale jobs
  * (pending past 30 s or a lease that expired; drafts not yet attached are left to their dialog),

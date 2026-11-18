@@ -8,7 +8,7 @@ import { hashToken } from '../tokens/hash-token';
 import { parseBearerToken } from './parse-bearer-token';
 
 /**
- * Resolves `Authorization: Bearer smk_live_…` (ADR 0053 point 5): a well-formed token is hashed and
+ * Resolves `Authorization: Bearer smk_live_…` (ADR 0054 point 5): a well-formed token is hashed and
  * looked up with its user in one query on the unique digest. Missing, malformed, unknown and revoked
  * tokens are all `null`. Only the `Authorization` header is read: never a cookie.
  */

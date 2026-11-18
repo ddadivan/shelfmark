@@ -1,7 +1,7 @@
 import type { LinkKind } from '@shelfmark/contracts';
 
 /**
- * A link as the MCP tools return it: the audited allow-list of ADR 0053 point 6 (`toMcpLink` is the
+ * A link as the MCP tools return it: the audited allow-list of ADR 0054 point 6 (`toMcpLink` is the
  * only producer). Never images, normalised URLs, reminders, pins, share tokens or AI suggestions.
  */
 export interface McpLink {

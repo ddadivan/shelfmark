@@ -122,7 +122,7 @@ export class LinksWriteService {
           const replay = await this.findByKey(tx, userId, key);
           if (replay) return { link: replay, created: false };
         }
-        // The draft job row is locked after `folders:` and before `tags:` (ADR 0048 point 4).
+        // The draft job row is locked after `folders:` and before `tags:` (ADR 0049 point 4).
         const draft =
           request.aiDraftId === undefined
             ? null
@@ -154,7 +154,7 @@ export class LinksWriteService {
           },
           include: LINK_INCLUDE,
         });
-        // AI (ADR 0048): attach the draft or enqueue a job; nothing while AI is off.
+        // AI (ADR 0049): attach the draft or enqueue a job; nothing while AI is off.
         const ai = await this.aiJobs.afterCreate(
           tx,
           userId,
@@ -227,7 +227,7 @@ export class LinksWriteService {
     this.assertTagNames(request.tags);
     // `folders:` first whenever the job rows or tags may be touched: AI's apply takes `folders:` →
     // job row → `tags:`, so a tag or address edit queues behind it instead of deadlocking on the
-    // link row and the tags lock in the opposite order (ADR 0048).
+    // link row and the tags lock in the opposite order (ADR 0049).
     const needsLock =
       typeof request.folderId === 'string' ||
       request.pinnedInFolder === true ||
@@ -269,7 +269,7 @@ export class LinksWriteService {
             data.kind = deriveLinkKind(request.url);
           }
         }
-        // Job rows after `folders:` and before `tags:` (ADR 0048 lock order).
+        // Job rows after `folders:` and before `tags:` (ADR 0049 lock order).
         aiSuperseded = await this.aiHooks.beforeUpdate(tx, userId, id, newPage);
 
         if (request.tags !== undefined) {
@@ -285,7 +285,7 @@ export class LinksWriteService {
           data: touched ? { ...data, updatedAt: new Date() } : data,
           include: LINK_INCLUDE,
         });
-        // AI (#390, ADR 0048): settle the suggestion marks; a new page asks AI again.
+        // AI (#390, ADR 0049): settle the suggestion marks; a new page asks AI again.
         const ai = await this.aiHooks.afterUpdate(
           tx,
           userId,

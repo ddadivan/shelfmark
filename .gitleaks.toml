@@ -9,6 +9,6 @@ paths = ['''^package-lock\.json$''', '''^docs/design/assets/.*''', '''^docs/desi
 
 [[rules]]
 id = "shelfmark-mcp-token"
-description = "Shelfmark personal MCP token (ADR 0053)"
+description = "Shelfmark personal MCP token (ADR 0054)"
 regex = '''smk_live_[A-Za-z0-9_-]{43}'''
 keywords = ["smk_live_"]

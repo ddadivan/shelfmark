@@ -559,7 +559,7 @@
       "intro": "KI ist aus, bis du sie unter Einstellungen › KI einschaltest. Ist sie an, schlägt sie Tags und Ordner vor und schreibt kurze Zusammenfassungen. Alles, was sie erstellt, trägt einen kleinen Funken und kann ungenau sein; nichts wird übernommen, solange du es nicht annimmst oder den automatischen Modus wählst.",
       "processor": {
         "term": "Wer es verarbeitet:",
-        "text": "[PROVIDER] als unser Auftragsverarbeiter, nur um das Ergebnis zu erzeugen, das du angefragt hast. [ADD LINK TO ITS DATA PROCESSING TERMS AND REGION]"
+        "text": "Anthropic PBC (USA) als unser Auftragsverarbeiter, nur um das Ergebnis zu erzeugen, das du angefragt hast."
       },
       "sent": {
         "term": "Was gesendet wird:",
@@ -567,7 +567,7 @@
       },
       "kept": {
         "term": "Wie lange es gespeichert wird:",
-        "text": "Der Anbieter bewahrt die Anfrage höchstens [N] Tage auf und nutzt sie nicht zum Training. Die Ergebnisse (Tags, Zusammenfassungen) werden mit deinen Links gespeichert und mit ihnen gelöscht."
+        "text": "Anthropic löscht die Anfrage innerhalb von 30 Tagen und nutzt sie nicht zum Training; nur Inhalte, die die Sicherheitssysteme markieren, können länger aufbewahrt werden (bis zu 2 Jahre), oder wenn das Gesetz es verlangt. Die Ergebnisse (Tags, Zusammenfassungen) werden mit deinen Links gespeichert und mit ihnen gelöscht."
       },
       "counted": {
         "term": "Was wir zählen:",
@@ -1188,7 +1188,7 @@
       "title": "Seiten direkt aus dem Browser speichern",
       "text": "Die Shelfmark-Erweiterung speichert die geöffnete Seite mit einem Klick oder Alt+Umschalt+S, Ordner und Tags sind schon ausgefüllt.",
       "install": "Erweiterung installieren",
-      "installLabel": "Erweiterung aus dem Chrome Web Store installieren (öffnet in einem neuen Tab)",
+      "installLabel": "Erweiterung installieren, aus dem Chrome Web Store (öffnet in einem neuen Tab)",
       "dismiss": "Nicht jetzt"
     }
   },
@@ -1547,7 +1547,7 @@
           "label": "Browsererweiterung",
           "hint": "Speichere jede Seite mit einem Klick aus Chrome, Edge, Brave oder Arc",
           "action": "Installieren",
-          "actionLabel": "Browsererweiterung aus dem Chrome Web Store installieren (öffnet in einem neuen Tab)"
+          "actionLabel": "Installieren: Browsererweiterung aus dem Chrome Web Store (öffnet in einem neuen Tab)"
         }
       },
       "failed": "Einstellung konnte nicht gespeichert werden",
@@ -2853,6 +2853,9 @@
       "mcp": {
         "title": "Assistenten verbinden",
         "text": "Mit Pro können Claude und andere MCP-Assistenten deine Links mit einem persönlichen Token durchsuchen und lesen. Nur Lesezugriff, jederzeit widerrufbar."
+      },
+      "extensionInStore": {
+        "text": "Die Shelfmark-Browsererweiterung ist im Chrome Web Store: Installiere sie über das Banner in deinem Regal oder unter Einstellungen › Bibliothek."
       }
     },
     "sections": {
@@ -3005,7 +3008,7 @@
       },
       "training": {
         "title": "Nicht für Training genutzt",
-        "text": "Deine Inhalte werden nie zum Training von Modellen genutzt. Der Anbieter, [PROVIDER], verarbeitet sie für uns und bewahrt sie höchstens [N] Tage auf."
+        "text": "Deine Inhalte werden nie zum Training von Modellen genutzt. Anthropic verarbeitet sie für uns und löscht sie innerhalb von 30 Tagen."
       },
       "details": "Du kannst die KI oder einzelne Funktionen unter Einstellungen › KI ausschalten.",
       "policy": "Datenschutzerklärung lesen",

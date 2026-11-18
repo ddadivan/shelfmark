@@ -31,7 +31,7 @@ const TOKEN_SELECT = {
 const WEEK_DAYS_BEFORE_TODAY = 6;
 
 /**
- * Personal MCP tokens of the session user (#395, ADR 0053): list, create (the secret is answered
+ * Personal MCP tokens of the session user (#395, ADR 0054): list, create (the secret is answered
  * once), revoke. Every query filters by that user; a foreign or missing token is 404. Create runs
  * under the per-user `mcp-tokens:` advisory lock so the cap cannot be raced. Secrets and digests are
  * never logged or answered by the list.

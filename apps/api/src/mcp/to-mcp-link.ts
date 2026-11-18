@@ -4,7 +4,7 @@ import type { McpLink } from './models/mcp-link.interface';
 import type { McpLinkRow } from './models/mcp-link-row.type';
 
 /**
- * The only way a link leaves through the MCP server (ADR 0053 point 6): the allow-listed fields,
+ * The only way a link leaves through the MCP server (ADR 0054 point 6): the allow-listed fields,
  * the folder path instead of ids, tag names sorted, and the note only when the token includes notes.
  * Callers pass live links of the token's user only.
  */

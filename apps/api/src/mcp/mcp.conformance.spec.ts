@@ -1,5 +1,5 @@
 /**
- * Conformance against the official MCP TypeScript SDK (ADR 0053 point 2): its `Client` with the
+ * Conformance against the official MCP TypeScript SDK (ADR 0054 point 2): its `Client` with the
  * Streamable HTTP transport connects to the real app on an ephemeral loopback port with a personal
  * token, initialises (the SDK checks the negotiated version and capabilities), lists the tools and
  * calls each one (the SDK validates `structuredContent` against each `outputSchema`), and pings.

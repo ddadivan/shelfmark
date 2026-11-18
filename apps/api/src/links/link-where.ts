@@ -25,7 +25,7 @@ function termCondition(term: string, searchNotes: boolean): Prisma.LinkWhereInpu
  * The `where` of a link query. `userId` always comes first and is never optional: every caller
  * passes the session user. Trashed links are never matched (ADR 0036). All parts are combined with AND.
  * The search text matches title, note and URL; `options.searchNotes: false` leaves the note out (an
- * MCP token without "Include my notes" must not learn note contents from which links match, ADR 0053).
+ * MCP token without "Include my notes" must not learn note contents from which links match, ADR 0054).
  */
 export function buildLinkWhere(
   userId: string,

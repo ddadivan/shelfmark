@@ -33,7 +33,7 @@ const ALLOW_HEADER = 'Allow';
 const ALLOWED_METHODS = 'POST';
 
 /**
- * The Shelfmark MCP server (#395, ADR 0053): a stateless Streamable HTTP endpoint for the user's own
+ * The Shelfmark MCP server (#395, ADR 0054): a stateless Streamable HTTP endpoint for the user's own
  * assistant. Bearer personal tokens only; the session cookie is never read on these routes.
  */
 @ApiTags('mcp')

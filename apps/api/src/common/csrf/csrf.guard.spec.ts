@@ -172,7 +172,7 @@ describe('CsrfGuard', () => {
   });
 });
 
-describe('CsrfGuard on the MCP server (ADR 0053: no exemption)', () => {
+describe('CsrfGuard on the MCP server (ADR 0054: no exemption)', () => {
   const MCP = '/api/mcp';
   const json = { 'content-length': '40', 'content-type': 'application/json' };
 

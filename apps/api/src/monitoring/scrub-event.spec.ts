@@ -108,7 +108,7 @@ describe('scrubEvent', () => {
     expect(scrubEvent({ type: undefined })).toEqual({ type: undefined });
   });
 
-  it('drops the bearer token and the JSON-RPC body of an MCP request (ADR 0053)', () => {
+  it('drops the bearer token and the JSON-RPC body of an MCP request (ADR 0054)', () => {
     const secret = ['smk', 'live', 'x'.repeat(43)].join('_');
     const event: ErrorEvent = {
       type: undefined,

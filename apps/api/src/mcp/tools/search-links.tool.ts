@@ -125,7 +125,7 @@ export class SearchLinksTool implements McpTool<SearchLinksArgs> {
       tag: args.tag === undefined ? undefined : [args.tag],
     };
     // Without "Include my notes" the note is not searched either: which links match must not
-    // reveal what their notes say (ADR 0053).
+    // reveal what their notes say (ADR 0054).
     const words = await this.prisma.link.findMany({
       where: buildLinkWhere(
         userId,
