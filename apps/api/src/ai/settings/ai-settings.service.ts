@@ -4,6 +4,7 @@ import {
   AI_ERROR_MESSAGE,
   AI_JOB_REASON,
   AI_PROVIDER_STATUS,
+  AI_QUOTA,
   type AiEntitlements,
   type AiProviderStatus,
   type AiSettingsResponse,
@@ -27,6 +28,7 @@ import { AiUsageService } from '../usage/ai-usage.service';
 import { aiEntitlements } from './ai-entitlements';
 import { toBackfillStatus } from './to-backfill-status';
 import { toStoredAiSettings } from './to-ai-settings';
+import { toAskAllowance } from '../ask/to-ask-allowance';
 
 const SETTINGS_SELECT = {
   enabled: true,
@@ -98,6 +100,10 @@ export class AiSettingsService {
       pendingJobs,
       backfill: toBackfillStatus(stored, eligible),
       search,
+      ask: {
+        available: stored.settings.enabled && stored.settings.ask,
+        allowance: toAskAllowance(AI_QUOTA[entitlements.aiTier], 0, 0, new Date()),
+      },
     };
   }
 

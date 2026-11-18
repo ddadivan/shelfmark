@@ -132,7 +132,18 @@ export async function seedDemoLibrary(
     })),
   });
   await tx.aiSettings.create({
-    data: { userId, ...AI_SETTINGS_DEFAULT, enabled: true, enabledAt: now, introSeenAt: now },
+    data: {
+      userId,
+      folderMode: AI_SETTINGS_DEFAULT.folderMode,
+      tagsMode: AI_SETTINGS_DEFAULT.tagsMode,
+      summaries: AI_SETTINGS_DEFAULT.summaries,
+      includeNotes: AI_SETTINGS_DEFAULT.includeNotes,
+      summaryLanguage: AI_SETTINGS_DEFAULT.summaryLanguage,
+      meaningSearch: AI_SETTINGS_DEFAULT.meaningSearch,
+      enabled: true,
+      enabledAt: now,
+      introSeenAt: now,
+    },
   });
 
   /** The pending suggestions of one link: the folder first, then tags (a name not in the seed is new). */

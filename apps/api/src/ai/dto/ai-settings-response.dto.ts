@@ -9,6 +9,7 @@ import { AiEntitlementsDto } from './ai-entitlements.dto';
 import { AiSearchStatusDto } from './ai-search-status.dto';
 import { AiSettingsDto } from './ai-settings.dto';
 import { AiUsageDto } from './ai-usage.dto';
+import { AskStatusDto } from './ask-status.dto';
 
 export class AiSettingsResponseDto implements AiSettingsResponse {
   @ApiProperty({ type: AiSettingsDto }) settings!: AiSettingsDto;
@@ -19,4 +20,5 @@ export class AiSettingsResponseDto implements AiSettingsResponse {
   @ApiProperty() pendingJobs!: number;
   @ApiProperty({ type: AiBackfillStatusDto }) backfill!: AiBackfillStatusDto;
   @ApiProperty({ type: AiSearchStatusDto }) search!: AiSearchStatusDto;
+  @ApiProperty({ type: AskStatusDto }) ask!: AskStatusDto;
 }

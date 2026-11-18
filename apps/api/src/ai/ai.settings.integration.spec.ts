@@ -75,6 +75,7 @@ describe('AI settings API', () => {
         includeNotes: false,
         summaryLanguage: 'app',
         meaningSearch: true,
+        ask: true,
       },
       introSeen: false,
       entitlements: { plan: 'free', aiTier: 'free' },
@@ -89,6 +90,14 @@ describe('AI settings API', () => {
       pendingJobs: 0,
       backfill: { state: 'idle', eligible: 0, total: 0, done: 0, estimatedMinutes: null },
       search: { state: 'off', ready: 0, total: 0 },
+      ask: {
+        available: false,
+        allowance: {
+          questionsLeft: 5,
+          period: 'month',
+          resetsOn: expect.stringMatching(/^\d{4}-\d{2}-01$/),
+        },
+      },
     });
     expect(await t.db.prisma.aiSettings.count()).toBe(0);
   });
@@ -125,6 +134,7 @@ describe('AI settings API', () => {
       includeNotes: true,
       summaryLanguage: 'app',
       meaningSearch: true,
+      ask: true,
     });
     expect(changed.introSeen).toBe(false);
   });

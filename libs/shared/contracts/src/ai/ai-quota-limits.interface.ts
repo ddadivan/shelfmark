@@ -8,4 +8,8 @@ export interface AiQuotaLimits {
   embedsPerMonth: number;
   /** Search queries embedded per UTC calendar month (AI-3). */
   searchQueriesPerMonth: number;
+  /** Ask your shelf questions per UTC day (AI-4). */
+  questionsPerDay: number;
+  /** Ask your shelf questions per UTC calendar month (AI-4, fair-use cap). */
+  questionsPerMonth: number;
 }
