@@ -46,7 +46,7 @@ Principles enforced: nothing changes without "Apply"; unchecked rows are left al
 
 Changes: `AiQuotaLimits` + `cleanupAiRunsPerMonth` (`AI_QUOTA`: Free 0, AI pack 10); `AiTickResponse` + `cleanup: CleanupState`. Server-only (`apps/api/src/cleanup/models/`, `apps/api/src/ai/models/`): `CleanupCheck`, `CleanupCheckProgress`, `StoredCleanupFindings` (with its narrowing reader), `TagSynonymsInput`, `TagSynonymsOutcome`; `NearSimilarityMin`, `TitleOverlapMin`, `TagsSentMax` stay server constants.
 
-## 3. Schema and migration `20261201120000_cleanup_reports`
+## 3. Schema and migration `20261204120000_cleanup_reports`
 
 - **`cleanup_reports`**: `user_id uuid PRIMARY KEY` (FK `users` cascade), `state varchar(8)` (CHECK), `include_ai boolean`, `checked int`, `total int`, `cursor uuid`, `lease_until timestamptz`, `findings jsonb NOT NULL DEFAULT '{}'` (ids only, read back with a narrowing parser like `parseStoredQuery`), `started_at`, `finished_at`, `applied_at`, `card_dismissed_at`.
 - **`ai_usage`** + `cleanup_runs int NOT NULL DEFAULT 0` (the same one-statement reserve).
@@ -122,3 +122,56 @@ Changes: `AiQuotaLimits` + `cleanupAiRunsPerMonth` (`AI_QUOTA`: Free 0, AI pack 
 8. **Clean-up with AI off.** Default: the page is available to everyone in Settings › Library with exact duplicates and tag variants; AI groups only with AI on.
 9. **Entry card.** Default: computed on request from cheap counts and the last report; no scheduled check; at most once in 30 days after a dismissal.
 10. **Undo window.** Default: the 8 s toast, like bulk actions; afterwards Trash restore covers the copies.
+
+## 10. API as built
+
+Nov 18, 2026 · backend, commits 2–8 on `feat/394-ai-cleanup`. Contracts in `libs/shared/contracts/src/cleanup/` as in section 2, plus `CLEANUP_ERROR_MESSAGE` (`Running`, `EmptyApply`, `UndoGone`) and `CLEANUP_LIMIT.UndoWindowMinutes` (10). Review fixes: `CleanupUndoRequest` is `{ runId }`, `CleanupApplyResponse` is `{ trashed, merged, skipped, trashedIds, undo: { runId } | null }`, and `CleanupUndoMerge` left the contracts (the server-side `StoredUndoMerge`); `AI_QUOTA.*.cleanupAiRunsPerMonth` (Free 0, AI pack 10); `AiTickResponse.cleanup`.
+
+**Schema** (`20261204120000_cleanup_reports`): `cleanup_reports` as section 3 plus `progress_at` (the 24 h stall rule); CHECKs on `state`, non-negative counts and `jsonb_typeof(findings) = 'object'`; `ai_usage.cleanup_runs`. Migration `20261205120000_cleanup_undo` (review fixes) adds `ai_run_month` (the month the run's AI allowance was counted in) and the held Undo `undo_run_id`, `undo_data` (jsonb object: `{ deletedAt, trashedIds, merges: [{ keptTagId, mergedName, linkIds, addedLinkIds }] }`, read back by `readStoredUndo`), `undo_until`, all three set or all null (CHECK). Findings: `{ duplicates: [{ id, reason, source, linkIds }], similarTags: [{ id, source, tagIds: [a, b] }], pending: [checkKey], nearPairs: [[a, b]] }`, ids only, read back by `readStoredFindings` (malformed items dropped one by one). Group and pair ids are 12-character random base64url strings, new on every run. `DELETE /api/ai/data` deletes the row.
+
+**Endpoints** (all session-only, every query on the session user):
+
+| Route | Answer | Errors | Limit |
+| --- | --- | --- | --- |
+| `GET /api/cleanup` | `CleanupReport`, read live: trashed links and deleted tags drop out, a group with fewer than 2 live members is left out; keep chosen live by `pickKeep`, a pair's keep is the tag on more live links (tie: the stored order) | 401 | default |
+| `POST /api/cleanup/run` `{ includeAi }` | 200 `CleanupReport`. Rule checks in the request (exact duplicates, tag variants); with `includeAi` and `aiAvailable` (AI on, AI pack, a run left) one run is counted, state `running`, `total` = live links with a vector of the current model (0 when search is not `ready`; near-duplicates then skipped, synonyms still run), the pass deferred | 400 body, 409 `Running` while a run progressed in the last 24 h | `CleanupRun` 6/min |
+| `POST /api/cleanup/apply` | 200 `CleanupApplyResponse` | 400 body or both lists empty (`EmptyApply`) | `CleanupApply` 10/min |
+| `POST /api/cleanup/undo` `{ runId }` | 200 `{ restored, unmerged }` | 400 body, 409 `UndoGone` (already undone, expired, or not the latest run, or not the user's) | `CleanupApply` |
+| `GET /api/cleanup/summary` | `CleanupSummary` | 401 | default |
+| `POST /api/cleanup/card/dismiss` | 204 (creates the row when needed) | 401 | `CleanupRun` |
+
+**Limits.** Groups at most `DuplicateGroupsMax` 100 in all, `GroupSizeMax` 5 (exact groups keep the 5 oldest saves); similar-tag pairs at most `TagPairsMax` 20 in all (rule pairs first, model pairs fill the rest), so one apply (`ApplyGroupsMax` 100, `ApplyTagMergesMax` 20) covers a report. The Undo body is only the run id (review fix: a client-held payload with every link of a merged tag hit the 100 kb JSON limit at about 1,300 links). Rule variants: lower case, diacritics, `-_ .` removed, one trailing `s` dropped only when 4+ characters stay and not after `s` (`news`, `class` stay).
+
+**Apply.** Under `folders:` then the report row `FOR UPDATE`, then `tags:` (inside `TagsService.mergeInTransaction(tx, userId, sourceId, targetId)`, which also serves `POST /api/tags/:id/merge` and answers `linkIds` / `addedLinkIds`). A duplicate item counts only when its `groupId` is stored, its `trashIds` are live members of the user and at least one live member stays; a merge only when its `pairId` is stored, `keepTagId` is one of the pair and both tags are still the user's. Everything else is `skipped`, never an error. One shared `deleted_at`, pins cleared. When something changed the report becomes `applied` (unless a run is going) and the run's Undo is written to the row with a new `undo_run_id` and `undo_until` = now + `UndoWindowMinutes`, replacing an earlier run's; the answer carries `trashedIds` and `undo: { runId }`. When nothing changed `undo` is `null` and an earlier run's Undo stays.
+
+**Undo.** Under `folders:`, then the report row `FOR UPDATE` (matched by the session user, `undo_run_id` and `undo_until > now()`), then `tags:`; no match is 409 `UndoGone` with nothing changed. The held Undo is cleared in the same transaction (single-use). Restores ids still carrying the run's `deleted_at` (a folder gone meanwhile puts the link in Unsorted; pins stay cleared); per merge `resolveNames([mergedName])` (reuses a tag of that name, else creates it; 409 at the tag cap), re-attaches it to the user's own `linkIds` (trashed ones included), removes `keptTagId` from `addedLinkIds`, marks those vectors stale. A report `applied` goes back to `ready`.
+
+**Deferred pass.** `CleanupRunnerService` (also the `CleanupTickHook` under `CLEANUP_TICK_HOOK`, resolved by `AiCatchUpService` through `ModuleRef` with `strict: false`, so `AiModule` never imports `CleanupModule`): 20 s budget per start, 60 s lease on the row taken only when free and checked by value on every save, steps of 200 links by keyset cursor (link id), 3 HNSW neighbours each, cosine ≥ 0.93 plus same host family or title Jaccard ≥ 0.6, pairs grouped by union-find at the end (exact members excluded). AI turned off meanwhile drops the pending AI checks and completes. The tick answers `cleanup` and starts a pass for a running report with a free lease; the daily sweep marks runs without progress for 24 h `failed` (findings kept, pairs grouped) and continues abandoned ones (at most 50).
+
+**Tag synonyms.** `AiProvider.findTagSynonyms` (Anthropic: `AI_MODEL.LinkJob`, effort low, structured output `TAG_SYNONYMS_SCHEMA`, 1,024 max tokens, 15 s, no retries); input up to 300 tags on live links, most used first, `t1…: name` (`<` escaped, control characters removed, 64 characters) in one `<tags>` block. `parseTagSynonymsOutput` keeps known distinct keys, each key once, no rule duplicates, at most 20. Refusal or invalid output: no AI pairs, the run stays counted; a provider error refunds it through `refundCleanupRun(db, userId, lease)`: one statement that clears `ai_run_month` and decrements that month's `cleanup_runs`, only while the report is `running` with the pass's current lease (`CleanupCheckContext.lease`), so at most once and never for a pass that lost its lease or a month other than the one counted. Logs carry counts, durations and outcome types only.
+
+**Mock triggers.** `MOCK_TAG_SYNONYMS.Sets` (`javascript`/`js`, `typescript`/`ts`, `recipes`/`cooking`, `photography`/`photos`, `machine learning`/`ml`, `artificial intelligence`/`ai`; the first present in most-used order is kept); a tag name containing `ai-fail` answers a retryable error, `ai-refuse` a refusal. Near-duplicates use the mock embeddings (identical title, tags and summary give similarity 1).
+
+**Demo seed.** `https://news.ycombinator.com/` saved three times (all Unsorted; the original keeps its tag) — not the coat of the plan, because the Ask theme "two coats" needs exactly two coat links; `https://next.angular.dev/guide/signals` as the same page as `angular.dev/guide/signals` (same title, tags and summary); tags `javascript` / `js` and `cooking` / `recipes` on several links. Demo users are Free: they see the exact group and no AI groups unless AI is opened up for them.
+
+## 11. Implementation notes
+
+Nov 18, 2026 · web, commits 9–12 plus e2e on `feat/394-ai-cleanup` (the branch merged `origin/feat/393-ai-ask` twice to stack on the finished AI-4 web).
+
+**Review fixes (Nov 18, 2026).** Undo is held server-side on the report row and the request carries only the run id (fixes the 413 for a merged tag on ~1,300+ links and makes Undo single-use, so a replay is refused); the Undo window is `UndoWindowMinutes` (10, longer than the 8 s toast, which pauses on hover or focus) and ends with the next apply that changes something. Undo locks `folders:`, then the report row, then `tags:`. The tag-synonyms refund gives back the stored month and only under the pass's lease. Tests added: a 1,500-link merge Undo, replayed / superseded / expired Undo refused, the 20-pair cap across rule and model pairs, the refund month and lease, the rate-limit decorators of the clean-up routes.
+
+**Backend deviations from the plan.** The demo duplicate is Hacker News saved three times (all Unsorted, the first keeps its tag), not a coat: the Ask theme "two coats" needs exactly two coat links; the web mock demo seed mirrors it (plus the signals guide on next.angular.dev and `javascript` / `js` tags). The tick reaches the runner through the `CLEANUP_TICK_HOOK` token resolved by `AiCatchUpService` with `ModuleRef` (`strict: false`), so `AiModule` never imports `CleanupModule`. Similar-tag pairs are capped at 20 in all (rule pairs first), so one apply covers a report. `progress_at` is a separate column for the 24 h stall rule.
+
+**Web deviations and choices.**
+
+- The feature is `features/cleanup/` with the page at its root (`cleanup.page.*`, ADR 0042) rather than `pages/cleanup/`; the route is a child of the settings routes (`library/cleanup`), so the settings nav keeps Library active and the phone back control leads to Library.
+- One row per duplicate group (all its copies go to Trash), as the design shows; the apply count is copies plus merges ("Apply 5 changes" for 2 + 1 copies and 2 merges), and the toast says "Cleaned up {n} things" with copies in Trash and tags merged.
+- The reason line names the keep reason in brackets ("keep the one in Unsorted (it has more tags)"); a same-page group with one host falls back to the same-address line.
+- The entry card's tile uses the `copy` icon instead of the design's spark: the counts are mostly rule-based, and the spark marks only AI content (apps/web CLAUDE.md). AI rows carry the spark in their badge with the disclaimer tooltip.
+- Unchecked rows and swapped pairs survive a re-read (apply, Undo) but not a new run. After Undo a merged tag comes back as a new tag (the API's `resolveNames`), so its pair leaves the report until the next run.
+- Polling: the page calls `AiSettingsStore.tick()` then `GET /api/cleanup` every 3 s while `running` (the shell's tick does not watch clean-up); with AI off it only re-reads.
+- "Nothing to clean" says "No duplicates or similar tags found." without "next month" (there is no scheduled check) and offers Check again.
+- A `failed` report with no live rows shows "The check didn't finish" with Try again (`CLEANUP_VIEW.Failed`), not "Your library is tidy"; a failed report with rows keeps the report and its notice.
+- Undo sends only the apply answer's run id; the feed drops `trashedIds`. The mock holds the latest run's Undo like the API (single-use, `UndoWindowMinutes`, 409 otherwise).
+- The demo seed change moved one search e2e locator to the angular.dev option; visual baselines with the demo library will shift (four more links).
+

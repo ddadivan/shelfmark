@@ -4,6 +4,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AdminModule } from '../admin/admin.module';
 import { AiModule } from '../ai/ai.module';
 import { RediscoverModule } from '../rediscover/rediscover.module';
+import { CleanupModule } from '../cleanup/cleanup.module';
 import { AuthModule } from '../auth/auth.module';
 import { SessionAuthGuard } from '../auth/session-auth.guard';
 import { CsrfGuard } from '../common/csrf/csrf.guard';
@@ -57,6 +58,7 @@ import { UsersModule } from '../users/users.module';
     AiModule,
     McpModule,
     RediscoverModule,
+    CleanupModule,
     // Async so the environment is read at DI time, not at import time.
     ThrottlerModule.forRootAsync({
       useFactory: () => createRateLimitOptions(shouldTrustProxyHeaders()),

@@ -103,6 +103,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiLinkHooksService,
     AiEmbedService,
     AiSearchStatusService,
+    AiBackgroundService,
   ],
 })
 export class AiModule {}

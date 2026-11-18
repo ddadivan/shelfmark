@@ -75,7 +75,9 @@ test.describe('search by meaning (AI-3, mock API)', () => {
       const related = group(list, 'Related by meaning');
       await expect(related).toBeVisible();
       await expect(list.getByRole('group').first()).not.toHaveAccessibleName('Related by meaning');
-      await expect(list.getByRole('option', { name: /Angular signals: the guide/ })).toBeVisible();
+      await expect(
+        list.getByRole('option', { name: /Angular signals: the guide angular\.dev in Signals/ }),
+      ).toBeVisible();
       const rows = related.getByRole('option');
       await expect(rows.first()).toContainText('Close to:');
       await expect(rows.first().getByRole('img', { name: DISCLAIMER })).toBeVisible();
@@ -100,7 +102,9 @@ test.describe('search by meaning (AI-3, mock API)', () => {
   }) => {
     await openLibrary(page, { searchProcessing: true });
     const list = await search(page, 'signals');
-    await expect(list.getByRole('option', { name: /Angular signals: the guide/ })).toBeVisible();
+    await expect(
+      list.getByRole('option', { name: /Angular signals: the guide angular\.dev in Signals/ }),
+    ).toBeVisible();
     await expect(
       page.getByText(/^Search by meaning is getting ready: \d+ of \d+ links\./),
     ).toBeVisible();

@@ -7,6 +7,8 @@ import type { LinkBatchStatus } from './link-batch-status.type';
 import type { LinkBatchSubmission } from './link-batch-submission.interface';
 import type { LinkJobInput } from './link-job-input.interface';
 import type { LinkJobOutcome } from './link-job-outcome.type';
+import type { TagSynonymsInput } from './tag-synonyms-input.interface';
+import type { TagSynonymsOutcome } from './tag-synonyms-outcome.type';
 
 /**
  * The server-side seam to a language model (ADR 0047 point 1, ADR 0049 point 9): the web app never
@@ -27,4 +29,9 @@ export interface AiProvider {
    * throws; stops promptly when `signal` aborts (the client went away or a deadline passed).
    */
   askStream(input: AskInput, signal: AbortSignal): AsyncIterable<AskChunk>;
+  /**
+   * Synonym pairs among the user's tag names (AI-5, ADR 0053): names only, as keys `t1…`. Never
+   * throws; the output is narrowed by `parseTagSynonymsOutput`.
+   */
+  findTagSynonyms(input: TagSynonymsInput): Promise<TagSynonymsOutcome>;
 }

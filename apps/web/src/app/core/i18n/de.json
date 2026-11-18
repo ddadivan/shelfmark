@@ -1621,6 +1621,12 @@
           "cancel": "Abbrechen",
           "close": "Schließen"
         }
+      },
+      "cleanup": {
+        "title": "Aufräumen",
+        "label": "Bibliothek aufräumen",
+        "hint": "Finde Duplikate und ähnliche Tags und behebe sie in einem Schritt.",
+        "action": "Ansehen"
       }
     },
     "language": {
@@ -2916,6 +2922,10 @@
         "title": "Frag deine Links",
         "text": "Stell eine Frage in deinen eigenen Worten und erhalte eine kurze Antwort aus den Links, die du gespeichert hast, mit jeder Quelle. Dazu „Aus deinen Links“: einmal pro Woche ältere Links, die du nie geöffnet hast."
       },
+      "aiCleanup": {
+        "title": "Bibliothek aufräumen",
+        "text": "Finde mehrfach gespeicherte Links und Tags mit gleicher Bedeutung, prüfe jede Änderung und wende sie in einem Schritt an, mit einem Rückgängig. Kopien kommen in den Papierkorb."
+      },
       "mcp": {
         "title": "Assistenten verbinden",
         "text": "Mit Pro können Claude und andere MCP-Assistenten deine Links mit einem persönlichen Token durchsuchen und lesen. Nur Lesezugriff, jederzeit widerrufbar."
@@ -3392,5 +3402,127 @@
     "remind": "Erinnern",
     "readLater": "Später lesen",
     "notInterested": "Kein Interesse"
+  },
+  "cleanup": {
+    "title": "Bibliothek aufräumen",
+    "lead": "Finde Links, die du mehrfach gespeichert hast, und Tags mit gleicher Bedeutung. Nichts ändert sich, bevor du anwendest.",
+    "checkedOn": "Geprüft {{when}}. Nichts ändert sich, bevor du anwendest; du kannst den ganzen Lauf rückgängig machen.",
+    "intro": "Shelfmark sucht nach zusätzlichen Kopien desselben Links und nach Tags mit gleicher Bedeutung. Du prüfst jede Änderung, und ein Rückgängig macht den ganzen Lauf rückgängig.",
+    "loading": "Aufräumbericht wird geladen",
+    "loadFailed": "Der Aufräumbericht konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "run": "Bibliothek prüfen",
+    "runAgain": "Erneut prüfen",
+    "runFailed": "Die Prüfung konnte nicht starten. Versuch es noch einmal.",
+    "includeAi": {
+      "label": "KI-Prüfungen einbeziehen",
+      "hint": "Findet auch dieselbe Seite unter anderer Adresse und Tags mit gleicher Bedeutung."
+    },
+    "checking": {
+      "title": "Bibliothek wird geprüft…",
+      "text": "Du kannst diese Seite verlassen; der Bericht bleibt erhalten.",
+      "progress": "{{checked}} von {{total}} Links. Du kannst diese Seite verlassen; der Bericht bleibt erhalten.",
+      "label": "Aufräumfortschritt"
+    },
+    "apply": {
+      "one": "{{count}} Änderung anwenden",
+      "other": "{{count}} Änderungen anwenden"
+    },
+    "cancel": "Abbrechen",
+    "barLabel": "Aufräumaktionen",
+    "groups": {
+      "duplicates": {
+        "title": "Duplikate",
+        "hint": "Zusätzliche Kopien kommen in den Papierkorb"
+      },
+      "similarTags": {
+        "title": "Ähnliche Tags",
+        "hint": "Werden mit dem ersten zusammengeführt"
+      }
+    },
+    "reason": {
+      "sameAddress": "Gleiche Adresse",
+      "samePage": "Gleiche Seite"
+    },
+    "duplicate": {
+      "sameAddress": {
+        "one": "{{saved}}-mal gespeichert: den in {{place}} behalten ({{why}}), {{count}} Kopie in den Papierkorb",
+        "other": "{{saved}}-mal gespeichert: den in {{place}} behalten ({{why}}), {{count}} Kopien in den Papierkorb"
+      },
+      "samePage": {
+        "one": "{{hosts}}: {{keep}} behalten ({{why}}), {{count}} Kopie in den Papierkorb",
+        "other": "{{hosts}}: {{keep}} behalten ({{why}}), {{count}} Kopien in den Papierkorb"
+      }
+    },
+    "unsorted": "Unsortiert",
+    "keep": {
+      "in-folder": "er liegt in einem Ordner",
+      "has-note": "er hat eine Notiz",
+      "has-reminder": "er hat eine Erinnerung",
+      "more-tags": "er hat mehr Tags",
+      "favorite": "er ist ein Favorit",
+      "recently-opened": "zuletzt geöffnet",
+      "oldest": "zuerst gespeichert"
+    },
+    "tagPair": {
+      "title": "{{keep}} ← {{merge}}",
+      "detail": {
+        "one": "{{count}} Link bekommt „{{keep}}“; „{{merge}}“ wird entfernt",
+        "other": "{{count}} Links bekommen „{{keep}}“; „{{merge}}“ wird entfernt"
+      },
+      "swap": "Stattdessen „{{merge}}“ behalten"
+    },
+    "foundByAi": "Von KI gefunden",
+    "footer": "Mit „Von KI gefunden“ markierte Gruppen sind Vorschläge und können ungenau sein. Exakte Duplikate werden ohne KI geprüft.",
+    "failed": "Die Prüfung wurde vor dem Ende abgebrochen. Das hat sie gefunden.",
+    "empty": {
+      "title": "Deine Bibliothek ist aufgeräumt",
+      "text": "Keine Duplikate oder ähnlichen Tags gefunden."
+    },
+    "checkFailed": {
+      "title": "Die Prüfung wurde nicht abgeschlossen",
+      "text": "Sie hat abgebrochen, bevor sie etwas gefunden hat, und nichts wurde geändert. Versuch es noch einmal."
+    },
+    "applied": {
+      "title": "Alles aufgeräumt",
+      "text": "Die gewählten Änderungen sind erledigt. Entfernte Kopien warten im Papierkorb."
+    },
+    "toast": {
+      "title": {
+        "one": "{{count}} Sache aufgeräumt",
+        "other": "{{count}} Sachen aufgeräumt"
+      },
+      "copies": {
+        "one": "{{count}} Kopie im Papierkorb",
+        "other": "{{count}} Kopien im Papierkorb"
+      },
+      "tags": {
+        "one": "{{count}} Tag zusammengeführt",
+        "other": "{{count}} Tags zusammengeführt"
+      },
+      "detail": "{{copies}}, {{tags}}",
+      "undo": "Rückgängig",
+      "failed": "Die Änderungen konnten nicht angewendet werden",
+      "failedDetail": "Es wurde nichts geändert. Versuch es noch einmal.",
+      "nothing": "Nichts anzuwenden",
+      "nothingDetail": "Diese Einträge haben sich inzwischen geändert."
+    },
+    "undone": "Aufräumen rückgängig gemacht",
+    "undoFailed": "Das Aufräumen konnte nicht rückgängig gemacht werden",
+    "card": {
+      "title": "Deine Bibliothek könnte etwas Ordnung vertragen",
+      "duplicates": {
+        "one": "{{count}} Duplikat",
+        "other": "{{count}} Duplikate"
+      },
+      "similarTags": {
+        "one": "{{count}} Paar ähnlicher Tags",
+        "other": "{{count}} Paare ähnlicher Tags"
+      },
+      "text": "{{items}}. Nichts ändert sich, bevor du prüfst.",
+      "review": "Ansehen",
+      "dismiss": "Einen Monat ausblenden",
+      "label": "Bibliothek aufräumen"
+    }
   }
 }

@@ -75,4 +75,8 @@ export const RATE_LIMIT = {
   Mcp: { limit: 120, ttl: MINUTE_MS },
   // Personal MCP token create and revoke (#395, ADR 0054): a person creates a handful, ever.
   McpTokenWrite: { limit: 10, ttl: MINUTE_MS },
+  // AI-5 library clean-up: a run (rule checks in the request, AI checks deferred) and the card
+  // dismissal; apply and its Undo (up to 100 groups and 20 merges in one transaction).
+  CleanupRun: { limit: 6, ttl: MINUTE_MS },
+  CleanupApply: { limit: 10, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;

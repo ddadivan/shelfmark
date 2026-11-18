@@ -44,7 +44,10 @@
     "design",
     "reference",
     "cooking",
-    "shopping"
+    "shopping",
+    "recipes",
+    "javascript",
+    "js"
   ],
   "links": [
     {
@@ -137,7 +140,7 @@
       "url": "https://web.dev/learn",
       "title": "Learn Web Development",
       "folder": "courses",
-      "tags": ["tutorial"],
+      "tags": ["tutorial", "javascript"],
       "isFavorite": false,
       "createdDaysAgo": 26,
       "lastOpenedDaysAgo": 8,
@@ -157,7 +160,7 @@
       "url": "https://www.freecodecamp.org/learn",
       "title": "freeCodeCamp curriculum",
       "folder": "courses",
-      "tags": ["tutorial"],
+      "tags": ["tutorial", "js"],
       "isFavorite": false,
       "createdDaysAgo": 20,
       "lastOpenedDaysAgo": 15,
@@ -212,7 +215,7 @@
       "title": "Smitten Kitchen",
       "kind": "article",
       "folder": "recipes",
-      "tags": ["cooking"],
+      "tags": ["cooking", "recipes"],
       "isFavorite": true,
       "createdDaysAgo": 22,
       "lastOpenedDaysAgo": 9,
@@ -223,7 +226,7 @@
       "title": "Budget Bytes",
       "kind": "article",
       "folder": "recipes",
-      "tags": ["cooking"],
+      "tags": ["cooking", "recipes"],
       "isFavorite": false,
       "createdDaysAgo": 15,
       "lastOpenedDaysAgo": null,
@@ -371,7 +374,7 @@
       "url": "https://rxjs.dev/guide/overview",
       "title": "RxJS overview",
       "folder": null,
-      "tags": [],
+      "tags": ["javascript"],
       "isFavorite": false,
       "createdDaysAgo": 2,
       "lastOpenedDaysAgo": null,
@@ -467,6 +470,34 @@
       "createdDaysAgo": 140,
       "lastOpenedDaysAgo": 125,
       "summary": "A long essay on doing great work: choose a field you are curious about, aim at ambitious problems and keep momentum with small daily progress."
+    },
+    {
+      "url": "https://next.angular.dev/guide/signals",
+      "title": "Angular Signals",
+      "folder": null,
+      "tags": ["angular", "reference"],
+      "isFavorite": false,
+      "createdDaysAgo": 3,
+      "lastOpenedDaysAgo": null,
+      "summary": "The official guide to signals: writable signals, computed values, effects and how they drive rendering."
+    },
+    {
+      "url": "https://news.ycombinator.com/",
+      "title": "Hacker News",
+      "folder": null,
+      "tags": [],
+      "createdDaysAgo": 5,
+      "lastOpenedDaysAgo": null,
+      "isFavorite": false
+    },
+    {
+      "url": "https://news.ycombinator.com/",
+      "title": "Hacker News",
+      "folder": null,
+      "tags": [],
+      "createdDaysAgo": 2,
+      "lastOpenedDaysAgo": null,
+      "isFavorite": false
     }
   ],
   "rules": [

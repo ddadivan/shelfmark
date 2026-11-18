@@ -1621,6 +1621,12 @@
           "cancel": "Cancel",
           "close": "Close"
         }
+      },
+      "cleanup": {
+        "title": "Clean up",
+        "label": "Clean up your library",
+        "hint": "Find duplicates and similar tags, and fix them in one step.",
+        "action": "Review"
       }
     },
     "language": {
@@ -2916,6 +2922,10 @@
         "title": "Ask your shelf",
         "text": "Ask a question in your own words and get a short answer from the links you saved, with every source listed. Plus “From your shelf”: older links you never opened, once a week."
       },
+      "aiCleanup": {
+        "title": "Library clean-up",
+        "text": "Find links you saved more than once and tags that mean the same, review every change and apply them in one step, with one Undo. Copies go to Trash."
+      },
       "mcp": {
         "title": "Connect your assistant",
         "text": "On Pro, Claude and other MCP assistants can search and read your links with a personal token. Read-only, and you can revoke it any time."
@@ -3392,5 +3402,127 @@
     "remind": "Remind me",
     "readLater": "Read later",
     "notInterested": "Not interested"
+  },
+  "cleanup": {
+    "title": "Clean up your library",
+    "lead": "Find links you saved more than once and tags that mean the same. Nothing changes until you apply.",
+    "checkedOn": "Checked {{when}}. Nothing changes until you apply; you can undo the whole run.",
+    "intro": "Shelfmark looks for extra copies of the same link and for tags that mean the same. You review every change, and one Undo reverts the whole run.",
+    "loading": "Loading the clean-up report",
+    "loadFailed": "Couldn’t load the clean-up report.",
+    "retry": "Try again",
+    "run": "Check my library",
+    "runAgain": "Check again",
+    "runFailed": "Couldn’t start the check. Try again.",
+    "includeAi": {
+      "label": "Include AI checks",
+      "hint": "Also finds the same page under another address and tags with the same meaning."
+    },
+    "checking": {
+      "title": "Checking your library…",
+      "text": "You can leave this page; we’ll keep the report.",
+      "progress": "{{checked}} of {{total}} links. You can leave this page; we’ll keep the report.",
+      "label": "Clean-up progress"
+    },
+    "apply": {
+      "one": "Apply {{count}} change",
+      "other": "Apply {{count}} changes"
+    },
+    "cancel": "Cancel",
+    "barLabel": "Clean-up actions",
+    "groups": {
+      "duplicates": {
+        "title": "Duplicates",
+        "hint": "Extra copies go to Trash"
+      },
+      "similarTags": {
+        "title": "Similar tags",
+        "hint": "Merged into the first one"
+      }
+    },
+    "reason": {
+      "sameAddress": "Same address",
+      "samePage": "Same page"
+    },
+    "duplicate": {
+      "sameAddress": {
+        "one": "Saved {{saved}} times: keep the one in {{place}} ({{why}}), move {{count}} copy to Trash",
+        "other": "Saved {{saved}} times: keep the one in {{place}} ({{why}}), move {{count}} copies to Trash"
+      },
+      "samePage": {
+        "one": "{{hosts}}: keep {{keep}} ({{why}}), move {{count}} copy to Trash",
+        "other": "{{hosts}}: keep {{keep}} ({{why}}), move {{count}} copies to Trash"
+      }
+    },
+    "unsorted": "Unsorted",
+    "keep": {
+      "in-folder": "it is in a folder",
+      "has-note": "it has a note",
+      "has-reminder": "it has a reminder",
+      "more-tags": "it has more tags",
+      "favorite": "it is a favourite",
+      "recently-opened": "you opened it last",
+      "oldest": "it was saved first"
+    },
+    "tagPair": {
+      "title": "{{keep}} ← {{merge}}",
+      "detail": {
+        "one": "{{count}} link gets “{{keep}}”; “{{merge}}” is removed",
+        "other": "{{count}} links get “{{keep}}”; “{{merge}}” is removed"
+      },
+      "swap": "Keep “{{merge}}” instead"
+    },
+    "foundByAi": "Found by AI",
+    "footer": "Groups marked “Found by AI” are suggestions and may be inaccurate. Exact duplicates are checked without AI.",
+    "failed": "The check stopped before it finished. Here is what it found.",
+    "empty": {
+      "title": "Your library is tidy",
+      "text": "No duplicates or similar tags found."
+    },
+    "checkFailed": {
+      "title": "The check didn’t finish",
+      "text": "It stopped before it found anything, and nothing was changed. Try checking again."
+    },
+    "applied": {
+      "title": "All cleaned up",
+      "text": "The changes you picked are done. Copies you removed wait in Trash."
+    },
+    "toast": {
+      "title": {
+        "one": "Cleaned up {{count}} thing",
+        "other": "Cleaned up {{count}} things"
+      },
+      "copies": {
+        "one": "{{count}} copy in Trash",
+        "other": "{{count}} copies in Trash"
+      },
+      "tags": {
+        "one": "{{count}} tag merged",
+        "other": "{{count}} tags merged"
+      },
+      "detail": "{{copies}}, {{tags}}",
+      "undo": "Undo",
+      "failed": "Couldn’t apply the changes",
+      "failedDetail": "Nothing was changed. Try again.",
+      "nothing": "Nothing to apply",
+      "nothingDetail": "These items changed meanwhile."
+    },
+    "undone": "Clean-up undone",
+    "undoFailed": "Couldn’t undo the clean-up",
+    "card": {
+      "title": "Your library could use a tidy-up",
+      "duplicates": {
+        "one": "{{count}} duplicate",
+        "other": "{{count}} duplicates"
+      },
+      "similarTags": {
+        "one": "{{count}} pair of similar tags",
+        "other": "{{count}} pairs of similar tags"
+      },
+      "text": "{{items}}. Nothing changes until you review.",
+      "review": "Review",
+      "dismiss": "Hide for a month",
+      "label": "Library clean-up"
+    }
   }
 }

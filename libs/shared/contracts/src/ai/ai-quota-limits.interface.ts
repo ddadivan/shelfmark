@@ -12,4 +12,6 @@ export interface AiQuotaLimits {
   questionsPerDay: number;
   /** Ask your shelf questions per UTC calendar month (AI-4, fair-use cap). */
   questionsPerMonth: number;
+  /** Library clean-up runs with AI checks per UTC calendar month (AI-5); rule checks are unlimited. */
+  cleanupAiRunsPerMonth: number;
 }

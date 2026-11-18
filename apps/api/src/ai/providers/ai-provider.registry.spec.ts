@@ -54,6 +54,22 @@ describe('AiProviderRegistry', () => {
     expect(factory).not.toHaveBeenCalled();
   });
 
+  it('answers tag synonyms from the mock for a demo user, never through the real factory', async () => {
+    const { registry, factory } = setup({
+      ...NO_EMBEDDINGS,
+      apiKey: 'sk-ant-test-0123456789',
+      useRealProvider: true,
+    });
+    const outcome = await registry.for({ isDemo: true }).findTagSynonyms({
+      tags: [
+        { key: 't1', name: 'javascript' },
+        { key: 't2', name: 'js' },
+      ],
+    });
+    expect(outcome).toEqual({ type: 'output', output: { pairs: [{ keep: 't1', merge: 't2' }] } });
+    expect(factory).not.toHaveBeenCalled();
+  });
+
   it('builds the real provider once for a regular user in production', () => {
     const config = { ...NO_EMBEDDINGS, apiKey: 'sk-ant-test-0123456789', useRealProvider: true };
     const { registry, factory, real } = setup(config);

@@ -10,6 +10,7 @@ import {
   type UpdateAiSettingsRequest,
   AI_SEARCH_STATE,
   ASK_PERIOD,
+  CLEANUP_STATE,
 } from '@shelfmark/contracts';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { UiButtonHarness } from '@shelfmark/ui/testing';
@@ -85,7 +86,14 @@ async function setup(
     ),
     stopBackfill: vi.fn(() => of({ ...current.backfill, state: AI_BACKFILL_STATE.Stopped })),
     deleteData: vi.fn(() => of(undefined)),
-    tick: vi.fn(() => of({ pendingJobs: 0, backfill: current.backfill })),
+    tick: vi.fn(() =>
+      of({
+        pendingJobs: 0,
+        backfill: current.backfill,
+        search: current.search,
+        cleanup: CLEANUP_STATE.None,
+      }),
+    ),
   };
   const confirm = vi.fn(() => Promise.resolve(options.confirm ?? true));
   const open = vi.fn(() => ({

@@ -62,7 +62,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     summary:
       'Compares signals and RxJS: signals for synchronous state in templates, RxJS for streams over time such as search input and websockets.',
     kind: LINK_KIND.Article,
-    tags: ['angular', 'reading'],
+    tags: ['angular', 'javascript', 'reading'],
     daysAgo: 28,
     openedDaysAgo: 20,
   },
@@ -174,7 +174,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     summary:
       'Covers TypeScript from the type system basics to generics, decorators and structuring larger projects.',
     kind: LINK_KIND.Other,
-    tags: ['courses'],
+    tags: ['courses', 'javascript'],
     daysAgo: 19,
     openedDaysAgo: null,
     remindInHours: 72,
@@ -185,7 +185,7 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     title: 'RxJS basics',
     summary: 'Short lessons on RxJS observables, common operators and how to combine streams.',
     kind: LINK_KIND.Other,
-    tags: ['courses'],
+    tags: ['courses', 'js'],
     daysAgo: 31,
     openedDaysAgo: null,
   },
@@ -571,5 +571,47 @@ export const DEMO_SEED_LINKS: readonly DemoSeedLink[] = [
     tags: ['reading'],
     daysAgo: 140,
     openedDaysAgo: 125,
+  },
+  // AI-5 (like the API's seed.json): the clean-up report's examples. One page saved three times
+  // (Hacker News, all in Unsorted, the first keeps its tag) and the signals guide on next.angular.dev,
+  // the same page as angular.dev (same title, tags and summary: the mock vectors match). Tags
+  // `javascript` / `js` and `cooking` / `recipes` are the synonym pairs.
+  {
+    folder: null,
+    url: 'https://next.angular.dev/guide/signals',
+    title: 'Angular signals: the guide',
+    summary:
+      'The official guide to signals: writable signals, computed values, effects and how they drive rendering.',
+    kind: LINK_KIND.Article,
+    tags: ['angular', 'docs'],
+    daysAgo: 3,
+    openedDaysAgo: null,
+  },
+  {
+    folder: null,
+    url: 'https://news.ycombinator.com/',
+    title: 'Hacker News',
+    kind: LINK_KIND.Other,
+    tags: ['reading'],
+    daysAgo: 0,
+    openedDaysAgo: null,
+  },
+  {
+    folder: null,
+    url: 'https://news.ycombinator.com/',
+    title: 'Hacker News',
+    kind: LINK_KIND.Other,
+    tags: [],
+    daysAgo: 5,
+    openedDaysAgo: null,
+  },
+  {
+    folder: null,
+    url: 'https://news.ycombinator.com/',
+    title: 'Hacker News',
+    kind: LINK_KIND.Other,
+    tags: [],
+    daysAgo: 2,
+    openedDaysAgo: null,
   },
 ];

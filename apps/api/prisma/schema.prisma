@@ -119,6 +119,7 @@ model User {
   aiAskUsage            AiAskUsage[]
   rediscoverHidden      RediscoverHidden[]
   rediscoverState       RediscoverState?
+  cleanupReport         CleanupReport?
 
   @@map("users")
 }
@@ -522,6 +523,8 @@ model AiUsage {
   // Search by meaning (AI-3): link texts embedded and search queries embedded this month.
   embeds        Int      @default(0)
   searchQueries Int      @default(0) @map("search_queries")
+  // Library clean-up runs with AI checks this month (AI-5, ADR 0053 point 3).
+  cleanupRuns   Int      @default(0) @map("cleanup_runs")
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, month])
@@ -561,6 +564,35 @@ model RediscoverState {
   user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("rediscover_state")
+}
+
+// The user's library clean-up report (AI-5, ADR 0053): one row, replaced by each run. `findings` holds
+// group ids, reasons and link or tag ids only, never titles, URLs or names (read back with a narrowing
+// parser). `cursor` and `leaseUntil` drive the deferred near-duplicate pass.
+model CleanupReport {
+  userId          String    @id @map("user_id") @db.Uuid
+  // none | running | ready | applied | failed (CHECK in the migration)
+  state           String    @default("none") @db.VarChar(8)
+  includeAi       Boolean   @default(false) @map("include_ai")
+  checked         Int       @default(0)
+  total           Int       @default(0)
+  cursor          String?   @db.Uuid
+  leaseUntil      DateTime? @map("lease_until") @db.Timestamptz(3)
+  findings        Json      @default("{}")
+  startedAt       DateTime? @map("started_at") @db.Timestamptz(3)
+  progressAt      DateTime? @map("progress_at") @db.Timestamptz(3)
+  finishedAt      DateTime? @map("finished_at") @db.Timestamptz(3)
+  appliedAt       DateTime? @map("applied_at") @db.Timestamptz(3)
+  cardDismissedAt DateTime? @map("card_dismissed_at") @db.Timestamptz(3)
+  // The month whose AI clean-up run this report counted (refunded at most once, under the lease).
+  aiRunMonth      DateTime? @map("ai_run_month") @db.Date
+  // Undo of the last apply, held here (ids only), single-use and valid until `undoUntil`.
+  undoRunId       String?   @map("undo_run_id") @db.Uuid
+  undoData        Json?     @map("undo_data")
+  undoUntil       DateTime? @map("undo_until") @db.Timestamptz(3)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("cleanup_reports")
 }
 
 // A provider batch (Message Batches API) of backfill jobs; `providerBatchId` is the provider's id.

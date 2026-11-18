@@ -8,7 +8,7 @@ import { AiSettingsService } from '../settings/ai-settings.service';
 /**
  * `DELETE /api/ai/data` (#389, Privacy): removes what AI generated for the user — summaries written
  * by AI, every suggestion, every job (with any stored result), every search-by-meaning vector (and
- * turns that switch off) — cancels open batches and stops a running backfill. The user's own summaries, tags, folders, settings and the usage counts stay. A
+ * turns that switch off), the clean-up report — cancels open batches and stops a running backfill. The user's own summaries, tags, folders, settings and the usage counts stay. A
  * job that is running meanwhile finds its row gone and its result is discarded. Plain SQL on links,
  * so `updated_at` stays.
  */
@@ -45,6 +45,8 @@ export class AiDataService {
           embed_not_before = NULL, embed_failures = 0, embed_failed_at = NULL
         WHERE user_id = ${userId}::uuid`;
       await tx.$executeRaw`DELETE FROM link_embeddings WHERE user_id = ${userId}::uuid`;
+      // Library clean-up (ADR 0053): the stored report goes; a deferred pass finds no row and stops.
+      await tx.$executeRaw`DELETE FROM cleanup_reports WHERE user_id = ${userId}::uuid`;
       return batches;
     });
     await this.settings.cancelBatches(canceled);

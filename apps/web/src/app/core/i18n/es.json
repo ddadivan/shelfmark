@@ -1645,6 +1645,12 @@
           "cancel": "Cancelar",
           "close": "Cerrar"
         }
+      },
+      "cleanup": {
+        "title": "Limpieza",
+        "label": "Ordena tu biblioteca",
+        "hint": "Encuentra duplicados y etiquetas parecidas y corrígelos en un paso.",
+        "action": "Revisar"
       }
     },
     "language": {
@@ -2977,6 +2983,10 @@
         "title": "Pregunta a tus enlaces",
         "text": "Haz una pregunta con tus propias palabras y recibe una respuesta breve a partir de los enlaces que guardaste, con cada fuente. Además, «De tus enlaces»: una vez por semana, enlaces antiguos que nunca abriste."
       },
+      "aiCleanup": {
+        "title": "Limpieza de la biblioteca",
+        "text": "Encuentra enlaces guardados más de una vez y etiquetas que significan lo mismo, revisa cada cambio y aplícalos en un paso, con un solo Deshacer. Las copias van a la papelera."
+      },
       "mcp": {
         "title": "Conecta tu asistente",
         "text": "Con Pro, Claude y otros asistentes MCP pueden buscar y leer tus enlaces con un token personal. Solo lectura, y puedes revocarlo cuando quieras."
@@ -3465,5 +3475,136 @@
     "remind": "Recordarme",
     "readLater": "Leer más tarde",
     "notInterested": "No me interesa"
+  },
+  "cleanup": {
+    "title": "Ordena tu biblioteca",
+    "lead": "Encuentra enlaces que guardaste más de una vez y etiquetas que significan lo mismo. Nada cambia hasta que apliques.",
+    "checkedOn": "Revisada {{when}}. Nada cambia hasta que apliques; puedes deshacer todo de una vez.",
+    "intro": "Shelfmark busca copias de más del mismo enlace y etiquetas que significan lo mismo. Revisas cada cambio, y un solo Deshacer revierte todo.",
+    "loading": "Cargando el informe de limpieza",
+    "loadFailed": "No se pudo cargar el informe de limpieza.",
+    "retry": "Reintentar",
+    "run": "Revisar mi biblioteca",
+    "runAgain": "Revisar de nuevo",
+    "runFailed": "No se pudo iniciar la revisión. Inténtalo de nuevo.",
+    "includeAi": {
+      "label": "Incluir revisiones con IA",
+      "hint": "También encuentra la misma página en otra dirección y etiquetas con el mismo significado."
+    },
+    "checking": {
+      "title": "Revisando tu biblioteca…",
+      "text": "Puedes salir de esta página; guardaremos el informe.",
+      "progress": "{{checked}} de {{total}} enlaces. Puedes salir de esta página; guardaremos el informe.",
+      "label": "Progreso de la limpieza"
+    },
+    "apply": {
+      "one": "Aplicar {{count}} cambio",
+      "many": "Aplicar {{count}} cambios",
+      "other": "Aplicar {{count}} cambios"
+    },
+    "cancel": "Cancelar",
+    "barLabel": "Acciones de limpieza",
+    "groups": {
+      "duplicates": {
+        "title": "Duplicados",
+        "hint": "Las copias de más van a la papelera"
+      },
+      "similarTags": {
+        "title": "Etiquetas parecidas",
+        "hint": "Se fusionan en la primera"
+      }
+    },
+    "reason": {
+      "sameAddress": "Misma dirección",
+      "samePage": "Misma página"
+    },
+    "duplicate": {
+      "sameAddress": {
+        "one": "Guardado {{saved}} veces: conservar el de {{place}} ({{why}}), mover {{count}} copia a la papelera",
+        "many": "Guardado {{saved}} veces: conservar el de {{place}} ({{why}}), mover {{count}} copias a la papelera",
+        "other": "Guardado {{saved}} veces: conservar el de {{place}} ({{why}}), mover {{count}} copias a la papelera"
+      },
+      "samePage": {
+        "one": "{{hosts}}: conservar {{keep}} ({{why}}), mover {{count}} copia a la papelera",
+        "many": "{{hosts}}: conservar {{keep}} ({{why}}), mover {{count}} copias a la papelera",
+        "other": "{{hosts}}: conservar {{keep}} ({{why}}), mover {{count}} copias a la papelera"
+      }
+    },
+    "unsorted": "Sin ordenar",
+    "keep": {
+      "in-folder": "está en una carpeta",
+      "has-note": "tiene una nota",
+      "has-reminder": "tiene un recordatorio",
+      "more-tags": "tiene más etiquetas",
+      "favorite": "es un favorito",
+      "recently-opened": "abierto por última vez",
+      "oldest": "guardado primero"
+    },
+    "tagPair": {
+      "title": "{{keep}} ← {{merge}}",
+      "detail": {
+        "one": "{{count}} enlace recibe «{{keep}}»; «{{merge}}» se elimina",
+        "many": "{{count}} enlaces reciben «{{keep}}»; «{{merge}}» se elimina",
+        "other": "{{count}} enlaces reciben «{{keep}}»; «{{merge}}» se elimina"
+      },
+      "swap": "Conservar «{{merge}}» en su lugar"
+    },
+    "foundByAi": "Encontrado por IA",
+    "footer": "Los grupos marcados con «Encontrado por IA» son sugerencias y pueden ser inexactos. Los duplicados exactos se revisan sin IA.",
+    "failed": "La revisión se detuvo antes de terminar. Esto es lo que encontró.",
+    "empty": {
+      "title": "Tu biblioteca está en orden",
+      "text": "No se encontraron duplicados ni etiquetas parecidas."
+    },
+    "checkFailed": {
+      "title": "La revisión no terminó",
+      "text": "Se detuvo antes de encontrar nada y no se cambió nada. Inténtalo de nuevo."
+    },
+    "applied": {
+      "title": "Todo ordenado",
+      "text": "Los cambios elegidos están hechos. Las copias quitadas esperan en la papelera."
+    },
+    "toast": {
+      "title": {
+        "one": "{{count}} elemento ordenado",
+        "many": "{{count}} elementos ordenados",
+        "other": "{{count}} elementos ordenados"
+      },
+      "copies": {
+        "one": "{{count}} copia en la papelera",
+        "many": "{{count}} copias en la papelera",
+        "other": "{{count}} copias en la papelera"
+      },
+      "tags": {
+        "one": "{{count}} etiqueta fusionada",
+        "many": "{{count}} etiquetas fusionadas",
+        "other": "{{count}} etiquetas fusionadas"
+      },
+      "detail": "{{copies}}, {{tags}}",
+      "undo": "Deshacer",
+      "failed": "No se pudieron aplicar los cambios",
+      "failedDetail": "No se cambió nada. Inténtalo de nuevo.",
+      "nothing": "Nada que aplicar",
+      "nothingDetail": "Estos elementos cambiaron mientras tanto."
+    },
+    "undone": "Limpieza deshecha",
+    "undoFailed": "No se pudo deshacer la limpieza",
+    "card": {
+      "title": "Tu biblioteca necesita un repaso",
+      "duplicates": {
+        "one": "{{count}} duplicado",
+        "many": "{{count}} duplicados",
+        "other": "{{count}} duplicados"
+      },
+      "similarTags": {
+        "one": "{{count}} par de etiquetas parecidas",
+        "many": "{{count}} pares de etiquetas parecidas",
+        "other": "{{count}} pares de etiquetas parecidas"
+      },
+      "text": "{{items}}. Nada cambia hasta que lo revises.",
+      "review": "Revisar",
+      "dismiss": "Ocultar durante un mes",
+      "label": "Limpieza de la biblioteca"
+    }
   }
 }

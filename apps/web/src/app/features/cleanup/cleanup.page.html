@@ -1,0 +1,169 @@
+<ui-progress-bar
+  [active]="store.loading() || store.starting()"
+  [label]="'cleanup.loading' | transloco"
+/>
+<div class="cleanup" [attr.aria-busy]="store.loading()">
+  <header class="cleanup__head">
+    <app-settings-page-header
+      class="cleanup__header"
+      [title]="'cleanup.title' | transloco"
+      [description]="
+        store.view() === CLEANUP_VIEW.Report && checkedWhen()
+          ? ('cleanup.checkedOn' | transloco: { when: checkedWhen() })
+          : ('cleanup.lead' | transloco)
+      "
+      [backHref]="libraryHref"
+      [backLabel]="'settings.nav.library' | transloco"
+    />
+    @if (!compact() && store.view() === CLEANUP_VIEW.Report) {
+    <div class="cleanup__actions">
+      <ng-container *ngTemplateOutlet="actions" />
+    </div>
+    }
+  </header>
+
+  @switch (store.view()) { @case (CLEANUP_VIEW.Error) {
+  <ui-notice kind="danger">
+    {{ 'cleanup.loadFailed' | transloco }}
+    <ui-button uiNoticeAction variant="ghost" size="sm" (click)="store.load()">
+      {{ 'cleanup.retry' | transloco }}
+    </ui-button>
+  </ui-notice>
+  } @case (CLEANUP_VIEW.Never) {
+  <ui-panel class="cleanup__panel">
+    <p class="cleanup__intro">{{ 'cleanup.intro' | transloco }}</p>
+    <ng-container *ngTemplateOutlet="runControls; context: { $implicit: 'cleanup.run' }" />
+  </ui-panel>
+  } @case (CLEANUP_VIEW.Checking) {
+  <ui-panel class="cleanup__panel">
+    <div class="cleanup__checking">
+      <ui-spinner [label]="'cleanup.checking.title' | transloco" />
+      <div>
+        <p class="cleanup__checking-title">{{ 'cleanup.checking.title' | transloco }}</p>
+        <p class="cleanup__checking-text">
+          @if (store.report(); as report) { @if (report.total > 0) { {{ 'cleanup.checking.progress'
+          | transloco : { checked: locale.formatNumber(report.checked), total:
+          locale.formatNumber(report.total), } }} } @else { {{ 'cleanup.checking.text' | transloco
+          }} } }
+        </p>
+      </div>
+    </div>
+    @if ((store.report()?.total ?? 0) > 0) {
+    <ui-meter [value]="percent()" [label]="'cleanup.checking.label' | transloco" />
+    }
+  </ui-panel>
+  } @case (CLEANUP_VIEW.Tidy) {
+  <ui-panel class="cleanup__panel">
+    <ui-empty-state
+      class="cleanup__empty"
+      icon="check"
+      [heading]="'cleanup.empty.title' | transloco"
+      [text]="'cleanup.empty.text' | transloco"
+    />
+    <ng-container *ngTemplateOutlet="runControls; context: { $implicit: 'cleanup.runAgain' }" />
+  </ui-panel>
+  } @case (CLEANUP_VIEW.Failed) {
+  <ui-panel class="cleanup__panel">
+    <ui-empty-state
+      class="cleanup__empty"
+      icon="warning"
+      [heading]="'cleanup.checkFailed.title' | transloco"
+      [text]="'cleanup.checkFailed.text' | transloco"
+    />
+    <ng-container *ngTemplateOutlet="runControls; context: { $implicit: 'cleanup.retry' }" />
+  </ui-panel>
+  } @case (CLEANUP_VIEW.Applied) {
+  <ui-panel class="cleanup__panel">
+    <ui-empty-state
+      class="cleanup__empty"
+      icon="check"
+      [heading]="'cleanup.applied.title' | transloco"
+      [text]="'cleanup.applied.text' | transloco"
+    />
+    <ng-container *ngTemplateOutlet="runControls; context: { $implicit: 'cleanup.runAgain' }" />
+  </ui-panel>
+  } @case (CLEANUP_VIEW.Report) { @if (store.report()?.state === CLEANUP_STATE.Failed) {
+  <ui-notice kind="info">{{ 'cleanup.failed' | transloco }}</ui-notice>
+  } @if (store.duplicates().length > 0) {
+  <section class="cleanup__group" aria-labelledby="cleanup-duplicates">
+    <div class="cleanup__group-head">
+      <h2 id="cleanup-duplicates" class="cleanup__group-title">
+        {{ 'cleanup.groups.duplicates.title' | transloco }}
+      </h2>
+      <span class="cleanup__group-hint">{{ 'cleanup.groups.duplicates.hint' | transloco }}</span>
+    </div>
+    <ul class="cleanup__rows">
+      @for (row of store.duplicates(); track row.id) {
+      <li>
+        <app-cleanup-duplicate-row [row]="row" (toggled)="store.toggle(row.id, $event)" />
+      </li>
+      }
+    </ul>
+  </section>
+  } @if (store.tags().length > 0) {
+  <section class="cleanup__group" aria-labelledby="cleanup-tags">
+    <div class="cleanup__group-head">
+      <h2 id="cleanup-tags" class="cleanup__group-title">
+        {{ 'cleanup.groups.similarTags.title' | transloco }}
+      </h2>
+      <span class="cleanup__group-hint">{{ 'cleanup.groups.similarTags.hint' | transloco }}</span>
+    </div>
+    <ul class="cleanup__rows">
+      @for (row of store.tags(); track row.id) {
+      <li>
+        <app-cleanup-tag-row
+          [row]="row"
+          (toggled)="store.toggle(row.id, $event)"
+          (swapped)="store.swap(row.id)"
+        />
+      </li>
+      }
+    </ul>
+  </section>
+  } @if (store.hasAi()) {
+  <ui-ai-line class="cleanup__footer" [text]="'cleanup.footer' | transloco" />
+  } @if (compact()) {
+  <div
+    class="cleanup__bar"
+    appToastAbove
+    role="group"
+    [attr.aria-label]="'cleanup.barLabel' | transloco"
+  >
+    <ng-container *ngTemplateOutlet="actions" />
+  </div>
+  } } }
+</div>
+
+<ng-template #actions>
+  <ui-button variant="secondary" (click)="cancel()">{{ 'cleanup.cancel' | transloco }}</ui-button>
+  <ui-button
+    variant="primary"
+    wrap
+    [disabled]="store.applyCount() === 0"
+    [loading]="store.applying()"
+    (click)="store.apply()"
+  >
+    {{ pluralKey('cleanup.apply', store.applyCount()) | transloco: { count: store.applyCount() } }}
+  </ui-button>
+</ng-template>
+
+<ng-template #runControls let-label>
+  @if (store.offerAi()) {
+  <ui-settings-row
+    class="cleanup__ai"
+    [title]="'cleanup.includeAi.label' | transloco"
+    [description]="'cleanup.includeAi.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'cleanup.includeAi.label' | transloco"
+      [checked]="store.includeAi()"
+      (checkedChange)="store.setIncludeAi($event)"
+    />
+  </ui-settings-row>
+  }
+  <div class="cleanup__run">
+    <ui-button variant="primary" wrap [loading]="store.starting()" (click)="store.run()">
+      {{ label | transloco }}
+    </ui-button>
+  </div>
+</ng-template>

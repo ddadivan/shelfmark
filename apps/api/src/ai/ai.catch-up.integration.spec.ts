@@ -129,6 +129,7 @@ describe('AI tick, sweep and backfill', () => {
         pendingJobs: 1,
         backfill: { state: 'idle', eligible: 0, total: 0, done: 0, estimatedMinutes: null },
         search: { state: 'off', ready: 0, total: 0 },
+        cleanup: 'none',
       });
       await deferrer.flush();
       expect((await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: jobId } })).status).toBe(

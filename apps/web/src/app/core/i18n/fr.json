@@ -1645,6 +1645,12 @@
           "cancel": "Annuler",
           "close": "Fermer"
         }
+      },
+      "cleanup": {
+        "title": "Nettoyage",
+        "label": "Nettoyer votre bibliothèque",
+        "hint": "Trouvez les doublons et les tags similaires, et corrigez-les en une fois.",
+        "action": "Voir"
       }
     },
     "language": {
@@ -2977,6 +2983,10 @@
         "title": "Interroger mes liens",
         "text": "Posez une question avec vos propres mots et obtenez une réponse courte tirée des liens que vous avez enregistrés, chaque source listée. Et « Dans vos liens » : une fois par semaine, d’anciens liens jamais ouverts."
       },
+      "aiCleanup": {
+        "title": "Nettoyage de la bibliothèque",
+        "text": "Trouvez les liens enregistrés plusieurs fois et les tags de même sens, validez chaque changement et appliquez-les en une fois, avec une seule annulation. Les copies vont à la corbeille."
+      },
       "mcp": {
         "title": "Connecter votre assistant",
         "text": "Avec Pro, Claude et d’autres assistants MCP peuvent rechercher et lire vos liens avec un jeton personnel. Lecture seule, révocable à tout moment."
@@ -3465,5 +3475,136 @@
     "remind": "Me le rappeler",
     "readLater": "Lire plus tard",
     "notInterested": "Pas intéressé"
+  },
+  "cleanup": {
+    "title": "Nettoyer votre bibliothèque",
+    "lead": "Trouvez les liens enregistrés plusieurs fois et les tags qui veulent dire la même chose. Rien ne change avant d’appliquer.",
+    "checkedOn": "Vérifié {{when}}. Rien ne change avant d’appliquer ; vous pouvez tout annuler d’un coup.",
+    "intro": "Shelfmark cherche les copies d’un même lien et les tags qui veulent dire la même chose. Vous validez chaque changement, et une seule annulation rétablit tout.",
+    "loading": "Chargement du rapport de nettoyage",
+    "loadFailed": "Impossible de charger le rapport de nettoyage.",
+    "retry": "Réessayer",
+    "run": "Vérifier ma bibliothèque",
+    "runAgain": "Vérifier à nouveau",
+    "runFailed": "Impossible de lancer la vérification. Réessayez.",
+    "includeAi": {
+      "label": "Inclure les vérifications IA",
+      "hint": "Trouve aussi la même page à une autre adresse et les tags de même sens."
+    },
+    "checking": {
+      "title": "Vérification de votre bibliothèque…",
+      "text": "Vous pouvez quitter cette page ; le rapport sera conservé.",
+      "progress": "{{checked}} liens sur {{total}}. Vous pouvez quitter cette page ; le rapport sera conservé.",
+      "label": "Progression du nettoyage"
+    },
+    "apply": {
+      "one": "Appliquer {{count}} changement",
+      "many": "Appliquer {{count}} changements",
+      "other": "Appliquer {{count}} changements"
+    },
+    "cancel": "Annuler",
+    "barLabel": "Actions de nettoyage",
+    "groups": {
+      "duplicates": {
+        "title": "Doublons",
+        "hint": "Les copies en trop vont à la corbeille"
+      },
+      "similarTags": {
+        "title": "Tags similaires",
+        "hint": "Fusionnés dans le premier"
+      }
+    },
+    "reason": {
+      "sameAddress": "Même adresse",
+      "samePage": "Même page"
+    },
+    "duplicate": {
+      "sameAddress": {
+        "one": "Enregistré {{saved}} fois : garder celui dans {{place}} ({{why}}), mettre {{count}} copie à la corbeille",
+        "many": "Enregistré {{saved}} fois : garder celui dans {{place}} ({{why}}), mettre {{count}} copies à la corbeille",
+        "other": "Enregistré {{saved}} fois : garder celui dans {{place}} ({{why}}), mettre {{count}} copies à la corbeille"
+      },
+      "samePage": {
+        "one": "{{hosts}} : garder {{keep}} ({{why}}), mettre {{count}} copie à la corbeille",
+        "many": "{{hosts}} : garder {{keep}} ({{why}}), mettre {{count}} copies à la corbeille",
+        "other": "{{hosts}} : garder {{keep}} ({{why}}), mettre {{count}} copies à la corbeille"
+      }
+    },
+    "unsorted": "Non classés",
+    "keep": {
+      "in-folder": "il est dans un dossier",
+      "has-note": "il a une note",
+      "has-reminder": "il a un rappel",
+      "more-tags": "il a plus de tags",
+      "favorite": "c’est un favori",
+      "recently-opened": "ouvert en dernier",
+      "oldest": "enregistré en premier"
+    },
+    "tagPair": {
+      "title": "{{keep}} ← {{merge}}",
+      "detail": {
+        "one": "{{count}} lien reçoit « {{keep}} » ; « {{merge}} » est supprimé",
+        "many": "{{count}} liens reçoivent « {{keep}} » ; « {{merge}} » est supprimé",
+        "other": "{{count}} liens reçoivent « {{keep}} » ; « {{merge}} » est supprimé"
+      },
+      "swap": "Garder « {{merge}} » plutôt"
+    },
+    "foundByAi": "Trouvé par l’IA",
+    "footer": "Les groupes marqués « Trouvé par l’IA » sont des suggestions et peuvent être inexacts. Les doublons exacts sont vérifiés sans IA.",
+    "failed": "La vérification s’est arrêtée avant la fin. Voici ce qu’elle a trouvé.",
+    "empty": {
+      "title": "Votre bibliothèque est en ordre",
+      "text": "Aucun doublon ni tag similaire trouvé."
+    },
+    "checkFailed": {
+      "title": "La vérification n’a pas abouti",
+      "text": "Elle s’est arrêtée avant de trouver quoi que ce soit, et rien n’a été modifié. Réessayez."
+    },
+    "applied": {
+      "title": "Nettoyage terminé",
+      "text": "Les changements choisis sont faits. Les copies retirées attendent dans la corbeille."
+    },
+    "toast": {
+      "title": {
+        "one": "{{count}} élément nettoyé",
+        "many": "{{count}} éléments nettoyés",
+        "other": "{{count}} éléments nettoyés"
+      },
+      "copies": {
+        "one": "{{count}} copie à la corbeille",
+        "many": "{{count}} copies à la corbeille",
+        "other": "{{count}} copies à la corbeille"
+      },
+      "tags": {
+        "one": "{{count}} tag fusionné",
+        "many": "{{count}} tags fusionnés",
+        "other": "{{count}} tags fusionnés"
+      },
+      "detail": "{{copies}}, {{tags}}",
+      "undo": "Annuler",
+      "failed": "Impossible d’appliquer les changements",
+      "failedDetail": "Rien n’a été modifié. Réessayez.",
+      "nothing": "Rien à appliquer",
+      "nothingDetail": "Ces éléments ont changé entre-temps."
+    },
+    "undone": "Nettoyage annulé",
+    "undoFailed": "Impossible d’annuler le nettoyage",
+    "card": {
+      "title": "Votre bibliothèque mérite un petit rangement",
+      "duplicates": {
+        "one": "{{count}} doublon",
+        "many": "{{count}} doublons",
+        "other": "{{count}} doublons"
+      },
+      "similarTags": {
+        "one": "{{count}} paire de tags similaires",
+        "many": "{{count}} paires de tags similaires",
+        "other": "{{count}} paires de tags similaires"
+      },
+      "text": "{{items}}. Rien ne change avant votre validation.",
+      "review": "Voir",
+      "dismiss": "Masquer pendant un mois",
+      "label": "Nettoyage de la bibliothèque"
+    }
   }
 }

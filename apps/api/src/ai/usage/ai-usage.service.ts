@@ -160,4 +160,33 @@ export class AiUsageService {
       UPDATE ai_usage SET search_queries = search_queries - 1
       WHERE user_id = ${userId}::uuid AND month = ${month}::date AND search_queries > 0`;
   }
+  /** AI clean-up runs left this month (ADR 0053 point 3; a cheap read, `reserveCleanupRun` decides). */
+  async cleanupRunsLeft(userId: string, tier: AiTier, now = new Date()): Promise<number> {
+    const rows = await this.prisma.$queryRaw<{ n: number }[]>`
+      SELECT cleanup_runs AS n FROM ai_usage
+      WHERE user_id = ${userId}::uuid AND month = ${usageMonth(now)}::date`;
+    return Math.max(0, AI_QUOTA[tier].cleanupAiRunsPerMonth - (rows[0]?.n ?? 0));
+  }
+
+  /**
+   * Counts one AI clean-up run against this month's allowance in one statement; answers the month
+   * (stored on the report for a refund, see `refundCleanupRun` in cleanup) or `null` when none is
+   * left. Pass the transaction of the run, if any.
+   */
+  async reserveCleanupRun(
+    userId: string,
+    tier: AiTier,
+    now = new Date(),
+    db: AiDbClient = this.prisma,
+  ): Promise<string | null> {
+    const limit = AI_QUOTA[tier].cleanupAiRunsPerMonth;
+    if (limit <= 0) return null;
+    const month = usageMonth(now);
+    const rows = await db.$queryRaw<{ n: number }[]>`
+      INSERT INTO ai_usage (user_id, month, cleanup_runs) VALUES (${userId}::uuid, ${month}::date, 1)
+      ON CONFLICT (user_id, month) DO UPDATE SET cleanup_runs = ai_usage.cleanup_runs + 1
+      WHERE ai_usage.cleanup_runs < ${limit}
+      RETURNING cleanup_runs AS n`;
+    return rows.length > 0 ? month : null;
+  }
 }

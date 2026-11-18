@@ -19,13 +19,13 @@ import { DEMO_SEED } from './demo-seed';
 describe('demo seed (seed.json)', () => {
   const folderKeys = DEMO_SEED.folders.map((folder) => folder.key);
 
-  it('has about thirty links, six folders (one nested) and about eight tags', () => {
+  it('has about forty links, six folders (one nested) and about ten tags', () => {
     expect(DEMO_SEED.links.length).toBeGreaterThanOrEqual(28);
-    expect(DEMO_SEED.links.length).toBeLessThanOrEqual(40);
+    expect(DEMO_SEED.links.length).toBeLessThanOrEqual(45);
     expect(DEMO_SEED.folders).toHaveLength(6);
     expect(DEMO_SEED.folders.filter((folder) => folder.parent !== null)).toHaveLength(1);
     expect(DEMO_SEED.tags.length).toBeGreaterThanOrEqual(6);
-    expect(DEMO_SEED.tags.length).toBeLessThanOrEqual(10);
+    expect(DEMO_SEED.tags.length).toBeLessThanOrEqual(12);
   });
 
   it('covers the mockup topics', () => {
@@ -80,9 +80,10 @@ describe('demo seed (seed.json)', () => {
     }
   });
 
-  it('has valid, unique, storable http(s) URLs and bounded titles and notes', () => {
+  it('has valid, storable http(s) URLs, unique but for one clean-up duplicate, and bounded titles', () => {
     const normalized = DEMO_SEED.links.map((link) => normalizeUrl(link.url));
-    expect(new Set(normalized).size).toBe(normalized.length);
+    // AI-5: one page saved three times (the exact-duplicate group of the clean-up report).
+    expect(normalized.length - new Set(normalized).size).toBe(2);
     for (const link of DEMO_SEED.links) {
       expect(isHttpUrl(link.url)).toBe(true);
       expect(isStorableUrl(link.url)).toBe(true);
@@ -206,5 +207,21 @@ describe('demo seed (seed.json)', () => {
     );
     expect(candidates.length).toBeGreaterThanOrEqual(REDISCOVER_LIMIT.ItemsMin);
     expect(candidates.length).toBeLessThanOrEqual(REDISCOVER_LIMIT.ItemsMax);
+  });
+
+  it('seeds the clean-up fixtures: one page saved three times, a same-page pair, tag synonyms (AI-5)', () => {
+    // Not a coat: the Ask theme "two coats" needs exactly two coat links.
+    const copies = DEMO_SEED.links.filter((link) => link.url === 'https://news.ycombinator.com/');
+    expect(copies).toHaveLength(3);
+    expect(copies.filter((link) => link.tags.length === 0)).toHaveLength(2);
+    const signals = DEMO_SEED.links.filter((link) => link.url.endsWith('/guide/signals'));
+    expect(signals.map((link) => ruleHost(link.url)).sort()).toEqual([
+      'angular.dev',
+      'next.angular.dev',
+    ]);
+    expect(new Set(signals.map((link) => link.title)).size).toBe(1);
+    const used = new Set(DEMO_SEED.links.flatMap((link) => link.tags));
+    for (const name of ['js', 'javascript', 'cooking', 'recipes'])
+      expect(used.has(name)).toBe(true);
   });
 });

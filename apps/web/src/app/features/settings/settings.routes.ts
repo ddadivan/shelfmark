@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { Router, type Routes } from '@angular/router';
 import { AI_APPLIED_PART } from '@shelfmark/contracts';
 import { APP_PATH } from '../../models/app-path.const';
+import { CLEANUP_SEGMENT } from '../cleanup/models/cleanup-segment.const';
 import { YOUR_DATA_FRAGMENT } from './models/your-data-fragment.const';
 import { SETTINGS_PATH } from './models/settings-path.const';
 import { settingsIndexGuard } from './pages/settings-index/settings-index.guard';
@@ -25,6 +26,11 @@ export default [
   {
     path: SETTINGS_PATH.Library,
     loadComponent: () => import('./pages/library/library.page'),
+  },
+  // Library clean-up (AI-5): a page under Library on every screen size.
+  {
+    path: `${SETTINGS_PATH.Library}/${CLEANUP_SEGMENT}`,
+    loadComponent: () => import('../cleanup/cleanup.page'),
   },
   {
     path: SETTINGS_PATH.Ai,
