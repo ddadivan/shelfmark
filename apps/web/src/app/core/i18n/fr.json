@@ -3377,7 +3377,8 @@
       "retry": "Réessayer",
       "truncated": "La réponse a été interrompue.",
       "stopped": "Arrêté.",
-      "button": "Demander"
+      "button": "Demander",
+      "try": "Essayez"
     },
     "connect": {
       "title": "Connecter votre assistant",

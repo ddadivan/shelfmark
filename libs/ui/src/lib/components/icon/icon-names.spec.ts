@@ -78,6 +78,8 @@ const APP_ICONS = [
   'swap',
   // The AI mark (#476).
   'spark',
+  // The send button of the Ask composer (#507).
+  'arrow-up',
 ];
 
 const sprite = readFileSync(SPRITE_PATH, 'utf8');

@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
+import { IconComponent } from '../icon/icon.component';
 import type { StreamingCiteLabel } from './models/streaming-cite-label.type';
 import type { StreamingPart } from './models/streaming-part.type';
 import { STREAMING_PART_KIND } from './models/streaming-part-kind.const';
 import type { StreamingSegment } from './models/streaming-segment.type';
 
 /**
- * An Ask your shelf answer (StreamingAnswer spec): the question as a bubble, the answer as plain
- * text with numbered citation buttons, a caret while it streams, and the disclaimer line once it is
+ * An Ask your shelf answer (StreamingAnswer spec): the question as a bubble, the answer (with a
+ * small spark avatar) as plain text with numbered citation buttons, a caret while it streams, and the disclaimer line once it is
  * complete. Sources and actions are projected after the disclaimer (default slot) and show only
  * when the answer is complete.
  *
@@ -20,6 +22,7 @@ import type { StreamingSegment } from './models/streaming-segment.type';
  */
 @Component({
   selector: 'ui-streaming-answer',
+  imports: [IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ui-streaming-answer', '[attr.aria-busy]': 'streaming() || null' },
   templateUrl: './streaming-answer.component.html',
@@ -27,6 +30,7 @@ import type { StreamingSegment } from './models/streaming-segment.type';
 })
 export class StreamingAnswerComponent {
   protected readonly STREAMING_PART_KIND = STREAMING_PART_KIND;
+  protected readonly ICON_SIZE = ICON_SIZE;
 
   /** The user's question, shown as a bubble. */
   readonly question = input.required<string>();

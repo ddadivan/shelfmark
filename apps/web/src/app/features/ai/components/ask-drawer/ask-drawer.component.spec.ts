@@ -72,14 +72,15 @@ describe('AskDrawerComponent', () => {
     expect(host.textContent).toContain('What do you want to find out?');
     expect(host.textContent).toContain('12 questions left today');
     expect(host.textContent).toContain('Answers use only your links.');
-    const starter = await loader.getHarness(
-      UiButtonHarness.with({ text: 'What did I save about Recipes?' }),
+    const starters = Array.from(
+      host.querySelectorAll<HTMLButtonElement>('.ask-conversation__starter button'),
     );
-    expect(await loader.getAllHarnesses(UiButtonHarness.with({ text: /Clothes/u }))).toHaveLength(
+    expect(starters.filter((starter) => /Clothes/u.test(starter.textContent ?? ''))).toHaveLength(
       1,
     );
+    expect(host.textContent).toContain('Try');
     expect(await axeViolations(host)).toEqual([]);
-    await starter.click();
+    starters.find((starter) => /Recipes/u.test(starter.textContent ?? ''))?.click();
     expect(api.ask).toHaveBeenCalledWith('What did I save about Recipes?');
   });
 
@@ -186,7 +187,7 @@ describe('AskDrawerComponent', () => {
     await fixture.whenStable();
     const host = fixture.nativeElement as HTMLElement;
     expect(host.textContent).toContain('You’ve used today’s questions.');
-    expect(host.querySelector<HTMLInputElement>('input')?.disabled).toBe(true);
+    expect(host.querySelector<HTMLTextAreaElement>('textarea')?.disabled).toBe(true);
   });
 
   it('offers Try again for a failed question and Search for one the links do not answer', async () => {

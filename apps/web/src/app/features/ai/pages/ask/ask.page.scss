@@ -26,30 +26,11 @@
   margin-inline-start: calc(-1 * var(--space-2));
 }
 
-.ask-page__title {
-  @include type(title);
-
-  display: flex;
-  gap: var(--space-2);
-  align-items: center;
-  margin: 0;
-}
-
-.ask-page__spark {
-  color: var(--ai);
-}
-
-.ask-page__left {
-  @include type(caption);
-
-  margin: var(--space-1) 0 0;
-  color: var(--text-muted);
-}
-
 // The conversation starts right under the title (`MobileAiMore` 2); the panel centres its empty
 // state in the drawer's height instead.
 .ask-page__conversation {
   min-height: 0;
+  padding: 0;
 }
 
 // The composer floats where the tab bar is (the same offset as the Tidy bar): the shell's main

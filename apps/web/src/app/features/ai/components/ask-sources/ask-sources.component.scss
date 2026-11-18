@@ -3,44 +3,56 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
 }
 
+// The caption over the cards (BRAND › AI): small, upper case, muted.
 .ask-sources__heading {
   @include type(caption);
 
   margin: 0;
-  padding-inline: var(--space-1);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .ask-sources__list {
-  margin: 0 calc(var(--space-2) * -1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.ask-sources__lead {
-  display: inline-flex;
-  gap: var(--space-2);
-  align-items: center;
+// Compact cards: `bg` fill, a border, `radius-md`; the title keeps to one line with an ellipsis.
+.ask-sources__card {
+  padding: rem(10px) var(--space-3);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
 }
 
-// The citation number of the row (`sm-cite`, not a button here).
+// The citation number of the card (the same number as the chip in the answer).
 .ask-sources__n {
-  display: inline-grid;
+  display: grid;
+  flex: none;
   place-items: center;
-  min-width: rem(18px);
-  height: rem(18px);
-  padding: 0 rem(4px);
-  font: 600 #{rem(11px)} / #{rem(16px)} var(--font-sans);
-  color: var(--text);
-  background: var(--surface-hover);
-  border-radius: rem(6px);
+  width: rem(24px);
+  height: rem(24px);
+  font: 700 #{rem(12px)} / #{rem(16px)} var(--font-sans);
+  color: var(--ai);
+  background: var(--ai-fill);
+  border-radius: rem(7px);
 }
 
 .ask-sources__actions {
   display: inline-flex;
   gap: var(--space-1);
+  align-items: center;
+}
+
+.ask-sources__open {
+  color: var(--text-muted);
 }

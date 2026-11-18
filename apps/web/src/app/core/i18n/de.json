@@ -3304,7 +3304,8 @@
       "retry": "Erneut versuchen",
       "truncated": "Die Antwort wurde abgeschnitten.",
       "stopped": "Gestoppt.",
-      "button": "Fragen"
+      "button": "Fragen",
+      "try": "Zum Beispiel"
     },
     "connect": {
       "title": "Assistenten verbinden",

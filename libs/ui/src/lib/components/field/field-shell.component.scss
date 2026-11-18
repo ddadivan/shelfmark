@@ -25,11 +25,15 @@
   gap: var(--space-2);
   align-items: center;
   min-height: rem(44px);
-  padding: 0 var(--space-3);
+
+  // A feature may reshape the box through these hooks (the Ask composer: rounder, `bg` fill, the
+  // send button inside at the end).
+  padding: var(--ui-field-block-padding, 0) var(--ui-field-end-padding, var(--space-3))
+    var(--ui-field-block-padding, 0) var(--space-3);
   color: var(--text-muted);
-  background: var(--surface);
+  background: var(--ui-field-bg, var(--surface));
   border: 1px solid var(--border-control);
-  border-radius: var(--radius-md);
+  border-radius: var(--ui-field-radius, var(--radius-md));
 
   @include hover {
     border-color: var(--text-muted);
@@ -41,7 +45,12 @@
   padding-top: 0;
 }
 
-// Inline pill among chips: the label is for assistive technology only.
+// The label is for assistive technology only.
+.ui-field--label-hidden .ui-field__label {
+  @include visually-hidden;
+}
+
+// Inline pill among chips (the label is for assistive technology only, too).
 .ui-field--compact {
   .ui-field__label {
     @include visually-hidden;

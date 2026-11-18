@@ -3304,7 +3304,8 @@
       "retry": "Try again",
       "truncated": "The answer was cut short.",
       "stopped": "Stopped.",
-      "button": "Ask"
+      "button": "Ask",
+      "try": "Try"
     },
     "connect": {
       "title": "Connect your assistant",
