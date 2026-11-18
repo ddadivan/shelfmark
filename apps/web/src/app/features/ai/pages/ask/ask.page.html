@@ -1,0 +1,37 @@
+@if (settings.askOn()) {
+<div class="ask-page">
+  <div class="ask-page__top">
+    <ui-button
+      variant="ghost"
+      size="sm"
+      iconLeft="chevron-left"
+      [href]="libraryHref"
+      (linkClick)="back($event)"
+    >
+      {{ 'ai.ask.back' | transloco }}
+    </ui-button>
+    @if (store.entries().length > 0) {
+    <ui-button
+      variant="ghost"
+      size="sm"
+      iconOnly
+      iconLeft="refresh"
+      [ariaLabel]="'ai.ask.newQuestion' | transloco"
+      (click)="store.reset()"
+    />
+    }
+  </div>
+  <header class="ask-page__head">
+    <h1 class="ask-page__title">
+      <ui-icon class="ask-page__spark" name="spark" />{{ 'ai.ask.title' | transloco }}
+    </h1>
+    @if (left(); as left) {
+    <p class="ask-page__left">{{ left.key | transloco: { count: left.count } }}</p>
+    }
+  </header>
+  <app-ask-conversation class="ask-page__conversation" onPage />
+  <div class="ask-page__bar">
+    <app-ask-composer />
+  </div>
+</div>
+}

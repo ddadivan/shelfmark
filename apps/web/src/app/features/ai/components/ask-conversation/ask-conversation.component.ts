@@ -1,10 +1,12 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
   effect,
   inject,
+  input,
   untracked,
 } from '@angular/core';
 import { Router } from '@angular/router';
@@ -34,6 +36,9 @@ import { AskEntryComponent } from '../ask-entry/ask-entry.component';
   styleUrl: './ask-conversation.component.scss',
 })
 export class AskConversationComponent {
+  /** On the full-screen Ask page the heading follows its `h1` (an `h2`), in a panel its `h2`. */
+  readonly onPage = input(false, { transform: booleanAttribute });
+
   protected readonly store = inject(AskStore);
   private readonly folders = inject(FoldersStore);
   private readonly inbox = inject(AskInbox);

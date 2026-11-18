@@ -4,6 +4,8 @@ export const APP_PATH = {
   Library: 'library',
   /** Phone only: the Tags tab. */
   Tags: 'tags',
+  /** Ask your shelf full screen: the Ask tab of the mobile shell while Ask is on (AI-4, #499). */
+  Ask: 'ask',
   Links: 'links',
   Unsorted: 'unsorted',
   /** Tidy Unsorted (AI-2): review the AI suggestions of the links in Unsorted; only while AI is on. */

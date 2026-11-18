@@ -792,7 +792,7 @@
       "library": "Liens",
       "search": "Trouver",
       "tags": "Tags",
-      "ask": "Demander",
+      "ask": "Question",
       "you": "Vous"
     },
     "sidebar": {
@@ -1873,11 +1873,6 @@
       "background": "ouvrir en arrière-plan"
     },
     "askRow": "Interroger mes liens : « {{query}} »",
-    "mode": {
-      "label": "Rechercher ou demander",
-      "search": "Rechercher",
-      "ask": "Demander"
-    },
     "askRowCompact": "Interroger mes liens à ce sujet"
   },
   "share": {

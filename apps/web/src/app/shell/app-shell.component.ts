@@ -64,7 +64,8 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
 /**
  * Layout around the signed-in pages. Desktop and tablet: the sidebar card on the left, the top bar
  * (search pill, theme, "Add link", account menu) and the page on the right. Phone: the page alone
- * under the floating tab bar (Library, Search, Add, Tags, You); each page carries its own title.
+ * under the floating tab bar (Library, Search, Add, Tags or Ask while Ask is on, You); each page
+ * carries its own title.
  */
 @Component({
   selector: 'app-shell',
@@ -125,16 +126,21 @@ export default class AppShellComponent {
       this.transloco.selectTranslate('shell.tabs.library'),
       this.transloco.selectTranslate('shell.tabs.search'),
       this.transloco.selectTranslate('shell.tabs.tags'),
+      this.transloco.selectTranslate('shell.tabs.ask'),
       this.transloco.selectTranslate('shell.tabs.you'),
     ]),
-    { initialValue: ['', '', '', ''] },
+    { initialValue: ['', '', '', '', ''] },
   );
+  private readonly ai = inject(AiSettingsStore);
   protected readonly tabs = computed<TabBarItem[]>(() => {
-    const [library, search, tags, you] = this.tabLabels();
+    const [library, search, tags, ask, you] = this.tabLabels();
     return [
       { id: PHONE_TAB.Library, label: library, icon: 'bookmark', href: `/${APP_PATH.Library}` },
       { id: PHONE_TAB.Search, label: search, icon: 'search' },
-      { id: PHONE_TAB.Tags, label: tags, icon: 'tag', href: `/${APP_PATH.Tags}` },
+      // While Ask is on it takes the place of Tags; tags move into Library (#499).
+      this.ai.askOn()
+        ? { id: PHONE_TAB.Ask, label: ask, icon: 'spark', href: `/${APP_PATH.Ask}` }
+        : { id: PHONE_TAB.Tags, label: tags, icon: 'tag', href: `/${APP_PATH.Tags}` },
       { id: PHONE_TAB.You, label: you, icon: 'user', href: `/${APP_PATH.Settings}` },
     ];
   });
@@ -181,7 +187,7 @@ export default class AppShellComponent {
     // The due reminders badge, and the note when some became due since the last visit (#275).
     void inject(ReminderNoticeService).check();
     // AI (#389): the switches the dialogs and cards follow, and the catch-up tick while jobs wait.
-    void inject(AiSettingsStore).load();
+    void this.ai.load();
     inject(AiTickService);
   }
 

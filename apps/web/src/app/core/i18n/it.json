@@ -1873,11 +1873,6 @@
       "background": "apri in background"
     },
     "askRow": "Chiedi ai tuoi link: «{{query}}»",
-    "mode": {
-      "label": "Cerca o chiedi",
-      "search": "Cerca",
-      "ask": "Chiedi"
-    },
     "askRowCompact": "Chiedi ai tuoi link su questo"
   },
   "share": {

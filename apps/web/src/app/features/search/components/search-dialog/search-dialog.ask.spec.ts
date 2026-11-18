@@ -1,10 +1,11 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { MOCK_LIBRARY_COUNTS } from '@shelfmark/contracts/testing';
 import type { AskEvent } from '@shelfmark/contracts';
 import { UiDialogRef } from '@shelfmark/ui';
-import { UiCommandListHarness, UiStreamingAnswerHarness } from '@shelfmark/ui/testing';
+import { UiCommandListHarness } from '@shelfmark/ui/testing';
 import { of, Subject } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
 import { aiSettingsResponse, fakeAiApi } from '../../../../../testing/fake-ai-api';
@@ -14,6 +15,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { AI_API } from '../../../ai/models/ai-api.const';
 import { AI_SETTINGS_DEFAULT } from '../../../ai/models/ai-settings-default.const';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
+import { AskInbox } from '../../../ai/services/ask-inbox.service';
 import { AskPanelService } from '../../../ai/services/ask-panel.service';
 import { LinkActionsService } from '../../../links/services/link-actions.service';
 import { FOLDERS_API } from '../../../links/models/folders-api.const';
@@ -32,6 +34,7 @@ async function setup(compact: boolean, ask = true) {
   ai.ask.mockReturnValue(stream);
   const ref = { close: vi.fn(), locked: () => false };
   const panel = { open: vi.fn() };
+  const router = { navigateByUrl: vi.fn(() => Promise.resolve(true)) };
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
@@ -47,6 +50,7 @@ async function setup(compact: boolean, ask = true) {
       { provide: AI_API, useValue: ai },
       { provide: UiDialogRef, useValue: ref },
       { provide: AskPanelService, useValue: panel },
+      { provide: Router, useValue: router },
       { provide: LinkActionsService, useValue: { open: vi.fn(), addLink: vi.fn() } },
       { provide: LinkOpener, useValue: { open: vi.fn() } },
       { provide: UserSettingsStore, useValue: { openInNewTab: signal(true) } },
@@ -64,30 +68,21 @@ async function setup(compact: boolean, ask = true) {
     ai,
     ref,
     panel,
+    router,
     fixture,
     loader: TestbedHarnessEnvironment.loader(fixture),
     element: fixture.nativeElement as HTMLElement,
   };
 }
 
-describe('SearchDialogComponent with Ask (AI-4)', () => {
+describe('SearchDialogComponent with Ask (AI-4, #499)', () => {
   afterEach(() => {
     document.querySelectorAll('.cdk-overlay-container').forEach((node) => node.replaceChildren());
   });
 
-  it('switches to Ask with the Search · Ask segment in the mobile shell', async () => {
-    const { element, fixture } = await setup(true);
-    const radios = element.querySelectorAll<HTMLInputElement>('ui-segmented-control input');
-    expect(radios).toHaveLength(2);
-    radios[1]?.click();
-    await fixture.whenStable();
-    expect(element.textContent).toContain('What do you want to find out?');
-    expect(element.textContent).toContain('Answers use only your links.');
-    expect(await axeViolations(element)).toEqual([]);
-  });
-
-  it('hands the query to the Ask segment from "Ask your shelf about this"', async () => {
-    const { ai, loader, fixture } = await setup(true);
+  it('hands the query to the full-screen Ask page in the mobile shell; no segment', async () => {
+    const { element, loader, ref, panel, router } = await setup(true);
+    expect(element.querySelector('ui-segmented-control')).toBeNull();
     const list = await loader.getHarness(UiCommandListHarness);
     await list.setQuery('ramen recipes');
     await vi.waitFor(async () => {
@@ -96,15 +91,15 @@ describe('SearchDialogComponent with Ask (AI-4)', () => {
       );
     }, WAIT);
     await (await list.getOptions()).at(-1)?.click();
-    await fixture.whenStable();
-    expect(ai.ask).toHaveBeenCalledWith('ramen recipes');
-    const answer = await loader.getHarness(UiStreamingAnswerHarness);
-    expect(await answer.getQuestion()).toBe('ramen recipes');
+    await vi.waitFor(() => expect(router.navigateByUrl).toHaveBeenCalledWith('/ask'), WAIT);
+    expect(ref.close).toHaveBeenCalled();
+    expect(panel.open).not.toHaveBeenCalled();
+    expect(TestBed.inject(AskInbox).pending()).toBe('ramen recipes');
+    expect(await axeViolations(element)).toEqual([]);
   });
 
-  it('closes and opens the Ask panel with a header; no segment', async () => {
-    const { element, loader, ref, panel } = await setup(false);
-    expect(element.querySelector('ui-segmented-control')).toBeNull();
+  it('closes and opens the Ask panel with a header', async () => {
+    const { loader, ref, panel } = await setup(false);
     const list = await loader.getHarness(UiCommandListHarness);
     await list.setQuery('ramen recipes');
     await vi.waitFor(async () => {
@@ -118,8 +113,7 @@ describe('SearchDialogComponent with Ask (AI-4)', () => {
   });
 
   it('renders nothing of Ask while Ask is off', async () => {
-    const { element, loader } = await setup(true, false);
-    expect(element.querySelector('ui-segmented-control')).toBeNull();
+    const { loader } = await setup(true, false);
     const list = await loader.getHarness(UiCommandListHarness);
     await list.setQuery('ramen recipes');
     await new Promise((resolve) => setTimeout(resolve, 400));

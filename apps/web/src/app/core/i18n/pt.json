@@ -792,7 +792,7 @@
       "library": "Links",
       "search": "Buscar",
       "tags": "Tags",
-      "ask": "Perguntar",
+      "ask": "Consulta",
       "you": "Você"
     },
     "sidebar": {
@@ -1873,11 +1873,6 @@
       "background": "abrir em segundo plano"
     },
     "askRow": "Pergunte aos seus links: “{{query}}”",
-    "mode": {
-      "label": "Pesquisar ou perguntar",
-      "search": "Pesquisar",
-      "ask": "Perguntar"
-    },
     "askRowCompact": "Pergunte aos seus links sobre isso"
   },
   "share": {
