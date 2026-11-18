@@ -19,6 +19,14 @@ const anthropicAllowedFiles = [
   'src/ai/providers/real-client.guard.spec.ts',
 ];
 
+// ADR 0054 point 2: the MCP SDK is a devDependency for the conformance spec only; the server is our
+// own handler, so nothing of the SDK may reach the API bundle.
+const mcpSdkPattern = {
+  group: ['@modelcontextprotocol/*', '@modelcontextprotocol/**'],
+  message:
+    'The MCP SDK is test-only (ADR 0054): import it in *.spec.ts only; the server is src/mcp/.',
+};
+
 export default [
   ...base,
   {
@@ -26,6 +34,20 @@ export default [
     // `@AllowAnonymous()`. The integration's own `Session`, `OptionalAuth`, `Public` and `Roles`
     // are untyped or bypass the allow-list, so the package is only imported by the auth wiring.
     files: ['src/**/*.ts'],
+    ignores: ['src/auth/**', 'src/common/auth/**', ...anthropicAllowedFiles],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [betterAuthPath, anthropicPath],
+          patterns: [...testingImportPatterns, mcpSdkPattern],
+        },
+      ],
+    },
+  },
+  {
+    // Specs may import the MCP SDK (the conformance spec); every other restriction stays.
+    files: ['src/**/*.spec.ts'],
     ignores: ['src/auth/**', 'src/common/auth/**', ...anthropicAllowedFiles],
     rules: {
       'no-restricted-imports': [
@@ -40,7 +62,7 @@ export default [
     rules: {
       'no-restricted-imports': [
         'error',
-        { paths: [betterAuthPath], patterns: testingImportPatterns },
+        { paths: [betterAuthPath], patterns: [...testingImportPatterns, mcpSdkPattern] },
       ],
     },
   },

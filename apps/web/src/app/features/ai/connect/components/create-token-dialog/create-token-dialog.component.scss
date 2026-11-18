@@ -1,0 +1,46 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.token__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  // Room for the focus ring of the field at the edge of the scrolling body.
+  padding: rem(2px);
+}
+
+.token__value {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.token__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
+.token__label {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.token__code {
+  @include type(mono);
+
+  color: var(--text);
+  overflow-wrap: anywhere;
+}

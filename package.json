@@ -45,6 +45,7 @@
     "@electric-sql/pglite": "0.5.16",
     "@electric-sql/pglite-socket": "0.2.19",
     "@eslint/js": "10.0.1",
+    "@modelcontextprotocol/sdk": "1.32.2",
     "@nestjs/testing": "12.5.0",
     "@nx/angular": "24.0.6",
     "@nx/devkit": "24.0.6",

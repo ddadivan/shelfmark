@@ -2923,12 +2923,16 @@
         "title": "Resumos curtos",
         "text": "Com a IA ativada, os links ganham um resumo de uma ou duas linhas no cartão. Edite e ele passa a ser seu."
       },
-      "aiTidy": {
-        "title": "Organizar “Sem pasta” com IA",
-        "text": "Revise numa única página as sugestões de IA para tudo em “Sem pasta” e aplique-as com um só Desfazer. Se você guardar links de um site na mesma pasta algumas vezes, o Shelfmark oferece uma regra."
+      "mcp": {
+        "title": "Conecte seu assistente",
+        "text": "No Pro, o Claude e outros assistentes MCP podem pesquisar e ler seus links com um token pessoal. Somente leitura, e você pode revogá-lo quando quiser."
       },
       "extensionInStore": {
         "text": "A extensão do Shelfmark está na Chrome Web Store: instale-a pelo aviso da sua estante ou em Configurações › Biblioteca."
+      },
+      "aiTidy": {
+        "title": "Organizar “Sem pasta” com IA",
+        "text": "Revise numa única página as sugestões de IA para tudo em “Sem pasta” e aplique-as com um só Desfazer. Se você guardar links de um site na mesma pasta algumas vezes, o Shelfmark oferece uma regra."
       }
     },
     "sections": {
@@ -3148,6 +3152,101 @@
         "other": "{{count}} tags adicionadas pela IA"
       },
       "undo": "Desfazer"
+    },
+    "connect": {
+      "title": "Conecte seu assistente",
+      "lead": "Deixe o Claude ou outro assistente compatível com MCP pesquisar e ler seus links. Somente leitura: ele não pode alterar nem excluir nada.",
+      "pro": "Conectar um assistente faz parte do Pro. Os tokens que você já tem continuam na lista e podem ser revogados.",
+      "demo": "A demo não pode conectar um assistente. Entre com sua própria conta para experimentar.",
+      "loadFailed": "Não foi possível carregar seus tokens.",
+      "retry": "Tentar de novo",
+      "copy": "Copiar",
+      "copyFailed": "Não foi possível copiar. Selecione o texto e copie com o teclado.",
+      "address": {
+        "title": "1. Endereço do servidor",
+        "copyLabel": "Copiar o endereço do servidor",
+        "copied": "Endereço do servidor copiado"
+      },
+      "token": {
+        "title": "2. Token pessoal",
+        "hint": "Um token por assistente, para revogar cada um separadamente.",
+        "limit": "Você tem {{max}} tokens. Revogue um para criar outro.",
+        "create": "Criar token"
+      },
+      "list": {
+        "title": "Conectados",
+        "last4": "Termina em {{last4}}",
+        "used": "Último uso {{when}}, chamadas nesta semana: {{calls}}",
+        "never": "Criado em {{date}}, nunca usado",
+        "notes": "Com notas",
+        "revoke": "Revogar",
+        "revokeLabel": "Revogar {{name}}"
+      },
+      "empty": {
+        "title": "Nenhum assistente conectado",
+        "text": "Crie um token, cole-o com o endereço do servidor nas configurações MCP do seu assistente e pergunte a ele sobre seus links."
+      },
+      "revoke": {
+        "title": "Revogar {{name}}?",
+        "message": "Ele para de funcionar na hora: o assistente que o usa não consegue mais ler seus links.",
+        "confirm": "Revogar",
+        "cancel": "Cancelar",
+        "done": "Token revogado",
+        "failed": "Não foi possível revogar o token. Tente de novo."
+      },
+      "create": {
+        "title": "Criar um token",
+        "close": "Fechar",
+        "name": "Nome",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Dê um nome ao token.",
+        "tooLong": "No máximo {{max}} caracteres.",
+        "notes": "Incluir minhas notas",
+        "notesHint": "Seu assistente também verá as notas dos seus links. Para mudar isso depois, crie um novo token.",
+        "cancel": "Cancelar",
+        "action": "Criar token",
+        "saving": "Criando…",
+        "error": {
+          "limit": "Você tem {{max}} tokens. Revogue um para criar outro.",
+          "notAvailable": "Conectar um assistente faz parte do Pro.",
+          "save": "Não foi possível criar o token. Tente de novo."
+        }
+      },
+      "secret": {
+        "title": "Token para {{name}}",
+        "label": "Token pessoal (mostrado uma vez)",
+        "copyLabel": "Copiar o token",
+        "copied": "Token copiado",
+        "warning": "Copie agora: você não vai vê-lo de novo. Qualquer pessoa com este token pode ler seus links até você revogá-lo.",
+        "fallback": "Não foi possível copiar. O token está selecionado acima: pressione Ctrl+C ou ⌘C para copiá-lo.",
+        "field": "Token pessoal",
+        "done": "Concluir"
+      },
+      "howTo": {
+        "toggle": "Como conectar: Claude, Cursor, VS Code",
+        "intro": "Substitua <token> pelo seu token pessoal.",
+        "copyLabel": "Copiar a configuração do {{client}}",
+        "copied": "Configuração do {{client}} copiada",
+        "oauth": "Assistentes que só se conectam por login (OAuth), como conectores na web, ainda não podem se conectar.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Execute isto em um terminal:"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Adicione isto ao claude_desktop_config.json (Configurações › Desenvolvedor › Editar configuração) e reinicie o Claude Desktop. Requer Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Adicione isto ao ~/.cursor/mcp.json:"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Adicione isto ao .vscode/mcp.json do seu projeto:"
+          }
+        }
+      }
     },
     "tidy": {
       "entry": "Organizar com sugestões",
