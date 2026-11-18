@@ -16,6 +16,9 @@ import type { LinkJobInput } from '../models/link-job-input.interface';
 import type { LinkJobOutcome } from '../models/link-job-outcome.type';
 import type { MockAskDelay } from '../models/mock-ask-delay.type';
 import { mockAskAnswer, mockAskChunks } from './mock-ask-answer';
+import { mockTagSynonyms } from './mock-tag-synonyms';
+import type { TagSynonymsInput } from '../models/tag-synonyms-input.interface';
+import type { TagSynonymsOutcome } from '../models/tag-synonyms-outcome.type';
 
 const VIDEO_HOSTS = ['youtube.com', 'youtu.be', 'vimeo.com'];
 
@@ -64,6 +67,11 @@ export class MockAiProvider implements AiProvider {
     private readonly delay: MockAskDelay = realDelay,
     private readonly chunkMs: number = MOCK_ASK.ChunkMs,
   ) {}
+
+  /** Synonym pairs from `MOCK_TAG_SYNONYMS` (triggers `ai-fail`, `ai-refuse` in a tag name). */
+  findTagSynonyms(input: TagSynonymsInput): Promise<TagSynonymsOutcome> {
+    return Promise.resolve(mockTagSynonyms(input));
+  }
 
   async *askStream(input: AskInput, signal: AbortSignal): AsyncGenerator<AskChunk> {
     const question = input.question.toLowerCase();

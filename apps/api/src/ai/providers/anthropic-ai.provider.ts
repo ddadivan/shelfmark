@@ -5,6 +5,12 @@ import { buildAskUserPrompt } from '../prompt/build-ask-prompt';
 import { buildLinkUserPrompt } from '../prompt/build-link-prompt';
 import { LINK_OUTPUT_SCHEMA } from '../prompt/link-output.schema';
 import { LINK_SYSTEM_PROMPT } from '../prompt/link-system-prompt.const';
+import { buildTagSynonymsPrompt } from '../prompt/build-tag-synonyms-prompt';
+import { TAG_SYNONYMS_SCHEMA } from '../prompt/tag-synonyms.schema';
+import { TAG_SYNONYMS_SYSTEM_PROMPT } from '../prompt/tag-synonyms-system-prompt.const';
+import { TAG_SYNONYMS_LIMIT } from '../models/tag-synonyms-limit.const';
+import type { TagSynonymsInput } from '../models/tag-synonyms-input.interface';
+import type { TagSynonymsOutcome } from '../models/tag-synonyms-outcome.type';
 import { ANTHROPIC_LIMIT } from '../models/anthropic-limit.const';
 import { AI_EFFORT, AI_MODEL } from '../models/ai-model.const';
 import { AI_PROVIDER_NAME } from '../models/ai-provider-name.const';
@@ -46,6 +52,20 @@ function paramsFor(input: LinkJobInput): MessageParams {
     output_config: {
       effort: AI_EFFORT.LinkJob,
       format: { type: 'json_schema', schema: LINK_OUTPUT_SCHEMA },
+    },
+  };
+}
+
+/** Tag synonyms (AI-5): the link-job model at low effort, structured output, tag names only. */
+function tagSynonymsParamsFor(input: TagSynonymsInput): MessageParams {
+  return {
+    model: AI_MODEL.LinkJob,
+    max_tokens: TAG_SYNONYMS_LIMIT.MaxTokens,
+    system: TAG_SYNONYMS_SYSTEM_PROMPT,
+    messages: [{ role: 'user', content: buildTagSynonymsPrompt(input) }],
+    output_config: {
+      effort: AI_EFFORT.LinkJob,
+      format: { type: 'json_schema', schema: TAG_SYNONYMS_SCHEMA },
     },
   };
 }
@@ -116,6 +136,18 @@ export class AnthropicAiProvider implements AiProvider {
   async runLinkJob(input: LinkJobInput): Promise<LinkJobOutcome> {
     try {
       const message = await this.client.messages.create(paramsFor(input), {
+        timeout: ANTHROPIC_LIMIT.TimeoutMs,
+        maxRetries: ANTHROPIC_LIMIT.MaxRetries,
+      });
+      return outcomeOfMessage(message);
+    } catch (error) {
+      return outcomeOfError(error);
+    }
+  }
+
+  async findTagSynonyms(input: TagSynonymsInput): Promise<TagSynonymsOutcome> {
+    try {
+      const message = await this.client.messages.create(tagSynonymsParamsFor(input), {
         timeout: ANTHROPIC_LIMIT.TimeoutMs,
         maxRetries: ANTHROPIC_LIMIT.MaxRetries,
       });

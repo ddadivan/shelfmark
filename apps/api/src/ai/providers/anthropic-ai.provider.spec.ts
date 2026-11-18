@@ -60,6 +60,32 @@ describe('AnthropicAiProvider', () => {
     expect(options).toEqual({ timeout: 15_000, maxRetries: 0 });
   });
 
+  it('asks for tag synonyms with tag names only, structured output and no retries', async () => {
+    const { provider, create } = setup();
+    create.mockResolvedValue(message('{"pairs":[{"keep":"t1","merge":"t2"}]}'));
+    const outcome = await provider.findTagSynonyms({
+      tags: [
+        { key: 't1', name: 'javascript' },
+        { key: 't2', name: 'js' },
+      ],
+    });
+    expect(outcome).toEqual({ type: 'output', output: { pairs: [{ keep: 't1', merge: 't2' }] } });
+    const [params, options] = create.mock.calls[0];
+    expect(params.model).toBe('claude-haiku-5-5');
+    expect(params.output_config.effort).toBe('low');
+    expect(params.output_config.format.schema.required).toEqual(['pairs']);
+    expect(params.messages[0].content).toBe('<tags>\nt1: javascript\nt2: js\n</tags>');
+    expect(options).toEqual({ timeout: 15_000, maxRetries: 0 });
+
+    create.mockResolvedValue(message('{}', 'refusal'));
+    expect(await provider.findTagSynonyms({ tags: [] })).toEqual({ type: 'refusal' });
+    create.mockRejectedValue(Object.assign(new Error('x'), { status: 400 }));
+    expect(await provider.findTagSynonyms({ tags: [] })).toEqual({
+      type: 'error',
+      retryable: false,
+    });
+  });
+
   it('answers a refusal for the refusal stop reason', async () => {
     const { provider, create } = setup();
     create.mockResolvedValue(message('{"tags":[]}', 'refusal'));
