@@ -1800,7 +1800,13 @@
       "open": "öffnen",
       "background": "im Hintergrund öffnen"
     },
-    "askRow": "Frag deine Links: „{{query}}“"
+    "askRow": "Frag deine Links: „{{query}}“",
+    "mode": {
+      "label": "Suchen oder fragen",
+      "search": "Suchen",
+      "ask": "Fragen"
+    },
+    "askRowCompact": "Deine Links dazu fragen"
   },
   "share": {
     "title": "In Shelfmark speichern",

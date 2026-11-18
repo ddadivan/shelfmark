@@ -1829,7 +1829,13 @@
       "open": "ouvrir",
       "background": "ouvrir en arrière-plan"
     },
-    "askRow": "Interroger mes liens : « {{query}} »"
+    "askRow": "Interroger mes liens : « {{query}} »",
+    "mode": {
+      "label": "Rechercher ou demander",
+      "search": "Rechercher",
+      "ask": "Demander"
+    },
+    "askRowCompact": "Interroger mes liens à ce sujet"
   },
   "share": {
     "title": "Enregistrer dans Shelfmark",

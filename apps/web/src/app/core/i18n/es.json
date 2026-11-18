@@ -1829,7 +1829,13 @@
       "open": "abrir",
       "background": "abrir en segundo plano"
     },
-    "askRow": "Pregunta a tus enlaces: «{{query}}»"
+    "askRow": "Pregunta a tus enlaces: «{{query}}»",
+    "mode": {
+      "label": "Buscar o preguntar",
+      "search": "Buscar",
+      "ask": "Preguntar"
+    },
+    "askRowCompact": "Pregunta a tus enlaces sobre esto"
   },
   "share": {
     "title": "Guardar en Shelfmark",

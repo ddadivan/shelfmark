@@ -52,6 +52,7 @@ import { matchFolders, matchTags } from '../../utils/search-match';
 import { isMacPlatform } from '../../utils/is-mac-platform';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
+import { ViewportService } from '../../../../core/layout/viewport.service';
 import { ASK_LIMIT } from '@shelfmark/contracts';
 
 const IDLE: SearchState = { query: '', links: [], more: false, failed: false };
@@ -109,6 +110,8 @@ export class SearchResultsComponent {
     () => this.ai.askOn() && this.query().trim().length >= ASK_LIMIT.QuestionMin,
   );
   private readonly ai = inject(AiSettingsStore);
+  /** The mobile shell: the Ask row reads "Ask your shelf about this" and opens the Ask segment. */
+  protected readonly compact = inject(ViewportService).compact;
 
   protected readonly SEARCH_RESULT_KIND = SEARCH_RESULT_KIND;
   protected readonly ICON_SIZE = ICON_SIZE;

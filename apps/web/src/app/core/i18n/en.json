@@ -1800,7 +1800,13 @@
       "open": "open",
       "background": "open in background"
     },
-    "askRow": "Ask your shelf: “{{query}}”"
+    "askRow": "Ask your shelf: “{{query}}”",
+    "mode": {
+      "label": "Search or ask",
+      "search": "Search",
+      "ask": "Ask"
+    },
+    "askRowCompact": "Ask your shelf about this"
   },
   "share": {
     "title": "Save to Shelfmark",
