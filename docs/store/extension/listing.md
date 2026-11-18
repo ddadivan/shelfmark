@@ -21,7 +21,7 @@ Texts to paste into the Chrome Web Store developer dashboard (#445). The author 
 > - Add tags and a short note if you like, then press Save (or just Enter).
 > - Already saved it? Shelfmark tells you when, and where, instead of making a copy.
 >
-> The extension reads a tab only when you click its button or press its shortcut, never in the background. It then sends the address of that one tab to your Shelfmark library to check whether you saved it already; the page is saved only when you press Save. If you click Fill in with AI and AI is on in your account, that address is also sent to Shelfmark for AI suggestions. It can talk to Shelfmark only.
+> The extension reads a tab only when you click its button or press its shortcut, never in the background. It then sends the address of that one tab to your Shelfmark library to check whether you saved it already; the page is saved only when you press Save. If you click Fill in with AI and AI is on in your account, that address and title (and your note, if AI may read notes) are also sent to Shelfmark for AI suggestions. It can talk to Shelfmark only.
 >
 > You need a Shelfmark account (free, sign in with Google or GitHub) at https://shelfmark-app.vercel.app. Sign in once in the browser and the extension uses that sign-in.
 >
@@ -60,7 +60,7 @@ Texts to paste into the Chrome Web Store developer dashboard (#445). The author 
 
 **Data usage.** Tick only **Web history**, and nothing else:
 
-- **Web history**: yes. When the user opens the popup, the address of the current tab goes to their own Shelfmark library to check whether it is saved already, and its address and title are stored there when they press Save. If they click Fill in with AI and AI is on in their account, the address is also sent to Shelfmark for AI suggestions (processed under its AI terms). Nothing else of their browsing is read or sent.
+- **Web history**: yes. When the user opens the popup, the address of the current tab goes to their own Shelfmark library to check whether it is saved already, and its address and title are stored there when they press Save. If they click Fill in with AI and AI is on in their account, the address and title (and the note, when they let AI read notes) are also sent to Shelfmark for AI suggestions (processed under its AI terms). Nothing else of their browsing is read or sent.
 - **Website content**: no. The extension never reads the page itself (no content scripts).
 - **Personally identifiable information, health, financial, authentication, personal communications, location, user activity**: no.
 
