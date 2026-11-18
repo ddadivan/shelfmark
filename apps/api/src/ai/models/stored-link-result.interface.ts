@@ -7,4 +7,6 @@ export interface StoredLinkResult {
   newTag: string | null;
   folderId: string | null;
   summary: string | null;
+  /** The cleaned-up title of a draft; never applied to a saved link. */
+  title: string | null;
 }

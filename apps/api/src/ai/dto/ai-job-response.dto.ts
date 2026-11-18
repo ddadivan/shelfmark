@@ -15,4 +15,5 @@ export class AiJobResponseDto implements AiJobResponse {
   reason!: AiJobReason | null;
   @ApiProperty({ type: [LinkSuggestionDto] }) suggestions!: LinkSuggestionDto[];
   @ApiProperty({ nullable: true, type: String }) summary!: string | null;
+  @ApiProperty({ nullable: true, type: String }) title!: string | null;
 }

@@ -36,6 +36,11 @@ export interface CreateLinkRequest {
    */
   applyRules?: boolean;
   /**
+   * The user's own summary (at most `AI_LIMIT.SummaryMax`), sent when they wrote or edited it in Add
+   * link; stored as theirs (AI never replaces it). Left out, the draft's AI summary is applied.
+   */
+  summary?: string;
+  /**
    * The Add link dialog's AI draft id (`CreateAiDraftRequest.draftId`, a UUID): the save picks up that
    * draft's suggestions and summary instead of starting a new AI job. Separate from `idempotencyKey`.
    */

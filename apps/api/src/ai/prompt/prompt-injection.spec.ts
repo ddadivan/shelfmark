@@ -23,6 +23,7 @@ const OWN_FOLDERS = [
 const context: ParseLinkContext = {
   parts: ['tags', 'folder', 'summary'],
   tags: OWN_TAGS,
+  title: { wanted: false, page: null },
   folders: OWN_FOLDERS,
 };
 
@@ -30,6 +31,7 @@ describe('prompt injection through a hostile page', () => {
   const excerpt = extractExcerpt(HOSTILE_PAGE);
   const input: LinkJobInput = {
     parts: ['tags', 'folder', 'summary'],
+    wantsTitle: false,
     language: 'en',
     url: 'https://cats.example/page',
     title: 'Cute cats',

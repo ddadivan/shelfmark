@@ -46,6 +46,12 @@ import { toLinkResponse } from './to-link-response';
 const CREATE_RESPONSE_MARGIN_MS = 1_000;
 
 /** `null` and blank text both mean "no note". */
+/** A summary the user wrote in Add link: theirs, so AI never replaces it; blank is no summary. */
+function userSummary(summary: string | undefined): { summary?: string; summarySource?: string } {
+  const text = summary?.trim() ?? '';
+  return text === '' ? {} : { summary: text, summarySource: SUMMARY_SOURCE.User };
+}
+
 function noteOrNull(note: string | null | undefined): string | null {
   return note === undefined || note === null || note.trim() === '' ? null : note;
 }
@@ -150,6 +156,7 @@ export class LinksWriteService {
             titleSortKey: finalTitle.toLowerCase(),
             kind,
             note: noteOrNull(request.note),
+            ...userSummary(request.summary),
             faviconSourceUrl,
             imageSourceUrl,
             idempotencyKey: key ?? null,

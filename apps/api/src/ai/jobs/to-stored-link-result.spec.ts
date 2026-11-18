@@ -4,8 +4,14 @@ import { toStoredLinkResult } from './to-stored-link-result';
 describe('toStoredLinkResult', () => {
   it('reads the shape the runner wrote', () => {
     expect(
-      toStoredLinkResult({ tags: ['a', 3, 'b'], newTag: 'n', folderId: 'f', summary: 's' }),
-    ).toEqual({ tags: ['a', 'b'], newTag: 'n', folderId: 'f', summary: 's' });
+      toStoredLinkResult({
+        tags: ['a', 3, 'b'],
+        newTag: 'n',
+        folderId: 'f',
+        summary: 's',
+        title: 't',
+      }),
+    ).toEqual({ tags: ['a', 'b'], newTag: 'n', folderId: 'f', summary: 's', title: 't' });
   });
 
   it('turns blank or missing fields into null', () => {
@@ -14,6 +20,7 @@ describe('toStoredLinkResult', () => {
       newTag: null,
       folderId: null,
       summary: null,
+      title: null,
     });
   });
 

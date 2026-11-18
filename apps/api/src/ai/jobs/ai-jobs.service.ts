@@ -226,6 +226,7 @@ export class AiJobsService {
       reason: toAiJobReason(job.reason),
       suggestions: [],
       summary: null,
+      title: null,
     };
     if (status !== AI_JOB_STATUS.Done) return response;
     if (job.linkId === null) {
@@ -240,7 +241,7 @@ export class AiJobsService {
           ? []
           : [this.draftSuggestion(job.id, SUGGESTION_KIND.NewTag, result.newTag, null)]),
       ];
-      return { ...response, suggestions, summary: result.summary };
+      return { ...response, suggestions, summary: result.summary, title: result.title };
     }
     const [link, rows] = await Promise.all([
       this.prisma.link.findFirst({
@@ -402,7 +403,14 @@ export class AiJobsService {
   }
 
   private skipped(id: string, reason: AiJobResponse['reason']): AiJobResponse {
-    return { id, status: AI_JOB_STATUS.Skipped, reason, suggestions: [], summary: null };
+    return {
+      id,
+      status: AI_JOB_STATUS.Skipped,
+      reason,
+      suggestions: [],
+      summary: null,
+      title: null,
+    };
   }
 
   private draftSuggestion(

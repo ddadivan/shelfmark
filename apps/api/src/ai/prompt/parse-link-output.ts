@@ -1,4 +1,4 @@
-import { AI_LIMIT, LINK_KIND, TAG_LIMIT, normalizeTagName } from '@shelfmark/contracts';
+import { AI_LIMIT, LINK_KIND, LINK_LIMIT, TAG_LIMIT, normalizeTagName } from '@shelfmark/contracts';
 import type { LinkKind } from '@shelfmark/contracts';
 import { stripControlChars } from '../../common/validation/has-control-chars';
 import { AI_PART } from '../models/ai-part.const';
@@ -53,6 +53,19 @@ function parseSummary(raw: string | null | undefined): string | null {
 }
 
 /**
+ * A draft's cleaned-up title as plain text: markup, control characters and extra whitespace
+ * removed, at most `LINK_LIMIT.TitleMax`; dropped when it is empty or only the page title again
+ * (compared without case and surrounding whitespace).
+ */
+function parseTitle(raw: string | null | undefined, page: string | null): string | null {
+  if (!raw) return null;
+  const text = stripControlChars(raw.replace(HTML_TAG, ' ')).replace(/\s+/g, ' ').trim();
+  const cut = text.length > LINK_LIMIT.TitleMax ? text.slice(0, LINK_LIMIT.TitleMax).trim() : text;
+  if (cut === '' || cut.toLowerCase() === (page ?? '').trim().toLowerCase()) return null;
+  return cut;
+}
+
+/**
  * Checks the model's answer before anything is stored. `null` means the answer is unusable (not an
  * object, or a field of the wrong type): the job fails and nothing is shown (ADR 0047). Otherwise
  * only what is trusted survives:
@@ -62,14 +75,20 @@ function parseSummary(raw: string | null | undefined): string | null {
  * - a folder only when its key is one of the keys the job offered;
  * - a summary as plain text: markup, control characters and extra whitespace removed, at most
  *   `AI_LIMIT.SummaryMax`;
+ * - a title (drafts only) as plain text, at most `LINK_LIMIT.TitleMax`, never the page title again;
  * - a kind only from `LINK_KIND`;
  * - nothing for a part the job did not ask for.
  */
 export function parseLinkOutput(raw: unknown, context: ParseLinkContext): LinkJobOutput | null {
   if (!isRecord(raw)) return null;
-  const { tags, newTag, folder, summary, kind } = raw;
+  const { tags, newTag, folder, summary, title, kind } = raw;
   if (tags !== undefined && !Array.isArray(tags)) return null;
-  if (!isNullableString(newTag) || !isNullableString(folder) || !isNullableString(summary)) {
+  if (
+    !isNullableString(newTag) ||
+    !isNullableString(folder) ||
+    !isNullableString(summary) ||
+    !isNullableString(title)
+  ) {
     return null;
   }
   if (kind !== null && kind !== undefined && typeof kind !== 'string') return null;
@@ -85,6 +104,7 @@ export function parseLinkOutput(raw: unknown, context: ParseLinkContext): LinkJo
     newTag: wants(AI_PART.Tags) ? parseNewTag(newTag, context) : null,
     folder: folderKey,
     summary: wants(AI_PART.Summary) ? parseSummary(summary) : null,
+    title: context.title.wanted ? parseTitle(title, context.title.page) : null,
     kind: typeof kind === 'string' && isLinkKind(kind) ? kind : null,
   };
 }

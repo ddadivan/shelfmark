@@ -74,6 +74,7 @@ export class AiApplyService {
               newTag: result.newTag,
               folderId: result.folderId,
               summary: result.summary,
+              title: result.title,
             },
           },
         });

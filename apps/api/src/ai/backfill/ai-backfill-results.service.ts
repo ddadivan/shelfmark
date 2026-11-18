@@ -124,6 +124,7 @@ export class AiBackfillResultsService {
         ? parseLinkOutput(outcome.output, {
             parts,
             tags,
+            title: { wanted: false, page: null },
             folders: [...folderKeys.keys()].map((key) => ({ key, path: '' })),
           })
         : null;
@@ -136,6 +137,7 @@ export class AiBackfillResultsService {
       newTag: parsed.newTag,
       folderId: parsed.folder === null ? null : (folderKeys.get(parsed.folder) ?? null),
       summary: parsed.summary,
+      title: null,
     });
     return false;
   }

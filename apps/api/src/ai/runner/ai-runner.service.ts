@@ -159,6 +159,7 @@ export class AiRunnerService {
       excerpt: page.excerpt,
       tags: vocabulary.tags,
       folders: vocabulary.folders,
+      wantsTitle: job.linkId === null,
       examples,
     };
     const outcome = await this.call(this.registry.for(account), input);
@@ -177,6 +178,7 @@ export class AiRunnerService {
     const parsed = parseLinkOutput(outcome.output, {
       parts: job.parts,
       tags: vocabulary.tags,
+      title: { wanted: input.wantsTitle, page: source.title },
       folders: vocabulary.folders,
     });
     if (!parsed) return this.settle(job, AI_JOB_STATE.Failed, AI_JOB_REASON.Rejected);
@@ -186,6 +188,7 @@ export class AiRunnerService {
       folderId:
         parsed.folder === null ? null : (vocabulary.folderIdByKey.get(parsed.folder) ?? null),
       summary: parsed.summary,
+      title: parsed.title,
     });
   }
 

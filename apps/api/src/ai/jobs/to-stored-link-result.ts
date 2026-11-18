@@ -16,5 +16,6 @@ export function toStoredLinkResult(value: unknown): StoredLinkResult | null {
     newTag: stringOrNull(value['newTag']),
     folderId: stringOrNull(value['folderId']),
     summary: stringOrNull(value['summary']),
+    title: stringOrNull(value['title']),
   };
 }
