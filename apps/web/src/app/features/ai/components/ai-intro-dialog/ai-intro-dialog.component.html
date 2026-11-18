@@ -1,12 +1,28 @@
 <ui-dialog
   size="md"
+  hideTitle
   [title]="(phone() ? 'ai.intro.titleShort' : 'ai.intro.title') | transloco"
-  [closeLabel]="'ai.intro.close' | transloco"
 >
   <div class="ai-intro">
-    <span class="ai-intro__tile" aria-hidden="true">
-      <ui-icon name="spark" [size]="ICON_SIZE.Lg" />
-    </span>
+    <!-- The dialog title (visually hidden) is the accessible name; the same text is shown here,
+         next to the tile, with the close button where the header's would be. -->
+    <div class="ai-intro__head">
+      <span class="ai-intro__tile" aria-hidden="true">
+        <ui-icon name="spark" [size]="ICON_SIZE.Lg" />
+      </span>
+      <p class="ai-intro__heading" aria-hidden="true">
+        {{ (phone() ? 'ai.intro.titleShort' : 'ai.intro.title') | transloco }}
+      </p>
+      <ui-button
+        class="ai-intro__close"
+        iconOnly
+        iconLeft="close"
+        [variant]="BUTTON_VARIANT.Ghost"
+        [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
+        [ariaLabel]="'ai.intro.close' | transloco"
+        (click)="notNow()"
+      />
+    </div>
     <ul class="ai-intro__points">
       @for (point of POINTS; track point.key) {
         <li class="ai-intro__point">
