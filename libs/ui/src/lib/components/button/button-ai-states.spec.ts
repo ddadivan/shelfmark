@@ -86,3 +86,32 @@ describe('ButtonComponent ariaDisabled (#507)', () => {
     expect(host.clicks()).toBe(1);
   });
 });
+
+@Component({
+  imports: [ButtonComponent],
+  template: `<ui-button variant="ai-ghost" size="sm" iconLeft="spark" [loading]="loading()"
+    >Rewrite</ui-button
+  >`,
+})
+class GhostHostComponent {
+  readonly loading = signal(false);
+}
+
+describe('ButtonComponent ai-ghost variant (#512)', () => {
+  it('has its own class, a 20px spark and the same busy look as ai', async () => {
+    const fixture = TestBed.createComponent(GhostHostComponent);
+    await fixture.whenStable();
+    const root = fixture.nativeElement as HTMLElement;
+    const control = () => root.querySelector('.ui-button') as HTMLButtonElement;
+    expect(control().classList).toContain('ui-button--ai-ghost');
+    expect(control().classList).not.toContain('ui-button--ai');
+    expect(root.querySelector('ui-icon')?.classList).toContain('ui-icon--20');
+
+    fixture.componentInstance.loading.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(control().classList).toContain('ui-button--ai-busy');
+    expect(root.querySelector('ui-spinner')).toBeNull();
+    expect(await axeViolations(root)).toEqual([]);
+  });
+});

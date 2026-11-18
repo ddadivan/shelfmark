@@ -15,6 +15,20 @@
   align-items: center;
 }
 
+.summary-field__source {
+  @include type(caption);
+
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.summary-field__spark {
+  flex: none;
+  color: var(--ai);
+}
+
 .summary-field__rewrite {
   margin-inline-start: auto;
 }

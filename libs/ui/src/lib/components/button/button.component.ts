@@ -132,10 +132,13 @@ export class ButtonComponent implements UiFocusTarget {
   /** The inner native `<button>` / `<a>`; `undefined` until rendered. */
   readonly element = computed(() => this.control()?.nativeElement);
 
-  /** The `ai` variant (with a label) shows busy as a pulsing spark and a light sweep. */
-  protected readonly aiBusy = computed(
-    () => this.loading() && this.variant() === BUTTON_VARIANT.Ai && !this.iconOnly(),
+  /** The AI variants (`ai`, `ai-ghost`) are about the spark: 20px, and busy is a pulse and a sweep. */
+  private readonly aiLook = computed(
+    () => this.variant() === BUTTON_VARIANT.Ai || this.variant() === BUTTON_VARIANT.AiGhost,
   );
+
+  /** An AI variant (with a label) shows busy as a pulsing spark and a light sweep. */
+  protected readonly aiBusy = computed(() => this.loading() && this.aiLook() && !this.iconOnly());
 
   protected readonly isLink = computed(() => this.href() !== undefined);
   /** A link without `href` (disabled or busy): no navigation by middle click or context menu. */
@@ -177,7 +180,7 @@ export class ButtonComponent implements UiFocusTarget {
     return classes.join(' ');
   });
 
-  /** The `ai` variant draws its spark at 20px whatever the size (BRAND › AI). */
+  /** The AI variants draw their spark at 20px whatever the size (BRAND › AI). */
   protected readonly iconSizePx = computed(() => {
     const own = this.iconSize();
     if (own !== undefined) {
@@ -186,7 +189,7 @@ export class ButtonComponent implements UiFocusTarget {
     if (this.fab()) {
       return BUTTON_FAB_ICON_SIZE;
     }
-    return this.variant() === BUTTON_VARIANT.Ai ? ICON_SIZE.Md : BUTTON_ICON_SIZE[this.size()];
+    return this.aiLook() ? ICON_SIZE.Md : BUTTON_ICON_SIZE[this.size()];
   });
   /**
    * An icon-only button names itself with a tooltip: the text is the accessible name, so the two

@@ -149,6 +149,26 @@ a.ui-button {
   }
 }
 
+// The quiet AI action (`ai-ghost`, "Rewrite"): like ghost at rest, the spark in `ai`, and the
+// `ai-fill` family on hover and press (the same tints as the Fill button, one step each).
+.ui-button--ai-ghost {
+  --ui-icon-size: var(--icon-size-md);
+
+  ui-icon {
+    color: var(--ai);
+  }
+
+  &:not([aria-disabled='true']) {
+    @include hover {
+      background: var(--ai-fill);
+    }
+  }
+
+  &:active {
+    background: var(--ai-fill-hover);
+  }
+}
+
 .ui-button--danger {
   --ui-ripple-opacity: 0.2;
 
@@ -173,7 +193,8 @@ a.ui-button {
   background: var(--primary-hover);
 }
 
-.ui-button--ai[aria-expanded='true'] {
+.ui-button--ai[aria-expanded='true'],
+.ui-button--ai-ghost[aria-expanded='true'] {
   background: var(--ai-fill-pressed);
 }
 
