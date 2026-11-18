@@ -8,6 +8,8 @@ import {
 } from '@nestjs/swagger';
 import type { AuthUser } from '@shelfmark/contracts';
 import { CurrentUser } from '../common/auth/current-user.decorator';
+import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
+import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { RelatedLinksQueryDto } from './dto/related-links-query.dto';
 import { RelatedLinksResponseDto } from './dto/related-links-response.dto';
 import { RelatedLinksService } from './search/related-links.service';
@@ -19,6 +21,7 @@ export class RelatedLinksController {
   constructor(private readonly relatedLinks: RelatedLinksService) {}
 
   @Get()
+  @RateLimit(RATE_LIMIT.AiRelated)
   @ApiOkResponse({ type: RelatedLinksResponseDto })
   @ApiNotFoundResponse({ description: 'Unknown, trashed or foreign link' })
   @ApiBadRequestResponse({ description: 'Invalid id or limit' })

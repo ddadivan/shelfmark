@@ -26,6 +26,22 @@ const fetchAllowedFiles = [
   'src/monitoring/monitoring.service.ts',
 ];
 
+// Raw HTTP clients would bypass the SSRF guard just like `fetch`: only SafeFetcherService builds
+// requests with `node:http` / `node:https` (types and `STATUS_CODES` stay free), and `undici` is not
+// imported at all. A separate rule name, so it stacks with the import rules below.
+const networkMessage =
+  'Outbound HTTP goes through SafeFetcherService (PROJECT.md 5.8, ADR 0048, ADR 0050).';
+const networkClientNames = ['default', 'request', 'get', 'Agent', 'globalAgent'];
+const networkPaths = [
+  ...['http', 'https', 'node:http', 'node:https'].map((name) => ({
+    name,
+    importNames: networkClientNames,
+    allowTypeImports: true,
+    message: networkMessage,
+  })),
+  ...['undici', 'node:undici'].map((name) => ({ name, message: networkMessage })),
+];
+
 export default [
   ...base,
   {
@@ -48,7 +64,20 @@ export default [
           message:
             'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0048, ADR 0050).',
         },
+        {
+          object: 'global',
+          property: 'fetch',
+          message:
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0048, ADR 0050).',
+        },
       ],
+    },
+  },
+  {
+    files: ['src/**/*.ts'],
+    ignores: ['src/**/*.spec.ts', 'src/fetcher/safe-fetcher.service.ts'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': ['error', { paths: networkPaths }],
     },
   },
   {

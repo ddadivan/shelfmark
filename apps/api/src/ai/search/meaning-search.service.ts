@@ -33,6 +33,11 @@ export function normalizeMeaningQuery(q: string): string {
  * answers no items and the status, so the web keeps today's word search. The query vector comes
  * from the instance cache or one provider call counted against `search_queries`. Every query runs on
  * the session user's rows; logs carry counts and durations only, never the query.
+ *
+ * Dedupe: word matches are removed before the relative window is applied, so a query whose best
+ * vectors are all word matches still leaves meaning matches. It covers only the
+ * `AI_MEANING_LIMIT.KnnLimit` nearest live links, and it drops every link the word search finds
+ * (`buildLinkWhere` with the same `q`), even one past the word list the dialog shows.
  */
 @Injectable()
 export class MeaningSearchService {
@@ -67,18 +72,17 @@ export class MeaningSearchService {
       return { status: { ...status, state: vector.state }, items: [] };
 
     const started = Date.now();
-    const hits = rankMeaning(
-      await nearestLinks(this.prisma, userId, provider.model, { vector }),
-      provider.minSimilarity,
-    );
+    const nearest = await nearestLinks(this.prisma, userId, provider.model, { vector });
     const wordMatches = await this.wordMatches(
       userId,
       q,
-      hits.map((hit) => hit.linkId),
+      nearest.map((hit) => hit.linkId),
     );
-    const ids = hits
+    const ids = rankMeaning(
+      nearest.filter((hit) => !wordMatches.has(hit.linkId)),
+      provider.minSimilarity,
+    )
       .map((hit) => hit.linkId)
-      .filter((id) => !wordMatches.has(id))
       .slice(0, limit ?? AI_SEARCH_LIMIT.MeaningDefault);
     const items = await loadMeaningMatches(this.prisma, userId, ids, (source) =>
       whyForQuery(q, source),

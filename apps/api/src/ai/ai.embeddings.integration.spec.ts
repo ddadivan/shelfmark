@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { randomBytes } from 'node:crypto';
 import request from 'supertest';
 import {
@@ -20,6 +21,7 @@ import { AiBackgroundService } from './background/ai-background.service';
 import { AiEmbedService } from './embeddings/ai-embed.service';
 import { markEmbeddingsStale } from './embeddings/mark-embeddings-stale';
 import { AiExcerptService } from './excerpt/ai-excerpt.service';
+import { AI_EMBED_LIMIT } from './models/ai-embed-limit.const';
 import { AI_ENV } from './models/ai-env.const';
 import type { EmbedOutcome } from './models/embed-outcome.type';
 import { EMBEDDING_LIMIT } from './models/embedding-limit.const';
@@ -369,7 +371,10 @@ describe('AI embeddings: the embed pass, stale hooks and status (AI-3)', () => {
       const two = await seedLink(t.db.prisma, owner(), { title: 'Two', tags: ['beta'] });
       const three = await seedLink(t.db.prisma, owner(), { title: 'Three', tags: ['gamma'] });
       await embedAll();
-      const reset = () => t.db.prisma.$executeRaw`UPDATE link_embeddings SET stale = false`;
+      const reset = () => {
+        deferrer.clear();
+        return t.db.prisma.$executeRaw`UPDATE link_embeddings SET stale = false`;
+      };
       const tagId = async (name: string) =>
         (
           await t.db.prisma.tag.findFirstOrThrow({
@@ -393,6 +398,7 @@ describe('AI embeddings: the embed pass, stale hooks and status (AI-3)', () => {
         .send({ ids: [two], addTags: ['added'] })
         .expect(200);
       expect([await staleOf(one), await staleOf(two)]).toEqual([false, true]);
+      expect(deferrer.size).toBe(1);
 
       await reset();
       await a
@@ -400,6 +406,8 @@ describe('AI embeddings: the embed pass, stale hooks and status (AI-3)', () => {
         .send({ name: 'gamma2' })
         .expect(200);
       expect([await staleOf(two), await staleOf(three)]).toEqual([false, true]);
+      // Tag writes kick the pass too (through `TagChangeHooks`), so the vectors rebuild soon.
+      expect(deferrer.size).toBe(1);
 
       await reset();
       await a
@@ -407,11 +415,25 @@ describe('AI embeddings: the embed pass, stale hooks and status (AI-3)', () => {
         .send({ targetTagId: await tagId('gamma2') })
         .expect(200);
       expect([await staleOf(two), await staleOf(three)]).toEqual([true, false]);
+      expect(deferrer.size).toBe(1);
 
       await reset();
       await a.delete(`/api/tags/${await tagId('gamma2')}`).expect(204);
       expect([await staleOf(two), await staleOf(three)]).toEqual([true, true]);
       expect(await staleOf(one)).toBe(false);
+      expect(deferrer.size).toBe(1);
+      await deferrer.flush();
+      expect(await rows(owner())).toEqual(
+        expect.arrayContaining([expect.objectContaining({ linkId: two, stale: false })]),
+      );
+
+      // A tag no vector depends on changes nothing and starts no pass.
+      await t.db.prisma.tag.create({ data: { userId: owner(), name: 'lonely' } });
+      await a
+        .patch(`/api/tags/${await tagId('lonely')}`)
+        .send({ name: 'lonely2' })
+        .expect(200);
+      expect(deferrer.size).toBe(0);
     });
   });
 
@@ -483,6 +505,96 @@ describe('AI embeddings: the embed pass, stale hooks and status (AI-3)', () => {
       });
       await run();
       expect(await rows(owner())).toEqual([expect.objectContaining({ linkId: link, stale: true })]);
+    });
+  });
+
+  describe('races and failures', () => {
+    it('stores a first vector as stale when a tag changed during the call (no row to flag yet)', async () => {
+      const link = await seedLink(t.db.prisma, owner(), { title: 'Tagged', tags: ['before'] });
+      await turnOn();
+      deferrer.clear();
+      const original = provider().embed.bind(provider());
+      let first = true;
+      const spy = vi.spyOn(provider(), 'embed').mockImplementation(async (texts, type) => {
+        if (first) {
+          first = false;
+          // A rename with no vector row yet: `markEmbeddingsStale` has nothing to flag and the
+          // link's own `updated_at` does not move, so only the snapshot comparison sees it.
+          await t.db.prisma.tag.updateMany({
+            where: { userId: owner(), name: 'before' },
+            data: { name: 'after' },
+          });
+        }
+        return original(texts, type);
+      });
+      await run();
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy.mock.calls[1]?.[0]?.[0]).toContain('after');
+      expect(await rows(owner())).toEqual([
+        expect.objectContaining({ linkId: link, stale: false }),
+      ]);
+    });
+
+    it('leaves the lease of a pass that claimed it after ours expired', async () => {
+      await seedLink(t.db.prisma, owner(), { title: 'One' });
+      await turnOn();
+      deferrer.clear();
+      const theirs = new Date(Date.now() + 45_000);
+      spyEmbed(async (texts) => {
+        // Our lease ran out during a slow call and another pass claimed the user.
+        await t.db.prisma.aiSettings.update({
+          where: { userId: owner() },
+          data: { embedLeaseUntil: theirs },
+        });
+        return { ok: true, vectors: texts.map(() => vectorOf(2)), tokens: 1 };
+      });
+      await run();
+      const stored = await t.db.prisma.aiSettings.findUniqueOrThrow({ where: { userId: owner() } });
+      expect(stored.embedLeaseUntil?.getTime()).toBe(theirs.getTime());
+    });
+
+    it('refunds and backs off when the provider answers a malformed vector', async () => {
+      await seedLink(t.db.prisma, owner(), { title: 'One' });
+      const { spy } = spyEmbed((texts) =>
+        Promise.resolve({ ok: true, vectors: texts.map(() => [Number.NaN]), tokens: 1 }),
+      );
+      await embedAll();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(await rows(owner())).toEqual([]);
+      expect(await embedsUsed()).toBe(0);
+      const stored = await t.db.prisma.aiSettings.findUniqueOrThrow({ where: { userId: owner() } });
+      expect(stored.embedFailures).toBe(1);
+      expect(stored.embedNotBefore).not.toBeNull();
+    });
+
+    it('waits hours after repeated failures that cannot be retried and warns once', async () => {
+      await seedLink(t.db.prisma, owner(), { title: 'One' });
+      await turnOn();
+      deferrer.clear();
+      const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+      spyEmbed(() => Promise.resolve({ ok: false, retryable: false }));
+      const failAgain = async () => {
+        await t.db.prisma.aiSettings.update({
+          where: { userId: owner() },
+          data: { embedNotBefore: null },
+        });
+        await run();
+        return t.db.prisma.aiSettings.findUniqueOrThrow({ where: { userId: owner() } });
+      };
+      const waitOf = (stored: { embedNotBefore: Date | null }) =>
+        (stored.embedNotBefore?.getTime() ?? 0) - Date.now();
+      expect(waitOf(await failAgain())).toBeLessThanOrEqual(30_000);
+      expect(waitOf(await failAgain())).toBeLessThanOrEqual(120_000);
+      const third = await failAgain();
+      expect(third.embedFailures).toBe(AI_EMBED_LIMIT.NonRetryableMax);
+      expect(waitOf(third)).toBeGreaterThan(
+        AI_EMBED_LIMIT.NonRetryableBackoffSeconds * 1000 - 10_000,
+      );
+      await failAgain();
+      const hoursWarnings = warn.mock.calls.filter(([message]) =>
+        String(message).includes('cannot be retried'),
+      );
+      expect(hoursWarnings).toHaveLength(1);
     });
   });
 

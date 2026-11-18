@@ -11,6 +11,8 @@ import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
 import { AiBackgroundService } from './background/ai-background.service';
 import { AI_ENV } from './models/ai-env.const';
+import { AI_MEANING_LIMIT } from './models/ai-meaning-limit.const';
+import { EMBEDDING_LIMIT } from './models/embedding-limit.const';
 import { AiProviderRegistry } from './providers/ai-provider.registry';
 import { QueryEmbeddingCache } from './search/query-embedding-cache.service';
 
@@ -166,6 +168,50 @@ describe('GET /api/ai/search (AI-3)', () => {
     expect(res).toEqual({ status: { state: 'unavailable', ready: 4, total: 4 }, items: [] });
     const usage = await t.db.prisma.aiUsage.findFirst({ where: { userId: owner() } });
     expect(usage?.searchQueries ?? 0).toBe(0);
+  });
+
+  describe('with controlled vectors', () => {
+    /** A unit vector with `head` on the first axis and the rest on `axis`. */
+    const vectorOf = (head: number, axis = 1): string =>
+      `[${Array.from({ length: EMBEDDING_LIMIT.Dimensions }, (_, i) =>
+        i === 0 ? head : i === axis ? Math.sqrt(1 - head * head) : 0,
+      ).join(',')}]`;
+    const setVector = (linkId: string, vector: string) =>
+      t.db.prisma.$executeRaw`
+        UPDATE link_embeddings SET embedding = ${vector}::halfvec WHERE link_id = ${linkId}::uuid`;
+    /** The query embeds along the first axis. */
+    const queryAlongFirstAxis = () =>
+      vi
+        .spyOn(provider(), 'embed')
+        .mockResolvedValue({ ok: true, vectors: [JSON.parse(vectorOf(1)) as number[]], tokens: 1 });
+
+    it('removes word matches before the relative window, so a nearer word match leaves meaning matches', async () => {
+      const word = await seedLink(t.db.prisma, owner(), { title: 'Zebra stripes' });
+      const meaning = await seedLink(t.db.prisma, owner(), { title: 'Horse patterns' });
+      await turnOn();
+      await setVector(word, vectorOf(1));
+      // 0.2 below the word match: outside its window, but the best once word matches are gone.
+      await setVector(meaning, vectorOf(0.8));
+      queryAlongFirstAxis();
+      expect(titles(await search('zebra stripes'))).toEqual(['Horse patterns']);
+    });
+
+    it('does not let trashed links with nearer vectors shrink the result', async () => {
+      const live = await seedLink(t.db.prisma, owner(), { title: 'Live neighbour' });
+      const trashed: string[] = [];
+      for (let i = 0; i < AI_MEANING_LIMIT.KnnLimit; i += 1) {
+        trashed.push(await seedLink(t.db.prisma, owner(), { title: `Trashed ${i}` }));
+      }
+      await turnOn();
+      for (const [i, id] of trashed.entries()) await setVector(id, vectorOf(1, i + 2));
+      await setVector(live, vectorOf(0.95));
+      await t.db.prisma.link.updateMany({
+        where: { id: { in: trashed } },
+        data: { deletedAt: new Date() },
+      });
+      queryAlongFirstAxis();
+      expect(titles(await search('something else'))).toEqual(['Live neighbour']);
+    });
   });
 
   it('leaves out trashed links and never logs the query', async () => {
