@@ -51,6 +51,10 @@ export class AiCatchUpService {
       DELETE FROM ai_jobs
       WHERE link_id IS NULL AND draft_id IS NOT NULL
         AND created_at < now() - make_interval(hours => ${AI_CATCH_UP_LIMIT.DraftMaxAgeHours})`;
+    // Ask question counts (AI-4): only the current day and month are ever read.
+    const deletedAskDays = await this.prisma.$executeRaw`
+      DELETE FROM ai_ask_usage
+      WHERE day < (now() AT TIME ZONE 'UTC')::date - ${AI_CATCH_UP_LIMIT.AskUsageMaxAgeDays}::int`;
     const users = await this.prisma.$queryRaw<{ userId: string }[]>`
       SELECT user_id AS "userId" FROM ai_jobs
       WHERE link_id IS NOT NULL AND batch_id IS NULL
@@ -77,8 +81,10 @@ export class AiCatchUpService {
       }
       if (errors > 0) this.logger.warn(`AI sweep: catch-up failed for ${errors} user(s)`);
     });
-    if (failed > 0 || deletedDrafts > 0) {
-      this.logger.log(`AI sweep: ${failed} job(s) failed, ${deletedDrafts} draft(s) deleted`);
+    if (failed > 0 || deletedDrafts > 0 || deletedAskDays > 0) {
+      this.logger.log(
+        `AI sweep: ${failed} job(s) failed, ${deletedDrafts} draft(s) deleted, ${deletedAskDays} old Ask count(s) deleted`,
+      );
     }
     return { failed, deletedDrafts, users: users.length };
   }

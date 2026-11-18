@@ -139,6 +139,19 @@ describe('AI settings API', () => {
     expect(changed.introSeen).toBe(false);
   });
 
+  it('switches Ask your shelf, available only while AI is on too (AI-4)', async () => {
+    const on = await patch({ enabled: true });
+    expect(on.settings.ask).toBe(true);
+    expect(on.ask.available).toBe(true);
+    const off = await patch({ ask: false });
+    expect(off.settings.ask).toBe(false);
+    expect(off.ask.available).toBe(false);
+    const back = await patch({ ask: true, enabled: false });
+    expect(back.ask.available).toBe(false);
+    await a.patch(BASE).send({ ask: null }).expect(400);
+    await a.patch(BASE).send({ ask: 'yes' }).expect(400);
+  });
+
   it('refuses an empty body, unknown fields, nulls and values outside the allow-lists', async () => {
     const empty = await a.patch(BASE).send({}).expect(400);
     expect(empty.body.message).toBe(AI_ERROR_MESSAGE.NothingToUpdate);

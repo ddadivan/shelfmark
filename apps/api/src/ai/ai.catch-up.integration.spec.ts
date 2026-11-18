@@ -255,6 +255,18 @@ describe('AI tick, sweep and backfill', () => {
       );
     });
 
+    it('deletes Ask question counts older than 62 days and keeps the recent ones', async () => {
+      const owner = users.owner.userId;
+      await t.db.prisma.$executeRaw`
+        INSERT INTO ai_ask_usage (user_id, day, questions) VALUES
+          (${owner}::uuid, (now() AT TIME ZONE 'UTC')::date - 63, 3),
+          (${owner}::uuid, (now() AT TIME ZONE 'UTC')::date - 62, 2),
+          (${owner}::uuid, (now() AT TIME ZONE 'UTC')::date, 1)`;
+      await sweep(`Bearer ${SECRET}`).expect(200);
+      const left = await t.db.prisma.aiAskUsage.findMany({ orderBy: { day: 'asc' } });
+      expect(left.map((row) => row.questions)).toEqual([2, 1]);
+    });
+
     it('stops starting users once its budget is spent', async () => {
       await turnOn();
       const stale = await lostJob();

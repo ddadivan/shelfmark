@@ -52,4 +52,12 @@ export class UpdateAiSettingsDto implements UpdateAiSettingsRequest {
   @ValidateIf(present)
   @IsBoolean()
   meaningSearch?: boolean;
+
+  @ApiPropertyOptional({
+    description:
+      'Ask your shelf: the question and the matching links go to the model when asked; nothing is stored',
+  })
+  @ValidateIf(present)
+  @IsBoolean()
+  ask?: boolean;
 }

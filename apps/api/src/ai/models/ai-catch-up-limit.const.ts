@@ -12,4 +12,6 @@ export const AI_CATCH_UP_LIMIT = {
   StaleJobsPerUser: 20,
   SweepUsersMax: 200,
   DraftMaxAgeHours: 24,
+  /** Daily Ask question counts are kept this long (the month view needs at most 31 days). */
+  AskUsageMaxAgeDays: 62,
 } as const;

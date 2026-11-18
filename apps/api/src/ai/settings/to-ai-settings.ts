@@ -50,8 +50,7 @@ export function toStoredAiSettings(row: AiSettingsRow | null): StoredAiSettings 
         ? row.summaryLanguage
         : AI_SETTINGS_DEFAULT.summaryLanguage,
       meaningSearch: row.meaningSearch,
-      // The `ask` column arrives with the next migration (AI-4); until then the default.
-      ask: AI_SETTINGS_DEFAULT.ask,
+      ask: row.ask,
     },
     enabledAt: row.enabledAt,
     introSeenAt: row.introSeenAt,

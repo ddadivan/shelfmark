@@ -38,6 +38,7 @@ const SETTINGS_SELECT = {
   includeNotes: true,
   summaryLanguage: true,
   meaningSearch: true,
+  ask: true,
   enabledAt: true,
   introSeenAt: true,
   backfillState: true,
@@ -137,6 +138,7 @@ export class AiSettingsService {
           ? {}
           : { summaryLanguage: request.summaryLanguage }),
         ...(request.meaningSearch === undefined ? {} : { meaningSearch: request.meaningSearch }),
+        ...(request.ask === undefined ? {} : { ask: request.ask }),
         ...(searchOn ? {} : { embedLeaseUntil: null }),
         // The intro's "Turn on AI" is the first `enabled: true`: it records both moments.
         ...(request.enabled === true && current.enabledAt === null ? { enabledAt: now } : {}),

@@ -7,6 +7,7 @@ export interface AiSettingsRow {
   includeNotes: boolean;
   summaryLanguage: string;
   meaningSearch: boolean;
+  ask: boolean;
   enabledAt: Date | null;
   introSeenAt: Date | null;
   backfillState: string;
