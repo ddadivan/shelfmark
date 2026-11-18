@@ -2951,6 +2951,10 @@
       "aiAsk": {
         "title": "Chiedi ai tuoi link",
         "text": "Fai una domanda con parole tue e ricevi una risposta breve dai link che hai salvato, con ogni fonte elencata. In più «Dai tuoi link»: una volta a settimana, link meno recenti che non hai mai aperto."
+      },
+      "aiCleanup": {
+        "title": "Riordino della libreria",
+        "text": "Trova i link salvati più volte e i tag con lo stesso significato, controlla ogni modifica e applicale in un passaggio, con un solo Annulla. Le copie vanno nel cestino."
       }
     },
     "sections": {

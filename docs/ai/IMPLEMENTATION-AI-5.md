@@ -153,3 +153,21 @@ Nov 18, 2026 · backend, commits 2–8 on `feat/394-ai-cleanup`. Contracts in `l
 **Mock triggers.** `MOCK_TAG_SYNONYMS.Sets` (`javascript`/`js`, `typescript`/`ts`, `recipes`/`cooking`, `photography`/`photos`, `machine learning`/`ml`, `artificial intelligence`/`ai`; the first present in most-used order is kept); a tag name containing `ai-fail` answers a retryable error, `ai-refuse` a refusal. Near-duplicates use the mock embeddings (identical title, tags and summary give similarity 1).
 
 **Demo seed.** `https://news.ycombinator.com/` saved three times (all Unsorted; the original keeps its tag) — not the coat of the plan, because the Ask theme "two coats" needs exactly two coat links; `https://next.angular.dev/guide/signals` as the same page as `angular.dev/guide/signals` (same title, tags and summary); tags `javascript` / `js` and `cooking` / `recipes` on several links. Demo users are Free: they see the exact group and no AI groups unless AI is opened up for them.
+
+## 11. Implementation notes
+
+Nov 18, 2026 · web, commits 9–12 plus e2e on `feat/394-ai-cleanup` (the branch merged `origin/feat/393-ai-ask` twice to stack on the finished AI-4 web).
+
+**Backend deviations from the plan.** The demo duplicate is Hacker News saved three times (all Unsorted, the first keeps its tag), not a coat: the Ask theme "two coats" needs exactly two coat links; the web mock demo seed mirrors it (plus the signals guide on next.angular.dev and `javascript` / `js` tags). The tick reaches the runner through the `CLEANUP_TICK_HOOK` token resolved by `AiCatchUpService` with `ModuleRef` (`strict: false`), so `AiModule` never imports `CleanupModule`. Similar-tag pairs are capped at 20 in all (rule pairs first), so one apply covers a report. `progress_at` is a separate column for the 24 h stall rule.
+
+**Web deviations and choices.**
+
+- The feature is `features/cleanup/` with the page at its root (`cleanup.page.*`, ADR 0042) rather than `pages/cleanup/`; the route is a child of the settings routes (`library/cleanup`), so the settings nav keeps Library active and the phone back control leads to Library.
+- One row per duplicate group (all its copies go to Trash), as the design shows; the apply count is copies plus merges ("Apply 5 changes" for 2 + 1 copies and 2 merges), and the toast says "Cleaned up {n} things" with copies in Trash and tags merged.
+- The reason line names the keep reason in brackets ("keep the one in Unsorted (it has more tags)"); a same-page group with one host falls back to the same-address line.
+- The entry card's tile uses the `copy` icon instead of the design's spark: the counts are mostly rule-based, and the spark marks only AI content (apps/web CLAUDE.md). AI rows carry the spark in their badge with the disclaimer tooltip.
+- Unchecked rows and swapped pairs survive a re-read (apply, Undo) but not a new run. After Undo a merged tag comes back as a new tag (the API's `resolveNames`), so its pair leaves the report until the next run.
+- Polling: the page calls `AiSettingsStore.tick()` then `GET /api/cleanup` every 3 s while `running` (the shell's tick does not watch clean-up); with AI off it only re-reads.
+- "Nothing to clean" says "No duplicates or similar tags found." without "next month" (there is no scheduled check) and offers Check again.
+- The demo seed change moved one search e2e locator to the angular.dev option; visual baselines with the demo library will shift (four more links).
+

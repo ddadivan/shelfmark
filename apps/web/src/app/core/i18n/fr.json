@@ -2951,6 +2951,10 @@
       "aiAsk": {
         "title": "Interroger mes liens",
         "text": "Posez une question avec vos propres mots et obtenez une réponse courte tirée des liens que vous avez enregistrés, chaque source listée. Et « Dans vos liens » : une fois par semaine, d’anciens liens jamais ouverts."
+      },
+      "aiCleanup": {
+        "title": "Nettoyage de la bibliothèque",
+        "text": "Trouvez les liens enregistrés plusieurs fois et les tags de même sens, validez chaque changement et appliquez-les en une fois, avec une seule annulation. Les copies vont à la corbeille."
       }
     },
     "sections": {

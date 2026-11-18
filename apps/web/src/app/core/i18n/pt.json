@@ -2951,6 +2951,10 @@
       "aiAsk": {
         "title": "Pergunte aos seus links",
         "text": "Faça uma pergunta com suas próprias palavras e receba uma resposta curta a partir dos links que você salvou, com cada fonte listada. E mais “Dos seus links”: uma vez por semana, links antigos que você nunca abriu."
+      },
+      "aiCleanup": {
+        "title": "Limpeza da biblioteca",
+        "text": "Encontre links salvos mais de uma vez e tags que significam a mesma coisa, revise cada mudança e aplique tudo em um passo, com um único Desfazer. As cópias vão para a lixeira."
       }
     },
     "sections": {

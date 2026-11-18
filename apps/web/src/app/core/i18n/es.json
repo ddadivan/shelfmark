@@ -2951,6 +2951,10 @@
       "aiAsk": {
         "title": "Pregunta a tus enlaces",
         "text": "Haz una pregunta con tus propias palabras y recibe una respuesta breve a partir de los enlaces que guardaste, con cada fuente. Además, «De tus enlaces»: una vez por semana, enlaces antiguos que nunca abriste."
+      },
+      "aiCleanup": {
+        "title": "Limpieza de la biblioteca",
+        "text": "Encuentra enlaces guardados más de una vez y etiquetas que significan lo mismo, revisa cada cambio y aplícalos en un paso, con un solo Deshacer. Las copias van a la papelera."
       }
     },
     "sections": {
