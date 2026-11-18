@@ -273,7 +273,7 @@
         "list": "Suggestions de tags"
       },
       "note": {
-        "label": "Note",
+        "label": "Votre note",
         "placeholder": "Pourquoi enregistrez-vous ce lien ?",
         "hint": "Pour le retrouver plus tard",
         "counter": "caractères",
@@ -3201,7 +3201,10 @@
         "alt": "Alt",
         "shiftMac": "⇧",
         "shift": "Shift"
-      }
+      },
+      "filling": "Remplissage…",
+      "needLink": "Collez d’abord un lien",
+      "nothing": "L’IA n’a rien à remplir pour ce lien"
     },
     "line": {
       "limit": "Suggestions en pause jusqu’au {{date}}. Vous avez utilisé les {{limit}} liens de ce mois.",

@@ -436,7 +436,7 @@ describe('AddLinkDialogComponent', () => {
     const { result } = await setup(api, { folderId: MOCK_ID.FolderAngular });
 
     await type('Link', ' https://example.org/post ');
-    await type('Note', 'Read on the weekend');
+    await type('Your note', 'Read on the weekend');
     const tags = dialog().querySelector<HTMLInputElement>('ui-tag-input input');
     if (!tags) {
       throw new Error('no tag input');
@@ -511,7 +511,7 @@ describe('AddLinkDialogComponent', () => {
     await until(() => {
       expect(input('Title').value).toBe('A fine post');
     });
-    input('Note').dispatchEvent(
+    input('Your note').dispatchEvent(
       new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, bubbles: true }),
     );
 
@@ -641,7 +641,7 @@ describe('AddLinkDialogComponent', () => {
         expect(input('Title').value).toBe('A fine post');
       });
       await save();
-      await type('Note', 'now with a note');
+      await type('Your note', 'now with a note');
       await save();
       await save();
 
@@ -945,7 +945,7 @@ describe('AddLinkDialogComponent', () => {
       expect(dialog().textContent).toContain('Edit link');
       expect(input('Link').value).toBe('https://example.org/saved');
       expect(input('Title').value).toBe('Saved title');
-      expect(input('Note').value).toBe('A note');
+      expect(input('Your note').value).toBe('A note');
       expect(dialog().textContent).toMatch(/Saved .* ago, last opened /);
       expect(dialog().querySelector('.add-link__preview')).toBeNull();
       button('Save changes');
@@ -965,7 +965,7 @@ describe('AddLinkDialogComponent', () => {
       const { result } = await setup(api, { link: EDITED });
 
       await type('Title', ' New title ');
-      await type('Note', '');
+      await type('Your note', '');
       button('Save changes').click();
 
       const outcome = await result;
@@ -1246,7 +1246,7 @@ describe('AddLinkDialogComponent', () => {
 
     it('always spell-checks the note and has no "Check spelling" option (#326)', async () => {
       await setup(fakeApi(() => of(PLAIN)));
-      expect(input('Note').getAttribute('spellcheck')).toBe('true');
+      expect(input('Your note').getAttribute('spellcheck')).toBe('true');
       expect(() => checkbox('Check spelling')).toThrow();
       expect(dialog().querySelectorAll('input[type="checkbox"]')).toHaveLength(0);
     });

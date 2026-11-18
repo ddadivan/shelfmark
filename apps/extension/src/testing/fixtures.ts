@@ -129,6 +129,7 @@ export function makeAiJob(overrides: Partial<AiJobResponse> = {}): AiJobResponse
     reason: null,
     suggestions: [],
     summary: null,
+    title: null,
     ...overrides,
   };
 }

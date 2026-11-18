@@ -89,7 +89,8 @@
       "tagsRow": "Vorgeschlagene Tags",
       "new": "Neu",
       "createTag": "Tag {{name}} erstellen und hinzufügen",
-      "dismiss": "Vorschlag {{name}} verwerfen"
+      "dismiss": "Vorschlag {{name}} verwerfen",
+      "filling": "Wird ausgefüllt …"
     }
   }
 }

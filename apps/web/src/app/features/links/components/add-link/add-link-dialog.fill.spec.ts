@@ -22,7 +22,7 @@ import {
   UiSuggestionHarness,
   UiTagInputHarness,
 } from '@shelfmark/ui/testing';
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom, of, Subject } from 'rxjs';
 import { aiSettingsResponse, fakeAiApi, type FakeAiApi } from '../../../../../testing/fake-ai-api';
 import { AppTranslocoLoader } from '../../../../core/i18n/app-transloco.loader';
 import { APP_LANG } from '../../../../core/i18n/models/app-lang.const';
@@ -73,7 +73,14 @@ const SIGNALS = suggestion('s-signals', SUGGESTION_KIND.Tag, 'signals');
 const NEW_TAG = suggestion('s-new', SUGGESTION_KIND.NewTag, 'state management');
 
 function job(suggestions: LinkSuggestion[]): AiJobResponse {
-  return { id: 'job-1', status: AI_JOB_STATUS.Done, reason: null, suggestions, summary: null };
+  return {
+    id: 'job-1',
+    status: AI_JOB_STATUS.Done,
+    reason: null,
+    suggestions,
+    summary: null,
+    title: null,
+  };
 }
 
 function linkState(state: Partial<LinkAiState>): LinkAiState {
@@ -164,7 +171,7 @@ afterEach(() => {
 });
 
 describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
-  it('applies the folder and the existing tags; the new tag stays a chip', async () => {
+  it('applies the folder and all the tags, new ones too', async () => {
     const ai = withDraft([FOLDER, ANGULAR, SIGNALS, NEW_TAG]);
     const { loader, links, result } = await setup(ai);
     await typeUrl(URL);
@@ -181,12 +188,12 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     const select = await loader.getHarness(UiSelectHarness.with({ label: 'Folder' }));
     await until(async () => expect(await select.getValueText()).toContain(MOCK_NAME.FolderAngular));
     const tags = await loader.getHarness(UiTagInputHarness);
-    expect(await tags.getTags()).toEqual(['angular', 'signals']);
+    expect(await tags.getTags()).toEqual(['angular', 'signals', 'state-management']);
+    // The dashed chips of tags that are in the field now are gone.
     expect(
       await loader.getAllHarnesses(UiSuggestionHarness.with({ label: 'state management' })),
-    ).toHaveLength(1);
-    expect(await loader.getAllHarnesses(UiButtonHarness.with({ text: FILL }))).toEqual([]);
-    expect(root()?.querySelector('.add-link-ai-fill__live')?.textContent).toBe(
+    ).toHaveLength(0);
+    expect(root()?.querySelector('.add-link-ai-fill__live[aria-live="polite"]')?.textContent).toBe(
       'Filled in with AI’s suggestions',
     );
     // Ordinary values: no "Moved by AI" mark.
@@ -196,7 +203,7 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     await result;
     expect(links.create.mock.calls[0]?.[0]).toMatchObject({
       folderId: MOCK_ID.FolderAngular,
-      tags: ['angular', 'signals'],
+      tags: ['angular', 'signals', 'state-management'],
     });
   });
 
@@ -228,14 +235,98 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     await until(async () => expect(await tags.getTags()).toEqual(['angular']));
   });
 
-  it('is hidden with only a new tag or a folder under a chosen one', async () => {
-    const ai = withDraft([FOLDER, NEW_TAG]);
-    const { loader } = await setup(ai, { folderId: MOCK_ID.FolderReading });
+  it('shows while AI is on, inactive (aria-disabled, focusable) until a link is pasted', async () => {
+    const ai = withDraft([ANGULAR]);
+    const { loader } = await setup(ai);
+    const button = (): HTMLButtonElement | null =>
+      root()?.querySelector<HTMLButtonElement>('app-add-link-ai-fill button') ?? null;
+    await vi.waitFor(() => loader.getHarness(UiButtonHarness.with({ text: FILL })));
+    expect(button()?.getAttribute('aria-disabled')).toBe('true');
+    expect(button()?.disabled).toBe(false);
+    expect(root()?.textContent).toContain('Paste a link first');
+    button()?.click();
+    const tags = await loader.getHarness(UiTagInputHarness);
+    expect(await tags.getTags()).toEqual([]);
+
     await typeUrl(URL);
-    await vi.waitFor(() =>
-      loader.getHarness(UiSuggestionHarness.with({ label: 'state management' })),
+    await until(() => expect(button()?.getAttribute('aria-disabled')).toBeNull());
+  });
+
+  it('waits for a running draft: locks Link, Folder, Tags and Summary, then fills and unlocks; title and note stay free', async () => {
+    const ai = fakeAiApi();
+    const arrival = new Subject<AiJobResponse>();
+    ai.createDraft.mockReturnValue(arrival);
+    const { loader, links, result } = await setup(ai);
+    await typeUrl(URL);
+    const fill = await vi.waitFor(() => loader.getHarness(UiButtonHarness.with({ text: FILL })));
+    await fill.click();
+
+    const busyButton = await loader.getHarness(UiButtonHarness.with({ text: /Filling/ }));
+    expect(await busyButton.isLoading()).toBe(true);
+    const field = (selector: string): HTMLInputElement | null =>
+      root()?.querySelector<HTMLInputElement>(selector) ?? null;
+    expect(field('input[type="url"]')?.disabled).toBe(true);
+    expect(root()?.querySelector('.add-link__fields')?.getAttribute('aria-busy')).toBe('true');
+    const create = await loader.getHarness(UiButtonHarness.with({ text: 'Create link' }));
+    expect(await create.isDisabled()).toBe(true);
+    // Title and note stay editable.
+    const free = [...(root()?.querySelectorAll<HTMLInputElement>('input, textarea') ?? [])].filter(
+      (el) => !el.disabled,
     );
-    expect(await loader.getAllHarnesses(UiButtonHarness.with({ text: FILL }))).toEqual([]);
+    expect(free.length).toBeGreaterThanOrEqual(2);
+
+    arrival.next({
+      ...job([FOLDER, ANGULAR, NEW_TAG]),
+      summary: 'A short AI summary.',
+      title: 'A cleaner title',
+    });
+    arrival.complete();
+    await until(() => expect(field('input[type="url"]')?.disabled).toBe(false));
+    const tags = await loader.getHarness(UiTagInputHarness);
+    expect(await tags.getTags()).toEqual(['angular', 'state-management']);
+    const summary = root()?.querySelector<HTMLTextAreaElement>('app-summary-field textarea');
+    expect(summary?.value).toBe('A short AI summary.');
+    expect(root()?.querySelector('app-summary-field')?.textContent).toContain('Written by AI');
+    expect(root()?.querySelector<HTMLInputElement>('input[type="text"]')?.value).not.toBe('');
+
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Create link' }))).click();
+    await result;
+    // AI's own summary is the draft's: the request carries the cleaned title, not the summary.
+    expect(links.create.mock.calls[0]?.[0]).toMatchObject({ title: 'A cleaner title' });
+    expect(links.create.mock.calls[0]?.[0]).not.toHaveProperty('summary');
+  });
+
+  it('never replaces a title the user edited and sends an edited summary as theirs', async () => {
+    const ai = withDraft([ANGULAR]);
+    ai.createDraft.mockReturnValue(
+      of({ ...job([ANGULAR]), summary: 'AI summary.', title: 'AI title' }),
+    );
+    const { loader, links, result } = await setup(ai);
+    await typeUrl(URL);
+    await vi.waitFor(() => loader.getHarness(UiButtonHarness.with({ text: FILL })));
+    const title = (): HTMLInputElement | null =>
+      root()?.querySelector<HTMLInputElement>('input[type="text"]') ?? null;
+    const own = title();
+    if (own) {
+      own.value = 'My own title';
+      own.dispatchEvent(new Event('input'));
+    }
+    TestBed.tick();
+    await (await loader.getHarness(UiButtonHarness.with({ text: FILL }))).click();
+    await until(() => expect(root()?.querySelector('app-summary-field textarea')).not.toBeNull());
+    expect(title()?.value).toBe('My own title');
+    const summary = root()?.querySelector<HTMLTextAreaElement>('app-summary-field textarea');
+    if (summary) {
+      summary.value = 'My words.';
+      summary.dispatchEvent(new Event('input'));
+    }
+    TestBed.tick();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Create link' }))).click();
+    await result;
+    expect(links.create.mock.calls[0]?.[0]).toMatchObject({
+      title: 'My own title',
+      summary: 'My words.',
+    });
   });
 
   it('is hidden while AI is off', async () => {

@@ -131,12 +131,19 @@ export class AddLinkAiService {
     return chip ? (this.suggestions().find((item) => item.id === chip.id)?.folderId ?? null) : null;
   });
 
-  /** Fill in with AI: the suggested existing tags not in the field yet; a new tag stays a chip. */
-  readonly fillTags = computed<readonly string[]>(() =>
-    this.tagChips()
-      .filter((chip) => chip.kind === SUGGESTION_KIND.Tag)
-      .map((chip) => chip.label),
-  );
+  /**
+   * Fill in with AI: every suggested tag not in the field yet, new ones too (a new tag becomes a
+   * real tag on save, like a typed one); the user's own tags stay.
+   */
+  readonly fillTags = computed<readonly string[]>(() => this.tagChips().map((chip) => chip.label));
+
+  /** The draft is asked for or still running (adding only). */
+  readonly draftState = this.draft.state;
+  /** The draft's AI summary and cleaned-up title once it is ready (adding only). */
+  readonly draftSummary = this.draft.summary;
+  readonly draftTitle = this.draft.title;
+  /** The draft has an answer, or none will come (ready, limit, error, too slow). */
+  readonly draftSettled = this.draft.settled;
 
   /** The one AI line of the dialog: the monthly limit, or "not available" (Try again once). */
   readonly line = computed<AiLineView | null>(() => {
@@ -214,10 +221,10 @@ export class AddLinkAiService {
   }
 
   /**
-   * Fill in with AI: the folder and the existing tags go into their fields as ordinary values
-   * (no "Moved by AI" mark: the click is the user's choice).
+   * Fill in with AI: the folder and the tags (new ones too) go into their fields as ordinary
+   * values (no "Moved by AI" mark: the click is the user's choice); `true` when something went in.
    */
-  fill(): void {
+  fill(): boolean {
     const folderId = this.fillFolderId();
     if (folderId !== null) {
       const field = this.formState.form.folderId();
@@ -228,6 +235,7 @@ export class AddLinkAiService {
     if (tags.length > 0) {
       this.addTags(tags);
     }
+    return folderId !== null || tags.length > 0;
   }
 
   dismiss(chip: AiChipView): void {

@@ -48,7 +48,7 @@
       [closeLabel]="'links.add.close' | transloco"
       size="md"
     >
-      <div class="add-link__fields">
+      <div class="add-link__fields" [attr.aria-busy]="aiFill.busy() ? 'true' : null">
         <ui-input
           (paste)="severalLinks.onUrlPaste($event)"
           (focusout)="onUrlBlur()"
@@ -201,7 +201,9 @@
           <app-add-link-ai-tags />
         </div>
 
+        <!-- The note is the user's own: last, set apart from what Fill in with AI can change. -->
         <ui-textarea
+          class="add-link__own-note"
           [label]="'links.add.note.label' | transloco"
           [placeholder]="'links.add.note.placeholder' | transloco"
           [hint]="'links.add.note.hint' | transloco"
@@ -295,6 +297,7 @@
         [type]="BUTTON_TYPE.Submit"
         [variant]="BUTTON_VARIANT.Primary"
         [loading]="saving()"
+        [disabled]="aiFill.busy()"
         >{{
           (editing
             ? saving()

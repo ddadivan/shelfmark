@@ -273,7 +273,7 @@
         "list": "Tag-Vorschläge"
       },
       "note": {
-        "label": "Notiz",
+        "label": "Deine Notiz",
         "placeholder": "Warum speicherst du das?",
         "hint": "Hilft dir, es später zu finden",
         "counter": "Zeichen",
@@ -3138,7 +3138,10 @@
         "alt": "Alt",
         "shiftMac": "⇧",
         "shift": "Shift"
-      }
+      },
+      "filling": "Wird ausgefüllt …",
+      "needLink": "Füge zuerst einen Link ein",
+      "nothing": "Die KI hat für diesen Link nichts auszufüllen"
     },
     "line": {
       "limit": "Vorschläge pausieren bis {{date}}. Du hast die {{limit}} Links dieses Monats genutzt.",

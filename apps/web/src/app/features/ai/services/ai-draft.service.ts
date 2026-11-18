@@ -51,6 +51,22 @@ export class AiDraftService {
     return job.suggestions.filter((item) => !hidden.has(item.id));
   });
 
+  /** The draft's AI summary once ready (Add link, "Fill in with AI"), else `null`. */
+  readonly summary = computed(() =>
+    this.state() === AI_DRAFT_STATE.Ready ? (this.job()?.summary ?? null) : null,
+  );
+
+  /** The draft's cleaned-up title once ready, else `null`. */
+  readonly title = computed(() =>
+    this.state() === AI_DRAFT_STATE.Ready ? (this.job()?.title ?? null) : null,
+  );
+
+  /** The draft has an answer (or none will come): ready, limit, error or too slow. */
+  readonly settled = computed(() => {
+    const state = this.state();
+    return state !== AI_DRAFT_STATE.Idle && state !== AI_DRAFT_STATE.Loading;
+  });
+
   /** "Try again" is offered once, after a provider error or a failed request. */
   readonly canRetry = computed(
     () => this.state() === AI_DRAFT_STATE.Unavailable && !this.retried(),

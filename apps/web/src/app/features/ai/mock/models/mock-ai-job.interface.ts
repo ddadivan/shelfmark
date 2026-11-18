@@ -13,4 +13,6 @@ export interface MockAiJob {
   reason: AiJobReason | null;
   suggestions: LinkSuggestion[];
   summary: string | null;
+  /** The cleaned-up title of a draft; `null` when none. */
+  cleanTitle: string | null;
 }

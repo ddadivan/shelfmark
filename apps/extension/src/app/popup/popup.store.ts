@@ -114,7 +114,7 @@ export class PopupStore {
       const aiDraftId = this.ai.draftId();
       const link = await this.api.create({
         url: page.url,
-        title: page.title.slice(0, LINK_LIMIT.TitleMax),
+        title: (this.ai.cleanTitle() ?? page.title).slice(0, LINK_LIMIT.TitleMax),
         ...(folderId !== null && { folderId }),
         tags: this.chosenTags(),
         ...(note !== '' && { note }),

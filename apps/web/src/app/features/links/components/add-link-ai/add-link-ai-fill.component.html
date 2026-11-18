@@ -7,11 +7,19 @@
     iconLeft="spark"
     [block]="phone()"
     [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md"
-    [uiTooltip]="phone() ? '' : ('ai.fill.button' | transloco)"
-    [uiTooltipShortcut]="phone() ? '' : shortcut()"
+    [ariaDisabled]="fill.needsLink()"
+    [loading]="fill.busy()"
+    [ariaDescribedby]="fill.needsLink() ? hintId : undefined"
+    [uiTooltip]="tooltip()"
+    [uiTooltipShortcut]="phone() || fill.needsLink() ? '' : shortcut()"
     (click)="apply()"
   >
-    {{ 'ai.fill.button' | transloco }}
+    {{ (fill.busy() ? 'ai.fill.filling' : 'ai.fill.button') | transloco }}
   </ui-button>
 }
+<span class="add-link-ai-fill__live" [id]="hintId">
+  @if (fill.needsLink()) {
+    {{ 'ai.fill.needLink' | transloco }}
+  }
+</span>
 <span class="add-link-ai-fill__live" aria-live="polite">{{ fill.announcement() }}</span>

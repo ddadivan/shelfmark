@@ -36,7 +36,7 @@ test.describe('add link dialog (mock API)', () => {
       await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on example.org');
       await expect(dialog.getByText('Filled in from the page')).toBeVisible();
 
-      await dialog.getByLabel('Note').fill('Read on the weekend');
+      await dialog.getByLabel('Your note').fill('Read on the weekend');
       await dialog.getByRole('button', { name: 'Create link' }).click();
 
       await expect(dialog).toBeHidden();

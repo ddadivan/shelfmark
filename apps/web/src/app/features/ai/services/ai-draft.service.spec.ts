@@ -40,6 +40,7 @@ function job(patch: Partial<AiJobResponse> = {}): AiJobResponse {
       },
     ],
     summary: null,
+    title: null,
     ...patch,
   };
 }

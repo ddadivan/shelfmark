@@ -89,7 +89,8 @@
       "tagsRow": "Tags suggérés",
       "new": "Nouveau",
       "createTag": "Créer et ajouter le tag {{name}}",
-      "dismiss": "Ignorer la suggestion {{name}}"
+      "dismiss": "Ignorer la suggestion {{name}}",
+      "filling": "Remplissage…"
     }
   }
 }

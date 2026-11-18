@@ -273,7 +273,7 @@
         "list": "Sugerencias de etiquetas"
       },
       "note": {
-        "label": "Nota",
+        "label": "Tu nota",
         "placeholder": "¿Por qué lo guardas?",
         "hint": "Te ayuda a encontrarlo después",
         "counter": "caracteres",
@@ -3201,7 +3201,10 @@
         "alt": "Alt",
         "shiftMac": "⇧",
         "shift": "Shift"
-      }
+      },
+      "filling": "Rellenando…",
+      "needLink": "Pega primero un enlace",
+      "nothing": "La IA no tiene nada que rellenar para este enlace"
     },
     "line": {
       "limit": "Sugerencias en pausa hasta el {{date}}. Has usado los {{limit}} enlaces de este mes.",

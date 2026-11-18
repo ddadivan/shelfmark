@@ -25,9 +25,10 @@ import { withoutFragment } from '../utils/without-fragment';
  * "Fill in with AI" of the popup (#503, F1c). Nothing leaves the browser for AI until the user
  * clicks the button: then `POST /api/ai/drafts` (the page address and title, the note only with
  * "Include my notes"), `GET /api/ai/jobs/:id` until the job is done or `AI_LIMIT.DraftPollMaxMs`
- * has passed (the save never waits), then the suggested folder and the existing tags are put into
- * the form. A value the user already chose is never replaced; a new tag stays a dashed chip. Save
- * sends `draftId()` as `aiDraftId`. Without AI (off, no allowance, a failed settings call) nothing
+ * has passed (the save never waits), then the suggested folder (only while none is chosen) and all
+ * suggested tags, new ones too, are put into the form next to the user's, and the cleaned-up page
+ * title replaces the tab title that is sent on save. While it waits the popup locks folder and tags.
+ * Save sends `draftId()` as `aiDraftId`. Without AI (off, no allowance, a failed settings call) nothing
  * here shows.
  */
 @Service()
@@ -39,6 +40,7 @@ export class PopupAiFillService {
   private readonly newTags = signal<readonly AiChip[]>([]);
   private readonly appliedFolder = signal<string | null>(null);
   private readonly appliedTags = signal<readonly string[]>([]);
+  private readonly cleanTitleValue = signal<string | null>(null);
   private target: AiFillTarget | null = null;
 
   readonly state = signal<AiFillState>(AI_FILL_STATE.Idle);
@@ -49,14 +51,10 @@ export class PopupAiFillService {
     return settings !== null && settings.settings.enabled && settings.usage.linksLimit > 0;
   });
   readonly busy = computed(() => this.state() === AI_FILL_STATE.Loading);
-  /** The button: until the draft is applied, the limit is reached or nothing was found. */
-  readonly buttonShown = computed(
-    () =>
-      this.on() &&
-      (this.state() === AI_FILL_STATE.Idle ||
-        this.state() === AI_FILL_STATE.Loading ||
-        this.state() === AI_FILL_STATE.Unavailable),
-  );
+  /** The button shows while AI is on (the popup always has the tab's address). */
+  readonly buttonShown = this.on;
+  /** The cleaned-up title AI gave for the page, `null` until a fill applied one. */
+  readonly cleanTitle = this.cleanTitleValue.asReadonly();
   /** New-tag chips that are still open, in the order AI gave them. */
   readonly chips = computed<readonly AiChip[]>(() => {
     const chosen = new Set(this.target?.chosenTags().map((tag) => tag.toLowerCase()));
@@ -112,7 +110,7 @@ export class PopupAiFillService {
 
   /** The click: asks for the draft (again with the same id after "not available") and fills the form. */
   async fill(page: PageInfo): Promise<void> {
-    if (!this.on() || this.busy()) return;
+    if (!this.on() || this.busy() || this.state() === AI_FILL_STATE.Ready) return;
     const draftId = this.state() === AI_FILL_STATE.Unavailable ? this.id() : null;
     const id = draftId ?? crypto.randomUUID();
     this.id.set(id);
@@ -174,9 +172,11 @@ export class PopupAiFillService {
       target.folderId.set(folderId);
       this.appliedFolder.set(folderId);
     }
+    // Every suggested tag, new ones too: a new tag becomes a real tag on save, like a typed one.
     const tags = job.suggestions.flatMap((item) =>
-      item.kind === SUGGESTION_KIND.Tag && item.tagName !== null ? [item.tagName] : [],
+      item.kind !== SUGGESTION_KIND.Folder && item.tagName !== null ? [item.tagName] : [],
     );
+    this.cleanTitleValue.set(job.title);
     this.appliedTags.set(this.addTags(tags));
     this.newTags.set(
       job.suggestions.flatMap((item) =>

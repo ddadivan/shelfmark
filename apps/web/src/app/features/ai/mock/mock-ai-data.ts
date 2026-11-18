@@ -504,6 +504,7 @@ export class MockAiData {
       reason: null,
       suggestions: [],
       summary: null,
+      cleanTitle: null,
     };
     this.jobs.set(job.id, job);
     return job;
@@ -563,6 +564,7 @@ export class MockAiData {
       suggestions.length === 0 && !settings.summaries ? AI_JOB_REASON.NothingFound : null;
     job.suggestions = suggestions;
     job.summary = settings.summaries ? outcome.summary : null;
+    job.cleanTitle = job.linkId === null ? outcome.title : null;
     const link = this.library.links.find((item) => item.id === job.linkId);
     if (link) {
       this.apply(link, job, auto);
@@ -712,6 +714,7 @@ export class MockAiData {
       reason: job.reason,
       suggestions: job.status === AI_JOB_STATUS.Done ? [...job.suggestions] : [],
       summary: job.summary,
+      title: job.status === AI_JOB_STATUS.Done ? job.cleanTitle : null,
     };
   }
 }

@@ -273,7 +273,7 @@
         "list": "Suggerimenti di tag"
       },
       "note": {
-        "label": "Nota",
+        "label": "La tua nota",
         "placeholder": "Perché lo stai salvando?",
         "hint": "Ti aiuta a ritrovarlo dopo",
         "counter": "caratteri",
@@ -3201,7 +3201,10 @@
         "alt": "Alt",
         "shiftMac": "⇧",
         "shift": "Shift"
-      }
+      },
+      "filling": "Compilazione…",
+      "needLink": "Incolla prima un link",
+      "nothing": "L’IA non ha nulla da compilare per questo link"
     },
     "line": {
       "limit": "Suggerimenti in pausa fino al {{date}}. Hai usato i {{limit}} link di questo mese.",

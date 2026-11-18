@@ -213,7 +213,12 @@ export class AddLinkDialogComponent {
     if (this.aiFill.handleShortcut(event)) {
       return;
     }
-    if (event.key === KEYBOARD_KEY.Enter && (event.metaKey || event.ctrlKey) && !this.saving()) {
+    if (
+      event.key === KEYBOARD_KEY.Enter &&
+      (event.metaKey || event.ctrlKey) &&
+      !this.saving() &&
+      !this.aiFill.busy()
+    ) {
       event.preventDefault();
       (event.currentTarget as HTMLFormElement).requestSubmit();
     }

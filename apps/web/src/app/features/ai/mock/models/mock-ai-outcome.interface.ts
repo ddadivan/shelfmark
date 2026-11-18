@@ -6,4 +6,6 @@ export interface MockAiOutcome {
   /** At most one tag that does not exist yet. */
   newTag: string | null;
   summary: string;
+  /** The page title without a site suffix; `null` when there is nothing to clean up. */
+  title: string | null;
 }
