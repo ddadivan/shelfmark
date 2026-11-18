@@ -1,0 +1,21 @@
+@if (fill.available()) {
+  <div class="add-link-ai-fill">
+    <ui-button
+      variant="secondary"
+      iconLeft="spark"
+      [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
+      [iconSize]="ICON_SIZE.Sm"
+      (click)="apply()"
+    >
+      {{ 'ai.fill.button' | transloco }}
+    </ui-button>
+    @if (!phone()) {
+      <span class="add-link-ai-fill__keys" aria-hidden="true">
+        <kbd>{{ (mac ? 'ai.fill.keys.option' : 'ai.fill.keys.alt') | transloco }}</kbd>
+        <kbd>{{ (mac ? 'ai.fill.keys.shiftMac' : 'ai.fill.keys.shift') | transloco }}</kbd>
+        <kbd>F</kbd>
+      </span>
+    }
+  </div>
+}
+<span class="add-link-ai-fill__live" aria-live="polite">{{ fill.announcement() }}</span>

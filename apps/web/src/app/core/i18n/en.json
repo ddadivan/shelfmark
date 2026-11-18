@@ -779,6 +779,7 @@
       "library": "Library",
       "search": "Search",
       "tags": "Tags",
+      "ask": "Ask",
       "you": "You"
     },
     "sidebar": {
@@ -1689,6 +1690,7 @@
       "undo": "Undo the last action",
       "toastAction": "Go to the button of a toast",
       "save": "Save the link",
+      "aiFill": "Fill in with AI in the link dialog",
       "results": "Move through search results",
       "openResult": "Open the result",
       "openBackground": "Open it in a background tab",
@@ -3131,6 +3133,16 @@
       "tagAdded": "Tag {{name}} added",
       "folderChosen": "Folder {{name}} chosen"
     },
+    "fill": {
+      "button": "Fill in with AI",
+      "done": "Filled in with AI’s suggestions",
+      "keys": {
+        "option": "⌥",
+        "alt": "Alt",
+        "shiftMac": "⇧",
+        "shift": "Shift"
+      }
+    },
     "line": {
       "limit": "Suggestions are paused until {{date}}. You used this month’s {{limit}} links.",
       "unavailable": "Suggestions aren’t available right now. Your link saves as usual.",
@@ -3250,6 +3262,7 @@
       "open": "Ask your shelf",
       "close": "Close Ask your shelf",
       "newQuestion": "New question",
+      "back": "Back",
       "emptyTitle": "What do you want to find out?",
       "lead": "Ask in your own words. The answer comes from the links you saved, with each source listed.",
       "starters": {

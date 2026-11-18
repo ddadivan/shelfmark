@@ -779,6 +779,7 @@
       "library": "Links",
       "search": "Suche",
       "tags": "Tags",
+      "ask": "Fragen",
       "you": "Du"
     },
     "sidebar": {
@@ -1689,6 +1690,7 @@
       "undo": "Letzte Aktion rückgängig machen",
       "toastAction": "Zur Schaltfläche einer Meldung gehen",
       "save": "Link speichern",
+      "aiFill": "Im Link-Dialog mit KI ausfüllen",
       "results": "Durch Suchergebnisse bewegen",
       "openResult": "Ergebnis öffnen",
       "openBackground": "In einem Hintergrund-Tab öffnen",
@@ -3131,6 +3133,16 @@
       "tagAdded": "Tag {{name}} hinzugefügt",
       "folderChosen": "Ordner {{name}} gewählt"
     },
+    "fill": {
+      "button": "Mit KI ausfüllen",
+      "done": "Mit den Vorschlägen der KI ausgefüllt",
+      "keys": {
+        "option": "⌥",
+        "alt": "Alt",
+        "shiftMac": "⇧",
+        "shift": "Shift"
+      }
+    },
     "line": {
       "limit": "Vorschläge pausieren bis {{date}}. Du hast die {{limit}} Links dieses Monats genutzt.",
       "unavailable": "Vorschläge sind gerade nicht verfügbar. Dein Link wird wie gewohnt gespeichert.",
@@ -3250,6 +3262,7 @@
       "open": "Frag deine Links",
       "close": "Frag deine Links schließen",
       "newQuestion": "Neue Frage",
+      "back": "Zurück",
       "emptyTitle": "Was möchtest du wissen?",
       "lead": "Frag in deinen eigenen Worten. Die Antwort stammt aus deinen gespeicherten Links, mit allen Quellen.",
       "starters": {

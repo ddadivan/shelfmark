@@ -792,6 +792,7 @@
       "library": "Liens",
       "search": "Trouver",
       "tags": "Tags",
+      "ask": "Demander",
       "you": "Vous"
     },
     "sidebar": {
@@ -1713,6 +1714,7 @@
       "undo": "Annuler la dernière action",
       "toastAction": "Aller au bouton d’une notification",
       "save": "Enregistrer le lien",
+      "aiFill": "Remplir avec l’IA dans la fenêtre du lien",
       "results": "Parcourir les résultats de recherche",
       "openResult": "Ouvrir le résultat",
       "openBackground": "L’ouvrir dans un onglet en arrière-plan",
@@ -3194,6 +3196,16 @@
       "tagAdded": "Tag {{name}} ajouté",
       "folderChosen": "Dossier {{name}} choisi"
     },
+    "fill": {
+      "button": "Remplir avec l’IA",
+      "done": "Rempli avec les suggestions de l’IA",
+      "keys": {
+        "option": "⌥",
+        "alt": "Alt",
+        "shiftMac": "⇧",
+        "shift": "Shift"
+      }
+    },
     "line": {
       "limit": "Suggestions en pause jusqu’au {{date}}. Vous avez utilisé les {{limit}} liens de ce mois.",
       "unavailable": "Les suggestions ne sont pas disponibles pour le moment. Votre lien s’enregistre normalement.",
@@ -3321,6 +3333,7 @@
       "open": "Interroger mes liens",
       "close": "Fermer Interroger mes liens",
       "newQuestion": "Nouvelle question",
+      "back": "Retour",
       "emptyTitle": "Que voulez-vous savoir ?",
       "lead": "Posez votre question avec vos mots. La réponse vient des liens que vous avez enregistrés, avec chaque source.",
       "starters": {

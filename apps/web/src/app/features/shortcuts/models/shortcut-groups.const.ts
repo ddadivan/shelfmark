@@ -6,7 +6,7 @@ import { SHORTCUT_KEY } from './shortcut-key.const';
  * which draw many more). The "?" dialog and Settings › Keyboard shortcuts both render it, and
  * `shortcut-groups.spec.ts` compares it with the key handlers: search (`SearchDialogService`), the
  * list ("?", `ShortcutsDialogService`), Esc (dialogs, menus, toasts), undo and the toast action
- * (`ToastService`), save in the link dialog, paste links into the library (`LibraryPage`), the
+ * (`ToastService`), save and Fill in with AI in the link dialog, paste links into the library (`LibraryPage`), the
  * search results, the feed selection (`LibraryPage`, `linkKeyIntent`), the folder tree and
  * reordering the sidebar (Alt+Up / Alt+Down). A new key handler adds its row here.
  */
@@ -30,6 +30,11 @@ export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = [
     titleKey: 'shortcuts.groups.links',
     shortcuts: [
       { labelKey: 'shortcuts.items.save', keys: [SHORTCUT_KEY.Command, SHORTCUT_KEY.Enter] },
+      // Fill in with AI in the link dialog (F1c, `AddLinkAiFillService`).
+      {
+        labelKey: 'shortcuts.items.aiFill',
+        keys: [SHORTCUT_KEY.Alt, SHORTCUT_KEY.Shift, SHORTCUT_KEY.F],
+      },
       { labelKey: 'shortcuts.items.paste', keys: [SHORTCUT_KEY.Command, SHORTCUT_KEY.V] },
       { labelKey: 'shortcuts.items.results', keys: [SHORTCUT_KEY.Up, SHORTCUT_KEY.Down] },
       { labelKey: 'shortcuts.items.openResult', keys: [SHORTCUT_KEY.Enter] },

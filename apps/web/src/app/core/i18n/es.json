@@ -792,6 +792,7 @@
       "library": "Enlaces",
       "search": "Buscar",
       "tags": "Etiquetas",
+      "ask": "Preguntar",
       "you": "Tú"
     },
     "sidebar": {
@@ -1713,6 +1714,7 @@
       "undo": "Deshacer la última acción",
       "toastAction": "Ir al botón de un aviso",
       "save": "Guardar el enlace",
+      "aiFill": "Rellenar con IA en el diálogo del enlace",
       "results": "Moverse por los resultados de búsqueda",
       "openResult": "Abrir el resultado",
       "openBackground": "Abrirlo en una pestaña en segundo plano",
@@ -3194,6 +3196,16 @@
       "tagAdded": "Etiqueta {{name}} añadida",
       "folderChosen": "Carpeta {{name}} elegida"
     },
+    "fill": {
+      "button": "Rellenar con IA",
+      "done": "Rellenado con las sugerencias de la IA",
+      "keys": {
+        "option": "⌥",
+        "alt": "Alt",
+        "shiftMac": "⇧",
+        "shift": "Shift"
+      }
+    },
     "line": {
       "limit": "Sugerencias en pausa hasta el {{date}}. Has usado los {{limit}} enlaces de este mes.",
       "unavailable": "Las sugerencias no están disponibles ahora mismo. Tu enlace se guarda como siempre.",
@@ -3321,6 +3333,7 @@
       "open": "Pregunta a tus enlaces",
       "close": "Cerrar Pregunta a tus enlaces",
       "newQuestion": "Nueva pregunta",
+      "back": "Atrás",
       "emptyTitle": "¿Qué quieres saber?",
       "lead": "Pregunta con tus propias palabras. La respuesta sale de los enlaces que guardaste, con cada fuente.",
       "starters": {

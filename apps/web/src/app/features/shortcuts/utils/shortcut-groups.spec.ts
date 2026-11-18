@@ -1,4 +1,5 @@
 import { TOAST_SHORTCUT } from '@shelfmark/ui';
+import { AI_FILL_SHORTCUT } from '../../links/models/ai-fill-shortcut.const';
 import { LINK_SELECT_SHORTCUT } from '../../links/models/link-select-shortcut.const';
 import { SEARCH_SHORTCUT_KEY } from '../../search/models/search-shortcut-key.const';
 import { SHORTCUT_GROUPS } from '../models/shortcut-groups.const';
@@ -48,6 +49,11 @@ const BOUND: readonly { labelKey: string; keys: readonly ShortcutKey[] }[] = [
   },
   // AddLinkDialogComponent.onKeydown
   { labelKey: 'shortcuts.items.save', keys: [SHORTCUT_KEY.Command, SHORTCUT_KEY.Enter] },
+  // AddLinkAiFillService.handleShortcut (F1c)
+  {
+    labelKey: 'shortcuts.items.aiFill',
+    keys: [SHORTCUT_KEY.Alt, SHORTCUT_KEY.Shift, letterKey(AI_FILL_SHORTCUT.code)],
+  },
   // LibraryPage: document paste
   { labelKey: 'shortcuts.items.paste', keys: [SHORTCUT_KEY.Command, SHORTCUT_KEY.V] },
   // SearchDialogComponent: the results list

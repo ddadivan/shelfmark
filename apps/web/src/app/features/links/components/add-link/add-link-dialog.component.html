@@ -140,6 +140,8 @@
 
         <ui-input [label]="'links.add.titleField.label' | transloco" [formField]="form.title" />
 
+        <app-add-link-ai-fill />
+
         @if (summary.shown()) {
           <app-summary-field
             [field]="form.summary"

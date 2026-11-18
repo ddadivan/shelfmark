@@ -45,6 +45,8 @@ import { SummaryFieldComponent } from '../../../ai/components/summary-field/summ
 import { AiDraftService } from '../../../ai/services/ai-draft.service';
 import { AiLinkStateService } from '../../../ai/services/ai-link-state.service';
 import { AddLinkAiAppliedService } from '../../services/add-link-ai-applied.service';
+import { AddLinkAiFillService } from '../../services/add-link-ai-fill.service';
+import { AddLinkAiFillComponent } from '../add-link-ai/add-link-ai-fill.component';
 import { AddLinkAiFolderComponent } from '../add-link-ai/add-link-ai-folder.component';
 import { AddLinkAiTagsComponent } from '../add-link-ai/add-link-ai-tags.component';
 import { RelatedLinksComponent } from '../../../ai/components/related-links/related-links.component';
@@ -70,6 +72,7 @@ import { RelatedLinksComponent } from '../../../ai/components/related-links/rela
 @Component({
   selector: 'app-add-link-dialog',
   imports: [
+    AddLinkAiFillComponent,
     AddLinkAiFolderComponent,
     AddLinkAiTagsComponent,
     RelatedLinksComponent,
@@ -103,6 +106,7 @@ import { RelatedLinksComponent } from '../../../ai/components/related-links/rela
     AiLinkStateService,
     AddLinkAiService,
     AddLinkAiAppliedService,
+    AddLinkAiFillService,
     AddLinkSummaryService,
     AddLinkLabelsService,
   ],
@@ -175,6 +179,7 @@ export class AddLinkDialogComponent {
     void this.tagStore.load();
   }
 
+  private readonly aiFill = inject(AddLinkAiFillService);
   private readonly saveFlow = inject(AddLinkSaveService);
   protected readonly saving = this.saveFlow.saving;
   protected readonly saveError = this.saveFlow.saveError;
@@ -199,8 +204,14 @@ export class AddLinkDialogComponent {
     }
   }
 
-  /** Cmd / Ctrl + Enter saves from any field (Enter alone in a text field submits as before). */
+  /**
+   * Cmd / Ctrl + Enter saves from any field (Enter alone in a text field submits as before);
+   * Alt / Option + Shift + F is "Fill in with AI" (F1c).
+   */
   protected onKeydown(event: KeyboardEvent): void {
+    if (this.aiFill.handleShortcut(event)) {
+      return;
+    }
     if (event.key === KEYBOARD_KEY.Enter && (event.metaKey || event.ctrlKey) && !this.saving()) {
       event.preventDefault();
       (event.currentTarget as HTMLFormElement).requestSubmit();

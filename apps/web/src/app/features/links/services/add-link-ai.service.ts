@@ -119,6 +119,25 @@ export class AddLinkAiService {
     });
   });
 
+  /**
+   * Fill in with AI (F1c): the suggested folder, only while the field is still empty (Unsorted).
+   * A folder the user or a rule chose is never replaced.
+   */
+  readonly fillFolderId = computed<string | null>(() => {
+    if (this.formState.model().folderId !== null) {
+      return null;
+    }
+    const chip = this.folderChips()[0];
+    return chip ? (this.suggestions().find((item) => item.id === chip.id)?.folderId ?? null) : null;
+  });
+
+  /** Fill in with AI: the suggested existing tags not in the field yet; a new tag stays a chip. */
+  readonly fillTags = computed<readonly string[]>(() =>
+    this.tagChips()
+      .filter((chip) => chip.kind === SUGGESTION_KIND.Tag)
+      .map((chip) => chip.label),
+  );
+
   /** The one AI line of the dialog: the monthly limit, or "not available" (Try again once). */
   readonly line = computed<AiLineView | null>(() => {
     this.formState.i18n();
@@ -192,6 +211,23 @@ export class AddLinkAiService {
   /** "Add all" of the tags row. */
   acceptAllTags(): void {
     this.addTags(this.tagChips().map((chip) => chip.label));
+  }
+
+  /**
+   * Fill in with AI: the folder and the existing tags go into their fields as ordinary values
+   * (no "Moved by AI" mark: the click is the user's choice).
+   */
+  fill(): void {
+    const folderId = this.fillFolderId();
+    if (folderId !== null) {
+      const field = this.formState.form.folderId();
+      field.value.set(folderId);
+      field.markAsDirty();
+    }
+    const tags = this.fillTags();
+    if (tags.length > 0) {
+      this.addTags(tags);
+    }
   }
 
   dismiss(chip: AiChipView): void {
