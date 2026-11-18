@@ -9,6 +9,7 @@ import {
   type AiSettingsResponse,
   AI_SEARCH_STATE,
   ASK_PERIOD,
+  CLEANUP_STATE,
 } from '@shelfmark/contracts';
 import { of, Subject, throwError, type Observable } from 'rxjs';
 import { SessionScope } from '../../../core/auth/session-scope.service';
@@ -233,8 +234,15 @@ describe('AiSettingsStore', () => {
     api.startBackfill.mockReturnValue(of(running));
     expect(await store.startBackfill()).toBe(true);
     expect(store.backfillRunning()).toBe(true);
-    api.tick.mockReturnValue(of({ pendingJobs: 1, backfill: { ...running, done: 6 } }));
-    expect(await store.tick()).toEqual({ pendingJobs: 1, backfill: { ...running, done: 6 } });
+    api.tick.mockReturnValue(
+      of({
+        pendingJobs: 1,
+        backfill: { ...running, done: 6 },
+        search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
+        cleanup: CLEANUP_STATE.None,
+      }),
+    );
+    expect(await store.tick()).toMatchObject({ pendingJobs: 1, backfill: { ...running, done: 6 } });
     expect(store.backfill()?.done).toBe(6);
     expect(store.pendingJobs()).toBe(1);
     api.stopBackfill.mockReturnValue(of({ ...running, state: AI_BACKFILL_STATE.Stopped }));
@@ -258,7 +266,9 @@ describe('AiSettingsStore', () => {
     expect(store.meaningReady()).toBe(true);
     expect(store.searchProcessing()).toBe(false);
     const processing = { state: AI_SEARCH_STATE.Processing, ready: 6, total: 10 };
-    api.tick.mockReturnValue(of({ pendingJobs: 0, backfill: BACKFILL, search: processing }));
+    api.tick.mockReturnValue(
+      of({ pendingJobs: 0, backfill: BACKFILL, search: processing, cleanup: CLEANUP_STATE.None }),
+    );
     await store.tick();
     expect(store.searchStatus()).toEqual(processing);
     expect(store.meaningReady()).toBe(false);

@@ -32,6 +32,7 @@ import { MockAiAsk } from './mock-ai-ask';
 import { MockAiData } from './mock-ai-data';
 import { meaningQueryProblems, MockAiMeaning } from './mock-ai-meaning';
 import { MockAiTidy } from './mock-ai-tidy';
+import { MockCleanupData } from '../../cleanup/mock/mock-cleanup-data';
 
 function failure(status: number, message?: string | string[]): Observable<never> {
   return throwError(() => mockHttpError(status, message));
@@ -86,6 +87,7 @@ export class MockAiApi implements AiApi {
   private readonly tidy = inject(MockAiTidy);
   private readonly meaning = inject(MockAiMeaning);
   private readonly asking = inject(MockAiAsk);
+  private readonly cleanup = inject(MockCleanupData);
 
   getSettings(): Observable<AiSettingsResponse> {
     return defer(() => of(this.data.settingsResponse())).pipe(delay(MOCK_LATENCY_MS.List));
@@ -141,6 +143,7 @@ export class MockAiApi implements AiApi {
         pendingJobs: this.data.pendingJobs(),
         backfill: this.data.backfillStatus(),
         search: this.data.searchStatus(),
+        cleanup: this.cleanup.state(),
       });
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
@@ -148,6 +151,7 @@ export class MockAiApi implements AiApi {
   deleteData(): Observable<void> {
     return defer(() => {
       this.data.deleteData();
+      this.cleanup.reset();
       return of(undefined);
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }

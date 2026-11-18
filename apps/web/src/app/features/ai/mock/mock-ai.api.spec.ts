@@ -20,6 +20,7 @@ import { firstValueFrom, type Observable } from 'rxjs';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MockLinksApi } from '../../links/mock/mock-links.api';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
+import { MockCleanupData } from '../../cleanup/mock/mock-cleanup-data';
 import { MockAiApi } from './mock-ai.api';
 import { MockAiData } from './mock-ai-data';
 import { MockAiTidy } from './mock-ai-tidy';
@@ -46,7 +47,7 @@ async function statusOf(source: Observable<unknown>): Promise<number> {
 
 function setup() {
   const injector = Injector.create({
-    providers: [MockLibraryData, MockAiData, MockAiTidy, MockAiMeaning, MockAiAsk],
+    providers: [MockLibraryData, MockAiData, MockAiTidy, MockAiMeaning, MockAiAsk, MockCleanupData],
   });
   return runInInjectionContext(injector, () => ({
     ai: new MockAiApi(),
@@ -259,6 +260,7 @@ describe('MockAiApi', () => {
     expect((await run(ai.tick())).pendingJobs).toBe(1);
     await vi.advanceTimersByTimeAsync(MOCK_AI_TIMING.JobMs);
     expect((await run(ai.tick())).pendingJobs).toBe(0);
+    expect((await run(ai.tick())).cleanup).toBe('none');
     expect((await run(ai.getLinkAi(batch.links[0].id))).summary).toContain('b.example');
   });
 

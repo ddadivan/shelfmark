@@ -1,3 +1,4 @@
+import { CLEANUP_STATE } from '@shelfmark/contracts';
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { SessionScope } from '../../../core/auth/session-scope.service';
@@ -49,6 +50,7 @@ describe('TidyCountStore', () => {
         pendingJobs: 0,
         backfill: aiSettingsResponse().backfill,
         search: aiSettingsResponse().search,
+        cleanup: CLEANUP_STATE.None,
       }),
     );
     await settings.tick();

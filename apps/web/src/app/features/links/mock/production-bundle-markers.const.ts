@@ -54,6 +54,7 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'ids must hold 1 to 100 distinct ids',
   // The AI mock (#389): its storage key and the URL parts that fail on purpose.
   'sm-mock-ai',
+  'sm-mock-cleanup',
   'ai-refuse',
   'at least one setting is required',
 ] as const;

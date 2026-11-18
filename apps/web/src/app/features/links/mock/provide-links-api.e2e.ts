@@ -50,6 +50,10 @@ import { HttpRediscoverApi } from '../../rediscover/http/http-rediscover.api';
 import { MockRediscoverApi } from '../../rediscover/mock/mock-rediscover.api';
 import { REDISCOVER_API } from '../../rediscover/models/rediscover-api.const';
 import type { RediscoverApi } from '../../rediscover/models/rediscover-api.interface';
+import { HttpCleanupApi } from '../../cleanup/http/http-cleanup.api';
+import { MockCleanupApi } from '../../cleanup/mock/mock-cleanup.api';
+import { CLEANUP_API } from '../../cleanup/models/cleanup-api.const';
+import type { CleanupApi } from '../../cleanup/models/cleanup-api.interface';
 import type { AiApi } from '../../ai/models/ai-api.interface';
 import { HttpSharesApi } from '../../sharing/http/http-shares.api';
 import { MockSharesApi } from '../../sharing/mock/mock-shares.api';
@@ -165,6 +169,11 @@ export function provideLinksApi(): Provider[] {
       provide: REDISCOVER_API,
       useFactory: (): RediscoverApi =>
         useRealApi() ? inject(HttpRediscoverApi) : inject(MockRediscoverApi),
+    },
+    {
+      provide: CLEANUP_API,
+      useFactory: (): CleanupApi =>
+        useRealApi() ? inject(HttpCleanupApi) : inject(MockCleanupApi),
     },
     { provide: EXPORT_API, useExisting: MockExportApi },
   ];
