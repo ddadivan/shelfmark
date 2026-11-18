@@ -154,6 +154,14 @@
   }
 }
 
+// With "Fill in with AI" next to it, the two share the start of the footer: the button takes the
+// free space after itself.
+.add-link__delete--with-fill {
+  @include tablet-up {
+    margin-inline-end: 0;
+  }
+}
+
 // The "save" shortcut at the start of the footer; a phone has no keyboard to press it.
 .add-link__shortcut {
   @include type(caption);

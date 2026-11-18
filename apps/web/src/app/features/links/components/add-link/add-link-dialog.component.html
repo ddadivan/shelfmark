@@ -254,6 +254,7 @@
         <ui-button
           slot="footer"
           class="add-link__delete"
+          [class.add-link__delete--with-fill]="aiFill.available()"
           [variant]="BUTTON_VARIANT.Ghost"
           iconLeft="trash"
           [disabled]="saving()"
@@ -261,6 +262,10 @@
           >{{ 'links.edit.actions.delete' | transloco }}</ui-button
         >
       }
+
+      <!-- Fill in with AI (F1c): first in the footer (after Delete), Cancel and the primary action
+           stay on the right; nothing while hidden. -->
+      <app-add-link-ai-fill slot="footer" />
 
       <!-- The save hint makes room for "Fill in with AI" while it shows (the row stays one line). -->
       @if (!editing && !phone() && !aiFill.available()) {
@@ -284,8 +289,6 @@
           'links.add.actions.openSaved' | transloco
         }}</ui-button>
       }
-      <!-- Fill in with AI (F1c): a footer action left of the primary one, nothing while hidden. -->
-      <app-add-link-ai-fill slot="footer" />
       <ui-button
         slot="footer"
         class="add-link__action"

@@ -78,6 +78,26 @@ export const Ghost: Story = { args: { variant: BUTTON_VARIANT.Ghost } };
 
 export const Danger: Story = { args: { variant: BUTTON_VARIANT.Danger, iconLeft: 'trash' } };
 
+/**
+ * The one AI action ("Fill in with AI", BRAND › AI): the `ai-fill` tint, no edge, the label in
+ * `text` and a 20px spark in `ai`; hover and press a step stronger. Light and dark side by side.
+ */
+export const Ai: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { themes: Object.values(THEME) },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
+            <ui-button variant="ai" iconLeft="spark">Fill in with AI</ui-button>
+            <ui-button variant="ai" size="lg" iconLeft="spark" block>Fill in with AI</ui-button>
+          </div>
+        }
+      </div>`,
+  }),
+};
+
 export const Small: Story = { args: { size: BUTTON_SIZE.Sm } };
 
 export const Large: Story = { args: { size: BUTTON_SIZE.Lg, variant: BUTTON_VARIANT.Primary } };

@@ -1,11 +1,12 @@
 @if (fill.available()) {
   <ui-button
     class="add-link-ai-fill"
-    variant="secondary"
+    animate.enter="add-link-ai-fill--enter"
+    animate.leave="add-link-ai-fill--leave"
+    variant="ai"
     iconLeft="spark"
     [block]="phone()"
     [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md"
-    [iconSize]="ICON_SIZE.Sm"
     [uiTooltip]="phone() ? '' : ('ai.fill.button' | transloco)"
     [uiTooltipShortcut]="phone() ? '' : shortcut()"
     (click)="apply()"

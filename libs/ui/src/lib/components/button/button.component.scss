@@ -117,6 +117,27 @@ a.ui-button {
   }
 }
 
+// The one AI action ("Fill in with AI", BRAND › AI): a quiet indigo fill (`ai-fill`), no edge,
+// the label in `text`, the icon (the spark) 20px in `ai`, also inside a dialog. Never sage, never
+// a gradient.
+.ui-button--ai {
+  --ui-icon-size: var(--icon-size-md);
+
+  background: var(--ai-fill);
+
+  ui-icon {
+    color: var(--ai);
+  }
+
+  @include hover {
+    background: var(--ai-fill-hover);
+  }
+
+  &:active {
+    background: var(--ai-fill-pressed);
+  }
+}
+
 .ui-button--danger {
   --ui-ripple-opacity: 0.2;
 
@@ -137,6 +158,10 @@ a.ui-button {
 
 .ui-button--primary[aria-expanded='true'] {
   background: var(--primary-hover);
+}
+
+.ui-button--ai[aria-expanded='true'] {
+  background: var(--ai-fill-pressed);
 }
 
 .ui-button--danger[aria-expanded='true'] {

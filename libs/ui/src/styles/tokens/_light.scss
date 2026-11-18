@@ -31,6 +31,12 @@
   --ai-line: #767ecb;
   --ai-bg: #e9eaf8;
 
+  // The fill of the one AI action button ("Fill in with AI", `ui-button variant="ai"`): mixed from
+  // `ai` and `surface`, so the Custom theme follows its base.
+  --ai-fill: color-mix(in srgb, var(--ai) 24%, var(--surface));
+  --ai-fill-hover: color-mix(in srgb, var(--ai) 30%, var(--surface));
+  --ai-fill-pressed: color-mix(in srgb, var(--ai) 36%, var(--surface));
+
   // The disc behind a page-level empty-state scene (#315): one step stronger than the page `bg`, so the scene's
   // edges (`border-control`, `accent`) keep 3:1 on it (WCAG 1.4.11).
   --illustration-disc: var(--surface-hover);

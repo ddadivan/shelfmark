@@ -169,11 +169,13 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     const { loader, links, result } = await setup(ai);
     await typeUrl(URL);
     const fill = await vi.waitFor(() => loader.getHarness(UiButtonHarness.with({ text: FILL })));
-    // A footer action, right before the primary button (F1c, AiTags 12).
+    // The tinted AI button first in the footer, Cancel and Create link after it (AiTags 12); the
+    // save hint steps aside while it shows.
     const footer = [...(root()?.querySelectorAll('[slot="footer"]') ?? [])];
-    const fillAt = footer.findIndex((el) => el.tagName === 'APP-ADD-LINK-AI-FILL');
-    expect(fillAt).toBeGreaterThan(-1);
-    expect(footer[fillAt + 1]?.textContent?.trim()).toBe('Create link');
+    expect(footer.map((el) => el.textContent?.trim())).toEqual([FILL, 'Cancel', 'Create link']);
+    expect(root()?.querySelector('app-add-link-ai-fill button')?.classList).toContain(
+      'ui-button--ai',
+    );
     await fill.click();
 
     const select = await loader.getHarness(UiSelectHarness.with({ label: 'Folder' }));
