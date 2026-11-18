@@ -2709,6 +2709,18 @@
       "missingFolder": "Dieser Ordner existiert nicht mehr. Wähle einen anderen.",
       "missing": "Diese Regel wurde inzwischen gelöscht.",
       "failed": "Die Regel konnte nicht gespeichert werden. Versuche es erneut."
+    },
+    "offer": {
+      "title": "Links von {{domain}} immer in {{folder}} ablegen?",
+      "detail": {
+        "one": "Dein letzter {{count}} Link von dieser Website liegt dort. Eine Regel funktioniert ohne KI.",
+        "other": "Deine letzten {{count}} Links von dieser Website liegen dort. Eine Regel funktioniert ohne KI."
+      },
+      "create": "Regel erstellen",
+      "notNow": "Nicht jetzt",
+      "created": "Regel erstellt",
+      "applyExisting": "Auf „Ohne Ordner“ anwenden",
+      "failed": "Regel konnte nicht erstellt werden"
     }
   },
   "changelog": {
@@ -2856,6 +2868,10 @@
       },
       "extensionInStore": {
         "text": "Die Shelfmark-Browsererweiterung ist im Chrome Web Store: Installiere sie über das Banner in deinem Regal oder unter Einstellungen › Bibliothek."
+      },
+      "aiTidy": {
+        "title": "„Ohne Ordner“ mit KI aufräumen",
+        "text": "Prüfe die KI-Vorschläge für alles in „Ohne Ordner“ auf einer Seite und wende sie mit einem Rückgängig an. Legst du Links einer Website mehrmals in denselben Ordner, schlägt Shelfmark eine Regel vor."
       }
     },
     "sections": {
@@ -3166,6 +3182,67 @@
           }
         }
       }
+    },
+    "tidy": {
+      "entry": "Mit Vorschlägen aufräumen",
+      "back": "Ohne Ordner",
+      "title": "„Ohne Ordner“ aufräumen",
+      "lead": {
+        "one": "Vorschläge für {{count}} Link. Tippe auf einen Chip, um ihn auszulassen.",
+        "other": "Vorschläge für {{count}} Links. Tippe auf einen Chip, um ihn auszulassen."
+      },
+      "cancel": "Abbrechen",
+      "apply": {
+        "one": "Auf {{count}} Link anwenden",
+        "other": "Auf {{count}} Links anwenden"
+      },
+      "skip": "Überspringen",
+      "skipped": "Übersprungen – bleibt in „Ohne Ordner“",
+      "undoSkip": "Überspringen rückgängig",
+      "rowLabel": "Änderungen für {{title}}",
+      "listLabel": "Links mit Vorschlägen",
+      "barLabel": "Vorschläge anwenden",
+      "loading": "Vorschläge werden geladen",
+      "chip": {
+        "folder": "In {{name}} verschieben",
+        "folderAdded": "In {{name}} verschieben, ausgewählt",
+        "tag": "Tag {{name}} hinzufügen",
+        "tagAdded": "Tag {{name}} hinzufügen, ausgewählt",
+        "newTag": "Tag {{name}} erstellen und hinzufügen",
+        "newTagAdded": "Tag {{name}} erstellen und hinzufügen, ausgewählt"
+      },
+      "more": {
+        "one": "Danach folgt noch {{count}} Link. Links ohne Vorschläge werden nicht aufgeführt.",
+        "other": "Danach folgen noch {{count}} Links. Links ohne Vorschläge werden nicht aufgeführt."
+      },
+      "next": "Nächste Links zeigen",
+      "empty": {
+        "title": "Nichts aufzuräumen",
+        "text": "Jeder Link hier hat entweder noch keine Vorschläge oder du hast ihn schon einsortiert. Neue Links bekommen innerhalb einer Minute Vorschläge.",
+        "back": "Zurück zu „Ohne Ordner“"
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} Link aufgeräumt",
+          "other": "{{count}} Links aufgeräumt"
+        },
+        "folders": {
+          "one": "In {{count}} Ordner verschoben",
+          "other": "In {{count}} Ordner verschoben"
+        },
+        "tags": {
+          "one": "{{count}} Tag hinzugefügt",
+          "other": "{{count}} Tags hinzugefügt"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Rückgängig",
+        "failed": "Links konnten nicht aufgeräumt werden",
+        "failedDetail": "Es wurde nichts geändert. Versuche es noch einmal.",
+        "nothing": "Nichts anzuwenden",
+        "nothingDetail": "Die Vorschläge haben sich inzwischen geändert."
+      },
+      "undone": "Aufräumen rückgängig gemacht",
+      "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden"
     }
   }
 }

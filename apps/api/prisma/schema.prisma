@@ -21,82 +21,82 @@ datasource db {
 // Better Auth core models (users, sessions, linked OAuth accounts, verification tokens).
 
 model User {
-  id                    String             @id @default(uuid(7)) @db.Uuid
+  id                    String               @id @default(uuid(7)) @db.Uuid
   name                  String
-  email                 String             @unique
-  emailVerified         Boolean            @default(false) @map("email_verified")
+  email                 String               @unique
+  emailVerified         Boolean              @default(false) @map("email_verified")
   image                 String?
-  isDemo                Boolean            @default(false) @map("is_demo")
-  onboardingCompletedAt DateTime?          @map("onboarding_completed_at") @db.Timestamptz(3)
-  demoExpiresAt         DateTime?          @map("demo_expires_at") @db.Timestamptz(3)
+  isDemo                Boolean              @default(false) @map("is_demo")
+  onboardingCompletedAt DateTime?            @map("onboarding_completed_at") @db.Timestamptz(3)
+  demoExpiresAt         DateTime?            @map("demo_expires_at") @db.Timestamptz(3)
   // HMAC of the creating client IP for the per-IP demo quota (#67); never the raw address.
-  demoSourceHash        String?            @map("demo_source_hash")
+  demoSourceHash        String?              @map("demo_source_hash")
   // Same for the wider IPv6 /48 network (null for IPv4 clients).
-  demoNetworkHash       String?            @map("demo_network_hash")
+  demoNetworkHash       String?              @map("demo_network_hash")
   // How long deleted links and folders stay in Trash (ADR 0036); a CHECK in the migration keeps it to 7, 30, 90.
-  trashRetentionDays    Int                @default(30) @map("trash_retention_days") @db.SmallInt
+  trashRetentionDays    Int                  @default(30) @map("trash_retention_days") @db.SmallInt
   // Account setting "Folder colours" (#263): off shows every folder in graphite.
-  folderColours         Boolean            @default(true) @map("folder_colours")
+  folderColours         Boolean              @default(true) @map("folder_colours")
   // "Pause history" on Recently opened (#269): while true, opens are not recorded.
-  historyPaused         Boolean            @default(false) @map("history_paused")
+  historyPaused         Boolean              @default(false) @map("history_paused")
   // Settings › Appearance (#273): theme, the Custom theme and Animations. CHECKs in the migration
   // keep each to its allow-list (contracts) and the background to the backgrounds of its base.
-  theme                 String             @default("system") @map("theme")
-  customThemeBase       String             @default("light") @map("custom_theme_base")
-  customThemeAccent     String             @default("ocean") @map("custom_theme_accent")
-  customThemeBackground String             @default("paper") @map("custom_theme_background")
-  customThemeCorners    String             @default("soft") @map("custom_theme_corners")
+  theme                 String               @default("system") @map("theme")
+  customThemeBase       String               @default("light") @map("custom_theme_base")
+  customThemeAccent     String               @default("ocean") @map("custom_theme_accent")
+  customThemeBackground String               @default("paper") @map("custom_theme_background")
+  customThemeCorners    String               @default("soft") @map("custom_theme_corners")
   // Own colours (#335): up to 12 lower-case #rrggbb, offered as swatches; a CHECK in the migration keeps the list valid.
-  customColours         String[]           @default([]) @map("custom_colours")
+  customColours         String[]             @default([]) @map("custom_colours")
   // Own emoji (#363): up to 24 folder emoji the picker offers under "Yours"; the API checks each is one emoji, a CHECK in the migration keeps the count and length.
-  customEmoji           String[]           @default([]) @map("custom_emoji")
-  motion                String             @default("system") @map("motion")
+  customEmoji           String[]             @default([]) @map("custom_emoji")
+  motion                String               @default("system") @map("motion")
   // Set by the first write of theme, customTheme or motion; NULL = the appearance was never chosen.
-  appearanceSavedAt     DateTime?          @map("appearance_saved_at") @db.Timestamptz(3)
+  appearanceSavedAt     DateTime?            @map("appearance_saved_at") @db.Timestamptz(3)
   // Settings › Library (#284). CHECKs in the migration keep the three text columns to the contract
   // allow-lists. newLinksFolderId has no relation on purpose (see the migration): the API checks it.
-  defaultView           String             @default("cards") @map("default_view")
-  defaultSort           String             @default("newest") @map("default_sort")
-  openLinksIn           String             @default("new-tab") @map("open_links_in")
-  showFolderCounts      Boolean            @default(true) @map("show_folder_counts")
-  newLinksFolderId      String?            @map("new_links_folder_id") @db.Uuid
+  defaultView           String               @default("cards") @map("default_view")
+  defaultSort           String               @default("newest") @map("default_sort")
+  openLinksIn           String               @default("new-tab") @map("open_links_in")
+  showFolderCounts      Boolean              @default(true) @map("show_folder_counts")
+  newLinksFolderId      String?              @map("new_links_folder_id") @db.Uuid
   // Retired in #315 (the duplicate notice is always on, tracking parameters are always stripped):
   // the API no longer reads or writes warn_duplicates and keep_query; a later migration drops them.
-  warnDuplicates        Boolean            @default(true) @map("warn_duplicates")
-  fetchPreviews         Boolean            @default(true) @map("fetch_previews")
-  keepQuery             Boolean            @default(false) @map("keep_query")
+  warnDuplicates        Boolean              @default(true) @map("warn_duplicates")
+  fetchPreviews         Boolean              @default(true) @map("fetch_previews")
+  keepQuery             Boolean              @default(false) @map("keep_query")
   // Settings › Appearance extras (#285): part of the appearance (appearanceSavedAt). CHECKs in the
   // migration keep the text columns to the contract allow-lists.
-  textSize              String             @default("m") @map("text_size")
-  font                  String             @default("onest") @map("font")
-  density               String             @default("comfortable") @map("density")
-  cardPreview           String             @default("large") @map("card_preview")
-  cardSite              Boolean            @default(true) @map("card_site")
-  cardNotes             Boolean            @default(true) @map("card_notes")
-  cardTags              Boolean            @default(true) @map("card_tags")
+  textSize              String               @default("m") @map("text_size")
+  font                  String               @default("onest") @map("font")
+  density               String               @default("comfortable") @map("density")
+  cardPreview           String               @default("large") @map("card_preview")
+  cardSite              Boolean              @default(true) @map("card_site")
+  cardNotes             Boolean              @default(true) @map("card_notes")
+  cardTags              Boolean              @default(true) @map("card_tags")
   // Settings › Language (#274). CHECKs in the migration keep the text columns to the contract
   // allow-lists; languageSavedAt marks the first write (a guest's local choice is kept until then).
-  language              String             @default("browser") @map("language")
-  dateFormat            String             @default("default") @map("date_format")
-  timeFormat            String             @default("default") @map("time_format")
-  weekStart             String             @default("default") @map("week_start")
+  language              String               @default("browser") @map("language")
+  dateFormat            String               @default("default") @map("date_format")
+  timeFormat            String               @default("default") @map("time_format")
+  weekStart             String               @default("default") @map("week_start")
   // Retired in #326 (spell-check in the note field is always on, the browser default): the API no
   // longer reads or writes spellcheck; a later migration drops it.
-  spellcheck            Boolean            @default(true) @map("spellcheck")
-  languageSavedAt       DateTime?          @map("language_saved_at") @db.Timestamptz(3)
+  spellcheck            Boolean              @default(true) @map("spellcheck")
+  languageSavedAt       DateTime?            @map("language_saved_at") @db.Timestamptz(3)
   // Admin usage stats (#333, ADR 0045): UTC day of the last authenticated non-demo request, written
   // at most once a day by UserActivityService; backfilled once in the migration.
-  lastActiveOn          DateTime?          @map("last_active_on") @db.Date
+  lastActiveOn          DateTime?            @map("last_active_on") @db.Date
   // "What's new" (#424): the newest release (x.y.z) whose highlights the user has seen; NULL until the
   // web app writes it. A CHECK in the migration keeps it to RELEASE_VERSION_PATTERN.
-  whatsNewSeen          String?            @map("whats_new_seen")
+  whatsNewSeen          String?              @map("whats_new_seen")
   // Account plan and AI pack (#389, ADR 0047): stored defaults only. The effective tier also
   // counts AI_FULL_ACCESS_EMAILS, computed per request and never written from the environment.
   // CHECKs in the migration keep plan to free | pro.
-  plan                  String             @default("free") @db.VarChar(8)
-  aiPack                Boolean            @default(false) @map("ai_pack")
-  createdAt             DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt             DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+  plan                  String               @default("free") @db.VarChar(8)
+  aiPack                Boolean              @default(false) @map("ai_pack")
+  createdAt             DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]
   accounts              Account[]
   folders               Folder[]
@@ -113,6 +113,7 @@ model User {
   aiJobs                AiJob[]
   aiBatches             AiBatch[]
   linkSuggestions       LinkSuggestion[]
+  ruleOfferDismissals   RuleOfferDismissal[]
   mcpTokens             McpToken[]
 
   @@map("users")
@@ -453,6 +454,18 @@ model LinkRule {
   @@map("link_rules")
 }
 
+// "Not now" on a rule offer (AI-2, ADR 0050): one row per user and site (`ruleHost`), read by the
+// offer check. Rules data, not AI data: deleting AI data keeps it; it cascades with the account.
+model RuleOfferDismissal {
+  userId    String   @map("user_id") @db.Uuid
+  domain    String   @db.VarChar(253)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, domain])
+  @@map("rule_offer_dismissals")
+}
+
 // AI settings (#389, ADR 0047/0049), one row per user; a missing row means the defaults and AI off.
 // `enabledAt` is the first time AI was turned on and `introSeenAt` the intro (turning AI on is the
 // intro's button). The backfill ("Process existing links") state lives here: a keyset cursor over the
@@ -574,6 +587,7 @@ model LinkSuggestion {
   job       AiJob?   @relation(fields: [jobId], references: [id], onDelete: SetNull)
 
   @@index([userId, linkId])
+  @@index([userId, state])
   @@index([jobId])
   @@index([folderId])
   @@map("link_suggestions")

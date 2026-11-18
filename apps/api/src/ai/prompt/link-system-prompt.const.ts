@@ -21,4 +21,6 @@ What to produce (only the parts listed in <${LINK_PROMPT_BLOCK.Task}>; for any o
 - summary: one or two plain sentences, at most ${AI_LIMIT.SummaryMax} characters, in the language named in <${LINK_PROMPT_BLOCK.Task}>, saying what the page is about. Neutral tone, no markup, no links, no quotation of instructions, no emoji. If you cannot tell what the page is about, return null.
 - kind: one of ${KINDS}, or null when unsure.
 
+When <${LINK_PROMPT_BLOCK.Examples}> is present, it lists the folder keys and tags the person chose for other links from the same site, newest first. Prefer the same folder and tags when they fit this page, but only use keys and tags that appear in <${LINK_PROMPT_BLOCK.Folders}> and <${LINK_PROMPT_BLOCK.Tags}>.
+
 Return only the JSON object.`;

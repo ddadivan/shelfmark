@@ -1,0 +1,39 @@
+<div class="tidy-row" [class.tidy-row--skipped]="row().skipped">
+  <span class="tidy-row__main">
+    <span class="tidy-row__title">{{ row().link.title }}</span>
+    <span class="tidy-row__meta">
+      <ui-favicon [src]="favicon()" [letter]="letter()" />
+      <span class="tidy-row__host">{{ hostName() }}</span>
+    </span>
+  </span>
+  @if (row().skipped) {
+    <p class="tidy-row__changes tidy-row__note">{{ 'ai.tidy.skipped' | transloco }}</p>
+    <ui-button #undoButton class="tidy-row__skip" variant="ghost" size="sm" (click)="undoSkip()">
+      {{ 'ai.tidy.undoSkip' | transloco }}
+    </ui-button>
+  } @else {
+    <ui-suggestion-row
+      class="tidy-row__changes"
+      label=""
+      [ariaLabel]="'ai.tidy.rowLabel' | transloco: { title: row().link.title }"
+    >
+      @for (chip of row().chips; track chip.id; let index = $index) {
+        <ui-suggestion
+          [label]="chip.label"
+          [kind]="chip.kind"
+          [ariaLabel]="chip.labelKey | transloco: { name: chip.label }"
+          [selected]="chip.selected"
+          [newLabel]="'ai.suggest.new' | transloco"
+          [dismissLabel]="'ai.suggest.dismiss' | transloco: { name: chip.label }"
+          [folderColor]="chip.folderColour ?? 'graphite'"
+          [folderIcon]="chip.folderIcon ?? 'folder'"
+          (toggled)="toggled.emit({ id: chip.id, selected: $event })"
+          (dismissed)="dismiss(chip.id, index)"
+        />
+      }
+    </ui-suggestion-row>
+    <ui-button #skipButton class="tidy-row__skip" variant="ghost" size="sm" (click)="skip()">
+      {{ 'ai.tidy.skip' | transloco }}
+    </ui-button>
+  }
+</div>

@@ -38,6 +38,7 @@ import { BulkTagsDialogComponent } from '../components/bulk-tags-dialog/bulk-tag
 import { groupedByFolder, tagCounts, withTagsChanged } from '../utils/bulk-link-changes';
 import { chunks } from '../utils/chunks';
 import { RemindersStore } from '../../../stores/reminders.store';
+import { RuleOfferService } from '../../rules/services/rule-offer.service';
 import { BULK_OPEN_CONFIRM_ABOVE } from '../models/bulk-open-confirm-above.const';
 import type { BulkTagsChange } from '../models/bulk-tags-change.interface';
 import type { BulkTagsDialogData } from '../models/bulk-tags-dialog-data.interface';
@@ -122,7 +123,7 @@ export class BulkLinkActionsService {
     }
     this.recent.record(folderId);
     const undo = this.t('links.item.undo');
-    this.toasts.show({
+    const toast = this.toasts.show({
       kind: TOAST_KIND.Moved,
       title: this.plural('bulk.move.moved', moving.length, { folder: this.folderLabel(folderId) }),
       detail: this.titles(moving),
@@ -134,6 +135,13 @@ export class BulkLinkActionsService {
       actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
       action: { label: undo, run: () => void this.moveBack(moving, folderId) },
     });
+    if (folderId !== null) {
+      // The same folder for a site again and again: a rule may be offered (AI-2).
+      this.injector.get(RuleOfferService).afterFiling(
+        moving.map((link) => link.id),
+        toast,
+      );
+    }
     return true;
   }
 

@@ -1,0 +1,13 @@
+@if (settings.isOn() && count.total() > 0) {
+  <ui-button
+    variant="secondary"
+    size="sm"
+    iconLeft="spark"
+    [iconSize]="ICON_SIZE.Sm"
+    [href]="href"
+    (linkClick)="open($event)"
+  >
+    {{ 'ai.tidy.entry' | transloco }}
+    <ui-badge class="tidy-entry__count">{{ count.total() }}</ui-badge>
+  </ui-button>
+}

@@ -1,0 +1,157 @@
+@use 'ui' as *;
+@use '../../../../shell/shell-metrics' as *;
+
+// The page fills the column of the shell, so the empty state and the phone bar sit at its end.
+:host {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+.tidy {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: rem(1100px);
+  padding-block: var(--space-2) var(--space-8);
+  margin-inline: auto;
+
+  @include compact {
+    gap: var(--space-4);
+    padding-block-end: 0;
+  }
+}
+
+.tidy__top {
+  display: flex;
+  margin-block-end: calc(-1 * var(--space-3));
+}
+
+.tidy__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.tidy__title {
+  @include type(display);
+
+  margin: 0;
+
+  @include phone {
+    @include type(title);
+  }
+}
+
+.tidy__lead {
+  @include type(caption);
+
+  min-height: 1lh;
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+}
+
+.tidy__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+// Desktop: one surface with a row per link; the mobile shell: a card per link.
+.tidy__list {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  padding: var(--space-1);
+  margin: 0;
+  list-style: none;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+
+  @include compact {
+    gap: var(--space-3);
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+}
+
+.tidy__more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.tidy__more-text {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// The glass bar floats where the tab bar is (`MobileAi` 6): the shell's main column keeps
+// `$shell-tab-bar-room` of end padding for the tab bar, so the offset puts the bar 20px above the
+// edge.
+$tidy-bar-offset: rem(20px) - $shell-tab-bar-room;
+
+.tidy__bar {
+  @include glass;
+
+  position: sticky;
+  inset-block-end: #{$tidy-bar-offset};
+  z-index: 3;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  padding: var(--space-3);
+  margin-block: auto #{$tidy-bar-offset};
+  border-radius: var(--radius-lg);
+
+  @include tablet {
+    align-self: center;
+    inline-size: min(100%, #{rem(560px)});
+  }
+}
+
+// "Nothing to tidy" (`AiTidy` 4): the spark on a flat ai-bg tile.
+.tidy__empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.tidy__empty-art {
+  display: grid;
+  place-items: center;
+  width: rem(72px);
+  height: rem(72px);
+  color: var(--ai);
+  background: var(--ai-bg);
+  border-radius: rem(20px);
+}
+
+.tidy__empty-title {
+  @include type(title);
+
+  margin: 0;
+}
+
+.tidy__empty-text {
+  @include type(body);
+
+  max-width: rem(460px);
+  margin: 0;
+  color: var(--text-muted);
+}

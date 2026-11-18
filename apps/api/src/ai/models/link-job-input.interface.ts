@@ -1,5 +1,6 @@
 import type { LinkJobFolder } from './link-job-folder.interface';
 import type { AiPart } from './ai-part.type';
+import type { LinkJobExample } from './link-job-example.interface';
 
 /**
  * Everything a provider sees for one link: untrusted page data and the user's own vocabulary.
@@ -20,4 +21,6 @@ export interface LinkJobInput {
   tags: readonly string[];
   /** The user's live folders by short key. */
   folders: readonly LinkJobFolder[];
+  /** Earlier choices of the user for the same site (folder keys and own tag names only), newest first. */
+  examples: readonly LinkJobExample[];
 }

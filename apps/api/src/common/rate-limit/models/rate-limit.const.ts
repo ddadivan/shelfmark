@@ -55,6 +55,13 @@ export const RATE_LIMIT = {
   AiBackfill: { limit: 20, ttl: MINUTE_MS },
   AiTick: { limit: 10, ttl: MINUTE_MS },
   AiDeleteData: { limit: 5, ttl: MINUTE_MS },
+  // AI-2 (#390): Tidy apply and its Undo, up to 100 links per call in one transaction.
+  AiTidy: { limit: 20, ttl: MINUTE_MS },
+  // Tidy list and count (each a bounded scan of Unsorted): the page, the Unsorted button and its
+  // refresh after jobs finish.
+  AiTidyRead: { limit: 60, ttl: MINUTE_MS },
+  // Rule offer check (AI-2): read-only, asked after each filing by the user.
+  RuleOffer: { limit: 60, ttl: MINUTE_MS },
   // The MCP server (#395, ADR 0054), per client IP before the token guard; each token also has a
   // daily cap in Postgres (MCP_LIMIT.CallsPerTokenPerDay).
   Mcp: { limit: 120, ttl: MINUTE_MS },

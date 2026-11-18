@@ -24,6 +24,7 @@ import type { LinkBatchRequest } from '../models/link-batch-request.interface';
 import type { PageExcerpt } from '../models/page-excerpt.interface';
 import { AiProviderRegistry } from '../providers/ai-provider.registry';
 import { loadLinkVocabulary } from '../runner/load-link-vocabulary';
+import { loadSiteExamples } from '../runner/load-site-examples';
 import { AiSettingsService } from '../settings/ai-settings.service';
 import { AiUsageService } from '../usage/ai-usage.service';
 import { AiBackfillResultsService } from './ai-backfill-results.service';
@@ -264,6 +265,14 @@ export class AiBackfillService {
     const jobIds = chunk.map((job) => job.jobId);
     if (!account) return false;
     const vocabulary = await loadLinkVocabulary(this.prisma, userId);
+    // One query for the whole chunk.
+    const examples = await loadSiteExamples(
+      this.prisma,
+      userId,
+      chunk.map((job) => ({ url: job.url, linkId: job.linkId })),
+      vocabulary.folderIdByKey,
+      vocabulary.tags,
+    );
     const pages = await mapLimit(chunk, AI_BACKFILL_LIMIT.ExcerptConcurrency, (job) =>
       account.fetchPreviews && deadline - Date.now() > AI_BACKFILL_LIMIT.ExcerptMarginMs
         ? this.excerpts.load(job.url)
@@ -281,6 +290,7 @@ export class AiBackfillService {
         excerpt: pages[index]?.excerpt ?? null,
         tags: vocabulary.tags,
         folders: vocabulary.folders,
+        examples: examples[index] ?? [],
       },
     }));
     const provider = this.registry.for(account);

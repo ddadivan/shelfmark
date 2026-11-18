@@ -2709,6 +2709,18 @@
       "missingFolder": "This folder is gone. Choose another one.",
       "missing": "This rule was deleted meanwhile.",
       "failed": "Couldn't save the rule. Try again."
+    },
+    "offer": {
+      "title": "Always put {{domain}} links in {{folder}}?",
+      "detail": {
+        "one": "Your last {{count}} link from this site is there. A rule works without AI.",
+        "other": "Your last {{count}} links from this site are there. A rule works without AI."
+      },
+      "create": "Create rule",
+      "notNow": "Not now",
+      "created": "Rule created",
+      "applyExisting": "Apply to Unsorted",
+      "failed": "Couldn’t create the rule"
     }
   },
   "changelog": {
@@ -2856,6 +2868,10 @@
       },
       "extensionInStore": {
         "text": "The Shelfmark browser extension is in the Chrome Web Store: install it from the banner on your shelf or from Settings › Library."
+      },
+      "aiTidy": {
+        "title": "Tidy Unsorted with AI",
+        "text": "Review the AI suggestions for everything in Unsorted on one page and apply them with one Undo. File a site's links into the same folder a few times and Shelfmark offers a rule."
       }
     },
     "sections": {
@@ -3166,6 +3182,67 @@
           }
         }
       }
+    },
+    "tidy": {
+      "entry": "Tidy with suggestions",
+      "back": "Unsorted",
+      "title": "Tidy Unsorted",
+      "lead": {
+        "one": "Suggestions for {{count}} link. Tap a chip to leave it out.",
+        "other": "Suggestions for {{count}} links. Tap a chip to leave it out."
+      },
+      "cancel": "Cancel",
+      "apply": {
+        "one": "Apply to {{count}} link",
+        "other": "Apply to {{count}} links"
+      },
+      "skip": "Skip",
+      "skipped": "Skipped — stays in Unsorted",
+      "undoSkip": "Undo skip",
+      "rowLabel": "Changes for {{title}}",
+      "listLabel": "Links with suggestions",
+      "barLabel": "Apply suggestions",
+      "loading": "Loading suggestions",
+      "chip": {
+        "folder": "Move to {{name}}",
+        "folderAdded": "Move to {{name}}, added",
+        "tag": "Add tag {{name}}",
+        "tagAdded": "Add tag {{name}}, added",
+        "newTag": "Create and add tag {{name}}",
+        "newTagAdded": "Create and add tag {{name}}, added"
+      },
+      "more": {
+        "one": "{{count}} more link after these. Links without suggestions are not listed.",
+        "other": "{{count}} more links after these. Links without suggestions are not listed."
+      },
+      "next": "Show the next links",
+      "empty": {
+        "title": "Nothing to tidy",
+        "text": "Every link here either has no suggestions yet or you already sorted it. New links get suggestions within a minute.",
+        "back": "Back to Unsorted"
+      },
+      "toast": {
+        "title": {
+          "one": "Tidied {{count}} link",
+          "other": "Tidied {{count}} links"
+        },
+        "folders": {
+          "one": "Moved into {{count}} folder",
+          "other": "Moved into {{count}} folders"
+        },
+        "tags": {
+          "one": "{{count}} tag added",
+          "other": "{{count}} tags added"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Undo",
+        "failed": "Couldn’t tidy the links",
+        "failedDetail": "Nothing was changed. Try again.",
+        "nothing": "Nothing to apply",
+        "nothingDetail": "The suggestions changed meanwhile."
+      },
+      "undone": "Tidy undone",
+      "undoFailed": "Couldn’t undo the tidy"
     }
   }
 }
