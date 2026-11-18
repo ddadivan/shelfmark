@@ -325,7 +325,12 @@
     },
     "card": {
       "moreTags": "+{{count}}",
-      "inFolder": "Na pasta"
+      "inFolder": "Na pasta",
+      "moreTagsLabel": {
+        "one": "mais {{count}} tag: {{list}}",
+        "many": "mais {{count}} tags: {{list}}",
+        "other": "mais {{count}} tags: {{list}}"
+      }
     },
     "item": {
       "edit": "Editar",

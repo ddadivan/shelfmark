@@ -37,12 +37,15 @@ import {
   siteLetter,
 } from '../../utils/link-view';
 
-const MAX_TAGS = 3;
+/** Tags rendered for the footer to fit; the rest are only counted. */
+const MAX_TAGS_RENDERED = 12;
 
 /**
  * One saved link in the cards view. It only renders and emits; the favorite and delete flows
  * live in `LinkActionsService`. The title opens the link in a new tab (http and https only).
  */
+import { pluralKey } from '../../../../core/i18n/plural-key';
+import { FitTagsDirective } from '../../directives/fit-tags.directive';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 
 @Component({
@@ -56,6 +59,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
     CardComponent,
     ChipComponent,
     FaviconComponent,
+    FitTagsDirective,
     FolderChipComponent,
     LinkSummaryComponent,
     MenuComponent,
@@ -184,8 +188,14 @@ export class LinkCardComponent {
       ? { text: this.reminders.chip(at, this.now), due: this.reminders.isDue(at, this.now) }
       : null;
   });
-  protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS));
-  protected readonly hiddenTags = computed(() => Math.max(0, this.link().tags.length - MAX_TAGS));
+  protected readonly pluralKey = pluralKey;
+  protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS_RENDERED));
+
+  /** "+N" and its name for the tags the footer has no room for (`FitTagsDirective` counts them). */
+  protected moreTags(fit: FitTagsDirective): { count: number; list: string } {
+    const left = this.link().tags.slice(fit.visible());
+    return { count: left.length, list: left.join(', ') };
+  }
 
   protected open(event?: MouseEvent): void {
     if (this.selecting()) {

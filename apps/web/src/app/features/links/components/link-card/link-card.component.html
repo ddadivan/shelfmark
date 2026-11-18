@@ -84,19 +84,39 @@
   <!-- Tags and the favorite star share the bottom row; the star sits right whether or not there are tags. -->
   <div class="link-card__foot">
     @if (tags().length > 0) {
-      <ul class="link-card__tags">
-        @for (tag of tags(); track tag) {
-          <li>
+      <!-- Only whole tags that fit the line show, then "+N" (FitTagsDirective); the list stays
+           hidden until measured, so the footer never jumps. -->
+      <ul
+        class="link-card__tags"
+        [class.link-card__tags--measured]="fit.measured()"
+        [appFitTags]="tags().length"
+        #fit="appFitTags"
+      >
+        @for (tag of tags(); track tag; let i = $index) {
+          <li
+            data-tag
+            class="link-card__tag"
+            [class.link-card__tag--off]="i >= fit.visible()"
+            [class.link-card__tag--clip]="i === 0 && fit.clipFirst()"
+          >
             <ui-chip>{{ tag }}</ui-chip>
           </li>
         }
-        @if (hiddenTags() > 0) {
-          <li>
-            <ui-chip variant="neutral">{{
-              'links.card.moreTags' | transloco: { count: hiddenTags() }
-            }}</ui-chip>
-          </li>
-        }
+        @let more = moreTags(fit);
+        <li
+          data-more
+          class="link-card__tag link-card__more"
+          [class.link-card__tag--off]="more.count === 0 || fit.hidden() === 0"
+        >
+          <ui-chip
+            variant="neutral"
+            role="img"
+            [attr.aria-label]="pluralKey('links.card.moreTagsLabel', more.count) | transloco: more"
+            [uiTooltip]="pluralKey('links.card.moreTagsLabel', more.count) | transloco: more"
+          >
+            {{ 'links.card.moreTags' | transloco: { count: more.count || link().tags.length - 1 } }}
+          </ui-chip>
+        </li>
       </ul>
     }
     <!-- After the tags, so the tags keep their place whether the feed names folders or not. -->

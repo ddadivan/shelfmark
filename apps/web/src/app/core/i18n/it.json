@@ -325,7 +325,12 @@
     },
     "card": {
       "moreTags": "+{{count}}",
-      "inFolder": "Nella cartella"
+      "inFolder": "Nella cartella",
+      "moreTagsLabel": {
+        "one": "{{count}} altro tag: {{list}}",
+        "many": "{{count}} altri tag: {{list}}",
+        "other": "{{count}} altri tag: {{list}}"
+      }
     },
     "item": {
       "edit": "Modifica",

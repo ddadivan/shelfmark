@@ -52,10 +52,12 @@
 }
 
 .link-card__tags {
+  position: relative;
   display: flex;
   flex: 1;
 
-  // One line of chips (up to three and "+N"): a long tag is cut, the row never grows.
+  // One line of whole tags and "+N" (`FitTagsDirective`); the one that does not fit is out of the
+  // flow, so the row never grows and nothing is cut mid-word.
   flex-wrap: nowrap;
   gap: var(--space-1);
   min-width: 0;
@@ -63,6 +65,38 @@
   padding: 0;
   margin: 0;
   list-style: none;
+
+  // Until the first measure: it takes its room but shows nothing (no jump).
+  &:not(.link-card__tags--measured) {
+    visibility: hidden;
+  }
+}
+
+.link-card__tag {
+  flex: none;
+  white-space: nowrap;
+}
+
+// Left out: kept in the DOM, out of the flow and unseen, so it can still be measured.
+.link-card__tag--off {
+  position: absolute;
+  inset-inline-start: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+// Not even the first tag fits the line: it is cut with an ellipsis.
+.link-card__tag--clip {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// "+N" above the stretched link, so its tooltip shows on hover.
+.link-card__more {
+  position: relative;
+  z-index: 2;
 }
 
 // The favorite star: bottom right of the card, above the stretched link (z-index 2). A favorite

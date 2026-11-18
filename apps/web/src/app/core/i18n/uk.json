@@ -325,7 +325,13 @@
     },
     "card": {
       "moreTags": "+{{count}}",
-      "inFolder": "У папці"
+      "inFolder": "У папці",
+      "moreTagsLabel": {
+        "one": "ще {{count}} тег: {{list}}",
+        "few": "ще {{count}} теги: {{list}}",
+        "many": "ще {{count}} тегів: {{list}}",
+        "other": "ще {{count}} тегу: {{list}}"
+      }
     },
     "item": {
       "edit": "Редагувати",
