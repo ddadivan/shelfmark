@@ -168,6 +168,8 @@ export function provideLinksApi(): Provider[] {
     {
       provide: MCP_API,
       useFactory: (): McpApi => (useRealApi() ? inject(HttpMcpApi) : inject(MockMcpApi)),
+    },
+    {
       provide: REDISCOVER_API,
       useFactory: (): RediscoverApi =>
         useRealApi() ? inject(HttpRediscoverApi) : inject(MockRediscoverApi),
