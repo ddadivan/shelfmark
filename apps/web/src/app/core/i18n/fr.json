@@ -2972,12 +2972,14 @@
         "text": "Le sélecteur d’emoji est aussi large que son champ, et ses onglets de catégories ne ressemblent plus à des emoji à choisir."
       },
       "aiSuggestions": {
-        "title": "Suggestions IA (facultatives)",
-        "text": "Activez l'IA dans Paramètres › IA pour obtenir des suggestions de dossier et de tags à l'enregistrement. Désactivée par défaut ; rien ne change sans votre accord."
+        "title": "Remplir avec l’IA",
+        "text": "Un clic dans Ajouter un lien remplit le titre, le dossier, les tags et un court résumé à partir de la page. Modifiez ce que vous voulez : votre choix l’emporte toujours. Fonctionne aussi dans l’extension du navigateur. L’IA reste désactivée tant que vous ne l’activez pas dans Paramètres › IA.",
+        "alt": "La fenêtre Ajouter un lien avec une adresse YouTube remplie par l’IA : titre, dossier, tags et résumé."
       },
       "aiSummaries": {
         "title": "Résumés courts",
-        "text": "Avec l'IA activée, chaque lien reçoit un résumé d'une ou deux lignes sur sa carte. Modifiez-le et il vous appartient."
+        "text": "Avec l'IA activée, chaque lien reçoit un résumé d'une ou deux lignes sur sa carte. Modifiez-le et il vous appartient.",
+        "alt": "Cartes de liens avec un court résumé de l’IA sous chaque titre."
       },
       "aiTidy": {
         "title": "Ranger « Sans dossier » avec l’IA",
@@ -2985,7 +2987,8 @@
       },
       "aiAsk": {
         "title": "Interroger mes liens",
-        "text": "Posez une question avec vos propres mots et obtenez une réponse courte tirée des liens que vous avez enregistrés, chaque source listée. Et « Dans vos liens » : une fois par semaine, d’anciens liens jamais ouverts."
+        "text": "Posez une question avec vos mots et obtenez une réponse courte tirée de vos liens enregistrés, avec toutes les sources. Ouvrez-la avec Demander à côté de la recherche, ou l’onglet Question sur votre téléphone.",
+        "alt": "Le panneau Demander avec une question, une réponse courte et les liens dont elle provient."
       },
       "aiCleanup": {
         "title": "Nettoyage de la bibliothèque",
@@ -2997,10 +3000,30 @@
       },
       "aiSearch": {
         "title": "Recherche par le sens",
-        "text": "La recherche trouve les liens qui correspondent à ce que vous voulez dire, pas seulement à vos mots, et explique pourquoi chacun correspond. « Modifier le lien » affiche des liens proches sur votre étagère, et « Côte à côte » peut proposer leurs dossiers."
+        "text": "La recherche trouve les liens qui correspondent à ce que vous voulez dire, pas seulement à vos mots, et explique pourquoi chacun correspond. « Modifier le lien » affiche des liens proches sur votre étagère, et « Côte à côte » peut proposer leurs dossiers.",
+        "alt": "Résultats de recherche avec un groupe « Liés par le sens » sous les correspondances de mots."
       },
       "extensionInStore": {
         "text": "L’extension Shelfmark est sur le Chrome Web Store : installez-la depuis le bandeau de votre étagère ou depuis Paramètres › Bibliothèque."
+      },
+      "forgotten": {
+        "title": "Liens oubliés",
+        "text": "Les liens enregistrés et jamais ouverts attendent dans Ouverts récemment › Oubliés. Leur nombre s’affiche à côté d’Ouverts récemment."
+      },
+      "cardTags": {
+        "text": "Les cartes affichent des tags entiers et un « +N » pour le reste, au lieu de couper un tag."
+      },
+      "phoneFolders": {
+        "text": "Sur mobile, la Bibliothèque liste les Dossiers juste sous Épinglés."
+      },
+      "dialogButtons": {
+        "text": "Dans les boîtes de dialogue sur mobile, l’action principale se trouve seule en bas."
+      },
+      "textFields": {
+        "text": "Les champs de texte grandissent avec ce que vous saisissez."
+      },
+      "landingHeadline": {
+        "text": "Le titre de la page d’accueil tient dans toutes les langues."
       }
     },
     "sections": {

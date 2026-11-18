@@ -2910,12 +2910,14 @@
         "text": "Die Emoji-Auswahl ist so breit wie ihr Feld, und die Kategorie-Tabs sehen nicht mehr wie wählbare Emojis aus."
       },
       "aiSuggestions": {
-        "title": "KI-Vorschläge (optional)",
-        "text": "Schalte KI unter Einstellungen › KI ein, um beim Speichern Ordner- und Tag-Vorschläge zu bekommen. Standardmäßig aus; ohne deine Wahl ändert sich nichts."
+        "title": "Mit KI ausfüllen",
+        "text": "Ein Klick in „Link hinzufügen“ füllt Titel, Ordner, Tags und eine kurze Zusammenfassung aus der Seite aus. Ändern Sie, was Sie möchten: Ihre Wahl hat immer Vorrang. Funktioniert auch in der Browsererweiterung. KI bleibt aus, bis Sie sie unter Einstellungen › KI einschalten.",
+        "alt": "Der Dialog „Link hinzufügen“ mit einer YouTube-Adresse, von der KI ausgefüllt: Titel, Ordner, Tags und Zusammenfassung."
       },
       "aiSummaries": {
         "title": "Kurze Zusammenfassungen",
-        "text": "Mit KI bekommen Links eine Zusammenfassung von ein bis zwei Zeilen auf ihrer Karte. Bearbeitest du sie, gehört sie dir."
+        "text": "Mit KI bekommen Links eine Zusammenfassung von ein bis zwei Zeilen auf ihrer Karte. Bearbeitest du sie, gehört sie dir.",
+        "alt": "Link-Karten mit einer kurzen KI-Zusammenfassung unter jedem Titel."
       },
       "aiTidy": {
         "title": "„Ohne Ordner“ mit KI aufräumen",
@@ -2923,7 +2925,8 @@
       },
       "aiAsk": {
         "title": "Frag deine Links",
-        "text": "Stell eine Frage in deinen eigenen Worten und erhalte eine kurze Antwort aus den Links, die du gespeichert hast, mit jeder Quelle. Dazu „Aus deinen Links“: einmal pro Woche ältere Links, die du nie geöffnet hast."
+        "text": "Stellen Sie eine Frage in Ihren eigenen Worten und erhalten Sie eine kurze Antwort aus Ihren gespeicherten Links, mit allen Quellen. Öffnen Sie es mit „Fragen“ neben der Suche oder dem Tab „Fragen“ auf dem Smartphone.",
+        "alt": "Die Fragen-Seitenleiste mit einer Frage, einer kurzen Antwort und den Links, aus denen sie stammt."
       },
       "aiCleanup": {
         "title": "Bibliothek aufräumen",
@@ -2935,10 +2938,30 @@
       },
       "aiSearch": {
         "title": "Suche nach Bedeutung",
-        "text": "Die Suche findet Links, die zu dem passen, was du meinst, nicht nur zu deinen Wörtern, und sagt, warum jeder passt. „Link bearbeiten“ zeigt Ähnliches aus deinem Regal, und „Nebeneinander“ kann dessen Ordner anbieten."
+        "text": "Die Suche findet Links, die zu dem passen, was du meinst, nicht nur zu deinen Wörtern, und sagt, warum jeder passt. „Link bearbeiten“ zeigt Ähnliches aus deinem Regal, und „Nebeneinander“ kann dessen Ordner anbieten.",
+        "alt": "Suchergebnisse mit der Gruppe „Nach Bedeutung verwandt“ unter den Worttreffern."
       },
       "extensionInStore": {
         "text": "Die Shelfmark-Browsererweiterung ist im Chrome Web Store: Installiere sie über das Banner in deinem Regal oder unter Einstellungen › Bibliothek."
+      },
+      "forgotten": {
+        "title": "Vergessene Links",
+        "text": "Links, die du gespeichert und nie geöffnet hast, warten unter „Zuletzt geöffnet“ › Vergessen. Die Anzahl steht neben „Zuletzt geöffnet“."
+      },
+      "cardTags": {
+        "text": "Link-Karten zeigen ganze Tags und „+N“ für den Rest, statt einen Tag abzuschneiden."
+      },
+      "phoneFolders": {
+        "text": "Auf dem Smartphone listet die Bibliothek die Ordner direkt unter „Angeheftet“."
+      },
+      "dialogButtons": {
+        "text": "In Dialogen auf dem Smartphone steht die Hauptaktion allein unten."
+      },
+      "textFields": {
+        "text": "Textfelder wachsen mit dem, was du tippst."
+      },
+      "landingHeadline": {
+        "text": "Die Überschrift der Startseite passt in jeder Sprache."
       }
     },
     "sections": {

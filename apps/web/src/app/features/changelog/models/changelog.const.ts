@@ -7,12 +7,12 @@ import type { ChangelogRelease } from './changelog-release.interface';
  * into `main` adds a patch entry with one-line fixes. Media rules (PROJECT.md 9.3): improvements
  * and fixes are one line of text; features get a short text and, when they have a `priority`, a
  * screenshot per theme (`public/media/whats-new/<version>/`, made by the generator, no video).
- * The draft lists the 2.1.0 changes since 2.0.0; hotfixes 2.0.1 to 2.0.8 are not repeated.
+ * The 2.2.0 entry lists the AI release; the 2.1.0 entry lists the changes since 2.0.0; hotfixes 2.0.1 to 2.0.8 are not repeated.
  */
 export const CHANGELOG: readonly ChangelogRelease[] = [
   {
     version: '2.2.0',
-    date: null,
+    date: '2026-11-19',
     items: [
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
@@ -20,13 +20,55 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
         titleKey: 'changelog.items.aiSuggestions.title',
         textKey: 'changelog.items.aiSuggestions.text',
         priority: 1,
+        image: {
+          light: '/media/whats-new/2.2.0/ai-suggestions-light.webp',
+          dark: '/media/whats-new/2.2.0/ai-suggestions-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.aiSuggestions.alt',
+        },
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'aiAsk',
+        titleKey: 'changelog.items.aiAsk.title',
+        textKey: 'changelog.items.aiAsk.text',
+        priority: 2,
+        image: {
+          light: '/media/whats-new/2.2.0/ai-ask-light.webp',
+          dark: '/media/whats-new/2.2.0/ai-ask-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.aiAsk.alt',
+        },
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'aiSearch',
+        titleKey: 'changelog.items.aiSearch.title',
+        textKey: 'changelog.items.aiSearch.text',
+        priority: 3,
+        image: {
+          light: '/media/whats-new/2.2.0/ai-search-light.webp',
+          dark: '/media/whats-new/2.2.0/ai-search-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.aiSearch.alt',
+        },
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'aiSummaries',
         titleKey: 'changelog.items.aiSummaries.title',
         textKey: 'changelog.items.aiSummaries.text',
-        priority: 2,
+        priority: 4,
+        image: {
+          light: '/media/whats-new/2.2.0/ai-summaries-light.webp',
+          dark: '/media/whats-new/2.2.0/ai-summaries-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.aiSummaries.alt',
+        },
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
@@ -42,21 +84,40 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
-        id: 'aiSearch',
-        titleKey: 'changelog.items.aiSearch.title',
-        textKey: 'changelog.items.aiSearch.text',
-      },
-      {
-        kind: CHANGELOG_ITEM_KIND.Feature,
-        id: 'aiAsk',
-        titleKey: 'changelog.items.aiAsk.title',
-        textKey: 'changelog.items.aiAsk.text',
-      },
-      {
-        kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'aiCleanup',
         titleKey: 'changelog.items.aiCleanup.title',
         textKey: 'changelog.items.aiCleanup.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'forgotten',
+        titleKey: 'changelog.items.forgotten.title',
+        textKey: 'changelog.items.forgotten.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'cardTags',
+        textKey: 'changelog.items.cardTags.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'phoneFolders',
+        textKey: 'changelog.items.phoneFolders.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'dialogButtons',
+        textKey: 'changelog.items.dialogButtons.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'textFields',
+        textKey: 'changelog.items.textFields.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'landingHeadline',
+        textKey: 'changelog.items.landingHeadline.text',
       },
     ],
   },
