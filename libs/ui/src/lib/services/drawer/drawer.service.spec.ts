@@ -7,6 +7,8 @@ import { injectDialogData } from '../dialog/inject-dialog-data';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { DrawerComponent } from '../../components/drawer/drawer.component';
 import { DrawerService } from './drawer.service';
+import { DRAWER_WIDTH } from '../../components/drawer/models/drawer-width.const';
+import { compileScss } from '../../../testing/scss';
 
 @Component({
   imports: [DrawerComponent, ButtonComponent],
@@ -177,6 +179,18 @@ describe('DrawerComponent', () => {
     expect(button.getAttribute('aria-label')).toBe('Close menu');
     expect(fixture.nativeElement.querySelector('.ui-drawer--enter')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('.ui-drawer__foot')).not.toBeNull();
+  });
+
+  it('is narrow by default and 27.5rem wide with width="wide"', () => {
+    const fixture = TestBed.createComponent(DrawerComponent);
+    fixture.componentRef.setInput('closeLabel', 'Close panel');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.ui-drawer--wide')).toBeNull();
+    fixture.componentRef.setInput('width', DRAWER_WIDTH.Wide);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.ui-drawer--wide')).not.toBeNull();
+    const css = compileScss('lib/components/drawer/drawer.component.scss');
+    expect(css).toMatch(/\.ui-drawer--wide\s*\{\s*width: min\(27\.5rem/);
   });
 
   it('plays the leave animation while the ref is leaving', () => {
