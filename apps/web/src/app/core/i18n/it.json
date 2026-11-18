@@ -3311,5 +3311,17 @@
       "truncated": "La risposta è stata interrotta.",
       "stopped": "Interrotto."
     }
+  },
+  "rediscover": {
+    "title": "Dai tuoi link",
+    "lead": {
+      "theme": "Stai salvando molto su {{theme}}. Questi sono link più vecchi che non hai aperto.",
+      "forgotten": "Salvati tempo fa e mai aperti."
+    },
+    "dismiss": "Nascondi fino alla prossima settimana",
+    "saved": "Salvato a {{month}}, non aperto di recente",
+    "remind": "Ricordamelo",
+    "readLater": "Leggi dopo",
+    "notInterested": "Non mi interessa"
   }
 }

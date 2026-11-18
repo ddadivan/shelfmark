@@ -3238,5 +3238,17 @@
       "truncated": "The answer was cut short.",
       "stopped": "Stopped."
     }
+  },
+  "rediscover": {
+    "title": "From your shelf",
+    "lead": {
+      "theme": "You’ve been saving a lot about {{theme}}. These are older ones you haven’t opened.",
+      "forgotten": "Saved a while ago and never opened."
+    },
+    "dismiss": "Hide until next week",
+    "saved": "Saved in {{month}}, not opened lately",
+    "remind": "Remind me",
+    "readLater": "Read later",
+    "notInterested": "Not interested"
   }
 }

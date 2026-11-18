@@ -3311,5 +3311,17 @@
       "truncated": "La réponse a été interrompue.",
       "stopped": "Arrêté."
     }
+  },
+  "rediscover": {
+    "title": "Dans vos liens",
+    "lead": {
+      "theme": "Vous enregistrez beaucoup sur {{theme}}. Voici des liens plus anciens que vous n’avez pas ouverts.",
+      "forgotten": "Enregistrés il y a un moment et jamais ouverts."
+    },
+    "dismiss": "Masquer jusqu’à la semaine prochaine",
+    "saved": "Enregistré en {{month}}, pas ouvert récemment",
+    "remind": "Me le rappeler",
+    "readLater": "Lire plus tard",
+    "notInterested": "Pas intéressé"
   }
 }

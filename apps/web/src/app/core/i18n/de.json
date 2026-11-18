@@ -3238,5 +3238,17 @@
       "truncated": "Die Antwort wurde abgeschnitten.",
       "stopped": "Gestoppt."
     }
+  },
+  "rediscover": {
+    "title": "Aus deinen Links",
+    "lead": {
+      "theme": "Du speicherst gerade viel zu {{theme}}. Das sind ältere Links, die du nicht geöffnet hast.",
+      "forgotten": "Vor einer Weile gespeichert und nie geöffnet."
+    },
+    "dismiss": "Bis nächste Woche ausblenden",
+    "saved": "Gespeichert im {{month}}, länger nicht geöffnet",
+    "remind": "Erinnern",
+    "readLater": "Später lesen",
+    "notInterested": "Kein Interesse"
   }
 }

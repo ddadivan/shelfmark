@@ -3311,5 +3311,17 @@
       "truncated": "La respuesta se cortó.",
       "stopped": "Detenido."
     }
+  },
+  "rediscover": {
+    "title": "De tus enlaces",
+    "lead": {
+      "theme": "Últimamente guardas mucho sobre {{theme}}. Estos son enlaces más antiguos que no has abierto.",
+      "forgotten": "Guardados hace tiempo y nunca abiertos."
+    },
+    "dismiss": "Ocultar hasta la próxima semana",
+    "saved": "Guardado en {{month}}, sin abrir últimamente",
+    "remind": "Recordarme",
+    "readLater": "Leer más tarde",
+    "notInterested": "No me interesa"
   }
 }
