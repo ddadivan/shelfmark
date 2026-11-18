@@ -2880,6 +2880,10 @@
       "aiTidy": {
         "title": "„Ohne Ordner“ mit KI aufräumen",
         "text": "Prüfe die KI-Vorschläge für alles in „Ohne Ordner“ auf einer Seite und wende sie mit einem Rückgängig an. Legst du Links einer Website mehrmals in denselben Ordner, schlägt Shelfmark eine Regel vor."
+      },
+      "aiAsk": {
+        "title": "Frag deine Links",
+        "text": "Stell eine Frage in deinen eigenen Worten und erhalte eine kurze Antwort aus den Links, die du gespeichert hast, mit jeder Quelle. Dazu „Aus deinen Links“: einmal pro Woche ältere Links, die du nie geöffnet hast."
       }
     },
     "sections": {

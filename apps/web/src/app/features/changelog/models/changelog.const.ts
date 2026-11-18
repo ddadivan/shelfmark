@@ -34,6 +34,12 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
         titleKey: 'changelog.items.aiTidy.title',
         textKey: 'changelog.items.aiTidy.text',
       },
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'aiAsk',
+        titleKey: 'changelog.items.aiAsk.title',
+        textKey: 'changelog.items.aiAsk.text',
+      },
     ],
   },
   {

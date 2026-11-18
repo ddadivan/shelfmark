@@ -2941,6 +2941,10 @@
       "aiTidy": {
         "title": "Ranger « Sans dossier » avec l’IA",
         "text": "Passez en revue sur une seule page les suggestions de l’IA pour tout ce qui est dans « Sans dossier » et appliquez-les avec une seule annulation. Rangez plusieurs fois les liens d’un site dans le même dossier et Shelfmark propose une règle."
+      },
+      "aiAsk": {
+        "title": "Interroger mes liens",
+        "text": "Posez une question avec vos propres mots et obtenez une réponse courte tirée des liens que vous avez enregistrés, chaque source listée. Et « Dans vos liens » : une fois par semaine, d’anciens liens jamais ouverts."
       }
     },
     "sections": {
