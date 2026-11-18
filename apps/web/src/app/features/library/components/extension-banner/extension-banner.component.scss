@@ -14,7 +14,11 @@
   display: flex;
   gap: rem(20px);
   align-items: center;
-  min-height: rem(132px);
+
+  // One fixed height for every width and language (#490), so the app skeleton can hold its place
+  // and nothing moves when the app takes over (`.boot__extension` in src/_boot-skeleton.scss, the
+  // same value). 188px fits the tallest copy measured: French at 64em, German at 80em.
+  block-size: rem(188px);
   padding: rem(20px) rem(56px) rem(20px) var(--space-6);
   overflow: hidden;
   background: var(--accent-bg);

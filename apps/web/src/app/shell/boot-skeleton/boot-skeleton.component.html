@@ -14,6 +14,11 @@
       <span class="boot__block boot__row boot__row--folder"></span>
       <span class="boot__block boot__row boot__row--folder"></span>
       <span class="boot__block boot__row"></span>
+      <div class="boot__footer">
+        <span class="boot__block boot__row"></span>
+        <span class="boot__divider"></span>
+        <span class="boot__block boot__row"></span>
+      </div>
     </div>
     <div class="boot__content">
       <div class="boot__header">
@@ -27,6 +32,9 @@
       <div class="boot__main">
         <span class="boot__block boot__title"></span>
         <span class="boot__block boot__count"></span>
+        @if (extensionBanner.bannerShown()) {
+          <span class="boot__extension boot__extension--shown"></span>
+        }
         <div class="boot__grid">
           @for (card of cards; track card) {}
           <div class="boot__card">

@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ExtensionBannerService } from '../../core/browser-extension/extension-banner.service';
 
 /**
  * The app skeleton of `index.html` as a component (#410): the same markup and classes, styled by
  * the global `_boot-skeleton.scss`, so a page that leads into the app (the demo start) shows one
  * continuous skeleton from the first paint to the library. Decorative: the page announces itself.
+ * It holds the place of the library's extension banner when the app will show it (#490).
  */
 @Component({
   selector: 'app-boot-skeleton',
@@ -11,5 +13,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BootSkeletonComponent {
+  protected readonly extensionBanner = inject(ExtensionBannerService);
   protected readonly cards = [0, 1, 2, 3, 4, 5, 6, 7];
 }
