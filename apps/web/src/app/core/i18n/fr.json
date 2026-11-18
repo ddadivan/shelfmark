@@ -591,7 +591,7 @@
       },
       "meaning": {
         "term": "Recherche par le sens :",
-        "text": "tant qu’elle est activée (Paramètres › IA), le titre, le résumé et les noms de tags de chaque lien, votre note seulement avec « Inclure mes notes », et les mots que vous cherchez sont envoyés à Voyage AI, notre second sous-traitant, qui les transforme en vecteurs de nombres. Jamais l’adresse, vos dossiers ni les données d’autres personnes. Les vecteurs sont conservés avec vos liens et supprimés avec eux ou avec « Supprimer les données d’IA » ; votre recherche n’est pas conservée. Voyage AI conserve les requêtes [N] jours au maximum et ne les utilise pas pour l’entraînement. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+        "text": "tant qu’elle est activée (Paramètres › IA), le titre, le résumé et les noms de tags de chaque lien, votre note seulement avec « Inclure mes notes », et les mots que vous cherchez sont envoyés à Voyage AI, notre second sous-traitant, qui les transforme en vecteurs de nombres. Jamais l’adresse, vos dossiers ni les données d’autres personnes. Les vecteurs sont conservés avec vos liens et supprimés avec eux ou avec « Supprimer les données d’IA » ; votre recherche n’est pas conservée. Voyage AI by MongoDB (États-Unis) supprime chaque requête juste après l’avoir traitée (rétention zéro) et ne l’utilise pas pour l’entraînement."
       }
     },
     "retention": {

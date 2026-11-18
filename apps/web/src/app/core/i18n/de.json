@@ -579,7 +579,7 @@
       },
       "meaning": {
         "term": "Suche nach Bedeutung:",
-        "text": "solange sie eingeschaltet ist (Einstellungen › KI), werden Titel, Zusammenfassung und Tag-Namen jedes Links, die Notiz nur mit „Meine Notizen einbeziehen“, und die Wörter deiner Suche an Voyage AI gesendet, unseren zweiten Auftragsverarbeiter, der daraus Zahlenvektoren macht. Nie die Adresse, deine Ordner oder Daten anderer. Die Vektoren werden mit deinen Links gespeichert und mit ihnen oder mit „KI-Daten löschen“ gelöscht; deine Suche wird nicht gespeichert. Voyage AI bewahrt Anfragen höchstens [N] Tage auf und nutzt sie nicht zum Training. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+        "text": "solange sie eingeschaltet ist (Einstellungen › KI), werden Titel, Zusammenfassung und Tag-Namen jedes Links, die Notiz nur mit „Meine Notizen einbeziehen“, und die Wörter deiner Suche an Voyage AI gesendet, unseren zweiten Auftragsverarbeiter, der daraus Zahlenvektoren macht. Nie die Adresse, deine Ordner oder Daten anderer. Die Vektoren werden mit deinen Links gespeichert und mit ihnen oder mit „KI-Daten löschen“ gelöscht; deine Suche wird nicht gespeichert. Voyage AI by MongoDB (USA) löscht jede Anfrage direkt nach der Verarbeitung (Zero-Day-Retention) und nutzt sie nicht zum Training."
       }
     },
     "retention": {

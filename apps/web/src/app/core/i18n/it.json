@@ -591,7 +591,7 @@
       },
       "meaning": {
         "term": "Ricerca per significato:",
-        "text": "finché è attiva (Impostazioni › IA), titolo, riepilogo e nomi dei tag di ogni link, la nota solo con «Includi le mie note», e le parole che cerchi vengono inviati a Voyage AI, il nostro secondo responsabile del trattamento, che li trasforma in vettori di numeri. Mai l’indirizzo, le tue cartelle o i dati di altre persone. I vettori sono salvati con i tuoi link ed eliminati con essi o con «Elimina dati IA»; ciò che cerchi non viene salvato. Voyage AI conserva le richieste per al massimo [N] giorni e non le usa per l’addestramento. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+        "text": "finché è attiva (Impostazioni › IA), titolo, riepilogo e nomi dei tag di ogni link, la nota solo con «Includi le mie note», e le parole che cerchi vengono inviati a Voyage AI, il nostro secondo responsabile del trattamento, che li trasforma in vettori di numeri. Mai l’indirizzo, le tue cartelle o i dati di altre persone. I vettori sono salvati con i tuoi link ed eliminati con essi o con «Elimina dati IA»; ciò che cerchi non viene salvato. Voyage AI by MongoDB (USA) elimina ogni richiesta subito dopo averla elaborata (conservazione zero) e non la usa per l’addestramento."
       }
     },
     "retention": {

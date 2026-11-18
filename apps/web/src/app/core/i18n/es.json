@@ -591,7 +591,7 @@
       },
       "meaning": {
         "term": "Búsqueda por significado:",
-        "text": "mientras está activada (Ajustes › IA), el título, el resumen y los nombres de etiquetas de cada enlace, tu nota solo con «Incluir mis notas», y las palabras que buscas se envían a Voyage AI, nuestro segundo encargado del tratamiento, que los convierte en vectores de números. Nunca la dirección, tus carpetas ni datos de otras personas. Los vectores se guardan con tus enlaces y se eliminan con ellos o con «Eliminar datos de IA»; tu búsqueda no se guarda. Voyage AI conserva las solicitudes [N] días como máximo y no las usa para entrenar. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
+        "text": "mientras está activada (Ajustes › IA), el título, el resumen y los nombres de etiquetas de cada enlace, tu nota solo con «Incluir mis notas», y las palabras que buscas se envían a Voyage AI, nuestro segundo encargado del tratamiento, que los convierte en vectores de números. Nunca la dirección, tus carpetas ni datos de otras personas. Los vectores se guardan con tus enlaces y se eliminan con ellos o con «Eliminar datos de IA»; tu búsqueda no se guarda. Voyage AI by MongoDB (EE. UU.) elimina cada solicitud justo después de procesarla (retención cero) y no la usa para entrenar."
       }
     },
     "retention": {
