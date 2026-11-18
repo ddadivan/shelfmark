@@ -182,9 +182,13 @@ Settings → **Environment Variables**. Each variable is set per environment: **
 | `BETTER_AUTH_URL` | `https://<prod-domain>` | leave unset | Required in production; on previews derived from the Vercel branch URL (ADR 0026 update) |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | production client | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | production app | not set until ADR 0026 is decided | Both or neither; mark Sensitive |
-| `CRON_SECRET` | own value, at least 32 characters | not set | Mark Sensitive. Vercel sends it as `Authorization: Bearer …` to the daily demo cleanup (`vercel.json` `crons`, ADR 0034); see 5.8. Cron jobs run on Production deployments only |
+| `CRON_SECRET` | own value, at least 32 characters | not set | Mark Sensitive. Vercel sends it as `Authorization: Bearer …` to the daily crons in `vercel.json` (demo cleanup, Trash cleanup and the AI sweep; ADR 0034, 0036, 0049); see 5.8 and 5.11. Cron jobs run on Production deployments only |
 | `ADMIN_EMAILS` | your sign-in email(s), comma-separated | optional | Issue #272. Emails (case-insensitive) that may use the admin API and page to read feedback, set its status and reply. Unset or empty means nobody is an admin. Use the email of the Google / GitHub account you sign in with. Redeploy after changing. |
 | `SENTRY_DSN`, `SENTRY_WEB_DSN` | DSN of the API / web Sentry project | optional, empty by default | Issue #109, ADR 0032. Create two Sentry projects (Node.js for the API, Browser JavaScript for the web), copy each DSN (a public client key, not a secret). Empty = monitoring off. Vercel supplies `VERCEL_ENV` (environment) and `VERCEL_GIT_COMMIT_SHA` (release) itself. Redeploy after setting. |
+| `ANTHROPIC_API_KEY` | the Anthropic API key (5.11) | **never** | Issue #389, ADR 0047 / 0049. **Production only**, mark **Sensitive**; never add it to Preview or Development. Read once at boot (an invalid value stops the boot, the error names the variable only). The real provider is used only when the key is set, `NODE_ENV` is production, `VERCEL_ENV` is not `preview`, `AI_PROVIDER` is not `mock` and the user is not a demo user; everything else (local, CI, previews, demo sandboxes) gets the mock provider. Unset = mock everywhere. |
+| `VOYAGE_API_KEY` | already set | not set | Reserved for semantic search (AI-3, ADR 0047). Mark Sensitive. **Not read by any code yet**: AI-1 never touches it. Leave it in Production; do not add it to Preview. |
+| `AI_FULL_ACCESS_EMAILS` | your and the second account's sign-in emails, comma-separated | optional | Issue #389, ADR 0047 point 7 (private phase). Same format as `ADMIN_EMAILS` (case-insensitive, normalised the same way): these accounts get Pro and the AI pack (1,000 links a month, 5,000 one-time "Process existing links"); everyone else is Free (50 a month, no backfill). Read per request, never written to the database. Unset or empty = nobody. Redeploy after changing. |
+| `AI_PROVIDER` | leave unset | leave unset | Optional. `mock` forces the mock provider even with a key (a production smoke test, a self-host without AI cost); `anthropic` is the same as unset; any other value stops the boot. |
 
 Mark every secret as **Sensitive** (value cannot be read back in the dashboard). Do not set `PORT` on Vercel. An env change applies only to **new** deployments: redeploy after editing.
 
@@ -273,12 +277,29 @@ The web app offers the browser extension (5.9) to signed-in people on a desktop 
 - [ ] Put it into `EXTENSION_STORE_URL` in `apps/web/src/app/models/extension-store-url.const.ts` (a one-line PR into `stage`, or ask an agent to do it).
 - [ ] After the release, open the library and Settings › Library in desktop Chrome: Install opens the store page. In Firefox, Safari or on a phone nothing is shown.
 
+
+### 5.11 AI provider (#389)
+
+AI is opt-in per user (Settings › AI) and runs on Anthropic's API (ADR 0047: Claude Haiku 5.5 for link jobs, the Message Batches API for "Process existing links"). Without a key the app uses the built-in mock provider, so nothing below is needed for local work, CI or previews. The job runner and its timing are in [ADR 0049](adr/0049-ai-job-runner-on-vercel.md).
+
+- [ ] Anthropic Console (console.anthropic.com): create an account and an organisation for Shelfmark, add a payment method and buy the smallest credit amount.
+- [ ] Console → **Limits** (Billing → Spend limits): set a **monthly spend limit of $10**. It is the backstop behind the per-user quotas; at two users the expected cost is about $1–2 a month.
+- [ ] Console → **API keys** → **Create key** (name it `shelfmark-production`, in a workspace of its own if you use workspaces). Copy it once into your password manager.
+- [ ] Vercel → Settings → Environment Variables → `ANTHROPIC_API_KEY` for **Production** only, **Sensitive** (5.3). Never Preview, never Development, never a file. `ANTHROPIC_BASE_URL` is ignored: the code pins Anthropic's own host.
+- [ ] `AI_FULL_ACCESS_EMAILS` for **Production** (5.3), then redeploy.
+- [x] Data terms for the privacy page (checked Nov 18, 2026, Anthropic privacy centre and API docs): API inputs and outputs are deleted within **30 days**; content flagged by trust and safety systems may be kept up to 2 years, and longer where the law requires; commercial API data is not used for training by default. The privacy page AI section and the AI intro name **Anthropic PBC (USA)** and these terms. Re-check before each release that changes the provider or model (Covered Models such as Fable require 30-day retention too; zero data retention is by agreement only).
+- [ ] Vercel → Settings → **Functions**: check that **Fluid compute** is on (the default for new projects) and that `api/index.mjs` shows **Max Duration 30 s** after the next deploy. `vercel.json` sets `maxDuration: 30` (ADR 0049): requests still time out at 8 s (`REQUEST_TIMEOUT_MS`), the extra time is for AI work that runs after the response with `waitUntil`.
+- [ ] Vercel → Settings → **Cron Jobs** shows `/api/cron/ai-sweep` (daily at 04:17 UTC, `vercel.json`). It uses the same `CRON_SECRET` as the other crons (5.8) and answers 401 without it. Use **Run** once and check the response `{ "failed": …, "deletedDrafts": …, "users": … }`; the catch-up itself runs after the response. If Hobby ever refuses a third cron, tell an agent: the sweep can move into the Trash cleanup handler (ADR 0049).
+- [ ] After the release: sign in with an account from `AI_FULL_ACCESS_EMAILS`, turn AI on, save a link and check that suggestions and a summary appear; the Console → **Usage** page shows the call. Demo sandboxes always use the mock and never reach Anthropic.
+- [ ] Rotation follows section 6: create the new key, update Vercel, redeploy, then delete the old key in the Console.
+
 ## 6. Secrets policy
 
 | Secret | Lives in | Never in |
 | --- | --- | --- |
 | Neon connection strings | Vercel env (via integration); GitHub Environment secret only if CI migrates | repo, chat, issues, logs |
 | OAuth client secrets, Better Auth secret | Vercel env (Production / Preview); local ones only on your machine | repo, chat, issues, logs |
+| AI provider keys (`ANTHROPIC_API_KEY`, `VOYAGE_API_KEY`) | Vercel env, Production only | Preview, Development, local shells, repo, chat, issues, logs |
 | Local development values | exported in your shell or injected by a password-manager CLI (section 4.3), never a file in the repository | anywhere shared |
 | Backup copy | your password manager | notes, screenshots |
 
@@ -321,5 +342,9 @@ Prevention layers: gitleaks in the pre-commit hook (locally) and in CI (CI task)
 | 17 | `CRON_SECRET` (32+ characters) in Vercel Production for the demo cleanup cron | Vercel env | author | demo sign-in (#67) |
 | 18 | Chrome Web Store developer account ($5), item upload, `EXTENSION_ORIGINS` with the item id, listing, submit (section 5.9) | Chrome Web Store, Vercel env | author | browser extension (#445) |
 | 19 | Chrome Web Store URL of the published extension in `EXTENSION_STORE_URL` (section 5.10) | `apps/web` models | author | extension store link (#455) |
+| 20 | Anthropic Console account, $10 monthly spend limit, API key (section 5.11) | console.anthropic.com | author | AI foundation (#389) |
+| 21 | `ANTHROPIC_API_KEY` (Production only, Sensitive) and `AI_FULL_ACCESS_EMAILS` in Vercel; `VOYAGE_API_KEY` stays as is for AI-3 | Vercel env | author | AI foundation (#389) |
+| 22 | Fluid compute on, `maxDuration` 30 s visible, `/api/cron/ai-sweep` listed and run once | Vercel project settings | author | AI foundation (#389) |
+| 23 | Provider retention period, region and no-training statement copied for the privacy page | Anthropic terms | author | AI foundation (#389) |
 
 The showcase builds only from `main`: `ignoreCommand` in `libs/ui/vercel.json` skips every other branch (issue #50), so PRs create no `shelfmark-ui` deployments and the Hobby deployment limit is spent on the app project. Storybook on PRs is checked by CI (`nx test-storybook ui`).

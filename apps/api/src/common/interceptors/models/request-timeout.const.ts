@@ -1,5 +1,6 @@
 /**
- * Handler time limit. Below the Vercel `maxDuration` of 10 s (`vercel.json`), so the client gets a
- * clean 504 `ApiError` instead of the platform's own timeout page. Includes preview fetching.
+ * Handler time limit. Well below the Vercel `maxDuration` (`vercel.json`, 30 s since ADR 0049, which
+ * leaves the rest to AI work deferred with `waitUntil`), so the client gets a clean 504 `ApiError`
+ * instead of the platform's own timeout page. Includes preview fetching. Kept at 8 s (ADR 0031).
  */
 export const REQUEST_TIMEOUT_MS = 8_000;

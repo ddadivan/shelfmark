@@ -260,6 +260,7 @@ describe('motion mixins', () => {
       'ui-ripple-fade',
       'ui-land',
       'ui-land-ring',
+      'ui-suggest-accept',
     ]);
     expect(out).not.toMatch(/\d+px/);
   });
@@ -396,6 +397,23 @@ describe('text-muted contrast (WCAG AA 4.5:1)', () => {
     for (const surface of ['bg', 'surface', 'surface-hover', 'surface-pressed', 'accent-bg']) {
       const ratio = contrast(tokenHex(theme, 'text-muted'), tokenHex(theme, surface));
       expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+});
+
+describe('AI tokens contrast', () => {
+  it.each(['light', 'dark'] as const)('ai text-grade on bg, surface and ai-bg in %s', (theme) => {
+    expect(tokenHex(theme, 'ai')).toBe(theme === 'light' ? '#4c54b5' : '#a9aef2');
+    for (const surface of ['bg', 'surface', 'ai-bg']) {
+      const ratio = contrast(tokenHex(theme, 'ai'), tokenHex(theme, surface));
+      expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it.each(['light', 'dark'] as const)('ai-line keeps 3:1 on bg and surface in %s', (theme) => {
+    for (const surface of ['bg', 'surface']) {
+      const ratio = contrast(tokenHex(theme, 'ai-line'), tokenHex(theme, surface));
+      expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(3);
     }
   });
 });

@@ -1,0 +1,19 @@
+@if (ai.on()) {
+  @if (applied.folderApplied()) {
+    <app-ai-applied
+      [label]="'ai.applied.folder' | transloco"
+      [undoLabel]="'ai.applied.undo' | transloco"
+      [undoAriaLabel]="'ai.applied.undoFolder' | transloco"
+      [busy]="applied.undoing() === AI_APPLIED_PART.Folder"
+      (undo)="applied.undo(AI_APPLIED_PART.Folder)"
+    />
+  }
+  <app-ai-suggestion-row
+    [chips]="ai.folderChips()"
+    [label]="ai.folderRowLabel()"
+    [ariaLabel]="'ai.suggest.folderRow' | transloco"
+    (accepted)="ai.accept($event)"
+    (dismissed)="ai.dismiss($event)"
+    (cleared)="focusField()"
+  />
+}

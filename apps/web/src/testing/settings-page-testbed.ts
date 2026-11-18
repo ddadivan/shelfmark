@@ -1,7 +1,7 @@
 import type { Type } from '@angular/core';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding, type Data } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import type { AuthUser, MeStatsResponse } from '@shelfmark/contracts';
 import { of, type Observable } from 'rxjs';
@@ -37,6 +37,8 @@ interface SetupOptions {
   phone?: boolean;
   /** What `GET /api/me/stats` answers (the Account page). */
   stats?: () => Observable<MeStatsResponse>;
+  /** Route data of the page (bound to its inputs, as in the app). */
+  data?: Data;
 }
 
 /** Renders one settings page at `/settings/<path>` with the real translations and mock APIs. */
@@ -47,6 +49,7 @@ export async function setupSettingsPage(
     user = SETTINGS_TEST_USER,
     phone = false,
     stats = () => of(SETTINGS_TEST_STATS),
+    data,
   }: SetupOptions = {},
 ) {
   // No appearance from an earlier spec: the settings load would keep and save it (#273).
@@ -71,13 +74,16 @@ export async function setupSettingsPage(
   };
   TestBed.configureTestingModule({
     providers: [
-      provideRouter([
-        { path: 'sign-in', children: [] },
-        { path: 'links', children: [] },
-        { path: 'privacy', children: [] },
-        { path: 'settings', children: [] },
-        { path: `settings/${path}`, component },
-      ]),
+      provideRouter(
+        [
+          { path: 'sign-in', children: [] },
+          { path: 'links', children: [] },
+          { path: 'privacy', children: [] },
+          { path: 'settings', children: [] },
+          { path: `settings/${path}`, component, data },
+        ],
+        withComponentInputBinding(),
+      ),
       provideTranslocoForTest(),
       { provide: AUTH_API, useValue: api },
       { provide: ONBOARDING_API, useValue: onboardingApi },

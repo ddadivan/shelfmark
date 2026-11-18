@@ -13,6 +13,7 @@ export const COLOR_GROUPS: readonly ColorGroup[] = [
   { title: 'Accent and focus', tokens: ['accent', 'accent-bg', 'accent-text', 'focus-ring'] },
   { title: 'Status', tokens: ['danger', 'danger-bg', 'success', 'warning', 'warning-bg'] },
   { title: 'Search highlight', tokens: ['highlight-bg', 'highlight-text'] },
+  { title: 'AI', tokens: ['ai', 'ai-line', 'ai-bg'] },
   { title: 'Glass', tokens: ['glass', 'glass-line'] },
   {
     title: 'Folder colors',

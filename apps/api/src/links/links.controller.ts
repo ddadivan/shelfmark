@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   HttpCode,
   HttpStatus,
   Param,
@@ -224,8 +225,11 @@ export class LinksController {
     @CurrentUser() user: AuthUser,
     @Body() body: CreateLinksBatchDto,
     @Res({ passthrough: true }) res: Response,
+    @Headers('accept-language') acceptLanguage?: string,
   ): Promise<CreateLinksBatchResponseDto> {
-    const { response, created } = await this.batches.create(user.id, body, user.isDemo);
+    const { response, created } = await this.batches.create(user.id, body, user.isDemo, {
+      acceptLanguage,
+    });
     if (!created) res.status(HttpStatus.OK);
     return response;
   }
@@ -287,8 +291,11 @@ export class LinksController {
     @CurrentUser() user: AuthUser,
     @Body() body: CreateLinkDto,
     @Res({ passthrough: true }) res: Response,
+    @Headers('accept-language') acceptLanguage?: string,
   ): Promise<LinkResponseDto> {
-    const { link, created } = await this.writes.create(user.id, body, user.isDemo);
+    const { link, created } = await this.writes.create(user.id, body, user.isDemo, {
+      acceptLanguage,
+    });
     if (!created) res.status(HttpStatus.OK);
     return link;
   }
@@ -302,8 +309,9 @@ export class LinksController {
     @CurrentUser() user: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpdateLinkDto,
+    @Headers('accept-language') acceptLanguage?: string,
   ): Promise<LinkResponseDto> {
-    return this.writes.update(user.id, id, body);
+    return this.writes.update(user.id, id, body, { acceptLanguage });
   }
 
   @Post(':id/open')

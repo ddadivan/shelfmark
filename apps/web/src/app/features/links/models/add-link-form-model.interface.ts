@@ -10,4 +10,6 @@ export interface AddLinkFormModel {
   isFavorite: boolean;
   /** Edit mode only: the link kind (one of `LINK_KIND`); `null` only before a choice exists. */
   kind: string | null;
+  /** Edit mode only: the summary (#391); empty for none. */
+  summary: string;
 }

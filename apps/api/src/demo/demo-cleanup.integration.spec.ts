@@ -54,6 +54,8 @@ describe('GET /api/cron/demo-cleanup', () => {
     links: await t.db.prisma.link.count(),
     tags: await t.db.prisma.tag.count(),
     linkTags: await t.db.prisma.linkTag.count(),
+    aiSettings: await t.db.prisma.aiSettings.count(),
+    linkSuggestions: await t.db.prisma.linkSuggestion.count(),
   });
 
   it('has the vercel.json cron path of the route', () => {
@@ -61,7 +63,11 @@ describe('GET /api/cron/demo-cleanup', () => {
       readFileSync(resolve(import.meta.dirname, '../../../../vercel.json'), 'utf8'),
     );
     const crons = (config as { crons?: { path: string; schedule: string }[] }).crons ?? [];
-    expect(crons.map((cron) => cron.path)).toEqual([CRON_ROUTE.Path, CRON_ROUTE.TrashCleanupPath]);
+    expect(crons.map((cron) => cron.path)).toEqual([
+      CRON_ROUTE.Path,
+      CRON_ROUTE.TrashCleanupPath,
+      CRON_ROUTE.AiSweepPath,
+    ]);
     // Hobby allows one run per day: a fixed minute and hour, nothing more frequent.
     for (const cron of crons) expect(cron.schedule).toMatch(/^\d{1,2} \d{1,2} \* \* \*$/);
   });
@@ -144,7 +150,10 @@ describe('GET /api/cron/demo-cleanup', () => {
       await t.db.prisma.account.create({
         data: { accountId: 'a1', providerId: 'github', userId: first.userId },
       });
-      expect((await rowCounts()).links).toBeGreaterThan(0);
+      const seeded = await rowCounts();
+      expect(seeded.links).toBeGreaterThan(0);
+      expect(seeded.aiSettings).toBe(2);
+      expect(seeded.linkSuggestions).toBeGreaterThan(0);
       await expire([first.userId, second.userId]);
 
       await call(`Bearer ${SECRET}`).expect(200);
@@ -156,6 +165,8 @@ describe('GET /api/cron/demo-cleanup', () => {
         links: 0,
         tags: 0,
         linkTags: 0,
+        aiSettings: 0,
+        linkSuggestions: 0,
       });
     });
 

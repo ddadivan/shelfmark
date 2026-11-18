@@ -1,0 +1,101 @@
+import { HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import {
+  AI_ENDPOINT,
+  type AiBackfillStatus,
+  type AiJobResponse,
+  type AiSettingsResponse,
+  type AiTickResponse,
+  type CreateAiDraftRequest,
+  type LinkAiState,
+  type LinkResponse,
+  type UndoAiApplyRequest,
+  type UpdateAiSettingsRequest,
+} from '@shelfmark/contracts';
+import type { Observable } from 'rxjs';
+import { skipErrorToast } from '../../../core/api/skip-error-toast';
+import type { AiApi } from '../models/ai-api.interface';
+
+/** `path` with its `:id` replaced by the encoded `id`. */
+function withId(path: string, id: string): string {
+  return path.replace(':id', encodeURIComponent(id));
+}
+
+/**
+ * `AiApi` over `AI_ENDPOINT`. Every call skips the global error toast: AI never blocks a save, so
+ * the caller decides what (if anything) a failure shows.
+ */
+@Service()
+export class HttpAiApi implements AiApi {
+  private readonly http = inject(HttpClient);
+
+  getSettings(): Observable<AiSettingsResponse> {
+    return this.http.get<AiSettingsResponse>(AI_ENDPOINT.Settings, { context: skipErrorToast() });
+  }
+
+  updateSettings(request: UpdateAiSettingsRequest): Observable<AiSettingsResponse> {
+    return this.http.patch<AiSettingsResponse>(AI_ENDPOINT.Settings, request, {
+      context: skipErrorToast(),
+    });
+  }
+
+  createDraft(request: CreateAiDraftRequest): Observable<AiJobResponse> {
+    return this.http.post<AiJobResponse>(AI_ENDPOINT.Drafts, request, {
+      context: skipErrorToast(),
+    });
+  }
+
+  getJob(id: string): Observable<AiJobResponse> {
+    return this.http.get<AiJobResponse>(withId(AI_ENDPOINT.Job, id), {
+      context: skipErrorToast(),
+    });
+  }
+
+  dismissSuggestion(id: string): Observable<void> {
+    return this.http.post<void>(withId(AI_ENDPOINT.DismissSuggestion, id), null, {
+      context: skipErrorToast(),
+    });
+  }
+
+  getBackfill(): Observable<AiBackfillStatus> {
+    return this.http.get<AiBackfillStatus>(AI_ENDPOINT.Backfill, { context: skipErrorToast() });
+  }
+
+  startBackfill(): Observable<AiBackfillStatus> {
+    return this.http.post<AiBackfillStatus>(AI_ENDPOINT.Backfill, null, {
+      context: skipErrorToast(),
+    });
+  }
+
+  stopBackfill(): Observable<AiBackfillStatus> {
+    return this.http.delete<AiBackfillStatus>(AI_ENDPOINT.Backfill, {
+      context: skipErrorToast(),
+    });
+  }
+
+  tick(): Observable<AiTickResponse> {
+    return this.http.post<AiTickResponse>(AI_ENDPOINT.Tick, null, { context: skipErrorToast() });
+  }
+
+  deleteData(): Observable<void> {
+    return this.http.delete<void>(AI_ENDPOINT.Data, { context: skipErrorToast() });
+  }
+
+  getLinkAi(linkId: string): Observable<LinkAiState> {
+    return this.http.get<LinkAiState>(withId(AI_ENDPOINT.LinkAi, linkId), {
+      context: skipErrorToast(),
+    });
+  }
+
+  rewriteSummary(linkId: string): Observable<LinkAiState> {
+    return this.http.post<LinkAiState>(withId(AI_ENDPOINT.LinkAiRewrite, linkId), null, {
+      context: skipErrorToast(),
+    });
+  }
+
+  undoApply(linkId: string, request: UndoAiApplyRequest): Observable<LinkResponse> {
+    return this.http.post<LinkResponse>(withId(AI_ENDPOINT.LinkAiUndo, linkId), request, {
+      context: skipErrorToast(),
+    });
+  }
+}

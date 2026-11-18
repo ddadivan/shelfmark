@@ -1,0 +1,30 @@
+<ui-textarea
+  [label]="'ai.summary.label' | transloco"
+  [hint]="hintKey() | transloco: { disclaimer: ('ai.disclaimer' | transloco) }"
+  [counterLabel]="'ai.summary.counter' | transloco"
+  [rows]="2"
+  [formField]="field()"
+/>
+@if (source() || canRewrite()) {
+  <div class="summary-field__meta">
+    @switch (source()) {
+      @case (SUMMARY_SOURCE.Ai) {
+        <ui-badge icon="spark">{{ 'ai.summary.byAi' | transloco }}</ui-badge>
+      }
+      @case (SUMMARY_SOURCE.User) {
+        <ui-badge>{{ 'ai.summary.byYou' | transloco }}</ui-badge>
+      }
+    }
+    @if (canRewrite()) {
+      <ui-button
+        class="summary-field__rewrite"
+        [variant]="BUTTON_VARIANT.Ghost"
+        [size]="BUTTON_SIZE.Sm"
+        iconLeft="spark"
+        [loading]="rewriting()"
+        (click)="rewrite.emit()"
+        >{{ 'ai.summary.rewrite' | transloco }}</ui-button
+      >
+    }
+  </div>
+}

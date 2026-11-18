@@ -1,0 +1,9 @@
+<ui-badge icon="spark">{{ label() }}</ui-badge>
+<ui-button
+  [variant]="BUTTON_VARIANT.Ghost"
+  [size]="BUTTON_SIZE.Sm"
+  [loading]="busy()"
+  [ariaLabel]="undoAriaLabel() || undoLabel()"
+  (click)="undo.emit()"
+  >{{ undoLabel() }}</ui-button
+>

@@ -1,0 +1,4 @@
+// The rows sit in the dialog's field group and take its gap, as if they were its children.
+:host {
+  display: contents;
+}

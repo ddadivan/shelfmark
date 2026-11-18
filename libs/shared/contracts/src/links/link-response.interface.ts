@@ -1,3 +1,5 @@
+import type { AiJobStatus } from '../ai/ai-job-status.type';
+import type { SummarySource } from '../ai/summary-source.type';
 import type { LinkKind } from './link-kind.type';
 
 /** A saved link as returned by the API. */
@@ -25,6 +27,12 @@ export interface LinkResponse {
   remindAt: string | null;
   /** Tag names. */
   tags: string[];
+  /** Short summary (#391): plain text, at most `AI_LIMIT.SummaryMax`; `null` when there is none. */
+  summary: string | null;
+  /** `ai` while AI wrote it (shown with the AI mark), `user` once the user wrote or edited it; `null` with no summary. */
+  summarySource: SummarySource | null;
+  /** Latest AI job of the link (cards show a skeleton while `pending`); `null` when AI never ran for it. */
+  aiStatus: AiJobStatus | null;
   createdAt: string;
   updatedAt: string;
 }

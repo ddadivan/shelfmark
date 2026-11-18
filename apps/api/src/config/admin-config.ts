@@ -1,4 +1,7 @@
-import { normalizeAdminEmail } from './normalize-admin-email';
+import { readEmailList } from './read-email-list';
+
+/** Environment variable with the admin allow-list. */
+const ADMIN_EMAILS_ENV = 'ADMIN_EMAILS';
 
 /**
  * The admin allow-list from `ADMIN_EMAILS` (comma-separated, case-insensitive, ASCII only; a
@@ -6,10 +9,5 @@ import { normalizeAdminEmail } from './normalize-admin-email';
  * is never cached stale. Unset or empty means nobody is an admin (fail closed).
  */
 export function readAdminEmails(env: NodeJS.ProcessEnv = process.env): ReadonlySet<string> {
-  const raw = env['ADMIN_EMAILS'] ?? '';
-  const emails = raw
-    .split(',')
-    .map(normalizeAdminEmail)
-    .filter((email): email is string => email !== null);
-  return new Set(emails);
+  return readEmailList(ADMIN_EMAILS_ENV, env);
 }

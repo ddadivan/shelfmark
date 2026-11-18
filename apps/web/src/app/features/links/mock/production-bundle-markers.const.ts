@@ -52,4 +52,8 @@ export const PRODUCTION_BUNDLE_MARKERS = [
   'sm-mock-trash-scenario',
   // The reminders mock's batch message (#275).
   'ids must hold 1 to 100 distinct ids',
+  // The AI mock (#389): its storage key and the URL parts that fail on purpose.
+  'sm-mock-ai',
+  'ai-refuse',
+  'at least one setting is required',
 ] as const;

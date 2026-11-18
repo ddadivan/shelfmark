@@ -46,4 +46,13 @@ export const RATE_LIMIT = {
   ReminderWrite: { limit: 60, ttl: MINUTE_MS },
   // Domain rule writes (#398, create, edit, delete): like the saved views.
   RuleWrite: { limit: 30, ttl: MINUTE_MS },
+  // AI (#389–#391, docs/ai/IMPLEMENTATION-AI-1.md 4): settings and suggestion writes, draft jobs from
+  // Add link, summary rewrites (each one a model call), backfill start / stop, the catch-up tick
+  // (every 15 s while jobs are pending) and the irreversible "Delete AI data".
+  AiWrite: { limit: 60, ttl: MINUTE_MS },
+  AiDraft: { limit: 30, ttl: MINUTE_MS },
+  AiRewrite: { limit: 10, ttl: MINUTE_MS },
+  AiBackfill: { limit: 20, ttl: MINUTE_MS },
+  AiTick: { limit: 10, ttl: MINUTE_MS },
+  AiDeleteData: { limit: 5, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;

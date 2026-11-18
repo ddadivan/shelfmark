@@ -7,7 +7,8 @@ import { APP_PATH } from '../../../../models/app-path.const';
 
 /**
  * The top of a settings page: the title and the line under it. On a phone, where the sections
- * are pages reached from the You list, a back control leads to that list.
+ * are pages reached from the You list, a back control leads to that list, or to `backHref` with
+ * `backLabel` for a page one level deeper (You › AI › Folder).
  */
 @Component({
   selector: 'app-settings-page-header',
@@ -24,11 +25,13 @@ export class SettingsPageHeaderComponent {
   readonly title = input.required<string>();
   /** Already translated line under the title. */
   readonly description = input<string>();
-
-  protected readonly listHref = `/${APP_PATH.Settings}`;
+  /** Where the phone back control leads; the You list by default. */
+  readonly backHref = input(`/${APP_PATH.Settings}`);
+  /** Already translated text of the phone back control; "You" by default. */
+  readonly backLabel = input<string>();
 
   protected async back(event: MouseEvent): Promise<void> {
     event.preventDefault();
-    await this.router.navigateByUrl(this.listHref);
+    await this.router.navigateByUrl(this.backHref());
   }
 }

@@ -1,0 +1,11 @@
+@use 'ui' as *;
+
+// No box of its own: the row sits in the field group of the dialog, and nothing is left when it
+// collapses (the live region is absolutely positioned).
+:host {
+  display: contents;
+}
+
+.ai-suggestion-row__live {
+  @include visually-hidden;
+}

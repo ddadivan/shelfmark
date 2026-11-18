@@ -1,5 +1,11 @@
-import type { FolderResponse, LinkResponse, PinRef } from '@shelfmark/contracts';
-import { PIN_KIND } from '@shelfmark/contracts';
+import type { FolderResponse, LinkResponse, LinkSuggestion, PinRef } from '@shelfmark/contracts';
+import {
+  AI_JOB_STATUS,
+  PIN_KIND,
+  SUGGESTION_KIND,
+  SUGGESTION_STATE,
+  SUMMARY_SOURCE,
+} from '@shelfmark/contracts';
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
 import { MS_PER_HOUR } from '../../../core/models/ms-per-hour.const';
@@ -18,6 +24,8 @@ export interface DemoLibrarySeed {
   pins: PinRef[];
   /** Domain rules (#398): one example, like the API's demo seed. */
   rules: MockRule[];
+  /** Pending AI suggestions per link id (some Unsorted links), like the API's demo seed. */
+  suggestions: Map<string, LinkSuggestion[]>;
 }
 
 const ID_PREFIX = '00000000-0000-4000-8000-';
@@ -84,10 +92,16 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
       updatedAt: stamp,
     };
   });
+  const suggestions = new Map<string, LinkSuggestion[]>();
   const links = DEMO_SEED_LINKS.map((link, index): LinkResponse => {
     const created = new Date(now - link.daysAgo * MS_PER_DAY).toISOString();
+    const id = `${ID_PREFIX}${String(2000 + index).padStart(12, '0')}`;
+    const suggested = demoSuggestions(link.suggestFolder, link.suggestTags ?? [], ids, index);
+    if (suggested.length > 0) {
+      suggestions.set(id, suggested);
+    }
     return {
-      id: `${ID_PREFIX}${String(2000 + index).padStart(12, '0')}`,
+      id,
       kind: link.kind,
       folderId: link.folder === null ? null : (ids.get(link.folder) ?? null),
       url: link.url,
@@ -107,6 +121,9 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
           ? null
           : new Date(now + link.remindInHours * MS_PER_HOUR).toISOString(),
       tags: [...link.tags],
+      summary: link.summary ?? null,
+      summarySource: link.summary === undefined ? null : SUMMARY_SOURCE.Ai,
+      aiStatus: link.summary === undefined && suggested.length === 0 ? null : AI_JOB_STATUS.Done,
       createdAt: created,
       updatedAt: created,
     };
@@ -131,7 +148,39 @@ export function buildDemoLibrarySeed(now: number = Date.now()): DemoLibrarySeed 
       createdAt: stamp,
     },
   ];
-  return { folders, links, pins, rules };
+  return { folders, links, pins, rules, suggestions };
+}
+
+/** The seeded suggestions of one link: its folder first, then its tags (a name not in the library is new). */
+function demoSuggestions(
+  folder: DemoFolderKey | undefined,
+  tags: readonly string[],
+  ids: ReadonlyMap<DemoFolderKey, string>,
+  index: number,
+): LinkSuggestion[] {
+  const known = new Set(DEMO_SEED_LINKS.flatMap((link) => link.tags));
+  const id = (n: number) => `${ID_PREFIX}s${String(index * 10 + n).padStart(11, '0')}`;
+  const list: LinkSuggestion[] = [];
+  const folderId = folder === undefined ? undefined : ids.get(folder);
+  if (folderId !== undefined) {
+    list.push({
+      id: id(0),
+      kind: SUGGESTION_KIND.Folder,
+      state: SUGGESTION_STATE.Suggested,
+      tagName: null,
+      folderId,
+    });
+  }
+  tags.forEach((name, n) =>
+    list.push({
+      id: id(n + 1),
+      kind: known.has(name) ? SUGGESTION_KIND.Tag : SUGGESTION_KIND.NewTag,
+      state: SUGGESTION_STATE.Suggested,
+      tagName: name,
+      folderId: null,
+    }),
+  );
+  return list;
 }
 
 function folderSuffix(index: number): string {

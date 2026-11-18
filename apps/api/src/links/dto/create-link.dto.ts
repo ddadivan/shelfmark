@@ -115,4 +115,13 @@ export class CreateLinkDto implements CreateLinkRequest {
   @IsOptional()
   @IsBoolean()
   applyRules?: boolean;
+
+  @ApiPropertyOptional({
+    format: 'uuid',
+    description:
+      'The draftId of POST /api/ai/drafts from the same dialog: its AI result is picked up by this save',
+  })
+  @IsOptional()
+  @IsUUID()
+  aiDraftId?: string;
 }

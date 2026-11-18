@@ -7,7 +7,7 @@
   />
 } @else if (several()) {
   <!-- "Add several links" (#315): any text with links, read by the paste-many parser. -->
-  <form [formRoot]="severalForm" class="add-link" (keydown)="onSeveralKeydown($event)">
+  <form [formRoot]="severalForm" class="add-link" (keydown)="severalLinks.onSeveralKeydown($event)">
     <ui-dialog
       [title]="'links.add.several.title' | transloco"
       [closeLabel]="'links.add.close' | transloco"
@@ -29,7 +29,7 @@
         class="add-link__back"
         [variant]="BUTTON_VARIANT.Ghost"
         iconLeft="chevron-left"
-        (click)="showSingle()"
+        (click)="severalLinks.showSingle()"
         >{{ 'links.add.several.back' | transloco }}</ui-button
       >
       <ui-button
@@ -50,7 +50,7 @@
     >
       <div class="add-link__fields">
         <ui-input
-          (paste)="onUrlPaste($event)"
+          (paste)="severalLinks.onUrlPaste($event)"
           (focusout)="onUrlBlur()"
           [type]="INPUT_TYPE.Url"
           [label]="'links.add.url.label' | transloco"
@@ -67,7 +67,7 @@
               class="add-link__several-open"
               [variant]="BUTTON_VARIANT.Ghost"
               size="sm"
-              (click)="showSeveral()"
+              (click)="severalLinks.showSeveral()"
               >{{ 'links.add.several.open' | transloco }}</ui-button
             >
           </div>
@@ -140,6 +140,16 @@
 
         <ui-input [label]="'links.add.titleField.label' | transloco" [formField]="form.title" />
 
+        @if (summary.shown()) {
+          <app-summary-field
+            [field]="form.summary"
+            [source]="summary.source()"
+            [canRewrite]="summary.canRewrite()"
+            [rewriting]="summary.rewriting()"
+            (rewrite)="summary.rewrite()"
+          />
+        }
+
         @if (ruleChip(); as chip) {
           <!-- A domain rule filled folder and tags (#398); removing the chip takes them out. -->
           <div class="add-link__rule">
@@ -154,32 +164,38 @@
           </div>
         }
 
-        <ui-select
-          [label]="'links.add.folder.label' | transloco"
-          [options]="folderOptions()"
-          [emptyLabel]="'links.add.folder.unsorted' | transloco"
-          [searchLabel]="'links.add.folder.searchLabel' | transloco"
-          [noResultsLabel]="'links.add.folder.noResults' | transloco"
-          [createLabel]="'links.add.folder.create' | transloco"
-          searchable
-          [formField]="form.folderId"
-          (created)="onFolderCreated($event)"
-        />
+        <div class="add-link__group">
+          <ui-select
+            [label]="'links.add.folder.label' | transloco"
+            [options]="folderOptions()"
+            [emptyLabel]="'links.add.folder.unsorted' | transloco"
+            [searchLabel]="'links.add.folder.searchLabel' | transloco"
+            [noResultsLabel]="'links.add.folder.noResults' | transloco"
+            [createLabel]="'links.add.folder.create' | transloco"
+            searchable
+            [formField]="form.folderId"
+            (created)="onFolderCreated($event)"
+          />
+          <app-add-link-ai-folder />
+        </div>
 
-        <ui-tag-input
-          [label]="'links.add.tags.label' | transloco"
-          [placeholder]="'links.add.tags.placeholder' | transloco"
-          [suggestions]="tagSuggestions()"
-          [maxTags]="LINK_LIMIT.TagsMax"
-          [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
-          [createLabel]="'links.add.tags.create' | transloco"
-          [removeLabel]="'links.add.tags.remove' | transloco"
-          [addedLabel]="'links.add.tags.added' | transloco"
-          [removedLabel]="'links.add.tags.removed' | transloco"
-          [duplicateLabel]="'links.add.tags.duplicate' | transloco"
-          [listLabel]="'links.add.tags.list' | transloco"
-          [formField]="form.tags"
-        />
+        <div class="add-link__group">
+          <ui-tag-input
+            [label]="'links.add.tags.label' | transloco"
+            [placeholder]="'links.add.tags.placeholder' | transloco"
+            [suggestions]="tagSuggestions()"
+            [maxTags]="LINK_LIMIT.TagsMax"
+            [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
+            [createLabel]="'links.add.tags.create' | transloco"
+            [removeLabel]="'links.add.tags.remove' | transloco"
+            [addedLabel]="'links.add.tags.added' | transloco"
+            [removedLabel]="'links.add.tags.removed' | transloco"
+            [duplicateLabel]="'links.add.tags.duplicate' | transloco"
+            [listLabel]="'links.add.tags.list' | transloco"
+            [formField]="form.tags"
+          />
+          <app-add-link-ai-tags />
+        </div>
 
         <ui-textarea
           [label]="'links.add.note.label' | transloco"

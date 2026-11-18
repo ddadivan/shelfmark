@@ -1,3 +1,4 @@
+export * from './lib/components/ai-line';
 export * from './lib/components/avatar';
 export * from './lib/components/badge';
 export * from './lib/components/breadcrumbs';
@@ -48,6 +49,7 @@ export * from './lib/components/sheet';
 export * from './lib/components/skeleton';
 export * from './lib/components/spinner';
 export * from './lib/components/steps';
+export * from './lib/components/suggestion';
 export * from './lib/components/switch';
 export * from './lib/components/tab-bar';
 export * from './lib/components/tag-input';

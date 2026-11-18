@@ -1,4 +1,5 @@
 import {
+  AI_LIMIT,
   isHttpUrl,
   LINK_KIND,
   LINK_LIMIT,
@@ -123,5 +124,38 @@ describe('demo seed (seed.json)', () => {
     expect(DEMO_SEED.links.some((link) => link.lastOpenedDaysAgo === null)).toBe(true);
     expect(DEMO_SEED.links.some((link) => link.lastOpenedDaysAgo !== null)).toBe(true);
     expect(DEMO_SEED.links.some((link) => link.folder === null)).toBe(true);
+  });
+
+  it('has AI summaries on most links, each within the stored length (#391)', () => {
+    const summarised = DEMO_SEED.links.filter((link) => link.summary !== undefined);
+    expect(summarised.length).toBeGreaterThan(DEMO_SEED.links.length / 2);
+    for (const link of summarised) {
+      expect(link.summary?.trim()).not.toBe('');
+      expect(link.summary?.length ?? 0).toBeLessThanOrEqual(AI_LIMIT.SummaryMax);
+    }
+  });
+
+  it('suggests only on unsorted links, seed folders, a few tags and one new tag overall (#390)', () => {
+    const declared = new Set(DEMO_SEED.tags.map((name) => normalizeTagName(name).toLowerCase()));
+    const suggesting = DEMO_SEED.links.filter(
+      (link) => link.suggestFolder !== undefined || (link.suggestTags?.length ?? 0) > 0,
+    );
+    expect(suggesting.length).toBeGreaterThanOrEqual(1);
+    const newTags: string[] = [];
+    for (const link of suggesting) {
+      expect(link.folder).toBeNull();
+      if (link.suggestFolder !== undefined) expect(folderKeys).toContain(link.suggestFolder);
+      const tags = link.suggestTags ?? [];
+      const fresh = tags.filter((name) => !declared.has(normalizeTagName(name).toLowerCase()));
+      expect(fresh.length).toBeLessThanOrEqual(1);
+      expect(tags.length - fresh.length).toBeLessThanOrEqual(AI_LIMIT.SuggestedTagsMax);
+      for (const name of tags) {
+        expect(name).toBe(normalizeTagName(name));
+        expect(name.length).toBeLessThanOrEqual(TAG_LIMIT.NameMax);
+        expect(link.tags.map((tag) => tag.toLowerCase())).not.toContain(name.toLowerCase());
+      }
+      newTags.push(...fresh);
+    }
+    expect(newTags).toHaveLength(1);
   });
 });

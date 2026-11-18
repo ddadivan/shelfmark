@@ -34,6 +34,7 @@ import type { MovePickerData } from '../models/move-picker-data.interface';
 import { MovePickerComponent } from '../components/move-picker/move-picker.component';
 import { ReminderActionsService } from '../../reminders/services/reminder-actions.service';
 import { RemindersStore } from '../../../stores/reminders.store';
+import { AiFollowUpService } from '../../ai/services/ai-follow-up.service';
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,
@@ -230,6 +231,8 @@ export class LinkActionsService {
   /** A link was saved (dialog or share page): it shows in the feed, the counts refresh, a toast confirms. */
   noteSaved(link: LinkResponse): void {
     this.store.addSaved(link);
+    // The summary and what Automatic mode does arrive a few seconds later (#390 / #391).
+    this.injector.get(AiFollowUpService).watch(link, true);
     void this.folders.refresh();
     void this.tags.noteLinkSaved();
     this.toasts.show({
@@ -258,6 +261,8 @@ export class LinkActionsService {
       return;
     }
     this.store.addSavedMany(links);
+    // Their summaries arrive a few seconds later, through one refresh loop for the batch.
+    this.injector.get(AiFollowUpService).watchMany(links);
     void this.folders.refresh();
     void this.tags.noteLinkSaved();
     const undo = this.t('links.item.undo');
@@ -313,6 +318,8 @@ export class LinkActionsService {
     const result = await this.addLinkDialog.open({ link });
     if (result?.action === ADD_LINK_ACTION.Saved) {
       this.store.applyEdit(result.link);
+      // A new address queues a new AI job (#391).
+      this.injector.get(AiFollowUpService).watch(result.link);
       void this.tags.noteLinkSaved();
       this.toasts.show({
         kind: TOAST_KIND.Success,

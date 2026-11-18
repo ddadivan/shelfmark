@@ -26,4 +26,9 @@ export interface UpdateLinkRequest {
    * and is 409 beyond `LINK_LIMIT.PinnedInFolderMax` in that folder. Moving a link to another folder unpins it.
    */
   pinnedInFolder?: boolean;
+  /**
+   * The summary as the user wrote it (#391), at most `AI_LIMIT.SummaryMax`: any text makes it the
+   * user's (`summarySource: user`, never overwritten by AI); `null` or blank clears it and lets AI write again.
+   */
+  summary?: string | null;
 }

@@ -50,7 +50,8 @@
       "isFavorite": true,
       "createdDaysAgo": 21,
       "lastOpenedDaysAgo": 5,
-      "note": "Checklist for the new service."
+      "note": "Checklist for the new service.",
+      "summary": "A methodology for building software-as-a-service apps in twelve factors: one codebase, explicit dependencies, config in the environment, stateless processes and disposable deploys."
     },
     {
       "url": "https://martinfowler.com/articles/microservices.html",
@@ -60,7 +61,8 @@
       "tags": ["reading"],
       "isFavorite": false,
       "createdDaysAgo": 18,
-      "lastOpenedDaysAgo": 12
+      "lastOpenedDaysAgo": 12,
+      "summary": "Defines the microservice architectural style: services built around business capabilities, decentralised data, smart endpoints and dumb pipes, and the trade-offs against a monolith."
     },
     {
       "url": "https://www.nngroup.com/articles/ten-usability-heuristics/",
@@ -70,7 +72,8 @@
       "tags": ["design", "reference"],
       "isFavorite": true,
       "createdDaysAgo": 9,
-      "lastOpenedDaysAgo": 2
+      "lastOpenedDaysAgo": 2,
+      "summary": "Jakob Nielsen's ten general principles for interaction design, from visibility of system status to error prevention, with examples for each."
     },
     {
       "url": "https://angular.dev/guide/signals",
@@ -80,7 +83,8 @@
       "isFavorite": true,
       "createdDaysAgo": 14,
       "lastOpenedDaysAgo": 1,
-      "note": "Read before the refactor."
+      "note": "Read before the refactor.",
+      "summary": "The official guide to signals: writable signals, computed values, effects and how they drive rendering."
     },
     {
       "url": "https://angular.dev/guide/templates",
@@ -89,7 +93,8 @@
       "tags": ["angular", "tutorial"],
       "isFavorite": false,
       "createdDaysAgo": 13,
-      "lastOpenedDaysAgo": 6
+      "lastOpenedDaysAgo": 6,
+      "summary": "How Angular templates work: binding text, properties and events, control flow blocks, deferred loading and template variables."
     },
     {
       "url": "https://angular.dev/tools/cli",
@@ -98,7 +103,8 @@
       "tags": ["angular", "reference"],
       "isFavorite": false,
       "createdDaysAgo": 12,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "Reference for the Angular CLI commands: generate, build, serve, test and update, with their most useful options."
     },
     {
       "url": "https://www.typescriptlang.org/docs/handbook/intro.html",
@@ -108,7 +114,8 @@
       "isFavorite": false,
       "createdDaysAgo": 11,
       "lastOpenedDaysAgo": 3,
-      "remindInHours": 72
+      "remindInHours": 72,
+      "summary": "The official TypeScript handbook: everyday types, narrowing, functions, object types, generics and modules, for developers new to the language."
     },
     {
       "url": "https://github.com/angular/angular",
@@ -117,7 +124,8 @@
       "tags": ["angular"],
       "isFavorite": false,
       "createdDaysAgo": 6,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "The Angular framework repository: source, issues, releases, the changelog and the contributing guide."
     },
     {
       "url": "https://web.dev/learn",
@@ -126,7 +134,8 @@
       "tags": ["tutorial"],
       "isFavorite": false,
       "createdDaysAgo": 26,
-      "lastOpenedDaysAgo": 8
+      "lastOpenedDaysAgo": 8,
+      "summary": "Free structured courses from the Chrome team on HTML, CSS, JavaScript, accessibility, performance and forms."
     },
     {
       "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development",
@@ -135,7 +144,8 @@
       "tags": ["tutorial", "reference"],
       "isFavorite": true,
       "createdDaysAgo": 24,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "MDN's beginner curriculum for web development: HTML structure, CSS styling, JavaScript basics and how the web works."
     },
     {
       "url": "https://www.freecodecamp.org/learn",
@@ -144,7 +154,8 @@
       "tags": ["tutorial"],
       "isFavorite": false,
       "createdDaysAgo": 20,
-      "lastOpenedDaysAgo": 15
+      "lastOpenedDaysAgo": 15,
+      "summary": "A free, self-paced curriculum with interactive lessons and projects on responsive design, JavaScript, back-end development and more."
     },
     {
       "url": "https://ocw.mit.edu/",
@@ -153,7 +164,8 @@
       "tags": ["reading"],
       "isFavorite": false,
       "createdDaysAgo": 7,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "Free lecture notes, videos and assignments from thousands of MIT courses, from computer science to economics."
     },
     {
       "url": "https://www.uniqlo.com/",
@@ -175,7 +187,8 @@
       "createdDaysAgo": 10,
       "lastOpenedDaysAgo": 4,
       "remindInHours": -3,
-      "note": "Repair before replacing."
+      "note": "Repair before replacing.",
+      "summary": "Patagonia's program for used gear: buy second-hand clothing, trade in what you no longer wear and get items repaired."
     },
     {
       "url": "https://www.everlane.com/",
@@ -185,7 +198,8 @@
       "tags": ["shopping"],
       "isFavorite": false,
       "createdDaysAgo": 4,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "A clothing shop for everyday basics such as denim, knitwear and shoes, listing the factory and cost breakdown behind each product."
     },
     {
       "url": "https://smittenkitchen.com/",
@@ -195,7 +209,8 @@
       "tags": ["cooking"],
       "isFavorite": true,
       "createdDaysAgo": 22,
-      "lastOpenedDaysAgo": 9
+      "lastOpenedDaysAgo": 9,
+      "summary": "A home cooking blog with tested recipes for weeknight dinners, baking and seasonal produce, each with step-by-step photos."
     },
     {
       "url": "https://www.budgetbytes.com/",
@@ -205,7 +220,8 @@
       "tags": ["cooking"],
       "isFavorite": false,
       "createdDaysAgo": 15,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "Recipes designed for small budgets, with the cost per serving and per recipe, plus meal prep ideas."
     },
     {
       "url": "https://www.bbcgoodfood.com/recipes/collection/pasta-recipes",
@@ -216,7 +232,8 @@
       "isFavorite": false,
       "createdDaysAgo": 3,
       "lastOpenedDaysAgo": 0,
-      "note": "Try the tomato one on Sunday."
+      "note": "Try the tomato one on Sunday.",
+      "summary": "A collection of pasta recipes from quick weeknight bowls to baked dishes, with ratings, timings and nutrition per serving."
     },
     {
       "url": "https://developer.mozilla.org/en-US/docs/Web/CSS",
@@ -225,7 +242,9 @@
       "tags": ["reference", "design"],
       "isFavorite": false,
       "createdDaysAgo": 2,
-      "lastOpenedDaysAgo": 1
+      "lastOpenedDaysAgo": 1,
+      "summary": "MDN's reference for CSS: every property, selector and at-rule, with syntax, examples and browser support.",
+      "suggestFolder": "courses"
     },
     {
       "url": "https://news.ycombinator.com/",
@@ -234,7 +253,9 @@
       "tags": ["reading"],
       "isFavorite": false,
       "createdDaysAgo": 0,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "suggestFolder": "work",
+      "suggestTags": ["news"]
     }
   ],
   "rules": [

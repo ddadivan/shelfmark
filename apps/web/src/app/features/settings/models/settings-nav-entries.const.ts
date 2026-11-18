@@ -22,6 +22,12 @@ export const SETTINGS_NAV_ENTRIES: readonly SettingsNavEntry[] = [
     phone: true,
   },
   {
+    path: SETTINGS_PATH.Ai,
+    labelKey: 'settings.nav.ai',
+    descriptionKey: 'settings.description.ai',
+    phone: true,
+  },
+  {
     path: SETTINGS_PATH.Language,
     labelKey: 'settings.nav.language',
     descriptionKey: 'settings.description.language',

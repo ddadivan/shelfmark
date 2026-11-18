@@ -7,13 +7,17 @@ import { MOCK_LINKS_COUNT } from '../models/mock-links-count.const';
 import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
 import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const';
 import { MockLibraryData } from './mock-library-data';
+import { MockAiData } from '../../ai/mock/mock-ai-data';
 import { MockLinksApi } from './mock-links.api';
 
 /** A links API over its own fresh library. */
 function createApi(): MockLinksApi {
-  return runInInjectionContext(Injector.create({ providers: [MockLibraryData] }), () => {
-    return new MockLinksApi();
-  });
+  return runInInjectionContext(
+    Injector.create({ providers: [MockLibraryData, MockAiData] }),
+    () => {
+      return new MockLinksApi();
+    },
+  );
 }
 
 describe('MockLinksApi', () => {
@@ -261,7 +265,7 @@ describe('MockLinksApi', () => {
     });
 
     it('answers but records nothing while the history is paused, as the server', async () => {
-      const injector = Injector.create({ providers: [MockLibraryData] });
+      const injector = Injector.create({ providers: [MockLibraryData, MockAiData] });
       const feed = runInInjectionContext(injector, () => new MockLinksApi());
       const data = injector.get(MockLibraryData);
       const [target] = (await firstValueFrom(feed.list({ limit: 1 }))).items;
