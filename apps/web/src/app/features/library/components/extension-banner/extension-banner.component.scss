@@ -71,7 +71,10 @@
   position: relative;
   z-index: 1;
   flex: none;
-  max-width: rem(220px);
+
+  // The longest label (Ukrainian, German) stays on one line; `wrap` only lets it break when even
+  // this much room is not there (#507).
+  max-width: rem(300px);
 }
 
 .extension-banner__popup {
