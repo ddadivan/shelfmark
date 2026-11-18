@@ -17,7 +17,7 @@ import { AiUsageService } from '../usage/ai-usage.service';
 import { readFolderKeys } from './folder-keys';
 
 /**
- * The result side of "Process existing links" (ADR 0048 point 6): polls the user's open provider
+ * The result side of "Process existing links" (ADR 0049 point 6): polls the user's open provider
  * batches and sends every item of an ended one through `AiApplyService` (a backfill never
  * auto-applies), fails jobs that can no longer get an answer and gives their links back to the
  * one-time allowance. The claim and submit side is `AiBackfillService`. Every statement filters by

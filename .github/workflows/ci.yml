@@ -681,7 +681,13 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
-      - run: npm audit --audit-level=high
+      # ADR 0048 (#493): the required gate blocks on run-time dependencies only; the full tree,
+      # dev tooling included, is still audited and shown, without failing the job.
+      - name: Audit run-time dependencies (blocking)
+        run: node tools/ci/audit-runtime.mjs
+      - name: Audit the full tree, dev tooling included (warning only)
+        continue-on-error: true
+        run: npm audit --audit-level=high
 
   gitleaks:
     name: gitleaks

@@ -2849,6 +2849,9 @@
       "aiSummaries": {
         "title": "Short summaries",
         "text": "With AI on, links get a one- or two-line summary on their card. Edit it and it's yours."
+      },
+      "extensionInStore": {
+        "text": "The Shelfmark browser extension is in the Chrome Web Store: install it from the banner on your shelf or from Settings › Library."
       }
     },
     "sections": {

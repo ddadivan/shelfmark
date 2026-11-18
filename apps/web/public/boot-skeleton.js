@@ -7,6 +7,12 @@
   const DEMO_HINT = 'demo'; // SESSION_HINT_KIND.Demo: the hint of a demo session (#440)
   const THEME_KEY = 'sm-theme'; // THEME_STORAGE_KEY
   const MAX_MS = 15000; // never leave an overlay over a page that failed to start
+  // The library's extension banner (#455, #490), held in the skeleton when the app will show it.
+  const EXTENSION_DISMISSED_KEY = 'sm-extension-banner-dismissed'; // EXTENSION_BANNER_DISMISSED_STORAGE_KEY
+  const EXTENSION_BRANDS = ['Google Chrome', 'Microsoft Edge', 'Brave', 'Chromium']; // EXTENSION_BROWSER_BRAND
+  const OTHER_BRANDS = ['Opera', 'Opera GX', 'Samsung Internet']; // OTHER_CHROMIUM_BRAND
+  const DESKTOP_QUERY = '(width >= 64em)'; // ViewportService.desktop
+  const WIDE_QUERY = '(width >= 80em)'; // ViewportService.wide: the split view opens from here
   const root = document.documentElement;
   const path = location.pathname.replace(/(.)\/$/, '$1');
   // Pages a guest can be on: the hint (a session that may have ended) is not trusted there.
@@ -30,9 +36,47 @@
   }
   if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme);
   if (demo) root.setAttribute('data-boot-demo', '');
+  if (extensionBanner()) root.setAttribute('data-boot-extension', '');
   root.setAttribute('data-boot-skeleton', '');
   setTimeout(function () {
     const left = document.querySelector('[data-app-skeleton]');
     if (left) left.remove();
   }, MAX_MS);
+
+  /**
+   * As `BrowserExtensionService.offered` and `ExtensionBannerService.bannerShown`: a library page
+   * (`/` and `/demo` lead there), a desktop-wide window without the split view, a browser that
+   * installs from the Chrome Web Store (`isExtensionBrowser`), and the banner not closed.
+   */
+  function extensionBanner() {
+    const libraryPage = /^\/(|demo|links|unsorted|favorites|folders\/[^/]+)$/.test(path);
+    if (!libraryPage || !matchMedia(DESKTOP_QUERY).matches) return false;
+    if (new URLSearchParams(location.search).has('split') && matchMedia(WIDE_QUERY).matches) {
+      return false;
+    }
+    try {
+      if (localStorage.getItem(EXTENSION_DISMISSED_KEY) === '1') return false;
+    } catch {
+      return false;
+    }
+    const data = navigator.userAgentData;
+    if (data && data.brands && data.brands.length > 0) {
+      if (data.mobile || data.platform === 'Android') return false;
+      const names = data.brands.map(function (entry) {
+        return entry.brand;
+      });
+      const other = names.some(function (name) {
+        return OTHER_BRANDS.indexOf(name) !== -1;
+      });
+      const supported = names.some(function (name) {
+        return EXTENSION_BRANDS.indexOf(name) !== -1;
+      });
+      return !other && supported;
+    }
+    const agent = navigator.userAgent;
+    return (
+      /\b(?:Chrome|Edg)\/\d+/.test(agent) &&
+      !/Android|Mobile|CriOS|EdgiOS|OPR\/|SamsungBrowser/.test(agent)
+    );
+  }
 })();

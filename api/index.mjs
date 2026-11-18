@@ -10,7 +10,7 @@
 // generated client in the bundle only needs `@prisma/client/runtime/client`.
 // Better Auth and its Nest integration are ESM-only and stay external bare imports; `express` is a direct
 // dependency because the integration requires it by name at runtime.
-// `@anthropic-ai/sdk` (the AI provider, ADR 0048) and `@vercel/functions` (`waitUntil` for deferred AI jobs)
+// `@anthropic-ai/sdk` (the AI provider, ADR 0049) and `@vercel/functions` (`waitUntil` for deferred AI jobs)
 // are runtime packages of the API like the rest.
 // `@nestjs/throttler` is CommonJS and `require()`s the ESM-only `@nestjs/common`, which Vercel's
 // loader rejects (`ERR_REQUIRE_ESM`), so webpack bundles it (`BUNDLED_CJS_PACKAGES` in

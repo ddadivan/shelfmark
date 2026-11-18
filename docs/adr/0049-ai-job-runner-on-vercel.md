@@ -1,4 +1,4 @@
-# 0048. AI job runner on Vercel: a Postgres job table, `waitUntil` after the response, a per-user tick and a daily sweep, Message Batches for backfill
+# 0049. AI job runner on Vercel: a Postgres job table, `waitUntil` after the response, a per-user tick and a daily sweep, Message Batches for backfill
 
 - Status: Proposed
 - Date: 2026-11-17

@@ -2909,6 +2909,9 @@
       "aiSummaries": {
         "title": "Resumos curtos",
         "text": "Com a IA ativada, os links ganham um resumo de uma ou duas linhas no cartão. Edite e ele passa a ser seu."
+      },
+      "extensionInStore": {
+        "text": "A extensão do Shelfmark está na Chrome Web Store: instale-a pelo aviso da sua estante ou em Configurações › Biblioteca."
       }
     },
     "sections": {
