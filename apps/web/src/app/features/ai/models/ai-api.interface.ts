@@ -7,6 +7,12 @@ import type {
   CreateAiDraftRequest,
   LinkAiState,
   LinkResponse,
+  TidyApplyRequest,
+  TidyApplyResponse,
+  TidyCountResponse,
+  TidyListResponse,
+  TidyUndoRequest,
+  TidyUndoResponse,
   UndoAiApplyRequest,
   UpdateAiSettingsRequest,
 } from '@shelfmark/contracts';
@@ -33,6 +39,17 @@ export interface AiApi {
   tick(): Observable<AiTickResponse>;
   /** `DELETE /api/ai/data` (204): every AI summary and suggestion; user edits stay. */
   deleteData(): Observable<void>;
+  /**
+   * `GET /api/ai/tidy`: links in Unsorted with suggestions to review, newest first (AI-2); `after`
+   * (the last link of the previous page) reads the next page.
+   */
+  getTidy(after?: string): Observable<TidyListResponse>;
+  /** `GET /api/ai/tidy/count`: how many links Tidy would list (the Unsorted button). */
+  getTidyCount(): Observable<TidyCountResponse>;
+  /** `POST /api/ai/tidy/apply`: one run of the selected suggestions (409 while AI is off). */
+  applyTidy(request: TidyApplyRequest): Observable<TidyApplyResponse>;
+  /** `POST /api/ai/tidy/undo`: reverts a run with the `undo` payload of its apply answer. */
+  undoTidy(request: TidyUndoRequest): Observable<TidyUndoResponse>;
   /** `GET /api/links/:id/ai`: the AI state of one link (Edit link, the post-save poll). */
   getLinkAi(linkId: string): Observable<LinkAiState>;
   /** `POST /api/links/:id/ai/rewrite`: a new summary (409 while the summary is the user's). */

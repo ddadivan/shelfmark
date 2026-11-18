@@ -4,6 +4,7 @@ import {
   AI_JOB_STATUS,
   AUTH_ENDPOINT,
   DEMO_LIMIT,
+  RULE_OFFER_ENDPOINT,
   SUGGESTION_KIND,
   SUGGESTION_STATE,
   SUMMARY_SOURCE,
@@ -17,6 +18,9 @@ import type {
   ListLinksResponse,
   ListRemindersResponse,
   ListTagsResponse,
+  RuleOfferResponse,
+  TidyApplyResponse,
+  TidyListResponse,
 } from '@shelfmark/contracts';
 import request from 'supertest';
 import { AwaitableDeferrer } from '../../test-utils/awaitable-deferrer';
@@ -194,6 +198,37 @@ describe('demo library, limits and expiry', () => {
       expect(await t.db.prisma.tag.count({ where: { userId: demo.userId } })).toBe(
         DEMO_SEED.tags.length,
       );
+    });
+
+    it('fills Tidy, and applying it makes the YouTube rule offer (AI-2)', async () => {
+      const demo = await signInDemo(t.app, t.baseUrl);
+      const agent = asUser(t.app, demo);
+      const tidy = (await agent.get(AI_ENDPOINT.Tidy).expect(200)).body as TidyListResponse;
+      const suggesting = DEMO_SEED.links.filter(
+        (link) => link.suggestFolder !== undefined || (link.suggestTags?.length ?? 0) > 0,
+      );
+      expect(tidy.total).toBe(suggesting.length);
+      expect(tidy.total).toBeGreaterThanOrEqual(12);
+      const items = tidy.items.map((item) => ({
+        linkId: item.link.id,
+        suggestionIds: item.suggestions.map((suggestion) => suggestion.id),
+      }));
+      const applied = (await agent.post(AI_ENDPOINT.TidyApply).send({ items }).expect(200))
+        .body as TidyApplyResponse;
+      expect(applied.applied).toBe(tidy.total);
+      const fireship = applied.links.find((link) => link.url.includes('@Fireship'));
+      const offer = (
+        await agent
+          .post(RULE_OFFER_ENDPOINT.Check)
+          .send({ linkIds: [fireship?.id ?? ''] })
+          .expect(200)
+      ).body as RuleOfferResponse;
+      expect(offer.offer).toEqual({
+        domain: 'youtube.com',
+        folderId: fireship?.folderId,
+        count: 3,
+      });
+      expect((await agent.get(AI_ENDPOINT.TidyCount).expect(200)).body).toEqual({ total: 0 });
     });
 
     it('runs a new save of a demo user through the mock provider (#389)', async () => {

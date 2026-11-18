@@ -1,0 +1,85 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+// Desktop (`AiTidy` 2): title and host, the chips, Skip on one line.
+.tidy-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) auto;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+
+  // The mobile shell (`MobileAi` 6): one card per link, the chips under the title.
+  @include compact {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+  }
+}
+
+.tidy-row--skipped {
+  background: var(--surface-hover);
+}
+
+.tidy-row__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.tidy-row__title {
+  @include type(heading);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.tidy-row__meta {
+  @include type(caption);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+  color: var(--text-muted);
+}
+
+.tidy-row__host {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tidy-row__changes {
+  min-width: 0;
+
+  @include compact {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+.tidy-row__note {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.tidy-row__skip {
+  @include compact {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+  }
+}

@@ -19,6 +19,7 @@ import { MockLinksApi } from '../../links/mock/mock-links.api';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import { MockAiApi } from './mock-ai.api';
 import { MockAiData } from './mock-ai-data';
+import { MockAiTidy } from './mock-ai-tidy';
 import { MOCK_AI_TIMING } from './models/mock-ai-timing.const';
 
 /** Resolves `source` while the fake clock runs past the mock latency. */
@@ -39,7 +40,7 @@ async function statusOf(source: Observable<unknown>): Promise<number> {
 }
 
 function setup() {
-  const injector = Injector.create({ providers: [MockLibraryData, MockAiData] });
+  const injector = Injector.create({ providers: [MockLibraryData, MockAiData, MockAiTidy] });
   return runInInjectionContext(injector, () => ({
     ai: new MockAiApi(),
     links: new MockLinksApi(),
@@ -288,5 +289,19 @@ describe('MockAiApi', () => {
     const again = await run(links.update(link.id, { url: 'https://third.example/' }));
     expect(again.aiStatus).toBe(AI_JOB_STATUS.Done);
     expect(again.summary).toBe('Mine.');
+  });
+
+  it('serves Tidy: empty while off, 409 to apply while off, 400 for a bad body', async () => {
+    const { ai } = setup();
+    expect(await run(ai.getTidy())).toEqual({ items: [], total: 0 });
+    expect(await run(ai.getTidyCount())).toEqual({ total: 0 });
+    const item = { linkId: 'l1', suggestionIds: ['s1'] };
+    expect(await statusOf(ai.applyTidy({ items: [item] }))).toBe(409);
+    expect(await statusOf(ai.applyTidy({ items: [] }))).toBe(400);
+    expect(await statusOf(ai.applyTidy({ items: [item, item] }))).toBe(400);
+    expect(await run(ai.undoTidy({ items: [{ ...item, folderId: null, tags: [] }] }))).toEqual({
+      links: [],
+    });
+    expect(await statusOf(ai.undoTidy({ items: [] }))).toBe(400);
   });
 });

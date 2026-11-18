@@ -365,6 +365,7 @@ export type { SuggestionState } from './ai/suggestion-state.type';
 export type { SummarySource } from './ai/summary-source.type';
 export type { UndoAiApplyRequest } from './ai/undo-ai-apply-request.interface';
 export type { TidyItem } from './ai/tidy-item.interface';
+export type { TidyListQuery } from './ai/tidy-list-query.interface';
 export type { TidyListResponse } from './ai/tidy-list-response.interface';
 export type { TidyCountResponse } from './ai/tidy-count-response.interface';
 export type { TidyApplyItem } from './ai/tidy-apply-item.interface';

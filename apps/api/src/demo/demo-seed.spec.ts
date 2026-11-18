@@ -7,6 +7,7 @@ import {
   normalizeTagName,
   normalizeUrl,
   RULE_LIMIT,
+  ruleHost,
   TAG_LIMIT,
 } from '@shelfmark/contracts';
 import { FOLDER_COLOUR, FOLDER_LIMIT } from '@shelfmark/contracts';
@@ -16,10 +17,10 @@ import { DEMO_SEED } from './demo-seed';
 describe('demo seed (seed.json)', () => {
   const folderKeys = DEMO_SEED.folders.map((folder) => folder.key);
 
-  it('has about twenty links, five folders (one nested) and about eight tags', () => {
-    expect(DEMO_SEED.links.length).toBeGreaterThanOrEqual(18);
-    expect(DEMO_SEED.links.length).toBeLessThanOrEqual(25);
-    expect(DEMO_SEED.folders).toHaveLength(5);
+  it('has about thirty links, six folders (one nested) and about eight tags', () => {
+    expect(DEMO_SEED.links.length).toBeGreaterThanOrEqual(28);
+    expect(DEMO_SEED.links.length).toBeLessThanOrEqual(40);
+    expect(DEMO_SEED.folders).toHaveLength(6);
     expect(DEMO_SEED.folders.filter((folder) => folder.parent !== null)).toHaveLength(1);
     expect(DEMO_SEED.tags.length).toBeGreaterThanOrEqual(6);
     expect(DEMO_SEED.tags.length).toBeLessThanOrEqual(10);
@@ -28,7 +29,7 @@ describe('demo seed (seed.json)', () => {
   it('covers the mockup topics', () => {
     const names = DEMO_SEED.folders.map((folder) => folder.name);
     expect(names).toEqual(
-      expect.arrayContaining(['Work', 'Angular', 'Courses', 'Clothes', 'Recipes']),
+      expect.arrayContaining(['Work', 'Angular', 'Courses', 'Clothes', 'Recipes', 'Videos']),
     );
   });
 
@@ -157,5 +158,18 @@ describe('demo seed (seed.json)', () => {
       newTags.push(...fresh);
     }
     expect(newTags).toHaveLength(1);
+  });
+
+  it('fills Tidy and sets up the rule offer (AI-2)', () => {
+    const suggesting = DEMO_SEED.links.filter(
+      (link) => link.suggestFolder !== undefined || (link.suggestTags?.length ?? 0) > 0,
+    );
+    // The design shows "Suggestions for 12 links".
+    expect(suggesting.length).toBeGreaterThanOrEqual(12);
+    const youtube = DEMO_SEED.links.filter((link) => ruleHost(link.url) === 'youtube.com');
+    expect(youtube.filter((link) => link.folder === 'videos')).toHaveLength(2);
+    const unsorted = youtube.filter((link) => link.folder === null);
+    expect(unsorted.map((link) => link.suggestFolder)).toEqual(['videos']);
+    expect(DEMO_SEED.rules.some((rule) => rule.domain === 'youtube.com')).toBe(false);
   });
 });

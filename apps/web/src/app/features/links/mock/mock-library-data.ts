@@ -102,6 +102,8 @@ export class MockLibraryData {
   views: MockSavedView[] = mockStarterViews();
   /** The domain rules (#398); the demo starts with one example. */
   rules: MockRule[] = this.demo?.rules ?? [];
+  /** Domains the user answered "Not now" for in a rule offer (AI-2); rules data, not AI data. */
+  ruleOfferDismissals: string[] = [];
   /** AI suggestions the demo starts with, per link id (read once by the mock AI). */
   readonly demoSuggestions: ReadonlyMap<string, LinkSuggestion[]> =
     this.demo?.suggestions ?? new Map();

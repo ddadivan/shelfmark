@@ -42,5 +42,19 @@ describe('HttpRulesApi', () => {
     expect(matches.request.method).toBe('GET');
     expect(matches.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
     matches.flush({ items: [], total: 0 });
+
+    api.checkOffer(['l1', 'l2']).subscribe();
+    const check = http.expectOne('/api/rules/offers/check');
+    expect(check.request.method).toBe('POST');
+    expect(check.request.body).toEqual({ linkIds: ['l1', 'l2'] });
+    expect(check.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
+    check.flush({ offer: null });
+
+    api.dismissOffer('youtube.com').subscribe();
+    const dismiss = http.expectOne('/api/rules/offers/dismiss');
+    expect(dismiss.request.method).toBe('POST');
+    expect(dismiss.request.body).toEqual({ domain: 'youtube.com' });
+    expect(dismiss.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
+    dismiss.flush(null);
   });
 });

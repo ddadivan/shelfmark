@@ -73,6 +73,7 @@ import { FolderTileComponent } from './components/folder-tile/folder-tile.compon
 import { ExtensionBannerComponent } from './components/extension-banner/extension-banner.component';
 import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
 import { SplitViewService } from './services/split-view.service';
+import { TidyEntryComponent } from '../ai/components/tidy-entry/tidy-entry.component';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
 
@@ -125,6 +126,7 @@ const SKELETON_COUNT = 8;
     SegmentedControlComponent,
     SkeletonComponent,
     SplitRightHalfComponent,
+    TidyEntryComponent,
   ],
   templateUrl: './library.page.html',
   styleUrls: [
@@ -173,6 +175,10 @@ export default class LibraryPage {
     const banner = this.splitView.open() ? null : this.head.banner();
     return banner && !banner.highlighted ? banner : null;
   });
+  /** "Tidy with suggestions" (AI-2): only in Unsorted, not in the split view; it hides itself while AI is off. */
+  protected readonly tidyEntry = computed(
+    () => this.filters.scope() === LINKS_SCOPE.Unsorted && !this.splitView.open(),
+  );
   protected readonly selection = inject(LibrarySelectionService);
   protected readonly bulk = inject(LibraryBulkService);
   protected readonly drag = inject(LinkDragService);

@@ -2769,6 +2769,19 @@
       "missingFolder": "Esta pasta não existe mais. Escolha outra.",
       "missing": "Esta regra foi excluída nesse meio-tempo.",
       "failed": "Não foi possível salvar a regra. Tente novamente."
+    },
+    "offer": {
+      "title": "Sempre colocar os links de {{domain}} em {{folder}}?",
+      "detail": {
+        "one": "Seu último link deste site está lá. Uma regra funciona sem IA.",
+        "many": "Seus últimos {{count}} links deste site estão lá. Uma regra funciona sem IA.",
+        "other": "Seus últimos {{count}} links deste site estão lá. Uma regra funciona sem IA."
+      },
+      "create": "Criar regra",
+      "notNow": "Agora não",
+      "created": "Regra criada",
+      "applyExisting": "Aplicar a “Sem pasta”",
+      "failed": "Não foi possível criar a regra"
     }
   },
   "changelog": {
@@ -2909,6 +2922,10 @@
       "aiSummaries": {
         "title": "Resumos curtos",
         "text": "Com a IA ativada, os links ganham um resumo de uma ou duas linhas no cartão. Edite e ele passa a ser seu."
+      },
+      "aiTidy": {
+        "title": "Organizar “Sem pasta” com IA",
+        "text": "Revise numa única página as sugestões de IA para tudo em “Sem pasta” e aplique-as com um só Desfazer. Se você guardar links de um site na mesma pasta algumas vezes, o Shelfmark oferece uma regra."
       },
       "extensionInStore": {
         "text": "A extensão do Shelfmark está na Chrome Web Store: instale-a pelo aviso da sua estante ou em Configurações › Biblioteca."
@@ -3131,6 +3148,73 @@
         "other": "{{count}} tags adicionadas pela IA"
       },
       "undo": "Desfazer"
+    },
+    "tidy": {
+      "entry": "Organizar com sugestões",
+      "back": "Sem pasta",
+      "title": "Organizar “Sem pasta”",
+      "lead": {
+        "one": "Sugestões para {{count}} link. Toque em um chip para deixá-lo de fora.",
+        "many": "Sugestões para {{count}} links. Toque em um chip para deixá-lo de fora.",
+        "other": "Sugestões para {{count}} links. Toque em um chip para deixá-lo de fora."
+      },
+      "cancel": "Cancelar",
+      "apply": {
+        "one": "Aplicar a {{count}} link",
+        "many": "Aplicar a {{count}} links",
+        "other": "Aplicar a {{count}} links"
+      },
+      "skip": "Pular",
+      "skipped": "Pulado — fica em “Sem pasta”",
+      "undoSkip": "Desfazer",
+      "rowLabel": "Mudanças para {{title}}",
+      "listLabel": "Links com sugestões",
+      "barLabel": "Aplicar sugestões",
+      "loading": "Carregando sugestões",
+      "chip": {
+        "folder": "Mover para {{name}}",
+        "folderAdded": "Mover para {{name}}, escolhido",
+        "tag": "Adicionar a tag {{name}}",
+        "tagAdded": "Adicionar a tag {{name}}, escolhido",
+        "newTag": "Criar e adicionar a tag {{name}}",
+        "newTagAdded": "Criar e adicionar a tag {{name}}, escolhido"
+      },
+      "more": {
+        "one": "Depois destes, falta mais {{count}} link. Links sem sugestões não aparecem.",
+        "many": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem.",
+        "other": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem."
+      },
+      "next": "Mostrar os próximos links",
+      "empty": {
+        "title": "Nada para organizar",
+        "text": "Cada link aqui ainda não tem sugestões ou você já o organizou. Links novos recebem sugestões em menos de um minuto.",
+        "back": "Voltar para “Sem pasta”"
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} link organizado",
+          "many": "{{count}} links organizados",
+          "other": "{{count}} links organizados"
+        },
+        "folders": {
+          "one": "Movidos para {{count}} pasta",
+          "many": "Movidos para {{count}} pastas",
+          "other": "Movidos para {{count}} pastas"
+        },
+        "tags": {
+          "one": "{{count}} tag adicionada",
+          "many": "{{count}} tags adicionadas",
+          "other": "{{count}} tags adicionadas"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Desfazer",
+        "failed": "Não foi possível organizar os links",
+        "failedDetail": "Nada foi alterado. Tente de novo.",
+        "nothing": "Nada para aplicar",
+        "nothingDetail": "As sugestões mudaram nesse meio-tempo."
+      },
+      "undone": "Organização desfeita",
+      "undoFailed": "Não foi possível desfazer a organização"
     }
   }
 }

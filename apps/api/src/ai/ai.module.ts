@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { FetcherModule } from '../fetcher/fetcher.module';
 import { FoldersModule } from '../folders/folders.module';
+import { RulesModule } from '../rules/rules.module';
 import { TagsModule } from '../tags/tags.module';
 import { AiController } from './ai.controller';
+import { AiTidyController } from './ai-tidy.controller';
 import { LinkAiController } from './link-ai.controller';
 import { AiSweepController } from './ai-sweep.controller';
 import { AiBackfillResultsService } from './backfill/ai-backfill-results.service';
@@ -23,15 +25,18 @@ import { AiProviderRegistry } from './providers/ai-provider.registry';
 import { createAnthropicProvider } from './providers/anthropic-ai.provider';
 import { AiRunnerService } from './runner/ai-runner.service';
 import { AiSettingsService } from './settings/ai-settings.service';
+import { AiTidyUndoService } from './tidy/ai-tidy-undo.service';
+import { AiTidyService } from './tidy/ai-tidy.service';
 import { AiUsageService } from './usage/ai-usage.service';
 
 /**
  * AI (#389–#391, ADR 0047 / 0049). `LinksModule` imports this module (enqueue and draft attach in
- * the create transaction), so it must never import `LinksModule`.
+ * the create transaction), so it must never import `LinksModule`. It imports `RulesModule` (no imports
+ * of its own, so no cycle) for `RulesService.matcher`: a rule wins over AI in Tidy.
  */
 @Module({
-  imports: [FetcherModule, FoldersModule, TagsModule],
-  controllers: [AiController, LinkAiController, AiSweepController],
+  imports: [FetcherModule, FoldersModule, RulesModule, TagsModule],
+  controllers: [AiController, AiTidyController, LinkAiController, AiSweepController],
   providers: [
     // Read once at boot (the module is created when the app starts): never at import time.
     { provide: AI_CONFIG, useFactory: () => readAiConfig() },
@@ -51,6 +56,8 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiBackfillResultsService,
     AiBackfillService,
     AiCatchUpService,
+    AiTidyService,
+    AiTidyUndoService,
   ],
   exports: [
     AiProviderRegistry,
