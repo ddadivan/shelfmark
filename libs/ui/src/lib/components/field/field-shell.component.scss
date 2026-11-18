@@ -42,7 +42,10 @@
 
 .ui-field__control--textarea {
   align-items: flex-start;
-  padding-top: 0;
+
+  // The textarea brings its own 10px; a feature that frames the text itself (the Ask composer)
+  // sets the box padding through the hook, on both edges, so its round button sits centred.
+  padding-top: var(--ui-field-block-padding, 0);
 }
 
 // The label is for assistive technology only.
