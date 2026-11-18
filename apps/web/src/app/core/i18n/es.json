@@ -3209,7 +3209,8 @@
       },
       "filling": "Rellenando…",
       "needLink": "Pega primero un enlace",
-      "nothing": "La IA no tiene nada que rellenar para este enlace"
+      "nothing": "La IA no tiene nada que rellenar para este enlace",
+      "short": "Rellenar"
     },
     "line": {
       "limit": "Sugerencias en pausa hasta el {{date}}. Has usado los {{limit}} enlaces de este mes.",

@@ -3209,7 +3209,8 @@
       },
       "filling": "Compilazione…",
       "needLink": "Incolla prima un link",
-      "nothing": "L’IA non ha nulla da compilare per questo link"
+      "nothing": "L’IA non ha nulla da compilare per questo link",
+      "short": "Compila"
     },
     "line": {
       "limit": "Suggerimenti in pausa fino al {{date}}. Hai usato i {{limit}} link di questo mese.",

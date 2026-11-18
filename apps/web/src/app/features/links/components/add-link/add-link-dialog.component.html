@@ -287,15 +287,15 @@
       }
       <!-- Cancel and the main action are one group that never splits across rows. -->
       <div slot="footer" class="add-link__confirm">
-        @if (editing || !phone()) {
-          <ui-button
-            class="add-link__action"
-            [block]="phone()"
-            [disabled]="saving()"
-            (click)="cancel()"
-            >{{ 'links.add.actions.cancel' | transloco }}</ui-button
-          >
-        }
+        <!-- Left out on the sheet: its x does the same (`uiDialogCancel`). -->
+        <ui-button
+          class="add-link__action"
+          uiDialogCancel
+          [block]="phone()"
+          [disabled]="saving()"
+          (click)="cancel()"
+          >{{ 'links.add.actions.cancel' | transloco }}</ui-button
+        >
         @if (duplicate() && !editing) {
           <ui-button class="add-link__action" [block]="phone()" (click)="openExisting()">{{
             'links.add.actions.openSaved' | transloco

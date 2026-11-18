@@ -3145,7 +3145,8 @@
       },
       "filling": "Filling…",
       "needLink": "Paste a link first",
-      "nothing": "AI had nothing to fill in for this link"
+      "nothing": "AI had nothing to fill in for this link",
+      "short": "Fill"
     },
     "line": {
       "limit": "Suggestions are paused until {{date}}. You used this month’s {{limit}} links.",

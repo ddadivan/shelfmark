@@ -3209,7 +3209,8 @@
       },
       "filling": "Preenchendo…",
       "needLink": "Cole um link primeiro",
-      "nothing": "A IA não tem nada para preencher neste link"
+      "nothing": "A IA não tem nada para preencher neste link",
+      "short": "Preencher"
     },
     "line": {
       "limit": "Sugestões pausadas até {{date}}. Você usou os {{limit}} links deste mês.",

@@ -3145,7 +3145,8 @@
       },
       "filling": "Wird ausgefüllt …",
       "needLink": "Füge zuerst einen Link ein",
-      "nothing": "Die KI hat für diesen Link nichts auszufüllen"
+      "nothing": "Die KI hat für diesen Link nichts auszufüllen",
+      "short": "Ausfüllen"
     },
     "line": {
       "limit": "Vorschläge pausieren bis {{date}}. Du hast die {{limit}} Links dieses Monats genutzt.",

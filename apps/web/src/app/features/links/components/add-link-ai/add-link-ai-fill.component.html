@@ -9,12 +9,15 @@
     [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md"
     [ariaDisabled]="fill.needsLink()"
     [loading]="fill.busy()"
+    [ariaLabel]="phone() && !fill.busy() ? ('ai.fill.button' | transloco) : undefined"
     [ariaDescribedby]="fill.needsLink() ? hintId : undefined"
     [uiTooltip]="tooltip()"
     [uiTooltipShortcut]="phone() || fill.needsLink() ? '' : shortcut()"
     (click)="apply()"
   >
-    {{ (fill.busy() ? 'ai.fill.filling' : 'ai.fill.button') | transloco }}
+    {{
+      (fill.busy() ? 'ai.fill.filling' : phone() ? 'ai.fill.short' : 'ai.fill.button') | transloco
+    }}
   </ui-button>
 }
 <span class="add-link-ai-fill__live" [id]="hintId">

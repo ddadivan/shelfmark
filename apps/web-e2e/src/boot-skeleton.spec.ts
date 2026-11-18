@@ -304,6 +304,7 @@ test.describe('the skeleton keeps the page still when the app takes over (#440, 
       await slowBundle(page);
       await page.goto('/links');
       await expect(page.locator('app-extension-banner section')).toBeVisible();
+      await expect(page.locator('app-shell ui-card').first()).toBeVisible();
 
       const { skeleton, app } = await readGeometry(page);
       expect(skeleton.extension, 'the skeleton draws the extension banner').not.toBeNull();

@@ -163,14 +163,18 @@
 }
 
 // Cancel and the main action (and "Open saved") stay together: the footer wraps around the group,
-// never through it. On the phone the group stacks like the footer (main action on top).
+// never through it. On the phone sheet it is the main row of the footer (#512); what is left in it
+// ("Open saved" next to Create anyway) stacks above the main action.
 .add-link__confirm {
   display: flex;
-  flex: none;
   gap: var(--space-4);
 
+  @include tablet-up {
+    flex: none;
+  }
+
   @include phone {
-    flex-flow: column-reverse nowrap;
+    flex-direction: column;
   }
 }
 
