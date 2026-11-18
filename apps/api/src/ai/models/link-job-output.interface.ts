@@ -13,5 +13,7 @@ export interface LinkJobOutput {
   folder: string | null;
   /** Trimmed, no control characters, at most `AI_LIMIT.SummaryMax`. */
   summary: string | null;
+  /** A cleaned-up title (only for a draft), plain text, at most `LINK_LIMIT.TitleMax`. */
+  title: string | null;
   kind: LinkKind | null;
 }

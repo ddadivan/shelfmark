@@ -89,6 +89,15 @@ describe('PopupAiFillService', () => {
     expect(off.api.createAiDraft.mock.calls[0]?.[0]).not.toHaveProperty('note');
   });
 
+  it('uses the cleaned-up title on Save and keeps the tab title without one', async () => {
+    const { store, ai, api } = await setup({ draft: makeAiJob({ title: 'A cleaner title' }) });
+    expect(ai.cleanTitle()).toBeNull();
+    await store.fillWithAi();
+    expect(ai.cleanTitle()).toBe('A cleaner title');
+    await store.save();
+    expect(api.create.mock.calls[0]?.[0].title).toBe('A cleaner title');
+  });
+
   it('polls the job until done, then fills the folder and the existing tags', async () => {
     vi.useFakeTimers();
     const pending = makeAiJob({ status: AI_JOB_STATUS.Pending });
@@ -109,17 +118,13 @@ describe('PopupAiFillService', () => {
     expect(api.aiJob).toHaveBeenCalledWith('job-1');
     expect(ai.state()).toBe(AI_FILL_STATE.Ready);
     expect(store.folderId()).toBe('f1');
-    expect(store.chosenTags()).toEqual(['signals']);
+    // Every suggested tag goes in, the new one too, so no dashed chip is left.
+    expect(store.chosenTags()).toEqual(['signals', 'zoneless']);
     expect(ai.folderMarked()).toBe(true);
     expect(ai.tagsMarked()).toBe(true);
-    // A new tag stays a chip until it is taken.
-    expect(ai.chips().map((chip) => chip.name)).toEqual(['zoneless']);
-    expect(ai.buttonShown()).toBe(false);
-    const [chip] = ai.chips();
-    if (chip === undefined) throw new Error('expected a chip');
-    ai.accept(chip);
-    expect(store.chosenTags()).toEqual(['signals', 'zoneless']);
     expect(ai.chips()).toEqual([]);
+    // The button stays (AI is on); a second press after a fill does nothing.
+    expect(ai.buttonShown()).toBe(true);
   });
 
   it('never replaces what the user chose', async () => {
@@ -174,7 +179,7 @@ describe('PopupAiFillService', () => {
     await vi.advanceTimersByTimeAsync(AI_LIMIT.DraftPollMaxMs);
     await run;
     expect(ai.state()).toBe(AI_FILL_STATE.Hidden);
-    expect(ai.buttonShown()).toBe(false);
+    expect(ai.buttonShown()).toBe(true);
     expect(ai.line()).toBeNull();
     await store.save();
     expect(api.create.mock.calls[0]?.[0].aiDraftId).toBe(
@@ -182,13 +187,12 @@ describe('PopupAiFillService', () => {
     );
   });
 
-  it('shows the limit line, no button and no error', async () => {
+  it('shows the limit line and no error', async () => {
     const job = makeAiJob({ status: AI_JOB_STATUS.Skipped, reason: AI_JOB_REASON.Quota });
     const { store, ai } = await setup({ draft: job });
     await store.fillWithAi();
     expect(ai.state()).toBe(AI_FILL_STATE.Quota);
     expect(ai.line()).toEqual({ kind: 'limit', resetsOn: '2026-12-01', limit: 50 });
-    expect(ai.buttonShown()).toBe(false);
     expect(store.failure()).toBeNull();
   });
 

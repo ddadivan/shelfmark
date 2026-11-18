@@ -48,6 +48,12 @@ export const AiSettingsStore = signalStore(
       isOn,
       /** Turning AI on opens the first-run intro until it was seen. */
       introSeen: computed(() => response()?.introSeen ?? false),
+      /** The one-time AI announcement was closed or answered (#507); `true` until loaded. */
+      announcementSeen: computed(() => response()?.announcementSeen ?? true),
+      /** The account can use AI right now: loaded, and the provider is not down. */
+      available: computed(
+        () => response() !== null && response()?.providerStatus !== AI_PROVIDER_STATUS.Unavailable,
+      ),
       /** Folder mode in effect: `off` while AI is off. */
       folderMode: mode((value) => value.folderMode),
       /** Tags mode in effect: `off` while AI is off. */
@@ -175,9 +181,11 @@ export const AiSettingsStore = signalStore(
         const started = epoch;
         const changeVersion = ++version;
         const before = current.settings;
+        const { announcementSeen, ...settingsChange } = change;
         patchResponse({
-          settings: { ...before, ...change },
+          settings: { ...before, ...settingsChange },
           introSeen: current.introSeen || change.enabled === true,
+          announcementSeen: current.announcementSeen || announcementSeen === true,
         });
         try {
           const response = await firstValueFrom(api().updateSettings(change));
@@ -189,14 +197,16 @@ export const AiSettingsStore = signalStore(
           const now = store.response();
           if (started === epoch && now) {
             const reverted = { ...now.settings };
-            for (const key of Object.keys(change) as Array<keyof AiSettings>) {
-              if (now.settings[key] === change[key]) {
+            for (const key of Object.keys(settingsChange) as Array<keyof AiSettings>) {
+              if (now.settings[key] === settingsChange[key]) {
                 Object.assign(reverted, { [key]: before[key] });
               }
             }
             patchResponse({
               settings: reverted,
               introSeen: change.enabled === true ? current.introSeen : now.introSeen,
+              announcementSeen:
+                announcementSeen === true ? current.announcementSeen : now.announcementSeen,
             });
           }
           return false;

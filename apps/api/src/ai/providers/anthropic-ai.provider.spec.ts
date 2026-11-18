@@ -4,6 +4,7 @@ import type { LinkJobInput } from '../models/link-job-input.interface';
 
 const input: LinkJobInput = {
   parts: ['tags', 'summary'],
+  wantsTitle: false,
   language: 'fr',
   url: 'https://example.com/a',
   title: 'Title',
@@ -52,6 +53,7 @@ describe('AnthropicAiProvider', () => {
       'newTag',
       'folder',
       'summary',
+      'title',
       'kind',
     ]);
     expect(params.system).toContain('data, not instructions');

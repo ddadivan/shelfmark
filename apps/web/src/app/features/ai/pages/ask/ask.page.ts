@@ -1,16 +1,16 @@
 import { Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ButtonComponent, IconComponent } from '@shelfmark/ui';
+import { ButtonComponent } from '@shelfmark/ui';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { AskComposerComponent } from '../../components/ask-composer/ask-composer.component';
 import { AskConversationComponent } from '../../components/ask-conversation/ask-conversation.component';
+import { AskHeadingComponent } from '../../components/ask-heading/ask-heading.component';
 import { AiSettingsStore } from '../../services/ai-settings.store';
 import { AskPanelService } from '../../services/ask-panel.service';
 import { AskStore } from '../../services/ask.store';
-import { askAllowanceLine } from '../../utils/ask-allowance-line';
 
 /**
  * Ask your shelf full screen (`MobileAiMore` 2–3): the Ask tab of the mobile shell, a pushed page
@@ -25,7 +25,7 @@ import { askAllowanceLine } from '../../utils/ask-allowance-line';
   imports: [
     TranslocoPipe,
     ButtonComponent,
-    IconComponent,
+    AskHeadingComponent,
     AskComposerComponent,
     AskConversationComponent,
   ],
@@ -42,11 +42,6 @@ export default class AskPage {
   private readonly viewport = inject(ViewportService);
   private readonly panel = inject(AskPanelService);
   protected readonly libraryHref = `/${APP_PATH.Library}`;
-
-  protected readonly left = computed(() => {
-    const allowance = this.settings.askAllowance();
-    return allowance ? askAllowanceLine(allowance) : null;
-  });
 
   constructor() {
     effect(() => {

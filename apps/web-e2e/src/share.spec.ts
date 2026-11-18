@@ -23,7 +23,7 @@ test.describe('share target (mock API)', () => {
 
       await waitForPreview(page);
       await expect(page.getByText('https://example.com/a')).toBeVisible();
-      await page.getByLabel('Note').fill('From a chat');
+      await page.getByLabel('Your note').fill('From a chat');
       await page.getByRole('button', { name: 'Save', exact: true }).click();
 
       await expect(page).toHaveURL(/\/links$/);

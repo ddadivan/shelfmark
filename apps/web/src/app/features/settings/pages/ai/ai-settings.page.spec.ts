@@ -30,6 +30,7 @@ function response(patch: Partial<AiSettingsResponse> = {}): AiSettingsResponse {
   return {
     settings: { ...AI_SETTINGS_DEFAULT },
     introSeen: false,
+    announcementSeen: true,
     entitlements: { plan: ACCOUNT_PLAN.Pro, aiTier: AI_TIER.AiPack },
     usage: {
       linksUsed: 38,

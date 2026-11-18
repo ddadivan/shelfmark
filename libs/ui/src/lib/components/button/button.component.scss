@@ -89,8 +89,10 @@ a.ui-button {
   color: var(--on-primary);
   background: var(--primary);
 
-  @include hover {
-    background: var(--primary-hover);
+  &:not([aria-disabled='true']) {
+    @include hover {
+      background: var(--primary-hover);
+    }
   }
 }
 
@@ -98,8 +100,10 @@ a.ui-button {
   background: var(--surface);
   border-color: var(--border-control);
 
-  @include hover {
-    background: var(--surface-hover);
+  &:not([aria-disabled='true']) {
+    @include hover {
+      background: var(--surface-hover);
+    }
   }
 
   &:active {
@@ -108,8 +112,10 @@ a.ui-button {
 }
 
 .ui-button--ghost {
-  @include hover {
-    background: var(--surface-hover);
+  &:not([aria-disabled='true']) {
+    @include hover {
+      background: var(--surface-hover);
+    }
   }
 
   &:active {
@@ -119,22 +125,27 @@ a.ui-button {
 
 // The one AI action ("Fill in with AI", BRAND › AI): a quiet indigo fill (`ai-fill`), no edge,
 // the label in `text`, the icon (the spark) 20px in `ai`, also inside a dialog. Never sage, never
-// a gradient.
+// a gradient. A feature may set `--ui-button-ai-border` (the header's Ask pill) or, for a solid `ai`
+// fill with a light icon (the Ask send button when ready), `--ui-button-ai-bg`, `-bg-hover`,
+// `-bg-pressed` and `--ui-button-ai-icon`.
 .ui-button--ai {
   --ui-icon-size: var(--icon-size-md);
 
-  background: var(--ai-fill);
+  background: var(--ui-button-ai-bg, var(--ai-fill));
+  border-color: var(--ui-button-ai-border, transparent);
 
   ui-icon {
-    color: var(--ai);
+    color: var(--ui-button-ai-icon, var(--ai));
   }
 
-  @include hover {
-    background: var(--ai-fill-hover);
+  &:not([aria-disabled='true']) {
+    @include hover {
+      background: var(--ui-button-ai-bg-hover, var(--ai-fill-hover));
+    }
   }
 
   &:active {
-    background: var(--ai-fill-pressed);
+    background: var(--ui-button-ai-bg-pressed, var(--ai-fill-pressed));
   }
 }
 
@@ -144,8 +155,10 @@ a.ui-button {
   color: var(--on-primary);
   background: var(--danger);
 
-  @include hover {
-    filter: brightness(0.92);
+  &:not([aria-disabled='true']) {
+    @include hover {
+      filter: brightness(0.92);
+    }
   }
 }
 

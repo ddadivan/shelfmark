@@ -233,11 +233,36 @@ test.describe('the skeleton keeps the page still when the app takes over (#440, 
     });
   }
 
+  /**
+   * The demo library's "From your shelf" and clean-up cards load after the feed and are not part of
+   * the skeleton; the comparison is about the feed, so they are dismissed for these tests (the mock
+   * storage of `MockRediscoverApi` and `MockCleanupData`; the ISO week matches `isoWeek`).
+   */
+  async function hideShelfCards(page: Page): Promise<void> {
+    await page.addInitScript(() => {
+      const date = new Date();
+      const day = date.getUTCDay() || 7;
+      const thursday = new Date(
+        Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + 4 - day),
+      );
+      const week = Math.ceil(
+        ((thursday.getTime() - Date.UTC(thursday.getUTCFullYear(), 0, 1)) / 86_400_000 + 1) / 7,
+      );
+      const isoWeek = `${thursday.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+      localStorage.setItem(
+        'sm-mock-rediscover',
+        JSON.stringify({ dismissedWeek: isoWeek, hidden: [] }),
+      );
+      localStorage.setItem('sm-mock-cleanup', String(Date.now()));
+    });
+  }
+
   test(
     'a demo start: the banner, the title and the first card stay where the skeleton drew them',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await seedWhatsNewSeen(page);
+      await hideShelfCards(page);
       await recordSkeletonGeometry(page);
       await slowBundle(page);
       await page.goto('/demo');
@@ -257,6 +282,7 @@ test.describe('the skeleton keeps the page still when the app takes over (#440, 
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await seedSession(page, demoUser(24));
+      await hideShelfCards(page);
       await page.addInitScript(`localStorage.setItem('${SESSION_HINT_KEY}', 'demo');`);
       await recordSkeletonGeometry(page);
       await slowBundle(page);

@@ -89,7 +89,8 @@
       "tagsRow": "Suggested tags",
       "new": "New",
       "createTag": "Create and add tag {{name}}",
-      "dismiss": "Dismiss suggestion {{name}}"
+      "dismiss": "Dismiss suggestion {{name}}",
+      "filling": "Filling…"
     }
   }
 }

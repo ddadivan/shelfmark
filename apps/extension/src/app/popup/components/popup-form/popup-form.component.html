@@ -8,7 +8,7 @@
     <span class="ext-preview__thumb" aria-hidden="true"></span>
     <span class="ext-preview__text">
       <span class="ext-preview__host">{{ page.host }}</span>
-      <span class="ext-preview__title">{{ page.title }}</span>
+      <span class="ext-preview__title">{{ store.ai.cleanTitle() ?? page.title }}</span>
     </span>
   </div>
 }
@@ -31,7 +31,7 @@
       iconRight="chevron-right"
       ariaHaspopup="dialog"
       [ariaLabel]="'popup.form.chooseFolder' | transloco: { folder: folderName() }"
-      [disabled]="store.saving()"
+      [disabled]="store.saving() || store.ai.busy()"
       (click)="store.openPicker()"
     >
       <span class="form__folder-value">
@@ -65,7 +65,7 @@
                 ? CHIP_VARIANT.Tag
                 : CHIP_VARIANT.Neutral
             "
-            [disabled]="store.saving()"
+            [disabled]="store.saving() || store.ai.busy()"
             (clicked)="store.chooseFolder(recent.id)"
             >{{ recent.folder?.name ?? ('popup.unsorted' | transloco) }}</ui-chip
           >
@@ -86,7 +86,7 @@
     [removedLabel]="'popup.form.tagsRemoved' | transloco"
     [duplicateLabel]="'popup.form.tagsDuplicate' | transloco"
     [listLabel]="'popup.form.tagsList' | transloco"
-    [disabled]="store.saving()"
+    [disabled]="store.saving() || store.ai.busy()"
     [(value)]="store.chosenTags"
   />
 
@@ -152,7 +152,7 @@
       [loading]="store.ai.busy()"
       [disabled]="store.saving()"
       (click)="store.fillWithAi()"
-      >{{ 'popup.ai.button' | transloco }}</ui-button
+      >{{ (store.ai.busy() ? 'popup.ai.filling' : 'popup.ai.button') | transloco }}</ui-button
     >
   }
   <ui-button [variant]="BUTTON_VARIANT.Ghost" (click)="store.openApp()">{{
@@ -164,6 +164,7 @@
     block
     [variant]="BUTTON_VARIANT.Primary"
     [loading]="store.saving()"
+    [disabled]="store.ai.busy()"
     (click)="store.save()"
     >{{ 'popup.form.save' | transloco }}</ui-button
   >

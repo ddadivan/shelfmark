@@ -3,6 +3,15 @@ import type { MockAiLibrary } from './models/mock-ai-library.interface';
 import type { MockAiOutcome } from './models/mock-ai-outcome.interface';
 
 const NEW_TAG_MIN = 3;
+const VIDEO_HOSTS = ['youtube.com', 'youtu.be', 'vimeo.com'];
+/** A site name after the title: " | COS", " - YouTube", " – Site", " — Site". */
+const SITE_SUFFIX = /\s+[|\-\u2013\u2014]\s+[^|\-\u2013\u2014]+$/u;
+
+/** The title without its site suffix; `null` when there is none to remove. */
+function cleanTitle(title: string): string | null {
+  const cleaned = title.replace(SITE_SUFFIX, '').trim();
+  return cleaned !== '' && cleaned !== title ? cleaned : null;
+}
 
 function words(text: string): Set<string> {
   return new Set(
@@ -48,13 +57,16 @@ function folderOfHost(host: string, library: MockAiLibrary): string | null {
 export function mockAiOutcome(url: string, title: string, library: MockAiLibrary): MockAiOutcome {
   const host = bareHost(url);
   const found = words(`${title} ${url}`);
+  const video = host !== null && VIDEO_HOSTS.includes(host);
+  // A video address also fits the user's "video" tag and "Videos" folder, when they have them.
   const tags = [...library.tags]
     .sort((a, b) => a.localeCompare(b, 'en'))
-    .filter((name) => mentioned(name, found))
+    .filter((name) => mentioned(name, found) || (video && name.toLowerCase() === 'video'))
     .slice(0, AI_LIMIT.SuggestedTagsMax);
-  const byName = [...library.folders]
-    .sort((a, b) => a.name.localeCompare(b.name, 'en'))
-    .find((folder) => mentioned(folder.name, found));
+  const sorted = [...library.folders].sort((a, b) => a.name.localeCompare(b.name, 'en'));
+  const byName =
+    sorted.find((folder) => mentioned(folder.name, found)) ??
+    (video ? sorted.find((folder) => folder.name.toLowerCase().startsWith('video')) : undefined);
   const site = host?.split('.')[0] ?? '';
   const known = library.tags.some((name) => name.toLowerCase() === site);
   const summary = `${title}. A page from ${host ?? 'the web'}, kept here so you can find it again later.`;
@@ -63,5 +75,6 @@ export function mockAiOutcome(url: string, title: string, library: MockAiLibrary
     tags,
     newTag: site.length >= NEW_TAG_MIN && !known ? site : null,
     summary: summary.slice(0, AI_LIMIT.SummaryMax),
+    title: cleanTitle(title),
   };
 }

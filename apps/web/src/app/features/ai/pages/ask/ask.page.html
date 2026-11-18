@@ -15,20 +15,13 @@
       variant="ghost"
       size="sm"
       iconOnly
-      iconLeft="refresh"
+      iconLeft="edit"
       [ariaLabel]="'ai.ask.newQuestion' | transloco"
       (click)="store.reset()"
     />
     }
   </div>
-  <header class="ask-page__head">
-    <h1 class="ask-page__title">
-      <ui-icon class="ask-page__spark" name="spark" />{{ 'ai.ask.title' | transloco }}
-    </h1>
-    @if (left(); as left) {
-    <p class="ask-page__left">{{ left.key | transloco: { count: left.count } }}</p>
-    }
-  </header>
+  <app-ask-heading class="ask-page__head" onPage />
   <app-ask-conversation class="ask-page__conversation" onPage />
   <div class="ask-page__bar">
     <app-ask-composer />

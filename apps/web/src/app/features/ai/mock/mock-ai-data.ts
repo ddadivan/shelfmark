@@ -34,6 +34,7 @@ import { normalizeLinkTags } from '../../links/mock/normalize-link-tags';
 import { nextUtcMonthStart, readMockAiAccount, writeMockAiAccount } from './mock-ai-account';
 import { mockAiOutcome } from './mock-ai-outcome';
 import { mockAskAllowance } from './mock-ask-allowance';
+import { MOCK_AI_ANNOUNCEMENT_STORAGE_KEY } from './models/mock-ai-announcement-storage-key.const';
 import type { MockAiAccount } from './models/mock-ai-account.interface';
 import type { MockAiLibrary } from './models/mock-ai-library.interface';
 import type { MockBackfillRefusal } from './models/mock-backfill-refusal.type';
@@ -92,6 +93,11 @@ export class MockAiData {
     writeMockAiAccount(mockStorage(), account);
   }
 
+  /** The one-time AI announcement was seen (the demo never gets it: AI is on there). */
+  get announcementSeen(): boolean {
+    return this.demo || mockStorage()?.getItem(MOCK_AI_ANNOUNCEMENT_STORAGE_KEY) === '1';
+  }
+
   get settings(): AiSettings {
     return this.account.settings;
   }
@@ -104,6 +110,7 @@ export class MockAiData {
     return {
       settings: account.settings,
       introSeen: account.introSeen,
+      announcementSeen: this.announcementSeen,
       entitlements: {
         plan: account.tier === AI_TIER.AiPack ? ACCOUNT_PLAN.Pro : ACCOUNT_PLAN.Free,
         aiTier: account.tier,
@@ -175,7 +182,15 @@ export class MockAiData {
   }
 
   /** `PATCH /api/ai/settings`: the first `enabled: true` marks the intro seen, off skips pending work. */
-  updateSettings(change: UpdateAiSettingsRequest): AiSettingsResponse {
+  updateSettings(request: UpdateAiSettingsRequest): AiSettingsResponse {
+    const { announcementSeen, ...change } = request;
+    if (announcementSeen === true) {
+      try {
+        mockStorage()?.setItem(MOCK_AI_ANNOUNCEMENT_STORAGE_KEY, '1');
+      } catch {
+        // Storage unavailable: the flag lasts until the next read.
+      }
+    }
     const account = this.account;
     const settings = { ...account.settings, ...change };
     this.account = { ...account, settings, introSeen: account.introSeen || settings.enabled };
@@ -489,6 +504,7 @@ export class MockAiData {
       reason: null,
       suggestions: [],
       summary: null,
+      cleanTitle: null,
     };
     this.jobs.set(job.id, job);
     return job;
@@ -548,6 +564,7 @@ export class MockAiData {
       suggestions.length === 0 && !settings.summaries ? AI_JOB_REASON.NothingFound : null;
     job.suggestions = suggestions;
     job.summary = settings.summaries ? outcome.summary : null;
+    job.cleanTitle = job.linkId === null ? outcome.title : null;
     const link = this.library.links.find((item) => item.id === job.linkId);
     if (link) {
       this.apply(link, job, auto);
@@ -697,6 +714,7 @@ export class MockAiData {
       reason: job.reason,
       suggestions: job.status === AI_JOB_STATUS.Done ? [...job.suggestions] : [],
       summary: job.summary,
+      title: job.status === AI_JOB_STATUS.Done ? job.cleanTitle : null,
     };
   }
 }

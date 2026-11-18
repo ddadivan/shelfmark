@@ -99,6 +99,8 @@ export class AddLinkSaveService {
         ...(this.ruleService?.handled() && { applyRules: false }),
         // The draft suggestions asked for in the dialog (#390): the server picks up their result.
         ...(aiDraftId && { aiDraftId }),
+        // A summary the user wrote or edited in Add link (#507); AI's own text is the draft's.
+        ...(this.summary?.createSummary() && { summary: this.summary.createSummary() }),
       };
       request$ = this.linksApi.create({
         ...payload,
@@ -153,6 +155,7 @@ export class AddLinkSaveService {
       folderId: payload.folderId,
       tags: payload.tags,
       title: this.formState.form.title().dirty() ? payload.title : undefined,
+      summary: payload.summary,
     });
   }
 

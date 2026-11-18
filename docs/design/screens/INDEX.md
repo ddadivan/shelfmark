@@ -115,7 +115,8 @@ AI features F0–F8 (`docs/ai/FEATURES.md`, approved Nov 17, 2026; parent #388).
 - `Privacy.dc.html` (section 9) — now has the «AI features (optional)» section: provider as processor, data sent, retention, counts only, turning it off
 
 - `AiSearch.dc.html` — Search by meaning (F3) in ⌘K: word matches first, “Related by meaning” with “why it matched”, nothing matches the words, not ready, off; the Ask entry (desktop)
-- `AskShelf.dc.html` — Ask your shelf (F4) side panel: empty with starters, streaming, answer with cited sources, not in your links, daily limit, error (desktop)
+- `AskShelf.dc.html` — Ask your shelf (F4) side panel, redesign #507: header with spark tile and allowance, top-aligned empty state with starter cards, answer with avatar, citation chips and source cards, one-piece composer (desktop; other states follow the same frame)
+- `AiAnnounce.dc.html` — One-time “Shelfmark can now help with AI” dialog (#507): animated spark tile, four feature cards, Turn on AI… opens the AI intro, Not now
 - `AiCleanup.dc.html` — Clean-up (F5): report with per-item choice and one Undo, entry card, checking, applied, nothing to clean (desktop)
 - `AiConnect.dc.html` — Connect your assistant (F6, MCP): server address, token shown once, connected clients, revoke, empty (desktop)
 - `AiDiscover.dc.html` — Related on your shelf in Edit link (F7); “From your shelf” weekly block with and without AI (F8) (desktop)

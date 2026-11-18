@@ -78,6 +78,7 @@ describe('AI settings API', () => {
         ask: true,
       },
       introSeen: false,
+      announcementSeen: false,
       entitlements: { plan: 'free', aiTier: 'free' },
       usage: {
         linksUsed: 0,
@@ -122,6 +123,30 @@ describe('AI settings API', () => {
     });
     expect(second.enabledAt).toEqual(first.enabledAt);
     expect(second.introSeenAt).toEqual(first.introSeenAt);
+  });
+
+  it('records that the AI announcement was seen, once, without turning AI on (#507)', async () => {
+    const seen = await patch({ announcementSeen: true });
+    expect(seen.announcementSeen).toBe(true);
+    expect(seen.settings.enabled).toBe(false);
+    const first = await t.db.prisma.aiSettings.findUniqueOrThrow({
+      where: { userId: users.owner.userId },
+    });
+    expect(first.announcementSeenAt).not.toBeNull();
+    await patch({ announcementSeen: true });
+    const second = await t.db.prisma.aiSettings.findUniqueOrThrow({
+      where: { userId: users.owner.userId },
+    });
+    expect(second.announcementSeenAt).toEqual(first.announcementSeenAt);
+    // Only the owner's row changed; another user still has not seen it.
+    const other = await t.db.prisma.aiSettings.findUnique({
+      where: { userId: users.intruder.userId },
+    });
+    expect(other?.announcementSeenAt ?? null).toBeNull();
+  });
+
+  it('rejects announcementSeen: false', async () => {
+    await a.patch(BASE).send({ announcementSeen: false }).expect(400);
   });
 
   it('changes single fields without turning AI on', async () => {

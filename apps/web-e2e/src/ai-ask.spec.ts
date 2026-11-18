@@ -33,7 +33,7 @@ async function openLibrary(page: Page): Promise<void> {
   await expect(page.locator('ui-card').first()).toBeVisible();
 }
 
-/** Opens the Ask drawer from the header spark button. */
+/** Opens the Ask drawer from the header Ask pill. */
 async function openPanel(page: Page): Promise<Locator> {
   await page.getByRole('button', { name: 'Ask your shelf' }).click();
   const panel = page.getByRole('dialog', { name: 'Ask your shelf' });
@@ -88,6 +88,10 @@ test.describe('Ask your shelf (AI-4, mock API)', () => {
     await ask(panel, 'ramen ai-fail');
     await expect(panel).toContainText('Couldn’t get an answer right now.');
     await panel.getByRole('button', { name: 'Try again' }).click();
+    // The retry streams (the field is locked) and fails again.
+    const field = panel.getByRole('textbox', { name: 'Ask about your links' });
+    await expect(field).toBeDisabled();
+    await expect(field).toBeEnabled();
     await expect(panel).toContainText('Couldn’t get an answer right now.');
 
     await ask(panel, 'ramen ai-quota');
@@ -118,8 +122,10 @@ test.describe('Ask your shelf (AI-4, mock API)', () => {
       // Full screen: the tab bar hides while the page is open.
       await expect(bar).toHaveCount(0);
 
-      await page.getByRole('textbox', { name: 'Ask about your links' }).fill(RAMEN);
-      await page.getByRole('button', { name: 'Ask', exact: true }).click();
+      // Enter asks (the due-reminder toast of the demo library may float over the send button).
+      const field = page.getByRole('textbox', { name: 'Ask about your links' });
+      await field.fill(RAMEN);
+      await field.press('Enter');
       await expect(page.getByRole('main')).toContainText('You saved a few ramen recipes.');
       await expect(page.getByRole('list', { name: 'Sources from your shelf' })).toBeVisible();
 

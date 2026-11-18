@@ -5,6 +5,7 @@ import type { LinkJobInput } from '../models/link-job-input.interface';
 
 const base: LinkJobInput = {
   parts: ['tags', 'folder', 'summary'],
+  wantsTitle: false,
   language: 'en',
   url: 'https://example.com/a',
   title: 'A title',
@@ -22,7 +23,9 @@ const base: LinkJobInput = {
 describe('buildLinkUserPrompt', () => {
   it('lists the task, the user vocabulary by key and the page in delimited blocks', () => {
     const prompt = buildLinkUserPrompt(base);
-    expect(prompt).toContain('<task>\nparts: tags, folder, summary\nsummary_language: en\n</task>');
+    expect(prompt).toContain(
+      '<task>\nparts: tags, folder, summary\nsummary_language: en\nclean_title: no\n</task>',
+    );
     expect(prompt).toContain('<user_tags>\n- css\n- ux\n</user_tags>');
     expect(prompt).toContain('<user_folders>\nf1: Work\nf2: Work / Design\n</user_folders>');
     expect(prompt).toContain('url: https://example.com/a');
@@ -49,7 +52,7 @@ describe('buildLinkUserPrompt', () => {
     expect(prompt).toContain('<user_tags>\n(none)\n</user_tags>');
     expect(prompt).toContain('<user_folders>\n(none)\n</user_folders>');
     expect(prompt).toContain('(page text unavailable)');
-    expect(prompt).not.toContain('title:');
+    expect(prompt).not.toContain('\ntitle:');
   });
 
   it('keeps hostile text from closing or opening a block', () => {
@@ -115,8 +118,15 @@ describe('link prompt constants', () => {
     expect(LINK_SYSTEM_PROMPT).toContain('<earlier_choices>');
   });
 
-  it('asks for the five fields and nothing else', () => {
-    expect(LINK_OUTPUT_SCHEMA.required).toEqual(['tags', 'newTag', 'folder', 'summary', 'kind']);
+  it('asks for the six fields and nothing else', () => {
+    expect(LINK_OUTPUT_SCHEMA.required).toEqual([
+      'tags',
+      'newTag',
+      'folder',
+      'summary',
+      'title',
+      'kind',
+    ]);
     expect(LINK_OUTPUT_SCHEMA.additionalProperties).toBe(false);
     expect(Object.keys(LINK_OUTPUT_SCHEMA.properties)).toEqual([...LINK_OUTPUT_SCHEMA.required]);
   });

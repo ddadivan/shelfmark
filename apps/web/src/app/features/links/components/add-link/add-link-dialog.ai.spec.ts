@@ -80,6 +80,7 @@ const DONE: AiJobResponse = {
     suggestion('s-new', SUGGESTION_KIND.NewTag, 'state management'),
   ],
   summary: null,
+  title: null,
 };
 
 interface FakeLinksApi extends Pick<LinksApi, 'preview' | 'create' | 'update'> {

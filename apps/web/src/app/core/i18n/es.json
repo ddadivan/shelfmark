@@ -273,7 +273,7 @@
         "list": "Sugerencias de etiquetas"
       },
       "note": {
-        "label": "Nota",
+        "label": "Tu nota",
         "placeholder": "¿Por qué lo guardas?",
         "hint": "Te ayuda a encontrarlo después",
         "counter": "caracteres",
@@ -3201,7 +3201,10 @@
         "alt": "Alt",
         "shiftMac": "⇧",
         "shift": "Shift"
-      }
+      },
+      "filling": "Rellenando…",
+      "needLink": "Pega primero un enlace",
+      "nothing": "La IA no tiene nada que rellenar para este enlace"
     },
     "line": {
       "limit": "Sugerencias en pausa hasta el {{date}}. Has usado los {{limit}} enlaces de este mes.",
@@ -3376,7 +3379,9 @@
       "off": "Pregunta a tus enlaces está desactivado en Ajustes › IA.",
       "retry": "Reintentar",
       "truncated": "La respuesta se cortó.",
-      "stopped": "Detenido."
+      "stopped": "Detenido.",
+      "button": "Preguntar",
+      "try": "Prueba"
     },
     "connect": {
       "title": "Conecta tu asistente",
@@ -3472,6 +3477,30 @@
           }
         }
       }
+    },
+    "announce": {
+      "title": "Shelfmark ya puede ayudarte con IA",
+      "lead": "Está desactivada hasta que la actives. Siempre decides tú, y cada sugerencia se puede deshacer.",
+      "close": "Cerrar",
+      "folder": {
+        "title": "Carpeta y etiquetas",
+        "text": "Sugeridas al guardar, se rellenan con un clic"
+      },
+      "summaries": {
+        "title": "Resúmenes breves",
+        "text": "Dos líneas en cada tarjeta, para recordar por qué lo guardaste"
+      },
+      "meaning": {
+        "title": "Búsqueda por significado",
+        "text": "Encuentra enlaces aunque las palabras no coincidan"
+      },
+      "ask": {
+        "title": "Pregunta a tu estantería",
+        "text": "Respuestas a partir de tus enlaces, con fuentes"
+      },
+      "turnOn": "Activar la IA…",
+      "notNow": "Ahora no",
+      "note": "A continuación verás qué se envía y adónde, y elegirás. Puedes desactivarla en cualquier momento en Ajustes › IA."
     }
   },
   "rediscover": {

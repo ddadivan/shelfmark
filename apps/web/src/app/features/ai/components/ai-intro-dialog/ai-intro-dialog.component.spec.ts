@@ -30,6 +30,7 @@ class HostComponent {}
 const RESPONSE: AiSettingsResponse = {
   settings: { ...AI_SETTINGS_DEFAULT },
   introSeen: false,
+  announcementSeen: true,
   entitlements: { plan: ACCOUNT_PLAN.Free, aiTier: AI_TIER.Free },
   usage: {
     linksUsed: 0,

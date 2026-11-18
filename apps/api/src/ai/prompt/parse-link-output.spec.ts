@@ -4,6 +4,7 @@ import type { ParseLinkContext } from '../models/parse-link-context.interface';
 const context: ParseLinkContext = {
   parts: ['tags', 'folder', 'summary'],
   tags: ['CSS', 'ux', 'to-read'],
+  title: { wanted: false, page: null },
   folders: [
     { key: 'f1', path: 'Work' },
     { key: 'f2', path: 'Work / Design' },
@@ -25,6 +26,7 @@ describe('parseLinkOutput', () => {
       newTag: 'grid-layout',
       folder: 'f2',
       summary: 'A guide to grid.',
+      title: null,
       kind: 'article',
     });
   });
@@ -130,7 +132,47 @@ describe('parseLinkOutput', () => {
       newTag: null,
       folder: null,
       summary: null,
+      title: null,
       kind: null,
     });
+  });
+});
+
+describe('parseLinkOutput title (drafts)', () => {
+  const draft: ParseLinkContext = {
+    ...context,
+    title: { wanted: true, page: 'Wool coat, straight cut, graphite | COS' },
+  };
+  const answer = (title: unknown) => ({
+    tags: [],
+    newTag: null,
+    folder: null,
+    summary: null,
+    title,
+    kind: null,
+  });
+
+  it('keeps a cleaned-up title as plain text', () => {
+    expect(parseLinkOutput(answer('  Wool coat,  straight cut, graphite '), draft)?.title).toBe(
+      'Wool coat, straight cut, graphite',
+    );
+    expect(parseLinkOutput(answer('<b>Wool</b> coat'), draft)?.title).toBe('Wool coat');
+  });
+
+  it('drops a title that is empty or only the page title again', () => {
+    expect(parseLinkOutput(answer('  '), draft)?.title).toBeNull();
+    expect(
+      parseLinkOutput(answer('wool coat, straight cut, graphite | cos'), draft)?.title,
+    ).toBeNull();
+    expect(parseLinkOutput(answer(null), draft)?.title).toBeNull();
+  });
+
+  it('caps the length and rejects a wrong type', () => {
+    expect(parseLinkOutput(answer('x'.repeat(500)), draft)?.title?.length).toBe(300);
+    expect(parseLinkOutput(answer(5), draft)).toBeNull();
+  });
+
+  it('gives no title when the job did not ask for one', () => {
+    expect(parseLinkOutput(answer('A title'), context)?.title).toBeNull();
   });
 });

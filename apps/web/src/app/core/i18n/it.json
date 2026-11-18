@@ -273,7 +273,7 @@
         "list": "Suggerimenti di tag"
       },
       "note": {
-        "label": "Nota",
+        "label": "La tua nota",
         "placeholder": "Perché lo stai salvando?",
         "hint": "Ti aiuta a ritrovarlo dopo",
         "counter": "caratteri",
@@ -3201,7 +3201,10 @@
         "alt": "Alt",
         "shiftMac": "⇧",
         "shift": "Shift"
-      }
+      },
+      "filling": "Compilazione…",
+      "needLink": "Incolla prima un link",
+      "nothing": "L’IA non ha nulla da compilare per questo link"
     },
     "line": {
       "limit": "Suggerimenti in pausa fino al {{date}}. Hai usato i {{limit}} link di questo mese.",
@@ -3376,7 +3379,9 @@
       "off": "Chiedi ai tuoi link è disattivato in Impostazioni › IA.",
       "retry": "Riprova",
       "truncated": "La risposta è stata interrotta.",
-      "stopped": "Interrotto."
+      "stopped": "Interrotto.",
+      "button": "Chiedi",
+      "try": "Prova"
     },
     "connect": {
       "title": "Collega il tuo assistente",
@@ -3472,6 +3477,30 @@
           }
         }
       }
+    },
+    "announce": {
+      "title": "Shelfmark ora può aiutarti con l’IA",
+      "lead": "Resta spenta finché non la attivi. Decidi sempre tu, e ogni suggerimento si può annullare.",
+      "close": "Chiudi",
+      "folder": {
+        "title": "Cartella e tag",
+        "text": "Suggeriti mentre salvi, compilati con un clic"
+      },
+      "summaries": {
+        "title": "Riassunti brevi",
+        "text": "Due righe su ogni scheda, per ricordare perché l’hai salvato"
+      },
+      "meaning": {
+        "title": "Ricerca per significato",
+        "text": "Trova i link anche quando le parole non coincidono"
+      },
+      "ask": {
+        "title": "Chiedi al tuo scaffale",
+        "text": "Risposte dai tuoi link, con le fonti"
+      },
+      "turnOn": "Attiva l’IA…",
+      "notNow": "Non ora",
+      "note": "Poi vedrai cosa viene inviato e dove, e deciderai. Puoi disattivarla in qualsiasi momento in Impostazioni › IA."
     }
   },
   "rediscover": {

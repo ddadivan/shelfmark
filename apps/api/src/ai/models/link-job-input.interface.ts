@@ -21,6 +21,8 @@ export interface LinkJobInput {
   tags: readonly string[];
   /** The user's live folders by short key. */
   folders: readonly LinkJobFolder[];
+  /** A cleaned-up title is wanted too (Add link drafts only). */
+  wantsTitle: boolean;
   /** Earlier choices of the user for the same site (folder keys and own tag names only), newest first. */
   examples: readonly LinkJobExample[];
 }

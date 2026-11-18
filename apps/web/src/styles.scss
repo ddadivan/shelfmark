@@ -14,6 +14,14 @@
   }
 }
 
+// The Ask tab of the phone tab bar (#499, #507): its spark icon is the AI colour, like the spark
+// everywhere else (the label keeps the tab's colour, and the active tab keeps its tint, so it
+// stays readable in both themes). `ui-tab-bar` has no per-item colour, so the rule reaches the
+// icon of the one link that goes to `/ask` (`APP_PATH.Ask`); the icon inherits its colour.
+.ui-tab-bar__tab[href='/ask'] ui-icon {
+  color: var(--ai);
+}
+
 // While the bulk bar shows (#267), toasts sit 12px above it (a global rule: a toast never covers
 // the bar). `ToastAreaService` measures the bar and sets the exact offset on `html` (#352); these
 // rules are the first frame before it does. Desktop: the bar's bottom is on the sidebar card's

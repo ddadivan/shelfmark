@@ -7,6 +7,7 @@ import {
   addLinkWith,
   AI_TITLE,
   AI_URL,
+  AI_SUMMARY,
   AI_WAIT,
   cardOf,
   saveLink,
@@ -27,7 +28,7 @@ test.describe('Fill in with AI (F1c, #499, mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
   test(
-    'one press applies the folder and the existing tag; the new tag stays a chip',
+    'one press fills the folder, all tags (new ones too) and the summary; the note stays yours',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await openLinks(page);
@@ -38,17 +39,55 @@ test.describe('Fill in with AI (F1c, #499, mock API)', () => {
 
       await expect(dialog.getByRole('combobox', { name: 'Folder' })).toContainText('Angular');
       await expect(dialog.getByRole('button', { name: 'Remove tag docs' })).toBeVisible();
-      // The new tag is never created by the press: it stays a suggestion.
+      // The new tag goes in too; its dashed chip is gone.
+      await expect(dialog.getByRole('button', { name: 'Remove tag example' })).toBeVisible();
       await expect(
         tagSuggestions(dialog).getByRole('button', { name: 'Create and add tag example' }),
-      ).toBeVisible();
-      await expect(dialog.getByRole('button', { name: 'Remove tag example' })).toHaveCount(0);
-      await expect(fill).toHaveCount(0);
+      ).toHaveCount(0);
+      // The summary field appears with AI's text; the note is untouched.
+      await expect(dialog.getByLabel('Summary')).toHaveValue(AI_SUMMARY);
+      await expect(dialog.getByLabel('Your note')).toHaveValue('');
       // Ordinary values: no "Moved by AI" mark.
       await expect(dialog).not.toContainText('Moved by AI');
 
       await saveLink(dialog);
-      await expect(cardOf(page, AI_TITLE)).toContainText('docs');
+      const card = cardOf(page, AI_TITLE);
+      await expect(card).toContainText('docs');
+      await expect(card).toContainText('example');
+    },
+  );
+
+  test(
+    'is inactive until a link is pasted, then fills a video address from the user own folder and tags',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      // The demo library has a Videos folder and a "video" tag.
+      await page.addInitScript(() => sessionStorage.setItem('sm-mock-links-scenario', 'showcase'));
+      await openLinks(page);
+      await page.getByRole('button', { name: 'Add link' }).first().click();
+      const dialog = page.getByRole('dialog', { name: 'Add link' });
+      const fill = dialog.getByRole('button', { name: FILL });
+      await expect(fill).toHaveAttribute('aria-disabled', 'true');
+      // Focusable (not natively disabled): the tooltip stays readable.
+      await expect(fill).not.toHaveAttribute('disabled', '');
+      await expect(dialog).toContainText('Paste a link first', { useInnerText: false });
+
+      await dialog
+        .getByLabel('Link', { exact: true })
+        .fill('https://www.youtube.com/watch?v=abc123');
+      await expect(fill).not.toHaveAttribute('aria-disabled', 'true');
+      // The due-reminder toast of the demo library may float over the footer.
+      const dismiss = page.getByRole('button', { name: 'Dismiss' });
+      if (await dismiss.count()) {
+        await dismiss.first().click();
+      }
+      await fill.click();
+      await expect(dialog.getByRole('combobox', { name: 'Folder' })).toContainText(
+        'Videos',
+        AI_WAIT,
+      );
+      await expect(dialog.getByRole('button', { name: 'Remove tag video' })).toBeVisible();
+      await expect(dialog.getByLabel('Summary')).not.toHaveValue('');
     },
   );
 

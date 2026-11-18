@@ -563,6 +563,7 @@ describe('AI link jobs', () => {
         reason: 'off',
         suggestions: [],
         summary: null,
+        title: null,
       });
       await turnOn({ tagsMode: 'off', folderMode: 'off', summaries: false });
       expect((await draft({ draftId })).reason).toBe('off');
@@ -620,6 +621,26 @@ describe('AI link jobs', () => {
           folderId: design,
         },
       ]);
+    });
+
+    it('answers a cleaned-up title for a draft, never applies it, and keeps the user summary (#507)', async () => {
+      await turnOn();
+      const draftId = randomUUID();
+      const started = await draft({ draftId, title: 'Design systems | Example' });
+      await deferrer.flush();
+      const ready = await job(started.id);
+      expect(ready.title).toBe('Design systems');
+      const saved = await save({
+        aiDraftId: draftId,
+        title: 'My own title',
+        summary: 'My own words about it.',
+      });
+      expect(saved).toMatchObject({
+        title: 'My own title',
+        summary: 'My own words about it.',
+        summarySource: 'user',
+      });
+      expect((await job(started.id)).title).toBeNull();
     });
 
     it('applies the result on the link when the draft finishes after the save', async () => {
@@ -764,6 +785,7 @@ describe('AI link jobs', () => {
         reason: 'off',
         suggestions: [],
         summary: null,
+        title: null,
       });
     });
 

@@ -14,6 +14,7 @@ import { AskStatusDto } from './ask-status.dto';
 export class AiSettingsResponseDto implements AiSettingsResponse {
   @ApiProperty({ type: AiSettingsDto }) settings!: AiSettingsDto;
   @ApiProperty() introSeen!: boolean;
+  @ApiProperty() announcementSeen!: boolean;
   @ApiProperty({ type: AiEntitlementsDto }) entitlements!: AiEntitlementsDto;
   @ApiProperty({ type: AiUsageDto }) usage!: AiUsageDto;
   @ApiProperty({ enum: Object.values(AI_PROVIDER_STATUS) }) providerStatus!: AiProviderStatus;

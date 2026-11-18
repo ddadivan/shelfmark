@@ -22,6 +22,12 @@ import type { TagSynonymsOutcome } from '../models/tag-synonyms-outcome.type';
 
 const VIDEO_HOSTS = ['youtube.com', 'youtu.be', 'vimeo.com'];
 
+/** The mock's "cleaned-up" title: the page title without a trailing site name (" | X", " - X"). */
+function mockTitle(title: string | null): string | null {
+  const cleaned = (title ?? '').replace(/\s+[|\-\u2013\u2014]\s+[^|\-\u2013\u2014]+$/u, '').trim();
+  return cleaned !== '' && cleaned !== title ? cleaned : null;
+}
+
 /** Waits `ms` or until `signal` aborts, whichever comes first. */
 const realDelay: MockAskDelay = (ms, signal) =>
   new Promise((resolve) => {
@@ -171,6 +177,7 @@ export class MockAiProvider implements AiProvider {
       tags,
       newTag,
       folder,
+      title: input.wantsTitle ? mockTitle(input.title) : null,
       summary: wantsSummary ? `A page about ${subject}.`.slice(0, MOCK_AI.SummaryMax) : null,
       kind: VIDEO_HOSTS.includes(host) ? 'video' : 'article',
     };

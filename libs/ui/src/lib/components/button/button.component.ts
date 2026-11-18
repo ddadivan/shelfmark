@@ -79,7 +79,16 @@ export class ButtonComponent implements UiFocusTarget {
   /** Accessible name; required for icon-only buttons. */
   readonly ariaLabel = input<string>();
   readonly disabled = input(false, { transform: booleanAttribute });
-  /** Busy: spinner, `aria-busy`, width locked, activation blocked. The button stays focusable. */
+  /**
+   * Not available yet, but the button stays focusable and keeps its tooltip (`aria-disabled="true"`,
+   * the disabled look, activation blocked). For an action that waits for something the user can do
+   * ("Paste a link first"); `disabled` removes the button from the tab order.
+   */
+  readonly ariaDisabled = input(false, { transform: booleanAttribute });
+  /**
+   * Busy: spinner, `aria-busy`, width locked, activation blocked. The button stays focusable. The
+   * `ai` variant has no spinner: its spark pulses and a soft light sweeps across the button.
+   */
   readonly loading = input(false, { transform: booleanAttribute });
   /** Renders an inner `<a href>` instead of a `<button>` (`type` then does not apply). */
   readonly href = input<string>();
@@ -123,6 +132,11 @@ export class ButtonComponent implements UiFocusTarget {
   /** The inner native `<button>` / `<a>`; `undefined` until rendered. */
   readonly element = computed(() => this.control()?.nativeElement);
 
+  /** The `ai` variant (with a label) shows busy as a pulsing spark and a light sweep. */
+  protected readonly aiBusy = computed(
+    () => this.loading() && this.variant() === BUTTON_VARIANT.Ai && !this.iconOnly(),
+  );
+
   protected readonly isLink = computed(() => this.href() !== undefined);
   /** A link without `href` (disabled or busy): no navigation by middle click or context menu. */
   protected readonly inert = computed(() => this.disabled() || this.loading());
@@ -131,7 +145,12 @@ export class ButtonComponent implements UiFocusTarget {
     () => this.iconOnly() && this.hitArea() === BUTTON_HIT_AREA.Overlay,
   );
   protected readonly rippleActive = computed(
-    () => this.ripple() && !this.disabled() && !this.loading() && !this.hasOverlay(),
+    () =>
+      this.ripple() &&
+      !this.disabled() &&
+      !this.ariaDisabled() &&
+      !this.loading() &&
+      !this.hasOverlay(),
   );
   /** Width (px) the button keeps while it is loading and until the spinner has left. */
   protected readonly lockedWidth = signal<number | undefined>(undefined);
@@ -151,6 +170,9 @@ export class ButtonComponent implements UiFocusTarget {
     }
     if (this.hasOverlay()) {
       classes.push('ui-button--hit-overlay');
+    }
+    if (this.aiBusy()) {
+      classes.push('ui-button--ai-busy');
     }
     return classes.join(' ');
   });
@@ -215,7 +237,7 @@ export class ButtonComponent implements UiFocusTarget {
     // button does not submit. Capture listeners higher up (the CDK overlay's outside-press)
     // still see the event; `preventDefault()` also stops link navigation.
     const swallowClick = (event: Event): void => {
-      if (this.loading()) {
+      if (this.loading() || this.ariaDisabled()) {
         event.preventDefault();
         event.stopImmediatePropagation();
       }

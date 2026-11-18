@@ -10,12 +10,34 @@
   gap: var(--space-4);
 }
 
+// The spark tile and the title in one row, the tile left of the title, both centred; the close
+// button sits at the end (the dialog's own header is hidden for this).
+.ai-intro__head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.ai-intro__heading {
+  @include type(title);
+
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--text);
+}
+
+.ai-intro__close {
+  flex: none;
+}
+
 // The soft indigo-to-sage tile: the only gradient of the AI design (AiIntro, BRAND.md › AI).
 .ai-intro__tile {
   display: grid;
   place-items: center;
   width: rem(48px);
   height: rem(48px);
+  flex: none;
   color: var(--ai);
   background: linear-gradient(135deg, var(--ai-bg), var(--accent-bg));
   border-radius: var(--radius-md);

@@ -68,7 +68,9 @@ describe('AskPage (#499)', () => {
     const { fixture, loader } = await setup();
     const host = fixture.nativeElement as HTMLElement;
     expect(host.querySelector('h1')?.textContent?.trim()).toBe('Ask your shelf');
-    expect(host.querySelector('h1 ui-icon use')?.getAttribute('href')).toMatch(/-spark$/);
+    expect(host.querySelector('.ask-heading__tile ui-icon use')?.getAttribute('href')).toMatch(
+      /-spark$/,
+    );
     expect(host.textContent).toContain('12 questions left today');
     expect(host.textContent).toContain('What do you want to find out?');
     expect(host.querySelector('.ask-page__bar app-ask-composer')).not.toBeNull();

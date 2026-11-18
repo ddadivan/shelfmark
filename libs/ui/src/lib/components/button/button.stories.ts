@@ -98,6 +98,26 @@ export const Ai: Story = {
   }),
 };
 
+/**
+ * Fill in with AI states: `ariaDisabled` (waits for a link: dimmed, still focusable, tooltip
+ * readable) and `loading` (the spark pulses and a soft light sweeps across; no spinner).
+ */
+export const AiStates: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { themes: Object.values(THEME) },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
+            <ui-button variant="ai" iconLeft="spark" ariaDisabled>Fill in with AI</ui-button>
+            <ui-button variant="ai" iconLeft="spark" loading>Filling…</ui-button>
+          </div>
+        }
+      </div>`,
+  }),
+};
+
 export const Small: Story = { args: { size: BUTTON_SIZE.Sm } };
 
 export const Large: Story = { args: { size: BUTTON_SIZE.Lg, variant: BUTTON_VARIANT.Primary } };

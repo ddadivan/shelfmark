@@ -12,6 +12,10 @@ import { AddLinkFormService } from './add-link-form.service';
  * "Edited by you" once the user typed or it is theirs; Rewrite (AI's text only) asks for a new
  * one and puts it in the field. The save sends `summary` only when the text differs from the
  * saved one (any text is then the user's; empty lets AI write again).
+ *
+ * Add link (#507): the field appears once "Fill in with AI" put the draft's summary in it
+ * (`fillDraft`); while the text is that AI text the save sends nothing (the server applies the
+ * draft's summary as AI's); any other text is the user's and goes with the create request.
  */
 @Service({ autoProvided: false })
 export class AddLinkSummaryService {
@@ -28,8 +32,13 @@ export class AddLinkSummaryService {
 
   readonly rewriting = this.linkState.rewriting;
 
-  readonly shown = computed(
-    () => this.original !== undefined && (this.saved() !== null || this.settings.summariesOn()),
+  /** Add link: the AI text "Fill in with AI" put in the field; `null` until it did. */
+  private readonly draftText = signal<string | null>(null);
+
+  readonly shown = computed(() =>
+    this.original === undefined
+      ? this.draftText() !== null || this.formState.model().summary.trim() !== ''
+      : this.saved() !== null || this.settings.summariesOn(),
   );
 
   /** The text differs from the saved summary. */
@@ -39,8 +48,12 @@ export class AddLinkSummaryService {
 
   /** Whose text the field holds: `null` while it is empty. */
   readonly source = computed<SummarySource | null>(() => {
-    if (this.formState.model().summary.trim() === '') {
+    const text = this.formState.model().summary.trim();
+    if (text === '') {
       return null;
+    }
+    if (this.original === undefined) {
+      return text === this.draftText() ? SUMMARY_SOURCE.Ai : SUMMARY_SOURCE.User;
     }
     return this.edited() || this.savedSource() === SUMMARY_SOURCE.User
       ? SUMMARY_SOURCE.User
@@ -49,7 +62,10 @@ export class AddLinkSummaryService {
 
   /** Rewrite: only for AI's untouched text while AI writes summaries. */
   readonly canRewrite = computed(
-    () => this.settings.summariesOn() && this.source() === SUMMARY_SOURCE.Ai,
+    () =>
+      this.original !== undefined &&
+      this.settings.summariesOn() &&
+      this.source() === SUMMARY_SOURCE.Ai,
   );
 
   /**
@@ -69,14 +85,40 @@ export class AddLinkSummaryService {
   });
 
   /** Puts `fillSummary` into the field; it is the saved AI text, so the save sends nothing for it. */
-  fill(): void {
+  fill(): boolean {
     const text = this.fillSummary();
     if (text === null) {
-      return;
+      return false;
     }
     this.saved.set(text);
     this.savedSource.set(SUMMARY_SOURCE.Ai);
     this.formState.model.update((model) => ({ ...model, summary: text }));
+    return true;
+  }
+
+  /**
+   * Add link, "Fill in with AI": the draft's summary into an empty Summary field. `false` when the
+   * field already has text (the user's wins) or there is none.
+   */
+  fillDraft(text: string | null): boolean {
+    if (
+      this.original !== undefined ||
+      text === null ||
+      this.formState.model().summary.trim() !== ''
+    ) {
+      return false;
+    }
+    this.draftText.set(text);
+    this.formState.model.update((model) => ({ ...model, summary: text }));
+    return true;
+  }
+
+  /** The `summary` of a create request: the user's own text; nothing for AI's untouched text. */
+  createSummary(): string | undefined {
+    const text = this.formState.model().summary.trim();
+    return this.original === undefined && text !== '' && text !== this.draftText()
+      ? text
+      : undefined;
   }
 
   /** A new AI summary in the field; a refusal or failure keeps the text and says so. */

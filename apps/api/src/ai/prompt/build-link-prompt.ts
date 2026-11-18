@@ -29,6 +29,7 @@ export function buildLinkUserPrompt(input: LinkJobInput): string {
       [
         `parts: ${input.parts.join(', ')}`,
         `summary_language: ${clean(input.language, false)}`,
+        `clean_title: ${input.wantsTitle ? 'yes' : 'no'}`,
       ].join('\n'),
     ),
     block(

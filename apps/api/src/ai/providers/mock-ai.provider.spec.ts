@@ -3,6 +3,7 @@ import type { LinkJobInput } from '../models/link-job-input.interface';
 
 const input = (overrides: Partial<LinkJobInput> = {}): LinkJobInput => ({
   parts: ['tags', 'folder', 'summary'],
+  wantsTitle: false,
   language: 'en',
   url: 'https://www.example.com/css-grid-guide',
   title: 'A CSS grid guide',
@@ -31,9 +32,21 @@ describe('MockAiProvider', () => {
         newTag: 'example',
         folder: null,
         summary: 'A page about A CSS grid guide.',
+        title: null,
         kind: 'article',
       },
     });
+  });
+
+  it('cleans the title of a draft only when one is wanted', async () => {
+    const page = 'Wool coat, straight cut, graphite | COS';
+    const wanted = await provider.runLinkJob(input({ title: page, wantsTitle: true }));
+    expect(wanted).toMatchObject({
+      type: 'output',
+      output: { title: 'Wool coat, straight cut, graphite' },
+    });
+    const unwanted = await provider.runLinkJob(input({ title: page }));
+    expect(unwanted).toMatchObject({ type: 'output', output: { title: null } });
   });
 
   it('picks the first folder the link mentions and marks video hosts', async () => {

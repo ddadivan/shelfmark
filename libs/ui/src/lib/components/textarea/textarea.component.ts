@@ -19,7 +19,8 @@ import { TEXTAREA_MAX_ROWS } from './models/textarea-max-rows.const';
  * Multi-line field, for example the note "why I saved it", in the shared field shell. Bind it
  * with `<ui-textarea label="Note" [formField]="form.note" />` (same contract as `ui-input`).
  * It starts at `rows` (3) and grows with its content up to 8 rows (CDK `cdkTextareaAutosize`),
- * then scrolls. With `maxLength` the right of the hint row shows a counter such as `42 / 2000`;
+ * then scrolls (`maxRows`). Content marked `slot="end"` sits inside the box after the text (a send
+ * button). With `maxLength` the right of the hint row shows a counter such as `42 / 2000`;
  * `counterLabel` adds the unit for screen readers.
  */
 @Component({
@@ -45,7 +46,10 @@ export class TextareaComponent extends UiFieldControl implements FormValueContro
   /** The browser's spell-check (its own dictionary) while typing; on by default. */
   readonly spellcheck = input(true, { transform: booleanAttribute });
 
-  protected readonly maxRows = TEXTAREA_MAX_ROWS;
+  /** The label is for assistive technology only (a field whose purpose is clear from its place). */
+  readonly labelHidden = input(false, { transform: booleanAttribute });
+  /** Rows after which the field scrolls instead of growing. */
+  readonly maxRows = input(TEXTAREA_MAX_ROWS, { transform: numberAttribute });
 
   private readonly native = viewChild.required<ElementRef<HTMLTextAreaElement>>('native');
   private readonly autosize = viewChild(CdkTextareaAutosize);

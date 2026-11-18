@@ -282,6 +282,7 @@ export class AiBackfillService {
       customId: job.jobId,
       input: {
         parts: job.parts,
+        wantsTitle: false,
         language: job.language,
         url: job.url,
         title: job.title,

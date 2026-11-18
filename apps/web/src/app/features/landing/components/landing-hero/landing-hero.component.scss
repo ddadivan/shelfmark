@@ -87,6 +87,60 @@
   }
 }
 
+// Longer languages (#507): the headline is sized for English ("Even in a year." is the widest
+// line). Ukrainian, Spanish and Portuguese run about 70% longer per line, German, French and
+// Italian about 30%, so they get a smaller size (still the same fluid rules) and may wrap inside a
+// sentence instead of breaking into one word per line.
+.landing-hero__title:lang(uk),
+.landing-hero__title:lang(es),
+.landing-hero__title:lang(pt) {
+  font-size: rem(32px);
+  line-height: rem(32px);
+
+  @include tablet {
+    font-size: rem(46px);
+    line-height: rem(46px);
+  }
+
+  @include desktop {
+    font-size: min(#{rem(64px)}, 9.5cqi);
+    line-height: 0.96;
+  }
+
+  @include landing.wide {
+    font-size: min(#{rem(76px)}, 9.5cqi);
+  }
+
+  @include landing.xwide {
+    font-size: min(#{rem(88px)}, 9.5cqi);
+  }
+}
+
+.landing-hero__title:lang(de),
+.landing-hero__title:lang(fr),
+.landing-hero__title:lang(it) {
+  font-size: rem(38px);
+  line-height: rem(38px);
+
+  @include tablet {
+    font-size: rem(54px);
+    line-height: rem(52px);
+  }
+
+  @include desktop {
+    font-size: min(#{rem(74px)}, 12cqi);
+    line-height: 0.95;
+  }
+
+  @include landing.wide {
+    font-size: min(#{rem(84px)}, 12cqi);
+  }
+
+  @include landing.xwide {
+    font-size: min(#{rem(96px)}, 12cqi);
+  }
+}
+
 .landing-hero__line {
   display: block;
 }

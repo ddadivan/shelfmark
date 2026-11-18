@@ -34,7 +34,9 @@ Motion defines Shelfmark's few animations. The one signature moment is saving a 
 | Favorite | star scales 1→1.25→1, turns sage; un-favorite has no animation | 200 ms `ease-spring` |
 | Accept a suggestion (AI) | the dashed chip turns solid sage and pulses 1→1.06→1, then moves into the field as a tag; × fades the chip out | 200 ms `ease-spring` / 120 ms |
 | Ask answer streams (AI) | text appends in place with a 2px `ai` caret blinking (1 s steps); sources fade in when complete; reduced motion: no blink, text in chunks | — |
-| «Fill in with AI» appears (AI) | when suggestions become ready the button fades in and grows 0.96→1, once per appearance (`animate.enter`); it leaves with a fade (`animate.leave`); no loop, shimmer or pulse; reduced motion: fade only | 200 ms `ease-out` / 120 ms `ease-in` |
+| «Fill in with AI» appears (AI) | when suggestions become ready the button fades in and grows 0.96→1, once per appearance (`animate.enter`); it leaves with a fade (`animate.leave`); no loop of its own; reduced motion: fade only | 200 ms `ease-out` / 120 ms `ease-in` |
+| «Fill in with AI» runs (AI) | while the draft is awaited (a loader): the spark keeps its place and pulses (scale 0.85→1.12, opacity 0.55→1) and a soft light sweeps across the button (40% wide, `ai` at 22%, translateX −120%→320%); both loop until the draft arrives or times out; reduced motion: static spark, no sweep | 1.2 s / 1.6 s `ease-in-out` |
+| One-time AI announcement (AI) | the spark tile scales 0.6→1.08→1 and rotates −20°→4°→0 (`ease-spring`), the title rises 16 px, the four feature cards rise 10 px one after the other, the buttons rise last; a soft glow breathes behind; reduced motion: everything at once, glow still | 0.3–1 s `ease-out` / `ease-spring` |
 | AI content arrives | skeleton chips or summary lines (loader), then the content fades in (`sm-reveal`); no typing effect for summaries | 200 ms |
 | Delete | card fades and collapses, neighbours close the gap (FLIP) | 200 ms |
 | Tree expand | chevron rotates, children open by height | 120 / 200 ms `ease-in-out` |

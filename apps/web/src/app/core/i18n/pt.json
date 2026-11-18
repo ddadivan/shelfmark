@@ -273,7 +273,7 @@
         "list": "Sugestões de tags"
       },
       "note": {
-        "label": "Nota",
+        "label": "Sua nota",
         "placeholder": "Por que você está salvando isto?",
         "hint": "Ajuda a encontrar depois",
         "counter": "caracteres",
@@ -3201,7 +3201,10 @@
         "alt": "Alt",
         "shiftMac": "⇧",
         "shift": "Shift"
-      }
+      },
+      "filling": "Preenchendo…",
+      "needLink": "Cole um link primeiro",
+      "nothing": "A IA não tem nada para preencher neste link"
     },
     "line": {
       "limit": "Sugestões pausadas até {{date}}. Você usou os {{limit}} links deste mês.",
@@ -3376,7 +3379,9 @@
       "off": "Pergunte aos seus links está desativado em Configurações › IA.",
       "retry": "Tentar de novo",
       "truncated": "A resposta foi interrompida.",
-      "stopped": "Parado."
+      "stopped": "Parado.",
+      "button": "Perguntar",
+      "try": "Experimente"
     },
     "connect": {
       "title": "Conecte seu assistente",
@@ -3472,6 +3477,30 @@
           }
         }
       }
+    },
+    "announce": {
+      "title": "O Shelfmark agora pode ajudar com IA",
+      "lead": "Ela fica desligada até você ligar. A decisão é sempre sua, e cada sugestão pode ser desfeita.",
+      "close": "Fechar",
+      "folder": {
+        "title": "Pasta e tags",
+        "text": "Sugeridas ao salvar, preenchidas com um clique"
+      },
+      "summaries": {
+        "title": "Resumos curtos",
+        "text": "Duas linhas em cada cartão, para lembrar por que você salvou"
+      },
+      "meaning": {
+        "title": "Busca por significado",
+        "text": "Encontra links mesmo quando as palavras não coincidem"
+      },
+      "ask": {
+        "title": "Pergunte à sua estante",
+        "text": "Respostas a partir dos seus links, com fontes"
+      },
+      "turnOn": "Ativar a IA…",
+      "notNow": "Agora não",
+      "note": "Em seguida você verá o que é enviado e para onde, e então escolhe. Você pode desativar a qualquer momento em Configurações › IA."
     }
   },
   "rediscover": {

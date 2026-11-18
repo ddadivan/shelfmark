@@ -15,8 +15,9 @@ export const LINK_OUTPUT_SCHEMA = {
     newTag: nullable({ type: 'string' }),
     folder: nullable({ type: 'string' }),
     summary: nullable({ type: 'string' }),
+    title: nullable({ type: 'string' }),
     kind: nullable({ type: 'string', enum: Object.values(LINK_KIND) }),
   },
-  required: ['tags', 'newTag', 'folder', 'summary', 'kind'],
+  required: ['tags', 'newTag', 'folder', 'summary', 'title', 'kind'],
   additionalProperties: false,
 } as const;

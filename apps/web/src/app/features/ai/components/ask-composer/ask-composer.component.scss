@@ -4,17 +4,39 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+
+  // One container: the border, the focus ring (in the AI colour) and the send button inside.
+  --focus-ring: var(--ai);
+  --ui-field-radius: var(--radius-lg);
+  --ui-field-bg: var(--bg);
+  --ui-field-block-padding: var(--space-2);
+  --ui-field-end-padding: var(--space-2);
+  --ui-textarea-padding: 0;
+  --ui-textarea-margin: #{rem(9px)};
 }
 
 .ask-composer__form {
-  display: flex;
-  gap: var(--space-2);
-  align-items: flex-end;
+  display: block;
 }
 
-.ask-composer__field {
-  flex: 1;
-  min-width: 0;
+.ask-composer__end {
+  display: inline-flex;
+  flex: none;
+  align-self: flex-end;
+  align-items: center;
+
+  // Nothing to send: a quiet round button; ready: solid `ai` with a light arrow.
+  --ui-button-ai-bg: var(--surface-hover);
+  --ui-button-ai-bg-hover: var(--surface-hover);
+  --ui-button-ai-bg-pressed: var(--surface-hover);
+  --ui-button-ai-icon: var(--text-muted);
+}
+
+.ask-composer__send--ready {
+  --ui-button-ai-bg: var(--ai);
+  --ui-button-ai-bg-hover: color-mix(in srgb, var(--ai) 88%, var(--text));
+  --ui-button-ai-bg-pressed: color-mix(in srgb, var(--ai) 78%, var(--text));
+  --ui-button-ai-icon: var(--bg);
 }
 
 .ask-composer__footer {
@@ -22,4 +44,5 @@
 
   margin: 0;
   color: var(--text-muted);
+  text-align: center;
 }

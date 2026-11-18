@@ -1,31 +1,41 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ButtonComponent, ICON_SIZE, TooltipDirective } from '@shelfmark/ui';
+import { ButtonComponent, TooltipDirective } from '@shelfmark/ui';
 import { AiSettingsStore } from '../../services/ai-settings.store';
 import { AskPanelService } from '../../services/ask-panel.service';
 
-/** The spark button in the shell header that opens Ask your shelf; nothing while Ask is off. */
+/**
+ * The "Ask" pill in the shell header that opens Ask your shelf, after the search field: a tinted
+ * `ai` button (spark, short label, `ai-line` edge) as high as the field. Its accessible name and
+ * tooltip are the long "Ask your shelf"; nothing while Ask is off.
+ */
 @Component({
   selector: 'app-ask-header-button',
   imports: [TranslocoPipe, ButtonComponent, TooltipDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  styles: `
+    :host {
+      display: inline-flex;
+      flex: none;
+      --ui-button-ai-border: var(--ai-line);
+    }
+  `,
   template: `
     @if (settings.askOn()) {
       <ui-button
-        variant="ghost"
-        iconOnly
+        variant="ai"
         iconLeft="spark"
         ariaHaspopup="dialog"
-        [iconSize]="ICON_SIZE.Lg"
         [ariaLabel]="'ai.ask.open' | transloco"
         [uiTooltip]="'ai.ask.open' | transloco"
         (click)="panel.open()"
-      />
+      >
+        {{ 'ai.ask.button' | transloco }}
+      </ui-button>
     }
   `,
 })
 export class AskHeaderButtonComponent {
   protected readonly settings = inject(AiSettingsStore);
   protected readonly panel = inject(AskPanelService);
-  protected readonly ICON_SIZE = ICON_SIZE;
 }

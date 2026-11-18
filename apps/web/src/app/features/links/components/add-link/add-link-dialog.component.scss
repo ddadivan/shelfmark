@@ -200,3 +200,9 @@
   gap: var(--space-2);
   min-width: 0;
 }
+
+// The note is the user's own and comes last: a little more room above it sets it apart from the
+// fields Fill in with AI can change.
+.add-link__own-note {
+  margin-block-start: var(--space-2);
+}

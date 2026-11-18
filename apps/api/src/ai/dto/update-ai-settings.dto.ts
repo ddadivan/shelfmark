@@ -5,7 +5,7 @@ import {
   type AiSummaryLanguage,
   type UpdateAiSettingsRequest,
 } from '@shelfmark/contracts';
-import { IsBoolean, IsIn, ValidateIf } from 'class-validator';
+import { Equals, IsBoolean, IsIn, ValidateIf } from 'class-validator';
 import { AI_SUMMARY_LANGUAGES } from '../models/ai-summary-languages.const';
 
 // Absent is fine, but an explicit null is not (IsOptional would let it through).
@@ -60,4 +60,11 @@ export class UpdateAiSettingsDto implements UpdateAiSettingsRequest {
   @ValidateIf(present)
   @IsBoolean()
   ask?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'The one-time AI announcement was closed or answered (only true is accepted)',
+  })
+  @ValidateIf(present)
+  @Equals(true)
+  announcementSeen?: true;
 }

@@ -21,7 +21,33 @@
   white-space: pre-line;
   color: var(--text);
   background: var(--surface-hover);
-  border-radius: rem(18px) rem(18px) rem(6px);
+  border-radius: rem(20px) rem(20px) rem(6px);
+}
+
+// The reply: a small spark tile (`ai-fill`) beside the text, disclaimer and projected sources.
+.ui-streaming-answer__reply {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.ui-streaming-answer__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: rem(28px);
+  height: rem(28px);
+  color: var(--ai);
+  background: var(--ai-fill);
+  border-radius: rem(9px);
+}
+
+.ui-streaming-answer__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
 }
 
 // The answer (`sm-answer`): 15/24 plain text; line breaks from the model are kept.
@@ -50,12 +76,12 @@
   vertical-align: rem(2px);
   color: var(--text);
   cursor: pointer;
-  background: var(--surface-hover);
+  background: var(--ai-fill);
   border: 0;
   border-radius: rem(6px);
 
   @include hover {
-    background: var(--surface-pressed);
+    background: var(--ai-fill-hover);
   }
 
   &:focus-visible {
