@@ -13,6 +13,6 @@ export const MOCK_ASK = {
   NotFoundMarker: 'sourdough',
   SlowMs: 30_000,
   CutAfterChunks: 2,
-  TitleMax: 80,
+  TitleMax: 120,
   TemplateSourcesMax: 3,
 } as const;
