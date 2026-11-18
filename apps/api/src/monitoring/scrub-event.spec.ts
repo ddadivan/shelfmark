@@ -67,6 +67,23 @@ describe('scrubEvent', () => {
     expect(event.server_name).toBeUndefined();
   });
 
+  it('never attaches the body of an Ask request (question or answer, ADR 0052)', () => {
+    const event: ErrorEvent = {
+      type: undefined,
+      transaction: 'POST /api/ai/ask',
+      request: {
+        url: 'https://shelfmark.app/api/ai/ask',
+        method: 'POST',
+        data: { question: 'what did I save about my diagnosis?' },
+      },
+      extra: { answer: 'You saved two links about it [1].' },
+    };
+    const scrubbed = scrubEvent(event);
+    expect(scrubbed.request).toBeUndefined();
+    expect(scrubbed.extra).toBeUndefined();
+    expect(JSON.stringify(scrubbed)).not.toMatch(/diagnosis|You saved/);
+  });
+
   it('keeps only the allow-listed contexts', () => {
     expect(Object.keys(scrubEvent(sample()).contexts ?? {})).toEqual(['runtime', 'os']);
   });
@@ -106,5 +123,21 @@ describe('scrubEvent', () => {
 
   it('handles an event without optional parts', () => {
     expect(scrubEvent({ type: undefined })).toEqual({ type: undefined });
+  });
+
+  it('drops the bearer token and the JSON-RPC body of an MCP request (ADR 0054)', () => {
+    const secret = ['smk', 'live', 'x'.repeat(43)].join('_');
+    const event: ErrorEvent = {
+      type: undefined,
+      transaction: 'POST /api/mcp',
+      request: {
+        url: 'https://shelfmark.app/api/mcp',
+        headers: { authorization: `Bearer ${secret}` },
+        data: '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"arguments":{"query":"x"}}}',
+      },
+    };
+    const scrubbed = JSON.stringify(scrubEvent(event));
+    expect(scrubbed).not.toContain(secret);
+    expect(scrubbed).not.toContain('tools/call');
   });
 });

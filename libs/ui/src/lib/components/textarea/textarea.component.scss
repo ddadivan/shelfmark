@@ -10,5 +10,15 @@
   @include field-native;
 
   display: block;
+
+  // `cdkTextareaAutosize` writes the height of the text alone; with `border-box` the 10px paddings
+  // came out of it and the last line was cut. `content-box` adds them back (no inline padding, so
+  // the width is unchanged).
+  box-sizing: content-box;
+
+  // A feature that frames the text itself (the Ask composer, one line next to a round button)
+  // moves the 10px padding into a margin, so the autosize measures only the lines.
+  padding-block: var(--ui-textarea-padding, #{rem(10px)});
+  margin-block: var(--ui-textarea-margin, 0);
   resize: none;
 }

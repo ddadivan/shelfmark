@@ -1,0 +1,107 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.ai-intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+// The spark tile and the title in one row, the tile left of the title, both centred; the close
+// button sits at the end (the dialog's own header is hidden for this).
+.ai-intro__head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.ai-intro__heading {
+  @include type(title);
+
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--text);
+}
+
+.ai-intro__close {
+  flex: none;
+}
+
+// The soft indigo-to-sage tile: the only gradient of the AI design (AiIntro, BRAND.md › AI).
+.ai-intro__tile {
+  display: grid;
+  place-items: center;
+  width: rem(48px);
+  height: rem(48px);
+  flex: none;
+  color: var(--ai);
+  background: linear-gradient(135deg, var(--ai-bg), var(--accent-bg));
+  border-radius: var(--radius-md);
+}
+
+.ai-intro__points {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ai-intro__point {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.ai-intro__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: rem(32px);
+  height: rem(32px);
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+}
+
+.ai-intro__text {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  min-width: 0;
+}
+
+.ai-intro__title {
+  @include type(label);
+
+  color: var(--text);
+}
+
+.ai-intro__desc,
+.ai-intro__details {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.ai-intro__foot {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+// Phone: stacked buttons, the main action on top (the DOM order stays secondary, primary).
+@include phone {
+  .ai-intro__foot {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}

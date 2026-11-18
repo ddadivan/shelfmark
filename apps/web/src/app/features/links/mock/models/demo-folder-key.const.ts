@@ -7,4 +7,5 @@ export const DEMO_FOLDER_KEY = {
   Courses: 'courses',
   Clothes: 'clothes',
   Recipes: 'recipes',
+  Videos: 'videos',
 } as const;

@@ -1,0 +1,89 @@
+@use '../../../../styles/ui' as *;
+
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(6px);
+  align-items: center;
+
+  // The toolbar is never a tab stop itself (Aria gives it tabindex -1); the chips draw the ring.
+  &:focus {
+    outline: none;
+  }
+}
+
+.ui-suggestion-row__label {
+  @include type(caption);
+
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin-right: rem(2px);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+// The mark is 14px next to 12px text (AiMark spec).
+.ui-suggestion-row__mark {
+  --ui-icon-size: #{rem(14px)};
+
+  color: var(--ai);
+}
+
+.ui-suggestion-row__add-all {
+  @include type(caption);
+
+  height: rem(28px);
+  padding: 0 rem(10px);
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-full);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include hover {
+    color: var(--text);
+    background: var(--surface-hover);
+  }
+
+  @include touch-target;
+}
+
+// Pills in the shape of the chips: `surface-pressed` with the shared shimmer sweep.
+.ui-suggestion-row__skeleton {
+  position: relative;
+  display: inline-block;
+  width: rem(76px);
+  height: rem(28px);
+  overflow: hidden;
+  background: var(--surface-pressed);
+  border-radius: var(--radius-full);
+
+  &:nth-of-type(2) {
+    width: rem(96px);
+  }
+
+  &:nth-of-type(3) {
+    width: rem(64px);
+  }
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background: linear-gradient(90deg, transparent, var(--skeleton-shimmer), transparent);
+    transform: translateX(-100%);
+
+    @include loop(shimmer);
+  }
+}
+
+.ui-suggestion-row__live {
+  @include visually-hidden;
+}

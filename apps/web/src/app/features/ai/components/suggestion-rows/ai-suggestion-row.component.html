@@ -1,0 +1,28 @@
+@if (shown()) {
+  <ui-suggestion-row
+    [label]="label()"
+    [ariaLabel]="ariaLabel()"
+    [loading]="loading()"
+    [loadingLabel]="loadingLabel()"
+    [addAll]="addAll()"
+    [addAllLabel]="addAllLabel()"
+    [announcement]="rowAnnouncement()"
+    (acceptAll)="acceptAll()"
+  >
+    @for (chip of chips(); track chip.id; let index = $index) {
+      <ui-suggestion
+        [label]="chip.label"
+        [kind]="chip.kind"
+        [ariaLabel]="chip.ariaLabel"
+        [dismissLabel]="chip.dismissLabel"
+        [newLabel]="newLabel()"
+        [folderColor]="chip.folderColour ?? 'graphite'"
+        [folderIcon]="chip.folderIcon ?? 'folder'"
+        (accepted)="accept(chip, index)"
+        (dismissed)="dismiss(chip, index)"
+      />
+    }
+  </ui-suggestion-row>
+}
+<!-- Says the change once the row itself has collapsed (its own live region left with it). -->
+<span class="ai-suggestion-row__live" aria-live="polite">{{ ownAnnouncement() }}</span>

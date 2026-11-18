@@ -120,6 +120,18 @@
   }
 }
 
+// The note slot: a muted caption line after the results, nothing while empty.
+.ui-command-list__note {
+  @include type(caption);
+
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  color: var(--text-muted);
+
+  &:empty {
+    display: none;
+  }
+}
+
 .ui-command-list__status {
   @include visually-hidden;
 }

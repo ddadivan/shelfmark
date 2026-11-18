@@ -72,7 +72,9 @@ import { FolderCoverComponent } from './components/folder-cover/folder-cover.com
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
 import { ExtensionBannerComponent } from './components/extension-banner/extension-banner.component';
 import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
+import { SplitRelatedService } from './services/split-related.service';
 import { SplitViewService } from './services/split-view.service';
+import { TidyEntryComponent } from '../ai/components/tidy-entry/tidy-entry.component';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
 
@@ -125,6 +127,7 @@ const SKELETON_COUNT = 8;
     SegmentedControlComponent,
     SkeletonComponent,
     SplitRightHalfComponent,
+    TidyEntryComponent,
   ],
   templateUrl: './library.page.html',
   styleUrls: [
@@ -156,6 +159,8 @@ export default class LibraryPage {
   /** From 80em: the "Side by side" button and the right half (#386). */
   protected readonly wide = inject(ViewportService).wide;
   protected readonly splitView = inject(SplitViewService);
+  /** "Show related" in the card and row menus (AI-3). */
+  protected readonly splitRelated = inject(SplitRelatedService);
   protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
   protected readonly folderChips = inject(FolderChipsService);
   /** Cards and rows name their folder in mixed feeds, not in a folder's own feed or Unsorted (#418). */
@@ -173,6 +178,10 @@ export default class LibraryPage {
     const banner = this.splitView.open() ? null : this.head.banner();
     return banner && !banner.highlighted ? banner : null;
   });
+  /** "Tidy with suggestions" (AI-2): only in Unsorted, not in the split view; it hides itself while AI is off. */
+  protected readonly tidyEntry = computed(
+    () => this.filters.scope() === LINKS_SCOPE.Unsorted && !this.splitView.open(),
+  );
   protected readonly selection = inject(LibrarySelectionService);
   protected readonly bulk = inject(LibraryBulkService);
   protected readonly drag = inject(LinkDragService);
@@ -194,6 +203,8 @@ export default class LibraryPage {
   readonly kind = input<unknown>();
   /** From the query (`?split=<folder id>`): the right half of the side-by-side view. */
   readonly split = input<unknown>();
+  /** From the query (`?related=<link id>`): "Show related" fills the split picker (AI-3). */
+  readonly related = input<unknown>();
 
   protected readonly emptyIllustration = this.filters.emptyIllustration;
   protected readonly UI_VIEW = UI_VIEW;
@@ -220,6 +231,7 @@ export default class LibraryPage {
       sort: this.sort,
       kind: this.kind,
       split: this.split,
+      related: this.related,
     });
     effect(() => {
       const opener = this.splitOpener();

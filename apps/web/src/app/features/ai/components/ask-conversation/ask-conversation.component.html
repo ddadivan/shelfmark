@@ -1,0 +1,32 @@
+@if (store.entries().length === 0) {
+  <div class="ask-conversation__empty">
+    <div class="ask-conversation__intro">
+      @if (onPage()) {
+        <h2 class="ask-conversation__title">{{ 'ai.ask.emptyTitle' | transloco }}</h2>
+      } @else {
+        <h3 class="ask-conversation__title">{{ 'ai.ask.emptyTitle' | transloco }}</h3>
+      }
+      <p class="ask-conversation__lead">{{ 'ai.ask.lead' | transloco }}</p>
+    </div>
+    <div class="ask-conversation__starters">
+      <p class="ask-conversation__try">{{ 'ai.ask.try' | transloco }}</p>
+      @for (starter of starters(); track starter.key) {
+        @let text = starter.key | transloco: { folder: starter.folder };
+        <ui-list-item class="ask-conversation__starter" (activated)="store.ask(text)">
+          <ui-icon slot="leading" [name]="starterIcon(starter.key)" />
+          <span slot="title" class="ask-conversation__starter-text">{{ text }}</span>
+          <ui-icon slot="trailing" name="chevron-right" />
+        </ui-list-item>
+      }
+    </div>
+  </div>
+} @else {
+  @for (entry of store.entries(); track entry.id) {
+    <app-ask-entry
+      [entry]="entry"
+      (retry)="store.retry(entry.id)"
+      (searchRequested)="search($event)"
+      (addRequested)="add()"
+    />
+  }
+}

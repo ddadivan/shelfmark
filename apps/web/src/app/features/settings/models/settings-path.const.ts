@@ -4,6 +4,8 @@ export const SETTINGS_PATH = {
   Appearance: 'appearance',
   /** What happens to deleted items (Trash). */
   Library: 'library',
+  /** AI features, usage, existing links and AI data (#389); phone sub-pages `ai/folder`, `ai/tags`. */
+  Ai: 'ai',
   /** Interface language, date format, clock, week start and spell-check (#274). */
   Language: 'language',
   /** Your feedback: the send form and the user's messages. */

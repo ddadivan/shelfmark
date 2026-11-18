@@ -23,10 +23,6 @@ async function photoLoaded(page: Page, selector: string): Promise<boolean> {
 // "Your data" (export moved here from its own Settings section).
 test.describe('account page (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
-  // The production build registers the Angular service worker. Once it controls the page,
-  // image requests go through it and bypass `page.route`, so the sample avatar 404s on the
-  // second page (seen in CI on the You page). Block it here: these tests are about the photo.
-  test.use({ serviceWorkers: 'block' });
 
   test(
     'the provider photo shows on Account and in the account menu or the You page',

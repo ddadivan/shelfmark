@@ -37,6 +37,22 @@
   </ui-settings-row>
 </ui-settings-section>
 
+<ui-settings-section [title]="'settings.privacy.ai.title' | transloco">
+  <p class="privacy-data__text">{{ 'settings.privacy.ai.body' | transloco }}</p>
+  <ui-settings-row
+    [title]="'settings.privacy.ai.delete.label' | transloco"
+    [description]="'settings.privacy.ai.delete.hint' | transloco"
+  >
+    <ui-button
+      [href]="aiDataHref"
+      [ariaLabel]="'settings.privacy.ai.delete.actionLabel' | transloco"
+      (linkClick)="open($event, aiDataHref)"
+    >
+      {{ 'settings.privacy.ai.delete.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+
 <ui-settings-section [title]="'settings.privacy.kept.title' | transloco">
   <ul class="privacy-data__points">
     <li>{{ 'privacy.store.content' | transloco }}</li>

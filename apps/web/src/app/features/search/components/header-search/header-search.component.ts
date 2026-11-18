@@ -6,6 +6,7 @@ import { SearchDialogService } from '../../services/search-dialog.service';
 import { SearchFieldService } from '../../services/search-field.service';
 import { isMacPlatform } from '../../utils/is-mac-platform';
 import { SearchResultsComponent } from '../search-results/search-results.component';
+import { AskPanelService } from '../../../ai/services/ask-panel.service';
 
 /**
  * The search of the desktop header (#329). From 80em it is a real field with a results panel
@@ -25,6 +26,7 @@ import { SearchResultsComponent } from '../search-results/search-results.compone
 export class HeaderSearchComponent {
   protected readonly viewport = inject(ViewportService);
   protected readonly search = inject(SearchDialogService);
+  protected readonly askPanel = inject(AskPanelService);
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   /** Shortcut caps of the button (the key is Cmd on Apple devices, else Ctrl). */
   protected readonly shortcut = isMacPlatform() ? '⌘K' : 'Ctrl K';

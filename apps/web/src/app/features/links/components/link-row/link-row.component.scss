@@ -28,3 +28,10 @@
 .link-row__folder {
   max-inline-size: #{rem(160px)};
 }
+
+// One line: the summary takes the room of the domain and ends with "…" (#391).
+.link-row__summary {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

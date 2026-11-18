@@ -26,12 +26,12 @@ test.describe('scroll restoration in the mobile shell (mock API)', { tag: E2E_TA
     await page.goto('/links');
     await openSidebar(page);
     await makePageTall(page, 3000);
-    await scrollMainTo(page, 600);
-    await expect.poll(() => mainScrollTop(page)).toBe(600);
-    // The tree focuses the folder on activation, which scrolls it into view: focus it first, so the
-    // position left behind is known, then open it.
+    // The tree focuses the folder on activation, which scrolls it into view: focus it first (the
+    // folders sit right under Pinned, #512), then scroll, so the position left behind is known.
     const folder = page.getByRole('treeitem', { name: new RegExp(`^${READING.name}\\b`) });
     await folder.focus();
+    await scrollMainTo(page, 600);
+    await expect.poll(() => mainScrollTop(page)).toBe(600);
     const before = await mainScrollTop(page);
     expect(before).toBeGreaterThan(100);
 
@@ -55,8 +55,8 @@ test.describe('scroll restoration in the mobile shell (mock API)', { tag: E2E_TA
     await page.goto('/links');
     await expect(page.locator('ui-card').first()).toBeVisible();
     await makePageTall(page, 3000);
-    await scrollMainTo(page, 900);
-    await expect.poll(() => mainScrollTop(page)).toBe(900);
+    await scrollMainTo(page, 600);
+    await expect.poll(() => mainScrollTop(page)).toBe(600);
 
     await tabBar(page).getByRole('link', { name: 'Tags' }).click();
     await expect(page).toHaveURL('/tags');
@@ -66,7 +66,7 @@ test.describe('scroll restoration in the mobile shell (mock API)', { tag: E2E_TA
     await expect(page).toHaveURL('/links');
     await expect(page.locator('ui-card').first()).toBeAttached();
     await expect
-      .poll(async () => Math.abs((await mainScrollTop(page)) - 900))
+      .poll(async () => Math.abs((await mainScrollTop(page)) - 600))
       .toBeLessThanOrEqual(TOLERANCE_PX);
   });
 });

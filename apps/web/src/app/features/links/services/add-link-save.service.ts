@@ -15,6 +15,8 @@ import type { AddLinkSaved } from '../models/add-link-saved.interface';
 import { LINKS_API } from '../models/links-api.const';
 import { isLinkKind } from '../utils/link-kind';
 import { saveErrorKey } from '../utils/save-error-key';
+import { AddLinkAiService } from './add-link-ai.service';
+import { AddLinkSummaryService } from './add-link-summary.service';
 import { AddLinkFormService } from './add-link-form.service';
 import { AddLinkNewFolderService } from './add-link-new-folder.service';
 import { AddLinkPreviewService } from './add-link-preview.service';
@@ -35,6 +37,9 @@ export class AddLinkSaveService {
   // Optional: specs of the save flow alone run without rules.
   private readonly ruleService = inject(AddLinkRuleService, { optional: true });
   private readonly newFolder = inject(AddLinkNewFolderService);
+  // Optional: specs of the save flow alone run without AI.
+  private readonly ai = inject(AddLinkAiService, { optional: true });
+  private readonly summary = inject(AddLinkSummaryService, { optional: true });
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
@@ -79,6 +84,7 @@ export class AddLinkSaveService {
       request$ = this.linksApi.update(this.formState.original.id, changes);
     } else {
       const fetched = this.previewService.fetchedPreview();
+      const aiDraftId = this.ai?.draftId();
       const payload: CreateLinkRequest = {
         url: this.formState.url(),
         ...(title && { title }),
@@ -91,6 +97,10 @@ export class AddLinkSaveService {
         ...(fetched && { kind: fetched.kind }),
         // The form already shows what the domain rule does (#398): the server must not add it again.
         ...(this.ruleService?.handled() && { applyRules: false }),
+        // The draft suggestions asked for in the dialog (#390): the server picks up their result.
+        ...(aiDraftId && { aiDraftId }),
+        // A summary the user wrote or edited in Add link (#507); AI's own text is the draft's.
+        ...(this.summary?.createSummary() && { summary: this.summary.createSummary() }),
       };
       request$ = this.linksApi.create({
         ...payload,
@@ -98,9 +108,15 @@ export class AddLinkSaveService {
       });
     }
     try {
+      // Not a folder the dialog started with or a domain rule put there (AI-2 rule offers).
+      const folderChosen =
+        !this.formState.original &&
+        value.folderId !== null &&
+        this.formState.form.folderId().dirty();
       const pending = firstValueFrom(request$).then((link): AddLinkSaved => ({
         action: ADD_LINK_ACTION.Saved,
         link,
+        ...(folderChosen && { folderChosen }),
       }));
       // Kept for the service: the caller gets the result even if the dialog was dismissed meanwhile.
       this.data.session.saving = pending.catch(() => undefined);
@@ -139,6 +155,7 @@ export class AddLinkSaveService {
       folderId: payload.folderId,
       tags: payload.tags,
       title: this.formState.form.title().dirty() ? payload.title : undefined,
+      summary: payload.summary,
     });
   }
 
@@ -192,6 +209,7 @@ export class AddLinkSaveService {
     if (tags.length !== link.tags.length || tags.some((tag, index) => tag !== link.tags[index])) {
       changes.tags = tags;
     }
-    return changes;
+    // The summary field of Edit link (#391): only when its text changed.
+    return { ...changes, ...this.summary?.changes() };
   }
 }

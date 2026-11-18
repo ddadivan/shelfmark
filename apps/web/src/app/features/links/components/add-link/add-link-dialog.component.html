@@ -7,7 +7,7 @@
   />
 } @else if (several()) {
   <!-- "Add several links" (#315): any text with links, read by the paste-many parser. -->
-  <form [formRoot]="severalForm" class="add-link" (keydown)="onSeveralKeydown($event)">
+  <form [formRoot]="severalForm" class="add-link" (keydown)="severalLinks.onSeveralKeydown($event)">
     <ui-dialog
       [title]="'links.add.several.title' | transloco"
       [closeLabel]="'links.add.close' | transloco"
@@ -29,7 +29,7 @@
         class="add-link__back"
         [variant]="BUTTON_VARIANT.Ghost"
         iconLeft="chevron-left"
-        (click)="showSingle()"
+        (click)="severalLinks.showSingle()"
         >{{ 'links.add.several.back' | transloco }}</ui-button
       >
       <ui-button
@@ -48,9 +48,9 @@
       [closeLabel]="'links.add.close' | transloco"
       size="md"
     >
-      <div class="add-link__fields">
+      <div class="add-link__fields" [attr.aria-busy]="aiFill.busy() ? 'true' : null">
         <ui-input
-          (paste)="onUrlPaste($event)"
+          (paste)="severalLinks.onUrlPaste($event)"
           (focusout)="onUrlBlur()"
           [type]="INPUT_TYPE.Url"
           [label]="'links.add.url.label' | transloco"
@@ -67,7 +67,7 @@
               class="add-link__several-open"
               [variant]="BUTTON_VARIANT.Ghost"
               size="sm"
-              (click)="showSeveral()"
+              (click)="severalLinks.showSeveral()"
               >{{ 'links.add.several.open' | transloco }}</ui-button
             >
           </div>
@@ -140,6 +140,16 @@
 
         <ui-input [label]="'links.add.titleField.label' | transloco" [formField]="form.title" />
 
+        @if (summary.shown()) {
+          <app-summary-field
+            [field]="form.summary"
+            [source]="summary.source()"
+            [canRewrite]="summary.canRewrite()"
+            [rewriting]="summary.rewriting()"
+            (rewrite)="summary.rewrite()"
+          />
+        }
+
         @if (ruleChip(); as chip) {
           <!-- A domain rule filled folder and tags (#398); removing the chip takes them out. -->
           <div class="add-link__rule">
@@ -154,34 +164,46 @@
           </div>
         }
 
-        <ui-select
-          [label]="'links.add.folder.label' | transloco"
-          [options]="folderOptions()"
-          [emptyLabel]="'links.add.folder.unsorted' | transloco"
-          [searchLabel]="'links.add.folder.searchLabel' | transloco"
-          [noResultsLabel]="'links.add.folder.noResults' | transloco"
-          [createLabel]="'links.add.folder.create' | transloco"
-          searchable
-          [formField]="form.folderId"
-          (created)="onFolderCreated($event)"
-        />
+        <div class="add-link__group">
+          <ui-select
+            [label]="'links.add.folder.label' | transloco"
+            [options]="folderOptions()"
+            [emptyLabel]="'links.add.folder.unsorted' | transloco"
+            [searchLabel]="'links.add.folder.searchLabel' | transloco"
+            [noResultsLabel]="'links.add.folder.noResults' | transloco"
+            [createLabel]="'links.add.folder.create' | transloco"
+            searchable
+            [formField]="form.folderId"
+            (created)="onFolderCreated($event)"
+          />
+          <app-add-link-ai-folder />
+        </div>
 
-        <ui-tag-input
-          [label]="'links.add.tags.label' | transloco"
-          [placeholder]="'links.add.tags.placeholder' | transloco"
-          [suggestions]="tagSuggestions()"
-          [maxTags]="LINK_LIMIT.TagsMax"
-          [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
-          [createLabel]="'links.add.tags.create' | transloco"
-          [removeLabel]="'links.add.tags.remove' | transloco"
-          [addedLabel]="'links.add.tags.added' | transloco"
-          [removedLabel]="'links.add.tags.removed' | transloco"
-          [duplicateLabel]="'links.add.tags.duplicate' | transloco"
-          [listLabel]="'links.add.tags.list' | transloco"
-          [formField]="form.tags"
-        />
+        @if (original; as link) {
+          <app-related-links [linkId]="link.id" />
+        }
 
+        <div class="add-link__group">
+          <ui-tag-input
+            [label]="'links.add.tags.label' | transloco"
+            [placeholder]="'links.add.tags.placeholder' | transloco"
+            [suggestions]="tagSuggestions()"
+            [maxTags]="LINK_LIMIT.TagsMax"
+            [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
+            [createLabel]="'links.add.tags.create' | transloco"
+            [removeLabel]="'links.add.tags.remove' | transloco"
+            [addedLabel]="'links.add.tags.added' | transloco"
+            [removedLabel]="'links.add.tags.removed' | transloco"
+            [duplicateLabel]="'links.add.tags.duplicate' | transloco"
+            [listLabel]="'links.add.tags.list' | transloco"
+            [formField]="form.tags"
+          />
+          <app-add-link-ai-tags />
+        </div>
+
+        <!-- The note is the user's own: last, set apart from what Fill in with AI can change. -->
         <ui-textarea
+          class="add-link__own-note"
           [label]="'links.add.note.label' | transloco"
           [placeholder]="'links.add.note.placeholder' | transloco"
           [hint]="'links.add.note.hint' | transloco"
@@ -231,55 +253,75 @@
       </div>
 
       @if (editing) {
+        <!-- Icon-only (its name is the tooltip) while "Fill in with AI" shares the row on a tablet
+             and wider; with AI off, and on the phone sheet, it keeps its label. -->
+        @let deleteIcon = !phone() && aiFill.available();
         <ui-button
           slot="footer"
           class="add-link__delete"
+          [class.add-link__delete--with-fill]="aiFill.available()"
           [variant]="BUTTON_VARIANT.Ghost"
           iconLeft="trash"
+          [iconOnly]="deleteIcon"
+          [ariaLabel]="'links.edit.actions.delete' | transloco"
           [disabled]="saving()"
           (click)="requestDelete()"
-          >{{ 'links.edit.actions.delete' | transloco }}</ui-button
         >
+          @if (!deleteIcon) {
+            {{ 'links.edit.actions.delete' | transloco }}
+          }
+        </ui-button>
       }
 
-      @if (!editing && !phone()) {
+      <!-- Fill in with AI (F1c): first in the footer (after Delete), Cancel and the primary action
+           stay on the right; nothing while hidden. -->
+      <app-add-link-ai-fill slot="footer" />
+
+      <!-- The save hint makes room for "Fill in with AI" while it shows (the row stays one line). -->
+      @if (!editing && !phone() && !aiFill.available()) {
         <span slot="footer" class="add-link__shortcut">
           <kbd>{{ (mac ? 'links.add.shortcut.cmd' : 'links.add.shortcut.ctrl') | transloco }}</kbd>
           <kbd>{{ 'links.add.shortcut.enter' | transloco }}</kbd>
-          {{ 'links.add.shortcut.save' | transloco }}
+          {{ 'links.add.shortcut.create' | transloco }}
         </span>
       }
-      @if (editing || !phone()) {
+      <!-- Cancel and the main action are one group that never splits across rows. -->
+      <div slot="footer" class="add-link__confirm">
+        <!-- Left out on the sheet: its x does the same (`uiDialogCancel`). -->
         <ui-button
-          slot="footer"
           class="add-link__action"
+          uiDialogCancel
+          [block]="phone()"
           [disabled]="saving()"
           (click)="cancel()"
           >{{ 'links.add.actions.cancel' | transloco }}</ui-button
         >
-      }
-      @if (duplicate() && !editing) {
-        <ui-button slot="footer" class="add-link__action" (click)="openExisting()">{{
-          'links.add.actions.openSaved' | transloco
-        }}</ui-button>
-      }
-      <ui-button
-        slot="footer"
-        class="add-link__action"
-        [type]="BUTTON_TYPE.Submit"
-        [variant]="BUTTON_VARIANT.Primary"
-        [loading]="saving()"
-        >{{
-          (saving()
-            ? 'links.add.actions.saving'
-            : editing
-              ? 'links.edit.actions.save'
-              : duplicate()
-                ? 'links.add.actions.saveAnyway'
-                : 'links.add.actions.save'
-          ) | transloco
-        }}</ui-button
-      >
+        @if (duplicate() && !editing) {
+          <ui-button class="add-link__action" [block]="phone()" (click)="openExisting()">{{
+            'links.add.actions.openSaved' | transloco
+          }}</ui-button>
+        }
+        <ui-button
+          class="add-link__action"
+          [block]="phone()"
+          [type]="BUTTON_TYPE.Submit"
+          [variant]="BUTTON_VARIANT.Primary"
+          [loading]="saving()"
+          [disabled]="aiFill.busy()"
+          >{{
+            (editing
+              ? saving()
+                ? 'links.add.actions.saving'
+                : 'links.edit.actions.save'
+              : saving()
+                ? 'links.add.actions.creating'
+                : duplicate()
+                  ? 'links.add.actions.createAnyway'
+                  : 'links.add.actions.create'
+            ) | transloco
+          }}</ui-button
+        >
+      </div>
     </ui-dialog>
   </form>
 }

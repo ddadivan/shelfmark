@@ -260,6 +260,7 @@ describe('motion mixins', () => {
       'ui-ripple-fade',
       'ui-land',
       'ui-land-ring',
+      'ui-suggest-accept',
     ]);
     expect(out).not.toMatch(/\d+px/);
   });
@@ -326,6 +327,22 @@ function luminance(hex: string): number {
     return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
   });
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** `color-mix(in srgb, a p, b)`: the sRGB channels mixed linearly, as the browser does. */
+function mixHex(a: string, b: string, p: number): string {
+  const channels = (hex: string): number[] => {
+    const full = hex.length === 4 ? `#${[...hex.slice(1)].map((c) => c + c).join('')}` : hex;
+    return [1, 3, 5].map((i) => parseInt(full.slice(i, i + 2), 16));
+  };
+  const [ca, cb] = [channels(a), channels(b)];
+  return `#${ca
+    .map((value, i) =>
+      Math.round(value * p + (cb[i] ?? 0) * (1 - p))
+        .toString(16)
+        .padStart(2, '0'),
+    )
+    .join('')}`;
 }
 
 function contrast(a: string, b: string): number {
@@ -396,6 +413,45 @@ describe('text-muted contrast (WCAG AA 4.5:1)', () => {
     for (const surface of ['bg', 'surface', 'surface-hover', 'surface-pressed', 'accent-bg']) {
       const ratio = contrast(tokenHex(theme, 'text-muted'), tokenHex(theme, surface));
       expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+});
+
+describe('AI tokens contrast', () => {
+  it.each(['light', 'dark'] as const)('ai text-grade on bg, surface and ai-bg in %s', (theme) => {
+    expect(tokenHex(theme, 'ai')).toBe(theme === 'light' ? '#4c54b5' : '#a9aef2');
+    for (const surface of ['bg', 'surface', 'ai-bg']) {
+      const ratio = contrast(tokenHex(theme, 'ai'), tokenHex(theme, surface));
+      expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it.each(['light', 'dark'] as const)(
+    'ai-fill (the "Fill in with AI" button) keeps the label 4.5:1 and the spark 3:1 in %s',
+    (theme) => {
+      const out = css(`:root { @include ${theme}; }`);
+      const steps = { 'ai-fill': 24, 'ai-fill-hover': 30, 'ai-fill-pressed': 36 } as const;
+      for (const [name, percent] of Object.entries(steps)) {
+        expect(out).toContain(
+          `--${name}: color-mix(in srgb, var(--ai) ${percent}%, var(--surface))`,
+        );
+        const fill = mixHex(tokenHex(theme, 'ai'), tokenHex(theme, 'surface'), percent / 100);
+        expect(
+          contrast(tokenHex(theme, 'text'), fill),
+          `${theme} label on ${name}`,
+        ).toBeGreaterThanOrEqual(4.5);
+        expect(
+          contrast(tokenHex(theme, 'ai'), fill),
+          `${theme} spark on ${name}`,
+        ).toBeGreaterThanOrEqual(3);
+      }
+    },
+  );
+
+  it.each(['light', 'dark'] as const)('ai-line keeps 3:1 on bg and surface in %s', (theme) => {
+    for (const surface of ['bg', 'surface']) {
+      const ratio = contrast(tokenHex(theme, 'ai-line'), tokenHex(theme, surface));
+      expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(3);
     }
   });
 });

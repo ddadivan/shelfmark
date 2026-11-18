@@ -1,0 +1,220 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
+import { provideTransloco, TranslocoService } from '@jsverse/transloco';
+import { ASK_PERIOD, type AskEvent, type LinkResponse } from '@shelfmark/contracts';
+import { UiButtonHarness, UiStreamingAnswerHarness } from '@shelfmark/ui/testing';
+import { firstValueFrom, Subject } from 'rxjs';
+import { axeViolations } from '../../../../../testing/axe';
+import { aiSettingsResponse, fakeAiApi } from '../../../../../testing/fake-ai-api';
+import { AppTranslocoLoader } from '../../../../core/i18n/app-transloco.loader';
+import { APP_LANG } from '../../../../core/i18n/models/app-lang.const';
+import { translocoConfig } from '../../../../core/i18n/transloco.config';
+import { FoldersStore } from '../../../../stores/folders.store';
+import { UserSettingsStore } from '../../../../stores/user-settings.store';
+import { LinkActionsService } from '../../../links/services/link-actions.service';
+import { AI_API } from '../../models/ai-api.const';
+import { AiSettingsStore } from '../../services/ai-settings.store';
+import { AskInbox } from '../../services/ask-inbox.service';
+import { AskDrawerComponent } from './ask-drawer.component';
+
+const ALLOWANCE = { questionsLeft: 11, period: ASK_PERIOD.Day, resetsOn: '2026-11-19' };
+const LINK = {
+  id: 'l1',
+  url: 'https://www.seriouseats.com/ramen',
+  title: 'Weeknight ramen',
+  faviconUrl: null,
+  folderId: null,
+  tags: [],
+} as unknown as LinkResponse;
+
+async function setup() {
+  const api = fakeAiApi(aiSettingsResponse());
+  const stream = new Subject<AskEvent>();
+  api.ask.mockReturnValue(stream);
+  const actions = { open: vi.fn(), remind: vi.fn(), addLink: vi.fn() };
+  TestBed.configureTestingModule({
+    providers: [
+      provideRouter([]),
+      { provide: AI_API, useValue: api },
+      provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+      { provide: LinkActionsService, useValue: actions },
+      {
+        provide: FoldersStore,
+        useValue: {
+          load: vi.fn(),
+          entities: signal([
+            { id: 'f1', name: 'Recipes', linkCount: 9 },
+            { id: 'f2', name: 'Clothes', linkCount: 3 },
+          ]),
+        },
+      },
+      { provide: UserSettingsStore, useValue: { openInNewTab: signal(true) } },
+    ],
+  });
+  await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
+  await TestBed.inject(AiSettingsStore).load();
+  const fixture = TestBed.createComponent(AskDrawerComponent);
+  await fixture.whenStable();
+  return { api, stream, actions, fixture, loader: TestbedHarnessEnvironment.loader(fixture) };
+}
+
+describe('AskDrawerComponent', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = vi.fn();
+  });
+
+  it('starts with starters from the largest folders and the allowance line', async () => {
+    const { fixture, loader, api } = await setup();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.textContent).toContain('What do you want to find out?');
+    expect(host.textContent).toContain('12 questions left today');
+    expect(host.textContent).toContain('Answers use only your links.');
+    const starters = Array.from(
+      host.querySelectorAll<HTMLButtonElement>('.ask-conversation__starter button'),
+    );
+    expect(starters.filter((starter) => /Clothes/u.test(starter.textContent ?? ''))).toHaveLength(
+      1,
+    );
+    expect(host.textContent).toContain('Try');
+    expect(await axeViolations(host)).toEqual([]);
+    starters.find((starter) => /Recipes/u.test(starter.textContent ?? ''))?.click();
+    expect(api.ask).toHaveBeenCalledWith('What did I save about Recipes?');
+  });
+
+  it('streams the answer, shows sources and the disclaimer, and a citation highlights its row', async () => {
+    const { fixture, loader, stream } = await setup();
+    TestBed.inject(AskInbox).put('Which ramen recipes did I save?');
+    await fixture.whenStable();
+    const answer = await loader.getHarness(UiStreamingAnswerHarness);
+    expect(await answer.getQuestion()).toBe('Which ramen recipes did I save?');
+    expect(await answer.isStreaming()).toBe(true);
+    expect(await loader.getHarness(UiButtonHarness.with({ text: 'Stop' }))).toBeTruthy();
+
+    stream.next({ type: 'meta', allowance: ALLOWANCE, retrieved: 3 });
+    stream.next({ type: 'text', text: 'The quickest is the weeknight ramen ' });
+    stream.next({ type: 'cite', n: 1 });
+    stream.next({ type: 'cite', n: 2 });
+    stream.next({ type: 'text', text: '.' });
+    stream.next({
+      type: 'done',
+      sources: [{ n: 1, link: LINK }],
+      notFound: false,
+      truncated: false,
+      allowance: ALLOWANCE,
+    });
+    stream.complete();
+    await fixture.whenStable();
+
+    expect(await answer.isStreaming()).toBe(false);
+    expect(await answer.getDisclaimer()).toBe('Generated by AI, may be inaccurate');
+    expect(await answer.getCitationLabels()).toEqual(['Source 1', 'Source 2']);
+    expect(await answer.isCitationDisabled(1)).toBe(true);
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.textContent).toContain('Sources from your shelf');
+    expect(host.textContent).toContain('11 questions left today');
+    await answer.clickCitation(0);
+    await fixture.whenStable();
+    expect(
+      host.querySelector(
+        '#ask-1-source-1 .ui-list-item--selected, #ask-1-source-1 [aria-current="true"]',
+      ),
+    ).not.toBeNull();
+    expect(await axeViolations(host)).toEqual([]);
+  });
+
+  it('drops a question handed over while another streams, and clears the inbox on close', async () => {
+    const { fixture, stream, api } = await setup();
+    const inbox = TestBed.inject(AskInbox);
+    inbox.put('Which ramen recipes did I save?');
+    await fixture.whenStable();
+    inbox.put('Compare the two coats I liked');
+    await fixture.whenStable();
+    expect(inbox.pending()).toBeNull();
+    stream.next({
+      type: 'done',
+      sources: [],
+      notFound: true,
+      truncated: false,
+      allowance: ALLOWANCE,
+    });
+    stream.complete();
+    await fixture.whenStable();
+    expect(api.ask).toHaveBeenCalledTimes(1);
+    inbox.put('ramen recipes again');
+    fixture.destroy();
+    expect(inbox.pending()).toBeNull();
+  });
+
+  it('keeps citations enabled after Stop, when no done arrived', async () => {
+    const { fixture, loader, stream } = await setup();
+    TestBed.inject(AskInbox).put('Which ramen recipes did I save?');
+    await fixture.whenStable();
+    stream.next({ type: 'text', text: 'The weeknight ramen ' });
+    stream.next({ type: 'cite', n: 1 });
+    await fixture.whenStable();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Stop' }))).click();
+    await fixture.whenStable();
+    const answer = await loader.getHarness(UiStreamingAnswerHarness);
+    expect(await answer.isStreaming()).toBe(false);
+    expect(await answer.isCitationDisabled(0)).toBe(false);
+  });
+
+  it('shows the rate-limit line with Try again for a 429', async () => {
+    const { fixture, loader, stream } = await setup();
+    TestBed.inject(AskInbox).put('Which ramen recipes did I save?');
+    await fixture.whenStable();
+    stream.error(new HttpErrorResponse({ status: 429 }));
+    await fixture.whenStable();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.textContent).toContain('Too many questions in a short time.');
+    expect(await loader.getHarness(UiButtonHarness.with({ text: 'Try again' }))).toBeTruthy();
+  });
+
+  it('shows the limit line and disables the composer', async () => {
+    const { fixture, stream } = await setup();
+    TestBed.inject(AskInbox).put('Compare the two coats I liked');
+    await fixture.whenStable();
+    stream.next({
+      type: 'error',
+      reason: 'quota',
+      counted: false,
+      allowance: { ...ALLOWANCE, questionsLeft: 0 },
+    });
+    stream.complete();
+    await fixture.whenStable();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.textContent).toContain('You’ve used today’s questions.');
+    expect(host.querySelector<HTMLTextAreaElement>('textarea')?.disabled).toBe(true);
+  });
+
+  it('offers Try again for a failed question and Search for one the links do not answer', async () => {
+    const { fixture, loader, stream, api } = await setup();
+    TestBed.inject(AskInbox).put('ramen ai-fail');
+    await fixture.whenStable();
+    stream.next({ type: 'error', reason: 'unavailable', counted: false, allowance: ALLOWANCE });
+    stream.complete();
+    await fixture.whenStable();
+    const retry = await loader.getHarness(UiButtonHarness.with({ text: 'Try again' }));
+    const second = new Subject<AskEvent>();
+    api.ask.mockReturnValue(second);
+    await retry.click();
+    expect(api.ask).toHaveBeenCalledTimes(2);
+    second.next({
+      type: 'done',
+      sources: [],
+      notFound: true,
+      truncated: false,
+      allowance: ALLOWANCE,
+    });
+    second.complete();
+    await fixture.whenStable();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    await (
+      await loader.getHarness(UiButtonHarness.with({ text: 'Search “ramen ai-fail”' }))
+    ).click();
+    expect(navigate).toHaveBeenCalledWith(['/links'], { queryParams: { q: 'ramen ai-fail' } });
+  });
+});

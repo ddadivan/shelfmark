@@ -225,7 +225,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await director.type(dialog.getByRole('combobox', { name: 'Tags' }), TAG_NEW);
       await page.keyboard.press('Enter');
       await expect(dialog.locator('ui-chip', { hasText: TAG_NEW })).toBeVisible();
-      await director.type(dialog.getByLabel('Note'), LINK_NOTE);
+      await director.type(dialog.getByLabel('Your note'), LINK_NOTE);
       await director.pause(400);
     },
   },
@@ -235,7 +235,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     poster: true,
     run: async ({ page, director }) => {
       const dialog = addDialog(page);
-      await director.press(dialog.getByRole('button', { name: 'Save link' }));
+      await director.press(dialog.getByRole('button', { name: 'Create link' }));
       await expect(dialog).toBeHidden();
       await expect(cards(page).filter({ hasText: LINK_TITLE }).first()).toBeVisible();
       await director.parkPointer();

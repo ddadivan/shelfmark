@@ -4,6 +4,7 @@
 /** Every icon in `assets/icons/sprite.svg` (symbol id without the `sm-` prefix), sorted. */
 export const ICON_NAMES = [
   'add',
+  'arrow-up',
   'backpack',
   'ball',
   'bell',
@@ -92,6 +93,7 @@ export const ICON_NAMES = [
   'shirt',
   'shopping-bag',
   'sort',
+  'spark',
   'star',
   'star-filled',
   'sun',

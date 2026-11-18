@@ -25,6 +25,10 @@ import { ThemeService } from '../core/theme/theme.service';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
 import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
+import { aiSettingsResponse, fakeAiApi, type FakeAiApi } from '../../testing/fake-ai-api';
+import { AI_API } from '../features/ai/models/ai-api.const';
+import { AI_SETTINGS_DEFAULT } from '../features/ai/models/ai-settings-default.const';
+import { AiSettingsStore } from '../features/ai/services/ai-settings.store';
 import { ShortcutsDialogService } from '../features/shortcuts/services/shortcuts-dialog.service';
 import AppShellComponent from './app-shell.component';
 
@@ -302,7 +306,7 @@ describe('AppShellComponent', () => {
     const listeners = new Map<string, (event: MediaQueryListEvent) => void>();
 
     /** `phone`: below 40em (and so below 64em); `tablet`: 40em to 64em, the mobile shell too. */
-    async function setup(phone: boolean, tablet = false) {
+    async function setup(phone: boolean, tablet = false, ai?: FakeAiApi) {
       listeners.clear();
       vi.stubGlobal('matchMedia', (query: string) => ({
         matches: (phone && query === PHONE_QUERY) || ((phone || tablet) && query === COMPACT_QUERY),
@@ -326,11 +330,13 @@ describe('AppShellComponent', () => {
                 { path: 'settings', children: [{ path: 'account', children: [] }] },
                 { path: 'recent', children: [] },
                 { path: 'tags', children: [] },
+                { path: 'ask', children: [] },
               ],
             },
           ]),
           provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
           { provide: AUTH_API, useValue: api },
+          ...(ai ? [{ provide: AI_API, useValue: ai }] : []),
           { provide: ONBOARDING_API, useValue: { complete: vi.fn() } },
           { provide: RATING_API, useValue: { prompt: vi.fn(), record: vi.fn() } },
           { provide: USER_SETTINGS_API, useValue: settingsApi },
@@ -339,6 +345,9 @@ describe('AppShellComponent', () => {
       });
       await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
       await TestBed.inject(AuthStore).ensureLoaded();
+      if (ai) {
+        await TestBed.inject(AiSettingsStore).load();
+      }
       const harness = await RouterTestingHarness.create('/');
       const root = harness.routeNativeElement as HTMLElement;
       return { harness, root };
@@ -459,6 +468,37 @@ describe('AppShellComponent', () => {
       tab(root, 'You')?.click();
       await harness.fixture.whenStable();
       expect(TestBed.inject(Router).url).toBe('/settings');
+    });
+
+    it('shows Ask with the spark in place of Tags while Ask is on (#499)', async () => {
+      const ai = fakeAiApi(
+        aiSettingsResponse({ settings: { ...AI_SETTINGS_DEFAULT, enabled: true, ask: true } }),
+      );
+      const { harness, root } = await setup(true, false, ai);
+      await harness.fixture.whenStable();
+
+      expect(
+        Array.from(root.querySelectorAll('ui-tab-bar li')).map((item) => item.textContent?.trim()),
+      ).toEqual(['Library', 'Search', '', 'Ask', 'You']);
+      expect(tab(root, 'Ask')?.getAttribute('href')).toBe('/ask');
+      expect(tab(root, 'Ask')?.querySelector('ui-icon use')?.getAttribute('href')).toMatch(
+        /-spark$/,
+      );
+      tab(root, 'Ask')?.click();
+      await harness.fixture.whenStable();
+      expect(TestBed.inject(Router).url).toBe('/ask');
+      // The full-screen Ask page is pushed: the tab bar hides.
+      expect(bar(root)).toBeNull();
+    });
+
+    it('keeps Tags while AI is on but Ask is off', async () => {
+      const ai = fakeAiApi(
+        aiSettingsResponse({ settings: { ...AI_SETTINGS_DEFAULT, enabled: true, ask: false } }),
+      );
+      const { harness, root } = await setup(true, false, ai);
+      await harness.fixture.whenStable();
+      expect(tab(root, 'Tags')).toBeDefined();
+      expect(tab(root, 'Ask')).toBeUndefined();
     });
 
     it('opens the search from the Search tab without leaving the page', async () => {

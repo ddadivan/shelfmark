@@ -43,6 +43,22 @@ import type { TagsApi } from '../models/tags-api.interface';
 import { MockFoldersApi } from './mock-folders.api';
 import { MockLinksApi } from './mock-links.api';
 import { MockTagsApi } from './mock-tags.api';
+import { HttpAiApi } from '../../ai/http/http-ai.api';
+import { MockAiApi } from '../../ai/mock/mock-ai.api';
+import { AI_API } from '../../ai/models/ai-api.const';
+import { HttpRediscoverApi } from '../../rediscover/http/http-rediscover.api';
+import { MockRediscoverApi } from '../../rediscover/mock/mock-rediscover.api';
+import { REDISCOVER_API } from '../../rediscover/models/rediscover-api.const';
+import type { RediscoverApi } from '../../rediscover/models/rediscover-api.interface';
+import { HttpCleanupApi } from '../../cleanup/http/http-cleanup.api';
+import { MockCleanupApi } from '../../cleanup/mock/mock-cleanup.api';
+import { CLEANUP_API } from '../../cleanup/models/cleanup-api.const';
+import type { CleanupApi } from '../../cleanup/models/cleanup-api.interface';
+import type { AiApi } from '../../ai/models/ai-api.interface';
+import { HttpMcpApi } from '../../ai/connect/http/http-mcp.api';
+import { MockMcpApi } from '../../ai/connect/mock/mock-mcp.api';
+import { MCP_API } from '../../ai/connect/models/mcp-api.const';
+import type { McpApi } from '../../ai/connect/models/mcp-api.interface';
 import { HttpSharesApi } from '../../sharing/http/http-shares.api';
 import { MockSharesApi } from '../../sharing/mock/mock-shares.api';
 import { PUBLIC_COLLECTION_ORIGIN } from '../../sharing/models/public-collection-origin.const';
@@ -148,6 +164,24 @@ export function provideLinksApi(): Provider[] {
     {
       provide: RULES_API,
       useFactory: (): RulesApi => (useRealApi() ? inject(HttpRulesApi) : inject(MockRulesApi)),
+    },
+    {
+      provide: AI_API,
+      useFactory: (): AiApi => (useRealApi() ? inject(HttpAiApi) : inject(MockAiApi)),
+    },
+    {
+      provide: MCP_API,
+      useFactory: (): McpApi => (useRealApi() ? inject(HttpMcpApi) : inject(MockMcpApi)),
+    },
+    {
+      provide: REDISCOVER_API,
+      useFactory: (): RediscoverApi =>
+        useRealApi() ? inject(HttpRediscoverApi) : inject(MockRediscoverApi),
+    },
+    {
+      provide: CLEANUP_API,
+      useFactory: (): CleanupApi =>
+        useRealApi() ? inject(HttpCleanupApi) : inject(MockCleanupApi),
     },
     { provide: EXPORT_API, useExisting: MockExportApi },
   ];

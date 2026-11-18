@@ -1,10 +1,11 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { signal } from '@angular/core';
+import { signal, type Provider } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { TestKey } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { provideRouter, Router } from '@angular/router';
-import { MOCK_ID, MOCK_NAME } from '@shelfmark/contracts/testing';
+import { REDISCOVER_MODE } from '@shelfmark/contracts';
+import { MOCK_ID, MOCK_LINKS, MOCK_NAME } from '@shelfmark/contracts/testing';
 import { UiMenuHarness, UiTreeHarness, UiTreeItemHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { FoldersStore } from '../../stores/folders.store';
@@ -26,9 +27,11 @@ import { UserSettingsStore } from '../../stores/user-settings.store';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { ExtensionBannerService } from '../../core/browser-extension/extension-banner.service';
+import { REDISCOVER_API } from '../../features/rediscover/models/rediscover-api.const';
+import { of } from 'rxjs';
 import { SidebarComponent } from './sidebar.component';
 
-async function setup(url = '/links', waitForFolders = true) {
+async function setup(url = '/links', waitForFolders = true, extra: Provider[] = []) {
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
@@ -45,6 +48,7 @@ async function setup(url = '/links', waitForFolders = true) {
       { provide: TAGS_API, useClass: MockTagsApi },
       { provide: TRASH_API, useClass: MockTrashApi },
       { provide: USER_SETTINGS_API, useClass: MockUserSettingsApi },
+      ...extra,
     ],
   });
   await loadEnglish();
@@ -107,6 +111,28 @@ async function treeHeading(fixture: ComponentFixture<unknown>): Promise<string |
 
 describe('SidebarComponent', () => {
   afterEach(() => localStorage.removeItem(MOCK_LIBRARY_SETTINGS_STORAGE_KEY));
+
+  it('shows "N forgotten" on the Recently opened row while some wait (#512)', async () => {
+    const block = {
+      week: '2026-W47',
+      mode: REDISCOVER_MODE.Forgotten,
+      theme: null,
+      items: [MOCK_LINKS[0], MOCK_LINKS[1], MOCK_LINKS[2]],
+    };
+    const { element } = await setup('/links', true, [
+      { provide: REDISCOVER_API, useValue: { getBlock: () => of(block) } },
+    ]);
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(row(element, 'Recently opened').textContent).toContain('3 forgotten');
+    });
+    expect(row(element, 'Recently opened').querySelector('.ui-tree__count--note')).not.toBeNull();
+  });
+
+  it('shows no note on Recently opened without forgotten links', async () => {
+    const { element } = await setup();
+    expect(row(element, 'Recently opened').querySelector('.ui-tree__count')).toBeNull();
+  });
 
   it('has a "Send feedback" row above Trash that opens the dialog (#335)', async () => {
     const { fixture } = await setup();

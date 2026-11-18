@@ -13,6 +13,12 @@
   --on-primary: #FFFFFF;
   --accent: #4F7A4B;
   --accent-bg: #E3EEDF;
+  --ai: #4C54B5;
+  --ai-line: #767ECB;
+  --ai-bg: #E9EAF8;
+  --ai-fill: color-mix(in srgb, var(--ai) 24%, var(--surface));
+  --ai-fill-hover: color-mix(in srgb, var(--ai) 30%, var(--surface));
+  --ai-fill-pressed: color-mix(in srgb, var(--ai) 36%, var(--surface));
   --accent-text: #2F4A2C;
   --focus-ring: #5E8A58;
   --danger: #B42318;
@@ -59,6 +65,12 @@
   --on-primary: #131315;
   --accent: #8DBB86;
   --accent-bg: #21301E;
+  --ai: #A9AEF2;
+  --ai-line: #666CB8;
+  --ai-bg: #23253D;
+  --ai-fill: color-mix(in srgb, var(--ai) 24%, var(--surface));
+  --ai-fill-hover: color-mix(in srgb, var(--ai) 30%, var(--surface));
+  --ai-fill-pressed: color-mix(in srgb, var(--ai) 36%, var(--surface));
   --accent-text: #C6DEC0;
   --focus-ring: #8DBB86;
   --danger: #F97066;

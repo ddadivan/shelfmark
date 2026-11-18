@@ -32,6 +32,7 @@
     <ul>
       <li>{{ 'privacy.dont.sell' | transloco }}</li>
       <li>{{ 'privacy.dont.read' | transloco }}</li>
+      <li>{{ 'privacy.dont.training' | transloco }}</li>
     </ul>
 
     <h2>{{ 'privacy.previews.title' | transloco }}</h2>
@@ -65,6 +66,17 @@
 
     <h2>{{ 'privacy.where.title' | transloco }}</h2>
     <p>{{ 'privacy.where.hosting' | transloco }}</p>
+
+    <h2 [appFragmentTarget]="AI_FRAGMENT">{{ 'privacy.ai.title' | transloco }}</h2>
+    <p>{{ 'privacy.ai.intro' | transloco }}</p>
+    <ul>
+      @for (point of aiPoints; track point) {
+      <li>
+        <b class="term">{{ 'privacy.ai.' + point + '.term' | transloco }}</b>
+        {{ 'privacy.ai.' + point + '.text' | transloco }}
+      </li>
+      }
+    </ul>
 
     <h2>{{ 'privacy.retention.title' | transloco }}</h2>
     <p>{{ 'privacy.retention.data' | transloco }}</p>

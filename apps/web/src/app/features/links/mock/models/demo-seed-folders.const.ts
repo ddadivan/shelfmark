@@ -4,8 +4,8 @@ import type { DemoSeedFolder } from './demo-seed-folder.interface';
 
 /**
  * The demo folders as in the Main mockup: Work holds Angular (with Signals and Forms) and
- * Courses; Clothes and Recipes stand on their own; Angular is pinned. Icons as in the mockup:
- * briefcase, code, graduation cap, shirt and cooking pot.
+ * Courses; Clothes, Recipes and Videos (AI-2: the rule offer for youtube.com) stand on their own;
+ * Angular is pinned. Icons as in the mockup: briefcase, code, graduation cap, shirt, cooking pot, film.
  */
 export const DEMO_SEED_FOLDERS: readonly DemoSeedFolder[] = [
   {
@@ -59,5 +59,12 @@ export const DEMO_SEED_FOLDERS: readonly DemoSeedFolder[] = [
     colour: FOLDER_COLOUR.Amber,
     icon: FOLDER_ICON.CookingPot,
     highlighted: true,
+  },
+  {
+    key: DEMO_FOLDER_KEY.Videos,
+    parent: null,
+    name: 'Videos',
+    colour: FOLDER_COLOUR.Plum,
+    icon: FOLDER_ICON.Film,
   },
 ];

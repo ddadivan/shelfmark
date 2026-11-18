@@ -1,0 +1,59 @@
+@use 'ui' as *;
+
+// No box of its own: the button is a footer action of the dialog, and nothing is left when it
+// hides.
+:host {
+  display: contents;
+}
+
+// Desktop: the first thing in the footer, Cancel and the primary action stay on the right. Phone
+// sheet: the main action has the bottom row and this button shares the row above it.
+.add-link-ai-fill {
+  margin-inline-end: auto;
+
+  // The phone sheet footer shares one row between the actions above the main one (#512).
+  @include phone {
+    flex: 1 1 0;
+    min-inline-size: 0;
+    margin-inline-end: 0;
+  }
+}
+
+// It arrives when the suggestions are ready (Motion › "Fill in with AI"): fade in and grow from
+// 0.96, once; it leaves with a short fade. Under reduced motion both only fade.
+.add-link-ai-fill--enter {
+  animation: add-link-ai-fill-in var(--duration-base) var(--ease-out) both;
+}
+
+.add-link-ai-fill--leave {
+  animation: add-link-ai-fill-out var(--duration-fast) var(--ease-in) both;
+}
+
+@include reduced-motion {
+  .add-link-ai-fill--enter {
+    animation-name: add-link-ai-fill-fade;
+  }
+}
+
+@keyframes add-link-ai-fill-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes add-link-ai-fill-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes add-link-ai-fill-out {
+  to {
+    opacity: 0;
+  }
+}
+
+.add-link-ai-fill__live {
+  @include visually-hidden;
+}

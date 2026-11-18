@@ -43,8 +43,8 @@ test.describe('public changelog', () => {
       await expect(
         page.getByText('A link typed as example.com saves like any other.'),
       ).toBeVisible();
-      // The 2.1.1 hotfix (#490) leads the page; 2.1.0 (#464) keeps its highlights.
-      await expect(releases.first()).toHaveText('Shelfmark 2.1.1');
+      // 2.2.0 (the AI release) leads the page; 2.1.0 (#464) keeps its highlights.
+      await expect(releases.first()).toHaveText('Shelfmark 2.2.0');
       await expect(
         page.getByRole('region', { name: 'Shelfmark 2.1.0' }).getByRole('heading', {
           level: 4,

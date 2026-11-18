@@ -18,14 +18,15 @@ test.describe('landing', () => {
       await expect(page.getByRole('heading', { level: 1, name: LANDING_HEADLINE })).toBeVisible();
       await expect(page.getByRole('main')).toBeVisible();
       // Auto-waits: the sections below the hero are deferred (on idle).
-      // The browser extension block (#455) is only on a desktop Chromium browser: the desktop
+      // The AI block and the browser extension block follow the hero (#507). The extension block (#455) is only on a desktop Chromium browser: the desktop
       // project runs Chromium, the tablet and phone projects are below 64em.
       await expect(page.getByRole('heading', { level: 2 })).toHaveText([
+        'Help with sorting, when you want it',
+        ...(isCompact(page) ? [] : ['Save the page you are on']),
         'Save once, find in seconds',
         'The same links, before and after',
         'Why this exists',
         "How it's built",
-        ...(isCompact(page) ? [] : ['Save the page you are on']),
         'Empty your Saved Messages.',
       ]);
     },

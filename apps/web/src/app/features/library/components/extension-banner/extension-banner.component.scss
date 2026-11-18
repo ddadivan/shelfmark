@@ -1,9 +1,11 @@
 @use 'ui' as *;
 
 // ExtensionInstall mockup (#455). The entrance is the author's call (a banner that should be
-// noticed): the band fades down, the popup screenshot slides up into it, the logo, the copy and
-// the button rise in one after another. Every step stays within `duration-slow`; under reduced
-// motion everything only fades.
+// noticed), once per appearance: the band itself stays put (it takes the place of the app
+// skeleton's placeholder of the same size, #490, so nothing blinks), the popup screenshot slides
+// up into it from below its bottom edge, and the logo, title, text and button rise in one after
+// another. Only transform and opacity move, inside the band's clip, so its 188px height never
+// changes. Every step stays within `duration-slow`; under reduced motion nothing animates.
 
 :host {
   display: block;
@@ -71,7 +73,10 @@
   position: relative;
   z-index: 1;
   flex: none;
-  max-width: rem(220px);
+
+  // The longest label (Ukrainian, German) stays on one line; `wrap` only lets it break when even
+  // this much room is not there (#507).
+  max-width: rem(300px);
 }
 
 .extension-banner__popup {
@@ -93,32 +98,34 @@
 
 // Entrance, step by step.
 .extension-banner--enter {
-  animation: extension-band var(--duration-base) var(--ease-out) both;
+  // Draws nothing: Angular removes the enter class when the element's own animation ends, so this
+  // one lasts as long as the longest step below (the popup: 520ms delay plus three `duration-slow`).
+  animation: extension-hold calc(var(--duration-slow) * 3 + 520ms) linear both;
 
   .extension-banner__logo {
-    animation: extension-pop var(--duration-slow) var(--ease-spring) 80ms both;
+    animation: extension-pop calc(var(--duration-slow) * 2) var(--ease-out) 480ms both;
   }
 
   .extension-banner__title,
   .extension-banner__text,
   .extension-banner__install {
-    animation: extension-rise var(--duration-slow) var(--ease-out) both;
+    animation: extension-rise calc(var(--duration-slow) * 2) var(--ease-out) both;
   }
 
   .extension-banner__title {
-    animation-delay: 120ms;
+    animation-delay: 560ms;
   }
 
   .extension-banner__text {
-    animation-delay: 180ms;
+    animation-delay: 640ms;
   }
 
   .extension-banner__install {
-    animation-delay: 240ms;
+    animation-delay: 720ms;
   }
 
   .extension-banner__popup {
-    animation: extension-popup var(--duration-slow) var(--ease-out) 160ms both;
+    animation: extension-popup calc(var(--duration-slow) * 3) var(--ease-drawer) 520ms both;
   }
 }
 
@@ -133,8 +140,7 @@
   .extension-banner--enter .extension-banner__text,
   .extension-banner--enter .extension-banner__install,
   .extension-banner--enter .extension-banner__popup {
-    animation-name: extension-fade;
-    animation-timing-function: var(--ease-out);
+    animation: none;
   }
 
   .extension-banner--leave {
@@ -142,31 +148,29 @@
   }
 }
 
-@keyframes extension-band {
+@keyframes extension-hold {
   from {
-    opacity: 0;
-    transform: translateY(-0.5rem);
+    opacity: 1;
   }
 }
 
 @keyframes extension-pop {
   from {
     opacity: 0;
-    transform: scale(0.8);
+    transform: scale(0.92);
   }
 }
 
 @keyframes extension-rise {
   from {
     opacity: 0;
-    transform: translateY(0.5rem);
+    transform: translateY(0.75rem);
   }
 }
 
 @keyframes extension-popup {
   from {
-    opacity: 0;
-    transform: translateY(3rem);
+    transform: translateY(calc(100% + #{rem(16px)}));
   }
 }
 
@@ -174,12 +178,6 @@
   to {
     opacity: 0;
     transform: translateY(-0.5rem);
-  }
-}
-
-@keyframes extension-fade {
-  from {
-    opacity: 0;
   }
 }
 

@@ -2,9 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
   RULE_ENDPOINT,
+  RULE_OFFER_ENDPOINT,
+  type CheckRuleOfferRequest,
   type CreateRuleRequest,
+  type DismissRuleOfferRequest,
   type ListRulesResponse,
   type RuleMatchesResponse,
+  type RuleOfferResponse,
   type RuleResponse,
   type UpdateRuleRequest,
 } from '@shelfmark/contracts';
@@ -42,5 +46,17 @@ export class HttpRulesApi implements RulesApi {
       `${RULE_ENDPOINT}/${encodeURIComponent(id)}/matches`,
       { context: skipErrorToast() },
     );
+  }
+
+  checkOffer(linkIds: readonly string[]): Observable<RuleOfferResponse> {
+    const body: CheckRuleOfferRequest = { linkIds: [...linkIds] };
+    return this.http.post<RuleOfferResponse>(RULE_OFFER_ENDPOINT.Check, body, {
+      context: skipErrorToast(),
+    });
+  }
+
+  dismissOffer(domain: string): Observable<void> {
+    const body: DismissRuleOfferRequest = { domain };
+    return this.http.post<void>(RULE_OFFER_ENDPOINT.Dismiss, body, { context: skipErrorToast() });
   }
 }

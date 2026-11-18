@@ -187,6 +187,37 @@
       "text": "Ein Klick in der Symbolleiste oder Alt+Umschalt+S. Titel, deine Ordnerregeln und letzten Ordner sind schon ausgefüllt, für die meisten Seiten reicht ein weiterer Klick.",
       "browsers": "Für Chrome, Edge, Brave und Arc. Nach der Anmeldung installierst du sie aus deinem Regal.",
       "alt": "Die Shelfmark-Erweiterung: In Shelfmark speichern mit dem Seitentitel, dem Ordner Kleidung aus einer Regel, Tags und einer Notiz"
+    },
+    "ai": {
+      "badge": "Optionale KI",
+      "title": "Hilfe beim Sortieren, wenn du sie willst",
+      "text": "Schalte KI ein, und jeder neue Link kommt mit vorgeschlagenen Tags, einem Ordner und einer zweizeiligen Zusammenfassung. Nichts bewegt sich, bevor du tippst.",
+      "points": {
+        "suggest": {
+          "title": "Vorschläge, die du annimmst",
+          "text": "Tags und Ordner aus denen, die du schon hast, mit einem Tipp."
+        },
+        "meaning": {
+          "title": "Finden, worum es geht",
+          "text": "„Der Vortrag über Signals“ findet das Video, auch ohne diese Wörter."
+        },
+        "ask": {
+          "title": "Frag dein Regal",
+          "text": "Eine Frage in deinen Worten, eine Antwort aus deinen Links mit Quellen."
+        }
+      },
+      "note": "Aus, bis du sie einschaltest. Deine Links werden nie zum Trainieren von KI-Modellen verwendet.",
+      "privacy": "So funktioniert KI in Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore in der Praxis",
+        "newTag": "State-Management",
+        "query": "Vortrag über Signals und Performance",
+        "related": "Ähnlich im Inhalt",
+        "result": "Zoneless Change Detection erklärt",
+        "why": "Nah an: schnelleres Rendern",
+        "recipe": "Das beste Ramen für unter der Woche",
+        "summary": "Ein Ramen in 30 Minuten mit gekaufter Brühe, weichen Eiern und schnellen Pickles."
+      }
     }
   },
   "links": {
@@ -205,7 +236,7 @@
         "cmd": "⌘",
         "ctrl": "Strg",
         "enter": "Enter",
-        "save": "zum Speichern"
+        "create": "zum Erstellen"
       },
       "preview": {
         "loading": "Vorschau wird geladen",
@@ -242,7 +273,7 @@
         "list": "Tag-Vorschläge"
       },
       "note": {
-        "label": "Notiz",
+        "label": "Deine Notiz",
         "placeholder": "Warum speicherst du das?",
         "hint": "Hilft dir, es später zu finden",
         "counter": "Zeichen",
@@ -259,7 +290,9 @@
       "actions": {
         "cancel": "Abbrechen",
         "openSaved": "Gespeicherten öffnen",
-        "save": "Link speichern",
+        "create": "Link erstellen",
+        "createAnyway": "Trotzdem erstellen",
+        "creating": "Wird erstellt…",
         "saveAnyway": "Trotzdem speichern",
         "saving": "Wird gespeichert…"
       },
@@ -292,7 +325,11 @@
     },
     "card": {
       "moreTags": "+{{count}}",
-      "inFolder": "Im Ordner"
+      "inFolder": "Im Ordner",
+      "moreTagsLabel": {
+        "one": "{{count}} weiterer Tag: {{list}}",
+        "other": "{{count}} weitere Tags: {{list}}"
+      }
     },
     "item": {
       "edit": "Bearbeiten",
@@ -529,7 +566,8 @@
     "dont": {
       "title": "Was wir nicht tun",
       "sell": "Wir verkaufen oder teilen deine Daten nicht und zeigen keine Werbung.",
-      "read": "Wir nutzen den Inhalt deiner Links nicht für Statistiken: nur Anzahlen (Links, Ordner, Bewertungen), nie Adressen oder Titel. Deine Links liegen in unserer Datenbank, damit die App sie anzeigen, durchsuchen und mit Vorschau zeigen kann; Zugriff darauf hat nur der Autor des Dienstes."
+      "read": "Wir nutzen den Inhalt deiner Links nicht für Statistiken: nur Anzahlen (Links, Ordner, Bewertungen), nie Adressen oder Titel. Deine Links liegen in unserer Datenbank, damit die App sie anzeigen, durchsuchen und mit Vorschau zeigen kann; Zugriff darauf hat nur der Autor des Dienstes.",
+      "training": "Wir nutzen deine Links, Notizen und Zusammenfassungen nicht zum Training von KI-Modellen und erlauben das auch unserem KI-Anbieter nicht."
     },
     "previews": {
       "title": "Link-Vorschauen",
@@ -537,7 +575,7 @@
     },
     "extension": {
       "title": "Browser-Erweiterung",
-      "body": "Die Shelfmark-Erweiterung für Chrome, Edge, Brave und Arc wird nur aktiv, wenn Sie auf ihre Schaltfläche klicken oder ihr Tastenkürzel drücken, nie im Hintergrund. Dann sendet sie Shelfmark die Adresse dieses einen Tabs, um zu prüfen, ob Sie ihn schon gespeichert haben, und speichert Adresse und Titel mit Ordner, Tags und Notiz erst, wenn Sie auf Speichern drücken. Ihren Verlauf und andere Websites, die Sie besuchen, sieht sie nie.",
+      "body": "Die Shelfmark-Erweiterung für Chrome, Edge, Brave und Arc wird nur aktiv, wenn Sie auf ihre Schaltfläche klicken oder ihr Tastenkürzel drücken, nie im Hintergrund. Dann sendet sie Shelfmark die Adresse dieses einen Tabs, um zu prüfen, ob Sie ihn schon gespeichert haben, und speichert Adresse und Titel mit Ordner, Tags und Notiz erst, wenn Sie auf Speichern drücken. Ihren Verlauf und andere Websites, die Sie besuchen, sieht sie nie. Wenn Sie auf „Mit KI ausfüllen“ klicken und KI in Ihrem Konto eingeschaltet ist, sendet sie diese Adresse und den Titel, und Ihre Notiz, wenn die KI Notizen lesen darf, zusätzlich an Shelfmark, um KI-Vorschläge zu erhalten; sie werden nach denselben KI-Bedingungen wie in der App verarbeitet.",
       "access": "Sie nutzt Ihre Shelfmark-Anmeldung in diesem Browser und kann das Anmelde-Cookie selbst nicht lesen. Sie erreicht nur Shelfmark und speichert auf Ihrem Gerät nur die zuletzt verwendeten Ordner, um sie beim nächsten Mal anzubieten."
     },
     "third": {
@@ -552,6 +590,38 @@
     "where": {
       "title": "Wo die Daten liegen",
       "hosting": "Die API läuft bei Vercel in der Region fra1 (Frankfurt), die Datenbank bei Neon in eu-central-1 (Frankfurt). Die statischen Dateien der App kommen aus dem globalen Netzwerk von Vercel."
+    },
+    "ai": {
+      "title": "KI-Funktionen (optional)",
+      "intro": "KI ist aus, bis du sie unter Einstellungen › KI einschaltest. Ist sie an, schlägt sie Tags und Ordner vor und schreibt kurze Zusammenfassungen. Alles, was sie erstellt, trägt einen kleinen Funken und kann ungenau sein; nichts wird übernommen, solange du es nicht annimmst oder den automatischen Modus wählst.",
+      "processor": {
+        "term": "Wer es verarbeitet:",
+        "text": "Anthropic PBC (USA) als unser Auftragsverarbeiter, nur um das Ergebnis zu erzeugen, das du angefragt hast."
+      },
+      "sent": {
+        "term": "Was gesendet wird:",
+        "text": "Adresse, Titel, Beschreibung und aus der Seite extrahierter Text eines Links sowie die Namen deiner Tags und Ordner. Deine Notizen nur, wenn du „Meine Notizen einbeziehen“ einschaltest. Nie deine anderen Links, deine Kontodaten oder Daten anderer Personen."
+      },
+      "kept": {
+        "term": "Wie lange es gespeichert wird:",
+        "text": "Anthropic löscht die Anfrage innerhalb von 30 Tagen und nutzt sie nicht zum Training; nur Inhalte, die die Sicherheitssysteme markieren, können länger aufbewahrt werden (bis zu 2 Jahre), oder wenn das Gesetz es verlangt. Die Ergebnisse (Tags, Zusammenfassungen) werden mit deinen Links gespeichert und mit ihnen gelöscht."
+      },
+      "counted": {
+        "term": "Was wir zählen:",
+        "text": "Nur die Zahl der KI-Anfragen pro Konto, für dein Monatslimit. Wie überall in Shelfmark nutzen Statistiken nur Zahlen, nie das, was du gespeichert hast."
+      },
+      "off": {
+        "term": "Ausschalten:",
+        "text": "Schalte unter Einstellungen › KI eine Funktion oder die KI ganz aus; Anfragen enden sofort. „KI-Daten löschen“ dort entfernt jede Zusammenfassung und jeden Vorschlag der KI."
+      },
+      "meaning": {
+        "term": "Suche nach Bedeutung:",
+        "text": "solange sie eingeschaltet ist (Einstellungen › KI), werden Titel, Zusammenfassung und Tag-Namen jedes Links, die Notiz nur mit „Meine Notizen einbeziehen“, und die Wörter deiner Suche an Voyage AI gesendet, unseren zweiten Auftragsverarbeiter, der daraus Zahlenvektoren macht. Nie die Adresse, deine Ordner oder Daten anderer. Die Vektoren werden mit deinen Links gespeichert und mit ihnen oder mit „KI-Daten löschen“ gelöscht; deine Suche wird nicht gespeichert. Voyage AI by MongoDB (USA) löscht jede Anfrage direkt nach der Verarbeitung (Zero-Day-Retention) und nutzt sie nicht zum Training."
+      },
+      "ask": {
+        "term": "Frag deine Links:",
+        "text": "nur wenn du eine Frage stellst, werden deine Frage und bis zu 10 passende Links (Titel, Adresse ohne Parameter, Ordner- und Tag-Namen, Zusammenfassung, deine Notiz nur mit „Meine Notizen einbeziehen“) an [PROVIDER] gesendet. Die Antwort zitiert nur diese Links. Weder Frage noch Antwort werden gespeichert; wir zählen nur die Anzahl der Fragen pro Tag und Monat, für dein Limit."
+      }
     },
     "retention": {
       "title": "Wie lange wir sie aufbewahren",
@@ -715,6 +785,7 @@
       "library": "Links",
       "search": "Suche",
       "tags": "Tags",
+      "ask": "Fragen",
       "you": "Du"
     },
     "sidebar": {
@@ -1198,6 +1269,7 @@
       "account": "Konto",
       "appearance": "Darstellung",
       "library": "Bibliothek",
+      "ai": "KI",
       "language": "Sprache",
       "privacy": "Datenschutz und Daten",
       "shortcuts": "Tastenkürzel",
@@ -1207,6 +1279,7 @@
       "account": "Dein Profil, dein Regal und deine Daten.",
       "appearance": "Wird sofort gespeichert und auf all deinen Geräten synchronisiert.",
       "library": "Wie Links gezeigt, gespeichert und aufbewahrt werden.",
+      "ai": "Hilfe beim Ordnen, nur wenn du sie willst. Aus, bis du sie einschaltest.",
       "language": "Die Sprache der Oberfläche. Datums- und Zeitformate findest du unter Darstellung.",
       "privacy": "Was wir speichern und wie du es mitnimmst.",
       "shortcuts": "Arbeite ohne Maus.",
@@ -1448,6 +1521,16 @@
       },
       "kept": {
         "title": "Was wir speichern"
+      },
+      "ai": {
+        "title": "KI-Funktionen",
+        "body": "KI ist optional und aus, bis du sie einschaltest. Ist sie an, gehen Adresse, Titel und Seitentext eines Links an unseren KI-Anbieter, um Tags und Ordner vorzuschlagen und Zusammenfassungen zu schreiben. Nie zum Training von Modellen genutzt, nie für Statistiken.",
+        "delete": {
+          "label": "KI-Daten löschen",
+          "hint": "Entfernt jede Zusammenfassung und jeden Vorschlag der KI, unter Einstellungen › KI",
+          "action": "Öffnen",
+          "actionLabel": "„KI-Daten löschen“ unter Einstellungen › KI öffnen"
+        }
       }
     },
     "footer": {
@@ -1545,6 +1628,12 @@
           "cancel": "Abbrechen",
           "close": "Schließen"
         }
+      },
+      "cleanup": {
+        "title": "Aufräumen",
+        "label": "Bibliothek aufräumen",
+        "hint": "Finde Duplikate und ähnliche Tags und behebe sie in einem Schritt.",
+        "action": "Ansehen"
       }
     },
     "language": {
@@ -1607,6 +1696,7 @@
       "undo": "Letzte Aktion rückgängig machen",
       "toastAction": "Zur Schaltfläche einer Meldung gehen",
       "save": "Link speichern",
+      "aiFill": "Im Link-Dialog mit KI ausfüllen",
       "results": "Durch Suchergebnisse bewegen",
       "openResult": "Ergebnis öffnen",
       "openBackground": "In einem Hintergrund-Tab öffnen",
@@ -1758,7 +1848,9 @@
       "move": "bewegen",
       "open": "öffnen",
       "background": "im Hintergrund öffnen"
-    }
+    },
+    "askRow": "Frag deine Links: „{{query}}“",
+    "askRowCompact": "Deine Links dazu fragen"
   },
   "share": {
     "title": "In Shelfmark speichern",
@@ -2672,6 +2764,18 @@
       "missingFolder": "Dieser Ordner existiert nicht mehr. Wähle einen anderen.",
       "missing": "Diese Regel wurde inzwischen gelöscht.",
       "failed": "Die Regel konnte nicht gespeichert werden. Versuche es erneut."
+    },
+    "offer": {
+      "title": "Links von {{domain}} immer in {{folder}} ablegen?",
+      "detail": {
+        "one": "Dein letzter {{count}} Link von dieser Website liegt dort. Eine Regel funktioniert ohne KI.",
+        "other": "Deine letzten {{count}} Links von dieser Website liegen dort. Eine Regel funktioniert ohne KI."
+      },
+      "create": "Regel erstellen",
+      "notNow": "Nicht jetzt",
+      "created": "Regel erstellt",
+      "applyExisting": "Auf „Ohne Ordner“ anwenden",
+      "failed": "Regel konnte nicht erstellt werden"
     }
   },
   "changelog": {
@@ -2805,8 +2909,59 @@
       "emojiPickerTabs": {
         "text": "Die Emoji-Auswahl ist so breit wie ihr Feld, und die Kategorie-Tabs sehen nicht mehr wie wählbare Emojis aus."
       },
+      "aiSuggestions": {
+        "title": "Mit KI ausfüllen",
+        "text": "Ein Klick in „Link hinzufügen“ füllt Titel, Ordner, Tags und eine kurze Zusammenfassung aus der Seite aus. Ändern Sie, was Sie möchten: Ihre Wahl hat immer Vorrang. Funktioniert auch in der Browsererweiterung. KI bleibt aus, bis Sie sie unter Einstellungen › KI einschalten.",
+        "alt": "Der Dialog „Link hinzufügen“ mit einer YouTube-Adresse, von der KI ausgefüllt: Titel, Ordner, Tags und Zusammenfassung."
+      },
+      "aiSummaries": {
+        "title": "Kurze Zusammenfassungen",
+        "text": "Mit KI bekommen Links eine Zusammenfassung von ein bis zwei Zeilen auf ihrer Karte. Bearbeitest du sie, gehört sie dir.",
+        "alt": "Link-Karten mit einer kurzen KI-Zusammenfassung unter jedem Titel."
+      },
+      "aiTidy": {
+        "title": "„Ohne Ordner“ mit KI aufräumen",
+        "text": "Prüfe die KI-Vorschläge für alles in „Ohne Ordner“ auf einer Seite und wende sie mit einem Rückgängig an. Legst du Links einer Website mehrmals in denselben Ordner, schlägt Shelfmark eine Regel vor."
+      },
+      "aiAsk": {
+        "title": "Frag deine Links",
+        "text": "Stellen Sie eine Frage in Ihren eigenen Worten und erhalten Sie eine kurze Antwort aus Ihren gespeicherten Links, mit allen Quellen. Öffnen Sie es mit „Fragen“ neben der Suche oder dem Tab „Fragen“ auf dem Smartphone.",
+        "alt": "Die Fragen-Seitenleiste mit einer Frage, einer kurzen Antwort und den Links, aus denen sie stammt."
+      },
+      "aiCleanup": {
+        "title": "Bibliothek aufräumen",
+        "text": "Finde mehrfach gespeicherte Links und Tags mit gleicher Bedeutung, prüfe jede Änderung und wende sie in einem Schritt an, mit einem Rückgängig. Kopien kommen in den Papierkorb."
+      },
+      "mcp": {
+        "title": "Assistenten verbinden",
+        "text": "Mit Pro können Claude und andere MCP-Assistenten deine Links mit einem persönlichen Token durchsuchen und lesen. Nur Lesezugriff, jederzeit widerrufbar."
+      },
+      "aiSearch": {
+        "title": "Suche nach Bedeutung",
+        "text": "Die Suche findet Links, die zu dem passen, was du meinst, nicht nur zu deinen Wörtern, und sagt, warum jeder passt. „Link bearbeiten“ zeigt Ähnliches aus deinem Regal, und „Nebeneinander“ kann dessen Ordner anbieten.",
+        "alt": "Suchergebnisse mit der Gruppe „Nach Bedeutung verwandt“ unter den Worttreffern."
+      },
       "extensionInStore": {
         "text": "Die Shelfmark-Browsererweiterung ist im Chrome Web Store: Installiere sie über das Banner in deinem Regal oder unter Einstellungen › Bibliothek."
+      },
+      "forgotten": {
+        "title": "Vergessene Links",
+        "text": "Links, die du gespeichert und nie geöffnet hast, warten unter „Zuletzt geöffnet“ › Vergessen. Die Anzahl steht neben „Zuletzt geöffnet“."
+      },
+      "cardTags": {
+        "text": "Link-Karten zeigen ganze Tags und „+N“ für den Rest, statt einen Tag abzuschneiden."
+      },
+      "phoneFolders": {
+        "text": "Auf dem Smartphone listet die Bibliothek die Ordner direkt unter „Angeheftet“."
+      },
+      "dialogButtons": {
+        "text": "In Dialogen auf dem Smartphone steht die Hauptaktion allein unten."
+      },
+      "textFields": {
+        "text": "Textfelder wachsen mit dem, was du tippst."
+      },
+      "landingHeadline": {
+        "text": "Die Überschrift der Startseite passt in jeder Sprache."
       }
     },
     "sections": {
@@ -2831,5 +2986,612 @@
     "available": "Eine neue Version von Shelfmark ist bereit",
     "reload": "Neu laden",
     "later": "Später"
+  },
+  "ai": {
+    "settings": {
+      "features": {
+        "title": "KI-Funktionen"
+      },
+      "enabled": {
+        "label": "KI in Shelfmark nutzen",
+        "hint": "Sendet Adresse, Titel und einen kurzen Auszug der Seite eines Links an unseren KI-Anbieter, um Tags vorzuschlagen und Zusammenfassungen zu schreiben. Nie zum Training von Modellen, nie für Statistiken genutzt."
+      },
+      "unavailable": "Die KI antwortet gerade nicht. Deine Links werden wie gewohnt gespeichert; Vorschläge und Zusammenfassungen folgen, sobald sie wieder da ist.",
+      "folder": {
+        "label": "Ordner",
+        "hint": "Vorschlagen: ein Chip zum Antippen. Automatisch: nur wenn du einen Link in „Ohne Ordner“ lässt, mit Rückgängig. Ein Ordner, den du wählst, wird nie geändert."
+      },
+      "tags": {
+        "label": "Tags",
+        "hint": "Vorschlagen: Chips zum Antippen. Automatisch: nur wenn du selbst keine Tags hinzufügst, mit Rückgängig."
+      },
+      "mode": {
+        "suggest": "Vorschlagen",
+        "auto": "Automatisch",
+        "off": "Aus"
+      },
+      "modePage": {
+        "open": "{{label}}: {{mode}}",
+        "auto": "Automatisch anwenden, wenn ich nicht wähle",
+        "folder": {
+          "groupLabel": "Ordnervorschläge",
+          "suggestHint": "Ein Chip zum Antippen. Nichts ändert sich, bis du es tust.",
+          "autoHint": "Nur für Links, die in „Ohne Ordner“ bleiben. Du siehst es und kannst es rückgängig machen.",
+          "offHint": "Keine Ordnervorschläge.",
+          "note": "Einen Ordner, den du selbst wählst, ändert die KI nie."
+        },
+        "tags": {
+          "groupLabel": "Tag-Vorschläge",
+          "suggestHint": "Chips zum Antippen. Nichts ändert sich, bis du es tust.",
+          "autoHint": "Nur für Links, die du ohne Tags speicherst. Du siehst es und kannst es rückgängig machen.",
+          "offHint": "Keine Tag-Vorschläge.",
+          "note": "Tags, die du selbst hinzufügst, entfernt die KI nie."
+        }
+      },
+      "summaries": {
+        "label": "Zusammenfassungen",
+        "hint": "Ein oder zwei Sätze zu jedem Link, damit du weißt, warum du ihn gespeichert hast. Jederzeit bearbeitbar."
+      },
+      "sent": {
+        "title": "Was gesendet wird"
+      },
+      "notes": {
+        "label": "Meine Notizen einbeziehen",
+        "hint": "Notizen machen Vorschläge genauer. Wenn aus, verlassen deine Notizen Shelfmark nie."
+      },
+      "language": {
+        "label": "Sprache der Zusammenfassungen",
+        "hint": "Zusammenfassungen werden in dieser Sprache geschrieben, egal in welcher Sprache die Seite ist.",
+        "app": "Wie die App ({{language}})"
+      },
+      "usage": {
+        "title": "Dieser Monat",
+        "count": "{{used}} von {{limit}} Links in diesem Monat",
+        "resets": "Zurückgesetzt am {{date}}",
+        "meterLabel": "In diesem Monat von der KI verarbeitete Links",
+        "limit": "Du hast die {{limit}} Links dieses Monats verbraucht. Neue Links werden wie gewohnt gespeichert, ohne Vorschläge oder Zusammenfassungen, bis zum {{date}}."
+      },
+      "data": {
+        "title": "Deine KI-Daten",
+        "label": "KI-Daten löschen",
+        "hint": "Entfernt alle Zusammenfassungen und Vorschläge der KI und schaltet die Suche nach Bedeutung aus. Deine eigenen Änderungen, Tags und Ordner bleiben.",
+        "action": "KI-Daten löschen"
+      },
+      "privacy": {
+        "label": "Wie KI in Shelfmark funktioniert",
+        "hint": "Was gesendet wird, an wen, wie lange es aufbewahrt wird und wie du sie ausschaltest",
+        "action": "Lesen",
+        "actionLabel": "Lesen, wie KI in Shelfmark funktioniert"
+      },
+      "failed": "KI-Einstellungen konnten nicht gespeichert werden",
+      "failedDetail": "Die Änderung wurde zurückgenommen. Versuch es noch einmal.",
+      "loadFailed": "KI-Einstellungen konnten nicht geladen werden.",
+      "retry": "Erneut versuchen",
+      "meaning": {
+        "title": "Suche nach Bedeutung",
+        "text": "Findet Links nach ihrem Thema, nicht nur nach ihren Wörtern, und zeigt ähnliche Links. Sendet Titel, Tags und Zusammenfassung jedes Links (mit „Meine Notizen einbeziehen“ auch die Notiz) und deine Suche an Voyage AI.",
+        "ready": "Bereit",
+        "progress": "{{ready}} von {{total}} Links bereit",
+        "quota": "Pausiert bis {{date}}: Monatslimit erreicht"
+      },
+      "ask": {
+        "title": "Frag deine Links",
+        "text": "Beantwortet Fragen aus deinen eigenen Links. Nutzt Claude von Anthropic: Deine Frage und die passenden Links werden gesendet, nichts wird gespeichert."
+      }
+    },
+    "backfill": {
+      "title": "Vorhandene Links verarbeiten",
+      "hint": {
+        "one": "{{count}} Link wurde gespeichert, bevor du die KI eingeschaltet hast. Ergänzt Vorschläge und Zusammenfassungen im Hintergrund: schneller, solange Shelfmark offen ist, sonst innerhalb eines Tages.",
+        "other": "{{count}} Links wurden gespeichert, bevor du die KI eingeschaltet hast. Ergänzt Vorschläge und Zusammenfassungen im Hintergrund: schneller, solange Shelfmark offen ist, sonst innerhalb eines Tages."
+      },
+      "start": "Starten",
+      "running": "Vorhandene Links werden verarbeitet",
+      "progress": "{{done}} von {{total}} erledigt. Schneller, solange Shelfmark offen ist; sonst fertig innerhalb eines Tages.",
+      "meterLabel": "Verarbeitete vorhandene Links",
+      "estimate": "Noch etwa {{minutes}} Min.",
+      "stop": "Stoppen",
+      "done": "Alle vorhandenen Links sind verarbeitet.",
+      "startFailed": "Verarbeitung deiner Links konnte nicht gestartet werden",
+      "stopFailed": "Verarbeitung konnte nicht gestoppt werden. Versuch es noch einmal."
+    },
+    "deleteData": {
+      "confirm": {
+        "title": "KI-Daten löschen?",
+        "message": "Alle Zusammenfassungen und Vorschläge der KI werden entfernt, und die Suche nach Bedeutung wird ausgeschaltet. Deine eigenen Änderungen, Tags und Ordner bleiben. Das lässt sich nicht rückgängig machen.",
+        "confirm": "KI-Daten löschen",
+        "cancel": "Abbrechen",
+        "close": "Schließen"
+      },
+      "done": "KI-Daten gelöscht",
+      "failed": "KI-Daten konnten nicht gelöscht werden",
+      "failedDetail": "Es wurde nichts entfernt. Versuch es noch einmal."
+    },
+    "intro": {
+      "title": "KI in Shelfmark einschalten?",
+      "titleShort": "KI einschalten?",
+      "close": "Schließen",
+      "suggest": {
+        "title": "Schlägt Tags und einen Ordner vor",
+        "text": "Aus denen, die du schon hast. Du entscheidest: Nichts wird angewendet, solange du es nicht antippst oder in den Einstellungen Automatisch wählst."
+      },
+      "summaries": {
+        "title": "Schreibt kurze Zusammenfassungen",
+        "text": "Ein oder zwei Sätze pro Link. Als KI-generiert gekennzeichnet und möglicherweise ungenau; jederzeit bearbeitbar."
+      },
+      "sent": {
+        "title": "Was an das Modell gesendet wird",
+        "text": "Adresse, Titel und Beschreibung eines Links und Text aus der Seite. Nie deine anderen Links, deine Notizen (außer du erlaubst es) oder Daten anderer."
+      },
+      "training": {
+        "title": "Nicht für Training genutzt",
+        "text": "Deine Inhalte werden nie zum Training von Modellen genutzt. Anthropic verarbeitet sie für uns und löscht sie innerhalb von 30 Tagen."
+      },
+      "details": "Du kannst die KI oder einzelne Funktionen unter Einstellungen › KI ausschalten.",
+      "policy": "Datenschutzerklärung lesen",
+      "failed": "KI konnte nicht eingeschaltet werden. Versuch es noch einmal.",
+      "notNow": "Nicht jetzt",
+      "turnOn": "KI einschalten",
+      "meaning": {
+        "title": "Findet Links nach Bedeutung",
+        "text": "Suche und ähnliche Links berücksichtigen auch, worum es in einem Link geht. Dafür gehen Titel, Tags, Zusammenfassungen und deine Suche an Voyage AI. Einzeln abschaltbar unter Einstellungen › KI."
+      },
+      "ask": {
+        "title": "Beantwortet Fragen aus deinen Links",
+        "text": "Nur wenn du fragst: Deine Frage und die passenden Links gehen an das Modell. Die Antwort nennt ihre Quellen, nichts wird gespeichert. Einzeln ausschaltbar unter Einstellungen › KI."
+      }
+    },
+    "suggest": {
+      "label": "Vorgeschlagen",
+      "alsoFits": "Passt auch",
+      "loading": "Schlägt vor…",
+      "folderRow": "Vorgeschlagener Ordner",
+      "tagsRow": "Vorgeschlagene Tags",
+      "addAll": "Alle hinzufügen",
+      "addedAll": "Vorgeschlagene Tags hinzugefügt",
+      "new": "Neu",
+      "addTag": "Tag {{name}} hinzufügen",
+      "createTag": "Tag {{name}} erstellen und hinzufügen",
+      "moveTo": "Nach {{name}} verschieben",
+      "dismiss": "Vorschlag {{name}} verwerfen",
+      "tagAdded": "Tag {{name}} hinzugefügt",
+      "folderChosen": "Ordner {{name}} gewählt"
+    },
+    "fill": {
+      "button": "Mit KI ausfüllen",
+      "done": "Mit den Vorschlägen der KI ausgefüllt",
+      "keys": {
+        "option": "⌥",
+        "alt": "Alt",
+        "shiftMac": "⇧",
+        "shift": "Shift"
+      },
+      "filling": "Wird ausgefüllt …",
+      "needLink": "Füge zuerst einen Link ein",
+      "nothing": "Die KI hat für diesen Link nichts auszufüllen",
+      "short": "Ausfüllen"
+    },
+    "line": {
+      "limit": "Vorschläge pausieren bis {{date}}. Du hast die {{limit}} Links dieses Monats genutzt.",
+      "unavailable": "Vorschläge sind gerade nicht verfügbar. Dein Link wird wie gewohnt gespeichert.",
+      "retry": "Erneut versuchen",
+      "settings": "KI-Einstellungen"
+    },
+    "applied": {
+      "folder": "Von KI verschoben",
+      "tags": {
+        "one": "{{count}} von KI hinzugefügt",
+        "other": "{{count}} von KI hinzugefügt"
+      },
+      "undo": "Rückgängig",
+      "undoFolder": "Verschieben durch KI rückgängig machen",
+      "undoTags": "Von KI hinzugefügte Tags rückgängig machen",
+      "undoFailed": "KI-Änderung konnte nicht rückgängig gemacht werden"
+    },
+    "disclaimer": "Von KI erstellt, kann ungenau sein",
+    "summary": {
+      "pending": "Zusammenfassung wird geschrieben",
+      "label": "Zusammenfassung",
+      "counter": "Zeichen",
+      "byAi": "Von KI geschrieben",
+      "byYou": "Von dir bearbeitet",
+      "rewrite": "Neu schreiben",
+      "hintAi": "{{disclaimer}}. Bearbeite sie und sie gehört dir: KI schreibt deinen Text nie um.",
+      "hintUser": "Leere das Feld, damit KI sie neu schreibt.",
+      "hintEmpty": "Lass es leer, dann schreibt KI eine.",
+      "rewriteFailed": "Zusammenfassung konnte nicht neu geschrieben werden",
+      "rewriteFailedDetail": "Deine Zusammenfassung bleibt unverändert. Versuch es später noch einmal.",
+      "tooLong": "Die Zusammenfassung darf höchstens {{max}} Zeichen haben."
+    },
+    "toast": {
+      "moved": "Von KI nach {{folder}} verschoben",
+      "tagged": {
+        "one": "{{count}} Tag von KI hinzugefügt",
+        "other": "{{count}} Tags von KI hinzugefügt"
+      },
+      "undo": "Rückgängig"
+    },
+    "tidy": {
+      "entry": "Mit Vorschlägen aufräumen",
+      "back": "Ohne Ordner",
+      "title": "„Ohne Ordner“ aufräumen",
+      "lead": {
+        "one": "Vorschläge für {{count}} Link. Tippe auf einen Chip, um ihn auszulassen.",
+        "other": "Vorschläge für {{count}} Links. Tippe auf einen Chip, um ihn auszulassen."
+      },
+      "cancel": "Abbrechen",
+      "apply": {
+        "one": "Auf {{count}} Link anwenden",
+        "other": "Auf {{count}} Links anwenden"
+      },
+      "skip": "Überspringen",
+      "skipped": "Übersprungen – bleibt in „Ohne Ordner“",
+      "undoSkip": "Überspringen rückgängig",
+      "rowLabel": "Änderungen für {{title}}",
+      "listLabel": "Links mit Vorschlägen",
+      "barLabel": "Vorschläge anwenden",
+      "loading": "Vorschläge werden geladen",
+      "chip": {
+        "folder": "In {{name}} verschieben",
+        "folderAdded": "In {{name}} verschieben, ausgewählt",
+        "tag": "Tag {{name}} hinzufügen",
+        "tagAdded": "Tag {{name}} hinzufügen, ausgewählt",
+        "newTag": "Tag {{name}} erstellen und hinzufügen",
+        "newTagAdded": "Tag {{name}} erstellen und hinzufügen, ausgewählt"
+      },
+      "more": {
+        "one": "Danach folgt noch {{count}} Link. Links ohne Vorschläge werden nicht aufgeführt.",
+        "other": "Danach folgen noch {{count}} Links. Links ohne Vorschläge werden nicht aufgeführt."
+      },
+      "next": "Nächste Links zeigen",
+      "empty": {
+        "title": "Nichts aufzuräumen",
+        "text": "Jeder Link hier hat entweder noch keine Vorschläge oder du hast ihn schon einsortiert. Neue Links bekommen innerhalb einer Minute Vorschläge.",
+        "back": "Zurück zu „Ohne Ordner“"
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} Link aufgeräumt",
+          "other": "{{count}} Links aufgeräumt"
+        },
+        "folders": {
+          "one": "In {{count}} Ordner verschoben",
+          "other": "In {{count}} Ordner verschoben"
+        },
+        "tags": {
+          "one": "{{count}} Tag hinzugefügt",
+          "other": "{{count}} Tags hinzugefügt"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Rückgängig",
+        "failed": "Links konnten nicht aufgeräumt werden",
+        "failedDetail": "Es wurde nichts geändert. Versuche es noch einmal.",
+        "nothing": "Nichts anzuwenden",
+        "nothingDetail": "Die Vorschläge haben sich inzwischen geändert."
+      },
+      "undone": "Aufräumen rückgängig gemacht",
+      "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden"
+    },
+    "search": {
+      "related": "Ähnlich nach Bedeutung",
+      "noWordMatches": "Keine Links mit diesen Wörtern",
+      "why": "Nah an: {{reasons}}",
+      "fromSummary": "Nah an: {{reasons}} (aus der Zusammenfassung)",
+      "preparing": "Die Suche nach Bedeutung wird vorbereitet: {{ready}} von {{total}} Links. Die Wortsuche funktioniert wie gewohnt."
+    },
+    "related": {
+      "title": "Ähnliches in deinem Regal",
+      "why": "Nah an: {{reasons}}",
+      "show": "Ähnliches zeigen",
+      "folders": "Ähnliche Ordner"
+    },
+    "ask": {
+      "title": "Frag deine Links",
+      "open": "Frag deine Links",
+      "close": "Frag deine Links schließen",
+      "newQuestion": "Neue Frage",
+      "back": "Zurück",
+      "emptyTitle": "Was möchtest du wissen?",
+      "lead": "Frag in deinen eigenen Worten. Die Antwort stammt aus deinen gespeicherten Links, mit allen Quellen.",
+      "starters": {
+        "saved": "Was habe ich zu {{folder}} gespeichert?",
+        "ideas": "Was sind die wichtigsten Ideen in {{folder}}?",
+        "recent": "Was habe ich zuletzt zu {{folder}} hinzugefügt?",
+        "generic": "Was habe ich diesen Monat gespeichert?"
+      },
+      "label": "Frag zu deinen Links",
+      "placeholder": "Frag zu deinen Links",
+      "send": "Fragen",
+      "stop": "Stoppen",
+      "left": {
+        "day": {
+          "one": "Heute noch {{count}} Frage",
+          "other": "Heute noch {{count}} Fragen"
+        },
+        "month": {
+          "one": "Diesen Monat noch {{count}} Frage",
+          "other": "Diesen Monat noch {{count}} Fragen"
+        }
+      },
+      "footer": "Antworten nutzen nur deine Links. In deiner Bibliothek wird nichts geändert.",
+      "sources": "Quellen aus deinen Links",
+      "source": "Quelle {{n}}",
+      "sideBySide": "Nebeneinander öffnen",
+      "remind": "Erinnern",
+      "notFound": {
+        "text": "Nichts in deinen Links beantwortet das.",
+        "search": "„{{query}}“ suchen",
+        "add": "Link hinzufügen"
+      },
+      "limit": {
+        "day": "Du hast die Fragen für heute aufgebraucht. Frag morgen wieder; die Suche funktioniert wie gewohnt.",
+        "month": "Du hast die Fragen für diesen Monat aufgebraucht. Frag ab {{date}} wieder; die Suche funktioniert wie gewohnt."
+      },
+      "error": "Gerade keine Antwort möglich. Diese Frage zählt nicht für dein Limit.",
+      "rejected": "Diese Frage kann nicht beantwortet werden. Sie zählt nicht für dein Limit.",
+      "busy": "Eine andere Frage wird noch beantwortet. Versuch es gleich noch einmal.",
+      "rateLimited": "Zu viele Fragen in kurzer Zeit. Versuche es in einer Minute erneut; diese Frage wurde nicht auf dein Limit angerechnet.",
+      "off": "Frag deine Links ist unter Einstellungen › KI ausgeschaltet.",
+      "retry": "Erneut versuchen",
+      "truncated": "Die Antwort wurde abgeschnitten.",
+      "stopped": "Gestoppt.",
+      "button": "Fragen",
+      "try": "Zum Beispiel"
+    },
+    "connect": {
+      "title": "Assistenten verbinden",
+      "lead": "Lass Claude oder einen anderen Assistenten mit MCP-Unterstützung deine Links durchsuchen und lesen. Nur Lesezugriff: Er kann nichts ändern oder löschen.",
+      "pro": "Einen Assistenten zu verbinden ist Teil von Pro. Vorhandene Tokens bleiben aufgelistet und du kannst sie widerrufen.",
+      "demo": "In der Demo lässt sich kein Assistent verbinden. Melde dich mit deinem eigenen Konto an, um es auszuprobieren.",
+      "loadFailed": "Deine Tokens konnten nicht geladen werden.",
+      "retry": "Erneut versuchen",
+      "copy": "Kopieren",
+      "copyFailed": "Kopieren nicht möglich. Markiere den Text und kopiere ihn mit der Tastatur.",
+      "address": {
+        "title": "1. Serveradresse",
+        "copyLabel": "Serveradresse kopieren",
+        "copied": "Serveradresse kopiert"
+      },
+      "token": {
+        "title": "2. Persönliches Token",
+        "hint": "Ein Token pro Assistent, damit du jedes einzeln widerrufen kannst.",
+        "limit": "Du hast {{max}} Tokens. Widerrufe eines, um ein neues zu erstellen.",
+        "create": "Token erstellen"
+      },
+      "list": {
+        "title": "Verbunden",
+        "last4": "Endet auf {{last4}}",
+        "used": "Zuletzt genutzt {{when}}, Aufrufe diese Woche: {{calls}}",
+        "never": "Erstellt am {{date}}, nie genutzt",
+        "notes": "Mit Notizen",
+        "revoke": "Widerrufen",
+        "revokeLabel": "{{name}} widerrufen"
+      },
+      "empty": {
+        "title": "Keine Assistenten verbunden",
+        "text": "Erstelle ein Token, füge es mit der Serveradresse in die MCP-Einstellungen deines Assistenten ein und frag ihn nach deinen Links."
+      },
+      "revoke": {
+        "title": "{{name}} widerrufen?",
+        "message": "Das Token funktioniert sofort nicht mehr: Der Assistent, der es nutzt, kann deine Links nicht mehr lesen.",
+        "confirm": "Widerrufen",
+        "cancel": "Abbrechen",
+        "done": "Token widerrufen",
+        "failed": "Das Token konnte nicht widerrufen werden. Versuch es noch einmal."
+      },
+      "create": {
+        "title": "Token erstellen",
+        "close": "Schließen",
+        "name": "Name",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Gib dem Token einen Namen.",
+        "tooLong": "Höchstens {{max}} Zeichen.",
+        "notes": "Meine Notizen einbeziehen",
+        "notesHint": "Dein Assistent sieht dann auch die Notizen zu deinen Links. Um das später zu ändern, erstelle ein neues Token.",
+        "cancel": "Abbrechen",
+        "action": "Token erstellen",
+        "saving": "Wird erstellt…",
+        "error": {
+          "limit": "Du hast {{max}} Tokens. Widerrufe eines, um ein neues zu erstellen.",
+          "notAvailable": "Einen Assistenten zu verbinden ist Teil von Pro.",
+          "save": "Das Token konnte nicht erstellt werden. Versuch es noch einmal."
+        }
+      },
+      "secret": {
+        "title": "Token für {{name}}",
+        "label": "Persönliches Token (nur einmal angezeigt)",
+        "copyLabel": "Token kopieren",
+        "copied": "Token kopiert",
+        "warning": "Kopiere es jetzt: Du siehst es nicht noch einmal. Wer dieses Token hat, kann deine Links lesen, bis du es widerrufst.",
+        "fallback": "Kopieren nicht möglich. Das Token ist oben markiert: Drücke Strg+C oder ⌘C, um es zu kopieren.",
+        "field": "Persönliches Token",
+        "done": "Fertig"
+      },
+      "howTo": {
+        "toggle": "So verbindest du: Claude, Cursor, VS Code",
+        "intro": "Ersetze <token> durch dein persönliches Token.",
+        "copyLabel": "Einrichtung für {{client}} kopieren",
+        "copied": "Einrichtung für {{client}} kopiert",
+        "oauth": "Assistenten, die sich nur über eine Anmeldung (OAuth) verbinden, etwa webbasierte Connectors, können sich noch nicht verbinden.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Führe das in einem Terminal aus:"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Füge das in claude_desktop_config.json ein (Einstellungen › Entwickler › Konfiguration bearbeiten) und starte Claude Desktop neu. Benötigt Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Füge das in ~/.cursor/mcp.json ein:"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Füge das in .vscode/mcp.json in deinem Projekt ein:"
+          }
+        }
+      }
+    },
+    "announce": {
+      "title": "Shelfmark kann dir jetzt mit KI helfen",
+      "lead": "Sie bleibt aus, bis du sie einschaltest. Du entscheidest immer selbst, und jeder Vorschlag lässt sich rückgängig machen.",
+      "close": "Schließen",
+      "folder": {
+        "title": "Ordner und Tags",
+        "text": "Beim Speichern vorgeschlagen, mit einem Klick übernommen"
+      },
+      "summaries": {
+        "title": "Kurze Zusammenfassungen",
+        "text": "Zwei Zeilen auf jeder Karte, damit du weißt, warum du den Link gespeichert hast"
+      },
+      "meaning": {
+        "title": "Suche nach Bedeutung",
+        "text": "Findet Links auch, wenn die Wörter nicht passen"
+      },
+      "ask": {
+        "title": "Frag dein Regal",
+        "text": "Antworten aus deinen Links, mit Quellen"
+      },
+      "turnOn": "KI einschalten …",
+      "notNow": "Nicht jetzt",
+      "note": "Als Nächstes siehst du, was wohin gesendet wird, und entscheidest dann. Du kannst sie jederzeit unter Einstellungen › KI ausschalten."
+    }
+  },
+  "rediscover": {
+    "lead": {
+      "theme": "Du speicherst gerade viel zu {{theme}}. Das sind ältere Links, die du nicht geöffnet hast.",
+      "forgotten": "Ein paar Links, die du gespeichert und nie wieder geöffnet hast. Öffne einen, setze eine Erinnerung oder lass ihn los."
+    },
+    "dismiss": "Bis nächste Woche ausblenden",
+    "saved": "Gespeichert im {{month}}, länger nicht geöffnet",
+    "remind": "Erinnern",
+    "readLater": "Später lesen",
+    "notInterested": "Kein Interesse",
+    "count": {
+      "one": "{{count}} Link, vor einer Weile gespeichert und nie geöffnet",
+      "other": "{{count}} Links, vor einer Weile gespeichert und nie geöffnet"
+    },
+    "segment": {
+      "label": "Anzeigen",
+      "opened": "Geöffnet",
+      "forgotten": "Vergessen",
+      "forgottenCount": "Vergessen {{count}}"
+    },
+    "empty": {
+      "title": "Nichts vergessen",
+      "text": "Links, die du speicherst und nie öffnest, warten hier."
+    },
+    "note": {
+      "one": "{{count}} vergessen",
+      "other": "{{count}} vergessen"
+    }
+  },
+  "cleanup": {
+    "title": "Bibliothek aufräumen",
+    "lead": "Finde Links, die du mehrfach gespeichert hast, und Tags mit gleicher Bedeutung. Nichts ändert sich, bevor du anwendest.",
+    "checkedOn": "Geprüft {{when}}. Nichts ändert sich, bevor du anwendest; du kannst den ganzen Lauf rückgängig machen.",
+    "intro": "Shelfmark sucht nach zusätzlichen Kopien desselben Links und nach Tags mit gleicher Bedeutung. Du prüfst jede Änderung, und ein Rückgängig macht den ganzen Lauf rückgängig.",
+    "loading": "Aufräumbericht wird geladen",
+    "loadFailed": "Der Aufräumbericht konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "run": "Bibliothek prüfen",
+    "runAgain": "Erneut prüfen",
+    "runFailed": "Die Prüfung konnte nicht starten. Versuch es noch einmal.",
+    "includeAi": {
+      "label": "KI-Prüfungen einbeziehen",
+      "hint": "Findet auch dieselbe Seite unter anderer Adresse und Tags mit gleicher Bedeutung."
+    },
+    "checking": {
+      "title": "Bibliothek wird geprüft…",
+      "text": "Du kannst diese Seite verlassen; der Bericht bleibt erhalten.",
+      "progress": "{{checked}} von {{total}} Links. Du kannst diese Seite verlassen; der Bericht bleibt erhalten.",
+      "label": "Aufräumfortschritt"
+    },
+    "apply": {
+      "one": "{{count}} Änderung anwenden",
+      "other": "{{count}} Änderungen anwenden"
+    },
+    "cancel": "Abbrechen",
+    "barLabel": "Aufräumaktionen",
+    "groups": {
+      "duplicates": {
+        "title": "Duplikate",
+        "hint": "Zusätzliche Kopien kommen in den Papierkorb"
+      },
+      "similarTags": {
+        "title": "Ähnliche Tags",
+        "hint": "Werden mit dem ersten zusammengeführt"
+      }
+    },
+    "reason": {
+      "sameAddress": "Gleiche Adresse",
+      "samePage": "Gleiche Seite"
+    },
+    "duplicate": {
+      "sameAddress": {
+        "one": "{{saved}}-mal gespeichert: den in {{place}} behalten ({{why}}), {{count}} Kopie in den Papierkorb",
+        "other": "{{saved}}-mal gespeichert: den in {{place}} behalten ({{why}}), {{count}} Kopien in den Papierkorb"
+      },
+      "samePage": {
+        "one": "{{hosts}}: {{keep}} behalten ({{why}}), {{count}} Kopie in den Papierkorb",
+        "other": "{{hosts}}: {{keep}} behalten ({{why}}), {{count}} Kopien in den Papierkorb"
+      }
+    },
+    "unsorted": "Unsortiert",
+    "keep": {
+      "in-folder": "er liegt in einem Ordner",
+      "has-note": "er hat eine Notiz",
+      "has-reminder": "er hat eine Erinnerung",
+      "more-tags": "er hat mehr Tags",
+      "favorite": "er ist ein Favorit",
+      "recently-opened": "zuletzt geöffnet",
+      "oldest": "zuerst gespeichert"
+    },
+    "tagPair": {
+      "title": "{{keep}} ← {{merge}}",
+      "detail": {
+        "one": "{{count}} Link bekommt „{{keep}}“; „{{merge}}“ wird entfernt",
+        "other": "{{count}} Links bekommen „{{keep}}“; „{{merge}}“ wird entfernt"
+      },
+      "swap": "Stattdessen „{{merge}}“ behalten"
+    },
+    "foundByAi": "Von KI gefunden",
+    "footer": "Mit „Von KI gefunden“ markierte Gruppen sind Vorschläge und können ungenau sein. Exakte Duplikate werden ohne KI geprüft.",
+    "failed": "Die Prüfung wurde vor dem Ende abgebrochen. Das hat sie gefunden.",
+    "empty": {
+      "title": "Deine Bibliothek ist aufgeräumt",
+      "text": "Keine Duplikate oder ähnlichen Tags gefunden."
+    },
+    "checkFailed": {
+      "title": "Die Prüfung wurde nicht abgeschlossen",
+      "text": "Sie hat abgebrochen, bevor sie etwas gefunden hat, und nichts wurde geändert. Versuch es noch einmal."
+    },
+    "applied": {
+      "title": "Alles aufgeräumt",
+      "text": "Die gewählten Änderungen sind erledigt. Entfernte Kopien warten im Papierkorb."
+    },
+    "toast": {
+      "title": {
+        "one": "{{count}} Sache aufgeräumt",
+        "other": "{{count}} Sachen aufgeräumt"
+      },
+      "copies": {
+        "one": "{{count}} Kopie im Papierkorb",
+        "other": "{{count}} Kopien im Papierkorb"
+      },
+      "tags": {
+        "one": "{{count}} Tag zusammengeführt",
+        "other": "{{count}} Tags zusammengeführt"
+      },
+      "detail": "{{copies}}, {{tags}}",
+      "undo": "Rückgängig",
+      "failed": "Die Änderungen konnten nicht angewendet werden",
+      "failedDetail": "Es wurde nichts geändert. Versuch es noch einmal.",
+      "nothing": "Nichts anzuwenden",
+      "nothingDetail": "Diese Einträge haben sich inzwischen geändert."
+    },
+    "undone": "Aufräumen rückgängig gemacht",
+    "undoFailed": "Das Aufräumen konnte nicht rückgängig gemacht werden"
   }
 }

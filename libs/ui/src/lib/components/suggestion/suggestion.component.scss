@@ -1,0 +1,146 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: inline-flex;
+  flex: none;
+  max-width: 100%;
+}
+
+// The pill. Dashed `ai-line` edge (3:1) and no fill until it is taken; the buttons inside are
+// transparent.
+.ui-suggestion__chip {
+  @include type(caption);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  height: rem(28px);
+  padding: 0 rem(4px) 0 rem(8px);
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  background: transparent;
+  border: 1px dashed var(--ai-line);
+  border-radius: var(--radius-full);
+  transition:
+    background-color var(--duration-fast),
+    border-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out);
+
+  // One ring for the chip when its main button has focus (the button itself draws none).
+  &:has(.ui-suggestion__apply:focus-visible) {
+    @include focus-ring;
+  }
+
+  @include hover {
+    background: var(--surface-hover);
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+.ui-suggestion__chip--accepted {
+  padding-right: rem(10px);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  border-color: transparent;
+  border-style: solid;
+
+  @include hover {
+    background: var(--accent-bg);
+  }
+}
+
+.ui-suggestion__chip--swell {
+  animation: ui-suggest-accept var(--duration-base) var(--ease-spring);
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.ui-suggestion__apply,
+.ui-suggestion__dismiss {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.ui-suggestion__apply {
+  gap: var(--space-1);
+  min-width: 0;
+  height: 100%;
+  padding-right: rem(2px);
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  // The pill is 28px; a finger gets 44px (the dismiss button keeps its own strip on the right).
+  @include coarse {
+    &::before {
+      position: absolute;
+      inset: rem(-8px) rem(22px) rem(-8px) 0;
+      content: '';
+    }
+  }
+}
+
+.ui-suggestion__plus {
+  color: var(--ai);
+}
+
+.ui-suggestion__chip--accepted .ui-suggestion__plus {
+  color: var(--accent-text);
+}
+
+.ui-suggestion__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ui-suggestion__new {
+  font-size: rem(11px);
+  color: var(--text-muted);
+}
+
+.ui-suggestion__chip--accepted .ui-suggestion__new {
+  color: var(--accent-text);
+}
+
+.ui-suggestion__dismiss {
+  flex: none;
+  justify-content: center;
+  width: rem(22px);
+  height: rem(22px);
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include hover {
+    color: var(--text);
+    background: var(--surface-pressed);
+  }
+
+  // Always visible on touch; its hit area grows to 44px with the pill.
+  @include coarse {
+    &::before {
+      position: absolute;
+      inset: rem(-8px) rem(-6px) rem(-8px) auto;
+      width: rem(30px);
+      content: '';
+    }
+  }
+}

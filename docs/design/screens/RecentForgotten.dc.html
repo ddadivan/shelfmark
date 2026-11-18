@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recently opened and Forgotten</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#A9AEF2}a:hover{color:#C9CCF7}
+</style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; display: flex; gap: 24px; padding: 16px; background: #111113; color: #EDEDEF; font-family: Onest, system-ui, sans-serif">
+  <nav aria-label="Library" style="width: 248px; flex: none; display: flex; flex-direction: column; gap: 2px; padding: 16px 8px; border-radius: 22px; background: #1A1A1D">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 4px 10px 16px; font-size: 18px; font-weight: 700">
+      <span style="width: 24px; height: 24px; border-radius: 7px; background: #EDEDEF"></span>Shelfmark
+    </div>
+    <a href="#" style="display: flex; justify-content: space-between; padding: 10px 12px; border-radius: 12px; color: #EDEDEF; text-decoration: none; font-size: 14px; font-weight: 500">All links<span style="color: #9A9AA0">54</span></a>
+    <a href="#" style="display: flex; justify-content: space-between; padding: 10px 12px; border-radius: 12px; color: #EDEDEF; text-decoration: none; font-size: 14px; font-weight: 500">Unsorted<span style="color: #9A9AA0">16</span></a>
+    <a href="#" style="display: flex; justify-content: space-between; padding: 10px 12px; border-radius: 12px; color: #EDEDEF; text-decoration: none; font-size: 14px; font-weight: 500">Favorites<span style="color: #9A9AA0">6</span></a>
+    <a href="#" aria-current="page" style="display: flex; justify-content: space-between; padding: 10px 12px; border-radius: 12px; background: #21301E; color: #C6DEC0; text-decoration: none; font-size: 14px; font-weight: 600">Recently opened<span style="color: #8DBB86">5 forgotten</span></a>
+    <a href="#" style="display: flex; justify-content: space-between; padding: 10px 12px; border-radius: 12px; color: #EDEDEF; text-decoration: none; font-size: 14px; font-weight: 500">Reminders<span style="color: #9A9AA0">1</span></a>
+    <p style="margin: 16px 12px 0; font-size: 12px; line-height: 1.45; color: #9A9AA0">No new row: “Forgotten” lives inside Recently opened. The row only shows how many are waiting.</p>
+  </nav>
+
+  <main style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 20px; padding: 24px 24px 0">
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <h1 style="margin: 0; font-size: 36px; font-weight: 700">Recently opened</h1>
+        <span style="font-size: 13px; color: #9A9AA0">Saved a while ago and never opened · 5</span>
+      </div>
+      <div role="radiogroup" aria-label="Show" style="display: flex; padding: 4px; border-radius: 999px; background: #1A1A1D; border: 1px solid #29292E">
+        <label style="display: flex; align-items: center; height: 32px; padding: 0 16px; border-radius: 999px; font-size: 14px; color: #9A9AA0"><input type="radio" name="seg" style="position: absolute; opacity: 0">Opened</label>
+        <label style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 16px; border-radius: 999px; background: #EDEDEF; color: #131315; font-size: 14px; font-weight: 600"><input type="radio" name="seg" checked style="position: absolute; opacity: 0">Forgotten <span style="font-weight: 500; opacity: .7">5</span></label>
+      </div>
+    </div>
+
+    <p style="margin: 0; font-size: 14px; color: #9A9AA0">A few links you saved and never came back to. Open one, set a reminder, or let it go.</p>
+
+    <ul style="margin: 0; padding: 6px; list-style: none; display: flex; flex-direction: column; gap: 2px; border-radius: 22px; background: #1A1A1D">
+      <li style="display: flex; align-items: center; gap: 16px; padding: 12px 14px; border-radius: 14px">
+        <span style="width: 72px; height: 48px; flex: none; border-radius: 14px; background: #21301E"></span>
+        <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 3px; min-width: 0">
+          <a href="#" style="color: #EDEDEF; text-decoration: none; font-size: 15px; font-weight: 600">How to Do Great Work</a>
+          <span style="font-size: 12px; color: #9A9AA0">paulgraham.com · saved in July, never opened</span>
+        </span>
+        <button type="button" style="height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: #EDEDEF; font: 600 13px Onest, sans-serif">Remind me</button>
+        <button type="button" style="height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: #9A9AA0; font: 600 13px Onest, sans-serif">Not interested</button>
+      </li>
+      <li style="display: flex; align-items: center; gap: 16px; padding: 12px 14px; border-radius: 14px; border-top: 1px solid #29292E">
+        <span style="width: 72px; height: 48px; flex: none; border-radius: 14px; background: #2C2C31"></span>
+        <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 3px; min-width: 0">
+          <a href="#" style="color: #EDEDEF; text-decoration: none; font-size: 15px; font-weight: 600">A complete guide to CSS Grid</a>
+          <span style="font-size: 12px; color: #9A9AA0">css-tricks.com · saved in October, never opened</span>
+        </span>
+        <button type="button" style="height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: #EDEDEF; font: 600 13px Onest, sans-serif">Remind me</button>
+        <button type="button" style="height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: #9A9AA0; font: 600 13px Onest, sans-serif">Not interested</button>
+      </li>
+      <li style="display: flex; align-items: center; gap: 16px; padding: 12px 14px; border-radius: 14px; border-top: 1px solid #29292E">
+        <span style="width: 72px; height: 48px; flex: none; border-radius: 14px; background: #21301E"></span>
+        <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 3px; min-width: 0">
+          <a href="#" style="color: #EDEDEF; text-decoration: none; font-size: 15px; font-weight: 600">Angular CLI reference</a>
+          <span style="font-size: 12px; color: #9A9AA0">angular.dev · saved in October, never opened</span>
+        </span>
+        <button type="button" style="height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: #EDEDEF; font: 600 13px Onest, sans-serif">Remind me</button>
+        <button type="button" style="height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: #9A9AA0; font: 600 13px Onest, sans-serif">Not interested</button>
+      </li>
+      <li style="display: flex; align-items: center; gap: 16px; padding: 12px 14px; border-radius: 14px; border-top: 1px solid #29292E">
+        <span style="width: 72px; height: 48px; flex: none; border-radius: 14px; background: #2C2C31"></span>
+        <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 3px; min-width: 0">
+          <a href="#" style="color: #EDEDEF; text-decoration: none; font-size: 15px; font-weight: 600">Cashmere scarf</a>
+          <span style="font-size: 12px; color: #9A9AA0">arket.com · saved in October, never opened</span>
+        </span>
+        <button type="button" style="height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: #EDEDEF; font: 600 13px Onest, sans-serif">Remind me</button>
+        <button type="button" style="height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: #9A9AA0; font: 600 13px Onest, sans-serif">Not interested</button>
+      </li>
+    </ul>
+    <p style="margin: 0; font-size: 12px; color: #9A9AA0">With AI on, a second group “Around one theme” (spark mark) can follow, as Rediscover does today.</p>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

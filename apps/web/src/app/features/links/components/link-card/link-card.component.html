@@ -75,25 +75,48 @@
   <!-- The note and the bottom row always take their room, so every card is the same height (#335). -->
   @if (link().note; as note) {
     <p class="link-card__note">{{ note }}</p>
+  } @else if (link().summary || link().aiStatus === AI_JOB_STATUS.Pending) {
+    <!-- The user's note wins the slot; else the summary, or its skeleton right after a save (#391). -->
+    <app-link-summary class="link-card__note" [link]="link()" />
   } @else {
     <p class="link-card__note" aria-hidden="true"></p>
   }
   <!-- Tags and the favorite star share the bottom row; the star sits right whether or not there are tags. -->
   <div class="link-card__foot">
     @if (tags().length > 0) {
-      <ul class="link-card__tags">
-        @for (tag of tags(); track tag) {
-          <li>
+      <!-- Only whole tags that fit the line show, then "+N" (FitTagsDirective); the list stays
+           hidden until measured, so the footer never jumps. -->
+      <ul
+        class="link-card__tags"
+        [class.link-card__tags--measured]="fit.measured()"
+        [appFitTags]="tags().length"
+        #fit="appFitTags"
+      >
+        @for (tag of tags(); track tag; let i = $index) {
+          <li
+            data-tag
+            class="link-card__tag"
+            [class.link-card__tag--off]="i >= fit.visible()"
+            [class.link-card__tag--clip]="i === 0 && fit.clipFirst()"
+          >
             <ui-chip>{{ tag }}</ui-chip>
           </li>
         }
-        @if (hiddenTags() > 0) {
-          <li>
-            <ui-chip variant="neutral">{{
-              'links.card.moreTags' | transloco: { count: hiddenTags() }
-            }}</ui-chip>
-          </li>
-        }
+        @let more = moreTags(fit);
+        <li
+          data-more
+          class="link-card__tag link-card__more"
+          [class.link-card__tag--off]="more.count === 0 || fit.hidden() === 0"
+        >
+          <ui-chip
+            variant="neutral"
+            role="img"
+            [attr.aria-label]="pluralKey('links.card.moreTagsLabel', more.count) | transloco: more"
+            [uiTooltip]="pluralKey('links.card.moreTagsLabel', more.count) | transloco: more"
+          >
+            {{ 'links.card.moreTags' | transloco: { count: more.count || link().tags.length - 1 } }}
+          </ui-chip>
+        </li>
       </ul>
     }
     <!-- After the tags, so the tags keep their place whether the feed names folders or not. -->
@@ -159,6 +182,11 @@
     <ui-menu-item icon="folder-move" (activated)="moveRequested.emit()">
       {{ 'links.item.move' | transloco }}
     </ui-menu-item>
+    @if (relatable()) {
+      <ui-menu-item icon="columns" (activated)="relatedRequested.emit()">
+        {{ 'ai.related.show' | transloco }}
+      </ui-menu-item>
+    }
     @if (ruleDomain(); as domain) {
       <ui-menu-item icon="globe" (activated)="ruleRequested.emit()">
         {{ 'links.item.createRule' | transloco: { domain } }}

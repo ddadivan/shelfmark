@@ -43,6 +43,15 @@ import type { CommandSelection } from './models/command-selection.interface';
           </ui-command-item>
         </ui-command-group>
       }
+      @if (showRelated()) {
+        <ui-command-group
+          heading="Related by meaning"
+          icon="spark"
+          lead="No links with these words"
+        >
+          <ui-command-item value="r">Zoneless change detection</ui-command-item>
+        </ui-command-group>
+      }
       @if (showLoose()) {
         <ui-command-item value="loose">Loose item</ui-command-item>
       }
@@ -50,16 +59,21 @@ import type { CommandSelection } from './models/command-selection.interface';
         <ui-command-item [value]="value">{{ value }}</ui-command-item>
       }
       <p slot="empty">Nothing found</p>
+      @if (showNote()) {
+        <span slot="note">Search by meaning is getting ready</span>
+      }
       <span slot="footer"><kbd>↵</kbd> open</span>
     </ui-command-list>
   `,
 })
 class HostComponent {
+  readonly showNote = signal(false);
   readonly query = signal('');
   readonly busy = signal(false);
   readonly showLinks = signal(true);
   readonly showFolders = signal(true);
   readonly showLoose = signal(false);
+  readonly showRelated = signal(false);
   readonly extra = signal<string[]>([]);
   readonly count = signal(4);
   readonly lastDisabled = signal(false);
@@ -127,6 +141,38 @@ describe('CommandListComponent', () => {
     expect(options()[3].querySelector('.ui-command-item__leading')?.textContent).toBe('F');
     expect(options()[3].querySelector('.ui-command-item__trailing')?.textContent).toBe('5');
     expect(options()[0].querySelector('mark')).toBeNull();
+  });
+
+  it('draws a group with an icon as a divider and its lead line outside the name', async () => {
+    host.showRelated.set(true);
+    await settle(fixture);
+    const groups = [...el.querySelectorAll<HTMLElement>('[role="group"]')];
+    expect(groups).toHaveLength(3);
+    const related = groups[2];
+    const heading = el.querySelector(`#${related.getAttribute('aria-labelledby')}`);
+    expect(heading?.textContent).toBe('Related by meaning');
+    expect(heading?.classList).toContain('ui-command-list__heading--divider');
+    expect(heading?.querySelector('ui-icon')?.getAttribute('aria-hidden')).toBe('true');
+    expect(related.querySelector('.ui-command-list__lead')?.textContent).toBe(
+      'No links with these words',
+    );
+    expect(groups[0].querySelector('.ui-command-list__lead')).toBeNull();
+    expect(groups[0].querySelector('.ui-command-list__heading ui-icon')).toBeNull();
+    expect(await axeViolations(el)).toEqual([]);
+  });
+
+  it('shows the note slot after the list, outside the listbox and the status region', async () => {
+    const note = () => el.querySelector('.ui-command-list__note');
+    expect(note()?.textContent).toBe('');
+    host.showNote.set(true);
+    await settle(fixture);
+    expect(note()?.textContent).toBe('Search by meaning is getting ready');
+    expect(note()?.closest('[role="listbox"], [role="status"]')).toBeNull();
+    expect(note()?.previousElementSibling?.getAttribute('role')).toBe('listbox');
+    host.showLinks.set(false);
+    host.showFolders.set(false);
+    await settle(fixture);
+    expect(note()?.textContent).toBe('Search by meaning is getting ready');
   });
 
   it('shows the input-end and footer slots and styles nothing in the empty region', () => {
@@ -547,6 +593,18 @@ describe('CommandListComponent styles', () => {
     expect(css).toMatch(
       /\.ui-command-list__option\[data-active=(?:'true'|"true"|true)\] > \.ui-command-list__enter/,
     );
+  });
+
+  it('draws the divider heading with the AI mark and a hairline', () => {
+    expect(css).toMatch(
+      /\.ui-command-list__heading--divider::after\s*{[^}]*border-top:\s*1px solid var\(--border\)/,
+    );
+    expect(css).toMatch(/\.ui-command-list__heading-icon\s*{[^}]*color:\s*var\(--ai\)/);
+  });
+
+  it('hides an empty note slot', () => {
+    const rows = compileScss('lib/components/command-list/command-list-rows.scss');
+    expect(rows).toMatch(/\.ui-command-list__note:empty\s*{[^}]*display:\s*none/);
   });
 
   it('uses 44px targets on coarse pointers', () => {

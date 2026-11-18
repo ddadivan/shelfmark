@@ -1,0 +1,9 @@
+@if (line(); as line) {
+  <span class="ask-control__status">{{ line.key | transloco: { count: line.count } }}</span>
+}
+<ui-switch
+  #control
+  [label]="'ai.settings.ask.title' | transloco"
+  [checked]="store.settings().ask"
+  (checkedChange)="set($event, control)"
+/>

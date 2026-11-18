@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Phone Library order</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#A9AEF2}a:hover{color:#C9CCF7}
+</style>
+</helmet>
+<div style="width: 390px; height: 1000px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; padding: 20px 16px; background: #111113; color: #EDEDEF; font-family: Onest, system-ui, sans-serif">
+  <h1 style="margin: 4px 4px 4px; font-size: 32px; font-weight: 700">Library</h1>
+
+  <section aria-label="Pinned" style="display: flex; flex-direction: column; padding: 14px 16px; border-radius: 22px; background: #1A1A1D">
+    <span style="font-size: 13px; color: #9A9AA0; padding-bottom: 6px">Pinned</span>
+    <div style="display: flex; align-items: center; gap: 12px; height: 44px"><span style="width: 28px; height: 28px; border-radius: 9px; background: #3A2A20"></span><span style="flex: 1 1 auto; font-size: 16px">Angular</span><span style="color: #9A9AA0">6</span></div>
+    <div style="display: flex; align-items: center; gap: 12px; height: 44px"><span style="width: 28px; height: 28px; border-radius: 9px; background: #2C2C31"></span><span style="flex: 1 1 auto; font-size: 16px">Neon free plan limits</span></div>
+  </section>
+
+  <section aria-label="Folders" style="display: flex; flex-direction: column; padding: 14px 16px; border-radius: 22px; background: #1A1A1D; outline: 2px solid #8DBB86; outline-offset: 2px">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 6px"><span style="font-size: 13px; color: #9A9AA0">Folders</span><span style="font-size: 22px; color: #EDEDEF">+</span></div>
+    <div style="display: flex; align-items: center; gap: 12px; height: 44px"><span style="width: 28px; height: 28px; border-radius: 9px; background: #3A2030"></span><span style="flex: 1 1 auto; font-size: 16px">Clothes</span><span style="color: #9A9AA0">7</span></div>
+    <div style="display: flex; align-items: center; gap: 12px; height: 44px"><span style="width: 28px; height: 28px; border-radius: 9px; background: #3A3320"></span><span style="flex: 1 1 auto; font-size: 16px">Recipes</span><span style="color: #9A9AA0">7</span></div>
+    <div style="display: flex; align-items: center; gap: 12px; height: 44px"><span style="width: 28px; height: 28px; border-radius: 9px; background: #2E2340"></span><span style="flex: 1 1 auto; font-size: 16px">Videos</span><span style="color: #9A9AA0">2</span></div>
+    <div style="display: flex; align-items: center; gap: 12px; height: 44px"><span style="width: 28px; height: 28px; border-radius: 9px; background: #1F2C3A"></span><span style="flex: 1 1 auto; font-size: 16px">Work</span><span style="color: #9A9AA0">5</span></div>
+  </section>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+    <a href="#" style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 22px; background: #1A1A1D; color: #EDEDEF; text-decoration: none"><span style="font-size: 16px; font-weight: 600">All links</span><span style="color: #9A9AA0">54</span></a>
+    <a href="#" style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 22px; background: #1A1A1D; color: #EDEDEF; text-decoration: none"><span style="font-size: 16px; font-weight: 600">Unsorted</span><span style="color: #9A9AA0">16</span></a>
+    <a href="#" style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 22px; background: #1A1A1D; color: #EDEDEF; text-decoration: none"><span style="font-size: 16px; font-weight: 600">Favorites</span><span style="color: #9A9AA0">6</span></a>
+    <a href="#" style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 22px; background: #1A1A1D; color: #EDEDEF; text-decoration: none"><span style="font-size: 16px; font-weight: 600">Recently opened</span><span style="color: #8DBB86">5 forgotten</span></a>
+    <a href="#" style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 22px; background: #1A1A1D; color: #EDEDEF; text-decoration: none"><span style="font-size: 16px; font-weight: 600">Reminders</span><span style="color: #9A9AA0">1 due</span></a>
+    <a href="#" style="display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 22px; background: #1A1A1D; color: #EDEDEF; text-decoration: none"><span style="font-size: 16px; font-weight: 600">Trash</span></a>
+  </div>
+  <p style="margin: 0 4px; font-size: 12px; line-height: 1.45; color: #9A9AA0">Folders move up under Pinned (green outline: the change). “Recently opened” shows how many forgotten links wait; inside, the same Opened · Forgotten switch as on desktop.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

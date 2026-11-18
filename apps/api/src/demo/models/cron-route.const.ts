@@ -7,4 +7,6 @@ export const CRON_ROUTE = {
   Path: CRON_ENDPOINT.DemoCleanup,
   TrashCleanup: 'trash-cleanup',
   TrashCleanupPath: CRON_ENDPOINT.TrashCleanup,
+  AiSweep: 'ai-sweep',
+  AiSweepPath: CRON_ENDPOINT.AiSweep,
 } as const;

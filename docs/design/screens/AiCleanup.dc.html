@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Library clean-up</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="min-height: 1700px; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+<section class="a-state" style="flex-basis: 760px; max-width: 760px;">
+<h2 class="a-cap">1 · Report — choose per item</h2>
+<div style="display: flex; flex-direction: column; gap: 22px;">
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+<div><h1 style="margin: 0; font-size: 34px; line-height: 40px; font-weight: 600;">Clean up your library</h1><p style="margin: 6px 0 0; font-size: 14px; color: var(--text-muted);">Checked 1,248 links today. Nothing changes until you apply; you can undo the whole run.</p></div>
+<div style="display: flex; gap: 8px;"><button class="sm-btn sm-btn--secondary">Cancel</button><button class="sm-btn sm-btn--primary">Apply 6 changes</button></div>
+</div>
+<section style="display: flex; flex-direction: column; gap: 8px;"><div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 0 4px;"><h3 style="margin: 0; font-size: 15px; line-height: 22px; font-weight: 600; display: flex; align-items: center; gap: 8px;">Duplicates</h3><span style="font-size: 13px; color: var(--text-muted);">Extra copies go to Trash</span></div>
+<div style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 6px; display: flex; flex-direction: column; gap: 2px;"><label class="sm-row" style="min-height: 56px; cursor: pointer;"><input type="checkbox" checked aria-label="Wool coat, straight cut, graphite" style="width: 18px; height: 18px; flex: none; accent-color: var(--accent);"><span class="sm-row__main"><span class="sm-row__title">Wool coat, straight cut, graphite</span><span class="sm-row__meta">Saved 3 times: keep the one in Clothes, move 2 copies to Trash</span></span><span class="sm-badge">Same address</span></label>
+<label class="sm-row" style="min-height: 56px; cursor: pointer;"><input type="checkbox" checked aria-label="Zoneless change detection, explained" style="width: 18px; height: 18px; flex: none; accent-color: var(--accent);"><span class="sm-row__main"><span class="sm-row__title">Zoneless change detection, explained</span><span class="sm-row__meta">angular.dev and blog.angular.dev: keep angular.dev</span></span><span class="sm-badge"><svg class="sm-ai-spark" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4c.6 3.9 2.6 6 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5C8.4 10 10.4 7.9 11 4z"/><path d="M18.5 15v4M16.5 17h4"/></svg>Same page</span></label></div></section>
+<section style="display: flex; flex-direction: column; gap: 8px;"><div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 0 4px;"><h3 style="margin: 0; font-size: 15px; line-height: 22px; font-weight: 600; display: flex; align-items: center; gap: 8px;">Dead links</h3><span style="font-size: 13px; color: var(--text-muted);">From the link check</span></div>
+<div style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 6px; display: flex; flex-direction: column; gap: 2px;"><label class="sm-row" style="min-height: 56px; cursor: pointer;"><input type="checkbox" checked aria-label="Neon free plan limits (2025)" style="width: 18px; height: 18px; flex: none; accent-color: var(--accent);"><span class="sm-row__main"><span class="sm-row__title">Neon free plan limits (2025)</span><span class="sm-row__meta">Page not found. Replace with the Wayback Machine copy from March 2026</span></span><span class="sm-badge sm-badge--danger">Not found</span></label>
+<label class="sm-row" style="min-height: 56px; cursor: pointer;"><input type="checkbox" aria-label="Old portfolio draft" style="width: 18px; height: 18px; flex: none; accent-color: var(--accent);"><span class="sm-row__main"><span class="sm-row__title">Old portfolio draft</span><span class="sm-row__meta">Site doesn’t respond. Move to Trash</span></span><span class="sm-badge sm-badge--danger">No response</span></label></div></section>
+<section style="display: flex; flex-direction: column; gap: 8px;"><div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 0 4px;"><h3 style="margin: 0; font-size: 15px; line-height: 22px; font-weight: 600; display: flex; align-items: center; gap: 8px;">Similar tags<span class="sm-badge"><svg class="sm-ai-spark" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4c.6 3.9 2.6 6 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5C8.4 10 10.4 7.9 11 4z"/><path d="M18.5 15v4M16.5 17h4"/></svg>Found by AI</span></h3><span style="font-size: 13px; color: var(--text-muted);">Merged into the first one</span></div>
+<div style="background: var(--surface); box-shadow: var(--shadow-card); border-radius: var(--radius-lg); padding: 6px; display: flex; flex-direction: column; gap: 2px;"><label class="sm-row" style="min-height: 56px; cursor: pointer;"><input type="checkbox" checked aria-label="javascript ← js" style="width: 18px; height: 18px; flex: none; accent-color: var(--accent);"><span class="sm-row__main"><span class="sm-row__title">javascript ← js</span><span class="sm-row__meta">14 links get “javascript”; “js” is removed</span></span><button class="sm-btn sm-btn--ghost sm-btn--sm">Keep “js” instead</button></label>
+<label class="sm-row" style="min-height: 56px; cursor: pointer;"><input type="checkbox" checked aria-label="recipes ← cooking" style="width: 18px; height: 18px; flex: none; accent-color: var(--accent);"><span class="sm-row__main"><span class="sm-row__title">recipes ← cooking</span><span class="sm-row__meta">9 links get “recipes”; “cooking” is removed</span></span><button class="sm-btn sm-btn--ghost sm-btn--sm">Keep “cooking” instead</button></label></div></section>
+<p class="sm-ai-line"><span>Groups marked “Found by AI” are suggestions and may be inaccurate. Exact duplicates and dead links are checked without AI.</span></p>
+</div>
+<p class="a-note">Every change is a row with its own checkbox; unchecked rows are left alone. AI groups carry “Found by AI”; exact duplicates and dead links need no AI (Free / Pro). Deletions go through Trash. The primary button names the count.</p>
+</section>
+<section class="a-state" style="flex-basis: 560px; max-width: 560px;">
+<h2 class="a-cap">2 · Entry card on All links</h2>
+<div class="sm-panel" style="flex-direction: row; align-items: center; gap: 14px; padding: 16px 18px;"><span class="sm-setting__icon"><svg class="sm-ai-spark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4c.6 3.9 2.6 6 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5C8.4 10 10.4 7.9 11 4z"/><path d="M18.5 15v4M16.5 17h4"/></svg></span><div style="flex: 1; min-width: 0;"><div style="font-size: 14px; font-weight: 500;">Your library could use a tidy-up</div><div style="font-size: 13px; color: var(--text-muted);">3 duplicates, 2 dead links and 2 similar tags. Nothing changes until you review.</div></div><button class="sm-btn sm-btn--secondary sm-btn--sm">Review</button><button type="button" class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<p class="a-note">At most once a month, only when something was found, dismissible. Also in Settings › Library › “Clean up”.</p>
+</section>
+<section class="a-state" style="flex-basis: 560px; max-width: 560px;">
+<h2 class="a-cap">3 · Checking</h2>
+<div class="sm-panel" style="gap: 14px;"><div style="display: flex; align-items: center; gap: 12px;"><span class="sm-spinner" role="status" aria-label="Checking your library" style="color: var(--text-muted);"></span><div><div style="font-size: 15px; font-weight: 500;">Checking your library…</div><div style="font-size: 13px; color: var(--text-muted);">812 of 1,248 links. You can leave this page; we’ll keep the report.</div></div></div><div class="sm-meter" role="progressbar" aria-valuenow="812" aria-valuemax="1248"><div class="sm-meter__fill" style="width: 65%;"></div></div></div>
+<p class="a-note">Runs in the background; the report is kept until reviewed.</p>
+</section>
+<section class="a-state" style="flex-basis: 560px; max-width: 560px;">
+<h2 class="a-cap">4 · Applied — one Undo</h2>
+<div style="display: flex; justify-content: center; padding: 16px 0;"><div class="sm-toast" role="status"><span class="sm-toast__icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="sm-toast__text">Cleaned up 6 things<small>2 copies in Trash, 1 link replaced, 2 tags merged</small></span><button class="sm-toast__action">Undo</button><button class="sm-toast__close" aria-label="Dismiss"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button><span class="sm-toast__timer" style="--dur: 8s;" aria-hidden="true"></span></div></div>
+<p class="a-note">8 s with Undo; Undo restores every change of the run (Trash restore, tag split, original links).</p>
+</section>
+<section class="a-state" style="flex-basis: 480px; max-width: 480px;">
+<h2 class="a-cap">5 · Nothing to clean</h2>
+<div class="sm-panel"><div class="sm-empty" style="padding: 24px 12px;"><div class="sm-empty__art" style="background: var(--ai-bg); color: var(--ai);"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3 class="sm-empty__title" style="font-size: 18px; line-height: 24px; font-weight: 600;">Your library is tidy</h3><p class="sm-empty__text" style="font-size: 14px; line-height: 20px;">No duplicates, dead links or similar tags found. We’ll check again next month.</p></div></div>
+<p class="a-note">Flat ai-bg tile, no gradient.</p>
+</section>
+</div>
+<p style="margin: 8px 16px; font-size: 12px; color: var(--text-muted);">Update (#512): the clean-up entry card no longer sits above the All links feed. Clean-up stays in Settings &rsaquo; Library &rsaquo; Clean-up (You &rsaquo; Library on the phone).</p>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

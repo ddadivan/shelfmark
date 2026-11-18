@@ -187,6 +187,37 @@
       "text": "Um clique na barra de ferramentas ou Alt+Shift+S. O título, suas regras de pastas e as pastas recentes já vêm preenchidos: a maioria das páginas pede só mais um clique.",
       "browsers": "Para Chrome, Edge, Brave e Arc. Instale pela sua estante depois de entrar.",
       "alt": "A extensão do Shelfmark: Salvar no Shelfmark com o título da página, a pasta Roupas de uma regra, tags e uma nota"
+    },
+    "ai": {
+      "badge": "IA opcional",
+      "title": "Ajuda para organizar, quando você quiser",
+      "text": "Ative a IA e cada link novo chega com tags, uma pasta e um resumo de duas linhas sugeridos. Nada muda de lugar até você tocar.",
+      "points": {
+        "suggest": {
+          "title": "Sugestões que você aceita",
+          "text": "Tags e pastas entre as que você já tem, com um toque."
+        },
+        "meaning": {
+          "title": "Encontre pelo assunto",
+          "text": "“Aquela palestra sobre signals” encontra o vídeo, mesmo sem essas palavras."
+        },
+        "ask": {
+          "title": "Pergunte à sua estante",
+          "text": "Uma pergunta com suas palavras, uma resposta dos seus links com as fontes."
+        }
+      },
+      "note": "Desligada até você ativar. Seus links nunca são usados para treinar modelos de IA.",
+      "privacy": "Como a IA funciona no Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore na prática",
+        "newTag": "gerenciamento de estado",
+        "query": "palestra sobre signals e desempenho",
+        "related": "Relacionados pelo sentido",
+        "result": "Detecção de mudanças sem zone, explicada",
+        "why": "Próximo de: renderização mais rápida",
+        "recipe": "O melhor lámen para o dia a dia",
+        "summary": "Um lámen em 30 minutos com caldo pronto, ovos moles e picles rápidos."
+      }
     }
   },
   "links": {
@@ -205,7 +236,7 @@
         "cmd": "⌘",
         "ctrl": "Ctrl",
         "enter": "Enter",
-        "save": "para salvar"
+        "create": "para criar"
       },
       "preview": {
         "loading": "Carregando prévia",
@@ -242,7 +273,7 @@
         "list": "Sugestões de tags"
       },
       "note": {
-        "label": "Nota",
+        "label": "Sua nota",
         "placeholder": "Por que você está salvando isto?",
         "hint": "Ajuda a encontrar depois",
         "counter": "caracteres",
@@ -259,7 +290,9 @@
       "actions": {
         "cancel": "Cancelar",
         "openSaved": "Abrir o salvo",
-        "save": "Salvar link",
+        "create": "Criar link",
+        "createAnyway": "Criar mesmo assim",
+        "creating": "Criando…",
         "saveAnyway": "Salvar mesmo assim",
         "saving": "Salvando…"
       },
@@ -292,7 +325,12 @@
     },
     "card": {
       "moreTags": "+{{count}}",
-      "inFolder": "Na pasta"
+      "inFolder": "Na pasta",
+      "moreTagsLabel": {
+        "one": "mais {{count}} tag: {{list}}",
+        "many": "mais {{count}} tags: {{list}}",
+        "other": "mais {{count}} tags: {{list}}"
+      }
     },
     "item": {
       "edit": "Editar",
@@ -541,7 +579,8 @@
     "dont": {
       "title": "O que não fazemos",
       "sell": "Não vendemos nem compartilhamos seus dados e não mostramos anúncios.",
-      "read": "Não usamos o conteúdo dos seus links para estatísticas: só contagens (links, pastas, avaliações), nunca endereços ou títulos. Seus links ficam no nosso banco de dados para que o app possa mostrá-los, buscá-los e gerar prévias; só o autor do serviço tem acesso a ele."
+      "read": "Não usamos o conteúdo dos seus links para estatísticas: só contagens (links, pastas, avaliações), nunca endereços ou títulos. Seus links ficam no nosso banco de dados para que o app possa mostrá-los, buscá-los e gerar prévias; só o autor do serviço tem acesso a ele.",
+      "training": "Não usamos seus links, notas ou resumos para treinar modelos de IA, nem deixamos nosso provedor de IA fazer isso."
     },
     "previews": {
       "title": "Prévias de links",
@@ -549,7 +588,7 @@
     },
     "extension": {
       "title": "Extensão do navegador",
-      "body": "A extensão do Shelfmark para Chrome, Edge, Brave e Arc só age quando você clica no botão dela ou usa o atalho, nunca em segundo plano. Ela então envia ao Shelfmark o endereço daquela guia, para verificar se você já a salvou, e só salva o endereço e o título, com a pasta, as tags e a nota escolhidas, quando você toca em Salvar. Ela nunca vê seu histórico nem os outros sites que você visita.",
+      "body": "A extensão do Shelfmark para Chrome, Edge, Brave e Arc só age quando você clica no botão dela ou usa o atalho, nunca em segundo plano. Ela então envia ao Shelfmark o endereço daquela guia, para verificar se você já a salvou, e só salva o endereço e o título, com a pasta, as tags e a nota escolhidas, quando você toca em Salvar. Ela nunca vê seu histórico nem os outros sites que você visita. Se você clicar em “Preencher com IA” e a IA estiver ativada na sua conta, ela também envia ao Shelfmark esse endereço e o título, e a sua nota se a IA puder ler as notas, para obter sugestões da IA, tratadas nos mesmos termos de IA do aplicativo.",
       "access": "Ela usa o seu login do Shelfmark nesse navegador e não consegue ler o cookie de login. Só acessa o Shelfmark e guarda no seu dispositivo apenas as pastas usadas recentemente, para sugeri-las na próxima vez."
     },
     "third": {
@@ -564,6 +603,38 @@
     "where": {
       "title": "Onde fica",
       "hosting": "A API roda na Vercel na região fra1 (Frankfurt) e o banco de dados na Neon em eu-central-1 (Frankfurt). Os arquivos estáticos do app são servidos pela rede global da Vercel."
+    },
+    "ai": {
+      "title": "Recursos de IA (opcionais)",
+      "intro": "A IA fica desligada até você ativá-la em Configurações › IA. Quando ligada, ela sugere tags e pastas e escreve resumos curtos. Tudo o que ela cria leva uma pequena faísca e pode ser impreciso; nada é aplicado a menos que você aceite ou escolha o modo automático.",
+      "processor": {
+        "term": "Quem processa:",
+        "text": "Anthropic PBC (EUA), como nosso operador, apenas para gerar o resultado que você pediu."
+      },
+      "sent": {
+        "term": "O que é enviado:",
+        "text": "o endereço, o título, a descrição e o texto extraído da página de um link, e os nomes das suas tags e pastas. Suas notas só se você ativar \"Incluir minhas notas\". Nunca seus outros links, os dados da sua conta ou dados de outras pessoas."
+      },
+      "kept": {
+        "term": "Por quanto tempo fica guardado:",
+        "text": "A Anthropic exclui a solicitação em até 30 dias e não a usa para treinamento; só o conteúdo sinalizado pelos seus sistemas de segurança pode ser guardado por mais tempo (até 2 anos), ou quando a lei exige. Os resultados (tags, resumos) ficam salvos com seus links e são excluídos com eles."
+      },
+      "counted": {
+        "term": "O que contamos:",
+        "text": "apenas o número de solicitações de IA por conta, para seu limite mensal. Como em todo o Shelfmark, as estatísticas usam só contagens, nunca o que você salvou."
+      },
+      "off": {
+        "term": "Como desligar:",
+        "text": "desligue um recurso ou a IA inteira em Configurações › IA; as solicitações param na hora. \"Excluir dados de IA\" ali remove todos os resumos e sugestões da IA."
+      },
+      "meaning": {
+        "term": "Busca por significado:",
+        "text": "enquanto estiver ativada (Configurações › IA), o título, o resumo e os nomes das tags de cada link, sua nota só com “Incluir minhas notas”, e as palavras que você busca são enviados à Voyage AI, nosso segundo operador, que os transforma em vetores de números. Nunca o endereço, suas pastas ou dados de outras pessoas. Os vetores ficam guardados com seus links e são excluídos com eles ou com “Excluir dados de IA”; sua busca não é guardada. A Voyage AI by MongoDB (EUA) exclui cada solicitação logo após processá-la (retenção zero) e não a usa para treinamento."
+      },
+      "ask": {
+        "term": "Pergunte aos seus links:",
+        "text": "só quando você faz uma pergunta, sua pergunta e até 10 links relacionados (título, endereço sem parâmetros, nomes de pastas e tags, resumo, sua nota só com “Incluir minhas notas”) são enviados para [PROVIDER]. A resposta cita apenas esses links. Nem a pergunta nem a resposta são guardadas; contamos só o número de perguntas por dia e por mês, para o seu limite."
+      }
     },
     "retention": {
       "title": "Por quanto tempo guardamos",
@@ -728,6 +799,7 @@
       "library": "Links",
       "search": "Buscar",
       "tags": "Tags",
+      "ask": "Consulta",
       "you": "Você"
     },
     "sidebar": {
@@ -1220,6 +1292,7 @@
       "account": "Conta",
       "appearance": "Aparência",
       "library": "Biblioteca",
+      "ai": "IA",
       "language": "Idioma",
       "privacy": "Privacidade e dados",
       "shortcuts": "Atalhos de teclado",
@@ -1229,6 +1302,7 @@
       "account": "Seu perfil, sua estante e seus dados.",
       "appearance": "Salvo na hora e sincronizado em todos os seus dispositivos.",
       "library": "Como os links são mostrados, salvos e mantidos.",
+      "ai": "Ajuda para organizar, só quando você quiser. Desligada até você ativar.",
       "language": "O idioma da interface. Os formatos de data e hora ficam em Aparência.",
       "privacy": "O que guardamos e como levar com você.",
       "shortcuts": "Trabalhe sem o mouse.",
@@ -1470,6 +1544,16 @@
       },
       "kept": {
         "title": "O que guardamos"
+      },
+      "ai": {
+        "title": "Recursos de IA",
+        "body": "A IA é opcional e fica desligada até você ativá-la. Quando ligada, o endereço, o título e o texto da página de um link vão para nosso provedor de IA para sugerir tags e pastas e escrever resumos. Nunca usados para treinar modelos nem para estatísticas.",
+        "delete": {
+          "label": "Excluir dados de IA",
+          "hint": "Remove todos os resumos e sugestões da IA, em Configurações › IA",
+          "action": "Abrir",
+          "actionLabel": "Abrir \"Excluir dados de IA\" em Configurações › IA"
+        }
       }
     },
     "footer": {
@@ -1569,6 +1653,12 @@
           "cancel": "Cancelar",
           "close": "Fechar"
         }
+      },
+      "cleanup": {
+        "title": "Limpeza",
+        "label": "Organize sua biblioteca",
+        "hint": "Encontre duplicados e tags parecidas e corrija tudo em um passo.",
+        "action": "Revisar"
       }
     },
     "language": {
@@ -1631,6 +1721,7 @@
       "undo": "Desfazer a última ação",
       "toastAction": "Ir para o botão de um aviso",
       "save": "Salvar o link",
+      "aiFill": "Preencher com IA na janela do link",
       "results": "Navegar pelos resultados da pesquisa",
       "openResult": "Abrir o resultado",
       "openBackground": "Abrir em uma aba em segundo plano",
@@ -1787,7 +1878,9 @@
       "move": "mover",
       "open": "abrir",
       "background": "abrir em segundo plano"
-    }
+    },
+    "askRow": "Pergunte aos seus links: “{{query}}”",
+    "askRowCompact": "Pergunte aos seus links sobre isso"
   },
   "share": {
     "title": "Salvar no Shelfmark",
@@ -2732,6 +2825,19 @@
       "missingFolder": "Esta pasta não existe mais. Escolha outra.",
       "missing": "Esta regra foi excluída nesse meio-tempo.",
       "failed": "Não foi possível salvar a regra. Tente novamente."
+    },
+    "offer": {
+      "title": "Sempre colocar os links de {{domain}} em {{folder}}?",
+      "detail": {
+        "one": "Seu último link deste site está lá. Uma regra funciona sem IA.",
+        "many": "Seus últimos {{count}} links deste site estão lá. Uma regra funciona sem IA.",
+        "other": "Seus últimos {{count}} links deste site estão lá. Uma regra funciona sem IA."
+      },
+      "create": "Criar regra",
+      "notNow": "Agora não",
+      "created": "Regra criada",
+      "applyExisting": "Aplicar a “Sem pasta”",
+      "failed": "Não foi possível criar a regra"
     }
   },
   "changelog": {
@@ -2865,8 +2971,59 @@
       "emojiPickerTabs": {
         "text": "O seletor de emoji tem a largura do campo, e as abas de categorias não parecem mais emojis para escolher."
       },
+      "aiSuggestions": {
+        "title": "Preencher com IA",
+        "text": "Um clique em Adicionar link preenche o título, a pasta, as tags e um breve resumo a partir da página. Mude o que quiser: a sua escolha sempre vale. Funciona também na extensão do navegador. A IA fica desligada até você ativá-la em Configurações › IA.",
+        "alt": "A caixa Adicionar link com um endereço do YouTube preenchido pela IA: título, pasta, tags e resumo."
+      },
+      "aiSummaries": {
+        "title": "Resumos curtos",
+        "text": "Com a IA ativada, os links ganham um resumo de uma ou duas linhas no cartão. Edite e ele passa a ser seu.",
+        "alt": "Cartões de link com um resumo curto da IA sob cada título."
+      },
+      "aiTidy": {
+        "title": "Organizar “Sem pasta” com IA",
+        "text": "Revise numa única página as sugestões de IA para tudo em “Sem pasta” e aplique-as com um só Desfazer. Se você guardar links de um site na mesma pasta algumas vezes, o Shelfmark oferece uma regra."
+      },
+      "aiAsk": {
+        "title": "Pergunte aos seus links",
+        "text": "Faça uma pergunta com suas palavras e receba uma resposta curta a partir dos links que você salvou, com todas as fontes. Abra com Perguntar ao lado da busca ou com a aba Consulta no celular.",
+        "alt": "O painel Perguntar com uma pergunta, uma resposta curta e os links de onde ela vem."
+      },
+      "aiCleanup": {
+        "title": "Limpeza da biblioteca",
+        "text": "Encontre links salvos mais de uma vez e tags que significam a mesma coisa, revise cada mudança e aplique tudo em um passo, com um único Desfazer. As cópias vão para a lixeira."
+      },
+      "mcp": {
+        "title": "Conecte seu assistente",
+        "text": "No Pro, o Claude e outros assistentes MCP podem pesquisar e ler seus links com um token pessoal. Somente leitura, e você pode revogá-lo quando quiser."
+      },
+      "aiSearch": {
+        "title": "Busca por significado",
+        "text": "A busca encontra links que correspondem ao que você quer dizer, não só às suas palavras, e diz por que cada um corresponde. “Editar link” mostra links relacionados na sua estante, e “Lado a lado” pode sugerir as pastas deles.",
+        "alt": "Resultados de busca com um grupo “Relacionados por significado” abaixo das correspondências de palavras."
+      },
       "extensionInStore": {
         "text": "A extensão do Shelfmark está na Chrome Web Store: instale-a pelo aviso da sua estante ou em Configurações › Biblioteca."
+      },
+      "forgotten": {
+        "title": "Links esquecidos",
+        "text": "Os links que você salvou e nunca abriu esperam em Abertos recentemente › Esquecidos. O número aparece ao lado de Abertos recentemente."
+      },
+      "cardTags": {
+        "text": "Os cartões de link mostram tags inteiras e um “+N” para o resto, em vez de cortar uma tag."
+      },
+      "phoneFolders": {
+        "text": "No celular, a Biblioteca lista as Pastas logo abaixo de Fixados."
+      },
+      "dialogButtons": {
+        "text": "Nas caixas de diálogo no celular, a ação principal fica sozinha embaixo."
+      },
+      "textFields": {
+        "text": "Os campos de texto crescem com o que você digita."
+      },
+      "landingHeadline": {
+        "text": "O título da página inicial cabe em todos os idiomas."
       }
     },
     "sections": {
@@ -2892,5 +3049,632 @@
     "available": "Uma nova versão do Shelfmark está pronta",
     "reload": "Recarregar",
     "later": "Depois"
+  },
+  "ai": {
+    "settings": {
+      "features": {
+        "title": "Recursos de IA"
+      },
+      "enabled": {
+        "label": "Usar IA no Shelfmark",
+        "hint": "Envia o endereço, o título e um pequeno trecho da página de um link ao nosso provedor de IA para sugerir tags e escrever resumos. Nunca usado para treinar modelos nem para estatísticas."
+      },
+      "unavailable": "A IA não está respondendo agora. Seus links são salvos normalmente; sugestões e resumos chegam quando ela voltar.",
+      "folder": {
+        "label": "Pasta",
+        "hint": "Sugerir: um chip que você toca. Automático: só quando você deixa um link em Sem pasta, com Desfazer. Uma pasta que você escolhe nunca é alterada."
+      },
+      "tags": {
+        "label": "Tags",
+        "hint": "Sugerir: chips que você toca. Automático: só quando você não adiciona nenhuma tag, com Desfazer."
+      },
+      "mode": {
+        "suggest": "Sugerir",
+        "auto": "Automático",
+        "off": "Desligado"
+      },
+      "modePage": {
+        "open": "{{label}}: {{mode}}",
+        "auto": "Aplicar automaticamente quando eu não escolher",
+        "folder": {
+          "groupLabel": "Sugestões de pasta",
+          "suggestHint": "Um chip que você toca. Nada muda até você tocar.",
+          "autoHint": "Só para links deixados em Sem pasta. Você vê e pode desfazer.",
+          "offHint": "Sem sugestões de pasta.",
+          "note": "A IA nunca altera uma pasta que você mesmo escolheu."
+        },
+        "tags": {
+          "groupLabel": "Sugestões de tags",
+          "suggestHint": "Chips que você toca. Nada muda até você tocar.",
+          "autoHint": "Só para links salvos sem tags. Você vê e pode desfazer.",
+          "offHint": "Sem sugestões de tags.",
+          "note": "A IA nunca remove as tags que você mesmo adicionou."
+        }
+      },
+      "summaries": {
+        "label": "Resumos",
+        "hint": "Uma ou duas frases sobre cada link, para lembrar por que você o salvou. Edite quando quiser."
+      },
+      "sent": {
+        "title": "O que é enviado"
+      },
+      "notes": {
+        "label": "Incluir minhas notas",
+        "hint": "Notas deixam as sugestões mais precisas. Desligado, suas notas nunca saem do Shelfmark."
+      },
+      "language": {
+        "label": "Idioma dos resumos",
+        "hint": "Os resumos são escritos neste idioma, seja qual for o da página.",
+        "app": "Igual ao app ({{language}})"
+      },
+      "usage": {
+        "title": "Este mês",
+        "count": "{{used}} de {{limit}} links este mês",
+        "resets": "Reinicia em {{date}}",
+        "meterLabel": "Links processados pela IA este mês",
+        "limit": "Você usou os {{limit}} links deste mês. Novos links são salvos normalmente, sem sugestões nem resumos, até {{date}}."
+      },
+      "data": {
+        "title": "Seus dados de IA",
+        "label": "Excluir dados de IA",
+        "hint": "Remove todos os resumos e sugestões da IA e desativa a busca por significado. Suas edições, tags e pastas continuam.",
+        "action": "Excluir dados de IA"
+      },
+      "privacy": {
+        "label": "Como a IA funciona no Shelfmark",
+        "hint": "O que é enviado, para quem, por quanto tempo fica guardado e como desligar",
+        "action": "Ler",
+        "actionLabel": "Ler como a IA funciona no Shelfmark"
+      },
+      "failed": "Não foi possível salvar as configurações de IA",
+      "failedDetail": "A alteração foi desfeita. Tente de novo.",
+      "loadFailed": "Não foi possível carregar as configurações de IA.",
+      "retry": "Tentar de novo",
+      "meaning": {
+        "title": "Busca por significado",
+        "text": "Encontra links pelo assunto, não só pelas palavras, e mostra links relacionados. Envia à Voyage AI o título, as tags e o resumo de cada link (sua nota também, com “Incluir minhas notas”) e o que você busca.",
+        "ready": "Pronta",
+        "progress": "{{ready}} de {{total}} links prontos",
+        "quota": "Pausada até {{date}}: limite do mês atingido"
+      },
+      "ask": {
+        "title": "Pergunte aos seus links",
+        "text": "Responde perguntas com base nos seus próprios links. Usa o Claude da Anthropic: sua pergunta e os links relacionados são enviados, nada é guardado."
+      }
+    },
+    "backfill": {
+      "title": "Processar links existentes",
+      "hint": {
+        "one": "{{count}} link foi salvo antes de você ligar a IA. Adiciona sugestões e resumos em segundo plano: mais rápido com o Shelfmark aberto, senão em até um dia.",
+        "many": "{{count}} de links foram salvos antes de você ligar a IA. Adiciona sugestões e resumos em segundo plano: mais rápido com o Shelfmark aberto, senão em até um dia.",
+        "other": "{{count}} links foram salvos antes de você ligar a IA. Adiciona sugestões e resumos em segundo plano: mais rápido com o Shelfmark aberto, senão em até um dia."
+      },
+      "start": "Iniciar",
+      "running": "Processando links existentes",
+      "progress": "{{done}} de {{total}} prontos. Mais rápido com o Shelfmark aberto; senão termina em até um dia.",
+      "meterLabel": "Links existentes processados",
+      "estimate": "Cerca de {{minutes}} min restantes",
+      "stop": "Parar",
+      "done": "Todos os links existentes foram processados.",
+      "startFailed": "Não foi possível começar a processar seus links",
+      "stopFailed": "Não foi possível parar o processamento. Tente de novo."
+    },
+    "deleteData": {
+      "confirm": {
+        "title": "Excluir dados de IA?",
+        "message": "Todos os resumos e sugestões da IA são removidos, e a busca por significado é desativada. Suas edições, tags e pastas continuam. Não dá para desfazer.",
+        "confirm": "Excluir dados de IA",
+        "cancel": "Cancelar",
+        "close": "Fechar"
+      },
+      "done": "Dados de IA excluídos",
+      "failed": "Não foi possível excluir os dados de IA",
+      "failedDetail": "Nada foi removido. Tente de novo."
+    },
+    "intro": {
+      "title": "Ligar a IA no Shelfmark?",
+      "titleShort": "Ligar a IA?",
+      "close": "Fechar",
+      "suggest": {
+        "title": "Sugere tags e uma pasta",
+        "text": "Entre as que você já tem. Você decide: nada é aplicado até você tocar ou escolher Automático nas configurações."
+      },
+      "summaries": {
+        "title": "Escreve resumos curtos",
+        "text": "Uma ou duas frases por link. Marcados como feitos por IA e podem ser imprecisos; edite quando quiser."
+      },
+      "sent": {
+        "title": "O que é enviado ao modelo",
+        "text": "O endereço, o título, a descrição de um link e texto extraído da página. Nunca seus outros links, suas notas (a menos que você permita) ou dados de outras pessoas."
+      },
+      "training": {
+        "title": "Não usado para treinamento",
+        "text": "Seu conteúdo nunca é usado para treinar modelos. A Anthropic processa para nós e o exclui em até 30 dias."
+      },
+      "details": "Você pode desligar a IA, ou um recurso por vez, em Configurações › IA.",
+      "policy": "Ler a política de privacidade",
+      "failed": "Não foi possível ligar a IA. Tente de novo.",
+      "notNow": "Agora não",
+      "turnOn": "Ligar a IA",
+      "meaning": {
+        "title": "Encontra links pelo significado",
+        "text": "A busca e os links relacionados também consideram o assunto de um link. Para isso, títulos, tags, resumos e o que você busca vão para a Voyage AI. Desative separadamente em Configurações › IA."
+      },
+      "ask": {
+        "title": "Responde perguntas com seus links",
+        "text": "Só quando você pergunta: sua pergunta e os links relacionados vão para o modelo. A resposta lista as fontes e nada é guardado. Desative separadamente em Configurações › IA."
+      }
+    },
+    "suggest": {
+      "label": "Sugerido",
+      "alsoFits": "Também combina",
+      "loading": "Sugerindo…",
+      "folderRow": "Pasta sugerida",
+      "tagsRow": "Tags sugeridas",
+      "addAll": "Adicionar todas",
+      "addedAll": "Tags sugeridas adicionadas",
+      "new": "Nova",
+      "addTag": "Adicionar a tag {{name}}",
+      "createTag": "Criar e adicionar a tag {{name}}",
+      "moveTo": "Mover para {{name}}",
+      "dismiss": "Dispensar a sugestão {{name}}",
+      "tagAdded": "Tag {{name}} adicionada",
+      "folderChosen": "Pasta {{name}} escolhida"
+    },
+    "fill": {
+      "button": "Preencher com IA",
+      "done": "Preenchido com as sugestões da IA",
+      "keys": {
+        "option": "⌥",
+        "alt": "Alt",
+        "shiftMac": "⇧",
+        "shift": "Shift"
+      },
+      "filling": "Preenchendo…",
+      "needLink": "Cole um link primeiro",
+      "nothing": "A IA não tem nada para preencher neste link",
+      "short": "Preencher"
+    },
+    "line": {
+      "limit": "Sugestões pausadas até {{date}}. Você usou os {{limit}} links deste mês.",
+      "unavailable": "As sugestões não estão disponíveis agora. Seu link é salvo normalmente.",
+      "retry": "Tentar de novo",
+      "settings": "Configurações de IA"
+    },
+    "applied": {
+      "folder": "Movido pela IA",
+      "tags": {
+        "one": "{{count}} adicionada pela IA",
+        "many": "{{count}} adicionadas pela IA",
+        "other": "{{count}} adicionadas pela IA"
+      },
+      "undo": "Desfazer",
+      "undoFolder": "Desfazer a movimentação da IA",
+      "undoTags": "Desfazer as tags adicionadas pela IA",
+      "undoFailed": "Não foi possível desfazer a mudança da IA"
+    },
+    "disclaimer": "Gerado por IA, pode ser impreciso",
+    "summary": {
+      "pending": "Escrevendo um resumo",
+      "label": "Resumo",
+      "counter": "caracteres",
+      "byAi": "Escrito pela IA",
+      "byYou": "Editado por você",
+      "rewrite": "Reescrever",
+      "hintAi": "{{disclaimer}}. Edite e ele passa a ser seu: a IA nunca reescreve seu texto.",
+      "hintUser": "Limpe o campo para a IA escrever de novo.",
+      "hintEmpty": "Deixe vazio e a IA escreve um.",
+      "rewriteFailed": "Não foi possível reescrever o resumo",
+      "rewriteFailedDetail": "Seu resumo não mudou. Tente de novo mais tarde.",
+      "tooLong": "O resumo deve ter menos de {{max}} caracteres."
+    },
+    "toast": {
+      "moved": "Movido para {{folder}} pela IA",
+      "tagged": {
+        "one": "{{count}} tag adicionada pela IA",
+        "many": "{{count}} de tags adicionadas pela IA",
+        "other": "{{count}} tags adicionadas pela IA"
+      },
+      "undo": "Desfazer"
+    },
+    "tidy": {
+      "entry": "Organizar com sugestões",
+      "back": "Sem pasta",
+      "title": "Organizar “Sem pasta”",
+      "lead": {
+        "one": "Sugestões para {{count}} link. Toque em um chip para deixá-lo de fora.",
+        "many": "Sugestões para {{count}} links. Toque em um chip para deixá-lo de fora.",
+        "other": "Sugestões para {{count}} links. Toque em um chip para deixá-lo de fora."
+      },
+      "cancel": "Cancelar",
+      "apply": {
+        "one": "Aplicar a {{count}} link",
+        "many": "Aplicar a {{count}} links",
+        "other": "Aplicar a {{count}} links"
+      },
+      "skip": "Pular",
+      "skipped": "Pulado — fica em “Sem pasta”",
+      "undoSkip": "Desfazer",
+      "rowLabel": "Mudanças para {{title}}",
+      "listLabel": "Links com sugestões",
+      "barLabel": "Aplicar sugestões",
+      "loading": "Carregando sugestões",
+      "chip": {
+        "folder": "Mover para {{name}}",
+        "folderAdded": "Mover para {{name}}, escolhido",
+        "tag": "Adicionar a tag {{name}}",
+        "tagAdded": "Adicionar a tag {{name}}, escolhido",
+        "newTag": "Criar e adicionar a tag {{name}}",
+        "newTagAdded": "Criar e adicionar a tag {{name}}, escolhido"
+      },
+      "more": {
+        "one": "Depois destes, falta mais {{count}} link. Links sem sugestões não aparecem.",
+        "many": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem.",
+        "other": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem."
+      },
+      "next": "Mostrar os próximos links",
+      "empty": {
+        "title": "Nada para organizar",
+        "text": "Cada link aqui ainda não tem sugestões ou você já o organizou. Links novos recebem sugestões em menos de um minuto.",
+        "back": "Voltar para “Sem pasta”"
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} link organizado",
+          "many": "{{count}} links organizados",
+          "other": "{{count}} links organizados"
+        },
+        "folders": {
+          "one": "Movidos para {{count}} pasta",
+          "many": "Movidos para {{count}} pastas",
+          "other": "Movidos para {{count}} pastas"
+        },
+        "tags": {
+          "one": "{{count}} tag adicionada",
+          "many": "{{count}} tags adicionadas",
+          "other": "{{count}} tags adicionadas"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Desfazer",
+        "failed": "Não foi possível organizar os links",
+        "failedDetail": "Nada foi alterado. Tente de novo.",
+        "nothing": "Nada para aplicar",
+        "nothingDetail": "As sugestões mudaram nesse meio-tempo."
+      },
+      "undone": "Organização desfeita",
+      "undoFailed": "Não foi possível desfazer a organização"
+    },
+    "search": {
+      "related": "Relacionados pelo significado",
+      "noWordMatches": "Nenhum link com essas palavras",
+      "why": "Perto de: {{reasons}}",
+      "fromSummary": "Perto de: {{reasons}} (do resumo)",
+      "preparing": "A busca por significado está se preparando: {{ready}} de {{total}} links. A busca por palavras funciona como sempre."
+    },
+    "related": {
+      "title": "Relacionados na sua estante",
+      "why": "Perto de: {{reasons}}",
+      "show": "Mostrar relacionados",
+      "folders": "Pastas relacionadas"
+    },
+    "ask": {
+      "title": "Pergunte aos seus links",
+      "open": "Pergunte aos seus links",
+      "close": "Fechar Pergunte aos seus links",
+      "newQuestion": "Nova pergunta",
+      "back": "Voltar",
+      "emptyTitle": "O que você quer saber?",
+      "lead": "Pergunte com suas palavras. A resposta vem dos links que você salvou, com cada fonte listada.",
+      "starters": {
+        "saved": "O que eu salvei sobre {{folder}}?",
+        "ideas": "Quais são as ideias principais em {{folder}}?",
+        "recent": "O que eu adicionei a {{folder}} recentemente?",
+        "generic": "O que eu salvei este mês?"
+      },
+      "label": "Pergunte sobre seus links",
+      "placeholder": "Pergunte sobre seus links",
+      "send": "Perguntar",
+      "stop": "Parar",
+      "left": {
+        "day": {
+          "one": "{{count}} pergunta restante hoje",
+          "many": "{{count}} de perguntas restantes hoje",
+          "other": "{{count}} perguntas restantes hoje"
+        },
+        "month": {
+          "one": "{{count}} pergunta restante este mês",
+          "many": "{{count}} de perguntas restantes este mês",
+          "other": "{{count}} perguntas restantes este mês"
+        }
+      },
+      "footer": "As respostas usam apenas seus links. Nada muda na sua biblioteca.",
+      "sources": "Fontes dos seus links",
+      "source": "Fonte {{n}}",
+      "sideBySide": "Abrir lado a lado",
+      "remind": "Lembrar-me",
+      "notFound": {
+        "text": "Nada nos seus links responde a isso.",
+        "search": "Pesquisar “{{query}}”",
+        "add": "Adicionar um link"
+      },
+      "limit": {
+        "day": "Você usou as perguntas de hoje. Pergunte de novo amanhã; a pesquisa funciona normalmente.",
+        "month": "Você usou as perguntas deste mês. Pergunte de novo em {{date}}; a pesquisa funciona normalmente."
+      },
+      "error": "Não foi possível obter uma resposta agora. Esta pergunta não foi contada.",
+      "rejected": "Não é possível responder a esta pergunta. Ela não foi contada.",
+      "busy": "Outra pergunta ainda está sendo respondida. Tente de novo em instantes.",
+      "rateLimited": "Perguntas demais em pouco tempo. Tente de novo em um minuto; esta não contou para o seu limite.",
+      "off": "Pergunte aos seus links está desativado em Configurações › IA.",
+      "retry": "Tentar de novo",
+      "truncated": "A resposta foi interrompida.",
+      "stopped": "Parado.",
+      "button": "Perguntar",
+      "try": "Experimente"
+    },
+    "connect": {
+      "title": "Conecte seu assistente",
+      "lead": "Deixe o Claude ou outro assistente compatível com MCP pesquisar e ler seus links. Somente leitura: ele não pode alterar nem excluir nada.",
+      "pro": "Conectar um assistente faz parte do Pro. Os tokens que você já tem continuam na lista e podem ser revogados.",
+      "demo": "A demo não pode conectar um assistente. Entre com sua própria conta para experimentar.",
+      "loadFailed": "Não foi possível carregar seus tokens.",
+      "retry": "Tentar de novo",
+      "copy": "Copiar",
+      "copyFailed": "Não foi possível copiar. Selecione o texto e copie com o teclado.",
+      "address": {
+        "title": "1. Endereço do servidor",
+        "copyLabel": "Copiar o endereço do servidor",
+        "copied": "Endereço do servidor copiado"
+      },
+      "token": {
+        "title": "2. Token pessoal",
+        "hint": "Um token por assistente, para revogar cada um separadamente.",
+        "limit": "Você tem {{max}} tokens. Revogue um para criar outro.",
+        "create": "Criar token"
+      },
+      "list": {
+        "title": "Conectados",
+        "last4": "Termina em {{last4}}",
+        "used": "Último uso {{when}}, chamadas nesta semana: {{calls}}",
+        "never": "Criado em {{date}}, nunca usado",
+        "notes": "Com notas",
+        "revoke": "Revogar",
+        "revokeLabel": "Revogar {{name}}"
+      },
+      "empty": {
+        "title": "Nenhum assistente conectado",
+        "text": "Crie um token, cole-o com o endereço do servidor nas configurações MCP do seu assistente e pergunte a ele sobre seus links."
+      },
+      "revoke": {
+        "title": "Revogar {{name}}?",
+        "message": "Ele para de funcionar na hora: o assistente que o usa não consegue mais ler seus links.",
+        "confirm": "Revogar",
+        "cancel": "Cancelar",
+        "done": "Token revogado",
+        "failed": "Não foi possível revogar o token. Tente de novo."
+      },
+      "create": {
+        "title": "Criar um token",
+        "close": "Fechar",
+        "name": "Nome",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Dê um nome ao token.",
+        "tooLong": "No máximo {{max}} caracteres.",
+        "notes": "Incluir minhas notas",
+        "notesHint": "Seu assistente também verá as notas dos seus links. Para mudar isso depois, crie um novo token.",
+        "cancel": "Cancelar",
+        "action": "Criar token",
+        "saving": "Criando…",
+        "error": {
+          "limit": "Você tem {{max}} tokens. Revogue um para criar outro.",
+          "notAvailable": "Conectar um assistente faz parte do Pro.",
+          "save": "Não foi possível criar o token. Tente de novo."
+        }
+      },
+      "secret": {
+        "title": "Token para {{name}}",
+        "label": "Token pessoal (mostrado uma vez)",
+        "copyLabel": "Copiar o token",
+        "copied": "Token copiado",
+        "warning": "Copie agora: você não vai vê-lo de novo. Qualquer pessoa com este token pode ler seus links até você revogá-lo.",
+        "fallback": "Não foi possível copiar. O token está selecionado acima: pressione Ctrl+C ou ⌘C para copiá-lo.",
+        "field": "Token pessoal",
+        "done": "Concluir"
+      },
+      "howTo": {
+        "toggle": "Como conectar: Claude, Cursor, VS Code",
+        "intro": "Substitua <token> pelo seu token pessoal.",
+        "copyLabel": "Copiar a configuração do {{client}}",
+        "copied": "Configuração do {{client}} copiada",
+        "oauth": "Assistentes que só se conectam por login (OAuth), como conectores na web, ainda não podem se conectar.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Execute isto em um terminal:"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Adicione isto ao claude_desktop_config.json (Configurações › Desenvolvedor › Editar configuração) e reinicie o Claude Desktop. Requer Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Adicione isto ao ~/.cursor/mcp.json:"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Adicione isto ao .vscode/mcp.json do seu projeto:"
+          }
+        }
+      }
+    },
+    "announce": {
+      "title": "O Shelfmark agora pode ajudar com IA",
+      "lead": "Ela fica desligada até você ligar. A decisão é sempre sua, e cada sugestão pode ser desfeita.",
+      "close": "Fechar",
+      "folder": {
+        "title": "Pasta e tags",
+        "text": "Sugeridas ao salvar, preenchidas com um clique"
+      },
+      "summaries": {
+        "title": "Resumos curtos",
+        "text": "Duas linhas em cada cartão, para lembrar por que você salvou"
+      },
+      "meaning": {
+        "title": "Busca por significado",
+        "text": "Encontra links mesmo quando as palavras não coincidem"
+      },
+      "ask": {
+        "title": "Pergunte à sua estante",
+        "text": "Respostas a partir dos seus links, com fontes"
+      },
+      "turnOn": "Ativar a IA…",
+      "notNow": "Agora não",
+      "note": "Em seguida você verá o que é enviado e para onde, e então escolhe. Você pode desativar a qualquer momento em Configurações › IA."
+    }
+  },
+  "rediscover": {
+    "lead": {
+      "theme": "Você tem salvado muito sobre {{theme}}. Estes são links mais antigos que você não abriu.",
+      "forgotten": "Alguns links que você salvou e nunca reabriu. Abra um, defina um lembrete ou deixe para lá."
+    },
+    "dismiss": "Ocultar até a próxima semana",
+    "saved": "Salvo em {{month}}, não aberto recentemente",
+    "remind": "Lembrar-me",
+    "readLater": "Ler depois",
+    "notInterested": "Não tenho interesse",
+    "count": {
+      "one": "{{count}} link salvo há algum tempo e nunca aberto",
+      "many": "{{count}} links salvos há algum tempo e nunca abertos",
+      "other": "{{count}} links salvos há algum tempo e nunca abertos"
+    },
+    "segment": {
+      "label": "Mostrar",
+      "opened": "Abertos",
+      "forgotten": "Esquecidos",
+      "forgottenCount": "Esquecidos {{count}}"
+    },
+    "empty": {
+      "title": "Nada esquecido",
+      "text": "Os links que você salvar e nunca abrir esperarão aqui."
+    },
+    "note": {
+      "one": "{{count}} esquecido",
+      "many": "{{count}} esquecidos",
+      "other": "{{count}} esquecidos"
+    }
+  },
+  "cleanup": {
+    "title": "Organize sua biblioteca",
+    "lead": "Encontre links que você salvou mais de uma vez e tags que significam a mesma coisa. Nada muda até você aplicar.",
+    "checkedOn": "Verificada {{when}}. Nada muda até você aplicar; dá para desfazer tudo de uma vez.",
+    "intro": "O Shelfmark procura cópias extras do mesmo link e tags que significam a mesma coisa. Você revisa cada mudança, e um único Desfazer reverte tudo.",
+    "loading": "Carregando o relatório de limpeza",
+    "loadFailed": "Não foi possível carregar o relatório de limpeza.",
+    "retry": "Tentar de novo",
+    "run": "Verificar minha biblioteca",
+    "runAgain": "Verificar de novo",
+    "runFailed": "Não foi possível iniciar a verificação. Tente de novo.",
+    "includeAi": {
+      "label": "Incluir verificações com IA",
+      "hint": "Também encontra a mesma página em outro endereço e tags com o mesmo significado."
+    },
+    "checking": {
+      "title": "Verificando sua biblioteca…",
+      "text": "Você pode sair desta página; vamos guardar o relatório.",
+      "progress": "{{checked}} de {{total}} links. Você pode sair desta página; vamos guardar o relatório.",
+      "label": "Progresso da limpeza"
+    },
+    "apply": {
+      "one": "Aplicar {{count}} mudança",
+      "many": "Aplicar {{count}} mudanças",
+      "other": "Aplicar {{count}} mudanças"
+    },
+    "cancel": "Cancelar",
+    "barLabel": "Ações de limpeza",
+    "groups": {
+      "duplicates": {
+        "title": "Duplicados",
+        "hint": "Cópias extras vão para a lixeira"
+      },
+      "similarTags": {
+        "title": "Tags parecidas",
+        "hint": "Mescladas na primeira"
+      }
+    },
+    "reason": {
+      "sameAddress": "Mesmo endereço",
+      "samePage": "Mesma página"
+    },
+    "duplicate": {
+      "sameAddress": {
+        "one": "Salvo {{saved}} vezes: manter o de {{place}} ({{why}}), mover {{count}} cópia para a lixeira",
+        "many": "Salvo {{saved}} vezes: manter o de {{place}} ({{why}}), mover {{count}} cópias para a lixeira",
+        "other": "Salvo {{saved}} vezes: manter o de {{place}} ({{why}}), mover {{count}} cópias para a lixeira"
+      },
+      "samePage": {
+        "one": "{{hosts}}: manter {{keep}} ({{why}}), mover {{count}} cópia para a lixeira",
+        "many": "{{hosts}}: manter {{keep}} ({{why}}), mover {{count}} cópias para a lixeira",
+        "other": "{{hosts}}: manter {{keep}} ({{why}}), mover {{count}} cópias para a lixeira"
+      }
+    },
+    "unsorted": "Sem pasta",
+    "keep": {
+      "in-folder": "está em uma pasta",
+      "has-note": "tem uma nota",
+      "has-reminder": "tem um lembrete",
+      "more-tags": "tem mais tags",
+      "favorite": "é um favorito",
+      "recently-opened": "aberto por último",
+      "oldest": "salvo primeiro"
+    },
+    "tagPair": {
+      "title": "{{keep}} ← {{merge}}",
+      "detail": {
+        "one": "{{count}} link recebe “{{keep}}”; “{{merge}}” é removida",
+        "many": "{{count}} links recebem “{{keep}}”; “{{merge}}” é removida",
+        "other": "{{count}} links recebem “{{keep}}”; “{{merge}}” é removida"
+      },
+      "swap": "Manter “{{merge}}” no lugar"
+    },
+    "foundByAi": "Encontrado pela IA",
+    "footer": "Grupos marcados com “Encontrado pela IA” são sugestões e podem não ser precisos. Duplicados exatos são verificados sem IA.",
+    "failed": "A verificação parou antes de terminar. Veja o que ela encontrou.",
+    "empty": {
+      "title": "Sua biblioteca está em ordem",
+      "text": "Nenhum duplicado ou tag parecida encontrado."
+    },
+    "checkFailed": {
+      "title": "A verificação não terminou",
+      "text": "Parou antes de encontrar algo e nada foi alterado. Tente de novo."
+    },
+    "applied": {
+      "title": "Tudo organizado",
+      "text": "As mudanças escolhidas foram feitas. As cópias removidas esperam na lixeira."
+    },
+    "toast": {
+      "title": {
+        "one": "{{count}} item organizado",
+        "many": "{{count}} itens organizados",
+        "other": "{{count}} itens organizados"
+      },
+      "copies": {
+        "one": "{{count}} cópia na lixeira",
+        "many": "{{count}} cópias na lixeira",
+        "other": "{{count}} cópias na lixeira"
+      },
+      "tags": {
+        "one": "{{count}} tag mesclada",
+        "many": "{{count}} tags mescladas",
+        "other": "{{count}} tags mescladas"
+      },
+      "detail": "{{copies}}, {{tags}}",
+      "undo": "Desfazer",
+      "failed": "Não foi possível aplicar as mudanças",
+      "failedDetail": "Nada foi alterado. Tente de novo.",
+      "nothing": "Nada para aplicar",
+      "nothingDetail": "Esses itens mudaram nesse meio-tempo."
+    },
+    "undone": "Limpeza desfeita",
+    "undoFailed": "Não foi possível desfazer a limpeza"
   }
 }

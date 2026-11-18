@@ -1,4 +1,4 @@
-import { normalizeRuleDomain } from '@shelfmark/contracts';
+import { AI_JOB_STATUS, normalizeRuleDomain } from '@shelfmark/contracts';
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
@@ -19,6 +19,7 @@ import {
   TooltipDirective,
 } from '@shelfmark/ui';
 import type { LinkCardItem } from '../../models/link-card-item.type';
+import { LinkSummaryComponent } from '../../../ai/components/link-summary/link-summary.component';
 import type { FolderChipView } from '../../models/folder-chip-view.interface';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { linkKeyIntent } from '../../utils/link-select-keys';
@@ -36,12 +37,15 @@ import {
   siteLetter,
 } from '../../utils/link-view';
 
-const MAX_TAGS = 3;
+/** Tags rendered for the footer to fit; the rest are only counted. */
+const MAX_TAGS_RENDERED = 12;
 
 /**
  * One saved link in the cards view. It only renders and emits; the favorite and delete flows
  * live in `LinkActionsService`. The title opens the link in a new tab (http and https only).
  */
+import { pluralKey } from '../../../../core/i18n/plural-key';
+import { FitTagsDirective } from '../../directives/fit-tags.directive';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 
 @Component({
@@ -55,7 +59,9 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
     CardComponent,
     ChipComponent,
     FaviconComponent,
+    FitTagsDirective,
     FolderChipComponent,
+    LinkSummaryComponent,
     MenuComponent,
     MenuItemComponent,
     MenuSeparatorComponent,
@@ -76,6 +82,7 @@ export class LinkCardComponent {
   private readonly reminders = inject(ReminderFormatService);
   private readonly now = Date.now();
   protected readonly BADGE_TONE = BADGE_TONE;
+  protected readonly AI_JOB_STATUS = AI_JOB_STATUS;
 
   readonly link = input.required<LinkCardItem>();
   /** No favorite button and no actions menu: a guest looks at someone else's link (#276). */
@@ -109,6 +116,13 @@ export class LinkCardComponent {
   readonly remindRequested = output<void>();
   /** "Create a rule for youtube.com…" from the actions menu (#398). */
   readonly ruleRequested = output<void>();
+  /**
+   * Offer "Show related" (AI-3): the page sets it while search by meaning is ready and the side by
+   * side view can open.
+   */
+  readonly relatable = input(false);
+  /** "Show related" from the actions menu: the split picker offers the related folders. */
+  readonly relatedRequested = output<void>();
   /** The domain a rule for this link would match; `null` hides the menu item. */
   protected readonly ruleDomain = computed(() => normalizeRuleDomain(this.link().url));
   readonly deleteRequested = output<void>();
@@ -174,8 +188,14 @@ export class LinkCardComponent {
       ? { text: this.reminders.chip(at, this.now), due: this.reminders.isDue(at, this.now) }
       : null;
   });
-  protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS));
-  protected readonly hiddenTags = computed(() => Math.max(0, this.link().tags.length - MAX_TAGS));
+  protected readonly pluralKey = pluralKey;
+  protected readonly tags = computed(() => this.link().tags.slice(0, MAX_TAGS_RENDERED));
+
+  /** "+N" and its name for the tags the footer has no room for (`FitTagsDirective` counts them). */
+  protected moreTags(fit: FitTagsDirective): { count: number; list: string } {
+    const left = this.link().tags.slice(fit.visible());
+    return { count: left.length, list: left.join(', ') };
+  }
 
   protected open(event?: MouseEvent): void {
     if (this.selecting()) {

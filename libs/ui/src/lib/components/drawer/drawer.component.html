@@ -1,6 +1,7 @@
 <div
   class="ui-drawer"
   [class.ui-drawer--end]="side() === DRAWER_SIDE.End"
+  [class.ui-drawer--wide]="width() === DRAWER_WIDTH.Wide"
   [class.ui-drawer--enter]="!leaving()"
   [class.ui-drawer--leave]="leaving()"
 >

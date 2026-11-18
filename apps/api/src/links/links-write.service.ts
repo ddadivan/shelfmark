@@ -16,8 +16,14 @@ import {
   type CreateLinkRequest,
   type LinkResponse,
   type OpenLinkResponse,
+  SUMMARY_SOURCE,
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
+import { AiEmbedService } from '../ai/embeddings/ai-embed.service';
+import { markEmbeddingsStale } from '../ai/embeddings/mark-embeddings-stale';
+import { AiJobsService } from '../ai/jobs/ai-jobs.service';
+import { AiLinkHooksService } from '../ai/link-hooks/ai-link-hooks.service';
+import type { AiRequestContext } from '../ai/models/ai-request-context.interface';
 import { REQUEST_TIMEOUT_MS } from '../common/interceptors/models/request-timeout.const';
 import { FoldersService } from '../folders/folders.service';
 import { Prisma } from '../generated/prisma/client';
@@ -40,6 +46,12 @@ import { toLinkResponse } from './to-link-response';
 const CREATE_RESPONSE_MARGIN_MS = 1_000;
 
 /** `null` and blank text both mean "no note". */
+/** A summary the user wrote in Add link: theirs, so AI never replaces it; blank is no summary. */
+function userSummary(summary: string | undefined): { summary?: string; summarySource?: string } {
+  const text = summary?.trim() ?? '';
+  return text === '' ? {} : { summary: text, summarySource: SUMMARY_SOURCE.User };
+}
+
 function noteOrNull(note: string | null | undefined): string | null {
   return note === undefined || note === null || note.trim() === '' ? null : note;
 }
@@ -57,13 +69,20 @@ export class LinksWriteService {
     private readonly previews: LinkPreviewService,
     private readonly images: LinkImageCaptureService,
     private readonly rules: RulesService,
+    private readonly aiJobs: AiJobsService,
+    private readonly aiHooks: AiLinkHooksService,
+    private readonly aiEmbed: AiEmbedService,
   ) {}
 
-  /** `isDemo` comes from the session (never the request): demo sandboxes have a lower link cap. */
+  /**
+   * `isDemo` comes from the session (never the request): demo sandboxes have a lower link cap.
+   * `context` carries what the AI step needs from the request (the summary language fallback).
+   */
   async create(
     userId: string,
     request: CreateLinkRequest,
     isDemo = false,
+    context: AiRequestContext = {},
   ): Promise<CreateLinkResult> {
     const startedAt = Date.now();
     this.normalize(request.url);
@@ -102,6 +121,7 @@ export class LinksWriteService {
     const finalTitle = title;
 
     let result: CreateLinkResult;
+    let aiJobIds: string[] = [];
     try {
       result = await this.prisma.$transaction(async (tx) => {
         // Folder lock first: it serializes this insert against folder moves and deletes and makes the
@@ -111,6 +131,11 @@ export class LinksWriteService {
           const replay = await this.findByKey(tx, userId, key);
           if (replay) return { link: replay, created: false };
         }
+        // The draft job row is locked after `folders:` and before `tags:` (ADR 0049 point 4).
+        const draft =
+          request.aiDraftId === undefined
+            ? null
+            : await this.aiJobs.lockDraft(tx, userId, request.aiDraftId);
         if (request.folderId !== undefined) {
           await this.requireFolder(tx, userId, request.folderId);
         }
@@ -131,6 +156,7 @@ export class LinksWriteService {
             titleSortKey: finalTitle.toLowerCase(),
             kind,
             note: noteOrNull(request.note),
+            ...userSummary(request.summary),
             faviconSourceUrl,
             imageSourceUrl,
             idempotencyKey: key ?? null,
@@ -138,7 +164,19 @@ export class LinksWriteService {
           },
           include: LINK_INCLUDE,
         });
-        return { link: toLinkResponse(row), created: true };
+        // AI (ADR 0049): attach the draft or enqueue a job; nothing while AI is off.
+        const ai = await this.aiJobs.afterCreate(
+          tx,
+          userId,
+          { linkId: row.id, folderSet: row.folderId !== null, tagsSet: tagIds.length > 0 },
+          draft,
+          context,
+        );
+        aiJobIds = ai.jobIds;
+        const saved = ai.touched
+          ? await tx.link.findFirstOrThrow({ where: { id: row.id, userId }, include: LINK_INCLUDE })
+          : row;
+        return { link: toLinkResponse(saved), created: true };
       });
     } catch (error) {
       if (key !== undefined && hasPrismaCode(error, PRISMA_ERROR_CODE.UniqueViolation)) {
@@ -149,7 +187,16 @@ export class LinksWriteService {
       throw this.mapVanished(error);
     }
     // After the commit and outside any transaction: the remote fetches must never hold a lock.
-    return this.attachImages(userId, result, { faviconSourceUrl, imageSourceUrl }, startedAt);
+    const withImages = await this.attachImages(
+      userId,
+      result,
+      { faviconSourceUrl, imageSourceUrl },
+      startedAt,
+    );
+    this.aiJobs.start(userId, aiJobIds);
+    // Search by meaning: a link without a job is embedded now; one with a job after its job.
+    if (aiJobIds.length === 0) await this.aiEmbed.kick(userId);
+    return withImages;
   }
 
   /**
@@ -175,28 +222,61 @@ export class LinksWriteService {
     return row ? { link: toLinkResponse(row), created: true } : result;
   }
 
-  async update(userId: string, id: string, sent: UpdateLinkRequest): Promise<LinkResponse> {
+  /**
+   * `context` carries what a re-enqueued AI job needs from the request (a new URL asks AI again
+   * unless the summary is the user's own).
+   */
+  async update(
+    userId: string,
+    id: string,
+    sent: UpdateLinkRequest,
+    context: AiRequestContext = {},
+  ): Promise<LinkResponse> {
     // A new address is stored like a new link's: without tracking parameters (#284, #315).
     const request: UpdateLinkRequest =
       sent.url === undefined ? sent : { ...sent, url: savedUrl(sent.url) };
     const data = this.updateData(request);
     this.assertTagNames(request.tags);
-    const needsLock = typeof request.folderId === 'string' || request.pinnedInFolder === true;
+    // `folders:` first whenever the job rows or tags may be touched: AI's apply takes `folders:` →
+    // job row → `tags:`, so a tag or address edit queues behind it instead of deadlocking on the
+    // link row and the tags lock in the opposite order (ADR 0049).
+    const needsLock =
+      typeof request.folderId === 'string' ||
+      request.pinnedInFolder === true ||
+      request.tags !== undefined ||
+      request.url !== undefined;
+    let aiJobIds: string[] = [];
+    let aiSuperseded = 0;
+    let response: LinkResponse;
+    // What search by meaning embeds (title, note, tags, summary) changed: the vector goes stale.
+    const embeddedChanged =
+      request.title !== undefined ||
+      request.note !== undefined ||
+      request.tags !== undefined ||
+      request.summary !== undefined;
     try {
-      return await this.prisma.$transaction(async (tx) => {
+      response = await this.prisma.$transaction(async (tx) => {
         if (needsLock) await this.folders.lockTree(tx, userId);
         if (typeof request.folderId === 'string') {
           await this.requireFolder(tx, userId, request.folderId);
         }
         const current = await tx.link.findFirst({
           where: { id, userId, deletedAt: null },
-          select: { id: true, normalizedUrl: true, folderId: true, pinnedInFolderAt: true },
+          select: {
+            id: true,
+            normalizedUrl: true,
+            folderId: true,
+            pinnedInFolderAt: true,
+            tags: { select: { tag: { select: { name: true } } } },
+          },
         });
         if (!current) throw new NotFoundException(LINK_ERROR_MESSAGE.NotFound);
         await this.applyFolderPin(tx, userId, current, request, data);
         // Only a really different page invalidates the captured images and the source hints (the
         // same URL written differently keeps them); the card then falls back to the site letter.
-        if (data.normalizedUrl !== undefined && data.normalizedUrl !== current.normalizedUrl) {
+        const newPage =
+          data.normalizedUrl !== undefined && data.normalizedUrl !== current.normalizedUrl;
+        if (newPage) {
           await tx.linkImage.deleteMany({ where: { linkId: id, userId } });
           data.faviconSourceUrl = null;
           data.imageSourceUrl = null;
@@ -207,6 +287,8 @@ export class LinksWriteService {
             data.kind = deriveLinkKind(request.url);
           }
         }
+        // Job rows after `folders:` and before `tags:` (ADR 0049 lock order).
+        aiSuperseded = await this.aiHooks.beforeUpdate(tx, userId, id, newPage);
 
         if (request.tags !== undefined) {
           // Held until commit, so a merge or a concurrent tag write cannot interleave with the swap.
@@ -215,17 +297,42 @@ export class LinksWriteService {
           await tx.linkTag.deleteMany({ where: { linkId: id } });
           await tx.linkTag.createMany({ data: tagIds.map((tagId) => ({ linkId: id, tagId })) });
         }
+        if (embeddedChanged) await markEmbeddingsStale(tx, userId, { linkIds: [id] });
         const touched = Object.keys(data).length > 0 || request.tags !== undefined;
-        const row = await tx.link.update({
+        let row = await tx.link.update({
           where: { id, userId, deletedAt: null },
           data: touched ? { ...data, updatedAt: new Date() } : data,
           include: LINK_INCLUDE,
         });
+        // AI (#390, ADR 0049): settle the suggestion marks; a new page asks AI again.
+        const ai = await this.aiHooks.afterUpdate(
+          tx,
+          userId,
+          {
+            linkId: id,
+            folderSent: request.folderId !== undefined,
+            tagsSent: request.tags !== undefined,
+            folderBefore: current.folderId,
+            folderAfter: row.folderId,
+            tagsBefore: current.tags.map((entry) => entry.tag.name),
+            tagsAfter: row.tags.map((entry) => entry.tag.name),
+            newPage,
+            summarySource: row.summarySource,
+          },
+          context,
+        );
+        aiJobIds = ai.jobIds;
+        if (ai.touched) {
+          row = await tx.link.findFirstOrThrow({ where: { id, userId }, include: LINK_INCLUDE });
+        }
         return toLinkResponse(row);
       });
     } catch (error) {
       throw this.mapVanished(error);
     }
+    await this.aiHooks.afterCommit(userId, aiJobIds, aiSuperseded);
+    if (embeddedChanged && aiJobIds.length === 0) await this.aiEmbed.kick(userId);
+    return response;
   }
 
   /**
@@ -329,6 +436,12 @@ export class LinksWriteService {
     if (request.folderId !== undefined) data.folderId = request.folderId;
     if (request.isFavorite !== undefined) data.isFavorite = request.isFavorite;
     if (request.kind !== undefined) data.kind = request.kind;
+    if (request.summary !== undefined) {
+      // Any text is the user's; null or blank clears it, so AI may write one again.
+      const summary = request.summary?.trim() ?? '';
+      data.summary = summary === '' ? null : summary;
+      data.summarySource = summary === '' ? null : SUMMARY_SOURCE.User;
+    }
     return data;
   }
 

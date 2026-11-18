@@ -152,6 +152,9 @@
           </ng-template>
           @if (phone()) {
           <div class="library__tools">
+            @if (tidyEntry()) {
+            <app-tidy-entry />
+            }
             <ui-button
               [uiMenuTrigger]="viewMenu"
               variant="secondary"
@@ -207,7 +210,9 @@
           </div>
           } @else {
           <div class="library__tools">
-            @if (feed.showControls() && feed.viewOptions(); as options) {
+            @if (tidyEntry()) {
+            <app-tidy-entry />
+            } @if (feed.showControls() && feed.viewOptions(); as options) {
             <div class="library__controls">
               <ui-button
                 [uiMenuTrigger]="sortMenu"
@@ -507,6 +512,8 @@
               (moveRequested)="actions.move(link)"
               (remindRequested)="actions.remind(link)"
               (ruleRequested)="actions.createRule(link)"
+              [relatable]="splitRelated.available()"
+              (relatedRequested)="splitView.showRelated(link.id)"
               (deleteRequested)="actions.delete(link)"
             />
           </li>
@@ -576,6 +583,8 @@
               (moveRequested)="actions.move(link)"
               (remindRequested)="actions.remind(link)"
               (ruleRequested)="actions.createRule(link)"
+              [relatable]="splitRelated.available()"
+              (relatedRequested)="splitView.showRelated(link.id)"
               (deleteRequested)="actions.delete(link)"
             />
           </li>

@@ -142,7 +142,7 @@ test.describe('mobile layout (mock API)', () => {
   );
 
   test(
-    'the Library page has the four tiles with counts, then the folders',
+    'the Library page has Pinned and the folders, then the tiles with counts',
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       await page.goto('/links');
@@ -393,7 +393,7 @@ test.describe('mobile layout (mock API)', () => {
     await page.getByRole('button', { name: 'Add link' }).click();
     const dialog = page.getByRole('dialog', { name: 'Add link' });
     await dialog.getByLabel('Link', { exact: true }).fill('https://mobile.example/phone');
-    await dialog.getByRole('button', { name: /Save/ }).click();
+    await dialog.getByRole('button', { name: 'Create link' }).click();
 
     await expect(dialog).toBeHidden();
     await expect(page.getByText(/Saved to /)).toBeVisible();
@@ -408,7 +408,7 @@ test.describe('mobile layout (mock API)', () => {
       await add.click();
       const dialog = page.getByRole('dialog', { name: 'Add link' });
       await dialog.getByLabel('Link', { exact: true }).fill('https://mobile.example/toast');
-      await dialog.getByRole('button', { name: /Save/ }).click();
+      await dialog.getByRole('button', { name: 'Create link' }).click();
       await expect(page.getByText(/Saved to /)).toBeVisible();
 
       // The toast sits above the bar; its pane must not swallow clicks on the bar.

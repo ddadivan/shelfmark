@@ -65,8 +65,6 @@ function readFrames(page: Page): Promise<Frame[]> {
 
 test.describe('app skeleton while a signed-in start loads (#410)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock library');
-  // The service worker would answer the routed requests itself.
-  test.use({ serviceWorkers: 'block' });
 
   test(
     'a returning session shows the skeleton, then the app, never an empty frame',
@@ -226,8 +224,6 @@ function expectSameExtension(skeleton: Box | null, app: Box | null): void {
 
 test.describe('the skeleton keeps the page still when the app takes over (#440, mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock library');
-  // The service worker would answer the delayed bundle request itself.
-  test.use({ serviceWorkers: 'block' });
 
   /** Delays the app bundle, so the skeleton is on screen for a while before the app starts. */
   async function slowBundle(page: Page): Promise<void> {
@@ -308,6 +304,7 @@ test.describe('the skeleton keeps the page still when the app takes over (#440, 
       await slowBundle(page);
       await page.goto('/links');
       await expect(page.locator('app-extension-banner section')).toBeVisible();
+      await expect(page.locator('app-shell ui-card').first()).toBeVisible();
 
       const { skeleton, app } = await readGeometry(page);
       expect(skeleton.extension, 'the skeleton draws the extension banner').not.toBeNull();

@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FormField, FormRoot } from '@angular/forms/signals';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { LINK_KIND, LINK_LIMIT } from '@shelfmark/contracts';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { LINK_LIMIT } from '@shelfmark/contracts';
 import {
   ButtonComponent,
   CheckboxComponent,
   ChipComponent,
+  DialogCancelDirective,
   DialogComponent,
   FaviconComponent,
-  injectDialogData,
   KEYBOARD_KEY,
   InputComponent,
   NoticeComponent,
@@ -22,18 +22,14 @@ import {
   BUTTON_TYPE,
   INPUT_TYPE,
   SKELETON_SHAPE,
-  type TagSuggestion,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { TagsStore } from '../../../../stores/tags.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
-import { pluralKey } from '../../../../core/i18n/plural-key';
 import { isMacPlatform } from '../../../search/utils/is-mac-platform';
 import { ADD_LINK_ACTION } from '../../models/add-link-action.const';
-import type { AddLinkDialogData } from '../../models/add-link-dialog-data.interface';
 import type { AddLinkResult } from '../../models/add-link-result.type';
 import { PREVIEW_STATE } from '../../models/preview-state.const';
-import { LocaleService } from '../../../../core/i18n/locale.service';
 import { PasteManyListComponent } from '../paste-many/paste-many-list.component';
 import { AddLinkFormService } from '../../services/add-link-form.service';
 import { AddLinkSaveService } from '../../services/add-link-save.service';
@@ -41,9 +37,20 @@ import { AddLinkPreviewService } from '../../services/add-link-preview.service';
 import { AddLinkRuleService } from '../../services/add-link-rule.service';
 import { RuleSuggestionService } from '../../../rules/services/rule-suggestion.service';
 import { AddSeveralLinksService } from '../../services/add-several-links.service';
-import { ReminderFormatService } from '../../../reminders/services/reminder-format.service';
 import { AddLinkNewFolderService } from '../../services/add-link-new-folder.service';
+import { AddLinkLabelsService } from '../../services/add-link-labels.service';
 import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
+import { AddLinkAiService } from '../../services/add-link-ai.service';
+import { AddLinkSummaryService } from '../../services/add-link-summary.service';
+import { SummaryFieldComponent } from '../../../ai/components/summary-field/summary-field.component';
+import { AiDraftService } from '../../../ai/services/ai-draft.service';
+import { AiLinkStateService } from '../../../ai/services/ai-link-state.service';
+import { AddLinkAiAppliedService } from '../../services/add-link-ai-applied.service';
+import { AddLinkAiFillService } from '../../services/add-link-ai-fill.service';
+import { AddLinkAiFillComponent } from '../add-link-ai/add-link-ai-fill.component';
+import { AddLinkAiFolderComponent } from '../add-link-ai/add-link-ai-folder.component';
+import { AddLinkAiTagsComponent } from '../add-link-ai/add-link-ai-tags.component';
+import { RelatedLinksComponent } from '../../../ai/components/related-links/related-links.component';
 
 /**
  * Content of the add-link dialog (`openAddLinkDialog()`): paste a URL, the preview fills the
@@ -66,9 +73,14 @@ import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
 @Component({
   selector: 'app-add-link-dialog',
   imports: [
+    AddLinkAiFillComponent,
+    AddLinkAiFolderComponent,
+    AddLinkAiTagsComponent,
+    RelatedLinksComponent,
     ButtonComponent,
     CheckboxComponent,
     ChipComponent,
+    DialogCancelDirective,
     DialogComponent,
     FaviconComponent,
     FormField,
@@ -78,6 +90,7 @@ import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
     PasteManyListComponent,
     SelectComponent,
     SkeletonComponent,
+    SummaryFieldComponent,
     TagInputComponent,
     TextareaComponent,
     TranslocoPipe,
@@ -91,6 +104,13 @@ import { NEW_FOLDER_OPTION_ID } from '../../models/new-folder-option-id.const';
     RuleSuggestionService,
     AddLinkSaveService,
     AddLinkNewFolderService,
+    AiDraftService,
+    AiLinkStateService,
+    AddLinkAiService,
+    AddLinkAiAppliedService,
+    AddLinkAiFillService,
+    AddLinkSummaryService,
+    AddLinkLabelsService,
   ],
   templateUrl: './add-link-dialog.component.html',
   styleUrl: './add-link-dialog.component.scss',
@@ -113,28 +133,16 @@ export class AddLinkDialogComponent {
   private readonly newFolder = inject(AddLinkNewFolderService);
   private readonly tagStore = inject(TagsStore);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
-  private readonly transloco = inject(TranslocoService);
-  private readonly localeService = inject(LocaleService);
-  private readonly reminderFormat = inject(ReminderFormatService);
-  private readonly data = injectDialogData<AddLinkDialogData>();
 
   /** The link being edited; `undefined` when adding. */
   protected readonly original = this.formState.original;
   protected readonly editing = this.formState.editing;
 
-  private readonly severalLinks = inject(AddSeveralLinksService);
+  /** Paste many: its toggles, paste and keyboard handling are bound directly. */
+  protected readonly severalLinks = inject(AddSeveralLinksService);
   protected readonly pasted = this.severalLinks.pasted;
   protected readonly several = this.severalLinks.several;
   protected readonly severalForm = this.severalLinks.severalForm;
-
-  /** Edit mode: the "Type" select (video, article, shopping, other). */
-  protected readonly kindOptions = computed(() => {
-    this.formState.i18n();
-    return Object.values(LINK_KIND).map((kind) => ({
-      id: kind,
-      name: this.transloco.translate(`links.kindOption.${kind}`),
-    }));
-  });
 
   protected readonly form = this.formState.form;
 
@@ -147,6 +155,9 @@ export class AddLinkDialogComponent {
   protected readonly previewHost = this.previewService.previewHost;
   protected readonly duplicate = this.previewService.duplicate;
 
+  /** Edit link: the summary field (#391). */
+  protected readonly summary = inject(AddLinkSummaryService);
+
   private readonly ruleService = inject(AddLinkRuleService);
   /** "Rule: youtube.com → Videos" while a domain rule filled folder or tags (#398). */
   protected readonly ruleChip = this.ruleService.chip;
@@ -158,39 +169,11 @@ export class AddLinkDialogComponent {
     const id = this.form.folderId().value();
     return id === NEW_FOLDER_OPTION_ID ? null : id;
   });
-  protected readonly tagSuggestions = computed<TagSuggestion[]>(() => {
-    this.formState.i18n();
-    return this.tagStore.entities().map((tag) => ({
-      name: tag.name,
-      countLabel: this.transloco.translate(pluralKey('tags.count', tag.linkCount), {
-        count: tag.linkCount,
-      }),
-    }));
-  });
-
-  /** Edit mode: the link's reminder ("Sat, 10:00", "Due 2 hours ago"), or `null` without one. */
-  protected readonly reminder = computed(() => {
-    this.formState.i18n();
-    const at = this.original?.remindAt;
-    return at ? this.reminderFormat.chip(at) : null;
-  });
-
-  /** "Saved X, last opened Y" under the form (edit mode). */
-  protected readonly meta = computed(() => {
-    this.formState.i18n();
-    const link = this.original;
-    if (!link) {
-      return null;
-    }
-    const now = Date.now();
-    const created = this.localeService.formatRelative(link.createdAt, now);
-    return link.lastOpenedAt === null
-      ? this.transloco.translate('links.edit.metaNever', { created })
-      : this.transloco.translate('links.edit.meta', {
-          created,
-          opened: this.localeService.formatRelative(link.lastOpenedAt, now),
-        });
-  });
+  private readonly labels = inject(AddLinkLabelsService);
+  protected readonly kindOptions = this.labels.kindOptions;
+  protected readonly tagSuggestions = this.labels.tagSuggestions;
+  protected readonly reminder = this.labels.reminder;
+  protected readonly meta = this.labels.meta;
 
   constructor() {
     // Usually loaded by the sidebar already; the options fill in when the list arrives.
@@ -198,6 +181,8 @@ export class AddLinkDialogComponent {
     void this.tagStore.load();
   }
 
+  /** Fill in with AI (F1c): the footer drops the save hint while its button shows. */
+  protected readonly aiFill = inject(AddLinkAiFillService);
   private readonly saveFlow = inject(AddLinkSaveService);
   protected readonly saving = this.saveFlow.saving;
   protected readonly saveError = this.saveFlow.saveError;
@@ -207,10 +192,6 @@ export class AddLinkDialogComponent {
     if (existing) {
       this.ref.close({ action: ADD_LINK_ACTION.OpenExisting, existing });
     }
-  }
-
-  protected onUrlPaste(event: ClipboardEvent): void {
-    this.severalLinks.onUrlPaste(event);
   }
 
   /** Leaving the address shows it as it will be saved (`https://` added, #405). */
@@ -226,21 +207,20 @@ export class AddLinkDialogComponent {
     }
   }
 
-  protected showSeveral(): void {
-    this.severalLinks.showSeveral();
-  }
-
-  protected showSingle(): void {
-    this.severalLinks.showSingle();
-  }
-
-  protected onSeveralKeydown(event: KeyboardEvent): void {
-    this.severalLinks.onSeveralKeydown(event);
-  }
-
-  /** Cmd / Ctrl + Enter saves from any field (Enter alone in a text field submits as before). */
+  /**
+   * Cmd / Ctrl + Enter saves from any field (Enter alone in a text field submits as before);
+   * Alt / Option + Shift + F is "Fill in with AI" (F1c).
+   */
   protected onKeydown(event: KeyboardEvent): void {
-    if (event.key === KEYBOARD_KEY.Enter && (event.metaKey || event.ctrlKey) && !this.saving()) {
+    if (this.aiFill.handleShortcut(event)) {
+      return;
+    }
+    if (
+      event.key === KEYBOARD_KEY.Enter &&
+      (event.metaKey || event.ctrlKey) &&
+      !this.saving() &&
+      !this.aiFill.busy()
+    ) {
       event.preventDefault();
       (event.currentTarget as HTMLFormElement).requestSubmit();
     }

@@ -14,6 +14,12 @@
     fold only grows towards its real height.
   -->
   @defer (on idle; when sectionsRequested()) {
+  <!-- The AI features (#481) and the browser extension (#455) come right after the hero (#507),
+       then the bento. All three are one block: the bento's "How it works" scroll waits for it, so
+       nothing above its target arrives later and moves the page. The extension block renders
+       nothing outside a desktop Chromium browser, so it needs no placeholder of its own. -->
+  <app-landing-ai />
+  <app-landing-extension />
   <app-landing-bento #bento />
   } @placeholder {
   <div class="landing__placeholder landing__placeholder--bento"></div>
@@ -34,10 +40,6 @@
   <div class="landing__placeholder landing__placeholder--about"></div>
   } @loading {
   <div class="landing__placeholder landing__placeholder--about"></div>
-  } @defer (on timer(225ms); when sectionsRequested()) {
-  <!-- The browser extension (#455): renders nothing outside a desktop Chromium browser, so it has
-       no placeholder (a box would stay empty for everybody else). -->
-  <app-landing-extension />
   } @defer (on timer(300ms); when sectionsRequested()) {
   <app-landing-finale />
   } @placeholder {

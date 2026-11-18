@@ -1,0 +1,49 @@
+@use 'ui' as *;
+@use '../../../../shell/shell-metrics' as *;
+
+// The page fills the column of the shell, so the composer bar sits at its end.
+:host {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+.ask-page {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: rem(720px);
+  margin-inline: auto;
+}
+
+.ask-page__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block: calc(-1 * var(--space-3)) calc(-1 * var(--space-2));
+  margin-inline-start: calc(-1 * var(--space-2));
+}
+
+// The conversation starts right under the title (`MobileAiMore` 2); the panel centres its empty
+// state in the drawer's height instead.
+.ask-page__conversation {
+  min-height: 0;
+  padding: 0;
+}
+
+// The composer floats where the tab bar is (the same offset as the Tidy bar): the shell's main
+// column keeps `$shell-tab-bar-room` of end padding for the tab bar this page hides.
+$ask-bar-offset: rem(20px) - $shell-tab-bar-room;
+
+.ask-page__bar {
+  @include glass;
+
+  position: sticky;
+  inset-block-end: #{$ask-bar-offset};
+  z-index: 3;
+  padding: var(--space-3);
+  margin-block: auto #{$ask-bar-offset};
+  border-radius: var(--radius-lg);
+}

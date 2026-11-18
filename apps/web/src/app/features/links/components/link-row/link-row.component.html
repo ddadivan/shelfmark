@@ -21,8 +21,13 @@
   />
   <ui-favicon slot="leading" [src]="favicon()" [letter]="letter()" />
   <span slot="title">{{ link().title }}</span>
-  <span slot="meta" class="link-row__meta">
-    {{ host() }}
+  <!-- The summary replaces the domain line (one line); the domain moves to the tooltip (#391). -->
+  <span slot="meta" class="link-row__meta" [attr.title]="summarised() ? host() : null">
+    @if (summarised()) {
+      <app-link-summary class="link-row__summary" row [link]="link()" />
+    } @else {
+      {{ host() }}
+    }
     @if (folder(); as chip) {
       <ui-folder-chip
         class="link-row__folder"
@@ -110,6 +115,11 @@
       <ui-menu-item icon="folder-move" (activated)="moveRequested.emit()">
         {{ 'links.item.move' | transloco }}
       </ui-menu-item>
+      @if (relatable()) {
+        <ui-menu-item icon="columns" (activated)="relatedRequested.emit()">
+          {{ 'ai.related.show' | transloco }}
+        </ui-menu-item>
+      }
       @if (ruleDomain(); as domain) {
         <ui-menu-item icon="globe" (activated)="ruleRequested.emit()">
           {{ 'links.item.createRule' | transloco: { domain } }}

@@ -13,6 +13,7 @@ export const SHORTCUT_KEY = {
   Question: 'question',
   Space: 'space',
   A: 'a',
+  F: 'f',
   K: 'k',
   M: 'm',
   T: 't',

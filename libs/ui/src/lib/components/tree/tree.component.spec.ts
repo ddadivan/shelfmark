@@ -461,6 +461,21 @@ describe('TreeComponent', () => {
       expect(labelled(TREE_STORY_NAME.All)).toBe('All links 248');
     });
 
+    it('shows a note instead of the count in the accent tone and reads it with the name', async () => {
+      const { host, fixture, item, root } = await setup();
+      host.fixed.set([...TREE_STORY_FIXED, { id: 'recent', name: 'Recent', note: '5 forgotten' }]);
+      await settle(fixture);
+
+      const note = item('Recent').querySelector('.ui-tree__count--note');
+      expect(note?.textContent?.trim()).toBe('5 forgotten');
+      const labelled = (item('Recent').getAttribute('aria-labelledby') ?? '')
+        .split(' ')
+        .map((ref) => root.querySelector(`[id="${ref}"]`)?.textContent?.trim())
+        .join(' ');
+      expect(labelled).toBe('Recent 5 forgotten');
+      expect(item(TREE_STORY_NAME.All).querySelector('.ui-tree__count--note')).toBeNull();
+    });
+
     it('indents each level by one step through the level variable', async () => {
       const { row } = await setup();
       expect(row(TREE_STORY_NAME.Work).style.getPropertyValue('--ui-tree-level')).toBe('1');

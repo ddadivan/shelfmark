@@ -11,6 +11,7 @@ import {
   ToastService,
   toastShortcutLabel,
   type ToastFolder,
+  type ToastRef,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../stores/folders.store';
 import { RecentFoldersStore } from '../../../stores/recent-folders.store';
@@ -34,6 +35,8 @@ import type { MovePickerData } from '../models/move-picker-data.interface';
 import { MovePickerComponent } from '../components/move-picker/move-picker.component';
 import { ReminderActionsService } from '../../reminders/services/reminder-actions.service';
 import { RemindersStore } from '../../../stores/reminders.store';
+import { AiFollowUpService } from '../../ai/services/ai-follow-up.service';
+import { RuleOfferService } from '../../rules/services/rule-offer.service';
 
 /**
  * What a user can do with a link from the feed, the recent panel and the header: open, favorite,
@@ -185,7 +188,7 @@ export class LinkActionsService {
     void this.folders.refresh();
     this.recent.record(folderId);
     const undo = this.t('links.item.undo');
-    this.toasts.show({
+    const toast = this.toasts.show({
       kind: TOAST_KIND.Moved,
       title: this.t('links.move.moved', { folder: this.folderLabel(folderId) }),
       detail: link.title,
@@ -194,6 +197,14 @@ export class LinkActionsService {
       actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
       action: { label: undo, run: () => void this.moveBack({ ...link, folderId }, from) },
     });
+    if (folderId !== null) {
+      this.offerRule([link.id], toast);
+    }
+  }
+
+  /** The user filed links into a folder: a rule may be offered (AI-2, only while AI is on). */
+  private offerRule(ids: readonly string[], toast?: ToastRef): void {
+    this.injector.get(RuleOfferService).afterFiling(ids, toast);
   }
 
   /** The folder tile of a `moved` toast: the folder's colour and icon, graphite for Unsorted. */
@@ -218,7 +229,7 @@ export class LinkActionsService {
   async addLink(data: AddLinkData = {}): Promise<void> {
     const result = await this.addLinkDialog.open(data);
     if (result?.action === ADD_LINK_ACTION.Saved) {
-      this.noteSaved(result.link);
+      this.noteSaved(result.link, result.folderChosen === true);
     } else if (result?.action === ADD_LINK_ACTION.SavedMany) {
       this.noteSavedMany(result);
     } else if (result?.action === ADD_LINK_ACTION.OpenExisting) {
@@ -227,9 +238,14 @@ export class LinkActionsService {
     }
   }
 
-  /** A link was saved (dialog or share page): it shows in the feed, the counts refresh, a toast confirms. */
-  noteSaved(link: LinkResponse): void {
+  /**
+   * A link was saved (dialog or share page): it shows in the feed, the counts refresh, a toast
+   * confirms. `folderChosen`: the user (or a suggestion they took) picked its folder.
+   */
+  noteSaved(link: LinkResponse, folderChosen = false): void {
     this.store.addSaved(link);
+    // The summary and what Automatic mode does arrive a few seconds later (#390 / #391).
+    this.injector.get(AiFollowUpService).watch(link, true);
     void this.folders.refresh();
     void this.tags.noteLinkSaved();
     this.toasts.show({
@@ -238,6 +254,9 @@ export class LinkActionsService {
       detail: link.title,
       thumb: ownImageUrl(link.imageUrl),
     });
+    if (folderChosen && link.folderId !== null) {
+      this.offerRule([link.id]);
+    }
   }
 
   /**
@@ -258,6 +277,8 @@ export class LinkActionsService {
       return;
     }
     this.store.addSavedMany(links);
+    // Their summaries arrive a few seconds later, through one refresh loop for the batch.
+    this.injector.get(AiFollowUpService).watchMany(links);
     void this.folders.refresh();
     void this.tags.noteLinkSaved();
     const undo = this.t('links.item.undo');
@@ -313,6 +334,11 @@ export class LinkActionsService {
     const result = await this.addLinkDialog.open({ link });
     if (result?.action === ADD_LINK_ACTION.Saved) {
       this.store.applyEdit(result.link);
+      if (result.link.folderId !== null && result.link.folderId !== link.folderId) {
+        this.offerRule([result.link.id]);
+      }
+      // A new address queues a new AI job (#391).
+      this.injector.get(AiFollowUpService).watch(result.link);
       void this.tags.noteLinkSaved();
       this.toasts.show({
         kind: TOAST_KIND.Success,

@@ -154,6 +154,30 @@
   }
 }
 
+// With "Fill in with AI" next to it, the two share the start of the footer: the button takes the
+// free space after itself.
+.add-link__delete--with-fill {
+  @include tablet-up {
+    margin-inline-end: 0;
+  }
+}
+
+// Cancel and the main action (and "Open saved") stay together: the footer wraps around the group,
+// never through it. On the phone sheet it is the main row of the footer (#512); what is left in it
+// ("Open saved" next to Create anyway) stacks above the main action.
+.add-link__confirm {
+  display: flex;
+  gap: var(--space-4);
+
+  @include tablet-up {
+    flex: none;
+  }
+
+  @include phone {
+    flex-direction: column;
+  }
+}
+
 // The "save" shortcut at the start of the footer; a phone has no keyboard to press it.
 .add-link__shortcut {
   @include type(caption);
@@ -183,4 +207,18 @@
   ui-chip {
     max-width: 100%;
   }
+}
+
+// A field with its AI suggestion row, "Moved by AI" mark or AI line right under it (#390).
+.add-link__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+// The note is the user's own and comes last: a little more room above it sets it apart from the
+// fields Fill in with AI can change.
+.add-link__own-note {
+  margin-block-start: var(--space-2);
 }

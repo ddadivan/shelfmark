@@ -8,20 +8,30 @@
     <span class="ext-preview__thumb" aria-hidden="true"></span>
     <span class="ext-preview__text">
       <span class="ext-preview__host">{{ page.host }}</span>
-      <span class="ext-preview__title">{{ page.title }}</span>
+      <span class="ext-preview__title">{{ store.ai.cleanTitle() ?? page.title }}</span>
     </span>
   </div>
 }
 
 <div class="form">
   <div class="form__folder">
-    <span class="form__label" aria-hidden="true">{{ 'popup.form.folder' | transloco }}</span>
+    <span class="form__label-row">
+      <span class="form__label" aria-hidden="true">{{ 'popup.form.folder' | transloco }}</span>
+      @if (store.ai.folderMarked()) {
+        <ui-icon
+          name="spark"
+          [size]="ICON_SIZE.Sm"
+          [label]="'popup.ai.disclaimer' | transloco"
+          [attr.title]="'popup.ai.disclaimer' | transloco"
+        />
+      }
+    </span>
     <ui-button
       block
       iconRight="chevron-right"
       ariaHaspopup="dialog"
       [ariaLabel]="'popup.form.chooseFolder' | transloco: { folder: folderName() }"
-      [disabled]="store.saving()"
+      [disabled]="store.saving() || store.ai.busy()"
       (click)="store.openPicker()"
     >
       <span class="form__folder-value">
@@ -55,7 +65,7 @@
                 ? CHIP_VARIANT.Tag
                 : CHIP_VARIANT.Neutral
             "
-            [disabled]="store.saving()"
+            [disabled]="store.saving() || store.ai.busy()"
             (clicked)="store.chooseFolder(recent.id)"
             >{{ recent.folder?.name ?? ('popup.unsorted' | transloco) }}</ui-chip
           >
@@ -76,9 +86,38 @@
     [removedLabel]="'popup.form.tagsRemoved' | transloco"
     [duplicateLabel]="'popup.form.tagsDuplicate' | transloco"
     [listLabel]="'popup.form.tagsList' | transloco"
-    [disabled]="store.saving()"
+    [disabled]="store.saving() || store.ai.busy()"
     [(value)]="store.chosenTags"
   />
+
+  @if (store.ai.tagsMarked() || store.ai.chips().length > 0) {
+    <div class="form__ai">
+      @if (store.ai.tagsMarked()) {
+        <!-- A labelled mark, not a lone spark (#510): the tags above came from AI. -->
+        <ui-badge icon="spark" [attr.title]="'popup.ai.disclaimer' | transloco">{{
+          'popup.ai.tagsByAi' | transloco
+        }}</ui-badge>
+      }
+      @if (store.ai.chips().length > 0) {
+        <ui-suggestion-row
+          [label]="'popup.ai.suggested' | transloco"
+          [ariaLabel]="'popup.ai.tagsRow' | transloco"
+        >
+          @for (chip of store.ai.chips(); track chip.id) {
+            <ui-suggestion
+              [kind]="SUGGESTION_KIND.NewTag"
+              [label]="chip.name"
+              [newLabel]="'popup.ai.new' | transloco"
+              [ariaLabel]="'popup.ai.createTag' | transloco: { name: chip.name }"
+              [dismissLabel]="'popup.ai.dismiss' | transloco: { name: chip.name }"
+              (accepted)="store.ai.accept(chip)"
+              (dismissed)="store.ai.dismiss(chip)"
+            />
+          }
+        </ui-suggestion-row>
+      }
+    </div>
+  }
 
   <ui-input
     [label]="'popup.form.note' | transloco"
@@ -86,9 +125,34 @@
     [disabled]="store.saving()"
     [(value)]="store.note"
   />
+
+  @if (store.ai.line(); as line) {
+    <ui-ai-line
+      role="status"
+      [text]="lineText()"
+      [actionLabel]="line.kind === AI_LINE_KIND.Limit ? ('popup.ai.settings' | transloco) : ''"
+      (action)="store.openAiSettings()"
+    />
+  }
 </div>
 
+<span class="form__live" aria-live="polite">{{
+  store.ai.filled() ? ('popup.ai.done' | transloco) : ''
+}}</span>
+
 <div class="ext-screen__foot form__foot">
+  @if (store.ai.buttonShown()) {
+    <ui-button
+      class="form__ai-button"
+      block
+      [variant]="BUTTON_VARIANT.Ai"
+      iconLeft="spark"
+      [loading]="store.ai.busy()"
+      [disabled]="store.saving()"
+      (click)="store.fillWithAi()"
+      >{{ (store.ai.busy() ? 'popup.ai.filling' : 'popup.ai.button') | transloco }}</ui-button
+    >
+  }
   <ui-button [variant]="BUTTON_VARIANT.Ghost" (click)="store.openApp()">{{
     'popup.openApp' | transloco
   }}</ui-button>
@@ -98,6 +162,7 @@
     block
     [variant]="BUTTON_VARIANT.Primary"
     [loading]="store.saving()"
+    [disabled]="store.ai.busy()"
     (click)="store.save()"
     >{{ 'popup.form.save' | transloco }}</ui-button
   >

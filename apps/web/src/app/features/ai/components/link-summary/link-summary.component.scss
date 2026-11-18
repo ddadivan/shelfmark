@@ -1,0 +1,28 @@
+@use 'ui' as *;
+
+// Inline content: the card's note slot (the host carries its class) clamps it to two lines, the
+// row's meta line to one.
+:host {
+  min-width: 0;
+}
+
+.link-summary__body--reveal {
+  @include enter(fade);
+}
+
+.link-summary__mark {
+  --ui-icon-size: #{rem(14px)};
+
+  margin-inline-end: var(--space-1);
+  color: var(--ai);
+  vertical-align: -0.125em;
+}
+
+.link-summary__skeleton {
+  display: block;
+  inline-size: 100%;
+}
+
+:host(.link-summary--row) .link-summary__skeleton {
+  inline-size: min(100%, #{rem(240px)});
+}

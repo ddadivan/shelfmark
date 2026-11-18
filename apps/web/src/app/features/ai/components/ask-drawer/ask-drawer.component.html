@@ -1,0 +1,22 @@
+<ui-drawer
+  [closeLabel]="'ai.ask.close' | transloco"
+  [side]="DRAWER_SIDE.End"
+  [width]="DRAWER_WIDTH.Wide"
+>
+  <div slot="head" class="ask-drawer__head">
+    <app-ask-heading />
+    @if (store.entries().length > 0) {
+      <ui-button
+        variant="ghost"
+        size="lg"
+        iconOnly
+        iconLeft="edit"
+        [ariaLabel]="'ai.ask.newQuestion' | transloco"
+        [uiTooltip]="'ai.ask.newQuestion' | transloco"
+        (click)="store.reset()"
+      />
+    }
+  </div>
+  <app-ask-conversation />
+  <app-ask-composer slot="foot" />
+</ui-drawer>

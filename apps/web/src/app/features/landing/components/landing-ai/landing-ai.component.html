@@ -1,0 +1,105 @@
+<section class="landing-ai" appLandingReveal aria-labelledby="landing-ai-title">
+  <div class="landing-ai__copy">
+    <p class="landing-ai__badge">
+      <ui-icon class="landing-ai__spark" name="spark" [size]="ICON_SIZE.Sm" />
+      {{ 'landing.ai.badge' | transloco }}
+    </p>
+    <h2 id="landing-ai-title" class="landing-ai__title">{{ 'landing.ai.title' | transloco }}</h2>
+    <p class="landing-ai__text">{{ 'landing.ai.text' | transloco }}</p>
+    <ul class="landing-ai__points">
+      @for (point of POINTS; track point.id) {
+        <li class="landing-ai__point">
+          <span class="landing-ai__point-icon"
+            ><ui-icon [name]="point.icon" [size]="ICON_SIZE.Sm"
+          /></span>
+          <span class="landing-ai__point-body">
+            <span class="landing-ai__point-title">{{
+              'landing.ai.points.' + point.id + '.title' | transloco
+            }}</span>
+            <span class="landing-ai__point-text">{{
+              'landing.ai.points.' + point.id + '.text' | transloco
+            }}</span>
+          </span>
+        </li>
+      }
+    </ul>
+    <p class="landing-ai__note">
+      {{ 'landing.ai.note' | transloco }}
+      <a class="landing-ai__link" [routerLink]="privacyHref" [fragment]="privacyFragment">{{
+        'landing.ai.privacy' | transloco
+      }}</a>
+    </p>
+  </div>
+  <div class="landing-ai__visual" aria-hidden="true" inert>
+    <span class="landing-ai__disc"></span>
+    <div class="landing-ai__card landing-ai__card--suggest">
+      <div class="landing-ai__link-head">
+        <span class="landing-ai__thumb"></span>
+        <span class="landing-ai__link-main">
+          <span class="landing-ai__site"><ui-favicon letter="Y" />youtube.com</span>
+          <span class="landing-ai__link-title">{{ 'landing.ai.demo.video' | transloco }}</span>
+        </span>
+      </div>
+      <ui-suggestion-row
+        class="landing-ai__chips"
+        [label]="'ai.suggest.label' | transloco"
+        [ariaLabel]="'ai.suggest.tagsRow' | transloco"
+      >
+        <ui-suggestion
+          [kind]="SUGGESTION_KIND.Folder"
+          folderIcon="code"
+          [folderColor]="FOLDER_COLOUR.Clay"
+          label="Angular"
+          [ariaLabel]="'ai.suggest.moveTo' | transloco: { name: 'Angular' }"
+          [dismissLabel]="'ai.suggest.dismiss' | transloco: { name: 'Angular' }"
+        />
+        <ui-suggestion
+          label="angular"
+          [selected]="true"
+          [ariaLabel]="'ai.suggest.addTag' | transloco: { name: 'angular' }"
+        />
+        <ui-suggestion
+          label="signals"
+          [ariaLabel]="'ai.suggest.addTag' | transloco: { name: 'signals' }"
+          [dismissLabel]="'ai.suggest.dismiss' | transloco: { name: 'signals' }"
+        />
+        @let newTag = 'landing.ai.demo.newTag' | transloco;
+        <ui-suggestion
+          [kind]="SUGGESTION_KIND.NewTag"
+          [label]="newTag"
+          [newLabel]="'ai.suggest.new' | transloco"
+          [ariaLabel]="'ai.suggest.createTag' | transloco: { name: newTag }"
+          [dismissLabel]="'ai.suggest.dismiss' | transloco: { name: newTag }"
+        />
+      </ui-suggestion-row>
+    </div>
+    <div class="landing-ai__card landing-ai__card--search">
+      <span class="landing-ai__query">
+        <ui-icon name="search" [size]="ICON_SIZE.Sm" />
+        {{ 'landing.ai.demo.query' | transloco }}
+      </span>
+      <span class="landing-ai__divider">
+        <ui-icon class="landing-ai__spark" name="spark" [size]="ICON_SIZE.Sm" />
+        {{ 'landing.ai.demo.related' | transloco }}
+      </span>
+      <span class="landing-ai__row">
+        <span class="landing-ai__row-thumb"></span>
+        <span class="landing-ai__link-main">
+          <span class="landing-ai__row-title">{{ 'landing.ai.demo.result' | transloco }}</span>
+          <span class="landing-ai__why">
+            <ui-icon class="landing-ai__spark" name="spark" [size]="ICON_SIZE.Sm" />
+            {{ 'landing.ai.demo.why' | transloco }}
+          </span>
+        </span>
+      </span>
+    </div>
+    <div class="landing-ai__card landing-ai__card--summary">
+      <span class="landing-ai__site"><ui-favicon letter="S" />seriouseats.com</span>
+      <span class="landing-ai__summary-title">{{ 'landing.ai.demo.recipe' | transloco }}</span>
+      <span class="landing-ai__summary">
+        <ui-icon class="landing-ai__spark" name="spark" [size]="ICON_SIZE.Sm" />
+        {{ 'landing.ai.demo.summary' | transloco }}
+      </span>
+    </div>
+  </div>
+</section>

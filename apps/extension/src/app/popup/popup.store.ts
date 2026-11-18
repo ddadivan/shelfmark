@@ -19,6 +19,7 @@ import type { PopupFailure } from './models/popup-failure.interface';
 import { POPUP_STEP } from './models/popup-step.const';
 import { POPUP_VIEW } from './models/popup-view.const';
 import type { PopupView } from './models/popup-view.type';
+import { PopupAiFillService } from './services/popup-ai-fill.service';
 import { readRecentFolders, rememberRecentFolder } from './utils/recent-folders';
 import { toFolderOptions } from './utils/to-folder-options';
 import { toPageInfo } from './utils/to-page-info';
@@ -34,6 +35,8 @@ import { withoutFragment } from './utils/without-fragment';
 export class PopupStore {
   private readonly api = inject(ShelfmarkApiService);
   private readonly tabs = inject(BrowserTabsService);
+  /** "Fill in with AI": starts only on the user's click (see its own doc). */
+  readonly ai = inject(PopupAiFillService);
 
   readonly view = signal<PopupView>(POPUP_VIEW.Opening);
   /** The opening skeleton shows only once loading has taken longer than `OPENING_DELAY_MS`. */
@@ -53,6 +56,16 @@ export class PopupStore {
   readonly folderNotCreated = signal<string | null>(null);
   readonly chosenTags = signal<string[]>([]);
   readonly note = signal('');
+
+  constructor() {
+    this.ai.attach({
+      folders: this.folders,
+      folderId: this.folderId,
+      newFolderName: this.newFolderName,
+      chosenTags: this.chosenTags,
+      note: this.note,
+    });
+  }
 
   private readonly recentIds = signal(readRecentFolders());
   private readonly rule = signal<Pick<RuleResponse, 'domain' | 'folderId'> | null>(null);
@@ -98,13 +111,15 @@ export class PopupStore {
       if (!(await this.createNewFolder())) return;
       const note = this.note().trim();
       const folderId = this.folderId();
+      const aiDraftId = this.ai.draftId();
       const link = await this.api.create({
         url: page.url,
-        title: page.title.slice(0, LINK_LIMIT.TitleMax),
+        title: (this.ai.cleanTitle() ?? page.title).slice(0, LINK_LIMIT.TitleMax),
         ...(folderId !== null && { folderId }),
         tags: this.chosenTags(),
         ...(note !== '' && { note }),
         idempotencyKey: this.idempotencyKey,
+        ...(aiDraftId !== null && { aiDraftId }),
         // The form already shows what a domain rule filled in; it sends exactly that.
         applyRules: false,
       });
@@ -117,6 +132,12 @@ export class PopupStore {
     } finally {
       this.saving.set(false);
     }
+  }
+
+  /** The "Fill in with AI" button: only now does the page address go to Shelfmark for AI. */
+  async fillWithAi(): Promise<void> {
+    const page = this.page();
+    if (page !== null) await this.ai.fill(page);
   }
 
   /** Already saved → a second copy through the form, with a fresh idempotency key. */
@@ -190,6 +211,10 @@ export class PopupStore {
     return this.tabs.open(`${SHELFMARK_ORIGIN}${APP_PATH.SignIn}`);
   }
 
+  openAiSettings(): Promise<void> {
+    return this.tabs.open(`${SHELFMARK_ORIGIN}${APP_PATH.AiSettings}`);
+  }
+
   openPrivacy(): Promise<void> {
     return this.tabs.open(`${SHELFMARK_ORIGIN}${APP_PATH.Privacy}`);
   }
@@ -212,6 +237,7 @@ export class PopupStore {
         this.api.tags(),
         this.api.rules(),
         this.lookup(page.url),
+        this.ai.load(),
       ]);
       this.folders.set(folders.items);
       this.tags.set(tags.items);

@@ -201,6 +201,18 @@ describe('ButtonComponent', () => {
     expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--20')).toBe(true);
   });
 
+  it('draws the ai variant with its class and a 20px spark whatever the size', async () => {
+    const { host, root, button, settle } = await setup();
+    host.variant.set(BUTTON_VARIANT.Ai);
+    host.iconLeft.set('spark');
+    host.size.set(BUTTON_SIZE.Lg);
+    await settle();
+
+    expect(button().classList).toContain('ui-button--ai');
+    expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--20')).toBe(true);
+    expect(await axeViolations(root)).toEqual([]);
+  });
+
   it('shows only the icon and the aria-label when icon-only', async () => {
     const { host, root, button, settle } = await setup();
     host.iconOnly.set(true);

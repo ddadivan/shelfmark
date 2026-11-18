@@ -28,6 +28,15 @@
   }
 }
 
+// A 440px panel (Ask your shelf); still the whole screen up to 600px.
+.ui-drawer--wide {
+  width: min(27.5rem, calc(100vw - #{rem(48px)}));
+
+  @media (width <= 37.5em) {
+    width: 100vw;
+  }
+}
+
 .ui-drawer--end {
   --ui-inline-sign: 1;
 
@@ -57,6 +66,7 @@
 
 .ui-drawer__head-slot {
   display: flex;
+  flex: 1;
   align-items: center;
   min-width: 0;
 }

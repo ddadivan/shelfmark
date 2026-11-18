@@ -1,0 +1,8 @@
+@use 'ui' as *;
+
+// Metrics of the app shell that pages lean on (one source, so a page never repeats the number).
+
+// The end padding of the mobile shell's scroll area (`.shell__main`): the room the floating tab
+// bar keeps below the last row (TabBar spec). A pushed page that hides the tab bar and floats its
+// own bar there offsets by it (Tidy, the library selection bar).
+$shell-tab-bar-room: rem(110px);

@@ -1,8 +1,15 @@
 import { effect, inject, Service, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { form, maxLength, required, validate, type ValidationError } from '@angular/forms/signals';
+import {
+  disabled,
+  form,
+  maxLength,
+  required,
+  validate,
+  type ValidationError,
+} from '@angular/forms/signals';
 import { TranslocoService } from '@jsverse/transloco';
-import { isHttpUrl, LINK_LIMIT, withDefaultScheme } from '@shelfmark/contracts';
+import { AI_LIMIT, isHttpUrl, LINK_LIMIT, withDefaultScheme } from '@shelfmark/contracts';
 import { injectDialogData } from '@shelfmark/ui';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import { normalizeTagNames } from '../../tags/utils/normalize-tag-names';
@@ -53,13 +60,24 @@ export class AddLinkFormService {
     note: this.original?.note ?? '',
     isFavorite: this.original?.isFavorite ?? false,
     kind: this.original?.kind ?? null,
+    summary: this.original?.summary ?? '',
   });
+
+  /**
+   * "Fill in with AI" is waiting for the draft: the fields it can change (Link, Folder, Tags,
+   * Summary) are locked until it ends; Title and Note stay editable (#507).
+   */
+  readonly locked = signal(false);
 
   private submitAction: () => Promise<undefined> = async () => undefined;
 
   readonly form = form(
     this.model,
     (path) => {
+      disabled(path.url, () => this.locked());
+      disabled(path.folderId, () => this.locked());
+      disabled(path.tags, () => this.locked());
+      disabled(path.summary, () => this.locked());
       required(path.url, { message: () => this.text('links.add.url.required') });
       maxLength(path.url, LINK_LIMIT.UrlMax, {
         message: () => this.text('links.add.url.tooLong', { max: LINK_LIMIT.UrlMax }),
@@ -84,6 +102,9 @@ export class AddLinkFormService {
       });
       maxLength(path.note, LINK_LIMIT.NoteMax, {
         message: () => this.text('links.add.note.tooLong', { max: LINK_LIMIT.NoteMax }),
+      });
+      maxLength(path.summary, AI_LIMIT.SummaryMax, {
+        message: () => this.text('ai.summary.tooLong', { max: AI_LIMIT.SummaryMax }),
       });
     },
     {

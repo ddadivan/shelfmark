@@ -136,6 +136,10 @@ body {
 // Structural CDK overlay CSS (avoids a flash and a duplicate; the CDK still injects a runtime
 // `<style>`, which needs the CSP nonce of ADR 0022).
 @include cdk.overlay;
+
+// The measuring class of `cdkTextareaAutosize` (`ui-textarea`): without it the CDK measures the
+// textarea at its fixed height and padding, so a field never grew past its rows and cut the text.
+@include cdk.text-field-autosize;
 @include overlay-layers;
 @include overlay-passthrough;
 @include glass-utility;

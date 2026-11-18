@@ -14,6 +14,9 @@ import {
   type LinkResponse,
   deriveLinkKind,
 } from '@shelfmark/contracts';
+import { AiEmbedService } from '../ai/embeddings/ai-embed.service';
+import { AiJobsService } from '../ai/jobs/ai-jobs.service';
+import type { AiRequestContext } from '../ai/models/ai-request-context.interface';
 import { hasPrismaCode } from '../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { FoldersService } from '../folders/folders.service';
@@ -24,6 +27,7 @@ import { TagsService } from '../tags/tags.service';
 import type { CreateLinksBatchResult } from './models/create-links-batch-result.interface';
 import { LINK_INCLUDE } from './models/link-include.const';
 import type { LinkDbClient } from './models/link-db-client.type';
+import type { BatchInsertResult } from './models/batch-insert-result.interface';
 import type { BatchTarget } from './models/batch-target.interface';
 import type { PlannedBatchItem } from './models/planned-batch-item.interface';
 import { fallbackTitle } from './title-or-url';
@@ -44,13 +48,19 @@ export class LinksBatchService {
     private readonly folders: FoldersService,
     private readonly tags: TagsService,
     private readonly rules: RulesService,
+    private readonly aiJobs: AiJobsService,
+    private readonly aiEmbed: AiEmbedService,
   ) {}
 
-  /** `isDemo` comes from the session (never the request): demo sandboxes have a lower link cap. */
+  /**
+   * `isDemo` comes from the session (never the request): demo sandboxes have a lower link cap.
+   * Every created link gets an AI job while AI is on (started after the commit).
+   */
   async create(
     userId: string,
     request: CreateLinksBatchRequest,
     isDemo = false,
+    context: AiRequestContext = {},
   ): Promise<CreateLinksBatchResult> {
     this.assertTagNames([
       ...(request.tags ?? []),
@@ -61,8 +71,9 @@ export class LinksBatchService {
     if (planned.length === 0) {
       return { response: { links: [], errors }, created: false };
     }
+    let aiJobIds: string[] = [];
     try {
-      return await this.prisma.$transaction(async (tx) => {
+      const outcome = await this.prisma.$transaction(async (tx) => {
         // Folder lock first: it serializes the inserts against folder moves and deletes, makes the
         // count below exact and makes two retries of the same batch wait for each other.
         await this.folders.lockTree(tx, userId);
@@ -80,7 +91,14 @@ export class LinksBatchService {
             await this.folders.requireOwned(tx, userId, folderId);
           }
           await this.assertFits(tx, userId, fresh.length, isDemo);
-          created = await this.insert(tx, userId, await this.targets(tx, userId, request, fresh));
+          const inserted = await this.insert(
+            tx,
+            userId,
+            await this.targets(tx, userId, request, fresh),
+            context,
+          );
+          created = inserted.links;
+          aiJobIds = inserted.aiJobIds;
         }
         const links = planned.flatMap((entry) => {
           const key = entry.item.idempotencyKey;
@@ -89,6 +107,10 @@ export class LinksBatchService {
         });
         return { response: { links, errors }, created: fresh.length > 0 };
       });
+      this.aiJobs.start(userId, aiJobIds);
+      // Search by meaning: links without a job are embedded now, the others after their jobs.
+      if (outcome.created && aiJobIds.length === 0) await this.aiEmbed.kick(userId);
+      return outcome;
     } catch (error) {
       if (hasPrismaCode(error, PRISMA_ERROR_CODE.UniqueViolation)) {
         // Only reachable if the lock is ever bypassed: a concurrent batch with the same keys won.
@@ -144,7 +166,8 @@ export class LinksBatchService {
     tx: Prisma.TransactionClient,
     userId: string,
     fresh: readonly BatchTarget[],
-  ): Promise<Map<string, LinkResponse>> {
+    context: AiRequestContext,
+  ): Promise<BatchInsertResult> {
     const now = Date.now();
     const rows = await tx.link.createManyAndReturn({
       data: fresh.map(({ entry, folderId }, position) => {
@@ -180,15 +203,39 @@ export class LinksBatchService {
       ).map((tagId) => ({ linkId: row.id, tagId })),
     );
     if (pairs.length > 0) await tx.linkTag.createMany({ data: pairs });
+    // AI (ADR 0049): one job per new link whose parts are open; nothing while AI is off.
+    const filledById = new Map(
+      rows.map((row) => {
+        const target = fresh.find(
+          (entry) =>
+            entry.entry.item.idempotencyKey.toLowerCase() === row.idempotencyKey?.toLowerCase(),
+        );
+        return [row.id, target] as const;
+      }),
+    );
+    const ai = await this.aiJobs.enqueue(
+      tx,
+      userId,
+      rows.map((row) => {
+        const target = filledById.get(row.id);
+        return {
+          linkId: row.id,
+          folderSet: (target?.folderId ?? null) !== null,
+          tagsSet: (target?.tagIds.length ?? 0) > 0,
+        };
+      }),
+      context,
+    );
     const saved = await tx.link.findMany({
       where: { userId, id: { in: ids } },
       include: LINK_INCLUDE,
     });
-    return new Map(
+    const links = new Map(
       saved.flatMap((row) =>
         row.idempotencyKey === null ? [] : [[row.idempotencyKey, toLinkResponse(row)] as const],
       ),
     );
+    return { links, aiJobIds: ai.jobIds };
   }
 
   /**

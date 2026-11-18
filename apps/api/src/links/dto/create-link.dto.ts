@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  AI_LIMIT,
   LINK_KIND,
   LINK_LIMIT,
   TAG_LIMIT,
@@ -115,4 +116,25 @@ export class CreateLinkDto implements CreateLinkRequest {
   @IsOptional()
   @IsBoolean()
   applyRules?: boolean;
+
+  @ApiPropertyOptional({
+    maxLength: AI_LIMIT.SummaryMax,
+    description:
+      'Your own summary (stored as yours, AI never replaces it); leave it out to take the AI summary of the draft',
+  })
+  @IsOptional()
+  @TrimString()
+  @IsString()
+  @NoControlChars(true)
+  @MaxLength(AI_LIMIT.SummaryMax)
+  summary?: string;
+
+  @ApiPropertyOptional({
+    format: 'uuid',
+    description:
+      'The draftId of POST /api/ai/drafts from the same dialog: its AI result is picked up by this save',
+  })
+  @IsOptional()
+  @IsUUID()
+  aiDraftId?: string;
 }

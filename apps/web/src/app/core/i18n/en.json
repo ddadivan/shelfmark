@@ -187,6 +187,37 @@
       "text": "One click on the toolbar or Alt+Shift+S. The title, your folder rules and recent folders are already filled in, so most pages take one more click.",
       "browsers": "For Chrome, Edge, Brave and Arc. Install it from your shelf after you sign in.",
       "alt": "The Shelfmark extension: Save to Shelfmark with the page title, the folder Clothes from a rule, tags and a note"
+    },
+    "ai": {
+      "badge": "Optional AI",
+      "title": "Help with sorting, when you want it",
+      "text": "Turn on AI and each new link arrives with suggested tags, a folder and a two-line summary. Nothing moves until you tap it.",
+      "points": {
+        "suggest": {
+          "title": "Suggestions you accept",
+          "text": "Tags and folders from the ones you already have, one tap each."
+        },
+        "meaning": {
+          "title": "Find it by what it’s about",
+          "text": "“That talk about signals” finds the video, even without those words."
+        },
+        "ask": {
+          "title": "Ask your shelf",
+          "text": "A question in your own words, an answer from your links with sources."
+        }
+      },
+      "note": "Off until you turn it on. Your links are never used to train AI models.",
+      "privacy": "How AI works in Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore in practice",
+        "newTag": "state management",
+        "query": "talk about signals and performance",
+        "related": "Related by meaning",
+        "result": "Zoneless change detection, explained",
+        "why": "Close to: faster rendering",
+        "recipe": "The best weeknight ramen",
+        "summary": "A 30-minute ramen with store-bought stock, soft eggs and quick pickles."
+      }
     }
   },
   "links": {
@@ -205,7 +236,7 @@
         "cmd": "⌘",
         "ctrl": "Ctrl",
         "enter": "Enter",
-        "save": "to save"
+        "create": "to create"
       },
       "preview": {
         "loading": "Loading preview",
@@ -242,7 +273,7 @@
         "list": "Tag suggestions"
       },
       "note": {
-        "label": "Note",
+        "label": "Your note",
         "placeholder": "Why are you saving this?",
         "hint": "Helps you find it later",
         "counter": "characters",
@@ -259,7 +290,9 @@
       "actions": {
         "cancel": "Cancel",
         "openSaved": "Open saved",
-        "save": "Save link",
+        "create": "Create link",
+        "createAnyway": "Create anyway",
+        "creating": "Creating…",
         "saveAnyway": "Save anyway",
         "saving": "Saving…"
       },
@@ -292,7 +325,11 @@
     },
     "card": {
       "moreTags": "+{{count}}",
-      "inFolder": "In folder"
+      "inFolder": "In folder",
+      "moreTagsLabel": {
+        "one": "{{count}} more tag: {{list}}",
+        "other": "{{count}} more tags: {{list}}"
+      }
     },
     "item": {
       "edit": "Edit",
@@ -529,7 +566,8 @@
     "dont": {
       "title": "What we don't do",
       "sell": "We don't sell or share your data and don't show ads.",
-      "read": "We don't use the content of your links for statistics: only counts (links, folders, ratings), never addresses or titles. Your links are stored in our database so the app can show, search and preview them; only the author of the service has access to it."
+      "read": "We don't use the content of your links for statistics: only counts (links, folders, ratings), never addresses or titles. Your links are stored in our database so the app can show, search and preview them; only the author of the service has access to it.",
+      "training": "We don't use your links, notes or summaries to train AI models, and we don't let our AI provider do so."
     },
     "previews": {
       "title": "Link previews",
@@ -537,7 +575,7 @@
     },
     "extension": {
       "title": "Browser extension",
-      "body": "The Shelfmark extension for Chrome, Edge, Brave and Arc works only when you click its button or press its shortcut, never in the background. It then sends Shelfmark the address of that one tab, to check whether you saved it already, and saves its address and title, with the folder, tags and note you pick, only when you press Save. It never sees your history or the other sites you visit.",
+      "body": "The Shelfmark extension for Chrome, Edge, Brave and Arc works only when you click its button or press its shortcut, never in the background. It then sends Shelfmark the address of that one tab, to check whether you saved it already, and saves its address and title, with the folder, tags and note you pick, only when you press Save. It never sees your history or the other sites you visit. If you click “Fill in with AI” and AI is on in your account, it also sends Shelfmark that address and title, and your note when AI may read notes, to get AI suggestions, handled under the same AI terms as in the app.",
       "access": "It uses your Shelfmark sign-in in that browser and cannot read the sign-in cookie itself. It can reach Shelfmark only, and keeps just the folders you saved to most recently on your device, to offer them next time."
     },
     "third": {
@@ -552,6 +590,38 @@
     "where": {
       "title": "Where it lives",
       "hosting": "The API runs on Vercel in the fra1 region (Frankfurt) and the database on Neon in eu-central-1 (Frankfurt). The app's static files are served from Vercel's global network."
+    },
+    "ai": {
+      "title": "AI features (optional)",
+      "intro": "AI is off until you turn it on in Settings › AI. When it is on, it suggests tags and folders and writes short summaries. Everything it makes is marked with a small spark and may be inaccurate; nothing is applied unless you accept it or choose automatic mode.",
+      "processor": {
+        "term": "Who processes it:",
+        "text": "Anthropic PBC (USA), as our processor, only to produce the result you asked for."
+      },
+      "sent": {
+        "term": "What is sent:",
+        "text": "a link's address, title, description and text extracted from the page, and the names of your tags and folders. Your notes only if you turn on \"Include my notes\". Never your other links, your account details or anyone else's data."
+      },
+      "kept": {
+        "term": "How long it is kept:",
+        "text": "Anthropic deletes the request within 30 days and doesn't use it for training; only content its safety systems flag may be kept longer (up to 2 years), or where the law requires it. The results (tags, summaries) are stored with your links and deleted with them."
+      },
+      "counted": {
+        "term": "What we count:",
+        "text": "only the number of AI requests per account, for your monthly limit. As everywhere in Shelfmark, statistics use counts only, never what you saved."
+      },
+      "off": {
+        "term": "Turning it off:",
+        "text": "switch off one feature or AI as a whole in Settings › AI; requests stop at once. \"Delete AI data\" there removes every summary and suggestion AI made."
+      },
+      "meaning": {
+        "term": "Search by meaning:",
+        "text": "while it is on (Settings › AI), the title, summary and tag names of each link, your note only with \"Include my notes\", and the words you search for are sent to Voyage AI, our second processor, which turns them into number vectors. Never the address, your folders or anyone else's data. The vectors are stored with your links and deleted with them or with \"Delete AI data\"; your search text is not stored. Voyage AI by MongoDB (USA) deletes each request right after processing it (zero-day retention) and doesn't use it for training."
+      },
+      "ask": {
+        "term": "Ask your shelf:",
+        "text": "only when you ask a question, your question and up to 10 of your links that match it (title, address without its query, folder and tag names, summary, your note only with \"Include my notes\") are sent to [PROVIDER]. The answer cites only those links. Neither the question nor the answer is stored; we count only the number of questions per day and month, for your limit."
+      }
     },
     "retention": {
       "title": "How long we keep it",
@@ -715,6 +785,7 @@
       "library": "Library",
       "search": "Search",
       "tags": "Tags",
+      "ask": "Ask",
       "you": "You"
     },
     "sidebar": {
@@ -1198,6 +1269,7 @@
       "account": "Account",
       "appearance": "Appearance",
       "library": "Library",
+      "ai": "AI",
       "language": "Language",
       "privacy": "Privacy and data",
       "shortcuts": "Keyboard shortcuts",
@@ -1207,6 +1279,7 @@
       "account": "Your profile, your shelf and your data.",
       "appearance": "Saved as you go and synced to all your devices.",
       "library": "How links are shown, saved and kept.",
+      "ai": "Help with organising, only when you want it. Off until you turn it on.",
       "language": "The language of the interface. Date and time formats are in Appearance.",
       "privacy": "What we keep, and how to take it with you.",
       "shortcuts": "Work without the mouse.",
@@ -1448,6 +1521,16 @@
       },
       "kept": {
         "title": "What we keep"
+      },
+      "ai": {
+        "title": "AI features",
+        "body": "AI is optional and off until you turn it on. When it is on, a link's address, title and page text go to our AI provider to suggest tags and folders and write summaries. Never used to train models, never used for statistics.",
+        "delete": {
+          "label": "Delete AI data",
+          "hint": "Removes every summary and suggestion AI made, in Settings › AI",
+          "action": "Open",
+          "actionLabel": "Open Delete AI data in Settings › AI"
+        }
       }
     },
     "footer": {
@@ -1545,6 +1628,12 @@
           "cancel": "Cancel",
           "close": "Close"
         }
+      },
+      "cleanup": {
+        "title": "Clean up",
+        "label": "Clean up your library",
+        "hint": "Find duplicates and similar tags, and fix them in one step.",
+        "action": "Review"
       }
     },
     "language": {
@@ -1607,6 +1696,7 @@
       "undo": "Undo the last action",
       "toastAction": "Go to the button of a toast",
       "save": "Save the link",
+      "aiFill": "Fill in with AI in the link dialog",
       "results": "Move through search results",
       "openResult": "Open the result",
       "openBackground": "Open it in a background tab",
@@ -1758,7 +1848,9 @@
       "move": "move",
       "open": "open",
       "background": "open in background"
-    }
+    },
+    "askRow": "Ask your shelf: “{{query}}”",
+    "askRowCompact": "Ask your shelf about this"
   },
   "share": {
     "title": "Save to Shelfmark",
@@ -2672,6 +2764,18 @@
       "missingFolder": "This folder is gone. Choose another one.",
       "missing": "This rule was deleted meanwhile.",
       "failed": "Couldn't save the rule. Try again."
+    },
+    "offer": {
+      "title": "Always put {{domain}} links in {{folder}}?",
+      "detail": {
+        "one": "Your last {{count}} link from this site is there. A rule works without AI.",
+        "other": "Your last {{count}} links from this site are there. A rule works without AI."
+      },
+      "create": "Create rule",
+      "notNow": "Not now",
+      "created": "Rule created",
+      "applyExisting": "Apply to Unsorted",
+      "failed": "Couldn’t create the rule"
     }
   },
   "changelog": {
@@ -2805,8 +2909,59 @@
       "emojiPickerTabs": {
         "text": "The emoji picker is as wide as its field, and its category tabs no longer look like emoji to pick."
       },
+      "aiSuggestions": {
+        "title": "Fill in with AI",
+        "text": "One click in Add link fills in the title, folder, tags and a short summary from the page. Change anything you like: your choice always wins. Works in the browser extension too. AI stays off until you turn it on in Settings › AI.",
+        "alt": "The Add link dialog with a YouTube address, filled in by AI: title, folder, tags and a summary."
+      },
+      "aiSummaries": {
+        "title": "Short summaries",
+        "text": "With AI on, links get a one- or two-line summary on their card. Edit it and it's yours.",
+        "alt": "Link cards with a short AI summary under each title."
+      },
+      "aiTidy": {
+        "title": "Tidy Unsorted with AI",
+        "text": "Review the AI suggestions for everything in Unsorted on one page and apply them with one Undo. File a site's links into the same folder a few times and Shelfmark offers a rule."
+      },
+      "aiAsk": {
+        "title": "Ask your shelf",
+        "text": "Ask a question in your own words and get a short answer from the links you saved, with every source listed. Open it with Ask next to search, or the Ask tab on your phone.",
+        "alt": "The Ask drawer with a question, a short answer and the links it comes from."
+      },
+      "aiCleanup": {
+        "title": "Library clean-up",
+        "text": "Find links you saved more than once and tags that mean the same, review every change and apply them in one step, with one Undo. Copies go to Trash."
+      },
+      "mcp": {
+        "title": "Connect your assistant",
+        "text": "On Pro, Claude and other MCP assistants can search and read your links with a personal token. Read-only, and you can revoke it any time."
+      },
+      "aiSearch": {
+        "title": "Search by meaning",
+        "text": "Search finds links that match what you mean, not only your words, and says why each one matched. Edit link shows related links from your shelf, and Side by side can offer their folders.",
+        "alt": "Search results with a Related by meaning group below the word matches."
+      },
       "extensionInStore": {
         "text": "The Shelfmark browser extension is in the Chrome Web Store: install it from the banner on your shelf or from Settings › Library."
+      },
+      "forgotten": {
+        "title": "Forgotten links",
+        "text": "Links you saved and never opened wait in Recently opened › Forgotten. The count shows next to Recently opened."
+      },
+      "cardTags": {
+        "text": "Link cards show whole tags and a “+N” for the rest instead of cutting a tag off."
+      },
+      "phoneFolders": {
+        "text": "On phones the Library lists Folders right under Pinned."
+      },
+      "dialogButtons": {
+        "text": "In dialogs on phones the main action sits alone at the bottom."
+      },
+      "textFields": {
+        "text": "Text fields grow with what you type."
+      },
+      "landingHeadline": {
+        "text": "The landing page headline fits every language."
       }
     },
     "sections": {
@@ -2831,5 +2986,612 @@
     "available": "A new version of Shelfmark is ready",
     "reload": "Reload",
     "later": "Later"
+  },
+  "ai": {
+    "settings": {
+      "features": {
+        "title": "AI features"
+      },
+      "enabled": {
+        "label": "Use AI in Shelfmark",
+        "hint": "Sends a link’s address, title and a short excerpt of the page to our AI provider to suggest tags and write summaries. Never used to train models, never used for statistics."
+      },
+      "unavailable": "AI isn’t responding right now. Your links save as usual; suggestions and summaries catch up when it’s back.",
+      "folder": {
+        "label": "Folder",
+        "hint": "Suggest: a chip you tap. Automatic: only when you leave a link in Unsorted, with Undo. A folder you pick is never changed."
+      },
+      "tags": {
+        "label": "Tags",
+        "hint": "Suggest: chips you tap. Automatic: only when you add no tags yourself, with Undo."
+      },
+      "mode": {
+        "suggest": "Suggest",
+        "auto": "Automatic",
+        "off": "Off"
+      },
+      "modePage": {
+        "open": "{{label}}: {{mode}}",
+        "auto": "Apply automatically when I don’t choose",
+        "folder": {
+          "groupLabel": "Folder suggestions",
+          "suggestHint": "A chip you tap. Nothing changes until you do.",
+          "autoHint": "Only for links left in Unsorted. You see it and can undo it.",
+          "offHint": "No folder suggestions.",
+          "note": "A folder you pick yourself is never changed by AI."
+        },
+        "tags": {
+          "groupLabel": "Tag suggestions",
+          "suggestHint": "Chips you tap. Nothing changes until you do.",
+          "autoHint": "Only for links you save without tags. You see it and can undo it.",
+          "offHint": "No tag suggestions.",
+          "note": "Tags you add yourself are never removed by AI."
+        }
+      },
+      "summaries": {
+        "label": "Summaries",
+        "hint": "One or two sentences on each link, so you remember why you saved it. Edit them any time."
+      },
+      "sent": {
+        "title": "What is sent"
+      },
+      "notes": {
+        "label": "Include my notes",
+        "hint": "Notes make suggestions more accurate. When off, your notes never leave Shelfmark."
+      },
+      "language": {
+        "label": "Summary language",
+        "hint": "Summaries are written in this language, whatever the page is in.",
+        "app": "Match the app ({{language}})"
+      },
+      "usage": {
+        "title": "This month",
+        "count": "{{used}} of {{limit}} links this month",
+        "resets": "Resets on {{date}}",
+        "meterLabel": "AI links used this month",
+        "limit": "You used this month’s {{limit}} links. New links save as usual, without suggestions or summaries, until {{date}}."
+      },
+      "data": {
+        "title": "Your AI data",
+        "label": "Delete AI data",
+        "hint": "Removes every summary and suggestion AI made and turns search by meaning off. Your own edits, tags and folders stay.",
+        "action": "Delete AI data"
+      },
+      "privacy": {
+        "label": "How AI works in Shelfmark",
+        "hint": "What is sent, to whom, how long it is kept, and how to turn it off",
+        "action": "Read",
+        "actionLabel": "Read how AI works in Shelfmark"
+      },
+      "failed": "Couldn’t save your AI settings",
+      "failedDetail": "The change was undone. Try again.",
+      "loadFailed": "Couldn’t load your AI settings.",
+      "retry": "Try again",
+      "meaning": {
+        "title": "Search by meaning",
+        "text": "Finds links by what they’re about, not only by their words, and shows related links. Sends each link’s title, tags and summary (your note too, with “Include my notes”) and what you search for to Voyage AI.",
+        "ready": "Ready",
+        "progress": "{{ready}} of {{total}} links ready",
+        "quota": "Paused until {{date}}: this month’s limit"
+      },
+      "ask": {
+        "title": "Ask your shelf",
+        "text": "Answers questions from your own links. Uses Claude by Anthropic: your question and the matching links are sent, nothing is stored."
+      }
+    },
+    "backfill": {
+      "title": "Process existing links",
+      "hint": {
+        "one": "{{count}} link was saved before you turned AI on. Adds suggestions and summaries in the background: faster while Shelfmark is open, within a day otherwise.",
+        "other": "{{count}} links were saved before you turned AI on. Adds suggestions and summaries in the background: faster while Shelfmark is open, within a day otherwise."
+      },
+      "start": "Start",
+      "running": "Processing existing links",
+      "progress": "{{done}} of {{total}} done. Faster while Shelfmark is open; otherwise it finishes within a day.",
+      "meterLabel": "Existing links processed",
+      "estimate": "About {{minutes}} min left",
+      "stop": "Stop",
+      "done": "Every existing link has been processed.",
+      "startFailed": "Couldn’t start processing your links",
+      "stopFailed": "Couldn’t stop processing. Try again."
+    },
+    "deleteData": {
+      "confirm": {
+        "title": "Delete AI data?",
+        "message": "Every summary and suggestion AI made is removed, and search by meaning turns off. Your own edits, tags and folders stay. This can’t be undone.",
+        "confirm": "Delete AI data",
+        "cancel": "Cancel",
+        "close": "Close"
+      },
+      "done": "AI data deleted",
+      "failed": "Couldn’t delete AI data",
+      "failedDetail": "Nothing was removed. Try again."
+    },
+    "intro": {
+      "title": "Turn on AI in Shelfmark?",
+      "titleShort": "Turn on AI?",
+      "close": "Close",
+      "suggest": {
+        "title": "Suggests tags and a folder",
+        "text": "From the ones you already have. You decide: nothing is applied unless you tap it or choose Automatic in settings."
+      },
+      "summaries": {
+        "title": "Writes short summaries",
+        "text": "One or two sentences per link. Marked as made by AI and may be inaccurate; edit them any time."
+      },
+      "sent": {
+        "title": "What is sent to the model",
+        "text": "A link’s address, title, description and text extracted from the page. Never your other links, your notes (unless you allow it) or anyone else’s data."
+      },
+      "training": {
+        "title": "Not used for training",
+        "text": "Your content is never used to train models. Anthropic processes it for us and deletes it within 30 days."
+      },
+      "details": "You can turn AI off, or one feature at a time, in Settings › AI.",
+      "policy": "Read the privacy policy",
+      "failed": "Couldn’t turn on AI. Try again.",
+      "notNow": "Not now",
+      "turnOn": "Turn on AI",
+      "meaning": {
+        "title": "Finds links by meaning",
+        "text": "Search and related links also match what a link is about. For this, titles, tags, summaries and your search text go to Voyage AI. Turn it off on its own in Settings › AI."
+      },
+      "ask": {
+        "title": "Answers questions from your links",
+        "text": "Only when you ask: your question and the matching links go to the model. The answer lists its sources and nothing is stored. Turn it off on its own in Settings › AI."
+      }
+    },
+    "suggest": {
+      "label": "Suggested",
+      "alsoFits": "Also fits",
+      "loading": "Suggesting…",
+      "folderRow": "Suggested folder",
+      "tagsRow": "Suggested tags",
+      "addAll": "Add all",
+      "addedAll": "Suggested tags added",
+      "new": "New",
+      "addTag": "Add tag {{name}}",
+      "createTag": "Create and add tag {{name}}",
+      "moveTo": "Move to {{name}}",
+      "dismiss": "Dismiss suggestion {{name}}",
+      "tagAdded": "Tag {{name}} added",
+      "folderChosen": "Folder {{name}} chosen"
+    },
+    "fill": {
+      "button": "Fill in with AI",
+      "done": "Filled in with AI’s suggestions",
+      "keys": {
+        "option": "⌥",
+        "alt": "Alt",
+        "shiftMac": "⇧",
+        "shift": "Shift"
+      },
+      "filling": "Filling…",
+      "needLink": "Paste a link first",
+      "nothing": "AI had nothing to fill in for this link",
+      "short": "Fill"
+    },
+    "line": {
+      "limit": "Suggestions are paused until {{date}}. You used this month’s {{limit}} links.",
+      "unavailable": "Suggestions aren’t available right now. Your link saves as usual.",
+      "retry": "Try again",
+      "settings": "AI settings"
+    },
+    "applied": {
+      "folder": "Moved by AI",
+      "tags": {
+        "one": "{{count}} added by AI",
+        "other": "{{count}} added by AI"
+      },
+      "undo": "Undo",
+      "undoFolder": "Undo the move by AI",
+      "undoTags": "Undo the tags added by AI",
+      "undoFailed": "Couldn’t undo the AI change"
+    },
+    "disclaimer": "Generated by AI, may be inaccurate",
+    "summary": {
+      "pending": "Writing a summary",
+      "label": "Summary",
+      "counter": "characters",
+      "byAi": "Written by AI",
+      "byYou": "Edited by you",
+      "rewrite": "Rewrite",
+      "hintAi": "{{disclaimer}}. Edit it and it becomes yours: AI never rewrites your text.",
+      "hintUser": "Clear the field to let AI write it again.",
+      "hintEmpty": "Leave it empty and AI writes one.",
+      "rewriteFailed": "Couldn’t rewrite the summary",
+      "rewriteFailedDetail": "Your summary is unchanged. Try again later.",
+      "tooLong": "Keep the summary under {{max}} characters."
+    },
+    "toast": {
+      "moved": "Moved to {{folder}} by AI",
+      "tagged": {
+        "one": "{{count}} tag added by AI",
+        "other": "{{count}} tags added by AI"
+      },
+      "undo": "Undo"
+    },
+    "tidy": {
+      "entry": "Tidy with suggestions",
+      "back": "Unsorted",
+      "title": "Tidy Unsorted",
+      "lead": {
+        "one": "Suggestions for {{count}} link. Tap a chip to leave it out.",
+        "other": "Suggestions for {{count}} links. Tap a chip to leave it out."
+      },
+      "cancel": "Cancel",
+      "apply": {
+        "one": "Apply to {{count}} link",
+        "other": "Apply to {{count}} links"
+      },
+      "skip": "Skip",
+      "skipped": "Skipped — stays in Unsorted",
+      "undoSkip": "Undo skip",
+      "rowLabel": "Changes for {{title}}",
+      "listLabel": "Links with suggestions",
+      "barLabel": "Apply suggestions",
+      "loading": "Loading suggestions",
+      "chip": {
+        "folder": "Move to {{name}}",
+        "folderAdded": "Move to {{name}}, added",
+        "tag": "Add tag {{name}}",
+        "tagAdded": "Add tag {{name}}, added",
+        "newTag": "Create and add tag {{name}}",
+        "newTagAdded": "Create and add tag {{name}}, added"
+      },
+      "more": {
+        "one": "{{count}} more link after these. Links without suggestions are not listed.",
+        "other": "{{count}} more links after these. Links without suggestions are not listed."
+      },
+      "next": "Show the next links",
+      "empty": {
+        "title": "Nothing to tidy",
+        "text": "Every link here either has no suggestions yet or you already sorted it. New links get suggestions within a minute.",
+        "back": "Back to Unsorted"
+      },
+      "toast": {
+        "title": {
+          "one": "Tidied {{count}} link",
+          "other": "Tidied {{count}} links"
+        },
+        "folders": {
+          "one": "Moved into {{count}} folder",
+          "other": "Moved into {{count}} folders"
+        },
+        "tags": {
+          "one": "{{count}} tag added",
+          "other": "{{count}} tags added"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Undo",
+        "failed": "Couldn’t tidy the links",
+        "failedDetail": "Nothing was changed. Try again.",
+        "nothing": "Nothing to apply",
+        "nothingDetail": "The suggestions changed meanwhile."
+      },
+      "undone": "Tidy undone",
+      "undoFailed": "Couldn’t undo the tidy"
+    },
+    "search": {
+      "related": "Related by meaning",
+      "noWordMatches": "No links with these words",
+      "why": "Close to: {{reasons}}",
+      "fromSummary": "Close to: {{reasons}} (from the summary)",
+      "preparing": "Search by meaning is getting ready: {{ready}} of {{total}} links. Word matches work as usual."
+    },
+    "related": {
+      "title": "Related on your shelf",
+      "why": "Close to: {{reasons}}",
+      "show": "Show related",
+      "folders": "Related folders"
+    },
+    "ask": {
+      "title": "Ask your shelf",
+      "open": "Ask your shelf",
+      "close": "Close Ask your shelf",
+      "newQuestion": "New question",
+      "back": "Back",
+      "emptyTitle": "What do you want to find out?",
+      "lead": "Ask in your own words. The answer comes from the links you saved, with each source listed.",
+      "starters": {
+        "saved": "What did I save about {{folder}}?",
+        "ideas": "What are the main ideas in {{folder}}?",
+        "recent": "What did I add to {{folder}} lately?",
+        "generic": "What did I save this month?"
+      },
+      "label": "Ask about your links",
+      "placeholder": "Ask about your links",
+      "send": "Ask",
+      "stop": "Stop",
+      "left": {
+        "day": {
+          "one": "{{count}} question left today",
+          "other": "{{count}} questions left today"
+        },
+        "month": {
+          "one": "{{count}} question left this month",
+          "other": "{{count}} questions left this month"
+        }
+      },
+      "footer": "Answers use only your links. Nothing is changed in your library.",
+      "sources": "Sources from your shelf",
+      "source": "Source {{n}}",
+      "sideBySide": "Open side by side",
+      "remind": "Remind me",
+      "notFound": {
+        "text": "Nothing in your links answers this.",
+        "search": "Search “{{query}}”",
+        "add": "Add a link"
+      },
+      "limit": {
+        "day": "You’ve used today’s questions. Ask again tomorrow; search works as usual.",
+        "month": "You’ve used this month’s questions. Ask again on {{date}}; search works as usual."
+      },
+      "error": "Couldn’t get an answer right now. This question didn’t count toward your limit.",
+      "rejected": "This question couldn’t be answered. It didn’t count toward your limit.",
+      "busy": "Another question is still being answered. Try again in a moment.",
+      "rateLimited": "Too many questions in a short time. Try again in a minute; this one didn’t count toward your limit.",
+      "off": "Ask your shelf is turned off in Settings › AI.",
+      "retry": "Try again",
+      "truncated": "The answer was cut short.",
+      "stopped": "Stopped.",
+      "button": "Ask",
+      "try": "Try"
+    },
+    "connect": {
+      "title": "Connect your assistant",
+      "lead": "Let Claude or another assistant that supports MCP search and read your links. Read-only: it can’t change or delete anything.",
+      "pro": "Connecting an assistant is part of Pro. Tokens you already have stay listed, and you can revoke them.",
+      "demo": "The demo can’t connect an assistant. Sign in with your own account to try it.",
+      "loadFailed": "Couldn’t load your tokens.",
+      "retry": "Try again",
+      "copy": "Copy",
+      "copyFailed": "Couldn’t copy. Select the text and copy it with your keyboard.",
+      "address": {
+        "title": "1. Server address",
+        "copyLabel": "Copy the server address",
+        "copied": "Server address copied"
+      },
+      "token": {
+        "title": "2. Personal token",
+        "hint": "One token per assistant, so you can revoke each on its own.",
+        "limit": "You have {{max}} tokens. Revoke one to create another.",
+        "create": "Create token"
+      },
+      "list": {
+        "title": "Connected",
+        "last4": "Ends in {{last4}}",
+        "used": "Last used {{when}}, calls this week: {{calls}}",
+        "never": "Created {{date}}, never used",
+        "notes": "Includes notes",
+        "revoke": "Revoke",
+        "revokeLabel": "Revoke {{name}}"
+      },
+      "empty": {
+        "title": "No assistants connected",
+        "text": "Create a token, paste it into your assistant’s MCP settings with the server address, and ask it about your links."
+      },
+      "revoke": {
+        "title": "Revoke {{name}}?",
+        "message": "It stops working at once: the assistant that uses it can no longer read your links.",
+        "confirm": "Revoke",
+        "cancel": "Cancel",
+        "done": "Token revoked",
+        "failed": "Couldn’t revoke the token. Try again."
+      },
+      "create": {
+        "title": "Create a token",
+        "close": "Close",
+        "name": "Name",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Give the token a name.",
+        "tooLong": "Use at most {{max}} characters.",
+        "notes": "Include my notes",
+        "notesHint": "Your assistant will also see the notes on your links. To change this later, create a new token.",
+        "cancel": "Cancel",
+        "action": "Create token",
+        "saving": "Creating…",
+        "error": {
+          "limit": "You have {{max}} tokens. Revoke one to create another.",
+          "notAvailable": "Connecting an assistant is part of Pro.",
+          "save": "Couldn’t create the token. Try again."
+        }
+      },
+      "secret": {
+        "title": "Token for {{name}}",
+        "label": "Personal token (shown once)",
+        "copyLabel": "Copy the token",
+        "copied": "Token copied",
+        "warning": "Copy it now: you won’t see it again. Anyone with this token can read your links until you revoke it.",
+        "fallback": "Couldn’t copy. The token is selected above: press Ctrl+C or ⌘C to copy it.",
+        "field": "Personal token",
+        "done": "Done"
+      },
+      "howTo": {
+        "toggle": "How to connect: Claude, Cursor, VS Code",
+        "intro": "Replace <token> with your personal token.",
+        "copyLabel": "Copy the {{client}} setup",
+        "copied": "{{client}} setup copied",
+        "oauth": "Assistants that can only connect through a sign-in (OAuth), such as web-based connectors, can’t connect yet.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Run this in a terminal:"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Add this to claude_desktop_config.json (Settings › Developer › Edit Config), then restart Claude Desktop. Needs Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Add this to ~/.cursor/mcp.json:"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Add this to .vscode/mcp.json in your project:"
+          }
+        }
+      }
+    },
+    "announce": {
+      "title": "Shelfmark can now help with AI",
+      "lead": "It’s off until you turn it on. Your choice always wins, and every suggestion can be undone.",
+      "close": "Close",
+      "folder": {
+        "title": "Folder and tags",
+        "text": "Suggested as you save, one click to fill in"
+      },
+      "summaries": {
+        "title": "Short summaries",
+        "text": "Two lines on each card, so you know why you saved it"
+      },
+      "meaning": {
+        "title": "Search by meaning",
+        "text": "Finds links even when the words don’t match"
+      },
+      "ask": {
+        "title": "Ask your shelf",
+        "text": "Questions answered from your links, with sources"
+      },
+      "turnOn": "Turn on AI…",
+      "notNow": "Not now",
+      "note": "Next you’ll see what is sent and where, then choose. You can turn it off any time in Settings › AI."
+    }
+  },
+  "rediscover": {
+    "lead": {
+      "theme": "You’ve been saving a lot about {{theme}}. These are older ones you haven’t opened.",
+      "forgotten": "A few links you saved and never came back to. Open one, set a reminder, or let it go."
+    },
+    "dismiss": "Hide until next week",
+    "saved": "Saved in {{month}}, not opened lately",
+    "remind": "Remind me",
+    "readLater": "Read later",
+    "notInterested": "Not interested",
+    "count": {
+      "one": "{{count}} link saved a while ago and never opened",
+      "other": "{{count}} links saved a while ago and never opened"
+    },
+    "segment": {
+      "label": "Show",
+      "opened": "Opened",
+      "forgotten": "Forgotten",
+      "forgottenCount": "Forgotten {{count}}"
+    },
+    "empty": {
+      "title": "Nothing forgotten",
+      "text": "Links you save and never open will wait here."
+    },
+    "note": {
+      "one": "{{count}} forgotten",
+      "other": "{{count}} forgotten"
+    }
+  },
+  "cleanup": {
+    "title": "Clean up your library",
+    "lead": "Find links you saved more than once and tags that mean the same. Nothing changes until you apply.",
+    "checkedOn": "Checked {{when}}. Nothing changes until you apply; you can undo the whole run.",
+    "intro": "Shelfmark looks for extra copies of the same link and for tags that mean the same. You review every change, and one Undo reverts the whole run.",
+    "loading": "Loading the clean-up report",
+    "loadFailed": "Couldn’t load the clean-up report.",
+    "retry": "Try again",
+    "run": "Check my library",
+    "runAgain": "Check again",
+    "runFailed": "Couldn’t start the check. Try again.",
+    "includeAi": {
+      "label": "Include AI checks",
+      "hint": "Also finds the same page under another address and tags with the same meaning."
+    },
+    "checking": {
+      "title": "Checking your library…",
+      "text": "You can leave this page; we’ll keep the report.",
+      "progress": "{{checked}} of {{total}} links. You can leave this page; we’ll keep the report.",
+      "label": "Clean-up progress"
+    },
+    "apply": {
+      "one": "Apply {{count}} change",
+      "other": "Apply {{count}} changes"
+    },
+    "cancel": "Cancel",
+    "barLabel": "Clean-up actions",
+    "groups": {
+      "duplicates": {
+        "title": "Duplicates",
+        "hint": "Extra copies go to Trash"
+      },
+      "similarTags": {
+        "title": "Similar tags",
+        "hint": "Merged into the first one"
+      }
+    },
+    "reason": {
+      "sameAddress": "Same address",
+      "samePage": "Same page"
+    },
+    "duplicate": {
+      "sameAddress": {
+        "one": "Saved {{saved}} times: keep the one in {{place}} ({{why}}), move {{count}} copy to Trash",
+        "other": "Saved {{saved}} times: keep the one in {{place}} ({{why}}), move {{count}} copies to Trash"
+      },
+      "samePage": {
+        "one": "{{hosts}}: keep {{keep}} ({{why}}), move {{count}} copy to Trash",
+        "other": "{{hosts}}: keep {{keep}} ({{why}}), move {{count}} copies to Trash"
+      }
+    },
+    "unsorted": "Unsorted",
+    "keep": {
+      "in-folder": "it is in a folder",
+      "has-note": "it has a note",
+      "has-reminder": "it has a reminder",
+      "more-tags": "it has more tags",
+      "favorite": "it is a favourite",
+      "recently-opened": "you opened it last",
+      "oldest": "it was saved first"
+    },
+    "tagPair": {
+      "title": "{{keep}} ← {{merge}}",
+      "detail": {
+        "one": "{{count}} link gets “{{keep}}”; “{{merge}}” is removed",
+        "other": "{{count}} links get “{{keep}}”; “{{merge}}” is removed"
+      },
+      "swap": "Keep “{{merge}}” instead"
+    },
+    "foundByAi": "Found by AI",
+    "footer": "Groups marked “Found by AI” are suggestions and may be inaccurate. Exact duplicates are checked without AI.",
+    "failed": "The check stopped before it finished. Here is what it found.",
+    "empty": {
+      "title": "Your library is tidy",
+      "text": "No duplicates or similar tags found."
+    },
+    "checkFailed": {
+      "title": "The check didn’t finish",
+      "text": "It stopped before it found anything, and nothing was changed. Try checking again."
+    },
+    "applied": {
+      "title": "All cleaned up",
+      "text": "The changes you picked are done. Copies you removed wait in Trash."
+    },
+    "toast": {
+      "title": {
+        "one": "Cleaned up {{count}} thing",
+        "other": "Cleaned up {{count}} things"
+      },
+      "copies": {
+        "one": "{{count}} copy in Trash",
+        "other": "{{count}} copies in Trash"
+      },
+      "tags": {
+        "one": "{{count}} tag merged",
+        "other": "{{count}} tags merged"
+      },
+      "detail": "{{copies}}, {{tags}}",
+      "undo": "Undo",
+      "failed": "Couldn’t apply the changes",
+      "failedDetail": "Nothing was changed. Try again.",
+      "nothing": "Nothing to apply",
+      "nothingDetail": "These items changed meanwhile."
+    },
+    "undone": "Clean-up undone",
+    "undoFailed": "Couldn’t undo the clean-up"
   }
 }

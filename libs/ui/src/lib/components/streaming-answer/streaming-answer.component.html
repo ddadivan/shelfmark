@@ -1,0 +1,37 @@
+<p class="ui-streaming-answer__bubble">{{ question() }}</p>
+@if (hasAnswer() || streaming()) {
+  <div class="ui-streaming-answer__reply">
+    <span class="ui-streaming-answer__avatar" aria-hidden="true">
+      <ui-icon name="spark" [size]="ICON_SIZE.Sm" />
+    </span>
+    <div class="ui-streaming-answer__body">
+      <p class="ui-streaming-answer__text">
+        @for (part of parts(); track $index) {
+          @switch (part.kind) {
+            @case (STREAMING_PART_KIND.Cite) {
+              <!-- prettier-ignore -->
+              <button
+                type="button"
+                class="ui-streaming-answer__cite"
+                [disabled]="part.disabled"
+                [attr.aria-label]="citeLabel()(part.n)"
+                (click)="citationClicked.emit(part.n)"
+              >{{ part.n }}</button>
+            }
+            @case (STREAMING_PART_KIND.Text) {
+              <span>{{ part.text }}</span>
+            }
+          }
+        }
+        @if (streaming()) {
+          <span class="ui-streaming-answer__caret" aria-hidden="true"></span>
+        }
+      </p>
+      @if (!streaming() && hasAnswer()) {
+        <p class="ui-streaming-answer__disclaimer">{{ disclaimer() }}</p>
+        <div class="ui-streaming-answer__after"><ng-content /></div>
+      }
+    </div>
+  </div>
+}
+<span class="ui-streaming-answer__live" aria-live="polite">{{ announcement() }}</span>

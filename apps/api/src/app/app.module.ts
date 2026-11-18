@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AdminModule } from '../admin/admin.module';
+import { AiModule } from '../ai/ai.module';
+import { RediscoverModule } from '../rediscover/rediscover.module';
+import { CleanupModule } from '../cleanup/cleanup.module';
 import { AuthModule } from '../auth/auth.module';
 import { SessionAuthGuard } from '../auth/session-auth.guard';
 import { CsrfGuard } from '../common/csrf/csrf.guard';
@@ -19,6 +22,7 @@ import { ExportModule } from '../export/export.module';
 import { FoldersModule } from '../folders/folders.module';
 import { HealthModule } from '../health/health.module';
 import { LinksModule } from '../links/links.module';
+import { McpModule } from '../mcp/mcp.module';
 import { MonitoringModule } from '../monitoring/monitoring.module';
 import { PinsModule } from '../pins/pins.module';
 import { RemindersModule } from '../reminders/reminders.module';
@@ -51,6 +55,10 @@ import { UsersModule } from '../users/users.module';
     ViewsModule,
     RemindersModule,
     RulesModule,
+    AiModule,
+    McpModule,
+    RediscoverModule,
+    CleanupModule,
     // Async so the environment is read at DI time, not at import time.
     ThrottlerModule.forRootAsync({
       useFactory: () => createRateLimitOptions(shouldTrustProxyHeaders()),

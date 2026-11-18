@@ -43,3 +43,9 @@ export type * from '../lib/components/picker-menu/testing/models/picker-menu-har
 export * from '../lib/components/bar-chart/testing/bar-chart.harness';
 export type * from '../lib/components/bar-chart/testing/models/bar-chart-harness-filters.interface';
 export type * from '../lib/components/bar-chart/testing/models/bar-chart-harness-row.interface';
+export * from '../lib/components/suggestion/testing/suggestion.harness';
+export * from '../lib/components/suggestion/testing/suggestion-row.harness';
+export type * from '../lib/components/suggestion/testing/models/suggestion-harness-filters.interface';
+export type * from '../lib/components/suggestion/testing/models/suggestion-row-harness-filters.interface';
+export * from '../lib/components/streaming-answer/testing/streaming-answer.harness';
+export type * from '../lib/components/streaming-answer/testing/models/streaming-answer-harness-filters.interface';

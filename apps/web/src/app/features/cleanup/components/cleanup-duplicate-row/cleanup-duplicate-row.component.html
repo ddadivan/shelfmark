@@ -1,0 +1,14 @@
+<ui-checkbox
+  class="cleanup-row__check"
+  [label]="row().title"
+  [hint]="detail()"
+  [checked]="row().selected"
+  (checkedChange)="toggled.emit($event)"
+/>
+@if (row().ai) {
+  <ui-badge class="cleanup-row__badge" icon="spark" [uiTooltip]="'ai.disclaimer' | transloco">{{
+    reasonKey() | transloco
+  }}</ui-badge>
+} @else {
+  <ui-badge class="cleanup-row__badge">{{ reasonKey() | transloco }}</ui-badge>
+}

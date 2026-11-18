@@ -7,6 +7,7 @@
   [disabled]="disabled()"
   [counter]="counterText()"
   [counterLabel]="counterLabel()"
+  [labelHidden]="labelHidden()"
   [multiline]="true"
 >
   <textarea
@@ -14,7 +15,7 @@
     class="ui-textarea__native"
     cdkTextareaAutosize
     [cdkAutosizeMinRows]="rows()"
-    [cdkAutosizeMaxRows]="maxRows"
+    [cdkAutosizeMaxRows]="maxRows()"
     [id]="controlId"
     [rows]="rows()"
     [value]="value()"
@@ -27,4 +28,5 @@
     (input)="onInput($event)"
     (blur)="touch.emit()"
   ></textarea>
+  <ng-content select="[slot=end]" />
 </ui-field-shell>

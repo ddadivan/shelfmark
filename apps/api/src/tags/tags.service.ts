@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { markEmbeddingsStale } from '../ai/embeddings/mark-embeddings-stale';
 import { normalizeTagName, TAG_ERROR_MESSAGE, TAG_LIMIT } from '@shelfmark/contracts';
 import type { ListTagsResponse, TagResponse } from '@shelfmark/contracts';
 import { escapeLike } from '../common/util/escape-like';
@@ -12,8 +13,11 @@ import { hasPrismaCode } from '../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
 import { PrismaService } from '../prisma/prisma.service';
 import { TAG_LOCK_PREFIX } from './models/tag-advisory-lock.const';
+import { TagChangeHooks } from './tag-change-hooks.service';
 import type { TagDbClient } from './models/tag-db-client.type';
 import type { TagWithCount } from './models/tag-with-count.interface';
+import type { TagMergeResult } from './models/tag-merge-result.interface';
+import type { Prisma } from '../generated/prisma/client';
 
 function isUniqueViolation(error: unknown): boolean {
   return hasPrismaCode(error, PRISMA_ERROR_CODE.UniqueViolation);
@@ -51,7 +55,10 @@ function tagSelect(userId: string) {
 
 @Injectable()
 export class TagsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly hooks: TagChangeHooks,
+  ) {}
 
   async list(userId: string): Promise<ListTagsResponse> {
     const tags = await this.prisma.tag.findMany({ where: { userId }, select: tagSelect(userId) });
@@ -84,8 +91,13 @@ export class TagsService {
     try {
       // The unique index is on lower(name) per user, so a case-only change of the tag's own name
       // never collides with itself.
-      const result = await this.prisma.tag.updateMany({ where: { id, userId }, data: { name } });
-      if (result.count === 0) throw new NotFoundException(TAG_ERROR_MESSAGE.NotFound);
+      const staled = await this.prisma.$transaction(async (tx) => {
+        const result = await tx.tag.updateMany({ where: { id, userId }, data: { name } });
+        if (result.count === 0) throw new NotFoundException(TAG_ERROR_MESSAGE.NotFound);
+        // The name is part of what search by meaning embeds for every link with the tag.
+        return markEmbeddingsStale(tx, userId, { tagIds: [id] });
+      });
+      if (staled > 0) await this.hooks.linksChanged(userId);
     } catch (error) {
       throw this.conflictOr(error);
     }
@@ -93,15 +105,25 @@ export class TagsService {
   }
 
   async remove(userId: string, id: string): Promise<void> {
-    // The tag's link rows go with it (cascade); the links themselves stay.
-    const result = await this.prisma.tag.deleteMany({ where: { id, userId } });
-    if (result.count === 0) throw new NotFoundException(TAG_ERROR_MESSAGE.NotFound);
+    // The tag's link rows go with it (cascade); the links themselves stay. Their vectors go stale
+    // first, while the link rows still say which links had the tag.
+    const staled = await this.prisma.$transaction(async (tx) => {
+      const flagged = await markEmbeddingsStale(tx, userId, { tagIds: [id] });
+      const result = await tx.tag.deleteMany({ where: { id, userId } });
+      if (result.count === 0) throw new NotFoundException(TAG_ERROR_MESSAGE.NotFound);
+      return flagged;
+    });
+    if (staled > 0) await this.hooks.linksChanged(userId);
   }
 
   /** Moves the links of `sourceId` onto `targetId` and deletes the source, in one transaction. */
   async merge(userId: string, sourceId: string, targetId: string): Promise<TagResponse> {
     try {
-      return await this.mergeInTransaction(userId, sourceId, targetId);
+      const result = await this.prisma.$transaction((tx) =>
+        this.mergeInTransaction(tx, userId, sourceId, targetId),
+      );
+      if (result.staled > 0) await this.hooks.linksChanged(userId);
+      return result.target;
     } catch (error) {
       // A concurrent delete of the target between the lookup and the insert: the target is gone.
       if (isVanishedRecord(error)) throw new NotFoundException(TAG_ERROR_MESSAGE.NotFound);
@@ -109,31 +131,43 @@ export class TagsService {
     }
   }
 
-  private mergeInTransaction(
+  /**
+   * The merge on the caller's transaction (also used by the library clean-up, AI-5): takes the tags
+   * lock (so a caller holding `folders:` keeps the lock order), 404 for a foreign or missing tag, 400
+   * for the same tag. Answers the target and, for an Undo, the links that carried the source and the
+   * links that got the target only through the merge.
+   */
+  async mergeInTransaction(
+    tx: Prisma.TransactionClient,
     userId: string,
     sourceId: string,
     targetId: string,
-  ): Promise<TagResponse> {
-    return this.prisma.$transaction(async (tx) => {
-      // Same lock as create and resolveNames: opposite merges and tag creation run one at a time.
-      await this.lockUserTags(tx, userId);
-      // Both lookups come first: a foreign or missing tag is a 404 even when the ids are equal.
-      await this.read(tx, userId, sourceId);
-      await this.read(tx, userId, targetId);
-      if (sourceId === targetId) throw new BadRequestException(TAG_ERROR_MESSAGE.MergeIntoItself);
-      // Trashed links move too (no deletedAt filter): the source tag is deleted, and a restored link
-      // must not lose it.
-      const moved = await tx.linkTag.findMany({
-        where: { tagId: sourceId, link: { userId } },
-        select: { linkId: true },
-      });
-      await tx.linkTag.createMany({
-        data: moved.map(({ linkId }) => ({ linkId, tagId: targetId })),
-        skipDuplicates: true,
-      });
-      await tx.tag.delete({ where: { id: sourceId } });
-      return this.read(tx, userId, targetId);
+  ): Promise<TagMergeResult> {
+    // Same lock as create and resolveNames: opposite merges and tag creation run one at a time.
+    await this.lockUserTags(tx, userId);
+    // Both lookups come first: a foreign or missing tag is a 404 even when the ids are equal.
+    await this.read(tx, userId, sourceId);
+    await this.read(tx, userId, targetId);
+    if (sourceId === targetId) throw new BadRequestException(TAG_ERROR_MESSAGE.MergeIntoItself);
+    // Trashed links move too (no deletedAt filter): the source tag is deleted, and a restored link
+    // must not lose it.
+    const staled = await markEmbeddingsStale(tx, userId, { tagIds: [sourceId] });
+    const moved = await tx.linkTag.findMany({
+      where: { tagId: sourceId, link: { userId } },
+      select: { linkId: true },
     });
+    const added = await tx.linkTag.createManyAndReturn({
+      data: moved.map(({ linkId }) => ({ linkId, tagId: targetId })),
+      skipDuplicates: true,
+      select: { linkId: true },
+    });
+    await tx.tag.delete({ where: { id: sourceId } });
+    return {
+      target: await this.read(tx, userId, targetId),
+      linkIds: moved.map((row) => row.linkId),
+      addedLinkIds: added.map((row) => row.linkId),
+      staled,
+    };
   }
 
   /**

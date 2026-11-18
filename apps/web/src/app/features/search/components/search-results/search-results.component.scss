@@ -59,3 +59,17 @@ ui-command-list {
   color: var(--text-muted);
   text-wrap: balance;
 }
+
+// "Why it matched" of a meaning result (AiSearch): the host, the AI mark (14px next to 12px text, in
+// the `ai` colour) and "Close to: …".
+.search-results__spark {
+  --ui-icon-size: #{rem(14px)};
+
+  margin-inline: var(--space-1);
+  color: var(--ai);
+  vertical-align: text-bottom;
+}
+
+.search-results__ask-icon {
+  color: var(--ai);
+}

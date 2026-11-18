@@ -3,7 +3,7 @@
   "name": "Shelfmark (dev)",
   "short_name": "Shelfmark",
   "description": "Development build: saves to the local app on http://localhost:4200.",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "default_locale": "en",
   "minimum_chrome_version": "120",
   "icons": {

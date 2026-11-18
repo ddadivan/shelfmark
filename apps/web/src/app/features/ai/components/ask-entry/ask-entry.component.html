@@ -1,0 +1,54 @@
+@if (answered()) {
+  <ui-streaming-answer
+    [question]="entry().question"
+    [segments]="entry().segments"
+    [streaming]="streaming()"
+    [citeLabel]="citeLabel"
+    [disabledCites]="disabledCites()"
+    [disclaimer]="'ai.disclaimer' | transloco"
+    (citationClicked)="cite($event)"
+  >
+    @if (entry().truncated) {
+      <p class="ask-entry__note">{{ 'ai.ask.truncated' | transloco }}</p>
+    }
+    @if (entry().sources.length > 0) {
+      <app-ask-sources
+        [sources]="entry().sources"
+        [idPrefix]="idPrefix()"
+        [highlighted]="highlighted()"
+      />
+    }
+    @if (entry().notFound) {
+      <div class="ask-entry__actions">
+        <ui-button size="sm" iconLeft="search" (click)="searchRequested.emit(entry().question)">
+          {{ 'ai.ask.notFound.search' | transloco: { query: entry().question } }}
+        </ui-button>
+        <ui-button size="sm" variant="ghost" (click)="addRequested.emit()">
+          {{ 'ai.ask.notFound.add' | transloco }}
+        </ui-button>
+      </div>
+    }
+  </ui-streaming-answer>
+} @else {
+  <p class="ask-entry__bubble">{{ entry().question }}</p>
+  @if (line(); as line) {
+    <ui-ai-line
+      role="status"
+      [text]="line.key | transloco: line.params"
+      [actionLabel]="canRetry() ? ('ai.ask.retry' | transloco) : ''"
+      (action)="retry.emit()"
+    />
+  } @else if (entry().notFound) {
+    <p class="ask-entry__text" role="status">{{ 'ai.ask.notFound.text' | transloco }}</p>
+    <div class="ask-entry__actions">
+      <ui-button size="sm" iconLeft="search" (click)="searchRequested.emit(entry().question)">
+        {{ 'ai.ask.notFound.search' | transloco: { query: entry().question } }}
+      </ui-button>
+      <ui-button size="sm" variant="ghost" (click)="addRequested.emit()">
+        {{ 'ai.ask.notFound.add' | transloco }}
+      </ui-button>
+    </div>
+  } @else {
+    <p class="ask-entry__note" role="status">{{ 'ai.ask.stopped' | transloco }}</p>
+  }
+}

@@ -18,6 +18,7 @@
         <!-- Settings pages have nothing to search: no field, no button (#335). -->
         @if (!inSettings()) {
           <app-header-search />
+          <app-ask-header-button />
         }
         <span class="shell__spacer"></span>
         <ui-button
@@ -107,7 +108,7 @@
     </div>
   </div>
 </div>
-@if (viewport.compact()) {
+@if (viewport.compact() && !pushed()) {
   <ui-tab-bar
     [items]="tabs()"
     [active]="activeTab()"

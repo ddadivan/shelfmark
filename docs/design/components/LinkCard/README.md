@@ -7,3 +7,4 @@ LinkCard shows one saved link in the cards view: preview image, site, title, not
 - The whole card opens the link in a new tab; actions stop propagation.
 - `sm-card__title` is a heading one level below the page title (`h2` under the page `h1` on library pages), so heading navigation jumps card to card without skipping levels.
 - Grid: `repeat(auto-fill, minmax(240px, 1fr))`, gap `space-6`; one column on phones.
+- Tags (#512): the footer line shows only whole tags that fit next to the folder chip, then a `+N` chip; the chip's tooltip and accessible name list the hidden tags. A card never grows for tags.

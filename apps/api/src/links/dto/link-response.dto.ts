@@ -1,6 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  AI_JOB_STATUS,
   LINK_KIND,
+  SUMMARY_SOURCE,
+  type AiJobStatus,
+  type SummarySource,
   type GetLinkResponse,
   type LinkKind,
   type LinkResponse,
@@ -30,6 +34,17 @@ export class LinkResponseDto implements LinkResponse, GetLinkResponse {
   })
   remindAt!: string | null;
   @ApiProperty({ type: [String] }) tags!: string[];
+  @ApiProperty({ nullable: true, type: String, description: 'Short summary, plain text' })
+  summary!: string | null;
+  @ApiProperty({ enum: Object.values(SUMMARY_SOURCE), nullable: true, type: String })
+  summarySource!: SummarySource | null;
+  @ApiProperty({
+    enum: Object.values(AI_JOB_STATUS),
+    nullable: true,
+    type: String,
+    description: 'Latest AI job of the link; null when AI never ran for it',
+  })
+  aiStatus!: AiJobStatus | null;
   @ApiProperty({ format: 'date-time' }) createdAt!: string;
   @ApiProperty({ format: 'date-time' }) updatedAt!: string;
 }

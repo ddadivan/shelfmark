@@ -139,6 +139,18 @@ $more-column: rem(30px);
   color: var(--text-muted);
 }
 
+// A note ("5 forgotten") instead of a number: the accent tone, not tabular. Only fixed rows have
+// one, so it may use the reserved "..." column and the name keeps its room.
+.ui-tree__count--note {
+  margin-inline-end: calc(-1 * #{$more-column});
+  font-variant-numeric: normal;
+  color: var(--accent-text);
+
+  @include coarse {
+    margin-inline-end: calc(-1 * #{rem(44px)});
+  }
+}
+
 .ui-tree__section {
   @include type(caption);
 

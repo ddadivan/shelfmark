@@ -5,6 +5,7 @@ import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import {
   LINK_KIND,
+  REDISCOVER_MODE,
   type FolderResponse,
   type LinkResponse,
   type UserSettingsResponse,
@@ -22,6 +23,7 @@ import { FOLDERS_API } from '../../models/folders-api.const';
 import type { FoldersApi } from '../../models/folders-api.interface';
 import { LINKS_API } from '../../models/links-api.const';
 import type { LinksApi } from '../../models/links-api.interface';
+import { REDISCOVER_API } from '../../../rediscover/models/rediscover-api.const';
 import RecentPage from './recent.page';
 import { HISTORY_SEARCH_DEBOUNCE_MS } from '../../models/history-search-debounce-ms.const';
 
@@ -50,6 +52,8 @@ async function setup(
     paused?: boolean;
     failUpdate?: boolean;
     phone?: boolean;
+    forgotten?: LinkResponse[];
+    show?: string;
   } = {},
 ) {
   const folder: FolderResponse = { ...MOCK_FOLDERS[0], id: 'f-1', name: 'Reading' };
@@ -88,6 +92,21 @@ async function setup(
       { provide: FOLDERS_API, useValue: folders },
       { provide: LinkActionsService, useValue: actions },
       { provide: ToastService, useValue: toast },
+      {
+        provide: REDISCOVER_API,
+        useValue: {
+          getBlock: vi.fn(() =>
+            of({
+              week: '2026-W47',
+              mode: REDISCOVER_MODE.Forgotten,
+              theme: null,
+              items: options.forgotten ?? [],
+            }),
+          ),
+          dismiss: vi.fn(() => of(undefined)),
+          hide: vi.fn(() => of(undefined)),
+        },
+      },
       { provide: DialogService, useValue: { confirm } },
       { provide: USER_SETTINGS_API, useValue: settingsApi },
       {
@@ -102,6 +121,9 @@ async function setup(
   });
   await loadEnglish();
   const fixture = TestBed.createComponent(RecentPage);
+  if (options.show) {
+    fixture.componentRef.setInput('show', options.show);
+  }
   await fixture.whenStable();
   const element = fixture.nativeElement as HTMLElement;
   return { api, settingsApi, toast, actions, confirm, fixture, element };
@@ -156,6 +178,47 @@ const titles = (element: HTMLElement) =>
   [...element.querySelectorAll('ui-history-group h2')].map((h) => h.textContent?.trim());
 
 describe('RecentPage', () => {
+  it('has an Opened and Forgotten switch with the count and writes the choice into the URL', async () => {
+    const { element, fixture } = await setup([opened(1, 0)], {
+      forgotten: [opened(7, 90), opened(8, 95), opened(9, 99)],
+    });
+    const router = TestBed.inject(Router);
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    const radios = [...element.querySelectorAll<HTMLInputElement>('input[type="radio"]')];
+    expect(radios.map((radio) => radio.closest('label')?.textContent?.trim())).toEqual([
+      'Opened',
+      'Forgotten 3',
+    ]);
+    expect(radios[0]?.checked).toBe(true);
+    expect(element.querySelector('app-forgotten-list')).toBeNull();
+
+    radios[1]?.click();
+    await fixture.whenStable();
+    expect(navigate).toHaveBeenCalledWith([], {
+      queryParams: { show: 'forgotten' },
+      queryParamsHandling: 'merge',
+    });
+  });
+
+  it('shows the Forgotten rows for ?show=forgotten and hides the history actions', async () => {
+    const { element } = await setup([opened(1, 0)], {
+      forgotten: [opened(7, 90), opened(8, 95), opened(9, 99)],
+      show: 'forgotten',
+    });
+    expect(element.querySelectorAll('app-forgotten-list li')).toHaveLength(3);
+    expect(element.querySelector('app-recent-history')).toBeNull();
+    expect(element.textContent).toContain('3 links saved a while ago and never opened');
+    expect(element.textContent).not.toContain('Clear history');
+    expect([...element.querySelectorAll<HTMLInputElement>('input[type="radio"]')][1]?.checked).toBe(
+      true,
+    );
+  });
+
+  it('shows the small empty state for Forgotten without links', async () => {
+    const { element } = await setup([opened(1, 0)], { show: 'forgotten' });
+    expect(element.textContent).toContain('Nothing forgotten');
+  });
+
   it('filters the history by kind with chips that count each kind', async () => {
     const { element, fixture } = await setup([
       opened(1, 0, { kind: LINK_KIND.Video }),

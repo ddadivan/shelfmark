@@ -1,0 +1,113 @@
+import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import type { AuthUser } from '@shelfmark/contracts';
+import { CurrentUser } from '../common/auth/current-user.decorator';
+import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
+import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
+import { CleanupApplyResponseDto } from './dto/cleanup-apply-response.dto';
+import { CleanupApplyDto } from './dto/cleanup-apply.dto';
+import { CleanupReportDto } from './dto/cleanup-report.dto';
+import { CleanupUndoResponseDto } from './dto/cleanup-undo-response.dto';
+import { CleanupUndoDto } from './dto/cleanup-undo.dto';
+import { CleanupRunDto } from './dto/cleanup-run.dto';
+import { CleanupSummaryDto } from './dto/cleanup-summary.dto';
+import { CleanupApplyService } from './cleanup-apply.service';
+import { CleanupUndoService } from './cleanup-undo.service';
+import { CleanupService } from './cleanup.service';
+
+/** Library clean-up (F5, `CLEANUP_ENDPOINT`). Thin: the services own the rules. */
+@ApiTags('cleanup')
+@Controller('cleanup')
+export class CleanupController {
+  constructor(
+    private readonly cleanup: CleanupService,
+    private readonly applyService: CleanupApplyService,
+    private readonly undoService: CleanupUndoService,
+  ) {}
+
+  @Get()
+  @ApiOkResponse({ type: CleanupReportDto })
+  @ApiOperation({
+    summary: 'The stored clean-up report, read live',
+    description:
+      'State none before the first run. Trashed links and deleted tags drop out; a group with fewer than two live members is left out.',
+  })
+  report(@CurrentUser() user: AuthUser): Promise<CleanupReportDto> {
+    return this.cleanup.report(user.id);
+  }
+
+  @Get('summary')
+  @ApiOkResponse({ type: CleanupSummaryDto })
+  @ApiOperation({
+    summary: 'The entry card on All links',
+    description:
+      'Exact duplicates now plus the unapplied groups of the stored report; show only when something was found and the card was not dismissed in the last 30 days. No check is started.',
+  })
+  summary(@CurrentUser() user: AuthUser): Promise<CleanupSummaryDto> {
+    return this.cleanup.summary(user.id);
+  }
+
+  @Post('card/dismiss')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RateLimit(RATE_LIMIT.CleanupRun)
+  @ApiNoContentResponse({ description: 'Hidden for 30 days' })
+  @ApiOperation({ summary: 'Dismiss the entry card' })
+  async dismissCard(@CurrentUser() user: AuthUser): Promise<void> {
+    await this.cleanup.dismissCard(user.id);
+  }
+
+  @Post('run')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.CleanupRun)
+  @ApiOkResponse({ type: CleanupReportDto })
+  @ApiConflictResponse({ description: 'A check is already running' })
+  @ApiOperation({
+    summary: 'Check the library',
+    description:
+      'Exact duplicates and tag variants now; with includeAi and access (AI on, AI pack, a run left this month) the AI checks continue in the background (poll the AI tick).',
+  })
+  run(@CurrentUser() user: AuthUser, @Body() body: CleanupRunDto): Promise<CleanupReportDto> {
+    return this.cleanup.run(user, body.includeAi);
+  }
+
+  @Post('apply')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.CleanupApply)
+  @ApiOkResponse({ type: CleanupApplyResponseDto })
+  @ApiBadRequestResponse({ description: 'Invalid body or nothing selected' })
+  @ApiOperation({
+    summary: 'Apply the selected rows in one step',
+    description:
+      'Only ids of the stored report and live rows of the user count; others are skipped. Copies go to Trash with one shared time, merges use the tag merge. Answers the run id for Undo (the server holds the rest).',
+  })
+  apply(
+    @CurrentUser() user: AuthUser,
+    @Body() body: CleanupApplyDto,
+  ): Promise<CleanupApplyResponseDto> {
+    return this.applyService.apply(user.id, body);
+  }
+
+  @Post('undo')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.CleanupApply)
+  @ApiOkResponse({ type: CleanupUndoResponseDto })
+  @ApiConflictResponse({ description: 'Already undone, expired or not the latest run' })
+  @ApiOperation({
+    summary: 'Undo a clean-up run',
+    description:
+      'The undo of the apply answer (run id only). Single-use, for the latest run and within the Undo window, else 409. Conditional on the current state. Works with AI off.',
+  })
+  undo(
+    @CurrentUser() user: AuthUser,
+    @Body() body: CleanupUndoDto,
+  ): Promise<CleanupUndoResponseDto> {
+    return this.undoService.undo(user.id, body);
+  }
+}

@@ -43,14 +43,19 @@
     }
   }
 
-  // Phone footer (container rules: `.ui-dialog__foot` in `dialog.component.scss`): every slotted
-  // action, a `ui-button` or a wrapper, fills the sheet width. The slotted elements belong to
-  // the feature's view, so only a global rule reaches them.
+  // Phone footer (container rules: `.ui-dialog__foot` in `dialog-parts.scss`, #512): the last
+  // slotted action (the main one) takes a whole row; the others share the row above in equal
+  // widths. The slotted elements belong to the feature's view, so only a global rule reaches them.
   .ui-dialog__foot {
     @include phone {
       > * {
-        inline-size: 100%;
+        flex: 1 1 0;
+        min-inline-size: 0;
         margin-inline: 0;
+      }
+
+      > :last-child {
+        flex: 0 0 100%;
       }
 
       > ui-button {
@@ -60,6 +65,12 @@
           flex: 1 1 auto;
           inline-size: 100%;
         }
+      }
+
+      // `uiDialogCancel` next to the close button: the x does the same, so the sheet drops it.
+      > .ui-dialog-cancel--with-close,
+      ui-button.ui-dialog-cancel--with-close {
+        display: none;
       }
     }
   }

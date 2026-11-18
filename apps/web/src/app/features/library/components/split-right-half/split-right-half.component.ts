@@ -19,6 +19,7 @@ import { LinkActionsService } from '../../../links/services/link-actions.service
 import { LinkDragService } from '../../../links/services/link-drag.service';
 import { LibraryDragService } from '../../services/library-drag.service';
 import { SplitFeedStore } from '../../services/split-feed.store';
+import { SplitRelatedService } from '../../services/split-related.service';
 import { SplitViewService } from '../../services/split-view.service';
 
 /** Number of placeholders shown while the first page loads. */
@@ -58,6 +59,8 @@ const SKELETON_COUNT = 4;
 })
 export class SplitRightHalfComponent {
   protected readonly split = inject(SplitViewService);
+  /** "Show related" (AI-3): the picker offers the related folders first. */
+  protected readonly related = inject(SplitRelatedService);
   protected readonly feed = inject(SplitFeedStore);
   /** The picker takes the focus only when the "Side by side" button just opened the half. */
   protected readonly focusPicker = this.split.takePickerFocus();

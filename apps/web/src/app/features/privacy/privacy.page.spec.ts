@@ -38,6 +38,7 @@ describe('PrivacyPage', () => {
       'Browser extension',
       'Other services',
       'Where it lives',
+      'AI features (optional)',
       'How long we keep it',
       'Your control',
       'Security',
@@ -69,6 +70,31 @@ describe('PrivacyPage', () => {
     expect(element.textContent).toContain('we record the day you last used the app');
     expect(element.textContent).toContain('Groups of fewer than three people are not shown');
     expect(element.textContent).toContain('When you delete your account, the date goes with it.');
+  });
+
+  it('has the AI section at #ai with the processor, the data sent and the placeholders (#389)', async () => {
+    const element = await render();
+    const heading = element.querySelector('h2#ai');
+    const points = [
+      ...(heading?.nextElementSibling?.nextElementSibling?.querySelectorAll('li') ?? []),
+    ];
+
+    expect(heading?.textContent).toBe('AI features (optional)');
+    expect(points.map((point) => point.querySelector('b')?.textContent)).toEqual([
+      'Who processes it:',
+      'What is sent:',
+      'How long it is kept:',
+      'Search by meaning:',
+      'Ask your shelf:',
+      'What we count:',
+      'Turning it off:',
+    ]);
+    expect(element.textContent).toContain('Anthropic PBC (USA), as our processor');
+    expect(element.textContent).toContain('deletes the request within 30 days');
+    expect(element.textContent).toContain('sent to Voyage AI, our second processor');
+    expect(element.textContent).toContain('your search text is not stored');
+    expect(element.textContent).toContain('Neither the question nor the answer is stored');
+    expect(element.textContent).toContain('to train AI models');
   });
 
   it('gives the repository as the contact and shows no email address', async () => {

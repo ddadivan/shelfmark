@@ -84,7 +84,9 @@
             >&ngsp;{{ dropLabel() }}</span
           >
         } @else if (countId(item.id(), node); as count) {
-          <span class="ui-tree__count" [id]="count">&ngsp;{{ node.count }}</span>
+          <span class="ui-tree__count" [class.ui-tree__count--note]="node.note" [id]="count"
+            >&ngsp;{{ node.note ?? node.count }}</span
+          >
         }
         @if (folder && menuLabel()) {
           <ui-button

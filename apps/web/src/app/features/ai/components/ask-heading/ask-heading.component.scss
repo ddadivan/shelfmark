@@ -1,0 +1,40 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-width: 0;
+}
+
+.ask-heading__tile {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: rem(40px);
+  height: rem(40px);
+  color: var(--ai);
+  background: var(--ai-fill);
+  border-radius: rem(14px);
+}
+
+.ask-heading__text {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  min-width: 0;
+}
+
+.ask-heading__title {
+  @include type(heading);
+
+  margin: 0;
+  font-size: rem(18px);
+  line-height: rem(24px);
+}
+
+.ask-heading__left {
+  @include type(caption);
+
+  color: var(--text-muted);
+}

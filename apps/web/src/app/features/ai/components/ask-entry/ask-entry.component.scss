@@ -1,0 +1,40 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+// Same bubble as `ui-streaming-answer` for a question without an answer.
+.ask-entry__bubble {
+  align-self: flex-end;
+  max-width: 85%;
+  margin: 0;
+  padding: rem(10px) rem(14px);
+  font: 400 #{rem(14px)} / #{rem(20px)} var(--font-sans);
+  overflow-wrap: anywhere;
+  color: var(--text);
+  background: var(--surface-hover);
+  border-radius: rem(20px) rem(20px) rem(6px);
+}
+
+.ask-entry__text {
+  @include type(body);
+
+  margin: 0;
+  line-height: rem(24px);
+}
+
+.ask-entry__note {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.ask-entry__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

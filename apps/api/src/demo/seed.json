@@ -28,6 +28,12 @@
       "parent": null,
       "colour": "amber",
       "highlighted": true
+    },
+    {
+      "key": "videos",
+      "name": "Videos",
+      "parent": null,
+      "colour": "plum"
     }
   ],
   "tags": [
@@ -38,7 +44,10 @@
     "design",
     "reference",
     "cooking",
-    "shopping"
+    "shopping",
+    "recipes",
+    "javascript",
+    "js"
   ],
   "links": [
     {
@@ -50,7 +59,8 @@
       "isFavorite": true,
       "createdDaysAgo": 21,
       "lastOpenedDaysAgo": 5,
-      "note": "Checklist for the new service."
+      "note": "Checklist for the new service.",
+      "summary": "A methodology for building software-as-a-service apps in twelve factors: one codebase, explicit dependencies, config in the environment, stateless processes and disposable deploys."
     },
     {
       "url": "https://martinfowler.com/articles/microservices.html",
@@ -60,7 +70,8 @@
       "tags": ["reading"],
       "isFavorite": false,
       "createdDaysAgo": 18,
-      "lastOpenedDaysAgo": 12
+      "lastOpenedDaysAgo": 12,
+      "summary": "Defines the microservice architectural style: services built around business capabilities, decentralised data, smart endpoints and dumb pipes, and the trade-offs against a monolith."
     },
     {
       "url": "https://www.nngroup.com/articles/ten-usability-heuristics/",
@@ -70,7 +81,8 @@
       "tags": ["design", "reference"],
       "isFavorite": true,
       "createdDaysAgo": 9,
-      "lastOpenedDaysAgo": 2
+      "lastOpenedDaysAgo": 2,
+      "summary": "Jakob Nielsen's ten general principles for interaction design, from visibility of system status to error prevention, with examples for each."
     },
     {
       "url": "https://angular.dev/guide/signals",
@@ -80,7 +92,8 @@
       "isFavorite": true,
       "createdDaysAgo": 14,
       "lastOpenedDaysAgo": 1,
-      "note": "Read before the refactor."
+      "note": "Read before the refactor.",
+      "summary": "The official guide to signals: writable signals, computed values, effects and how they drive rendering."
     },
     {
       "url": "https://angular.dev/guide/templates",
@@ -89,7 +102,8 @@
       "tags": ["angular", "tutorial"],
       "isFavorite": false,
       "createdDaysAgo": 13,
-      "lastOpenedDaysAgo": 6
+      "lastOpenedDaysAgo": 6,
+      "summary": "How Angular templates work: binding text, properties and events, control flow blocks, deferred loading and template variables."
     },
     {
       "url": "https://angular.dev/tools/cli",
@@ -98,7 +112,8 @@
       "tags": ["angular", "reference"],
       "isFavorite": false,
       "createdDaysAgo": 12,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "Reference for the Angular CLI commands: generate, build, serve, test and update, with their most useful options."
     },
     {
       "url": "https://www.typescriptlang.org/docs/handbook/intro.html",
@@ -108,7 +123,8 @@
       "isFavorite": false,
       "createdDaysAgo": 11,
       "lastOpenedDaysAgo": 3,
-      "remindInHours": 72
+      "remindInHours": 72,
+      "summary": "The official TypeScript handbook: everyday types, narrowing, functions, object types, generics and modules, for developers new to the language."
     },
     {
       "url": "https://github.com/angular/angular",
@@ -117,16 +133,18 @@
       "tags": ["angular"],
       "isFavorite": false,
       "createdDaysAgo": 6,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "The Angular framework repository: source, issues, releases, the changelog and the contributing guide."
     },
     {
       "url": "https://web.dev/learn",
       "title": "Learn Web Development",
       "folder": "courses",
-      "tags": ["tutorial"],
+      "tags": ["tutorial", "javascript"],
       "isFavorite": false,
       "createdDaysAgo": 26,
-      "lastOpenedDaysAgo": 8
+      "lastOpenedDaysAgo": 8,
+      "summary": "Free structured courses from the Chrome team on HTML, CSS, JavaScript, accessibility, performance and forms."
     },
     {
       "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development",
@@ -135,16 +153,18 @@
       "tags": ["tutorial", "reference"],
       "isFavorite": true,
       "createdDaysAgo": 24,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "MDN's beginner curriculum for web development: HTML structure, CSS styling, JavaScript basics and how the web works."
     },
     {
       "url": "https://www.freecodecamp.org/learn",
       "title": "freeCodeCamp curriculum",
       "folder": "courses",
-      "tags": ["tutorial"],
+      "tags": ["tutorial", "js"],
       "isFavorite": false,
       "createdDaysAgo": 20,
-      "lastOpenedDaysAgo": 15
+      "lastOpenedDaysAgo": 15,
+      "summary": "A free, self-paced curriculum with interactive lessons and projects on responsive design, JavaScript, back-end development and more."
     },
     {
       "url": "https://ocw.mit.edu/",
@@ -153,7 +173,8 @@
       "tags": ["reading"],
       "isFavorite": false,
       "createdDaysAgo": 7,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "Free lecture notes, videos and assignments from thousands of MIT courses, from computer science to economics."
     },
     {
       "url": "https://www.uniqlo.com/",
@@ -175,7 +196,8 @@
       "createdDaysAgo": 10,
       "lastOpenedDaysAgo": 4,
       "remindInHours": -3,
-      "note": "Repair before replacing."
+      "note": "Repair before replacing.",
+      "summary": "Patagonia's program for used gear: buy second-hand clothing, trade in what you no longer wear and get items repaired."
     },
     {
       "url": "https://www.everlane.com/",
@@ -185,27 +207,30 @@
       "tags": ["shopping"],
       "isFavorite": false,
       "createdDaysAgo": 4,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "A clothing shop for everyday basics such as denim, knitwear and shoes, listing the factory and cost breakdown behind each product."
     },
     {
       "url": "https://smittenkitchen.com/",
       "title": "Smitten Kitchen",
       "kind": "article",
       "folder": "recipes",
-      "tags": ["cooking"],
+      "tags": ["cooking", "recipes"],
       "isFavorite": true,
       "createdDaysAgo": 22,
-      "lastOpenedDaysAgo": 9
+      "lastOpenedDaysAgo": 9,
+      "summary": "A home cooking blog with tested recipes for weeknight dinners, baking and seasonal produce, each with step-by-step photos."
     },
     {
       "url": "https://www.budgetbytes.com/",
       "title": "Budget Bytes",
       "kind": "article",
       "folder": "recipes",
-      "tags": ["cooking"],
+      "tags": ["cooking", "recipes"],
       "isFavorite": false,
       "createdDaysAgo": 15,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "summary": "Recipes designed for small budgets, with the cost per serving and per recipe, plus meal prep ideas."
     },
     {
       "url": "https://www.bbcgoodfood.com/recipes/collection/pasta-recipes",
@@ -216,7 +241,8 @@
       "isFavorite": false,
       "createdDaysAgo": 3,
       "lastOpenedDaysAgo": 0,
-      "note": "Try the tomato one on Sunday."
+      "note": "Try the tomato one on Sunday.",
+      "summary": "A collection of pasta recipes from quick weeknight bowls to baked dishes, with ratings, timings and nutrition per serving."
     },
     {
       "url": "https://developer.mozilla.org/en-US/docs/Web/CSS",
@@ -225,7 +251,9 @@
       "tags": ["reference", "design"],
       "isFavorite": false,
       "createdDaysAgo": 2,
-      "lastOpenedDaysAgo": 1
+      "lastOpenedDaysAgo": 1,
+      "summary": "MDN's reference for CSS: every property, selector and at-rule, with syntax, examples and browser support.",
+      "suggestFolder": "courses"
     },
     {
       "url": "https://news.ycombinator.com/",
@@ -234,7 +262,242 @@
       "tags": ["reading"],
       "isFavorite": false,
       "createdDaysAgo": 0,
-      "lastOpenedDaysAgo": null
+      "lastOpenedDaysAgo": null,
+      "suggestFolder": "work",
+      "suggestTags": ["news"]
+    },
+    {
+      "url": "https://www.youtube.com/@Angular",
+      "title": "Angular on YouTube",
+      "folder": "videos",
+      "tags": ["angular"],
+      "isFavorite": false,
+      "createdDaysAgo": 12,
+      "lastOpenedDaysAgo": 4,
+      "summary": "The official Angular channel: release talks, live streams and short videos on new framework features."
+    },
+    {
+      "url": "https://www.youtube.com/@ChromeforDevelopers",
+      "title": "Chrome for Developers on YouTube",
+      "folder": "videos",
+      "tags": ["tutorial"],
+      "isFavorite": false,
+      "createdDaysAgo": 9,
+      "lastOpenedDaysAgo": 9,
+      "summary": "Talks and short explainers from the Chrome team on web platform features, performance and DevTools."
+    },
+    {
+      "url": "https://www.youtube.com/@Fireship",
+      "title": "Fireship",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 1,
+      "lastOpenedDaysAgo": null,
+      "summary": "Fast-paced explainers on web development tools and frameworks, most of them under ten minutes.",
+      "suggestFolder": "videos",
+      "suggestTags": ["tutorial"]
+    },
+    {
+      "url": "https://www.cos.com/",
+      "title": "COS",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 6,
+      "lastOpenedDaysAgo": null,
+      "summary": "A clothing brand with minimal, long-lasting pieces for women and men, plus a resell section.",
+      "suggestFolder": "clothes",
+      "suggestTags": ["shopping"]
+    },
+    {
+      "url": "https://www.arket.com/",
+      "title": "ARKET",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 5,
+      "lastOpenedDaysAgo": null,
+      "summary": "A modern-day market for clothes and home goods for the whole family, with a focus on durable basics.",
+      "suggestFolder": "clothes",
+      "suggestTags": ["shopping"]
+    },
+    {
+      "url": "https://www.seriouseats.com/",
+      "title": "Serious Eats",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 4,
+      "lastOpenedDaysAgo": null,
+      "summary": "Recipes and cooking guides that explain the science behind each technique, from ramen to roast chicken.",
+      "suggestFolder": "recipes",
+      "suggestTags": ["cooking"]
+    },
+    {
+      "url": "https://www.allrecipes.com/",
+      "title": "Allrecipes",
+      "folder": null,
+      "tags": ["cooking"],
+      "isFavorite": false,
+      "createdDaysAgo": 3,
+      "lastOpenedDaysAgo": null,
+      "summary": "A large collection of home cooks' recipes with ratings, reviews and step-by-step photos.",
+      "suggestFolder": "recipes",
+      "suggestTags": ["reading"]
+    },
+    {
+      "url": "https://www.typescriptlang.org/play",
+      "title": "TypeScript Playground",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 3,
+      "lastOpenedDaysAgo": null,
+      "summary": "An online editor that compiles TypeScript in the browser and shows the emitted JavaScript and types.",
+      "suggestFolder": "work",
+      "suggestTags": ["typescript", "reference"]
+    },
+    {
+      "url": "https://web.dev/learn/css",
+      "title": "Learn CSS",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 2,
+      "lastOpenedDaysAgo": null,
+      "summary": "A free course on modern CSS from the box model to grid, flexbox and custom properties.",
+      "suggestFolder": "courses",
+      "suggestTags": ["design", "tutorial"]
+    },
+    {
+      "url": "https://rxjs.dev/guide/overview",
+      "title": "RxJS overview",
+      "folder": null,
+      "tags": ["javascript"],
+      "isFavorite": false,
+      "createdDaysAgo": 2,
+      "lastOpenedDaysAgo": null,
+      "summary": "An introduction to RxJS: observables, operators and subscriptions for composing asynchronous code.",
+      "suggestFolder": "angular",
+      "suggestTags": ["typescript"]
+    },
+    {
+      "url": "https://www.smashingmagazine.com/",
+      "title": "Smashing Magazine",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 1,
+      "lastOpenedDaysAgo": null,
+      "summary": "Articles and books on web design and front-end development, from accessibility to CSS layout.",
+      "suggestTags": ["design", "reading"]
+    },
+    {
+      "url": "https://frontendmasters.com/courses/",
+      "title": "Frontend Masters courses",
+      "folder": null,
+      "tags": [],
+      "isFavorite": false,
+      "createdDaysAgo": 0,
+      "lastOpenedDaysAgo": null,
+      "summary": "In-depth video courses on JavaScript, TypeScript, frameworks and web performance.",
+      "suggestFolder": "courses",
+      "suggestTags": ["tutorial"]
+    },
+    {
+      "url": "https://www.justonecookbook.com/quick-shoyu-ramen/",
+      "title": "Quick shoyu ramen for weeknights",
+      "kind": "article",
+      "folder": "recipes",
+      "tags": ["cooking"],
+      "isFavorite": false,
+      "createdDaysAgo": 48,
+      "lastOpenedDaysAgo": null,
+      "summary": "A 30-minute shoyu ramen: a soy and dashi broth, fresh noodles and a soft-boiled egg, made from pantry staples on a weeknight."
+    },
+    {
+      "url": "https://www.seriouseats.com/tonkotsu-ramen-broth-recipe",
+      "title": "Rich tonkotsu ramen broth from scratch",
+      "kind": "article",
+      "folder": "recipes",
+      "tags": ["cooking", "reference"],
+      "isFavorite": false,
+      "createdDaysAgo": 120,
+      "lastOpenedDaysAgo": 110,
+      "summary": "A step-by-step tonkotsu ramen: pork bones boiled hard for twelve hours into a creamy broth, with tare, aroma oil and noodles."
+    },
+    {
+      "url": "https://www.justonecookbook.com/ramen-toppings/",
+      "title": "Ramen toppings guide",
+      "kind": "article",
+      "folder": "recipes",
+      "tags": ["cooking"],
+      "isFavorite": false,
+      "createdDaysAgo": 62,
+      "lastOpenedDaysAgo": null,
+      "summary": "A guide to ramen toppings: chashu pork, marinated soft-boiled eggs, menma, nori and scallions, with tips on prepping them ahead."
+    },
+    {
+      "url": "https://www.cos.com/en/men/menswear/coats-and-jackets/wool-blend-overcoat",
+      "title": "COS wool-blend overcoat",
+      "kind": "shopping",
+      "folder": "clothes",
+      "tags": ["shopping"],
+      "isFavorite": false,
+      "createdDaysAgo": 8,
+      "lastOpenedDaysAgo": 6,
+      "summary": "A single-breasted wool coat in charcoal: knee length, notch lapels and a relaxed fit for layering over knitwear."
+    },
+    {
+      "url": "https://www.patagonia.com/product/mens-tres-3-in-1-parka/28388.html",
+      "title": "Patagonia Tres 3-in-1 parka",
+      "kind": "shopping",
+      "folder": "clothes",
+      "tags": ["shopping"],
+      "isFavorite": false,
+      "createdDaysAgo": 6,
+      "lastOpenedDaysAgo": null,
+      "summary": "A waterproof parka with a zip-out down jacket inside, so the shell and the liner work as two coats for wet and cold days."
+    },
+    {
+      "url": "https://paulgraham.com/greatwork.html",
+      "title": "How to Do Great Work",
+      "kind": "article",
+      "folder": "work",
+      "tags": ["reading"],
+      "isFavorite": false,
+      "createdDaysAgo": 140,
+      "lastOpenedDaysAgo": 125,
+      "summary": "A long essay on doing great work: choose a field you are curious about, aim at ambitious problems and keep momentum with small daily progress."
+    },
+    {
+      "url": "https://next.angular.dev/guide/signals",
+      "title": "Angular Signals",
+      "folder": null,
+      "tags": ["angular", "reference"],
+      "isFavorite": false,
+      "createdDaysAgo": 3,
+      "lastOpenedDaysAgo": null,
+      "summary": "The official guide to signals: writable signals, computed values, effects and how they drive rendering."
+    },
+    {
+      "url": "https://news.ycombinator.com/",
+      "title": "Hacker News",
+      "folder": null,
+      "tags": [],
+      "createdDaysAgo": 5,
+      "lastOpenedDaysAgo": null,
+      "isFavorite": false
+    },
+    {
+      "url": "https://news.ycombinator.com/",
+      "title": "Hacker News",
+      "folder": null,
+      "tags": [],
+      "createdDaysAgo": 2,
+      "lastOpenedDaysAgo": null,
+      "isFavorite": false
     }
   ],
   "rules": [

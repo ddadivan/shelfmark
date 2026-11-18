@@ -5,6 +5,7 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 ## 1 · Landing and sign in
 
 - `Landing.dc.html` — Landing · desktop · redesigned (desktop)
+- `LandingAi.dc.html` — Landing block «Optional AI» (#481): desktop (also placed in `Landing.dc.html`, after «Save once, find in seconds») and phone at 360px; ships with the first AI release
 - `SignIn.dc.html` — Sign in · redesigned (desktop)
 - `AuthEmail.dc.html` — Email sign in, sign up, reset (desktop)
 - `Emails.dc.html` — Emails (desktop)
@@ -33,6 +34,8 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 - `MobileHome.dc.html` — Home · phone · redesigned (phone)
 - `MobileMenu.dc.html` — Library and folders · phone · redesigned (phone)
 - `MobileRecent.dc.html` — Recently opened sheet · phone (phone)
+- `RecentForgotten.dc.html` — Recently opened › Forgotten: the Opened · Forgotten switch, the Rediscover rows, "N forgotten" on the sidebar row (desktop, #512)
+- `MobileLibraryOrder.dc.html` — Library · phone: Pinned, Folders, then the tiles; "N forgotten" on the Recently opened tile (phone, #512)
 - `MobileLoading.dc.html` — Loading · phone · redesigned (phone)
 
 ## 4 · Add and edit links
@@ -84,7 +87,7 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 - `SetFeedback.dc.html` — Settings › Your feedback (desktop)
 - `Languages.dc.html` — Language list and translation checks (desktop)
 - `Trash.dc.html` — Keyboard shortcuts dialog (press ?) (desktop)
-- `Privacy.dc.html` — Privacy policy page (desktop)
+- `Privacy.dc.html` — Privacy policy page, with the AI section (#476) (desktop)
 - `MobileSettings.dc.html` — You (settings) · phone (phone)
 
 ## 10 · Feedback: toasts, errors, rating
@@ -99,3 +102,24 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 - `Extension.dc.html` — Browser extension popup (Chrome, #445): form and Save, saved, opening, folder picker, already saved, signed out, page that cannot be saved, errors; light and dark
 - `ExtensionInstall.dc.html` — Install the extension from the app (#455): library banner and Settings row; desktop Chromium only; light and dark
 - `Landing.dc.html` also has the "Save the page you are on" block: a mention of the extension without a link (#455)
+
+## 12 · AI (#476)
+
+AI features F0–F8 (`docs/ai/FEATURES.md`, approved Nov 17, 2026; parent #388). Each board shows its states: off, suggesting / pending, limit reached, not available, empty. Rules: `BRAND.md` › AI; components `AiMark`, `Suggestion`, `AiSummary`, `StreamingAnswer`.
+
+- `AiIntro.dc.html` — First-run AI intro when AI is turned on: what it does, what is sent, no training, the provider, link to Settings › AI; desktop dialog and phone sheet
+- `AiSettings.dc.html` — Settings › AI: opt-in switch, Folder and Tags each Suggest / Automatic / Off (default Suggest), Summaries switch, what is sent (notes, summary language), this month's usage, process existing links, delete AI data; variants off, folder set to Automatic, limit reached, provider trouble, processing (desktop)
+- `AiTags.dc.html` — Tag and folder suggestions in Add link and Edit link: ready, suggesting, accepted, old link, limit reached, not available, off; chip anatomy; **proposal** rule offer after repeated corrections; you chose the folder (AI never overrides); Automatic mode applied with «Moved by AI» and Undo; **Fill in with AI** (F1c): the button and its shortcut, after the click, with a folder you already chose (desktop)
+- `AiSummary.dc.html` — Summaries on cards and rows, pending, kind-aware wording, Edit link written by AI and edited by you (desktop)
+- `AiTidy.dc.html` — **Proposal** Tidy Unsorted: entry point, review with everything selected, applied toast with Undo, empty (desktop)
+- `MobileAi.dc.html` — Phone at 360px: Add link sheet with suggestions, suggesting and limit states, feed with summaries, You › AI, Tidy Unsorted, the Folder mode sheet, Automatic mode toast with Undo; Fill in with AI in the Add link sheet, before and after (phone)
+
+- `Privacy.dc.html` (section 9) — now has the «AI features (optional)» section: provider as processor, data sent, retention, counts only, turning it off
+
+- `AiSearch.dc.html` — Search by meaning (F3) in ⌘K: word matches first, “Related by meaning” with “why it matched”, nothing matches the words, not ready, off; the Ask entry (desktop)
+- `AskShelf.dc.html` — Ask your shelf (F4) side panel, redesign #507: header with spark tile and allowance, top-aligned empty state with starter cards, answer with avatar, citation chips and source cards, one-piece composer (desktop; other states follow the same frame)
+- `AiAnnounce.dc.html` — One-time “Shelfmark can now help with AI” dialog (#507): animated spark tile, four feature cards, Turn on AI… opens the AI intro, Not now
+- `AiCleanup.dc.html` — Clean-up (F5): report with per-item choice and one Undo, entry card, checking, applied, nothing to clean (desktop)
+- `AiConnect.dc.html` — Connect your assistant (F6, MCP): server address, token shown once, connected clients, revoke, empty (desktop)
+- `AiDiscover.dc.html` — Related on your shelf in Edit link (F7); “From your shelf” weekly block with and without AI (F8) (desktop)
+- `MobileAiMore.dc.html` — Phone at 360px: the Ask tab replaces Tags while Ask is on; search with meaning results and the Ask row; Ask full screen (empty, answered) with Back; Library with the Tags section next to folders; AI off keeps the Tags tab (phone)

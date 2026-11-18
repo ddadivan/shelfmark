@@ -204,7 +204,7 @@ class Component extends DCLogic {
       showFirst: () => this.setState({ phase: 'first' }),
       showNav: () => this.setState({ phase: 'nav' }),
       showDone: () => this.setState({ phase: 'done' }),
-      saveBusy: save !== 'idle' ? 'true' : 'false', saveSpin: save !== 'idle' ? 'inline-block' : 'none', saveLeave: save === 'leaving' ? 'sm-spinner--leave' : '', saveLabel: save === 'busy' ? 'Saving…' : 'Save link',
+      saveBusy: save !== 'idle' ? 'true' : 'false', saveSpin: save !== 'idle' ? 'inline-block' : 'none', saveLeave: save === 'leaving' ? 'sm-spinner--leave' : '', saveLabel: save === 'busy' ? 'Creating…' : 'Create link',
       delBusy: del !== 'idle' ? 'true' : 'false', delSpin: del !== 'idle' ? 'inline-block' : 'none', delLeave: del === 'leaving' ? 'sm-spinner--leave' : '', delLabel: del === 'busy' ? 'Deleting…' : 'Delete link',
       qSpin: q !== 'idle' ? 'inline-block' : 'none', qIcon: q === 'idle' ? 'inline-grid' : 'none', qLeave: q === 'leaving' ? 'sm-spinner--leave' : '',
       save: () => this.run('save', 1400),

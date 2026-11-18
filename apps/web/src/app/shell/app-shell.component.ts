@@ -35,6 +35,7 @@ import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/services/onboarding.store';
 import { RatingStore } from '../features/rating/services/rating.store';
+import { AiAnnouncementService } from '../features/ai/services/ai-announcement.service';
 import { WhatsNewStore } from '../features/changelog/services/whats-new.store';
 import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
@@ -48,10 +49,14 @@ import { UserSettingsStore } from '../stores/user-settings.store';
 import { ADMIN_PATH } from '../features/admin/models/admin-path.const';
 import { HowItWorksService } from '../features/how-it-works/services/how-it-works.service';
 import { ReminderNoticeService } from '../features/reminders/services/reminder-notice.service';
+import { AiSettingsStore } from '../features/ai/services/ai-settings.store';
+import { AskHeaderButtonComponent } from '../features/ai/components/ask-header-button/ask-header-button.component';
+import { AiTickService } from '../features/ai/services/ai-tick.service';
 import { DemoBannerComponent } from './demo-banner/demo-banner.component';
 import { OfflineBannerComponent } from './offline-banner/offline-banner.component';
 import { PHONE_TAB } from './models/phone-tab.const';
 import { phoneTabForUrl } from './phone-tab-for-url';
+import { isPushedUrl } from './pushed-url';
 import { SettingsNavComponent } from '../features/settings/components/settings-nav/settings-nav.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ToastAreaDirective } from '../core/layout/toast-area.directive';
@@ -60,7 +65,8 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
 /**
  * Layout around the signed-in pages. Desktop and tablet: the sidebar card on the left, the top bar
  * (search pill, theme, "Add link", account menu) and the page on the right. Phone: the page alone
- * under the floating tab bar (Library, Search, Add, Tags, You); each page carries its own title.
+ * under the floating tab bar (Library, Search, Add, Tags or Ask while Ask is on, You); each page
+ * carries its own title.
  */
 @Component({
   selector: 'app-shell',
@@ -78,6 +84,7 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
     MenuSeparatorComponent,
     MenuTriggerDirective,
     HeaderSearchComponent,
+    AskHeaderButtonComponent,
     SettingsNavComponent,
     SidebarComponent,
     TabBarComponent,
@@ -111,6 +118,8 @@ export default class AppShellComponent {
   );
   /** The tab of the current page (the tab bar marks it with `aria-current`). */
   protected readonly activeTab = computed(() => phoneTabForUrl(this.url()));
+  /** A pushed page with its own bottom bar (Tidy Unsorted): the mobile shell hides the tab bar. */
+  protected readonly pushed = computed(() => isPushedUrl(this.url()));
   /** On the settings pages the settings nav takes the place of the sidebar (tablet and up). */
   protected readonly inSettings = computed(() => this.activeTab() === PHONE_TAB.You);
   private readonly tabLabels = toSignal(
@@ -118,16 +127,21 @@ export default class AppShellComponent {
       this.transloco.selectTranslate('shell.tabs.library'),
       this.transloco.selectTranslate('shell.tabs.search'),
       this.transloco.selectTranslate('shell.tabs.tags'),
+      this.transloco.selectTranslate('shell.tabs.ask'),
       this.transloco.selectTranslate('shell.tabs.you'),
     ]),
-    { initialValue: ['', '', '', ''] },
+    { initialValue: ['', '', '', '', ''] },
   );
+  private readonly ai = inject(AiSettingsStore);
   protected readonly tabs = computed<TabBarItem[]>(() => {
-    const [library, search, tags, you] = this.tabLabels();
+    const [library, search, tags, ask, you] = this.tabLabels();
     return [
       { id: PHONE_TAB.Library, label: library, icon: 'bookmark', href: `/${APP_PATH.Library}` },
       { id: PHONE_TAB.Search, label: search, icon: 'search' },
-      { id: PHONE_TAB.Tags, label: tags, icon: 'tag', href: `/${APP_PATH.Tags}` },
+      // While Ask is on it takes the place of Tags; tags move into Library (#499).
+      this.ai.askOn()
+        ? { id: PHONE_TAB.Ask, label: ask, icon: 'spark', href: `/${APP_PATH.Ask}` }
+        : { id: PHONE_TAB.Tags, label: tags, icon: 'tag', href: `/${APP_PATH.Tags}` },
       { id: PHONE_TAB.You, label: you, icon: 'user', href: `/${APP_PATH.Settings}` },
     ];
   });
@@ -173,6 +187,11 @@ export default class AppShellComponent {
     void this.userSettings.load();
     // The due reminders badge, and the note when some became due since the last visit (#275).
     void inject(ReminderNoticeService).check();
+    // AI (#389): the switches the dialogs and cards follow, and the catch-up tick while jobs wait.
+    void this.ai.load();
+    inject(AiTickService);
+    // The one-time AI announcement (#507) plans itself once the account's AI side is loaded.
+    inject(AiAnnouncementService);
   }
 
   /** The rating look starts for an eligible user (not demo, onboarding done) and stops otherwise. */

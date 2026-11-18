@@ -1,12 +1,13 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import { MOCK_FIXTURE } from '../../src/models/mock-fixture.const';
 import { openFeed, pickFolderMenuItem } from '../../src/support/a11y-flows';
+import { SEARCH_BUTTON, SEARCH_FIELD_NAME } from '../../src/support/search-button';
 import { viewEntry } from '../../src/support/sidebar';
 import type { WhatsNewClip } from '../models/whats-new-clip.interface';
 import { WHATS_NEW_MEDIA } from '../models/whats-new-media.const';
 
-// The screens of the 2.1.0 New items on the mock data (the same flows as the e2e specs: side-by-side,
-// folder-details, rules, reminders). Each returns where its crop starts.
+// The screens of the New items on the mock data (the same flows as the e2e specs). Each returns
+// where its crop starts. The 2.2.0 ones (AI) start with the mock AI account on (`seedAi`).
 
 const READING = MOCK_FIXTURE.readingName;
 // Same values as MOCK_LINKS_SCENARIO_KEY and its Previews / Showcase scenarios (apps/web).
@@ -89,7 +90,7 @@ export async function rulesByDomain(page: Page): Promise<WhatsNewClip> {
   let dialog = page.getByRole('dialog', { name: 'Add link' });
   await dialog.getByLabel('Link', { exact: true }).fill('https://www.youtube.com/watch?v=first');
   await expect(dialog.getByLabel('Title', { exact: true })).not.toHaveValue('');
-  await dialog.getByRole('button', { name: 'Save link' }).click();
+  await dialog.getByRole('button', { name: 'Create link' }).click();
   await expect(dialog).toBeHidden();
 
   await page.mouse.move(0, 0);
@@ -127,4 +128,111 @@ export async function reminders(page: Page): Promise<WhatsNewClip> {
   await expect(page.getByRole('heading', { level: 1, name: 'Reminders' })).toBeVisible();
   await expect(page.locator('app-reminder-row').first()).toBeVisible();
   return { x: 0, y: 0 };
+}
+
+// --- 2.2.0: the AI release --------------------------------------------------------------------
+
+// Same values as MOCK_AI_STORAGE_KEY and MOCK_AI_ANNOUNCEMENT_KEY in apps/web.
+const MOCK_AI_KEY = 'sm-mock-ai';
+const AI_SEEDED_FLAG = 'whats-new-ai-seeded';
+const VIDEO_URL = 'https://www.youtube.com/watch?v=first';
+const AI_WAIT = { timeout: 15_000 } as const;
+
+interface AiAccount {
+  readonly ask?: boolean;
+  readonly meaningSearch?: boolean;
+}
+
+/** The demo library with the mock AI account on (summaries on, Ask and meaning search as given). */
+async function openAiLibrary(page: Page, account: AiAccount = {}): Promise<void> {
+  const stored = {
+    settings: {
+      enabled: true,
+      summaries: true,
+      ask: account.ask ?? false,
+      meaningSearch: account.meaningSearch ?? false,
+    },
+    introSeen: true,
+  };
+  await page.addInitScript(
+    ([scenarioKey, scenario, key, flag, value]) => {
+      sessionStorage.setItem(scenarioKey, scenario);
+      // The extension banner would take the room of the feed.
+      localStorage.setItem('sm-extension-banner-dismissed', '1');
+      if (!sessionStorage.getItem(flag)) {
+        sessionStorage.setItem(flag, '1');
+        localStorage.setItem(key, value);
+      }
+    },
+    [SCENARIO_KEY, SHOWCASE, MOCK_AI_KEY, AI_SEEDED_FLAG, JSON.stringify(stored)],
+  );
+  await openFeed(page);
+  await dismissToasts(page);
+}
+
+/** Closes the toasts the demo library shows on start (the due reminder), so none covers a screen. */
+async function dismissToasts(page: Page): Promise<void> {
+  const toasts = page.getByRole('status').filter({ hasText: 'A reminder is due' });
+  await expect(toasts.first()).toBeVisible(AI_WAIT);
+  await toasts.first().getByRole('button', { name: 'Dismiss' }).click();
+  await expect(toasts).toHaveCount(0);
+}
+
+/** Add link with a YouTube address after Fill in with AI: title, folder, tags and the summary. */
+export async function aiSuggestions(page: Page): Promise<WhatsNewClip> {
+  await openAiLibrary(page);
+  await page.getByRole('button', { name: 'Add link' }).first().click();
+  const dialog = page.getByRole('dialog', { name: 'Add link' });
+  await dialog.getByLabel('Link', { exact: true }).fill(VIDEO_URL);
+  await expect(dialog.getByLabel('Title', { exact: true })).not.toHaveValue('');
+  const fill = dialog.getByRole('button', { name: 'Fill in with AI' });
+  await expect(fill).toBeVisible(AI_WAIT);
+  await fill.click();
+  await expect(dialog.getByLabel('Summary')).not.toHaveValue('', AI_WAIT);
+  await expect(dialog.getByRole('combobox', { name: 'Folder' })).not.toContainText('Unsorted');
+  await expect(dialog.getByRole('button', { name: /^Remove tag / }).first()).toBeVisible();
+  // The whole window: the dialog with its footer button and the filled fields.
+  return { x: 0, y: 0, ...WHATS_NEW_MEDIA.viewport };
+}
+
+/** The Ask drawer with a cited answer and its sources. */
+export async function aiAsk(page: Page): Promise<WhatsNewClip> {
+  await openAiLibrary(page, { ask: true });
+  await page.getByRole('button', { name: 'Ask your shelf' }).click();
+  const panel = page.getByRole('dialog', { name: 'Ask your shelf' });
+  const field = panel.getByRole('textbox', { name: 'Ask about your links' });
+  await field.fill('Which ramen recipes did I save?');
+  await field.press('Enter');
+  await expect(panel).toContainText('You saved a few ramen recipes.', AI_WAIT);
+  const sources = panel.getByRole('list', { name: 'Sources from your shelf' });
+  await expect(sources.getByRole('listitem')).toHaveCount(3, AI_WAIT);
+  await expect(panel.getByRole('button', { name: 'Stop' })).toBeHidden(AI_WAIT);
+  return { x: WHATS_NEW_MEDIA.viewport.width - WHATS_NEW_MEDIA.crop.width, y: 0 };
+}
+
+/** Search for "signals": word matches, then the "Related by meaning" group. */
+export async function aiSearch(page: Page): Promise<WhatsNewClip> {
+  await openAiLibrary(page, { meaningSearch: true });
+  const field = page.getByRole('combobox', { name: SEARCH_FIELD_NAME });
+  if (!(await field.isVisible())) {
+    await page.getByRole('button', { name: SEARCH_BUTTON }).first().click();
+  }
+  await field.fill('signals');
+  const list = page.getByRole('listbox', { name: 'Search results' });
+  const related = list.getByRole('group', { name: 'Related by meaning' });
+  await expect(related.getByRole('option').first()).toBeVisible(AI_WAIT);
+  // The word matches fill the panel: scroll until the meaning group shows under them.
+  await related.getByRole('option').last().scrollIntoViewIfNeeded();
+  return centred(await boxOf(list));
+}
+
+/** The feed with AI summaries on the cards of the demo library. */
+export async function aiSummaries(page: Page): Promise<WhatsNewClip> {
+  await openAiLibrary(page);
+  const summarised = page
+    .locator('ui-card')
+    .filter({ has: page.getByRole('img', { name: /Generated by AI/ }) });
+  await expect(summarised.first()).toBeVisible(AI_WAIT);
+  const left = await boxOf(page.locator('.library__scroll'));
+  return { x: Math.round(left.x), y: 0 };
 }

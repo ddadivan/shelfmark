@@ -44,7 +44,7 @@ test.describe('keyboard-only flows (mock API)', () => {
 
     await page.keyboard.type(NEW_URL);
     await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on example.org');
-    await activate(page, dialog.getByRole('button', { name: 'Save link' }));
+    await activate(page, dialog.getByRole('button', { name: 'Create link' }));
 
     await expect(dialog).toBeHidden();
     await expect(trigger).toBeFocused();

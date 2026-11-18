@@ -86,10 +86,12 @@ jobs:
       contents: read
       actions: read
     # Real Postgres for the migration check only (ADR 0025); unit tests use in-memory PGlite.
-    # Trust auth: the container is reachable from this job only and holds no data.
+    # pgvector image (ADR 0052): the ai_embeddings migration runs `CREATE EXTENSION vector`; 0.8.7
+    # matches the PGlite extension of the tests. Trust auth: the container is reachable from this job
+    # only and holds no data.
     services:
       postgres:
-        image: postgres:17-alpine@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac
+        image: pgvector/pgvector:0.8.7-pg17@sha256:b513c48566e4777cd3370451400000c78eda6a08131d68f4c31d4a76f27bd8fd
         env:
           POSTGRES_HOST_AUTH_METHOD: trust
         ports:
@@ -681,7 +683,13 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
-      - run: npm audit --audit-level=high
+      # ADR 0048 (#493): the required gate blocks on run-time dependencies only; the full tree,
+      # dev tooling included, is still audited and shown, without failing the job.
+      - name: Audit run-time dependencies (blocking)
+        run: node tools/ci/audit-runtime.mjs
+      - name: Audit the full tree, dev tooling included (warning only)
+        continue-on-error: true
+        run: npm audit --audit-level=high
 
   gitleaks:
     name: gitleaks

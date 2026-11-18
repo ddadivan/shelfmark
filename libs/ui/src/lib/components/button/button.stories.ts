@@ -78,6 +78,66 @@ export const Ghost: Story = { args: { variant: BUTTON_VARIANT.Ghost } };
 
 export const Danger: Story = { args: { variant: BUTTON_VARIANT.Danger, iconLeft: 'trash' } };
 
+/**
+ * The one AI action ("Fill in with AI", BRAND › AI): the `ai-fill` tint, no edge, the label in
+ * `text` and a 20px spark in `ai`; hover and press a step stronger. Light and dark side by side.
+ */
+export const Ai: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { themes: Object.values(THEME) },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
+            <ui-button variant="ai" iconLeft="spark">Fill in with AI</ui-button>
+            <ui-button variant="ai" size="lg" iconLeft="spark" block>Fill in with AI</ui-button>
+          </div>
+        }
+      </div>`,
+  }),
+};
+
+/**
+ * The quiet AI action ("Rewrite" under a summary): no fill at rest, the spark in `ai`; hover and
+ * press bring the `ai-fill` tints. Busy keeps the pulsing spark. Light and dark side by side.
+ */
+export const AiGhost: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { themes: Object.values(THEME) },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
+            <ui-button variant="ai-ghost" size="sm" iconLeft="spark">Rewrite</ui-button>
+            <ui-button variant="ai-ghost" size="sm" iconLeft="spark" loading>Rewriting…</ui-button>
+          </div>
+        }
+      </div>`,
+  }),
+};
+
+/**
+ * Fill in with AI states: `ariaDisabled` (waits for a link: dimmed, still focusable, tooltip
+ * readable) and `loading` (the spark pulses and a soft light sweeps across; no spinner).
+ */
+export const AiStates: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { themes: Object.values(THEME) },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
+            <ui-button variant="ai" iconLeft="spark" ariaDisabled>Fill in with AI</ui-button>
+            <ui-button variant="ai" iconLeft="spark" loading>Filling…</ui-button>
+          </div>
+        }
+      </div>`,
+  }),
+};
+
 export const Small: Story = { args: { size: BUTTON_SIZE.Sm } };
 
 export const Large: Story = { args: { size: BUTTON_SIZE.Lg, variant: BUTTON_VARIANT.Primary } };

@@ -1,0 +1,44 @@
+<ui-dialog size="md" hideTitle [title]="'ai.announce.title' | transloco">
+  <div class="ai-announce">
+    <span class="ai-announce__glow" aria-hidden="true"></span>
+    <ui-button
+      class="ai-announce__close"
+      iconOnly
+      iconLeft="close"
+      [variant]="BUTTON_VARIANT.Ghost"
+      [size]="BUTTON_SIZE.Lg"
+      [ariaLabel]="'ai.announce.close' | transloco"
+      (click)="notNow()"
+    />
+    <span class="ai-announce__tile" aria-hidden="true">
+      <ui-icon name="spark" [size]="ICON_SIZE.Lg" />
+    </span>
+    <div class="ai-announce__intro">
+      <p class="ai-announce__heading" aria-hidden="true">{{ 'ai.announce.title' | transloco }}</p>
+      <p class="ai-announce__lead">{{ 'ai.announce.lead' | transloco }}</p>
+    </div>
+    <ul class="ai-announce__points">
+      @for (point of POINTS; track point; let i = $index) {
+        <li class="ai-announce__point" [style.--i]="i">
+          <strong class="ai-announce__point-title">{{ point + '.title' | transloco }}</strong>
+          <span class="ai-announce__point-text">{{ point + '.text' | transloco }}</span>
+        </li>
+      }
+    </ul>
+    <div class="ai-announce__actions">
+      <ui-button
+        class="ai-announce__turn-on"
+        block
+        [variant]="BUTTON_VARIANT.Primary"
+        [size]="BUTTON_SIZE.Lg"
+        (click)="turnOn()"
+      >
+        {{ 'ai.announce.turnOn' | transloco }}
+      </ui-button>
+      <ui-button block [variant]="BUTTON_VARIANT.Ghost" [size]="BUTTON_SIZE.Lg" (click)="notNow()">
+        {{ 'ai.announce.notNow' | transloco }}
+      </ui-button>
+      <p class="ai-announce__note">{{ 'ai.announce.note' | transloco }}</p>
+    </div>
+  </div>
+</ui-dialog>

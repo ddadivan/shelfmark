@@ -1,0 +1,30 @@
+@if (settings.askOn()) {
+<div class="ask-page">
+  <div class="ask-page__top">
+    <ui-button
+      variant="ghost"
+      size="sm"
+      iconLeft="chevron-left"
+      [href]="libraryHref"
+      (linkClick)="back($event)"
+    >
+      {{ 'ai.ask.back' | transloco }}
+    </ui-button>
+    @if (store.entries().length > 0) {
+    <ui-button
+      variant="ghost"
+      size="sm"
+      iconOnly
+      iconLeft="edit"
+      [ariaLabel]="'ai.ask.newQuestion' | transloco"
+      (click)="store.reset()"
+    />
+    }
+  </div>
+  <app-ask-heading class="ask-page__head" onPage />
+  <app-ask-conversation class="ask-page__conversation" onPage />
+  <div class="ask-page__bar">
+    <app-ask-composer />
+  </div>
+</div>
+}

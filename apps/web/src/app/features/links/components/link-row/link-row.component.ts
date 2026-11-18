@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { normalizeRuleDomain, type LinkResponse } from '@shelfmark/contracts';
+import { AI_JOB_STATUS, normalizeRuleDomain, type LinkResponse } from '@shelfmark/contracts';
 import {
   BADGE_TONE,
   BadgeComponent,
@@ -22,6 +22,7 @@ import { linkKeyIntent } from '../../utils/link-select-keys';
 import { LINK_KEY_INTENT } from '../../models/link-key-intent.const';
 import type { LinkSelectToggle } from '../../models/link-select-toggle.interface';
 import type { FolderChipView } from '../../models/folder-chip-view.interface';
+import { LinkSummaryComponent } from '../../../ai/components/link-summary/link-summary.component';
 import { linkHost, ownImageUrl, safeHref, siteLetter } from '../../utils/link-view';
 import { ReminderFormatService } from '../../../reminders/services/reminder-format.service';
 
@@ -41,6 +42,7 @@ import { UserSettingsStore } from '../../../../stores/user-settings.store';
     ChipComponent,
     FaviconComponent,
     FolderChipComponent,
+    LinkSummaryComponent,
     ListItemComponent,
     MenuComponent,
     MenuItemComponent,
@@ -58,6 +60,10 @@ export class LinkRowComponent {
   /** The tags are left out on a phone: the row has no room for them. */
   protected readonly viewport = inject(ViewportService);
   protected readonly phone = this.viewport.phone;
+  /** The meta line shows the summary (or its skeleton right after a save) instead of the domain. */
+  protected readonly summarised = computed(
+    () => !!this.link().summary || this.link().aiStatus === AI_JOB_STATUS.Pending,
+  );
   private readonly reminders = inject(ReminderFormatService);
   private readonly now = Date.now();
   protected readonly BADGE_TONE = BADGE_TONE;
@@ -92,6 +98,13 @@ export class LinkRowComponent {
   readonly remindRequested = output<void>();
   /** "Create a rule for youtube.com…" from the actions menu (#398). */
   readonly ruleRequested = output<void>();
+  /**
+   * Offer "Show related" (AI-3): the page sets it while search by meaning is ready and the side by
+   * side view can open.
+   */
+  readonly relatable = input(false);
+  /** "Show related" from the actions menu: the split picker offers the related folders. */
+  readonly relatedRequested = output<void>();
   /** The domain a rule for this link would match; `null` hides the menu item. */
   protected readonly ruleDomain = computed(() => normalizeRuleDomain(this.link().url));
   readonly deleteRequested = output<void>();

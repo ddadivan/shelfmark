@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ButtonComponent } from '../button/button.component';
 import { ChipComponent } from '../chip/chip.component';
 import { SelectComponent } from '../select/select.component';
+import { DialogCancelDirective } from './dialog-cancel.directive';
 import { DialogComponent } from './dialog.component';
 import { UiDialogRef } from '../../services/dialog/dialog-ref';
 import { DialogService } from '../../services/dialog/dialog.service';
@@ -295,6 +296,46 @@ const frame = (theme: Theme) => `
       </ui-dialog>
     </div>
   </div>`;
+
+const footerFrame = (theme: Theme) => `
+  <div ${THEME_ATTRIBUTE}="${theme}" class="dst-gallery">
+    <p class="dst-hint">${theme} theme: phone footer with 2, 3 and 4 buttons (narrow viewport)</p>
+    <div class="dst-scrim">
+      <ui-dialog title="Two buttons" closeLabel="Close">
+        <ui-button slot="footer" uiDialogCancel>Cancel</ui-button>
+        <ui-button slot="footer" variant="primary">Save</ui-button>
+      </ui-dialog>
+    </div>
+    <div class="dst-scrim">
+      <ui-dialog title="Three buttons" closeLabel="Close">
+        <ui-button slot="footer" iconLeft="trash">Delete</ui-button>
+        <ui-button slot="footer" variant="ai-ghost" iconLeft="spark">Fill</ui-button>
+        <ui-button slot="footer" variant="primary">Save changes</ui-button>
+      </ui-dialog>
+    </div>
+    <div class="dst-scrim">
+      <ui-dialog title="Four buttons" closeLabel="Close">
+        <ui-button slot="footer" iconLeft="trash">Delete</ui-button>
+        <ui-button slot="footer" variant="ai" iconLeft="spark">Fill</ui-button>
+        <ui-button slot="footer" uiDialogCancel>Cancel</ui-button>
+        <ui-button slot="footer" variant="primary">Save changes</ui-button>
+      </ui-dialog>
+    </div>
+  </div>`;
+
+/**
+ * Phone sheet footer (#512): the main action (the last button) is alone on the bottom row at full
+ * width; every other button shares one row above it in equal widths. A button marked
+ * `uiDialogCancel` is left out on the sheet while the dialog has its own close button (the fourth
+ * panel has it at "Cancel", so it shows Delete and Fill side by side). Desktop keeps one row.
+ */
+export const SheetFooter: Story = {
+  globals: { viewport: { value: 'phone', isRotated: false } },
+  render: () => ({
+    moduleMetadata: { imports: [DialogComponent, ButtonComponent, DialogCancelDirective] },
+    template: Object.values(THEME).map(footerFrame).join(''),
+  }),
+};
 
 const controlsFrame = (theme: Theme) => `
   <div ${THEME_ATTRIBUTE}="${theme}" class="dst-gallery">

@@ -395,6 +395,13 @@ $leave-presets: (
       box-shadow: 0 0 0 #{rem(2px)} transparent;
     }
   }
+
+  // A suggestion chip that was just accepted swells a little at the middle of its 200 ms.
+  @keyframes ui-suggest-accept {
+    50% {
+      scale: 1.06;
+    }
+  }
 }
 
 // The sage ring of a landed card is the one moment longer than 320 ms (Motion principle 2).
