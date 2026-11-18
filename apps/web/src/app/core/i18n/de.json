@@ -187,6 +187,37 @@
       "text": "Ein Klick in der Symbolleiste oder Alt+Umschalt+S. Titel, deine Ordnerregeln und letzten Ordner sind schon ausgefüllt, für die meisten Seiten reicht ein weiterer Klick.",
       "browsers": "Für Chrome, Edge, Brave und Arc. Nach der Anmeldung installierst du sie aus deinem Regal.",
       "alt": "Die Shelfmark-Erweiterung: In Shelfmark speichern mit dem Seitentitel, dem Ordner Kleidung aus einer Regel, Tags und einer Notiz"
+    },
+    "ai": {
+      "badge": "Optionale KI",
+      "title": "Hilfe beim Sortieren, wenn du sie willst",
+      "text": "Schalte KI ein, und jeder neue Link kommt mit vorgeschlagenen Tags, einem Ordner und einer zweizeiligen Zusammenfassung. Nichts bewegt sich, bevor du tippst.",
+      "points": {
+        "suggest": {
+          "title": "Vorschläge, die du annimmst",
+          "text": "Tags und Ordner aus denen, die du schon hast, mit einem Tipp."
+        },
+        "meaning": {
+          "title": "Finden, worum es geht",
+          "text": "„Der Vortrag über Signals“ findet das Video, auch ohne diese Wörter."
+        },
+        "ask": {
+          "title": "Frag dein Regal",
+          "text": "Eine Frage in deinen Worten, eine Antwort aus deinen Links mit Quellen."
+        }
+      },
+      "note": "Aus, bis du sie einschaltest. Deine Links werden nie zum Trainieren von KI-Modellen verwendet.",
+      "privacy": "So funktioniert KI in Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore in der Praxis",
+        "newTag": "State-Management",
+        "query": "Vortrag über Signals und Performance",
+        "related": "Ähnlich im Inhalt",
+        "result": "Zoneless Change Detection erklärt",
+        "why": "Nah an: schnelleres Rendern",
+        "recipe": "Das beste Ramen für unter der Woche",
+        "summary": "Ein Ramen in 30 Minuten mit gekaufter Brühe, weichen Eiern und schnellen Pickles."
+      }
     }
   },
   "links": {

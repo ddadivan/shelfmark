@@ -187,6 +187,37 @@
       "text": "Un clic en la barra de herramientas o Alt+Mayús+S. El título, tus reglas de carpetas y las carpetas recientes ya están rellenados: casi todas las páginas solo piden un clic más.",
       "browsers": "Para Chrome, Edge, Brave y Arc. Instálala desde tu estantería al iniciar sesión.",
       "alt": "La extensión de Shelfmark: Guardar en Shelfmark con el título de la página, la carpeta Ropa según una regla, etiquetas y una nota"
+    },
+    "ai": {
+      "badge": "IA opcional",
+      "title": "Ayuda para ordenar, cuando la quieras",
+      "text": "Activa la IA y cada enlace nuevo llega con etiquetas, una carpeta y un resumen de dos líneas sugeridos. Nada se mueve hasta que lo toques.",
+      "points": {
+        "suggest": {
+          "title": "Sugerencias que tú aceptas",
+          "text": "Etiquetas y carpetas de las que ya tienes, con un toque."
+        },
+        "meaning": {
+          "title": "Encuéntralo por su tema",
+          "text": "«Esa charla sobre signals» encuentra el vídeo, aunque no tenga esas palabras."
+        },
+        "ask": {
+          "title": "Pregunta a tu estantería",
+          "text": "Una pregunta con tus palabras, una respuesta de tus enlaces con fuentes."
+        }
+      },
+      "note": "Desactivada hasta que la actives. Tus enlaces nunca se usan para entrenar modelos de IA.",
+      "privacy": "Cómo funciona la IA en Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore en la práctica",
+        "newTag": "gestión de estado",
+        "query": "charla sobre signals y rendimiento",
+        "related": "Relacionados por significado",
+        "result": "Detección de cambios sin zonas, explicada",
+        "why": "Cerca de: renderizado más rápido",
+        "recipe": "El mejor ramen entre semana",
+        "summary": "Un ramen en 30 minutos con caldo comprado, huevos blandos y encurtidos rápidos."
+      }
     }
   },
   "links": {

@@ -187,6 +187,37 @@
       "text": "One click on the toolbar or Alt+Shift+S. The title, your folder rules and recent folders are already filled in, so most pages take one more click.",
       "browsers": "For Chrome, Edge, Brave and Arc. Install it from your shelf after you sign in.",
       "alt": "The Shelfmark extension: Save to Shelfmark with the page title, the folder Clothes from a rule, tags and a note"
+    },
+    "ai": {
+      "badge": "Optional AI",
+      "title": "Help with sorting, when you want it",
+      "text": "Turn on AI and each new link arrives with suggested tags, a folder and a two-line summary. Nothing moves until you tap it.",
+      "points": {
+        "suggest": {
+          "title": "Suggestions you accept",
+          "text": "Tags and folders from the ones you already have, one tap each."
+        },
+        "meaning": {
+          "title": "Find it by what it’s about",
+          "text": "“That talk about signals” finds the video, even without those words."
+        },
+        "ask": {
+          "title": "Ask your shelf",
+          "text": "A question in your own words, an answer from your links with sources."
+        }
+      },
+      "note": "Off until you turn it on. Your links are never used to train AI models.",
+      "privacy": "How AI works in Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore in practice",
+        "newTag": "state management",
+        "query": "talk about signals and performance",
+        "related": "Related by meaning",
+        "result": "Zoneless change detection, explained",
+        "why": "Close to: faster rendering",
+        "recipe": "The best weeknight ramen",
+        "summary": "A 30-minute ramen with store-bought stock, soft eggs and quick pickles."
+      }
     }
   },
   "links": {

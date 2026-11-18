@@ -15,6 +15,9 @@
   -->
   @defer (on idle; when sectionsRequested()) {
   <app-landing-bento #bento />
+  <!-- The AI features (#481) right after the bento, in its block: it arrives with it, so the
+       "How it's built" scroll that waits for the bento needs no further wait. -->
+  <app-landing-ai />
   } @placeholder {
   <div class="landing__placeholder landing__placeholder--bento"></div>
   } @loading {

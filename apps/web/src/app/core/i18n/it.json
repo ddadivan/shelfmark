@@ -187,6 +187,37 @@
       "text": "Un clic sulla barra degli strumenti o Alt+Maiusc+S. Titolo, regole delle cartelle e cartelle recenti sono già compilati: per quasi tutte le pagine basta un altro clic.",
       "browsers": "Per Chrome, Edge, Brave e Arc. Installala dalla tua libreria dopo l’accesso.",
       "alt": "L’estensione Shelfmark: Salva in Shelfmark con il titolo della pagina, la cartella Abbigliamento da una regola, tag e una nota"
+    },
+    "ai": {
+      "badge": "IA facoltativa",
+      "title": "Un aiuto a riordinare, quando lo vuoi",
+      "text": "Attiva l’IA e ogni nuovo link arriva con tag, una cartella e un riassunto di due righe suggeriti. Niente si sposta finché non tocchi.",
+      "points": {
+        "suggest": {
+          "title": "Suggerimenti che accetti",
+          "text": "Tag e cartelle tra quelli che hai già, con un tocco."
+        },
+        "meaning": {
+          "title": "Trovalo per argomento",
+          "text": "«Quel talk sui signals» trova il video, anche senza quelle parole."
+        },
+        "ask": {
+          "title": "Chiedi alla tua libreria",
+          "text": "Una domanda con parole tue, una risposta dai tuoi link con le fonti."
+        }
+      },
+      "note": "Spenta finché non la attivi. I tuoi link non vengono mai usati per addestrare modelli di IA.",
+      "privacy": "Come funziona l’IA in Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore in pratica",
+        "newTag": "gestione dello stato",
+        "query": "talk su signals e prestazioni",
+        "related": "Simili per significato",
+        "result": "Change detection zoneless, spiegata",
+        "why": "Vicino a: rendering più veloce",
+        "recipe": "Il miglior ramen infrasettimanale",
+        "summary": "Un ramen in 30 minuti con brodo pronto, uova morbide e sottaceti veloci."
+      }
     }
   },
   "links": {
