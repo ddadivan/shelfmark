@@ -1,6 +1,11 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { signal, type EnvironmentProviders, type Provider } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
 import { ASK_PERIOD, type AskEvent } from '@shelfmark/contracts';
 import { Subject } from 'rxjs';
+import { AuthStore } from '../../../core/auth/auth.store';
+import { AUTH_ROUTE } from '../../../core/auth/models/auth-routes.const';
 import { aiSettingsResponse, fakeAiApi } from '../../../../testing/fake-ai-api';
 import { AI_API } from '../models/ai-api.const';
 import { AiSettingsStore } from './ai-settings.store';
@@ -8,7 +13,7 @@ import { AskStore } from './ask.store';
 
 const ALLOWANCE = { questionsLeft: 7, period: ASK_PERIOD.Day, resetsOn: '2026-11-19' };
 
-async function setup() {
+async function setup(providers: (Provider | EnvironmentProviders)[] = []) {
   const api = fakeAiApi(aiSettingsResponse());
   const streams: Subject<AskEvent>[] = [];
   api.ask.mockImplementation(() => {
@@ -16,7 +21,9 @@ async function setup() {
     streams.push(stream);
     return stream;
   });
-  TestBed.configureTestingModule({ providers: [{ provide: AI_API, useValue: api }, AskStore] });
+  TestBed.configureTestingModule({
+    providers: [{ provide: AI_API, useValue: api }, AskStore, ...providers],
+  });
   const settings = TestBed.inject(AiSettingsStore);
   await settings.load();
   return { api, streams, settings, store: TestBed.inject(AskStore) };
@@ -90,5 +97,24 @@ describe('AskStore', () => {
     store.ask('ramen again');
     streams[1]?.next({ type: 'error', reason: 'off', counted: false, allowance: null });
     expect(api.getSettings).toHaveBeenCalledTimes(2);
+  });
+
+  it('shows the rate-limit line for a 429 and ends the session for a 401', async () => {
+    const auth = { user: signal({ id: 'u1' }), expireSession: vi.fn() };
+    const { streams, store } = await setup([
+      provideRouter([]),
+      { provide: AuthStore, useValue: auth },
+    ]);
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    store.ask('ramen recipes');
+    streams[0]?.error(new HttpErrorResponse({ status: 429 }));
+    expect(store.entries()[0]).toMatchObject({ state: 'error', reason: 'rate-limited' });
+    expect(store.streaming()).toBe(false);
+    expect(auth.expireSession).not.toHaveBeenCalled();
+    store.ask('ramen again');
+    streams[1]?.error(new HttpErrorResponse({ status: 401 }));
+    expect(store.entries()[1]).toMatchObject({ state: 'error', reason: 'unavailable' });
+    expect(auth.expireSession).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledWith([AUTH_ROUTE.SignIn], expect.anything());
   });
 });

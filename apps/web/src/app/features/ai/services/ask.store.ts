@@ -1,4 +1,5 @@
-import { computed, inject } from '@angular/core';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { computed, inject, Injector } from '@angular/core';
 import {
   patchState,
   signalStore,
@@ -9,11 +10,17 @@ import {
 } from '@ngrx/signals';
 import { ASK_ERROR_REASON, ASK_EVENT_TYPE, ASK_LIMIT, type AskEvent } from '@shelfmark/contracts';
 import type { Subscription } from 'rxjs';
+import { expireSession } from '../../../core/auth/expire-session';
 import { AI_API } from '../models/ai-api.const';
 import type { AskEntry } from '../models/ask-entry.interface';
 import { ASK_ENTRY_STATE } from '../models/ask-entry-state.const';
 import type { AskState } from '../models/ask-state.interface';
-import { applyAskEvent, endAskEntry, stopAskEntry } from '../utils/apply-ask-event';
+import {
+  applyAskEvent,
+  endAskEntry,
+  rateLimitAskEntry,
+  stopAskEntry,
+} from '../utils/apply-ask-event';
 import { AiSettingsStore } from './ai-settings.store';
 
 const initialState: AskState = { entries: [] };
@@ -27,7 +34,8 @@ export function normalizeQuestion(question: string): string {
  * The conversation of one Ask panel (AI-4, ADR 0051), provided by the panel's container: entries
  * stay in memory until it closes, each question is single-turn, one question in flight. Allowances
  * from the stream go to `AiSettingsStore`, so every "questions left" line follows. An `off` error
- * reloads the AI settings (the entry points then hide). Destroying the store aborts the stream.
+ * reloads the AI settings (the entry points then hide). A 429 shows the rate-limit line; a 401 ends
+ * the session like the error interceptor does. Destroying the store aborts the stream.
  */
 export const AskStore = signalStore(
   withState(initialState),
@@ -38,6 +46,7 @@ export const AskStore = signalStore(
   withMethods((store) => {
     const api = inject(AI_API);
     const settings = inject(AiSettingsStore);
+    const injector = inject(Injector);
     let subscription: Subscription | null = null;
     let nextId = 1;
 
@@ -64,9 +73,18 @@ export const AskStore = signalStore(
     const start = (id: number, question: string): void => {
       subscription = api.ask(question).subscribe({
         next: (event) => onEvent(id, event),
-        error: () => {
+        error: (error: unknown) => {
           subscription = null;
+          const status = error instanceof HttpErrorResponse ? error.status : null;
+          if (status === HttpStatusCode.TooManyRequests) {
+            update(id, rateLimitAskEntry);
+            return;
+          }
           update(id, endAskEntry);
+          if (status === HttpStatusCode.Unauthorized) {
+            // `fetch` bypasses the error interceptor: the same session-end handling.
+            expireSession(injector);
+          }
         },
         complete: () => {
           subscription = null;

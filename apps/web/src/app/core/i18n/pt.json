@@ -3306,6 +3306,7 @@
       "error": "Não foi possível obter uma resposta agora. Esta pergunta não foi contada.",
       "rejected": "Não é possível responder a esta pergunta. Ela não foi contada.",
       "busy": "Outra pergunta ainda está sendo respondida. Tente de novo em instantes.",
+      "rateLimited": "Perguntas demais em pouco tempo. Tente de novo em um minuto; esta não contou para o seu limite.",
       "off": "Pergunte aos seus links está desativado em Configurações › IA.",
       "retry": "Tentar de novo",
       "truncated": "A resposta foi interrompida.",

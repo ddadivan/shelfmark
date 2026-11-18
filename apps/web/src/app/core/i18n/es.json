@@ -3306,6 +3306,7 @@
       "error": "No se pudo obtener una respuesta ahora. Esta pregunta no se ha contado.",
       "rejected": "No se puede responder a esta pregunta. No se ha contado.",
       "busy": "Todavía se está respondiendo otra pregunta. Inténtalo de nuevo en un momento.",
+      "rateLimited": "Demasiadas preguntas en poco tiempo. Vuelve a intentarlo en un minuto; esta no ha contado para tu límite.",
       "off": "Pregunta a tus enlaces está desactivado en Ajustes › IA.",
       "retry": "Reintentar",
       "truncated": "La respuesta se cortó.",

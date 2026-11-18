@@ -3233,6 +3233,7 @@
       "error": "Gerade keine Antwort möglich. Diese Frage zählt nicht für dein Limit.",
       "rejected": "Diese Frage kann nicht beantwortet werden. Sie zählt nicht für dein Limit.",
       "busy": "Eine andere Frage wird noch beantwortet. Versuch es gleich noch einmal.",
+      "rateLimited": "Zu viele Fragen in kurzer Zeit. Versuche es in einer Minute erneut; diese Frage wurde nicht auf dein Limit angerechnet.",
       "off": "Frag deine Links ist unter Einstellungen › KI ausgeschaltet.",
       "retry": "Erneut versuchen",
       "truncated": "Die Antwort wurde abgeschnitten.",

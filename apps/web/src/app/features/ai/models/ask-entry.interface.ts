@@ -1,5 +1,6 @@
-import type { AskAllowance, AskErrorReason, AskSource } from '@shelfmark/contracts';
+import type { AskAllowance, AskSource } from '@shelfmark/contracts';
 import type { StreamingSegment } from '@shelfmark/ui';
+import type { AskEntryReason } from './ask-entry-reason.type';
 import type { AskEntryState } from './ask-entry-state.type';
 
 /** One question of the Ask panel and its answer, kept in memory until the panel closes. */
@@ -21,7 +22,7 @@ export interface AskEntry {
   /** The answer was cut (cap, deadline, failure after text) or stopped. */
   readonly truncated: boolean;
   /** Why it ended with `error` or `limit`. */
-  readonly reason: AskErrorReason | null;
+  readonly reason: AskEntryReason | null;
   /** The limit line's allowance (`limit`), `null` otherwise. */
   readonly allowance: AskAllowance | null;
 }

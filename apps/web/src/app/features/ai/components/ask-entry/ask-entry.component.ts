@@ -22,6 +22,7 @@ import { LocaleService } from '../../../../core/i18n/locale.service';
 import { aiResetDate } from '../../utils/ai-reset-date';
 import type { AskEntry } from '../../models/ask-entry.interface';
 import type { AskLine } from '../../models/ask-line.interface';
+import { ASK_CLIENT_REASON } from '../../models/ask-client-reason.const';
 import { ASK_ENTRY_STATE } from '../../models/ask-entry-state.const';
 import { AskSourcesComponent } from '../ask-sources/ask-sources.component';
 
@@ -100,13 +101,15 @@ export class AskEntryComponent {
       case ASK_ENTRY_STATE.Error:
         return {
           key:
-            entry.reason === ASK_ERROR_REASON.Busy
-              ? 'ai.ask.busy'
-              : entry.reason === ASK_ERROR_REASON.Rejected
-                ? 'ai.ask.rejected'
-                : entry.reason === ASK_ERROR_REASON.Off
-                  ? 'ai.ask.off'
-                  : 'ai.ask.error',
+            entry.reason === ASK_CLIENT_REASON.RateLimited
+              ? 'ai.ask.rateLimited'
+              : entry.reason === ASK_ERROR_REASON.Busy
+                ? 'ai.ask.busy'
+                : entry.reason === ASK_ERROR_REASON.Rejected
+                  ? 'ai.ask.rejected'
+                  : entry.reason === ASK_ERROR_REASON.Off
+                    ? 'ai.ask.off'
+                    : 'ai.ask.error',
           params: {},
         };
       default:

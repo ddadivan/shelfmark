@@ -3233,6 +3233,7 @@
       "error": "Couldn’t get an answer right now. This question didn’t count toward your limit.",
       "rejected": "This question couldn’t be answered. It didn’t count toward your limit.",
       "busy": "Another question is still being answered. Try again in a moment.",
+      "rateLimited": "Too many questions in a short time. Try again in a minute; this one didn’t count toward your limit.",
       "off": "Ask your shelf is turned off in Settings › AI.",
       "retry": "Try again",
       "truncated": "The answer was cut short.",

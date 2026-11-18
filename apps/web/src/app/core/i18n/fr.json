@@ -3306,6 +3306,7 @@
       "error": "Impossible d’obtenir une réponse pour le moment. Cette question n’a pas été comptée.",
       "rejected": "Impossible de répondre à cette question. Elle n’a pas été comptée.",
       "busy": "Une autre question est encore en cours. Réessayez dans un instant.",
+      "rateLimited": "Trop de questions en peu de temps. Réessayez dans une minute ; celle-ci n’a pas été comptée dans votre limite.",
       "off": "Interroger mes liens est désactivé dans Réglages › IA.",
       "retry": "Réessayer",
       "truncated": "La réponse a été interrompue.",

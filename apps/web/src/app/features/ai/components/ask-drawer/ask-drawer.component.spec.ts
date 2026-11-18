@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
@@ -158,6 +159,17 @@ describe('AskDrawerComponent', () => {
     const answer = await loader.getHarness(UiStreamingAnswerHarness);
     expect(await answer.isStreaming()).toBe(false);
     expect(await answer.isCitationDisabled(0)).toBe(false);
+  });
+
+  it('shows the rate-limit line with Try again for a 429', async () => {
+    const { fixture, loader, stream } = await setup();
+    TestBed.inject(AskInbox).put('Which ramen recipes did I save?');
+    await fixture.whenStable();
+    stream.error(new HttpErrorResponse({ status: 429 }));
+    await fixture.whenStable();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.textContent).toContain('Too many questions in a short time.');
+    expect(await loader.getHarness(UiButtonHarness.with({ text: 'Try again' }))).toBeTruthy();
   });
 
   it('shows the limit line and disables the composer', async () => {

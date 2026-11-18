@@ -7,7 +7,9 @@ import { createAskSseParser } from '../utils/parse-sse';
  * `POST` an Ask question and read the `text/event-stream` answer with `fetch` and a stream reader
  * (ADR 0051): no `EventSource`, so the question stays out of the URL and a reconnect never asks
  * twice. Same-origin credentials, like the API base interceptor. A non-2xx answer (400, 401, 403,
- * 429) errors with an `HttpErrorResponse`; unsubscribing aborts the request, which stops the model.
+ * 429) errors with an `HttpErrorResponse` (`fetch` bypasses the interceptors, so `AskStore` maps a
+ * 429 to the rate-limit line and a 401 to the session end); unsubscribing aborts the request, which
+ * stops the model.
  */
 export function fetchAskEvents(
   url: string,

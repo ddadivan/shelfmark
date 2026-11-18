@@ -3306,6 +3306,7 @@
       "error": "Al momento non è possibile rispondere. Questa domanda non è stata conteggiata.",
       "rejected": "Non è possibile rispondere a questa domanda. Non è stata conteggiata.",
       "busy": "C’è ancora un’altra domanda in corso. Riprova tra un momento.",
+      "rateLimited": "Troppe domande in poco tempo. Riprova tra un minuto; questa non è stata conteggiata nel tuo limite.",
       "off": "Chiedi ai tuoi link è disattivato in Impostazioni › IA.",
       "retry": "Riprova",
       "truncated": "La risposta è stata interrotta.",
