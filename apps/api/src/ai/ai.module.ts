@@ -26,7 +26,7 @@ import { AiSettingsService } from './settings/ai-settings.service';
 import { AiUsageService } from './usage/ai-usage.service';
 
 /**
- * AI (#389–#391, ADR 0047 / 0048). `LinksModule` imports this module (enqueue and draft attach in
+ * AI (#389–#391, ADR 0047 / 0049). `LinksModule` imports this module (enqueue and draft attach in
  * the create transaction), so it must never import `LinksModule`.
  */
 @Module({

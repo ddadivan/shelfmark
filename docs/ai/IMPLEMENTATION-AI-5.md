@@ -1,6 +1,6 @@
 # AI-5 implementation plan: library clean-up
 
-Nov 17, 2026 · architect plan for F5 "Library clean-up" (#394), one branch `feat/394-library-cleanup` (stacked on AI-4 `feat/393-ask-your-shelf`; it needs only AI-3, so it can rebase onto AI-3 if AI-4 lags), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F5, principle 3, disclosure), `docs/design/screens/AiCleanup.dc.html`, `MobileAiMore.dc.html` (note: the desktop page in one column), the AI-1 code (`apps/api/src/ai/**`), `apps/api/src/tags/tags.service.ts` (merge), `apps/api/src/trash/**`, `apps/api/src/links/links-bulk.service.ts`, the AI-2 and AI-3 plans, ADR 0036 / 0048 / 0049 / 0050, new ADR 0052.
+Nov 17, 2026 · architect plan for F5 "Library clean-up" (#394), one branch `feat/394-library-cleanup` (stacked on AI-4 `feat/393-ask-your-shelf`; it needs only AI-3, so it can rebase onto AI-3 if AI-4 lags), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F5, principle 3, disclosure), `docs/design/screens/AiCleanup.dc.html`, `MobileAiMore.dc.html` (note: the desktop page in one column), the AI-1 code (`apps/api/src/ai/**`), `apps/api/src/tags/tags.service.ts` (merge), `apps/api/src/trash/**`, `apps/api/src/links/links-bulk.service.ts`, the AI-2 and AI-3 plans, ADR 0036 / 0049 / 0050 / 0051, new ADR 0053.
 
 **In scope.** The clean-up report page (desktop, tablet, phone) with three groups: duplicates (exact by normalised URL, near by AI-3 vectors), similar tags (by rule and by the model); per-row checkboxes; "Apply {n} changes" in one step with one Undo; deletions through Trash; the checking, applied and "nothing to clean" states; the monthly entry card on All links; entries in Settings › Library and You › Library.
 
@@ -8,7 +8,7 @@ Nov 17, 2026 · architect plan for F5 "Library clean-up" (#394), one branch `fea
 
 Principles enforced: nothing changes without "Apply"; unchecked rows are left alone; deletions go to Trash; one Undo reverts the run; AI groups are marked "Found by AI" and follow the opt-in and tier; near-duplicates send nothing new; tag synonyms send only tag names; the mock is the only provider outside production and for demo users.
 
-## 1. Decisions (ADR 0052)
+## 1. Decisions (ADR 0053)
 
 1. **Split (FEATURES proposal).** For everyone, AI on or off: **exact duplicates** (`links.normalized_url`, index `(user_id, normalized_url)`) and **similar tags by rule** (equal after lower case, diacritics removed, separators `-_ .` removed and one trailing `s` dropped; no model). For AI on and the AI pack: **near-duplicates** (search status `ready`, nothing sent) and **similar tags by the model** (one Haiku call, tag names only, counts one `cleanup_runs`).
 2. **Stored report, ids only** (`cleanup_reports`, one row per user, replaced by each run): findings hold group ids, reasons and link or tag ids, never titles, URLs or names; the read joins live rows, so trashed links and deleted tags drop out and renames show.
@@ -87,11 +87,11 @@ Changes: `AiQuotaLimits` + `cleanupAiRunsPerMonth` (`AI_QUOTA`: Free 0, AI pack 
 
 ## 7. Docs
 
-`docs/PROJECT.md`: 5.6 status (AI-5), 6.1 `cleanup_reports` and `ai_usage.cleanup_runs`, 6.2 the endpoints, 5.8 AI row (clean-up: ids-only report, apply validated against it, deletions through Trash, tag names only to the model). `apps/api/CLAUDE.md` (`CleanupModule`, the check seam, the tick hook), `apps/web/CLAUDE.md` (clean-up page, card). ADR 0052 and its row. Changelog draft entry.
+`docs/PROJECT.md`: 5.6 status (AI-5), 6.1 `cleanup_reports` and `ai_usage.cleanup_runs`, 6.2 the endpoints, 5.8 AI row (clean-up: ids-only report, apply validated against it, deletions through Trash, tag names only to the model). `apps/api/CLAUDE.md` (`CleanupModule`, the check seam, the tick hook), `apps/web/CLAUDE.md` (clean-up page, card). ADR 0053 and its row. Changelog draft entry.
 
 ## 8. Commits (each builds and passes `npm run affected`)
 
-1. `docs(ai): AI-5 implementation plan` (architect): this file and ADR 0052.
+1. `docs(ai): AI-5 implementation plan` (architect): this file and ADR 0053.
 2. `feat(contracts): clean-up types`.
 3. `feat(api): clean-up report table and allowance column`: migration, schema spec.
 4. `feat(api): exact duplicates and rule-based tag variants`: checks, keep rule, `GET` / `POST run`.

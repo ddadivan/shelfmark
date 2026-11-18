@@ -45,7 +45,7 @@ type Tx = Prisma.TransactionClient;
 const NO_JOBS: AiEnqueueResult = { jobIds: [], touched: false };
 
 /**
- * Link jobs (ADR 0048 points 1 and 4): enqueue inside the save transaction (only while AI is on and
+ * Link jobs (ADR 0049 points 1 and 4): enqueue inside the save transaction (only while AI is on and
  * at least one part is open), draft jobs from Add link, and the attach of a draft by
  * `(userId, aiDraftId)` inside the create transaction. Started after the commit through
  * `AiBackgroundService`. Every query filters by the session `userId`.
@@ -63,7 +63,7 @@ export class AiJobsService {
 
   /**
    * Locks the user's unattached draft job of that id (`FOR UPDATE`). Call it right after the
-   * `folders:` lock and before anything takes `tags:` (ADR 0033 / 0048 lock order).
+   * `folders:` lock and before anything takes `tags:` (ADR 0033 / 0049 lock order).
    */
   async lockDraft(tx: Tx, userId: string, draftId: string): Promise<LockedDraft | null> {
     const rows = await tx.$queryRaw<LockedDraft[]>`

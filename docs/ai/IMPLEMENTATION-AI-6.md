@@ -1,6 +1,6 @@
 # AI-6 implementation plan: Shelfmark MCP server
 
-Nov 17, 2026 · architect plan for F6 "Shelfmark MCP server" (#395), one branch `feat/395-mcp-server` (from AI-1's tip or `stage` once AI-1 is merged: it needs only entitlements and, optionally, the AI-3 meaning search; FEATURES lets it run in parallel with any step), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F6, open question 10), `docs/design/screens/AiConnect.dc.html`, `MobileAiMore.dc.html` (note: desktop pages in one column on the phone), `apps/api/src/auth/**`, `apps/api/src/common/{auth,csrf,rate-limit,interceptors}/**`, `apps/api/CLAUDE.md` (allow-list, public routes, CSRF, rate limits), `apps/api/src/links/link-where.ts`, `apps/api/src/ai/settings/ai-entitlements.ts`, the AI-3 plan, ADR 0029 / 0031 / 0040 / 0046, new ADR 0053.
+Nov 17, 2026 · architect plan for F6 "Shelfmark MCP server" (#395), one branch `feat/395-mcp-server` (from AI-1's tip or `stage` once AI-1 is merged: it needs only entitlements and, optionally, the AI-3 meaning search; FEATURES lets it run in parallel with any step), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F6, open question 10), `docs/design/screens/AiConnect.dc.html`, `MobileAiMore.dc.html` (note: desktop pages in one column on the phone), `apps/api/src/auth/**`, `apps/api/src/common/{auth,csrf,rate-limit,interceptors}/**`, `apps/api/CLAUDE.md` (allow-list, public routes, CSRF, rate limits), `apps/api/src/links/link-where.ts`, `apps/api/src/ai/settings/ai-entitlements.ts`, the AI-3 plan, ADR 0029 / 0031 / 0040 / 0046, new ADR 0054.
 
 **In scope.** An MCP server at `/api/mcp` on the existing Vercel Function (Streamable HTTP, stateless, JSON responses) with four read-only tools: `search_links`, `get_link`, `list_folders`, `list_tags`; personal tokens (create, copy once, hashed at rest, revoke, last used, calls this week, optional notes); Settings › AI › "Connect your assistant" on desktop and phone; per-client how-to text; privacy page section.
 
@@ -8,7 +8,7 @@ Nov 17, 2026 · architect plan for F6 "Shelfmark MCP server" (#395), one branch 
 
 Principles enforced: read-only, scoped to one user, nothing returned beyond an audited allow-list, notes only when the user chose, revoke stops at once, no secret ever logged; no Shelfmark model cost.
 
-## 1. Decisions (ADR 0053)
+## 1. Decisions (ADR 0054)
 
 1. **Hand-written handler, not the SDK at runtime.** `apps/api/src/mcp/` implements the stateless subset of Streamable HTTP: `POST /api/mcp` with one JSON-RPC message; `initialize`, `notifications/initialized`, `ping`, `tools/list`, `tools/call`; `application/json` answers; 202 for notifications and client responses; `GET` / `DELETE` → 405 `Allow: POST`; no sessions. Version negotiation from `MCP_PROTOCOL_VERSIONS = ['2025-11-25', '2025-06-18', '2025-03-26']` (newest first; commit 4 re-checks the spec's current revision and adds it if newer): the client's version if listed, else the newest. A present `MCP-Protocol-Version` header outside the list → 400. Batches → `-32600`; unparseable JSON → `-32700` with `id: null`; unknown method → `-32601`; invalid tool arguments → `-32602`; a missing link → a tool result with `isError: true`.
 2. **SDK as a pinned devDependency only.** `@modelcontextprotocol/sdk` (exact version, install scripts checked per ADR 0020) is used by `mcp.conformance.spec.ts`: its `Client` with `StreamableHTTPClientTransport` connects to the test app on an ephemeral port with a test token, initialises, lists tools and calls each one. ESLint `no-restricted-imports` keeps it out of `apps/api/src/**` except `*.spec.ts`.
@@ -81,11 +81,11 @@ Settings › AI page places the group last (desktop) and on You › AI (phone, s
 
 ## 7. Docs
 
-`docs/PROJECT.md`: 5.4 (personal MCP tokens beside sessions), 5.6 status (AI-6), 6.1 `mcp_tokens` and `mcp_token_usage`, 6.2 the endpoints, 5.8 a new "MCP server" row (bearer-only public route, hashed tokens shown once, read-only allow-listed output, per-token caps, cookies ignored, Origin check kept). `apps/api/CLAUDE.md` (`McpModule`, the guard, the public-route reasons, "never read cookies on `/api/mcp`", the allow-list mapper as the only output path, the SDK test-only rule), `apps/web/CLAUDE.md` (Connect your assistant). `docs/SETUP.md`: an optional step for the author to try a client against a preview (Claude Code command) and the GitHub secret-scanning custom pattern. ADR 0053 and its row. Changelog draft entry.
+`docs/PROJECT.md`: 5.4 (personal MCP tokens beside sessions), 5.6 status (AI-6), 6.1 `mcp_tokens` and `mcp_token_usage`, 6.2 the endpoints, 5.8 a new "MCP server" row (bearer-only public route, hashed tokens shown once, read-only allow-listed output, per-token caps, cookies ignored, Origin check kept). `apps/api/CLAUDE.md` (`McpModule`, the guard, the public-route reasons, "never read cookies on `/api/mcp`", the allow-list mapper as the only output path, the SDK test-only rule), `apps/web/CLAUDE.md` (Connect your assistant). `docs/SETUP.md`: an optional step for the author to try a client against a preview (Claude Code command) and the GitHub secret-scanning custom pattern. ADR 0054 and its row. Changelog draft entry.
 
 ## 8. Commits (each builds and passes `npm run affected`)
 
-1. `docs(ai): AI-6 implementation plan` (architect): this file and ADR 0053.
+1. `docs(ai): AI-6 implementation plan` (architect): this file and ADR 0054.
 2. `feat(contracts): MCP token types`.
 3. `feat(api): MCP token tables`: migration, schema spec.
 4. `feat(api): personal MCP tokens`: create, list, revoke, limits, `RATE_LIMIT.McpTokenWrite`, gitleaks rule.

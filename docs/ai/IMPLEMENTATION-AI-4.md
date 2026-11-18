@@ -1,6 +1,6 @@
 # AI-4 implementation plan: Ask your shelf and Rediscover
 
-Nov 17, 2026 · architect plan for F4 "Ask your shelf" (#393) and F8 "Rediscover" (FEATURES proposal, no issue yet: tracked under #393 unless the author wants its own), one branch `feat/393-ask-your-shelf` (stacked on AI-3 `feat/392-ai-search`), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F4, F8, principles, disclosure, open question 4), `docs/design/screens/AskShelf.dc.html`, `docs/design/components/StreamingAnswer/README.md`, `AiSearch.dc.html` 1 (Ask row), `MobileAiMore.dc.html` 1–3, `AiDiscover.dc.html` 2–3, the AI-1 code (`apps/api/src/ai/**`), the AI-2 and AI-3 plans, `apps/api/src/common/interceptors/timeout.interceptor.ts`, ADR 0047 / 0048 / 0050, new ADR 0051.
+Nov 17, 2026 · architect plan for F4 "Ask your shelf" (#393) and F8 "Rediscover" (FEATURES proposal, no issue yet: tracked under #393 unless the author wants its own), one branch `feat/393-ask-your-shelf` (stacked on AI-3 `feat/392-ai-search`), one PR into `stage` · sources: `docs/ai/FEATURES.md` (F4, F8, principles, disclosure, open question 4), `docs/design/screens/AskShelf.dc.html`, `docs/design/components/StreamingAnswer/README.md`, `AiSearch.dc.html` 1 (Ask row), `MobileAiMore.dc.html` 1–3, `AiDiscover.dc.html` 2–3, the AI-1 code (`apps/api/src/ai/**`), the AI-2 and AI-3 plans, `apps/api/src/common/interceptors/timeout.interceptor.ts`, ADR 0047 / 0049 / 0051, new ADR 0052.
 
 **In scope.** The Ask panel (desktop side panel, phone Search · Ask segment) with starters, a streamed plain-text answer, numbered citations, sources as real link rows, "not in your links", limit and error states; the ⌘K and phone search "Ask" rows; a server-side daily and monthly question limit; the "Ask your shelf" switch in Settings › AI; the weekly "From your shelf" block on All links (with and without AI).
 
@@ -8,7 +8,7 @@ Nov 17, 2026 · architect plan for F4 "Ask your shelf" (#393) and F8 "Rediscover
 
 Principles enforced: Ask runs only when the user asks; the library is never read for chat in the background; answers come only from the user's own retrieved links and are labelled; text only; nothing about a question or answer is stored; off, quota used or provider down shows a quiet line, never a broken screen; the mock is the only provider outside production and for demo users.
 
-## 1. Decisions (ADR 0051)
+## 1. Decisions (ADR 0052)
 
 1. **Transport: SSE framing over a POST, same Vercel Function.** `POST /api/ai/ask` `{ question }` answers `text/event-stream`, one JSON event per `data:` line (`meta`, `text`, `cite`, `done`, `error`). Not `EventSource`: the question must not sit in a URL or an access log, and a reconnect must not ask (and pay) twice. The handler takes `@Res()`, sets `Content-Type: text/event-stream; charset=utf-8`, `Cache-Control: no-store, no-transform`, `X-Accel-Buffering: no`, calls `flushHeaders()`, writes with `res.write`, ends with `res.end()`. No new dependency; Node streaming works on the existing function.
 2. **Timeout and `maxDuration`.** `TimeoutInterceptor` skips handlers carrying `@LongRunning()` (`common/interceptors/long-running.decorator.ts`, metadata key); `common/interceptors/models/long-running-route.const.ts` = `LONG_RUNNING_ROUTES` lists exactly `POST /api/ai/ask` with a reason, and `long-running-routes.spec.ts` (reusing `scanRoutes`) fails when markers and list differ. The handler owns its deadlines (`ASK_LIMIT`): `meta` right after retrieval; the first model text within `FirstTokenMs = 8000` or `error` `unavailable` (refunded); a hard stop at `StreamMaxMs = 24000`, ending with `done` `truncated: true` (6 s margin under `maxDuration` 30, unchanged). `req.on('close')` aborts the provider stream through an `AbortController` (Stop, panel closed, tab gone). The ask request defers nothing with `waitUntil`.
@@ -81,6 +81,10 @@ Changed: `GET` / `PATCH /api/ai/settings` (`ask`, `ask: AskStatus`); `AnthropicA
 
 **Settings › AI**: an "Ask your shelf" switch with "Uses Claude by Anthropic; questions and the matching links are sent, nothing is stored" and the allowance line. Intro and privacy page: Ask in the list of what is sent. **Transloco** (seven languages): `ai.ask.*` (`title`, `open`, `lead`, `starters.*`, `placeholder`, `send`, `stop`, `left.day` / `left.month`, `footer`, `sources`, `source`, `notFound.search` / `add`, `limit.day` / `month`, `error`, `retry`, `busy`, `truncated`), `search.askRow`, `ai.settings.ask.*`, `rediscover.*`.
 
+### 5a. Phone entry point (author's decision, Nov 18, 2026)
+
+While AI is on, the phone tab bar shows **Ask** (spark) instead of **Tags**; tags move into Library as their own section next to folders (with AI off the bar keeps Tags). Ask opens full screen (not a sheet). Update `MobileAiMore.dc.html`, the tab bar component and the Library page before building.
+
 ## 6. Tests (`test-engineer`)
 
 - **Unit (api, ≥ 80%)**: `citation-stream` (markers split across deltas, out-of-range and non-numeric brackets kept as text, renumbering, repeated citations, cut at the cap); `build-ask-prompt` (note only with the switch, field caps, `<` escaped, numbered keys, no ids or query strings); retrieval fusion (words only when not ready, cap 10, empty); `ask-usage` (day limit, month limit, Free month, refund, UTC boundaries, lock); `sse-writer` (framing, newlines, write after close); deadlines with fake timers (first text, hard stop); abort on close; Rediscover selection (age, opened, reminder, hidden, weekly order stable within a week and different across weeks, theme label fallback, fewer than 3 → forgotten).
@@ -94,11 +98,11 @@ Changed: `GET` / `PATCH /api/ai/settings` (`ask`, `ask: AskStatus`); `AnthropicA
 
 ## 7. Docs
 
-`docs/PROJECT.md`: 5.6 status (AI-4), 6.1 the new tables and columns, 6.2 the endpoints, 5.8 AI row (Ask: no tools, server-side citations, nothing stored, one long-running route, limits). `apps/api/CLAUDE.md` (Ask module, `@LongRunning` rule and its list, Rediscover), `apps/web/CLAUDE.md` (Ask panel, SSE reader, Rediscover block). ADR 0051 and its row. Changelog draft entry.
+`docs/PROJECT.md`: 5.6 status (AI-4), 6.1 the new tables and columns, 6.2 the endpoints, 5.8 AI row (Ask: no tools, server-side citations, nothing stored, one long-running route, limits). `apps/api/CLAUDE.md` (Ask module, `@LongRunning` rule and its list, Rediscover), `apps/web/CLAUDE.md` (Ask panel, SSE reader, Rediscover block). ADR 0052 and its row. Changelog draft entry.
 
 ## 8. Commits (each builds and passes `npm run affected`)
 
-1. `docs(ai): AI-4 implementation plan` (architect): this file and ADR 0051.
+1. `docs(ai): AI-4 implementation plan` (architect): this file and ADR 0052.
 2. `feat(contracts): Ask and Rediscover types`.
 3. `feat(api): ask usage, Ask switch and Rediscover tables`: migration, schema spec.
 4. `feat(api): long-running route marker for the request timeout`: decorator, list, spec.

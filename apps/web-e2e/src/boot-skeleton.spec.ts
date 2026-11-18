@@ -7,6 +7,8 @@ import { E2E_TAG } from './models/e2e-tag.const';
 // Same values as REAL_AUTH_API_STORAGE_KEY and SESSION_HINT_STORAGE_KEY in apps/web/src/app/core/auth/models.
 const REAL_AUTH_API_KEY = 'sm-real-auth-api';
 const SESSION_HINT_KEY = 'sm-session-hint';
+// Same value as EXTENSION_BANNER_DISMISSED_STORAGE_KEY in apps/web/src/app/core/auth/models.
+const EXTENSION_DISMISSED_KEY = 'sm-extension-banner-dismissed';
 const SESSION_DELAY_MS = 400;
 const COLD_SESSION_MS = 8000;
 const BUNDLE_DELAY_MS = 600;
@@ -154,6 +156,8 @@ interface Geometry {
   banner: Box | null;
   title: Box | null;
   card: Box | null;
+  /** The library's extension banner (#490): desktop Chromium, not closed. */
+  extension: Box | null;
 }
 
 /** Remembers the geometry of the skeleton on every frame it is in the DOM (the last one wins). */
@@ -172,6 +176,7 @@ async function recordSkeletonGeometry(page: Page): Promise<void> {
           banner: box(visible(root.querySelector('.boot__banner'))),
           title: box(visible(root.querySelector('.boot__title'))),
           card: box(visible(root.querySelector('.boot__card'))),
+          extension: box(visible(root.querySelector('.boot__extension'))),
         };
       }
       requestAnimationFrame(frame);
@@ -192,6 +197,7 @@ async function readGeometry(page: Page): Promise<{ skeleton: Geometry; app: Geom
       banner: box(document.querySelector('app-demo-banner ui-notice')),
       title: box(document.querySelector('app-shell h1')),
       card: box(document.querySelector('app-shell ui-card')),
+      extension: box(document.querySelector('app-extension-banner section')),
     };
   })()`);
   expect(skeleton, 'the skeleton was drawn').toBeDefined();
@@ -210,6 +216,12 @@ function expectSameBox(actual: Box | null, expected: Box | null, what: string, s
       `${what} height`,
     ).toBeLessThanOrEqual(1);
   }
+}
+
+/** The extension banner: in both or in neither, and then in the same place with the same height. */
+function expectSameExtension(skeleton: Box | null, app: Box | null): void {
+  expect(skeleton === null, 'extension banner in the skeleton and in the app').toBe(app === null);
+  if (skeleton && app) expectSameBox(skeleton, app, 'extension banner', true);
 }
 
 test.describe('the skeleton keeps the page still when the app takes over (#440, mock API)', () => {
@@ -240,6 +252,7 @@ test.describe('the skeleton keeps the page still when the app takes over (#440, 
       expectSameBox(skeleton.banner, app.banner, 'banner', true);
       expectSameBox(skeleton.title, app.title, 'title');
       expectSameBox(skeleton.card, app.card, 'first card');
+      expectSameExtension(skeleton.extension, app.extension);
     },
   );
 
@@ -260,6 +273,7 @@ test.describe('the skeleton keeps the page still when the app takes over (#440, 
       expectSameBox(skeleton.banner, app.banner, 'banner', true);
       expectSameBox(skeleton.title, app.title, 'title');
       expectSameBox(skeleton.card, app.card, 'first card');
+      expectSameExtension(skeleton.extension, app.extension);
     },
   );
 
@@ -279,6 +293,44 @@ test.describe('the skeleton keeps the page still when the app takes over (#440, 
       expect(app.banner).toBeNull();
       expectSameBox(skeleton.title, app.title, 'title');
       expectSameBox(skeleton.card, app.card, 'first card');
+      expectSameExtension(skeleton.extension, app.extension);
     },
   );
+
+  // Desktop Chromium (#490): the library's extension banner has one fixed height, so the skeleton
+  // holds its place at every desktop width.
+  for (const width of [1280, 1600]) {
+    test(`the extension banner keeps its place at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await seedSession(page);
+      await page.addInitScript(`localStorage.setItem('${SESSION_HINT_KEY}', '1');`);
+      await recordSkeletonGeometry(page);
+      await slowBundle(page);
+      await page.goto('/links');
+      await expect(page.locator('app-extension-banner section')).toBeVisible();
+
+      const { skeleton, app } = await readGeometry(page);
+      expect(skeleton.extension, 'the skeleton draws the extension banner').not.toBeNull();
+      expectSameExtension(skeleton.extension, app.extension);
+      expectSameBox(skeleton.card, app.card, 'first card');
+    });
+  }
+
+  test('a closed extension banner is not drawn', async ({ page }) => {
+    await seedSession(page);
+    await page.addInitScript(`
+      localStorage.setItem('${SESSION_HINT_KEY}', '1');
+      localStorage.setItem('${EXTENSION_DISMISSED_KEY}', '1');
+    `);
+    await recordSkeletonGeometry(page);
+    await slowBundle(page);
+    await page.goto('/links');
+    await expect(page.locator('app-shell ui-card').first()).toBeVisible();
+
+    const { skeleton, app } = await readGeometry(page);
+    expect(skeleton.extension).toBeNull();
+    expect(app.extension).toBeNull();
+    await expect(page.locator('html[data-boot-extension]')).toHaveCount(0);
+    expectSameBox(skeleton.card, app.card, 'first card');
+  });
 });

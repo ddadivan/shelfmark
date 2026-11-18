@@ -1,13 +1,13 @@
-# 0051. Ask your shelf: an SSE stream over a POST on the same Vercel Function, server-side citations, no stored answers, daily and monthly caps
+# 0052. Ask your shelf: an SSE stream over a POST on the same Vercel Function, server-side citations, no stored answers, daily and monthly caps
 
 - Status: Proposed
 - Date: 2026-11-17
-- Source: issue #393 (F4), `docs/ai/IMPLEMENTATION-AI-4.md` section 1, `docs/ai/FEATURES.md` F4, principles 2, 5, 6 and 7, open question 4, `docs/design/components/StreamingAnswer/README.md`, `docs/PROJECT.md` 5.6 and 5.8; amends [0047](0047-ai-provider-models-and-cost.md) point 7 (question limits) and [0031](0031-rate-limiting-and-request-interceptors.md) (request timeout for one route); builds on [0048](0048-ai-job-runner-on-vercel.md) and [0050](0050-search-by-meaning-embeddings.md)
+- Source: issue #393 (F4), `docs/ai/IMPLEMENTATION-AI-4.md` section 1, `docs/ai/FEATURES.md` F4, principles 2, 5, 6 and 7, open question 4, `docs/design/components/StreamingAnswer/README.md`, `docs/PROJECT.md` 5.6 and 5.8; amends [0047](0047-ai-provider-models-and-cost.md) point 7 (question limits) and [0031](0031-rate-limiting-and-request-interceptors.md) (request timeout for one route); builds on [0049](0049-ai-job-runner-on-vercel.md) and [0051](0051-search-by-meaning-embeddings.md)
 
 ## Context
 
 - Ask your shelf answers a question from the user's own links with Claude Sonnet 5.5 (`claude-sonnet-5-5`, ADR 0047), streamed, with numbered citations that are real link rows. It runs only when asked.
-- The API is one Vercel Function (`api/index.mjs`, `maxDuration: 30` since ADR 0048) on Node, which can stream a response. Every handler is cut by the global `TimeoutInterceptor` at `REQUEST_TIMEOUT_MS = 8000` with a 504, which cannot be sent once a stream has started; a Sonnet answer of up to 700 tokens takes 10 to 20 s.
+- The API is one Vercel Function (`api/index.mjs`, `maxDuration: 30` since ADR 0049) on Node, which can stream a response. Every handler is cut by the global `TimeoutInterceptor` at `REQUEST_TIMEOUT_MS = 8000` with a 504, which cannot be sent once a stream has started; a Sonnet answer of up to 700 tokens takes 10 to 20 s.
 - Retrieval can use the AI-3 vectors (`link_embeddings`, query embedding with its own monthly allowance) and the word search (`buildLinkWhere`).
 - ADR 0047 set "30 questions a day" for the AI pack; the design (`AskShelf` 5) shows 15; FEATURES says a heavy user (15 a day, \~$6 a month) costs more than the AI pack price idea (\~$30–50 a year).
 - Model output is untrusted and rendered as text only; link titles, notes and summaries can carry prompt injection.

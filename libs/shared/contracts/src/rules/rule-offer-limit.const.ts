@@ -1,5 +1,5 @@
 /**
- * Rule offer detection (AI-2, #390, ADR 0049): the newest `SameChoiceMin` links of a site must share
+ * Rule offer detection (AI-2, #390, ADR 0050): the newest `SameChoiceMin` links of a site must share
  * one folder; `CandidatesMax` links of the site are read; at most `HostsPerCheckMax` sites per check.
  */
 export const RULE_OFFER_LIMIT = {

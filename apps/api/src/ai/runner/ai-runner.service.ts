@@ -26,7 +26,7 @@ import { loadLinkVocabulary } from './load-link-vocabulary';
 const NO_EXCERPT: PageExcerpt = { excerpt: null, description: null };
 
 /**
- * Runs link jobs (ADR 0048 point 2): claim with a lease, count the quota, read the page (only while
+ * Runs link jobs (ADR 0049 point 2): claim with a lease, count the quota, read the page (only while
  * "Fetch titles and previews" is on, never inside a transaction), call the user's provider, validate
  * the answer and hand it to `AiApplyService`. Outages go back to the queue with a growing delay, at
  * most `AI_RUNNER_LIMIT.MaxAttempts` attempts; a refusal or an invalid answer fails at once. Logs carry

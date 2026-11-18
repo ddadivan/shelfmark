@@ -1,8 +1,8 @@
-# 0049. Rule offers and AI examples are derived from the user's links; no correction-event log
+# 0050. Rule offers and AI examples are derived from the user's links; no correction-event log
 
 - Status: Proposed
 - Date: 2026-11-17
-- Source: issue #390 (F1b, extends #398), `docs/ai/IMPLEMENTATION-AI-2.md` section 1, `docs/ai/FEATURES.md` F1b and principle 6, `docs/PROJECT.md` 5.6 and 5.8; builds on [0047](0047-ai-provider-models-and-cost.md) and [0048](0048-ai-job-runner-on-vercel.md)
+- Source: issue #390 (F1b, extends #398), `docs/ai/IMPLEMENTATION-AI-2.md` section 1, `docs/ai/FEATURES.md` F1b and principle 6, `docs/PROJECT.md` 5.6 and 5.8; builds on [0047](0047-ai-provider-models-and-cost.md) and [0049](0049-ai-job-runner-on-vercel.md)
 
 ## Context
 

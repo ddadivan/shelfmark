@@ -1,15 +1,15 @@
-# 0052. Library clean-up: one stored report per user (ids only), checks behind a seam, apply validated against the report, one Undo through Trash
+# 0053. Library clean-up: one stored report per user (ids only), checks behind a seam, apply validated against the report, one Undo through Trash
 
 - Status: Proposed
 - Date: 2026-11-17
-- Source: issue #394 (F5), `docs/ai/IMPLEMENTATION-AI-5.md` section 1, `docs/ai/FEATURES.md` F5 and principle 3, `docs/design/screens/AiCleanup.dc.html`, `docs/PROJECT.md` 5.6 and 5.8; builds on [0036](0036-trash-soft-delete.md), [0048](0048-ai-job-runner-on-vercel.md), [0049](0049-rule-offers-derived-no-correction-log.md) and [0050](0050-search-by-meaning-embeddings.md)
+- Source: issue #394 (F5), `docs/ai/IMPLEMENTATION-AI-5.md` section 1, `docs/ai/FEATURES.md` F5 and principle 3, `docs/design/screens/AiCleanup.dc.html`, `docs/PROJECT.md` 5.6 and 5.8; builds on [0036](0036-trash-soft-delete.md), [0049](0049-ai-job-runner-on-vercel.md), [0050](0050-rule-offers-derived-no-correction-log.md) and [0051](0051-search-by-meaning-embeddings.md)
 
 ## Context
 
 - F5 shows a clean-up report: duplicates (extra copies to Trash), similar tags (merge into one) and, later, dead links (#397, not built). Every row has a checkbox; "Apply selected" runs in one step with one Undo; nothing is automatic.
 - FEATURES splits it: exact duplicates (same normalised URL, `links.normalized_url`, indexed with `user_id`) need no model; near-duplicates use the AI-3 vectors (nothing new is sent); tag synonyms need a model call with tag names only.
 - The design shows progress ("812 of 1,248 links"), "you can leave this page; we'll keep the report", and an entry card on All links at most once a month.
-- A vector neighbour scan over 10,000 links takes longer than the 8 s request timeout; deferred work has the ADR 0048 machinery (`waitUntil`, the per-user tick, the daily sweep, 30 s `maxDuration`).
+- A vector neighbour scan over 10,000 links takes longer than the 8 s request timeout; deferred work has the ADR 0049 machinery (`waitUntil`, the per-user tick, the daily sweep, 30 s `maxDuration`).
 - AI-2 Tidy returns its Undo payload to the client and scopes every Undo statement by the session `userId` and the current state; Trash is a soft delete with one shared `deleted_at` per delete (ADR 0036).
 
 ## Decision
