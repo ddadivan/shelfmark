@@ -17,8 +17,6 @@ const PNG = Buffer.from(
 // the first load navigates inside the app.
 test.describe('folder description and cover (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
-  // The service worker would answer the image requests before `page.route` sees them.
-  test.use({ serviceWorkers: 'block' });
 
   /** Starts with every link previewed; `broken` answers the pictures with 404 (before any load). */
   async function start(page: Page, broken = false): Promise<void> {

@@ -58,10 +58,6 @@ async function expectSingleToast(page: Page, api: { failed: () => number }, text
 }
 
 test.describe('API error toasts (real APIs, routed failures)', () => {
-  // The production build registers the PWA service worker, and page.route never sees the
-  // requests it makes.
-  test.use({ serviceWorkers: 'block' });
-
   test('a 429 shows the rate-limit toast once', async ({ page }) => {
     const api = await failApi(page, 429);
 

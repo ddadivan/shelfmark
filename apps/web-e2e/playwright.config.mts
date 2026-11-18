@@ -46,6 +46,14 @@ export default defineConfig({
   use: {
     baseURL,
     trace: 'on-first-retry',
+    // CI serves the production build, which registers the Angular service worker. On a localhost
+    // scope the worker prefetches the whole app (every chunk) before it answers any fetch, so a
+    // lazy chunk asked for during the first seconds (the shell after a sign-in click, a landing
+    // section) waited up to ~5 s on a busy runner and the next `expect` timed out (#496). On a
+    // real domain that prefetch runs when idle and never holds a request. It also answers
+    // requests before `page.route` sees them. Only `pwa.spec.ts`, which checks the worker itself,
+    // allows it.
+    serviceWorkers: 'block',
   },
   // Against a deployed URL there is nothing to start.
   webServer: deployedUrl

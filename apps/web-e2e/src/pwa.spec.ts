@@ -7,6 +7,8 @@ const isProductionBuild = !!process.env['CI'] || !!process.env['BASE_URL'];
 
 test.describe('service worker', () => {
   test.skip(!isProductionBuild, 'the development build registers no service worker');
+  // The suite blocks the worker (playwright.config.mts); this spec is about it.
+  test.use({ serviceWorkers: 'allow' });
 
   test('registers and takes control after the first load', async ({ page }) => {
     await page.goto('/');
