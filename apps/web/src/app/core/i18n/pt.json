@@ -2972,8 +2972,8 @@
         "text": "O seletor de emoji tem a largura do campo, e as abas de categorias não parecem mais emojis para escolher."
       },
       "aiSuggestions": {
-        "title": "Sugestões de IA (opcionais)",
-        "text": "Toque em Preencher com IA em Adicionar link e um clique preenche título, pasta, tags e um resumo curto. Você pode mudar qualquer coisa. Também funciona na extensão do navegador. A IA vem desativada; ative em Configurações › IA.",
+        "title": "Preencher com IA",
+        "text": "Um clique em Adicionar link preenche o título, a pasta, as tags e um breve resumo a partir da página. Mude o que quiser: a sua escolha sempre vale. Funciona também na extensão do navegador. A IA fica desligada até você ativá-la em Configurações › IA.",
         "alt": "A caixa Adicionar link com um endereço do YouTube preenchido pela IA: título, pasta, tags e resumo."
       },
       "aiSummaries": {
@@ -2987,7 +2987,7 @@
       },
       "aiAsk": {
         "title": "Pergunte aos seus links",
-        "text": "Faça uma pergunta com suas próprias palavras e receba uma resposta curta a partir dos links que você salvou, com cada fonte listada.",
+        "text": "Faça uma pergunta com suas palavras e receba uma resposta curta a partir dos links que você salvou, com todas as fontes. Abra com Perguntar ao lado da busca ou com a aba Consulta no celular.",
         "alt": "O painel Perguntar com uma pergunta, uma resposta curta e os links de onde ela vem."
       },
       "aiCleanup": {

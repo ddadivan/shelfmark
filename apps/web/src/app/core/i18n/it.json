@@ -2972,8 +2972,8 @@
         "text": "Il selettore di emoji è largo quanto il suo campo e le schede delle categorie non sembrano più emoji da scegliere."
       },
       "aiSuggestions": {
-        "title": "Suggerimenti IA (facoltativi)",
-        "text": "Premi Compila con l’IA in Aggiungi link e un clic compila titolo, cartella, tag e un breve riassunto. Puoi cambiare tutto. Funziona anche nell’estensione del browser. L’IA è disattivata per impostazione predefinita; attivala in Impostazioni › IA.",
+        "title": "Compila con l’IA",
+        "text": "Un clic in Aggiungi link compila titolo, cartella, tag e un breve riassunto dalla pagina. Cambia ciò che vuoi: la tua scelta vince sempre. Funziona anche nell’estensione del browser. L’IA resta spenta finché non la attivi in Impostazioni › IA.",
         "alt": "La finestra Aggiungi link con un indirizzo YouTube compilato dall’IA: titolo, cartella, tag e riassunto."
       },
       "aiSummaries": {
@@ -2987,7 +2987,7 @@
       },
       "aiAsk": {
         "title": "Chiedi ai tuoi link",
-        "text": "Fai una domanda con parole tue e ricevi una risposta breve dai link che hai salvato, con ogni fonte elencata.",
+        "text": "Fai una domanda con parole tue e ricevi una risposta breve dai link che hai salvato, con tutte le fonti. Aprila con Chiedi accanto alla ricerca o con la scheda Chiedi sul telefono.",
         "alt": "Il pannello Chiedi con una domanda, una risposta breve e i link da cui deriva."
       },
       "aiCleanup": {

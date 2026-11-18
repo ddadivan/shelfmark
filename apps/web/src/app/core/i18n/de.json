@@ -2910,8 +2910,8 @@
         "text": "Die Emoji-Auswahl ist so breit wie ihr Feld, und die Kategorie-Tabs sehen nicht mehr wie wählbare Emojis aus."
       },
       "aiSuggestions": {
-        "title": "KI-Vorschläge (optional)",
-        "text": "Tippe in „Link hinzufügen“ auf „Mit KI ausfüllen“, und ein Klick füllt Titel, Ordner, Tags und eine kurze Zusammenfassung aus. Du kannst alles ändern. Auch in der Browser-Erweiterung. KI ist standardmäßig aus; schalte sie unter Einstellungen › KI ein.",
+        "title": "Mit KI ausfüllen",
+        "text": "Ein Klick in „Link hinzufügen“ füllt Titel, Ordner, Tags und eine kurze Zusammenfassung aus der Seite aus. Ändern Sie, was Sie möchten: Ihre Wahl hat immer Vorrang. Funktioniert auch in der Browsererweiterung. KI bleibt aus, bis Sie sie unter Einstellungen › KI einschalten.",
         "alt": "Der Dialog „Link hinzufügen“ mit einer YouTube-Adresse, von der KI ausgefüllt: Titel, Ordner, Tags und Zusammenfassung."
       },
       "aiSummaries": {
@@ -2925,7 +2925,7 @@
       },
       "aiAsk": {
         "title": "Frag deine Links",
-        "text": "Stell eine Frage in deinen eigenen Worten und erhalte eine kurze Antwort aus den Links, die du gespeichert hast, mit jeder Quelle.",
+        "text": "Stellen Sie eine Frage in Ihren eigenen Worten und erhalten Sie eine kurze Antwort aus Ihren gespeicherten Links, mit allen Quellen. Öffnen Sie es mit „Fragen“ neben der Suche oder dem Tab „Fragen“ auf dem Smartphone.",
         "alt": "Die Fragen-Seitenleiste mit einer Frage, einer kurzen Antwort und den Links, aus denen sie stammt."
       },
       "aiCleanup": {

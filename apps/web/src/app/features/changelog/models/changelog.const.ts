@@ -12,7 +12,7 @@ import type { ChangelogRelease } from './changelog-release.interface';
 export const CHANGELOG: readonly ChangelogRelease[] = [
   {
     version: '2.2.0',
-    date: '2026-11-18',
+    date: '2026-11-19',
     items: [
       {
         kind: CHANGELOG_ITEM_KIND.Feature,

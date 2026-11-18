@@ -2910,8 +2910,8 @@
         "text": "The emoji picker is as wide as its field, and its category tabs no longer look like emoji to pick."
       },
       "aiSuggestions": {
-        "title": "AI suggestions (optional)",
-        "text": "Press Fill in with AI in Add link and one click fills in the title, folder, tags and a short summary. You can change anything. It works in the browser extension too. AI is off by default; turn it on in Settings › AI.",
+        "title": "Fill in with AI",
+        "text": "One click in Add link fills in the title, folder, tags and a short summary from the page. Change anything you like: your choice always wins. Works in the browser extension too. AI stays off until you turn it on in Settings › AI.",
         "alt": "The Add link dialog with a YouTube address, filled in by AI: title, folder, tags and a summary."
       },
       "aiSummaries": {
@@ -2925,7 +2925,7 @@
       },
       "aiAsk": {
         "title": "Ask your shelf",
-        "text": "Ask a question in your own words and get a short answer from the links you saved, with every source listed.",
+        "text": "Ask a question in your own words and get a short answer from the links you saved, with every source listed. Open it with Ask next to search, or the Ask tab on your phone.",
         "alt": "The Ask drawer with a question, a short answer and the links it comes from."
       },
       "aiCleanup": {

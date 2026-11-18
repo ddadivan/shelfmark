@@ -2972,8 +2972,8 @@
         "text": "Le sélecteur d’emoji est aussi large que son champ, et ses onglets de catégories ne ressemblent plus à des emoji à choisir."
       },
       "aiSuggestions": {
-        "title": "Suggestions IA (facultatives)",
-        "text": "Appuyez sur Remplir avec l’IA dans Ajouter un lien : un clic remplit le titre, le dossier, les tags et un court résumé. Vous pouvez tout modifier. Cela marche aussi dans l’extension du navigateur. L’IA est désactivée par défaut ; activez-la dans Paramètres › IA.",
+        "title": "Remplir avec l’IA",
+        "text": "Un clic dans Ajouter un lien remplit le titre, le dossier, les tags et un court résumé à partir de la page. Modifiez ce que vous voulez : votre choix l’emporte toujours. Fonctionne aussi dans l’extension du navigateur. L’IA reste désactivée tant que vous ne l’activez pas dans Paramètres › IA.",
         "alt": "La fenêtre Ajouter un lien avec une adresse YouTube remplie par l’IA : titre, dossier, tags et résumé."
       },
       "aiSummaries": {
@@ -2987,7 +2987,7 @@
       },
       "aiAsk": {
         "title": "Interroger mes liens",
-        "text": "Posez une question avec vos propres mots et obtenez une réponse courte tirée des liens que vous avez enregistrés, chaque source listée.",
+        "text": "Posez une question avec vos mots et obtenez une réponse courte tirée de vos liens enregistrés, avec toutes les sources. Ouvrez-la avec Demander à côté de la recherche, ou l’onglet Question sur votre téléphone.",
         "alt": "Le panneau Demander avec une question, une réponse courte et les liens dont elle provient."
       },
       "aiCleanup": {

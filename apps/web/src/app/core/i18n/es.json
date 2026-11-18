@@ -2972,8 +2972,8 @@
         "text": "El selector de emoji es tan ancho como su campo y sus pestañas de categorías ya no parecen emoji para elegir."
       },
       "aiSuggestions": {
-        "title": "Sugerencias de IA (opcionales)",
-        "text": "Pulsa Rellenar con IA en Añadir enlace y un clic rellena el título, la carpeta, las etiquetas y un resumen breve. Puedes cambiar lo que quieras. También funciona en la extensión del navegador. La IA viene desactivada; actívala en Ajustes › IA.",
+        "title": "Rellenar con IA",
+        "text": "Un clic en Añadir enlace rellena el título, la carpeta, las etiquetas y un breve resumen a partir de la página. Cambia lo que quieras: tu elección siempre manda. También funciona en la extensión del navegador. La IA sigue apagada hasta que la actives en Ajustes › IA.",
         "alt": "El diálogo Añadir enlace con una dirección de YouTube rellenada por la IA: título, carpeta, etiquetas y resumen."
       },
       "aiSummaries": {
@@ -2987,7 +2987,7 @@
       },
       "aiAsk": {
         "title": "Pregunta a tus enlaces",
-        "text": "Haz una pregunta con tus propias palabras y recibe una respuesta breve a partir de los enlaces que guardaste, con cada fuente.",
+        "text": "Haz una pregunta con tus palabras y obtén una respuesta breve a partir de tus enlaces guardados, con todas las fuentes. Ábrelo con Preguntar junto a la búsqueda o con la pestaña Consulta en el móvil.",
         "alt": "El panel Preguntar con una pregunta, una respuesta breve y los enlaces de los que sale."
       },
       "aiCleanup": {
