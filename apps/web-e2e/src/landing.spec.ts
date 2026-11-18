@@ -22,6 +22,7 @@ test.describe('landing', () => {
       // project runs Chromium, the tablet and phone projects are below 64em.
       await expect(page.getByRole('heading', { level: 2 })).toHaveText([
         'Save once, find in seconds',
+        'Help with sorting, when you want it',
         'The same links, before and after',
         'Why this exists',
         "How it's built",
