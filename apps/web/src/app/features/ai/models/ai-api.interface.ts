@@ -7,6 +7,8 @@ import type {
   CreateAiDraftRequest,
   LinkAiState,
   LinkResponse,
+  MeaningSearchResponse,
+  RelatedLinksResponse,
   TidyApplyRequest,
   TidyApplyResponse,
   TidyCountResponse,
@@ -56,4 +58,11 @@ export interface AiApi {
   rewriteSummary(linkId: string): Observable<LinkAiState>;
   /** `POST /api/links/:id/ai/undo`: undoes what Automatic mode applied to one part. */
   undoApply(linkId: string, request: UndoAiApplyRequest): Observable<LinkResponse>;
+  /**
+   * `GET /api/ai/search` (AI-3): links found by meaning that are not word matches for `q`, always
+   * 200; `items` is empty unless the status is `ready`. `q` 3 to 200 characters, else 400.
+   */
+  searchMeaning(q: string, limit?: number): Observable<MeaningSearchResponse>;
+  /** `GET /api/links/:id/related` (AI-3): the closest other links by meaning (404 for a foreign link). */
+  related(linkId: string, limit?: number): Observable<RelatedLinksResponse>;
 }

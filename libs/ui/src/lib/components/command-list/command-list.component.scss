@@ -136,3 +136,32 @@
   padding: var(--space-2) var(--space-3) var(--space-1);
   color: var(--text-muted);
 }
+
+// A heading with an icon is a divider: the mark (14px next to 12px text, `ai` colour), the text and
+// a hairline to the end ("Related by meaning").
+.ui-command-list__heading--divider {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  padding-top: var(--space-3);
+
+  &::after {
+    flex: 1 1 auto;
+    content: '';
+    border-top: 1px solid var(--border);
+  }
+}
+
+.ui-command-list__heading-icon {
+  --ui-icon-size: #{rem(14px)};
+
+  color: var(--ai);
+}
+
+// Muted line above a heading ("No links with these words").
+.ui-command-list__lead {
+  @include type(caption);
+
+  padding: var(--space-2) var(--space-3) 0;
+  color: var(--text-muted);
+}

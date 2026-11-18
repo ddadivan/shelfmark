@@ -576,6 +576,10 @@
       "off": {
         "term": "Turning it off:",
         "text": "switch off one feature or AI as a whole in Settings › AI; requests stop at once. \"Delete AI data\" there removes every summary and suggestion AI made."
+      },
+      "meaning": {
+        "term": "Search by meaning:",
+        "text": "while it is on (Settings › AI), the title, summary and tag names of each link, your note only with \"Include my notes\", and the words you search for are sent to Voyage AI, our second processor, which turns them into number vectors. Never the address, your folders or anyone else's data. The vectors are stored with your links and deleted with them or with \"Delete AI data\"; your search text is not stored. Voyage AI keeps requests for at most [N] days and doesn't use them for training. [ADD LINK TO VOYAGE AI'S DATA PROCESSING TERMS AND REGION]"
       }
     },
     "retention": {
@@ -2957,7 +2961,7 @@
       "data": {
         "title": "Your AI data",
         "label": "Delete AI data",
-        "hint": "Removes every summary and suggestion AI made. Your own edits, tags and folders stay.",
+        "hint": "Removes every summary and suggestion AI made and turns search by meaning off. Your own edits, tags and folders stay.",
         "action": "Delete AI data"
       },
       "privacy": {
@@ -2969,7 +2973,14 @@
       "failed": "Couldn’t save your AI settings",
       "failedDetail": "The change was undone. Try again.",
       "loadFailed": "Couldn’t load your AI settings.",
-      "retry": "Try again"
+      "retry": "Try again",
+      "meaning": {
+        "title": "Search by meaning",
+        "text": "Finds links by what they’re about, not only by their words, and shows related links. Sends each link’s title, tags and summary (your note too, with “Include my notes”) and what you search for to Voyage AI.",
+        "ready": "Ready",
+        "progress": "{{ready}} of {{total}} links ready",
+        "quota": "Paused until {{date}}: this month’s limit"
+      }
     },
     "backfill": {
       "title": "Process existing links",
@@ -2990,7 +3001,7 @@
     "deleteData": {
       "confirm": {
         "title": "Delete AI data?",
-        "message": "Every summary and suggestion AI made is removed. Your own edits, tags and folders stay. This can’t be undone.",
+        "message": "Every summary and suggestion AI made is removed, and search by meaning turns off. Your own edits, tags and folders stay. This can’t be undone.",
         "confirm": "Delete AI data",
         "cancel": "Cancel",
         "close": "Close"
@@ -3023,7 +3034,11 @@
       "policy": "Read the privacy policy",
       "failed": "Couldn’t turn on AI. Try again.",
       "notNow": "Not now",
-      "turnOn": "Turn on AI"
+      "turnOn": "Turn on AI",
+      "meaning": {
+        "title": "Finds links by meaning",
+        "text": "Search and related links also match what a link is about. For this, titles, tags, summaries and your search text go to Voyage AI. Turn it off on its own in Settings › AI."
+      }
     },
     "suggest": {
       "label": "Suggested",
@@ -3141,6 +3156,19 @@
       },
       "undone": "Tidy undone",
       "undoFailed": "Couldn’t undo the tidy"
+    },
+    "search": {
+      "related": "Related by meaning",
+      "noWordMatches": "No links with these words",
+      "why": "Close to: {{reasons}}",
+      "fromSummary": "Close to: {{reasons}} (from the summary)",
+      "preparing": "Search by meaning is getting ready: {{ready}} of {{total}} links. Word matches work as usual."
+    },
+    "related": {
+      "title": "Related on your shelf",
+      "why": "Close to: {{reasons}}",
+      "show": "Show related",
+      "folders": "Related folders"
     }
   }
 }

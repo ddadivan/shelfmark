@@ -69,6 +69,20 @@ describe('HttpAiApi', () => {
         '/api/links/l1/ai/undo',
         { part: 'folder' },
       ],
+      [
+        () => api.searchMeaning('warm coat').subscribe(),
+        'GET',
+        '/api/ai/search?q=warm%20coat',
+        null,
+      ],
+      [
+        () => api.searchMeaning('warm coat', 3).subscribe(),
+        'GET',
+        '/api/ai/search?q=warm%20coat&limit=3',
+        null,
+      ],
+      [() => api.related('l/1').subscribe(), 'GET', '/api/links/l%2F1/related', null],
+      [() => api.related('l1', 5).subscribe(), 'GET', '/api/links/l1/related?limit=5', null],
     ];
     for (const [call, method, url, body] of calls) {
       call();

@@ -512,6 +512,8 @@
               (moveRequested)="actions.move(link)"
               (remindRequested)="actions.remind(link)"
               (ruleRequested)="actions.createRule(link)"
+              [relatable]="splitRelated.available()"
+              (relatedRequested)="splitView.showRelated(link.id)"
               (deleteRequested)="actions.delete(link)"
             />
           </li>
@@ -581,6 +583,8 @@
               (moveRequested)="actions.move(link)"
               (remindRequested)="actions.remind(link)"
               (ruleRequested)="actions.createRule(link)"
+              [relatable]="splitRelated.available()"
+              (relatedRequested)="splitView.showRelated(link.id)"
               (deleteRequested)="actions.delete(link)"
             />
           </li>

@@ -2,6 +2,7 @@ import {
   ACCOUNT_PLAN,
   AI_BACKFILL_STATE,
   AI_PROVIDER_STATUS,
+  AI_SEARCH_STATE,
   AI_TIER,
   type AiSettingsResponse,
 } from '@shelfmark/contracts';
@@ -34,11 +35,15 @@ export function aiSettingsResponse(patch: Partial<AiSettingsResponse> = {}): AiS
       done: 0,
       estimatedMinutes: null,
     },
+    search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
     ...patch,
   };
 }
 
-/** A fake `AI_API`: settings answer `settings`, every other method must be given by the spec. */
+/**
+ * A fake `AI_API`: settings answer `settings`, meaning search and related links answer nothing;
+ * every other method must be given by the spec.
+ */
 export function fakeAiApi(settings: AiSettingsResponse = aiSettingsResponse()): FakeAiApi {
   return {
     getSettings: vi.fn<AiApi['getSettings']>(() => of(settings)),
@@ -58,5 +63,7 @@ export function fakeAiApi(settings: AiSettingsResponse = aiSettingsResponse()): 
     getLinkAi: vi.fn<AiApi['getLinkAi']>(),
     rewriteSummary: vi.fn<AiApi['rewriteSummary']>(),
     undoApply: vi.fn<AiApi['undoApply']>(),
+    searchMeaning: vi.fn<AiApi['searchMeaning']>(() => of({ status: settings.search, items: [] })),
+    related: vi.fn<AiApi['related']>(() => of({ status: settings.search, items: [] })),
   };
 }

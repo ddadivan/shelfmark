@@ -112,6 +112,13 @@ export class LinkCardComponent {
   readonly remindRequested = output<void>();
   /** "Create a rule for youtube.com…" from the actions menu (#398). */
   readonly ruleRequested = output<void>();
+  /**
+   * Offer "Show related" (AI-3): the page sets it while search by meaning is ready and the side by
+   * side view can open.
+   */
+  readonly relatable = input(false);
+  /** "Show related" from the actions menu: the split picker offers the related folders. */
+  readonly relatedRequested = output<void>();
   /** The domain a rule for this link would match; `null` hides the menu item. */
   protected readonly ruleDomain = computed(() => normalizeRuleDomain(this.link().url));
   readonly deleteRequested = output<void>();

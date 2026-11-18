@@ -8,4 +8,5 @@ export const AI_SETTINGS_DEFAULT: Readonly<AiSettings> = {
   summaries: true,
   includeNotes: false,
   summaryLanguage: AI_SUMMARY_LANGUAGE_APP,
+  meaningSearch: true,
 };

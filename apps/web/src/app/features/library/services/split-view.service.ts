@@ -14,6 +14,7 @@ import { SPLIT_TILE_ICON } from '../models/split-tile-icon.const';
 import type { SplitTile } from '../models/split-tile.interface';
 import type { LibraryRoute } from '../models/library-route.interface';
 import { LEFT_FEED_ID } from '../models/left-feed-id.const';
+import { RELATED_QUERY_PARAM } from '../models/related-query-param.const';
 import { SPLIT_QUERY_PARAM } from '../models/split-query-param.const';
 import { SPLIT_RIGHT_KIND } from '../models/split-right-kind.const';
 import {
@@ -53,6 +54,8 @@ export class SplitViewService {
 
   private readonly right = computed(() => parseSplitParam(this.filters.splitParam()));
 
+  /** The split view can open here (from 80em). */
+  readonly canOpen = this.viewport.wide;
   /** The right half is on screen: wide enough and `?split` present. */
   readonly open = computed(
     () => this.viewport.wide() && this.right().kind !== SPLIT_RIGHT_KIND.Closed,
@@ -212,7 +215,7 @@ export class SplitViewService {
     this.pickerFocus = false;
     this.openerFocus = true;
     await this.router.navigate([], {
-      queryParams: { [SPLIT_QUERY_PARAM]: null },
+      queryParams: { [SPLIT_QUERY_PARAM]: null, [RELATED_QUERY_PARAM]: null },
       queryParamsHandling: 'merge',
     });
   }
@@ -249,9 +252,25 @@ export class SplitViewService {
     });
   }
 
+  /**
+   * "Show related" (AI-3): the right half opens with the picker, which offers the folders of the
+   * links related to `linkId` first (`SplitRelatedService`). Only from 80em.
+   */
+  async showRelated(linkId: string): Promise<void> {
+    if (!this.viewport.wide()) {
+      return;
+    }
+    this.pickerFocus = true;
+    await this.router.navigate([], {
+      queryParams: { [SPLIT_QUERY_PARAM]: '', [RELATED_QUERY_PARAM]: linkId },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  // Any choice ends "Show related": `?related` goes with it.
   private async setSplit(value: string, replaceUrl: boolean): Promise<void> {
     await this.router.navigate([], {
-      queryParams: { [SPLIT_QUERY_PARAM]: value },
+      queryParams: { [SPLIT_QUERY_PARAM]: value, [RELATED_QUERY_PARAM]: null },
       queryParamsHandling: 'merge',
       replaceUrl,
     });

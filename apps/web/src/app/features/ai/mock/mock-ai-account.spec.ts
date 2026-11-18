@@ -21,6 +21,7 @@ describe('mock AI account', () => {
       month: '2026-11',
       linksUsed: 0,
       backfillUsed: 0,
+      searchProcessing: false,
     });
     const demo = readMockAiAccount(localStorage, true, NOW);
     expect(demo.settings.enabled).toBe(true);
@@ -39,6 +40,8 @@ describe('mock AI account', () => {
     const again = readMockAiAccount(localStorage, false, NOW);
     expect(again.settings.tagsMode).toBe(AI_FEATURE_MODE.Auto);
     expect(again.linksUsed).toBe(7);
+    expect(again.settings.meaningSearch).toBe(true);
+    expect(again.searchProcessing).toBe(false);
     const next = readMockAiAccount(localStorage, false, Date.UTC(2026, 11, 1));
     expect(next.linksUsed).toBe(0);
     expect(next.backfillUsed).toBe(3);
@@ -55,6 +58,16 @@ describe('mock AI account', () => {
     localStorage.setItem(MOCK_AI_STORAGE_KEY, '{');
     expect(readMockAiAccount(localStorage, false, NOW).settings).toEqual(AI_SETTINGS_DEFAULT);
     expect(readMockAiAccount(undefined, false, NOW).introSeen).toBe(false);
+  });
+
+  it('reads the search by meaning switch and the processing toggle', () => {
+    localStorage.setItem(
+      MOCK_AI_STORAGE_KEY,
+      JSON.stringify({ settings: { meaningSearch: false }, searchProcessing: true }),
+    );
+    const account = readMockAiAccount(localStorage, false, NOW);
+    expect(account.settings.meaningSearch).toBe(false);
+    expect(account.searchProcessing).toBe(true);
   });
 
   it('names the UTC month and the first day of the next one', () => {

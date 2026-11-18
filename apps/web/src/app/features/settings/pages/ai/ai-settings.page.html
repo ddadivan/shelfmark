@@ -76,6 +76,13 @@
       (checkedChange)="setSwitch('summaries', $event, summariesSwitch)"
     />
   </ui-settings-row>
+  <ui-settings-row
+    align="top"
+    [title]="'ai.settings.meaning.title' | transloco"
+    [description]="'ai.settings.meaning.text' | transloco"
+  >
+    <app-meaning-search-control />
+  </ui-settings-row>
   }
 </ui-settings-section>
 

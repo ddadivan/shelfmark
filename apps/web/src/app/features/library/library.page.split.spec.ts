@@ -145,7 +145,7 @@ describe('LibraryPage side by side', () => {
     await button.click();
 
     expect(navigate).toHaveBeenCalledWith([], {
-      queryParams: { split: '' },
+      queryParams: { split: '', related: null },
       queryParamsHandling: 'merge',
       replaceUrl: false,
     });
@@ -322,7 +322,7 @@ describe('LibraryPage side by side', () => {
     await close.click();
 
     expect(navigate).toHaveBeenCalledWith([], {
-      queryParams: { split: null },
+      queryParams: { split: null, related: null },
       queryParamsHandling: 'merge',
     });
   });
@@ -336,7 +336,7 @@ describe('LibraryPage side by side', () => {
     expect(await toggle.getPressed()).toBe('true');
     await toggle.click();
     expect(navigate).toHaveBeenCalledWith([], {
-      queryParams: { split: null },
+      queryParams: { split: null, related: null },
       queryParamsHandling: 'merge',
     });
   });
@@ -361,7 +361,7 @@ describe('LibraryPage side by side', () => {
 
   it('closes with Esc in the right half, not in the left one', async () => {
     const { element, navigate } = await setup({ split: B });
-    const closed = { queryParams: { split: null }, queryParamsHandling: 'merge' };
+    const closed = { queryParams: { split: null, related: null }, queryParamsHandling: 'merge' };
 
     element
       .querySelector('.library__scroll')

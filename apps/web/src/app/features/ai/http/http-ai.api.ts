@@ -9,6 +9,8 @@ import {
   type CreateAiDraftRequest,
   type LinkAiState,
   type LinkResponse,
+  type MeaningSearchResponse,
+  type RelatedLinksResponse,
   type TidyApplyRequest,
   type TidyApplyResponse,
   type TidyCountResponse,
@@ -125,6 +127,20 @@ export class HttpAiApi implements AiApi {
   undoApply(linkId: string, request: UndoAiApplyRequest): Observable<LinkResponse> {
     return this.http.post<LinkResponse>(withId(AI_ENDPOINT.LinkAiUndo, linkId), request, {
       context: skipErrorToast(),
+    });
+  }
+
+  searchMeaning(q: string, limit?: number): Observable<MeaningSearchResponse> {
+    return this.http.get<MeaningSearchResponse>(AI_ENDPOINT.MeaningSearch, {
+      context: skipErrorToast(),
+      params: limit === undefined ? { q } : { q, limit },
+    });
+  }
+
+  related(linkId: string, limit?: number): Observable<RelatedLinksResponse> {
+    return this.http.get<RelatedLinksResponse>(withId(AI_ENDPOINT.RelatedLinks, linkId), {
+      context: skipErrorToast(),
+      ...(limit !== undefined && { params: { limit } }),
     });
   }
 }

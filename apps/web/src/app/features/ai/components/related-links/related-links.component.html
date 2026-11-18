@@ -1,0 +1,38 @@
+@if (rows().length > 0) {
+  <section class="related-links" [attr.aria-labelledby]="headingId">
+    <h3 class="related-links__title" [id]="headingId">{{ 'ai.related.title' | transloco }}</h3>
+    <ul class="related-links__list">
+      @for (row of rows(); track row.link.id) {
+        <li>
+          <ui-list-item
+            compact
+            newTab
+            [href]="row.href"
+            [description]="'links.item.opensInNewTab' | transloco"
+            (activated)="opened(row.link)"
+          >
+            <ui-favicon
+              slot="leading"
+              [src]="row.link.faviconUrl ?? undefined"
+              [letter]="row.letter"
+            />
+            <span slot="title">{{ row.link.title }}</span>
+            <span slot="meta" class="related-links__why">
+              @if (row.reasons) {
+                <ui-icon
+                  class="related-links__spark"
+                  name="spark"
+                  [size]="ICON_SIZE.Sm"
+                  [label]="'ai.disclaimer' | transloco"
+                  [attr.title]="'ai.disclaimer' | transloco"
+                />{{ 'ai.related.why' | transloco: { reasons: row.reasons } }}
+              } @else {
+                {{ row.host }}
+              }
+            </span>
+          </ui-list-item>
+        </li>
+      }
+    </ul>
+  </section>
+}
