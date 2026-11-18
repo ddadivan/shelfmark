@@ -123,6 +123,29 @@ describe('AskDrawerComponent', () => {
     expect(await axeViolations(host)).toEqual([]);
   });
 
+  it('drops a question handed over while another streams, and clears the inbox on close', async () => {
+    const { fixture, stream, api } = await setup();
+    const inbox = TestBed.inject(AskInbox);
+    inbox.put('Which ramen recipes did I save?');
+    await fixture.whenStable();
+    inbox.put('Compare the two coats I liked');
+    await fixture.whenStable();
+    expect(inbox.pending()).toBeNull();
+    stream.next({
+      type: 'done',
+      sources: [],
+      notFound: true,
+      truncated: false,
+      allowance: ALLOWANCE,
+    });
+    stream.complete();
+    await fixture.whenStable();
+    expect(api.ask).toHaveBeenCalledTimes(1);
+    inbox.put('ramen recipes again');
+    fixture.destroy();
+    expect(inbox.pending()).toBeNull();
+  });
+
   it('shows the limit line and disables the composer', async () => {
     const { fixture, stream } = await setup();
     TestBed.inject(AskInbox).put('Compare the two coats I liked');

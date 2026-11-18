@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
   untracked,
@@ -21,7 +22,8 @@ import { AskEntryComponent } from '../ask-entry/ask-entry.component';
 /**
  * The Ask conversation: before the first question a title, the lead and up to three starters from
  * the user's largest folders; then the questions with their answers. A question handed over
- * (`AskInbox`, from ⌘K or the phone search) is asked as soon as it shows. "Search" and "Add a link"
+ * (`AskInbox`, from ⌘K or the phone search) is asked as soon as it shows, or dropped while another
+ * question streams; the inbox is cleared when the panel closes. "Search" and "Add a link"
  * close the surrounding panel first. Uses the panel's `AskStore`.
  */
 @Component({
@@ -46,15 +48,16 @@ export class AskConversationComponent {
     effect(() => {
       if (this.inbox.pending() !== null) {
         untracked(() => {
-          if (!this.store.streaming()) {
-            const question = this.inbox.take();
-            if (question !== null) {
-              this.store.ask(question);
-            }
+          // Taken even while another question streams: a refused question is dropped, never asked
+          // later unprompted (it would spend a question).
+          const question = this.inbox.take();
+          if (question !== null) {
+            this.store.ask(question);
           }
         });
       }
     });
+    inject(DestroyRef).onDestroy(() => this.inbox.clear());
   }
 
   protected async search(query: string): Promise<void> {
