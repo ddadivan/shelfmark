@@ -1,7 +1,11 @@
 import { inject, Injector, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import type { CleanupApplyRequest, CleanupApplyResponse } from '@shelfmark/contracts';
-import { TOAST_KIND, ToastService } from '@shelfmark/ui';
+import type {
+  CleanupApplyRequest,
+  CleanupApplyResponse,
+  CleanupUndoRequest,
+} from '@shelfmark/contracts';
+import { TOAST_DURATION_MS, TOAST_KIND, ToastService, toastShortcutLabel } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { FoldersStore } from '../../../stores/folders.store';
@@ -16,8 +20,9 @@ import { CLEANUP_API } from '../models/cleanup-api.const';
 /**
  * One clean-up run (AI-5): sends the selected rows in one request, takes the trashed copies out of
  * the feed, refreshes folder, tag, Trash, pin, reminder and saved-view counts like the bulk
- * actions, and confirms with one toast ("Cleaned up {n} things", copies in Trash and tags merged).
- * Root, so the toast outlives the page.
+ * actions, and confirms with one toast ("Cleaned up {n} things", copies in Trash and tags merged)
+ * whose Undo (8 s, Ctrl/⌘+Z) reverts the whole run with the server's `undo` payload. Root, so Undo
+ * still works after the page is left.
  */
 @Service()
 export class CleanupApplyService {
@@ -56,12 +61,34 @@ export class CleanupApplyService {
     return true;
   }
 
-  protected announce(response: CleanupApplyResponse, _undone?: () => void): void {
+  private announce(response: CleanupApplyResponse, undone?: () => void): void {
+    const undo = this.t('cleanup.toast.undo');
     this.toasts.show({
       kind: TOAST_KIND.Success,
       title: this.plural('cleanup.toast.title', response.trashed + response.merged),
       detail: this.detail(response),
+      duration: TOAST_DURATION_MS.Undo,
+      actionHint: this.t('toast.actionHint', { shortcut: toastShortcutLabel(), action: undo }),
+      action: { label: undo, run: () => void this.undo(response.undo, undone) },
     });
+  }
+
+  /**
+   * Undo from the toast: the copies come back from Trash and the merged tags are split again, as
+   * far as nothing changed them meanwhile (the server checks).
+   */
+  private async undo(request: CleanupUndoRequest, undone?: () => void): Promise<void> {
+    try {
+      await firstValueFrom(this.injector.get(CLEANUP_API).undo(request));
+    } catch {
+      this.toasts.show({ kind: TOAST_KIND.Danger, title: this.t('cleanup.undoFailed') });
+      return;
+    }
+    // Restored copies and split tags come back with the next page load.
+    this.links.refresh();
+    this.refreshCounts();
+    undone?.();
+    this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('cleanup.undone') });
   }
 
   /** The feed and the counts after the run. */
