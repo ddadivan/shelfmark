@@ -70,3 +70,4 @@ Routine features, bug fixes and choices already fully covered by an existing ADR
 | [0045](0045-admin-usage-stats.md) | Admin usage stats: live aggregates over real users (demo and admin accounts excluded), minimum group size 3, one activity date per user (`users.last_active_on`), nothing derived stored | Accepted | 2026-11-14 |
 | [0046](0046-browser-extension-auth.md) | Browser extension auth: it reuses the session cookie (`credentials: 'include'`), its `chrome-extension://<id>` origins are trusted in `CsrfGuard` only (`EXTENSION_ORIGINS`), no CORS and no token | Accepted | 2026-11-16 |
 | [0047](0047-ai-provider-models-and-cost.md) | AI provider, models and cost: Claude via the Anthropic API, Voyage embeddings, a mock everywhere else | Proposed | 2026-11-17 |
+| [0048](0048-npm-audit-runtime-gate.md) | npm audit: the required gate blocks on run-time dependencies (`tools/ci/audit-runtime.mjs`), the full tree warns | Accepted | 2026-11-18 |
