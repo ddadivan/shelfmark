@@ -36,6 +36,24 @@ describe('AiProviderRegistry', () => {
     expect(factory).not.toHaveBeenCalled();
   });
 
+  it('streams Ask answers from the mock for a demo user, never through the real factory', async () => {
+    const { registry, factory } = setup({
+      ...NO_EMBEDDINGS,
+      apiKey: 'sk-ant-test-0123456789',
+      useRealProvider: true,
+    });
+    const provider = registry.for({ isDemo: true });
+    const chunks = [];
+    for await (const chunk of provider.askStream(
+      { question: 'ai-fail', sources: [], includeNotes: false },
+      new AbortController().signal,
+    )) {
+      chunks.push(chunk);
+    }
+    expect(chunks).toEqual([{ type: 'error', retryable: true }]);
+    expect(factory).not.toHaveBeenCalled();
+  });
+
   it('builds the real provider once for a regular user in production', () => {
     const config = { ...NO_EMBEDDINGS, apiKey: 'sk-ant-test-0123456789', useRealProvider: true };
     const { registry, factory, real } = setup(config);
