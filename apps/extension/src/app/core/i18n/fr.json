@@ -90,7 +90,8 @@
       "new": "Nouveau",
       "createTag": "Créer et ajouter le tag {{name}}",
       "dismiss": "Ignorer la suggestion {{name}}",
-      "filling": "Remplissage…"
+      "filling": "Remplissage…",
+      "tagsByAi": "Tags proposés par l’IA"
     }
   }
 }

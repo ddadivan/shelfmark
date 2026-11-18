@@ -59,6 +59,21 @@ $xwide-min: 120em;
   }
 }
 
+// The space above a section card that has no section padding of its own (the AI and extension
+// cards right after the hero, #507): the same step as `section-pad`, as a margin, so a card that
+// renders nothing (the extension outside desktop Chromium) leaves no gap.
+@mixin section-gap {
+  margin-block-start: calc(var(--space-8) * 2);
+
+  @include tablet-up {
+    margin-block-start: calc(var(--space-8) * 3);
+  }
+
+  @include wide {
+    margin-block-start: calc(var(--space-8) * 4);
+  }
+}
+
 // The inner padding of the cards (before, after, "How it's built"): one value, slightly bigger
 // than the old 16px / 24px. Sets the custom property so absolutely placed content can use it too.
 @mixin card-pad {

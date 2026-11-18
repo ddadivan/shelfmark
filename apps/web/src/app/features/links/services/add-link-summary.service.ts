@@ -100,6 +100,11 @@ export class AddLinkSummaryService {
    * Add link, "Fill in with AI": the draft's summary into an empty Summary field. `false` when the
    * field already has text (the user's wins) or there is none.
    */
+  /** A new address after a fill (#510): the AI text no longer belongs to this link. */
+  forgetDraft(): void {
+    this.draftText.set(null);
+  }
+
   fillDraft(text: string | null): boolean {
     if (
       this.original !== undefined ||

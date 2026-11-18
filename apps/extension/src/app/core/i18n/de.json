@@ -90,7 +90,8 @@
       "new": "Neu",
       "createTag": "Tag {{name}} erstellen und hinzufügen",
       "dismiss": "Vorschlag {{name}} verwerfen",
-      "filling": "Wird ausgefüllt …"
+      "filling": "Wird ausgefüllt …",
+      "tagsByAi": "Tags von der KI"
     }
   }
 }
