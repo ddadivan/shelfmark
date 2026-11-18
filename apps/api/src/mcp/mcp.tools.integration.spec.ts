@@ -187,6 +187,17 @@ describe('MCP tools', () => {
     );
   });
 
+  it('matches the note only for tokens created with notes', async () => {
+    const id = await seedLink(t.db.prisma, users.owner.userId, {
+      title: 'Plain title',
+      note: 'zanzibar meeting',
+    });
+    expect(await items(mine, { query: 'zanzibar' })).toEqual([]);
+    expect(await items(mine, { query: 'plain zanzibar' })).toEqual([]);
+    const withNotes = await seedMcpToken(t.db.prisma, users.owner.userId, { includeNotes: true });
+    expect((await items(withNotes, { query: 'zanzibar' })).map((item) => item['id'])).toEqual([id]);
+  });
+
   it('refuses invalid arguments with -32602', async () => {
     for (const [name, args] of [
       ['search_links', {}],

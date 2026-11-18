@@ -123,6 +123,7 @@ Settings › AI page places the group last (desktop) and on You › AI (phone, s
 **API.**
 
 - `search_links` searches by words only. Meaning matches (open question 8) sit behind the `MCP_MEANING_SEARCH` seam, which answers no matches until AI-3 provides the meaning search service; the `match: 'meaning'` value is reserved for it.
+- `search_links` matches the note only for tokens with "Include my notes": otherwise the words match title and URL only (`buildLinkWhere(…, { searchNotes: false })`; the option defaults to `true`, so the app's search is unchanged), so which links match never reveals what the notes say. The meaning seam gets `includeNotes` too and must not let notes or note-derived embeddings influence matches when it is `false`.
 - `McpModule` does not import `AiModule`: it reads the entitlement through the shared `aiEntitlements` function and needs nothing else from the AI module until the meaning search lands.
 - Every authenticated `POST /api/mcp` counts toward the daily cap (the guard reserves the call before dispatch), including `initialize`, `ping` and `tools/list`, not only `tools/call`; "calls this week" counts the same way.
 

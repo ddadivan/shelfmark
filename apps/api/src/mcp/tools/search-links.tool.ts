@@ -27,8 +27,8 @@ import { hasOnlyKeys, invalidArgs, isUuid, validArgs } from './tool-args';
 const KEYS = ['query', 'folderId', 'tag', 'limit'] as const;
 
 /**
- * `search_links`: the user's live links whose title, note or URL contain every word of the query
- * (`buildLinkWhere`, the same search as the app), newest first, optionally inside one folder (its
+ * `search_links`: the user's live links whose title or URL (and note, only for a token with "Include
+ * my notes") contain every word of the query (`buildLinkWhere`, the same search as the app), newest first, optionally inside one folder (its
  * direct links) or with one tag. A foreign or missing folder simply matches nothing. When word
  * matches leave room, the AI-3 meaning search (`MCP_MEANING_SEARCH`, a no-op on this branch) fills
  * the remaining slots, each result marked with how it matched.
@@ -38,7 +38,7 @@ export class SearchLinksTool implements McpTool<SearchLinksArgs> {
   readonly definition: McpToolDefinition = {
     name: MCP_TOOL_NAME.SearchLinks,
     title: 'Search links',
-    description: `Search the user's saved links. Every word of the query must appear in the title, note or URL; newest first. Optionally only the links directly in one folder (id from list_folders) or with one tag (from list_tags). ${MCP_UNTRUSTED_CONTENT_NOTE}`,
+    description: `Search the user's saved links. Every word of the query must appear in the title or URL (or the note, when this connection includes notes); newest first. Optionally only the links directly in one folder (id from list_folders) or with one tag (from list_tags). ${MCP_UNTRUSTED_CONTENT_NOTE}`,
     inputSchema: {
       type: 'object',
       properties: {
@@ -124,13 +124,19 @@ export class SearchLinksTool implements McpTool<SearchLinksArgs> {
       folderId: args.folderId,
       tag: args.tag === undefined ? undefined : [args.tag],
     };
+    // Without "Include my notes" the note is not searched either: which links match must not
+    // reveal what their notes say (ADR 0053).
     const words = await this.prisma.link.findMany({
-      where: buildLinkWhere(userId, { ...filter, q: args.query }),
+      where: buildLinkWhere(
+        userId,
+        { ...filter, q: args.query },
+        { searchNotes: principal.includeNotes },
+      ),
       select: MCP_LINK_SELECT,
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: args.limit,
     });
-    const meaning = await this.meaningMatches(userId, args, words);
+    const meaning = await this.meaningMatches(principal, args, words);
     const paths = await loadFolderPaths(this.prisma, userId);
     const item = (row: McpLinkRow, match: McpSearchItem['match']): McpSearchItem => ({
       ...toMcpLink(row, paths, principal.includeNotes),
@@ -145,16 +151,18 @@ export class SearchLinksTool implements McpTool<SearchLinksArgs> {
 
   /** Meaning matches for the slots the word matches left, in the order the search ranked them. */
   private async meaningMatches(
-    userId: string,
+    principal: McpPrincipal,
     args: SearchLinksArgs,
     words: readonly McpLinkRow[],
   ): Promise<McpLinkRow[]> {
+    const { userId } = principal;
     const room = args.limit - words.length;
     if (room <= 0) return [];
     const ids = await this.meaning.find(userId, {
       query: args.query,
       folderId: args.folderId,
       tag: args.tag,
+      includeNotes: principal.includeNotes,
       excludeIds: words.map((row) => row.id),
       limit: room,
     });

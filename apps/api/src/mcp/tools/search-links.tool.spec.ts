@@ -54,6 +54,7 @@ describe('SearchLinksTool meaning seam', () => {
       query: 'q',
       folderId: undefined,
       tag: 'x',
+      includeNotes: false,
       excludeIds: ['w1'],
       limit: 2,
     });
@@ -82,5 +83,33 @@ describe('SearchLinksTool meaning seam', () => {
     const meaning: McpMeaningSearch = { find: vi.fn().mockResolvedValue([]) };
     await new SearchLinksTool(prisma, meaning).run(PRINCIPAL, { query: 'q', limit: 5 });
     expect(findMany).toHaveBeenCalledTimes(1);
+  });
+
+  it('searches the note only for a token with notes', async () => {
+    const findMany = vi.fn().mockResolvedValue([]);
+    const prisma = {
+      link: { findMany },
+      folder: { findMany: vi.fn().mockResolvedValue([]) },
+    } as unknown as PrismaService;
+    const meaning: McpMeaningSearch = { find: vi.fn().mockResolvedValue([]) };
+    const tool = new SearchLinksTool(prisma, meaning);
+    const fields = (call: number): string[] =>
+      (findMany.mock.calls[call][0].where.AND[0].OR as Record<string, unknown>[]).flatMap(
+        Object.keys,
+      );
+
+    await tool.run(PRINCIPAL, { query: 'q', limit: 5 });
+    expect(fields(0)).toEqual(['title', 'url']);
+    expect(meaning.find).toHaveBeenLastCalledWith(
+      'u1',
+      expect.objectContaining({ includeNotes: false }),
+    );
+
+    await tool.run({ ...PRINCIPAL, includeNotes: true }, { query: 'q', limit: 5 });
+    expect(fields(1)).toEqual(['title', 'note', 'url']);
+    expect(meaning.find).toHaveBeenLastCalledWith(
+      'u1',
+      expect.objectContaining({ includeNotes: true }),
+    );
   });
 });
