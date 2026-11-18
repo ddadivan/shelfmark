@@ -122,3 +122,34 @@ Changes: `AiQuotaLimits` + `cleanupAiRunsPerMonth` (`AI_QUOTA`: Free 0, AI pack 
 8. **Clean-up with AI off.** Default: the page is available to everyone in Settings › Library with exact duplicates and tag variants; AI groups only with AI on.
 9. **Entry card.** Default: computed on request from cheap counts and the last report; no scheduled check; at most once in 30 days after a dismissal.
 10. **Undo window.** Default: the 8 s toast, like bulk actions; afterwards Trash restore covers the copies.
+
+## 10. API as built
+
+Nov 18, 2026 · backend, commits 2–8 on `feat/394-ai-cleanup`. Contracts in `libs/shared/contracts/src/cleanup/` as in section 2, plus `CLEANUP_ERROR_MESSAGE` (`Running`, `EmptyApply`); `AI_QUOTA.*.cleanupAiRunsPerMonth` (Free 0, AI pack 10); `AiTickResponse.cleanup`.
+
+**Schema** (`20261201120000_cleanup_reports`): `cleanup_reports` as section 3 plus `progress_at` (the 24 h stall rule); CHECKs on `state`, non-negative counts and `jsonb_typeof(findings) = 'object'`; `ai_usage.cleanup_runs`. Findings: `{ duplicates: [{ id, reason, source, linkIds }], similarTags: [{ id, source, tagIds: [a, b] }], pending: [checkKey], nearPairs: [[a, b]] }`, ids only, read back by `readStoredFindings` (malformed items dropped one by one). Group and pair ids are 12-character random base64url strings, new on every run. `DELETE /api/ai/data` deletes the row.
+
+**Endpoints** (all session-only, every query on the session user):
+
+| Route | Answer | Errors | Limit |
+| --- | --- | --- | --- |
+| `GET /api/cleanup` | `CleanupReport`, read live: trashed links and deleted tags drop out, a group with fewer than 2 live members is left out; keep chosen live by `pickKeep`, a pair's keep is the tag on more live links (tie: the stored order) | 401 | default |
+| `POST /api/cleanup/run` `{ includeAi }` | 200 `CleanupReport`. Rule checks in the request (exact duplicates, tag variants); with `includeAi` and `aiAvailable` (AI on, AI pack, a run left) one run is counted, state `running`, `total` = live links with a vector of the current model (0 when search is not `ready`; near-duplicates then skipped, synonyms still run), the pass deferred | 400 body, 409 `Running` while a run progressed in the last 24 h | `CleanupRun` 6/min |
+| `POST /api/cleanup/apply` | 200 `CleanupApplyResponse` | 400 body or both lists empty (`EmptyApply`) | `CleanupApply` 10/min |
+| `POST /api/cleanup/undo` | 200 `{ restored, unmerged }` | 400 body | `CleanupApply` |
+| `GET /api/cleanup/summary` | `CleanupSummary` | 401 | default |
+| `POST /api/cleanup/card/dismiss` | 204 (creates the row when needed) | 401 | `CleanupRun` |
+
+**Limits.** Groups at most `DuplicateGroupsMax` 100 in all, `GroupSizeMax` 5 (exact groups keep the 5 oldest saves); similar-tag pairs at most `TagPairsMax` 20 in all (rule pairs first, model pairs fill the rest), so one apply (`ApplyGroupsMax` 100, `ApplyTagMergesMax` 20) covers a report. Undo body: `trashedIds` ≤ 500, `merges` ≤ 20, `mergedName` 1–50 characters without control characters, link id lists ≤ 10,000 (the 100 kb JSON limit applies). Rule variants: lower case, diacritics, `-_ .` removed, one trailing `s` dropped only when 4+ characters stay and not after `s` (`news`, `class` stay).
+
+**Apply.** Under `folders:` then the report row `FOR UPDATE`, then `tags:` (inside `TagsService.mergeInTransaction(tx, userId, sourceId, targetId)`, which also serves `POST /api/tags/:id/merge` and answers `linkIds` / `addedLinkIds`). A duplicate item counts only when its `groupId` is stored, its `trashIds` are live members of the user and at least one live member stays; a merge only when its `pairId` is stored, `keepTagId` is one of the pair and both tags are still the user's. Everything else is `skipped`, never an error. One shared `deleted_at`, pins cleared. The report becomes `applied` when something changed. `undo.deletedAt` is `null` when nothing was trashed.
+
+**Undo.** Restores ids still carrying the run's `deleted_at` (a folder gone meanwhile puts the link in Unsorted; pins stay cleared); per merge `resolveNames([mergedName])` (reuses a tag of that name, else creates it; 409 at the tag cap), re-attaches it to the user's own `linkIds` (trashed ones included), removes `keptTagId` from `addedLinkIds`, marks those vectors stale. A report `applied` goes back to `ready`.
+
+**Deferred pass.** `CleanupRunnerService` (also the `CleanupTickHook` under `CLEANUP_TICK_HOOK`, resolved by `AiCatchUpService` through `ModuleRef` with `strict: false`, so `AiModule` never imports `CleanupModule`): 20 s budget per start, 60 s lease on the row taken only when free and checked by value on every save, steps of 200 links by keyset cursor (link id), 3 HNSW neighbours each, cosine ≥ 0.93 plus same host family or title Jaccard ≥ 0.6, pairs grouped by union-find at the end (exact members excluded). AI turned off meanwhile drops the pending AI checks and completes. The tick answers `cleanup` and starts a pass for a running report with a free lease; the daily sweep marks runs without progress for 24 h `failed` (findings kept, pairs grouped) and continues abandoned ones (at most 50).
+
+**Tag synonyms.** `AiProvider.findTagSynonyms` (Anthropic: `AI_MODEL.LinkJob`, effort low, structured output `TAG_SYNONYMS_SCHEMA`, 1,024 max tokens, 15 s, no retries); input up to 300 tags on live links, most used first, `t1…: name` (`<` escaped, control characters removed, 64 characters) in one `<tags>` block. `parseTagSynonymsOutput` keeps known distinct keys, each key once, no rule duplicates, at most 20. Refusal or invalid output: no AI pairs, the run stays counted; a provider error refunds it. Logs carry counts, durations and outcome types only.
+
+**Mock triggers.** `MOCK_TAG_SYNONYMS.Sets` (`javascript`/`js`, `typescript`/`ts`, `recipes`/`cooking`, `photography`/`photos`, `machine learning`/`ml`, `artificial intelligence`/`ai`; the first present in most-used order is kept); a tag name containing `ai-fail` answers a retryable error, `ai-refuse` a refusal. Near-duplicates use the mock embeddings (identical title, tags and summary give similarity 1).
+
+**Demo seed.** `https://news.ycombinator.com/` saved three times (all Unsorted; the original keeps its tag) — not the coat of the plan, because the Ask theme "two coats" needs exactly two coat links; `https://next.angular.dev/guide/signals` as the same page as `angular.dev/guide/signals` (same title, tags and summary); tags `javascript` / `js` and `cooking` / `recipes` on several links. Demo users are Free: they see the exact group and no AI groups unless AI is opened up for them.
