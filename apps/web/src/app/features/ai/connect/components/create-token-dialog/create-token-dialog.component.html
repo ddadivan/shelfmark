@@ -49,7 +49,7 @@
         </ui-settings-row>
         @if (error(); as reason) {
           <ui-notice [kind]="NOTICE_KIND.Danger">{{
-            'ai.connect.create.error.' + reason | transloco: { max: MCP_LIMIT.TokensPerUserMax }
+            MCP_TOKEN_ERROR_KEY[reason] | transloco: { max: MCP_LIMIT.TokensPerUserMax }
           }}</ui-notice>
         }
       }

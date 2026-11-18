@@ -39,6 +39,13 @@ describe('McpTokensStore', () => {
     expect(store.loaded()).toBe(false);
   });
 
+  it('starts no second request while a load is running', async () => {
+    const { api, store } = setup();
+    await Promise.all([store.load(), store.load()]);
+    expect(api.list).toHaveBeenCalledTimes(1);
+    expect(store.loaded()).toBe(true);
+  });
+
   it('creates a token: hands the secret back and lists only the summary', async () => {
     const { api, store } = setup();
     await store.load();

@@ -7,7 +7,7 @@
   @if (store.loadFailed()) {
     <ui-notice [kind]="NOTICE_KIND.Danger">
       {{ 'ai.connect.loadFailed' | transloco }}
-      <ui-button [size]="BUTTON_SIZE.Sm" (click)="store.load()">
+      <ui-button uiNoticeAction [size]="BUTTON_SIZE.Sm" (click)="store.load()">
         {{ 'ai.connect.retry' | transloco }}
       </ui-button>
     </ui-notice>

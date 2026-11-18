@@ -39,6 +39,8 @@ export const McpTokensStore = signalStore(
   })),
   withMethods((store, api = inject(MCP_API)) => ({
     async load(): Promise<void> {
+      // A second Try again while the first request runs must not start another one.
+      if (store.loading()) return;
       patchState(store, { loading: true, loadFailed: false });
       try {
         const { available, items } = await firstValueFrom(api.list());

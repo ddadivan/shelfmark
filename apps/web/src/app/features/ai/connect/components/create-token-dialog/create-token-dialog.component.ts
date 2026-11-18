@@ -35,6 +35,7 @@ import {
   UiDialogRef,
 } from '@shelfmark/ui';
 import { MCP_NAME_ERROR } from '../../models/mcp-name-error.const';
+import { MCP_TOKEN_ERROR_KEY } from '../../models/mcp-token-error-key.const';
 import type { McpTokenError } from '../../models/mcp-token-error.type';
 import { McpTokensStore } from '../../services/mcp-tokens.store';
 import { copyText } from '../../utils/copy-text';
@@ -68,6 +69,7 @@ export class CreateTokenDialogComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly MCP_LIMIT = MCP_LIMIT;
+  protected readonly MCP_TOKEN_ERROR_KEY = MCP_TOKEN_ERROR_KEY;
 
   private readonly store = inject(McpTokensStore);
   private readonly ref = inject<UiDialogRef<void>>(UiDialogRef);

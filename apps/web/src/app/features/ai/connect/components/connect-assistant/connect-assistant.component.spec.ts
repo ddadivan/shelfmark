@@ -179,6 +179,10 @@ describe('ConnectAssistantComponent', () => {
   it('offers Try again when the list fails to load', async () => {
     const { api, element, loader, fixture } = await setup(undefined, { failLoad: true });
     expect(element.textContent).toContain('Couldn’t load your tokens.');
+    // Try again sits in the notice's action slot, not inside its text.
+    expect(element.querySelector('.ui-notice__action ui-button')?.textContent).toContain(
+      'Try again',
+    );
     api.list.mockReturnValue(of({ available: true, items: [] }));
     await (await loader.getHarness(UiButtonHarness.with({ text: 'Try again' }))).click();
     await fixture.whenStable();
