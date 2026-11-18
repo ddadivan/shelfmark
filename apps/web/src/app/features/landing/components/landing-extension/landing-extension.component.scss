@@ -12,6 +12,7 @@
 // others; the popup rises a little further as it does.
 .landing-extension {
   @include landing.reveal;
+  @include landing.section-gap;
 
   display: flex;
   flex-wrap: wrap;

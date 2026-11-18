@@ -12,6 +12,7 @@
 // and two cards.
 .landing-ai {
   @include landing.reveal;
+  @include landing.section-gap;
 
   display: flex;
   flex-wrap: wrap;
