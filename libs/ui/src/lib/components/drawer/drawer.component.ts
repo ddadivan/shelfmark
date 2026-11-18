@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { DRAWER_SIDE } from './models/drawer-side.const';
 import type { DrawerSide } from './models/drawer-side.type';
+import { DRAWER_WIDTH } from './models/drawer-width.const';
+import type { DrawerWidth } from './models/drawer-width.type';
 import { ButtonComponent } from '../button/button.component';
 import { BUTTON_SIZE } from '../button/models/button-size.const';
 import { UiDialogRef } from '../../services/dialog/dialog-ref';
@@ -8,7 +10,8 @@ import { UiDialogRef } from '../../services/dialog/dialog-ref';
 /**
  * Layout of a side drawer: a header (`slot="head"`, for example the logo) with a close button,
  * a scrolling body (default slot) and a footer (`slot="foot"`). Pinned to the inline-start
- * edge, full viewport height, `min(19.5rem, 100vw - 3rem)` wide, with safe-area padding.
+ * edge, full viewport height, `min(19.5rem, 100vw - 3rem)` wide (`width="wide"`: 27.5rem, a
+ * 440px panel), with safe-area padding.
  * Opened through `DrawerService`, whose content component renders it; it also works on its own
  * for docs. It slides in from the inline-start edge and out again (a fade under
  * `prefers-reduced-motion`).
@@ -28,9 +31,13 @@ export class DrawerComponent {
   /** The edge the drawer is pinned to: decides where it slides in from. */
   readonly side = input<DrawerSide>(DRAWER_SIDE.Start);
 
+  /** `narrow` (the phone menu) or `wide` (a 440px panel such as Ask your shelf). */
+  readonly width = input<DrawerWidth>(DRAWER_WIDTH.Narrow);
+
   private readonly ref = inject<UiDialogRef<unknown>>(UiDialogRef, { optional: true });
 
   protected readonly DRAWER_SIDE = DRAWER_SIDE;
+  protected readonly DRAWER_WIDTH = DRAWER_WIDTH;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly leaving = computed(() => this.ref?.leaving() ?? false);
 

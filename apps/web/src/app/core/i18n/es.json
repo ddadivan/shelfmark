@@ -623,6 +623,10 @@
       "meaning": {
         "term": "Búsqueda por significado:",
         "text": "mientras está activada (Ajustes › IA), el título, el resumen y los nombres de etiquetas de cada enlace, tu nota solo con «Incluir mis notas», y las palabras que buscas se envían a Voyage AI, nuestro segundo encargado del tratamiento, que los convierte en vectores de números. Nunca la dirección, tus carpetas ni datos de otras personas. Los vectores se guardan con tus enlaces y se eliminan con ellos o con «Eliminar datos de IA»; tu búsqueda no se guarda. Voyage AI by MongoDB (EE. UU.) elimina cada solicitud justo después de procesarla (retención cero) y no la usa para entrenar."
+      },
+      "ask": {
+        "term": "Pregunta a tus enlaces:",
+        "text": "solo cuando haces una pregunta, se envían a [PROVIDER] tu pregunta y hasta 10 enlaces relacionados (título, dirección sin parámetros, nombres de carpetas y etiquetas, resumen, tu nota solo con «Incluir mis notas»). La respuesta cita solo esos enlaces. No se guardan ni la pregunta ni la respuesta; solo contamos el número de preguntas por día y por mes, para tu límite."
       }
     },
     "retention": {
@@ -1859,7 +1863,14 @@
       "move": "moverse",
       "open": "abrir",
       "background": "abrir en segundo plano"
-    }
+    },
+    "askRow": "Pregunta a tus enlaces: «{{query}}»",
+    "mode": {
+      "label": "Buscar o preguntar",
+      "search": "Buscar",
+      "ask": "Preguntar"
+    },
+    "askRowCompact": "Pregunta a tus enlaces sobre esto"
   },
   "share": {
     "title": "Guardar en Shelfmark",
@@ -2958,6 +2969,14 @@
         "title": "Resúmenes breves",
         "text": "Con la IA activada, los enlaces reciben un resumen de una o dos líneas en su tarjeta. Si lo editas, es tuyo."
       },
+      "aiTidy": {
+        "title": "Ordenar «Sin carpeta» con IA",
+        "text": "Revisa en una sola página las sugerencias de IA para todo lo que está en «Sin carpeta» y aplícalas con un solo Deshacer. Si guardas varias veces enlaces de un sitio en la misma carpeta, Shelfmark te ofrece una regla."
+      },
+      "aiAsk": {
+        "title": "Pregunta a tus enlaces",
+        "text": "Haz una pregunta con tus propias palabras y recibe una respuesta breve a partir de los enlaces que guardaste, con cada fuente. Además, «De tus enlaces»: una vez por semana, enlaces antiguos que nunca abriste."
+      },
       "mcp": {
         "title": "Conecta tu asistente",
         "text": "Con Pro, Claude y otros asistentes MCP pueden buscar y leer tus enlaces con un token personal. Solo lectura, y puedes revocarlo cuando quieras."
@@ -2968,10 +2987,6 @@
       },
       "extensionInStore": {
         "text": "La extensión de Shelfmark ya está en Chrome Web Store: instálala desde el aviso de tu estantería o desde Ajustes › Biblioteca."
-      },
-      "aiTidy": {
-        "title": "Ordenar «Sin carpeta» con IA",
-        "text": "Revisa en una sola página las sugerencias de IA para todo lo que está en «Sin carpeta» y aplícalas con un solo Deshacer. Si guardas varias veces enlaces de un sitio en la misma carpeta, Shelfmark te ofrece una regla."
       }
     },
     "sections": {
@@ -3084,6 +3099,10 @@
         "ready": "Lista",
         "progress": "{{ready}} de {{total}} enlaces listos",
         "quota": "En pausa hasta el {{date}}: límite del mes alcanzado"
+      },
+      "ask": {
+        "title": "Pregunta a tus enlaces",
+        "text": "Responde preguntas a partir de tus propios enlaces. Usa Claude de Anthropic: se envían tu pregunta y los enlaces relacionados, no se guarda nada."
       }
     },
     "backfill": {
@@ -3143,6 +3162,10 @@
       "meaning": {
         "title": "Encuentra enlaces por significado",
         "text": "La búsqueda y los enlaces relacionados también tienen en cuenta el tema de un enlace. Para ello, los títulos, etiquetas, resúmenes y tu búsqueda van a Voyage AI. Se desactiva por separado en Ajustes › IA."
+      },
+      "ask": {
+        "title": "Responde preguntas con tus enlaces",
+        "text": "Solo cuando preguntas: tu pregunta y los enlaces relacionados van al modelo. La respuesta indica sus fuentes y no se guarda nada. Desactívalo por separado en Ajustes › IA."
       }
     },
     "suggest": {
@@ -3202,6 +3225,138 @@
         "other": "{{count}} etiquetas añadidas por la IA"
       },
       "undo": "Deshacer"
+    },
+    "tidy": {
+      "entry": "Ordenar con sugerencias",
+      "back": "Sin carpeta",
+      "title": "Ordenar «Sin carpeta»",
+      "lead": {
+        "one": "Sugerencias para {{count}} enlace. Toca una etiqueta para dejarla fuera.",
+        "many": "Sugerencias para {{count}} enlaces. Toca una etiqueta para dejarla fuera.",
+        "other": "Sugerencias para {{count}} enlaces. Toca una etiqueta para dejarla fuera."
+      },
+      "cancel": "Cancelar",
+      "apply": {
+        "one": "Aplicar a {{count}} enlace",
+        "many": "Aplicar a {{count}} enlaces",
+        "other": "Aplicar a {{count}} enlaces"
+      },
+      "skip": "Omitir",
+      "skipped": "Omitido: se queda en «Sin carpeta»",
+      "undoSkip": "Deshacer omisión",
+      "rowLabel": "Cambios para {{title}}",
+      "listLabel": "Enlaces con sugerencias",
+      "barLabel": "Aplicar sugerencias",
+      "loading": "Cargando sugerencias",
+      "chip": {
+        "folder": "Mover a {{name}}",
+        "folderAdded": "Mover a {{name}}, elegido",
+        "tag": "Añadir la etiqueta {{name}}",
+        "tagAdded": "Añadir la etiqueta {{name}}, elegido",
+        "newTag": "Crear y añadir la etiqueta {{name}}",
+        "newTagAdded": "Crear y añadir la etiqueta {{name}}, elegido"
+      },
+      "more": {
+        "one": "Después de estos queda {{count}} enlace más. Los enlaces sin sugerencias no aparecen.",
+        "many": "Después de estos quedan {{count}} enlaces más. Los enlaces sin sugerencias no aparecen.",
+        "other": "Después de estos quedan {{count}} enlaces más. Los enlaces sin sugerencias no aparecen."
+      },
+      "next": "Mostrar los siguientes enlaces",
+      "empty": {
+        "title": "Nada que ordenar",
+        "text": "Cada enlace de aquí aún no tiene sugerencias o ya lo ordenaste. Los enlaces nuevos reciben sugerencias en menos de un minuto.",
+        "back": "Volver a «Sin carpeta»"
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} enlace ordenado",
+          "many": "{{count}} enlaces ordenados",
+          "other": "{{count}} enlaces ordenados"
+        },
+        "folders": {
+          "one": "Movidos a {{count}} carpeta",
+          "many": "Movidos a {{count}} carpetas",
+          "other": "Movidos a {{count}} carpetas"
+        },
+        "tags": {
+          "one": "{{count}} etiqueta añadida",
+          "many": "{{count}} etiquetas añadidas",
+          "other": "{{count}} etiquetas añadidas"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Deshacer",
+        "failed": "No se pudieron ordenar los enlaces",
+        "failedDetail": "No se cambió nada. Inténtalo de nuevo.",
+        "nothing": "Nada que aplicar",
+        "nothingDetail": "Las sugerencias cambiaron mientras tanto."
+      },
+      "undone": "Orden deshecho",
+      "undoFailed": "No se pudo deshacer el orden"
+    },
+    "search": {
+      "related": "Relacionados por significado",
+      "noWordMatches": "Ningún enlace con estas palabras",
+      "why": "Cerca de: {{reasons}}",
+      "fromSummary": "Cerca de: {{reasons}} (del resumen)",
+      "preparing": "La búsqueda por significado se está preparando: {{ready}} de {{total}} enlaces. La búsqueda por palabras funciona como siempre."
+    },
+    "related": {
+      "title": "Relacionados en tu estantería",
+      "why": "Cerca de: {{reasons}}",
+      "show": "Mostrar relacionados",
+      "folders": "Carpetas relacionadas"
+    },
+    "ask": {
+      "title": "Pregunta a tus enlaces",
+      "open": "Pregunta a tus enlaces",
+      "close": "Cerrar Pregunta a tus enlaces",
+      "newQuestion": "Nueva pregunta",
+      "emptyTitle": "¿Qué quieres saber?",
+      "lead": "Pregunta con tus propias palabras. La respuesta sale de los enlaces que guardaste, con cada fuente.",
+      "starters": {
+        "saved": "¿Qué guardé sobre {{folder}}?",
+        "ideas": "¿Cuáles son las ideas principales en {{folder}}?",
+        "recent": "¿Qué añadí a {{folder}} últimamente?",
+        "generic": "¿Qué guardé este mes?"
+      },
+      "label": "Pregunta sobre tus enlaces",
+      "placeholder": "Pregunta sobre tus enlaces",
+      "send": "Preguntar",
+      "stop": "Detener",
+      "left": {
+        "day": {
+          "one": "Te queda {{count}} pregunta hoy",
+          "many": "Te quedan {{count}} de preguntas hoy",
+          "other": "Te quedan {{count}} preguntas hoy"
+        },
+        "month": {
+          "one": "Te queda {{count}} pregunta este mes",
+          "many": "Te quedan {{count}} de preguntas este mes",
+          "other": "Te quedan {{count}} preguntas este mes"
+        }
+      },
+      "footer": "Las respuestas usan solo tus enlaces. No se cambia nada en tu biblioteca.",
+      "sources": "Fuentes de tus enlaces",
+      "source": "Fuente {{n}}",
+      "sideBySide": "Abrir en paralelo",
+      "remind": "Recordarme",
+      "notFound": {
+        "text": "Nada en tus enlaces responde a esto.",
+        "search": "Buscar «{{query}}»",
+        "add": "Añadir un enlace"
+      },
+      "limit": {
+        "day": "Has usado las preguntas de hoy. Vuelve a preguntar mañana; la búsqueda funciona como siempre.",
+        "month": "Has usado las preguntas de este mes. Vuelve a preguntar el {{date}}; la búsqueda funciona como siempre."
+      },
+      "error": "No se pudo obtener una respuesta ahora. Esta pregunta no se ha contado.",
+      "rejected": "No se puede responder a esta pregunta. No se ha contado.",
+      "busy": "Todavía se está respondiendo otra pregunta. Inténtalo de nuevo en un momento.",
+      "rateLimited": "Demasiadas preguntas en poco tiempo. Vuelve a intentarlo en un minuto; esta no ha contado para tu límite.",
+      "off": "Pregunta a tus enlaces está desactivado en Ajustes › IA.",
+      "retry": "Reintentar",
+      "truncated": "La respuesta se cortó.",
+      "stopped": "Detenido."
     },
     "connect": {
       "title": "Conecta tu asistente",
@@ -3297,86 +3452,18 @@
           }
         }
       }
-    },
-    "tidy": {
-      "entry": "Ordenar con sugerencias",
-      "back": "Sin carpeta",
-      "title": "Ordenar «Sin carpeta»",
-      "lead": {
-        "one": "Sugerencias para {{count}} enlace. Toca una etiqueta para dejarla fuera.",
-        "many": "Sugerencias para {{count}} enlaces. Toca una etiqueta para dejarla fuera.",
-        "other": "Sugerencias para {{count}} enlaces. Toca una etiqueta para dejarla fuera."
-      },
-      "cancel": "Cancelar",
-      "apply": {
-        "one": "Aplicar a {{count}} enlace",
-        "many": "Aplicar a {{count}} enlaces",
-        "other": "Aplicar a {{count}} enlaces"
-      },
-      "skip": "Omitir",
-      "skipped": "Omitido: se queda en «Sin carpeta»",
-      "undoSkip": "Deshacer omisión",
-      "rowLabel": "Cambios para {{title}}",
-      "listLabel": "Enlaces con sugerencias",
-      "barLabel": "Aplicar sugerencias",
-      "loading": "Cargando sugerencias",
-      "chip": {
-        "folder": "Mover a {{name}}",
-        "folderAdded": "Mover a {{name}}, elegido",
-        "tag": "Añadir la etiqueta {{name}}",
-        "tagAdded": "Añadir la etiqueta {{name}}, elegido",
-        "newTag": "Crear y añadir la etiqueta {{name}}",
-        "newTagAdded": "Crear y añadir la etiqueta {{name}}, elegido"
-      },
-      "more": {
-        "one": "Después de estos queda {{count}} enlace más. Los enlaces sin sugerencias no aparecen.",
-        "many": "Después de estos quedan {{count}} enlaces más. Los enlaces sin sugerencias no aparecen.",
-        "other": "Después de estos quedan {{count}} enlaces más. Los enlaces sin sugerencias no aparecen."
-      },
-      "next": "Mostrar los siguientes enlaces",
-      "empty": {
-        "title": "Nada que ordenar",
-        "text": "Cada enlace de aquí aún no tiene sugerencias o ya lo ordenaste. Los enlaces nuevos reciben sugerencias en menos de un minuto.",
-        "back": "Volver a «Sin carpeta»"
-      },
-      "toast": {
-        "title": {
-          "one": "{{count}} enlace ordenado",
-          "many": "{{count}} enlaces ordenados",
-          "other": "{{count}} enlaces ordenados"
-        },
-        "folders": {
-          "one": "Movidos a {{count}} carpeta",
-          "many": "Movidos a {{count}} carpetas",
-          "other": "Movidos a {{count}} carpetas"
-        },
-        "tags": {
-          "one": "{{count}} etiqueta añadida",
-          "many": "{{count}} etiquetas añadidas",
-          "other": "{{count}} etiquetas añadidas"
-        },
-        "detail": "{{folders}}, {{tags}}",
-        "undo": "Deshacer",
-        "failed": "No se pudieron ordenar los enlaces",
-        "failedDetail": "No se cambió nada. Inténtalo de nuevo.",
-        "nothing": "Nada que aplicar",
-        "nothingDetail": "Las sugerencias cambiaron mientras tanto."
-      },
-      "undone": "Orden deshecho",
-      "undoFailed": "No se pudo deshacer el orden"
-    },
-    "search": {
-      "related": "Relacionados por significado",
-      "noWordMatches": "Ningún enlace con estas palabras",
-      "why": "Cerca de: {{reasons}}",
-      "fromSummary": "Cerca de: {{reasons}} (del resumen)",
-      "preparing": "La búsqueda por significado se está preparando: {{ready}} de {{total}} enlaces. La búsqueda por palabras funciona como siempre."
-    },
-    "related": {
-      "title": "Relacionados en tu estantería",
-      "why": "Cerca de: {{reasons}}",
-      "show": "Mostrar relacionados",
-      "folders": "Carpetas relacionadas"
     }
+  },
+  "rediscover": {
+    "title": "De tus enlaces",
+    "lead": {
+      "theme": "Últimamente guardas mucho sobre {{theme}}. Estos son enlaces más antiguos que no has abierto.",
+      "forgotten": "Guardados hace tiempo y nunca abiertos."
+    },
+    "dismiss": "Ocultar hasta la próxima semana",
+    "saved": "Guardado en {{month}}, sin abrir últimamente",
+    "remind": "Recordarme",
+    "readLater": "Leer más tarde",
+    "notInterested": "No me interesa"
   }
 }

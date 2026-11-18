@@ -1,0 +1,25 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ask-composer__form {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-end;
+}
+
+.ask-composer__field {
+  flex: 1;
+  min-width: 0;
+}
+
+.ask-composer__footer {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}

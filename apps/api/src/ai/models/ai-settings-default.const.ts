@@ -12,4 +12,5 @@ export const AI_SETTINGS_DEFAULT: AiSettings = {
   includeNotes: false,
   summaryLanguage: AI_SUMMARY_LANGUAGE_APP,
   meaningSearch: true,
+  ask: true,
 };

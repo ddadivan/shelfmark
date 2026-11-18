@@ -623,6 +623,10 @@
       "meaning": {
         "term": "Ricerca per significato:",
         "text": "finché è attiva (Impostazioni › IA), titolo, riepilogo e nomi dei tag di ogni link, la nota solo con «Includi le mie note», e le parole che cerchi vengono inviati a Voyage AI, il nostro secondo responsabile del trattamento, che li trasforma in vettori di numeri. Mai l’indirizzo, le tue cartelle o i dati di altre persone. I vettori sono salvati con i tuoi link ed eliminati con essi o con «Elimina dati IA»; ciò che cerchi non viene salvato. Voyage AI by MongoDB (USA) elimina ogni richiesta subito dopo averla elaborata (conservazione zero) e non la usa per l’addestramento."
+      },
+      "ask": {
+        "term": "Chiedi ai tuoi link:",
+        "text": "solo quando fai una domanda, la domanda e fino a 10 dei tuoi link pertinenti (titolo, indirizzo senza parametri, nomi di cartelle e tag, riassunto, la tua nota solo con «Includi le mie note») vengono inviati a [PROVIDER]. La risposta cita solo quei link. Né la domanda né la risposta vengono conservate; contiamo solo il numero di domande al giorno e al mese, per il tuo limite."
       }
     },
     "retention": {
@@ -1859,7 +1863,14 @@
       "move": "sposta",
       "open": "apri",
       "background": "apri in background"
-    }
+    },
+    "askRow": "Chiedi ai tuoi link: «{{query}}»",
+    "mode": {
+      "label": "Cerca o chiedi",
+      "search": "Cerca",
+      "ask": "Chiedi"
+    },
+    "askRowCompact": "Chiedi ai tuoi link su questo"
   },
   "share": {
     "title": "Salva in Shelfmark",
@@ -2958,6 +2969,14 @@
         "title": "Riassunti brevi",
         "text": "Con l'IA attiva, i link ricevono un riassunto di una o due righe sulla scheda. Modificalo e diventa tuo."
       },
+      "aiTidy": {
+        "title": "Riordina «Senza cartella» con l’IA",
+        "text": "Controlla in una sola pagina i suggerimenti dell’IA per tutto ciò che è in «Senza cartella» e applicali con un solo Annulla. Se metti più volte i link di un sito nella stessa cartella, Shelfmark propone una regola."
+      },
+      "aiAsk": {
+        "title": "Chiedi ai tuoi link",
+        "text": "Fai una domanda con parole tue e ricevi una risposta breve dai link che hai salvato, con ogni fonte elencata. In più «Dai tuoi link»: una volta a settimana, link meno recenti che non hai mai aperto."
+      },
       "mcp": {
         "title": "Collega il tuo assistente",
         "text": "Con Pro, Claude e altri assistenti MCP possono cercare e leggere i tuoi link con un token personale. Sola lettura, revocabile in qualsiasi momento."
@@ -2968,10 +2987,6 @@
       },
       "extensionInStore": {
         "text": "L’estensione di Shelfmark è sul Chrome Web Store: installala dal banner del tuo scaffale o da Impostazioni › Libreria."
-      },
-      "aiTidy": {
-        "title": "Riordina «Senza cartella» con l’IA",
-        "text": "Controlla in una sola pagina i suggerimenti dell’IA per tutto ciò che è in «Senza cartella» e applicali con un solo Annulla. Se metti più volte i link di un sito nella stessa cartella, Shelfmark propone una regola."
       }
     },
     "sections": {
@@ -3084,6 +3099,10 @@
         "ready": "Pronta",
         "progress": "{{ready}} link pronti su {{total}}",
         "quota": "In pausa fino al {{date}}: limite del mese raggiunto"
+      },
+      "ask": {
+        "title": "Chiedi ai tuoi link",
+        "text": "Risponde alle domande a partire dai tuoi link. Usa Claude di Anthropic: vengono inviati la domanda e i link pertinenti, non viene conservato nulla."
       }
     },
     "backfill": {
@@ -3143,6 +3162,10 @@
       "meaning": {
         "title": "Trova i link per significato",
         "text": "La ricerca e i link correlati tengono conto anche dell’argomento di un link. Per questo titoli, tag, riepiloghi e ciò che cerchi vanno a Voyage AI. Si disattiva a parte in Impostazioni › IA."
+      },
+      "ask": {
+        "title": "Risponde alle domande dai tuoi link",
+        "text": "Solo quando chiedi: la domanda e i link pertinenti vanno al modello. La risposta indica le fonti e non viene conservato nulla. Puoi disattivarlo da solo in Impostazioni › IA."
       }
     },
     "suggest": {
@@ -3202,6 +3225,138 @@
         "other": "{{count}} tag aggiunti dall’IA"
       },
       "undo": "Annulla"
+    },
+    "tidy": {
+      "entry": "Riordina con i suggerimenti",
+      "back": "Senza cartella",
+      "title": "Riordina «Senza cartella»",
+      "lead": {
+        "one": "Suggerimenti per {{count}} link. Tocca un chip per escluderlo.",
+        "many": "Suggerimenti per {{count}} link. Tocca un chip per escluderlo.",
+        "other": "Suggerimenti per {{count}} link. Tocca un chip per escluderlo."
+      },
+      "cancel": "Annulla",
+      "apply": {
+        "one": "Applica a {{count}} link",
+        "many": "Applica a {{count}} link",
+        "other": "Applica a {{count}} link"
+      },
+      "skip": "Salta",
+      "skipped": "Saltato — resta in «Senza cartella»",
+      "undoSkip": "Annulla salto",
+      "rowLabel": "Modifiche per {{title}}",
+      "listLabel": "Link con suggerimenti",
+      "barLabel": "Applica i suggerimenti",
+      "loading": "Caricamento dei suggerimenti",
+      "chip": {
+        "folder": "Sposta in {{name}}",
+        "folderAdded": "Sposta in {{name}}, scelto",
+        "tag": "Aggiungi il tag {{name}}",
+        "tagAdded": "Aggiungi il tag {{name}}, scelto",
+        "newTag": "Crea e aggiungi il tag {{name}}",
+        "newTagAdded": "Crea e aggiungi il tag {{name}}, scelto"
+      },
+      "more": {
+        "one": "Dopo questi c’è ancora {{count}} link. I link senza suggerimenti non sono elencati.",
+        "many": "Dopo questi ci sono ancora {{count}} link. I link senza suggerimenti non sono elencati.",
+        "other": "Dopo questi ci sono ancora {{count}} link. I link senza suggerimenti non sono elencati."
+      },
+      "next": "Mostra i link successivi",
+      "empty": {
+        "title": "Niente da riordinare",
+        "text": "Ogni link qui non ha ancora suggerimenti oppure l’hai già sistemato. I nuovi link ricevono suggerimenti entro un minuto.",
+        "back": "Torna a «Senza cartella»"
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} link riordinato",
+          "many": "{{count}} link riordinati",
+          "other": "{{count}} link riordinati"
+        },
+        "folders": {
+          "one": "Spostati in {{count}} cartella",
+          "many": "Spostati in {{count}} cartelle",
+          "other": "Spostati in {{count}} cartelle"
+        },
+        "tags": {
+          "one": "{{count}} tag aggiunto",
+          "many": "{{count}} tag aggiunti",
+          "other": "{{count}} tag aggiunti"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Annulla",
+        "failed": "Impossibile riordinare i link",
+        "failedDetail": "Non è cambiato nulla. Riprova.",
+        "nothing": "Niente da applicare",
+        "nothingDetail": "Nel frattempo i suggerimenti sono cambiati."
+      },
+      "undone": "Riordino annullato",
+      "undoFailed": "Impossibile annullare il riordino"
+    },
+    "search": {
+      "related": "Correlati per significato",
+      "noWordMatches": "Nessun link con queste parole",
+      "why": "Vicino a: {{reasons}}",
+      "fromSummary": "Vicino a: {{reasons}} (dal riepilogo)",
+      "preparing": "La ricerca per significato si sta preparando: {{ready}} link su {{total}}. La ricerca per parole funziona come sempre."
+    },
+    "related": {
+      "title": "Correlati nel tuo scaffale",
+      "why": "Vicino a: {{reasons}}",
+      "show": "Mostra correlati",
+      "folders": "Cartelle correlate"
+    },
+    "ask": {
+      "title": "Chiedi ai tuoi link",
+      "open": "Chiedi ai tuoi link",
+      "close": "Chiudi Chiedi ai tuoi link",
+      "newQuestion": "Nuova domanda",
+      "emptyTitle": "Cosa vuoi sapere?",
+      "lead": "Chiedi con parole tue. La risposta arriva dai link che hai salvato, con ogni fonte indicata.",
+      "starters": {
+        "saved": "Cosa ho salvato su {{folder}}?",
+        "ideas": "Quali sono le idee principali in {{folder}}?",
+        "recent": "Cosa ho aggiunto a {{folder}} di recente?",
+        "generic": "Cosa ho salvato questo mese?"
+      },
+      "label": "Chiedi sui tuoi link",
+      "placeholder": "Chiedi sui tuoi link",
+      "send": "Chiedi",
+      "stop": "Interrompi",
+      "left": {
+        "day": {
+          "one": "{{count}} domanda rimasta oggi",
+          "many": "{{count}} di domande rimaste oggi",
+          "other": "{{count}} domande rimaste oggi"
+        },
+        "month": {
+          "one": "{{count}} domanda rimasta questo mese",
+          "many": "{{count}} di domande rimaste questo mese",
+          "other": "{{count}} domande rimaste questo mese"
+        }
+      },
+      "footer": "Le risposte usano solo i tuoi link. Nella tua libreria non cambia nulla.",
+      "sources": "Fonti dai tuoi link",
+      "source": "Fonte {{n}}",
+      "sideBySide": "Apri affiancato",
+      "remind": "Ricordamelo",
+      "notFound": {
+        "text": "Nei tuoi link non c’è una risposta.",
+        "search": "Cerca «{{query}}»",
+        "add": "Aggiungi un link"
+      },
+      "limit": {
+        "day": "Hai usato le domande di oggi. Riprova domani; la ricerca funziona come sempre.",
+        "month": "Hai usato le domande di questo mese. Riprova il {{date}}; la ricerca funziona come sempre."
+      },
+      "error": "Al momento non è possibile rispondere. Questa domanda non è stata conteggiata.",
+      "rejected": "Non è possibile rispondere a questa domanda. Non è stata conteggiata.",
+      "busy": "C’è ancora un’altra domanda in corso. Riprova tra un momento.",
+      "rateLimited": "Troppe domande in poco tempo. Riprova tra un minuto; questa non è stata conteggiata nel tuo limite.",
+      "off": "Chiedi ai tuoi link è disattivato in Impostazioni › IA.",
+      "retry": "Riprova",
+      "truncated": "La risposta è stata interrotta.",
+      "stopped": "Interrotto."
     },
     "connect": {
       "title": "Collega il tuo assistente",
@@ -3297,86 +3452,18 @@
           }
         }
       }
-    },
-    "tidy": {
-      "entry": "Riordina con i suggerimenti",
-      "back": "Senza cartella",
-      "title": "Riordina «Senza cartella»",
-      "lead": {
-        "one": "Suggerimenti per {{count}} link. Tocca un chip per escluderlo.",
-        "many": "Suggerimenti per {{count}} link. Tocca un chip per escluderlo.",
-        "other": "Suggerimenti per {{count}} link. Tocca un chip per escluderlo."
-      },
-      "cancel": "Annulla",
-      "apply": {
-        "one": "Applica a {{count}} link",
-        "many": "Applica a {{count}} link",
-        "other": "Applica a {{count}} link"
-      },
-      "skip": "Salta",
-      "skipped": "Saltato — resta in «Senza cartella»",
-      "undoSkip": "Annulla salto",
-      "rowLabel": "Modifiche per {{title}}",
-      "listLabel": "Link con suggerimenti",
-      "barLabel": "Applica i suggerimenti",
-      "loading": "Caricamento dei suggerimenti",
-      "chip": {
-        "folder": "Sposta in {{name}}",
-        "folderAdded": "Sposta in {{name}}, scelto",
-        "tag": "Aggiungi il tag {{name}}",
-        "tagAdded": "Aggiungi il tag {{name}}, scelto",
-        "newTag": "Crea e aggiungi il tag {{name}}",
-        "newTagAdded": "Crea e aggiungi il tag {{name}}, scelto"
-      },
-      "more": {
-        "one": "Dopo questi c’è ancora {{count}} link. I link senza suggerimenti non sono elencati.",
-        "many": "Dopo questi ci sono ancora {{count}} link. I link senza suggerimenti non sono elencati.",
-        "other": "Dopo questi ci sono ancora {{count}} link. I link senza suggerimenti non sono elencati."
-      },
-      "next": "Mostra i link successivi",
-      "empty": {
-        "title": "Niente da riordinare",
-        "text": "Ogni link qui non ha ancora suggerimenti oppure l’hai già sistemato. I nuovi link ricevono suggerimenti entro un minuto.",
-        "back": "Torna a «Senza cartella»"
-      },
-      "toast": {
-        "title": {
-          "one": "{{count}} link riordinato",
-          "many": "{{count}} link riordinati",
-          "other": "{{count}} link riordinati"
-        },
-        "folders": {
-          "one": "Spostati in {{count}} cartella",
-          "many": "Spostati in {{count}} cartelle",
-          "other": "Spostati in {{count}} cartelle"
-        },
-        "tags": {
-          "one": "{{count}} tag aggiunto",
-          "many": "{{count}} tag aggiunti",
-          "other": "{{count}} tag aggiunti"
-        },
-        "detail": "{{folders}}, {{tags}}",
-        "undo": "Annulla",
-        "failed": "Impossibile riordinare i link",
-        "failedDetail": "Non è cambiato nulla. Riprova.",
-        "nothing": "Niente da applicare",
-        "nothingDetail": "Nel frattempo i suggerimenti sono cambiati."
-      },
-      "undone": "Riordino annullato",
-      "undoFailed": "Impossibile annullare il riordino"
-    },
-    "search": {
-      "related": "Correlati per significato",
-      "noWordMatches": "Nessun link con queste parole",
-      "why": "Vicino a: {{reasons}}",
-      "fromSummary": "Vicino a: {{reasons}} (dal riepilogo)",
-      "preparing": "La ricerca per significato si sta preparando: {{ready}} link su {{total}}. La ricerca per parole funziona come sempre."
-    },
-    "related": {
-      "title": "Correlati nel tuo scaffale",
-      "why": "Vicino a: {{reasons}}",
-      "show": "Mostra correlati",
-      "folders": "Cartelle correlate"
     }
+  },
+  "rediscover": {
+    "title": "Dai tuoi link",
+    "lead": {
+      "theme": "Stai salvando molto su {{theme}}. Questi sono link più vecchi che non hai aperto.",
+      "forgotten": "Salvati tempo fa e mai aperti."
+    },
+    "dismiss": "Nascondi fino alla prossima settimana",
+    "saved": "Salvato a {{month}}, non aperto di recente",
+    "remind": "Ricordamelo",
+    "readLater": "Leggi dopo",
+    "notInterested": "Non mi interessa"
   }
 }

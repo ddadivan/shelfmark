@@ -623,6 +623,10 @@
       "meaning": {
         "term": "Busca por significado:",
         "text": "enquanto estiver ativada (Configurações › IA), o título, o resumo e os nomes das tags de cada link, sua nota só com “Incluir minhas notas”, e as palavras que você busca são enviados à Voyage AI, nosso segundo operador, que os transforma em vetores de números. Nunca o endereço, suas pastas ou dados de outras pessoas. Os vetores ficam guardados com seus links e são excluídos com eles ou com “Excluir dados de IA”; sua busca não é guardada. A Voyage AI by MongoDB (EUA) exclui cada solicitação logo após processá-la (retenção zero) e não a usa para treinamento."
+      },
+      "ask": {
+        "term": "Pergunte aos seus links:",
+        "text": "só quando você faz uma pergunta, sua pergunta e até 10 links relacionados (título, endereço sem parâmetros, nomes de pastas e tags, resumo, sua nota só com “Incluir minhas notas”) são enviados para [PROVIDER]. A resposta cita apenas esses links. Nem a pergunta nem a resposta são guardadas; contamos só o número de perguntas por dia e por mês, para o seu limite."
       }
     },
     "retention": {
@@ -1859,7 +1863,14 @@
       "move": "mover",
       "open": "abrir",
       "background": "abrir em segundo plano"
-    }
+    },
+    "askRow": "Pergunte aos seus links: “{{query}}”",
+    "mode": {
+      "label": "Pesquisar ou perguntar",
+      "search": "Pesquisar",
+      "ask": "Perguntar"
+    },
+    "askRowCompact": "Pergunte aos seus links sobre isso"
   },
   "share": {
     "title": "Salvar no Shelfmark",
@@ -2958,6 +2969,14 @@
         "title": "Resumos curtos",
         "text": "Com a IA ativada, os links ganham um resumo de uma ou duas linhas no cartão. Edite e ele passa a ser seu."
       },
+      "aiTidy": {
+        "title": "Organizar “Sem pasta” com IA",
+        "text": "Revise numa única página as sugestões de IA para tudo em “Sem pasta” e aplique-as com um só Desfazer. Se você guardar links de um site na mesma pasta algumas vezes, o Shelfmark oferece uma regra."
+      },
+      "aiAsk": {
+        "title": "Pergunte aos seus links",
+        "text": "Faça uma pergunta com suas próprias palavras e receba uma resposta curta a partir dos links que você salvou, com cada fonte listada. E mais “Dos seus links”: uma vez por semana, links antigos que você nunca abriu."
+      },
       "mcp": {
         "title": "Conecte seu assistente",
         "text": "No Pro, o Claude e outros assistentes MCP podem pesquisar e ler seus links com um token pessoal. Somente leitura, e você pode revogá-lo quando quiser."
@@ -2968,10 +2987,6 @@
       },
       "extensionInStore": {
         "text": "A extensão do Shelfmark está na Chrome Web Store: instale-a pelo aviso da sua estante ou em Configurações › Biblioteca."
-      },
-      "aiTidy": {
-        "title": "Organizar “Sem pasta” com IA",
-        "text": "Revise numa única página as sugestões de IA para tudo em “Sem pasta” e aplique-as com um só Desfazer. Se você guardar links de um site na mesma pasta algumas vezes, o Shelfmark oferece uma regra."
       }
     },
     "sections": {
@@ -3084,6 +3099,10 @@
         "ready": "Pronta",
         "progress": "{{ready}} de {{total}} links prontos",
         "quota": "Pausada até {{date}}: limite do mês atingido"
+      },
+      "ask": {
+        "title": "Pergunte aos seus links",
+        "text": "Responde perguntas com base nos seus próprios links. Usa o Claude da Anthropic: sua pergunta e os links relacionados são enviados, nada é guardado."
       }
     },
     "backfill": {
@@ -3143,6 +3162,10 @@
       "meaning": {
         "title": "Encontra links pelo significado",
         "text": "A busca e os links relacionados também consideram o assunto de um link. Para isso, títulos, tags, resumos e o que você busca vão para a Voyage AI. Desative separadamente em Configurações › IA."
+      },
+      "ask": {
+        "title": "Responde perguntas com seus links",
+        "text": "Só quando você pergunta: sua pergunta e os links relacionados vão para o modelo. A resposta lista as fontes e nada é guardado. Desative separadamente em Configurações › IA."
       }
     },
     "suggest": {
@@ -3202,6 +3225,138 @@
         "other": "{{count}} tags adicionadas pela IA"
       },
       "undo": "Desfazer"
+    },
+    "tidy": {
+      "entry": "Organizar com sugestões",
+      "back": "Sem pasta",
+      "title": "Organizar “Sem pasta”",
+      "lead": {
+        "one": "Sugestões para {{count}} link. Toque em um chip para deixá-lo de fora.",
+        "many": "Sugestões para {{count}} links. Toque em um chip para deixá-lo de fora.",
+        "other": "Sugestões para {{count}} links. Toque em um chip para deixá-lo de fora."
+      },
+      "cancel": "Cancelar",
+      "apply": {
+        "one": "Aplicar a {{count}} link",
+        "many": "Aplicar a {{count}} links",
+        "other": "Aplicar a {{count}} links"
+      },
+      "skip": "Pular",
+      "skipped": "Pulado — fica em “Sem pasta”",
+      "undoSkip": "Desfazer",
+      "rowLabel": "Mudanças para {{title}}",
+      "listLabel": "Links com sugestões",
+      "barLabel": "Aplicar sugestões",
+      "loading": "Carregando sugestões",
+      "chip": {
+        "folder": "Mover para {{name}}",
+        "folderAdded": "Mover para {{name}}, escolhido",
+        "tag": "Adicionar a tag {{name}}",
+        "tagAdded": "Adicionar a tag {{name}}, escolhido",
+        "newTag": "Criar e adicionar a tag {{name}}",
+        "newTagAdded": "Criar e adicionar a tag {{name}}, escolhido"
+      },
+      "more": {
+        "one": "Depois destes, falta mais {{count}} link. Links sem sugestões não aparecem.",
+        "many": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem.",
+        "other": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem."
+      },
+      "next": "Mostrar os próximos links",
+      "empty": {
+        "title": "Nada para organizar",
+        "text": "Cada link aqui ainda não tem sugestões ou você já o organizou. Links novos recebem sugestões em menos de um minuto.",
+        "back": "Voltar para “Sem pasta”"
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} link organizado",
+          "many": "{{count}} links organizados",
+          "other": "{{count}} links organizados"
+        },
+        "folders": {
+          "one": "Movidos para {{count}} pasta",
+          "many": "Movidos para {{count}} pastas",
+          "other": "Movidos para {{count}} pastas"
+        },
+        "tags": {
+          "one": "{{count}} tag adicionada",
+          "many": "{{count}} tags adicionadas",
+          "other": "{{count}} tags adicionadas"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Desfazer",
+        "failed": "Não foi possível organizar os links",
+        "failedDetail": "Nada foi alterado. Tente de novo.",
+        "nothing": "Nada para aplicar",
+        "nothingDetail": "As sugestões mudaram nesse meio-tempo."
+      },
+      "undone": "Organização desfeita",
+      "undoFailed": "Não foi possível desfazer a organização"
+    },
+    "search": {
+      "related": "Relacionados pelo significado",
+      "noWordMatches": "Nenhum link com essas palavras",
+      "why": "Perto de: {{reasons}}",
+      "fromSummary": "Perto de: {{reasons}} (do resumo)",
+      "preparing": "A busca por significado está se preparando: {{ready}} de {{total}} links. A busca por palavras funciona como sempre."
+    },
+    "related": {
+      "title": "Relacionados na sua estante",
+      "why": "Perto de: {{reasons}}",
+      "show": "Mostrar relacionados",
+      "folders": "Pastas relacionadas"
+    },
+    "ask": {
+      "title": "Pergunte aos seus links",
+      "open": "Pergunte aos seus links",
+      "close": "Fechar Pergunte aos seus links",
+      "newQuestion": "Nova pergunta",
+      "emptyTitle": "O que você quer saber?",
+      "lead": "Pergunte com suas palavras. A resposta vem dos links que você salvou, com cada fonte listada.",
+      "starters": {
+        "saved": "O que eu salvei sobre {{folder}}?",
+        "ideas": "Quais são as ideias principais em {{folder}}?",
+        "recent": "O que eu adicionei a {{folder}} recentemente?",
+        "generic": "O que eu salvei este mês?"
+      },
+      "label": "Pergunte sobre seus links",
+      "placeholder": "Pergunte sobre seus links",
+      "send": "Perguntar",
+      "stop": "Parar",
+      "left": {
+        "day": {
+          "one": "{{count}} pergunta restante hoje",
+          "many": "{{count}} de perguntas restantes hoje",
+          "other": "{{count}} perguntas restantes hoje"
+        },
+        "month": {
+          "one": "{{count}} pergunta restante este mês",
+          "many": "{{count}} de perguntas restantes este mês",
+          "other": "{{count}} perguntas restantes este mês"
+        }
+      },
+      "footer": "As respostas usam apenas seus links. Nada muda na sua biblioteca.",
+      "sources": "Fontes dos seus links",
+      "source": "Fonte {{n}}",
+      "sideBySide": "Abrir lado a lado",
+      "remind": "Lembrar-me",
+      "notFound": {
+        "text": "Nada nos seus links responde a isso.",
+        "search": "Pesquisar “{{query}}”",
+        "add": "Adicionar um link"
+      },
+      "limit": {
+        "day": "Você usou as perguntas de hoje. Pergunte de novo amanhã; a pesquisa funciona normalmente.",
+        "month": "Você usou as perguntas deste mês. Pergunte de novo em {{date}}; a pesquisa funciona normalmente."
+      },
+      "error": "Não foi possível obter uma resposta agora. Esta pergunta não foi contada.",
+      "rejected": "Não é possível responder a esta pergunta. Ela não foi contada.",
+      "busy": "Outra pergunta ainda está sendo respondida. Tente de novo em instantes.",
+      "rateLimited": "Perguntas demais em pouco tempo. Tente de novo em um minuto; esta não contou para o seu limite.",
+      "off": "Pergunte aos seus links está desativado em Configurações › IA.",
+      "retry": "Tentar de novo",
+      "truncated": "A resposta foi interrompida.",
+      "stopped": "Parado."
     },
     "connect": {
       "title": "Conecte seu assistente",
@@ -3297,86 +3452,18 @@
           }
         }
       }
-    },
-    "tidy": {
-      "entry": "Organizar com sugestões",
-      "back": "Sem pasta",
-      "title": "Organizar “Sem pasta”",
-      "lead": {
-        "one": "Sugestões para {{count}} link. Toque em um chip para deixá-lo de fora.",
-        "many": "Sugestões para {{count}} links. Toque em um chip para deixá-lo de fora.",
-        "other": "Sugestões para {{count}} links. Toque em um chip para deixá-lo de fora."
-      },
-      "cancel": "Cancelar",
-      "apply": {
-        "one": "Aplicar a {{count}} link",
-        "many": "Aplicar a {{count}} links",
-        "other": "Aplicar a {{count}} links"
-      },
-      "skip": "Pular",
-      "skipped": "Pulado — fica em “Sem pasta”",
-      "undoSkip": "Desfazer",
-      "rowLabel": "Mudanças para {{title}}",
-      "listLabel": "Links com sugestões",
-      "barLabel": "Aplicar sugestões",
-      "loading": "Carregando sugestões",
-      "chip": {
-        "folder": "Mover para {{name}}",
-        "folderAdded": "Mover para {{name}}, escolhido",
-        "tag": "Adicionar a tag {{name}}",
-        "tagAdded": "Adicionar a tag {{name}}, escolhido",
-        "newTag": "Criar e adicionar a tag {{name}}",
-        "newTagAdded": "Criar e adicionar a tag {{name}}, escolhido"
-      },
-      "more": {
-        "one": "Depois destes, falta mais {{count}} link. Links sem sugestões não aparecem.",
-        "many": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem.",
-        "other": "Depois destes, faltam mais {{count}} links. Links sem sugestões não aparecem."
-      },
-      "next": "Mostrar os próximos links",
-      "empty": {
-        "title": "Nada para organizar",
-        "text": "Cada link aqui ainda não tem sugestões ou você já o organizou. Links novos recebem sugestões em menos de um minuto.",
-        "back": "Voltar para “Sem pasta”"
-      },
-      "toast": {
-        "title": {
-          "one": "{{count}} link organizado",
-          "many": "{{count}} links organizados",
-          "other": "{{count}} links organizados"
-        },
-        "folders": {
-          "one": "Movidos para {{count}} pasta",
-          "many": "Movidos para {{count}} pastas",
-          "other": "Movidos para {{count}} pastas"
-        },
-        "tags": {
-          "one": "{{count}} tag adicionada",
-          "many": "{{count}} tags adicionadas",
-          "other": "{{count}} tags adicionadas"
-        },
-        "detail": "{{folders}}, {{tags}}",
-        "undo": "Desfazer",
-        "failed": "Não foi possível organizar os links",
-        "failedDetail": "Nada foi alterado. Tente de novo.",
-        "nothing": "Nada para aplicar",
-        "nothingDetail": "As sugestões mudaram nesse meio-tempo."
-      },
-      "undone": "Organização desfeita",
-      "undoFailed": "Não foi possível desfazer a organização"
-    },
-    "search": {
-      "related": "Relacionados pelo significado",
-      "noWordMatches": "Nenhum link com essas palavras",
-      "why": "Perto de: {{reasons}}",
-      "fromSummary": "Perto de: {{reasons}} (do resumo)",
-      "preparing": "A busca por significado está se preparando: {{ready}} de {{total}} links. A busca por palavras funciona como sempre."
-    },
-    "related": {
-      "title": "Relacionados na sua estante",
-      "why": "Perto de: {{reasons}}",
-      "show": "Mostrar relacionados",
-      "folders": "Pastas relacionadas"
     }
+  },
+  "rediscover": {
+    "title": "Dos seus links",
+    "lead": {
+      "theme": "Você tem salvado muito sobre {{theme}}. Estes são links mais antigos que você não abriu.",
+      "forgotten": "Salvos há algum tempo e nunca abertos."
+    },
+    "dismiss": "Ocultar até a próxima semana",
+    "saved": "Salvo em {{month}}, não aberto recentemente",
+    "remind": "Lembrar-me",
+    "readLater": "Ler depois",
+    "notInterested": "Não tenho interesse"
   }
 }

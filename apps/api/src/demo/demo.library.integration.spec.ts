@@ -2,8 +2,13 @@ import {
   AI_ENDPOINT,
   AI_FEATURE_MODE,
   AI_JOB_STATUS,
+  AI_QUOTA,
+  ASK_PERIOD,
   AUTH_ENDPOINT,
   DEMO_LIMIT,
+  REDISCOVER_ENDPOINT,
+  REDISCOVER_LIMIT,
+  REDISCOVER_MODE,
   RULE_OFFER_ENDPOINT,
   SUGGESTION_KIND,
   SUGGESTION_STATE,
@@ -11,6 +16,7 @@ import {
 } from '@shelfmark/contracts';
 import type {
   AiSettingsResponse,
+  AskDoneEvent,
   GetSessionResponse,
   LinkAiState,
   LinkResponse,
@@ -18,6 +24,7 @@ import type {
   ListLinksResponse,
   ListRemindersResponse,
   ListTagsResponse,
+  RediscoverResponse,
   RuleOfferResponse,
   TidyApplyResponse,
   TidyListResponse,
@@ -29,6 +36,7 @@ import { createIsolationUsers } from '../../test-utils/isolation/create-isolatio
 import { expectIsolated } from '../../test-utils/isolation/expect-isolated';
 import { asUser } from '../../test-utils/isolation/test-agent';
 import type { AuthTestApp } from '../../test-utils/models/auth-test-app.interface';
+import { sseEvents, sseParser } from '../../test-utils/read-sse';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
 import { signInAs } from '../../test-utils/sign-in-as';
@@ -159,6 +167,79 @@ describe('demo library, limits and expiry', () => {
         .query({ q: 'warm jackets for winter' })
         .expect(200);
       expect((meaning.body as { status: { state: string } }).status.state).toBe('ready');
+    });
+
+    it('starts with Ask on, the Free allowance and canned answers grounded in the seed (AI-4)', async () => {
+      const demo = await signInDemo(t.app, t.baseUrl);
+      const agent = asUser(t.app, demo);
+      const settings = (await agent.get(AI_ENDPOINT.Settings).expect(200))
+        .body as AiSettingsResponse;
+      expect(settings.settings.ask).toBe(true);
+      expect(settings.ask.available).toBe(true);
+      expect(settings.ask.allowance).toMatchObject({
+        questionsLeft: AI_QUOTA.free.questionsPerMonth,
+        period: ASK_PERIOD.Month,
+      });
+
+      const themes = [
+        { question: 'Which ramen recipes did I save?', intro: 'You saved a few ramen recipes.' },
+        { question: 'Which coats was I comparing?', intro: 'You were comparing two coats.' },
+        {
+          question: 'What do I have on Angular signals?',
+          intro: 'Your Angular links cover signals.',
+        },
+      ];
+      const seedUrls = new Set(DEMO_SEED.links.map((link) => link.url));
+      for (const theme of themes) {
+        const res = await agent
+          .post(AI_ENDPOINT.Ask)
+          .send({ question: theme.question })
+          .buffer(true)
+          .parse(sseParser)
+          .expect(200);
+        const events = sseEvents(res.body);
+        const text = events.map((event) => (event.type === 'text' ? event.text : '')).join('');
+        expect(text.startsWith(theme.intro)).toBe(true);
+        const done = events.at(-1) as AskDoneEvent;
+        expect(done.type).toBe('done');
+        expect(done.notFound).toBe(false);
+        expect(done.sources.length).toBeGreaterThan(0);
+        for (const source of done.sources) expect(seedUrls.has(source.link.url)).toBe(true);
+        for (const source of done.sources) expect(text).toContain(source.link.title);
+      }
+      const ramen = sseEvents(
+        (
+          await agent
+            .post(AI_ENDPOINT.Ask)
+            .send({ question: 'Remind me of my ramen links' })
+            .buffer(true)
+            .parse(sseParser)
+            .expect(200)
+        ).body,
+      ).at(-1) as AskDoneEvent;
+      expect(ramen.sources.map((source) => source.link.title)).toEqual(
+        expect.arrayContaining(['Quick shoyu ramen for weeknights', 'Ramen toppings guide']),
+      );
+      // Four questions counted out of the Free month; nothing about them was stored.
+      expect(ramen.allowance.questionsLeft).toBe(AI_QUOTA.free.questionsPerMonth - 4);
+    });
+
+    it('shows the From your shelf block: older seed links never opened (AI-4)', async () => {
+      const demo = await signInDemo(t.app, t.baseUrl);
+      const res = await asUser(t.app, demo).get(REDISCOVER_ENDPOINT.Block).expect(200);
+      const block = res.body as RediscoverResponse;
+      expect(block.mode).toBe(REDISCOVER_MODE.Forgotten);
+      expect(block.items.length).toBeGreaterThanOrEqual(REDISCOVER_LIMIT.ItemsMin);
+      expect(block.items.length).toBeLessThanOrEqual(REDISCOVER_LIMIT.ItemsMax);
+      const candidates = DEMO_SEED.links
+        .filter(
+          (link) =>
+            link.createdDaysAgo >= REDISCOVER_LIMIT.SavedDaysMin &&
+            (link.lastOpenedDaysAgo === null ||
+              link.lastOpenedDaysAgo >= REDISCOVER_LIMIT.OpenedDaysMin),
+        )
+        .map((link) => link.url);
+      expect(block.items.map((item) => item.url).sort()).toEqual(candidates.sort());
     });
 
     it('seeds AI summaries (source ai, status done) as in seed.json (#391)', async () => {

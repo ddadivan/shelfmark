@@ -6,6 +6,8 @@ export const ANTHROPIC_LIMIT = {
   TimeoutMs: 15_000,
   /** The answer is a small JSON object. */
   MaxTokens: 500,
+  /** An Ask answer: a few plain sentences (ADR 0052 point 4). */
+  AskMaxTokens: 700,
   /** Our queue retries; the SDK does not. */
   MaxRetries: 0,
   /** HTTP statuses (besides 5xx) that are worth another attempt. */

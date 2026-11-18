@@ -8,6 +8,7 @@ import {
   type AiBackfillStatus,
   type AiFeatureMode,
   type AiSearchStatus,
+  type AskAllowance,
   type AiSettings,
   type AiSettingsResponse,
   type AiTickResponse,
@@ -92,6 +93,13 @@ export const AiSettingsStore = signalStore(
           (state === AI_SEARCH_STATE.Processing || state === AI_SEARCH_STATE.Unavailable)
         );
       }),
+      /**
+       * Ask your shelf may show (AI-4): AI and the Ask switch on. Read from the settings, so an
+       * optimistic switch hides or shows the entry points at once.
+       */
+      askOn: computed(() => isOn() && settings().ask),
+      /** Questions left and when they reset, `null` until loaded. */
+      askAllowance: computed(() => response()?.ask.allowance ?? null),
     };
   }),
   withMethods((store) => {
@@ -255,6 +263,14 @@ export const AiSettingsStore = signalStore(
        */
       searchStatusSeen(search: AiSearchStatus): void {
         patchResponse({ search });
+      },
+
+      /** An Ask stream reported a newer allowance: the "questions left" lines follow it. */
+      askAllowanceSeen(allowance: AskAllowance): void {
+        const response = store.response();
+        if (response) {
+          patchResponse({ ask: { ...response.ask, allowance } });
+        }
       },
 
       /** Deletes every AI summary, suggestion and vector; reloads the settings after it. */

@@ -1,0 +1,26 @@
+<ui-drawer
+  [closeLabel]="'ai.ask.close' | transloco"
+  [side]="DRAWER_SIDE.End"
+  [width]="DRAWER_WIDTH.Wide"
+>
+  <div slot="head" class="ask-drawer__head">
+    <h2 class="ask-drawer__title">
+      <ui-icon class="ask-drawer__spark" name="spark" />{{ 'ai.ask.title' | transloco }}
+    </h2>
+    @if (left(); as left) {
+      <span class="ask-drawer__left">{{ left.key | transloco: { count: left.count } }}</span>
+    }
+    @if (store.entries().length > 0) {
+      <ui-button
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="refresh"
+        [ariaLabel]="'ai.ask.newQuestion' | transloco"
+        (click)="store.reset()"
+      />
+    }
+  </div>
+  <app-ask-conversation />
+  <app-ask-composer slot="foot" />
+</ui-drawer>

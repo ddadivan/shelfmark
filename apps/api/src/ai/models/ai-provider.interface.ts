@@ -1,4 +1,6 @@
 import type { AiProviderName } from './ai-provider-name.type';
+import type { AskChunk } from './ask-chunk.type';
+import type { AskInput } from './ask-input.interface';
 import type { LinkBatchItem } from './link-batch-item.interface';
 import type { LinkBatchRequest } from './link-batch-request.interface';
 import type { LinkBatchStatus } from './link-batch-status.type';
@@ -20,4 +22,9 @@ export interface AiProvider {
   getLinkBatchStatus(providerBatchId: string): Promise<LinkBatchStatus>;
   readLinkBatchResults(providerBatchId: string): Promise<LinkBatchItem[]>;
   cancelLinkBatch(providerBatchId: string): Promise<void>;
+  /**
+   * One Ask answer as a stream (ADR 0052): `text` chunks, then exactly one `end` or `error`. Never
+   * throws; stops promptly when `signal` aborts (the client went away or a deadline passed).
+   */
+  askStream(input: AskInput, signal: AbortSignal): AsyncIterable<AskChunk>;
 }

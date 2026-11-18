@@ -91,8 +91,11 @@ export class MeaningSearchService {
     return { status, items };
   }
 
-  /** The cached or freshly embedded query vector, or the state to answer instead. */
-  private async queryVector(
+  /**
+   * The cached or freshly embedded query vector, or the state to answer instead. Also used by Ask
+   * retrieval (AI-4): one cache and one `search_queries` allowance for both.
+   */
+  async queryVector(
     userId: string,
     provider: EmbeddingProvider,
     q: string,

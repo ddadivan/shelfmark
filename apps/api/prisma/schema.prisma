@@ -116,6 +116,9 @@ model User {
   ruleOfferDismissals   RuleOfferDismissal[]
   linkEmbeddings        LinkEmbedding[]
   mcpTokens             McpToken[]
+  aiAskUsage            AiAskUsage[]
+  rediscoverHidden      RediscoverHidden[]
+  rediscoverState       RediscoverState?
 
   @@map("users")
 }
@@ -219,54 +222,55 @@ model Folder {
 }
 
 model Link {
-  id                 String           @id @default(uuid(7)) @db.Uuid
-  userId             String           @map("user_id") @db.Uuid
-  folderId           String?          @map("folder_id") @db.Uuid
-  url                String           @db.VarChar(2048)
-  normalizedUrl      String           @map("normalized_url") @db.VarChar(2048)
-  title              String           @db.VarChar(300)
+  id                 String             @id @default(uuid(7)) @db.Uuid
+  userId             String             @map("user_id") @db.Uuid
+  folderId           String?            @map("folder_id") @db.Uuid
+  url                String             @db.VarChar(2048)
+  normalizedUrl      String             @map("normalized_url") @db.VarChar(2048)
+  title              String             @db.VarChar(300)
   // lower(title), kept in sync by the service: the keyset cursor sorts on it (ADR 0033).
-  titleSortKey       String           @map("title_sort_key")
+  titleSortKey       String             @map("title_sort_key")
   note               String?
   // Remote source URLs as sent by the client or found in the preview; the capture fetches them
   // server-side (ADR 0027). The response derives its same-origin image paths from link_images.
-  faviconSourceUrl   String?          @map("favicon_source_url") @db.VarChar(2048)
-  imageSourceUrl     String?          @map("image_source_url") @db.VarChar(2048)
+  faviconSourceUrl   String?            @map("favicon_source_url") @db.VarChar(2048)
+  imageSourceUrl     String?            @map("image_source_url") @db.VarChar(2048)
   // When the last image capture was attempted (create, or the lazy re-capture of ADR 0027). Defaults
   // to the insert time; a PATCH that changes the page sets it to NULL = "capture pending". The
   // lazy path claims it atomically, which is also its cooldown.
-  captureAttemptedAt DateTime?        @default(now()) @map("capture_attempted_at") @db.Timestamptz(3)
+  captureAttemptedAt DateTime?          @default(now()) @map("capture_attempted_at") @db.Timestamptz(3)
   // Client-generated UUID that makes a retried create return the first link (ADR 0033).
-  idempotencyKey     String?          @map("idempotency_key") @db.Uuid
-  isFavorite         Boolean          @default(false) @map("is_favorite")
+  idempotencyKey     String?            @map("idempotency_key") @db.Uuid
+  isFavorite         Boolean            @default(false) @map("is_favorite")
   // video | article | shopping | other (LINK_KIND, CHECK in the migration): derived at save time from
   // og:type and the host, recomputed on a URL change, changeable by the user (ADR 0038).
-  kind               String           @default("other") @db.VarChar(16)
+  kind               String             @default("other") @db.VarChar(16)
   // Pinned to the top of its folder (#263): the pin time orders pinned links; NULL = not pinned.
-  pinnedInFolderAt   DateTime?        @map("pinned_in_folder_at") @db.Timestamptz(3)
+  pinnedInFolderAt   DateTime?          @map("pinned_in_folder_at") @db.Timestamptz(3)
   // Place in the user's sidebar pins (ADR 0037); NULL = not pinned. Cleared when the link goes to Trash.
-  pinnedPosition     Int?             @map("pinned_position") @db.SmallInt
-  lastOpenedAt       DateTime?        @map("last_opened_at") @db.Timestamptz(3)
+  pinnedPosition     Int?               @map("pinned_position") @db.SmallInt
+  lastOpenedAt       DateTime?          @map("last_opened_at") @db.Timestamptz(3)
   // In-app reminder (#275): the link is due once this time has passed; NULL = no reminder. Done
   // clears it. Written with plain SQL so `updated_at` stays; the partial index lives in the migration.
-  remindAt           DateTime?        @map("remind_at") @db.Timestamptz(3)
+  remindAt           DateTime?          @map("remind_at") @db.Timestamptz(3)
   // AI summary (#391): plain text, at most AI_LIMIT.SummaryMax. `summarySource` is `ai` or `user`
   // (both null or both set, CHECKs in the migration); a `user` summary is never overwritten by AI.
   // `aiStatus` is the latest job status for the cards (pending | done | failed | skipped).
-  summary            String?          @db.VarChar(300)
-  summarySource      String?          @map("summary_source") @db.VarChar(8)
-  aiStatus           String?          @map("ai_status") @db.VarChar(8)
+  summary            String?            @db.VarChar(300)
+  summarySource      String?            @map("summary_source") @db.VarChar(8)
+  aiStatus           String?            @map("ai_status") @db.VarChar(8)
   // Set when the link is in Trash (ADR 0036). The partial indexes for Trash live in the migration.
-  deletedAt          DateTime?        @map("deleted_at") @db.Timestamptz(3)
-  createdAt          DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt          DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
-  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  folder             Folder?          @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  deletedAt          DateTime?          @map("deleted_at") @db.Timestamptz(3)
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder             Folder?            @relation(fields: [folderId], references: [id], onDelete: SetNull)
   tags               LinkTag[]
   images             LinkImage[]
   aiJobs             AiJob[]
   suggestions        LinkSuggestion[]
   embeddings         LinkEmbedding[]
+  rediscoverHidden   RediscoverHidden[]
 
   @@unique([id, userId])
   @@unique([userId, idempotencyKey])
@@ -498,6 +502,10 @@ model AiSettings {
   embedNotBefore    DateTime? @map("embed_not_before") @db.Timestamptz(3)
   embedFailures     Int       @default(0) @map("embed_failures") @db.SmallInt
   embedFailedAt     DateTime? @map("embed_failed_at") @db.Timestamptz(3)
+  // Ask your shelf (AI-4, ADR 0052): the switch (on for every row, existing ones too) and the
+  // one-question-at-a-time lease (30 s, released when the answer ends).
+  ask               Boolean   @default(true)
+  askLeaseUntil     DateTime? @map("ask_lease_until") @db.Timestamptz(3)
   createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -518,6 +526,41 @@ model AiUsage {
 
   @@id([userId, month])
   @@map("ai_usage")
+}
+
+// Ask your shelf questions per UTC day (AI-4, ADR 0052 point 7): counts only, never a question or an
+// answer. Reserved under the advisory lock `ai-ask:<userId>` before the model call, refunded when the
+// stream fails before any text; the AI sweep deletes rows older than 62 days.
+model AiAskUsage {
+  userId    String   @map("user_id") @db.Uuid
+  day       DateTime @db.Date
+  questions Int      @default(0)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, day])
+  @@map("ai_ask_usage")
+}
+
+// "Not interested" in the Rediscover block (F8): the link never shows there again. Library
+// preferences, not AI data: kept by DELETE /api/ai/data, cascades with the link and the account.
+model RediscoverHidden {
+  userId    String   @map("user_id") @db.Uuid
+  linkId    String   @map("link_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  link      Link     @relation(fields: [linkId, userId], references: [id, userId], onDelete: Cascade)
+
+  @@id([userId, linkId])
+  @@map("rediscover_hidden")
+}
+
+// The Rediscover block dismissed for an ISO week (`2026-W47`, F8): hidden until the next week.
+model RediscoverState {
+  userId        String  @id @map("user_id") @db.Uuid
+  dismissedWeek String? @map("dismissed_week") @db.Char(8)
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("rediscover_state")
 }
 
 // A provider batch (Message Batches API) of backfill jobs; `providerBatchId` is the provider's id.

@@ -1,0 +1,35 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-height: 100%;
+}
+
+.ask-conversation__empty {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block: auto;
+}
+
+.ask-conversation__title {
+  @include type(title);
+
+  margin: 0;
+}
+
+.ask-conversation__lead {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.ask-conversation__starters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+}

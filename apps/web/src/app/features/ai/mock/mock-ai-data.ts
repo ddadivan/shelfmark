@@ -19,6 +19,8 @@ import {
   type AiBackfillStatus,
   type AiJobResponse,
   type AiSearchStatus,
+  type AskAllowance,
+  type AskStatus,
   type AiSettings,
   type AiSettingsResponse,
   type LinkAiState,
@@ -31,6 +33,7 @@ import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { normalizeLinkTags } from '../../links/mock/normalize-link-tags';
 import { nextUtcMonthStart, readMockAiAccount, writeMockAiAccount } from './mock-ai-account';
 import { mockAiOutcome } from './mock-ai-outcome';
+import { mockAskAllowance } from './mock-ask-allowance';
 import type { MockAiAccount } from './models/mock-ai-account.interface';
 import type { MockAiLibrary } from './models/mock-ai-library.interface';
 import type { MockBackfillRefusal } from './models/mock-backfill-refusal.type';
@@ -119,6 +122,34 @@ export class MockAiData {
       pendingJobs: this.pendingJobs(),
       backfill: this.backfillStatus(),
       search: this.searchStatus(),
+      ask: this.askStatus(),
+    };
+  }
+
+  /** Ask your shelf like the API: available while AI and the Ask switch are on. */
+  askStatus(): AskStatus {
+    const { settings } = this.account;
+    return { available: settings.enabled && settings.ask, allowance: this.askAllowance() };
+  }
+
+  /** The question allowance of the mock account's tier (`AI_QUOTA`). */
+  askAllowance(): AskAllowance {
+    const account = this.account;
+    return mockAskAllowance(
+      AI_QUOTA[account.tier],
+      account.askDayUsed,
+      account.askMonthUsed,
+      Date.now(),
+    );
+  }
+
+  /** Counts a question (`1`) or refunds one (`-1`) for today and this month. */
+  countQuestion(delta: 1 | -1): void {
+    const account = this.account;
+    this.account = {
+      ...account,
+      askDayUsed: Math.max(0, account.askDayUsed + delta),
+      askMonthUsed: Math.max(0, account.askMonthUsed + delta),
     };
   }
 

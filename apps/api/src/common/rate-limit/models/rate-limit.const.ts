@@ -64,6 +64,10 @@ export const RATE_LIMIT = {
   // Tidy list and count (each a bounded scan of Unsorted): the page, the Unsorted button and its
   // refresh after jobs finish.
   AiTidyRead: { limit: 60, ttl: MINUTE_MS },
+  // AI-4 Ask your shelf: each one a streamed model answer (the question limits apply on top).
+  AiAsk: { limit: 10, ttl: MINUTE_MS },
+  // Rediscover dismiss and "Not interested".
+  RediscoverWrite: { limit: 30, ttl: MINUTE_MS },
   // Rule offer check (AI-2): read-only, asked after each filing by the user.
   RuleOffer: { limit: 60, ttl: MINUTE_MS },
   // The MCP server (#395, ADR 0054), per client IP before the token guard; each token also has a

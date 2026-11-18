@@ -75,6 +75,7 @@ describe('AI settings API', () => {
         includeNotes: false,
         summaryLanguage: 'app',
         meaningSearch: true,
+        ask: true,
       },
       introSeen: false,
       entitlements: { plan: 'free', aiTier: 'free' },
@@ -89,6 +90,14 @@ describe('AI settings API', () => {
       pendingJobs: 0,
       backfill: { state: 'idle', eligible: 0, total: 0, done: 0, estimatedMinutes: null },
       search: { state: 'off', ready: 0, total: 0 },
+      ask: {
+        available: false,
+        allowance: {
+          questionsLeft: 5,
+          period: 'month',
+          resetsOn: expect.stringMatching(/^\d{4}-\d{2}-01$/),
+        },
+      },
     });
     expect(await t.db.prisma.aiSettings.count()).toBe(0);
   });
@@ -125,8 +134,22 @@ describe('AI settings API', () => {
       includeNotes: true,
       summaryLanguage: 'app',
       meaningSearch: true,
+      ask: true,
     });
     expect(changed.introSeen).toBe(false);
+  });
+
+  it('switches Ask your shelf, available only while AI is on too (AI-4)', async () => {
+    const on = await patch({ enabled: true });
+    expect(on.settings.ask).toBe(true);
+    expect(on.ask.available).toBe(true);
+    const off = await patch({ ask: false });
+    expect(off.settings.ask).toBe(false);
+    expect(off.ask.available).toBe(false);
+    const back = await patch({ ask: true, enabled: false });
+    expect(back.ask.available).toBe(false);
+    await a.patch(BASE).send({ ask: null }).expect(400);
+    await a.patch(BASE).send({ ask: 'yes' }).expect(400);
   });
 
   it('refuses an empty body, unknown fields, nulls and values outside the allow-lists', async () => {

@@ -1,3 +1,4 @@
+import type { AskStatus } from './ask-status.interface';
 import type { AiBackfillStatus } from './ai-backfill-status.interface';
 import type { AiEntitlements } from './ai-entitlements.interface';
 import type { AiProviderStatus } from './ai-provider-status.type';
@@ -18,4 +19,6 @@ export interface AiSettingsResponse {
   backfill: AiBackfillStatus;
   /** Search by meaning readiness; the web app calls the tick while `state` is `processing`. */
   search: AiSearchStatus;
+  /** Ask your shelf availability and the question allowance (AI-4). */
+  ask: AskStatus;
 }

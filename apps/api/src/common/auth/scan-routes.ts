@@ -2,6 +2,7 @@ import { type INestApplicationContext, RequestMethod } from '@nestjs/common';
 import { METHOD_METADATA, PATH_METADATA, ROUTE_ARGS_METADATA } from '@nestjs/common/constants';
 import { DiscoveryService, MetadataScanner } from '@nestjs/core';
 import { API_GLOBAL_PREFIX } from '../../app/models/api-global-prefix.const';
+import { LONG_RUNNING_METADATA_KEY } from '../interceptors/models/long-running-metadata-key.const';
 import { currentUserFactory } from './current-user.decorator';
 import { EXPECTED_ALL_VERB_MOUNTS } from './models/expected-all-verb-mount.const';
 import { AUTH_METADATA_KEY } from './models/auth-metadata-key.const';
@@ -74,6 +75,7 @@ export function scanRoutes(context: Pick<INestApplicationContext, 'get'>): Route
             isPublic: hasMetadata(AUTH_METADATA_KEY.Public, handler),
             optional: hasMetadata(AUTH_METADATA_KEY.Optional, handler),
             usesCurrentUser: readsCurrentUser(instance, name),
+            longRunning: hasMetadata(LONG_RUNNING_METADATA_KEY, handler),
           };
           scan.routes.push(route);
         }

@@ -33,6 +33,13 @@ import { AiRunnerService } from './runner/ai-runner.service';
 import { AiSettingsService } from './settings/ai-settings.service';
 import { AiTidyUndoService } from './tidy/ai-tidy-undo.service';
 import { AiTidyService } from './tidy/ai-tidy.service';
+import { AskRetrievalService } from './ask/ask-retrieval.service';
+import { AskController } from './ask/ask.controller';
+import { AskService } from './ask/ask.service';
+import { AskUsageService } from './ask/ask-usage.service';
+import { ASK_DEADLINES } from './models/ask-deadlines.token';
+import type { AskDeadlines } from './models/ask-deadlines.interface';
+import { ASK_LIMIT } from '@shelfmark/contracts';
 import { AiUsageService } from './usage/ai-usage.service';
 
 /**
@@ -48,6 +55,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     LinkAiController,
     RelatedLinksController,
     AiSweepController,
+    AskController,
   ],
   providers: [
     // Read once at boot (the module is created when the app starts): never at import time.
@@ -75,6 +83,16 @@ import { AiUsageService } from './usage/ai-usage.service';
     QueryEmbeddingCache,
     MeaningSearchService,
     RelatedLinksService,
+    AskRetrievalService,
+    AskUsageService,
+    AskService,
+    {
+      provide: ASK_DEADLINES,
+      useValue: {
+        firstTokenMs: ASK_LIMIT.FirstTokenMs,
+        streamMaxMs: ASK_LIMIT.StreamMaxMs,
+      } satisfies AskDeadlines,
+    },
   ],
   exports: [
     AiProviderRegistry,
@@ -84,6 +102,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiSuggestionsService,
     AiLinkHooksService,
     AiEmbedService,
+    AiSearchStatusService,
   ],
 })
 export class AiModule {}

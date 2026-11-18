@@ -611,6 +611,10 @@
       "meaning": {
         "term": "Suche nach Bedeutung:",
         "text": "solange sie eingeschaltet ist (Einstellungen › KI), werden Titel, Zusammenfassung und Tag-Namen jedes Links, die Notiz nur mit „Meine Notizen einbeziehen“, und die Wörter deiner Suche an Voyage AI gesendet, unseren zweiten Auftragsverarbeiter, der daraus Zahlenvektoren macht. Nie die Adresse, deine Ordner oder Daten anderer. Die Vektoren werden mit deinen Links gespeichert und mit ihnen oder mit „KI-Daten löschen“ gelöscht; deine Suche wird nicht gespeichert. Voyage AI by MongoDB (USA) löscht jede Anfrage direkt nach der Verarbeitung (Zero-Day-Retention) und nutzt sie nicht zum Training."
+      },
+      "ask": {
+        "term": "Frag deine Links:",
+        "text": "nur wenn du eine Frage stellst, werden deine Frage und bis zu 10 passende Links (Titel, Adresse ohne Parameter, Ordner- und Tag-Namen, Zusammenfassung, deine Notiz nur mit „Meine Notizen einbeziehen“) an [PROVIDER] gesendet. Die Antwort zitiert nur diese Links. Weder Frage noch Antwort werden gespeichert; wir zählen nur die Anzahl der Fragen pro Tag und Monat, für dein Limit."
       }
     },
     "retention": {
@@ -1830,7 +1834,14 @@
       "move": "bewegen",
       "open": "öffnen",
       "background": "im Hintergrund öffnen"
-    }
+    },
+    "askRow": "Frag deine Links: „{{query}}“",
+    "mode": {
+      "label": "Suchen oder fragen",
+      "search": "Suchen",
+      "ask": "Fragen"
+    },
+    "askRowCompact": "Deine Links dazu fragen"
   },
   "share": {
     "title": "In Shelfmark speichern",
@@ -2897,6 +2908,14 @@
         "title": "Kurze Zusammenfassungen",
         "text": "Mit KI bekommen Links eine Zusammenfassung von ein bis zwei Zeilen auf ihrer Karte. Bearbeitest du sie, gehört sie dir."
       },
+      "aiTidy": {
+        "title": "„Ohne Ordner“ mit KI aufräumen",
+        "text": "Prüfe die KI-Vorschläge für alles in „Ohne Ordner“ auf einer Seite und wende sie mit einem Rückgängig an. Legst du Links einer Website mehrmals in denselben Ordner, schlägt Shelfmark eine Regel vor."
+      },
+      "aiAsk": {
+        "title": "Frag deine Links",
+        "text": "Stell eine Frage in deinen eigenen Worten und erhalte eine kurze Antwort aus den Links, die du gespeichert hast, mit jeder Quelle. Dazu „Aus deinen Links“: einmal pro Woche ältere Links, die du nie geöffnet hast."
+      },
       "mcp": {
         "title": "Assistenten verbinden",
         "text": "Mit Pro können Claude und andere MCP-Assistenten deine Links mit einem persönlichen Token durchsuchen und lesen. Nur Lesezugriff, jederzeit widerrufbar."
@@ -2907,10 +2926,6 @@
       },
       "extensionInStore": {
         "text": "Die Shelfmark-Browsererweiterung ist im Chrome Web Store: Installiere sie über das Banner in deinem Regal oder unter Einstellungen › Bibliothek."
-      },
-      "aiTidy": {
-        "title": "„Ohne Ordner“ mit KI aufräumen",
-        "text": "Prüfe die KI-Vorschläge für alles in „Ohne Ordner“ auf einer Seite und wende sie mit einem Rückgängig an. Legst du Links einer Website mehrmals in denselben Ordner, schlägt Shelfmark eine Regel vor."
       }
     },
     "sections": {
@@ -3022,6 +3037,10 @@
         "ready": "Bereit",
         "progress": "{{ready}} von {{total}} Links bereit",
         "quota": "Pausiert bis {{date}}: Monatslimit erreicht"
+      },
+      "ask": {
+        "title": "Frag deine Links",
+        "text": "Beantwortet Fragen aus deinen eigenen Links. Nutzt Claude von Anthropic: Deine Frage und die passenden Links werden gesendet, nichts wird gespeichert."
       }
     },
     "backfill": {
@@ -3080,6 +3099,10 @@
       "meaning": {
         "title": "Findet Links nach Bedeutung",
         "text": "Suche und ähnliche Links berücksichtigen auch, worum es in einem Link geht. Dafür gehen Titel, Tags, Zusammenfassungen und deine Suche an Voyage AI. Einzeln abschaltbar unter Einstellungen › KI."
+      },
+      "ask": {
+        "title": "Beantwortet Fragen aus deinen Links",
+        "text": "Nur wenn du fragst: Deine Frage und die passenden Links gehen an das Modell. Die Antwort nennt ihre Quellen, nichts wird gespeichert. Einzeln ausschaltbar unter Einstellungen › KI."
       }
     },
     "suggest": {
@@ -3137,6 +3160,130 @@
         "other": "{{count}} Tags von KI hinzugefügt"
       },
       "undo": "Rückgängig"
+    },
+    "tidy": {
+      "entry": "Mit Vorschlägen aufräumen",
+      "back": "Ohne Ordner",
+      "title": "„Ohne Ordner“ aufräumen",
+      "lead": {
+        "one": "Vorschläge für {{count}} Link. Tippe auf einen Chip, um ihn auszulassen.",
+        "other": "Vorschläge für {{count}} Links. Tippe auf einen Chip, um ihn auszulassen."
+      },
+      "cancel": "Abbrechen",
+      "apply": {
+        "one": "Auf {{count}} Link anwenden",
+        "other": "Auf {{count}} Links anwenden"
+      },
+      "skip": "Überspringen",
+      "skipped": "Übersprungen – bleibt in „Ohne Ordner“",
+      "undoSkip": "Überspringen rückgängig",
+      "rowLabel": "Änderungen für {{title}}",
+      "listLabel": "Links mit Vorschlägen",
+      "barLabel": "Vorschläge anwenden",
+      "loading": "Vorschläge werden geladen",
+      "chip": {
+        "folder": "In {{name}} verschieben",
+        "folderAdded": "In {{name}} verschieben, ausgewählt",
+        "tag": "Tag {{name}} hinzufügen",
+        "tagAdded": "Tag {{name}} hinzufügen, ausgewählt",
+        "newTag": "Tag {{name}} erstellen und hinzufügen",
+        "newTagAdded": "Tag {{name}} erstellen und hinzufügen, ausgewählt"
+      },
+      "more": {
+        "one": "Danach folgt noch {{count}} Link. Links ohne Vorschläge werden nicht aufgeführt.",
+        "other": "Danach folgen noch {{count}} Links. Links ohne Vorschläge werden nicht aufgeführt."
+      },
+      "next": "Nächste Links zeigen",
+      "empty": {
+        "title": "Nichts aufzuräumen",
+        "text": "Jeder Link hier hat entweder noch keine Vorschläge oder du hast ihn schon einsortiert. Neue Links bekommen innerhalb einer Minute Vorschläge.",
+        "back": "Zurück zu „Ohne Ordner“"
+      },
+      "toast": {
+        "title": {
+          "one": "{{count}} Link aufgeräumt",
+          "other": "{{count}} Links aufgeräumt"
+        },
+        "folders": {
+          "one": "In {{count}} Ordner verschoben",
+          "other": "In {{count}} Ordner verschoben"
+        },
+        "tags": {
+          "one": "{{count}} Tag hinzugefügt",
+          "other": "{{count}} Tags hinzugefügt"
+        },
+        "detail": "{{folders}}, {{tags}}",
+        "undo": "Rückgängig",
+        "failed": "Links konnten nicht aufgeräumt werden",
+        "failedDetail": "Es wurde nichts geändert. Versuche es noch einmal.",
+        "nothing": "Nichts anzuwenden",
+        "nothingDetail": "Die Vorschläge haben sich inzwischen geändert."
+      },
+      "undone": "Aufräumen rückgängig gemacht",
+      "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden"
+    },
+    "search": {
+      "related": "Ähnlich nach Bedeutung",
+      "noWordMatches": "Keine Links mit diesen Wörtern",
+      "why": "Nah an: {{reasons}}",
+      "fromSummary": "Nah an: {{reasons}} (aus der Zusammenfassung)",
+      "preparing": "Die Suche nach Bedeutung wird vorbereitet: {{ready}} von {{total}} Links. Die Wortsuche funktioniert wie gewohnt."
+    },
+    "related": {
+      "title": "Ähnliches in deinem Regal",
+      "why": "Nah an: {{reasons}}",
+      "show": "Ähnliches zeigen",
+      "folders": "Ähnliche Ordner"
+    },
+    "ask": {
+      "title": "Frag deine Links",
+      "open": "Frag deine Links",
+      "close": "Frag deine Links schließen",
+      "newQuestion": "Neue Frage",
+      "emptyTitle": "Was möchtest du wissen?",
+      "lead": "Frag in deinen eigenen Worten. Die Antwort stammt aus deinen gespeicherten Links, mit allen Quellen.",
+      "starters": {
+        "saved": "Was habe ich zu {{folder}} gespeichert?",
+        "ideas": "Was sind die wichtigsten Ideen in {{folder}}?",
+        "recent": "Was habe ich zuletzt zu {{folder}} hinzugefügt?",
+        "generic": "Was habe ich diesen Monat gespeichert?"
+      },
+      "label": "Frag zu deinen Links",
+      "placeholder": "Frag zu deinen Links",
+      "send": "Fragen",
+      "stop": "Stoppen",
+      "left": {
+        "day": {
+          "one": "Heute noch {{count}} Frage",
+          "other": "Heute noch {{count}} Fragen"
+        },
+        "month": {
+          "one": "Diesen Monat noch {{count}} Frage",
+          "other": "Diesen Monat noch {{count}} Fragen"
+        }
+      },
+      "footer": "Antworten nutzen nur deine Links. In deiner Bibliothek wird nichts geändert.",
+      "sources": "Quellen aus deinen Links",
+      "source": "Quelle {{n}}",
+      "sideBySide": "Nebeneinander öffnen",
+      "remind": "Erinnern",
+      "notFound": {
+        "text": "Nichts in deinen Links beantwortet das.",
+        "search": "„{{query}}“ suchen",
+        "add": "Link hinzufügen"
+      },
+      "limit": {
+        "day": "Du hast die Fragen für heute aufgebraucht. Frag morgen wieder; die Suche funktioniert wie gewohnt.",
+        "month": "Du hast die Fragen für diesen Monat aufgebraucht. Frag ab {{date}} wieder; die Suche funktioniert wie gewohnt."
+      },
+      "error": "Gerade keine Antwort möglich. Diese Frage zählt nicht für dein Limit.",
+      "rejected": "Diese Frage kann nicht beantwortet werden. Sie zählt nicht für dein Limit.",
+      "busy": "Eine andere Frage wird noch beantwortet. Versuch es gleich noch einmal.",
+      "rateLimited": "Zu viele Fragen in kurzer Zeit. Versuche es in einer Minute erneut; diese Frage wurde nicht auf dein Limit angerechnet.",
+      "off": "Frag deine Links ist unter Einstellungen › KI ausgeschaltet.",
+      "retry": "Erneut versuchen",
+      "truncated": "Die Antwort wurde abgeschnitten.",
+      "stopped": "Gestoppt."
     },
     "connect": {
       "title": "Assistenten verbinden",
@@ -3232,80 +3379,18 @@
           }
         }
       }
-    },
-    "tidy": {
-      "entry": "Mit Vorschlägen aufräumen",
-      "back": "Ohne Ordner",
-      "title": "„Ohne Ordner“ aufräumen",
-      "lead": {
-        "one": "Vorschläge für {{count}} Link. Tippe auf einen Chip, um ihn auszulassen.",
-        "other": "Vorschläge für {{count}} Links. Tippe auf einen Chip, um ihn auszulassen."
-      },
-      "cancel": "Abbrechen",
-      "apply": {
-        "one": "Auf {{count}} Link anwenden",
-        "other": "Auf {{count}} Links anwenden"
-      },
-      "skip": "Überspringen",
-      "skipped": "Übersprungen – bleibt in „Ohne Ordner“",
-      "undoSkip": "Überspringen rückgängig",
-      "rowLabel": "Änderungen für {{title}}",
-      "listLabel": "Links mit Vorschlägen",
-      "barLabel": "Vorschläge anwenden",
-      "loading": "Vorschläge werden geladen",
-      "chip": {
-        "folder": "In {{name}} verschieben",
-        "folderAdded": "In {{name}} verschieben, ausgewählt",
-        "tag": "Tag {{name}} hinzufügen",
-        "tagAdded": "Tag {{name}} hinzufügen, ausgewählt",
-        "newTag": "Tag {{name}} erstellen und hinzufügen",
-        "newTagAdded": "Tag {{name}} erstellen und hinzufügen, ausgewählt"
-      },
-      "more": {
-        "one": "Danach folgt noch {{count}} Link. Links ohne Vorschläge werden nicht aufgeführt.",
-        "other": "Danach folgen noch {{count}} Links. Links ohne Vorschläge werden nicht aufgeführt."
-      },
-      "next": "Nächste Links zeigen",
-      "empty": {
-        "title": "Nichts aufzuräumen",
-        "text": "Jeder Link hier hat entweder noch keine Vorschläge oder du hast ihn schon einsortiert. Neue Links bekommen innerhalb einer Minute Vorschläge.",
-        "back": "Zurück zu „Ohne Ordner“"
-      },
-      "toast": {
-        "title": {
-          "one": "{{count}} Link aufgeräumt",
-          "other": "{{count}} Links aufgeräumt"
-        },
-        "folders": {
-          "one": "In {{count}} Ordner verschoben",
-          "other": "In {{count}} Ordner verschoben"
-        },
-        "tags": {
-          "one": "{{count}} Tag hinzugefügt",
-          "other": "{{count}} Tags hinzugefügt"
-        },
-        "detail": "{{folders}}, {{tags}}",
-        "undo": "Rückgängig",
-        "failed": "Links konnten nicht aufgeräumt werden",
-        "failedDetail": "Es wurde nichts geändert. Versuche es noch einmal.",
-        "nothing": "Nichts anzuwenden",
-        "nothingDetail": "Die Vorschläge haben sich inzwischen geändert."
-      },
-      "undone": "Aufräumen rückgängig gemacht",
-      "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden"
-    },
-    "search": {
-      "related": "Ähnlich nach Bedeutung",
-      "noWordMatches": "Keine Links mit diesen Wörtern",
-      "why": "Nah an: {{reasons}}",
-      "fromSummary": "Nah an: {{reasons}} (aus der Zusammenfassung)",
-      "preparing": "Die Suche nach Bedeutung wird vorbereitet: {{ready}} von {{total}} Links. Die Wortsuche funktioniert wie gewohnt."
-    },
-    "related": {
-      "title": "Ähnliches in deinem Regal",
-      "why": "Nah an: {{reasons}}",
-      "show": "Ähnliches zeigen",
-      "folders": "Ähnliche Ordner"
     }
+  },
+  "rediscover": {
+    "title": "Aus deinen Links",
+    "lead": {
+      "theme": "Du speicherst gerade viel zu {{theme}}. Das sind ältere Links, die du nicht geöffnet hast.",
+      "forgotten": "Vor einer Weile gespeichert und nie geöffnet."
+    },
+    "dismiss": "Bis nächste Woche ausblenden",
+    "saved": "Gespeichert im {{month}}, länger nicht geöffnet",
+    "remind": "Erinnern",
+    "readLater": "Später lesen",
+    "notInterested": "Kein Interesse"
   }
 }

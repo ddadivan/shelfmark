@@ -401,6 +401,72 @@
       "summary": "In-depth video courses on JavaScript, TypeScript, frameworks and web performance.",
       "suggestFolder": "courses",
       "suggestTags": ["tutorial"]
+    },
+    {
+      "url": "https://www.justonecookbook.com/quick-shoyu-ramen/",
+      "title": "Quick shoyu ramen for weeknights",
+      "kind": "article",
+      "folder": "recipes",
+      "tags": ["cooking"],
+      "isFavorite": false,
+      "createdDaysAgo": 48,
+      "lastOpenedDaysAgo": null,
+      "summary": "A 30-minute shoyu ramen: a soy and dashi broth, fresh noodles and a soft-boiled egg, made from pantry staples on a weeknight."
+    },
+    {
+      "url": "https://www.seriouseats.com/tonkotsu-ramen-broth-recipe",
+      "title": "Rich tonkotsu ramen broth from scratch",
+      "kind": "article",
+      "folder": "recipes",
+      "tags": ["cooking", "reference"],
+      "isFavorite": false,
+      "createdDaysAgo": 120,
+      "lastOpenedDaysAgo": 110,
+      "summary": "A step-by-step tonkotsu ramen: pork bones boiled hard for twelve hours into a creamy broth, with tare, aroma oil and noodles."
+    },
+    {
+      "url": "https://www.justonecookbook.com/ramen-toppings/",
+      "title": "Ramen toppings guide",
+      "kind": "article",
+      "folder": "recipes",
+      "tags": ["cooking"],
+      "isFavorite": false,
+      "createdDaysAgo": 62,
+      "lastOpenedDaysAgo": null,
+      "summary": "A guide to ramen toppings: chashu pork, marinated soft-boiled eggs, menma, nori and scallions, with tips on prepping them ahead."
+    },
+    {
+      "url": "https://www.cos.com/en/men/menswear/coats-and-jackets/wool-blend-overcoat",
+      "title": "COS wool-blend overcoat",
+      "kind": "shopping",
+      "folder": "clothes",
+      "tags": ["shopping"],
+      "isFavorite": false,
+      "createdDaysAgo": 8,
+      "lastOpenedDaysAgo": 6,
+      "summary": "A single-breasted wool coat in charcoal: knee length, notch lapels and a relaxed fit for layering over knitwear."
+    },
+    {
+      "url": "https://www.patagonia.com/product/mens-tres-3-in-1-parka/28388.html",
+      "title": "Patagonia Tres 3-in-1 parka",
+      "kind": "shopping",
+      "folder": "clothes",
+      "tags": ["shopping"],
+      "isFavorite": false,
+      "createdDaysAgo": 6,
+      "lastOpenedDaysAgo": null,
+      "summary": "A waterproof parka with a zip-out down jacket inside, so the shell and the liner work as two coats for wet and cold days."
+    },
+    {
+      "url": "https://paulgraham.com/greatwork.html",
+      "title": "How to Do Great Work",
+      "kind": "article",
+      "folder": "work",
+      "tags": ["reading"],
+      "isFavorite": false,
+      "createdDaysAgo": 140,
+      "lastOpenedDaysAgo": 125,
+      "summary": "A long essay on doing great work: choose a field you are curious about, aim at ambitious problems and keep momentum with small daily progress."
     }
   ],
   "rules": [

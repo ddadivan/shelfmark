@@ -1,13 +1,8 @@
 import { HttpErrorResponse, HttpInterceptorFn, HttpStatusCode } from '@angular/common/http';
 import { inject, Injector } from '@angular/core';
-import { Router } from '@angular/router';
 import { MONITORING_TUNNEL_ROUTE } from '@shelfmark/contracts';
 import { catchError, throwError } from 'rxjs';
-import { AuthStore } from '../auth/auth.store';
-import { AUTH_ROUTE } from '../auth/models/auth-routes.const';
-import { SIGN_IN_QUERY } from '../auth/models/sign-in-query.const';
-import { SIGN_IN_REASON } from '../auth/models/sign-in-reason.const';
-import { safeReturnUrl } from '../auth/safe-return-url';
+import { expireSession } from '../auth/expire-session';
 import { API_BASE_URL } from './api-base-url';
 import { ApiErrorToastService } from './api-error-toast.service';
 import { SKIP_ERROR_TOAST } from './models/skip-error-toast.const';
@@ -67,21 +62,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         error instanceof HttpErrorResponse &&
         error.status === HttpStatusCode.Unauthorized
       ) {
-        const auth = injector.get(AuthStore);
-        if (auth.user() === null) {
-          return throwError(() => error);
-        }
-        const router = injector.get(Router);
-        auth.expireSession();
-        const onSignIn = router.url.split(/[?#]/)[0] === AUTH_ROUTE.SignIn;
-        if (!onSignIn) {
-          void router.navigate([AUTH_ROUTE.SignIn], {
-            queryParams: {
-              [SIGN_IN_QUERY.Reason]: SIGN_IN_REASON.SessionExpired,
-              [SIGN_IN_QUERY.ReturnUrl]: safeReturnUrl(router.url) ?? undefined,
-            },
-          });
-        }
+        expireSession(injector);
       }
       return throwError(() => error);
     }),

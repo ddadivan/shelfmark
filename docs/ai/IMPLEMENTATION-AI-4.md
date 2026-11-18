@@ -46,7 +46,7 @@ Principles enforced: Ask runs only when the user asks; the library is never read
 
 Changes: `AiSettings` + `ask: boolean`; `AiSettingsResponse` + `ask: AskStatus`; `AiQuotaLimits` + `questionsPerDay`, `questionsPerMonth`; `AI_QUOTA` → `free: { …, questionsPerDay: 5, questionsPerMonth: 5 }`, `'ai-pack': { …, questionsPerDay: 15, questionsPerMonth: 150 }`; `AI_ENDPOINT.Ask = '/api/ai/ask'`. Server-only (`apps/api/src/ai/models/`): `ask-input.interface.ts` (`{ question; sources: AskPromptSource[]; includeNotes }`), `ask-chunk.type.ts` (`{ type: 'text'; text } | { type: 'end'; stopReason; inputTokens; outputTokens } | { type: 'error'; retryable: boolean }`), and `AiProvider.askStream(input: AskInput, signal: AbortSignal): AsyncIterable<AskChunk>` (never throws).
 
-## 3. Schema and migration `20261130120000_ask_and_rediscover`
+## 3. Schema and migration `20261203120000_ask_and_rediscover`
 
 - **`ai_settings`** + `ask boolean NOT NULL DEFAULT true` (existing rows too: same processor, runs only when asked; open question 4), `ask_lease_until timestamptz`.
 - **`ai_ask_usage`**: `user_id uuid` (FK `users`, cascade), `day date`, `questions int NOT NULL DEFAULT 0`, PK `(user_id, day)`. The AI sweep deletes rows older than 62 days. Counts only.
@@ -137,3 +137,80 @@ While AI is on, the phone tab bar shows **Ask** (spark) instead of **Tags**; tag
 9. **Rediscover for AI-off users.** The forgotten mode is not AI. Default: shown to everyone (no mark), dismissible per week; no permanent off switch in v1.
 10. **Read later and digest.** Default: the Read later action and the digest wait for #396 and a digest channel; seams only.
 11. **Thresholds.** Default: saved ≥ 30 days, not opened ≥ 90 days, theme from the last 14 days, 3–5 items, ISO weeks starting Monday (UTC).
+
+## 10. API as built
+
+Nov 18, 2026 · what `feat/393-ai-ask` commits 2–9 actually ship, for the web side (commits 10–15). Contracts are in `@shelfmark/contracts` as listed in 2; this section is the wire behaviour. All routes need a session (401 `ApiError` otherwise); unsafe methods need our `Origin` (403) and a JSON body (415), like every other route. Every query uses the session `userId`.
+
+### 10.1 `POST /api/ai/ask` (`AI_ENDPOINT.Ask`)
+
+**Request.** `AskRequest` `{ question: string }`, JSON. The server trims and collapses whitespace, then checks 3–500 characters (`ASK_LIMIT.QuestionMin` / `QuestionMax`), a string, no control characters; unknown fields are refused. A failed check is a normal JSON `ApiError` 400 (`message: string[]`) and no stream starts. Rate limit `RATE_LIMIT.AiAsk` = 10 per minute per client IP: over it, a JSON 429 before any stream. The question is never logged or stored.
+
+**Response.** Always 200 once the body is valid, `Content-Type: text/event-stream; charset=utf-8`, `Cache-Control: no-store, no-transform`, `X-Accel-Buffering: no`, headers flushed at once. Every outcome after validation is an event, never an HTTP status. Framing: each event is exactly one line `data: <JSON.stringify(AskEvent)>` followed by a blank line (`\n\n`); no `event:`, `id:` or `retry:` fields, no comments or heartbeats; JSON escapes newlines in text, so splitting on `\n\n` and stripping `data: ` is enough. The server closes the response after the last event; the last event is always `done` or `error`, exactly once.
+
+**Event order.**
+
+- `error` (only event) when AI is off or `ask` is off: `{ type: 'error', reason: 'off', counted: false, allowance: null }`.
+- `error` `busy` (only event) when another question of the same user is in flight (30 s lease): `allowance` set.
+- `done` (only event) when retrieval finds nothing: `{ type: 'done', sources: [], notFound: true, truncated: false, allowance }`. No model call, not counted.
+- `error` `quota` (only event) when the day or month limit is used up: `allowance.questionsLeft` is 0 and `resetsOn` tells when.
+- Otherwise: `meta` `{ type: 'meta', allowance, retrieved }` (allowance already counting this question; `retrieved` = links sent as context, 1–10), then any mix of `text` `{ type: 'text', text }` and `cite` `{ type: 'cite', n }` in reading order, then one final event:
+  - `done` `{ type: 'done', sources, notFound, truncated, allowance }`. `sources` = `AskSource[]` `{ n, link: LinkResponse }`, one per cited `n`, re-read live; a link trashed meanwhile is left out, so a `cite` `n` may have no source (render it disabled). `notFound: true` when the answer cited nothing (the text then says so; the question counted). `truncated: true` when the answer was cut: the 4,000-character cap, the 24 s hard stop, or a provider failure after some text.
+  - or `error` `unavailable` (provider failure, or no text by the 8 s first-text deadline) or `rejected` (model refusal), both after `meta`, `counted: false` (refunded), `allowance` set.
+- `cite.n` is renumbered by first appearance: 1, 2, 3 … in the order the citations appear in the text; a repeated citation repeats its number. Only brackets pointing at retrieved links become `cite`; everything else (`[2024]`, `[11]`) stays `text`.
+- Every `error` event has `counted: false`. A question counts once any text has arrived (a Stop after text counts; a Stop before text is refunded).
+
+**Allowance.** `AskAllowance` `{ questionsLeft, period: 'day' | 'month', resetsOn: 'YYYY-MM-DD' }` (UTC): the closer of the two limits, the month on a tie. Limits (`AI_QUOTA`): Free 5 a day and 5 a month (in effect 5 a month), AI pack 15 a day and 150 a month.
+
+**Stop.** Aborting the request (closing the connection) stops the provider at once; nothing more is written. Do not retry automatically: a retry is a new question.
+
+**Mock triggers** (tests, previews, every demo user; the real provider never runs outside production). Each needs retrieval to find at least one source first (else the no-model `done` `notFound`): a question containing `ai-fail` → `meta`, then `error` `unavailable`; `ai-refuse` → `meta`, `error` `rejected`; `ai-slow` → `meta`, `error` `unavailable` after the first-text deadline (8 s); `ai-cut` → `meta`, two words, `done` `truncated: true`; `sourdough` → an answer without citations, `done` `notFound: true`. Mentions of ramen / noodle, coat / coats / jacket, or signal / signals give canned answers citing the matching sources; anything else gets "You saved {n} links about this: …" over the first three sources. Words arrive every 30 ms. The API has no `ai-quota` trigger: the limit is real (the web mock may keep its own).
+
+### 10.2 `GET` / `PATCH /api/ai/settings`
+
+`AiSettings.ask: boolean` (default `true`, existing rows too) can be sent in `PATCH` like any other switch. `AiSettingsResponse.ask: AskStatus` = `{ available, allowance }`, `available` = AI on and `ask` on. Show the Ask entry points only when `available`.
+
+### 10.3 Rediscover (`REDISCOVER_ENDPOINT`)
+
+| Method | Path | Request | Response | Errors | Rate limit |
+| --- | --- | --- | --- | --- | --- |
+| GET | `/api/rediscover` | none | 200 `RediscoverResponse` `{ week: '2026-W47', mode: 'theme' \| 'forgotten' \| null, theme: string \| null, items: LinkResponse[] }`; empty `items` (and `mode: null`) = no block | 401 | default (global) |
+| POST | `/api/rediscover/dismiss` | no body (send `{}` or nothing as JSON) | 204, block empty until the next ISO week (Monday, UTC); idempotent | 401, 403, 415 | `RediscoverWrite` 30/min |
+| POST | `/api/rediscover/links/:id/hide` | `:id` UUID | 204, the link never appears again; idempotent | 400 (not a UUID), 404 (`ApiError`: foreign, trashed or missing link), 401, 403, 415 | `RediscoverWrite` |
+
+`theme` is set only in `theme` mode (AI on, AI pack, search by meaning `ready`, at least 3 picks above the similarity floor): a tag name, else a folder name. `forgotten` mode is shown to everyone, AI or not, and must render without the AI mark. 3–5 items, in display order. No model or provider call; nothing is cached server-side (load once per session on the web).
+
+### 10.4 Demo sandbox
+
+A new demo user starts with AI and Ask on and the Free allowance (5 questions a month), the mock provider and search by meaning ready. `seed.json` gained six links: three ramen recipes (Recipes, 48–120 days old, not opened), two coats (Clothes, "COS wool-blend overcoat", "Patagonia Tres 3-in-1 parka") and "How to Do Great Work" (Work, 140 days old). So "Which ramen recipes did I save?", "Which coats was I comparing?" and "What do I have on Angular signals?" give canned, cited answers, and `GET /api/rediscover` answers a `forgotten` block with the four links older than 30 days not opened for 90 (demo users are Free, so never `theme`). The web mock's demo seed (`apps/web/.../mock/models/demo-seed-links.const.ts`) should get the same six links with the same summaries. The demo cleanup removes `ai_ask_usage`, `rediscover_hidden` and `rediscover_state` with the user (cascade, covered by `demo-cleanup.integration.spec.ts`).
+
+## 11. Implementation notes
+
+What the code on `feat/393-ai-ask` does differently from sections 1–7, and the defaults taken for section 9 (Nov 18, 2026).
+
+**Web deviations**
+
+- **No `?mode=ask`.** The phone Search · Ask segment is state of the search dialog, not a URL parameter: the dialog is an overlay without its own route, and a question must not sit in a URL. The ⌘K and phone Ask rows hand the question over through `AskInbox` (taken once; dropped while another question streams; cleared when the panel closes).
+- **Compact sources row.** Sources are a compact `ui-list-item` per cited link (favicon, title, host; open, side by side from 80em, remind me) instead of the full domain `link-row`: the 440px panel leaves too little room for the row's actions and meta.
+- **Side by side opens All links.** "Open side by side" from the panel navigates to All links and opens the link there in the split view; the panel closes first (the split view needs the library page).
+- **Announced once, on completion.** `ui-streaming-answer` announces the whole answer once in a visually hidden polite region when `streaming` turns false, not sentence by sentence (screen readers repeated partial sentences while tokens arrived).
+- **Send icon `key-enter`.** The composer's send button uses the existing `key-enter` icon (no new arrow icon in the sprite).
+- **"Not interested" as text.** The Rediscover row action is a text button "Not interested", not an icon-only button, so its meaning is clear without a tooltip.
+- **Existing `ai.disclaimer`.** The answer disclaimer and the theme-mode mark reuse `ai.disclaimer` ("Generated by AI, may be inaccurate") instead of a new Ask-specific line.
+- **ai-search e2e seeds Ask off.** `ai-search.spec.ts` turns Ask off in its mock account: otherwise the Ask row ends every ⌘K result list and shifts the rows its assertions count.
+- **The coats answer may cite older links.** The mock's canned coat answer cites whichever coat links retrieval returns first; with the demo seed that can include older coat links besides the two AI-4 ones, so the e2e journey checks for a cited source, not for exact titles.
+- **Review fixes (AI-4 review).** The API ends the stream with `error` `unavailable` and refunds (unless text was sent) after any unexpected exception past the reserve, and calls no provider once the client left; word retrieval matches notes only with "Include my notes" (`buildLinkWhere` option `searchNotes`); the web keeps citations enabled after Stop or a broken stream (no `done`, so no known trashed links), maps a 429 to its own line (`ai.ask.rateLimited`, Try again) and a 401 to the interceptor's session-end handling (`core/auth/expire-session.ts`, since `fetch` bypasses the interceptors); a failed Rediscover dismiss or "Not interested" puts back only what it removed, and nothing after the session ended.
+
+**Defaults taken for section 9** (none answered otherwise by the author yet)
+
+1. Limits: AI pack 15 a day and 150 a month, Free 5 a month (`AI_QUOTA`).
+2. Answer model: Sonnet 5.5 (`claude-sonnet-5-5`), effort medium, 700 output tokens, no fallback model.
+3. Memory: single-turn; the panel keeps its conversation until it closes; nothing stored on the server.
+4. Ask switch: on for everyone with AI on, existing rows too (migration default `true`).
+5. Before vectors are ready: word matches only.
+6. Stop counts once text has arrived; anything before is refunded.
+7. Day boundary: UTC days.
+8. Rediscover ships under #393 (no separate issue yet).
+9. Rediscover forgotten mode shows to everyone, without the AI mark; dismissible per week, no permanent off switch.
+10. Read later and the digest: seams only (`READ_LATER` token; no digest).
+11. Thresholds: saved ≥ 30 days, not opened ≥ 90 days, theme from the last 14 days, 3–5 items, ISO weeks from Monday (UTC).

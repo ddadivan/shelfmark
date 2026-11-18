@@ -7,6 +7,7 @@ import {
   type AiJobResponse,
   type AiSettingsResponse,
   type AiTickResponse,
+  type AskEvent,
   type CreateAiDraftRequest,
   type LinkAiState,
   type LinkResponse,
@@ -27,6 +28,7 @@ import { mockHttpError } from '../../../core/api/mock-http-error';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { AiApi } from '../models/ai-api.interface';
 import { isAiFeatureMode } from '../utils/ai-setting-values';
+import { MockAiAsk } from './mock-ai-ask';
 import { MockAiData } from './mock-ai-data';
 import { meaningQueryProblems, MockAiMeaning } from './mock-ai-meaning';
 import { MockAiTidy } from './mock-ai-tidy';
@@ -83,6 +85,7 @@ export class MockAiApi implements AiApi {
   private readonly data = inject(MockAiData);
   private readonly tidy = inject(MockAiTidy);
   private readonly meaning = inject(MockAiMeaning);
+  private readonly asking = inject(MockAiAsk);
 
   getSettings(): Observable<AiSettingsResponse> {
     return defer(() => of(this.data.settingsResponse())).pipe(delay(MOCK_LATENCY_MS.List));
@@ -228,5 +231,9 @@ export class MockAiApi implements AiApi {
       const response = this.meaning.related(linkId, limit);
       return response ? of(response) : failure(HttpStatusCode.NotFound);
     }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
+  ask(question: string): Observable<AskEvent> {
+    return this.asking.ask(question);
   }
 }

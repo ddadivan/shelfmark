@@ -1,0 +1,118 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+// The question: right-aligned bubble (`sm-bubble`), 14/20 on `surface-hover`.
+.ui-streaming-answer__bubble {
+  @include type(label);
+
+  align-self: flex-end;
+  max-width: 85%;
+  margin: 0;
+  padding: rem(10px) rem(14px);
+  font-size: rem(14px);
+  line-height: rem(20px);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+  color: var(--text);
+  background: var(--surface-hover);
+  border-radius: rem(18px) rem(18px) rem(6px);
+}
+
+// The answer (`sm-answer`): 15/24 plain text; line breaks from the model are kept.
+.ui-streaming-answer__text {
+  @include type(body);
+
+  margin: 0;
+  line-height: rem(24px);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+  color: var(--text);
+}
+
+// `sm-cite`: an 18px rounded number, a real button.
+.ui-streaming-answer__cite {
+  @include hit-area(-3px, -13px);
+
+  display: inline-grid;
+  place-items: center;
+  min-width: rem(18px);
+  height: rem(18px);
+  margin: 0 rem(1px);
+  padding: 0 rem(4px);
+  font: 600 #{rem(11px)} / #{rem(16px)} var(--font-sans);
+  white-space: nowrap;
+  vertical-align: rem(2px);
+  color: var(--text);
+  cursor: pointer;
+  background: var(--surface-hover);
+  border: 0;
+  border-radius: rem(6px);
+
+  @include hover {
+    background: var(--surface-pressed);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    color: var(--text-muted);
+    cursor: default;
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+}
+
+// `sm-stream__caret`: a 2px `ai` caret that blinks in 1 s steps; still under reduced motion.
+.ui-streaming-answer__caret {
+  display: inline-block;
+  width: rem(2px);
+  height: 1.1em;
+  margin-inline-start: rem(2px);
+  vertical-align: rem(-3px);
+  background: var(--ai);
+  border-radius: rem(1px);
+  animation: ui-streaming-caret 1s steps(2, start) infinite;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+@keyframes ui-streaming-caret {
+  to {
+    visibility: hidden;
+  }
+}
+
+// `sm-ai-line`: the disclaimer under every complete answer.
+.ui-streaming-answer__disclaimer {
+  @include type(caption);
+
+  margin: rem(-6px) 0 0;
+  color: var(--text-muted);
+}
+
+.ui-streaming-answer__after {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  &:empty {
+    display: none;
+  }
+
+  // Sources fade in when the answer is complete (Motion: "Ask answer streams").
+  @include enter(fade);
+}
+
+.ui-streaming-answer__live {
+  @include visually-hidden;
+}

@@ -12,12 +12,16 @@ describe('AI_QUOTA', () => {
       backfillLinks: 0,
       embedsPerMonth: 2000,
       searchQueriesPerMonth: 1000,
+      questionsPerDay: 5,
+      questionsPerMonth: 5,
     });
     expect(AI_QUOTA[AI_TIER.AiPack]).toEqual({
       linksPerMonth: 1000,
       backfillLinks: 5000,
       embedsPerMonth: 20000,
       searchQueriesPerMonth: 10000,
+      questionsPerDay: 15,
+      questionsPerMonth: 150,
     });
   });
 });

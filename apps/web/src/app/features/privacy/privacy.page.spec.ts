@@ -85,6 +85,7 @@ describe('PrivacyPage', () => {
       'What is sent:',
       'How long it is kept:',
       'Search by meaning:',
+      'Ask your shelf:',
       'What we count:',
       'Turning it off:',
     ]);
@@ -92,6 +93,7 @@ describe('PrivacyPage', () => {
     expect(element.textContent).toContain('deletes the request within 30 days');
     expect(element.textContent).toContain('sent to Voyage AI, our second processor');
     expect(element.textContent).toContain('your search text is not stored');
+    expect(element.textContent).toContain('Neither the question nor the answer is stored');
     expect(element.textContent).toContain('to train AI models');
   });
 

@@ -1,0 +1,107 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.from-your-shelf__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.from-your-shelf__head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.from-your-shelf__title {
+  @include type(heading);
+
+  margin: 0;
+}
+
+.from-your-shelf__lead {
+  @include type(caption);
+
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+}
+
+.from-your-shelf__spark {
+  flex: none;
+  color: var(--ai);
+}
+
+.from-your-shelf__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.from-your-shelf__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg);
+  border-radius: var(--radius-md);
+}
+
+.from-your-shelf__main {
+  display: flex;
+  flex: 1 1 rem(240px);
+  flex-direction: column;
+  gap: rem(2px);
+  min-width: 0;
+}
+
+.from-your-shelf__site {
+  @include type(caption);
+
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.from-your-shelf__link {
+  @include type(label);
+
+  overflow: hidden;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.from-your-shelf__meta {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.from-your-shelf__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}

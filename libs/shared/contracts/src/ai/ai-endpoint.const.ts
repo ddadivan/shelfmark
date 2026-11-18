@@ -32,6 +32,8 @@ export const AI_ENDPOINT = {
   MeaningSearch: '/api/ai/search',
   /** `GET` up to five related links by the link's stored vector (AI-3). */
   RelatedLinks: '/api/links/:id/related',
+  /** `POST` a question; answers a `text/event-stream` of `AskEvent`s (AI-4, ADR 0052). */
+  Ask: '/api/ai/ask',
   /** Daily Vercel Cron sweep (`CRON_SECRET` bearer). */
   Sweep: '/api/cron/ai-sweep',
 } as const;

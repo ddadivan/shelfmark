@@ -9,6 +9,7 @@ import {
   type AiSettingsResponse,
   type UpdateAiSettingsRequest,
   AI_SEARCH_STATE,
+  ASK_PERIOD,
 } from '@shelfmark/contracts';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { UiButtonHarness } from '@shelfmark/ui/testing';
@@ -46,6 +47,10 @@ function response(patch: Partial<AiSettingsResponse> = {}): AiSettingsResponse {
       estimatedMinutes: 60,
     },
     search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
+    ask: {
+      available: true,
+      allowance: { questionsLeft: 12, period: ASK_PERIOD.Day, resetsOn: '2026-11-19' },
+    },
     ...patch,
   };
 }
@@ -268,6 +273,21 @@ describe('AiSettingsPage', () => {
     expect(api.updateSettings).toHaveBeenLastCalledWith({ meaningSearch: false });
     expect(meaningSwitch(root).getAttribute('aria-checked')).toBe('false');
     expect(meaningRow(root).textContent).not.toContain('links ready');
+  });
+
+  it('saves Ask your shelf at once and shows the questions left', async () => {
+    const { root, api, settle } = await setup({ initial: response(ON) });
+    const askSwitch = (): HTMLButtonElement | null =>
+      root.querySelector<HTMLButtonElement>('button[role="switch"][aria-label="Ask your shelf"]');
+    const row = askSwitch()?.closest('ui-settings-row');
+    expect(row?.textContent).toContain('Uses Claude by Anthropic');
+    expect(row?.textContent).toContain('nothing is stored');
+    expect(row?.textContent).toContain('12 questions left today');
+    askSwitch()?.click();
+    await settle();
+    expect(api.updateSettings).toHaveBeenLastCalledWith({ ask: false });
+    expect(askSwitch()?.getAttribute('aria-checked')).toBe('false');
+    expect(askSwitch()?.closest('ui-settings-row')?.textContent).not.toContain('questions left');
   });
 
   it('says Ready, or paused until the reset day at the limit', async () => {

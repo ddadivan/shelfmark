@@ -27,6 +27,7 @@ import { AiUsageService } from '../usage/ai-usage.service';
 import { aiEntitlements } from './ai-entitlements';
 import { toBackfillStatus } from './to-backfill-status';
 import { toStoredAiSettings } from './to-ai-settings';
+import { AskUsageService } from '../ask/ask-usage.service';
 
 const SETTINGS_SELECT = {
   enabled: true,
@@ -36,6 +37,7 @@ const SETTINGS_SELECT = {
   includeNotes: true,
   summaryLanguage: true,
   meaningSearch: true,
+  ask: true,
   enabledAt: true,
   introSeenAt: true,
   backfillState: true,
@@ -61,6 +63,7 @@ export class AiSettingsService {
     private readonly registry: AiProviderRegistry,
     private readonly searchStatus: AiSearchStatusService,
     private readonly embed: AiEmbedService,
+    private readonly askUsage: AskUsageService,
   ) {}
 
   /** The stored settings of the user (defaults when there is no row). */
@@ -98,6 +101,10 @@ export class AiSettingsService {
       pendingJobs,
       backfill: toBackfillStatus(stored, eligible),
       search,
+      ask: {
+        available: stored.settings.enabled && stored.settings.ask,
+        allowance: await this.askUsage.allowance(userId, entitlements.aiTier),
+      },
     };
   }
 
@@ -131,6 +138,7 @@ export class AiSettingsService {
           ? {}
           : { summaryLanguage: request.summaryLanguage }),
         ...(request.meaningSearch === undefined ? {} : { meaningSearch: request.meaningSearch }),
+        ...(request.ask === undefined ? {} : { ask: request.ask }),
         ...(searchOn ? {} : { embedLeaseUntil: null }),
         // The intro's "Turn on AI" is the first `enabled: true`: it records both moments.
         ...(request.enabled === true && current.enabledAt === null ? { enabledAt: now } : {}),
