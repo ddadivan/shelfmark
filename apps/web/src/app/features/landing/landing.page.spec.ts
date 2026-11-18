@@ -109,8 +109,8 @@ describe('LandingPage', () => {
     expect(root.querySelectorAll('h1')).toHaveLength(1);
     const h2 = Array.from(root.querySelectorAll('h2')).map((h) => h.textContent?.trim());
     expect(h2).toEqual([
-      'Save once, find in seconds',
       'Help with sorting, when you want it',
+      'Save once, find in seconds',
       'The same links, before and after',
       'Why this exists',
       "How it's built",
