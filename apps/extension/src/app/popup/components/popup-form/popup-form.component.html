@@ -93,12 +93,10 @@
   @if (store.ai.tagsMarked() || store.ai.chips().length > 0) {
     <div class="form__ai">
       @if (store.ai.tagsMarked()) {
-        <ui-icon
-          name="spark"
-          [size]="ICON_SIZE.Sm"
-          [label]="'popup.ai.disclaimer' | transloco"
-          [attr.title]="'popup.ai.disclaimer' | transloco"
-        />
+        <!-- A labelled mark, not a lone spark (#510): the tags above came from AI. -->
+        <ui-badge icon="spark" [attr.title]="'popup.ai.disclaimer' | transloco">{{
+          'popup.ai.tagsByAi' | transloco
+        }}</ui-badge>
       }
       @if (store.ai.chips().length > 0) {
         <ui-suggestion-row

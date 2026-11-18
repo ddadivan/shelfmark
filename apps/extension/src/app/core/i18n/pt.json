@@ -90,7 +90,8 @@
       "new": "Nova",
       "createTag": "Criar e adicionar a tag {{name}}",
       "dismiss": "Dispensar a sugestão {{name}}",
-      "filling": "Preenchendo…"
+      "filling": "Preenchendo…",
+      "tagsByAi": "Tags sugeridas pela IA"
     }
   }
 }

@@ -90,7 +90,8 @@
       "new": "Nueva",
       "createTag": "Crear y añadir la etiqueta {{name}}",
       "dismiss": "Descartar la sugerencia {{name}}",
-      "filling": "Rellenando…"
+      "filling": "Rellenando…",
+      "tagsByAi": "Etiquetas de la IA"
     }
   }
 }

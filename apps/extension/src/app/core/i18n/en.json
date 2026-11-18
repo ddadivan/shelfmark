@@ -90,7 +90,8 @@
       "new": "New",
       "createTag": "Create and add tag {{name}}",
       "dismiss": "Dismiss suggestion {{name}}",
-      "filling": "Filling…"
+      "filling": "Filling…",
+      "tagsByAi": "Tags from AI"
     }
   }
 }
