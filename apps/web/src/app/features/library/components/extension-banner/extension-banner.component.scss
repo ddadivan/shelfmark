@@ -99,11 +99,11 @@
 // Entrance, step by step.
 .extension-banner--enter {
   // Draws nothing: Angular removes the enter class when the element's own animation ends, so this
-  // one lasts as long as the longest step below (the popup, 200ms delay plus `duration-slow`).
-  animation: extension-hold calc(var(--duration-slow) + 200ms) linear both;
+  // one lasts as long as the longest step below (the popup, 600ms delay plus `duration-slow`).
+  animation: extension-hold calc(var(--duration-slow) + 600ms) linear both;
 
   .extension-banner__logo {
-    animation: extension-pop var(--duration-slow) var(--ease-spring) 80ms both;
+    animation: extension-pop var(--duration-slow) var(--ease-spring) 480ms both;
   }
 
   .extension-banner__title,
@@ -113,19 +113,19 @@
   }
 
   .extension-banner__title {
-    animation-delay: 120ms;
+    animation-delay: 520ms;
   }
 
   .extension-banner__text {
-    animation-delay: 180ms;
+    animation-delay: 580ms;
   }
 
   .extension-banner__install {
-    animation-delay: 240ms;
+    animation-delay: 640ms;
   }
 
   .extension-banner__popup {
-    animation: extension-popup var(--duration-slow) var(--ease-out) 200ms both;
+    animation: extension-popup var(--duration-slow) var(--ease-out) 600ms both;
   }
 }
 
