@@ -22,11 +22,16 @@ import { markEmbeddingsStale } from './embeddings/mark-embeddings-stale';
 import { AiExcerptService } from './excerpt/ai-excerpt.service';
 import { AI_ENV } from './models/ai-env.const';
 import type { EmbedOutcome } from './models/embed-outcome.type';
+import { EMBEDDING_LIMIT } from './models/embedding-limit.const';
 import type { EmbeddingInputType } from './models/embedding-input-type.type';
 import { AiProviderRegistry } from './providers/ai-provider.registry';
 
 const SECRET = randomBytes(24).toString('hex');
 const PAGE = { excerpt: 'Visible page text', description: 'From the page' };
+
+/** A valid unit vector of the column's length, pointing along `axis`. */
+const vectorOf = (axis: number): number[] =>
+  Array.from({ length: EMBEDDING_LIMIT.Dimensions }, (_, i) => (i === axis ? 1 : 0));
 
 interface EmbeddingRow {
   linkId: string;
@@ -425,6 +430,59 @@ describe('AI embeddings: the embed pass, stale hooks and status (AI-3)', () => {
       const after = await settings();
       expect(after.settings.meaningSearch).toBe(false);
       expect(after.search.state).toBe('off');
+    });
+  });
+
+  describe('switched off or deleted during the provider call', () => {
+    it('writes no vector when "Delete AI data" runs during the call', async () => {
+      await seedLink(t.db.prisma, owner(), { title: 'Mine' });
+      await turnOn();
+      deferrer.clear();
+      const { spy } = spyEmbed(async (texts) => {
+        await a.delete(AI_ENDPOINT.Data).expect(204);
+        return { ok: true, vectors: texts.map(() => vectorOf(1)), tokens: 1 };
+      });
+      await run();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(await rows(owner())).toEqual([]);
+      expect((await settings()).settings.meaningSearch).toBe(false);
+    });
+
+    it('writes no vector when AI or the switch is turned off during the call', async () => {
+      await seedLink(t.db.prisma, owner(), { title: 'Mine' });
+      await turnOn();
+      deferrer.clear();
+      for (const off of [{ meaningSearch: false }, { enabled: false }]) {
+        const { spy } = spyEmbed(async (texts) => {
+          await a.patch(AI_ENDPOINT.Settings).send(off).expect(200);
+          return { ok: true, vectors: texts.map(() => vectorOf(1)), tokens: 1 };
+        });
+        await run();
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(await rows(owner())).toEqual([]);
+        spy.mockRestore();
+        await turnOn(a, { meaningSearch: true });
+        deferrer.clear();
+      }
+    });
+
+    it('does not clear the stale flag of an unchanged text once the switch is off', async () => {
+      const link = await seedLink(t.db.prisma, owner(), { title: 'Same' });
+      await embedAll();
+      await markEmbeddingsStale(t.db.prisma, owner(), { linkIds: [link] });
+      const service = t.app.get(AiEmbedService) as unknown as {
+        tagNames: (userId: string, ids: readonly string[]) => Promise<Map<string, string[]>>;
+      };
+      const original = service.tagNames.bind(service);
+      vi.spyOn(service, 'tagNames').mockImplementation(async (userId, ids) => {
+        await t.db.prisma.aiSettings.update({
+          where: { userId: owner() },
+          data: { meaningSearch: false },
+        });
+        return original(userId, ids);
+      });
+      await run();
+      expect(await rows(owner())).toEqual([expect.objectContaining({ linkId: link, stale: true })]);
     });
   });
 

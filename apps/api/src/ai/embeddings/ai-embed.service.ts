@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { AiTier } from '@shelfmark/contracts';
+import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiBackgroundService } from '../background/ai-background.service';
 import { AI_EMBED_LIMIT } from '../models/ai-embed-limit.const';
@@ -244,8 +245,22 @@ export class AiEmbedService {
   }
 
   /**
+   * Guards every vector write: AI and search by meaning must still be on when the row is written, so
+   * "Delete AI data" or a switch turned off during the provider call leaves nothing behind. `FOR
+   * SHARE` serialises with those writers, which lock the settings row first (`AiDataService` turns
+   * the switch off before it deletes the vectors): either the write waits and then sees the switch
+   * off, or the delete waits and then removes what was written.
+   */
+  private searchStillOn(userId: string): Prisma.Sql {
+    return Prisma.sql`EXISTS (
+      SELECT 1 FROM ai_settings s
+      WHERE s.user_id = ${userId}::uuid AND s.enabled AND s.meaning_search
+      FOR SHARE)`;
+  }
+
+  /**
    * Unchanged texts: the vector stays, only the flags move. A row flagged stale again after the
-   * candidates were read keeps its flag.
+   * candidates were read keeps its flag; nothing moves once AI or the switch is off.
    */
   private async keep(
     userId: string,
@@ -256,13 +271,14 @@ export class AiEmbedService {
     return this.prisma.$executeRaw`
       UPDATE link_embeddings SET stale = false, with_note = ${includeNotes}
       WHERE user_id = ${userId}::uuid AND link_id = ANY(${[...linkIds]}::uuid[])
-        AND updated_at <= ${readAt}`;
+        AND updated_at <= ${readAt} AND ${this.searchStillOn(userId)}`;
   }
 
   /**
    * One set-based upsert for the chunk: only links that are still the user's and live get a row; a
    * link edited during the call (its `updated_at` moved past `readAt`) or flagged stale meanwhile is
-   * stored as stale, so the next pass rebuilds it. Vectors are bound parameters cast to `halfvec`.
+   * stored as stale, so the next pass rebuilds it; nothing is written once AI or the switch is off
+   * (`searchStillOn`). Vectors are bound parameters cast to `halfvec`.
    */
   private async write(
     userId: string,
@@ -282,7 +298,7 @@ export class AiEmbedService {
         ${rows.map((row) => row.vector)}::text[]
       ) AS v(id, hash, vector)
       JOIN links l ON l.id = v.id
-      WHERE l.user_id = ${userId}::uuid AND l.deleted_at IS NULL
+      WHERE l.user_id = ${userId}::uuid AND l.deleted_at IS NULL AND ${this.searchStillOn(userId)}
       ON CONFLICT (link_id) DO UPDATE SET
         model = EXCLUDED.model,
         with_note = EXCLUDED.with_note,
