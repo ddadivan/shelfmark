@@ -107,6 +107,16 @@ describe('Ask retrieval (AI-4)', () => {
     expect(withNotes.sources[0]?.note).toBe('my secret sizes');
   });
 
+  it('matches words in the note only with the notes switch on', async () => {
+    await library(users.owner.userId);
+    expect((await retrieval().retrieve(owner(), 'secret sizes', options)).sources).toEqual([]);
+    const withNotes = await retrieval().retrieve(owner(), 'secret sizes', {
+      ...options,
+      includeNotes: true,
+    });
+    expect(withNotes.sources.map((source) => source.title)).toEqual(['Winter coat buying guide']);
+  });
+
   it('finds nothing for a question without topic words, and never a trashed link', async () => {
     await library(users.owner.userId);
     expect((await retrieval().retrieve(owner(), 'What did I save?', options)).sources).toEqual([]);

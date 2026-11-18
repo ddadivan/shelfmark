@@ -23,7 +23,12 @@ interface Seed {
 /** Signed in on All links of the demo library, with the mock AI account seeded once. */
 async function openLibrary(page: Page, seed: Seed = {}): Promise<void> {
   const account = {
-    settings: { enabled: seed.enabled ?? true, meaningSearch: seed.meaningSearch ?? true },
+    // Ask off (AI-4): its row would end every result list here.
+    settings: {
+      enabled: seed.enabled ?? true,
+      meaningSearch: seed.meaningSearch ?? true,
+      ask: false,
+    },
     introSeen: true,
     searchProcessing: seed.searchProcessing ?? false,
   };

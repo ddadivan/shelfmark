@@ -3,7 +3,6 @@ import {
   AI_SEARCH_STATE,
   ASK_ERROR_REASON,
   ASK_EVENT_TYPE,
-  type AiTier,
   type AskAllowance,
   type AskErrorReason,
   type AskSource,
@@ -15,10 +14,12 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AiSearchStatusService } from '../embeddings/ai-search-status.service';
 import { ASK_DEADLINES } from '../models/ask-deadlines.token';
 import { ASK_STOP_REASON } from '../models/ask-stop-reason.const';
+import type { AskAnswerContext } from '../models/ask-answer-context.interface';
 import type { AskChunk } from '../models/ask-chunk.type';
 import type { AskDeadlines } from '../models/ask-deadlines.interface';
 import type { AskInterruption } from '../models/ask-interruption.type';
 import type { AskLog } from '../models/ask-log.interface';
+import type { AskProgress } from '../models/ask-progress.interface';
 import type { AskRetrieval } from '../models/ask-retrieval.interface';
 import type { AskSink } from '../models/ask-sink.interface';
 import { AiProviderRegistry } from '../providers/ai-provider.registry';
@@ -27,13 +28,34 @@ import { AskRetrievalService } from './ask-retrieval.service';
 import { AskUsageService } from './ask-usage.service';
 import { CitationStream } from './citation-stream';
 
+/** The sink, noting whether text and a closing `done` or `error` were sent through it. */
+function trackProgress(sink: AskSink, progress: AskProgress): AskSink {
+  return {
+    get closed() {
+      return sink.closed;
+    },
+    send(event) {
+      if (event.type === ASK_EVENT_TYPE.Text) progress.text = true;
+      if (event.type === ASK_EVENT_TYPE.Done || event.type === ASK_EVENT_TYPE.Error) {
+        progress.ended = true;
+      }
+      sink.send(event);
+    },
+    onAbort(listener) {
+      sink.onAbort(listener);
+    },
+  };
+}
+
 /**
  * `POST /api/ai/ask` (F4, ADR 0051): one single-turn answer from the session user's own links,
  * streamed as events. Order: AI and Ask on (else `off`) → the lease (else `busy`) → retrieval →
  * nothing found → `done` `notFound` (no model call, not counted) → reserve a question (else `quota`)
  * → `meta` → the provider stream through `CitationStream` → `done` → release the lease. The question
  * is refunded when the stream fails, is cut by the first-text deadline, is refused, or the client
- * leaves before any text; once text arrived it counts. Nothing is stored; the log line carries the
+ * leaves before any text (a client gone before the reserve or the provider call costs nothing); once
+ * text arrived it counts. Any other exception after the reserve refunds the question unless text was
+ * sent and ends the stream with `error` `unavailable` (outcome `error`). Nothing is stored; the log line carries the
  * outcome, duration, source and citation counts and token counts, never the question or the answer.
  */
 @Injectable()
@@ -102,25 +124,72 @@ export class AskService {
         });
         return;
       }
+      if (sink.closed) {
+        log.outcome = 'client';
+        return;
+      }
       const day = await this.usage.reserve(userId, tier);
       if (day === null) {
         log.outcome = 'quota';
         this.fail(sink, ASK_ERROR_REASON.Quota, await this.usage.allowance(userId, tier));
         return;
       }
-      sink.send({
-        type: ASK_EVENT_TYPE.Meta,
-        allowance: await this.usage.allowance(userId, tier),
-        retrieved: found.sources.length,
-      });
-      await this.answer(user, question, found, stored.settings.includeNotes, sink, started, {
-        day,
-        tier,
-        log,
-      });
+      const context: AskAnswerContext = { day, tier, log, refunded: false };
+      const progress: AskProgress = { text: false, ended: false };
+      const tracked = trackProgress(sink, progress);
+      try {
+        tracked.send({
+          type: ASK_EVENT_TYPE.Meta,
+          allowance: await this.usage.allowance(userId, tier),
+          retrieved: found.sources.length,
+        });
+        await this.answer(
+          user,
+          question,
+          found,
+          stored.settings.includeNotes,
+          tracked,
+          started,
+          context,
+        );
+      } catch (error: unknown) {
+        await this.recover(userId, context, progress, tracked, error);
+      }
     } finally {
       await this.usage.releaseLease(userId, lease);
     }
+  }
+
+  /**
+   * After an unexpected exception once the question was reserved: refunds it unless text was sent
+   * (or it was refunded already), ends an open stream with `error` `unavailable` unless `done` or
+   * `error` went out, and logs the outcome `error` (the error's name only, never its message).
+   */
+  private async recover(
+    userId: string,
+    context: AskAnswerContext,
+    progress: AskProgress,
+    sink: AskSink,
+    error: unknown,
+  ): Promise<void> {
+    context.log.outcome = 'error';
+    this.logger.warn(`Ask failed: ${error instanceof Error ? error.name : 'unknown error'}`);
+    if (!progress.text && !context.refunded) {
+      await this.refund(userId, context).catch(() => undefined);
+    }
+    if (sink.closed || progress.ended) return;
+    const allowance = await this.usage.allowance(userId, context.tier).catch(() => null);
+    sink.send({
+      type: ASK_EVENT_TYPE.Error,
+      reason: ASK_ERROR_REASON.Unavailable,
+      counted: progress.text,
+      allowance,
+    });
+  }
+
+  private async refund(userId: string, context: AskAnswerContext): Promise<void> {
+    await this.usage.refund(userId, context.day);
+    context.refunded = true;
   }
 
   /** Streams the provider's answer and ends with `done` or `error`. */
@@ -131,9 +200,15 @@ export class AskService {
     includeNotes: boolean,
     sink: AskSink,
     started: number,
-    context: { day: string; tier: AiTier; log: AskLog },
+    context: AskAnswerContext,
   ): Promise<void> {
-    const { day, tier, log } = context;
+    const { tier, log } = context;
+    if (sink.closed) {
+      // The client left after `meta`: no provider call, the question is not counted.
+      await this.refund(user.id, context);
+      log.outcome = 'client';
+      return;
+    }
     const controller = new AbortController();
     const state: { interruption: AskInterruption | null } = { interruption: null };
     let wake: () => void = () => undefined;
@@ -192,7 +267,7 @@ export class AskService {
     }
     const refused = last?.type === 'end' && last.stopReason === ASK_STOP_REASON.Refusal;
     if (!citations.hasText) {
-      await this.usage.refund(user.id, day);
+      await this.refund(user.id, context);
       const reason = refused ? ASK_ERROR_REASON.Rejected : ASK_ERROR_REASON.Unavailable;
       log.outcome = state.interruption ?? (refused ? 'rejected' : 'unavailable');
       this.fail(sink, reason, await this.usage.allowance(user.id, tier));

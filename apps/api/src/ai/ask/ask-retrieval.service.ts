@@ -26,7 +26,7 @@ function siteOf(url: string): { host: string; path: string } {
  * Ask retrieval without a model (ADR 0051 point 3), every query on the session user's live links:
  * meaning matches (the AI-3 query vector from the shared cache or one counted embedding, KNN above
  * the provider's floor) only while search by meaning is `ready`, and word matches (topic words of
- * the question over title, note, URL, summary and tag names), fused by reciprocal rank, at most
+ * the question over title, URL, summary, tag names and, with `includeNotes`, the note), fused by reciprocal rank, at most
  * `ASK_LIMIT.ContextLinksMax`. A failed or used-up query embedding falls back to words only.
  */
 @Injectable()
@@ -44,7 +44,7 @@ export class AskRetrievalService {
   ): Promise<AskRetrieval> {
     const [meaning, words] = await Promise.all([
       options.searchReady ? this.meaningMatches(user, question, options.tier) : [],
-      this.wordMatches(user.id, question),
+      this.wordMatches(user.id, question, options.includeNotes),
     ]);
     const ids = fuseRanks([meaning, words], ASK_LIMIT.ContextLinksMax);
     const sources = await this.loadSources(user.id, ids, options.includeNotes);
@@ -68,14 +68,21 @@ export class AskRetrievalService {
       .map((hit) => hit.linkId);
   }
 
-  /** Live links matching any topic word, ranked by how many words match, then newest first. */
-  private async wordMatches(userId: string, question: string): Promise<string[]> {
+  /**
+   * Live links matching any topic word, ranked by how many words match, then newest first. The note
+   * is matched only with `includeNotes`, so a note never pulls a link in while the switch is off.
+   */
+  private async wordMatches(
+    userId: string,
+    question: string,
+    includeNotes: boolean,
+  ): Promise<string[]> {
     const keywords = askKeywords(question);
     if (keywords.length === 0) return [];
     const anyWord: Prisma.LinkWhereInput[] = keywords.flatMap((word) => {
       const escaped = escapeLike(word);
       return [
-        buildLinkWhere(userId, { q: word }),
+        buildLinkWhere(userId, { q: word }, { searchNotes: includeNotes }),
         { summary: { contains: escaped, mode: 'insensitive' } },
         {
           tags: {
@@ -101,7 +108,7 @@ export class AskRetrievalService {
       .map((row, order) => {
         const haystack = [
           row.title,
-          row.note ?? '',
+          includeNotes ? (row.note ?? '') : '',
           row.url,
           row.summary ?? '',
           ...row.tags.map((entry) => entry.tag.name),

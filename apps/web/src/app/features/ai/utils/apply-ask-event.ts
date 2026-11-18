@@ -1,6 +1,7 @@
 import { ASK_ERROR_REASON, ASK_EVENT_TYPE, type AskEvent } from '@shelfmark/contracts';
 import type { StreamingSegment } from '@shelfmark/ui';
 import type { AskEntry } from '../models/ask-entry.interface';
+import { ASK_CLIENT_REASON } from '../models/ask-client-reason.const';
 import { ASK_ENTRY_STATE } from '../models/ask-entry-state.const';
 
 function appendText(segments: readonly StreamingSegment[], text: string): StreamingSegment[] {
@@ -22,6 +23,7 @@ export function applyAskEvent(entry: AskEntry, event: AskEvent): AskEntry {
         ...entry,
         state: ASK_ENTRY_STATE.Done,
         sources: event.sources,
+        sourcesKnown: true,
         notFound: event.notFound,
         truncated: event.truncated,
       };
@@ -49,6 +51,13 @@ export function endAskEntry(entry: AskEntry): AskEntry {
   return entry.segments.length > 0
     ? { ...entry, state: ASK_ENTRY_STATE.Done, truncated: true }
     : { ...entry, state: ASK_ENTRY_STATE.Error, reason: ASK_ERROR_REASON.Unavailable };
+}
+
+/** The request was refused with 429 before the answer started: not counted, "Try again" is offered. */
+export function rateLimitAskEntry(entry: AskEntry): AskEntry {
+  return entry.state === ASK_ENTRY_STATE.Streaming
+    ? { ...entry, state: ASK_ENTRY_STATE.Error, reason: ASK_CLIENT_REASON.RateLimited }
+    : entry;
 }
 
 /** Stop keeps what arrived (spec: "Stop keeps what came"); nothing yet reads as stopped. */

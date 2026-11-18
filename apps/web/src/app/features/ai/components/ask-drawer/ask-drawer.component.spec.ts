@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
@@ -121,6 +122,54 @@ describe('AskDrawerComponent', () => {
       ),
     ).not.toBeNull();
     expect(await axeViolations(host)).toEqual([]);
+  });
+
+  it('drops a question handed over while another streams, and clears the inbox on close', async () => {
+    const { fixture, stream, api } = await setup();
+    const inbox = TestBed.inject(AskInbox);
+    inbox.put('Which ramen recipes did I save?');
+    await fixture.whenStable();
+    inbox.put('Compare the two coats I liked');
+    await fixture.whenStable();
+    expect(inbox.pending()).toBeNull();
+    stream.next({
+      type: 'done',
+      sources: [],
+      notFound: true,
+      truncated: false,
+      allowance: ALLOWANCE,
+    });
+    stream.complete();
+    await fixture.whenStable();
+    expect(api.ask).toHaveBeenCalledTimes(1);
+    inbox.put('ramen recipes again');
+    fixture.destroy();
+    expect(inbox.pending()).toBeNull();
+  });
+
+  it('keeps citations enabled after Stop, when no done arrived', async () => {
+    const { fixture, loader, stream } = await setup();
+    TestBed.inject(AskInbox).put('Which ramen recipes did I save?');
+    await fixture.whenStable();
+    stream.next({ type: 'text', text: 'The weeknight ramen ' });
+    stream.next({ type: 'cite', n: 1 });
+    await fixture.whenStable();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Stop' }))).click();
+    await fixture.whenStable();
+    const answer = await loader.getHarness(UiStreamingAnswerHarness);
+    expect(await answer.isStreaming()).toBe(false);
+    expect(await answer.isCitationDisabled(0)).toBe(false);
+  });
+
+  it('shows the rate-limit line with Try again for a 429', async () => {
+    const { fixture, loader, stream } = await setup();
+    TestBed.inject(AskInbox).put('Which ramen recipes did I save?');
+    await fixture.whenStable();
+    stream.error(new HttpErrorResponse({ status: 429 }));
+    await fixture.whenStable();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.textContent).toContain('Too many questions in a short time.');
+    expect(await loader.getHarness(UiButtonHarness.with({ text: 'Try again' }))).toBeTruthy();
   });
 
   it('shows the limit line and disables the composer', async () => {

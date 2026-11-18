@@ -2886,6 +2886,10 @@
       "aiTidy": {
         "title": "„Ohne Ordner“ mit KI aufräumen",
         "text": "Prüfe die KI-Vorschläge für alles in „Ohne Ordner“ auf einer Seite und wende sie mit einem Rückgängig an. Legst du Links einer Website mehrmals in denselben Ordner, schlägt Shelfmark eine Regel vor."
+      },
+      "aiAsk": {
+        "title": "Frag deine Links",
+        "text": "Stell eine Frage in deinen eigenen Worten und erhalte eine kurze Antwort aus den Links, die du gespeichert hast, mit jeder Quelle. Dazu „Aus deinen Links“: einmal pro Woche ältere Links, die du nie geöffnet hast."
       }
     },
     "sections": {
@@ -3239,6 +3243,7 @@
       "error": "Gerade keine Antwort möglich. Diese Frage zählt nicht für dein Limit.",
       "rejected": "Diese Frage kann nicht beantwortet werden. Sie zählt nicht für dein Limit.",
       "busy": "Eine andere Frage wird noch beantwortet. Versuch es gleich noch einmal.",
+      "rateLimited": "Zu viele Fragen in kurzer Zeit. Versuche es in einer Minute erneut; diese Frage wurde nicht auf dein Limit angerechnet.",
       "off": "Frag deine Links ist unter Einstellungen › KI ausgeschaltet.",
       "retry": "Erneut versuchen",
       "truncated": "Die Antwort wurde abgeschnitten.",

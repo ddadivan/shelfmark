@@ -19,6 +19,7 @@ import type { TestAgent } from '../../test-utils/models/test-agent.interface';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
 import { AskService } from './ask/ask.service';
+import { AskUsageService } from './ask/ask-usage.service';
 import { AiBackgroundService } from './background/ai-background.service';
 import { AI_ENV } from './models/ai-env.const';
 import { ASK_DEADLINES } from './models/ask-deadlines.token';
@@ -300,6 +301,64 @@ describe('POST /api/ai/ask (AI-4)', () => {
       expect(last<AskDoneEvent>(events)).toMatchObject({ type: 'done', truncated: true });
       expect(await usage()).toBe(1);
     });
+    it('refunds and ends with unavailable when the provider cannot even start', async () => {
+      await library(owner());
+      await turnOn();
+      vi.spyOn(MockAiProvider.prototype, 'askStream').mockImplementation(() => {
+        throw new Error('setup failed');
+      });
+      const log = vi.spyOn(Logger.prototype, 'log');
+      const { events } = await ask('Which ramen recipes did I save?');
+      expect(events.map((event) => event.type)).toEqual(['meta', 'error']);
+      expect(last<AskErrorEvent>(events)).toMatchObject({
+        reason: 'unavailable',
+        counted: false,
+        allowance: { questionsLeft: 5 },
+      });
+      expect(await usage()).toBe(0);
+      expect(log.mock.calls.some((call) => String(call[0]).startsWith('Ask: error'))).toBe(true);
+    });
+
+    it('refunds once and still ends the stream when a step after the reserve fails', async () => {
+      await library(owner());
+      await turnOn();
+      vi.spyOn(AskUsageService.prototype, 'allowance').mockRejectedValueOnce(new Error('db down'));
+      const { events } = await ask('Which ramen recipes did I save?');
+      expect(events).toEqual([
+        {
+          type: 'error',
+          reason: 'unavailable',
+          counted: false,
+          allowance: { questionsLeft: 5, period: 'month', resetsOn: expect.any(String) },
+        },
+      ]);
+      expect(await usage()).toBe(0);
+    });
+
+    it('keeps the question counted when a step fails after text was sent', async () => {
+      await library(owner());
+      await turnOn();
+      const original = AskUsageService.prototype.allowance;
+      let calls = 0;
+      vi.spyOn(AskUsageService.prototype, 'allowance').mockImplementation(function (
+        this: AskUsageService,
+        ...args: Parameters<AskUsageService['allowance']>
+      ) {
+        calls += 1;
+        // 1: meta, 2: done (fails), 3: the error event.
+        if (calls === 2) return Promise.reject(new Error('db down'));
+        return original.apply(this, args);
+      });
+      const { events } = await ask('Which ramen recipes did I save?');
+      expect(events.some((event) => event.type === 'text')).toBe(true);
+      expect(last<AskErrorEvent>(events)).toMatchObject({
+        type: 'error',
+        reason: 'unavailable',
+        counted: true,
+      });
+      expect(events.some((event) => event.type === 'done')).toBe(false);
+      expect(await usage()).toBe(1);
+    });
   });
 
   describe('limits', () => {
@@ -420,6 +479,32 @@ describe('POST /api/ai/ask (AI-4)', () => {
       await turnOn();
       const { fake } = sink((event) => event.type === 'meta');
       await t.app.get(AskService).ask(user(), 'ramen ai-slow', fake);
+      expect(await usage()).toBe(0);
+    });
+
+    it('calls no provider once the client left after meta', async () => {
+      await library(owner());
+      await turnOn();
+      const provider = vi.spyOn(MockAiProvider.prototype, 'askStream');
+      const { fake, events } = sink((event) => event.type === 'meta');
+      await t.app.get(AskService).ask(user(), 'Which ramen recipes did I save?', fake);
+      expect(events.map((event) => event.type)).toEqual(['meta']);
+      expect(provider).not.toHaveBeenCalled();
+      expect(await usage()).toBe(0);
+    });
+
+    it('reserves nothing when the client left before the reserve', async () => {
+      await library(owner());
+      await turnOn();
+      const reserve = vi.spyOn(AskUsageService.prototype, 'reserve');
+      const provider = vi.spyOn(MockAiProvider.prototype, 'askStream');
+      const { fake, events } = sink(() => true);
+      fake.send({ type: 'meta', allowance: null, retrieved: 0 } as unknown as AskEvent);
+      events.length = 0;
+      await t.app.get(AskService).ask(user(), 'Which ramen recipes did I save?', fake);
+      expect(events).toEqual([]);
+      expect(reserve).not.toHaveBeenCalled();
+      expect(provider).not.toHaveBeenCalled();
       expect(await usage()).toBe(0);
     });
   });

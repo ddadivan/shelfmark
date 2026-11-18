@@ -9,12 +9,12 @@ export function searchTerms(q: string | undefined): string[] {
   return q.split(/\s+/).filter(Boolean).slice(0, LINK_LIMIT.QueryTermsMax);
 }
 
-function termCondition(term: string): Prisma.LinkWhereInput {
+function termCondition(term: string, searchNotes: boolean): Prisma.LinkWhereInput {
   const escaped = escapeLike(term);
   return {
     OR: [
       { title: { contains: escaped, mode: 'insensitive' } },
-      { note: { contains: escaped, mode: 'insensitive' } },
+      ...(searchNotes ? [{ note: { contains: escaped, mode: 'insensitive' as const } }] : []),
       { url: { contains: escaped, mode: 'insensitive' } },
     ],
   };
@@ -23,8 +23,14 @@ function termCondition(term: string): Prisma.LinkWhereInput {
 /**
  * The `where` of a link query. `userId` always comes first and is never optional: every caller
  * passes the session user. Trashed links are never matched (ADR 0036). All parts are combined with AND.
+ * `searchNotes: false` keeps the note out of the text match (Ask with its notes switch off).
  */
-export function buildLinkWhere(userId: string, filter: LinkFilter): Prisma.LinkWhereInput {
+export function buildLinkWhere(
+  userId: string,
+  filter: LinkFilter,
+  options: { searchNotes?: boolean } = {},
+): Prisma.LinkWhereInput {
+  const searchNotes = options.searchNotes ?? true;
   const and: Prisma.LinkWhereInput[] = [];
   if (filter.unsorted === true) and.push({ folderId: null });
   else if (filter.folderId !== undefined) and.push({ folderId: filter.folderId });
@@ -35,6 +41,6 @@ export function buildLinkWhere(userId: string, filter: LinkFilter): Prisma.LinkW
       tags: { some: { tag: { userId, name: { equals: escapeLike(name), mode: 'insensitive' } } } },
     });
   }
-  for (const term of searchTerms(filter.q)) and.push(termCondition(term));
+  for (const term of searchTerms(filter.q)) and.push(termCondition(term, searchNotes));
   return { userId, deletedAt: null, AND: and };
 }

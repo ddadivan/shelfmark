@@ -22,6 +22,7 @@ import { LocaleService } from '../../../../core/i18n/locale.service';
 import { aiResetDate } from '../../utils/ai-reset-date';
 import type { AskEntry } from '../../models/ask-entry.interface';
 import type { AskLine } from '../../models/ask-line.interface';
+import { ASK_CLIENT_REASON } from '../../models/ask-client-reason.const';
 import { ASK_ENTRY_STATE } from '../../models/ask-entry-state.const';
 import { AskSourcesComponent } from '../ask-sources/ask-sources.component';
 
@@ -68,10 +69,13 @@ export class AskEntryComponent {
     this.transloco.translate('ai.ask.source', { n });
   protected readonly idPrefix = computed(() => `ask-${this.entry().id}-source`);
   protected readonly streaming = computed(() => this.entry().state === ASK_ENTRY_STATE.Streaming);
-  /** Citations whose link is gone (trashed meanwhile): rendered disabled. */
+  /**
+   * Citations whose link is gone (trashed meanwhile): rendered disabled. Only known once `done`
+   * arrived; after Stop or a broken stream every citation stays enabled.
+   */
   protected readonly disabledCites = computed(() => {
     const entry = this.entry();
-    if (entry.state !== ASK_ENTRY_STATE.Done) {
+    if (entry.state !== ASK_ENTRY_STATE.Done || !entry.sourcesKnown) {
       return [];
     }
     const known = new Set(entry.sources.map((source) => source.n));
@@ -97,13 +101,15 @@ export class AskEntryComponent {
       case ASK_ENTRY_STATE.Error:
         return {
           key:
-            entry.reason === ASK_ERROR_REASON.Busy
-              ? 'ai.ask.busy'
-              : entry.reason === ASK_ERROR_REASON.Rejected
-                ? 'ai.ask.rejected'
-                : entry.reason === ASK_ERROR_REASON.Off
-                  ? 'ai.ask.off'
-                  : 'ai.ask.error',
+            entry.reason === ASK_CLIENT_REASON.RateLimited
+              ? 'ai.ask.rateLimited'
+              : entry.reason === ASK_ERROR_REASON.Busy
+                ? 'ai.ask.busy'
+                : entry.reason === ASK_ERROR_REASON.Rejected
+                  ? 'ai.ask.rejected'
+                  : entry.reason === ASK_ERROR_REASON.Off
+                    ? 'ai.ask.off'
+                    : 'ai.ask.error',
           params: {},
         };
       default:

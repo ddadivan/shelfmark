@@ -10,6 +10,7 @@ const ENTRY: AskEntry = {
   state: ASK_ENTRY_STATE.Streaming,
   segments: [],
   sources: [],
+  sourcesKnown: false,
   notFound: false,
   truncated: false,
   reason: null,

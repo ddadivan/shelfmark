@@ -2947,6 +2947,10 @@
       "aiTidy": {
         "title": "Riordina «Senza cartella» con l’IA",
         "text": "Controlla in una sola pagina i suggerimenti dell’IA per tutto ciò che è in «Senza cartella» e applicali con un solo Annulla. Se metti più volte i link di un sito nella stessa cartella, Shelfmark propone una regola."
+      },
+      "aiAsk": {
+        "title": "Chiedi ai tuoi link",
+        "text": "Fai una domanda con parole tue e ricevi una risposta breve dai link che hai salvato, con ogni fonte elencata. In più «Dai tuoi link»: una volta a settimana, link meno recenti che non hai mai aperto."
       }
     },
     "sections": {
@@ -3312,6 +3316,7 @@
       "error": "Al momento non è possibile rispondere. Questa domanda non è stata conteggiata.",
       "rejected": "Non è possibile rispondere a questa domanda. Non è stata conteggiata.",
       "busy": "C’è ancora un’altra domanda in corso. Riprova tra un momento.",
+      "rateLimited": "Troppe domande in poco tempo. Riprova tra un minuto; questa non è stata conteggiata nel tuo limite.",
       "off": "Chiedi ai tuoi link è disattivato in Impostazioni › IA.",
       "retry": "Riprova",
       "truncated": "La risposta è stata interrotta.",

@@ -2947,6 +2947,10 @@
       "aiTidy": {
         "title": "Organizar “Sem pasta” com IA",
         "text": "Revise numa única página as sugestões de IA para tudo em “Sem pasta” e aplique-as com um só Desfazer. Se você guardar links de um site na mesma pasta algumas vezes, o Shelfmark oferece uma regra."
+      },
+      "aiAsk": {
+        "title": "Pergunte aos seus links",
+        "text": "Faça uma pergunta com suas próprias palavras e receba uma resposta curta a partir dos links que você salvou, com cada fonte listada. E mais “Dos seus links”: uma vez por semana, links antigos que você nunca abriu."
       }
     },
     "sections": {
@@ -3312,6 +3316,7 @@
       "error": "Não foi possível obter uma resposta agora. Esta pergunta não foi contada.",
       "rejected": "Não é possível responder a esta pergunta. Ela não foi contada.",
       "busy": "Outra pergunta ainda está sendo respondida. Tente de novo em instantes.",
+      "rateLimited": "Perguntas demais em pouco tempo. Tente de novo em um minuto; esta não contou para o seu limite.",
       "off": "Pergunte aos seus links está desativado em Configurações › IA.",
       "retry": "Tentar de novo",
       "truncated": "A resposta foi interrompida.",
