@@ -69,7 +69,8 @@ describe('AI tick, sweep and backfill', () => {
   const turnOn = (settings: object = {}, agent: TestAgent = a) =>
     agent
       .patch(AI_ENDPOINT.Settings)
-      .send({ enabled: true, ...settings })
+      // Search by meaning has its own specs (ai.embeddings.integration.spec.ts).
+      .send({ enabled: true, meaningSearch: false, ...settings })
       .expect(200);
   const save = async (body: object = {}, agent: TestAgent = a): Promise<LinkResponse> =>
     (
@@ -127,6 +128,7 @@ describe('AI tick, sweep and backfill', () => {
       expect(answer).toEqual({
         pendingJobs: 1,
         backfill: { state: 'idle', eligible: 0, total: 0, done: 0, estimatedMinutes: null },
+        search: { state: 'off', ready: 0, total: 0 },
       });
       await deferrer.flush();
       expect((await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: jobId } })).status).toBe(

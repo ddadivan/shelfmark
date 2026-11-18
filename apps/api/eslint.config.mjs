@@ -26,9 +26,67 @@ const mcpSdkPattern = {
   message:
     'The MCP SDK is test-only (ADR 0054): import it in *.spec.ts only; the server is src/mcp/.',
 };
+// ADR 0052: Voyage embeddings are one POST to a pinned host with plain `fetch`, so `fetch` is confined
+// to that provider and the Sentry tunnel; every other outbound request goes through SafeFetcherService.
+const fetchAllowedFiles = [
+  'src/ai/providers/voyage-embedding.provider.ts',
+  'src/monitoring/monitoring.service.ts',
+];
+
+// Raw HTTP clients would bypass the SSRF guard just like `fetch`: only SafeFetcherService builds
+// requests with `node:http` / `node:https` (types and `STATUS_CODES` stay free), and `undici` is not
+// imported at all. A separate rule name, so it stacks with the import rules below.
+const networkMessage =
+  'Outbound HTTP goes through SafeFetcherService (PROJECT.md 5.8, ADR 0050, ADR 0052).';
+const networkClientNames = ['default', 'request', 'get', 'Agent', 'globalAgent'];
+const networkPaths = [
+  ...['http', 'https', 'node:http', 'node:https'].map((name) => ({
+    name,
+    importNames: networkClientNames,
+    allowTypeImports: true,
+    message: networkMessage,
+  })),
+  ...['undici', 'node:undici'].map((name) => ({ name, message: networkMessage })),
+];
 
 export default [
   ...base,
+  {
+    files: ['src/**/*.ts'],
+    ignores: ['src/**/*.spec.ts', ...fetchAllowedFiles],
+    rules: {
+      'no-restricted-globals': [
+        'error',
+        {
+          name: 'fetch',
+          message:
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0050, ADR 0052).',
+        },
+      ],
+      'no-restricted-properties': [
+        'error',
+        {
+          object: 'globalThis',
+          property: 'fetch',
+          message:
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0050, ADR 0052).',
+        },
+        {
+          object: 'global',
+          property: 'fetch',
+          message:
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0050, ADR 0052).',
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/**/*.ts'],
+    ignores: ['src/**/*.spec.ts', 'src/fetcher/safe-fetcher.service.ts'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': ['error', { paths: networkPaths }],
+    },
+  },
   {
     // ADR 0029: feature modules get the user through `@CurrentUser()` and open routes through our
     // `@AllowAnonymous()`. The integration's own `Session`, `OptionalAuth`, `Public` and `Roles`

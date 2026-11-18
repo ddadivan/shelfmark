@@ -8,10 +8,14 @@ describe('readAiConfig', () => {
     expect(readAiConfig({ NODE_ENV: 'production' })).toEqual({
       apiKey: null,
       useRealProvider: false,
+      voyageApiKey: null,
+      useRealEmbeddings: false,
     });
     expect(readAiConfig({ NODE_ENV: 'production', ANTHROPIC_API_KEY: '  ' })).toEqual({
       apiKey: null,
       useRealProvider: false,
+      voyageApiKey: null,
+      useRealEmbeddings: false,
     });
   });
 
@@ -19,6 +23,8 @@ describe('readAiConfig', () => {
     expect(readAiConfig({ ...PRODUCTION, ANTHROPIC_API_KEY: KEY })).toEqual({
       apiKey: KEY,
       useRealProvider: true,
+      voyageApiKey: null,
+      useRealEmbeddings: false,
     });
     // An unset NODE_ENV is production (fail safe), so the key is honoured there too.
     expect(readAiConfig({ ANTHROPIC_API_KEY: KEY }).useRealProvider).toBe(true);
@@ -73,5 +79,41 @@ describe('readAiConfig', () => {
     expect(() => readAiConfig({ ...PRODUCTION, ANTHROPIC_API_KEY: 'short' })).toThrow(
       /ANTHROPIC_API_KEY/,
     );
+  });
+
+  describe('Voyage embeddings (ADR 0052)', () => {
+    const VOYAGE = 'voyage'.padEnd(20, 'x');
+
+    it('uses real embeddings only in production, not a preview, with a key and not forced to mock', () => {
+      expect(readAiConfig({ ...PRODUCTION, VOYAGE_API_KEY: VOYAGE })).toMatchObject({
+        voyageApiKey: VOYAGE,
+        useRealEmbeddings: true,
+        useRealProvider: false,
+      });
+      for (const NODE_ENV of ['development', 'test']) {
+        expect(readAiConfig({ NODE_ENV, VOYAGE_API_KEY: VOYAGE }).useRealEmbeddings).toBe(false);
+      }
+      expect(
+        readAiConfig({ ...PRODUCTION, VERCEL_ENV: 'preview', VOYAGE_API_KEY: VOYAGE })
+          .useRealEmbeddings,
+      ).toBe(false);
+      expect(
+        readAiConfig({ ...PRODUCTION, AI_PROVIDER: 'mock', VOYAGE_API_KEY: VOYAGE })
+          .useRealEmbeddings,
+      ).toBe(false);
+      expect(readAiConfig({ ...PRODUCTION, VOYAGE_API_KEY: ' ' })).toMatchObject({
+        voyageApiKey: null,
+        useRealEmbeddings: false,
+      });
+    });
+
+    it('rejects a malformed Voyage key, naming only the variable', () => {
+      expect(() => readAiConfig({ ...PRODUCTION, VOYAGE_API_KEY: 'bad key value' })).toThrow(
+        /VOYAGE_API_KEY/,
+      );
+      expect(() => readAiConfig({ ...PRODUCTION, VOYAGE_API_KEY: 'bad key value' })).not.toThrow(
+        /bad key/,
+      );
+    });
   });
 });

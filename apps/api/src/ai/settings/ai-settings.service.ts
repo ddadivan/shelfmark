@@ -20,6 +20,8 @@ import type { AiDbClient } from '../models/ai-db-client.type';
 import type { CanceledBatch } from '../models/canceled-batch.interface';
 import type { StoppedQueue } from '../models/stopped-queue.interface';
 import type { StoredAiSettings } from '../models/stored-ai-settings.interface';
+import { AiEmbedService } from '../embeddings/ai-embed.service';
+import { AiSearchStatusService } from '../embeddings/ai-search-status.service';
 import { AiProviderRegistry } from '../providers/ai-provider.registry';
 import { AiUsageService } from '../usage/ai-usage.service';
 import { aiEntitlements } from './ai-entitlements';
@@ -33,12 +35,14 @@ const SETTINGS_SELECT = {
   summaries: true,
   includeNotes: true,
   summaryLanguage: true,
+  meaningSearch: true,
   enabledAt: true,
   introSeenAt: true,
   backfillState: true,
   backfillTotal: true,
   backfillDone: true,
   backfillUsed: true,
+  embedFailedAt: true,
 } as const;
 
 /**
@@ -55,6 +59,8 @@ export class AiSettingsService {
     private readonly prisma: PrismaService,
     private readonly usage: AiUsageService,
     private readonly registry: AiProviderRegistry,
+    private readonly searchStatus: AiSearchStatusService,
+    private readonly embed: AiEmbedService,
   ) {}
 
   /** The stored settings of the user (defaults when there is no row). */
@@ -76,11 +82,12 @@ export class AiSettingsService {
   async get(userId: string): Promise<AiSettingsResponse> {
     const entitlements = await this.entitlements(this.prisma, userId);
     const stored = await this.read(this.prisma, userId);
-    const [usage, providerStatus, pendingJobs, eligible] = await Promise.all([
+    const [usage, providerStatus, pendingJobs, eligible, search] = await Promise.all([
       this.usage.read(userId, entitlements.aiTier, stored.backfillUsed),
       this.providerStatus(userId),
       this.pendingJobs(userId),
       this.eligibleForBackfill(userId, stored.enabledAt),
+      this.searchStatus.status(userId, stored, entitlements.aiTier),
     ]);
     return {
       settings: stored.settings,
@@ -90,6 +97,7 @@ export class AiSettingsService {
       providerStatus,
       pendingJobs,
       backfill: toBackfillStatus(stored, eligible),
+      search,
     };
   }
 
@@ -97,8 +105,21 @@ export class AiSettingsService {
     if (Object.values(request).every((value) => value === undefined)) {
       throw new BadRequestException(AI_ERROR_MESSAGE.NothingToUpdate);
     }
+    let startEmbedding = false;
     const stopped = await this.prisma.$transaction(async (tx) => {
       const current = await this.read(tx, userId);
+      const before = current.settings;
+      const after = {
+        enabled: request.enabled ?? before.enabled,
+        meaningSearch: request.meaningSearch ?? before.meaningSearch,
+        includeNotes: request.includeNotes ?? before.includeNotes,
+      };
+      const searchOn = after.enabled && after.meaningSearch;
+      // Turning search by meaning on (or AI with it), or changing what is sent, starts the embed pass
+      // after the commit; turning it off releases the lease and keeps the vectors (nothing is sent).
+      startEmbedding =
+        searchOn &&
+        (!(before.enabled && before.meaningSearch) || after.includeNotes !== before.includeNotes);
       const now = new Date();
       const changes = {
         ...(request.enabled === undefined ? {} : { enabled: request.enabled }),
@@ -109,6 +130,8 @@ export class AiSettingsService {
         ...(request.summaryLanguage === undefined
           ? {}
           : { summaryLanguage: request.summaryLanguage }),
+        ...(request.meaningSearch === undefined ? {} : { meaningSearch: request.meaningSearch }),
+        ...(searchOn ? {} : { embedLeaseUntil: null }),
         // The intro's "Turn on AI" is the first `enabled: true`: it records both moments.
         ...(request.enabled === true && current.enabledAt === null ? { enabledAt: now } : {}),
         ...(request.enabled === true && current.introSeenAt === null ? { introSeenAt: now } : {}),
@@ -128,6 +151,7 @@ export class AiSettingsService {
       await this.usage.refundBackfill(userId, stopped.backfillSkipped);
       await this.cancelBatches(stopped.canceled);
     }
+    if (startEmbedding) await this.embed.kick(userId);
     return this.get(userId);
   }
 
@@ -199,11 +223,13 @@ export class AiSettingsService {
   /** Pending jobs and the backfill block (`POST /api/ai/tick`, backfill routes). */
   async progress(userId: string): Promise<AiTickResponse> {
     const stored = await this.read(this.prisma, userId);
-    const [pendingJobs, eligible] = await Promise.all([
+    const entitlements = await this.entitlements(this.prisma, userId);
+    const [pendingJobs, eligible, search] = await Promise.all([
       this.pendingJobs(userId),
       this.eligibleForBackfill(userId, stored.enabledAt),
+      this.searchStatus.status(userId, stored, entitlements.aiTier),
     ]);
-    return { pendingJobs, backfill: toBackfillStatus(stored, eligible) };
+    return { pendingJobs, backfill: toBackfillStatus(stored, eligible), search };
   }
 
   private pendingJobs(userId: string): Promise<number> {

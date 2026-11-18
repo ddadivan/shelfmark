@@ -4,4 +4,8 @@ export interface AiQuotaLimits {
   linksPerMonth: number;
   /** One-time allowance for "Process existing links" (backfill), separate from the monthly limit. */
   backfillLinks: number;
+  /** Link texts embedded for search by meaning per UTC calendar month (AI-3). */
+  embedsPerMonth: number;
+  /** Search queries embedded per UTC calendar month (AI-3). */
+  searchQueriesPerMonth: number;
 }

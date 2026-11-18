@@ -7,8 +7,8 @@ import { AiSettingsService } from '../settings/ai-settings.service';
 
 /**
  * `DELETE /api/ai/data` (#389, Privacy): removes what AI generated for the user — summaries written
- * by AI, every suggestion, every job (with any stored result) — cancels open batches and stops a
- * running backfill. The user's own summaries, tags, folders, settings and the usage counts stay. A
+ * by AI, every suggestion, every job (with any stored result), every search-by-meaning vector (and
+ * turns that switch off) — cancels open batches and stops a running backfill. The user's own summaries, tags, folders, settings and the usage counts stay. A
  * job that is running meanwhile finds its row gone and its result is discarded. Plain SQL on links,
  * so `updated_at` stays.
  */
@@ -36,6 +36,15 @@ export class AiDataService {
       await tx.$executeRaw`
         UPDATE ai_settings SET backfill_state = ${AI_BACKFILL_STATE.Stopped}, backfill_cursor = NULL
         WHERE user_id = ${userId}::uuid AND backfill_state = ${AI_BACKFILL_STATE.Running}`;
+      // Search by meaning (ADR 0052): the switch turns off so the vectors are not rebuilt at once
+      // (open question 3), then every vector goes. The order matters: the settings row lock comes
+      // first, so a pass writing during the provider call either waits and finds the switch off or
+      // has committed before the delete reads the table (`AiEmbedService.searchStillOn`).
+      await tx.$executeRaw`
+        UPDATE ai_settings SET meaning_search = false, embed_lease_until = NULL,
+          embed_not_before = NULL, embed_failures = 0, embed_failed_at = NULL
+        WHERE user_id = ${userId}::uuid`;
+      await tx.$executeRaw`DELETE FROM link_embeddings WHERE user_id = ${userId}::uuid`;
       return batches;
     });
     await this.settings.cancelBatches(canceled);

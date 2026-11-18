@@ -9,6 +9,7 @@ import {
   AI_LIMIT,
   AI_PROVIDER_STATUS,
   AI_QUOTA,
+  AI_SEARCH_STATE,
   AI_TIER,
   SUGGESTION_KIND,
   SUGGESTION_STATE,
@@ -17,6 +18,7 @@ import {
   type AiAutoApplied,
   type AiBackfillStatus,
   type AiJobResponse,
+  type AiSearchStatus,
   type AiSettings,
   type AiSettingsResponse,
   type LinkAiState,
@@ -40,6 +42,8 @@ import { MOCK_AI_URL_MARKER } from './models/mock-ai-url-marker.const';
 /** Like the API: the provider reads as unavailable this long after a job failed with `unavailable`. */
 const PROVIDER_WINDOW_MS = 15 * 60_000;
 const MS_PER_MINUTE = 60_000;
+/** Share of links the `searchProcessing` toggle reports as embedded (under the API's 80%). */
+const PROCESSING_SHARE = 0.6;
 const IDLE_BACKFILL: MockAiBackfillRun = {
   state: AI_BACKFILL_STATE.Idle,
   linkIds: [],
@@ -114,7 +118,29 @@ export class MockAiData {
           : AI_PROVIDER_STATUS.Ok,
       pendingJobs: this.pendingJobs(),
       backfill: this.backfillStatus(),
+      search: this.searchStatus(),
     };
+  }
+
+  /**
+   * Search by meaning readiness, like the API: `off` while AI or the switch is off; the mock embeds
+   * every live link at once, except while the account's `searchProcessing` toggle reads "getting
+   * ready" (60% of the links).
+   */
+  searchStatus(): AiSearchStatus {
+    const account = this.account;
+    const total = this.library.links.length;
+    if (!account.settings.enabled || !account.settings.meaningSearch) {
+      return { state: AI_SEARCH_STATE.Off, ready: 0, total };
+    }
+    if (account.searchProcessing) {
+      return {
+        state: AI_SEARCH_STATE.Processing,
+        ready: Math.floor(total * PROCESSING_SHARE),
+        total,
+      };
+    }
+    return { state: AI_SEARCH_STATE.Ready, ready: total, total };
   }
 
   /** `PATCH /api/ai/settings`: the first `enabled: true` marks the intro seen, off skips pending work. */
@@ -319,8 +345,13 @@ export class MockAiData {
     return this.library.linkView(next);
   }
 
-  /** `DELETE /api/ai/data`: AI summaries, suggestions, marks and jobs go; the user's summaries stay. */
+  /**
+   * `DELETE /api/ai/data`: AI summaries, suggestions, marks, jobs and vectors go (search by meaning
+   * turns off, plan open question 3); the user's summaries stay.
+   */
   deleteData(): void {
+    const account = this.account;
+    this.account = { ...account, settings: { ...account.settings, meaningSearch: false } };
     this.library.links = this.library.links.map((link) =>
       link.summarySource === SUMMARY_SOURCE.Ai
         ? { ...link, summary: null, summarySource: null, aiStatus: null }

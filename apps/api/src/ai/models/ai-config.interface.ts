@@ -8,4 +8,8 @@ export interface AiConfig {
    * CI, previews and the demo always run on the mock provider.
    */
   useRealProvider: boolean;
+  /** The Voyage embeddings key, or `null`. Never log, echo or return it. */
+  voyageApiKey: string | null;
+  /** Same rule as `useRealProvider`, for the Voyage key (ADR 0052 point 1). */
+  useRealEmbeddings: boolean;
 }

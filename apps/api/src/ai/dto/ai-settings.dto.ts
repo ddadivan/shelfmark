@@ -14,4 +14,5 @@ export class AiSettingsDto implements AiSettings {
   @ApiProperty() summaries!: boolean;
   @ApiProperty() includeNotes!: boolean;
   @ApiProperty({ enum: AI_SUMMARY_LANGUAGES }) summaryLanguage!: AiSummaryLanguage;
+  @ApiProperty({ description: 'Search by meaning and related links' }) meaningSearch!: boolean;
 }

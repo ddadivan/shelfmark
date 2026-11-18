@@ -4,4 +4,6 @@ export const SEARCH_RESULT_KIND = {
   Folder: 'folder',
   Tag: 'tag',
   All: 'all',
+  /** A link found by meaning (AI-3), opened like a link. */
+  Meaning: 'meaning',
 } as const;

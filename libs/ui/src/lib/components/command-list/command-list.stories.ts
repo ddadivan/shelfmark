@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { AiLineComponent } from '../ai-line/ai-line.component';
 import { ButtonComponent } from '../button/button.component';
 import { DialogComponent } from '../dialog/dialog.component';
 import { DialogService } from '../../services/dialog/dialog.service';
@@ -280,6 +281,7 @@ const imports = [
   HighlightComponent,
   IconComponent,
   FaviconComponent,
+  AiLineComponent,
 ];
 
 /** Type to filter; the matching part is marked. Enter or a click chooses, the demo ignores it. */
@@ -322,6 +324,78 @@ export const Busy: Story = {
         <ui-command-group heading="Links">
           <ui-command-item value="a">Signals vs RxJS: when to use which</ui-command-item>
         </ui-command-group>
+      </ui-command-list>`),
+  }),
+};
+
+/**
+ * `icon` draws the heading as a divider (the spark in the `ai` colour, a hairline after the text);
+ * `lead` is a muted line above it. Search by meaning: word matches first, then meaning matches with
+ * their "why it matched" line; with no word matches the lead says so.
+ */
+export const RelatedByMeaning: Story = {
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports },
+    template: `<div class="cls-themes">${box(`
+        <ui-command-list [inputLabel]="inputLabel" listLabel="Search results" query="talk about signals and performance">
+          <ui-command-group heading="1 link">
+            <ui-command-item value="a">
+              <ui-favicon slot="leading" letter="y" />
+              <ui-highlight text="Angular signals: fine-grained reactivity and performance" query="signals performance" />
+              <span slot="meta">youtube.com, in Angular</span>
+            </ui-command-item>
+          </ui-command-group>
+          <ui-command-group heading="Related by meaning" icon="spark">
+            <ui-command-item value="b">
+              <ui-favicon slot="leading" letter="d" />
+              Zoneless change detection, explained
+              <span slot="meta">dev.to · Close to: change detection, faster rendering</span>
+            </ui-command-item>
+            <ui-command-item value="c">
+              <ui-favicon slot="leading" letter="n" />
+              NgRx SignalStore: patterns for real apps
+              <span slot="meta">ngrx.io · Close to: signal-based state</span>
+            </ui-command-item>
+          </ui-command-group>
+        </ui-command-list>`)}${box(`
+        <ui-command-list [inputLabel]="inputLabel" listLabel="Search results" query="that ramen place in lisbon">
+          <ui-command-group heading="Related by meaning" icon="spark" lead="No links with these words">
+            <ui-command-item value="d">
+              <ui-favicon slot="leading" letter="l" />
+              Lisbon in three days
+              <span slot="meta">timeout.com · Close to: Lisbon, where to eat</span>
+            </ui-command-item>
+          </ui-command-group>
+        </ui-command-list>
+      `)}</div>`,
+  }),
+};
+
+/**
+ * The `note` slot: a muted line after the results, for example the spark and "Search by meaning is
+ * getting ready" while the word matches show as usual.
+ */
+export const WithNote: Story = {
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports },
+    template: box(`
+      <ui-command-list [inputLabel]="inputLabel" listLabel="Search results" query="coat">
+        <ui-command-group heading="2 links">
+          <ui-command-item value="a">
+            <ui-favicon slot="leading" letter="c" />
+            <ui-highlight text="Wool coat, straight cut, graphite" query="coat" />
+            <span slot="meta">cos.com, in Clothes</span>
+          </ui-command-item>
+          <ui-command-item value="b">
+            <ui-favicon slot="leading" letter="r" />
+            <ui-highlight text="Rain coat, packable" query="coat" />
+            <span slot="meta">rains.com, in Clothes</span>
+          </ui-command-item>
+        </ui-command-group>
+        <ui-ai-line slot="note" text="Search by meaning is getting ready: 840 of 1,000 links. Word matches work as usual." />
+        <span slot="footer"><kbd>↑</kbd> <kbd>↓</kbd> move</span>
       </ui-command-list>`),
   }),
 };
@@ -404,6 +478,13 @@ export const AllVariants: Story = {
                     <span slot="trailing">5 links</span>
                   </ui-command-item>
                   <ui-command-item value="d" disabled>Disabled row</ui-command-item>
+                </ui-command-group>
+                <ui-command-group heading="Related by meaning" icon="spark">
+                  <ui-command-item value="e">
+                    <ui-favicon slot="leading" letter="d" />
+                    Zoneless change detection, explained
+                    <span slot="meta">dev.to · Close to: change detection</span>
+                  </ui-command-item>
                 </ui-command-group>
                 <span slot="footer"><kbd>↑</kbd> <kbd>↓</kbd> move</span>
                 <span slot="footer"><kbd><ui-icon name="key-enter" [size]="16" /></kbd> open</span>

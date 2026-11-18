@@ -38,6 +38,8 @@ function readSettings(value: unknown, fallback: AiSettings): AiSettings {
     summaryLanguage: isAiSummaryLanguage(stored.summaryLanguage)
       ? stored.summaryLanguage
       : fallback.summaryLanguage,
+    meaningSearch:
+      typeof stored.meaningSearch === 'boolean' ? stored.meaningSearch : fallback.meaningSearch,
   };
 }
 
@@ -68,6 +70,7 @@ export function readMockAiAccount(
     month,
     linksUsed: stored.month === month ? count(stored.linksUsed) : 0,
     backfillUsed: count(stored.backfillUsed),
+    searchProcessing: stored.searchProcessing === true,
   };
 }
 

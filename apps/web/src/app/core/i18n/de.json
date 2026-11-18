@@ -607,6 +607,10 @@
       "off": {
         "term": "Ausschalten:",
         "text": "Schalte unter Einstellungen › KI eine Funktion oder die KI ganz aus; Anfragen enden sofort. „KI-Daten löschen“ dort entfernt jede Zusammenfassung und jeden Vorschlag der KI."
+      },
+      "meaning": {
+        "term": "Suche nach Bedeutung:",
+        "text": "solange sie eingeschaltet ist (Einstellungen › KI), werden Titel, Zusammenfassung und Tag-Namen jedes Links, die Notiz nur mit „Meine Notizen einbeziehen“, und die Wörter deiner Suche an Voyage AI gesendet, unseren zweiten Auftragsverarbeiter, der daraus Zahlenvektoren macht. Nie die Adresse, deine Ordner oder Daten anderer. Die Vektoren werden mit deinen Links gespeichert und mit ihnen oder mit „KI-Daten löschen“ gelöscht; deine Suche wird nicht gespeichert. Voyage AI by MongoDB (USA) löscht jede Anfrage direkt nach der Verarbeitung (Zero-Day-Retention) und nutzt sie nicht zum Training."
       }
     },
     "retention": {
@@ -2897,6 +2901,10 @@
         "title": "Assistenten verbinden",
         "text": "Mit Pro können Claude und andere MCP-Assistenten deine Links mit einem persönlichen Token durchsuchen und lesen. Nur Lesezugriff, jederzeit widerrufbar."
       },
+      "aiSearch": {
+        "title": "Suche nach Bedeutung",
+        "text": "Die Suche findet Links, die zu dem passen, was du meinst, nicht nur zu deinen Wörtern, und sagt, warum jeder passt. „Link bearbeiten“ zeigt Ähnliches aus deinem Regal, und „Nebeneinander“ kann dessen Ordner anbieten."
+      },
       "extensionInStore": {
         "text": "Die Shelfmark-Browsererweiterung ist im Chrome Web Store: Installiere sie über das Banner in deinem Regal oder unter Einstellungen › Bibliothek."
       },
@@ -2995,7 +3003,7 @@
       "data": {
         "title": "Deine KI-Daten",
         "label": "KI-Daten löschen",
-        "hint": "Entfernt alle Zusammenfassungen und Vorschläge der KI. Deine eigenen Änderungen, Tags und Ordner bleiben.",
+        "hint": "Entfernt alle Zusammenfassungen und Vorschläge der KI und schaltet die Suche nach Bedeutung aus. Deine eigenen Änderungen, Tags und Ordner bleiben.",
         "action": "KI-Daten löschen"
       },
       "privacy": {
@@ -3007,7 +3015,14 @@
       "failed": "KI-Einstellungen konnten nicht gespeichert werden",
       "failedDetail": "Die Änderung wurde zurückgenommen. Versuch es noch einmal.",
       "loadFailed": "KI-Einstellungen konnten nicht geladen werden.",
-      "retry": "Erneut versuchen"
+      "retry": "Erneut versuchen",
+      "meaning": {
+        "title": "Suche nach Bedeutung",
+        "text": "Findet Links nach ihrem Thema, nicht nur nach ihren Wörtern, und zeigt ähnliche Links. Sendet Titel, Tags und Zusammenfassung jedes Links (mit „Meine Notizen einbeziehen“ auch die Notiz) und deine Suche an Voyage AI.",
+        "ready": "Bereit",
+        "progress": "{{ready}} von {{total}} Links bereit",
+        "quota": "Pausiert bis {{date}}: Monatslimit erreicht"
+      }
     },
     "backfill": {
       "title": "Vorhandene Links verarbeiten",
@@ -3028,7 +3043,7 @@
     "deleteData": {
       "confirm": {
         "title": "KI-Daten löschen?",
-        "message": "Alle Zusammenfassungen und Vorschläge der KI werden entfernt. Deine eigenen Änderungen, Tags und Ordner bleiben. Das lässt sich nicht rückgängig machen.",
+        "message": "Alle Zusammenfassungen und Vorschläge der KI werden entfernt, und die Suche nach Bedeutung wird ausgeschaltet. Deine eigenen Änderungen, Tags und Ordner bleiben. Das lässt sich nicht rückgängig machen.",
         "confirm": "KI-Daten löschen",
         "cancel": "Abbrechen",
         "close": "Schließen"
@@ -3061,7 +3076,11 @@
       "policy": "Datenschutzerklärung lesen",
       "failed": "KI konnte nicht eingeschaltet werden. Versuch es noch einmal.",
       "notNow": "Nicht jetzt",
-      "turnOn": "KI einschalten"
+      "turnOn": "KI einschalten",
+      "meaning": {
+        "title": "Findet Links nach Bedeutung",
+        "text": "Suche und ähnliche Links berücksichtigen auch, worum es in einem Link geht. Dafür gehen Titel, Tags, Zusammenfassungen und deine Suche an Voyage AI. Einzeln abschaltbar unter Einstellungen › KI."
+      }
     },
     "suggest": {
       "label": "Vorgeschlagen",
@@ -3274,6 +3293,19 @@
       },
       "undone": "Aufräumen rückgängig gemacht",
       "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden"
+    },
+    "search": {
+      "related": "Ähnlich nach Bedeutung",
+      "noWordMatches": "Keine Links mit diesen Wörtern",
+      "why": "Nah an: {{reasons}}",
+      "fromSummary": "Nah an: {{reasons}} (aus der Zusammenfassung)",
+      "preparing": "Die Suche nach Bedeutung wird vorbereitet: {{ready}} von {{total}} Links. Die Wortsuche funktioniert wie gewohnt."
+    },
+    "related": {
+      "title": "Ähnliches in deinem Regal",
+      "why": "Nah an: {{reasons}}",
+      "show": "Ähnliches zeigen",
+      "folders": "Ähnliche Ordner"
     }
   }
 }

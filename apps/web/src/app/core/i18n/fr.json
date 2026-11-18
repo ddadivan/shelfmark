@@ -619,6 +619,10 @@
       "off": {
         "term": "Désactiver :",
         "text": "désactivez une fonction ou l’IA entière dans Paramètres › IA ; les requêtes s’arrêtent aussitôt. « Supprimer les données d’IA » y retire tous les résumés et suggestions de l’IA."
+      },
+      "meaning": {
+        "term": "Recherche par le sens :",
+        "text": "tant qu’elle est activée (Paramètres › IA), le titre, le résumé et les noms de tags de chaque lien, votre note seulement avec « Inclure mes notes », et les mots que vous cherchez sont envoyés à Voyage AI, notre second sous-traitant, qui les transforme en vecteurs de nombres. Jamais l’adresse, vos dossiers ni les données d’autres personnes. Les vecteurs sont conservés avec vos liens et supprimés avec eux ou avec « Supprimer les données d’IA » ; votre recherche n’est pas conservée. Voyage AI by MongoDB (États-Unis) supprime chaque requête juste après l’avoir traitée (rétention zéro) et ne l’utilise pas pour l’entraînement."
       }
     },
     "retention": {
@@ -2958,6 +2962,10 @@
         "title": "Connecter votre assistant",
         "text": "Avec Pro, Claude et d’autres assistants MCP peuvent rechercher et lire vos liens avec un jeton personnel. Lecture seule, révocable à tout moment."
       },
+      "aiSearch": {
+        "title": "Recherche par le sens",
+        "text": "La recherche trouve les liens qui correspondent à ce que vous voulez dire, pas seulement à vos mots, et explique pourquoi chacun correspond. « Modifier le lien » affiche des liens proches sur votre étagère, et « Côte à côte » peut proposer leurs dossiers."
+      },
       "extensionInStore": {
         "text": "L’extension Shelfmark est sur le Chrome Web Store : installez-la depuis le bandeau de votre étagère ou depuis Paramètres › Bibliothèque."
       },
@@ -3057,7 +3065,7 @@
       "data": {
         "title": "Vos données d’IA",
         "label": "Supprimer les données d’IA",
-        "hint": "Supprime tous les résumés et suggestions faits par l’IA. Vos modifications, tags et dossiers restent.",
+        "hint": "Supprime tous les résumés et suggestions faits par l’IA et désactive la recherche par le sens. Vos modifications, tags et dossiers restent.",
         "action": "Supprimer les données d’IA"
       },
       "privacy": {
@@ -3069,7 +3077,14 @@
       "failed": "Impossible d’enregistrer vos paramètres d’IA",
       "failedDetail": "La modification a été annulée. Réessayez.",
       "loadFailed": "Impossible de charger vos paramètres d’IA.",
-      "retry": "Réessayer"
+      "retry": "Réessayer",
+      "meaning": {
+        "title": "Recherche par le sens",
+        "text": "Trouve les liens selon leur sujet, pas seulement leurs mots, et affiche des liens proches. Envoie à Voyage AI le titre, les tags et le résumé de chaque lien (votre note aussi, avec « Inclure mes notes ») et ce que vous cherchez.",
+        "ready": "Prête",
+        "progress": "{{ready}} liens prêts sur {{total}}",
+        "quota": "En pause jusqu’au {{date}} : limite du mois atteinte"
+      }
     },
     "backfill": {
       "title": "Traiter les liens existants",
@@ -3091,7 +3106,7 @@
     "deleteData": {
       "confirm": {
         "title": "Supprimer les données d’IA ?",
-        "message": "Tous les résumés et suggestions faits par l’IA sont supprimés. Vos modifications, tags et dossiers restent. Action irréversible.",
+        "message": "Tous les résumés et suggestions faits par l’IA sont supprimés, et la recherche par le sens est désactivée. Vos modifications, tags et dossiers restent. Action irréversible.",
         "confirm": "Supprimer les données d’IA",
         "cancel": "Annuler",
         "close": "Fermer"
@@ -3124,7 +3139,11 @@
       "policy": "Lire la politique de confidentialité",
       "failed": "Impossible d’activer l’IA. Réessayez.",
       "notNow": "Pas maintenant",
-      "turnOn": "Activer l’IA"
+      "turnOn": "Activer l’IA",
+      "meaning": {
+        "title": "Trouve les liens par le sens",
+        "text": "La recherche et les liens proches tiennent aussi compte du sujet d’un lien. Pour cela, les titres, tags, résumés et votre recherche sont envoyés à Voyage AI. Désactivable à part dans Paramètres › IA."
+      }
     },
     "suggest": {
       "label": "Suggéré",
@@ -3345,6 +3364,19 @@
       },
       "undone": "Rangement annulé",
       "undoFailed": "Impossible d’annuler le rangement"
+    },
+    "search": {
+      "related": "Proches par le sens",
+      "noWordMatches": "Aucun lien avec ces mots",
+      "why": "Proche de : {{reasons}}",
+      "fromSummary": "Proche de : {{reasons}} (d’après le résumé)",
+      "preparing": "La recherche par le sens se prépare : {{ready}} liens sur {{total}}. La recherche par mots marche comme d’habitude."
+    },
+    "related": {
+      "title": "Proches sur votre étagère",
+      "why": "Proche de : {{reasons}}",
+      "show": "Afficher les liens proches",
+      "folders": "Dossiers proches"
     }
   }
 }

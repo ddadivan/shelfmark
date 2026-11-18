@@ -19,6 +19,8 @@ import {
   SUMMARY_SOURCE,
   type UpdateLinkRequest,
 } from '@shelfmark/contracts';
+import { AiEmbedService } from '../ai/embeddings/ai-embed.service';
+import { markEmbeddingsStale } from '../ai/embeddings/mark-embeddings-stale';
 import { AiJobsService } from '../ai/jobs/ai-jobs.service';
 import { AiLinkHooksService } from '../ai/link-hooks/ai-link-hooks.service';
 import type { AiRequestContext } from '../ai/models/ai-request-context.interface';
@@ -63,6 +65,7 @@ export class LinksWriteService {
     private readonly rules: RulesService,
     private readonly aiJobs: AiJobsService,
     private readonly aiHooks: AiLinkHooksService,
+    private readonly aiEmbed: AiEmbedService,
   ) {}
 
   /**
@@ -184,6 +187,8 @@ export class LinksWriteService {
       startedAt,
     );
     this.aiJobs.start(userId, aiJobIds);
+    // Search by meaning: a link without a job is embedded now; one with a job after its job.
+    if (aiJobIds.length === 0) await this.aiEmbed.kick(userId);
     return withImages;
   }
 
@@ -236,6 +241,12 @@ export class LinksWriteService {
     let aiJobIds: string[] = [];
     let aiSuperseded = 0;
     let response: LinkResponse;
+    // What search by meaning embeds (title, note, tags, summary) changed: the vector goes stale.
+    const embeddedChanged =
+      request.title !== undefined ||
+      request.note !== undefined ||
+      request.tags !== undefined ||
+      request.summary !== undefined;
     try {
       response = await this.prisma.$transaction(async (tx) => {
         if (needsLock) await this.folders.lockTree(tx, userId);
@@ -279,6 +290,7 @@ export class LinksWriteService {
           await tx.linkTag.deleteMany({ where: { linkId: id } });
           await tx.linkTag.createMany({ data: tagIds.map((tagId) => ({ linkId: id, tagId })) });
         }
+        if (embeddedChanged) await markEmbeddingsStale(tx, userId, { linkIds: [id] });
         const touched = Object.keys(data).length > 0 || request.tags !== undefined;
         let row = await tx.link.update({
           where: { id, userId, deletedAt: null },
@@ -312,6 +324,7 @@ export class LinksWriteService {
       throw this.mapVanished(error);
     }
     await this.aiHooks.afterCommit(userId, aiJobIds, aiSuperseded);
+    if (embeddedChanged && aiJobIds.length === 0) await this.aiEmbed.kick(userId);
     return response;
   }
 

@@ -12,6 +12,7 @@ import { AI_RUNNER_LIMIT } from '../models/ai-runner-limit.const';
 import type { AiSweepResponse } from '../models/ai-sweep-response.interface';
 import { AiRunnerService } from '../runner/ai-runner.service';
 import { AiSettingsService } from '../settings/ai-settings.service';
+import { AiEmbedService } from '../embeddings/ai-embed.service';
 
 /**
  * Catch-up without frequent crons (ADR 0049 point 4). `tick` (the session user, while the web app
@@ -19,8 +20,8 @@ import { AiSettingsService } from '../settings/ai-settings.service';
  * and run the work after the response within their budget: poll open batches, run stale jobs
  * (pending past 30 s or a lease that expired; drafts not yet attached are left to their dialog),
  * advance the backfill. The sweep also fails jobs whose attempts are used up and deletes unattached
- * drafts older than a day. Both fail backfill chunks orphaned by a dead instance. Logs carry counts
- * only.
+ * drafts older than a day. Both fail backfill chunks orphaned by a dead instance and end with the
+ * embed pass (search by meaning, ADR 0052). Logs carry counts only.
  */
 @Injectable()
 export class AiCatchUpService {
@@ -33,6 +34,7 @@ export class AiCatchUpService {
     private readonly backfill: AiBackfillService,
     private readonly backfillResults: AiBackfillResultsService,
     private readonly background: AiBackgroundService,
+    private readonly embed: AiEmbedService,
   ) {}
 
   /** `POST /api/ai/tick`: starts the user's catch-up and answers the progress as it is now. */
@@ -58,6 +60,12 @@ export class AiCatchUpService {
       UNION
       SELECT user_id FROM ai_settings WHERE backfill_state = ${AI_BACKFILL_STATE.Running}
       LIMIT ${AI_CATCH_UP_LIMIT.SweepUsersMax}`;
+    // Users whose vectors need work (search by meaning): new, edited or tag-renamed links.
+    const known = new Set(users.map((row) => row.userId));
+    for (const userId of await this.embed.usersWithCandidates(AI_CATCH_UP_LIMIT.SweepUsersMax)) {
+      if (users.length >= AI_CATCH_UP_LIMIT.SweepUsersMax) break;
+      if (!known.has(userId)) users.push({ userId });
+    }
     const deadline = Date.now() + AI_CATCH_UP_LIMIT.SweepBudgetMs;
     this.background.defer(async () => {
       let errors = 0;
@@ -82,6 +90,8 @@ export class AiCatchUpService {
     const stale = await this.staleJobs(userId);
     if (stale.length > 0) await this.runner.runMany(userId, stale, deadline - Date.now());
     await this.backfill.advance(userId, deadline);
+    // Last: the embed pass (search by meaning) with what is left of the budget.
+    await this.embed.run(userId, deadline - Date.now());
   }
 
   /**

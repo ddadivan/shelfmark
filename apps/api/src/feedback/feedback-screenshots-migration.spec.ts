@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { PGlite } from '@electric-sql/pglite';
 import { pg_trgm } from '@electric-sql/pglite/contrib/pg_trgm';
+import { vector } from '@electric-sql/pglite-pgvector';
 import { migrationFiles } from '../../test-utils/test-database';
 
 const MIGRATION = '20261118120000_feedback_screenshots';
@@ -18,7 +19,7 @@ describe(`migration ${MIGRATION}`, () => {
   const bytes = Buffer.from([0x89, 0x50, 0x4e, 0x47, 1, 2, 3]);
 
   beforeAll(async () => {
-    db = await PGlite.create({ extensions: { pg_trgm } });
+    db = await PGlite.create({ extensions: { pg_trgm, vector } });
     const files = migrationFiles();
     const index = files.findIndex((file) => file.includes(MIGRATION));
     expect(index).toBeGreaterThan(0);

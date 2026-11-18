@@ -14,6 +14,8 @@ import {
   type TidyListResponse,
   type TidyUndoItem,
 } from '@shelfmark/contracts';
+import { AiEmbedService } from '../embeddings/ai-embed.service';
+import { markEmbeddingsStale } from '../embeddings/mark-embeddings-stale';
 import { hasPrismaCode } from '../../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../../common/prisma/prisma-error-code.const';
 import { FoldersService } from '../../folders/folders.service';
@@ -64,6 +66,7 @@ export class AiTidyService {
     private readonly rules: RulesService,
     private readonly folders: FoldersService,
     private readonly tags: TagsService,
+    private readonly embed: AiEmbedService,
   ) {}
 
   /**
@@ -103,7 +106,9 @@ export class AiTidyService {
     const stored = await this.settings.read(this.prisma, userId);
     if (!stored.settings.enabled) throw new ConflictException(AI_ERROR_MESSAGE.AiOff);
     try {
-      return await this.prisma.$transaction((tx) => this.applyIn(tx, userId, request));
+      const response = await this.prisma.$transaction((tx) => this.applyIn(tx, userId, request));
+      if (response.tagsAdded > 0) await this.embed.kick(userId);
+      return response;
     } catch (error) {
       if (hasPrismaCode(error, PRISMA_ERROR_CODE.ForeignKeyViolation)) {
         throw new ConflictException(LINK_ERROR_MESSAGE.ChangedMeanwhile);
@@ -268,6 +273,7 @@ export class AiTidyService {
       added.set(pair.linkId, (added.get(pair.linkId) ?? new Set<string>()).add(key));
     }
     if (added.size > 0) {
+      await markEmbeddingsStale(tx, userId, { linkIds: [...added.keys()] });
       await tx.link.updateMany({
         where: { userId, deletedAt: null, id: { in: [...added.keys()] } },
         data: { updatedAt: now },

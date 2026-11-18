@@ -157,16 +157,22 @@ describe('AnthropicAiProvider', () => {
   });
 });
 
+const NO_EMBEDDINGS = { voyageApiKey: null, useRealEmbeddings: false };
+
 describe('createAnthropicProvider', () => {
   it('needs a key', () => {
-    expect(() => createAnthropicProvider({ apiKey: null, useRealProvider: true })).toThrow(
-      /ANTHROPIC_API_KEY/,
-    );
+    expect(() =>
+      createAnthropicProvider({ ...NO_EMBEDDINGS, apiKey: null, useRealProvider: true }),
+    ).toThrow(/ANTHROPIC_API_KEY/);
   });
 
   it('builds a client with the key (the SDK is replaced by a throwing stub in tests)', () => {
     expect(() =>
-      createAnthropicProvider({ apiKey: 'sk-ant-test-0123456789', useRealProvider: true }),
+      createAnthropicProvider({
+        ...NO_EMBEDDINGS,
+        apiKey: 'sk-ant-test-0123456789',
+        useRealProvider: true,
+      }),
     ).toThrow(/must never be constructed in tests/);
   });
 });

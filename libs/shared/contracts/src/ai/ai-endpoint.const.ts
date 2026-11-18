@@ -12,7 +12,7 @@ export const AI_ENDPOINT = {
   Backfill: '/api/ai/backfill',
   /** `POST` catch-up for the session user while jobs are pending or a backfill runs. */
   Tick: '/api/ai/tick',
-  /** `DELETE` every AI summary and suggestion of the user; user edits stay. */
+  /** `DELETE` every AI summary, suggestion and vector of the user and turns search by meaning off; user edits stay. */
   Data: '/api/ai/data',
   /** `GET` the Tidy review list: links in Unsorted with suggestions (AI-2). */
   Tidy: '/api/ai/tidy',
@@ -28,6 +28,10 @@ export const AI_ENDPOINT = {
   LinkAiRewrite: '/api/links/:id/ai/rewrite',
   /** `POST` undoes what Automatic mode applied to a link. */
   LinkAiUndo: '/api/links/:id/ai/undo',
+  /** `GET` links found by meaning that are not word matches (AI-3). */
+  MeaningSearch: '/api/ai/search',
+  /** `GET` up to five related links by the link's stored vector (AI-3). */
+  RelatedLinks: '/api/links/:id/related',
   /** Daily Vercel Cron sweep (`CRON_SECRET` bearer). */
   Sweep: '/api/cron/ai-sweep',
 } as const;

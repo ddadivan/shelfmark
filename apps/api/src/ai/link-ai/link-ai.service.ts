@@ -9,6 +9,8 @@ import {
   type LinkAiState,
   type LinkResponse,
 } from '@shelfmark/contracts';
+import { AiEmbedService } from '../embeddings/ai-embed.service';
+import { markEmbeddingsStale } from '../embeddings/mark-embeddings-stale';
 import { FoldersService } from '../../folders/folders.service';
 import { LINK_INCLUDE } from '../../links/models/link-include.const';
 import { toAiJobStatus, toLinkResponse, toSummarySource } from '../../links/to-link-response';
@@ -41,6 +43,7 @@ export class LinkAiService {
     private readonly tags: TagsService,
     private readonly settings: AiSettingsService,
     private readonly jobs: AiJobsService,
+    private readonly embed: AiEmbedService,
   ) {}
 
   /** `GET /api/links/:id/ai`. */
@@ -147,7 +150,8 @@ export class LinkAiService {
    * suggestions are dismissed. Plain SQL, so `updated_at` stays (AI's write was not an edit either).
    */
   async undo(userId: string, linkId: string, part: AiAppliedPart): Promise<LinkResponse> {
-    return this.prisma.$transaction(async (tx) => {
+    let vectorFlagged = false;
+    const response = await this.prisma.$transaction(async (tx) => {
       // Lock order: `folders:` before `tags:` (ADR 0033).
       await this.folders.lockTree(tx, userId);
       const link = await tx.link.findFirst({
@@ -194,6 +198,7 @@ export class LinkAiService {
             DELETE FROM link_tags AS lt USING tags AS t
             WHERE lt.tag_id = t.id AND lt.link_id = ${linkId}::uuid
               AND t.user_id = ${userId}::uuid AND lower(t.name) = ANY(${names}::text[])`;
+          vectorFlagged = (await markEmbeddingsStale(tx, userId, { linkIds: [linkId] })) > 0;
           await tx.linkSuggestion.updateMany({
             where: { userId, id: { in: rows.map((row) => row.id) } },
             data: { state: SUGGESTION_ROW_STATE.Dismissed },
@@ -206,5 +211,8 @@ export class LinkAiService {
       });
       return toLinkResponse(row);
     });
+    // The tags are part of the embedded text (AI-3): rebuild the vector after the response.
+    if (vectorFlagged) await this.embed.kick(userId);
+    return response;
   }
 }

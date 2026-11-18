@@ -140,6 +140,27 @@ describe('demo library, limits and expiry', () => {
       expect(body.pendingJobs).toBe(0);
     });
 
+    it('starts with search by meaning ready: a mock vector per seed link (AI-3)', async () => {
+      const demo = await signInDemo(t.app, t.baseUrl);
+      const res = await asUser(t.app, demo).get(AI_ENDPOINT.Settings).expect(200);
+      const body = res.body as AiSettingsResponse;
+      expect(body.settings.meaningSearch).toBe(true);
+      expect(body.search).toEqual({
+        state: 'ready',
+        ready: DEMO_SEED.links.length,
+        total: DEMO_SEED.links.length,
+      });
+      const rows = await t.db.prisma.linkEmbedding.findMany({ where: { userId: demo.userId } });
+      expect(rows).toHaveLength(DEMO_SEED.links.length);
+      expect(rows.every((row) => row.model === 'mock-embed-1' && !row.stale)).toBe(true);
+      // The embed pass finds nothing to do: the seed texts are exactly what it would build.
+      const meaning = await asUser(t.app, demo)
+        .get(AI_ENDPOINT.MeaningSearch)
+        .query({ q: 'warm jackets for winter' })
+        .expect(200);
+      expect((meaning.body as { status: { state: string } }).status.state).toBe('ready');
+    });
+
     it('seeds AI summaries (source ai, status done) as in seed.json (#391)', async () => {
       const demo = await signInDemo(t.app, t.baseUrl);
       const res = await asUser(t.app, demo).get(`${LINKS}?limit=100`).expect(200);

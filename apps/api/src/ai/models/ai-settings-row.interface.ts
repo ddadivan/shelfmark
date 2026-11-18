@@ -6,10 +6,12 @@ export interface AiSettingsRow {
   summaries: boolean;
   includeNotes: boolean;
   summaryLanguage: string;
+  meaningSearch: boolean;
   enabledAt: Date | null;
   introSeenAt: Date | null;
   backfillState: string;
   backfillTotal: number;
   backfillDone: number;
   backfillUsed: number;
+  embedFailedAt: Date | null;
 }

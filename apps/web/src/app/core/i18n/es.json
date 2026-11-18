@@ -619,6 +619,10 @@
       "off": {
         "term": "Desactivarla:",
         "text": "desactiva una función o toda la IA en Ajustes › IA; las solicitudes se detienen al instante. «Eliminar datos de IA» allí borra todos los resúmenes y sugerencias de la IA."
+      },
+      "meaning": {
+        "term": "Búsqueda por significado:",
+        "text": "mientras está activada (Ajustes › IA), el título, el resumen y los nombres de etiquetas de cada enlace, tu nota solo con «Incluir mis notas», y las palabras que buscas se envían a Voyage AI, nuestro segundo encargado del tratamiento, que los convierte en vectores de números. Nunca la dirección, tus carpetas ni datos de otras personas. Los vectores se guardan con tus enlaces y se eliminan con ellos o con «Eliminar datos de IA»; tu búsqueda no se guarda. Voyage AI by MongoDB (EE. UU.) elimina cada solicitud justo después de procesarla (retención cero) y no la usa para entrenar."
       }
     },
     "retention": {
@@ -2958,6 +2962,10 @@
         "title": "Conecta tu asistente",
         "text": "Con Pro, Claude y otros asistentes MCP pueden buscar y leer tus enlaces con un token personal. Solo lectura, y puedes revocarlo cuando quieras."
       },
+      "aiSearch": {
+        "title": "Búsqueda por significado",
+        "text": "La búsqueda encuentra enlaces que coinciden con lo que quieres decir, no solo con tus palabras, y explica por qué coincide cada uno. «Editar enlace» muestra enlaces relacionados de tu estantería, y «Lado a lado» puede ofrecer sus carpetas."
+      },
       "extensionInStore": {
         "text": "La extensión de Shelfmark ya está en Chrome Web Store: instálala desde el aviso de tu estantería o desde Ajustes › Biblioteca."
       },
@@ -3057,7 +3065,7 @@
       "data": {
         "title": "Tus datos de IA",
         "label": "Eliminar datos de IA",
-        "hint": "Quita todos los resúmenes y sugerencias de la IA. Tus cambios, etiquetas y carpetas se quedan.",
+        "hint": "Elimina todos los resúmenes y sugerencias de la IA y desactiva la búsqueda por significado. Tus cambios, etiquetas y carpetas se mantienen.",
         "action": "Eliminar datos de IA"
       },
       "privacy": {
@@ -3069,7 +3077,14 @@
       "failed": "No se pudieron guardar los ajustes de IA",
       "failedDetail": "El cambio se ha deshecho. Inténtalo de nuevo.",
       "loadFailed": "No se pudieron cargar los ajustes de IA.",
-      "retry": "Reintentar"
+      "retry": "Reintentar",
+      "meaning": {
+        "title": "Búsqueda por significado",
+        "text": "Encuentra enlaces por su tema, no solo por sus palabras, y muestra enlaces relacionados. Envía a Voyage AI el título, las etiquetas y el resumen de cada enlace (también tu nota, con «Incluir mis notas») y lo que buscas.",
+        "ready": "Lista",
+        "progress": "{{ready}} de {{total}} enlaces listos",
+        "quota": "En pausa hasta el {{date}}: límite del mes alcanzado"
+      }
     },
     "backfill": {
       "title": "Procesar enlaces existentes",
@@ -3091,7 +3106,7 @@
     "deleteData": {
       "confirm": {
         "title": "¿Eliminar los datos de IA?",
-        "message": "Se quitan todos los resúmenes y sugerencias de la IA. Tus cambios, etiquetas y carpetas se quedan. No se puede deshacer.",
+        "message": "Se eliminan todos los resúmenes y sugerencias de la IA y se desactiva la búsqueda por significado. Tus cambios, etiquetas y carpetas se mantienen. No se puede deshacer.",
         "confirm": "Eliminar datos de IA",
         "cancel": "Cancelar",
         "close": "Cerrar"
@@ -3124,7 +3139,11 @@
       "policy": "Leer la política de privacidad",
       "failed": "No se pudo activar la IA. Inténtalo de nuevo.",
       "notNow": "Ahora no",
-      "turnOn": "Activar la IA"
+      "turnOn": "Activar la IA",
+      "meaning": {
+        "title": "Encuentra enlaces por significado",
+        "text": "La búsqueda y los enlaces relacionados también tienen en cuenta el tema de un enlace. Para ello, los títulos, etiquetas, resúmenes y tu búsqueda van a Voyage AI. Se desactiva por separado en Ajustes › IA."
+      }
     },
     "suggest": {
       "label": "Sugerido",
@@ -3345,6 +3364,19 @@
       },
       "undone": "Orden deshecho",
       "undoFailed": "No se pudo deshacer el orden"
+    },
+    "search": {
+      "related": "Relacionados por significado",
+      "noWordMatches": "Ningún enlace con estas palabras",
+      "why": "Cerca de: {{reasons}}",
+      "fromSummary": "Cerca de: {{reasons}} (del resumen)",
+      "preparing": "La búsqueda por significado se está preparando: {{ready}} de {{total}} enlaces. La búsqueda por palabras funciona como siempre."
+    },
+    "related": {
+      "title": "Relacionados en tu estantería",
+      "why": "Cerca de: {{reasons}}",
+      "show": "Mostrar relacionados",
+      "folders": "Carpetas relacionadas"
     }
   }
 }

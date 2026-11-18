@@ -8,12 +8,14 @@ const ROW = {
   summaries: false,
   includeNotes: true,
   summaryLanguage: 'fr',
+  meaningSearch: false,
   enabledAt: new Date('2026-11-01T00:00:00Z'),
   introSeenAt: new Date('2026-11-01T00:00:00Z'),
   backfillState: 'running',
   backfillTotal: 10,
   backfillDone: 4,
   backfillUsed: 4,
+  embedFailedAt: null,
 };
 
 describe('toStoredAiSettings', () => {
@@ -26,6 +28,7 @@ describe('toStoredAiSettings', () => {
       backfillTotal: 0,
       backfillDone: 0,
       backfillUsed: 0,
+      embedFailedAt: null,
     });
     expect(AI_SETTINGS_DEFAULT.enabled).toBe(false);
   });
@@ -39,6 +42,7 @@ describe('toStoredAiSettings', () => {
         summaries: false,
         includeNotes: true,
         summaryLanguage: 'fr',
+        meaningSearch: false,
       },
       enabledAt: ROW.enabledAt,
       introSeenAt: ROW.introSeenAt,
@@ -46,6 +50,7 @@ describe('toStoredAiSettings', () => {
       backfillTotal: 10,
       backfillDone: 4,
       backfillUsed: 4,
+      embedFailedAt: null,
     });
   });
 

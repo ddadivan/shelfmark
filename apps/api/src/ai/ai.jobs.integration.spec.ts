@@ -68,7 +68,8 @@ describe('AI link jobs', () => {
   const turnOn = (settings: object = {}, agent: TestAgent = a) =>
     agent
       .patch(AI_ENDPOINT.Settings)
-      .send({ enabled: true, ...settings })
+      // Search by meaning has its own specs (ai.embeddings.integration.spec.ts).
+      .send({ enabled: true, meaningSearch: false, ...settings })
       .expect(200);
   const folder = async (name: string, agent: TestAgent = a): Promise<string> =>
     ((await agent.post('/api/folders').send({ name }).expect(201)).body as FolderResponse).id;

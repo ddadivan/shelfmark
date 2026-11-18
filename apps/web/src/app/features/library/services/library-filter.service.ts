@@ -85,6 +85,8 @@ export class LibraryFilterService {
   );
   /** `?split` as the URL has it (`undefined` when absent): read by `SplitViewService`. */
   readonly splitParam = computed(() => this.inputs().split?.());
+  /** `?related` as the URL has it: the link of "Show related" (AI-3), read by `SplitRelatedService`. */
+  readonly relatedParam = computed(() => this.inputs().related?.());
   readonly linkKind = computed(() => parseLinkKind(this.inputs().kind()));
   readonly searching = computed(() => this.query() !== '');
   readonly filtered = computed(

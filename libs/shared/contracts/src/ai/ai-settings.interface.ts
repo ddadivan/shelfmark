@@ -15,4 +15,10 @@ export interface AiSettings {
   includeNotes: boolean;
   /** Default `app`. */
   summaryLanguage: AiSummaryLanguage;
+  /**
+   * Search by meaning and related links (AI-3): title, tag names, summary (and the note with
+   * `includeNotes`) and search text go to the embedding provider. On for settings created from AI-3
+   * on, off for rows that existed before.
+   */
+  meaningSearch: boolean;
 }

@@ -72,6 +72,7 @@ import { FolderCoverComponent } from './components/folder-cover/folder-cover.com
 import { FolderTileComponent } from './components/folder-tile/folder-tile.component';
 import { ExtensionBannerComponent } from './components/extension-banner/extension-banner.component';
 import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
+import { SplitRelatedService } from './services/split-related.service';
 import { SplitViewService } from './services/split-view.service';
 import { TidyEntryComponent } from '../ai/components/tidy-entry/tidy-entry.component';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
@@ -158,6 +159,8 @@ export default class LibraryPage {
   /** From 80em: the "Side by side" button and the right half (#386). */
   protected readonly wide = inject(ViewportService).wide;
   protected readonly splitView = inject(SplitViewService);
+  /** "Show related" in the card and row menus (AI-3). */
+  protected readonly splitRelated = inject(SplitRelatedService);
   protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
   protected readonly folderChips = inject(FolderChipsService);
   /** Cards and rows name their folder in mixed feeds, not in a folder's own feed or Unsorted (#418). */
@@ -200,6 +203,8 @@ export default class LibraryPage {
   readonly kind = input<unknown>();
   /** From the query (`?split=<folder id>`): the right half of the side-by-side view. */
   readonly split = input<unknown>();
+  /** From the query (`?related=<link id>`): "Show related" fills the split picker (AI-3). */
+  readonly related = input<unknown>();
 
   protected readonly emptyIllustration = this.filters.emptyIllustration;
   protected readonly UI_VIEW = UI_VIEW;
@@ -226,6 +231,7 @@ export default class LibraryPage {
       sort: this.sort,
       kind: this.kind,
       split: this.split,
+      related: this.related,
     });
     effect(() => {
       const opener = this.splitOpener();

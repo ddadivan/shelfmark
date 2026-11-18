@@ -14,6 +14,7 @@ import {
   type LinkResponse,
   deriveLinkKind,
 } from '@shelfmark/contracts';
+import { AiEmbedService } from '../ai/embeddings/ai-embed.service';
 import { AiJobsService } from '../ai/jobs/ai-jobs.service';
 import type { AiRequestContext } from '../ai/models/ai-request-context.interface';
 import { hasPrismaCode } from '../common/prisma/has-prisma-code';
@@ -48,6 +49,7 @@ export class LinksBatchService {
     private readonly tags: TagsService,
     private readonly rules: RulesService,
     private readonly aiJobs: AiJobsService,
+    private readonly aiEmbed: AiEmbedService,
   ) {}
 
   /**
@@ -106,6 +108,8 @@ export class LinksBatchService {
         return { response: { links, errors }, created: fresh.length > 0 };
       });
       this.aiJobs.start(userId, aiJobIds);
+      // Search by meaning: links without a job are embedded now, the others after their jobs.
+      if (outcome.created && aiJobIds.length === 0) await this.aiEmbed.kick(userId);
       return outcome;
     } catch (error) {
       if (hasPrismaCode(error, PRISMA_ERROR_CODE.UniqueViolation)) {

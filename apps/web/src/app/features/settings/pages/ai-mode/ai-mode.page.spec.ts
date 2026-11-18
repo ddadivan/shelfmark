@@ -8,6 +8,7 @@ import {
   AI_TIER,
   type AiSettingsResponse,
   type UpdateAiSettingsRequest,
+  AI_SEARCH_STATE,
 } from '@shelfmark/contracts';
 import { ToastService } from '@shelfmark/ui';
 import { of, throwError } from 'rxjs';
@@ -37,6 +38,7 @@ const RESPONSE: AiSettingsResponse = {
     done: 0,
     estimatedMinutes: null,
   },
+  search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
 };
 
 async function setup(part: string, fail = false) {

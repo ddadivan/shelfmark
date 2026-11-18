@@ -84,11 +84,14 @@ describe('PrivacyPage', () => {
       'Who processes it:',
       'What is sent:',
       'How long it is kept:',
+      'Search by meaning:',
       'What we count:',
       'Turning it off:',
     ]);
     expect(element.textContent).toContain('Anthropic PBC (USA), as our processor');
     expect(element.textContent).toContain('deletes the request within 30 days');
+    expect(element.textContent).toContain('sent to Voyage AI, our second processor');
+    expect(element.textContent).toContain('your search text is not stored');
     expect(element.textContent).toContain('to train AI models');
   });
 

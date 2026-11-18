@@ -3,8 +3,11 @@ import { AI_CONFIG } from '../models/ai-config.token';
 import { AI_PROVIDER_NAME } from '../models/ai-provider-name.const';
 import { REAL_AI_PROVIDER_FACTORY } from '../models/real-ai-provider-factory.token';
 import { MockAiProvider } from './mock-ai.provider';
+import { MockEmbeddingProvider } from './mock-embedding.provider';
+import { createVoyageEmbeddingProvider } from './voyage-embedding.provider';
 import type { AiConfig } from '../models/ai-config.interface';
 import type { AiProvider } from '../models/ai-provider.interface';
+import type { EmbeddingProvider } from '../models/embedding-provider.interface';
 import type { RealAiProviderFactory } from '../models/real-ai-provider-factory.type';
 
 /**
@@ -17,6 +20,8 @@ import type { RealAiProviderFactory } from '../models/real-ai-provider-factory.t
 export class AiProviderRegistry {
   private readonly mock = new MockAiProvider();
   private real: AiProvider | null = null;
+  private readonly mockEmbeddings = new MockEmbeddingProvider();
+  private realEmbeddings: EmbeddingProvider | null = null;
 
   constructor(
     @Inject(AI_CONFIG) private readonly config: AiConfig,
@@ -27,6 +32,16 @@ export class AiProviderRegistry {
     if (!this.config.useRealProvider || user.isDemo) return this.mock;
     this.real ??= this.createReal(this.config);
     return this.real;
+  }
+
+  /**
+   * The embedding provider for a user (ADR 0052 point 1): Voyage only when `useRealEmbeddings`
+   * (key, production, not a preview, not forced to mock) and not a demo user; else the mock.
+   */
+  embeddingsFor(user: { isDemo: boolean }): EmbeddingProvider {
+    if (!this.config.useRealEmbeddings || user.isDemo) return this.mockEmbeddings;
+    this.realEmbeddings ??= createVoyageEmbeddingProvider(this.config);
+    return this.realEmbeddings;
   }
 
   /**

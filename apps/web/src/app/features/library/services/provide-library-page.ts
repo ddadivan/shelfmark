@@ -6,6 +6,7 @@ import { LibraryFilterService } from './library-filter.service';
 import { LibraryHeadService } from './library-head.service';
 import { LibrarySelectionService } from './library-selection.service';
 import { SplitFeedStore } from './split-feed.store';
+import { SplitRelatedService } from './split-related.service';
 import { SplitViewService } from './split-view.service';
 
 /**
@@ -21,6 +22,7 @@ export function provideLibraryPage(): Provider[] {
     LibraryBulkService,
     LibraryDragService,
     SplitViewService,
+    SplitRelatedService,
     SplitFeedStore,
   ];
 }

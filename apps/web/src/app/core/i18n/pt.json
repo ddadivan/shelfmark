@@ -619,6 +619,10 @@
       "off": {
         "term": "Como desligar:",
         "text": "desligue um recurso ou a IA inteira em Configurações › IA; as solicitações param na hora. \"Excluir dados de IA\" ali remove todos os resumos e sugestões da IA."
+      },
+      "meaning": {
+        "term": "Busca por significado:",
+        "text": "enquanto estiver ativada (Configurações › IA), o título, o resumo e os nomes das tags de cada link, sua nota só com “Incluir minhas notas”, e as palavras que você busca são enviados à Voyage AI, nosso segundo operador, que os transforma em vetores de números. Nunca o endereço, suas pastas ou dados de outras pessoas. Os vetores ficam guardados com seus links e são excluídos com eles ou com “Excluir dados de IA”; sua busca não é guardada. A Voyage AI by MongoDB (EUA) exclui cada solicitação logo após processá-la (retenção zero) e não a usa para treinamento."
       }
     },
     "retention": {
@@ -2958,6 +2962,10 @@
         "title": "Conecte seu assistente",
         "text": "No Pro, o Claude e outros assistentes MCP podem pesquisar e ler seus links com um token pessoal. Somente leitura, e você pode revogá-lo quando quiser."
       },
+      "aiSearch": {
+        "title": "Busca por significado",
+        "text": "A busca encontra links que correspondem ao que você quer dizer, não só às suas palavras, e diz por que cada um corresponde. “Editar link” mostra links relacionados na sua estante, e “Lado a lado” pode sugerir as pastas deles."
+      },
       "extensionInStore": {
         "text": "A extensão do Shelfmark está na Chrome Web Store: instale-a pelo aviso da sua estante ou em Configurações › Biblioteca."
       },
@@ -3057,7 +3065,7 @@
       "data": {
         "title": "Seus dados de IA",
         "label": "Excluir dados de IA",
-        "hint": "Remove todos os resumos e sugestões feitos pela IA. Suas edições, tags e pastas ficam.",
+        "hint": "Remove todos os resumos e sugestões da IA e desativa a busca por significado. Suas edições, tags e pastas continuam.",
         "action": "Excluir dados de IA"
       },
       "privacy": {
@@ -3069,7 +3077,14 @@
       "failed": "Não foi possível salvar as configurações de IA",
       "failedDetail": "A alteração foi desfeita. Tente de novo.",
       "loadFailed": "Não foi possível carregar as configurações de IA.",
-      "retry": "Tentar de novo"
+      "retry": "Tentar de novo",
+      "meaning": {
+        "title": "Busca por significado",
+        "text": "Encontra links pelo assunto, não só pelas palavras, e mostra links relacionados. Envia à Voyage AI o título, as tags e o resumo de cada link (sua nota também, com “Incluir minhas notas”) e o que você busca.",
+        "ready": "Pronta",
+        "progress": "{{ready}} de {{total}} links prontos",
+        "quota": "Pausada até {{date}}: limite do mês atingido"
+      }
     },
     "backfill": {
       "title": "Processar links existentes",
@@ -3091,7 +3106,7 @@
     "deleteData": {
       "confirm": {
         "title": "Excluir dados de IA?",
-        "message": "Todos os resumos e sugestões feitos pela IA são removidos. Suas edições, tags e pastas ficam. Não dá para desfazer.",
+        "message": "Todos os resumos e sugestões da IA são removidos, e a busca por significado é desativada. Suas edições, tags e pastas continuam. Não dá para desfazer.",
         "confirm": "Excluir dados de IA",
         "cancel": "Cancelar",
         "close": "Fechar"
@@ -3124,7 +3139,11 @@
       "policy": "Ler a política de privacidade",
       "failed": "Não foi possível ligar a IA. Tente de novo.",
       "notNow": "Agora não",
-      "turnOn": "Ligar a IA"
+      "turnOn": "Ligar a IA",
+      "meaning": {
+        "title": "Encontra links pelo significado",
+        "text": "A busca e os links relacionados também consideram o assunto de um link. Para isso, títulos, tags, resumos e o que você busca vão para a Voyage AI. Desative separadamente em Configurações › IA."
+      }
     },
     "suggest": {
       "label": "Sugerido",
@@ -3345,6 +3364,19 @@
       },
       "undone": "Organização desfeita",
       "undoFailed": "Não foi possível desfazer a organização"
+    },
+    "search": {
+      "related": "Relacionados pelo significado",
+      "noWordMatches": "Nenhum link com essas palavras",
+      "why": "Perto de: {{reasons}}",
+      "fromSummary": "Perto de: {{reasons}} (do resumo)",
+      "preparing": "A busca por significado está se preparando: {{ready}} de {{total}} links. A busca por palavras funciona como sempre."
+    },
+    "related": {
+      "title": "Relacionados na sua estante",
+      "why": "Perto de: {{reasons}}",
+      "show": "Mostrar relacionados",
+      "folders": "Pastas relacionadas"
     }
   }
 }

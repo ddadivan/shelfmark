@@ -8,6 +8,7 @@ import {
   AI_TIER,
   type AiSettingsResponse,
   type UpdateAiSettingsRequest,
+  AI_SEARCH_STATE,
 } from '@shelfmark/contracts';
 import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { UiButtonHarness } from '@shelfmark/ui/testing';
@@ -44,6 +45,7 @@ function response(patch: Partial<AiSettingsResponse> = {}): AiSettingsResponse {
       done: 0,
       estimatedMinutes: 60,
     },
+    search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
     ...patch,
   };
 }
@@ -121,6 +123,24 @@ function mainSwitch(root: HTMLElement): HTMLButtonElement {
   );
   if (!found) {
     throw new Error('No main switch');
+  }
+  return found;
+}
+
+function meaningSwitch(root: HTMLElement): HTMLButtonElement {
+  const found = root.querySelector<HTMLButtonElement>(
+    'button[role="switch"][aria-label="Search by meaning"]',
+  );
+  if (!found) {
+    throw new Error('No Search by meaning switch');
+  }
+  return found;
+}
+
+function meaningRow(root: HTMLElement): Element {
+  const found = meaningSwitch(root).closest('ui-settings-row');
+  if (!found) {
+    throw new Error('No Search by meaning row');
   }
   return found;
 }
@@ -229,6 +249,45 @@ describe('AiSettingsPage', () => {
       title: 'Couldn’t save your AI settings',
     });
     expect(radio(root, 'Tags', 'Suggest').checked).toBe(true);
+  });
+
+  it('saves Search by meaning at once and says how many links are ready, without axe violations', async () => {
+    const { root, api, settle } = await setup({
+      initial: response({
+        ...ON,
+        search: { state: AI_SEARCH_STATE.Processing, ready: 840, total: 1000 },
+      }),
+    });
+    const row = meaningRow(root);
+    expect(row.textContent).toContain('Voyage AI');
+    expect(row.textContent).toContain('840 of 1,000 links ready');
+    expect(await axeViolations(root)).toEqual([]);
+
+    meaningSwitch(root).click();
+    await settle();
+    expect(api.updateSettings).toHaveBeenLastCalledWith({ meaningSearch: false });
+    expect(meaningSwitch(root).getAttribute('aria-checked')).toBe('false');
+    expect(meaningRow(root).textContent).not.toContain('links ready');
+  });
+
+  it('says Ready, or paused until the reset day at the limit', async () => {
+    const ready = await setup({ initial: response(ON) });
+    expect(meaningRow(ready.root).textContent).toContain('Ready');
+    TestBed.resetTestingModule();
+    const quota = await setup({
+      initial: response({ ...ON, search: { state: AI_SEARCH_STATE.Quota, ready: 10, total: 10 } }),
+    });
+    expect(meaningRow(quota.root).textContent).toMatch(/Paused until .*2026: this month’s limit/);
+  });
+
+  it('puts Search by meaning back with a toast when saving fails', async () => {
+    const { root, toasts, settle } = await setup({ initial: response(ON), failUpdate: true });
+
+    meaningSwitch(root).click();
+    await settle();
+    await vi.waitFor(() => expect(toasts).toHaveLength(1));
+    await settle();
+    await vi.waitFor(() => expect(meaningSwitch(root).getAttribute('aria-checked')).toBe('true'));
   });
 
   it('shows the usage with its reset date, the limit and the provider line', async () => {
