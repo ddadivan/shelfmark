@@ -2864,6 +2864,9 @@
       },
       "emojiPickerTabs": {
         "text": "Il selettore di emoji è largo quanto il suo campo e le schede delle categorie non sembrano più emoji da scegliere."
+      },
+      "extensionInStore": {
+        "text": "L’estensione di Shelfmark è sul Chrome Web Store: installala dal banner del tuo scaffale o da Impostazioni › Libreria."
       }
     },
     "sections": {

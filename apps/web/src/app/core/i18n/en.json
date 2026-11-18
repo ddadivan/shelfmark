@@ -2804,6 +2804,9 @@
       },
       "emojiPickerTabs": {
         "text": "The emoji picker is as wide as its field, and its category tabs no longer look like emoji to pick."
+      },
+      "extensionInStore": {
+        "text": "The Shelfmark browser extension is in the Chrome Web Store: install it from the banner on your shelf or from Settings › Library."
       }
     },
     "sections": {
