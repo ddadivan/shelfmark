@@ -142,6 +142,20 @@
   margin-inline-start: rem(24px);
 }
 
+// The sidebar footer at the bottom of the card (#335): "What's new" and "Send feedback", then Trash
+// under a divider.
+.boot__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-block-start: auto;
+}
+
+.boot__divider {
+  display: block;
+  border-block-start: 1px solid var(--border);
+}
+
 .boot__content {
   display: flex;
   flex: 1;
@@ -241,6 +255,30 @@
   // Touch: the controls above the feed have 44px targets, 4px more room than with a mouse.
   @include coarse {
     margin-block-end: rem(76px);
+  }
+}
+
+// The extension banner of the library (#455, #490): the real one has one fixed height (188px,
+// extension-banner.component.scss) and sits 16px under the count line, where the saved views would
+// start; they and the 16px gaps around them (the count's 72px, 76px on touch) follow under it.
+// Drawn when `public/boot-skeleton.js` expects the banner (`html[data-boot-extension]`) and on the
+// demo start page when the app offers it (`.boot__extension--shown`).
+.boot__extension {
+  display: none;
+  block-size: rem(188px);
+  margin-block: calc(var(--space-4) - #{rem(72px)}) rem(72px);
+  background: var(--accent-bg);
+  border-radius: var(--radius-lg);
+
+  @include coarse {
+    margin-block: calc(var(--space-4) - #{rem(76px)}) rem(76px);
+  }
+}
+
+:root[data-boot-extension] .boot__extension,
+.boot__extension--shown {
+  @include desktop {
+    display: block;
   }
 }
 

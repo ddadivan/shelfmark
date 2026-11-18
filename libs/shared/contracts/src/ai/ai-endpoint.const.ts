@@ -1,4 +1,4 @@
-/** AI routes (#389–#391, ADR 0048). `:id` is a job, suggestion or link id as named. */
+/** AI routes (#389–#391, ADR 0049). `:id` is a job, suggestion or link id as named. */
 export const AI_ENDPOINT = {
   /** `GET` the settings with usage, entitlements and status; `PATCH` to change them. */
   Settings: '/api/ai/settings',
@@ -14,6 +14,14 @@ export const AI_ENDPOINT = {
   Tick: '/api/ai/tick',
   /** `DELETE` every AI summary and suggestion of the user; user edits stay. */
   Data: '/api/ai/data',
+  /** `GET` the Tidy review list: links in Unsorted with suggestions (AI-2). */
+  Tidy: '/api/ai/tidy',
+  /** `GET` how many links Tidy would list. */
+  TidyCount: '/api/ai/tidy/count',
+  /** `POST` applies the selected suggestions of one run. */
+  TidyApply: '/api/ai/tidy/apply',
+  /** `POST` reverts a run with the `undo` payload of its apply response. */
+  TidyUndo: '/api/ai/tidy/undo',
   /** `GET` the AI state of one link (summary, suggestions, auto-applied marks). */
   LinkAi: '/api/links/:id/ai',
   /** `POST` asks for a new summary (counts against the monthly limit). */

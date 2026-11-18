@@ -1,4 +1,4 @@
-/** Limits of the Anthropic provider (ADR 0048: the model call gets 15 s, one attempt per invocation). */
+/** Limits of the Anthropic provider (ADR 0049: the model call gets 15 s, one attempt per invocation). */
 export const ANTHROPIC_LIMIT = {
   /** Pinned API host: the SDK would otherwise follow an `ANTHROPIC_BASE_URL` environment variable. */
   BaseUrl: 'https://api.anthropic.com',

@@ -31,6 +31,17 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
     ],
   },
   {
+    version: '2.1.1',
+    date: '2026-11-18',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'extensionInStore',
+        textKey: 'changelog.items.extensionInStore.text',
+      },
+    ],
+  },
+  {
     version: '2.1.0',
     date: '2026-11-17',
     items: [

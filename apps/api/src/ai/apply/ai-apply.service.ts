@@ -29,7 +29,7 @@ type Tx = Prisma.TransactionClient;
 const AUTO_SOURCES: readonly string[] = [AI_JOB_SOURCE.Save, AI_JOB_SOURCE.Draft];
 
 /**
- * Writes job results (ADR 0048). Every write happens in one transaction with the lock order
+ * Writes job results (ADR 0049). Every write happens in one transaction with the lock order
  * `folders:` → the job row (`FOR UPDATE`) → `tags:`, and only while the job is still `running`: a job
  * AI was turned off for (skipped) or that another claim settled is discarded. Rules: the summary
  * never replaces the user's (`summary_source = 'user'`); suggestions are the user's own tags and live

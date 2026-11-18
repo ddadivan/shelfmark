@@ -6,12 +6,12 @@ const betterAuthPath = {
   message: 'Use @CurrentUser() and @AllowAnonymous() from src/common/auth instead (ADR 0029).',
 };
 
-// ADR 0048 point 10: the provider SDK makes its own HTTPS calls to a fixed host, so it is confined to
+// ADR 0049 point 10: the provider SDK makes its own HTTPS calls to a fixed host, so it is confined to
 // one file (and the spec that proves no real client is built in tests).
 const anthropicPath = {
   name: '@anthropic-ai/sdk',
   message:
-    'Only src/ai/providers/anthropic-ai.provider.ts may import the provider SDK (ADR 0048); every other outbound call goes through SafeFetcherService.',
+    'Only src/ai/providers/anthropic-ai.provider.ts may import the provider SDK (ADR 0049); every other outbound call goes through SafeFetcherService.',
 };
 
 const anthropicAllowedFiles = [

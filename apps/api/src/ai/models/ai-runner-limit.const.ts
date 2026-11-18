@@ -1,5 +1,5 @@
 /**
- * Limits of the link job runner (ADR 0048). A claim holds a 60 s lease, which must outlast the page
+ * Limits of the link job runner (ADR 0049). A claim holds a 60 s lease, which must outlast the page
  * read (`EXCERPT_FETCH_LIMITS.totalTimeoutMs`), the model call (`ANTHROPIC_LIMIT.TimeoutMs`) and
  * `LeaseMarginMs` for the database work around them (`runner/ai-runner-limit.spec.ts` checks it), so a live
  * run never loses its job to a second claim; a provider outage retries
