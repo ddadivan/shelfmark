@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { Logger } from '@nestjs/common';
 import { ASK_LIMIT } from '@shelfmark/contracts';
 import { ASK_SYSTEM_PROMPT } from '../prompt/ask-system-prompt.const';
 import { buildAskUserPrompt } from '../prompt/build-ask-prompt';
@@ -81,7 +82,9 @@ function askParamsFor(input: AskInput): StreamParams {
     max_tokens: ANTHROPIC_LIMIT.AskMaxTokens,
     system: [{ type: 'text', text: ASK_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: buildAskUserPrompt(input) }],
-    thinking: { type: 'disabled' },
+    // Sonnet 5.5 rejects `disabled` with a 400; `between_tools` is its "no thinking before the
+    // answer" (no tools here, so nothing comes back as thinking). Allowed at effort `high` or below.
+    thinking: { type: 'between_tools' },
     output_config: { effort: AI_EFFORT.Ask },
   };
 }
@@ -113,10 +116,18 @@ function outcomeOfMessage(message: Message): LinkJobOutcome {
  * 429, 5xx, timeouts and network failures (no HTTP status) are worth another attempt; a rejected
  * key or request (other 4xx) is not. Nothing of the error is kept: it can echo request data.
  */
-function outcomeOfError(error: unknown): LinkJobOutcome {
+const ASK_LOG = new Logger('AnthropicAsk');
+
+/** The HTTP status of a provider error, `undefined` for a network failure or timeout. */
+function statusOf(error: unknown): number | undefined {
   const status =
     typeof error === 'object' && error !== null && 'status' in error ? error.status : undefined;
-  if (typeof status !== 'number') return { type: 'error', retryable: true };
+  return typeof status === 'number' ? status : undefined;
+}
+
+function outcomeOfError(error: unknown): LinkJobOutcome {
+  const status = statusOf(error);
+  if (status === undefined) return { type: 'error', retryable: true };
   const retryable =
     status >= 500 || (ANTHROPIC_LIMIT.RetryableStatuses as readonly number[]).includes(status);
   return { type: 'error', retryable };
@@ -194,6 +205,9 @@ export class AnthropicAiProvider implements AiProvider {
     } catch (error) {
       finished = true;
       const outcome = outcomeOfError(error);
+      // The HTTP status only (never the message: it can echo request data), so a rejected request
+      // is visible in the logs instead of a silent "unavailable".
+      ASK_LOG.warn(`Ask provider error: status ${statusOf(error) ?? 'none'}`);
       yield { type: 'error', retryable: outcome.type === 'error' && outcome.retryable };
     } finally {
       if (!finished) stream?.abort();
