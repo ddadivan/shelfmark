@@ -129,7 +129,7 @@ Changed: `GET` / `PATCH /api/ai/settings` (`meaningSearch`, `search`); `POST /ap
 
 Deviations from this plan and from the backend and web reports, as built on `feat/392-ai-search`:
 
-- **No embed job rows.** As decided (ADR 0051 point 4): the pass works on the derived set; `ai_jobs.kind` keeps `link` only, and readiness is a count.
+- **No embed job rows.** As decided (ADR 0052 point 4): the pass works on the derived set; `ai_jobs.kind` keeps `link` only, and readiness is a count.
 - **Partial HNSW index.** The index is `WHERE model <> ''` (always true) so Prisma's drift check ignores it; every KNN query repeats the predicate (`HNSW_INDEX_PREDICATE`) so the planner may use it. The KNN runs the index scan alone in a materialized CTE ordered by distance, then removes trashed links; it over-fetches by the user's trashed links with a vector (at most `KnnFetchMax` = 200 rows), so they never shrink the 40-row result.
 - **CI image.** The migration check runs on `pgvector/pgvector:0.8.7-pg17`, pinned by digest (PGlite runs the same pgvector 0.8.7).
 - **Voyage request fields unverified.** `output_dimension`, `output_dtype` and `truncation` follow the plan; the agent proxy blocked Voyage's API reference, so the author checks them against the current docs before the first production call (the provider narrows the answer either way: one 1,024-number finite vector per input, else a failure).

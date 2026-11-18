@@ -10,6 +10,6 @@ export interface AiConfig {
   useRealProvider: boolean;
   /** The Voyage embeddings key, or `null`. Never log, echo or return it. */
   voyageApiKey: string | null;
-  /** Same rule as `useRealProvider`, for the Voyage key (ADR 0051 point 1). */
+  /** Same rule as `useRealProvider`, for the Voyage key (ADR 0052 point 1). */
   useRealEmbeddings: boolean;
 }

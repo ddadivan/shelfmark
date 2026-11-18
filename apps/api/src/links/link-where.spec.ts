@@ -61,4 +61,19 @@ describe('buildLinkWhere', () => {
       },
     ]);
   });
+
+  it('leaves the note out of the search when searchNotes is false', () => {
+    const where = buildLinkWhere(USER, { q: 'word' }, { searchNotes: false });
+    expect(where.AND).toEqual([
+      {
+        OR: [
+          { title: { contains: 'word', mode: 'insensitive' } },
+          { url: { contains: 'word', mode: 'insensitive' } },
+        ],
+      },
+    ]);
+    expect(buildLinkWhere(USER, { q: 'word' }, { searchNotes: true })).toEqual(
+      buildLinkWhere(USER, { q: 'word' }),
+    );
+  });
 });

@@ -1,5 +1,5 @@
 /**
- * Embedding limits shared by every provider (ADR 0051): the column is `halfvec(1024)`, a request
+ * Embedding limits shared by every provider (ADR 0052): the column is `halfvec(1024)`, a request
  * holds at most `BatchMax` texts.
  */
 export const EMBEDDING_LIMIT = {

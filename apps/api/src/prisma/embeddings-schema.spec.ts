@@ -12,7 +12,7 @@ function unit(hot: number): string {
   return `[${Array.from({ length: 1024 }, (_, i) => (i === hot ? 1 : 0)).join(',')}]`;
 }
 
-describe('link embeddings schema (AI-3, ADR 0051)', () => {
+describe('link embeddings schema (AI-3, ADR 0052)', () => {
   let database: TestDatabase;
 
   beforeAll(async () => {

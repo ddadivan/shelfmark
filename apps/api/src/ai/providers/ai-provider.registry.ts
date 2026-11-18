@@ -35,7 +35,7 @@ export class AiProviderRegistry {
   }
 
   /**
-   * The embedding provider for a user (ADR 0051 point 1): Voyage only when `useRealEmbeddings`
+   * The embedding provider for a user (ADR 0052 point 1): Voyage only when `useRealEmbeddings`
    * (key, production, not a preview, not forced to mock) and not a demo user; else the mock.
    */
   embeddingsFor(user: { isDemo: boolean }): EmbeddingProvider {

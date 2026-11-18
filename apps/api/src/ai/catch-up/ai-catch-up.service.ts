@@ -21,7 +21,7 @@ import { AiEmbedService } from '../embeddings/ai-embed.service';
  * (pending past 30 s or a lease that expired; drafts not yet attached are left to their dialog),
  * advance the backfill. The sweep also fails jobs whose attempts are used up and deletes unattached
  * drafts older than a day. Both fail backfill chunks orphaned by a dead instance and end with the
- * embed pass (search by meaning, ADR 0051). Logs carry counts only.
+ * embed pass (search by meaning, ADR 0052). Logs carry counts only.
  */
 @Injectable()
 export class AiCatchUpService {

@@ -9,7 +9,7 @@ export interface LinkFilter {
   favorite?: boolean;
   /** Normalized tag names; a link must have all of them. */
   tag?: readonly string[];
-  /** Free text; split into words, every word must match the title, note or URL. */
+  /** Free text; split into words, every word must match the title, note or URL (`buildLinkWhere` can leave the note out). */
   q?: string;
   /** Only links of this kind (ADR 0038). */
   kind?: LinkKind;

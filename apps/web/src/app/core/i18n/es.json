@@ -187,6 +187,37 @@
       "text": "Un clic en la barra de herramientas o Alt+Mayús+S. El título, tus reglas de carpetas y las carpetas recientes ya están rellenados: casi todas las páginas solo piden un clic más.",
       "browsers": "Para Chrome, Edge, Brave y Arc. Instálala desde tu estantería al iniciar sesión.",
       "alt": "La extensión de Shelfmark: Guardar en Shelfmark con el título de la página, la carpeta Ropa según una regla, etiquetas y una nota"
+    },
+    "ai": {
+      "badge": "IA opcional",
+      "title": "Ayuda para ordenar, cuando la quieras",
+      "text": "Activa la IA y cada enlace nuevo llega con etiquetas, una carpeta y un resumen de dos líneas sugeridos. Nada se mueve hasta que lo toques.",
+      "points": {
+        "suggest": {
+          "title": "Sugerencias que tú aceptas",
+          "text": "Etiquetas y carpetas de las que ya tienes, con un toque."
+        },
+        "meaning": {
+          "title": "Encuéntralo por su tema",
+          "text": "«Esa charla sobre signals» encuentra el vídeo, aunque no tenga esas palabras."
+        },
+        "ask": {
+          "title": "Pregunta a tu estantería",
+          "text": "Una pregunta con tus palabras, una respuesta de tus enlaces con fuentes."
+        }
+      },
+      "note": "Desactivada hasta que la actives. Tus enlaces nunca se usan para entrenar modelos de IA.",
+      "privacy": "Cómo funciona la IA en Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore en la práctica",
+        "newTag": "gestión de estado",
+        "query": "charla sobre signals y rendimiento",
+        "related": "Relacionados por significado",
+        "result": "Detección de cambios sin zonas, explicada",
+        "why": "Cerca de: renderizado más rápido",
+        "recipe": "El mejor ramen entre semana",
+        "summary": "Un ramen en 30 minutos con caldo comprado, huevos blandos y encurtidos rápidos."
+      }
     }
   },
   "links": {
@@ -2927,9 +2958,9 @@
         "title": "Resúmenes breves",
         "text": "Con la IA activada, los enlaces reciben un resumen de una o dos líneas en su tarjeta. Si lo editas, es tuyo."
       },
-      "aiTidy": {
-        "title": "Ordenar «Sin carpeta» con IA",
-        "text": "Revisa en una sola página las sugerencias de IA para todo lo que está en «Sin carpeta» y aplícalas con un solo Deshacer. Si guardas varias veces enlaces de un sitio en la misma carpeta, Shelfmark te ofrece una regla."
+      "mcp": {
+        "title": "Conecta tu asistente",
+        "text": "Con Pro, Claude y otros asistentes MCP pueden buscar y leer tus enlaces con un token personal. Solo lectura, y puedes revocarlo cuando quieras."
       },
       "aiSearch": {
         "title": "Búsqueda por significado",
@@ -2937,6 +2968,10 @@
       },
       "extensionInStore": {
         "text": "La extensión de Shelfmark ya está en Chrome Web Store: instálala desde el aviso de tu estantería o desde Ajustes › Biblioteca."
+      },
+      "aiTidy": {
+        "title": "Ordenar «Sin carpeta» con IA",
+        "text": "Revisa en una sola página las sugerencias de IA para todo lo que está en «Sin carpeta» y aplícalas con un solo Deshacer. Si guardas varias veces enlaces de un sitio en la misma carpeta, Shelfmark te ofrece una regla."
       }
     },
     "sections": {
@@ -3167,6 +3202,101 @@
         "other": "{{count}} etiquetas añadidas por la IA"
       },
       "undo": "Deshacer"
+    },
+    "connect": {
+      "title": "Conecta tu asistente",
+      "lead": "Deja que Claude u otro asistente compatible con MCP busque y lea tus enlaces. Solo lectura: no puede cambiar ni borrar nada.",
+      "pro": "Conectar un asistente es parte de Pro. Los tokens que ya tienes siguen en la lista y puedes revocarlos.",
+      "demo": "La demo no puede conectar un asistente. Inicia sesión con tu propia cuenta para probarlo.",
+      "loadFailed": "No se pudieron cargar tus tokens.",
+      "retry": "Reintentar",
+      "copy": "Copiar",
+      "copyFailed": "No se pudo copiar. Selecciona el texto y cópialo con el teclado.",
+      "address": {
+        "title": "1. Dirección del servidor",
+        "copyLabel": "Copiar la dirección del servidor",
+        "copied": "Dirección del servidor copiada"
+      },
+      "token": {
+        "title": "2. Token personal",
+        "hint": "Un token por asistente, para poder revocar cada uno por separado.",
+        "limit": "Tienes {{max}} tokens. Revoca uno para crear otro.",
+        "create": "Crear token"
+      },
+      "list": {
+        "title": "Conectados",
+        "last4": "Termina en {{last4}}",
+        "used": "Último uso {{when}}, llamadas esta semana: {{calls}}",
+        "never": "Creado el {{date}}, nunca usado",
+        "notes": "Con notas",
+        "revoke": "Revocar",
+        "revokeLabel": "Revocar {{name}}"
+      },
+      "empty": {
+        "title": "Ningún asistente conectado",
+        "text": "Crea un token, pégalo con la dirección del servidor en los ajustes MCP de tu asistente y pregúntale por tus enlaces."
+      },
+      "revoke": {
+        "title": "¿Revocar {{name}}?",
+        "message": "Deja de funcionar al instante: el asistente que lo usa ya no puede leer tus enlaces.",
+        "confirm": "Revocar",
+        "cancel": "Cancelar",
+        "done": "Token revocado",
+        "failed": "No se pudo revocar el token. Inténtalo de nuevo."
+      },
+      "create": {
+        "title": "Crear un token",
+        "close": "Cerrar",
+        "name": "Nombre",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Ponle un nombre al token.",
+        "tooLong": "Como máximo {{max}} caracteres.",
+        "notes": "Incluir mis notas",
+        "notesHint": "Tu asistente también verá las notas de tus enlaces. Para cambiarlo más adelante, crea un token nuevo.",
+        "cancel": "Cancelar",
+        "action": "Crear token",
+        "saving": "Creando…",
+        "error": {
+          "limit": "Tienes {{max}} tokens. Revoca uno para crear otro.",
+          "notAvailable": "Conectar un asistente es parte de Pro.",
+          "save": "No se pudo crear el token. Inténtalo de nuevo."
+        }
+      },
+      "secret": {
+        "title": "Token para {{name}}",
+        "label": "Token personal (se muestra una vez)",
+        "copyLabel": "Copiar el token",
+        "copied": "Token copiado",
+        "warning": "Cópialo ahora: no lo volverás a ver. Cualquiera con este token puede leer tus enlaces hasta que lo revoques.",
+        "fallback": "No se pudo copiar. El token está seleccionado arriba: pulsa Ctrl+C o ⌘C para copiarlo.",
+        "field": "Token personal",
+        "done": "Listo"
+      },
+      "howTo": {
+        "toggle": "Cómo conectar: Claude, Cursor, VS Code",
+        "intro": "Sustituye <token> por tu token personal.",
+        "copyLabel": "Copiar la configuración de {{client}}",
+        "copied": "Configuración de {{client}} copiada",
+        "oauth": "Los asistentes que solo se conectan mediante un inicio de sesión (OAuth), como los conectores web, aún no pueden conectarse.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Ejecuta esto en un terminal:"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Añade esto a claude_desktop_config.json (Ajustes › Desarrollador › Editar configuración) y reinicia Claude Desktop. Requiere Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Añade esto a ~/.cursor/mcp.json:"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Añade esto a .vscode/mcp.json en tu proyecto:"
+          }
+        }
+      }
     },
     "tidy": {
       "entry": "Ordenar con sugerencias",

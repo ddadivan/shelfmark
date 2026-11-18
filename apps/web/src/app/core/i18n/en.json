@@ -187,6 +187,37 @@
       "text": "One click on the toolbar or Alt+Shift+S. The title, your folder rules and recent folders are already filled in, so most pages take one more click.",
       "browsers": "For Chrome, Edge, Brave and Arc. Install it from your shelf after you sign in.",
       "alt": "The Shelfmark extension: Save to Shelfmark with the page title, the folder Clothes from a rule, tags and a note"
+    },
+    "ai": {
+      "badge": "Optional AI",
+      "title": "Help with sorting, when you want it",
+      "text": "Turn on AI and each new link arrives with suggested tags, a folder and a two-line summary. Nothing moves until you tap it.",
+      "points": {
+        "suggest": {
+          "title": "Suggestions you accept",
+          "text": "Tags and folders from the ones you already have, one tap each."
+        },
+        "meaning": {
+          "title": "Find it by what it’s about",
+          "text": "“That talk about signals” finds the video, even without those words."
+        },
+        "ask": {
+          "title": "Ask your shelf",
+          "text": "A question in your own words, an answer from your links with sources."
+        }
+      },
+      "note": "Off until you turn it on. Your links are never used to train AI models.",
+      "privacy": "How AI works in Shelfmark",
+      "demo": {
+        "video": "NgRx SignalStore in practice",
+        "newTag": "state management",
+        "query": "talk about signals and performance",
+        "related": "Related by meaning",
+        "result": "Zoneless change detection, explained",
+        "why": "Close to: faster rendering",
+        "recipe": "The best weeknight ramen",
+        "summary": "A 30-minute ramen with store-bought stock, soft eggs and quick pickles."
+      }
     }
   },
   "links": {
@@ -2866,9 +2897,9 @@
         "title": "Short summaries",
         "text": "With AI on, links get a one- or two-line summary on their card. Edit it and it's yours."
       },
-      "aiTidy": {
-        "title": "Tidy Unsorted with AI",
-        "text": "Review the AI suggestions for everything in Unsorted on one page and apply them with one Undo. File a site's links into the same folder a few times and Shelfmark offers a rule."
+      "mcp": {
+        "title": "Connect your assistant",
+        "text": "On Pro, Claude and other MCP assistants can search and read your links with a personal token. Read-only, and you can revoke it any time."
       },
       "aiSearch": {
         "title": "Search by meaning",
@@ -2876,6 +2907,10 @@
       },
       "extensionInStore": {
         "text": "The Shelfmark browser extension is in the Chrome Web Store: install it from the banner on your shelf or from Settings › Library."
+      },
+      "aiTidy": {
+        "title": "Tidy Unsorted with AI",
+        "text": "Review the AI suggestions for everything in Unsorted on one page and apply them with one Undo. File a site's links into the same folder a few times and Shelfmark offers a rule."
       }
     },
     "sections": {
@@ -3102,6 +3137,101 @@
         "other": "{{count}} tags added by AI"
       },
       "undo": "Undo"
+    },
+    "connect": {
+      "title": "Connect your assistant",
+      "lead": "Let Claude or another assistant that supports MCP search and read your links. Read-only: it can’t change or delete anything.",
+      "pro": "Connecting an assistant is part of Pro. Tokens you already have stay listed, and you can revoke them.",
+      "demo": "The demo can’t connect an assistant. Sign in with your own account to try it.",
+      "loadFailed": "Couldn’t load your tokens.",
+      "retry": "Try again",
+      "copy": "Copy",
+      "copyFailed": "Couldn’t copy. Select the text and copy it with your keyboard.",
+      "address": {
+        "title": "1. Server address",
+        "copyLabel": "Copy the server address",
+        "copied": "Server address copied"
+      },
+      "token": {
+        "title": "2. Personal token",
+        "hint": "One token per assistant, so you can revoke each on its own.",
+        "limit": "You have {{max}} tokens. Revoke one to create another.",
+        "create": "Create token"
+      },
+      "list": {
+        "title": "Connected",
+        "last4": "Ends in {{last4}}",
+        "used": "Last used {{when}}, calls this week: {{calls}}",
+        "never": "Created {{date}}, never used",
+        "notes": "Includes notes",
+        "revoke": "Revoke",
+        "revokeLabel": "Revoke {{name}}"
+      },
+      "empty": {
+        "title": "No assistants connected",
+        "text": "Create a token, paste it into your assistant’s MCP settings with the server address, and ask it about your links."
+      },
+      "revoke": {
+        "title": "Revoke {{name}}?",
+        "message": "It stops working at once: the assistant that uses it can no longer read your links.",
+        "confirm": "Revoke",
+        "cancel": "Cancel",
+        "done": "Token revoked",
+        "failed": "Couldn’t revoke the token. Try again."
+      },
+      "create": {
+        "title": "Create a token",
+        "close": "Close",
+        "name": "Name",
+        "namePlaceholder": "Claude Desktop",
+        "required": "Give the token a name.",
+        "tooLong": "Use at most {{max}} characters.",
+        "notes": "Include my notes",
+        "notesHint": "Your assistant will also see the notes on your links. To change this later, create a new token.",
+        "cancel": "Cancel",
+        "action": "Create token",
+        "saving": "Creating…",
+        "error": {
+          "limit": "You have {{max}} tokens. Revoke one to create another.",
+          "notAvailable": "Connecting an assistant is part of Pro.",
+          "save": "Couldn’t create the token. Try again."
+        }
+      },
+      "secret": {
+        "title": "Token for {{name}}",
+        "label": "Personal token (shown once)",
+        "copyLabel": "Copy the token",
+        "copied": "Token copied",
+        "warning": "Copy it now: you won’t see it again. Anyone with this token can read your links until you revoke it.",
+        "fallback": "Couldn’t copy. The token is selected above: press Ctrl+C or ⌘C to copy it.",
+        "field": "Personal token",
+        "done": "Done"
+      },
+      "howTo": {
+        "toggle": "How to connect: Claude, Cursor, VS Code",
+        "intro": "Replace <token> with your personal token.",
+        "copyLabel": "Copy the {{client}} setup",
+        "copied": "{{client}} setup copied",
+        "oauth": "Assistants that can only connect through a sign-in (OAuth), such as web-based connectors, can’t connect yet.",
+        "clients": {
+          "claudeCode": {
+            "title": "Claude Code",
+            "hint": "Run this in a terminal:"
+          },
+          "claudeDesktop": {
+            "title": "Claude Desktop",
+            "hint": "Add this to claude_desktop_config.json (Settings › Developer › Edit Config), then restart Claude Desktop. Needs Node.js."
+          },
+          "cursor": {
+            "title": "Cursor",
+            "hint": "Add this to ~/.cursor/mcp.json:"
+          },
+          "vscode": {
+            "title": "VS Code",
+            "hint": "Add this to .vscode/mcp.json in your project:"
+          }
+        }
+      }
     },
     "tidy": {
       "entry": "Tidy with suggestions",

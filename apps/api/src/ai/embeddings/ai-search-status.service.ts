@@ -10,7 +10,7 @@ import { AiUsageService } from '../usage/ai-usage.service';
 const OFF: AiSearchStatus = { state: AI_SEARCH_STATE.Off, ready: 0, total: 0 };
 
 /**
- * Readiness of search by meaning ("N of M links ready", ADR 0051): `ready` counts live links whose
+ * Readiness of search by meaning ("N of M links ready", ADR 0052): `ready` counts live links whose
  * vector is current (the user's model, not stale, built with the current note setting), `total`
  * the live links, from one grouped count on the session user. From `ReadyShareMin` on the state is
  * `ready`; below it `unavailable` after a recent provider failure, `quota` when this month's

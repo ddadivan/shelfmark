@@ -22,7 +22,7 @@ import { buildEmbeddingText, embeddingTextHash } from './build-embedding-text';
 import { toVectorLiteral } from './embedding-sql';
 
 /**
- * The embed pass (ADR 0051 point 4): no job rows; per user it works on the derived set of live links
+ * The embed pass (ADR 0052 point 4): no job rows; per user it works on the derived set of live links
  * without a current vector (none, `stale`, another model, or built with the other note setting),
  * newest first, in chunks of `AI_EMBED_LIMIT.ChunkSize`, skipping links whose link job is still
  * pending (the summary is on the way; the runner starts the pass after it). An unchanged text only

@@ -2,7 +2,7 @@ import type { EmbedOutcome } from './embed-outcome.type';
 import type { EmbeddingInputType } from './embedding-input-type.type';
 
 /**
- * The server-side seam to an embedding model (ADR 0051 point 1), separate from `AiProvider`; the web
+ * The server-side seam to an embedding model (ADR 0052 point 1), separate from `AiProvider`; the web
  * app never sees these shapes. `embed` never throws and never logs the texts, the vectors or the key.
  */
 export interface EmbeddingProvider {

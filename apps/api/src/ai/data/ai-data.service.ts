@@ -36,7 +36,7 @@ export class AiDataService {
       await tx.$executeRaw`
         UPDATE ai_settings SET backfill_state = ${AI_BACKFILL_STATE.Stopped}, backfill_cursor = NULL
         WHERE user_id = ${userId}::uuid AND backfill_state = ${AI_BACKFILL_STATE.Running}`;
-      // Search by meaning (ADR 0051): the switch turns off so the vectors are not rebuilt at once
+      // Search by meaning (ADR 0052): the switch turns off so the vectors are not rebuilt at once
       // (open question 3), then every vector goes. The order matters: the settings row lock comes
       // first, so a pass writing during the provider call either waits and finds the switch off or
       // has committed before the delete reads the table (`AiEmbedService.searchStillOn`).

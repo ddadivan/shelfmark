@@ -1,5 +1,5 @@
 /**
- * The embed pass (ADR 0051 point 4): at most `ChunkSize` links per provider call, newest first; the
+ * The embed pass (ADR 0052 point 4): at most `ChunkSize` links per provider call, newest first; the
  * per-user lease on `ai_settings` lasts `LeaseSeconds` (longer than a chunk with its 8 s call) and is
  * renewed per chunk; a kick after a save works for `KickBudgetMs`. After a failure the pass waits
  * `BackoffSeconds` by the number of failures in a row; after `NonRetryableMax` failures in a row that

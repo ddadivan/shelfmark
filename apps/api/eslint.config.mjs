@@ -19,7 +19,14 @@ const anthropicAllowedFiles = [
   'src/ai/providers/real-client.guard.spec.ts',
 ];
 
-// ADR 0051: Voyage embeddings are one POST to a pinned host with plain `fetch`, so `fetch` is confined
+// ADR 0054 point 2: the MCP SDK is a devDependency for the conformance spec only; the server is our
+// own handler, so nothing of the SDK may reach the API bundle.
+const mcpSdkPattern = {
+  group: ['@modelcontextprotocol/*', '@modelcontextprotocol/**'],
+  message:
+    'The MCP SDK is test-only (ADR 0054): import it in *.spec.ts only; the server is src/mcp/.',
+};
+// ADR 0052: Voyage embeddings are one POST to a pinned host with plain `fetch`, so `fetch` is confined
 // to that provider and the Sentry tunnel; every other outbound request goes through SafeFetcherService.
 const fetchAllowedFiles = [
   'src/ai/providers/voyage-embedding.provider.ts',
@@ -30,7 +37,7 @@ const fetchAllowedFiles = [
 // requests with `node:http` / `node:https` (types and `STATUS_CODES` stay free), and `undici` is not
 // imported at all. A separate rule name, so it stacks with the import rules below.
 const networkMessage =
-  'Outbound HTTP goes through SafeFetcherService (PROJECT.md 5.8, ADR 0049, ADR 0051).';
+  'Outbound HTTP goes through SafeFetcherService (PROJECT.md 5.8, ADR 0050, ADR 0052).';
 const networkClientNames = ['default', 'request', 'get', 'Agent', 'globalAgent'];
 const networkPaths = [
   ...['http', 'https', 'node:http', 'node:https'].map((name) => ({
@@ -53,7 +60,7 @@ export default [
         {
           name: 'fetch',
           message:
-            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0049, ADR 0051).',
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0050, ADR 0052).',
         },
       ],
       'no-restricted-properties': [
@@ -62,13 +69,13 @@ export default [
           object: 'globalThis',
           property: 'fetch',
           message:
-            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0049, ADR 0051).',
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0050, ADR 0052).',
         },
         {
           object: 'global',
           property: 'fetch',
           message:
-            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0049, ADR 0051).',
+            'Outbound HTTP goes through SafeFetcherService; only the Voyage provider and the Sentry tunnel call fetch (ADR 0050, ADR 0052).',
         },
       ],
     },
@@ -89,6 +96,20 @@ export default [
     rules: {
       'no-restricted-imports': [
         'error',
+        {
+          paths: [betterAuthPath, anthropicPath],
+          patterns: [...testingImportPatterns, mcpSdkPattern],
+        },
+      ],
+    },
+  },
+  {
+    // Specs may import the MCP SDK (the conformance spec); every other restriction stays.
+    files: ['src/**/*.spec.ts'],
+    ignores: ['src/auth/**', 'src/common/auth/**', ...anthropicAllowedFiles],
+    rules: {
+      'no-restricted-imports': [
+        'error',
         { paths: [betterAuthPath, anthropicPath], patterns: testingImportPatterns },
       ],
     },
@@ -99,7 +120,7 @@ export default [
     rules: {
       'no-restricted-imports': [
         'error',
-        { paths: [betterAuthPath], patterns: testingImportPatterns },
+        { paths: [betterAuthPath], patterns: [...testingImportPatterns, mcpSdkPattern] },
       ],
     },
   },

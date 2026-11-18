@@ -36,6 +36,12 @@ export const CHANGELOG: readonly ChangelogRelease[] = [
       },
       {
         kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'mcp',
+        titleKey: 'changelog.items.mcp.title',
+        textKey: 'changelog.items.mcp.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
         id: 'aiSearch',
         titleKey: 'changelog.items.aiSearch.title',
         textKey: 'changelog.items.aiSearch.text',

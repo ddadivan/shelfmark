@@ -29,7 +29,7 @@ vi.mock('@anthropic-ai/sdk', () => {
   return { default: Anthropic, Anthropic };
 });
 
-// ADR 0051: the Voyage embeddings provider calls `fetch` itself (no SDK to mock). Any request to its
+// ADR 0052: the Voyage embeddings provider calls `fetch` itself (no SDK to mock). Any request to its
 // host throws, and a spec that attempted one fails in `afterEach` even when the provider turned the
 // error into a retryable outcome (`real-client.guard.spec.ts` pins this).
 installVoyageFetchGuard();
