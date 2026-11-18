@@ -68,10 +68,13 @@ export class AskEntryComponent {
     this.transloco.translate('ai.ask.source', { n });
   protected readonly idPrefix = computed(() => `ask-${this.entry().id}-source`);
   protected readonly streaming = computed(() => this.entry().state === ASK_ENTRY_STATE.Streaming);
-  /** Citations whose link is gone (trashed meanwhile): rendered disabled. */
+  /**
+   * Citations whose link is gone (trashed meanwhile): rendered disabled. Only known once `done`
+   * arrived; after Stop or a broken stream every citation stays enabled.
+   */
   protected readonly disabledCites = computed(() => {
     const entry = this.entry();
-    if (entry.state !== ASK_ENTRY_STATE.Done) {
+    if (entry.state !== ASK_ENTRY_STATE.Done || !entry.sourcesKnown) {
       return [];
     }
     const known = new Set(entry.sources.map((source) => source.n));

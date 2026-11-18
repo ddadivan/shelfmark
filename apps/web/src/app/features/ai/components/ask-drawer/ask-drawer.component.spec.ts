@@ -146,6 +146,20 @@ describe('AskDrawerComponent', () => {
     expect(inbox.pending()).toBeNull();
   });
 
+  it('keeps citations enabled after Stop, when no done arrived', async () => {
+    const { fixture, loader, stream } = await setup();
+    TestBed.inject(AskInbox).put('Which ramen recipes did I save?');
+    await fixture.whenStable();
+    stream.next({ type: 'text', text: 'The weeknight ramen ' });
+    stream.next({ type: 'cite', n: 1 });
+    await fixture.whenStable();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Stop' }))).click();
+    await fixture.whenStable();
+    const answer = await loader.getHarness(UiStreamingAnswerHarness);
+    expect(await answer.isStreaming()).toBe(false);
+    expect(await answer.isCitationDisabled(0)).toBe(false);
+  });
+
   it('shows the limit line and disables the composer', async () => {
     const { fixture, stream } = await setup();
     TestBed.inject(AskInbox).put('Compare the two coats I liked');

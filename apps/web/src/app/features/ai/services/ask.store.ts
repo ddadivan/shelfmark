@@ -102,6 +102,7 @@ export const AskStore = signalStore(
           state: ASK_ENTRY_STATE.Streaming,
           segments: [],
           sources: [],
+          sourcesKnown: false,
           notFound: false,
           truncated: false,
           reason: null,

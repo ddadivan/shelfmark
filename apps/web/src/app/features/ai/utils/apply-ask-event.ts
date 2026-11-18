@@ -22,6 +22,7 @@ export function applyAskEvent(entry: AskEntry, event: AskEvent): AskEntry {
         ...entry,
         state: ASK_ENTRY_STATE.Done,
         sources: event.sources,
+        sourcesKnown: true,
         notFound: event.notFound,
         truncated: event.truncated,
       };
