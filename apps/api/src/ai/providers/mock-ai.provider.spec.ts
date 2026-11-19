@@ -105,6 +105,23 @@ describe('MockAiProvider', () => {
     expect(await kindOf('Notes')).toBeNull();
   });
 
+  it('reads the new kinds from clear words too (#537)', async () => {
+    const kindOf = async (title: string) => {
+      const outcome = await provider.runLinkJob({
+        ...input(),
+        title,
+        url: 'https://example.test/a',
+      });
+      return outcome.type === 'output' ? (outcome.output as { kind: unknown }).kind : undefined;
+    };
+    expect(await kindOf('Episode 12 of the signals podcast')).toBe('podcast');
+    expect(await kindOf('Lemon tart recipe')).toBe('recipe');
+    expect(await kindOf('Annual report pdf')).toBe('document');
+    expect(await kindOf('A tiny state library')).toBe('code');
+    expect(await kindOf('The best notes app')).toBe('app');
+    expect(await kindOf('A thread on CSS')).toBe('post');
+  });
+
   it('drafts a view from a phrase with the shared planner; ai-fail and ai-refuse fail', async () => {
     const outcome = await provider.draftView({
       phrase: 'design videos #css',

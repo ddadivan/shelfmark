@@ -385,7 +385,14 @@ export class SafeFetcherService {
         return;
       }
     } else if (!(Object.values(HTML_CONTENT_TYPES) as string[]).includes(contentType)) {
-      fail(new SafeFetchError(SAFE_FETCH_ERROR_CODE.NotHtml, 'Response is not HTML'));
+      fail(
+        new SafeFetchError(
+          SAFE_FETCH_ERROR_CODE.NotHtml,
+          'Response is not HTML',
+          undefined,
+          contentType,
+        ),
+      );
       return;
     }
     const declaredLength = Number(response.headers['content-length']);

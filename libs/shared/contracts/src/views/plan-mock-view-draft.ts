@@ -9,6 +9,10 @@ const has = (text: string, words: readonly string[]): boolean =>
 
 const VIDEO = ['video', 'watch', 'відео', 'vidéo', 'vídeo', 'talk'];
 const ARTICLE = ['article', 'read', 'стат', 'artikel', 'articol', 'artículo', 'artigo'];
+const PODCAST = ['podcast', 'подкаст', 'episode', 'épisode'];
+const RECIPE = ['recipe', 'рецепт', 'recette', 'rezept', 'receta', 'ricetta', 'receita'];
+const DOCUMENT = ['pdf', 'slides', 'документ', 'dokument'];
+const CODE = ['repo', 'github', 'library', 'бібліотек'];
 const SHOPPING = ['buy', 'shop', 'купи', 'покуп', 'acheter', 'kaufen', 'comprar', 'comprare'];
 const UNSORTED = ['unsorted', 'без папки', 'не розібран'];
 const FAVORITES = ['favorite', 'favourite', 'starred', 'улюблен', 'обран'];
@@ -29,13 +33,16 @@ export function planMockViewDraft(
   vocabulary: ViewDraftVocabulary,
 ): Record<string, unknown> {
   const text = phrase.toLowerCase();
-  const kind = has(text, VIDEO)
-    ? LINK_KIND.Video
-    : has(text, SHOPPING)
-      ? LINK_KIND.Shopping
-      : has(text, ARTICLE)
-        ? LINK_KIND.Article
-        : null;
+  const kind =
+    [
+      { kind: LINK_KIND.Video, words: VIDEO },
+      { kind: LINK_KIND.Podcast, words: PODCAST },
+      { kind: LINK_KIND.Recipe, words: RECIPE },
+      { kind: LINK_KIND.Document, words: DOCUMENT },
+      { kind: LINK_KIND.Code, words: CODE },
+      { kind: LINK_KIND.Shopping, words: SHOPPING },
+      { kind: LINK_KIND.Article, words: ARTICLE },
+    ].find((entry) => has(text, entry.words))?.kind ?? null;
   const folder =
     [...vocabulary.folders]
       .sort((a, b) => b.name.length - a.name.length)

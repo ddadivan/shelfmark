@@ -53,7 +53,7 @@ describe('Ask tool argument parsers', () => {
       message: 'savedFrom must not be after savedTo',
     });
     expect(parseSearchLinksArgs({ savedFrom: '2026-10-01', savedTo: '2026-10-31' }).ok).toBe(true);
-    expect(parseSearchLinksArgs({ kind: 'podcast' }).ok).toBe(false);
+    expect(parseSearchLinksArgs({ kind: 'sticker' }).ok).toBe(false);
     expect(parseSearchLinksArgs({ kind: 'video' }).ok).toBe(true);
     expect(parseSearchLinksArgs({ favorite: 'yes' }).ok).toBe(false);
     expect(parseSearchLinksArgs({ query: 'a\u0000b' }).ok).toBe(false);

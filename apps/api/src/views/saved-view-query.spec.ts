@@ -61,7 +61,7 @@ describe('parseStoredQuery', () => {
         scope: 'x',
         folderId: 3,
         tags: ['a', 1, 'b', 'c', 'd', 'e', 'f'],
-        kind: 'podcast',
+        kind: 'sticker',
         sort: 'url',
         order: 'up',
         q: 5,

@@ -233,7 +233,7 @@ describe('saved views API', () => {
       { name: 'x', query: { scope: 'all', tags: ['a', 'b', 'c', 'd', 'e', 'f'] } },
       { name: 'x', query: { scope: 'all', tags: ['x'.repeat(51)] } },
       { name: 'x', query: { scope: 'all', tags: 'a' } },
-      { name: 'x', query: { scope: 'all', kind: 'podcast' } },
+      { name: 'x', query: { scope: 'all', kind: 'sticker' } },
       { name: 'x', query: { scope: 'all', sort: 'url' } },
       { name: 'x', query: { scope: 'all', order: 'up' } },
       { name: 'x', query: { scope: 'all', q: 'x'.repeat(LINK_LIMIT.QueryMax + 1) } },

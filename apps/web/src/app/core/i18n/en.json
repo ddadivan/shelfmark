@@ -440,12 +440,24 @@
       "video": "Videos",
       "article": "Articles",
       "shopping": "Shopping",
+      "podcast": "Podcasts",
+      "document": "Documents",
+      "code": "Code",
+      "app": "Apps",
+      "post": "Posts",
+      "recipe": "Recipes",
       "other": "Other"
     },
     "kindOption": {
       "video": "Video",
       "article": "Article",
       "shopping": "Shopping",
+      "podcast": "Podcast",
+      "document": "Document",
+      "code": "Code",
+      "app": "App",
+      "post": "Post",
+      "recipe": "Recipe",
       "other": "Other"
     },
     "move": {
@@ -2383,7 +2395,13 @@
     "kindHint": {
       "video": "Links detected as videos",
       "article": "Links detected as articles",
-      "shopping": "Links detected as shopping"
+      "shopping": "Links detected as shopping",
+      "podcast": "Links detected as podcasts",
+      "document": "Links detected as documents",
+      "code": "Links detected as code",
+      "app": "Links detected as apps",
+      "post": "Links detected as posts",
+      "recipe": "Links detected as recipes"
     },
     "new": {
       "title": "New view",
@@ -2417,10 +2435,7 @@
       },
       "kind": {
         "label": "Type",
-        "all": "All",
-        "video": "Video",
-        "article": "Articles",
-        "shopping": "Shop"
+        "all": "All types"
       },
       "tags": {
         "label": "Tags",

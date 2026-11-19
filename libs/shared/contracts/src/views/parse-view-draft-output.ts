@@ -1,4 +1,3 @@
-import { LINK_KIND } from '../links/link-kind.const';
 import type { LinkKind } from '../links/link-kind.type';
 import { LINK_LIMIT } from '../links/link-limit.const';
 import { LINK_SORT_FIELD } from '../links/link-sort-field.const';
@@ -12,13 +11,14 @@ import { VIEW_DRAFT_FIELD } from './view-draft-field.const';
 import type { ViewDraftField } from './view-draft-field.type';
 import { VIEW_DRAFT_LIMIT } from './view-draft-limit.const';
 import { VIEW_DRAFT_SORT } from './view-draft-sort.const';
+import { VIEW_DRAFT_KINDS } from './view-draft-kinds.const';
 import type { ViewDraftVocabulary } from './view-draft-vocabulary.interface';
 import type { ViewDraft } from './view-draft.interface';
 
 const CONTROL_CHARS = /\p{Cc}/gu;
 const HTML_TAG = /<[^>]*>/g;
-/** Kinds a view row offers; `other` is not one of them, so it reads as "every kind". */
-const KINDS: readonly string[] = [LINK_KIND.Video, LINK_KIND.Article, LINK_KIND.Shopping];
+/** Kinds a phrase may ask for; `other` is not one of them, so it reads as "every kind". */
+const KINDS: readonly string[] = VIEW_DRAFT_KINDS;
 const SCOPES: readonly string[] = Object.values(SAVED_VIEW_SCOPE);
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -62,7 +62,7 @@ function findFolder(name: string, vocabulary: ViewDraftVocabulary): string | nul
  *   search words and the view starts from all links;
  * - tags only from the user's own names (as the user spelled them), at most `SAVED_VIEW_LIMIT.TagsMax`
  *   (the rest go to `dropped`); an unknown tag becomes a search word;
- * - a kind only `video`, `article` or `shopping`; a sort only one of the feed's three;
+ * - a kind only one of `VIEW_DRAFT_KINDS` (never `other`); a sort only one of the feed's three;
  * - search words as plain text, at most `LINK_LIMIT.QueryTermsMax` words (the rest go to `dropped`);
  * - a plain-text name (else the phrase) and an optional plain-text note.
  * Nothing is ever created: no tag, no folder.

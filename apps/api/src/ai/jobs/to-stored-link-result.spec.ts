@@ -29,7 +29,7 @@ describe('toStoredLinkResult', () => {
   });
 
   it('turns blank or missing fields into null', () => {
-    expect(toStoredLinkResult({ tags: [], newTag: '', summary: 5, kind: 'podcast' })).toEqual({
+    expect(toStoredLinkResult({ tags: [], newTag: '', summary: 5, kind: 'sticker' })).toEqual({
       tags: [],
       newTags: [],
       moreTags: [],

@@ -17,7 +17,6 @@ import {
   InputComponent,
   NOTICE_KIND,
   NoticeComponent,
-  SegmentedControlComponent,
   SelectComponent,
   TagInputComponent,
 } from '@shelfmark/ui';
@@ -49,7 +48,6 @@ import { NEW_VIEW_PREVIEW } from '../../models/new-view-preview.const';
     InputComponent,
     NgTemplateOutlet,
     NoticeComponent,
-    SegmentedControlComponent,
     SelectComponent,
     TagInputComponent,
     TranslocoPipe,

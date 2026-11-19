@@ -442,12 +442,24 @@
       "video": "Vídeos",
       "article": "Artigos",
       "shopping": "Compras",
+      "podcast": "Podcasts",
+      "document": "Documentos",
+      "code": "Código",
+      "app": "Apps",
+      "post": "Publicações",
+      "recipe": "Receitas",
       "other": "Outros"
     },
     "kindOption": {
       "video": "Vídeo",
       "article": "Artigo",
       "shopping": "Compra",
+      "podcast": "Podcast",
+      "document": "Documento",
+      "code": "Código",
+      "app": "App",
+      "post": "Publicação",
+      "recipe": "Receita",
       "other": "Outro"
     },
     "move": {
@@ -2444,7 +2456,13 @@
     "kindHint": {
       "video": "Links detetados como vídeos",
       "article": "Links detetados como artigos",
-      "shopping": "Links detetados como compras"
+      "shopping": "Links detetados como compras",
+      "podcast": "Links detetados como podcasts",
+      "document": "Links detetados como documentos",
+      "code": "Links detetados como código",
+      "app": "Links detetados como apps",
+      "post": "Links detetados como publicações",
+      "recipe": "Links detetados como receitas"
     },
     "new": {
       "title": "Nova visualização",
@@ -2478,10 +2496,7 @@
       },
       "kind": {
         "label": "Tipo",
-        "all": "Todos",
-        "video": "Vídeos",
-        "article": "Artigos",
-        "shopping": "Compras"
+        "all": "Todos os tipos"
       },
       "tags": {
         "label": "Tags",

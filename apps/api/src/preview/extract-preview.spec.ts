@@ -1,4 +1,5 @@
 import { extractPreview, fallbackPreview } from './extract-preview';
+import { PREVIEW_LIMITS } from './models/preview-limits.const';
 
 const PAGE = 'https://example.com/articles/one';
 
@@ -159,6 +160,88 @@ describe('extractPreview kind (ADR 0038)', () => {
       'other',
     );
     expect(fallbackPreview('https://www.etsy.com/x').kind).toBe('shopping');
+  });
+});
+
+describe('extractPreview kind from JSON-LD and the URL (#537)', () => {
+  const ld = (json: string): string => `<script type="application/ld+json">${json}</script>`;
+
+  it('reads a schema.org Recipe in the head', () => {
+    const recipe = ld('{"@context":"https://schema.org","@type":"Recipe","name":"Ramen"}');
+    expect(extractPreview(page(recipe), PAGE).kind).toBe('recipe');
+  });
+
+  it('finds the Recipe in a type array, a root array or @graph, under any prefix', () => {
+    expect(extractPreview(page(ld('{"@type":["Thing","Recipe"]}')), PAGE).kind).toBe('recipe');
+    expect(
+      extractPreview(page(ld('[{"@type":"WebSite"},{"@type":"schema:Recipe"}]')), PAGE).kind,
+    ).toBe('recipe');
+    expect(
+      extractPreview(
+        page(ld('{"@graph":[{"@type":"WebPage"},{"@type":"http://schema.org/Recipe"}]}')),
+        PAGE,
+      ).kind,
+    ).toBe('recipe');
+  });
+
+  it('lets a Recipe win over og:type article', () => {
+    const head = `<meta property="og:type" content="article">${ld('{"@type":"Recipe"}')}`;
+    expect(extractPreview(page(head), PAGE).kind).toBe('recipe');
+  });
+
+  it('ignores a Recipe nested in a property', () => {
+    const nested = ld('{"@type":"Article","mentions":{"@type":"Recipe"}}');
+    expect(extractPreview(page(nested), PAGE).kind).toBe('other');
+  });
+
+  it('skips malformed JSON-LD and other script types without failing', () => {
+    const head = [
+      ld('{"@type":"Recipe",'),
+      ld('not json at all'),
+      '<script type="application/json">{"@type":"Recipe"}</script>',
+      '<script>{"@type":"Recipe"}</script>',
+    ].join('');
+    expect(extractPreview(page(head), PAGE).kind).toBe('other');
+    expect(extractPreview(page(`${ld('{oops')}${ld('{"@type":"Recipe"}')}`), PAGE).kind).toBe(
+      'recipe',
+    );
+  });
+
+  it('skips a block over the size cap and blocks past the count cap', () => {
+    const big = ld(`{"@type":"Recipe","pad":"${'x'.repeat(PREVIEW_LIMITS.maxJsonLdChars)}"}`);
+    expect(extractPreview(page(big), PAGE).kind).toBe('other');
+    const filler = ld('{"@type":"WebSite"}').repeat(PREVIEW_LIMITS.maxJsonLdScripts);
+    expect(extractPreview(page(`${filler}${ld('{"@type":"Recipe"}')}`), PAGE).kind).toBe('other');
+  });
+
+  it('reads only a bounded number of @graph entities', () => {
+    const graph = Array.from(
+      { length: PREVIEW_LIMITS.maxJsonLdEntities + 5 },
+      () => '{"@type":"Thing"}',
+    );
+    graph.push('{"@type":"Recipe"}');
+    expect(extractPreview(page(ld(`{"@graph":[${graph.join(',')}]}`)), PAGE).kind).toBe('other');
+  });
+
+  it('uses the final URL rules and audio og:type', () => {
+    expect(
+      extractPreview(
+        page('<meta property="og:type" content="article">'),
+        'https://www.linkedin.com/posts/a-1',
+      ).kind,
+    ).toBe('post');
+    expect(
+      extractPreview(page('<meta property="og:type" content="audio.episode">'), PAGE).kind,
+    ).toBe('podcast');
+    expect(extractPreview(page(''), 'https://github.com/angular/angular').kind).toBe('code');
+  });
+});
+
+describe('fallbackPreview kind (#537)', () => {
+  it('makes a PDF response or a .pdf path a document', () => {
+    expect(fallbackPreview('https://example.com/r', 'application/pdf').kind).toBe('document');
+    expect(fallbackPreview('https://example.com/report.PDF').kind).toBe('document');
+    expect(fallbackPreview('https://example.com/r', 'image/png').kind).toBe('other');
   });
 });
 

@@ -1,4 +1,4 @@
-import { LINK_KIND, SAVED_VIEW_SCOPE, VIEW_DRAFT_SORT } from '@shelfmark/contracts';
+import { SAVED_VIEW_SCOPE, VIEW_DRAFT_KINDS, VIEW_DRAFT_SORT } from '@shelfmark/contracts';
 
 const nullable = (schema: Record<string, unknown>): Record<string, unknown> => ({
   anyOf: [schema, { type: 'null' }],
@@ -14,10 +14,7 @@ export const VIEW_DRAFT_OUTPUT_SCHEMA = {
     scope: { type: 'string', enum: Object.values(SAVED_VIEW_SCOPE) },
     folder: nullable({ type: 'string' }),
     tags: { type: 'array', items: { type: 'string' } },
-    kind: nullable({
-      type: 'string',
-      enum: [LINK_KIND.Video, LINK_KIND.Article, LINK_KIND.Shopping],
-    }),
+    kind: nullable({ type: 'string', enum: [...VIEW_DRAFT_KINDS] }),
     words: { type: 'string' },
     sort: nullable({ type: 'string', enum: Object.values(VIEW_DRAFT_SORT) }),
     name: { type: 'string' },

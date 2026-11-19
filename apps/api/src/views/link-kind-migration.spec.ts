@@ -86,6 +86,6 @@ describe(`migration ${MIGRATION}`, () => {
   });
 
   it('refuses an unknown kind', async () => {
-    await expect(db.exec(`UPDATE links SET kind = 'podcast'`)).rejects.toThrow(/links_kind_check/);
+    await expect(db.exec(`UPDATE links SET kind = 'sticker'`)).rejects.toThrow(/links_kind_check/);
   });
 });

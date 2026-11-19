@@ -113,10 +113,8 @@
         </div>
 
         <div class="nv__row">
-          <span class="nv__label" id="nv-kind-label">{{ 'views.new.kind.label' | transloco }}</span>
-          <ui-segmented-control
-            class="nv__kind"
-            ariaLabelledby="nv-kind-label"
+          <ui-select
+            [label]="'views.new.kind.label' | transloco"
             [options]="options.kindOptions()"
             [formField]="form.kind"
           />
