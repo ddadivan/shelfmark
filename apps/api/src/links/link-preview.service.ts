@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { FetchLimits } from '../fetcher/models/fetch-limits.interface';
+import { SafeFetchError } from '../fetcher/safe-fetch.error';
 import { SafeFetcherService } from '../fetcher/safe-fetcher.service';
 import { extractPreview, fallbackPreview } from '../preview/extract-preview';
 import { remainingLimits } from '../preview/youtube/remaining-limits';
@@ -34,8 +35,11 @@ export class LinkPreviewService {
     try {
       const page = await this.fetcher.fetch(url, pageLimits);
       return { preview: extractPreview(page.body, page.finalUrl), fetched: true };
-    } catch {
-      return { preview: fallbackPreview(url), fetched: false };
+    } catch (error) {
+      // A refused non-HTML response still tells its type (a PDF is a document, #537); it comes only
+      // from an address that passed the SSRF policy, so it says nothing about internal hosts.
+      const contentType = error instanceof SafeFetchError ? error.contentType : undefined;
+      return { preview: fallbackPreview(url, contentType), fetched: false };
     }
   }
 }

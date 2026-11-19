@@ -30,13 +30,20 @@ import { planMockViewDraft } from '@shelfmark/contracts';
 const VIDEO_HOSTS = ['youtube.com', 'youtu.be', 'vimeo.com'];
 
 /**
- * The mock's kind (#535): a video host or a "talk" / "video" word in the title or description reads
- * as video, "shop" / "product" as shopping, "article" / "blog" as article; otherwise unsure (`null`),
- * so most mock links keep the kind the page and host gave them.
+ * The mock's kind (#535, #537): a video host or a "talk" / "video" word in the title or description
+ * reads as video, then podcast, recipe, document, code, app and post words, "shop" / "product" as
+ * shopping, "article" / "blog" as article; otherwise unsure (`null`), so most mock links keep the
+ * kind the page and host gave them.
  */
 function mockKind(host: string, haystack: ReadonlySet<string>): string | null {
   const any = (list: readonly string[]): boolean => list.some((word) => haystack.has(word));
   if (VIDEO_HOSTS.includes(host) || any(['video', 'talk', 'webinar'])) return 'video';
+  if (any(['podcast', 'episode'])) return 'podcast';
+  if (any(['recipe', 'ingredients'])) return 'recipe';
+  if (any(['pdf', 'slides', 'whitepaper'])) return 'document';
+  if (any(['repository', 'library', 'sdk'])) return 'code';
+  if (any(['app', 'extension'])) return 'app';
+  if (any(['thread', 'tweet'])) return 'post';
   if (any(['shop', 'product', 'buy'])) return 'shopping';
   if (any(['article', 'blog', 'essay'])) return 'article';
   return null;

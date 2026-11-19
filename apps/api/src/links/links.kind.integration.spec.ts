@@ -14,6 +14,8 @@ import type { IsolationUsers } from '../../test-utils/models/isolation-users.int
 import type { TestAgent } from '../../test-utils/models/test-agent.interface';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
+import { SAFE_FETCH_ERROR_CODE } from '../fetcher/models/safe-fetch-error-code.const';
+import { SafeFetchError } from '../fetcher/safe-fetch.error';
 import { SafeFetcherService } from '../fetcher/safe-fetcher.service';
 
 const BASE = '/api/links';
@@ -92,12 +94,57 @@ describe('links API: kind (ADR 0038)', () => {
   it('rejects an unknown kind on create, update and list', async () => {
     await a
       .post(BASE)
-      .send({ url: 'https://example.test/a', title: 'A', kind: 'podcast' })
+      .send({ url: 'https://example.test/a', title: 'A', kind: 'sticker' })
       .expect(400);
     const link = await create({ url: 'https://example.test/a', title: 'A' });
-    await a.patch(`${BASE}/${link.id}`).send({ kind: 'podcast' }).expect(400);
+    await a.patch(`${BASE}/${link.id}`).send({ kind: 'sticker' }).expect(400);
     await a.patch(`${BASE}/${link.id}`).send({ kind: null }).expect(400);
-    await a.get(BASE).query({ kind: 'podcast' }).expect(400);
+    await a.get(BASE).query({ kind: 'sticker' }).expect(400);
+  });
+
+  it('create detects the kinds of #537: URL rules, a PDF response and a JSON-LD recipe', async () => {
+    expect((await create({ url: 'https://github.com/angular/angular' })).kind).toBe(LINK_KIND.Code);
+    expect((await create({ url: 'https://open.spotify.com/episode/abc' })).kind).toBe(
+      LINK_KIND.Podcast,
+    );
+    fetch.mockRejectedValueOnce(
+      new SafeFetchError(
+        SAFE_FETCH_ERROR_CODE.NotHtml,
+        'Response is not HTML',
+        undefined,
+        'application/pdf',
+      ),
+    );
+    expect((await create({ url: 'https://example.test/whitepaper' })).kind).toBe(
+      LINK_KIND.Document,
+    );
+    fetch.mockResolvedValueOnce({
+      finalUrl: 'https://food.test/ramen',
+      status: 200,
+      contentType: 'text/html',
+      body: '<html><head><title>Ramen</title><meta property="og:type" content="article"><script type="application/ld+json">{"@type":"Recipe"}</script></head></html>',
+    });
+    expect((await create({ url: 'https://food.test/ramen' })).kind).toBe(LINK_KIND.Recipe);
+  });
+
+  it('accepts every new kind from the user and filters by it', async () => {
+    const link = await create({ url: 'https://example.test/a', title: 'A' });
+    for (const kind of Object.values(LINK_KIND)) {
+      const body = (await a.patch(`${BASE}/${link.id}`).send({ kind }).expect(200))
+        .body as LinkResponse;
+      expect(body.kind).toBe(kind);
+    }
+    await a.patch(`${BASE}/${link.id}`).send({ kind: LINK_KIND.App }).expect(200);
+    const apps = (await a.get(BASE).query({ kind: LINK_KIND.App }).expect(200))
+      .body as ListLinksResponse;
+    expect(apps.items.map((item) => item.id)).toEqual([link.id]);
+    const moved = (
+      await a
+        .patch(`${BASE}/${link.id}`)
+        .send({ url: 'https://x.com/someone/status/123' })
+        .expect(200)
+    ).body as LinkResponse;
+    expect(moved.kind).toBe(LINK_KIND.Post);
   });
 
   it('update: a new URL recomputes the kind from the host unless the request sets one', async () => {

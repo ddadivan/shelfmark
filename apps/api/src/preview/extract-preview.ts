@@ -7,8 +7,10 @@ import type { HtmlNode } from './models/html-node.type';
 import { HTML_ATTRIBUTE } from './models/html-attribute.const';
 import { HTML_NODE_NAME } from './models/html-node-name.const';
 import { HTML_TAG } from './models/html-tag.const';
+import { JSON_LD_CONTENT_TYPE } from './models/json-ld-content-type.const';
 import { META_KEY } from './models/meta-key.const';
 import { PREVIEW_LIMITS } from './models/preview-limits.const';
+import { jsonLdTypes } from './json-ld-types';
 
 const FAVICON_PATH = '/favicon.ico';
 const ICON_REL = 'icon';
@@ -34,6 +36,7 @@ function collect(root: HtmlNode): CollectedTags {
     icons: [],
     appleIcons: [],
     baseHref: null,
+    jsonLd: [],
   };
   const stack: HtmlNode[] = [root];
   while (stack.length > 0) {
@@ -55,6 +58,11 @@ function collect(root: HtmlNode): CollectedTags {
         }
       } else if (node.tagName === HTML_TAG.Title && tags.title === null) {
         tags.title = textOf(node);
+      } else if (node.tagName === HTML_TAG.Script) {
+        const type = attribute(node, HTML_ATTRIBUTE.Type)?.trim().toLowerCase();
+        if (type === JSON_LD_CONTENT_TYPE && tags.jsonLd.length < PREVIEW_LIMITS.maxJsonLdScripts) {
+          tags.jsonLd.push(textOf(node));
+        }
       } else if (node.tagName === HTML_TAG.Base) {
         tags.baseHref ??= attribute(node, HTML_ATTRIBUTE.Href) ?? null;
       } else if (node.tagName === HTML_TAG.Link) {
@@ -128,10 +136,13 @@ function originFavicon(pageUrl: string): string | null {
   return absoluteHttpUrl(FAVICON_PATH, pageUrl);
 }
 
-/** Preview for a page that could not be fetched: the URL is the title. */
-export function fallbackPreview(pageUrl: string): LinkPreview {
+/**
+ * Preview for a page that could not be fetched: the URL is the title. `contentType` is the media
+ * type of a response that was refused for not being HTML (a PDF is a `document`, #537).
+ */
+export function fallbackPreview(pageUrl: string, contentType?: string): LinkPreview {
   return {
-    kind: deriveLinkKind(pageUrl),
+    kind: deriveLinkKind(pageUrl, { contentType }),
     url: pageUrl,
     title: clean(pageUrl, PREVIEW_LIMITS.maxTitleLength) ?? pageUrl,
     description: null,
@@ -180,6 +191,9 @@ export function extractPreview(html: string, pageUrl: string): LinkPreview {
       .map((href) => absoluteHttpUrl(href, base))
       .find((href) => href !== null) ?? originFavicon(pageUrl);
 
-  const kind = deriveLinkKind(pageUrl, tags.meta.get(META_KEY.OgType));
+  const kind = deriveLinkKind(pageUrl, {
+    ogType: tags.meta.get(META_KEY.OgType),
+    schemaTypes: jsonLdTypes(tags.jsonLd),
+  });
   return { kind, url: pageUrl, title, description, imageUrl, faviconUrl };
 }

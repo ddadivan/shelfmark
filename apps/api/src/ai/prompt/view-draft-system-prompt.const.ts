@@ -1,7 +1,8 @@
-import { SAVED_VIEW_LIMIT, VIEW_DRAFT_LIMIT } from '@shelfmark/contracts';
+import { SAVED_VIEW_LIMIT, VIEW_DRAFT_KINDS, VIEW_DRAFT_LIMIT } from '@shelfmark/contracts';
 import { VIEW_DRAFT_PROMPT_BLOCK } from '../models/view-draft-prompt-block.const';
 
 const B = VIEW_DRAFT_PROMPT_BLOCK;
+const VIEW_KINDS = VIEW_DRAFT_KINDS.map((kind) => `"${kind}"`).join(', ');
 
 /**
  * The fixed instructions of a view-from-a-phrase request (#535). Identical for every call; the phrase,
@@ -17,7 +18,7 @@ What a view can filter by, and nothing else:
 - scope: "all", "unsorted" (links in no folder), "favorites" (starred links) or "folder" (one folder, named in "folder").
 - folder: the exact path or name of one folder from <${B.Folders}> when the phrase points at it, else null. Never invent a folder.
 - tags: up to ${SAVED_VIEW_LIMIT.TagsMax} tag names from <${B.Tags}> that the phrase asks for; a link must have all of them, so use few. Never invent a tag; a topic with no matching tag goes into "words".
-- kind: "video", "article" or "shopping" when the phrase asks for that type of link, else null.
+- kind: one of ${VIEW_KINDS} when the phrase asks for that type of link, else null.
 - words: a few search words matched in the title, note and address (all words must match), only when no folder or tag expresses the topic; else "".
 - sort: "newest", "oldest" or "title" when the phrase asks for an order, else null.
 

@@ -609,6 +609,31 @@ describe('AI link jobs', () => {
       expect((await link(saved.id)).kind).toBe('video');
     });
 
+    it.each([
+      ['Episode 12 of the signals podcast', 'podcast'],
+      ['Lemon tart recipe', 'recipe'],
+      ['Annual report pdf', 'document'],
+      ['A tiny state library', 'code'],
+      ['The best notes app', 'app'],
+      ['A thread on CSS', 'post'],
+    ])("sets a new kind (#537) from '%s' while the link is 'other'", async (title, kind) => {
+      await turnOn();
+      const saved = await save({ title });
+      expect(saved.kind).toBe('other');
+      await deferrer.flush();
+      expect((await link(saved.id)).kind).toBe(kind);
+    });
+
+    it('never puts a new kind over a kind the page gave or the user chose (#537)', async () => {
+      await turnOn();
+      const fromPage = await save({ title: 'Lemon tart recipe', kind: 'article' });
+      const chosen = await save({ title: 'Episode 12 of the signals podcast' });
+      await a.patch(`/api/links/${chosen.id}`).send({ kind: 'other' }).expect(200);
+      await deferrer.flush();
+      expect((await link(fromPage.id)).kind).toBe('article');
+      expect((await link(chosen.id)).kind).toBe('other');
+    });
+
     it('keeps a kind the page or the host gave', async () => {
       await turnOn();
       const saved = await save({ title: 'A conference talk on signals', kind: 'article' });
