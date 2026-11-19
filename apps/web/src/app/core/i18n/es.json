@@ -3053,6 +3053,17 @@
       },
       "aiNewTags": {
         "text": "La IA rellena una o dos etiquetas nuevas y sugiere más."
+      },
+      "askChat": {
+        "title": "“Pregunta a tus enlaces” ahora es un chat",
+        "text": "Haz preguntas de seguimiento, pregunta cuántos enlaces tienes sobre un tema y recibe los enlaces encontrados como tarjetas que puedes abrir al momento. Arrastra el borde del panel para ensancharlo.",
+        "alt": "El panel “Pregunta a tus enlaces” responde a “Find my design links” con cinco enlaces mostrados como tarjetas."
+      },
+      "toastsSmooth": {
+        "text": "Varias notificaciones se abren y se vuelven a plegar con suavidad al pasar el puntero."
+      },
+      "cardTagsFit": {
+        "text": "Una etiqueta en una tarjeta se muestra entera o pasa a “+N”, que solo lista las etiquetas que no están en la tarjeta."
       }
     },
     "sections": {

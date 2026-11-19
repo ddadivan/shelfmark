@@ -2991,6 +2991,17 @@
       },
       "aiNewTags": {
         "text": "KI trägt ein oder zwei neue Tags ein und schlägt weitere vor."
+      },
+      "askChat": {
+        "title": "„Frag deine Links“ ist jetzt ein Chat",
+        "text": "Stelle Rückfragen, frag, wie viele Links du zu einem Thema hast, und erhalte die gefundenen Links als Karten, die du sofort öffnen kannst. Zieh am Rand des Bereichs, um ihn breiter zu machen.",
+        "alt": "Der Bereich „Frag deine Links“ beantwortet „Find my design links“ mit fünf Links als Karten."
+      },
+      "toastsSmooth": {
+        "text": "Mehrere Benachrichtigungen klappen beim Zeigen sanft auf und wieder zu."
+      },
+      "cardTagsFit": {
+        "text": "Ein Tag auf einer Karte erscheint vollständig oder wandert in „+N“, das nur die Tags zeigt, die nicht auf der Karte stehen."
       }
     },
     "sections": {
