@@ -4,7 +4,6 @@ import {
   computed,
   effect,
   inject,
-  Injector,
   untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
