@@ -10,6 +10,11 @@
   min-inline-size: 0;
 }
 
+// Until the first measure decided whether the first tag fits whole (no flash of a cut tag).
+:host(.link-card-tags--measuring) {
+  visibility: hidden;
+}
+
 .link-card-tags__first {
   --ui-chip-max-inline-size: #{rem(160px)};
 
@@ -24,12 +29,22 @@
 // tag or opens the popover instead of opening the link. A plain chip (read-only, selecting) lets
 // the click through to the card.
 .link-card-tags__more,
-:host(.link-card-tags--interactive) .link-card-tags__first {
+:host(.link-card-tags--interactive) // Until the first measure decided whether the first tag fits whole (no flash of a cut tag).
+:host(.link-card-tags--measuring) {
+  visibility: hidden;
+}
+
+.link-card-tags__first {
   position: relative;
   z-index: 2;
 }
 
-:host(:not(.link-card-tags--interactive)) .link-card-tags__first {
+:host(:not(.link-card-tags--interactive)) // Until the first measure decided whether the first tag fits whole (no flash of a cut tag).
+:host(.link-card-tags--measuring) {
+  visibility: hidden;
+}
+
+.link-card-tags__first {
   pointer-events: none;
 }
 

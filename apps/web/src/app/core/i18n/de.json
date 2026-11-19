@@ -330,7 +330,8 @@
         "one": "{{count}} weiterer Tag: {{list}}",
         "other": "{{count}} weitere Tags: {{list}}"
       },
-      "allTags": "Alle Tags"
+      "allTags": "Alle Tags",
+      "otherTags": "Weitere Tags"
     },
     "item": {
       "edit": "Bearbeiten",
