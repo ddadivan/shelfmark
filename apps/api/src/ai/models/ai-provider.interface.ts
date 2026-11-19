@@ -1,6 +1,8 @@
 import type { AiProviderName } from './ai-provider-name.type';
 import type { AskRoundChunk } from './ask-round-chunk.type';
 import type { AskRoundInput } from './ask-round-input.interface';
+import type { ImportGroupNamesInput } from './import-group-names-input.interface';
+import type { ImportGroupNamesOutcome } from './import-group-names-outcome.type';
 import type { LinkBatchItem } from './link-batch-item.interface';
 import type { LinkBatchRequest } from './link-batch-request.interface';
 import type { LinkBatchStatus } from './link-batch-status.type';
@@ -35,4 +37,10 @@ export interface AiProvider {
    * throws; the output is narrowed by `parseTagSynonymsOutput`.
    */
   findTagSynonyms(input: TagSynonymsInput): Promise<TagSynonymsOutcome>;
+  /**
+   * Folder names for the topic clusters of an import (ADR 0056 decision 10), one call for all
+   * clusters: a few sample titles per cluster, keys `g1…`. Never throws; the output is narrowed by
+   * `parseImportGroupNamesOutput`.
+   */
+  nameImportGroups(input: ImportGroupNamesInput): Promise<ImportGroupNamesOutcome>;
 }

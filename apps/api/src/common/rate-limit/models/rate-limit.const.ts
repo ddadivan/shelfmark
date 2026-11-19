@@ -86,4 +86,6 @@ export const RATE_LIMIT = {
   ImportCheck: { limit: 60, ttl: MINUTE_MS },
   ImportBatch: { limit: 120, ttl: MINUTE_MS },
   ImportUndo: { limit: 10, ttl: MINUTE_MS },
+  // AI groups by topic (ADR 0056 decision 10): an embedding pass and a model call each; once per file.
+  ImportGroups: { limit: 10, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;

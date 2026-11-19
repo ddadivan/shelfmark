@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ImportAiSummaryDto } from './import-ai-summary.dto';
 import { IMPORT_SOURCE, type ImportSource, type ImportSummary } from '@shelfmark/contracts';
 
 export class ImportSummaryDto implements ImportSummary {
@@ -18,4 +19,10 @@ export class ImportSummaryDto implements ImportSummary {
   @ApiProperty() foldersCreated!: number;
   @ApiProperty() skipped!: number;
   @ApiProperty() failed!: number;
+  @ApiProperty({
+    type: ImportAiSummaryDto,
+    nullable: true,
+    description: 'The AI pass, when the import asked for one; else null',
+  })
+  ai!: ImportAiSummaryDto | null;
 }

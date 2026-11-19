@@ -28,19 +28,26 @@ import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { FinishImportDto } from './dto/finish-import.dto';
 import { ImportCheckDto } from './dto/import-check.dto';
 import { ImportCheckResponseDto } from './dto/import-check-response.dto';
+import { ImportGroupsDto } from './dto/import-groups.dto';
+import { ImportGroupsResponseDto } from './dto/import-groups-response.dto';
 import { ImportLinksDto } from './dto/import-links.dto';
 import { ImportLinksResponseDto } from './dto/import-links-response.dto';
+import { ImportSummaryDto } from './dto/import-summary.dto';
 import { ListImportsResponseDto } from './dto/list-imports-response.dto';
 import { StartImportDto } from './dto/start-import.dto';
 import { StartImportResponseDto } from './dto/start-import-response.dto';
 import { UndoImportResponseDto } from './dto/undo-import-response.dto';
+import { ImportGroupsService } from './import-groups.service';
 import { ImportsService } from './imports.service';
 
 @ApiTags('imports')
 @ApiUnauthorizedResponse({ type: ApiErrorResponseDto, description: 'No valid session' })
 @Controller('imports')
 export class ImportsController {
-  constructor(private readonly imports: ImportsService) {}
+  constructor(
+    private readonly imports: ImportsService,
+    private readonly groups: ImportGroupsService,
+  ) {}
 
   @Get()
   @ApiOperation({
@@ -62,7 +69,29 @@ export class ImportsController {
     @CurrentUser() user: AuthUser,
     @Body() body: ImportCheckDto,
   ): Promise<ImportCheckResponseDto> {
-    return this.imports.check(user.id, body.urls);
+    return this.imports.check(user.id, body.urls, user.isDemo);
+  }
+
+  @Post('groups')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.ImportGroups)
+  @ApiOperation({
+    summary: 'AI groups by topic for the links of a file (nothing is written)',
+    description:
+      'Takes one unit of the allowance for existing links per link (all or nothing; units of an earlier grouping nobody used are given back first), embeds and clusters the titles, names the groups in your language and matches them to your folders by name. A provider failure answers 503 and gives the units back. The body limit of this route is 1 MB.',
+  })
+  @ApiOkResponse({ type: ImportGroupsResponseDto })
+  @ApiBadRequestResponse({ type: ApiErrorResponseDto, description: 'Invalid body' })
+  @ApiConflictResponse({
+    type: ApiErrorResponseDto,
+    description: 'AI is off or not in your plan, or not enough of the allowance is left',
+  })
+  group(
+    @CurrentUser() user: AuthUser,
+    @Body() body: ImportGroupsDto,
+    @Headers('accept-language') acceptLanguage?: string,
+  ): Promise<ImportGroupsResponseDto> {
+    return this.groups.group(user, body, { acceptLanguage });
   }
 
   @Post()
@@ -85,6 +114,17 @@ export class ImportsController {
     @Body() body: StartImportDto,
   ): Promise<StartImportResponseDto> {
     return this.imports.start(user.id, body);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'One of your imports with its AI pass (polled while it runs)' })
+  @ApiOkResponse({ type: ImportSummaryDto })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto, description: 'Unknown or foreign import' })
+  get(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<ImportSummaryDto> {
+    return this.imports.get(user.id, id);
   }
 
   @Post(':id/links')

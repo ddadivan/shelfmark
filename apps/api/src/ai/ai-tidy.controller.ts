@@ -12,6 +12,7 @@ import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RateLimit } from '../common/rate-limit/rate-limit.decorator';
 import { TidyApplyResponseDto } from './dto/tidy-apply-response.dto';
 import { TidyApplyDto } from './dto/tidy-apply.dto';
+import { TidyCountQueryDto } from './dto/tidy-count-query.dto';
 import { TidyCountResponseDto } from './dto/tidy-count-response.dto';
 import { TidyListQueryDto } from './dto/tidy-list-query.dto';
 import { TidyListResponseDto } from './dto/tidy-list-response.dto';
@@ -34,7 +35,7 @@ export class AiTidyController {
   @ApiOkResponse({ type: TidyListResponseDto })
   @ApiBadRequestResponse({ description: 'Invalid query' })
   @ApiOperation({
-    summary: 'Links in Unsorted with suggestions to review',
+    summary: 'Links in Unsorted (or of one import) with suggestions to review',
     description:
       'Newest first, one page (after the given link of the previous page); only suggestions still worth showing (a rule decides the folder over AI). Empty while AI is off.',
   })
@@ -42,15 +43,18 @@ export class AiTidyController {
     @CurrentUser() user: AuthUser,
     @Query() query: TidyListQueryDto,
   ): Promise<TidyListResponseDto> {
-    return this.tidy.list(user.id, query.after);
+    return this.tidy.list(user.id, query.after, query.import);
   }
 
   @Get('count')
   @RateLimit(RATE_LIMIT.AiTidyRead)
   @ApiOkResponse({ type: TidyCountResponseDto })
   @ApiOperation({ summary: 'How many links Tidy would list' })
-  count(@CurrentUser() user: AuthUser): Promise<TidyCountResponseDto> {
-    return this.tidy.count(user.id);
+  count(
+    @CurrentUser() user: AuthUser,
+    @Query() query: TidyCountQueryDto,
+  ): Promise<TidyCountResponseDto> {
+    return this.tidy.count(user.id, query.import);
   }
 
   @Post('apply')

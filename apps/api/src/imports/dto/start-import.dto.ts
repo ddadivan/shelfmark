@@ -10,6 +10,7 @@ import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
+  IsBoolean,
   IsIn,
   IsOptional,
   IsString,
@@ -55,6 +56,14 @@ export class StartImportDto implements StartImportRequest {
   @MinLength(1)
   @MaxLength(FOLDER_LIMIT.NameMax)
   newFolderName?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'AI groups by topic was chosen: the links get the AI pass afterwards, against the allowance for existing links',
+  })
+  @IsOptional()
+  @IsBoolean()
+  aiPass?: boolean;
 
   @ApiProperty({
     type: [ImportFolderDto],
