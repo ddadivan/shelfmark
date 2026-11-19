@@ -2,7 +2,7 @@
 
 - Status: Proposed
 - Date: 2026-11-19
-- Source: issue #387, `docs/design/screens/Import.dc.html`, `SetImport.dc.html`, `docs/PROJECT.md` 5.5 and 5.8; builds on [0033](0033-links-search-cursor-idempotency.md) (idempotent batch create), [0036](0036-trash-soft-delete.md) (Trash) and [0027](0027-link-preview-images-under-csp.md) (lazy, SSRF-safe image capture)
+- Source: issue #387, `docs/design/screens/ImportExport.dc.html` (approved Nov 19, 2026; replaces `Import.dc.html` and `SetImport.dc.html`), `docs/PROJECT.md` 5.5 and 5.8; builds on [0033](0033-links-search-cursor-idempotency.md) (idempotent batch create), [0036](0036-trash-soft-delete.md) (Trash) and [0027](0027-link-preview-images-under-csp.md) (lazy, SSRF-safe image capture)
 
 ## Context
 
@@ -10,7 +10,8 @@
 - A bookmark file can hold thousands of links and, from Chrome, an inline base64 icon per link (tens of MB). The API runs as one Vercel Function (Hobby, 300 s default duration, `REQUEST_TIMEOUT_MS` below it), behind a global 100 kb JSON body limit.
 - The file is untrusted HTML. Nothing from it may ever be rendered as HTML (PROJECT.md 5.8).
 - Paste many (#265) already saves up to `LINK_LIMIT.BatchMax` links in one transaction with per-item idempotency keys, the per-user cap and no page fetch; the images and page titles come later through the lazy capture of ADR 0027 (the SSRF-safe fetcher).
-- The design promises a review before anything is written (counts, duplicates, target folder, keep or flatten), progress, a summary and **Undo import** that removes exactly what the import created, for 7 days.
+- The design promises a review before anything is written (counts, duplicates, target folder, the folders inside: as in the file, AI groups by topic or none), progress, a summary and **Undo import** that removes exactly what the import created, for 7 days.
+- AI work on saved links is counted: a monthly link allowance for new saves and a one-time backfill allowance for existing links (ADR 0047 point 7). An import is existing links moving in, not new saves.
 
 ## Decision
 
@@ -25,7 +26,10 @@
 5. **What an import created is recorded on the rows.** New nullable `import_id` columns on `links`, `folders` and `tags` (foreign key to `imports`, `ON DELETE SET NULL`, partial indexes). A tag gets it only when this import's batch created it (looked up under the `tags:` lock before `resolveNames`).
 6. **Undo through Trash.** `POST /api/imports/:id/undo`, within `IMPORT_LIMIT.UndoDays` (7) and once: under `folders:` then `tags:`, one shared `deleted_at` for the import's live links and folders (so Trash shows the import's top folder as one entry and restores it whole); links the user added to an import folder later move to Unsorted and the user's own subfolders move to the top level first, so nothing the import did not create goes to Trash; pins are cleared; tags the import created are deleted when no link outside this import carries them (a link restored from Trash later comes back without such a tag). `imports.undone_at` is set. `GET /api/imports` lists the user's imports of the last 7 days that are not undone (Account › Your data, "Recent imports").
 7. **Previews in the background.** Import saves never fetch a page. Imported links keep their bookmark title; favicons and preview images come through the lazy capture of ADR 0027 when the cards are shown, through `SafeFetcherService` with its rate limit, as for paste many.
-8. **Demo.** Import is allowed in a demo sandbox; the demo link cap (`DEMO_LIMIT.MaxLinks`) applies to every batch, and the review says how many fit. No separate demo path.
+8. **Room.** Import is allowed in a demo sandbox; the demo link cap (`DEMO_LIMIT.MaxLinks`) applies to every batch, as the per-user cap does elsewhere. `POST /api/imports/check` also answers `room`, how many more links fit the cap that applies to the session (demo or `LINK_LIMIT.PerUserMax`); when the links to import exceed it, the review says how many fit before anything is written. No separate demo path.
+9. **AI only when asked, against the one-time allowance.** Import batches never enqueue the per-link AI job (`skipAi` on the paste many path), so a 2,000-link file never uses the monthly link allowance; search by meaning still embeds the new links. When the user chooses "AI groups by topic" in step 2, `StartImportRequest.aiPass` marks the import, and after `finish` its links get the AI pass of "Process existing links" (ADR 0049 point 6): a backfill run scoped to the import (`ai_settings.backfill_import_id`), the same chunks, provider batches and results, counted against the backfill allowance (`ai_settings.backfill_used`). The units the grouping took (decision 10) pay for the pass first (`imports.ai_prepaid`); what the pass does not use is given back when it ends. If a "Process existing links" run is already in progress, or AI is off, or nothing is left, the pass is `skipped` and the prepaid units are given back. `ImportSummary.ai` (and `GET /api/imports/:id`, polled by the web app) reports the state and, when done, how many links got a summary and how many have open suggestions; the web app then shows a toast that opens the Tidy review limited to this import (`GET /api/ai/tidy?import=`).
+10. **AI groups by topic (step 2a).** Before anything is written, `POST /api/imports/groups` takes the titles and URLs of the links the import would send (at most `IMPORT_LIMIT.GroupLinksMax`, cut to `GroupTitleMax` / `GroupUrlMax`; a route body limit of `GroupBodyBytesMax`) and the file's folder names. It needs AI on and a backfill allowance with room for every link, and takes that many units (all or nothing; 409 otherwise). Any units of an earlier grouping that no import used are given back first, so grouping again costs nothing extra. The API embeds the texts with the embedding seam (ADR 0052; these embeddings use the units taken, not the monthly embedding counter, and are not stored), clusters them (deterministic k-means with cosine similarity; a link below the similarity floor goes to `rest`), names each cluster with the fast model in the user's language from a few sample titles and the folder hints (titles are untrusted data in the prompt and the names are validated like folder names), and matches each name to a live own folder (case- and accent-insensitive name equality, then the folder's own links' vectors when search by meaning is on) so the group is "already there" (`folderId`) or new. A provider failure gives the units back and answers 503 with `AiFailed`. The mock providers answer deterministic groups (by host and title words) so tests and the mock web build need no key. The client can rename a group, untick it (its links go to the target) or move a link between groups; it then starts the import with only the ticked new groups as folders and the ticked existing ones as `folderId` on the links.
+11. **Entry points.** Import and export open as dialogs (bottom sheets on the phone), not pages: the desktop sidebar footer row "Data & help" opens a menu with Import links, Export, What's new and Send feedback; the phone You tab has an Import / Export group; Settings › Privacy and data has one "Import and export" row. The library toolbar export (current view) stays. Recent imports with Undo live in step 1 of the import dialog. Other sources (Pocket, Raindrop.io, a Shelfmark backup) keep the source seam but are hidden until they ship.
 
 ## Consequences
 
@@ -33,6 +37,7 @@
 - A 10,000-link import is about 100 short requests; each is one transaction well inside the function limits, and a failure loses one batch at most.
 - Undo is exact even after edits: what the import created is on the rows, not in a list the client holds. Moving an imported link elsewhere does not save it from Undo; the confirmation says so.
 - Three tables gain a nullable column and a partial index; the export and every read ignore it.
+- An import never spends the monthly AI allowance; with AI groups it spends the one-time backfill allowance once (grouping plus the pass), which step 2 states before the user chooses it.
 - The other sources of #387 add a parser and translations only, unless they bring data the batch contract lacks (favorites, notes are already in it).
 
 ## Alternatives considered
@@ -40,4 +45,7 @@
 - **Upload the file and parse it on the API** — one request, but the body limit (and the 4.5 MB of older plans) needs a special parser route, a long or background job, and the server would parse untrusted HTML; progress would need polling.
 - **One request per link** — simple, but 10,000 requests, the rate limits and no transaction per batch.
 - **Undo from a client-held list of created ids** — no schema change, but lost with the tab and unbounded in size; `import_id` on the rows survives and is exact.
+- **Run the per-link AI job for imported links** — no new code, but one import could use up the monthly allowance meant for new saves.
+- **Charge the grouping and the AI pass separately** — simpler bookkeeping, but the user would pay twice for the same links.
+- **Group with the language model alone** — one call, but it would need every title in the prompt (thousands of links) and is less stable than clustering vectors; the model only names clusters.
 - **Hard delete on Undo** — faster, but every other delete in Shelfmark goes through Trash.

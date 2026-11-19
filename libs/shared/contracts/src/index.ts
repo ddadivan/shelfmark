@@ -489,3 +489,10 @@ export type { FinishImportRequest } from './imports/finish-import-request.interf
 export type { ImportSummary } from './imports/import-summary.interface';
 export type { ListImportsResponse } from './imports/list-imports-response.interface';
 export type { UndoImportResponse } from './imports/undo-import-response.interface';
+export { IMPORT_AI_STATE } from './imports/import-ai-state.const';
+export type { ImportAiState } from './imports/import-ai-state.type';
+export type { ImportAiSummary } from './imports/import-ai-summary.interface';
+export type { ImportGroupLink } from './imports/import-group-link.interface';
+export type { ImportGroupsRequest } from './imports/import-groups-request.interface';
+export type { ImportGroup } from './imports/import-group.interface';
+export type { ImportGroupsResponse } from './imports/import-groups-response.interface';

@@ -14,4 +14,10 @@ export interface StartImportRequest {
   newFolderName?: string;
   /** The file's folders to create below the target; empty to flatten. */
   folders: ImportFolder[];
+  /**
+   * The user chose "AI groups by topic": imported links get the AI pass afterwards (summaries, type,
+   * suggestions), counted against the backfill allowance and never the monthly one. Without it the
+   * import runs no AI job (ADR 0056 decision 9).
+   */
+  aiPass?: boolean;
 }
