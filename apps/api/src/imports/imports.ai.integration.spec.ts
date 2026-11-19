@@ -16,6 +16,8 @@ import {
   type TidyCountResponse,
   type TidyListResponse,
 } from '@shelfmark/contracts';
+import { AiCatchUpService } from '../ai/catch-up/ai-catch-up.service';
+import { AiTidyService } from '../ai/tidy/ai-tidy.service';
 import { AiEmbedService } from '../ai/embeddings/ai-embed.service';
 import { AiBackgroundService } from '../ai/background/ai-background.service';
 import { AI_ENV } from '../ai/models/ai-env.const';
@@ -232,7 +234,11 @@ describe('imports: no AI job, room and the AI pass (#387, ADR 0056 decisions 8-1
         backfillUsed: 4,
         backfillDone: 4,
       });
-      expect(await t.db.prisma.aiUsage.count()).toBe(0);
+      expect(
+        await t.db.prisma.aiUsage.count({
+          where: { OR: [{ links: { gt: 0 } }, { embeds: { gt: 0 } }] },
+        }),
+      ).toBe(0);
       const links = await t.db.prisma.link.findMany({ where: { importId: created.id } });
       expect(links).toHaveLength(4);
       for (const link of links) {
@@ -374,6 +380,129 @@ describe('imports: no AI job, room and the AI pass (#387, ADR 0056 decisions 8-1
         'done',
       );
       expect(await importRow(created.id)).toMatchObject({ aiState: 'done' });
+    });
+  });
+
+  describe('finish', () => {
+    it('stores the counts of the first finish only and answers 204 to repeats', async () => {
+      const created = await start(startBody());
+      await a.post(finishUrl(created.id)).send({ skipped: 3, failed: 1 }).expect(204);
+      const first = await importRow(created.id);
+      await a.post(finishUrl(created.id)).send({ skipped: 9, failed: 9 }).expect(204);
+      expect(await importRow(created.id)).toMatchObject({
+        skipped: 3,
+        failed: 1,
+        finishedAt: first.finishedAt,
+      });
+    });
+
+    it('is 404 for a foreign or unknown import, repeats included', async () => {
+      const created = await start(startBody());
+      await b.post(finishUrl(created.id)).send({ skipped: 0, failed: 0 }).expect(404);
+      await a.post(finishUrl(randomUUID())).send({ skipped: 0, failed: 0 }).expect(404);
+    });
+  });
+
+  describe('suggestions count', () => {
+    it('asks Tidy only for a pass that is done', async () => {
+      await ready();
+      const count = vi.spyOn(AiTidyService.prototype, 'count');
+      const created = await importWithPass(2);
+      expect((await summary(created.id)).ai).toMatchObject({ state: 'running', suggestions: 0 });
+      await a.get(BASE).expect(200);
+      expect(count).not.toHaveBeenCalled();
+      await t.db.prisma.import.update({
+        where: { id: created.id },
+        data: { aiState: IMPORT_AI_STATE.Done },
+      });
+      await summary(created.id);
+      expect(count).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('units nobody used (AI sweep and the grouping token)', () => {
+    const sweep = () => t.app.get(AiCatchUpService).sweep();
+    const old = (hours: number) => new Date(Date.now() - hours * 3_600_000);
+
+    it('gives back the prepaid units of an import that never finished, once its window is over', async () => {
+      await ready();
+      await group(6);
+      const created = await start(startBody({ aiPass: true }));
+      const fresh = await start(startBody());
+      await sweep();
+      // Still open: nothing happens.
+      expect(await importRow(created.id)).toMatchObject({ aiPrepaid: 6, aiState: null });
+      await t.db.prisma.import.update({ where: { id: created.id }, data: { createdAt: old(25) } });
+      await sweep();
+      expect(await importRow(created.id)).toMatchObject({ aiPrepaid: 0, aiState: 'skipped' });
+      expect(await settingsRow()).toMatchObject({ backfillUsed: 0, importAiPrepaid: 0 });
+      expect(await importRow(fresh.id)).toMatchObject({ aiState: null });
+      // A second sweep refunds nothing more.
+      await sweep();
+      expect((await settingsRow()).backfillUsed).toBe(0);
+    });
+
+    it('leaves a finished pass and a running one alone', async () => {
+      await ready();
+      await group(4);
+      const created = await importWithPass(2);
+      await t.db.prisma.import.update({ where: { id: created.id }, data: { createdAt: old(30) } });
+      const before = await importRow(created.id);
+      await sweep();
+      expect(await importRow(created.id)).toMatchObject({
+        aiState: before.aiState,
+        aiPrepaid: before.aiPrepaid,
+      });
+    });
+
+    it('gives back pending grouping units older than the window and clears the token', async () => {
+      await ready();
+      await group(6);
+      await sweep();
+      expect(await settingsRow()).toMatchObject({ backfillUsed: 6, importAiPrepaid: 6 });
+      await t.db.prisma.aiSettings.update({
+        where: { userId: users.owner.userId },
+        data: { importAiPrepaidAt: old(25) },
+      });
+      await sweep();
+      expect(await settingsRow()).toMatchObject({
+        backfillUsed: 0,
+        importAiPrepaid: 0,
+        importAiGroupingId: null,
+        importAiPrepaidAt: null,
+      });
+    });
+
+    it('only touches the units of the user they belong to', async () => {
+      await ready();
+      await group(6);
+      await t.db.prisma.aiSettings.update({
+        where: { userId: users.owner.userId },
+        data: { importAiPrepaidAt: old(25) },
+      });
+      await turnOn({}, b);
+      await t.db.prisma.aiSettings.update({
+        where: { userId: users.intruder.userId },
+        data: { backfillUsed: 5, importAiPrepaid: 5, importAiPrepaidAt: new Date() },
+      });
+      await sweep();
+      const other = await t.db.prisma.aiSettings.findUniqueOrThrow({
+        where: { userId: users.intruder.userId },
+      });
+      expect(other).toMatchObject({ backfillUsed: 5, importAiPrepaid: 5 });
+      expect(await settingsRow()).toMatchObject({ backfillUsed: 0, importAiPrepaid: 0 });
+    });
+
+    it('start clears the grouping token with the units it takes', async () => {
+      await ready();
+      await group(6);
+      expect((await settingsRow()).importAiGroupingId).not.toBeNull();
+      await start(startBody({ aiPass: true }));
+      expect(await settingsRow()).toMatchObject({
+        importAiPrepaid: 0,
+        importAiGroupingId: null,
+        importAiPrepaidAt: null,
+      });
     });
   });
 

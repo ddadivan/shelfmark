@@ -1,11 +1,14 @@
+import { randomUUID } from 'node:crypto';
 import {
   AI_ENDPOINT,
+  AI_QUOTA,
   IMPORT_ENDPOINT,
   IMPORT_ERROR_MESSAGE,
   IMPORT_LIMIT,
   type ImportGroupLink,
   type ImportGroupsResponse,
 } from '@shelfmark/contracts';
+import { usageMonth } from '../ai/usage/usage-month';
 import { AI_ENV } from '../ai/models/ai-env.const';
 import { MockEmbeddingProvider } from '../ai/providers/mock-embedding.provider';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
@@ -72,6 +75,10 @@ describe('POST /api/imports/groups (#387, ADR 0056 decision 10)', () => {
     await t.close();
   });
 
+  const ready2 = async (): Promise<void> => {
+    await turnOn(b);
+    await aiPack(users.intruder.userId);
+  };
   const turnOn = (agent: TestAgent = a) =>
     agent.patch(AI_ENDPOINT.Settings).send({ enabled: true, meaningSearch: false }).expect(200);
   const aiPack = (userId = users.owner.userId) =>
@@ -82,6 +89,10 @@ describe('POST /api/imports/groups (#387, ADR 0056 decision 10)', () => {
   };
   const settingsRow = (userId = users.owner.userId) =>
     t.db.prisma.aiSettings.findUniqueOrThrow({ where: { userId } });
+  const usageRow = async () => {
+    const rows = await t.db.prisma.aiUsage.findMany({ where: { userId: users.owner.userId } });
+    return rows[0];
+  };
   const group = async (
     links: ImportGroupLink[] = FILE,
     folderNames: string[] = [],
@@ -164,7 +175,7 @@ describe('POST /api/imports/groups (#387, ADR 0056 decision 10)', () => {
       expect(await settingsRow()).toMatchObject({ backfillUsed: 4_989 + 11, importAiPrepaid: 11 });
     });
 
-    it('charges one unit per link, never the monthly counters', async () => {
+    it('charges one unit per link and counts them against the monthly cap, not the other counters', async () => {
       await ready();
       const res = await group();
       expect(res.charged).toBe(FILE.length);
@@ -172,14 +183,114 @@ describe('POST /api/imports/groups (#387, ADR 0056 decision 10)', () => {
         backfillUsed: FILE.length,
         importAiPrepaid: FILE.length,
       });
-      expect(await t.db.prisma.aiUsage.count()).toBe(0);
+      expect(await usageRow()).toMatchObject({
+        importGroupLinks: FILE.length,
+        links: 0,
+        embeds: 0,
+      });
     });
 
-    it('gives the units of an earlier grouping back: grouping again costs nothing extra', async () => {
+    it('gives the units of an earlier grouping back: grouping again costs no extra allowance, but the monthly count stays', async () => {
       await ready();
       await group(FILE);
       await group(FILE.slice(0, 6));
       expect(await settingsRow()).toMatchObject({ backfillUsed: 6, importAiPrepaid: 6 });
+      expect((await usageRow())?.importGroupLinks).toBe(FILE.length + 6);
+    });
+
+    it('is 409 GroupsMonthly when the links do not fit the month, checked before the allowance, nothing taken', async () => {
+      await ready();
+      const cap = AI_QUOTA['ai-pack'].importGroupLinksPerMonth;
+      await group(FILE.slice(0, 6));
+      await t.db.prisma.aiUsage.update({
+        where: {
+          userId_month: { userId: users.owner.userId, month: new Date(usageMonth(new Date())) },
+        },
+        data: { importGroupLinks: cap - 10 },
+      });
+      // The allowance is short too, yet the monthly cap answers first.
+      await t.db.prisma.aiSettings.update({
+        where: { userId: users.owner.userId },
+        data: { backfillUsed: 4_999 },
+      });
+      const res = await a
+        .post(GROUPS)
+        .send({ links: FILE.slice(0, 11), folderNames: [] })
+        .expect(409);
+      expect(res.body.message).toBe(IMPORT_ERROR_MESSAGE.GroupsMonthly);
+      expect((await usageRow())?.importGroupLinks).toBe(cap - 10);
+      // The earlier units stay (the whole reservation rolled back).
+      expect(await settingsRow()).toMatchObject({ backfillUsed: 4_999, importAiPrepaid: 6 });
+      // Exactly what is left fits (the allowance has room again).
+      await t.db.prisma.aiSettings.update({
+        where: { userId: users.owner.userId },
+        data: { backfillUsed: 4_990 },
+      });
+      await group(FILE.slice(0, 10));
+      expect((await usageRow())?.importGroupLinks).toBe(cap);
+    });
+
+    it('is 409 GroupsMonthly for a file above the whole cap on a first grouping', async () => {
+      await ready();
+      // 2,000 links fit the cap; the INSERT path must not skip it when the cap is lower than the file.
+      await t.db.prisma.aiUsage.create({
+        data: {
+          userId: users.owner.userId,
+          month: new Date(usageMonth(new Date())),
+          importGroupLinks: AI_QUOTA['ai-pack'].importGroupLinksPerMonth,
+        },
+      });
+      const res = await a.post(GROUPS).send({ links: FILE, folderNames: [] }).expect(409);
+      expect(res.body.message).toBe(IMPORT_ERROR_MESSAGE.GroupsMonthly);
+    });
+
+    it('gives the monthly count back with the units on a provider failure', async () => {
+      await ready();
+      await group(FILE.slice(0, 4));
+      vi.spyOn(MockEmbeddingProvider.prototype, 'embed').mockResolvedValue({
+        ok: false,
+        retryable: true,
+      });
+      await a.post(GROUPS).send({ links: FILE, folderNames: [] }).expect(503);
+      expect((await usageRow())?.importGroupLinks).toBe(4);
+    });
+
+    it('keeps the units of a newer grouping when an older one fails late', async () => {
+      await ready();
+      const original = MockEmbeddingProvider.prototype.embed;
+      let release: () => void = () => undefined;
+      const gate = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      let entered: () => void = () => undefined;
+      const started = new Promise<void>((resolve) => {
+        entered = resolve;
+      });
+      vi.spyOn(MockEmbeddingProvider.prototype, 'embed').mockImplementationOnce(async () => {
+        entered();
+        await gate;
+        return { ok: false, retryable: true };
+      });
+      vi.spyOn(MockEmbeddingProvider.prototype, 'embed').mockImplementation(function (
+        this: MockEmbeddingProvider,
+        ...args: Parameters<typeof original>
+      ) {
+        return original.apply(this, args);
+      });
+      const first = a
+        .post(GROUPS)
+        .send({ links: FILE, folderNames: [] })
+        .then((res) => res.status);
+      await started;
+      expect(await settingsRow()).toMatchObject({ importAiPrepaid: FILE.length });
+      // The second grouping reserves while the first is still in flight and succeeds.
+      const second = await group(FILE.slice(0, 12));
+      expect(second.charged).toBe(12);
+      release();
+      expect(await first).toBe(503);
+      // The first one's late release found another token: the second keeps its units.
+      expect(await settingsRow()).toMatchObject({ backfillUsed: 12, importAiPrepaid: 12 });
+      expect((await settingsRow()).importAiGroupingId).not.toBeNull();
     });
 
     it('gives the units back and answers 503 when the naming call fails', async () => {
@@ -299,6 +410,46 @@ describe('POST /api/imports/groups (#387, ADR 0056 decision 10)', () => {
     });
   });
 
+  describe('DELETE /api/imports/groups', () => {
+    it('needs a session', async () => {
+      await anonymous(t.app).delete(GROUPS).expect(401);
+    });
+
+    it('gives the pending units back, keeps the monthly count and is idempotent', async () => {
+      await ready();
+      await group(FILE.slice(0, 6));
+      await a.delete(GROUPS).expect(204);
+      expect(await settingsRow()).toMatchObject({
+        backfillUsed: 0,
+        importAiPrepaid: 0,
+        importAiGroupingId: null,
+        importAiPrepaidAt: null,
+      });
+      expect((await usageRow())?.importGroupLinks).toBe(6);
+      await a.delete(GROUPS).expect(204);
+      expect((await settingsRow()).backfillUsed).toBe(0);
+    });
+
+    it('answers 204 without a settings row and never touches another user', async () => {
+      await ready();
+      await ready2();
+      await group(FILE.slice(0, 6));
+      await b.delete(GROUPS).expect(204);
+      expect(await settingsRow()).toMatchObject({ backfillUsed: 6, importAiPrepaid: 6 });
+    });
+
+    it('does not take back units an import already took', async () => {
+      await ready();
+      await group(FILE.slice(0, 6));
+      await a
+        .post(IMPORT_ENDPOINT.Base)
+        .send({ source: 'browser', fileName: 'b.html', folders: [], aiPass: true })
+        .expect(201);
+      await a.delete(GROUPS).expect(204);
+      expect((await settingsRow()).backfillUsed).toBe(6);
+    });
+  });
+
   describe('body limit', () => {
     const big = (links: number): ImportGroupLink[] =>
       Array.from({ length: links }, (_, i) => ({
@@ -329,6 +480,47 @@ describe('POST /api/imports/groups (#387, ADR 0056 decision 10)', () => {
         .send(check)
         .set('Content-Type', 'application/json')
         .expect(413);
+    });
+
+    it('takes a start body past 100 kb (a full folder tree) and a 150 kb one reaches validation, not a 413', async () => {
+      // The longest valid tree (500 folders, 64-character keys, 100-character names) is ~136 kb.
+      const tree = (count: number) =>
+        Array.from({ length: count }, (_, i) => ({
+          key: `${i}`.padStart(64, 'k'),
+          parentKey: i === 0 ? null : '0'.padStart(64, 'k'),
+          name: `${i}`.padStart(100, 'n'),
+        }));
+      const full = JSON.stringify({ source: 'browser', fileName: 'b.html', folders: tree(500) });
+      expect(full.length).toBeGreaterThan(100 * 1024);
+      await a
+        .post(IMPORT_ENDPOINT.Base)
+        .send(full)
+        .set('Content-Type', 'application/json')
+        .expect(201);
+      resetRateLimits(t.app);
+      const over = JSON.stringify({ source: 'browser', fileName: 'b.html', folders: tree(600) });
+      expect(over.length).toBeGreaterThan(150_000);
+      const res = await a
+        .post(IMPORT_ENDPOINT.Base)
+        .send(over)
+        .set('Content-Type', 'application/json')
+        .expect(400);
+      expect(res.body.statusCode).toBe(400);
+      // Other import routes keep the global 100 kb limit.
+      const filler = JSON.stringify({ skipped: 0, failed: 0, pad: 'x'.repeat(150_000) });
+      await a
+        .post(`${IMPORT_ENDPOINT.Base}/${randomUUID()}/finish`)
+        .send(filler)
+        .set('Content-Type', 'application/json')
+        .expect(413);
+    });
+
+    it('needs a session cookie before a start body is read', async () => {
+      await anonymous(t.app)
+        .post(IMPORT_ENDPOINT.Base)
+        .send(JSON.stringify({ source: 'browser', fileName: 'b.html', folders: [] }))
+        .set('Content-Type', 'application/json')
+        .expect(401);
     });
 
     it('refuses more than the route limit with 413 before reading it', async () => {
