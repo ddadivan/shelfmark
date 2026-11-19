@@ -45,8 +45,17 @@ async function ask(scope: Locator, question: string): Promise<void> {
   const field = scope.getByRole('textbox', { name: 'Ask about your links' });
   // The field is locked while the previous answer streams; typing before it opens races the reset.
   await expect(field).toBeEnabled();
-  await field.fill(question);
-  await field.press('Enter');
+  // The reset after the previous answer can still clear what was typed: type again until the
+  // question shows as a new entry.
+  const entries = scope.locator('app-ask-entry');
+  const before = await entries.count();
+  await expect(async () => {
+    if ((await entries.count()) === before) {
+      await field.fill(question);
+      await field.press('Enter');
+    }
+    await expect(entries).toHaveCount(before + 1, { timeout: 1000 });
+  }).toPass();
 }
 
 /** The status pill on a slow search, then a find with cards; answers the card list. */
@@ -173,6 +182,95 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
       const list = await cards.boundingBox();
       expect(Math.round(card?.width ?? 0)).toBe(Math.round(list?.width ?? -1));
       await followUps(main, cards);
+    },
+  );
+
+  test(
+    'a long question the links do not answer never scrolls sideways',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await openLibrary(page);
+      const compact = (page.viewportSize()?.width ?? 0) < COMPACT_MAX_PX;
+      let scope: Locator;
+      if (compact) {
+        await page
+          .getByRole('navigation', { name: 'Main' })
+          .getByRole('link', { name: 'Ask' })
+          .click();
+        scope = page.getByRole('main');
+      } else {
+        scope = await openPanel(page);
+      }
+      await ask(
+        scope,
+        'which of my links explain decorators and how they work in sourdough baking in detail',
+      );
+      // The button quotes the question short; the search still gets all of it.
+      await expect(
+        scope.getByRole('button', { name: 'Search “which of my links explain decorators…”' }),
+      ).toBeVisible();
+      const sideways = await scope.evaluate((root) =>
+        [root, ...root.querySelectorAll('*')]
+          .filter((element) => {
+            const style = element.ownerDocument.defaultView?.getComputedStyle(element);
+            return style?.overflowX !== 'hidden' && element.scrollWidth > element.clientWidth + 1;
+          })
+          .map((element) => element.tagName.toLowerCase()),
+      );
+      expect(sideways).toEqual([]);
+    },
+  );
+
+  test(
+    'each new question scrolls the chat so it shows at the top',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await openLibrary(page);
+      const compact = (page.viewportSize()?.width ?? 0) < COMPACT_MAX_PX;
+      let scope: Locator;
+      if (compact) {
+        await page
+          .getByRole('navigation', { name: 'Main' })
+          .getByRole('link', { name: 'Ask' })
+          .click();
+        scope = page.getByRole('main');
+      } else {
+        scope = await openPanel(page);
+      }
+      const entries = scope.locator('app-ask-entry');
+      for (const [index, question] of ['find ramen', 'find coats', 'find design'].entries()) {
+        await ask(scope, question);
+        await expect(entries).toHaveCount(index + 1);
+        await expect(scope.getByRole('list', { name: 'Links found' }).nth(index)).toBeVisible();
+      }
+      await ask(scope, 'find recipes');
+      const latest = entries.last();
+      await expect(latest).toBeInViewport();
+      // The new question starts near the top of what scrolls the chat (or the chat is at its end).
+      await expect
+        .poll(() =>
+          latest.evaluate((entry) => {
+            const view = entry.ownerDocument.defaultView;
+            let scroller = entry.parentElement;
+            while (scroller) {
+              const overflow = view?.getComputedStyle(scroller).overflowY ?? '';
+              if (
+                /auto|scroll/u.test(overflow) &&
+                scroller.scrollHeight > scroller.clientHeight + 1
+              ) {
+                break;
+              }
+              scroller = scroller.parentElement;
+            }
+            if (!scroller) return 'no scroller';
+            const atEnd = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2;
+            const offset = entry.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+            return atEnd || offset < 120
+              ? true
+              : `${scroller.className} top ${scroller.scrollTop} of ${scroller.scrollHeight - scroller.clientHeight}, offset ${Math.round(offset)}`;
+          }),
+        )
+        .toBe(true);
     },
   );
 
