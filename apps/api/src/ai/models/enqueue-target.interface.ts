@@ -3,4 +3,6 @@ export interface EnqueueTarget {
   linkId: string;
   folderSet: boolean;
   tagsSet: boolean;
+  /** The save asked for no summary (`CreateLinkRequest.summary: null`): the job leaves it out. */
+  summaryDeclined?: boolean;
 }

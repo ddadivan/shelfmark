@@ -78,9 +78,19 @@ describe('parseLinkOutput', () => {
     }
     expect(parseLinkOutput({ ...valid, newTag: 'c++' }, context)?.newTag).toBe('c++');
     expect(parseLinkOutput({ ...valid, newTag: 'Design Systems' }, context)?.newTag).toBe(
-      'Design-Systems',
+      'design-systems',
     );
     expect(parseLinkOutput({ ...valid, newTag: undefined }, context)?.newTag).toBeNull();
+  });
+
+  it('writes a new tag in lower case and keeps existing tags as the user spelled them', () => {
+    const out = parseLinkOutput({ ...valid, tags: ['css', 'Ux'], newTag: 'AI-courses' }, context);
+    expect(out?.newTag).toBe('ai-courses');
+    expect(out?.tags).toEqual(['CSS', 'ux']);
+    expect(parseLinkOutput({ ...valid, newTag: '  Course ' }, context)?.newTag).toBe('course');
+    expect(parseLinkOutput({ ...valid, newTag: 'ÉCOLE' }, context)?.newTag).toBe('école');
+    // An existing tag in another case is still not a new tag.
+    expect(parseLinkOutput({ ...valid, newTag: 'To-Read' }, context)?.newTag).toBeNull();
   });
 
   it('accepts a folder only by one of the offered keys', () => {

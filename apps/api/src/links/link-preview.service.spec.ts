@@ -1,9 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { SafeFetcherService } from '../fetcher/safe-fetcher.service';
+import { YOUTUBE_LIMIT } from '../preview/youtube/models/youtube-limit.const';
+import { YouTubeOembedService } from '../preview/youtube/youtube-oembed.service';
 import { LinkPreviewService } from './link-preview.service';
 
 describe('LinkPreviewService with the real fetcher', () => {
-  const service = new LinkPreviewService(new SafeFetcherService());
+  const fetcher = new SafeFetcherService();
+  const service = new LinkPreviewService(
+    fetcher,
+    new YouTubeOembedService(fetcher, YOUTUBE_LIMIT.OembedEndpoint),
+  );
 
   it.each([
     'http://127.0.0.1/admin',

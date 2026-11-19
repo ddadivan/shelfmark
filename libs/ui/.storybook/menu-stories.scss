@@ -44,3 +44,22 @@
 .ms-static {
   width: rem(240px);
 }
+
+// Popover stories (`ps-`): they reuse the menu panel and row above.
+.ps-foot {
+  --ui-chip-max-inline-size: #{rem(160px)};
+
+  align-items: center;
+  max-width: rem(280px);
+  padding-top: rem(160px);
+}
+
+.ps-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  max-width: rem(280px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}

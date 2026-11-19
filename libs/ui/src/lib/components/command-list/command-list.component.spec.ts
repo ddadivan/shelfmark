@@ -315,6 +315,23 @@ describe('CommandListComponent', () => {
     ]);
   });
 
+  it('resets the Aria selection once per choice, without a value feedback loop', async () => {
+    const list = fixture.debugElement.query(
+      (d) => d.componentInstance instanceof CommandListComponent,
+    ).componentInstance as CommandListComponent;
+    const handler = vi.spyOn(
+      list as unknown as { onListValue: (selected: readonly string[]) => void },
+      'onListValue',
+    );
+    options()[1].click();
+    await settle(fixture);
+    expect(host.chosen()).toEqual([{ value: 'b', background: false }]);
+    // The choice and the reset it causes; the empty reset must not reset again (stack overflow).
+    expect(handler.mock.calls.length).toBeLessThanOrEqual(2);
+    const resets = handler.mock.calls.filter(([selected]) => selected.length === 0);
+    expect(resets.length).toBeLessThanOrEqual(1);
+  });
+
   it('does not choose a disabled item and skips it with the arrows', async () => {
     host.lastDisabled.set(true);
     await settle(fixture);

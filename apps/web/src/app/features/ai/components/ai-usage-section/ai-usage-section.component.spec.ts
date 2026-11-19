@@ -1,5 +1,6 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import {
   AI_BACKFILL_STATE,
   type AiBackfillStatus,
@@ -25,7 +26,7 @@ const RUNNING: AiBackfillStatus = {
 async function setup(response: AiSettingsResponse = aiSettingsResponse()) {
   const api = fakeAiApi(response);
   TestBed.configureTestingModule({
-    providers: [provideTranslocoForTest(), { provide: AI_API, useValue: api }],
+    providers: [provideTranslocoForTest(), provideRouter([]), { provide: AI_API, useValue: api }],
   });
   await loadEnglish();
   await TestBed.inject(AiSettingsStore).load();
@@ -67,6 +68,8 @@ describe('AiUsageSectionComponent', () => {
     const { api, loader, element } = await setup(withBackfill({ eligible: 12 }));
     api.startBackfill.mockReturnValue(of(RUNNING));
     expect(element.textContent).toContain('12 links were saved before you turned AI on.');
+    // The AI intro links to this row (`/settings/ai#ai-backfill`).
+    expect(element.querySelector('#ai-backfill')?.textContent).toContain('Process existing links');
     const start = await loader.getHarness(UiButtonHarness.with({ text: 'Start' }));
     expect(await start.isDisabled()).toBe(false);
     await start.click();

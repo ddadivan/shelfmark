@@ -10,8 +10,10 @@ import {
   SettingsRowComponent,
   SettingsSectionComponent,
 } from '@shelfmark/ui';
+import { FragmentTargetDirective } from '../../../../core/layout/fragment-target.directive';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { LocaleService } from '../../../../core/i18n/locale.service';
+import { AI_BACKFILL_FRAGMENT } from '../../../settings/models/ai-backfill-fragment.const';
 import { AiSettingsActions } from '../../services/ai-settings-actions.service';
 import { AiSettingsStore } from '../../services/ai-settings.store';
 import { aiResetDate } from '../../utils/ai-reset-date';
@@ -26,6 +28,7 @@ import { aiResetDate } from '../../utils/ai-reset-date';
   imports: [
     TranslocoPipe,
     ButtonComponent,
+    FragmentTargetDirective,
     MeterComponent,
     NoticeComponent,
     SettingsRowComponent,
@@ -43,6 +46,8 @@ export class AiUsageSectionComponent {
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly AI_BACKFILL_STATE = AI_BACKFILL_STATE;
+  /** The id of the backfill row: the AI intro links to it. */
+  protected readonly AI_BACKFILL_FRAGMENT = AI_BACKFILL_FRAGMENT;
   protected readonly pluralKey = pluralKey;
 
   protected readonly used = computed(() => {

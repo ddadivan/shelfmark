@@ -379,13 +379,13 @@ describe('POST /api/ai/ask (AI-4)', () => {
       expect(await usage()).toBe(5);
     });
 
-    it('stops the AI pack at 15 a day, then at 150 a month', async () => {
+    it('stops the AI pack at 50 a day, then at 500 a month', async () => {
       await t.db.prisma.user.update({ where: { id: owner() }, data: { aiPack: true } });
       await library(owner());
       await turnOn();
       await t.db.prisma.$executeRaw`
         INSERT INTO ai_ask_usage (user_id, day, questions)
-        VALUES (${owner()}::uuid, (now() AT TIME ZONE 'UTC')::date, 15)`;
+        VALUES (${owner()}::uuid, (now() AT TIME ZONE 'UTC')::date, 50)`;
       expect(last<AskErrorEvent>((await ask('ramen')).events)).toMatchObject({
         reason: 'quota',
         allowance: { questionsLeft: 0, period: 'day' },
@@ -393,13 +393,13 @@ describe('POST /api/ai/ask (AI-4)', () => {
       await t.db.prisma.aiAskUsage.deleteMany();
       expect(last<AskMetaEvent>([(await ask('ramen')).events[0] as AskEvent])).toMatchObject({
         type: 'meta',
-        allowance: { questionsLeft: 14, period: 'day' },
+        allowance: { questionsLeft: 49, period: 'day' },
       });
       await t.db.prisma.aiAskUsage.deleteMany();
-      // 150 spread over earlier days of this month (or today when it is the first).
+      // 500 spread over earlier days of this month (or today when it is the first).
       await t.db.prisma.$executeRaw`
         INSERT INTO ai_ask_usage (user_id, day, questions)
-        VALUES (${owner()}::uuid, date_trunc('month', now() AT TIME ZONE 'UTC')::date, 150)`;
+        VALUES (${owner()}::uuid, date_trunc('month', now() AT TIME ZONE 'UTC')::date, 500)`;
       expect(last<AskErrorEvent>((await ask('ramen')).events)).toMatchObject({
         reason: 'quota',
         allowance: { questionsLeft: 0, period: 'month' },

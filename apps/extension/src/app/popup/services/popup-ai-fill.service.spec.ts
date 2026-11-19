@@ -40,7 +40,7 @@ describe('PopupAiFillService', () => {
       expect(service.on()).toBe(false);
       expect(service.buttonShown()).toBe(false);
       expect(service.line()).toBeNull();
-      await service.fill({ url: 'https://a.b/', title: 't', host: 'a.b' });
+      await service.fill({ url: 'https://a.b/', title: 't', titleFromTab: true, host: 'a.b' });
       expect(api.createAiDraft).not.toHaveBeenCalled();
     });
 
@@ -72,6 +72,22 @@ describe('PopupAiFillService', () => {
       url: 'https://www.example.com/post',
       title: 'A post',
     });
+  });
+
+  it('sends a YouTube title without the suffix', async () => {
+    const video = await setup({
+      tab: { url: 'https://youtu.be/dQw4w9WgXcQ', title: 'Rick – YouTube' },
+    });
+    await video.store.fillWithAi();
+    expect(video.api.createAiDraft.mock.calls[0]?.[0].title).toBe('Rick');
+  });
+
+  it('sends no title while the YouTube tab only says YouTube', async () => {
+    const loading = await setup({
+      tab: { url: 'https://m.youtube.com/watch?v=dQw4w9WgXcQ', title: 'YouTube' },
+    });
+    await loading.store.fillWithAi();
+    expect(loading.api.createAiDraft.mock.calls[0]?.[0]).not.toHaveProperty('title');
   });
 
   it('sends the note with "Include my notes"', async () => {

@@ -329,7 +329,8 @@
       "moreTagsLabel": {
         "one": "{{count}} weiterer Tag: {{list}}",
         "other": "{{count}} weitere Tags: {{list}}"
-      }
+      },
+      "allTags": "Alle Tags"
     },
     "item": {
       "edit": "Bearbeiten",
@@ -2962,6 +2963,30 @@
       },
       "landingHeadline": {
         "text": "Die Überschrift der Startseite passt in jeder Sprache."
+      },
+      "askAnswers": {
+        "text": "„Frag deine Links“ beantwortet wieder Fragen."
+      },
+      "youtubeTitles": {
+        "text": "YouTube-Links erhalten Videotitel und Kanal."
+      },
+      "clearedSummary": {
+        "text": "Eine in „Link hinzufügen“ geleerte Zusammenfassung bleibt nach dem Speichern leer."
+      },
+      "cardTagsWhole": {
+        "text": "Tags auf Karten werden nicht mehr abgeschnitten: der erste Tag, dann „+N“ mit allen Tags beim Darüberfahren."
+      },
+      "bulkBarFits": {
+        "text": "Die Auswahlleiste zeigt auch in schmaleren Fenstern alle Schaltflächen."
+      },
+      "aiDialogIcon": {
+        "text": "Die KI-Ankündigung zeigt ihr Symbol sofort und ohne Bildlaufleiste."
+      },
+      "searchChoice": {
+        "text": "Ein Suchergebnis auszuwählen lässt die App nicht mehr hängen."
+      },
+      "backfillProgress": {
+        "text": "„Vorhandene Links verarbeiten“ geht weiter, solange die App geöffnet ist."
       }
     },
     "sections": {
@@ -3094,6 +3119,33 @@
       "done": "Alle vorhandenen Links sind verarbeitet.",
       "startFailed": "Verarbeitung deiner Links konnte nicht gestartet werden",
       "stopFailed": "Verarbeitung konnte nicht gestoppt werden. Versuch es noch einmal."
+    },
+    "backfillOffer": {
+      "title": {
+        "one": "KI ist an. Deinen {{count}} gespeicherten Link verarbeiten?",
+        "other": "KI ist an. Deine {{count}} gespeicherten Links verarbeiten?"
+      },
+      "lead": "Früher gespeicherte Links hat die KI noch nicht gelesen. Sie schreibt kurze Zusammenfassungen, schlägt Tags und Ordner vor, und die Suche nach Bedeutung findet sie wie neue.",
+      "review": "Nichts ändert sich ohne deine Wahl: Vorschläge warten auf dich.",
+      "background": "Läuft im Hintergrund, meist ein paar Minuten. Jederzeit stoppbar.",
+      "allowance": "Zählt nicht zum Monatslimit: Dafür gibt es ein eigenes Kontingent von {{allowance}} Links.",
+      "process": {
+        "one": "{{count}} Link verarbeiten",
+        "other": "{{count}} Links verarbeiten"
+      },
+      "later": "Später",
+      "noteLead": "Doch anders entschieden? Du kannst es jederzeit starten:",
+      "notePath": "Einstellungen › KI › Vorhandene Links verarbeiten",
+      "noteTail": "Ein Hinweis erscheint auch in der Suche.",
+      "search": {
+        "text": {
+          "one": "Die KI hat {{count}} älteren Link noch nicht gelesen – die Suche findet ihn schlechter.",
+          "other": "Die KI hat {{count}} ältere Links noch nicht gelesen – die Suche findet sie schlechter."
+        },
+        "process": "Verarbeiten",
+        "started": "Verarbeitung gestartet",
+        "hide": "Ausblenden"
+      }
     },
     "deleteData": {
       "confirm": {

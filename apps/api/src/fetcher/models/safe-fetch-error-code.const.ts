@@ -9,6 +9,7 @@ export const SAFE_FETCH_ERROR_CODE = {
   TooLarge: 'too-large',
   NotHtml: 'not-html',
   NotImage: 'not-image',
+  NotJson: 'not-json',
   UnsupportedEncoding: 'unsupported-encoding',
   HttpError: 'http-error',
   NetworkError: 'network-error',

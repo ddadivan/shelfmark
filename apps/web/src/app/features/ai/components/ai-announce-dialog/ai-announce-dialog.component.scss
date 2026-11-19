@@ -9,6 +9,13 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+
+  // The entrance moves content down before it settles; clipped here, it never makes the dialog
+  // body scroll (a scrollbar flashed while it played). The box reaches into the body's 8px inline
+  // padding and gives it back, so focus rings at the sides stay whole.
+  padding-inline: var(--space-2);
+  margin-inline: calc(-1 * var(--space-2));
+  overflow: hidden;
   isolation: isolate;
 }
 
@@ -29,8 +36,8 @@
 
 .ai-announce__close {
   position: absolute;
-  inset-block-start: calc(var(--space-2) * -1);
-  inset-inline-end: calc(var(--space-2) * -1);
+  inset-block-start: 0;
+  inset-inline-end: 0;
 }
 
 .ai-announce__tile {
@@ -43,10 +50,13 @@
   background: var(--ai-fill);
   border: 1px solid var(--ai-line);
   border-radius: rem(24px);
-
-  --ui-icon-size: #{rem(44px)};
-
   animation: ai-announce-spark calc(var(--duration-slow) * 3) var(--ease-spring) both;
+}
+
+.ai-announce__spark {
+  width: rem(44px);
+  height: rem(44px);
+  fill: currentcolor;
 }
 
 .ai-announce__intro {

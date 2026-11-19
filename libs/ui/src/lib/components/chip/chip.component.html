@@ -2,14 +2,16 @@
   @if (icon(); as name) {
     <ui-icon class="ui-chip__icon" [name]="name" [size]="ICON_SIZE.Md" />
   }
-  <ng-content />
+  <span class="ui-chip__label"><ng-content /></span>
 </ng-template>
 @if (clickable()) {
   <button
+    #bodyButton
     type="button"
     class="ui-chip__body"
     uiRipple
     [disabled]="disabled()"
+    [attr.aria-label]="ariaLabel() || null"
     (click)="clicked.emit()"
   >
     <ng-container [ngTemplateOutlet]="content" />

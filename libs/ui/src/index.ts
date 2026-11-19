@@ -36,6 +36,7 @@ export * from './lib/components/notice';
 export * from './lib/components/panel';
 export * from './lib/components/picker-list';
 export * from './lib/components/picker-menu';
+export * from './lib/components/popover';
 export * from './lib/components/progress-bar';
 export * from './lib/components/radio-group';
 export * from './lib/components/rating-scale';
@@ -65,6 +66,7 @@ export * from './lib/directives/folder-colour';
 export * from './lib/directives/long-press';
 export * from './lib/directives/menu-trigger';
 export * from './lib/directives/pointer-shadow';
+export * from './lib/directives/popover-trigger';
 export * from './lib/directives/ripple';
 export * from './lib/directives/tooltip';
 

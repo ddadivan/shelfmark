@@ -177,15 +177,16 @@ export class MockLinksApi implements LinksApi {
         lastOpenedAt: null,
         remindAt: null,
         tags: normalizeLinkTags(tags),
-        summary: null,
-        summarySource: null,
+        // Like the API (#507): text is the user's summary; null or left out saves none.
+        ...summaryFields({ summary: null, summarySource: null }, request.summary ?? null),
         aiStatus: null,
         createdAt: now,
         updatedAt: now,
       };
       this.links = [saved, ...this.links];
-      // Like the API: the draft's result, or a new AI job, inside the save (#389).
-      const link = this.ai.linkCreated(saved, request.aiDraftId);
+      // Like the API: the draft's result, or a new AI job, inside the save (#389); `summary: null`
+      // declines AI's summary for this save.
+      const link = this.ai.linkCreated(saved, request.aiDraftId, request.summary === null);
       this.links = this.links.map((item) => (item.id === link.id ? link : item));
       this.data.ensureTags(link.tags);
       if (request.idempotencyKey !== undefined) {
@@ -691,7 +692,7 @@ function readScenario(): string | null {
  * `null` or blank clears it so AI may write again; `undefined` keeps what is there.
  */
 function summaryFields(
-  current: LinkResponse,
+  current: Pick<LinkResponse, 'summary' | 'summarySource'>,
   summary: string | null | undefined,
 ): Pick<LinkResponse, 'summary' | 'summarySource'> {
   if (summary === undefined) {

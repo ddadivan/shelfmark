@@ -330,7 +330,8 @@
         "one": "{{count}} etiqueta más: {{list}}",
         "many": "{{count}} etiquetas más: {{list}}",
         "other": "{{count}} etiquetas más: {{list}}"
-      }
+      },
+      "allTags": "Todas las etiquetas"
     },
     "item": {
       "edit": "Editar",
@@ -3024,6 +3025,30 @@
       },
       "landingHeadline": {
         "text": "El titular de la página de inicio cabe en todos los idiomas."
+      },
+      "askAnswers": {
+        "text": "«Pregunta a tus enlaces» vuelve a responder preguntas."
+      },
+      "youtubeTitles": {
+        "text": "Los enlaces de YouTube obtienen el título y el autor del vídeo."
+      },
+      "clearedSummary": {
+        "text": "Un resumen que borraste en Añadir enlace sigue vacío al guardar."
+      },
+      "cardTagsWhole": {
+        "text": "Las etiquetas de las tarjetas ya no se cortan: la primera etiqueta y luego «+N» con todas al pasar el cursor."
+      },
+      "bulkBarFits": {
+        "text": "La barra de selección muestra todos los botones en ventanas más estrechas."
+      },
+      "aiDialogIcon": {
+        "text": "El anuncio de la IA muestra su icono enseguida, sin barra de desplazamiento."
+      },
+      "searchChoice": {
+        "text": "Elegir un resultado de búsqueda ya no bloquea la aplicación."
+      },
+      "backfillProgress": {
+        "text": "«Procesar enlaces existentes» avanza mientras la aplicación está abierta."
       }
     },
     "sections": {
@@ -3158,6 +3183,36 @@
       "done": "Todos los enlaces existentes están procesados.",
       "startFailed": "No se pudo empezar a procesar tus enlaces",
       "stopFailed": "No se pudo detener el procesamiento. Inténtalo de nuevo."
+    },
+    "backfillOffer": {
+      "title": {
+        "one": "La IA está activada. ¿Procesar tu {{count}} enlace guardado?",
+        "many": "La IA está activada. ¿Procesar tus {{count}} enlaces guardados?",
+        "other": "La IA está activada. ¿Procesar tus {{count}} enlaces guardados?"
+      },
+      "lead": "La IA aún no ha leído los enlaces que guardaste antes. Escribirá resúmenes breves, sugerirá etiquetas y carpetas, y la búsqueda por significado los encontrará como a los nuevos.",
+      "review": "Nada cambia sin tu elección: las sugerencias te esperan.",
+      "background": "Se ejecuta en segundo plano, normalmente unos minutos. Detenlo cuando quieras.",
+      "allowance": "No usa el límite mensual: hay una cuota aparte de {{allowance}} enlaces.",
+      "process": {
+        "one": "Procesar {{count}} enlace",
+        "many": "Procesar {{count}} enlaces",
+        "other": "Procesar {{count}} enlaces"
+      },
+      "later": "Más tarde",
+      "noteLead": "¿Cambias de opinión? Empieza cuando quieras:",
+      "notePath": "Ajustes › IA › Procesar enlaces existentes",
+      "noteTail": "También aparece un recordatorio en la búsqueda.",
+      "search": {
+        "text": {
+          "one": "La IA aún no ha leído {{count}} enlace antiguo: la búsqueda lo encuentra peor.",
+          "many": "La IA aún no ha leído {{count}} enlaces antiguos: la búsqueda los encuentra peor.",
+          "other": "La IA aún no ha leído {{count}} enlaces antiguos: la búsqueda los encuentra peor."
+        },
+        "process": "Procesar",
+        "started": "Procesamiento iniciado",
+        "hide": "Ocultar"
+      }
     },
     "deleteData": {
       "confirm": {

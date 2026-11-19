@@ -45,6 +45,12 @@ describe('mockAiOutcome', () => {
     expect(mockAiOutcome('https://ab.example/x', 'X', LIBRARY).newTag).toBeNull();
   });
 
+  it('writes the new tag in lower case and treats an existing tag in another case as known', () => {
+    expect(mockAiOutcome('https://WWW.GitHub.com/x', 'X', LIBRARY).newTag).toBe('github');
+    const library = { ...LIBRARY, tags: [...LIBRARY.tags, 'GitHub'] };
+    expect(mockAiOutcome('https://github.com/x', 'X', library).newTag).toBeNull();
+  });
+
   it('writes a plain summary within the limit', () => {
     const outcome = mockAiOutcome('https://a.example/', 'T'.repeat(400), LIBRARY);
     expect(outcome.summary.length).toBe(AI_LIMIT.SummaryMax);

@@ -66,6 +66,19 @@ export const LINKS_SCENARIOS: readonly ContractScenario[] = [
     },
   ),
 
+  scenario(
+    'links',
+    "saves the user's own summary as theirs, and none with summary: null",
+    async ({ links }) => {
+      const mine = await links.create({ url: URL_A, title: 'Alpha', summary: '  My words  ' });
+      expectEqual([mine.summary, mine.summarySource], ['My words', 'user']);
+      const none = await links.create({ url: URL_B, title: 'Beta', summary: null });
+      expectEqual([none.summary, none.summarySource], [null, null]);
+      const left = await links.create({ url: URL_C, title: 'Gamma' });
+      expectEqual([left.summary, left.summarySource], [null, null]);
+    },
+  ),
+
   scenario('links', 'strips tracking parameters from the saved URL', async ({ links }) => {
     const link = await links.create({
       url: 'https://a.example/page?utm_source=news&id=7&fbclid=x',

@@ -204,7 +204,8 @@ export class PopupAiFillService {
   }
 
   private request(draftId: string, page: PageInfo): CreateAiDraftRequest {
-    const title = page.title.trim().slice(0, LINK_LIMIT.TitleMax);
+    // A generic tab title ("YouTube") is not sent: the server reads the video's own (oEmbed).
+    const title = page.titleFromTab ? page.title.trim().slice(0, LINK_LIMIT.TitleMax) : '';
     const note = this.settings()?.settings.includeNotes
       ? this.target?.note().trim().slice(0, LINK_LIMIT.NoteMax)
       : undefined;

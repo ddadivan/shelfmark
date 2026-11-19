@@ -13,6 +13,8 @@ export interface MockAiJob {
   reason: AiJobReason | null;
   suggestions: LinkSuggestion[];
   summary: string | null;
+  /** The save asked for no summary (`CreateLinkRequest.summary: null`): none is written. */
+  noSummary?: boolean;
   /** The cleaned-up title of a draft; `null` when none. */
   cleanTitle: string | null;
 }
