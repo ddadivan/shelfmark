@@ -34,7 +34,7 @@ const AUTO_SOURCES: readonly string[] = [AI_JOB_SOURCE.Save, AI_JOB_SOURCE.Draft
  * `folders:` → the job row (`FOR UPDATE`) → `tags:`, and only while the job is still `running`: a job
  * AI was turned off for (skipped) or that another claim settled is discarded. Rules: the summary
  * never replaces the user's (`summary_source = 'user'`); suggestions are the user's own tags and live
- * folders plus at most one new tag, never one the user dismissed or accepted; Automatic mode applies
+ * folders plus up to two new tags and up to three "more" new-tag ideas (chips only), never one the user dismissed or accepted; Automatic mode applies
  * only for `save` / `draft` jobs, the folder only while the link is still in Unsorted and tags only
  * while it has none, existing tags only. The model's `kind` is never written.
  */
@@ -71,7 +71,8 @@ export class AiApplyService {
             leaseUntil: null,
             result: {
               tags: result.tags,
-              newTag: result.newTag,
+              newTags: result.newTags,
+              moreTags: result.moreTags,
               folderId: result.folderId,
               summary: result.summary,
               title: result.title,
@@ -242,7 +243,8 @@ export class AiApplyService {
       );
     };
     const candidates = result.tags.filter(open);
-    const newTag = result.newTag !== null && open(result.newTag) ? result.newTag : null;
+    const newTags = result.newTags.filter(open);
+    const moreTags = result.moreTags.filter(open);
 
     const applied = new Set<string>();
     if (options.auto && candidates.length > 0) {
@@ -284,15 +286,26 @@ export class AiApplyService {
           : SUGGESTION_ROW_STATE.Suggested,
       });
     }
-    if (newTag !== null) {
-      await this.upsertSuggestion(tx, context, priorOf(newTag), {
+    // Automatic mode never creates a tag: every new tag stays a suggestion, like before.
+    for (const name of newTags) {
+      await this.upsertSuggestion(tx, context, priorOf(name), {
         kind: SUGGESTION_KIND.NewTag,
-        tagName: newTag,
+        tagName: name,
         folderId: null,
+        more: false,
         state: SUGGESTION_ROW_STATE.Suggested,
       });
     }
-    return candidates.length > 0 || newTag !== null;
+    for (const name of moreTags) {
+      await this.upsertSuggestion(tx, context, priorOf(name), {
+        kind: SUGGESTION_KIND.NewTag,
+        tagName: name,
+        folderId: null,
+        more: true,
+        state: SUGGESTION_ROW_STATE.Suggested,
+      });
+    }
+    return candidates.length > 0 || newTags.length > 0 || moreTags.length > 0;
   }
 
   private async upsertSuggestion(

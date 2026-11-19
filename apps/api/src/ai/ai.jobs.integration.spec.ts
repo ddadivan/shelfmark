@@ -175,6 +175,52 @@ describe('AI link jobs', () => {
       expect(usage.links).toBe(1);
     });
 
+    it('suggests two new tags and three more ideas for a link no tag fits, in both modes, never creating one', async () => {
+      for (const tagsMode of ['suggest', 'auto'] as const) {
+        await turnOn({ tagsMode });
+        const saved = await save({
+          url: `https://comedy.example/${tagsMode}`,
+          title: 'Stand-up special about airports',
+        });
+        await deferrer.flush();
+        const rows = await t.db.prisma.linkSuggestion.findMany({
+          where: { linkId: saved.id },
+          orderBy: { createdAt: 'asc' },
+          select: { kind: true, tagName: true, more: true, state: true },
+        });
+        expect(rows.filter((row) => row.kind === 'tag')).toEqual([]);
+        // The best two are primary; the rest are "more" chips; none is applied, even in Automatic.
+        const byName = new Map(rows.map((row) => [row.tagName, row]));
+        expect([...byName.keys()].sort()).toEqual([
+          'about',
+          'airports',
+          'comedy',
+          'special',
+          'stand',
+        ]);
+        for (const [name, row] of byName) {
+          expect(row).toMatchObject({
+            kind: 'new-tag',
+            state: 'suggested',
+            more: !['comedy', 'stand'].includes(name ?? ''),
+          });
+        }
+        const state = (await a.get(`/api/links/${saved.id}/ai`).expect(200)).body as {
+          suggestions: { tagName: string; more?: boolean }[];
+        };
+        expect(state.suggestions.map((item) => item.tagName)).toEqual([
+          'comedy',
+          'stand',
+          'special',
+          'about',
+          'airports',
+        ]);
+        expect(state.suggestions.filter((item) => item.more).length).toBe(3);
+        expect((await link(saved.id)).tags).toEqual([]);
+      }
+      expect(await t.db.prisma.tag.count({ where: { userId: users.owner.userId } })).toBe(0);
+    });
+
     it('asks only for what the save left open, and nothing when every part is off', async () => {
       await turnOn();
       const design = await folder('Design');
@@ -266,7 +312,7 @@ describe('AI link jobs', () => {
       await turnOn({ tagsMode: 'off', folderMode: 'off' });
       vi.spyOn(MockAiProvider.prototype, 'runLinkJob').mockResolvedValue({
         type: 'output',
-        output: { tags: [], newTag: null, folder: null, summary: null, kind: null },
+        output: { tags: [], newTags: [], folder: null, summary: null, kind: null },
       });
       const saved = await save({});
       await deferrer.flush();

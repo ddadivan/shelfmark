@@ -24,5 +24,19 @@ export function toLinkSuggestion(row: SuggestionRowOut): LinkSuggestion {
         : SUGGESTION_STATE.Suggested,
     tagName: row.tagName,
     folderId: row.folderId,
+    ...(row.more === true && { more: true }),
   };
+}
+
+/**
+ * The order a client lists suggestions in: the folder, the primary new tags (what Fill in with AI
+ * puts in), the user's own tags, then the "more" ideas. Stable inside each group.
+ */
+export function orderSuggestions<T extends { kind: string; more?: boolean }>(rows: T[]): T[] {
+  const rank = (row: T): number => {
+    if (row.kind === SUGGESTION_KIND.Folder) return 0;
+    if (row.kind === SUGGESTION_KIND.NewTag) return row.more === true ? 3 : 1;
+    return 2;
+  };
+  return [...rows].sort((a, b) => rank(a) - rank(b));
 }

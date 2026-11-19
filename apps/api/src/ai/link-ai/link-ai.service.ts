@@ -25,7 +25,7 @@ import { AI_PART } from '../models/ai-part.const';
 import type { AiRequestContext } from '../models/ai-request-context.interface';
 import { SUGGESTION_ROW_STATE } from '../models/suggestion-row-state.const';
 import { AiSettingsService } from '../settings/ai-settings.service';
-import { toLinkSuggestion } from '../suggestions/to-link-suggestion';
+import { orderSuggestions, toLinkSuggestion } from '../suggestions/to-link-suggestion';
 
 const OPEN_STATES: string[] = [SUGGESTION_ROW_STATE.Suggested, SUGGESTION_ROW_STATE.AutoApplied];
 const QUEUED_STATES: string[] = [AI_JOB_STATE.Pending, AI_JOB_STATE.Running];
@@ -68,7 +68,7 @@ export class LinkAiService {
       this.prisma.linkSuggestion.findMany({
         where: { userId, linkId, state: { in: OPEN_STATES } },
         orderBy: { createdAt: 'asc' },
-        select: { id: true, kind: true, state: true, tagName: true, folderId: true },
+        select: { id: true, kind: true, state: true, tagName: true, folderId: true, more: true },
       }),
     ]);
     const auto = rows.filter((row) => row.state === SUGGESTION_ROW_STATE.AutoApplied);
@@ -86,7 +86,7 @@ export class LinkAiService {
       reason: toAiJobReason(job?.reason ?? null),
       summary: link.summary,
       summarySource: link.summary === null ? null : toSummarySource(link.summarySource),
-      suggestions: rows.map(toLinkSuggestion),
+      suggestions: orderSuggestions(rows).map(toLinkSuggestion),
       autoApplied: folderId === null && tags.length === 0 ? null : { folderId, tags },
     };
   }

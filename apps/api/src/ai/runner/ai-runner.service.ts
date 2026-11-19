@@ -184,7 +184,8 @@ export class AiRunnerService {
     if (!parsed) return this.settle(job, AI_JOB_STATE.Failed, AI_JOB_REASON.Rejected);
     await this.apply.finish(job.id, job.userId, {
       tags: parsed.tags,
-      newTag: parsed.newTag,
+      newTags: parsed.newTags,
+      moreTags: parsed.moreTags,
       folderId:
         parsed.folder === null ? null : (vocabulary.folderIdByKey.get(parsed.folder) ?? null),
       summary: parsed.summary,

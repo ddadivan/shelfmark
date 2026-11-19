@@ -2987,6 +2987,9 @@
       },
       "backfillProgress": {
         "text": "„Vorhandene Links verarbeiten“ geht weiter, solange die App geöffnet ist."
+      },
+      "aiNewTags": {
+        "text": "KI schlägt ein oder zwei neue Tags vor, wenn keiner deiner Tags passt."
       }
     },
     "sections": {

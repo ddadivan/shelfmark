@@ -8,12 +8,29 @@ function stringOrNull(value: unknown): string | null {
   return typeof value === 'string' && value !== '' ? value : null;
 }
 
+function storedStrings(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((tag): tag is string => typeof tag === 'string' && tag !== '')
+    : [];
+}
+
+/** `newTags`, or the single `newTag` an older job stored before up to two were allowed. */
+function storedNewTags(value: Record<string, unknown>): string[] {
+  const list = value['newTags'];
+  if (Array.isArray(list)) {
+    return list.filter((tag): tag is string => typeof tag === 'string' && tag !== '');
+  }
+  const legacy = stringOrNull(value['newTag']);
+  return legacy === null ? [] : [legacy];
+}
+
 /** Reads `ai_jobs.result` back; `null` when it is missing or not the shape the runner wrote. */
 export function toStoredLinkResult(value: unknown): StoredLinkResult | null {
   if (!isRecord(value) || !Array.isArray(value['tags'])) return null;
   return {
     tags: value['tags'].filter((tag): tag is string => typeof tag === 'string'),
-    newTag: stringOrNull(value['newTag']),
+    newTags: storedNewTags(value),
+    moreTags: storedStrings(value['moreTags']),
     folderId: stringOrNull(value['folderId']),
     summary: stringOrNull(value['summary']),
     title: stringOrNull(value['title']),

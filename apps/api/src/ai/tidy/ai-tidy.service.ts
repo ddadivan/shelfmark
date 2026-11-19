@@ -40,7 +40,7 @@ const TIDY_LINK_SELECT = {
   folderId: true,
   tags: { select: { tag: { select: { name: true } } } },
   suggestions: {
-    where: { state: SUGGESTION_ROW_STATE.Suggested },
+    where: { state: SUGGESTION_ROW_STATE.Suggested, more: false },
     orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
     select: { id: true, kind: true, tagName: true, folderId: true },
   },
@@ -304,7 +304,7 @@ export class AiTidyService {
         userId,
         deletedAt: null,
         folderId: null,
-        suggestions: { some: { userId, state: SUGGESTION_ROW_STATE.Suggested } },
+        suggestions: { some: { userId, state: SUGGESTION_ROW_STATE.Suggested, more: false } },
         ...(cursor !== null && {
           OR: [
             { createdAt: { lt: cursor.createdAt } },
