@@ -23,6 +23,8 @@ import { AuthStore } from '../../../../core/auth/auth.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { AccountDeletionService } from '../../../account-deletion/services/account-deletion.service';
 import { ExportActionsService } from '../../../export/services/export-actions.service';
+import { RecentImportsComponent } from '../../../import/components/recent-imports/recent-imports.component';
+import { ImportDialogService } from '../../../import/services/import-dialog.service';
 import { AccountShelfComponent } from '../../components/account-shelf/account-shelf.component';
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
 import { YOUR_DATA_FRAGMENT } from '../../models/your-data-fragment.const';
@@ -31,13 +33,14 @@ import { AccountStatsService } from '../../services/account-stats.service';
 /**
  * `/settings/account` (#352): who is signed in (the provider's photo, member since), the "Your
  * shelf" numbers, the connected sign-in providers, "Your data" (export, moved here from its own
- * section) and deleting the account, plus sign out.
+ * section, and import with its recent imports, #387) and deleting the account, plus sign out.
  */
 @Component({
   selector: 'app-settings-account-page',
   imports: [
     TranslocoPipe,
     AccountShelfComponent,
+    RecentImportsComponent,
     AvatarComponent,
     ButtonComponent,
     SettingsPageHeaderComponent,
@@ -55,6 +58,7 @@ export default class AccountPage {
   private readonly viewport = inject(ViewportService);
   private readonly accountDeletion = inject(AccountDeletionService);
   private readonly exporter = inject(ExportActionsService);
+  private readonly importer = inject(ImportDialogService);
 
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
@@ -88,6 +92,10 @@ export default class AccountPage {
 
   protected async exportAll(format: ExportFormat): Promise<void> {
     await this.exporter.download(format);
+  }
+
+  protected openImport(): void {
+    this.importer.open();
   }
 
   protected async deleteAccount(): Promise<void> {

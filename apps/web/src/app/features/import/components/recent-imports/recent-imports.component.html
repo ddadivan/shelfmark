@@ -1,0 +1,18 @@
+@if (rows().length > 0) {
+  <ui-settings-section [title]="'import.recent.title' | transloco">
+    @for (row of rows(); track row.item.id) {
+      <ui-settings-row icon="check" [title]="row.item.fileName" [description]="row.line">
+        <ui-button
+          [variant]="BUTTON_VARIANT.Ghost"
+          [size]="buttonSize()"
+          [loading]="store.undoing() === row.item.id"
+          [ariaLabel]="'import.recent.undoLabel' | transloco: { name: row.item.fileName }"
+          (click)="undo(row.item)"
+        >
+          {{ 'import.progress.undo' | transloco }}
+        </ui-button>
+      </ui-settings-row>
+    }
+    <p class="recent-imports__hint">{{ 'import.recent.hint' | transloco }}</p>
+  </ui-settings-section>
+}

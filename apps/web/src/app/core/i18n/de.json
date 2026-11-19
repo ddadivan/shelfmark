@@ -486,8 +486,8 @@
         "skipped": "Kein Link, übersprungen"
       },
       "overflow": {
-        "one": "{{count}} weiterer Link wurde weggelassen: höchstens {{max}} Links auf einmal. Längere Listen gehen über „Als Text importieren“.",
-        "other": "{{count}} weitere Links wurden weggelassen: höchstens {{max}} Links auf einmal. Längere Listen gehen über „Als Text importieren“."
+        "one": "{{count}} weiterer Link wurde weggelassen: höchstens {{max}} Links auf einmal. Eine Lesezeichen-Datei geht über „Importieren“ unter Konto › Deine Daten.",
+        "other": "{{count}} weitere Links wurden weggelassen: höchstens {{max}} Links auf einmal. Eine Lesezeichen-Datei geht über „Importieren“ unter Konto › Deine Daten."
       },
       "folder": "Ordner für alle",
       "tags": "Tags für alle",
@@ -1260,6 +1260,133 @@
     "emptyView": {
       "title": "In dieser Ansicht gibt es nichts zu exportieren",
       "detail": "Diese Ansicht enthält keine Links. Exportiere alles oder öffne eine andere Ansicht"
+    }
+  },
+  "import": {
+    "title": "Links importieren",
+    "close": "Schließen",
+    "source": {
+      "label": "Quelle",
+      "browser": {
+        "title": "Browser-Lesezeichen",
+        "description": "HTML-Datei aus Chrome, Safari, Firefox oder Edge. Ordner bleiben Ordner.",
+        "hint": "Öffne im Browser die Lesezeichenverwaltung und wähle „Lesezeichen exportieren“."
+      },
+      "drop": "Datei hier ablegen oder",
+      "choose": "auswählen",
+      "reading": "Datei wird gelesen …",
+      "problem": {
+        "too-big": "Diese Datei ist größer als {{max}} MB.",
+        "unreadable": "Diese Datei konnte nicht gelesen werden. Exportiere sie noch einmal.",
+        "not-bookmarks": "Das ist keine Lesezeichen-Datei. Exportiere deine Lesezeichen im Browser als HTML.",
+        "empty": "Diese Datei enthält keine Web-Links.",
+        "too-many-links": "Diese Datei enthält mehr als {{max}} Links.",
+        "check-failed": "Die Datei konnte nicht mit deiner Sammlung abgeglichen werden. Versuch es noch einmal."
+      }
+    },
+    "review": {
+      "stats": {
+        "label": "In dieser Datei",
+        "links": {
+          "one": "Link",
+          "other": "Links"
+        },
+        "folders": {
+          "one": "Ordner",
+          "other": "Ordner"
+        },
+        "saved": "schon in deiner Sammlung"
+      },
+      "into": "Ablegen in",
+      "newFolder": "Neuer Ordner „{{name}}“",
+      "newFolderName": "Importierte Lesezeichen",
+      "unsorted": "Unsortiert",
+      "folderSearch": "Ordner suchen",
+      "noFolders": "Keine Ordner gefunden",
+      "skip": {
+        "one": "{{count}} Duplikat überspringen",
+        "other": "{{count}} Duplikate überspringen"
+      },
+      "skipHint": "Links, die du schon hast, und Wiederholungen in der Datei",
+      "keep": "Ordnerstruktur beibehalten",
+      "keepHint": "Aus: Jeder Link landet direkt am oben gewählten Ort",
+      "back": "Zurück",
+      "import": {
+        "one": "{{count}} Link importieren",
+        "other": "{{count}} Links importieren"
+      },
+      "nothing": "Alle Links dieser Datei sind schon in deiner Sammlung.",
+      "untitledFolder": "Unbenannter Ordner",
+      "untitledFile": "Lesezeichen-Datei"
+    },
+    "progress": {
+      "title": "Links werden importiert",
+      "count": "{{done}} von {{total}}",
+      "label": "Importfortschritt",
+      "note": "Du kannst weiterarbeiten. Vorschauen laden in den nächsten Minuten im Hintergrund.",
+      "doneTitle": {
+        "one": "{{count}} Link importiert",
+        "other": "{{count}} Links importiert"
+      },
+      "inFolder": "In „{{name}}“.",
+      "inUnsorted": "In Unsortiert.",
+      "inTarget": "Im gewählten Ordner.",
+      "folders": {
+        "one": "{{count}} Ordner.",
+        "other": "{{count}} Ordner."
+      },
+      "skipped": {
+        "one": "{{count}} übersprungen: schon gespeichert, doppelt oder keine Webseite.",
+        "other": "{{count}} übersprungen: schon gespeichert, doppelt oder keine Webseite."
+      },
+      "failed": {
+        "one": "{{count}} konnte nicht gespeichert werden.",
+        "other": "{{count}} konnten nicht gespeichert werden."
+      },
+      "openFolder": "Ordner öffnen",
+      "openUnsorted": "Unsortiert öffnen",
+      "undo": "Import rückgängig machen",
+      "done": "Fertig",
+      "startFailed": "Der Import konnte nicht starten, nichts wurde gespeichert. Versuch es noch einmal.",
+      "foldersLimit": "Die Ordner dieser Datei passen nicht in dein Ordnerlimit. Schalte „Ordnerstruktur beibehalten“ aus und versuch es noch einmal."
+    },
+    "undo": {
+      "title": "Diesen Import rückgängig machen?",
+      "message": {
+        "one": "Der Link und die Ordner dieses Imports kommen in den Papierkorb, und Tags, die er hinzugefügt hat und die sonst nichts nutzt, werden entfernt. Was du seitdem hinzugefügt hast, bleibt.",
+        "other": "Die {{count}} Links und die Ordner dieses Imports kommen in den Papierkorb, und Tags, die er hinzugefügt hat und die sonst nichts nutzt, werden entfernt. Was du seitdem hinzugefügt hast, bleibt."
+      },
+      "confirm": "Import rückgängig machen",
+      "cancel": "Abbrechen",
+      "failed": "Der Import konnte nicht rückgängig gemacht werden. Versuch es noch einmal.",
+      "done": "Import rückgängig gemacht",
+      "doneDetail": {
+        "one": "{{count}} Link in den Papierkorb verschoben",
+        "other": "{{count}} Links in den Papierkorb verschoben"
+      }
+    },
+    "recent": {
+      "title": "Letzte Importe",
+      "source": {
+        "browser": "Browser-Lesezeichen"
+      },
+      "links": {
+        "one": "{{count}} Link",
+        "other": "{{count}} Links"
+      },
+      "folders": {
+        "one": "{{count}} Ordner",
+        "other": "{{count}} Ordner"
+      },
+      "skipped": "{{count}} übersprungen",
+      "failed": "{{count}} fehlgeschlagen",
+      "undoLabel": "Import rückgängig machen: {{name}}",
+      "hint": "Ein Import lässt sich 7 Tage lang rückgängig machen."
+    },
+    "entry": {
+      "title": "Links importieren",
+      "description": "Hol deine Browser-Lesezeichen herein. Ordner bleiben Ordner, Links, die du schon hast, werden übersprungen.",
+      "action": "Importieren"
     }
   },
   "settings": {

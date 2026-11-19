@@ -1,0 +1,92 @@
+<ui-dialog
+  [title]="title() || ('import.title' | transloco)"
+  [closeLabel]="'import.close' | transloco"
+>
+  @switch (flow.step()) {
+    @case (IMPORT_STEP.Source) {
+      <div class="import-dialog__source">
+        @if (sourceOptions().length > 1) {
+          <ui-radio-group
+            [ariaLabel]="'import.source.label' | transloco"
+            [options]="sourceOptions()"
+            [value]="flow.sourceId()"
+            (valueChange)="setSource($event)"
+          />
+        } @else {
+          <div class="import-dialog__only-source">
+            <p class="import-dialog__source-title">{{ flow.source().titleKey | transloco }}</p>
+            <p class="import-dialog__source-text">{{ flow.source().descriptionKey | transloco }}</p>
+          </div>
+        }
+        <ui-drop-zone
+          [accept]="flow.source().accept"
+          [label]="'import.source.drop' | transloco"
+          [actionLabel]="'import.source.choose' | transloco"
+          [hint]="'import.source.browser.hint' | transloco"
+          [disabled]="flow.reading()"
+          [invalid]="flow.problem() !== null"
+          (fileSelected)="flow.chooseFile($event)"
+        />
+        <div class="import-dialog__status" role="status">
+          @if (flow.reading()) {
+            <span class="import-dialog__reading"
+              ><ui-spinner size="sm" />{{ 'import.source.reading' | transloco }}</span
+            >
+          }
+        </div>
+        @if (problemText(); as message) {
+          <ui-notice [kind]="NOTICE_KIND.Danger">{{ message }}</ui-notice>
+        }
+      </div>
+    }
+    @case (IMPORT_STEP.Review) {
+      <app-import-review />
+    }
+    @case (IMPORT_STEP.Progress) {
+      <app-import-progress />
+    }
+  }
+
+  <div slot="footer" class="import-dialog__foot">
+    @switch (flow.step()) {
+      @case (IMPORT_STEP.Review) {
+        <ui-button (click)="flow.back()">{{ 'import.review.back' | transloco }}</ui-button>
+        <ui-button
+          wrap
+          [variant]="BUTTON_VARIANT.Primary"
+          [disabled]="flow.importCount() === 0"
+          (click)="flow.startImport()"
+        >
+          {{ importKey() | transloco: { count: flow.importCount() } }}
+        </ui-button>
+      }
+      @case (IMPORT_STEP.Progress) {
+        @switch (runner.run().phase) {
+          @case (IMPORT_RUN_PHASE.Done) {
+            @if (runner.run().importId !== null && runner.run().created > 0) {
+              <ui-button [variant]="BUTTON_VARIANT.Ghost" (click)="undo()">
+                {{ 'import.progress.undo' | transloco }}
+              </ui-button>
+            }
+            <ui-button [variant]="BUTTON_VARIANT.Primary" (click)="openTarget()">
+              {{
+                (runner.run().targetFolderId === null
+                  ? 'import.progress.openUnsorted'
+                  : 'import.progress.openFolder'
+                ) | transloco
+              }}
+            </ui-button>
+          }
+          @case (IMPORT_RUN_PHASE.Failed) {
+            <ui-button [variant]="BUTTON_VARIANT.Primary" (click)="retry()">
+              {{ 'import.review.back' | transloco }}
+            </ui-button>
+          }
+          @default {
+            <ui-button (click)="close()">{{ 'import.progress.done' | transloco }}</ui-button>
+          }
+        }
+      }
+    }
+  </div>
+</ui-dialog>

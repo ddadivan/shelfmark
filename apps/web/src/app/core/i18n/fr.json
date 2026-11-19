@@ -491,9 +491,9 @@
         "skipped": "Pas un lien, ignoré"
       },
       "overflow": {
-        "one": "{{count}} lien de plus a été laissé de côté : {{max}} liens maximum à la fois. Les listes plus longues passent par Importer du texte.",
-        "many": "{{count}} liens de plus ont été laissés de côté : {{max}} liens maximum à la fois. Les listes plus longues passent par Importer du texte.",
-        "other": "{{count}} liens de plus ont été laissés de côté : {{max}} liens maximum à la fois. Les listes plus longues passent par Importer du texte."
+        "one": "{{count}} lien de plus a été laissé de côté : {{max}} liens maximum à la fois. Un fichier de favoris passe par Importer dans Compte › Vos données.",
+        "many": "{{count}} liens de plus ont été laissés de côté : {{max}} liens maximum à la fois. Un fichier de favoris passe par Importer dans Compte › Vos données.",
+        "other": "{{count}} liens de plus ont été laissés de côté : {{max}} liens maximum à la fois. Un fichier de favoris passe par Importer dans Compte › Vos données."
       },
       "folder": "Dossier pour tous",
       "tags": "Tags pour tous",
@@ -1283,6 +1283,145 @@
     "emptyView": {
       "title": "Rien à exporter dans cette vue",
       "detail": "Cette vue ne contient aucun lien. Exportez tout ou ouvrez une autre vue"
+    }
+  },
+  "import": {
+    "title": "Importer des liens",
+    "close": "Fermer",
+    "source": {
+      "label": "Source",
+      "browser": {
+        "title": "Favoris du navigateur",
+        "description": "Fichier HTML de Chrome, Safari, Firefox ou Edge. Les dossiers restent des dossiers.",
+        "hint": "Dans votre navigateur, ouvrez le gestionnaire de favoris et choisissez Exporter les favoris."
+      },
+      "drop": "Déposez le fichier ici ou",
+      "choose": "choisissez-le",
+      "reading": "Lecture du fichier…",
+      "problem": {
+        "too-big": "Ce fichier dépasse {{max}} Mo.",
+        "unreadable": "Impossible de lire ce fichier. Essayez de l’exporter à nouveau.",
+        "not-bookmarks": "Ce n’est pas un fichier de favoris. Exportez vos favoris depuis le navigateur au format HTML.",
+        "empty": "Ce fichier ne contient aucun lien web.",
+        "too-many-links": "Ce fichier contient plus de {{max}} liens.",
+        "check-failed": "Impossible de comparer le fichier avec votre bibliothèque. Réessayez."
+      }
+    },
+    "review": {
+      "stats": {
+        "label": "Dans ce fichier",
+        "links": {
+          "one": "lien",
+          "many": "liens",
+          "other": "liens"
+        },
+        "folders": {
+          "one": "dossier",
+          "many": "dossiers",
+          "other": "dossiers"
+        },
+        "saved": "déjà dans votre bibliothèque"
+      },
+      "into": "Les mettre dans",
+      "newFolder": "Nouveau dossier « {{name}} »",
+      "newFolderName": "Favoris importés",
+      "unsorted": "Non classés",
+      "folderSearch": "Rechercher un dossier",
+      "noFolders": "Aucun dossier trouvé",
+      "skip": {
+        "one": "Ignorer le doublon ({{count}})",
+        "many": "Ignorer les {{count}} doublons",
+        "other": "Ignorer les {{count}} doublons"
+      },
+      "skipHint": "Liens déjà enregistrés et répétitions dans le fichier",
+      "keep": "Garder la structure des dossiers",
+      "keepHint": "Désactivé : chaque lien va directement à l’endroit choisi",
+      "back": "Retour",
+      "import": {
+        "one": "Importer {{count}} lien",
+        "many": "Importer {{count}} liens",
+        "other": "Importer {{count}} liens"
+      },
+      "nothing": "Tous les liens de ce fichier sont déjà dans votre bibliothèque.",
+      "untitledFolder": "Dossier sans nom",
+      "untitledFile": "Fichier de favoris"
+    },
+    "progress": {
+      "title": "Importation des liens",
+      "count": "{{done}} sur {{total}}",
+      "label": "Progression de l’importation",
+      "note": "Vous pouvez continuer à travailler. Les aperçus se chargent en arrière-plan dans les prochaines minutes.",
+      "doneTitle": {
+        "one": "{{count}} lien importé",
+        "many": "{{count}} liens importés",
+        "other": "{{count}} liens importés"
+      },
+      "inFolder": "Dans « {{name}} ».",
+      "inUnsorted": "Dans Non classés.",
+      "inTarget": "Dans le dossier choisi.",
+      "folders": {
+        "one": "{{count}} dossier.",
+        "many": "{{count}} dossiers.",
+        "other": "{{count}} dossiers."
+      },
+      "skipped": {
+        "one": "{{count}} ignoré : déjà enregistré, en double ou pas une page web.",
+        "many": "{{count}} ignorés : déjà enregistrés, en double ou pas des pages web.",
+        "other": "{{count}} ignorés : déjà enregistrés, en double ou pas des pages web."
+      },
+      "failed": {
+        "one": "{{count}} n’a pas pu être enregistré.",
+        "many": "{{count}} n’ont pas pu être enregistrés.",
+        "other": "{{count}} n’ont pas pu être enregistrés."
+      },
+      "openFolder": "Ouvrir le dossier",
+      "openUnsorted": "Ouvrir Non classés",
+      "undo": "Annuler l’importation",
+      "done": "Terminé",
+      "startFailed": "L’importation n’a pas pu démarrer, rien n’a été enregistré. Réessayez.",
+      "foldersLimit": "Les dossiers de ce fichier dépassent votre limite de dossiers. Désactivez « Garder la structure des dossiers » et réessayez."
+    },
+    "undo": {
+      "title": "Annuler cette importation ?",
+      "message": {
+        "one": "Le lien et les dossiers de cette importation vont à la corbeille, et les tags ajoutés que rien d’autre n’utilise sont supprimés. Ce que vous avez ajouté depuis reste.",
+        "many": "Les {{count}} liens et les dossiers de cette importation vont à la corbeille, et les tags ajoutés que rien d’autre n’utilise sont supprimés. Ce que vous avez ajouté depuis reste.",
+        "other": "Les {{count}} liens et les dossiers de cette importation vont à la corbeille, et les tags ajoutés que rien d’autre n’utilise sont supprimés. Ce que vous avez ajouté depuis reste."
+      },
+      "confirm": "Annuler l’importation",
+      "cancel": "Garder",
+      "failed": "Impossible d’annuler l’importation. Réessayez.",
+      "done": "Importation annulée",
+      "doneDetail": {
+        "one": "{{count}} lien mis à la corbeille",
+        "many": "{{count}} liens mis à la corbeille",
+        "other": "{{count}} liens mis à la corbeille"
+      }
+    },
+    "recent": {
+      "title": "Importations récentes",
+      "source": {
+        "browser": "Favoris du navigateur"
+      },
+      "links": {
+        "one": "{{count}} lien",
+        "many": "{{count}} liens",
+        "other": "{{count}} liens"
+      },
+      "folders": {
+        "one": "{{count}} dossier",
+        "many": "{{count}} dossiers",
+        "other": "{{count}} dossiers"
+      },
+      "skipped": "{{count}} ignorés",
+      "failed": "{{count}} en échec",
+      "undoLabel": "Annuler l’importation : {{name}}",
+      "hint": "Une importation peut être annulée pendant 7 jours."
+    },
+    "entry": {
+      "title": "Importer des liens",
+      "description": "Importez les favoris de votre navigateur. Les dossiers restent des dossiers, les liens déjà enregistrés sont ignorés.",
+      "action": "Importer"
     }
   },
   "settings": {

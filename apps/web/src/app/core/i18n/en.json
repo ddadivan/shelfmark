@@ -486,8 +486,8 @@
         "skipped": "Not a link, skipped"
       },
       "overflow": {
-        "one": "{{count}} more link was left out: up to {{max}} links at a time. Bigger lists go to Import as text.",
-        "other": "{{count}} more links were left out: up to {{max}} links at a time. Bigger lists go to Import as text."
+        "one": "{{count}} more link was left out: up to {{max}} links at a time. A bookmarks file goes to Import in Account › Your data.",
+        "other": "{{count}} more links were left out: up to {{max}} links at a time. A bookmarks file goes to Import in Account › Your data."
       },
       "folder": "Folder for all",
       "tags": "Tags for all",
@@ -1260,6 +1260,133 @@
     "emptyView": {
       "title": "Nothing to export in this view",
       "detail": "This view has no links. Export everything, or open another view"
+    }
+  },
+  "import": {
+    "title": "Import links",
+    "close": "Close",
+    "source": {
+      "label": "Source",
+      "browser": {
+        "title": "Browser bookmarks",
+        "description": "HTML file from Chrome, Safari, Firefox or Edge. Folders become folders.",
+        "hint": "In your browser, open the bookmark manager and choose Export bookmarks."
+      },
+      "drop": "Drop the file here or",
+      "choose": "choose it",
+      "reading": "Reading the file…",
+      "problem": {
+        "too-big": "This file is larger than {{max}} MB.",
+        "unreadable": "This file could not be read. Try exporting it again.",
+        "not-bookmarks": "This is not a bookmarks file. Export your bookmarks from the browser as HTML.",
+        "empty": "There are no web links in this file.",
+        "too-many-links": "This file holds more than {{max}} links.",
+        "check-failed": "Could not compare the file with your shelf. Try again."
+      }
+    },
+    "review": {
+      "stats": {
+        "label": "In this file",
+        "links": {
+          "one": "link",
+          "other": "links"
+        },
+        "folders": {
+          "one": "folder",
+          "other": "folders"
+        },
+        "saved": "already on your shelf"
+      },
+      "into": "Put them into",
+      "newFolder": "New folder “{{name}}”",
+      "newFolderName": "Imported bookmarks",
+      "unsorted": "Unsorted",
+      "folderSearch": "Search folders",
+      "noFolders": "No folders found",
+      "skip": {
+        "one": "Skip the {{count}} duplicate",
+        "other": "Skip the {{count}} duplicates"
+      },
+      "skipHint": "Links already on your shelf and repeats inside the file",
+      "keep": "Keep the folder structure",
+      "keepHint": "Off: every link goes straight into the place above",
+      "back": "Back",
+      "import": {
+        "one": "Import {{count}} link",
+        "other": "Import {{count}} links"
+      },
+      "nothing": "Every link in this file is already on your shelf.",
+      "untitledFolder": "Untitled folder",
+      "untitledFile": "Bookmarks file"
+    },
+    "progress": {
+      "title": "Importing links",
+      "count": "{{done}} of {{total}}",
+      "label": "Import progress",
+      "note": "You can keep working. Previews load in the background over the next few minutes.",
+      "doneTitle": {
+        "one": "{{count}} link imported",
+        "other": "{{count}} links imported"
+      },
+      "inFolder": "In “{{name}}”.",
+      "inUnsorted": "In Unsorted.",
+      "inTarget": "In the folder you chose.",
+      "folders": {
+        "one": "{{count}} folder.",
+        "other": "{{count}} folders."
+      },
+      "skipped": {
+        "one": "{{count}} skipped: already saved, repeated or not a web page.",
+        "other": "{{count}} skipped: already saved, repeated or not a web page."
+      },
+      "failed": {
+        "one": "{{count}} could not be saved.",
+        "other": "{{count}} could not be saved."
+      },
+      "openFolder": "Open the folder",
+      "openUnsorted": "Open Unsorted",
+      "undo": "Undo import",
+      "done": "Done",
+      "startFailed": "The import could not start, nothing was saved. Try again.",
+      "foldersLimit": "The folders of this file do not fit your folder limit. Turn off “Keep the folder structure” and try again."
+    },
+    "undo": {
+      "title": "Undo this import?",
+      "message": {
+        "one": "The {{count}} link and the folders of this import go to Trash, and tags it added that nothing else uses are removed. What you added since stays.",
+        "other": "The {{count}} links and the folders of this import go to Trash, and tags it added that nothing else uses are removed. What you added since stays."
+      },
+      "confirm": "Undo import",
+      "cancel": "Cancel",
+      "failed": "Could not undo the import. Try again.",
+      "done": "Import undone",
+      "doneDetail": {
+        "one": "{{count}} link moved to Trash",
+        "other": "{{count}} links moved to Trash"
+      }
+    },
+    "recent": {
+      "title": "Recent imports",
+      "source": {
+        "browser": "Browser bookmarks"
+      },
+      "links": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      },
+      "folders": {
+        "one": "{{count}} folder",
+        "other": "{{count}} folders"
+      },
+      "skipped": "{{count}} skipped",
+      "failed": "{{count}} failed",
+      "undoLabel": "Undo import: {{name}}",
+      "hint": "Undo import is available for 7 days."
+    },
+    "entry": {
+      "title": "Import links",
+      "description": "Bring in browser bookmarks. Folders come in as folders, links you already have are skipped.",
+      "action": "Import"
     }
   },
   "settings": {

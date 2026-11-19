@@ -491,9 +491,9 @@
         "skipped": "No es un enlace, omitido"
       },
       "overflow": {
-        "one": "Se dejó fuera {{count}} enlace más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto.",
-        "many": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto.",
-        "other": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto."
+        "one": "Se dejó fuera {{count}} enlace más: hasta {{max}} enlaces a la vez. Un archivo de marcadores va por Importar en Cuenta › Tus datos.",
+        "many": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Un archivo de marcadores va por Importar en Cuenta › Tus datos.",
+        "other": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Un archivo de marcadores va por Importar en Cuenta › Tus datos."
       },
       "folder": "Carpeta para todos",
       "tags": "Etiquetas para todos",
@@ -1283,6 +1283,145 @@
     "emptyView": {
       "title": "No hay nada que exportar en esta vista",
       "detail": "Esta vista no tiene enlaces. Exporta todo o abre otra vista"
+    }
+  },
+  "import": {
+    "title": "Importar enlaces",
+    "close": "Cerrar",
+    "source": {
+      "label": "Origen",
+      "browser": {
+        "title": "Marcadores del navegador",
+        "description": "Archivo HTML de Chrome, Safari, Firefox o Edge. Las carpetas siguen siendo carpetas.",
+        "hint": "En tu navegador, abre el administrador de marcadores y elige Exportar marcadores."
+      },
+      "drop": "Suelta el archivo aquí o",
+      "choose": "elígelo",
+      "reading": "Leyendo el archivo…",
+      "problem": {
+        "too-big": "Este archivo supera los {{max}} MB.",
+        "unreadable": "No se pudo leer este archivo. Prueba a exportarlo de nuevo.",
+        "not-bookmarks": "Esto no es un archivo de marcadores. Exporta tus marcadores desde el navegador como HTML.",
+        "empty": "Este archivo no tiene enlaces web.",
+        "too-many-links": "Este archivo tiene más de {{max}} enlaces.",
+        "check-failed": "No se pudo comparar el archivo con tu biblioteca. Inténtalo de nuevo."
+      }
+    },
+    "review": {
+      "stats": {
+        "label": "En este archivo",
+        "links": {
+          "one": "enlace",
+          "many": "enlaces",
+          "other": "enlaces"
+        },
+        "folders": {
+          "one": "carpeta",
+          "many": "carpetas",
+          "other": "carpetas"
+        },
+        "saved": "ya en tu biblioteca"
+      },
+      "into": "Guardarlos en",
+      "newFolder": "Carpeta nueva «{{name}}»",
+      "newFolderName": "Marcadores importados",
+      "unsorted": "Sin clasificar",
+      "folderSearch": "Buscar carpetas",
+      "noFolders": "No se encontraron carpetas",
+      "skip": {
+        "one": "Omitir el duplicado ({{count}})",
+        "many": "Omitir los {{count}} duplicados",
+        "other": "Omitir los {{count}} duplicados"
+      },
+      "skipHint": "Enlaces que ya tienes y repeticiones dentro del archivo",
+      "keep": "Mantener la estructura de carpetas",
+      "keepHint": "Desactivado: cada enlace va directo al lugar elegido arriba",
+      "back": "Atrás",
+      "import": {
+        "one": "Importar {{count}} enlace",
+        "many": "Importar {{count}} enlaces",
+        "other": "Importar {{count}} enlaces"
+      },
+      "nothing": "Todos los enlaces de este archivo ya están en tu biblioteca.",
+      "untitledFolder": "Carpeta sin nombre",
+      "untitledFile": "Archivo de marcadores"
+    },
+    "progress": {
+      "title": "Importando enlaces",
+      "count": "{{done}} de {{total}}",
+      "label": "Progreso de la importación",
+      "note": "Puedes seguir trabajando. Las vistas previas se cargan en segundo plano en los próximos minutos.",
+      "doneTitle": {
+        "one": "{{count}} enlace importado",
+        "many": "{{count}} enlaces importados",
+        "other": "{{count}} enlaces importados"
+      },
+      "inFolder": "En «{{name}}».",
+      "inUnsorted": "En Sin clasificar.",
+      "inTarget": "En la carpeta elegida.",
+      "folders": {
+        "one": "{{count}} carpeta.",
+        "many": "{{count}} carpetas.",
+        "other": "{{count}} carpetas."
+      },
+      "skipped": {
+        "one": "{{count}} omitido: ya guardado, repetido o no es una página web.",
+        "many": "{{count}} omitidos: ya guardados, repetidos o no son páginas web.",
+        "other": "{{count}} omitidos: ya guardados, repetidos o no son páginas web."
+      },
+      "failed": {
+        "one": "{{count}} no se pudo guardar.",
+        "many": "{{count}} no se pudieron guardar.",
+        "other": "{{count}} no se pudieron guardar."
+      },
+      "openFolder": "Abrir la carpeta",
+      "openUnsorted": "Abrir Sin clasificar",
+      "undo": "Deshacer importación",
+      "done": "Listo",
+      "startFailed": "La importación no pudo empezar, no se guardó nada. Inténtalo de nuevo.",
+      "foldersLimit": "Las carpetas de este archivo superan tu límite de carpetas. Desactiva «Mantener la estructura de carpetas» e inténtalo de nuevo."
+    },
+    "undo": {
+      "title": "¿Deshacer esta importación?",
+      "message": {
+        "one": "El enlace y las carpetas de esta importación van a la papelera, y se quitan las etiquetas que añadió y que nada más usa. Lo que añadiste después se queda.",
+        "many": "Los {{count}} enlaces y las carpetas de esta importación van a la papelera, y se quitan las etiquetas que añadió y que nada más usa. Lo que añadiste después se queda.",
+        "other": "Los {{count}} enlaces y las carpetas de esta importación van a la papelera, y se quitan las etiquetas que añadió y que nada más usa. Lo que añadiste después se queda."
+      },
+      "confirm": "Deshacer importación",
+      "cancel": "Cancelar",
+      "failed": "No se pudo deshacer la importación. Inténtalo de nuevo.",
+      "done": "Importación deshecha",
+      "doneDetail": {
+        "one": "{{count}} enlace movido a la papelera",
+        "many": "{{count}} enlaces movidos a la papelera",
+        "other": "{{count}} enlaces movidos a la papelera"
+      }
+    },
+    "recent": {
+      "title": "Importaciones recientes",
+      "source": {
+        "browser": "Marcadores del navegador"
+      },
+      "links": {
+        "one": "{{count}} enlace",
+        "many": "{{count}} enlaces",
+        "other": "{{count}} enlaces"
+      },
+      "folders": {
+        "one": "{{count}} carpeta",
+        "many": "{{count}} carpetas",
+        "other": "{{count}} carpetas"
+      },
+      "skipped": "{{count}} omitidos",
+      "failed": "{{count}} con error",
+      "undoLabel": "Deshacer importación: {{name}}",
+      "hint": "Una importación se puede deshacer durante 7 días."
+    },
+    "entry": {
+      "title": "Importar enlaces",
+      "description": "Trae los marcadores de tu navegador. Las carpetas siguen siendo carpetas y se omiten los enlaces que ya tienes.",
+      "action": "Importar"
     }
   },
   "settings": {

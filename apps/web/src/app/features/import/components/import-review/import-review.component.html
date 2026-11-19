@@ -1,0 +1,39 @@
+<dl class="import-review__stats" [attr.aria-label]="'import.review.stats.label' | transloco">
+  @for (stat of stats(); track stat.labelKey) {
+    <div class="import-review__stat">
+      <dt class="import-review__stat-label">{{ stat.labelKey | transloco }}</dt>
+      <dd class="import-review__stat-value">{{ stat.text }}</dd>
+    </div>
+  }
+</dl>
+
+<ui-select
+  searchable
+  [label]="'import.review.into' | transloco"
+  [options]="targetOptions()"
+  [emptyLabel]="'import.review.unsorted' | transloco"
+  [searchLabel]="'import.review.folderSearch' | transloco"
+  [noResultsLabel]="'import.review.noFolders' | transloco"
+  [value]="flow.target()"
+  (valueChange)="setTarget($event)"
+/>
+
+@if (flow.duplicates() > 0) {
+  <ui-checkbox
+    [label]="skipKey() | transloco: { count: flow.duplicates() }"
+    [hint]="'import.review.skipHint' | transloco"
+    [checked]="flow.skipDuplicates()"
+    (checkedChange)="flow.skipDuplicates.set($event)"
+  />
+}
+@if ((flow.counts()?.folders ?? 0) > 0) {
+  <ui-checkbox
+    [label]="'import.review.keep' | transloco"
+    [hint]="'import.review.keepHint' | transloco"
+    [checked]="flow.keepStructure()"
+    (checkedChange)="flow.keepStructure.set($event)"
+  />
+}
+@if (flow.importCount() === 0) {
+  <ui-notice [kind]="NOTICE_KIND.Info">{{ 'import.review.nothing' | transloco }}</ui-notice>
+}
