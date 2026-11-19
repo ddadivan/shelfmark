@@ -85,6 +85,8 @@ export class AiBackfillService {
         backfill_done = 0, backfill_started_at = now(), updated_at = now()
       WHERE user_id = ${userId}::uuid AND enabled AND backfill_state <> ${AI_BACKFILL_STATE.Running}`;
     if (started === 0) throw new ConflictException(AI_ERROR_MESSAGE.BackfillRunning);
+    // Counts only (no ids or content): shows on prod that a run began and how big it is.
+    this.logger.log(`AI backfill started: ${total} of ${eligible} eligible links`);
     if (total > 0) {
       this.background.defer(() =>
         this.advance(userId, Date.now() + AI_BACKFILL_LIMIT.StartBudgetMs),
@@ -324,6 +326,9 @@ export class AiBackfillService {
       }
       return false;
     }
+    this.logger.log(
+      `AI backfill batch of ${chunk.length} submitted to ${provider.name}${completed ? ' (completed at once)' : ''}`,
+    );
     if (submission.completed !== null) {
       await this.results.applyItems(userId, batchId, submission.completed);
     }
