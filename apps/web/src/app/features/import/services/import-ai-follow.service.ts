@@ -39,6 +39,14 @@ export class ImportAiFollowService {
     this.schedule(importId, IMPORT_AI_POLL.FirstMs, Date.now() + IMPORT_AI_POLL.MaxMs);
   }
 
+  /** Stops following an import (it was undone: its pass has nothing left to report). */
+  unwatch(importId: string): void {
+    const timer = this.watching.get(importId);
+    if (timer === undefined) return;
+    clearTimeout(timer);
+    this.watching.delete(importId);
+  }
+
   private schedule(importId: string, delay: number, until: number): void {
     this.watching.set(
       importId,
@@ -57,7 +65,8 @@ export class ImportAiFollowService {
     }
     if (!this.watching.has(importId)) return;
     if (!failed && ai === null) {
-      // The import has no AI pass (it did not ask, or was undone): nothing to wait for.
+      // The import did not ask for an AI pass (`ai` is null only then; an undone import still reports
+      // its pass, which is why Undo calls `unwatch`): nothing to wait for.
       this.watching.delete(importId);
     } else if (ai !== null && ai.state === IMPORT_AI_STATE.Done) {
       this.watching.delete(importId);

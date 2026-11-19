@@ -26,6 +26,8 @@ import { cleanLine } from '../utils/clean-text';
 export class ImportGroupsService {
   private readonly injector = inject(Injector);
   private token = 0;
+  /** A grouping may have used allowance units that no import took yet. */
+  private held = false;
 
   readonly loading = signal(false);
   readonly error = signal<ImportGroupsError | null>(null);
@@ -69,6 +71,7 @@ export class ImportGroupsService {
     this.links.set(request.links);
     this.groups.set([]);
     this.rest.set([]);
+    this.held = true;
     try {
       const response = await firstValueFrom(this.injector.get(IMPORT_API).groups(request));
       if (token !== this.token) return;
@@ -84,20 +87,54 @@ export class ImportGroupsService {
       this.rest.set(response.rest);
     } catch (error) {
       if (token !== this.token) return;
-      this.error.set(
-        error instanceof HttpErrorResponse &&
-          error.status === HttpStatusCode.Conflict &&
-          !hasApiMessage(error, IMPORT_ERROR_MESSAGE.AiUnavailable)
-          ? IMPORT_GROUPS_ERROR.Allowance
-          : IMPORT_GROUPS_ERROR.Failed,
-      );
+      const kind = this.errorKind(error);
+      // A refused grouping took nothing from the allowance; any other failure may have.
+      if (kind === IMPORT_GROUPS_ERROR.Allowance || kind === IMPORT_GROUPS_ERROR.Monthly) {
+        this.held = false;
+      }
+      this.error.set(kind);
     } finally {
       if (token === this.token) this.loading.set(false);
     }
   }
 
+  private errorKind(error: unknown): ImportGroupsError {
+    if (!(error instanceof HttpErrorResponse) || error.status !== HttpStatusCode.Conflict) {
+      return IMPORT_GROUPS_ERROR.Failed;
+    }
+    if (hasApiMessage(error, IMPORT_ERROR_MESSAGE.GroupsMonthly)) {
+      return IMPORT_GROUPS_ERROR.Monthly;
+    }
+    return hasApiMessage(error, IMPORT_ERROR_MESSAGE.AiUnavailable)
+      ? IMPORT_GROUPS_ERROR.Failed
+      : IMPORT_GROUPS_ERROR.Allowance;
+  }
+
+  /** An import took the grouping: nothing is left to give back. */
+  consumed(): void {
+    this.held = false;
+  }
+
+  /**
+   * Gives the grouping's allowance units back (`DELETE /api/imports/groups`) when no import took
+   * them: Back, another choice, the dialog closed. Fire and forget; a failure is ignored.
+   */
+  release(): void {
+    if (!this.held) return;
+    this.held = false;
+    try {
+      this.injector
+        .get(IMPORT_API)
+        .releaseGroups()
+        .subscribe({ error: () => undefined });
+    } catch {
+      // The units are given back by the API's own expiry.
+    }
+  }
+
   /** Drops the groups and any answer still on its way (Back to the check). */
   reset(): void {
+    this.release();
     this.token++;
     this.loading.set(false);
     this.error.set(null);

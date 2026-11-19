@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import type { ImportGroupsResponse } from '@shelfmark/contracts';
+import { IMPORT_ERROR_MESSAGE, type ImportGroupsResponse } from '@shelfmark/contracts';
 import { UiButtonHarness, UiSelectHarness } from '@shelfmark/ui/testing';
 import { Subject, of, throwError } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
@@ -188,6 +188,15 @@ describe('ImportGroupsComponent', () => {
     await settle();
     expect(root.querySelector('[role="alert"]')?.textContent).toContain(
       'Not enough of the allowance',
+    );
+
+    groups.mockReturnValue(
+      throwError(() => mockHttpError(409, IMPORT_ERROR_MESSAGE.GroupsMonthly)),
+    );
+    await state.load(REQUEST);
+    await settle();
+    expect(root.querySelector('[role="alert"]')?.textContent).toContain(
+      'already grouped as many links with AI this month',
     );
   });
 

@@ -14,6 +14,7 @@ import { TrashStore } from '../../../stores/trash.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { IMPORT_API } from '../models/import-api.const';
 import type { ImportApi } from '../models/import-api.interface';
+import { ImportAiFollowService } from './import-ai-follow.service';
 import { RecentImportsStore } from './recent-imports.store';
 
 function summary(id: string, extra: Partial<ImportSummary> = {}): ImportSummary {
@@ -43,6 +44,7 @@ async function setup(confirmed = true) {
     undo: vi.fn<ImportApi['undo']>(() => of({ links: 5, folders: 1, tags: 0 })),
   };
   const toasts: ToastOptions[] = [];
+  const unwatch = vi.fn();
   const confirm = vi.fn(() => Promise.resolve(confirmed));
   const refresh = () => vi.fn(async () => undefined);
   const stores = {
@@ -66,6 +68,7 @@ async function setup(confirmed = true) {
       { provide: RemindersStore, useValue: { refresh: stores.reminders } },
       { provide: LinksStore, useValue: { refresh: stores.links } },
       { provide: TabSyncService, useValue: { post: stores.post } },
+      { provide: ImportAiFollowService, useValue: { unwatch } },
       {
         provide: ToastService,
         useValue: {
@@ -78,7 +81,7 @@ async function setup(confirmed = true) {
     ],
   });
   await loadEnglish();
-  return { api, toasts, confirm, stores, store: TestBed.inject(RecentImportsStore) };
+  return { api, toasts, confirm, stores, unwatch, store: TestBed.inject(RecentImportsStore) };
 }
 
 describe('RecentImportsStore', () => {
@@ -107,7 +110,7 @@ describe('RecentImportsStore', () => {
 
   describe('undo', () => {
     it('asks first, undoes through the API, removes the item and shows a toast', async () => {
-      const { store, api, confirm, toasts, stores } = await setup();
+      const { store, api, confirm, toasts, stores, unwatch } = await setup();
       await store.load();
 
       const done = await store.undo('a', 5);
@@ -121,6 +124,7 @@ describe('RecentImportsStore', () => {
         }),
       );
       expect(api.undo).toHaveBeenCalledWith('a');
+      expect(unwatch).toHaveBeenCalledWith('a');
       expect(store.items().map((item) => item.id)).toEqual(['b']);
       expect(store.undoing()).toBeNull();
       expect(toasts).toEqual([

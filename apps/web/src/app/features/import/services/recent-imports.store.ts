@@ -14,6 +14,7 @@ import { RemindersStore } from '../../../stores/reminders.store';
 import { TagsStore } from '../../../stores/tags.store';
 import { TrashStore } from '../../../stores/trash.store';
 import { IMPORT_API } from '../models/import-api.const';
+import { ImportAiFollowService } from './import-ai-follow.service';
 
 /**
  * "Recent imports" of Account › Your data (SetImport.dc.html): the imports of the last 7 days
@@ -83,6 +84,7 @@ export class RecentImportsStore {
     }
     this.undoingState.set(null);
     this.itemsState.update((items) => items.filter((item) => item.id !== id));
+    this.injector.get(ImportAiFollowService).unwatch(id);
     this.refreshLibrary();
     this.toasts.show({
       kind: TOAST_KIND.Success,

@@ -121,6 +121,7 @@ export class ImportFlowService {
 
   setFoldersMode(mode: ImportFoldersMode): void {
     this.chosenMode.set(mode);
+    this.groups.release();
   }
 
   /** Reads, parses and checks the file; moves to the review step when it can be imported. */
@@ -195,6 +196,7 @@ export class ImportFlowService {
     const plan = ai
       ? applyGroups(this.plan(parsed, false), this.groups.assignment())
       : this.plan(parsed, this.foldersMode() === IMPORT_FOLDERS_MODE.File);
+    if (ai) this.groups.consumed();
     const target = this.target();
     const newFolderName = this.t('import.review.newFolderName');
     this.step.set(IMPORT_STEP.Progress);

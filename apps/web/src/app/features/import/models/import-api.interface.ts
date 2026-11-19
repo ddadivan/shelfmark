@@ -21,6 +21,8 @@ export interface ImportApi {
   check(urls: readonly string[]): Observable<ImportCheckResponse>;
   /** AI groups for the links of a file (nothing is written; uses the allowance). */
   groups(request: ImportGroupsRequest): Observable<ImportGroupsResponse>;
+  /** Gives back the units of the last grouping no import took (`DELETE /api/imports/groups`). */
+  releaseGroups(): Observable<void>;
   start(request: StartImportRequest): Observable<StartImportResponse>;
   addLinks(id: string, request: ImportLinksRequest): Observable<ImportLinksResponse>;
   finish(id: string, request: FinishImportRequest): Observable<void>;

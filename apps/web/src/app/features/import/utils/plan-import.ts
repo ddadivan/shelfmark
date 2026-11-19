@@ -1,4 +1,5 @@
 import { normalizeUrl, stripTrackingParams, type ImportFolder } from '@shelfmark/contracts';
+import { isStorableUrl } from './storable-url';
 import type { ImportPlan } from '../models/import-plan.interface';
 import type { ImportPlanOptions } from '../models/import-plan-options.interface';
 import type { ImportPlanLink } from '../models/import-plan-link.interface';
@@ -54,6 +55,9 @@ export function planImport(
   const repeats = repeatIndexes(parsed.links);
   const links: ImportPlanLink[] = [];
   parsed.links.forEach((link, index) => {
+    if (!isStorableUrl(importUrl(link))) {
+      return;
+    }
     if (options.skipDuplicates && (saved.has(index) || repeats.has(index))) {
       return;
     }

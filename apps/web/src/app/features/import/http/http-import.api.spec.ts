@@ -29,6 +29,7 @@ describe('HttpImportApi', () => {
       [() => api.list().subscribe(), 'GET', '/api/imports', null],
       [() => api.get('i1').subscribe(), 'GET', '/api/imports/i1', null],
       [() => api.groups(groups).subscribe(), 'POST', '/api/imports/groups', groups],
+      [() => api.releaseGroups().subscribe(), 'DELETE', '/api/imports/groups', null],
       [
         () => api.check(['https://a.example/']).subscribe(),
         'POST',

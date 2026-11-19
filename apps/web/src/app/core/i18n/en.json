@@ -1485,7 +1485,8 @@
         "other": "Import and create {{count}} folders"
       },
       "failed": "The links could not be grouped right now. Nothing was used from your allowance. Go back, or import them without groups.",
-      "allowance": "Not enough of the allowance for existing links is left for these links. Go back, or import them without groups."
+      "allowance": "Not enough of the allowance for existing links is left for these links. Go back, or import them without groups.",
+      "monthly": "You have already grouped as many links with AI this month as you can. Import them as in the file, or without folders."
     },
     "ai": {
       "doneTitle": "Descriptions and tags are ready",

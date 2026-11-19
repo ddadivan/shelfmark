@@ -187,4 +187,14 @@ describe('ImportAiFollowService', () => {
 
     expect(get).not.toHaveBeenCalled();
   });
+
+  it('stops watching an import that was undone', async () => {
+    const { service, get } = await setup();
+
+    service.watch('imp1');
+    service.unwatch('imp1');
+    await vi.advanceTimersByTimeAsync(IMPORT_AI_POLL.FirstMs * 3);
+
+    expect(get).not.toHaveBeenCalled();
+  });
 });

@@ -40,6 +40,7 @@ async function setup(running = false) {
     list: vi.fn(),
     get: vi.fn(),
     groups: vi.fn<ImportApi['groups']>(),
+    releaseGroups: vi.fn<ImportApi['releaseGroups']>(() => of(undefined)),
     check: vi.fn<ImportApi['check']>(() => of({ saved: [], room: 10_000 })),
     start: vi.fn(),
     addLinks: vi.fn(),
@@ -525,6 +526,33 @@ describe('ImportFlowService', () => {
 
       expect(flow.step()).toBe(IMPORT_STEP.Review);
       expect(flow.groups.groups()).toEqual([]);
+    });
+
+    it('gives the grouping units back on Back, on another choice and after a failed grouping', async () => {
+      const { flow, api } = await grouped();
+      await flow.requestGroups();
+      flow.back();
+      expect(api.releaseGroups).toHaveBeenCalledTimes(1);
+
+      await flow.requestGroups();
+      flow.setFoldersMode(IMPORT_FOLDERS_MODE.None);
+      expect(api.releaseGroups).toHaveBeenCalledTimes(2);
+
+      flow.setFoldersMode(IMPORT_FOLDERS_MODE.Ai);
+      api.groups.mockReturnValue(throwError(() => new Error('503')));
+      await flow.requestGroups();
+      flow.importAsFile();
+      expect(api.releaseGroups).toHaveBeenCalledTimes(3);
+    });
+
+    it('keeps the units when the import takes the grouping', async () => {
+      const { flow, api } = await grouped();
+      await flow.requestGroups();
+
+      flow.startImport();
+      flow.groups.release();
+
+      expect(api.releaseGroups).not.toHaveBeenCalled();
     });
 
     it('imports as the file has it after a failed grouping, without the AI pass', async () => {

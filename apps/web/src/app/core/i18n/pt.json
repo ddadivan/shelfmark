@@ -1528,7 +1528,8 @@
         "other": "Importar e criar {{count}} pastas"
       },
       "failed": "Não foi possível agrupar os links agora. Nada foi usado da sua cota. Volte ou importe-os sem grupos.",
-      "allowance": "Não sobrou cota suficiente para links existentes para estes links. Volte ou importe-os sem grupos."
+      "allowance": "Não sobrou cota suficiente para links existentes para estes links. Volte ou importe-os sem grupos.",
+      "monthly": "Neste mês você já agrupou com IA todos os links possíveis. Importe como no arquivo ou sem pastas."
     },
     "ai": {
       "doneTitle": "Descrições e tags prontas",

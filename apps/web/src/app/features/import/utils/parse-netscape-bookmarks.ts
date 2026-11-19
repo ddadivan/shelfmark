@@ -3,6 +3,7 @@ import {
   IMPORT_LIMIT,
   LINK_LIMIT,
   normalizeTagName,
+  stripTrackingParams,
   TAG_LIMIT,
 } from '@shelfmark/contracts';
 import type { BookmarkDraftFolder } from '../models/bookmark-draft-folder.interface';
@@ -13,6 +14,7 @@ import type { ParsedImportLink } from '../models/parsed-import-link.interface';
 import { bookmarkDate } from './bookmark-date';
 import { cleanLine, cleanNote } from './clean-text';
 import { ImportParseError } from './import-parse-error';
+import { isStorableUrl } from './storable-url';
 
 const NETSCAPE_DOCTYPE = /<!DOCTYPE\s+NETSCAPE-Bookmark-file-1>/i;
 
@@ -140,20 +142,16 @@ function ownText(element: Element): string {
     .join('');
 }
 
-/** The trimmed address when it is an http(s) URL within the length limit, else `null`. */
+/**
+ * The trimmed address when the API would store it (`isStorableUrl`: http(s), no credentials, no
+ * control characters, within the length limit, also after the tracking parameters are dropped),
+ * else `null`.
+ */
 function webUrl(href: string | null): string | null {
   const value = (href ?? '').trim();
-  if (value === '' || value.length > LINK_LIMIT.UrlMax) {
-    return null;
-  }
-  try {
-    const parsed = new URL(value);
-    return (parsed.protocol === 'http:' || parsed.protocol === 'https:') && parsed.hostname !== ''
-      ? value
-      : null;
-  } catch {
-    return null;
-  }
+  return value !== '' && isStorableUrl(value) && isStorableUrl(stripTrackingParams(value))
+    ? value
+    : null;
 }
 
 /** Firefox's `TAGS="a,b"`: normalised names, no repeats (any case), within the tag limits. */

@@ -41,6 +41,10 @@ export class HttpImportApi implements ImportApi {
     });
   }
 
+  releaseGroups(): Observable<void> {
+    return this.http.delete<void>(IMPORT_ENDPOINT.Groups, { context: skipErrorToast() });
+  }
+
   check(urls: readonly string[]): Observable<ImportCheckResponse> {
     const body: ImportCheckRequest = { urls: [...urls] };
     return this.http.post<ImportCheckResponse>(IMPORT_ENDPOINT.Check, body, {

@@ -12,6 +12,7 @@ import {
   type StartImportResponse,
 } from '@shelfmark/contracts';
 import { firstValueFrom, type Observable } from 'rxjs';
+import { hasApiMessage } from '../../../core/api/api-error';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MOCK_HOST } from '../../links/models/mock-host.const';
 import { MockImportApi } from './mock-import.api';
@@ -340,6 +341,21 @@ describe('MockImportApi', () => {
 
       expect((quota.error as HttpErrorResponse).status).toBe(409);
       expect((fail.error as HttpErrorResponse).status).toBe(503);
+    });
+
+    it('answers 409 with the monthly message and releases units without an answer to wait for', async () => {
+      const { api } = setup();
+
+      const monthly = await settle(
+        api.groups({
+          links: [{ title: 'x', url: 'https://example.org/ai-monthly' }],
+          folderNames: [],
+        }),
+      );
+
+      expect((monthly.error as HttpErrorResponse).status).toBe(409);
+      expect(hasApiMessage(monthly.error, IMPORT_ERROR_MESSAGE.GroupsMonthly)).toBe(true);
+      expect((await settle(api.releaseGroups())).error).toBeNull();
     });
   });
 

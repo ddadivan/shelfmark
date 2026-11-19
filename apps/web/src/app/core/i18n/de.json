@@ -1485,7 +1485,8 @@
         "other": "Importieren und {{count}} Ordner erstellen"
       },
       "failed": "Die Links konnten gerade nicht gruppiert werden. Von deinem Kontingent wurde nichts verbraucht. Geh zurück oder importiere sie ohne Gruppen.",
-      "allowance": "Vom Kontingent für vorhandene Links ist nicht genug für diese Links übrig. Geh zurück oder importiere sie ohne Gruppen."
+      "allowance": "Vom Kontingent für vorhandene Links ist nicht genug für diese Links übrig. Geh zurück oder importiere sie ohne Gruppen.",
+      "monthly": "Du hast diesen Monat schon so viele Links mit KI gruppiert, wie möglich ist. Importiere sie wie in der Datei oder ohne Ordner."
     },
     "ai": {
       "doneTitle": "Beschreibungen und Tags sind fertig",
