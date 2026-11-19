@@ -60,7 +60,7 @@ test.describe('AI announcement (#507, mock API)', () => {
     await openUnseen(page);
     const dialog = page.getByRole('dialog', { name: TITLE });
     await expect(dialog).toBeVisible({ timeout: 10_000 });
-    // Sampled on every frame while the entrance plays (about 1.5 s).
+    // Sampled about every frame while the entrance plays (about 1.5 s).
     const overflow = await dialog.evaluate(
       (panel) =>
         new Promise<number>((resolve) => {
@@ -69,7 +69,7 @@ test.describe('AI announcement (#507, mock API)', () => {
           const start = performance.now();
           const sample = (): void => {
             if (body) most = Math.max(most, body.scrollHeight - body.clientHeight);
-            if (performance.now() - start < 2000) requestAnimationFrame(sample);
+            if (performance.now() - start < 2000) setTimeout(sample, 16);
             else resolve(most);
           };
           sample();

@@ -505,11 +505,12 @@ test.describe('bulk bar fits narrow desktop windows', () => {
       await expect(toolbar).toBeVisible();
       for (const width of [1440, 1280, 1180, 1100, 1024]) {
         await page.setViewportSize({ width, height: 900 });
+        const viewport = width;
         // The layout follows a ResizeObserver: poll until the bar settles.
         await expect
           .poll(
             () =>
-              toolbar.evaluate((bar) => {
+              toolbar.evaluate((bar, windowWidth) => {
                 const box = bar.getBoundingClientRect();
                 const buttons = [...bar.querySelectorAll('button')].map((b) =>
                   b.getBoundingClientRect(),
@@ -518,9 +519,9 @@ test.describe('bulk bar fits narrow desktop windows', () => {
                   overflow: bar.scrollWidth - bar.clientWidth,
                   outside: buttons.filter((b) => b.left < box.left - 1 || b.right > box.right + 1)
                     .length,
-                  inWindow: box.right <= window.innerWidth,
+                  inWindow: box.right <= windowWidth,
                 };
-              }),
+              }, viewport),
             { message: `${language} at ${width}px` },
           )
           .toEqual({ overflow: 0, outside: 0, inWindow: true });
