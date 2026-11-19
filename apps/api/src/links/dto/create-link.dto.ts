@@ -119,15 +119,17 @@ export class CreateLinkDto implements CreateLinkRequest {
 
   @ApiPropertyOptional({
     maxLength: AI_LIMIT.SummaryMax,
+    nullable: true,
+    type: String,
     description:
-      'Your own summary (stored as yours, AI never replaces it); leave it out to take the AI summary of the draft',
+      'Your own summary (stored as yours, AI never replaces it); null saves the link without a summary and AI adds none for this save; leave it out to take the AI summary (of the draft)',
   })
   @IsOptional()
   @TrimString()
   @IsString()
   @NoControlChars(true)
   @MaxLength(AI_LIMIT.SummaryMax)
-  summary?: string;
+  summary?: string | null;
 
   @ApiPropertyOptional({
     format: 'uuid',

@@ -14,6 +14,15 @@ describe('requestedParts', () => {
     expect(requestedParts(ON, { folderSet: false, tagsSet: true })).toEqual(['folder', 'summary']);
   });
 
+  it('leaves the summary out when the save declined it', () => {
+    expect(requestedParts(ON, { ...OPEN, summaryDeclined: true })).toEqual(['tags', 'folder']);
+    expect(requestedParts(ON, { ...OPEN, summaryDeclined: false })).toEqual([
+      'tags',
+      'folder',
+      'summary',
+    ]);
+  });
+
   it('never asks for a part that is off', () => {
     expect(requestedParts({ ...ON, tagsMode: 'off', folderMode: 'auto' }, OPEN)).toEqual([
       'folder',

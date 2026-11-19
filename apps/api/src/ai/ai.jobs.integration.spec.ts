@@ -643,6 +643,64 @@ describe('AI link jobs', () => {
       expect((await job(started.id)).title).toBeNull();
     });
 
+    it("saves without a summary when the user cleared AI's text (summary: null, #507)", async () => {
+      await turnOn();
+      await tag('design');
+      const draftId = randomUUID();
+      const started = await draft({ draftId });
+      await deferrer.flush();
+      expect((await job(started.id)).summary).toBe('A page about Design systems.');
+      const saved = await save({ aiDraftId: draftId, summary: null });
+      expect(saved).toMatchObject({ summary: null, summarySource: null, aiStatus: 'done' });
+      const attached = await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: started.id } });
+      expect(attached).toMatchObject({ linkId: saved.id, parts: ['tags', 'folder'] });
+      // The rest of the draft still lands: its suggestions.
+      expect((await suggestions(saved.id)).map((entry) => entry.tagName).sort()).toEqual([
+        'design',
+        'example',
+      ]);
+      expect((await link(saved.id)).summary).toBeNull();
+    });
+
+    it('keeps the link without a summary when the draft finishes after a save with summary: null', async () => {
+      await turnOn();
+      const draftId = randomUUID();
+      await draft({ draftId });
+      const saved = await save({ aiDraftId: draftId, summary: null });
+      expect(saved).toMatchObject({ summary: null, aiStatus: 'pending' });
+      await deferrer.flush();
+      expect(await link(saved.id)).toMatchObject({
+        summary: null,
+        summarySource: null,
+        aiStatus: 'done',
+      });
+    });
+
+    it('applies the draft summary when the save leaves summary out, and the user text wins', async () => {
+      await turnOn();
+      const left = randomUUID();
+      await draft({ draftId: left, url: 'https://example.com/left' });
+      const edited = randomUUID();
+      await draft({ draftId: edited, url: 'https://example.com/edited' });
+      await deferrer.flush();
+      const auto = await save({ aiDraftId: left, url: 'https://example.com/left' });
+      expect(auto).toMatchObject({ summary: 'A page about Design systems.', summarySource: 'ai' });
+      const mine = await save({
+        aiDraftId: edited,
+        url: 'https://example.com/edited',
+        summary: '  Edited by me.  ',
+      });
+      expect(mine).toMatchObject({ summary: 'Edited by me.', summarySource: 'user' });
+    });
+
+    it('does not ask a new save job for a summary with summary: null', async () => {
+      await turnOn();
+      const saved = await save({ summary: null });
+      expect((await jobsOf(saved.id)).map((row) => row.parts)).toEqual([['tags', 'folder']]);
+      await deferrer.flush();
+      expect(await link(saved.id)).toMatchObject({ summary: null, summarySource: null });
+    });
+
     it('applies the result on the link when the draft finishes after the save', async () => {
       await turnOn();
       await tag('design');
@@ -822,6 +880,10 @@ describe('AI link jobs', () => {
         .post('/api/links')
         .send({ url: 'https://example.com', aiDraftId: 'nope' })
         .expect(400);
+      // The create summary: text, null or left out; nothing else.
+      for (const summary of [5, false, 'x'.repeat(301), 'a\u0000b', ['x']]) {
+        await a.post('/api/links').send({ url: 'https://example.com', summary }).expect(400);
+      }
       await a.get(AI_ENDPOINT.Job.replace(':id', 'nope')).expect(400);
       const missing = await a.get(AI_ENDPOINT.Job.replace(':id', randomUUID())).expect(404);
       expect(missing.body.message).toBe(AI_ERROR_MESSAGE.JobNotFound);
@@ -864,6 +926,17 @@ describe('AI link jobs', () => {
       expect(ownerJob.linkId).toBeNull();
       expect(ownerJob.result).not.toBeNull();
       expect((await jobsOf(saved.id)).map((row) => row.id)).toEqual([intruders.id]);
+
+      // A draft id only the owner has: the intruder's save gets none of its result.
+      const ownOnly = randomUUID();
+      const ownerOnly = await draft({ draftId: ownOnly });
+      await deferrer.flush();
+      const foreign = await save({ aiDraftId: ownOnly, url: 'https://example.com/c' }, b);
+      expect(foreign).toMatchObject({ summary: null, summarySource: null });
+      const untouched = await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: ownerOnly.id } });
+      expect(untouched.linkId).toBeNull();
+      expect(untouched.result).not.toBeNull();
+      expect((await jobsOf(foreign.id)).map((row) => row.id)).not.toContain(ownerOnly.id);
     });
 
     it("never puts another user's tags or folders into a prompt", async () => {
