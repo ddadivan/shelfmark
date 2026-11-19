@@ -1,6 +1,6 @@
 import { computed, DestroyRef, inject, Service, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { catchError, debounce, map, of, switchMap, tap, timer } from 'rxjs';
+import { catchError, debounce, filter, map, of, switchMap, tap, timer } from 'rxjs';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { FoldersStore } from '../../../stores/folders.store';
 import { LINKS_API } from '../../links/models/links-api.const';
@@ -8,6 +8,8 @@ import { NEW_VIEW_PREVIEW } from '../models/new-view-preview.const';
 import type { ViewPreview } from '../models/view-preview.interface';
 import { previewOf, previewQueryOf } from '../utils/view-preview';
 import { NewViewFormService } from './new-view-form.service';
+import { NewViewPhraseService } from './new-view-phrase.service';
+import type { SavedViewQuery } from '@shelfmark/contracts';
 
 /**
  * The live count of the new view dialog (provided by the dialog): what the rows would list, asked
@@ -20,6 +22,11 @@ export class NewViewPreviewService {
   private readonly api = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
   private readonly formState = inject(NewViewFormService);
+  private readonly phrase = inject(NewViewPhraseService);
+  /** What the rows list, or `null` while the phrase step hides them (nothing is asked then). */
+  private readonly shown = computed(() =>
+    this.phrase.showPhrase() ? null : this.formState.query(),
+  );
 
   /** The last answer; `null` before the first and after a failure. */
   readonly preview = signal<ViewPreview | null>(null);
@@ -37,8 +44,9 @@ export class NewViewPreviewService {
 
   constructor() {
     let first = true;
-    toObservable(this.formState.query)
+    toObservable(this.shown)
       .pipe(
+        filter((query): query is SavedViewQuery => query !== null),
         tap(() => this.busy.set(true)),
         debounce(() => {
           const wait = first ? 0 : NEW_VIEW_PREVIEW.DebounceMs;

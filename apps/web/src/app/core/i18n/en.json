@@ -2093,8 +2093,6 @@
       "cancel": "Cancel"
     },
     "create": {
-      "title": "Save this view",
-      "action": "Save view",
       "saving": "Saving…",
       "failed": "Couldn't save the view. Try again.",
       "limit": "You already have the most views you can save. Delete one first.",
@@ -2185,7 +2183,8 @@
       },
       "q": {
         "label": "Search words",
-        "placeholder": "Words in the title, note or address"
+        "placeholder": "Words in the title, note or address",
+        "tooLong": "Use at most {{max}} characters"
       },
       "sort": {
         "label": "Sort"

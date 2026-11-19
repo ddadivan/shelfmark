@@ -2,7 +2,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
 import { FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { LINK_LIMIT, SAVED_VIEW_LIMIT, VIEW_DRAFT_FIELD } from '@shelfmark/contracts';
+import { SAVED_VIEW_LIMIT, VIEW_DRAFT_FIELD } from '@shelfmark/contracts';
 import {
   AiLineComponent,
   BUTTON_SIZE,
@@ -71,8 +71,6 @@ export class NewViewDialogComponent {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly FIELD = VIEW_DRAFT_FIELD;
-  protected readonly LINK_LIMIT = LINK_LIMIT;
-  protected readonly NAME_MAX = SAVED_VIEW_LIMIT.NameMax;
   protected readonly TAGS_MAX = SAVED_VIEW_LIMIT.TagsMax;
   protected readonly PREVIEW_ROWS = NEW_VIEW_PREVIEW.Rows;
 

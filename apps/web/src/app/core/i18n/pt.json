@@ -2132,8 +2132,6 @@
       "cancel": "Cancelar"
     },
     "create": {
-      "title": "Salvar esta visualização",
-      "action": "Salvar visualização",
       "saving": "Salvando…",
       "failed": "Não foi possível salvar a visualização. Tente de novo.",
       "limit": "Você já tem o máximo de visualizações. Exclua uma antes.",
@@ -2224,7 +2222,8 @@
       },
       "q": {
         "label": "Palavras da busca",
-        "placeholder": "Palavras do título, da nota ou do endereço"
+        "placeholder": "Palavras do título, da nota ou do endereço",
+        "tooLong": "Use no máximo {{max}} caracteres"
       },
       "sort": {
         "label": "Ordem"

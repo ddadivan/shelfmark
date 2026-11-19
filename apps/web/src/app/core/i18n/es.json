@@ -2132,8 +2132,6 @@
       "cancel": "Cancelar"
     },
     "create": {
-      "title": "Guardar esta vista",
-      "action": "Guardar vista",
       "saving": "Guardando…",
       "failed": "No se pudo guardar la vista. Inténtalo de nuevo.",
       "limit": "Ya tienes el máximo de vistas que puedes guardar. Elimina una primero.",
@@ -2224,7 +2222,8 @@
       },
       "q": {
         "label": "Palabras de búsqueda",
-        "placeholder": "Palabras del título, la nota o la dirección"
+        "placeholder": "Palabras del título, la nota o la dirección",
+        "tooLong": "Usa {{max}} caracteres como máximo"
       },
       "sort": {
         "label": "Orden"

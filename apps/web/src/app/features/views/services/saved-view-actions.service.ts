@@ -9,7 +9,6 @@ import { SavedViewsStore } from '../../../stores/saved-views.store';
 import { AiSettingsStore } from '../../ai/services/ai-settings.store';
 import type { LinksFilter } from '../../links/models/links-filter.type';
 import type { ViewNameDialogData } from '../models/view-name-dialog-data.interface';
-import { VIEW_NAME_MODE } from '../models/view-name-mode.const';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { feedAllNavigation, savedQueryOf, viewNavigationOnFeed } from '../utils/feed-views';
 import { normalizeViewQuery, viewQueryOf } from '../utils/saved-view-query';
@@ -118,7 +117,6 @@ export class SavedViewActionsService {
         size: DIALOG_SIZE.Sm,
         autoFocus: DIALOG_FIRST_FIELD,
         data: {
-          mode: VIEW_NAME_MODE.Rename,
           name: view.name,
           submit: (name) => {
             void this.store.rename(view.id, name).then((done) => {

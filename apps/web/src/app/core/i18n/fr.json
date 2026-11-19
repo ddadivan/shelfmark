@@ -2132,8 +2132,6 @@
       "cancel": "Annuler"
     },
     "create": {
-      "title": "Enregistrer cette vue",
-      "action": "Enregistrer la vue",
       "saving": "Enregistrement…",
       "failed": "Impossible d’enregistrer la vue. Réessayez.",
       "limit": "Vous avez déjà le nombre maximal de vues. Supprimez-en une d’abord.",
@@ -2224,7 +2222,8 @@
       },
       "q": {
         "label": "Mots recherchés",
-        "placeholder": "Mots du titre, de la note ou de l’adresse"
+        "placeholder": "Mots du titre, de la note ou de l’adresse",
+        "tooLong": "{{max}} caractères au maximum"
       },
       "sort": {
         "label": "Tri"

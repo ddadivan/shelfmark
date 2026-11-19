@@ -1,9 +1,6 @@
-import type { ViewNameMode } from './view-name-mode.type';
-
 /** Data of the saved view name dialog. */
 export interface ViewNameDialogData {
-  mode: ViewNameMode;
-  /** The current name (empty for a new view). */
+  /** The view's current name. */
   name: string;
   /**
    * Saves the trimmed name. Resolves `null` on success (the dialog closes), or the translation key

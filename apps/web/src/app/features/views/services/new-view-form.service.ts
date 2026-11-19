@@ -65,7 +65,7 @@ export class NewViewFormService {
         message: () => this.text('views.name.tooLong', { max: SAVED_VIEW_LIMIT.NameMax }),
       });
       maxLength(path.q, LINK_LIMIT.QueryMax, {
-        message: () => this.text('views.name.tooLong', { max: LINK_LIMIT.QueryMax }),
+        message: () => this.text('views.new.q.tooLong', { max: LINK_LIMIT.QueryMax }),
       });
       // Existing tags only: a typed name that is not one of the user's tags is an error.
       validate(path.tags, ({ value }): ValidationError.WithoutFieldTree | undefined => {

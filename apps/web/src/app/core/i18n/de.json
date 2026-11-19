@@ -2093,8 +2093,6 @@
       "cancel": "Abbrechen"
     },
     "create": {
-      "title": "Diese Ansicht speichern",
-      "action": "Ansicht speichern",
       "saving": "Wird gespeichert…",
       "failed": "Ansicht konnte nicht gespeichert werden. Versuch es noch einmal.",
       "limit": "Du hast schon die maximale Anzahl an Ansichten. Lösche zuerst eine.",
@@ -2185,7 +2183,8 @@
       },
       "q": {
         "label": "Suchwörter",
-        "placeholder": "Wörter in Titel, Notiz oder Adresse"
+        "placeholder": "Wörter in Titel, Notiz oder Adresse",
+        "tooLong": "Höchstens {{max}} Zeichen"
       },
       "sort": {
         "label": "Sortierung"

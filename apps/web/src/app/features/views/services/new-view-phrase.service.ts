@@ -48,7 +48,6 @@ export class NewViewPhraseService {
   readonly state = signal<NewViewCompose>(NEW_VIEW_COMPOSE.Idle);
   /** The phrase field and its ideas show; the rows wait for the first draft or "save the current filter". */
   readonly showPhrase = computed(() => this.on() && this.step() === NEW_VIEW_STEP.Phrase);
-  readonly showRows = computed(() => !this.showPhrase());
   readonly composing = computed(() => this.state() === NEW_VIEW_COMPOSE.Composing);
   /** The rows hold a draft: the phrase shows as one line with "Change". */
   readonly composed = computed(() => this.on() && this.state() === NEW_VIEW_COMPOSE.Done);

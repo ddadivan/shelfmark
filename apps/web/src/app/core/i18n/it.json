@@ -2132,8 +2132,6 @@
       "cancel": "Annulla"
     },
     "create": {
-      "title": "Salva questa vista",
-      "action": "Salva vista",
       "saving": "Salvataggio…",
       "failed": "Impossibile salvare la vista. Riprova.",
       "limit": "Hai già il numero massimo di viste. Prima eliminane una.",
@@ -2224,7 +2222,8 @@
       },
       "q": {
         "label": "Parole da cercare",
-        "placeholder": "Parole nel titolo, nella nota o nell’indirizzo"
+        "placeholder": "Parole nel titolo, nella nota o nell’indirizzo",
+        "tooLong": "Usa al massimo {{max}} caratteri"
       },
       "sort": {
         "label": "Ordine"
