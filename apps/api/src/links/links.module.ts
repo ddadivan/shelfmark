@@ -28,6 +28,6 @@ import { LinksService } from './links.service';
     LinkImageRecaptureService,
     LinkImagesService,
   ],
-  exports: [LinksService, LinksWriteService],
+  exports: [LinksService, LinksWriteService, LinksBatchService],
 })
 export class LinksModule {}

@@ -79,4 +79,11 @@ export const RATE_LIMIT = {
   // dismissal; apply and its Undo (up to 100 groups and 20 merges in one transaction).
   CleanupRun: { limit: 6, ttl: MINUTE_MS },
   CleanupApply: { limit: 10, ttl: MINUTE_MS },
+  // Import of a bookmark file (#387, ADR 0056): start (folders in one transaction) and Undo are rare
+  // and heavy; the duplicate check is read-only, one call per 500 URLs; batches come one after
+  // another from the browser (100 links each, 10,000 links = 100 calls, so 120 a minute is enough).
+  ImportStart: { limit: 10, ttl: MINUTE_MS },
+  ImportCheck: { limit: 60, ttl: MINUTE_MS },
+  ImportBatch: { limit: 120, ttl: MINUTE_MS },
+  ImportUndo: { limit: 10, ttl: MINUTE_MS },
 } as const satisfies Record<string, RateLimitPreset>;

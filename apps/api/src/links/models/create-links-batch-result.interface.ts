@@ -4,4 +4,8 @@ import type { CreateLinksBatchResponse } from '@shelfmark/contracts';
 export interface CreateLinksBatchResult {
   response: CreateLinksBatchResponse;
   created: boolean;
+  /** Links this request created. */
+  createdCount: number;
+  /** Links an earlier try of the same keys had created. */
+  replayedCount: number;
 }
