@@ -191,27 +191,18 @@
               <ui-menu-separator />
               }
               <ui-menu-label>{{ 'export.menu' | transloco }}</ui-menu-label>
-              @if (filters.viewScope()) {
-              <ui-menu-item icon="code" (activated)="exportView(EXPORT_FORMAT.Json)">
-                {{ 'export.view.json' | transloco }}
+              @if (filters.viewScope()) { @for (format of EXPORT_FORMAT_OPTIONS; track format.value)
+              {
+              <ui-menu-item [icon]="format.icon" (activated)="exportView(format.value)">
+                {{ format.viewKey | transloco }}
               </ui-menu-item>
-              <ui-menu-item icon="globe" (activated)="exportView(EXPORT_FORMAT.Html)">
-                {{ 'export.view.html' | transloco }}
-              </ui-menu-item>
-              <ui-menu-item icon="list" (activated)="exportView(EXPORT_FORMAT.Csv)">
-                {{ 'export.view.csv' | transloco }}
-              </ui-menu-item>
-              <ui-menu-separator />
               }
-              <ui-menu-item icon="code" (activated)="exportAll(EXPORT_FORMAT.Json)">
-                {{ 'export.all.json' | transloco }}
+              <ui-menu-separator />
+              } @for (format of EXPORT_FORMAT_OPTIONS; track format.value) {
+              <ui-menu-item [icon]="format.icon" (activated)="exportAll(format.value)">
+                {{ format.allKey | transloco }}
               </ui-menu-item>
-              <ui-menu-item icon="globe" (activated)="exportAll(EXPORT_FORMAT.Html)">
-                {{ 'export.all.html' | transloco }}
-              </ui-menu-item>
-              <ui-menu-item icon="list" (activated)="exportAll(EXPORT_FORMAT.Csv)">
-                {{ 'export.all.csv' | transloco }}
-              </ui-menu-item>
+              }
             </ui-menu>
           </div>
           } @else {
@@ -262,27 +253,18 @@
               {{ 'export.menu' | transloco }}
             </ui-button>
             <ui-menu #exportMenu align="end" [ariaLabel]="'export.menu' | transloco">
-              @if (filters.viewScope()) {
-              <ui-menu-item icon="code" (activated)="exportView(EXPORT_FORMAT.Json)">
-                {{ 'export.view.json' | transloco }}
+              @if (filters.viewScope()) { @for (format of EXPORT_FORMAT_OPTIONS; track format.value)
+              {
+              <ui-menu-item [icon]="format.icon" (activated)="exportView(format.value)">
+                {{ format.viewKey | transloco }}
               </ui-menu-item>
-              <ui-menu-item icon="globe" (activated)="exportView(EXPORT_FORMAT.Html)">
-                {{ 'export.view.html' | transloco }}
-              </ui-menu-item>
-              <ui-menu-item icon="list" (activated)="exportView(EXPORT_FORMAT.Csv)">
-                {{ 'export.view.csv' | transloco }}
-              </ui-menu-item>
-              <ui-menu-separator />
               }
-              <ui-menu-item icon="code" (activated)="exportAll(EXPORT_FORMAT.Json)">
-                {{ 'export.all.json' | transloco }}
+              <ui-menu-separator />
+              } @for (format of EXPORT_FORMAT_OPTIONS; track format.value) {
+              <ui-menu-item [icon]="format.icon" (activated)="exportAll(format.value)">
+                {{ format.allKey | transloco }}
               </ui-menu-item>
-              <ui-menu-item icon="globe" (activated)="exportAll(EXPORT_FORMAT.Html)">
-                {{ 'export.all.html' | transloco }}
-              </ui-menu-item>
-              <ui-menu-item icon="list" (activated)="exportAll(EXPORT_FORMAT.Csv)">
-                {{ 'export.all.csv' | transloco }}
-              </ui-menu-item>
+              }
             </ui-menu>
             @if (wide()) {
             <ui-button

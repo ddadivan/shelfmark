@@ -1627,10 +1627,6 @@
       "title": "Tus datos",
       "export": {
         "label": "Exporta tus datos",
-        "json": "JSON",
-        "jsonHint": "Todas tus carpetas, etiquetas y enlaces en un archivo",
-        "html": "HTML de marcadores",
-        "htmlHint": "Se abre con la importación de marcadores de cualquier navegador",
         "download": "Descargar",
         "downloadAs": "Descargar {{format}}"
       }

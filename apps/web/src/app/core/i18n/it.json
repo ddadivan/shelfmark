@@ -1627,10 +1627,6 @@
       "title": "I tuoi dati",
       "export": {
         "label": "Esporta i tuoi dati",
-        "json": "JSON",
-        "jsonHint": "Tutte le cartelle, i tag e i link in un solo file",
-        "html": "HTML dei preferiti",
-        "htmlHint": "Si apre con l’importazione dei preferiti di qualsiasi browser",
         "download": "Scarica",
         "downloadAs": "Scarica {{format}}"
       }

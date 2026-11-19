@@ -1627,10 +1627,6 @@
       "title": "Vos données",
       "export": {
         "label": "Exporter vos données",
-        "json": "JSON",
-        "jsonHint": "Tous vos dossiers, tags et liens dans un seul fichier",
-        "html": "Favoris HTML",
-        "htmlHint": "S’ouvre dans l’import de favoris de n’importe quel navigateur",
         "download": "Télécharger",
         "downloadAs": "Télécharger en {{format}}"
       }

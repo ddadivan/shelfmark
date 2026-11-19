@@ -1582,10 +1582,6 @@
       "title": "Deine Daten",
       "export": {
         "label": "Deine Daten exportieren",
-        "json": "JSON",
-        "jsonHint": "Alle deine Ordner, Tags und Links in einer Datei",
-        "html": "Lesezeichen-HTML",
-        "htmlHint": "Lässt sich in jedem Browser als Lesezeichen importieren",
         "download": "Herunterladen",
         "downloadAs": "{{format}} herunterladen"
       }
