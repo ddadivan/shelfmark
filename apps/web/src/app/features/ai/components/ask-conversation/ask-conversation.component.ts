@@ -1,17 +1,26 @@
 import {
+  afterNextRender,
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
   effect,
+  ElementRef,
   inject,
+  Injector,
   input,
   untracked,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { IconComponent, type IconName, ListItemComponent, UiDialogRef } from '@shelfmark/ui';
+import {
+  IconComponent,
+  type IconName,
+  ListItemComponent,
+  ReducedMotion,
+  UiDialogRef,
+} from '@shelfmark/ui';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { LinkActionsService } from '../../../links/services/link-actions.service';
@@ -26,8 +35,9 @@ import { AskEntryComponent } from '../ask-entry/ask-entry.component';
  * The Ask conversation: before the first question a title, the lead, a "Try" caption and up to three starter cards from
  * the user's largest folders; then the questions with their answers. A question handed over
  * (`AskInbox`, from ⌘K or the phone search) is asked as soon as it shows, or dropped while another
- * question streams; the inbox is cleared when the panel closes. "Search" and "Add a link"
- * close the surrounding panel first. Uses the panel's `AskStore`.
+ * question streams; the inbox is cleared when the panel closes. Each new question scrolls the
+ * chat (the panel body or the page) so it shows at the top, with its answer coming in below.
+ * "Search" and "Add a link" close the surrounding panel first. Uses the panel's `AskStore`.
  */
 @Component({
   selector: 'app-ask-conversation',
@@ -46,6 +56,9 @@ export class AskConversationComponent {
   private readonly router = inject(Router);
   private readonly links = inject(LinkActionsService);
   private readonly ref = inject(UiDialogRef, { optional: true });
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  private readonly motion = inject(ReducedMotion);
 
   protected readonly starters = computed(() => askStarters(this.folders.entities()));
 
@@ -63,7 +76,22 @@ export class AskConversationComponent {
         });
       }
     });
+    let count = this.store.entries().length;
+    effect(() => {
+      const next = this.store.entries().length;
+      if (next > count) {
+        afterNextRender(() => this.revealLatest(), { injector: this.injector });
+      }
+      count = next;
+    });
     inject(DestroyRef).onDestroy(() => this.inbox.clear());
+  }
+
+  /** Scrolls the newest question to the top of whatever scrolls the chat. */
+  private revealLatest(): void {
+    const latest = [...this.host.nativeElement.querySelectorAll('app-ask-entry')].at(-1);
+    if (typeof latest?.scrollIntoView !== 'function') return;
+    latest.scrollIntoView({ block: 'start', behavior: this.motion.reduced() ? 'auto' : 'smooth' });
   }
 
   protected starterIcon(key: string): IconName {
