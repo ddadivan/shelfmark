@@ -120,6 +120,7 @@ model User {
   rediscoverHidden      RediscoverHidden[]
   rediscoverState       RediscoverState?
   cleanupReport         CleanupReport?
+  imports               Import[]
 
   @@map("users")
 }
@@ -208,7 +209,10 @@ model Folder {
   deletedAt      DateTime?        @map("deleted_at") @db.Timestamptz(3)
   createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt      DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+  // The import that created the folder (#387, ADR 0056); NULL otherwise. Undo moves these to Trash.
+  importId       String?          @map("import_id") @db.Uuid
   user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  import         Import?          @relation(fields: [importId], references: [id], onDelete: SetNull)
   parent         Folder?          @relation("FolderTree", fields: [parentId, userId], references: [id, userId], onDelete: Cascade)
   children       Folder[]         @relation("FolderTree")
   links          Link[]
@@ -264,7 +268,10 @@ model Link {
   deletedAt          DateTime?          @map("deleted_at") @db.Timestamptz(3)
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+  // The import that created the link (#387, ADR 0056); NULL otherwise. Partial index in the migration.
+  importId           String?            @map("import_id") @db.Uuid
   user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  import             Import?            @relation(fields: [importId], references: [id], onDelete: SetNull)
   folder             Folder?            @relation(fields: [folderId], references: [id], onDelete: SetNull)
   tags               LinkTag[]
   images             LinkImage[]
@@ -316,7 +323,10 @@ model Tag {
   name      String    @db.VarChar(50)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  // The import whose batch created the tag (#387, ADR 0056); NULL otherwise.
+  importId  String?   @map("import_id") @db.Uuid
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  import    Import?   @relation(fields: [importId], references: [id], onDelete: SetNull)
   links     LinkTag[]
 
   @@unique([userId, name])
@@ -742,4 +752,30 @@ model McpTokenUsage {
 
   @@id([tokenId, day])
   @@map("mcp_token_usage")
+}
+
+// One import of a bookmark file (#387, ADR 0056). The rows it created carry its id (import_id on
+// links, folders and tags) so Undo is exact. `source` is kept to IMPORT_SOURCE by a CHECK in the
+// migration. `targetFolderId` has no relation on purpose (like users.new_links_folder_id): the API
+// answers it only while it is a live own folder.
+model Import {
+  id             String    @id @default(uuid(7)) @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  source         String    @db.VarChar(16)
+  fileName       String    @map("file_name") @db.VarChar(255)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  finishedAt     DateTime? @map("finished_at") @db.Timestamptz(3)
+  undoneAt       DateTime? @map("undone_at") @db.Timestamptz(3)
+  linksCreated   Int       @default(0) @map("links_created")
+  foldersCreated Int       @default(0) @map("folders_created")
+  skipped        Int       @default(0)
+  failed         Int       @default(0)
+  targetFolderId String?   @map("target_folder_id") @db.Uuid
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links          Link[]
+  folders        Folder[]
+  tags           Tag[]
+
+  @@index([userId, createdAt])
+  @@map("imports")
 }
