@@ -9,10 +9,11 @@ import { openTrash, trashRow } from './support/trash';
 import { E2E_TAG } from './models/e2e-tag.const';
 
 // A real Chrome export (the parser's fixture in apps/web): 8 web links in nested folders, one
-// repeated address, a bookmarklet and a chrome:// entry. Nx runs e2e from the workspace root.
+// repeated address, a bookmarklet and a chrome:// entry. Resolved from this file, not the working
+// directory: CI runs the e2e project from apps/web-e2e, locally Nx runs it from the workspace root.
 const CHROME_EXPORT = join(
-  process.cwd(),
-  'apps/web/src/app/features/import/utils/fixtures/chrome-bookmarks.html',
+  __dirname,
+  '../../web/src/app/features/import/utils/fixtures/chrome-bookmarks.html',
 );
 
 /** Opens "Import links" from the library: the sidebar's Data & help menu, or the You tab on a phone. */
