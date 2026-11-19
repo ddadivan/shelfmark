@@ -85,7 +85,7 @@ describe('AskPage (#499)', () => {
     const { fixture, loader, api } = await setup();
     TestBed.inject(AskInbox).put('Which ramen recipes did I save?');
     await fixture.whenStable();
-    expect(api.ask).toHaveBeenCalledWith('Which ramen recipes did I save?');
+    expect(api.ask).toHaveBeenCalledWith('Which ramen recipes did I save?', []);
     const answer = await loader.getHarness(UiStreamingAnswerHarness);
     expect(await answer.getQuestion()).toBe('Which ramen recipes did I save?');
     const reset = await loader.getHarness(UiButtonHarness.with({ name: 'New question' }));

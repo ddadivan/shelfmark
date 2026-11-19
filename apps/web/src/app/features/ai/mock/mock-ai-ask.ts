@@ -1,24 +1,22 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
-  ASK_DEPTH,
   ASK_ERROR_REASON,
   ASK_EVENT_TYPE,
   ASK_LIMIT,
   ASK_PERIOD,
   type AskErrorReason,
   type AskEvent,
-  type AskSource,
+  type AskTurn,
   type LinkResponse,
 } from '@shelfmark/contracts';
 import { defer, Observable, throwError } from 'rxjs';
 import { mockHttpError } from '../../../core/api/mock-http-error';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
-import { linkHost } from '../../links/utils/link-view';
 import { MockAiData } from './mock-ai-data';
 import { normalizeMeaningQuery } from './mock-ai-meaning';
 import { nextUtcDayStart } from './mock-ask-allowance';
-import { mockAskAnswer, mockAskCitations } from './mock-ask-answer';
+import { planMockAsk } from './mock-ask-plan';
 import { meaningDoc, meaningStems, rankByMeaning } from './mock-meaning';
 import { MOCK_AI_URL_MARKER } from './models/mock-ai-url-marker.const';
 import { MOCK_ASK } from './models/mock-ask.const';
@@ -38,17 +36,16 @@ const TRIGGERS: readonly string[] = [
   MOCK_AI_URL_MARKER.Quota,
   MOCK_ASK.SlowMarker,
   MOCK_ASK.CutMarker,
-  MOCK_ASK.NotFoundMarker,
+  MOCK_ASK.LoopMarker,
 ];
 
 /**
- * `POST /api/ai/ask` over the mock library (mock builds only), in the API's event order (plan
- * 10.1): `off`, `busy` (one question at a time), no sources → `done` `notFound` (not counted),
- * `quota`, then `meta`, the words every `MOCK_ASK.ChunkMs` and `done`. Retrieval ranks the mock
- * library like search by meaning (title, tags, summary). A question with a trigger (`ai-fail`,
- * `ai-refuse`, `ai-quota`, `ai-slow`, `ai-cut`, `sourdough`) falls back to the first links when
- * nothing matches, so the trigger always reaches the "model". Failures before text are refunded;
- * a Stop before any text too.
+ * `POST /api/ai/ask` over the mock library (mock builds only), in the API's event order (ADR 0055):
+ * `off`, `busy` (one question at a time), `quota`, then `meta`, the planned activities, words,
+ * cards and `done` with the turn (`planMockAsk`). The history the web sends back is read like the
+ * API reads it: only links still in the mock library count. Retrieval ranks the mock library like
+ * search by meaning (title, tags, summary); a question with a trigger falls back to the first links
+ * when nothing matches. Failures before text are refunded; a Stop before any text too.
  */
 @Service()
 export class MockAiAsk {
@@ -56,15 +53,16 @@ export class MockAiAsk {
   private readonly library = inject(MockLibraryData);
   private inFlight = false;
 
-  ask(question: string): Observable<AskEvent> {
-    return defer(() => this.start(normalizeMeaningQuery(question)));
+  ask(question: string, history: readonly AskTurn[] = []): Observable<AskEvent> {
+    return defer(() => this.start(normalizeMeaningQuery(question), history));
   }
 
-  private start(question: string): Observable<AskEvent> {
+  private start(question: string, history: readonly AskTurn[]): Observable<AskEvent> {
     if (
       question.length < ASK_LIMIT.QuestionMin ||
       question.length > ASK_LIMIT.QuestionMax ||
-      hasControl(question)
+      hasControl(question) ||
+      history.length > ASK_LIMIT.HistoryTurnsMax
     ) {
       return throwError(() => mockHttpError(HttpStatusCode.BadRequest, ['question is invalid']));
     }
@@ -74,10 +72,6 @@ export class MockAiAsk {
     }
     if (this.inFlight) {
       return this.stream([this.error(ASK_ERROR_REASON.Busy, MOCK_ASK.MetaMs)]);
-    }
-    const sources = this.retrieve(question);
-    if (sources.length === 0) {
-      return this.stream([this.done([], [], false, MOCK_ASK.MetaMs)]);
     }
     const lower = question.toLowerCase();
     if (lower.includes(MOCK_AI_URL_MARKER.Quota)) {
@@ -101,59 +95,24 @@ export class MockAiAsk {
     if (this.data.askAllowance().questionsLeft === 0) {
       return this.stream([this.error(ASK_ERROR_REASON.Quota, MOCK_ASK.MetaMs)]);
     }
-    return this.answer(question, lower, sources);
+    return this.answer(question, history);
   }
 
-  private answer(question: string, lower: string, sources: LinkResponse[]): Observable<AskEvent> {
+  private answer(question: string, history: readonly AskTurn[]): Observable<AskEvent> {
     this.data.countQuestion(1);
     const meta: MockAskStep = {
       afterMs: MOCK_ASK.MetaMs,
-      event: {
-        type: ASK_EVENT_TYPE.Meta,
-        allowance: this.data.askAllowance(),
-      },
+      event: { type: ASK_EVENT_TYPE.Meta, allowance: this.data.askAllowance() },
     };
-    const failure = lower.includes(MOCK_AI_URL_MARKER.Fail)
-      ? { reason: ASK_ERROR_REASON.Unavailable, afterMs: MOCK_ASK.ChunkMs }
-      : lower.includes(MOCK_AI_URL_MARKER.Refuse)
-        ? { reason: ASK_ERROR_REASON.Rejected, afterMs: MOCK_ASK.ChunkMs }
-        : lower.includes(MOCK_ASK.SlowMarker)
-          ? { reason: ASK_ERROR_REASON.Unavailable, afterMs: MOCK_ASK.FirstTokenMs }
-          : null;
-    if (failure) {
-      return this.stream([meta, this.error(failure.reason, failure.afterMs)], true);
-    }
-    const answer = mockAskAnswer(
-      question,
-      sources.map((link, index) => ({
-        n: index + 1,
-        title: link.title,
-        host: linkHost(link.url),
-        tags: link.tags,
-        summary: link.summary,
-      })),
-    );
-    const { chunks, cited } = mockAskCitations(answer, sources.length);
-    const cut = lower.includes(MOCK_ASK.CutMarker);
-    const sent = cut ? chunks.slice(0, MOCK_ASK.CutAfterChunks) : chunks;
-    const shown = cut
-      ? [...new Set(sent.flat().flatMap((e) => (e.type === ASK_EVENT_TYPE.Cite ? [e.n] : [])))]
-      : cited.map((_, index) => index + 1);
-    const steps: MockAskStep[] = [meta];
-    for (const chunk of sent) {
-      chunk.forEach((event, index) =>
-        steps.push({ afterMs: index === 0 ? MOCK_ASK.ChunkMs : 0, event }),
-      );
-    }
-    const linked = shown.flatMap((n) => {
-      const link = sources[(cited[n - 1] ?? 0) - 1];
-      return link ? [{ n, link: this.library.linkView(link) }] : [];
+    const plan = planMockAsk(question, history, {
+      links: this.library.links,
+      rank: (text) => this.retrieve(text),
+      view: (link) => this.library.linkView(link),
     });
-    steps.push(this.done(linked, shown, cut, MOCK_ASK.ChunkMs));
-    return this.stream(steps, true);
+    return this.stream([meta, ...plan.steps], true);
   }
 
-  /** The links the "model" gets: closest by meaning, at most `ContextLinksMax`. */
+  /** What the mock search finds: closest by meaning, at most `MOCK_ASK.SearchMax`. */
   private retrieve(question: string): LinkResponse[] {
     const stems = new Set(
       [...meaningStems(question)].filter((stem) => !MOCK_ASK_QUESTION_WORDS.has(stem)),
@@ -162,7 +121,7 @@ export class MockAiAsk {
     const docs = this.library.links.map((link) =>
       meaningDoc(link, this.library.folderName(link.folderId), includeNotes),
     );
-    const found = rankByMeaning(stems, docs, ASK_LIMIT.ContextLinksMax).map(({ doc }) => doc.link);
+    const found = rankByMeaning(stems, docs, MOCK_ASK.SearchMax).map(({ doc }) => doc.link);
     if (found.length > 0 || !TRIGGERS.some((trigger) => question.toLowerCase().includes(trigger))) {
       return found;
     }
@@ -177,26 +136,6 @@ export class MockAiAsk {
         reason,
         counted: false,
         allowance: withAllowance ? this.data.askAllowance() : null,
-      },
-    };
-  }
-
-  private done(
-    sources: AskSource[],
-    cites: readonly number[],
-    truncated: boolean,
-    afterMs: number,
-  ): MockAskStep {
-    return {
-      afterMs,
-      event: {
-        type: ASK_EVENT_TYPE.Done,
-        sources,
-        notFound: cites.length === 0,
-        truncated,
-        allowance: this.data.askAllowance(),
-        turn: { question: '', answer: '', links: [] },
-        depth: ASK_DEPTH.Quick,
       },
     };
   }

@@ -8,11 +8,7 @@
 export const ASK_LIMIT = {
   QuestionMin: 3,
   QuestionMax: 500,
-  /** Links sent as context by the single-turn answer (ADR 0052); removed with the chat service. */
-  ContextLinksMax: 10,
   AnswerMaxChars: 4000,
-  /** First model text of the single-turn answer (ADR 0052); removed with the chat service. */
-  FirstTokenMs: 8000,
   StreamMaxMs: 24000,
   StartersMax: 3,
   HistoryTurnsMax: 10,

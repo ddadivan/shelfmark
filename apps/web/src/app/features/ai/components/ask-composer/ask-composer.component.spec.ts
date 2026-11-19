@@ -68,7 +68,7 @@ describe('AskComposerComponent', () => {
     field().focus();
     await type('What did I save about ramen?');
     await pressEnter();
-    expect(api.ask).toHaveBeenCalledWith('What did I save about ramen?');
+    expect(api.ask).toHaveBeenCalledWith('What did I save about ramen?', []);
     expect(field().disabled).toBe(true);
     // A browser drops focus from a disabled field; jsdom does not.
     field().blur();

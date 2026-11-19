@@ -1,10 +1,6 @@
-import { ASK_EVENT_TYPE, type AskCiteEvent, type AskTextEvent } from '@shelfmark/contracts';
-import type { MockAskCitations } from './models/mock-ask-citations.interface';
 import type { MockAskSource } from './models/mock-ask-source.interface';
 import { MOCK_ASK } from './models/mock-ask.const';
 import { MOCK_ASK_THEMES } from './models/mock-ask-themes.const';
-
-const MARKER = /\[(\d+)\]/gu;
 
 function words(text: string): Set<string> {
   return new Set(text.toLowerCase().split(/[^\p{L}\p{N}]+/u));
@@ -53,36 +49,4 @@ export function mockAskAnswer(question: string, sources: readonly MockAskSource[
       : `${shortTitle(source)} is related [${source.n}].`,
   );
   return [`You saved ${count} ${count === 1 ? 'link' : 'links'} about this.`, ...lines].join(' ');
-}
-
-/**
- * The answer as word chunks of `text` and `cite` events, like the API's citation stream: a marker
- * `[n]` with `n` in `1..retrieved` becomes a citation renumbered by first appearance; any other
- * bracket stays text.
- */
-export function mockAskCitations(answer: string, retrieved: number): MockAskCitations {
-  const cited: number[] = [];
-  const chunks = (answer.match(/\S+\s*/gu) ?? []).map((word) => {
-    const events: (AskTextEvent | AskCiteEvent)[] = [];
-    let last = 0;
-    for (const match of word.matchAll(MARKER)) {
-      const n = Number(match[1]);
-      if (n < 1 || n > retrieved) {
-        continue;
-      }
-      if (match.index > last) {
-        events.push({ type: ASK_EVENT_TYPE.Text, text: word.slice(last, match.index) });
-      }
-      if (!cited.includes(n)) {
-        cited.push(n);
-      }
-      events.push({ type: ASK_EVENT_TYPE.Cite, n: cited.indexOf(n) + 1 });
-      last = match.index + match[0].length;
-    }
-    if (last < word.length) {
-      events.push({ type: ASK_EVENT_TYPE.Text, text: word.slice(last) });
-    }
-    return events;
-  });
-  return { chunks, cited };
 }

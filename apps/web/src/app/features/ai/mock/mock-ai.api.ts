@@ -8,6 +8,7 @@ import {
   type AiSettingsResponse,
   type AiTickResponse,
   type AskEvent,
+  type AskTurn,
   type CreateAiDraftRequest,
   type LinkAiState,
   type LinkResponse,
@@ -237,7 +238,7 @@ export class MockAiApi implements AiApi {
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
-  ask(question: string): Observable<AskEvent> {
-    return this.asking.ask(question);
+  ask(question: string, history: readonly AskTurn[]): Observable<AskEvent> {
+    return this.asking.ask(question, history);
   }
 }

@@ -81,7 +81,7 @@ describe('AskDrawerComponent', () => {
     expect(host.textContent).toContain('Try');
     expect(await axeViolations(host)).toEqual([]);
     starters.find((starter) => /Recipes/u.test(starter.textContent ?? ''))?.click();
-    expect(api.ask).toHaveBeenCalledWith('What did I save about Recipes?');
+    expect(api.ask).toHaveBeenCalledWith('What did I save about Recipes?', []);
   });
 
   it('streams the answer, shows sources and the disclaimer, and a citation highlights its row', async () => {

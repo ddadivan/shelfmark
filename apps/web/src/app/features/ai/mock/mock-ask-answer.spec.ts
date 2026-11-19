@@ -1,4 +1,4 @@
-import { mockAskAnswer, mockAskCitations } from './mock-ask-answer';
+import { mockAskAnswer } from './mock-ask-answer';
 import type { MockAskSource } from './models/mock-ask-source.interface';
 
 const SOURDOUGH: MockAskSource = {
@@ -34,26 +34,5 @@ describe('mockAskAnswer', () => {
       'You saved 1 link about this. b looks closest [2].',
     );
     expect(mockAskAnswer('ramen please', [SOURDOUGH])).toContain('You saved 1 link');
-  });
-});
-
-describe('mockAskCitations', () => {
-  it('turns valid markers into citations renumbered by first appearance', () => {
-    const { chunks, cited } = mockAskCitations('See [3] and [1], again [3]. Year [2024] [0]', 3);
-    expect(cited).toEqual([3, 1]);
-    expect(chunks.flat()).toEqual([
-      { type: 'text', text: 'See ' },
-      { type: 'cite', n: 1 },
-      { type: 'text', text: ' ' },
-      { type: 'text', text: 'and ' },
-      { type: 'cite', n: 2 },
-      { type: 'text', text: ', ' },
-      { type: 'text', text: 'again ' },
-      { type: 'cite', n: 1 },
-      { type: 'text', text: '. ' },
-      { type: 'text', text: 'Year ' },
-      { type: 'text', text: '[2024] ' },
-      { type: 'text', text: '[0]' },
-    ]);
   });
 });
