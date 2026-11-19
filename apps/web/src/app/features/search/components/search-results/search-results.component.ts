@@ -21,6 +21,7 @@ import {
   HighlightComponent,
   ICON_SIZE,
   IconComponent,
+  KEYBOARD_KEY,
   type CommandSelection,
 } from '@shelfmark/ui';
 import {
@@ -48,6 +49,7 @@ import { SEARCH_RESULT_KIND } from '../../models/search-result-kind.const';
 import type { SearchState } from '../../models/search-state.interface';
 import { LinkOpener } from '../../services/link-opener.service';
 import { MeaningSearch } from '../../services/meaning-search';
+import { BackfillReminderComponent } from '../backfill-reminder/backfill-reminder.component';
 import { matchFolders, matchTags } from '../../utils/search-match';
 import { isMacPlatform } from '../../utils/is-mac-platform';
 import { pluralKey } from '../../../../core/i18n/plural-key';
@@ -76,6 +78,7 @@ const IDLE: SearchState = { query: '', links: [], more: false, failed: false };
   imports: [
     TranslocoPipe,
     AiLineComponent,
+    BackfillReminderComponent,
     CommandGroupComponent,
     CommandItemComponent,
     CommandListComponent,
@@ -97,6 +100,7 @@ export class SearchResultsComponent {
   readonly ask = output<string>();
 
   private readonly list = viewChild.required(CommandListComponent);
+  private readonly reminder = viewChild(BackfillReminderComponent);
   private readonly api = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
   private readonly tags = inject(TagsStore);
@@ -219,6 +223,22 @@ export class SearchResultsComponent {
         break;
       default:
         break;
+    }
+  }
+
+  /**
+   * The header panel lives in an overlay away from the field, so Tab would skip it: Tab in the
+   * field moves to the reminder's buttons while they show (the dialog keeps the natural order).
+   */
+  protected onKeydown(event: KeyboardEvent): void {
+    if (
+      this.popup() &&
+      event.key === KEYBOARD_KEY.Tab &&
+      !event.shiftKey &&
+      event.target instanceof HTMLInputElement &&
+      this.reminder()?.focusFirst()
+    ) {
+      event.preventDefault();
     }
   }
 

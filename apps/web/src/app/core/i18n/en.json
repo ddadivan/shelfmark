@@ -3111,7 +3111,16 @@
       "later": "Later",
       "noteLead": "Change your mind? Start it any time:",
       "notePath": "Settings › AI › Process existing links",
-      "noteTail": "A reminder also appears in search."
+      "noteTail": "A reminder also appears in search.",
+      "search": {
+        "text": {
+          "one": "AI hasn’t read {{count}} older link yet — search finds it less well.",
+          "other": "AI hasn’t read {{count}} older links yet — search finds them less well."
+        },
+        "process": "Process",
+        "started": "Processing started",
+        "hide": "Hide"
+      }
     },
     "deleteData": {
       "confirm": {

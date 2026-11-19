@@ -6,6 +6,7 @@
   [placeholder]="'search.placeholder' | transloco"
   [listLabel]="'search.results' | transloco"
   (selected)="choose($event)"
+  (keydown)="onKeydown($event)"
 >
   <span slot="status" [class.search-results__sr]="resultCount() === 0">
     @if (settled()) {
@@ -139,6 +140,9 @@
 
   @if (meaning.hint(); as hint) {
     <ui-ai-line slot="note" [text]="'ai.search.preparing' | transloco: hint" />
+  }
+  @if (parsed() !== '') {
+    <app-backfill-reminder slot="note" [popup]="popup()" (leave)="focus()" />
   }
 
   <span slot="footer"

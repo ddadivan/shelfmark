@@ -3177,7 +3177,17 @@
       "later": "Más tarde",
       "noteLead": "¿Cambias de opinión? Empieza cuando quieras:",
       "notePath": "Ajustes › IA › Procesar enlaces existentes",
-      "noteTail": "También aparece un recordatorio en la búsqueda."
+      "noteTail": "También aparece un recordatorio en la búsqueda.",
+      "search": {
+        "text": {
+          "one": "La IA aún no ha leído {{count}} enlace antiguo: la búsqueda lo encuentra peor.",
+          "many": "La IA aún no ha leído {{count}} enlaces antiguos: la búsqueda los encuentra peor.",
+          "other": "La IA aún no ha leído {{count}} enlaces antiguos: la búsqueda los encuentra peor."
+        },
+        "process": "Procesar",
+        "started": "Procesamiento iniciado",
+        "hide": "Ocultar"
+      }
     },
     "deleteData": {
       "confirm": {

@@ -3177,7 +3177,17 @@
       "later": "Plus tard",
       "noteLead": "Vous changez d’avis ? Lancez-le quand vous voulez :",
       "notePath": "Paramètres › IA › Traiter les liens existants",
-      "noteTail": "Un rappel apparaît aussi dans la recherche."
+      "noteTail": "Un rappel apparaît aussi dans la recherche.",
+      "search": {
+        "text": {
+          "one": "L’IA n’a pas encore lu {{count}} lien plus ancien : la recherche le trouve moins bien.",
+          "many": "L’IA n’a pas encore lu {{count}} liens plus anciens : la recherche les trouve moins bien.",
+          "other": "L’IA n’a pas encore lu {{count}} liens plus anciens : la recherche les trouve moins bien."
+        },
+        "process": "Traiter",
+        "started": "Traitement lancé",
+        "hide": "Masquer"
+      }
     },
     "deleteData": {
       "confirm": {

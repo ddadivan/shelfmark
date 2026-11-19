@@ -3177,7 +3177,17 @@
       "later": "Mais tarde",
       "noteLead": "Mudou de ideia? Comece quando quiser:",
       "notePath": "Configurações › IA › Processar links existentes",
-      "noteTail": "Um lembrete também aparece na busca."
+      "noteTail": "Um lembrete também aparece na busca.",
+      "search": {
+        "text": {
+          "one": "A IA ainda não leu {{count}} link antigo: a busca o encontra pior.",
+          "many": "A IA ainda não leu {{count}} links antigos: a busca os encontra pior.",
+          "other": "A IA ainda não leu {{count}} links antigos: a busca os encontra pior."
+        },
+        "process": "Processar",
+        "started": "Processamento iniciado",
+        "hide": "Ocultar"
+      }
     },
     "deleteData": {
       "confirm": {

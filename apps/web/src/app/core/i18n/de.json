@@ -3111,7 +3111,16 @@
       "later": "Später",
       "noteLead": "Doch anders entschieden? Du kannst es jederzeit starten:",
       "notePath": "Einstellungen › KI › Vorhandene Links verarbeiten",
-      "noteTail": "Ein Hinweis erscheint auch in der Suche."
+      "noteTail": "Ein Hinweis erscheint auch in der Suche.",
+      "search": {
+        "text": {
+          "one": "Die KI hat {{count}} älteren Link noch nicht gelesen – die Suche findet ihn schlechter.",
+          "other": "Die KI hat {{count}} ältere Links noch nicht gelesen – die Suche findet sie schlechter."
+        },
+        "process": "Verarbeiten",
+        "started": "Verarbeitung gestartet",
+        "hide": "Ausblenden"
+      }
     },
     "deleteData": {
       "confirm": {

@@ -3177,7 +3177,17 @@
       "later": "Più tardi",
       "noteLead": "Cambi idea? Avviala quando vuoi:",
       "notePath": "Impostazioni › IA › Elabora i link esistenti",
-      "noteTail": "Un promemoria compare anche nella ricerca."
+      "noteTail": "Un promemoria compare anche nella ricerca.",
+      "search": {
+        "text": {
+          "one": "L’IA non ha ancora letto {{count}} link meno recente: la ricerca lo trova peggio.",
+          "many": "L’IA non ha ancora letto {{count}} link meno recenti: la ricerca li trova peggio.",
+          "other": "L’IA non ha ancora letto {{count}} link meno recenti: la ricerca li trova peggio."
+        },
+        "process": "Elabora",
+        "started": "Elaborazione avviata",
+        "hide": "Nascondi"
+      }
     },
     "deleteData": {
       "confirm": {
