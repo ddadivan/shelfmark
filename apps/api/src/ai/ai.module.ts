@@ -38,6 +38,14 @@ import { AskRetrievalService } from './ask/ask-retrieval.service';
 import { AskController } from './ask/ask.controller';
 import { AskService } from './ask/ask.service';
 import { AskUsageService } from './ask/ask-usage.service';
+import { AskToolRegistry } from './ask/tools/ask-tool.registry';
+import { CountLinksAskTool } from './ask/tools/count-links.ask-tool';
+import { GetLinkAskTool } from './ask/tools/get-link.ask-tool';
+import { ListFoldersAskTool } from './ask/tools/list-folders.ask-tool';
+import { ListTagsAskTool } from './ask/tools/list-tags.ask-tool';
+import { RequestDeeperAnswerAskTool } from './ask/tools/request-deeper-answer.ask-tool';
+import { SearchLinksAskTool } from './ask/tools/search-links.ask-tool';
+import { ShowLinksAskTool } from './ask/tools/show-links.ask-tool';
 import { ASK_DEADLINES } from './models/ask-deadlines.token';
 import type { AskDeadlines } from './models/ask-deadlines.interface';
 import { ASK_LIMIT } from '@shelfmark/contracts';
@@ -87,6 +95,14 @@ import { AiUsageService } from './usage/ai-usage.service';
     AskRetrievalService,
     AskUsageService,
     AskService,
+    SearchLinksAskTool,
+    CountLinksAskTool,
+    GetLinkAskTool,
+    ListFoldersAskTool,
+    ListTagsAskTool,
+    ShowLinksAskTool,
+    RequestDeeperAnswerAskTool,
+    AskToolRegistry,
     {
       provide: ASK_DEADLINES,
       useValue: {
