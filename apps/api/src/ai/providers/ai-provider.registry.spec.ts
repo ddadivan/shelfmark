@@ -1,3 +1,4 @@
+import { ASK_MODEL_PROFILE } from '../models/ask-model-profile.const';
 import { AiProviderRegistry } from './ai-provider.registry';
 import { MockAiProvider } from './mock-ai.provider';
 import type { AiConfig } from '../models/ai-config.interface';
@@ -36,7 +37,7 @@ describe('AiProviderRegistry', () => {
     expect(factory).not.toHaveBeenCalled();
   });
 
-  it('streams Ask answers from the mock for a demo user, never through the real factory', async () => {
+  it('runs Ask rounds on the mock for a demo user, never through the real factory', async () => {
     const { registry, factory } = setup({
       ...NO_EMBEDDINGS,
       apiKey: 'sk-ant-test-0123456789',
@@ -44,8 +45,18 @@ describe('AiProviderRegistry', () => {
     });
     const provider = registry.for({ isDemo: true });
     const chunks = [];
-    for await (const chunk of provider.askStream(
-      { question: 'ai-fail', sources: [], includeNotes: false },
+    for await (const chunk of provider.askRound(
+      {
+        profile: ASK_MODEL_PROFILE.Quick,
+        system: '',
+        tools: [],
+        messages: [
+          { role: 'user', content: [{ type: 'text', text: '<question>ai-fail</question>' }] },
+        ],
+        historyEnd: null,
+        toolChoice: 'auto',
+        timeoutMs: 1000,
+      },
       new AbortController().signal,
     )) {
       chunks.push(chunk);

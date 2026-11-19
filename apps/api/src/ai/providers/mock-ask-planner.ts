@@ -21,12 +21,17 @@ function has(question: string, phrases: readonly string[]): boolean {
   );
 }
 
-/** The topic words of a question (stems), the planner's own words and month names left out. */
+/** The answer split into word chunks, each with its following whitespace. */
+export function mockAskChunks(answer: string): string[] {
+  return answer.match(/\S+\s*/gu) ?? [];
+}
+
+/** The topic word of a question (its first stem), the planner's own words and month names left out. */
 export function mockTopic(question: string): string {
   const months: readonly string[] = MOCK_ASK_WORDS.Months.map((month) => wordStem(month));
   return wordStems(question.replace(/\bai-[a-z-]+/gu, ' '))
     .filter((stem) => !PLANNER.has(stem) && !months.includes(stem) && !/^\d+$/u.test(stem))
-    .slice(0, 2)
+    .slice(0, 1)
     .join(' ');
 }
 

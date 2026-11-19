@@ -34,7 +34,6 @@ import { AiRunnerService } from './runner/ai-runner.service';
 import { AiSettingsService } from './settings/ai-settings.service';
 import { AiTidyUndoService } from './tidy/ai-tidy-undo.service';
 import { AiTidyService } from './tidy/ai-tidy.service';
-import { AskRetrievalService } from './ask/ask-retrieval.service';
 import { AskController } from './ask/ask.controller';
 import { AskService } from './ask/ask.service';
 import { AskUsageService } from './ask/ask-usage.service';
@@ -92,7 +91,6 @@ import { AiUsageService } from './usage/ai-usage.service';
     QueryEmbeddingCache,
     MeaningSearchService,
     RelatedLinksService,
-    AskRetrievalService,
     AskUsageService,
     AskService,
     SearchLinksAskTool,
@@ -106,7 +104,6 @@ import { AiUsageService } from './usage/ai-usage.service';
     {
       provide: ASK_DEADLINES,
       useValue: {
-        firstTokenMs: ASK_LIMIT.FirstTokenMs,
         streamMaxMs: ASK_LIMIT.StreamMaxMs,
         roundFirstOutputMs: ASK_LIMIT.RoundFirstOutputMs,
         toolRoundMs: ASK_LIMIT.ToolRoundMs,

@@ -1,8 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { Logger } from '@nestjs/common';
-import { ASK_LIMIT } from '@shelfmark/contracts';
-import { ASK_SYSTEM_PROMPT } from '../prompt/ask-system-prompt.const';
-import { buildAskUserPrompt } from '../prompt/build-ask-prompt';
 import { buildLinkUserPrompt } from '../prompt/build-link-prompt';
 import { LINK_OUTPUT_SCHEMA } from '../prompt/link-output.schema';
 import { LINK_SYSTEM_PROMPT } from '../prompt/link-system-prompt.const';
@@ -16,8 +13,6 @@ import { ANTHROPIC_LIMIT } from '../models/anthropic-limit.const';
 import { AI_EFFORT, AI_MODEL } from '../models/ai-model.const';
 import { AI_PROVIDER_NAME } from '../models/ai-provider-name.const';
 import { ASK_STOP_REASON } from '../models/ask-stop-reason.const';
-import type { AskChunk } from '../models/ask-chunk.type';
-import type { AskInput } from '../models/ask-input.interface';
 import type { AskStopReason } from '../models/ask-stop-reason.type';
 import { ASK_THINKING } from '../models/ask-thinking.const';
 import { ASK_TOOL_CHOICE } from '../models/ask-tool-choice.const';
@@ -75,24 +70,6 @@ function tagSynonymsParamsFor(input: TagSynonymsInput): MessageParams {
       effort: AI_EFFORT.LinkJob,
       format: { type: 'json_schema', schema: TAG_SYNONYMS_SCHEMA },
     },
-  };
-}
-
-/**
- * An Ask answer (ADR 0052 point 4): Sonnet at medium effort, plain text, no tools, no thinking (the
- * first text must arrive within `ASK_LIMIT.FirstTokenMs`), the fixed system prompt first with a cache
- * breakpoint.
- */
-function askParamsFor(input: AskInput): StreamParams {
-  return {
-    model: AI_MODEL.Ask,
-    max_tokens: ANTHROPIC_LIMIT.AskMaxTokens,
-    system: [{ type: 'text', text: ASK_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
-    messages: [{ role: 'user', content: buildAskUserPrompt(input) }],
-    // Sonnet 5.5 rejects `disabled` with a 400; `between_tools` is its "no thinking before the
-    // answer" (no tools here, so nothing comes back as thinking). Allowed at effort `high` or below.
-    thinking: { type: 'between_tools' },
-    output_config: { effort: AI_EFFORT.Ask },
   };
 }
 
@@ -282,52 +259,6 @@ export class AnthropicAiProvider implements AiProvider {
       return outcomeOfMessage(message);
     } catch (error) {
       return outcomeOfError(error);
-    }
-  }
-
-  /**
-   * Streams an Ask answer through `client.messages.stream` (SDK timeout `ASK_LIMIT.StreamMaxMs`,
-   * retries off, the caller's abort signal). Yields text deltas only (never thinking or other
-   * blocks), then the stop reason with the token counts; any failure, an abort included, ends with
-   * one `error`. The stream is aborted when the consumer stops early.
-   */
-  async *askStream(input: AskInput, signal: AbortSignal): AsyncGenerator<AskChunk> {
-    let stream: ReturnType<AnthropicClient['messages']['stream']> | null = null;
-    let finished = false;
-    try {
-      stream = this.client.messages.stream(askParamsFor(input), {
-        timeout: ASK_LIMIT.StreamMaxMs,
-        maxRetries: ANTHROPIC_LIMIT.MaxRetries,
-        signal,
-      });
-      let inputTokens = 0;
-      let outputTokens = 0;
-      let stopReason: string | null = null;
-      for await (const event of stream) {
-        if (event.type === 'message_start') {
-          const usage = event.message.usage;
-          inputTokens =
-            usage.input_tokens +
-            (usage.cache_creation_input_tokens ?? 0) +
-            (usage.cache_read_input_tokens ?? 0);
-        } else if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-          if (event.delta.text !== '') yield { type: 'text', text: event.delta.text };
-        } else if (event.type === 'message_delta') {
-          stopReason = event.delta.stop_reason;
-          outputTokens = event.usage.output_tokens;
-        }
-      }
-      finished = true;
-      yield { type: 'end', stopReason: askStopReason(stopReason), inputTokens, outputTokens };
-    } catch (error) {
-      finished = true;
-      const outcome = outcomeOfError(error);
-      // The HTTP status only (never the message: it can echo request data), so a rejected request
-      // is visible in the logs instead of a silent "unavailable".
-      ASK_LOG.warn(`Ask provider error: status ${statusOf(error) ?? 'none'}`);
-      yield { type: 'error', retryable: outcome.type === 'error' && outcome.retryable };
-    } finally {
-      if (!finished) stream?.abort();
     }
   }
 

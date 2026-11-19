@@ -18,7 +18,6 @@ type Script = (input: AskRoundInput, signal: AbortSignal) => AsyncGenerator<AskR
 
 const USAGE = { input: 10, cacheRead: 100, cacheWrite: 0, output: 5 };
 const DEADLINES: AskDeadlines = {
-  firstTokenMs: 8000,
   streamMaxMs: 24000,
   roundFirstOutputMs: 200,
   toolRoundMs: 100,

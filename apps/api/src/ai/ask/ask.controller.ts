@@ -16,7 +16,7 @@ import { AskRequestDto } from '../dto/ask-request.dto';
 import { AskService } from './ask.service';
 import { SseWriter } from './sse-writer';
 
-/** `POST /api/ai/ask` (F4, ADR 0052). Thin: `AskService` owns the rules. */
+/** `POST /api/ai/ask` (F4, ADR 0052 and 0055). Thin: `AskService` owns the rules. */
 @ApiTags('ai')
 @Controller('ai')
 export class AskController {
@@ -30,13 +30,15 @@ export class AskController {
   @ApiProduces('text/event-stream')
   @ApiOkResponse({
     description:
-      'text/event-stream: one JSON AskEvent per `data:` line (meta, text, cite, then done or error). Errors after validation (AI off, busy, quota, provider down) are error events, not HTTP statuses.',
+      'text/event-stream: one JSON AskEvent per `data:` line (meta, activity, text, cite, links, then done or error). Errors after validation (AI off, busy, quota, provider down) are error events, not HTTP statuses.',
   })
-  @ApiBadRequestResponse({ description: 'question missing, under 3 or over 500 characters' })
+  @ApiBadRequestResponse({
+    description: 'question missing, under 3 or over 500 characters, or an invalid history',
+  })
   @ApiOperation({
     summary: 'Ask your shelf',
     description:
-      "A single-turn answer from the session user's own links, streamed, with citations to those links only. Nothing is stored.",
+      "One turn of a chat over the session user's own links (read-only tools, link cards, citations to those links only), streamed. The open chat's earlier turns come back in history; nothing is stored.",
   })
   async ask(
     @CurrentUser() user: AuthUser,
@@ -45,7 +47,7 @@ export class AskController {
   ): Promise<void> {
     const writer = new SseWriter(res);
     try {
-      await this.asks.ask(user, body.question, writer);
+      await this.asks.ask(user, { question: body.question, history: body.history ?? [] }, writer);
     } finally {
       writer.end();
     }
