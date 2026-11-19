@@ -1269,20 +1269,21 @@
       "label": "Quelle",
       "browser": {
         "title": "Browser-Lesezeichen",
-        "description": "HTML-Datei aus Chrome, Safari, Firefox oder Edge. Ordner bleiben Ordner.",
-        "hint": "Öffne im Browser die Lesezeichenverwaltung und wähle „Lesezeichen exportieren“."
+        "description": "HTML-Datei aus Chrome, Safari, Firefox oder Edge. Ordner bleiben Ordner."
       },
-      "drop": "Datei hier ablegen oder",
-      "choose": "auswählen",
-      "reading": "Datei wird gelesen …",
+      "drop": "Datei hierher ziehen",
+      "choose": "Datei auswählen",
+      "reading": "{{file}} wird gelesen …",
       "problem": {
         "too-big": "Diese Datei ist größer als {{max}} MB.",
         "unreadable": "Diese Datei konnte nicht gelesen werden. Exportiere sie noch einmal.",
-        "not-bookmarks": "Das ist keine Lesezeichen-Datei. Exportiere deine Lesezeichen im Browser als HTML.",
+        "not-bookmarks": "In dieser Datei sind keine Lesezeichen. Wähle die HTML-Datei, die dein Browser über „Lesezeichen exportieren“ gespeichert hat.",
         "empty": "Diese Datei enthält keine Web-Links.",
         "too-many-links": "Diese Datei enthält mehr als {{max}} Links.",
         "check-failed": "Die Datei konnte nicht mit deiner Sammlung abgeglichen werden. Versuch es noch einmal."
-      }
+      },
+      "hint": ".html, bis {{max}} MB und {{links}} Links",
+      "dropping": "Zum Importieren loslassen"
     },
     "review": {
       "stats": {
@@ -1308,8 +1309,6 @@
         "other": "{{count}} Duplikate überspringen"
       },
       "skipHint": "Links, die du schon hast, und Wiederholungen in der Datei",
-      "keep": "Ordnerstruktur beibehalten",
-      "keepHint": "Aus: Jeder Link landet direkt am oben gewählten Ort",
       "back": "Zurück",
       "import": {
         "one": "{{count}} Link importieren",
@@ -1317,13 +1316,37 @@
       },
       "nothing": "Alle Links dieser Datei sind schon in deiner Sammlung.",
       "untitledFolder": "Unbenannter Ordner",
-      "untitledFile": "Lesezeichen-Datei"
+      "untitledFile": "Lesezeichen-Datei",
+      "folders": {
+        "label": "Ordner darin",
+        "file": {
+          "title": "Wie in der Datei",
+          "description": {
+            "one": "{{count}} Browser-Ordner",
+            "other": "{{count}} Browser-Ordner"
+          }
+        },
+        "ai": {
+          "title": "KI nach Themen sortieren lassen",
+          "description": "Die KI gruppiert die Links und schlägt Ordner vor, auch deine vorhandenen. Du prüfst die Gruppen vor dem Import. Verbraucht {{count}} von {{left}} Durchläufen für vorhandene Links."
+        },
+        "none": {
+          "title": "Keine Ordner",
+          "description": "Alles in einer Liste in „{{target}}“"
+        }
+      },
+      "group": "Gruppieren",
+      "room": {
+        "one": "Nur noch {{count}} Link passt in dein Limit, deshalb wird nur der erste importiert.",
+        "other": "Nur noch {{count}} Links passen in dein Limit, deshalb werden nur die ersten {{count}} importiert."
+      },
+      "full": "In deiner Sammlung ist kein Platz mehr für weitere Links."
     },
     "progress": {
       "title": "Links werden importiert",
       "count": "{{done}} von {{total}}",
       "label": "Importfortschritt",
-      "note": "Du kannst weiterarbeiten. Vorschauen laden in den nächsten Minuten im Hintergrund.",
+      "note": "Du kannst weiterarbeiten: Das Fenster darf geschlossen werden. Die Vorschauen werden in den nächsten Minuten im Hintergrund geladen.",
       "doneTitle": {
         "one": "{{count}} Link importiert",
         "other": "{{count}} Links importiert"
@@ -1346,9 +1369,13 @@
       "openFolder": "Ordner öffnen",
       "openUnsorted": "Unsortiert öffnen",
       "undo": "Import rückgängig machen",
-      "done": "Fertig",
       "startFailed": "Der Import konnte nicht starten, nichts wurde gespeichert. Versuch es noch einmal.",
-      "foldersLimit": "Die Ordner dieser Datei passen nicht in dein Ordnerlimit. Schalte „Ordnerstruktur beibehalten“ aus und versuch es noch einmal."
+      "foldersLimit": "Die Ordner passen nicht in dein Ordnerlimit. Wähle „Keine Ordner“ und versuche es noch einmal.",
+      "minimize": "Minimieren",
+      "grouped": {
+        "one": "In {{count}} Ordner, {{created}} davon neu.",
+        "other": "In {{count}} Ordnern, {{created}} davon neu."
+      }
     },
     "undo": {
       "title": "Diesen Import rückgängig machen?",
@@ -1388,7 +1415,59 @@
       "description": "Hol deine Browser-Lesezeichen herein. Ordner bleiben Ordner, Links, die du schon hast, werden übersprungen.",
       "action": "Importieren"
     },
-    "menu": "Links importieren …"
+    "menu": "Links importieren …",
+    "help": {
+      "link": "So exportierst du Lesezeichen aus dem Browser",
+      "chrome": "Chrome und Edge: Lesezeichenverwaltung öffnen (Strg+Umschalt+O), das ⋮-Menü öffnen und „Lesezeichen exportieren“ wählen.",
+      "firefox": "Firefox: Lesezeichen, Lesezeichen verwalten (Strg+Umschalt+O), Importieren und Sichern, „Lesezeichen nach HTML exportieren …“.",
+      "safari": "Safari: Ablage, Exportieren, Lesezeichen."
+    },
+    "groups": {
+      "waiting": {
+        "one": "Die KI gruppiert {{count}} Link …",
+        "other": "Die KI gruppiert {{count}} Links …"
+      },
+      "count": {
+        "one": "{{count}} Gruppe",
+        "other": "{{count}} Gruppen"
+      },
+      "forLinks": {
+        "one": "für {{count}} Link",
+        "other": "für {{count}} Links"
+      },
+      "nameLabel": "Ordnername",
+      "nameEmpty": "Gib dem Ordner einen Namen",
+      "linkCount": {
+        "one": "{{count}} Link",
+        "other": "{{count}} Links"
+      },
+      "existing": "schon vorhanden",
+      "new": "neu",
+      "showLinks": "Links von „{{name}}“ anzeigen",
+      "hideLinks": "Links von „{{name}}“ ausblenden",
+      "moveLabel": "„{{title}}“ verschieben nach",
+      "other": "Sonstige",
+      "otherText": "Links, die zu keinem Thema passen, landen in „{{target}}“.",
+      "hint": "Du kannst die Ordner umbenennen. Links, die du aus einer Gruppe nimmst, landen in „{{target}}“.",
+      "import": {
+        "one": "Importieren und {{count}} Ordner erstellen",
+        "other": "Importieren und {{count}} Ordner erstellen"
+      },
+      "failed": "Die Links konnten gerade nicht gruppiert werden. Von deinem Kontingent wurde nichts verbraucht. Geh zurück oder importiere sie ohne Gruppen.",
+      "allowance": "Vom Kontingent für vorhandene Links ist nicht genug für diese Links übrig. Geh zurück oder importiere sie ohne Gruppen."
+    },
+    "ai": {
+      "doneTitle": "Beschreibungen und Tags sind fertig",
+      "summaries": {
+        "one": "{{count}} Link hat eine kurze Beschreibung bekommen.",
+        "other": "{{count}} Links haben kurze Beschreibungen bekommen."
+      },
+      "suggestions": {
+        "one": "Für {{count}} Link gibt es Tag-Vorschläge.",
+        "other": "Für {{count}} Links gibt es Tag-Vorschläge."
+      },
+      "review": "Tags ansehen"
+    }
   },
   "settings": {
     "title": "Einstellungen",
@@ -3471,7 +3550,11 @@
         "nothingDetail": "Die Vorschläge haben sich inzwischen geändert."
       },
       "undone": "Aufräumen rückgängig gemacht",
-      "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden"
+      "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden",
+      "import": {
+        "line": "Es werden nur die Links dieses Imports angezeigt.",
+        "all": "Alles durchgehen"
+      }
     },
     "search": {
       "related": "Ähnlich nach Bedeutung",

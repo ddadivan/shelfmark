@@ -1292,20 +1292,21 @@
       "label": "Origine",
       "browser": {
         "title": "Segnalibri del browser",
-        "description": "File HTML da Chrome, Safari, Firefox o Edge. Le cartelle restano cartelle.",
-        "hint": "Nel browser apri la gestione dei segnalibri e scegli Esporta segnalibri."
+        "description": "File HTML da Chrome, Safari, Firefox o Edge. Le cartelle restano cartelle."
       },
-      "drop": "Trascina qui il file o",
-      "choose": "sceglilo",
-      "reading": "Lettura del file…",
+      "drop": "Trascina qui il file",
+      "choose": "Scegli il file",
+      "reading": "Lettura di {{file}}…",
       "problem": {
         "too-big": "Questo file supera {{max}} MB.",
         "unreadable": "Impossibile leggere questo file. Prova a esportarlo di nuovo.",
-        "not-bookmarks": "Questo non è un file di segnalibri. Esporta i segnalibri dal browser in formato HTML.",
+        "not-bookmarks": "In questo file non ci sono segnalibri. Scegli il file HTML che il browser ha salvato con “Esporta segnalibri”.",
         "empty": "In questo file non ci sono link web.",
         "too-many-links": "Questo file contiene più di {{max}} link.",
         "check-failed": "Impossibile confrontare il file con la tua raccolta. Riprova."
-      }
+      },
+      "hint": ".html, fino a {{max}} MB e {{links}} link",
+      "dropping": "Rilascia per importare"
     },
     "review": {
       "stats": {
@@ -1334,8 +1335,6 @@
         "other": "Salta i {{count}} duplicati"
       },
       "skipHint": "Link già salvati e ripetizioni nel file",
-      "keep": "Mantieni la struttura delle cartelle",
-      "keepHint": "Disattivato: ogni link va direttamente nel posto scelto sopra",
       "back": "Indietro",
       "import": {
         "one": "Importa {{count}} link",
@@ -1344,13 +1343,39 @@
       },
       "nothing": "Tutti i link di questo file sono già nella tua raccolta.",
       "untitledFolder": "Cartella senza nome",
-      "untitledFile": "File di segnalibri"
+      "untitledFile": "File di segnalibri",
+      "folders": {
+        "label": "Cartelle all’interno",
+        "file": {
+          "title": "Come nel file",
+          "description": {
+            "one": "{{count}} cartella del browser",
+            "many": "{{count}} cartelle del browser",
+            "other": "{{count}} cartelle del browser"
+          }
+        },
+        "ai": {
+          "title": "Lascia che l’IA li ordini per argomento",
+          "description": "L’IA raggruppa i link e propone cartelle, comprese quelle che hai già. Controlli i gruppi prima di importare. Usa {{count}} di {{left}} elaborazioni per i link esistenti."
+        },
+        "none": {
+          "title": "Nessuna cartella",
+          "description": "Tutto in un unico elenco in “{{target}}”"
+        }
+      },
+      "group": "Raggruppa",
+      "room": {
+        "one": "Nel tuo limite entra ancora solo {{count}} link, quindi viene importato solo il primo.",
+        "many": "Nel tuo limite entrano ancora solo {{count}} link, quindi vengono importati solo i primi {{count}}.",
+        "other": "Nel tuo limite entrano ancora solo {{count}} link, quindi vengono importati solo i primi {{count}}."
+      },
+      "full": "La tua raccolta non ha più spazio per altri link."
     },
     "progress": {
       "title": "Importazione dei link",
       "count": "{{done}} di {{total}}",
       "label": "Avanzamento dell’importazione",
-      "note": "Puoi continuare a lavorare. Le anteprime si caricano in background nei prossimi minuti.",
+      "note": "Puoi continuare a lavorare: puoi chiudere questa finestra. Le anteprime si caricano in background nei prossimi minuti.",
       "doneTitle": {
         "one": "{{count}} link importato",
         "many": "{{count}} link importati",
@@ -1377,9 +1402,14 @@
       "openFolder": "Apri la cartella",
       "openUnsorted": "Apri Non ordinati",
       "undo": "Annulla importazione",
-      "done": "Fatto",
       "startFailed": "Impossibile avviare l’importazione, non è stato salvato nulla. Riprova.",
-      "foldersLimit": "Le cartelle di questo file superano il tuo limite di cartelle. Disattiva “Mantieni la struttura delle cartelle” e riprova."
+      "foldersLimit": "Le cartelle superano il tuo limite di cartelle. Scegli “Nessuna cartella” e riprova.",
+      "minimize": "Riduci a icona",
+      "grouped": {
+        "one": "In {{count}} cartella, di cui {{created}} nuove.",
+        "many": "In {{count}} cartelle, di cui {{created}} nuove.",
+        "other": "In {{count}} cartelle, di cui {{created}} nuove."
+      }
     },
     "undo": {
       "title": "Annullare questa importazione?",
@@ -1423,7 +1453,66 @@
       "description": "Porta qui i segnalibri del browser. Le cartelle restano cartelle, i link che hai già vengono saltati.",
       "action": "Importa"
     },
-    "menu": "Importa link…"
+    "menu": "Importa link…",
+    "help": {
+      "link": "Come esportare i segnalibri da un browser",
+      "chrome": "Chrome ed Edge: apri la gestione dei segnalibri (Ctrl+Maiusc+O), apri il menu ⋮ e scegli “Esporta segnalibri”.",
+      "firefox": "Firefox: Segnalibri, Gestisci segnalibri (Ctrl+Maiusc+O), Importa e salva, “Esporta segnalibri in HTML…”.",
+      "safari": "Safari: File, Esporta, Segnalibri."
+    },
+    "groups": {
+      "waiting": {
+        "one": "L’IA sta raggruppando {{count}} link…",
+        "many": "L’IA sta raggruppando {{count}} link…",
+        "other": "L’IA sta raggruppando {{count}} link…"
+      },
+      "count": {
+        "one": "{{count}} gruppo",
+        "many": "{{count}} gruppi",
+        "other": "{{count}} gruppi"
+      },
+      "forLinks": {
+        "one": "per {{count}} link",
+        "many": "per {{count}} link",
+        "other": "per {{count}} link"
+      },
+      "nameLabel": "Nome della cartella",
+      "nameEmpty": "Dai un nome alla cartella",
+      "linkCount": {
+        "one": "{{count}} link",
+        "many": "{{count}} link",
+        "other": "{{count}} link"
+      },
+      "existing": "già esistente",
+      "new": "nuova",
+      "showLinks": "Mostra i link di “{{name}}”",
+      "hideLinks": "Nascondi i link di “{{name}}”",
+      "moveLabel": "Sposta “{{title}}” in",
+      "other": "Altri",
+      "otherText": "I link che non rientrano in nessun argomento vanno in “{{target}}”.",
+      "hint": "Puoi rinominare le cartelle. I link che togli da un gruppo vanno in “{{target}}”.",
+      "import": {
+        "one": "Importa e crea {{count}} cartella",
+        "many": "Importa e crea {{count}} cartelle",
+        "other": "Importa e crea {{count}} cartelle"
+      },
+      "failed": "Al momento non è stato possibile raggruppare i link. Non è stato usato nulla della tua quota. Torna indietro oppure importali senza gruppi.",
+      "allowance": "Per questi link non resta abbastanza quota per i link esistenti. Torna indietro oppure importali senza gruppi."
+    },
+    "ai": {
+      "doneTitle": "Descrizioni e tag pronti",
+      "summaries": {
+        "one": "{{count}} link ha ricevuto una breve descrizione.",
+        "many": "{{count}} link hanno ricevuto brevi descrizioni.",
+        "other": "{{count}} link hanno ricevuto brevi descrizioni."
+      },
+      "suggestions": {
+        "one": "Ci sono suggerimenti di tag per {{count}} link.",
+        "many": "Ci sono suggerimenti di tag per {{count}} link.",
+        "other": "Ci sono suggerimenti di tag per {{count}} link."
+      },
+      "review": "Rivedi i tag"
+    }
   },
   "settings": {
     "title": "Impostazioni",
@@ -3558,7 +3647,11 @@
         "nothingDetail": "Nel frattempo i suggerimenti sono cambiati."
       },
       "undone": "Riordino annullato",
-      "undoFailed": "Impossibile annullare il riordino"
+      "undoFailed": "Impossibile annullare il riordino",
+      "import": {
+        "line": "Sono mostrati solo i link di questa importazione.",
+        "all": "Rivedi tutto"
+      }
     },
     "search": {
       "related": "Correlati per significato",

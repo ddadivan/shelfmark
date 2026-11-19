@@ -1292,20 +1292,21 @@
       "label": "Origem",
       "browser": {
         "title": "Favoritos do navegador",
-        "description": "Arquivo HTML do Chrome, Safari, Firefox ou Edge. Pastas continuam sendo pastas.",
-        "hint": "No navegador, abra o gerenciador de favoritos e escolha Exportar favoritos."
+        "description": "Arquivo HTML do Chrome, Safari, Firefox ou Edge. Pastas continuam sendo pastas."
       },
-      "drop": "Solte o arquivo aqui ou",
-      "choose": "escolha",
-      "reading": "Lendo o arquivo…",
+      "drop": "Arraste o arquivo para cá",
+      "choose": "Escolher arquivo",
+      "reading": "Lendo {{file}}…",
       "problem": {
         "too-big": "Este arquivo tem mais de {{max}} MB.",
         "unreadable": "Não foi possível ler este arquivo. Tente exportá-lo de novo.",
-        "not-bookmarks": "Este não é um arquivo de favoritos. Exporte seus favoritos do navegador como HTML.",
+        "not-bookmarks": "Não há favoritos neste arquivo. Escolha o arquivo HTML que o navegador salvou com “Exportar favoritos”.",
         "empty": "Este arquivo não tem links da web.",
         "too-many-links": "Este arquivo tem mais de {{max}} links.",
         "check-failed": "Não foi possível comparar o arquivo com sua biblioteca. Tente de novo."
-      }
+      },
+      "hint": ".html, até {{max}} MB e {{links}} links",
+      "dropping": "Solte para importar"
     },
     "review": {
       "stats": {
@@ -1334,8 +1335,6 @@
         "other": "Pular os {{count}} duplicados"
       },
       "skipHint": "Links que você já tem e repetições dentro do arquivo",
-      "keep": "Manter a estrutura de pastas",
-      "keepHint": "Desligado: cada link vai direto para o lugar escolhido acima",
       "back": "Voltar",
       "import": {
         "one": "Importar {{count}} link",
@@ -1344,13 +1343,39 @@
       },
       "nothing": "Todos os links deste arquivo já estão na sua biblioteca.",
       "untitledFolder": "Pasta sem nome",
-      "untitledFile": "Arquivo de favoritos"
+      "untitledFile": "Arquivo de favoritos",
+      "folders": {
+        "label": "Pastas dentro",
+        "file": {
+          "title": "Como no arquivo",
+          "description": {
+            "one": "{{count}} pasta do navegador",
+            "many": "{{count}} pastas do navegador",
+            "other": "{{count}} pastas do navegador"
+          }
+        },
+        "ai": {
+          "title": "Deixar a IA organizar por assunto",
+          "description": "A IA agrupa os links e sugere pastas, inclusive as que você já tem. Você revisa os grupos antes de importar. Usa {{count}} de {{left}} processamentos de links existentes."
+        },
+        "none": {
+          "title": "Sem pastas",
+          "description": "Tudo em uma só lista em “{{target}}”"
+        }
+      },
+      "group": "Agrupar",
+      "room": {
+        "one": "Só cabe mais {{count}} link no seu limite, então apenas o primeiro é importado.",
+        "many": "Só cabem mais {{count}} links no seu limite, então apenas os primeiros {{count}} são importados.",
+        "other": "Só cabem mais {{count}} links no seu limite, então apenas os primeiros {{count}} são importados."
+      },
+      "full": "Sua biblioteca não tem mais espaço para links."
     },
     "progress": {
       "title": "Importando links",
       "count": "{{done}} de {{total}}",
       "label": "Progresso da importação",
-      "note": "Você pode continuar trabalhando. As prévias carregam em segundo plano nos próximos minutos.",
+      "note": "Você pode continuar trabalhando: pode fechar esta janela. As prévias carregam em segundo plano nos próximos minutos.",
       "doneTitle": {
         "one": "{{count}} link importado",
         "many": "{{count}} links importados",
@@ -1377,9 +1402,14 @@
       "openFolder": "Abrir a pasta",
       "openUnsorted": "Abrir Sem pasta",
       "undo": "Desfazer importação",
-      "done": "Concluir",
       "startFailed": "A importação não pôde começar, nada foi salvo. Tente de novo.",
-      "foldersLimit": "As pastas deste arquivo passam do seu limite de pastas. Desligue “Manter a estrutura de pastas” e tente de novo."
+      "foldersLimit": "As pastas não cabem no seu limite de pastas. Escolha “Sem pastas” e tente de novo.",
+      "minimize": "Minimizar",
+      "grouped": {
+        "one": "Em {{count}} pasta, {{created}} delas novas.",
+        "many": "Em {{count}} pastas, {{created}} delas novas.",
+        "other": "Em {{count}} pastas, {{created}} delas novas."
+      }
     },
     "undo": {
       "title": "Desfazer esta importação?",
@@ -1423,7 +1453,66 @@
       "description": "Traga os favoritos do seu navegador. Pastas continuam sendo pastas, e links que você já tem são pulados.",
       "action": "Importar"
     },
-    "menu": "Importar links…"
+    "menu": "Importar links…",
+    "help": {
+      "link": "Como exportar os favoritos de um navegador",
+      "chrome": "Chrome e Edge: abra o gerenciador de favoritos (Ctrl+Shift+O), abra o menu ⋮ e escolha “Exportar favoritos”.",
+      "firefox": "Firefox: Favoritos, Gerenciar favoritos (Ctrl+Shift+O), Importar e fazer backup, “Exportar favoritos para HTML…”.",
+      "safari": "Safari: Arquivo, Exportar, Favoritos."
+    },
+    "groups": {
+      "waiting": {
+        "one": "A IA está agrupando {{count}} link…",
+        "many": "A IA está agrupando {{count}} links…",
+        "other": "A IA está agrupando {{count}} links…"
+      },
+      "count": {
+        "one": "{{count}} grupo",
+        "many": "{{count}} grupos",
+        "other": "{{count}} grupos"
+      },
+      "forLinks": {
+        "one": "para {{count}} link",
+        "many": "para {{count}} links",
+        "other": "para {{count}} links"
+      },
+      "nameLabel": "Nome da pasta",
+      "nameEmpty": "Dê um nome à pasta",
+      "linkCount": {
+        "one": "{{count}} link",
+        "many": "{{count}} links",
+        "other": "{{count}} links"
+      },
+      "existing": "já existe",
+      "new": "nova",
+      "showLinks": "Mostrar os links de “{{name}}”",
+      "hideLinks": "Ocultar os links de “{{name}}”",
+      "moveLabel": "Mover “{{title}}” para",
+      "other": "Outros",
+      "otherText": "Links que não combinam com nenhum assunto vão para “{{target}}”.",
+      "hint": "Você pode renomear as pastas. Links que você tirar de um grupo vão para “{{target}}”.",
+      "import": {
+        "one": "Importar e criar {{count}} pasta",
+        "many": "Importar e criar {{count}} pastas",
+        "other": "Importar e criar {{count}} pastas"
+      },
+      "failed": "Não foi possível agrupar os links agora. Nada foi usado da sua cota. Volte ou importe-os sem grupos.",
+      "allowance": "Não sobrou cota suficiente para links existentes para estes links. Volte ou importe-os sem grupos."
+    },
+    "ai": {
+      "doneTitle": "Descrições e tags prontas",
+      "summaries": {
+        "one": "{{count}} link ganhou uma descrição curta.",
+        "many": "{{count}} links ganharam descrições curtas.",
+        "other": "{{count}} links ganharam descrições curtas."
+      },
+      "suggestions": {
+        "one": "Há sugestões de tags para {{count}} link.",
+        "many": "Há sugestões de tags para {{count}} links.",
+        "other": "Há sugestões de tags para {{count}} links."
+      },
+      "review": "Revisar tags"
+    }
   },
   "settings": {
     "title": "Configurações",
@@ -3558,7 +3647,11 @@
         "nothingDetail": "As sugestões mudaram nesse meio-tempo."
       },
       "undone": "Organização desfeita",
-      "undoFailed": "Não foi possível desfazer a organização"
+      "undoFailed": "Não foi possível desfazer a organização",
+      "import": {
+        "line": "Mostrando só os links desta importação.",
+        "all": "Revisar tudo"
+      }
     },
     "search": {
       "related": "Relacionados pelo significado",
