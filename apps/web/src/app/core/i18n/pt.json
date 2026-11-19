@@ -3159,6 +3159,26 @@
       "startFailed": "Não foi possível começar a processar seus links",
       "stopFailed": "Não foi possível parar o processamento. Tente de novo."
     },
+    "backfillOffer": {
+      "title": {
+        "one": "A IA está ligada. Processar seu {{count}} link salvo?",
+        "many": "A IA está ligada. Processar seus {{count}} links salvos?",
+        "other": "A IA está ligada. Processar seus {{count}} links salvos?"
+      },
+      "lead": "A IA ainda não leu os links que você salvou antes. Ela vai escrever resumos curtos, sugerir tags e pastas, e a busca por significado vai encontrá-los como os novos.",
+      "review": "Nada muda sem a sua escolha: as sugestões esperam por você.",
+      "background": "Roda em segundo plano, geralmente em poucos minutos. Pare quando quiser.",
+      "allowance": "Não usa o limite mensal: há uma cota separada de {{allowance}} links.",
+      "process": {
+        "one": "Processar {{count}} link",
+        "many": "Processar {{count}} links",
+        "other": "Processar {{count}} links"
+      },
+      "later": "Mais tarde",
+      "noteLead": "Mudou de ideia? Comece quando quiser:",
+      "notePath": "Configurações › IA › Processar links existentes",
+      "noteTail": "Um lembrete também aparece na busca."
+    },
     "deleteData": {
       "confirm": {
         "title": "Excluir dados de IA?",

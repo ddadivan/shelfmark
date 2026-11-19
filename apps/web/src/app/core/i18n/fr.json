@@ -3159,6 +3159,26 @@
       "startFailed": "Impossible de lancer le traitement de vos liens",
       "stopFailed": "Impossible d’arrêter le traitement. Réessayez."
     },
+    "backfillOffer": {
+      "title": {
+        "one": "L’IA est activée. Traiter votre {{count}} lien enregistré ?",
+        "many": "L’IA est activée. Traiter vos {{count}} liens enregistrés ?",
+        "other": "L’IA est activée. Traiter vos {{count}} liens enregistrés ?"
+      },
+      "lead": "L’IA n’a pas encore lu les liens enregistrés plus tôt. Elle rédigera de courts résumés, proposera des tags et des dossiers, et la recherche par le sens les trouvera comme les nouveaux.",
+      "review": "Rien ne change sans votre accord : les suggestions vous attendent.",
+      "background": "S’exécute en arrière-plan, en général quelques minutes. Arrêtez quand vous voulez.",
+      "allowance": "N’utilise pas la limite mensuelle : un quota à part de {{allowance}} liens est prévu.",
+      "process": {
+        "one": "Traiter {{count}} lien",
+        "many": "Traiter {{count}} liens",
+        "other": "Traiter {{count}} liens"
+      },
+      "later": "Plus tard",
+      "noteLead": "Vous changez d’avis ? Lancez-le quand vous voulez :",
+      "notePath": "Paramètres › IA › Traiter les liens existants",
+      "noteTail": "Un rappel apparaît aussi dans la recherche."
+    },
     "deleteData": {
       "confirm": {
         "title": "Supprimer les données d’IA ?",

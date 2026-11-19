@@ -1,6 +1,7 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import {
   ACCOUNT_PLAN,
@@ -55,19 +56,52 @@ const RESPONSE: AiSettingsResponse = {
   },
 };
 
-async function setup(options: { fail?: boolean; phone?: boolean } = {}) {
+/** An AI pack account with links saved before AI was on: the intro offers to process them. */
+function withOffer(eligible: number): AiSettingsResponse {
+  return {
+    ...RESPONSE,
+    entitlements: { plan: ACCOUNT_PLAN.Free, aiTier: AI_TIER.AiPack },
+    usage: { ...RESPONSE.usage, linksLimit: 1000, backfillLimit: 5000 },
+    backfill: { ...RESPONSE.backfill, eligible, estimatedMinutes: 2 },
+  };
+}
+
+async function setup(
+  options: {
+    fail?: boolean;
+    phone?: boolean;
+    offer?: number;
+    backfillState?: AiSettingsResponse['backfill']['state'];
+    startFails?: boolean;
+  } = {},
+) {
+  const base = options.offer === undefined ? RESPONSE : withOffer(options.offer);
+  const initial: AiSettingsResponse = {
+    ...base,
+    backfill: { ...base.backfill, state: options.backfillState ?? base.backfill.state },
+  };
   const api = {
-    getSettings: vi.fn(() => of(RESPONSE)),
+    getSettings: vi.fn(() => of(initial)),
     updateSettings: vi.fn(() =>
       options.fail
         ? throwError(() => new Error('down'))
-        : of({ ...RESPONSE, settings: { ...RESPONSE.settings, enabled: true }, introSeen: true }),
+        : of({ ...initial, settings: { ...initial.settings, enabled: true }, introSeen: true }),
+    ),
+    startBackfill: vi.fn(() =>
+      options.startFails
+        ? throwError(() => new Error('refused'))
+        : of({
+            ...initial.backfill,
+            state: AI_BACKFILL_STATE.Running,
+            total: initial.backfill.eligible,
+          }),
     ),
   };
   const phone = options.phone ?? false;
   TestBed.configureTestingModule({
     providers: [
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
+      provideRouter([]),
       { provide: AI_API, useValue: api },
       {
         provide: ViewportService,
@@ -154,5 +188,76 @@ describe('AiIntroDialogComponent', () => {
     const { dialog } = await setup({ phone: true });
 
     expect(await dialog.getTitle()).toBe('Turn on AI?');
+  });
+
+  describe('the next step: process the links saved before', () => {
+    it('follows Turn on AI with the count, the three promises and the allowance, without axe violations', async () => {
+      const { dialog, loader, result } = await setup({ offer: 120 });
+      await (await loader.getHarness(UiButtonHarness.with({ text: 'Turn on AI' }))).click();
+      await vi.waitFor(async () =>
+        expect(await dialog.getTitle()).toBe('AI is on. Process your 120 saved links?'),
+      );
+      expect(result).not.toHaveBeenCalled();
+      const body = await dialog.getBodyText();
+      expect(body).toContain('haven’t been read by AI yet');
+      expect(body).toContain('Nothing changes without your choice');
+      expect(body).toContain('Runs in the background');
+      expect(body).toContain('separate allowance of 5,000 links');
+      expect(body).toContain('A reminder also appears in search.');
+      const container = document.querySelector('.cdk-dialog-container') as Element;
+      const link = container.querySelector('a[href="/settings/ai#ai-backfill"]');
+      expect(link?.textContent).toContain('Settings › AI › Process existing links');
+      expect(document.activeElement?.textContent).toContain('Process your 120 saved links?');
+      expect(await axeViolations(container)).toEqual([]);
+    });
+
+    it('starts the backfill with Process N links and closes with true', async () => {
+      const { api, store, loader, result } = await setup({ offer: 1 });
+      await (await loader.getHarness(UiButtonHarness.with({ text: 'Turn on AI' }))).click();
+      const process = await loader.getHarness(UiButtonHarness.with({ text: 'Process 1 link' }));
+      await process.click();
+      await vi.waitFor(() => expect(result).toHaveBeenCalledWith(true));
+      expect(api.startBackfill).toHaveBeenCalledTimes(1);
+      expect(store.backfillRunning()).toBe(true);
+    });
+
+    it('closes with true and starts nothing with Later', async () => {
+      const { api, loader, result, store } = await setup({ offer: 30 });
+      await (await loader.getHarness(UiButtonHarness.with({ text: 'Turn on AI' }))).click();
+      await (await loader.getHarness(UiButtonHarness.with({ text: 'Later' }))).click();
+      await vi.waitFor(() => expect(result).toHaveBeenCalledWith(true));
+      expect(api.startBackfill).not.toHaveBeenCalled();
+      expect(store.isOn()).toBe(true);
+    });
+
+    it('stays on the step when the start is refused', async () => {
+      const { dialog, loader, result } = await setup({ offer: 30, startFails: true });
+      await (await loader.getHarness(UiButtonHarness.with({ text: 'Turn on AI' }))).click();
+      await (await loader.getHarness(UiButtonHarness.with({ text: 'Process 30 links' }))).click();
+      await vi.waitFor(async () =>
+        expect(
+          await (
+            await loader.getHarness(UiButtonHarness.with({ text: 'Process 30 links' }))
+          ).isDisabled(),
+        ).toBe(false),
+      );
+      expect(result).not.toHaveBeenCalled();
+      expect(await dialog.getTitle()).toContain('Process your 30 saved links?');
+    });
+
+    it('closes right away when a run is already going or there is nothing to process', async () => {
+      for (const options of [
+        { offer: 30, backfillState: AI_BACKFILL_STATE.Running },
+        { offer: 0 },
+      ]) {
+        const { loader, result } = await setup(options);
+        await (await loader.getHarness(UiButtonHarness.with({ text: 'Turn on AI' }))).click();
+        await vi.waitFor(() => expect(result).toHaveBeenCalledWith(true));
+        document.querySelectorAll('.cdk-overlay-container').forEach((element) => {
+          element.replaceChildren();
+        });
+        TestBed.resetTestingModule();
+      }
+    });
   });
 });

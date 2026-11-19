@@ -259,6 +259,25 @@ describe('AiSettingsStore', () => {
     expect(await store.tick()).toBeNull();
   });
 
+  it('offers the eligible links up to the allowance left, only while no run is going or done', async () => {
+    const cases: Array<[Partial<AiSettingsResponse>, number]> = [
+      [{}, 12],
+      [{ backfill: { ...BACKFILL, state: AI_BACKFILL_STATE.Stopped } }, 12],
+      [{ backfill: { ...BACKFILL, state: AI_BACKFILL_STATE.Running } }, 0],
+      [{ backfill: { ...BACKFILL, state: AI_BACKFILL_STATE.Done } }, 0],
+      [{ backfill: { ...BACKFILL, eligible: 9000 } }, 5000],
+      [{ usage: { ...response().usage, backfillUsed: 4995 } }, 5],
+      [{ usage: { ...response().usage, backfillLimit: 0 } }, 0],
+    ];
+    for (const [patch, offer] of cases) {
+      TestBed.resetTestingModule();
+      const { store } = setup(response(patch));
+      expect(store.backfillOffer()).toBe(0);
+      await store.load();
+      expect(store.backfillOffer()).toBe(offer);
+    }
+  });
+
   it('reads search by meaning: on with AI and the switch, ready only when the server says so', async () => {
     const on = { ...AI_SETTINGS_DEFAULT, enabled: true };
     const { store, api } = setup(response({ settings: on }));

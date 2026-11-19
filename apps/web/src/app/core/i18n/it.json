@@ -3159,6 +3159,26 @@
       "startFailed": "Impossibile avviare l’elaborazione dei link",
       "stopFailed": "Impossibile interrompere l’elaborazione. Riprova."
     },
+    "backfillOffer": {
+      "title": {
+        "one": "L’IA è attiva. Elaborare il tuo {{count}} link salvato?",
+        "many": "L’IA è attiva. Elaborare i tuoi {{count}} link salvati?",
+        "other": "L’IA è attiva. Elaborare i tuoi {{count}} link salvati?"
+      },
+      "lead": "L’IA non ha ancora letto i link salvati in precedenza. Scriverà brevi riassunti, suggerirà tag e cartelle, e la ricerca per significato li troverà come quelli nuovi.",
+      "review": "Nulla cambia senza la tua scelta: i suggerimenti ti aspettano.",
+      "background": "Funziona in background, di solito pochi minuti. Puoi fermarla quando vuoi.",
+      "allowance": "Non usa il limite mensile: c’è una quota separata di {{allowance}} link.",
+      "process": {
+        "one": "Elabora {{count}} link",
+        "many": "Elabora {{count}} link",
+        "other": "Elabora {{count}} link"
+      },
+      "later": "Più tardi",
+      "noteLead": "Cambi idea? Avviala quando vuoi:",
+      "notePath": "Impostazioni › IA › Elabora i link esistenti",
+      "noteTail": "Un promemoria compare anche nella ricerca."
+    },
     "deleteData": {
       "confirm": {
         "title": "Eliminare i dati IA?",
