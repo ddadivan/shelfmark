@@ -11,6 +11,14 @@ test.describe('new view dialog (mock API)', () => {
   const views = (page: Page): Locator => page.getByRole('toolbar', { name: 'Saved views' });
   const spark = (dialog: Locator): Locator => dialog.getByRole('img', { name: AI_DISCLAIMER });
 
+  const type = (dialog: Locator): Locator => dialog.getByRole('combobox', { name: 'Type' });
+
+  async function chooseType(page: Page, dialog: Locator, name: string): Promise<void> {
+    await type(dialog).click();
+    await page.getByRole('option', { name, exact: true }).click();
+    await expect(type(dialog)).toContainText(name);
+  }
+
   async function openDialog(page: Page): Promise<Locator> {
     await views(page).getByRole('button', { name: 'Save this view' }).click();
     const dialog = page.getByRole('dialog', { name: 'New view' });
@@ -28,8 +36,7 @@ test.describe('new view dialog (mock API)', () => {
       await expect(dialog.getByRole('textbox', { name: 'Describe what to show' })).toHaveCount(0);
       await expect(dialog.getByText(/Found \d+ links?/u)).toBeVisible();
 
-      await dialog.getByRole('radio', { name: 'Video' }).click({ force: true });
-      await expect(dialog.getByRole('radio', { name: 'Video' })).toBeChecked();
+      await chooseType(page, dialog, 'Video');
       await dialog.getByRole('combobox', { name: 'Where' }).click();
       await page.getByRole('option', { name: 'Favorites' }).click();
       await expect(dialog.getByRole('combobox', { name: 'Where' })).toContainText('Favorites');
@@ -61,13 +68,13 @@ test.describe('new view dialog (mock API)', () => {
       await phrase.fill('videos, newest first');
       await dialog.getByRole('button', { name: 'Compose' }).click();
 
-      await expect(dialog.getByRole('radio', { name: 'Video' })).toBeChecked({ timeout: 10_000 });
+      await expect(type(dialog)).toContainText('Video', { timeout: 10_000 });
       await expect(spark(dialog)).toHaveCount(3);
       await expect(dialog.getByRole('textbox', { name: 'Name' })).toHaveValue(
         'Videos, newest first',
       );
 
-      await dialog.getByRole('radio', { name: 'Articles' }).click({ force: true });
+      await chooseType(page, dialog, 'Article');
       await expect(spark(dialog)).toHaveCount(2);
 
       await dialog.getByRole('button', { name: 'Save view' }).click();
@@ -75,6 +82,41 @@ test.describe('new view dialog (mock API)', () => {
       await expect(
         views(page).getByRole('button', { name: /^Videos, newest first \d+$/u }),
       ).toBeVisible();
+    },
+  );
+
+  // #537: the type select lists all ten kinds; a view of a new kind filters the feed by it.
+  test(
+    'a new kind: choose Recipe, save, the chip filters the feed by it',
+    { tag: E2E_TAG.Phone },
+    async ({ page }) => {
+      await openFeed(page);
+      const dialog = await openDialog(page);
+      await type(dialog).click();
+      await expect(page.getByRole('option')).toHaveText([
+        'All types',
+        'Video',
+        'Article',
+        'Shopping',
+        'Podcast',
+        'Document',
+        'Code',
+        'App',
+        'Post',
+        'Recipe',
+        'Other',
+      ]);
+      await page.getByRole('option', { name: 'Recipe', exact: true }).click();
+      await expect(type(dialog)).toContainText('Recipe');
+      await expect(dialog.getByText(/Found [1-9]\d* links?/u)).toBeVisible();
+
+      await dialog.getByRole('textbox', { name: 'Name' }).fill('Cooking');
+      await dialog.getByRole('button', { name: 'Save view' }).click();
+      await expect(dialog).toHaveCount(0);
+      const cooking = views(page).getByRole('button', { name: /^Cooking \d+$/u });
+      await cooking.click();
+      await expect(cooking).toHaveAttribute('aria-pressed', 'true');
+      await expect(page).toHaveURL(/kind=recipe/u);
     },
   );
 
