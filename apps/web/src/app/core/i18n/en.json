@@ -1314,7 +1314,7 @@
         "title": "Browser bookmarks",
         "description": "HTML file from Chrome, Safari, Firefox or Edge. Folders become folders."
       },
-      "drop": "Drag the file here",
+      "drop": "or drag the file here",
       "choose": "Choose file",
       "reading": "Reading {{file}}…",
       "problem": {
@@ -1461,8 +1461,10 @@
     "menu": "Import links…",
     "help": {
       "link": "How to export bookmarks from a browser",
-      "chrome": "Chrome and Edge: open the bookmark manager (Ctrl+Shift+O), open its ⋮ menu and choose “Export bookmarks”.",
-      "firefox": "Firefox: Bookmarks, Manage bookmarks (Ctrl+Shift+O), Import and Backup, “Export Bookmarks to HTML…”.",
+      "chrome": "Chrome: open the bookmark manager ({{keys}}), open its ⋮ menu and choose “Export bookmarks”.",
+      "edge": "Edge: open Favorites ({{keys}}), open its ⋯ menu and choose “Export favorites”.",
+      "edgeMac": "Edge: open Favorites from the ⋯ menu, open its ⋯ menu and choose “Export favorites”.",
+      "firefox": "Firefox: open the Library ({{keys}}), then Import and Backup, “Export Bookmarks to HTML…”.",
       "safari": "Safari: File, Export, Bookmarks."
     },
     "groups": {

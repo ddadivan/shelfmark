@@ -78,3 +78,43 @@ export const AllVariants: Story = {
       </div>`,
   }),
 };
+
+const STACKED = `illustration="welcome-save" heading="Browser bookmarks" text="HTML file from Chrome, Safari, Firefox or Edge. Folders become folders." hint=".html, up to 10 MB and 5,000 links" label="or drag the file here" actionLabel="Choose file"`;
+
+/**
+ * With an `illustration` the zone stacks like an empty state (import step 1): the scene on the
+ * soft disc (160px, plays once), heading, text, hint, a `md` button and the label under it.
+ */
+export const Stacked: Story = {
+  render: () => ({
+    template: `<div style="max-width: 32rem"><ui-drop-zone ${STACKED} /></div>`,
+  }),
+};
+
+/** Stacked at 360px. */
+export const StackedPhone: Story = {
+  render: () => ({
+    template: `<div style="width: 22.5rem"><ui-drop-zone ${STACKED} /></div>`,
+  }),
+};
+
+/** Stacked at rest, dragged over, invalid and disabled in both themes. */
+export const StackedAllVariants: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { themes: Object.values(THEME) },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
+            <div class="ds-stack">
+              <ui-drop-zone ${STACKED} />
+              <ui-drop-zone ${STACKED.replace('or drag the file here', 'Release to import')} over />
+              <ui-drop-zone ${STACKED} [invalid]="true" />
+              <ui-drop-zone ${STACKED} [disabled]="true" />
+            </div>
+          </div>
+        }
+      </div>`,
+  }),
+};

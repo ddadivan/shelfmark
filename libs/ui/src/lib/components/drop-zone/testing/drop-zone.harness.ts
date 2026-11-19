@@ -25,6 +25,8 @@ export class UiDropZoneHarness extends ComponentHarness {
   private readonly button = this.locatorFor(UiButtonHarness);
   private readonly labelEl = this.locatorForOptional('.ui-drop-zone__label');
   private readonly hintEl = this.locatorForOptional('.ui-drop-zone__hint');
+  private readonly headingEl = this.locatorForOptional('.ui-drop-zone__heading');
+  private readonly textEl = this.locatorForOptional('.ui-drop-zone__text');
 
   /** The text before the action; empty when there is none. */
   async getLabel(): Promise<string> {
@@ -40,6 +42,23 @@ export class UiDropZoneHarness extends ComponentHarness {
   async getHint(): Promise<string | null> {
     const hint = await this.hintEl();
     return hint ? (await hint.text()).trim() : null;
+  }
+
+  /** The heading of the stacked layout; `null` when there is none. */
+  async getHeading(): Promise<string | null> {
+    const heading = await this.headingEl();
+    return heading ? (await heading.text()).trim() : null;
+  }
+
+  /** The supporting text of the stacked layout; `null` when there is none. */
+  async getText(): Promise<string | null> {
+    const text = await this.textEl();
+    return text ? (await text.text()).trim() : null;
+  }
+
+  /** `true` in the stacked empty-state layout (an illustration is set). */
+  async isStacked(): Promise<boolean> {
+    return (await this.host()).hasClass('ui-drop-zone--stacked');
   }
 
   /** `true` while a file is dragged over the zone. */

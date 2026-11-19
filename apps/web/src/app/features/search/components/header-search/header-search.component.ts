@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, viewChild } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { BUTTON_VARIANT, ButtonComponent } from '@shelfmark/ui';
+import { BUTTON_VARIANT, ButtonComponent, isMacPlatform } from '@shelfmark/ui';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { SearchDialogService } from '../../services/search-dialog.service';
 import { SearchFieldService } from '../../services/search-field.service';
-import { isMacPlatform } from '../../utils/is-mac-platform';
 import { SearchResultsComponent } from '../search-results/search-results.component';
 import { AskPanelService } from '../../../ai/services/ask-panel.service';
 

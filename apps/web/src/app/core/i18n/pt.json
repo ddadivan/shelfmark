@@ -1337,7 +1337,7 @@
         "title": "Favoritos do navegador",
         "description": "Arquivo HTML do Chrome, Safari, Firefox ou Edge. Pastas continuam sendo pastas."
       },
-      "drop": "Arraste o arquivo para cá",
+      "drop": "ou arraste o arquivo para cá",
       "choose": "Escolher arquivo",
       "reading": "Lendo {{file}}…",
       "problem": {
@@ -1499,8 +1499,10 @@
     "menu": "Importar links…",
     "help": {
       "link": "Como exportar os favoritos de um navegador",
-      "chrome": "Chrome e Edge: abra o gerenciador de favoritos (Ctrl+Shift+O), abra o menu ⋮ e escolha “Exportar favoritos”.",
-      "firefox": "Firefox: Favoritos, Gerenciar favoritos (Ctrl+Shift+O), Importar e fazer backup, “Exportar favoritos para HTML…”.",
+      "chrome": "Chrome: abra o gerenciador de favoritos ({{keys}}), abra o menu ⋮ e escolha “Exportar favoritos”.",
+      "edge": "Edge: abra Favoritos ({{keys}}), abra o menu ⋯ e escolha “Exportar favoritos”.",
+      "edgeMac": "Edge: abra Favoritos pelo menu ⋯, abra o menu ⋯ e escolha “Exportar favoritos”.",
+      "firefox": "Firefox: abra a Biblioteca ({{keys}}), depois Importar e fazer backup, “Exportar favoritos para HTML…”.",
       "safari": "Safari: Arquivo, Exportar, Favoritos."
     },
     "groups": {

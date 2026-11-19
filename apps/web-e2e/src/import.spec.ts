@@ -44,12 +44,14 @@ test.describe('import browser bookmarks (mock API)', () => {
     async ({ page }) => {
       const dialog = await openImport(page);
 
-      // Step 1: the browser source, the drop zone with the real limits and the short help.
-      await expect(dialog.getByText('Browser bookmarks')).toBeVisible();
-      await expect(dialog.getByText('Drag the file here')).toBeVisible();
+      // Step 1: an empty-state stack (scene, the browser source, the real limits, the button,
+      // "or drag the file here") and the short help.
+      await expect(dialog.getByRole('heading', { name: 'Browser bookmarks' })).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Choose file' })).toBeVisible();
+      await expect(dialog.getByText('or drag the file here')).toBeVisible();
       await expect(dialog.getByText(/^\.html, up to 50 MB and 10,000 links$/)).toBeVisible();
       await dialog.getByRole('button', { name: 'How to export bookmarks from a browser' }).click();
-      await expect(dialog.getByText(/^Chrome and Edge:/)).toBeVisible();
+      await expect(dialog.getByText(/^Chrome: open the bookmark manager/)).toBeVisible();
       // The picker button opens the hidden file input; Playwright fills it directly.
       await dialog.locator('input[type="file"]').setInputFiles(CHROME_EXPORT);
 
@@ -157,7 +159,32 @@ test.describe('import browser bookmarks (mock API)', () => {
     await dialog
       .getByText('Browser bookmarks')
       .dispatchEvent('dragleave', { dataTransfer: transfer });
-    await expect(dialog.getByText('Drag the file here')).toBeVisible();
+    await expect(dialog.getByText('or drag the file here')).toBeVisible();
+  });
+
+  test('gives the export help with the keys of the platform', async ({ page }) => {
+    // Chromium on Linux: Windows-style keys, no Safari.
+    let dialog = await openImport(page);
+    await dialog.getByRole('button', { name: 'How to export bookmarks from a browser' }).click();
+    const help = dialog.locator('#import-help');
+    await expect(help.getByRole('listitem')).toHaveCount(3);
+    await expect(help.getByText(/^Chrome: open the bookmark manager/)).toContainText(
+      'Ctrl+Shift+O',
+    );
+    await expect(help.getByText(/^Safari/)).toHaveCount(0);
+
+    // The same browser reporting a Mac: Command / Option glyph caps and the Safari step.
+    await page.addInitScript(() => {
+      Object.defineProperty(Navigator.prototype, 'platform', { get: () => 'MacIntel' });
+      Object.defineProperty(Navigator.prototype, 'userAgentData', { get: () => undefined });
+    });
+    dialog = await openImport(page);
+    await dialog.getByRole('button', { name: 'How to export bookmarks from a browser' }).click();
+    await expect(help.getByRole('listitem')).toHaveCount(4);
+    const chrome = help.getByText(/^Chrome: open the bookmark manager/);
+    await expect(chrome).toContainText('Command+Option+B');
+    await expect(chrome.locator('kbd ui-icon')).toHaveCount(2);
+    await expect(help.getByText('Safari: File, Export, Bookmarks.')).toBeVisible();
   });
 
   test('refuses a file that is not a bookmarks export', async ({ page }) => {

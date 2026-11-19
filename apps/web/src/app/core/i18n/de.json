@@ -1314,7 +1314,7 @@
         "title": "Browser-Lesezeichen",
         "description": "HTML-Datei aus Chrome, Safari, Firefox oder Edge. Ordner bleiben Ordner."
       },
-      "drop": "Datei hierher ziehen",
+      "drop": "oder Datei hierher ziehen",
       "choose": "Datei auswählen",
       "reading": "{{file}} wird gelesen …",
       "problem": {
@@ -1461,8 +1461,10 @@
     "menu": "Links importieren …",
     "help": {
       "link": "So exportierst du Lesezeichen aus dem Browser",
-      "chrome": "Chrome und Edge: Lesezeichenverwaltung öffnen (Strg+Umschalt+O), das ⋮-Menü öffnen und „Lesezeichen exportieren“ wählen.",
-      "firefox": "Firefox: Lesezeichen, Lesezeichen verwalten (Strg+Umschalt+O), Importieren und Sichern, „Lesezeichen nach HTML exportieren …“.",
+      "chrome": "Chrome: Lesezeichenverwaltung öffnen ({{keys}}), das ⋮-Menü öffnen und „Lesezeichen exportieren“ wählen.",
+      "edge": "Edge: Favoriten öffnen ({{keys}}), das ⋯-Menü öffnen und „Favoriten exportieren“ wählen.",
+      "edgeMac": "Edge: Favoriten über das ⋯-Menü öffnen, dort das ⋯-Menü öffnen und „Favoriten exportieren“ wählen.",
+      "firefox": "Firefox: Bibliothek öffnen ({{keys}}), dann Importieren und Sichern, „Lesezeichen nach HTML exportieren …“.",
       "safari": "Safari: Ablage, Exportieren, Lesezeichen."
     },
     "groups": {

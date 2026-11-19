@@ -1337,7 +1337,7 @@
         "title": "Favoris du navigateur",
         "description": "Fichier HTML de Chrome, Safari, Firefox ou Edge. Les dossiers restent des dossiers."
       },
-      "drop": "Glissez le fichier ici",
+      "drop": "ou glissez le fichier ici",
       "choose": "Choisir un fichier",
       "reading": "Lecture de {{file}}…",
       "problem": {
@@ -1499,8 +1499,10 @@
     "menu": "Importer des liens…",
     "help": {
       "link": "Comment exporter les favoris d’un navigateur",
-      "chrome": "Chrome et Edge : ouvrez le gestionnaire de favoris (Ctrl+Maj+O), ouvrez son menu ⋮ et choisissez « Exporter les favoris ».",
-      "firefox": "Firefox : Marque-pages, Gérer les marque-pages (Ctrl+Maj+O), Importation et sauvegarde, « Exporter les marque-pages au format HTML… ».",
+      "chrome": "Chrome : ouvrez le gestionnaire de favoris ({{keys}}), ouvrez son menu ⋮ et choisissez « Exporter les favoris ».",
+      "edge": "Edge : ouvrez les Favoris ({{keys}}), ouvrez leur menu ⋯ et choisissez « Exporter les favoris ».",
+      "edgeMac": "Edge : ouvrez les Favoris depuis le menu ⋯, ouvrez leur menu ⋯ et choisissez « Exporter les favoris ».",
+      "firefox": "Firefox : ouvrez la Bibliothèque ({{keys}}), puis Importation et sauvegarde, « Exporter les marque-pages au format HTML… ».",
       "safari": "Safari : Fichier, Exporter, Signets."
     },
     "groups": {

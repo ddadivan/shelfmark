@@ -158,6 +158,96 @@ describe('DropZoneComponent', () => {
     }
   });
 
+  describe('stacked layout (illustration)', () => {
+    const stacked = {
+      illustration: 'welcome-save',
+      heading: 'Browser bookmarks',
+      text: 'HTML file from Chrome, Safari, Firefox or Edge.',
+      hint: '.html, up to 10 MB',
+      label: 'or drag the file here',
+    };
+
+    it('keeps the row layout without an illustration', () => {
+      const { host } = setup();
+      expect(host.classList.contains('ui-drop-zone--stacked')).toBe(false);
+      expect(host.querySelector('.ui-drop-zone__icon')).not.toBeNull();
+      expect(host.querySelector('ui-illustration')).toBeNull();
+      expect(host.querySelector('button')?.className).toContain('ui-button--sm');
+    });
+
+    it('stacks the scene, heading, text, hint, md button and label in that order', () => {
+      const { host } = setup(stacked);
+      expect(host.classList.contains('ui-drop-zone--stacked')).toBe(true);
+      expect(host.querySelector('.ui-drop-zone__icon')).toBeNull();
+      const scene = host.querySelector('ui-illustration');
+      expect(scene?.classList.contains('ui-illustration--once')).toBe(true);
+      const order = [
+        '.ui-drop-zone__stage',
+        'h3.ui-drop-zone__heading',
+        '.ui-drop-zone__text',
+        '.ui-drop-zone__hint',
+        'button',
+        '.ui-drop-zone__label',
+      ].map((selector) => host.querySelector(selector));
+      expect(order.every(Boolean)).toBe(true);
+      for (let i = 1; i < order.length; i++) {
+        const before = order[i - 1] as Element;
+        const after = order[i] as Element;
+        expect(
+          before.compareDocumentPosition(after) & Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
+      }
+      expect(host.querySelector('h3')?.textContent).toContain('Browser bookmarks');
+      const button = host.querySelector('button') as HTMLButtonElement;
+      expect(button.className).not.toContain('ui-button--sm');
+      expect(button.className).toContain('ui-button--secondary');
+    });
+
+    it('leaves out empty copy', () => {
+      const { host } = setup({ illustration: 'welcome-save', label: '' });
+      expect(host.querySelector('.ui-drop-zone__copy')).toBeNull();
+      expect(host.querySelector('.ui-drop-zone__label')).toBeNull();
+    });
+
+    it('still takes drops, opens the picker and shows the over, invalid and disabled looks', () => {
+      const { fixture, host, files, input } = setup(stacked);
+      let clicks = 0;
+      input.addEventListener('click', (e) => {
+        e.preventDefault();
+        clicks += 1;
+      });
+      host.querySelector('button')?.click();
+      expect(clicks).toBe(1);
+      const file = new File(['<a>'], 'bookmarks.html', { type: 'text/html' });
+      host.dispatchEvent(dragEvent('dragenter'));
+      fixture.detectChanges();
+      expect(host.classList.contains('ui-drop-zone--over')).toBe(true);
+      host.dispatchEvent(dragEvent('drop', ['Files'], [file]));
+      fixture.detectChanges();
+      expect(files).toEqual([file]);
+      expect(host.classList.contains('ui-drop-zone--over')).toBe(false);
+      fixture.componentRef.setInput('invalid', true);
+      fixture.componentRef.setInput('disabled', true);
+      fixture.detectChanges();
+      expect(host.classList.contains('ui-drop-zone--invalid')).toBe(true);
+      expect(host.classList.contains('ui-drop-zone--disabled')).toBe(true);
+      expect((host.querySelector('button') as HTMLButtonElement).disabled).toBe(true);
+    });
+
+    it('has no axe violations at rest, over, invalid and disabled', async () => {
+      for (const extra of [{}, { over: true }, { invalid: true }, { disabled: true }]) {
+        const { host } = setup({ ...stacked, ...extra });
+        expect(await axeViolations(host)).toEqual([]);
+      }
+    });
+
+    it('puts the 160px scene on the illustration disc', () => {
+      const css = compileScss('lib/components/drop-zone/drop-zone.component.scss');
+      expect(css).toContain('var(--illustration-disc)');
+      expect(css).toMatch(/--ui-illustration-width:\s*10rem/);
+    });
+  });
+
   it('uses tokens only and drops transitions under reduced motion', () => {
     const css = compileScss('lib/components/drop-zone/drop-zone.component.scss');
     expect(css).toContain('var(--accent-bg)');
