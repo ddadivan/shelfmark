@@ -60,8 +60,10 @@ test.describe('saved views (mock API)', () => {
 
     // On a feed other than All links "Save this view" stores the type only (#335).
     await views(page).getByRole('button', { name: 'Save this view' }).click();
-    const dialog = page.getByRole('dialog', { name: 'Save this view' });
-    await expect(dialog.getByRole('textbox', { name: 'Name' })).toBeFocused();
+    const dialog = page.getByRole('dialog', { name: 'New view' });
+    // AI is off: no phrase, the first row has focus and the type of the feed is already chosen.
+    await expect(dialog.getByRole('combobox', { name: 'Where' })).toBeFocused();
+    await expect(dialog.getByRole('radio', { name: 'Shop' })).toBeChecked();
     await dialog.getByRole('button', { name: 'Save view' }).click();
     await expect(dialog.getByText('Enter a name')).toBeVisible();
     await dialog.getByRole('textbox', { name: 'Name' }).fill('Inbox');
@@ -126,7 +128,7 @@ test.describe('saved views (mock API)', () => {
 
     await views(page).getByRole('button', { name: 'Save this view' }).focus();
     await page.keyboard.press('Enter');
-    const dialog = page.getByRole('dialog', { name: 'Save this view' });
+    const dialog = page.getByRole('dialog', { name: 'New view' });
     await dialog.getByRole('textbox', { name: 'Name' }).fill('Keyboard view');
     await page.keyboard.press('Enter');
 

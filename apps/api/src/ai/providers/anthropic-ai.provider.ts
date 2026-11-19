@@ -15,6 +15,12 @@ import type { ImportGroupNamesOutcome } from '../models/import-group-names-outco
 import { TAG_SYNONYMS_LIMIT } from '../models/tag-synonyms-limit.const';
 import type { TagSynonymsInput } from '../models/tag-synonyms-input.interface';
 import type { TagSynonymsOutcome } from '../models/tag-synonyms-outcome.type';
+import { buildViewDraftPrompt } from '../prompt/build-view-draft-prompt';
+import { VIEW_DRAFT_OUTPUT_SCHEMA } from '../prompt/view-draft.schema';
+import { VIEW_DRAFT_SYSTEM_PROMPT } from '../prompt/view-draft-system-prompt.const';
+import { VIEW_DRAFT_PROMPT_LIMIT } from '../models/view-draft-prompt-limit.const';
+import type { ViewDraftInput } from '../models/view-draft-input.interface';
+import type { ViewDraftModelOutcome } from '../models/view-draft-model-outcome.type';
 import { ANTHROPIC_LIMIT } from '../models/anthropic-limit.const';
 import { AI_EFFORT, AI_MODEL } from '../models/ai-model.const';
 import { AI_PROVIDER_NAME } from '../models/ai-provider-name.const';
@@ -89,6 +95,24 @@ function importGroupNamesParamsFor(input: ImportGroupNamesInput): MessageParams 
     output_config: {
       effort: AI_EFFORT.ImportGroups,
       format: { type: 'json_schema', schema: IMPORT_GROUP_NAMES_SCHEMA },
+    },
+  };
+}
+
+/**
+ * A view from a phrase (#535, ADR 0057): Haiku 5.5 at low effort, no thinking (Haiku takes
+ * `disabled`), structured output, the phrase plus folder paths and tag names only.
+ */
+export function viewDraftParamsFor(input: ViewDraftInput): MessageParams {
+  return {
+    model: AI_MODEL.ViewDraft,
+    max_tokens: VIEW_DRAFT_PROMPT_LIMIT.MaxTokens,
+    system: VIEW_DRAFT_SYSTEM_PROMPT,
+    messages: [{ role: 'user', content: buildViewDraftPrompt(input) }],
+    thinking: { type: 'disabled' },
+    output_config: {
+      effort: AI_EFFORT.ViewDraft,
+      format: { type: 'json_schema', schema: VIEW_DRAFT_OUTPUT_SCHEMA },
     },
   };
 }
@@ -285,6 +309,18 @@ export class AnthropicAiProvider implements AiProvider {
   async nameImportGroups(input: ImportGroupNamesInput): Promise<ImportGroupNamesOutcome> {
     try {
       const message = await this.client.messages.create(importGroupNamesParamsFor(input), {
+        timeout: ANTHROPIC_LIMIT.TimeoutMs,
+        maxRetries: ANTHROPIC_LIMIT.MaxRetries,
+      });
+      return outcomeOfMessage(message);
+    } catch (error) {
+      return outcomeOfError(error);
+    }
+  }
+
+  async draftView(input: ViewDraftInput): Promise<ViewDraftModelOutcome> {
+    try {
+      const message = await this.client.messages.create(viewDraftParamsFor(input), {
         timeout: ANTHROPIC_LIMIT.TimeoutMs,
         maxRetries: ANTHROPIC_LIMIT.MaxRetries,
       });

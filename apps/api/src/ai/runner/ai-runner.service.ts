@@ -190,6 +190,7 @@ export class AiRunnerService {
         parsed.folder === null ? null : (vocabulary.folderIdByKey.get(parsed.folder) ?? null),
       summary: parsed.summary,
       title: parsed.title,
+      kind: parsed.kind,
     });
   }
 

@@ -2338,8 +2338,6 @@
       "cancel": "Abbrechen"
     },
     "create": {
-      "title": "Diese Ansicht speichern",
-      "action": "Ansicht speichern",
       "saving": "Wird gespeichert…",
       "failed": "Ansicht konnte nicht gespeichert werden. Versuch es noch einmal.",
       "limit": "Du hast schon die maximale Anzahl an Ansichten. Lösche zuerst eine.",
@@ -2384,6 +2382,65 @@
       "video": "Links, die als Videos erkannt wurden",
       "article": "Links, die als Artikel erkannt wurden",
       "shopping": "Links, die als Shopping erkannt wurden"
+    },
+    "new": {
+      "title": "Neue Ansicht",
+      "lead": "Starte mit dem Filter der aktuellen Liste oder ändere ihn hier.",
+      "action": "Ansicht speichern",
+      "change": "Ändern",
+      "composed": "Der Filter wurde aus deiner Beschreibung erstellt.",
+      "dropped": "Nicht berücksichtigt: {{names}}",
+      "compose": "Erstellen",
+      "composing": "Wird erstellt…",
+      "ideas": "Ideen",
+      "ideaLabel": "Idee übernehmen: {{name}}",
+      "ideaPhrase": "Links zu {{name}}",
+      "unavailable": "Gerade lässt sich keine Ansicht erstellen. Das zählt nicht zu deinem Limit; du kannst den Filter selbst einstellen.",
+      "skip": {
+        "or": "oder",
+        "action": "den aktuellen Filter speichern"
+      },
+      "phrase": {
+        "label": "Beschreibe, was gezeigt werden soll",
+        "placeholder": "Videos über Angular, die ich noch nicht gesehen habe",
+        "hint": "Zum Beispiel: „Artikel über Design aus meinem Ordner Arbeit“, „was ich an Kleidung kaufen will“, „Rezepte, neueste zuerst“."
+      },
+      "where": {
+        "label": "Wo",
+        "all": "Alle Links",
+        "unsorted": "Nicht einsortiert",
+        "favorites": "Favoriten",
+        "search": "Ordner suchen",
+        "noResults": "Keine Ordner gefunden"
+      },
+      "kind": {
+        "label": "Typ",
+        "all": "Alle",
+        "video": "Videos",
+        "article": "Artikel",
+        "shopping": "Shop"
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "Tag hinzufügen",
+        "max": "Bis zu {{max}} Tags",
+        "unknown": "„{{name}}“ ist keiner deiner Tags. Wähle einen aus der Liste."
+      },
+      "q": {
+        "label": "Suchwörter",
+        "placeholder": "Wörter in Titel, Notiz oder Adresse",
+        "tooLong": "Höchstens {{max}} Zeichen"
+      },
+      "sort": {
+        "label": "Sortierung"
+      },
+      "found": {
+        "one": "{{count}} Link gefunden",
+        "other": "{{count}} Links gefunden"
+      },
+      "foundMore": "Mehr als {{count}} Links gefunden",
+      "andMore": "und {{count}} weitere",
+      "meta": "{{host}} · {{folder}}"
     }
   },
   "feedback": {

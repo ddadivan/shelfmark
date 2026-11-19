@@ -21,6 +21,8 @@ import {
   type TidyUndoResponse,
   type UndoAiApplyRequest,
   type UpdateAiSettingsRequest,
+  VIEW_DRAFT_ENDPOINT,
+  type ViewDraftResponse,
 } from '@shelfmark/contracts';
 import type { Observable } from 'rxjs';
 import { skipErrorToast } from '../../../core/api/skip-error-toast';
@@ -159,5 +161,13 @@ export class HttpAiApi implements AiApi {
 
   ask(question: string, history: readonly AskTurn[]): Observable<AskEvent> {
     return fetchAskEvents(AI_ENDPOINT.Ask, { question, history: [...history] });
+  }
+
+  draftView(phrase: string): Observable<ViewDraftResponse> {
+    return this.http.post<ViewDraftResponse>(
+      VIEW_DRAFT_ENDPOINT,
+      { phrase },
+      { context: skipErrorToast() },
+    );
   }
 }

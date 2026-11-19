@@ -66,6 +66,8 @@ export const RATE_LIMIT = {
   AiTidyRead: { limit: 60, ttl: MINUTE_MS },
   // AI-4 Ask your shelf: each one a streamed model answer (the question limits apply on top).
   AiAsk: { limit: 10, ttl: MINUTE_MS },
+  // A saved view from a phrase (#535): one short model call each (the Ask question limits apply on top).
+  AiViewDraft: { limit: 10, ttl: MINUTE_MS },
   // Rediscover dismiss and "Not interested".
   RediscoverWrite: { limit: 30, ttl: MINUTE_MS },
   // Rule offer check (AI-2): read-only, asked after each filing by the user.

@@ -600,6 +600,49 @@ describe('AI link jobs', () => {
     });
   });
 
+  describe('link kind (#535)', () => {
+    it("sets the model's kind while the link is 'other'", async () => {
+      await turnOn();
+      const saved = await save({ title: 'A conference talk on signals' });
+      expect(saved.kind).toBe('other');
+      await deferrer.flush();
+      expect((await link(saved.id)).kind).toBe('video');
+    });
+
+    it('keeps a kind the page or the host gave', async () => {
+      await turnOn();
+      const saved = await save({ title: 'A conference talk on signals', kind: 'article' });
+      await deferrer.flush();
+      expect((await link(saved.id)).kind).toBe('article');
+    });
+
+    it('never changes a kind the user chose, even back to other', async () => {
+      await turnOn();
+      const saved = await save({ title: 'A conference talk on signals' });
+      await a.patch(`/api/links/${saved.id}`).send({ kind: 'other' }).expect(200);
+      expect((await link(saved.id)).kindByUser).toBe(true);
+      await deferrer.flush();
+      expect((await link(saved.id)).kind).toBe('other');
+    });
+
+    it('leaves the kind when the model is unsure', async () => {
+      await turnOn();
+      const saved = await save({});
+      await deferrer.flush();
+      expect((await link(saved.id)).kind).toBe('other');
+    });
+
+    it('lets the host decide again after a new URL, which clears the choice', async () => {
+      const saved = await save({});
+      await a.patch(`/api/links/${saved.id}`).send({ kind: 'shopping' }).expect(200);
+      await a
+        .patch(`/api/links/${saved.id}`)
+        .send({ url: 'https://www.youtube.com/watch?v=abcdefghijk' })
+        .expect(200);
+      expect(await link(saved.id)).toMatchObject({ kind: 'video', kindByUser: false });
+    });
+  });
+
   describe('drafts', () => {
     it('answers skipped without a job while AI is off or asks for nothing', async () => {
       const draftId = randomUUID();

@@ -50,6 +50,8 @@ import { ASK_DEADLINES } from './models/ask-deadlines.token';
 import type { AskDeadlines } from './models/ask-deadlines.interface';
 import { ASK_LIMIT } from '@shelfmark/contracts';
 import { AiUsageService } from './usage/ai-usage.service';
+import { ViewDraftController } from './view-draft.controller';
+import { ViewDraftService } from './view-draft/view-draft.service';
 
 /**
  * AI (#389–#391, ADR 0047 / 0049). `LinksModule` imports this module (enqueue and draft attach in
@@ -65,6 +67,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     RelatedLinksController,
     AiSweepController,
     AskController,
+    ViewDraftController,
   ],
   providers: [
     // Read once at boot (the module is created when the app starts): never at import time.
@@ -95,6 +98,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     RelatedLinksService,
     AskUsageService,
     AskService,
+    ViewDraftService,
     SearchLinksAskTool,
     CountLinksAskTool,
     GetLinkAskTool,

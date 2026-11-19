@@ -6,16 +6,19 @@ import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark
 import { DIALOG_FIRST_FIELD } from '../../../models/dialog-first-field.const';
 import { VIEW_OUTCOME } from '../../../stores/models/view-outcome.const';
 import { SavedViewsStore } from '../../../stores/saved-views.store';
+import { AiSettingsStore } from '../../ai/services/ai-settings.store';
 import type { LinksFilter } from '../../links/models/links-filter.type';
 import type { ViewNameDialogData } from '../models/view-name-dialog-data.interface';
-import { VIEW_NAME_MODE } from '../models/view-name-mode.const';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { feedAllNavigation, savedQueryOf, viewNavigationOnFeed } from '../utils/feed-views';
-import { viewQueryOf } from '../utils/saved-view-query';
+import { normalizeViewQuery, viewQueryOf } from '../utils/saved-view-query';
+import { NewViewDialogComponent } from '../components/new-view-dialog/new-view-dialog.component';
 import { ViewNameDialogComponent } from '../components/view-name-dialog/view-name-dialog.component';
+import { NEW_VIEW_FOCUS } from '../models/new-view-focus.const';
+import type { NewViewDialogData } from '../models/new-view-dialog-data.interface';
 
 /**
- * What a user can do with saved views: apply one (or "All"), save the current filter as a view,
+ * What a user can do with saved views: apply one (or "All"), save the current filter as a view (the new view dialog),
  * rename, delete (after a confirmation) and move one left or right. Dialogs, texts and toasts live
  * here, so components only call. Save waits for the server inside its dialog; rename, delete and
  * move change the chips at once and roll back with a toast when the request fails.
@@ -23,6 +26,7 @@ import { ViewNameDialogComponent } from '../components/view-name-dialog/view-nam
 @Service()
 export class SavedViewActionsService {
   private readonly store = inject(SavedViewsStore);
+  private readonly ai = inject(AiSettingsStore);
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly router = inject(Router);
@@ -59,27 +63,27 @@ export class SavedViewActionsService {
   }
 
   /**
-   * Opens the name dialog and saves the filter as a new view at the end. Resolves with the id of
-   * the new view (the caller moves focus to its chip), or `null` when nothing was saved.
+   * Opens the new view dialog on the feed's current filter and saves what the user settles on as a
+   * new view at the end. Resolves with the id of the new view (the caller moves focus to its chip),
+   * or `null` when nothing was saved.
    */
   async saveCurrent(filter: LinksFilter): Promise<string | null> {
     if (this.store.atLimit()) {
       this.limitToast();
       return null;
     }
-    const query = savedQueryOf(filter, viewQueryOf(filter));
+    const query = normalizeViewQuery(savedQueryOf(filter, viewQueryOf(filter)));
     let saved = '';
     let createdId: string | null = null;
-    const ref = this.dialogs.open<ViewNameDialogComponent, boolean, ViewNameDialogData>(
-      ViewNameDialogComponent,
+    const ref = this.dialogs.open<NewViewDialogComponent, boolean, NewViewDialogData>(
+      NewViewDialogComponent,
       {
-        size: DIALOG_SIZE.Sm,
-        autoFocus: DIALOG_FIRST_FIELD,
+        size: DIALOG_SIZE.Md,
+        autoFocus: this.ai.isOn() ? NEW_VIEW_FOCUS.Phrase : NEW_VIEW_FOCUS.FirstRow,
         data: {
-          mode: VIEW_NAME_MODE.Create,
-          name: '',
-          submit: async (name) => {
-            const { outcome, view } = await this.store.create(name, query);
+          query,
+          submit: async (name, chosen) => {
+            const { outcome, view } = await this.store.create(name, chosen);
             saved = name;
             if (outcome === VIEW_OUTCOME.Done) {
               createdId = view?.id ?? null;
@@ -113,7 +117,6 @@ export class SavedViewActionsService {
         size: DIALOG_SIZE.Sm,
         autoFocus: DIALOG_FIRST_FIELD,
         data: {
-          mode: VIEW_NAME_MODE.Rename,
           name: view.name,
           submit: (name) => {
             void this.store.rename(view.id, name).then((done) => {
