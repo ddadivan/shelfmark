@@ -1,6 +1,6 @@
 import type { AiProviderName } from './ai-provider-name.type';
-import type { AskChunk } from './ask-chunk.type';
-import type { AskInput } from './ask-input.interface';
+import type { AskRoundChunk } from './ask-round-chunk.type';
+import type { AskRoundInput } from './ask-round-input.interface';
 import type { LinkBatchItem } from './link-batch-item.interface';
 import type { LinkBatchRequest } from './link-batch-request.interface';
 import type { LinkBatchStatus } from './link-batch-status.type';
@@ -25,10 +25,11 @@ export interface AiProvider {
   readLinkBatchResults(providerBatchId: string): Promise<LinkBatchItem[]>;
   cancelLinkBatch(providerBatchId: string): Promise<void>;
   /**
-   * One Ask answer as a stream (ADR 0052): `text` chunks, then exactly one `end` or `error`. Never
-   * throws; stops promptly when `signal` aborts (the client went away or a deadline passed).
+   * One model call of the Ask chat loop (ADR 0055 point 5): with tools, the profile's model, thinking
+   * and token caps and the cache breakpoints. `text` and `tool_start` chunks, then exactly one `end`
+   * or `error`. Never throws; stops promptly when `signal` aborts.
    */
-  askStream(input: AskInput, signal: AbortSignal): AsyncIterable<AskChunk>;
+  askRound(input: AskRoundInput, signal: AbortSignal): AsyncIterable<AskRoundChunk>;
   /**
    * Synonym pairs among the user's tag names (AI-5, ADR 0053): names only, as keys `t1…`. Never
    * throws; the output is narrowed by `parseTagSynonymsOutput`.

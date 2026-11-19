@@ -1,8 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { Logger } from '@nestjs/common';
-import { ASK_LIMIT } from '@shelfmark/contracts';
-import { ASK_SYSTEM_PROMPT } from '../prompt/ask-system-prompt.const';
-import { buildAskUserPrompt } from '../prompt/build-ask-prompt';
 import { buildLinkUserPrompt } from '../prompt/build-link-prompt';
 import { LINK_OUTPUT_SCHEMA } from '../prompt/link-output.schema';
 import { LINK_SYSTEM_PROMPT } from '../prompt/link-system-prompt.const';
@@ -16,9 +13,14 @@ import { ANTHROPIC_LIMIT } from '../models/anthropic-limit.const';
 import { AI_EFFORT, AI_MODEL } from '../models/ai-model.const';
 import { AI_PROVIDER_NAME } from '../models/ai-provider-name.const';
 import { ASK_STOP_REASON } from '../models/ask-stop-reason.const';
-import type { AskChunk } from '../models/ask-chunk.type';
-import type { AskInput } from '../models/ask-input.interface';
 import type { AskStopReason } from '../models/ask-stop-reason.type';
+import { ASK_THINKING } from '../models/ask-thinking.const';
+import { ASK_TOOL_CHOICE } from '../models/ask-tool-choice.const';
+import type { AskAssistantBlock } from '../models/ask-assistant-block.type';
+import type { AskMessage } from '../models/ask-message.type';
+import type { AskRoundChunk } from '../models/ask-round-chunk.type';
+import type { AskRoundInput } from '../models/ask-round-input.interface';
+import type { AskUsageTokens } from '../models/ask-usage-tokens.interface';
 import { LINK_BATCH_STATUS } from '../models/link-batch-status.const';
 import type { AiConfig } from '../models/ai-config.interface';
 import type { AiProvider } from '../models/ai-provider.interface';
@@ -71,28 +73,120 @@ function tagSynonymsParamsFor(input: TagSynonymsInput): MessageParams {
   };
 }
 
-/**
- * An Ask answer (ADR 0052 point 4): Sonnet at medium effort, plain text, no tools, no thinking (the
- * first text must arrive within `ASK_LIMIT.FirstTokenMs`), the fixed system prompt first with a cache
- * breakpoint.
- */
-function askParamsFor(input: AskInput): StreamParams {
-  return {
-    model: AI_MODEL.Ask,
-    max_tokens: ANTHROPIC_LIMIT.AskMaxTokens,
-    system: [{ type: 'text', text: ASK_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
-    messages: [{ role: 'user', content: buildAskUserPrompt(input) }],
-    // Sonnet 5.5 rejects `disabled` with a 400; `between_tools` is its "no thinking before the
-    // answer" (no tools here, so nothing comes back as thinking). Allowed at effort `high` or below.
-    thinking: { type: 'between_tools' },
-    output_config: { effort: AI_EFFORT.Ask },
-  };
-}
+const STOP_REASON_TOOL_USE = 'tool_use';
+const CACHE: Anthropic.Messages.CacheControlEphemeral = { type: 'ephemeral' };
 
 function askStopReason(reason: string | null): AskStopReason {
   if (reason === STOP_REASON_REFUSAL) return ASK_STOP_REASON.Refusal;
+  if (reason === STOP_REASON_TOOL_USE) return ASK_STOP_REASON.ToolUse;
   if (reason === STOP_REASON_MAX_TOKENS) return ASK_STOP_REASON.MaxTokens;
   return ASK_STOP_REASON.Done;
+}
+
+/** A block the API gave us earlier (thinking with its signature), sent back unchanged. */
+function isBlockParam(block: unknown): block is Anthropic.Messages.ContentBlockParam {
+  return (
+    typeof block === 'object' && block !== null && 'type' in block && typeof block.type === 'string'
+  );
+}
+
+type CacheableParam =
+  | Anthropic.Messages.TextBlockParam
+  | Anthropic.Messages.ToolUseBlockParam
+  | Anthropic.Messages.ToolResultBlockParam;
+
+function toParamContent(
+  message: AskMessage,
+): CacheableParam[] | Anthropic.Messages.ContentBlockParam[] {
+  if (message.role === 'user') {
+    return message.content.map((block): CacheableParam =>
+      block.type === 'text'
+        ? { type: 'text', text: block.text }
+        : {
+            type: 'tool_result',
+            tool_use_id: block.toolCallId,
+            content: block.content,
+            is_error: block.isError,
+          },
+    );
+  }
+  return message.content.flatMap((block): Anthropic.Messages.ContentBlockParam[] => {
+    if (block.type === 'text') return block.text === '' ? [] : [{ type: 'text', text: block.text }];
+    if (block.type === 'tool_call') {
+      return [{ type: 'tool_use', id: block.id, name: block.name, input: block.input }];
+    }
+    return isBlockParam(block.block) ? [block.block] : [];
+  });
+}
+
+/** A copy of the last block with a cache breakpoint, when it can carry one (never on thinking). */
+function withCache(
+  content: Anthropic.Messages.ContentBlockParam[],
+): Anthropic.Messages.ContentBlockParam[] {
+  const last = content.at(-1);
+  if (
+    last === undefined ||
+    (last.type !== 'text' && last.type !== 'tool_result' && last.type !== 'tool_use')
+  ) {
+    return content;
+  }
+  return [...content.slice(0, -1), { ...last, cache_control: CACHE }];
+}
+
+/**
+ * One Ask chat round (ADR 0055 points 1, 5 and 9): the profile's model, effort, thinking and token
+ * cap; tools in their fixed order (also with `tool_choice: none`, so the prefix stays the same);
+ * cache breakpoints after the system prompt (tools and instructions), on the last history message
+ * and on the last message (the moving one).
+ */
+export function askRoundParamsFor(input: AskRoundInput): StreamParams {
+  const last = input.messages.length - 1;
+  const messages = input.messages.map((message, index): Anthropic.Messages.MessageParam => {
+    const content = toParamContent(message);
+    const cached = index === last || index === input.historyEnd ? withCache(content) : content;
+    return { role: message.role, content: cached };
+  });
+  const forced = input.toolChoice === ASK_TOOL_CHOICE.None;
+  return {
+    model: input.profile.model,
+    max_tokens: forced ? input.profile.finalMaxTokens : input.profile.roundMaxTokens,
+    system: [{ type: 'text', text: input.system, cache_control: CACHE }],
+    tools: input.tools.map((tool) => ({
+      name: tool.name,
+      description: tool.description,
+      input_schema: { type: 'object', ...tool.inputSchema },
+    })),
+    tool_choice: forced ? { type: 'none' } : { type: 'auto' },
+    messages,
+    // Haiku 5.5 takes `disabled` (it rejects `between_tools`); Sonnet 5.5 rejects `disabled` and takes
+    // `between_tools`. Both mean no thinking before the first output (pinned by a provider spec).
+    thinking:
+      input.profile.thinking === ASK_THINKING.BetweenTools
+        ? { type: 'between_tools' }
+        : { type: 'disabled' },
+    output_config: { effort: input.profile.effort },
+  };
+}
+
+function toAssistantBlocks(
+  content: readonly Anthropic.Messages.ContentBlock[],
+): AskAssistantBlock[] {
+  return content.map((block): AskAssistantBlock => {
+    if (block.type === 'text') return { type: 'text', text: block.text };
+    if (block.type === 'tool_use') {
+      return { type: 'tool_call', id: block.id, name: block.name, input: block.input };
+    }
+    return { type: 'opaque', block };
+  });
+}
+
+function usageOf(usage: Anthropic.Messages.Usage): AskUsageTokens {
+  return {
+    input: usage.input_tokens,
+    cacheRead: usage.cache_read_input_tokens ?? 0,
+    cacheWrite: usage.cache_creation_input_tokens ?? 0,
+    output: usage.output_tokens,
+  };
 }
 
 /** The model's JSON, or `null` when the answer is not parseable (the validator then rejects it). */
@@ -169,45 +263,41 @@ export class AnthropicAiProvider implements AiProvider {
   }
 
   /**
-   * Streams an Ask answer through `client.messages.stream` (SDK timeout `ASK_LIMIT.StreamMaxMs`,
-   * retries off, the caller's abort signal). Yields text deltas only (never thinking or other
-   * blocks), then the stop reason with the token counts; any failure, an abort included, ends with
-   * one `error`. The stream is aborted when the consumer stops early.
+   * One Ask chat round through `client.messages.stream` (SDK timeout = what is left of the budget,
+   * retries off, the caller's abort signal). Yields text deltas and the start of each tool call, then
+   * `end` with the assistant blocks exactly as returned (thinking blocks with signatures stay opaque
+   * for the next round of the same loop, never yielded as text) and the usage, cache reads and writes
+   * included; any failure, an abort included, ends with one `error`. The stream is aborted when the
+   * consumer stops early.
    */
-  async *askStream(input: AskInput, signal: AbortSignal): AsyncGenerator<AskChunk> {
+  async *askRound(input: AskRoundInput, signal: AbortSignal): AsyncGenerator<AskRoundChunk> {
     let stream: ReturnType<AnthropicClient['messages']['stream']> | null = null;
     let finished = false;
     try {
-      stream = this.client.messages.stream(askParamsFor(input), {
-        timeout: ASK_LIMIT.StreamMaxMs,
+      stream = this.client.messages.stream(askRoundParamsFor(input), {
+        timeout: Math.max(1, input.timeoutMs),
         maxRetries: ANTHROPIC_LIMIT.MaxRetries,
         signal,
       });
-      let inputTokens = 0;
-      let outputTokens = 0;
-      let stopReason: string | null = null;
       for await (const event of stream) {
-        if (event.type === 'message_start') {
-          const usage = event.message.usage;
-          inputTokens =
-            usage.input_tokens +
-            (usage.cache_creation_input_tokens ?? 0) +
-            (usage.cache_read_input_tokens ?? 0);
+        if (event.type === 'content_block_start' && event.content_block.type === 'tool_use') {
+          yield { type: 'tool_start', name: event.content_block.name };
         } else if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
           if (event.delta.text !== '') yield { type: 'text', text: event.delta.text };
-        } else if (event.type === 'message_delta') {
-          stopReason = event.delta.stop_reason;
-          outputTokens = event.usage.output_tokens;
         }
       }
+      const message = await stream.finalMessage();
       finished = true;
-      yield { type: 'end', stopReason: askStopReason(stopReason), inputTokens, outputTokens };
+      yield {
+        type: 'end',
+        stopReason: askStopReason(message.stop_reason),
+        blocks: toAssistantBlocks(message.content),
+        usage: usageOf(message.usage),
+      };
     } catch (error) {
       finished = true;
       const outcome = outcomeOfError(error);
-      // The HTTP status only (never the message: it can echo request data), so a rejected request
-      // is visible in the logs instead of a silent "unavailable".
-      ASK_LOG.warn(`Ask provider error: status ${statusOf(error) ?? 'none'}`);
+      ASK_LOG.warn(`Ask round provider error: status ${statusOf(error) ?? 'none'}`);
       yield { type: 'error', retryable: outcome.type === 'error' && outcome.retryable };
     } finally {
       if (!finished) stream?.abort();

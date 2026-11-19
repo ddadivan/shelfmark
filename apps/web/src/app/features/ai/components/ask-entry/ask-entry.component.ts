@@ -24,15 +24,18 @@ import type { AskEntry } from '../../models/ask-entry.interface';
 import type { AskLine } from '../../models/ask-line.interface';
 import { ASK_CLIENT_REASON } from '../../models/ask-client-reason.const';
 import { ASK_ENTRY_STATE } from '../../models/ask-entry-state.const';
+import { AskLinkCardsComponent } from '../ask-link-cards/ask-link-cards.component';
 import { AskSourcesComponent } from '../ask-sources/ask-sources.component';
 
 /** How long a citation keeps its source row highlighted (StreamingAnswer spec). */
 const HIGHLIGHT_MS = 1500;
 
 /**
- * One question of the Ask panel: the streamed answer (`ui-streaming-answer`) with its sources, or
- * the "not in your links" actions, the limit line or the error line with "Try again" (only when
- * the question was not counted). A citation scrolls to its source row and highlights it for 1.5 s.
+ * One question of the Ask chat: the streamed answer (`ui-streaming-answer`) with the status pill
+ * while tools run, the link cards as they arrive and the cited sources not already shown as cards,
+ * or the "not in your links" actions, the limit line or the error line with "Try again" (only when
+ * the question was not counted). A citation scrolls to its card or source row and highlights it
+ * for 1.5 s.
  */
 @Component({
   selector: 'app-ask-entry',
@@ -41,6 +44,7 @@ const HIGHLIGHT_MS = 1500;
     AiLineComponent,
     ButtonComponent,
     StreamingAnswerComponent,
+    AskLinkCardsComponent,
     AskSourcesComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -83,10 +87,25 @@ export class AskEntryComponent {
       'cite' in segment && !known.has(segment.cite) ? [segment.cite] : [],
     );
   });
-  /** The answer block shows: streaming, or a done answer with text. */
+  /** The answer block shows: streaming, or a done answer with text or cards. */
   protected readonly answered = computed(() => {
     const entry = this.entry();
-    return entry.state === ASK_ENTRY_STATE.Streaming || entry.segments.length > 0;
+    return (
+      entry.state === ASK_ENTRY_STATE.Streaming ||
+      entry.segments.length > 0 ||
+      entry.cards.length > 0
+    );
+  });
+  /** The status pill's key: what Ask is doing (never the tool or its words). */
+  protected readonly statusKey = computed(() => {
+    const activity = this.entry().activity;
+    return activity === null ? null : `ai.ask.activity.${activity.activity}`;
+  });
+  /** Cited links not already shown as cards: the sources list under a content answer. */
+  protected readonly sources = computed(() => {
+    const entry = this.entry();
+    const carded = new Set(entry.cards.flatMap((group) => group.items.map((item) => item.n)));
+    return entry.sources.filter((source) => !carded.has(source.n));
   });
   /** The line in place of an answer: the limit, an error, or "not found" / "stopped" without text. */
   protected readonly line = computed((): AskLine | null => {

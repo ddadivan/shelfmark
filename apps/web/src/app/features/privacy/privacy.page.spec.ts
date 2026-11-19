@@ -51,7 +51,7 @@ describe('PrivacyPage', () => {
   it('shows the last updated date and renders no raw translation keys', async () => {
     const element = await render();
 
-    expect(element.textContent).toContain('Last updated 16 November 2026');
+    expect(element.textContent).toContain('Last updated 19 November 2026');
     expect(element.textContent).not.toMatch(/\bprivacy\.[a-zA-Z.]+/);
   });
 
@@ -93,7 +93,9 @@ describe('PrivacyPage', () => {
     expect(element.textContent).toContain('deletes the request within 30 days');
     expect(element.textContent).toContain('sent to Voyage AI, our second processor');
     expect(element.textContent).toContain('your search text is not stored');
-    expect(element.textContent).toContain('Neither the question nor the answer is stored');
+    expect(element.textContent).toContain(
+      'Neither the questions, the answers nor the chat are stored',
+    );
     expect(element.textContent).toContain('to train AI models');
   });
 

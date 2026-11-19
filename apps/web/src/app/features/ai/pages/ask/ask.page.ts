@@ -15,7 +15,7 @@ import { AskStore } from '../../services/ask.store';
 /**
  * Ask your shelf full screen (`MobileAiMore` 2–3): the Ask tab of the mobile shell, a pushed page
  * (the shell hides the tab bar). Back on top (the previous page, else Library), the title with the
- * spark and the questions left, "New question" once something was asked, the conversation and the
+ * spark and the questions left, ✎ "New conversation" once something was asked, the conversation and the
  * composer in a glass bar at the bottom. Owns the conversation (`AskStore`): leaving forgets it
  * and stops a stream, as closing the desktop panel does. From 64em the header has the Ask button,
  * so the page hands over to the panel; while Ask is off it leaves for Library.

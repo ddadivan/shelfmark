@@ -94,19 +94,24 @@ describe('HttpAiApi', () => {
     }
   });
 
-  it('asks over fetch with the question as JSON, outside HttpClient', async () => {
+  it('asks over fetch with the question and the history as JSON, outside HttpClient', async () => {
     const { api } = setup();
     const fetchSpy = vi
       .spyOn(globalThis, 'fetch')
       .mockResolvedValue(new Response('data: {"type":"text","text":"Hi"}\n\n', { status: 200 }));
     const events = await new Promise<unknown[]>((resolve) => {
       const seen: unknown[] = [];
-      api.ask('ramen?').subscribe({ next: (e) => seen.push(e), complete: () => resolve(seen) });
+      api
+        .ask('ramen?', [{ question: 'q', answer: 'a [1]', links: [] }])
+        .subscribe({ next: (e) => seen.push(e), complete: () => resolve(seen) });
     });
     expect(events).toEqual([{ type: 'text', text: 'Hi' }]);
     expect(fetchSpy).toHaveBeenCalledWith(
       '/api/ai/ask',
-      expect.objectContaining({ method: 'POST', body: '{"question":"ramen?"}' }),
+      expect.objectContaining({
+        method: 'POST',
+        body: '{"question":"ramen?","history":[{"question":"q","answer":"a [1]","links":[]}]}',
+      }),
     );
     fetchSpy.mockRestore();
   });

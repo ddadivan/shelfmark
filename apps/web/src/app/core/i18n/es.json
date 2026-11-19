@@ -331,7 +331,8 @@
         "many": "{{count}} etiquetas más: {{list}}",
         "other": "{{count}} etiquetas más: {{list}}"
       },
-      "allTags": "Todas las etiquetas"
+      "allTags": "Todas las etiquetas",
+      "otherTags": "Otras etiquetas"
     },
     "item": {
       "edit": "Editar",
@@ -557,7 +558,7 @@
     "home": "Shelfmark, inicio",
     "newTab": "(se abre en una pestaña nueva)",
     "updated": "Última actualización: {{date}}",
-    "updatedDate": "16 de noviembre de 2026",
+    "updatedDate": "19 de noviembre de 2026",
     "intro": "Shelfmark es un proyecto personal que guarda los enlaces que guardas. Esta página explica qué conservamos y por qué, con palabras sencillas.",
     "store": {
       "title": "Qué guardamos",
@@ -634,7 +635,7 @@
       },
       "ask": {
         "term": "Pregunta a tus enlaces:",
-        "text": "solo cuando haces una pregunta, se envían a [PROVIDER] tu pregunta y hasta 10 enlaces relacionados (título, dirección sin parámetros, nombres de carpetas y etiquetas, resumen, tu nota solo con «Incluir mis notas»). La respuesta cita solo esos enlaces. No se guardan ni la pregunta ni la respuesta; solo contamos el número de preguntas por día y por mes, para tu límite."
+        "text": "solo cuando haces una pregunta, se envían a [PROVIDER] tu pregunta, las preguntas y respuestas anteriores de la conversación abierta y los enlaces tuyos que el asistente consulta con herramientas de búsqueda, recuento y listado de solo lectura (título, dirección sin sus parámetros, nombres de carpetas y etiquetas, resumen, tu nota solo con «Incluir mis notas»). La respuesta cita y muestra solo tus propios enlaces. No se guardan ni las preguntas, ni las respuestas, ni la conversación, y al cerrar el panel la conversación se olvida; solo contamos el número de preguntas por día y por mes (y cuántas recibieron una respuesta más detallada), para tu límite."
       }
     },
     "retention": {
@@ -3052,6 +3053,17 @@
       },
       "aiNewTags": {
         "text": "La IA rellena una o dos etiquetas nuevas y sugiere más."
+      },
+      "askChat": {
+        "title": "“Pregunta a tus enlaces” ahora es un chat",
+        "text": "Haz preguntas de seguimiento, pregunta cuántos enlaces tienes sobre un tema y recibe los enlaces encontrados como tarjetas que puedes abrir al momento. Arrastra el borde del panel para ensancharlo.",
+        "alt": "El panel “Pregunta a tus enlaces” responde a “Find my design links” con cinco enlaces mostrados como tarjetas."
+      },
+      "toastsSmooth": {
+        "text": "Varias notificaciones se abren y se vuelven a plegar con suavidad al pasar el puntero."
+      },
+      "cardTagsFit": {
+        "text": "Una etiqueta en una tarjeta se muestra entera o pasa a “+N”, que solo lista las etiquetas que no están en la tarjeta."
       }
     },
     "sections": {
@@ -3167,7 +3179,7 @@
       },
       "ask": {
         "title": "Pregunta a tus enlaces",
-        "text": "Responde preguntas a partir de tus propios enlaces. Usa Claude de Anthropic: se envían tu pregunta y los enlaces relacionados, no se guarda nada."
+        "text": "Responde preguntas a partir de tus propios enlaces, también las de seguimiento. Usa Claude de Anthropic: se envían tu pregunta, los turnos anteriores de la conversación abierta y los enlaces que consulta; no se guarda nada."
       }
     },
     "backfill": {
@@ -3419,7 +3431,8 @@
       "title": "Pregunta a tus enlaces",
       "open": "Pregunta a tus enlaces",
       "close": "Cerrar Pregunta a tus enlaces",
-      "newQuestion": "Nueva pregunta",
+      "resize": "Cambiar el ancho del panel",
+      "newChat": "Nueva conversación",
       "back": "Atrás",
       "emptyTitle": "¿Qué quieres saber?",
       "lead": "Pregunta con tus propias palabras. La respuesta sale de los enlaces que guardaste, con cada fuente.",
@@ -3431,6 +3444,7 @@
       },
       "label": "Pregunta sobre tus enlaces",
       "placeholder": "Pregunta sobre tus enlaces",
+      "followUp": "Pregunta otra cosa…",
       "send": "Preguntar",
       "stop": "Detener",
       "left": {
@@ -3467,6 +3481,19 @@
       "retry": "Reintentar",
       "truncated": "La respuesta se cortó.",
       "stopped": "Detenido.",
+      "historyTrimmed": "En esta conversación solo se recuerdan las últimas 10 preguntas.",
+      "activity": {
+        "search": "Buscando en tus enlaces…",
+        "count": "Contando…",
+        "read": "Leyendo un enlace…",
+        "browse": "Revisando carpetas y etiquetas…",
+        "deep": "Mirando con más detalle…"
+      },
+      "cards": {
+        "label": "Enlaces encontrados",
+        "more": "Más acciones para «{{title}}»",
+        "showAll": "Ver los {{count}} en la búsqueda"
+      },
       "button": "Preguntar",
       "try": "Prueba"
     },

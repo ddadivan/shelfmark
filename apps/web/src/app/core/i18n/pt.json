@@ -331,7 +331,8 @@
         "many": "mais {{count}} tags: {{list}}",
         "other": "mais {{count}} tags: {{list}}"
       },
-      "allTags": "Todas as tags"
+      "allTags": "Todas as tags",
+      "otherTags": "Outras tags"
     },
     "item": {
       "edit": "Editar",
@@ -557,7 +558,7 @@
     "home": "Shelfmark, início",
     "newTab": "(abre em uma nova aba)",
     "updated": "Última atualização: {{date}}",
-    "updatedDate": "16 de novembro de 2026",
+    "updatedDate": "19 de novembro de 2026",
     "intro": "O Shelfmark é um projeto pessoal que guarda os links que você salva. Esta página explica o que mantemos e por quê, em palavras simples.",
     "store": {
       "title": "O que guardamos",
@@ -634,7 +635,7 @@
       },
       "ask": {
         "term": "Pergunte aos seus links:",
-        "text": "só quando você faz uma pergunta, sua pergunta e até 10 links relacionados (título, endereço sem parâmetros, nomes de pastas e tags, resumo, sua nota só com “Incluir minhas notas”) são enviados para [PROVIDER]. A resposta cita apenas esses links. Nem a pergunta nem a resposta são guardadas; contamos só o número de perguntas por dia e por mês, para o seu limite."
+        "text": "só quando você faz uma pergunta, são enviados para [PROVIDER] sua pergunta, as perguntas e respostas anteriores da conversa aberta e os seus links que o assistente consulta com ferramentas de busca, contagem e listagem somente leitura (título, endereço sem os parâmetros, nomes de pastas e tags, resumo, sua nota só com “Incluir minhas notas”). A resposta cita e mostra só os seus próprios links. Nem as perguntas, nem as respostas, nem a conversa são guardadas, e fechar o painel esquece a conversa; contamos só o número de perguntas por dia e por mês (e quantas receberam uma resposta mais detalhada), para o seu limite."
       }
     },
     "retention": {
@@ -3052,6 +3053,17 @@
       },
       "aiNewTags": {
         "text": "A IA preenche uma ou duas tags novas e sugere mais."
+      },
+      "askChat": {
+        "title": "“Pergunte aos seus links” agora é um chat",
+        "text": "Faça perguntas de acompanhamento, pergunte quantos links você tem sobre um assunto e receba os links encontrados como cards para abrir na hora. Arraste a borda do painel para deixá-lo mais largo.",
+        "alt": "O painel “Pergunte aos seus links” responde a “Find my design links” com cinco links mostrados como cards."
+      },
+      "toastsSmooth": {
+        "text": "Várias notificações se abrem e se recolhem suavemente quando você passa o ponteiro."
+      },
+      "cardTagsFit": {
+        "text": "Uma tag no card aparece inteira ou vai para “+N”, que lista só as tags que não estão no card."
       }
     },
     "sections": {
@@ -3167,7 +3179,7 @@
       },
       "ask": {
         "title": "Pergunte aos seus links",
-        "text": "Responde perguntas com base nos seus próprios links. Usa o Claude da Anthropic: sua pergunta e os links relacionados são enviados, nada é guardado."
+        "text": "Responde perguntas a partir dos seus próprios links, inclusive as de acompanhamento. Usa o Claude da Anthropic: sua pergunta, as trocas anteriores da conversa aberta e os links consultados são enviados; nada é guardado."
       }
     },
     "backfill": {
@@ -3419,7 +3431,8 @@
       "title": "Pergunte aos seus links",
       "open": "Pergunte aos seus links",
       "close": "Fechar Pergunte aos seus links",
-      "newQuestion": "Nova pergunta",
+      "resize": "Redimensionar o painel",
+      "newChat": "Nova conversa",
       "back": "Voltar",
       "emptyTitle": "O que você quer saber?",
       "lead": "Pergunte com suas palavras. A resposta vem dos links que você salvou, com cada fonte listada.",
@@ -3431,6 +3444,7 @@
       },
       "label": "Pergunte sobre seus links",
       "placeholder": "Pergunte sobre seus links",
+      "followUp": "Pergunte outra coisa…",
       "send": "Perguntar",
       "stop": "Parar",
       "left": {
@@ -3467,6 +3481,19 @@
       "retry": "Tentar de novo",
       "truncated": "A resposta foi interrompida.",
       "stopped": "Parado.",
+      "historyTrimmed": "Nesta conversa, só as últimas 10 perguntas são lembradas.",
+      "activity": {
+        "search": "Buscando nos seus links…",
+        "count": "Contando…",
+        "read": "Lendo um link…",
+        "browse": "Olhando pastas e tags…",
+        "deep": "Olhando com mais atenção…"
+      },
+      "cards": {
+        "label": "Links encontrados",
+        "more": "Mais ações para “{{title}}”",
+        "showAll": "Ver todos os {{count}} na busca"
+      },
       "button": "Perguntar",
       "try": "Experimente"
     },

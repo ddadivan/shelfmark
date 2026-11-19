@@ -34,10 +34,17 @@ import { AiRunnerService } from './runner/ai-runner.service';
 import { AiSettingsService } from './settings/ai-settings.service';
 import { AiTidyUndoService } from './tidy/ai-tidy-undo.service';
 import { AiTidyService } from './tidy/ai-tidy.service';
-import { AskRetrievalService } from './ask/ask-retrieval.service';
 import { AskController } from './ask/ask.controller';
 import { AskService } from './ask/ask.service';
 import { AskUsageService } from './ask/ask-usage.service';
+import { AskToolRegistry } from './ask/tools/ask-tool.registry';
+import { CountLinksAskTool } from './ask/tools/count-links.ask-tool';
+import { GetLinkAskTool } from './ask/tools/get-link.ask-tool';
+import { ListFoldersAskTool } from './ask/tools/list-folders.ask-tool';
+import { ListTagsAskTool } from './ask/tools/list-tags.ask-tool';
+import { RequestDeeperAnswerAskTool } from './ask/tools/request-deeper-answer.ask-tool';
+import { SearchLinksAskTool } from './ask/tools/search-links.ask-tool';
+import { ShowLinksAskTool } from './ask/tools/show-links.ask-tool';
 import { ASK_DEADLINES } from './models/ask-deadlines.token';
 import type { AskDeadlines } from './models/ask-deadlines.interface';
 import { ASK_LIMIT } from '@shelfmark/contracts';
@@ -84,14 +91,24 @@ import { AiUsageService } from './usage/ai-usage.service';
     QueryEmbeddingCache,
     MeaningSearchService,
     RelatedLinksService,
-    AskRetrievalService,
     AskUsageService,
     AskService,
+    SearchLinksAskTool,
+    CountLinksAskTool,
+    GetLinkAskTool,
+    ListFoldersAskTool,
+    ListTagsAskTool,
+    ShowLinksAskTool,
+    RequestDeeperAnswerAskTool,
+    AskToolRegistry,
     {
       provide: ASK_DEADLINES,
       useValue: {
-        firstTokenMs: ASK_LIMIT.FirstTokenMs,
         streamMaxMs: ASK_LIMIT.StreamMaxMs,
+        roundFirstOutputMs: ASK_LIMIT.RoundFirstOutputMs,
+        toolRoundMs: ASK_LIMIT.ToolRoundMs,
+        finalAnswerReserveMs: ASK_LIMIT.FinalAnswerReserveMs,
+        escalateBeforeMs: ASK_LIMIT.EscalateBeforeMs,
       } satisfies AskDeadlines,
     },
   ],

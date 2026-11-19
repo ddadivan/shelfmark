@@ -33,12 +33,12 @@ describe('AskStore', () => {
   it('streams one question at a time and feeds the allowance to the settings', async () => {
     const { api, streams, settings, store } = await setup();
     expect(store.ask('  Which   ramen? ')).toBe(true);
-    expect(api.ask).toHaveBeenCalledWith('Which ramen?');
+    expect(api.ask).toHaveBeenCalledWith('Which ramen?', []);
     expect(store.streaming()).toBe(true);
     expect(store.ask('another one')).toBe(false);
     expect(store.ask('no')).toBe(false);
 
-    streams[0]?.next({ type: 'meta', allowance: ALLOWANCE, retrieved: 3 });
+    streams[0]?.next({ type: 'meta', allowance: ALLOWANCE });
     expect(settings.askAllowance()).toEqual(ALLOWANCE);
     streams[0]?.next({ type: 'text', text: 'Hi ' });
     streams[0]?.next({ type: 'cite', n: 1 });
@@ -48,6 +48,8 @@ describe('AskStore', () => {
       notFound: false,
       truncated: false,
       allowance: ALLOWANCE,
+      turn: { question: '', answer: '', links: [] },
+      depth: 'quick',
     });
     streams[0]?.complete();
     expect(store.streaming()).toBe(false);
@@ -55,6 +57,43 @@ describe('AskStore', () => {
       state: 'done',
       segments: [{ text: 'Hi ' }, { cite: 1 }],
     });
+  });
+
+  it('sends the finished turns back with the next question, at most ten, and forgets them on reset', async () => {
+    const { api, streams, store } = await setup();
+    const finish = (index: number, question: string) => {
+      streams[index]?.next({
+        type: 'done',
+        sources: [],
+        notFound: false,
+        truncated: false,
+        allowance: ALLOWANCE,
+        turn: { question, answer: `answer ${index}`, links: [] },
+        depth: 'quick',
+      });
+      streams[index]?.complete();
+    };
+    expect(store.answered()).toBe(false);
+    store.ask('first question');
+    finish(0, 'first question');
+    expect(store.answered()).toBe(true);
+    store.ask('a follow-up');
+    expect(api.ask).toHaveBeenLastCalledWith('a follow-up', [
+      { question: 'first question', answer: 'answer 0', links: [] },
+    ]);
+    // An error adds no turn.
+    streams[1]?.next({ type: 'error', reason: 'unavailable', counted: false, allowance: null });
+    streams[1]?.complete();
+    for (let index = 2; index < 13; index += 1) {
+      store.ask(`question ${index}`);
+      finish(index, `question ${index}`);
+    }
+    expect(store.history()).toHaveLength(10);
+    expect(store.history()[0]?.question).toBe('question 3');
+    expect(store.historyTrimmed()).toBe(true);
+    store.reset();
+    expect(store.history()).toEqual([]);
+    expect(store.answered()).toBe(false);
   });
 
   it('stops keeping what arrived, and the stream is unsubscribed', async () => {

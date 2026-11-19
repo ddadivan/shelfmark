@@ -1,0 +1,59 @@
+<ul class="ask-link-cards__list" [attr.aria-label]="'ai.ask.cards.label' | transloco">
+  @for (source of group().items; track source.n) {
+    <li [id]="idPrefix() + '-' + source.n">
+      <ui-list-item
+        class="ask-link-cards__card"
+        compact
+        [href]="safeHref(source.link.url)"
+        [newTab]="newTab()"
+        [selected]="highlighted() === source.n"
+        [description]="newTab() ? ('links.item.opensInNewTab' | transloco) : undefined"
+        (activated)="actions.opened(source.link)"
+      >
+        <ui-favicon
+          slot="leading"
+          [src]="source.link.faviconUrl ?? undefined"
+          [letter]="siteLetter(source.link.url)"
+        />
+        <span slot="title">{{ source.link.title }}</span>
+        <span slot="meta">{{ meta(source.link) }}</span>
+        <span slot="trailing" class="ask-link-cards__actions">
+          <ui-icon class="ask-link-cards__open" name="external" [size]="ICON_SIZE.Sm" />
+          <ui-button
+            variant="ghost"
+            size="sm"
+            iconOnly
+            iconLeft="more"
+            [uiMenuTrigger]="menu"
+            [ariaLabel]="'ai.ask.cards.more' | transloco: { title: source.link.title }"
+          />
+          <ui-menu
+            #menu
+            align="end"
+            [ariaLabel]="'ai.ask.cards.more' | transloco: { title: source.link.title }"
+          >
+            @if (viewport.wide()) {
+              <ui-menu-item icon="columns" (activated)="sideBySide(source)">
+                {{ 'ai.ask.sideBySide' | transloco }}
+              </ui-menu-item>
+            }
+            <ui-menu-item icon="clock" (activated)="actions.remind(source.link)">
+              {{ 'ai.ask.remind' | transloco }}
+            </ui-menu-item>
+          </ui-menu>
+        </span>
+      </ui-list-item>
+    </li>
+  }
+</ul>
+@if (showAll(); as total) {
+  <ui-button
+    class="ask-link-cards__all"
+    variant="ghost"
+    size="sm"
+    iconLeft="search"
+    (click)="openAll()"
+  >
+    {{ 'ai.ask.cards.showAll' | transloco: { count: total } }}
+  </ui-button>
+}

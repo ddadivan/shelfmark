@@ -173,6 +173,25 @@ export const Wide: Story = {
   }),
 };
 
+/**
+ * `resizable` (#521, from 64em): drag the handle on the inline-start edge, or focus it and use
+ * ArrowLeft / ArrowRight (40px), Home / End; a double click goes back to 440px. `size` is a model the
+ * feature keeps (Ask your shelf stores it on the device).
+ */
+export const Resizable: Story = {
+  render: () => ({
+    props: { size: null },
+    moduleMetadata: { imports: [DrawerComponent] },
+    template: `
+      <div class="drs-scrim">
+        <ui-drawer closeLabel="Close panel" side="end" width="wide" resizable resizeLabel="Resize the panel" [(size)]="size">
+          <span slot="head" class="drs-title">Ask your shelf</span>
+          <p class="drs-paragraph">Width: {{ size ?? 'default' }}</p>
+        </ui-drawer>
+      </div>`,
+  }),
+};
+
 /** The body scrolls; the header and footer stay put. */
 export const LongContent: Story = {
   render: () => ({

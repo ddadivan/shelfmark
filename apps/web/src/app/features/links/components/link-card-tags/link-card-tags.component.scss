@@ -10,6 +10,11 @@
   min-inline-size: 0;
 }
 
+// Until the first measure decided whether the first tag fits whole (no flash of a cut tag).
+:host(.link-card-tags--measuring) {
+  visibility: hidden;
+}
+
 .link-card-tags__first {
   --ui-chip-max-inline-size: #{rem(160px)};
 

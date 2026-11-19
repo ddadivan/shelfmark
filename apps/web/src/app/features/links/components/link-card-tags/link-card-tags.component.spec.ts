@@ -3,6 +3,7 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { provideRouter, Router } from '@angular/router';
 import { UiPopoverHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
+import { readRepoFile } from '../../../../../testing/read-repo-file';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { LinkCardTagsComponent } from './link-card-tags.component';
 
@@ -71,7 +72,7 @@ describe('LinkCardTagsComponent', () => {
     expect(element.textContent.trim()).toBe('');
   });
 
-  it('a click on "+N" opens the "All tags" dialog with every tag', async () => {
+  it('a click on "+N" opens the "Other tags" dialog with the tags not shown on the card', async () => {
     const { element, loader, fixture } = await setup();
     const popover = await loader.getHarness(UiPopoverHarness);
     expect(await popover.isOpen()).toBe(false);
@@ -80,12 +81,12 @@ describe('LinkCardTagsComponent', () => {
     await settle(fixture);
 
     expect(await popover.isOpen()).toBe(true);
-    expect(await popover.getHeading()).toBe('All tags');
+    expect(await popover.getHeading()).toBe('Other tags');
     expect(await popover.isTriggerExpanded()).toBe(true);
     const host = await popover.host();
     expect(await host.getAttribute('role')).toBe('dialog');
     const dialog = document.querySelector('ui-popover') as HTMLElement;
-    expect(buttons(dialog).map((button) => button.textContent.trim())).toEqual(TAGS);
+    expect(buttons(dialog).map((button) => button.textContent.trim())).toEqual(TAGS.slice(1));
   });
 
   it('opens on hover after the hover-intent delay', async () => {
@@ -96,7 +97,7 @@ describe('LinkCardTagsComponent', () => {
     await new Promise((resolve) => setTimeout(resolve, 200));
     await settle(fixture);
     expect(document.querySelector('.cdk-overlay-pane ui-popover')?.textContent).toContain(
-      'All tags',
+      'Other tags',
     );
   });
 
@@ -165,21 +166,58 @@ describe('LinkCardTagsComponent', () => {
     expect(router.url).toBe('/');
   });
 
-  it('shows the whole name in a tooltip only when the first tag is cut', async () => {
-    const { element, fixture } = await setup(['a-very-long-tag-name', 'b']);
-    const chip = element.querySelector<HTMLElement>('ui-chip') as HTMLElement;
-    const first = buttons(element)[0] as HTMLButtonElement;
-    const label = first.querySelector<HTMLElement>('span') as HTMLElement;
-    Object.defineProperty(label, 'clientWidth', { configurable: true, value: 80 });
-    Object.defineProperty(label, 'scrollWidth', { configurable: true, value: 80 });
-    chip.dispatchEvent(new PointerEvent('pointerenter'));
-    await settle(fixture);
-    expect(first.hasAttribute('aria-description')).toBe(false);
+  it('a first tag that would be cut is not shown: "+N" holds every tag under "All tags"', async () => {
+    let resize: () => void = () => undefined;
+    const original = globalThis.ResizeObserver;
+    globalThis.ResizeObserver = class {
+      constructor(callback: () => void) {
+        resize = callback;
+      }
+      observe(): void {
+        return undefined;
+      }
+      unobserve(): void {
+        return undefined;
+      }
+      disconnect(): void {
+        return undefined;
+      }
+    } as unknown as typeof ResizeObserver;
+    try {
+      const host = document.createElement('div');
+      document.body.append(host);
+      const { element, fixture, loader } = await setup(['a-very-long-tag-name', 'b']);
+      host.append(element);
+      Object.defineProperty(host, 'clientWidth', { configurable: true, value: 200 });
+      const label = element.querySelector<HTMLElement>('.ui-chip__label') as HTMLElement;
+      Object.defineProperty(label, 'clientWidth', { configurable: true, value: 80 });
+      Object.defineProperty(label, 'scrollWidth', { configurable: true, value: 160 });
+      resize();
+      await settle(fixture);
 
-    Object.defineProperty(label, 'scrollWidth', { configurable: true, value: 160 });
-    chip.dispatchEvent(new PointerEvent('pointerenter'));
-    await settle(fixture);
-    expect(first.getAttribute('aria-description')).toBe('a-very-long-tag-name');
+      expect(buttons(element).map((button) => button.textContent.trim())).toEqual(['+2']);
+      more(element)?.click();
+      await settle(fixture);
+      const popover = await loader.getHarness(UiPopoverHarness);
+      expect(await popover.getHeading()).toBe('All tags');
+      const dialog = document.querySelector('ui-popover') as HTMLElement;
+      expect(buttons(dialog).map((button) => button.textContent.trim())).toEqual([
+        'a-very-long-tag-name',
+        'b',
+      ]);
+      host.remove();
+    } finally {
+      globalThis.ResizeObserver = original;
+    }
+  });
+
+  it('keeps "+N" and the first tag above the card\'s stretched link, so hover reaches them', () => {
+    const scss = readRepoFile(
+      'apps/web/src/app/features/links/components/link-card-tags/link-card-tags.component.scss',
+    );
+    expect(scss).toMatch(
+      /\.link-card-tags__more,\s*:host\(\.link-card-tags--interactive\) \.link-card-tags__first \{\s*position: relative;\s*z-index: 2;/,
+    );
   });
 
   it('has no axe violations, closed and open', async () => {

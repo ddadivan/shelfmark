@@ -142,3 +142,51 @@
 .ui-streaming-answer__live {
   @include visually-hidden;
 }
+
+// Live content (link cards) right under the text, as it arrives; nothing when empty.
+.ui-streaming-answer__extra {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  &:empty {
+    display: none;
+  }
+}
+
+// The status region stays in the DOM (a polite live region must exist before it changes); empty
+// while no status shows.
+.ui-streaming-answer__status {
+  margin: 0;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// The status pill under the spark: `ai-fill` capsule, caption type, a soft sweep (`loop(shimmer)`)
+// that stops under reduced motion. Never a tool name or search words: the caller passes a label.
+.ui-streaming-answer__pill {
+  @include type(caption);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: rem(28px);
+  padding: 0 rem(12px);
+  overflow: hidden;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--ai-fill);
+  border-radius: var(--radius-full);
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background: linear-gradient(90deg, transparent, var(--skeleton-shimmer), transparent);
+    transform: translateX(-100%);
+
+    @include loop(shimmer);
+  }
+}

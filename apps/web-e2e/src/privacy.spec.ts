@@ -10,7 +10,7 @@ test.describe('privacy policy', () => {
     expect(response?.status()).toBe(200);
     await expect(page).toHaveURL(/\/privacy$/);
     await expect(page.getByRole('heading', { level: 1, name: TITLE })).toBeVisible();
-    await expect(page.getByText('Last updated 16 November 2026')).toBeVisible();
+    await expect(page.getByText('Last updated 19 November 2026')).toBeVisible();
     await expect(page.getByRole('heading', { level: 2, name: 'Contact' })).toBeVisible();
   });
 

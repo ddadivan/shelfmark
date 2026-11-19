@@ -22,7 +22,7 @@ describe('ChangelogPage', () => {
     expect(headings).toEqual(
       releasedChangelog(CHANGELOG).map((release) => `Shelfmark ${release.version}`),
     );
-    expect(headings[0]).toBe('Shelfmark 2.2.2');
+    expect(headings[0]).toBe('Shelfmark 2.3.0');
   });
 
   it('shows the current version, the dates and a release heading per shipped release', async () => {
@@ -61,7 +61,7 @@ describe('ChangelogPage', () => {
   it('shows a feature as a title and a text under a heading level 4', async () => {
     const root = (await createTranslated(ChangelogPage)).nativeElement as HTMLElement;
 
-    expect(root.querySelector('h4')?.textContent).toBe('Fill in with AI');
+    expect(root.querySelector('h4')?.textContent).toBe('Ask your shelf is now a chat');
   });
 
   it('sets the document title and puts it back on leave', async () => {

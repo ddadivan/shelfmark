@@ -106,7 +106,13 @@ describe('WhatsNewStore', () => {
     expect(dialogs.open).toHaveBeenCalledTimes(1);
     const highlights = dialogData(dialogs).highlights;
     expect(highlights.length).toBe(4);
-    expect(highlights.map((entry) => entry.item.priority)).toEqual([1, 2, 3, 4]);
+    // Newest release first: 2.3.0 has one highlight, then the first three of 2.2.0.
+    expect(highlights.map((entry) => [entry.version, entry.item.priority])).toEqual([
+      ['2.3.0', 1],
+      ['2.2.0', 1],
+      ['2.2.0', 2],
+      ['2.2.0', 3],
+    ]);
     expect(dialogData(dialogs).moreCount).toBeGreaterThan(0);
     expect(settingsApi.update).toHaveBeenCalledWith({ whatsNewSeen: LATEST });
     expect(store.pending()).toBe(false);

@@ -37,6 +37,59 @@
   }
 }
 
+// Resizable (#521, from 64em only): the chosen width (`--ui-drawer-size`, CSSOM) replaces the
+// default; the width never animates.
+.ui-drawer--resizable {
+  position: relative;
+
+  @include desktop {
+    width: var(--ui-drawer-size, min(27.5rem, calc(100vw - #{rem(48px)})));
+  }
+}
+
+// The handle on the edge towards the page: a 12px strip, `col-resize`, with a grip pill that shows
+// on hover and keyboard focus.
+.ui-drawer__resize {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: rem(12px);
+  cursor: col-resize;
+  touch-action: none;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible .ui-drawer__grip {
+    @include focus-ring;
+
+    background: var(--border-control);
+  }
+
+  @include hover {
+    .ui-drawer__grip {
+      background: var(--border-control);
+    }
+  }
+}
+
+// A start drawer has its page-side edge at the inline end.
+.ui-drawer:not(.ui-drawer--end) .ui-drawer__resize {
+  inset-inline: auto 0;
+}
+
+// The grip: transparent at rest, `border-control` on hover and keyboard focus.
+.ui-drawer__grip {
+  width: rem(4px);
+  height: rem(40px);
+  background: transparent;
+  border-radius: var(--radius-full);
+}
+
 .ui-drawer--end {
   --ui-inline-sign: 1;
 

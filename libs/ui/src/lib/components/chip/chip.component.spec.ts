@@ -180,6 +180,27 @@ describe('ChipComponent', () => {
     expect(api.isTruncated()).toBe(true);
   });
 
+  it('isTruncated() sees a text that overflows its label by less than one pixel', () => {
+    const { chip, update, fixture } = setup();
+    update((c) => c.truncate.set(true));
+    const api = fixture.debugElement.children[0].componentInstance as ChipComponent;
+    const label = chip.querySelector('.ui-chip__label') as HTMLElement;
+    // Whole pixels read as fitting (42 = 42) while the text is 0.2px wider than its box.
+    Object.defineProperty(label, 'clientWidth', { configurable: true, value: 42 });
+    Object.defineProperty(label, 'scrollWidth', { configurable: true, value: 42 });
+    label.getBoundingClientRect = () => ({ width: 41.97 }) as DOMRect;
+    const original = Range.prototype.getBoundingClientRect;
+    let textWidth = 42.17;
+    Range.prototype.getBoundingClientRect = () => ({ width: textWidth }) as DOMRect;
+    try {
+      expect(api.isTruncated()).toBe(true);
+      textWidth = 41.97;
+      expect(api.isTruncated()).toBe(false);
+    } finally {
+      Range.prototype.getBoundingClientRect = original;
+    }
+  });
+
   it('ariaLabel names the clickable body; the focus target is the body, else the host', () => {
     const { chip, update, fixture } = setup();
     const api = fixture.debugElement.children[0].componentInstance as ChipComponent;

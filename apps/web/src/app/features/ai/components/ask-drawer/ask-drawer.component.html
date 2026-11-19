@@ -2,6 +2,10 @@
   [closeLabel]="'ai.ask.close' | transloco"
   [side]="DRAWER_SIDE.End"
   [width]="DRAWER_WIDTH.Wide"
+  resizable
+  [resizeLabel]="'ai.ask.resize' | transloco"
+  [size]="width.width()"
+  (sizeChange)="width.set($event)"
 >
   <div slot="head" class="ask-drawer__head">
     <app-ask-heading />
@@ -11,8 +15,8 @@
         size="lg"
         iconOnly
         iconLeft="edit"
-        [ariaLabel]="'ai.ask.newQuestion' | transloco"
-        [uiTooltip]="'ai.ask.newQuestion' | transloco"
+        [ariaLabel]="'ai.ask.newChat' | transloco"
+        [uiTooltip]="'ai.ask.newChat' | transloco"
         (click)="store.reset()"
       />
     }
