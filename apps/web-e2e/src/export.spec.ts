@@ -11,6 +11,12 @@ import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
 const MOCK_MARKER = 'sm-mock-export';
 
 /** The second line of the mock file: the URL the real API would have been asked for. */
+/** The mock writes a real CSV (no marker line): its header row, the BOM dropped. */
+async function csvHeader(download: Download): Promise<string> {
+  const text = await readFile(await download.path(), 'utf8');
+  return text.replace(/^\uFEFF/u, '').split(/\r?\n/u)[0];
+}
+
 async function requestedUrl(download: Download): Promise<string> {
   const path = await download.path();
   const lines = (await readFile(path, 'utf8')).split('\n');
@@ -25,7 +31,7 @@ test.describe('export (mock API)', () => {
     await seedSession(page);
   });
 
-  test('the library menu exports everything as JSON and as Bookmarks HTML', async ({ page }) => {
+  test('the library menu exports everything as JSON, Bookmarks HTML and CSV', async ({ page }) => {
     await page.goto('/links');
     await openExportMenu(page);
     // No folder or tag narrows "All links": only the two "everything" items.
@@ -47,6 +53,14 @@ test.describe('export (mock API)', () => {
     const htmlFile = await html;
     expect(htmlFile.suggestedFilename()).toMatch(/^shelfmark-\d{4}-\d{2}-\d{2}\.html$/);
     expect(await requestedUrl(htmlFile)).toBe('/api/export?format=html');
+
+    await expect(page.getByRole('menu')).toBeHidden();
+    await openExportMenu(page);
+    const csv = page.waitForEvent('download');
+    await page.getByRole('menuitem', { name: 'Everything as CSV' }).click();
+    const csvFile = await csv;
+    expect(csvFile.suggestedFilename()).toMatch(/^shelfmark-\d{4}-\d{2}-\d{2}\.csv$/);
+    expect(await csvHeader(csvFile)).toBe('url,title,folder,tags,note,favorite,kind,created_at');
   });
 
   test('a tag filter adds "This view" items that carry the tag', async ({ page }) => {
@@ -60,6 +74,14 @@ test.describe('export (mock API)', () => {
     await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
 
     expect(await requestedUrl(await download)).toBe('/api/export?format=json&tag=docs');
+
+    await expect(page.getByRole('menu')).toBeHidden();
+    await openExportMenu(page);
+    const csv = page.waitForEvent('download');
+    await page.getByRole('menuitem', { name: 'This view as CSV' }).click();
+    const viewCsv = await csv;
+    expect(viewCsv.suggestedFilename()).toMatch(/\.csv$/u);
+    expect(await csvHeader(viewCsv)).toBe('url,title,folder,tags,note,favorite,kind,created_at');
   });
 
   test('an empty view explains instead of saving an empty file', async ({ page }) => {

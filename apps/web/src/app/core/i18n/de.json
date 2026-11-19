@@ -1266,11 +1266,13 @@
     "retry": "Erneut versuchen",
     "view": {
       "json": "Diese Ansicht als JSON",
-      "html": "Diese Ansicht als Lesezeichen-HTML"
+      "html": "Diese Ansicht als Lesezeichen-HTML",
+      "csv": "Diese Ansicht als CSV"
     },
     "all": {
       "json": "Alles als JSON",
-      "html": "Alles als Lesezeichen-HTML"
+      "html": "Alles als Lesezeichen-HTML",
+      "csv": "Alles als CSV"
     },
     "empty": {
       "title": "Noch nichts zu exportieren",

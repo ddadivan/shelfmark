@@ -198,6 +198,9 @@
               <ui-menu-item icon="globe" (activated)="exportView(EXPORT_FORMAT.Html)">
                 {{ 'export.view.html' | transloco }}
               </ui-menu-item>
+              <ui-menu-item icon="list" (activated)="exportView(EXPORT_FORMAT.Csv)">
+                {{ 'export.view.csv' | transloco }}
+              </ui-menu-item>
               <ui-menu-separator />
               }
               <ui-menu-item icon="code" (activated)="exportAll(EXPORT_FORMAT.Json)">
@@ -205,6 +208,9 @@
               </ui-menu-item>
               <ui-menu-item icon="globe" (activated)="exportAll(EXPORT_FORMAT.Html)">
                 {{ 'export.all.html' | transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="list" (activated)="exportAll(EXPORT_FORMAT.Csv)">
+                {{ 'export.all.csv' | transloco }}
               </ui-menu-item>
             </ui-menu>
           </div>
@@ -263,6 +269,9 @@
               <ui-menu-item icon="globe" (activated)="exportView(EXPORT_FORMAT.Html)">
                 {{ 'export.view.html' | transloco }}
               </ui-menu-item>
+              <ui-menu-item icon="list" (activated)="exportView(EXPORT_FORMAT.Csv)">
+                {{ 'export.view.csv' | transloco }}
+              </ui-menu-item>
               <ui-menu-separator />
               }
               <ui-menu-item icon="code" (activated)="exportAll(EXPORT_FORMAT.Json)">
@@ -270,6 +279,9 @@
               </ui-menu-item>
               <ui-menu-item icon="globe" (activated)="exportAll(EXPORT_FORMAT.Html)">
                 {{ 'export.all.html' | transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="list" (activated)="exportAll(EXPORT_FORMAT.Csv)">
+                {{ 'export.all.csv' | transloco }}
               </ui-menu-item>
             </ui-menu>
             @if (wide()) {

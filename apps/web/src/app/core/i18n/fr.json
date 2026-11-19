@@ -1289,11 +1289,13 @@
     "retry": "Réessayer",
     "view": {
       "json": "Cette vue en JSON",
-      "html": "Cette vue en favoris HTML"
+      "html": "Cette vue en favoris HTML",
+      "csv": "Cette vue en CSV"
     },
     "all": {
       "json": "Tout en JSON",
-      "html": "Tout en favoris HTML"
+      "html": "Tout en favoris HTML",
+      "csv": "Tout en CSV"
     },
     "empty": {
       "title": "Rien à exporter pour l'instant",

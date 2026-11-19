@@ -1266,11 +1266,13 @@
     "retry": "Try again",
     "view": {
       "json": "This view as JSON",
-      "html": "This view as Bookmarks HTML"
+      "html": "This view as Bookmarks HTML",
+      "csv": "This view as CSV"
     },
     "all": {
       "json": "Everything as JSON",
-      "html": "Everything as Bookmarks HTML"
+      "html": "Everything as Bookmarks HTML",
+      "csv": "Everything as CSV"
     },
     "empty": {
       "title": "Nothing to export yet",
