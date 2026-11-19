@@ -148,7 +148,7 @@ describe('AccountPage', () => {
 
   it('offers Import in Your data and opens the import dialog', async () => {
     const { root, harness } = await setup();
-    const open = vi.spyOn(TestBed.inject(ImportDialogService), 'open').mockImplementation(() => {});
+    const open = vi.spyOn(TestBed.inject(ImportDialogService), 'open').mockReturnValue(undefined);
 
     expect(root.textContent).toContain('Bring in browser bookmarks.');
     buttonWith(root, 'Import')?.click();
