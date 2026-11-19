@@ -13,6 +13,18 @@ const vocabulary: ViewDraftVocabulary = {
 };
 
 describe('parseViewDraftOutput', () => {
+  it('strips markup in linear time: a long run of "<" is read quickly and tags still go', () => {
+    const started = Date.now();
+    const draft = parseViewDraftOutput(
+      { name: '<'.repeat(100_000), note: '<b>Only</b> videos' },
+      vocabulary,
+      'x',
+    );
+    expect(Date.now() - started).toBeLessThan(200);
+    expect(draft?.note).toBe('Only videos');
+    expect(draft?.name.length).toBeLessThanOrEqual(40);
+  });
+
   it('refuses anything that is not an object', () => {
     expect(parseViewDraftOutput(null, vocabulary, 'x')).toBeNull();
     expect(parseViewDraftOutput([], vocabulary, 'x')).toBeNull();
