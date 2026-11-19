@@ -7,7 +7,11 @@ export const IMPORT_ENDPOINT = {
   Base: '/api/imports',
   /** `POST` which of the URLs are already saved (read-only). */
   Check: '/api/imports/check',
-  /** `POST` AI groups by topic for the links of a file (nothing is written; uses the allowance). */
+  /**
+   * `POST` AI groups by topic for the links of a file (nothing is written; uses the allowance);
+   * `DELETE` gives back the units of the last grouping that no import took (Back, another choice,
+   * dialog closed); 204, idempotent.
+   */
   Groups: '/api/imports/groups',
   /** `POST` one batch of links: `/api/imports/:id/links`. */
   Links: '/links',
