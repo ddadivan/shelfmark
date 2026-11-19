@@ -108,6 +108,10 @@ import { AiUsageService } from './usage/ai-usage.service';
       useValue: {
         firstTokenMs: ASK_LIMIT.FirstTokenMs,
         streamMaxMs: ASK_LIMIT.StreamMaxMs,
+        roundFirstOutputMs: ASK_LIMIT.RoundFirstOutputMs,
+        toolRoundMs: ASK_LIMIT.ToolRoundMs,
+        finalAnswerReserveMs: ASK_LIMIT.FinalAnswerReserveMs,
+        escalateBeforeMs: ASK_LIMIT.EscalateBeforeMs,
       } satisfies AskDeadlines,
     },
   ],

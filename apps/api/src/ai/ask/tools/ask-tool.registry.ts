@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ASK_TOOL_NAME } from '../../models/ask-tool-name.const';
 import type { AskTool } from '../../models/ask-tool.interface';
 import type { AskToolDefinition } from '../../models/ask-tool-definition.interface';
+import type { AskToolbox } from '../../models/ask-toolbox.interface';
 import { CountLinksAskTool } from './count-links.ask-tool';
 import { GetLinkAskTool } from './get-link.ask-tool';
 import { ListFoldersAskTool } from './list-folders.ask-tool';
@@ -16,7 +17,7 @@ import { ShowLinksAskTool } from './show-links.ask-tool';
  * profile the same list without `request_deeper_answer`.
  */
 @Injectable()
-export class AskToolRegistry {
+export class AskToolRegistry implements AskToolbox {
   private readonly tools: readonly AskTool[];
 
   constructor(

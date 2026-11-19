@@ -235,7 +235,8 @@ export class AskService {
     sink.onAbort(() => interrupt('client'));
     if (sink.closed) interrupt('client');
 
-    const citations = new CitationStream(found.sources.length);
+    const retrieved = found.sources.length;
+    const citations = new CitationStream((n) => n >= 1 && n <= retrieved);
     const iterator = this.registry
       .for(user)
       .askStream({ question, sources: found.sources, includeNotes }, controller.signal)

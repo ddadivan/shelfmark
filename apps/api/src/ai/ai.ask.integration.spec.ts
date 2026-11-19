@@ -62,7 +62,14 @@ describe('POST /api/ai/ask (AI-4)', () => {
   let a: TestAgent;
   let b: TestAgent;
   const deferrer = new AwaitableDeferrer();
-  const deadlines: AskDeadlines = { firstTokenMs: 8000, streamMaxMs: 24000 };
+  const deadlines: AskDeadlines = {
+    firstTokenMs: 8000,
+    streamMaxMs: 24000,
+    roundFirstOutputMs: 8000,
+    toolRoundMs: 4000,
+    finalAnswerReserveMs: 8000,
+    escalateBeforeMs: 10000,
+  };
 
   beforeAll(async () => {
     t = await createAuthTestApp({
