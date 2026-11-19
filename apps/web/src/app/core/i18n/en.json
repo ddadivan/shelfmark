@@ -2991,6 +2991,17 @@
       },
       "aiNewTags": {
         "text": "AI fills in one or two new tags and suggests more."
+      },
+      "askChat": {
+        "title": "Ask your shelf is now a chat",
+        "text": "Ask follow-up questions, ask how many links you have on a topic, and get the links it finds as cards you can open at once. Drag the edge of the panel to make it wider.",
+        "alt": "The Ask your shelf panel answering “Find my design links” with five links shown as cards."
+      },
+      "toastsSmooth": {
+        "text": "Several notifications open up and fold back smoothly when you point at them."
+      },
+      "cardTagsFit": {
+        "text": "A tag on a card is shown whole or moves into “+N”, which lists only the tags not on the card."
       }
     },
     "sections": {

@@ -210,6 +210,20 @@ export async function aiAsk(page: Page): Promise<WhatsNewClip> {
   return { x: WHATS_NEW_MEDIA.viewport.width - WHATS_NEW_MEDIA.crop.width, y: 0 };
 }
 
+/** Ask as a chat (2.3.0): a find that answers with the count and the links as cards. */
+export async function askChat(page: Page): Promise<WhatsNewClip> {
+  await openAiLibrary(page, { ask: true });
+  await page.getByRole('button', { name: 'Ask your shelf' }).click();
+  const panel = page.getByRole('dialog', { name: 'Ask your shelf' });
+  const field = panel.getByRole('textbox', { name: 'Ask about your links' });
+  await field.fill('Find my design links');
+  await field.press('Enter');
+  const cards = panel.getByRole('list', { name: 'Links found' });
+  await expect(cards.getByRole('listitem').first()).toBeVisible(AI_WAIT);
+  await expect(panel.getByRole('button', { name: 'Stop' })).toBeHidden(AI_WAIT);
+  return { x: WHATS_NEW_MEDIA.viewport.width - WHATS_NEW_MEDIA.crop.width, y: 0 };
+}
+
 /** Search for "signals": word matches, then the "Related by meaning" group. */
 export async function aiSearch(page: Page): Promise<WhatsNewClip> {
   await openAiLibrary(page, { meaningSearch: true });

@@ -7,9 +7,39 @@ import type { ChangelogRelease } from './changelog-release.interface';
  * into `main` adds a patch entry with one-line fixes. Media rules (PROJECT.md 9.3): improvements
  * and fixes are one line of text; features get a short text and, when they have a `priority`, a
  * screenshot per theme (`public/media/whats-new/<version>/`, made by the generator, no video).
- * The 2.2.0 entry lists the AI release; the 2.1.0 entry lists the changes since 2.0.0; hotfixes 2.0.1 to 2.0.8 are not repeated.
+ * The 2.3.0 entry makes Ask a chat; the 2.2.0 entry lists the AI release; the 2.1.0 entry lists the changes since 2.0.0; hotfixes 2.0.1 to 2.0.8 are not repeated.
  */
 export const CHANGELOG: readonly ChangelogRelease[] = [
+  {
+    version: '2.3.0',
+    date: '2026-11-19',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'askChat',
+        titleKey: 'changelog.items.askChat.title',
+        textKey: 'changelog.items.askChat.text',
+        priority: 1,
+        image: {
+          light: '/media/whats-new/2.3.0/ask-chat-light.webp',
+          dark: '/media/whats-new/2.3.0/ask-chat-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.askChat.alt',
+        },
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'toastsSmooth',
+        textKey: 'changelog.items.toastsSmooth.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'cardTagsFit',
+        textKey: 'changelog.items.cardTagsFit.text',
+      },
+    ],
+  },
   {
     version: '2.2.2',
     date: '2026-11-19',

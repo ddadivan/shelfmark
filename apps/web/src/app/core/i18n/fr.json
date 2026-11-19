@@ -3053,6 +3053,17 @@
       },
       "aiNewTags": {
         "text": "L’IA remplit un ou deux nouveaux tags et en propose d’autres."
+      },
+      "askChat": {
+        "title": "« Interroger mes liens » devient une conversation",
+        "text": "Posez des questions de suivi, demandez combien de liens vous avez sur un sujet et recevez les liens trouvés sous forme de cartes à ouvrir tout de suite. Faites glisser le bord du panneau pour l’élargir.",
+        "alt": "Le panneau « Interroger mes liens » répond à « Find my design links » avec cinq liens affichés en cartes."
+      },
+      "toastsSmooth": {
+        "text": "Plusieurs notifications s’ouvrent et se replient en douceur au survol."
+      },
+      "cardTagsFit": {
+        "text": "Un tag sur une carte s’affiche en entier ou passe dans « +N », qui ne liste que les tags absents de la carte."
       }
     },
     "sections": {

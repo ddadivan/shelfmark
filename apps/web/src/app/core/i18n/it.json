@@ -3053,6 +3053,17 @@
       },
       "aiNewTags": {
         "text": "L’IA compila uno o due tag nuovi e ne suggerisce altri."
+      },
+      "askChat": {
+        "title": "“Chiedi ai tuoi link” ora è una chat",
+        "text": "Fai domande di seguito, chiedi quanti link hai su un argomento e ricevi i link trovati come schede da aprire subito. Trascina il bordo del pannello per allargarlo.",
+        "alt": "Il pannello “Chiedi ai tuoi link” risponde a “Find my design links” con cinque link mostrati come schede."
+      },
+      "toastsSmooth": {
+        "text": "Più notifiche si aprono e si richiudono in modo fluido al passaggio del puntatore."
+      },
+      "cardTagsFit": {
+        "text": "Un tag sulla scheda è mostrato intero o passa in “+N”, che elenca solo i tag non presenti sulla scheda."
       }
     },
     "sections": {
