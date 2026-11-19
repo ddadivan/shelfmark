@@ -557,7 +557,7 @@
     "home": "Shelfmark, accueil",
     "newTab": "(s’ouvre dans un nouvel onglet)",
     "updated": "Dernière mise à jour : {{date}}",
-    "updatedDate": "16 novembre 2026",
+    "updatedDate": "19 novembre 2026",
     "intro": "Shelfmark est un projet personnel qui stocke les liens que vous enregistrez. Cette page explique ce que nous conservons et pourquoi, en termes simples.",
     "store": {
       "title": "Ce que nous stockons",
@@ -634,7 +634,7 @@
       },
       "ask": {
         "term": "Interroger mes liens :",
-        "text": "uniquement quand vous posez une question, votre question et jusqu’à 10 de vos liens correspondants (titre, adresse sans paramètres, noms des dossiers et des tags, résumé, votre note seulement avec « Inclure mes notes ») sont envoyés à [PROVIDER]. La réponse ne cite que ces liens. Ni la question ni la réponse ne sont conservées ; nous ne comptons que le nombre de questions par jour et par mois, pour votre limite."
+        "text": "uniquement quand vous posez une question, votre question, les questions et réponses précédentes de la conversation ouverte et ceux de vos liens que l’assistant consulte avec des outils de recherche, de comptage et de liste en lecture seule (titre, adresse sans ses paramètres, noms de dossier et de tags, résumé, votre note seulement avec « Inclure mes notes ») sont envoyés à [PROVIDER]. La réponse ne cite et n’affiche que vos propres liens. Ni les questions, ni les réponses, ni la conversation ne sont conservées, et fermer le panneau oublie la conversation ; nous comptons seulement le nombre de questions par jour et par mois (et combien ont reçu une réponse approfondie), pour votre limite."
       }
     },
     "retention": {
@@ -3167,7 +3167,7 @@
       },
       "ask": {
         "title": "Interroger mes liens",
-        "text": "Répond aux questions à partir de vos propres liens. Utilise Claude d’Anthropic : votre question et les liens correspondants sont envoyés, rien n’est conservé."
+        "text": "Répond aux questions à partir de vos liens, y compris les questions de suivi. Utilise Claude d’Anthropic : votre question, les échanges précédents de la conversation ouverte et les liens consultés sont envoyés ; rien n’est conservé."
       }
     },
     "backfill": {
@@ -3419,7 +3419,8 @@
       "title": "Interroger mes liens",
       "open": "Interroger mes liens",
       "close": "Fermer Interroger mes liens",
-      "newQuestion": "Nouvelle question",
+      "resize": "Redimensionner le panneau",
+      "newChat": "Nouvelle conversation",
       "back": "Retour",
       "emptyTitle": "Que voulez-vous savoir ?",
       "lead": "Posez votre question avec vos mots. La réponse vient des liens que vous avez enregistrés, avec chaque source.",
@@ -3431,6 +3432,7 @@
       },
       "label": "Posez une question sur vos liens",
       "placeholder": "Posez une question sur vos liens",
+      "followUp": "Demandez autre chose…",
       "send": "Demander",
       "stop": "Arrêter",
       "left": {
@@ -3467,6 +3469,19 @@
       "retry": "Réessayer",
       "truncated": "La réponse a été interrompue.",
       "stopped": "Arrêté.",
+      "historyTrimmed": "Seules les 10 dernières questions sont retenues dans cette conversation.",
+      "activity": {
+        "search": "Recherche dans vos liens…",
+        "count": "Comptage…",
+        "read": "Lecture d’un lien…",
+        "browse": "Parcours des dossiers et des tags…",
+        "deep": "Analyse plus poussée…"
+      },
+      "cards": {
+        "label": "Liens trouvés",
+        "more": "Plus d’actions pour « {{title}} »",
+        "showAll": "Voir les {{count}} dans la recherche"
+      },
       "button": "Demander",
       "try": "Essayez"
     },

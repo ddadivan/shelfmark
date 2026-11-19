@@ -557,7 +557,7 @@
     "home": "Shelfmark, home",
     "newTab": "(si apre in una nuova scheda)",
     "updated": "Ultimo aggiornamento: {{date}}",
-    "updatedDate": "16 novembre 2026",
+    "updatedDate": "19 novembre 2026",
     "intro": "Shelfmark è un progetto personale che conserva i link che salvi. Questa pagina spiega in parole semplici cosa teniamo e perché.",
     "store": {
       "title": "Cosa conserviamo",
@@ -634,7 +634,7 @@
       },
       "ask": {
         "term": "Chiedi ai tuoi link:",
-        "text": "solo quando fai una domanda, la domanda e fino a 10 dei tuoi link pertinenti (titolo, indirizzo senza parametri, nomi di cartelle e tag, riassunto, la tua nota solo con «Includi le mie note») vengono inviati a [PROVIDER]. La risposta cita solo quei link. Né la domanda né la risposta vengono conservate; contiamo solo il numero di domande al giorno e al mese, per il tuo limite."
+        "text": "solo quando fai una domanda, vengono inviati a [PROVIDER] la tua domanda, le domande e risposte precedenti della conversazione aperta e i tuoi link che l’assistente consulta con strumenti di ricerca, conteggio ed elenco in sola lettura (titolo, indirizzo senza parametri, nomi di cartelle e tag, riassunto, la tua nota solo con «Includi le mie note»). La risposta cita e mostra solo i tuoi link. Né le domande, né le risposte, né la conversazione vengono conservate, e chiudendo il pannello la conversazione viene dimenticata; contiamo solo il numero di domande al giorno e al mese (e quante hanno avuto una risposta più approfondita), per il tuo limite."
       }
     },
     "retention": {
@@ -3167,7 +3167,7 @@
       },
       "ask": {
         "title": "Chiedi ai tuoi link",
-        "text": "Risponde alle domande a partire dai tuoi link. Usa Claude di Anthropic: vengono inviati la domanda e i link pertinenti, non viene conservato nulla."
+        "text": "Risponde alle domande a partire dai tuoi link, anche a quelle successive. Usa Claude di Anthropic: vengono inviati la tua domanda, gli scambi precedenti della conversazione aperta e i link consultati; non viene conservato nulla."
       }
     },
     "backfill": {
@@ -3419,7 +3419,8 @@
       "title": "Chiedi ai tuoi link",
       "open": "Chiedi ai tuoi link",
       "close": "Chiudi Chiedi ai tuoi link",
-      "newQuestion": "Nuova domanda",
+      "resize": "Ridimensiona il pannello",
+      "newChat": "Nuova conversazione",
       "back": "Indietro",
       "emptyTitle": "Cosa vuoi sapere?",
       "lead": "Chiedi con parole tue. La risposta arriva dai link che hai salvato, con ogni fonte indicata.",
@@ -3431,6 +3432,7 @@
       },
       "label": "Chiedi sui tuoi link",
       "placeholder": "Chiedi sui tuoi link",
+      "followUp": "Chiedi qualcos’altro…",
       "send": "Chiedi",
       "stop": "Interrompi",
       "left": {
@@ -3467,6 +3469,19 @@
       "retry": "Riprova",
       "truncated": "La risposta è stata interrotta.",
       "stopped": "Interrotto.",
+      "historyTrimmed": "In questa conversazione si ricordano solo le ultime 10 domande.",
+      "activity": {
+        "search": "Ricerca nei tuoi link…",
+        "count": "Conteggio…",
+        "read": "Lettura di un link…",
+        "browse": "Uno sguardo a cartelle e tag…",
+        "deep": "Analisi più approfondita…"
+      },
+      "cards": {
+        "label": "Link trovati",
+        "more": "Altre azioni per «{{title}}»",
+        "showAll": "Mostra tutti i {{count}} nella ricerca"
+      },
       "button": "Chiedi",
       "try": "Prova"
     },

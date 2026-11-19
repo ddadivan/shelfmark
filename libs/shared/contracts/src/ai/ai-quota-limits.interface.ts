@@ -12,6 +12,10 @@ export interface AiQuotaLimits {
   questionsPerDay: number;
   /** Ask your shelf questions per UTC calendar month (AI-4, fair-use cap). */
   questionsPerMonth: number;
+  /** Ask questions answered by the deeper model per UTC day, inside the question limits (ADR 0055). */
+  deepQuestionsPerDay: number;
+  /** Ask questions answered by the deeper model per UTC calendar month (ADR 0055). */
+  deepQuestionsPerMonth: number;
   /** Library clean-up runs with AI checks per UTC calendar month (AI-5); rule checks are unlimited. */
   cleanupAiRunsPerMonth: number;
 }

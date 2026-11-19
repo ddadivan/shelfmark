@@ -5,6 +5,7 @@ import type {
   AiSettingsResponse,
   AiTickResponse,
   AskEvent,
+  AskTurn,
   CreateAiDraftRequest,
   LinkAiState,
   LinkResponse,
@@ -67,9 +68,10 @@ export interface AiApi {
   /** `GET /api/links/:id/related` (AI-3): the closest other links by meaning (404 for a foreign link). */
   related(linkId: string, limit?: number): Observable<RelatedLinksResponse>;
   /**
-   * `POST /api/ai/ask` (AI-4, ADR 0052): the answer as a stream of events, ending with one `done`
-   * or `error`. Errors (an `HttpErrorResponse`) only for a refused request (400, 401, 403, 429) or
-   * a broken connection; unsubscribing aborts the request.
+   * `POST /api/ai/ask` (AI-4, ADR 0052 and 0055): one chat turn as a stream of events, ending with
+   * one `done` or `error`; `history` is the open chat's earlier turns (`done.turn`, at most
+   * `ASK_LIMIT.HistoryTurnsMax`). Errors (an `HttpErrorResponse`) only for a refused request (400,
+   * 401, 403, 429) or a broken connection; unsubscribing aborts the request.
    */
-  ask(question: string): Observable<AskEvent>;
+  ask(question: string, history: readonly AskTurn[]): Observable<AskEvent>;
 }

@@ -5,8 +5,6 @@ import { LINK_BATCH_STATUS } from '../models/link-batch-status.const';
 import { MOCK_AI } from '../models/mock-ai-limit.const';
 import { MOCK_ASK } from '../models/mock-ask.const';
 import { ASK_STOP_REASON } from '../models/ask-stop-reason.const';
-import type { AskChunk } from '../models/ask-chunk.type';
-import type { AskInput } from '../models/ask-input.interface';
 import type { AiProvider } from '../models/ai-provider.interface';
 import type { LinkBatchItem } from '../models/link-batch-item.interface';
 import type { LinkBatchRequest } from '../models/link-batch-request.interface';
@@ -15,7 +13,10 @@ import type { LinkBatchSubmission } from '../models/link-batch-submission.interf
 import type { LinkJobInput } from '../models/link-job-input.interface';
 import type { LinkJobOutcome } from '../models/link-job-outcome.type';
 import type { MockAskDelay } from '../models/mock-ask-delay.type';
-import { mockAskAnswer, mockAskChunks } from './mock-ask-answer';
+import { mockAskChunks, planMockAskRound } from './mock-ask-planner';
+import type { AskAssistantBlock } from '../models/ask-assistant-block.type';
+import type { AskRoundChunk } from '../models/ask-round-chunk.type';
+import type { AskRoundInput } from '../models/ask-round-input.interface';
 import { mockTagSynonyms } from './mock-tag-synonyms';
 import type { TagSynonymsInput } from '../models/tag-synonyms-input.interface';
 import type { TagSynonymsOutcome } from '../models/tag-synonyms-outcome.type';
@@ -88,8 +89,8 @@ function hostOf(url: string): string {
  * The provider for development, tests, CI, previews and the demo: no network, no key, deterministic.
  * Tags are the user's own tags that the link mentions, the folder is the first folder whose name the
  * link mentions, the new tag is the site's name, the summary restates the title. A URL with
- * `ai-refuse` answers a refusal and one with `ai-fail` a retryable outage. Ask answers stream word by
- * word (`mockAskAnswer`, triggers in `MOCK_ASK`); `delay` is injected so unit tests run without waits.
+ * `ai-refuse` answers a refusal and one with `ai-fail` a retryable outage. Ask rounds are planned by
+ * `planMockAskRound` and stream word by word (triggers in `MOCK_ASK`); `delay` is injected so unit tests run without waits.
  */
 export class MockAiProvider implements AiProvider {
   readonly name = AI_PROVIDER_NAME.Mock;
@@ -104,26 +105,27 @@ export class MockAiProvider implements AiProvider {
     return Promise.resolve(mockTagSynonyms(input));
   }
 
-  async *askStream(input: AskInput, signal: AbortSignal): AsyncGenerator<AskChunk> {
-    const question = input.question.toLowerCase();
-    if (question.includes(MOCK_ASK.FailMarker)) {
+  /**
+   * One mock Ask chat round (ADR 0055 point 10): `planMockAskRound` decides from the messages, the
+   * text streams word by word, then the tool calls start and the round ends with the blocks. No
+   * opaque blocks (the mock does not think); an abort ends with `error`.
+   */
+  async *askRound(input: AskRoundInput, signal: AbortSignal): AsyncGenerator<AskRoundChunk> {
+    const plan = planMockAskRound(input);
+    if (plan.kind === 'fail') {
       yield { type: 'error', retryable: true };
       return;
     }
-    if (question.includes(MOCK_ASK.RefuseMarker)) {
-      yield { type: 'end', stopReason: ASK_STOP_REASON.Refusal, inputTokens: 0, outputTokens: 0 };
+    const usage = { input: 0, cacheRead: 0, cacheWrite: 0, output: 0 };
+    const round = input.messages.filter((message) => message.role === 'assistant').length;
+    if (plan.kind === 'refuse') {
+      yield { type: 'end', stopReason: ASK_STOP_REASON.Refusal, blocks: [], usage };
       return;
     }
-    if (question.includes(MOCK_ASK.SlowMarker)) await this.delay(MOCK_ASK.SlowMs, signal);
-    const chunks = mockAskChunks(mockAskAnswer(input));
-    const cut = question.includes(MOCK_ASK.CutMarker);
+    if (plan.slow) await this.delay(MOCK_ASK.SlowMs, signal);
     let sent = 0;
-    for (const text of chunks) {
-      if (signal.aborted) {
-        yield { type: 'error', retryable: true };
-        return;
-      }
-      if (cut && sent === MOCK_ASK.CutAfterChunks) {
+    for (const text of mockAskChunks(plan.text)) {
+      if (signal.aborted || (plan.cut && sent === MOCK_ASK.CutAfterChunks)) {
         yield { type: 'error', retryable: true };
         return;
       }
@@ -135,11 +137,25 @@ export class MockAiProvider implements AiProvider {
       yield { type: 'text', text };
       sent += 1;
     }
+    const blocks: AskAssistantBlock[] = plan.text === '' ? [] : [{ type: 'text', text: plan.text }];
+    for (const [index, call] of plan.calls.entries()) {
+      if (signal.aborted) {
+        yield { type: 'error', retryable: true };
+        return;
+      }
+      yield { type: 'tool_start', name: call.name };
+      blocks.push({
+        type: 'tool_call',
+        id: `${MOCK_ASK.ToolCallId}${round}-${index + 1}`,
+        name: call.name,
+        input: call.input,
+      });
+    }
     yield {
       type: 'end',
-      stopReason: ASK_STOP_REASON.Done,
-      inputTokens: 0,
-      outputTokens: chunks.length,
+      stopReason: plan.calls.length > 0 ? ASK_STOP_REASON.ToolUse : ASK_STOP_REASON.Done,
+      blocks,
+      usage: { ...usage, output: sent },
     };
   }
 

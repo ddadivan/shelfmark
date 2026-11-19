@@ -12,12 +12,12 @@ describe('createAskSseParser', () => {
   it('reads several events in one chunk, in order', () => {
     const parser = createAskSseParser();
     const events = parser.push(
-      frame({ type: 'meta', allowance: ALLOWANCE, retrieved: 2 }) +
+      frame({ type: 'meta', allowance: ALLOWANCE }) +
         frame({ type: 'text', text: 'Hi\nthere ' }) +
         frame({ type: 'cite', n: 1 }),
     );
     expect(events).toEqual<AskEvent[]>([
-      { type: ASK_EVENT_TYPE.Meta, allowance: ALLOWANCE, retrieved: 2 },
+      { type: ASK_EVENT_TYPE.Meta, allowance: ALLOWANCE },
       { type: ASK_EVENT_TYPE.Text, text: 'Hi\nthere ' },
       { type: ASK_EVENT_TYPE.Cite, n: 1 },
     ]);
@@ -42,7 +42,7 @@ describe('createAskSseParser', () => {
         frame({ type: 'cite', n: 0 }) +
         frame({ type: 'cite', n: 1.5 }) +
         frame(['text']) +
-        frame({ type: 'meta', allowance: { questionsLeft: -1 }, retrieved: 1 }) +
+        frame({ type: 'meta', allowance: { questionsLeft: -1 } }) +
         frame({ type: 'error', reason: 'nope', counted: false, allowance: null }) +
         frame({
           type: 'done',
@@ -50,6 +50,8 @@ describe('createAskSseParser', () => {
           notFound: false,
           truncated: false,
           allowance: ALLOWANCE,
+          turn: { question: '', answer: '', links: [] },
+          depth: 'quick',
         }) +
         frame({
           type: 'done',
@@ -57,6 +59,8 @@ describe('createAskSseParser', () => {
           notFound: false,
           truncated: false,
           allowance: ALLOWANCE,
+          turn: { question: '', answer: '', links: [] },
+          depth: 'quick',
         }) +
         frame({
           type: 'done',
@@ -64,6 +68,8 @@ describe('createAskSseParser', () => {
           notFound: false,
           truncated: false,
           allowance: ALLOWANCE,
+          turn: { question: '', answer: '', links: [] },
+          depth: 'quick',
         }) +
         frame({ type: 'text', text: 'kept' }),
     );
@@ -79,6 +85,8 @@ describe('createAskSseParser', () => {
         notFound: false,
         truncated: true,
         allowance: ALLOWANCE,
+        turn: { question: '', answer: '', links: [] },
+        depth: 'quick',
         extra: 1,
       }) +
         frame({ type: 'error', reason: 'quota', counted: false, allowance: ALLOWANCE }) +
@@ -91,6 +99,8 @@ describe('createAskSseParser', () => {
         notFound: false,
         truncated: true,
         allowance: ALLOWANCE,
+        turn: { question: '', answer: '', links: [] },
+        depth: 'quick',
       },
       { type: 'error', reason: 'quota', counted: false, allowance: ALLOWANCE },
       { type: 'error', reason: 'off', counted: false, allowance: null },

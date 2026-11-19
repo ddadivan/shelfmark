@@ -12,8 +12,8 @@ export function askDay(now: Date): string {
 }
 
 /**
- * Ask question counts and the one-question lease (ADR 0052 point 7). Counts only, per user and UTC
- * day; the month is the sum of its days. Every statement runs on the session user's rows.
+ * Ask question counts, the deeper-answer counts (ADR 0055) and the one-question lease (ADR 0052
+ * point 7). Counts only, per user and UTC day; the month is the sum of its days. Every statement runs on the session user's rows.
  */
 @Injectable()
 export class AskUsageService {
@@ -61,10 +61,45 @@ export class AskUsageService {
     });
   }
 
+  /**
+   * Counts one deeper answer (ADR 0055 point 1) on the day its question was counted, under the same
+   * advisory lock: one statement increments `deep` only while the day's and the month's deep counts
+   * are under the tier's deep limits. `false` when the deep allowance is used up.
+   */
+  async reserveDeep(
+    userId: string,
+    tier: AiTier,
+    day: string,
+    now: Date = new Date(),
+  ): Promise<boolean> {
+    const limits = AI_QUOTA[tier];
+    const month = usageMonth(now);
+    return this.prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${ASK_LOCK_PREFIX + userId}, 0))`;
+      const rows = await tx.$queryRaw<{ deep: number }[]>`
+        UPDATE ai_ask_usage SET deep = deep + 1
+        WHERE user_id = ${userId}::uuid AND day = ${day}::date
+          AND deep < questions
+          AND deep < ${limits.deepQuestionsPerDay}
+          AND (SELECT COALESCE(SUM(deep), 0) FROM ai_ask_usage
+                WHERE user_id = ${userId}::uuid AND day >= ${month}::date AND day <= ${day}::date)
+              < ${limits.deepQuestionsPerMonth}
+        RETURNING deep`;
+      return rows.length > 0;
+    });
+  }
+
+  /** Gives a reserved deeper answer back (refunded together with its question, or no deep text). */
+  async refundDeep(userId: string, day: string): Promise<void> {
+    await this.prisma.$executeRaw`
+      UPDATE ai_ask_usage SET deep = deep - 1
+      WHERE user_id = ${userId}::uuid AND day = ${day}::date AND deep > 0`;
+  }
+
   /** Gives a reserved question back (failure before any text, refusal). */
   async refund(userId: string, day: string): Promise<void> {
     await this.prisma.$executeRaw`
-      UPDATE ai_ask_usage SET questions = questions - 1
+      UPDATE ai_ask_usage SET questions = questions - 1, deep = LEAST(deep, questions - 1)
       WHERE user_id = ${userId}::uuid AND day = ${day}::date AND questions > 0`;
   }
 

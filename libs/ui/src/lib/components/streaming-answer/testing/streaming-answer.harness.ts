@@ -3,7 +3,7 @@ import type { StreamingAnswerHarnessFilters } from './models/streaming-answer-ha
 
 /**
  * Harness for `ui-streaming-answer`: reads the question, the answer text, the citations, whether it
- * still streams and what the live region announces; clicks a citation.
+ * still streams, the status pill and what the live region announces; clicks a citation.
  */
 export class UiStreamingAnswerHarness extends ComponentHarness {
   static hostSelector = 'ui-streaming-answer';
@@ -24,6 +24,7 @@ export class UiStreamingAnswerHarness extends ComponentHarness {
   private readonly caret = this.locatorForOptional('.ui-streaming-answer__caret');
   private readonly disclaimerLine = this.locatorForOptional('.ui-streaming-answer__disclaimer');
   private readonly live = this.locatorFor('.ui-streaming-answer__live');
+  private readonly pill = this.locatorForOptional('.ui-streaming-answer__pill');
 
   async getQuestion(): Promise<string> {
     return (await (await this.bubble()).text()).trim();
@@ -58,9 +59,15 @@ export class UiStreamingAnswerHarness extends ComponentHarness {
     await cite.click();
   }
 
-  /** The caret shows: text is still arriving. */
+  /** The caret or the status pill shows: the answer is still arriving. */
   async isStreaming(): Promise<boolean> {
-    return (await this.caret()) !== null;
+    return (await this.caret()) !== null || (await this.pill()) !== null;
+  }
+
+  /** The status pill's text ("Searching your links…"), or `null` when none shows. */
+  async getStatus(): Promise<string | null> {
+    const pill = await this.pill();
+    return pill ? (await pill.text()).trim() : null;
   }
 
   /** The disclaimer line, or `null` while streaming or before any text. */

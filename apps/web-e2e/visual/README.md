@@ -20,6 +20,7 @@ network settled before every shot. Each screen is a viewport shot named `<screen
 | tab bar, bottom sheet (Recently opened)        | `library.visual.spec.ts` | tablet and phone only |
 | settings appearance, settings library          | `account.visual.spec.ts` | all                   |
 | trash with items, empty trash, empty library   | `account.visual.spec.ts` | all                   |
+| Ask chat: a find answer with link cards (#521) | `ask.visual.spec.ts`     | all                   |
 
 Projects: `desktop` (1280x800), `tablet` (820x1180, touch), `phone` (360x780, touch), each in
 `light` and `dark`, so `desktop-light`, `desktop-dark`, `tablet-light`, ... The sidebar of the

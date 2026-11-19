@@ -1,4 +1,5 @@
 @if (answered()) {
+  @let activityKey = statusKey();
   <ui-streaming-answer
     [question]="entry().question"
     [segments]="entry().segments"
@@ -6,14 +7,27 @@
     [citeLabel]="citeLabel"
     [disabledCites]="disabledCites()"
     [disclaimer]="'ai.disclaimer' | transloco"
+    [status]="activityKey ? (activityKey | transloco) : null"
+    [hasContent]="entry().cards.length > 0"
     (citationClicked)="cite($event)"
   >
+    @if (entry().cards.length > 0) {
+      <div uiStreamingLive class="ask-entry__cards">
+        @for (group of entry().cards; track $index) {
+          <app-ask-link-cards
+            [group]="group"
+            [idPrefix]="idPrefix()"
+            [highlighted]="highlighted()"
+          />
+        }
+      </div>
+    }
     @if (entry().truncated) {
       <p class="ask-entry__note">{{ 'ai.ask.truncated' | transloco }}</p>
     }
-    @if (entry().sources.length > 0) {
+    @if (sources().length > 0) {
       <app-ask-sources
-        [sources]="entry().sources"
+        [sources]="sources()"
         [idPrefix]="idPrefix()"
         [highlighted]="highlighted()"
       />

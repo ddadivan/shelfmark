@@ -15,11 +15,14 @@ const ENTRY: AskEntry = {
   truncated: false,
   reason: null,
   allowance: null,
+  activity: null,
+  cards: [],
+  turn: null,
 };
 
 describe('applyAskEvent', () => {
   it('appends text (merged) and citations, then completes with done', () => {
-    let entry = applyAskEvent(ENTRY, { type: 'meta', allowance: ALLOWANCE, retrieved: 2 });
+    let entry = applyAskEvent(ENTRY, { type: 'meta', allowance: ALLOWANCE });
     expect(entry).toBe(ENTRY);
     entry = applyAskEvent(entry, { type: 'text', text: 'You ' });
     entry = applyAskEvent(entry, { type: 'text', text: 'saved ' });
@@ -32,6 +35,8 @@ describe('applyAskEvent', () => {
       notFound: true,
       truncated: true,
       allowance: ALLOWANCE,
+      turn: { question: '', answer: '', links: [] },
+      depth: 'quick',
     });
     expect(entry).toMatchObject({ state: 'done', notFound: true, truncated: true });
   });
@@ -65,5 +70,56 @@ describe('endAskEntry and stopAskEntry', () => {
     const done = { ...ENTRY, state: ASK_ENTRY_STATE.Done };
     expect(endAskEntry(done)).toBe(done);
     expect(stopAskEntry(done)).toBe(done);
+  });
+});
+
+describe('applyAskEvent for the chat events (ADR 0055)', () => {
+  const link = { id: 'l1', title: 'Signals' } as never;
+  it('shows the status pill on an activity start and hides it on its end, text or cards', () => {
+    let entry = applyAskEvent(ENTRY, {
+      type: 'activity',
+      activity: 'search',
+      phase: 'start',
+      found: null,
+    });
+    expect(entry.activity).toEqual({ activity: 'search' });
+    entry = applyAskEvent(entry, { type: 'activity', activity: 'search', phase: 'end', found: 3 });
+    expect(entry.activity).toBeNull();
+    entry = applyAskEvent(entry, {
+      type: 'activity',
+      activity: 'count',
+      phase: 'start',
+      found: null,
+    });
+    entry = applyAskEvent(entry, { type: 'text', text: 'You have 3.' });
+    expect(entry.activity).toBeNull();
+  });
+
+  it('keeps cards in stream order and the turn from done', () => {
+    let entry = applyAskEvent(ENTRY, {
+      type: 'links',
+      items: [{ n: 1, link }],
+      total: 14,
+      search: { q: 'signals', folderId: null, tags: [], kind: null, favorite: false },
+    });
+    expect(entry.cards).toEqual([
+      {
+        items: [{ n: 1, link }],
+        total: 14,
+        search: { q: 'signals', folderId: null, tags: [], kind: null, favorite: false },
+      },
+    ]);
+    const turn = { question: 'ramen?', answer: 'x [1]', links: [{ n: 1, id: 'l1' }] };
+    entry = applyAskEvent(entry, {
+      type: 'done',
+      sources: [{ n: 1, link }],
+      notFound: false,
+      truncated: false,
+      allowance: ALLOWANCE,
+      turn,
+      depth: 'quick',
+    });
+    expect(entry.turn).toEqual(turn);
+    expect(endAskEntry({ ...ENTRY, cards: entry.cards }).state).toBe(ASK_ENTRY_STATE.Done);
   });
 });

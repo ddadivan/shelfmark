@@ -14,6 +14,8 @@ describe('AI_QUOTA', () => {
       searchQueriesPerMonth: 1000,
       questionsPerDay: 5,
       questionsPerMonth: 5,
+      deepQuestionsPerDay: 5,
+      deepQuestionsPerMonth: 5,
       cleanupAiRunsPerMonth: 0,
     });
     expect(AI_QUOTA[AI_TIER.AiPack]).toEqual({
@@ -23,6 +25,8 @@ describe('AI_QUOTA', () => {
       searchQueriesPerMonth: 10000,
       questionsPerDay: 50,
       questionsPerMonth: 500,
+      deepQuestionsPerDay: 20,
+      deepQuestionsPerMonth: 150,
       cleanupAiRunsPerMonth: 10,
     });
   });

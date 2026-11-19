@@ -21,6 +21,9 @@
     </div>
   </div>
 } @else {
+  @if (store.historyTrimmed()) {
+    <p class="ask-conversation__trimmed">{{ 'ai.ask.historyTrimmed' | transloco }}</p>
+  }
   @for (entry of store.entries(); track entry.id) {
     <app-ask-entry
       [entry]="entry"

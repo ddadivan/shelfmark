@@ -1,0 +1,39 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: stretch;
+}
+
+.ask-link-cards__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Compact cards like the sources: `bg` fill, a border, `radius-md`; full width in the column.
+.ask-link-cards__card {
+  padding: rem(10px) var(--space-3);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.ask-link-cards__actions {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.ask-link-cards__open {
+  color: var(--text-muted);
+}
+
+.ask-link-cards__all {
+  align-self: flex-start;
+}

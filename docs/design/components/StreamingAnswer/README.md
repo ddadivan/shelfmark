@@ -11,6 +11,7 @@ Behaviour:
 - A citation scrolls to and highlights its source row (`accent-bg` for 1.5 s, like a new row in list view); the row opens the link.
 - "Not in your links": the answer says so and offers a normal search; it never answers from general knowledge.
 - Limit and error use `sm-ai-line` in place of the answer (AiSummary spec); a failed question doesn't count.
+- Chat (ADR 0055, #521): `status` (a translated label or `null`) shows a pill under the spark while the assistant works and no text streams ("Searching your links…", "Counting…", "Reading a link…", "Looking through folders and tags…", "Looking closer…"; never tool names or search words): `ai-fill` capsule, caption type, a soft shimmer sweep that stops under reduced motion, inside a persistent `role="status"` region; the caret hides while it shows. Content projected with `uiStreamingLive` (the link cards of a "find" answer) shows right under the text as it arrives; `hasContent` keeps the reply (and later the disclaimer) for an answer that is only cards. The default slot (sources, actions) still shows only once complete.
 
 Accessibility:
 

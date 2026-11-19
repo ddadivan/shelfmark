@@ -6,7 +6,8 @@ import type { AiTier } from './ai-tier.type';
  * decision, Nov 17, 2026): the AI pack gets 5,000 links, Free none. Embeddings and search queries
  * have their own monthly counters (ADR 0051 point 5); Ask questions are counted per UTC day with a
  * monthly cap (ADR 0052 point 7: Free 5 a month, AI pack 50 a day and 500 a month, raised from 15 and
- * 150 on Nov 19, 2026); AI clean-up runs have a monthly allowance (ADR 0053 point 3: AI pack 10, Free none).
+ * 150 on Nov 19, 2026), of which the deeper model answers at most 20 a day and 150 a month on the
+ * AI pack (ADR 0055 point 1; Free inside its 5); AI clean-up runs have a monthly allowance (ADR 0053 point 3: AI pack 10, Free none).
  */
 export const AI_QUOTA = {
   free: {
@@ -16,6 +17,8 @@ export const AI_QUOTA = {
     searchQueriesPerMonth: 1000,
     questionsPerDay: 5,
     questionsPerMonth: 5,
+    deepQuestionsPerDay: 5,
+    deepQuestionsPerMonth: 5,
     cleanupAiRunsPerMonth: 0,
   },
   'ai-pack': {
@@ -25,6 +28,8 @@ export const AI_QUOTA = {
     searchQueriesPerMonth: 10000,
     questionsPerDay: 50,
     questionsPerMonth: 500,
+    deepQuestionsPerDay: 20,
+    deepQuestionsPerMonth: 150,
     cleanupAiRunsPerMonth: 10,
   },
 } as const satisfies Record<AiTier, AiQuotaLimits>;

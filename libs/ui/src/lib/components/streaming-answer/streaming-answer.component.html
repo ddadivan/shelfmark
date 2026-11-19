@@ -1,33 +1,41 @@
 <p class="ui-streaming-answer__bubble">{{ question() }}</p>
-@if (hasAnswer() || streaming()) {
+@if (hasReply()) {
   <div class="ui-streaming-answer__reply">
     <span class="ui-streaming-answer__avatar" aria-hidden="true">
       <ui-icon name="spark" [size]="ICON_SIZE.Sm" />
     </span>
     <div class="ui-streaming-answer__body">
-      <p class="ui-streaming-answer__text">
-        @for (part of parts(); track $index) {
-          @switch (part.kind) {
-            @case (STREAMING_PART_KIND.Cite) {
-              <!-- prettier-ignore -->
-              <button
-                type="button"
-                class="ui-streaming-answer__cite"
-                [disabled]="part.disabled"
-                [attr.aria-label]="citeLabel()(part.n)"
-                (click)="citationClicked.emit(part.n)"
-              >{{ part.n }}</button>
-            }
-            @case (STREAMING_PART_KIND.Text) {
-              <span>{{ part.text }}</span>
+      @if (hasAnswer() || (streaming() && !shownStatus())) {
+        <p class="ui-streaming-answer__text">
+          @for (part of parts(); track $index) {
+            @switch (part.kind) {
+              @case (STREAMING_PART_KIND.Cite) {
+                <!-- prettier-ignore -->
+                <button
+                  type="button"
+                  class="ui-streaming-answer__cite"
+                  [disabled]="part.disabled"
+                  [attr.aria-label]="citeLabel()(part.n)"
+                  (click)="citationClicked.emit(part.n)"
+                >{{ part.n }}</button>
+              }
+              @case (STREAMING_PART_KIND.Text) {
+                <span>{{ part.text }}</span>
+              }
             }
           }
-        }
-        @if (streaming()) {
-          <span class="ui-streaming-answer__caret" aria-hidden="true"></span>
+          @if (streaming() && !shownStatus()) {
+            <span class="ui-streaming-answer__caret" aria-hidden="true"></span>
+          }
+        </p>
+      }
+      <p class="ui-streaming-answer__status" role="status">
+        @if (shownStatus(); as status) {
+          <span class="ui-streaming-answer__pill">{{ status }}</span>
         }
       </p>
-      @if (!streaming() && hasAnswer()) {
+      <div class="ui-streaming-answer__extra"><ng-content select="[uiStreamingLive]" /></div>
+      @if (!streaming() && (hasAnswer() || hasContent())) {
         <p class="ui-streaming-answer__disclaimer">{{ disclaimer() }}</p>
         <div class="ui-streaming-answer__after"><ng-content /></div>
       }

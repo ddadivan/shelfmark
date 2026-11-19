@@ -1,6 +1,6 @@
 # 0052. Ask your shelf: an SSE stream over a POST on the same Vercel Function, server-side citations, no stored answers, daily and monthly caps
 
-- Status: Proposed
+- Status: Accepted, partly superseded by [0055](0055-ask-chat-with-tools.md) (points 3, 5, 6 and 8; points 2 and 4 amended)
 - Date: 2026-11-17
 - Source: issue #393 (F4), `docs/ai/IMPLEMENTATION-AI-4.md` section 1, `docs/ai/FEATURES.md` F4, principles 2, 5, 6 and 7, open question 4, `docs/design/components/StreamingAnswer/README.md`, `docs/PROJECT.md` 5.6 and 5.8; amends [0047](0047-ai-provider-models-and-cost.md) point 7 (question limits) and [0031](0031-rate-limiting-and-request-interceptors.md) (request timeout for one route); builds on [0049](0049-ai-job-runner-on-vercel.md) and [0051](0051-search-by-meaning-embeddings.md)
 

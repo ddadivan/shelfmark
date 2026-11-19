@@ -8,7 +8,13 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { ASK_ERROR_REASON, ASK_EVENT_TYPE, ASK_LIMIT, type AskEvent } from '@shelfmark/contracts';
+import {
+  ASK_ERROR_REASON,
+  ASK_EVENT_TYPE,
+  ASK_LIMIT,
+  type AskEvent,
+  type AskTurn,
+} from '@shelfmark/contracts';
 import type { Subscription } from 'rxjs';
 import { expireSession } from '../../../core/auth/expire-session';
 import { AI_API } from '../models/ai-api.const';
@@ -25,14 +31,21 @@ import { AiSettingsStore } from './ai-settings.store';
 
 const initialState: AskState = { entries: [] };
 
+/** The turns the server wrote, oldest first (only finished answers have one). */
+function turnsOf(entries: readonly AskEntry[]): AskTurn[] {
+  return entries.flatMap((entry) => (entry.turn === null ? [] : [entry.turn]));
+}
+
 /** The question as the API normalises it: trimmed, runs of white space collapsed. */
 export function normalizeQuestion(question: string): string {
   return question.trim().replace(/\s+/gu, ' ');
 }
 
 /**
- * The conversation of one Ask panel (AI-4, ADR 0052), provided by the panel's container: entries
- * stay in memory until it closes, each question is single-turn, one question in flight. Allowances
+ * The chat of one Ask panel (AI-4, ADR 0052 and 0055), provided by the panel's container: entries
+ * stay in memory until it closes (nothing in storage), one question in flight. Each finished answer
+ * keeps the turn the server wrote (`done.turn`); the last `ASK_LIMIT.HistoryTurnsMax` go back with
+ * the next question, so follow-ups work. Errors and a Stop without `done` add no turn. Allowances
  * from the stream go to `AiSettingsStore`, so every "questions left" line follows. An `off` error
  * reloads the AI settings (the entry points then hide). A 429 shows the rate-limit line; a 401 ends
  * the session like the error interceptor does. Destroying the store aborts the stream.
@@ -42,6 +55,12 @@ export const AskStore = signalStore(
   withComputed(({ entries }) => ({
     /** A question is being answered: the composer is disabled and Stop shows. */
     streaming: computed(() => entries().some((entry) => entry.state === ASK_ENTRY_STATE.Streaming)),
+    /** What the next question sends back: the last `ASK_LIMIT.HistoryTurnsMax` turns. */
+    history: computed(() => turnsOf(entries()).slice(-ASK_LIMIT.HistoryTurnsMax)),
+    /** Older turns no longer go with the next question (the quiet note). */
+    historyTrimmed: computed(() => turnsOf(entries()).length > ASK_LIMIT.HistoryTurnsMax),
+    /** The chat has a finished answer: the composer asks for a follow-up. */
+    answered: computed(() => entries().some((entry) => entry.turn !== null)),
   })),
   withMethods((store) => {
     const api = inject(AI_API);
@@ -71,7 +90,7 @@ export const AskStore = signalStore(
     };
 
     const start = (id: number, question: string): void => {
-      subscription = api.ask(question).subscribe({
+      subscription = api.ask(question, store.history()).subscribe({
         next: (event) => onEvent(id, event),
         error: (error: unknown) => {
           subscription = null;
@@ -125,6 +144,9 @@ export const AskStore = signalStore(
           truncated: false,
           reason: null,
           allowance: null,
+          activity: null,
+          cards: [],
+          turn: null,
         };
         patchState(store, { entries: [...store.entries(), entry] });
         start(id, text);
@@ -146,11 +168,13 @@ export const AskStore = signalStore(
           segments: [],
           reason: null,
           allowance: null,
+          activity: null,
+          cards: [],
         }));
         start(id, entry.question);
       },
 
-      /** "New question": stops and forgets the conversation. */
+      /** ✎ "New conversation": stops and forgets the chat, history included. */
       reset(): void {
         stop();
         patchState(store, { entries: [] });

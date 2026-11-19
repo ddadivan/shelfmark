@@ -169,7 +169,7 @@ describe('demo library, limits and expiry', () => {
       expect((meaning.body as { status: { state: string } }).status.state).toBe('ready');
     });
 
-    it('starts with Ask on, the Free allowance and canned answers grounded in the seed (AI-4)', async () => {
+    it('starts with Ask on, the Free allowance and canned chat answers grounded in the seed (AI-4, ADR 0055)', async () => {
       const demo = await signInDemo(t.app, t.baseUrl);
       const agent = asUser(t.app, demo);
       const settings = (await agent.get(AI_ENDPOINT.Settings).expect(200))
@@ -182,8 +182,8 @@ describe('demo library, limits and expiry', () => {
       });
 
       const themes = [
-        { question: 'Which ramen recipes did I save?', intro: 'You saved a few ramen recipes.' },
-        { question: 'Which coats was I comparing?', intro: 'You were comparing two coats.' },
+        { question: 'What did I save about ramen?', intro: 'You saved a few ramen recipes.' },
+        { question: 'What did I save about coats?', intro: 'You were comparing two coats.' },
         {
           question: 'What do I have on Angular signals?',
           intro: 'Your Angular links cover signals.',

@@ -1,12 +1,16 @@
 import { inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
-import type { LinkResponse } from '@shelfmark/contracts';
+import type { AskSearchFilter, LinkResponse } from '@shelfmark/contracts';
 import { APP_PATH } from '../../../models/app-path.const';
 import { SPLIT_QUERY_PARAM } from '../../library/models/split-query-param.const';
 import { splitParamValue } from '../../library/utils/split-param';
 import { LinkActionsService } from '../../links/services/link-actions.service';
+import { askSearchNavigation } from '../utils/ask-search-navigation';
 
-/** What a source row of an Ask answer does: open (recorded), side by side, remind me. */
+/**
+ * What a source row or link card of an Ask answer does: open (recorded), side by side, remind me,
+ * and "Show all N in search" for a group of cards.
+ */
 @Service()
 export class AskSourceActions {
   private readonly actions = inject(LinkActionsService);
@@ -22,6 +26,12 @@ export class AskSourceActions {
     return this.router.navigate([`/${APP_PATH.Links}`], {
       queryParams: { [SPLIT_QUERY_PARAM]: splitParamValue(link.folderId) },
     });
+  }
+
+  /** The feed with the search the cards came from. */
+  async showAll(filter: AskSearchFilter): Promise<boolean> {
+    const { commands, queryParams } = askSearchNavigation(filter);
+    return this.router.navigate(commands, { queryParams });
   }
 
   /** The reminder presets for the source. */

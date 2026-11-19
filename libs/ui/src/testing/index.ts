@@ -51,3 +51,4 @@ export type * from '../lib/components/suggestion/testing/models/suggestion-harne
 export type * from '../lib/components/suggestion/testing/models/suggestion-row-harness-filters.interface';
 export * from '../lib/components/streaming-answer/testing/streaming-answer.harness';
 export type * from '../lib/components/streaming-answer/testing/models/streaming-answer-harness-filters.interface';
+export * from '../lib/components/drawer/testing/drawer.harness';
