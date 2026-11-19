@@ -3064,6 +3064,12 @@
       },
       "cardTagsFit": {
         "text": "Una etiqueta en una tarjeta se muestra entera o pasa a “+N”, que solo lista las etiquetas que no están en la tarjeta."
+      },
+      "askNoSideways": {
+        "text": "Una pregunta larga ya no hace que el chat de Ask se desplace hacia los lados."
+      },
+      "askScrollsDown": {
+        "text": "El chat de Ask baja hasta cada pregunta nueva."
       }
     },
     "sections": {

@@ -3064,6 +3064,12 @@
       },
       "cardTagsFit": {
         "text": "Un tag sulla scheda è mostrato intero o passa in “+N”, che elenca solo i tag non presenti sulla scheda."
+      },
+      "askNoSideways": {
+        "text": "Una domanda lunga non fa più scorrere di lato la chat di Ask."
+      },
+      "askScrollsDown": {
+        "text": "La chat di Ask scorre fino a ogni nuova domanda."
       }
     },
     "sections": {

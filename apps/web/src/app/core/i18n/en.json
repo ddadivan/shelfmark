@@ -3002,6 +3002,12 @@
       },
       "cardTagsFit": {
         "text": "A tag on a card is shown whole or moves into “+N”, which lists only the tags not on the card."
+      },
+      "askNoSideways": {
+        "text": "A long question no longer makes the Ask chat scroll sideways."
+      },
+      "askScrollsDown": {
+        "text": "The Ask chat scrolls down to each new question."
       }
     },
     "sections": {
