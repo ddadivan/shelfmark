@@ -19,3 +19,11 @@ Both follow the rules above (1.75px line, round caps and joins, converted to fil
 
 It follows the same rules (1.75px line, round caps and joins, converted to filled outlines, no `stroke`).
 
+
+## Added for link kinds (#537)
+
+- `mic` — a capsule microphone in a cradle on a short stem (stroke source: `M9 6a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z M5 11a7 7 0 0 0 14 0 M12 18v3`): the podcast kind.
+- `file` — a page with a folded top-right corner and two text lines (stroke source: `M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z M14 3v5h5 M9 13h6 M9 17h6`): the document kind.
+- `smartphone` — a rounded phone body with a short home bar (stroke source: a 12×20 rectangle with 3px corners, `M11 18h2`): the app kind.
+
+They follow the same rules (1.75px line, round caps and joins, converted to filled outlines, no `stroke`). The other kinds reuse existing glyphs: video `play`, article `newspaper`, shopping `shopping-bag`, code `code`, post `message`, recipe `cooking-pot`, other `link`.
