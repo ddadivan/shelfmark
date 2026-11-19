@@ -5,8 +5,6 @@ import {
   BUTTON_VARIANT,
   ButtonComponent,
   DialogComponent,
-  ICON_SIZE,
-  IconComponent,
   UiDialogRef,
 } from '@shelfmark/ui';
 import { AI_ANNOUNCE_POINTS } from './models/ai-announce-points.const';
@@ -20,7 +18,7 @@ import { AI_ANNOUNCE_POINTS } from './models/ai-announce-points.const';
  */
 @Component({
   selector: 'app-ai-announce-dialog',
-  imports: [TranslocoPipe, ButtonComponent, DialogComponent, IconComponent],
+  imports: [TranslocoPipe, ButtonComponent, DialogComponent],
   templateUrl: './ai-announce-dialog.component.html',
   styleUrl: './ai-announce-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,7 +26,6 @@ import { AI_ANNOUNCE_POINTS } from './models/ai-announce-points.const';
 export class AiAnnounceDialogComponent {
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
-  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly POINTS = AI_ANNOUNCE_POINTS;
 
   private readonly ref = inject<UiDialogRef<boolean>>(UiDialogRef);
