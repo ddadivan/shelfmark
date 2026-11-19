@@ -13,7 +13,7 @@ export interface StoredLinkResult {
   /** The cleaned-up title of a draft; never applied to a saved link. */
   title: string | null;
   /**
-   * What the page is (#535, ADR 0056); written only while the link's kind is `other` and the user
+   * What the page is (#535, ADR 0057); written only while the link's kind is `other` and the user
    * never chose one. `null` when the model was unsure (and for results stored before #535).
    */
   kind: LinkKind | null;

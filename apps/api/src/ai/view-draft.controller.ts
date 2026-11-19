@@ -14,7 +14,7 @@ import { ViewDraftRequestDto } from './dto/view-draft-request.dto';
 import { ViewDraftResponseDto } from './dto/view-draft-response.dto';
 import { ViewDraftService } from './view-draft/view-draft.service';
 
-/** `POST /api/ai/view-draft` (#535, ADR 0056). Thin: `ViewDraftService` owns the rules. */
+/** `POST /api/ai/view-draft` (#535, ADR 0057). Thin: `ViewDraftService` owns the rules. */
 @ApiTags('ai')
 @Controller('ai')
 export class ViewDraftController {

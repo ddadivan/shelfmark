@@ -246,7 +246,7 @@ model Link {
   // video | article | shopping | other (LINK_KIND, CHECK in the migration): derived at save time from
   // og:type and the host, recomputed on a URL change, changeable by the user (ADR 0038).
   kind               String             @default("other") @db.VarChar(16)
-  // The user chose `kind` in Edit link (#535, ADR 0056): AI never changes it then. A new URL that
+  // The user chose `kind` in Edit link (#535, ADR 0057): AI never changes it then. A new URL that
   // recomputes the kind from the host clears it; a create never sets it (its kind is the preview's).
   kindByUser         Boolean            @default(false) @map("kind_by_user")
   // Pinned to the top of its folder (#263): the pin time orders pinned links; NULL = not pinned.

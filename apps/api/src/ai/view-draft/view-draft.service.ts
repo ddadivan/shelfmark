@@ -15,7 +15,7 @@ import { AiSettingsService } from '../settings/ai-settings.service';
 import { loadViewDraftVocabulary } from './load-view-draft-vocabulary';
 
 /**
- * `POST /api/ai/view-draft` (#535, ADR 0056): a saved view's filter from a phrase. Order: AI on
+ * `POST /api/ai/view-draft` (#535, ADR 0057): a saved view's filter from a phrase. Order: AI on
  * (else 409) → reserve one Ask question (else `quota`, no further reads) → the user's vocabulary →
  * one model call with the phrase, folder paths and tag names → `parseViewDraftOutput` against the
  * same vocabulary. A failure (thrown or answered), refusal or unusable answer refunds the question

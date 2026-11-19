@@ -1,4 +1,4 @@
-# 0056. New view dialog: a view from a phrase counts one Ask question, Haiku with structured output and names only; AI sets a link's kind only while it is `other` and the user never chose it
+# 0057. New view dialog: a view from a phrase counts one Ask question, Haiku with structured output and names only; AI sets a link's kind only while it is `other` and the user never chose it
 
 - Status: Proposed
 - Date: 2026-11-19

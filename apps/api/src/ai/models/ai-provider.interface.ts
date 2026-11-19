@@ -38,7 +38,7 @@ export interface AiProvider {
    */
   findTagSynonyms(input: TagSynonymsInput): Promise<TagSynonymsOutcome>;
   /**
-   * A saved view's filter from a phrase (#535, ADR 0056): the phrase plus folder paths and tag names
+   * A saved view's filter from a phrase (#535, ADR 0057): the phrase plus folder paths and tag names
    * only. Never throws; the output is narrowed by `parseViewDraftOutput`.
    */
   draftView(input: ViewDraftInput): Promise<ViewDraftModelOutcome>;

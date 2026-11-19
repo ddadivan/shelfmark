@@ -1,5 +1,5 @@
 /**
- * The view-from-a-phrase prompt (#535, ADR 0056): at most `FoldersSentMax` folder paths and
+ * The view-from-a-phrase prompt (#535, ADR 0057): at most `FoldersSentMax` folder paths and
  * `TagsSentMax` tag names of the user, each cut to `NameMax` characters; at most `MaxTokens` of output.
  */
 export const VIEW_DRAFT_PROMPT_LIMIT = {

@@ -80,7 +80,7 @@ function tagSynonymsParamsFor(input: TagSynonymsInput): MessageParams {
 }
 
 /**
- * A view from a phrase (#535, ADR 0056): Haiku 5.5 at low effort, no thinking (Haiku takes
+ * A view from a phrase (#535, ADR 0057): Haiku 5.5 at low effort, no thinking (Haiku takes
  * `disabled`), structured output, the phrase plus folder paths and tag names only.
  */
 export function viewDraftParamsFor(input: ViewDraftInput): MessageParams {

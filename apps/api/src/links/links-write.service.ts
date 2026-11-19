@@ -294,7 +294,7 @@ export class LinksWriteService {
           // Another page: its kind follows the new host unless the same request sets one (ADR 0038).
           if (request.kind === undefined && request.url !== undefined) {
             data.kind = deriveLinkKind(request.url);
-            // The host decides again, so AI may refine an `other` once more (ADR 0056).
+            // The host decides again, so AI may refine an `other` once more (ADR 0057).
             data.kindByUser = false;
           }
         }
@@ -448,7 +448,7 @@ export class LinksWriteService {
     if (request.isFavorite !== undefined) data.isFavorite = request.isFavorite;
     if (request.kind !== undefined) {
       data.kind = request.kind;
-      // The user's choice: AI never changes the kind of this link again (#535, ADR 0056).
+      // The user's choice: AI never changes the kind of this link again (#535, ADR 0057).
       data.kindByUser = true;
     }
     if (request.summary !== undefined) {

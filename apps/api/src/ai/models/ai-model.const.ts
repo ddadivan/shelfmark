@@ -5,7 +5,7 @@ export const AI_MODEL = {
   AskQuick: 'claude-haiku-5-5',
   /** Ask chat, deep profile: after the quick model asks for a deeper answer. */
   AskDeep: 'claude-sonnet-5-5',
-  /** A saved view from a phrase (#535, ADR 0056): one short structured call. */
+  /** A saved view from a phrase (#535, ADR 0057): one short structured call. */
   ViewDraft: 'claude-haiku-5-5',
 } as const;
 
