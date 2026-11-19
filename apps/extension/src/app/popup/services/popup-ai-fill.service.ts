@@ -173,8 +173,11 @@ export class PopupAiFillService {
       this.appliedFolder.set(folderId);
     }
     // Every suggested tag, new ones too: a new tag becomes a real tag on save, like a typed one.
+    // The "more" ideas stay dashed chips (a click takes one).
     const tags = job.suggestions.flatMap((item) =>
-      item.kind !== SUGGESTION_KIND.Folder && item.tagName !== null ? [item.tagName] : [],
+      item.kind !== SUGGESTION_KIND.Folder && item.tagName !== null && item.more !== true
+        ? [item.tagName]
+        : [],
     );
     this.cleanTitleValue.set(job.title);
     this.appliedTags.set(this.addTags(tags));

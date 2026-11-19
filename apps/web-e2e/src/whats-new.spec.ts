@@ -43,13 +43,14 @@ test.describe('public changelog', () => {
       await expect(
         page.getByText('A link typed as example.com saves like any other.'),
       ).toBeVisible();
-      // Hotfix 2.2.1 leads the page (fixes only), then 2.2.0 (the AI release); 2.1.0 (#464) keeps
-      // its highlights.
-      await expect(releases.first()).toHaveText('Shelfmark 2.2.1');
+      // Hotfix 2.2.2 leads the page (fixes only), then 2.2.1 and 2.2.0 (the AI release); 2.1.0
+      // (#464) keeps its highlights.
+      await expect(releases.first()).toHaveText('Shelfmark 2.2.2');
       await expect(
-        page.getByRole('region', { name: 'Shelfmark 2.2.1' }).getByRole('heading', { level: 3 }),
+        page.getByRole('region', { name: 'Shelfmark 2.2.2' }).getByRole('heading', { level: 3 }),
       ).toHaveText('Fixed');
-      await expect(releases.nth(1)).toHaveText('Shelfmark 2.2.0');
+      await expect(releases.nth(1)).toHaveText('Shelfmark 2.2.1');
+      await expect(releases.nth(2)).toHaveText('Shelfmark 2.2.0');
       await expect(
         page.getByRole('region', { name: 'Shelfmark 2.1.0' }).getByRole('heading', {
           level: 4,

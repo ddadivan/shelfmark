@@ -11,6 +11,17 @@ import type { ChangelogRelease } from './changelog-release.interface';
  */
 export const CHANGELOG: readonly ChangelogRelease[] = [
   {
+    version: '2.2.2',
+    date: '2026-11-19',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'aiNewTags',
+        textKey: 'changelog.items.aiNewTags.text',
+      },
+    ],
+  },
+  {
     version: '2.2.1',
     date: '2026-11-19',
     items: [

@@ -7,8 +7,10 @@ import type { LinkKind } from '@shelfmark/contracts';
 export interface LinkJobOutput {
   /** Existing tag names, at most `AI_LIMIT.SuggestedTagsMax`. */
   tags: string[];
-  /** One new tag name in lower case that passes the tag rules and is not an existing tag. */
-  newTag: string | null;
+  /** New tag names in lower case, no repeats, each passing the tag rules and not an existing tag; at most `AI_LIMIT.NewTagsMax`. */
+  newTags: string[];
+  /** Extra new-tag ideas (chips only): same rules, not in `newTags`, at most `AI_LIMIT.MoreTagsMax`. */
+  moreTags: string[];
   /** The key of one of the folders given in the input (`f1`, ...). */
   folder: string | null;
   /** Trimmed, no control characters, at most `AI_LIMIT.SummaryMax`. */

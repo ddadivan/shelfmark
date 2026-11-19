@@ -118,10 +118,11 @@ describe('link prompt constants', () => {
     expect(LINK_SYSTEM_PROMPT).toContain('<earlier_choices>');
   });
 
-  it('asks for the six fields and nothing else', () => {
+  it('asks for the seven fields and nothing else', () => {
     expect(LINK_OUTPUT_SCHEMA.required).toEqual([
       'tags',
-      'newTag',
+      'newTags',
+      'moreTags',
       'folder',
       'summary',
       'title',
