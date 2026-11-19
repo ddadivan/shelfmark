@@ -33,6 +33,7 @@ import { IMPORT_FILE_PROBLEM } from '../../models/import-file-problem.const';
 import { IMPORT_RUN_PHASE } from '../../models/import-run-phase.const';
 import { IMPORT_STEP } from '../../models/import-step.const';
 import { ImportFlowService } from '../../services/import-flow.service';
+import { ImportGroupsService } from '../../services/import-groups.service';
 import { ImportRunService } from '../../services/import-run.service';
 import { RecentImportsStore } from '../../services/recent-imports.store';
 import { ImportGroupsComponent } from '../import-groups/import-groups.component';
@@ -64,7 +65,7 @@ const BYTES_PER_MB = 1024 * 1024;
     ImportProgressComponent,
     ImportReviewComponent,
   ],
-  providers: [ImportFlowService],
+  providers: [ImportFlowService, ImportGroupsService],
   templateUrl: './import-dialog.component.html',
   styleUrl: './import-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
