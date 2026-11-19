@@ -1,5 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { UiSelectHarness } from '@shelfmark/ui/testing';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import {
   LIBRARY_SETTINGS_DEFAULT,
@@ -82,6 +85,14 @@ function fakeApi(preview: () => Observable<LinkPreviewResponse>): FakeApi {
     ),
   };
 }
+
+/** An empty root, only so harnesses can reach the dialog in the overlay. */
+@Component({
+  selector: 'app-empty-host',
+  template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+class EmptyHostComponent {}
 
 async function setup(
   api: FakeApi,
@@ -1015,6 +1026,37 @@ describe('AddLinkDialogComponent', () => {
 
       await result;
       expect(api.update).toHaveBeenCalledWith(EDITED.id, { kind: LINK_KIND.Shopping });
+    });
+
+    it('offers the ten kinds in the Type select and saves a new one (#537)', async () => {
+      const api = fakeApi(() => of(PLAIN));
+      const { result } = await setup(api, { link: { ...EDITED, kind: LINK_KIND.Article } });
+      const loader = TestbedHarnessEnvironment.documentRootLoader(
+        TestBed.createComponent(EmptyHostComponent),
+      );
+      const type = await loader.getHarness(UiSelectHarness.with({ label: 'Type' }));
+      expect(await type.getValueText()).toBe('Article');
+      await type.open();
+      const names = await Promise.all((await type.getOptions()).map((option) => option.getText()));
+      expect(names.map((name) => name.trim())).toEqual([
+        'Video',
+        'Article',
+        'Shopping',
+        'Podcast',
+        'Document',
+        'Code',
+        'App',
+        'Post',
+        'Recipe',
+        'Other',
+      ]);
+      await type.close();
+      await type.chooseOption({ text: 'Podcast' });
+      expect(await type.getValueText()).toBe('Podcast');
+      button('Save changes').click();
+
+      await result;
+      expect(api.update).toHaveBeenCalledWith(EDITED.id, { kind: LINK_KIND.Podcast });
     });
 
     it('has no Type select when adding', async () => {

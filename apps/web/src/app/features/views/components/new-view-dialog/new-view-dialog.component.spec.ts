@@ -132,8 +132,8 @@ describe('NewViewDialogComponent without AI', () => {
     const { loader } = await setup(null);
     expect(root()?.querySelector(PHRASE)).toBeNull();
     expect(text()).toContain('Start from the filter');
-    const type = root()?.querySelector<HTMLInputElement>('input[type="radio"]:checked');
-    expect(type?.parentElement?.textContent).toContain('Articles');
+    const type = await loader.getHarness(UiSelectHarness.with({ label: 'Type' }));
+    expect(await type.getValueText()).toBe('Article');
     await until(() => {
       expect(text()).toMatch(/Found \d+ links?/u);
       expect(root()?.querySelectorAll('.nv__link').length).toBeGreaterThan(0);
@@ -163,6 +163,33 @@ describe('NewViewDialogComponent without AI', () => {
       name: 'Empty one',
       query: { tags: ['docs'], q: 'zzzznothing', kind: LINK_KIND.Article },
     });
+  });
+
+  it('offers All types and the ten kinds in the type select and saves a new kind (#537)', async () => {
+    const { loader, store, done } = await setup(null);
+    const type = await loader.getHarness(UiSelectHarness.with({ label: 'Type' }));
+    await type.open();
+    const names = await Promise.all((await type.getOptions()).map((option) => option.getText()));
+    expect(names.map((name) => name.trim())).toEqual([
+      'All types',
+      'Video',
+      'Article',
+      'Shopping',
+      'Podcast',
+      'Document',
+      'Code',
+      'App',
+      'Post',
+      'Recipe',
+      'Other',
+    ]);
+    await type.close();
+    await type.chooseOption({ text: 'Recipe' });
+    expect(await type.getValueText()).toBe('Recipe');
+    typeInto(NAME, 'Cooking');
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Save view' }))).click();
+    expect(await done).toBe(store.items().at(-1)?.id);
+    expect(store.items().at(-1)?.query.kind).toBe(LINK_KIND.Recipe);
   });
 
   it('asks for a name before saving and refuses a tag that is not the user’s', async () => {

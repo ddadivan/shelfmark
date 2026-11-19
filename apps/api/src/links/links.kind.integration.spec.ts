@@ -1,6 +1,8 @@
 import {
   LINK_KIND,
+  deriveLinkKind,
   type ExportDocument,
+  type LinkKind,
   type LinkPreviewResponse,
   type LinkResponse,
   type ListLinksResponse,
@@ -14,6 +16,8 @@ import type { IsolationUsers } from '../../test-utils/models/isolation-users.int
 import type { TestAgent } from '../../test-utils/models/test-agent.interface';
 import { resetRateLimits } from '../../test-utils/reset-rate-limits';
 import { seedLink } from '../../test-utils/seed-link';
+import { SAFE_FETCH_ERROR_CODE } from '../fetcher/models/safe-fetch-error-code.const';
+import { SafeFetchError } from '../fetcher/safe-fetch.error';
 import { SafeFetcherService } from '../fetcher/safe-fetcher.service';
 
 const BASE = '/api/links';
@@ -92,12 +96,57 @@ describe('links API: kind (ADR 0038)', () => {
   it('rejects an unknown kind on create, update and list', async () => {
     await a
       .post(BASE)
-      .send({ url: 'https://example.test/a', title: 'A', kind: 'podcast' })
+      .send({ url: 'https://example.test/a', title: 'A', kind: 'sticker' })
       .expect(400);
     const link = await create({ url: 'https://example.test/a', title: 'A' });
-    await a.patch(`${BASE}/${link.id}`).send({ kind: 'podcast' }).expect(400);
+    await a.patch(`${BASE}/${link.id}`).send({ kind: 'sticker' }).expect(400);
     await a.patch(`${BASE}/${link.id}`).send({ kind: null }).expect(400);
-    await a.get(BASE).query({ kind: 'podcast' }).expect(400);
+    await a.get(BASE).query({ kind: 'sticker' }).expect(400);
+  });
+
+  it('create detects the kinds of #537: URL rules, a PDF response and a JSON-LD recipe', async () => {
+    expect((await create({ url: 'https://github.com/angular/angular' })).kind).toBe(LINK_KIND.Code);
+    expect((await create({ url: 'https://open.spotify.com/episode/abc' })).kind).toBe(
+      LINK_KIND.Podcast,
+    );
+    fetch.mockRejectedValueOnce(
+      new SafeFetchError(
+        SAFE_FETCH_ERROR_CODE.NotHtml,
+        'Response is not HTML',
+        undefined,
+        'application/pdf',
+      ),
+    );
+    expect((await create({ url: 'https://example.test/whitepaper' })).kind).toBe(
+      LINK_KIND.Document,
+    );
+    fetch.mockResolvedValueOnce({
+      finalUrl: 'https://food.test/ramen',
+      status: 200,
+      contentType: 'text/html',
+      body: '<html><head><title>Ramen</title><meta property="og:type" content="article"><script type="application/ld+json">{"@type":"Recipe"}</script></head></html>',
+    });
+    expect((await create({ url: 'https://food.test/ramen' })).kind).toBe(LINK_KIND.Recipe);
+  });
+
+  it('accepts every new kind from the user and filters by it', async () => {
+    const link = await create({ url: 'https://example.test/a', title: 'A' });
+    for (const kind of Object.values(LINK_KIND)) {
+      const body = (await a.patch(`${BASE}/${link.id}`).send({ kind }).expect(200))
+        .body as LinkResponse;
+      expect(body.kind).toBe(kind);
+    }
+    await a.patch(`${BASE}/${link.id}`).send({ kind: LINK_KIND.App }).expect(200);
+    const apps = (await a.get(BASE).query({ kind: LINK_KIND.App }).expect(200))
+      .body as ListLinksResponse;
+    expect(apps.items.map((item) => item.id)).toEqual([link.id]);
+    const moved = (
+      await a
+        .patch(`${BASE}/${link.id}`)
+        .send({ url: 'https://x.com/someone/status/123' })
+        .expect(200)
+    ).body as LinkResponse;
+    expect(moved.kind).toBe(LINK_KIND.Post);
   });
 
   it('update: a new URL recomputes the kind from the host unless the request sets one', async () => {
@@ -158,5 +207,63 @@ describe('links API: kind (ADR 0038)', () => {
       .body as ExportDocument;
     expect(videos.links.map((link) => link.title)).toEqual(['V']);
     await a.get('/api/export').query({ format: 'json', kind: 'nope' }).expect(400);
+  });
+
+  it('the export round-trips all ten kinds in JSON, CSV and, by URL, in HTML (#537)', async () => {
+    const userId = users.owner.userId;
+    const urls: Record<LinkKind, string> = {
+      video: 'https://youtu.be/abc',
+      article: 'https://blog.test/post',
+      shopping: 'https://www.etsy.com/listing/1',
+      podcast: 'https://open.spotify.com/episode/abc',
+      document: 'https://docs.google.com/document/d/1/edit',
+      code: 'https://github.com/angular/angular',
+      app: 'https://apps.apple.com/app/id1',
+      post: 'https://x.com/someone/status/1',
+      recipe: 'https://food.test/ramen',
+      other: 'https://example.test/o',
+    };
+    for (const kind of Object.values(LINK_KIND)) {
+      await seedLink(t.db.prisma, userId, { kind, url: urls[kind], title: kind });
+    }
+    const json = (await a.get('/api/export').query({ format: 'json' }).expect(200))
+      .body as ExportDocument;
+    expect(Object.fromEntries(json.links.map((link) => [link.title, link.kind]))).toEqual(
+      Object.fromEntries(Object.values(LINK_KIND).map((kind) => [kind, kind])),
+    );
+    // The export has a tight rate limit: one filtered call is enough next to the list filter specs.
+    for (const kind of [LINK_KIND.Recipe]) {
+      const only = (await a.get('/api/export').query({ format: 'json', kind }).expect(200))
+        .body as ExportDocument;
+      expect(only.links.map((link) => link.title)).toEqual([kind]);
+    }
+    const csv = (await a.get('/api/export').query({ format: 'csv' }).expect(200)).text;
+    const [header, ...rows] = csv
+      .replace(/^\uFEFF/, '')
+      .trim()
+      .split('\r\n');
+    const columns = (header ?? '').split(',');
+    const at = (name: string) => columns.indexOf(name);
+    const fromCsv = Object.fromEntries(
+      rows.map((row) => row.split(',')).map((cells) => [cells[at('title')], cells[at('kind')]]),
+    );
+    expect(fromCsv).toEqual(
+      Object.fromEntries(Object.values(LINK_KIND).map((kind) => [kind, kind])),
+    );
+    // HTML carries no kind; an import derives it again from the URL, which holds for URL-ruled kinds.
+    const html = (await a.get('/api/export').query({ format: 'html' }).expect(200)).text;
+    const byUrl: LinkKind[] = [
+      LINK_KIND.Video,
+      LINK_KIND.Shopping,
+      LINK_KIND.Podcast,
+      LINK_KIND.Document,
+      LINK_KIND.Code,
+      LINK_KIND.App,
+      LINK_KIND.Post,
+    ];
+    for (const kind of byUrl) {
+      expect(html).toContain(`HREF="${urls[kind]}"`);
+      expect(deriveLinkKind(urls[kind])).toBe(kind);
+    }
   });
 });

@@ -267,6 +267,10 @@ export type { LinkKind } from './links/link-kind.type';
 export { LINK_KIND_VIDEO_HOSTS } from './links/link-kind-video-hosts.const';
 export { LINK_KIND_SHOP_HOSTS } from './links/link-kind-shop-hosts.const';
 export { deriveLinkKind } from './links/derive-link-kind';
+export type { LinkKindSignals } from './links/link-kind-signals.interface';
+export type { LinkKindUrlRule } from './links/link-kind-url-rule.interface';
+export { LINK_KIND_URL_RULES } from './links/link-kind-url-rules.const';
+export { PDF_CONTENT_TYPES } from './links/pdf-content-types.const';
 
 export { SAVED_VIEW_SCOPE } from './views/saved-view-scope.const';
 export type { SavedViewScope } from './views/saved-view-scope.type';
@@ -293,6 +297,7 @@ export type { ViewDraftRequest } from './views/view-draft-request.interface';
 export type { ViewDraftResponse } from './views/view-draft-response.interface';
 export type { ViewDraftVocabulary } from './views/view-draft-vocabulary.interface';
 export { parseViewDraftOutput } from './views/parse-view-draft-output';
+export { VIEW_DRAFT_KINDS } from './views/view-draft-kinds.const';
 export { planMockViewDraft } from './views/plan-mock-view-draft';
 export { FEEDBACK_MESSAGE_KIND } from './feedback/feedback-message-kind.const';
 export type { FeedbackMessageKind } from './feedback/feedback-message-kind.type';

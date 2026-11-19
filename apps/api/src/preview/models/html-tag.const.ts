@@ -1,1 +1,7 @@
-export const HTML_TAG = { Meta: 'meta', Title: 'title', Link: 'link', Base: 'base' } as const;
+export const HTML_TAG = {
+  Meta: 'meta',
+  Title: 'title',
+  Link: 'link',
+  Base: 'base',
+  Script: 'script',
+} as const;

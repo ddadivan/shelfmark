@@ -97,18 +97,6 @@
   inset-inline-end: 0;
 }
 
-.nv__label {
-  @include type(caption);
-
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.nv__kind {
-  align-self: flex-start;
-  max-inline-size: 100%;
-}
-
 // The live count and the first links.
 .nv__found {
   display: flex;

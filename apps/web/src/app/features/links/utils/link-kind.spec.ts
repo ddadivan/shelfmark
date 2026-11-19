@@ -13,7 +13,8 @@ import { LINKS_SCOPE } from '../models/links-scope.const';
 describe('link kind', () => {
   it('parses ?kind= and drops anything else', () => {
     expect(parseLinkKind(LINK_KIND.Video)).toBe(LINK_KIND.Video);
-    expect(parseLinkKind('podcast')).toBeUndefined();
+    expect(parseLinkKind('podcast')).toBe('podcast');
+    expect(parseLinkKind('sticker')).toBeUndefined();
     expect(parseLinkKind([LINK_KIND.Video])).toBeUndefined();
     expect(parseLinkKind(undefined)).toBeUndefined();
     expect(isLinkKind(LINK_KIND.Other)).toBe(true);

@@ -310,6 +310,22 @@ describe('SafeFetcherService', () => {
     expect(await codeOf(fetcher().fetch(url()))).toBe(SAFE_FETCH_ERROR_CODE.NotHtml);
   });
 
+  it('tells the media type of a refused non-HTML response (#537)', async () => {
+    handler = (_req, res) => {
+      res.writeHead(200, { 'Content-Type': 'Application/PDF; charset=binary' });
+      res.end('%PDF-1.7');
+    };
+    const error = await fetcher()
+      .fetch(url())
+      .then(
+        () => undefined,
+        (reason: unknown) => reason,
+      );
+    expect(error).toBeInstanceOf(SafeFetchError);
+    expect((error as SafeFetchError).code).toBe(SAFE_FETCH_ERROR_CODE.NotHtml);
+    expect((error as SafeFetchError).contentType).toBe('application/pdf');
+  });
+
   it('maps error statuses and redirects without a Location to http-error', async () => {
     handler = (_req, res) => {
       res.writeHead(404);

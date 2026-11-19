@@ -247,8 +247,9 @@ model Link {
   // Client-generated UUID that makes a retried create return the first link (ADR 0033).
   idempotencyKey     String?            @map("idempotency_key") @db.Uuid
   isFavorite         Boolean            @default(false) @map("is_favorite")
-  // video | article | shopping | other (LINK_KIND, CHECK in the migration): derived at save time from
-  // og:type and the host, recomputed on a URL change, changeable by the user (ADR 0038).
+  // video | article | shopping | podcast | document | code | app | post | recipe | other (LINK_KIND,
+  // CHECK in the migration): derived at save time from the URL, the response type, og:type and JSON-LD,
+  // recomputed on a URL change, changeable by the user (ADR 0038, ADR 0058).
   kind               String             @default("other") @db.VarChar(16)
   // The user chose `kind` in Edit link (#535, ADR 0057): AI never changes it then. A new URL that
   // recomputes the kind from the host clears it; a create never sets it (its kind is the preview's).
