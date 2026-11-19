@@ -1,5 +1,6 @@
 import {
   afterNextRender,
+  type AfterViewInit,
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
@@ -16,6 +17,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { ChipComponent, PopoverComponent, PopoverTriggerDirective } from '@shelfmark/ui';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { TagActionsService } from '../../../tags/services/tag-actions.service';
+import { MEASURE_FALLBACK_MS } from './models/measure-fallback-ms.const';
 
 /**
  * The tags of a card footer (#512, hotfix 2.2.1): the first tag as a chip, then a "+N" chip for
@@ -37,7 +39,7 @@ import { TagActionsService } from '../../../tags/services/tag-actions.service';
     '[class.link-card-tags--measuring]': '!measured()',
   },
 })
-export class LinkCardTagsComponent {
+export class LinkCardTagsComponent implements AfterViewInit {
   /** Every tag of the link, in its order. */
   readonly tags = input.required<readonly string[]>();
   /** A tag chip lists the links with that tag. */
@@ -67,27 +69,39 @@ export class LinkCardTagsComponent {
     pluralKey('links.card.moreTagsLabel', this.more().count),
   );
 
-  constructor() {
-    afterNextRender(() => {
-      const footer = this.host.nativeElement.parentElement;
-      if (!footer || typeof ResizeObserver === 'undefined') {
-        this.measured.set(true);
-        return;
-      }
-      let width = -1;
-      const observer = new ResizeObserver(() => {
-        // The footer's width does not depend on the tags, so it is the stable thing to watch.
-        if (footer.clientWidth === width) return;
-        width = footer.clientWidth;
-        this.measure();
-      });
-      observer.observe(footer);
-      this.destroyRef.onDestroy(() => observer.disconnect());
+  /** Watches the footer (its width does not depend on the tags) and measures on each change. */
+  ngAfterViewInit(): void {
+    const footer = this.host.nativeElement.parentElement;
+    if (!footer || typeof ResizeObserver === 'undefined') {
+      this.measured.set(true);
+      return;
+    }
+    let width = -1;
+    const observer = new ResizeObserver(() => {
+      if (footer.clientWidth === width) return;
+      width = footer.clientWidth;
+      this.measure();
+    });
+    observer.observe(footer);
+    // A browser that delivers no resize callback (a background tab) must not leave the tags
+    // hidden: measure once anyway.
+    const fallback = setTimeout(() => {
+      if (!this.measured()) this.measure();
+    }, MEASURE_FALLBACK_MS);
+    this.destroyRef.onDestroy(() => {
+      observer.disconnect();
+      clearTimeout(fallback);
     });
   }
 
   /** Shows the first tag, then keeps it only if it is not cut. */
   private measure(): void {
+    if (!this.collapsed()) {
+      // The first tag is on screen already: measure it now (no render would come to wait for).
+      this.collapsed.set(this.firstChip()?.isTruncated() ?? false);
+      this.measured.set(true);
+      return;
+    }
     this.collapsed.set(false);
     afterNextRender(
       () => {
