@@ -540,6 +540,8 @@ model AiAskUsage {
   userId    String   @map("user_id") @db.Uuid
   day       DateTime @db.Date
   questions Int      @default(0)
+  // Questions of the day answered by the deeper model (ADR 0055), inside `questions`.
+  deep      Int      @default(0)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, day])
