@@ -16,9 +16,10 @@ import { loadViewDraftVocabulary } from './load-view-draft-vocabulary';
 
 /**
  * `POST /api/ai/view-draft` (#535, ADR 0056): a saved view's filter from a phrase. Order: AI on
- * (else 409) → the user's vocabulary → reserve one Ask question (else `quota`) → one model call with
- * the phrase, folder paths and tag names → `parseViewDraftOutput` against the same vocabulary. A
- * failure, refusal or unusable answer refunds the question and answers `unavailable`. Nothing is
+ * (else 409) → reserve one Ask question (else `quota`, no further reads) → the user's vocabulary →
+ * one model call with the phrase, folder paths and tag names → `parseViewDraftOutput` against the
+ * same vocabulary. A failure (thrown or answered), refusal or unusable answer refunds the question
+ * and answers `unavailable`. Nothing is
  * stored; the log line carries the outcome and duration only, never the phrase or the answer.
  */
 @Injectable()
@@ -38,30 +39,25 @@ export class ViewDraftService {
     const stored = await this.settings.read(this.prisma, userId);
     if (!stored.settings.enabled) throw new ConflictException(AI_ERROR_MESSAGE.AiOff);
     const { aiTier: tier } = await this.settings.entitlements(this.prisma, userId);
-    const vocabulary = await loadViewDraftVocabulary(this.prisma, userId);
     const day = await this.usage.reserve(userId, tier);
     let outcome: ViewDraftOutcome = VIEW_DRAFT_OUTCOME.Quota;
     let draft: ViewDraft | null = null;
-    try {
-      if (day !== null) {
-        draft = await this.ask(user, phrase, vocabulary);
-        outcome = draft === null ? VIEW_DRAFT_OUTCOME.Unavailable : VIEW_DRAFT_OUTCOME.Done;
-        if (draft === null) await this.usage.refund(userId, day);
+    if (day !== null) {
+      try {
+        draft = await this.ask(user, phrase);
+      } catch (error) {
+        // The provider never throws by contract; anything else (a database read) still refunds.
+        this.logger.warn(`View draft failed (${error instanceof Error ? error.name : 'unknown'})`);
       }
-    } catch (error) {
-      if (day !== null) await this.usage.refund(userId, day);
-      throw error;
-    } finally {
-      this.logger.log(`View draft: ${outcome} in ${Date.now() - started} ms`);
+      outcome = draft === null ? VIEW_DRAFT_OUTCOME.Unavailable : VIEW_DRAFT_OUTCOME.Done;
+      if (draft === null) await this.usage.refund(userId, day);
     }
+    this.logger.log(`View draft: ${outcome} in ${Date.now() - started} ms`);
     return { outcome, draft, allowance: await this.usage.allowance(userId, tier) };
   }
 
-  private async ask(
-    user: AuthUser,
-    phrase: string,
-    vocabulary: Awaited<ReturnType<typeof loadViewDraftVocabulary>>,
-  ): Promise<ViewDraft | null> {
+  private async ask(user: AuthUser, phrase: string): Promise<ViewDraft | null> {
+    const vocabulary = await loadViewDraftVocabulary(this.prisma, user.id);
     const result = await this.registry.for(user).draftView({
       phrase,
       folders: vocabulary.folders.map((folder) => folder.path),

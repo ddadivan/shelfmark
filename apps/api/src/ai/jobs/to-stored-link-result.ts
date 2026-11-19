@@ -27,8 +27,12 @@ function storedNewTags(value: Record<string, unknown>): string[] {
 
 const KINDS: readonly string[] = Object.values(LINK_KIND);
 
+function isLinkKind(value: unknown): value is LinkKind {
+  return typeof value === 'string' && KINDS.includes(value);
+}
+
 function storedKind(value: unknown): LinkKind | null {
-  return typeof value === 'string' && KINDS.includes(value) ? (value as LinkKind) : null;
+  return isLinkKind(value) ? value : null;
 }
 
 /** Reads `ai_jobs.result` back; `null` when it is missing or not the shape the runner wrote. */

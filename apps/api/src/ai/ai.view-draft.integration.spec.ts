@@ -19,6 +19,7 @@ import { seedLink } from '../../test-utils/seed-link';
 import { askDay } from './ask/ask-usage.service';
 import { AiBackgroundService } from './background/ai-background.service';
 import { AI_ENV } from './models/ai-env.const';
+import { MockAiProvider } from './providers/mock-ai.provider';
 
 describe('POST /api/ai/view-draft (#535)', () => {
   let t: AuthTestApp;
@@ -164,6 +165,23 @@ describe('POST /api/ai/view-draft (#535)', () => {
       expect(body.allowance.questionsLeft).toBe(AI_QUOTA.free.questionsPerMonth);
     },
   );
+
+  it('refunds and answers unavailable when the model answer is unusable or a read throws', async () => {
+    await turnOn();
+    const spy = vi
+      .spyOn(MockAiProvider.prototype, 'draftView')
+      .mockResolvedValueOnce({ type: 'output', output: 'not an object' })
+      .mockRejectedValueOnce(new Error('boom'));
+    expect((await ok('angular videos')).outcome).toBe(VIEW_DRAFT_OUTCOME.Unavailable);
+    expect((await ok('angular videos')).outcome).toBe(VIEW_DRAFT_OUTCOME.Unavailable);
+    expect(await questionsToday(users.owner.userId)).toBe(0);
+    spy.mockRestore();
+  });
+
+  it('collapses whitespace before the length check', async () => {
+    await turnOn();
+    await draft('  a  \t b ').expect(200);
+  });
 
   it('shares the allowance with Ask: the settings show the question as used', async () => {
     await turnOn();
