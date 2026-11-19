@@ -37,10 +37,15 @@ export const Invalid: Story = { args: { invalid: true, hint: 'Choose an HTML fil
 export const DragOver: Story = {
   render: (args) => ({
     props: args,
-    template: `<ui-drop-zone class="ui-drop-zone--over" [label]="label" [actionLabel]="actionLabel" />`,
+    template: `<ui-drop-zone over [label]="label" [actionLabel]="actionLabel" />`,
   }),
   parameters: {
-    docs: { description: { story: 'Border `accent`, fill `accent-bg` (shown here forced).' } },
+    docs: {
+      description: {
+        story:
+          'Border `accent`, fill `accent-bg` (shown here with `over`, which a feature sets while a file is over a larger area such as a dialog).',
+      },
+    },
   },
 };
 

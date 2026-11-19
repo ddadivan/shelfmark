@@ -135,6 +135,17 @@ describe('DropZoneComponent', () => {
     expect(files).toHaveLength(0);
   });
 
+  it('shows the dragging look while the feature says a file is over a larger area', () => {
+    const { fixture, host } = setup();
+    expect(host.classList.contains('ui-drop-zone--over')).toBe(false);
+    fixture.componentRef.setInput('over', true);
+    fixture.detectChanges();
+    expect(host.classList.contains('ui-drop-zone--over')).toBe(true);
+    fixture.componentRef.setInput('over', false);
+    fixture.detectChanges();
+    expect(host.classList.contains('ui-drop-zone--over')).toBe(false);
+  });
+
   it('marks an invalid zone', () => {
     const { host } = setup({ invalid: true });
     expect(host.classList.contains('ui-drop-zone--invalid')).toBe(true);

@@ -24,7 +24,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-drop-zone',
-    '[class.ui-drop-zone--over]': 'dragOver()',
+    '[class.ui-drop-zone--over]': 'dragOver() || over()',
     '[class.ui-drop-zone--disabled]': 'disabled()',
     '[class.ui-drop-zone--invalid]': 'invalid()',
     '(dragenter)': 'onDragEnter($event)',
@@ -42,6 +42,11 @@ export class DropZoneComponent {
   /** Passed to the hidden file input (`.html,text/html`). */
   readonly accept = input('');
   readonly disabled = input(false, { transform: booleanAttribute });
+  /**
+   * Shows the dragging look while the feature sees a file over a larger area (a dialog that takes
+   * the drop anywhere), so the zone answers "release here" before the pointer reaches it.
+   */
+  readonly over = input(false, { transform: booleanAttribute });
   /** Error border; the feature explains the error elsewhere. */
   readonly invalid = input(false, { transform: booleanAttribute });
   /** The text before the action ("Drop the file here or"). */
