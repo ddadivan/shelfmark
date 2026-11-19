@@ -15,7 +15,7 @@ const RAMEN = 'Which ramen recipes did I save?';
 /** The mobile shell (tab bar with Ask, the full-screen Ask page) is below 64em. */
 const COMPACT_MAX_PX = 1024;
 
-/** Signed in on All links of the demo library, AI and Ask on (AI pack, 15 questions a day). */
+/** Signed in on All links of the demo library, AI and Ask on (AI pack, 50 questions a day). */
 async function openLibrary(page: Page): Promise<void> {
   const account = { settings: { enabled: true, ask: true }, introSeen: true };
   await page.addInitScript(
@@ -53,7 +53,7 @@ test.describe('Ask your shelf (AI-4, mock API)', () => {
     await openLibrary(page);
     const panel = await openPanel(page);
     await expect(panel).toContainText('What do you want to find out?');
-    await expect(panel).toContainText('15 questions left today');
+    await expect(panel).toContainText('50 questions left today');
     await expect(panel.getByRole('button', { name: /^What did I save about / })).toBeVisible();
 
     await ask(panel, RAMEN);
@@ -63,7 +63,7 @@ test.describe('Ask your shelf (AI-4, mock API)', () => {
     const sources = panel.getByRole('list', { name: 'Sources from your shelf' });
     await expect(sources.getByRole('listitem')).toHaveCount(3);
     await expect(sources).toContainText(/ramen/i);
-    await expect(panel).toContainText('14 questions left today');
+    await expect(panel).toContainText('49 questions left today');
 
     await panel.getByRole('button', { name: 'Source 2' }).click();
     await expect(sources.getByRole('listitem').nth(1).locator('[aria-current="true"]')).toHaveCount(
