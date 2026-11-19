@@ -13,4 +13,5 @@ export class LinkSuggestionDto implements LinkSuggestion {
   @ApiProperty({ enum: Object.values(SUGGESTION_STATE) }) state!: SuggestionState;
   @ApiProperty({ nullable: true, type: String }) tagName!: string | null;
   @ApiProperty({ format: 'uuid', nullable: true, type: String }) folderId!: string | null;
+  @ApiProperty({ required: false, type: Boolean }) more?: boolean;
 }

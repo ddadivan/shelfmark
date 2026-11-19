@@ -6,18 +6,31 @@ describe('toStoredLinkResult', () => {
     expect(
       toStoredLinkResult({
         tags: ['a', 3, 'b'],
-        newTag: 'n',
+        newTags: ['n', 4, 'm'],
+        moreTags: ['x', 1],
         folderId: 'f',
         summary: 's',
         title: 't',
       }),
-    ).toEqual({ tags: ['a', 'b'], newTag: 'n', folderId: 'f', summary: 's', title: 't' });
+    ).toEqual({
+      tags: ['a', 'b'],
+      newTags: ['n', 'm'],
+      moreTags: ['x'],
+      folderId: 'f',
+      summary: 's',
+      title: 't',
+    });
+  });
+
+  it('reads the single newTag an older job stored', () => {
+    expect(toStoredLinkResult({ tags: [], newTag: 'old' })?.newTags).toEqual(['old']);
   });
 
   it('turns blank or missing fields into null', () => {
     expect(toStoredLinkResult({ tags: [], newTag: '', summary: 5 })).toEqual({
       tags: [],
-      newTag: null,
+      newTags: [],
+      moreTags: [],
       folderId: null,
       summary: null,
       title: null,

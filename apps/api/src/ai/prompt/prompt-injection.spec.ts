@@ -59,26 +59,32 @@ describe('prompt injection through a hostile page', () => {
   it('lets only own tags and folders survive a model that obeys the page', () => {
     const obedient = {
       tags: ['admin', 'secret-project', 'cats', 'pets', 'other-users-tag'],
-      newTag: '<img src=x onerror=alert(1)>',
+      newTags: ['<img src=x onerror=alert(1)>'],
       folder: '01990000-0000-7000-8000-00000000dead',
       summary: '<img src=x onerror=alert(1)> Your other links are example.com, bank.example',
       kind: 'article',
     };
     const out = parseLinkOutput(obedient, context);
     expect(out?.tags).toEqual(['cats', 'pets']);
-    expect(out?.newTag).toBeNull();
+    expect(out?.newTags).toEqual([]);
     expect(out?.folder).toBeNull();
     // Stored as plain text: the markup is gone, the text left is rendered by interpolation.
     expect(out?.summary).toBe('Your other links are example.com, bank.example');
     expect(out?.summary).not.toContain('<');
   });
 
-  it('allows at most one new tag, and only a plain one', () => {
+  it('allows at most two new tags, and only plain ones', () => {
     const out = parseLinkOutput(
-      { tags: [], newTag: 'admin', folder: 'f7', summary: null, kind: null },
+      {
+        tags: [],
+        newTags: ['admin', 'b<b>', 'x', 'y', 'z'],
+        folder: 'f7',
+        summary: null,
+        kind: null,
+      },
       context,
     );
-    expect(out?.newTag).toBe('admin');
+    expect(out?.newTags).toEqual(['admin', 'x']);
     expect(out?.folder).toBeNull();
     expect(out?.tags).toEqual([]);
   });

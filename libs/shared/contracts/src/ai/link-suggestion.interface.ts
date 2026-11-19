@@ -10,4 +10,6 @@ export interface LinkSuggestion {
   tagName: string | null;
   /** Set for `folder` (one of the user's live folders), else `null`. */
   folderId: string | null;
+  /** A `new-tag` AI offers only as a chip (an alternative): Fill in with AI skips it. Absent = false. */
+  more?: boolean;
 }

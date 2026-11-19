@@ -12,12 +12,13 @@ export const LINK_OUTPUT_SCHEMA = {
   type: 'object',
   properties: {
     tags: { type: 'array', items: { type: 'string' } },
-    newTag: nullable({ type: 'string' }),
+    newTags: { type: 'array', items: { type: 'string' } },
+    moreTags: { type: 'array', items: { type: 'string' } },
     folder: nullable({ type: 'string' }),
     summary: nullable({ type: 'string' }),
     title: nullable({ type: 'string' }),
     kind: nullable({ type: 'string', enum: Object.values(LINK_KIND) }),
   },
-  required: ['tags', 'newTag', 'folder', 'summary', 'title', 'kind'],
+  required: ['tags', 'newTags', 'moreTags', 'folder', 'summary', 'title', 'kind'],
   additionalProperties: false,
 } as const;

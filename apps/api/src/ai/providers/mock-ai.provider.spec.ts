@@ -29,7 +29,8 @@ describe('MockAiProvider', () => {
       type: 'output',
       output: {
         tags: ['css'],
-        newTag: 'example',
+        newTags: ['example'],
+        moreTags: [],
         folder: null,
         summary: 'A page about A CSS grid guide.',
         title: null,
@@ -55,14 +56,14 @@ describe('MockAiProvider', () => {
     );
     expect(outcome).toMatchObject({
       type: 'output',
-      output: { folder: 'f2', kind: 'video', newTag: 'youtube' },
+      output: { folder: 'f2', kind: 'video', newTags: ['youtube', 'design'] },
     });
   });
 
   it('answers only the parts that were asked for', async () => {
     const outcome = await provider.runLinkJob(input({ parts: ['summary'] }));
     expect(outcome).toMatchObject({
-      output: { tags: [], newTag: null, folder: null, summary: expect.any(String) },
+      output: { tags: [], newTags: [], folder: null, summary: expect.any(String) },
     });
     const none = await provider.runLinkJob(input({ parts: ['tags'], title: null }));
     expect(none).toMatchObject({ output: { summary: null } });
@@ -70,14 +71,27 @@ describe('MockAiProvider', () => {
 
   it('does not repeat an existing tag as the new tag', async () => {
     const outcome = await provider.runLinkJob(input({ tags: ['example'] }));
-    expect(outcome).toMatchObject({ output: { newTag: null } });
+    expect(outcome).toMatchObject({ output: { newTags: [] } });
     const otherCase = await provider.runLinkJob(input({ tags: ['Example'] }));
-    expect(otherCase).toMatchObject({ output: { newTag: null } });
+    expect(otherCase).toMatchObject({ output: { newTags: [] } });
   });
 
   it('proposes a new tag in lower case', async () => {
     const outcome = await provider.runLinkJob(input({ url: 'https://WWW.GitHub.COM/a/b' }));
-    expect(outcome).toMatchObject({ output: { newTag: 'github' } });
+    expect(outcome).toMatchObject({ output: { newTags: ['github'] } });
+  });
+
+  it('proposes up to two new tags when no existing tag matches, a site name first', async () => {
+    const link = input({
+      url: 'https://www.example.com/watch',
+      title: 'Stand-up comedy special: Hilarious Observations about airports',
+      tags: ['cooking'],
+    });
+    const outcome = await provider.runLinkJob(link);
+    expect(outcome).toMatchObject({
+      output: { newTags: ['example', 'stand'], moreTags: ['comedy', 'special', 'hilarious'] },
+    });
+    expect(outcome).toEqual(await provider.runLinkJob(link));
   });
 
   it('simulates a refusal and an outage from the URL', async () => {

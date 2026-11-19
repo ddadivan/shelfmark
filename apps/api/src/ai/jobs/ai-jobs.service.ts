@@ -40,7 +40,7 @@ import { requestedParts, toAiParts } from './requested-parts';
 import { resolveJobLanguage } from './resolve-job-language';
 import { toAiJobReason } from './to-ai-job-reason';
 import { toStoredLinkResult } from './to-stored-link-result';
-import { toLinkSuggestion } from '../suggestions/to-link-suggestion';
+import { orderSuggestions, toLinkSuggestion } from '../suggestions/to-link-suggestion';
 
 type Tx = Prisma.TransactionClient;
 
@@ -232,15 +232,18 @@ export class AiJobsService {
     if (job.linkId === null) {
       const result = toStoredLinkResult(job.result);
       if (!result) return response;
-      const suggestions: LinkSuggestion[] = [
+      const suggestions: LinkSuggestion[] = orderSuggestions([
         ...(result.folderId === null
           ? []
           : [this.draftSuggestion(job.id, SUGGESTION_KIND.Folder, null, result.folderId)]),
         ...result.tags.map((name) => this.draftSuggestion(job.id, SUGGESTION_KIND.Tag, name, null)),
-        ...(result.newTag === null
-          ? []
-          : [this.draftSuggestion(job.id, SUGGESTION_KIND.NewTag, result.newTag, null)]),
-      ];
+        ...result.newTags.map((name) =>
+          this.draftSuggestion(job.id, SUGGESTION_KIND.NewTag, name, null),
+        ),
+        ...result.moreTags.map((name) =>
+          this.draftSuggestion(job.id, SUGGESTION_KIND.NewTag, name, null, true),
+        ),
+      ]);
       return { ...response, suggestions, summary: result.summary, title: result.title };
     }
     const [link, rows] = await Promise.all([
@@ -255,7 +258,7 @@ export class AiJobsService {
           state: { in: [SUGGESTION_ROW_STATE.Suggested, SUGGESTION_ROW_STATE.AutoApplied] },
         },
         orderBy: { createdAt: 'asc' },
-        select: { id: true, kind: true, state: true, tagName: true, folderId: true },
+        select: { id: true, kind: true, state: true, tagName: true, folderId: true, more: true },
       }),
     ]);
     return {
@@ -418,6 +421,7 @@ export class AiJobsService {
     kind: SuggestionKind,
     tagName: string | null,
     folderId: string | null,
+    more = false,
   ): LinkSuggestion {
     return {
       id: draftSuggestionId(jobId, kind, tagName ?? folderId ?? ''),
@@ -425,6 +429,7 @@ export class AiJobsService {
       state: SUGGESTION_STATE.Suggested,
       tagName,
       folderId,
+      ...(more && { more: true }),
     };
   }
 }

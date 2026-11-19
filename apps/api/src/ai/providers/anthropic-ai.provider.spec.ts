@@ -50,7 +50,8 @@ describe('AnthropicAiProvider', () => {
     expect(params.output_config.format.type).toBe('json_schema');
     expect(params.output_config.format.schema.required).toEqual([
       'tags',
-      'newTag',
+      'newTags',
+      'moreTags',
       'folder',
       'summary',
       'title',
