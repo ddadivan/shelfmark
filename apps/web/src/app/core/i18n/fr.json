@@ -3064,6 +3064,12 @@
       },
       "cardTagsFit": {
         "text": "Un tag sur une carte s’affiche en entier ou passe dans « +N », qui ne liste que les tags absents de la carte."
+      },
+      "askNoSideways": {
+        "text": "Une longue question ne fait plus défiler la conversation Ask sur le côté."
+      },
+      "askScrollsDown": {
+        "text": "La conversation Ask descend jusqu’à chaque nouvelle question."
       }
     },
     "sections": {

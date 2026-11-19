@@ -11,6 +11,22 @@ import type { ChangelogRelease } from './changelog-release.interface';
  */
 export const CHANGELOG: readonly ChangelogRelease[] = [
   {
+    version: '2.3.1',
+    date: '2026-11-19',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'askNoSideways',
+        textKey: 'changelog.items.askNoSideways.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'askScrollsDown',
+        textKey: 'changelog.items.askScrollsDown.text',
+      },
+    ],
+  },
+  {
     version: '2.3.0',
     date: '2026-11-19',
     items: [

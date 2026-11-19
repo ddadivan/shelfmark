@@ -34,8 +34,13 @@
     }
     @if (entry().notFound) {
       <div class="ask-entry__actions">
-        <ui-button size="sm" iconLeft="search" (click)="searchRequested.emit(entry().question)">
-          {{ 'ai.ask.notFound.search' | transloco: { query: entry().question } }}
+        <ui-button
+          size="sm"
+          iconLeft="search"
+          wrap
+          (click)="searchRequested.emit(entry().question)"
+        >
+          {{ 'ai.ask.notFound.search' | transloco: { query: searchQuery() } }}
         </ui-button>
         <ui-button size="sm" variant="ghost" (click)="addRequested.emit()">
           {{ 'ai.ask.notFound.add' | transloco }}
@@ -55,8 +60,8 @@
   } @else if (entry().notFound) {
     <p class="ask-entry__text" role="status">{{ 'ai.ask.notFound.text' | transloco }}</p>
     <div class="ask-entry__actions">
-      <ui-button size="sm" iconLeft="search" (click)="searchRequested.emit(entry().question)">
-        {{ 'ai.ask.notFound.search' | transloco: { query: entry().question } }}
+      <ui-button size="sm" iconLeft="search" wrap (click)="searchRequested.emit(entry().question)">
+        {{ 'ai.ask.notFound.search' | transloco: { query: searchQuery() } }}
       </ui-button>
       <ui-button size="sm" variant="ghost" (click)="addRequested.emit()">
         {{ 'ai.ask.notFound.add' | transloco }}
