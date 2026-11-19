@@ -1,0 +1,25 @@
+<ul class="import-help">
+  @for (row of rows(); track row.id) {
+    <!-- prettier-ignore -->
+    <li class="import-help__step" [attr.data-browser]="row.id">{{ row.before }}@if (row.caps.length > 0) {<span class="import-help__keys">
+          @for (cap of row.caps; track $index) {
+            <kbd class="import-help__cap">
+              @if (cap.icon; as icon) {
+                <ui-icon [name]="icon" [size]="ICON_SIZE.Sm" />
+              }
+              @if (cap.text !== null) {
+                <span [attr.aria-hidden]="cap.nameKey ? 'true' : null">{{ cap.text }}</span>
+              }
+              @if (cap.nameKey; as nameKey) {
+                <span [class.import-help__sr]="cap.icon !== null || cap.text !== null">{{
+                  nameKey | transloco
+                }}</span>
+              }
+            </kbd>
+            @if (!$last) {
+              <span class="import-help__sr">+</span>
+            }
+          }
+        </span>}{{ row.after }}</li>
+  }
+</ul>

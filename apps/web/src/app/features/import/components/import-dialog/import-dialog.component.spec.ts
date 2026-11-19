@@ -328,15 +328,17 @@ describe('ImportDialogComponent', () => {
 
   it('shows the short export help when asked, without leaving the dialog', async () => {
     const { dialog, until, button } = await setup();
-    expect(await dialog.getBodyText()).not.toContain('Chrome and Edge');
+    expect(await dialog.getBodyText()).not.toContain('Chrome: open the bookmark manager');
 
     await (await button('How to export bookmarks from a browser')).click();
 
     await until(async () => {
-      expect(await dialog.getBodyText()).toContain('Chrome and Edge');
+      expect(await dialog.getBodyText()).toContain('Chrome: open the bookmark manager');
     });
-    expect(await dialog.getBodyText()).toContain('Firefox');
-    expect(await dialog.getBodyText()).toContain('Safari');
+    expect(await dialog.getBodyText()).toContain('Edge: open Favorites');
+    expect(await dialog.getBodyText()).toContain('Firefox: open the Library');
+    // jsdom is not a Mac: no Safari step (ImportHelpComponent covers the Mac list).
+    expect(await dialog.getBodyText()).not.toContain('Safari: File');
   });
 
   it('says "Release to import" while a file is dragged over the dialog and imports a drop anywhere', async () => {

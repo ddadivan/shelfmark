@@ -22,11 +22,11 @@ import {
   BUTTON_TYPE,
   INPUT_TYPE,
   SKELETON_SHAPE,
+  isMacPlatform,
 } from '@shelfmark/ui';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { TagsStore } from '../../../../stores/tags.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
-import { isMacPlatform } from '../../../search/utils/is-mac-platform';
 import { ADD_LINK_ACTION } from '../../models/add-link-action.const';
 import type { AddLinkResult } from '../../models/add-link-result.type';
 import { PREVIEW_STATE } from '../../models/preview-state.const';

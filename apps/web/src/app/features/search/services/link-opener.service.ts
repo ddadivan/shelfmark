@@ -1,5 +1,5 @@
+import { isMacPlatform } from '@shelfmark/ui';
 import { Service } from '@angular/core';
-import { isMacPlatform } from '../utils/is-mac-platform';
 
 /** Opens a saved link in a new tab. */
 @Service()

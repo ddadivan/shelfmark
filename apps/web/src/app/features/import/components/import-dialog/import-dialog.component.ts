@@ -37,6 +37,7 @@ import { ImportGroupsService } from '../../services/import-groups.service';
 import { ImportRunService } from '../../services/import-run.service';
 import { RecentImportsStore } from '../../services/recent-imports.store';
 import { ImportGroupsComponent } from '../import-groups/import-groups.component';
+import { ImportHelpComponent } from '../import-help/import-help.component';
 import { RecentImportsComponent } from '../recent-imports/recent-imports.component';
 import { ImportProgressComponent } from '../import-progress/import-progress.component';
 import { ImportReviewComponent } from '../import-review/import-review.component';
@@ -58,6 +59,7 @@ const BYTES_PER_MB = 1024 * 1024;
     DropZoneComponent,
     FileDragDirective,
     ImportGroupsComponent,
+    ImportHelpComponent,
     NoticeComponent,
     RecentImportsComponent,
     RadioGroupComponent,

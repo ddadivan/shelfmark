@@ -1487,8 +1487,10 @@
     "menu": "Importa link…",
     "help": {
       "link": "Come esportare i segnalibri da un browser",
-      "chrome": "Chrome ed Edge: apri la gestione dei segnalibri (Ctrl+Maiusc+O), apri il menu ⋮ e scegli “Esporta segnalibri”.",
-      "firefox": "Firefox: Segnalibri, Gestisci segnalibri (Ctrl+Maiusc+O), Importa e salva, “Esporta segnalibri in HTML…”.",
+      "chrome": "Chrome: apri la gestione dei segnalibri ({{keys}}), apri il menu ⋮ e scegli “Esporta segnalibri”.",
+      "edge": "Edge: apri i Preferiti ({{keys}}), apri il loro menu ⋯ e scegli “Esporta preferiti”.",
+      "edgeMac": "Edge: apri i Preferiti dal menu ⋯, apri il loro menu ⋯ e scegli “Esporta preferiti”.",
+      "firefox": "Firefox: apri la Libreria ({{keys}}), poi Importa e salva, “Esporta segnalibri in HTML…”.",
       "safari": "Safari: File, Esporta, Segnalibri."
     },
     "groups": {

@@ -1,15 +1,5 @@
-import { MAC_PLATFORM } from './models/mac-platform.const';
+import { isMacPlatform } from '../../utils/platform/is-mac-platform';
 import type { ToastShortcutKey } from '../../components/toast/models/toast-shortcut-key.interface';
-
-/** True on macOS (and iPadOS), where the Alt key is called Option. */
-function isMacPlatform(): boolean {
-  if (typeof navigator === 'undefined') {
-    return false;
-  }
-  const hinted = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData
-    ?.platform;
-  return MAC_PLATFORM.test(hinted ?? navigator.platform);
-}
 
 /**
  * The shortcut as the user reads it on their keys: "Option+Shift+T" on macOS, "Alt+Shift+T"

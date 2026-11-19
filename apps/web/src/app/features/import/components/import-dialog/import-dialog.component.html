@@ -50,11 +50,7 @@
             {{ 'import.help.link' | transloco }}
           </ui-button>
           @if (helpOpen()) {
-            <ul class="import-dialog__steps" id="import-help">
-              <li>{{ 'import.help.chrome' | transloco }}</li>
-              <li>{{ 'import.help.firefox' | transloco }}</li>
-              <li>{{ 'import.help.safari' | transloco }}</li>
-            </ul>
+            <app-import-help id="import-help" />
           }
         </div>
         <app-recent-imports />

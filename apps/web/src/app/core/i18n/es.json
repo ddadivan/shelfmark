@@ -1487,8 +1487,10 @@
     "menu": "Importar enlaces…",
     "help": {
       "link": "Cómo exportar los marcadores de un navegador",
-      "chrome": "Chrome y Edge: abre el administrador de marcadores (Ctrl+Mayús+O), abre su menú ⋮ y elige «Exportar marcadores».",
-      "firefox": "Firefox: Marcadores, Administrar marcadores (Ctrl+Mayús+O), Importar y respaldar, «Exportar marcadores a HTML…».",
+      "chrome": "Chrome: abre el administrador de marcadores ({{keys}}), abre su menú ⋮ y elige «Exportar marcadores».",
+      "edge": "Edge: abre Favoritos ({{keys}}), abre su menú ⋯ y elige «Exportar favoritos».",
+      "edgeMac": "Edge: abre Favoritos desde el menú ⋯, abre su menú ⋯ y elige «Exportar favoritos».",
+      "firefox": "Firefox: abre la Biblioteca ({{keys}}), luego Importar y respaldar, «Exportar marcadores a HTML…».",
       "safari": "Safari: Archivo, Exportar, Marcadores."
     },
     "groups": {

@@ -24,7 +24,7 @@ libs/ui/
       components/<name>/ one component per folder; sub-components in sub-folders (components/menu/menu-item/)
       directives/<name>/ ripple, long-press, pointer-shadow, tooltip (panel in tooltip/tooltip-panel/), menu-trigger, focus-target
       services/<name>/   dialog, drawer, toast (split from their components), overlay, motion
-      utils/<name>/      pure functions shared beyond one component: media, loader-timing, colour-contrast, custom-accent, reorder-drop-line, sheet-drag (`SheetDragTracker`, `shouldCloseSheet`, `sheetVelocity`: the dialog sheets and the emoji picker sheet)
+      utils/<name>/      pure functions shared beyond one component: media, platform (`isMacPlatform()`: `navigator.userAgentData.platform`, then `navigator.platform`, against `MAC_PLATFORM`; the toast shortcut, the app's shortcut caps and the import help), loader-timing, colour-contrast, custom-accent, reorder-drop-line, sheet-drag (`SheetDragTracker`, `shouldCloseSheet`, `sheetVelocity`: the dialog sheets and the emoji picker sheet)
       models/<domain>/   constants and types with no component: keyboard, heading, theme
 ```
 
