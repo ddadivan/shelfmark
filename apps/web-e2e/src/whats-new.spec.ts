@@ -13,12 +13,26 @@ const DIALOG = "What's new in Shelfmark";
 /** Fast-forwards past the dialog's start delay (1.5 s) and one retry (5 s). */
 const SETTLE_MS = 7000;
 
-/** The "What's new" entry: a sidebar footer row on desktop, a row of the You list in the mobile shell. */
+/**
+ * Where the "What's new" dot shows: the "Data & help" row of the sidebar footer on desktop (#387),
+ * the What's new row of the You list in the mobile shell.
+ */
 function entry(page: Page, withDot: boolean) {
   const name = withDot ? "What's new new" : "What's new";
   return isCompact(page)
     ? page.getByRole('link', { name, exact: true })
-    : page.getByRole('treeitem', { name, exact: true });
+    : page.getByRole('treeitem', {
+        name: withDot ? 'Data & help new' : 'Data & help',
+        exact: true,
+      });
+}
+
+/** Opens the dialog from its entry: a row of the You list, or an item of the data menu. */
+async function openFromEntry(page: Page): Promise<void> {
+  await entry(page, false).click();
+  if (!isCompact(page)) {
+    await page.getByRole('menuitem', { name: "What's new" }).click();
+  }
 }
 
 test.describe('public changelog', () => {
@@ -121,7 +135,7 @@ test.describe("What's new after an update (mock API)", () => {
       await seedWhatsNewSeen(page);
       await page.goto(isCompact(page) ? '/settings' : '/links');
 
-      await entry(page, false).click();
+      await openFromEntry(page);
       const dialog = page.getByRole('dialog', { name: DIALOG });
       await expect(dialog).toBeVisible();
       await dialog.getByRole('button', { name: 'See all changes' }).click();

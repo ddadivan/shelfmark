@@ -16,14 +16,6 @@
     />
   </ui-settings-row>
   <ui-settings-row
-    [title]="'settings.data.export.label' | transloco"
-    [description]="'settings.privacy.data.hint' | transloco"
-  >
-    <ui-button [href]="exportHref" (linkClick)="open($event, exportHref)">
-      {{ 'settings.privacy.data.action' | transloco }}
-    </ui-button>
-  </ui-settings-row>
-  <ui-settings-row
     [title]="'settings.privacy.policy.label' | transloco"
     [description]="'settings.privacy.policy.hint' | transloco"
   >
@@ -33,6 +25,35 @@
       (linkClick)="open($event, policyHref)"
     >
       {{ 'settings.privacy.policy.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+
+<ui-settings-section [title]="'settings.privacy.importExport.title' | transloco">
+  <ui-settings-row
+    icon="download"
+    [title]="'shell.data.import' | transloco"
+    [description]="'settings.privacy.importExport.import.hint' | transloco"
+  >
+    <ui-button
+      ariaHaspopup="dialog"
+      [ariaLabel]="'shell.data.import' | transloco"
+      (click)="openImport()"
+    >
+      {{ 'settings.privacy.importExport.open' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+  <ui-settings-row
+    icon="share"
+    [title]="'shell.data.export' | transloco"
+    [description]="'settings.privacy.importExport.export.hint' | transloco"
+  >
+    <ui-button
+      ariaHaspopup="dialog"
+      [ariaLabel]="'shell.data.export' | transloco"
+      (click)="openExport()"
+    >
+      {{ 'settings.privacy.importExport.open' | transloco }}
     </ui-button>
   </ui-settings-row>
 </ui-settings-section>

@@ -491,9 +491,9 @@
         "skipped": "Pas un lien, ignoré"
       },
       "overflow": {
-        "one": "{{count}} lien de plus a été laissé de côté : {{max}} liens maximum à la fois. Les listes plus longues passent par Importer du texte.",
-        "many": "{{count}} liens de plus ont été laissés de côté : {{max}} liens maximum à la fois. Les listes plus longues passent par Importer du texte.",
-        "other": "{{count}} liens de plus ont été laissés de côté : {{max}} liens maximum à la fois. Les listes plus longues passent par Importer du texte."
+        "one": "{{count}} lien de plus a été laissé de côté : {{max}} liens maximum à la fois. Un fichier de favoris passe par Importer dans Compte › Vos données.",
+        "many": "{{count}} liens de plus ont été laissés de côté : {{max}} liens maximum à la fois. Un fichier de favoris passe par Importer dans Compte › Vos données.",
+        "other": "{{count}} liens de plus ont été laissés de côté : {{max}} liens maximum à la fois. Un fichier de favoris passe par Importer dans Compte › Vos données."
       },
       "folder": "Dossier pour tous",
       "tags": "Tags pour tous",
@@ -842,7 +842,9 @@
         "movedUp": "Déplacé vers le haut, position {{position}} sur {{total}}",
         "movedDown": "Déplacé vers le bas, position {{position}} sur {{total}}"
       },
-      "extension": "Obtenir l’extension"
+      "extension": "Obtenir l’extension",
+      "data": "Données et aide",
+      "dataMenu": "Données et aide"
     },
     "searchHint": "Rechercher dans vos liens",
     "searchButton": "Rechercher",
@@ -853,7 +855,12 @@
     "sendFeedback": "Envoyer un avis",
     "feedbackInbox": "Boîte des avis",
     "about": "À propos de Shelfmark",
-    "usageStats": "Statistiques d’usage"
+    "usageStats": "Statistiques d’usage",
+    "data": {
+      "import": "Importer des liens",
+      "export": "Exporter",
+      "group": "Import et export"
+    }
   },
   "folders": {
     "dialog": {
@@ -1283,6 +1290,260 @@
     "emptyView": {
       "title": "Rien à exporter dans cette vue",
       "detail": "Cette vue ne contient aucun lien. Exportez tout ou ouvrez une autre vue"
+    },
+    "dialog": {
+      "title": "Export",
+      "close": "Fermer",
+      "formatLabel": "Format du fichier",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Tout : liens, dossiers, tags, notes, rappels"
+        },
+        "html": {
+          "title": "Favoris HTML",
+          "description": "S'ouvre dans l'import de favoris de n'importe quel navigateur"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "Pour les tableurs"
+        }
+      },
+      "last": "Dernier export : {{when}}, {{format}}.",
+      "preparing": "Préparation du fichier {{format}}…",
+      "cancel": "Annuler",
+      "download": "Télécharger",
+      "saved": "Fichier enregistré"
+    }
+  },
+  "import": {
+    "title": "Importer des liens",
+    "close": "Fermer",
+    "source": {
+      "label": "Source",
+      "browser": {
+        "title": "Favoris du navigateur",
+        "description": "Fichier HTML de Chrome, Safari, Firefox ou Edge. Les dossiers restent des dossiers."
+      },
+      "drop": "Glissez le fichier ici",
+      "choose": "Choisir un fichier",
+      "reading": "Lecture de {{file}}…",
+      "problem": {
+        "too-big": "Ce fichier dépasse {{max}} Mo.",
+        "unreadable": "Impossible de lire ce fichier. Essayez de l’exporter à nouveau.",
+        "not-bookmarks": "Ce fichier ne contient aucun favori. Choisissez le fichier HTML enregistré par votre navigateur avec « Exporter les favoris ».",
+        "empty": "Ce fichier ne contient aucun lien web.",
+        "too-many-links": "Ce fichier contient plus de {{max}} liens.",
+        "check-failed": "Impossible de comparer le fichier avec votre bibliothèque. Réessayez."
+      },
+      "hint": ".html, jusqu’à {{max}} Mo et {{links}} liens",
+      "dropping": "Relâchez pour importer"
+    },
+    "review": {
+      "stats": {
+        "label": "Dans ce fichier",
+        "links": {
+          "one": "lien",
+          "many": "liens",
+          "other": "liens"
+        },
+        "folders": {
+          "one": "dossier",
+          "many": "dossiers",
+          "other": "dossiers"
+        },
+        "saved": "déjà dans votre bibliothèque"
+      },
+      "into": "Les mettre dans",
+      "newFolder": "Nouveau dossier « {{name}} »",
+      "newFolderName": "Favoris importés",
+      "unsorted": "Non classés",
+      "folderSearch": "Rechercher un dossier",
+      "noFolders": "Aucun dossier trouvé",
+      "skip": {
+        "one": "Ignorer le doublon ({{count}})",
+        "many": "Ignorer les {{count}} doublons",
+        "other": "Ignorer les {{count}} doublons"
+      },
+      "skipHint": "Liens déjà enregistrés et répétitions dans le fichier",
+      "back": "Retour",
+      "import": {
+        "one": "Importer {{count}} lien",
+        "many": "Importer {{count}} liens",
+        "other": "Importer {{count}} liens"
+      },
+      "nothing": "Tous les liens de ce fichier sont déjà dans votre bibliothèque.",
+      "untitledFolder": "Dossier sans nom",
+      "untitledFile": "Fichier de favoris",
+      "folders": {
+        "label": "Dossiers à l’intérieur",
+        "file": {
+          "title": "Comme dans le fichier",
+          "description": {
+            "one": "{{count}} dossier du navigateur",
+            "many": "{{count}} dossiers du navigateur",
+            "other": "{{count}} dossiers du navigateur"
+          }
+        },
+        "ai": {
+          "title": "Laisser l’IA les ranger par thème",
+          "description": "L’IA regroupe les liens et propose des dossiers, y compris ceux que vous avez déjà. Vous vérifiez les groupes avant d’importer. Utilise {{count}} des {{left}} traitements de liens existants."
+        },
+        "none": {
+          "title": "Sans dossier",
+          "description": "Tout dans une seule liste dans « {{target}} »"
+        }
+      },
+      "group": "Regrouper",
+      "room": {
+        "one": "Un seul lien de plus rentre dans votre limite : seul le premier sera importé.",
+        "many": "Seuls {{count}} liens de plus rentrent dans votre limite : seuls les {{count}} premiers seront importés.",
+        "other": "Seuls {{count}} liens de plus rentrent dans votre limite : seuls les {{count}} premiers seront importés."
+      },
+      "full": "Votre bibliothèque n’a plus de place pour d’autres liens."
+    },
+    "progress": {
+      "title": "Importation des liens",
+      "count": "{{done}} sur {{total}}",
+      "label": "Progression de l’importation",
+      "note": "Vous pouvez continuer à travailler : vous pouvez fermer cette fenêtre. Les aperçus se chargent en arrière-plan dans les prochaines minutes.",
+      "doneTitle": {
+        "one": "{{count}} lien importé",
+        "many": "{{count}} liens importés",
+        "other": "{{count}} liens importés"
+      },
+      "inFolder": "Dans « {{name}} ».",
+      "inUnsorted": "Dans Non classés.",
+      "inTarget": "Dans le dossier choisi.",
+      "folders": {
+        "one": "{{count}} dossier.",
+        "many": "{{count}} dossiers.",
+        "other": "{{count}} dossiers."
+      },
+      "skipped": {
+        "one": "{{count}} ignoré : déjà enregistré, en double ou pas une page web.",
+        "many": "{{count}} ignorés : déjà enregistrés, en double ou pas des pages web.",
+        "other": "{{count}} ignorés : déjà enregistrés, en double ou pas des pages web."
+      },
+      "failed": {
+        "one": "{{count}} n’a pas pu être enregistré.",
+        "many": "{{count}} n’ont pas pu être enregistrés.",
+        "other": "{{count}} n’ont pas pu être enregistrés."
+      },
+      "openFolder": "Ouvrir le dossier",
+      "openUnsorted": "Ouvrir Non classés",
+      "undo": "Annuler l’importation",
+      "startFailed": "L’importation n’a pas pu démarrer, rien n’a été enregistré. Réessayez.",
+      "foldersLimit": "Les dossiers dépassent votre limite de dossiers. Choisissez « Sans dossier » et réessayez.",
+      "minimize": "Réduire",
+      "grouped": {
+        "one": "Dans {{count}} dossier (nouveaux : {{created}}).",
+        "many": "Dans {{count}} dossiers (nouveaux : {{created}}).",
+        "other": "Dans {{count}} dossiers (nouveaux : {{created}})."
+      }
+    },
+    "undo": {
+      "title": "Annuler cette importation ?",
+      "message": {
+        "one": "Le lien et les dossiers de cette importation vont à la corbeille, et les tags ajoutés que rien d’autre n’utilise sont supprimés. Ce que vous avez ajouté depuis reste.",
+        "many": "Les {{count}} liens et les dossiers de cette importation vont à la corbeille, et les tags ajoutés que rien d’autre n’utilise sont supprimés. Ce que vous avez ajouté depuis reste.",
+        "other": "Les {{count}} liens et les dossiers de cette importation vont à la corbeille, et les tags ajoutés que rien d’autre n’utilise sont supprimés. Ce que vous avez ajouté depuis reste."
+      },
+      "confirm": "Annuler l’importation",
+      "cancel": "Garder",
+      "failed": "Impossible d’annuler l’importation. Réessayez.",
+      "done": "Importation annulée",
+      "doneDetail": {
+        "one": "{{count}} lien mis à la corbeille",
+        "many": "{{count}} liens mis à la corbeille",
+        "other": "{{count}} liens mis à la corbeille"
+      }
+    },
+    "recent": {
+      "title": "Importations récentes",
+      "source": {
+        "browser": "Favoris du navigateur"
+      },
+      "links": {
+        "one": "{{count}} lien",
+        "many": "{{count}} liens",
+        "other": "{{count}} liens"
+      },
+      "folders": {
+        "one": "{{count}} dossier",
+        "many": "{{count}} dossiers",
+        "other": "{{count}} dossiers"
+      },
+      "skipped": "{{count}} ignorés",
+      "failed": "{{count}} en échec",
+      "undoLabel": "Annuler l’importation : {{name}}",
+      "hint": "Une importation peut être annulée pendant 7 jours."
+    },
+    "entry": {
+      "title": "Importer des liens",
+      "description": "Importez les favoris de votre navigateur. Les dossiers restent des dossiers, les liens déjà enregistrés sont ignorés.",
+      "action": "Importer"
+    },
+    "menu": "Importer des liens…",
+    "help": {
+      "link": "Comment exporter les favoris d’un navigateur",
+      "chrome": "Chrome et Edge : ouvrez le gestionnaire de favoris (Ctrl+Maj+O), ouvrez son menu ⋮ et choisissez « Exporter les favoris ».",
+      "firefox": "Firefox : Marque-pages, Gérer les marque-pages (Ctrl+Maj+O), Importation et sauvegarde, « Exporter les marque-pages au format HTML… ».",
+      "safari": "Safari : Fichier, Exporter, Signets."
+    },
+    "groups": {
+      "waiting": {
+        "one": "L’IA regroupe {{count}} lien…",
+        "many": "L’IA regroupe {{count}} liens…",
+        "other": "L’IA regroupe {{count}} liens…"
+      },
+      "count": {
+        "one": "{{count}} groupe",
+        "many": "{{count}} groupes",
+        "other": "{{count}} groupes"
+      },
+      "forLinks": {
+        "one": "pour {{count}} lien",
+        "many": "pour {{count}} liens",
+        "other": "pour {{count}} liens"
+      },
+      "nameLabel": "Nom du dossier",
+      "nameEmpty": "Donnez un nom au dossier",
+      "linkCount": {
+        "one": "{{count}} lien",
+        "many": "{{count}} liens",
+        "other": "{{count}} liens"
+      },
+      "existing": "existe déjà",
+      "new": "nouveau",
+      "showLinks": "Afficher les liens de « {{name}} »",
+      "hideLinks": "Masquer les liens de « {{name}} »",
+      "moveLabel": "Déplacer « {{title}} » vers",
+      "other": "Autres",
+      "otherText": "Les liens qui ne correspondent à aucun thème vont dans « {{target}} ».",
+      "hint": "Vous pouvez renommer les dossiers. Un lien retiré d’un groupe va dans « {{target}} ».",
+      "import": {
+        "one": "Importer et créer {{count}} dossier",
+        "many": "Importer et créer {{count}} dossiers",
+        "other": "Importer et créer {{count}} dossiers"
+      },
+      "failed": "Les liens n’ont pas pu être regroupés pour le moment. Rien n’a été prélevé sur votre quota. Revenez en arrière ou importez-les sans groupes.",
+      "allowance": "Il ne reste pas assez de quota pour les liens existants pour ces liens. Revenez en arrière ou importez-les sans groupes.",
+      "monthly": "Vous avez déjà regroupé ce mois-ci autant de liens avec l’IA que possible. Importez-les comme dans le fichier ou sans dossiers."
+    },
+    "ai": {
+      "doneTitle": "Les descriptions et les tags sont prêts",
+      "summaries": {
+        "one": "{{count}} lien a reçu une courte description.",
+        "many": "{{count}} liens ont reçu de courtes descriptions.",
+        "other": "{{count}} liens ont reçu de courtes descriptions."
+      },
+      "suggestions": {
+        "one": "Des suggestions de tags existent pour {{count}} lien.",
+        "many": "Des suggestions de tags existent pour {{count}} liens.",
+        "other": "Des suggestions de tags existent pour {{count}} liens."
+      },
+      "review": "Voir les tags"
     }
   },
   "settings": {
@@ -1540,10 +1801,6 @@
           "close": "Fermer"
         }
       },
-      "data": {
-        "hint": "Tout ce que vous avez enregistré, en JSON ou en favoris HTML",
-        "action": "Ouvrir l’export"
-      },
       "kept": {
         "title": "Ce que nous conservons"
       },
@@ -1556,6 +1813,16 @@
           "action": "Ouvrir",
           "actionLabel": "Ouvrir « Supprimer les données d’IA » dans Paramètres › IA"
         }
+      },
+      "importExport": {
+        "title": "Import et export",
+        "import": {
+          "hint": "Importez les favoris de votre navigateur"
+        },
+        "export": {
+          "hint": "Téléchargez toute votre bibliothèque dans un fichier"
+        },
+        "open": "Ouvrir"
       }
     },
     "footer": {
@@ -3476,7 +3743,11 @@
         "nothingDetail": "Les suggestions ont changé entre-temps."
       },
       "undone": "Rangement annulé",
-      "undoFailed": "Impossible d’annuler le rangement"
+      "undoFailed": "Impossible d’annuler le rangement",
+      "import": {
+        "line": "Seuls les liens de cet import sont affichés.",
+        "all": "Tout passer en revue"
+      }
     },
     "search": {
       "related": "Proches par le sens",

@@ -28,6 +28,9 @@ export default [
       '**/storybook-static',
       'docs/**',
       'tools/lighthouse/**',
+      // Real browser bookmark exports (test fixtures, kept byte for byte).
+      'apps/web/src/app/features/import/utils/fixtures/**',
+      '**/features/import/utils/fixtures/**',
     ],
   },
   {

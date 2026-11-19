@@ -120,6 +120,7 @@ model User {
   rediscoverHidden      RediscoverHidden[]
   rediscoverState       RediscoverState?
   cleanupReport         CleanupReport?
+  imports               Import[]
 
   @@map("users")
 }
@@ -208,7 +209,10 @@ model Folder {
   deletedAt      DateTime?        @map("deleted_at") @db.Timestamptz(3)
   createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt      DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+  // The import that created the folder (#387, ADR 0056); NULL otherwise. Undo moves these to Trash.
+  importId       String?          @map("import_id") @db.Uuid
   user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  import         Import?          @relation(fields: [importId], references: [id], onDelete: SetNull)
   parent         Folder?          @relation("FolderTree", fields: [parentId, userId], references: [id, userId], onDelete: Cascade)
   children       Folder[]         @relation("FolderTree")
   links          Link[]
@@ -267,7 +271,10 @@ model Link {
   deletedAt          DateTime?          @map("deleted_at") @db.Timestamptz(3)
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+  // The import that created the link (#387, ADR 0056); NULL otherwise. Partial index in the migration.
+  importId           String?            @map("import_id") @db.Uuid
   user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  import             Import?            @relation(fields: [importId], references: [id], onDelete: SetNull)
   folder             Folder?            @relation(fields: [folderId], references: [id], onDelete: SetNull)
   tags               LinkTag[]
   images             LinkImage[]
@@ -319,7 +326,10 @@ model Tag {
   name      String    @db.VarChar(50)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  // The import whose batch created the tag (#387, ADR 0056); NULL otherwise.
+  importId  String?   @map("import_id") @db.Uuid
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  import    Import?   @relation(fields: [importId], references: [id], onDelete: SetNull)
   links     LinkTag[]
 
   @@unique([userId, name])
@@ -512,9 +522,18 @@ model AiSettings {
   // one-question-at-a-time lease (30 s, released when the answer ends).
   ask                Boolean   @default(true)
   askLeaseUntil      DateTime? @map("ask_lease_until") @db.Timestamptz(3)
+  // Import AI pass (ADR 0056): the import a running backfill run is scoped to (null = every eligible
+  // link), and the backfill units an AI grouping took that no import has used yet.
+  backfillImportId   String?   @map("backfill_import_id") @db.Uuid
+  importAiPrepaid    Int       @default(0) @map("import_ai_prepaid")
+  // The grouping that holds `importAiPrepaid` (a refund only touches units whose token still matches)
+  // and when it took them (units nobody used within an import's open window are given back).
+  importAiGroupingId String?   @map("import_ai_grouping_id") @db.Uuid
+  importAiPrepaidAt  DateTime? @map("import_ai_prepaid_at") @db.Timestamptz(3)
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  backfillImport     Import?   @relation(fields: [backfillImportId], references: [id], onDelete: SetNull)
 
   @@map("ai_settings")
 }
@@ -530,6 +549,8 @@ model AiUsage {
   searchQueries Int      @default(0) @map("search_queries")
   // Library clean-up runs with AI checks this month (AI-5, ADR 0053 point 3).
   cleanupRuns   Int      @default(0) @map("cleanup_runs")
+  // Links sent to import AI grouping this month (ADR 0056 decision 10); refunded only on a provider failure.
+  importGroupLinks Int   @default(0) @map("import_group_links")
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, month])
@@ -745,4 +766,38 @@ model McpTokenUsage {
 
   @@id([tokenId, day])
   @@map("mcp_token_usage")
+}
+
+// One import of a bookmark file (#387, ADR 0056). The rows it created carry its id (import_id on
+// links, folders and tags) so Undo is exact. `source` is kept to IMPORT_SOURCE by a CHECK in the
+// migration. `targetFolderId` has no relation on purpose (like users.new_links_folder_id): the API
+// answers it only while it is a live own folder.
+model Import {
+  id             String    @id @default(uuid(7)) @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  source         String    @db.VarChar(16)
+  fileName       String    @map("file_name") @db.VarChar(255)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  finishedAt     DateTime? @map("finished_at") @db.Timestamptz(3)
+  undoneAt       DateTime? @map("undone_at") @db.Timestamptz(3)
+  linksCreated   Int       @default(0) @map("links_created")
+  foldersCreated Int       @default(0) @map("folders_created")
+  skipped        Int       @default(0)
+  failed         Int       @default(0)
+  targetFolderId String?   @map("target_folder_id") @db.Uuid
+  // The AI pass (ADR 0056 decision 9): asked for at start, `running` | `done` | `skipped` once it
+  // began or could not run (CHECK in the migration), the backfill units the grouping took that no
+  // chunk used yet, and the links the pass covers.
+  aiRequested    Boolean   @default(false) @map("ai_requested")
+  aiState        String?   @map("ai_state") @db.VarChar(8)
+  aiPrepaid      Int       @default(0) @map("ai_prepaid")
+  aiTotal        Int       @default(0) @map("ai_total")
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scopedRuns     AiSettings[]
+  links          Link[]
+  folders        Folder[]
+  tags           Tag[]
+
+  @@index([userId, createdAt])
+  @@map("imports")
 }

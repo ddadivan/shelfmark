@@ -549,7 +549,7 @@ describe('PasteManyListComponent', () => {
       expect(heading()).toBe('Add 100 links');
     });
     expect(dialog().textContent).toContain(
-      '5 more links were left out: up to 100 links at a time. Bigger lists go to Import as text.',
+      '5 more links were left out: up to 100 links at a time. A bookmarks file goes to Import in Account › Your data.',
     );
   });
 

@@ -10,6 +10,7 @@ import { LinkAiController } from './link-ai.controller';
 import { AiSweepController } from './ai-sweep.controller';
 import { AiBackfillResultsService } from './backfill/ai-backfill-results.service';
 import { AiBackfillService } from './backfill/ai-backfill.service';
+import { AiImportPassService } from './backfill/ai-import-pass.service';
 import { AiCatchUpService } from './catch-up/ai-catch-up.service';
 import { LinkAiService } from './link-ai/link-ai.service';
 import { AiDataService } from './data/ai-data.service';
@@ -86,6 +87,7 @@ import { ViewDraftService } from './view-draft/view-draft.service';
     AiDataService,
     AiBackfillResultsService,
     AiBackfillService,
+    AiImportPassService,
     AiCatchUpService,
     AiTidyService,
     AiTidyUndoService,
@@ -126,6 +128,8 @@ import { ViewDraftService } from './view-draft/view-draft.service';
     AiEmbedService,
     AiSearchStatusService,
     AiBackgroundService,
+    AiImportPassService,
+    AiTidyService,
   ],
 })
 export class AiModule {}

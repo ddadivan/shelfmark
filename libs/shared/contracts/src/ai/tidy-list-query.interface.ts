@@ -5,4 +5,9 @@
  */
 export interface TidyListQuery {
   after?: string;
+  /**
+   * Limits the review to the links of this import (its AI pass, ADR 0056 decision 9), in any folder;
+   * without it the review lists Unsorted. A foreign or unknown import lists nothing.
+   */
+  import?: string;
 }

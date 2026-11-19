@@ -4,6 +4,7 @@ import { axeViolations } from '../../../testing/axe';
 import type { RadioOption } from './models/radio-option.interface';
 import { RadioGroupComponent } from './radio-group.component';
 import { RADIO_ORIENTATION } from './models/radio-orientation.const';
+import { RADIO_OPTION_TONE } from './models/radio-option-tone.const';
 
 const OPTIONS: RadioOption[] = [
   { value: 'move', title: 'Move links to Unsorted', description: 'The folders go, all links stay' },
@@ -48,6 +49,19 @@ describe('RadioGroupComponent', () => {
     const descId = radios()[0].getAttribute('aria-describedby') ?? '';
     expect(host.querySelector(`#${descId}`)?.textContent).toBe('The folders go, all links stay');
     expect(radios()[2].getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('gives an option with tone ai the AI class, chosen or not, and no other option', () => {
+    const options: RadioOption[] = [
+      { value: 'file', title: 'As in the file' },
+      { value: 'ai', title: 'Let AI sort them', icon: 'spark', tone: RADIO_OPTION_TONE.Ai },
+    ];
+    const { fixture, host } = setup({ options, value: 'file' });
+    const labels = () => [...host.querySelectorAll('.ui-radio')];
+    expect(labels().map((l) => l.classList.contains('ui-radio--ai'))).toEqual([false, true]);
+    fixture.componentInstance.value.set('ai');
+    fixture.detectChanges();
+    expect(host.querySelector('.ui-radio--ai')?.classList).toContain('ui-radio--checked');
   });
 
   it('checks the option equal to the value and marks it', () => {

@@ -46,11 +46,12 @@ export interface AiApi {
   deleteData(): Observable<void>;
   /**
    * `GET /api/ai/tidy`: links in Unsorted with suggestions to review, newest first (AI-2); `after`
-   * (the last link of the previous page) reads the next page.
+   * (the last link of the previous page) reads the next page; `importId` limits it to the links of
+   * one import, in any folder (`?import=`, ADR 0056).
    */
-  getTidy(after?: string): Observable<TidyListResponse>;
-  /** `GET /api/ai/tidy/count`: how many links Tidy would list (the Unsorted button). */
-  getTidyCount(): Observable<TidyCountResponse>;
+  getTidy(after?: string, importId?: string): Observable<TidyListResponse>;
+  /** `GET /api/ai/tidy/count`: how many links Tidy would list (the Unsorted button, or one import). */
+  getTidyCount(importId?: string): Observable<TidyCountResponse>;
   /** `POST /api/ai/tidy/apply`: one run of the selected suggestions (409 while AI is off). */
   applyTidy(request: TidyApplyRequest): Observable<TidyApplyResponse>;
   /** `POST /api/ai/tidy/undo`: reverts a run with the `undo` payload of its apply answer. */

@@ -104,6 +104,7 @@ export const ICON_NAMES = [
   'trophy',
   'umbrella',
   'undo',
+  'upload',
   'user',
   'utensils',
   'wallet',

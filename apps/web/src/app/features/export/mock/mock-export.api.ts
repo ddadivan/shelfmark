@@ -45,7 +45,17 @@ export class MockExportApi implements ExportApi {
         );
       }
       const url = buildExportUrl(this.base, format, scope);
-      const blob = new Blob([`${EXPORT_MOCK_MARKER}\n${url}\n`], { type: 'text/plain' });
+      // CSV: a small valid file (BOM, header, one row) that carries the marker and URL in its cells.
+      const blob =
+        format === EXPORT_FORMAT.Csv
+          ? new Blob(
+              [
+                String.fromCodePoint(0xfeff),
+                `url,title,folder,tags,note,favorite,kind,created_at\r\n${EXPORT_MOCK_MARKER},"${url}",,,,false,,\r\n`,
+              ],
+              { type: 'text/csv' },
+            )
+          : new Blob([`${EXPORT_MOCK_MARKER}\n${url}\n`], { type: 'text/plain' });
       // Named like the API's `Content-Disposition`: `shelfmark-<day>.<format>`.
       saveBlob(this.doc, blob, `shelfmark-${new Date().toISOString().slice(0, 10)}.${format}`);
       return of(undefined);

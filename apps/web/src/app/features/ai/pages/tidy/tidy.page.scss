@@ -155,3 +155,14 @@ $tidy-bar-offset: rem(20px) - $shell-tab-bar-room;
   margin: 0;
   color: var(--text-muted);
 }
+
+.tidy__import {
+  @include type(caption);
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin: 0;
+  color: var(--text-muted);
+}

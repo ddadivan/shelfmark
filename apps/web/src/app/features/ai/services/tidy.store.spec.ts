@@ -32,6 +32,34 @@ async function setup(total = 2) {
 }
 
 describe('TidyStore', () => {
+  it('limits the review to one import, from the first page, and back to Unsorted', async () => {
+    const { api, store } = await setup();
+    api.getTidy.mockClear();
+
+    await store.setImport('imp1');
+    expect(api.getTidy).toHaveBeenLastCalledWith(undefined, 'imp1');
+    expect(store.importId()).toBe('imp1');
+
+    // The same choice on a read list does not read again.
+    await store.setImport('imp1');
+    expect(api.getTidy).toHaveBeenCalledTimes(1);
+
+    await store.setImport(null);
+    expect(api.getTidy).toHaveBeenLastCalledWith(undefined);
+    expect(store.importId()).toBeNull();
+  });
+
+  it('forgets skipped links and left-out chips when the import changes', async () => {
+    const { store } = await setup();
+    store.skip(LINK.id);
+    store.toggle('t1', false);
+
+    await store.setImport('imp1');
+
+    expect(store.rows().every((row) => !row.skipped)).toBe(true);
+    expect(store.rows()[0]?.chips.every((chip) => chip.selected)).toBe(true);
+  });
+
   it('starts with every chip selected and sends one item per link', async () => {
     const { store } = await setup(130);
     expect(store.rows().map((row) => row.chips.map((chip) => [chip.id, chip.selected]))).toEqual([

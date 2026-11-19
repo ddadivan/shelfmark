@@ -145,6 +145,14 @@ describe('AccountPage', () => {
     expect(exportApi.download).toHaveBeenNthCalledWith(2, EXPORT_FORMAT.Json, {});
   });
 
+  it('leaves Import and Recent imports to the data menu and the import dialog (#387)', async () => {
+    const { root } = await setup();
+
+    expect(root.textContent).not.toContain('Bring in browser bookmarks.');
+    expect(buttonWith(root, 'Import')).toBeFalsy();
+    expect(root.querySelector('app-recent-imports')).toBeNull();
+  });
+
   it('signs out to the sign-in screen', async () => {
     const { api, store, root, harness } = await setup();
 

@@ -17,6 +17,9 @@ import { mockAskChunks, planMockAskRound } from './mock-ask-planner';
 import type { AskAssistantBlock } from '../models/ask-assistant-block.type';
 import type { AskRoundChunk } from '../models/ask-round-chunk.type';
 import type { AskRoundInput } from '../models/ask-round-input.interface';
+import { mockImportGroupNames } from './mock-import-group-names';
+import type { ImportGroupNamesInput } from '../models/import-group-names-input.interface';
+import type { ImportGroupNamesOutcome } from '../models/import-group-names-outcome.type';
 import { mockTagSynonyms } from './mock-tag-synonyms';
 import type { TagSynonymsInput } from '../models/tag-synonyms-input.interface';
 import type { TagSynonymsOutcome } from '../models/tag-synonyms-outcome.type';
@@ -119,6 +122,11 @@ export class MockAiProvider implements AiProvider {
   /** Synonym pairs from `MOCK_TAG_SYNONYMS` (triggers `ai-fail`, `ai-refuse` in a tag name). */
   findTagSynonyms(input: TagSynonymsInput): Promise<TagSynonymsOutcome> {
     return Promise.resolve(mockTagSynonyms(input));
+  }
+
+  /** Group names from the clusters' own words (triggers `ai-fail`, `ai-refuse` in a title). */
+  nameImportGroups(input: ImportGroupNamesInput): Promise<ImportGroupNamesOutcome> {
+    return Promise.resolve(mockImportGroupNames(input));
   }
 
   /**

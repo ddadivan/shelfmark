@@ -8,6 +8,8 @@ export interface TidyState {
   total: number;
   /** The page starts after this link (`null`: the first page). */
   after: string | null;
+  /** Limits the review to the links of this import (`?import=`, ADR 0056); `null`: Unsorted. */
+  importId: string | null;
   loading: boolean;
   loaded: boolean;
   /** Suggestion ids the user left out (chips start selected). */

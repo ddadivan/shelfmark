@@ -7,7 +7,7 @@ import type { AiTier } from './ai-tier.type';
  * have their own monthly counters (ADR 0051 point 5); Ask questions are counted per UTC day with a
  * monthly cap (ADR 0052 point 7: Free 5 a month, AI pack 50 a day and 500 a month, raised from 15 and
  * 150 on Nov 19, 2026), of which the deeper model answers at most 20 a day and 150 a month on the
- * AI pack (ADR 0055 point 1; Free inside its 5); AI clean-up runs have a monthly allowance (ADR 0053 point 3: AI pack 10, Free none).
+ * AI pack (ADR 0055 point 1; Free inside its 5); AI clean-up runs have a monthly allowance (ADR 0053 point 3: AI pack 10, Free none); import AI grouping has a monthly link cap (ADR 0056 decision 10: AI pack 10,000, Free none).
  */
 export const AI_QUOTA = {
   free: {
@@ -20,6 +20,7 @@ export const AI_QUOTA = {
     deepQuestionsPerDay: 5,
     deepQuestionsPerMonth: 5,
     cleanupAiRunsPerMonth: 0,
+    importGroupLinksPerMonth: 0,
   },
   'ai-pack': {
     linksPerMonth: 1000,
@@ -31,5 +32,6 @@ export const AI_QUOTA = {
     deepQuestionsPerDay: 20,
     deepQuestionsPerMonth: 150,
     cleanupAiRunsPerMonth: 10,
+    importGroupLinksPerMonth: 10000,
   },
 } as const satisfies Record<AiTier, AiQuotaLimits>;

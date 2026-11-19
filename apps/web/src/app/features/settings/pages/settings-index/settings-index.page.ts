@@ -10,6 +10,8 @@ import {
 } from '@shelfmark/ui';
 import { AdminStore } from '../../../admin/services/admin.store';
 import { ADMIN_PATH } from '../../../admin/models/admin-path.const';
+import { ExportDialogService } from '../../../export/services/export-dialog.service';
+import { ImportDialogService } from '../../../import/services/import-dialog.service';
 import { FeedbackDialogService } from '../../../feedback/services/feedback-dialog.service';
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
@@ -27,7 +29,7 @@ import { THEME_OPTION_KEYS } from '../../models/theme-option-keys.const';
 
 /**
  * `/settings` on a phone, the You tab (MobileSettings): the account card, one row per section,
- * Sign out, the privacy policy and the version. Each row opens that section as a page.
+ * Import and export (#387), Send feedback, Sign out, the privacy policy and the version. Each row opens that section as a page.
  */
 @Component({
   selector: 'app-settings-index-page',
@@ -46,12 +48,16 @@ export default class SettingsIndexPage {
 
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
+  private readonly importer = inject(ImportDialogService);
+  private readonly exporter = inject(ExportDialogService);
   protected readonly SETTINGS_PATH = SETTINGS_PATH;
   protected readonly appVersion = APP_VERSION;
   protected readonly settingsPath = `/${APP_PATH.Settings}`;
   protected readonly adminFeedbackPath = ['/', APP_PATH.Admin, ADMIN_PATH.Feedback];
   protected readonly adminStatsPath = ['/', APP_PATH.Admin, ADMIN_PATH.Stats];
   protected readonly privacyHref = `/${APP_PATH.Privacy}`;
+  /** The no-script fallback of the Import / Export rows: Privacy and data has both actions too. */
+  protected readonly privacyDataHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.Privacy}`;
   protected readonly aboutHref = `/${APP_PATH.About}`;
   protected readonly changelogHref = `/${APP_PATH.Changelog}`;
   /** "What's new" opens the dialog (the link to `/changelog` is the fallback), with a dot while unseen. */
@@ -77,6 +83,17 @@ export default class SettingsIndexPage {
       });
     }
   });
+
+  /** Import and export open their dialog, a bottom sheet on a phone (#387). */
+  protected openImport(event: MouseEvent): void {
+    event.preventDefault();
+    this.importer.open();
+  }
+
+  protected openExport(event: MouseEvent): void {
+    event.preventDefault();
+    this.exporter.open();
+  }
 
   protected openWhatsNew(event: MouseEvent): void {
     event.preventDefault();

@@ -486,8 +486,8 @@
         "skipped": "Not a link, skipped"
       },
       "overflow": {
-        "one": "{{count}} more link was left out: up to {{max}} links at a time. Bigger lists go to Import as text.",
-        "other": "{{count}} more links were left out: up to {{max}} links at a time. Bigger lists go to Import as text."
+        "one": "{{count}} more link was left out: up to {{max}} links at a time. A bookmarks file goes to Import in Account › Your data.",
+        "other": "{{count}} more links were left out: up to {{max}} links at a time. A bookmarks file goes to Import in Account › Your data."
       },
       "folder": "Folder for all",
       "tags": "Tags for all",
@@ -828,7 +828,9 @@
         "movedUp": "Moved up, position {{position}} of {{total}}",
         "movedDown": "Moved down, position {{position}} of {{total}}"
       },
-      "extension": "Get the extension"
+      "extension": "Get the extension",
+      "data": "Data & help",
+      "dataMenu": "Data and help"
     },
     "searchHint": "Search your links",
     "searchButton": "Search",
@@ -839,7 +841,12 @@
     "sendFeedback": "Send feedback",
     "feedbackInbox": "Feedback inbox",
     "about": "About Shelfmark",
-    "usageStats": "Usage stats"
+    "usageStats": "Usage stats",
+    "data": {
+      "import": "Import links",
+      "export": "Export",
+      "group": "Import and export"
+    }
   },
   "folders": {
     "dialog": {
@@ -1260,6 +1267,238 @@
     "emptyView": {
       "title": "Nothing to export in this view",
       "detail": "This view has no links. Export everything, or open another view"
+    },
+    "dialog": {
+      "title": "Export",
+      "close": "Close",
+      "formatLabel": "File format",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Everything: links, folders, tags, notes, reminders"
+        },
+        "html": {
+          "title": "Bookmarks HTML",
+          "description": "Opens in the bookmark import of any browser"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "For spreadsheets"
+        }
+      },
+      "last": "Last export: {{when}}, {{format}}.",
+      "preparing": "Preparing the {{format}} file…",
+      "cancel": "Cancel",
+      "download": "Download",
+      "saved": "File saved"
+    }
+  },
+  "import": {
+    "title": "Import links",
+    "close": "Close",
+    "source": {
+      "label": "Source",
+      "browser": {
+        "title": "Browser bookmarks",
+        "description": "HTML file from Chrome, Safari, Firefox or Edge. Folders become folders."
+      },
+      "drop": "Drag the file here",
+      "choose": "Choose file",
+      "reading": "Reading {{file}}…",
+      "problem": {
+        "too-big": "This file is larger than {{max}} MB.",
+        "unreadable": "This file could not be read. Try exporting it again.",
+        "not-bookmarks": "There are no bookmarks in this file. Choose the HTML file your browser saved with “Export bookmarks”.",
+        "empty": "There are no web links in this file.",
+        "too-many-links": "This file holds more than {{max}} links.",
+        "check-failed": "Could not compare the file with your shelf. Try again."
+      },
+      "hint": ".html, up to {{max}} MB and {{links}} links",
+      "dropping": "Release to import"
+    },
+    "review": {
+      "stats": {
+        "label": "In this file",
+        "links": {
+          "one": "link",
+          "other": "links"
+        },
+        "folders": {
+          "one": "folder",
+          "other": "folders"
+        },
+        "saved": "already on your shelf"
+      },
+      "into": "Put them into",
+      "newFolder": "New folder “{{name}}”",
+      "newFolderName": "Imported bookmarks",
+      "unsorted": "Unsorted",
+      "folderSearch": "Search folders",
+      "noFolders": "No folders found",
+      "skip": {
+        "one": "Skip the {{count}} duplicate",
+        "other": "Skip the {{count}} duplicates"
+      },
+      "skipHint": "Links already on your shelf and repeats inside the file",
+      "back": "Back",
+      "import": {
+        "one": "Import {{count}} link",
+        "other": "Import {{count}} links"
+      },
+      "nothing": "Every link in this file is already on your shelf.",
+      "untitledFolder": "Untitled folder",
+      "untitledFile": "Bookmarks file",
+      "folders": {
+        "label": "Folders inside",
+        "file": {
+          "title": "As in the file",
+          "description": {
+            "one": "{{count}} browser folder",
+            "other": "{{count}} browser folders"
+          }
+        },
+        "ai": {
+          "title": "Let AI sort them by topic",
+          "description": "AI groups the links and suggests folders, including ones you already have. You review the groups before importing. Uses {{count}} of {{left}} runs for existing links."
+        },
+        "none": {
+          "title": "No folders",
+          "description": "Everything in one list in “{{target}}”"
+        }
+      },
+      "group": "Group",
+      "room": {
+        "one": "Only {{count}} more link fits your limit, so just the first one is imported.",
+        "other": "Only {{count}} more links fit your limit, so just the first {{count}} are imported."
+      },
+      "full": "Your shelf has no room for more links."
+    },
+    "progress": {
+      "title": "Importing links",
+      "count": "{{done}} of {{total}}",
+      "label": "Import progress",
+      "note": "You can keep working: you can close this window. Previews load in the background over the next few minutes.",
+      "doneTitle": {
+        "one": "{{count}} link imported",
+        "other": "{{count}} links imported"
+      },
+      "inFolder": "In “{{name}}”.",
+      "inUnsorted": "In Unsorted.",
+      "inTarget": "In the folder you chose.",
+      "folders": {
+        "one": "{{count}} folder.",
+        "other": "{{count}} folders."
+      },
+      "skipped": {
+        "one": "{{count}} skipped: already saved, repeated or not a web page.",
+        "other": "{{count}} skipped: already saved, repeated or not a web page."
+      },
+      "failed": {
+        "one": "{{count}} could not be saved.",
+        "other": "{{count}} could not be saved."
+      },
+      "openFolder": "Open the folder",
+      "openUnsorted": "Open Unsorted",
+      "undo": "Undo import",
+      "startFailed": "The import could not start, nothing was saved. Try again.",
+      "foldersLimit": "The folders do not fit your folder limit. Choose “No folders” and try again.",
+      "minimize": "Minimize",
+      "grouped": {
+        "one": "In {{count}} folder, {{created}} of them new.",
+        "other": "In {{count}} folders, {{created}} of them new."
+      }
+    },
+    "undo": {
+      "title": "Undo this import?",
+      "message": {
+        "one": "The {{count}} link and the folders of this import go to Trash, and tags it added that nothing else uses are removed. What you added since stays.",
+        "other": "The {{count}} links and the folders of this import go to Trash, and tags it added that nothing else uses are removed. What you added since stays."
+      },
+      "confirm": "Undo import",
+      "cancel": "Cancel",
+      "failed": "Could not undo the import. Try again.",
+      "done": "Import undone",
+      "doneDetail": {
+        "one": "{{count}} link moved to Trash",
+        "other": "{{count}} links moved to Trash"
+      }
+    },
+    "recent": {
+      "title": "Recent imports",
+      "source": {
+        "browser": "Browser bookmarks"
+      },
+      "links": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      },
+      "folders": {
+        "one": "{{count}} folder",
+        "other": "{{count}} folders"
+      },
+      "skipped": "{{count}} skipped",
+      "failed": "{{count}} failed",
+      "undoLabel": "Undo import: {{name}}",
+      "hint": "Undo import is available for 7 days."
+    },
+    "entry": {
+      "title": "Import links",
+      "description": "Bring in browser bookmarks. Folders come in as folders, links you already have are skipped.",
+      "action": "Import"
+    },
+    "menu": "Import links…",
+    "help": {
+      "link": "How to export bookmarks from a browser",
+      "chrome": "Chrome and Edge: open the bookmark manager (Ctrl+Shift+O), open its ⋮ menu and choose “Export bookmarks”.",
+      "firefox": "Firefox: Bookmarks, Manage bookmarks (Ctrl+Shift+O), Import and Backup, “Export Bookmarks to HTML…”.",
+      "safari": "Safari: File, Export, Bookmarks."
+    },
+    "groups": {
+      "waiting": {
+        "one": "AI is grouping {{count}} link…",
+        "other": "AI is grouping {{count}} links…"
+      },
+      "count": {
+        "one": "{{count}} group",
+        "other": "{{count}} groups"
+      },
+      "forLinks": {
+        "one": "for {{count}} link",
+        "other": "for {{count}} links"
+      },
+      "nameLabel": "Folder name",
+      "nameEmpty": "Give the folder a name",
+      "linkCount": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      },
+      "existing": "already there",
+      "new": "new",
+      "showLinks": "Show the links of “{{name}}”",
+      "hideLinks": "Hide the links of “{{name}}”",
+      "moveLabel": "Move “{{title}}” to",
+      "other": "Other",
+      "otherText": "Links that fit no topic go to “{{target}}”.",
+      "hint": "You can rename the folders. Links you take out of a group go to “{{target}}”.",
+      "import": {
+        "one": "Import and create {{count}} folder",
+        "other": "Import and create {{count}} folders"
+      },
+      "failed": "The links could not be grouped right now. Nothing was used from your allowance. Go back, or import them without groups.",
+      "allowance": "Not enough of the allowance for existing links is left for these links. Go back, or import them without groups.",
+      "monthly": "You have already grouped as many links with AI this month as you can. Import them as in the file, or without folders."
+    },
+    "ai": {
+      "doneTitle": "Descriptions and tags are ready",
+      "summaries": {
+        "one": "{{count}} link got a short description.",
+        "other": "{{count}} links got short descriptions."
+      },
+      "suggestions": {
+        "one": "There are tag suggestions for {{count}} link.",
+        "other": "There are tag suggestions for {{count}} links."
+      },
+      "review": "Review tags"
     }
   },
   "settings": {
@@ -1517,10 +1756,6 @@
           "close": "Close"
         }
       },
-      "data": {
-        "hint": "Everything you saved, as JSON or bookmarks HTML",
-        "action": "Open export"
-      },
       "kept": {
         "title": "What we keep"
       },
@@ -1533,6 +1768,16 @@
           "action": "Open",
           "actionLabel": "Open Delete AI data in Settings › AI"
         }
+      },
+      "importExport": {
+        "title": "Import and export",
+        "import": {
+          "hint": "Bring in bookmarks from your browser"
+        },
+        "export": {
+          "hint": "Download your whole library as a file"
+        },
+        "open": "Open"
       }
     },
     "footer": {
@@ -3400,7 +3645,11 @@
         "nothingDetail": "The suggestions changed meanwhile."
       },
       "undone": "Tidy undone",
-      "undoFailed": "Couldn’t undo the tidy"
+      "undoFailed": "Couldn’t undo the tidy",
+      "import": {
+        "line": "Showing only the links of this import.",
+        "all": "Review everything"
+      }
     },
     "search": {
       "related": "Related by meaning",

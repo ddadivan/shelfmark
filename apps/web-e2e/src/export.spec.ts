@@ -1,8 +1,8 @@
 import { readFile } from 'node:fs/promises';
 import { type Download } from '@playwright/test';
 import { expect, test } from './support/test';
-import { openAccountMenu, openSettingsSection, seedSession } from './support/mock-session';
-import { isCompact } from './support/sidebar';
+import { openDataDialog } from './support/data-menu';
+import { openSettingsSection, seedSession } from './support/mock-session';
 import { openExportMenu } from './support/library-toolbar';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
@@ -77,18 +77,16 @@ test.describe('export (mock API)', () => {
   });
 
   test(
-    'the account menu (the You tab on a phone) exports everything',
+    'the data menu (the You tab on a phone) exports everything through the dialog',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await page.goto('/links');
+      await openDataDialog(page, 'Export');
       const download = page.waitForEvent('download');
-      if (isCompact(page)) {
-        await openSettingsSection(page, 'Account');
-        await page.getByRole('button', { name: 'Download JSON' }).click();
-      } else {
-        await openAccountMenu(page);
-        await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
-      }
+      await page
+        .getByRole('dialog', { name: 'Export' })
+        .getByRole('button', { name: 'Download' })
+        .click();
 
       expect(await requestedUrl(await download)).toBe('/api/export?format=json');
     },
@@ -140,6 +138,14 @@ test.describe('export with nothing to export (mock API)', () => {
 
       await openSettingsSection(page, 'Account');
       await page.getByRole('button', { name: 'Download Bookmarks HTML' }).click();
+      await expect(notice.first()).toBeVisible();
+
+      // The export dialog explains the same and closes (the data menu is in the library sidebar).
+      await page.goto('/links');
+      await openDataDialog(page, 'Export');
+      const dialog = page.getByRole('dialog', { name: 'Export' });
+      await dialog.getByRole('button', { name: 'Download' }).click();
+      await expect(dialog).toHaveCount(0);
       await expect(notice.first()).toBeVisible();
 
       expect(downloads).toBe(0);

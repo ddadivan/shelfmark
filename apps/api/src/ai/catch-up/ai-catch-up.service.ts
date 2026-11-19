@@ -3,6 +3,7 @@ import { ModuleRef } from '@nestjs/core';
 import { AI_BACKFILL_STATE, AI_JOB_REASON, type AiTickResponse } from '@shelfmark/contracts';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiBackfillResultsService } from '../backfill/ai-backfill-results.service';
+import { AiImportPassService } from '../backfill/ai-import-pass.service';
 import { AiBackfillService } from '../backfill/ai-backfill.service';
 import { AiBackgroundService } from '../background/ai-background.service';
 import { AI_BATCH_STATE } from '../models/ai-batch-state.const';
@@ -36,6 +37,7 @@ export class AiCatchUpService {
     private readonly runner: AiRunnerService,
     private readonly backfill: AiBackfillService,
     private readonly backfillResults: AiBackfillResultsService,
+    private readonly importPass: AiImportPassService,
     private readonly background: AiBackgroundService,
     private readonly embed: AiEmbedService,
     private readonly moduleRef: ModuleRef,
@@ -78,6 +80,10 @@ export class AiCatchUpService {
     const deletedAskDays = await this.prisma.$executeRaw`
       DELETE FROM ai_ask_usage
       WHERE day < (now() AT TIME ZONE 'UTC')::date - ${AI_CATCH_UP_LIMIT.AskUsageMaxAgeDays}::int`;
+    // Import AI units nobody used within the open window of an import go back (ADR 0056).
+    await this.importPass.expireStranded().catch(() => {
+      this.logger.warn('AI sweep: giving back stranded import units failed');
+    });
     const users = await this.prisma.$queryRaw<{ userId: string }[]>`
       SELECT user_id AS "userId" FROM ai_jobs
       WHERE link_id IS NOT NULL AND batch_id IS NULL

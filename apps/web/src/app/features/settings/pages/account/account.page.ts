@@ -31,7 +31,8 @@ import { AccountStatsService } from '../../services/account-stats.service';
 /**
  * `/settings/account` (#352): who is signed in (the provider's photo, member since), the "Your
  * shelf" numbers, the connected sign-in providers, "Your data" (export, moved here from its own
- * section) and deleting the account, plus sign out.
+ * section; import lives in the sidebar's data menu with its recent imports, #387) and deleting the
+ * account, plus sign out.
  */
 @Component({
   selector: 'app-settings-account-page',

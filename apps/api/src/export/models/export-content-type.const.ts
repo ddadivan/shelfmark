@@ -2,4 +2,5 @@
 export const EXPORT_CONTENT_TYPE = {
   Json: 'application/json; charset=utf-8',
   Html: 'text/html; charset=utf-8',
+  Csv: 'text/csv; charset=utf-8',
 } as const;

@@ -1,0 +1,45 @@
+<dl class="import-review__stats" [attr.aria-label]="'import.review.stats.label' | transloco">
+  @for (stat of stats(); track stat.labelKey) {
+    <div class="import-review__stat">
+      <dt class="import-review__stat-label">{{ stat.labelKey | transloco }}</dt>
+      <dd class="import-review__stat-value">{{ stat.text }}</dd>
+    </div>
+  }
+</dl>
+
+<ui-select
+  searchable
+  [label]="'import.review.into' | transloco"
+  [options]="targetOptions()"
+  [emptyLabel]="'import.review.unsorted' | transloco"
+  [searchLabel]="'import.review.folderSearch' | transloco"
+  [noResultsLabel]="'import.review.noFolders' | transloco"
+  [value]="flow.target()"
+  (valueChange)="setTarget($event)"
+/>
+
+@if (flow.duplicates() > 0) {
+  <ui-checkbox
+    [label]="skipKey() | transloco: { count: flow.duplicates() }"
+    [hint]="'import.review.skipHint' | transloco"
+    [checked]="flow.skipDuplicates()"
+    (checkedChange)="flow.skipDuplicates.set($event)"
+  />
+}
+<div class="import-review__modes">
+  <p class="import-review__modes-label" [id]="modesLabelId">
+    {{ 'import.review.folders.label' | transloco }}
+  </p>
+  <ui-radio-group
+    [ariaLabelledby]="modesLabelId"
+    [options]="modeOptions()"
+    [value]="flow.foldersMode()"
+    (valueChange)="setMode($event)"
+  />
+</div>
+@if (flow.overRoom() > 0 || flow.room() <= 0) {
+  <ui-notice [kind]="NOTICE_KIND.Warning">{{ roomText() }}</ui-notice>
+}
+@if (flow.importCount() === 0 && flow.room() > 0) {
+  <ui-notice [kind]="NOTICE_KIND.Info">{{ 'import.review.nothing' | transloco }}</ui-notice>
+}

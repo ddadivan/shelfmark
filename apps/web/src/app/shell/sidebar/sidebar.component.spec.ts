@@ -24,6 +24,9 @@ import { MockUserSettingsApi } from '../../features/settings/mock/mock-user-sett
 import { MOCK_LIBRARY_SETTINGS_STORAGE_KEY } from '../../features/settings/models/mock-library-settings-storage-key.const';
 import { USER_SETTINGS_API } from '../../features/settings/models/user-settings-api.const';
 import { UserSettingsStore } from '../../stores/user-settings.store';
+import { ExportDialogService } from '../../features/export/services/export-dialog.service';
+import { ImportDialogService } from '../../features/import/services/import-dialog.service';
+import { WhatsNewStore } from '../../features/changelog/services/whats-new.store';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { ExtensionBannerService } from '../../core/browser-extension/extension-banner.service';
@@ -134,16 +137,103 @@ describe('SidebarComponent', () => {
     expect(row(element, 'Recently opened').querySelector('.ui-tree__count')).toBeNull();
   });
 
-  it('has a "Send feedback" row above Trash that opens the dialog (#335)', async () => {
-    const { fixture } = await setup();
-    const open = vi.spyOn(TestBed.inject(FeedbackDialogService), 'open').mockImplementation(() => {
-      // The dialog itself is covered by the feedback specs.
-    });
-    const names = await rowNames(fixture);
+  describe('the "Data & help" row (#387)', () => {
+    async function openMenu(fixture: ComponentFixture<unknown>): Promise<UiMenuHarness> {
+      await (await treeRow(fixture, 'Data & help')).select();
+      await fixture.whenStable();
+      return TestbedHarnessEnvironment.documentRootLoader(fixture).getHarness(
+        UiMenuHarness.with({ label: 'Data and help' }),
+      );
+    }
 
-    expect(names.slice(-2)).toEqual(['Send feedback', 'Trash']);
-    await (await treeRow(fixture, 'Send feedback')).select();
-    expect(open).toHaveBeenCalledTimes(1);
+    function stubWhatsNew(pending: boolean) {
+      const open = vi.fn(() => Promise.resolve());
+      TestBed.overrideProvider(WhatsNewStore, { useValue: { pending: signal(pending), open } });
+      return open;
+    }
+
+    it('replaces "What\'s new" and "Send feedback"; Trash stays its own row below', async () => {
+      stubWhatsNew(false);
+      const { fixture } = await setup();
+      const names = await rowNames(fixture);
+
+      expect(names.slice(-2)).toEqual(['Data & help', 'Trash']);
+      expect(names).not.toContain('Send feedback');
+      expect(names).not.toContain("What's new");
+    });
+
+    it("opens a menu with Import links, Export, What's new and Send feedback", async () => {
+      stubWhatsNew(false);
+      const { fixture } = await setup();
+      const menu = await openMenu(fixture);
+
+      expect(await menu.isOpen()).toBe(true);
+      const items = await Promise.all((await menu.getItems()).map((item) => item.getText()));
+      expect(items).toEqual(['Import links', 'Export', "What's new", 'Send feedback']);
+    });
+
+    it("opens the import dialog, the export dialog, What's new and the feedback dialog", async () => {
+      const whatsNew = stubWhatsNew(false);
+      const { fixture } = await setup();
+      const importOpen = vi.spyOn(TestBed.inject(ImportDialogService), 'open').mockReturnValue();
+      const exportOpen = vi.spyOn(TestBed.inject(ExportDialogService), 'open').mockReturnValue();
+      const feedbackOpen = vi
+        .spyOn(TestBed.inject(FeedbackDialogService), 'open')
+        .mockReturnValue();
+
+      await (await openMenu(fixture)).clickItem({ text: 'Import links' });
+      await vi.waitFor(() => {
+        expect(importOpen).toHaveBeenCalledTimes(1);
+      });
+      await (await openMenu(fixture)).clickItem({ text: 'Export' });
+      await vi.waitFor(() => {
+        expect(exportOpen).toHaveBeenCalledTimes(1);
+      });
+      await (await openMenu(fixture)).clickItem({ text: /What's new/ });
+      expect(whatsNew).toHaveBeenCalledTimes(1);
+      await (await openMenu(fixture)).clickItem({ text: 'Send feedback' });
+      expect(feedbackOpen).toHaveBeenCalledTimes(1);
+    });
+
+    it('shows the dot on the row and the badge on "What\'s new" while a release is unseen', async () => {
+      stubWhatsNew(true);
+      const { fixture, element } = await setup();
+
+      expect(element.querySelector('[data-ui-tree-id="data"] .ui-tree__dot')).not.toBeNull();
+      const menu = await openMenu(fixture);
+      const item = (await menu.getItems({ text: /What's new/ }))[0];
+      expect(await item.getText()).toContain('new');
+    });
+
+    it('shows no dot and no badge when everything is seen', async () => {
+      stubWhatsNew(false);
+      const { fixture, element } = await setup();
+
+      expect(element.querySelector('[data-ui-tree-id="data"] .ui-tree__dot')).toBeNull();
+      const menu = await openMenu(fixture);
+      const item = (await menu.getItems({ text: /What's new/ }))[0];
+      expect((await item.getText()).trim()).toBe("What's new");
+    });
+
+    it('opens on ArrowUp with the last item focused, and Escape gives focus back to the row', async () => {
+      stubWhatsNew(false);
+      const { fixture, element } = await setup();
+      const dataRow = element.querySelector<HTMLElement>('[data-ui-tree-id="data"]');
+      dataRow?.focus();
+      dataRow?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+      await fixture.whenStable();
+      const menu = await TestbedHarnessEnvironment.documentRootLoader(fixture).getHarness(
+        UiMenuHarness.with({ label: 'Data and help' }),
+      );
+
+      expect(await menu.isOpen()).toBe(true);
+      await vi.waitFor(async () => {
+        expect(await menu.getFocusedItemText()).toBe('Send feedback');
+      });
+      await menu.sendKeys(TestKey.ESCAPE);
+      expect(await menu.isOpen()).toBe(false);
+      expect(document.activeElement).toBe(dataRow);
+    });
   });
 
   it('offers "Get the extension" once the library banner was closed, opening the store (#455)', async () => {
@@ -168,7 +258,7 @@ describe('SidebarComponent', () => {
     open.mockRestore();
   });
 
-  it('leaves the "Send feedback" row out on a phone (it is in the You list)', async () => {
+  it('leaves the "Data & help" row out on a phone (the You list has the entries)', async () => {
     TestBed.configureTestingModule({
       providers: [
         {
@@ -184,8 +274,8 @@ describe('SidebarComponent', () => {
     });
     const { element, fixture } = await setup();
 
-    expect(await rowNames(fixture)).not.toContain('Send feedback');
-    expect(element.textContent).not.toContain('Send feedback');
+    expect(await rowNames(fixture)).not.toContain('Data & help');
+    expect(element.textContent).not.toContain('Data & help');
   });
 
   it('drops the link counts when "Show folder counts" is off (#284)', async () => {

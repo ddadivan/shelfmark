@@ -13,6 +13,7 @@ import { nextFieldId } from '../field/field-ids';
 import { FlagComponent } from '../flag/flag.component';
 import { IconComponent } from '../icon/icon.component';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
+import { RADIO_OPTION_TONE } from './models/radio-option-tone.const';
 import type { RadioOption } from './models/radio-option.interface';
 import type { RadioOrientation } from './models/radio-orientation.type';
 import { RADIO_ORIENTATION } from './models/radio-orientation.const';
@@ -47,6 +48,7 @@ import { RADIO_ORIENTATION } from './models/radio-orientation.const';
 export class RadioGroupComponent implements FormValueControl<string> {
   protected readonly RADIO_ORIENTATION = RADIO_ORIENTATION;
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly RADIO_OPTION_TONE = RADIO_OPTION_TONE;
 
   private readonly host: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 

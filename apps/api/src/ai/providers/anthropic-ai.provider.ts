@@ -6,6 +6,12 @@ import { LINK_SYSTEM_PROMPT } from '../prompt/link-system-prompt.const';
 import { buildTagSynonymsPrompt } from '../prompt/build-tag-synonyms-prompt';
 import { TAG_SYNONYMS_SCHEMA } from '../prompt/tag-synonyms.schema';
 import { TAG_SYNONYMS_SYSTEM_PROMPT } from '../prompt/tag-synonyms-system-prompt.const';
+import { buildImportGroupNamesPrompt } from '../prompt/build-import-group-names-prompt';
+import { IMPORT_GROUP_NAMES_SCHEMA } from '../prompt/import-group-names.schema';
+import { IMPORT_GROUP_NAMES_SYSTEM_PROMPT } from '../prompt/import-group-names-system-prompt.const';
+import { IMPORT_GROUP_NAMES_LIMIT } from '../models/import-group-names-limit.const';
+import type { ImportGroupNamesInput } from '../models/import-group-names-input.interface';
+import type { ImportGroupNamesOutcome } from '../models/import-group-names-outcome.type';
 import { TAG_SYNONYMS_LIMIT } from '../models/tag-synonyms-limit.const';
 import type { TagSynonymsInput } from '../models/tag-synonyms-input.interface';
 import type { TagSynonymsOutcome } from '../models/tag-synonyms-outcome.type';
@@ -75,6 +81,20 @@ function tagSynonymsParamsFor(input: TagSynonymsInput): MessageParams {
     output_config: {
       effort: AI_EFFORT.LinkJob,
       format: { type: 'json_schema', schema: TAG_SYNONYMS_SCHEMA },
+    },
+  };
+}
+
+/** Import group names (ADR 0056): the fast model at low effort, structured output, samples only. */
+function importGroupNamesParamsFor(input: ImportGroupNamesInput): MessageParams {
+  return {
+    model: AI_MODEL.ImportGroups,
+    max_tokens: IMPORT_GROUP_NAMES_LIMIT.MaxTokens,
+    system: IMPORT_GROUP_NAMES_SYSTEM_PROMPT,
+    messages: [{ role: 'user', content: buildImportGroupNamesPrompt(input) }],
+    output_config: {
+      effort: AI_EFFORT.ImportGroups,
+      format: { type: 'json_schema', schema: IMPORT_GROUP_NAMES_SCHEMA },
     },
   };
 }
@@ -277,6 +297,18 @@ export class AnthropicAiProvider implements AiProvider {
   async findTagSynonyms(input: TagSynonymsInput): Promise<TagSynonymsOutcome> {
     try {
       const message = await this.client.messages.create(tagSynonymsParamsFor(input), {
+        timeout: ANTHROPIC_LIMIT.TimeoutMs,
+        maxRetries: ANTHROPIC_LIMIT.MaxRetries,
+      });
+      return outcomeOfMessage(message);
+    } catch (error) {
+      return outcomeOfError(error);
+    }
+  }
+
+  async nameImportGroups(input: ImportGroupNamesInput): Promise<ImportGroupNamesOutcome> {
+    try {
+      const message = await this.client.messages.create(importGroupNamesParamsFor(input), {
         timeout: ANTHROPIC_LIMIT.TimeoutMs,
         maxRetries: ANTHROPIC_LIMIT.MaxRetries,
       });

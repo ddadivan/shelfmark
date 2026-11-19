@@ -34,6 +34,13 @@ function withId(path: string, id: string): string {
   return path.replace(':id', encodeURIComponent(id));
 }
 
+/** The query of a Tidy read: only the parts that are set. */
+function tidyParams(parts: Record<string, string | undefined>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(parts).filter((entry): entry is [string, string] => entry[1] !== undefined),
+  );
+}
+
 /**
  * `AiApi` over `AI_ENDPOINT`. Every call skips the global error toast: AI never blocks a save, so
  * the caller decides what (if anything) a failure shows.
@@ -94,15 +101,18 @@ export class HttpAiApi implements AiApi {
     return this.http.delete<void>(AI_ENDPOINT.Data, { context: skipErrorToast() });
   }
 
-  getTidy(after?: string): Observable<TidyListResponse> {
+  getTidy(after?: string, importId?: string): Observable<TidyListResponse> {
     return this.http.get<TidyListResponse>(AI_ENDPOINT.Tidy, {
       context: skipErrorToast(),
-      ...(after !== undefined && { params: { after } }),
+      params: tidyParams({ after, import: importId }),
     });
   }
 
-  getTidyCount(): Observable<TidyCountResponse> {
-    return this.http.get<TidyCountResponse>(AI_ENDPOINT.TidyCount, { context: skipErrorToast() });
+  getTidyCount(importId?: string): Observable<TidyCountResponse> {
+    return this.http.get<TidyCountResponse>(AI_ENDPOINT.TidyCount, {
+      context: skipErrorToast(),
+      params: tidyParams({ import: importId }),
+    });
   }
 
   applyTidy(request: TidyApplyRequest): Observable<TidyApplyResponse> {
