@@ -132,3 +132,15 @@ ADR 0055 and its index row (this commit); ADR 0052 status "partly superseded by 
 9. **Round limits.** [4 tool rounds per profile, 4 calls per round, 12 cards per `show_links`.]
 10. **Free tier tools and escalation.** [Same tools and escalation inside its 5 questions a month.]
 11. **Cards and citations together.** [Cards for "find / list" answers via `show_links`; citations for prose answers; the design step decides the layout.]
+
+## 10. Implementation notes (as built)
+
+- **Haiku 5.5 thinking** is `thinking: { type: 'disabled' }` (the API docs: Haiku 5.5 accepts `disabled` at effort `high` or below and rejects `between_tools`, which only Sonnet 5.5 accepts); pinned by `anthropic-ask-round.provider.spec.ts`. Check both profiles on a preview with a real key before release (`tools/ai/ask-eval.mjs`).
+- **Migration name** is `20261207120000_ask_deep_usage`, not `20261120…`: the existing migrations run up to `20261206…` and `ai_ask_usage` is created in `20261203…`, so an earlier timestamp would run before the table exists on a fresh database.
+- **`count_links` site and month groups** are counted from the matching rows' URL and save time instead of tagged `$queryRaw`, so every filter stays one Prisma `where` shared with `search_links` (at most `LINK_LIMIT.PerUserMax` rows, url or timestamp only). Folder, tag and kind use Prisma `groupBy`.
+- **Search words** match title, URL, summary, tag names and the note (with the switch); "Show all N in search" opens the feed, whose `q` matches title, note and URL, so the feed can show slightly fewer links than N. "Show all" is offered only when the search used no site or date filter (the feed has none).
+- **Cards in the stream**: `ui-streaming-answer` got a `status` input (the pill) and a `uiStreamingLive` slot (cards as they arrive) plus `hasContent`; the StreamingAnswer spec is updated. Cited links that are also cards are not repeated under "Sources from your shelf".
+- **Refunds**: a question counts once text or cards reached the client; an accepted hand-over reserves the deep answer on the question day, refunded when the deep model writes nothing or with the question.
+- **`ContextLinksMax` / `FirstTokenMs`** left the contract in the web commit (their last callers), not in the contracts commit.
+- **Not done here**: new demo seed links for the mock journeys (the existing seed answers them; extra links would move many demo counts), new count and find starters, and the changelog entry, which waits for the release PR so it does not collide with hotfix 2.2.2.
+- **Desktop panel width** (author's request during the work): `ui-drawer` `resizable` (from 64em, 440px to `min(880px, 70vw)`, keyboard and double click), the Ask drawer keeps the width in `localStorage` `sm-ask-width`.
