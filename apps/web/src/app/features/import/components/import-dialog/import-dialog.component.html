@@ -82,11 +82,12 @@
         <ui-button
           [block]="phone()"
           wrap
-          [variant]="BUTTON_VARIANT.Primary"
+          [variant]="aiMode() ? BUTTON_VARIANT.Ai : BUTTON_VARIANT.Primary"
+          [iconLeft]="aiMode() ? 'spark' : undefined"
           [disabled]="flow.importCount() === 0"
           (click)="flow.next()"
         >
-          @if (flow.foldersMode() === IMPORT_FOLDERS_MODE.Ai) {
+          @if (aiMode()) {
             {{ 'import.review.group' | transloco }}
           } @else {
             {{ importKey() | transloco: { count: flow.importCount() } }}

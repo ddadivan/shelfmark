@@ -4,6 +4,7 @@ import {
   CheckboxComponent,
   NOTICE_KIND,
   NoticeComponent,
+  RADIO_OPTION_TONE,
   RadioGroupComponent,
   SelectComponent,
   type RadioOption,
@@ -93,6 +94,7 @@ export class ImportReviewComponent {
         value: IMPORT_FOLDERS_MODE.Ai,
         title: this.transloco.translate('import.review.folders.ai.title'),
         icon: 'spark',
+        tone: RADIO_OPTION_TONE.Ai,
         description: this.transloco.translate('import.review.folders.ai.description', {
           count: this.locale.formatNumber(this.flow.importCount()),
           left: this.locale.formatNumber(offer.left),

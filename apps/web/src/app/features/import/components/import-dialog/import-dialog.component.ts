@@ -90,6 +90,8 @@ export class ImportDialogComponent implements OnDestroy {
 
   /** The short "how to export" steps are open. */
   protected readonly helpOpen = signal(false);
+  /** «Let AI sort them by topic» is chosen: the main button is the AI action («Group»). */
+  protected readonly aiMode = computed(() => this.flow.foldersMode() === IMPORT_FOLDERS_MODE.Ai);
 
   protected readonly sourceOptions = computed<RadioOption[]>(() => {
     activeLang();
