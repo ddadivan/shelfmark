@@ -1528,7 +1528,8 @@
         "other": "Importa e crea {{count}} cartelle"
       },
       "failed": "Al momento non è stato possibile raggruppare i link. Non è stato usato nulla della tua quota. Torna indietro oppure importali senza gruppi.",
-      "allowance": "Per questi link non resta abbastanza quota per i link esistenti. Torna indietro oppure importali senza gruppi."
+      "allowance": "Per questi link non resta abbastanza quota per i link esistenti. Torna indietro oppure importali senza gruppi.",
+      "monthly": "Questo mese hai già raggruppato con l’IA tutti i link consentiti. Importali come nel file o senza cartelle."
     },
     "ai": {
       "doneTitle": "Descrizioni e tag pronti",

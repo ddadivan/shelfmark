@@ -1,5 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import type { ImportGroupsRequest, ImportGroupsResponse } from '@shelfmark/contracts';
+import {
+  IMPORT_ERROR_MESSAGE,
+  type ImportGroupsRequest,
+  type ImportGroupsResponse,
+} from '@shelfmark/contracts';
 import { Subject, of, throwError } from 'rxjs';
 import { mockHttpError } from '../../../core/api/mock-http-error';
 import { IMPORT_API } from '../models/import-api.const';
@@ -23,10 +27,11 @@ const RESPONSE: ImportGroupsResponse = {
 
 function setup() {
   const groups = vi.fn<ImportApi['groups']>(() => of(RESPONSE));
+  const releaseGroups = vi.fn<ImportApi['releaseGroups']>(() => of(undefined));
   TestBed.configureTestingModule({
-    providers: [{ provide: IMPORT_API, useValue: { groups } }, ImportGroupsService],
+    providers: [{ provide: IMPORT_API, useValue: { groups, releaseGroups } }, ImportGroupsService],
   });
-  return { groups, service: TestBed.inject(ImportGroupsService) };
+  return { groups, releaseGroups, service: TestBed.inject(ImportGroupsService) };
 }
 
 describe('ImportGroupsService', () => {
@@ -151,5 +156,53 @@ describe('ImportGroupsService', () => {
 
     expect(service.newFolders()).toEqual([]);
     expect(service.groupCount()).toBe(1);
+  });
+
+  it('reports the monthly cap (409 with its message) as its own error', async () => {
+    const { service, groups, releaseGroups } = setup();
+    groups.mockReturnValue(
+      throwError(() => mockHttpError(409, IMPORT_ERROR_MESSAGE.GroupsMonthly)),
+    );
+
+    await service.load(REQUEST);
+
+    expect(service.error()).toBe(IMPORT_GROUPS_ERROR.Monthly);
+    service.reset();
+    expect(releaseGroups).not.toHaveBeenCalled();
+  });
+
+  describe('release', () => {
+    it('gives the units back once when a grouping is dropped (Back)', async () => {
+      const { service, releaseGroups } = setup();
+      await service.load(REQUEST);
+
+      service.reset();
+      service.reset();
+
+      expect(releaseGroups).toHaveBeenCalledTimes(1);
+    });
+
+    it('gives nothing back before a grouping, after a refused one, or once an import took it', async () => {
+      const { service, groups, releaseGroups } = setup();
+      service.release();
+      groups.mockReturnValueOnce(throwError(() => mockHttpError(409)));
+      await service.load(REQUEST);
+      service.release();
+      await service.load(REQUEST);
+      service.consumed();
+      service.release();
+
+      expect(releaseGroups).not.toHaveBeenCalled();
+    });
+
+    it('releases after a failed grouping and ignores a failing release', async () => {
+      const { service, groups, releaseGroups } = setup();
+      groups.mockReturnValue(throwError(() => mockHttpError(503)));
+      releaseGroups.mockReturnValue(throwError(() => mockHttpError(500)));
+      await service.load(REQUEST);
+
+      expect(() => service.release()).not.toThrow();
+      expect(releaseGroups).toHaveBeenCalledTimes(1);
+    });
   });
 });

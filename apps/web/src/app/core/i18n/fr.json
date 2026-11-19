@@ -1528,7 +1528,8 @@
         "other": "Importer et créer {{count}} dossiers"
       },
       "failed": "Les liens n’ont pas pu être regroupés pour le moment. Rien n’a été prélevé sur votre quota. Revenez en arrière ou importez-les sans groupes.",
-      "allowance": "Il ne reste pas assez de quota pour les liens existants pour ces liens. Revenez en arrière ou importez-les sans groupes."
+      "allowance": "Il ne reste pas assez de quota pour les liens existants pour ces liens. Revenez en arrière ou importez-les sans groupes.",
+      "monthly": "Vous avez déjà regroupé ce mois-ci autant de liens avec l’IA que possible. Importez-les comme dans le fichier ou sans dossiers."
     },
     "ai": {
       "doneTitle": "Les descriptions et les tags sont prêts",

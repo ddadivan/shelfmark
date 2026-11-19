@@ -5,10 +5,7 @@
   </div>
 } @else if (state.error(); as error) {
   <ui-notice [kind]="NOTICE_KIND.Danger">
-    {{
-      (error === IMPORT_GROUPS_ERROR.Allowance ? 'import.groups.allowance' : 'import.groups.failed')
-        | transloco
-    }}
+    {{ errorKey(error) | transloco }}
   </ui-notice>
 } @else {
   <p class="import-groups__heading" role="status">{{ heading() }}</p>

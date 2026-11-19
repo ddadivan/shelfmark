@@ -55,6 +55,7 @@ const AI_POLLS_UNTIL_DONE = 2;
 const MOCK_AI_GROUPS_MS = 900;
 const GROUPS_FAIL_MARKER = 'ai-fail';
 const GROUPS_ALLOWANCE_MARKER = 'ai-quota';
+const GROUPS_MONTHLY_MARKER = 'ai-monthly';
 
 /**
  * `ImportApi` over the in-memory mock library, following the API (ADR 0056): the start creates
@@ -114,6 +115,11 @@ export class MockImportApi implements ImportApi {
   groups(request: ImportGroupsRequest): Observable<ImportGroupsResponse> {
     return defer(() => {
       const urls = request.links.map((link) => link.url);
+      if (urls.some((url) => url.includes(GROUPS_MONTHLY_MARKER))) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.Conflict, IMPORT_ERROR_MESSAGE.GroupsMonthly),
+        );
+      }
       if (urls.some((url) => url.includes(GROUPS_ALLOWANCE_MARKER))) {
         return throwError(() =>
           mockHttpError(HttpStatusCode.Conflict, IMPORT_ERROR_MESSAGE.AiAllowance),
@@ -126,6 +132,10 @@ export class MockImportApi implements ImportApi {
       }
       return of(mockImportGroups(request.links, this.data.folderList));
     }).pipe(delay(MOCK_AI_GROUPS_MS));
+  }
+
+  releaseGroups(): Observable<void> {
+    return of(undefined).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
   start(request: StartImportRequest): Observable<StartImportResponse> {

@@ -1528,7 +1528,8 @@
         "other": "Importar y crear {{count}} carpetas"
       },
       "failed": "No se pudieron agrupar los enlaces ahora. No se usó nada de tu cuota. Vuelve atrás o impórtalos sin grupos.",
-      "allowance": "No queda cuota suficiente para enlaces existentes para estos enlaces. Vuelve atrás o impórtalos sin grupos."
+      "allowance": "No queda cuota suficiente para enlaces existentes para estos enlaces. Vuelve atrás o impórtalos sin grupos.",
+      "monthly": "Este mes ya has agrupado con IA todos los enlaces que se pueden. Impórtalos como en el archivo o sin carpetas."
     },
     "ai": {
       "doneTitle": "Las descripciones y las etiquetas están listas",

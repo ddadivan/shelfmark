@@ -164,6 +164,8 @@ export class ImportDialogComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // A grouping no import took gives its allowance units back.
+    this.flow.groups.release();
     this.runner.dialogClosed();
   }
 

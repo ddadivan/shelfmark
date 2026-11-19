@@ -54,6 +54,7 @@ async function setup() {
         charged: 3,
       }),
     ),
+    releaseGroups: vi.fn<ImportApi['releaseGroups']>(() => of(undefined)),
     check: vi.fn<ImportApi['check']>(() => of({ saved: [], room: 10_000 })),
     start: vi.fn<ImportApi['start']>(() =>
       of({ id: 'imp1', targetFolderId: 'target1', folders: [{ key: 'f1', id: 'folder1' }] }),
@@ -273,7 +274,7 @@ describe('ImportDialogComponent', () => {
   it('offers "Open Unsorted" and no Undo when nothing was created', async () => {
     const { loader, dialog, until, button, maybeButton, api, navigate } = await setup();
     api.start.mockReturnValue(of({ id: 'imp1', targetFolderId: null, folders: [] }));
-    api.addLinks.mockReturnValue(throwError(() => new Error('network')));
+    api.addLinks.mockReturnValue(throwError(() => mockHttpError(400)));
     await (await loader.getHarness(UiDropZoneHarness)).dropFile(bookmarks());
     await until(async () => {
       expect(await dialog.getTitle()).toBe('my-bookmarks.html');
@@ -471,6 +472,65 @@ describe('ImportDialogComponent', () => {
         expect(await dialog.getBodyText()).toContain('3 links imported');
       });
       expect(api.start.mock.calls[0][0].aiPass).toBeUndefined();
+    });
+
+    async function toGroups() {
+      const ctx = await toReview();
+      control('radio', 'Let AI sort them by topic').click();
+      await ctx.until(async () => {
+        expect(await (await ctx.button('Group')).isDisabled()).toBe(false);
+      });
+      await (await ctx.button('Group')).click();
+      await ctx.until(async () => {
+        expect(await ctx.dialog.getBodyText()).toContain('2 groups for 3 links');
+      });
+      return ctx;
+    }
+
+    it('gives the grouping units back on Back', async () => {
+      const { api, button } = await toGroups();
+
+      await (await button('Back')).click();
+
+      expect(api.releaseGroups).toHaveBeenCalledTimes(1);
+    });
+
+    it('gives the grouping units back when the dialog closes without an import', async () => {
+      const { api, dialog, closed } = await toGroups();
+
+      await dialog.close();
+
+      await vi.waitFor(() => expect(closed).toHaveBeenCalled());
+      expect(api.releaseGroups).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the units once the import started with the groups', async () => {
+      const { api, dialog, until, button } = await toGroups();
+      await (await button('Import and create 1 folder')).click();
+      await until(async () => {
+        expect(await dialog.getBodyText()).toContain('3 links imported');
+      });
+
+      await dialog.close();
+
+      expect(api.releaseGroups).not.toHaveBeenCalled();
+    });
+
+    it('gives the units back when the user imports without groups after a failed grouping', async () => {
+      const { api, until, button, dialog } = await toReview();
+      api.groups.mockReturnValue(throwError(() => mockHttpError(503)));
+      control('radio', 'Let AI sort them by topic').click();
+      await until(async () => {
+        expect(await (await button('Group')).isDisabled()).toBe(false);
+      });
+      await (await button('Group')).click();
+      await until(async () => {
+        expect(await dialog.getBodyText()).toContain('could not be grouped right now');
+      });
+
+      await (await button('Import 3 links')).click();
+
+      expect(api.releaseGroups).toHaveBeenCalledTimes(1);
     });
   });
 });

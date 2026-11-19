@@ -18,6 +18,7 @@ import { activeLang } from '../../../../core/i18n/active-lang';
 import { LocaleService } from '../../../../core/i18n/locale.service';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { IMPORT_GROUPS_ERROR } from '../../models/import-groups-error.const';
+import type { ImportGroupsError } from '../../models/import-groups-error.type';
 import type { ImportGroupDraft } from '../../models/import-group-draft.interface';
 import { ImportFlowService } from '../../services/import-flow.service';
 import { ImportGroupsService } from '../../services/import-groups.service';
@@ -59,7 +60,6 @@ export class ImportGroupsComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly SPINNER_SIZE = SPINNER_SIZE;
-  protected readonly IMPORT_GROUPS_ERROR = IMPORT_GROUPS_ERROR;
   protected readonly OTHER = OTHER;
 
   /** Key of the group whose links are open, if any. */
@@ -104,6 +104,17 @@ export class ImportGroupsComponent {
     const links = this.plural('import.groups.forLinks', this.state.linkCount());
     return `${groups} ${links}`;
   });
+
+  protected errorKey(error: ImportGroupsError): string {
+    switch (error) {
+      case IMPORT_GROUPS_ERROR.Allowance:
+        return 'import.groups.allowance';
+      case IMPORT_GROUPS_ERROR.Monthly:
+        return 'import.groups.monthly';
+      default:
+        return 'import.groups.failed';
+    }
+  }
 
   protected readonly waiting = computed(() =>
     this.plural('import.groups.waiting', this.state.linkCount()),
