@@ -59,9 +59,13 @@
   border-color: var(--danger);
 }
 
+// Disabled: the button disables itself and the icon dims; the text keeps its contrast (axe, WCAG AA).
 :host(.ui-drop-zone--disabled) {
-  opacity: 0.5;
   cursor: not-allowed;
+
+  .ui-drop-zone__icon {
+    opacity: 0.5;
+  }
 }
 
 @include reduced-motion {
