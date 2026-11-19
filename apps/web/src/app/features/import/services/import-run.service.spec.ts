@@ -193,27 +193,83 @@ describe('ImportRunService', () => {
     expect(api.finish).toHaveBeenCalledWith('imp1', { skipped: 2, failed: 0 });
   });
 
-  it('counts a failed batch (500 or network) as failed and still runs the next one', async () => {
+  it('counts a batch that keeps failing (500, network) as failed after the retries and runs the next one', async () => {
+    vi.useFakeTimers();
+    try {
+      const { api, service } = await setup();
+      const total = LINK_LIMIT.BatchMax * 3;
+      const bodies: string[] = [];
+      api.addLinks.mockImplementation((_id, body) => {
+        const first = body.items[0].idempotencyKey;
+        if (!bodies.includes(first)) bodies.push(first);
+        const failing = bodies.indexOf(first);
+        if (failing === 0) return throwError(() => httpError(500));
+        if (failing === 1) return throwError(() => new Error('network'));
+        return of(created(body.items.length));
+      });
+
+      const done = service.start(request(total));
+      await vi.advanceTimersByTimeAsync(20_000);
+      await done;
+
+      expect(api.addLinks).toHaveBeenCalledTimes(3 + 3 + 1);
+      expect(service.run()).toMatchObject({
+        phase: IMPORT_RUN_PHASE.Done,
+        failed: LINK_LIMIT.BatchMax * 2,
+        created: LINK_LIMIT.BatchMax,
+        processed: total,
+      });
+      expect(api.finish).toHaveBeenCalledWith('imp1', {
+        skipped: 0,
+        failed: LINK_LIMIT.BatchMax * 2,
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it.each([429, 503, 0])(
+    'retries a batch that failed with %i with the same keys, after 1 s and 3 s',
+    async (status) => {
+      vi.useFakeTimers();
+      try {
+        const { api, service } = await setup();
+        api.addLinks
+          .mockReturnValueOnce(throwError(() => httpError(status)))
+          .mockReturnValueOnce(throwError(() => httpError(status)))
+          .mockImplementation((_id, body) => of(created(body.items.length)));
+
+        const done = service.start(request(2));
+        await vi.advanceTimersByTimeAsync(0);
+        expect(api.addLinks).toHaveBeenCalledTimes(1);
+        await vi.advanceTimersByTimeAsync(999);
+        expect(api.addLinks).toHaveBeenCalledTimes(1);
+        await vi.advanceTimersByTimeAsync(1);
+        expect(api.addLinks).toHaveBeenCalledTimes(2);
+        await vi.advanceTimersByTimeAsync(3000);
+        await done;
+
+        expect(api.addLinks).toHaveBeenCalledTimes(3);
+        const keys = api.addLinks.mock.calls.map(([, body]) =>
+          body.items.map((item) => item.idempotencyKey),
+        );
+        expect(keys[1]).toEqual(keys[0]);
+        expect(keys[2]).toEqual(keys[0]);
+        expect(service.run()).toMatchObject({ created: 2, failed: 0 });
+      } finally {
+        vi.useRealTimers();
+      }
+    },
+  );
+
+  it('does not retry a 400', async () => {
     const { api, service } = await setup();
-    const total = LINK_LIMIT.BatchMax * 3;
-    api.addLinks
-      .mockReturnValueOnce(throwError(() => httpError(500)))
-      .mockReturnValueOnce(throwError(() => new Error('network')))
-      .mockImplementation((_id, body) => of(created(body.items.length)));
+    api.addLinks.mockReturnValue(throwError(() => httpError(400)));
 
-    await service.start(request(total));
+    await service.start(request(2));
 
-    expect(api.addLinks).toHaveBeenCalledTimes(3);
-    expect(service.run()).toMatchObject({
-      phase: IMPORT_RUN_PHASE.Done,
-      failed: LINK_LIMIT.BatchMax * 2,
-      created: LINK_LIMIT.BatchMax,
-      processed: total,
-    });
-    expect(api.finish).toHaveBeenCalledWith('imp1', {
-      skipped: 0,
-      failed: LINK_LIMIT.BatchMax * 2,
-    });
+    expect(api.addLinks).toHaveBeenCalledTimes(1);
+    expect(service.run()).toMatchObject({ failed: 2, created: 0 });
   });
 
   it.each([401, 403, 404, 409])(
@@ -238,13 +294,21 @@ describe('ImportRunService', () => {
     },
   );
 
-  it('still ends done when finish fails', async () => {
-    const { api, service } = await setup();
-    api.finish.mockReturnValue(throwError(() => httpError(500)));
+  it('still ends done when finish fails, after trying it once more', async () => {
+    vi.useFakeTimers();
+    try {
+      const { api, service } = await setup();
+      api.finish.mockReturnValue(throwError(() => httpError(500)));
 
-    await service.start(request(1));
+      const done = service.start(request(1));
+      await vi.advanceTimersByTimeAsync(5000);
+      await done;
 
-    expect(service.run().phase).toBe(IMPORT_RUN_PHASE.Done);
+      expect(api.finish).toHaveBeenCalledTimes(2);
+      expect(service.run().phase).toBe(IMPORT_RUN_PHASE.Done);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('fails with the folders-limit message when the start answers it, sending no links', async () => {
@@ -391,7 +455,7 @@ describe('ImportRunService', () => {
       TestBed.resetTestingModule();
 
       const second = await setup();
-      second.api.addLinks.mockReturnValue(throwError(() => httpError(500)));
+      second.api.addLinks.mockReturnValue(throwError(() => httpError(400)));
       await second.service.start(request(2, {}, { aiPass: true }));
       expect(second.follow.watch).not.toHaveBeenCalled();
     });

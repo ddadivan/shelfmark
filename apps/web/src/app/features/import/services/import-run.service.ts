@@ -36,6 +36,21 @@ const STOP_STATUSES: readonly number[] = [
   HttpStatusCode.Conflict,
 ];
 
+/** Waits before the retries of a batch that failed for a transient reason (two more tries). */
+const BATCH_RETRY_DELAYS_MS: readonly number[] = [1000, 3000];
+/** `finish` is tried once more. */
+const FINISH_RETRY_DELAYS_MS: readonly number[] = [1000];
+
+/** A network error (status 0), 429 or 5xx: worth sending again. */
+function isTransient(error: unknown): boolean {
+  if (!(error instanceof HttpErrorResponse)) return true;
+  return (
+    error.status === 0 ||
+    error.status === HttpStatusCode.TooManyRequests ||
+    error.status >= HttpStatusCode.InternalServerError
+  );
+}
+
 /**
  * Runs one import (ADR 0056): starts it (folders included), sends the links in batches one after
  * another and records the counts. A failed batch is counted as failed and the next one runs;
@@ -101,7 +116,10 @@ export class ImportRunService {
     await this.sendBatches(started.id, items);
     const { skipped, failed } = this.state();
     try {
-      await firstValueFrom(this.api().finish(started.id, { skipped, failed }));
+      await this.withRetries(
+        () => firstValueFrom(this.api().finish(started.id, { skipped, failed })),
+        FINISH_RETRY_DELAYS_MS,
+      );
     } catch {
       // The counts of Recent imports stay at what the batches recorded.
     }
@@ -146,8 +164,8 @@ export class ImportRunService {
     const batches = chunkBySize(items, LINK_LIMIT.BatchMax, IMPORT_REQUEST_BYTES);
     for (const [index, batch] of batches.entries()) {
       try {
-        const response = await firstValueFrom(
-          this.api().addLinks(id, { items: batch, skipRepeats: false }),
+        const response = await this.withRetries(() =>
+          firstValueFrom(this.api().addLinks(id, { items: batch, skipRepeats: false })),
         );
         this.state.update((state) => ({
           ...state,
@@ -168,6 +186,26 @@ export class ImportRunService {
         if (stop) return;
       }
     }
+  }
+
+  /**
+   * Runs a request again after a network error, 429 or 5xx (the same body, so the same idempotency
+   * keys: a batch that did arrive is replayed, not doubled), waiting `delays[i]` before retry i.
+   * Any other error, and the last failure, are thrown.
+   */
+  private async withRetries<T>(
+    send: () => Promise<T>,
+    delays: readonly number[] = BATCH_RETRY_DELAYS_MS,
+  ): Promise<T> {
+    for (const delay of delays) {
+      try {
+        return await send();
+      } catch (error) {
+        if (!isTransient(error)) throw error;
+        await new Promise<void>((resolve) => setTimeout(resolve, delay));
+      }
+    }
+    return send();
   }
 
   /** The new folders, tags and links show up everywhere, other tabs included. */
