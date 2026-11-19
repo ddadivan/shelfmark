@@ -124,3 +124,16 @@ AI features F0–F8 (`docs/ai/FEATURES.md`, approved Nov 17, 2026; parent #388).
 - `AiConnect.dc.html` — Connect your assistant (F6, MCP): server address, token shown once, connected clients, revoke, empty (desktop)
 - `AiDiscover.dc.html` — Related on your shelf in Edit link (F7); “From your shelf” weekly block with and without AI (F8) (desktop)
 - `MobileAiMore.dc.html` — Phone at 360px: the Ask tab replaces Tags while Ask is on; search with meaning results and the Ask row; Ask full screen (empty, answered) with Back; Library with the Tags section next to folders; AI off keeps the Tags tab (phone)
+
+## 13 · Reader (#539)
+
+Design for review, not approved yet (Nov 19, 2026). A stored copy of an article, the reading page, reading themes, an AI chat about the article and a digest the person keeps, copies or shares. Every board numbers its frames (1a, 1b, …), marks the pressed control with a numbered badge and names the next frame; read them in order. Screenshots: `reader-shots/`.
+
+- `Reader1Entry.dc.html` — Where reading starts: «Читати» on the card (hover bar, card menu), list row, Edit link, search; «Є копія»; dead link «Оригінал недоступний — відкрити копію»; «На потім» and favourites pre-extract a copy; phone sheet
+- `Reader2Page.dc.html` — Reading page /read/:id: first open «Готуємо текст…», the desktop article with every control and block type, more menu, phone pushed page, no copy possible, end of the article with «Позначити прочитаним» and the next unread
+- `Reader3Themes.dc.html` — The «Aa» menu (theme, font, size, line height, width), phone sheet, Світла / Сепія / Темна / Чорна side by side with WCAG AA ratios, type options
+- `Reader4Ask.dc.html` — «Запитати про статтю» (AI on only): desktop side panel, quick prompts, streaming, paragraph citations that scroll to and highlight the paragraph, phone sheet, allowance used up, AI off
+- `Reader5Digest.dc.html` — Digest without AI: select → «Додати в конспект», highlights, the digest editor (points and quotes with paragraph links), item menu, empty state, phone
+- `Reader6DigestAi.dc.html` — Digest with AI: «Зробити конспект», kinds or a custom goal, generating, AI items with the spark until edited, other kinds (plan, terms, questions; proposal: review cards), phone, limit
+- `Reader7Share.dc.html` — Share dialog (what guests see and never see, revoke), public page desktop and phone, revoked link, messenger preview with the OG image layout, copied-text format
+- `Reader8After.dc.html` — After reading: card with «Прочитано» and the digest chip and popover, card menu, list row, Edit link digest section, Settings › Читання (desktop and phone), offline (later), Trash
