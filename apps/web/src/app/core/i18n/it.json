@@ -2132,8 +2132,6 @@
       "cancel": "Annulla"
     },
     "create": {
-      "title": "Salva questa vista",
-      "action": "Salva vista",
       "saving": "Salvataggio…",
       "failed": "Impossibile salvare la vista. Riprova.",
       "limit": "Hai già il numero massimo di viste. Prima eliminane una.",
@@ -2178,6 +2176,66 @@
       "video": "Link riconosciuti come video",
       "article": "Link riconosciuti come articoli",
       "shopping": "Link riconosciuti come acquisti"
+    },
+    "new": {
+      "title": "Nuova vista",
+      "lead": "Parti dal filtro dell’elenco in cui ti trovi, oppure cambialo qui.",
+      "action": "Salva vista",
+      "change": "Modifica",
+      "composed": "Il filtro è stato compilato dalla tua descrizione.",
+      "dropped": "Lasciato fuori: {{names}}",
+      "compose": "Componi",
+      "composing": "Composizione…",
+      "ideas": "Idee",
+      "ideaLabel": "Usa l’idea: {{name}}",
+      "ideaPhrase": "Link su {{name}}",
+      "unavailable": "Al momento non riesco a comporre una vista. Non è stato conteggiato nel tuo limite; puoi impostare il filtro da solo.",
+      "skip": {
+        "or": "oppure",
+        "action": "salva il filtro attuale"
+      },
+      "phrase": {
+        "label": "Descrivi cosa mostrare",
+        "placeholder": "i video su Angular che non ho ancora visto",
+        "hint": "Ad esempio: “articoli di design dalla cartella Lavoro”, “cosa comprare tra i vestiti”, “ricette, prima le più recenti”."
+      },
+      "where": {
+        "label": "Dove",
+        "all": "Tutti i link",
+        "unsorted": "Non ordinati",
+        "favorites": "Preferiti",
+        "search": "Cerca cartelle",
+        "noResults": "Nessuna cartella trovata"
+      },
+      "kind": {
+        "label": "Tipo",
+        "all": "Tutti",
+        "video": "Video",
+        "article": "Articoli",
+        "shopping": "Shop"
+      },
+      "tags": {
+        "label": "Tag",
+        "placeholder": "Aggiungi tag",
+        "max": "Fino a {{max}} tag",
+        "unknown": "“{{name}}” non è uno dei tuoi tag. Sceglilo dall’elenco."
+      },
+      "q": {
+        "label": "Parole da cercare",
+        "placeholder": "Parole nel titolo, nella nota o nell’indirizzo",
+        "tooLong": "Usa al massimo {{max}} caratteri"
+      },
+      "sort": {
+        "label": "Ordine"
+      },
+      "found": {
+        "one": "{{count}} link trovato",
+        "many": "{{count}} link trovati",
+        "other": "{{count}} link trovati"
+      },
+      "foundMore": "Più di {{count}} link trovati",
+      "andMore": "e altri {{count}}",
+      "meta": "{{host}} · {{folder}}"
     }
   },
   "feedback": {

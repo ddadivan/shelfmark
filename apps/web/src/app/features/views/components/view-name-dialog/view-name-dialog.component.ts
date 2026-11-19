@@ -24,11 +24,10 @@ import {
 } from '@shelfmark/ui';
 import type { ViewNameDialogData } from '../../models/view-name-dialog-data.interface';
 import { VIEW_NAME_ERROR } from '../../models/view-name-error.const';
-import { VIEW_NAME_MODE } from '../../models/view-name-mode.const';
 
 /**
- * Names a saved view: "Save this view" (the current filter) or "Rename". One field; the dialog
- * stays open with an error notice when `submit` resolves an error key and closes on success.
+ * Renames a saved view (a new view has its own dialog, `NewViewDialogComponent`). One field; the
+ * dialog stays open with an error notice when `submit` resolves an error key and closes on success.
  */
 @Component({
   selector: 'app-view-name-dialog',
@@ -80,10 +79,9 @@ export class ViewNameDialogComponent {
     },
   );
 
-  private readonly renaming = this.data.mode === VIEW_NAME_MODE.Rename;
-  protected readonly titleKey = this.renaming ? 'views.rename.title' : 'views.create.title';
-  protected readonly actionKey = this.renaming ? 'views.rename.action' : 'views.create.action';
-  protected readonly savingKey = this.renaming ? 'views.rename.saving' : 'views.create.saving';
+  protected readonly titleKey = 'views.rename.title';
+  protected readonly actionKey = 'views.rename.action';
+  protected readonly savingKey = 'views.rename.saving';
   protected readonly saving = signal(false);
   protected readonly errorKey = signal<string | null>(null);
   protected readonly failed = computed(() => this.errorKey() !== null);

@@ -72,5 +72,6 @@ export function fakeAiApi(settings: AiSettingsResponse = aiSettingsResponse()): 
     searchMeaning: vi.fn<AiApi['searchMeaning']>(() => of({ status: settings.search, items: [] })),
     related: vi.fn<AiApi['related']>(() => of({ status: settings.search, items: [] })),
     ask: vi.fn<AiApi['ask']>(),
+    draftView: vi.fn<AiApi['draftView']>(),
   };
 }

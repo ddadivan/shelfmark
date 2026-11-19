@@ -2132,8 +2132,6 @@
       "cancel": "Annuler"
     },
     "create": {
-      "title": "Enregistrer cette vue",
-      "action": "Enregistrer la vue",
       "saving": "Enregistrement…",
       "failed": "Impossible d’enregistrer la vue. Réessayez.",
       "limit": "Vous avez déjà le nombre maximal de vues. Supprimez-en une d’abord.",
@@ -2178,6 +2176,66 @@
       "video": "Liens détectés comme vidéos",
       "article": "Liens détectés comme articles",
       "shopping": "Liens détectés comme achats"
+    },
+    "new": {
+      "title": "Nouvelle vue",
+      "lead": "Partez du filtre du flux actuel, ou modifiez-le ici.",
+      "action": "Enregistrer la vue",
+      "change": "Modifier",
+      "composed": "Le filtre a été rempli d’après votre description.",
+      "dropped": "Laissé de côté : {{names}}",
+      "compose": "Composer",
+      "composing": "Composition…",
+      "ideas": "Idées",
+      "ideaLabel": "Utiliser l’idée : {{name}}",
+      "ideaPhrase": "Liens sur {{name}}",
+      "unavailable": "Impossible de composer une vue pour l’instant. Cela n’a pas compté dans votre limite ; vous pouvez régler le filtre vous-même.",
+      "skip": {
+        "or": "ou",
+        "action": "enregistrer le filtre actuel"
+      },
+      "phrase": {
+        "label": "Décrivez ce qu’il faut afficher",
+        "placeholder": "les vidéos sur Angular que je n’ai pas encore vues",
+        "hint": "Par exemple : « articles de design de mon dossier Travail », « quoi acheter côté vêtements », « recettes, les plus récentes d’abord »."
+      },
+      "where": {
+        "label": "Où",
+        "all": "Tous les liens",
+        "unsorted": "Non classés",
+        "favorites": "Favoris",
+        "search": "Rechercher des dossiers",
+        "noResults": "Aucun dossier trouvé"
+      },
+      "kind": {
+        "label": "Type",
+        "all": "Tous",
+        "video": "Vidéos",
+        "article": "Articles",
+        "shopping": "Achats"
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "Ajouter un tag",
+        "max": "Jusqu’à {{max}} tags",
+        "unknown": "« {{name}} » n’est pas l’un de vos tags. Choisissez-en un dans la liste."
+      },
+      "q": {
+        "label": "Mots recherchés",
+        "placeholder": "Mots du titre, de la note ou de l’adresse",
+        "tooLong": "{{max}} caractères au maximum"
+      },
+      "sort": {
+        "label": "Tri"
+      },
+      "found": {
+        "one": "{{count}} lien trouvé",
+        "many": "{{count}} liens trouvés",
+        "other": "{{count}} liens trouvés"
+      },
+      "foundMore": "Plus de {{count}} liens trouvés",
+      "andMore": "et {{count}} de plus",
+      "meta": "{{host}} · {{folder}}"
     }
   },
   "feedback": {

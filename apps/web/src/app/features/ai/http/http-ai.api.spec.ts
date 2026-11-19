@@ -83,6 +83,12 @@ describe('HttpAiApi', () => {
       ],
       [() => api.related('l/1').subscribe(), 'GET', '/api/links/l%2F1/related', null],
       [() => api.related('l1', 5).subscribe(), 'GET', '/api/links/l1/related?limit=5', null],
+      [
+        () => api.draftView('videos about Angular').subscribe(),
+        'POST',
+        '/api/ai/view-draft',
+        { phrase: 'videos about Angular' },
+      ],
     ];
     for (const [call, method, url, body] of calls) {
       call();

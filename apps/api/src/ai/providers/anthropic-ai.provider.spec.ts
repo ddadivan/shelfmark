@@ -89,6 +89,46 @@ describe('AnthropicAiProvider', () => {
     });
   });
 
+  it('drafts a view with Haiku, no thinking, structured output, names only and no retries', async () => {
+    const { provider, create } = setup();
+    create.mockResolvedValue(message('{"scope":"all","tags":["css"]}'));
+    const outcome = await provider.draftView({
+      phrase: 'css <b>videos</b>',
+      folders: ['Work / Design'],
+      tags: ['css'],
+    });
+    expect(outcome).toEqual({ type: 'output', output: { scope: 'all', tags: ['css'] } });
+    const [params, options] = create.mock.calls[0];
+    expect(params.model).toBe('claude-haiku-5-5');
+    expect(params.thinking).toEqual({ type: 'disabled' });
+    expect(params.max_tokens).toBe(512);
+    expect(params.output_config.effort).toBe('low');
+    expect(params.output_config.format.schema.required).toEqual([
+      'scope',
+      'folder',
+      'tags',
+      'kind',
+      'words',
+      'sort',
+      'name',
+      'note',
+    ]);
+    expect(params.messages[0].content).toBe(
+      '<phrase>\ncss &lt;b>videos&lt;/b>\n</phrase>\n\n<folders>\nWork / Design\n</folders>\n\n<tags>\ncss\n</tags>',
+    );
+    expect(options).toEqual({ timeout: 15_000, maxRetries: 0 });
+
+    create.mockResolvedValue(message('{}', 'refusal'));
+    expect(await provider.draftView({ phrase: 'x', folders: [], tags: [] })).toEqual({
+      type: 'refusal',
+    });
+    create.mockRejectedValue(Object.assign(new Error('x'), { status: 529 }));
+    expect(await provider.draftView({ phrase: 'x', folders: [], tags: [] })).toEqual({
+      type: 'error',
+      retryable: true,
+    });
+  });
+
   it('answers a refusal for the refusal stop reason', async () => {
     const { provider, create } = setup();
     create.mockResolvedValue(message('{"tags":[]}', 'refusal'));

@@ -139,6 +139,7 @@ export class AiBackfillResultsService {
       folderId: parsed.folder === null ? null : (folderKeys.get(parsed.folder) ?? null),
       summary: parsed.summary,
       title: null,
+      kind: parsed.kind,
     });
     return false;
   }

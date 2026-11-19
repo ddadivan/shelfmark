@@ -19,6 +19,7 @@ import type {
   TidyUndoResponse,
   UndoAiApplyRequest,
   UpdateAiSettingsRequest,
+  ViewDraftResponse,
 } from '@shelfmark/contracts';
 
 /** Seam for the AI endpoints (`AI_ENDPOINT`, #389–#391): the plan's endpoint table, one method per route. */
@@ -74,4 +75,10 @@ export interface AiApi {
    * 401, 403, 429) or a broken connection; unsubscribing aborts the request.
    */
   ask(question: string, history: readonly AskTurn[]): Observable<AskEvent>;
+  /**
+   * `POST /api/ai/view-draft` (#535): turns a phrase into the filter of a new saved view; always 200
+   * with an `outcome` while AI is on and the phrase is valid (3 to 200 characters after trimming),
+   * 409 while AI is off, 400 for a bad phrase. A phrase counts as one Ask question. Nothing is saved.
+   */
+  draftView(phrase: string): Observable<ViewDraftResponse>;
 }

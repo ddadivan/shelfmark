@@ -11,7 +11,6 @@ import {
 } from '@shelfmark/contracts';
 import { APP_PATH } from '../../../models/app-path.const';
 import { FEED_SORT } from '../../links/models/feed-sort.const';
-import type { FeedSort } from '../../links/models/feed-sort.type';
 import type { LinksFilter } from '../../links/models/links-filter.type';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { KIND_QUERY_PARAM } from '../../links/models/kind-query-param.const';
@@ -19,6 +18,7 @@ import { SEARCH_QUERY_PARAM } from '../../links/models/search-query-param.const'
 import { SORT_QUERY_PARAM } from '../../links/models/sort-query-param.const';
 import { TAG_QUERY_PARAM } from '../../tags/models/tag-query-param.const';
 import type { ViewNavigation } from '../models/view-navigation.interface';
+import { feedSortOf } from './view-sort';
 
 /** The complete saved-view query of a feed filter: what "Save this view" stores. */
 export function viewQueryOf(filter: LinksFilter): SavedViewQuery {
@@ -108,14 +108,6 @@ export function listQueryOf(query: SavedViewQuery): ListLinksQuery {
     list.q = query.q;
   }
   return list;
-}
-
-/** The feed sort of a view; a sort the feed has no option for falls back to newest first. */
-function feedSortOf(query: SavedViewQuery): FeedSort {
-  if (query.sort === LINK_SORT_FIELD.Title) {
-    return FEED_SORT.Title;
-  }
-  return query.order === SORT_ORDER.Asc ? FEED_SORT.Oldest : FEED_SORT.Newest;
 }
 
 /** Where a view leads: the route of its scope and the query parameters of its filters. */

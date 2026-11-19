@@ -7,6 +7,12 @@ import { SavedViewsStore } from '../../../stores/saved-views.store';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
+import { FOLDERS_API } from '../../links/models/folders-api.const';
+import { LINKS_API } from '../../links/models/links-api.const';
+import { TAGS_API } from '../../links/models/tags-api.const';
+import { MockFoldersApi } from '../../links/mock/mock-folders.api';
+import { MockLinksApi } from '../../links/mock/mock-links.api';
+import { MockTagsApi } from '../../links/mock/mock-tags.api';
 import { MockSavedViewsApi } from '../mock/mock-saved-views.api';
 import { SAVED_VIEWS_API } from '../models/saved-views-api.const';
 import { SavedViewActionsService } from './saved-view-actions.service';
@@ -23,6 +29,9 @@ async function setup() {
         { path: 'folders/:folderId', children: [] },
       ]),
       { provide: SAVED_VIEWS_API, useClass: MockSavedViewsApi },
+      { provide: LINKS_API, useClass: MockLinksApi },
+      { provide: FOLDERS_API, useClass: MockFoldersApi },
+      { provide: TAGS_API, useClass: MockTagsApi },
     ],
   });
   await loadEnglish();
@@ -82,7 +91,7 @@ function button(label: string): HTMLButtonElement {
 }
 
 function type(value: string): void {
-  const field = dialog().querySelector<HTMLInputElement>('input');
+  const field = dialog().querySelector<HTMLInputElement>('input[placeholder="To read"]');
   if (!field) {
     throw new Error('no name field');
   }
@@ -142,7 +151,9 @@ describe('SavedViewActionsService', () => {
     const { actions, store } = await setup();
     const done = actions.saveCurrent({ scope: LINKS_SCOPE.Unsorted, kind: LINK_KIND.Article });
     await opened();
-    expect(dialog().textContent).toContain('Save this view');
+    expect(dialog().textContent).toContain('New view');
+    // AI is off here: no phrase field, the rows start from the filter.
+    expect(dialog().textContent).not.toContain('Describe what to show');
     button('Save view').click();
     await until(() => {
       expect(dialog().textContent).toContain('Enter a name');
