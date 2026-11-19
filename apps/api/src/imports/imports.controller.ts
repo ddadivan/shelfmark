@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   HttpCode,
@@ -78,13 +79,14 @@ export class ImportsController {
   @ApiOperation({
     summary: 'AI groups by topic for the links of a file (nothing is written)',
     description:
-      'Takes one unit of the allowance for existing links per link (all or nothing; units of an earlier grouping nobody used are given back first), embeds and clusters the titles, names the groups in your language and matches them to your folders by name. A provider failure answers 503 and gives the units back. The body limit of this route is 1 MB.',
+      'Takes one unit of the allowance for existing links per link (all or nothing; units of an earlier grouping nobody used are given back first) and counts the links against a monthly grouping cap (given back only on a provider failure), embeds and clusters the titles, names the groups in your language and matches them to your folders by name. A provider failure answers 503 and gives the units back. The body limit of this route is 1 MB.',
   })
   @ApiOkResponse({ type: ImportGroupsResponseDto })
   @ApiBadRequestResponse({ type: ApiErrorResponseDto, description: 'Invalid body' })
   @ApiConflictResponse({
     type: ApiErrorResponseDto,
-    description: 'AI is off or not in your plan, or not enough of the allowance is left',
+    description:
+      'AI is off or not in your plan, not enough of the allowance is left, or the monthly grouping cap is reached',
   })
   group(
     @CurrentUser() user: AuthUser,
@@ -92,6 +94,19 @@ export class ImportsController {
     @Headers('accept-language') acceptLanguage?: string,
   ): Promise<ImportGroupsResponseDto> {
     return this.groups.group(user, body, { acceptLanguage });
+  }
+
+  @Delete('groups')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RateLimit(RATE_LIMIT.ImportGroups)
+  @ApiOperation({
+    summary: 'Give back the allowance units of your last AI grouping that no import took',
+    description:
+      'For Back, another choice or a closed dialog. Idempotent: 204 whether or not units were waiting. The monthly grouping count is not given back.',
+  })
+  @ApiNoContentResponse({ description: 'Given back (or nothing was waiting)' })
+  async discardGroups(@CurrentUser() user: AuthUser): Promise<void> {
+    await this.groups.discard(user.id);
   }
 
   @Post()

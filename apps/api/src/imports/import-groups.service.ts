@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { ConflictException, Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
 import {
   AI_QUOTA,
@@ -8,6 +9,7 @@ import {
   type ImportGroupsRequest,
   type ImportGroupsResponse,
 } from '@shelfmark/contracts';
+import type { Prisma } from '../generated/prisma/client';
 import { mapLimit } from '../ai/backfill/map-limit';
 import { AiJobsService } from '../ai/jobs/ai-jobs.service';
 import { EMBEDDING_INPUT_TYPE } from '../ai/models/embedding-input-type.const';
@@ -42,8 +44,10 @@ function topHosts(urls: readonly string[], max: number): string[] {
 
 /**
  * AI groups by topic for the links of a file (#387, ADR 0056 decision 10). Nothing is written except
- * the allowance: N units of the one-time backfill allowance are taken all or nothing (units of an
- * earlier grouping that no import used are given back first, `ai_settings.import_ai_prepaid`), the
+ * the allowance: N links count against the monthly grouping cap (never given back except on a
+ * provider failure) and N units of the one-time backfill allowance are taken all or nothing (units
+ * of an earlier grouping that no import used are given back first, `ai_settings.import_ai_prepaid`,
+ * guarded by the grouping token `import_ai_grouping_id`), the
  * texts are embedded through the embedding seam (not stored, not counted as monthly embeds),
  * clustered (`clusterVectors`), the clusters named by the fast model in the user's language and
  * matched to the user's own live folders by name. A provider failure gives the units back (503).
@@ -69,14 +73,14 @@ export class ImportGroupsService {
     const userId = user.id;
     const charged = request.links.length;
     const stored = await this.settings.read(this.prisma, userId);
-    await this.reserve(userId, charged);
+    const { token, month } = await this.reserve(userId, charged);
     try {
       const { groups, rest } = await this.compute(user, request, stored, context);
       // Counts only (no titles, URLs or names).
       this.logger.log(`Import grouping: ${charged} links, ${groups.length} groups`);
       return { groups, rest, charged };
     } catch (error) {
-      await this.release(userId, charged);
+      await this.release(userId, token, month, charged);
       this.logger.warn(
         `Import grouping failed (${error instanceof Error ? error.name : 'unknown'}), ${charged} units given back`,
       );
@@ -85,46 +89,86 @@ export class ImportGroupsService {
   }
 
   /**
-   * Takes `wanted` units of the backfill allowance, all or nothing, in one transaction under the
-   * settings row lock: the units an earlier grouping left are given back first, a short grant
-   * rolls everything back (the earlier units stay as they were). 409 when AI is off or the tier has
-   * no allowance (`AiUnavailable`) or too little is left (`AiAllowance`).
+   * `DELETE /api/imports/groups`: gives back the units of the user's pending grouping (no import
+   * took them: Back, another choice, dialog closed) and clears its token. Idempotent. The monthly
+   * count stays (it bounds provider spend).
    */
-  private async reserve(userId: string, wanted: number): Promise<void> {
+  async discard(userId: string): Promise<void> {
     await this.prisma.$transaction(async (tx) => {
-      const rows = await tx.$queryRaw<{ enabled: boolean; prepaid: number }[]>`
-        SELECT enabled, import_ai_prepaid AS prepaid FROM ai_settings
-        WHERE user_id = ${userId}::uuid FOR UPDATE`;
+      await this.giveBackPending(tx, userId);
+    });
+  }
+
+  /**
+   * Gives back the pending grouping units under the caller's lock on the settings row and clears
+   * them with their token.
+   */
+  private async giveBackPending(tx: Prisma.TransactionClient, userId: string): Promise<void> {
+    await tx.$executeRaw`
+      UPDATE ai_settings
+      SET backfill_used = GREATEST(backfill_used - import_ai_prepaid, 0), import_ai_prepaid = 0,
+        import_ai_grouping_id = NULL, import_ai_prepaid_at = NULL
+      WHERE user_id = ${userId}::uuid AND import_ai_prepaid > 0`;
+  }
+
+  /**
+   * Takes this grouping's units, all or nothing, in one transaction under the settings row lock:
+   * the units an earlier grouping left are given back first, then `wanted` links count against the
+   * monthly cap (409 `GroupsMonthly`, checked before the allowance), then `wanted` units of the
+   * backfill allowance (409 `AiAllowance`); a refusal rolls everything back. The units carry a new
+   * token. 409 `AiUnavailable` when AI is off or the tier has no allowance.
+   */
+  private async reserve(userId: string, wanted: number): Promise<{ token: string; month: string }> {
+    const token = randomUUID();
+    const month = await this.prisma.$transaction(async (tx) => {
+      const rows = await tx.$queryRaw<{ enabled: boolean }[]>`
+        SELECT enabled FROM ai_settings WHERE user_id = ${userId}::uuid FOR UPDATE`;
       const row = rows[0];
       if (row === undefined || !row.enabled) {
         throw new ConflictException(IMPORT_ERROR_MESSAGE.AiUnavailable);
       }
       const { aiTier } = await this.settings.entitlements(tx, userId);
-      if (AI_QUOTA[aiTier].backfillLinks <= 0) {
+      if (AI_QUOTA[aiTier].backfillLinks <= 0 || AI_QUOTA[aiTier].importGroupLinksPerMonth <= 0) {
         throw new ConflictException(IMPORT_ERROR_MESSAGE.AiUnavailable);
       }
-      if (row.prepaid > 0) {
-        await tx.$executeRaw`
-          UPDATE ai_settings
-          SET backfill_used = GREATEST(backfill_used - ${row.prepaid}::int, 0), import_ai_prepaid = 0
-          WHERE user_id = ${userId}::uuid`;
-      }
+      await this.giveBackPending(tx, userId);
+      const reserved = await this.usage.reserveImportGroupLinks(
+        userId,
+        aiTier,
+        wanted,
+        new Date(),
+        tx,
+      );
+      if (reserved === null) throw new ConflictException(IMPORT_ERROR_MESSAGE.GroupsMonthly);
       const granted = await this.usage.reserveBackfill(userId, aiTier, wanted, tx);
       if (granted < wanted) throw new ConflictException(IMPORT_ERROR_MESSAGE.AiAllowance);
       await tx.$executeRaw`
-        UPDATE ai_settings SET import_ai_prepaid = ${wanted}::int WHERE user_id = ${userId}::uuid`;
+        UPDATE ai_settings
+        SET import_ai_prepaid = ${wanted}::int, import_ai_grouping_id = ${token}::uuid,
+          import_ai_prepaid_at = now()
+        WHERE user_id = ${userId}::uuid`;
+      return reserved;
     });
+    return { token, month };
   }
 
   /**
-   * Gives this request's units back after a failure, only while they are still the user's pending
-   * grouping units (an import that took them over, or a newer grouping, keeps its own).
+   * After a provider failure: the monthly count of this request always goes back; the backfill
+   * units only while they are still this grouping's (token match): a newer grouping, or an import
+   * that took them over, keeps its own.
    */
-  private async release(userId: string, units: number): Promise<void> {
+  private async release(
+    userId: string,
+    token: string,
+    month: string,
+    units: number,
+  ): Promise<void> {
+    await this.usage.refundImportGroupLinks(userId, month, units);
     await this.prisma.$executeRaw`
       UPDATE ai_settings
-      SET backfill_used = GREATEST(backfill_used - ${units}::int, 0), import_ai_prepaid = 0
-      WHERE user_id = ${userId}::uuid AND import_ai_prepaid = ${units}::int`;
+      SET backfill_used = GREATEST(backfill_used - import_ai_prepaid, 0), import_ai_prepaid = 0,
+        import_ai_grouping_id = NULL, import_ai_prepaid_at = NULL
+      WHERE user_id = ${userId}::uuid AND import_ai_grouping_id = ${token}::uuid`;
   }
 
   private async compute(

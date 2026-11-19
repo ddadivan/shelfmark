@@ -3,11 +3,13 @@ import {
   AI_BACKFILL_STATE,
   AI_QUOTA,
   IMPORT_AI_STATE,
+  IMPORT_LIMIT,
   type ImportAiState,
 } from '@shelfmark/contracts';
 import type { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiBackgroundService } from '../background/ai-background.service';
+import { AI_CATCH_UP_LIMIT } from '../models/ai-catch-up-limit.const';
 import { AI_BACKFILL_LIMIT } from '../models/ai-backfill-limit.const';
 import { AI_JOB_STATE } from '../models/ai-job-state.const';
 import { AiSettingsService } from '../settings/ai-settings.service';
@@ -36,7 +38,8 @@ export class AiImportPassService {
   /**
    * Moves the units of the user's last AI grouping (`ai_settings.import_ai_prepaid`) onto the
    * import (`imports.ai_prepaid`) and zeroes them, in the caller's transaction under the settings
-   * row lock, so two starts cannot take the same units.
+   * row lock, so two starts cannot take the same units. The grouping token is cleared too: a late
+   * failure of that grouping can no longer give the units back.
    */
   async takeGroupingUnits(
     tx: Prisma.TransactionClient,
@@ -48,7 +51,9 @@ export class AiImportPassService {
     const units = rows[0]?.n ?? 0;
     if (units <= 0) return;
     await tx.$executeRaw`
-      UPDATE ai_settings SET import_ai_prepaid = 0 WHERE user_id = ${userId}::uuid`;
+      UPDATE ai_settings
+      SET import_ai_prepaid = 0, import_ai_grouping_id = NULL, import_ai_prepaid_at = NULL
+      WHERE user_id = ${userId}::uuid`;
     await tx.$executeRaw`
       UPDATE imports SET ai_prepaid = ${units}::int
       WHERE id = ${importId}::uuid AND user_id = ${userId}::uuid`;
@@ -140,5 +145,49 @@ export class AiImportPassService {
         UPDATE ai_settings SET backfill_used = GREATEST(backfill_used - ${prepaid}::int, 0)
         WHERE user_id = ${userId}::uuid`;
     }
+  }
+
+  /**
+   * The daily sweep (every user, ADR 0056): gives back units nobody used within the open window
+   * of an import. (a) An import that asked for the pass, never got a state (the tab closed before
+   * `finish`) and holds prepaid units: units back, `ai_prepaid` 0, state `skipped`. (b) Pending
+   * grouping units (`ai_settings.import_ai_prepaid`) older than the window: units back, token
+   * cleared. One transaction per user, the settings row first (the lock order of `begin`).
+   * Answers how many users were touched.
+   */
+  async expireStranded(): Promise<number> {
+    const users = await this.prisma.$queryRaw<{ userId: string }[]>`
+      SELECT user_id AS "userId" FROM imports
+      WHERE ai_requested AND ai_state IS NULL AND ai_prepaid > 0
+        AND created_at < now() - make_interval(hours => ${IMPORT_LIMIT.OpenHours}::int)
+      UNION
+      SELECT user_id FROM ai_settings
+      WHERE import_ai_prepaid > 0
+        AND import_ai_prepaid_at < now() - make_interval(hours => ${IMPORT_LIMIT.OpenHours}::int)
+      LIMIT ${AI_CATCH_UP_LIMIT.SweepUsersMax}`;
+    let touched = 0;
+    for (const { userId } of users) {
+      const changed = await this.prisma.$transaction(async (tx) => {
+        await tx.$queryRaw`SELECT 1 FROM ai_settings WHERE user_id = ${userId}::uuid FOR UPDATE`;
+        const stale = await tx.$queryRaw<{ id: string; prepaid: number }[]>`
+          SELECT id, ai_prepaid AS prepaid FROM imports
+          WHERE user_id = ${userId}::uuid AND ai_requested AND ai_state IS NULL AND ai_prepaid > 0
+            AND created_at < now() - make_interval(hours => ${IMPORT_LIMIT.OpenHours}::int)
+          FOR UPDATE`;
+        for (const row of stale) {
+          await this.release(tx, userId, row.id, row.prepaid, IMPORT_AI_STATE.Skipped, 0);
+        }
+        const pending = await tx.$executeRaw`
+          UPDATE ai_settings
+          SET backfill_used = GREATEST(backfill_used - import_ai_prepaid, 0), import_ai_prepaid = 0,
+            import_ai_grouping_id = NULL, import_ai_prepaid_at = NULL
+          WHERE user_id = ${userId}::uuid AND import_ai_prepaid > 0
+            AND import_ai_prepaid_at < now() - make_interval(hours => ${IMPORT_LIMIT.OpenHours}::int)`;
+        return stale.length > 0 || pending > 0;
+      });
+      if (changed) touched += 1;
+    }
+    if (touched > 0) this.logger.log(`Import AI sweep: units given back for ${touched} user(s)`);
+    return touched;
   }
 }
