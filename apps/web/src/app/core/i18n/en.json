@@ -1302,7 +1302,7 @@
         "title": "Browser bookmarks",
         "description": "HTML file from Chrome, Safari, Firefox or Edge. Folders become folders."
       },
-      "drop": "Drag the file here",
+      "drop": "or drag the file here",
       "choose": "Choose file",
       "reading": "Reading {{file}}…",
       "problem": {

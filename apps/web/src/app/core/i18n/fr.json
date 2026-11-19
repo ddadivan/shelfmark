@@ -1325,7 +1325,7 @@
         "title": "Favoris du navigateur",
         "description": "Fichier HTML de Chrome, Safari, Firefox ou Edge. Les dossiers restent des dossiers."
       },
-      "drop": "Glissez le fichier ici",
+      "drop": "ou glissez le fichier ici",
       "choose": "Choisir un fichier",
       "reading": "Lecture de {{file}}…",
       "problem": {

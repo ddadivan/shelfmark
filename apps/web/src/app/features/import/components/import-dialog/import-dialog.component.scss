@@ -13,26 +13,6 @@
   padding: rem(2px);
 }
 
-.import-dialog__only-source {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.import-dialog__source-title {
-  @include type(heading);
-
-  margin: 0;
-  color: var(--text);
-}
-
-.import-dialog__source-text {
-  @include type(body);
-
-  margin: 0;
-  color: var(--text-muted);
-}
-
 .import-dialog__status:empty {
   display: none;
 }

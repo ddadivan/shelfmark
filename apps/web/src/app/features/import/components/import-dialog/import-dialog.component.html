@@ -16,13 +16,11 @@
             [value]="flow.sourceId()"
             (valueChange)="setSource($event)"
           />
-        } @else {
-          <div class="import-dialog__only-source">
-            <p class="import-dialog__source-title">{{ flow.source().titleKey | transloco }}</p>
-            <p class="import-dialog__source-text">{{ flow.source().descriptionKey | transloco }}</p>
-          </div>
         }
         <ui-drop-zone
+          illustration="welcome-save"
+          [heading]="sourceOptions().length > 1 ? '' : (flow.source().titleKey | transloco)"
+          [text]="sourceOptions().length > 1 ? '' : (flow.source().descriptionKey | transloco)"
           [accept]="flow.source().accept"
           [label]="dropLabel()"
           [actionLabel]="'import.source.choose' | transloco"

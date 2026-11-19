@@ -1325,7 +1325,7 @@
         "title": "Segnalibri del browser",
         "description": "File HTML da Chrome, Safari, Firefox o Edge. Le cartelle restano cartelle."
       },
-      "drop": "Trascina qui il file",
+      "drop": "o trascina qui il file",
       "choose": "Scegli il file",
       "reading": "Lettura di {{file}}…",
       "problem": {

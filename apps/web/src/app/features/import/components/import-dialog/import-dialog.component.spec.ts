@@ -150,8 +150,10 @@ describe('ImportDialogComponent', () => {
     const zone = await loader.getHarness(UiDropZoneHarness);
 
     expect(await dialog.getTitle()).toBe('Import links');
-    expect(await dialog.getBodyText()).toContain('Browser bookmarks');
-    expect(await zone.getLabel()).toBe('Drag the file here');
+    expect(await zone.isStacked()).toBe(true);
+    expect(await zone.getHeading()).toBe('Browser bookmarks');
+    expect(await zone.getText()).toContain('HTML file from Chrome');
+    expect(await zone.getLabel()).toBe('or drag the file here');
     expect(await zone.getActionLabel()).toBe('Choose file');
     expect(await zone.getHint()).toContain('.html, up to 50 MB and');
     expect(await zone.isInvalid()).toBe(false);

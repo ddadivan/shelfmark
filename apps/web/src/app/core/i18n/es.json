@@ -1325,7 +1325,7 @@
         "title": "Marcadores del navegador",
         "description": "Archivo HTML de Chrome, Safari, Firefox o Edge. Las carpetas siguen siendo carpetas."
       },
-      "drop": "Arrastra el archivo aquí",
+      "drop": "o arrastra el archivo aquí",
       "choose": "Elegir archivo",
       "reading": "Leyendo {{file}}…",
       "problem": {

@@ -43,9 +43,11 @@ test.describe('import browser bookmarks (mock API)', () => {
     async ({ page }) => {
       const dialog = await openImport(page);
 
-      // Step 1: the browser source, the drop zone with the real limits and the short help.
-      await expect(dialog.getByText('Browser bookmarks')).toBeVisible();
-      await expect(dialog.getByText('Drag the file here')).toBeVisible();
+      // Step 1: an empty-state stack (scene, the browser source, the real limits, the button,
+      // "or drag the file here") and the short help.
+      await expect(dialog.getByRole('heading', { name: 'Browser bookmarks' })).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Choose file' })).toBeVisible();
+      await expect(dialog.getByText('or drag the file here')).toBeVisible();
       await expect(dialog.getByText(/^\.html, up to 50 MB and 10,000 links$/)).toBeVisible();
       await dialog.getByRole('button', { name: 'How to export bookmarks from a browser' }).click();
       await expect(dialog.getByText(/^Chrome and Edge:/)).toBeVisible();
@@ -156,7 +158,7 @@ test.describe('import browser bookmarks (mock API)', () => {
     await dialog
       .getByText('Browser bookmarks')
       .dispatchEvent('dragleave', { dataTransfer: transfer });
-    await expect(dialog.getByText('Drag the file here')).toBeVisible();
+    await expect(dialog.getByText('or drag the file here')).toBeVisible();
   });
 
   test('refuses a file that is not a bookmarks export', async ({ page }) => {

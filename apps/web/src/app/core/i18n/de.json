@@ -1302,7 +1302,7 @@
         "title": "Browser-Lesezeichen",
         "description": "HTML-Datei aus Chrome, Safari, Firefox oder Edge. Ordner bleiben Ordner."
       },
-      "drop": "Datei hierher ziehen",
+      "drop": "oder Datei hierher ziehen",
       "choose": "Datei auswählen",
       "reading": "{{file}} wird gelesen …",
       "problem": {

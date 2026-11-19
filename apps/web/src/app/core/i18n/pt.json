@@ -1325,7 +1325,7 @@
         "title": "Favoritos do navegador",
         "description": "Arquivo HTML do Chrome, Safari, Firefox ou Edge. Pastas continuam sendo pastas."
       },
-      "drop": "Arraste o arquivo para cá",
+      "drop": "ou arraste o arquivo para cá",
       "choose": "Escolher arquivo",
       "reading": "Lendo {{file}}…",
       "problem": {
