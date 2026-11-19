@@ -25,7 +25,7 @@ import type { TagSynonymsInput } from '../models/tag-synonyms-input.interface';
 import type { TagSynonymsOutcome } from '../models/tag-synonyms-outcome.type';
 import type { ViewDraftInput } from '../models/view-draft-input.interface';
 import type { ViewDraftModelOutcome } from '../models/view-draft-model-outcome.type';
-import { planMockViewDraft } from '@shelfmark/contracts';
+import { LINK_KIND, planMockViewDraft, type LinkKind } from '@shelfmark/contracts';
 
 const VIDEO_HOSTS = ['youtube.com', 'youtu.be', 'vimeo.com'];
 
@@ -35,17 +35,17 @@ const VIDEO_HOSTS = ['youtube.com', 'youtu.be', 'vimeo.com'];
  * shopping, "article" / "blog" as article; otherwise unsure (`null`), so most mock links keep the
  * kind the page and host gave them.
  */
-function mockKind(host: string, haystack: ReadonlySet<string>): string | null {
+function mockKind(host: string, haystack: ReadonlySet<string>): LinkKind | null {
   const any = (list: readonly string[]): boolean => list.some((word) => haystack.has(word));
-  if (VIDEO_HOSTS.includes(host) || any(['video', 'talk', 'webinar'])) return 'video';
-  if (any(['podcast', 'episode'])) return 'podcast';
-  if (any(['recipe', 'ingredients'])) return 'recipe';
-  if (any(['pdf', 'slides', 'whitepaper'])) return 'document';
-  if (any(['repository', 'library', 'sdk'])) return 'code';
-  if (any(['app', 'extension'])) return 'app';
-  if (any(['thread', 'tweet'])) return 'post';
-  if (any(['shop', 'product', 'buy'])) return 'shopping';
-  if (any(['article', 'blog', 'essay'])) return 'article';
+  if (VIDEO_HOSTS.includes(host) || any(['video', 'talk', 'webinar'])) return LINK_KIND.Video;
+  if (any(['podcast', 'episode'])) return LINK_KIND.Podcast;
+  if (any(['recipe', 'ingredients'])) return LINK_KIND.Recipe;
+  if (any(['pdf', 'slides', 'whitepaper'])) return LINK_KIND.Document;
+  if (any(['repository', 'library', 'sdk'])) return LINK_KIND.Code;
+  if (any(['app', 'extension'])) return LINK_KIND.App;
+  if (any(['thread', 'tweet'])) return LINK_KIND.Post;
+  if (any(['shop', 'product', 'buy'])) return LINK_KIND.Shopping;
+  if (any(['article', 'blog', 'essay'])) return LINK_KIND.Article;
   return null;
 }
 
