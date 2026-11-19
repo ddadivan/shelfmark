@@ -3410,6 +3410,30 @@
       },
       "askScrollsDown": {
         "text": "La chat di Ask scorre fino a ogni nuova domanda."
+      },
+      "importBookmarks": {
+        "title": "Importa i preferiti del browser",
+        "text": "Porta qui il file dei preferiti di Chrome, Safari, Firefox o Edge. Mantieni le sue cartelle, metti tutto in una sola, oppure lascia che l’IA ordini i link per argomento e controlla prima i gruppi. Puoi annullare ogni importazione per 7 giorni. Importazione ed esportazione ora sono in Dati e aiuto, nella barra laterale.",
+        "alt": "La finestra di importazione con due gruppi proposti dall’IA per sei link, uno dei quali è una cartella esistente."
+      },
+      "newView": {
+        "title": "Crea una vista a mano o a parole",
+        "text": "Salva questa vista apre una sola finestra: scegli dove, tipo, tag, parole e ordinamento, e guarda il conteggio. Con l’IA attiva descrivila, ad esempio “video su Angular, dal più recente”, e l’IA compila i campi da controllare.",
+        "alt": "La finestra della nuova vista compilata dalla frase “video su Angular, dal più recente”, con il link trovato."
+      },
+      "linkKinds": {
+        "title": "Dieci tipi di link",
+        "text": "Podcast, documenti, codice, app, post e ricette si aggiungono a video, articoli e acquisti. Shelfmark riconosce il tipo al salvataggio e puoi sceglierlo in una vista o in Modifica link.",
+        "alt": "L’elenco dei tipi nella finestra della nuova vista con tutti e dieci i tipi."
+      },
+      "exportCsv": {
+        "text": "Esportazione CSV nel menu Esporta e nelle Impostazioni, accanto a JSON e HTML dei preferiti."
+      },
+      "dialogFocus": {
+        "text": "Le finestre si aprono senza contorno di focus con il mouse; appare ancora premendo Tab."
+      },
+      "exportHelp": {
+        "text": "La guida all’esportazione dei preferiti mostra le scorciatoie del tuo sistema, Mac o Windows."
       }
     },
     "sections": {

@@ -3410,6 +3410,30 @@
       },
       "askScrollsDown": {
         "text": "La conversation Ask descend jusqu’à chaque nouvelle question."
+      },
+      "importBookmarks": {
+        "title": "Importez les favoris de votre navigateur",
+        "text": "Importez le fichier de favoris de Chrome, Safari, Firefox ou Edge. Gardez ses dossiers, mettez tout dans un seul, ou laissez l’IA trier les liens par thème et vérifiez les groupes d’abord. Annulez un import pendant 7 jours. L’import et l’export se trouvent désormais dans Données et aide, dans la barre latérale.",
+        "alt": "La fenêtre d’import avec deux groupes proposés par l’IA pour six liens, dont un dossier existant."
+      },
+      "newView": {
+        "title": "Créez une vue à la main ou en quelques mots",
+        "text": "Enregistrer cette vue ouvre une seule fenêtre : choisissez l’emplacement, le type, les tags, les mots et le tri, et suivez le nombre de liens. Avec l’IA, décrivez-la, par exemple « vidéos Angular, les plus récentes d’abord », et l’IA remplit les champs pour que vous les vérifiiez.",
+        "alt": "La fenêtre de nouvelle vue remplie à partir de la phrase « vidéos Angular, les plus récentes d’abord », avec le lien trouvé."
+      },
+      "linkKinds": {
+        "title": "Dix types de liens",
+        "text": "Podcasts, documents, code, applications, publications et recettes rejoignent les vidéos, articles et achats. Shelfmark reconnaît le type à l’enregistrement, et vous pouvez le choisir dans une vue ou dans Modifier le lien.",
+        "alt": "La liste des types de la fenêtre de nouvelle vue avec les dix types."
+      },
+      "exportCsv": {
+        "text": "Export CSV dans le menu Exporter et dans les Paramètres, à côté de JSON et des favoris HTML."
+      },
+      "dialogFocus": {
+        "text": "Les fenêtres s’ouvrent sans contour de focus à la souris ; il apparaît toujours avec la touche Tab."
+      },
+      "exportHelp": {
+        "text": "L’aide pour exporter les favoris affiche les raccourcis de votre système, Mac ou Windows."
       }
     },
     "sections": {

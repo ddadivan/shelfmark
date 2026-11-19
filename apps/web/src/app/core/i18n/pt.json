@@ -3410,6 +3410,30 @@
       },
       "askScrollsDown": {
         "text": "O chat do Ask rola até cada nova pergunta."
+      },
+      "importBookmarks": {
+        "title": "Importe os favoritos do navegador",
+        "text": "Traga o arquivo de favoritos do Chrome, Safari, Firefox ou Edge. Mantenha as pastas, coloque tudo em uma só ou deixe a IA organizar os links por assunto e revise os grupos antes. Desfaça qualquer importação em até 7 dias. Importar e exportar agora ficam em Dados e ajuda, na barra lateral.",
+        "alt": "A janela de importação com dois grupos sugeridos pela IA para seis links, um deles uma pasta existente."
+      },
+      "newView": {
+        "title": "Crie uma visualização à mão ou com palavras",
+        "text": "Salvar esta visualização abre uma só janela: escolha onde, tipo, tags, palavras e ordem, e veja a contagem. Com a IA ligada, descreva o que quer, como “vídeos de Angular, mais recentes primeiro”, e a IA preenche os campos para você conferir.",
+        "alt": "A janela de nova visualização preenchida com a frase “vídeos de Angular, mais recentes primeiro”, com o link encontrado."
+      },
+      "linkKinds": {
+        "title": "Dez tipos de links",
+        "text": "Podcasts, documentos, código, apps, posts e receitas se juntam a vídeos, artigos e compras. O Shelfmark reconhece o tipo ao salvar, e você pode escolhê-lo em uma visualização ou em Editar link.",
+        "alt": "A lista de tipos da janela de nova visualização com os dez tipos."
+      },
+      "exportCsv": {
+        "text": "Exportação em CSV no menu Exportar e nas Configurações, ao lado de JSON e HTML de favoritos."
+      },
+      "dialogFocus": {
+        "text": "As janelas abrem sem contorno de foco ao usar o mouse; ele ainda aparece ao pressionar Tab."
+      },
+      "exportHelp": {
+        "text": "A ajuda para exportar favoritos mostra os atalhos do seu sistema, Mac ou Windows."
       }
     },
     "sections": {
