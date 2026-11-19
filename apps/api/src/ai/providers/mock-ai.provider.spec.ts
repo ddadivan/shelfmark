@@ -34,7 +34,7 @@ describe('MockAiProvider', () => {
         folder: null,
         summary: 'A page about A CSS grid guide.',
         title: null,
-        kind: 'article',
+        kind: null,
       },
     });
   });
@@ -92,6 +92,41 @@ describe('MockAiProvider', () => {
       output: { newTags: ['example', 'stand'], moreTags: ['comedy', 'special', 'hilarious'] },
     });
     expect(outcome).toEqual(await provider.runLinkJob(link));
+  });
+
+  it('reads a kind only from clear words, else stays unsure (#535)', async () => {
+    const kindOf = async (title: string, url = 'https://example.test/a') => {
+      const outcome = await provider.runLinkJob({ ...input(), title, url });
+      return outcome.type === 'output' ? (outcome.output as { kind: unknown }).kind : undefined;
+    };
+    expect(await kindOf('A conference talk on signals')).toBe('video');
+    expect(await kindOf('Wool overshirt product page')).toBe('shopping');
+    expect(await kindOf('Notes', 'https://blog.example.test/a')).toBe('article');
+    expect(await kindOf('Notes')).toBeNull();
+  });
+
+  it('drafts a view from a phrase with the shared planner; ai-fail and ai-refuse fail', async () => {
+    const outcome = await provider.draftView({
+      phrase: 'design videos #css',
+      folders: ['Work / Design'],
+      tags: ['css'],
+    });
+    expect(outcome).toEqual({
+      type: 'output',
+      output: expect.objectContaining({
+        scope: 'folder',
+        folder: 'Design',
+        tags: ['css'],
+        kind: 'video',
+      }),
+    });
+    expect(await provider.draftView({ phrase: 'x ai-fail', folders: [], tags: [] })).toEqual({
+      type: 'error',
+      retryable: true,
+    });
+    expect(await provider.draftView({ phrase: 'x ai-refuse', folders: [], tags: [] })).toEqual({
+      type: 'refusal',
+    });
   });
 
   it('simulates a refusal and an outage from the URL', async () => {
