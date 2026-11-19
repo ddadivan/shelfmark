@@ -127,6 +127,58 @@ describe('AskDrawerComponent', () => {
     expect(await axeViolations(host)).toEqual([]);
   });
 
+  it('shows the status pill while tools run, then cards with "Show all", and asks for a follow-up after', async () => {
+    const { fixture, loader, stream } = await setup();
+    const router = TestBed.inject(Router);
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    TestBed.inject(AskInbox).put('find ramen');
+    await fixture.whenStable();
+    const answer = await loader.getHarness(UiStreamingAnswerHarness);
+    stream.next({ type: 'meta', allowance: ALLOWANCE });
+    stream.next({ type: 'activity', activity: 'search', phase: 'start', found: null });
+    await fixture.whenStable();
+    expect(await answer.getStatus()).toBe('Searching your links…');
+    stream.next({ type: 'activity', activity: 'search', phase: 'end', found: 9 });
+    stream.next({ type: 'text', text: 'I found 9 links about ramen. ' });
+    stream.next({
+      type: 'links',
+      items: [{ n: 1, link: LINK }],
+      total: 9,
+      search: { q: 'ramen', folderId: null, tags: [], kind: null, favorite: false },
+    });
+    await fixture.whenStable();
+    expect(await answer.getStatus()).toBeNull();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('#ask-1-source-1')?.textContent).toContain('Weeknight ramen');
+    stream.next({
+      type: 'done',
+      sources: [{ n: 1, link: LINK }],
+      notFound: false,
+      truncated: false,
+      allowance: ALLOWANCE,
+      turn: {
+        question: 'find ramen',
+        answer: 'I found 9 links about ramen. ',
+        links: [{ n: 1, id: 'l1' }],
+      },
+      depth: 'quick',
+    });
+    stream.complete();
+    await fixture.whenStable();
+    // The card is not listed again under "Sources from your shelf".
+    expect(host.textContent).not.toContain('Sources from your shelf');
+    expect(host.querySelector('textarea')?.getAttribute('placeholder')).toBe('Ask something else…');
+    expect(
+      await loader.getHarness(UiButtonHarness.with({ name: 'More actions for “Weeknight ramen”' })),
+    ).toBeTruthy();
+    expect(await axeViolations(host)).toEqual([]);
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Show all 9 in search' }))).click();
+    expect(navigate).toHaveBeenCalledWith(['/', 'links'], { queryParams: { q: 'ramen' } });
+    await (await loader.getHarness(UiButtonHarness.with({ name: 'New conversation' }))).click();
+    await fixture.whenStable();
+    expect(host.textContent).toContain('What do you want to find out?');
+  });
+
   it('drops a question handed over while another streams, and clears the inbox on close', async () => {
     const { fixture, stream, api } = await setup();
     const inbox = TestBed.inject(AskInbox);

@@ -17,8 +17,15 @@ const HOSTILE = '<img src=x onerror=alert(1)> **bold** [link](https://evil.examp
       [streaming]="streaming()"
       [citeLabel]="citeLabel"
       [disabledCites]="disabled()"
+      [status]="status()"
+      [hasContent]="cards()"
       (citationClicked)="clicks.update((c) => [...c, $event])"
     >
+      @if (cards()) {
+        <ul uiStreamingLive class="cards" aria-label="Links found">
+          <li>Signals guide</li>
+        </ul>
+      }
       <ul class="sources" aria-label="Sources from your shelf">
         <li>Weeknight ramen</li>
       </ul>
@@ -31,6 +38,8 @@ class HostComponent {
   readonly streaming = signal(true);
   readonly disabled = signal<readonly number[]>([]);
   readonly clicks = signal<number[]>([]);
+  readonly status = signal<string | null>(null);
+  readonly cards = signal(false);
   readonly citeLabel = (n: number): string => `Source ${n}`;
 }
 
@@ -121,6 +130,39 @@ describe('ui-streaming-answer', () => {
     );
     expect(host.querySelector('.sources')).not.toBeNull();
     expect(host.querySelector('ui-streaming-answer')?.getAttribute('aria-busy')).toBeNull();
+  });
+
+  it('shows the status pill in a polite region while working, instead of the caret', () => {
+    const { host, update } = setup();
+    const region = () => host.querySelector('.ui-streaming-answer__status');
+    expect(region()?.getAttribute('role')).toBe('status');
+    expect(host.querySelector('.ui-streaming-answer__pill')).toBeNull();
+    update((c) => c.status.set('Searching your links…'));
+    expect(host.querySelector('.ui-streaming-answer__pill')?.textContent).toBe(
+      'Searching your links…',
+    );
+    expect(host.querySelector('.ui-streaming-answer__caret')).toBeNull();
+    update((c) => c.segments.set([{ text: 'Found it.' }]));
+    expect(host.querySelector('.ui-streaming-answer__text')?.textContent).toContain('Found it.');
+    update((c) => c.streaming.set(false));
+    expect(host.querySelector('.ui-streaming-answer__pill')).toBeNull();
+  });
+
+  it('shows live content as it arrives and keeps the reply for a cards-only answer', () => {
+    const { host, update } = setup();
+    update((c) => c.cards.set(true));
+    expect(host.querySelector('.ui-streaming-answer__extra .cards')).not.toBeNull();
+    expect(host.querySelector('.sources')).toBeNull();
+    update((c) => c.streaming.set(false));
+    expect(host.querySelector('.ui-streaming-answer__extra .cards')).not.toBeNull();
+    expect(host.querySelector('.ui-streaming-answer__disclaimer')).not.toBeNull();
+    expect(host.querySelector('.sources')).not.toBeNull();
+  });
+
+  it('sweeps the pill with the shimmer loop, which stops under reduced motion', () => {
+    const css = compileScss('lib/components/streaming-answer/streaming-answer.component.scss');
+    expect(css).toMatch(/\.ui-streaming-answer__pill\s*\{[^}]*background: var\(--ai-fill\)/);
+    expect(css).toMatch(/\.ui-streaming-answer__pill::after\s*\{[^}]*animation: ui-shimmer/);
   });
 
   it('shows only the bubble for a question without an answer', () => {

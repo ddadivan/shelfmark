@@ -544,7 +544,7 @@
     "home": "Shelfmark, Startseite",
     "newTab": "(öffnet in einem neuen Tab)",
     "updated": "Zuletzt aktualisiert am {{date}}",
-    "updatedDate": "16. November 2026",
+    "updatedDate": "19. November 2026",
     "intro": "Shelfmark ist ein persönliches Projekt, das die Links speichert, die du sicherst. Diese Seite erklärt in einfachen Worten, was wir speichern und warum.",
     "store": {
       "title": "Was wir speichern",
@@ -621,7 +621,7 @@
       },
       "ask": {
         "term": "Frag deine Links:",
-        "text": "nur wenn du eine Frage stellst, werden deine Frage und bis zu 10 passende Links (Titel, Adresse ohne Parameter, Ordner- und Tag-Namen, Zusammenfassung, deine Notiz nur mit „Meine Notizen einbeziehen“) an [PROVIDER] gesendet. Die Antwort zitiert nur diese Links. Weder Frage noch Antwort werden gespeichert; wir zählen nur die Anzahl der Fragen pro Tag und Monat, für dein Limit."
+        "text": "nur wenn du eine Frage stellst, werden deine Frage, die bisherigen Fragen und Antworten der offenen Unterhaltung und die Links von dir, die der Assistent mit Such-, Zähl- und Listenwerkzeugen nur lesend abruft (Titel, Adresse ohne Abfrageteil, Ordner- und Tag-Namen, Zusammenfassung, deine Notiz nur mit „Meine Notizen einbeziehen“), an [PROVIDER] gesendet. Die Antwort zitiert und zeigt nur deine eigenen Links. Weder die Fragen noch die Antworten noch die Unterhaltung werden gespeichert, und beim Schließen des Bereichs wird die Unterhaltung vergessen; wir zählen nur die Fragen pro Tag und Monat (und wie viele eine ausführlichere Antwort bekamen), für dein Limit."
       }
     },
     "retention": {
@@ -3101,7 +3101,7 @@
       },
       "ask": {
         "title": "Frag deine Links",
-        "text": "Beantwortet Fragen aus deinen eigenen Links. Nutzt Claude von Anthropic: Deine Frage und die passenden Links werden gesendet, nichts wird gespeichert."
+        "text": "Beantwortet Fragen aus deinen eigenen Links, auch Rückfragen. Nutzt Claude von Anthropic: Deine Frage, die bisherigen Beiträge der offenen Unterhaltung und die nachgeschlagenen Links werden gesendet; nichts wird gespeichert."
       }
     },
     "backfill": {
@@ -3341,7 +3341,7 @@
       "title": "Frag deine Links",
       "open": "Frag deine Links",
       "close": "Frag deine Links schließen",
-      "newQuestion": "Neue Frage",
+      "newChat": "Neue Unterhaltung",
       "back": "Zurück",
       "emptyTitle": "Was möchtest du wissen?",
       "lead": "Frag in deinen eigenen Worten. Die Antwort stammt aus deinen gespeicherten Links, mit allen Quellen.",
@@ -3353,6 +3353,7 @@
       },
       "label": "Frag zu deinen Links",
       "placeholder": "Frag zu deinen Links",
+      "followUp": "Etwas anderes fragen…",
       "send": "Fragen",
       "stop": "Stoppen",
       "left": {
@@ -3387,6 +3388,19 @@
       "retry": "Erneut versuchen",
       "truncated": "Die Antwort wurde abgeschnitten.",
       "stopped": "Gestoppt.",
+      "historyTrimmed": "In dieser Unterhaltung werden nur die letzten 10 Fragen berücksichtigt.",
+      "activity": {
+        "search": "Deine Links werden durchsucht…",
+        "count": "Wird gezählt…",
+        "read": "Ein Link wird gelesen…",
+        "browse": "Ordner und Tags werden durchgesehen…",
+        "deep": "Genauer hinsehen…"
+      },
+      "cards": {
+        "label": "Gefundene Links",
+        "more": "Weitere Aktionen für „{{title}}“",
+        "showAll": "Alle {{count}} in der Suche zeigen"
+      },
       "button": "Fragen",
       "try": "Zum Beispiel"
     },

@@ -544,7 +544,7 @@
     "home": "Shelfmark, home",
     "newTab": "(opens in a new tab)",
     "updated": "Last updated {{date}}",
-    "updatedDate": "16 November 2026",
+    "updatedDate": "19 November 2026",
     "intro": "Shelfmark is a personal project that stores the links you save. This page explains what we keep and why, in plain words.",
     "store": {
       "title": "What we store",
@@ -621,7 +621,7 @@
       },
       "ask": {
         "term": "Ask your shelf:",
-        "text": "only when you ask a question, your question and up to 10 of your links that match it (title, address without its query, folder and tag names, summary, your note only with \"Include my notes\") are sent to [PROVIDER]. The answer cites only those links. Neither the question nor the answer is stored; we count only the number of questions per day and month, for your limit."
+        "text": "only when you ask a question, your question, the earlier questions and answers of the open chat and the links of yours that the assistant looks up with read-only search, count and list tools (title, address without its query, folder and tag names, summary, your note only with \"Include my notes\") are sent to [PROVIDER]. The answer cites and shows only your own links. Neither the questions, the answers nor the chat are stored, and closing the panel forgets the chat; we count only the number of questions per day and month (and how many got a deeper answer), for your limit."
       }
     },
     "retention": {
@@ -3101,7 +3101,7 @@
       },
       "ask": {
         "title": "Ask your shelf",
-        "text": "Answers questions from your own links. Uses Claude by Anthropic: your question and the matching links are sent, nothing is stored."
+        "text": "Answers questions from your own links, also follow-ups. Uses Claude by Anthropic: your question, the earlier turns of the open chat and the links it looks up are sent; nothing is stored."
       }
     },
     "backfill": {
@@ -3341,7 +3341,7 @@
       "title": "Ask your shelf",
       "open": "Ask your shelf",
       "close": "Close Ask your shelf",
-      "newQuestion": "New question",
+      "newChat": "New conversation",
       "back": "Back",
       "emptyTitle": "What do you want to find out?",
       "lead": "Ask in your own words. The answer comes from the links you saved, with each source listed.",
@@ -3353,6 +3353,7 @@
       },
       "label": "Ask about your links",
       "placeholder": "Ask about your links",
+      "followUp": "Ask something else…",
       "send": "Ask",
       "stop": "Stop",
       "left": {
@@ -3387,6 +3388,19 @@
       "retry": "Try again",
       "truncated": "The answer was cut short.",
       "stopped": "Stopped.",
+      "historyTrimmed": "Only the last 10 questions are remembered in this conversation.",
+      "activity": {
+        "search": "Searching your links…",
+        "count": "Counting…",
+        "read": "Reading a link…",
+        "browse": "Looking through folders and tags…",
+        "deep": "Looking closer…"
+      },
+      "cards": {
+        "label": "Links found",
+        "more": "More actions for “{{title}}”",
+        "showAll": "Show all {{count}} in search"
+      },
       "button": "Ask",
       "try": "Try"
     },

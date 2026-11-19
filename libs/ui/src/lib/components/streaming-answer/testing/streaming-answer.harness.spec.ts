@@ -15,6 +15,7 @@ import { UiStreamingAnswerHarness } from './streaming-answer.harness';
       [streaming]="streaming()"
       [citeLabel]="citeLabel"
       [disabledCites]="[2]"
+      [status]="status()"
       (citationClicked)="clicked.set($event)"
     />
   `,
@@ -28,6 +29,7 @@ class HostComponent {
     { text: '.' },
   ]);
   readonly streaming = signal(true);
+  readonly status = signal<string | null>(null);
   readonly clicked = signal<number | null>(null);
   readonly citeLabel = (n: number): string => `Source ${n}`;
 }
@@ -43,6 +45,11 @@ describe('UiStreamingAnswerHarness', () => {
     expect(await answer.getCitationLabels()).toEqual(['Source 1', 'Source 2']);
     expect(await answer.isCitationDisabled(1)).toBe(true);
     expect(await answer.isStreaming()).toBe(true);
+    expect(await answer.getStatus()).toBeNull();
+    fixture.componentInstance.status.set('Counting…');
+    expect(await answer.getStatus()).toBe('Counting…');
+    expect(await answer.isStreaming()).toBe(true);
+    fixture.componentInstance.status.set(null);
     expect(await answer.getDisclaimer()).toBeNull();
     expect(await answer.getAnnouncement()).toBe('');
 

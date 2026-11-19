@@ -14,7 +14,7 @@ import { AskHeadingComponent } from '../ask-heading/ask-heading.component';
 
 /**
  * Ask your shelf as a 440px drawer from the inline-end edge (desktop and tablet with a header,
- * `AskPanelService`): the heading (spark tile, title, questions left) and "New question" on top,
+ * `AskPanelService`): the heading (spark tile, title, questions left) and ✎ "New conversation" on top,
  * the conversation, the composer at the bottom. Owns the conversation (`AskStore`): closing
  * forgets it and stops a stream.
  */

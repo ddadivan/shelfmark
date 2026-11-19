@@ -75,20 +75,20 @@ describe('AskPage (#499)', () => {
     expect(host.textContent).toContain('What do you want to find out?');
     expect(host.querySelector('.ask-page__bar app-ask-composer')).not.toBeNull();
     expect(await loader.getHarness(UiButtonHarness.with({ text: 'Back' }))).toBeTruthy();
-    expect(await loader.getAllHarnesses(UiButtonHarness.with({ name: 'New question' }))).toEqual(
-      [],
-    );
+    expect(
+      await loader.getAllHarnesses(UiButtonHarness.with({ name: 'New conversation' })),
+    ).toEqual([]);
     expect(await axeViolations(host)).toEqual([]);
   });
 
-  it('asks a question handed over from search, then offers "New question"', async () => {
+  it('asks a question handed over from search, then offers "New conversation"', async () => {
     const { fixture, loader, api } = await setup();
     TestBed.inject(AskInbox).put('Which ramen recipes did I save?');
     await fixture.whenStable();
     expect(api.ask).toHaveBeenCalledWith('Which ramen recipes did I save?', []);
     const answer = await loader.getHarness(UiStreamingAnswerHarness);
     expect(await answer.getQuestion()).toBe('Which ramen recipes did I save?');
-    const reset = await loader.getHarness(UiButtonHarness.with({ name: 'New question' }));
+    const reset = await loader.getHarness(UiButtonHarness.with({ name: 'New conversation' }));
     await reset.click();
     expect(await loader.getAllHarnesses(UiStreamingAnswerHarness)).toEqual([]);
   });

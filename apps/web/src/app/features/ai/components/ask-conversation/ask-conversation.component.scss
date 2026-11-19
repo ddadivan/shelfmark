@@ -66,3 +66,12 @@
   display: block;
   white-space: normal;
 }
+
+// The quiet note once older questions no longer go with the next one.
+.ask-conversation__trimmed {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+  text-align: center;
+}
