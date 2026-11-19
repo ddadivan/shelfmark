@@ -1,4 +1,4 @@
-import { feedbackNodes, fixedNodes, trashNodes } from './sidebar-nodes';
+import { dataNodes, extensionNodes, fixedNodes, trashNodes } from './sidebar-nodes';
 import type { SidebarLabels } from '../models/sidebar-labels.interface';
 
 const LABELS: SidebarLabels = {
@@ -9,8 +9,7 @@ const LABELS: SidebarLabels = {
   recent: 'Recently opened',
   reminders: 'Reminders',
   trash: 'Trash',
-  feedback: 'Send feedback',
-  whatsNew: "What's new",
+  data: 'Data & help',
   extension: 'Get the extension',
   whatsNewDot: 'new',
 };
@@ -43,30 +42,18 @@ describe('sidebar nodes', () => {
     expect(fixedNodes(LABELS, null).every((node) => !('count' in node))).toBe(true);
   });
 
-  it('builds the feedback row', () => {
-    expect(feedbackNodes(LABELS)).toEqual([
-      { id: 'whats-new', name: "What's new", icon: 'gift' },
-      { id: 'feedback', name: 'Send feedback', icon: 'message' },
+  it('builds the one "Data & help" row, with the dot while a release is unseen', () => {
+    expect(dataNodes(LABELS)).toEqual([{ id: 'data', name: 'Data & help', icon: 'more' }]);
+    expect(dataNodes(LABELS, true)).toEqual([
+      { id: 'data', name: 'Data & help', icon: 'more', dot: 'new' },
     ]);
-    expect(feedbackNodes(LABELS, true)[0]).toEqual({
-      id: 'whats-new',
-      name: "What's new",
-      icon: 'gift',
-      dot: 'new',
-    });
   });
 
-  it('leads the footer with "Get the extension" once the banner was closed (#455)', () => {
-    expect(feedbackNodes(LABELS, false, true).map((node) => node.id)).toEqual([
-      'extension',
-      'whats-new',
-      'feedback',
+  it('adds "Get the extension" once the banner was closed (#455)', () => {
+    expect(extensionNodes(LABELS)).toEqual([]);
+    expect(extensionNodes(LABELS, true)).toEqual([
+      { id: 'extension', name: 'Get the extension', icon: 'download' },
     ]);
-    expect(feedbackNodes(LABELS, false, true)[0]).toEqual({
-      id: 'extension',
-      name: 'Get the extension',
-      icon: 'download',
-    });
   });
 
   it('builds the trash row with or without a count', () => {

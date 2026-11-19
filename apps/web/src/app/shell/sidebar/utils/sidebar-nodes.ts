@@ -1,10 +1,9 @@
 import { LINKS_SCOPE } from '../../../features/links/models/links-scope.const';
 import { SIDEBAR_EXTENSION_ID } from '../models/sidebar-extension-id.const';
-import { SIDEBAR_FEEDBACK_ID } from '../models/sidebar-feedback-id.const';
+import { SIDEBAR_DATA_ID } from '../models/sidebar-data-id.const';
 import { SIDEBAR_RECENT_ID } from '../models/sidebar-recent-id.const';
 import { SIDEBAR_REMINDERS_ID } from '../models/sidebar-reminders-id.const';
 import { SIDEBAR_TRASH_ID } from '../models/sidebar-trash-id.const';
-import { SIDEBAR_WHATS_NEW_ID } from '../models/sidebar-whats-new-id.const';
 import type { UiTreeNode } from '@shelfmark/ui';
 import type { SidebarLabels } from '../models/sidebar-labels.interface';
 import type { SidebarCounts } from '../models/sidebar-counts.interface';
@@ -50,26 +49,23 @@ export function fixedNodes(
   ];
 }
 
+/** "Get the extension" above the data row once the library banner was closed (#455). */
+export function extensionNodes(labels: SidebarLabels, shown = false): UiTreeNode[] {
+  return shown ? [{ id: SIDEBAR_EXTENSION_ID, name: labels.extension, icon: 'download' }] : [];
+}
+
 /**
- * "What's new" (with a dot while a release is unseen, #424) and "Send feedback" above the divider,
- * led by "Get the extension" once the library banner was closed (`extension`, #455).
+ * The one "Data & help" row (#387) that opens the menu of Import, Export, What's new and Send
+ * feedback; it carries the dot while a release is unseen (#424).
  */
-export function feedbackNodes(
-  labels: SidebarLabels,
-  whatsNewUnseen = false,
-  extension = false,
-): UiTreeNode[] {
+export function dataNodes(labels: SidebarLabels, whatsNewUnseen = false): UiTreeNode[] {
   return [
-    ...(extension
-      ? [{ id: SIDEBAR_EXTENSION_ID, name: labels.extension, icon: 'download' as const }]
-      : []),
     {
-      id: SIDEBAR_WHATS_NEW_ID,
-      name: labels.whatsNew,
-      icon: 'gift',
+      id: SIDEBAR_DATA_ID,
+      name: labels.data,
+      icon: 'more',
       ...(whatsNewUnseen ? { dot: labels.whatsNewDot } : {}),
     },
-    { id: SIDEBAR_FEEDBACK_ID, name: labels.feedback, icon: 'message' },
   ];
 }
 

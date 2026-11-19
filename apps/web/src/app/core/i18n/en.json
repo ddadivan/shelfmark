@@ -828,7 +828,9 @@
         "movedUp": "Moved up, position {{position}} of {{total}}",
         "movedDown": "Moved down, position {{position}} of {{total}}"
       },
-      "extension": "Get the extension"
+      "extension": "Get the extension",
+      "data": "Data & help",
+      "dataMenu": "Data and help"
     },
     "searchHint": "Search your links",
     "searchButton": "Search",
@@ -839,7 +841,12 @@
     "sendFeedback": "Send feedback",
     "feedbackInbox": "Feedback inbox",
     "about": "About Shelfmark",
-    "usageStats": "Usage stats"
+    "usageStats": "Usage stats",
+    "data": {
+      "import": "Import links",
+      "export": "Export",
+      "group": "Import and export"
+    }
   },
   "folders": {
     "dialog": {
@@ -1260,6 +1267,30 @@
     "emptyView": {
       "title": "Nothing to export in this view",
       "detail": "This view has no links. Export everything, or open another view"
+    },
+    "dialog": {
+      "title": "Export",
+      "close": "Close",
+      "formatLabel": "File format",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Everything: links, folders, tags, notes, reminders"
+        },
+        "html": {
+          "title": "Bookmarks HTML",
+          "description": "Opens in the bookmark import of any browser"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "For spreadsheets"
+        }
+      },
+      "last": "Last export: {{when}}, {{format}}.",
+      "preparing": "Preparing the {{format}} file…",
+      "cancel": "Cancel",
+      "download": "Download",
+      "saved": "File saved"
     }
   },
   "import": {
@@ -1645,10 +1676,6 @@
           "close": "Close"
         }
       },
-      "data": {
-        "hint": "Everything you saved, as JSON or bookmarks HTML",
-        "action": "Open export"
-      },
       "kept": {
         "title": "What we keep"
       },
@@ -1661,6 +1688,16 @@
           "action": "Open",
           "actionLabel": "Open Delete AI data in Settings › AI"
         }
+      },
+      "importExport": {
+        "title": "Import and export",
+        "import": {
+          "hint": "Bring in bookmarks from your browser"
+        },
+        "export": {
+          "hint": "Download your whole library as a file"
+        },
+        "open": "Open"
       }
     },
     "footer": {

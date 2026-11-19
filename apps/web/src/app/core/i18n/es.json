@@ -842,7 +842,9 @@
         "movedUp": "Movido hacia arriba, posición {{position}} de {{total}}",
         "movedDown": "Movido hacia abajo, posición {{position}} de {{total}}"
       },
-      "extension": "Obtener la extensión"
+      "extension": "Obtener la extensión",
+      "data": "Datos y ayuda",
+      "dataMenu": "Datos y ayuda"
     },
     "searchHint": "Busca en tus enlaces",
     "searchButton": "Buscar",
@@ -853,7 +855,12 @@
     "sendFeedback": "Enviar comentarios",
     "feedbackInbox": "Buzón de comentarios",
     "about": "Acerca de Shelfmark",
-    "usageStats": "Estadísticas de uso"
+    "usageStats": "Estadísticas de uso",
+    "data": {
+      "import": "Importar enlaces",
+      "export": "Exportar",
+      "group": "Importar y exportar"
+    }
   },
   "folders": {
     "dialog": {
@@ -1283,6 +1290,30 @@
     "emptyView": {
       "title": "No hay nada que exportar en esta vista",
       "detail": "Esta vista no tiene enlaces. Exporta todo o abre otra vista"
+    },
+    "dialog": {
+      "title": "Exportar",
+      "close": "Cerrar",
+      "formatLabel": "Formato de archivo",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Todo: enlaces, carpetas, etiquetas, notas, recordatorios"
+        },
+        "html": {
+          "title": "Marcadores HTML",
+          "description": "Se abre en la importación de marcadores de cualquier navegador"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "Para hojas de cálculo"
+        }
+      },
+      "last": "Última exportación: {{when}}, {{format}}.",
+      "preparing": "Preparando el archivo {{format}}…",
+      "cancel": "Cancelar",
+      "download": "Descargar",
+      "saved": "Archivo guardado"
     }
   },
   "import": {
@@ -1680,10 +1711,6 @@
           "close": "Cerrar"
         }
       },
-      "data": {
-        "hint": "Todo lo que has guardado, en JSON o HTML de marcadores",
-        "action": "Abrir exportación"
-      },
       "kept": {
         "title": "Lo que guardamos"
       },
@@ -1696,6 +1723,16 @@
           "action": "Abrir",
           "actionLabel": "Abrir «Eliminar datos de IA» en Ajustes › IA"
         }
+      },
+      "importExport": {
+        "title": "Importar y exportar",
+        "import": {
+          "hint": "Trae los marcadores de tu navegador"
+        },
+        "export": {
+          "hint": "Descarga toda tu biblioteca en un archivo"
+        },
+        "open": "Abrir"
       }
     },
     "footer": {

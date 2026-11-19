@@ -2,10 +2,12 @@ import { inject, Injector, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import type { ExportFormat } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
-import { firstValueFrom } from 'rxjs';
+import type { Observable } from 'rxjs';
 import { EXPORT_API } from '../models/export-api.const';
 import type { ExportScope } from '../models/export-scope.interface';
 import type { ExportOptions } from '../models/export-options.interface';
+import { EXPORT_RESULT } from '../models/export-result.const';
+import type { ExportResult } from '../models/export-result.type';
 import { FoldersStore } from '../../../stores/folders.store';
 
 /**
@@ -30,9 +32,9 @@ export class ExportActionsService {
     format: ExportFormat,
     scope: ExportScope = {},
     options: ExportOptions = {},
-  ): Promise<void> {
+  ): Promise<ExportResult> {
     if (this.running) {
-      return;
+      return EXPORT_RESULT.Skipped;
     }
     this.running = true;
     try {
@@ -46,11 +48,13 @@ export class ExportActionsService {
             whole ? 'export.empty.detail' : 'export.emptyView.detail',
           ),
         });
-        return;
+        return EXPORT_RESULT.Empty;
       }
-      await firstValueFrom(this.injector.get(EXPORT_API).download(format, scope), {
-        defaultValue: undefined,
-      });
+      const saved = await this.run(
+        this.injector.get(EXPORT_API).download(format, scope),
+        options.signal,
+      );
+      return saved ? EXPORT_RESULT.Saved : EXPORT_RESULT.Skipped;
     } catch {
       this.toasts.show({
         kind: TOAST_KIND.Danger,
@@ -61,9 +65,34 @@ export class ExportActionsService {
           run: () => void this.download(format, scope),
         },
       });
+      return EXPORT_RESULT.Failed;
     } finally {
       this.running = false;
     }
+  }
+
+  /** `true` when the export completes, `false` when `signal` aborted it (unsubscribing cancels the request). */
+  private run(download: Observable<void>, signal?: AbortSignal): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      if (signal?.aborted) {
+        resolve(false);
+        return;
+      }
+      const subscription = download.subscribe({
+        error: reject,
+        complete: () => {
+          resolve(true);
+        },
+      });
+      signal?.addEventListener(
+        'abort',
+        () => {
+          subscription.unsubscribe();
+          resolve(false);
+        },
+        { once: true },
+      );
+    });
   }
 
   /**

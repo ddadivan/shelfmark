@@ -39,6 +39,34 @@
   }
 </nav>
 
+<!-- Import and export are things you do now and then, not settings: both open their dialog as a sheet (#387). -->
+<div
+  class="settings-index__list settings-index__list--actions"
+  role="group"
+  [attr.aria-label]="'shell.data.group' | transloco"
+>
+  <ui-button
+    block
+    [variant]="BUTTON_VARIANT.Ghost"
+    [size]="BUTTON_SIZE.Lg"
+    iconLeft="download"
+    ariaHaspopup="dialog"
+    (click)="openImport()"
+  >
+    {{ 'shell.data.import' | transloco }}
+  </ui-button>
+  <ui-button
+    block
+    [variant]="BUTTON_VARIANT.Ghost"
+    [size]="BUTTON_SIZE.Lg"
+    iconLeft="share"
+    ariaHaspopup="dialog"
+    (click)="openExport()"
+  >
+    {{ 'shell.data.export' | transloco }}
+  </ui-button>
+</div>
+
 <ui-button
   block
   [size]="BUTTON_SIZE.Lg"

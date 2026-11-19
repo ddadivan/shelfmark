@@ -1,0 +1,48 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+.export-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  // Room for the focus rings at the edge of the scrolling body.
+  padding: rem(2px);
+}
+
+.export-dialog__status:empty {
+  display: none;
+}
+
+.export-dialog__last {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+.export-dialog__preparing {
+  @include type(label);
+
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.export-dialog__foot {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+@include phone {
+  .export-dialog__foot {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}

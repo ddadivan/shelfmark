@@ -828,7 +828,9 @@
         "movedUp": "Nach oben verschoben, Position {{position}} von {{total}}",
         "movedDown": "Nach unten verschoben, Position {{position}} von {{total}}"
       },
-      "extension": "Erweiterung holen"
+      "extension": "Erweiterung holen",
+      "data": "Daten & Hilfe",
+      "dataMenu": "Daten und Hilfe"
     },
     "searchHint": "Deine Links durchsuchen",
     "searchButton": "Suchen",
@@ -839,7 +841,12 @@
     "sendFeedback": "Feedback senden",
     "feedbackInbox": "Feedback-Eingang",
     "about": "Über Shelfmark",
-    "usageStats": "Nutzungsstatistik"
+    "usageStats": "Nutzungsstatistik",
+    "data": {
+      "import": "Links importieren",
+      "export": "Exportieren",
+      "group": "Import und Export"
+    }
   },
   "folders": {
     "dialog": {
@@ -1260,6 +1267,30 @@
     "emptyView": {
       "title": "In dieser Ansicht gibt es nichts zu exportieren",
       "detail": "Diese Ansicht enthält keine Links. Exportiere alles oder öffne eine andere Ansicht"
+    },
+    "dialog": {
+      "title": "Export",
+      "close": "Schließen",
+      "formatLabel": "Dateiformat",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Alles: Links, Ordner, Tags, Notizen, Erinnerungen"
+        },
+        "html": {
+          "title": "Lesezeichen-HTML",
+          "description": "Lässt sich in den Lesezeichen-Import jedes Browsers laden"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "Für Tabellen"
+        }
+      },
+      "last": "Letzter Export: {{when}}, {{format}}.",
+      "preparing": "{{format}}-Datei wird vorbereitet…",
+      "cancel": "Abbrechen",
+      "download": "Herunterladen",
+      "saved": "Datei gespeichert"
     }
   },
   "import": {
@@ -1645,10 +1676,6 @@
           "close": "Schließen"
         }
       },
-      "data": {
-        "hint": "Alles, was du gespeichert hast, als JSON oder Lesezeichen-HTML",
-        "action": "Export öffnen"
-      },
       "kept": {
         "title": "Was wir speichern"
       },
@@ -1661,6 +1688,16 @@
           "action": "Öffnen",
           "actionLabel": "„KI-Daten löschen“ unter Einstellungen › KI öffnen"
         }
+      },
+      "importExport": {
+        "title": "Import und Export",
+        "import": {
+          "hint": "Lesezeichen aus deinem Browser übernehmen"
+        },
+        "export": {
+          "hint": "Deine ganze Bibliothek als Datei herunterladen"
+        },
+        "open": "Öffnen"
       }
     },
     "footer": {
