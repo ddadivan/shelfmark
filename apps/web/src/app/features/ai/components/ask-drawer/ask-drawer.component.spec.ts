@@ -275,4 +275,29 @@ describe('AskDrawerComponent', () => {
     ).click();
     expect(navigate).toHaveBeenCalledWith(['/links'], { queryParams: { q: 'ramen ai-fail' } });
   });
+
+  it('quotes a long question short in "Search “…”" (no sideways scroll) and searches the whole of it', async () => {
+    const { fixture, loader, stream } = await setup();
+    const question =
+      'which of my links explain decorators and how they work in Angular 22 in detail';
+    TestBed.inject(AskInbox).put(question);
+    await fixture.whenStable();
+    stream.next({
+      type: 'done',
+      sources: [],
+      notFound: true,
+      truncated: false,
+      allowance: ALLOWANCE,
+      turn: { question, answer: '', links: [] },
+      depth: 'quick',
+    });
+    stream.complete();
+    await fixture.whenStable();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const search = await loader.getHarness(
+      UiButtonHarness.with({ text: 'Search “which of my links explain decorators…”' }),
+    );
+    await search.click();
+    expect(navigate).toHaveBeenCalledWith(['/links'], { queryParams: { q: question } });
+  });
 });

@@ -3002,6 +3002,12 @@
       },
       "cardTagsFit": {
         "text": "Ein Tag auf einer Karte erscheint vollständig oder wandert in „+N“, das nur die Tags zeigt, die nicht auf der Karte stehen."
+      },
+      "askNoSideways": {
+        "text": "Eine lange Frage lässt den Ask-Chat nicht mehr seitwärts scrollen."
+      },
+      "askScrollsDown": {
+        "text": "Der Ask-Chat scrollt zu jeder neuen Frage nach unten."
       }
     },
     "sections": {
