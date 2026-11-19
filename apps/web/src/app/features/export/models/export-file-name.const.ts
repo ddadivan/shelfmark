@@ -4,4 +4,5 @@ import { EXPORT_FORMAT } from '@shelfmark/contracts';
 export const EXPORT_FILE_NAME = {
   [EXPORT_FORMAT.Json]: 'shelfmark-export.json',
   [EXPORT_FORMAT.Html]: 'shelfmark-bookmarks.html',
+  [EXPORT_FORMAT.Csv]: 'shelfmark-export.csv',
 } as const;

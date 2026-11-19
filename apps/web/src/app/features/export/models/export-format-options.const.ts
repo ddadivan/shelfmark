@@ -3,8 +3,7 @@ import type { ExportFormatOption } from './export-format-option.interface';
 
 /**
  * The cards of the export dialog, in order. The dialog offers only those the contract's
- * `ExportFormat` has, so the CSV card appears with the format (it is a plain string here until
- * the contract names it).
+ * `ExportFormat` has.
  */
 export const EXPORT_FORMAT_OPTIONS: readonly ExportFormatOption[] = [
   {
@@ -18,7 +17,7 @@ export const EXPORT_FORMAT_OPTIONS: readonly ExportFormatOption[] = [
     descriptionKey: 'export.dialog.format.html.description',
   },
   {
-    value: 'csv',
+    value: EXPORT_FORMAT.Csv,
     titleKey: 'export.dialog.format.csv.title',
     descriptionKey: 'export.dialog.format.csv.description',
   },

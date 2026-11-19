@@ -12,13 +12,16 @@ const MISSING_ID = '018f0000-0000-7000-8000-00000000dead';
 export const EXPORT_SCENARIOS: readonly ContractScenario[] = [
   scenario(
     'export',
-    'saves the library as a JSON or HTML file named after the day',
+    'saves the library as a JSON, HTML or CSV file named after the day',
     async ({ exports }) => {
       expectEqual(await exports.download({ format: EXPORT_FORMAT.Json }), {
         fileName: DATED_NAME('json'),
       });
       expectEqual(await exports.download({ format: EXPORT_FORMAT.Html }), {
         fileName: DATED_NAME('html'),
+      });
+      expectEqual(await exports.download({ format: EXPORT_FORMAT.Csv }), {
+        fileName: DATED_NAME('csv'),
       });
     },
   ),
@@ -45,7 +48,7 @@ export const EXPORT_SCENARIOS: readonly ContractScenario[] = [
         'missing folder',
       );
       await expectError(
-        exports.download({ format: 'csv' as never }),
+        exports.download({ format: 'xml' as never }),
         { status: 400 },
         'unknown format',
       );
