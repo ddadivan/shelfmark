@@ -16,6 +16,10 @@ import type { LinkJobInput } from '../models/link-job-input.interface';
 import type { LinkJobOutcome } from '../models/link-job-outcome.type';
 import type { MockAskDelay } from '../models/mock-ask-delay.type';
 import { mockAskAnswer, mockAskChunks } from './mock-ask-answer';
+import { planMockAskRound } from './mock-ask-planner';
+import type { AskAssistantBlock } from '../models/ask-assistant-block.type';
+import type { AskRoundChunk } from '../models/ask-round-chunk.type';
+import type { AskRoundInput } from '../models/ask-round-input.interface';
 import { mockTagSynonyms } from './mock-tag-synonyms';
 import type { TagSynonymsInput } from '../models/tag-synonyms-input.interface';
 import type { TagSynonymsOutcome } from '../models/tag-synonyms-outcome.type';
@@ -115,6 +119,60 @@ export class MockAiProvider implements AiProvider {
       stopReason: ASK_STOP_REASON.Done,
       inputTokens: 0,
       outputTokens: chunks.length,
+    };
+  }
+
+  /**
+   * One mock Ask chat round (ADR 0055 point 10): `planMockAskRound` decides from the messages, the
+   * text streams word by word, then the tool calls start and the round ends with the blocks. No
+   * opaque blocks (the mock does not think); an abort ends with `error`.
+   */
+  async *askRound(input: AskRoundInput, signal: AbortSignal): AsyncGenerator<AskRoundChunk> {
+    const plan = planMockAskRound(input);
+    if (plan.kind === 'fail') {
+      yield { type: 'error', retryable: true };
+      return;
+    }
+    const usage = { input: 0, cacheRead: 0, cacheWrite: 0, output: 0 };
+    const round = input.messages.filter((message) => message.role === 'assistant').length;
+    if (plan.kind === 'refuse') {
+      yield { type: 'end', stopReason: ASK_STOP_REASON.Refusal, blocks: [], usage };
+      return;
+    }
+    if (plan.slow) await this.delay(MOCK_ASK.SlowMs, signal);
+    let sent = 0;
+    for (const text of mockAskChunks(plan.text)) {
+      if (signal.aborted || (plan.cut && sent === MOCK_ASK.CutAfterChunks)) {
+        yield { type: 'error', retryable: true };
+        return;
+      }
+      await this.delay(this.chunkMs, signal);
+      if (signal.aborted) {
+        yield { type: 'error', retryable: true };
+        return;
+      }
+      yield { type: 'text', text };
+      sent += 1;
+    }
+    const blocks: AskAssistantBlock[] = plan.text === '' ? [] : [{ type: 'text', text: plan.text }];
+    for (const [index, call] of plan.calls.entries()) {
+      if (signal.aborted) {
+        yield { type: 'error', retryable: true };
+        return;
+      }
+      yield { type: 'tool_start', name: call.name };
+      blocks.push({
+        type: 'tool_call',
+        id: `${MOCK_ASK.ToolCallId}${round}-${index + 1}`,
+        name: call.name,
+        input: call.input,
+      });
+    }
+    yield {
+      type: 'end',
+      stopReason: plan.calls.length > 0 ? ASK_STOP_REASON.ToolUse : ASK_STOP_REASON.Done,
+      blocks,
+      usage: { ...usage, output: sent },
     };
   }
 
