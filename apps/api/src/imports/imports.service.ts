@@ -139,6 +139,7 @@ export class ImportsService {
         : isImportOpen(row, new Date())
           ? IMPORT_AI_STATE.Running
           : IMPORT_AI_STATE.Skipped;
+    // The Tidy count is the costly part: only a pass that is done has suggestions to show.
     const [ended, summaries, suggestions] = await Promise.all([
       this.prisma.link.count({
         where: {
@@ -151,14 +152,16 @@ export class ImportsService {
       this.prisma.link.count({
         where: { userId, importId, deletedAt: null, summary: { not: null } },
       }),
-      this.tidy.count(userId, importId),
+      state === IMPORT_AI_STATE.Done
+        ? this.tidy.count(userId, importId).then((count) => count.total)
+        : Promise.resolve(0),
     ]);
     return {
       state,
       total: row.aiTotal,
       done: Math.min(row.aiTotal, ended),
       summaries,
-      suggestions: suggestions.total,
+      suggestions,
     };
   }
 
@@ -317,21 +320,26 @@ export class ImportsService {
     };
   }
 
-  /** Stores the client's counts, then starts the AI pass when the import asked for one. */
+  /**
+   * Stores the client's counts once (`finished_at IS NULL`: a repeat changes nothing and still
+   * answers 204), then starts the AI pass when the import asked for one (`begin` runs once too).
+   */
   async finish(userId: string, id: string, request: FinishImportRequest): Promise<void> {
     const result = await this.prisma.import.updateMany({
-      where: { id, userId },
+      where: { id, userId, finishedAt: null },
       data: { skipped: request.skipped, failed: request.failed, finishedAt: new Date() },
     });
-    if (result.count === 0) throw new NotFoundException(IMPORT_ERROR_MESSAGE.NotFound);
+    if (result.count === 0) await this.requireImport(this.prisma, userId, id);
     await this.aiPass.begin(userId, id);
   }
 
   /**
    * Moves what the import created to Trash, with one shared `deleted_at` so Trash shows its top
    * folder as one entry. Nothing the import did not create goes to Trash: links the user added to an
-   * import folder move to Unsorted, the user's own subfolders move to the top level. Tags the import
-   * created go when no other link carries them. Plain SQL keeps `updated_at` (not an edit).
+   * import folder move to Unsorted, the user's own subfolders move to the top level. This holds for
+   * links of another import too (a different non-null `import_id`): they are not this import's, so
+   * they leave its folder for Unsorted like the user's own. Tags the import created go when no
+   * other link carries them. Plain SQL keeps `updated_at` (not an edit).
    */
   async undo(userId: string, id: string): Promise<UndoImportResponse> {
     return this.prisma.$transaction(async (tx) => {

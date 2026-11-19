@@ -10,6 +10,12 @@ describe('importGroupText', () => {
     ).toBe('Signals angular.dev/guide/signals');
   });
 
+  it('keeps at most the first two path segments', () => {
+    expect(
+      importGroupText({ title: 'Doc', url: 'https://example.com/a/b/private-doc-id/c?token=1' }),
+    ).toBe('Doc example.com/a/b');
+  });
+
   it('leaves the bare path out for a root URL and survives a broken URL', () => {
     expect(importGroupText({ title: 'Home', url: 'https://example.com/' })).toBe(
       'Home example.com',
