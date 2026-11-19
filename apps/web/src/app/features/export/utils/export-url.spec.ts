@@ -37,6 +37,7 @@ describe('buildExportUrl', () => {
   it('is just the format for everything', () => {
     expect(buildExportUrl('/api', EXPORT_FORMAT.Json, {})).toBe('/api/export?format=json');
     expect(buildExportUrl('/api', EXPORT_FORMAT.Html, {})).toBe('/api/export?format=html');
+    expect(buildExportUrl('/api', EXPORT_FORMAT.Csv, {})).toBe('/api/export?format=csv');
   });
 
   it('adds the folder', () => {

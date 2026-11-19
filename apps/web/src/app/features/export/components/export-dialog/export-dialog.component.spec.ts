@@ -74,7 +74,7 @@ describe('ExportDialogComponent', () => {
     expect(await dialog.getTitle()).toBe('Export');
     expect(await dialog.getSize()).toBe(DIALOG_SIZE.Sm);
     const values = radios().map((radio) => radio.value);
-    expect(values.slice(0, 2)).toEqual([EXPORT_FORMAT.Json, EXPORT_FORMAT.Html]);
+    expect(values).toEqual([EXPORT_FORMAT.Json, EXPORT_FORMAT.Html, EXPORT_FORMAT.Csv]);
     expect(radios()[0].checked).toBe(true);
     expect(body()).toContain('Everything: links, folders, tags, notes, reminders');
     expect(body()).toContain('Opens in the bookmark import of any browser');
