@@ -68,7 +68,7 @@
   padding-block-start: var(--space-6);
 }
 
-// Footer, fixed at the bottom of the card: "Send feedback", then Trash under a divider (#335).
+// Footer, fixed at the bottom of the card: the "Data & help" row, then Trash under a divider (#335, #387).
 .sidebar__footer {
   flex: none;
   padding-block: var(--space-1) var(--space-3);
@@ -91,4 +91,17 @@
 // First load of the folder list: skeleton rows with a 'Folders' heading's worth of room above.
 .sidebar__loading {
   padding-block-start: var(--space-6);
+}
+
+.sidebar__data {
+  display: block;
+}
+
+// "What's new" with its badge at the end of the line in the data menu.
+.sidebar__menu-line {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  inline-size: 100%;
 }

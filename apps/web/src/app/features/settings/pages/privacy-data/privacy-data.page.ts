@@ -10,19 +10,20 @@ import {
   TOAST_KIND,
   ToastService,
 } from '@shelfmark/ui';
+import { ExportDialogService } from '../../../export/services/export-dialog.service';
+import { ImportDialogService } from '../../../import/services/import-dialog.service';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { LinksStore } from '../../../../stores/links.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { AI_DATA_FRAGMENT } from '../../models/ai-data-fragment.const';
 import { SETTINGS_PATH } from '../../models/settings-path.const';
-import { YOUR_DATA_FRAGMENT } from '../../models/your-data-fragment.const';
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
 
 const KEY = 'settings.privacy.recent';
 
 /**
- * `/settings/privacy`: "Remember recently opened" (moved here from Appearance in #315), the way
- * to take your data out (Account › Your data), the policy, what AI sends (with the way to
+ * `/settings/privacy`: "Remember recently opened" (moved here from Appearance in #315), Import and export (the dialogs of the
+ * sidebar's data menu), the policy, what AI sends (with the way to
  * Settings › AI "Delete AI data") and what is kept.
  */
 @Component({
@@ -48,14 +49,23 @@ export default class PrivacyDataPage {
   private readonly toasts = inject(ToastService);
 
   protected readonly policyHref = `/${APP_PATH.Privacy}`;
-  /** Export lives in Account › Your data (#352). */
-  protected readonly exportHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.Account}#${YOUR_DATA_FRAGMENT}`;
+  private readonly importer = inject(ImportDialogService);
+  private readonly exporter = inject(ExportDialogService);
 
   /** "Delete AI data" lives in Settings › AI (#389). */
   protected readonly aiDataHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.Ai}#${AI_DATA_FRAGMENT}`;
 
   constructor() {
     void this.settings.load();
+  }
+
+  /** "Import links" and "Export" open the same dialogs as the sidebar's data menu (#387). */
+  protected openImport(): void {
+    this.importer.open();
+  }
+
+  protected openExport(): void {
+    this.exporter.open();
   }
 
   protected async open(event: MouseEvent, href: string): Promise<void> {

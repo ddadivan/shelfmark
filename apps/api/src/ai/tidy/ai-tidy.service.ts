@@ -73,8 +73,8 @@ export class AiTidyService {
    * `GET /api/ai/tidy`: newest first, at most `TIDY_LIMIT.PageMax`, after the link `after` when it
    * is one of the user's (the next page); empty while AI is off.
    */
-  async list(userId: string, after?: string): Promise<TidyListResponse> {
-    const reviewable = await this.reviewable(userId, after);
+  async list(userId: string, after?: string, importId?: string): Promise<TidyListResponse> {
+    const reviewable = await this.reviewable(userId, after, importId);
     const page = reviewable.slice(0, TIDY_LIMIT.PageMax);
     if (page.length === 0) return { items: [], total: reviewable.length };
     const rows = await this.prisma.link.findMany({
@@ -90,9 +90,9 @@ export class AiTidyService {
     return { items, total: reviewable.length };
   }
 
-  /** `GET /api/ai/tidy/count`: the same filter as the list. */
-  async count(userId: string): Promise<TidyCountResponse> {
-    return { total: (await this.reviewable(userId)).length };
+  /** `GET /api/ai/tidy/count`: the same filter as the list (and the same `import` scope). */
+  async count(userId: string, importId?: string): Promise<TidyCountResponse> {
+    return { total: (await this.reviewable(userId, undefined, importId)).length };
   }
 
   /**
@@ -284,11 +284,15 @@ export class AiTidyService {
 
   /**
    * The user's links in Unsorted with something to review, newest first, older than the user's link
-   * `after` when given, at most `TIDY_SCAN.RowsMax` read (`[]` while AI is off).
+   * `after` when given, at most `TIDY_SCAN.RowsMax` read (`[]` while AI is off). With `importId`
+   * (ADR 0056 decision 9) the scope is the user's live links of that import in any folder instead
+   * of Unsorted (a foreign or unknown import matches no row); a link already in a folder keeps only
+   * its tag suggestions, since `apply` never moves a link out of a folder.
    */
   private async reviewable(
     userId: string,
     after?: string,
+    importId?: string,
   ): Promise<{ id: string; suggestions: TidyItem['suggestions'] }[]> {
     const stored = await this.settings.read(this.prisma, userId);
     if (!stored.settings.enabled) return [];
@@ -303,7 +307,7 @@ export class AiTidyService {
       where: {
         userId,
         deletedAt: null,
-        folderId: null,
+        ...(importId === undefined ? { folderId: null } : { importId }),
         suggestions: { some: { userId, state: SUGGESTION_ROW_STATE.Suggested, more: false } },
         ...(cursor !== null && {
           OR: [
@@ -320,7 +324,12 @@ export class AiTidyService {
     return rows
       .map((row) => ({
         id: row.id,
-        suggestions: filterTidySuggestions(row.suggestions, contextOf(row)),
+        suggestions: filterTidySuggestions(row.suggestions, contextOf(row)).filter(
+          (suggestion) =>
+            importId === undefined ||
+            row.folderId === null ||
+            suggestion.kind !== SUGGESTION_KIND.Folder,
+        ),
       }))
       .filter((entry) => entry.suggestions.length > 0);
   }

@@ -7,4 +7,9 @@ export class ImportCheckResponseDto implements ImportCheckResponse {
     description: 'Indexes into urls that match one of your live links, ascending',
   })
   saved!: number[];
+
+  @ApiProperty({
+    description: 'How many more links fit your link limit (the demo limit in a demo sandbox)',
+  })
+  room!: number;
 }

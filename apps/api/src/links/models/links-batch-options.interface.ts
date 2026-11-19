@@ -16,4 +16,9 @@ export interface LinksBatchOptions {
    * is still open.
    */
   afterLock?: (tx: Prisma.TransactionClient) => Promise<void>;
+  /**
+   * `true` enqueues no AI job for the created links (an import never uses the monthly link
+   * allowance, ADR 0056 decision 9); the embed pass still runs so search by meaning finds them.
+   */
+  skipAi?: boolean;
 }

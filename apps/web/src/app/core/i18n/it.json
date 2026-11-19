@@ -842,7 +842,9 @@
         "movedUp": "Spostato in alto, posizione {{position}} di {{total}}",
         "movedDown": "Spostato in basso, posizione {{position}} di {{total}}"
       },
-      "extension": "Scarica l’estensione"
+      "extension": "Scarica l’estensione",
+      "data": "Dati e aiuto",
+      "dataMenu": "Dati e aiuto"
     },
     "searchHint": "Cerca nei tuoi link",
     "searchButton": "Cerca",
@@ -853,7 +855,12 @@
     "sendFeedback": "Invia feedback",
     "feedbackInbox": "Feedback ricevuti",
     "about": "Informazioni su Shelfmark",
-    "usageStats": "Statistiche d’uso"
+    "usageStats": "Statistiche d’uso",
+    "data": {
+      "import": "Importa link",
+      "export": "Esporta",
+      "group": "Importa ed esporta"
+    }
   },
   "folders": {
     "dialog": {
@@ -1283,6 +1290,30 @@
     "emptyView": {
       "title": "Niente da esportare in questa vista",
       "detail": "Questa vista non contiene link. Esporta tutto o apri un'altra vista"
+    },
+    "dialog": {
+      "title": "Esporta",
+      "close": "Chiudi",
+      "formatLabel": "Formato del file",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Tutto: link, cartelle, tag, note, promemoria"
+        },
+        "html": {
+          "title": "Segnalibri HTML",
+          "description": "Si apre nell'importazione dei segnalibri di qualsiasi browser"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "Per i fogli di calcolo"
+        }
+      },
+      "last": "Ultima esportazione: {{when}}, {{format}}.",
+      "preparing": "Preparazione del file {{format}}…",
+      "cancel": "Annulla",
+      "download": "Scarica",
+      "saved": "File salvato"
     }
   },
   "import": {
@@ -1769,10 +1800,6 @@
           "close": "Chiudi"
         }
       },
-      "data": {
-        "hint": "Tutto quello che hai salvato, in JSON o HTML dei preferiti",
-        "action": "Apri l’esportazione"
-      },
       "kept": {
         "title": "Cosa conserviamo"
       },
@@ -1785,6 +1812,16 @@
           "action": "Apri",
           "actionLabel": "Apri «Elimina dati IA» in Impostazioni › IA"
         }
+      },
+      "importExport": {
+        "title": "Importa ed esporta",
+        "import": {
+          "hint": "Porta qui i segnalibri del tuo browser"
+        },
+        "export": {
+          "hint": "Scarica l'intera libreria in un file"
+        },
+        "open": "Apri"
       }
     },
     "footer": {

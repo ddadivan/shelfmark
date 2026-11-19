@@ -519,9 +519,14 @@ model AiSettings {
   // one-question-at-a-time lease (30 s, released when the answer ends).
   ask                Boolean   @default(true)
   askLeaseUntil      DateTime? @map("ask_lease_until") @db.Timestamptz(3)
+  // Import AI pass (ADR 0056): the import a running backfill run is scoped to (null = every eligible
+  // link), and the backfill units an AI grouping took that no import has used yet.
+  backfillImportId   String?   @map("backfill_import_id") @db.Uuid
+  importAiPrepaid    Int       @default(0) @map("import_ai_prepaid")
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  backfillImport     Import?   @relation(fields: [backfillImportId], references: [id], onDelete: SetNull)
 
   @@map("ai_settings")
 }
@@ -771,7 +776,15 @@ model Import {
   skipped        Int       @default(0)
   failed         Int       @default(0)
   targetFolderId String?   @map("target_folder_id") @db.Uuid
+  // The AI pass (ADR 0056 decision 9): asked for at start, `running` | `done` | `skipped` once it
+  // began or could not run (CHECK in the migration), the backfill units the grouping took that no
+  // chunk used yet, and the links the pass covers.
+  aiRequested    Boolean   @default(false) @map("ai_requested")
+  aiState        String?   @map("ai_state") @db.VarChar(8)
+  aiPrepaid      Int       @default(0) @map("ai_prepaid")
+  aiTotal        Int       @default(0) @map("ai_total")
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scopedRuns     AiSettings[]
   links          Link[]
   folders        Folder[]
   tags           Tag[]

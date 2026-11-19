@@ -10,7 +10,6 @@ import {
   setupSettingsPage,
 } from '../../../../../testing/settings-page-testbed';
 import { LocaleService } from '../../../../core/i18n/locale.service';
-import { ImportDialogService } from '../../../import/services/import-dialog.service';
 import AccountPage from './account.page';
 
 const setup = (user = SETTINGS_TEST_USER, stats = () => of(SETTINGS_TEST_STATS)) =>
@@ -146,15 +145,12 @@ describe('AccountPage', () => {
     expect(exportApi.download).toHaveBeenNthCalledWith(2, EXPORT_FORMAT.Json, {});
   });
 
-  it('offers Import in Your data and opens the import dialog', async () => {
-    const { root, harness } = await setup();
-    const open = vi.spyOn(TestBed.inject(ImportDialogService), 'open').mockReturnValue(undefined);
+  it('leaves Import and Recent imports to the data menu and the import dialog (#387)', async () => {
+    const { root } = await setup();
 
-    expect(root.textContent).toContain('Bring in browser bookmarks.');
-    buttonWith(root, 'Import')?.click();
-    await harness.fixture.whenStable();
-
-    expect(open).toHaveBeenCalledTimes(1);
+    expect(root.textContent).not.toContain('Bring in browser bookmarks.');
+    expect(buttonWith(root, 'Import')).toBeFalsy();
+    expect(root.querySelector('app-recent-imports')).toBeNull();
   });
 
   it('signs out to the sign-in screen', async () => {

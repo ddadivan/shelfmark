@@ -105,6 +105,7 @@ export class LinksBatchService {
             await this.targets(tx, userId, request, fresh, options.importId),
             context,
             options.importId,
+            options.skipAi === true,
           );
           created = inserted.links;
           aiJobIds = inserted.aiJobIds;
@@ -196,6 +197,7 @@ export class LinksBatchService {
     fresh: readonly BatchTarget[],
     context: AiRequestContext,
     importId?: string,
+    skipAi = false,
   ): Promise<BatchInsertResult> {
     const now = Date.now();
     const rows = await tx.link.createManyAndReturn({
@@ -245,19 +247,21 @@ export class LinksBatchService {
         return [row.id, target] as const;
       }),
     );
-    const ai = await this.aiJobs.enqueue(
-      tx,
-      userId,
-      rows.map((row) => {
-        const target = filledById.get(row.id);
-        return {
-          linkId: row.id,
-          folderSet: (target?.folderId ?? null) !== null,
-          tagsSet: (target?.tagIds.length ?? 0) > 0,
-        };
-      }),
-      context,
-    );
+    const ai = skipAi
+      ? { jobIds: [] }
+      : await this.aiJobs.enqueue(
+          tx,
+          userId,
+          rows.map((row) => {
+            const target = filledById.get(row.id);
+            return {
+              linkId: row.id,
+              folderSet: (target?.folderId ?? null) !== null,
+              tagsSet: (target?.tagIds.length ?? 0) > 0,
+            };
+          }),
+          context,
+        );
     const saved = await tx.link.findMany({
       where: { userId, id: { in: ids } },
       include: LINK_INCLUDE,

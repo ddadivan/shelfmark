@@ -5,20 +5,28 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  DEMO_LIMIT,
   FOLDER_LIMIT,
+  LINK_LIMIT,
+  IMPORT_AI_STATE,
   IMPORT_ERROR_MESSAGE,
   IMPORT_LIMIT,
   normalizeUrl,
   type FinishImportRequest,
+  type ImportAiSummary,
   type ImportCheckResponse,
   type ImportLinksRequest,
   type ImportLinksResponse,
   type ImportSource,
+  type ImportSummary,
   type ListImportsResponse,
   type StartImportRequest,
   type StartImportResponse,
   type UndoImportResponse,
 } from '@shelfmark/contracts';
+import { AiImportPassService } from '../ai/backfill/ai-import-pass.service';
+import { AI_JOB_STATE } from '../ai/models/ai-job-state.const';
+import { AiTidyService } from '../ai/tidy/ai-tidy.service';
 import type { AiRequestContext } from '../ai/models/ai-request-context.interface';
 import { FoldersService } from '../folders/folders.service';
 import type { Prisma } from '../generated/prisma/client';
@@ -29,6 +37,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { TagsService } from '../tags/tags.service';
 import { assertImportFolderKeys } from './assert-import-folder-keys';
 import { clampAddedAt } from './clamp-added-at';
+import type { ImportRow } from './models/import-row.type';
 import { isImportOpen, isImportUndoable, undoCutoff } from './import-window';
 
 /**
@@ -44,6 +53,8 @@ export class ImportsService {
     private readonly folders: FoldersService,
     private readonly tags: TagsService,
     private readonly batches: LinksBatchService,
+    private readonly aiPass: AiImportPassService,
+    private readonly tidy: AiTidyService,
   ) {}
 
   async list(userId: string): Promise<ListImportsResponse> {
@@ -65,26 +76,102 @@ export class ImportsService {
             })
           ).map((folder) => folder.id),
     );
-    return {
-      items: rows.map((row) => ({
-        id: row.id,
-        // The CHECK keeps the column to IMPORT_SOURCE.
-        source: row.source as ImportSource,
-        fileName: row.fileName,
-        createdAt: row.createdAt.toISOString(),
-        finishedAt: row.finishedAt?.toISOString() ?? null,
-        targetFolderId:
+    const items = await Promise.all(
+      rows.map(async (row) =>
+        this.toSummary(
+          userId,
+          row,
           row.targetFolderId !== null && live.has(row.targetFolderId) ? row.targetFolderId : null,
-        linksCreated: row.linksCreated,
-        foldersCreated: row.foldersCreated,
-        skipped: row.skipped,
-        failed: row.failed,
-      })),
+        ),
+      ),
+    );
+    return { items };
+  }
+
+  /** `GET /api/imports/:id`: one own import (even when undone or older), else 404. */
+  async get(userId: string, id: string): Promise<ImportSummary> {
+    const row = await this.requireImport(this.prisma, userId, id);
+    const target =
+      row.targetFolderId === null
+        ? null
+        : await this.prisma.folder.findFirst({
+            where: { id: row.targetFolderId, userId, deletedAt: null },
+            select: { id: true },
+          });
+    return this.toSummary(userId, row, target?.id ?? null);
+  }
+
+  private async toSummary(
+    userId: string,
+    row: ImportRow,
+    targetFolderId: string | null,
+  ): Promise<ImportSummary> {
+    return {
+      id: row.id,
+      // The CHECK keeps the column to IMPORT_SOURCE.
+      source: row.source as ImportSource,
+      fileName: row.fileName,
+      createdAt: row.createdAt.toISOString(),
+      finishedAt: row.finishedAt?.toISOString() ?? null,
+      targetFolderId,
+      linksCreated: row.linksCreated,
+      foldersCreated: row.foldersCreated,
+      skipped: row.skipped,
+      failed: row.failed,
+      ai: await this.aiSummary(userId, row),
     };
   }
 
-  /** Which of the URLs (by index) are already among the user's live links. Read-only. */
-  async check(userId: string, urls: readonly string[]): Promise<ImportCheckResponse> {
+  /**
+   * The AI pass of an import: `null` unless it asked for one. Before `finish` (no state yet) it
+   * reads `running` while the import still takes batches, else `skipped` (the tab closed before the
+   * pass could start). `done` counts the import's live links whose AI job ended; summaries and open
+   * suggestions are the import's live links with a summary / what Tidy lists for it.
+   */
+  private async aiSummary(userId: string, row: ImportRow): Promise<ImportAiSummary | null> {
+    if (!row.aiRequested) return null;
+    const importId = row.id;
+    const state =
+      row.aiState === IMPORT_AI_STATE.Running ||
+      row.aiState === IMPORT_AI_STATE.Done ||
+      row.aiState === IMPORT_AI_STATE.Skipped
+        ? row.aiState
+        : isImportOpen(row, new Date())
+          ? IMPORT_AI_STATE.Running
+          : IMPORT_AI_STATE.Skipped;
+    const [ended, summaries, suggestions] = await Promise.all([
+      this.prisma.link.count({
+        where: {
+          userId,
+          importId,
+          deletedAt: null,
+          aiStatus: { in: [AI_JOB_STATE.Done, AI_JOB_STATE.Failed, AI_JOB_STATE.Skipped] },
+        },
+      }),
+      this.prisma.link.count({
+        where: { userId, importId, deletedAt: null, summary: { not: null } },
+      }),
+      this.tidy.count(userId, importId),
+    ]);
+    return {
+      state,
+      total: row.aiTotal,
+      done: Math.min(row.aiTotal, ended),
+      summaries,
+      suggestions: suggestions.total,
+    };
+  }
+
+  /**
+   * Which of the URLs (by index) are already among the user's live links, and how many more links
+   * fit the cap that applies (counted like `LinksBatchService.assertFits`: every row, Trash too).
+   * Read-only.
+   */
+  async check(
+    userId: string,
+    urls: readonly string[],
+    isDemo: boolean,
+  ): Promise<ImportCheckResponse> {
     const normalized = urls.map((url) => normalizeUrl(savedUrl(url)));
     const rows = await this.prisma.link.findMany({
       where: { userId, deletedAt: null, normalizedUrl: { in: [...new Set(normalized)] } },
@@ -92,7 +179,9 @@ export class ImportsService {
     });
     const known = new Set(rows.map((row) => row.normalizedUrl));
     const saved = normalized.flatMap((url, index) => (known.has(url) ? [index] : []));
-    return { saved };
+    const max = isDemo ? DEMO_LIMIT.MaxLinks : LINK_LIMIT.PerUserMax;
+    const total = await this.prisma.link.count({ where: { userId } });
+    return { saved, room: Math.max(0, max - total) };
   }
 
   async start(userId: string, request: StartImportRequest): Promise<StartImportResponse> {
@@ -114,10 +203,17 @@ export class ImportsService {
         }
       }
       const record = await tx.import.create({
-        data: { userId, source: request.source, fileName: request.fileName },
+        data: {
+          userId,
+          source: request.source,
+          fileName: request.fileName,
+          aiRequested: request.aiPass === true,
+        },
         select: { id: true },
       });
       const importId = record.id;
+      // The units an AI grouping took now belong to this import's AI pass.
+      if (request.aiPass === true) await this.aiPass.takeGroupingUnits(tx, userId, importId);
 
       let targetFolderId: string | null = request.targetFolderId?.toLowerCase() ?? null;
       const next = new Map<string | null, number>();
@@ -202,6 +298,8 @@ export class ImportsService {
       context,
       {
         importId: id,
+        // An import never uses the monthly link allowance (ADR 0056 decision 9).
+        skipAi: true,
         skipRepeats: request.skipRepeats !== false,
         // Under the folders lock Undo also takes: no link lands after an Undo.
         afterLock: async (tx) => {
@@ -219,12 +317,14 @@ export class ImportsService {
     };
   }
 
+  /** Stores the client's counts, then starts the AI pass when the import asked for one. */
   async finish(userId: string, id: string, request: FinishImportRequest): Promise<void> {
     const result = await this.prisma.import.updateMany({
       where: { id, userId },
       data: { skipped: request.skipped, failed: request.failed, finishedAt: new Date() },
     });
     if (result.count === 0) throw new NotFoundException(IMPORT_ERROR_MESSAGE.NotFound);
+    await this.aiPass.begin(userId, id);
   }
 
   /**
