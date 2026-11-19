@@ -27,11 +27,9 @@ import {
   ToastService,
   TooltipDirective,
 } from '@shelfmark/ui';
-import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
 import { combineLatest, filter, map } from 'rxjs';
 import { AdminStore } from '../features/admin/services/admin.store';
 import { FeedbackDialogService } from '../features/feedback/services/feedback-dialog.service';
-import { ExportActionsService } from '../features/export/services/export-actions.service';
 import { AuthStore } from '../core/auth/auth.store';
 import { LinkActionsService } from '../features/links/services/link-actions.service';
 import { OnboardingStore } from '../features/onboarding/services/onboarding.store';
@@ -99,9 +97,6 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
 export default class AppShellComponent {
   protected readonly auth = inject(AuthStore);
   protected readonly actions = inject(LinkActionsService);
-  private readonly injector = inject(Injector);
-  private readonly exporter = inject(ExportActionsService);
-  protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly search = inject(SearchDialogService);
   protected readonly shortcuts = inject(ShortcutsDialogService);
@@ -257,17 +252,6 @@ export default class AppShellComponent {
   /** "About Shelfmark": the landing page, with "Back to my shelf" and "What's new" (#270). */
   protected async openAbout(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.About}`);
-  }
-
-  /** "Import links…" (#387): the dialog's code loads on first use, not with the shell. */
-  protected async openImport(): Promise<void> {
-    const { ImportDialogService } =
-      await import('../features/import/services/import-dialog.service');
-    this.injector.get(ImportDialogService).open();
-  }
-
-  protected async exportAll(format: ExportFormat): Promise<void> {
-    await this.exporter.download(format);
   }
 
   protected onKeydown(event: KeyboardEvent): void {

@@ -4,12 +4,15 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import {
   AvatarComponent,
   BUTTON_SIZE,
+  BUTTON_VARIANT,
   ButtonComponent,
   ICON_SIZE,
   IconComponent,
 } from '@shelfmark/ui';
 import { AdminStore } from '../../../admin/services/admin.store';
 import { ADMIN_PATH } from '../../../admin/models/admin-path.const';
+import { ExportDialogService } from '../../../export/services/export-dialog.service';
+import { ImportDialogService } from '../../../import/services/import-dialog.service';
 import { FeedbackDialogService } from '../../../feedback/services/feedback-dialog.service';
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
@@ -27,7 +30,7 @@ import { THEME_OPTION_KEYS } from '../../models/theme-option-keys.const';
 
 /**
  * `/settings` on a phone, the You tab (MobileSettings): the account card, one row per section,
- * Sign out, the privacy policy and the version. Each row opens that section as a page.
+ * Import and export (#387), Send feedback, Sign out, the privacy policy and the version. Each row opens that section as a page.
  */
 @Component({
   selector: 'app-settings-index-page',
@@ -46,6 +49,9 @@ export default class SettingsIndexPage {
 
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
+  protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
+  private readonly importer = inject(ImportDialogService);
+  private readonly exporter = inject(ExportDialogService);
   protected readonly SETTINGS_PATH = SETTINGS_PATH;
   protected readonly appVersion = APP_VERSION;
   protected readonly settingsPath = `/${APP_PATH.Settings}`;
@@ -77,6 +83,15 @@ export default class SettingsIndexPage {
       });
     }
   });
+
+  /** Import and export open their dialog, a bottom sheet on a phone (#387). */
+  protected openImport(): void {
+    this.importer.open();
+  }
+
+  protected openExport(): void {
+    this.exporter.open();
+  }
 
   protected openWhatsNew(event: MouseEvent): void {
     event.preventDefault();

@@ -68,17 +68,7 @@
         {{ 'settings.data.export.download' | transloco }}
       </ui-button>
     </ui-settings-row>
-    <ui-settings-row
-      icon="upload"
-      [title]="'import.entry.title' | transloco"
-      [description]="'import.entry.description' | transloco"
-    >
-      <ui-button iconLeft="upload" [size]="buttonSize()" (click)="openImport()">
-        {{ 'import.entry.action' | transloco }}
-      </ui-button>
-    </ui-settings-row>
   </ui-settings-section>
-  <app-recent-imports />
 </div>
 
 @if (canDeleteAccount()) {
