@@ -1,5 +1,12 @@
 import type { ToastItem } from '../models/toast-item.interface';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  afterRenderEffect,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+} from '@angular/core';
 import { TOAST_DISMISS_LABEL } from '../models/toast-dismiss-label.token';
 import { TOAST_KIND } from '../models/toast-kind.const';
 import { toastShortcutKeys } from '../../../services/toast/toast-shortcut-label';
@@ -23,7 +30,11 @@ function isAssertive(item: ToastItem): boolean {
   selector: 'ui-toast-region',
   imports: [ToastComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'ui-toast-region' },
+  host: {
+    class: 'ui-toast-region',
+    '(pointerenter)': 'measureLift()',
+    '(focusin)': 'measureLift()',
+  },
   templateUrl: './toast-region.component.html',
   styleUrl: './toast-region.component.scss',
 })
@@ -38,4 +49,34 @@ export class ToastRegionComponent {
   protected readonly assertive = computed(() =>
     this.store.stack().filter((entry) => isAssertive(entry.item)),
   );
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  constructor() {
+    afterRenderEffect(() => {
+      this.store.stack();
+      this.measureLift();
+    });
+  }
+
+  /**
+   * Fanning out moves each toast up by the heights of the newer toasts plus the gaps
+   * (`--ui-toast-lift`), so the stack opens and closes with a transform transition instead of
+   * jumping between one grid cell and a list. Heights come from `offsetHeight` (transforms do not
+   * change it); measured after each stack change and again when the pointer or focus enters.
+   */
+  protected measureLift(): void {
+    const host = this.host.nativeElement;
+    const gap = Number.parseFloat(getComputedStyle(host).rowGap) || 0;
+    const items = [
+      ...host.querySelectorAll<HTMLElement>(
+        '.ui-toast-region__item:not(.ui-toast-region__item--leave)',
+      ),
+    ].sort((a, b) => Number(a.dataset['depth']) - Number(b.dataset['depth']));
+    let lift = 0;
+    for (const item of items) {
+      item.style.setProperty('--ui-toast-lift', `${lift}px`);
+      lift += item.offsetHeight + gap;
+    }
+  }
 }
