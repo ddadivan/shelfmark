@@ -1,3 +1,4 @@
+import { stopScopedRun } from '../backfill/close-import-pass';
 import { Injectable } from '@nestjs/common';
 import { AI_BACKFILL_STATE, SUMMARY_SOURCE } from '@shelfmark/contracts';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -33,6 +34,7 @@ export class AiDataService {
       await tx.$executeRaw`
         UPDATE links SET ai_status = NULL
         WHERE user_id = ${userId}::uuid AND ai_status IS NOT NULL`;
+      await stopScopedRun(tx, userId);
       await tx.$executeRaw`
         UPDATE ai_settings SET backfill_state = ${AI_BACKFILL_STATE.Stopped}, backfill_cursor = NULL
         WHERE user_id = ${userId}::uuid AND backfill_state = ${AI_BACKFILL_STATE.Running}`;

@@ -1,5 +1,9 @@
 @for (option of options(); track option.value; let i = $index) {
-  <label class="ui-radio" [class.ui-radio--checked]="value() === option.value">
+  <label
+    class="ui-radio"
+    [class.ui-radio--checked]="value() === option.value"
+    [class.ui-radio--ai]="option.tone === RADIO_OPTION_TONE.Ai"
+  >
     <input
       type="radio"
       class="ui-radio__input"

@@ -21,6 +21,8 @@ import {
   type TidyUndoResponse,
   type UndoAiApplyRequest,
   type UpdateAiSettingsRequest,
+  VIEW_DRAFT_ENDPOINT,
+  type ViewDraftResponse,
 } from '@shelfmark/contracts';
 import type { Observable } from 'rxjs';
 import { skipErrorToast } from '../../../core/api/skip-error-toast';
@@ -30,6 +32,13 @@ import { fetchAskEvents } from './fetch-ask-events';
 /** `path` with its `:id` replaced by the encoded `id`. */
 function withId(path: string, id: string): string {
   return path.replace(':id', encodeURIComponent(id));
+}
+
+/** The query of a Tidy read: only the parts that are set. */
+function tidyParams(parts: Record<string, string | undefined>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(parts).filter((entry): entry is [string, string] => entry[1] !== undefined),
+  );
 }
 
 /**
@@ -92,15 +101,18 @@ export class HttpAiApi implements AiApi {
     return this.http.delete<void>(AI_ENDPOINT.Data, { context: skipErrorToast() });
   }
 
-  getTidy(after?: string): Observable<TidyListResponse> {
+  getTidy(after?: string, importId?: string): Observable<TidyListResponse> {
     return this.http.get<TidyListResponse>(AI_ENDPOINT.Tidy, {
       context: skipErrorToast(),
-      ...(after !== undefined && { params: { after } }),
+      params: tidyParams({ after, import: importId }),
     });
   }
 
-  getTidyCount(): Observable<TidyCountResponse> {
-    return this.http.get<TidyCountResponse>(AI_ENDPOINT.TidyCount, { context: skipErrorToast() });
+  getTidyCount(importId?: string): Observable<TidyCountResponse> {
+    return this.http.get<TidyCountResponse>(AI_ENDPOINT.TidyCount, {
+      context: skipErrorToast(),
+      params: tidyParams({ import: importId }),
+    });
   }
 
   applyTidy(request: TidyApplyRequest): Observable<TidyApplyResponse> {
@@ -149,5 +161,13 @@ export class HttpAiApi implements AiApi {
 
   ask(question: string, history: readonly AskTurn[]): Observable<AskEvent> {
     return fetchAskEvents(AI_ENDPOINT.Ask, { question, history: [...history] });
+  }
+
+  draftView(phrase: string): Observable<ViewDraftResponse> {
+    return this.http.post<ViewDraftResponse>(
+      VIEW_DRAFT_ENDPOINT,
+      { phrase },
+      { context: skipErrorToast() },
+    );
   }
 }

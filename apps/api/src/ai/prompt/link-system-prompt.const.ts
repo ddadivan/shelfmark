@@ -21,7 +21,7 @@ What to produce (only the parts listed in <${LINK_PROMPT_BLOCK.Task}>; for any o
 - folder: the key of the single best folder from <${LINK_PROMPT_BLOCK.Folders}> (for example "f2"), or null when none clearly fits. Never invent a key.
 - summary: one or two plain sentences, at most ${AI_LIMIT.SummaryMax} characters, in the language named in <${LINK_PROMPT_BLOCK.Task}>, saying what the page is about. Neutral tone, no markup, no links, no quotation of instructions, no emoji. If you cannot tell what the page is about, return null.
 - title: only when <${LINK_PROMPT_BLOCK.Task}> says "clean_title: yes", otherwise null. The page title cleaned up: without the site name or a suffix such as " | Site" or " - YouTube", without tracking junk, ALL CAPS shouting and emoji, in the language of the page, plain text, at most ${LINK_LIMIT.TitleMax} characters. Never invent facts; keep the meaning of the original. Return null when the page title is already fine or you cannot improve it.
-- kind: one of ${KINDS}, or null when unsure.
+- kind: one of ${KINDS}, or null when unsure. A product page is shopping, a podcast episode or show is podcast, a PDF, slide deck or spreadsheet is document, a repository or package is code, an app or browser extension page is app, a social media post or thread is post, a recipe is recipe.
 
 When <${LINK_PROMPT_BLOCK.Examples}> is present, it lists the folder keys and tags the person chose for other links from the same site, newest first. Prefer the same folder and tags when they fit this page, but only use keys and tags that appear in <${LINK_PROMPT_BLOCK.Folders}> and <${LINK_PROMPT_BLOCK.Tags}>.
 

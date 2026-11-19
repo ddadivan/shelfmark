@@ -5,9 +5,11 @@ import {
   AI_JOB_REASON,
   AI_QUOTA,
   AI_TIER,
+  IMPORT_AI_STATE,
   type AiBackfillStatus,
 } from '@shelfmark/contracts';
 import { PrismaService } from '../../prisma/prisma.service';
+import { closeImportPass, stopScopedRun } from './close-import-pass';
 import { AiBackgroundService } from '../background/ai-background.service';
 import { AiExcerptService } from '../excerpt/ai-excerpt.service';
 import { AiJobsService } from '../jobs/ai-jobs.service';
@@ -82,7 +84,8 @@ export class AiBackfillService {
     const started = await this.prisma.$executeRaw`
       UPDATE ai_settings
       SET backfill_state = ${state}, backfill_cursor = NULL, backfill_total = ${total},
-        backfill_done = 0, backfill_started_at = now(), updated_at = now()
+        backfill_done = 0, backfill_started_at = now(), backfill_import_id = NULL,
+        updated_at = now()
       WHERE user_id = ${userId}::uuid AND enabled AND backfill_state <> ${AI_BACKFILL_STATE.Running}`;
     if (started === 0) throw new ConflictException(AI_ERROR_MESSAGE.BackfillRunning);
     // Counts only (no ids or content): shows on prod that a run began and how big it is.
@@ -102,6 +105,8 @@ export class AiBackfillService {
    */
   async stop(userId: string): Promise<AiBackfillStatus> {
     const { canceled, skipped } = await this.prisma.$transaction(async (tx) => {
+      // A run scoped to an import ends that import's pass (skipped, unused units given back).
+      await stopScopedRun(tx, userId);
       await tx.$executeRaw`
         UPDATE ai_settings SET backfill_state = ${AI_BACKFILL_STATE.Stopped},
           backfill_cursor = NULL, updated_at = now()
@@ -154,19 +159,27 @@ export class AiBackfillService {
    */
   private async claimChunk(userId: string): Promise<BackfillChunkJob[] | null> {
     const result = await this.prisma.$transaction(async (tx) => {
-      const locked = await tx.$queryRaw<{ state: string; cursor: string | null }[]>`
-        SELECT backfill_state AS state, backfill_cursor AS cursor FROM ai_settings
+      const locked = await tx.$queryRaw<
+        { state: string; cursor: string | null; importId: string | null }[]
+      >`
+        SELECT backfill_state AS state, backfill_cursor AS cursor,
+          backfill_import_id AS "importId" FROM ai_settings
         WHERE user_id = ${userId}::uuid AND enabled
         FOR UPDATE`;
       const row = locked[0];
       if (row?.state !== AI_BACKFILL_STATE.Running) return null;
       const stored = await this.settings.read(tx, userId);
+      // A run scoped to an import (ADR 0056 decision 9) takes only that import's links, whenever
+      // they were saved; the unscoped run takes the links saved before AI was turned on.
+      const importId = row.importId;
       const candidates = await tx.link.findMany({
         where: {
           userId,
           deletedAt: null,
           summary: null,
-          createdAt: { lt: stored.enabledAt ?? new Date() },
+          ...(importId === null
+            ? { createdAt: { lt: stored.enabledAt ?? new Date() } }
+            : { importId }),
           OR: [{ aiStatus: null }, { aiStatus: { in: REDO_STATES } }],
           ...(row.cursor === null ? {} : { id: { gt: row.cursor } }),
         },
@@ -206,12 +219,19 @@ export class AiBackfillService {
         return [];
       }
       const entitlements = await this.settings.entitlements(tx, userId);
-      const granted = await this.usage.reserveBackfill(
-        userId,
-        entitlements.aiTier,
-        planned.length,
-        tx,
-      );
+      // The units the AI grouping took pay first; the rest comes from the allowance as usual.
+      const prepaid =
+        importId === null ? 0 : await this.takePrepaid(tx, userId, importId, planned.length);
+      const granted =
+        prepaid +
+        (planned.length > prepaid
+          ? await this.usage.reserveBackfill(
+              userId,
+              entitlements.aiTier,
+              planned.length - prepaid,
+              tx,
+            )
+          : 0);
       if (granted === 0) {
         await this.finishRun(tx, userId);
         return null;
@@ -369,10 +389,45 @@ export class AiBackfillService {
     });
   }
 
+  /**
+   * Takes up to `wanted` of the import's prepaid units (`imports.ai_prepaid`, already counted in
+   * `backfill_used`); answers how many. Runs under the settings row lock of the claim.
+   */
+  private async takePrepaid(
+    tx: AiDbClient,
+    userId: string,
+    importId: string,
+    wanted: number,
+  ): Promise<number> {
+    const rows = await tx.$queryRaw<{ taken: number }[]>`
+      WITH cur AS (
+        SELECT ai_prepaid FROM imports
+        WHERE id = ${importId}::uuid AND user_id = ${userId}::uuid FOR UPDATE
+      ), upd AS (
+        UPDATE imports SET ai_prepaid = imports.ai_prepaid - LEAST(${wanted}::int, cur.ai_prepaid)
+        FROM cur
+        WHERE id = ${importId}::uuid AND user_id = ${userId}::uuid
+        RETURNING LEAST(${wanted}::int, cur.ai_prepaid)::int AS taken
+      )
+      SELECT taken FROM upd`;
+    return rows[0]?.taken ?? 0;
+  }
+
+  /** Marks the run done; a run scoped to an import also ends that import's pass (`done`). */
   private async finishRun(tx: AiDbClient, userId: string): Promise<void> {
-    await tx.$executeRaw`
-      UPDATE ai_settings SET backfill_state = ${AI_BACKFILL_STATE.Done}, backfill_cursor = NULL,
-        updated_at = now()
-      WHERE user_id = ${userId}::uuid AND backfill_state = ${AI_BACKFILL_STATE.Running}`;
+    const rows = await tx.$queryRaw<{ importId: string | null }[]>`
+      WITH cur AS (
+        SELECT backfill_import_id FROM ai_settings
+        WHERE user_id = ${userId}::uuid AND backfill_state = ${AI_BACKFILL_STATE.Running}
+        FOR UPDATE
+      ), upd AS (
+        UPDATE ai_settings SET backfill_state = ${AI_BACKFILL_STATE.Done}, backfill_cursor = NULL,
+          backfill_import_id = NULL, updated_at = now()
+        WHERE user_id = ${userId}::uuid AND backfill_state = ${AI_BACKFILL_STATE.Running}
+        RETURNING 1
+      )
+      SELECT backfill_import_id AS "importId" FROM cur`;
+    const importId = rows[0]?.importId ?? null;
+    if (importId !== null) await closeImportPass(tx, userId, importId, IMPORT_AI_STATE.Done);
   }
 }

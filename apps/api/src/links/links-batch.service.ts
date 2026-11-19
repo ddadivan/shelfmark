@@ -9,7 +9,6 @@ import {
   normalizeUrl,
   TAG_ERROR_MESSAGE,
   TAG_LIMIT,
-  type CreateLinksBatchRequest,
   type LinkBatchItemError,
   type LinkResponse,
   deriveLinkKind,
@@ -29,6 +28,8 @@ import { LINK_INCLUDE } from './models/link-include.const';
 import type { LinkDbClient } from './models/link-db-client.type';
 import type { BatchInsertResult } from './models/batch-insert-result.interface';
 import type { BatchTarget } from './models/batch-target.interface';
+import type { LinksBatchInput } from './models/links-batch-input.interface';
+import type { LinksBatchOptions } from './models/links-batch-options.interface';
 import type { PlannedBatchItem } from './models/planned-batch-item.interface';
 import { fallbackTitle } from './title-or-url';
 import { toLinkResponse } from './to-link-response';
@@ -58,18 +59,24 @@ export class LinksBatchService {
    */
   async create(
     userId: string,
-    request: CreateLinksBatchRequest,
+    request: LinksBatchInput,
     isDemo = false,
     context: AiRequestContext = {},
+    options: LinksBatchOptions = {},
   ): Promise<CreateLinksBatchResult> {
     this.assertTagNames([
       ...(request.tags ?? []),
       ...request.items.flatMap((item) => item.tags ?? []),
     ]);
     this.assertDistinctKeys(request);
-    const { planned, errors } = this.plan(request);
+    const { planned, errors } = this.plan(request, options.skipRepeats !== false);
     if (planned.length === 0) {
-      return { response: { links: [], errors }, created: false };
+      return {
+        response: { links: [], errors },
+        created: false,
+        createdCount: 0,
+        replayedCount: 0,
+      };
     }
     let aiJobIds: string[] = [];
     try {
@@ -77,6 +84,7 @@ export class LinksBatchService {
         // Folder lock first: it serializes the inserts against folder moves and deletes, makes the
         // count below exact and makes two retries of the same batch wait for each other.
         await this.folders.lockTree(tx, userId);
+        await options.afterLock?.(tx);
         const replayed = await this.findByKeys(tx, userId, planned);
         const fresh = planned.filter((entry) => !replayed.has(entry.item.idempotencyKey));
         let created = new Map<string, LinkResponse>();
@@ -94,18 +102,31 @@ export class LinksBatchService {
           const inserted = await this.insert(
             tx,
             userId,
-            await this.targets(tx, userId, request, fresh),
+            await this.targets(tx, userId, request, fresh, options.importId),
             context,
+            options.importId,
+            options.skipAi === true,
           );
           created = inserted.links;
           aiJobIds = inserted.aiJobIds;
+          if (options.importId !== undefined) {
+            await tx.import.updateMany({
+              where: { id: options.importId, userId },
+              data: { linksCreated: { increment: fresh.length } },
+            });
+          }
         }
         const links = planned.flatMap((entry) => {
           const key = entry.item.idempotencyKey;
           const link = replayed.get(key) ?? created.get(key);
           return link ? [link] : [];
         });
-        return { response: { links, errors }, created: fresh.length > 0 };
+        return {
+          response: { links, errors },
+          created: fresh.length > 0,
+          createdCount: fresh.length,
+          replayedCount: planned.length - fresh.length,
+        };
       });
       this.aiJobs.start(userId, aiJobIds);
       // Search by meaning: links without a job are embedded now, the others after their jobs.
@@ -120,7 +141,12 @@ export class LinksBatchService {
             const link = replayed.get(entry.item.idempotencyKey);
             return link ? [link] : [];
           });
-          return { response: { links, errors }, created: false };
+          return {
+            response: { links, errors },
+            created: false,
+            createdCount: 0,
+            replayedCount: planned.length,
+          };
         }
       }
       if (
@@ -135,9 +161,12 @@ export class LinksBatchService {
 
   /**
    * Splits the items into those to save and those to skip: a normalized URL over the column limit,
-   * or the same normalized URL as an earlier item of the batch.
+   * or (unless `skipRepeats` is off) the same normalized URL as an earlier item of the batch.
    */
-  private plan(request: CreateLinksBatchRequest): {
+  private plan(
+    request: LinksBatchInput,
+    skipRepeats: boolean,
+  ): {
     planned: PlannedBatchItem[];
     errors: LinkBatchItemError[];
   } {
@@ -148,7 +177,7 @@ export class LinksBatchService {
       const normalizedUrl = normalizeUrl(item.url);
       if (normalizedUrl.length > LINK_LIMIT.UrlMax) {
         errors.push({ index, url: item.url, code: LINK_BATCH_ERROR_CODE.UrlTooLong });
-      } else if (seen.has(normalizedUrl)) {
+      } else if (skipRepeats && seen.has(normalizedUrl)) {
         errors.push({ index, url: item.url, code: LINK_BATCH_ERROR_CODE.DuplicateInBatch });
       } else {
         seen.add(normalizedUrl);
@@ -167,12 +196,15 @@ export class LinksBatchService {
     userId: string,
     fresh: readonly BatchTarget[],
     context: AiRequestContext,
+    importId?: string,
+    skipAi = false,
   ): Promise<BatchInsertResult> {
     const now = Date.now();
     const rows = await tx.link.createManyAndReturn({
       data: fresh.map(({ entry, folderId }, position) => {
         const { item } = entry;
         const title = item.title ?? fallbackTitle(item.url);
+        const createdAt = item.createdAt ?? new Date(now - position);
         return {
           userId,
           folderId,
@@ -186,8 +218,10 @@ export class LinksBatchService {
           imageSourceUrl: item.imageUrl ?? null,
           captureAttemptedAt: null,
           idempotencyKey: item.idempotencyKey,
-          createdAt: new Date(now - position),
-          updatedAt: new Date(now - position),
+          note: item.note ?? null,
+          importId: importId ?? null,
+          createdAt,
+          updatedAt: createdAt,
         };
       }),
       select: { id: true, idempotencyKey: true },
@@ -213,19 +247,21 @@ export class LinksBatchService {
         return [row.id, target] as const;
       }),
     );
-    const ai = await this.aiJobs.enqueue(
-      tx,
-      userId,
-      rows.map((row) => {
-        const target = filledById.get(row.id);
-        return {
-          linkId: row.id,
-          folderSet: (target?.folderId ?? null) !== null,
-          tagsSet: (target?.tagIds.length ?? 0) > 0,
-        };
-      }),
-      context,
-    );
+    const ai = skipAi
+      ? { jobIds: [] }
+      : await this.aiJobs.enqueue(
+          tx,
+          userId,
+          rows.map((row) => {
+            const target = filledById.get(row.id);
+            return {
+              linkId: row.id,
+              folderSet: (target?.folderId ?? null) !== null,
+              tagsSet: (target?.tagIds.length ?? 0) > 0,
+            };
+          }),
+          context,
+        );
     const saved = await tx.link.findMany({
       where: { userId, id: { in: ids } },
       include: LINK_INCLUDE,
@@ -240,16 +276,26 @@ export class LinksBatchService {
 
   /**
    * Folder and tags of each new link: the item's own, else the batch's, else the domain rule of
-   * the link (#398, unless `applyRules` is false). Tag lists are resolved once per distinct list (the tags lock is taken there,
-   * after the folders lock).
+   * the link (#398, unless `applyRules` is false or the batch is an import's). Tag lists are
+   * resolved once per distinct list (the tags lock is taken there, after the folders lock); with an
+   * `importId` the tags this batch creates get it.
    */
   private async targets(
     tx: Prisma.TransactionClient,
     userId: string,
-    request: CreateLinksBatchRequest,
+    request: LinksBatchInput,
     fresh: readonly PlannedBatchItem[],
+    importId?: string,
   ): Promise<BatchTarget[]> {
-    const match = request.applyRules === false ? () => null : await this.rules.matcher(tx, userId);
+    const rulesOff = request.applyRules === false || importId !== undefined;
+    const match = rulesOff ? () => null : await this.rules.matcher(tx, userId);
+    // Tags that exist before this batch (read under the tags lock): the others are this batch's.
+    let before: Set<string> | undefined;
+    if (importId !== undefined && fresh.some((entry) => (entry.item.tags?.length ?? 0) > 0)) {
+      await this.tags.lockUserTags(tx, userId);
+      const rows = await tx.tag.findMany({ where: { userId }, select: { id: true } });
+      before = new Set(rows.map((row) => row.id));
+    }
     const resolved = new Map<string, string[]>();
     const targets: BatchTarget[] = [];
     for (const entry of fresh) {
@@ -267,6 +313,15 @@ export class LinksBatchService {
         folderId: item.folderId ?? request.folderId ?? rule?.folderId ?? null,
         tagIds,
       });
+    }
+    if (importId !== undefined && before !== undefined) {
+      const known = before;
+      const created = [...new Set(targets.flatMap((target) => target.tagIds))].filter(
+        (id) => !known.has(id),
+      );
+      if (created.length > 0) {
+        await tx.tag.updateMany({ where: { userId, id: { in: created } }, data: { importId } });
+      }
     }
     return targets;
   }
@@ -302,7 +357,7 @@ export class LinksBatchService {
   }
 
   /** Two items with one key would replay each other: the client must send one key per link. */
-  private assertDistinctKeys(request: CreateLinksBatchRequest): void {
+  private assertDistinctKeys(request: LinksBatchInput): void {
     const keys = request.items.map((item) => item.idempotencyKey.toLowerCase());
     if (new Set(keys).size !== keys.length) {
       throw new BadRequestException(LINK_ERROR_MESSAGE.DuplicateIdempotencyKey);

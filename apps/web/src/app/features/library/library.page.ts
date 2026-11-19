@@ -37,7 +37,8 @@ import {
   SkeletonComponent,
   type BreadcrumbClick,
 } from '@shelfmark/ui';
-import { EXPORT_FORMAT, PIN_KIND, type ExportFormat } from '@shelfmark/contracts';
+import { PIN_KIND, type ExportFormat } from '@shelfmark/contracts';
+import { EXPORT_FORMAT_OPTIONS } from '../export/models/export-format-options.const';
 import { Router } from '@angular/router';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { ViewportService } from '../../core/layout/viewport.service';
@@ -210,7 +211,7 @@ export default class LibraryPage {
 
   protected readonly emptyIllustration = this.filters.emptyIllustration;
   protected readonly UI_VIEW = UI_VIEW;
-  protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
+  protected readonly EXPORT_FORMAT_OPTIONS = EXPORT_FORMAT_OPTIONS;
   protected readonly LINKS_SCOPE = LINKS_SCOPE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly ICON_SIZE = ICON_SIZE;

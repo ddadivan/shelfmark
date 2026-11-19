@@ -11,6 +11,7 @@ describe('toStoredLinkResult', () => {
         folderId: 'f',
         summary: 's',
         title: 't',
+        kind: 'video',
       }),
     ).toEqual({
       tags: ['a', 'b'],
@@ -19,6 +20,7 @@ describe('toStoredLinkResult', () => {
       folderId: 'f',
       summary: 's',
       title: 't',
+      kind: 'video',
     });
   });
 
@@ -27,13 +29,14 @@ describe('toStoredLinkResult', () => {
   });
 
   it('turns blank or missing fields into null', () => {
-    expect(toStoredLinkResult({ tags: [], newTag: '', summary: 5 })).toEqual({
+    expect(toStoredLinkResult({ tags: [], newTag: '', summary: 5, kind: 'sticker' })).toEqual({
       tags: [],
       newTags: [],
       moreTags: [],
       folderId: null,
       summary: null,
       title: null,
+      kind: null,
     });
   });
 

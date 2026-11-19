@@ -48,7 +48,20 @@ function setup(enabled = true) {
 }
 
 describe('MockAiTidy', () => {
-  afterEach(() => localStorage.clear());
+  it('lists the links of one import in any folder, and nothing for an unknown import', () => {
+    const { tidy, library, ai } = setup();
+    const filed = library.links.find((link) => link.folderId !== null);
+    if (!filed) throw new Error('The mock library has a link in a folder');
+    ai.setSuggestions(filed.id, [row('s9', SUGGESTION_KIND.NewTag, 'imported')]);
+    library.importLinkIds.set('imp1', new Set([filed.id, MOCK_ID.LinkPasta]));
+
+    const ids = tidy.list(undefined, 'imp1').items.map((item) => item.link.id);
+    expect(ids.sort()).toEqual([filed.id, MOCK_ID.LinkPasta].sort());
+    expect(tidy.count('imp1')).toBe(2);
+    // The usual review stays Unsorted only.
+    expect(tidy.list().items.map((item) => item.link.id)).not.toContain(filed.id);
+    expect(tidy.list(undefined, 'unknown')).toEqual({ items: [], total: 0 });
+  });
 
   it('lists links in Unsorted with filtered suggestions, nothing while AI is off', () => {
     const { tidy } = setup();

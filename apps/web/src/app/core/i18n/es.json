@@ -442,12 +442,24 @@
       "video": "Vídeos",
       "article": "Artículos",
       "shopping": "Compras",
+      "podcast": "Podcasts",
+      "document": "Documentos",
+      "code": "Código",
+      "app": "Apps",
+      "post": "Publicaciones",
+      "recipe": "Recetas",
       "other": "Otros"
     },
     "kindOption": {
       "video": "Vídeo",
       "article": "Artículo",
       "shopping": "Compra",
+      "podcast": "Podcast",
+      "document": "Documento",
+      "code": "Código",
+      "app": "App",
+      "post": "Publicación",
+      "recipe": "Receta",
       "other": "Otro"
     },
     "move": {
@@ -491,9 +503,9 @@
         "skipped": "No es un enlace, omitido"
       },
       "overflow": {
-        "one": "Se dejó fuera {{count}} enlace más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto.",
-        "many": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto.",
-        "other": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Las listas más largas van por Importar como texto."
+        "one": "Se dejó fuera {{count}} enlace más: hasta {{max}} enlaces a la vez. Un archivo de marcadores va por Importar en Cuenta › Tus datos.",
+        "many": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Un archivo de marcadores va por Importar en Cuenta › Tus datos.",
+        "other": "Se dejaron fuera {{count}} enlaces más: hasta {{max}} enlaces a la vez. Un archivo de marcadores va por Importar en Cuenta › Tus datos."
       },
       "folder": "Carpeta para todos",
       "tags": "Etiquetas para todos",
@@ -842,7 +854,9 @@
         "movedUp": "Movido hacia arriba, posición {{position}} de {{total}}",
         "movedDown": "Movido hacia abajo, posición {{position}} de {{total}}"
       },
-      "extension": "Obtener la extensión"
+      "extension": "Obtener la extensión",
+      "data": "Datos y ayuda",
+      "dataMenu": "Datos y ayuda"
     },
     "searchHint": "Busca en tus enlaces",
     "searchButton": "Buscar",
@@ -853,7 +867,12 @@
     "sendFeedback": "Enviar comentarios",
     "feedbackInbox": "Buzón de comentarios",
     "about": "Acerca de Shelfmark",
-    "usageStats": "Estadísticas de uso"
+    "usageStats": "Estadísticas de uso",
+    "data": {
+      "import": "Importar enlaces",
+      "export": "Exportar",
+      "group": "Importar y exportar"
+    }
   },
   "folders": {
     "dialog": {
@@ -1270,11 +1289,13 @@
     "retry": "Reintentar",
     "view": {
       "json": "Esta vista en JSON",
-      "html": "Esta vista como HTML de marcadores"
+      "html": "Esta vista como HTML de marcadores",
+      "csv": "Esta vista en CSV"
     },
     "all": {
       "json": "Todo en JSON",
-      "html": "Todo como HTML de marcadores"
+      "html": "Todo como HTML de marcadores",
+      "csv": "Todo en CSV"
     },
     "empty": {
       "title": "Todavía no hay nada que exportar",
@@ -1283,6 +1304,262 @@
     "emptyView": {
       "title": "No hay nada que exportar en esta vista",
       "detail": "Esta vista no tiene enlaces. Exporta todo o abre otra vista"
+    },
+    "dialog": {
+      "title": "Exportar",
+      "close": "Cerrar",
+      "formatLabel": "Formato de archivo",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Todo: enlaces, carpetas, etiquetas, notas, recordatorios"
+        },
+        "html": {
+          "title": "Marcadores HTML",
+          "description": "Se abre en la importación de marcadores de cualquier navegador"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "Para hojas de cálculo"
+        }
+      },
+      "last": "Última exportación: {{when}}, {{format}}.",
+      "preparing": "Preparando el archivo {{format}}…",
+      "cancel": "Cancelar",
+      "download": "Descargar",
+      "saved": "Archivo guardado"
+    }
+  },
+  "import": {
+    "title": "Importar enlaces",
+    "close": "Cerrar",
+    "source": {
+      "label": "Origen",
+      "browser": {
+        "title": "Marcadores del navegador",
+        "description": "Archivo HTML de Chrome, Safari, Firefox o Edge. Las carpetas siguen siendo carpetas."
+      },
+      "drop": "o arrastra el archivo aquí",
+      "choose": "Elegir archivo",
+      "reading": "Leyendo {{file}}…",
+      "problem": {
+        "too-big": "Este archivo supera los {{max}} MB.",
+        "unreadable": "No se pudo leer este archivo. Prueba a exportarlo de nuevo.",
+        "not-bookmarks": "Este archivo no tiene marcadores. Elige el archivo HTML que tu navegador guardó con «Exportar marcadores».",
+        "empty": "Este archivo no tiene enlaces web.",
+        "too-many-links": "Este archivo tiene más de {{max}} enlaces.",
+        "check-failed": "No se pudo comparar el archivo con tu biblioteca. Inténtalo de nuevo."
+      },
+      "hint": ".html, hasta {{max}} MB y {{links}} enlaces",
+      "dropping": "Suelta para importar"
+    },
+    "review": {
+      "stats": {
+        "label": "En este archivo",
+        "links": {
+          "one": "enlace",
+          "many": "enlaces",
+          "other": "enlaces"
+        },
+        "folders": {
+          "one": "carpeta",
+          "many": "carpetas",
+          "other": "carpetas"
+        },
+        "saved": "ya en tu biblioteca"
+      },
+      "into": "Guardarlos en",
+      "newFolder": "Carpeta nueva «{{name}}»",
+      "newFolderName": "Marcadores importados",
+      "unsorted": "Sin clasificar",
+      "folderSearch": "Buscar carpetas",
+      "noFolders": "No se encontraron carpetas",
+      "skip": {
+        "one": "Omitir el duplicado ({{count}})",
+        "many": "Omitir los {{count}} duplicados",
+        "other": "Omitir los {{count}} duplicados"
+      },
+      "skipHint": "Enlaces que ya tienes y repeticiones dentro del archivo",
+      "back": "Atrás",
+      "import": {
+        "one": "Importar {{count}} enlace",
+        "many": "Importar {{count}} enlaces",
+        "other": "Importar {{count}} enlaces"
+      },
+      "nothing": "Todos los enlaces de este archivo ya están en tu biblioteca.",
+      "untitledFolder": "Carpeta sin nombre",
+      "untitledFile": "Archivo de marcadores",
+      "folders": {
+        "label": "Carpetas dentro",
+        "file": {
+          "title": "Como en el archivo",
+          "description": {
+            "one": "{{count}} carpeta del navegador",
+            "many": "{{count}} carpetas del navegador",
+            "other": "{{count}} carpetas del navegador"
+          }
+        },
+        "ai": {
+          "title": "Que la IA los ordene por temas",
+          "description": "La IA agrupa los enlaces y propone carpetas, incluidas las que ya tienes. Revisas los grupos antes de importar. Usa {{count}} de {{left}} procesamientos de enlaces existentes."
+        },
+        "none": {
+          "title": "Sin carpetas",
+          "description": "Todo en una sola lista en «{{target}}»"
+        }
+      },
+      "group": "Agrupar",
+      "room": {
+        "one": "Solo cabe {{count}} enlace más en tu límite, así que solo se importa el primero.",
+        "many": "Solo caben {{count}} enlaces más en tu límite, así que solo se importan los primeros {{count}}.",
+        "other": "Solo caben {{count}} enlaces más en tu límite, así que solo se importan los primeros {{count}}."
+      },
+      "full": "Tu biblioteca no tiene espacio para más enlaces."
+    },
+    "progress": {
+      "title": "Importando enlaces",
+      "count": "{{done}} de {{total}}",
+      "label": "Progreso de la importación",
+      "note": "Puedes seguir trabajando: puedes cerrar esta ventana. Las vistas previas se cargan en segundo plano en los próximos minutos.",
+      "doneTitle": {
+        "one": "{{count}} enlace importado",
+        "many": "{{count}} enlaces importados",
+        "other": "{{count}} enlaces importados"
+      },
+      "inFolder": "En «{{name}}».",
+      "inUnsorted": "En Sin clasificar.",
+      "inTarget": "En la carpeta elegida.",
+      "folders": {
+        "one": "{{count}} carpeta.",
+        "many": "{{count}} carpetas.",
+        "other": "{{count}} carpetas."
+      },
+      "skipped": {
+        "one": "{{count}} omitido: ya guardado, repetido o no es una página web.",
+        "many": "{{count}} omitidos: ya guardados, repetidos o no son páginas web.",
+        "other": "{{count}} omitidos: ya guardados, repetidos o no son páginas web."
+      },
+      "failed": {
+        "one": "{{count}} no se pudo guardar.",
+        "many": "{{count}} no se pudieron guardar.",
+        "other": "{{count}} no se pudieron guardar."
+      },
+      "openFolder": "Abrir la carpeta",
+      "openUnsorted": "Abrir Sin clasificar",
+      "undo": "Deshacer importación",
+      "startFailed": "La importación no pudo empezar, no se guardó nada. Inténtalo de nuevo.",
+      "foldersLimit": "Las carpetas no caben en tu límite de carpetas. Elige «Sin carpetas» e inténtalo de nuevo.",
+      "minimize": "Minimizar",
+      "grouped": {
+        "one": "En {{count}} carpeta, {{created}} de ellas nuevas.",
+        "many": "En {{count}} carpetas, {{created}} de ellas nuevas.",
+        "other": "En {{count}} carpetas, {{created}} de ellas nuevas."
+      }
+    },
+    "undo": {
+      "title": "¿Deshacer esta importación?",
+      "message": {
+        "one": "El enlace y las carpetas de esta importación van a la papelera, y se quitan las etiquetas que añadió y que nada más usa. Lo que añadiste después se queda.",
+        "many": "Los {{count}} enlaces y las carpetas de esta importación van a la papelera, y se quitan las etiquetas que añadió y que nada más usa. Lo que añadiste después se queda.",
+        "other": "Los {{count}} enlaces y las carpetas de esta importación van a la papelera, y se quitan las etiquetas que añadió y que nada más usa. Lo que añadiste después se queda."
+      },
+      "confirm": "Deshacer importación",
+      "cancel": "Cancelar",
+      "failed": "No se pudo deshacer la importación. Inténtalo de nuevo.",
+      "done": "Importación deshecha",
+      "doneDetail": {
+        "one": "{{count}} enlace movido a la papelera",
+        "many": "{{count}} enlaces movidos a la papelera",
+        "other": "{{count}} enlaces movidos a la papelera"
+      }
+    },
+    "recent": {
+      "title": "Importaciones recientes",
+      "source": {
+        "browser": "Marcadores del navegador"
+      },
+      "links": {
+        "one": "{{count}} enlace",
+        "many": "{{count}} enlaces",
+        "other": "{{count}} enlaces"
+      },
+      "folders": {
+        "one": "{{count}} carpeta",
+        "many": "{{count}} carpetas",
+        "other": "{{count}} carpetas"
+      },
+      "skipped": "{{count}} omitidos",
+      "failed": "{{count}} con error",
+      "undoLabel": "Deshacer importación: {{name}}",
+      "hint": "Una importación se puede deshacer durante 7 días."
+    },
+    "entry": {
+      "title": "Importar enlaces",
+      "description": "Trae los marcadores de tu navegador. Las carpetas siguen siendo carpetas y se omiten los enlaces que ya tienes.",
+      "action": "Importar"
+    },
+    "menu": "Importar enlaces…",
+    "help": {
+      "link": "Cómo exportar los marcadores de un navegador",
+      "chrome": "Chrome: abre el administrador de marcadores ({{keys}}), abre su menú ⋮ y elige «Exportar marcadores».",
+      "edge": "Edge: abre Favoritos ({{keys}}), abre su menú ⋯ y elige «Exportar favoritos».",
+      "edgeMac": "Edge: abre Favoritos desde el menú ⋯, abre su menú ⋯ y elige «Exportar favoritos».",
+      "firefox": "Firefox: abre la Biblioteca ({{keys}}), luego Importar y respaldar, «Exportar marcadores a HTML…».",
+      "safari": "Safari: Archivo, Exportar, Marcadores."
+    },
+    "groups": {
+      "waiting": {
+        "one": "La IA está agrupando {{count}} enlace…",
+        "many": "La IA está agrupando {{count}} enlaces…",
+        "other": "La IA está agrupando {{count}} enlaces…"
+      },
+      "count": {
+        "one": "{{count}} grupo",
+        "many": "{{count}} grupos",
+        "other": "{{count}} grupos"
+      },
+      "forLinks": {
+        "one": "para {{count}} enlace",
+        "many": "para {{count}} enlaces",
+        "other": "para {{count}} enlaces"
+      },
+      "nameLabel": "Nombre de la carpeta",
+      "nameEmpty": "Ponle un nombre a la carpeta",
+      "linkCount": {
+        "one": "{{count}} enlace",
+        "many": "{{count}} enlaces",
+        "other": "{{count}} enlaces"
+      },
+      "existing": "ya existe",
+      "new": "nueva",
+      "showLinks": "Mostrar los enlaces de «{{name}}»",
+      "hideLinks": "Ocultar los enlaces de «{{name}}»",
+      "moveLabel": "Mover «{{title}}» a",
+      "other": "Otros",
+      "otherText": "Los enlaces que no encajan en ningún tema van a «{{target}}».",
+      "hint": "Puedes cambiar el nombre de las carpetas. Los enlaces que saques de un grupo van a «{{target}}».",
+      "import": {
+        "one": "Importar y crear {{count}} carpeta",
+        "many": "Importar y crear {{count}} carpetas",
+        "other": "Importar y crear {{count}} carpetas"
+      },
+      "failed": "No se pudieron agrupar los enlaces ahora. No se usó nada de tu cuota. Vuelve atrás o impórtalos sin grupos.",
+      "allowance": "No queda cuota suficiente para enlaces existentes para estos enlaces. Vuelve atrás o impórtalos sin grupos.",
+      "monthly": "Este mes ya has agrupado con IA todos los enlaces que se pueden. Impórtalos como en el archivo o sin carpetas."
+    },
+    "ai": {
+      "doneTitle": "Las descripciones y las etiquetas están listas",
+      "summaries": {
+        "one": "{{count}} enlace recibió una descripción breve.",
+        "many": "{{count}} enlaces recibieron descripciones breves.",
+        "other": "{{count}} enlaces recibieron descripciones breves."
+      },
+      "suggestions": {
+        "one": "Hay sugerencias de etiquetas para {{count}} enlace.",
+        "many": "Hay sugerencias de etiquetas para {{count}} enlaces.",
+        "other": "Hay sugerencias de etiquetas para {{count}} enlaces."
+      },
+      "review": "Revisar etiquetas"
     }
   },
   "settings": {
@@ -1350,10 +1627,6 @@
       "title": "Tus datos",
       "export": {
         "label": "Exporta tus datos",
-        "json": "JSON",
-        "jsonHint": "Todas tus carpetas, etiquetas y enlaces en un archivo",
-        "html": "HTML de marcadores",
-        "htmlHint": "Se abre con la importación de marcadores de cualquier navegador",
         "download": "Descargar",
         "downloadAs": "Descargar {{format}}"
       }
@@ -1540,10 +1813,6 @@
           "close": "Cerrar"
         }
       },
-      "data": {
-        "hint": "Todo lo que has guardado, en JSON o HTML de marcadores",
-        "action": "Abrir exportación"
-      },
       "kept": {
         "title": "Lo que guardamos"
       },
@@ -1556,6 +1825,16 @@
           "action": "Abrir",
           "actionLabel": "Abrir «Eliminar datos de IA» en Ajustes › IA"
         }
+      },
+      "importExport": {
+        "title": "Importar y exportar",
+        "import": {
+          "hint": "Trae los marcadores de tu navegador"
+        },
+        "export": {
+          "hint": "Descarga toda tu biblioteca en un archivo"
+        },
+        "open": "Abrir"
       }
     },
     "footer": {
@@ -2132,8 +2411,6 @@
       "cancel": "Cancelar"
     },
     "create": {
-      "title": "Guardar esta vista",
-      "action": "Guardar vista",
       "saving": "Guardando…",
       "failed": "No se pudo guardar la vista. Inténtalo de nuevo.",
       "limit": "Ya tienes el máximo de vistas que puedes guardar. Elimina una primero.",
@@ -2177,7 +2454,70 @@
     "kindHint": {
       "video": "Enlaces detectados como vídeos",
       "article": "Enlaces detectados como artículos",
-      "shopping": "Enlaces detectados como compras"
+      "shopping": "Enlaces detectados como compras",
+      "podcast": "Enlaces detectados como podcasts",
+      "document": "Enlaces detectados como documentos",
+      "code": "Enlaces detectados como código",
+      "app": "Enlaces detectados como apps",
+      "post": "Enlaces detectados como publicaciones",
+      "recipe": "Enlaces detectados como recetas"
+    },
+    "new": {
+      "title": "Nueva vista",
+      "lead": "Empieza con el filtro de la lista en la que estás, o cámbialo aquí.",
+      "action": "Guardar vista",
+      "change": "Cambiar",
+      "composed": "El filtro se rellenó con tu descripción.",
+      "dropped": "Se dejó fuera: {{names}}",
+      "compose": "Componer",
+      "composing": "Componiendo…",
+      "ideas": "Ideas",
+      "ideaLabel": "Usar la idea: {{name}}",
+      "ideaPhrase": "Enlaces sobre {{name}}",
+      "unavailable": "Ahora no se puede componer una vista. No contó para tu límite; puedes ajustar el filtro tú mismo.",
+      "skip": {
+        "or": "o",
+        "action": "guardar el filtro actual"
+      },
+      "phrase": {
+        "label": "Describe qué mostrar",
+        "placeholder": "los vídeos sobre Angular que aún no he visto",
+        "hint": "Por ejemplo: «artículos de diseño de mi carpeta Trabajo», «qué comprar de ropa», «recetas, las más recientes primero»."
+      },
+      "where": {
+        "label": "Dónde",
+        "all": "Todos los enlaces",
+        "unsorted": "Sin clasificar",
+        "favorites": "Favoritos",
+        "search": "Buscar carpetas",
+        "noResults": "No se encontraron carpetas"
+      },
+      "kind": {
+        "label": "Tipo",
+        "all": "Todos los tipos"
+      },
+      "tags": {
+        "label": "Etiquetas",
+        "placeholder": "Añadir etiqueta",
+        "max": "Hasta {{max}} etiquetas",
+        "unknown": "«{{name}}» no es una de tus etiquetas. Elige una de la lista."
+      },
+      "q": {
+        "label": "Palabras de búsqueda",
+        "placeholder": "Palabras del título, la nota o la dirección",
+        "tooLong": "Usa {{max}} caracteres como máximo"
+      },
+      "sort": {
+        "label": "Orden"
+      },
+      "found": {
+        "one": "{{count}} enlace encontrado",
+        "many": "{{count}} enlaces encontrados",
+        "other": "{{count}} enlaces encontrados"
+      },
+      "foundMore": "Más de {{count}} enlaces encontrados",
+      "andMore": "y {{count}} más",
+      "meta": "{{host}} · {{folder}}"
     }
   },
   "feedback": {
@@ -3070,6 +3410,30 @@
       },
       "askScrollsDown": {
         "text": "El chat de Ask baja hasta cada pregunta nueva."
+      },
+      "importBookmarks": {
+        "title": "Importa los marcadores de tu navegador",
+        "text": "Trae el archivo de marcadores de Chrome, Safari, Firefox o Edge. Conserva sus carpetas, pon todo en una o deja que la IA ordene los enlaces por tema y revisa antes los grupos. Puedes deshacer cada importación durante 7 días. Importar y exportar ahora están en Datos y ayuda, en la barra lateral.",
+        "alt": "El diálogo de importación con dos grupos que propone la IA para seis enlaces, uno de ellos una carpeta existente."
+      },
+      "newView": {
+        "title": "Crea una vista a mano o con palabras",
+        "text": "Guardar esta vista abre un solo diálogo: elige dónde, tipo, etiquetas, palabras y orden, y mira el recuento. Con la IA activada, descríbela, por ejemplo “vídeos de Angular, los más recientes primero”, y la IA rellena los campos para que los revises.",
+        "alt": "El diálogo de nueva vista rellenado con la frase “vídeos de Angular, los más recientes primero”, con el enlace encontrado."
+      },
+      "linkKinds": {
+        "title": "Diez tipos de enlaces",
+        "text": "Pódcasts, documentos, código, apps, publicaciones y recetas se suman a vídeos, artículos y compras. Shelfmark reconoce el tipo al guardar y puedes elegirlo en una vista o en Editar enlace.",
+        "alt": "La lista de tipos del diálogo de nueva vista con los diez tipos."
+      },
+      "exportCsv": {
+        "text": "Exportación CSV en el menú Exportar y en Ajustes, junto a JSON y HTML de marcadores."
+      },
+      "dialogFocus": {
+        "text": "Los diálogos se abren sin contorno de foco con el ratón; sigue apareciendo al pulsar Tab."
+      },
+      "exportHelp": {
+        "text": "La ayuda para exportar marcadores muestra los atajos de tu sistema, Mac o Windows."
       }
     },
     "sections": {
@@ -3418,7 +3782,11 @@
         "nothingDetail": "Las sugerencias cambiaron mientras tanto."
       },
       "undone": "Orden deshecho",
-      "undoFailed": "No se pudo deshacer el orden"
+      "undoFailed": "No se pudo deshacer el orden",
+      "import": {
+        "line": "Solo se muestran los enlaces de esta importación.",
+        "all": "Revisar todo"
+      }
     },
     "search": {
       "related": "Relacionados por significado",

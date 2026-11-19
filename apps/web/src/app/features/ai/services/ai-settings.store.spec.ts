@@ -75,6 +75,7 @@ function setup(initial: AiSettingsResponse = response()) {
     searchMeaning: vi.fn(),
     related: vi.fn(),
     ask: vi.fn(),
+    draftView: vi.fn(),
   };
   TestBed.configureTestingModule({ providers: [{ provide: AI_API, useValue: api }] });
   return { api, store: TestBed.inject(AiSettingsStore) };

@@ -442,12 +442,24 @@
       "video": "Video",
       "article": "Articoli",
       "shopping": "Shopping",
+      "podcast": "Podcast",
+      "document": "Documenti",
+      "code": "Codice",
+      "app": "App",
+      "post": "Post",
+      "recipe": "Ricette",
       "other": "Altro"
     },
     "kindOption": {
       "video": "Video",
       "article": "Articolo",
       "shopping": "Shopping",
+      "podcast": "Podcast",
+      "document": "Documento",
+      "code": "Codice",
+      "app": "App",
+      "post": "Post",
+      "recipe": "Ricetta",
       "other": "Altro"
     },
     "move": {
@@ -491,9 +503,9 @@
         "skipped": "Non è un link, saltato"
       },
       "overflow": {
-        "one": "{{count}} link in più è stato escluso: al massimo {{max}} link alla volta. Gli elenchi più lunghi passano da Importa come testo.",
-        "many": "{{count}} link in più sono stati esclusi: al massimo {{max}} link alla volta. Gli elenchi più lunghi passano da Importa come testo.",
-        "other": "{{count}} link in più sono stati esclusi: al massimo {{max}} link alla volta. Gli elenchi più lunghi passano da Importa come testo."
+        "one": "{{count}} link in più è stato escluso: al massimo {{max}} link alla volta. Un file di segnalibri passa da Importa in Account › I tuoi dati.",
+        "many": "{{count}} link in più sono stati esclusi: al massimo {{max}} link alla volta. Un file di segnalibri passa da Importa in Account › I tuoi dati.",
+        "other": "{{count}} link in più sono stati esclusi: al massimo {{max}} link alla volta. Un file di segnalibri passa da Importa in Account › I tuoi dati."
       },
       "folder": "Cartella per tutti",
       "tags": "Tag per tutti",
@@ -842,7 +854,9 @@
         "movedUp": "Spostato in alto, posizione {{position}} di {{total}}",
         "movedDown": "Spostato in basso, posizione {{position}} di {{total}}"
       },
-      "extension": "Scarica l’estensione"
+      "extension": "Scarica l’estensione",
+      "data": "Dati e aiuto",
+      "dataMenu": "Dati e aiuto"
     },
     "searchHint": "Cerca nei tuoi link",
     "searchButton": "Cerca",
@@ -853,7 +867,12 @@
     "sendFeedback": "Invia feedback",
     "feedbackInbox": "Feedback ricevuti",
     "about": "Informazioni su Shelfmark",
-    "usageStats": "Statistiche d’uso"
+    "usageStats": "Statistiche d’uso",
+    "data": {
+      "import": "Importa link",
+      "export": "Esporta",
+      "group": "Importa ed esporta"
+    }
   },
   "folders": {
     "dialog": {
@@ -1270,11 +1289,13 @@
     "retry": "Riprova",
     "view": {
       "json": "Questa vista in JSON",
-      "html": "Questa vista come HTML dei preferiti"
+      "html": "Questa vista come HTML dei preferiti",
+      "csv": "Questa vista in CSV"
     },
     "all": {
       "json": "Tutto in JSON",
-      "html": "Tutto come HTML dei preferiti"
+      "html": "Tutto come HTML dei preferiti",
+      "csv": "Tutto in CSV"
     },
     "empty": {
       "title": "Ancora niente da esportare",
@@ -1283,6 +1304,262 @@
     "emptyView": {
       "title": "Niente da esportare in questa vista",
       "detail": "Questa vista non contiene link. Esporta tutto o apri un'altra vista"
+    },
+    "dialog": {
+      "title": "Esporta",
+      "close": "Chiudi",
+      "formatLabel": "Formato del file",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Tutto: link, cartelle, tag, note, promemoria"
+        },
+        "html": {
+          "title": "Segnalibri HTML",
+          "description": "Si apre nell'importazione dei segnalibri di qualsiasi browser"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "Per i fogli di calcolo"
+        }
+      },
+      "last": "Ultima esportazione: {{when}}, {{format}}.",
+      "preparing": "Preparazione del file {{format}}…",
+      "cancel": "Annulla",
+      "download": "Scarica",
+      "saved": "File salvato"
+    }
+  },
+  "import": {
+    "title": "Importa link",
+    "close": "Chiudi",
+    "source": {
+      "label": "Origine",
+      "browser": {
+        "title": "Segnalibri del browser",
+        "description": "File HTML da Chrome, Safari, Firefox o Edge. Le cartelle restano cartelle."
+      },
+      "drop": "o trascina qui il file",
+      "choose": "Scegli il file",
+      "reading": "Lettura di {{file}}…",
+      "problem": {
+        "too-big": "Questo file supera {{max}} MB.",
+        "unreadable": "Impossibile leggere questo file. Prova a esportarlo di nuovo.",
+        "not-bookmarks": "In questo file non ci sono segnalibri. Scegli il file HTML che il browser ha salvato con “Esporta segnalibri”.",
+        "empty": "In questo file non ci sono link web.",
+        "too-many-links": "Questo file contiene più di {{max}} link.",
+        "check-failed": "Impossibile confrontare il file con la tua raccolta. Riprova."
+      },
+      "hint": ".html, fino a {{max}} MB e {{links}} link",
+      "dropping": "Rilascia per importare"
+    },
+    "review": {
+      "stats": {
+        "label": "In questo file",
+        "links": {
+          "one": "link",
+          "many": "link",
+          "other": "link"
+        },
+        "folders": {
+          "one": "cartella",
+          "many": "cartelle",
+          "other": "cartelle"
+        },
+        "saved": "già nella tua raccolta"
+      },
+      "into": "Mettili in",
+      "newFolder": "Nuova cartella “{{name}}”",
+      "newFolderName": "Segnalibri importati",
+      "unsorted": "Non ordinati",
+      "folderSearch": "Cerca cartelle",
+      "noFolders": "Nessuna cartella trovata",
+      "skip": {
+        "one": "Salta il duplicato ({{count}})",
+        "many": "Salta i {{count}} duplicati",
+        "other": "Salta i {{count}} duplicati"
+      },
+      "skipHint": "Link già salvati e ripetizioni nel file",
+      "back": "Indietro",
+      "import": {
+        "one": "Importa {{count}} link",
+        "many": "Importa {{count}} link",
+        "other": "Importa {{count}} link"
+      },
+      "nothing": "Tutti i link di questo file sono già nella tua raccolta.",
+      "untitledFolder": "Cartella senza nome",
+      "untitledFile": "File di segnalibri",
+      "folders": {
+        "label": "Cartelle all’interno",
+        "file": {
+          "title": "Come nel file",
+          "description": {
+            "one": "{{count}} cartella del browser",
+            "many": "{{count}} cartelle del browser",
+            "other": "{{count}} cartelle del browser"
+          }
+        },
+        "ai": {
+          "title": "Lascia che l’IA li ordini per argomento",
+          "description": "L’IA raggruppa i link e propone cartelle, comprese quelle che hai già. Controlli i gruppi prima di importare. Usa {{count}} di {{left}} elaborazioni per i link esistenti."
+        },
+        "none": {
+          "title": "Nessuna cartella",
+          "description": "Tutto in un unico elenco in “{{target}}”"
+        }
+      },
+      "group": "Raggruppa",
+      "room": {
+        "one": "Nel tuo limite entra ancora solo {{count}} link, quindi viene importato solo il primo.",
+        "many": "Nel tuo limite entrano ancora solo {{count}} link, quindi vengono importati solo i primi {{count}}.",
+        "other": "Nel tuo limite entrano ancora solo {{count}} link, quindi vengono importati solo i primi {{count}}."
+      },
+      "full": "La tua raccolta non ha più spazio per altri link."
+    },
+    "progress": {
+      "title": "Importazione dei link",
+      "count": "{{done}} di {{total}}",
+      "label": "Avanzamento dell’importazione",
+      "note": "Puoi continuare a lavorare: puoi chiudere questa finestra. Le anteprime si caricano in background nei prossimi minuti.",
+      "doneTitle": {
+        "one": "{{count}} link importato",
+        "many": "{{count}} link importati",
+        "other": "{{count}} link importati"
+      },
+      "inFolder": "In “{{name}}”.",
+      "inUnsorted": "In Non ordinati.",
+      "inTarget": "Nella cartella scelta.",
+      "folders": {
+        "one": "{{count}} cartella.",
+        "many": "{{count}} cartelle.",
+        "other": "{{count}} cartelle."
+      },
+      "skipped": {
+        "one": "{{count}} saltato: già salvato, ripetuto o non è una pagina web.",
+        "many": "{{count}} saltati: già salvati, ripetuti o non pagine web.",
+        "other": "{{count}} saltati: già salvati, ripetuti o non pagine web."
+      },
+      "failed": {
+        "one": "{{count}} non è stato salvato.",
+        "many": "{{count}} non sono stati salvati.",
+        "other": "{{count}} non sono stati salvati."
+      },
+      "openFolder": "Apri la cartella",
+      "openUnsorted": "Apri Non ordinati",
+      "undo": "Annulla importazione",
+      "startFailed": "Impossibile avviare l’importazione, non è stato salvato nulla. Riprova.",
+      "foldersLimit": "Le cartelle superano il tuo limite di cartelle. Scegli “Nessuna cartella” e riprova.",
+      "minimize": "Riduci a icona",
+      "grouped": {
+        "one": "In {{count}} cartella, di cui {{created}} nuove.",
+        "many": "In {{count}} cartelle, di cui {{created}} nuove.",
+        "other": "In {{count}} cartelle, di cui {{created}} nuove."
+      }
+    },
+    "undo": {
+      "title": "Annullare questa importazione?",
+      "message": {
+        "one": "Il link e le cartelle di questa importazione vanno nel cestino, e i tag aggiunti che nient’altro usa vengono rimossi. Quello che hai aggiunto dopo resta.",
+        "many": "I {{count}} link e le cartelle di questa importazione vanno nel cestino, e i tag aggiunti che nient’altro usa vengono rimossi. Quello che hai aggiunto dopo resta.",
+        "other": "I {{count}} link e le cartelle di questa importazione vanno nel cestino, e i tag aggiunti che nient’altro usa vengono rimossi. Quello che hai aggiunto dopo resta."
+      },
+      "confirm": "Annulla importazione",
+      "cancel": "Mantieni",
+      "failed": "Impossibile annullare l’importazione. Riprova.",
+      "done": "Importazione annullata",
+      "doneDetail": {
+        "one": "{{count}} link spostato nel cestino",
+        "many": "{{count}} link spostati nel cestino",
+        "other": "{{count}} link spostati nel cestino"
+      }
+    },
+    "recent": {
+      "title": "Importazioni recenti",
+      "source": {
+        "browser": "Segnalibri del browser"
+      },
+      "links": {
+        "one": "{{count}} link",
+        "many": "{{count}} link",
+        "other": "{{count}} link"
+      },
+      "folders": {
+        "one": "{{count}} cartella",
+        "many": "{{count}} cartelle",
+        "other": "{{count}} cartelle"
+      },
+      "skipped": "{{count}} saltati",
+      "failed": "{{count}} non riusciti",
+      "undoLabel": "Annulla importazione: {{name}}",
+      "hint": "Un’importazione si può annullare per 7 giorni."
+    },
+    "entry": {
+      "title": "Importa link",
+      "description": "Porta qui i segnalibri del browser. Le cartelle restano cartelle, i link che hai già vengono saltati.",
+      "action": "Importa"
+    },
+    "menu": "Importa link…",
+    "help": {
+      "link": "Come esportare i segnalibri da un browser",
+      "chrome": "Chrome: apri la gestione dei segnalibri ({{keys}}), apri il menu ⋮ e scegli “Esporta segnalibri”.",
+      "edge": "Edge: apri i Preferiti ({{keys}}), apri il loro menu ⋯ e scegli “Esporta preferiti”.",
+      "edgeMac": "Edge: apri i Preferiti dal menu ⋯, apri il loro menu ⋯ e scegli “Esporta preferiti”.",
+      "firefox": "Firefox: apri la Libreria ({{keys}}), poi Importa e salva, “Esporta segnalibri in HTML…”.",
+      "safari": "Safari: File, Esporta, Segnalibri."
+    },
+    "groups": {
+      "waiting": {
+        "one": "L’IA sta raggruppando {{count}} link…",
+        "many": "L’IA sta raggruppando {{count}} link…",
+        "other": "L’IA sta raggruppando {{count}} link…"
+      },
+      "count": {
+        "one": "{{count}} gruppo",
+        "many": "{{count}} gruppi",
+        "other": "{{count}} gruppi"
+      },
+      "forLinks": {
+        "one": "per {{count}} link",
+        "many": "per {{count}} link",
+        "other": "per {{count}} link"
+      },
+      "nameLabel": "Nome della cartella",
+      "nameEmpty": "Dai un nome alla cartella",
+      "linkCount": {
+        "one": "{{count}} link",
+        "many": "{{count}} link",
+        "other": "{{count}} link"
+      },
+      "existing": "già esistente",
+      "new": "nuova",
+      "showLinks": "Mostra i link di “{{name}}”",
+      "hideLinks": "Nascondi i link di “{{name}}”",
+      "moveLabel": "Sposta “{{title}}” in",
+      "other": "Altri",
+      "otherText": "I link che non rientrano in nessun argomento vanno in “{{target}}”.",
+      "hint": "Puoi rinominare le cartelle. I link che togli da un gruppo vanno in “{{target}}”.",
+      "import": {
+        "one": "Importa e crea {{count}} cartella",
+        "many": "Importa e crea {{count}} cartelle",
+        "other": "Importa e crea {{count}} cartelle"
+      },
+      "failed": "Al momento non è stato possibile raggruppare i link. Non è stato usato nulla della tua quota. Torna indietro oppure importali senza gruppi.",
+      "allowance": "Per questi link non resta abbastanza quota per i link esistenti. Torna indietro oppure importali senza gruppi.",
+      "monthly": "Questo mese hai già raggruppato con l’IA tutti i link consentiti. Importali come nel file o senza cartelle."
+    },
+    "ai": {
+      "doneTitle": "Descrizioni e tag pronti",
+      "summaries": {
+        "one": "{{count}} link ha ricevuto una breve descrizione.",
+        "many": "{{count}} link hanno ricevuto brevi descrizioni.",
+        "other": "{{count}} link hanno ricevuto brevi descrizioni."
+      },
+      "suggestions": {
+        "one": "Ci sono suggerimenti di tag per {{count}} link.",
+        "many": "Ci sono suggerimenti di tag per {{count}} link.",
+        "other": "Ci sono suggerimenti di tag per {{count}} link."
+      },
+      "review": "Rivedi i tag"
     }
   },
   "settings": {
@@ -1350,10 +1627,6 @@
       "title": "I tuoi dati",
       "export": {
         "label": "Esporta i tuoi dati",
-        "json": "JSON",
-        "jsonHint": "Tutte le cartelle, i tag e i link in un solo file",
-        "html": "HTML dei preferiti",
-        "htmlHint": "Si apre con l’importazione dei preferiti di qualsiasi browser",
         "download": "Scarica",
         "downloadAs": "Scarica {{format}}"
       }
@@ -1540,10 +1813,6 @@
           "close": "Chiudi"
         }
       },
-      "data": {
-        "hint": "Tutto quello che hai salvato, in JSON o HTML dei preferiti",
-        "action": "Apri l’esportazione"
-      },
       "kept": {
         "title": "Cosa conserviamo"
       },
@@ -1556,6 +1825,16 @@
           "action": "Apri",
           "actionLabel": "Apri «Elimina dati IA» in Impostazioni › IA"
         }
+      },
+      "importExport": {
+        "title": "Importa ed esporta",
+        "import": {
+          "hint": "Porta qui i segnalibri del tuo browser"
+        },
+        "export": {
+          "hint": "Scarica l'intera libreria in un file"
+        },
+        "open": "Apri"
       }
     },
     "footer": {
@@ -2132,8 +2411,6 @@
       "cancel": "Annulla"
     },
     "create": {
-      "title": "Salva questa vista",
-      "action": "Salva vista",
       "saving": "Salvataggio…",
       "failed": "Impossibile salvare la vista. Riprova.",
       "limit": "Hai già il numero massimo di viste. Prima eliminane una.",
@@ -2177,7 +2454,70 @@
     "kindHint": {
       "video": "Link riconosciuti come video",
       "article": "Link riconosciuti come articoli",
-      "shopping": "Link riconosciuti come acquisti"
+      "shopping": "Link riconosciuti come acquisti",
+      "podcast": "Link riconosciuti come podcast",
+      "document": "Link riconosciuti come documenti",
+      "code": "Link riconosciuti come codice",
+      "app": "Link riconosciuti come app",
+      "post": "Link riconosciuti come post",
+      "recipe": "Link riconosciuti come ricette"
+    },
+    "new": {
+      "title": "Nuova vista",
+      "lead": "Parti dal filtro dell’elenco in cui ti trovi, oppure cambialo qui.",
+      "action": "Salva vista",
+      "change": "Modifica",
+      "composed": "Il filtro è stato compilato dalla tua descrizione.",
+      "dropped": "Lasciato fuori: {{names}}",
+      "compose": "Componi",
+      "composing": "Composizione…",
+      "ideas": "Idee",
+      "ideaLabel": "Usa l’idea: {{name}}",
+      "ideaPhrase": "Link su {{name}}",
+      "unavailable": "Al momento non riesco a comporre una vista. Non è stato conteggiato nel tuo limite; puoi impostare il filtro da solo.",
+      "skip": {
+        "or": "oppure",
+        "action": "salva il filtro attuale"
+      },
+      "phrase": {
+        "label": "Descrivi cosa mostrare",
+        "placeholder": "i video su Angular che non ho ancora visto",
+        "hint": "Ad esempio: “articoli di design dalla cartella Lavoro”, “cosa comprare tra i vestiti”, “ricette, prima le più recenti”."
+      },
+      "where": {
+        "label": "Dove",
+        "all": "Tutti i link",
+        "unsorted": "Non ordinati",
+        "favorites": "Preferiti",
+        "search": "Cerca cartelle",
+        "noResults": "Nessuna cartella trovata"
+      },
+      "kind": {
+        "label": "Tipo",
+        "all": "Tutti i tipi"
+      },
+      "tags": {
+        "label": "Tag",
+        "placeholder": "Aggiungi tag",
+        "max": "Fino a {{max}} tag",
+        "unknown": "“{{name}}” non è uno dei tuoi tag. Sceglilo dall’elenco."
+      },
+      "q": {
+        "label": "Parole da cercare",
+        "placeholder": "Parole nel titolo, nella nota o nell’indirizzo",
+        "tooLong": "Usa al massimo {{max}} caratteri"
+      },
+      "sort": {
+        "label": "Ordine"
+      },
+      "found": {
+        "one": "{{count}} link trovato",
+        "many": "{{count}} link trovati",
+        "other": "{{count}} link trovati"
+      },
+      "foundMore": "Più di {{count}} link trovati",
+      "andMore": "e altri {{count}}",
+      "meta": "{{host}} · {{folder}}"
     }
   },
   "feedback": {
@@ -3070,6 +3410,30 @@
       },
       "askScrollsDown": {
         "text": "La chat di Ask scorre fino a ogni nuova domanda."
+      },
+      "importBookmarks": {
+        "title": "Importa i preferiti del browser",
+        "text": "Porta qui il file dei preferiti di Chrome, Safari, Firefox o Edge. Mantieni le sue cartelle, metti tutto in una sola, oppure lascia che l’IA ordini i link per argomento e controlla prima i gruppi. Puoi annullare ogni importazione per 7 giorni. Importazione ed esportazione ora sono in Dati e aiuto, nella barra laterale.",
+        "alt": "La finestra di importazione con due gruppi proposti dall’IA per sei link, uno dei quali è una cartella esistente."
+      },
+      "newView": {
+        "title": "Crea una vista a mano o a parole",
+        "text": "Salva questa vista apre una sola finestra: scegli dove, tipo, tag, parole e ordinamento, e guarda il conteggio. Con l’IA attiva descrivila, ad esempio “video su Angular, dal più recente”, e l’IA compila i campi da controllare.",
+        "alt": "La finestra della nuova vista compilata dalla frase “video su Angular, dal più recente”, con il link trovato."
+      },
+      "linkKinds": {
+        "title": "Dieci tipi di link",
+        "text": "Podcast, documenti, codice, app, post e ricette si aggiungono a video, articoli e acquisti. Shelfmark riconosce il tipo al salvataggio e puoi sceglierlo in una vista o in Modifica link.",
+        "alt": "L’elenco dei tipi nella finestra della nuova vista con tutti e dieci i tipi."
+      },
+      "exportCsv": {
+        "text": "Esportazione CSV nel menu Esporta e nelle Impostazioni, accanto a JSON e HTML dei preferiti."
+      },
+      "dialogFocus": {
+        "text": "Le finestre si aprono senza contorno di focus con il mouse; appare ancora premendo Tab."
+      },
+      "exportHelp": {
+        "text": "La guida all’esportazione dei preferiti mostra le scorciatoie del tuo sistema, Mac o Windows."
       }
     },
     "sections": {
@@ -3418,7 +3782,11 @@
         "nothingDetail": "Nel frattempo i suggerimenti sono cambiati."
       },
       "undone": "Riordino annullato",
-      "undoFailed": "Impossibile annullare il riordino"
+      "undoFailed": "Impossibile annullare il riordino",
+      "import": {
+        "line": "Sono mostrati solo i link di questa importazione.",
+        "all": "Rivedi tutto"
+      }
     },
     "search": {
       "related": "Correlati per significato",

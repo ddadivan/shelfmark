@@ -442,12 +442,24 @@
       "video": "Vídeos",
       "article": "Artigos",
       "shopping": "Compras",
+      "podcast": "Podcasts",
+      "document": "Documentos",
+      "code": "Código",
+      "app": "Apps",
+      "post": "Publicações",
+      "recipe": "Receitas",
       "other": "Outros"
     },
     "kindOption": {
       "video": "Vídeo",
       "article": "Artigo",
       "shopping": "Compra",
+      "podcast": "Podcast",
+      "document": "Documento",
+      "code": "Código",
+      "app": "App",
+      "post": "Publicação",
+      "recipe": "Receita",
       "other": "Outro"
     },
     "move": {
@@ -491,9 +503,9 @@
         "skipped": "Não é um link, ignorado"
       },
       "overflow": {
-        "one": "{{count}} link a mais ficou de fora: no máximo {{max}} links por vez. Listas maiores vão por Importar como texto.",
-        "many": "{{count}} links a mais ficaram de fora: no máximo {{max}} links por vez. Listas maiores vão por Importar como texto.",
-        "other": "{{count}} links a mais ficaram de fora: no máximo {{max}} links por vez. Listas maiores vão por Importar como texto."
+        "one": "{{count}} link a mais ficou de fora: no máximo {{max}} links por vez. Um arquivo de favoritos vai por Importar em Conta › Seus dados.",
+        "many": "{{count}} links a mais ficaram de fora: no máximo {{max}} links por vez. Um arquivo de favoritos vai por Importar em Conta › Seus dados.",
+        "other": "{{count}} links a mais ficaram de fora: no máximo {{max}} links por vez. Um arquivo de favoritos vai por Importar em Conta › Seus dados."
       },
       "folder": "Pasta para todos",
       "tags": "Tags para todos",
@@ -842,7 +854,9 @@
         "movedUp": "Movido para cima, posição {{position}} de {{total}}",
         "movedDown": "Movido para baixo, posição {{position}} de {{total}}"
       },
-      "extension": "Baixar a extensão"
+      "extension": "Baixar a extensão",
+      "data": "Dados e ajuda",
+      "dataMenu": "Dados e ajuda"
     },
     "searchHint": "Pesquise seus links",
     "searchButton": "Pesquisar",
@@ -853,7 +867,12 @@
     "sendFeedback": "Enviar feedback",
     "feedbackInbox": "Caixa de feedback",
     "about": "Sobre o Shelfmark",
-    "usageStats": "Estatísticas de uso"
+    "usageStats": "Estatísticas de uso",
+    "data": {
+      "import": "Importar links",
+      "export": "Exportar",
+      "group": "Importar e exportar"
+    }
   },
   "folders": {
     "dialog": {
@@ -1270,11 +1289,13 @@
     "retry": "Tentar de novo",
     "view": {
       "json": "Esta visualização em JSON",
-      "html": "Esta visualização como HTML de favoritos"
+      "html": "Esta visualização como HTML de favoritos",
+      "csv": "Esta visualização em CSV"
     },
     "all": {
       "json": "Tudo em JSON",
-      "html": "Tudo como HTML de favoritos"
+      "html": "Tudo como HTML de favoritos",
+      "csv": "Tudo em CSV"
     },
     "empty": {
       "title": "Ainda não há nada para exportar",
@@ -1283,6 +1304,262 @@
     "emptyView": {
       "title": "Nada para exportar nesta visualização",
       "detail": "Esta visualização não tem links. Exporte tudo ou abra outra visualização"
+    },
+    "dialog": {
+      "title": "Exportar",
+      "close": "Fechar",
+      "formatLabel": "Formato do arquivo",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Tudo: links, pastas, tags, notas, lembretes"
+        },
+        "html": {
+          "title": "Favoritos em HTML",
+          "description": "Abre na importação de favoritos de qualquer navegador"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "Para planilhas"
+        }
+      },
+      "last": "Última exportação: {{when}}, {{format}}.",
+      "preparing": "Preparando o arquivo {{format}}…",
+      "cancel": "Cancelar",
+      "download": "Baixar",
+      "saved": "Arquivo salvo"
+    }
+  },
+  "import": {
+    "title": "Importar links",
+    "close": "Fechar",
+    "source": {
+      "label": "Origem",
+      "browser": {
+        "title": "Favoritos do navegador",
+        "description": "Arquivo HTML do Chrome, Safari, Firefox ou Edge. Pastas continuam sendo pastas."
+      },
+      "drop": "ou arraste o arquivo para cá",
+      "choose": "Escolher arquivo",
+      "reading": "Lendo {{file}}…",
+      "problem": {
+        "too-big": "Este arquivo tem mais de {{max}} MB.",
+        "unreadable": "Não foi possível ler este arquivo. Tente exportá-lo de novo.",
+        "not-bookmarks": "Não há favoritos neste arquivo. Escolha o arquivo HTML que o navegador salvou com “Exportar favoritos”.",
+        "empty": "Este arquivo não tem links da web.",
+        "too-many-links": "Este arquivo tem mais de {{max}} links.",
+        "check-failed": "Não foi possível comparar o arquivo com sua biblioteca. Tente de novo."
+      },
+      "hint": ".html, até {{max}} MB e {{links}} links",
+      "dropping": "Solte para importar"
+    },
+    "review": {
+      "stats": {
+        "label": "Neste arquivo",
+        "links": {
+          "one": "link",
+          "many": "links",
+          "other": "links"
+        },
+        "folders": {
+          "one": "pasta",
+          "many": "pastas",
+          "other": "pastas"
+        },
+        "saved": "já na sua biblioteca"
+      },
+      "into": "Colocar em",
+      "newFolder": "Nova pasta “{{name}}”",
+      "newFolderName": "Favoritos importados",
+      "unsorted": "Sem pasta",
+      "folderSearch": "Buscar pastas",
+      "noFolders": "Nenhuma pasta encontrada",
+      "skip": {
+        "one": "Pular o duplicado ({{count}})",
+        "many": "Pular os {{count}} duplicados",
+        "other": "Pular os {{count}} duplicados"
+      },
+      "skipHint": "Links que você já tem e repetições dentro do arquivo",
+      "back": "Voltar",
+      "import": {
+        "one": "Importar {{count}} link",
+        "many": "Importar {{count}} links",
+        "other": "Importar {{count}} links"
+      },
+      "nothing": "Todos os links deste arquivo já estão na sua biblioteca.",
+      "untitledFolder": "Pasta sem nome",
+      "untitledFile": "Arquivo de favoritos",
+      "folders": {
+        "label": "Pastas dentro",
+        "file": {
+          "title": "Como no arquivo",
+          "description": {
+            "one": "{{count}} pasta do navegador",
+            "many": "{{count}} pastas do navegador",
+            "other": "{{count}} pastas do navegador"
+          }
+        },
+        "ai": {
+          "title": "Deixar a IA organizar por assunto",
+          "description": "A IA agrupa os links e sugere pastas, inclusive as que você já tem. Você revisa os grupos antes de importar. Usa {{count}} de {{left}} processamentos de links existentes."
+        },
+        "none": {
+          "title": "Sem pastas",
+          "description": "Tudo em uma só lista em “{{target}}”"
+        }
+      },
+      "group": "Agrupar",
+      "room": {
+        "one": "Só cabe mais {{count}} link no seu limite, então apenas o primeiro é importado.",
+        "many": "Só cabem mais {{count}} links no seu limite, então apenas os primeiros {{count}} são importados.",
+        "other": "Só cabem mais {{count}} links no seu limite, então apenas os primeiros {{count}} são importados."
+      },
+      "full": "Sua biblioteca não tem mais espaço para links."
+    },
+    "progress": {
+      "title": "Importando links",
+      "count": "{{done}} de {{total}}",
+      "label": "Progresso da importação",
+      "note": "Você pode continuar trabalhando: pode fechar esta janela. As prévias carregam em segundo plano nos próximos minutos.",
+      "doneTitle": {
+        "one": "{{count}} link importado",
+        "many": "{{count}} links importados",
+        "other": "{{count}} links importados"
+      },
+      "inFolder": "Em “{{name}}”.",
+      "inUnsorted": "Em Sem pasta.",
+      "inTarget": "Na pasta escolhida.",
+      "folders": {
+        "one": "{{count}} pasta.",
+        "many": "{{count}} pastas.",
+        "other": "{{count}} pastas."
+      },
+      "skipped": {
+        "one": "{{count}} pulado: já salvo, repetido ou não é uma página web.",
+        "many": "{{count}} pulados: já salvos, repetidos ou não são páginas web.",
+        "other": "{{count}} pulados: já salvos, repetidos ou não são páginas web."
+      },
+      "failed": {
+        "one": "{{count}} não pôde ser salvo.",
+        "many": "{{count}} não puderam ser salvos.",
+        "other": "{{count}} não puderam ser salvos."
+      },
+      "openFolder": "Abrir a pasta",
+      "openUnsorted": "Abrir Sem pasta",
+      "undo": "Desfazer importação",
+      "startFailed": "A importação não pôde começar, nada foi salvo. Tente de novo.",
+      "foldersLimit": "As pastas não cabem no seu limite de pastas. Escolha “Sem pastas” e tente de novo.",
+      "minimize": "Minimizar",
+      "grouped": {
+        "one": "Em {{count}} pasta, {{created}} delas novas.",
+        "many": "Em {{count}} pastas, {{created}} delas novas.",
+        "other": "Em {{count}} pastas, {{created}} delas novas."
+      }
+    },
+    "undo": {
+      "title": "Desfazer esta importação?",
+      "message": {
+        "one": "O link e as pastas desta importação vão para a lixeira, e as tags que ela adicionou e que nada mais usa são removidas. O que você adicionou depois fica.",
+        "many": "Os {{count}} links e as pastas desta importação vão para a lixeira, e as tags que ela adicionou e que nada mais usa são removidas. O que você adicionou depois fica.",
+        "other": "Os {{count}} links e as pastas desta importação vão para a lixeira, e as tags que ela adicionou e que nada mais usa são removidas. O que você adicionou depois fica."
+      },
+      "confirm": "Desfazer importação",
+      "cancel": "Cancelar",
+      "failed": "Não foi possível desfazer a importação. Tente de novo.",
+      "done": "Importação desfeita",
+      "doneDetail": {
+        "one": "{{count}} link movido para a lixeira",
+        "many": "{{count}} links movidos para a lixeira",
+        "other": "{{count}} links movidos para a lixeira"
+      }
+    },
+    "recent": {
+      "title": "Importações recentes",
+      "source": {
+        "browser": "Favoritos do navegador"
+      },
+      "links": {
+        "one": "{{count}} link",
+        "many": "{{count}} links",
+        "other": "{{count}} links"
+      },
+      "folders": {
+        "one": "{{count}} pasta",
+        "many": "{{count}} pastas",
+        "other": "{{count}} pastas"
+      },
+      "skipped": "{{count}} pulados",
+      "failed": "{{count}} com falha",
+      "undoLabel": "Desfazer importação: {{name}}",
+      "hint": "Uma importação pode ser desfeita por 7 dias."
+    },
+    "entry": {
+      "title": "Importar links",
+      "description": "Traga os favoritos do seu navegador. Pastas continuam sendo pastas, e links que você já tem são pulados.",
+      "action": "Importar"
+    },
+    "menu": "Importar links…",
+    "help": {
+      "link": "Como exportar os favoritos de um navegador",
+      "chrome": "Chrome: abra o gerenciador de favoritos ({{keys}}), abra o menu ⋮ e escolha “Exportar favoritos”.",
+      "edge": "Edge: abra Favoritos ({{keys}}), abra o menu ⋯ e escolha “Exportar favoritos”.",
+      "edgeMac": "Edge: abra Favoritos pelo menu ⋯, abra o menu ⋯ e escolha “Exportar favoritos”.",
+      "firefox": "Firefox: abra a Biblioteca ({{keys}}), depois Importar e fazer backup, “Exportar favoritos para HTML…”.",
+      "safari": "Safari: Arquivo, Exportar, Favoritos."
+    },
+    "groups": {
+      "waiting": {
+        "one": "A IA está agrupando {{count}} link…",
+        "many": "A IA está agrupando {{count}} links…",
+        "other": "A IA está agrupando {{count}} links…"
+      },
+      "count": {
+        "one": "{{count}} grupo",
+        "many": "{{count}} grupos",
+        "other": "{{count}} grupos"
+      },
+      "forLinks": {
+        "one": "para {{count}} link",
+        "many": "para {{count}} links",
+        "other": "para {{count}} links"
+      },
+      "nameLabel": "Nome da pasta",
+      "nameEmpty": "Dê um nome à pasta",
+      "linkCount": {
+        "one": "{{count}} link",
+        "many": "{{count}} links",
+        "other": "{{count}} links"
+      },
+      "existing": "já existe",
+      "new": "nova",
+      "showLinks": "Mostrar os links de “{{name}}”",
+      "hideLinks": "Ocultar os links de “{{name}}”",
+      "moveLabel": "Mover “{{title}}” para",
+      "other": "Outros",
+      "otherText": "Links que não combinam com nenhum assunto vão para “{{target}}”.",
+      "hint": "Você pode renomear as pastas. Links que você tirar de um grupo vão para “{{target}}”.",
+      "import": {
+        "one": "Importar e criar {{count}} pasta",
+        "many": "Importar e criar {{count}} pastas",
+        "other": "Importar e criar {{count}} pastas"
+      },
+      "failed": "Não foi possível agrupar os links agora. Nada foi usado da sua cota. Volte ou importe-os sem grupos.",
+      "allowance": "Não sobrou cota suficiente para links existentes para estes links. Volte ou importe-os sem grupos.",
+      "monthly": "Neste mês você já agrupou com IA todos os links possíveis. Importe como no arquivo ou sem pastas."
+    },
+    "ai": {
+      "doneTitle": "Descrições e tags prontas",
+      "summaries": {
+        "one": "{{count}} link ganhou uma descrição curta.",
+        "many": "{{count}} links ganharam descrições curtas.",
+        "other": "{{count}} links ganharam descrições curtas."
+      },
+      "suggestions": {
+        "one": "Há sugestões de tags para {{count}} link.",
+        "many": "Há sugestões de tags para {{count}} links.",
+        "other": "Há sugestões de tags para {{count}} links."
+      },
+      "review": "Revisar tags"
     }
   },
   "settings": {
@@ -1350,10 +1627,6 @@
       "title": "Seus dados",
       "export": {
         "label": "Exportar seus dados",
-        "json": "JSON",
-        "jsonHint": "Todas as suas pastas, tags e links em um arquivo",
-        "html": "HTML de favoritos",
-        "htmlHint": "Abre na importação de favoritos de qualquer navegador",
         "download": "Baixar",
         "downloadAs": "Baixar {{format}}"
       }
@@ -1540,10 +1813,6 @@
           "close": "Fechar"
         }
       },
-      "data": {
-        "hint": "Tudo o que você salvou, em JSON ou HTML de favoritos",
-        "action": "Abrir exportação"
-      },
       "kept": {
         "title": "O que guardamos"
       },
@@ -1556,6 +1825,16 @@
           "action": "Abrir",
           "actionLabel": "Abrir \"Excluir dados de IA\" em Configurações › IA"
         }
+      },
+      "importExport": {
+        "title": "Importar e exportar",
+        "import": {
+          "hint": "Traga os favoritos do seu navegador"
+        },
+        "export": {
+          "hint": "Baixe toda a sua biblioteca em um arquivo"
+        },
+        "open": "Abrir"
       }
     },
     "footer": {
@@ -2132,8 +2411,6 @@
       "cancel": "Cancelar"
     },
     "create": {
-      "title": "Salvar esta visualização",
-      "action": "Salvar visualização",
       "saving": "Salvando…",
       "failed": "Não foi possível salvar a visualização. Tente de novo.",
       "limit": "Você já tem o máximo de visualizações. Exclua uma antes.",
@@ -2177,7 +2454,70 @@
     "kindHint": {
       "video": "Links detetados como vídeos",
       "article": "Links detetados como artigos",
-      "shopping": "Links detetados como compras"
+      "shopping": "Links detetados como compras",
+      "podcast": "Links detetados como podcasts",
+      "document": "Links detetados como documentos",
+      "code": "Links detetados como código",
+      "app": "Links detetados como apps",
+      "post": "Links detetados como publicações",
+      "recipe": "Links detetados como receitas"
+    },
+    "new": {
+      "title": "Nova visualização",
+      "lead": "Comece com o filtro da lista em que você está ou mude aqui.",
+      "action": "Salvar visualização",
+      "change": "Alterar",
+      "composed": "O filtro foi preenchido com a sua descrição.",
+      "dropped": "Ficou de fora: {{names}}",
+      "compose": "Montar",
+      "composing": "Montando…",
+      "ideas": "Ideias",
+      "ideaLabel": "Usar a ideia: {{name}}",
+      "ideaPhrase": "Links sobre {{name}}",
+      "unavailable": "Não foi possível montar uma visualização agora. Isso não contou no seu limite; você pode ajustar o filtro por conta própria.",
+      "skip": {
+        "or": "ou",
+        "action": "salvar o filtro atual"
+      },
+      "phrase": {
+        "label": "Descreva o que mostrar",
+        "placeholder": "os vídeos sobre Angular que ainda não assisti",
+        "hint": "Por exemplo: “artigos de design da pasta Trabalho”, “o que comprar de roupa”, “receitas, mais recentes primeiro”."
+      },
+      "where": {
+        "label": "Onde",
+        "all": "Todos os links",
+        "unsorted": "Sem pasta",
+        "favorites": "Favoritos",
+        "search": "Pesquisar pastas",
+        "noResults": "Nenhuma pasta encontrada"
+      },
+      "kind": {
+        "label": "Tipo",
+        "all": "Todos os tipos"
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "Adicionar tag",
+        "max": "Até {{max}} tags",
+        "unknown": "“{{name}}” não é uma das suas tags. Escolha uma da lista."
+      },
+      "q": {
+        "label": "Palavras da busca",
+        "placeholder": "Palavras do título, da nota ou do endereço",
+        "tooLong": "Use no máximo {{max}} caracteres"
+      },
+      "sort": {
+        "label": "Ordem"
+      },
+      "found": {
+        "one": "{{count}} link encontrado",
+        "many": "{{count}} links encontrados",
+        "other": "{{count}} links encontrados"
+      },
+      "foundMore": "Mais de {{count}} links encontrados",
+      "andMore": "e mais {{count}}",
+      "meta": "{{host}} · {{folder}}"
     }
   },
   "feedback": {
@@ -3070,6 +3410,30 @@
       },
       "askScrollsDown": {
         "text": "O chat do Ask rola até cada nova pergunta."
+      },
+      "importBookmarks": {
+        "title": "Importe os favoritos do navegador",
+        "text": "Traga o arquivo de favoritos do Chrome, Safari, Firefox ou Edge. Mantenha as pastas, coloque tudo em uma só ou deixe a IA organizar os links por assunto e revise os grupos antes. Desfaça qualquer importação em até 7 dias. Importar e exportar agora ficam em Dados e ajuda, na barra lateral.",
+        "alt": "A janela de importação com dois grupos sugeridos pela IA para seis links, um deles uma pasta existente."
+      },
+      "newView": {
+        "title": "Crie uma visualização à mão ou com palavras",
+        "text": "Salvar esta visualização abre uma só janela: escolha onde, tipo, tags, palavras e ordem, e veja a contagem. Com a IA ligada, descreva o que quer, como “vídeos de Angular, mais recentes primeiro”, e a IA preenche os campos para você conferir.",
+        "alt": "A janela de nova visualização preenchida com a frase “vídeos de Angular, mais recentes primeiro”, com o link encontrado."
+      },
+      "linkKinds": {
+        "title": "Dez tipos de links",
+        "text": "Podcasts, documentos, código, apps, posts e receitas se juntam a vídeos, artigos e compras. O Shelfmark reconhece o tipo ao salvar, e você pode escolhê-lo em uma visualização ou em Editar link.",
+        "alt": "A lista de tipos da janela de nova visualização com os dez tipos."
+      },
+      "exportCsv": {
+        "text": "Exportação em CSV no menu Exportar e nas Configurações, ao lado de JSON e HTML de favoritos."
+      },
+      "dialogFocus": {
+        "text": "As janelas abrem sem contorno de foco ao usar o mouse; ele ainda aparece ao pressionar Tab."
+      },
+      "exportHelp": {
+        "text": "A ajuda para exportar favoritos mostra os atalhos do seu sistema, Mac ou Windows."
       }
     },
     "sections": {
@@ -3418,7 +3782,11 @@
         "nothingDetail": "As sugestões mudaram nesse meio-tempo."
       },
       "undone": "Organização desfeita",
-      "undoFailed": "Não foi possível desfazer a organização"
+      "undoFailed": "Não foi possível desfazer a organização",
+      "import": {
+        "line": "Mostrando só os links desta importação.",
+        "all": "Revisar tudo"
+      }
     },
     "search": {
       "related": "Relacionados pelo significado",

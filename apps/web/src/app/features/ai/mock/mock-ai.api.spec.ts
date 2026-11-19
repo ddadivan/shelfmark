@@ -26,6 +26,7 @@ import { MockAiData } from './mock-ai-data';
 import { MockAiTidy } from './mock-ai-tidy';
 import { MockAiMeaning } from './mock-ai-meaning';
 import { MockAiAsk } from './mock-ai-ask';
+import { MockAiViewDraft } from './mock-ai-view-draft';
 import { MOCK_AI_TIMING } from './models/mock-ai-timing.const';
 
 /** Resolves `source` while the fake clock runs past the mock latency. */
@@ -47,7 +48,15 @@ async function statusOf(source: Observable<unknown>): Promise<number> {
 
 function setup() {
   const injector = Injector.create({
-    providers: [MockLibraryData, MockAiData, MockAiTidy, MockAiMeaning, MockAiAsk, MockCleanupData],
+    providers: [
+      MockLibraryData,
+      MockAiData,
+      MockAiTidy,
+      MockAiMeaning,
+      MockAiAsk,
+      MockAiViewDraft,
+      MockCleanupData,
+    ],
   });
   return runInInjectionContext(injector, () => ({
     ai: new MockAiApi(),

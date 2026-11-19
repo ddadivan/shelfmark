@@ -1,4 +1,4 @@
-/** The keys that appear in the shortcut list. `Command` is Cmd on Apple devices and Ctrl elsewhere. */
+/** The keys that appear in the shortcut list (and the import help). `Command` is Cmd on Apple devices and Ctrl elsewhere. */
 export const SHORTCUT_KEY = {
   Command: 'command',
   Alt: 'alt',
@@ -13,9 +13,11 @@ export const SHORTCUT_KEY = {
   Question: 'question',
   Space: 'space',
   A: 'a',
+  B: 'b',
   F: 'f',
   K: 'k',
   M: 'm',
+  O: 'o',
   T: 't',
   V: 'v',
   Z: 'z',

@@ -83,6 +83,13 @@ describe('breakpoint mixins', () => {
   });
 });
 
+describe('dialog focus', () => {
+  it('draws no ring on the dialog panel itself, which takes focus on open', () => {
+    const out = css('@include dialog-layout;');
+    expect(out).toMatch(/\.cdk-dialog-container:focus \{\s*outline: none;/);
+  });
+});
+
 describe('focus mixins', () => {
   it('field-focus removes the global ring only from controls inside the wrapper', () => {
     const out = css('.a { @include field-focus; }');

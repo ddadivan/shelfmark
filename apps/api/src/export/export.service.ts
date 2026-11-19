@@ -9,6 +9,7 @@ import { EXPORT_CONTENT_TYPE } from './models/export-content-type.const';
 import type { ExportFile } from './models/export-file.interface';
 import type { ExportFolderRow } from './models/export-folder-row.interface';
 import type { ExportLinkRow } from './models/export-link-row.interface';
+import { CSV_BOM, CSV_HEADER, csvRow } from './write-csv';
 import {
   BOOKMARKS_HEAD,
   BOOKMARKS_TAIL,
@@ -87,6 +88,13 @@ export class ExportService {
         filename: `shelfmark-${date}.json`,
         contentType: EXPORT_CONTENT_TYPE.Json,
         body: Readable.from(this.guarded(this.jsonChunks(folders, byId, base, now, rules))),
+      };
+    }
+    if (query.format === EXPORT_FORMAT.Csv) {
+      return {
+        filename: `shelfmark-${date}.csv`,
+        contentType: EXPORT_CONTENT_TYPE.Csv,
+        body: Readable.from(this.guarded(this.csvChunks(byId, base))),
       };
     }
     return {
@@ -254,6 +262,31 @@ export class ExportService {
       first = false;
     }
     yield `],"rules":${JSON.stringify(rules)}}\n`;
+  }
+
+  /** One row per live link (batched, ordered by id), after a BOM and the header row. */
+  private async *csvChunks(
+    byId: Map<string, ExportFolderRow>,
+    where: Prisma.LinkWhereInput,
+  ): AsyncGenerator<string> {
+    yield CSV_BOM + csvRow(CSV_HEADER);
+    for await (const batch of this.linkBatches(where)) {
+      yield batch
+        .map((row) =>
+          csvRow([
+            row.url,
+            row.title,
+            row.folderId === null ? '' : this.pathOf(row.folderId, byId).join(' / '),
+            // `;` separates the tags, so one inside a name becomes a comma.
+            row.tags.map((entry) => entry.tag.name.replaceAll(';', ',')).join(';'),
+            row.note ?? '',
+            row.isFavorite ? 'true' : 'false',
+            toLinkKind(row.kind),
+            row.createdAt.toISOString(),
+          ]),
+        )
+        .join('');
+    }
   }
 
   /**

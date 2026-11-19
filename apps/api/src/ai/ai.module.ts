@@ -10,6 +10,7 @@ import { LinkAiController } from './link-ai.controller';
 import { AiSweepController } from './ai-sweep.controller';
 import { AiBackfillResultsService } from './backfill/ai-backfill-results.service';
 import { AiBackfillService } from './backfill/ai-backfill.service';
+import { AiImportPassService } from './backfill/ai-import-pass.service';
 import { AiCatchUpService } from './catch-up/ai-catch-up.service';
 import { LinkAiService } from './link-ai/link-ai.service';
 import { AiDataService } from './data/ai-data.service';
@@ -49,6 +50,8 @@ import { ASK_DEADLINES } from './models/ask-deadlines.token';
 import type { AskDeadlines } from './models/ask-deadlines.interface';
 import { ASK_LIMIT } from '@shelfmark/contracts';
 import { AiUsageService } from './usage/ai-usage.service';
+import { ViewDraftController } from './view-draft.controller';
+import { ViewDraftService } from './view-draft/view-draft.service';
 
 /**
  * AI (#389–#391, ADR 0047 / 0049). `LinksModule` imports this module (enqueue and draft attach in
@@ -64,6 +67,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     RelatedLinksController,
     AiSweepController,
     AskController,
+    ViewDraftController,
   ],
   providers: [
     // Read once at boot (the module is created when the app starts): never at import time.
@@ -83,6 +87,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiDataService,
     AiBackfillResultsService,
     AiBackfillService,
+    AiImportPassService,
     AiCatchUpService,
     AiTidyService,
     AiTidyUndoService,
@@ -93,6 +98,7 @@ import { AiUsageService } from './usage/ai-usage.service';
     RelatedLinksService,
     AskUsageService,
     AskService,
+    ViewDraftService,
     SearchLinksAskTool,
     CountLinksAskTool,
     GetLinkAskTool,
@@ -122,6 +128,8 @@ import { AiUsageService } from './usage/ai-usage.service';
     AiEmbedService,
     AiSearchStatusService,
     AiBackgroundService,
+    AiImportPassService,
+    AiTidyService,
   ],
 })
 export class AiModule {}

@@ -1,3 +1,4 @@
+import { LINK_KIND, type LinkKind } from '@shelfmark/contracts';
 import type { StoredLinkResult } from '../models/stored-link-result.interface';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -24,6 +25,16 @@ function storedNewTags(value: Record<string, unknown>): string[] {
   return legacy === null ? [] : [legacy];
 }
 
+const KINDS: readonly string[] = Object.values(LINK_KIND);
+
+function isLinkKind(value: unknown): value is LinkKind {
+  return typeof value === 'string' && KINDS.includes(value);
+}
+
+function storedKind(value: unknown): LinkKind | null {
+  return isLinkKind(value) ? value : null;
+}
+
 /** Reads `ai_jobs.result` back; `null` when it is missing or not the shape the runner wrote. */
 export function toStoredLinkResult(value: unknown): StoredLinkResult | null {
   if (!isRecord(value) || !Array.isArray(value['tags'])) return null;
@@ -34,5 +45,6 @@ export function toStoredLinkResult(value: unknown): StoredLinkResult | null {
     folderId: stringOrNull(value['folderId']),
     summary: stringOrNull(value['summary']),
     title: stringOrNull(value['title']),
+    kind: storedKind(value['kind']),
   };
 }

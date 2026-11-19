@@ -1,0 +1,132 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  // Room for the focus rings at the edge of the scrolling body.
+  padding: rem(2px);
+}
+
+.import-groups__wait {
+  @include type(body);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.import-groups__heading {
+  @include type(title);
+
+  margin: 0;
+  color: var(--text);
+}
+
+.import-groups__list,
+.import-groups__links {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.import-groups__list {
+  gap: var(--space-2);
+}
+
+.import-groups__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+}
+
+.import-groups__row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.import-groups__name {
+  flex: 1 1 rem(120px);
+  min-width: 0;
+}
+
+.import-groups__name--text {
+  @include type(body);
+
+  overflow: hidden;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.import-groups__count {
+  @include type(caption);
+
+  flex: none;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.import-groups__samples {
+  @include type(caption);
+
+  margin: 0;
+  padding-inline-start: var(--space-1);
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.import-groups__links {
+  gap: var(--space-1);
+  padding-block-start: var(--space-1);
+}
+
+.import-groups__link {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.import-groups__link-title {
+  @include type(caption);
+
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.import-groups__move {
+  flex: none;
+  width: min(50%, rem(200px));
+}
+
+.import-groups__hint {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+@include phone {
+  .import-groups__row {
+    flex-wrap: wrap;
+  }
+
+  .import-groups__move {
+    width: 50%;
+  }
+}

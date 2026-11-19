@@ -1,0 +1,38 @@
+<ui-dialog
+  [title]="'export.dialog.title' | transloco"
+  [closeLabel]="'export.dialog.close' | transloco"
+>
+  <div class="export-dialog">
+    <ui-radio-group
+      [ariaLabel]="'export.dialog.formatLabel' | transloco"
+      [options]="options()"
+      [value]="format()"
+      [disabled]="preparing()"
+      (valueChange)="choose($event)"
+    />
+    <div class="export-dialog__status" role="status">
+      @if (preparing()) {
+        <span class="export-dialog__preparing">
+          <ui-spinner size="sm" />
+          {{ 'export.dialog.preparing' | transloco: { format: formatName() } }}
+        </span>
+      } @else if (lastLine(); as line) {
+        <span class="export-dialog__last">{{ line }}</span>
+      }
+    </div>
+  </div>
+
+  <div slot="footer" class="export-dialog__foot">
+    <ui-button uiDialogCancel [block]="phone()" (click)="cancel()">
+      {{ 'export.dialog.cancel' | transloco }}
+    </ui-button>
+    <ui-button
+      [block]="phone()"
+      [variant]="BUTTON_VARIANT.Primary"
+      [disabled]="preparing()"
+      (click)="download()"
+    >
+      {{ 'export.dialog.download' | transloco }}
+    </ui-button>
+  </div>
+</ui-dialog>

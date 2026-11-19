@@ -4,4 +4,5 @@ export const HTML_ATTRIBUTE = {
   Content: 'content',
   Rel: 'rel',
   Href: 'href',
+  Type: 'type',
 } as const;

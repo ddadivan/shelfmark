@@ -7,10 +7,9 @@ import {
   Injector,
 } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { BUTTON_SIZE, ButtonComponent, TooltipDirective } from '@shelfmark/ui';
+import { BUTTON_SIZE, ButtonComponent, TooltipDirective, isMacPlatform } from '@shelfmark/ui';
 import { activeLang } from '../../../../core/i18n/active-lang';
 import { ViewportService } from '../../../../core/layout/viewport.service';
-import { isMacPlatform } from '../../../search/utils/is-mac-platform';
 import { AddLinkAiFillService } from '../../services/add-link-ai-fill.service';
 import { AddLinkFormService } from '../../services/add-link-form.service';
 

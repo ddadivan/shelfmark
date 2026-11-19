@@ -11,4 +11,13 @@ export class TidyListQueryDto implements TidyListQuery {
   @IsOptional()
   @IsUUID()
   after?: string;
+
+  @ApiPropertyOptional({
+    format: 'uuid',
+    description:
+      'Limits the review to the links of this import of yours, in any folder; a foreign or unknown import lists nothing',
+  })
+  @IsOptional()
+  @IsUUID()
+  import?: string;
 }

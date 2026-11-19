@@ -54,6 +54,10 @@ import { HttpCleanupApi } from '../../cleanup/http/http-cleanup.api';
 import { MockCleanupApi } from '../../cleanup/mock/mock-cleanup.api';
 import { CLEANUP_API } from '../../cleanup/models/cleanup-api.const';
 import type { CleanupApi } from '../../cleanup/models/cleanup-api.interface';
+import { HttpImportApi } from '../../import/http/http-import.api';
+import { MockImportApi } from '../../import/mock/mock-import.api';
+import { IMPORT_API } from '../../import/models/import-api.const';
+import type { ImportApi } from '../../import/models/import-api.interface';
 import type { AiApi } from '../../ai/models/ai-api.interface';
 import { HttpMcpApi } from '../../ai/connect/http/http-mcp.api';
 import { MockMcpApi } from '../../ai/connect/mock/mock-mcp.api';
@@ -182,6 +186,10 @@ export function provideLinksApi(): Provider[] {
       provide: CLEANUP_API,
       useFactory: (): CleanupApi =>
         useRealApi() ? inject(HttpCleanupApi) : inject(MockCleanupApi),
+    },
+    {
+      provide: IMPORT_API,
+      useFactory: (): ImportApi => (useRealApi() ? inject(HttpImportApi) : inject(MockImportApi)),
     },
     { provide: EXPORT_API, useExisting: MockExportApi },
   ];

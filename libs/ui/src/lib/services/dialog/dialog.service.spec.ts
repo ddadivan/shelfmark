@@ -244,6 +244,33 @@ describe('DialogService', () => {
       expect(document.activeElement).toBe(trigger);
     });
 
+    it('focuses the dialog panel by default, not the close button, so no ring shows for a click', async () => {
+      const ref = service.open(EditDialogComponent, { data: { name: 'x' } });
+      settle();
+      await vi.waitFor(() => {
+        settle();
+        expect(document.activeElement).toBe(container());
+      });
+      // The panel is focusable from script only and named by the title for screen readers.
+      expect(container().getAttribute('tabindex')).toBe('-1');
+      expect(container().getAttribute('aria-labelledby')).toBe(container().querySelector('h2')?.id);
+      expect(document.activeElement).not.toBe(button('Close'));
+      ref.close();
+      await closed();
+      expect(document.activeElement).toBe(trigger);
+    });
+
+    it('keeps an autoFocus the caller passes', async () => {
+      const ref = service.open(EditDialogComponent, { data: { name: 'x' }, autoFocus: 'input' });
+      settle();
+      await vi.waitFor(() => {
+        settle();
+        expect(document.activeElement?.id).toBe('edit-input');
+      });
+      ref.close();
+      await closed();
+    });
+
     it('hands focus back to the trigger as a focus return, so its tooltip stays closed', async () => {
       const returns: boolean[] = [];
       trigger.addEventListener('focus', () => returns.push(consumeFocusReturn(trigger)));

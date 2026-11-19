@@ -39,6 +39,29 @@
   }
 </nav>
 
+<!-- Import and export are things you do now and then, not settings: each row opens its dialog as a
+     sheet (#387); the link to Privacy and data (where both also live) is only the no-script fallback. -->
+<div class="settings-index__list" role="group" [attr.aria-label]="'shell.data.group' | transloco">
+  <a
+    class="settings-index__row"
+    [href]="privacyDataHref"
+    aria-haspopup="dialog"
+    (click)="openImport($event)"
+  >
+    <span class="settings-index__label">{{ 'shell.data.import' | transloco }}</span>
+    <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
+  </a>
+  <a
+    class="settings-index__row"
+    [href]="privacyDataHref"
+    aria-haspopup="dialog"
+    (click)="openExport($event)"
+  >
+    <span class="settings-index__label">{{ 'shell.data.export' | transloco }}</span>
+    <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
+  </a>
+</div>
+
 <ui-button
   block
   [size]="BUTTON_SIZE.Lg"

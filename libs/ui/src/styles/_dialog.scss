@@ -12,6 +12,13 @@
 //   a panel stuck to the bottom edge (bottom sheet) on a phone, above the on-screen keyboard, and for a `ui-sheet` also on a
 //   tablet (#316: quick lists are centred bottom sheets on an iPad, forms stay dialogs).
 @mixin dialog-layout {
+  // The dialog panel takes focus on open (`autoFocus: 'dialog'`) so screen readers announce it;
+  // it is not a control, so it shows no ring of its own, even after a key opened it. The first
+  // Tab moves to a control, which shows the ring.
+  .cdk-dialog-container:focus {
+    outline: none;
+  }
+
   .ui-dialog-scrim {
     background: var(--overlay);
     transition: opacity var(--duration-fast) var(--ease-out);

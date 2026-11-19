@@ -10,6 +10,8 @@ import { DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { of, throwError } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
 import { setupSettingsPage } from '../../../../../testing/settings-page-testbed';
+import { ExportDialogService } from '../../../export/services/export-dialog.service';
+import { ImportDialogService } from '../../../import/services/import-dialog.service';
 import { LinksStore } from '../../../../stores/links.store';
 import { USER_SETTINGS_API } from '../../models/user-settings-api.const';
 import PrivacyDataPage from './privacy-data.page';
@@ -59,19 +61,27 @@ function remember(root: HTMLElement): HTMLButtonElement {
 }
 
 describe('PrivacyDataPage', () => {
-  it('links the privacy policy and the one export page, and states what is kept', async () => {
+  it('links the privacy policy and states what is kept', async () => {
     const { root } = await setup();
 
     expect(root.querySelector('h1')?.textContent).toContain('Privacy and data');
     expect(root.querySelector('a[href="/privacy"]')?.getAttribute('aria-label')).toBe(
       'Read the privacy policy',
     );
-    expect(root.querySelector('a[href="/settings/account#your-data"]')?.textContent).toContain(
-      'Open export',
-    );
-    expect(root.textContent).toContain('Export your data');
-    expect(root.textContent).not.toContain('Download your data');
+    expect(root.querySelector('a[href="/settings/account#your-data"]')).toBeNull();
     expect(root.textContent).toContain("We don't sell or share your data");
+  });
+
+  it('opens the import and export dialogs from its own section (#387)', async () => {
+    const { root } = await setup();
+    const importer = vi.spyOn(TestBed.inject(ImportDialogService), 'open').mockReturnValue();
+    const exporter = vi.spyOn(TestBed.inject(ExportDialogService), 'open').mockReturnValue();
+
+    expect(root.textContent).toContain('Import and export');
+    root.querySelector<HTMLElement>('button[aria-label="Import links"]')?.click();
+    expect(importer).toHaveBeenCalledOnce();
+    root.querySelector<HTMLElement>('button[aria-label="Export"]')?.click();
+    expect(exporter).toHaveBeenCalledOnce();
   });
 
   it('explains what AI sends and links Delete AI data in Settings › AI (#389)', async () => {

@@ -18,4 +18,9 @@ export interface AiQuotaLimits {
   deepQuestionsPerMonth: number;
   /** Library clean-up runs with AI checks per UTC calendar month (AI-5); rule checks are unlimited. */
   cleanupAiRunsPerMonth: number;
+  /**
+   * Links sent to import AI grouping per UTC calendar month (ADR 0056 decision 10). Not given back
+   * when a grouping is redone or abandoned (only on a provider failure), so it bounds provider spend.
+   */
+  importGroupLinksPerMonth: number;
 }

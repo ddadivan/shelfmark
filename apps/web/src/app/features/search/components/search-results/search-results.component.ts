@@ -23,6 +23,7 @@ import {
   IconComponent,
   KEYBOARD_KEY,
   type CommandSelection,
+  isMacPlatform,
 } from '@shelfmark/ui';
 import {
   catchError,
@@ -51,7 +52,6 @@ import { LinkOpener } from '../../services/link-opener.service';
 import { MeaningSearch } from '../../services/meaning-search';
 import { BackfillReminderComponent } from '../backfill-reminder/backfill-reminder.component';
 import { matchFolders, matchTags } from '../../utils/search-match';
-import { isMacPlatform } from '../../utils/is-mac-platform';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';

@@ -1,0 +1,13 @@
+@use 'ui' as *;
+
+:host {
+  display: contents;
+}
+
+.recent-imports__hint {
+  @include type(caption);
+
+  margin: 0;
+  padding-block-start: var(--space-3);
+  color: var(--text-muted);
+}

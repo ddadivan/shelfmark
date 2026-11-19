@@ -24,7 +24,7 @@ export interface UiDialogConfig<D = undefined> {
   readonly role?: DialogRole;
   /** Id of an element inside the content that describes the dialog (`aria-describedby`). */
   readonly describedBy?: string;
-  /** What gets focus on open: `first-tabbable` (default), `first-heading`, `dialog`, a CSS selector or `false`. */
+  /** What gets focus on open: `dialog` (default: the panel), `first-tabbable`, `first-heading`, a CSS selector or `false`. */
   readonly autoFocus?: string | boolean;
   /**
    * Where focus goes on close when the element that opened the dialog is gone from the page (a

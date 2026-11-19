@@ -37,6 +37,7 @@ export class ExportController {
     content: {
       [EXPORT_CONTENT_TYPE.Json]: { schema: { type: 'object' } },
       [EXPORT_CONTENT_TYPE.Html]: { schema: { type: 'string' } },
+      [EXPORT_CONTENT_TYPE.Csv]: { schema: { type: 'string' } },
     },
   })
   @ApiBadRequestResponse({ description: 'Invalid query.' })

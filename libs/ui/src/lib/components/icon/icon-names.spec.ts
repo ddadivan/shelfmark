@@ -80,6 +80,12 @@ const APP_ICONS = [
   'spark',
   // The send button of the Ask composer (#507).
   'arrow-up',
+  // The drop zone of the bookmarks import (#387).
+  'upload',
+  // Link kinds of the new view dialog and Edit link (#537): podcast, document, app.
+  'file',
+  'mic',
+  'smartphone',
 ];
 
 const sprite = readFileSync(SPRITE_PATH, 'utf8');

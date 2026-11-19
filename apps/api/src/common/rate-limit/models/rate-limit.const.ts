@@ -66,6 +66,8 @@ export const RATE_LIMIT = {
   AiTidyRead: { limit: 60, ttl: MINUTE_MS },
   // AI-4 Ask your shelf: each one a streamed model answer (the question limits apply on top).
   AiAsk: { limit: 10, ttl: MINUTE_MS },
+  // A saved view from a phrase (#535): one short model call each (the Ask question limits apply on top).
+  AiViewDraft: { limit: 10, ttl: MINUTE_MS },
   // Rediscover dismiss and "Not interested".
   RediscoverWrite: { limit: 30, ttl: MINUTE_MS },
   // Rule offer check (AI-2): read-only, asked after each filing by the user.
@@ -79,4 +81,14 @@ export const RATE_LIMIT = {
   // dismissal; apply and its Undo (up to 100 groups and 20 merges in one transaction).
   CleanupRun: { limit: 6, ttl: MINUTE_MS },
   CleanupApply: { limit: 10, ttl: MINUTE_MS },
+  // Import of a bookmark file (#387, ADR 0056): start (folders in one transaction) and Undo are rare
+  // and heavy; the duplicate check is read-only, one call per 500 URLs; batches come one after
+  // another from the browser (100 links each, 10,000 links = 100 calls, so 120 a minute is enough).
+  ImportStart: { limit: 10, ttl: MINUTE_MS },
+  ImportCheck: { limit: 60, ttl: MINUTE_MS },
+  ImportBatch: { limit: 120, ttl: MINUTE_MS },
+  ImportUndo: { limit: 10, ttl: MINUTE_MS },
+  // AI groups by topic (ADR 0056 decision 10): an embedding pass and a model call each; once per file.
+  // Also the limit of the `DELETE` that releases the units again.
+  ImportGroups: { limit: 10, ttl: HOUR_MS },
 } as const satisfies Record<string, RateLimitPreset>;

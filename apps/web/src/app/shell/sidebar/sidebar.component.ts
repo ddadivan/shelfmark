@@ -5,8 +5,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
+  ElementRef,
   inject,
+  Injector,
   input,
   viewChild,
 } from '@angular/core';
@@ -14,11 +17,15 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
+  BADGE_TONE,
+  BadgeComponent,
   BUTTON_SIZE,
   ButtonComponent,
   ICON_SIZE,
+  KEYBOARD_KEY,
   loaderVisible,
   LogoComponent,
+  MENU_FOCUS_EDGE,
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
@@ -47,15 +54,14 @@ import { LinkDragService } from '../../features/links/services/link-drag.service
 import { HowItWorksService } from '../../features/how-it-works/services/how-it-works.service';
 import { FeedbackDialogService } from '../../features/feedback/services/feedback-dialog.service';
 import { HowItWorksCardComponent } from '../../features/how-it-works/components/how-it-works-card/how-it-works-card.component';
-import { SIDEBAR_FEEDBACK_ID } from './models/sidebar-feedback-id.const';
+import { SIDEBAR_DATA_ID } from './models/sidebar-data-id.const';
 import { SIDEBAR_EXTENSION_ID } from './models/sidebar-extension-id.const';
-import { SIDEBAR_WHATS_NEW_ID } from './models/sidebar-whats-new-id.const';
 import { WhatsNewStore } from '../../features/changelog/services/whats-new.store';
 import { folderTreeNodes } from './utils/folder-tree-nodes';
 import { injectSidebarLabels } from './utils/inject-sidebar-labels';
 import { latched } from './utils/latched';
 import { sidebarActiveId } from './utils/sidebar-active-id';
-import { feedbackNodes, fixedNodes, trashNodes } from './utils/sidebar-nodes';
+import { dataNodes, extensionNodes, fixedNodes, trashNodes } from './utils/sidebar-nodes';
 import { sidebarRoute } from './utils/sidebar-route';
 import { SidebarFoldersService } from './services/sidebar-folders.service';
 import { SidebarTreeFocusService } from './services/sidebar-tree-focus.service';
@@ -66,12 +72,14 @@ import { SidebarTreeFocusService } from './services/sidebar-tree-focus.service';
  * folder tiles (`ui-tree`; the "Folders" heading has a "New folder" icon button) and the tags.
  * Choosing a row navigates; the active row follows the URL. A folder has a menu (right click,
  * "..." button, Shift+F10): new subfolder, add link here, rename, move, share, delete. Folders
- * reorder among their siblings by dragging or Alt+Up / Alt+Down (#314). Trash is a row of its
- * own under a divider at the bottom.
+ * reorder among their siblings by dragging or Alt+Up / Alt+Down (#314). The footer has one "Data &
+ * help" row that opens a menu upwards (Import links, Export, What's new, Send feedback, #387) and
+ * Trash as a row of its own under a divider.
  */
 @Component({
   selector: 'app-sidebar',
   imports: [
+    BadgeComponent,
     HowItWorksCardComponent,
     ButtonComponent,
     MenuComponent,
@@ -102,11 +110,14 @@ export class SidebarComponent {
   private readonly settings = inject(UserSettingsStore);
   protected readonly drag = inject(LinkDragService);
   protected readonly howItWorks = inject(HowItWorksService);
-  /** "Send feedback" in the sidebar footer opens the same dialog as the account menu (#315). */
+  /** "Send feedback" in the data menu opens the same dialog as the account menu (#315). */
   protected readonly feedback = inject(FeedbackDialogService);
   private readonly whatsNew = inject(WhatsNewStore);
   private readonly tagsStore = inject(TagsStore);
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly BADGE_TONE = BADGE_TONE;
+  /** Shown as the badge of "What's new" in the data menu while a release is unseen. */
+  protected readonly whatsNewPending = this.whatsNew.pending;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   /** The folder list answered (or failed): before that the section stays out, not empty. */
   protected readonly foldersReady = latched(() => this.folders.loaded() || this.folders.error());
@@ -129,7 +140,10 @@ export class SidebarComponent {
     this.viewport.compact() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
   );
   private readonly router = inject(Router);
-  private readonly menu = viewChild.required(MenuComponent);
+  private readonly menu = viewChild.required<MenuComponent>('folderMenuRef');
+  private readonly dataMenu = viewChild.required<MenuComponent>('dataMenuRef');
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly injector = inject(Injector);
   private readonly tree = viewChild<TreeComponent>('folderTree');
   private readonly treeFocus = inject(SidebarTreeFocusService);
 
@@ -172,12 +186,16 @@ export class SidebarComponent {
     return fixedNodes(labels, counts, due > 0 ? due : undefined, note);
   });
 
-  /** "What's new" and "Send feedback" above the divider (not on the phone: the You list has them). */
-  protected readonly feedbackNodes = computed<UiTreeNode[]>(() => {
+  /** "Get the extension" above the data row (not on the phone). */
+  protected readonly extensionRows = computed<UiTreeNode[]>(() => {
     const labels = this.labels();
-    return !labels || this.phone()
-      ? []
-      : feedbackNodes(labels, this.whatsNew.pending(), this.extension.entryShown());
+    return !labels || this.phone() ? [] : extensionNodes(labels, this.extension.entryShown());
+  });
+
+  /** The "Data & help" row (not on the phone: the You list has the same entries), with the What's new dot. */
+  protected readonly dataRows = computed<UiTreeNode[]>(() => {
+    const labels = this.labels();
+    return !labels || this.phone() ? [] : dataNodes(labels, this.whatsNew.pending());
   });
 
   /** Trash under the divider; its count shows once the list has loaded and only while not empty. */
@@ -209,6 +227,11 @@ export class SidebarComponent {
   });
 
   constructor() {
+    // In the capture phase: the tree stops the keys of its rows from bubbling.
+    this.host.addEventListener('keydown', this.dataKeydown, true);
+    inject(DestroyRef).onDestroy(() => {
+      this.host.removeEventListener('keydown', this.dataKeydown, true);
+    });
     void this.folders.load();
     void this.trash.load();
     void this.pins.load();
@@ -233,19 +256,59 @@ export class SidebarComponent {
   }
 
   protected async footerSelected(node: UiTreeNode): Promise<void> {
-    if (node.id === SIDEBAR_FEEDBACK_ID) {
-      this.feedback.open();
+    if (node.id === SIDEBAR_DATA_ID) {
+      this.toggleDataMenu(MENU_FOCUS_EDGE.First);
       return;
     }
     if (node.id === SIDEBAR_EXTENSION_ID) {
       this.document.defaultView?.open(this.extension.storeUrl, '_blank', 'noopener,noreferrer');
       return;
     }
-    if (node.id === SIDEBAR_WHATS_NEW_ID) {
-      void this.whatsNew.open();
+    await this.router.navigate([`/${APP_PATH.Trash}`]);
+  }
+
+  /** ArrowUp on the data row opens its menu on the last item (the menu grows upwards). */
+  private readonly dataKeydown = (event: KeyboardEvent): void => {
+    if (event.key === KEYBOARD_KEY.ArrowUp && event.target === this.dataRow()) {
+      event.preventDefault();
+      this.toggleDataMenu(MENU_FOCUS_EDGE.Last, true);
+    }
+  };
+
+  protected async openImport(): Promise<void> {
+    const { ImportDialogService } =
+      await import('../../features/import/services/import-dialog.service');
+    this.injector.get(ImportDialogService).open();
+  }
+
+  protected async openExport(): Promise<void> {
+    const { ExportDialogService } =
+      await import('../../features/export/services/export-dialog.service');
+    this.injector.get(ExportDialogService).open();
+  }
+
+  protected openWhatsNew(): void {
+    void this.whatsNew.open();
+  }
+
+  private dataRow(): HTMLElement | null {
+    return this.host.querySelector<HTMLElement>(`[data-ui-tree-id="${SIDEBAR_DATA_ID}"]`);
+  }
+
+  private toggleDataMenu(
+    focus: typeof MENU_FOCUS_EDGE.First | typeof MENU_FOCUS_EDGE.Last,
+    openOnly = false,
+  ): void {
+    const row = this.dataRow();
+    if (!row) {
       return;
     }
-    await this.router.navigate([`/${APP_PATH.Trash}`]);
+    const menu = this.dataMenu();
+    if (menu.anchor() === row && !openOnly) {
+      menu.close();
+    } else {
+      menu.openFrom(row, { focus });
+    }
   }
 
   protected openMenu(event: UiTreeContextMenuEvent): void {

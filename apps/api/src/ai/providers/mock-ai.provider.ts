@@ -17,11 +17,37 @@ import { mockAskChunks, planMockAskRound } from './mock-ask-planner';
 import type { AskAssistantBlock } from '../models/ask-assistant-block.type';
 import type { AskRoundChunk } from '../models/ask-round-chunk.type';
 import type { AskRoundInput } from '../models/ask-round-input.interface';
+import { mockImportGroupNames } from './mock-import-group-names';
+import type { ImportGroupNamesInput } from '../models/import-group-names-input.interface';
+import type { ImportGroupNamesOutcome } from '../models/import-group-names-outcome.type';
 import { mockTagSynonyms } from './mock-tag-synonyms';
 import type { TagSynonymsInput } from '../models/tag-synonyms-input.interface';
 import type { TagSynonymsOutcome } from '../models/tag-synonyms-outcome.type';
+import type { ViewDraftInput } from '../models/view-draft-input.interface';
+import type { ViewDraftModelOutcome } from '../models/view-draft-model-outcome.type';
+import { LINK_KIND, planMockViewDraft, type LinkKind } from '@shelfmark/contracts';
 
 const VIDEO_HOSTS = ['youtube.com', 'youtu.be', 'vimeo.com'];
+
+/**
+ * The mock's kind (#535, #537): a video host or a "talk" / "video" word in the title or description
+ * reads as video, then podcast, recipe, document, code, app and post words, "shop" / "product" as
+ * shopping, "article" / "blog" as article; otherwise unsure (`null`), so most mock links keep the
+ * kind the page and host gave them.
+ */
+function mockKind(host: string, haystack: ReadonlySet<string>): LinkKind | null {
+  const any = (list: readonly string[]): boolean => list.some((word) => haystack.has(word));
+  if (VIDEO_HOSTS.includes(host) || any(['video', 'talk', 'webinar'])) return LINK_KIND.Video;
+  if (any(['podcast', 'episode'])) return LINK_KIND.Podcast;
+  if (any(['recipe', 'ingredients'])) return LINK_KIND.Recipe;
+  if (any(['pdf', 'slides', 'whitepaper'])) return LINK_KIND.Document;
+  if (any(['repository', 'library', 'sdk'])) return LINK_KIND.Code;
+  if (any(['app', 'extension'])) return LINK_KIND.App;
+  if (any(['thread', 'tweet'])) return LINK_KIND.Post;
+  if (any(['shop', 'product', 'buy'])) return LINK_KIND.Shopping;
+  if (any(['article', 'blog', 'essay'])) return LINK_KIND.Article;
+  return null;
+}
 
 /** The mock's "cleaned-up" title: the page title without a trailing site name (" | X", " - X"). */
 function mockTitle(title: string | null): string | null {
@@ -103,6 +129,31 @@ export class MockAiProvider implements AiProvider {
   /** Synonym pairs from `MOCK_TAG_SYNONYMS` (triggers `ai-fail`, `ai-refuse` in a tag name). */
   findTagSynonyms(input: TagSynonymsInput): Promise<TagSynonymsOutcome> {
     return Promise.resolve(mockTagSynonyms(input));
+  }
+
+  /** Group names from the clusters' own words (triggers `ai-fail`, `ai-refuse` in a title). */
+  nameImportGroups(input: ImportGroupNamesInput): Promise<ImportGroupNamesOutcome> {
+    return Promise.resolve(mockImportGroupNames(input));
+  }
+
+  /**
+   * A view from a phrase by `planMockViewDraft` (shared with the web mock); a phrase with `ai-fail`
+   * fails retryably, one with `ai-refuse` is refused.
+   */
+  draftView(input: ViewDraftInput): Promise<ViewDraftModelOutcome> {
+    if (input.phrase.includes(MOCK_AI.RefuseMarker)) return Promise.resolve({ type: 'refusal' });
+    if (input.phrase.includes(MOCK_AI.FailMarker)) {
+      return Promise.resolve({ type: 'error', retryable: true });
+    }
+    const folders = input.folders.map((path) => ({
+      id: path,
+      path,
+      name: path.split(' / ').at(-1) ?? path,
+    }));
+    return Promise.resolve({
+      type: 'output',
+      output: planMockViewDraft(input.phrase, { folders, tags: input.tags }),
+    });
   }
 
   /**
@@ -222,7 +273,7 @@ export class MockAiProvider implements AiProvider {
       folder,
       title: input.wantsTitle ? mockTitle(input.title) : null,
       summary: wantsSummary ? `A page about ${subject}.`.slice(0, MOCK_AI.SummaryMax) : null,
-      kind: VIDEO_HOSTS.includes(host) ? 'video' : 'article',
+      kind: mockKind(host, haystack),
     };
   }
 }

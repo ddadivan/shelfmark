@@ -77,6 +77,9 @@ describe('the You list (/settings)', () => {
     expect(
       Array.from(root.querySelectorAll('ui-button')).map((b) => b.textContent?.trim()),
     ).toEqual(['Send feedback', 'How it works', 'Sign out']);
+    expect(
+      Array.from(root.querySelectorAll('[role="group"] a')).map((a) => a.textContent?.trim()),
+    ).toEqual(['Import links', 'Export']);
     expect(root.querySelector('nav a[href="/settings/appearance"]')?.textContent).toContain(
       'System',
     );

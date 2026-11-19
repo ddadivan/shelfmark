@@ -18,7 +18,8 @@ import {
   SettingsRowComponent,
   SettingsSectionComponent,
 } from '@shelfmark/ui';
-import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
+import type { ExportFormat } from '@shelfmark/contracts';
+import { EXPORT_FORMAT_OPTIONS } from '../../../export/models/export-format-options.const';
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { AccountDeletionService } from '../../../account-deletion/services/account-deletion.service';
@@ -31,7 +32,8 @@ import { AccountStatsService } from '../../services/account-stats.service';
 /**
  * `/settings/account` (#352): who is signed in (the provider's photo, member since), the "Your
  * shelf" numbers, the connected sign-in providers, "Your data" (export, moved here from its own
- * section) and deleting the account, plus sign out.
+ * section; import lives in the sidebar's data menu with its recent imports, #387) and deleting the
+ * account, plus sign out.
  */
 @Component({
   selector: 'app-settings-account-page',
@@ -57,7 +59,7 @@ export default class AccountPage {
   private readonly exporter = inject(ExportActionsService);
 
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
-  protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
+  protected readonly EXPORT_FORMAT_OPTIONS = EXPORT_FORMAT_OPTIONS;
   protected readonly YOUR_DATA_FRAGMENT = YOUR_DATA_FRAGMENT;
   /** Thumb-sized buttons on a phone. */
   protected readonly buttonSize = computed(() =>

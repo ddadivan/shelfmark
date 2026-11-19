@@ -84,6 +84,9 @@ export class MockLibraryData {
     ...generatedTagNames(this.links, this.demo ? [] : MOCK_TAGS).map((name) => newTag(name)),
   ];
 
+  /** The links each mock import created, by import id (the Tidy review of one import reads it). */
+  readonly importLinkIds = new Map<string, ReadonlySet<string>>();
+
   /** The mock Trash, newest first. */
   trash: MockTrashEntry[] = this.seedTrash();
   /** The mock account setting "Keep deleted items for". */

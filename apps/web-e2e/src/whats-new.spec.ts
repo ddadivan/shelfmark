@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { MOCK_USER, seedSession } from './support/mock-session';
+import { expectVisibleFocus } from './support/keyboard';
 import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 import { MOCK_WHATS_NEW_KEY, seedWhatsNewSeen } from './support/whats-new';
@@ -13,12 +14,26 @@ const DIALOG = "What's new in Shelfmark";
 /** Fast-forwards past the dialog's start delay (1.5 s) and one retry (5 s). */
 const SETTLE_MS = 7000;
 
-/** The "What's new" entry: a sidebar footer row on desktop, a row of the You list in the mobile shell. */
+/**
+ * Where the "What's new" dot shows: the "Data & help" row of the sidebar footer on desktop (#387),
+ * the What's new row of the You list in the mobile shell.
+ */
 function entry(page: Page, withDot: boolean) {
   const name = withDot ? "What's new new" : "What's new";
   return isCompact(page)
     ? page.getByRole('link', { name, exact: true })
-    : page.getByRole('treeitem', { name, exact: true });
+    : page.getByRole('treeitem', {
+        name: withDot ? 'Data & help new' : 'Data & help',
+        exact: true,
+      });
+}
+
+/** Opens the dialog from its entry: a row of the You list, or an item of the data menu. */
+async function openFromEntry(page: Page): Promise<void> {
+  await entry(page, false).click();
+  if (!isCompact(page)) {
+    await page.getByRole('menuitem', { name: "What's new" }).click();
+  }
 }
 
 test.describe('public changelog', () => {
@@ -43,19 +58,15 @@ test.describe('public changelog', () => {
       await expect(
         page.getByText('A link typed as example.com saves like any other.'),
       ).toBeVisible();
-      // Hotfix 2.3.1 leads the page (fixes only), then 2.3.0 (Ask as a chat) with New, Improved and
-      // Fixed, then 2.2.2, 2.2.1 and 2.2.0 (the AI release); 2.1.0 (#464) keeps its highlights.
-      await expect(releases.first()).toHaveText('Shelfmark 2.3.1');
+      // 2.4.0 (import, views in words, ten kinds) leads the page with New and Improved, then the
+      // hotfix 2.3.1, 2.3.0 (Ask as a chat) and the 2.2 releases; 2.1.0 (#464) keeps its highlights.
+      await expect(releases.first()).toHaveText('Shelfmark 2.4.0');
       await expect(
-        page.getByRole('region', { name: 'Shelfmark 2.3.1' }).getByRole('heading', { level: 3 }),
-      ).toHaveText('Fixed');
-      await expect(releases.nth(1)).toHaveText('Shelfmark 2.3.0');
-      await expect(
-        page.getByRole('region', { name: 'Shelfmark 2.3.0' }).getByRole('heading', { level: 3 }),
-      ).toHaveText(['New', 'Improved', 'Fixed']);
-      await expect(releases.nth(2)).toHaveText('Shelfmark 2.2.2');
-      await expect(releases.nth(3)).toHaveText('Shelfmark 2.2.1');
-      await expect(releases.nth(4)).toHaveText('Shelfmark 2.2.0');
+        page.getByRole('region', { name: 'Shelfmark 2.4.0' }).getByRole('heading', { level: 3 }),
+      ).toHaveText(['New', 'Improved']);
+      await expect(releases.nth(1)).toHaveText('Shelfmark 2.3.1');
+      await expect(releases.nth(2)).toHaveText('Shelfmark 2.3.0');
+      await expect(releases.nth(3)).toHaveText('Shelfmark 2.2.2');
       await expect(
         page.getByRole('region', { name: 'Shelfmark 2.1.0' }).getByRole('heading', {
           level: 4,
@@ -121,7 +132,7 @@ test.describe("What's new after an update (mock API)", () => {
       await seedWhatsNewSeen(page);
       await page.goto(isCompact(page) ? '/settings' : '/links');
 
-      await entry(page, false).click();
+      await openFromEntry(page);
       const dialog = page.getByRole('dialog', { name: DIALOG });
       await expect(dialog).toBeVisible();
       await dialog.getByRole('button', { name: 'See all changes' }).click();
@@ -130,6 +141,31 @@ test.describe("What's new after an update (mock API)", () => {
       await expect(page.getByRole('heading', { level: 1, name: "What's new" })).toBeVisible();
     },
   );
+
+  test('opened by a click it focuses the dialog itself: no ring until a key is pressed', async ({
+    page,
+  }) => {
+    await seedSession(page, ONBOARDED);
+    await seedWhatsNewSeen(page);
+    await page.goto('/links');
+
+    await openFromEntry(page);
+    const dialog = page.getByRole('dialog', { name: DIALOG });
+    // The panel has focus (a screen reader announces the dialog), not the close button or a link.
+    await expect(dialog).toBeFocused();
+    const ring = await dialog.evaluate(
+      (el) => el.ownerDocument.defaultView?.getComputedStyle(el).outlineStyle,
+    );
+    expect(ring).toBe('none');
+    // No tooltip either (the close button's would open on focus).
+    await page.waitForTimeout(600);
+    await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+    // Tab moves to the first control, which shows the ring.
+    await page.keyboard.press('Tab');
+    await expect(dialog).not.toBeFocused();
+    expect(await dialog.evaluate((el) => el.contains(el.ownerDocument.activeElement))).toBe(true);
+    await expectVisibleFocus(page);
+  });
 
   test('"And N more…" opens /changelog', { tag: E2E_TAG.Phone }, async ({ page }) => {
     await seedSession(page, ONBOARDED);

@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ICON_SIZE, IconComponent } from '@shelfmark/ui';
-import { isMacPlatform } from '../../../search/utils/is-mac-platform';
+import { ICON_SIZE, IconComponent, isMacPlatform } from '@shelfmark/ui';
 import { keyCap } from '../../utils/key-cap';
 import type { KeyCap } from '../../models/key-cap.interface';
 import type { ShortcutGroup } from '../../models/shortcut-group.interface';

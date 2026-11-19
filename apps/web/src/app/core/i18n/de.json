@@ -440,12 +440,24 @@
       "video": "Videos",
       "article": "Artikel",
       "shopping": "Shopping",
+      "podcast": "Podcasts",
+      "document": "Dokumente",
+      "code": "Code",
+      "app": "Apps",
+      "post": "Beiträge",
+      "recipe": "Rezepte",
       "other": "Sonstiges"
     },
     "kindOption": {
       "video": "Video",
       "article": "Artikel",
       "shopping": "Shopping",
+      "podcast": "Podcast",
+      "document": "Dokument",
+      "code": "Code",
+      "app": "App",
+      "post": "Beitrag",
+      "recipe": "Rezept",
       "other": "Sonstiges"
     },
     "move": {
@@ -486,8 +498,8 @@
         "skipped": "Kein Link, übersprungen"
       },
       "overflow": {
-        "one": "{{count}} weiterer Link wurde weggelassen: höchstens {{max}} Links auf einmal. Längere Listen gehen über „Als Text importieren“.",
-        "other": "{{count}} weitere Links wurden weggelassen: höchstens {{max}} Links auf einmal. Längere Listen gehen über „Als Text importieren“."
+        "one": "{{count}} weiterer Link wurde weggelassen: höchstens {{max}} Links auf einmal. Eine Lesezeichen-Datei geht über „Importieren“ unter Konto › Deine Daten.",
+        "other": "{{count}} weitere Links wurden weggelassen: höchstens {{max}} Links auf einmal. Eine Lesezeichen-Datei geht über „Importieren“ unter Konto › Deine Daten."
       },
       "folder": "Ordner für alle",
       "tags": "Tags für alle",
@@ -828,7 +840,9 @@
         "movedUp": "Nach oben verschoben, Position {{position}} von {{total}}",
         "movedDown": "Nach unten verschoben, Position {{position}} von {{total}}"
       },
-      "extension": "Erweiterung holen"
+      "extension": "Erweiterung holen",
+      "data": "Daten & Hilfe",
+      "dataMenu": "Daten und Hilfe"
     },
     "searchHint": "Deine Links durchsuchen",
     "searchButton": "Suchen",
@@ -839,7 +853,12 @@
     "sendFeedback": "Feedback senden",
     "feedbackInbox": "Feedback-Eingang",
     "about": "Über Shelfmark",
-    "usageStats": "Nutzungsstatistik"
+    "usageStats": "Nutzungsstatistik",
+    "data": {
+      "import": "Links importieren",
+      "export": "Exportieren",
+      "group": "Import und Export"
+    }
   },
   "folders": {
     "dialog": {
@@ -1247,11 +1266,13 @@
     "retry": "Erneut versuchen",
     "view": {
       "json": "Diese Ansicht als JSON",
-      "html": "Diese Ansicht als Lesezeichen-HTML"
+      "html": "Diese Ansicht als Lesezeichen-HTML",
+      "csv": "Diese Ansicht als CSV"
     },
     "all": {
       "json": "Alles als JSON",
-      "html": "Alles als Lesezeichen-HTML"
+      "html": "Alles als Lesezeichen-HTML",
+      "csv": "Alles als CSV"
     },
     "empty": {
       "title": "Noch nichts zu exportieren",
@@ -1260,6 +1281,240 @@
     "emptyView": {
       "title": "In dieser Ansicht gibt es nichts zu exportieren",
       "detail": "Diese Ansicht enthält keine Links. Exportiere alles oder öffne eine andere Ansicht"
+    },
+    "dialog": {
+      "title": "Export",
+      "close": "Schließen",
+      "formatLabel": "Dateiformat",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Alles: Links, Ordner, Tags, Notizen, Erinnerungen"
+        },
+        "html": {
+          "title": "Lesezeichen-HTML",
+          "description": "Lässt sich in den Lesezeichen-Import jedes Browsers laden"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "Für Tabellen"
+        }
+      },
+      "last": "Letzter Export: {{when}}, {{format}}.",
+      "preparing": "{{format}}-Datei wird vorbereitet…",
+      "cancel": "Abbrechen",
+      "download": "Herunterladen",
+      "saved": "Datei gespeichert"
+    }
+  },
+  "import": {
+    "title": "Links importieren",
+    "close": "Schließen",
+    "source": {
+      "label": "Quelle",
+      "browser": {
+        "title": "Browser-Lesezeichen",
+        "description": "HTML-Datei aus Chrome, Safari, Firefox oder Edge. Ordner bleiben Ordner."
+      },
+      "drop": "oder Datei hierher ziehen",
+      "choose": "Datei auswählen",
+      "reading": "{{file}} wird gelesen …",
+      "problem": {
+        "too-big": "Diese Datei ist größer als {{max}} MB.",
+        "unreadable": "Diese Datei konnte nicht gelesen werden. Exportiere sie noch einmal.",
+        "not-bookmarks": "In dieser Datei sind keine Lesezeichen. Wähle die HTML-Datei, die dein Browser über „Lesezeichen exportieren“ gespeichert hat.",
+        "empty": "Diese Datei enthält keine Web-Links.",
+        "too-many-links": "Diese Datei enthält mehr als {{max}} Links.",
+        "check-failed": "Die Datei konnte nicht mit deiner Sammlung abgeglichen werden. Versuch es noch einmal."
+      },
+      "hint": ".html, bis {{max}} MB und {{links}} Links",
+      "dropping": "Zum Importieren loslassen"
+    },
+    "review": {
+      "stats": {
+        "label": "In dieser Datei",
+        "links": {
+          "one": "Link",
+          "other": "Links"
+        },
+        "folders": {
+          "one": "Ordner",
+          "other": "Ordner"
+        },
+        "saved": "schon in deiner Sammlung"
+      },
+      "into": "Ablegen in",
+      "newFolder": "Neuer Ordner „{{name}}“",
+      "newFolderName": "Importierte Lesezeichen",
+      "unsorted": "Unsortiert",
+      "folderSearch": "Ordner suchen",
+      "noFolders": "Keine Ordner gefunden",
+      "skip": {
+        "one": "{{count}} Duplikat überspringen",
+        "other": "{{count}} Duplikate überspringen"
+      },
+      "skipHint": "Links, die du schon hast, und Wiederholungen in der Datei",
+      "back": "Zurück",
+      "import": {
+        "one": "{{count}} Link importieren",
+        "other": "{{count}} Links importieren"
+      },
+      "nothing": "Alle Links dieser Datei sind schon in deiner Sammlung.",
+      "untitledFolder": "Unbenannter Ordner",
+      "untitledFile": "Lesezeichen-Datei",
+      "folders": {
+        "label": "Ordner darin",
+        "file": {
+          "title": "Wie in der Datei",
+          "description": {
+            "one": "{{count}} Browser-Ordner",
+            "other": "{{count}} Browser-Ordner"
+          }
+        },
+        "ai": {
+          "title": "KI nach Themen sortieren lassen",
+          "description": "Die KI gruppiert die Links und schlägt Ordner vor, auch deine vorhandenen. Du prüfst die Gruppen vor dem Import. Verbraucht {{count}} von {{left}} Durchläufen für vorhandene Links."
+        },
+        "none": {
+          "title": "Keine Ordner",
+          "description": "Alles in einer Liste in „{{target}}“"
+        }
+      },
+      "group": "Gruppieren",
+      "room": {
+        "one": "Nur noch {{count}} Link passt in dein Limit, deshalb wird nur der erste importiert.",
+        "other": "Nur noch {{count}} Links passen in dein Limit, deshalb werden nur die ersten {{count}} importiert."
+      },
+      "full": "In deiner Sammlung ist kein Platz mehr für weitere Links."
+    },
+    "progress": {
+      "title": "Links werden importiert",
+      "count": "{{done}} von {{total}}",
+      "label": "Importfortschritt",
+      "note": "Du kannst weiterarbeiten: Das Fenster darf geschlossen werden. Die Vorschauen werden in den nächsten Minuten im Hintergrund geladen.",
+      "doneTitle": {
+        "one": "{{count}} Link importiert",
+        "other": "{{count}} Links importiert"
+      },
+      "inFolder": "In „{{name}}“.",
+      "inUnsorted": "In Unsortiert.",
+      "inTarget": "Im gewählten Ordner.",
+      "folders": {
+        "one": "{{count}} Ordner.",
+        "other": "{{count}} Ordner."
+      },
+      "skipped": {
+        "one": "{{count}} übersprungen: schon gespeichert, doppelt oder keine Webseite.",
+        "other": "{{count}} übersprungen: schon gespeichert, doppelt oder keine Webseite."
+      },
+      "failed": {
+        "one": "{{count}} konnte nicht gespeichert werden.",
+        "other": "{{count}} konnten nicht gespeichert werden."
+      },
+      "openFolder": "Ordner öffnen",
+      "openUnsorted": "Unsortiert öffnen",
+      "undo": "Import rückgängig machen",
+      "startFailed": "Der Import konnte nicht starten, nichts wurde gespeichert. Versuch es noch einmal.",
+      "foldersLimit": "Die Ordner passen nicht in dein Ordnerlimit. Wähle „Keine Ordner“ und versuche es noch einmal.",
+      "minimize": "Minimieren",
+      "grouped": {
+        "one": "In {{count}} Ordner, {{created}} davon neu.",
+        "other": "In {{count}} Ordnern, {{created}} davon neu."
+      }
+    },
+    "undo": {
+      "title": "Diesen Import rückgängig machen?",
+      "message": {
+        "one": "Der Link und die Ordner dieses Imports kommen in den Papierkorb, und Tags, die er hinzugefügt hat und die sonst nichts nutzt, werden entfernt. Was du seitdem hinzugefügt hast, bleibt.",
+        "other": "Die {{count}} Links und die Ordner dieses Imports kommen in den Papierkorb, und Tags, die er hinzugefügt hat und die sonst nichts nutzt, werden entfernt. Was du seitdem hinzugefügt hast, bleibt."
+      },
+      "confirm": "Import rückgängig machen",
+      "cancel": "Abbrechen",
+      "failed": "Der Import konnte nicht rückgängig gemacht werden. Versuch es noch einmal.",
+      "done": "Import rückgängig gemacht",
+      "doneDetail": {
+        "one": "{{count}} Link in den Papierkorb verschoben",
+        "other": "{{count}} Links in den Papierkorb verschoben"
+      }
+    },
+    "recent": {
+      "title": "Letzte Importe",
+      "source": {
+        "browser": "Browser-Lesezeichen"
+      },
+      "links": {
+        "one": "{{count}} Link",
+        "other": "{{count}} Links"
+      },
+      "folders": {
+        "one": "{{count}} Ordner",
+        "other": "{{count}} Ordner"
+      },
+      "skipped": "{{count}} übersprungen",
+      "failed": "{{count}} fehlgeschlagen",
+      "undoLabel": "Import rückgängig machen: {{name}}",
+      "hint": "Ein Import lässt sich 7 Tage lang rückgängig machen."
+    },
+    "entry": {
+      "title": "Links importieren",
+      "description": "Hol deine Browser-Lesezeichen herein. Ordner bleiben Ordner, Links, die du schon hast, werden übersprungen.",
+      "action": "Importieren"
+    },
+    "menu": "Links importieren …",
+    "help": {
+      "link": "So exportierst du Lesezeichen aus dem Browser",
+      "chrome": "Chrome: Lesezeichenverwaltung öffnen ({{keys}}), das ⋮-Menü öffnen und „Lesezeichen exportieren“ wählen.",
+      "edge": "Edge: Favoriten öffnen ({{keys}}), das ⋯-Menü öffnen und „Favoriten exportieren“ wählen.",
+      "edgeMac": "Edge: Favoriten über das ⋯-Menü öffnen, dort das ⋯-Menü öffnen und „Favoriten exportieren“ wählen.",
+      "firefox": "Firefox: Bibliothek öffnen ({{keys}}), dann Importieren und Sichern, „Lesezeichen nach HTML exportieren …“.",
+      "safari": "Safari: Ablage, Exportieren, Lesezeichen."
+    },
+    "groups": {
+      "waiting": {
+        "one": "Die KI gruppiert {{count}} Link …",
+        "other": "Die KI gruppiert {{count}} Links …"
+      },
+      "count": {
+        "one": "{{count}} Gruppe",
+        "other": "{{count}} Gruppen"
+      },
+      "forLinks": {
+        "one": "für {{count}} Link",
+        "other": "für {{count}} Links"
+      },
+      "nameLabel": "Ordnername",
+      "nameEmpty": "Gib dem Ordner einen Namen",
+      "linkCount": {
+        "one": "{{count}} Link",
+        "other": "{{count}} Links"
+      },
+      "existing": "schon vorhanden",
+      "new": "neu",
+      "showLinks": "Links von „{{name}}“ anzeigen",
+      "hideLinks": "Links von „{{name}}“ ausblenden",
+      "moveLabel": "„{{title}}“ verschieben nach",
+      "other": "Sonstige",
+      "otherText": "Links, die zu keinem Thema passen, landen in „{{target}}“.",
+      "hint": "Du kannst die Ordner umbenennen. Links, die du aus einer Gruppe nimmst, landen in „{{target}}“.",
+      "import": {
+        "one": "Importieren und {{count}} Ordner erstellen",
+        "other": "Importieren und {{count}} Ordner erstellen"
+      },
+      "failed": "Die Links konnten gerade nicht gruppiert werden. Von deinem Kontingent wurde nichts verbraucht. Geh zurück oder importiere sie ohne Gruppen.",
+      "allowance": "Vom Kontingent für vorhandene Links ist nicht genug für diese Links übrig. Geh zurück oder importiere sie ohne Gruppen.",
+      "monthly": "Du hast diesen Monat schon so viele Links mit KI gruppiert, wie möglich ist. Importiere sie wie in der Datei oder ohne Ordner."
+    },
+    "ai": {
+      "doneTitle": "Beschreibungen und Tags sind fertig",
+      "summaries": {
+        "one": "{{count}} Link hat eine kurze Beschreibung bekommen.",
+        "other": "{{count}} Links haben kurze Beschreibungen bekommen."
+      },
+      "suggestions": {
+        "one": "Für {{count}} Link gibt es Tag-Vorschläge.",
+        "other": "Für {{count}} Links gibt es Tag-Vorschläge."
+      },
+      "review": "Tags ansehen"
     }
   },
   "settings": {
@@ -1327,10 +1582,6 @@
       "title": "Deine Daten",
       "export": {
         "label": "Deine Daten exportieren",
-        "json": "JSON",
-        "jsonHint": "Alle deine Ordner, Tags und Links in einer Datei",
-        "html": "Lesezeichen-HTML",
-        "htmlHint": "Lässt sich in jedem Browser als Lesezeichen importieren",
         "download": "Herunterladen",
         "downloadAs": "{{format}} herunterladen"
       }
@@ -1517,10 +1768,6 @@
           "close": "Schließen"
         }
       },
-      "data": {
-        "hint": "Alles, was du gespeichert hast, als JSON oder Lesezeichen-HTML",
-        "action": "Export öffnen"
-      },
       "kept": {
         "title": "Was wir speichern"
       },
@@ -1533,6 +1780,16 @@
           "action": "Öffnen",
           "actionLabel": "„KI-Daten löschen“ unter Einstellungen › KI öffnen"
         }
+      },
+      "importExport": {
+        "title": "Import und Export",
+        "import": {
+          "hint": "Lesezeichen aus deinem Browser übernehmen"
+        },
+        "export": {
+          "hint": "Deine ganze Bibliothek als Datei herunterladen"
+        },
+        "open": "Öffnen"
       }
     },
     "footer": {
@@ -2093,8 +2350,6 @@
       "cancel": "Abbrechen"
     },
     "create": {
-      "title": "Diese Ansicht speichern",
-      "action": "Ansicht speichern",
       "saving": "Wird gespeichert…",
       "failed": "Ansicht konnte nicht gespeichert werden. Versuch es noch einmal.",
       "limit": "Du hast schon die maximale Anzahl an Ansichten. Lösche zuerst eine.",
@@ -2138,7 +2393,69 @@
     "kindHint": {
       "video": "Links, die als Videos erkannt wurden",
       "article": "Links, die als Artikel erkannt wurden",
-      "shopping": "Links, die als Shopping erkannt wurden"
+      "shopping": "Links, die als Shopping erkannt wurden",
+      "podcast": "Links, die als Podcasts erkannt wurden",
+      "document": "Links, die als Dokumente erkannt wurden",
+      "code": "Links, die als Code erkannt wurden",
+      "app": "Links, die als Apps erkannt wurden",
+      "post": "Links, die als Beiträge erkannt wurden",
+      "recipe": "Links, die als Rezepte erkannt wurden"
+    },
+    "new": {
+      "title": "Neue Ansicht",
+      "lead": "Starte mit dem Filter der aktuellen Liste oder ändere ihn hier.",
+      "action": "Ansicht speichern",
+      "change": "Ändern",
+      "composed": "Der Filter wurde aus deiner Beschreibung erstellt.",
+      "dropped": "Nicht berücksichtigt: {{names}}",
+      "compose": "Erstellen",
+      "composing": "Wird erstellt…",
+      "ideas": "Ideen",
+      "ideaLabel": "Idee übernehmen: {{name}}",
+      "ideaPhrase": "Links zu {{name}}",
+      "unavailable": "Gerade lässt sich keine Ansicht erstellen. Das zählt nicht zu deinem Limit; du kannst den Filter selbst einstellen.",
+      "skip": {
+        "or": "oder",
+        "action": "den aktuellen Filter speichern"
+      },
+      "phrase": {
+        "label": "Beschreibe, was gezeigt werden soll",
+        "placeholder": "Videos über Angular, die ich noch nicht gesehen habe",
+        "hint": "Zum Beispiel: „Artikel über Design aus meinem Ordner Arbeit“, „was ich an Kleidung kaufen will“, „Rezepte, neueste zuerst“."
+      },
+      "where": {
+        "label": "Wo",
+        "all": "Alle Links",
+        "unsorted": "Nicht einsortiert",
+        "favorites": "Favoriten",
+        "search": "Ordner suchen",
+        "noResults": "Keine Ordner gefunden"
+      },
+      "kind": {
+        "label": "Typ",
+        "all": "Alle Typen"
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "Tag hinzufügen",
+        "max": "Bis zu {{max}} Tags",
+        "unknown": "„{{name}}“ ist keiner deiner Tags. Wähle einen aus der Liste."
+      },
+      "q": {
+        "label": "Suchwörter",
+        "placeholder": "Wörter in Titel, Notiz oder Adresse",
+        "tooLong": "Höchstens {{max}} Zeichen"
+      },
+      "sort": {
+        "label": "Sortierung"
+      },
+      "found": {
+        "one": "{{count}} Link gefunden",
+        "other": "{{count}} Links gefunden"
+      },
+      "foundMore": "Mehr als {{count}} Links gefunden",
+      "andMore": "und {{count}} weitere",
+      "meta": "{{host}} · {{folder}}"
     }
   },
   "feedback": {
@@ -3008,6 +3325,30 @@
       },
       "askScrollsDown": {
         "text": "Der Ask-Chat scrollt zu jeder neuen Frage nach unten."
+      },
+      "importBookmarks": {
+        "title": "Lesezeichen aus dem Browser importieren",
+        "text": "Hol dir die Lesezeichen-Datei aus Chrome, Safari, Firefox oder Edge. Behalte ihre Ordner, leg alles in einen, oder lass KI die Links nach Themen ordnen und prüfe die Gruppen vorher. Jeden Import kannst du 7 Tage lang rückgängig machen. Import und Export findest du jetzt unter Daten & Hilfe in der Seitenleiste.",
+        "alt": "Der Import-Dialog mit zwei von der KI vorgeschlagenen Gruppen für sechs Links, eine davon ein vorhandener Ordner."
+      },
+      "newView": {
+        "title": "Ansicht von Hand oder mit Worten erstellen",
+        "text": "Diese Ansicht speichern öffnet einen Dialog: Ort, Typ, Tags, Wörter und Sortierung festlegen und die Anzahl sehen. Mit KI beschreibst du sie, etwa „Angular-Videos, neueste zuerst“, und die KI füllt die Felder zum Prüfen aus.",
+        "alt": "Der Dialog „Neue Ansicht“, ausgefüllt aus „Angular-Videos, neueste zuerst“, mit dem passenden Link."
+      },
+      "linkKinds": {
+        "title": "Zehn Arten von Links",
+        "text": "Podcasts, Dokumente, Code, Apps, Beiträge und Rezepte kommen zu Videos, Artikeln und Einkäufen dazu. Shelfmark erkennt die Art beim Speichern, und du kannst sie in einer Ansicht oder unter Link bearbeiten wählen.",
+        "alt": "Die Typliste im Dialog „Neue Ansicht“ mit allen zehn Arten."
+      },
+      "exportCsv": {
+        "text": "CSV-Export im Menü Exportieren und in den Einstellungen, neben JSON und Lesezeichen-HTML."
+      },
+      "dialogFocus": {
+        "text": "Dialoge öffnen sich mit der Maus ohne Fokusrahmen; mit der Tabulatortaste erscheint er weiterhin."
+      },
+      "exportHelp": {
+        "text": "Die Hilfe zum Lesezeichen-Export zeigt die Tastenkürzel deines Systems, Mac oder Windows."
       }
     },
     "sections": {
@@ -3343,7 +3684,11 @@
         "nothingDetail": "Die Vorschläge haben sich inzwischen geändert."
       },
       "undone": "Aufräumen rückgängig gemacht",
-      "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden"
+      "undoFailed": "Aufräumen konnte nicht rückgängig gemacht werden",
+      "import": {
+        "line": "Es werden nur die Links dieses Imports angezeigt.",
+        "all": "Alles durchgehen"
+      }
     },
     "search": {
       "related": "Ähnlich nach Bedeutung",

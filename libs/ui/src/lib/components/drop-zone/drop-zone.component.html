@@ -1,0 +1,55 @@
+<input
+  #picker
+  type="file"
+  class="ui-drop-zone__input"
+  tabindex="-1"
+  aria-hidden="true"
+  [attr.accept]="accept() || null"
+  [disabled]="disabled()"
+  (change)="onPick(picker)"
+/>
+@if (illustration(); as scene) {
+  <div class="ui-drop-zone__stage">
+    <ui-illustration
+      class="ui-drop-zone__illustration"
+      [name]="scene"
+      [motion]="ILLUSTRATION_MOTION.Once"
+    />
+  </div>
+  @if (heading() || text() || hint()) {
+    <div class="ui-drop-zone__copy">
+      @if (heading()) {
+        <h3 class="ui-drop-zone__heading">{{ heading() }}</h3>
+      }
+      @if (text()) {
+        <p class="ui-drop-zone__text">{{ text() }}</p>
+      }
+      @if (hint()) {
+        <p class="ui-drop-zone__hint">{{ hint() }}</p>
+      }
+    </div>
+  }
+  <div class="ui-drop-zone__action">
+    <ui-button [size]="BUTTON_SIZE.Md" [disabled]="disabled()" (click)="openPicker(picker)">{{
+      actionLabel()
+    }}</ui-button>
+    @if (label()) {
+      <span class="ui-drop-zone__label">{{ label() }}</span>
+    }
+  </div>
+} @else {
+  <ui-icon class="ui-drop-zone__icon" name="upload" [size]="ICON_SIZE.Md" />
+  <div class="ui-drop-zone__body">
+    <span class="ui-drop-zone__row">
+      @if (label()) {
+        <span class="ui-drop-zone__label">{{ label() }}</span>
+      }
+      <ui-button [size]="BUTTON_SIZE.Sm" [disabled]="disabled()" (click)="openPicker(picker)">{{
+        actionLabel()
+      }}</ui-button>
+    </span>
+    @if (hint()) {
+      <span class="ui-drop-zone__hint">{{ hint() }}</span>
+    }
+  </div>
+}

@@ -38,12 +38,14 @@ import { HttpRediscoverApi } from '../rediscover/http/http-rediscover.api';
 import { REDISCOVER_API } from '../rediscover/models/rediscover-api.const';
 import { HttpCleanupApi } from '../cleanup/http/http-cleanup.api';
 import { CLEANUP_API } from '../cleanup/models/cleanup-api.const';
+import { HttpImportApi } from '../import/http/http-import.api';
+import { IMPORT_API } from '../import/models/import-api.const';
 import { HttpSharesApi } from '../sharing/http/http-shares.api';
 import { SHARES_API } from '../sharing/models/shares-api.const';
 
 /**
  * Registers the data seams of the links feature (`LINKS_API`, `FOLDERS_API`, `TAGS_API`) and
- * `EXPORT_API`, `TRASH_API`, `USER_SETTINGS_API`, `SAVED_VIEWS_API`, `RULES_API`, `SHARES_API`, `AI_API`, `MCP_API`, `REDISCOVER_API` and `CLEANUP_API` over the REST API. `EXPORT_API` is registered here, not in `app.config.ts`,
+ * `EXPORT_API`, `TRASH_API`, `USER_SETTINGS_API`, `SAVED_VIEWS_API`, `RULES_API`, `SHARES_API`, `AI_API`, `MCP_API`, `REDISCOVER_API`, `CLEANUP_API` and `IMPORT_API` over the REST API. `EXPORT_API` is registered here, not in `app.config.ts`,
  * because this file is the single seam `fileReplacements` swaps: the `development` and `e2e`
  * builds replace it with `mock/provide-links-api.e2e.ts`, which provides `MockExportApi`
  * instead, so no export code needs its own build switch.
@@ -85,5 +87,6 @@ export function provideLinksApi(): Provider[] {
     { provide: MCP_API, useExisting: HttpMcpApi },
     { provide: REDISCOVER_API, useExisting: HttpRediscoverApi },
     { provide: CLEANUP_API, useExisting: HttpCleanupApi },
+    { provide: IMPORT_API, useExisting: HttpImportApi },
   ];
 }

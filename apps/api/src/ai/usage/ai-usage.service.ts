@@ -95,6 +95,40 @@ export class AiUsageService {
       WHERE user_id = ${userId}::uuid`;
   }
 
+  /**
+   * Counts `wanted` links against this month's import-grouping cap in one statement (ADR 0056
+   * decision 10); answers the month for a refund, or `null` when they do not fit. Pass the
+   * transaction of the grouping, if any.
+   */
+  async reserveImportGroupLinks(
+    userId: string,
+    tier: AiTier,
+    wanted: number,
+    now = new Date(),
+    db: AiDbClient = this.prisma,
+  ): Promise<string | null> {
+    const limit = AI_QUOTA[tier].importGroupLinksPerMonth;
+    // The INSERT path has no WHERE, so a request above the cap is refused here.
+    if (limit <= 0 || wanted <= 0 || wanted > limit) return null;
+    const month = usageMonth(now);
+    const rows = await db.$queryRaw<{ n: number }[]>`
+      INSERT INTO ai_usage (user_id, month, import_group_links)
+      VALUES (${userId}::uuid, ${month}::date, ${wanted}::int)
+      ON CONFLICT (user_id, month) DO UPDATE
+        SET import_group_links = ai_usage.import_group_links + ${wanted}::int
+      WHERE ai_usage.import_group_links + ${wanted}::int <= ${limit}::int
+      RETURNING import_group_links AS n`;
+    return rows.length > 0 ? month : null;
+  }
+
+  /** Gives back import-grouping links after a provider failure. */
+  async refundImportGroupLinks(userId: string, month: string, count: number): Promise<void> {
+    if (count <= 0) return;
+    await this.prisma.$executeRaw`
+      UPDATE ai_usage SET import_group_links = GREATEST(import_group_links - ${count}::int, 0)
+      WHERE user_id = ${userId}::uuid AND month = ${month}::date`;
+  }
+
   /** Link texts embedded this month (search by meaning, ADR 0052 point 5). */
   async embedsUsed(userId: string, now = new Date()): Promise<number> {
     const rows = await this.prisma.$queryRaw<{ embeds: number }[]>`

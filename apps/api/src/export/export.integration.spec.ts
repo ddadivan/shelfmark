@@ -321,6 +321,56 @@ describe('GET /api/export', () => {
     expect(doc.folders.map((f) => f.path)).toContainEqual(['Empty']);
   });
 
+  it('exports CSV with a BOM, header, CRLF and one row per link', async () => {
+    await seed(users.owner.userId);
+    const res = await owner().get('/api/export?format=csv').expect(200);
+    expect(res.headers['content-type']).toMatch(/^text\/csv; charset=utf-8/);
+    expect(res.headers['content-disposition']).toMatch(
+      /^attachment; filename="shelfmark-\d{4}-\d{2}-\d{2}\.csv"$/,
+    );
+    expect(res.headers['cache-control']).toBe('no-store');
+    expect(res.headers['x-content-type-options']).toBe('nosniff');
+    const text = res.text;
+    expect(text.startsWith('﻿url,title,folder,tags,note,favorite,kind,created_at\r\n')).toBe(true);
+    const lines = text.slice(1).split('\r\n');
+    expect(lines.pop()).toBe('');
+    expect(lines).toHaveLength(5);
+    expect(text).toContain('https://root.example/,Root,,Alpha;beta,,false,');
+    expect(text).toContain('https://work.example/a,Work A,Work,Alpha,line one,true,');
+    expect(text).toContain('Work / Docs ""x""');
+  });
+
+  it('guards CSV cells against formulas and quotes special characters', async () => {
+    const { prisma } = t.db;
+    await prisma.link.create({
+      data: {
+        userId: users.owner.userId,
+        url: 'https://f.example/',
+        normalizedUrl: 'https://f.example/',
+        title: '=HYPERLINK("x")',
+        titleSortKey: 'f',
+        note: 'Привіт, світ\nline 2',
+      },
+    });
+    const text = (await owner().get('/api/export?format=csv').expect(200)).text;
+    expect(text).toContain(`"'=HYPERLINK(""x"")"`);
+    expect(text).toContain('"Привіт, світ\nline 2"');
+  });
+
+  it('filters the CSV by scope and never includes another user data', async () => {
+    const { work } = await seed(users.owner.userId);
+    const scoped = (await owner().get(`/api/export?format=csv&folderId=${work.id}`).expect(200))
+      .text;
+    expect(scoped).toContain('Work A');
+    expect(scoped).toContain('Sub');
+    expect(scoped).not.toContain('Root');
+    const foreign = (await intruder().get('/api/export?format=csv').expect(200)).text;
+    expect(foreign).not.toContain('example');
+    expect(foreign.slice(1)).toBe('url,title,folder,tags,note,favorite,kind,created_at\r\n');
+    await anonymous(t.app).get('/api/export?format=csv').expect(401);
+    await intruder().get(`/api/export?format=csv&folderId=${work.id}`).expect(404);
+  });
+
   it('validates the query', async () => {
     await owner().get('/api/export').expect(400);
     await owner().get('/api/export?format=xml').expect(400);

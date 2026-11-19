@@ -24,6 +24,7 @@ import type { StoredAiSettings } from '../models/stored-ai-settings.interface';
 import { AiEmbedService } from '../embeddings/ai-embed.service';
 import { AiSearchStatusService } from '../embeddings/ai-search-status.service';
 import { AiProviderRegistry } from '../providers/ai-provider.registry';
+import { stopScopedRun } from '../backfill/close-import-pass';
 import { AiUsageService } from '../usage/ai-usage.service';
 import { aiEntitlements } from './ai-entitlements';
 import { toBackfillStatus } from './to-backfill-status';
@@ -154,6 +155,10 @@ export class AiSettingsService {
           ? { backfillState: AI_BACKFILL_STATE.Stopped }
           : {}),
       };
+      // Turning AI off stops a run scoped to an import: its pass is skipped, unused units go back.
+      if (request.enabled === false && current.backfillState === AI_BACKFILL_STATE.Running) {
+        await stopScopedRun(tx, userId);
+      }
       await tx.aiSettings.upsert({
         where: { userId },
         create: { userId, ...changes },

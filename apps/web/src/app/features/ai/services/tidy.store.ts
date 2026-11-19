@@ -14,6 +14,7 @@ const initialState: TidyState = {
   items: [],
   total: 0,
   after: null,
+  importId: null,
   loading: false,
   loaded: false,
   deselected: [],
@@ -62,7 +63,8 @@ function withSuggestion(
 }
 
 /**
- * The Tidy review page (AI-2, provided by the page): the links in Unsorted with their suggestions,
+ * The Tidy review page (AI-2, provided by the page): the links in Unsorted (or, with `importId`,
+ * the links of one import in any folder) with their suggestions,
  * which chips the user left out and which links they skipped (both only on this page; chips start
  * selected), and what one apply run sends: per link the ids still selected. A link with no chip
  * selected is not sent.
@@ -126,7 +128,11 @@ export const TidyStore = signalStore(
       const token = ++request;
       patchState(store, { loading: true });
       try {
-        const { items, total } = await firstValueFrom(api.getTidy(store.after() ?? undefined));
+        const after = store.after() ?? undefined;
+        const importId = store.importId();
+        const { items, total } = await firstValueFrom(
+          importId === null ? api.getTidy(after) : api.getTidy(after, importId),
+        );
         if (token !== request) {
           return;
         }
@@ -158,6 +164,26 @@ export const TidyStore = signalStore(
 
     return {
       load,
+
+      /**
+       * Limits the review to the links of one import, or back to Unsorted (`null`), and reads it
+       * from the first page; a no-op while the choice stays the same and the list was read.
+       */
+      async setImport(importId: string | null): Promise<void> {
+        if (importId === store.importId() && store.loaded()) {
+          return;
+        }
+        patchState(store, {
+          importId,
+          after: null,
+          items: [],
+          total: 0,
+          loaded: false,
+          skipped: [],
+          deselected: [],
+        });
+        await load();
+      },
 
       /**
        * "Apply to {n} links": one run of what is selected; the list is read again afterwards (the

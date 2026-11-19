@@ -94,6 +94,29 @@
   }
 }
 
+// `tone: ai` (an option that hands the work to AI): the AI colours instead of the accent. `ai`
+// only marks (dot, icon); the fill is `ai-bg`, the edge `ai-line`.
+.ui-radio--ai .ui-radio__icon {
+  color: var(--ai);
+}
+
+.ui-radio--ai.ui-radio--checked {
+  background: var(--ai-bg);
+  border-color: var(--ai-line);
+
+  @include hover {
+    border-color: var(--ai-line);
+  }
+
+  .ui-radio__dot {
+    border-color: var(--ai);
+
+    &::after {
+      background: var(--ai);
+    }
+  }
+}
+
 .ui-radio__input:focus-visible + .ui-radio__dot {
   @include focus-ring;
 }

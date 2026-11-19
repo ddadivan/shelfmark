@@ -1,8 +1,8 @@
 import { readFile } from 'node:fs/promises';
 import { type Download } from '@playwright/test';
 import { expect, test } from './support/test';
-import { openAccountMenu, openSettingsSection, seedSession } from './support/mock-session';
-import { isCompact } from './support/sidebar';
+import { openDataDialog } from './support/data-menu';
+import { openSettingsSection, seedSession } from './support/mock-session';
 import { openExportMenu } from './support/library-toolbar';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
@@ -11,6 +11,12 @@ import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
 const MOCK_MARKER = 'sm-mock-export';
 
 /** The second line of the mock file: the URL the real API would have been asked for. */
+/** The mock writes a real CSV (no marker line): its header row, the BOM dropped. */
+async function csvHeader(download: Download): Promise<string> {
+  const text = await readFile(await download.path(), 'utf8');
+  return text.replace(/^\uFEFF/u, '').split(/\r?\n/u)[0];
+}
+
 async function requestedUrl(download: Download): Promise<string> {
   const path = await download.path();
   const lines = (await readFile(path, 'utf8')).split('\n');
@@ -25,7 +31,7 @@ test.describe('export (mock API)', () => {
     await seedSession(page);
   });
 
-  test('the library menu exports everything as JSON and as Bookmarks HTML', async ({ page }) => {
+  test('the library menu exports everything as JSON, Bookmarks HTML and CSV', async ({ page }) => {
     await page.goto('/links');
     await openExportMenu(page);
     // No folder or tag narrows "All links": only the two "everything" items.
@@ -47,6 +53,14 @@ test.describe('export (mock API)', () => {
     const htmlFile = await html;
     expect(htmlFile.suggestedFilename()).toMatch(/^shelfmark-\d{4}-\d{2}-\d{2}\.html$/);
     expect(await requestedUrl(htmlFile)).toBe('/api/export?format=html');
+
+    await expect(page.getByRole('menu')).toBeHidden();
+    await openExportMenu(page);
+    const csv = page.waitForEvent('download');
+    await page.getByRole('menuitem', { name: 'Everything as CSV' }).click();
+    const csvFile = await csv;
+    expect(csvFile.suggestedFilename()).toMatch(/^shelfmark-\d{4}-\d{2}-\d{2}\.csv$/);
+    expect(await csvHeader(csvFile)).toBe('url,title,folder,tags,note,favorite,kind,created_at');
   });
 
   test('a tag filter adds "This view" items that carry the tag', async ({ page }) => {
@@ -60,6 +74,14 @@ test.describe('export (mock API)', () => {
     await page.getByRole('menuitem', { name: 'This view as JSON' }).click();
 
     expect(await requestedUrl(await download)).toBe('/api/export?format=json&tag=docs');
+
+    await expect(page.getByRole('menu')).toBeHidden();
+    await openExportMenu(page);
+    const csv = page.waitForEvent('download');
+    await page.getByRole('menuitem', { name: 'This view as CSV' }).click();
+    const viewCsv = await csv;
+    expect(viewCsv.suggestedFilename()).toMatch(/\.csv$/u);
+    expect(await csvHeader(viewCsv)).toBe('url,title,folder,tags,note,favorite,kind,created_at');
   });
 
   test('an empty view explains instead of saving an empty file', async ({ page }) => {
@@ -77,18 +99,16 @@ test.describe('export (mock API)', () => {
   });
 
   test(
-    'the account menu (the You tab on a phone) exports everything',
+    'the data menu (the You tab on a phone) exports everything through the dialog',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await page.goto('/links');
+      await openDataDialog(page, 'Export');
       const download = page.waitForEvent('download');
-      if (isCompact(page)) {
-        await openSettingsSection(page, 'Account');
-        await page.getByRole('button', { name: 'Download JSON' }).click();
-      } else {
-        await openAccountMenu(page);
-        await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
-      }
+      await page
+        .getByRole('dialog', { name: 'Export' })
+        .getByRole('button', { name: 'Download' })
+        .click();
 
       expect(await requestedUrl(await download)).toBe('/api/export?format=json');
     },
@@ -140,6 +160,14 @@ test.describe('export with nothing to export (mock API)', () => {
 
       await openSettingsSection(page, 'Account');
       await page.getByRole('button', { name: 'Download Bookmarks HTML' }).click();
+      await expect(notice.first()).toBeVisible();
+
+      // The export dialog explains the same and closes (the data menu is in the library sidebar).
+      await page.goto('/links');
+      await openDataDialog(page, 'Export');
+      const dialog = page.getByRole('dialog', { name: 'Export' });
+      await dialog.getByRole('button', { name: 'Download' }).click();
+      await expect(dialog).toHaveCount(0);
       await expect(notice.first()).toBeVisible();
 
       expect(downloads).toBe(0);

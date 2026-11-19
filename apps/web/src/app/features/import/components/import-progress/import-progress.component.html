@@ -1,0 +1,24 @@
+@switch (runner.run().phase) {
+  @case (IMPORT_RUN_PHASE.Failed) {
+    <ui-notice [kind]="NOTICE_KIND.Danger">{{ runner.run().errorKey ?? '' | transloco }}</ui-notice>
+  }
+  @case (IMPORT_RUN_PHASE.Done) {
+    <div class="import-progress__done" role="status">
+      <span class="import-progress__badge" aria-hidden="true"
+        ><ui-icon name="check" [size]="ICON_SIZE.Lg"
+      /></span>
+      <p class="import-progress__title">{{ doneTitle() }}</p>
+      <p class="import-progress__text">{{ doneText() }}</p>
+    </div>
+  }
+  @default {
+    <div class="import-progress__running">
+      <div class="import-progress__line">
+        <span>{{ 'import.progress.title' | transloco }}</span>
+        <span class="import-progress__count">{{ countText() }}</span>
+      </div>
+      <ui-meter [value]="runner.percent()" [label]="'import.progress.label' | transloco" />
+      <p class="import-progress__note">{{ 'import.progress.note' | transloco }}</p>
+    </div>
+  }
+}

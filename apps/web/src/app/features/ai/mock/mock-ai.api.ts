@@ -23,6 +23,7 @@ import {
   TIDY_LIMIT,
   type UndoAiApplyRequest,
   type UpdateAiSettingsRequest,
+  type ViewDraftResponse,
 } from '@shelfmark/contracts';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { mockHttpError } from '../../../core/api/mock-http-error';
@@ -30,6 +31,7 @@ import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { AiApi } from '../models/ai-api.interface';
 import { isAiFeatureMode } from '../utils/ai-setting-values';
 import { MockAiAsk } from './mock-ai-ask';
+import { MockAiViewDraft } from './mock-ai-view-draft';
 import { MockAiData } from './mock-ai-data';
 import { meaningQueryProblems, MockAiMeaning } from './mock-ai-meaning';
 import { MockAiTidy } from './mock-ai-tidy';
@@ -88,6 +90,7 @@ export class MockAiApi implements AiApi {
   private readonly tidy = inject(MockAiTidy);
   private readonly meaning = inject(MockAiMeaning);
   private readonly asking = inject(MockAiAsk);
+  private readonly viewDraft = inject(MockAiViewDraft);
   private readonly cleanup = inject(MockCleanupData);
 
   getSettings(): Observable<AiSettingsResponse> {
@@ -157,12 +160,12 @@ export class MockAiApi implements AiApi {
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
-  getTidy(after?: string): Observable<TidyListResponse> {
-    return defer(() => of(this.tidy.list(after))).pipe(delay(MOCK_LATENCY_MS.List));
+  getTidy(after?: string, importId?: string): Observable<TidyListResponse> {
+    return defer(() => of(this.tidy.list(after, importId))).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
-  getTidyCount(): Observable<TidyCountResponse> {
-    return defer(() => of({ total: this.tidy.count() })).pipe(delay(MOCK_LATENCY_MS.List));
+  getTidyCount(importId?: string): Observable<TidyCountResponse> {
+    return defer(() => of({ total: this.tidy.count(importId) })).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
   applyTidy(request: TidyApplyRequest): Observable<TidyApplyResponse> {
@@ -240,5 +243,9 @@ export class MockAiApi implements AiApi {
 
   ask(question: string, history: readonly AskTurn[]): Observable<AskEvent> {
     return this.asking.ask(question, history);
+  }
+
+  draftView(phrase: string): Observable<ViewDraftResponse> {
+    return this.viewDraft.draft(phrase);
   }
 }

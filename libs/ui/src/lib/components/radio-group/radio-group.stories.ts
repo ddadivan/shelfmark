@@ -3,6 +3,7 @@ import type { RadioOption } from './models/radio-option.interface';
 import { RadioGroupComponent } from './radio-group.component';
 import { THEME, THEME_ATTRIBUTE } from '../../models/theme';
 import { RADIO_ORIENTATION } from './models/radio-orientation.const';
+import { RADIO_OPTION_TONE } from './models/radio-option-tone.const';
 
 const OPTIONS: RadioOption[] = [
   {
@@ -23,6 +24,19 @@ const LANGUAGES: RadioOption[] = [
   { value: 'pt', title: 'Português', flag: 'br', lang: 'pt' },
   { value: 'uk', title: 'Українська', flag: 'ua', lang: 'uk' },
   { value: 'browser', title: 'Match my browser', icon: 'monitor' },
+];
+
+/** Import, "Folders inside" (#387): the AI option wears the AI colours (`tone: ai`). */
+const FOLDER_MODES: RadioOption[] = [
+  { value: 'file', title: 'As in the file', description: '5 browser folders' },
+  {
+    value: 'ai',
+    title: 'Let AI sort them by topic',
+    description: 'AI groups the links and suggests folders. You review the groups first.',
+    icon: 'spark',
+    tone: RADIO_OPTION_TONE.Ai,
+  },
+  { value: 'none', title: 'No folders', description: 'Everything in one list' },
 ];
 
 const ORIENTATIONS = Object.values(RADIO_ORIENTATION);
@@ -88,11 +102,21 @@ export const WithFlags: Story = {
   args: { options: LANGUAGES, value: 'fr', ariaLabel: 'Interface language' },
 };
 
+/** An option that hands the work to AI (`tone: ai`), chosen: AI colours instead of the accent. */
+export const AiTone: Story = {
+  args: { options: FOLDER_MODES, value: 'ai', ariaLabel: 'Folders inside' },
+};
+
 /** Both orientations and states in both themes, independent of the toolbar. */
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },
   render: () => ({
-    props: { options: OPTIONS, languages: LANGUAGES, themes: Object.values(THEME) },
+    props: {
+      options: OPTIONS,
+      languages: LANGUAGES,
+      folderModes: FOLDER_MODES,
+      themes: Object.values(THEME),
+    },
     template: `
       <div class="fs-themes">
         @for (theme of themes; track theme) {
@@ -103,6 +127,7 @@ export const AllVariants: Story = {
             <ui-radio-group [options]="options" value="move" [disabled]="true"
               ariaLabel="Disabled" />
             <ui-radio-group [options]="languages" value="de" ariaLabel="Languages" />
+            <ui-radio-group [options]="folderModes" value="ai" ariaLabel="AI tone" />
           </div>
         }
       </div>`,

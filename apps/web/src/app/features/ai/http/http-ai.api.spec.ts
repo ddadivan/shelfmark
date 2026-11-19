@@ -45,7 +45,10 @@ describe('HttpAiApi', () => {
       [() => api.deleteData().subscribe(), 'DELETE', '/api/ai/data', null],
       [() => api.getTidy().subscribe(), 'GET', '/api/ai/tidy', null],
       [() => api.getTidy('l9').subscribe(), 'GET', '/api/ai/tidy?after=l9', null],
+      [() => api.getTidy(undefined, 'i1').subscribe(), 'GET', '/api/ai/tidy?import=i1', null],
+      [() => api.getTidy('l9', 'i1').subscribe(), 'GET', '/api/ai/tidy?after=l9&import=i1', null],
       [() => api.getTidyCount().subscribe(), 'GET', '/api/ai/tidy/count', null],
+      [() => api.getTidyCount('i1').subscribe(), 'GET', '/api/ai/tidy/count?import=i1', null],
       [
         () => api.applyTidy({ items: [{ linkId: 'l1', suggestionIds: ['s1'] }] }).subscribe(),
         'POST',
@@ -83,6 +86,12 @@ describe('HttpAiApi', () => {
       ],
       [() => api.related('l/1').subscribe(), 'GET', '/api/links/l%2F1/related', null],
       [() => api.related('l1', 5).subscribe(), 'GET', '/api/links/l1/related?limit=5', null],
+      [
+        () => api.draftView('videos about Angular').subscribe(),
+        'POST',
+        '/api/ai/view-draft',
+        { phrase: 'videos about Angular' },
+      ],
     ];
     for (const [call, method, url, body] of calls) {
       call();

@@ -1,0 +1,151 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(10px);
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: rem(20px);
+  color: var(--text-muted);
+  text-align: center;
+  background: transparent;
+  border: 1.5px dashed var(--border-control);
+  border-radius: rem(18px);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+
+  @include type(body);
+}
+
+.ui-drop-zone__input {
+  @include visually-hidden;
+}
+
+.ui-drop-zone__icon {
+  flex: none;
+}
+
+.ui-drop-zone__body {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  align-items: center;
+  min-width: 0;
+}
+
+.ui-drop-zone__row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: rem(8px);
+  align-items: center;
+  justify-content: center;
+}
+
+.ui-drop-zone__hint {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+// Stacked (with an illustration): the empty-state order, top to bottom, centred.
+:host(.ui-drop-zone--stacked) {
+  flex-flow: column nowrap;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-4);
+
+  @include phone {
+    padding: var(--space-4);
+  }
+}
+
+// The scene on the soft disc of the page empty states (`illustration-disc`), smaller (160px).
+.ui-drop-zone__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+
+  &::before {
+    position: absolute;
+    z-index: -1;
+    width: 72%;
+    aspect-ratio: 1;
+    content: '';
+    background: var(--illustration-disc);
+    border-radius: var(--radius-full);
+  }
+}
+
+.ui-drop-zone__illustration {
+  // On the disc the key shapes keep 3:1 edges (WCAG 1.4.11), as in the page empty states.
+  --ui-illustration-width: #{rem(160px)};
+  --ui-illustration-edge: var(--border-control);
+  --ui-illustration-key-edge: var(--accent);
+}
+
+.ui-drop-zone__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+  max-width: rem(420px);
+}
+
+.ui-drop-zone__heading {
+  @include type(heading);
+
+  margin: 0;
+  color: var(--text);
+}
+
+.ui-drop-zone__text {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+:host(.ui-drop-zone--stacked) .ui-drop-zone__hint {
+  margin: 0;
+}
+
+.ui-drop-zone__action {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+:host(.ui-drop-zone--stacked) .ui-drop-zone__label {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+:host(.ui-drop-zone--over) {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+}
+
+:host(.ui-drop-zone--invalid) {
+  border-color: var(--danger);
+}
+
+// Disabled: the button disables itself and the icon dims; the text keeps its contrast (axe, WCAG AA).
+:host(.ui-drop-zone--disabled) {
+  cursor: not-allowed;
+
+  .ui-drop-zone__icon,
+  .ui-drop-zone__stage {
+    opacity: 0.5;
+  }
+}
+
+@include reduced-motion {
+  :host {
+    transition: none;
+  }
+}

@@ -9,6 +9,7 @@ export * from './lib/components/checkbox';
 export * from './lib/components/chip';
 export * from './lib/components/choice-grid';
 export * from './lib/components/color-picker';
+export * from './lib/components/drop-zone';
 export * from './lib/components/emoji-picker';
 export * from './lib/components/command-list';
 export * from './lib/components/date-picker';
@@ -83,6 +84,7 @@ export * from './lib/utils/custom-background';
 export * from './lib/utils/folder-colour';
 export * from './lib/utils/loader-timing';
 export * from './lib/utils/media';
+export * from './lib/utils/platform';
 export * from './lib/utils/reorder-drop-line';
 
 export * from './lib/models/heading';

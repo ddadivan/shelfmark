@@ -1,6 +1,6 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { MOCK_LIST_FOLDERS_RESPONSE } from '@shelfmark/contracts/testing';
 import {
   UiButtonHarness,
@@ -23,7 +23,12 @@ import { TidyApplyService } from '../../services/tidy-apply.service';
 import TidyPage from './tidy.page';
 import { tidyAiOn } from './tidy.guard';
 
-async function setup(items = tidyItems(), on = true, total = items.length) {
+async function setup(
+  items = tidyItems(),
+  on = true,
+  total = items.length,
+  importId: string | null = null,
+) {
   const api = fakeAiApi(
     aiSettingsResponse(on ? {} : { settings: { ...AI_SETTINGS_DEFAULT, enabled: false } }),
   );
@@ -36,11 +41,20 @@ async function setup(items = tidyItems(), on = true, total = items.length) {
       { provide: FOLDERS_API, useValue: { list: () => of(MOCK_LIST_FOLDERS_RESPONSE) } },
       provideTransloco({ config: translocoConfig, loader: AppTranslocoLoader }),
       { provide: TidyApplyService, useValue: applier },
+      ...(importId === null
+        ? []
+        : [
+            {
+              provide: ActivatedRoute,
+              useValue: { queryParamMap: of(convertToParamMap({ import: importId })) },
+            },
+          ]),
     ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
   await TestBed.inject(AiSettingsStore).load();
   const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+  const navigateTree = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
   const fixture = TestBed.createComponent(TidyPage);
   await fixture.whenStable();
   if (on) {
@@ -57,6 +71,7 @@ async function setup(items = tidyItems(), on = true, total = items.length) {
     fixture,
     loader,
     navigate,
+    navigateTree,
     element: fixture.nativeElement as HTMLElement,
   };
 }
@@ -147,6 +162,27 @@ describe('TidyPage', () => {
     await fixture.whenStable();
     expect(api.getTidy).toHaveBeenCalledWith('l2');
     expect(await axeViolations(element)).toEqual([]);
+  });
+
+  it('asks only for the links of one import with ?import= and says so, with a way back to everything', async () => {
+    const { api, element, loader, navigateTree } = await setup(tidyItems(), true, 2, 'imp1');
+
+    expect(api.getTidy).toHaveBeenCalledWith(undefined, 'imp1');
+    expect(element.textContent).toContain('Showing only the links of this import.');
+
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Review everything' }))).click();
+
+    expect(navigateTree).toHaveBeenCalledWith([], {
+      queryParams: { import: null },
+      queryParamsHandling: 'merge',
+    });
+  });
+
+  it('shows no import line for the usual review of Unsorted', async () => {
+    const { api, element } = await setup();
+
+    expect(api.getTidy).toHaveBeenCalledWith(undefined);
+    expect(element.textContent).not.toContain('Showing only the links of this import.');
   });
 
   it('renders nothing AI and leaves for Unsorted while AI is off', async () => {

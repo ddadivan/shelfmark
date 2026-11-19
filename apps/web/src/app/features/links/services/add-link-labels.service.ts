@@ -1,10 +1,10 @@
 import { computed, inject, Service } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { LINK_KIND } from '@shelfmark/contracts';
-import type { TagSuggestion } from '@shelfmark/ui';
+import type { SelectOption, TagSuggestion } from '@shelfmark/ui';
 import { LocaleService } from '../../../core/i18n/locale.service';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { TagsStore } from '../../../stores/tags.store';
+import { linkKindOptions } from '../utils/link-kind-options';
 import { ReminderFormatService } from '../../reminders/services/reminder-format.service';
 import { AddLinkFormService } from './add-link-form.service';
 
@@ -22,13 +22,10 @@ export class AddLinkLabelsService {
   private readonly reminderFormat = inject(ReminderFormatService);
   private readonly original = this.formState.original;
 
-  /** Edit mode: the "Type" select (video, article, shopping, other). */
-  readonly kindOptions = computed(() => {
+  /** Edit mode: the "Type" select, the ten kinds with their icons (#537). */
+  readonly kindOptions = computed<SelectOption[]>(() => {
     this.formState.i18n();
-    return Object.values(LINK_KIND).map((kind) => ({
-      id: kind,
-      name: this.transloco.translate(`links.kindOption.${kind}`),
-    }));
+    return linkKindOptions((key) => this.transloco.translate(key));
   });
 
   readonly tagSuggestions = computed<TagSuggestion[]>(() => {
