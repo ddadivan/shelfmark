@@ -3341,6 +3341,7 @@
       "title": "Ask your shelf",
       "open": "Ask your shelf",
       "close": "Close Ask your shelf",
+      "resize": "Resize the panel",
       "newChat": "New conversation",
       "back": "Back",
       "emptyTitle": "What do you want to find out?",
