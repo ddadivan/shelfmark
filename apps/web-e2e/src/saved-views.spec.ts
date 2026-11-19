@@ -63,7 +63,7 @@ test.describe('saved views (mock API)', () => {
     const dialog = page.getByRole('dialog', { name: 'New view' });
     // AI is off: no phrase, the first row has focus and the type of the feed is already chosen.
     await expect(dialog.getByRole('combobox', { name: 'Where' })).toBeFocused();
-    await expect(dialog.getByRole('radio', { name: 'Shopping' })).toBeChecked();
+    await expect(dialog.getByRole('radio', { name: 'Shop' })).toBeChecked();
     await dialog.getByRole('button', { name: 'Save view' }).click();
     await expect(dialog.getByText('Enter a name')).toBeVisible();
     await dialog.getByRole('textbox', { name: 'Name' }).fill('Inbox');
