@@ -176,6 +176,42 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
     },
   );
 
+  test(
+    'a long question the links do not answer never scrolls sideways',
+    { tag: E2E_TAG.Mobile },
+    async ({ page }) => {
+      await openLibrary(page);
+      const compact = (page.viewportSize()?.width ?? 0) < COMPACT_MAX_PX;
+      let scope: Locator;
+      if (compact) {
+        await page
+          .getByRole('navigation', { name: 'Main' })
+          .getByRole('link', { name: 'Ask' })
+          .click();
+        scope = page.getByRole('main');
+      } else {
+        scope = await openPanel(page);
+      }
+      await ask(
+        scope,
+        'which of my links explain decorators and how they work in sourdough baking in detail',
+      );
+      // The button quotes the question short; the search still gets all of it.
+      await expect(
+        scope.getByRole('button', { name: 'Search “which of my links explain decorators…”' }),
+      ).toBeVisible();
+      const sideways = await scope.evaluate((root) =>
+        [root, ...root.querySelectorAll('*')]
+          .filter((element) => {
+            const style = element.ownerDocument.defaultView?.getComputedStyle(element);
+            return style?.overflowX !== 'hidden' && element.scrollWidth > element.clientWidth + 1;
+          })
+          .map((element) => element.tagName.toLowerCase()),
+      );
+      expect(sideways).toEqual([]);
+    },
+  );
+
   test('the desktop panel resizes from its edge and keeps the width on the device', async ({
     page,
   }) => {

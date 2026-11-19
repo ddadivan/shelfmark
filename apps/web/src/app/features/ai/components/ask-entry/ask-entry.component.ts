@@ -20,6 +20,8 @@ import {
 } from '@shelfmark/ui';
 import { LocaleService } from '../../../../core/i18n/locale.service';
 import { aiResetDate } from '../../utils/ai-reset-date';
+import { shortQuestion } from '../../utils/short-question';
+import { ASK_SEARCH_LABEL_MAX } from '../../models/ask-search-label-max.const';
 import type { AskEntry } from '../../models/ask-entry.interface';
 import type { AskLine } from '../../models/ask-line.interface';
 import { ASK_CLIENT_REASON } from '../../models/ask-client-reason.const';
@@ -72,6 +74,10 @@ export class AskEntryComponent {
   protected readonly citeLabel: StreamingCiteLabel = (n) =>
     this.transloco.translate('ai.ask.source', { n });
   protected readonly idPrefix = computed(() => `ask-${this.entry().id}-source`);
+  /** The question as "Search “…”" quotes it (a long one is cut; the search gets it whole). */
+  protected readonly searchQuery = computed(() =>
+    shortQuestion(this.entry().question, ASK_SEARCH_LABEL_MAX),
+  );
   protected readonly streaming = computed(() => this.entry().state === ASK_ENTRY_STATE.Streaming);
   /**
    * Citations whose link is gone (trashed meanwhile): rendered disabled. Only known once `done`
