@@ -295,8 +295,13 @@ export class CommandListComponent {
   }
 
   /** Aria's own selection state is not used; it is reset so the same row can be chosen again. */
-  protected onListValue(): void {
-    this.listbox()?.value.set([]);
+  protected onListValue(selected: readonly string[]): void {
+    // The reset emits `valueChange` again, with the empty selection: handling that one would
+    // reset again, endlessly (a stack overflow when a result is chosen). Nothing to reset then.
+    if (selected.length === 0) {
+      return;
+    }
+    this.listbox()?.value.set(this.noSelection);
   }
 
   protected onOptionClick(item: CommandItemComponent, event: MouseEvent): void {
