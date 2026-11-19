@@ -36,7 +36,9 @@ function parseTags(raw: unknown[], context: ParseLinkContext): string[] {
 
 function parseNewTag(raw: string | null | undefined, context: ParseLinkContext): string | null {
   if (!raw) return null;
-  const name = normalizeTagName(stripControlChars(raw));
+  // Lower case like the app's own tag style ("AI-courses" becomes "ai-courses"); `toLowerCase` is
+  // locale-insensitive, and the length is checked after it because lower-casing can change it.
+  const name = normalizeTagName(stripControlChars(raw)).toLowerCase();
   if (name === '' || name.length > TAG_LIMIT.NameMax || !NEW_TAG_SHAPE.test(name)) return null;
   const exists = context.tags.some((tag) => tag.toLowerCase() === name.toLowerCase());
   return exists ? null : name;
@@ -71,7 +73,8 @@ function parseTitle(raw: string | null | undefined, page: string | null): string
  * only what is trusted survives:
  * - tags only from the user's own names (matched without case, returned as the user spelled them),
  *   at most `AI_LIMIT.SuggestedTagsMax`, no repeats;
- * - one new tag that passes the tag rules, has a plain shape and is not an existing tag;
+ * - one new tag that passes the tag rules, has a plain shape and is not an existing tag, in lower
+ *   case (existing tags keep the user's own spelling);
  * - a folder only when its key is one of the keys the job offered;
  * - a summary as plain text: markup, control characters and extra whitespace removed, at most
  *   `AI_LIMIT.SummaryMax`;

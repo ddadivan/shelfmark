@@ -71,6 +71,13 @@ describe('MockAiProvider', () => {
   it('does not repeat an existing tag as the new tag', async () => {
     const outcome = await provider.runLinkJob(input({ tags: ['example'] }));
     expect(outcome).toMatchObject({ output: { newTag: null } });
+    const otherCase = await provider.runLinkJob(input({ tags: ['Example'] }));
+    expect(otherCase).toMatchObject({ output: { newTag: null } });
+  });
+
+  it('proposes a new tag in lower case', async () => {
+    const outcome = await provider.runLinkJob(input({ url: 'https://WWW.GitHub.COM/a/b' }));
+    expect(outcome).toMatchObject({ output: { newTag: 'github' } });
   });
 
   it('simulates a refusal and an outage from the URL', async () => {

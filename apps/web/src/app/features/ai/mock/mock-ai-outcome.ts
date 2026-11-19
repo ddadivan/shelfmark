@@ -67,7 +67,8 @@ export function mockAiOutcome(url: string, title: string, library: MockAiLibrary
   const byName =
     sorted.find((folder) => mentioned(folder.name, found)) ??
     (video ? sorted.find((folder) => folder.name.toLowerCase().startsWith('video')) : undefined);
-  const site = host?.split('.')[0] ?? '';
+  // A new tag is lower case, like the API's (`parseLinkOutput`); existing tags keep their spelling.
+  const site = (host?.split('.')[0] ?? '').toLowerCase();
   const known = library.tags.some((name) => name.toLowerCase() === site);
   const summary = `${title}. A page from ${host ?? 'the web'}, kept here so you can find it again later.`;
   return {
