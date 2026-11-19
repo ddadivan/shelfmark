@@ -11,11 +11,32 @@ import { RATE_LIMIT } from '../common/rate-limit/models/rate-limit.const';
 import { RATE_LIMIT_MESSAGE } from '../common/rate-limit/models/rate-limit-message.const';
 import { RETRY_AFTER_HEADER } from '../common/rate-limit/models/retry-after-header.const';
 
-const THROTTLER_NAME = 'import-groups-body';
-
 const parser = json({ limit: IMPORT_LIMIT.GroupBodyBytesMax });
-/** Exactly `POST /api/imports/groups` (`IMPORT_ENDPOINT.Groups`), with or without a trailing slash. */
-const ROUTE = new RegExp(`^${IMPORT_ENDPOINT.Groups}/?$`);
+
+interface GuardedRoute {
+  /** Exactly one path, with or without a trailing slash. */
+  pattern: RegExp;
+  /** Throttler bucket and preset of the route (the same as its controller's `@RateLimit`). */
+  name: string;
+  preset: { limit: number; ttl: number };
+}
+
+/**
+ * The only `POST` routes that take the larger body: the AI grouping of a file and the start of an
+ * import (its folder tree can pass 100kb).
+ */
+const ROUTES: readonly GuardedRoute[] = [
+  {
+    pattern: new RegExp(`^${IMPORT_ENDPOINT.Groups}/?$`),
+    name: 'import-groups-body',
+    preset: RATE_LIMIT.ImportGroups,
+  },
+  {
+    pattern: new RegExp(`^${IMPORT_ENDPOINT.Base}/?$`),
+    name: 'import-start-body',
+    preset: RATE_LIMIT.ImportStart,
+  },
+];
 const SESSION_COOKIE = new RegExp(
   `(?:^|;\\s*)(?:${AUTH_SESSION_COOKIE.SecurePrefix})?${AUTH_COOKIE_PREFIX}\\.${AUTH_SESSION_COOKIE.Name}=[^;\\s]`,
 );
@@ -26,7 +47,8 @@ function hasSessionCookie(req: Request): boolean {
 }
 
 /**
- * Larger JSON parser (`IMPORT_LIMIT.GroupBodyBytesMax`) for `POST /api/imports/groups` only; every
+ * Larger JSON parser (`IMPORT_LIMIT.GroupBodyBytesMax`) for exactly `POST /api/imports/groups` and
+ * `POST /api/imports` (`ROUTES`); every
  * other request passes through to the global 100kb parser. It runs before Nest's guards, so a cheap
  * gate comes first and nothing is read for a request that would be refused anyway: a declared
  * `Content-Length` over the cap is 413, a request without a session cookie is 401 (the real session
@@ -38,7 +60,8 @@ export function createImportGroupsBodyParser(
   trustProxyHeaders: boolean,
 ): RequestHandler {
   return (req, res, next) => {
-    if (req.method !== 'POST' || !ROUTE.test(req.path)) {
+    const route = req.method === 'POST' ? ROUTES.find((r) => r.pattern.test(req.path)) : undefined;
+    if (route === undefined) {
       next();
       return;
     }
@@ -52,11 +75,11 @@ export function createImportGroupsBodyParser(
       return;
     }
     const key = createHash('sha256')
-      .update(`${THROTTLER_NAME}-${clientIp(req, trustProxyHeaders)}`)
+      .update(`${route.name}-${clientIp(req, trustProxyHeaders)}`)
       .digest('hex');
-    const { limit, ttl } = RATE_LIMIT.ImportGroups;
+    const { limit, ttl } = route.preset;
     storage
-      .increment(key, ttl, limit, ttl, THROTTLER_NAME)
+      .increment(key, ttl, limit, ttl, route.name)
       .then((record) => {
         if (record.isBlocked) {
           res.setHeader(RETRY_AFTER_HEADER, record.timeToBlockExpire);

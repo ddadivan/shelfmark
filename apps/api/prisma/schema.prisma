@@ -523,6 +523,10 @@ model AiSettings {
   // link), and the backfill units an AI grouping took that no import has used yet.
   backfillImportId   String?   @map("backfill_import_id") @db.Uuid
   importAiPrepaid    Int       @default(0) @map("import_ai_prepaid")
+  // The grouping that holds `importAiPrepaid` (a refund only touches units whose token still matches)
+  // and when it took them (units nobody used within an import's open window are given back).
+  importAiGroupingId String?   @map("import_ai_grouping_id") @db.Uuid
+  importAiPrepaidAt  DateTime? @map("import_ai_prepaid_at") @db.Timestamptz(3)
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -542,6 +546,8 @@ model AiUsage {
   searchQueries Int      @default(0) @map("search_queries")
   // Library clean-up runs with AI checks this month (AI-5, ADR 0053 point 3).
   cleanupRuns   Int      @default(0) @map("cleanup_runs")
+  // Links sent to import AI grouping this month (ADR 0056 decision 10); refunded only on a provider failure.
+  importGroupLinks Int   @default(0) @map("import_group_links")
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, month])

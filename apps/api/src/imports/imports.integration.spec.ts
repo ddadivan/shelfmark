@@ -487,12 +487,12 @@ describe('imports API (#387)', () => {
   });
 
   describe('finish and list', () => {
-    it('stores the counts and the finish time', async () => {
+    it('stores the counts and the finish time of the first finish only', async () => {
       const res = await start(startBody());
       await a.post(finishUrl(res.id)).send({ skipped: 3, failed: 1 }).expect(204);
       await a.post(finishUrl(res.id)).send({ skipped: 5, failed: 0 }).expect(204);
       const row = await t.db.prisma.import.findFirstOrThrow({ where: { id: res.id } });
-      expect(row).toMatchObject({ skipped: 5, failed: 0 });
+      expect(row).toMatchObject({ skipped: 3, failed: 1 });
       expect(row.finishedAt).not.toBeNull();
     });
 

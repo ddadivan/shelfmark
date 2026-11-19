@@ -50,8 +50,8 @@ export function configureApp(app: NestExpressApplication, options: ConfigureAppO
       shouldTrustProxyHeaders(),
     ),
   );
-  // `POST /api/imports/groups` takes the titles and URLs of a whole bookmarks file (up to 1 MB); the
-  // rest of the API, the other import routes included, stays 100kb.
+  // `POST /api/imports/groups` (the titles and URLs of a whole bookmarks file) and `POST /api/imports`
+  // (its folder tree) take up to 1 MB; the rest of the API, the other import routes included, stays 100kb.
   app.use(
     createImportGroupsBodyParser(
       app.get(ThrottlerStorage, { strict: false }),
