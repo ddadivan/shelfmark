@@ -3025,6 +3025,30 @@
       },
       "landingHeadline": {
         "text": "O título da página inicial cabe em todos os idiomas."
+      },
+      "askAnswers": {
+        "text": "“Pergunte aos seus links” volta a responder perguntas."
+      },
+      "youtubeTitles": {
+        "text": "Links do YouTube recebem o título e o autor do vídeo."
+      },
+      "clearedSummary": {
+        "text": "Um resumo apagado em Adicionar link continua vazio depois de salvar."
+      },
+      "cardTagsWhole": {
+        "text": "As tags nos cartões não são mais cortadas: a primeira tag e depois “+N” com todas ao passar o mouse."
+      },
+      "bulkBarFits": {
+        "text": "A barra de seleção mostra todos os botões em janelas mais estreitas."
+      },
+      "aiDialogIcon": {
+        "text": "O anúncio da IA mostra o ícone na hora, sem barra de rolagem."
+      },
+      "searchChoice": {
+        "text": "Escolher um resultado da busca não trava mais o app."
+      },
+      "backfillProgress": {
+        "text": "“Processar links existentes” avança enquanto o app está aberto."
       }
     },
     "sections": {

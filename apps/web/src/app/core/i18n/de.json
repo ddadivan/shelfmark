@@ -2963,6 +2963,30 @@
       },
       "landingHeadline": {
         "text": "Die Überschrift der Startseite passt in jeder Sprache."
+      },
+      "askAnswers": {
+        "text": "„Frag deine Links“ beantwortet wieder Fragen."
+      },
+      "youtubeTitles": {
+        "text": "YouTube-Links erhalten Videotitel und Kanal."
+      },
+      "clearedSummary": {
+        "text": "Eine in „Link hinzufügen“ geleerte Zusammenfassung bleibt nach dem Speichern leer."
+      },
+      "cardTagsWhole": {
+        "text": "Tags auf Karten werden nicht mehr abgeschnitten: der erste Tag, dann „+N“ mit allen Tags beim Darüberfahren."
+      },
+      "bulkBarFits": {
+        "text": "Die Auswahlleiste zeigt auch in schmaleren Fenstern alle Schaltflächen."
+      },
+      "aiDialogIcon": {
+        "text": "Die KI-Ankündigung zeigt ihr Symbol sofort und ohne Bildlaufleiste."
+      },
+      "searchChoice": {
+        "text": "Ein Suchergebnis auszuwählen lässt die App nicht mehr hängen."
+      },
+      "backfillProgress": {
+        "text": "„Vorhandene Links verarbeiten“ geht weiter, solange die App geöffnet ist."
       }
     },
     "sections": {

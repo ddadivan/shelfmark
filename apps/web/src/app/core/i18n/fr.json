@@ -3025,6 +3025,30 @@
       },
       "landingHeadline": {
         "text": "Le titre de la page d’accueil tient dans toutes les langues."
+      },
+      "askAnswers": {
+        "text": "« Interroger mes liens » répond de nouveau aux questions."
+      },
+      "youtubeTitles": {
+        "text": "Les liens YouTube récupèrent le titre et l’auteur de la vidéo."
+      },
+      "clearedSummary": {
+        "text": "Un résumé effacé dans Ajouter un lien reste vide après l’enregistrement."
+      },
+      "cardTagsWhole": {
+        "text": "Les tags des cartes ne sont plus coupés : le premier tag, puis « +N » avec tous les tags au survol."
+      },
+      "bulkBarFits": {
+        "text": "La barre de sélection affiche tous ses boutons dans les fenêtres plus étroites."
+      },
+      "aiDialogIcon": {
+        "text": "L’annonce de l’IA affiche son icône tout de suite, sans barre de défilement."
+      },
+      "searchChoice": {
+        "text": "Choisir un résultat de recherche ne bloque plus l’application."
+      },
+      "backfillProgress": {
+        "text": "« Traiter les liens existants » avance tant que l’application est ouverte."
       }
     },
     "sections": {

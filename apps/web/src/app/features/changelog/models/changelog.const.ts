@@ -11,6 +11,52 @@ import type { ChangelogRelease } from './changelog-release.interface';
  */
 export const CHANGELOG: readonly ChangelogRelease[] = [
   {
+    version: '2.2.1',
+    date: '2026-11-19',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'askAnswers',
+        textKey: 'changelog.items.askAnswers.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'youtubeTitles',
+        textKey: 'changelog.items.youtubeTitles.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'clearedSummary',
+        textKey: 'changelog.items.clearedSummary.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'cardTagsWhole',
+        textKey: 'changelog.items.cardTagsWhole.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'bulkBarFits',
+        textKey: 'changelog.items.bulkBarFits.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'aiDialogIcon',
+        textKey: 'changelog.items.aiDialogIcon.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'searchChoice',
+        textKey: 'changelog.items.searchChoice.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'backfillProgress',
+        textKey: 'changelog.items.backfillProgress.text',
+      },
+    ],
+  },
+  {
     version: '2.2.0',
     date: '2026-11-19',
     items: [

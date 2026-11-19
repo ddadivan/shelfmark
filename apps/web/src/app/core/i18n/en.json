@@ -2963,6 +2963,30 @@
       },
       "landingHeadline": {
         "text": "The landing page headline fits every language."
+      },
+      "askAnswers": {
+        "text": "Ask your shelf answers questions again."
+      },
+      "youtubeTitles": {
+        "text": "YouTube links get their video title and author."
+      },
+      "clearedSummary": {
+        "text": "A summary you cleared in Add link stays empty after saving."
+      },
+      "cardTagsWhole": {
+        "text": "Tags on cards are never cut off: the first tag, then “+N” with all tags on hover."
+      },
+      "bulkBarFits": {
+        "text": "The selection bar shows every button on narrower windows."
+      },
+      "aiDialogIcon": {
+        "text": "The AI announcement shows its icon at once, without a scrollbar."
+      },
+      "searchChoice": {
+        "text": "Choosing a search result no longer freezes the app."
+      },
+      "backfillProgress": {
+        "text": "“Process existing links” moves on while the app is open."
       }
     },
     "sections": {

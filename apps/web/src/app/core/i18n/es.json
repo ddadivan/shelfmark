@@ -3025,6 +3025,30 @@
       },
       "landingHeadline": {
         "text": "El titular de la página de inicio cabe en todos los idiomas."
+      },
+      "askAnswers": {
+        "text": "«Pregunta a tus enlaces» vuelve a responder preguntas."
+      },
+      "youtubeTitles": {
+        "text": "Los enlaces de YouTube obtienen el título y el autor del vídeo."
+      },
+      "clearedSummary": {
+        "text": "Un resumen que borraste en Añadir enlace sigue vacío al guardar."
+      },
+      "cardTagsWhole": {
+        "text": "Las etiquetas de las tarjetas ya no se cortan: la primera etiqueta y luego «+N» con todas al pasar el cursor."
+      },
+      "bulkBarFits": {
+        "text": "La barra de selección muestra todos los botones en ventanas más estrechas."
+      },
+      "aiDialogIcon": {
+        "text": "El anuncio de la IA muestra su icono enseguida, sin barra de desplazamiento."
+      },
+      "searchChoice": {
+        "text": "Elegir un resultado de búsqueda ya no bloquea la aplicación."
+      },
+      "backfillProgress": {
+        "text": "«Procesar enlaces existentes» avanza mientras la aplicación está abierta."
       }
     },
     "sections": {
