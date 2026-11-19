@@ -842,7 +842,9 @@
         "movedUp": "Movido para cima, posição {{position}} de {{total}}",
         "movedDown": "Movido para baixo, posição {{position}} de {{total}}"
       },
-      "extension": "Baixar a extensão"
+      "extension": "Baixar a extensão",
+      "data": "Dados e ajuda",
+      "dataMenu": "Dados e ajuda"
     },
     "searchHint": "Pesquise seus links",
     "searchButton": "Pesquisar",
@@ -853,7 +855,12 @@
     "sendFeedback": "Enviar feedback",
     "feedbackInbox": "Caixa de feedback",
     "about": "Sobre o Shelfmark",
-    "usageStats": "Estatísticas de uso"
+    "usageStats": "Estatísticas de uso",
+    "data": {
+      "import": "Importar links",
+      "export": "Exportar",
+      "group": "Importar e exportar"
+    }
   },
   "folders": {
     "dialog": {
@@ -1283,6 +1290,30 @@
     "emptyView": {
       "title": "Nada para exportar nesta visualização",
       "detail": "Esta visualização não tem links. Exporte tudo ou abra outra visualização"
+    },
+    "dialog": {
+      "title": "Exportar",
+      "close": "Fechar",
+      "formatLabel": "Formato do arquivo",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Tudo: links, pastas, tags, notas, lembretes"
+        },
+        "html": {
+          "title": "Favoritos em HTML",
+          "description": "Abre na importação de favoritos de qualquer navegador"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "Para planilhas"
+        }
+      },
+      "last": "Última exportação: {{when}}, {{format}}.",
+      "preparing": "Preparando o arquivo {{format}}…",
+      "cancel": "Cancelar",
+      "download": "Baixar",
+      "saved": "Arquivo salvo"
     }
   },
   "import": {
@@ -1680,10 +1711,6 @@
           "close": "Fechar"
         }
       },
-      "data": {
-        "hint": "Tudo o que você salvou, em JSON ou HTML de favoritos",
-        "action": "Abrir exportação"
-      },
       "kept": {
         "title": "O que guardamos"
       },
@@ -1696,6 +1723,16 @@
           "action": "Abrir",
           "actionLabel": "Abrir \"Excluir dados de IA\" em Configurações › IA"
         }
+      },
+      "importExport": {
+        "title": "Importar e exportar",
+        "import": {
+          "hint": "Traga os favoritos do seu navegador"
+        },
+        "export": {
+          "hint": "Baixe toda a sua biblioteca em um arquivo"
+        },
+        "open": "Abrir"
       }
     },
     "footer": {

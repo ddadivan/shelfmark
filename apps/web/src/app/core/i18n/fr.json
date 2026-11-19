@@ -842,7 +842,9 @@
         "movedUp": "Déplacé vers le haut, position {{position}} sur {{total}}",
         "movedDown": "Déplacé vers le bas, position {{position}} sur {{total}}"
       },
-      "extension": "Obtenir l’extension"
+      "extension": "Obtenir l’extension",
+      "data": "Données et aide",
+      "dataMenu": "Données et aide"
     },
     "searchHint": "Rechercher dans vos liens",
     "searchButton": "Rechercher",
@@ -853,7 +855,12 @@
     "sendFeedback": "Envoyer un avis",
     "feedbackInbox": "Boîte des avis",
     "about": "À propos de Shelfmark",
-    "usageStats": "Statistiques d’usage"
+    "usageStats": "Statistiques d’usage",
+    "data": {
+      "import": "Importer des liens",
+      "export": "Exporter",
+      "group": "Import et export"
+    }
   },
   "folders": {
     "dialog": {
@@ -1283,6 +1290,30 @@
     "emptyView": {
       "title": "Rien à exporter dans cette vue",
       "detail": "Cette vue ne contient aucun lien. Exportez tout ou ouvrez une autre vue"
+    },
+    "dialog": {
+      "title": "Export",
+      "close": "Fermer",
+      "formatLabel": "Format du fichier",
+      "format": {
+        "json": {
+          "title": "JSON",
+          "description": "Tout : liens, dossiers, tags, notes, rappels"
+        },
+        "html": {
+          "title": "Favoris HTML",
+          "description": "S'ouvre dans l'import de favoris de n'importe quel navigateur"
+        },
+        "csv": {
+          "title": "CSV",
+          "description": "Pour les tableurs"
+        }
+      },
+      "last": "Dernier export : {{when}}, {{format}}.",
+      "preparing": "Préparation du fichier {{format}}…",
+      "cancel": "Annuler",
+      "download": "Télécharger",
+      "saved": "Fichier enregistré"
     }
   },
   "import": {
@@ -1680,10 +1711,6 @@
           "close": "Fermer"
         }
       },
-      "data": {
-        "hint": "Tout ce que vous avez enregistré, en JSON ou en favoris HTML",
-        "action": "Ouvrir l’export"
-      },
       "kept": {
         "title": "Ce que nous conservons"
       },
@@ -1696,6 +1723,16 @@
           "action": "Ouvrir",
           "actionLabel": "Ouvrir « Supprimer les données d’IA » dans Paramètres › IA"
         }
+      },
+      "importExport": {
+        "title": "Import et export",
+        "import": {
+          "hint": "Importez les favoris de votre navigateur"
+        },
+        "export": {
+          "hint": "Téléchargez toute votre bibliothèque dans un fichier"
+        },
+        "open": "Ouvrir"
       }
     },
     "footer": {
