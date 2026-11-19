@@ -16,6 +16,7 @@ import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import type { ChipVariant } from './models/chip-variant.type';
 import { KEYBOARD_KEY } from '../../models/keyboard';
 import { CHIP_VARIANT } from './models/chip-variant.const';
+import { TRUNCATION_EPSILON_PX } from './models/truncation-epsilon-px.const';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { UI_FOCUS_TARGET } from '../../directives/focus-target/models/ui-focus-target.const';
@@ -118,10 +119,21 @@ export class ChipComponent implements UiFocusTarget {
       ?.focus(options);
   }
 
-  /** The label is cut with an ellipsis right now (`truncate`): a tooltip with the whole text helps. */
+  /**
+   * The label is cut with an ellipsis right now (`truncate`). `scrollWidth` and `clientWidth` are
+   * whole pixels, so a text that overflows by less than one pixel reads as fitting while the
+   * browser already draws "angul…"; the text's own width (a range over the label) against the
+   * label box catches that sub-pixel case.
+   */
   isTruncated(): boolean {
     const label = this.host.querySelector<HTMLElement>('.ui-chip__label');
-    return label !== null && label.scrollWidth > label.clientWidth;
+    if (!label) return false;
+    if (label.scrollWidth > label.clientWidth) return true;
+    const range = document.createRange();
+    range.selectNodeContents(label);
+    if (typeof range.getBoundingClientRect !== 'function') return false;
+    const overflow = range.getBoundingClientRect().width - label.getBoundingClientRect().width;
+    return overflow > TRUNCATION_EPSILON_PX;
   }
 
   protected onMenuClick(event: MouseEvent, origin: HTMLElement): void {
