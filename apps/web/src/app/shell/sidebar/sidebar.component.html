@@ -72,17 +72,29 @@
   </div>
 
   @if (!foldersOnly()) {
-    <!-- The footer stays put (#335): "Send feedback" (desktop only; the phone has it in the You list),
-      then Trash under its divider (Main spec). -->
+    <!-- The footer stays put (#335): the "Data & help" row (desktop only; the phone has the same
+      entries in the You list) that opens a menu upwards (#387), then Trash under its divider. -->
     <div class="sidebar__footer">
-      @if (feedbackNodes().length) {
+      @if (extensionRows().length) {
         <ui-tree
-          [fixedNodes]="feedbackNodes()"
+          [fixedNodes]="extensionRows()"
           [activeId]="activeId()"
           [noDropIds]="drag.treeNoDropIds()"
           [ariaLabel]="'shell.sidebar.footer' | transloco"
           (selected)="footerSelected($event)"
         />
+      }
+      @if (dataRows().length) {
+        <!-- ArrowUp on the row opens the menu (the tree has one row, so the key has no other use). -->
+        <div class="sidebar__data">
+          <ui-tree
+            [fixedNodes]="dataRows()"
+            [activeId]="activeId()"
+            [noDropIds]="drag.treeNoDropIds()"
+            [ariaLabel]="'shell.sidebar.dataMenu' | transloco"
+            (selected)="footerSelected($event)"
+          />
+        </div>
       }
       <ui-tree
         class="sidebar__trash"
@@ -95,7 +107,32 @@
     </div>
   }
 
-  <ui-menu [ariaLabel]="'shell.sidebar.folderMenu' | transloco" (closed)="folderMenu.menuClosed()">
+  <ui-menu #dataMenuRef [ariaLabel]="'shell.sidebar.dataMenu' | transloco">
+    <ui-menu-item icon="download" (activated)="openImport()">
+      {{ 'shell.data.import' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="share" (activated)="openExport()">
+      {{ 'shell.data.export' | transloco }}
+    </ui-menu-item>
+    <ui-menu-separator />
+    <ui-menu-item icon="gift" (activated)="openWhatsNew()">
+      <span class="sidebar__menu-line">
+        {{ 'whatsNew.entry' | transloco }}
+        @if (whatsNewPending()) {
+          <ui-badge [tone]="BADGE_TONE.Accent">{{ 'whatsNew.unseen' | transloco }}</ui-badge>
+        }
+      </span>
+    </ui-menu-item>
+    <ui-menu-item icon="message" (activated)="feedback.open()">
+      {{ 'shell.sendFeedback' | transloco }}
+    </ui-menu-item>
+  </ui-menu>
+
+  <ui-menu
+    #folderMenuRef
+    [ariaLabel]="'shell.sidebar.folderMenu' | transloco"
+    (closed)="folderMenu.menuClosed()"
+  >
     <ui-menu-item icon="pin" (activated)="folderMenu.togglePin()">
       {{
         (folderMenu.menuPinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin')

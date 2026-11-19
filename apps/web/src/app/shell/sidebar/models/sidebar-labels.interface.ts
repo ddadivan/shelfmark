@@ -8,8 +8,8 @@ export interface SidebarLabels {
   recent: string;
   reminders: string;
   trash: string;
-  feedback: string;
-  whatsNew: string;
+  /** "Data & help" (#387). */
+  data: string;
   /** Accessible name of the dot on "What's new" while a release is unseen. */
   whatsNewDot: string;
   /** "Get the extension" (#455). */
