@@ -413,7 +413,7 @@ describe('AI tick, sweep and backfill', () => {
           customId: jobOf(first),
           outcome: {
             type: 'output',
-            output: { tags: [], newTag: null, folder: 'f1', summary: 'Polled.', kind: null },
+            output: { tags: [], newTags: [], folder: 'f1', summary: 'Polled.', kind: null },
           },
         },
         { customId: jobOf(second), outcome: { type: 'refusal' } },

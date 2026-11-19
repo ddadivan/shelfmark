@@ -99,7 +99,7 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 - **Dependencies.** F0. Rules without AI (#398) are complementary: a domain rule applies first and the model is not asked about what a rule already decided (**Proposal**).
 - **Order.** 1 (MVP).
 
-**Proposal — one call for F1 and F2.** Tags, folder and summary are produced by the same background job with one structured response (`{ tags, newTag, folder, summary, kind }`), so a link costs one call, not two, and both appear together. The two features keep separate switches; a switched-off part is simply not requested.
+**Proposal — one call for F1 and F2.** Tags, folder and summary are produced by the same background job with one structured response (`{ tags, newTags, folder, summary, kind }`), so a link costs one call, not two, and both appear together. The two features keep separate switches; a switched-off part is simply not requested.
 
 ### F1c. Fill in with AI (author's decision, Nov 18, 2026; extends #390)
 
@@ -224,7 +224,7 @@ Model prices are the 5.6 estimates (Nov 2026) and are re-checked in the provider
 
 - **Describe a view (later).** "Save this view" accepts a sentence ("videos about Angular I haven't opened") and turns it into the existing saved-view filters, shown for review before saving. Cheap (one small call), reuses saved views (ADR 0038). Not designed now.
 - **Kind detection.** The F1 call also returns the link `kind` when the URL rules (ADR 0038) say "other", so saved views like Videos and Articles get more accurate. No extra cost.
-- **Cut from MVP:** creating new folders from suggestions (only existing folders are suggested; new tags only as one marked chip), chat memory, write access in MCP.
+- **Cut from MVP:** creating new folders from suggestions (only existing folders are suggested; new tags only as up to two marked chips), chat memory, write access in MCP.
 - **Postpone:** AI clean-up until the dead-link check (#397) exists, so there is no second checker.
 
 ## Suggested order

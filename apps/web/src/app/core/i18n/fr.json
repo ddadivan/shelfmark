@@ -3049,6 +3049,9 @@
       },
       "backfillProgress": {
         "text": "« Traiter les liens existants » avance tant que l’application est ouverte."
+      },
+      "aiNewTags": {
+        "text": "L’IA remplit un ou deux nouveaux tags et en propose d’autres."
       }
     },
     "sections": {

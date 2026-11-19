@@ -52,6 +52,31 @@ function words(text: string): string[] {
     .filter((word) => word.length >= MOCK_AI.MinWordLength);
 }
 
+/**
+ * The mock's new tags: the site's name first, and when no existing tag matched the link, longer
+ * words of the title after it. The first `MOCK_AI.NewTagsMax` are the best tags, the next
+ * `MOCK_AI.MoreTagsMax` the "more" ideas. Never an existing tag, in any case.
+ */
+function mockNewTags(
+  input: LinkJobInput,
+  siteName: string,
+  unmatched: boolean,
+): { newTags: string[]; moreTags: string[] } {
+  const known = new Set(input.tags.map((name) => name.toLowerCase()));
+  const topics = unmatched
+    ? words(input.title ?? '').filter((word) => word.length >= MOCK_AI.TopicWordLength)
+    : [];
+  const names: string[] = [];
+  for (const name of [siteName, ...topics]) {
+    if (name.length < MOCK_AI.MinWordLength || known.has(name) || names.includes(name)) continue;
+    names.push(name);
+  }
+  return {
+    newTags: names.slice(0, MOCK_AI.NewTagsMax),
+    moreTags: names.slice(MOCK_AI.NewTagsMax, MOCK_AI.NewTagsMax + MOCK_AI.MoreTagsMax),
+  };
+}
+
 function hostOf(url: string): string {
   try {
     return new URL(url).hostname.replace(/^www\./, '');
@@ -180,19 +205,20 @@ export class MockAiProvider implements AiProvider {
     const wantsSummary = input.parts.includes(AI_PART.Summary);
 
     const tags = wantsTags ? input.tags.filter(matches).slice(0, 3) : [];
-    // A new tag in lower case like a real answer after `parseLinkOutput`; an existing tag in any case
+    // New tags in lower case like a real answer after `parseLinkOutput`; an existing tag in any case
     // is not new.
     const siteName = (host.split('.').slice(-2, -1)[0] ?? '').toLowerCase();
-    const known = input.tags.some((name) => name.toLowerCase() === siteName);
-    const newTag =
-      wantsTags && siteName.length >= MOCK_AI.MinWordLength && !known ? siteName : null;
+    const { newTags, moreTags } = wantsTags
+      ? mockNewTags(input, siteName, tags.length === 0)
+      : { newTags: [], moreTags: [] };
     const folder = wantsFolder
       ? (input.folders.find((candidate) => matches(candidate.path))?.key ?? null)
       : null;
     const subject = (input.title ?? host) || input.url;
     return {
       tags,
-      newTag,
+      newTags,
+      moreTags,
       folder,
       title: input.wantsTitle ? mockTitle(input.title) : null,
       summary: wantsSummary ? `A page about ${subject}.`.slice(0, MOCK_AI.SummaryMax) : null,

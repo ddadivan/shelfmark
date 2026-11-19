@@ -668,6 +668,8 @@ model LinkSuggestion {
   kind      String   @db.VarChar(8)
   tagName   String?  @map("tag_name") @db.VarChar(50)
   folderId  String?  @map("folder_id") @db.Uuid
+  // A "more" new-tag idea: a chip only, never put in by Fill in with AI
+  more      Boolean  @default(false)
   // suggested | auto-applied | accepted | dismissed
   state     String   @default("suggested") @db.VarChar(12)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)

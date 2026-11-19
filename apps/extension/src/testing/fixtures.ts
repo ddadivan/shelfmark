@@ -137,7 +137,7 @@ export function makeAiJob(overrides: Partial<AiJobResponse> = {}): AiJobResponse
 export function makeSuggestion(
   id: string,
   kind: SuggestionKind,
-  fields: { tagName?: string; folderId?: string },
+  fields: { tagName?: string; folderId?: string; more?: boolean },
 ): LinkSuggestion {
   return {
     id,
@@ -145,5 +145,6 @@ export function makeSuggestion(
     state: SUGGESTION_STATE.Suggested,
     tagName: fields.tagName ?? null,
     folderId: fields.folderId ?? null,
+    ...(fields.more === true && { more: true }),
   };
 }
