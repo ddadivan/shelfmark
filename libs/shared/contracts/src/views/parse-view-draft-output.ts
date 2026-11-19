@@ -16,7 +16,10 @@ import type { ViewDraftVocabulary } from './view-draft-vocabulary.interface';
 import type { ViewDraft } from './view-draft.interface';
 
 const CONTROL_CHARS = /\p{Cc}/gu;
-const HTML_TAG = /<[^>]*>/g;
+// `<[^<>]*>`, not `<[^>]*>`: a run of `<` cannot make it backtrack (linear time; CodeQL ReDoS).
+const HTML_TAG = /<[^<>]*>/g;
+/** How much of a model string is read at all: a few times the longest field, before any regex. */
+const READ_FACTOR = 4;
 /** Kinds a phrase may ask for; `other` is not one of them, so it reads as "every kind". */
 const KINDS: readonly string[] = VIEW_DRAFT_KINDS;
 const SCOPES: readonly string[] = Object.values(SAVED_VIEW_SCOPE);
@@ -30,7 +33,12 @@ const isScope = (value: string): value is SavedViewScope => SCOPES.includes(valu
 /** Plain one-line text: markup and control characters removed, whitespace collapsed, cut to `max`. */
 function plain(value: unknown, max: number): string {
   if (typeof value !== 'string') return '';
-  const text = value.replace(HTML_TAG, ' ').replace(CONTROL_CHARS, ' ').replace(/\s+/g, ' ').trim();
+  const text = value
+    .slice(0, max * READ_FACTOR)
+    .replace(HTML_TAG, ' ')
+    .replace(CONTROL_CHARS, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   return text.length > max ? text.slice(0, max).trim() : text;
 }
 
