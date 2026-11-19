@@ -114,6 +114,21 @@ describe('PopupAiFillService', () => {
     expect(api.create.mock.calls[0]?.[0].title).toBe('A cleaner title');
   });
 
+  it('fills the best new tags and leaves the "more" ideas as dashed chips', async () => {
+    const done = makeAiJob({
+      suggestions: [
+        suggestion('s1', SUGGESTION_KIND.NewTag, { tagName: 'comedy' }),
+        suggestion('s2', SUGGESTION_KIND.NewTag, { tagName: 'stand-up' }),
+        suggestion('s3', SUGGESTION_KIND.NewTag, { tagName: 'airports', more: true }),
+      ],
+    });
+    const { store, ai, api } = await setup({ draft: done });
+    api.aiJob.mockResolvedValue(done);
+    await store.fillWithAi();
+    expect(store.chosenTags()).toEqual(['comedy', 'stand-up']);
+    expect(ai.chips().map((chip) => chip.name)).toEqual(['airports']);
+  });
+
   it('polls the job until done, then fills the folder and the existing tags', async () => {
     vi.useFakeTimers();
     const pending = makeAiJob({ status: AI_JOB_STATUS.Pending });

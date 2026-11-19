@@ -4,7 +4,8 @@
  */
 export interface StoredLinkResult {
   tags: string[];
-  newTag: string | null;
+  newTags: string[];
+  moreTags: string[];
   folderId: string | null;
   summary: string | null;
   /** The cleaned-up title of a draft; never applied to a saved link. */

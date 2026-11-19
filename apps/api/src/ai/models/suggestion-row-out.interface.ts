@@ -5,4 +5,5 @@ export interface SuggestionRowOut {
   state: string;
   tagName: string | null;
   folderId: string | null;
+  more?: boolean;
 }

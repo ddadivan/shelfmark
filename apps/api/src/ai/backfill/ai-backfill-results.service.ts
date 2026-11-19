@@ -134,7 +134,8 @@ export class AiBackfillResultsService {
     }
     await this.apply.finish(jobId, userId, {
       tags: parsed.tags,
-      newTag: parsed.newTag,
+      newTags: parsed.newTags,
+      moreTags: parsed.moreTags,
       folderId: parsed.folder === null ? null : (folderKeys.get(parsed.folder) ?? null),
       summary: parsed.summary,
       title: null,

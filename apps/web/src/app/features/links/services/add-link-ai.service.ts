@@ -133,9 +133,18 @@ export class AddLinkAiService {
 
   /**
    * Fill in with AI: every suggested tag not in the field yet, new ones too (a new tag becomes a
-   * real tag on save, like a typed one); the user's own tags stay.
+   * real tag on save, like a typed one); the user's own tags stay. The "more" ideas stay chips.
    */
-  readonly fillTags = computed<readonly string[]>(() => this.tagChips().map((chip) => chip.label));
+  readonly fillTags = computed<readonly string[]>(() => {
+    const more = new Set(
+      this.suggestions()
+        .filter((item) => item.more === true)
+        .map((item) => item.id),
+    );
+    return this.tagChips()
+      .filter((chip) => !more.has(chip.id))
+      .map((chip) => chip.label);
+  });
 
   /** The draft is asked for or still running (adding only). */
   readonly draftState = this.draft.state;

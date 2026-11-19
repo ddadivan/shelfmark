@@ -61,7 +61,7 @@ An ADR 0049 "AI job runner on Vercel" records this (and the `maxDuration` change
 
 Changes to existing contracts: `LinkResponse` + `summary: string | null`, `summarySource: SummarySource | null`, `aiStatus: AiJobStatus | null`; `CreateLinkRequest` + `aiDraftId?: string` (a per-dialog UUID, separate from `idempotencyKey`, which changes when the payload changes); `UpdateLinkRequest` + `summary?: string | null` (any write makes it `user`; `null` clears and lets AI write again).
 
-The provider's output shape `{ tags, newTag, folder, summary, kind }` and the `AiProvider` interface stay in `apps/api/src/ai/models/` (server-only; see section 9).
+The provider's output shape `{ tags, newTags, folder, summary, kind }` and the `AiProvider` interface stay in `apps/api/src/ai/models/` (server-only; see section 9).
 
 ## 3. Prisma schema and migration `20261126120000_ai_foundation`
 

@@ -13,7 +13,8 @@ const context: ParseLinkContext = {
 
 const valid = {
   tags: ['css', 'UX'],
-  newTag: 'grid layout',
+  newTags: ['grid layout'],
+  moreTags: ['layout'],
   folder: 'f2',
   summary: '  A guide   to grid. ',
   kind: 'article',
@@ -23,7 +24,8 @@ describe('parseLinkOutput', () => {
   it('accepts a good answer and canonicalises it', () => {
     expect(parseLinkOutput(valid, context)).toEqual({
       tags: ['CSS', 'ux'],
-      newTag: 'grid-layout',
+      newTags: ['grid-layout'],
+      moreTags: ['layout'],
       folder: 'f2',
       summary: 'A guide to grid.',
       title: null,
@@ -38,7 +40,8 @@ describe('parseLinkOutput', () => {
   it.each([
     ['tags', 'css'],
     ['tags', { a: 1 }],
-    ['newTag', 5],
+    ['newTags', 5],
+    ['newTags', 'x'],
     ['folder', ['f1']],
     ['summary', { text: 'x' }],
     ['kind', 7],
@@ -49,7 +52,7 @@ describe('parseLinkOutput', () => {
   it("keeps only the user's own tags, once, at most three", () => {
     const wide = { ...context, tags: ['a1', 'b2', 'c3', 'd4'] };
     const out = parseLinkOutput(
-      { ...valid, tags: ['admin', 'A1', 'a1', 7, 'b2', 'c3', 'd4'], newTag: null },
+      { ...valid, tags: ['admin', 'A1', 'a1', 7, 'b2', 'c3', 'd4'], newTags: [] },
       wide,
     );
     expect(out?.tags).toEqual(['a1', 'b2', 'c3']);
@@ -73,24 +76,62 @@ describe('parseLinkOutput', () => {
       'a"b',
       '-lead',
       '\u0000',
+      5,
+      null,
     ]) {
-      expect(parseLinkOutput({ ...valid, newTag }, context)?.newTag).toBeNull();
+      expect(parseLinkOutput({ ...valid, newTags: [newTag] }, context)?.newTags).toEqual([]);
     }
-    expect(parseLinkOutput({ ...valid, newTag: 'c++' }, context)?.newTag).toBe('c++');
-    expect(parseLinkOutput({ ...valid, newTag: 'Design Systems' }, context)?.newTag).toBe(
+    expect(parseLinkOutput({ ...valid, newTags: ['c++'] }, context)?.newTags).toEqual(['c++']);
+    expect(parseLinkOutput({ ...valid, newTags: ['Design Systems'] }, context)?.newTags).toEqual([
       'design-systems',
+    ]);
+    expect(parseLinkOutput({ ...valid, newTags: undefined }, context)?.newTags).toEqual([]);
+    expect(parseLinkOutput({ ...valid, newTags: null }, context)?.newTags).toEqual([]);
+  });
+
+  it('keeps up to two valid new tags, skipping bad ones and repeats', () => {
+    const out = parseLinkOutput(
+      {
+        ...valid,
+        newTags: ['Stand-up', 'css', 'stand-up', '<b>', ' COMEDY ', 'airports', 'extra'],
+      },
+      context,
     );
-    expect(parseLinkOutput({ ...valid, newTag: undefined }, context)?.newTag).toBeNull();
+    expect(out?.newTags).toEqual(['stand-up', 'comedy']);
+    expect(parseLinkOutput({ ...valid, newTags: [] }, context)?.newTags).toEqual([]);
+    // No new tag for a job that did not ask for tags.
+    expect(parseLinkOutput(valid, { ...context, parts: ['summary'] })?.newTags).toEqual([]);
+  });
+
+  it('keeps up to three more tags, apart from the best ones, existing tags and repeats', () => {
+    const out = parseLinkOutput(
+      {
+        ...valid,
+        newTags: ['alpha', 'beta', 'gamma'],
+        moreTags: ['Beta', 'delta', 'css', 'epsilon', 'delta', 'zeta', 'eta', '<b>'],
+      },
+      context,
+    );
+    expect(out?.newTags).toEqual(['alpha', 'beta']);
+    expect(out?.moreTags).toEqual(['delta', 'epsilon', 'zeta']);
+    expect(parseLinkOutput({ ...valid, moreTags: 'x' }, context)).toBeNull();
+    expect(parseLinkOutput({ ...valid, moreTags: undefined }, context)?.moreTags).toEqual([]);
+    expect(parseLinkOutput(valid, { ...context, parts: ['summary'] })?.moreTags).toEqual([]);
   });
 
   it('writes a new tag in lower case and keeps existing tags as the user spelled them', () => {
-    const out = parseLinkOutput({ ...valid, tags: ['css', 'Ux'], newTag: 'AI-courses' }, context);
-    expect(out?.newTag).toBe('ai-courses');
+    const out = parseLinkOutput(
+      { ...valid, tags: ['css', 'Ux'], newTags: ['AI-courses'] },
+      context,
+    );
+    expect(out?.newTags).toEqual(['ai-courses']);
     expect(out?.tags).toEqual(['CSS', 'ux']);
-    expect(parseLinkOutput({ ...valid, newTag: '  Course ' }, context)?.newTag).toBe('course');
-    expect(parseLinkOutput({ ...valid, newTag: 'ÉCOLE' }, context)?.newTag).toBe('école');
+    expect(parseLinkOutput({ ...valid, newTags: ['  Course '] }, context)?.newTags).toEqual([
+      'course',
+    ]);
+    expect(parseLinkOutput({ ...valid, newTags: ['ÉCOLE'] }, context)?.newTags).toEqual(['école']);
     // An existing tag in another case is still not a new tag.
-    expect(parseLinkOutput({ ...valid, newTag: 'To-Read' }, context)?.newTag).toBeNull();
+    expect(parseLinkOutput({ ...valid, newTags: ['To-Read'] }, context)?.newTags).toEqual([]);
   });
 
   it('accepts a folder only by one of the offered keys', () => {
@@ -127,7 +168,8 @@ describe('parseLinkOutput', () => {
     const out = parseLinkOutput(valid, { ...context, parts: ['summary'] });
     expect(out).toMatchObject({
       tags: [],
-      newTag: null,
+      newTags: [],
+      moreTags: [],
       folder: null,
       summary: 'A guide to grid.',
     });
@@ -139,7 +181,8 @@ describe('parseLinkOutput', () => {
   it('treats missing fields as empty', () => {
     expect(parseLinkOutput({}, context)).toEqual({
       tags: [],
-      newTag: null,
+      newTags: [],
+      moreTags: [],
       folder: null,
       summary: null,
       title: null,
@@ -155,7 +198,8 @@ describe('parseLinkOutput title (drafts)', () => {
   };
   const answer = (title: unknown) => ({
     tags: [],
-    newTag: null,
+    newTags: [],
+    moreTags: [],
     folder: null,
     summary: null,
     title,
