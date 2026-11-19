@@ -97,4 +97,23 @@ describe('chunkBySize', () => {
     expect(chunkBySize(['x'.repeat(500)], 10, 100)).toHaveLength(1);
     expect(chunkBySize([], 10, 100)).toEqual([]);
   });
+
+  it('leaves out a link whose saved address the API would reject', () => {
+    const parsed: ParsedImport = {
+      folders: [],
+      links: [
+        { url: 'https://u:p@a.example/', folderKey: null, tags: [] },
+        { url: 'https://b.example/', folderKey: null, tags: [] },
+      ],
+      notWeb: 0,
+    };
+    const plan = planImport(parsed, new Set(), {
+      skipDuplicates: true,
+      keepStructure: false,
+      newKey: keys(),
+    });
+
+    expect(plan.links.map((link) => link.item.url)).toEqual(['https://b.example/']);
+    expect(plan.skipped).toBe(1);
+  });
 });

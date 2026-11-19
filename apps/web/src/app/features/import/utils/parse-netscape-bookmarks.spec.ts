@@ -175,4 +175,24 @@ describe('parseNetscapeBookmarks', () => {
       { url: 'https://d.example/', title: 'D', folderKey: 'f1', tags: [] },
     ]);
   });
+
+  it('counts links the API would reject as not web: credentials, control characters, too long', () => {
+    const long = `https://example.com/${'a'.repeat(LINK_LIMIT.UrlMax)}`;
+    const parsed = parseNetscapeBookmarks(
+      file(
+        [
+          '<DT><A HREF="https://user:pw@example.com/">Credentials</A>',
+          '<DT><A HREF="https://exa&#9;mple.com/a">Tab</A>',
+          '<DT><A HREF="https://example.com/a&#10;b">Newline</A>',
+          `<DT><A HREF="${long}">Long</A>`,
+          '<DT><A HREF="  https://example.com/ok  ">Fine</A>',
+        ].join('\n'),
+      ),
+      UNTITLED,
+      NOW,
+    );
+
+    expect(parsed.links.map((link) => link.url)).toEqual(['https://example.com/ok']);
+    expect(parsed.notWeb).toBe(4);
+  });
 });
