@@ -3325,6 +3325,30 @@
       },
       "askScrollsDown": {
         "text": "The Ask chat scrolls down to each new question."
+      },
+      "importBookmarks": {
+        "title": "Import your browser bookmarks",
+        "text": "Bring in the bookmarks file from Chrome, Safari, Firefox or Edge. Keep its folders, put everything in one, or let AI sort the links by topic and review the groups first. Undo any import for 7 days. Import and export now live in Data & help in the sidebar.",
+        "alt": "The import dialog with two groups AI suggested for six links, one of them an existing folder."
+      },
+      "newView": {
+        "title": "Build a view by hand or in words",
+        "text": "Save this view opens one dialog: set where, type, tags, words and sort, and watch the count. With AI on, describe it, like “Angular videos, newest first”, and AI fills the rows for you to check.",
+        "alt": "The new view dialog filled from the phrase “Angular videos, newest first”, with the matching link."
+      },
+      "linkKinds": {
+        "title": "Ten kinds of links",
+        "text": "Podcasts, documents, code, apps, posts and recipes join videos, articles and shopping. Shelfmark tells the kind when you save, and you can pick it in a view or in Edit link.",
+        "alt": "The type list of the new view dialog with all ten kinds."
+      },
+      "exportCsv": {
+        "text": "CSV export in the Export menu and in Settings, next to JSON and Bookmarks HTML."
+      },
+      "dialogFocus": {
+        "text": "Dialogs open without a focus ring when you use the mouse; it still shows when you press Tab."
+      },
+      "exportHelp": {
+        "text": "The bookmark export help shows the shortcuts of your system, Mac or Windows."
       }
     },
     "sections": {

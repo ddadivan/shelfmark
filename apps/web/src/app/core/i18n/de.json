@@ -3325,6 +3325,30 @@
       },
       "askScrollsDown": {
         "text": "Der Ask-Chat scrollt zu jeder neuen Frage nach unten."
+      },
+      "importBookmarks": {
+        "title": "Lesezeichen aus dem Browser importieren",
+        "text": "Hol dir die Lesezeichen-Datei aus Chrome, Safari, Firefox oder Edge. Behalte ihre Ordner, leg alles in einen, oder lass KI die Links nach Themen ordnen und prüfe die Gruppen vorher. Jeden Import kannst du 7 Tage lang rückgängig machen. Import und Export findest du jetzt unter Daten & Hilfe in der Seitenleiste.",
+        "alt": "Der Import-Dialog mit zwei von der KI vorgeschlagenen Gruppen für sechs Links, eine davon ein vorhandener Ordner."
+      },
+      "newView": {
+        "title": "Ansicht von Hand oder mit Worten erstellen",
+        "text": "Diese Ansicht speichern öffnet einen Dialog: Ort, Typ, Tags, Wörter und Sortierung festlegen und die Anzahl sehen. Mit KI beschreibst du sie, etwa „Angular-Videos, neueste zuerst“, und die KI füllt die Felder zum Prüfen aus.",
+        "alt": "Der Dialog „Neue Ansicht“, ausgefüllt aus „Angular-Videos, neueste zuerst“, mit dem passenden Link."
+      },
+      "linkKinds": {
+        "title": "Zehn Arten von Links",
+        "text": "Podcasts, Dokumente, Code, Apps, Beiträge und Rezepte kommen zu Videos, Artikeln und Einkäufen dazu. Shelfmark erkennt die Art beim Speichern, und du kannst sie in einer Ansicht oder unter Link bearbeiten wählen.",
+        "alt": "Die Typliste im Dialog „Neue Ansicht“ mit allen zehn Arten."
+      },
+      "exportCsv": {
+        "text": "CSV-Export im Menü Exportieren und in den Einstellungen, neben JSON und Lesezeichen-HTML."
+      },
+      "dialogFocus": {
+        "text": "Dialoge öffnen sich mit der Maus ohne Fokusrahmen; mit der Tabulatortaste erscheint er weiterhin."
+      },
+      "exportHelp": {
+        "text": "Die Hilfe zum Lesezeichen-Export zeigt die Tastenkürzel deines Systems, Mac oder Windows."
       }
     },
     "sections": {

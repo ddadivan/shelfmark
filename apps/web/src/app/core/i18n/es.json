@@ -3410,6 +3410,30 @@
       },
       "askScrollsDown": {
         "text": "El chat de Ask baja hasta cada pregunta nueva."
+      },
+      "importBookmarks": {
+        "title": "Importa los marcadores de tu navegador",
+        "text": "Trae el archivo de marcadores de Chrome, Safari, Firefox o Edge. Conserva sus carpetas, pon todo en una o deja que la IA ordene los enlaces por tema y revisa antes los grupos. Puedes deshacer cada importación durante 7 días. Importar y exportar ahora están en Datos y ayuda, en la barra lateral.",
+        "alt": "El diálogo de importación con dos grupos que propone la IA para seis enlaces, uno de ellos una carpeta existente."
+      },
+      "newView": {
+        "title": "Crea una vista a mano o con palabras",
+        "text": "Guardar esta vista abre un solo diálogo: elige dónde, tipo, etiquetas, palabras y orden, y mira el recuento. Con la IA activada, descríbela, por ejemplo “vídeos de Angular, los más recientes primero”, y la IA rellena los campos para que los revises.",
+        "alt": "El diálogo de nueva vista rellenado con la frase “vídeos de Angular, los más recientes primero”, con el enlace encontrado."
+      },
+      "linkKinds": {
+        "title": "Diez tipos de enlaces",
+        "text": "Pódcasts, documentos, código, apps, publicaciones y recetas se suman a vídeos, artículos y compras. Shelfmark reconoce el tipo al guardar y puedes elegirlo en una vista o en Editar enlace.",
+        "alt": "La lista de tipos del diálogo de nueva vista con los diez tipos."
+      },
+      "exportCsv": {
+        "text": "Exportación CSV en el menú Exportar y en Ajustes, junto a JSON y HTML de marcadores."
+      },
+      "dialogFocus": {
+        "text": "Los diálogos se abren sin contorno de foco con el ratón; sigue apareciendo al pulsar Tab."
+      },
+      "exportHelp": {
+        "text": "La ayuda para exportar marcadores muestra los atajos de tu sistema, Mac o Windows."
       }
     },
     "sections": {

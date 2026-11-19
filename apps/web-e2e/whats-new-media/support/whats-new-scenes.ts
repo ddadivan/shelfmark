@@ -1,8 +1,10 @@
+import { join } from 'node:path';
 import { expect, type Locator, type Page } from '@playwright/test';
 import { MOCK_FIXTURE } from '../../src/models/mock-fixture.const';
 import { openFeed, pickFolderMenuItem } from '../../src/support/a11y-flows';
 import { SEARCH_BUTTON, SEARCH_FIELD_NAME } from '../../src/support/search-button';
 import { viewEntry } from '../../src/support/sidebar';
+import { openDataDialog } from '../../src/support/data-menu';
 import type { WhatsNewClip } from '../models/whats-new-clip.interface';
 import { WHATS_NEW_MEDIA } from '../models/whats-new-media.const';
 
@@ -249,4 +251,53 @@ export async function aiSummaries(page: Page): Promise<WhatsNewClip> {
   await expect(summarised.first()).toBeVisible(AI_WAIT);
   const left = await boxOf(page.locator('.library__scroll'));
   return { x: Math.round(left.x), y: 0 };
+}
+
+// A real Chrome export (the import parser's fixture), resolved from this file.
+const CHROME_EXPORT = join(
+  __dirname,
+  '../../../web/src/app/features/import/utils/fixtures/chrome-bookmarks.html',
+);
+
+/** Import (2.4.0): a bookmarks file grouped by topic with AI, before anything is written. */
+export async function importGroups(page: Page): Promise<WhatsNewClip> {
+  await openAiLibrary(page);
+  await openDataDialog(page, 'Import links');
+  const dialog = page.getByRole('dialog', { name: 'Import links' });
+  await dialog.locator('input[type="file"]').setInputFiles(CHROME_EXPORT);
+  const review = page.getByRole('dialog', { name: 'chrome-bookmarks.html' });
+  await review.getByText('Let AI sort them by topic').click();
+  await review.getByRole('button', { name: 'Group' }).click();
+  await expect(review.getByText(/groups for \d+ links/u)).toBeVisible(AI_WAIT);
+  return { x: 0, y: 0, ...WHATS_NEW_MEDIA.viewport };
+}
+
+/** Saved views (2.4.0): a phrase fills the filter rows, with the live count. */
+export async function newViewPhrase(page: Page): Promise<WhatsNewClip> {
+  await openAiLibrary(page);
+  await page
+    .getByRole('toolbar', { name: 'Saved views' })
+    .getByRole('button', { name: 'Save this view' })
+    .click();
+  const dialog = page.getByRole('dialog', { name: 'New view' });
+  await dialog
+    .getByRole('textbox', { name: 'Describe what to show' })
+    .fill('Angular videos, newest first');
+  await dialog.getByRole('button', { name: 'Compose' }).click();
+  await expect(dialog.getByText(/Found \d+ links?/u)).toBeVisible(AI_WAIT);
+  await expect(dialog.getByRole('button', { name: 'Change' })).toBeVisible();
+  return { x: 0, y: 0, ...WHATS_NEW_MEDIA.viewport };
+}
+
+/** Link kinds (2.4.0): the type select with its ten kinds (no AI: the dialog opens on the rows). */
+export async function linkKinds(page: Page): Promise<WhatsNewClip> {
+  await openFeed(page);
+  await page
+    .getByRole('toolbar', { name: 'Saved views' })
+    .getByRole('button', { name: 'Save this view' })
+    .click();
+  const dialog = page.getByRole('dialog', { name: 'New view' });
+  await dialog.getByRole('combobox', { name: 'Type' }).click();
+  await expect(page.getByRole('option', { name: 'Recipe', exact: true })).toBeVisible();
+  return { x: 0, y: 0, ...WHATS_NEW_MEDIA.viewport };
 }

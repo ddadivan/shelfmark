@@ -7,9 +7,72 @@ import type { ChangelogRelease } from './changelog-release.interface';
  * into `main` adds a patch entry with one-line fixes. Media rules (PROJECT.md 9.3): improvements
  * and fixes are one line of text; features get a short text and, when they have a `priority`, a
  * screenshot per theme (`public/media/whats-new/<version>/`, made by the generator, no video).
- * The 2.3.0 entry makes Ask a chat; the 2.2.0 entry lists the AI release; the 2.1.0 entry lists the changes since 2.0.0; hotfixes 2.0.1 to 2.0.8 are not repeated.
+ * The 2.4.0 entry brings import, views by hand or in words and ten link kinds; the 2.3.0 entry makes Ask a chat; the 2.2.0 entry lists the AI release; the 2.1.0 entry lists the changes since 2.0.0; hotfixes 2.0.1 to 2.0.8 are not repeated.
  */
 export const CHANGELOG: readonly ChangelogRelease[] = [
+  {
+    version: '2.4.0',
+    date: '2026-11-19',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'importBookmarks',
+        titleKey: 'changelog.items.importBookmarks.title',
+        textKey: 'changelog.items.importBookmarks.text',
+        priority: 1,
+        image: {
+          light: '/media/whats-new/2.4.0/import-groups-light.webp',
+          dark: '/media/whats-new/2.4.0/import-groups-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.importBookmarks.alt',
+        },
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'newView',
+        titleKey: 'changelog.items.newView.title',
+        textKey: 'changelog.items.newView.text',
+        priority: 2,
+        image: {
+          light: '/media/whats-new/2.4.0/new-view-light.webp',
+          dark: '/media/whats-new/2.4.0/new-view-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.newView.alt',
+        },
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'linkKinds',
+        titleKey: 'changelog.items.linkKinds.title',
+        textKey: 'changelog.items.linkKinds.text',
+        priority: 3,
+        image: {
+          light: '/media/whats-new/2.4.0/link-kinds-light.webp',
+          dark: '/media/whats-new/2.4.0/link-kinds-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.linkKinds.alt',
+        },
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'exportCsv',
+        textKey: 'changelog.items.exportCsv.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'dialogFocus',
+        textKey: 'changelog.items.dialogFocus.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'exportHelp',
+        textKey: 'changelog.items.exportHelp.text',
+      },
+    ],
+  },
   {
     version: '2.3.1',
     date: '2026-11-19',
