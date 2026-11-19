@@ -43,7 +43,8 @@ export class DialogService {
   /**
    * Opens `component` in a dialog. `R` is the type of the result, `D` of `config.data`.
    * Esc closes it (and a scrim click, unless `scrimClose` is `false`); `dismissible: false`
-   * turns both off. Focus returns to the element that had it when the dialog closes.
+   * turns both off. Focus goes to the dialog panel unless `config.autoFocus` says otherwise and
+   * returns to the element that had it when the dialog closes.
    */
   open<C, R = undefined, D = undefined>(
     component: ComponentType<C>,
@@ -58,7 +59,10 @@ export class DialogService {
       ariaLabelledBy: titleId,
       ariaDescribedBy: config.describedBy ?? null,
       data: config.data,
-      autoFocus: config.autoFocus ?? 'first-tabbable',
+      // The panel itself (the CDK container, `tabindex="-1"`): a screen reader announces the
+      // dialog, a pointer user sees no ring on a control they never reached by key, and Tab moves
+      // to the first control with its ring. Form dialogs pass their first field.
+      autoFocus: config.autoFocus ?? 'dialog',
       dismissible,
       scrimClose: config.scrimClose ?? true,
       restoreFocus: config.restoreFocus,

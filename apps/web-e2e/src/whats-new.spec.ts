@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { MOCK_USER, seedSession } from './support/mock-session';
+import { expectVisibleFocus } from './support/keyboard';
 import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 import { MOCK_WHATS_NEW_KEY, seedWhatsNewSeen } from './support/whats-new';
@@ -144,6 +145,29 @@ test.describe("What's new after an update (mock API)", () => {
       await expect(page.getByRole('heading', { level: 1, name: "What's new" })).toBeVisible();
     },
   );
+
+  test('opened by a click it focuses the dialog itself: no ring until a key is pressed', async ({
+    page,
+  }) => {
+    await seedSession(page, ONBOARDED);
+    await seedWhatsNewSeen(page);
+    await page.goto('/links');
+
+    await openFromEntry(page);
+    const dialog = page.getByRole('dialog', { name: DIALOG });
+    // The panel has focus (a screen reader announces the dialog), not the close button or a link.
+    await expect(dialog).toBeFocused();
+    const ring = await dialog.evaluate((el) => getComputedStyle(el).outlineStyle);
+    expect(ring).toBe('none');
+    // No tooltip either (the close button's would open on focus).
+    await page.waitForTimeout(600);
+    await expect(page.locator('ui-tooltip-panel')).toHaveCount(0);
+    // Tab moves to the first control, which shows the ring.
+    await page.keyboard.press('Tab');
+    await expect(dialog).not.toBeFocused();
+    expect(await dialog.evaluate((el) => el.contains(el.ownerDocument.activeElement))).toBe(true);
+    await expectVisibleFocus(page);
+  });
 
   test('"And N more…" opens /changelog', { tag: E2E_TAG.Phone }, async ({ page }) => {
     await seedSession(page, ONBOARDED);
