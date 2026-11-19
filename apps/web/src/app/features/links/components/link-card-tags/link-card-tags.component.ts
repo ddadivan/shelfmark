@@ -101,9 +101,13 @@ export class LinkCardTagsComponent implements AfterViewInit {
       },
       { injector: this.injector },
     );
-    void document.fonts?.ready.then(() => {
+    // A web font that arrives later widens the tag: check again after each font load.
+    const fonts = document.fonts as FontFaceSet | undefined;
+    const onFonts = (): void => {
       if (!this.collapsed()) this.check();
-    });
+    };
+    void fonts?.ready.then(onFonts);
+    fonts?.addEventListener('loadingdone', onFonts);
     // A browser that delivers no resize callback (a background tab) must not leave the tags
     // hidden: measure once anyway.
     const fallback = setTimeout(() => {
@@ -111,6 +115,7 @@ export class LinkCardTagsComponent implements AfterViewInit {
     }, MEASURE_FALLBACK_MS);
     this.destroyRef.onDestroy(() => {
       observer.disconnect();
+      fonts?.removeEventListener('loadingdone', onFonts);
       clearTimeout(fallback);
     });
   }
