@@ -331,7 +331,8 @@
         "few": "ще {{count}} теги: {{list}}",
         "many": "ще {{count}} тегів: {{list}}",
         "other": "ще {{count}} тегу: {{list}}"
-      }
+      },
+      "allTags": "Усі теги"
     },
     "item": {
       "edit": "Редагувати",

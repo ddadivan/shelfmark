@@ -1,0 +1,10 @@
+@if (rendered()) {
+  <div
+    class="ui-popover__surface"
+    animate.enter="ui-popover--enter"
+    animate.leave="ui-popover--leave"
+  >
+    <p class="ui-popover__heading" [id]="headingId">{{ heading() }}</p>
+    <ng-content />
+  </div>
+}

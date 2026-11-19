@@ -35,6 +35,7 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 - `MobileMenu.dc.html` — Library and folders · phone · redesigned (phone)
 - `MobileRecent.dc.html` — Recently opened sheet · phone (phone)
 - `RecentForgotten.dc.html` — Recently opened › Forgotten: the Opened · Forgotten switch, the Rediscover rows, "N forgotten" on the sidebar row (desktop, #512)
+- `CardTags.dc.html` — Card footer tags: the first tag (ellipsis in its max width), “+N”, the folder chip right after; the glass “All tags” popover above “+N”; desktop and 360px phone, light and dark (hotfix 2.2.1)
 - `MobileLibraryOrder.dc.html` — Library · phone: Pinned, Folders, then the tiles; "N forgotten" on the Recently opened tile (phone, #512)
 - `MobileLoading.dc.html` — Loading · phone · redesigned (phone)
 

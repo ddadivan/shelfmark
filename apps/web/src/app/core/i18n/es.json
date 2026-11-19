@@ -330,7 +330,8 @@
         "one": "{{count}} etiqueta más: {{list}}",
         "many": "{{count}} etiquetas más: {{list}}",
         "other": "{{count}} etiquetas más: {{list}}"
-      }
+      },
+      "allTags": "Todas las etiquetas"
     },
     "item": {
       "edit": "Editar",

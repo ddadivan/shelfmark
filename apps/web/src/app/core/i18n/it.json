@@ -330,7 +330,8 @@
         "one": "{{count}} altro tag: {{list}}",
         "many": "{{count}} altri tag: {{list}}",
         "other": "{{count}} altri tag: {{list}}"
-      }
+      },
+      "allTags": "Tutti i tag"
     },
     "item": {
       "edit": "Modifica",
