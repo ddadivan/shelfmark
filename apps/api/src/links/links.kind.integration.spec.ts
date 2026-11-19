@@ -1,6 +1,8 @@
 import {
   LINK_KIND,
+  deriveLinkKind,
   type ExportDocument,
+  type LinkKind,
   type LinkPreviewResponse,
   type LinkResponse,
   type ListLinksResponse,
@@ -205,5 +207,63 @@ describe('links API: kind (ADR 0038)', () => {
       .body as ExportDocument;
     expect(videos.links.map((link) => link.title)).toEqual(['V']);
     await a.get('/api/export').query({ format: 'json', kind: 'nope' }).expect(400);
+  });
+
+  it('the export round-trips all ten kinds in JSON, CSV and, by URL, in HTML (#537)', async () => {
+    const userId = users.owner.userId;
+    const urls: Record<LinkKind, string> = {
+      video: 'https://youtu.be/abc',
+      article: 'https://blog.test/post',
+      shopping: 'https://www.etsy.com/listing/1',
+      podcast: 'https://open.spotify.com/episode/abc',
+      document: 'https://docs.google.com/document/d/1/edit',
+      code: 'https://github.com/angular/angular',
+      app: 'https://apps.apple.com/app/id1',
+      post: 'https://x.com/someone/status/1',
+      recipe: 'https://food.test/ramen',
+      other: 'https://example.test/o',
+    };
+    for (const kind of Object.values(LINK_KIND)) {
+      await seedLink(t.db.prisma, userId, { kind, url: urls[kind], title: kind });
+    }
+    const json = (await a.get('/api/export').query({ format: 'json' }).expect(200))
+      .body as ExportDocument;
+    expect(Object.fromEntries(json.links.map((link) => [link.title, link.kind]))).toEqual(
+      Object.fromEntries(Object.values(LINK_KIND).map((kind) => [kind, kind])),
+    );
+    // The export has a tight rate limit: one filtered call is enough next to the list filter specs.
+    for (const kind of [LINK_KIND.Recipe]) {
+      const only = (await a.get('/api/export').query({ format: 'json', kind }).expect(200))
+        .body as ExportDocument;
+      expect(only.links.map((link) => link.title)).toEqual([kind]);
+    }
+    const csv = (await a.get('/api/export').query({ format: 'csv' }).expect(200)).text;
+    const [header, ...rows] = csv
+      .replace(/^\uFEFF/, '')
+      .trim()
+      .split('\r\n');
+    const columns = (header ?? '').split(',');
+    const at = (name: string) => columns.indexOf(name);
+    const fromCsv = Object.fromEntries(
+      rows.map((row) => row.split(',')).map((cells) => [cells[at('title')], cells[at('kind')]]),
+    );
+    expect(fromCsv).toEqual(
+      Object.fromEntries(Object.values(LINK_KIND).map((kind) => [kind, kind])),
+    );
+    // HTML carries no kind; an import derives it again from the URL, which holds for URL-ruled kinds.
+    const html = (await a.get('/api/export').query({ format: 'html' }).expect(200)).text;
+    const byUrl: LinkKind[] = [
+      LINK_KIND.Video,
+      LINK_KIND.Shopping,
+      LINK_KIND.Podcast,
+      LINK_KIND.Document,
+      LINK_KIND.Code,
+      LINK_KIND.App,
+      LINK_KIND.Post,
+    ];
+    for (const kind of byUrl) {
+      expect(html).toContain(`HREF="${urls[kind]}"`);
+      expect(deriveLinkKind(urls[kind])).toBe(kind);
+    }
   });
 });
