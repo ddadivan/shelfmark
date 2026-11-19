@@ -157,7 +157,9 @@ test.describe("What's new after an update (mock API)", () => {
     const dialog = page.getByRole('dialog', { name: DIALOG });
     // The panel has focus (a screen reader announces the dialog), not the close button or a link.
     await expect(dialog).toBeFocused();
-    const ring = await dialog.evaluate((el) => getComputedStyle(el).outlineStyle);
+    const ring = await dialog.evaluate(
+      (el) => el.ownerDocument.defaultView?.getComputedStyle(el).outlineStyle,
+    );
     expect(ring).toBe('none');
     // No tooltip either (the close button's would open on focus).
     await page.waitForTimeout(600);
