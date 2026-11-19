@@ -10,6 +10,7 @@ import {
   setupSettingsPage,
 } from '../../../../../testing/settings-page-testbed';
 import { LocaleService } from '../../../../core/i18n/locale.service';
+import { ImportDialogService } from '../../../import/services/import-dialog.service';
 import AccountPage from './account.page';
 
 const setup = (user = SETTINGS_TEST_USER, stats = () => of(SETTINGS_TEST_STATS)) =>
@@ -143,6 +144,17 @@ describe('AccountPage', () => {
     expect(root.querySelector('#your-data')).not.toBeNull();
     expect(exportApi.download).toHaveBeenNthCalledWith(1, EXPORT_FORMAT.Html, {});
     expect(exportApi.download).toHaveBeenNthCalledWith(2, EXPORT_FORMAT.Json, {});
+  });
+
+  it('offers Import in Your data and opens the import dialog', async () => {
+    const { root, harness } = await setup();
+    const open = vi.spyOn(TestBed.inject(ImportDialogService), 'open').mockImplementation(() => {});
+
+    expect(root.textContent).toContain('Bring in browser bookmarks.');
+    buttonWith(root, 'Import')?.click();
+    await harness.fixture.whenStable();
+
+    expect(open).toHaveBeenCalledTimes(1);
   });
 
   it('signs out to the sign-in screen', async () => {
