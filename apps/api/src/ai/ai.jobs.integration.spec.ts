@@ -632,8 +632,8 @@ describe('AI link jobs', () => {
       expect(ready.suggestions.map((entry) => [entry.kind, entry.tagName, entry.folderId])).toEqual(
         [
           ['folder', null, design],
-          ['tag', 'design', null],
           ['new-tag', 'example', null],
+          ['tag', 'design', null],
         ],
       );
       expect((await job(started.id)).suggestions).toEqual(ready.suggestions);

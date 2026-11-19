@@ -72,6 +72,10 @@ const ANGULAR = suggestion('s-angular', SUGGESTION_KIND.Tag, 'angular');
 const SIGNALS = suggestion('s-signals', SUGGESTION_KIND.Tag, 'signals');
 const NEW_TAG = suggestion('s-new', SUGGESTION_KIND.NewTag, 'state management');
 const NEW_TAG_TWO = suggestion('s-new-2', SUGGESTION_KIND.NewTag, 'frontend');
+const MORE_TAG: LinkSuggestion = {
+  ...suggestion('s-more', SUGGESTION_KIND.NewTag, 'architecture'),
+  more: true,
+};
 
 function job(suggestions: LinkSuggestion[]): AiJobResponse {
   return {
@@ -173,7 +177,7 @@ afterEach(() => {
 
 describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
   it('applies the folder and all the tags, new ones too', async () => {
-    const ai = withDraft([FOLDER, ANGULAR, SIGNALS, NEW_TAG, NEW_TAG_TWO]);
+    const ai = withDraft([FOLDER, ANGULAR, SIGNALS, NEW_TAG, NEW_TAG_TWO, MORE_TAG]);
     const { loader, links, result } = await setup(ai);
     await typeUrl(URL);
     const fill = await vi.waitFor(() => loader.getHarness(UiButtonHarness.with({ text: FILL })));
@@ -194,10 +198,13 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     await until(async () => expect(await select.getValueText()).toContain(MOCK_NAME.FolderAngular));
     const tags = await loader.getHarness(UiTagInputHarness);
     expect(await tags.getTags()).toEqual(['angular', 'signals', 'state-management', 'frontend']);
-    // The dashed chips of tags that are in the field now are gone.
+    // The dashed chips of tags that are in the field now are gone; the "more" idea stays a chip.
     expect(
       await loader.getAllHarnesses(UiSuggestionHarness.with({ label: 'state management' })),
     ).toHaveLength(0);
+    expect(
+      await loader.getAllHarnesses(UiSuggestionHarness.with({ label: 'architecture' })),
+    ).toHaveLength(1);
     expect(root()?.querySelector('.add-link-ai-fill__live[aria-live="polite"]')?.textContent).toBe(
       'Filled in with AI’s suggestions',
     );
@@ -208,7 +215,7 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     await result;
     expect(links.create.mock.calls[0]?.[0]).toMatchObject({
       folderId: MOCK_ID.FolderAngular,
-      tags: ['angular', 'signals', 'state-management'],
+      tags: ['angular', 'signals', 'state-management', 'frontend'],
     });
   });
 

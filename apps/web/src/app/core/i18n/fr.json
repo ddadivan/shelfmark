@@ -3051,7 +3051,7 @@
         "text": "« Traiter les liens existants » avance tant que l’application est ouverte."
       },
       "aiNewTags": {
-        "text": "L’IA propose un ou deux nouveaux tags quand aucun des vôtres ne convient."
+        "text": "L’IA remplit un ou deux nouveaux tags et en propose d’autres."
       }
     },
     "sections": {

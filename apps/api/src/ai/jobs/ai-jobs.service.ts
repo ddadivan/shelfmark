@@ -40,7 +40,7 @@ import { requestedParts, toAiParts } from './requested-parts';
 import { resolveJobLanguage } from './resolve-job-language';
 import { toAiJobReason } from './to-ai-job-reason';
 import { toStoredLinkResult } from './to-stored-link-result';
-import { toLinkSuggestion } from '../suggestions/to-link-suggestion';
+import { orderSuggestions, toLinkSuggestion } from '../suggestions/to-link-suggestion';
 
 type Tx = Prisma.TransactionClient;
 
@@ -232,7 +232,7 @@ export class AiJobsService {
     if (job.linkId === null) {
       const result = toStoredLinkResult(job.result);
       if (!result) return response;
-      const suggestions: LinkSuggestion[] = [
+      const suggestions: LinkSuggestion[] = orderSuggestions([
         ...(result.folderId === null
           ? []
           : [this.draftSuggestion(job.id, SUGGESTION_KIND.Folder, null, result.folderId)]),
@@ -243,7 +243,7 @@ export class AiJobsService {
         ...result.moreTags.map((name) =>
           this.draftSuggestion(job.id, SUGGESTION_KIND.NewTag, name, null, true),
         ),
-      ];
+      ]);
       return { ...response, suggestions, summary: result.summary, title: result.title };
     }
     const [link, rows] = await Promise.all([

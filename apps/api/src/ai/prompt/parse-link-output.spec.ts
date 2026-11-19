@@ -170,7 +170,6 @@ describe('parseLinkOutput', () => {
       tags: [],
       newTags: [],
       moreTags: [],
-      moreTags: [],
       folder: null,
       summary: 'A guide to grid.',
     });
@@ -183,7 +182,6 @@ describe('parseLinkOutput', () => {
     expect(parseLinkOutput({}, context)).toEqual({
       tags: [],
       newTags: [],
-      moreTags: [],
       moreTags: [],
       folder: null,
       summary: null,
