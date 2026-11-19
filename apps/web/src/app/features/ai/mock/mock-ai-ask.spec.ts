@@ -115,7 +115,7 @@ describe('MockAiAsk', () => {
       type: 'error',
       reason: 'quota',
     });
-    data.account = { ...data.account, tier: AI_TIER.AiPack, askDayUsed: 15, askMonthUsed: 15 };
+    data.account = { ...data.account, tier: AI_TIER.AiPack, askDayUsed: 50, askMonthUsed: 50 };
     expect((await events(ask, 'ramen recipes'))[0]).toMatchObject({
       reason: 'quota',
       allowance: { period: ASK_PERIOD.Day, resetsOn: '2026-11-19' },

@@ -55,10 +55,39 @@ test.describe('AI (#389, mock API)', () => {
 
     await main.click();
     await intro.getByRole('button', { name: 'Turn on AI' }).click();
-    await expect(intro).toBeHidden();
+    const offer = page.getByRole('dialog', { name: /^AI is on\. Process your \d+ saved links\?$/ });
+    await offer.getByRole('button', { name: 'Later' }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     await expect(main).toBeChecked();
     await expect(page.getByRole('switch', { name: 'Summaries' })).toBeChecked();
     await expect(page.getByRole('heading', { name: 'This month' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Start' })).toBeVisible();
+  });
+
+  test('turning AI on offers to process the links saved before; Process starts it', async ({
+    page,
+  }) => {
+    await openLinks(page, false);
+    await openAiSettings(page);
+    await page.getByRole('switch', { name: 'Use AI in Shelfmark' }).click();
+    await page
+      .getByRole('dialog', { name: 'Turn on AI in Shelfmark?' })
+      .getByRole('button', { name: 'Turn on AI' })
+      .click();
+
+    const offer = page.getByRole('dialog', {
+      name: /^AI is on\. Process your (\d+) saved links\?$/,
+    });
+    await expect(offer.getByText('Nothing changes without your choice')).toBeVisible();
+    await expect(offer.getByText('separate allowance of 5,000 links')).toBeVisible();
+    await expect(
+      offer.getByRole('link', { name: 'Settings › AI › Process existing links' }),
+    ).toHaveAttribute('href', '/settings/ai#ai-backfill');
+    await expect(offer.getByRole('button', { name: /^Process \d+ links$/ })).toBeVisible();
+    await offer.getByRole('button', { name: /^Process \d+ links$/ }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(page.getByText('Processing existing links')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Stop' })).toBeVisible();
   });
 
   test('Add link suggests a folder and tags: a chip is taken, another dismissed', async ({

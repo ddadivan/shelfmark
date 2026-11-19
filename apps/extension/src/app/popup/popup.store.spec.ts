@@ -88,6 +88,7 @@ describe('PopupStore', () => {
       expect(store.page()).toEqual({
         url: 'https://www.example.com/post',
         title: 'A post',
+        titleFromTab: true,
         host: 'example.com',
       });
       expect(api.lookup).toHaveBeenCalledWith({ url: 'https://www.example.com/post' });
@@ -299,6 +300,26 @@ describe('PopupStore', () => {
       await store.init();
       await store.save();
       expect(api.create.mock.calls[0]?.[0].title).toHaveLength(LINK_LIMIT.TitleMax);
+    });
+
+    it('sends a YouTube video title without " - YouTube"', async () => {
+      const video = setup({
+        tab: { url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', title: '(2) Rick - YouTube' },
+      });
+      await video.store.init();
+      await video.store.save();
+      expect(video.api.create.mock.calls[0]?.[0].title).toBe('Rick');
+    });
+
+    it('sends no title while the YouTube tab only says YouTube', async () => {
+      const loading = setup({
+        tab: { url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', title: 'YouTube' },
+      });
+      await loading.store.init();
+      expect(loading.store.page()?.title).toBe('youtube.com');
+      await loading.store.save();
+      // The server reads the video's own title (oEmbed).
+      expect(loading.api.create.mock.calls[0]?.[0]).not.toHaveProperty('title');
     });
 
     it('shows Saved with the created link and remembers its folder', async () => {

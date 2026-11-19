@@ -238,7 +238,11 @@ export class MockAiData {
    * The AI side of `POST /api/links`: picks up the draft of `draftId`, or queues a job when AI is
    * on and a part is wanted. Answers the link as it is saved (pending, or with the draft applied).
    */
-  linkCreated(link: LinkResponse, draftId: string | undefined): LinkResponse {
+  linkCreated(
+    link: LinkResponse,
+    draftId: string | undefined,
+    summaryDeclined = false,
+  ): LinkResponse {
     const settings = this.settings;
     if (!settings.enabled) {
       return link;
@@ -250,18 +254,24 @@ export class MockAiData {
         : [...this.jobs.values()].find((job) => job.draftId === draftId && job.linkId === null);
     if (draft) {
       draft.linkId = link.id;
+      if (summaryDeclined) {
+        // Like the API: the save asked for no summary, so the draft's never lands (#507).
+        draft.summary = null;
+        draft.noSummary = true;
+      }
       return draft.status === AI_JOB_STATUS.Done
         ? this.apply(link, draft, true)
         : { ...link, aiStatus: draft.status };
     }
     const wanted =
-      settings.summaries ||
+      (settings.summaries && !summaryDeclined) ||
       (settings.folderMode !== AI_FEATURE_MODE.Off && link.folderId === null) ||
       (settings.tagsMode !== AI_FEATURE_MODE.Off && link.tags.length === 0);
     if (!wanted) {
       return link;
     }
     const job = this.queue(link.url, link.title, null, link.id);
+    job.noSummary = summaryDeclined;
     return { ...link, aiStatus: job.status };
   }
 
@@ -563,7 +573,7 @@ export class MockAiData {
     job.reason =
       suggestions.length === 0 && !settings.summaries ? AI_JOB_REASON.NothingFound : null;
     job.suggestions = suggestions;
-    job.summary = settings.summaries ? outcome.summary : null;
+    job.summary = settings.summaries && job.noSummary !== true ? outcome.summary : null;
     job.cleanTitle = job.linkId === null ? outcome.title : null;
     const link = this.library.links.find((item) => item.id === job.linkId);
     if (link) {

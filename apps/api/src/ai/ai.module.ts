@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { FetcherModule } from '../fetcher/fetcher.module';
 import { FoldersModule } from '../folders/folders.module';
+import { PreviewModule } from '../preview/preview.module';
 import { RulesModule } from '../rules/rules.module';
 import { TagsModule } from '../tags/tags.module';
 import { AiController } from './ai.controller';
@@ -48,7 +49,7 @@ import { AiUsageService } from './usage/ai-usage.service';
  * of its own, so no cycle) for `RulesService.matcher`: a rule wins over AI in Tidy.
  */
 @Module({
-  imports: [FetcherModule, FoldersModule, RulesModule, TagsModule],
+  imports: [FetcherModule, PreviewModule, FoldersModule, RulesModule, TagsModule],
   controllers: [
     AiController,
     AiTidyController,

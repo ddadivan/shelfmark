@@ -50,14 +50,20 @@ export class AiSettingsActions {
     return false;
   }
 
-  async startBackfill(): Promise<void> {
-    if (!(await this.store.startBackfill())) {
-      this.toasts.show({
-        kind: TOAST_KIND.Danger,
-        title: this.transloco.translate('ai.backfill.startFailed'),
-      });
-      void this.store.refresh();
+  /**
+   * "Process existing links" (Settings › AI, the intro's next step, the search reminder); a refusal
+   * says so and re-reads the settings. Resolves whether it started.
+   */
+  async startBackfill(): Promise<boolean> {
+    if (await this.store.startBackfill()) {
+      return true;
     }
+    this.toasts.show({
+      kind: TOAST_KIND.Danger,
+      title: this.transloco.translate('ai.backfill.startFailed'),
+    });
+    void this.store.refresh();
+    return false;
   }
 
   async stopBackfill(): Promise<void> {

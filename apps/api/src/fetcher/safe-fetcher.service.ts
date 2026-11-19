@@ -19,6 +19,8 @@ import type { FetchKind } from './models/fetch-kind.type';
 import type { HopResponse } from './models/hop-response.type';
 import { HTML_CONTENT_TYPES } from './models/html-content-types.const';
 import { DEFAULT_IMAGE_FETCH_LIMITS } from './models/image-fetch-limits.const';
+import { JSON_CONTENT_TYPES } from './models/json-content-types.const';
+import { DEFAULT_JSON_FETCH_LIMITS } from './models/json-fetch-limits.const';
 import {
   IMAGE_BINARY_CONTENT_TYPES,
   IMAGE_CONTENT_TYPE_PREFIX,
@@ -55,6 +57,14 @@ function isImageContentType(contentType: string): boolean {
   );
 }
 
+function acceptHeader(kind: FetchKind): string {
+  if (kind === FETCH_KIND.Image) {
+    return 'image/avif,image/webp,image/png,image/jpeg,image/gif,image/x-icon,image/*;q=0.8';
+  }
+  if (kind === FETCH_KIND.Json) return JSON_CONTENT_TYPES.Json;
+  return `${HTML_CONTENT_TYPES.Html},${HTML_CONTENT_TYPES.Xhtml};q=0.9`;
+}
+
 function stripBrackets(hostname: string): string {
   return hostname.startsWith('[') && hostname.endsWith(']') ? hostname.slice(1, -1) : hostname;
 }
@@ -81,6 +91,7 @@ function decodeBody(bytes: Buffer, contentType: string): string {
 export class SafeFetcherService {
   private readonly limits: FetchLimits;
   private readonly imageLimits: FetchLimits;
+  private readonly jsonLimits: FetchLimits;
   private readonly resolve: DnsResolver;
   private readonly isAddressAllowed: AddressPolicy;
   private readonly allowedPorts: readonly number[];
@@ -88,6 +99,7 @@ export class SafeFetcherService {
   constructor(@Optional() @Inject(SAFE_FETCHER_OPTIONS) options?: SafeFetcherOptions) {
     this.limits = { ...DEFAULT_FETCH_LIMITS, ...options?.limits };
     this.imageLimits = { ...this.limits, ...DEFAULT_IMAGE_FETCH_LIMITS, ...options?.limits };
+    this.jsonLimits = { ...this.limits, ...DEFAULT_JSON_FETCH_LIMITS, ...options?.limits };
     this.resolve = options?.resolve ?? defaultResolver;
     this.isAddressAllowed = options?.isAddressAllowed ?? ((address) => !isBlockedAddress(address));
     this.allowedPorts = options?.allowedPorts ?? DEFAULT_ALLOWED_PORTS;
@@ -124,6 +136,26 @@ export class SafeFetcherService {
       status: response.result.status,
       contentType: response.result.contentType,
       bytes: response.result.bytes,
+    };
+  }
+
+  /**
+   * JSON mode: same URL and address policy, redirect re-validation and pinned connection as
+   * `fetch`, but only `application/json` passes (never HTML) and the body is decoded as UTF-8
+   * (RFC 8259). Defaults are 64 KB, 3 s and 2 redirects; `overrides` can only tighten them. The
+   * text is untrusted: the caller parses it and narrows every field.
+   */
+  async fetchJson(rawUrl: string, overrides?: Partial<FetchLimits>): Promise<SafeFetchResult> {
+    const response = await this.run(
+      rawUrl,
+      narrowLimits(this.jsonLimits, overrides),
+      FETCH_KIND.Json,
+    );
+    return {
+      finalUrl: response.finalUrl,
+      status: response.result.status,
+      contentType: response.result.contentType,
+      body: new TextDecoder(DEFAULT_CHARSET).decode(response.result.bytes),
     };
   }
 
@@ -274,10 +306,7 @@ export class SafeFetcherService {
           // No cookies and no credentials are ever sent.
           headers: {
             'User-Agent': FETCH_USER_AGENT,
-            Accept:
-              kind === FETCH_KIND.Image
-                ? 'image/avif,image/webp,image/png,image/jpeg,image/gif,image/x-icon,image/*;q=0.8'
-                : `${HTML_CONTENT_TYPES.Html},${HTML_CONTENT_TYPES.Xhtml};q=0.9`,
+            Accept: acceptHeader(kind),
             'Accept-Encoding': 'identity',
             Connection: 'close',
           },
@@ -348,6 +377,11 @@ export class SafeFetcherService {
     if (kind === FETCH_KIND.Image) {
       if (!isImageContentType(contentType)) {
         fail(new SafeFetchError(SAFE_FETCH_ERROR_CODE.NotImage, 'Response is not an image'));
+        return;
+      }
+    } else if (kind === FETCH_KIND.Json) {
+      if (contentType !== JSON_CONTENT_TYPES.Json) {
+        fail(new SafeFetchError(SAFE_FETCH_ERROR_CODE.NotJson, 'Response is not JSON'));
         return;
       }
     } else if (!(Object.values(HTML_CONTENT_TYPES) as string[]).includes(contentType)) {

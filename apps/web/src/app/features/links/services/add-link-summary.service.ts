@@ -15,7 +15,8 @@ import { AddLinkFormService } from './add-link-form.service';
  *
  * Add link (#507): the field appears once "Fill in with AI" put the draft's summary in it
  * (`fillDraft`); while the text is that AI text the save sends nothing (the server applies the
- * draft's summary as AI's); any other text is the user's and goes with the create request.
+ * draft's summary as AI's); any other text is the user's and goes with the create request, and a
+ * field the user emptied sends `summary: null` (no summary, the server must not apply the draft's).
  */
 @Service({ autoProvided: false })
 export class AddLinkSummaryService {
@@ -118,12 +119,20 @@ export class AddLinkSummaryService {
     return true;
   }
 
-  /** The `summary` of a create request: the user's own text; nothing for AI's untouched text. */
-  createSummary(): string | undefined {
+  /**
+   * The `summary` of a create request: the user's own text; `null` when the field was shown with
+   * AI's text and the user emptied it (no summary, not the draft's); nothing for AI's untouched
+   * text or a field that never showed.
+   */
+  createSummary(): string | null | undefined {
+    if (this.original !== undefined) {
+      return undefined;
+    }
     const text = this.formState.model().summary.trim();
-    return this.original === undefined && text !== '' && text !== this.draftText()
-      ? text
-      : undefined;
+    if (text === '') {
+      return this.draftText() === null ? undefined : null;
+    }
+    return text === this.draftText() ? undefined : text;
   }
 
   /** A new AI summary in the field; a refusal or failure keeps the text and says so. */

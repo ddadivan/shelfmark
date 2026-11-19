@@ -637,13 +637,15 @@
   }
   <ng-template #bulkBar>
     <ui-bulk-bar
+      #bulkFit="appBulkBarFit"
       class="library__bulk"
+      [appBulkBarFit]="bulk.barActions()"
       appToastAbove=".ui-bulk-bar__bar"
       animate.enter="ui-bulk-bar--enter"
       animate.leave="ui-bulk-bar--leave"
       [actions]="bulk.barActions()"
       [ariaLabel]="pluralKey('bulk.bar.label', selection.selectedCount()) | transloco: { count: selection.selectedCount() }"
-      [layout]="compact() ? BULK_BAR_LAYOUT.Stacked : BULK_BAR_LAYOUT.Inline"
+      [layout]="compact() || bulkFit.stacked() ? BULK_BAR_LAYOUT.Stacked : BULK_BAR_LAYOUT.Inline"
       (action)="bulk.run($event)"
     />
   </ng-template>

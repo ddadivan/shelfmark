@@ -35,6 +35,23 @@
   border-radius: var(--radius-full);
 }
 
+// `truncate`: the pill shrinks with its container down to its padding; the label keeps one line
+// and ends in an ellipsis inside the pill, so a long tag is never cut mid-letter by an edge.
+:host(.ui-chip--truncate) {
+  min-inline-size: 0;
+  max-inline-size: var(--ui-chip-max-inline-size, 100%);
+
+  .ui-chip__body {
+    min-inline-size: 0;
+  }
+
+  .ui-chip__label {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 :host(.ui-chip--removable) .ui-chip__body,
 :host(.ui-chip--menu) .ui-chip__body {
   padding-right: var(--space-1);

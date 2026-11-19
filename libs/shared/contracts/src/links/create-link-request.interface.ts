@@ -36,10 +36,15 @@ export interface CreateLinkRequest {
    */
   applyRules?: boolean;
   /**
-   * The user's own summary (at most `AI_LIMIT.SummaryMax`), sent when they wrote or edited it in Add
-   * link; stored as theirs (AI never replaces it). Left out, the draft's AI summary is applied.
+   * The summary of the new link, like `UpdateLinkRequest.summary` (#507):
+   * - text (at most `AI_LIMIT.SummaryMax`): the user's own summary, written or edited in Add link;
+   *   stored as theirs (AI never replaces it);
+   * - `null`: no summary. The user cleared the AI text in Add link, so the link is saved without one
+   *   and AI does not add one for this save (neither the draft's nor a new job's);
+   * - left out (or blank): the save asks nothing of its own, so AI's summary (the draft's, or a new
+   *   job's while summaries are on) is applied as AI's.
    */
-  summary?: string;
+  summary?: string | null;
   /**
    * The Add link dialog's AI draft id (`CreateAiDraftRequest.draftId`, a UUID): the save picks up that
    * draft's suggestions and summary instead of starting a new AI job. Separate from `idempotencyKey`.

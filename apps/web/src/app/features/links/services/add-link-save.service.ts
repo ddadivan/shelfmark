@@ -85,6 +85,7 @@ export class AddLinkSaveService {
     } else {
       const fetched = this.previewService.fetchedPreview();
       const aiDraftId = this.ai?.draftId();
+      const summary = this.summary?.createSummary();
       const payload: CreateLinkRequest = {
         url: this.formState.url(),
         ...(title && { title }),
@@ -99,8 +100,9 @@ export class AddLinkSaveService {
         ...(this.ruleService?.handled() && { applyRules: false }),
         // The draft suggestions asked for in the dialog (#390): the server picks up their result.
         ...(aiDraftId && { aiDraftId }),
-        // A summary the user wrote or edited in Add link (#507); AI's own text is the draft's.
-        ...(this.summary?.createSummary() && { summary: this.summary.createSummary() }),
+        // A summary the user wrote or edited in Add link (#507), or `null` once they cleared AI's
+        // text (no summary, not the draft's); AI's own untouched text is the draft's.
+        ...(summary !== undefined && { summary }),
       };
       request$ = this.linksApi.create({
         ...payload,

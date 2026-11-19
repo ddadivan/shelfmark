@@ -244,6 +244,27 @@ describe('MockAiApi', () => {
     expect(await statusOf(ai.undoApply('missing', { part: AI_APPLIED_PART.Tags }))).toBe(404);
   });
 
+  it('saves without a summary with summary: null, whether the draft finished or not (#507)', async () => {
+    const { ai, links, data } = setup();
+    await run(ai.updateSettings({ enabled: true }));
+    const title = namedTitle(data);
+    await run(ai.createDraft({ draftId: 'd-done', url: 'https://a.example/done', title }));
+    await vi.advanceTimersByTimeAsync(MOCK_AI_TIMING.JobMs);
+    const done = await run(
+      links.create({ url: 'https://a.example/done', title, aiDraftId: 'd-done', summary: null }),
+    );
+    expect(done).toMatchObject({ summary: null, summarySource: null });
+    await run(ai.createDraft({ draftId: 'd-late', url: 'https://a.example/late', title }));
+    const late = await run(
+      links.create({ url: 'https://a.example/late', title, aiDraftId: 'd-late', summary: null }),
+    );
+    await vi.advanceTimersByTimeAsync(MOCK_AI_TIMING.JobMs);
+    expect((await run(ai.getLinkAi(late.id))).summary).toBeNull();
+    const queued = await run(links.create({ url: 'https://a.example/new', title, summary: null }));
+    await vi.advanceTimersByTimeAsync(MOCK_AI_TIMING.JobMs);
+    expect((await run(ai.getLinkAi(queued.id))).summary).toBeNull();
+  });
+
   it('auto-applies existing tags to a link saved without tags, and the user’s edit keeps them', async () => {
     const { ai, links, data } = setup();
     await run(ai.updateSettings({ enabled: true, tagsMode: AI_FEATURE_MODE.Auto }));

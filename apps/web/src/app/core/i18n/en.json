@@ -329,7 +329,8 @@
       "moreTagsLabel": {
         "one": "{{count}} more tag: {{list}}",
         "other": "{{count}} more tags: {{list}}"
-      }
+      },
+      "allTags": "All tags"
     },
     "item": {
       "edit": "Edit",
@@ -2962,6 +2963,30 @@
       },
       "landingHeadline": {
         "text": "The landing page headline fits every language."
+      },
+      "askAnswers": {
+        "text": "Ask your shelf answers questions again."
+      },
+      "youtubeTitles": {
+        "text": "YouTube links get their video title and author."
+      },
+      "clearedSummary": {
+        "text": "A summary you cleared in Add link stays empty after saving."
+      },
+      "cardTagsWhole": {
+        "text": "Tags on cards are never cut off: the first tag, then “+N” with all tags on hover."
+      },
+      "bulkBarFits": {
+        "text": "The selection bar shows every button on narrower windows."
+      },
+      "aiDialogIcon": {
+        "text": "The AI announcement shows its icon at once, without a scrollbar."
+      },
+      "searchChoice": {
+        "text": "Choosing a search result no longer freezes the app."
+      },
+      "backfillProgress": {
+        "text": "“Process existing links” moves on while the app is open."
       }
     },
     "sections": {
@@ -3094,6 +3119,33 @@
       "done": "Every existing link has been processed.",
       "startFailed": "Couldn’t start processing your links",
       "stopFailed": "Couldn’t stop processing. Try again."
+    },
+    "backfillOffer": {
+      "title": {
+        "one": "AI is on. Process your {{count}} saved link?",
+        "other": "AI is on. Process your {{count}} saved links?"
+      },
+      "lead": "Links you saved earlier haven’t been read by AI yet. It will write short summaries and suggest tags and folders, and search by meaning will find them like new ones.",
+      "review": "Nothing changes without your choice: suggestions wait for you.",
+      "background": "Runs in the background, usually a few minutes. Stop any time.",
+      "allowance": "Doesn’t use the monthly limit: there is a separate allowance of {{allowance}} links.",
+      "process": {
+        "one": "Process {{count}} link",
+        "other": "Process {{count}} links"
+      },
+      "later": "Later",
+      "noteLead": "Change your mind? Start it any time:",
+      "notePath": "Settings › AI › Process existing links",
+      "noteTail": "A reminder also appears in search.",
+      "search": {
+        "text": {
+          "one": "AI hasn’t read {{count}} older link yet — search finds it less well.",
+          "other": "AI hasn’t read {{count}} older links yet — search finds them less well."
+        },
+        "process": "Process",
+        "started": "Processing started",
+        "hide": "Hide"
+      }
     },
     "deleteData": {
       "confirm": {

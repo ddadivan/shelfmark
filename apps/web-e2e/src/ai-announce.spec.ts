@@ -54,4 +54,31 @@ test.describe('AI announcement (#507, mock API)', () => {
     await page.waitForTimeout(3500);
     await expect(page.getByRole('dialog', { name: TITLE })).toHaveCount(0);
   });
+
+  test('the spark shows at once and the entrance never makes the body scroll', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openUnseen(page);
+    const dialog = page.getByRole('dialog', { name: TITLE });
+    await expect(dialog).toBeVisible({ timeout: 10_000 });
+    // Sampled about every frame while the entrance plays (about 1.5 s).
+    const overflow = await dialog.evaluate(
+      (panel) =>
+        new Promise<number>((resolve) => {
+          const body = panel.querySelector('.ui-dialog__body');
+          let most = 0;
+          const start = performance.now();
+          const sample = (): void => {
+            if (body) most = Math.max(most, body.scrollHeight - body.clientHeight);
+            if (performance.now() - start < 2000) setTimeout(sample, 16);
+            else resolve(most);
+          };
+          sample();
+        }),
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+    // The spark is drawn inline in the tile: no sprite file a stale service worker could serve.
+    const spark = dialog.locator('.ai-announce__tile svg path');
+    await expect(spark.first()).toBeVisible();
+    await expect(dialog.locator('.ai-announce__tile use')).toHaveCount(0);
+  });
 });

@@ -10,7 +10,7 @@ import {
   type AiSearchState,
   type AiSettingsResponse,
 } from '@shelfmark/contracts';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { AI_API } from '../models/ai-api.const';
 import { AI_SETTINGS_DEFAULT } from '../models/ai-settings-default.const';
 import { AI_TICK_INTERVAL_MS } from '../models/ai-tick-interval.const';
@@ -51,7 +51,15 @@ function response(
   };
 }
 
-async function setup(initial: AiSettingsResponse) {
+const RUNNING = {
+  state: AI_BACKFILL_STATE.Running,
+  eligible: 10,
+  total: 10,
+  done: 0,
+  estimatedMinutes: 3,
+};
+
+async function setup(initial: AiSettingsResponse, startBackfill = vi.fn(() => of(RUNNING))) {
   const tick = vi.fn(() =>
     of({
       pendingJobs: 0,
@@ -60,12 +68,14 @@ async function setup(initial: AiSettingsResponse) {
     }),
   );
   TestBed.configureTestingModule({
-    providers: [{ provide: AI_API, useValue: { getSettings: () => of(initial), tick } }],
+    providers: [
+      { provide: AI_API, useValue: { getSettings: () => of(initial), tick, startBackfill } },
+    ],
   });
   await TestBed.inject(AiSettingsStore).load();
   const service = TestBed.inject(AiTickService);
   TestBed.tick();
-  return { service, tick };
+  return { service, tick, startBackfill };
 }
 
 describe('AiTickService', () => {
@@ -121,5 +131,33 @@ describe('AiTickService', () => {
     state.mockReturnValue('visible');
     doc.dispatchEvent(new Event('visibilitychange'));
     expect(service.active()).toBe(true);
+  });
+
+  it('starts ticking once "Process existing links" starts, without waiting for effects', async () => {
+    const { service, tick } = await setup(response(0));
+    expect(service.active()).toBe(false);
+    tick.mockReturnValue(
+      of({
+        pendingJobs: 0,
+        backfill: { ...RUNNING, done: 4 },
+        search: { state: AI_SEARCH_STATE.Ready, ready: 10, total: 10 },
+      }),
+    );
+    const store = TestBed.inject(AiSettingsStore);
+    expect(await store.startBackfill()).toBe(true);
+    // No TestBed.tick(): the timer reads the state itself.
+    expect(service.active()).toBe(true);
+    await vi.advanceTimersByTimeAsync(AI_TICK_INTERVAL_MS);
+    expect(tick).toHaveBeenCalledTimes(1);
+    expect(store.backfill()?.done).toBe(4);
+    await vi.advanceTimersByTimeAsync(AI_TICK_INTERVAL_MS);
+    expect(tick).toHaveBeenCalledTimes(2);
+  });
+
+  it('sends one tick at a time', async () => {
+    const { tick } = await setup(response(1));
+    tick.mockReturnValue(new Subject<never>());
+    await vi.advanceTimersByTimeAsync(AI_TICK_INTERVAL_MS * 3);
+    expect(tick).toHaveBeenCalledTimes(1);
   });
 });
