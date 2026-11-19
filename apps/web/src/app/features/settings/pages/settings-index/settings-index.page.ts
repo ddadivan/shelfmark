@@ -4,7 +4,6 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import {
   AvatarComponent,
   BUTTON_SIZE,
-  BUTTON_VARIANT,
   ButtonComponent,
   ICON_SIZE,
   IconComponent,
@@ -49,7 +48,6 @@ export default class SettingsIndexPage {
 
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
-  protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   private readonly importer = inject(ImportDialogService);
   private readonly exporter = inject(ExportDialogService);
   protected readonly SETTINGS_PATH = SETTINGS_PATH;
@@ -58,6 +56,8 @@ export default class SettingsIndexPage {
   protected readonly adminFeedbackPath = ['/', APP_PATH.Admin, ADMIN_PATH.Feedback];
   protected readonly adminStatsPath = ['/', APP_PATH.Admin, ADMIN_PATH.Stats];
   protected readonly privacyHref = `/${APP_PATH.Privacy}`;
+  /** The no-script fallback of the Import / Export rows: Privacy and data has both actions too. */
+  protected readonly privacyDataHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.Privacy}`;
   protected readonly aboutHref = `/${APP_PATH.About}`;
   protected readonly changelogHref = `/${APP_PATH.Changelog}`;
   /** "What's new" opens the dialog (the link to `/changelog` is the fallback), with a dot while unseen. */
@@ -85,11 +85,13 @@ export default class SettingsIndexPage {
   });
 
   /** Import and export open their dialog, a bottom sheet on a phone (#387). */
-  protected openImport(): void {
+  protected openImport(event: MouseEvent): void {
+    event.preventDefault();
     this.importer.open();
   }
 
-  protected openExport(): void {
+  protected openExport(event: MouseEvent): void {
+    event.preventDefault();
     this.exporter.open();
   }
 

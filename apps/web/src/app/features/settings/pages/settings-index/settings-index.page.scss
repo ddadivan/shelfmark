@@ -76,11 +76,6 @@
   padding-block: var(--space-1);
 }
 
-// Import and export: one group of full-width rows between the settings list and "Send feedback".
-.settings-index__list--actions {
-  gap: 0;
-}
-
 .settings-index__row {
   @include type(body);
 

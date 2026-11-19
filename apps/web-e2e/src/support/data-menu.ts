@@ -26,7 +26,7 @@ export async function openDataDialog(page: Page, entry: 'Import links' | 'Export
     await openYouTab(page);
     await page
       .getByRole('group', { name: 'Import and export' })
-      .getByRole('button', { name: entry })
+      .getByRole('link', { name: entry })
       .click();
   } else {
     const menu = await openDataMenu(page);

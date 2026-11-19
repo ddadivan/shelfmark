@@ -111,15 +111,15 @@ test.describe('data menu and its entries (mock API)', () => {
       await page.goto('/links');
       await openYouTab(page);
       const group = page.getByRole('group', { name: 'Import and export' });
-      await expect(group.getByRole('button')).toHaveText([/Import links/, /Export/]);
+      await expect(group.getByRole('link')).toHaveText([/Import links/, /Export/]);
 
-      await group.getByRole('button', { name: 'Import links' }).click();
+      await group.getByRole('link', { name: 'Import links' }).click();
       const importDialog = page.getByRole('dialog', { name: 'Import links' });
       await expect(importDialog).toBeVisible();
       await page.keyboard.press('Escape');
       await expect(importDialog).toHaveCount(0);
 
-      await group.getByRole('button', { name: 'Export' }).click();
+      await group.getByRole('link', { name: 'Export' }).click();
       const exportDialog = page.getByRole('dialog', { name: 'Export' });
       await expect(exportDialog).toBeVisible();
       const box = await exportDialog.boundingBox();
