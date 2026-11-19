@@ -477,3 +477,54 @@ test.describe('select links and bulk actions (mock API)', () => {
     });
   });
 });
+
+// A narrow desktop window in a longer language: the inline bar did not fit and its last buttons
+// were cut off at the right; it now takes the stacked layout when the inline one has no room.
+test.describe('bulk bar fits narrow desktop windows', () => {
+  const LANGUAGE_KEYS = ['sm-language', 'sm-mock-language'];
+  for (const language of ['uk', 'de', 'fr']) {
+    test(`shows every action whole in ${language} from 1024px to 1440px`, async ({ page }) => {
+      const settings = JSON.stringify({
+        language,
+        dateFormat: 'default',
+        timeFormat: 'default',
+        weekStart: 'default',
+      });
+      await page.addInitScript(
+        ([keys, value]) => {
+          for (const key of keys) {
+            localStorage.setItem(key, value);
+          }
+        },
+        [LANGUAGE_KEYS, settings] as const,
+      );
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await openFeed(page);
+      await pick(page, 0);
+      const toolbar = page.locator('.ui-bulk-bar__bar');
+      await expect(toolbar).toBeVisible();
+      for (const width of [1440, 1280, 1180, 1100, 1024]) {
+        await page.setViewportSize({ width, height: 900 });
+        // The layout follows a ResizeObserver: poll until the bar settles.
+        await expect
+          .poll(
+            () =>
+              toolbar.evaluate((bar) => {
+                const box = bar.getBoundingClientRect();
+                const buttons = [...bar.querySelectorAll('button')].map((b) =>
+                  b.getBoundingClientRect(),
+                );
+                return {
+                  overflow: bar.scrollWidth - bar.clientWidth,
+                  outside: buttons.filter((b) => b.left < box.left - 1 || b.right > box.right + 1)
+                    .length,
+                  inWindow: box.right <= window.innerWidth,
+                };
+              }),
+            { message: `${language} at ${width}px` },
+          )
+          .toEqual({ overflow: 0, outside: 0, inWindow: true });
+      }
+    });
+  }
+});

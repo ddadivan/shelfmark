@@ -60,6 +60,7 @@ import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LibraryFeedService } from './services/library-feed.service';
 import { LibraryHeadService } from './services/library-head.service';
+import { BulkBarFitDirective } from './directives/bulk-bar-fit.directive';
 import { LibraryHotkeysDirective } from './directives/library-hotkeys.directive';
 import { ToastAboveDirective } from '../../core/layout/toast-above.directive';
 import { ToastAreaDirective } from '../../core/layout/toast-area.directive';
@@ -109,6 +110,7 @@ const SKELETON_COUNT = 8;
     ExtensionBannerComponent,
     InViewDirective,
     LibraryHotkeysDirective,
+    BulkBarFitDirective,
     ToastAboveDirective,
     ToastAreaDirective,
     LinkCardComponent,
