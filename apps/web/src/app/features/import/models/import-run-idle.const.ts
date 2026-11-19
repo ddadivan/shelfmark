@@ -13,5 +13,6 @@ export const IMPORT_RUN_IDLE: ImportRunState = {
   folders: 0,
   targetFolderId: null,
   targetName: null,
+  grouped: null,
   errorKey: null,
 };

@@ -28,7 +28,14 @@
     }
   </header>
 
-  @if (store.loaded()) { @if (store.empty()) {
+  @if (store.importId() !== null) {
+  <p class="tidy__import" role="status">
+    <span>{{ 'ai.tidy.import.line' | transloco }}</span>
+    <ui-button variant="ghost" size="sm" (click)="showAll()">
+      {{ 'ai.tidy.import.all' | transloco }}
+    </ui-button>
+  </p>
+  } @if (store.loaded()) { @if (store.empty()) {
   <section class="tidy__empty">
     <span class="tidy__empty-art" aria-hidden="true">
       <ui-icon name="spark" [size]="ICON_SIZE.Lg" />

@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { IMPORT_LIMIT, IMPORT_SOURCE } from '@shelfmark/contracts';
+import { IMPORT_LIMIT, IMPORT_SOURCE, type AiUsage } from '@shelfmark/contracts';
 import { of, throwError } from 'rxjs';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { IMPORT_API } from '../models/import-api.const';
@@ -9,7 +9,11 @@ import { IMPORT_FILE_PROBLEM } from '../models/import-file-problem.const';
 import { IMPORT_NEW_FOLDER } from '../models/import-new-folder.const';
 import { IMPORT_STEP } from '../models/import-step.const';
 import type { ImportRunRequest } from '../models/import-run-request.interface';
+import { FoldersStore } from '../../../stores/folders.store';
+import { AiSettingsStore } from '../../ai/services/ai-settings.store';
+import { IMPORT_FOLDERS_MODE } from '../models/import-folders-mode.const';
 import { ImportFlowService } from './import-flow.service';
+import { ImportGroupsService } from './import-groups.service';
 import { ImportRunService } from './import-run.service';
 
 function html(body: string): string {
@@ -34,11 +38,23 @@ function file(text: string, name = 'bookmarks.html'): File {
 async function setup(running = false) {
   const api = {
     list: vi.fn(),
-    check: vi.fn<ImportApi['check']>(() => of({ saved: [] })),
+    get: vi.fn(),
+    groups: vi.fn<ImportApi['groups']>(),
+    check: vi.fn<ImportApi['check']>(() => of({ saved: [], room: 10_000 })),
     start: vi.fn(),
     addLinks: vi.fn(),
     finish: vi.fn(),
     undo: vi.fn(),
+  };
+  const ai = {
+    load: vi.fn(() => Promise.resolve()),
+    isOn: signal(false),
+    providerUnavailable: signal(false),
+    usage: signal<AiUsage | null>(null),
+  };
+  const folders = {
+    load: vi.fn(() => Promise.resolve()),
+    entityMap: signal<Record<string, { name: string }>>({ 'folder-1': { name: 'Reading' } }),
   };
   const runner = {
     running: signal(running),
@@ -49,11 +65,14 @@ async function setup(running = false) {
       provideTranslocoForTest(),
       { provide: IMPORT_API, useValue: api },
       { provide: ImportRunService, useValue: runner },
+      { provide: AiSettingsStore, useValue: ai },
+      { provide: FoldersStore, useValue: folders },
+      ImportGroupsService,
       ImportFlowService,
     ],
   });
   await loadEnglish();
-  return { api, runner, flow: TestBed.inject(ImportFlowService) };
+  return { api, runner, ai, folders, flow: TestBed.inject(ImportFlowService) };
 }
 
 describe('ImportFlowService', () => {
@@ -74,7 +93,7 @@ describe('ImportFlowService', () => {
   describe('chooseFile', () => {
     it('reads, checks and moves to the review step with the file name and counts', async () => {
       const { flow, api } = await setup();
-      api.check.mockReturnValue(of({ saved: [1] }));
+      api.check.mockReturnValue(of({ saved: [1], room: 10_000 }));
 
       await flow.chooseFile(file(SMALL));
 
@@ -165,7 +184,9 @@ describe('ImportFlowService', () => {
     it('asks the check in chunks and shifts the saved indexes by the chunk offset', async () => {
       const { flow, api } = await setup();
       const total = IMPORT_LIMIT.CheckBatchMax + 20;
-      api.check.mockImplementation((urls) => of({ saved: urls.length > 100 ? [0, 3] : [5] }));
+      api.check.mockImplementation((urls) =>
+        of({ saved: urls.length > 100 ? [0, 3] : [5], room: 10_000 }),
+      );
 
       await flow.chooseFile(file(html(anchors(total))));
 
@@ -205,7 +226,7 @@ describe('ImportFlowService', () => {
   describe('review choices', () => {
     it('counts every link when duplicates are kept and drops them when skipped', async () => {
       const { flow, api } = await setup();
-      api.check.mockReturnValue(of({ saved: [1] }));
+      api.check.mockReturnValue(of({ saved: [1], room: 10_000 }));
       await flow.chooseFile(file(SMALL));
 
       expect(flow.importCount()).toBe(2);
@@ -237,12 +258,12 @@ describe('ImportFlowService', () => {
       const { flow } = await setup();
       await flow.chooseFile(file(SMALL));
       flow.skipDuplicates.set(false);
-      flow.keepStructure.set(false);
+      flow.setFoldersMode(IMPORT_FOLDERS_MODE.None);
 
       await flow.chooseFile(file(SMALL));
 
       expect(flow.skipDuplicates()).toBe(true);
-      expect(flow.keepStructure()).toBe(true);
+      expect(flow.foldersMode()).toBe(IMPORT_FOLDERS_MODE.File);
     });
   });
 
@@ -298,7 +319,7 @@ describe('ImportFlowService', () => {
     it('flattens the folders when the structure is not kept and keeps duplicates when asked', async () => {
       const { flow, runner } = await setup();
       await flow.chooseFile(file(SMALL));
-      flow.keepStructure.set(false);
+      flow.setFoldersMode(IMPORT_FOLDERS_MODE.None);
       flow.skipDuplicates.set(false);
 
       flow.startImport();
@@ -313,7 +334,7 @@ describe('ImportFlowService', () => {
       flow.startImport();
       expect(runner.start).not.toHaveBeenCalled();
 
-      api.check.mockReturnValue(of({ saved: [0, 1, 2, 3] }));
+      api.check.mockReturnValue(of({ saved: [0, 1, 2, 3], room: 10_000 }));
       await flow.chooseFile(file(SMALL));
       expect(flow.importCount()).toBe(0);
       flow.startImport();
@@ -324,6 +345,201 @@ describe('ImportFlowService', () => {
       flow.startImport();
       expect(runner.start).not.toHaveBeenCalled();
       expect(flow.target()).toBe(IMPORT_NEW_FOLDER);
+    });
+  });
+
+  describe('folders inside and the link limit', () => {
+    const FLAT = html(anchors(3));
+    const USAGE: AiUsage = {
+      linksUsed: 0,
+      linksLimit: 100,
+      resetsOn: '2026-12-01',
+      backfillUsed: 100,
+      backfillLimit: 5_000,
+    };
+
+    it('defaults to the file for a file with folders and to none without AI', async () => {
+      const { flow } = await setup();
+      await flow.chooseFile(file(SMALL));
+      expect(flow.foldersMode()).toBe(IMPORT_FOLDERS_MODE.File);
+
+      await flow.chooseFile(file(FLAT));
+      expect(flow.hasFolders()).toBe(false);
+      expect(flow.foldersMode()).toBe(IMPORT_FOLDERS_MODE.None);
+      expect(flow.aiOffer()).toBeNull();
+    });
+
+    it('offers AI only with AI on, an allowance with room for every link and a groupable count', async () => {
+      const { flow, ai } = await setup();
+      await flow.chooseFile(file(FLAT));
+      ai.isOn.set(true);
+      expect(flow.aiOffer()).toBeNull();
+
+      ai.usage.set(USAGE);
+      expect(flow.aiOffer()).toEqual({ left: 4_900 });
+
+      ai.usage.set({ ...USAGE, backfillUsed: 4_999 });
+      expect(flow.aiOffer()).toBeNull();
+      ai.usage.set({ ...USAGE, backfillLimit: 0, backfillUsed: 0 });
+      expect(flow.aiOffer()).toBeNull();
+      ai.usage.set(USAGE);
+      ai.providerUnavailable.set(true);
+      expect(flow.aiOffer()).toBeNull();
+
+      ai.providerUnavailable.set(false);
+      await flow.chooseFile(file(html(anchors(IMPORT_LIMIT.GroupLinksMax + 1))));
+      expect(flow.aiOffer()).toBeNull();
+    });
+
+    it('preselects AI for a flat file when it is offered, and falls back when it stops being possible', async () => {
+      const { flow, ai } = await setup();
+      ai.isOn.set(true);
+      ai.usage.set(USAGE);
+
+      await flow.chooseFile(file(FLAT));
+      expect(flow.foldersMode()).toBe(IMPORT_FOLDERS_MODE.Ai);
+
+      ai.isOn.set(false);
+      expect(flow.foldersMode()).toBe(IMPORT_FOLDERS_MODE.None);
+    });
+
+    it('imports only what the link limit has room for and says how many are left out', async () => {
+      const { flow, api, runner } = await setup();
+      api.check.mockReturnValue(of({ saved: [], room: 2 }));
+      await flow.chooseFile(file(FLAT));
+
+      expect(flow.importCount()).toBe(2);
+      expect(flow.overRoom()).toBe(1);
+      flow.startImport();
+
+      const [request] = runner.start.mock.calls[0];
+      expect(request.plan.links).toHaveLength(2);
+    });
+
+    it('cannot import anything when there is no room', async () => {
+      const { flow, api, runner } = await setup();
+      api.check.mockReturnValue(of({ saved: [], room: 0 }));
+      await flow.chooseFile(file(FLAT));
+
+      expect(flow.importCount()).toBe(0);
+      flow.startImport();
+      expect(runner.start).not.toHaveBeenCalled();
+    });
+
+    it('names where the links go for the "no folders" choice', async () => {
+      const { flow } = await setup();
+      await flow.chooseFile(file(FLAT));
+      expect(flow.targetName()).toBe('Imported bookmarks');
+      flow.target.set(null);
+      expect(flow.targetName()).toBe('Unsorted');
+      flow.target.set('folder-1');
+      expect(flow.targetName()).toBe('Reading');
+    });
+  });
+
+  describe('AI groups (step 2a)', () => {
+    const FLAT = html(anchors(3));
+    const USAGE: AiUsage = {
+      linksUsed: 0,
+      linksLimit: 100,
+      resetsOn: '2026-12-01',
+      backfillUsed: 0,
+      backfillLimit: 5_000,
+    };
+
+    async function grouped() {
+      const ctx = await setup();
+      ctx.ai.isOn.set(true);
+      ctx.ai.usage.set(USAGE);
+      ctx.api.groups.mockReturnValue(
+        of({
+          groups: [
+            { key: 'g1', name: 'Dev', folderId: null, linkIndexes: [0, 1] },
+            { key: 'g2', name: 'Reading', folderId: 'folder-1', linkIndexes: [2] },
+          ],
+          rest: [],
+          charged: 3,
+        }),
+      );
+      await ctx.flow.chooseFile(file(FLAT));
+      return ctx;
+    }
+
+    it('asks for groups of the links the import would send, with the file folder names as hints', async () => {
+      const { flow, api } = await grouped();
+      await flow.chooseFile(file(SMALL));
+      await flow.requestGroups();
+
+      expect(flow.step()).toBe(IMPORT_STEP.Groups);
+      // The repeat inside the file is left out, the file's folder only hints.
+      expect(api.groups).toHaveBeenCalledWith({
+        links: [
+          { title: 'Link 0', url: 'https://site0.example/page' },
+          { title: 'Link 1', url: 'https://site1.example/page' },
+          { title: 'Top', url: 'https://top.example/' },
+        ],
+        folderNames: ['Dev'],
+      });
+      expect(flow.groups.groupCount()).toBe(2);
+    });
+
+    it('starts the import with the ticked new groups as folders and the AI pass', async () => {
+      const { flow, runner } = await grouped();
+      await flow.requestGroups();
+      flow.groups.rename('g1', '  Dev tools ');
+
+      flow.startImport();
+
+      const [request] = runner.start.mock.calls[0];
+      expect(request.start.aiPass).toBe(true);
+      expect(request.plan.folders).toEqual([{ key: 'g1', parentKey: null, name: 'Dev tools' }]);
+      expect(request.plan.links.map((link) => [link.folderKey, link.folderId])).toEqual([
+        ['g1', undefined],
+        ['g1', undefined],
+        [null, 'folder-1'],
+      ]);
+      expect(request.grouped).toEqual({ folders: 2, created: 1 });
+    });
+
+    it('sends an unticked group to the target and no folder when nothing is ticked', async () => {
+      const { flow, runner } = await grouped();
+      await flow.requestGroups();
+      flow.groups.setIncluded('g1', false);
+      flow.groups.setIncluded('g2', false);
+
+      flow.startImport();
+
+      const [request] = runner.start.mock.calls[0];
+      expect(request.plan.folders).toEqual([]);
+      expect(request.plan.links.every((link) => link.folderKey === null && !link.folderId)).toBe(
+        true,
+      );
+      expect(request.grouped).toEqual({ folders: 0, created: 0 });
+    });
+
+    it('goes back to the check and drops the groups', async () => {
+      const { flow } = await grouped();
+      await flow.requestGroups();
+
+      flow.back();
+
+      expect(flow.step()).toBe(IMPORT_STEP.Review);
+      expect(flow.groups.groups()).toEqual([]);
+    });
+
+    it('imports as the file has it after a failed grouping, without the AI pass', async () => {
+      const { flow, api, runner } = await grouped();
+      api.groups.mockReturnValue(throwError(() => new Error('503')));
+      await flow.requestGroups();
+      expect(flow.groups.error()).not.toBeNull();
+
+      flow.importAsFile();
+      flow.startImport();
+
+      const [request] = runner.start.mock.calls[0];
+      expect(request.start.aiPass).toBeUndefined();
+      expect(request.grouped).toBeUndefined();
+      expect(request.plan.folders).toEqual([]);
     });
   });
 });

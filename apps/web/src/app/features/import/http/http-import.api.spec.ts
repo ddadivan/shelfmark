@@ -24,8 +24,11 @@ describe('HttpImportApi', () => {
       items: [{ url: 'https://a.example/', idempotencyKey: 'k1' }],
       skipRepeats: false,
     };
+    const groups = { links: [{ title: 'A', url: 'https://a.example/' }], folderNames: ['Docs'] };
     const calls: Array<[() => void, string, string, unknown]> = [
       [() => api.list().subscribe(), 'GET', '/api/imports', null],
+      [() => api.get('i1').subscribe(), 'GET', '/api/imports/i1', null],
+      [() => api.groups(groups).subscribe(), 'POST', '/api/imports/groups', groups],
       [
         () => api.check(['https://a.example/']).subscribe(),
         'POST',

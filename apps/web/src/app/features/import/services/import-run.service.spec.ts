@@ -23,6 +23,7 @@ import type { ImportApi } from '../models/import-api.interface';
 import { IMPORT_RUN_PHASE } from '../models/import-run-phase.const';
 import type { ImportPlan } from '../models/import-plan.interface';
 import type { ImportRunRequest } from '../models/import-run-request.interface';
+import { ImportAiFollowService } from './import-ai-follow.service';
 import { ImportRunService } from './import-run.service';
 import { RecentImportsStore } from './recent-imports.store';
 
@@ -64,6 +65,8 @@ const created = (count: number): ImportLinksResponse => ({
 async function setup() {
   const api = {
     list: vi.fn(),
+    get: vi.fn(),
+    groups: vi.fn(),
     check: vi.fn(),
     start: vi.fn<ImportApi['start']>(() =>
       of({ id: 'imp1', targetFolderId: 'target1', folders: [{ key: 'f1', id: 'folder1' }] }),
@@ -73,6 +76,7 @@ async function setup() {
     undo: vi.fn(),
   };
   const toasts: ToastOptions[] = [];
+  const follow = { watch: vi.fn() };
   const refreshed = {
     folders: vi.fn(async () => undefined),
     tags: vi.fn(async () => undefined),
@@ -92,6 +96,7 @@ async function setup() {
       { provide: TrashStore, useValue: { refresh: refreshed.trash } },
       { provide: LinksStore, useValue: { refresh: refreshed.links } },
       { provide: RecentImportsStore, useValue: { load: refreshed.recent } },
+      { provide: ImportAiFollowService, useValue: follow },
       { provide: TabSyncService, useValue: { post: refreshed.post } },
       {
         provide: ToastService,
@@ -105,7 +110,7 @@ async function setup() {
     ],
   });
   await loadEnglish();
-  return { api, toasts, refreshed, service: TestBed.inject(ImportRunService) };
+  return { api, toasts, refreshed, follow, service: TestBed.inject(ImportRunService) };
 }
 
 function httpError(status: number): HttpErrorResponse {
@@ -348,5 +353,55 @@ describe('ImportRunService', () => {
     const { service } = await setup();
 
     expect(service.percent()).toBe(100);
+  });
+
+  describe('AI groups', () => {
+    it('files a link into the existing folder it names, ahead of a folder key', async () => {
+      const { api, service } = await setup();
+      const base = request(2);
+
+      await service.start({
+        ...base,
+        plan: {
+          ...base.plan,
+          links: [
+            { ...base.plan.links[0], folderKey: 'f1', folderId: 'existing' },
+            base.plan.links[1],
+          ],
+        },
+      });
+
+      const [, body] = api.addLinks.mock.calls[0];
+      expect(body.items.map((item) => item.folderId)).toEqual(['existing', undefined]);
+    });
+
+    it('starts the AI follow-up for an import that asked for the pass, after the library refresh', async () => {
+      const { follow, refreshed, service } = await setup();
+
+      await service.start(request(3, {}, { aiPass: true }));
+
+      expect(follow.watch).toHaveBeenCalledWith('imp1');
+      expect(refreshed.post).toHaveBeenCalledWith({ kind: TAB_SYNC_KIND.LibraryChanged });
+    });
+
+    it('does not follow an import without the pass, or one that saved nothing', async () => {
+      const first = await setup();
+      await first.service.start(request(2));
+      expect(first.follow.watch).not.toHaveBeenCalled();
+      TestBed.resetTestingModule();
+
+      const second = await setup();
+      second.api.addLinks.mockReturnValue(throwError(() => httpError(500)));
+      await second.service.start(request(2, {}, { aiPass: true }));
+      expect(second.follow.watch).not.toHaveBeenCalled();
+    });
+
+    it('keeps the folders of the groups for the summary', async () => {
+      const { service } = await setup();
+
+      await service.start({ ...request(2), grouped: { folders: 3, created: 2 } });
+
+      expect(service.run().grouped).toEqual({ folders: 3, created: 2 });
+    });
   });
 });

@@ -8,4 +8,8 @@ export interface MockImportRecord {
   /** Tag names this import created. */
   readonly tagNames: string[];
   undone: boolean;
+  /** The import asked for the AI pass (`StartImportRequest.aiPass`). */
+  readonly aiPass: boolean;
+  /** How often `get` asked since the import finished: the pass is done after a few. */
+  aiPolls: number;
 }

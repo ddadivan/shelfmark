@@ -44,17 +44,20 @@ export class MockAiTidy {
   /** Rows a run accepted, per link: Undo makes them `suggested` again. */
   private readonly accepted = new Map<string, LinkSuggestion[]>();
 
-  /** `GET /api/ai/tidy`, after the link `after` when it is listed or known; AI off answers []. */
-  list(after?: string): TidyListResponse {
-    const all = this.items();
+  /**
+   * `GET /api/ai/tidy`, after the link `after` when it is listed or known; AI off answers [].
+   * With `importId` the links of that import in any folder (an unknown import lists nothing).
+   */
+  list(after?: string, importId?: string): TidyListResponse {
+    const all = this.items(importId);
     const cursor = this.library.links.find((link) => link.id === after);
     const items = cursor ? all.filter((item) => newestFirst(item.link, cursor) > 0) : all;
     return { items: items.slice(0, TIDY_LIMIT.PageMax), total: items.length };
   }
 
   /** `GET /api/ai/tidy/count`. */
-  count(): number {
-    return this.items().length;
+  count(importId?: string): number {
+    return this.items(importId).length;
   }
 
   /** `POST /api/ai/tidy/apply`; `null` while AI is off (409). */
@@ -173,13 +176,17 @@ export class MockAiTidy {
     return { links: changed };
   }
 
-  private items(): TidyItem[] {
+  private items(importId?: string): TidyItem[] {
     if (!this.ai.settings.enabled) {
       return [];
     }
     this.ai.settle();
+    const imported =
+      importId === undefined
+        ? null
+        : (this.library.importLinkIds.get(importId) ?? new Set<string>());
     return this.library.links
-      .filter((link) => link.folderId === null)
+      .filter((link) => (imported === null ? link.folderId === null : imported.has(link.id)))
       .sort(newestFirst)
       .flatMap((link): TidyItem[] => {
         const suggestions = this.open(link);

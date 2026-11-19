@@ -6,21 +6,28 @@ import {
   FOLDER_DEFAULT_ICON,
   FOLDER_DELETE_MODE,
   FOLDER_ERROR_MESSAGE,
+  IMPORT_AI_STATE,
   FOLDER_LIMIT,
   IMPORT_ERROR_MESSAGE,
   IMPORT_LIMIT,
   LINK_BATCH_ERROR_CODE,
   LINK_LIMIT,
   linkLimitMessage,
+  SUGGESTION_KIND,
+  SUGGESTION_STATE,
   normalizeUrl,
   type FinishImportRequest,
   type FolderResponse,
   type ImportCheckResponse,
   type ImportFolderId,
+  type ImportGroupsRequest,
+  type ImportGroupsResponse,
   type ImportLinksRequest,
   type ImportLinksResponse,
   type LinkBatchItemError,
+  type ImportSummary,
   type LinkResponse,
+  type LinkSuggestion,
   type ListImportsResponse,
   type StartImportRequest,
   type StartImportResponse,
@@ -28,15 +35,26 @@ import {
 } from '@shelfmark/contracts';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { mockHttpError } from '../../../core/api/mock-http-error';
+import { MockAiData } from '../../ai/mock/mock-ai-data';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { normalizeLinkTags } from '../../links/mock/normalize-link-tags';
 import { MOCK_HOST } from '../../links/models/mock-host.const';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import { displayHost } from '../../links/utils/http-url';
 import type { ImportApi } from '../models/import-api.interface';
+import { mockImportGroups } from './mock-import-groups';
 import type { MockImportRecord } from './models/mock-import-record.interface';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** `get` answers `running` this many times after the import finished, then `done`. */
+const AI_POLLS_UNTIL_DONE = 2;
+
+/** Marks in a URL that make the mock grouping fail (503) or report a short allowance (409). */
+/** The grouping takes a moment, like the real one (5 to 10 s). */
+const MOCK_AI_GROUPS_MS = 900;
+const GROUPS_FAIL_MARKER = 'ai-fail';
+const GROUPS_ALLOWANCE_MARKER = 'ai-quota';
 
 /**
  * `ImportApi` over the in-memory mock library, following the API (ADR 0056): the start creates
@@ -46,6 +64,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 @Service()
 export class MockImportApi implements ImportApi {
   private readonly data = inject(MockLibraryData);
+  private readonly ai = inject(MockAiData);
   private imports: MockImportRecord[] = [];
   /** Idempotency keys already used, with their link. */
   private readonly created = new Map<string, string>();
@@ -68,12 +87,45 @@ export class MockImportApi implements ImportApi {
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
+  get(id: string): Observable<ImportSummary> {
+    return defer(() => {
+      const record = this.imports.find((item) => item.summary.id === id);
+      if (!record) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.NotFound, IMPORT_ERROR_MESSAGE.NotFound),
+        );
+      }
+      this.advanceAiPass(record);
+      return of(record.summary);
+    }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
   check(urls: readonly string[]): Observable<ImportCheckResponse> {
     return defer(() => {
       const saved = new Set(this.data.links.map((link) => normalizeUrl(link.url)));
       const indexes = urls.flatMap((url, index) => (saved.has(normalizeUrl(url)) ? [index] : []));
-      return of({ saved: indexes });
+      return of({
+        saved: indexes,
+        room: Math.max(0, LINK_LIMIT.PerUserMax - this.data.links.length),
+      });
     }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
+  groups(request: ImportGroupsRequest): Observable<ImportGroupsResponse> {
+    return defer(() => {
+      const urls = request.links.map((link) => link.url);
+      if (urls.some((url) => url.includes(GROUPS_ALLOWANCE_MARKER))) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.Conflict, IMPORT_ERROR_MESSAGE.AiAllowance),
+        );
+      }
+      if (urls.some((url) => url.includes(GROUPS_FAIL_MARKER))) {
+        return throwError(() =>
+          mockHttpError(HttpStatusCode.ServiceUnavailable, IMPORT_ERROR_MESSAGE.AiFailed),
+        );
+      }
+      return of(mockImportGroups(request.links, this.data.folderList));
+    }).pipe(delay(MOCK_AI_GROUPS_MS));
   }
 
   start(request: StartImportRequest): Observable<StartImportResponse> {
@@ -98,6 +150,7 @@ export class MockImportApi implements ImportApi {
         );
       }
       const id = globalThis.crypto.randomUUID();
+      const imported = new Set<string>();
       const folderIds = new Set<string>();
       let targetFolderId = request.targetFolderId ?? null;
       if (request.newFolderName !== undefined) {
@@ -126,14 +179,18 @@ export class MockImportApi implements ImportApi {
             foldersCreated: folderIds.size,
             skipped: 0,
             failed: 0,
+            ai: null,
           },
           folderIds,
-          linkIds: new Set(),
+          linkIds: imported,
           tagNames: [],
           undone: false,
+          aiPass: request.aiPass === true,
+          aiPolls: 0,
         },
         ...this.imports,
       ];
+      this.data.importLinkIds.set(id, imported);
       return of({ id, targetFolderId, folders });
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
@@ -233,6 +290,15 @@ export class MockImportApi implements ImportApi {
         skipped: request.skipped,
         failed: request.failed,
         finishedAt: new Date().toISOString(),
+        ai: record.aiPass
+          ? {
+              state: IMPORT_AI_STATE.Running,
+              total: record.summary.linksCreated,
+              done: 0,
+              summaries: 0,
+              suggestions: 0,
+            }
+          : null,
       };
       return of(undefined);
     }).pipe(delay(MOCK_LATENCY_MS.List));
@@ -253,6 +319,48 @@ export class MockImportApi implements ImportApi {
       }
       return of(this.undoRecord(record));
     }).pipe(delay(MOCK_LATENCY_MS.Create));
+  }
+
+  /** The AI pass finishes after a few reads: every link has a summary, some a tag suggestion. */
+  private advanceAiPass(record: MockImportRecord): void {
+    const ai = record.summary.ai;
+    if (ai === null || ai.state !== IMPORT_AI_STATE.Running) return;
+    record.aiPolls += 1;
+    if (record.aiPolls < AI_POLLS_UNTIL_DONE) {
+      record.summary = { ...record.summary, ai: { ...ai, done: Math.floor(ai.total / 2) } };
+      return;
+    }
+    const suggested = this.suggestTags(record);
+    record.summary = {
+      ...record.summary,
+      ai: {
+        ...ai,
+        state: IMPORT_AI_STATE.Done,
+        done: ai.total,
+        summaries: ai.total,
+        suggestions: suggested,
+      },
+    };
+  }
+
+  /** A new-tag suggestion named after the site for every other link; returns how many links got one. */
+  private suggestTags(record: MockImportRecord): number {
+    const links = this.data.links.filter((item) => record.linkIds.has(item.id));
+    let count = 0;
+    links.forEach((link, index) => {
+      const host = displayHost(link.url).split('.').at(0) ?? '';
+      if (index % 2 === 1 || host === '') return;
+      const row: LinkSuggestion = {
+        id: globalThis.crypto.randomUUID(),
+        kind: SUGGESTION_KIND.NewTag,
+        state: SUGGESTION_STATE.Suggested,
+        tagName: host,
+        folderId: null,
+      };
+      this.ai.setSuggestions(link.id, [...this.ai.suggestionsOf(link.id), row]);
+      count += 1;
+    });
+    return count;
   }
 
   /** Like the API: what the user added is moved out first, then one Trash entry per top folder. */

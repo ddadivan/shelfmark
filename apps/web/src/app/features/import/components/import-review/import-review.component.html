@@ -26,14 +26,20 @@
     (checkedChange)="flow.skipDuplicates.set($event)"
   />
 }
-@if ((flow.counts()?.folders ?? 0) > 0) {
-  <ui-checkbox
-    [label]="'import.review.keep' | transloco"
-    [hint]="'import.review.keepHint' | transloco"
-    [checked]="flow.keepStructure()"
-    (checkedChange)="flow.keepStructure.set($event)"
+<div class="import-review__modes">
+  <p class="import-review__modes-label" [id]="modesLabelId">
+    {{ 'import.review.folders.label' | transloco }}
+  </p>
+  <ui-radio-group
+    [ariaLabelledby]="modesLabelId"
+    [options]="modeOptions()"
+    [value]="flow.foldersMode()"
+    (valueChange)="setMode($event)"
   />
+</div>
+@if (flow.overRoom() > 0 || flow.room() <= 0) {
+  <ui-notice [kind]="NOTICE_KIND.Warning">{{ roomText() }}</ui-notice>
 }
-@if (flow.importCount() === 0) {
+@if (flow.importCount() === 0 && flow.room() > 0) {
   <ui-notice [kind]="NOTICE_KIND.Info">{{ 'import.review.nothing' | transloco }}</ui-notice>
 }

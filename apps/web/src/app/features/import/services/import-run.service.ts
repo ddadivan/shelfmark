@@ -25,6 +25,7 @@ import { IMPORT_RUN_PHASE } from '../models/import-run-phase.const';
 import type { ImportRunRequest } from '../models/import-run-request.interface';
 import type { ImportRunState } from '../models/import-run-state.interface';
 import { chunkBySize } from '../utils/chunk-by-size';
+import { ImportAiFollowService } from './import-ai-follow.service';
 import { RecentImportsStore } from './recent-imports.store';
 
 /** Statuses after which the next batches would fail too (session, import gone or closed, cap). */
@@ -68,6 +69,7 @@ export class ImportRunService {
       total: plan.links.length,
       skipped: plan.skipped,
       targetName: request.targetName,
+      grouped: request.grouped ?? null,
     });
     let started: StartImportResponse;
     try {
@@ -92,7 +94,8 @@ export class ImportRunService {
       folders: started.folders.length + (request.start.newFolderName === undefined ? 0 : 1),
     }));
     const items: ImportLinkItem[] = plan.links.map((link) => {
-      const folderId = link.folderKey === null ? undefined : folderIds.get(link.folderKey);
+      const folderId =
+        link.folderId ?? (link.folderKey === null ? undefined : folderIds.get(link.folderKey));
       return { ...link.item, ...(folderId !== undefined && { folderId }) };
     });
     await this.sendBatches(started.id, items);
@@ -104,6 +107,9 @@ export class ImportRunService {
     }
     this.state.update((state) => ({ ...state, phase: IMPORT_RUN_PHASE.Done }));
     this.refreshLibrary();
+    if (request.start.aiPass === true && this.state().created > 0) {
+      this.injector.get(ImportAiFollowService).watch(started.id);
+    }
     if (!this.dialogShown) this.announce();
   }
 

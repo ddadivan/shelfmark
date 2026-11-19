@@ -23,6 +23,7 @@ function summary(id: string, extra: Partial<ImportSummary> = {}): ImportSummary 
     fileName: `${id}.html`,
     createdAt: '2026-11-18T10:00:00.000Z',
     finishedAt: '2026-11-18T10:01:00.000Z',
+    ai: null,
     targetFolderId: null,
     linksCreated: 5,
     foldersCreated: 1,

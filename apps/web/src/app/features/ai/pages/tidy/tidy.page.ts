@@ -1,6 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { ButtonComponent, IconComponent, ICON_SIZE, ProgressBarComponent } from '@shelfmark/ui';
 import { pluralKey } from '../../../../core/i18n/plural-key';
@@ -10,6 +11,7 @@ import { APP_PATH } from '../../../../models/app-path.const';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { TidyRowComponent } from '../../components/tidy-row/tidy-row.component';
 import type { TidyChipToggle } from '../../models/tidy-chip-toggle.interface';
+import { TIDY_IMPORT_PARAM } from '../../../import/models/tidy-import-param.const';
 import { AiSettingsStore } from '../../services/ai-settings.store';
 import { TidyStore } from '../../services/tidy.store';
 
@@ -43,13 +45,18 @@ export default class TidyPage {
   protected readonly settings = inject(AiSettingsStore);
   protected readonly compact = inject(ViewportService).compact;
   private readonly router = inject(Router);
+  private readonly query = toSignal(inject(ActivatedRoute).queryParamMap);
   protected readonly unsortedHref = `/${APP_PATH.Unsorted}`;
   protected readonly pluralKey = pluralKey;
   protected readonly ICON_SIZE = ICON_SIZE;
 
   constructor() {
     void inject(FoldersStore).load();
-    void this.store.load();
+    effect(() => {
+      // `?import=<id>` limits the review to one import (the toast after its AI pass opens it).
+      const importId = this.query()?.get(TIDY_IMPORT_PARAM) || null;
+      void this.store.setImport(importId);
+    });
     effect(() => {
       // AI was turned off meanwhile (another tab, Settings): nothing AI stays on screen.
       if (this.settings.loaded() && !this.settings.isOn()) {
@@ -61,6 +68,14 @@ export default class TidyPage {
   protected async back(event?: MouseEvent): Promise<void> {
     event?.preventDefault();
     await this.router.navigateByUrl(this.unsortedHref);
+  }
+
+  /** "Review everything": the page without the import limit. */
+  protected async showAll(): Promise<void> {
+    await this.router.navigate([], {
+      queryParams: { [TIDY_IMPORT_PARAM]: null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   protected toggle(change: TidyChipToggle): void {

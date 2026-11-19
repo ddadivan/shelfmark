@@ -1,9 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import {
+  IMPORT_AI_STATE,
   IMPORT_ERROR_MESSAGE,
   IMPORT_SOURCE,
   LINK_BATCH_ERROR_CODE,
+  LINK_LIMIT,
   TRASH_ITEM_KIND,
   type ImportLinkItem,
   type StartImportRequest,
@@ -279,7 +281,109 @@ describe('MockImportApi', () => {
 
       const result = await ok(api.check(['https://new.example/', saved, 'https://other.example/']));
 
-      expect(result).toEqual({ saved: [1] });
+      expect(result.saved).toEqual([1]);
+    });
+  });
+
+  describe('room', () => {
+    it('answers how many more links fit the link limit', async () => {
+      const { api, data } = setup();
+
+      const result = await ok(api.check(['https://new.example/']));
+
+      expect(result.room).toBe(LINK_LIMIT.PerUserMax - data.links.length);
+    });
+  });
+
+  describe('groups', () => {
+    const links = [
+      { title: 'Angular', url: 'https://angular.dev/' },
+      { title: 'DOMParser - MDN', url: 'https://developer.mozilla.org/docs' },
+      { title: 'Best ramen', url: 'https://seriouseats.com/ramen' },
+      { title: 'Sourdough', url: 'https://kingarthurbaking.com/recipes/sourdough' },
+      { title: 'BBC News', url: 'https://www.bbc.com/news' },
+      { title: 'Hacker', url: 'https://news.ycombinator.com/' },
+      { title: 'Lonely', url: 'https://example.com/no-title' },
+    ];
+
+    it('groups by topic, matches an existing folder by name and leaves the rest', async () => {
+      const { api, data } = setup();
+      const reading = data.folderList.find((folder) => folder.name === 'Reading');
+
+      const result = await ok(api.groups({ links, folderNames: [] }));
+
+      expect(result.groups.map((group) => [group.key, group.name, group.linkIndexes])).toEqual([
+        ['g1', 'Recipes', [2, 3]],
+        ['g2', 'Development', [0, 1]],
+        ['g3', 'Reading', [4, 5]],
+      ]);
+      expect(result.groups.map((group) => group.folderId)).toEqual([null, null, reading?.id]);
+      expect(result.rest).toEqual([6]);
+      expect(result.charged).toBe(links.length);
+    });
+
+    it('answers 409 for a short allowance and 503 for a failed grouping', async () => {
+      const { api } = setup();
+
+      const quota = await settle(
+        api.groups({
+          links: [{ title: 'x', url: 'https://example.org/ai-quota' }],
+          folderNames: [],
+        }),
+      );
+      const fail = await settle(
+        api.groups({
+          links: [{ title: 'x', url: 'https://example.org/ai-fail' }],
+          folderNames: [],
+        }),
+      );
+
+      expect((quota.error as HttpErrorResponse).status).toBe(409);
+      expect((fail.error as HttpErrorResponse).status).toBe(503);
+    });
+  });
+
+  describe('AI pass', () => {
+    async function finished(aiPass: boolean) {
+      const { api, data } = setup();
+      const response = await started(api, { ...START, aiPass });
+      await ok(
+        api.addLinks(response.id, {
+          items: [item('https://a.example/'), item('https://b.example/')],
+        }),
+      );
+      await ok(api.finish(response.id, { skipped: 0, failed: 0 }));
+      return { api, data, id: response.id };
+    }
+
+    it('has no AI summary for an import that did not ask for the pass', async () => {
+      const { api, id } = await finished(false);
+
+      expect((await ok(api.get(id))).ai).toBeNull();
+    });
+
+    it('runs the pass for a couple of reads, then is done with summaries and suggestions', async () => {
+      const { api, data, id } = await finished(true);
+
+      const first = await ok(api.get(id));
+      expect(first.ai).toMatchObject({ state: IMPORT_AI_STATE.Running, total: 2 });
+      const second = await ok(api.get(id));
+      expect(second.ai).toMatchObject({
+        state: IMPORT_AI_STATE.Done,
+        total: 2,
+        done: 2,
+        summaries: 2,
+        suggestions: 1,
+      });
+      expect(data.importLinkIds.get(id)?.size).toBe(2);
+    });
+
+    it('answers 404 for an unknown import', async () => {
+      const { api } = setup();
+
+      const outcome = await settle(api.get('nope'));
+
+      expect((outcome.error as HttpErrorResponse).status).toBe(404);
     });
   });
 

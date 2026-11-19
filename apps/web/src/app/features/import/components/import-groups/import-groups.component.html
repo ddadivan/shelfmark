@@ -1,0 +1,122 @@
+@if (state.loading()) {
+  <div class="import-groups__wait" role="status">
+    <ui-spinner [size]="SPINNER_SIZE.Sm" />
+    <span>{{ waiting() }}</span>
+  </div>
+} @else if (state.error(); as error) {
+  <ui-notice [kind]="NOTICE_KIND.Danger">
+    {{
+      (error === IMPORT_GROUPS_ERROR.Allowance ? 'import.groups.allowance' : 'import.groups.failed')
+        | transloco
+    }}
+  </ui-notice>
+} @else {
+  <p class="import-groups__heading" role="status">{{ heading() }}</p>
+  <ul class="import-groups__list">
+    @for (row of rows(); track row.group.key) {
+      <li class="import-groups__group">
+        <div class="import-groups__row">
+          <ui-checkbox
+            hideLabel
+            [label]="row.group.name"
+            [checked]="row.group.included"
+            (checkedChange)="state.setIncluded(row.group.key, $event)"
+          />
+          @if (row.group.folderId === null) {
+            <ui-input
+              compact
+              class="import-groups__name"
+              [label]="'import.groups.nameLabel' | transloco"
+              [value]="row.group.name"
+              [error]="row.error ? ('import.groups.nameEmpty' | transloco) : ''"
+              (valueChange)="rename(row.group, $event)"
+            />
+          } @else {
+            <span class="import-groups__name import-groups__name--text">{{ row.group.name }}</span>
+          }
+          <span class="import-groups__count">{{ row.count }}</span>
+          @if (row.group.folderId === null) {
+            <ui-badge [tone]="BADGE_TONE.Neutral">{{ 'import.groups.new' | transloco }}</ui-badge>
+          } @else {
+            <ui-badge [tone]="BADGE_TONE.Accent">{{
+              'import.groups.existing' | transloco
+            }}</ui-badge>
+          }
+          <ui-button
+            iconOnly
+            [variant]="BUTTON_VARIANT.Ghost"
+            [iconLeft]="open() === row.group.key ? 'chevron-down' : 'chevron-right'"
+            [ariaLabel]="
+              (open() === row.group.key ? 'import.groups.hideLinks' : 'import.groups.showLinks')
+                | transloco: { name: row.group.name }
+            "
+            [ariaExpanded]="open() === row.group.key"
+            (click)="toggleOpen(row.group.key)"
+          />
+        </div>
+        @if (open() === row.group.key) {
+          <ul class="import-groups__links">
+            @for (link of openLinks(); track link.index) {
+              <li class="import-groups__link">
+                <span class="import-groups__link-title" [title]="link.url">{{ link.title }}</span>
+                <ui-select
+                  compact
+                  class="import-groups__move"
+                  [label]="'import.groups.moveLabel' | transloco: { title: link.title }"
+                  [options]="targets()"
+                  [value]="placeOf(link.index)"
+                  (valueChange)="move(link.index, $event)"
+                />
+              </li>
+            }
+          </ul>
+        } @else if (row.samples) {
+          <p class="import-groups__samples">{{ row.samples }}</p>
+        }
+      </li>
+    }
+    <li class="import-groups__group import-groups__group--rest">
+      <div class="import-groups__row">
+        <span class="import-groups__name import-groups__name--text">{{
+          'import.groups.other' | transloco
+        }}</span>
+        <span class="import-groups__count">{{ rest().count }}</span>
+        <ui-button
+          iconOnly
+          [variant]="BUTTON_VARIANT.Ghost"
+          [iconLeft]="open() === OTHER ? 'chevron-down' : 'chevron-right'"
+          [ariaLabel]="
+            (open() === OTHER ? 'import.groups.hideLinks' : 'import.groups.showLinks')
+              | transloco: { name: 'import.groups.other' | transloco }
+          "
+          [ariaExpanded]="open() === OTHER"
+          (click)="toggleOpen(OTHER)"
+        />
+      </div>
+      @if (open() === OTHER) {
+        <ul class="import-groups__links">
+          @for (link of openLinks(); track link.index) {
+            <li class="import-groups__link">
+              <span class="import-groups__link-title" [title]="link.url">{{ link.title }}</span>
+              <ui-select
+                compact
+                class="import-groups__move"
+                [label]="'import.groups.moveLabel' | transloco: { title: link.title }"
+                [options]="targets()"
+                [value]="placeOf(link.index)"
+                (valueChange)="move(link.index, $event)"
+              />
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="import-groups__samples">
+          {{ 'import.groups.otherText' | transloco: { target: flow.targetName() } }}
+        </p>
+      }
+    </li>
+  </ul>
+  <p class="import-groups__hint">
+    {{ 'import.groups.hint' | transloco: { target: flow.targetName() } }}
+  </p>
+}

@@ -69,6 +69,9 @@ export function planImport(
       },
     });
   });
+  if (options.limit !== undefined && links.length > options.limit) {
+    links.length = Math.max(0, options.limit);
+  }
   const folders = options.keepStructure ? usedFolders(parsed, links) : [];
   return { folders, links, skipped: parsed.notWeb + parsed.links.length - links.length };
 }

@@ -1,4 +1,8 @@
 <ui-dialog
+  appFileDrag
+  [appFileDragDisabled]="dropOff()"
+  (draggingChange)="setDragging($event)"
+  (fileDropped)="flow.chooseFile($event)"
   [title]="title() || ('import.title' | transloco)"
   [closeLabel]="'import.close' | transloco"
 >
@@ -20,27 +24,49 @@
         }
         <ui-drop-zone
           [accept]="flow.source().accept"
-          [label]="'import.source.drop' | transloco"
+          [label]="dropLabel()"
           [actionLabel]="'import.source.choose' | transloco"
-          [hint]="'import.source.browser.hint' | transloco"
+          [hint]="hint()"
+          [over]="flow.dragging()"
           [disabled]="flow.reading()"
           [invalid]="flow.problem() !== null"
           (fileSelected)="flow.chooseFile($event)"
         />
         <div class="import-dialog__status" role="status">
           @if (flow.reading()) {
-            <span class="import-dialog__reading"
-              ><ui-spinner size="sm" />{{ 'import.source.reading' | transloco }}</span
-            >
+            <span class="import-dialog__reading"><ui-spinner size="sm" />{{ readingText() }}</span>
           }
         </div>
         @if (problemText(); as message) {
           <ui-notice [kind]="NOTICE_KIND.Danger">{{ message }}</ui-notice>
         }
+        <div class="import-dialog__help">
+          <ui-button
+            size="sm"
+            [variant]="BUTTON_VARIANT.Ghost"
+            [iconRight]="helpOpen() ? 'chevron-down' : 'chevron-right'"
+            [ariaExpanded]="helpOpen()"
+            ariaControls="import-help"
+            (click)="helpOpen.set(!helpOpen())"
+          >
+            {{ 'import.help.link' | transloco }}
+          </ui-button>
+          @if (helpOpen()) {
+            <ul class="import-dialog__steps" id="import-help">
+              <li>{{ 'import.help.chrome' | transloco }}</li>
+              <li>{{ 'import.help.firefox' | transloco }}</li>
+              <li>{{ 'import.help.safari' | transloco }}</li>
+            </ul>
+          }
+        </div>
+        <app-recent-imports />
       </div>
     }
     @case (IMPORT_STEP.Review) {
       <app-import-review />
+    }
+    @case (IMPORT_STEP.Groups) {
+      <app-import-groups />
     }
     @case (IMPORT_STEP.Progress) {
       <app-import-progress />
@@ -58,10 +84,39 @@
           wrap
           [variant]="BUTTON_VARIANT.Primary"
           [disabled]="flow.importCount() === 0"
-          (click)="flow.startImport()"
+          (click)="flow.next()"
         >
-          {{ importKey() | transloco: { count: flow.importCount() } }}
+          @if (flow.foldersMode() === IMPORT_FOLDERS_MODE.Ai) {
+            {{ 'import.review.group' | transloco }}
+          } @else {
+            {{ importKey() | transloco: { count: flow.importCount() } }}
+          }
         </ui-button>
+      }
+      @case (IMPORT_STEP.Groups) {
+        <ui-button [block]="phone()" (click)="flow.back()">{{
+          'import.review.back' | transloco
+        }}</ui-button>
+        @if (flow.groups.error() !== null) {
+          <ui-button
+            [block]="phone()"
+            wrap
+            [variant]="BUTTON_VARIANT.Primary"
+            (click)="importPlain()"
+          >
+            {{ importKey() | transloco: { count: flow.importCount() } }}
+          </ui-button>
+        } @else {
+          <ui-button
+            [block]="phone()"
+            wrap
+            [variant]="BUTTON_VARIANT.Primary"
+            [disabled]="flow.groups.loading() || !flow.groups.valid()"
+            (click)="flow.startImport()"
+          >
+            {{ groupsKey() | transloco: { count: groupsCount() } }}
+          </ui-button>
+        }
       }
       @case (IMPORT_STEP.Progress) {
         @switch (runner.run().phase) {
@@ -87,7 +142,7 @@
           }
           @default {
             <ui-button [block]="phone()" (click)="close()">{{
-              'import.progress.done' | transloco
+              'import.progress.minimize' | transloco
             }}</ui-button>
           }
         }

@@ -53,7 +53,7 @@ describe('ImportProgressComponent', () => {
     expect(root.textContent).toContain('Importing links');
     expect(root.querySelector('.import-progress__count')?.textContent).toBe('212 of 1,234');
     expect(root.querySelector('ui-meter')).not.toBeNull();
-    expect(root.textContent).toContain('You can keep working.');
+    expect(root.textContent).toContain('You can keep working: you can close this window.');
   });
 
   it('updates the count while the run goes on', async () => {
@@ -84,6 +84,22 @@ describe('ImportProgressComponent', () => {
     expect(root.querySelector('.import-progress__title')?.textContent).toBe('1 link imported');
     expect(root.querySelector('.import-progress__text')?.textContent).toBe(
       'In “Imported bookmarks”. 1 folder.',
+    );
+  });
+
+  it('names the folders of the AI groups instead of the target', async () => {
+    const { root } = await setup({ ...DONE, folders: 18, grouped: { folders: 5, created: 3 } });
+
+    expect(root.querySelector('.import-progress__text')?.textContent).toBe(
+      'In 5 folders, 3 of them new.',
+    );
+  });
+
+  it('falls back to the target when no group got a link', async () => {
+    const { root } = await setup({ ...DONE, grouped: { folders: 0, created: 0 } });
+
+    expect(root.querySelector('.import-progress__text')?.textContent).toBe(
+      'In “Imported bookmarks”.',
     );
   });
 

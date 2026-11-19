@@ -47,14 +47,27 @@ export class ImportProgressComponent {
   /** "In “Imported bookmarks”. 18 folders. 37 skipped: …. 4 could not be saved." */
   protected readonly doneText = computed(() => {
     const run = this.runner.run();
-    const parts = [
-      run.targetName !== null
-        ? this.transloco.translate('import.progress.inFolder', { name: run.targetName })
-        : this.transloco.translate(
-            run.targetFolderId === null ? 'import.progress.inUnsorted' : 'import.progress.inTarget',
-          ),
-    ];
-    if (run.folders > 0) parts.push(this.plural('import.progress.folders', run.folders));
+    const parts: string[] = [];
+    if (run.grouped !== null && run.grouped.folders > 0) {
+      // With AI groups the summary names the folders the links went into instead of the target.
+      parts.push(
+        this.transloco.translate(pluralKey('import.progress.grouped', run.grouped.folders), {
+          count: this.locale.formatNumber(run.grouped.folders),
+          created: this.locale.formatNumber(run.grouped.created),
+        }),
+      );
+    } else {
+      parts.push(
+        run.targetName !== null
+          ? this.transloco.translate('import.progress.inFolder', { name: run.targetName })
+          : this.transloco.translate(
+              run.targetFolderId === null
+                ? 'import.progress.inUnsorted'
+                : 'import.progress.inTarget',
+            ),
+      );
+      if (run.folders > 0) parts.push(this.plural('import.progress.folders', run.folders));
+    }
     if (run.skipped > 0) parts.push(this.plural('import.progress.skipped', run.skipped));
     if (run.failed > 0) parts.push(this.plural('import.progress.failed', run.failed));
     return parts.join(' ');

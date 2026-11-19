@@ -157,12 +157,12 @@ export class MockAiApi implements AiApi {
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
 
-  getTidy(after?: string): Observable<TidyListResponse> {
-    return defer(() => of(this.tidy.list(after))).pipe(delay(MOCK_LATENCY_MS.List));
+  getTidy(after?: string, importId?: string): Observable<TidyListResponse> {
+    return defer(() => of(this.tidy.list(after, importId))).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
-  getTidyCount(): Observable<TidyCountResponse> {
-    return defer(() => of({ total: this.tidy.count() })).pipe(delay(MOCK_LATENCY_MS.List));
+  getTidyCount(importId?: string): Observable<TidyCountResponse> {
+    return defer(() => of({ total: this.tidy.count(importId) })).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
   applyTidy(request: TidyApplyRequest): Observable<TidyApplyResponse> {

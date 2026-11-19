@@ -5,8 +5,11 @@ import {
   type FinishImportRequest,
   type ImportCheckRequest,
   type ImportCheckResponse,
+  type ImportGroupsRequest,
+  type ImportGroupsResponse,
   type ImportLinksRequest,
   type ImportLinksResponse,
+  type ImportSummary,
   type ListImportsResponse,
   type StartImportRequest,
   type StartImportResponse,
@@ -26,6 +29,16 @@ export class HttpImportApi implements ImportApi {
 
   list(): Observable<ListImportsResponse> {
     return this.http.get<ListImportsResponse>(IMPORT_ENDPOINT.Base, { context: skipErrorToast() });
+  }
+
+  get(id: string): Observable<ImportSummary> {
+    return this.http.get<ImportSummary>(this.url(id, ''), { context: skipErrorToast() });
+  }
+
+  groups(request: ImportGroupsRequest): Observable<ImportGroupsResponse> {
+    return this.http.post<ImportGroupsResponse>(IMPORT_ENDPOINT.Groups, request, {
+      context: skipErrorToast(),
+    });
   }
 
   check(urls: readonly string[]): Observable<ImportCheckResponse> {

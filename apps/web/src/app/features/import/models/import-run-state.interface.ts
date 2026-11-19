@@ -1,3 +1,4 @@
+import type { ImportGroupedFolders } from './import-grouped-folders.interface';
 import type { ImportRunPhase } from './import-run-phase.type';
 
 /** Progress and result of the current import run. */
@@ -16,6 +17,8 @@ export interface ImportRunState {
   readonly targetFolderId: string | null;
   /** Name of the target folder for the summary; `null` for Unsorted. */
   readonly targetName: string | null;
+  /** With AI groups: folders used and new ones; the summary names them instead of the target. */
+  readonly grouped: ImportGroupedFolders | null;
   /** Message key when the run stopped before anything was written. */
   readonly errorKey: string | null;
 }
