@@ -1,6 +1,6 @@
 # Chrome Web Store listing: Shelfmark extension
 
-Texts to paste into the Chrome Web Store developer dashboard (#445). The author publishes; agents never do. English is the default listing language; the dashboard can add translated listings later (the extension itself already ships seven languages through `_locales`).
+Texts to paste into the Chrome Web Store developer dashboard (#445), as submitted with version 1.1.2 (Nov 19, 2026). The author publishes; agents never do. English is the default listing language; the dashboard can add translated listings later (the extension itself already ships seven languages through `_locales`).
 
 ## Store listing tab
 
@@ -19,6 +19,7 @@ Texts to paste into the Chrome Web Store developer dashboard (#445). The author 
 > - The page's title and address are already filled in.
 > - The folder comes from your domain rules, or pick one of your recent folders, or any folder.
 > - Add tags and a short note if you like, then press Save (or just Enter).
+> - With AI on in your account, press Fill in with AI: the title, folder and tags are filled in for you, and you can change anything.
 > - Already saved it? Shelfmark tells you when, and where, instead of making a copy.
 >
 > The extension reads a tab only when you click its button or press its shortcut, never in the background. It then sends the address of that one tab to your Shelfmark library to check whether you saved it already; the page is saved only when you press Save. If you click Fill in with AI and AI is on in your account, that address and title (and your note, if AI may read notes) are also sent to Shelfmark for AI suggestions. It can talk to Shelfmark only.
