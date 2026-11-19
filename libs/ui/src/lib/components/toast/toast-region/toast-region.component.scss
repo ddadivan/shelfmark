@@ -13,6 +13,9 @@
   // grows to the widest toast's max-content (a long second line, such as the titles of 16
   // deleted links), pushes the centred toasts to the right and half off the screen.
   grid-template-columns: minmax(0, 1fr);
+
+  // No effect on the one shared cell; read by the component as the gap of the fanned-out list.
+  row-gap: var(--space-2);
   justify-items: center;
   inline-size: 100%;
 
@@ -70,18 +73,16 @@
   }
 }
 
-// Fanned out: one column in stacking order (the newest nearest the edge, so it does not move
-// under the pointer). The grid has one cell per toast again.
+// Fanned out: a column above the newest toast (it stays nearest the edge, so it does not move
+// under the pointer). The toasts keep their shared cell and move up by `--ui-toast-lift` (the
+// heights of the newer toasts plus the gaps, set by the component), so opening and closing the
+// stack is one smooth transform transition, not a jump to another layout.
 :host(:hover),
 :host(:focus-within) {
-  gap: var(--space-2);
-
   .ui-toast-region__item {
-    grid-area: auto;
-    order: var(--ui-toast-index, 0);
     pointer-events: auto;
     opacity: 1;
-    transform: none;
+    transform: translateY(calc(var(--ui-toast-lift, 0rem) * -1));
 
     // The bridge keeps the pointer inside the stack when it moves between the toasts.
     &::before {

@@ -1,15 +1,14 @@
-@if (first(); as tag) {
-  <ui-chip
-    #firstChip
-    class="link-card-tags__first"
-    truncate
-    [clickable]="interactive()"
-    [uiTooltip]="firstClipped() ? tag : ''"
-    (pointerenter)="checkClipped(firstChip)"
-    (focusin)="checkClipped(firstChip)"
-    (clicked)="select(tag)"
-    >{{ tag }}</ui-chip
-  >
+@if (tags().length > 0) {
+  @if (first(); as tag) {
+    <ui-chip
+      #firstChip
+      class="link-card-tags__first"
+      truncate
+      [clickable]="interactive()"
+      (clicked)="select(tag)"
+      >{{ tag }}</ui-chip
+    >
+  }
   @if (more().count > 0) {
     <ui-chip
       class="link-card-tags__more"
@@ -19,9 +18,12 @@
       [uiPopoverTrigger]="popover"
       >{{ 'links.card.moreTags' | transloco: { count: more().count } }}</ui-chip
     >
-    <ui-popover #popover [heading]="'links.card.allTags' | transloco">
+    <ui-popover
+      #popover
+      [heading]="(collapsed() ? 'links.card.allTags' : 'links.card.otherTags') | transloco"
+    >
       <ul class="link-card-tags__all">
-        @for (name of tags(); track name) {
+        @for (name of hidden(); track name) {
           <li class="link-card-tags__item">
             <ui-chip truncate [clickable]="interactive()" (clicked)="select(name, popover)">{{
               name

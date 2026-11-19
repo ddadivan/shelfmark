@@ -331,7 +331,8 @@
         "many": "mais {{count}} tags: {{list}}",
         "other": "mais {{count}} tags: {{list}}"
       },
-      "allTags": "Todas as tags"
+      "allTags": "Todas as tags",
+      "otherTags": "Outras tags"
     },
     "item": {
       "edit": "Editar",
