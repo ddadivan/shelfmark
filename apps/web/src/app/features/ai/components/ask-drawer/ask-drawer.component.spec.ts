@@ -93,7 +93,7 @@ describe('AskDrawerComponent', () => {
     expect(await answer.isStreaming()).toBe(true);
     expect(await loader.getHarness(UiButtonHarness.with({ text: 'Stop' }))).toBeTruthy();
 
-    stream.next({ type: 'meta', allowance: ALLOWANCE, retrieved: 3 });
+    stream.next({ type: 'meta', allowance: ALLOWANCE });
     stream.next({ type: 'text', text: 'The quickest is the weeknight ramen ' });
     stream.next({ type: 'cite', n: 1 });
     stream.next({ type: 'cite', n: 2 });
@@ -104,6 +104,8 @@ describe('AskDrawerComponent', () => {
       notFound: false,
       truncated: false,
       allowance: ALLOWANCE,
+      turn: { question: '', answer: '', links: [] },
+      depth: 'quick',
     });
     stream.complete();
     await fixture.whenStable();
@@ -139,6 +141,8 @@ describe('AskDrawerComponent', () => {
       notFound: true,
       truncated: false,
       allowance: ALLOWANCE,
+      turn: { question: '', answer: '', links: [] },
+      depth: 'quick',
     });
     stream.complete();
     await fixture.whenStable();
@@ -208,6 +212,8 @@ describe('AskDrawerComponent', () => {
       notFound: true,
       truncated: false,
       allowance: ALLOWANCE,
+      turn: { question: '', answer: '', links: [] },
+      depth: 'quick',
     });
     second.complete();
     await fixture.whenStable();

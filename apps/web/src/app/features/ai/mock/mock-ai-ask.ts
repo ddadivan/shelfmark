@@ -1,6 +1,7 @@
 import { HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
+  ASK_DEPTH,
   ASK_ERROR_REASON,
   ASK_EVENT_TYPE,
   ASK_LIMIT,
@@ -110,7 +111,6 @@ export class MockAiAsk {
       event: {
         type: ASK_EVENT_TYPE.Meta,
         allowance: this.data.askAllowance(),
-        retrieved: sources.length,
       },
     };
     const failure = lower.includes(MOCK_AI_URL_MARKER.Fail)
@@ -195,6 +195,8 @@ export class MockAiAsk {
         notFound: cites.length === 0,
         truncated,
         allowance: this.data.askAllowance(),
+        turn: { question: '', answer: '', links: [] },
+        depth: ASK_DEPTH.Quick,
       },
     };
   }

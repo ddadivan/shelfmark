@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
   AI_SEARCH_STATE,
+  ASK_DEPTH,
   ASK_ERROR_REASON,
   ASK_EVENT_TYPE,
   type AskAllowance,
@@ -121,6 +122,8 @@ export class AskService {
           notFound: true,
           truncated: false,
           allowance: await this.usage.allowance(userId, tier),
+          turn: { question, answer: '', links: [] },
+          depth: ASK_DEPTH.Quick,
         });
         return;
       }
@@ -141,7 +144,6 @@ export class AskService {
         tracked.send({
           type: ASK_EVENT_TYPE.Meta,
           allowance: await this.usage.allowance(userId, tier),
-          retrieved: found.sources.length,
         });
         await this.answer(
           user,
@@ -289,6 +291,8 @@ export class AskService {
       notFound: citations.cited.length === 0,
       truncated,
       allowance: await this.usage.allowance(user.id, tier),
+      turn: { question, answer: '', links: [] },
+      depth: ASK_DEPTH.Quick,
     });
   }
 

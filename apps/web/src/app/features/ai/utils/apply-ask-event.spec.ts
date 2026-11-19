@@ -19,7 +19,7 @@ const ENTRY: AskEntry = {
 
 describe('applyAskEvent', () => {
   it('appends text (merged) and citations, then completes with done', () => {
-    let entry = applyAskEvent(ENTRY, { type: 'meta', allowance: ALLOWANCE, retrieved: 2 });
+    let entry = applyAskEvent(ENTRY, { type: 'meta', allowance: ALLOWANCE });
     expect(entry).toBe(ENTRY);
     entry = applyAskEvent(entry, { type: 'text', text: 'You ' });
     entry = applyAskEvent(entry, { type: 'text', text: 'saved ' });
@@ -32,6 +32,8 @@ describe('applyAskEvent', () => {
       notFound: true,
       truncated: true,
       allowance: ALLOWANCE,
+      turn: { question: '', answer: '', links: [] },
+      depth: 'quick',
     });
     expect(entry).toMatchObject({ state: 'done', notFound: true, truncated: true });
   });

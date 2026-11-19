@@ -180,7 +180,7 @@ describe('POST /api/ai/ask (AI-4)', () => {
       expect(chunks).toBeGreaterThan(1);
       const meta = events[0] as AskMetaEvent;
       expect(meta.type).toBe('meta');
-      expect(meta.retrieved).toBeGreaterThanOrEqual(2);
+      expect(meta.allowance.questionsLeft).toBeGreaterThanOrEqual(0);
       expect(meta.allowance).toEqual({
         questionsLeft: 4,
         period: 'month',

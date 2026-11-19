@@ -38,7 +38,7 @@ describe('AskStore', () => {
     expect(store.ask('another one')).toBe(false);
     expect(store.ask('no')).toBe(false);
 
-    streams[0]?.next({ type: 'meta', allowance: ALLOWANCE, retrieved: 3 });
+    streams[0]?.next({ type: 'meta', allowance: ALLOWANCE });
     expect(settings.askAllowance()).toEqual(ALLOWANCE);
     streams[0]?.next({ type: 'text', text: 'Hi ' });
     streams[0]?.next({ type: 'cite', n: 1 });
@@ -48,6 +48,8 @@ describe('AskStore', () => {
       notFound: false,
       truncated: false,
       allowance: ALLOWANCE,
+      turn: { question: '', answer: '', links: [] },
+      depth: 'quick',
     });
     streams[0]?.complete();
     expect(store.streaming()).toBe(false);
