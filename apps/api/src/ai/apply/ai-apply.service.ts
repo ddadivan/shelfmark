@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   AI_FEATURE_MODE,
   AI_JOB_REASON,
+  LINK_KIND,
   SUGGESTION_KIND,
   SUMMARY_SOURCE,
   type AiJobReason,
@@ -36,7 +37,8 @@ const AUTO_SOURCES: readonly string[] = [AI_JOB_SOURCE.Save, AI_JOB_SOURCE.Draft
  * never replaces the user's (`summary_source = 'user'`); suggestions are the user's own tags and live
  * folders plus up to two new tags and up to three "more" new-tag ideas (chips only), never one the user dismissed or accepted; Automatic mode applies
  * only for `save` / `draft` jobs, the folder only while the link is still in Unsorted and tags only
- * while it has none, existing tags only. The model's `kind` is never written.
+ * while it has none, existing tags only. The model's `kind` is written only while the link's kind is
+ * `other` (no signal from the page or host) and the user never chose one (`kind_by_user`, ADR 0056).
  */
 @Injectable()
 export class AiApplyService {
@@ -76,6 +78,7 @@ export class AiApplyService {
               folderId: result.folderId,
               summary: result.summary,
               title: result.title,
+              kind: result.kind,
             },
           },
         });
@@ -186,8 +189,14 @@ export class AiApplyService {
         })) || produced;
     }
 
+    // The link's kind (#535, ADR 0056) in the same statement as the AI status (plain SQL, so
+    // `updated_at` stays): only while it is still `other` and the user never chose one; a kind from
+    // the page or the host is never replaced.
+    const kind = result.kind !== null && result.kind !== LINK_KIND.Other ? result.kind : null;
     await tx.$executeRaw`
-      UPDATE links SET ai_status = ${AI_JOB_STATE.Done}
+      UPDATE links SET ai_status = ${AI_JOB_STATE.Done},
+        kind = CASE WHEN ${kind}::text IS NOT NULL AND kind = ${LINK_KIND.Other} AND NOT kind_by_user
+          THEN ${kind}::text ELSE kind END
       WHERE id = ${linkId}::uuid AND user_id = ${userId}::uuid`;
     return produced;
   }
