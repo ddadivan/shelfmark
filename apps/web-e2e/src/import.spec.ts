@@ -142,11 +142,12 @@ test.describe('import browser bookmarks (mock API)', () => {
     page,
   }) => {
     const dialog = await openImport(page);
-    const transfer = await page.evaluateHandle(() => {
+    // A string, like the other specs: the e2e tsconfig has no DOM types.
+    const transfer = await page.evaluateHandle(`(() => {
       const data = new DataTransfer();
       data.items.add(new File(['x'], 'bookmarks.html', { type: 'text/html' }));
       return data;
-    });
+    })()`);
 
     await dialog
       .getByText('Browser bookmarks')
