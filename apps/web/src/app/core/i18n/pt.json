@@ -1289,11 +1289,13 @@
     "retry": "Tentar de novo",
     "view": {
       "json": "Esta visualização em JSON",
-      "html": "Esta visualização como HTML de favoritos"
+      "html": "Esta visualização como HTML de favoritos",
+      "csv": "Esta visualização em CSV"
     },
     "all": {
       "json": "Tudo em JSON",
-      "html": "Tudo como HTML de favoritos"
+      "html": "Tudo como HTML de favoritos",
+      "csv": "Tudo em CSV"
     },
     "empty": {
       "title": "Ainda não há nada para exportar",
@@ -1625,10 +1627,6 @@
       "title": "Seus dados",
       "export": {
         "label": "Exportar seus dados",
-        "json": "JSON",
-        "jsonHint": "Todas as suas pastas, tags e links em um arquivo",
-        "html": "HTML de favoritos",
-        "htmlHint": "Abre na importação de favoritos de qualquer navegador",
         "download": "Baixar",
         "downloadAs": "Baixar {{format}}"
       }

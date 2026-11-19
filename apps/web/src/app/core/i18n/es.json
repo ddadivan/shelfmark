@@ -1289,11 +1289,13 @@
     "retry": "Reintentar",
     "view": {
       "json": "Esta vista en JSON",
-      "html": "Esta vista como HTML de marcadores"
+      "html": "Esta vista como HTML de marcadores",
+      "csv": "Esta vista en CSV"
     },
     "all": {
       "json": "Todo en JSON",
-      "html": "Todo como HTML de marcadores"
+      "html": "Todo como HTML de marcadores",
+      "csv": "Todo en CSV"
     },
     "empty": {
       "title": "Todavía no hay nada que exportar",
@@ -1625,10 +1627,6 @@
       "title": "Tus datos",
       "export": {
         "label": "Exporta tus datos",
-        "json": "JSON",
-        "jsonHint": "Todas tus carpetas, etiquetas y enlaces en un archivo",
-        "html": "HTML de marcadores",
-        "htmlHint": "Se abre con la importación de marcadores de cualquier navegador",
         "download": "Descargar",
         "downloadAs": "Descargar {{format}}"
       }

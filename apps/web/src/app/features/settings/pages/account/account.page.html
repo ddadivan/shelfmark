@@ -38,36 +38,23 @@
 
 <div #yourData class="account__anchor" [id]="YOUR_DATA_FRAGMENT">
   <ui-settings-section [title]="'settings.data.title' | transloco">
-    @let json = 'settings.data.export.json' | transloco; @let html = 'settings.data.export.html' |
+    @for (format of EXPORT_FORMAT_OPTIONS; track format.value) { @let name = format.titleKey |
     transloco;
     <ui-settings-row
-      icon="code"
-      [title]="json"
-      [description]="'settings.data.export.jsonHint' | transloco"
+      [icon]="format.icon"
+      [title]="name"
+      [description]="format.descriptionKey | transloco"
     >
       <ui-button
         iconLeft="download"
         [size]="buttonSize()"
-        [ariaLabel]="'settings.data.export.downloadAs' | transloco: { format: json }"
-        (click)="exportAll(EXPORT_FORMAT.Json)"
+        [ariaLabel]="'settings.data.export.downloadAs' | transloco: { format: name }"
+        (click)="exportAll(format.value)"
       >
         {{ 'settings.data.export.download' | transloco }}
       </ui-button>
     </ui-settings-row>
-    <ui-settings-row
-      icon="globe"
-      [title]="html"
-      [description]="'settings.data.export.htmlHint' | transloco"
-    >
-      <ui-button
-        iconLeft="download"
-        [size]="buttonSize()"
-        [ariaLabel]="'settings.data.export.downloadAs' | transloco: { format: html }"
-        (click)="exportAll(EXPORT_FORMAT.Html)"
-      >
-        {{ 'settings.data.export.download' | transloco }}
-      </ui-button>
-    </ui-settings-row>
+    }
   </ui-settings-section>
 </div>
 

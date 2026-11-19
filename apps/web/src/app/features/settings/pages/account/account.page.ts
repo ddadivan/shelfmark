@@ -18,7 +18,8 @@ import {
   SettingsRowComponent,
   SettingsSectionComponent,
 } from '@shelfmark/ui';
-import { EXPORT_FORMAT, type ExportFormat } from '@shelfmark/contracts';
+import type { ExportFormat } from '@shelfmark/contracts';
+import { EXPORT_FORMAT_OPTIONS } from '../../../export/models/export-format-options.const';
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { AccountDeletionService } from '../../../account-deletion/services/account-deletion.service';
@@ -58,7 +59,7 @@ export default class AccountPage {
   private readonly exporter = inject(ExportActionsService);
 
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
-  protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
+  protected readonly EXPORT_FORMAT_OPTIONS = EXPORT_FORMAT_OPTIONS;
   protected readonly YOUR_DATA_FRAGMENT = YOUR_DATA_FRAGMENT;
   /** Thumb-sized buttons on a phone. */
   protected readonly buttonSize = computed(() =>

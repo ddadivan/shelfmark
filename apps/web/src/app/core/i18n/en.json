@@ -1266,11 +1266,13 @@
     "retry": "Try again",
     "view": {
       "json": "This view as JSON",
-      "html": "This view as Bookmarks HTML"
+      "html": "This view as Bookmarks HTML",
+      "csv": "This view as CSV"
     },
     "all": {
       "json": "Everything as JSON",
-      "html": "Everything as Bookmarks HTML"
+      "html": "Everything as Bookmarks HTML",
+      "csv": "Everything as CSV"
     },
     "empty": {
       "title": "Nothing to export yet",
@@ -1580,10 +1582,6 @@
       "title": "Your data",
       "export": {
         "label": "Export your data",
-        "json": "JSON",
-        "jsonHint": "All your folders, tags and links in one file",
-        "html": "Bookmarks HTML",
-        "htmlHint": "Opens in any browser’s bookmark import",
         "download": "Download",
         "downloadAs": "Download {{format}}"
       }
