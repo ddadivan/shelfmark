@@ -1,0 +1,239 @@
+<form [formRoot]="form" class="nv">
+  <ui-dialog
+    [title]="'views.new.title' | transloco"
+    [closeLabel]="'views.dialog.close' | transloco"
+    size="md"
+  >
+    <div class="nv__body">
+      @if (phrase.showPhrase()) {
+        <ui-input
+          #phraseField
+          class="nv__phrase"
+          [label]="'views.new.phrase.label' | transloco"
+          [placeholder]="'views.new.phrase.placeholder' | transloco"
+          [hint]="'views.new.phrase.hint' | transloco"
+          [attr.aria-busy]="phrase.composing() ? 'true' : null"
+          [formField]="form.phrase"
+          (keydown.enter)="onPhraseEnter($event)"
+        />
+
+        @if (phrase.ideas().length > 0) {
+          <ul class="nv__ideas" [attr.aria-label]="'views.new.ideas' | transloco">
+            @for (idea of phrase.ideas(); track idea.id) {
+              <li>
+                <ui-button
+                  class="nv__idea"
+                  [variant]="BUTTON_VARIANT.Ghost"
+                  [size]="BUTTON_SIZE.Sm"
+                  iconLeft="spark"
+                  [disabled]="phrase.composing()"
+                  [ariaLabel]="'views.new.ideaLabel' | transloco: { name: idea.name }"
+                  (click)="phrase.useIdea(idea)"
+                  >{{ idea.name }}</ui-button
+                >
+              </li>
+            }
+          </ul>
+        }
+
+        <!-- Always present, so the limit and "not available" lines are announced reliably. -->
+        <div role="status">
+          @if (phrase.line(); as line) {
+            <ui-ai-line [text]="line.key | transloco: line.params" />
+          }
+        </div>
+
+        <p class="nv__skip">
+          {{ 'views.new.skip.or' | transloco }}
+          <ui-button
+            class="nv__skip-action"
+            [variant]="BUTTON_VARIANT.Ghost"
+            [size]="BUTTON_SIZE.Sm"
+            [disabled]="phrase.composing()"
+            (click)="phrase.skip()"
+            >{{ 'views.new.skip.action' | transloco }}</ui-button
+          >
+        </p>
+      } @else {
+        @if (phrase.composed()) {
+          <div class="nv__said">
+            <ui-icon
+              class="nv__spark"
+              name="spark"
+              [size]="ICON_SIZE.Sm"
+              [label]="'ai.disclaimer' | transloco"
+              [attr.title]="'ai.disclaimer' | transloco"
+            />
+            <span class="nv__said-text">{{ form.phrase().value() }}</span>
+            <ui-button [variant]="BUTTON_VARIANT.Ghost" [size]="BUTTON_SIZE.Sm" (click)="edit()">{{
+              'views.new.change' | transloco
+            }}</ui-button>
+          </div>
+        } @else if (!phrase.on()) {
+          <p class="nv__lead">{{ 'views.new.lead' | transloco }}</p>
+        }
+
+        <!-- What AI could not say, in one line; the changes are announced politely. -->
+        <div class="nv__notes" role="status">
+          @if (phrase.composed()) {
+            <span class="nv__sr">{{ 'views.new.composed' | transloco }}</span>
+            @if (phrase.note(); as note) {
+              <ui-ai-line [text]="note" />
+            }
+            @if (phrase.dropped().length > 0) {
+              <ui-ai-line
+                [text]="'views.new.dropped' | transloco: { names: phrase.dropped().join(', ') }"
+              />
+            }
+          }
+        </div>
+
+        <ng-template #spark>
+          <ui-icon
+            class="nv__spark nv__row-spark"
+            name="spark"
+            [size]="ICON_SIZE.Sm"
+            [label]="'ai.disclaimer' | transloco"
+            [attr.title]="'ai.disclaimer' | transloco"
+          />
+        </ng-template>
+
+        <div class="nv__row">
+          <ui-select
+            [label]="'views.new.where.label' | transloco"
+            [options]="options.whereOptions()"
+            [searchLabel]="'views.new.where.search' | transloco"
+            [noResultsLabel]="'views.new.where.noResults' | transloco"
+            searchable
+            [formField]="form.where"
+          />
+          @if (sparks().has(FIELD.Scope)) {
+            <ng-container *ngTemplateOutlet="spark" />
+          }
+        </div>
+
+        <div class="nv__row">
+          <span class="nv__label" id="nv-kind-label">{{ 'views.new.kind.label' | transloco }}</span>
+          <ui-segmented-control
+            class="nv__kind"
+            ariaLabelledby="nv-kind-label"
+            [options]="options.kindOptions()"
+            [formField]="form.kind"
+          />
+          @if (sparks().has(FIELD.Kind)) {
+            <ng-container *ngTemplateOutlet="spark" />
+          }
+        </div>
+
+        <div class="nv__row">
+          <ui-tag-input
+            [label]="'views.new.tags.label' | transloco"
+            [placeholder]="'views.new.tags.placeholder' | transloco"
+            [suggestions]="options.tagSuggestions()"
+            [maxTags]="TAGS_MAX"
+            [maxTagsLabel]="'views.new.tags.max' | transloco: { max: TAGS_MAX }"
+            [removeLabel]="'links.add.tags.remove' | transloco"
+            [addedLabel]="'links.add.tags.added' | transloco"
+            [removedLabel]="'links.add.tags.removed' | transloco"
+            [duplicateLabel]="'links.add.tags.duplicate' | transloco"
+            [listLabel]="'links.add.tags.list' | transloco"
+            [formField]="form.tags"
+          />
+          @if (sparks().has(FIELD.Tags)) {
+            <ng-container *ngTemplateOutlet="spark" />
+          }
+        </div>
+
+        <div class="nv__row">
+          <ui-input
+            [label]="'views.new.q.label' | transloco"
+            [placeholder]="'views.new.q.placeholder' | transloco"
+            [formField]="form.q"
+          />
+          @if (sparks().has(FIELD.Q)) {
+            <ng-container *ngTemplateOutlet="spark" />
+          }
+        </div>
+
+        <div class="nv__row">
+          <ui-select
+            [label]="'views.new.sort.label' | transloco"
+            [options]="options.sortOptions()"
+            [formField]="form.sort"
+          />
+          @if (sparks().has(FIELD.Sort)) {
+            <ng-container *ngTemplateOutlet="spark" />
+          }
+        </div>
+
+        <!-- The live count and the first links: an empty view is visible before it is saved. -->
+        <section class="nv__found" [attr.aria-busy]="preview.busy() ? 'true' : null">
+          <p class="nv__count" role="status">
+            @if (preview.countKey(); as key) {
+              {{ key | transloco: { count: preview.preview()?.count } }}
+            }
+          </p>
+          @if (preview.preview(); as found) {
+            @if (found.rows.length > 0) {
+              <ul class="nv__links">
+                @for (row of found.rows; track row.id) {
+                  <li class="nv__link">
+                    <ui-favicon [src]="row.faviconUrl ?? undefined" [letter]="row.host[0] ?? ''" />
+                    <span class="nv__link-main">
+                      <span class="nv__link-title">{{ row.title }}</span>
+                      <span class="nv__link-meta">{{
+                        row.folder === null
+                          ? row.host
+                          : ('views.new.meta' | transloco: { host: row.host, folder: row.folder })
+                      }}</span>
+                    </span>
+                  </li>
+                }
+              </ul>
+              @if (!found.more && found.count > PREVIEW_ROWS) {
+                <p class="nv__more">
+                  {{ 'views.new.andMore' | transloco: { count: found.count - PREVIEW_ROWS } }}
+                </p>
+              }
+            }
+          }
+        </section>
+
+        <ui-input
+          [label]="'views.name.label' | transloco"
+          [placeholder]="'views.name.placeholder' | transloco"
+          [formField]="form.name"
+        />
+        @if (errorKey(); as key) {
+          <ui-notice [kind]="NOTICE_KIND.Danger">{{ key | transloco }}</ui-notice>
+        }
+      }
+    </div>
+
+    <!-- Left out on the sheet: its x does the same (`uiDialogCancel`). -->
+    <ui-button slot="footer" uiDialogCancel [disabled]="saving()" (click)="cancel()">{{
+      'views.dialog.cancel' | transloco
+    }}</ui-button>
+    @if (phrase.showPhrase()) {
+      <ui-button
+        slot="footer"
+        [variant]="BUTTON_VARIANT.Ai"
+        iconLeft="spark"
+        [loading]="phrase.composing()"
+        [ariaDisabled]="!phrase.canCompose()"
+        (click)="phrase.compose()"
+        >{{
+          (phrase.composing() ? 'views.new.composing' : 'views.new.compose') | transloco
+        }}</ui-button
+      >
+    } @else {
+      <ui-button
+        slot="footer"
+        [type]="BUTTON_TYPE.Submit"
+        [variant]="BUTTON_VARIANT.Primary"
+        [loading]="saving()"
+        >{{ (saving() ? 'views.create.saving' : 'views.new.action') | transloco }}</ui-button
+      >
+    }
+  </ui-dialog>
+</form>

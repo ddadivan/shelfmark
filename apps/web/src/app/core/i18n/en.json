@@ -2139,6 +2139,64 @@
       "video": "Links detected as videos",
       "article": "Links detected as articles",
       "shopping": "Links detected as shopping"
+    },
+    "new": {
+      "title": "New view",
+      "lead": "Start from the filter of the feed you are on, or change it here.",
+      "action": "Save view",
+      "change": "Change",
+      "composed": "The filter was filled in from your description.",
+      "dropped": "Left out: {{names}}",
+      "compose": "Compose",
+      "composing": "Composing…",
+      "ideas": "Ideas",
+      "ideaLabel": "Use the idea: {{name}}",
+      "ideaPhrase": "Links about {{name}}",
+      "unavailable": "Couldn’t compose a view right now. This didn’t count toward your limit; you can set the filter yourself.",
+      "skip": {
+        "or": "or",
+        "action": "save the current filter"
+      },
+      "phrase": {
+        "label": "Describe what to show",
+        "placeholder": "videos about Angular I haven’t watched yet",
+        "hint": "For example: “articles about design from my Work folder”, “what to buy from clothes”, “recipes, newest first”."
+      },
+      "where": {
+        "label": "Where",
+        "all": "All links",
+        "unsorted": "Unsorted",
+        "favorites": "Favorites",
+        "search": "Search folders",
+        "noResults": "No folders found"
+      },
+      "kind": {
+        "label": "Type",
+        "all": "All",
+        "video": "Video",
+        "article": "Articles",
+        "shopping": "Shopping"
+      },
+      "tags": {
+        "label": "Tags",
+        "placeholder": "Add a tag",
+        "max": "Up to {{max}} tags",
+        "unknown": "“{{name}}” is not one of your tags. Pick one from the list."
+      },
+      "q": {
+        "label": "Search words",
+        "placeholder": "Words in the title, note or address"
+      },
+      "sort": {
+        "label": "Sort"
+      },
+      "found": {
+        "one": "Found {{count}} link",
+        "other": "Found {{count}} links"
+      },
+      "foundMore": "Found {{count}}+ links",
+      "andMore": "and {{count}} more",
+      "meta": "{{host}} · {{folder}}"
     }
   },
   "feedback": {
