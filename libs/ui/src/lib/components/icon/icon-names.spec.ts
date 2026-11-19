@@ -80,6 +80,8 @@ const APP_ICONS = [
   'spark',
   // The send button of the Ask composer (#507).
   'arrow-up',
+  // The drop zone of the bookmarks import (#387).
+  'upload',
 ];
 
 const sprite = readFileSync(SPRITE_PATH, 'utf8');

@@ -52,3 +52,5 @@ export type * from '../lib/components/suggestion/testing/models/suggestion-row-h
 export * from '../lib/components/streaming-answer/testing/streaming-answer.harness';
 export type * from '../lib/components/streaming-answer/testing/models/streaming-answer-harness-filters.interface';
 export * from '../lib/components/drawer/testing/drawer.harness';
+export * from '../lib/components/drop-zone/testing/drop-zone.harness';
+export type * from '../lib/components/drop-zone/testing/models/drop-zone-harness-filters.interface';
