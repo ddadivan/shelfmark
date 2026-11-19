@@ -4,6 +4,7 @@ import {
   computed,
   effect,
   inject,
+  Injector,
   untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -98,6 +99,7 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
 export default class AppShellComponent {
   protected readonly auth = inject(AuthStore);
   protected readonly actions = inject(LinkActionsService);
+  private readonly injector = inject(Injector);
   private readonly exporter = inject(ExportActionsService);
   protected readonly EXPORT_FORMAT = EXPORT_FORMAT;
   protected readonly ICON_SIZE = ICON_SIZE;
@@ -255,6 +257,13 @@ export default class AppShellComponent {
   /** "About Shelfmark": the landing page, with "Back to my shelf" and "What's new" (#270). */
   protected async openAbout(): Promise<void> {
     await this.router.navigateByUrl(`/${APP_PATH.About}`);
+  }
+
+  /** "Import links…" (#387): the dialog's code loads on first use, not with the shell. */
+  protected async openImport(): Promise<void> {
+    const { ImportDialogService } =
+      await import('../features/import/services/import-dialog.service');
+    this.injector.get(ImportDialogService).open();
   }
 
   protected async exportAll(format: ExportFormat): Promise<void> {

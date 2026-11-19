@@ -1422,7 +1422,8 @@
       "title": "Importar links",
       "description": "Traga os favoritos do seu navegador. Pastas continuam sendo pastas, e links que você já tem são pulados.",
       "action": "Importar"
-    }
+    },
+    "menu": "Importar links…"
   },
   "settings": {
     "title": "Configurações",

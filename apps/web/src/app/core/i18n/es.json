@@ -1422,7 +1422,8 @@
       "title": "Importar enlaces",
       "description": "Trae los marcadores de tu navegador. Las carpetas siguen siendo carpetas y se omiten los enlaces que ya tienes.",
       "action": "Importar"
-    }
+    },
+    "menu": "Importar enlaces…"
   },
   "settings": {
     "title": "Ajustes",

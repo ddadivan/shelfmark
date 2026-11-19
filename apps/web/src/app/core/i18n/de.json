@@ -1387,7 +1387,8 @@
       "title": "Links importieren",
       "description": "Hol deine Browser-Lesezeichen herein. Ordner bleiben Ordner, Links, die du schon hast, werden übersprungen.",
       "action": "Importieren"
-    }
+    },
+    "menu": "Links importieren …"
   },
   "settings": {
     "title": "Einstellungen",

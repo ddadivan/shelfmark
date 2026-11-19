@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { expect, test } from './support/test';
-import { openSettingsSection, seedSession } from './support/mock-session';
+import { openAccountMenu, openSettingsSection, seedSession } from './support/mock-session';
 import { isCompact } from './support/sidebar';
 import { openTrash, trashRow } from './support/trash';
 import { E2E_TAG } from './models/e2e-tag.const';
@@ -81,5 +81,13 @@ test.describe('import browser bookmarks (mock API)', () => {
       buffer: Buffer.from('just some notes'),
     });
     await expect(dialog.getByRole('alert')).toContainText('This is not a bookmarks file');
+  });
+
+  test('the account menu opens the import dialog', async ({ page }) => {
+    test.skip(isCompact(page), 'the phone reaches Import through You › Account');
+    await page.goto('/links');
+    await openAccountMenu(page);
+    await page.getByRole('menuitem', { name: 'Import links…' }).click();
+    await expect(page.getByRole('dialog', { name: 'Import links' })).toBeVisible();
   });
 });

@@ -1422,7 +1422,8 @@
       "title": "Importa link",
       "description": "Porta qui i segnalibri del browser. Le cartelle restano cartelle, i link che hai già vengono saltati.",
       "action": "Importa"
-    }
+    },
+    "menu": "Importa link…"
   },
   "settings": {
     "title": "Impostazioni",

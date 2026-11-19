@@ -1387,7 +1387,8 @@
       "title": "Import links",
       "description": "Bring in browser bookmarks. Folders come in as folders, links you already have are skipped.",
       "action": "Import"
-    }
+    },
+    "menu": "Import links…"
   },
   "settings": {
     "title": "Settings",

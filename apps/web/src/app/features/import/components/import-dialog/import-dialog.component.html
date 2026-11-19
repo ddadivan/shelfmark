@@ -50,8 +50,11 @@
   <div slot="footer" class="import-dialog__foot">
     @switch (flow.step()) {
       @case (IMPORT_STEP.Review) {
-        <ui-button (click)="flow.back()">{{ 'import.review.back' | transloco }}</ui-button>
+        <ui-button [block]="phone()" (click)="flow.back()">{{
+          'import.review.back' | transloco
+        }}</ui-button>
         <ui-button
+          [block]="phone()"
           wrap
           [variant]="BUTTON_VARIANT.Primary"
           [disabled]="flow.importCount() === 0"
@@ -64,11 +67,11 @@
         @switch (runner.run().phase) {
           @case (IMPORT_RUN_PHASE.Done) {
             @if (runner.run().importId !== null && runner.run().created > 0) {
-              <ui-button [variant]="BUTTON_VARIANT.Ghost" (click)="undo()">
+              <ui-button [block]="phone()" [variant]="BUTTON_VARIANT.Ghost" (click)="undo()">
                 {{ 'import.progress.undo' | transloco }}
               </ui-button>
             }
-            <ui-button [variant]="BUTTON_VARIANT.Primary" (click)="openTarget()">
+            <ui-button [block]="phone()" [variant]="BUTTON_VARIANT.Primary" (click)="openTarget()">
               {{
                 (runner.run().targetFolderId === null
                   ? 'import.progress.openUnsorted'
@@ -78,12 +81,14 @@
             </ui-button>
           }
           @case (IMPORT_RUN_PHASE.Failed) {
-            <ui-button [variant]="BUTTON_VARIANT.Primary" (click)="retry()">
+            <ui-button [block]="phone()" [variant]="BUTTON_VARIANT.Primary" (click)="retry()">
               {{ 'import.review.back' | transloco }}
             </ui-button>
           }
           @default {
-            <ui-button (click)="close()">{{ 'import.progress.done' | transloco }}</ui-button>
+            <ui-button [block]="phone()" (click)="close()">{{
+              'import.progress.done' | transloco
+            }}</ui-button>
           }
         }
       }

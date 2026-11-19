@@ -1422,7 +1422,8 @@
       "title": "Importer des liens",
       "description": "Importez les favoris de votre navigateur. Les dossiers restent des dossiers, les liens déjà enregistrés sont ignorés.",
       "action": "Importer"
-    }
+    },
+    "menu": "Importer des liens…"
   },
   "settings": {
     "title": "Paramètres",

@@ -16,6 +16,7 @@ import {
 } from '@shelfmark/ui';
 import { activeLang } from '../../../../core/i18n/active-lang';
 import { pluralKey } from '../../../../core/i18n/plural-key';
+import { ViewportService } from '../../../../core/layout/viewport.service';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { IMPORT_FILE_PROBLEM } from '../../models/import-file-problem.const';
 import { IMPORT_RUN_PHASE } from '../../models/import-run-phase.const';
@@ -59,6 +60,8 @@ export class ImportDialogComponent implements OnDestroy {
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
 
+  /** Full-width footer buttons in the phone sheet. */
+  protected readonly phone = inject(ViewportService).phone;
   protected readonly IMPORT_STEP = IMPORT_STEP;
   protected readonly IMPORT_RUN_PHASE = IMPORT_RUN_PHASE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
