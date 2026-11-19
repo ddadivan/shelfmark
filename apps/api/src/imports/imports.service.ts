@@ -202,6 +202,8 @@ export class ImportsService {
       context,
       {
         importId: id,
+        // An import never uses the monthly link allowance (ADR 0056 decision 9).
+        skipAi: true,
         skipRepeats: request.skipRepeats !== false,
         // Under the folders lock Undo also takes: no link lands after an Undo.
         afterLock: async (tx) => {
