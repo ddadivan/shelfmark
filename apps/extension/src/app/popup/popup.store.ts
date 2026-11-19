@@ -112,9 +112,11 @@ export class PopupStore {
       const note = this.note().trim();
       const folderId = this.folderId();
       const aiDraftId = this.ai.draftId();
+      // Without a usable tab title (only "YouTube" while a video loads) the server reads the page's.
+      const title = this.ai.cleanTitle() ?? (page.titleFromTab ? page.title : null);
       const link = await this.api.create({
         url: page.url,
-        title: (this.ai.cleanTitle() ?? page.title).slice(0, LINK_LIMIT.TitleMax),
+        ...(title !== null && { title: title.slice(0, LINK_LIMIT.TitleMax) }),
         ...(folderId !== null && { folderId }),
         tags: this.chosenTags(),
         ...(note !== '' && { note }),

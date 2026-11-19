@@ -17,6 +17,8 @@ import { CHIP_VARIANT } from './models/chip-variant.const';
       [disabled]="disabled()"
       [icon]="icon()"
       [removeLabel]="removeLabel()"
+      [truncate]="truncate()"
+      [ariaLabel]="ariaLabel()"
       (clicked)="clicks.set(clicks() + 1)"
       (removed)="removals.set(removals() + 1)"
       >design</ui-chip
@@ -30,6 +32,8 @@ class HostComponent {
   readonly disabled = signal(false);
   readonly icon = signal<IconName | undefined>(undefined);
   readonly removeLabel = signal<string | undefined>('Remove tag design');
+  readonly truncate = signal(false);
+  readonly ariaLabel = signal<string | undefined>(undefined);
   readonly clicks = signal(0);
   readonly removals = signal(0);
 }
@@ -158,6 +162,37 @@ describe('ChipComponent', () => {
     update((c) => c.clickable.set(true));
     api.focus();
     expect(document.activeElement).toBe(chip.querySelector('.ui-chip__body'));
+  });
+
+  it('truncate marks the host and wraps the label, which reports when it is cut', () => {
+    const { chip, update, fixture } = setup();
+    const api = fixture.debugElement.children[0].componentInstance as ChipComponent;
+    const label = chip.querySelector('.ui-chip__label') as HTMLElement;
+    expect(label.textContent).toBe('design');
+    expect(chip.classList).not.toContain('ui-chip--truncate');
+    update((c) => c.truncate.set(true));
+    expect(chip.classList).toContain('ui-chip--truncate');
+
+    Object.defineProperty(label, 'clientWidth', { configurable: true, value: 40 });
+    Object.defineProperty(label, 'scrollWidth', { configurable: true, value: 40 });
+    expect(api.isTruncated()).toBe(false);
+    Object.defineProperty(label, 'scrollWidth', { configurable: true, value: 90 });
+    expect(api.isTruncated()).toBe(true);
+  });
+
+  it('ariaLabel names the clickable body; the focus target is the body, else the host', () => {
+    const { chip, update, fixture } = setup();
+    const api = fixture.debugElement.children[0].componentInstance as ChipComponent;
+    expect(api.element()).toBe(chip);
+    update((c) => {
+      c.clickable.set(true);
+      c.ariaLabel.set('2 more tags: video, reading');
+    });
+    const body = chip.querySelector('button.ui-chip__body');
+    expect(body?.getAttribute('aria-label')).toBe('2 more tags: video, reading');
+    expect(api.element()).toBe(body);
+    update((c) => c.ariaLabel.set(undefined));
+    expect(body?.hasAttribute('aria-label')).toBe(false);
   });
 
   it('does not style hover or pressed when disabled', () => {

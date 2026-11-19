@@ -98,6 +98,95 @@
   justify-content: flex-end;
 }
 
+// The next step (AiIntro state 3): a plain `ai-bg` tile, a little larger than the intro's.
+.ai-intro__tile--offer {
+  width: rem(52px);
+  height: rem(52px);
+  background: var(--ai-bg);
+  border-radius: var(--radius-lg);
+}
+
+// Focused by script when the step opens; no ring on a heading that is not interactive.
+.ai-intro__heading:focus {
+  outline: none;
+}
+
+.ai-intro__lead {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.ai-intro__checks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ai-intro__check {
+  @include type(body);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  color: var(--text);
+}
+
+.ai-intro__check-icon {
+  flex: none;
+  margin-block-start: rem(2px);
+  color: var(--accent-text);
+}
+
+.ai-intro__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+// "Change your mind?": a bordered box with the settings icon; the path links to the row.
+.ai-intro__note {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  padding: var(--space-3);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.ai-intro__note-icon {
+  flex: none;
+  margin-block-start: rem(1px);
+}
+
+.ai-intro__note-text {
+  @include type(caption);
+
+  margin: 0;
+}
+
+.ai-intro__link {
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+
+  &:hover {
+    color: var(--accent-text);
+  }
+
+  &:focus-visible {
+    border-radius: var(--radius-sm);
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
+
 // Phone: stacked buttons, the main action on top (the DOM order stays secondary, primary).
 @include phone {
   .ai-intro__foot {

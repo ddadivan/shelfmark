@@ -351,6 +351,25 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     });
   });
 
+  it('sends summary: null when the user cleared the AI summary, so the draft one is not applied', async () => {
+    const ai = withDraft([ANGULAR]);
+    ai.createDraft.mockReturnValue(of({ ...job([ANGULAR]), summary: 'AI summary.' }));
+    const { loader, links, result } = await setup(ai);
+    await typeUrl(URL);
+    await (await vi.waitFor(() => loader.getHarness(UiButtonHarness.with({ text: FILL })))).click();
+    await until(() => expect(root()?.querySelector('app-summary-field textarea')).not.toBeNull());
+    const summary = root()?.querySelector<HTMLTextAreaElement>('app-summary-field textarea');
+    expect(summary?.value).toBe('AI summary.');
+    if (summary) {
+      summary.value = '   ';
+      summary.dispatchEvent(new Event('input'));
+    }
+    TestBed.tick();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Create link' }))).click();
+    await result;
+    expect(links.create.mock.calls[0]?.[0]).toMatchObject({ summary: null });
+  });
+
   it('is hidden while AI is off', async () => {
     const ai = withDraft(
       [FOLDER, ANGULAR],

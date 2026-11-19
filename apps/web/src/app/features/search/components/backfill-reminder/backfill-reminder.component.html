@@ -1,0 +1,36 @@
+@if (reminder.shown()) {
+  <div class="backfill-reminder">
+    <ui-icon class="backfill-reminder__spark" name="spark" [size]="ICON_SIZE.Sm" />
+    <!-- A status region: "Processing started" replacing the text is read out. -->
+    <p class="backfill-reminder__text" role="status">
+      @if (reminder.confirming()) {
+        {{ 'ai.backfillOffer.search.started' | transloco }}
+      } @else {
+        {{
+          pluralKey('ai.backfillOffer.search.text', reminder.count())
+            | transloco: { count: formatted(reminder.count()) }
+        }}
+      }
+    </p>
+    @if (!reminder.confirming()) {
+      <div #actions class="backfill-reminder__actions">
+        <ui-button
+          [variant]="BUTTON_VARIANT.Secondary"
+          [size]="BUTTON_SIZE.Sm"
+          [loading]="reminder.starting()"
+          (click)="process()"
+        >
+          {{ 'ai.backfillOffer.search.process' | transloco }}
+        </ui-button>
+        <ui-button
+          iconOnly
+          iconLeft="close"
+          [variant]="BUTTON_VARIANT.Ghost"
+          [size]="BUTTON_SIZE.Sm"
+          [ariaLabel]="'ai.backfillOffer.search.hide' | transloco"
+          (click)="hide()"
+        />
+      </div>
+    }
+  </div>
+}

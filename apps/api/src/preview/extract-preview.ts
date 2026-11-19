@@ -83,7 +83,8 @@ function collect(root: HtmlNode): CollectedTags {
   return tags;
 }
 
-function clean(value: string | null | undefined, maxLength: number): string | null {
+/** Whitespace collapsed and trimmed, at most `maxLength` code points; `null` when nothing is left. */
+export function clean(value: string | null | undefined, maxLength: number): string | null {
   if (value === null || value === undefined) {
     return null;
   }
@@ -105,7 +106,7 @@ function firstOf(meta: Map<string, string>, keys: readonly string[]): string | u
  * Resolves against `base`; only http(s) URLs without credentials and within the length limit are
  * returned (the value ends up in `<img src>` on the client).
  */
-function absoluteHttpUrl(value: string | undefined, base: string): string | null {
+export function absoluteHttpUrl(value: string | undefined, base: string): string | null {
   if (value === undefined) {
     return null;
   }

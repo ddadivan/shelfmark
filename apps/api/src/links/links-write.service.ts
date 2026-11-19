@@ -47,7 +47,10 @@ const CREATE_RESPONSE_MARGIN_MS = 1_000;
 
 /** `null` and blank text both mean "no note". */
 /** A summary the user wrote in Add link: theirs, so AI never replaces it; blank is no summary. */
-function userSummary(summary: string | undefined): { summary?: string; summarySource?: string } {
+function userSummary(summary: string | null | undefined): {
+  summary?: string;
+  summarySource?: string;
+} {
   const text = summary?.trim() ?? '';
   return text === '' ? {} : { summary: text, summarySource: SUMMARY_SOURCE.User };
 }
@@ -168,7 +171,13 @@ export class LinksWriteService {
         const ai = await this.aiJobs.afterCreate(
           tx,
           userId,
-          { linkId: row.id, folderSet: row.folderId !== null, tagsSet: tagIds.length > 0 },
+          {
+            linkId: row.id,
+            folderSet: row.folderId !== null,
+            tagsSet: tagIds.length > 0,
+            // `summary: null`: the user cleared AI's text; no AI summary for this save (#507).
+            summaryDeclined: request.summary === null,
+          },
           draft,
           context,
         );

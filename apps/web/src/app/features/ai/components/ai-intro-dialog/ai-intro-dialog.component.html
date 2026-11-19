@@ -1,69 +1,136 @@
 <ui-dialog
   size="md"
   hideTitle
-  [title]="(phone() ? 'ai.intro.titleShort' : 'ai.intro.title') | transloco"
+  [title]="
+    offer()
+      ? (pluralKey('ai.backfillOffer.title', offer()) | transloco: { count: offer() })
+      : ((phone() ? 'ai.intro.titleShort' : 'ai.intro.title') | transloco)
+  "
 >
-  <div class="ai-intro">
-    <!-- The dialog title (visually hidden) is the accessible name; the same text is shown here,
-         next to the tile, with the close button where the header's would be. -->
-    <div class="ai-intro__head">
-      <span class="ai-intro__tile" aria-hidden="true">
-        <ui-icon name="spark" [size]="ICON_SIZE.Lg" />
-      </span>
-      <p class="ai-intro__heading" aria-hidden="true">
-        {{ (phone() ? 'ai.intro.titleShort' : 'ai.intro.title') | transloco }}
-      </p>
-      <ui-button
-        class="ai-intro__close"
-        iconOnly
-        iconLeft="close"
-        [variant]="BUTTON_VARIANT.Ghost"
-        [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
-        [ariaLabel]="'ai.intro.close' | transloco"
-        (click)="notNow()"
-      />
+  @if (offer(); as count) {
+    <div class="ai-intro">
+      <div class="ai-intro__head">
+        <span class="ai-intro__tile ai-intro__tile--offer" aria-hidden="true">
+          <ui-icon name="spark" [size]="ICON_SIZE.Lg" />
+        </span>
+        <!-- Focused when the step opens (the pressed button is gone); the dialog title stays the
+             accessible name, so the visible copy is not read twice. -->
+        <p #offerHeading class="ai-intro__heading" tabindex="-1">
+          {{ pluralKey('ai.backfillOffer.title', count) | transloco: { count } }}
+        </p>
+        <ui-button
+          class="ai-intro__close"
+          iconOnly
+          iconLeft="close"
+          [variant]="BUTTON_VARIANT.Ghost"
+          [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
+          [ariaLabel]="'ai.intro.close' | transloco"
+          (click)="notNow()"
+        />
+      </div>
+      <p class="ai-intro__lead">{{ 'ai.backfillOffer.lead' | transloco }}</p>
+      <ul class="ai-intro__checks">
+        @for (key of OFFER_POINTS; track key) {
+          <li class="ai-intro__check">
+            <ui-icon class="ai-intro__check-icon" name="check" [size]="ICON_SIZE.Sm" />
+            <span>{{ key | transloco: { allowance: allowance() } }}</span>
+          </li>
+        }
+      </ul>
+      <div class="ai-intro__actions">
+        <ui-button
+          block
+          wrap
+          [variant]="BUTTON_VARIANT.Primary"
+          [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Md"
+          [loading]="starting()"
+          (click)="process()"
+        >
+          {{ pluralKey('ai.backfillOffer.process', count) | transloco: { count } }}
+        </ui-button>
+        <ui-button block [variant]="BUTTON_VARIANT.Ghost" (click)="notNow()">
+          {{ 'ai.backfillOffer.later' | transloco }}
+        </ui-button>
+      </div>
+      <div class="ai-intro__note">
+        <ui-icon class="ai-intro__note-icon" name="settings" [size]="ICON_SIZE.Sm" />
+        <p class="ai-intro__note-text">
+          {{ 'ai.backfillOffer.noteLead' | transloco }}
+          <a
+            class="ai-intro__link"
+            [routerLink]="settingsHref"
+            [fragment]="AI_BACKFILL_FRAGMENT"
+            (click)="notNow()"
+            >{{ 'ai.backfillOffer.notePath' | transloco }}</a><br />{{
+            'ai.backfillOffer.noteTail' | transloco
+          }}
+        </p>
+      </div>
     </div>
-    <ul class="ai-intro__points">
-      @for (point of POINTS; track point.key) {
-        <li class="ai-intro__point">
-          <span class="ai-intro__icon" aria-hidden="true">
-            <ui-icon [name]="point.icon" [size]="ICON_SIZE.Sm" />
-          </span>
-          <span class="ai-intro__text">
-            <strong class="ai-intro__title">{{ point.key + '.title' | transloco }}</strong>
-            <span class="ai-intro__desc">{{ point.key + '.text' | transloco }}</span>
-          </span>
-        </li>
+  } @else {
+    <div class="ai-intro">
+      <!-- The dialog title (visually hidden) is the accessible name; the same text is shown here,
+           next to the tile, with the close button where the header's would be. -->
+      <div class="ai-intro__head">
+        <span class="ai-intro__tile" aria-hidden="true">
+          <ui-icon name="spark" [size]="ICON_SIZE.Lg" />
+        </span>
+        <p class="ai-intro__heading" aria-hidden="true">
+          {{ (phone() ? 'ai.intro.titleShort' : 'ai.intro.title') | transloco }}
+        </p>
+        <ui-button
+          class="ai-intro__close"
+          iconOnly
+          iconLeft="close"
+          [variant]="BUTTON_VARIANT.Ghost"
+          [size]="phone() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm"
+          [ariaLabel]="'ai.intro.close' | transloco"
+          (click)="notNow()"
+        />
+      </div>
+      <ul class="ai-intro__points">
+        @for (point of POINTS; track point.key) {
+          <li class="ai-intro__point">
+            <span class="ai-intro__icon" aria-hidden="true">
+              <ui-icon [name]="point.icon" [size]="ICON_SIZE.Sm" />
+            </span>
+            <span class="ai-intro__text">
+              <strong class="ai-intro__title">{{ point.key + '.title' | transloco }}</strong>
+              <span class="ai-intro__desc">{{ point.key + '.text' | transloco }}</span>
+            </span>
+          </li>
+        }
+      </ul>
+      <p class="ai-intro__details">
+        {{ 'ai.intro.details' | transloco }}
+        <ui-button
+          class="ai-intro__policy"
+          newTab
+          [variant]="BUTTON_VARIANT.Ghost"
+          [size]="BUTTON_SIZE.Sm"
+          [href]="privacyHref"
+        >
+          {{ 'ai.intro.policy' | transloco }}
+        </ui-button>
+      </p>
+      @if (failed()) {
+        <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'ai.intro.failed' | transloco }}</ui-notice>
       }
-    </ul>
-    <p class="ai-intro__details">
-      {{ 'ai.intro.details' | transloco }}
-      <ui-button
-        class="ai-intro__policy"
-        newTab
-        [variant]="BUTTON_VARIANT.Ghost"
-        [size]="BUTTON_SIZE.Sm"
-        [href]="privacyHref"
-      >
-        {{ 'ai.intro.policy' | transloco }}
+    </div>
+  }
+  @if (!offer()) {
+    <div slot="footer" class="ai-intro__foot">
+      <ui-button [variant]="BUTTON_VARIANT.Secondary" [block]="phone()" (click)="notNow()">
+        {{ 'ai.intro.notNow' | transloco }}
       </ui-button>
-    </p>
-    @if (failed()) {
-      <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'ai.intro.failed' | transloco }}</ui-notice>
-    }
-  </div>
-
-  <div slot="footer" class="ai-intro__foot">
-    <ui-button [variant]="BUTTON_VARIANT.Secondary" [block]="phone()" (click)="notNow()">
-      {{ 'ai.intro.notNow' | transloco }}
-    </ui-button>
-    <ui-button
-      [variant]="BUTTON_VARIANT.Primary"
-      [block]="phone()"
-      [loading]="saving()"
-      (click)="turnOn()"
-    >
-      {{ 'ai.intro.turnOn' | transloco }}
-    </ui-button>
-  </div>
+      <ui-button
+        [variant]="BUTTON_VARIANT.Primary"
+        [block]="phone()"
+        [loading]="saving()"
+        (click)="turnOn()"
+      >
+        {{ 'ai.intro.turnOn' | transloco }}
+      </ui-button>
+    </div>
+  }
 </ui-dialog>

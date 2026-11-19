@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Card tags and All tags popover</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<!-- Hotfix 2.2.1, approved option B with hover. Light board left, dark board right; each with a desktop card (280px) and a phone card (328px, the 360px screen less 16px gutters). -->
+<div style="width: 1280px; box-sizing: border-box; display: grid; grid-template-columns: 1fr 1fr; font-family: Onest, system-ui, sans-serif">
+
+  <!-- LIGHT -->
+  <section aria-label="Light theme" style="display: flex; flex-direction: column; gap: 24px; padding: 32px; background: #F4F4F0; color: #18181B">
+    <h1 style="margin: 0; font-size: 22px; font-weight: 700">Card footer · light</h1>
+
+    <div style="display: flex; gap: 24px; align-items: flex-end">
+      <!-- Desktop card with the popover open above "+2" -->
+      <div style="position: relative; width: 280px">
+        <div role="dialog" aria-label="All tags" style="position: absolute; left: 96px; bottom: 52px; width: 216px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border-radius: 18px; background: rgba(255,255,255,.78); border: 1px solid rgba(24,24,27,.08); box-shadow: 0 12px 32px rgba(24,24,27,.14); backdrop-filter: blur(16px) saturate(1.5)">
+          <span style="font-size: 12px; font-weight: 600; color: #6B6B73">All tags</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 4px">
+            <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #E3EEDF; color: #35552F; font-size: 12px; font-weight: 500">angular</span>
+            <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #E3EEDF; color: #35552F; font-size: 12px; font-weight: 500">javascript</span>
+            <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #E3EEDF; color: #35552F; font-size: 12px; font-weight: 500">reading</span>
+          </div>
+        </div>
+        <article style="display: flex; flex-direction: column; gap: 6px; padding: 8px 8px 12px; border-radius: 22px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(24,24,27,.06)">
+          <span style="height: 140px; border-radius: 16px; background: #ECECE6"></span>
+          <div style="padding: 4px 8px 0; display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 12px; color: #6B6B73">medium.com · Oct 22</span>
+            <span style="font-size: 15px; font-weight: 600">Signals vs RxJS: when to use which</span>
+            <span style="font-size: 14px; color: #6B6B73">Compares signals and RxJS…</span>
+            <div style="display: flex; align-items: center; gap: 8px; height: 40px">
+              <span style="display: inline-flex; gap: 4px">
+                <span title="angular" style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #E3EEDF; color: #35552F; font-size: 12px; font-weight: 500">angular</span>
+                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #E8E8E3; color: #18181B; font-size: 12px; font-weight: 500; outline: 2px solid #18181B; outline-offset: 2px">+2</span>
+              </span>
+              <span style="height: 24px; display: inline-flex; align-items: center; gap: 4px; padding: 0 10px 0 8px; border-radius: 999px; background: #F6E3DA; color: #8A3B1E; font-size: 12px; font-weight: 500">▢ Angular</span>
+              <span style="margin-left: auto; font-size: 18px">☆</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Phone card: a long first tag ends in an ellipsis inside its pill; the folder chip truncates too -->
+      <article style="width: 296px; display: flex; flex-direction: column; gap: 6px; padding: 8px 16px 12px; border-radius: 22px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(24,24,27,.06)">
+        <span style="font-size: 12px; color: #6B6B73">Phone · 360px</span>
+        <span style="font-size: 15px; font-weight: 600">Angular 22: everything about Signal Forms</span>
+        <div style="display: flex; align-items: center; gap: 8px; height: 40px; min-width: 0">
+          <span style="display: inline-flex; gap: 4px; min-width: 0; flex: 0 4 auto">
+            <span style="min-width: 0; max-width: 160px; height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #E3EEDF; color: #35552F; font-size: 12px; font-weight: 500"><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">frontend-architecture-notes</span></span>
+            <span style="flex: none; height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #E8E8E3; font-size: 12px; font-weight: 500">+3</span>
+          </span>
+          <span style="min-width: 0; max-width: 50%; height: 24px; display: inline-flex; align-items: center; padding: 0 10px 0 8px; border-radius: 999px; background: #E6E0F2; color: #4B3A78; font-size: 12px; font-weight: 500"><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">▢ Conference talks 2026</span></span>
+          <span style="margin-left: auto; flex: none; font-size: 18px">☆</span>
+        </div>
+      </article>
+    </div>
+
+    <ul style="margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.55; color: #3F3F46">
+      <li><b>One line, start-aligned:</b> first tag · “+N” · folder chip, side by side (gap 4px inside the tags, 8px to the folder); the star stays at the end. No measuring, nothing hidden.</li>
+      <li><b>First tag:</b> a sage chip, max width 160px; a longer name ends in “…” inside the pill (never cut by the card edge). The whole name shows in a tooltip only when it is cut. A click lists the links with that tag.</li>
+      <li><b>“+N”:</b> neutral chip button (only when there are more tags), named “N more tags: a, b, c”, <code>aria-haspopup="dialog"</code>, <code>aria-expanded</code>.</li>
+      <li><b>Phone (360px):</b> short of room, the tags shrink first (the first tag to its ellipsis), then the folder chip, which truncates too. The footer never wraps or grows.</li>
+      <li><b>Cards setting “Tags” off</b> (<code>data-card-tags="off"</code>): no tags and no “+N”; the folder chip stays.</li>
+      <li>List rows are unchanged (their own three tags).</li>
+    </ul>
+  </section>
+
+  <!-- DARK -->
+  <section aria-label="Dark theme" style="display: flex; flex-direction: column; gap: 24px; padding: 32px; background: #111113; color: #EDEDEF">
+    <h1 style="margin: 0; font-size: 22px; font-weight: 700">“All tags” popover · dark</h1>
+
+    <div style="display: flex; gap: 24px; align-items: flex-end">
+      <div style="position: relative; width: 280px">
+        <div role="dialog" aria-label="All tags" style="position: absolute; left: 96px; bottom: 52px; width: 216px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border-radius: 18px; background: rgba(32,32,36,.78); border: 1px solid rgba(255,255,255,.10); box-shadow: 0 12px 32px rgba(0,0,0,.5); backdrop-filter: blur(16px) saturate(1.5)">
+          <span style="font-size: 12px; font-weight: 600; color: #9A9AA0">All tags</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 4px">
+            <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #21301E; color: #C6DEC0; font-size: 12px; font-weight: 500">angular</span>
+            <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #21301E; color: #C6DEC0; font-size: 12px; font-weight: 500">javascript</span>
+            <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #21301E; color: #C6DEC0; font-size: 12px; font-weight: 500">reading</span>
+          </div>
+        </div>
+        <article style="display: flex; flex-direction: column; gap: 6px; padding: 8px 8px 12px; border-radius: 22px; background: #1A1A1D; border: 1px solid #29292E">
+          <span style="height: 140px; border-radius: 16px; background: #232327"></span>
+          <div style="padding: 4px 8px 0; display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 12px; color: #9A9AA0">medium.com · Oct 22</span>
+            <span style="font-size: 15px; font-weight: 600">Signals vs RxJS: when to use which</span>
+            <span style="font-size: 14px; color: #9A9AA0">Compares signals and RxJS…</span>
+            <div style="display: flex; align-items: center; gap: 8px; height: 40px">
+              <span style="display: inline-flex; gap: 4px">
+                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #21301E; color: #C6DEC0; font-size: 12px; font-weight: 500">angular</span>
+                <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #2C2C31; color: #EDEDEF; font-size: 12px; font-weight: 500">+2</span>
+              </span>
+              <span style="height: 24px; display: inline-flex; align-items: center; gap: 4px; padding: 0 10px 0 8px; border-radius: 999px; background: #3A2A20; color: #F0B898; font-size: 12px; font-weight: 500">▢ Angular</span>
+              <span style="margin-left: auto; font-size: 18px">☆</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <article style="width: 296px; display: flex; flex-direction: column; gap: 6px; padding: 8px 16px 12px; border-radius: 22px; background: #1A1A1D; border: 1px solid #29292E">
+        <span style="font-size: 12px; color: #9A9AA0">Phone · 360px, “+3” tapped</span>
+        <div role="dialog" aria-label="All tags" style="display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border-radius: 18px; background: rgba(32,32,36,.78); border: 1px solid rgba(255,255,255,.10); box-shadow: 0 12px 32px rgba(0,0,0,.5)">
+          <span style="font-size: 12px; font-weight: 600; color: #9A9AA0">All tags</span>
+          <div style="display: flex; flex-wrap: wrap; gap: 4px">
+            <span style="max-width: 100%; height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #21301E; color: #C6DEC0; font-size: 12px; font-weight: 500"><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">frontend-architecture-notes</span></span>
+            <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #21301E; color: #C6DEC0; font-size: 12px; font-weight: 500">angular</span>
+            <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #21301E; color: #C6DEC0; font-size: 12px; font-weight: 500">forms</span>
+            <span style="height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #21301E; color: #C6DEC0; font-size: 12px; font-weight: 500">video</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; height: 40px; min-width: 0">
+          <span style="display: inline-flex; gap: 4px; min-width: 0">
+            <span style="min-width: 0; max-width: 160px; height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #21301E; color: #C6DEC0; font-size: 12px; font-weight: 500"><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">frontend-architecture-notes</span></span>
+            <span style="flex: none; height: 28px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: #2C2C31; font-size: 12px; font-weight: 500">+3</span>
+          </span>
+          <span style="min-width: 0; max-width: 50%; height: 24px; display: inline-flex; align-items: center; padding: 0 10px 0 8px; border-radius: 999px; background: #2E2340; color: #CDB8F2; font-size: 12px; font-weight: 500"><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">▢ Conference talks 2026</span></span>
+          <span style="margin-left: auto; flex: none; font-size: 18px">☆</span>
+        </div>
+      </article>
+    </div>
+
+    <ul style="margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.55; color: #C4C4CA">
+      <li><b>Popover:</b> <code>ui-popover</code>, glass (<code>@include glass</code>, 18px corners, padding 10/12/12px, max 320px wide), heading “All tags” (caption, 600, <code>text-muted</code>), then every tag as a sage chip (wraps; a long one ends in “…”). <code>role="dialog"</code> named by its heading; non-modal.</li>
+      <li><b>Position:</b> above “+N”, lined up with its start edge (flips to its end edge, then below when there is no room); it grows from the corner next to “+N” (<code>enter(pop)</code> / <code>leave(pop)</code>; a fade under reduced motion).</li>
+      <li><b>Opens:</b> hover or keyboard focus on “+N” after 150 ms; the pointer has 250 ms to travel into the panel, which keeps it open. A click or tap pins it open (touch never hovers); Enter or Space also moves focus to the first chip.</li>
+      <li><b>Closes:</b> Esc (focus back on “+N”), a press outside, Tab past the last chip, a second click on “+N”, or choosing a tag.</li>
+      <li><b>A chip</b> lists the links with that tag (All links, filtered). Read-only cards (shared collection) show plain chips.</li>
+    </ul>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

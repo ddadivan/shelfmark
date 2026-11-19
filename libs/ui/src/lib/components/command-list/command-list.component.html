@@ -55,7 +55,7 @@
         [attr.aria-busy]="busy() ? 'true' : null"
         [activeDescendant]="liveActive(list.activeDescendant())"
         [value]="noSelection"
-        (valueChange)="onListValue()"
+        (valueChange)="onListValue($event)"
         (mousedown)="onListMousedown($event)"
       >
         <ng-template #option let-item>

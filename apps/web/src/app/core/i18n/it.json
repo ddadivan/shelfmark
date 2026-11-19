@@ -330,7 +330,8 @@
         "one": "{{count}} altro tag: {{list}}",
         "many": "{{count}} altri tag: {{list}}",
         "other": "{{count}} altri tag: {{list}}"
-      }
+      },
+      "allTags": "Tutti i tag"
     },
     "item": {
       "edit": "Modifica",
@@ -3024,6 +3025,30 @@
       },
       "landingHeadline": {
         "text": "Il titolo della pagina iniziale sta bene in ogni lingua."
+      },
+      "askAnswers": {
+        "text": "«Chiedi ai tuoi link» risponde di nuovo alle domande."
+      },
+      "youtubeTitles": {
+        "text": "I link di YouTube ricevono titolo e autore del video."
+      },
+      "clearedSummary": {
+        "text": "Un riassunto cancellato in Aggiungi link resta vuoto dopo il salvataggio."
+      },
+      "cardTagsWhole": {
+        "text": "I tag sulle schede non vengono più tagliati: il primo tag, poi «+N» con tutti i tag al passaggio del mouse."
+      },
+      "bulkBarFits": {
+        "text": "La barra di selezione mostra tutti i pulsanti anche nelle finestre più strette."
+      },
+      "aiDialogIcon": {
+        "text": "L’annuncio dell’IA mostra subito la sua icona, senza barra di scorrimento."
+      },
+      "searchChoice": {
+        "text": "Scegliere un risultato di ricerca non blocca più l’app."
+      },
+      "backfillProgress": {
+        "text": "«Elabora i link esistenti» procede mentre l’app è aperta."
       }
     },
     "sections": {
@@ -3158,6 +3183,36 @@
       "done": "Tutti i link esistenti sono stati elaborati.",
       "startFailed": "Impossibile avviare l’elaborazione dei link",
       "stopFailed": "Impossibile interrompere l’elaborazione. Riprova."
+    },
+    "backfillOffer": {
+      "title": {
+        "one": "L’IA è attiva. Elaborare il tuo {{count}} link salvato?",
+        "many": "L’IA è attiva. Elaborare i tuoi {{count}} link salvati?",
+        "other": "L’IA è attiva. Elaborare i tuoi {{count}} link salvati?"
+      },
+      "lead": "L’IA non ha ancora letto i link salvati in precedenza. Scriverà brevi riassunti, suggerirà tag e cartelle, e la ricerca per significato li troverà come quelli nuovi.",
+      "review": "Nulla cambia senza la tua scelta: i suggerimenti ti aspettano.",
+      "background": "Funziona in background, di solito pochi minuti. Puoi fermarla quando vuoi.",
+      "allowance": "Non usa il limite mensile: c’è una quota separata di {{allowance}} link.",
+      "process": {
+        "one": "Elabora {{count}} link",
+        "many": "Elabora {{count}} link",
+        "other": "Elabora {{count}} link"
+      },
+      "later": "Più tardi",
+      "noteLead": "Cambi idea? Avviala quando vuoi:",
+      "notePath": "Impostazioni › IA › Elabora i link esistenti",
+      "noteTail": "Un promemoria compare anche nella ricerca.",
+      "search": {
+        "text": {
+          "one": "L’IA non ha ancora letto {{count}} link meno recente: la ricerca lo trova peggio.",
+          "many": "L’IA non ha ancora letto {{count}} link meno recenti: la ricerca li trova peggio.",
+          "other": "L’IA non ha ancora letto {{count}} link meno recenti: la ricerca li trova peggio."
+        },
+        "process": "Elabora",
+        "started": "Elaborazione avviata",
+        "hide": "Nascondi"
+      }
     },
     "deleteData": {
       "confirm": {

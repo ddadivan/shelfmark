@@ -330,7 +330,8 @@
         "one": "mais {{count}} tag: {{list}}",
         "many": "mais {{count}} tags: {{list}}",
         "other": "mais {{count}} tags: {{list}}"
-      }
+      },
+      "allTags": "Todas as tags"
     },
     "item": {
       "edit": "Editar",
@@ -3024,6 +3025,30 @@
       },
       "landingHeadline": {
         "text": "O título da página inicial cabe em todos os idiomas."
+      },
+      "askAnswers": {
+        "text": "“Pergunte aos seus links” volta a responder perguntas."
+      },
+      "youtubeTitles": {
+        "text": "Links do YouTube recebem o título e o autor do vídeo."
+      },
+      "clearedSummary": {
+        "text": "Um resumo apagado em Adicionar link continua vazio depois de salvar."
+      },
+      "cardTagsWhole": {
+        "text": "As tags nos cartões não são mais cortadas: a primeira tag e depois “+N” com todas ao passar o mouse."
+      },
+      "bulkBarFits": {
+        "text": "A barra de seleção mostra todos os botões em janelas mais estreitas."
+      },
+      "aiDialogIcon": {
+        "text": "O anúncio da IA mostra o ícone na hora, sem barra de rolagem."
+      },
+      "searchChoice": {
+        "text": "Escolher um resultado da busca não trava mais o app."
+      },
+      "backfillProgress": {
+        "text": "“Processar links existentes” avança enquanto o app está aberto."
       }
     },
     "sections": {
@@ -3158,6 +3183,36 @@
       "done": "Todos os links existentes foram processados.",
       "startFailed": "Não foi possível começar a processar seus links",
       "stopFailed": "Não foi possível parar o processamento. Tente de novo."
+    },
+    "backfillOffer": {
+      "title": {
+        "one": "A IA está ligada. Processar seu {{count}} link salvo?",
+        "many": "A IA está ligada. Processar seus {{count}} links salvos?",
+        "other": "A IA está ligada. Processar seus {{count}} links salvos?"
+      },
+      "lead": "A IA ainda não leu os links que você salvou antes. Ela vai escrever resumos curtos, sugerir tags e pastas, e a busca por significado vai encontrá-los como os novos.",
+      "review": "Nada muda sem a sua escolha: as sugestões esperam por você.",
+      "background": "Roda em segundo plano, geralmente em poucos minutos. Pare quando quiser.",
+      "allowance": "Não usa o limite mensal: há uma cota separada de {{allowance}} links.",
+      "process": {
+        "one": "Processar {{count}} link",
+        "many": "Processar {{count}} links",
+        "other": "Processar {{count}} links"
+      },
+      "later": "Mais tarde",
+      "noteLead": "Mudou de ideia? Comece quando quiser:",
+      "notePath": "Configurações › IA › Processar links existentes",
+      "noteTail": "Um lembrete também aparece na busca.",
+      "search": {
+        "text": {
+          "one": "A IA ainda não leu {{count}} link antigo: a busca o encontra pior.",
+          "many": "A IA ainda não leu {{count}} links antigos: a busca os encontra pior.",
+          "other": "A IA ainda não leu {{count}} links antigos: a busca os encontra pior."
+        },
+        "process": "Processar",
+        "started": "Processamento iniciado",
+        "hide": "Ocultar"
+      }
     },
     "deleteData": {
       "confirm": {

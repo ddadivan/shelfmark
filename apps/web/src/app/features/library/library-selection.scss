@@ -109,6 +109,18 @@
   }
 }
 
+// A desktop window too narrow for the inline bar (`BulkBarFitDirective`): the stacked bar spans
+// the feed, so its equal-width buttons have room for their labels.
+.library__bulk.ui-bulk-bar--stacked {
+  @include desktop {
+    align-self: stretch;
+  }
+}
+
+.library__bulk-split > .library__bulk.ui-bulk-bar--stacked {
+  flex: 1 1 auto;
+}
+
 // The cards that stay behind while a selection travels fade to 60% (SideBySide.dc.html). Only
 // this state carries the transition (a transition on every card breaks the scroll height of the
 // `content-visibility` list); the drop restores them at once. Instant under reduced motion.

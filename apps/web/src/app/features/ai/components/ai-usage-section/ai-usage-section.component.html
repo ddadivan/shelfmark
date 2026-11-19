@@ -18,6 +18,7 @@
     @if (backfill(); as status) {
       @if (status.state === AI_BACKFILL_STATE.Running) {
         <ui-settings-row
+          [appFragmentTarget]="AI_BACKFILL_FRAGMENT"
           [title]="'ai.backfill.running' | transloco"
           [description]="'ai.backfill.progress' | transloco: progress()"
         >
@@ -35,6 +36,7 @@
         </div>
       } @else if (status.eligible > 0) {
         <ui-settings-row
+          [appFragmentTarget]="AI_BACKFILL_FRAGMENT"
           [title]="'ai.backfill.title' | transloco"
           [description]="
             pluralKey('ai.backfill.hint', status.eligible) | transloco: { count: status.eligible }
@@ -50,6 +52,7 @@
         </ui-settings-row>
       } @else {
         <ui-settings-row
+          [appFragmentTarget]="AI_BACKFILL_FRAGMENT"
           [title]="'ai.backfill.title' | transloco"
           [description]="'ai.backfill.done' | transloco"
         />

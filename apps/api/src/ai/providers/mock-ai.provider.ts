@@ -164,11 +164,12 @@ export class MockAiProvider implements AiProvider {
     const wantsSummary = input.parts.includes(AI_PART.Summary);
 
     const tags = wantsTags ? input.tags.filter(matches).slice(0, 3) : [];
-    const siteName = host.split('.').slice(-2, -1)[0] ?? '';
+    // A new tag in lower case like a real answer after `parseLinkOutput`; an existing tag in any case
+    // is not new.
+    const siteName = (host.split('.').slice(-2, -1)[0] ?? '').toLowerCase();
+    const known = input.tags.some((name) => name.toLowerCase() === siteName);
     const newTag =
-      wantsTags && siteName.length >= MOCK_AI.MinWordLength && !input.tags.includes(siteName)
-        ? siteName
-        : null;
+      wantsTags && siteName.length >= MOCK_AI.MinWordLength && !known ? siteName : null;
     const folder = wantsFolder
       ? (input.folders.find((candidate) => matches(candidate.path))?.key ?? null)
       : null;

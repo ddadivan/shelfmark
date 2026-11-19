@@ -1,3 +1,4 @@
+import { BACKFILL_REMINDER_DISMISSED_STORAGE_KEY } from './backfill-reminder-dismissed-storage-key.const';
 import { EXTENSION_BANNER_DISMISSED_STORAGE_KEY } from './extension-banner-dismissed-storage-key.const';
 import { EMOJI_RECENT_STORAGE_KEY } from './emoji-recent-storage-key.const';
 import { RECENT_FOLDERS_STORAGE_KEY } from './recent-folders-storage-key.const';
@@ -17,4 +18,6 @@ export const USER_STORAGE_KEYS: readonly string[] = [
   SESSION_HINT_STORAGE_KEY,
   // The closed extension banner of the library (#455).
   EXTENSION_BANNER_DISMISSED_STORAGE_KEY,
+  // The hidden "AI hasn't read N older links yet" row of search (hotfix 2.2.1).
+  BACKFILL_REMINDER_DISMISSED_STORAGE_KEY,
 ];

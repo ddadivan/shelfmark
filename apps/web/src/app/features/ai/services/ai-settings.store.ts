@@ -76,6 +76,24 @@ export const AiSettingsStore = signalStore(
       /** "Process existing links" exists for the account's tier (allowance above 0). */
       backfillAvailable: computed(() => (usage()?.backfillLimit ?? 0) > 0),
       backfillRunning: computed(() => backfill()?.state === AI_BACKFILL_STATE.Running),
+      /**
+       * Links "Process existing links" would take on now (the intro's next step, the search
+       * reminder): the eligible links up to the allowance left, while no run is going or finished;
+       * 0 when there is nothing to offer.
+       */
+      backfillOffer: computed(() => {
+        const status = backfill();
+        const value = usage();
+        if (
+          !status ||
+          !value ||
+          status.state === AI_BACKFILL_STATE.Running ||
+          status.state === AI_BACKFILL_STATE.Done
+        ) {
+          return 0;
+        }
+        return Math.max(0, Math.min(status.eligible, value.backfillLimit - value.backfillUsed));
+      }),
       /** "Search by meaning" in effect (AI-3): AI and the switch on. */
       meaningSearchOn,
       /** Search by meaning readiness ("N of M links ready"), `null` until loaded. */

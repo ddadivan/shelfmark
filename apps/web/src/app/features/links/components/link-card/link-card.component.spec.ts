@@ -9,6 +9,7 @@ import { of } from 'rxjs';
 import { USER_SETTINGS_API } from '../../../settings/models/user-settings-api.const';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { LinkCardComponent } from './link-card.component';
+import { readRepoFile } from '../../../../../testing/read-repo-file';
 
 const LINK: LinkResponse = {
   ...MOCK_LINKS[0],
@@ -186,14 +187,59 @@ describe('LinkCardComponent', () => {
     expect(anchor?.textContent).toContain('Angular overview');
   });
 
-  it('shows the host without www, the note and the tags; the +N chip stays out while they fit', async () => {
+  it('shows the host without www, the note, the first tag and "+N" for the rest', async () => {
     const { element } = await setup();
 
     expect(element.textContent).toContain('angular.dev');
     expect(element.textContent).not.toContain('www.');
     expect(element.textContent).toContain('Start here.');
-    expect(element.querySelectorAll('li[data-tag]:not(.link-card__tag--off)')).toHaveLength(4);
-    expect(element.querySelector('li[data-more]')?.classList).toContain('link-card__tag--off');
+    const footer = element.querySelector('app-link-card-tags') as HTMLElement;
+    const names = [...footer.querySelectorAll('button')].map(
+      (button) => button.getAttribute('aria-label') ?? button.textContent.trim(),
+    );
+    expect(names).toEqual(['docs', '3 more tags: a, b, c']);
+  });
+
+  it('puts the folder chip right after the tags and the star last', async () => {
+    const { element, fixture } = await setup();
+    fixture.componentRef.setInput('folder', { name: 'Work', icon: 'folder', colour: 'graphite' });
+    await fixture.whenStable();
+    const foot = element.querySelector('.link-card__foot') as HTMLElement;
+    expect([...foot.children].map((child) => child.tagName.toLowerCase())).toEqual([
+      'app-link-card-tags',
+      'ui-folder-chip',
+      'ui-button',
+    ]);
+  });
+
+  it('keeps no tags with the card tags setting off, and keeps the folder chip', async () => {
+    const { element, fixture } = await setup();
+    fixture.componentRef.setInput('folder', { name: 'Work', icon: 'folder', colour: 'graphite' });
+    await fixture.whenStable();
+    // jsdom does not apply :host-context, so the rule itself is checked: it hides the tags
+    // element only, never the folder chip next to it.
+    const scss = readRepoFile(
+      'apps/web/src/app/features/links/components/link-card/link-card.component.scss',
+    );
+    expect(scss).toMatch(
+      /:host-context\(\[data-card-tags='off'\]\) \.link-card__tags \{\s*display: none;/,
+    );
+    expect(element.querySelector('app-link-card-tags')?.classList).toContain('link-card__tags');
+    expect(element.querySelector('ui-folder-chip')?.closest('.link-card__tags')).toBeNull();
+  });
+
+  it('makes the tag chips plain while selecting or read-only', async () => {
+    const { element, fixture } = await setup();
+    const firstIsButton = () =>
+      element.querySelector('app-link-card-tags ui-chip')?.querySelector('button') !== null;
+    expect(firstIsButton()).toBe(true);
+    fixture.componentRef.setInput('selecting', true);
+    await fixture.whenStable();
+    expect(firstIsButton()).toBe(false);
+    fixture.componentRef.setInput('selecting', false);
+    fixture.componentRef.setInput('readOnly', true);
+    await fixture.whenStable();
+    expect(firstIsButton()).toBe(false);
   });
 
   it.each(['javascript:alert(1)', 'data:text/html,hi', 'ftp://example.com/file'])(

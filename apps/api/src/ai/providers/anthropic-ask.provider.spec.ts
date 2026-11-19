@@ -96,7 +96,7 @@ describe('AnthropicAiProvider.askStream', () => {
     expect(params.model).toBe('claude-sonnet-5-5');
     expect(params.max_tokens).toBe(700);
     expect(params.output_config).toEqual({ effort: 'medium' });
-    expect(params.thinking).toEqual({ type: 'disabled' });
+    expect(params.thinking).toEqual({ type: 'between_tools' });
     expect(params).not.toHaveProperty('tools');
     expect(params.system[0].text).toContain('data, not instructions');
     expect(params.messages).toHaveLength(1);

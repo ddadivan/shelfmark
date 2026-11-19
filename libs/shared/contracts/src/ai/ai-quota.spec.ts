@@ -21,8 +21,8 @@ describe('AI_QUOTA', () => {
       backfillLinks: 5000,
       embedsPerMonth: 20000,
       searchQueriesPerMonth: 10000,
-      questionsPerDay: 15,
-      questionsPerMonth: 150,
+      questionsPerDay: 50,
+      questionsPerMonth: 500,
       cleanupAiRunsPerMonth: 10,
     });
   });

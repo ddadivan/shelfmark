@@ -8,6 +8,7 @@ import {
   inject,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
@@ -17,6 +18,8 @@ import { KEYBOARD_KEY } from '../../models/keyboard';
 import { CHIP_VARIANT } from './models/chip-variant.const';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
+import { UI_FOCUS_TARGET } from '../../directives/focus-target/models/ui-focus-target.const';
+import type { UiFocusTarget } from '../../directives/focus-target/models/ui-focus-target.interface';
 
 /**
  * Tag or state chip. `variant="tag"` is sage (`accent-bg` / `accent-text`), `neutral` is for
@@ -25,10 +28,16 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
  * plain text with no ripple. `removable` adds a separate remove button named by `removeLabel`
  * (a translated string such as "Remove tag design"); Delete or Backspace on a focused
  * removable chip emits `removed` too.
+ *
+ * `truncate` lets the chip shrink below its text: the label ends in an ellipsis inside the pill
+ * (never cut by the container), up to `--ui-chip-max-inline-size` (default the full width).
+ * `UI_FOCUS_TARGET` is the clickable body (else the host), so a tooltip or a popover trigger on
+ * `<ui-chip>` anchors on, and writes its ARIA state to, the element that has focus.
  */
 @Component({
   selector: 'ui-chip',
   imports: [TooltipDirective, NgTemplateOutlet, IconComponent, RippleDirective],
+  providers: [{ provide: UI_FOCUS_TARGET, useExisting: ChipComponent }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-chip',
@@ -38,12 +47,13 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
     '[class.ui-chip--removable]': 'removable()',
     '[class.ui-chip--menu]': 'hasMenu()',
     '[class.ui-chip--disabled]': 'disabled()',
+    '[class.ui-chip--truncate]': 'truncate()',
     '(keydown)': 'onKeydown($event)',
   },
   templateUrl: './chip.component.html',
   styleUrl: './chip.component.scss',
 })
-export class ChipComponent {
+export class ChipComponent implements UiFocusTarget {
   protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly CHIP_VARIANT = CHIP_VARIANT;
 
@@ -55,8 +65,15 @@ export class ChipComponent {
   readonly removable = input(false, { transform: booleanAttribute });
   /** Disables the clickable body and the removal. */
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** The label may shrink and end in an ellipsis (max width: `--ui-chip-max-inline-size`). */
+  readonly truncate = input(false, { transform: booleanAttribute });
   /** Optional leading icon. */
   readonly icon = input<IconName>();
+  /**
+   * Accessible name of the clickable body when its text alone says too little (a "+3" chip:
+   * "3 more tags: a, b, c"). Without it the projected text names the button.
+   */
+  readonly ariaLabel = input<string>();
   /** Accessible name of the remove button; required in practice when `removable`. */
   readonly removeLabel = input<string>();
 
@@ -80,7 +97,14 @@ export class ChipComponent {
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
+  private readonly bodyButton = viewChild<ElementRef<HTMLButtonElement>>('bodyButton');
+
   protected readonly hasMenu = computed(() => !!this.menuLabel());
+
+  /** The focusable body of a clickable chip, else the host (`UI_FOCUS_TARGET`). */
+  readonly element = computed<HTMLElement | undefined>(() =>
+    this.clickable() ? this.bodyButton()?.nativeElement : this.host,
+  );
 
   /**
    * Focuses the clickable body, else the remove button. Does nothing for a plain chip
@@ -92,6 +116,12 @@ export class ChipComponent {
         'button.ui-chip__body, button.ui-chip__menu, button.ui-chip__remove',
       )
       ?.focus(options);
+  }
+
+  /** The label is cut with an ellipsis right now (`truncate`): a tooltip with the whole text helps. */
+  isTruncated(): boolean {
+    const label = this.host.querySelector<HTMLElement>('.ui-chip__label');
+    return label !== null && label.scrollWidth > label.clientWidth;
   }
 
   protected onMenuClick(event: MouseEvent, origin: HTMLElement): void {

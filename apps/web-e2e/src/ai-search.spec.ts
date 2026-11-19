@@ -170,4 +170,32 @@ test.describe('search by meaning (AI-3, mock API)', () => {
     await expect(page).toHaveURL(/[?&]related=/);
     await expect(page.getByText('Related folders', { exact: true })).toBeVisible();
   });
+
+  test('reminds about older links AI has not read; Process starts it', async ({ page }) => {
+    await openLibrary(page);
+    await search(page, 'signals');
+    const reminder = page.locator('app-backfill-reminder');
+    await expect(reminder).toContainText(/AI hasn’t read \d+ older links? yet/);
+    // Outside the listbox: never an option.
+    await expect(
+      page.getByRole('listbox', { name: 'Search results' }).locator('app-backfill-reminder'),
+    ).toHaveCount(0);
+    await reminder.getByRole('button', { name: 'Process' }).click();
+    await expect(reminder).toContainText('Processing started');
+    await expect(reminder).toBeEmpty({ timeout: 5000 });
+  });
+
+  test('× hides the older-links reminder for good', async ({ page }) => {
+    await openLibrary(page);
+    await search(page, 'signals');
+    const reminder = page.locator('app-backfill-reminder');
+    await expect(reminder).toContainText(/AI hasn’t read/);
+    await reminder.getByRole('button', { name: 'Hide' }).click();
+    await expect(reminder).toBeEmpty();
+    await page.reload();
+    await expect(page.locator('ui-card').first()).toBeVisible();
+    await search(page, 'signals');
+    await expect(page.getByRole('option').first()).toBeVisible();
+    await expect(page.getByText(/AI hasn’t read/)).toHaveCount(0);
+  });
 });

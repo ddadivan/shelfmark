@@ -34,7 +34,10 @@ test.describe('AI in the mobile shell (#389, mock API)', { tag: E2E_TAG.Mobile }
     await page.getByRole('switch', { name: 'Use AI in Shelfmark' }).click();
     const intro = page.getByRole('dialog', { name: /^Turn on AI/ });
     await intro.getByRole('button', { name: 'Turn on AI' }).click();
-    await expect(intro).toBeHidden();
+    // The mock library's links predate AI: the same dialog offers to process them.
+    const offer = page.getByRole('dialog', { name: /^AI is on\. Process your \d+ saved links\?$/ });
+    await offer.getByRole('button', { name: 'Later' }).click();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     await expect(page.getByRole('switch', { name: 'Use AI in Shelfmark' })).toBeChecked();
 
     if (isPhone(page)) {
