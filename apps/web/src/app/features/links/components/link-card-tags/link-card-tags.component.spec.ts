@@ -3,6 +3,7 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { provideRouter, Router } from '@angular/router';
 import { UiPopoverHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
+import { readRepoFile } from '../../../../../testing/read-repo-file';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { LinkCardTagsComponent } from './link-card-tags.component';
 
@@ -175,6 +176,9 @@ describe('LinkCardTagsComponent', () => {
       observe(): void {
         return undefined;
       }
+      unobserve(): void {
+        return undefined;
+      }
       disconnect(): void {
         return undefined;
       }
@@ -205,6 +209,15 @@ describe('LinkCardTagsComponent', () => {
     } finally {
       globalThis.ResizeObserver = original;
     }
+  });
+
+  it('keeps "+N" and the first tag above the card\'s stretched link, so hover reaches them', () => {
+    const scss = readRepoFile(
+      'apps/web/src/app/features/links/components/link-card-tags/link-card-tags.component.scss',
+    );
+    expect(scss).toMatch(
+      /\.link-card-tags__more,\s*:host\(\.link-card-tags--interactive\) \.link-card-tags__first \{\s*position: relative;\s*z-index: 2;/,
+    );
   });
 
   it('has no axe violations, closed and open', async () => {

@@ -6,6 +6,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
   Injector,
@@ -49,6 +50,7 @@ export class LinkCardTagsComponent implements AfterViewInit {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly firstChip = viewChild<ChipComponent>('firstChip');
+  private readonly firstChipElement = viewChild('firstChip', { read: ElementRef<HTMLElement> });
 
   /** The first tag does not fit whole: the card shows only "+N" for every tag. */
   protected readonly collapsed = signal(false);
@@ -69,7 +71,11 @@ export class LinkCardTagsComponent implements AfterViewInit {
     pluralKey('links.card.moreTagsLabel', this.more().count),
   );
 
-  /** Watches the footer (its width does not depend on the tags) and measures on each change. */
+  /**
+   * Watches the footer (its width does not depend on the tags) and measures on each change; also
+   * watches the first tag itself, so a tag that grows later (the web font arrived after the first
+   * measure) and gets cut moves into "+N".
+   */
   ngAfterViewInit(): void {
     const footer = this.host.nativeElement.parentElement;
     if (!footer || typeof ResizeObserver === 'undefined') {
@@ -78,11 +84,26 @@ export class LinkCardTagsComponent implements AfterViewInit {
     }
     let width = -1;
     const observer = new ResizeObserver(() => {
-      if (footer.clientWidth === width) return;
-      width = footer.clientWidth;
-      this.measure();
+      if (footer.clientWidth !== width) {
+        width = footer.clientWidth;
+        this.measure();
+      } else if (!this.collapsed()) {
+        this.check();
+      }
     });
     observer.observe(footer);
+    effect(
+      (onCleanup) => {
+        const chip = this.firstChipElement()?.nativeElement;
+        if (!chip) return;
+        observer.observe(chip);
+        onCleanup(() => observer.unobserve(chip));
+      },
+      { injector: this.injector },
+    );
+    void document.fonts?.ready.then(() => {
+      if (!this.collapsed()) this.check();
+    });
     // A browser that delivers no resize callback (a background tab) must not leave the tags
     // hidden: measure once anyway.
     const fallback = setTimeout(() => {
@@ -98,18 +119,17 @@ export class LinkCardTagsComponent implements AfterViewInit {
   private measure(): void {
     if (!this.collapsed()) {
       // The first tag is on screen already: measure it now (no render would come to wait for).
-      this.collapsed.set(this.firstChip()?.isTruncated() ?? false);
-      this.measured.set(true);
+      this.check();
       return;
     }
     this.collapsed.set(false);
-    afterNextRender(
-      () => {
-        this.collapsed.set(this.firstChip()?.isTruncated() ?? false);
-        this.measured.set(true);
-      },
-      { injector: this.injector },
-    );
+    afterNextRender(() => this.check(), { injector: this.injector });
+  }
+
+  /** Collapses into "+N" when the first tag on screen is cut. */
+  private check(): void {
+    this.collapsed.set(this.firstChip()?.isTruncated() ?? false);
+    this.measured.set(true);
   }
 
   protected select(tag: string, popover?: PopoverComponent): void {
