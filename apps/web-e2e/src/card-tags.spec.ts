@@ -37,7 +37,7 @@ test.describe('card tags (hotfix 2.2.1, mock API)', () => {
       await expect(moreTags(page)).toHaveAttribute('aria-expanded', 'false');
 
       // Hover on a desktop pointer; a tap on touch, where nothing hovers.
-      const touch = await page.evaluate(() => matchMedia('(hover: none)').matches);
+      const touch = await page.evaluate<boolean>("matchMedia('(hover: none)').matches");
       if (touch) {
         await moreTags(page).tap();
       } else {
