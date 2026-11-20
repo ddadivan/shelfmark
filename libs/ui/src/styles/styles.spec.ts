@@ -90,6 +90,17 @@ describe('dialog focus', () => {
   });
 });
 
+describe('focus ring after a pointer', () => {
+  it('global.scss hides every ring, host rings included, while the last input was a pointer', () => {
+    const output = compile(resolve(STYLES_DIR, 'global.scss'), {
+      loadPaths: [resolve(STYLES_DIR, '../../../../node_modules')],
+    }).css;
+    expect(output).toMatch(
+      /:root\[data-ui-input=pointer\] :is\(:focus-visible, :has\(:focus-visible\)\):not\(#ui-input-pointer\) \{\s*outline: none;/,
+    );
+  });
+});
+
 describe('focus mixins', () => {
   it('field-focus removes the global ring only from controls inside the wrapper', () => {
     const out = css('.a { @include field-focus; }');

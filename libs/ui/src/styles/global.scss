@@ -128,6 +128,17 @@ body {
   @include focus-ring;
 }
 
+// No focus ring while the last input was a click or tap (`data-ui-input`, set by
+// `trackInputModality`): browsers treat focus moved by code (a dialog's first control, a menu's
+// item, a returned trigger) as `:focus-visible` when the element that had focus is gone or nothing
+// had it yet, so a ring showed before any key was pressed. The first key turns rings back on.
+// `:has()` covers rings drawn on a host around a focused inner control (card, history row).
+// `:not(#ui-input-pointer)` matches every element and lifts the rule over component rings (an id
+// beats their encapsulated class selectors) without `!important`.
+:root[data-ui-input='pointer'] :is(:focus-visible, :has(:focus-visible)):not(#ui-input-pointer) {
+  outline: none;
+}
+
 @include keyframes;
 @include scroll-fade-keyframes;
 @include illustration-keyframes;

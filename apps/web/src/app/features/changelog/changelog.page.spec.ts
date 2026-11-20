@@ -22,7 +22,7 @@ describe('ChangelogPage', () => {
     expect(headings).toEqual(
       releasedChangelog(CHANGELOG).map((release) => `Shelfmark ${release.version}`),
     );
-    expect(headings[0]).toBe('Shelfmark 2.4.0');
+    expect(headings[0]).toBe('Shelfmark 2.4.1');
   });
 
   it('shows the current version, the dates and a release heading per shipped release', async () => {
