@@ -35,7 +35,7 @@ import { provideOnboardingApi } from './features/onboarding/provide-onboarding-a
 import { provideRatingApi } from './features/rating/provide-rating-api';
 import { provideFeedbackApi } from './features/feedback/provide-feedback-api';
 import { provideAdminApi } from './features/admin/provide-admin-api';
-import { TOAST_DISMISS_LABEL } from '@shelfmark/ui';
+import { TOAST_DISMISS_LABEL, trackInputModality } from '@shelfmark/ui';
 import { ThemeService } from './core/theme/theme.service';
 import { TabSyncService } from './core/sync/tab-sync.service';
 import { UpdatePromptService } from './core/pwa/update-prompt.service';
@@ -67,6 +67,8 @@ export const appConfig: ApplicationConfig = {
     // Load the language before the first render (every language file is a lazy
     // chunk): text arriving later fills in empty strings and shifts the layout (CLS).
     provideAppInitializer(() => inject(LocaleService).init()),
+    // Focus rings only after a key, never on focus moved by code after a click or tap.
+    provideAppInitializer(() => trackInputModality()),
     // The close button of a toast is named in the active language.
     {
       provide: TOAST_DISMISS_LABEL,

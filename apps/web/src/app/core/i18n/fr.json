@@ -3405,6 +3405,9 @@
       "cardTagsFit": {
         "text": "Un tag sur une carte s’affiche en entier ou passe dans « +N », qui ne liste que les tags absents de la carte."
       },
+      "focusRingAfterKey": {
+        "text": "Une boîte de dialogue ouverte d’un clic ou d’un toucher n’affiche plus d’anneau de focus ; il apparaît dès que vous appuyez sur une touche."
+      },
       "askNoSideways": {
         "text": "Une longue question ne fait plus défiler la conversation Ask sur le côté."
       },

@@ -3405,6 +3405,9 @@
       "cardTagsFit": {
         "text": "Una etiqueta en una tarjeta se muestra entera o pasa a “+N”, que solo lista las etiquetas que no están en la tarjeta."
       },
+      "focusRingAfterKey": {
+        "text": "Un diálogo abierto con un clic o un toque ya no muestra el anillo de foco; aparece en cuanto pulsas una tecla."
+      },
       "askNoSideways": {
         "text": "Una pregunta larga ya no hace que el chat de Ask se desplace hacia los lados."
       },

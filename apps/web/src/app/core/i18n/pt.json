@@ -3405,6 +3405,9 @@
       "cardTagsFit": {
         "text": "Uma tag no card aparece inteira ou vai para “+N”, que lista só as tags que não estão no card."
       },
+      "focusRingAfterKey": {
+        "text": "Uma caixa de diálogo aberta com um clique ou toque não mostra mais o anel de foco; ele aparece assim que você pressiona uma tecla."
+      },
       "askNoSideways": {
         "text": "Uma pergunta longa não faz mais o chat do Ask rolar para o lado."
       },
