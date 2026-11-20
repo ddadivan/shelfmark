@@ -22,7 +22,7 @@ function setModality(pointer: boolean): void {
  * document, installed once) and mirrors it on `<html>` as `data-ui-input`. Until the first key the
  * page counts as `pointer`: focus moved by code (a dialog's first control, a returned trigger) then
  * shows no ring on a click or tap, and the first Tab turns the rings on. A modifier key alone
- * (Shift, Cmd, ...) changes nothing. A modal also reads it when it opens to know how its trigger
+ * (Shift, Cmd, ...) and a key dispatched by code change nothing. A modal also reads it when it opens to know how its trigger
  * was activated. The app calls it at start; `DialogService` and `DrawerService` call it too.
  */
 export function trackInputModality(): void {
@@ -35,7 +35,8 @@ export function trackInputModality(): void {
   document.addEventListener(
     'keydown',
     (event: KeyboardEvent) => {
-      if (!event.getModifierState(event.key)) {
+      // Synthetic keys (a menu dispatches Home to set its first item) are not the user's.
+      if (event.isTrusted && !event.getModifierState(event.key)) {
         setModality(false);
       }
     },
