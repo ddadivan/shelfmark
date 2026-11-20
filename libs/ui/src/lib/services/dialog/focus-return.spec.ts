@@ -1,6 +1,7 @@
 import {
   consumeFocusReturn,
   INPUT_MODALITY_ATTRIBUTE,
+  isUserKey,
   lastInputWasPointer,
   returnFocus,
   trackInputModality,
@@ -53,41 +54,28 @@ describe('returnFocus', () => {
 });
 
 describe('trackInputModality', () => {
-  const modality = (): string | null =>
-    document.documentElement.getAttribute(INPUT_MODALITY_ATTRIBUTE);
-
-  it('counts as pointer until a real key, not on a modifier or a dispatched key, back on a press', () => {
-    // jsdom cannot make a trusted event, so the keydown listener is called with event-like objects.
-    const listeners = new Map<string, EventListener>();
-    const add = vi
-      .spyOn(document, 'addEventListener')
-      .mockImplementation((type: string, listener: EventListenerOrEventListenerObject) => {
-        listeners.set(type, listener as EventListener);
-      });
+  it('marks <html> as pointer, also again after a press', () => {
     trackInputModality();
-    add.mockRestore();
-    const key = (name: string, trusted = true, modifier = false): void =>
-      listeners.get('keydown')?.({
-        key: name,
-        isTrusted: trusted,
-        getModifierState: () => modifier,
-      } as unknown as Event);
+    document.documentElement.setAttribute(INPUT_MODALITY_ATTRIBUTE, INPUT_MODALITY.Keyboard);
+    document.dispatchEvent(new Event('pointerdown'));
 
-    expect(modality()).toBe(INPUT_MODALITY.Pointer);
+    expect(document.documentElement.getAttribute(INPUT_MODALITY_ATTRIBUTE)).toBe(
+      INPUT_MODALITY.Pointer,
+    );
     expect(lastInputWasPointer()).toBe(true);
+  });
+});
 
-    key('Shift', true, true);
-    expect(modality()).toBe(INPUT_MODALITY.Pointer);
+describe('isUserKey', () => {
+  const key = (name: string, trusted: boolean, modifier = false) => ({
+    key: name,
+    isTrusted: trusted,
+    getModifierState: () => modifier,
+  });
 
-    key(KEYBOARD_KEY.Home, false);
-    expect(modality()).toBe(INPUT_MODALITY.Pointer);
-
-    key(KEYBOARD_KEY.Tab);
-    expect(modality()).toBe(INPUT_MODALITY.Keyboard);
-    expect(lastInputWasPointer()).toBe(false);
-
-    listeners.get('pointerdown')?.(new Event('pointerdown'));
-    expect(modality()).toBe(INPUT_MODALITY.Pointer);
-    expect(lastInputWasPointer()).toBe(true);
+  it('counts a real key, not a modifier alone or a key dispatched by code', () => {
+    expect(isUserKey(key(KEYBOARD_KEY.Tab, true))).toBe(true);
+    expect(isUserKey(key('Shift', true, true))).toBe(false);
+    expect(isUserKey(key(KEYBOARD_KEY.Home, false))).toBe(false);
   });
 });

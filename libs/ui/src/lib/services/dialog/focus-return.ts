@@ -18,6 +18,16 @@ function setModality(pointer: boolean): void {
 }
 
 /**
+ * True for a key the user pressed that counts as keyboard use: not a modifier alone (Shift, Cmd,
+ * ...) and not a key dispatched by code (a menu dispatches Home to set its first item).
+ */
+export function isUserKey(
+  event: Pick<KeyboardEvent, 'isTrusted' | 'key' | 'getModifierState'>,
+): boolean {
+  return event.isTrusted && !event.getModifierState(event.key);
+}
+
+/**
  * Starts remembering whether the last input was a pointer press or a key (capture listeners on the
  * document, installed once) and mirrors it on `<html>` as `data-ui-input`. Until the first key the
  * page counts as `pointer`: focus moved by code (a dialog's first control, a returned trigger) then
@@ -35,8 +45,7 @@ export function trackInputModality(): void {
   document.addEventListener(
     'keydown',
     (event: KeyboardEvent) => {
-      // Synthetic keys (a menu dispatches Home to set its first item) are not the user's.
-      if (event.isTrusted && !event.getModifierState(event.key)) {
+      if (isUserKey(event)) {
         setModality(false);
       }
     },
