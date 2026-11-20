@@ -3405,6 +3405,9 @@
       "cardTagsFit": {
         "text": "Un tag sulla scheda è mostrato intero o passa in “+N”, che elenca solo i tag non presenti sulla scheda."
       },
+      "focusRingAfterKey": {
+        "text": "Una finestra aperta con un clic o un tocco non mostra più l’anello di focus; compare appena premi un tasto."
+      },
       "askNoSideways": {
         "text": "Una domanda lunga non fa più scorrere di lato la chat di Ask."
       },

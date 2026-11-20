@@ -1,30 +1,43 @@
+import { INPUT_MODALITY } from './models/input-modality.const';
+
 /** Elements that are about to get their focus back (a trigger a modal will return focus to). */
 const pending = new WeakSet<Element>();
 
 let tracking = false;
 let lastInputPointer = false;
 
+/** Attribute on `<html>` with the last input (`INPUT_MODALITY`); the global styles read it. */
+export const INPUT_MODALITY_ATTRIBUTE = 'data-ui-input';
+
+function setModality(pointer: boolean): void {
+  lastInputPointer = pointer;
+  document.documentElement.setAttribute(
+    INPUT_MODALITY_ATTRIBUTE,
+    pointer ? INPUT_MODALITY.Pointer : INPUT_MODALITY.Keyboard,
+  );
+}
+
 /**
  * Starts remembering whether the last input was a pointer press or a key (capture listeners on the
- * document, installed once). A modal reads it when it opens to know how its trigger was activated.
- * Called by `DialogService` and `DrawerService`, which exist before the first click.
+ * document, installed once) and mirrors it on `<html>` as `data-ui-input`. Until the first key the
+ * page counts as `pointer`: focus moved by code (a dialog's first control, a returned trigger) then
+ * shows no ring on a click or tap, and the first Tab turns the rings on. A modifier key alone
+ * (Shift, Cmd, ...) changes nothing. A modal also reads it when it opens to know how its trigger
+ * was activated. The app calls it at start; `DialogService` and `DrawerService` call it too.
  */
 export function trackInputModality(): void {
   if (tracking || typeof document === 'undefined') {
     return;
   }
   tracking = true;
-  document.addEventListener(
-    'pointerdown',
-    () => {
-      lastInputPointer = true;
-    },
-    true,
-  );
+  setModality(true);
+  document.addEventListener('pointerdown', () => setModality(true), true);
   document.addEventListener(
     'keydown',
-    () => {
-      lastInputPointer = false;
+    (event: KeyboardEvent) => {
+      if (!event.getModifierState(event.key)) {
+        setModality(false);
+      }
     },
     true,
   );

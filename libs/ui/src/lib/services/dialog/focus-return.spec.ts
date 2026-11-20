@@ -1,4 +1,12 @@
-import { consumeFocusReturn, returnFocus } from './focus-return';
+import {
+  consumeFocusReturn,
+  INPUT_MODALITY_ATTRIBUTE,
+  lastInputWasPointer,
+  returnFocus,
+  trackInputModality,
+} from './focus-return';
+import { INPUT_MODALITY } from './models/input-modality.const';
+import { KEYBOARD_KEY } from '../../models/keyboard';
 
 describe('returnFocus', () => {
   let target: HTMLButtonElement;
@@ -41,5 +49,30 @@ describe('returnFocus', () => {
     returnFocus(target, false);
 
     expect(consumeFocusReturn(target)).toBe(false);
+  });
+});
+
+describe('trackInputModality', () => {
+  const modality = (): string | null =>
+    document.documentElement.getAttribute(INPUT_MODALITY_ATTRIBUTE);
+  const key = (init: KeyboardEventInit): void => {
+    document.dispatchEvent(new KeyboardEvent('keydown', init));
+  };
+
+  it('counts as pointer until a key, keeps it on a modifier alone, back to pointer on a press', () => {
+    trackInputModality();
+    expect(modality()).toBe(INPUT_MODALITY.Pointer);
+    expect(lastInputWasPointer()).toBe(true);
+
+    key({ key: 'Shift', shiftKey: true });
+    expect(modality()).toBe(INPUT_MODALITY.Pointer);
+
+    key({ key: KEYBOARD_KEY.Tab });
+    expect(modality()).toBe(INPUT_MODALITY.Keyboard);
+    expect(lastInputWasPointer()).toBe(false);
+
+    document.dispatchEvent(new Event('pointerdown'));
+    expect(modality()).toBe(INPUT_MODALITY.Pointer);
+    expect(lastInputWasPointer()).toBe(true);
   });
 });
