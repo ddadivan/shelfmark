@@ -3320,6 +3320,9 @@
       "cardTagsFit": {
         "text": "A tag on a card is shown whole or moves into “+N”, which lists only the tags not on the card."
       },
+      "focusRingAfterKey": {
+        "text": "Opening a dialog with a click or tap no longer shows a focus ring; it appears once you press a key."
+      },
       "askNoSideways": {
         "text": "A long question no longer makes the Ask chat scroll sideways."
       },

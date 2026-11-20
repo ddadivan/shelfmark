@@ -3320,6 +3320,9 @@
       "cardTagsFit": {
         "text": "Ein Tag auf einer Karte erscheint vollständig oder wandert in „+N“, das nur die Tags zeigt, die nicht auf der Karte stehen."
       },
+      "focusRingAfterKey": {
+        "text": "Ein per Klick oder Tippen geöffneter Dialog zeigt keinen Fokusrahmen mehr; er erscheint, sobald Sie eine Taste drücken."
+      },
       "askNoSideways": {
         "text": "Eine lange Frage lässt den Ask-Chat nicht mehr seitwärts scrollen."
       },
