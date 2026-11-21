@@ -21,6 +21,8 @@ import { HTML_CONTENT_TYPES } from './models/html-content-types.const';
 import { DEFAULT_IMAGE_FETCH_LIMITS } from './models/image-fetch-limits.const';
 import { JSON_CONTENT_TYPES } from './models/json-content-types.const';
 import { DEFAULT_JSON_FETCH_LIMITS } from './models/json-fetch-limits.const';
+import { DEFAULT_HEADERS_FETCH_LIMITS } from './models/headers-fetch-limits.const';
+import type { SafeHeadersResult } from './models/safe-headers-result.interface';
 import {
   IMAGE_BINARY_CONTENT_TYPES,
   IMAGE_CONTENT_TYPE_PREFIX,
@@ -62,7 +64,13 @@ function acceptHeader(kind: FetchKind): string {
     return 'image/avif,image/webp,image/png,image/jpeg,image/gif,image/x-icon,image/*;q=0.8';
   }
   if (kind === FETCH_KIND.Json) return JSON_CONTENT_TYPES.Json;
+  if (kind === FETCH_KIND.Headers) return '*/*';
   return `${HTML_CONTENT_TYPES.Html},${HTML_CONTENT_TYPES.Xhtml};q=0.9`;
+}
+
+/** Duplicate headers arrive joined by a comma already; this covers the array form of the types. */
+function joinHeader(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value.join(', ') : value;
 }
 
 function stripBrackets(hostname: string): string {
@@ -92,6 +100,7 @@ export class SafeFetcherService {
   private readonly limits: FetchLimits;
   private readonly imageLimits: FetchLimits;
   private readonly jsonLimits: FetchLimits;
+  private readonly headersLimits: FetchLimits;
   private readonly resolve: DnsResolver;
   private readonly isAddressAllowed: AddressPolicy;
   private readonly allowedPorts: readonly number[];
@@ -100,6 +109,7 @@ export class SafeFetcherService {
     this.limits = { ...DEFAULT_FETCH_LIMITS, ...options?.limits };
     this.imageLimits = { ...this.limits, ...DEFAULT_IMAGE_FETCH_LIMITS, ...options?.limits };
     this.jsonLimits = { ...this.limits, ...DEFAULT_JSON_FETCH_LIMITS, ...options?.limits };
+    this.headersLimits = { ...this.limits, ...DEFAULT_HEADERS_FETCH_LIMITS, ...options?.limits };
     this.resolve = options?.resolve ?? defaultResolver;
     this.isAddressAllowed = options?.isAddressAllowed ?? ((address) => !isBlockedAddress(address));
     this.allowedPorts = options?.allowedPorts ?? DEFAULT_ALLOWED_PORTS;
@@ -156,6 +166,29 @@ export class SafeFetcherService {
       status: response.result.status,
       contentType: response.result.contentType,
       body: new TextDecoder(DEFAULT_CHARSET).decode(response.result.bytes),
+    };
+  }
+
+  /**
+   * Headers mode (#553): same URL and address policy, redirect re-validation and pinned connection
+   * as `fetch`, any status and any content type, but the body is never read: the response is
+   * destroyed once its headers arrive. Answers the final URL, the status and the two framing
+   * headers (several `Content-Security-Policy` headers arrive joined by a comma). Defaults are 4 s
+   * and 3 redirects; `overrides` can only tighten them.
+   */
+  async fetchHeaders(rawUrl: string, overrides?: Partial<FetchLimits>): Promise<SafeHeadersResult> {
+    const response = await this.run(
+      rawUrl,
+      narrowLimits(this.headersLimits, overrides),
+      FETCH_KIND.Headers,
+    );
+    return {
+      finalUrl: response.finalUrl,
+      status: response.result.status,
+      headers: {
+        xFrameOptions: response.result.xFrameOptions ?? null,
+        contentSecurityPolicy: response.result.contentSecurityPolicy ?? null,
+      },
     };
   }
 
@@ -354,6 +387,25 @@ export class SafeFetcherService {
     if (REDIRECT_STATUSES.includes(status) && location !== undefined) {
       response.destroy();
       finish(() => resolve({ location }));
+      return;
+    }
+    if (kind === FETCH_KIND.Headers) {
+      // The body is never read: the headers are all that is wanted, at any status.
+      const xFrameOptions = joinHeader(response.headers['x-frame-options']);
+      const contentSecurityPolicy = joinHeader(response.headers['content-security-policy']);
+      response.destroy();
+      finish(() =>
+        resolve({
+          result: {
+            status,
+            contentType: '',
+            contentTypeHeader: '',
+            bytes: Buffer.alloc(0),
+            xFrameOptions,
+            contentSecurityPolicy,
+          },
+        }),
+      );
       return;
     }
     if (status < HTTP_OK_MIN || status > HTTP_OK_MAX) {

@@ -6,4 +6,6 @@ export interface LibraryRow {
   showFolderCounts: boolean;
   newLinksFolderId: string | null;
   fetchPreviews: boolean;
+  clickAction: string;
+  previewNewTabHosts: string[];
 }
