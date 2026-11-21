@@ -6,6 +6,7 @@ import { filter, map } from 'rxjs';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { PREVIEW_QUERY_PARAM } from '../../../models/preview-query-param.const';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
+import { PREVIEW_CLICK_SETTINGS } from '../models/preview-click-settings.const';
 import { previewIdOfUrl } from '../utils/preview-id-of-url';
 import { wantsPreview } from '../utils/wants-preview';
 
@@ -24,6 +25,7 @@ export class LinkPreviewRoute {
   private readonly history = inject(DOCUMENT).defaultView?.history;
   private readonly viewport = inject(ViewportService);
   private readonly settings = inject(UserSettingsStore);
+  private readonly clickSettings = inject(PREVIEW_CLICK_SETTINGS);
   private readonly url = toSignal(
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd),
@@ -76,6 +78,7 @@ export class LinkPreviewRoute {
     const library = this.settings.libraryShown();
     return wantsPreview({
       url,
+      settingsOn: this.clickSettings,
       clickAction: library.clickAction,
       newTabHosts: library.previewNewTabHosts,
       wide: this.viewport.wide(),

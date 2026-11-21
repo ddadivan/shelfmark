@@ -5,13 +5,18 @@ import { axeViolations } from '../../../../../testing/axe';
 import { createLinkPreviewStub, PREVIEW_STUB_LINK } from '../../../../../testing/link-preview-stub';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { PREVIEW_BODY_KIND } from '../../models/preview-body-kind.const';
+import { PREVIEW_CLICK_SETTINGS } from '../../models/preview-click-settings.const';
 import { LinkPreviewService } from '../../services/link-preview.service';
 import { PreviewBodyComponent } from './preview-body.component';
 
-async function setup(link = PREVIEW_STUB_LINK) {
+async function setup(link = PREVIEW_STUB_LINK, clickSettings = true) {
   const stub = createLinkPreviewStub(link);
   TestBed.configureTestingModule({
-    providers: [provideTranslocoForTest(), { provide: LinkPreviewService, useValue: stub }],
+    providers: [
+      provideTranslocoForTest(),
+      { provide: LinkPreviewService, useValue: stub },
+      { provide: PREVIEW_CLICK_SETTINGS, useValue: clickSettings },
+    ],
   });
   await loadEnglish();
   const fixture = TestBed.createComponent(PreviewBodyComponent);
@@ -65,8 +70,8 @@ describe('PreviewBodyComponent', () => {
   });
 
   describe('blocked', () => {
-    async function blocked() {
-      const context = await setup();
+    async function blocked(clickSettings = true) {
+      const context = await setup(PREVIEW_STUB_LINK, clickSettings);
       context.stub.body.set(PREVIEW_BODY_KIND.Blocked);
       context.stub.host.set('angular.dev');
       await context.fixture.whenStable();
@@ -107,6 +112,12 @@ describe('PreviewBodyComponent', () => {
       expect(ticked?.checked).toBe(true);
       ticked?.click();
       expect(stub.setAlwaysNewTab).toHaveBeenLastCalledWith(false);
+    });
+
+    it('has no checkbox while the click settings are off (#555)', async () => {
+      const { element } = await blocked(false);
+      expect(element.querySelector('input[type="checkbox"]')).toBeNull();
+      expect(element.textContent).toContain('angular.dev');
     });
 
     it('has no checkbox without a host', async () => {

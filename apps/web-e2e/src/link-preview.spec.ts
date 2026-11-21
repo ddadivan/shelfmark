@@ -98,7 +98,7 @@ test.describe('link preview (mock API)', () => {
     await expect(page.getByRole('separator', { name: 'Resize the list' })).toBeVisible();
   });
 
-  test('a site that refuses framing shows the blocked state and joins the new-tab sites', async ({
+  test('a site that refuses framing shows the blocked state with Open in new tab', async ({
     page,
   }) => {
     await openLibrary(page);
@@ -116,10 +116,8 @@ test.describe('link preview (mock API)', () => {
     ).toBeVisible();
     await expect(panel.locator('iframe')).toHaveCount(0);
     await expect(panel.getByRole('button', { name: 'Open in new tab' })).toBeVisible();
-    // The check found it blocked, so the site is on the list already.
-    await expect(
-      panel.getByRole('checkbox', { name: 'Always open github.com in a new tab' }),
-    ).toBeChecked();
+    // The click settings are off (#555): no "Always open in a new tab" choice.
+    await expect(panel.getByRole('checkbox')).toHaveCount(0);
   });
 
   test(

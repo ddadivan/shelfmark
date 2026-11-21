@@ -5,6 +5,7 @@ import { wantsPreview } from './wants-preview';
 
 const base: PreviewClick = {
   url: 'https://angular.dev/guide',
+  settingsOn: true,
   clickAction: LINK_CLICK_ACTION.Preview,
   newTabHosts: [],
   wide: true,
@@ -42,6 +43,16 @@ describe('wantsPreview', () => {
       wantsPreview({ ...base, url: 'https://github.com/a', newTabHosts: ['github.com'] }),
     ).toBe(false);
     expect(wantsPreview({ ...base, url: 'http://example.com' })).toBe(false);
+  });
+
+  it('previews every plain click while the click settings are off (#555)', () => {
+    const off = { ...base, settingsOn: false, clickAction: LINK_CLICK_ACTION.Open };
+    expect(wantsPreview(off)).toBe(true);
+    expect(wantsPreview({ ...off, url: 'https://github.com/a', newTabHosts: ['github.com'] })).toBe(
+      true,
+    );
+    expect(wantsPreview({ ...off, modifier: true })).toBe(false);
+    expect(wantsPreview({ ...off, wide: false })).toBe(false);
   });
 
   it('always previews a video in its player', () => {

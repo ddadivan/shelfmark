@@ -10,12 +10,13 @@ import {
 } from '@shelfmark/contracts';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
+import { PREVIEW_CLICK_SETTINGS } from '../models/preview-click-settings.const';
 import { LinkPreviewRoute } from './link-preview-route.service';
 
 @Component({ selector: 'app-route-spec-page', template: '' })
 class PageComponent {}
 
-async function setup(wide = true, library: Partial<LibrarySettings> = {}) {
+async function setup(wide = true, library: Partial<LibrarySettings> = {}, clickSettings = true) {
   const wideSignal = signal(wide);
   const librarySignal = signal<LibrarySettings>({ ...LIBRARY_SETTINGS_DEFAULT, ...library });
   TestBed.configureTestingModule({
@@ -24,6 +25,7 @@ async function setup(wide = true, library: Partial<LibrarySettings> = {}) {
       provideLocationMocks(),
       { provide: ViewportService, useValue: { wide: wideSignal } },
       { provide: UserSettingsStore, useValue: { libraryShown: librarySignal } },
+      { provide: PREVIEW_CLICK_SETTINGS, useValue: clickSettings },
     ],
   });
   const router = TestBed.inject(Router);
@@ -135,6 +137,16 @@ describe('LinkPreviewRoute', () => {
     it('previews with Meta when the setting opens the link', async () => {
       const { route } = await setup(true, { clickAction: LINK_CLICK_ACTION.Open });
       expect(route.wantsPreview(URL, click({ metaKey: true }))).toBe(true);
+    });
+
+    it('previews a plain click whatever the settings say while they are off (#555)', async () => {
+      const { route } = await setup(
+        true,
+        { clickAction: LINK_CLICK_ACTION.Open, previewNewTabHosts: ['example.com'] },
+        false,
+      );
+      expect(route.wantsPreview(URL, click())).toBe(true);
+      expect(route.wantsPreview(URL, click({ metaKey: true }))).toBe(false);
     });
 
     it('treats a missing event as a plain click', async () => {
