@@ -38,6 +38,7 @@ export * from './lib/components/panel';
 export * from './lib/components/picker-list';
 export * from './lib/components/picker-menu';
 export * from './lib/components/popover';
+export * from './lib/components/preview-frame';
 export * from './lib/components/progress-bar';
 export * from './lib/components/radio-group';
 export * from './lib/components/resize-handle';
