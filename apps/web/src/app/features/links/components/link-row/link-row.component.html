@@ -46,7 +46,7 @@
     }
   </span>
   <div slot="trailing" class="link-row__trailing">
-    @if (tags().length > 0 && !phone()) {
+    @if (tags().length > 0 && !phone() && !dense()) {
       <ul class="link-row__tags">
         @for (tag of tags(); track tag) {
           <li>
@@ -96,14 +96,18 @@
       [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
     >
       @if (previewable() && href()) {
-        <ui-menu-item icon="eye" shortcut="Space" (activated)="previewRequested.emit()">
+        <ui-menu-item
+          icon="eye"
+          [shortcut]="viewport.compact() ? undefined : 'Space'"
+          (activated)="previewRequested.emit()"
+        >
           {{ 'links.item.previewHere' | transloco }}
         </ui-menu-item>
       }
       @if (href()) {
         <ui-menu-item
           icon="external"
-          [shortcut]="previewable() ? '↵' : undefined"
+          [shortcut]="previewable() && !viewport.compact() ? '↵' : undefined"
           (activated)="openRequested.emit()"
         >
           {{ 'links.item.open' | transloco }}

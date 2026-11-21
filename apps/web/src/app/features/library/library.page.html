@@ -501,6 +501,7 @@
             </ng-template>
             <app-link-row
               [link]="link"
+              [dense]="preview.split()"
               [folder]="showFolderChips() ? folderChips.of(link.folderId) : null"
               [pinnable]="filters.isFolder()"
               [selecting]="selection.selecting()"

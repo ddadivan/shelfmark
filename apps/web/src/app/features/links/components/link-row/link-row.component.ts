@@ -95,6 +95,8 @@ export class LinkRowComponent {
    * preview ask `previewRequested`.
    */
   readonly previewable = input(false);
+  /** The compact list beside the desktop preview (#553): no tags, the title gets the room. */
+  readonly dense = input(false);
   readonly previewRequested = output<void>();
   private readonly previewRoute = inject(LinkPreviewRoute);
   /** "Open" from the actions menu: the link opens in a new tab. */
