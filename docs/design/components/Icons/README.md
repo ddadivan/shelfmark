@@ -27,3 +27,14 @@ It follows the same rules (1.75px line, round caps and joins, converted to fille
 - `smartphone` — a rounded phone body with a short home bar (stroke source: a 12×20 rectangle with 3px corners, `M11 18h2`): the app kind.
 
 They follow the same rules (1.75px line, round caps and joins, converted to filled outlines, no `stroke`). The other kinds reuse existing glyphs: video `play`, article `newspaper`, shopping `shopping-bag`, code `code`, post `message`, recipe `cooking-pot`, other `link`.
+
+## Added for the link preview (#553)
+
+- `eye` — an almond eye with a round pupil (stroke source: `M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z` plus a circle r 2.8 at the centre): "Preview".
+- `chevron-up` — `M6 15l6-6 6 6`: the counterpart of `chevron-down`.
+- `expand` — four outward corners (`M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5`): "Wider preview".
+- `collapse` — four inward corners (`M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5`): "Narrower preview".
+- `sidebar` — a rounded rectangle (17×15, 3px corners) with a vertical line and a small chevron to its right (`M9 4.5v15M13 10l2 2-2 2`): "Show sidebar".
+- `frame-off` — a rounded rectangle (17×14) with a header line and a diagonal strike (`M3.5 9h17M4 4l16 16`): "This site blocks previews".
+
+They follow the same rules (1.75px line, round caps and joins, converted to filled outlines, no `stroke`).
