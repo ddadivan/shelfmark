@@ -48,6 +48,13 @@ export { isHttpUrl } from './links/is-http-url';
 export { normalizeUrl } from './links/normalize-url';
 export { withDefaultScheme } from './links/with-default-scheme';
 export { linkHost } from './links/link-host';
+export { LINK_FRAMING } from './links/link-framing.const';
+export type { LinkFraming } from './links/link-framing.type';
+export type { LinkFrameCheckResponse } from './links/link-frame-check-response.interface';
+export { LINK_FRAME_CHECK_ENDPOINT } from './links/link-frame-check-endpoint.const';
+export { isPreviewableUrl } from './links/is-previewable-url';
+export { YOUTUBE_NOCOOKIE_EMBED_BASE } from './links/youtube-nocookie-embed-base.const';
+export { toVideoEmbedUrl } from './links/to-video-embed-url';
 export { LINK_ERROR_MESSAGE } from './links/link-error-message.const';
 export { LINK_LIMIT } from './links/link-limit.const';
 export { LINK_SORT_FIELD } from './links/link-sort-field.const';
@@ -183,7 +190,16 @@ export { LINK_OPEN_TARGET } from './users/link-open-target.const';
 export type { LinkOpenTarget } from './users/link-open-target.type';
 export type { LibrarySettings } from './users/library-settings.interface';
 export { LIBRARY_SETTINGS_DEFAULT } from './users/library-settings-default.const';
-export { isLibrarySort, isLibraryView, isLinkOpenTarget } from './users/is-library-setting';
+export {
+  isLibrarySort,
+  isLibraryView,
+  isLinkClickAction,
+  isLinkOpenTarget,
+} from './users/is-library-setting';
+export { LINK_CLICK_ACTION } from './users/link-click-action.const';
+export type { LinkClickAction } from './users/link-click-action.type';
+export { PREVIEW_HOST_PATTERN } from './users/preview-host-pattern.const';
+export { isPreviewHost } from './users/is-preview-host';
 export { TEXT_SIZE } from './users/text-size.const';
 export type { TextSize } from './users/text-size.type';
 export { APP_FONT } from './users/app-font.const';

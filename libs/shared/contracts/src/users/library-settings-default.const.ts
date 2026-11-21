@@ -1,6 +1,7 @@
 import { LIBRARY_SORT } from './library-sort.const';
 import { LIBRARY_VIEW } from './library-view.const';
 import type { LibrarySettings } from './library-settings.interface';
+import { LINK_CLICK_ACTION } from './link-click-action.const';
 import { LINK_OPEN_TARGET } from './link-open-target.const';
 
 /** What a new account has (SetLibrary mockup) and what the web shows until the settings load. */
@@ -11,4 +12,6 @@ export const LIBRARY_SETTINGS_DEFAULT: Readonly<LibrarySettings> = {
   showFolderCounts: true,
   newLinksFolderId: null,
   fetchPreviews: true,
+  clickAction: LINK_CLICK_ACTION.Open,
+  previewNewTabHosts: [],
 };
