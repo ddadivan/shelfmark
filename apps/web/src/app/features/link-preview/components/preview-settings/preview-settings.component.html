@@ -1,0 +1,44 @@
+<ui-settings-row
+  #clickRow
+  [align]="SETTINGS_ROW_ALIGN.Top"
+  [title]="'settings.library.viewing.click.label' | transloco"
+  [description]="'settings.library.viewing.click.hint' | transloco"
+>
+  <ui-radio-group
+    class="preview-settings__click"
+    [ariaLabelledby]="clickRow.titleId"
+    [options]="clickOptions()"
+    [value]="library().clickAction"
+    (valueChange)="setClick($event)"
+  />
+</ui-settings-row>
+<ui-settings-row
+  [align]="SETTINGS_ROW_ALIGN.Top"
+  [title]="'settings.library.viewing.newTabSites.label' | transloco"
+  [description]="'settings.library.viewing.newTabSites.hint' | transloco"
+>
+  @if (library().previewNewTabHosts.length > 0) {
+    <ul
+      class="preview-settings__hosts"
+      [attr.aria-label]="'settings.library.viewing.newTabSites.label' | transloco"
+    >
+      @for (host of library().previewNewTabHosts; track host) {
+        <li>
+          <ui-chip
+            variant="neutral"
+            removable
+            [removeLabel]="
+              'settings.library.viewing.newTabSites.remove' | transloco: { domain: host }
+            "
+            (removed)="removeHost(host)"
+            >{{ host }}</ui-chip
+          >
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="preview-settings__empty">
+      {{ 'settings.library.viewing.newTabSites.empty' | transloco }}
+    </p>
+  }
+</ui-settings-row>

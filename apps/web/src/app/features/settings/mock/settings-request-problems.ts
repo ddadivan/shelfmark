@@ -9,7 +9,9 @@ import {
   isInterfaceLanguage,
   isLibrarySort,
   isLibraryView,
+  isLinkClickAction,
   isLinkOpenTarget,
+  isPreviewHost,
   isMotionPreference,
   isTextSize,
   isThemePreference,
@@ -54,6 +56,12 @@ const FIELD_CHECKS: Readonly<Record<string, Check>> = {
   openLinksIn: isLinkOpenTarget,
   showFolderCounts: isFlag,
   fetchPreviews: isFlag,
+  clickAction: isLinkClickAction,
+  previewNewTabHosts: (value) =>
+    Array.isArray(value) &&
+    value.length <= USER_LIMIT.PreviewNewTabHostsMax &&
+    new Set(value).size === value.length &&
+    value.every((host) => isPreviewHost(host)),
   newLinksFolderId: (value) => value === null || typeof value === 'string',
   language: isInterfaceLanguage,
   dateFormat: isDateFormat,

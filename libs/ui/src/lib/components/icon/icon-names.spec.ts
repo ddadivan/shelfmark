@@ -86,6 +86,13 @@ const APP_ICONS = [
   'file',
   'mic',
   'smartphone',
+  // The link preview split view (#553): preview, wider / narrower panel, show sidebar, site blocks previews.
+  'chevron-up',
+  'collapse',
+  'expand',
+  'eye',
+  'frame-off',
+  'sidebar',
 ];
 
 const sprite = readFileSync(SPRITE_PATH, 'utf8');

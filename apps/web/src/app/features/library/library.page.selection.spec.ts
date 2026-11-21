@@ -196,10 +196,10 @@ describe('LibraryPage selection', () => {
     expect(document.activeElement).toBe(links()[0]);
   });
 
-  it('Space on a focused card toggles it, M asks to move it', async () => {
+  it('Shift+Space on a focused card toggles it (Space previews, #553), M asks to move it', async () => {
     const { element, fixture, bulk } = await setup();
     const title = element.querySelectorAll<HTMLElement>('.ui-card__link')[0] as HTMLElement;
-    key({ key: ' ' }, title);
+    key({ key: ' ', shiftKey: true }, title);
     await stable(fixture);
     expect(selectedText(element)).toBe('1 selected');
     expect(bulk.move).not.toHaveBeenCalled();

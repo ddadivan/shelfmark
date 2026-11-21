@@ -17,6 +17,7 @@ import {
   LAYOUT_SETTINGS_DEFAULT,
   TEXT_SIZE,
   LIBRARY_SETTINGS_DEFAULT,
+  LINK_CLICK_ACTION,
   LIBRARY_SORT,
   LIBRARY_VIEW,
   LINK_OPEN_TARGET,
@@ -581,6 +582,8 @@ describe('account settings', () => {
         showFolderCounts: false,
         newLinksFolderId: id,
         fetchPreviews: false,
+        clickAction: LINK_CLICK_ACTION.Preview,
+        previewNewTabHosts: ['example.com', 'news.example.org'],
       };
       const res = await a.patch(USER_SETTINGS_ENDPOINT).send(change).expect(200);
       expect(res.body).toEqual({
@@ -656,6 +659,16 @@ describe('account settings', () => {
       [{ showFolderCounts: 'false' }],
       [{ showFolderCounts: null }],
       [{ fetchPreviews: 'yes' }],
+      [{ clickAction: 'peek' }],
+      [{ clickAction: null }],
+      [{ previewNewTabHosts: 'example.com' }],
+      [{ previewNewTabHosts: null }],
+      [{ previewNewTabHosts: ['https://example.com'] }],
+      [{ previewNewTabHosts: ['Example.com'] }],
+      [{ previewNewTabHosts: ['localhost'] }],
+      [{ previewNewTabHosts: [1] }],
+      [{ previewNewTabHosts: ['example.com', 'example.com'] }],
+      [{ previewNewTabHosts: Array.from({ length: 101 }, (_, i) => `h${i}.example.com`) }],
       // Retired in #315 (always on / always stripped): unknown fields now.
       [{ warnDuplicates: false }],
       [{ keepQuery: true }],
@@ -674,6 +687,31 @@ describe('account settings', () => {
         ...APPEARANCE_DEFAULTS,
         ...LIBRARY_SETTINGS_DEFAULT,
       });
+    });
+
+    it('keeps the new-tab sites as the whole list sent, up to the limit, and clears them', async () => {
+      const a = asUser(t.app, users.owner);
+      const full = Array.from({ length: 100 }, (_, i) => `h${i}.example.com`);
+      const res = await a
+        .patch(USER_SETTINGS_ENDPOINT)
+        .send({ previewNewTabHosts: full })
+        .expect(200);
+      expect((res.body as UserSettingsResponse).previewNewTabHosts).toEqual(full);
+      const cleared = await a.patch(USER_SETTINGS_ENDPOINT).send({ previewNewTabHosts: [] });
+      expect((cleared.body as UserSettingsResponse).previewNewTabHosts).toEqual([]);
+    });
+
+    it('is enforced by the database CHECKs for the link preview columns', async () => {
+      const id = users.owner.userId;
+      await expect(
+        t.db.prisma.user.update({ where: { id }, data: { clickAction: 'peek' } }),
+      ).rejects.toThrow();
+      await expect(
+        t.db.prisma.user.update({
+          where: { id },
+          data: { previewNewTabHosts: Array.from({ length: 101 }, (_, i) => `h${i}.example.com`) },
+        }),
+      ).rejects.toThrow();
     });
 
     it('is isolated: one user’s library choices never reach another', async () => {

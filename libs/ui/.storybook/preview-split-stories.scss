@@ -1,0 +1,48 @@
+@use '../src/styles/ui' as *;
+
+// Layout of the ResizeHandle and PreviewFrame stories only (not part of the library).
+.rs-themes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.rs-panel {
+  padding: var(--space-4);
+  color: var(--text);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+}
+
+.rs-caption {
+  @include type(caption);
+
+  margin: 0 0 var(--space-2);
+  color: var(--text-muted);
+}
+
+// A split: list pane, handle, preview pane.
+.rs-split {
+  display: flex;
+  width: 100%;
+  min-width: rem(480px);
+  height: rem(220px);
+}
+
+.rs-pane {
+  flex: none;
+  padding: var(--space-4);
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+}
+
+.rs-pane--fill {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.rs-frame {
+  width: rem(480px);
+  height: rem(240px);
+}

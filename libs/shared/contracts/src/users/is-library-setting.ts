@@ -2,6 +2,8 @@ import { LIBRARY_SORT } from './library-sort.const';
 import type { LibrarySort } from './library-sort.type';
 import { LIBRARY_VIEW } from './library-view.const';
 import type { LibraryView } from './library-view.type';
+import { LINK_CLICK_ACTION } from './link-click-action.const';
+import type { LinkClickAction } from './link-click-action.type';
 import { LINK_OPEN_TARGET } from './link-open-target.const';
 import type { LinkOpenTarget } from './link-open-target.type';
 
@@ -19,4 +21,8 @@ export function isLibrarySort(value: unknown): value is LibrarySort {
 
 export function isLinkOpenTarget(value: unknown): value is LinkOpenTarget {
   return isOneOf(Object.values(LINK_OPEN_TARGET), value);
+}
+
+export function isLinkClickAction(value: unknown): value is LinkClickAction {
+  return isOneOf(Object.values(LINK_CLICK_ACTION), value);
 }

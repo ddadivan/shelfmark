@@ -156,7 +156,17 @@ describe('LibrarySettingsPage', () => {
       Array.from(root.querySelectorAll('input[type="radio"]')).map((input) =>
         input.closest('label')?.textContent?.trim(),
       ),
-    ).toEqual(['Cards', 'List', 'New tab', 'Same tab', '7 days', '30 days', '90 days']);
+    ).toEqual([
+      'Cards',
+      'List',
+      'New tab',
+      'Same tab',
+      'Opens it in a new tabAs today. Preview stays on the eye button and Space.',
+      'Opens the previewOn wide screens only. Smaller screens open the link.',
+      '7 days',
+      '30 days',
+      '90 days',
+    ]);
     expect(radio(root, '30 days').checked).toBe(true);
   });
 

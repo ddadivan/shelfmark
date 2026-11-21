@@ -366,7 +366,9 @@
       "pinToSidebar": "Fissa nella barra laterale",
       "unpinFromSidebar": "Togli dalla barra laterale",
       "pinned": "Fissato",
-      "createRule": "Crea una regola per {{domain}}…"
+      "createRule": "Crea una regola per {{domain}}…",
+      "preview": "Anteprima di {{title}}",
+      "previewHere": "Anteprima qui"
     },
     "recent": {
       "title": "Aperti di recente",
@@ -1881,6 +1883,20 @@
         "counts": {
           "label": "Mostra il numero nelle cartelle",
           "hint": "I numeri accanto alle cartelle nella barra laterale"
+        },
+        "click": {
+          "label": "Clic su un link",
+          "hint": "Tieni premuto ⌘ o Ctrl mentre clicchi per fare l'altra cosa.",
+          "open": "Lo apre in una nuova scheda",
+          "openHint": "Come oggi. L'anteprima resta sul pulsante occhio e su Spazio.",
+          "preview": "Apre l'anteprima",
+          "previewHint": "Solo su schermi larghi. Gli schermi piccoli aprono il link."
+        },
+        "newTabSites": {
+          "label": "Siti che si aprono in una nuova scheda",
+          "hint": "Bloccano l'anteprima, o l'hai scelto tu. Un clic sui loro link salta l'anteprima.",
+          "remove": "Rimuovi {{domain}}",
+          "empty": "Ancora nessuno."
         }
       },
       "saving": {
@@ -1993,7 +2009,8 @@
       "everywhere": "Ovunque",
       "links": "Salvare e ritrovare",
       "folders": "Nell’elenco delle cartelle",
-      "selecting": "Selezionare i link"
+      "selecting": "Selezionare i link",
+      "preview": "Anteprima del link"
     },
     "items": {
       "search": "Cerca",
@@ -2015,7 +2032,11 @@
       "selectRange": "Seleziona fino al link attivo",
       "selectAll": "Seleziona tutti i link dell’elenco",
       "moveLink": "Sposta il link attivo in una cartella",
-      "clearSelection": "Annulla la selezione"
+      "clearSelection": "Annulla la selezione",
+      "preview": "Anteprima del link selezionato",
+      "previewNext": "Link precedente o successivo",
+      "previewNewTab": "Apri il link dell'anteprima in una nuova scheda",
+      "previewClose": "Chiudi l'anteprima"
     },
     "keys": {
       "command": "Comando",
@@ -4138,5 +4159,47 @@
     },
     "undone": "Riordino annullato",
     "undoFailed": "Impossibile annullare il riordino"
+  },
+  "preview": {
+    "copied": "Link copiato",
+    "copyFailed": "Impossibile copiare il link",
+    "saveFailed": "Impossibile salvare la modifica. Riprova.",
+    "loading": "Caricamento dell'anteprima",
+    "frameTitle": "Pagina di {{title}}",
+    "region": "Anteprima: {{title}}",
+    "toolbar": "Azioni dell'anteprima",
+    "previous": "Link precedente",
+    "next": "Link successivo",
+    "favorite": "Preferito",
+    "edit": "Modifica",
+    "copy": "Copia link",
+    "wider": "Anteprima più larga",
+    "showList": "Mostra la lista",
+    "open": "Apri",
+    "openHint": "Apri in una nuova scheda",
+    "close": "Chiudi anteprima",
+    "back": "Torna ai link",
+    "openInBrowser": "Apri nel browser",
+    "more": "Altre azioni",
+    "share": "Condividi",
+    "resize": "Ridimensiona la lista",
+    "resizeHint": "Trascina o usa ← e →. Doppio clic per ripristinare.",
+    "blocked": {
+      "title": "{{domain}} non si apre dentro altre app",
+      "text": "Lo blocca il sito, non Shelfmark. Aprilo in una nuova scheda.",
+      "open": "Apri in una nuova scheda",
+      "always": "Apri sempre {{domain}} in una nuova scheda"
+    },
+    "keys": {
+      "next": "Link successivo",
+      "newTab": "Nuova scheda",
+      "close": "Chiudi"
+    },
+    "rail": {
+      "label": "Libreria",
+      "home": "Home di Shelfmark",
+      "folder": "Cartella {{name}}",
+      "showSidebar": "Mostra barra laterale"
+    }
   }
 }

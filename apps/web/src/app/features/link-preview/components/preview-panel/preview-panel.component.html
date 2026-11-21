@@ -1,0 +1,107 @@
+<section
+  class="preview-panel"
+  [attr.aria-label]="'preview.region' | transloco: { title: preview.link()?.title ?? '' }"
+>
+  <div class="preview-panel__bar" role="toolbar" [attr.aria-label]="'preview.toolbar' | transloco">
+    <ui-button
+      variant="ghost"
+      size="sm"
+      iconOnly
+      iconLeft="chevron-up"
+      [disabled]="preview.previousId() === null"
+      [ariaLabel]="'preview.previous' | transloco"
+      [uiTooltip]="'preview.previous' | transloco"
+      uiTooltipShortcut="↑"
+      (click)="preview.go(-1)"
+    />
+    <ui-button
+      variant="ghost"
+      size="sm"
+      iconOnly
+      iconLeft="chevron-down"
+      [disabled]="preview.nextId() === null"
+      [ariaLabel]="'preview.next' | transloco"
+      [uiTooltip]="'preview.next' | transloco"
+      uiTooltipShortcut="↓"
+      (click)="preview.go(1)"
+    />
+    @if (preview.link(); as link) {
+      <div class="preview-panel__title">
+        <!-- prettier-ignore -->
+        <h2 class="preview-panel__name">{{ link.title }}</h2>
+        <span class="preview-panel__address">
+          <ui-favicon [src]="favicon()" [letter]="letter()" />
+          <span class="preview-panel__url">{{ address() }}</span>
+        </span>
+      </div>
+      <span class="preview-panel__sep" aria-hidden="true"></span>
+      <ui-button
+        class="preview-panel__star"
+        [class.preview-panel__star--on]="link.isFavorite"
+        variant="ghost"
+        size="sm"
+        iconOnly
+        [iconLeft]="link.isFavorite ? 'star-filled' : 'star'"
+        [ariaPressed]="link.isFavorite"
+        [ariaLabel]="'preview.favorite' | transloco"
+        [uiTooltip]="
+          (link.isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
+        "
+        (click)="preview.toggleFavorite()"
+      />
+      <ui-button
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="edit"
+        [ariaLabel]="'preview.edit' | transloco"
+        [uiTooltip]="'preview.edit' | transloco"
+        (click)="preview.edit()"
+      />
+      <ui-button
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="copy"
+        [ariaLabel]="'preview.copy' | transloco"
+        [uiTooltip]="'preview.copy' | transloco"
+        (click)="preview.copyLink()"
+      />
+      <ui-button
+        variant="ghost"
+        size="sm"
+        iconOnly
+        [iconLeft]="preview.listHidden() ? 'collapse' : 'expand'"
+        [ariaPressed]="preview.listHidden()"
+        [ariaLabel]="'preview.wider' | transloco"
+        [uiTooltip]="(preview.listHidden() ? 'preview.showList' : 'preview.wider') | transloco"
+        (click)="preview.toggleList()"
+      />
+      @if (preview.href()) {
+        <ui-button
+          variant="secondary"
+          size="sm"
+          iconLeft="external"
+          [uiTooltip]="'preview.openHint' | transloco"
+          uiTooltipShortcut="↵"
+          (click)="preview.openInNewTab()"
+        >
+          {{ 'preview.open' | transloco }}
+        </ui-button>
+      }
+    } @else {
+      <span class="preview-panel__title"></span>
+    }
+    <ui-button
+      variant="ghost"
+      size="sm"
+      iconOnly
+      iconLeft="close"
+      [ariaLabel]="'preview.close' | transloco"
+      [uiTooltip]="'preview.close' | transloco"
+      uiTooltipShortcut="Esc"
+      (click)="preview.close()"
+    />
+  </div>
+  <app-preview-body class="preview-panel__body" />
+</section>

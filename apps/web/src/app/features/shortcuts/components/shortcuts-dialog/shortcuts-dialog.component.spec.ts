@@ -29,6 +29,7 @@ describe('ShortcutsDialogComponent', () => {
     expect(headings).toEqual([
       'Everywhere',
       'Saving and finding',
+      'Link preview',
       'Selecting links',
       'In the folder list',
     ]);

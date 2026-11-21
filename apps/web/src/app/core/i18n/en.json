@@ -365,7 +365,9 @@
       "pinToSidebar": "Pin to sidebar",
       "unpinFromSidebar": "Unpin from sidebar",
       "pinned": "Pinned",
-      "createRule": "Create a rule for {{domain}}…"
+      "createRule": "Create a rule for {{domain}}…",
+      "preview": "Preview {{title}}",
+      "previewHere": "Preview here"
     },
     "recent": {
       "title": "Recently opened",
@@ -1836,6 +1838,20 @@
         "counts": {
           "label": "Show folder counts",
           "hint": "Numbers next to folders in the sidebar"
+        },
+        "click": {
+          "label": "Clicking a link",
+          "hint": "Hold ⌘ or Ctrl while you click to do the other one.",
+          "open": "Opens it in a new tab",
+          "openHint": "As today. Preview stays on the eye button and Space.",
+          "preview": "Opens the preview",
+          "previewHint": "On wide screens only. Smaller screens open the link."
+        },
+        "newTabSites": {
+          "label": "Sites that open in a new tab",
+          "hint": "These block previews, or you chose so. A click on their links skips the preview.",
+          "remove": "Remove {{domain}}",
+          "empty": "None yet."
         }
       },
       "saving": {
@@ -1946,7 +1962,8 @@
       "everywhere": "Everywhere",
       "links": "Saving and finding",
       "folders": "In the folder list",
-      "selecting": "Selecting links"
+      "selecting": "Selecting links",
+      "preview": "Link preview"
     },
     "items": {
       "search": "Search",
@@ -1968,7 +1985,11 @@
       "selectRange": "Select up to the focused link",
       "selectAll": "Select every link in the list",
       "moveLink": "Move the focused link to a folder",
-      "clearSelection": "Clear the selection"
+      "clearSelection": "Clear the selection",
+      "preview": "Preview the focused link",
+      "previewNext": "Previous or next link",
+      "previewNewTab": "Open the previewed link in a new tab",
+      "previewClose": "Close the preview"
     },
     "keys": {
       "command": "Command",
@@ -4029,5 +4050,47 @@
     },
     "undone": "Clean-up undone",
     "undoFailed": "Couldn’t undo the clean-up"
+  },
+  "preview": {
+    "copied": "Link copied",
+    "copyFailed": "Couldn't copy the link",
+    "saveFailed": "Couldn't save the change. Try again.",
+    "loading": "Loading the preview",
+    "frameTitle": "Page of {{title}}",
+    "region": "Preview: {{title}}",
+    "toolbar": "Preview actions",
+    "previous": "Previous link",
+    "next": "Next link",
+    "favorite": "Favorite",
+    "edit": "Edit",
+    "copy": "Copy link",
+    "wider": "Wider preview",
+    "showList": "Show the list",
+    "open": "Open",
+    "openHint": "Open in new tab",
+    "close": "Close preview",
+    "back": "Back to the links",
+    "openInBrowser": "Open in browser",
+    "more": "More actions",
+    "share": "Share",
+    "resize": "Resize the list",
+    "resizeHint": "Drag, or use ← and →. Double-click resets.",
+    "blocked": {
+      "title": "{{domain}} doesn't open inside other apps",
+      "text": "The site blocks it, not Shelfmark. Open it in a new tab.",
+      "open": "Open in new tab",
+      "always": "Always open {{domain}} in a new tab"
+    },
+    "keys": {
+      "next": "Next link",
+      "newTab": "New tab",
+      "close": "Close"
+    },
+    "rail": {
+      "label": "Library",
+      "home": "Shelfmark home",
+      "folder": "Folder {{name}}",
+      "showSidebar": "Show sidebar"
+    }
   }
 }

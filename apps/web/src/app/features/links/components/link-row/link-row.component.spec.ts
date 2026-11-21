@@ -5,6 +5,7 @@ import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
+import { LinkPreviewRoute } from '../../../link-preview/services/link-preview-route.service';
 import { LinkRowComponent } from './link-row.component';
 
 const LINK: LinkResponse = {
@@ -166,5 +167,165 @@ describe('LinkRowComponent', () => {
     element.remove();
 
     expect(violations.map((violation) => violation.id)).toEqual([]);
+  });
+
+  describe('link preview (#553)', () => {
+    async function previewSetup(wants = false, link: LinkResponse = LINK) {
+      const wantsPreview = vi.fn(() => wants);
+      TestBed.configureTestingModule({
+        providers: [
+          provideTranslocoForTest(),
+          { provide: ViewportService, useValue: { phone: signal(false), compact: signal(false) } },
+          { provide: LinkPreviewRoute, useValue: { wantsPreview } },
+        ],
+      });
+      await loadEnglish();
+      const fixture = TestBed.createComponent(LinkRowComponent);
+      fixture.componentRef.setInput('link', link);
+      fixture.componentRef.setInput('previewable', true);
+      const requested = vi.fn();
+      const opened = vi.fn();
+      const toggled = vi.fn();
+      fixture.componentInstance.previewRequested.subscribe(requested);
+      fixture.componentInstance.opened.subscribe(opened);
+      fixture.componentInstance.selectToggled.subscribe(toggled);
+      await fixture.whenStable();
+      const element: HTMLElement = fixture.nativeElement;
+      const anchor = () => element.querySelector<HTMLElement>('a[href]');
+      const click = (init: MouseEventInit = {}) => {
+        const event = new MouseEvent('click', { bubbles: true, cancelable: true, ...init });
+        anchor()?.dispatchEvent(event);
+        return event;
+      };
+      const press = (init: KeyboardEventInit) => {
+        const event = new KeyboardEvent('keydown', {
+          key: ' ',
+          bubbles: true,
+          cancelable: true,
+          ...init,
+        });
+        anchor()?.dispatchEvent(event);
+        return event;
+      };
+      return { fixture, element, wantsPreview, requested, opened, toggled, click, press };
+    }
+
+    const eye = (element: HTMLElement) =>
+      element.querySelector<HTMLButtonElement>('button[aria-label="Preview Angular overview"]');
+
+    it('has no eye button or "Preview here" item unless the page offers the preview', async () => {
+      const { fixture, element } = await previewSetup();
+      fixture.componentRef.setInput('previewable', false);
+      await fixture.whenStable();
+      expect(eye(element)).toBeNull();
+      element
+        .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+        ?.click();
+      await fixture.whenStable();
+      expect(document.body.textContent).not.toContain('Preview here');
+    });
+
+    it('emits previewRequested from the eye button', async () => {
+      const { element, requested, opened } = await previewSetup();
+      eye(element)?.click();
+      expect(requested).toHaveBeenCalledTimes(1);
+      expect(opened).not.toHaveBeenCalled();
+    });
+
+    it('offers "Preview here" first in the menu and emits previewRequested', async () => {
+      const { fixture, element, requested } = await previewSetup();
+      element
+        .querySelector<HTMLButtonElement>('button[aria-label="Actions for Angular overview"]')
+        ?.click();
+      await fixture.whenStable();
+      const items = [...document.querySelectorAll('[role="menuitem"]')];
+      expect(items[0]?.textContent?.trim()).toContain('Preview here');
+      menuItem('Preview here').click();
+      expect(requested).toHaveBeenCalledTimes(1);
+    });
+
+    it('offers no preview for a link that cannot be opened', async () => {
+      const { element } = await previewSetup(false, { ...LINK, url: 'javascript:alert(1)' });
+      expect(eye(element)).toBeNull();
+    });
+
+    it('previews on Space instead of selecting', async () => {
+      const { press, requested, toggled } = await previewSetup();
+      const event = press({});
+      expect(requested).toHaveBeenCalledTimes(1);
+      expect(toggled).not.toHaveBeenCalled();
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('still selects on Shift+Space', async () => {
+      const { press, requested, toggled } = await previewSetup();
+      press({ shiftKey: true });
+      expect(requested).not.toHaveBeenCalled();
+      expect(toggled).toHaveBeenCalledWith({ range: true });
+    });
+
+    it('selects on Space while a selection is in progress', async () => {
+      const { fixture, press, requested, toggled } = await previewSetup();
+      fixture.componentRef.setInput('selecting', true);
+      await fixture.whenStable();
+      press({});
+      expect(requested).not.toHaveBeenCalled();
+      expect(toggled).toHaveBeenCalledWith({ range: false });
+    });
+
+    it('selects on Space when the page offers no preview', async () => {
+      const { fixture, press, requested, toggled } = await previewSetup();
+      fixture.componentRef.setInput('previewable', false);
+      await fixture.whenStable();
+      press({});
+      expect(requested).not.toHaveBeenCalled();
+      expect(toggled).toHaveBeenCalledTimes(1);
+    });
+
+    it('previews on a click the route turns into a preview, and does not follow the link', async () => {
+      const { click, wantsPreview, requested, opened } = await previewSetup(true);
+      const event = click({ metaKey: true });
+      expect(wantsPreview).toHaveBeenCalledWith(
+        LINK.url,
+        expect.objectContaining({ metaKey: true }),
+      );
+      expect(requested).toHaveBeenCalledTimes(1);
+      expect(opened).not.toHaveBeenCalled();
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('opens the link on a click the route leaves alone', async () => {
+      const { click, requested, opened } = await previewSetup(false);
+      click().preventDefault();
+      expect(requested).not.toHaveBeenCalled();
+      expect(opened).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not ask the route when the page offers no preview', async () => {
+      const { fixture, click, wantsPreview, opened } = await previewSetup(true);
+      fixture.componentRef.setInput('previewable', false);
+      await fixture.whenStable();
+      click().preventDefault();
+      expect(wantsPreview).not.toHaveBeenCalled();
+      expect(opened).toHaveBeenCalledTimes(1);
+    });
+
+    it('selects instead of previewing on a click while selecting', async () => {
+      const { fixture, click, wantsPreview, requested, toggled } = await previewSetup(true);
+      fixture.componentRef.setInput('selecting', true);
+      await fixture.whenStable();
+      click();
+      expect(wantsPreview).not.toHaveBeenCalled();
+      expect(requested).not.toHaveBeenCalled();
+      expect(toggled).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the eye button in the dense list beside the preview', async () => {
+      const { fixture, element, requested } = await previewSetup();
+      fixture.componentRef.setInput('dense', true);
+      await fixture.whenStable();
+      eye(element)?.click();
+      expect(requested).toHaveBeenCalledTimes(1);
+    });
   });
 });

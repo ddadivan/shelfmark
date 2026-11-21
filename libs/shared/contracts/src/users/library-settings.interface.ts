@@ -1,5 +1,6 @@
 import type { LibrarySort } from './library-sort.type';
 import type { LibraryView } from './library-view.type';
+import type { LinkClickAction } from './link-click-action.type';
 import type { LinkOpenTarget } from './link-open-target.type';
 
 /**
@@ -27,4 +28,16 @@ export interface LibrarySettings {
    * neither loads the page nor captures images for this user's new links. Default on.
    */
   fetchPreviews: boolean;
+  /**
+   * What a plain click on a card or row link does (#553): open it (as `openLinksIn` says) or open
+   * the link preview (wide screens only). Default `open`.
+   */
+  clickAction: LinkClickAction;
+  /**
+   * Sites that open in a new tab (#553): hosts (`isPreviewHost`) whose links skip the preview. The
+   * server adds a host whose frame check is `blocked`; the user adds one with "Always open … in a
+   * new tab" and removes chips in Settings › Library. At most `USER_LIMIT.PreviewNewTabHostsMax`,
+   * no duplicates, oldest first. Default empty.
+   */
+  previewNewTabHosts: string[];
 }

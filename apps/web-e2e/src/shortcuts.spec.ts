@@ -26,6 +26,7 @@ test.describe('keyboard shortcuts (mock API)', () => {
     await expect(dialog.getByRole('heading', { level: 3 })).toHaveText([
       'Everywhere',
       'Saving and finding',
+      'Link preview',
       'Selecting links',
       'In the folder list',
     ]);
@@ -37,14 +38,15 @@ test.describe('keyboard shortcuts (mock API)', () => {
     await expect(button).toBeFocused();
   });
 
-  test('the four group panels of the settings page are as tall as their row (#350)', async ({
+  test('the group panels of the settings page are as tall as their row (#350)', async ({
     page,
   }) => {
     test.skip(isCompact(page), 'the shortcuts page is part of the tablet and desktop settings');
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto('/settings/shortcuts');
     const panels = page.locator('.shortcuts__groups ui-panel');
-    await expect(panels).toHaveCount(4);
+    // Five groups since the link preview (#553): two full rows, then one panel.
+    await expect(panels).toHaveCount(5);
     const boxes = await Promise.all([0, 1, 2, 3].map((i) => panels.nth(i).boundingBox()));
     const [a, b, c, d] = boxes;
     // Two columns: each row's two panels share the top and the height.

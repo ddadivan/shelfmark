@@ -18,6 +18,7 @@ import {
   type TextSize,
   LIBRARY_SORT,
   LIBRARY_VIEW,
+  LINK_CLICK_ACTION,
   LINK_OPEN_TARGET,
   MOTION_PREFERENCE,
   type FolderEmoji,
@@ -26,6 +27,7 @@ import {
   TRASH_RETENTION_DAYS,
   type LibrarySort,
   type LibraryView,
+  type LinkClickAction,
   type LinkOpenTarget,
   type MotionPreference,
   type ThemePreference,
@@ -96,6 +98,12 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
 
   @ApiProperty({ example: true })
   fetchPreviews!: boolean;
+
+  @ApiProperty({ enum: Object.values(LINK_CLICK_ACTION), example: LINK_CLICK_ACTION.Open })
+  clickAction!: LinkClickAction;
+
+  @ApiProperty({ type: [String], example: ['example.com'] })
+  previewNewTabHosts!: string[];
 
   @ApiProperty({ enum: Object.values(TEXT_SIZE), example: TEXT_SIZE.M })
   textSize!: TextSize;

@@ -6,4 +6,6 @@ export const LIBRARY_SELECT = {
   showFolderCounts: true,
   newLinksFolderId: true,
   fetchPreviews: true,
+  clickAction: true,
+  previewNewTabHosts: true,
 } as const;
