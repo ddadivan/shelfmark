@@ -22,6 +22,15 @@ const page = (items: LinkResponse[]): ListLinksResponse => ({
   pinned: [],
 });
 
+/** The link preview as the directive sees it: `split` turns the preview keys on. */
+const previewStub = {
+  split: signal(false),
+  currentId: signal<string | null>(null),
+  go: vi.fn<(step: -1 | 1) => Promise<void>>(() => Promise.resolve()),
+  close: vi.fn(() => Promise.resolve()),
+  openInNewTab: vi.fn(),
+};
+
 @Component({
   selector: 'app-hotkeys-host',
   imports: [LibraryHotkeysDirective],
@@ -29,7 +38,7 @@ const page = (items: LinkResponse[]): ListLinksResponse => ({
     LibraryFilterService,
     LibraryFeedService,
     LibrarySelectionService,
-    { provide: LinkPreviewService, useValue: { split: () => false } },
+    { provide: LinkPreviewService, useValue: previewStub },
   ],
   template: '<div appLibraryHotkeys></div>',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,7 +88,14 @@ function paste(text: string): Event {
 }
 
 describe('LibraryHotkeysDirective', () => {
-  beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
+  beforeEach(() => {
+    localStorage.removeItem(FEED_MEMORY_STORAGE_KEY);
+    previewStub.split.set(false);
+    previewStub.currentId.set(null);
+    previewStub.go.mockClear();
+    previewStub.close.mockClear();
+    previewStub.openInNewTab.mockClear();
+  });
   afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
 
   it('selects every link on screen with Ctrl+A and ends the selection with Esc', async () => {
@@ -118,5 +134,98 @@ describe('LibraryHotkeysDirective', () => {
     expect(actions.addLink).toHaveBeenCalledWith(
       expect.objectContaining({ text: 'https://example.com/a' }),
     );
+  });
+
+  describe('link preview keys (#553)', () => {
+    it('moves to the next and previous link with the arrows while the split is open', async () => {
+      await setup();
+      previewStub.split.set(true);
+      expect(key({ key: 'ArrowDown' }).defaultPrevented).toBe(true);
+      expect(previewStub.go).toHaveBeenLastCalledWith(1);
+      key({ key: 'ArrowUp' });
+      expect(previewStub.go).toHaveBeenLastCalledWith(-1);
+    });
+
+    it('closes the preview with Esc', async () => {
+      await setup();
+      previewStub.split.set(true);
+      expect(key({ key: 'Escape' }).defaultPrevented).toBe(true);
+      expect(previewStub.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('opens the previewed link in a new tab with Enter on the page', async () => {
+      await setup();
+      previewStub.split.set(true);
+      expect(key({ key: 'Enter' }).defaultPrevented).toBe(true);
+      expect(previewStub.openInNewTab).toHaveBeenCalledTimes(1);
+    });
+
+    it('leaves the keys alone while no split preview is open', async () => {
+      await setup();
+      const events = [key({ key: 'ArrowDown' }), key({ key: 'Escape' }), key({ key: 'Enter' })];
+      expect(events.map((event) => event.defaultPrevented)).toEqual([false, false, false]);
+      expect(previewStub.go).not.toHaveBeenCalled();
+      expect(previewStub.close).not.toHaveBeenCalled();
+      expect(previewStub.openInNewTab).not.toHaveBeenCalled();
+    });
+
+    it('ends a selection with Esc before it closes the preview', async () => {
+      const { selection } = await setup();
+      previewStub.split.set(true);
+      key({ key: 'a', code: 'KeyA', ctrlKey: true });
+      expect(selection.selecting()).toBe(true);
+      key({ key: 'Escape' });
+      expect(selection.selecting()).toBe(false);
+      expect(previewStub.close).not.toHaveBeenCalled();
+    });
+
+    it('does not take the arrows in a text field', async () => {
+      await setup();
+      previewStub.split.set(true);
+      const input = document.createElement('input');
+      document.body.append(input);
+      const event = new KeyboardEvent('keydown', {
+        key: 'ArrowDown',
+        bubbles: true,
+        cancelable: true,
+      });
+      input.dispatchEvent(event);
+      input.remove();
+      expect(event.defaultPrevented).toBe(false);
+      expect(previewStub.go).not.toHaveBeenCalled();
+    });
+
+    it('moves the focus to the link now previewed after an arrow on a feed link', async () => {
+      const { fixture } = await setup();
+      previewStub.split.set(true);
+      const area: HTMLElement = fixture.nativeElement.querySelector('[appLibraryHotkeys]');
+      const item = (id: string) => {
+        const wrapper = document.createElement('div');
+        wrapper.dataset['linkId'] = id;
+        const anchor = document.createElement('a');
+        anchor.className = 'ui-card__link';
+        anchor.href = `https://example.com/${id}`;
+        wrapper.append(anchor);
+        area.append(wrapper);
+        return anchor;
+      };
+      const first = item('id-1');
+      const second = item('id-2');
+      // jsdom has no scrollIntoView.
+      const scrolled = vi.fn();
+      second.scrollIntoView = scrolled;
+      document.body.append(area);
+      previewStub.go.mockImplementation(() => {
+        previewStub.currentId.set('id-2');
+        return Promise.resolve();
+      });
+      first.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }),
+      );
+      await vi.waitFor(() => expect(document.activeElement).toBe(second));
+      expect(scrolled).toHaveBeenCalledWith({ block: 'nearest' });
+      previewStub.go.mockImplementation(() => Promise.resolve());
+      area.remove();
+    });
   });
 });
