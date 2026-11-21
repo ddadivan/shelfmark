@@ -858,7 +858,12 @@
       },
       "extension": "Obtener la extensión",
       "data": "Datos y ayuda",
-      "dataMenu": "Datos y ayuda"
+      "dataMenu": "Datos y ayuda",
+      "toggle": {
+        "pinned": "Mostrar u ocultar fijados",
+        "folders": "Mostrar u ocultar carpetas",
+        "tags": "Mostrar u ocultar etiquetas"
+      }
     },
     "searchHint": "Busca en tus enlaces",
     "searchButton": "Buscar",

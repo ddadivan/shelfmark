@@ -858,7 +858,12 @@
       },
       "extension": "Scarica l’estensione",
       "data": "Dati e aiuto",
-      "dataMenu": "Dati e aiuto"
+      "dataMenu": "Dati e aiuto",
+      "toggle": {
+        "pinned": "Mostra o nascondi i fissati",
+        "folders": "Mostra o nascondi le cartelle",
+        "tags": "Mostra o nascondi i tag"
+      }
     },
     "searchHint": "Cerca nei tuoi link",
     "searchButton": "Cerca",

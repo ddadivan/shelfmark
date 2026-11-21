@@ -15,37 +15,72 @@
         [ariaLabel]="'shell.sidebar.views' | transloco"
         (selected)="select($event)"
       />
-      <app-sidebar-pinned [activeId]="activeId()" />
+      <app-sidebar-pinned
+        [activeId]="activeId()"
+        [collapsible]="collapsible()"
+        [collapsed]="sections.collapsed(SIDEBAR_SECTION.Pinned)"
+        (collapsedChange)="sections.setCollapsed(SIDEBAR_SECTION.Pinned, $event)"
+      />
     }
     @if (foldersReady()) {
-      <ui-tree
-        #folderTree
-        [nodes]="nodes()"
-        [activeId]="activeId()"
-        [heading]="'shell.sidebar.folders' | transloco"
-        [ariaLabel]="'shell.sidebar.foldersTree' | transloco"
-        [menuLabel]="menuLabel()"
-        [menuNodeId]="folderMenu.menuNodeId()"
-        [dropTargetId]="drag.treeTargetId()"
-        [dropLabel]="'links.drag.moveHere' | transloco"
-        reorderable
-        (selected)="select($event)"
-        (contextMenu)="openMenu($event)"
-        (reordered)="folderMenu.reorder($event)"
-        (reorderStarted)="reorderStarted()"
-      >
-        <ui-button
-          uiTreeHeadingAction
-          variant="ghost"
-          size="sm"
-          iconOnly
-          iconLeft="add"
-          [iconSize]="ICON_SIZE.Md"
-          [ariaLabel]="'shell.sidebar.newFolder' | transloco"
-          [uiTooltip]="'shell.sidebar.newFolder' | transloco"
-          (click)="folderMenu.createTopLevel()"
-        />
-      </ui-tree>
+      <section class="sidebar__folders" aria-labelledby="sidebar-folders-heading">
+        <div class="sidebar__section-header">
+          <h2 id="sidebar-folders-heading" class="sidebar__section-heading">
+            {{ 'shell.sidebar.folders' | transloco }}
+          </h2>
+          @if (collapsible()) {
+            <ui-button
+              class="sidebar__section-toggle"
+              [class.is-collapsed]="foldersCollapsed()"
+              variant="ghost"
+              size="sm"
+              iconOnly
+              iconLeft="chevron-down"
+              [iconSize]="ICON_SIZE.Sm"
+              [ariaExpanded]="!foldersCollapsed()"
+              ariaControls="sidebar-folders-body"
+              [ariaLabel]="'shell.sidebar.toggle.folders' | transloco"
+              [uiTooltip]="'shell.sidebar.toggle.folders' | transloco"
+              (click)="sections.setCollapsed(SIDEBAR_SECTION.Folders, !foldersCollapsed())"
+            />
+          }
+          <ui-button
+            class="sidebar__section-add"
+            variant="ghost"
+            size="sm"
+            iconOnly
+            iconLeft="add"
+            [iconSize]="ICON_SIZE.Md"
+            [ariaLabel]="'shell.sidebar.newFolder' | transloco"
+            [uiTooltip]="'shell.sidebar.newFolder' | transloco"
+            (click)="createFolder()"
+          />
+        </div>
+        <div
+          id="sidebar-folders-body"
+          class="sidebar__section-body"
+          [class.sidebar__section-body--foldable]="collapsible()"
+          [class.is-collapsed]="foldersCollapsed()"
+        >
+          <div>
+            <ui-tree
+              #folderTree
+              [nodes]="nodes()"
+              [activeId]="activeId()"
+              [ariaLabel]="'shell.sidebar.foldersTree' | transloco"
+              [menuLabel]="menuLabel()"
+              [menuNodeId]="folderMenu.menuNodeId()"
+              [dropTargetId]="drag.treeTargetId()"
+              [dropLabel]="'links.drag.moveHere' | transloco"
+              reorderable
+              (selected)="select($event)"
+              (contextMenu)="openMenu($event)"
+              (reordered)="folderMenu.reorder($event)"
+              (reorderStarted)="reorderStarted()"
+            />
+          </div>
+        </div>
+      </section>
     } @else if (loaderShown()) {
       <!-- The first load: nothing before 300 ms, then rows of the right height; never empty sections. -->
       <div class="sidebar__loading" aria-hidden="true">
@@ -63,7 +98,11 @@
     }
 
     @if (!foldersOnly() && tagsReady()) {
-      <app-sidebar-tags />
+      <app-sidebar-tags
+        [collapsible]="collapsible()"
+        [collapsed]="sections.collapsed(SIDEBAR_SECTION.Tags)"
+        (collapsedChange)="sections.setCollapsed(SIDEBAR_SECTION.Tags, $event)"
+      />
     }
 
     @if (!foldersOnly() && howItWorks.cardVisible()) {

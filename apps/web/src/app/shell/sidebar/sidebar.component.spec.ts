@@ -6,7 +6,7 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { provideRouter, Router } from '@angular/router';
 import { REDISCOVER_MODE } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_LINKS, MOCK_NAME } from '@shelfmark/contracts/testing';
-import { UiMenuHarness, UiTreeHarness, UiTreeItemHarness } from '@shelfmark/ui/testing';
+import { UiButtonHarness, UiMenuHarness, UiTreeItemHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { FoldersStore } from '../../stores/folders.store';
 import { TrashStore } from '../../stores/trash.store';
@@ -33,6 +33,7 @@ import { ExtensionBannerService } from '../../core/browser-extension/extension-b
 import { REDISCOVER_API } from '../../features/rediscover/models/rediscover-api.const';
 import { of } from 'rxjs';
 import { SidebarComponent } from './sidebar.component';
+import { SIDEBAR_COLLAPSED_STORAGE_KEY } from './models/sidebar-collapsed-storage-key.const';
 
 async function setup(url = '/links', waitForFolders = true, extra: Provider[] = []) {
   TestBed.configureTestingModule({
@@ -99,21 +100,22 @@ async function treeRow(
   return TestbedHarnessEnvironment.loader(fixture).getHarness(UiTreeItemHarness.with({ name }));
 }
 
-/** The first tree section heading in the sidebar ("Folders"), `null` when no tree has one. */
-async function treeHeading(fixture: ComponentFixture<unknown>): Promise<string | null> {
-  for (const tree of await TestbedHarnessEnvironment.loader(fixture).getAllHarnesses(
-    UiTreeHarness,
-  )) {
-    const heading = await tree.getHeading();
-    if (heading !== null) {
-      return heading;
-    }
-  }
-  return null;
+/** The "Folders" section heading, `null` before the section shows. */
+function foldersHeading(element: HTMLElement): string | null {
+  return element.querySelector('#sidebar-folders-heading')?.textContent?.trim() ?? null;
+}
+
+async function foldersToggle(fixture: ComponentFixture<unknown>): Promise<UiButtonHarness> {
+  return TestbedHarnessEnvironment.loader(fixture).getHarness(
+    UiButtonHarness.with({ label: 'Show or hide folders' }),
+  );
 }
 
 describe('SidebarComponent', () => {
-  afterEach(() => localStorage.removeItem(MOCK_LIBRARY_SETTINGS_STORAGE_KEY));
+  afterEach(() => {
+    localStorage.removeItem(MOCK_LIBRARY_SETTINGS_STORAGE_KEY);
+    localStorage.removeItem(SIDEBAR_COLLAPSED_STORAGE_KEY);
+  });
 
   it('shows "N forgotten" on the Recently opened row while some wait (#512)', async () => {
     const block = {
@@ -276,6 +278,12 @@ describe('SidebarComponent', () => {
 
     expect(await rowNames(fixture)).not.toContain('Data & help');
     expect(element.textContent).not.toContain('Data & help');
+    // The sections never fold there (#556), whatever this device stored.
+    expect(
+      await TestbedHarnessEnvironment.loader(fixture).getAllHarnesses(
+        UiButtonHarness.with({ label: /^Show or hide/ }),
+      ),
+    ).toEqual([]);
   });
 
   it('drops the link counts when "Show folder counts" is off (#284)', async () => {
@@ -295,11 +303,11 @@ describe('SidebarComponent', () => {
 
   it('shows no empty Folders or Tags section before the first answer', async () => {
     const { element, fixture } = await setup('/links', false);
-    expect(element.querySelector('.ui-tree__section')).toBeNull();
+    expect(foldersHeading(element)).toBeNull();
     expect(element.querySelector('app-sidebar-tags')).toBeNull();
     await vi.waitFor(async () => {
       await fixture.whenStable();
-      expect(element.querySelector('.ui-tree__section')?.textContent?.trim()).toBe('Folders');
+      expect(foldersHeading(element)).toBe('Folders');
       expect(element.querySelector('app-sidebar-tags')).not.toBeNull();
     });
   });
@@ -318,7 +326,7 @@ describe('SidebarComponent', () => {
       (await treeRows(fixture)).slice(0, 3).map((item) => item.getCount()),
     );
     expect(counts.every((count) => (count ?? 0) > 0)).toBe(true);
-    expect(await treeHeading(fixture)).toBe('Folders');
+    expect(foldersHeading(element)).toBe('Folders');
   });
 
   it('shows folders as graphite tiles', async () => {
@@ -480,12 +488,51 @@ describe('SidebarComponent', () => {
   });
 
   it('has a "New folder" "+" icon button in the Folders heading row, and no such row', async () => {
-    const { element } = await setup();
+    const { element, fixture } = await setup();
 
-    const button = element.querySelector<HTMLElement>('.ui-tree__action button');
-    expect(button?.getAttribute('aria-label')).toBe('New folder');
-    expect(button?.textContent?.trim()).toBe('');
+    const button = await TestbedHarnessEnvironment.loader(fixture).getHarness(
+      UiButtonHarness.with({ label: 'New folder' }),
+    );
+    expect(await button.getText()).toBe('');
     expect(element.textContent).not.toContain('New folder');
+  });
+
+  it('folds the folder tree under its heading and remembers it on this device (#556)', async () => {
+    const { element, fixture } = await setup();
+    const toggle = await foldersToggle(fixture);
+    const body = element.querySelector('#sidebar-folders-body');
+    expect(await toggle.isExpanded()).toBe(true);
+    expect(body?.classList).not.toContain('is-collapsed');
+
+    await toggle.click();
+    expect(await toggle.isExpanded()).toBe(false);
+    expect(body?.classList).toContain('is-collapsed');
+    expect(JSON.parse(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) ?? '[]')).toEqual([
+      'folders',
+    ]);
+    // The rows stay rendered (they keep their open folders) and the "+" stays.
+    expect(row(element, MOCK_NAME.FolderReading)).toBeTruthy();
+
+    await toggle.click();
+    expect(await toggle.isExpanded()).toBe(true);
+    expect(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY)).toBeNull();
+  });
+
+  it('starts folded from the stored choice and "New folder" opens it again (#556)', async () => {
+    localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, JSON.stringify(['folders', 'tags']));
+    const { element, fixture } = await setup();
+    expect(await (await foldersToggle(fixture)).isExpanded()).toBe(false);
+    expect(element.querySelector('#sidebar-folders-body')?.classList).toContain('is-collapsed');
+
+    await (
+      await TestbedHarnessEnvironment.loader(fixture).getHarness(
+        UiButtonHarness.with({ label: 'New folder' }),
+      )
+    ).click();
+    expect(await (await foldersToggle(fixture)).isExpanded()).toBe(true);
+    expect(JSON.parse(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) ?? '[]')).toEqual([
+      'tags',
+    ]);
   });
 
   it('moves a folder among its siblings with Alt+ArrowUp, says so and saves it (#314)', async () => {

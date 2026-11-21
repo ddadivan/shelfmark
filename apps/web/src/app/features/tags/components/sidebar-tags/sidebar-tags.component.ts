@@ -11,6 +11,7 @@ import {
   inject,
   Injector,
   input,
+  model,
   signal,
   viewChild,
 } from '@angular/core';
@@ -77,6 +78,11 @@ export class SidebarTagsComponent {
 
   /** The Tags tab of the phone: the heading is the page title (an `h1`, large) and chips are bigger. */
   readonly asPage = input(false, { transform: booleanAttribute });
+  /** The heading has a chevron that folds the tags away (the desktop sidebar, #556). */
+  readonly collapsible = input(false, { transform: booleanAttribute });
+  /** The tags are folded under the heading (only with `collapsible`). */
+  readonly collapsed = model(false);
+  protected readonly folded = computed(() => this.collapsible() && this.collapsed());
 
   protected readonly tags = inject(TagsStore);
   private readonly viewport = inject(ViewportService);
@@ -168,7 +174,13 @@ export class SidebarTagsComponent {
       this.cancel();
       return;
     }
+    // The new tag's field opens in the list, so a folded section opens first.
+    this.collapsed.set(false);
     this.editor.open('', null, true);
+  }
+
+  protected toggleCollapsed(): void {
+    this.collapsed.update((collapsed) => !collapsed);
   }
 
   /** Focus left the field for another control (Tab, or a press that took focus): close it. */

@@ -858,7 +858,12 @@
       },
       "extension": "Baixar a extensão",
       "data": "Dados e ajuda",
-      "dataMenu": "Dados e ajuda"
+      "dataMenu": "Dados e ajuda",
+      "toggle": {
+        "pinned": "Mostrar ou ocultar fixados",
+        "folders": "Mostrar ou ocultar pastas",
+        "tags": "Mostrar ou ocultar tags"
+      }
     },
     "searchHint": "Pesquise seus links",
     "searchButton": "Pesquisar",

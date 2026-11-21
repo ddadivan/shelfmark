@@ -1,7 +1,22 @@
 @use 'ui' as *;
+@use '../../../../shell/sidebar/sidebar-section';
 
 :host {
   display: block;
+}
+
+// The heading row: the heading, then (desktop sidebar, #556) the chevron that folds the rows.
+.pinned__header {
+  display: flex;
+  align-items: center;
+}
+
+.pinned__toggle {
+  @include sidebar-section.toggle;
+}
+
+.pinned__body--foldable {
+  @include sidebar-section.body;
 }
 
 // Same section heading as "Folders" in the tree: caption, muted.

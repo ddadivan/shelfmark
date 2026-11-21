@@ -858,7 +858,12 @@
       },
       "extension": "Obtenir l’extension",
       "data": "Données et aide",
-      "dataMenu": "Données et aide"
+      "dataMenu": "Données et aide",
+      "toggle": {
+        "pinned": "Afficher ou masquer les épinglés",
+        "folders": "Afficher ou masquer les dossiers",
+        "tags": "Afficher ou masquer les tags"
+      }
     },
     "searchHint": "Rechercher dans vos liens",
     "searchButton": "Rechercher",

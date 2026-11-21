@@ -1,4 +1,5 @@
 @use 'ui' as *;
+@use 'sidebar-section';
 
 :host {
   display: flex;
@@ -20,6 +21,41 @@
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
+}
+
+// The "Folders" heading row (Tree spec `sm-tree__section`): caption, muted, then (desktop, #556)
+// the chevron that folds the tree, and the "New folder" button at the end.
+.sidebar__section-header {
+  display: flex;
+  align-items: center;
+
+  // Tall enough for the 30px buttons (44px on touch).
+  min-height: calc(#{rem(30px)} + #{rem(12px)});
+  padding: rem(18px) 0 rem(6px) rem(10px);
+
+  @include coarse {
+    min-height: calc(#{rem(44px)} + #{rem(12px)});
+  }
+}
+
+.sidebar__section-heading {
+  @include type(caption);
+
+  margin: 0;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.sidebar__section-toggle {
+  @include sidebar-section.toggle;
+}
+
+.sidebar__section-add {
+  margin-inline-start: auto;
+}
+
+.sidebar__section-body--foldable {
+  @include sidebar-section.body;
 }
 
 // Logo row heading the card on the desktop (Main spec): 26px mark, wordmark, 4 / 10 / 14 padding.

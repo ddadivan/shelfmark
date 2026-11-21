@@ -844,7 +844,12 @@
       },
       "extension": "Erweiterung holen",
       "data": "Daten & Hilfe",
-      "dataMenu": "Daten und Hilfe"
+      "dataMenu": "Daten und Hilfe",
+      "toggle": {
+        "pinned": "Angeheftete ein- oder ausblenden",
+        "folders": "Ordner ein- oder ausblenden",
+        "tags": "Tags ein- oder ausblenden"
+      }
     },
     "searchHint": "Deine Links durchsuchen",
     "searchButton": "Suchen",

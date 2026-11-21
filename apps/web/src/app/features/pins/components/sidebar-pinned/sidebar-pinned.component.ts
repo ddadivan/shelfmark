@@ -16,6 +16,7 @@ import {
   inject,
   Injector,
   input,
+  model,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -26,6 +27,7 @@ import {
   FolderColourDirective,
   FolderIconComponent,
   holdRowsStill,
+  ICON_SIZE,
   KEYBOARD_KEY,
   reorderDropLine,
   setReorderDropLine,
@@ -103,6 +105,12 @@ export class SidebarPinnedComponent {
   readonly activeId = input<string | null>(null);
   /** Its own card with a page-sized heading: the phone Library page. */
   readonly card = input(false, { transform: booleanAttribute });
+  /** The heading has a chevron that folds the rows away (the desktop sidebar, #556). */
+  readonly collapsible = input(false, { transform: booleanAttribute });
+  /** The rows are folded under the heading (only with `collapsible`). */
+  readonly collapsed = model(false);
+  protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly folded = computed(() => this.collapsible() && this.collapsed());
 
   /**
    * The section is drawn while something is pinned; empty, only on the phone Library page once the
@@ -120,6 +128,10 @@ export class SidebarPinnedComponent {
   protected readonly DRAG_START_DELAY = { touch: TREE_REORDER_TOUCH_DELAY_MS, mouse: 0 };
   /** A row is being dragged: a long press must not open the browser's link menu meanwhile. */
   private dragging = false;
+
+  protected toggleCollapsed(): void {
+    this.collapsed.update((collapsed) => !collapsed);
+  }
 
   protected dragStarted(): void {
     this.dragging = true;

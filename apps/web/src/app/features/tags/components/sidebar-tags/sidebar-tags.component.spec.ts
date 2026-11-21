@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import type { TagResponse } from '@shelfmark/contracts';
 import { MOCK_ID, MOCK_NAME, MOCK_TAGS } from '@shelfmark/contracts/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { UiButtonHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { of } from 'rxjs';
 import { TagsStore } from '../../../../stores/tags.store';
@@ -122,6 +124,28 @@ describe('SidebarTagsComponent', () => {
     expect(chips(element)).toEqual(
       expect.arrayContaining([MOCK_NAME.TagDocs, MOCK_NAME.TagRecipes]),
     );
+  });
+
+  it('folds the chips under the heading, and "+" opens a folded section again (#556)', async () => {
+    const { fixture, element } = await setup();
+    const loader = TestbedHarnessEnvironment.loader(fixture);
+    expect(
+      await loader.getAllHarnesses(UiButtonHarness.with({ label: 'Show or hide tags' })),
+    ).toEqual([]);
+    fixture.componentRef.setInput('collapsible', true);
+    await fixture.whenStable();
+    const toggle = await loader.getHarness(UiButtonHarness.with({ label: 'Show or hide tags' }));
+    const body = element.querySelector('#sidebar-tags-body');
+
+    await toggle.click();
+    expect(await toggle.isExpanded()).toBe(false);
+    expect(body?.classList).toContain('is-collapsed');
+    expect(fixture.componentInstance.collapsed()).toBe(true);
+
+    addButton(element).click();
+    await until(() => expect(field(element)).not.toBeNull());
+    expect(await toggle.isExpanded()).toBe(true);
+    expect(body?.classList).not.toContain('is-collapsed');
   });
 
   it('shows a short note without tags in the sidebar, the page empty state on the Tags tab', async () => {
