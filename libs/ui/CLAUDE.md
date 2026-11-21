@@ -395,6 +395,12 @@ The "Readable" font of Settings › Appearance (#285) is Atkinson Hyperlegible, 
 - Export each harness and its types from `src/testing/index.ts`, never from `src/index.ts`. `tsconfig.lib.json` excludes every `testing/` folder and lint bans `@shelfmark/ui/testing` outside specs and `testing/` folders, so harnesses never reach a bundle. `**/testing/**` is outside the coverage count; the harness specs still run.
 - Component specs may keep querying their own DOM (they test the internals); specs of composites (a component that uses another one) and app specs use the harnesses. E2e stays on role locators (ADR 0043, D6).
 
+## Split view parts (#553)
+
+- **`ui-resize-handle`** (`label` required, `value` model px = width of the pane before it, `min`, `max`, `hint` tooltip; output `resetRequested`, not `reset`: lint bans native event names): `role="separator"` between two panes, always-visible 4 x 44 grip pill (`border-control`, `accent` on hover, focus and drag), pointer capture drag with `col-resize` and no text selection on `body`, ArrowLeft / ArrowRight 16px (Shift 64px), Home / End, Enter or double click resets, rtl flips. Pure logic in `resize-handle-value.ts`. Harness `UiResizeHandleHarness` (`label`, `getValue`, `getLimits`, `pressKey`, `doubleClick`).
+- **`ui-preview-frame`** (`src`, `title` required, `timeoutMs` 10000; outputs `loaded`, `timedOut`, `rejected`): sandboxed iframe on the `--frame-canvas` token (white in both themes) with the inline `ui-progress-bar`. The single vetted place where a URL reaches an iframe `src` (ADR 0059): `framableUrl()` accepts only absolute `https:` without credentials and not the app origin, then `Renderer2.setAttribute`; there is no `src` binding. A refused `src` leaves the iframe blank and emits `rejected`. Its stories use a refused URL only, because Storybook's CSP is `frame-src 'self'`. Specs run axe with `iframes: false` (jsdom cannot message a frame).
+- Icons `eye`, `chevron-up`, `expand`, `collapse`, `sidebar`, `frame-off` were added.
+
 ## Commands
 
 ```bash
