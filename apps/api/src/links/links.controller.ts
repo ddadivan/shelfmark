@@ -38,6 +38,8 @@ import { LinksBulkService } from './links-bulk.service';
 import { CreateLinksBatchDto } from './dto/create-links-batch.dto';
 import { CreateLinksBatchResponseDto } from './dto/create-links-batch-response.dto';
 import { LinksBatchService } from './links-batch.service';
+import { LinkFrameCheckResponseDto } from './dto/link-frame-check-response.dto';
+import { LinkFrameCheckService } from './frame-check/link-frame-check.service';
 import { LinkImageRecaptureService } from './images/link-image-recapture.service';
 import { LinkImagesService } from './images/link-images.service';
 import { sendLinkImage } from './images/send-link-image';
@@ -65,6 +67,7 @@ export class LinksController {
     private readonly recapture: LinkImageRecaptureService,
     private readonly bulk: LinksBulkService,
     private readonly batches: LinksBatchService,
+    private readonly frameChecks: LinkFrameCheckService,
   ) {}
 
   @Post('preview')
@@ -202,6 +205,23 @@ export class LinksController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<LinkResponseDto> {
     return this.recapture.recapture(user.id, id);
+  }
+
+  @Post(':id/frame-check')
+  @HttpCode(HttpStatus.OK)
+  @RateLimit(RATE_LIMIT.LinkFrameCheck)
+  @ApiOkResponse({ type: LinkFrameCheckResponseDto })
+  @ApiNotFoundResponse({ description: 'Unknown or foreign link' })
+  @ApiOperation({
+    summary: 'Whether the page of a link may be shown in the preview frame',
+    description:
+      'Reads the framing headers of the page (cached per host, 7 days; an unknown answer 1 hour). A blocked host is added to previewNewTabHosts (addedToNewTabHosts). A page that cannot be reached is unknown, a non-https address is blocked without any request.',
+  })
+  frameCheck(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<LinkFrameCheckResponseDto> {
+    return this.frameChecks.check(user.id, id);
   }
 
   @Post('batch')

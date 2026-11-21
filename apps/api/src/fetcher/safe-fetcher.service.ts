@@ -68,6 +68,11 @@ function acceptHeader(kind: FetchKind): string {
   return `${HTML_CONTENT_TYPES.Html},${HTML_CONTENT_TYPES.Xhtml};q=0.9`;
 }
 
+/** Duplicate headers arrive joined by a comma already; this covers the array form of the types. */
+function joinHeader(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value.join(', ') : value;
+}
+
 function stripBrackets(hostname: string): string {
   return hostname.startsWith('[') && hostname.endsWith(']') ? hostname.slice(1, -1) : hostname;
 }
@@ -386,8 +391,8 @@ export class SafeFetcherService {
     }
     if (kind === FETCH_KIND.Headers) {
       // The body is never read: the headers are all that is wanted, at any status.
-      const xFrameOptions = response.headers['x-frame-options'];
-      const contentSecurityPolicy = response.headers['content-security-policy'];
+      const xFrameOptions = joinHeader(response.headers['x-frame-options']);
+      const contentSecurityPolicy = joinHeader(response.headers['content-security-policy']);
       response.destroy();
       finish(() =>
         resolve({
