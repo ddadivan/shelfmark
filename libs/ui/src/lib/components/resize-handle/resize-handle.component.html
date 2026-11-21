@@ -1,0 +1,22 @@
+<div
+  class="ui-resize-handle"
+  [class.ui-resize-handle--dragging]="dragging()"
+  role="separator"
+  tabindex="0"
+  aria-orientation="vertical"
+  [attr.aria-label]="label()"
+  [attr.aria-valuenow]="now()"
+  [attr.aria-valuemin]="min()"
+  [attr.aria-valuemax]="max()"
+  [uiTooltip]="hint()"
+  [position]="OVERLAY_SIDE.Right"
+  (pointerdown)="onPointerDown($event)"
+  (pointermove)="onPointerMove($event)"
+  (pointerup)="onPointerEnd($event)"
+  (pointercancel)="onPointerEnd($event)"
+  (lostpointercapture)="onPointerEnd($event)"
+  (keydown)="onKeydown($event)"
+  (dblclick)="resetRequested.emit()"
+>
+  <span class="ui-resize-handle__grip" aria-hidden="true"></span>
+</div>

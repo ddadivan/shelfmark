@@ -40,6 +40,7 @@ export * from './lib/components/picker-menu';
 export * from './lib/components/popover';
 export * from './lib/components/progress-bar';
 export * from './lib/components/radio-group';
+export * from './lib/components/resize-handle';
 export * from './lib/components/rating-scale';
 export * from './lib/components/save-status';
 export * from './lib/components/saved-views';
