@@ -26,7 +26,14 @@ describe('pressed menu trigger (CSS)', () => {
     expect(css).toMatch(
       /\.ui-button--secondary\[aria-expanded=true\][^{]*\{[^}]*--surface-pressed/,
     );
-    expect(css).toMatch(/\.ui-button--primary\[aria-expanded=true\]\s*\{[^}]*--primary-hover/);
+    expect(css).toMatch(/\.ui-button--primary\[aria-expanded=true\][^{]*\{[^}]*--primary-hover/);
+  });
+
+  it('keeps a disclosure toggle in its resting look while expanded (#556)', () => {
+    const css = compileScss('lib/components/button/button.component.scss');
+    expect(css).toMatch(
+      /\.ui-button--ghost\[aria-expanded=true\]:not\(\.ui-button--disclosure\)[^{]*\{[^}]*--surface-pressed/,
+    );
   });
 });
 

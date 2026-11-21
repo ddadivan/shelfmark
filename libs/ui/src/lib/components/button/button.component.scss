@@ -183,21 +183,22 @@ a.ui-button {
 }
 
 // A button that opens a menu (or any popup) stays pressed while it is open: one rule for every
-// menu trigger (`uiMenuTrigger` writes `aria-expanded` on the inner element).
-.ui-button--secondary[aria-expanded='true'],
-.ui-button--ghost[aria-expanded='true'] {
+// menu trigger (`uiMenuTrigger` writes `aria-expanded` on the inner element). A `disclosure`
+// button (a section chevron) only names its state and keeps its resting look.
+.ui-button--secondary[aria-expanded='true']:not(.ui-button--disclosure),
+.ui-button--ghost[aria-expanded='true']:not(.ui-button--disclosure) {
   background: var(--surface-pressed);
 }
 
-.ui-button--primary[aria-expanded='true'] {
+.ui-button--primary[aria-expanded='true']:not(.ui-button--disclosure) {
   background: var(--primary-hover);
 }
 
-.ui-button--ai[aria-expanded='true'],
-.ui-button--ai-ghost[aria-expanded='true'] {
+.ui-button--ai[aria-expanded='true']:not(.ui-button--disclosure),
+.ui-button--ai-ghost[aria-expanded='true']:not(.ui-button--disclosure) {
   background: var(--ai-fill-pressed);
 }
 
-.ui-button--danger[aria-expanded='true'] {
+.ui-button--danger[aria-expanded='true']:not(.ui-button--disclosure) {
   filter: brightness(0.85);
 }
