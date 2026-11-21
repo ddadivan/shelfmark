@@ -65,6 +65,8 @@ import { dataNodes, extensionNodes, fixedNodes, trashNodes } from './utils/sideb
 import { sidebarRoute } from './utils/sidebar-route';
 import { SidebarFoldersService } from './services/sidebar-folders.service';
 import { SidebarTreeFocusService } from './services/sidebar-tree-focus.service';
+import { SidebarSections } from './services/sidebar-sections.service';
+import { SIDEBAR_SECTION } from './models/sidebar-section.const';
 
 /**
  * The library sidebar, an inset card that only navigates: the logo, "All links", "Unsorted",
@@ -135,6 +137,13 @@ export class SidebarComponent {
   private readonly viewport = inject(ViewportService);
   /** Wide-screen-only blocks of the sidebar (the phone drawer and Library leave them out). */
   protected readonly phone = this.viewport.compact;
+  /** Pinned, Folders and Tags fold under their heading in the desktop sidebar (#556). */
+  protected readonly sections = inject(SidebarSections);
+  protected readonly SIDEBAR_SECTION = SIDEBAR_SECTION;
+  protected readonly collapsible = computed(() => !this.foldersOnly() && !this.phone());
+  protected readonly foldersCollapsed = computed(
+    () => this.collapsible() && this.sections.collapsed(SIDEBAR_SECTION.Folders),
+  );
   /** Text buttons reach the 44px touch target on a phone. */
   protected readonly buttonSize = computed(() =>
     this.viewport.compact() ? BUTTON_SIZE.Lg : BUTTON_SIZE.Sm,
@@ -245,6 +254,12 @@ export class SidebarComponent {
         onCleanup(this.treeFocus.register(tree));
       }
     });
+  }
+
+  /** "New folder" opens a folded Folders section first, so the new row shows. */
+  protected createFolder(): void {
+    this.sections.setCollapsed(SIDEBAR_SECTION.Folders, false);
+    this.folderMenu.createTopLevel();
   }
 
   protected retry(): void {

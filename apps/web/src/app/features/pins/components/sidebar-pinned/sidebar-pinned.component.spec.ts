@@ -5,6 +5,8 @@ import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { PIN_KIND } from '@shelfmark/contracts';
 import { TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { UiButtonHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { PinsStore } from '../../../../stores/pins.store';
@@ -133,6 +135,38 @@ describe('SidebarPinnedComponent', () => {
     expect(rows).toHaveLength(2);
     expect(rows[0].textContent).toContain(data.foldersView()[0].name);
     expect(rows[1].textContent).toContain(data.links[0].title);
+  });
+
+  it('has no fold chevron unless the sidebar asks for one (#556)', async () => {
+    const { fixture } = await setup();
+    const toggles = await TestbedHarnessEnvironment.loader(fixture).getAllHarnesses(
+      UiButtonHarness.with({ label: 'Show or hide pinned' }),
+    );
+    expect(toggles).toEqual([]);
+  });
+
+  it('folds the rows under the heading with its chevron and reports the change (#556)', async () => {
+    const { fixture, element } = await setup();
+    fixture.componentRef.setInput('collapsible', true);
+    await fixture.whenStable();
+    const changes: boolean[] = [];
+    fixture.componentInstance.collapsed.subscribe((value) => changes.push(value));
+    const toggle = await TestbedHarnessEnvironment.loader(fixture).getHarness(
+      UiButtonHarness.with({ label: 'Show or hide pinned' }),
+    );
+    const body = element.querySelector('#sidebar-pinned-body');
+    expect(await toggle.isExpanded()).toBe(true);
+
+    await toggle.click();
+    expect(await toggle.isExpanded()).toBe(false);
+    expect(body?.classList).toContain('is-collapsed');
+    // The rows stay rendered, only folded away.
+    expect(items(element)).toHaveLength(2);
+
+    await toggle.click();
+    expect(await toggle.isExpanded()).toBe(true);
+    expect(body?.classList).not.toContain('is-collapsed');
+    expect(changes).toEqual([true, false]);
   });
 
   it('has no "…" menu: Unpin is the only row action (#314)', async () => {

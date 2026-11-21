@@ -844,7 +844,12 @@
       },
       "extension": "Get the extension",
       "data": "Data & help",
-      "dataMenu": "Data and help"
+      "dataMenu": "Data and help",
+      "toggle": {
+        "pinned": "Show or hide pinned",
+        "folders": "Show or hide folders",
+        "tags": "Show or hide tags"
+      }
     },
     "searchHint": "Search your links",
     "searchButton": "Search",

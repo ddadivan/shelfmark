@@ -1,0 +1,52 @@
+@use 'ui' as *;
+
+// A foldable section of the desktop sidebar (#556): Pinned, Folders, Tags. The chevron after the
+// heading turns and the content opens by height, like a folder of the tree (Motion: tree expand).
+
+// On the `ui-button` host: the chevron points down while open and right while folded.
+@mixin toggle {
+  display: inline-flex;
+  margin-inline-start: var(--space-1);
+  transition: transform var(--duration-fast) var(--ease-in-out);
+
+  &.is-collapsed {
+    transform: rotate(-90deg);
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+// The content stays rendered while folded so it can animate (and keeps its state, such as the
+// open folders); it leaves the tab order and assistive tech once the fold has finished. Its only
+// child is the clipped box.
+@mixin body {
+  display: grid;
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition:
+    grid-template-rows var(--duration-base) var(--ease-in-out),
+    visibility 0s;
+
+  > * {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &.is-collapsed {
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows var(--duration-base) var(--ease-in-out),
+      visibility 0s var(--duration-base);
+  }
+
+  @include reduced-motion {
+    transition: none;
+
+    &.is-collapsed {
+      transition: none;
+    }
+  }
+}

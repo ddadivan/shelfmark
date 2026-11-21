@@ -1,20 +1,35 @@
 @use 'ui' as *;
+@use '../../../../shell/sidebar/sidebar-section';
 
 :host {
   display: block;
 }
 
-// Same section heading as "Folders" in the tree: caption, muted.
-.pinned__heading {
-  @include type(caption);
-
+// Same section heading as "Folders": caption, muted; then (desktop sidebar, #556) the chevron that
+// folds the rows, centred on the heading text and overhanging the row, so the height stays.
+.pinned__header {
   display: flex;
   align-items: center;
   min-height: rem(30px);
   padding: rem(18px) rem(10px) rem(6px);
+}
+
+.pinned__heading {
+  @include type(caption);
+
   margin: 0;
   font-weight: 500;
   color: var(--text-muted);
+}
+
+.pinned__toggle {
+  @include sidebar-section.toggle;
+
+  margin-block: calc(-1 * var(--space-4));
+}
+
+.pinned__body--foldable {
+  @include sidebar-section.body;
 }
 
 .pinned__list {

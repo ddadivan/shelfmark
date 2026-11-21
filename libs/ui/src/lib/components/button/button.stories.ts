@@ -58,6 +58,7 @@ const meta: Meta<ButtonArgs> = {
         [ripple]="ripple"
         [ariaExpanded]="ariaExpanded"
         [ariaControls]="ariaControls"
+        [disclosure]="disclosure"
         [ariaHaspopup]="ariaHaspopup"
         [ariaDescribedby]="ariaDescribedby"
         [ariaPressed]="ariaPressed"
@@ -256,6 +257,19 @@ export const MenuTrigger: Story = {
     ariaHaspopup: BUTTON_HASPOPUP.Menu,
     ariaExpanded: false,
     ariaControls: 'menu-1',
+  },
+};
+
+/** A section chevron (#556): `disclosure` keeps the resting look while `aria-expanded` is true. */
+export const Disclosure: Story = {
+  args: {
+    variant: BUTTON_VARIANT.Ghost,
+    size: BUTTON_SIZE.Sm,
+    iconOnly: true,
+    iconLeft: 'chevron-down',
+    ariaLabel: 'Show or hide folders',
+    ariaExpanded: true,
+    disclosure: true,
   },
 };
 
