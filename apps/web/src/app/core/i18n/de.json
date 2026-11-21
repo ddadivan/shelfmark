@@ -1849,7 +1849,7 @@
         },
         "newTabSites": {
           "label": "Websites, die in neuem Tab öffnen",
-          "hint": "Sie blockieren Vorschauen, oder du hast es so gewählt. Ein Klick auf ihre Links überspringt die Vorschau.",
+          "hint": "Von dir hinzugefügt. Ein Klick auf ihre Links öffnet einen neuen Tab statt der Vorschau.",
           "remove": "{{domain}} entfernen",
           "empty": "Noch keine."
         }

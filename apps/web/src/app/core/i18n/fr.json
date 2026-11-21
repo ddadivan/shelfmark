@@ -1894,7 +1894,7 @@
         },
         "newTabSites": {
           "label": "Sites ouverts dans un nouvel onglet",
-          "hint": "Ils bloquent l'aperçu, ou vous l'avez choisi. Un clic sur leurs liens saute l'aperçu.",
+          "hint": "Vous les avez ajoutés. Un clic sur leurs liens ouvre un nouvel onglet au lieu de l'aperçu.",
           "remove": "Retirer {{domain}}",
           "empty": "Aucun pour l'instant."
         }

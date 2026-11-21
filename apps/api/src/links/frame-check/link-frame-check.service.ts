@@ -2,8 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   LINK_ERROR_MESSAGE,
   LINK_FRAMING,
-  USER_LIMIT,
-  isPreviewHost,
   isPreviewableUrl,
   linkHost,
   type LinkFrameCheckResponse,
@@ -31,8 +29,8 @@ function sameSite(a: string, b: string): boolean {
 /**
  * Link preview frame check (#553, ADR 0059): can the page of one of the user's links be shown in
  * the preview frame. The verdict is cached per host in `frame_checks` (not user data); a miss asks
- * the page through `SafeFetcherService.fetchHeaders`. A `blocked` host is appended to the user's
- * `previewNewTabHosts` in one conditional statement. Never call it inside a transaction.
+ * the page through `SafeFetcherService.fetchHeaders`. It never changes the user's
+ * `previewNewTabHosts`: only the user adds a site there (#555).
  */
 @Injectable()
 export class LinkFrameCheckService {
@@ -52,38 +50,21 @@ export class LinkFrameCheckService {
     const host = linkHost(link.url) ?? link.url;
     if (!isPreviewableUrl(link.url)) {
       // A page that cannot be framed at all: no request, no cache row, not added to the list.
-      return this.answer(
-        linkId,
-        host,
-        { framing: LINK_FRAMING.Blocked, checkedAt: new Date() },
-        false,
-      );
+      return this.answer(linkId, host, { framing: LINK_FRAMING.Blocked, checkedAt: new Date() });
     }
 
     const cached = await this.cached(host);
     const fresh = cached === null ? await this.fetchAndStore(host, link.url) : null;
     const verdict: FrameVerdict = fresh?.verdict ?? cached ?? NO_VERDICT;
-    // Only a fresh check that stayed on the link's site adds the host: a cached verdict never
-    // re-adds a host the user removed, and a redirect to another site says nothing about this one.
-    const added =
-      fresh?.stored === true &&
-      verdict.framing === LINK_FRAMING.Blocked &&
-      (await this.addToNewTabHosts(userId, host));
-    return this.answer(linkId, host, verdict, added);
+    return this.answer(linkId, host, verdict);
   }
 
-  private answer(
-    linkId: string,
-    host: string,
-    verdict: FrameVerdict,
-    addedToNewTabHosts: boolean,
-  ): LinkFrameCheckResponse {
+  private answer(linkId: string, host: string, verdict: FrameVerdict): LinkFrameCheckResponse {
     return {
       linkId,
       host,
       framing: verdict.framing,
       checkedAt: verdict.checkedAt.toISOString(),
-      addedToNewTabHosts,
     };
   }
 
@@ -131,21 +112,6 @@ export class LinkFrameCheckService {
     } catch {
       return { framing: LINK_FRAMING.Unknown, finalHost: null };
     }
-  }
-
-  /**
-   * Appends the host in one statement: only while it is not there yet and the list has room, so
-   * a repeat or a full list changes nothing. Plain SQL, so `updated_at` stays. True when added.
-   */
-  private async addToNewTabHosts(userId: string, host: string): Promise<boolean> {
-    if (!isPreviewHost(host)) return false;
-    const changed = await this.prisma.$executeRaw`
-      UPDATE users
-      SET preview_new_tab_hosts = array_append(preview_new_tab_hosts, ${host})
-      WHERE id = ${userId}::uuid
-        AND NOT (${host} = ANY (preview_new_tab_hosts))
-        AND cardinality(preview_new_tab_hosts) < ${USER_LIMIT.PreviewNewTabHostsMax}`;
-    return changed > 0;
   }
 }
 

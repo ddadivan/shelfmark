@@ -1894,7 +1894,7 @@
         },
         "newTabSites": {
           "label": "Sitios que se abren en una pestaña nueva",
-          "hint": "Bloquean la vista previa, o lo elegiste tú. Un clic en sus enlaces se salta la vista previa.",
+          "hint": "Los añadiste tú. Un clic en sus enlaces abre una pestaña nueva en vez de la vista previa.",
           "remove": "Quitar {{domain}}",
           "empty": "Ninguno todavía."
         }

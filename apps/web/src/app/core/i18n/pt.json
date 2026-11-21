@@ -1894,7 +1894,7 @@
         },
         "newTabSites": {
           "label": "Sites que abrem em nova aba",
-          "hint": "Eles bloqueiam a prévia, ou você escolheu assim. Um clique nos links deles pula a prévia.",
+          "hint": "Você os adicionou. Um clique nos links deles abre uma nova aba em vez da prévia.",
           "remove": "Remover {{domain}}",
           "empty": "Nenhum ainda."
         }

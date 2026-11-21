@@ -81,7 +81,6 @@ describe('POST /api/links/:id/frame-check', () => {
       host: HOST,
       framing: LINK_FRAMING.Allowed,
       checkedAt: expect.any(String),
-      addedToNewTabHosts: false,
     });
     expect(fetchHeaders).toHaveBeenCalledWith(URL_ON_HOST, FRAME_CHECK_FETCH_LIMITS);
     const row = await t.db.prisma.frameCheck.findUniqueOrThrow({ where: { host: HOST } });
@@ -141,49 +140,23 @@ describe('POST /api/links/:id/frame-check', () => {
     it.each([
       ['X-Frame-Options', { xFrameOptions: 'SAMEORIGIN' }],
       ['CSP frame-ancestors', { contentSecurityPolicy: "frame-ancestors 'none'" }],
-    ])('is added to the new-tab sites (%s)', async (_name, headers) => {
+    ])('is blocked and leaves the new-tab sites alone (%s, #555)', async (_name, headers) => {
       fetchHeaders.mockResolvedValue(page(headers));
       const id = await link();
-      const body = await check(a, id);
-      expect(body.framing).toBe(LINK_FRAMING.Blocked);
-      expect(body.addedToNewTabHosts).toBe(true);
-      expect(await hostsOf(users.owner.userId)).toEqual([HOST]);
-      const settings = (await a.get(SETTINGS).expect(200)).body as UserSettingsResponse;
-      expect(settings.previewNewTabHosts).toEqual([HOST]);
-      // Another user's list is untouched.
-      expect(await hostsOf(users.intruder.userId)).toEqual([]);
-    });
-
-    it('is added once: a repeat (also from the cache) says false and keeps one entry', async () => {
-      fetchHeaders.mockResolvedValue(page({ xFrameOptions: 'DENY' }));
-      const id = await link();
-      expect((await check(a, id)).addedToNewTabHosts).toBe(true);
-      expect((await check(a, id)).addedToNewTabHosts).toBe(false);
-      expect(await hostsOf(users.owner.userId)).toEqual([HOST]);
-    });
-
-    it('is not added again from the cache once the user removed it', async () => {
-      fetchHeaders.mockResolvedValue(page({ xFrameOptions: 'DENY' }));
-      const id = await link();
-      expect((await check(a, id)).addedToNewTabHosts).toBe(true);
-      await a.patch(SETTINGS).send({ previewNewTabHosts: [] }).expect(200);
-      const again = await check(a, id);
-      expect(again.framing).toBe(LINK_FRAMING.Blocked);
-      expect(again.addedToNewTabHosts).toBe(false);
+      expect((await check(a, id)).framing).toBe(LINK_FRAMING.Blocked);
+      expect((await check(a, id)).framing).toBe(LINK_FRAMING.Blocked);
+      // Only the user adds a site ("Always open in a new tab" or Settings).
       expect(await hostsOf(users.owner.userId)).toEqual([]);
     });
 
-    it('a redirect to another site answers but caches nothing and adds nothing', async () => {
+    it('a redirect to another site answers but caches nothing', async () => {
       fetchHeaders.mockResolvedValue({
         ...page({ xFrameOptions: 'DENY' }),
         finalUrl: 'https://elsewhere.test/landing',
       });
       const id = await link();
-      const body = await check(a, id);
-      expect(body.framing).toBe(LINK_FRAMING.Blocked);
-      expect(body.addedToNewTabHosts).toBe(false);
+      expect((await check(a, id)).framing).toBe(LINK_FRAMING.Blocked);
       expect(await t.db.prisma.frameCheck.findUnique({ where: { host: HOST } })).toBeNull();
-      expect(await hostsOf(users.owner.userId)).toEqual([]);
     });
 
     it('a redirect within the site (www.) is cached for the host', async () => {
@@ -192,47 +165,8 @@ describe('POST /api/links/:id/frame-check', () => {
         finalUrl: `https://www.${HOST}/article`,
       });
       const id = await link();
-      expect((await check(a, id)).addedToNewTabHosts).toBe(true);
+      expect((await check(a, id)).framing).toBe(LINK_FRAMING.Blocked);
       expect(await t.db.prisma.frameCheck.findUnique({ where: { host: HOST } })).not.toBeNull();
-    });
-
-    it('is added behind older entries, keeping the order', async () => {
-      await t.db.prisma.user.update({
-        where: { id: users.owner.userId },
-        data: { previewNewTabHosts: ['old.example.com'] },
-      });
-      fetchHeaders.mockResolvedValue(page({ xFrameOptions: 'DENY' }));
-      await check(a, await link());
-      expect(await hostsOf(users.owner.userId)).toEqual(['old.example.com', HOST]);
-    });
-
-    it('is not added when the list is full, and the answer says so', async () => {
-      const full = Array.from(
-        { length: USER_LIMIT.PreviewNewTabHostsMax },
-        (_, i) => `h${i}.example.com`,
-      );
-      await t.db.prisma.user.update({
-        where: { id: users.owner.userId },
-        data: { previewNewTabHosts: full },
-      });
-      fetchHeaders.mockResolvedValue(page({ xFrameOptions: 'DENY' }));
-      const body = await check(a, await link());
-      expect(body.framing).toBe(LINK_FRAMING.Blocked);
-      expect(body.addedToNewTabHosts).toBe(false);
-      expect(await hostsOf(users.owner.userId)).toEqual(full);
-    });
-
-    it('is added exactly once under concurrent calls', async () => {
-      fetchHeaders.mockResolvedValue(page({ xFrameOptions: 'DENY' }));
-      const ids = await Promise.all([link(`${URL_ON_HOST}/1`), link(`${URL_ON_HOST}/2`)]);
-      const bodies = await Promise.all(ids.map((id) => check(a, id)));
-      expect(bodies.filter((body) => body.addedToNewTabHosts)).toHaveLength(1);
-      expect(await hostsOf(users.owner.userId)).toEqual([HOST]);
-    });
-
-    it('is not added for an allowed host', async () => {
-      expect((await check(a, await link())).addedToNewTabHosts).toBe(false);
-      expect(await hostsOf(users.owner.userId)).toEqual([]);
     });
   });
 
@@ -244,7 +178,6 @@ describe('POST /api/links/:id/frame-check', () => {
       const id = await link();
       const body = await check(a, id);
       expect(body.framing).toBe(LINK_FRAMING.Unknown);
-      expect(body.addedToNewTabHosts).toBe(false);
       await check(a, id);
       expect(fetchHeaders).toHaveBeenCalledTimes(1);
       expect(
@@ -256,7 +189,6 @@ describe('POST /api/links/:id/frame-check', () => {
       fetchHeaders.mockResolvedValue(page({ xFrameOptions: 'DENY' }, status));
       const body = await check(a, await link());
       expect(body.framing).toBe(LINK_FRAMING.Unknown);
-      expect(body.addedToNewTabHosts).toBe(false);
     });
   });
 
@@ -267,7 +199,6 @@ describe('POST /api/links/:id/frame-check', () => {
       linkId: id,
       host: 'insecure.test',
       framing: LINK_FRAMING.Blocked,
-      addedToNewTabHosts: false,
     });
     expect(fetchHeaders).not.toHaveBeenCalled();
     expect(await t.db.prisma.frameCheck.count()).toBe(0);

@@ -37,7 +37,6 @@ function frameAnswer(patch: Partial<LinkFrameCheckResponse> = {}): LinkFrameChec
     host: 'site1.example',
     framing: LINK_FRAMING.Allowed,
     checkedAt: '2026-01-01T00:00:00.000Z',
-    addedToNewTabHosts: false,
     ...patch,
   };
 }
@@ -82,7 +81,6 @@ function setup(options: SetupOptions = {}) {
   const library = signal<LibrarySettings>({ ...LIBRARY_SETTINGS_DEFAULT, ...options.library });
   const settings = {
     libraryShown: library,
-    noteNewTabHost: vi.fn(),
     setLibrary: vi.fn(options.setLibrary ?? (() => Promise.resolve(true))),
   };
   const actions = {
@@ -233,21 +231,6 @@ describe('LinkPreviewService', () => {
       await route.open('id-2');
       await settle();
       expect(service.body()).toBe(PREVIEW_BODY_KIND.Site);
-    });
-
-    it('tells the settings store when the server added the host to the new tab list', async () => {
-      const { settings } = setup({
-        frameCheck: () =>
-          of(frameAnswer({ framing: LINK_FRAMING.Blocked, addedToNewTabHosts: true })),
-      });
-      await settle();
-      expect(settings.noteNewTabHost).toHaveBeenCalledWith('site1.example');
-    });
-
-    it('leaves the settings alone when the server added nothing', async () => {
-      const { settings } = setup();
-      await settle();
-      expect(settings.noteNewTabHost).not.toHaveBeenCalled();
     });
   });
 

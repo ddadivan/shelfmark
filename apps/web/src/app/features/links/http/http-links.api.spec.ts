@@ -171,7 +171,6 @@ describe('HttpLinksApi', () => {
       host: 'example.com',
       framing: LINK_FRAMING.Blocked,
       checkedAt: '2026-01-01T00:00:00.000Z',
-      addedToNewTabHosts: true,
     };
     request.flush(body);
     expect(answer).toEqual(body);

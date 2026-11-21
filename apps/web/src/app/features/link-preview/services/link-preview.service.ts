@@ -286,9 +286,6 @@ export class LinkPreviewService {
     try {
       const answer = await firstValueFrom(this.api.frameCheck(id));
       this.framing.update((all) => ({ ...all, [id]: answer.framing }));
-      if (answer.addedToNewTabHosts) {
-        this.settings.noteNewTabHost(answer.host);
-      }
     } catch {
       // The frame and its load timeout decide (ADR 0059, point 7).
     }

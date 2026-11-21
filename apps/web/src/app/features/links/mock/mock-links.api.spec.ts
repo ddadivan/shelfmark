@@ -1,5 +1,5 @@
 import { Injector, runInInjectionContext } from '@angular/core';
-import { LINK_FRAMING, LINK_SORT_FIELD, SORT_ORDER, USER_LIMIT } from '@shelfmark/contracts';
+import { LINK_FRAMING, LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
 import { MOCK_LINK_PREVIEW_DUPLICATE } from '@shelfmark/contracts/testing';
 import { firstValueFrom } from 'rxjs';
 import { MOCK_HOST } from '../models/mock-host.const';
@@ -350,26 +350,18 @@ describe('MockLinksApi', () => {
         linkId: link.id,
         host: 'framable.example',
         framing: LINK_FRAMING.Allowed,
-        addedToNewTabHosts: false,
       });
       expect(data.library.previewNewTabHosts).not.toContain('framable.example');
     });
 
-    it('answers blocked for a blocked host and its subdomains, and adds the host once', async () => {
+    it('answers blocked for a blocked host and its subdomains, and adds nothing (#555)', async () => {
       const { api, data } = createWithData();
       const link = await firstValueFrom(api.create({ url: 'https://gist.github.com/a' }));
-      const first = await firstValueFrom(api.frameCheck(link.id));
-      expect(first).toMatchObject({
+      expect(await firstValueFrom(api.frameCheck(link.id))).toMatchObject({
         host: 'gist.github.com',
         framing: LINK_FRAMING.Blocked,
-        addedToNewTabHosts: true,
       });
-      const second = await firstValueFrom(api.frameCheck(link.id));
-      expect(second.framing).toBe(LINK_FRAMING.Blocked);
-      expect(second.addedToNewTabHosts).toBe(false);
-      expect(
-        data.library.previewNewTabHosts.filter((host) => host === 'gist.github.com'),
-      ).toHaveLength(1);
+      expect(data.library.previewNewTabHosts).not.toContain('gist.github.com');
     });
 
     it('does not mistake a host that only ends like a blocked one', async () => {
@@ -383,23 +375,7 @@ describe('MockLinksApi', () => {
       const link = await firstValueFrom(api.create({ url: 'http://plain.example/a' }));
       const answer = await firstValueFrom(api.frameCheck(link.id));
       expect(answer.framing).toBe(LINK_FRAMING.Blocked);
-      expect(answer.addedToNewTabHosts).toBe(false);
       expect(data.library.previewNewTabHosts).not.toContain('plain.example');
-    });
-
-    it('stops adding hosts at the limit', async () => {
-      const { api, data } = createWithData();
-      data.library = {
-        ...data.library,
-        previewNewTabHosts: Array.from(
-          { length: USER_LIMIT.PreviewNewTabHostsMax },
-          (_, index) => `site${index}.example`,
-        ),
-      };
-      const link = await firstValueFrom(api.create({ url: 'https://x.com/a' }));
-      const answer = await firstValueFrom(api.frameCheck(link.id));
-      expect(answer.framing).toBe(LINK_FRAMING.Blocked);
-      expect(answer.addedToNewTabHosts).toBe(false);
     });
 
     it('fails for an unknown link', async () => {

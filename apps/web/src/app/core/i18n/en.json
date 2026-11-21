@@ -1849,7 +1849,7 @@
         },
         "newTabSites": {
           "label": "Sites that open in a new tab",
-          "hint": "These block previews, or you chose so. A click on their links skips the preview.",
+          "hint": "You added these. A click on their links opens a new tab instead of the preview.",
           "remove": "Remove {{domain}}",
           "empty": "None yet."
         }

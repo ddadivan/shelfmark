@@ -1894,7 +1894,7 @@
         },
         "newTabSites": {
           "label": "Siti che si aprono in una nuova scheda",
-          "hint": "Bloccano l'anteprima, o l'hai scelto tu. Un clic sui loro link salta l'anteprima.",
+          "hint": "Li hai aggiunti tu. Un clic sui loro link apre una nuova scheda invece dell'anteprima.",
           "remove": "Rimuovi {{domain}}",
           "empty": "Ancora nessuno."
         }
