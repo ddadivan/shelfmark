@@ -46,6 +46,12 @@
   color: var(--text-muted);
 }
 
+// The buttons are centred on the heading text and may overhang the row, which keeps the height of
+// the tree heading it replaced (the "+" used to be laid over it).
+.sidebar__section-header > ui-button {
+  margin-block: calc(-1 * var(--space-4));
+}
+
 .sidebar__section-toggle {
   @include sidebar-section.toggle;
 }
