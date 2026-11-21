@@ -40,7 +40,6 @@ describe('LinkPreviewRoute', () => {
     expect(route.isOpen()).toBe(false);
     expect(route.split()).toBe(false);
     expect(route.pushed()).toBe(false);
-    expect(route.rail()).toBe(false);
   });
 
   it('follows the preview parameter of a navigation', async () => {
@@ -50,21 +49,19 @@ describe('LinkPreviewRoute', () => {
     expect(route.isOpen()).toBe(true);
   });
 
-  it('opens as a split with the rail on a wide screen', async () => {
+  it('opens as a split on a wide screen', async () => {
     const { route } = await setup(true);
     await route.open('abc');
     expect(route.currentId()).toBe('abc');
     expect(route.split()).toBe(true);
     expect(route.pushed()).toBe(false);
-    expect(route.rail()).toBe(true);
   });
 
-  it('opens as a pushed page below the wide breakpoint, with no rail', async () => {
+  it('opens as a pushed page below the wide breakpoint', async () => {
     const { route } = await setup(false);
     await route.open('abc');
     expect(route.split()).toBe(false);
     expect(route.pushed()).toBe(true);
-    expect(route.rail()).toBe(false);
   });
 
   it('drops the split and related parameters and keeps the others', async () => {
@@ -117,19 +114,6 @@ describe('LinkPreviewRoute', () => {
     expect(back).not.toHaveBeenCalled();
     expect(router.url).toBe('/links?q=x');
     expect(route.isOpen()).toBe(false);
-  });
-
-  it('shows the full sidebar after "Show sidebar" until the preview closes', async () => {
-    const { route, router } = await setup();
-    await route.open('a');
-    expect(route.rail()).toBe(true);
-    route.showSidebar();
-    expect(route.rail()).toBe(false);
-    expect(route.split()).toBe(true);
-    await router.navigateByUrl('/links?preview=a');
-    await route.close();
-    await route.open('b');
-    expect(route.rail()).toBe(true);
   });
 
   describe('wantsPreview', () => {

@@ -54,9 +54,8 @@ test.describe('link preview (mock API)', () => {
     const panel = page.getByRole('region', { name: `Preview: ${FIRST}` });
     await expect(panel).toBeVisible();
     await expect(page).toHaveURL(/[?&]preview=/);
-    // The sidebar folds into the icon rail; the feed becomes the compact list.
-    await expect(page.getByRole('navigation', { name: 'Library' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Show sidebar' })).toBeVisible();
+    // The sidebar stays as it is (no icon rail); the feed keeps its own view.
+    await expect(page.getByRole('button', { name: 'Show sidebar' })).toHaveCount(0);
     await expect(page.getByRole('separator', { name: 'Resize the list' })).toBeVisible();
     await expect(page.locator('[aria-current="true"]', { hasText: FIRST })).toBeVisible();
 

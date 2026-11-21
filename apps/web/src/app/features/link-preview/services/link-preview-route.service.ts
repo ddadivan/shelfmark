@@ -1,5 +1,5 @@
 import { DOCUMENT, Location } from '@angular/common';
-import { computed, inject, Service, signal } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
@@ -15,7 +15,7 @@ const SIDE_BY_SIDE_PARAMS = { split: null, related: null } as const;
 /**
  * Where the link preview is open (#553): `?preview=<linkId>` in the URL, so reload and Back keep
  * it. From 80em it is the split view (`split`), below it the pushed page (`pushed`). Root, so the
- * shell (the icon rail, the hidden tab bar) and every card or row read the same state.
+ * shell (the hidden tab bar) and every card or row read the same state.
  */
 @Service()
 export class LinkPreviewRoute {
@@ -37,22 +37,15 @@ export class LinkPreviewRoute {
    * to the same history, and Back would step the frame instead of closing.
    */
   private pushedLength: number | null = null;
-  /** "Show sidebar" on the rail: the full sidebar while the preview stays open. */
-  private readonly sidebarWanted = signal(false);
 
   readonly currentId = computed(() => previewIdOfUrl(this.url()));
   readonly isOpen = computed(() => this.currentId() !== null);
   readonly split = computed(() => this.isOpen() && this.viewport.wide());
   readonly pushed = computed(() => this.isOpen() && !this.viewport.wide());
-  /** The shell folds the sidebar into the icon rail. */
-  readonly rail = computed(() => this.split() && !this.sidebarWanted());
 
   /** Opens the preview of `linkId`; switching between links replaces the history entry. */
   async open(linkId: string): Promise<void> {
     const switching = this.isOpen();
-    if (!switching) {
-      this.sidebarWanted.set(false);
-    }
     const done = await this.router.navigate([], {
       queryParams: { [PREVIEW_QUERY_PARAM]: linkId, ...SIDE_BY_SIDE_PARAMS },
       queryParamsHandling: 'merge',
@@ -65,7 +58,6 @@ export class LinkPreviewRoute {
 
   /** Closes the preview: Back when this app opened it (the feed keeps its scroll), else drop the parameter. */
   async close(): Promise<void> {
-    this.sidebarWanted.set(false);
     const pushedLength = this.pushedLength;
     this.pushedLength = null;
     if (pushedLength !== null && this.history?.length === pushedLength) {
@@ -77,10 +69,6 @@ export class LinkPreviewRoute {
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
-  }
-
-  showSidebar(): void {
-    this.sidebarWanted.set(true);
   }
 
   /** Whether a click on the link `url` opens the preview instead of the link (`wantsPreview`). */

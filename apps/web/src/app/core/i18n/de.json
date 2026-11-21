@@ -4085,12 +4085,6 @@
       "next": "Nächster Link",
       "newTab": "Neuer Tab",
       "close": "Schließen"
-    },
-    "rail": {
-      "label": "Bibliothek",
-      "home": "Shelfmark-Start",
-      "folder": "Ordner {{name}}",
-      "showSidebar": "Seitenleiste zeigen"
     }
   }
 }

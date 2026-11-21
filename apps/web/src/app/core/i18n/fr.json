@@ -4194,12 +4194,6 @@
       "next": "Lien suivant",
       "newTab": "Nouvel onglet",
       "close": "Fermer"
-    },
-    "rail": {
-      "label": "Bibliothèque",
-      "home": "Accueil Shelfmark",
-      "folder": "Dossier {{name}}",
-      "showSidebar": "Afficher la barre latérale"
     }
   }
 }

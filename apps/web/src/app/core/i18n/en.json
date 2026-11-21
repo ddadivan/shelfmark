@@ -4085,12 +4085,6 @@
       "next": "Next link",
       "newTab": "New tab",
       "close": "Close"
-    },
-    "rail": {
-      "label": "Library",
-      "home": "Shelfmark home",
-      "folder": "Folder {{name}}",
-      "showSidebar": "Show sidebar"
     }
   }
 }

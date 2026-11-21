@@ -4194,12 +4194,6 @@
       "next": "Enlace siguiente",
       "newTab": "Pestaña nueva",
       "close": "Cerrar"
-    },
-    "rail": {
-      "label": "Biblioteca",
-      "home": "Inicio de Shelfmark",
-      "folder": "Carpeta {{name}}",
-      "showSidebar": "Mostrar barra lateral"
     }
   }
 }

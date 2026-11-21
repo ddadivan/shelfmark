@@ -4194,12 +4194,6 @@
       "next": "Próximo link",
       "newTab": "Nova aba",
       "close": "Fechar"
-    },
-    "rail": {
-      "label": "Biblioteca",
-      "home": "Início do Shelfmark",
-      "folder": "Pasta {{name}}",
-      "showSidebar": "Mostrar barra lateral"
     }
   }
 }
