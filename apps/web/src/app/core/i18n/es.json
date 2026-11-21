@@ -1888,7 +1888,7 @@
           "label": "Al hacer clic en un enlace",
           "hint": "Mantén ⌘ o Ctrl al hacer clic para hacer lo otro.",
           "open": "Lo abre en una pestaña nueva",
-          "openHint": "Como hasta ahora. La vista previa sigue en el botón del ojo y en Espacio.",
+          "openHint": "La vista previa sigue en el botón del ojo y en Espacio.",
           "preview": "Abre la vista previa",
           "previewHint": "Solo en pantallas anchas. Las pequeñas abren el enlace."
         },

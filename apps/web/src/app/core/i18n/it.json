@@ -1888,7 +1888,7 @@
           "label": "Clic su un link",
           "hint": "Tieni premuto ⌘ o Ctrl mentre clicchi per fare l'altra cosa.",
           "open": "Lo apre in una nuova scheda",
-          "openHint": "Come oggi. L'anteprima resta sul pulsante occhio e su Spazio.",
+          "openHint": "L'anteprima resta sul pulsante occhio e su Spazio.",
           "preview": "Apre l'anteprima",
           "previewHint": "Solo su schermi larghi. Gli schermi piccoli aprono il link."
         },

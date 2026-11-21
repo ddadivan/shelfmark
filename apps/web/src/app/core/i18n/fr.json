@@ -1888,7 +1888,7 @@
           "label": "Clic sur un lien",
           "hint": "Maintenez ⌘ ou Ctrl en cliquant pour faire l'autre.",
           "open": "Ouvre un nouvel onglet",
-          "openHint": "Comme aujourd'hui. L'aperçu reste sur le bouton œil et Espace.",
+          "openHint": "L'aperçu reste sur le bouton œil et Espace.",
           "preview": "Ouvre l'aperçu",
           "previewHint": "Sur grand écran uniquement. Les petits écrans ouvrent le lien."
         },

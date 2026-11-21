@@ -1843,7 +1843,7 @@
           "label": "Clicking a link",
           "hint": "Hold ⌘ or Ctrl while you click to do the other one.",
           "open": "Opens it in a new tab",
-          "openHint": "As today. Preview stays on the eye button and Space.",
+          "openHint": "Preview stays on the eye button and Space.",
           "preview": "Opens the preview",
           "previewHint": "On wide screens only. Smaller screens open the link."
         },

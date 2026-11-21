@@ -67,7 +67,7 @@ model User {
   keepQuery             Boolean              @default(false) @map("keep_query")
   // Link preview (#553): what a plain click does and the hosts that always open in a new tab. CHECKs
   // in the migration keep clickAction to the contract allow-list and the list to 100 entries.
-  clickAction           String               @default("open") @map("click_action")
+  clickAction           String               @default("preview") @map("click_action")
   previewNewTabHosts    String[]             @default([]) @map("preview_new_tab_hosts")
   // Settings › Appearance extras (#285): part of the appearance (appearanceSavedAt). CHECKs in the
   // migration keep the text columns to the contract allow-lists.
