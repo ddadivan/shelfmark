@@ -366,7 +366,9 @@
       "pinToSidebar": "Épingler dans la barre latérale",
       "unpinFromSidebar": "Désépingler de la barre latérale",
       "pinned": "Épinglé",
-      "createRule": "Créer une règle pour {{domain}}…"
+      "createRule": "Créer une règle pour {{domain}}…",
+      "preview": "Aperçu de {{title}}",
+      "previewHere": "Aperçu ici"
     },
     "recent": {
       "title": "Ouverts récemment",
@@ -1881,6 +1883,20 @@
         "counts": {
           "label": "Afficher le nombre de liens",
           "hint": "Les chiffres à côté des dossiers dans la barre latérale"
+        },
+        "click": {
+          "label": "Clic sur un lien",
+          "hint": "Maintenez ⌘ ou Ctrl en cliquant pour faire l'autre.",
+          "open": "Ouvre un nouvel onglet",
+          "openHint": "Comme aujourd'hui. L'aperçu reste sur le bouton œil et Espace.",
+          "preview": "Ouvre l'aperçu",
+          "previewHint": "Sur grand écran uniquement. Les petits écrans ouvrent le lien."
+        },
+        "newTabSites": {
+          "label": "Sites ouverts dans un nouvel onglet",
+          "hint": "Ils bloquent l'aperçu, ou vous l'avez choisi. Un clic sur leurs liens saute l'aperçu.",
+          "remove": "Retirer {{domain}}",
+          "empty": "Aucun pour l'instant."
         }
       },
       "saving": {
@@ -1993,7 +2009,8 @@
       "everywhere": "Partout",
       "links": "Enregistrer et retrouver",
       "folders": "Dans la liste des dossiers",
-      "selecting": "Sélectionner des liens"
+      "selecting": "Sélectionner des liens",
+      "preview": "Aperçu du lien"
     },
     "items": {
       "search": "Rechercher",
@@ -2015,7 +2032,11 @@
       "selectRange": "Sélectionner jusqu’au lien actif",
       "selectAll": "Sélectionner tous les liens de la liste",
       "moveLink": "Déplacer le lien actif dans un dossier",
-      "clearSelection": "Effacer la sélection"
+      "clearSelection": "Effacer la sélection",
+      "preview": "Aperçu du lien sélectionné",
+      "previewNext": "Lien précédent ou suivant",
+      "previewNewTab": "Ouvrir le lien de l'aperçu dans un nouvel onglet",
+      "previewClose": "Fermer l'aperçu"
     },
     "keys": {
       "command": "Commande",
@@ -4138,5 +4159,47 @@
     },
     "undone": "Nettoyage annulé",
     "undoFailed": "Impossible d’annuler le nettoyage"
+  },
+  "preview": {
+    "copied": "Lien copié",
+    "copyFailed": "Impossible de copier le lien",
+    "saveFailed": "Impossible d'enregistrer la modification. Réessayez.",
+    "loading": "Chargement de l'aperçu",
+    "frameTitle": "Page de {{title}}",
+    "region": "Aperçu : {{title}}",
+    "toolbar": "Actions de l'aperçu",
+    "previous": "Lien précédent",
+    "next": "Lien suivant",
+    "favorite": "Favori",
+    "edit": "Modifier",
+    "copy": "Copier le lien",
+    "wider": "Aperçu plus large",
+    "showList": "Afficher la liste",
+    "open": "Ouvrir",
+    "openHint": "Ouvrir dans un nouvel onglet",
+    "close": "Fermer l'aperçu",
+    "back": "Retour aux liens",
+    "openInBrowser": "Ouvrir dans le navigateur",
+    "more": "Plus d'actions",
+    "share": "Partager",
+    "resize": "Redimensionner la liste",
+    "resizeHint": "Faites glisser ou utilisez ← et →. Double-clic pour réinitialiser.",
+    "blocked": {
+      "title": "{{domain}} ne s'ouvre pas dans d'autres apps",
+      "text": "C'est le site qui le bloque, pas Shelfmark. Ouvrez-le dans un nouvel onglet.",
+      "open": "Ouvrir dans un nouvel onglet",
+      "always": "Toujours ouvrir {{domain}} dans un nouvel onglet"
+    },
+    "keys": {
+      "next": "Lien suivant",
+      "newTab": "Nouvel onglet",
+      "close": "Fermer"
+    },
+    "rail": {
+      "label": "Bibliothèque",
+      "home": "Accueil Shelfmark",
+      "folder": "Dossier {{name}}",
+      "showSidebar": "Afficher la barre latérale"
+    }
   }
 }

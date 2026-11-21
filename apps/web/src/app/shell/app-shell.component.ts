@@ -59,6 +59,8 @@ import { SettingsNavComponent } from '../features/settings/components/settings-n
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ToastAreaDirective } from '../core/layout/toast-area.directive';
 import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.directive';
+import { LinkPreviewRoute } from '../features/link-preview/services/link-preview-route.service';
+import { PreviewRailComponent } from '../features/link-preview/components/preview-rail/preview-rail.component';
 
 /**
  * Layout around the signed-in pages. Desktop and tablet: the sidebar card on the left, the top bar
@@ -69,6 +71,7 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
 @Component({
   selector: 'app-shell',
   imports: [
+    PreviewRailComponent,
     RouterOutlet,
     ToastAreaDirective,
     ScrollRestorationDirective,
@@ -100,6 +103,8 @@ export default class AppShellComponent {
   protected readonly search = inject(SearchDialogService);
   protected readonly shortcuts = inject(ShortcutsDialogService);
   protected readonly viewport = inject(ViewportService);
+  /** The link preview (#553): the rail in place of the sidebar while the desktop split is open. */
+  protected readonly preview = inject(LinkPreviewRoute);
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
 

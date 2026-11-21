@@ -1,0 +1,63 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  block-size: 100%;
+}
+
+.preview-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  inline-size: 4rem;
+  min-block-size: 0;
+  padding: var(--space-3) 0;
+}
+
+.preview-rail__item {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  text-decoration: none;
+
+  @include hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+}
+
+.preview-rail__item--current {
+  background: var(--accent-bg);
+  color: var(--accent-text);
+}
+
+.preview-rail__logo {
+  margin-block-end: var(--space-2);
+}
+
+.preview-rail__sep {
+  inline-size: 1.75rem;
+  margin: var(--space-2) 0;
+  border-block-start: 1px solid var(--border);
+}
+
+.preview-rail__folders {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.preview-rail__spacer {
+  flex: 1 1 auto;
+}

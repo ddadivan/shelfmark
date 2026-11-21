@@ -365,7 +365,9 @@
       "pinToSidebar": "An Seitenleiste anheften",
       "unpinFromSidebar": "Von Seitenleiste lösen",
       "pinned": "Angeheftet",
-      "createRule": "Regel für {{domain}} erstellen…"
+      "createRule": "Regel für {{domain}} erstellen…",
+      "preview": "Vorschau von {{title}}",
+      "previewHere": "Hier ansehen"
     },
     "recent": {
       "title": "Zuletzt geöffnet",
@@ -1836,6 +1838,20 @@
         "counts": {
           "label": "Anzahl in Ordnern zeigen",
           "hint": "Zahlen neben den Ordnern in der Seitenleiste"
+        },
+        "click": {
+          "label": "Klick auf einen Link",
+          "hint": "Halte ⌘ oder Strg beim Klicken, um das andere zu tun.",
+          "open": "Öffnet einen neuen Tab",
+          "openHint": "Wie bisher. Die Vorschau bleibt am Augen-Button und an der Leertaste.",
+          "preview": "Öffnet die Vorschau",
+          "previewHint": "Nur auf breiten Bildschirmen. Kleinere öffnen den Link."
+        },
+        "newTabSites": {
+          "label": "Websites, die in neuem Tab öffnen",
+          "hint": "Sie blockieren Vorschauen, oder du hast es so gewählt. Ein Klick auf ihre Links überspringt die Vorschau.",
+          "remove": "{{domain}} entfernen",
+          "empty": "Noch keine."
         }
       },
       "saving": {
@@ -1946,7 +1962,8 @@
       "everywhere": "Überall",
       "links": "Speichern und finden",
       "folders": "In der Ordnerliste",
-      "selecting": "Links auswählen"
+      "selecting": "Links auswählen",
+      "preview": "Linkvorschau"
     },
     "items": {
       "search": "Suchen",
@@ -1968,7 +1985,11 @@
       "selectRange": "Bis zum fokussierten Link auswählen",
       "selectAll": "Alle Links der Liste auswählen",
       "moveLink": "Fokussierten Link in einen Ordner verschieben",
-      "clearSelection": "Auswahl aufheben"
+      "clearSelection": "Auswahl aufheben",
+      "preview": "Fokussierten Link ansehen",
+      "previewNext": "Vorheriger oder nächster Link",
+      "previewNewTab": "Link der Vorschau in neuem Tab öffnen",
+      "previewClose": "Vorschau schließen"
     },
     "keys": {
       "command": "Befehl",
@@ -4029,5 +4050,47 @@
     },
     "undone": "Aufräumen rückgängig gemacht",
     "undoFailed": "Das Aufräumen konnte nicht rückgängig gemacht werden"
+  },
+  "preview": {
+    "copied": "Link kopiert",
+    "copyFailed": "Link konnte nicht kopiert werden",
+    "saveFailed": "Änderung konnte nicht gespeichert werden. Versuch es noch einmal.",
+    "loading": "Vorschau wird geladen",
+    "frameTitle": "Seite von {{title}}",
+    "region": "Vorschau: {{title}}",
+    "toolbar": "Vorschau-Aktionen",
+    "previous": "Vorheriger Link",
+    "next": "Nächster Link",
+    "favorite": "Favorit",
+    "edit": "Bearbeiten",
+    "copy": "Link kopieren",
+    "wider": "Breitere Vorschau",
+    "showList": "Liste zeigen",
+    "open": "Öffnen",
+    "openHint": "In neuem Tab öffnen",
+    "close": "Vorschau schließen",
+    "back": "Zurück zu den Links",
+    "openInBrowser": "Im Browser öffnen",
+    "more": "Weitere Aktionen",
+    "share": "Teilen",
+    "resize": "Listenbreite ändern",
+    "resizeHint": "Ziehen oder ← und → nutzen. Doppelklick setzt zurück.",
+    "blocked": {
+      "title": "{{domain}} lässt sich nicht in anderen Apps öffnen",
+      "text": "Die Website blockiert das, nicht Shelfmark. Öffne sie in einem neuen Tab.",
+      "open": "In neuem Tab öffnen",
+      "always": "{{domain}} immer in neuem Tab öffnen"
+    },
+    "keys": {
+      "next": "Nächster Link",
+      "newTab": "Neuer Tab",
+      "close": "Schließen"
+    },
+    "rail": {
+      "label": "Bibliothek",
+      "home": "Shelfmark-Start",
+      "folder": "Ordner {{name}}",
+      "showSidebar": "Seitenleiste zeigen"
+    }
   }
 }

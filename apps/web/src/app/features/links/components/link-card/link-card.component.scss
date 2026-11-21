@@ -174,3 +174,9 @@ ui-card:has(.ui-card__link:focus-visible) .link-card__open-text {
 :host-context([data-card-tags='off']) .link-card__tags {
   display: none;
 }
+
+// The eye ("Preview here", #553) sits left of "…" in the actions slot.
+.link-card__actions {
+  display: flex;
+  gap: var(--space-1);
+}

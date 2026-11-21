@@ -1,4 +1,5 @@
 import { activeLang } from '../../../../core/i18n/active-lang';
+import { PreviewSettingsComponent } from '../../../link-preview/components/preview-settings/preview-settings.component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -66,6 +67,7 @@ import { RulesSectionComponent } from '../../../rules/components/rules-section/r
 @Component({
   selector: 'app-settings-library-page',
   imports: [
+    PreviewSettingsComponent,
     TranslocoPipe,
     ButtonComponent,
     NoticeComponent,

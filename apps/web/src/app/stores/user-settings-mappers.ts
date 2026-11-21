@@ -45,6 +45,8 @@ export function libraryOf(settings: UserSettingsResponse): LibrarySettings {
     showFolderCounts: settings.showFolderCounts,
     newLinksFolderId: settings.newLinksFolderId,
     fetchPreviews: settings.fetchPreviews,
+    clickAction: settings.clickAction,
+    previewNewTabHosts: [...settings.previewNewTabHosts],
   };
 }
 

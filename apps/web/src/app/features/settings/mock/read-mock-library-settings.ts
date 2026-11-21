@@ -2,7 +2,10 @@ import {
   LIBRARY_SETTINGS_DEFAULT,
   isLibrarySort,
   isLibraryView,
+  isLinkClickAction,
   isLinkOpenTarget,
+  isPreviewHost,
+  USER_LIMIT,
   type LibrarySettings,
 } from '@shelfmark/contracts';
 import { MOCK_LIBRARY_SETTINGS_STORAGE_KEY } from '../models/mock-library-settings-storage-key.const';
@@ -34,6 +37,13 @@ export function readMockLibrarySettings(storage: Storage | undefined): LibrarySe
     newLinksFolderId:
       typeof stored.newLinksFolderId === 'string' ? stored.newLinksFolderId : d.newLinksFolderId,
     fetchPreviews: flag(stored.fetchPreviews, d.fetchPreviews),
+    clickAction: isLinkClickAction(stored.clickAction) ? stored.clickAction : d.clickAction,
+    previewNewTabHosts: Array.isArray(stored.previewNewTabHosts)
+      ? [...new Set(stored.previewNewTabHosts.filter((host) => isPreviewHost(host)))].slice(
+          0,
+          USER_LIMIT.PreviewNewTabHostsMax,
+        )
+      : [...d.previewNewTabHosts],
   };
 }
 

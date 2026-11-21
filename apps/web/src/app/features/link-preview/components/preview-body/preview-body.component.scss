@@ -1,0 +1,26 @@
+:host {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-block-size: 0;
+}
+
+.preview-body__frame {
+  flex: 1 1 auto;
+  min-block-size: 0;
+}
+
+.preview-body__blocked {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+}
+
+.preview-body__always {
+  color: var(--text-muted);
+}

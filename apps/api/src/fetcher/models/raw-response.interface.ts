@@ -6,4 +6,7 @@ export interface RawResponse {
   /** The full `Content-Type` header (charset detection). */
   contentTypeHeader: string;
   bytes: Buffer;
+  /** Headers mode only: the framing headers as received. */
+  xFrameOptions?: string;
+  contentSecurityPolicy?: string;
 }

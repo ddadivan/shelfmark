@@ -1,0 +1,75 @@
+<section
+  class="preview-page"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="'preview.region' | transloco: { title: preview.link()?.title ?? '' }"
+>
+  <header class="preview-page__head">
+    <ui-button
+      variant="ghost"
+      iconOnly
+      iconLeft="chevron-left"
+      [iconSize]="ICON_SIZE.Lg"
+      [ariaLabel]="'preview.back' | transloco"
+      (click)="preview.close()"
+    />
+    <div class="preview-page__title">
+      <!-- prettier-ignore -->
+      <h1 class="preview-page__name">{{ preview.link()?.title }}</h1>
+      @if (preview.link()) {
+        <span class="preview-page__domain">
+          <ui-favicon [src]="favicon()" [letter]="letter()" />
+          <span class="preview-page__host">{{ domain() }}</span>
+        </span>
+      }
+    </div>
+    @if (preview.href()) {
+      <ui-button
+        variant="ghost"
+        iconOnly
+        iconLeft="external"
+        [ariaLabel]="'preview.openInBrowser' | transloco"
+        (click)="preview.openInNewTab()"
+      />
+    }
+    @if (preview.link()) {
+      <ui-button
+        variant="ghost"
+        iconOnly
+        iconLeft="more"
+        [uiMenuTrigger]="more"
+        [ariaLabel]="'preview.more' | transloco"
+      />
+      <ui-menu #more align="end" [ariaLabel]="'preview.more' | transloco">
+        <ui-menu-item icon="edit" (activated)="preview.edit()">
+          {{ 'preview.edit' | transloco }}
+        </ui-menu-item>
+        <ui-menu-item icon="copy" (activated)="preview.copyLink()">
+          {{ 'preview.copy' | transloco }}
+        </ui-menu-item>
+      </ui-menu>
+    }
+  </header>
+  <app-preview-body class="preview-page__body" />
+  @if (preview.link(); as link) {
+    <div class="preview-page__bar" role="toolbar" [attr.aria-label]="'preview.toolbar' | transloco">
+      <ui-button
+        class="preview-page__star"
+        [class.preview-page__star--on]="link.isFavorite"
+        variant="ghost"
+        iconOnly
+        [iconLeft]="link.isFavorite ? 'star-filled' : 'star'"
+        [ariaPressed]="link.isFavorite"
+        [ariaLabel]="'preview.favorite' | transloco"
+        (click)="preview.toggleFavorite()"
+      />
+      <ui-button
+        variant="ghost"
+        iconOnly
+        iconLeft="share"
+        [ariaLabel]="'preview.share' | transloco"
+        (click)="preview.share()"
+      />
+    </div>
+  }
+</section>
