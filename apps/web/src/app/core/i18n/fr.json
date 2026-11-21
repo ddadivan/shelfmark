@@ -3463,6 +3463,14 @@
       },
       "exportHelp": {
         "text": "L’aide pour exporter les favoris affiche les raccourcis de votre système, Mac ou Windows."
+      },
+      "linkPreview": {
+        "title": "Lisez vos liens ici même",
+        "text": "Un clic sur un lien l'ouvre à côté de votre flux, sans perdre votre place. Passez de l'un à l'autre avec ↑ et ↓, faites glisser le bord pour élargir ou réduire la page, et ouvrez-la dans un nouvel onglet si besoin. Les vidéos se lisent dans leur lecteur ; un site qui refuse de s'ouvrir dans d'autres apps le signale. Vous préférez l'ancienne façon ? Paramètres › Bibliothèque › Clic sur un lien.",
+        "alt": "La bibliothèque avec une carte mise en évidence et sa page ouverte dans un panneau à côté du flux."
+      },
+      "sidebarSections": {
+        "text": "Repliez Épinglés, Dossiers et Tags dans la barre latérale ; chacun reste comme vous l'avez laissé."
       }
     },
     "sections": {

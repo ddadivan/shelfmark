@@ -3463,6 +3463,14 @@
       },
       "exportHelp": {
         "text": "A ajuda para exportar favoritos mostra os atalhos do seu sistema, Mac ou Windows."
+      },
+      "linkPreview": {
+        "title": "Leia seus links aqui mesmo",
+        "text": "Um clique em um link o abre ao lado do seu feed, sem perder seu lugar. Passe de um para outro com ↑ e ↓, arraste a borda para alargar ou estreitar a página e abra em uma nova aba quando precisar. Vídeos tocam no player deles; um site que não abre dentro de outros apps avisa. Prefere o jeito antigo? Configurações › Biblioteca › Ao clicar em um link.",
+        "alt": "A biblioteca com um card destacado e a página dele aberta em um painel ao lado do feed."
+      },
+      "sidebarSections": {
+        "text": "Recolha Fixados, Pastas e Tags na barra lateral; cada um fica do jeito que você deixou."
       }
     },
     "sections": {

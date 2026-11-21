@@ -3378,6 +3378,14 @@
       },
       "exportHelp": {
         "text": "Die Hilfe zum Lesezeichen-Export zeigt die Tastenkürzel deines Systems, Mac oder Windows."
+      },
+      "linkPreview": {
+        "title": "Links direkt hier lesen",
+        "text": "Ein Klick auf einen Link öffnet ihn neben deinem Feed, so bleibst du an deiner Stelle. Blättere mit ↑ und ↓, zieh den Rand, um die Seite breiter oder schmaler zu machen, und öffne sie bei Bedarf in einem neuen Tab. Videos laufen in ihrem Player; eine Website, die sich nicht in anderen Apps öffnen lässt, sagt das. Lieber wie früher? Einstellungen › Bibliothek › Klick auf einen Link.",
+        "alt": "Die Bibliothek mit einer hervorgehobenen Karte und ihrer Seite in einem Bereich neben dem Feed."
+      },
+      "sidebarSections": {
+        "text": "Angeheftet, Ordner und Tags in der Seitenleiste lassen sich einklappen und bleiben so, wie du sie verlassen hast."
       }
     },
     "sections": {

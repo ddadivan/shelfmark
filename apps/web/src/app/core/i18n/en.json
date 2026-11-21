@@ -3378,6 +3378,14 @@
       },
       "exportHelp": {
         "text": "The bookmark export help shows the shortcuts of your system, Mac or Windows."
+      },
+      "linkPreview": {
+        "title": "Read links right here",
+        "text": "A click on a link opens it beside your feed, so you keep your place. Step through with ↑ and ↓, drag the edge to make the page wider or narrower, and open it in a new tab when you need to. Videos play in their player; a site that refuses to open inside other apps says so. Prefer the old way? Settings › Library › Clicking a link.",
+        "alt": "The library with a card highlighted and its page open in a panel beside the feed."
+      },
+      "sidebarSections": {
+        "text": "Fold Pinned, Folders and Tags in the sidebar; each stays the way you left it."
       }
     },
     "sections": {

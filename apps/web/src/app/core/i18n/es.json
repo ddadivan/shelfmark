@@ -3463,6 +3463,14 @@
       },
       "exportHelp": {
         "text": "La ayuda para exportar marcadores muestra los atajos de tu sistema, Mac o Windows."
+      },
+      "linkPreview": {
+        "title": "Lee tus enlaces aquí mismo",
+        "text": "Un clic en un enlace lo abre junto a tu feed, sin perder tu sitio. Pasa de uno a otro con ↑ y ↓, arrastra el borde para ensanchar o estrechar la página y ábrela en una pestaña nueva cuando lo necesites. Los vídeos se reproducen en su reproductor; un sitio que no se abre dentro de otras apps lo indica. ¿Prefieres lo de antes? Ajustes › Biblioteca › Al hacer clic en un enlace.",
+        "alt": "La biblioteca con una tarjeta resaltada y su página abierta en un panel junto al feed."
+      },
+      "sidebarSections": {
+        "text": "Pliega Fijados, Carpetas y Etiquetas en la barra lateral; cada uno se queda como lo dejaste."
       }
     },
     "sections": {

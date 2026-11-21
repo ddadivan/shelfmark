@@ -58,18 +58,18 @@ test.describe('public changelog', () => {
       await expect(
         page.getByText('A link typed as example.com saves like any other.'),
       ).toBeVisible();
-      // The hotfix 2.4.1 leads the page, then 2.4.0 (import, views in words, ten kinds) with New
-      // and Improved, the hotfix 2.3.1, 2.3.0 (Ask as a chat); 2.1.0 (#464) keeps its highlights.
-      await expect(releases.first()).toHaveText('Shelfmark 2.4.1');
+      // 2.5.0 (the link preview) leads the page with New and Improved, then the hotfix 2.4.1,
+      // 2.4.0 (import, views in words, ten kinds); 2.1.0 (#464) keeps its highlights.
+      await expect(releases.first()).toHaveText('Shelfmark 2.5.0');
+      await expect(
+        page.getByRole('region', { name: 'Shelfmark 2.5.0' }).getByRole('heading', { level: 3 }),
+      ).toHaveText(['New', 'Improved']);
+      await expect(releases.nth(1)).toHaveText('Shelfmark 2.4.1');
       await expect(
         page.getByRole('region', { name: 'Shelfmark 2.4.1' }).getByRole('heading', { level: 3 }),
       ).toHaveText('Fixed');
-      await expect(releases.nth(1)).toHaveText('Shelfmark 2.4.0');
-      await expect(
-        page.getByRole('region', { name: 'Shelfmark 2.4.0' }).getByRole('heading', { level: 3 }),
-      ).toHaveText(['New', 'Improved']);
-      await expect(releases.nth(2)).toHaveText('Shelfmark 2.3.1');
-      await expect(releases.nth(3)).toHaveText('Shelfmark 2.3.0');
+      await expect(releases.nth(2)).toHaveText('Shelfmark 2.4.0');
+      await expect(releases.nth(3)).toHaveText('Shelfmark 2.3.1');
       await expect(
         page.getByRole('region', { name: 'Shelfmark 2.1.0' }).getByRole('heading', {
           level: 4,
