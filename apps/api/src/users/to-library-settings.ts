@@ -2,7 +2,9 @@ import {
   LIBRARY_SETTINGS_DEFAULT,
   isLibrarySort,
   isLibraryView,
+  isLinkClickAction,
   isLinkOpenTarget,
+  isPreviewHost,
   type LibrarySettings,
 } from '@shelfmark/contracts';
 import type { LibraryRow } from './models/library-row.interface';
@@ -26,5 +28,9 @@ export function toLibrarySettings(row: LibraryRow, liveFolder: boolean): Library
     showFolderCounts: row.showFolderCounts,
     newLinksFolderId: liveFolder ? row.newLinksFolderId : null,
     fetchPreviews: row.fetchPreviews,
+    clickAction: isLinkClickAction(row.clickAction)
+      ? row.clickAction
+      : LIBRARY_SETTINGS_DEFAULT.clickAction,
+    previewNewTabHosts: row.previewNewTabHosts.filter(isPreviewHost),
   };
 }
