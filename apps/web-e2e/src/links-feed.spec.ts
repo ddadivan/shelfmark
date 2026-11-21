@@ -77,7 +77,7 @@ test.describe('links feed (mock API)', () => {
     await expect(bar).toHaveAttribute('aria-hidden', 'true');
   });
 
-  test('the open arrow moves only while the pointer is over the bar, and a click opens', async ({
+  test('the open arrow moves only while the pointer is over the bar, and ⌘ / Ctrl-click opens', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.use.hasTouch === true, 'touch has no hover');
@@ -96,8 +96,9 @@ test.describe('links feed (mock API)', () => {
     await card.hover({ position: { x: 20, y: 20 } });
     await expect(arrow).toHaveCSS('transform', 'none');
 
-    const popup = page.waitForEvent('popup');
-    await card.locator('.link-card__open').click();
+    // A plain click opens the link preview (#555); ⌘ / Ctrl-click opens the link.
+    const popup = page.context().waitForEvent('page');
+    await card.locator('.link-card__open').click({ modifiers: ['ControlOrMeta'] });
     await (await popup).close();
   });
 

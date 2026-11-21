@@ -537,7 +537,9 @@ describe('LinkPreviewService', () => {
       expect(service.shownListWidth()).toBe(1000 - PREVIEW_LIST_WIDTH.PanelMin);
       service.setSplitWidth(1600);
       expect(service.shownListWidth()).toBe(1600 - PREVIEW_LIST_WIDTH.PanelMin);
-      // Never below the list's own minimum.
+      // A hidden split (0 wide) changes nothing; never below the list's own minimum.
+      service.setSplitWidth(0);
+      expect(service.listMax()).toBe(1600 - PREVIEW_LIST_WIDTH.PanelMin);
       service.setSplitWidth(400);
       expect(service.listMax()).toBe(PREVIEW_LIST_WIDTH.Min);
     });

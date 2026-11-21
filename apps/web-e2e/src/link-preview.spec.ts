@@ -84,7 +84,9 @@ test.describe('link preview (mock API)', () => {
     await openLibrary(page);
     await previewFromMenu(page, FIRST);
     const handle = page.getByRole('separator', { name: 'Resize the list' });
-    const before = Number(await handle.getAttribute('aria-valuenow'));
+    // The default width once the split is measured (the window leaves room for it).
+    await expect(handle).toHaveAttribute('aria-valuenow', '400');
+    const before = 400;
     await handle.focus();
     await handle.press('ArrowRight');
     await expect(handle).toHaveAttribute('aria-valuenow', String(before + 16));

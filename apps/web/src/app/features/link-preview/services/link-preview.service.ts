@@ -217,7 +217,10 @@ export class LinkPreviewService {
   }
 
   setSplitWidth(width: number): void {
-    this.splitWidth.set(width);
+    // A hidden split (0 wide, before layout) says nothing about the room.
+    if (width > 0) {
+      this.splitWidth.set(width);
+    }
   }
 
   setListWidth(width: number): void {
