@@ -6,6 +6,7 @@
 // On the `ui-button` host: the chevron points down while open and right while folded.
 @mixin toggle {
   display: inline-flex;
+  margin-inline-start: var(--space-1);
   transition: transform var(--duration-fast) var(--ease-in-out);
 
   &.is-collapsed {
