@@ -15,6 +15,7 @@ import {
   LIBRARY_SETTINGS_DEFAULT,
   LIBRARY_SORT,
   LIBRARY_VIEW,
+  LINK_CLICK_ACTION,
   LINK_OPEN_TARGET,
   MOTION_PREFERENCE,
   TEXT_SIZE,
@@ -231,6 +232,48 @@ export const SETTINGS_SCENARIOS: readonly ContractScenario[] = [
       );
       await folders.remove(folder.id, FOLDER_DELETE_MODE.MoveToUnsorted);
       expectEqual((await settings.get()).newLinksFolderId, null);
+    },
+  ),
+
+  scenario(
+    'settings',
+    'saves the link preview choices and rejects bad sites',
+    async ({ settings }) => {
+      const hosts = ['example.com', 'news.example.org'];
+      const updated = await settings.update({
+        clickAction: LINK_CLICK_ACTION.Preview,
+        previewNewTabHosts: hosts,
+      });
+      expectEqual(updated, {
+        ...DEFAULT_SETTINGS,
+        clickAction: LINK_CLICK_ACTION.Preview,
+        previewNewTabHosts: hosts,
+      });
+      expectEqual((await settings.update({ previewNewTabHosts: [] })).previewNewTabHosts, []);
+      await expectError(
+        settings.update({ clickAction: 'peek' as never }),
+        { status: 400 },
+        'unknown click action',
+      );
+      await expectError(
+        settings.update({ previewNewTabHosts: ['https://example.com'] }),
+        { status: 400 },
+        'not a host',
+      );
+      await expectError(
+        settings.update({ previewNewTabHosts: ['example.com', 'example.com'] }),
+        { status: 400 },
+        'duplicate host',
+      );
+      const tooMany = Array.from(
+        { length: USER_LIMIT.PreviewNewTabHostsMax + 1 },
+        (_, index) => `h${index}.example.com`,
+      );
+      await expectError(
+        settings.update({ previewNewTabHosts: tooMany }),
+        { status: 400 },
+        'too many',
+      );
     },
   ),
 
