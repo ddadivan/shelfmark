@@ -43,6 +43,7 @@ export function tabSyncedLinksApi(inner: LinksApi, sync: TabSyncService): LinksA
     clearRecent: () => inner.clearRecent(),
     get: (id: string) => inner.get(id),
     open: (id: string) => inner.open(id),
+    frameCheck: (id: string) => inner.frameCheck(id),
     captureImages: (id: string) => inner.captureImages(id),
     create: (request: CreateLinkRequest) =>
       after(inner.create(request), (link) => sync.post({ kind: TAB_SYNC_KIND.LinkSaved, link })),

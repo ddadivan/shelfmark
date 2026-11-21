@@ -11,6 +11,9 @@ import { LibraryFeedService } from '../services/library-feed.service';
 import { LibraryFilterService } from '../services/library-filter.service';
 import { LibrarySelectionService } from '../services/library-selection.service';
 import { scrollFeedForKey } from '../utils/feed-keyboard-scroll';
+import { PREVIEW_KEY } from '../../link-preview/models/preview-key.const';
+import { LinkPreviewService } from '../../link-preview/services/link-preview.service';
+import { previewKey } from '../../link-preview/utils/preview-key';
 
 /**
  * The keyboard and clipboard of the library page, on its scroll area: Esc and Cmd/Ctrl+A for the
@@ -32,6 +35,7 @@ export class LibraryHotkeysDirective {
   private readonly feed = inject(LibraryFeedService);
   private readonly filters = inject(LibraryFilterService);
   private readonly selection = inject(LibrarySelectionService);
+  private readonly preview = inject(LinkPreviewService);
 
   constructor() {
     effect(() => {
@@ -65,10 +69,11 @@ export class LibraryHotkeysDirective {
 
   /**
    * Page keys: Esc clears the selection, Cmd/Ctrl+A selects every link on screen (not in a field,
-   * dialog or menu); with nothing focused the paging keys scroll the feed area.
+   * dialog or menu); with nothing focused the paging keys scroll the feed area. While the desktop
+   * link preview is open (#553), ↑ / ↓ move it, ↵ opens its link in a new tab and Esc closes it.
    */
   onKeydown(event: KeyboardEvent): void {
-    if (this.selectionKey(event)) {
+    if (this.selectionKey(event) || this.previewKeyHandled(event)) {
       return;
     }
     scrollFeedForKey(this.area, event);
@@ -93,5 +98,38 @@ export class LibraryHotkeysDirective {
       return true;
     }
     return false;
+  }
+
+  private previewKeyHandled(event: KeyboardEvent): boolean {
+    if (!this.preview.split()) {
+      return false;
+    }
+    const key = previewKey(event);
+    if (key === null) {
+      return false;
+    }
+    event.preventDefault();
+    if (key === PREVIEW_KEY.Close) {
+      void this.preview.close();
+    } else if (key === PREVIEW_KEY.OpenInNewTab) {
+      this.preview.openInNewTab();
+    } else {
+      const onFeedLink = event.target instanceof Element && event.target.closest('[data-link-id]');
+      void this.preview.go(key === PREVIEW_KEY.Previous ? -1 : 1).then(() => {
+        if (onFeedLink) {
+          this.focusCurrent();
+        }
+      });
+    }
+    return true;
+  }
+
+  /** After ↑ / ↓ from a feed link the focus follows to the link now previewed. */
+  private focusCurrent(): void {
+    const id = this.preview.currentId();
+    const item = id === null ? null : this.area.querySelector(`[data-link-id="${CSS.escape(id)}"]`);
+    const link = item?.querySelector<HTMLElement>('.ui-list-item__link, .ui-card__link');
+    link?.focus();
+    link?.scrollIntoView({ block: 'nearest' });
   }
 }

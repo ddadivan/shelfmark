@@ -15,6 +15,7 @@ import {
   type CreateLinksBatchResponse,
   type GetLinkResponse,
   type LinkPreviewRequest,
+  type LinkFrameCheckResponse,
   type LinkPreviewResponse,
   type LinkResponse,
   type ListLinksQuery,
@@ -80,6 +81,15 @@ export class HttpLinksApi implements LinksApi {
 
   remove(id: string): Observable<void> {
     return this.http.delete<void>(this.url(id), { context: skipErrorToast() });
+  }
+
+  frameCheck(id: string): Observable<LinkFrameCheckResponse> {
+    // The preview falls back to the frame and its timeout when the check fails: no error toast.
+    return this.http.post<LinkFrameCheckResponse>(
+      `${this.url(id)}/frame-check`,
+      {},
+      { context: skipErrorToast() },
+    );
   }
 
   open(id: string): Observable<OpenLinkResponse> {

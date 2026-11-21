@@ -1,0 +1,49 @@
+@if (preview.link(); as link) {
+  @switch (preview.body()) {
+    @case (KIND.Video) {
+      <ui-preview-frame
+        class="preview-body__frame"
+        [src]="preview.embedUrl() ?? ''"
+        [title]="'preview.frameTitle' | transloco: { title: link.title }"
+        [timeoutMs]="TIMEOUT_MS"
+        (timedOut)="preview.frameTimedOut()"
+        (rejected)="preview.frameTimedOut()"
+      />
+    }
+    @case (KIND.Site) {
+      <ui-preview-frame
+        class="preview-body__frame"
+        [src]="link.url"
+        [title]="'preview.frameTitle' | transloco: { title: link.title }"
+        [timeoutMs]="TIMEOUT_MS"
+        (timedOut)="preview.frameTimedOut()"
+        (rejected)="preview.frameTimedOut()"
+      />
+    }
+    @default {
+      <div class="preview-body__blocked">
+        <ui-empty-state
+          icon="frame-off"
+          [heading]="'preview.blocked.title' | transloco: { domain: preview.host() }"
+          [text]="'preview.blocked.text' | transloco"
+        >
+          @if (preview.href()) {
+            <ui-button variant="primary" iconLeft="external" (click)="preview.openInNewTab()">
+              {{ 'preview.blocked.open' | transloco }}
+            </ui-button>
+          }
+        </ui-empty-state>
+        @if (preview.host()) {
+          <ui-checkbox
+            class="preview-body__always"
+            [label]="'preview.blocked.always' | transloco: { domain: preview.host() }"
+            [checked]="preview.alwaysNewTab()"
+            (checkedChange)="preview.setAlwaysNewTab($event)"
+          />
+        }
+      </div>
+    }
+  }
+} @else {
+  <ui-progress-bar active [label]="'preview.loading' | transloco" />
+}

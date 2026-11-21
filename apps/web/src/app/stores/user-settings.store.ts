@@ -394,6 +394,19 @@ export const UserSettingsStore = signalStore(
        * follow) and saves them on the account; resolves false (and puts the changed fields back,
        * unless a later change replaced them) when the request fails.
        */
+      /**
+       * The server added `host` to "Sites that open in a new tab" itself (a blocked frame check,
+       * #553): the local copy follows without a request. Nothing happens before the settings load.
+       */
+      noteNewTabHost(host: string): void {
+        const library = store.library();
+        if (library !== null && !library.previewNewTabHosts.includes(host)) {
+          patchState(store, {
+            library: { ...library, previewNewTabHosts: [...library.previewNewTabHosts, host] },
+          });
+        }
+      },
+
       async setLibrary(change: Partial<LibrarySettings>): Promise<boolean> {
         const previous = store.libraryShown();
         const keys = (Object.keys(change) as (keyof LibrarySettings)[]).filter(

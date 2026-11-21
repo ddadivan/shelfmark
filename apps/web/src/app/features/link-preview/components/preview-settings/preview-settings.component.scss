@@ -1,0 +1,27 @@
+@use 'ui' as *;
+
+:host {
+  display: contents;
+}
+
+.preview-settings__click {
+  max-inline-size: 25rem;
+}
+
+.preview-settings__hosts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  max-inline-size: 25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.preview-settings__empty {
+  margin: 0;
+  color: var(--text-muted);
+
+  @include type(caption);
+}

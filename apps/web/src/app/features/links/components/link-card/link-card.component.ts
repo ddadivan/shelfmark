@@ -37,6 +37,7 @@ import {
 } from '../../utils/link-view';
 import { LinkCardTagsComponent } from '../link-card-tags/link-card-tags.component';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
+import { LinkPreviewRoute } from '../../../link-preview/services/link-preview-route.service';
 
 /**
  * One saved link in the cards view. It only renders and emits; the favorite and delete flows
@@ -99,6 +100,14 @@ export class LinkCardComponent {
   );
 
   readonly opened = output<void>();
+  /**
+   * The page shows the link preview (#553): the eye button, "Preview here" first in the menu, Space
+   * on the link, and a click that the "Clicking a link" setting (or an open preview) turns into a
+   * preview ask `previewRequested`.
+   */
+  readonly previewable = input(false);
+  readonly previewRequested = output<void>();
+  private readonly previewRoute = inject(LinkPreviewRoute);
   /** "Open" from the actions menu: the link opens in a new tab. */
   readonly openRequested = output<void>();
   readonly favoriteToggled = output<void>();
@@ -147,13 +156,22 @@ export class LinkCardComponent {
     }
   }
 
-  /** Space toggles the selection, M moves the link (keys pressed on the link itself). */
+  /** Space previews (where the page offers it, #553) or toggles the selection; M moves the link. */
   protected onKeydown(event: KeyboardEvent): void {
     if (this.readOnly()) {
       return;
     }
     const intent = linkKeyIntent(event);
-    if (intent === LINK_KEY_INTENT.Toggle) {
+    if (
+      intent === LINK_KEY_INTENT.Toggle &&
+      this.previewable() &&
+      !this.selecting() &&
+      !event.shiftKey
+    ) {
+      // Space previews the link (#553); while selecting, and with Shift, it still selects.
+      event.preventDefault();
+      this.previewRequested.emit();
+    } else if (intent === LINK_KEY_INTENT.Toggle) {
       event.preventDefault();
       this.selectToggled.emit({ range: event.shiftKey });
     } else if (intent === LINK_KEY_INTENT.Move) {
@@ -186,6 +204,11 @@ export class LinkCardComponent {
       // While selecting, the card toggles instead of opening.
       event?.preventDefault();
       this.selectToggled.emit({ range: event?.shiftKey ?? false });
+      return;
+    }
+    if (this.previewable() && event && this.previewRoute.wantsPreview(this.link().url, event)) {
+      event.preventDefault();
+      this.previewRequested.emit();
       return;
     }
     if (this.href() !== undefined) {

@@ -11,7 +11,7 @@ import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { RESTORE_SCROLL_TIMEOUT_MS } from './models/restore-scroll-timeout-ms.const';
 import { SCROLL_POSITIONS_MAX } from './models/scroll-positions-max.const';
 import { USER_SCROLL_EVENTS } from './models/user-scroll-events.const';
-import { urlWithoutFragment } from './url-without-fragment';
+import { urlScrollKey } from './url-scroll-key';
 
 /** The `navigationId` the router keeps in `history.state`, if any. */
 function navigationIdOf(state: unknown): number {
@@ -31,7 +31,8 @@ function navigationIdOf(state: unknown): number {
  *   page has rendered, and holds it while the page settles (the list loads after the page, the
  *   previous page leaves) until the user scrolls or `RESTORE_SCROLL_TIMEOUT_MS` passes.
  * - Any other navigation to a new URL starts at the top: another page, and a new query (sort,
- *   filters) too. A change of the fragment alone keeps the position.
+ *   filters) too. A change of the fragment or of the link preview's
+ *   `?preview=` alone keeps the position (#553).
  */
 @Directive({ selector: '[appScrollRestoration]' })
 export class ScrollRestorationDirective {
@@ -44,7 +45,7 @@ export class ScrollRestorationDirective {
 
   constructor() {
     const router = inject(Router);
-    let url = urlWithoutFragment(router.url);
+    let url = urlScrollKey(router.url);
     const subscription = router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.remember(this.lastId, this.host.scrollTop);
@@ -54,7 +55,7 @@ export class ScrollRestorationDirective {
             : null;
       } else if (event instanceof NavigationEnd) {
         this.lastId = event.id;
-        const next = urlWithoutFragment(event.urlAfterRedirects);
+        const next = urlScrollKey(event.urlAfterRedirects);
         const changed = next !== url;
         url = next;
         const saved = this.restoredId === null ? undefined : this.positions.get(this.restoredId);

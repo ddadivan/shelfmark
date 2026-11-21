@@ -366,7 +366,9 @@
       "pinToSidebar": "Fixar na barra lateral",
       "unpinFromSidebar": "Desafixar da barra lateral",
       "pinned": "Fixado",
-      "createRule": "Criar uma regra para {{domain}}…"
+      "createRule": "Criar uma regra para {{domain}}…",
+      "preview": "Prévia de {{title}}",
+      "previewHere": "Prévia aqui"
     },
     "recent": {
       "title": "Abertos recentemente",
@@ -1881,6 +1883,20 @@
         "counts": {
           "label": "Mostrar contagem nas pastas",
           "hint": "Os números ao lado das pastas na barra lateral"
+        },
+        "click": {
+          "label": "Ao clicar em um link",
+          "hint": "Segure ⌘ ou Ctrl ao clicar para fazer o outro.",
+          "open": "Abre em nova aba",
+          "openHint": "Como hoje. A prévia continua no botão de olho e na barra de espaço.",
+          "preview": "Abre a prévia",
+          "previewHint": "Só em telas largas. Telas menores abrem o link."
+        },
+        "newTabSites": {
+          "label": "Sites que abrem em nova aba",
+          "hint": "Eles bloqueiam a prévia, ou você escolheu assim. Um clique nos links deles pula a prévia.",
+          "remove": "Remover {{domain}}",
+          "empty": "Nenhum ainda."
         }
       },
       "saving": {
@@ -1993,7 +2009,8 @@
       "everywhere": "Em qualquer lugar",
       "links": "Salvar e encontrar",
       "folders": "Na lista de pastas",
-      "selecting": "Selecionar links"
+      "selecting": "Selecionar links",
+      "preview": "Prévia do link"
     },
     "items": {
       "search": "Pesquisar",
@@ -2015,7 +2032,11 @@
       "selectRange": "Selecionar até o link em foco",
       "selectAll": "Selecionar todos os links da lista",
       "moveLink": "Mover o link em foco para uma pasta",
-      "clearSelection": "Limpar a seleção"
+      "clearSelection": "Limpar a seleção",
+      "preview": "Prévia do link em foco",
+      "previewNext": "Link anterior ou próximo",
+      "previewNewTab": "Abrir o link da prévia em nova aba",
+      "previewClose": "Fechar a prévia"
     },
     "keys": {
       "command": "Command",
@@ -4138,5 +4159,47 @@
     },
     "undone": "Limpeza desfeita",
     "undoFailed": "Não foi possível desfazer a limpeza"
+  },
+  "preview": {
+    "copied": "Link copiado",
+    "copyFailed": "Não foi possível copiar o link",
+    "saveFailed": "Não foi possível salvar a alteração. Tente de novo.",
+    "loading": "Carregando a prévia",
+    "frameTitle": "Página de {{title}}",
+    "region": "Prévia: {{title}}",
+    "toolbar": "Ações da prévia",
+    "previous": "Link anterior",
+    "next": "Próximo link",
+    "favorite": "Favorito",
+    "edit": "Editar",
+    "copy": "Copiar link",
+    "wider": "Prévia mais larga",
+    "showList": "Mostrar a lista",
+    "open": "Abrir",
+    "openHint": "Abrir em nova aba",
+    "close": "Fechar prévia",
+    "back": "Voltar aos links",
+    "openInBrowser": "Abrir no navegador",
+    "more": "Mais ações",
+    "share": "Compartilhar",
+    "resize": "Ajustar a largura da lista",
+    "resizeHint": "Arraste ou use ← e →. Clique duplo restaura.",
+    "blocked": {
+      "title": "{{domain}} não abre dentro de outros apps",
+      "text": "Quem bloqueia é o site, não o Shelfmark. Abra em uma nova aba.",
+      "open": "Abrir em nova aba",
+      "always": "Sempre abrir {{domain}} em nova aba"
+    },
+    "keys": {
+      "next": "Próximo link",
+      "newTab": "Nova aba",
+      "close": "Fechar"
+    },
+    "rail": {
+      "label": "Biblioteca",
+      "home": "Início do Shelfmark",
+      "folder": "Pasta {{name}}",
+      "showSidebar": "Mostrar barra lateral"
+    }
   }
 }
