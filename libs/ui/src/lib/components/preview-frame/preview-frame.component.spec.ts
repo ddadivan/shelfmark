@@ -51,6 +51,9 @@ describe('ui-preview-frame', () => {
       const { iframe, events } = setup(bad);
       expect(iframe().hasAttribute('src')).toBe(false);
       expect(iframe().hidden).toBe(true);
+      // The empty frame's own load is not a page.
+      iframe().dispatchEvent(new Event('load'));
+      expect(events.loaded).toBe(0);
       expect(events.rejected).toBe(1);
       expect(events.timedOut).toBe(0);
     }
@@ -62,11 +65,14 @@ describe('ui-preview-frame', () => {
     expect(events.rejected).toBe(1);
   });
 
-  it('blanks a frame that showed a page when src turns invalid', () => {
+  it('replaces a frame that showed a page with an empty one when src turns invalid', () => {
     const { fixture, iframe, flush, events } = setup();
+    const first = iframe();
     fixture.componentRef.setInput('src', 'javascript:alert(1)');
     flush();
-    expect(iframe().getAttribute('src')).toBe('about:blank');
+    expect(iframe()).not.toBe(first);
+    expect(iframe().hasAttribute('src')).toBe(false);
+    expect(iframe().hidden).toBe(true);
     expect(events.rejected).toBe(1);
   });
 
@@ -124,8 +130,11 @@ describe('ui-preview-frame', () => {
     expect(events.loaded).toBe(1);
 
     vi.advanceTimersByTime(4000);
+    const first = iframe();
     fixture.componentRef.setInput('src', 'https://example.org/next');
     flush();
+    // A fresh iframe, so the switch adds no browser history entry.
+    expect(iframe()).not.toBe(first);
     expect(iframe().getAttribute('src')).toBe('https://example.org/next');
     expect(el.querySelector('.ui-preview-frame')?.getAttribute('aria-busy')).toBe('true');
     vi.advanceTimersByTime(4999);

@@ -1893,13 +1893,13 @@
           "label": "Ao clicar em um link",
           "hint": "Segure ⌘ ou Ctrl ao clicar para fazer o outro.",
           "open": "Abre em nova aba",
-          "openHint": "Como hoje. A prévia continua no botão de olho e na barra de espaço.",
+          "openHint": "A prévia continua no botão de olho e na barra de espaço.",
           "preview": "Abre a prévia",
           "previewHint": "Só em telas largas. Telas menores abrem o link."
         },
         "newTabSites": {
           "label": "Sites que abrem em nova aba",
-          "hint": "Eles bloqueiam a prévia, ou você escolheu assim. Um clique nos links deles pula a prévia.",
+          "hint": "Você os adicionou. Um clique nos links deles abre uma nova aba em vez da prévia.",
           "remove": "Remover {{domain}}",
           "empty": "Nenhum ainda."
         }
@@ -4199,12 +4199,6 @@
       "next": "Próximo link",
       "newTab": "Nova aba",
       "close": "Fechar"
-    },
-    "rail": {
-      "label": "Biblioteca",
-      "home": "Início do Shelfmark",
-      "folder": "Pasta {{name}}",
-      "showSidebar": "Mostrar barra lateral"
     }
   }
 }

@@ -54,9 +54,8 @@ test.describe('link preview (mock API)', () => {
     const panel = page.getByRole('region', { name: `Preview: ${FIRST}` });
     await expect(panel).toBeVisible();
     await expect(page).toHaveURL(/[?&]preview=/);
-    // The sidebar folds into the icon rail; the feed becomes the compact list.
-    await expect(page.getByRole('navigation', { name: 'Library' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Show sidebar' })).toBeVisible();
+    // The sidebar stays as it is (no icon rail); the feed keeps its own view.
+    await expect(page.getByRole('button', { name: 'Show sidebar' })).toHaveCount(0);
     await expect(page.getByRole('separator', { name: 'Resize the list' })).toBeVisible();
     await expect(page.locator('[aria-current="true"]', { hasText: FIRST })).toBeVisible();
 
@@ -85,7 +84,9 @@ test.describe('link preview (mock API)', () => {
     await openLibrary(page);
     await previewFromMenu(page, FIRST);
     const handle = page.getByRole('separator', { name: 'Resize the list' });
-    const before = Number(await handle.getAttribute('aria-valuenow'));
+    // The default width once the split is measured (the window leaves room for it).
+    await expect(handle).toHaveAttribute('aria-valuenow', '400');
+    const before = 400;
     await handle.focus();
     await handle.press('ArrowRight');
     await expect(handle).toHaveAttribute('aria-valuenow', String(before + 16));
@@ -97,7 +98,7 @@ test.describe('link preview (mock API)', () => {
     await expect(page.getByRole('separator', { name: 'Resize the list' })).toBeVisible();
   });
 
-  test('a site that refuses framing shows the blocked state and joins the new-tab sites', async ({
+  test('a site that refuses framing shows the blocked state and stays off the new-tab sites', async ({
     page,
   }) => {
     await openLibrary(page);
@@ -115,10 +116,10 @@ test.describe('link preview (mock API)', () => {
     ).toBeVisible();
     await expect(panel.locator('iframe')).toHaveCount(0);
     await expect(panel.getByRole('button', { name: 'Open in new tab' })).toBeVisible();
-    // The check found it blocked, so the site is on the list already.
+    // Only the user adds a site to the new-tab list (#555): the check leaves it unticked.
     await expect(
       panel.getByRole('checkbox', { name: 'Always open github.com in a new tab' }),
-    ).toBeChecked();
+    ).not.toBeChecked();
   });
 
   test(

@@ -1848,13 +1848,13 @@
           "label": "Klick auf einen Link",
           "hint": "Halte ⌘ oder Strg beim Klicken, um das andere zu tun.",
           "open": "Öffnet einen neuen Tab",
-          "openHint": "Wie bisher. Die Vorschau bleibt am Augen-Button und an der Leertaste.",
+          "openHint": "Die Vorschau bleibt am Augen-Button und an der Leertaste.",
           "preview": "Öffnet die Vorschau",
           "previewHint": "Nur auf breiten Bildschirmen. Kleinere öffnen den Link."
         },
         "newTabSites": {
           "label": "Websites, die in neuem Tab öffnen",
-          "hint": "Sie blockieren Vorschauen, oder du hast es so gewählt. Ein Klick auf ihre Links überspringt die Vorschau.",
+          "hint": "Von dir hinzugefügt. Ein Klick auf ihre Links öffnet einen neuen Tab statt der Vorschau.",
           "remove": "{{domain}} entfernen",
           "empty": "Noch keine."
         }
@@ -4090,12 +4090,6 @@
       "next": "Nächster Link",
       "newTab": "Neuer Tab",
       "close": "Schließen"
-    },
-    "rail": {
-      "label": "Bibliothek",
-      "home": "Shelfmark-Start",
-      "folder": "Ordner {{name}}",
-      "showSidebar": "Seitenleiste zeigen"
     }
   }
 }

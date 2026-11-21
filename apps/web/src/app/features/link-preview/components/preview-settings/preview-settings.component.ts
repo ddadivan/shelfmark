@@ -35,14 +35,14 @@ export class PreviewSettingsComponent {
     const t = (key: string): string => this.transloco.translate(key);
     return [
       {
-        value: LINK_CLICK_ACTION.Open,
-        title: t('settings.library.viewing.click.open'),
-        description: t('settings.library.viewing.click.openHint'),
-      },
-      {
         value: LINK_CLICK_ACTION.Preview,
         title: t('settings.library.viewing.click.preview'),
         description: t('settings.library.viewing.click.previewHint'),
+      },
+      {
+        value: LINK_CLICK_ACTION.Open,
+        title: t('settings.library.viewing.click.open'),
+        description: t('settings.library.viewing.click.openHint'),
       },
     ];
   });

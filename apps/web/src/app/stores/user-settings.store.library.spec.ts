@@ -123,21 +123,4 @@ describe('UserSettingsStore library settings', () => {
     expect(await store.setLibrary({ newLinksFolderId: 'f1' })).toBe(true);
     expect(store.libraryShown().newLinksFolderId).toBeNull();
   });
-
-  describe('noteNewTabHost (#553)', () => {
-    it('adds a host the server added, once', async () => {
-      const { store, api } = setup({ previewNewTabHosts: ['x.com'] });
-      await store.load();
-      store.noteNewTabHost('github.com');
-      store.noteNewTabHost('github.com');
-      expect(store.libraryShown().previewNewTabHosts).toEqual(['x.com', 'github.com']);
-      expect(api.update).not.toHaveBeenCalled();
-    });
-
-    it('does nothing before the settings have loaded', () => {
-      const { store } = setup();
-      store.noteNewTabHost('github.com');
-      expect(store.libraryShown().previewNewTabHosts).toEqual([]);
-    });
-  });
 });

@@ -3,12 +3,9 @@
 <div class="shell__body">
   <!-- Below 64em (phones and iPad portrait, #316) the tab bar replaces the sidebar. -->
   @if (!viewport.compact()) {
-    <div class="shell__sidebar" [class.shell__sidebar--rail]="!inSettings() && preview.rail()">
+    <div class="shell__sidebar">
       @if (inSettings()) {
         <app-settings-nav />
-      } @else if (preview.rail()) {
-        <!-- The desktop link preview (#553) folds the sidebar into an icon rail. -->
-        <app-preview-rail />
       } @else {
         <app-sidebar showLogo />
       }

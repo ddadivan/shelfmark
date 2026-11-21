@@ -7,16 +7,11 @@ import type { LinksScope } from '../../links/models/links-scope.type';
 import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { LibraryFilterService } from './library-filter.service';
 import { provideLibraryPage } from './provide-library-page';
-import { LinkPreviewRoute } from '../../link-preview/services/link-preview-route.service';
 
 function setup() {
   const router = { navigate: vi.fn(() => Promise.resolve(true)) };
   TestBed.configureTestingModule({
-    providers: [
-      ...provideLibraryPage(),
-      { provide: Router, useValue: router },
-      { provide: LinkPreviewRoute, useValue: { split: signal(false) } },
-    ],
+    providers: [...provideLibraryPage(), { provide: Router, useValue: router }],
   });
   const service = TestBed.inject(LibraryFilterService);
   const scope = signal<LinksScope>(LINKS_SCOPE.All);

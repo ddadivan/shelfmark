@@ -13,10 +13,4 @@ export class LinkFrameCheckResponseDto implements LinkFrameCheckResponse {
 
   @ApiProperty({ format: 'date-time', description: 'When the host was last checked' })
   checkedAt!: string;
-
-  @ApiProperty({
-    example: false,
-    description: 'True when a blocked host was appended to previewNewTabHosts by this call',
-  })
-  addedToNewTabHosts!: boolean;
 }

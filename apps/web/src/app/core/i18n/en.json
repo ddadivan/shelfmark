@@ -1848,13 +1848,13 @@
           "label": "Clicking a link",
           "hint": "Hold ⌘ or Ctrl while you click to do the other one.",
           "open": "Opens it in a new tab",
-          "openHint": "As today. Preview stays on the eye button and Space.",
+          "openHint": "Preview stays on the eye button and Space.",
           "preview": "Opens the preview",
           "previewHint": "On wide screens only. Smaller screens open the link."
         },
         "newTabSites": {
           "label": "Sites that open in a new tab",
-          "hint": "These block previews, or you chose so. A click on their links skips the preview.",
+          "hint": "You added these. A click on their links opens a new tab instead of the preview.",
           "remove": "Remove {{domain}}",
           "empty": "None yet."
         }
@@ -4090,12 +4090,6 @@
       "next": "Next link",
       "newTab": "New tab",
       "close": "Close"
-    },
-    "rail": {
-      "label": "Library",
-      "home": "Shelfmark home",
-      "folder": "Folder {{name}}",
-      "showSidebar": "Show sidebar"
     }
   }
 }

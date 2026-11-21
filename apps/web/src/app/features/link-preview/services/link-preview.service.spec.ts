@@ -37,7 +37,6 @@ function frameAnswer(patch: Partial<LinkFrameCheckResponse> = {}): LinkFrameChec
     host: 'site1.example',
     framing: LINK_FRAMING.Allowed,
     checkedAt: '2026-01-01T00:00:00.000Z',
-    addedToNewTabHosts: false,
     ...patch,
   };
 }
@@ -82,7 +81,6 @@ function setup(options: SetupOptions = {}) {
   const library = signal<LibrarySettings>({ ...LIBRARY_SETTINGS_DEFAULT, ...options.library });
   const settings = {
     libraryShown: library,
-    noteNewTabHost: vi.fn(),
     setLibrary: vi.fn(options.setLibrary ?? (() => Promise.resolve(true))),
   };
   const actions = {
@@ -233,21 +231,6 @@ describe('LinkPreviewService', () => {
       await route.open('id-2');
       await settle();
       expect(service.body()).toBe(PREVIEW_BODY_KIND.Site);
-    });
-
-    it('tells the settings store when the server added the host to the new tab list', async () => {
-      const { settings } = setup({
-        frameCheck: () =>
-          of(frameAnswer({ framing: LINK_FRAMING.Blocked, addedToNewTabHosts: true })),
-      });
-      await settle();
-      expect(settings.noteNewTabHost).toHaveBeenCalledWith('site1.example');
-    });
-
-    it('leaves the settings alone when the server added nothing', async () => {
-      const { settings } = setup();
-      await settle();
-      expect(settings.noteNewTabHost).not.toHaveBeenCalled();
     });
   });
 
@@ -523,6 +506,25 @@ describe('LinkPreviewService', () => {
       expect(localStorage.getItem(PREVIEW_LIST_WIDTH.StorageKey)).toBe('500');
       service.setListWidth(10);
       expect(service.listWidth()).toBe(PREVIEW_LIST_WIDTH.Min);
+    });
+
+    it('lets the list grow until the panel is at its smallest width (#555)', () => {
+      const { service } = setup();
+      expect(service.listMax()).toBe(PREVIEW_LIST_WIDTH.Max);
+      service.setSplitWidth(1600);
+      expect(service.listMax()).toBe(1600 - PREVIEW_LIST_WIDTH.PanelMin);
+      service.setListWidth(5000);
+      expect(service.listWidth()).toBe(1600 - PREVIEW_LIST_WIDTH.PanelMin);
+      // A narrower window narrows the shown list, the chosen width comes back with the room.
+      service.setSplitWidth(1000);
+      expect(service.shownListWidth()).toBe(1000 - PREVIEW_LIST_WIDTH.PanelMin);
+      service.setSplitWidth(1600);
+      expect(service.shownListWidth()).toBe(1600 - PREVIEW_LIST_WIDTH.PanelMin);
+      // A hidden split (0 wide) changes nothing; never below the list's own minimum.
+      service.setSplitWidth(0);
+      expect(service.listMax()).toBe(1600 - PREVIEW_LIST_WIDTH.PanelMin);
+      service.setSplitWidth(400);
+      expect(service.listMax()).toBe(PREVIEW_LIST_WIDTH.Min);
     });
 
     it('resets to the default', () => {

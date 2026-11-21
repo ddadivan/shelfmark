@@ -215,7 +215,7 @@ export class LinksController {
   @ApiOperation({
     summary: 'Whether the page of a link may be shown in the preview frame',
     description:
-      'Reads the framing headers of the page (cached per host, 7 days; an unknown answer 1 hour). A blocked host is added to previewNewTabHosts (addedToNewTabHosts). A page that cannot be reached is unknown, a non-https address is blocked without any request.',
+      'Reads the framing headers of the page (cached per host, 7 days; an unknown answer 1 hour). A page that cannot be reached is unknown, a non-https address is blocked without any request.',
   })
   frameCheck(
     @CurrentUser() user: AuthUser,

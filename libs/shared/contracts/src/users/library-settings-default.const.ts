@@ -12,6 +12,6 @@ export const LIBRARY_SETTINGS_DEFAULT: Readonly<LibrarySettings> = {
   showFolderCounts: true,
   newLinksFolderId: null,
   fetchPreviews: true,
-  clickAction: LINK_CLICK_ACTION.Open,
+  clickAction: LINK_CLICK_ACTION.Preview,
   previewNewTabHosts: [],
 };

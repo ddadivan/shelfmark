@@ -582,7 +582,7 @@ describe('account settings', () => {
         showFolderCounts: false,
         newLinksFolderId: id,
         fetchPreviews: false,
-        clickAction: LINK_CLICK_ACTION.Preview,
+        clickAction: LINK_CLICK_ACTION.Open,
         previewNewTabHosts: ['example.com', 'news.example.org'],
       };
       const res = await a.patch(USER_SETTINGS_ENDPOINT).send(change).expect(200);

@@ -1893,13 +1893,13 @@
           "label": "Clic sur un lien",
           "hint": "Maintenez ⌘ ou Ctrl en cliquant pour faire l'autre.",
           "open": "Ouvre un nouvel onglet",
-          "openHint": "Comme aujourd'hui. L'aperçu reste sur le bouton œil et Espace.",
+          "openHint": "L'aperçu reste sur le bouton œil et Espace.",
           "preview": "Ouvre l'aperçu",
           "previewHint": "Sur grand écran uniquement. Les petits écrans ouvrent le lien."
         },
         "newTabSites": {
           "label": "Sites ouverts dans un nouvel onglet",
-          "hint": "Ils bloquent l'aperçu, ou vous l'avez choisi. Un clic sur leurs liens saute l'aperçu.",
+          "hint": "Vous les avez ajoutés. Un clic sur leurs liens ouvre un nouvel onglet au lieu de l'aperçu.",
           "remove": "Retirer {{domain}}",
           "empty": "Aucun pour l'instant."
         }
@@ -4199,12 +4199,6 @@
       "next": "Lien suivant",
       "newTab": "Nouvel onglet",
       "close": "Fermer"
-    },
-    "rail": {
-      "label": "Bibliothèque",
-      "home": "Accueil Shelfmark",
-      "folder": "Dossier {{name}}",
-      "showSidebar": "Afficher la barre latérale"
     }
   }
 }

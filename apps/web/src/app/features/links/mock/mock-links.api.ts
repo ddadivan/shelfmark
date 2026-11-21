@@ -6,7 +6,6 @@ import {
   isPreviewableUrl,
   LINK_FRAMING,
   linkHost,
-  USER_LIMIT,
   withDefaultScheme,
   LINK_BATCH_ERROR_CODE,
   LINK_ERROR_MESSAGE,
@@ -412,23 +411,8 @@ export class MockLinksApi implements LinksApi {
         : refused
           ? LINK_FRAMING.Blocked
           : LINK_FRAMING.Allowed;
-      // As the server: a refused https host joins "Sites that open in a new tab" once.
-      const hosts = this.data.library.previewNewTabHosts;
-      const add =
-        refused &&
-        isPreviewableUrl(current.url) &&
-        !hosts.includes(host) &&
-        hosts.length < USER_LIMIT.PreviewNewTabHostsMax;
-      if (add) {
-        this.data.library = { ...this.data.library, previewNewTabHosts: [...hosts, host] };
-      }
-      return of({
-        linkId: id,
-        host,
-        framing,
-        checkedAt: new Date().toISOString(),
-        addedToNewTabHosts: add,
-      });
+      // As the server: the answer never changes "Sites that open in a new tab" (#555).
+      return of({ linkId: id, host, framing, checkedAt: new Date().toISOString() });
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 

@@ -1893,13 +1893,13 @@
           "label": "Clic su un link",
           "hint": "Tieni premuto ⌘ o Ctrl mentre clicchi per fare l'altra cosa.",
           "open": "Lo apre in una nuova scheda",
-          "openHint": "Come oggi. L'anteprima resta sul pulsante occhio e su Spazio.",
+          "openHint": "L'anteprima resta sul pulsante occhio e su Spazio.",
           "preview": "Apre l'anteprima",
           "previewHint": "Solo su schermi larghi. Gli schermi piccoli aprono il link."
         },
         "newTabSites": {
           "label": "Siti che si aprono in una nuova scheda",
-          "hint": "Bloccano l'anteprima, o l'hai scelto tu. Un clic sui loro link salta l'anteprima.",
+          "hint": "Li hai aggiunti tu. Un clic sui loro link apre una nuova scheda invece dell'anteprima.",
           "remove": "Rimuovi {{domain}}",
           "empty": "Ancora nessuno."
         }
@@ -4199,12 +4199,6 @@
       "next": "Link successivo",
       "newTab": "Nuova scheda",
       "close": "Chiudi"
-    },
-    "rail": {
-      "label": "Libreria",
-      "home": "Home di Shelfmark",
-      "folder": "Cartella {{name}}",
-      "showSidebar": "Mostra barra laterale"
     }
   }
 }

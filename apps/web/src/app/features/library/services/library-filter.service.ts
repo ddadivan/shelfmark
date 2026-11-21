@@ -4,8 +4,6 @@ import { FoldersStore } from '../../../stores/folders.store';
 import { SavedViewsStore } from '../../../stores/saved-views.store';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
 import type { UiView } from '../../../stores/models/ui-view.type';
-import { UI_VIEW } from '../../../stores/models/ui-view.const';
-import { LinkPreviewRoute } from '../../link-preview/services/link-preview-route.service';
 import { exportScopeOf } from '../../export/utils/export-url';
 import { FEED_SORT } from '../../links/models/feed-sort.const';
 import type { FeedSort } from '../../links/models/feed-sort.type';
@@ -47,7 +45,6 @@ const NO_INPUTS: LibraryRouteInputs = {
 @Service({ autoProvided: false })
 export class LibraryFilterService {
   private readonly settings = inject(UserSettingsStore);
-  private readonly previewRoute = inject(LinkPreviewRoute);
   private readonly memory = inject(FeedMemoryService);
   private readonly folders = inject(FoldersStore);
   private readonly views = inject(SavedViewsStore);
@@ -83,11 +80,9 @@ export class LibraryFilterService {
       this.settings.libraryShown().defaultSort,
   );
   /** The feed's own last view, else the account's Default view. */
-  readonly view = computed<UiView>(() =>
-    // The desktop link preview (#553) shows the feed as the compact list beside the panel.
-    this.previewRoute.split()
-      ? UI_VIEW.List
-      : (this.memory.view(this.feedKey()) ?? this.settings.libraryShown().defaultView),
+  /** The link preview keeps it too (#555): cards stay cards beside the panel. */
+  readonly view = computed<UiView>(
+    () => this.memory.view(this.feedKey()) ?? this.settings.libraryShown().defaultView,
   );
   /** `?split` as the URL has it (`undefined` when absent): read by `SplitViewService`. */
   readonly splitParam = computed(() => this.inputs().split?.());

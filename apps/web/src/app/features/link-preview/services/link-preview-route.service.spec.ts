@@ -40,7 +40,6 @@ describe('LinkPreviewRoute', () => {
     expect(route.isOpen()).toBe(false);
     expect(route.split()).toBe(false);
     expect(route.pushed()).toBe(false);
-    expect(route.rail()).toBe(false);
   });
 
   it('follows the preview parameter of a navigation', async () => {
@@ -50,21 +49,19 @@ describe('LinkPreviewRoute', () => {
     expect(route.isOpen()).toBe(true);
   });
 
-  it('opens as a split with the rail on a wide screen', async () => {
+  it('opens as a split on a wide screen', async () => {
     const { route } = await setup(true);
     await route.open('abc');
     expect(route.currentId()).toBe('abc');
     expect(route.split()).toBe(true);
     expect(route.pushed()).toBe(false);
-    expect(route.rail()).toBe(true);
   });
 
-  it('opens as a pushed page below the wide breakpoint, with no rail', async () => {
+  it('opens as a pushed page below the wide breakpoint', async () => {
     const { route } = await setup(false);
     await route.open('abc');
     expect(route.split()).toBe(false);
     expect(route.pushed()).toBe(true);
-    expect(route.rail()).toBe(false);
   });
 
   it('drops the split and related parameters and keeps the others', async () => {
@@ -100,6 +97,26 @@ describe('LinkPreviewRoute', () => {
     expect(router.url).toBe('/links');
   });
 
+  it('drops the parameter when Back only stepped the frame (a full history, #555)', async () => {
+    const { route, router, back } = await setup();
+    await route.open('a');
+    // The mocked Back changes nothing, like a Back that stepped a page inside the frame.
+    await route.close();
+    expect(back).toHaveBeenCalledTimes(1);
+    expect(router.url).toBe('/links');
+    expect(route.isOpen()).toBe(false);
+  });
+
+  it('drops the parameter instead of going Back once the frame added history entries', async () => {
+    const { route, router, back } = await setup();
+    await route.open('a');
+    const length = window.history.length;
+    vi.spyOn(window.history, 'length', 'get').mockReturnValue(length + 2);
+    await route.close();
+    expect(back).not.toHaveBeenCalled();
+    expect(router.url).toBe('/links');
+  });
+
   it('removes the parameter on close when the page was reloaded on a preview', async () => {
     const { route, router, back } = await setup();
     await router.navigateByUrl('/links?preview=abc&q=x');
@@ -107,19 +124,6 @@ describe('LinkPreviewRoute', () => {
     expect(back).not.toHaveBeenCalled();
     expect(router.url).toBe('/links?q=x');
     expect(route.isOpen()).toBe(false);
-  });
-
-  it('shows the full sidebar after "Show sidebar" until the preview closes', async () => {
-    const { route, router } = await setup();
-    await route.open('a');
-    expect(route.rail()).toBe(true);
-    route.showSidebar();
-    expect(route.rail()).toBe(false);
-    expect(route.split()).toBe(true);
-    await router.navigateByUrl('/links?preview=a');
-    await route.close();
-    await route.open('b');
-    expect(route.rail()).toBe(true);
   });
 
   describe('wantsPreview', () => {
