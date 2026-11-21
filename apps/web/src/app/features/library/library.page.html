@@ -502,7 +502,7 @@
             <app-link-row
               [link]="link"
               [dense]="preview.split()"
-              [folder]="showFolderChips() ? folderChips.of(link.folderId) : null"
+              [folder]="showFolderChips() && !preview.split() ? folderChips.of(link.folderId) : null"
               [pinnable]="filters.isFolder()"
               [selecting]="selection.selecting()"
               [selected]="selection.has(link.id)"

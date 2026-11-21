@@ -30,7 +30,11 @@
 }
 
 .library__preview-keys {
+  position: relative;
+  z-index: 3;
   display: flex;
+  flex: none;
+  background: var(--bg);
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-1);

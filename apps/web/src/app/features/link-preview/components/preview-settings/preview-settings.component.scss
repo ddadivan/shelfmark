@@ -25,3 +25,10 @@
 
   @include type(caption);
 }
+
+// The rows sit inside this host, so the first one counts as `:first-of-type` and would lose the
+// line above it; it follows other rows of the section, so it keeps the line.
+ui-settings-row:first-of-type {
+  padding-block-start: 0.875rem;
+  border-block-start: 1px solid var(--border);
+}
