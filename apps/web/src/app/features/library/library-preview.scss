@@ -59,6 +59,15 @@
   background: var(--accent-bg);
 }
 
+// A card covers a background, which then peeks out at its rounded corners (#555): the current card
+// gets a ring on the card's own radius instead.
+.library__grid > .library__item--current {
+  border-radius: var(--radius-lg);
+  background: none;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 // The feed keeps its own view beside the preview (#555): when the list is narrow the tools move
 // under the title instead of squeezing it, and the title only breaks between words.
 .library__split--preview .library__toolbar--split {
