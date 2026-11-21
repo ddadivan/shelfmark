@@ -269,7 +269,6 @@ export const Disclosure: Story = {
     iconLeft: 'chevron-down',
     ariaLabel: 'Show or hide folders',
     ariaExpanded: true,
-    ariaControls: 'folders',
     disclosure: true,
   },
 };
