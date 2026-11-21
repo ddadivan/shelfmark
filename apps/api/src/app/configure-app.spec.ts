@@ -60,6 +60,14 @@ describe('configureApp', () => {
       }
     });
 
+    it('lets nothing frame the API, Swagger included (#553)', async () => {
+      for (const path of ['/api/health', '/api/docs']) {
+        const res = await request(app.getHttpServer()).get(path).redirects(1);
+        expect(res.headers['content-security-policy']).toContain("frame-ancestors 'none'");
+        expect(res.headers['x-frame-options']).toBe('DENY');
+      }
+    });
+
     it('does not enable CORS', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/health')

@@ -162,6 +162,40 @@ describe('POST /api/links/:id/frame-check', () => {
       expect(await hostsOf(users.owner.userId)).toEqual([HOST]);
     });
 
+    it('is not added again from the cache once the user removed it', async () => {
+      fetchHeaders.mockResolvedValue(page({ xFrameOptions: 'DENY' }));
+      const id = await link();
+      expect((await check(a, id)).addedToNewTabHosts).toBe(true);
+      await a.patch(SETTINGS).send({ previewNewTabHosts: [] }).expect(200);
+      const again = await check(a, id);
+      expect(again.framing).toBe(LINK_FRAMING.Blocked);
+      expect(again.addedToNewTabHosts).toBe(false);
+      expect(await hostsOf(users.owner.userId)).toEqual([]);
+    });
+
+    it('a redirect to another site answers but caches nothing and adds nothing', async () => {
+      fetchHeaders.mockResolvedValue({
+        ...page({ xFrameOptions: 'DENY' }),
+        finalUrl: 'https://elsewhere.test/landing',
+      });
+      const id = await link();
+      const body = await check(a, id);
+      expect(body.framing).toBe(LINK_FRAMING.Blocked);
+      expect(body.addedToNewTabHosts).toBe(false);
+      expect(await t.db.prisma.frameCheck.findUnique({ where: { host: HOST } })).toBeNull();
+      expect(await hostsOf(users.owner.userId)).toEqual([]);
+    });
+
+    it('a redirect within the site (www.) is cached for the host', async () => {
+      fetchHeaders.mockResolvedValue({
+        ...page({ xFrameOptions: 'DENY' }),
+        finalUrl: `https://www.${HOST}/article`,
+      });
+      const id = await link();
+      expect((await check(a, id)).addedToNewTabHosts).toBe(true);
+      expect(await t.db.prisma.frameCheck.findUnique({ where: { host: HOST } })).not.toBeNull();
+    });
+
     it('is added behind older entries, keeping the order', async () => {
       await t.db.prisma.user.update({
         where: { id: users.owner.userId },

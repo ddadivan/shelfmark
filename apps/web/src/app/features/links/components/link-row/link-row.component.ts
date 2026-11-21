@@ -146,6 +146,7 @@ export class LinkRowComponent {
     if (
       intent === LINK_KEY_INTENT.Toggle &&
       this.previewable() &&
+      this.href() !== undefined &&
       !this.selecting() &&
       !event.shiftKey
     ) {

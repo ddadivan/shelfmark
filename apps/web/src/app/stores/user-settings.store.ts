@@ -390,11 +390,6 @@ export const UserSettingsStore = signalStore(
       },
 
       /**
-       * Changes Settings › Library choices at once (the feed, the sidebar and the add-link dialog
-       * follow) and saves them on the account; resolves false (and puts the changed fields back,
-       * unless a later change replaced them) when the request fails.
-       */
-      /**
        * The server added `host` to "Sites that open in a new tab" itself (a blocked frame check,
        * #553): the local copy follows without a request. Nothing happens before the settings load.
        */
@@ -407,6 +402,11 @@ export const UserSettingsStore = signalStore(
         }
       },
 
+      /**
+       * Changes Settings › Library choices at once (the feed, the sidebar and the add-link dialog
+       * follow) and saves them on the account; resolves false (and puts the changed fields back,
+       * unless a later change replaced them) when the request fails.
+       */
       async setLibrary(change: Partial<LibrarySettings>): Promise<boolean> {
         const previous = store.libraryShown();
         const keys = (Object.keys(change) as (keyof LibrarySettings)[]).filter(

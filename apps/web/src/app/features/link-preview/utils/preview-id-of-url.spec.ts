@@ -12,4 +12,9 @@ describe('previewIdOfUrl', () => {
     expect(previewIdOfUrl('/links?preview=')).toBeNull();
     expect(previewIdOfUrl('/links#preview=abc')).toBeNull();
   });
+
+  it('is null on a page that cannot show the preview', () => {
+    expect(previewIdOfUrl('/unsorted/tidy?preview=abc')).toBeNull();
+    expect(previewIdOfUrl('/recent?preview=abc')).toBeNull();
+  });
 });
