@@ -240,7 +240,6 @@
                 </ui-menu-item>
                 }
               </ui-menu>
-              @if (!preview.split()) {
               <ui-segmented-control
                 iconOnly
                 [options]="options"
@@ -248,7 +247,6 @@
                 [ariaLabel]="'library.view.label' | transloco"
                 (valueChange)="feed.setView($event)"
               />
-              }
             </div>
             }
             <ui-button

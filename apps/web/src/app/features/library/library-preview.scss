@@ -58,3 +58,13 @@
   border-radius: var(--radius-md);
   background: var(--accent-bg);
 }
+
+// The feed keeps its own view beside the preview (#555): when the list is narrow the tools move
+// under the title instead of squeezing it, and the title only breaks between words.
+.library__split--preview .library__toolbar--split {
+  flex-wrap: wrap;
+
+  .library__title {
+    overflow-wrap: break-word;
+  }
+}
