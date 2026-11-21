@@ -17,10 +17,6 @@ export function wantsPreview(click: PreviewClick): boolean {
   if (!click.wide) {
     return false;
   }
-  // The click settings are off (#555): a plain click always previews.
-  if (!click.settingsOn) {
-    return !click.modifier;
-  }
   const preferred = click.previewOpen || click.clickAction === LINK_CLICK_ACTION.Preview;
   if (preferred === click.modifier) {
     return false;

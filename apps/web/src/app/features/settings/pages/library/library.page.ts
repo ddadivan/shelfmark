@@ -1,6 +1,5 @@
 import { activeLang } from '../../../../core/i18n/active-lang';
 import { PreviewSettingsComponent } from '../../../link-preview/components/preview-settings/preview-settings.component';
-import { PREVIEW_CLICK_SETTINGS } from '../../../link-preview/models/preview-click-settings.const';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -86,8 +85,6 @@ import { RulesSectionComponent } from '../../../rules/components/rules-section/r
 })
 export default class LibrarySettingsPage {
   protected readonly settings = inject(UserSettingsStore);
-  /** The link preview's click settings are off for now (#555). */
-  protected readonly clickSettings = inject(PREVIEW_CLICK_SETTINGS);
   protected readonly trash = inject(TrashStore);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);

@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { PREVIEW_CLICK_SETTINGS } from '../../models/preview-click-settings.const';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   ButtonComponent,
@@ -34,8 +33,6 @@ import { LinkPreviewService } from '../../services/link-preview.service';
 })
 export class PreviewBodyComponent {
   protected readonly preview = inject(LinkPreviewService);
-  /** "Always open <domain> in a new tab" shows only while the click settings are on (#555). */
-  protected readonly clickSettings = inject(PREVIEW_CLICK_SETTINGS);
   protected readonly KIND = PREVIEW_BODY_KIND;
   protected readonly TIMEOUT_MS = PREVIEW_FRAME_TIMEOUT_MS;
 }

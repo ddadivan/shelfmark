@@ -33,7 +33,7 @@
             </ui-button>
           }
         </ui-empty-state>
-        @if (clickSettings && preview.host()) {
+        @if (preview.host()) {
           <ui-checkbox
             class="preview-body__always"
             [label]="'preview.blocked.always' | transloco: { domain: preview.host() }"
