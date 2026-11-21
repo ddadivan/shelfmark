@@ -16,6 +16,8 @@ export const CSP_DIRECTIVES: Readonly<Record<string, readonly string[]>> = {
     'https://avatars.githubusercontent.com',
   ],
   'connect-src': ["'self'"],
+  // The link preview (#553, ADR 0059) frames saved https pages in a sandboxed iframe.
+  'frame-src': ['https:'],
   'base-uri': ["'self'"],
   'frame-ancestors': ["'none'"],
   'object-src': ["'none'"],

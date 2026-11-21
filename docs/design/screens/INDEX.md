@@ -38,6 +38,9 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 - `CardTags.dc.html` — Card footer tags: the first tag (ellipsis in its max width), “+N”, the folder chip right after; the glass “All tags” popover above “+N”; desktop and 360px phone, light and dark (hotfix 2.2.1)
 - `MobileLibraryOrder.dc.html` — Library · phone: Pinned, Folders, then the tiles; "N forgotten" on the Recently opened tile (phone, #512)
 - `MobileLoading.dc.html` — Loading · phone · redesigned (phone)
+- `LinkPreview.dc.html` — Link preview split (#553, approved Nov 21, 2026; interactive): the sidebar folds into a 64px rail, the feed becomes a compact list with the open link highlighted, a resize grip, the preview panel with prev / next, title, favorite, edit, copy, wider, Open and close; site, video player and "doesn't open inside other apps" states. The Site / Reader switch and "Read the copy" wait for Reader (#539) and are not built yet (desktop from 80em)
+- `LinkPreviewEntry.dc.html` — Where the preview starts (#553): the eye button next to More on a card and a list row, "Preview here" (Space) and "Open in new tab" (↵) first in the link menu; Settings › Library "Clicking a link" and "Sites that open in a new tab" (desktop)
+- `MobileLinkPreview.dc.html` — Link preview below 80em (#553; interactive): a pushed page with Back, title and domain, open in browser and More; the site below; a floating glass bar with favorite and share (the Site / Reader switch waits for #539) (phone, also tablets)
 
 ## 4 · Add and edit links
 
