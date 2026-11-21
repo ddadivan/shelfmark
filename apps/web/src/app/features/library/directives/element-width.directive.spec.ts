@@ -24,8 +24,8 @@ describe('ElementWidthDirective', () => {
       constructor(callback: () => void) {
         notify = callback;
       }
-      observe(): void {}
-      unobserve(): void {}
+      observe = vi.fn();
+      unobserve = vi.fn();
       disconnect = disconnect;
     } as unknown as typeof ResizeObserver;
     const fixture = TestBed.createComponent(HostComponent);
