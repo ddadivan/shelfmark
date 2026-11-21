@@ -52,7 +52,7 @@ describe('PreviewBodyComponent', () => {
     );
   });
 
-  it('shows the blocked state when the frame refuses the address', async () => {
+  it('reports an address the frame refuses, and leaves the frame blank', async () => {
     const { stub, fixture, element } = await setup();
     stub.body.set(PREVIEW_BODY_KIND.Site);
     stub.link.set({ ...PREVIEW_STUB_LINK, url: 'http://www.angular.dev/overview' });

@@ -26,7 +26,7 @@ const page = (items: LinkResponse[]): ListLinksResponse => ({
 const previewStub = {
   split: signal(false),
   currentId: signal<string | null>(null),
-  go: vi.fn((_step: -1 | 1) => Promise.resolve()),
+  go: vi.fn<(step: -1 | 1) => Promise<void>>(() => Promise.resolve()),
   close: vi.fn(() => Promise.resolve()),
   openInNewTab: vi.fn(),
 };
