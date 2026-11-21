@@ -8,6 +8,6 @@ export const PREVIEW_LIST_WIDTH = {
   Default: 400,
   Min: 300,
   Max: 2400,
-  PanelMin: 360,
+  PanelMin: 480,
   StorageKey: 'sm-preview-width',
 } as const;
