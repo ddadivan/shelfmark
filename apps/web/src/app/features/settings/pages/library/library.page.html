@@ -37,6 +37,7 @@
       (valueChange)="setOpenTarget($event)"
     />
   </ui-settings-row>
+  <app-preview-settings [library]="library()" (changed)="saveLibrary($event)" />
   <ui-settings-row
     [title]="'settings.library.viewing.counts.label' | transloco"
     [description]="'settings.library.viewing.counts.hint' | transloco"

@@ -1,7 +1,7 @@
 /** What the "What's new" screenshot generator (#442) captures and where it writes. */
 export const WHATS_NEW_MEDIA = {
   /** The release whose New items are captured; its folder under `apps/web/public/media/whats-new/`. */
-  version: '2.4.0',
+  version: '2.5.0',
   /** Desktop window the app is drawn in: 80em, the narrowest side-by-side layout. */
   viewport: { width: 1280, height: 800 },
   /** Size of the crop in CSS pixels (16:10), the image is twice that (retina). */

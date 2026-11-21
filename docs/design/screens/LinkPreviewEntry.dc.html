@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Link preview · entry points</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+.en-badge{position:absolute;z-index:5;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--on-accent, #fff);display:grid;place-items:center;font-size:12px;font-weight:700;box-shadow:var(--shadow-card)}
+.en-cap{font-size:13px;font-weight:600;color:var(--text-muted);margin:0}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="width: 1200px; height: 760px; box-sizing: border-box; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; padding: 36px; display: flex; gap: 36px;">
+
+<!-- 2a: on a card. Hover shows the eye next to More; the card menu lists Preview first. -->
+<section style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 16px;" aria-label="Card entry points">
+<p class="en-cap">2a · On a card: the eye button, the menu, or Space</p>
+<div style="position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;">
+
+<div class="sm-card is-hover" style="position: relative;">
+<span class="sm-card__actions">
+<button class="sm-btn sm-btn--secondary sm-btn--icon sm-btn--sm" aria-label="Preview here" title="Preview (Space)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg></button>
+<button class="sm-btn sm-btn--secondary sm-btn--icon sm-btn--sm" aria-label="More actions" aria-haspopup="menu" aria-expanded="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/></svg></button>
+</span>
+<span class="en-badge" style="top: -10px; right: 52px;">1</span>
+<div class="sm-card__media"><div class="sm-card__img" style="background: var(--accent-bg);"><svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice" width="100%" height="100%" aria-hidden="true"><circle cx="132" cy="16" r="38" style="fill: var(--surface); opacity: .4"/><rect x="18" y="26" width="88" height="54" rx="10" style="fill: var(--surface); opacity: .75"/><rect x="30" y="38" width="44" height="7" rx="3.5" style="fill: var(--text-muted); opacity: .45"/><rect x="30" y="52" width="62" height="5" rx="2.5" style="fill: var(--text-muted); opacity: .3"/></svg></div>
+<span class="sm-card__open" style="opacity: 1; transform: none;"><span>angular.dev/guide/zoneless</span><span>Preview</span></span></div>
+<div class="sm-card__body">
+<div class="sm-card__meta"><span class="sm-favicon">A</span>angular.dev<span class="sm-card__date">Today</span></div>
+<h2 class="sm-card__title">Zoneless change detection, explained</h2>
+<div class="sm-card__tags"><span class="sm-chip">angular</span></div>
+</div>
+</div>
+
+<div class="sm-card">
+<div class="sm-card__media"><div class="sm-card__img" style="background: var(--surface-hover);"><svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice" width="100%" height="100%" aria-hidden="true"><circle cx="132" cy="16" r="38" style="fill: var(--surface); opacity: .4"/><rect x="18" y="26" width="88" height="54" rx="10" style="fill: var(--surface); opacity: .75"/><rect x="30" y="38" width="44" height="7" rx="3.5" style="fill: var(--text-muted); opacity: .45"/></svg></div></div>
+<div class="sm-card__body">
+<div class="sm-card__meta"><span class="sm-favicon">D</span>dev.to<span class="sm-card__date">Last week</span></div>
+<h2 class="sm-card__title">NgRx SignalStore: patterns for real apps</h2>
+<div class="sm-card__tags"><span class="sm-chip">angular</span></div>
+</div>
+</div>
+
+<div class="sm-menu sm-glass" role="menu" aria-label="Link actions" style="position: absolute; top: 46px; left: calc(50% - 30px); z-index: 4; width: 240px;">
+<button class="sm-menu__item is-hover" role="menuitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>Preview here<span class="sm-menu__hint sm-kbd">Space</span></button>
+<button class="sm-menu__item" role="menuitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>Open in new tab<span class="sm-menu__hint sm-kbd">↵</span></button>
+<div class="sm-menu__sep" role="separator"></div>
+<button class="sm-menu__item" role="menuitem">Edit<span class="sm-menu__hint sm-kbd">E</span></button>
+<button class="sm-menu__item" role="menuitem">Add to favorites<span class="sm-menu__hint sm-kbd">F</span></button>
+<button class="sm-menu__item" role="menuitem">Move to folder<span class="sm-menu__hint sm-kbd">M</span></button>
+</div>
+<span class="en-badge" style="top: 52px; left: calc(50% + 214px);">2</span>
+</div>
+
+<p class="en-cap" style="margin-top: 8px;">2b · In list view: the eye on the row</p>
+<div style="position: relative; background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 6px;">
+<div class="sm-row is-hover">
+<span class="sm-row__thumb" style="background: var(--accent-bg);"></span>
+<span class="sm-row__main"><span class="sm-row__title">Building accessible menus with Angular Aria</span><span class="sm-row__meta" style="display: flex; align-items: center; gap: 6px;"><span class="sm-favicon">B</span>blog.angular.dev</span></span>
+<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Preview here" title="Preview (Space)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg></button>
+<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="More actions"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/></svg></button>
+</div>
+<div class="sm-row">
+<span class="sm-row__thumb" style="background: var(--surface-hover);"></span>
+<span class="sm-row__main"><span class="sm-row__title">Nx 23: monorepo setup for Angular and NestJS</span><span class="sm-row__meta" style="display: flex; align-items: center; gap: 6px;"><span class="sm-favicon">N</span>nx.dev</span></span>
+</div>
+<span class="en-badge" style="top: 12px; right: 56px;">3</span>
+</div>
+</section>
+
+<!-- 2c: what a plain click does. Settings › Library. -->
+<section style="flex: 0 0 400px; display: flex; flex-direction: column; gap: 16px;" aria-label="Click setting">
+<p class="en-cap">2c · Settings › Library: what a click on a link does</p>
+<div style="background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 22px; display: flex; flex-direction: column; gap: 14px;">
+<h2 style="margin: 0; font-size: 17px; line-height: 24px; font-weight: 600;">Clicking a link</h2>
+<div class="sm-radio-group" role="radiogroup" aria-label="Clicking a link">
+<label class="sm-radio {{newTabCls}}" onClick="{{pickNewTab}}"><span class="sm-radio__dot"></span><span style="display: flex; flex-direction: column; gap: 2px;"><span class="sm-radio__title">Opens it in a new tab</span><span class="sm-radio__desc">As today. Preview stays on the eye button and Space.</span></span></label>
+<label class="sm-radio {{previewCls}}" onClick="{{pickPreview}}"><span class="sm-radio__dot"></span><span style="display: flex; flex-direction: column; gap: 2px;"><span class="sm-radio__title">Opens the preview</span><span class="sm-radio__desc">On wide screens only. On a phone a click always opens the pushed page.</span></span></label>
+</div>
+<p style="margin: 0; font-size: 12px; line-height: 16px; color: var(--text-muted);">Hold <span class="sm-kbd">⌘</span> while you click to do the other one.</p>
+</div>
+
+<div style="background: var(--surface); border-radius: 22px; box-shadow: var(--shadow-card); padding: 22px; display: flex; flex-direction: column; gap: 10px;">
+<h2 style="margin: 0; font-size: 17px; line-height: 24px; font-weight: 600;">Sites that open in a new tab</h2>
+<p style="margin: 0; font-size: 13px; line-height: 18px; color: var(--text-muted);">These block previews, or you chose so. A click on their links skips the preview.</p>
+<div style="display: flex; gap: 6px; flex-wrap: wrap;">
+<span class="sm-chip" style="display: inline-flex; align-items: center; gap: 6px;"><span class="sm-favicon">G</span>github.com</span>
+<span class="sm-chip" style="display: inline-flex; align-items: center; gap: 6px;"><span class="sm-favicon">X</span>x.com</span>
+<span class="sm-chip" style="display: inline-flex; align-items: center; gap: 6px;"><span class="sm-favicon">L</span>linkedin.com</span>
+</div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1200,"height":760}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const s = this.state || {};
+    const preview = !!s.preview;
+    return {
+      theme: (this.props.dark ?? false) ? 'dark' : 'light',
+      newTabCls: preview ? '' : 'is-checked',
+      previewCls: preview ? 'is-checked' : '',
+      pickNewTab: () => this.setState({ preview: false }),
+      pickPreview: () => this.setState({ preview: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

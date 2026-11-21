@@ -301,3 +301,33 @@ export async function linkKinds(page: Page): Promise<WhatsNewClip> {
   await expect(page.getByRole('option', { name: 'Recipe', exact: true })).toBeVisible();
   return { x: 0, y: 0, ...WHATS_NEW_MEDIA.viewport };
 }
+
+// The framed page of the link preview shot: a plain article, drawn locally (nothing leaves the machine).
+const PREVIEW_ARTICLE = `<!doctype html><html><head><title>Angular overview</title><style>
+body{margin:0;font:18px/1.6 system-ui,sans-serif;color:#1f2328;background:#fff}
+header{padding:20px 48px;border-bottom:1px solid #e5e7eb;font-weight:600}
+main{max-width:640px;margin:40px auto;padding:0 32px}h1{font-size:34px;line-height:1.2;margin:0 0 16px}
+p{margin:0 0 16px;color:#424a53}</style></head><body><header>angular.dev</header><main>
+<h1>What is Angular?</h1>
+<p>Angular is a web framework that helps you build fast, reliable applications that scale with your team.</p>
+<p>Signals give you fine-grained reactivity, standalone components keep things simple, and the CLI takes care of the build.</p>
+<p>Start with the tutorial, then read the guides on components, templates and dependency injection.</p>
+</main></body></html>`;
+
+/** Link preview (2.5.0): a click on a card opens the page beside the feed, the sidebar stays. */
+export async function linkPreview(page: Page): Promise<WhatsNewClip> {
+  await page
+    .context()
+    .route(/^https:\/\/(?!localhost|127\.0\.0\.1)/u, (route) =>
+      route.request().resourceType() === 'document'
+        ? route.fulfill({ contentType: 'text/html', body: PREVIEW_ARTICLE })
+        : route.abort(),
+    );
+  await openFeed(page);
+  await page.locator('app-link-card', { hasText: 'Angular overview' }).first().click();
+  const panel = page.getByRole('region', { name: 'Preview: Angular overview' });
+  await expect(
+    panel.frameLocator('iframe').getByRole('heading', { name: 'What is Angular?' }),
+  ).toBeVisible();
+  return { x: 0, y: 0, ...WHATS_NEW_MEDIA.viewport };
+}

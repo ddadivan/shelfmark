@@ -56,18 +56,32 @@
     <span slot="date">{{ saved() }}</span>
   }
   @if (!readOnly()) {
-    <ui-button
-      slot="actions"
-      variant="secondary"
-      size="sm"
-      iconOnly
-      iconLeft="more"
-      [iconSize]="ICON_SIZE.Lg"
-      hitArea="overlay"
-      [uiMenuTrigger]="menu"
-      [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
-      [uiTooltip]="'links.item.moreActions' | transloco"
-    />
+    <span slot="actions" class="link-card__actions">
+      @if (previewable() && href()) {
+        <ui-button
+          variant="secondary"
+          size="sm"
+          iconOnly
+          iconLeft="eye"
+          hitArea="overlay"
+          [ariaLabel]="'links.item.preview' | transloco: { title: link().title }"
+          [uiTooltip]="'links.item.previewHere' | transloco"
+          uiTooltipShortcut="Space"
+          (click)="previewRequested.emit()"
+        />
+      }
+      <ui-button
+        variant="secondary"
+        size="sm"
+        iconOnly
+        iconLeft="more"
+        [iconSize]="ICON_SIZE.Lg"
+        hitArea="overlay"
+        [uiMenuTrigger]="menu"
+        [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
+        [uiTooltip]="'links.item.moreActions' | transloco"
+      />
+    </span>
   }
   @if (pinnedToTop()) {
     <ui-badge class="link-card__pinned" icon="pin">{{ 'links.item.pinned' | transloco }}</ui-badge>
@@ -125,8 +139,21 @@
     align="end"
     [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
   >
+    @if (previewable() && href()) {
+      <ui-menu-item
+        icon="eye"
+        [shortcut]="viewport.compact() ? undefined : 'Space'"
+        (activated)="previewRequested.emit()"
+      >
+        {{ 'links.item.previewHere' | transloco }}
+      </ui-menu-item>
+    }
     @if (href()) {
-      <ui-menu-item icon="external" (activated)="openRequested.emit()">
+      <ui-menu-item
+        icon="external"
+        [shortcut]="previewable() && !viewport.compact() ? '↵' : undefined"
+        (activated)="openRequested.emit()"
+      >
         {{ 'links.item.open' | transloco }}
       </ui-menu-item>
     }

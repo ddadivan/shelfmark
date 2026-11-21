@@ -2,8 +2,10 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import {
+  LINK_FRAMING,
   LINK_SORT_FIELD,
   SORT_ORDER,
+  type LinkFrameCheckResponse,
   type LinkResponse,
   type ListLinksResponse,
 } from '@shelfmark/contracts';
@@ -155,5 +157,22 @@ describe('HttpLinksApi', () => {
     const remove = http.expectOne(encoded);
     expect(remove.request.method).toBe('DELETE');
     remove.flush(null, { status: 204, statusText: 'No Content' });
+  });
+
+  it('posts the frame check to the id route', () => {
+    const { api, http } = setup();
+    let answer: LinkFrameCheckResponse | undefined;
+    api.frameCheck('a/b c').subscribe((response) => (answer = response));
+    const request = http.expectOne('/api/links/a%2Fb%20c/frame-check');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({});
+    const body: LinkFrameCheckResponse = {
+      linkId: 'a/b c',
+      host: 'example.com',
+      framing: LINK_FRAMING.Blocked,
+      checkedAt: '2026-01-01T00:00:00.000Z',
+    };
+    request.flush(body);
+    expect(answer).toEqual(body);
   });
 });

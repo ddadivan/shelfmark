@@ -1,0 +1,22 @@
+<div class="ui-preview-frame" [attr.aria-busy]="loading()">
+  <ui-progress-bar
+    class="ui-preview-frame__progress"
+    [active]="loading()"
+    [variant]="PROGRESS_BAR_VARIANT.Inline"
+  />
+  <!-- One iframe per accepted page: a fresh frame's first load adds no browser history entry, so
+       switching pages never leaves frame entries in front of the app's own (Back, close). -->
+  @for (key of frameKeys(); track key) {
+    <iframe
+      #frame
+      class="ui-preview-frame__iframe"
+      sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+      referrerpolicy="no-referrer"
+      allow="fullscreen; picture-in-picture; encrypted-media"
+      loading="eager"
+      [attr.title]="title()"
+      [hidden]="phase() === PREVIEW_FRAME_PHASE.Rejected"
+      (load)="onLoad($event)"
+    ></iframe>
+  }
+</div>

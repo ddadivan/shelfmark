@@ -28,6 +28,9 @@ export const RATE_LIMIT = {
   // Bulk move / tags / favorite (#267): up to 100 links per call, one transaction each.
   UpdateLinksBatch: { limit: 30, ttl: MINUTE_MS },
   Preview: { limit: 20, ttl: MINUTE_MS },
+  // Link preview frame check (#553): one header-only request per host and week, but one call each
+  // time a preview opens, so generous for people and tight against scripts.
+  LinkFrameCheck: { limit: 60, ttl: MINUTE_MS },
   Demo: { limit: 5, ttl: HOUR_MS },
   Export: { limit: 5, ttl: MINUTE_MS },
   Feedback: { limit: 10, ttl: MINUTE_MS },

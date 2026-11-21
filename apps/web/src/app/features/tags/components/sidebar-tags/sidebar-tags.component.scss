@@ -1,4 +1,5 @@
 @use 'ui' as *;
+@use '../../../../shell/sidebar/sidebar-section';
 
 :host {
   display: block;
@@ -12,7 +13,6 @@
 .tags__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   min-height: calc(#{rem(30px)} + #{rem(12px)});
   padding: rem(18px) 0 rem(6px) rem(10px);
 
@@ -27,6 +27,19 @@
   margin: 0;
   font-weight: 500;
   color: var(--text-muted);
+}
+
+.tags__add {
+  margin-inline-start: auto;
+}
+
+// The chevron after the heading folds the tags away (desktop sidebar, #556).
+.tags__toggle {
+  @include sidebar-section.toggle;
+}
+
+.tags__body--foldable {
+  @include sidebar-section.body;
 }
 
 .tags__note,

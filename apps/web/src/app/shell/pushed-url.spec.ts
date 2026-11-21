@@ -9,4 +9,11 @@ describe('isPushedUrl', () => {
     expect(isPushedUrl('/unsorted')).toBe(false);
     expect(isPushedUrl('/links')).toBe(false);
   });
+
+  it('is true for a library feed with the link preview open (#553)', () => {
+    expect(isPushedUrl('/links?preview=abc')).toBe(true);
+    expect(isPushedUrl('/folders/f1?sort=oldest&preview=abc#x')).toBe(true);
+    expect(isPushedUrl('/links?previewed=1')).toBe(false);
+    expect(isPushedUrl('/recent?preview=abc')).toBe(false);
+  });
 });

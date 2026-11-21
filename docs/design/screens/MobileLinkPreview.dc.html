@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Link preview · phone</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="width: 390px; height: 844px; position: relative; overflow: hidden; box-sizing: border-box; background: var(--surface); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; flex-direction: column;">
+
+<!-- Pushed page: back returns to the feed at the same scroll position; swipe from the left edge too. -->
+<header style="display: flex; align-items: center; gap: 4px; min-height: 56px; padding: 6px 6px 6px 4px; border-bottom: 1px solid var(--border);">
+<button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Back to Angular"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px;">
+<b style="font-size: 14px; line-height: 20px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Zoneless change detection, explained</b>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 16px; color: var(--text-muted);"><span class="sm-favicon">A</span>angular.dev</span>
+</div>
+<button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Open in browser"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg></button>
+<button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="More actions" aria-haspopup="menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="6" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18" r="1.6"/></svg></button>
+</header>
+
+<div style="flex: 1; min-height: 0; position: relative; overflow: hidden;">
+<sc-if value="{{site}}" hint-placeholder-val="{{true}}">
+<div style="position: absolute; inset: 0; background: #ffffff; color: #18181b; font-family: system-ui, sans-serif;">
+<div style="display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 16px; border-bottom: 1px solid #ececec;"><span style="width: 22px; height: 22px; border-radius: 6px; background: #c2185b; color: #ffffff; display: grid; place-items: center; font-size: 12px; font-weight: 700;">A</span><b style="font-size: 14px;">Angular</b><span style="flex: 1;"></span><span style="width: 22px; height: 3px; border-radius: 2px; background: #18181b; box-shadow: 0 6px 0 #18181b, 0 -6px 0 #18181b;"></span></div>
+<div style="padding: 24px 18px; display: flex; flex-direction: column; gap: 14px;">
+<span style="font-size: 12px; font-weight: 600; color: #c2185b;">Guide</span>
+<h2 style="margin: 0; font-size: 26px; line-height: 32px; font-weight: 700; letter-spacing: -0.02em;">Zoneless change detection, explained</h2>
+<p style="margin: 0; font-size: 16px; line-height: 24px; color: #52525b;">Without zone.js, Angular updates the view when a signal it reads changes, an event fires, or you ask for it.</p>
+<div style="height: 150px; border-radius: 12px; background: #fce4ec;"></div>
+<span style="display: block; width: 100%; height: 9px; border-radius: 5px; background: #e4e4e7;"></span>
+<span style="display: block; width: 92%; height: 9px; border-radius: 5px; background: #e4e4e7;"></span>
+<span style="display: block; width: 97%; height: 9px; border-radius: 5px; background: #e4e4e7;"></span>
+<span style="display: block; width: 64%; height: 9px; border-radius: 5px; background: #e4e4e7;"></span>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{reader}}" hint-placeholder-val="{{false}}">
+<article style="position: absolute; inset: 0; padding: 24px 20px 120px; display: flex; flex-direction: column; gap: 14px; background: var(--surface);">
+<div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted);"><span class="sm-favicon">A</span>angular.dev<span style="margin-left: auto;">6 min read</span></div>
+<h2 style="margin: 0; font-size: 26px; line-height: 32px; font-weight: 600; letter-spacing: -0.02em;">Zoneless change detection, explained</h2>
+<p style="margin: 0; font-size: 17px; line-height: 28px;">Without zone.js, Angular updates the view when a signal it reads changes, an event fires, or you ask for it.</p>
+<p style="margin: 0; font-size: 17px; line-height: 28px;">Nothing patches the browser any more, so the first load is smaller and stack traces are shorter.</p>
+</article>
+</sc-if>
+</div>
+
+<!-- Floating glass bar (glass is allowed on floating layers). -->
+<div class="sm-glass" style="position: absolute; left: 16px; right: 16px; bottom: 20px; display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 999px; box-shadow: var(--shadow-float);">
+<div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Show as" style="--seg-n: 2; --seg-i: {{segI}}; flex: 1;">
+<button class="sm-seg__item {{siteCls}}" role="radio" aria-checked="{{siteOn}}" onClick="{{toSite}}" style="height: 36px;">Site</button>
+<button class="sm-seg__item {{readerCls}}" role="radio" aria-checked="{{readerOn}}" onClick="{{toReader}}" style="height: 36px;">Reader</button>
+</div>
+<button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Remove from favorites" style="color: var(--accent);"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.8l2.45 5 5.5.8-4 3.9.95 5.5L12 16.4 7.1 19l.95-5.5-4-3.9 5.5-.8z"/></svg></button>
+<button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Share"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 8.5L12 4l4.5 4.5M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg></button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const reader = !!(this.state || {}).reader;
+    return {
+      theme: (this.props.dark ?? false) ? 'dark' : 'light',
+      site: !reader, reader,
+      segI: reader ? 1 : 0,
+      siteCls: reader ? '' : 'is-active', readerCls: reader ? 'is-active' : '',
+      siteOn: reader ? 'false' : 'true', readerOn: reader ? 'true' : 'false',
+      toSite: () => this.setState({ reader: false }),
+      toReader: () => this.setState({ reader: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

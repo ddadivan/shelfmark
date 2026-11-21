@@ -63,6 +63,11 @@ const BOUND: readonly { labelKey: string; keys: readonly ShortcutKey[] }[] = [
     labelKey: 'shortcuts.items.openBackground',
     keys: [SHORTCUT_KEY.Command, SHORTCUT_KEY.Enter],
   },
+  // The link preview (#553): Space on a card or row, then LibraryHotkeysDirective.previewKeyHandled
+  { labelKey: 'shortcuts.items.preview', keys: [SHORTCUT_KEY.Space] },
+  { labelKey: 'shortcuts.items.previewNext', keys: [SHORTCUT_KEY.Up, SHORTCUT_KEY.Down] },
+  { labelKey: 'shortcuts.items.previewNewTab', keys: [SHORTCUT_KEY.Enter] },
+  { labelKey: 'shortcuts.items.previewClose', keys: [SHORTCUT_KEY.Escape] },
   // linkKeyIntent (cards and rows) and LibraryPage.selectionKey
   { labelKey: 'shortcuts.items.select', keys: [SHORTCUT_KEY.Space] },
   { labelKey: 'shortcuts.items.selectRange', keys: [SHORTCUT_KEY.Shift, SHORTCUT_KEY.Space] },

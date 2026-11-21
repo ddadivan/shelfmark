@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Link preview · desktop</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+.pv-rail{flex:0 0 64px;background:var(--surface);border-radius:22px;box-shadow:var(--shadow-card);padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.pv-rail a{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:var(--text-muted)}
+.pv-rail a:hover{background:var(--surface-hover);color:var(--text)}
+.pv-rail a.is-active{background:var(--accent-bg);color:var(--accent-text)}
+.pv-list{flex:0 0 400px;min-width:0;display:flex;flex-direction:column;gap:10px;padding:4px 4px 0 8px}
+.pv-rows{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:2px;padding-right:6px}
+.pv-row{width:100%;border:0;background:transparent;text-align:left;font:inherit;color:inherit}
+.pv-grip{flex:0 0 14px;display:grid;place-items:center;cursor:col-resize}
+.pv-grip span{width:4px;height:44px;border-radius:999px;background:var(--border-control)}
+.pv-grip:hover span{background:var(--accent)}
+.pv-panel{flex:1 1 0;min-width:0;background:var(--surface);border-radius:22px;box-shadow:var(--shadow-card);display:flex;flex-direction:column;overflow:hidden}
+.pv-bar{display:flex;align-items:center;gap:6px;min-height:60px;padding:8px 10px 8px 12px;border-bottom:1px solid var(--border)}
+.pv-title{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:0 6px}
+.pv-title b{font-size:14px;line-height:20px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv-title span{display:flex;align-items:center;gap:6px;font-size:12px;line-height:16px;color:var(--text-muted)}
+.pv-sep{width:1px;height:24px;background:var(--border);margin:0 4px}
+.pv-body{flex:1;min-height:0;overflow:hidden;position:relative}
+.pv-hint{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 6px 14px;font-size:12px;color:var(--text-muted)}
+.pv-hint i{font-style:normal;margin-right:10px}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a" style="height: 900px; position: relative; background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif; display: flex; gap: 12px; padding: 12px; box-sizing: border-box; overflow: hidden;">
+
+<!-- Superseded (#555, author review): the sidebar stays as it is while a preview is open; the rail below is not built. -->
+<nav class="pv-rail" aria-label="Library">
+<a href="#" aria-label="Shelfmark home" style="margin-bottom: 10px;"><svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="7" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg></a>
+<a href="#" aria-label="All links"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 14.5l5-5M8 12l-1.8 1.8a3.2 3.2 0 0 0 4.5 4.5l1.8-1.8M16 12l1.8-1.8a3.2 3.2 0 0 0-4.5-4.5L11.5 7.5"/></svg></a>
+<a href="#" aria-label="Unsorted"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M3.5 13h4.5l1.5 2.5h5l1.5-2.5h4.5"/></svg></a>
+<a href="#" aria-label="Favorites"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.8l2.45 5 5.5.8-4 3.9.95 5.5L12 16.4 7.1 19l.95-5.5-4-3.9 5.5-.8z"/></svg></a>
+<a href="#" aria-label="Recently opened"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></a>
+<span style="width: 28px; height: 1px; background: var(--border); margin: 8px 0;"></span>
+<a href="#" class="is-active" aria-label="Folder Angular" aria-current="page"><span class="sm-fic sm-fic--sm fc-clay"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4M13 6l-2 12"/></svg></span></a>
+<a href="#" aria-label="Folder Courses"><span class="sm-fic sm-fic--sm fc-plum"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 9.5L12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5V16c1.5 1.5 3.5 2 5.5 2s4-.5 5.5-2v-4.5"/></svg></span></a>
+<a href="#" aria-label="Folder Recipes"><span class="sm-fic sm-fic--sm fc-amber"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h16v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M2.5 10h19M9.5 7c0-1 .5-1.5 1-2.5M13.5 7c0-1 .5-1.5 1-2.5"/></svg></span></a>
+<span style="flex: 1;"></span>
+<a href="#" aria-label="Show sidebar" title="Show sidebar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M9 4.5v15M13 10l2 2-2 2"/></svg></a>
+</nav>
+
+<main style="flex: 1; min-width: 0; min-height: 0; padding: 6px 0 0; display: flex; flex-direction: column; gap: 14px;">
+
+<!-- Top bar: unchanged, stays on screen. -->
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 4px 0 8px;">
+<label class="sm-field__control" style="flex: 1 1 320px; max-width: 560px; border-radius: 999px; min-height: 48px; padding: 0 10px 0 18px; background: var(--surface); border-color: transparent; box-shadow: var(--shadow-card);">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" style="color: var(--text-muted);"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>
+<input aria-label="Search links" placeholder="Search, or describe it: coat from last week" style="font-size: 15px;">
+<span class="sm-kbd">⌘K</span>
+</label>
+<span style="flex: 1;"></span>
+<button class="sm-btn sm-btn--primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add link</button>
+<button class="sm-btn sm-btn--ghost sm-btn--icon" aria-label="Account menu" aria-haspopup="menu" style="width: 44px; height: 44px; padding: 0;"><span class="sm-avatar">DD</span></button>
+</div>
+
+<div style="flex: 1; min-height: 0; display: flex;">
+
+<!-- LEFT: the same feed, as a compact list. The open link is highlighted. -->
+<sc-if value="{{showList}}" hint-placeholder-val="{{true}}">
+<section class="pv-list" aria-label="Angular">
+<div style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 6px;">
+<h1 style="margin: 0; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.02em;">Angular</h1>
+<span style="font-size: 13px; color: var(--text-muted);">12 links</span>
+<span style="flex: 1;"></span>
+<button class="sm-btn sm-btn--ghost sm-btn--sm">Newest<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+</div>
+<div class="pv-rows" role="list">
+<sc-for list="{{rows}}" as="l" hint-placeholder-count="7">
+<button class="pv-row {{l.cls}}" aria-current="{{l.cur}}" onClick="{{l.pick}}">
+<span class="sm-row__thumb" style="background: {{l.thumb}}; display: grid; place-items: center; color: {{l.thumbInk}}; font-size: 13px; font-weight: 600;">{{l.f}}</span>
+<span class="sm-row__main"><span class="sm-row__title">{{l.title}}</span><span class="sm-row__meta" style="display: flex; align-items: center; gap: 6px;"><span class="sm-favicon">{{l.f}}</span>{{l.site}}<span style="margin-left: auto;">{{l.when}}</span></span></span>
+</button>
+</sc-for>
+</div>
+<div class="pv-hint"><span class="sm-kbd">↑</span><span class="sm-kbd">↓</span><i>Next link</i><span class="sm-kbd">↵</span><i>New tab</i><span class="sm-kbd">Esc</span><i>Close</i></div>
+</section>
+<div class="pv-grip" role="separator" aria-orientation="vertical" aria-label="Resize preview" tabindex="0"><span></span></div>
+</sc-if>
+
+<!-- RIGHT: the preview panel. -->
+<section class="pv-panel" aria-label="Preview: {{cur.title}}">
+<div class="pv-bar">
+<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Previous link" title="Previous link (↑)" onClick="{{prev}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
+<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Next link" title="Next link (↓)" onClick="{{next}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+<div class="pv-title"><b>{{cur.title}}</b><span><span class="sm-favicon">{{cur.f}}</span>{{cur.url}}</span></div>
+
+<div class="sm-seg sm-seg--slide" role="radiogroup" aria-label="Show as" style="--seg-n: 2; --seg-i: {{segI}};">
+<button class="sm-seg__item {{siteCls}}" role="radio" aria-checked="{{siteOn}}" onClick="{{toSite}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.5 3.5 5.5 3.5 8.5s-1 6-3.5 8.5c-2.5-2.5-3.5-5.5-3.5-8.5s1-6 3.5-8.5"/></svg>Site</button>
+<button class="sm-seg__item {{readerCls}}" role="radio" aria-checked="{{readerOn}}" aria-disabled="{{readerOff}}" onClick="{{toReader}}" style="opacity: {{readerOpacity}};"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5c2.5-1 5-1 8 1 3-2 5.5-2 8-1v13c-2.5-1-5-1-8 1-3-2-5.5-2-8-1zM12 6.5v13"/></svg>Reader</button>
+</div>
+<span class="pv-sep"></span>
+<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Add to favorites" title="Favorite (F)" style="color: {{starInk}};"><svg width="16" height="16" viewBox="0 0 24 24" fill="{{starFill}}" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.8l2.45 5 5.5.8-4 3.9.95 5.5L12 16.4 7.1 19l.95-5.5-4-3.9 5.5-.8z"/></svg></button>
+<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Edit link" title="Edit (E)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>
+<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Copy link" title="Copy link"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 14.5l5-5M8 12l-1.8 1.8a3.2 3.2 0 0 0 4.5 4.5l1.8-1.8M16 12l1.8-1.8a3.2 3.2 0 0 0-4.5-4.5L11.5 7.5"/></svg></button>
+<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="{{wideLabel}}" title="{{wideLabel}}" onClick="{{toggleWide}}"><sc-if value="{{wide}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></sc-if><sc-if value="{{narrow}}" hint-placeholder-val="{{true}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></sc-if></button>
+<a href="#" class="sm-btn sm-btn--secondary sm-btn--sm" style="text-decoration: none;" title="Open in new tab (↵)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>Open</a>
+<button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Close preview" title="Close (Esc)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+</div>
+
+<div class="pv-body">
+
+<!-- The live site. It keeps its own look in both themes: it is someone else's page. -->
+<sc-if value="{{showSite}}" hint-placeholder-val="{{true}}">
+<div style="position: absolute; inset: 0; overflow: hidden; background: #ffffff; color: {{cur.ink}}; font-family: system-ui, sans-serif;">
+<div style="display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 28px; border-bottom: 1px solid #ececec;">
+<span style="width: 26px; height: 26px; border-radius: 7px; background: {{cur.brand}}; color: #ffffff; display: grid; place-items: center; font-size: 13px; font-weight: 700;">{{cur.f}}</span>
+<b style="font-size: 15px;">{{cur.siteName}}</b>
+<span style="flex: 1;"></span>
+<span style="width: 52px; height: 8px; border-radius: 4px; background: #e4e4e7;"></span>
+<span style="width: 64px; height: 8px; border-radius: 4px; background: #e4e4e7;"></span>
+<span style="width: 44px; height: 8px; border-radius: 4px; background: #e4e4e7;"></span>
+<span style="width: 84px; height: 30px; border-radius: 8px; background: {{cur.brand}};"></span>
+</div>
+<div style="max-width: 680px; margin: 0 auto; padding: 44px 28px; display: flex; flex-direction: column; gap: 18px;">
+<span style="font-size: 13px; font-weight: 600; color: {{cur.brand}};">{{cur.kicker}}</span>
+<h2 style="margin: 0; font-size: 36px; line-height: 42px; font-weight: 700; letter-spacing: -0.02em;">{{cur.title}}</h2>
+<p style="margin: 0; font-size: 18px; line-height: 28px; color: #52525b;">{{cur.lede}}</p>
+<div style="display: flex; align-items: center; gap: 10px;"><span style="width: 32px; height: 32px; border-radius: 50%; background: #e4e4e7;"></span><span style="width: 120px; height: 8px; border-radius: 4px; background: #d4d4d8;"></span></div>
+<div style="height: 200px; border-radius: 14px; background: {{cur.tint}};"></div>
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="5"><span style="display: block; width: {{b.w}}; height: 10px; border-radius: 5px; background: #e4e4e7;"></span></sc-for>
+</div>
+</div>
+</sc-if>
+
+<!-- Video: the player itself, ready to play. -->
+<sc-if value="{{showVideo}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; background: #0f0f10; color: #f4f4f5; display: flex; flex-direction: column; gap: 18px; padding: 28px; box-sizing: border-box; font-family: system-ui, sans-serif;">
+<div style="aspect-ratio: 16 / 9; width: 100%; border-radius: 14px; background: #1f1f23; display: grid; place-items: center;">
+<button aria-label="Play video" style="width: 72px; height: 72px; border-radius: 50%; border: 0; background: #f4f4f5; color: #0f0f10; display: grid; place-items: center; cursor: pointer;"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></button>
+</div>
+<b style="font-size: 20px; line-height: 26px;">{{cur.title}}</b>
+<div style="display: flex; align-items: center; gap: 10px;"><span style="width: 36px; height: 36px; border-radius: 50%; background: #3f3f46;"></span><span style="font-size: 14px; color: #a1a1aa;">Angular University</span><span style="font-size: 14px; color: #a1a1aa; margin-left: auto;">20 min</span></div>
+</div>
+</sc-if>
+
+<!-- The site refuses to be shown inside another app (X-Frame-Options / frame-ancestors). -->
+<sc-if value="{{showBlocked}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; display: grid; place-items: center; padding: 24px;">
+<div class="sm-empty" style="max-width: 440px;">
+<div class="sm-empty__art"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="3"/><path d="M3.5 9h17M4 4l16 16"/></svg></div>
+<h2 class="sm-empty__title" style="margin: 0; font-size: 20px; line-height: 28px; font-weight: 600;">{{cur.site}} doesn’t open inside other apps</h2>
+<p class="sm-empty__text" style="margin: 0; color: var(--text-muted); font-size: 14px; line-height: 20px;">The site blocks it, not Shelfmark. Open it in a new tab, or read the copy we saved.</p>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 4px;">
+<a href="#" class="sm-btn sm-btn--primary" style="text-decoration: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>Open in new tab</a>
+<button class="sm-btn sm-btn--secondary" onClick="{{toReader}}">Read the copy</button>
+</div>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); margin-top: 6px; cursor: pointer;"><input type="checkbox" class="sm-check" style="position: relative;">Always open {{cur.site}} in a new tab</label>
+</div>
+</div>
+</sc-if>
+
+<!-- Reader: the stored copy (#539 design), inside the same panel. -->
+<sc-if value="{{showReader}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; overflow: hidden; background: var(--surface);">
+<article style="max-width: 640px; margin: 0 auto; padding: 44px 28px; display: flex; flex-direction: column; gap: 18px;">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted);"><span class="sm-favicon">{{cur.f}}</span>{{cur.site}}<span style="margin-left: auto;">{{cur.read}}</span></div>
+<h2 style="margin: 0; font-size: 32px; line-height: 40px; font-weight: 600; letter-spacing: -0.02em;">{{cur.title}}</h2>
+<p style="margin: 0; font-size: 18px; line-height: 30px;">{{cur.lede}}</p>
+<p style="margin: 0; font-size: 18px; line-height: 30px;">{{cur.p2}}</p>
+<p style="margin: 0; font-size: 18px; line-height: 30px; color: var(--text-muted);">{{cur.p3}}</p>
+</article>
+</div>
+</sc-if>
+
+</div>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const s = this.state || {};
+    const sel = s.sel ?? 0;
+    const wide = !!s.wide;
+    const links = [
+      { f: 'A', site: 'angular.dev', url: 'angular.dev/guide/zoneless', siteName: 'Angular', when: 'Today', kind: 'site', fav: true,
+        title: 'Zoneless change detection, explained', kicker: 'Guide', brand: '#c2185b', tint: '#fce4ec', ink: '#18181b', thumb: '#fce4ec', thumbInk: '#c2185b', read: '6 min read',
+        lede: 'Without zone.js, Angular updates the view when a signal it reads changes, an event fires, or you ask for it.',
+        p2: 'Nothing patches the browser any more, so the first load is smaller and stack traces are shorter.',
+        p3: 'Most apps move over in an afternoon: remove the polyfill, then fix the few places that relied on setTimeout.' },
+      { f: 'Y', site: 'youtube.com', url: 'youtube.com/watch?v=signal-forms', siteName: 'YouTube', when: '2 days ago', kind: 'video', fav: false,
+        title: 'Angular 22: everything about Signal Forms in 20 minutes', kicker: '', brand: '#18181b', tint: '#27272a', ink: '#18181b', thumb: '#27272a', thumbInk: '#f4f4f5', read: '', lede: '', p2: '', p3: '' },
+      { f: 'G', site: 'github.com', url: 'github.com/angular/angular/discussions', siteName: 'GitHub', when: 'Yesterday', kind: 'blocked', fav: false,
+        title: 'RFC: Signal Forms, the full discussion', kicker: '', brand: '#24292f', tint: '#f6f8fa', ink: '#24292f', thumb: '#e4e4e7', thumbInk: '#24292f', read: '9 min read',
+        lede: 'The team proposes a forms API built on signals, with the model as the single source of truth.',
+        p2: 'Validation runs as computed signals, so errors update the moment the value changes.',
+        p3: 'Reactive Forms stay supported; the RFC asks which migration helpers people need first.' },
+      { f: 'D', site: 'dev.to', url: 'dev.to/ngrx/signalstore-patterns', siteName: 'DEV', when: 'Last week', kind: 'site', fav: false,
+        title: 'NgRx SignalStore: patterns for real apps', kicker: '#angular', brand: '#3b49df', tint: '#e8eafc', ink: '#18181b', thumb: '#e8eafc', thumbInk: '#3b49df', read: '8 min read',
+        lede: 'Feature stores, entity helpers and side effects with rxMethod, from a team that ships SignalStore every day.',
+        p2: 'Keep one store per feature and expose only computed state and methods to components.',
+        p3: 'Side effects live in methods, so tests call them directly without a TestBed.' },
+      { f: 'B', site: 'blog.angular.dev', url: 'blog.angular.dev/accessible-menus', siteName: 'Angular Blog', when: 'Oct 28', kind: 'site', fav: true,
+        title: 'Building accessible menus with Angular Aria', kicker: 'Accessibility', brand: '#7b1fa2', tint: '#f3e5f5', ink: '#18181b', thumb: '#f3e5f5', thumbInk: '#7b1fa2', read: '5 min read',
+        lede: 'Angular Aria gives you menus with keyboard support and roles built in, and leaves every pixel of styling to you.',
+        p2: 'Arrow keys, typeahead and focus return work out of the box.',
+        p3: 'You bring the markup and the styles; the directives bring the behaviour.' },
+      { f: 'N', site: 'nx.dev', url: 'nx.dev/blog/nx-23', siteName: 'Nx', when: 'Oct 21', kind: 'site', fav: false,
+        title: 'Nx 23: monorepo setup for Angular and NestJS', kicker: 'Release', brand: '#143055', tint: '#e3ecf7', ink: '#143055', thumb: '#e3ecf7', thumbInk: '#143055', read: '7 min read',
+        lede: 'One workspace for the web app, the API and the shared contracts, with tasks that only rebuild what changed.',
+        p2: 'Affected commands compare against the base branch, so CI runs only touched projects.',
+        p3: 'The new graph view shows which project pulls in which library.' },
+      { f: 'M', site: 'medium.com', url: 'medium.com/@dev/signals-vs-rxjs', siteName: 'Medium', when: 'Oct 14', kind: 'site', fav: false,
+        title: 'Signals vs RxJS: when to use which', kicker: 'Opinion', brand: '#18181b', tint: '#f4f4f5', ink: '#18181b', thumb: '#f4f4f5', thumbInk: '#18181b', read: '4 min read',
+        lede: 'Signals hold state you read now; streams describe things that happen over time. Most code needs both.',
+        p2: 'Use a signal for what the template shows and RxJS for events, retries and cancellation.',
+        p3: 'toSignal and toObservable connect the two without extra subscriptions.' }
+    ];
+    const cur = links[sel];
+    const video = cur.kind === 'video';
+    const mode = video ? 'site' : (s.mode ?? 'site');
+    const reader = mode === 'reader';
+    const go = (i) => this.setState({ sel: (i + links.length) % links.length });
+    return {
+      theme: (this.props.dark ?? false) ? 'dark' : 'light',
+      cur,
+      rows: links.map((l, i) => ({ ...l, cls: i === sel ? 'sm-row is-selected' : 'sm-row', cur: i === sel ? 'true' : 'false', pick: () => go(i) })),
+      bars: [{ w: '100%' }, { w: '94%' }, { w: '98%' }, { w: '70%' }, { w: '100%' }, { w: '86%' }],
+      showList: !wide, wide, narrow: !wide,
+      wideLabel: wide ? 'Show the list' : 'Wider preview',
+      toggleWide: () => this.setState({ wide: !wide }),
+      prev: () => go(sel - 1), next: () => go(sel + 1),
+      segI: reader ? 1 : 0,
+      siteCls: reader ? '' : 'is-active', readerCls: reader ? 'is-active' : '',
+      siteOn: reader ? 'false' : 'true', readerOn: reader ? 'true' : 'false',
+      readerOff: video ? 'true' : 'false', readerOpacity: video ? '0.45' : '1',
+      toSite: () => this.setState({ mode: 'site' }),
+      toReader: () => { if (!video) this.setState({ mode: 'reader' }); },
+      showSite: !reader && cur.kind === 'site',
+      showVideo: video,
+      showBlocked: !reader && cur.kind === 'blocked',
+      showReader: reader,
+      starFill: cur.fav ? 'currentColor' : 'none',
+      starInk: cur.fav ? 'var(--accent)' : 'var(--text-muted)'
+    };
+  }
+}
+</script>
+</body>
+</html>

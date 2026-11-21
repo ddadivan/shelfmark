@@ -7,9 +7,34 @@ import type { ChangelogRelease } from './changelog-release.interface';
  * into `main` adds a patch entry with one-line fixes. Media rules (PROJECT.md 9.3): improvements
  * and fixes are one line of text; features get a short text and, when they have a `priority`, a
  * screenshot per theme (`public/media/whats-new/<version>/`, made by the generator, no video).
- * The 2.4.1 hotfix hides the focus ring after a click or tap; the 2.4.0 entry brings import, views by hand or in words and ten link kinds; the 2.3.0 entry makes Ask a chat; the 2.2.0 entry lists the AI release; the 2.1.0 entry lists the changes since 2.0.0; hotfixes 2.0.1 to 2.0.8 are not repeated.
+ * The 2.5.0 entry brings the link preview and folding sidebar sections; the 2.4.1 hotfix hides the focus ring after a click or tap; the 2.4.0 entry brings import, views by hand or in words and ten link kinds; the 2.3.0 entry makes Ask a chat; the 2.2.0 entry lists the AI release; the 2.1.0 entry lists the changes since 2.0.0; hotfixes 2.0.1 to 2.0.8 are not repeated.
  */
 export const CHANGELOG: readonly ChangelogRelease[] = [
+  {
+    version: '2.5.0',
+    date: '2026-11-21',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'linkPreview',
+        titleKey: 'changelog.items.linkPreview.title',
+        textKey: 'changelog.items.linkPreview.text',
+        priority: 1,
+        image: {
+          light: '/media/whats-new/2.5.0/link-preview-light.webp',
+          dark: '/media/whats-new/2.5.0/link-preview-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.linkPreview.alt',
+        },
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'sidebarSections',
+        textKey: 'changelog.items.sidebarSections.text',
+      },
+    ],
+  },
   {
     version: '2.4.1',
     date: '2026-11-20',

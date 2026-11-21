@@ -34,6 +34,7 @@ import { BUTTON_HASPOPUP } from './models/button-haspopup.const';
       [ripple]="ripple()"
       [ariaExpanded]="ariaExpanded()"
       [ariaControls]="ariaControls()"
+      [disclosure]="disclosure()"
       [ariaHaspopup]="ariaHaspopup()"
       [ariaDescribedby]="ariaDescribedby()"
       [ariaPressed]="ariaPressed()"
@@ -62,6 +63,7 @@ class HostComponent {
   readonly ripple = signal(true);
   readonly ariaExpanded = signal<boolean | undefined>(undefined);
   readonly ariaControls = signal<string | undefined>(undefined);
+  readonly disclosure = signal(false);
   readonly ariaHaspopup = signal<ButtonHaspopup | undefined>(undefined);
   readonly ariaDescribedby = signal<string | undefined>(undefined);
   readonly ariaPressed = signal<ButtonPressed | undefined>(undefined);
@@ -312,6 +314,18 @@ describe('ButtonComponent', () => {
 
       expect(button().getAttribute('aria-expanded')).toBe('true');
       expect(button().getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('marks a disclosure toggle so an expanded one keeps its resting look (#556)', async () => {
+      const { host, button, settle } = await setup();
+      host.ariaExpanded.set(true);
+      await settle();
+      expect(button().classList).not.toContain('ui-button--disclosure');
+
+      host.disclosure.set(true);
+      await settle();
+      expect(button().classList).toContain('ui-button--disclosure');
+      expect(button().getAttribute('aria-expanded')).toBe('true');
     });
 
     it('puts tabIndex on the inner element and renders none when unset', async () => {

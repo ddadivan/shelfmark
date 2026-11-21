@@ -1,0 +1,32 @@
+@use '../../../styles/ui' as *;
+
+// Fills its container; the owner sizes it.
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ui-preview-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--frame-canvas);
+  border-radius: inherit;
+}
+
+// The progress bar over the top edge of the page, above the iframe.
+.ui-preview-frame__progress {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 1;
+}
+
+.ui-preview-frame__iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--frame-canvas);
+  border: 0;
+}

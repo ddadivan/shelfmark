@@ -116,6 +116,11 @@ export class ButtonComponent implements UiFocusTarget {
   /** `aria-expanded` of the inner element; unset renders no attribute. */
   readonly ariaExpanded = input<boolean>();
   readonly ariaControls = input<string>();
+  /**
+   * A disclosure toggle (a section chevron, #556): `aria-expanded` names the state, but the button
+   * does not stay pressed while expanded the way a menu trigger does.
+   */
+  readonly disclosure = input(false, { transform: booleanAttribute });
   readonly ariaHaspopup = input<ButtonHaspopup>();
   readonly ariaDescribedby = input<string>();
   readonly ariaPressed = input<ButtonPressed>();
@@ -176,6 +181,9 @@ export class ButtonComponent implements UiFocusTarget {
     }
     if (this.aiBusy()) {
       classes.push('ui-button--ai-busy');
+    }
+    if (this.disclosure()) {
+      classes.push('ui-button--disclosure');
     }
     return classes.join(' ');
   });

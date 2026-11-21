@@ -20,14 +20,24 @@ export function configureApp(app: NestExpressApplication, options: ConfigureAppO
   // First in the stack so every response, including parser errors, has a request id.
   app.use(requestIdMiddleware);
   app.use(
+    // Nothing the API serves may be framed, not even by our own origin (#553, ADR 0059): a page in
+    // the link preview's sandboxed frame could otherwise navigate itself to API HTML (Swagger) and
+    // run same-origin with Shelfmark.
     options.isProduction
-      ? helmet()
+      ? helmet({
+          contentSecurityPolicy: {
+            useDefaults: true,
+            directives: { 'frame-ancestors': ["'none'"] },
+          },
+          frameguard: { action: 'deny' },
+        })
       : helmet({
           // Plain http://localhost in development: no HTTPS upgrade, no HSTS.
           contentSecurityPolicy: {
             useDefaults: true,
-            directives: { 'upgrade-insecure-requests': null },
+            directives: { 'upgrade-insecure-requests': null, 'frame-ancestors': ["'none'"] },
           },
+          frameguard: { action: 'deny' },
           hsts: false,
         }),
   );

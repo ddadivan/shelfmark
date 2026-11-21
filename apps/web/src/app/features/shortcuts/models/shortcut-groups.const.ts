@@ -45,6 +45,18 @@ export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = [
     ],
   },
   {
+    id: 'preview',
+    titleKey: 'shortcuts.groups.preview',
+    shortcuts: [
+      // The focused card or row (#553, link-card / link-row onKeydown), while not selecting.
+      { labelKey: 'shortcuts.items.preview', keys: [SHORTCUT_KEY.Space] },
+      // LibraryHotkeysDirective.previewKeyHandled while the desktop preview is open.
+      { labelKey: 'shortcuts.items.previewNext', keys: [SHORTCUT_KEY.Up, SHORTCUT_KEY.Down] },
+      { labelKey: 'shortcuts.items.previewNewTab', keys: [SHORTCUT_KEY.Enter] },
+      { labelKey: 'shortcuts.items.previewClose', keys: [SHORTCUT_KEY.Escape] },
+    ],
+  },
+  {
     id: 'selecting',
     titleKey: 'shortcuts.groups.selecting',
     shortcuts: [

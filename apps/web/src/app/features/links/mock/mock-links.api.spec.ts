@@ -1,5 +1,5 @@
 import { Injector, runInInjectionContext } from '@angular/core';
-import { LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
+import { LINK_FRAMING, LINK_SORT_FIELD, SORT_ORDER } from '@shelfmark/contracts';
 import { MOCK_LINK_PREVIEW_DUPLICATE } from '@shelfmark/contracts/testing';
 import { firstValueFrom } from 'rxjs';
 import { MOCK_HOST } from '../models/mock-host.const';
@@ -330,6 +330,56 @@ describe('MockLinksApi', () => {
       expect((await firstValueFrom(feed.list())).items).toEqual([]);
       sessionStorage.setItem(MOCK_LINKS_SCENARIO_KEY, MOCK_LINKS_SCENARIO.Error);
       await expect(firstValueFrom(feed.list())).rejects.toThrow();
+    });
+  });
+
+  describe('frameCheck (#553)', () => {
+    function createWithData() {
+      const injector = Injector.create({ providers: [MockLibraryData, MockAiData] });
+      return runInInjectionContext(injector, () => ({
+        api: new MockLinksApi(),
+        data: injector.get(MockLibraryData),
+      }));
+    }
+
+    it('answers allowed for a site that can be framed, and adds nothing', async () => {
+      const { api, data } = createWithData();
+      const link = await firstValueFrom(api.create({ url: 'https://framable.example/a' }));
+      const answer = await firstValueFrom(api.frameCheck(link.id));
+      expect(answer).toMatchObject({
+        linkId: link.id,
+        host: 'framable.example',
+        framing: LINK_FRAMING.Allowed,
+      });
+      expect(data.library.previewNewTabHosts).not.toContain('framable.example');
+    });
+
+    it('answers blocked for a blocked host and its subdomains, and adds nothing (#555)', async () => {
+      const { api, data } = createWithData();
+      const link = await firstValueFrom(api.create({ url: 'https://gist.github.com/a' }));
+      expect(await firstValueFrom(api.frameCheck(link.id))).toMatchObject({
+        host: 'gist.github.com',
+        framing: LINK_FRAMING.Blocked,
+      });
+      expect(data.library.previewNewTabHosts).not.toContain('gist.github.com');
+    });
+
+    it('does not mistake a host that only ends like a blocked one', async () => {
+      const { api } = createWithData();
+      const link = await firstValueFrom(api.create({ url: 'https://notgithub.com/a' }));
+      expect((await firstValueFrom(api.frameCheck(link.id))).framing).toBe(LINK_FRAMING.Allowed);
+    });
+
+    it('answers blocked without remembering the host for an address the frame never shows', async () => {
+      const { api, data } = createWithData();
+      const link = await firstValueFrom(api.create({ url: 'http://plain.example/a' }));
+      const answer = await firstValueFrom(api.frameCheck(link.id));
+      expect(answer.framing).toBe(LINK_FRAMING.Blocked);
+      expect(data.library.previewNewTabHosts).not.toContain('plain.example');
+    });
+
+    it('fails for an unknown link', async () => {
+      await expect(firstValueFrom(createWithData().api.frameCheck('missing'))).rejects.toThrow();
     });
   });
 });

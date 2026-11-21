@@ -34,6 +34,7 @@ describe('ShortcutsPage', () => {
       'Keyboard shortcuts',
       'Everywhere',
       'Saving and finding',
+      'Link preview',
       'Selecting links',
       'In the folder list',
     ]);

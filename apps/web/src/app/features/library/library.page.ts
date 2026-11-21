@@ -32,6 +32,7 @@ import {
   NoticeComponent,
   PickerMenuComponent,
   ProgressBarComponent,
+  ResizeHandleComponent,
   SegmentedControlComponent,
   SKELETON_SHAPE,
   SkeletonComponent,
@@ -76,9 +77,13 @@ import { ExtensionBannerComponent } from './components/extension-banner/extensio
 import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
 import { SplitRelatedService } from './services/split-related.service';
 import { SplitViewService } from './services/split-view.service';
+import { ElementWidthDirective } from './directives/element-width.directive';
 import { TidyEntryComponent } from '../ai/components/tidy-entry/tidy-entry.component';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
+import { LinkPreviewService } from '../link-preview/services/link-preview.service';
+import { PreviewPanelComponent } from '../link-preview/components/preview-panel/preview-panel.component';
+import { PreviewPageComponent } from '../link-preview/components/preview-page/preview-page.component';
 
 /** Number of placeholders shown while the first page loads. */
 const SKELETON_COUNT = 8;
@@ -126,6 +131,10 @@ const SKELETON_COUNT = 8;
     NoticeComponent,
     PickerMenuComponent,
     ProgressBarComponent,
+    ElementWidthDirective,
+    PreviewPageComponent,
+    PreviewPanelComponent,
+    ResizeHandleComponent,
     SavedViewChipsComponent,
     SegmentedControlComponent,
     SkeletonComponent,
@@ -138,6 +147,7 @@ const SKELETON_COUNT = 8;
     './library-head.scss',
     './library-feed.scss',
     './library-selection.scss',
+    './library-preview.scss',
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: provideLibraryPage(),
@@ -162,6 +172,10 @@ export default class LibraryPage {
   /** From 80em: the "Side by side" button and the right half (#386). */
   protected readonly wide = inject(ViewportService).wide;
   protected readonly splitView = inject(SplitViewService);
+  /** The link preview (#553): the desktop split from 80em, the pushed page below. */
+  protected readonly preview = inject(LinkPreviewService);
+  /** The left feed shares the width with a right half or the preview: the compact toolbar. */
+  protected readonly narrow = computed(() => this.splitView.open() || this.preview.split());
   /** "Show related" in the card and row menus (AI-3). */
   protected readonly splitRelated = inject(SplitRelatedService);
   protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
@@ -173,17 +187,17 @@ export default class LibraryPage {
   );
   /** The tinted folder header (#418): band or cover, big tile, description; only for a highlighted folder (#440), never in the split view. */
   protected readonly folderBanner = computed(() => {
-    const banner = this.splitView.open() ? null : this.head.banner();
+    const banner = this.narrow() ? null : this.head.banner();
     return banner?.highlighted ? banner : null;
   });
   /** A folder that is not highlighted: its description and cover beside the plain title (#440). */
   protected readonly plainFolder = computed(() => {
-    const banner = this.splitView.open() ? null : this.head.banner();
+    const banner = this.narrow() ? null : this.head.banner();
     return banner && !banner.highlighted ? banner : null;
   });
   /** "Tidy with suggestions" (AI-2): only in Unsorted, not in the split view; it hides itself while AI is off. */
   protected readonly tidyEntry = computed(
-    () => this.filters.scope() === LINKS_SCOPE.Unsorted && !this.splitView.open(),
+    () => this.filters.scope() === LINKS_SCOPE.Unsorted && !this.narrow(),
   );
   protected readonly selection = inject(LibrarySelectionService);
   protected readonly bulk = inject(LibraryBulkService);

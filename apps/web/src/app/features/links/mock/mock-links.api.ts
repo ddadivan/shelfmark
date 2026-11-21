@@ -3,6 +3,9 @@ import {
   deriveLinkKind,
   FOLDER_ERROR_MESSAGE,
   isHttpUrl,
+  isPreviewableUrl,
+  LINK_FRAMING,
+  linkHost,
   withDefaultScheme,
   LINK_BATCH_ERROR_CODE,
   LINK_ERROR_MESSAGE,
@@ -25,6 +28,7 @@ import {
   type CreateLinksBatchRequest,
   type CreateLinksBatchResponse,
   type LinkBatchItemError,
+  type LinkFrameCheckResponse,
   type LinkPreviewResponse,
   type LinkResponse,
   type ListLinksQuery,
@@ -39,6 +43,7 @@ import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { defer, delay, type Observable, of, throwError } from 'rxjs';
 import { mockHttpError } from '../../../core/api/mock-http-error';
 import { displayHost } from '../utils/http-url';
+import { MOCK_FRAME_BLOCKED_HOSTS } from '../models/mock-frame-blocked-hosts.const';
 import { MOCK_HOST } from '../models/mock-host.const';
 import { MOCK_LATENCY_MS } from '../models/mock-latency.const';
 import { MOCK_LINKS_SCENARIO } from '../models/mock-links-scenario.const';
@@ -388,6 +393,26 @@ export class MockLinksApi implements LinksApi {
       const opened: LinkResponse = { ...current, lastOpenedAt: new Date().toISOString() };
       this.links = this.links.map((link) => (link.id === id ? opened : link));
       return of({ ...this.data.linkView(opened), recorded: true });
+    }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
+  frameCheck(id: string): Observable<LinkFrameCheckResponse> {
+    return defer(() => {
+      const current = this.links.find((link) => link.id === id);
+      if (!current) {
+        return throwError(() => linkNotFound());
+      }
+      const host = linkHost(current.url) ?? '';
+      const refused = MOCK_FRAME_BLOCKED_HOSTS.some(
+        (blocked) => host === blocked || host.endsWith(`.${blocked}`),
+      );
+      const framing = !isPreviewableUrl(current.url)
+        ? LINK_FRAMING.Blocked
+        : refused
+          ? LINK_FRAMING.Blocked
+          : LINK_FRAMING.Allowed;
+      // As the server: the answer never changes "Sites that open in a new tab" (#555).
+      return of({ linkId: id, host, framing, checkedAt: new Date().toISOString() });
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 

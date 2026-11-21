@@ -18,6 +18,7 @@ import {
   type TextSize,
   LIBRARY_SORT,
   LIBRARY_VIEW,
+  LINK_CLICK_ACTION,
   LINK_OPEN_TARGET,
   HEX_COLOUR_PATTERN,
   RELEASE_VERSION_PATTERN,
@@ -29,6 +30,7 @@ import {
   TRASH_RETENTION_DAYS,
   type LibrarySort,
   type LibraryView,
+  type LinkClickAction,
   type LinkOpenTarget,
   type MotionPreference,
   type ThemePreference,
@@ -50,6 +52,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CustomThemeDto } from './custom-theme.dto';
+import { IsPreviewHost } from './is-preview-host.decorator';
 
 // Absent is fine, but an explicit null is not (IsOptional would let it through).
 const present = (_: unknown, value: unknown): boolean => value !== undefined;
@@ -168,6 +171,28 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateIf(present)
   @IsBoolean()
   fetchPreviews?: boolean;
+
+  @ApiPropertyOptional({
+    enum: Object.values(LINK_CLICK_ACTION),
+    example: LINK_CLICK_ACTION.Open,
+    description: 'What a plain click on a link does: open it or open the preview',
+  })
+  @ValidateIf(present)
+  @IsIn(Object.values(LINK_CLICK_ACTION))
+  clickAction?: LinkClickAction;
+
+  @ApiPropertyOptional({
+    type: [String],
+    example: ['example.com'],
+    description:
+      'The whole list of sites that open in a new tab: lower-case hosts, no duplicates, at most 100',
+  })
+  @ValidateIf(present)
+  @IsArray()
+  @ArrayMaxSize(USER_LIMIT.PreviewNewTabHostsMax)
+  @ArrayUnique()
+  @IsPreviewHost({ each: true })
+  previewNewTabHosts?: string[];
 
   @ApiPropertyOptional({ enum: Object.values(TEXT_SIZE), example: TEXT_SIZE.M })
   @ValidateIf(present)

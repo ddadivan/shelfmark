@@ -9,8 +9,26 @@
         {{ 'tags.sidebar.heading' | transloco }}
       </h2>
     }
+    @if (collapsible()) {
+      <ui-button
+        class="tags__toggle"
+        [class.is-collapsed]="folded()"
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="chevron-down"
+        [iconSize]="ICON_SIZE.Sm"
+        [ariaExpanded]="!folded()"
+        disclosure
+        ariaControls="sidebar-tags-body"
+        [ariaLabel]="'shell.sidebar.toggle.tags' | transloco"
+        [uiTooltip]="'shell.sidebar.toggle.tags' | transloco"
+        (click)="toggleCollapsed()"
+      />
+    }
     <ui-button
       #addButton
+      class="tags__add"
       variant="ghost"
       size="sm"
       iconOnly
@@ -22,79 +40,93 @@
     />
   </div>
 
-  @if (tags.error()) {
-    <p class="tags__note">
-      {{ 'tags.sidebar.loadFailed' | transloco }}
-      <ui-button [size]="buttonSize()" (click)="retry()">{{
-        'shell.sidebar.retry' | transloco
-      }}</ui-button>
-    </p>
-  } @else if (tags.loaded() && tags.count() === 0 && !editor.adding()) {
-    @if (asPage()) {
-      <ui-empty-state
-        class="tags__empty"
-        layout="page"
-        illustration="empty-tags"
-        [heading]="'tags.page.empty.title' | transloco"
-        [text]="'tags.page.empty.text' | transloco"
-      >
-        <ui-button variant="primary" iconLeft="add" (click)="toggleAdd($event)">
-          {{ 'tags.sidebar.add' | transloco }}
-        </ui-button>
-      </ui-empty-state>
-    } @else {
-      <p class="tags__note">{{ 'tags.sidebar.empty' | transloco }}</p>
-    }
-  }
-
-  <ul
-    class="tags__list"
-    [class.tags__list--empty]="tags.loaded() && tags.count() === 0 && !editor.adding()"
-    [attr.aria-label]="'tags.sidebar.list' | transloco"
+  <div
+    id="sidebar-tags-body"
+    class="tags__body"
+    [class.tags__body--foldable]="collapsible()"
+    [class.is-collapsed]="folded()"
   >
-    @if (editor.adding()) {
-      <li class="tags__item tags__item--editor" [class.tags__item--wide]="editor.editorWide()">
-        <ng-container *ngTemplateOutlet="editorForm" />
-      </li>
-    }
-    @for (tag of split().shown; track tag.id) {
-      <li
-        class="tags__item"
-        [class.tags__item--editor]="editor.renamingId() === tag.id"
-        [class.tags__item--wide]="editor.renamingId() === tag.id && editor.editorWide()"
-      >
-        @if (editor.renamingId() === tag.id) {
-          <ng-container *ngTemplateOutlet="editorForm" />
-        } @else {
-          <ui-chip
-            clickable
-            [attr.data-tag-id]="tag.id"
-            uiLongPress
-            (uiLongPress)="openMenuFromLongPress(tag, $event)"
-            (contextmenu)="openMenuAt(tag, $event)"
-            (keydown)="openMenuFromKeyboard(tag, $event)"
-            [menuLabel]="'tags.sidebar.menuFor' | transloco: { name: tag.name }"
-            (clicked)="show(tag)"
-            (menuRequested)="openMenuFrom(tag, $event)"
+    <div class="tags__clip">
+      @if (tags.error()) {
+        <p class="tags__note">
+          {{ 'tags.sidebar.loadFailed' | transloco }}
+          <ui-button [size]="buttonSize()" (click)="retry()">{{
+            'shell.sidebar.retry' | transloco
+          }}</ui-button>
+        </p>
+      } @else if (tags.loaded() && tags.count() === 0 && !editor.adding()) {
+        @if (asPage()) {
+          <ui-empty-state
+            class="tags__empty"
+            layout="page"
+            illustration="empty-tags"
+            [heading]="'tags.page.empty.title' | transloco"
+            [text]="'tags.page.empty.text' | transloco"
           >
-            {{ tag.name }}
-          </ui-chip>
+            <ui-button variant="primary" iconLeft="add" (click)="toggleAdd($event)">
+              {{ 'tags.sidebar.add' | transloco }}
+            </ui-button>
+          </ui-empty-state>
+        } @else {
+          <p class="tags__note">{{ 'tags.sidebar.empty' | transloco }}</p>
         }
-      </li>
-    }
-    @if (split().foldable) {
-      <li class="tags__item">
-        <!-- A neutral chip (Tags.dc "+ 7 more"); `aria-expanded` is set on its button in the TS. -->
-        <ui-chip #moreChip clickable [variant]="CHIP_VARIANT.Neutral" (clicked)="toggleExpanded()">
-          @if (expanded()) {
-            {{ 'tags.sidebar.showLess' | transloco }}
-          } @else {
-            {{ 'tags.sidebar.more' | transloco: { count: split().hidden } }}
-          }
-        </ui-chip>
-      </li>
-    }
-  </ul>
+      }
+
+      <ul
+        class="tags__list"
+        [class.tags__list--empty]="tags.loaded() && tags.count() === 0 && !editor.adding()"
+        [attr.aria-label]="'tags.sidebar.list' | transloco"
+      >
+        @if (editor.adding()) {
+          <li class="tags__item tags__item--editor" [class.tags__item--wide]="editor.editorWide()">
+            <ng-container *ngTemplateOutlet="editorForm" />
+          </li>
+        }
+        @for (tag of split().shown; track tag.id) {
+          <li
+            class="tags__item"
+            [class.tags__item--editor]="editor.renamingId() === tag.id"
+            [class.tags__item--wide]="editor.renamingId() === tag.id && editor.editorWide()"
+          >
+            @if (editor.renamingId() === tag.id) {
+              <ng-container *ngTemplateOutlet="editorForm" />
+            } @else {
+              <ui-chip
+                clickable
+                [attr.data-tag-id]="tag.id"
+                uiLongPress
+                (uiLongPress)="openMenuFromLongPress(tag, $event)"
+                (contextmenu)="openMenuAt(tag, $event)"
+                (keydown)="openMenuFromKeyboard(tag, $event)"
+                [menuLabel]="'tags.sidebar.menuFor' | transloco: { name: tag.name }"
+                (clicked)="show(tag)"
+                (menuRequested)="openMenuFrom(tag, $event)"
+              >
+                {{ tag.name }}
+              </ui-chip>
+            }
+          </li>
+        }
+        @if (split().foldable) {
+          <li class="tags__item">
+            <!-- A neutral chip (Tags.dc "+ 7 more"); `aria-expanded` is set on its button in the TS. -->
+            <ui-chip
+              #moreChip
+              clickable
+              [variant]="CHIP_VARIANT.Neutral"
+              (clicked)="toggleExpanded()"
+            >
+              @if (expanded()) {
+                {{ 'tags.sidebar.showLess' | transloco }}
+              } @else {
+                {{ 'tags.sidebar.more' | transloco: { count: split().hidden } }}
+              }
+            </ui-chip>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
 
   <ui-menu
     [ariaLabel]="menuState.label() ?? ('tags.sidebar.menu.label' | transloco)"

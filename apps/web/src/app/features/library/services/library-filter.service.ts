@@ -80,6 +80,7 @@ export class LibraryFilterService {
       this.settings.libraryShown().defaultSort,
   );
   /** The feed's own last view, else the account's Default view. */
+  /** The link preview keeps it too (#555): cards stay cards beside the panel. */
   readonly view = computed<UiView>(
     () => this.memory.view(this.feedKey()) ?? this.settings.libraryShown().defaultView,
   );

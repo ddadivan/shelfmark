@@ -366,7 +366,9 @@
       "pinToSidebar": "Épingler dans la barre latérale",
       "unpinFromSidebar": "Désépingler de la barre latérale",
       "pinned": "Épinglé",
-      "createRule": "Créer une règle pour {{domain}}…"
+      "createRule": "Créer une règle pour {{domain}}…",
+      "preview": "Aperçu de {{title}}",
+      "previewHere": "Aperçu ici"
     },
     "recent": {
       "title": "Ouverts récemment",
@@ -856,7 +858,12 @@
       },
       "extension": "Obtenir l’extension",
       "data": "Données et aide",
-      "dataMenu": "Données et aide"
+      "dataMenu": "Données et aide",
+      "toggle": {
+        "pinned": "Afficher ou masquer les épinglés",
+        "folders": "Afficher ou masquer les dossiers",
+        "tags": "Afficher ou masquer les tags"
+      }
     },
     "searchHint": "Rechercher dans vos liens",
     "searchButton": "Rechercher",
@@ -1881,6 +1888,20 @@
         "counts": {
           "label": "Afficher le nombre de liens",
           "hint": "Les chiffres à côté des dossiers dans la barre latérale"
+        },
+        "click": {
+          "label": "Clic sur un lien",
+          "hint": "Maintenez ⌘ ou Ctrl en cliquant pour faire l'autre.",
+          "open": "Ouvre un nouvel onglet",
+          "openHint": "L'aperçu reste sur le bouton œil et Espace.",
+          "preview": "Ouvre l'aperçu",
+          "previewHint": "Sur grand écran uniquement. Les petits écrans ouvrent le lien."
+        },
+        "newTabSites": {
+          "label": "Sites ouverts dans un nouvel onglet",
+          "hint": "Vous les avez ajoutés. Un clic sur leurs liens ouvre un nouvel onglet au lieu de l'aperçu.",
+          "remove": "Retirer {{domain}}",
+          "empty": "Aucun pour l'instant."
         }
       },
       "saving": {
@@ -1993,7 +2014,8 @@
       "everywhere": "Partout",
       "links": "Enregistrer et retrouver",
       "folders": "Dans la liste des dossiers",
-      "selecting": "Sélectionner des liens"
+      "selecting": "Sélectionner des liens",
+      "preview": "Aperçu du lien"
     },
     "items": {
       "search": "Rechercher",
@@ -2015,7 +2037,11 @@
       "selectRange": "Sélectionner jusqu’au lien actif",
       "selectAll": "Sélectionner tous les liens de la liste",
       "moveLink": "Déplacer le lien actif dans un dossier",
-      "clearSelection": "Effacer la sélection"
+      "clearSelection": "Effacer la sélection",
+      "preview": "Aperçu du lien sélectionné",
+      "previewNext": "Lien précédent ou suivant",
+      "previewNewTab": "Ouvrir le lien de l'aperçu dans un nouvel onglet",
+      "previewClose": "Fermer l'aperçu"
     },
     "keys": {
       "command": "Commande",
@@ -3437,6 +3463,14 @@
       },
       "exportHelp": {
         "text": "L’aide pour exporter les favoris affiche les raccourcis de votre système, Mac ou Windows."
+      },
+      "linkPreview": {
+        "title": "Lisez vos liens ici même",
+        "text": "Un clic sur un lien l'ouvre à côté de votre flux, sans perdre votre place. Passez de l'un à l'autre avec ↑ et ↓, faites glisser le bord pour élargir ou réduire la page, et ouvrez-la dans un nouvel onglet si besoin. Les vidéos se lisent dans leur lecteur ; un site qui refuse de s'ouvrir dans d'autres apps le signale. Vous préférez l'ancienne façon ? Paramètres › Bibliothèque › Clic sur un lien.",
+        "alt": "La bibliothèque avec une carte mise en évidence et sa page ouverte dans un panneau à côté du flux."
+      },
+      "sidebarSections": {
+        "text": "Repliez Épinglés, Dossiers et Tags dans la barre latérale ; chacun reste comme vous l'avez laissé."
       }
     },
     "sections": {
@@ -4138,5 +4172,41 @@
     },
     "undone": "Nettoyage annulé",
     "undoFailed": "Impossible d’annuler le nettoyage"
+  },
+  "preview": {
+    "copied": "Lien copié",
+    "copyFailed": "Impossible de copier le lien",
+    "saveFailed": "Impossible d'enregistrer la modification. Réessayez.",
+    "loading": "Chargement de l'aperçu",
+    "frameTitle": "Page de {{title}}",
+    "region": "Aperçu : {{title}}",
+    "toolbar": "Actions de l'aperçu",
+    "previous": "Lien précédent",
+    "next": "Lien suivant",
+    "favorite": "Favori",
+    "edit": "Modifier",
+    "copy": "Copier le lien",
+    "wider": "Aperçu plus large",
+    "showList": "Afficher la liste",
+    "open": "Ouvrir",
+    "openHint": "Ouvrir dans un nouvel onglet",
+    "close": "Fermer l'aperçu",
+    "back": "Retour aux liens",
+    "openInBrowser": "Ouvrir dans le navigateur",
+    "more": "Plus d'actions",
+    "share": "Partager",
+    "resize": "Redimensionner la liste",
+    "resizeHint": "Faites glisser ou utilisez ← et →. Double-clic pour réinitialiser.",
+    "blocked": {
+      "title": "{{domain}} ne s'ouvre pas dans d'autres apps",
+      "text": "C'est le site qui le bloque, pas Shelfmark. Ouvrez-le dans un nouvel onglet.",
+      "open": "Ouvrir dans un nouvel onglet",
+      "always": "Toujours ouvrir {{domain}} dans un nouvel onglet"
+    },
+    "keys": {
+      "next": "Lien suivant",
+      "newTab": "Nouvel onglet",
+      "close": "Fermer"
+    }
   }
 }
