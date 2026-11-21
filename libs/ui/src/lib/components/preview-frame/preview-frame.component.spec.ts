@@ -51,6 +51,9 @@ describe('ui-preview-frame', () => {
       const { iframe, events } = setup(bad);
       expect(iframe().hasAttribute('src')).toBe(false);
       expect(iframe().hidden).toBe(true);
+      // The empty frame's own load is not a page.
+      iframe().dispatchEvent(new Event('load'));
+      expect(events.loaded).toBe(0);
       expect(events.rejected).toBe(1);
       expect(events.timedOut).toBe(0);
     }

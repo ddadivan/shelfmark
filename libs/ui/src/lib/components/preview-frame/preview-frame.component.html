@@ -16,7 +16,7 @@
       loading="eager"
       [attr.title]="title()"
       [hidden]="phase() === PREVIEW_FRAME_PHASE.Rejected"
-      (load)="onLoad()"
+      (load)="onLoad($event)"
     ></iframe>
   }
 </div>

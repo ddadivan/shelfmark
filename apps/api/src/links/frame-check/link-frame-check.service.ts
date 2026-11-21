@@ -17,9 +17,6 @@ import type { FrameVerdict } from './models/frame-verdict.interface';
 const HTTP_OK_MIN = 200;
 const HTTP_OK_MAX = 299;
 
-/** Never used: `cached` or `fresh` is always set; keeps the types honest without `!`. */
-const NO_VERDICT: FrameVerdict = { framing: LINK_FRAMING.Unknown, checkedAt: new Date(0) };
-
 /** Two hosts of one site: equal once a leading `www.` is dropped. */
 function sameSite(a: string, b: string): boolean {
   const bare = (host: string): string => host.replace(/^www\./, '');
@@ -54,8 +51,7 @@ export class LinkFrameCheckService {
     }
 
     const cached = await this.cached(host);
-    const fresh = cached === null ? await this.fetchAndStore(host, link.url) : null;
-    const verdict: FrameVerdict = fresh?.verdict ?? cached ?? NO_VERDICT;
+    const verdict = cached ?? (await this.fetchAndStore(host, link.url));
     return this.answer(linkId, host, verdict);
   }
 
@@ -83,10 +79,7 @@ export class LinkFrameCheckService {
    * when the final page after redirects is on the same site (`www.` ignored): a short link or an
    * open redirect must not decide for the host it starts on.
    */
-  private async fetchAndStore(
-    host: string,
-    url: string,
-  ): Promise<{ verdict: FrameVerdict; stored: boolean }> {
+  private async fetchAndStore(host: string, url: string): Promise<FrameVerdict> {
     const probed = await this.probe(url);
     const verdict: FrameVerdict = { framing: probed.framing, checkedAt: new Date() };
     const stored = probed.finalHost === null || sameSite(probed.finalHost, host);
@@ -97,7 +90,7 @@ export class LinkFrameCheckService {
         update: { framing: verdict.framing, checkedAt: verdict.checkedAt },
       });
     }
-    return { verdict, stored };
+    return verdict;
   }
 
   /** Any failure (blocked address, DNS, timeout) and any non-2xx answer is `unknown`. */

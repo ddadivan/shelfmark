@@ -6,6 +6,7 @@ import { filter, map } from 'rxjs';
 import { ViewportService } from '../../../core/layout/viewport.service';
 import { PREVIEW_QUERY_PARAM } from '../../../models/preview-query-param.const';
 import { UserSettingsStore } from '../../../stores/user-settings.store';
+import { PREVIEW_BACK_SETTLE_MS } from '../models/preview-back-settle-ms.const';
 import { previewIdOfUrl } from '../utils/preview-id-of-url';
 import { wantsPreview } from '../utils/wants-preview';
 
@@ -34,7 +35,8 @@ export class LinkPreviewRoute {
   /**
    * The history length right after this app pushed the open preview, else `null`. Close goes Back
    * only while the length is unchanged: a page the frame navigated to inside itself adds entries
-   * to the same history, and Back would step the frame instead of closing.
+   * to the same history, and Back would step the frame instead of closing. A full history (the
+   * browser caps its length) hides such entries, so close also checks that Back really closed.
    */
   private pushedLength: number | null = null;
 
@@ -62,7 +64,10 @@ export class LinkPreviewRoute {
     this.pushedLength = null;
     if (pushedLength !== null && this.history?.length === pushedLength) {
       this.location.back();
-      return;
+      await new Promise((settled) => setTimeout(settled, PREVIEW_BACK_SETTLE_MS));
+      if (!this.isOpen()) {
+        return;
+      }
     }
     await this.router.navigate([], {
       queryParams: { [PREVIEW_QUERY_PARAM]: null },

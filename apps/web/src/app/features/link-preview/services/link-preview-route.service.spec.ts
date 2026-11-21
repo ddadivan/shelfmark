@@ -97,6 +97,16 @@ describe('LinkPreviewRoute', () => {
     expect(router.url).toBe('/links');
   });
 
+  it('drops the parameter when Back only stepped the frame (a full history, #555)', async () => {
+    const { route, router, back } = await setup();
+    await route.open('a');
+    // The mocked Back changes nothing, like a Back that stepped a page inside the frame.
+    await route.close();
+    expect(back).toHaveBeenCalledTimes(1);
+    expect(router.url).toBe('/links');
+    expect(route.isOpen()).toBe(false);
+  });
+
   it('drops the parameter instead of going Back once the frame added history entries', async () => {
     const { route, router, back } = await setup();
     await route.open('a');

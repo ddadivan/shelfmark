@@ -113,8 +113,10 @@ export class PreviewFrameComponent {
     });
   }
 
-  protected onLoad(): void {
-    if (!this.armed || this.phase() === PREVIEW_FRAME_PHASE.Loaded) {
+  protected onLoad(event: Event): void {
+    // A fresh iframe fires `load` for its empty document before it gets the page.
+    const frame = event.target instanceof HTMLIFrameElement ? event.target : null;
+    if (!this.armed || !frame?.hasAttribute('src') || this.phase() === PREVIEW_FRAME_PHASE.Loaded) {
       return;
     }
     this.phase.set(PREVIEW_FRAME_PHASE.Loaded);
