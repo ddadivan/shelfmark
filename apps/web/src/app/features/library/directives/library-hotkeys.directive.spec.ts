@@ -13,6 +13,7 @@ import { LibraryFeedService } from '../services/library-feed.service';
 import { LibraryFilterService } from '../services/library-filter.service';
 import { LibrarySelectionService } from '../services/library-selection.service';
 import { LibraryHotkeysDirective } from './library-hotkeys.directive';
+import { LinkPreviewService } from '../../link-preview/services/link-preview.service';
 
 const link = (n: number): LinkResponse => ({ ...MOCK_LINKS[0], id: `id-${n}`, title: `Link ${n}` });
 const page = (items: LinkResponse[]): ListLinksResponse => ({
@@ -24,7 +25,12 @@ const page = (items: LinkResponse[]): ListLinksResponse => ({
 @Component({
   selector: 'app-hotkeys-host',
   imports: [LibraryHotkeysDirective],
-  providers: [LibraryFilterService, LibraryFeedService, LibrarySelectionService],
+  providers: [
+    LibraryFilterService,
+    LibraryFeedService,
+    LibrarySelectionService,
+    { provide: LinkPreviewService, useValue: { split: () => false } },
+  ],
   template: '<div appLibraryHotkeys></div>',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
