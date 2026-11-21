@@ -3463,6 +3463,14 @@
       },
       "exportHelp": {
         "text": "La guida all’esportazione dei preferiti mostra le scorciatoie del tuo sistema, Mac o Windows."
+      },
+      "linkPreview": {
+        "title": "Leggi i link proprio qui",
+        "text": "Un clic su un link lo apre accanto al tuo feed, così non perdi il segno. Passa dall'uno all'altro con ↑ e ↓, trascina il bordo per allargare o restringere la pagina e aprila in una nuova scheda quando serve. I video partono nel loro player; un sito che non si apre dentro altre app lo dice. Preferisci come prima? Impostazioni › Libreria › Clic su un link.",
+        "alt": "La libreria con una scheda evidenziata e la sua pagina aperta in un pannello accanto al feed."
+      },
+      "sidebarSections": {
+        "text": "Comprimi Fissati, Cartelle e Tag nella barra laterale; ognuno resta come lo hai lasciato."
       }
     },
     "sections": {
