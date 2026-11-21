@@ -101,6 +101,17 @@ export class LinkPreviewService {
   /** "Wider preview": the list hides until toggled back (session only). */
   readonly listHidden = signal(false);
   readonly listWidth = signal(this.readWidth());
+  /** Width of the whole split (list, handle and panel), measured by the page; `null` until then. */
+  private readonly splitWidth = signal<number | null>(null);
+  /** The widest list that still leaves the panel `PREVIEW_LIST_WIDTH.PanelMin` (#555). */
+  readonly listMax = computed(() => {
+    const split = this.splitWidth();
+    return split === null
+      ? PREVIEW_LIST_WIDTH.Max
+      : clampListWidth(Math.max(PREVIEW_LIST_WIDTH.Min, split - PREVIEW_LIST_WIDTH.PanelMin));
+  });
+  /** The list width on screen: the chosen one, narrowed while the window has no room for it. */
+  readonly shownListWidth = computed(() => Math.min(this.listWidth(), this.listMax()));
   readonly PREVIEW_LIST_WIDTH = PREVIEW_LIST_WIDTH;
 
   constructor() {
@@ -205,8 +216,12 @@ export class LinkPreviewService {
     this.listHidden.update((hidden) => !hidden);
   }
 
+  setSplitWidth(width: number): void {
+    this.splitWidth.set(width);
+  }
+
   setListWidth(width: number): void {
-    const next = clampListWidth(width);
+    const next = Math.min(clampListWidth(width), this.listMax());
     this.listWidth.set(next);
     try {
       this.doc.defaultView?.localStorage.setItem(PREVIEW_LIST_WIDTH.StorageKey, String(next));

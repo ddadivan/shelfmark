@@ -67,7 +67,8 @@
     [class.library__split--open]="splitView.open() && !preview.split()"
     [class.library__split--preview]="preview.split()"
     [class.library__split--wider]="preview.split() && preview.listHidden()"
-    [style.--library-preview-list]="preview.listWidth() / 16 + 'rem'"
+    [style.--library-preview-list]="preview.shownListWidth() / 16 + 'rem'"
+    (appElementWidth)="preview.setSplitWidth($event)"
   >
     <div
       class="library__half"
@@ -634,9 +635,9 @@
     @if (preview.split()) { @if (!preview.listHidden()) {
     <ui-resize-handle
       class="library__preview-handle"
-      [value]="preview.listWidth()"
+      [value]="preview.shownListWidth()"
       [min]="preview.PREVIEW_LIST_WIDTH.Min"
-      [max]="preview.PREVIEW_LIST_WIDTH.Max"
+      [max]="preview.listMax()"
       [label]="'preview.resize' | transloco"
       [hint]="'preview.resizeHint' | transloco"
       (valueChange)="preview.setListWidth($event)"

@@ -5,7 +5,7 @@ describe('clampListWidth', () => {
   it('keeps the width in range', () => {
     expect(clampListWidth(450.4)).toBe(450);
     expect(clampListWidth('100')).toBe(300);
-    expect(clampListWidth(9999)).toBe(640);
+    expect(clampListWidth(9999)).toBe(2400);
   });
 
   it('falls back to the default', () => {

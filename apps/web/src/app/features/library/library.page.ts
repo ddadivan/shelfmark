@@ -77,6 +77,7 @@ import { ExtensionBannerComponent } from './components/extension-banner/extensio
 import { SplitRightHalfComponent } from './components/split-right-half/split-right-half.component';
 import { SplitRelatedService } from './services/split-related.service';
 import { SplitViewService } from './services/split-view.service';
+import { ElementWidthDirective } from './directives/element-width.directive';
 import { TidyEntryComponent } from '../ai/components/tidy-entry/tidy-entry.component';
 import { SORT_OPTION_KEYS } from './models/sort-option-keys.const';
 import { SORT_OPTIONS } from './models/sort-options.const';
@@ -130,6 +131,7 @@ const SKELETON_COUNT = 8;
     NoticeComponent,
     PickerMenuComponent,
     ProgressBarComponent,
+    ElementWidthDirective,
     PreviewPageComponent,
     PreviewPanelComponent,
     ResizeHandleComponent,
