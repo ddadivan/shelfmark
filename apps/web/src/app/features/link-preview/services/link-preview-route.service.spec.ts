@@ -100,6 +100,16 @@ describe('LinkPreviewRoute', () => {
     expect(router.url).toBe('/links');
   });
 
+  it('drops the parameter instead of going Back once the frame added history entries', async () => {
+    const { route, router, back } = await setup();
+    await route.open('a');
+    const length = window.history.length;
+    vi.spyOn(window.history, 'length', 'get').mockReturnValue(length + 2);
+    await route.close();
+    expect(back).not.toHaveBeenCalled();
+    expect(router.url).toBe('/links');
+  });
+
   it('removes the parameter on close when the page was reloaded on a preview', async () => {
     const { route, router, back } = await setup();
     await router.navigateByUrl('/links?preview=abc&q=x');

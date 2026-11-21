@@ -3,14 +3,13 @@ import {
   Component,
   ElementRef,
   Renderer2,
+  afterRenderEffect,
   computed,
-  effect,
   inject,
   input,
   numberAttribute,
   output,
   signal,
-  untracked,
   viewChild,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
@@ -21,9 +20,6 @@ import { PREVIEW_FRAME_DEFAULT_TIMEOUT_MS } from './models/preview-frame-default
 import { PREVIEW_FRAME_PHASE } from './models/preview-frame-phase.const';
 import type { PreviewFramePhase } from './models/preview-frame-phase.type';
 
-/** What the iframe shows while it has no accepted page. */
-const BLANK = 'about:blank';
-
 /**
  * Shows a third-party page in a sandboxed `iframe` with the progress bar on top while it loads.
  *
@@ -32,7 +28,9 @@ const BLANK = 'about:blank';
  * banned, so the template has no `src` binding; instead `src` is validated by `framableUrl`
  * (absolute `https:`, no credentials, not the app's own origin) and only then written with
  * `Renderer2.setAttribute`. A refused `src` never touches the iframe: the frame is hidden,
- * stays blank and `rejected` emits. The iframe is sandboxed (`allow-scripts allow-same-origin
+ * stays blank and `rejected` emits. Every accepted page gets a fresh iframe: changing the `src`
+ * of a frame that already shows a page would add an entry to the browser history, so Back (and
+ * an owner that closes with Back) would step the frame instead of the app. The iframe is sandboxed (`allow-scripts allow-same-origin
  * allow-popups allow-forms`: the page needs scripts and its own storage; no top navigation, no
  * downloads, no modals), sends no referrer and gets only the features a video player needs.
  *
@@ -76,23 +74,23 @@ export class PreviewFrameComponent {
 
   /** The `load` of an empty iframe (`about:blank`) is not the page's. */
   private armed = false;
-  private showing = false;
+
+  private readonly accepted = computed(() => framableUrl(this.src(), this.ownOrigin));
+  /** Keys the iframe: a new accepted page (or none) re-creates it. */
+  protected readonly frameKeys = computed(() => [this.accepted() ?? '']);
 
   protected readonly phase = signal<PreviewFramePhase>(PREVIEW_FRAME_PHASE.Loading);
   protected readonly loading = computed(() => this.phase() === PREVIEW_FRAME_PHASE.Loading);
 
   constructor() {
-    effect((onCleanup) => {
-      const url = framableUrl(this.src(), this.ownOrigin);
+    // After render, so a re-created iframe is the one that gets the page.
+    afterRenderEffect((onCleanup) => {
+      const url = this.accepted();
       const timeout = this.timeoutMs();
-      const iframe = untracked(this.frame).nativeElement;
+      const iframe = this.frame().nativeElement;
 
       if (url === null) {
         this.armed = false;
-        if (this.showing) {
-          this.renderer.setAttribute(iframe, 'src', BLANK);
-          this.showing = false;
-        }
         this.phase.set(PREVIEW_FRAME_PHASE.Rejected);
         this.rejected.emit();
         return;
@@ -100,7 +98,6 @@ export class PreviewFrameComponent {
 
       this.phase.set(PREVIEW_FRAME_PHASE.Loading);
       this.armed = true;
-      this.showing = true;
       // The one place a URL reaches the iframe: `url` is the output of `framableUrl` above.
       this.renderer.setAttribute(iframe, 'src', url);
 

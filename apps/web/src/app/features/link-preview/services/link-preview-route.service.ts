@@ -1,4 +1,4 @@
-import { Location } from '@angular/common';
+import { DOCUMENT, Location } from '@angular/common';
 import { computed, inject, Service, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
@@ -21,6 +21,7 @@ const SIDE_BY_SIDE_PARAMS = { split: null, related: null } as const;
 export class LinkPreviewRoute {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
+  private readonly history = inject(DOCUMENT).defaultView?.history;
   private readonly viewport = inject(ViewportService);
   private readonly settings = inject(UserSettingsStore);
   private readonly url = toSignal(
@@ -30,8 +31,12 @@ export class LinkPreviewRoute {
     ),
     { initialValue: this.router.url },
   );
-  /** True while the open preview was pushed as a history entry by this app: close goes Back. */
-  private pushedEntry = false;
+  /**
+   * The history length right after this app pushed the open preview, else `null`. Close goes Back
+   * only while the length is unchanged: a page the frame navigated to inside itself adds entries
+   * to the same history, and Back would step the frame instead of closing.
+   */
+  private pushedLength: number | null = null;
   /** "Show sidebar" on the rail: the full sidebar while the preview stays open. */
   private readonly sidebarWanted = signal(false);
 
@@ -46,21 +51,24 @@ export class LinkPreviewRoute {
   async open(linkId: string): Promise<void> {
     const switching = this.isOpen();
     if (!switching) {
-      this.pushedEntry = true;
       this.sidebarWanted.set(false);
     }
-    await this.router.navigate([], {
+    const done = await this.router.navigate([], {
       queryParams: { [PREVIEW_QUERY_PARAM]: linkId, ...SIDE_BY_SIDE_PARAMS },
       queryParamsHandling: 'merge',
       replaceUrl: switching,
     });
+    if (!switching && done) {
+      this.pushedLength = this.history?.length ?? null;
+    }
   }
 
   /** Closes the preview: Back when this app opened it (the feed keeps its scroll), else drop the parameter. */
   async close(): Promise<void> {
     this.sidebarWanted.set(false);
-    if (this.pushedEntry) {
-      this.pushedEntry = false;
+    const pushedLength = this.pushedLength;
+    this.pushedLength = null;
+    if (pushedLength !== null && this.history?.length === pushedLength) {
       this.location.back();
       return;
     }
