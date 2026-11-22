@@ -229,31 +229,6 @@ app-link-card ui-card {
   }
 }
 
-// First load settle (#562, Motion «First load settle», pending the author's decision): while the
-// first page of an app load renders, `FirstSettleDirective` puts `shell__main--settle` on the main
-// column and the page's top-level blocks fade in 60 ms apart (fade only: no rise, nothing on
-// scroll). The step is 3/4 of `duration-instant`; the class goes once the first page has settled,
-// so later pages never animate. Reduced motion: none.
-.shell__main--settle > :not(router-outlet) > * {
-  --settle-step: calc(var(--duration-instant) * 0.75);
-
-  animation: ui-reveal var(--duration-base) var(--ease-out) both;
-
-  @for $i from 2 through 6 {
-    &:nth-child(#{$i}) {
-      animation-delay: calc(var(--settle-step) * #{$i - 1});
-    }
-  }
-
-  &:nth-child(n + 7) {
-    animation-delay: calc(var(--settle-step) * 6);
-  }
-
-  @include reduced-motion {
-    animation: none;
-  }
-}
-
 // Root font size of the landing and sign-in on very wide screens (#352). The app shell takes the
 // steps in libs/ui `global.scss` (100% up to 3200 CSS px, then 112.5%, 145%, 175%); these two pages are
 // tuned on their own, so each has its own steps here. `--root-base` is multiplied by the text size
