@@ -62,8 +62,6 @@ Motion defines Shelfmark's few animations. The one signature moment is saving a 
 | Panel resize (#562) | the link preview card of the Add link dialog changes height smoothly when its content arrives (skeleton → card, a notice) instead of jumping (`uiAutoHeight`: a ResizeObserver on the inner content, the outer height runs old → new, then back to `auto`; the one height animation besides the tree). The preview panel body is always full height, so it has nothing to animate | 200 ms `ease-in-out` |
 | Badge pop-in (#562) | a counter badge that appears (Feedback inbox, What's new) scales 0.6→1 with a small overshoot and fades in; a changing number uses Number change | 200 ms `ease-spring` |
 | Two-line rise (#562) | an empty state's title and text, and a Welcome step's title and text, rise 8 px and fade in, the second line 60 ms after the first | 200 ms `ease-out` |
-| Stacked thumbnails lift (#562) | in the multi-link toast and the drag deck badge the stacked thumbnails lift on hover with distance falloff: the hovered one rises 4 px, its neighbours 2 px and 1 px | 200 ms `ease-out` |
-| Folder tile fan-out (#562) | hovering a subfolder tile with stacked previews fans the previews out (rotate ±6°, spread 6 px) and settles them back on leave | 200 ms `ease-out` |
 
 Feed shifts and deletes use FLIP: measure positions before and after, then animate `transform` from the old place. In Angular: `animate.leave` on the removed card plus a small FLIP helper in `libs/ui` (no library).
 
@@ -75,7 +73,7 @@ The drag preview's tilt is the one physics-driven motion. `libs/ui` `utils/sprin
 
 `prefers-reduced-motion: reduce` removes all movement and scale. Dialogs, menus, toasts, sheets and the landed card simply fade in (200 ms), the sage ring still fades so the new card is findable, colour transitions stay. Spinners and the progress bar keep moving, slower — they are status, not decoration.
 
-The app's Settings › Appearance › Animations «Reduced» setting (`html[data-motion="reduced"]`, `ReducedMotion` for scripts) is the same switch: every moment above follows it. For the #562 batch that means: the drag preview keeps the static behaviour of before (no tilt, no wobble, no fly, no spring back: it disappears on release); fluid hover fades the highlight in place without travelling; the merged selection, colour changes and the drawn check stay (no movement); icon swaps, text swaps and number changes cross-fade without scale, blur or slide; the error shake becomes the error border alone; the clear dissolve and the tooltip travel are instant; the panel resize jumps; badges, two-line text and thumbnails appear without scale or rise; the folder tile previews stay stacked; the status shimmer stops (static muted text).
+The app's Settings › Appearance › Animations «Reduced» setting (`html[data-motion="reduced"]`, `ReducedMotion` for scripts) is the same switch: every moment above follows it. For the #562 batch that means: the drag preview keeps the static behaviour of before (no tilt, no wobble, no fly, no spring back: it disappears on release); fluid hover fades the highlight in place without travelling; the merged selection, colour changes and the drawn check stay (no movement); icon swaps, text swaps and number changes cross-fade without scale, blur or slide; the error shake becomes the error border alone; the clear dissolve and the tooltip travel are instant; the panel resize jumps; badges and two-line text appear without scale or rise; the status shimmer stops (static muted text).
 
 ## Button loading
 
