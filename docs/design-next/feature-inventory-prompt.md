@@ -49,14 +49,33 @@ One file, `docs/design-next/features.md`, in English. Structure:
    ```
 
    IDs are short and stable (`LIB-01`, `CAP-03`, `ORG-05`, ...).
-4. **Cross-cutting lists** (tables): all settings with their options and defaults; all keyboard shortcuts; all toasts; all empty states; all error messages and recovery actions; all confirmation dialogs; all limits and quotas; AI features with their modes and tiers; appearance options (themes, density, text size, fonts, card options); languages.
-5. **Observations**: duplicates, inconsistencies, dead ends, features reachable from only one platform, doc vs code disagreements, "designed, not built" items. Facts only, no fixes.
-6. **Counts**: number of features, routes, dialogs, settings, shortcuts.
+
+4. **Screen catalogue**: every page, dialog, sheet, drawer, menu, popover and panel, with its full contents, so a designer could rebuild it without opening the app:
+
+   ```
+   ### <SCR-ID> <Screen name>
+   - Route / how it opens: <URL, or the control that opens it>
+   - Platforms: <desktop / tablet / phone / extension; what changes on each>
+   - Regions: <top to bottom, left to right: header, toolbar, list, footer, ...>
+   - Shown information: <every piece of data on the screen and on each repeated item; e.g. a link card: preview, title, domain, favicon, date, tags, folder, summary, note, star>
+   - Controls: <every button, link, menu item, toggle, tab, chip; for each: label (or icon + accessible name), what it does, enabled or hidden when, shortcut>
+   - Form fields: <for each field: label, type (text, url, select, tags, switch, ...), required or optional, default, placeholder or hint, limits (length, count, format), validation messages, when it is disabled or hidden>
+   - Primary action: <the main action and what happens after it: navigation, toast, undo, close>
+   - States: <empty, loading, error, offline, AI off, limit reached, demo, read-only; the exact copy of each>
+   - Features: <feature IDs from the catalogue>
+   - Source: <main files>
+   ```
+
+   For menus (card menu, folder menu, account menu, bulk bar, ...), list every item in order with its condition. For each action that changes data, note: confirmation (with its copy), undo, toast, optimistic or not.
+
+5. **Cross-cutting lists** (tables): all settings with their options and defaults; all keyboard shortcuts; all toasts; all empty states; all error messages and recovery actions; all confirmation dialogs; all limits and quotas; AI features with their modes and tiers; appearance options (themes, density, text size, fonts, card options); languages.
+6. **Observations**: duplicates, inconsistencies, dead ends, features reachable from only one platform, doc vs code disagreements, "designed, not built" items. Facts only, no fixes.
+7. **Counts**: number of features, screens, routes, dialogs, form fields, settings, shortcuts.
 
 ## Rules
 
 - Do not change application code, docs other than the new file, or `docs/design-next/README.md`.
 - Describe what the user sees and does, in plain words; names of components and files go in "Source" only.
-- Be complete rather than short: a missed feature is worse than a long file.
+- Be complete rather than short: a missed feature, button or field is worse than a long file. If one file gets too large to work with, split it into `features.md` (catalogue, cross-cutting lists, observations) and `screens.md` (screen catalogue), both in `docs/design-next/`.
 - Commit `features.md` on your session's branch with a Conventional Commit (`docs(design): feature inventory`) and push it. Never commit to `main` or `stage`, and do not open a pull request unless asked.
 - At the end, report the file path, the counts, and the five most important observations.
