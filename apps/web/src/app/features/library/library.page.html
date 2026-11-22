@@ -462,6 +462,7 @@
             cdkDrag
             [cdkDragData]="link"
             [attr.data-link-id]="link.id"
+            [class.library__item--selected]="selection.has(link.id)"
             [class.library__item--current]="preview.split() && preview.currentId() === link.id"
             [attr.aria-current]="preview.split() && preview.currentId() === link.id ? 'true' : null"
             [cdkDragDisabled]="compact()"

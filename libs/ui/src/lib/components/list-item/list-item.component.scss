@@ -11,8 +11,16 @@
   padding: var(--density-row-padding);
   color: var(--text);
   cursor: pointer;
-  border-radius: var(--radius-md);
-  transition: background-color var(--duration-fast) var(--ease-out);
+  border-radius: var(--ui-list-item-radius, var(--radius-md));
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-radius var(--duration-base) var(--ease-in-out);
+
+  // Merged selection (#562): a page that joins neighbouring checked rows sets
+  // `--ui-list-item-radius`; the corners change instantly under reduced motion.
+  @include reduced-motion {
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
 }
 
 :host(.ui-list-item--compact) {
