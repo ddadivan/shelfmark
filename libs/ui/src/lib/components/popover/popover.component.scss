@@ -14,7 +14,10 @@
 }
 
 // A small glass panel like the menu (18px corners). The gap to the trigger is its margin: the
-// pointer crosses it within the hover-intent delay of `uiPopoverTrigger`.
+// pointer crosses it within the hover-intent delay of `uiPopoverTrigger`. A feature that needs a
+// taller panel (a list of five rows, #572) sets `--ui-popover-max-block-size` on the `ui-popover`
+// element; the content scrolls only past that. Never sideways: content wider than the panel is
+// the feature's to truncate.
 .ui-popover__surface {
   @include glass;
 
@@ -23,10 +26,10 @@
   gap: var(--space-2);
   min-inline-size: rem(160px);
   max-inline-size: min(#{rem(320px)}, calc(100vw - #{rem(16px)}));
-  max-block-size: min(#{rem(320px)}, calc(100vh - #{rem(16px)}));
+  max-block-size: min(var(--ui-popover-max-block-size, #{rem(320px)}), calc(100vh - #{rem(16px)}));
   padding: rem(10px) rem(12px) rem(12px);
   margin: var(--space-1) 0;
-  overflow-y: auto;
+  overflow: hidden auto;
   overscroll-behavior: contain;
   color: var(--text);
   border-radius: rem(18px);

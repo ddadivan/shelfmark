@@ -8,7 +8,7 @@
   >
     {{ 'ai.related.button' | transloco: { count: rows().length } }}
   </ui-button>
-  <ui-popover #popover [heading]="'ai.related.title' | transloco">
+  <ui-popover #popover class="related-links__popover" [heading]="'ai.related.title' | transloco">
     <ul class="related-links__list">
       @for (row of rows(); track row.link.id) {
         <li>

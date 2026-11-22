@@ -140,9 +140,9 @@ test.describe('search by meaning (AI-3, mock API)', () => {
   test(
     'the link preview offers related links and switches to the one chosen (#572)',
     { tag: E2E_TAG.Mobile },
-    async ({ page }) => {
+    async ({ page, context }) => {
       // Third-party pages never leave the test machine: framed documents get a tiny local page.
-      await page.context().route(/^https:\/\/(?!localhost|127\.0\.0\.1)/, (route) =>
+      await context.route(/^https:\/\/(?!localhost|127\.0\.0\.1)/, (route) =>
         route.request().resourceType() === 'document'
           ? route.fulfill({
               contentType: 'text/html',
@@ -151,6 +151,11 @@ test.describe('search by meaning (AI-3, mock API)', () => {
           : route.abort(),
       );
       await openLibrary(page);
+      // A real phone taps (pointer and touch events), a desktop clicks.
+      const press = async (target: Locator): Promise<void> =>
+        test.info().project.use.hasTouch ? target.tap() : target.click();
+      const opened: string[] = [];
+      context.on('page', (other) => opened.push(other.url()));
       await page
         .locator('ui-card')
         .filter({ hasText: 'Nano Puff jacket' })
@@ -159,14 +164,25 @@ test.describe('search by meaning (AI-3, mock API)', () => {
       await page.getByRole('menuitem', { name: /Preview here/ }).click();
       await expect(page).toHaveURL(/[?&]preview=/);
       const before = page.url();
-      await page.getByRole('button', { name: /^Related · \d+$/ }).click();
+      await press(page.getByRole('button', { name: /^Related · \d+$/ }));
       const related = page.getByRole('dialog', { name: 'Related on your shelf' });
       await expect(related).toBeVisible();
       await expect(related).toContainText('Close to:');
-      await related.getByRole('listitem').first().getByRole('button').click();
+      // Up to five rows fit: no scroll either way.
+      const scroll = await related.evaluate((element) => {
+        const panel = element.closest('.ui-popover__surface') ?? element;
+        return {
+          sideways: panel.scrollWidth > panel.clientWidth,
+          down: panel.scrollHeight > panel.clientHeight,
+        };
+      });
+      expect(scroll).toEqual({ sideways: false, down: false });
+      await press(related.getByRole('listitem').first().getByRole('button'));
       await expect(related).toBeHidden();
       await expect(page).toHaveURL(/[?&]preview=/);
       expect(page.url()).not.toBe(before);
+      // The chosen link opens here, in the preview, never in a new tab.
+      expect(opened).toEqual([]);
     },
   );
 
