@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { Toolbar, ToolbarWidget } from '@angular/aria/toolbar';
 import { IconComponent } from '../icon/icon.component';
+import { NumberFlowComponent } from '../number-flow/number-flow.component';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
@@ -29,7 +30,14 @@ import type { SavedViewsLayout } from './models/saved-views-layout.type';
  */
 @Component({
   selector: 'ui-saved-views',
-  imports: [IconComponent, RippleDirective, TooltipDirective, Toolbar, ToolbarWidget],
+  imports: [
+    IconComponent,
+    NumberFlowComponent,
+    RippleDirective,
+    TooltipDirective,
+    Toolbar,
+    ToolbarWidget,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-saved-views',

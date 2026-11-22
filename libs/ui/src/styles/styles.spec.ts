@@ -173,6 +173,8 @@ describe('motion mixins', () => {
     ['enter(disclose)', 'ui-disclose-in var(--duration-base) var(--ease-in-out) both'],
     ['enter(icon)', 'ui-icon-in var(--duration-base) var(--ease-out) both'],
     ['leave(icon)', 'ui-icon-out var(--duration-base) var(--ease-out) both'],
+    ['enter(digit)', 'ui-digit-in var(--duration-base) var(--ease-out) both'],
+    ['leave(digit)', 'ui-digit-out var(--duration-base) var(--ease-out) both'],
     ['enter(fade)', 'ui-reveal var(--duration-base) var(--ease-out) both'],
     ['enter(toast)', 'ui-toast-in var(--duration-slow) var(--ease-spring) both'],
     ['enter(sheet)', 'ui-sheet-in var(--duration-slow) var(--ease-drawer) both'],
@@ -189,6 +191,7 @@ describe('motion mixins', () => {
   it.each([
     'enter(pop)',
     'enter(icon)',
+    'enter(digit)',
     'enter(toast)',
     'enter(sheet)',
     'enter(drawer)',
@@ -197,12 +200,15 @@ describe('motion mixins', () => {
   ])('%s falls back to a fade in 200 ms under reduced motion', (include) => {
     const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
     expect(reduced).toContain('animation: ui-reveal var(--duration-base) var(--ease-out) both');
-    expect(reduced).not.toMatch(/ui-(pop-in|icon-in|toast-in|sheet-in|drawer-in|spinner-grow)/);
+    expect(reduced).not.toMatch(
+      /ui-(pop-in|icon-in|digit-in|toast-in|sheet-in|drawer-in|spinner-grow)/,
+    );
   });
 
   it.each([
     'leave(pop)',
     'leave(icon)',
+    'leave(digit)',
     'leave(toast)',
     'leave(sheet)',
     'leave(drawer)',
@@ -211,7 +217,7 @@ describe('motion mixins', () => {
     const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
     expect(reduced).toContain('ui-fade-out');
     expect(reduced).not.toMatch(
-      /ui-(pop-out|icon-out|toast-out|sheet-out|drawer-out|spinner-shrink)/,
+      /ui-(pop-out|icon-out|digit-out|toast-out|sheet-out|drawer-out|spinner-shrink)/,
     );
   });
 
@@ -278,6 +284,8 @@ describe('motion mixins', () => {
       'ui-toast-count',
       'ui-icon-in',
       'ui-icon-out',
+      'ui-digit-in',
+      'ui-digit-out',
       'ui-spin',
       'ui-spinner-in',
       'ui-spinner-grow',

@@ -58,6 +58,12 @@ $enter-presets: (
     'duration': 'base',
     'ease': 'in-out',
   ),
+  // A digit that changed (`ui-number-flow`): slides 0.5em from below (up) or above (down).
+  'digit': (
+    'keyframes': 'ui-digit-in',
+    'duration': 'base',
+    'ease': 'out',
+  ),
   // An icon that replaces another (`ui-icon-swap`): scales up from 0.5 out of a 4px blur.
   'icon': (
     'keyframes': 'ui-icon-in',
@@ -107,6 +113,11 @@ $leave-presets: (
     'keyframes': 'ui-disclose-out',
     'duration': 'fast',
     'ease': 'in-out',
+  ),
+  'digit': (
+    'keyframes': 'ui-digit-out',
+    'duration': 'base',
+    'ease': 'out',
   ),
   // The icon that is replaced: scales to 0.5, blurs 4px and fades.
   'icon': (
@@ -339,6 +350,27 @@ $leave-presets: (
       opacity: 0;
       filter: blur(#{rem(4px)});
       transform: scale(0.5);
+    }
+  }
+
+  // Number change (#562): `--ui-flow-dir` is 1 when the number grows (digits move up) and -1 when
+  // it shrinks (down). The new digit rises out of 0.5em below, the old one leaves 0.5em above.
+  @keyframes ui-digit-in {
+    from {
+      opacity: 0;
+      transform: translateY(calc(var(--ui-flow-dir, 1) * 0.5em));
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes ui-digit-out {
+    to {
+      opacity: 0;
+      transform: translateY(calc(var(--ui-flow-dir, 1) * -0.5em));
     }
   }
 

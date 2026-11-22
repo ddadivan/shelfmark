@@ -35,6 +35,7 @@ export * from './lib/components/menu';
 export * from './lib/components/meter';
 export * from './lib/components/bar-chart';
 export * from './lib/components/notice';
+export * from './lib/components/number-flow';
 export * from './lib/components/panel';
 export * from './lib/components/picker-list';
 export * from './lib/components/picker-menu';
