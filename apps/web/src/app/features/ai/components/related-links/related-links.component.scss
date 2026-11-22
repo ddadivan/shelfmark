@@ -2,16 +2,24 @@
 
 // "Related on your shelf" (#572): a "Related · N" button in the link preview toolbar (the phone
 // preview's bottom bar) and a popover of compact rows. The rows fit the popover: titles and the
-// "why" line truncate.
+// "why" line truncate, so it never scrolls sideways; its five rows fit without a vertical scroll.
 :host {
   display: contents;
+}
+
+// Tall enough for the five rows (about 54px each) under the heading; more would scroll.
+.related-links__popover {
+  --ui-popover-max-block-size: #{rem(416px)};
 }
 
 .related-links__list {
   display: flex;
   flex-direction: column;
   gap: rem(2px);
-  width: min(20rem, calc(100vw - 4rem));
+
+  // The popover's widest content box: 320px less its 12px side padding.
+  width: min(#{rem(296px)}, calc(100vw - #{rem(40px)}));
+  min-width: 0;
   padding: 0;
   margin: 0;
   list-style: none;
