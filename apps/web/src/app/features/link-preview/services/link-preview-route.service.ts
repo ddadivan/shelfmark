@@ -83,7 +83,6 @@ export class LinkPreviewRoute {
       url,
       clickAction: library.clickAction,
       newTabHosts: library.previewNewTabHosts,
-      wide: this.viewport.wide(),
       previewOpen: this.split(),
       modifier: event !== undefined && (event.metaKey || event.ctrlKey),
     });
