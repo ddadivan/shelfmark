@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Extension: save open tabs</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+/* The same popup frame as Extension.dc.html: 360 × 600 in every state, footer on the bottom edge. */
+.ex-pop{width:360px;height:600px;box-sizing:border-box;background:var(--surface);border-radius:22px;box-shadow:var(--shadow-float);padding:18px;display:flex;flex-direction:column;gap:14px;overflow:hidden;position:relative}
+.ex-head{display:flex;align-items:center;gap:10px;min-height:32px}
+.ex-head h3{margin:0;font-size:16px;font-weight:600;line-height:22px;flex:1;min-width:0}
+.ex-preview{display:flex;gap:12px;align-items:center;padding:8px;border-radius:16px;background:var(--bg)}
+.ex-thumb{width:56px;aspect-ratio:4/3;border-radius:10px;background:var(--accent-bg);flex:none}
+.ex-host{display:block;font-size:12px;line-height:16px;color:var(--text-muted)}
+.ex-title{display:block;font-size:14px;font-weight:600;line-height:19px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ex-text{margin:0;font-size:13px;line-height:19px;color:var(--text-muted)}
+.ex-foot{display:flex;gap:8px;align-items:center;margin-top:auto}
+.ex-foot .sm-link{font-size:13px;margin-right:auto}
+.ex-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:0 8px}
+.ex-center h3{margin:0;font-size:18px;line-height:24px;font-weight:600;letter-spacing:-0.01em}
+.ex-done{width:64px;height:64px;border-radius:50%;background:var(--accent);color:var(--surface);display:grid;place-items:center;box-shadow:0 0 0 8px var(--accent-bg);animation:ex-pop 360ms var(--ease-spring) both}
+@keyframes ex-pop{from{transform:scale(.6);opacity:0}}
+
+/* Entry: the tabs button on the end of the form heading. */
+.ex-tabs-btn{gap:6px;font-weight:500}
+.ex-tabs-btn .sm-badge{height:18px;padding:0 6px;font-size:11px}
+
+/* The tab list: a select-all line, then rows that scroll inside (like the folder picker). */
+.tb-all{display:flex;align-items:center;gap:10px;padding:0 10px;min-height:32px;font-size:13px;line-height:18px}
+.tb-all__count{flex:1;font-weight:600}
+.tb-all__meta{color:var(--text-muted);font-size:12px}
+.tb-list{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;margin:0 -8px;padding:0 0 2px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tb-row{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 18px 6px 18px;cursor:pointer;border-radius:12px;margin:0 0}
+.tb-row:hover{background:var(--surface-hover)}
+.tb-row--off .tb-row__text{opacity:.62}
+.tb-fav{width:20px;height:20px;border-radius:6px;flex:none;display:grid;place-items:center;font-size:11px;font-weight:600;background:var(--surface-pressed);color:var(--text)}
+.tb-row__text{flex:1;min-width:0;display:flex;flex-direction:column}
+.tb-row__title{font-size:13px;line-height:18px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-row__host{font-size:12px;line-height:16px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-state{flex:none;width:22px;height:22px;display:grid;place-items:center}
+.tb-tick{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--surface);display:grid;place-items:center;animation:ex-pop 240ms var(--ease-spring) both}
+.tb-spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--surface-pressed);border-top-color:var(--accent);animation:tb-spin .8s linear infinite}
+@keyframes tb-spin{to{transform:rotate(360deg)}}
+.tb-compact{display:flex;flex-direction:column;gap:10px}
+.tb-compact .sm-field{gap:6px}
+.tb-fold{display:flex;gap:8px}
+.tb-fold > .sm-field{flex:1;min-width:0}
+
+/* Saving: the inline progress line sits where the select-all line was. */
+.tb-progress{display:flex;flex-direction:column;gap:8px;padding:0 10px;min-height:32px;justify-content:center}
+.tb-progress__label{font-size:13px;line-height:18px;font-weight:600}
+.tb-progress__bar{height:2px;border-radius:2px;background:var(--surface-hover);overflow:hidden}
+.tb-progress__bar span{display:block;height:100%;width:var(--p);background:var(--accent);border-radius:2px;transition:width var(--duration-base) var(--ease-out)}
+
+/* Done: the saving moment for many links, a small fanned stack of cards dropping in. */
+.tb-stack{position:relative;width:200px;height:132px;margin-bottom:6px}
+.tb-card{position:absolute;left:30px;top:10px;width:140px;background:var(--surface);border-radius:14px;box-shadow:var(--shadow-card);overflow:hidden;transform:rotate(var(--r)) translate(var(--x),0);animation:tb-drop 520ms var(--ease-spring) backwards;animation-delay:var(--d)}
+.tb-card__media{aspect-ratio:16/10;background:var(--accent-bg)}
+.tb-card__media[data-tone="1"]{background:var(--surface-hover)}
+.tb-card__media[data-tone="2"]{background:var(--surface-pressed)}
+.tb-card__line{height:8px;border-radius:4px;background:var(--surface-pressed);margin:9px 10px 0}
+.tb-card__line + .tb-card__line{width:50%;margin-bottom:10px;margin-top:6px}
+@keyframes tb-drop{from{opacity:0;transform:rotate(0deg) translate(0,-60px) scale(.8)}}
+.tb-fail{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;border-radius:16px;background:var(--bg);padding:6px 0}
+.tb-fail .tb-row{min-height:44px;padding:4px 12px;cursor:default}
+.tb-fail .tb-row:hover{background:transparent}
+.tb-fail__why{font-size:12px;line-height:16px;color:var(--danger)}
+@media (prefers-reduced-motion:reduce){.ex-done,.tb-card,.tb-tick{animation:none!important}.tb-spin{animation-duration:2.4s}}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+
+<section class="a-state" style="grid-column: 1 / -1;">
+<h2 class="a-cap">Save open tabs — proposal for review (not in the build yet)</h2>
+<p class="a-note" style="max-width: 860px;">Several open tabs go to Shelfmark in one go: the popup lists the tabs of the current window, all ticked except the ones already in the library, the person picks one folder and optional tags for all of them, Save. Same popup frame as <code>Extension.dc.html</code> (360 × 600, footer on the bottom edge), the same folder picker and tag field, the same saving moment. No note and no Fill in with AI here: those are about one page; with AI in auto mode the server still files and tags each new link afterwards, as for any save. Reading other tabs needs Chrome's <code>tabs</code> permission, asked only when the person first opens this view (optional permission, so the install warning stays as it is; state 2).</p>
+</section>
+
+<!-- 1 · Entry point on the normal form. -->
+<section class="a-state">
+<h2 class="a-cap">1 · The form gets a tabs button when the window has more than one tab</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="t1-h">
+<div class="ex-head"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><h3 id="t1-h">Save to Shelfmark</h3>
+<button class="sm-btn sm-btn--ghost sm-btn--sm ex-tabs-btn" aria-label="Save open tabs, 12 in this window"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="13" height="13" rx="3"/><path d="M4 15.5V6a2 2 0 0 1 2-2h9.5"/></svg>Tabs<span class="sm-badge">12</span></button></div>
+<div class="ex-preview"><span class="ex-thumb"></span><span style="min-width: 0;"><span class="ex-host">angular.dev</span><span class="ex-title">Signal Forms · Angular</span></span></div>
+<div class="sm-field"><label class="sm-field__label">Folder</label><button class="sm-field__control" style="text-align: left; font: inherit; color: inherit;"><span class="sm-fic sm-fic--sm fc-ocean" aria-hidden="true"></span><span class="sm-select__value">Angular</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+<div style="display: flex; gap: 6px; flex-wrap: wrap;"><button class="sm-chip sm-chip--clickable" aria-pressed="true">Angular</button><button class="sm-chip sm-chip--neutral sm-chip--clickable">Unsorted</button><button class="sm-chip sm-chip--neutral sm-chip--clickable">Courses</button></div></div>
+<div class="sm-field"><label class="sm-field__label">Tags</label><div class="sm-field__control sm-taginput"><input placeholder="Add tag"></div></div>
+<div class="sm-field"><label class="sm-field__label">Note</label><div class="sm-field__control"><input placeholder="Why are you saving this?"></div></div>
+<div class="ex-foot"><a href="#" class="sm-link">Open Shelfmark</a><button class="sm-btn sm-btn--primary" style="min-width: 132px;">Save</button></div>
+</div>
+<p class="a-note">A quiet ghost button on the end of the heading: icon, "Tabs" and the count of tabs that can be saved (http/https only, the same rule as the single save). Hidden with one tab. The count needs no permission: <code>chrome.tabs.query</code> returns the tabs without URLs and titles, which is enough to count them. Alt+Shift+T opens this view straight away (changeable in the browser's shortcuts). The single-page flow stays the default and is unchanged.</p>
+</section>
+
+<!-- 2 · One-time permission. -->
+<section class="a-state">
+<h2 class="a-cap">2 · First time only: allow reading the open tabs</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="t2-h">
+<div class="ex-head"><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h3>Save open tabs</h3></div>
+<div class="ex-center">
+<svg width="200" height="130" viewBox="0 0 200 130" aria-hidden="true"><rect x="40" y="34" width="120" height="80" rx="12" fill="var(--surface)" stroke="var(--border)"/><rect x="52" y="22" width="40" height="18" rx="6" fill="var(--surface-pressed)"/><rect x="96" y="22" width="40" height="18" rx="6" fill="var(--accent-bg)" stroke="var(--accent)"/><rect x="140" y="22" width="20" height="18" rx="6" fill="var(--surface-pressed)"/><rect x="56" y="56" width="88" height="8" rx="4" fill="var(--surface-pressed)"/><rect x="56" y="72" width="60" height="8" rx="4" fill="var(--surface-pressed)"/><path d="M128 74h14v28l-7-5.5-7 5.5z" fill="var(--accent)"/></svg>
+<h3 id="t2-h">Let Shelfmark see your tabs</h3>
+<p class="ex-text">To list the tabs in this window, Chrome asks once to let Shelfmark read their addresses and titles. They stay in your browser until you press Save, and only the tabs you tick are sent.</p>
+</div>
+<div class="ex-foot"><button class="sm-btn sm-btn--ghost">Not now</button><button class="sm-btn sm-btn--primary" style="flex: 1;">Continue</button></div>
+</div>
+<p class="a-note">Continue calls <code>chrome.permissions.request({ permissions: ['tabs'] })</code>; Chrome shows its own prompt ("Read your browsing history" is how Chrome words the tabs permission, so the copy here explains it first). Granted: state 3. Declined: back to the form with nothing changed; the tabs button stays and asks again next time. The permission is optional in the manifest, so the install warning and the store review of the single save do not change. Removing it in Chrome's extension settings brings this screen back.</p>
+</section>
+
+<!-- 3 · The tab list. -->
+<section class="a-state">
+<h2 class="a-cap">3 · Pick the tabs, one folder and tags for all, Save</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="t3-h">
+<div class="ex-head"><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h3 id="t3-h">Save open tabs</h3></div>
+<label class="tb-all"><input type="checkbox" class="sm-check" checked aria-label="Select all tabs"><span class="tb-all__count">9 of 11 selected</span><span class="tb-all__meta">2 already saved</span></label>
+<div class="tb-list" role="group" aria-label="Open tabs">
+<label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">A</span><span class="tb-row__text"><span class="tb-row__title">Signal Forms · Angular</span><span class="tb-row__host">angular.dev</span></span></label>
+<label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">A</span><span class="tb-row__text"><span class="tb-row__title">Zoneless change detection</span><span class="tb-row__host">angular.dev</span></span></label>
+<label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">N</span><span class="tb-row__text"><span class="tb-row__title">NgRx SignalStore: custom features</span><span class="tb-row__host">ngrx.io</span></span></label>
+<label class="tb-row tb-row--off"><input type="checkbox" class="sm-check"><span class="tb-fav">G</span><span class="tb-row__text"><span class="tb-row__title">angular/angular · Issues</span><span class="tb-row__host">github.com</span></span><span class="sm-badge">Saved</span></label>
+<label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">Y</span><span class="tb-row__text"><span class="tb-row__title">Signals in 20 minutes, a practical intro</span><span class="tb-row__host">youtube.com</span></span></label>
+<label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">M</span><span class="tb-row__text"><span class="tb-row__title">View transitions API</span><span class="tb-row__host">developer.mozilla.org</span></span></label>
+<label class="tb-row tb-row--off"><input type="checkbox" class="sm-check"><span class="tb-fav">C</span><span class="tb-row__text"><span class="tb-row__title">Can I use: anchor positioning</span><span class="tb-row__host">caniuse.com</span></span><span class="sm-badge">Saved</span></label>
+</div>
+<div class="tb-compact">
+<div class="sm-field"><label class="sm-field__label">Folder</label><button class="sm-field__control" style="text-align: left; font: inherit; color: inherit;"><span class="sm-fic sm-fic--sm fc-ocean" aria-hidden="true"></span><span class="sm-select__value">Angular</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+<div class="sm-field"><label class="sm-field__label">Tags for all</label><div class="sm-field__control sm-taginput"><span class="sm-chip">research<button class="sm-chip__remove" aria-label="Remove tag research">×</button></span><input placeholder="Add tag"></div></div>
+</div>
+<div class="ex-foot"><button class="sm-btn sm-btn--primary" style="flex: 1;">Save 9 links</button></div>
+</div>
+<p class="a-note">Rows in tab order, the current tab first. Every tab is ticked except those already in the library (a muted "Saved" badge; ticking one saves a copy, like Save a copy). Not listed: chrome:// and other pages that cannot be saved, and the second of two tabs with the same address. The list scrolls inside; the select-all line and the fields stay put. Select-all ticks or clears everything; Space toggles the focused row, arrows move. Folder: the same picker as the single save (Unsorted by default, or the folder chosen on the form before). Domain rules still apply per link on the server, so a link whose domain has a rule lands in that rule's folder when the folder here is Unsorted. Tags go on every link. Save is disabled with nothing ticked and says the count. At most <code>LINK_LIMIT.BatchMax</code> (100) tabs a batch; past that the extra rows are greyed with "Up to 100 at a time".</p>
+</section>
+
+<!-- 4 · Saving. -->
+<section class="a-state">
+<h2 class="a-cap">4 · Saving: each row turns into a tick</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="t4-h" aria-busy="true">
+<div class="ex-head"><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Back" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h3 id="t4-h">Save open tabs</h3></div>
+<div class="tb-progress" role="status"><span class="tb-progress__label">Saving 4 of 9…</span><span class="tb-progress__bar" style="--p: 44%;"><span></span></span></div>
+<div class="tb-list" role="group" aria-label="Open tabs">
+<div class="tb-row"><span class="tb-state"><span class="tb-tick"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></span><span class="tb-fav">A</span><span class="tb-row__text"><span class="tb-row__title">Signal Forms · Angular</span><span class="tb-row__host">angular.dev</span></span></div>
+<div class="tb-row"><span class="tb-state"><span class="tb-tick"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></span><span class="tb-fav">A</span><span class="tb-row__text"><span class="tb-row__title">Zoneless change detection</span><span class="tb-row__host">angular.dev</span></span></div>
+<div class="tb-row"><span class="tb-state"><span class="tb-tick"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></span><span class="tb-fav">N</span><span class="tb-row__text"><span class="tb-row__title">NgRx SignalStore: custom features</span><span class="tb-row__host">ngrx.io</span></span></div>
+<div class="tb-row"><span class="tb-state"><span class="tb-spin"></span></span><span class="tb-fav">Y</span><span class="tb-row__text"><span class="tb-row__title">Signals in 20 minutes, a practical intro</span><span class="tb-row__host">youtube.com</span></span></div>
+<div class="tb-row tb-row--off"><span class="tb-state"></span><span class="tb-fav">M</span><span class="tb-row__text"><span class="tb-row__title">View transitions API</span><span class="tb-row__host">developer.mozilla.org</span></span></div>
+<div class="tb-row tb-row--off"><span class="tb-state"></span><span class="tb-fav">W</span><span class="tb-row__text"><span class="tb-row__title">web.dev: Interaction to Next Paint</span><span class="tb-row__host">web.dev</span></span></div>
+</div>
+<div class="ex-foot"><button class="sm-btn sm-btn--primary" style="flex: 1;" disabled><span class="sm-spinner" aria-hidden="true"></span>Saving…</button></div>
+</div>
+<p class="a-note">Only the ticked tabs stay in the list; the fields fold away. One request: the existing <code>POST /api/links/batch</code> of Paste many (one transaction, idempotency key per item, domain rules on, the tab's title and favicon as hints, no page fetch; the image capture fills in previews later). The rows tick in order once the response is in, 60 ms apart so the eye can follow; a slow response keeps the spinner on the first row not yet ticked. The live region reads the progress line, not every row. Closing the popup now does not cancel: the request is already on its way.</p>
+</section>
+
+<!-- 5 · Done. -->
+<section class="a-state">
+<h2 class="a-cap">5 · Saved: the saving moment, for a stack</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="t5-h">
+<div class="ex-center">
+<div class="tb-stack" aria-hidden="true">
+<div class="tb-card" style="--r: -9deg; --x: -26px; --d: 0ms;"><div class="tb-card__media" data-tone="1"></div><div class="tb-card__line"></div><div class="tb-card__line"></div></div>
+<div class="tb-card" style="--r: 8deg; --x: 26px; --d: 80ms;"><div class="tb-card__media" data-tone="2"></div><div class="tb-card__line"></div><div class="tb-card__line"></div></div>
+<div class="tb-card" style="--r: 0deg; --x: 0px; --d: 160ms;"><div class="tb-card__media"></div><div class="tb-card__line"></div><div class="tb-card__line"></div></div>
+</div>
+<h3 id="t5-h">9 links saved to Angular</h3>
+<p class="ex-text">Tagged research. You can close the tabs now; they are in your library.</p>
+<button class="sm-btn sm-btn--secondary" style="margin-top: 6px;">Close 9 saved tabs</button>
+</div>
+<div class="ex-foot"><button class="sm-btn sm-btn--secondary" style="flex: 1;">Open in Shelfmark</button><button class="sm-btn sm-btn--primary" style="flex: 1;">Done</button></div>
+</div>
+<p class="a-note">Three cards drop in and fan out (520 ms spring, 80 ms apart): the single save's card landing, made into a pile. Reduced motion: the stack at rest. "Close 9 saved tabs" closes exactly the saved tabs (never the one the popup belongs to last, so the window stays open) and then the popup; it is the step people do next by hand, so it is offered, never automatic. Open in Shelfmark opens the folder. Done closes the popup.</p>
+</section>
+
+<!-- 6 · Some failed. -->
+<section class="a-state">
+<h2 class="a-cap">6 · Some were skipped</h2>
+<div class="ex-pop" role="dialog" aria-labelledby="t6-h">
+<div class="ex-head"><span style="width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--warning-bg); color: var(--warning); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><h3 id="t6-h">7 of 9 saved to Angular</h3></div>
+<p class="ex-text">These 2 were skipped. The rest are in your library.</p>
+<div class="tb-fail">
+<div class="tb-row"><span class="tb-fav">M</span><span class="tb-row__text"><span class="tb-row__title">View transitions API</span><span class="tb-fail__why">Address is too long</span></span></div>
+<div class="tb-row"><span class="tb-fav">W</span><span class="tb-row__text"><span class="tb-row__title">web.dev: Interaction to Next Paint</span><span class="tb-fail__why">Same address as another tab</span></span></div>
+</div>
+<div class="ex-foot"><button class="sm-btn sm-btn--secondary" style="flex: 1;">Open in Shelfmark</button><button class="sm-btn sm-btn--primary" style="flex: 1;">Done</button></div>
+</div>
+<p class="a-note">The batch is one transaction, so it either saves or fails as a whole; only items the API skips come back in <code>errors</code> (an over-long address, a repeat within the batch). Then the heading counts what was saved and the list names the skipped tabs with the reason. A failed batch (no connection, rate limit, the library limit with the API's message of how many more fit) is the single save's error state with "Try again", which resends the same keys, so nothing is saved twice. Signed out on open: the usual signed-out screen.</p>
+</section>
+
+<section class="a-state" style="grid-column: 1 / -1;">
+<h2 class="a-cap">Open questions for the author</h2>
+<p class="a-note" style="max-width: 860px;">1 · The optional <code>tabs</code> permission is a new permission (apps/extension/CLAUDE.md asks for your OK): Chrome words it as "Read your browsing history" in its prompt. The alternative without it is impossible: other tabs' addresses are only visible with <code>tabs</code> or host access to every site. 2 · Current window only, or a "This window / All windows" switch when several windows are open? The proposal is current window only. 3 · "Close saved tabs" on the done screen — keep, or leave out of v1? 4 · Reusing <code>POST /api/links/batch</code> as it is (5 batches a minute, up to 100 links): no API change needed, only the extension.</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

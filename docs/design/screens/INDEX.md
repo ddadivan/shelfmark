@@ -105,6 +105,7 @@ Every screen of the redesign, grouped the way the canvas is. Desktop first, then
 
 - `Extension.dc.html` — Browser extension popup (Chrome, #445): form and Save, saved, opening, folder picker, already saved, signed out, page that cannot be saved, errors; light and dark
 - `ExtensionInstall.dc.html` — Install the extension from the app (#455): library banner and Settings row; desktop Chromium only; light and dark
+- `ExtensionTabs.dc.html` — Extension: save open tabs (proposal): tabs button on the form, one-time `tabs` permission, tab list with one folder and tags for all, saving, saved stack, skipped tabs; light and dark
 - `Landing.dc.html` also has the "Save the page you are on" block: a mention of the extension without a link (#455)
 
 ## 12 · AI (#476)
