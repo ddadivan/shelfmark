@@ -302,9 +302,23 @@ describe('motion mixins', () => {
       'ui-land',
       'ui-land-ring',
       'ui-suggest-accept',
+      'ui-shimmer-text',
       'ui-shake',
     ]);
     expect(out).not.toMatch(/\d+px/);
+  });
+
+  it('shimmer-text sweeps a clipped gradient and goes static under reduced motion', () => {
+    const out = css('.a { @include shimmer-text; }');
+    expect(out).toContain('ui-shimmer-text 1.4s var(--ease-in-out) infinite');
+    expect(out).toContain('var(--text-muted) 30%, var(--text) 50%, var(--text-muted) 70%');
+    expect(out).toContain('background-clip: text');
+    expect(out).toContain('color: var(--text-muted)');
+    const reduced = reducedMotionBlock(out);
+    expect(reduced).toContain('animation: none');
+    expect(reduced).toContain('background: none');
+    const custom = css('.a { @include shimmer-text(var(--x), var(--y)); }');
+    expect(custom).toContain('var(--x) 30%, var(--y) 50%, var(--x) 70%');
   });
 
   it('shake runs once at the slow duration and is off under reduced motion', () => {

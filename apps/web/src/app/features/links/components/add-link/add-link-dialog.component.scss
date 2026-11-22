@@ -122,6 +122,11 @@
   color: var(--text-muted);
 }
 
+// The loader status line while the preview is fetched: the light band sweeps the letters (#562).
+.add-link__note--loading {
+  @include shimmer-text;
+}
+
 // Under the address: "Have several links?" and the switch to the text area (#315), on one line
 // while it fits; the button keeps its whole label in every language.
 .add-link__several {

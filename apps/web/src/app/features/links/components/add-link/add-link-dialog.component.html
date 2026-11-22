@@ -102,7 +102,9 @@
             <div class="add-link__preview add-link__preview--loading" aria-busy="true">
               <ui-skeleton [shape]="SKELETON_SHAPE.Preview" />
             </div>
-            <p class="add-link__note">{{ 'links.add.preview.loadingHint' | transloco }}</p>
+            <p class="add-link__note add-link__note--loading">
+              {{ 'links.add.preview.loadingHint' | transloco }}
+            </p>
           }
           @case (PREVIEW_STATE.Failed) {
             <ui-notice [kind]="NOTICE_KIND.Danger">{{

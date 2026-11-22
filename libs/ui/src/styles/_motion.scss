@@ -501,6 +501,17 @@ $leave-presets: (
     }
   }
 
+  // Status text shimmer (#562): the light band travels across the letters (`shimmer-text`).
+  @keyframes ui-shimmer-text {
+    from {
+      background-position: 100% 0;
+    }
+
+    to {
+      background-position: -100% 0;
+    }
+  }
+
   // Error shake (#562): a field whose error appears on submit. Replayed by `uiShake`.
   @keyframes ui-shake {
     0%,
@@ -552,5 +563,27 @@ $land-ring-duration: 1.8s;
 
   @include reduced-motion {
     animation: none;
+  }
+}
+
+// Status text shimmer (#562): a loader status line («Fetching preview…», Ask «Searching…») carries
+// a soft light band that sweeps across the letters (`background-clip: text`, `$rest` → `$peak` →
+// `$rest`), looping at the shared shimmer duration. `$rest` is the colour of the text at rest and
+// must keep 4.5:1 on the surface behind it (`--text-muted` on a plain page; on a tinted pill pass a
+// stronger one). Reduced motion (device or Settings › Animations): static `$rest`, no clip, no loop.
+@mixin shimmer-text($rest: var(--text-muted), $peak: var(--text)) {
+  color: $rest;
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    background: linear-gradient(90deg, $rest 30%, $peak 50%, $rest 70%) 100% 0 / 200% 100% no-repeat;
+    background-clip: text;
+    animation: ui-shimmer-text $shimmer-duration var(--ease-in-out) infinite;
+    -webkit-text-fill-color: transparent;
+
+    @include reduced-motion {
+      background: none;
+      animation: none;
+      -webkit-text-fill-color: currentcolor;
+    }
   }
 }
