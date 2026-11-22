@@ -3130,6 +3130,20 @@
     "release": "Shelfmark {{version}}",
     "home": "Shelfmark, home",
     "items": {
+      "relatedInPreview": {
+        "title": "Related links, next to what you read",
+        "text": "The preview of a link has a Related button: up to five links from your shelf that are close in meaning, with what they share. Pick one and it opens right there. It needs Search by meaning in Settings › AI.",
+        "alt": "The link preview of a guide with its Related list open: five links close in meaning."
+      },
+      "motionBatch": {
+        "text": "Livelier motion: a dragged link sways and flies into its folder, the highlight glides between rows, checks draw themselves and changed numbers roll."
+      },
+      "extensionTabs": {
+        "text": "The browser extension saves several open tabs at once, with one folder and tags for all (version 1.2.0, rolling out in the Chrome Web Store)."
+      },
+      "phoneTapPreview": {
+        "text": "On a phone, tapping a card or row opens its preview, as a click does on a computer."
+      },
       "sideBySide": {
         "title": "Side by side",
         "text": "Open two feeds next to each other and drag links from one to the other.",

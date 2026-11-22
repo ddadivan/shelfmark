@@ -3215,6 +3215,20 @@
     "release": "Shelfmark {{version}}",
     "home": "Shelfmark, accueil",
     "items": {
+      "relatedInPreview": {
+        "title": "Des liens proches de ce que vous lisez",
+        "text": "L’aperçu d’un lien a un bouton Similaires : jusqu’à cinq liens de votre étagère proches par le sens, avec ce qu’ils ont en commun. Choisissez-en un, il s’ouvre sur place. Il faut la recherche par le sens dans Réglages › IA.",
+        "alt": "L’aperçu d’un guide avec sa liste Similaires ouverte : cinq liens proches par le sens."
+      },
+      "motionBatch": {
+        "text": "Des mouvements plus vivants : un lien déplacé oscille et s’envole dans son dossier, la surbrillance glisse entre les lignes, les coches se dessinent et les nombres qui changent défilent."
+      },
+      "extensionTabs": {
+        "text": "L’extension de navigateur enregistre plusieurs onglets ouverts d’un coup, avec un dossier et des tags pour tous (version 1.2.0, en cours de déploiement sur le Chrome Web Store)."
+      },
+      "phoneTapPreview": {
+        "text": "Sur téléphone, toucher une carte ou une ligne ouvre son aperçu, comme un clic sur ordinateur."
+      },
       "sideBySide": {
         "title": "Côte à côte",
         "text": "Ouvrez deux listes l'une à côté de l'autre et glissez des liens de l'une à l'autre.",

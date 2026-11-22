@@ -3215,6 +3215,20 @@
     "release": "Shelfmark {{version}}",
     "home": "Shelfmark, inicio",
     "items": {
+      "relatedInPreview": {
+        "title": "Enlaces relacionados junto a lo que lees",
+        "text": "La vista previa de un enlace tiene un botón Similares: hasta cinco enlaces de tu estantería cercanos en significado y lo que comparten. Elige uno y se abre ahí mismo. Necesita la búsqueda por significado en Ajustes › IA.",
+        "alt": "La vista previa de una guía con su lista Similares abierta: cinco enlaces cercanos en significado."
+      },
+      "motionBatch": {
+        "text": "Movimiento más vivo: un enlace arrastrado se balancea y vuela a su carpeta, el resaltado se desliza entre filas, las marcas se dibujan solas y los números que cambian ruedan."
+      },
+      "extensionTabs": {
+        "text": "La extensión del navegador guarda varias pestañas abiertas a la vez, con una carpeta y etiquetas para todas (versión 1.2.0, llegando a la Chrome Web Store)."
+      },
+      "phoneTapPreview": {
+        "text": "En el teléfono, tocar una tarjeta o fila abre su vista previa, como un clic en el ordenador."
+      },
       "sideBySide": {
         "title": "Lado a lado",
         "text": "Abre dos listas una junto a otra y arrastra enlaces de una a la otra.",

@@ -3215,6 +3215,20 @@
     "release": "Shelfmark {{version}}",
     "home": "Shelfmark, início",
     "items": {
+      "relatedInPreview": {
+        "title": "Links relacionados ao lado do que você lê",
+        "text": "A pré-visualização de um link tem um botão Relacionados: até cinco links da sua estante próximos em significado, com o que têm em comum. Escolha um e ele abre ali mesmo. Precisa da busca por significado em Configurações › IA.",
+        "alt": "A pré-visualização de um guia com a lista Relacionados aberta: cinco links próximos em significado."
+      },
+      "motionBatch": {
+        "text": "Movimento mais vivo: um link arrastado balança e voa para a pasta, o destaque desliza entre as linhas, as marcas se desenham e os números que mudam rolam."
+      },
+      "extensionTabs": {
+        "text": "A extensão do navegador salva várias abas abertas de uma vez, com uma pasta e tags para todas (versão 1.2.0, chegando à Chrome Web Store)."
+      },
+      "phoneTapPreview": {
+        "text": "No celular, tocar num cartão ou numa linha abre a pré-visualização, como um clique no computador."
+      },
       "sideBySide": {
         "title": "Lado a lado",
         "text": "Abra duas listas uma ao lado da outra e arraste links de uma para a outra.",

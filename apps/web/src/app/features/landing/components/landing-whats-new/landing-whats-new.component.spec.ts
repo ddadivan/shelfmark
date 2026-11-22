@@ -11,10 +11,10 @@ describe('LandingWhatsNewComponent', () => {
     const names = [...root.querySelectorAll('h3')].map((h) => h.textContent?.trim());
 
     expect(names).toEqual([
+      'Related links, next to what you read',
       'Read links right here',
       'Import your browser bookmarks',
       'Build a view by hand or in words',
-      'Ten kinds of links',
     ]);
     expect(root.querySelector('a')?.getAttribute('href')).toBe('/changelog');
     expect(root.querySelector('a')?.textContent?.trim()).toBe('See all changes');
