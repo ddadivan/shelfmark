@@ -184,10 +184,12 @@ a.ui-button {
   }
 }
 
-// A button that opens a menu or another popup stays pressed while it is open (#562): one rule for
+// A button that opens a menu or another popup stays marked while it is open (#562): one rule for
 // every popup trigger (`uiMenuTrigger` and `uiPopoverTrigger` write `aria-haspopup` and
-// `aria-expanded` on the inner element). The scale of `:active` is off while open, only the
-// background stays. A plain `aria-expanded` toggle (no `aria-haspopup`) and a `disclosure` button
+// `aria-expanded` on the inner element). The scale of `:active` is off while open. Secondary and
+// ghost buttons take the accent tint with `accent-text` (4.5:1 on `accent-bg`, checked for every
+// theme), so it is plain which button the open menu belongs to (#564: the pressed grey was hardly
+// different from the hover grey). A plain `aria-expanded` toggle (no `aria-haspopup`) and a `disclosure` button
 // (a section chevron) only name their state and keep the resting look.
 $-open: "[aria-haspopup]:not([aria-haspopup='false'])[aria-expanded='true']:not(.ui-button--disclosure)";
 
@@ -197,7 +199,8 @@ $-open: "[aria-haspopup]:not([aria-haspopup='false'])[aria-expanded='true']:not(
 
 .ui-button--secondary#{$-open},
 .ui-button--ghost#{$-open} {
-  background: var(--surface-pressed);
+  color: var(--accent-text);
+  background: var(--accent-bg);
 }
 
 .ui-button--primary#{$-open} {
