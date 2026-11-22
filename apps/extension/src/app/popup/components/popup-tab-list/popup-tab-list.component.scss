@@ -1,0 +1,132 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: rem(8px);
+  min-height: 0;
+}
+
+.tabs__all {
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  min-height: rem(32px);
+  padding-inline: rem(10px);
+}
+
+.tabs__all-box {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.tabs__all-meta {
+  @include type(caption);
+
+  flex: none;
+  color: var(--text-muted);
+}
+
+// The rows scroll inside; the list reaches the popup edges a little, like the design.
+.tabs__list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  margin-inline: rem(-8px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-block: 1px solid var(--border);
+}
+
+.tabs__loading {
+  padding: rem(12px) rem(18px);
+}
+
+.tabs__row {
+  display: flex;
+  flex: none;
+  gap: rem(10px);
+  align-items: center;
+  min-height: rem(48px);
+  padding: rem(6px) rem(18px);
+  border-radius: var(--radius-md);
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+}
+
+// Sorted: the third line makes the row taller, so the tick and icon stay on the title line.
+.tabs__row--ai {
+  align-items: flex-start;
+  padding-block: rem(8px);
+
+  > .tabs__tick,
+  > ui-favicon {
+    margin-block-start: rem(2px);
+  }
+}
+
+.tabs__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tabs__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.tabs__title {
+  @include type(label);
+  @include line-clamp(1);
+}
+
+.tabs__host {
+  @include type(caption);
+  @include line-clamp(1);
+
+  color: var(--text-muted);
+}
+
+.tabs__ai {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(4px) rem(6px);
+  align-items: center;
+  margin-block-start: rem(6px);
+}
+
+.tabs__spark {
+  color: var(--ai);
+}
+
+.tabs__skeleton {
+  display: block;
+  inline-size: 62%;
+  margin-block-start: rem(6px);
+}
+
+// A tag AI proposes that does not exist yet: dashed, created when the links are saved.
+.tabs__tag--new.tabs__tag--new {
+  background: transparent;
+  border: 1px dashed var(--ai-line);
+}
+
+.tabs__folder-body {
+  display: flex;
+  gap: rem(6px);
+  align-items: center;
+  min-width: 0;
+}
+
+.tabs__folder-name {
+  @include line-clamp(1);
+}

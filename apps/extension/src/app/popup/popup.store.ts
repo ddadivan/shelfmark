@@ -18,12 +18,18 @@ import type { PageInfo } from './models/page-info.interface';
 import type { PopupFailure } from './models/popup-failure.interface';
 import { POPUP_STEP } from './models/popup-step.const';
 import { POPUP_VIEW } from './models/popup-view.const';
+import type { SaveMode } from './models/save-mode.type';
+import type { TabsSaveResult } from './models/tabs-save-result.interface';
 import type { PopupView } from './models/popup-view.type';
 import { PopupAiFillService } from './services/popup-ai-fill.service';
+import { PopupTabsAiService } from './services/popup-tabs-ai.service';
+import { PopupTabsService } from './services/popup-tabs.service';
 import { readRecentFolders, rememberRecentFolder } from './utils/recent-folders';
 import { toFolderOptions } from './utils/to-folder-options';
+import { toBatchRequest } from './utils/to-batch-request';
 import { toPageInfo } from './utils/to-page-info';
 import { toPopupFailure } from './utils/to-popup-failure';
+import { toTabsSaveResult } from './utils/to-tabs-save-result';
 import { withoutFragment } from './utils/without-fragment';
 
 /**
@@ -37,6 +43,10 @@ export class PopupStore {
   private readonly tabs = inject(BrowserTabsService);
   /** "Fill in with AI": starts only on the user's click (see its own doc). */
   readonly ai = inject(PopupAiFillService);
+  /** "All tabs" (#569): the switch, the list and its ticks. */
+  readonly tabList = inject(PopupTabsService);
+  /** "Sort with AI" for the tabs. */
+  readonly tabsAi = inject(PopupTabsAiService);
 
   readonly view = signal<PopupView>(POPUP_VIEW.Opening);
   /** The opening skeleton shows only once loading has taken longer than `OPENING_DELAY_MS`. */
@@ -48,6 +58,17 @@ export class PopupStore {
   /** The saved link (Saved) or the existing one (Already saved). */
   readonly link = signal<LinkResponse | null>(null);
   readonly saving = signal(false);
+  /** The batch Save's answer (SavedTabs). */
+  readonly savedTabs = signal<TabsSaveResult | null>(null);
+  /** "Close N saved tabs" was pressed. */
+  readonly tabsClosed = signal(false);
+  /** The picker chooses the folder of this one tab (its key); `null`: the Folder field (all links). */
+  readonly pickerTarget = signal<string | null>(null);
+  /**
+   * The footer's second button opens up beside Open Shelfmark only on the first screen after opening
+   * (width and fade); the screen that shows it clears this after its first render.
+   */
+  readonly animateFoot = signal(true);
 
   readonly folderId = signal<string | null>(null);
   /** A folder the user named in the popup: created only on Save, so closing leaves no empty folder. */
@@ -65,6 +86,7 @@ export class PopupStore {
       chosenTags: this.chosenTags,
       note: this.note,
     });
+    this.tabsAi.attach({ folders: this.folders, folderId: this.folderId });
   }
 
   private readonly recentIds = signal(readRecentFolders());
@@ -103,6 +125,10 @@ export class PopupStore {
   }
 
   async save(): Promise<void> {
+    if (this.tabList.active()) {
+      await this.saveTabs();
+      return;
+    }
     const page = this.page();
     if (page === null || this.saving()) return;
     this.saving.set(true);
@@ -136,6 +162,41 @@ export class PopupStore {
     }
   }
 
+  /** The ticked tabs in one `POST /api/links/batch`; a retry sends the same idempotency keys. */
+  private async saveTabs(): Promise<void> {
+    const entries = this.tabList.selected();
+    if (entries.length === 0 || this.saving()) return;
+    this.saving.set(true);
+    this.failure.set(null);
+    try {
+      if (!(await this.createNewFolder())) return;
+      const response = await this.api.createBatch(
+        toBatchRequest(entries, { folderId: this.folderId(), tags: this.chosenTags() }, (entry) =>
+          this.tabsAi.pick(entry),
+        ),
+      );
+      const result = toTabsSaveResult(entries, response);
+      if (result.folderIds.length === 1) rememberRecentFolder(result.folderIds[0] ?? null);
+      this.recentIds.set(readRecentFolders());
+      this.tabsClosed.set(false);
+      this.savedTabs.set(result);
+      this.view.set(POPUP_VIEW.SavedTabs);
+    } catch (error: unknown) {
+      this.fail(error, POPUP_STEP.Save);
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  /** The switch "This page / All tabs": the first All tabs may ask Chrome for the `tabs` permission. */
+  async setMode(mode: SaveMode): Promise<void> {
+    try {
+      await this.tabList.setMode(mode);
+    } catch (error: unknown) {
+      this.fail(error, POPUP_STEP.Load);
+    }
+  }
+
   /** The "Fill in with AI" button: only now does the page address go to Shelfmark for AI. */
   async fillWithAi(): Promise<void> {
     const page = this.page();
@@ -148,6 +209,17 @@ export class PopupStore {
     this.view.set(POPUP_VIEW.Form);
   }
 
+  /** "Close N saved tabs": exactly the tabs that were saved, only on the user's click. */
+  async closeSavedTabs(): Promise<void> {
+    const saved = this.savedTabs()?.saved ?? [];
+    try {
+      await this.tabs.closeTabs(saved.map((entry) => entry.tabId));
+      this.tabsClosed.set(true);
+    } catch {
+      // The tabs are still open: the button stays, so the user can try again.
+    }
+  }
+
   async retry(): Promise<void> {
     const failure = this.failure();
     const page = this.page();
@@ -156,26 +228,47 @@ export class PopupStore {
       this.view.set(POPUP_VIEW.Form);
       await this.save();
     } else {
+      this.animateFoot.set(true);
       this.view.set(POPUP_VIEW.Opening);
       await this.load(page);
     }
   }
 
-  openPicker(): void {
+  /** The folder picker for the Folder field, or for one tab's link (`tabKey`, after "Sort with AI"). */
+  openPicker(tabKey: string | null = null): void {
+    this.pickerTarget.set(tabKey);
     this.view.set(POPUP_VIEW.Picker);
   }
 
   closePicker(): void {
+    this.pickerTarget.set(null);
     this.view.set(POPUP_VIEW.Form);
   }
 
+  /** "Keep AI picks": each link its own folder again. */
+  keepAiPicks(): void {
+    this.tabsAi.keepAiPicks();
+    this.newFolderName.set(null);
+    this.closePicker();
+  }
+
   chooseFolder(id: string | null): void {
+    const tabKey = this.pickerTarget();
+    if (tabKey !== null && id !== null) {
+      this.tabsAi.setFolder(tabKey, id);
+      this.closePicker();
+      return;
+    }
+    this.pickerTarget.set(null);
+    if (this.tabList.active()) this.tabsAi.useSharedFolder();
     this.folderId.set(id);
     this.newFolderName.set(null);
     this.view.set(POPUP_VIEW.Form);
   }
 
   openNewFolder(): void {
+    // Opened for one link: a new folder is for all links, never a way to drop the other AI picks.
+    if (this.pickerTarget() !== null) return;
     this.view.set(POPUP_VIEW.NewFolder);
   }
 
@@ -194,6 +287,8 @@ export class PopupStore {
       return;
     }
     this.folderId.set(null);
+    this.pickerTarget.set(null);
+    if (this.tabList.active()) this.tabsAi.useSharedFolder();
     this.newFolderName.set(trimmed);
     this.view.set(POPUP_VIEW.Form);
   }
@@ -205,6 +300,15 @@ export class PopupStore {
   /** The folder page of the saved or existing link. */
   openLinkFolder(): Promise<void> {
     const id = this.link()?.folderId ?? null;
+    const path = id === null ? APP_PATH.Unsorted : `${APP_PATH.Folders}/${encodeURIComponent(id)}`;
+    return this.tabs.open(`${SHELFMARK_ORIGIN}${path}`);
+  }
+
+  /** The folder page of the saved tabs when they went to one folder, else the library. */
+  openSavedTabsFolder(): Promise<void> {
+    const ids = this.savedTabs()?.folderIds ?? [];
+    if (ids.length !== 1) return this.openApp();
+    const id = ids[0] ?? null;
     const path = id === null ? APP_PATH.Unsorted : `${APP_PATH.Folders}/${encodeURIComponent(id)}`;
     return this.tabs.open(`${SHELFMARK_ORIGIN}${path}`);
   }
@@ -240,6 +344,7 @@ export class PopupStore {
         this.api.rules(),
         this.lookup(page.url),
         this.ai.load(),
+        this.tabList.init(),
       ]);
       this.folders.set(folders.items);
       this.tags.set(tags.items);

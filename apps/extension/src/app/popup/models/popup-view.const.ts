@@ -5,6 +5,7 @@ export const POPUP_VIEW = {
   Picker: 'picker',
   NewFolder: 'newFolder',
   Saved: 'saved',
+  SavedTabs: 'savedTabs',
   Duplicate: 'duplicate',
   SignedOut: 'signedOut',
   Unsupported: 'unsupported',

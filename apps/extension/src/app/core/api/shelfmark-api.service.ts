@@ -6,6 +6,8 @@ import type {
   CreateAiDraftRequest,
   CreateFolderRequest,
   CreateLinkRequest,
+  CreateLinksBatchRequest,
+  CreateLinksBatchResponse,
   FolderResponse,
   GetSessionResponse,
   LinkLookupRequest,
@@ -54,6 +56,13 @@ export class ShelfmarkApiService {
 
   create(body: CreateLinkRequest): Promise<LinkResponse> {
     return firstValueFrom(this.http.post<LinkResponse>(url(SHELFMARK_ENDPOINT.Links), body));
+  }
+
+  /** Several links at once (#569): "All tabs"; items the API skips come back in `errors`. */
+  createBatch(body: CreateLinksBatchRequest): Promise<CreateLinksBatchResponse> {
+    return firstValueFrom(
+      this.http.post<CreateLinksBatchResponse>(url(SHELFMARK_ENDPOINT.LinksBatch), body),
+    );
   }
 
   aiSettings(): Promise<AiSettingsResponse> {

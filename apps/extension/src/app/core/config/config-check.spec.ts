@@ -9,6 +9,7 @@ const ROOT = 'apps/extension';
 
 interface Manifest {
   permissions?: string[];
+  optional_permissions?: string[];
   host_permissions?: string[];
   content_security_policy?: { extension_pages?: string };
   [key: string]: unknown;
@@ -37,6 +38,10 @@ describe.each(BUILDS)('$name manifest', ({ name, host, origin, originFile }) => 
 
   it('requests exactly the activeTab permission', () => {
     expect(m.permissions).toEqual(['activeTab']);
+  });
+
+  it('asks for the tabs permission only as an optional one (#569)', () => {
+    expect(m.optional_permissions).toEqual(['tabs']);
   });
 
   it('requests exactly one host permission, the API of its origin', () => {
@@ -96,10 +101,16 @@ describe('store texts', () => {
   });
 });
 
-describe('activeTab use the store can see (#478)', () => {
+describe('browser API use the store can see (#478, #569)', () => {
   const service = readRepoFile(`${ROOT}/src/app/core/chrome/browser-tabs.service.ts`);
 
-  it.each(['chrome.tabs.query(', 'chrome.tabs.create('])('calls %s literally', (call) => {
+  it.each([
+    'chrome.tabs.query(',
+    'chrome.tabs.create(',
+    'chrome.tabs.remove(',
+    'chrome.permissions.request(',
+    'chrome.permissions.contains(',
+  ])('calls %s literally', (call) => {
     expect(service).toContain(call);
   });
 

@@ -6,6 +6,7 @@ import { PopupMessageComponent } from './popup/components/popup-message/popup-me
 import { PopupOpeningComponent } from './popup/components/popup-opening/popup-opening.component';
 import { PopupPickerComponent } from './popup/components/popup-picker/popup-picker.component';
 import { PopupSavedComponent } from './popup/components/popup-saved/popup-saved.component';
+import { PopupSavedTabsComponent } from './popup/components/popup-saved-tabs/popup-saved-tabs.component';
 import { PopupSignedOutComponent } from './popup/components/popup-signed-out/popup-signed-out.component';
 import { POPUP_VIEW } from './popup/models/popup-view.const';
 import { PopupStore } from './popup/popup.store';
@@ -23,6 +24,7 @@ import { PopupStore } from './popup/popup.store';
     PopupOpeningComponent,
     PopupPickerComponent,
     PopupSavedComponent,
+    PopupSavedTabsComponent,
     PopupSignedOutComponent,
   ],
 })

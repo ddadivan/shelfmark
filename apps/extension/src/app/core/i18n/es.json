@@ -22,7 +22,13 @@
       "note": "Nota",
       "notePlaceholder": "¿Por qué lo guardas?",
       "save": "Guardar",
-      "newBadge": "nueva"
+      "newBadge": "nueva",
+      "tagsForAll": "Etiquetas para todos",
+      "saveCount": {
+        "one": "Guardar {{count}} enlace",
+        "many": "Guardar {{count}} de enlaces",
+        "other": "Guardar {{count}} enlaces"
+      }
     },
     "picker": {
       "title": "Elige una carpeta",
@@ -30,7 +36,21 @@
       "search": "Buscar una carpeta",
       "list": "Carpetas",
       "noResults": "No hay ninguna carpeta con ese nombre",
-      "newFolder": "Nueva carpeta"
+      "newFolder": "Nueva carpeta",
+      "keepAi": "Mantener lo elegido por la IA",
+      "keepAiHint": "Cada enlace en su propia carpeta",
+      "titleAll": {
+        "one": "Carpeta para {{count}} enlace",
+        "many": "Carpeta para {{count}} de enlaces",
+        "other": "Carpeta para {{count}} enlaces"
+      },
+      "titleOne": "Carpeta de este enlace",
+      "summaryKeep": "Cada enlace mantiene la carpeta elegida por la IA.",
+      "summaryAll": {
+        "one": "El enlace ({{count}}) va a {{folder}}. Las etiquetas de la IA se quedan.",
+        "many": "Los {{count}} de enlaces van a {{folder}}. Las etiquetas de la IA se quedan.",
+        "other": "Los {{count}} enlaces van a {{folder}}. Las etiquetas de la IA se quedan."
+      }
     },
     "newFolder": {
       "title": "Nueva carpeta",
@@ -92,6 +112,61 @@
       "dismiss": "Descartar la sugerencia {{name}}",
       "filling": "Rellenando…",
       "tagsByAi": "Etiquetas de la IA"
+    },
+    "mode": {
+      "label": "Qué guardar",
+      "page": "Esta página",
+      "tabs": "Todas las pestañas ({{count}})"
+    },
+    "tabs": {
+      "list": "Pestañas abiertas",
+      "loading": "Leyendo tus pestañas",
+      "selected": "{{selected}} de {{total}} seleccionadas",
+      "alreadySaved": "{{count}} ya guardadas",
+      "savedBadge": "Guardado",
+      "pickedByAi": "Elegido por la IA para cada enlace",
+      "changeFolder": "Carpeta de este enlace: {{folder}}. Cambiar",
+      "sort": {
+        "one": "Ordenar {{count}} enlace con IA",
+        "many": "Ordenar {{count}} de enlaces con IA",
+        "other": "Ordenar {{count}} enlaces con IA"
+      },
+      "sorting": {
+        "one": "Ordenando {{count}} enlace…",
+        "many": "Ordenando {{count}} de enlaces…",
+        "other": "Ordenando {{count}} enlaces…"
+      },
+      "limit": "Sugerencias en pausa hasta el {{date}}. Los demás enlaces van a la carpeta del campo Carpeta.",
+      "sortedDone": "Enlaces ordenados con las sugerencias de la IA"
+    },
+    "savedTabs": {
+      "title": {
+        "one": "{{count}} enlace guardado en {{folder}}",
+        "many": "{{count}} de enlaces guardados en {{folder}}",
+        "other": "{{count}} enlaces guardados en {{folder}}"
+      },
+      "titleMixed": {
+        "one": "{{count}} enlace guardado",
+        "many": "{{count}} de enlaces guardados",
+        "other": "{{count}} enlaces guardados"
+      },
+      "text": "Ya puedes cerrar las pestañas: están en tu biblioteca.",
+      "close": {
+        "one": "Cerrar {{count}} pestaña guardada",
+        "many": "Cerrar {{count}} de pestañas guardadas",
+        "other": "Cerrar {{count}} pestañas guardadas"
+      },
+      "closed": "Las pestañas guardadas están cerradas.",
+      "partial": "{{saved}} de {{total}} guardados",
+      "skipped": {
+        "one": "Se omitió esta pestaña. El resto está en tu biblioteca.",
+        "many": "Se omitieron estas {{count}} de pestañas. El resto está en tu biblioteca.",
+        "other": "Se omitieron estas {{count}} pestañas. El resto está en tu biblioteca."
+      },
+      "reason": {
+        "urlTooLong": "La dirección es demasiado larga",
+        "duplicateInBatch": "Misma dirección que otra pestaña"
+      }
     }
   }
 }

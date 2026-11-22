@@ -20,6 +20,8 @@ import {
   type RuleResponse,
 } from '@shelfmark/contracts';
 
+import type { WindowTab } from '../app/core/chrome/models/window-tab.interface';
+
 const STAMP = '2026-01-01T00:00:00.000Z';
 
 export function makeFolder(overrides: Partial<FolderResponse> & { id: string }): FolderResponse {
@@ -147,4 +149,13 @@ export function makeSuggestion(
     folderId: fields.folderId ?? null,
     ...(fields.more === true && { more: true }),
   };
+}
+
+/** A tab of the window as `BrowserTabsService.windowTabs()` answers it. */
+export function makeWindowTab(
+  id: number,
+  url: string | null,
+  overrides: Partial<WindowTab> = {},
+): WindowTab {
+  return { id, active: false, url, title: `Tab ${id}`, favIconUrl: null, ...overrides };
 }

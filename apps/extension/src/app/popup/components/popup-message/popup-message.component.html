@@ -15,16 +15,12 @@
   </div>
 }
 <div class="ext-screen__foot">
+  <ui-button block (click)="store.openApp()">{{ 'popup.openApp' | transloco }}</ui-button>
   @if (canRetry()) {
-    <ui-button block [variant]="BUTTON_VARIANT.Primary" (click)="store.retry()">{{
-      'popup.error.tryAgain' | transloco
-    }}</ui-button>
-  } @else {
-    <ui-button
-      block
-      [variant]="unsupported() ? BUTTON_VARIANT.Secondary : BUTTON_VARIANT.Primary"
-      (click)="store.openApp()"
-      >{{ 'popup.openApp' | transloco }}</ui-button
-    >
+    <span class="ext-foot-slot" [class.ext-foot-slot--animate]="animateSlot">
+      <ui-button block [variant]="BUTTON_VARIANT.Primary" (click)="store.retry()">{{
+        'popup.error.tryAgain' | transloco
+      }}</ui-button>
+    </span>
   }
 </div>

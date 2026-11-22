@@ -239,7 +239,7 @@ export class LinksController {
   @ApiOperation({
     summary: 'Save up to 100 links at once (paste many)',
     description:
-      'One transaction, no page fetch: links without a title keep their URL until the lazy image capture fills in the page title. Items with an over-long URL or a URL repeated within the batch are skipped and listed in errors.',
+      'One transaction, no page fetch: links without a title keep their URL until the lazy image capture fills in the page title. Items with an over-long URL or a URL repeated within the batch are skipped and listed in errors. An item may carry aiDraftId (POST /api/ai/drafts): the link picks up that draft instead of a new AI job, like POST /api/links; an unknown or foreign draft id, or one repeated by a later item, is ignored and the link gets a normal AI job.',
   })
   async createBatch(
     @CurrentUser() user: AuthUser,

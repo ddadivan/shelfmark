@@ -1,0 +1,87 @@
+<div class="tabs__all">
+  <ui-checkbox
+    class="tabs__all-box"
+    [label]="selectedLabel()"
+    [checked]="store.tabList.allTicked()"
+    [indeterminate]="store.tabList.someTicked()"
+    [disabled]="locked() || store.tabList.loading()"
+    (checkedChange)="store.tabList.toggleAll()"
+  />
+  @if (store.tabList.savedCount() > 0) {
+    <span class="tabs__all-meta">{{
+      'popup.tabs.alreadySaved' | transloco: { count: store.tabList.savedCount() }
+    }}</span>
+  }
+</div>
+
+<div class="tabs__list" role="group" [attr.aria-label]="'popup.tabs.list' | transloco">
+  @if (store.tabList.loading()) {
+    <div class="tabs__loading" role="status" [attr.aria-label]="'popup.tabs.loading' | transloco">
+      <ui-skeleton shape="line" [count]="5" />
+    </div>
+  }
+  @for (entry of store.tabList.entries(); track entry.key) {
+    <div class="tabs__row" [class.tabs__row--ai]="aiStatus(entry) !== null">
+      <ui-checkbox
+        class="tabs__tick"
+        hideLabel
+        [label]="entry.title"
+        [checked]="store.tabList.isTicked(entry.key)"
+        [disabled]="locked()"
+        (checkedChange)="store.tabList.toggle(entry.key)"
+      />
+      <ui-favicon [letter]="entry.letter" />
+      <div class="tabs__main">
+        <!-- A mouse convenience: the tick is the keyboard and screen reader control. -->
+        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+        <div class="tabs__text" (click)="locked() || store.tabList.toggle(entry.key)">
+          <span class="tabs__title">{{ entry.title }}</span>
+          <span class="tabs__host">{{ entry.host }}</span>
+        </div>
+        @if (aiStatus(entry) === TAB_AI_STATUS.Working) {
+          <ui-skeleton class="tabs__skeleton" shape="line" />
+        } @else if (aiStatus(entry) === TAB_AI_STATUS.Done) {
+          <div class="tabs__ai">
+            <ui-icon
+              class="tabs__spark"
+              name="spark"
+              [size]="ICON_SIZE.Sm"
+              [label]="'popup.ai.disclaimer' | transloco"
+              [attr.title]="'popup.ai.disclaimer' | transloco"
+            />
+            <ui-chip
+              clickable
+              truncate
+              class="tabs__folder"
+              [variant]="CHIP_VARIANT.Neutral"
+              [ariaLabel]="changeFolderLabel(entry)"
+              [disabled]="locked()"
+              (clicked)="store.openPicker(entry.key)"
+            >
+              <span class="tabs__folder-body">
+                @if (folderOf(entry); as folder) {
+                  <ui-folder-icon size="sm" [icon]="folder.icon" [colour]="folder.colour" />
+                } @else {
+                  <ui-folder-icon size="sm" icon="inbox" />
+                }
+                <span class="tabs__folder-name">{{ folderName(entry) }}</span>
+              </span>
+            </ui-chip>
+            @for (tag of store.tabsAi.row(entry.key)?.tags ?? []; track tag.name) {
+              <ui-chip
+                truncate
+                [class.tabs__tag--new]="tag.isNew"
+                [variant]="tag.isNew ? CHIP_VARIANT.Neutral : CHIP_VARIANT.Tag"
+                [attr.title]="tag.isNew ? ('popup.ai.new' | transloco) : null"
+                >{{ tag.name }}</ui-chip
+              >
+            }
+          </div>
+        }
+      </div>
+      @if (entry.saved) {
+        <ui-badge [tone]="BADGE_TONE.Neutral">{{ 'popup.tabs.savedBadge' | transloco }}</ui-badge>
+      }
+    </div>
+  }
+</div>

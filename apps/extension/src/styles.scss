@@ -114,6 +114,48 @@ body {
   @include line-clamp(2);
 }
 
+// Opening and the first screen after it (form, error) share one footer: Open Shelfmark stays put (no
+// fade of the whole screen) and the primary button opens up beside it (width and fade; reduced motion:
+// fade only). `.ext-foot-slot--animate` is set only on the first screen after opening.
+.ext-screen--flow {
+  animation: none;
+
+  > :not(.ext-screen__foot) {
+    animation: ext-fade var(--duration-fast) var(--ease-out) both;
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+}
+
+.ext-foot-slot {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.ext-foot-slot--animate {
+  animation: ext-slot-open var(--duration-base) var(--ease-out) backwards;
+
+  @include reduced-motion {
+    animation: ext-fade var(--duration-base) linear backwards;
+  }
+}
+
+@keyframes ext-slot-open {
+  from {
+    flex-grow: 0;
+    margin-inline-start: rem(-8px);
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  to {
+    overflow: hidden;
+  }
+}
+
 @keyframes ext-fade {
   from {
     opacity: 0;
