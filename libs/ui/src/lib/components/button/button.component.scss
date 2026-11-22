@@ -184,23 +184,31 @@ a.ui-button {
   }
 }
 
-// A button that opens a menu (or any popup) stays pressed while it is open: one rule for every
-// menu trigger (`uiMenuTrigger` writes `aria-expanded` on the inner element). A `disclosure`
-// button (a section chevron) only names its state and keeps its resting look.
-.ui-button--secondary[aria-expanded='true']:not(.ui-button--disclosure),
-.ui-button--ghost[aria-expanded='true']:not(.ui-button--disclosure) {
+// A button that opens a menu or another popup stays pressed while it is open (#562): one rule for
+// every popup trigger (`uiMenuTrigger` and `uiPopoverTrigger` write `aria-haspopup` and
+// `aria-expanded` on the inner element). The scale of `:active` is off while open, only the
+// background stays. A plain `aria-expanded` toggle (no `aria-haspopup`) and a `disclosure` button
+// (a section chevron) only name their state and keep the resting look.
+$-open: "[aria-haspopup]:not([aria-haspopup='false'])[aria-expanded='true']:not(.ui-button--disclosure)";
+
+.ui-button#{$-open} {
+  transform: none;
+}
+
+.ui-button--secondary#{$-open},
+.ui-button--ghost#{$-open} {
   background: var(--surface-pressed);
 }
 
-.ui-button--primary[aria-expanded='true']:not(.ui-button--disclosure) {
+.ui-button--primary#{$-open} {
   background: var(--primary-hover);
 }
 
-.ui-button--ai[aria-expanded='true']:not(.ui-button--disclosure),
-.ui-button--ai-ghost[aria-expanded='true']:not(.ui-button--disclosure) {
+.ui-button--ai#{$-open},
+.ui-button--ai-ghost#{$-open} {
   background: var(--ai-fill-pressed);
 }
 
-.ui-button--danger[aria-expanded='true']:not(.ui-button--disclosure) {
+.ui-button--danger#{$-open} {
   filter: brightness(0.85);
 }
