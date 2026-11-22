@@ -13,6 +13,20 @@
   padding: rem(2px);
 }
 
+// The preview, skeleton and notices of the address (`uiAutoHeight`: the height follows the content
+// over 200 ms when the metadata arrives). The wrapper keeps the fields' gap; empty, it takes no room.
+.add-link__live {
+  &:has(> .add-link__live-inner:empty) {
+    display: none;
+  }
+}
+
+.add-link__live-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 .add-link__sr {
   position: absolute;
   width: rem(1px);

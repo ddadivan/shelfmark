@@ -3,6 +3,7 @@ import { FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LINK_LIMIT } from '@shelfmark/contracts';
 import {
+  AutoHeightDirective,
   ButtonComponent,
   CheckboxComponent,
   ChipComponent,
@@ -75,6 +76,7 @@ import { RelatedLinksComponent } from '../../../ai/components/related-links/rela
 @Component({
   selector: 'app-add-link-dialog',
   imports: [
+    AutoHeightDirective,
     AddLinkAiFillComponent,
     AddLinkAiFolderComponent,
     AddLinkAiTagsComponent,

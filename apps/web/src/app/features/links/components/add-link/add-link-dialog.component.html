@@ -97,49 +97,56 @@
           }
         </div>
 
-        @switch (shownState()) {
-          @case (PREVIEW_STATE.Loading) {
-            <div class="add-link__preview add-link__preview--loading" aria-busy="true">
-              <ui-skeleton [shape]="SKELETON_SHAPE.Preview" />
-            </div>
-            <p class="add-link__note add-link__note--loading">
-              {{ 'links.add.preview.loadingHint' | transloco }}
-            </p>
-          }
-          @case (PREVIEW_STATE.Failed) {
-            <ui-notice [kind]="NOTICE_KIND.Danger">{{
-              'links.add.preview.failed' | transloco
-            }}</ui-notice>
-          }
-          @case (PREVIEW_STATE.Ready) {
-            @if (duplicate(); as existing) {
-              <ui-notice>{{
-                'links.add.duplicate.text'
-                  | transloco
-                    : { folder: existing.folderName ?? ('links.add.folder.unsorted' | transloco) }
-              }}</ui-notice>
-            }
-            @if (noPreview()) {
-              <ui-notice>{{ 'links.add.preview.unavailable' | transloco }}</ui-notice>
-            }
-            @if (previewData(); as data) {
-              <div class="add-link__preview">
-                <span class="add-link__thumb" aria-hidden="true">{{ previewHost()[0] }}</span>
-                <div class="add-link__preview-main">
-                  <div class="add-link__meta">
-                    <ui-favicon [letter]="previewHost()[0]" />
-                    <span class="add-link__host">{{ previewHost() }}</span>
-                  </div>
-                  <div class="add-link__title">{{ data.title }}</div>
-                  @if (data.description) {
-                    <div class="add-link__description">{{ data.description }}</div>
-                  }
-                  <div class="add-link__note">{{ 'links.add.preview.filled' | transloco }}</div>
+        <div class="add-link__live" uiAutoHeight>
+          <div class="add-link__live-inner">
+            @switch (shownState()) {
+              @case (PREVIEW_STATE.Loading) {
+                <div class="add-link__preview add-link__preview--loading" aria-busy="true">
+                  <ui-skeleton [shape]="SKELETON_SHAPE.Preview" />
                 </div>
-              </div>
+                <p class="add-link__note add-link__note--loading">
+                  {{ 'links.add.preview.loadingHint' | transloco }}
+                </p>
+              }
+              @case (PREVIEW_STATE.Failed) {
+                <ui-notice [kind]="NOTICE_KIND.Danger">{{
+                  'links.add.preview.failed' | transloco
+                }}</ui-notice>
+              }
+              @case (PREVIEW_STATE.Ready) {
+                @if (duplicate(); as existing) {
+                  <ui-notice>{{
+                    'links.add.duplicate.text'
+                      | transloco
+                        : {
+                            folder:
+                              existing.folderName ?? ('links.add.folder.unsorted' | transloco),
+                          }
+                  }}</ui-notice>
+                }
+                @if (noPreview()) {
+                  <ui-notice>{{ 'links.add.preview.unavailable' | transloco }}</ui-notice>
+                }
+                @if (previewData(); as data) {
+                  <div class="add-link__preview">
+                    <span class="add-link__thumb" aria-hidden="true">{{ previewHost()[0] }}</span>
+                    <div class="add-link__preview-main">
+                      <div class="add-link__meta">
+                        <ui-favicon [letter]="previewHost()[0]" />
+                        <span class="add-link__host">{{ previewHost() }}</span>
+                      </div>
+                      <div class="add-link__title">{{ data.title }}</div>
+                      @if (data.description) {
+                        <div class="add-link__description">{{ data.description }}</div>
+                      }
+                      <div class="add-link__note">{{ 'links.add.preview.filled' | transloco }}</div>
+                    </div>
+                  </div>
+                }
+              }
             }
-          }
-        }
+          </div>
+        </div>
 
         <ui-input [label]="'links.add.titleField.label' | transloco" [formField]="form.title" />
 
