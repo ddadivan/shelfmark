@@ -59,7 +59,6 @@ import { SettingsNavComponent } from '../features/settings/components/settings-n
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ToastAreaDirective } from '../core/layout/toast-area.directive';
 import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.directive';
-import { FirstSettleDirective } from './first-settle/first-settle.directive';
 
 /**
  * Layout around the signed-in pages. Desktop and tablet: the sidebar card on the left, the top bar
@@ -70,7 +69,6 @@ import { FirstSettleDirective } from './first-settle/first-settle.directive';
 @Component({
   selector: 'app-shell',
   imports: [
-    FirstSettleDirective,
     RouterOutlet,
     ToastAreaDirective,
     ScrollRestorationDirective,

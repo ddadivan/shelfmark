@@ -70,10 +70,13 @@
 }
 
 // The tick exists only while checked: it draws itself when the box gets checked (`ui-check-mark`)
-// and is gone at once when it is unchecked.
+// and is gone at once when it is unchecked. It waits for the fill to land first (`duration-fast`,
+// the box's background transition), so the stroke is seen drawing on the finished colour (#564).
+// The size goes through `--ui-icon-size`, which `ui-check-mark` sizes its host from: a plain
+// width here ties with the check mark's own `:host(.ui-check-mark--16)` rule and loses.
 .ui-checkbox__check {
-  width: var(--ui-checkbox-tick, #{rem(16px)});
-  height: var(--ui-checkbox-tick, #{rem(16px)});
+  --ui-check-delay: var(--duration-fast);
+  --ui-icon-size: var(--ui-checkbox-tick, #{rem(20px)});
 }
 
 .ui-checkbox__dash {

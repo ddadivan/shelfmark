@@ -19,11 +19,13 @@ import { UI_VIEW } from '../../../stores/models/ui-view.const';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { pinnedFirst } from '../../links/utils/pinned-first';
 import { sameFilter } from '../../links/utils/links-filter';
+import { FEED_STAGGER } from '../models/feed-stagger.const';
 import { LAND_STAGGER_MS } from '../models/land-stagger-ms.const';
 import type { LastShown } from '../models/last-shown.interface';
 import type { SubfolderItem } from '../models/subfolder-item.interface';
 import { VIEW_OPTION_KEYS } from '../models/view-option-keys.const';
 import { runViewTransition, type ViewTransitionNames } from '../utils/view-transition';
+import { FeedStaggerGate } from './feed-stagger-gate.service';
 import { LibraryFilterService } from './library-filter.service';
 
 /**
@@ -40,6 +42,7 @@ export class LibraryFeedService {
   private readonly transloco = inject(TranslocoService);
   private readonly doc = inject(DOCUMENT);
   private readonly injector = inject(Injector);
+  private readonly staggerGate = inject(FeedStaggerGate);
 
   /**
    * The store is app-wide: when the page opens (back from another page) it can still hold the
@@ -75,6 +78,12 @@ export class LibraryFeedService {
   readonly batches = computed(() => [this.batch()]);
   /** The new list fades in only when it replaces a skeleton; on a view switch it just swaps. */
   readonly reveal = signal(false);
+  /**
+   * The first list of this app load (#564): its first cards rise in one after another
+   * (`library__list--stagger`). Once per app load (`FeedStaggerGate`), dropped after
+   * `FEED_STAGGER.ClearMs` so cards added later never wait; replaces `reveal` for that list.
+   */
+  readonly stagger = signal(false);
   /**
    * The cards <-> list switch is running: the links carry their `view-transition-name`. Only then,
    * so the names never take part in the router's page transition (cards would fly between pages).
@@ -179,7 +188,12 @@ export class LibraryFeedService {
           this.lastSubfolders.set(this.currentSubfolders());
         }
         if (wasLoading && !loading) {
-          this.reveal.set(sawSkeleton);
+          const first = this.ownCount() > 0 && this.staggerGate.take();
+          this.stagger.set(first);
+          if (first) {
+            setTimeout(() => this.stagger.set(false), FEED_STAGGER.ClearMs);
+          }
+          this.reveal.set(sawSkeleton && !first);
           sawSkeleton = false;
           this.batch.update((value) => value + 1);
         }
@@ -200,11 +214,17 @@ export class LibraryFeedService {
     return position === undefined || position === 0 ? null : `${position * LAND_STAGGER_MS}ms`;
   }
 
+  /** The step of a card in the first-load stagger; cards past `FEED_STAGGER.Items` share the last. */
+  staggerStep(index: number): number | null {
+    return this.stagger() ? Math.min(index, FEED_STAGGER.Items) : null;
+  }
+
   /** Switches cards / list: a view transition morphs the links; the new list does not fade in. */
   setView(view: string): void {
     if (isUiView(view)) {
       // The new list is the same links: no fade-in on top of the morph.
       this.reveal.set(false);
+      this.stagger.set(false);
       const feed = this.filters.feedKey();
       runViewTransition(
         this.doc,

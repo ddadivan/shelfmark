@@ -8,6 +8,7 @@ import { LINKS_API } from '../../links/models/links-api.const';
 import type { LinksApi } from '../../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import type { LinksScope } from '../../links/models/links-scope.type';
+import { FEED_STAGGER } from '../models/feed-stagger.const';
 import { LAND_STAGGER_MS } from '../models/land-stagger-ms.const';
 import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { provideTranslocoForTest, loadEnglish } from '../../../testing/transloco-testing';
@@ -117,5 +118,68 @@ describe('LibraryFeedService', () => {
     expect(feed.landDelay('id-10')).toBeNull();
     expect(feed.landDelay('id-11')).toBe(`${LAND_STAGGER_MS}ms`);
     expect(feed.landDelay('id-12')).toBe(`${2 * LAND_STAGGER_MS}ms`);
+  });
+
+  it('staggers the first list of the app load only, then never again', async () => {
+    const first = new Subject<ListLinksResponse>();
+    const next = new Subject<ListLinksResponse>();
+    let calls = 0;
+    const { feed, tag } = await setup([], () => (calls++ === 0 ? first : next));
+    expect(feed.stagger()).toBe(false);
+    expect(feed.staggerStep(0)).toBeNull();
+
+    first.next(page(Array.from({ length: 12 }, (_, n) => link(n))));
+    first.complete();
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(feed.stagger()).toBe(true);
+    });
+    // It replaces the plain fade of that list.
+    expect(feed.reveal()).toBe(false);
+    expect(feed.staggerStep(0)).toBe(0);
+    expect(feed.staggerStep(3)).toBe(3);
+    expect(feed.staggerStep(11)).toBe(FEED_STAGGER.Items);
+
+    tag.set('docs');
+    TestBed.tick();
+    next.next(page([link(20)]));
+    next.complete();
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(feed.shownLinks().map((item) => item.id)).toEqual(['id-20']);
+    });
+    expect(feed.stagger()).toBe(false);
+  });
+
+  it('drops the stagger once its cards have risen, so later cards never wait', async () => {
+    vi.useFakeTimers();
+    try {
+      const first = new Subject<ListLinksResponse>();
+      const { feed } = await setup([], () => first);
+      first.next(page([link(1)]));
+      first.complete();
+      TestBed.tick();
+      expect(feed.stagger()).toBe(true);
+
+      vi.advanceTimersByTime(FEED_STAGGER.ClearMs);
+      expect(feed.stagger()).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not stagger the morph of a view switch', async () => {
+    const first = new Subject<ListLinksResponse>();
+    const { feed } = await setup([], () => first);
+    first.next(page([link(1)]));
+    first.complete();
+    await vi.waitFor(() => {
+      TestBed.tick();
+      expect(feed.stagger()).toBe(true);
+    });
+
+    feed.setView('list');
+
+    expect(feed.stagger()).toBe(false);
   });
 });
