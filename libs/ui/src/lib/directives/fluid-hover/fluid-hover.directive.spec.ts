@@ -83,7 +83,7 @@ describe('FluidHoverDirective', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('ignores touch, pressed buttons, disabled rows and non-rows', () => {
+  it('ignores touch, pressed buttons and disabled rows', () => {
     const { highlight, over } = setup();
     over('a', 'touch');
     expect(highlight?.classList).not.toContain(FLUID_HOVER_CLASS.Shown);
@@ -92,9 +92,21 @@ describe('FluidHoverDirective', () => {
     over('a');
     over('off');
     expect(highlight?.classList).not.toContain(FLUID_HOVER_CLASS.Shown);
-    over('a');
+  });
+
+  it('stays on its row over the gap between rows, then glides on to the next one', () => {
+    const { highlight, over } = setup();
     over('gap');
     expect(highlight?.classList).not.toContain(FLUID_HOVER_CLASS.Shown);
+
+    over('a');
+    over('gap');
+    expect(highlight?.classList).toContain(FLUID_HOVER_CLASS.Shown);
+    expect(highlight?.style.transform).not.toContain('40px');
+
+    over('b');
+    expect(highlight?.classList).not.toContain(FLUID_HOVER_CLASS.Jump);
+    expect(highlight?.style.transform).toBe('translate(0px, 40px)');
   });
 
   it('re-measures the current row when the layout changes', () => {

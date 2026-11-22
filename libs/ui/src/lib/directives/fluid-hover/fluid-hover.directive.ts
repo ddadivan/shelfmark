@@ -90,7 +90,13 @@ export class FluidHoverDirective {
     }
     const target = event.target;
     const row = target instanceof Element ? target.closest<HTMLElement>(this.rowSelector()) : null;
-    if (!row || !this.host.contains(row) || row.getAttribute('aria-disabled') === 'true') {
+    // The gap between rows (padding, a list item, a section heading): the highlight stays on the
+    // row it is on, so moving on to the next row glides instead of going out and fading in again
+    // (#564). It goes out only when the pointer leaves the list.
+    if (!row || !this.host.contains(row)) {
+      return;
+    }
+    if (row.getAttribute('aria-disabled') === 'true') {
       this.hide();
       return;
     }

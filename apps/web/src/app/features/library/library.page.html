@@ -451,7 +451,6 @@
           cdkDropListSortingDisabled
           [cdkDropListDisabled]="compact()"
           [class.library__list--reveal]="feed.reveal()"
-          [class.library__list--stagger]="feed.stagger()"
           [class.library__list--stale]="feed.stale()"
           [attr.aria-busy]="feed.stale() ? 'true' : null"
           [attr.inert]="feed.stale() ? '' : null"
@@ -473,7 +472,6 @@
             [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
             [class.library__landed]="store.landed()[link.id] !== undefined"
             [style.--ui-land-delay]="feed.landDelay(link.id)"
-            [style.--library-stagger-step]="feed.staggerStep($index)"
             (pointerdown)="drag.grab($event)"
             (cdkDragStarted)="dnd.started(link)"
             (cdkDragMoved)="dnd.moved($event)"
@@ -542,7 +540,6 @@
           cdkDropListSortingDisabled
           [cdkDropListDisabled]="compact()"
           [class.library__list--reveal]="feed.reveal()"
-          [class.library__list--stagger]="feed.stagger()"
           [class.library__list--stale]="feed.stale()"
           [attr.aria-busy]="feed.stale() ? 'true' : null"
           [attr.inert]="feed.stale() ? '' : null"
@@ -563,7 +560,6 @@
             [style.view-transition-name]="feed.morphing() ? 'link-' + link.id : null"
             [class.library__landed]="store.landed()[link.id] !== undefined"
             [style.--ui-land-delay]="feed.landDelay(link.id)"
-            [style.--library-stagger-step]="feed.staggerStep($index)"
             (pointerdown)="drag.grab($event)"
             (cdkDragStarted)="dnd.started(link)"
             (cdkDragMoved)="dnd.moved($event)"
