@@ -24,15 +24,17 @@ describe('pressed menu trigger (CSS)', () => {
   it('shows the pressed state while aria-expanded is true', () => {
     const css = compileScss('lib/components/button/button.component.scss');
     expect(css).toMatch(
-      /\.ui-button--secondary\[aria-expanded=true\][^{]*\{[^}]*--surface-pressed/,
+      /\.ui-button--secondary\[aria-haspopup\][^{]*\[aria-expanded=true\][^{]*\{[^}]*--surface-pressed/,
     );
-    expect(css).toMatch(/\.ui-button--primary\[aria-expanded=true\][^{]*\{[^}]*--primary-hover/);
+    expect(css).toMatch(
+      /\.ui-button--primary\[aria-haspopup\][^{]*\[aria-expanded=true\][^{]*\{[^}]*--primary-hover/,
+    );
   });
 
   it('keeps a disclosure toggle in its resting look while expanded (#556)', () => {
     const css = compileScss('lib/components/button/button.component.scss');
     expect(css).toMatch(
-      /\.ui-button--ghost\[aria-expanded=true\]:not\(\.ui-button--disclosure\)[^{]*\{[^}]*--surface-pressed/,
+      /\.ui-button--ghost\[aria-haspopup\][^{]*\[aria-expanded=true\]:not\(\.ui-button--disclosure\)[^{]*\{[^}]*--surface-pressed/,
     );
   });
 });
