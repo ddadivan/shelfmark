@@ -31,9 +31,7 @@
       }
       <p class="ui-streaming-answer__status" role="status">
         @if (shownStatus(); as status) {
-          <span class="ui-streaming-answer__pill"
-            ><span class="ui-streaming-answer__pill-text">{{ status }}</span></span
-          >
+          <span class="ui-streaming-answer__pill"><ui-text-swap [text]="status" shimmer /></span>
         }
       </p>
       <div class="ui-streaming-answer__extra"><ng-content select="[uiStreamingLive]" /></div>

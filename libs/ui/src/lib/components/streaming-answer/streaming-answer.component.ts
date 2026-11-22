@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { IconComponent } from '../icon/icon.component';
+import { TextSwapComponent } from '../text-swap/text-swap.component';
 import type { StreamingCiteLabel } from './models/streaming-cite-label.type';
 import type { StreamingPart } from './models/streaming-part.type';
 import { STREAMING_PART_KIND } from './models/streaming-part-kind.const';
@@ -24,7 +25,7 @@ import type { StreamingSegment } from './models/streaming-segment.type';
  */
 @Component({
   selector: 'ui-streaming-answer',
-  imports: [IconComponent],
+  imports: [IconComponent, TextSwapComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ui-streaming-answer', '[attr.aria-busy]': 'streaming() || null' },
   templateUrl: './streaming-answer.component.html',

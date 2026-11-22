@@ -86,6 +86,12 @@ $enter-presets: (
     'duration': 'base',
     'ease': 'out',
   ),
+  // New status text or label: rises out of a 4px blur (#562, `ui-text-swap`).
+  'swap': (
+    'keyframes': 'ui-text-swap-in',
+    'duration': 'base',
+    'ease': 'out',
+  ),
 );
 
 // Exits: faster than entrances, `ease-in` only for things that leave the screen.
@@ -141,6 +147,12 @@ $leave-presets: (
     'duration': 'fast',
     'ease': 'out',
   ),
+  // Old status text or label: blurs 4px and fades up 4px (#562, `ui-text-swap`).
+  'swap': (
+    'keyframes': 'ui-text-swap-out',
+    'duration': 'fast',
+    'ease': 'out',
+  ),
 );
 
 @function -token($kind, $name) {
@@ -162,7 +174,7 @@ $leave-presets: (
 }
 
 // Plays an entrance: `pop` (menus, listboxes, dialogs), `disclose` (a panel under its trigger), `fade`, `toast`, `sheet`, `drawer`,
-// `spinner`, `spinner-grow` (spinner inside a button, label makes room). Reduced motion: fade, 200 ms
+// `spinner`, `spinner-grow` (spinner inside a button, label makes room), `swap` (new text rising out of a blur). Reduced motion: fade, 200 ms
 // (so `spinner-grow` also drops its margin growth: the label does not slide). A spinner's
 // rotation is a separate `loop(spin)` on the inner element.
 @mixin enter($name) {
@@ -498,6 +510,23 @@ $leave-presets: (
   @keyframes ui-suggest-accept {
     50% {
       scale: 1.06;
+    }
+  }
+
+  // Text state swap (#562): the old text blurs and fades up, the new one rises out of the blur.
+  @keyframes ui-text-swap-in {
+    from {
+      opacity: 0;
+      filter: blur(#{rem(4px)});
+      transform: translateY(#{rem(4px)});
+    }
+  }
+
+  @keyframes ui-text-swap-out {
+    to {
+      opacity: 0;
+      filter: blur(#{rem(4px)});
+      transform: translateY(#{rem(-4px)});
     }
   }
 

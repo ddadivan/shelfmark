@@ -165,12 +165,16 @@ describe('ui-streaming-answer', () => {
     expect(css).toMatch(/\.ui-streaming-answer__pill::after\s*\{[^}]*animation: ui-shimmer/);
   });
 
-  it('shimmers the words of the pill with a resting colour that keeps contrast on ai-fill', () => {
+  it('swaps and shimmers the words of the pill with a resting colour that keeps contrast on ai-fill', () => {
     const css = compileScss('lib/components/streaming-answer/streaming-answer.component.scss');
-    const rule = css.slice(css.indexOf('.ui-streaming-answer__pill-text'));
-    expect(rule).toContain('animation: ui-shimmer-text');
-    expect(rule).toContain('background-clip: text');
-    expect(rule).toContain('color-mix(in srgb, var(--text) 75%, var(--text-muted))');
+    expect(css).toContain(
+      '--ui-text-swap-rest: color-mix(in srgb, var(--text) 75%, var(--text-muted))',
+    );
+    const { host, update } = setup();
+    update((c) => c.status.set('Searching your links…'));
+    expect(
+      host.querySelector('.ui-streaming-answer__pill .ui-text-swap__text--shimmer'),
+    ).not.toBeNull();
   });
 
   it('shows only the bubble for a question without an answer', () => {

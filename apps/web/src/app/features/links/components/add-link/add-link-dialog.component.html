@@ -311,19 +311,20 @@
           [variant]="BUTTON_VARIANT.Primary"
           [loading]="saving()"
           [disabled]="aiFill.busy()"
-          >{{
-            (editing
-              ? saving()
-                ? 'links.add.actions.saving'
-                : 'links.edit.actions.save'
-              : saving()
-                ? 'links.add.actions.creating'
-                : duplicate()
-                  ? 'links.add.actions.createAnyway'
-                  : 'links.add.actions.create'
-            ) | transloco
-          }}</ui-button
-        >
+          ><ui-text-swap
+            [text]="
+              (editing
+                ? saving()
+                  ? 'links.add.actions.saving'
+                  : 'links.edit.actions.save'
+                : saving()
+                  ? 'links.add.actions.creating'
+                  : duplicate()
+                    ? 'links.add.actions.createAnyway'
+                    : 'links.add.actions.create'
+              ) | transloco
+            "
+        /></ui-button>
       </div>
     </ui-dialog>
   </form>

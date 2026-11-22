@@ -182,6 +182,8 @@ describe('motion mixins', () => {
     ['enter(drawer)', 'ui-drawer-in var(--duration-slow) var(--ease-drawer) both'],
     ['leave(drawer)', 'ui-drawer-out var(--duration-base) var(--ease-in) both'],
     ['leave(disclose)', 'ui-disclose-out var(--duration-fast) var(--ease-in-out) both'],
+    ['enter(swap)', 'ui-text-swap-in var(--duration-base) var(--ease-out) both'],
+    ['leave(swap)', 'ui-text-swap-out var(--duration-fast) var(--ease-out) both'],
     ['leave(pop)', 'ui-pop-out var(--duration-fast) var(--ease-out) both'],
     ['leave(toast)', 'ui-toast-out var(--duration-fast) var(--ease-in) both'],
     ['leave(sheet)', 'ui-sheet-out var(--duration-base) var(--ease-in) both'],
@@ -199,6 +201,7 @@ describe('motion mixins', () => {
     'enter(drawer)',
     'enter(spinner)',
     'enter(spinner-grow)',
+    'enter(swap)',
   ])('%s falls back to a fade in 200 ms under reduced motion', (include) => {
     const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
     expect(reduced).toContain('animation: ui-reveal var(--duration-base) var(--ease-out) both');
@@ -215,11 +218,12 @@ describe('motion mixins', () => {
     'leave(sheet)',
     'leave(drawer)',
     'leave(spinner-shrink)',
+    'leave(swap)',
   ])('%s falls back to a plain fade-out under reduced motion', (include) => {
     const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
     expect(reduced).toContain('ui-fade-out');
     expect(reduced).not.toMatch(
-      /ui-(pop-out|icon-out|digit-out|toast-out|sheet-out|drawer-out|spinner-shrink)/,
+      /ui-(pop-out|icon-out|digit-out|toast-out|sheet-out|drawer-out|spinner-shrink|text-swap-out)/,
     );
   });
 
@@ -302,6 +306,8 @@ describe('motion mixins', () => {
       'ui-land',
       'ui-land-ring',
       'ui-suggest-accept',
+      'ui-text-swap-in',
+      'ui-text-swap-out',
       'ui-shimmer-text',
       'ui-shake',
     ]);

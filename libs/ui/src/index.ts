@@ -62,6 +62,7 @@ export * from './lib/components/switch';
 export * from './lib/components/tab-bar';
 export * from './lib/components/tag-input';
 export * from './lib/components/textarea';
+export * from './lib/components/text-swap';
 export * from './lib/components/theme-picker';
 export * from './lib/components/theme-preview';
 export * from './lib/components/toast';
