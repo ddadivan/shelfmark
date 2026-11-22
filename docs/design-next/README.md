@@ -11,18 +11,22 @@ What still applies, because it is about the product working and not about taste:
 - accessibility: WCAG 2.2 AA contrast, keyboard, focus, 24px / 44px touch targets;
 - translations: strings up to 40% longer, sentence case, no text in images;
 - phone from 360px, tablet, desktop, and the browser extension popup;
-- implementation limits: components land in `libs/ui`, sizes in rem, external images only through an image proxy (#57), strict CSP.
+- implementation limits as a starting point (components in `libs/ui`, sizes in rem, external images through an image proxy (#57), strict CSP); they can change when the product is better for it.
 
 Code changes still follow `CLAUDE.md` (branch per issue, ADR for the decision, tests).
 
 ## Plan
 
-1. **Feature inventory** (separate session): every feature with its screens, platforms, states (empty, loading, error, offline, AI off, demo) and data. Sources: `docs/PROJECT.md` section 4, `docs/design/screens/INDEX.md`, routes in `apps/web`, `docs/ai/FEATURES.md`. Commit it here as `features.md`.
-2. **Foundations**: type scale, spacing grid, radii, elevation, and 2 to 3 colour palette options with contrast checked in both themes. The author picks; recorded in an ADR.
-3. **Design system**: a new Design System artifact (separate from the 2027 Refresh), every component mapped to a `libs/ui` component.
-4. **Screens by group**, one group at a time with a review after each. Draft groups: Library (feed, views, preview), Capture (add link, extension, import), Organise (folders, tags, pins, rules, bulk), Find (search, Ask / AI), Come back (recent, reminders, forgotten), Shared collections, Settings and account, Sign-in / onboarding / landing, System states.
-5. Feature moves, merges or removals are proposed with reasons and decided by the author.
-6. Migration plan into code.
+How the product works is open too, not only how it looks: flows, structure and where features live are redesigned, not just restyled.
+
+1. **Feature inventory, as is** (separate session): describe current behaviour neutrally, so nothing gets lost. Every feature with its screens, platforms, states (empty, loading, error, offline, AI off, demo) and data. Sources: `docs/PROJECT.md` section 4, `docs/design/screens/INDEX.md`, routes in `apps/web`, `docs/ai/FEATURES.md`. Commit it here as `features.md`. No judgement in this step.
+2. **Flow review and new structure**: walk the key flows (save a link, find it, organise, come back to it, share, settings) with the behaviour skills (page-patterns, surfaces, forms, defaults, empty-states, errors, loaders, keyboard, verbs, labels). Output: where there are extra steps, confusion and duplicates; a new information architecture (sections, what moves, merges or goes); before / after flows for the main jobs. The author approves before step 3.
+3. **Foundations**: type scale, spacing grid, radii, elevation, and 2 to 3 colour palette options with contrast checked in both themes. The author picks; recorded in an ADR.
+4. **Design system**: a new Design System artifact (separate from the 2027 Refresh), every component mapped to a `libs/ui` component.
+5. **Screens by group**, following the new structure from step 2, one group at a time with a review after each.
+6. **Migration plan** into code.
+
+Feature moves, merges or removals are proposed with reasons and decided by the author. Only accessibility, translations and the device range are fixed; implementation limits (CSP, image proxy, component boundaries) can change when the product is better for it.
 
 ## What exists so far
 
