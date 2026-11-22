@@ -3736,6 +3736,7 @@
     },
     "related": {
       "title": "Ähnliches in deinem Regal",
+      "button": "Ähnlich · {{count}}",
       "why": "Nah an: {{reasons}}",
       "show": "Ähnliches zeigen",
       "folders": "Ähnliche Ordner"

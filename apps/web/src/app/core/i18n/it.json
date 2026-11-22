@@ -3834,6 +3834,7 @@
     },
     "related": {
       "title": "Correlati nel tuo scaffale",
+      "button": "Simili · {{count}}",
       "why": "Vicino a: {{reasons}}",
       "show": "Mostra correlati",
       "folders": "Cartelle correlate"

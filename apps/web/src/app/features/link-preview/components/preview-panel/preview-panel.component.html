@@ -40,6 +40,7 @@
         </span>
       </div>
       <span class="preview-panel__sep" aria-hidden="true"></span>
+      <app-related-links small [linkId]="link.id" (chosen)="preview.open($event)" />
       <ui-button
         class="preview-panel__star"
         [class.preview-panel__star--on]="link.isFavorite"

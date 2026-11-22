@@ -3834,6 +3834,7 @@
     },
     "related": {
       "title": "Relacionados na sua estante",
+      "button": "Relacionados · {{count}}",
       "why": "Perto de: {{reasons}}",
       "show": "Mostrar relacionados",
       "folders": "Pastas relacionadas"

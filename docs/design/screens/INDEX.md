@@ -125,5 +125,5 @@ AI features F0–F8 (`docs/ai/FEATURES.md`, approved Nov 17, 2026; parent #388).
 - `AiAnnounce.dc.html` — One-time “Shelfmark can now help with AI” dialog (#507): animated spark tile, four feature cards, Turn on AI… opens the AI intro, Not now
 - `AiCleanup.dc.html` — Clean-up (F5): report with per-item choice and one Undo, entry card, checking, applied, nothing to clean (desktop)
 - `AiConnect.dc.html` — Connect your assistant (F6, MCP): server address, token shown once, connected clients, revoke, empty (desktop)
-- `AiDiscover.dc.html` — Related on your shelf in Edit link (F7); “From your shelf” weekly block with and without AI (F8) (desktop)
+- `AiDiscover.dc.html` — Related on your shelf in Edit link (F7; since #572 a "Related · N" button with a popover in the link preview instead); “From your shelf” weekly block with and without AI (F8) (desktop)
 - `MobileAiMore.dc.html` — Phone at 360px: the Ask tab replaces Tags while Ask is on; search with meaning results and the Ask row; Ask full screen (empty, answered) with Back; Library with the Tags section next to folders; AI off keeps the Tags tab (phone)
