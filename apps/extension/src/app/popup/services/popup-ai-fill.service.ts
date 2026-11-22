@@ -51,8 +51,11 @@ export class PopupAiFillService {
     return settings !== null && settings.settings.enabled && settings.usage.linksLimit > 0;
   });
   readonly busy = computed(() => this.state() === AI_FILL_STATE.Loading);
-  /** The button shows while AI is on (the popup always has the tab's address). */
-  readonly buttonShown = this.on;
+  /**
+   * The button shows while AI is on (the popup always has the tab's address) until a fill applied:
+   * a second click does nothing, and its row is the room the AI tags need in the fixed popup.
+   */
+  readonly buttonShown = computed(() => this.on() && this.state() !== AI_FILL_STATE.Ready);
   /** The cleaned-up title AI gave for the page, `null` until a fill applied one. */
   readonly cleanTitle = this.cleanTitleValue.asReadonly();
   /** New-tag chips that are still open, in the order AI gave them. */

@@ -121,7 +121,7 @@ const browser = await chromium.launch();
 for (const scheme of ['light', 'dark']) {
   for (const [name, s] of Object.entries(scenarios)) {
     const context = await browser.newContext({
-      viewport: { width: 360, height: 520 },
+      viewport: { width: 360, height: 600 },
       colorScheme: scheme,
       deviceScaleFactor: 2,
     });

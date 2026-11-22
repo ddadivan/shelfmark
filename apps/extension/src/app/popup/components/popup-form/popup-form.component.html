@@ -74,48 +74,52 @@
     }
   </div>
 
-  <ui-tag-input
-    [label]="'popup.form.tags' | transloco"
-    [placeholder]="'popup.form.tagsPlaceholder' | transloco"
-    [suggestions]="tagSuggestions()"
-    [maxTags]="LINK_LIMIT.TagsMax"
-    [maxTagsLabel]="'popup.form.tagsMax' | transloco: { max: LINK_LIMIT.TagsMax }"
-    [createLabel]="'popup.form.tagsCreate' | transloco"
-    [removeLabel]="'popup.form.tagsRemove' | transloco"
-    [addedLabel]="'popup.form.tagsAdded' | transloco"
-    [removedLabel]="'popup.form.tagsRemoved' | transloco"
-    [duplicateLabel]="'popup.form.tagsDuplicate' | transloco"
-    [listLabel]="'popup.form.tagsList' | transloco"
-    [disabled]="store.saving() || store.ai.busy()"
-    [(value)]="store.chosenTags"
-  />
+  <!-- The "Tags from AI" mark sits on the label line (#510: a labelled mark, not a lone spark), so
+       the AI tags need no extra row in the fixed popup. -->
+  <div class="form__tags">
+    <ui-tag-input
+      [label]="'popup.form.tags' | transloco"
+      [placeholder]="'popup.form.tagsPlaceholder' | transloco"
+      [suggestions]="tagSuggestions()"
+      [maxTags]="LINK_LIMIT.TagsMax"
+      [maxTagsLabel]="'popup.form.tagsMax' | transloco: { max: LINK_LIMIT.TagsMax }"
+      [createLabel]="'popup.form.tagsCreate' | transloco"
+      [removeLabel]="'popup.form.tagsRemove' | transloco"
+      [addedLabel]="'popup.form.tagsAdded' | transloco"
+      [removedLabel]="'popup.form.tagsRemoved' | transloco"
+      [duplicateLabel]="'popup.form.tagsDuplicate' | transloco"
+      [listLabel]="'popup.form.tagsList' | transloco"
+      [disabled]="store.saving() || store.ai.busy()"
+      [(value)]="store.chosenTags"
+    />
+    @if (store.ai.tagsMarked()) {
+      <ui-badge
+        class="form__tags-mark"
+        icon="spark"
+        [attr.title]="'popup.ai.disclaimer' | transloco"
+        >{{ 'popup.ai.tagsByAi' | transloco }}</ui-badge
+      >
+    }
+  </div>
 
-  @if (store.ai.tagsMarked() || store.ai.chips().length > 0) {
+  @if (store.ai.chips().length > 0) {
     <div class="form__ai">
-      @if (store.ai.tagsMarked()) {
-        <!-- A labelled mark, not a lone spark (#510): the tags above came from AI. -->
-        <ui-badge icon="spark" [attr.title]="'popup.ai.disclaimer' | transloco">{{
-          'popup.ai.tagsByAi' | transloco
-        }}</ui-badge>
-      }
-      @if (store.ai.chips().length > 0) {
-        <ui-suggestion-row
-          [label]="'popup.ai.suggested' | transloco"
-          [ariaLabel]="'popup.ai.tagsRow' | transloco"
-        >
-          @for (chip of store.ai.chips(); track chip.id) {
-            <ui-suggestion
-              [kind]="SUGGESTION_KIND.NewTag"
-              [label]="chip.name"
-              [newLabel]="'popup.ai.new' | transloco"
-              [ariaLabel]="'popup.ai.createTag' | transloco: { name: chip.name }"
-              [dismissLabel]="'popup.ai.dismiss' | transloco: { name: chip.name }"
-              (accepted)="store.ai.accept(chip)"
-              (dismissed)="store.ai.dismiss(chip)"
-            />
-          }
-        </ui-suggestion-row>
-      }
+      <ui-suggestion-row
+        [label]="'popup.ai.suggested' | transloco"
+        [ariaLabel]="'popup.ai.tagsRow' | transloco"
+      >
+        @for (chip of store.ai.chips(); track chip.id) {
+          <ui-suggestion
+            [kind]="SUGGESTION_KIND.NewTag"
+            [label]="chip.name"
+            [newLabel]="'popup.ai.new' | transloco"
+            [ariaLabel]="'popup.ai.createTag' | transloco: { name: chip.name }"
+            [dismissLabel]="'popup.ai.dismiss' | transloco: { name: chip.name }"
+            (accepted)="store.ai.accept(chip)"
+            (dismissed)="store.ai.dismiss(chip)"
+          />
+        }
+      </ui-suggestion-row>
     </div>
   }
 
