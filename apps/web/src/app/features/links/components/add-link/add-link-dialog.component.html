@@ -42,7 +42,7 @@
     </ui-dialog>
   </form>
 } @else {
-  <form [formRoot]="form" class="add-link" (keydown)="onKeydown($event)">
+  <form [formRoot]="form" class="add-link" (keydown)="onKeydown($event)" (submit)="onFormSubmit()">
     <ui-dialog
       [title]="(editing ? 'links.edit.title' : 'links.add.title') | transloco"
       [closeLabel]="'links.add.close' | transloco"
@@ -58,6 +58,7 @@
           [hint]="editing ? '' : ('links.add.url.hint' | transloco)"
           [loading]="shownState() === PREVIEW_STATE.Loading"
           [formField]="form.url"
+          [uiShake]="urlShakes()"
         />
         @if (!editing) {
           <!-- Paste many (story 3, #265) made findable (#315). -->

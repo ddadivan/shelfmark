@@ -500,6 +500,30 @@ $leave-presets: (
       scale: 1.06;
     }
   }
+
+  // Error shake (#562): a field whose error appears on submit. Replayed by `uiShake`.
+  @keyframes ui-shake {
+    0%,
+    100% {
+      transform: none;
+    }
+
+    20% {
+      transform: translateX(#{rem(-6px)});
+    }
+
+    45% {
+      transform: translateX(#{rem(5px)});
+    }
+
+    65% {
+      transform: translateX(#{rem(-3px)});
+    }
+
+    85% {
+      transform: translateX(#{rem(2px)});
+    }
+  }
 }
 
 // The sage ring of a landed card is the one moment longer than 320 ms (Motion principle 2).
@@ -518,5 +542,15 @@ $land-ring-duration: 1.8s;
     animation:
       ui-reveal var(--duration-base) var(--ease-out) var(--ui-land-delay, 0s) both,
       ui-land-ring $land-ring-duration var(--ease-out) var(--ui-land-delay, 0s) both;
+  }
+}
+
+// Error shake (#562): 320 ms `ease-out`, once. `uiShake` adds `.ui-shake` (emitted in `global.scss`)
+// for one run per counter step. Reduced motion: no movement, the error border alone.
+@mixin shake {
+  animation: ui-shake var(--duration-slow) var(--ease-out);
+
+  @include reduced-motion {
+    animation: none;
   }
 }

@@ -302,8 +302,16 @@ describe('motion mixins', () => {
       'ui-land',
       'ui-land-ring',
       'ui-suggest-accept',
+      'ui-shake',
     ]);
     expect(out).not.toMatch(/\d+px/);
+  });
+
+  it('shake runs once at the slow duration and is off under reduced motion', () => {
+    const out = css('.a { @include shake; }');
+    expect(out).toContain('animation: ui-shake var(--duration-slow) var(--ease-out)');
+    expect(out).not.toContain('infinite');
+    expect(reducedMotionBlock(out)).toContain('animation: none');
   });
 
   it('landed drops the card in with the spring and fades the sage ring, staggered by --ui-land-delay', () => {

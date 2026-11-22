@@ -76,6 +76,7 @@ export * from './lib/directives/menu-trigger';
 export * from './lib/directives/pointer-shadow';
 export * from './lib/directives/popover-trigger';
 export * from './lib/directives/ripple';
+export * from './lib/directives/shake';
 export * from './lib/directives/tooltip';
 
 export * from './lib/services/dialog';

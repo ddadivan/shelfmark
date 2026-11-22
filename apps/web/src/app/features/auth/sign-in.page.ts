@@ -5,6 +5,7 @@ import {
   DestroyRef,
   inject,
   input,
+  signal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -15,6 +16,7 @@ import {
   LogoComponent,
   NoticeComponent,
   NOTICE_KIND,
+  ShakeDirective,
 } from '@shelfmark/ui';
 import { ViewportService } from '../../core/layout/viewport.service';
 import { AuthStore } from '../../core/auth/auth.store';
@@ -40,6 +42,7 @@ import { SIGN_IN_REASON_KEY } from './models/sign-in-reason-key.const';
     ButtonComponent,
     LogoComponent,
     NoticeComponent,
+    ShakeDirective,
     SignInDriftComponent,
     SignInPhoneCardsComponent,
   ],
@@ -103,13 +106,24 @@ export default class SignInPage {
     return pending !== null && pending !== action;
   }
 
+  /** Bumped when an attempt fails: the notices shake once (#562). */
+  protected readonly errorShakes = signal(0);
+
+  private shakeOnFailure(): void {
+    if (this.auth.failed()) {
+      this.errorShakes.update((count) => count + 1);
+    }
+  }
+
   protected async signIn(provider: AuthProvider): Promise<void> {
     await this.auth.signIn(provider, safeReturnUrl(this.returnUrl()));
+    this.shakeOnFailure();
     await this.leave();
   }
 
   protected async signInDemo(): Promise<void> {
     await this.auth.signInDemo();
+    this.shakeOnFailure();
     await this.leave();
   }
 
