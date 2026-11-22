@@ -6,3 +6,4 @@ Checkbox selects items for bulk actions and marks options in forms.
 
 - Always pair with a visible label or an `aria-label` naming the item («Select Wool coat»).
 - Shift-click selects a range; ⌘A selects all in the view.
+- Motion (#562): checking draws the tick along its stroke (200 ms `ease-out`); unchecking clears at once; reduced motion shows the tick at once.

@@ -8,3 +8,4 @@ Toast confirms what just happened, names what it happened to, and offers Undo or
 - `role="status"`; errors `role="alert"`. Undo is a button reachable by Tab; ⌘Z also undoes while it is visible; Esc dismisses.
 - Up to three stack, newest in front; many saves at once collapse into one summary toast.
 - Width follows the text up to 540px; the second line truncates with “…”.
+- Motion (#562): the success toast's check draws itself as the toast enters; the multi-link toast's stacked thumbnails lift with distance falloff on hover.

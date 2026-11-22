@@ -45,12 +45,37 @@ Motion defines Shelfmark's few animations. The one signature moment is saving a 
 | Skeleton → content | content fades in | 200 ms |
 | Theme switch | colour cross-fade via the View Transitions API (one snapshot, not every element) | 200 ms |
 | First sign-in | logo card scales in, bookmark drops into the notch, once per account | ~900 ms |
+| **Drag a link (#562)** | the preview (0.65, down-right of the pointer, −4° base tilt) hangs from the pointer: its tilt follows the smoothed horizontal pointer velocity (target `clamp(vx · 6°/(px/ms), ±10°)`) through a damped spring (stiffness 220, damping 18, rAF), so it leans into a fast move and sways back once when the pointer stops; a fast vertical move squashes it by at most 4%. A dragged selection (the deck and its badge) wobbles as one piece. Only `transform` of an inner wrapper is written; the CDK keeps the root's `transform` | spring, settles in ~400 ms after the pointer stops (a physics loader, not a timed transition) |
+| Drop a link on a folder (#562) | the preview shrinks to 0.2, fades and flies into the folder row under the pointer; the row then bumps 1→1.06→1 | 320 ms `ease-in-out` / 200 ms `ease-spring` |
+| Cancel a drag (Esc, dropped outside a folder) (#562) | the preview springs back into the slot it left; its tilt springs to rest | 320 ms `ease-spring` |
+| Fluid hover (#562) | in the tree, menus and picker menus one highlight glides from row to row under the mouse (transform + height of one element) instead of each row blinking; leaving the list fades it out. Mouse only (`hover: hover` and a mouse pointer); keyboard focus keeps the rows' own active style | 200 ms `ease-out`, fade 120 ms |
+| Merged selection (#562) | contiguous selected rows in the list view render as one rounded shape: the inner corners between two selected neighbours square off and the gap fills, so a run of rows reads as one block; picking or unpicking a row merges or splits the shape | 200 ms `ease-in-out` (`border-radius`, background colour) |
+| Icon swap (#562) | the old icon scales to 0.5, blurs 4px and fades while the new one scales up from 0.5 out of the blur: copy link → check, theme sun ↔ moon, cards ↔ list | 200 ms `ease-out` |
+| Number change (#562) | only the digits that changed slide 0.5em (up when the number grows, down when it shrinks) and cross-fade in place; unchanged digits stay still; tabular numbers so the width never jumps: folder counts in the tree, saved view counts, the search result count | 200 ms `ease-out` |
+| Check a checkbox (#562) | the tick draws itself along its stroke (`stroke-dashoffset`) while the fill appears; unchecking clears at once. The success toast's check draws the same way when the toast enters | 200 ms `ease-out` |
+| Error shake (#562) | a field whose error appears on submit shakes sideways (translateX 0 → −6 → 5 → −3 → 2 → 0 px): the add-link address and the sign-in error. Once per submit, never while typing | 320 ms `ease-out` |
+| Pressed while open (#562) | a button that opens a menu (⋯, account, sort) keeps its pressed look (`active` background, scale 0.97 off) while `aria-expanded="true"`; it releases when the menu closes | 120 ms colour |
+| Status text shimmer (#562) | loader status lines («Fetching preview…», Ask «Searching…») carry a soft light band sweeping across the letters (background-clip text, `text-muted` → `text` → `text-muted`); a loader, so it loops while the status shows | 1.4 s `ease-in-out` loop (the shared shimmer duration) |
+| Text state swap (#562) | when a status or label changes (Ask steps, Create link → Creating… → Saved) the old text blurs 4px and fades up 4px while the new one rises out of the blur; the button keeps its width lock | 200 ms `ease-out` (out 120 ms) |
+| Clear search (#562) | pressing × in a clearable field dissolves the text word by word (each word blurs, fades and rises 4px, 30 ms apart, capped at 8 words), then the field is empty and focused | ≤ 320 ms `ease-out` |
+| Tooltip travel (#562) | once a tooltip in a toolbar group is open, moving to a neighbour opens its tooltip at once (no 400 ms wait) and the panel travels from the old position to the new one; leaving the group closes it instantly | 200 ms `ease-out` |
+| Panel resize (#562) | the link preview panel's body changes height smoothly when its content arrives (from the loader to the page, the blocked state or the video) instead of jumping | 200 ms `ease-in-out` |
+| Badge pop-in (#562) | a counter badge that appears (Feedback inbox, What's new) scales 0.6→1 with a small overshoot and fades in; a changing number uses Number change | 200 ms `ease-spring` |
+| Two-line rise (#562) | an empty state's title and text, and a Welcome step's title and text, rise 8 px and fade in, the second line 60 ms after the first | 200 ms `ease-out` |
+| Stacked thumbnails lift (#562) | in the multi-link toast and the drag deck badge the stacked thumbnails lift on hover with distance falloff: the hovered one rises 4 px, its neighbours 2 px and 1 px | 200 ms `ease-out` |
+| Folder tile fan-out (#562) | hovering a subfolder tile with stacked previews fans the previews out (rotate ±6°, spread 6 px) and settles them back on leave | 200 ms `ease-out` |
 
 Feed shifts and deletes use FLIP: measure positions before and after, then animate `transform` from the old place. In Angular: `animate.leave` on the removed card plus a small FLIP helper in `libs/ui` (no library).
+
+## Drag physics (#562)
+
+The drag preview's tilt is the one physics-driven motion. `libs/ui` `utils/spring` holds the math (`stepSpring`, `PointerVelocity`, `DragWobble`) and the `uiDragWobble` directive runs it on the preview's inner wrapper while the drag lasts. The velocity is smoothed exponentially (time constant 50 ms) and decays to zero when the pointer rests, so the spring always comes back to the base tilt. The spring writes `transform: rotate() scale()` only; the loop stops once it is at rest. On release the app decides: over a folder the wrapper flies into the folder row (its translate and scale transition with the CDK's own move of the root, same 320 ms `ease-in-out`, so the path is one straight line), otherwise the CDK moves the root back to the slot with `ease-spring` and the spring brings the tilt to rest.
 
 ## Reduced motion
 
 `prefers-reduced-motion: reduce` removes all movement and scale. Dialogs, menus, toasts, sheets and the landed card simply fade in (200 ms), the sage ring still fades so the new card is findable, colour transitions stay. Spinners and the progress bar keep moving, slower — they are status, not decoration.
+
+The app's Settings › Appearance › Animations «Reduced» setting (`html[data-motion="reduced"]`, `ReducedMotion` for scripts) is the same switch: every moment above follows it. For the #562 batch that means: the drag preview keeps the static behaviour of before (no tilt, no wobble, no fly, no spring back: it disappears on release); fluid hover fades the highlight in place without travelling; the merged selection, colour changes and the drawn check stay (no movement); icon swaps, text swaps and number changes cross-fade without scale, blur or slide; the error shake becomes the error border alone; the clear dissolve and the tooltip travel are instant; the panel resize jumps; badges, two-line text and thumbnails appear without scale or rise; the folder tile previews stay stacked; the status shimmer stops (static muted text).
 
 ## Button loading
 

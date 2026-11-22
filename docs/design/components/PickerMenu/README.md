@@ -9,3 +9,4 @@ PickerMenu is a title-sized button that opens the folder picker in a popover: th
 - Rows in `currentIds` show `currentLabel` on the right ("On the left", "On the right") and cannot be chosen; the shown value carries a check.
 - The trigger has `aria-haspopup="dialog"` and `aria-expanded`. Hover only with `hover: hover`; focus-visible ring as every button.
 - Both themes; nothing below 64em uses it (side by side is desktop only).
+- Motion (#562): with a mouse one highlight glides between rows (`uiFluidHover`); the trigger stays pressed while the popover is open.
