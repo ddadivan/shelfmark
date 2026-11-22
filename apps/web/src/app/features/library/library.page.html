@@ -213,7 +213,7 @@
             </ui-menu>
           </div>
           } @else {
-          <div class="library__tools">
+          <div class="library__tools" uiTooltipGroup>
             @if (tidyEntry()) {
             <app-tidy-entry />
             } @if (feed.showControls() && feed.viewOptions(); as options) {
@@ -462,6 +462,7 @@
             cdkDrag
             [cdkDragData]="link"
             [attr.data-link-id]="link.id"
+            [class.library__item--selected]="selection.has(link.id)"
             [class.library__item--current]="preview.split() && preview.currentId() === link.id"
             [attr.aria-current]="preview.split() && preview.currentId() === link.id ? 'true' : null"
             [cdkDragDisabled]="compact()"
@@ -474,6 +475,7 @@
             (pointerdown)="drag.grab($event)"
             (cdkDragStarted)="dnd.started(link)"
             (cdkDragMoved)="dnd.moved($event)"
+            (cdkDragReleased)="dnd.released($event)"
             (cdkDragEnded)="dnd.ended()"
           >
             <app-drag-slot
@@ -487,15 +489,21 @@
             }
             <ng-template cdkDragPreview matchSize>
               <div class="library__drag-preview" aria-hidden="true">
-                @if (dnd.deckDepth(link) > 1) {
-                <span class="library__drag-stack library__drag-stack--far"></span>
-                } @if (dnd.deckDepth(link) > 0) {
-                <span class="library__drag-stack library__drag-stack--near"></span>
-                }
-                <app-link-row [link]="link" />
-                <span class="library__drag-badge"
-                  >{{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}</span
+                <div
+                  class="library__drag-wobble"
+                  uiDragWobble
+                  (uiDragWobbleAttached)="dnd.wobbleAttached($event)"
                 >
+                  @if (dnd.deckDepth(link) > 1) {
+                  <span class="library__drag-stack library__drag-stack--far"></span>
+                  } @if (dnd.deckDepth(link) > 0) {
+                  <span class="library__drag-stack library__drag-stack--near"></span>
+                  }
+                  <app-link-row [link]="link" />
+                  <span class="library__drag-badge"
+                    >{{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}</span
+                  >
+                </div>
               </div>
             </ng-template>
             <app-link-row
@@ -555,6 +563,7 @@
             (pointerdown)="drag.grab($event)"
             (cdkDragStarted)="dnd.started(link)"
             (cdkDragMoved)="dnd.moved($event)"
+            (cdkDragReleased)="dnd.released($event)"
             (cdkDragEnded)="dnd.ended()"
           >
             <app-drag-slot *cdkDragPlaceholder class="library__drag-slot" [title]="link.title" />
@@ -563,15 +572,21 @@
             }
             <ng-template cdkDragPreview matchSize>
               <div class="library__drag-preview" aria-hidden="true">
-                @if (dnd.deckDepth(link) > 1) {
-                <span class="library__drag-stack library__drag-stack--far"></span>
-                } @if (dnd.deckDepth(link) > 0) {
-                <span class="library__drag-stack library__drag-stack--near"></span>
-                }
-                <app-link-card [link]="link" [readOnly]="true" />
-                <span class="library__drag-badge"
-                  >{{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}</span
+                <div
+                  class="library__drag-wobble"
+                  uiDragWobble
+                  (uiDragWobbleAttached)="dnd.wobbleAttached($event)"
                 >
+                  @if (dnd.deckDepth(link) > 1) {
+                  <span class="library__drag-stack library__drag-stack--far"></span>
+                  } @if (dnd.deckDepth(link) > 0) {
+                  <span class="library__drag-stack library__drag-stack--near"></span>
+                  }
+                  <app-link-card [link]="link" [readOnly]="true" />
+                  <span class="library__drag-badge"
+                    >{{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}</span
+                  >
+                </div>
               </div>
             </ng-template>
             <app-link-card

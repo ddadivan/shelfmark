@@ -165,6 +165,18 @@ describe('ui-streaming-answer', () => {
     expect(css).toMatch(/\.ui-streaming-answer__pill::after\s*\{[^}]*animation: ui-shimmer/);
   });
 
+  it('swaps and shimmers the words of the pill with a resting colour that keeps contrast on ai-fill', () => {
+    const css = compileScss('lib/components/streaming-answer/streaming-answer.component.scss');
+    expect(css).toContain(
+      '--ui-text-swap-rest: color-mix(in srgb, var(--text) 75%, var(--text-muted))',
+    );
+    const { host, update } = setup();
+    update((c) => c.status.set('Searching your links…'));
+    expect(
+      host.querySelector('.ui-streaming-answer__pill .ui-text-swap__text--shimmer'),
+    ).not.toBeNull();
+  });
+
   it('shows only the bubble for a question without an answer', () => {
     const { host, update } = setup();
     update((c) => c.streaming.set(false));

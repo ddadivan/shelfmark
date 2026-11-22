@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { BadgeComponent, ButtonComponent, ICON_SIZE } from '@shelfmark/ui';
+import { BadgeComponent, ButtonComponent, ICON_SIZE, NumberFlowComponent } from '@shelfmark/ui';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { AiSettingsStore } from '../../services/ai-settings.store';
 import { TidyCountStore } from '../../services/tidy-count.store';
@@ -13,7 +13,7 @@ import { TidyCountStore } from '../../services/tidy-count.store';
  */
 @Component({
   selector: 'app-tidy-entry',
-  imports: [TranslocoPipe, BadgeComponent, ButtonComponent],
+  imports: [TranslocoPipe, BadgeComponent, ButtonComponent, NumberFlowComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tidy-entry.component.html',
   styleUrl: './tidy-entry.component.scss',

@@ -10,6 +10,7 @@ import {
   PickerMenuComponent,
   SKELETON_SHAPE,
   SkeletonComponent,
+  DragWobbleDirective,
 } from '@shelfmark/ui';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { DragSlotComponent } from '../../../links/components/drag-slot/drag-slot.component';
@@ -39,6 +40,7 @@ const SKELETON_COUNT = 4;
     CdkDrag,
     CdkDragPlaceholder,
     CdkDragPreview,
+    DragWobbleDirective,
     CdkDropList,
     TranslocoPipe,
     BadgeComponent,

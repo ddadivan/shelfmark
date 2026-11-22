@@ -19,7 +19,9 @@
       >
         <span class="ui-saved-views__label">{{ item.label }}</span>{{ ' ' }}
         @if (item.count !== null) {
-          <b class="ui-saved-views__count">{{ countText(item.count) }}</b>
+          <b class="ui-saved-views__count"
+            ><ui-number-flow [value]="item.count" [text]="countText(item.count)"
+          /></b>
         }
       </button>
       @if (item.menuLabel; as menuLabel) {

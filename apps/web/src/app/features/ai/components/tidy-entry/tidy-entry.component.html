@@ -8,6 +8,6 @@
     (linkClick)="open($event)"
   >
     {{ 'ai.tidy.entry' | transloco }}
-    <ui-badge class="tidy-entry__count">{{ count.total() }}</ui-badge>
+    <ui-badge class="tidy-entry__count" pop><ui-number-flow [value]="count.total()" /></ui-badge>
   </ui-button>
 }

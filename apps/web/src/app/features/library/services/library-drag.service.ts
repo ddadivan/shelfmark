@@ -1,10 +1,12 @@
 import { inject, Service } from '@angular/core';
-import type { CdkDragMove } from '@angular/cdk/drag-drop';
+import type { CdkDragMove, CdkDragRelease } from '@angular/cdk/drag-drop';
 import { TranslocoService } from '@jsverse/transloco';
 import type { LinkResponse } from '@shelfmark/contracts';
-import { TOAST_KIND, ToastService, type ToastRef } from '@shelfmark/ui';
+import { type DragWobbleDirective, TOAST_KIND, ToastService, type ToastRef } from '@shelfmark/ui';
 import { pluralKey } from '../../../core/i18n/plural-key';
 import { LinkDragService } from '../../links/services/link-drag.service';
+import { LINK_DROP_HALF_ATTRIBUTE } from '../../links/models/link-drop-half-attribute.const';
+import { DROP_MOTION_CLASS } from '../models/drop-motion-class.const';
 import { isDropTarget } from '../utils/split-param';
 import { LibrarySelectionService } from './library-selection.service';
 
@@ -46,8 +48,44 @@ export class LibraryDragService {
     );
   }
 
+  /** The physics of the drag preview that is up (none under reduced motion's static preview). */
+  private wobble: DragWobbleDirective | null = null;
+
+  /** The drag preview was created: its wobble (`uiDragWobble`) takes the pointer moves. */
+  wobbleAttached(wobble: DragWobbleDirective): void {
+    this.wobble = wobble;
+  }
+
+  /**
+   * The pointer let go (before the CDK animates the preview back to its slot). Over a folder the
+   * preview flies into the folder's row, which then bumps; otherwise (no target, Esc) it springs
+   * back to the slot, its tilt coming to rest (Motion #562). Under reduced motion nothing moves:
+   * the preview has no transition and goes at once.
+   */
+  released(event: CdkDragRelease<unknown>): void {
+    const wobble = this.wobble;
+    this.wobble = null;
+    if (!wobble?.active) {
+      return;
+    }
+    const preview = wobble.element.parentElement;
+    const target = this.links.dropElement();
+    const slot = event.source.getPlaceholderElement();
+    if (
+      preview &&
+      target &&
+      wobble.flyTo(target.getBoundingClientRect(), slot.getBoundingClientRect())
+    ) {
+      preview.classList.add(DROP_MOTION_CLASS.Flying);
+      bump(target);
+      return;
+    }
+    wobble.settle();
+  }
+
   /** The drag ended (drop or Esc): clears the spoken text, the toast tells what moved. */
   ended(): void {
+    this.wobble = null;
     this.clearReason();
     this.selection.announce('');
     this.links.drop();
@@ -127,4 +165,29 @@ export class LibraryDragService {
     this.reasonToast?.dismiss();
     this.reasonToast = null;
   }
+}
+
+/**
+ * The folder row a link lands on swells 1 → 1.06 → 1 as the preview arrives (`ui-suggest-accept`,
+ * styles in `styles.scss`); the class goes once the animation ends.
+ */
+function bump(element: Element): void {
+  if (element.hasAttribute(LINK_DROP_HALF_ATTRIBUTE)) {
+    // A half of the side-by-side view is a large surface: no overshoot there (Motion principle 3).
+    return;
+  }
+  element.classList.remove(DROP_MOTION_CLASS.Bump);
+  // Restart the animation when the same row takes two drops in a row.
+  void element.getBoundingClientRect();
+  element.classList.add(DROP_MOTION_CLASS.Bump);
+  const done = (event: Event): void => {
+    if (event.target !== element) {
+      return;
+    }
+    element.classList.remove(DROP_MOTION_CLASS.Bump);
+    element.removeEventListener('animationend', done);
+    element.removeEventListener('animationcancel', done);
+  };
+  element.addEventListener('animationend', done);
+  element.addEventListener('animationcancel', done);
 }

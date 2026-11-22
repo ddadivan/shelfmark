@@ -69,11 +69,11 @@
   border-color: var(--ui-checkbox-fill, var(--primary));
 }
 
+// The tick exists only while checked: it draws itself when the box gets checked (`ui-check-mark`)
+// and is gone at once when it is unchecked.
 .ui-checkbox__check {
   width: var(--ui-checkbox-tick, #{rem(16px)});
   height: var(--ui-checkbox-tick, #{rem(16px)});
-  opacity: 0;
-  transition: opacity var(--duration-fast) var(--ease-out);
 }
 
 .ui-checkbox__dash {
@@ -87,10 +87,6 @@
 .ui-checkbox__input:indeterminate + .ui-checkbox__box {
   background: var(--ui-checkbox-fill, var(--primary));
   border-color: var(--ui-checkbox-fill, var(--primary));
-}
-
-:host(.ui-checkbox--checked) .ui-checkbox__check {
-  opacity: 1;
 }
 
 :host(.ui-checkbox--invalid) .ui-checkbox__box {
@@ -149,8 +145,7 @@
 }
 
 @include reduced-motion {
-  .ui-checkbox__box,
-  .ui-checkbox__check {
+  .ui-checkbox__box {
     transition: none;
   }
 }

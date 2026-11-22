@@ -15,15 +15,17 @@
       <p class="sign-in__subtitle">{{ 'auth.signIn.subtitle' | transloco }}</p>
     </div>
 
-    @if (reasonKey(); as key) {
-    <ui-notice [kind]="NOTICE_KIND.Warning">{{ key | transloco }}</ui-notice>
-    } @if (errorKey(); as key) {
-    <ui-notice [kind]="NOTICE_KIND.Danger">{{ key | transloco }}</ui-notice>
-    } @if (demoErrorKey(); as key) {
-    <ui-notice [kind]="NOTICE_KIND.Warning">{{ key | transloco }}</ui-notice>
-    } @else if (auth.failed() && !auth.demoError()) {
-    <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'auth.signIn.failed' | transloco }}</ui-notice>
-    }
+    <div class="sign-in__alerts" [uiShake]="errorShakes()">
+      @if (reasonKey(); as key) {
+      <ui-notice [kind]="NOTICE_KIND.Warning">{{ key | transloco }}</ui-notice>
+      } @if (errorKey(); as key) {
+      <ui-notice [kind]="NOTICE_KIND.Danger">{{ key | transloco }}</ui-notice>
+      } @if (demoErrorKey(); as key) {
+      <ui-notice [kind]="NOTICE_KIND.Warning">{{ key | transloco }}</ui-notice>
+      } @else if (auth.failed() && !auth.demoError()) {
+      <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'auth.signIn.failed' | transloco }}</ui-notice>
+      }
+    </div>
 
     <div class="sign-in__actions">
       <ui-button

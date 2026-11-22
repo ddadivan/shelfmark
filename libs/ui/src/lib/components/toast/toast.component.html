@@ -7,7 +7,7 @@
         <ui-icon [name]="icon()" [size]="ICON_SIZE.Sm" />
       }
       <span class="ui-toast__badge">
-        <ui-icon name="check" [size]="ICON_SIZE.Sm" />
+        <ui-check-mark [size]="ICON_SIZE.Sm" draw />
       </span>
     </span>
   }
@@ -17,6 +17,9 @@
       [colour]="folder()?.colour ?? FOLDER_COLOUR.Graphite"
       [icon]="folder()?.icon ?? icon()"
     />
+  }
+  @case (TOAST_KIND.Success) {
+    <span class="ui-toast__icon"><ui-check-mark [size]="ICON_SIZE.Sm" draw /></span>
   }
   @default {
     <span class="ui-toast__icon"><ui-icon [name]="icon()" [size]="ICON_SIZE.Sm" /></span>

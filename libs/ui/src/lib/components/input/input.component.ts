@@ -3,14 +3,19 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
+  inject,
   input,
   model,
   signal,
   viewChild,
 } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
+import { ReducedMotion } from '../../services/motion/reduced-motion.service';
+import { dissolveWords } from './dissolve-words';
+import { DISSOLVE_SAFETY_MS } from './models/dissolve-safety-ms.const';
 import { UiFieldControl } from '../field/field-control.directive';
 import { FieldShellComponent } from '../field/field-shell.component';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
@@ -30,7 +35,9 @@ import { INPUT_TYPE } from './models/input-type.const';
  * icon by default and swaps it for `ui-spinner` in the same 16px slot while `loading`, so the
  * field never shifts; other types show the spinner after the text, in `--text-muted`, and the
  * text keeps its room. `clearable` shows a clear button (`clearLabel` is its accessible name)
- * that empties the field and keeps focus in it.
+ * that empties the field and keeps focus in it. The value is cleared at once (the model and screen
+ * readers do not wait); the old text dissolves word by word on top of the field (`aria-hidden`
+ * overlay, at most 8 words, 30 ms apart, under 320 ms in all; none under reduced motion, #562).
  */
 @Component({
   selector: 'ui-input',
@@ -87,11 +94,21 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
       !this.readonly() &&
       this.value() !== '',
   );
+  private readonly motion = inject(ReducedMotion);
+  private readonly destroyRef = inject(DestroyRef);
+  private dissolveTimer: ReturnType<typeof setTimeout> | undefined;
+
+  /** The words of the text that was just cleared, while they dissolve; empty otherwise. */
+  protected readonly dissolveWords = signal<string[]>([]);
+
   /** True after the first spinner: only then the returning icon animates in. */
   protected readonly iconReturns = signal(false);
 
   constructor() {
     super();
+    this.destroyRef.onDestroy(() => {
+      clearTimeout(this.dissolveTimer);
+    });
     effect(() => {
       if (this.spinning()) {
         this.iconReturns.set(true);
@@ -112,11 +129,37 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
   }
 
   protected onInput(event: Event): void {
+    this.stopDissolve();
     this.value.set((event.target as HTMLInputElement).value);
   }
 
   protected clear(): void {
+    const cleared = this.value();
     this.value.set('');
     this.focus();
+    if (!this.motion.reduced()) {
+      this.startDissolve(cleared);
+    }
+  }
+
+  /** The overlay goes after its last word ended; the timer is the way out if no animation runs. */
+  protected onDissolveEnd(event: AnimationEvent): void {
+    const overlay = event.currentTarget;
+    if (overlay instanceof Element && event.target === overlay.lastElementChild) {
+      this.stopDissolve();
+    }
+  }
+
+  private startDissolve(text: string): void {
+    clearTimeout(this.dissolveTimer);
+    this.dissolveWords.set(dissolveWords(text));
+    this.dissolveTimer = setTimeout(() => {
+      this.stopDissolve();
+    }, DISSOLVE_SAFETY_MS);
+  }
+
+  private stopDissolve(): void {
+    clearTimeout(this.dissolveTimer);
+    this.dissolveWords.set([]);
   }
 }

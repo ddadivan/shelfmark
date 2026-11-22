@@ -17,8 +17,8 @@
   <span class="ui-checkbox__box" aria-hidden="true">
     @if (indeterminate()) {
       <span class="ui-checkbox__dash"></span>
-    } @else {
-      <ui-icon class="ui-checkbox__check" name="check" [size]="ICON_SIZE.Sm" />
+    } @else if (checked()) {
+      <ui-check-mark class="ui-checkbox__check" [size]="ICON_SIZE.Sm" [draw]="drawn()" />
     }
   </span>
   <span class="ui-checkbox__text" [class.ui-checkbox__text--hidden]="hideLabel()">{{

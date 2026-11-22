@@ -121,6 +121,7 @@
               (pointerdown)="drag.grab($event)"
               (cdkDragStarted)="dnd.started(link, true)"
               (cdkDragMoved)="dnd.moved($event)"
+              (cdkDragReleased)="dnd.released($event)"
               (cdkDragEnded)="dnd.ended()"
             >
               <app-drag-slot
@@ -130,10 +131,16 @@
               />
               <ng-template cdkDragPreview matchSize>
                 <div class="library__drag-preview" aria-hidden="true">
-                  <app-link-card [link]="link" [readOnly]="true" />
-                  <span class="library__drag-badge">
-                    {{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}
-                  </span>
+                  <div
+                    class="library__drag-wobble"
+                    uiDragWobble
+                    (uiDragWobbleAttached)="dnd.wobbleAttached($event)"
+                  >
+                    <app-link-card [link]="link" [readOnly]="true" />
+                    <span class="library__drag-badge">
+                      {{ dnd.dragLabelKey(link) | transloco: { count: dnd.dragCount(link) } }}
+                    </span>
+                  </div>
                 </div>
               </ng-template>
               <app-link-card [link]="link" [readOnly]="true" (opened)="actions.open(link)" />

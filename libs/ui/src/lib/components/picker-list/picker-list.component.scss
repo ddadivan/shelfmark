@@ -67,7 +67,7 @@
   transition: background-color var(--duration-fast) var(--ease-out);
 
   @include hover {
-    background: var(--surface-hover);
+    background: var(--ui-row-hover, var(--surface-hover));
   }
 
   &:active {

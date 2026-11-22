@@ -32,6 +32,19 @@ export const Danger: Story = { args: { tone: BADGE_TONE.Danger } };
 
 export const WithIcon: Story = { args: { icon: 'star' } };
 
+/** `pop` plays when the badge is created: toggle the control off and on to see it again. */
+export const PopIn: Story = {
+  args: { tone: BADGE_TONE.Accent, pop: true },
+  render: (args) => ({
+    props: { ...args, shown: true },
+    template: `
+      <button type="button" (click)="shown = !shown">Toggle badge</button>
+      @if (shown) {
+        <ui-badge [tone]="tone" [pop]="pop">New</ui-badge>
+      }`,
+  }),
+};
+
 /** Every tone, with and without an icon, in both themes. */
 export const AllVariants: Story = {
   render: () => ({

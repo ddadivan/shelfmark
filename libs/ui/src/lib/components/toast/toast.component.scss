@@ -32,6 +32,12 @@
   --ui-folder-icon-radius: #{rem(10px)};
 }
 
+// The tick of a success toast and of the saved badge draws once the toast has risen.
+.ui-toast__icon,
+.ui-toast__badge {
+  --ui-check-delay: var(--duration-fast);
+}
+
 .ui-toast__icon {
   display: grid;
   flex: none;

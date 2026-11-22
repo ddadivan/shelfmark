@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 import type { IconName } from '../icon/models/icon-name.type';
@@ -21,6 +21,7 @@ import type { BadgeTone } from './models/badge-tone.type';
     '[class.ui-badge--accent]': 'tone() === BADGE_TONE.Accent',
     '[class.ui-badge--warning]': 'tone() === BADGE_TONE.Warning',
     '[class.ui-badge--danger]': 'tone() === BADGE_TONE.Danger',
+    '[class.ui-badge--pop]': 'pop()',
   },
   templateUrl: './badge.component.html',
   styleUrl: './badge.component.scss',
@@ -33,4 +34,10 @@ export class BadgeComponent {
   readonly tone = input<BadgeTone>(BADGE_TONE.Neutral);
   /** Optional decorative leading icon. */
   readonly icon = input<IconName>();
+  /**
+   * For a counter badge that appears (What's new, a count next to a menu entry): it pops in
+   * 0.6 to 1 with a small overshoot and fades when it is created. Not for badges that are always
+   * there. A changing number inside uses `ui-number-flow`. Reduced motion: a fade.
+   */
+  readonly pop = input(false, { transform: booleanAttribute });
 }

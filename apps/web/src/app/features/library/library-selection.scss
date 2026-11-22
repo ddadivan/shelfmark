@@ -155,3 +155,47 @@
 .library__drag-slot {
   block-size: var(--drag-slot-height, 100%);
 }
+
+// Merged selection (#562): contiguous selected rows read as one rounded shape. A selected row whose
+// previous (next) neighbour is selected squares its top (bottom) corners through the row's
+// `--ui-list-item-radius`, and a bridge fills the gap between them. Corners and bridge change over
+// 200 ms ease-in-out (the corners instantly under reduced motion).
+.library__rows > .library__item {
+  --ui-list-item-radius: var(--radius-md);
+
+  position: relative;
+
+  &::before {
+    position: absolute;
+    inset-block-start: calc(var(--space-1) * -1);
+    inset-inline: 0;
+    block-size: var(--space-1);
+    pointer-events: none;
+    content: '';
+    background: var(--accent-bg);
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-in-out);
+
+    @include reduced-motion {
+      transition: none;
+    }
+  }
+}
+
+.library__rows > .library__item--selected + .library__item--selected {
+  --ui-list-item-radius: 0 0 var(--radius-md) var(--radius-md);
+
+  &::before {
+    opacity: 1;
+  }
+}
+
+.library__rows > .library__item--selected:has(+ .library__item--selected) {
+  --ui-list-item-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.library__rows
+  > .library__item--selected:has(+ .library__item--selected)
+  + .library__item--selected:has(+ .library__item--selected) {
+  --ui-list-item-radius: 0;
+}

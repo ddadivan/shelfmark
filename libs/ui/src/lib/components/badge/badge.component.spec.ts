@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../../testing/axe';
+import { compileScss } from '../../../testing/scss';
 import type { IconName } from '../icon/models/icon-name.type';
 import { BadgeComponent } from './badge.component';
 import { BADGE_TONE } from './models/badge-tone.const';
@@ -60,5 +61,21 @@ describe('BadgeComponent', () => {
         expect(await axeViolations(badge)).toEqual([]);
       }
     }
+  });
+
+  it('pops in only when asked to', () => {
+    const { badge, fixture } = setup();
+    expect(badge.classList.contains('ui-badge--pop')).toBe(false);
+    const popped = TestBed.createComponent(BadgeComponent);
+    popped.componentRef.setInput('pop', true);
+    popped.detectChanges();
+    expect((popped.nativeElement as HTMLElement).classList.contains('ui-badge--pop')).toBe(true);
+    fixture.destroy();
+  });
+
+  it('plays the spring pop-in with tokens and fades under reduced motion', () => {
+    const css = compileScss('lib/components/badge/badge.component.scss');
+    expect(css).toContain('ui-badge-in var(--duration-base) var(--ease-spring) both');
+    expect(css).toMatch(/prefers-reduced-motion: reduce[\s\S]*ui-reveal var\(--duration-base\)/);
   });
 });

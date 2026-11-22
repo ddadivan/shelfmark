@@ -1,0 +1,38 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}
+
+.ui-number-flow__text {
+  @include visually-hidden;
+}
+
+.ui-number-flow__digits {
+  display: inline-flex;
+}
+
+// One cell per character: the old and the new digit share it, so the width never jumps.
+.ui-number-flow__slot {
+  display: inline-grid;
+}
+
+// The glyph is drawn from `data-char` so the only text node is the visually hidden full number
+// (textContent, copy and find-in-page read the number once).
+.ui-number-flow__char {
+  grid-area: 1 / 1;
+
+  &::before {
+    content: attr(data-char);
+  }
+}
+
+.ui-number-flow__char--enter {
+  @include enter(digit);
+}
+
+.ui-number-flow__char--leave {
+  @include leave(digit);
+}

@@ -34,6 +34,7 @@ export function createLinkPreviewStub(link: LinkResponse | null = PREVIEW_STUB_L
     previousId: signal<string | null>(null),
     nextId: signal<string | null>(null),
     listHidden: signal(false),
+    copied: signal(false),
     listWidth: signal(400),
     split: signal(true),
     pushed: signal(false),

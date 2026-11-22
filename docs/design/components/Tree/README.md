@@ -6,3 +6,4 @@ Tree is the sidebar navigation: fixed sections, then the nested folder tree with
 
 - Each level indents 16px. Active row uses `accent-bg` — the main place sage appears in navigation.
 - Right click or the «…» button opens the folder Menu.
+- Motion (#562): with a mouse one highlight glides between rows (`uiFluidHover`, Motion «Fluid hover»); folder counts change with Number change; a row a link is dropped on bumps 1→1.06→1.

@@ -2,13 +2,22 @@ import { ElementRef, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
-import { TOAST_KIND, ToastService, type ToastOptions } from '@shelfmark/ui';
+import type { CdkDragRelease } from '@angular/cdk/drag-drop';
+import {
+  type DragWobbleDirective,
+  TOAST_KIND,
+  ToastService,
+  type ToastOptions,
+} from '@shelfmark/ui';
+import type { Mock } from 'vitest';
 import { of } from 'rxjs';
 import { loadEnglish, provideTranslocoForTest } from '../../../testing/transloco-testing';
 import { LINKS_API } from '../../links/models/links-api.const';
 import type { LinksApi } from '../../links/models/links-api.interface';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import { LinkDragService } from '../../links/services/link-drag.service';
+import { LINK_DROP_HALF_ATTRIBUTE } from '../../links/models/link-drop-half-attribute.const';
+import { DROP_MOTION_CLASS } from '../models/drop-motion-class.const';
 import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { LibraryDragService } from './library-drag.service';
 import { LibraryFilterService } from './library-filter.service';
@@ -32,7 +41,9 @@ async function setup() {
   const dragging = signal(false);
   const carriedIds = signal<ReadonlySet<string>>(new Set());
   const halfTargetId = signal<string | null>(null);
+  const dropElement = vi.fn<() => Element | null>(() => null);
   const links = {
+    dropElement,
     start: vi.fn(),
     drop: vi.fn(),
     move: vi.fn(),
@@ -83,7 +94,30 @@ async function setup() {
     dragging,
     carriedIds,
     halfTargetId,
+    dropElement,
   };
+}
+
+/** A stand-in for the preview's `uiDragWobble`: a wrapper inside a preview root. */
+function fakeWobble(active = true, flies = true) {
+  const root = document.createElement('div');
+  const element = document.createElement('div');
+  root.appendChild(element);
+  return {
+    root,
+    wobble: {
+      element,
+      active,
+      settle: vi.fn(),
+      flyTo: vi.fn(() => flies),
+    } as unknown as DragWobbleDirective & { settle: Mock; flyTo: Mock },
+  };
+}
+
+function release(slot: HTMLElement): CdkDragRelease<unknown> {
+  return {
+    source: { getPlaceholderElement: () => slot },
+  } as unknown as CdkDragRelease<unknown>;
 }
 
 describe('LibraryDragService', () => {
@@ -211,5 +245,77 @@ describe('LibraryDragService', () => {
     expect(dismiss).toHaveBeenCalledTimes(2);
     over('favorites', 'links.drag.noDrop.favorites');
     expect(shown).toHaveLength(3);
+  });
+
+  describe('release motion (#562)', () => {
+    it('flies into the folder row under the pointer and bumps it', async () => {
+      const { dnd, dropElement } = await setup();
+      const { root, wobble } = fakeWobble();
+      const row = document.createElement('div');
+      dropElement.mockReturnValue(row);
+      dnd.wobbleAttached(wobble);
+
+      dnd.released(release(document.createElement('div')));
+
+      expect(wobble.flyTo).toHaveBeenCalledTimes(1);
+      expect(wobble.settle).not.toHaveBeenCalled();
+      expect(root.classList).toContain(DROP_MOTION_CLASS.Flying);
+      expect(row.classList).toContain(DROP_MOTION_CLASS.Bump);
+      // Only the row's own animation ends the bump, not one of its children.
+      const child = document.createElement('span');
+      row.appendChild(child);
+      child.dispatchEvent(new Event('animationend', { bubbles: true }));
+      expect(row.classList).toContain(DROP_MOTION_CLASS.Bump);
+      row.dispatchEvent(new Event('animationend'));
+      expect(row.classList).not.toContain(DROP_MOTION_CLASS.Bump);
+    });
+
+    it('never bumps a half of the side-by-side view', async () => {
+      const { dnd, dropElement } = await setup();
+      const { wobble } = fakeWobble();
+      const half = document.createElement('section');
+      half.setAttribute(LINK_DROP_HALF_ATTRIBUTE, '');
+      dropElement.mockReturnValue(half);
+      dnd.wobbleAttached(wobble);
+      dnd.released(release(document.createElement('div')));
+      expect(wobble.flyTo).toHaveBeenCalled();
+      expect(half.classList).not.toContain(DROP_MOTION_CLASS.Bump);
+    });
+
+    it('springs back to the slot without a target', async () => {
+      const { dnd } = await setup();
+      const { root, wobble } = fakeWobble();
+      dnd.wobbleAttached(wobble);
+      dnd.released(release(document.createElement('div')));
+      expect(wobble.flyTo).not.toHaveBeenCalled();
+      expect(wobble.settle).toHaveBeenCalledTimes(1);
+      expect(root.classList).not.toContain(DROP_MOTION_CLASS.Flying);
+    });
+
+    it('settles when the fly cannot run', async () => {
+      const { dnd, dropElement } = await setup();
+      const { root, wobble } = fakeWobble(true, false);
+      dropElement.mockReturnValue(document.createElement('div'));
+      dnd.wobbleAttached(wobble);
+      dnd.released(release(document.createElement('div')));
+      expect(wobble.settle).toHaveBeenCalled();
+      expect(root.classList).not.toContain(DROP_MOTION_CLASS.Flying);
+    });
+
+    it('does nothing under reduced motion or once the drag ended', async () => {
+      const { dnd, dropElement } = await setup();
+      dropElement.mockReturnValue(document.createElement('div'));
+      const still = fakeWobble(false);
+      dnd.wobbleAttached(still.wobble);
+      dnd.released(release(document.createElement('div')));
+      expect(still.wobble.flyTo).not.toHaveBeenCalled();
+      expect(still.wobble.settle).not.toHaveBeenCalled();
+
+      const late = fakeWobble();
+      dnd.wobbleAttached(late.wobble);
+      dnd.ended();
+      dnd.released(release(document.createElement('div')));
+      expect(late.wobble.flyTo).not.toHaveBeenCalled();
+    });
   });
 });

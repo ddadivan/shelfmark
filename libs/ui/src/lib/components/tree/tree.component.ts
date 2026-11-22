@@ -19,11 +19,13 @@ import {
   viewChildren,
 } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
+import { FluidHoverDirective } from '../../directives/fluid-hover/fluid-hover.directive';
 import { FolderColourDirective } from '../../directives/folder-colour/folder-colour.directive';
 import { FolderIconComponent } from '../folder-icon/folder-icon.component';
 import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
 import { FOLDER_ICON_SIZE } from '../folder-icon/models/folder-icon-size.const';
 import { IconComponent } from '../icon/icon.component';
+import { NumberFlowComponent } from '../number-flow/number-flow.component';
 import { LongPressDirective } from '../../directives/long-press/long-press.directive';
 import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.interface';
@@ -64,11 +66,13 @@ import { indexTreeNodes } from './tree-nodes';
   selector: 'ui-tree',
   imports: [
     ButtonComponent,
+    FluidHoverDirective,
     FolderColourDirective,
     FolderIconComponent,
     IconComponent,
     LongPressDirective,
     NgTemplateOutlet,
+    NumberFlowComponent,
     RippleDirective,
     TooltipDirective,
     Tree,

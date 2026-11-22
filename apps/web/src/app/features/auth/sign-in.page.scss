@@ -165,3 +165,14 @@
     transform: translateY(#{rem(40px)});
   }
 }
+
+// The notices shake together on a failed attempt (`uiShake`); the wrapper takes no room without them.
+.sign-in__alerts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  &:empty {
+    display: none;
+  }
+}

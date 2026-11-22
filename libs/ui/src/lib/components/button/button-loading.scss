@@ -37,7 +37,7 @@
   position: relative;
   overflow: hidden;
 
-  ui-icon {
+  ui-icon-swap {
     animation: ui-button-ai-pulse calc(var(--duration-slow) * 3.75) var(--ease-in-out) infinite;
   }
 
@@ -58,7 +58,7 @@
   }
 
   @include reduced-motion {
-    ui-icon {
+    ui-icon-swap {
       animation: none;
     }
 

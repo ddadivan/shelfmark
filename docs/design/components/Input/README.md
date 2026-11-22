@@ -7,3 +7,4 @@ Input is a single-line text field with label, optional icon, hint and error.
 - Label is always visible above the field; placeholder shows an example, never the label.
 - Errors say what to do: “Enter an address that starts with https://”.
 - Borders use `border-control` (3:1); focus turns the border `focus-ring` and adds a soft 3px halo hugging the field (no offset outline, so the ring never floats away from the control). Buttons and other controls keep the 2px outline with a 2px offset.
+- Motion (#562): an error that appears on submit shakes the field once (320 ms; reduced motion: the error border only). The clearable × dissolves the text word by word before the field empties.
