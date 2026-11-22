@@ -190,3 +190,10 @@
     @include loop(shimmer);
   }
 }
+
+// The words of the pill (`ui-text-swap`) swap with a blur and carry the text shimmer (#562). The
+// pill is tinted, so the resting colour is a stronger mix than `text-muted` (which would only reach
+// ~4:1 on `ai-fill`); the band is `text`.
+.ui-streaming-answer__pill {
+  --ui-text-swap-rest: color-mix(in srgb, var(--text) 75%, var(--text-muted));
+}

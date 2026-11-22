@@ -51,6 +51,24 @@ describe('CheckboxComponent', () => {
     expect(fixture.componentInstance.checked()).toBe(false);
   });
 
+  it('draws the tick after a change, shows it at once when it starts checked, and clears it at once', () => {
+    const start = setup({ checked: true });
+    const first = start.host.querySelector('ui-check-mark');
+    expect(first).not.toBeNull();
+    expect(first?.classList.contains('ui-check-mark--draw')).toBe(false);
+
+    const { fixture, input, host } = setup();
+    expect(host.querySelector('ui-check-mark')).toBeNull();
+    input().click();
+    fixture.detectChanges();
+    expect(host.querySelector('ui-check-mark')?.classList.contains('ui-check-mark--draw')).toBe(
+      true,
+    );
+    input().click();
+    fixture.detectChanges();
+    expect(host.querySelector('ui-check-mark')).toBeNull();
+  });
+
   it('hideLabel keeps the label as the accessible name but draws only the box', () => {
     const { host, input } = setup({ hideLabel: true });
     const text = host.querySelector('.ui-checkbox__text') as HTMLElement;

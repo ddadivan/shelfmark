@@ -22,7 +22,13 @@
       "note": "Note",
       "notePlaceholder": "Pourquoi l’enregistrer ?",
       "save": "Enregistrer",
-      "newBadge": "nouveau"
+      "newBadge": "nouveau",
+      "tagsForAll": "Tags pour tous",
+      "saveCount": {
+        "one": "Enregistrer {{count}} lien",
+        "many": "Enregistrer {{count}} de liens",
+        "other": "Enregistrer {{count}} liens"
+      }
     },
     "picker": {
       "title": "Choisir un dossier",
@@ -30,7 +36,21 @@
       "search": "Trouver un dossier",
       "list": "Dossiers",
       "noResults": "Aucun dossier de ce nom",
-      "newFolder": "Nouveau dossier"
+      "newFolder": "Nouveau dossier",
+      "keepAi": "Garder les choix de l’IA",
+      "keepAiHint": "Chaque lien dans son propre dossier",
+      "titleAll": {
+        "one": "Dossier pour {{count}} lien",
+        "many": "Dossier pour {{count}} de liens",
+        "other": "Dossier pour {{count}} liens"
+      },
+      "titleOne": "Dossier de ce lien",
+      "summaryKeep": "Chaque lien garde le dossier choisi par l’IA.",
+      "summaryAll": {
+        "one": "Le lien ({{count}}) va dans {{folder}}. Les tags de l’IA restent.",
+        "many": "Les {{count}} de liens vont dans {{folder}}. Les tags de l’IA restent.",
+        "other": "Les {{count}} liens vont dans {{folder}}. Les tags de l’IA restent."
+      }
     },
     "newFolder": {
       "title": "Nouveau dossier",
@@ -92,6 +112,61 @@
       "dismiss": "Ignorer la suggestion {{name}}",
       "filling": "Remplissage…",
       "tagsByAi": "Tags proposés par l’IA"
+    },
+    "mode": {
+      "label": "Quoi enregistrer",
+      "page": "Cette page",
+      "tabs": "Tous les onglets ({{count}})"
+    },
+    "tabs": {
+      "list": "Onglets ouverts",
+      "loading": "Lecture de vos onglets",
+      "selected": "{{selected}} sur {{total}} sélectionnés",
+      "alreadySaved": "{{count}} déjà enregistrés",
+      "savedBadge": "Enregistré",
+      "pickedByAi": "Choisi par l’IA pour chaque lien",
+      "changeFolder": "Dossier de ce lien : {{folder}}. Modifier",
+      "sort": {
+        "one": "Trier {{count}} lien avec l’IA",
+        "many": "Trier {{count}} de liens avec l’IA",
+        "other": "Trier {{count}} liens avec l’IA"
+      },
+      "sorting": {
+        "one": "Tri de {{count}} lien…",
+        "many": "Tri de {{count}} de liens…",
+        "other": "Tri de {{count}} liens…"
+      },
+      "limit": "Suggestions en pause jusqu’au {{date}}. Les autres liens vont dans le dossier du champ Dossier.",
+      "sortedDone": "Liens triés avec les suggestions de l’IA"
+    },
+    "savedTabs": {
+      "title": {
+        "one": "{{count}} lien enregistré dans {{folder}}",
+        "many": "{{count}} de liens enregistrés dans {{folder}}",
+        "other": "{{count}} liens enregistrés dans {{folder}}"
+      },
+      "titleMixed": {
+        "one": "{{count}} lien enregistré",
+        "many": "{{count}} de liens enregistrés",
+        "other": "{{count}} liens enregistrés"
+      },
+      "text": "Vous pouvez fermer les onglets : ils sont dans votre bibliothèque.",
+      "close": {
+        "one": "Fermer {{count}} onglet enregistré",
+        "many": "Fermer {{count}} d’onglets enregistrés",
+        "other": "Fermer {{count}} onglets enregistrés"
+      },
+      "closed": "Les onglets enregistrés sont fermés.",
+      "partial": "{{saved}} sur {{total}} enregistrés",
+      "skipped": {
+        "one": "Cet onglet a été ignoré. Les autres sont dans votre bibliothèque.",
+        "many": "Ces {{count}} d’onglets ont été ignorés. Les autres sont dans votre bibliothèque.",
+        "other": "Ces {{count}} onglets ont été ignorés. Les autres sont dans votre bibliothèque."
+      },
+      "reason": {
+        "urlTooLong": "L’adresse est trop longue",
+        "duplicateInBatch": "Même adresse qu’un autre onglet"
+      }
     }
   }
 }

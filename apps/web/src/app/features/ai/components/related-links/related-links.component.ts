@@ -1,18 +1,27 @@
-import { _IdGenerator } from '@angular/cdk/a11y';
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
   inject,
   Injector,
   input,
+  output,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AI_SEARCH_STATE, type LinkResponse } from '@shelfmark/contracts';
-import { FaviconComponent, ICON_SIZE, IconComponent, ListItemComponent } from '@shelfmark/ui';
+import {
+  BUTTON_SIZE,
+  ButtonComponent,
+  FaviconComponent,
+  ICON_SIZE,
+  IconComponent,
+  ListItemComponent,
+  PopoverComponent,
+  PopoverTriggerDirective,
+} from '@shelfmark/ui';
 import { catchError, of } from 'rxjs';
-import { LinksStore } from '../../../../stores/links.store';
 import { linkHost, safeHref, siteLetter } from '../../../links/utils/link-view';
 import { AI_API } from '../../models/ai-api.const';
 import type { RelatedLinkRow } from '../../models/related-link-row.interface';
@@ -20,30 +29,41 @@ import { RELATED_LINKS_LIMIT } from '../../models/related-links-limit.const';
 import { AiSettingsStore } from '../../services/ai-settings.store';
 
 /**
- * "Related on your shelf" in Edit link (AI-3, `AiDiscover` 1): up to five links close by meaning to
- * `linkId`, each with its favicon, title and "Close to: …" with the AI mark (the disclaimer as its
- * name and tooltip). A row opens the link in a new tab (the dialog is modal, so no drag to side by
- * side). Asks only while search by meaning is ready; renders nothing while off, not ready, empty or
- * failed.
+ * "Related on your shelf" in the link preview (AI-3 F7, moved out of Edit link in #572): a
+ * "Related · N" button that opens a popover with up to five links close by meaning to `linkId`,
+ * each with its favicon, title and "Close to: …" with the AI mark (the disclaimer as its name and
+ * tooltip). Choosing a row emits `chosen`; the preview switches to that link. Asks only while search
+ * by meaning is ready; renders nothing while off, not ready, empty or failed.
  */
 @Component({
   selector: 'app-related-links',
-  imports: [TranslocoPipe, FaviconComponent, IconComponent, ListItemComponent],
+  imports: [
+    TranslocoPipe,
+    ButtonComponent,
+    FaviconComponent,
+    IconComponent,
+    ListItemComponent,
+    PopoverComponent,
+    PopoverTriggerDirective,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './related-links.component.html',
   styleUrl: './related-links.component.scss',
 })
 export class RelatedLinksComponent {
-  /** The link being edited. */
+  /** The link in the preview. */
   readonly linkId = input.required<string>();
+  /** The small button of the desktop preview toolbar; the phone bar takes the default size. */
+  readonly small = input(false, { transform: booleanAttribute });
+  /** A related link was chosen. */
+  readonly chosen = output<LinkResponse>();
 
   private readonly store = inject(AiSettingsStore);
-  // Read when asked only: Edit link without AI never needs the AI seam.
+  // Read when asked only: a preview without AI never needs the AI seam.
   private readonly injector = inject(Injector);
-  private readonly links = inject(LinksStore);
 
   protected readonly ICON_SIZE = ICON_SIZE;
-  protected readonly headingId = inject(_IdGenerator).getId('app-related-links-');
+  protected readonly size = computed(() => (this.small() ? BUTTON_SIZE.Sm : BUTTON_SIZE.Md));
 
   private readonly related = rxResource({
     params: () => (this.store.meaningReady() ? this.linkId() : undefined),
@@ -75,8 +95,9 @@ export class RelatedLinksComponent {
     }));
   });
 
-  /** Counts the open like any other (Recent, history); the row's link opens the tab. */
-  protected opened(link: LinkResponse): void {
-    void this.links.recordOpen(link.id);
+  /** Closes the popover (focus back on the button) and hands the link to the preview. */
+  protected choose(link: LinkResponse, popover: PopoverComponent): void {
+    popover.close({ restoreFocus: true });
+    this.chosen.emit(link);
   }
 }

@@ -152,9 +152,9 @@ describe('LinkPreviewRoute', () => {
       expect(route.wantsPreview(URL, undefined)).toBe(true);
     });
 
-    it('is false below the wide breakpoint', async () => {
+    it('follows the setting below the wide breakpoint too: the full-screen page (#572)', async () => {
       const { route } = await setup(false, { clickAction: LINK_CLICK_ACTION.Preview });
-      expect(route.wantsPreview(URL, click())).toBe(false);
+      expect(route.wantsPreview(URL, click())).toBe(true);
     });
 
     it('skips a site the user opens in a new tab', async () => {

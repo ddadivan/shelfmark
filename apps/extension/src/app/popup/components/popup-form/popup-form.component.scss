@@ -8,6 +8,21 @@
   overflow-y: auto;
 }
 
+// All tabs: the tab list takes the room and scrolls; Folder and Tags stay put below it.
+.form--tabs {
+  flex: none;
+  overflow-y: visible;
+}
+
+.form__mode {
+  flex: 1;
+  min-width: 0;
+}
+
+.form__sr-title {
+  @include visually-hidden;
+}
+
 .form__folder {
   display: flex;
   flex-direction: column;
@@ -26,6 +41,19 @@
   min-width: 0;
 }
 
+.form__picked {
+  display: flex;
+  flex: 1;
+  gap: rem(8px);
+  align-items: center;
+  min-width: 0;
+  color: var(--ai);
+
+  .form__folder-name {
+    color: var(--text);
+  }
+}
+
 .form__folder-name {
   @include line-clamp(1);
 
@@ -42,21 +70,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: rem(6px);
-}
-
-// The quiet way out on the left, Save on the right with room for the longest translation.
-.form__foot {
-  justify-content: space-between;
-
-  > ui-button {
-    flex: none;
-  }
-}
-
-// Doubled class: wins over the block host rule of ui-button, so the inner button fills this width.
-.form__save.form__save {
-  inline-size: auto;
-  min-inline-size: rem(132px);
 }
 
 .form__label-row {
@@ -78,16 +91,28 @@
   color: var(--ai);
 }
 
+// The "Tags from AI" mark on the end of the Tags label line, centred on it.
+.form__tags {
+  position: relative;
+}
+
+.form__tags-mark {
+  position: absolute;
+  inset-block-start: rem(-1px);
+  inset-inline-end: 0;
+  color: var(--ai);
+}
+
 // Visually hidden live region: says that the form was filled in.
 .form__live {
   @include visually-hidden;
 }
 
-// With AI on, "Fill in with AI" takes its own full row above Open Shelfmark and Save.
-.form__foot:has(.form__ai-button) {
+// With AI on, the AI button takes its own full row above Open Shelfmark and Save.
+.ext-screen__foot:has(.form__ai-button) {
   flex-wrap: wrap;
 }
 
-.form__foot > .form__ai-button {
+.ext-screen__foot > .form__ai-button {
   flex: 1 0 100%;
 }

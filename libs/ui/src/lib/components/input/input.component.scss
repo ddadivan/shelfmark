@@ -6,6 +6,15 @@
   min-width: 0;
 }
 
+// The text and the dissolve overlay (the cleared words) share one box.
+.ui-input__text {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+}
+
 .ui-input__native {
   @include field-native;
 
@@ -28,6 +37,47 @@
 
 .ui-input__native[type='url'] {
   @include type(mono);
+}
+
+// The cleared text, drawn like the input's own text, each word blurring 6px, fading and rising
+// 8px over `duration-base`, one step (`--ui-dissolve-step`, 60 ms, shorter for many words) after
+// the one before, so the last word ends within 320 ms (#564). Under reduced motion the component
+// draws no overlay at all.
+
+.ui-input__native--dissolving::placeholder {
+  opacity: 0;
+}
+
+.ui-input__dissolve {
+  @include type(body);
+
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  color: var(--text);
+  white-space: pre;
+  pointer-events: none;
+}
+
+:host(.ui-input--compact) .ui-input__dissolve {
+  @include type(caption);
+}
+
+.ui-input__native[type='url'] ~ .ui-input__dissolve {
+  @include type(mono);
+}
+
+.ui-input__word {
+  display: inline-block;
+  animation: ui-dissolve-word var(--duration-base) var(--ease-out) both;
+  animation-delay: calc(var(--ui-dissolve-step, 0ms) * var(--ui-dissolve-i, 0));
+
+  @include reduced-motion {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 // One 24px slot for the search icon and the spinner: the field never shifts.

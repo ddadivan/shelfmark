@@ -22,7 +22,12 @@
       "note": "Note",
       "notePlaceholder": "Why are you saving this?",
       "save": "Save",
-      "newBadge": "new"
+      "newBadge": "new",
+      "tagsForAll": "Tags for all",
+      "saveCount": {
+        "one": "Save {{count}} link",
+        "other": "Save {{count}} links"
+      }
     },
     "picker": {
       "title": "Choose a folder",
@@ -30,7 +35,19 @@
       "search": "Find a folder",
       "list": "Folders",
       "noResults": "No folder with that name",
-      "newFolder": "New folder"
+      "newFolder": "New folder",
+      "keepAi": "Keep AI picks",
+      "keepAiHint": "Each link its own folder",
+      "titleAll": {
+        "one": "Folder for {{count}} link",
+        "other": "Folder for {{count}} links"
+      },
+      "titleOne": "Folder for this link",
+      "summaryKeep": "Each link keeps the folder AI picked.",
+      "summaryAll": {
+        "one": "The link goes to {{folder}}. The AI tags stay.",
+        "other": "All {{count}} links go to {{folder}}. The AI tags stay."
+      }
     },
     "newFolder": {
       "title": "New folder",
@@ -92,6 +109,55 @@
       "dismiss": "Dismiss suggestion {{name}}",
       "filling": "Filling…",
       "tagsByAi": "Tags from AI"
+    },
+    "mode": {
+      "label": "What to save",
+      "page": "This page",
+      "tabs": "All tabs ({{count}})"
+    },
+    "tabs": {
+      "list": "Open tabs",
+      "loading": "Reading your tabs",
+      "selected": "{{selected}} of {{total}} selected",
+      "alreadySaved": "{{count}} already saved",
+      "savedBadge": "Saved",
+      "pickedByAi": "Picked by AI for each link",
+      "changeFolder": "Folder for this link: {{folder}}. Change",
+      "sort": {
+        "one": "Sort {{count}} link with AI",
+        "other": "Sort {{count}} links with AI"
+      },
+      "sorting": {
+        "one": "Sorting {{count}} link…",
+        "other": "Sorting {{count}} links…"
+      },
+      "limit": "Suggestions are paused until {{date}}. The other links go to the folder in the Folder field.",
+      "sortedDone": "Links sorted with AI’s suggestions"
+    },
+    "savedTabs": {
+      "title": {
+        "one": "{{count}} link saved to {{folder}}",
+        "other": "{{count}} links saved to {{folder}}"
+      },
+      "titleMixed": {
+        "one": "{{count}} link saved",
+        "other": "{{count}} links saved"
+      },
+      "text": "You can close the tabs now: they are in your library.",
+      "close": {
+        "one": "Close {{count}} saved tab",
+        "other": "Close {{count}} saved tabs"
+      },
+      "closed": "The saved tabs are closed.",
+      "partial": "{{saved}} of {{total}} saved",
+      "skipped": {
+        "one": "This tab was skipped. The rest are in your library.",
+        "other": "These {{count}} tabs were skipped. The rest are in your library."
+      },
+      "reason": {
+        "urlTooLong": "Address is too long",
+        "duplicateInBatch": "Same address as another tab"
+      }
     }
   }
 }

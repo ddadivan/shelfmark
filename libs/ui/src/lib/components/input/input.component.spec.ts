@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../../testing/axe';
+import { ReducedMotion } from '../../services/motion/reduced-motion.service';
 import { InputComponent } from './input.component';
 import { INPUT_TYPE } from './models/input-type.const';
 
@@ -244,6 +245,96 @@ describe('InputComponent', () => {
       expect(document.activeElement).toBe(input());
       expect(q('.ui-input__clear')).toBeNull();
       host.remove();
+    });
+
+    describe('word dissolve (#562)', () => {
+      const words = (host: HTMLElement) =>
+        Array.from(host.querySelectorAll('.ui-input__word')).map((el) => el.textContent);
+
+      function cleared(value: string) {
+        const ctx = setup({ clearable: true, clearLabel: 'Clear' });
+        ctx.fixture.componentInstance.value.set(value);
+        ctx.fixture.detectChanges();
+        ctx.q('.ui-input__clear')?.click();
+        ctx.fixture.detectChanges();
+        return ctx;
+      }
+
+      it('clears the value at once and dissolves the old words in an aria-hidden overlay', () => {
+        const { fixture, host, q } = cleared('red pepper soup');
+        expect(fixture.componentInstance.value()).toBe('');
+        expect(words(host)).toEqual(['red ', 'pepper ', 'soup']);
+        expect(q('.ui-input__dissolve')?.getAttribute('aria-hidden')).toBe('true');
+        expect(host.querySelector('input')?.value).toBe('');
+      });
+
+      it('steps the words one after the other (#564)', () => {
+        const { host, q } = cleared('red pepper soup');
+        expect(q('.ui-input__dissolve')?.style.getPropertyValue('--ui-dissolve-step')).toBe('60ms');
+        const steps = Array.from(host.querySelectorAll<HTMLElement>('.ui-input__word')).map(
+          (word) => word.style.getPropertyValue('--ui-dissolve-i'),
+        );
+        expect(steps).toEqual(['0', '1', '2']);
+      });
+
+      it('renders the words as text, never as HTML', () => {
+        const { host } = cleared('<b>bold</b> text');
+        expect(host.querySelector('.ui-input__dissolve b')).toBeNull();
+        expect(words(host).join('')).toBe('<b>bold</b> text');
+      });
+
+      it('caps the overlay at 8 words', () => {
+        const { host } = cleared('a b c d e f g h i j');
+        expect(words(host)).toHaveLength(8);
+      });
+
+      it('removes the overlay after the last word ended', () => {
+        const { fixture, host, q } = cleared('one two');
+        const last = host.querySelector('.ui-input__word:last-child') as HTMLElement;
+        last.dispatchEvent(new Event('animationend', { bubbles: true }));
+        fixture.detectChanges();
+        expect(q('.ui-input__dissolve')).toBeNull();
+      });
+
+      it('ignores the end of an earlier word', () => {
+        const { fixture, host, q } = cleared('one two');
+        const first = host.querySelector('.ui-input__word') as HTMLElement;
+        first.dispatchEvent(new Event('animationend', { bubbles: true }));
+        fixture.detectChanges();
+        expect(q('.ui-input__dissolve')).not.toBeNull();
+      });
+
+      it('drops the overlay when the user types again', () => {
+        const { fixture, q, input } = cleared('one two');
+        input().value = 'n';
+        input().dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+        expect(q('.ui-input__dissolve')).toBeNull();
+      });
+
+      it('is removed by the safety timer when no animation runs', () => {
+        vi.useFakeTimers();
+        try {
+          const { fixture, q } = cleared('one two');
+          expect(q('.ui-input__dissolve')).not.toBeNull();
+          vi.advanceTimersByTime(500);
+          fixture.detectChanges();
+          expect(q('.ui-input__dissolve')).toBeNull();
+        } finally {
+          vi.useRealTimers();
+        }
+      });
+
+      it('clears instantly with no overlay under reduced motion', () => {
+        const ctx = setup({ clearable: true, clearLabel: 'Clear' });
+        TestBed.inject(ReducedMotion).setAppReduced(true);
+        ctx.fixture.componentInstance.value.set('one two');
+        ctx.fixture.detectChanges();
+        ctx.q('.ui-input__clear')?.click();
+        ctx.fixture.detectChanges();
+        expect(ctx.fixture.componentInstance.value()).toBe('');
+        expect(ctx.q('.ui-input__dissolve')).toBeNull();
+      });
     });
 
     it('does not take focus from the field on mouse down', () => {

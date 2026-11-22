@@ -3,7 +3,7 @@
   "name": "Shelfmark (dev)",
   "short_name": "Shelfmark",
   "description": "Development build: saves to the local app on http://localhost:4200.",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "default_locale": "en",
   "minimum_chrome_version": "120",
   "icons": {
@@ -27,6 +27,7 @@
     }
   },
   "permissions": ["activeTab"],
+  "optional_permissions": ["tabs"],
   "host_permissions": ["http://localhost:4200/api/*"],
   "content_security_policy": {
     "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: http://localhost:4200; connect-src http://localhost:4200; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"

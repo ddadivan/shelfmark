@@ -1,0 +1,9 @@
+@for (item of items(); track item) {
+  <span
+    class="ui-text-swap__text"
+    [class.ui-text-swap__text--shimmer]="shimmer()"
+    [animate.enter]="swapping() ? 'ui-text-swap--enter' : ''"
+    animate.leave="ui-text-swap--leave"
+    >{{ item }}</span
+  >
+}

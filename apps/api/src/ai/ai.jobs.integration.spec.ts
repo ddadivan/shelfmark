@@ -589,6 +589,102 @@ describe('AI link jobs', () => {
       expect(done.every((row) => row.aiStatus === 'done' && row.summarySource === 'ai')).toBe(true);
     });
 
+    describe('batch with aiDraftId (#569)', () => {
+      const paste = async (items: object[], agent: TestAgent = a): Promise<LinkResponse[]> =>
+        (
+          (await agent.post('/api/links/batch').send({ items }).expect(201))
+            .body as CreateLinksBatchResponse
+        ).links;
+      const row = (url: string, extra: object = {}) => ({
+        url,
+        idempotencyKey: randomUUID(),
+        ...extra,
+      });
+
+      it('picks up the draft of an item and gives the others a job each', async () => {
+        await turnOn();
+        const draftId = randomUUID();
+        const started = await draft({ draftId, url: 'https://example.com/1' });
+        await deferrer.flush();
+        const usedBefore = await monthUsage();
+
+        const [first, second] = await paste([
+          row('https://example.com/1', { aiDraftId: draftId }),
+          row('https://example.com/2'),
+        ]);
+        expect(first).toMatchObject({ aiStatus: 'done', summary: 'A page about Design systems.' });
+        expect((await jobsOf(first?.id ?? '')).map((entry) => entry.id)).toEqual([started.id]);
+        expect(await jobsOf(second?.id ?? '')).toHaveLength(1);
+        expect(await t.db.prisma.aiJob.count({ where: { userId: users.owner.userId } })).toBe(2);
+        await deferrer.flush();
+        // Only the second link was counted now; the draft was counted when it ran.
+        expect(await monthUsage()).toBe(usedBefore + 1);
+      });
+
+      it('runs a still pending draft on the saved link and starts no second job', async () => {
+        await turnOn();
+        const draftId = randomUUID();
+        const started = await draft({ draftId, url: 'https://example.com/1' });
+        const [saved] = await paste([row('https://example.com/1', { aiDraftId: draftId })]);
+        expect((await jobsOf(saved?.id ?? '')).map((entry) => entry.id)).toEqual([started.id]);
+        await deferrer.flush();
+        expect(await t.db.prisma.aiJob.count({ where: { userId: users.owner.userId } })).toBe(1);
+      });
+
+      it('gives an unknown draft id a normal job', async () => {
+        await turnOn();
+        const [saved] = await paste([row('https://example.com/1', { aiDraftId: randomUUID() })]);
+        expect(await jobsOf(saved?.id ?? '')).toHaveLength(1);
+        await deferrer.flush();
+      });
+
+      it("never attaches another user's draft to a batch", async () => {
+        await turnOn();
+        await turnOn({}, b);
+        const theirs = randomUUID();
+        const owners = await draft({ draftId: theirs });
+        await deferrer.flush();
+        const [saved] = await paste([row('https://example.com/b', { aiDraftId: theirs })], b);
+        const untouched = await t.db.prisma.aiJob.findUniqueOrThrow({ where: { id: owners.id } });
+        expect(untouched.linkId).toBeNull();
+        expect(untouched.result).not.toBeNull();
+        expect(saved).toMatchObject({ summary: null, summarySource: null });
+        const jobs = await jobsOf(saved?.id ?? '');
+        expect(jobs).toHaveLength(1);
+        expect(jobs[0]?.id).not.toBe(owners.id);
+        await deferrer.flush();
+      });
+
+      it('lets only the first item of a batch use a repeated draft id', async () => {
+        await turnOn();
+        const draftId = randomUUID();
+        const started = await draft({ draftId });
+        await deferrer.flush();
+        const [first, second] = await paste([
+          row('https://example.com/1', { aiDraftId: draftId }),
+          row('https://example.com/2', { aiDraftId: draftId }),
+        ]);
+        expect((await jobsOf(first?.id ?? '')).map((entry) => entry.id)).toEqual([started.id]);
+        const jobs = await jobsOf(second?.id ?? '');
+        expect(jobs).toHaveLength(1);
+        expect(jobs[0]?.id).not.toBe(started.id);
+        await deferrer.flush();
+      });
+
+      it('ignores the draft while AI is off, like a single save', async () => {
+        const [saved] = await paste([row('https://example.com/1', { aiDraftId: randomUUID() })]);
+        expect(saved?.aiStatus).toBeNull();
+        expect(await t.db.prisma.aiJob.count()).toBe(0);
+      });
+
+      it('refuses a draft id that is not a UUID', async () => {
+        await a
+          .post('/api/links/batch')
+          .send({ items: [row('https://example.com/1', { aiDraftId: 'nope' })] })
+          .expect(400);
+      });
+    });
+
     it('stops starting jobs of a deferred run once its budget is spent', async () => {
       await turnOn();
       const first = await save({ url: 'https://example.com/1' });

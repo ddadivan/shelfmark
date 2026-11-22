@@ -44,6 +44,11 @@
     @include origin(center);
   }
 
+  // The directive moves the panel in from the previous one (Web Animations); no pop of its own.
+  &--travel {
+    @include origin(center);
+  }
+
   &--leave {
     @include leave(pop);
     @include origin(center);

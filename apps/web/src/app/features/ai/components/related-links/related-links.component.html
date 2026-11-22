@@ -1,16 +1,18 @@
 @if (rows().length > 0) {
-  <section class="related-links" [attr.aria-labelledby]="headingId">
-    <h3 class="related-links__title" [id]="headingId">{{ 'ai.related.title' | transloco }}</h3>
+  <ui-button
+    variant="secondary"
+    iconLeft="spark"
+    [size]="size()"
+    [uiPopoverTrigger]="popover"
+    uiPopoverTriggerHover="false"
+  >
+    {{ 'ai.related.button' | transloco: { count: rows().length } }}
+  </ui-button>
+  <ui-popover #popover class="related-links__popover" [heading]="'ai.related.title' | transloco">
     <ul class="related-links__list">
       @for (row of rows(); track row.link.id) {
         <li>
-          <ui-list-item
-            compact
-            newTab
-            [href]="row.href"
-            [description]="'links.item.opensInNewTab' | transloco"
-            (activated)="opened(row.link)"
-          >
+          <ui-list-item compact (activated)="choose(row.link, popover)">
             <ui-favicon
               slot="leading"
               [src]="row.link.faviconUrl ?? undefined"
@@ -34,5 +36,5 @@
         </li>
       }
     </ul>
-  </section>
+  </ui-popover>
 }

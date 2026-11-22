@@ -123,6 +123,28 @@ test.describe('link preview (mock API)', () => {
   });
 
   test(
+    'a tap on a card opens the full-screen preview on the phone, never a new tab (#572)',
+    { tag: E2E_TAG.Phone },
+    async ({ page, context }) => {
+      test.skip(!isCompact(page), 'the pushed page path is checked on the phone');
+      await openLibrary(page);
+      const opened: string[] = [];
+      context.on('page', (other) => opened.push(other.url()));
+      await page
+        .locator('app-link-card', { hasText: FIRST })
+        .first()
+        .getByRole('link')
+        .first()
+        .tap();
+
+      const pushed = page.getByRole('dialog', { name: `Preview: ${FIRST}` });
+      await expect(pushed).toBeVisible();
+      await expect(page).toHaveURL(/[?&]preview=/);
+      expect(opened).toEqual([]);
+    },
+  );
+
+  test(
     'below 80em the preview is a pushed page with Back',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {

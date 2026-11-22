@@ -6,7 +6,11 @@
     (pointerenter)="hovered.emit(true)"
     (pointerleave)="hovered.emit(false)"
   >
-    <div class="ui-tooltip" animate.enter="ui-tooltip--enter" animate.leave="ui-tooltip--leave">
+    <div
+      class="ui-tooltip"
+      [animate.enter]="travel() ? 'ui-tooltip--travel' : 'ui-tooltip--enter'"
+      animate.leave="ui-tooltip--leave"
+    >
       <span class="ui-tooltip__text">{{ text() }}</span>
       @if (shortcut()) {
         <kbd class="ui-tooltip__kbd">{{ shortcut() }}</kbd>

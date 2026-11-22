@@ -85,8 +85,13 @@
           >
         } @else if (countId(item.id(), node); as count) {
           <span class="ui-tree__count" [class.ui-tree__count--note]="node.note" [id]="count"
-            >&ngsp;{{ node.note ?? node.count }}</span
-          >
+            >&ngsp;
+            @if (node.note) {
+              {{ node.note }}
+            } @else {
+              <ui-number-flow [value]="node.count ?? 0" />
+            }
+          </span>
         }
         @if (folder && menuLabel()) {
           <ui-button
@@ -145,6 +150,7 @@
   #tree="ngTree"
   #rootList="uiTreeReorderList"
   ngTree
+  [uiFluidHover]="'.ui-tree__row'"
   nav
   uiTreeReorderList
   class="ui-tree__list"

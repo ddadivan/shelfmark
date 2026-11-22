@@ -33,3 +33,8 @@
 .ui-badge__icon {
   flex: none;
 }
+
+// Plays when the badge is created (`pop`); a badge that stays does not replay on change detection.
+:host(.ui-badge--pop) {
+  @include enter(badge);
+}

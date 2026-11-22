@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { ButtonComponent } from '../../components/button/button.component';
 import { TooltipPanelComponent } from './tooltip-panel/tooltip-panel.component';
 import { TooltipDirective } from './tooltip.directive';
+import { TooltipGroupDirective } from './tooltip-group/tooltip-group.directive';
 import { THEME, THEME_ATTRIBUTE } from '../../models/theme';
 import type { Theme } from '../../models/theme';
 import { OVERLAY_SIDE } from '../../services/overlay/models/overlay-side.const';
@@ -138,5 +139,20 @@ export const AllVariants: Story = {
   render: () => ({
     moduleMetadata: { imports },
     template: `${Object.values(THEME).map(variants).join('')}`,
+  }),
+};
+
+/** A toolbar group: after the first tooltip opens, neighbours open at once and the panel travels. */
+export const Group: Story = {
+  render: () => ({
+    moduleMetadata: { imports: [...imports, TooltipGroupDirective] },
+    template: `
+      <div class="ts-panel">
+        <div class="ts-row" uiTooltipGroup>
+          <ui-button variant="ghost" iconOnly iconLeft="cards" ariaLabel="Cards" uiTooltip="Cards view" />
+          <ui-button variant="ghost" iconOnly iconLeft="moon" ariaLabel="Theme" uiTooltip="Dark theme" />
+          <ui-button variant="ghost" iconOnly iconLeft="search" ariaLabel="Search" uiTooltip="Search" />
+        </div>
+      </div>`,
   }),
 };

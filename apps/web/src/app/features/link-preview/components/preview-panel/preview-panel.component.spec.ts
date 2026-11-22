@@ -76,6 +76,17 @@ describe('PreviewPanelComponent', () => {
     expect(stub.copyLink).toHaveBeenCalledTimes(1);
   });
 
+  it('swaps the copy icon for a check while the link counts as copied', async () => {
+    const { stub, fixture, button } = await setup();
+    const icon = () =>
+      fixture.nativeElement.querySelector('[aria-label="Copy link"] use')?.getAttribute('href');
+    expect(icon()).toContain('#sm-copy');
+    stub.copied.set(true);
+    await fixture.whenStable();
+    expect(icon()).toContain('#sm-check');
+    expect(await button('Copy link')).toBeDefined();
+  });
+
   it('hides and shows the list with the wider button', async () => {
     const { stub, fixture, button } = await setup();
     const wider = await button('Wider preview');

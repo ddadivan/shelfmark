@@ -604,7 +604,7 @@
     },
     "extension": {
       "title": "Extension de navigateur",
-      "body": "L’extension Shelfmark pour Chrome, Edge, Brave et Arc ne s’active que lorsque vous cliquez sur son bouton ou utilisez son raccourci, jamais en arrière-plan. Elle envoie alors à Shelfmark l’adresse de cet onglet, pour vérifier s’il est déjà enregistré, et n’enregistre son adresse et son titre, avec le dossier, les tags et la note choisis, que lorsque vous appuyez sur Enregistrer. Elle ne voit ni votre historique ni les autres sites que vous visitez. Si vous cliquez sur « Remplir avec l’IA » et que l’IA est activée sur votre compte, elle envoie aussi à Shelfmark cette adresse et ce titre, ainsi que votre note si l’IA peut lire les notes, pour obtenir des suggestions de l’IA, traitées selon les mêmes conditions d’IA que dans l’application.",
+      "body": "L’extension Shelfmark pour Chrome, Edge, Brave et Arc ne s’active que lorsque vous cliquez sur son bouton ou utilisez son raccourci, jamais en arrière-plan. Elle envoie alors à Shelfmark l’adresse de cet onglet, pour vérifier s’il est déjà enregistré, et n’enregistre son adresse et son titre, avec le dossier, les tags et la note choisis, que lorsque vous appuyez sur Enregistrer. Elle ne voit ni votre historique ni les autres sites que vous visitez. Si vous cliquez sur « Remplir avec l’IA » et que l’IA est activée sur votre compte, elle envoie aussi à Shelfmark cette adresse et ce titre, ainsi que votre note si l’IA peut lire les notes, pour obtenir des suggestions de l’IA, traitées selon les mêmes conditions d’IA que dans l’application. Si vous passez à « Tous les onglets », votre navigateur demande une fois l’autorisation facultative « onglets » ; ce passage compare alors les adresses de vos onglets ouverts (sans #fragment) à votre bibliothèque, pour repérer ceux déjà enregistrés. Rien n’est enregistré avant que vous appuyiez sur Enregistrer, et seuls les onglets que vous cochez sont enregistrés ou envoyés pour des suggestions de l’IA.",
       "access": "Elle utilise votre connexion à Shelfmark dans ce navigateur et ne peut pas lire le cookie de connexion lui-même. Elle ne peut joindre que Shelfmark et garde seulement, sur votre appareil, les dossiers utilisés récemment pour vous les proposer la fois suivante."
     },
     "third": {
@@ -3215,6 +3215,20 @@
     "release": "Shelfmark {{version}}",
     "home": "Shelfmark, accueil",
     "items": {
+      "relatedInPreview": {
+        "title": "Des liens proches de ce que vous lisez",
+        "text": "L’aperçu d’un lien a un bouton Similaires : jusqu’à cinq liens de votre étagère proches par le sens, avec ce qu’ils ont en commun. Choisissez-en un, il s’ouvre sur place. Il faut la recherche par le sens dans Réglages › IA.",
+        "alt": "L’aperçu d’un guide avec sa liste Similaires ouverte : cinq liens proches par le sens."
+      },
+      "motionBatch": {
+        "text": "Des mouvements plus vivants : un lien déplacé oscille et s’envole dans son dossier, la surbrillance glisse entre les lignes, les coches se dessinent et les nombres qui changent défilent."
+      },
+      "extensionTabs": {
+        "text": "L’extension de navigateur enregistre plusieurs onglets ouverts d’un coup, avec un dossier et des tags pour tous (version 1.2.0, en cours de déploiement sur le Chrome Web Store)."
+      },
+      "phoneTapPreview": {
+        "text": "Sur téléphone, toucher une carte ou une ligne ouvre son aperçu, comme un clic sur ordinateur."
+      },
       "sideBySide": {
         "title": "Côte à côte",
         "text": "Ouvrez deux listes l'une à côté de l'autre et glissez des liens de l'une à l'autre.",
@@ -3834,6 +3848,7 @@
     },
     "related": {
       "title": "Proches sur votre étagère",
+      "button": "Similaires · {{count}}",
       "why": "Proche de : {{reasons}}",
       "show": "Afficher les liens proches",
       "folders": "Dossiers proches"

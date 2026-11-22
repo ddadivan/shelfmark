@@ -15,6 +15,10 @@ import {
   Renderer2,
   untracked,
 } from '@angular/core';
+import { ReducedMotion } from '../../services/motion/reduced-motion.service';
+import { TOOLTIP_GROUP } from './tooltip-group/models/tooltip-group-token.const';
+import type { TooltipGroupMember } from './tooltip-group/models/tooltip-group-member.interface';
+import { travelFrom } from './tooltip-travel';
 import { UI_FOCUS_TARGET } from '../focus-target/models/ui-focus-target.const';
 import type { ConnectedOverlay } from '../../services/overlay/connected-overlay';
 import { UiOverlay } from '../../services/overlay/overlay.service';
@@ -50,7 +54,7 @@ function textTransform(value: string | null | undefined): string {
   selector: '[uiTooltip]',
   exportAs: 'uiTooltip',
 })
-export class TooltipDirective {
+export class TooltipDirective implements TooltipGroupMember {
   /** The tooltip text. Empty or missing: no tooltip. */
   readonly text = input('', { alias: 'uiTooltip', transform: textTransform });
   readonly position = input<TooltipPosition>(OVERLAY_SIDE.Bottom);
@@ -71,6 +75,8 @@ export class TooltipDirective {
   private readonly injector = inject(Injector);
   private readonly renderer = inject(Renderer2);
   private readonly document = inject(DOCUMENT);
+  private readonly group = inject(TOOLTIP_GROUP, { optional: true });
+  private readonly motion = inject(ReducedMotion);
 
   /** The element that gets listeners, `aria-describedby` and the anchor. */
   private readonly target = computed(() =>
@@ -238,6 +244,11 @@ export class TooltipDirective {
       return;
     }
     this.armEscape();
+    // Inside a warm tooltip group a neighbour opens at once.
+    if (this.group?.isWarm()) {
+      this.show();
+      return;
+    }
     this.showTimer = setTimeout(() => {
       this.showTimer = undefined;
       this.show();
@@ -269,6 +280,7 @@ export class TooltipDirective {
     this.syncDescription();
     const overlay = this.overlay ?? this.createOverlay(target);
     this.visible = true;
+    const from = this.group?.open(this) ?? null;
     if (this.panel && overlay.isAttached) {
       overlay.cancelRelease();
       this.panel.setInput('open', true);
@@ -280,6 +292,11 @@ export class TooltipDirective {
     panel.setInput('text', this.text());
     panel.setInput('shortcut', this.shortcut());
     panel.setInput('open', true);
+    const travelling = from !== null && !this.motion.reduced();
+    panel.setInput('travel', travelling);
+    if (travelling) {
+      this.travel(from);
+    }
     panel.instance.hovered.subscribe((over) => {
       this.onPanelHover(over);
     });
@@ -294,8 +311,47 @@ export class TooltipDirective {
       return;
     }
     this.visible = false;
+    this.group?.remember(this.panelRect());
+    this.group?.closed(this);
     this.panel?.setInput('open', false);
     this.overlay?.release();
+  }
+
+  /** The group closes this tooltip: no leave animation. */
+  closeNow(): void {
+    this.clearTimers();
+    this.disarmEscape();
+    this.overPanel = false;
+    if (!this.visible) {
+      return;
+    }
+    this.group?.remember(this.panelRect());
+    this.resetOverlay();
+  }
+
+  private panelBox(): HTMLElement | null {
+    return this.panel?.location.nativeElement.querySelector('.ui-tooltip') ?? null;
+  }
+
+  private panelRect(): DOMRect | null {
+    return this.panelBox()?.getBoundingClientRect() ?? null;
+  }
+
+  /** Slides the new panel in from where the previous one was, once it is placed. */
+  private travel(from: DOMRect): void {
+    afterNextRender(
+      () => {
+        if (!this.overlay?.isAttached) {
+          return;
+        }
+        this.overlay.updatePosition();
+        const box = this.panelBox();
+        if (box) {
+          travelFrom(box, from, this.document.defaultView);
+        }
+      },
+      { injector: this.injector },
+    );
   }
 
   private createOverlay(target: HTMLElement): ConnectedOverlay {

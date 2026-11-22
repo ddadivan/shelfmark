@@ -171,12 +171,20 @@ describe('motion mixins', () => {
   it.each([
     ['enter(pop)', 'ui-pop-in var(--duration-base) var(--ease-out) both'],
     ['enter(disclose)', 'ui-disclose-in var(--duration-base) var(--ease-in-out) both'],
+    ['enter(icon)', 'ui-icon-in var(--duration-base) var(--ease-out) both'],
+    ['leave(icon)', 'ui-icon-out var(--duration-base) var(--ease-out) both'],
+    ['enter(digit)', 'ui-digit-in var(--duration-base) var(--ease-out) both'],
+    ['leave(digit)', 'ui-digit-out var(--duration-base) var(--ease-out) both'],
+    ['enter(rise)', 'ui-rise-in var(--duration-base) var(--ease-out) both'],
+    ['enter(badge)', 'ui-badge-in var(--duration-base) var(--ease-spring) both'],
     ['enter(fade)', 'ui-reveal var(--duration-base) var(--ease-out) both'],
     ['enter(toast)', 'ui-toast-in var(--duration-slow) var(--ease-spring) both'],
     ['enter(sheet)', 'ui-sheet-in var(--duration-slow) var(--ease-drawer) both'],
     ['enter(drawer)', 'ui-drawer-in var(--duration-slow) var(--ease-drawer) both'],
     ['leave(drawer)', 'ui-drawer-out var(--duration-base) var(--ease-in) both'],
     ['leave(disclose)', 'ui-disclose-out var(--duration-fast) var(--ease-in-out) both'],
+    ['enter(swap)', 'ui-text-swap-in var(--duration-base) var(--ease-out) both'],
+    ['leave(swap)', 'ui-text-swap-out var(--duration-fast) var(--ease-out) both'],
     ['leave(pop)', 'ui-pop-out var(--duration-fast) var(--ease-out) both'],
     ['leave(toast)', 'ui-toast-out var(--duration-fast) var(--ease-in) both'],
     ['leave(sheet)', 'ui-sheet-out var(--duration-base) var(--ease-in) both'],
@@ -186,25 +194,39 @@ describe('motion mixins', () => {
 
   it.each([
     'enter(pop)',
+    'enter(icon)',
+    'enter(digit)',
+    'enter(badge)',
     'enter(toast)',
     'enter(sheet)',
     'enter(drawer)',
     'enter(spinner)',
     'enter(spinner-grow)',
+    'enter(swap)',
   ])('%s falls back to a fade in 200 ms under reduced motion', (include) => {
     const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
     expect(reduced).toContain('animation: ui-reveal var(--duration-base) var(--ease-out) both');
-    expect(reduced).not.toMatch(/ui-(pop-in|toast-in|sheet-in|drawer-in|spinner-grow)/);
+    expect(reduced).not.toMatch(
+      /ui-(pop-in|icon-in|digit-in|badge-in|toast-in|sheet-in|drawer-in|spinner-grow)/,
+    );
   });
 
-  it.each(['leave(pop)', 'leave(toast)', 'leave(sheet)', 'leave(drawer)', 'leave(spinner-shrink)'])(
-    '%s falls back to a plain fade-out under reduced motion',
-    (include) => {
-      const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
-      expect(reduced).toContain('ui-fade-out');
-      expect(reduced).not.toMatch(/ui-(pop-out|toast-out|sheet-out|drawer-out|spinner-shrink)/);
-    },
-  );
+  it.each([
+    'leave(pop)',
+    'leave(icon)',
+    'leave(digit)',
+    'leave(toast)',
+    'leave(sheet)',
+    'leave(drawer)',
+    'leave(spinner-shrink)',
+    'leave(swap)',
+  ])('%s falls back to a plain fade-out under reduced motion', (include) => {
+    const reduced = reducedMotionBlock(css(`.a { @include ${include}; }`));
+    expect(reduced).toContain('ui-fade-out');
+    expect(reduced).not.toMatch(
+      /ui-(pop-out|icon-out|digit-out|toast-out|sheet-out|drawer-out|spinner-shrink|text-swap-out)/,
+    );
+  });
 
   it('presets are finite so animate.leave can finish: no infinite, no loader rotation', () => {
     const presets = ['pop', 'fade', 'toast', 'sheet', 'drawer', 'spinner', 'spinner-grow']
@@ -255,6 +277,8 @@ describe('motion mixins', () => {
     const names = [...out.matchAll(/@keyframes (\S+)/g)].map((m) => m[1]);
     expect(names).toEqual([
       'ui-pop-in',
+      'ui-rise-in',
+      'ui-badge-in',
       'ui-disclose-in',
       'ui-disclose-out',
       'ui-pop-out',
@@ -267,6 +291,11 @@ describe('motion mixins', () => {
       'ui-toast-in',
       'ui-toast-out',
       'ui-toast-count',
+      'ui-icon-in',
+      'ui-icon-out',
+      'ui-digit-in',
+      'ui-digit-out',
+      'ui-draw-check',
       'ui-spin',
       'ui-spinner-in',
       'ui-spinner-grow',
@@ -279,8 +308,33 @@ describe('motion mixins', () => {
       'ui-land',
       'ui-land-ring',
       'ui-suggest-accept',
+      'ui-text-swap-in',
+      'ui-text-swap-out',
+      'ui-shimmer-text',
+      'ui-shake',
+      'ui-dissolve-word',
     ]);
     expect(out).not.toMatch(/\d+px/);
+  });
+
+  it('shimmer-text sweeps a clipped gradient and goes static under reduced motion', () => {
+    const out = css('.a { @include shimmer-text; }');
+    expect(out).toContain('ui-shimmer-text 1.4s var(--ease-in-out) infinite');
+    expect(out).toContain('var(--text-muted) 30%, var(--text) 50%, var(--text-muted) 70%');
+    expect(out).toContain('background-clip: text');
+    expect(out).toContain('color: var(--text-muted)');
+    const reduced = reducedMotionBlock(out);
+    expect(reduced).toContain('animation: none');
+    expect(reduced).toContain('background: none');
+    const custom = css('.a { @include shimmer-text(var(--x), var(--y)); }');
+    expect(custom).toContain('var(--x) 30%, var(--y) 50%, var(--x) 70%');
+  });
+
+  it('shake runs once at the slow duration and is off under reduced motion', () => {
+    const out = css('.a { @include shake; }');
+    expect(out).toContain('animation: ui-shake var(--duration-slow) var(--ease-out)');
+    expect(out).not.toContain('infinite');
+    expect(reducedMotionBlock(out)).toContain('animation: none');
   });
 
   it('landed drops the card in with the spring and fades the sage ring, staggered by --ui-land-delay', () => {

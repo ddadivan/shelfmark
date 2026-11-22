@@ -16,3 +16,7 @@
     <ui-skeleton shape="line" [count]="3" />
   </div>
 }
+<!-- There is always a way out: Open Shelfmark fills the footer until the screen is ready. -->
+<div class="ext-screen__foot">
+  <ui-button block (click)="store.openApp()">{{ 'popup.openApp' | transloco }}</ui-button>
+</div>

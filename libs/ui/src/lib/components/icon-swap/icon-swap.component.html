@@ -1,0 +1,10 @@
+@for (icon of icons(); track icon) {
+  <ui-icon
+    class="ui-icon-swap__icon"
+    [name]="icon"
+    [size]="size()"
+    [label]="label()"
+    [animate.enter]="enterClass()"
+    animate.leave="ui-icon-swap__icon--leave"
+  />
+}

@@ -2,15 +2,17 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  afterNextRender,
   ElementRef,
   inject,
   input,
   model,
+  signal,
 } from '@angular/core';
 import type { FormCheckboxControl } from '@angular/forms/signals';
 import { UiFieldControl } from '../field/field-control.directive';
 import { fieldErrorId, fieldHintId } from '../field/field-ids';
-import { IconComponent } from '../icon/icon.component';
+import { CheckMarkComponent } from '../check-mark/check-mark.component';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
 
 /**
@@ -24,7 +26,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
  */
 @Component({
   selector: 'ui-checkbox',
-  imports: [IconComponent],
+  imports: [CheckMarkComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-checkbox',
@@ -38,6 +40,12 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
 export class CheckboxComponent extends UiFieldControl implements FormCheckboxControl {
   protected readonly ICON_SIZE = ICON_SIZE;
   readonly checked = model(false);
+  /**
+   * True after the first render: only a tick created from then on draws itself. A box that starts
+   * checked (a selected row scrolled into view) shows its tick at once (`ui-check-mark` keeps the
+   * first value of `draw`).
+   */
+  protected readonly drawn = signal(false);
   /** Mixed state; shown as a dash. */
   readonly indeterminate = model(false);
   /** Form field name of the native input. */
@@ -52,6 +60,11 @@ export class CheckboxComponent extends UiFieldControl implements FormCheckboxCon
   protected readonly errorId = fieldErrorId(this.controlId);
 
   private readonly host: HTMLElement = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+  constructor() {
+    super();
+    afterNextRender(() => this.drawn.set(true));
+  }
 
   /** Focuses the native checkbox. */
   focus(options?: FocusOptions): void {

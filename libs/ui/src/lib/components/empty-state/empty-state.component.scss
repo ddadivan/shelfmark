@@ -88,6 +88,9 @@
   font-size: rem(22px);
   line-height: rem(28px);
   color: var(--text);
+
+  // Two-line rise (#562): the title first, the text 60 ms later.
+  @include rise;
 }
 
 // Page: a larger heading, still below the 40px page title; the lines stay readable in width.
@@ -107,6 +110,8 @@
 
   margin: 0;
   color: var(--text-muted);
+
+  @include rise(second);
 }
 
 :host(.ui-empty-state--page) .ui-empty-state__text {

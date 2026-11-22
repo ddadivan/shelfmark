@@ -51,6 +51,9 @@
 
   margin: var(--space-1) 0 0;
   color: var(--text);
+
+  // Two-line rise (#562) inside the sliding step: the title, then the text 60 ms later.
+  @include rise;
 }
 
 .onboarding__text {
@@ -58,6 +61,8 @@
 
   margin: 0;
   color: var(--text-muted);
+
+  @include rise(second);
 }
 
 .onboarding__sr {

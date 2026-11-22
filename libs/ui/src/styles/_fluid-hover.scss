@@ -1,0 +1,47 @@
+@use 'functions' as *;
+@use 'media' as *;
+
+// Styles of the `uiFluidHover` directive (docs/design/components/Motion, "Fluid hover"). The
+// highlight is created at runtime, outside view encapsulation, so the rules are global
+// (`global.scss` includes them once). The container is isolated: the highlight (`z-index: -1`)
+// paints above the container's own background and below every row, row content and ripple.
+// `--ui-row-hover` is the hover background rows read (`var(--ui-row-hover, var(--surface-hover))`);
+// under `--on` it is transparent, so the rows' own hover does not double the highlight.
+@mixin fluid-hover {
+  :where(.ui-fluid-hover) {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .ui-fluid-hover--on {
+    --ui-row-hover: transparent;
+  }
+
+  .ui-fluid-hover__highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--surface-hover);
+    opacity: 0;
+    transition:
+      transform var(--duration-base) var(--ease-out),
+      width var(--duration-base) var(--ease-out),
+      height var(--duration-base) var(--ease-out),
+      opacity var(--duration-fast) var(--ease-out);
+
+    &--shown {
+      opacity: 1;
+    }
+
+    // First entry and reduced motion: no travel, only the fade.
+    &--jump {
+      transition: opacity var(--duration-fast) var(--ease-out);
+    }
+
+    @include reduced-motion {
+      transition: opacity var(--duration-fast) var(--ease-out);
+    }
+  }
+}

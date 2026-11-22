@@ -1,7 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { ButtonComponent, FaviconComponent, ICON_SIZE, TooltipDirective } from '@shelfmark/ui';
+import {
+  ButtonComponent,
+  FaviconComponent,
+  ICON_SIZE,
+  TooltipDirective,
+  TooltipGroupDirective,
+} from '@shelfmark/ui';
 import { linkAddress, ownImageUrl, siteLetter } from '../../../links/utils/link-view';
+import { RelatedLinksComponent } from '../../../ai/components/related-links/related-links.component';
 import { LinkPreviewService } from '../../services/link-preview.service';
 import { PreviewBodyComponent } from '../preview-body/preview-body.component';
 
@@ -13,10 +20,12 @@ import { PreviewBodyComponent } from '../preview-body/preview-body.component';
 @Component({
   selector: 'app-preview-panel',
   imports: [
+    RelatedLinksComponent,
     TranslocoPipe,
     ButtonComponent,
     FaviconComponent,
     TooltipDirective,
+    TooltipGroupDirective,
     PreviewBodyComponent,
   ],
   templateUrl: './preview-panel.component.html',

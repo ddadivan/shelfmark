@@ -591,7 +591,7 @@
     },
     "extension": {
       "title": "Browser-Erweiterung",
-      "body": "Die Shelfmark-Erweiterung für Chrome, Edge, Brave und Arc wird nur aktiv, wenn Sie auf ihre Schaltfläche klicken oder ihr Tastenkürzel drücken, nie im Hintergrund. Dann sendet sie Shelfmark die Adresse dieses einen Tabs, um zu prüfen, ob Sie ihn schon gespeichert haben, und speichert Adresse und Titel mit Ordner, Tags und Notiz erst, wenn Sie auf Speichern drücken. Ihren Verlauf und andere Websites, die Sie besuchen, sieht sie nie. Wenn Sie auf „Mit KI ausfüllen“ klicken und KI in Ihrem Konto eingeschaltet ist, sendet sie diese Adresse und den Titel, und Ihre Notiz, wenn die KI Notizen lesen darf, zusätzlich an Shelfmark, um KI-Vorschläge zu erhalten; sie werden nach denselben KI-Bedingungen wie in der App verarbeitet.",
+      "body": "Die Shelfmark-Erweiterung für Chrome, Edge, Brave und Arc wird nur aktiv, wenn Sie auf ihre Schaltfläche klicken oder ihr Tastenkürzel drücken, nie im Hintergrund. Dann sendet sie Shelfmark die Adresse dieses einen Tabs, um zu prüfen, ob Sie ihn schon gespeichert haben, und speichert Adresse und Titel mit Ordner, Tags und Notiz erst, wenn Sie auf Speichern drücken. Ihren Verlauf und andere Websites, die Sie besuchen, sieht sie nie. Wenn Sie auf „Mit KI ausfüllen“ klicken und KI in Ihrem Konto eingeschaltet ist, sendet sie diese Adresse und den Titel, und Ihre Notiz, wenn die KI Notizen lesen darf, zusätzlich an Shelfmark, um KI-Vorschläge zu erhalten; sie werden nach denselben KI-Bedingungen wie in der App verarbeitet. Wenn Sie zu „Alle Tabs“ wechseln, fragt Ihr Browser einmal nach der optionalen Tabs-Berechtigung; beim Wechsel werden die Adressen Ihrer offenen Tabs (ohne #Fragment) mit Ihrer Bibliothek abgeglichen, um bereits gespeicherte zu markieren. Gespeichert wird erst, wenn Sie auf Speichern drücken, und nur die Tabs, die Sie ankreuzen, werden gespeichert oder für KI-Vorschläge gesendet.",
       "access": "Sie nutzt Ihre Shelfmark-Anmeldung in diesem Browser und kann das Anmelde-Cookie selbst nicht lesen. Sie erreicht nur Shelfmark und speichert auf Ihrem Gerät nur die zuletzt verwendeten Ordner, um sie beim nächsten Mal anzubieten."
     },
     "third": {
@@ -3130,6 +3130,20 @@
     "release": "Shelfmark {{version}}",
     "home": "Shelfmark, Startseite",
     "items": {
+      "relatedInPreview": {
+        "title": "Ähnliche Links neben dem, was du liest",
+        "text": "Die Vorschau eines Links hat eine Schaltfläche „Ähnlich“: bis zu fünf inhaltlich nahe Links aus deiner Sammlung und was sie gemeinsam haben. Wähle einen, und er öffnet sich direkt dort. Dafür braucht es die Suche nach Bedeutung unter Einstellungen › KI.",
+        "alt": "Die Linkvorschau eines Leitfadens mit geöffneter Liste „Ähnlich“: fünf inhaltlich nahe Links."
+      },
+      "motionBatch": {
+        "text": "Lebendigere Bewegung: Ein gezogener Link schwingt und fliegt in seinen Ordner, die Hervorhebung gleitet zwischen Zeilen, Häkchen zeichnen sich selbst und geänderte Zahlen rollen."
+      },
+      "extensionTabs": {
+        "text": "Die Browsererweiterung speichert mehrere offene Tabs auf einmal, mit einem Ordner und Tags für alle (Version 1.2.0, wird im Chrome Web Store ausgerollt)."
+      },
+      "phoneTapPreview": {
+        "text": "Auf dem Telefon öffnet ein Tippen auf eine Karte oder Zeile ihre Vorschau, wie ein Klick am Computer."
+      },
       "sideBySide": {
         "title": "Nebeneinander",
         "text": "Öffnen Sie zwei Listen nebeneinander und ziehen Sie Links von einer in die andere.",
@@ -3736,6 +3750,7 @@
     },
     "related": {
       "title": "Ähnliches in deinem Regal",
+      "button": "Ähnlich · {{count}}",
       "why": "Nah an: {{reasons}}",
       "show": "Ähnliches zeigen",
       "folders": "Ähnliche Ordner"

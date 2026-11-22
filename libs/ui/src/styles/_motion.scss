@@ -22,6 +22,9 @@ $progress-duration: 1.1s;
 $progress-duration-reduced: 2.4s;
 $shimmer-duration: 1.4s;
 
+// Delay of the second line of a two-line rise.
+$rise-stagger: 60ms;
+
 // Entrances. `duration` / `ease` name the tokens (`--duration-*`, `--ease-*`).
 $enter-presets: (
   'pop': (
@@ -58,6 +61,31 @@ $enter-presets: (
     'duration': 'base',
     'ease': 'in-out',
   ),
+  // A line of text that rises 8px while it fades in (empty states, Welcome steps); the second line
+  // adds `$rise-stagger` through `animation-delay`.
+  'rise': (
+    'keyframes': 'ui-rise-in',
+    'duration': 'base',
+    'ease': 'out',
+  ),
+  // A counter badge that appears (`ui-badge` with `pop`): 0.6 to 1 with a small overshoot.
+  'badge': (
+    'keyframes': 'ui-badge-in',
+    'duration': 'base',
+    'ease': 'spring',
+  ),
+  // A digit that changed (`ui-number-flow`): slides 0.5em from below (up) or above (down).
+  'digit': (
+    'keyframes': 'ui-digit-in',
+    'duration': 'base',
+    'ease': 'out',
+  ),
+  // An icon that replaces another (`ui-icon-swap`): scales up from 0.5 out of a 4px blur.
+  'icon': (
+    'keyframes': 'ui-icon-in',
+    'duration': 'base',
+    'ease': 'out',
+  ),
   'spinner': (
     'keyframes': 'ui-spinner-in',
     'duration': 'base',
@@ -65,6 +93,12 @@ $enter-presets: (
   ),
   'spinner-grow': (
     'keyframes': 'ui-spinner-grow',
+    'duration': 'base',
+    'ease': 'out',
+  ),
+  // New status text or label: rises out of a 4px blur (#562, `ui-text-swap`).
+  'swap': (
+    'keyframes': 'ui-text-swap-in',
     'duration': 'base',
     'ease': 'out',
   ),
@@ -102,6 +136,17 @@ $leave-presets: (
     'duration': 'fast',
     'ease': 'in-out',
   ),
+  'digit': (
+    'keyframes': 'ui-digit-out',
+    'duration': 'base',
+    'ease': 'out',
+  ),
+  // The icon that is replaced: scales to 0.5, blurs 4px and fades.
+  'icon': (
+    'keyframes': 'ui-icon-out',
+    'duration': 'base',
+    'ease': 'out',
+  ),
   'spinner': (
     'keyframes': 'ui-spinner-out',
     'duration': 'fast',
@@ -109,6 +154,12 @@ $leave-presets: (
   ),
   'spinner-shrink': (
     'keyframes': 'ui-spinner-shrink',
+    'duration': 'fast',
+    'ease': 'out',
+  ),
+  // Old status text or label: blurs 4px and fades up 4px (#562, `ui-text-swap`).
+  'swap': (
+    'keyframes': 'ui-text-swap-out',
     'duration': 'fast',
     'ease': 'out',
   ),
@@ -133,7 +184,7 @@ $leave-presets: (
 }
 
 // Plays an entrance: `pop` (menus, listboxes, dialogs), `disclose` (a panel under its trigger), `fade`, `toast`, `sheet`, `drawer`,
-// `spinner`, `spinner-grow` (spinner inside a button, label makes room). Reduced motion: fade, 200 ms
+// `spinner`, `spinner-grow` (spinner inside a button, label makes room), `swap` (new text rising out of a blur). Reduced motion: fade, 200 ms
 // (so `spinner-grow` also drops its margin growth: the label does not slide). A spinner's
 // rotation is a separate `loop(spin)` on the inner element.
 @mixin enter($name) {
@@ -147,6 +198,20 @@ $leave-presets: (
 
   @include reduced-motion {
     animation: -animation(ui-reveal, var(--duration-base), var(--ease-out));
+  }
+}
+
+// Two-line rise: `enter(rise)` for the first line; `rise(second)` for the line below it, 60 ms later
+// (reduced motion: a plain fade, no delay).
+@mixin rise($line: first) {
+  @include enter(rise);
+
+  @if $line == second {
+    animation-delay: $rise-stagger;
+
+    @include reduced-motion {
+      animation-delay: 0s;
+    }
   }
 }
 
@@ -204,6 +269,32 @@ $leave-presets: (
     from {
       opacity: 0;
       transform: scale(0.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  // Two-line rise (#562).
+  @keyframes ui-rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(#{rem(8px)});
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  // Badge pop-in (#562).
+  @keyframes ui-badge-in {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
     }
 
     to {
@@ -306,6 +397,62 @@ $leave-presets: (
     }
   }
 
+  // Icon swap (#562): the outgoing icon scales to 0.5, blurs 4px and fades; the incoming one grows
+  // from 0.5 out of the blur. The blur stays on small elements (icons) only.
+  @keyframes ui-icon-in {
+    from {
+      opacity: 0;
+      filter: blur(#{rem(4px)});
+      transform: scale(0.5);
+    }
+
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: none;
+    }
+  }
+
+  @keyframes ui-icon-out {
+    to {
+      opacity: 0;
+      filter: blur(#{rem(4px)});
+      transform: scale(0.5);
+    }
+  }
+
+  // Number change (#562): `--ui-flow-dir` is 1 when the number grows (digits move up) and -1 when
+  // it shrinks (down). The new digit rises out of 0.5em below, the old one leaves 0.5em above.
+  @keyframes ui-digit-in {
+    from {
+      opacity: 0;
+      transform: translateY(calc(var(--ui-flow-dir, 1) * 0.5em));
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes ui-digit-out {
+    to {
+      opacity: 0;
+      transform: translateY(calc(var(--ui-flow-dir, 1) * -0.5em));
+    }
+  }
+
+  // Drawn check (#562): the tick (`pathLength` 1, `stroke-dasharray: 1 2`) draws along its stroke.
+  @keyframes ui-draw-check {
+    from {
+      stroke-dashoffset: 1;
+    }
+
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
   @keyframes ui-spin {
     to {
       transform: rotate(360deg);
@@ -402,6 +549,67 @@ $leave-presets: (
       scale: 1.06;
     }
   }
+
+  // Text state swap (#562): the old text blurs and fades up, the new one rises out of the blur.
+  @keyframes ui-text-swap-in {
+    from {
+      opacity: 0;
+      filter: blur(#{rem(4px)});
+      transform: translateY(#{rem(4px)});
+    }
+  }
+
+  @keyframes ui-text-swap-out {
+    to {
+      opacity: 0;
+      filter: blur(#{rem(4px)});
+      transform: translateY(#{rem(-4px)});
+    }
+  }
+
+  // Status text shimmer (#562): the light band travels across the letters (`shimmer-text`).
+  @keyframes ui-shimmer-text {
+    from {
+      background-position: 100% 0;
+    }
+
+    to {
+      background-position: -100% 0;
+    }
+  }
+
+  // Error shake (#562): a field whose error appears on submit. Replayed by `uiShake`.
+  @keyframes ui-shake {
+    0%,
+    100% {
+      transform: none;
+    }
+
+    20% {
+      transform: translateX(#{rem(-6px)});
+    }
+
+    45% {
+      transform: translateX(#{rem(5px)});
+    }
+
+    65% {
+      transform: translateX(#{rem(-3px)});
+    }
+
+    85% {
+      transform: translateX(#{rem(2px)});
+    }
+  }
+
+  // Clear dissolve (#564): one cleared word blurs, fades and rises away (`ui-input`).
+  @keyframes ui-dissolve-word {
+    to {
+      opacity: 0;
+      filter: blur(#{rem(6px)});
+      transform: translateY(#{rem(-8px)});
+    }
+  }
 }
 
 // The sage ring of a landed card is the one moment longer than 320 ms (Motion principle 2).
@@ -420,5 +628,37 @@ $land-ring-duration: 1.8s;
     animation:
       ui-reveal var(--duration-base) var(--ease-out) var(--ui-land-delay, 0s) both,
       ui-land-ring $land-ring-duration var(--ease-out) var(--ui-land-delay, 0s) both;
+  }
+}
+
+// Error shake (#562): 320 ms `ease-out`, once. `uiShake` adds `.ui-shake` (emitted in `global.scss`)
+// for one run per counter step. Reduced motion: no movement, the error border alone.
+@mixin shake {
+  animation: ui-shake var(--duration-slow) var(--ease-out);
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+// Status text shimmer (#562): a loader status line («Fetching preview…», Ask «Searching…») carries
+// a soft light band that sweeps across the letters (`background-clip: text`, `$rest` → `$peak` →
+// `$rest`), looping at the shared shimmer duration. `$rest` is the colour of the text at rest and
+// must keep 4.5:1 on the surface behind it (`--text-muted` on a plain page; on a tinted pill pass a
+// stronger one). Reduced motion (device or Settings › Animations): static `$rest`, no clip, no loop.
+@mixin shimmer-text($rest: var(--text-muted), $peak: var(--text)) {
+  color: $rest;
+
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    background: linear-gradient(90deg, $rest 30%, $peak 50%, $rest 70%) 100% 0 / 200% 100% no-repeat;
+    background-clip: text;
+    animation: ui-shimmer-text $shimmer-duration var(--ease-in-out) infinite;
+    -webkit-text-fill-color: transparent;
+
+    @include reduced-motion {
+      background: none;
+      animation: none;
+      -webkit-text-fill-color: currentcolor;
+    }
   }
 }

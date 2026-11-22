@@ -21,6 +21,7 @@ import {
 import { UI_FOCUS_TARGET } from '../../directives/focus-target/models/ui-focus-target.const';
 import type { UiFocusTarget } from '../../directives/focus-target/models/ui-focus-target.interface';
 import { IconComponent } from '../icon/icon.component';
+import { IconSwapComponent } from '../icon-swap/icon-swap.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
@@ -58,7 +59,14 @@ import { BUTTON_TYPE } from './models/button-type.const';
  */
 @Component({
   selector: 'ui-button',
-  imports: [IconComponent, NgTemplateOutlet, RippleDirective, SpinnerComponent, TooltipDirective],
+  imports: [
+    IconComponent,
+    IconSwapComponent,
+    NgTemplateOutlet,
+    RippleDirective,
+    SpinnerComponent,
+    TooltipDirective,
+  ],
   providers: [{ provide: UI_FOCUS_TARGET, useExisting: ButtonComponent }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

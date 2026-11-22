@@ -154,8 +154,9 @@ describe('PopupAiFillService', () => {
     expect(ai.folderMarked()).toBe(true);
     expect(ai.tagsMarked()).toBe(true);
     expect(ai.chips()).toEqual([]);
-    // The button stays (AI is on); a second press after a fill does nothing.
-    expect(ai.buttonShown()).toBe(true);
+    // The button goes once the fill applied: a second press would do nothing, and its row is the
+    // room the AI tags need in the fixed popup.
+    expect(ai.buttonShown()).toBe(false);
   });
 
   it('never replaces what the user chose', async () => {

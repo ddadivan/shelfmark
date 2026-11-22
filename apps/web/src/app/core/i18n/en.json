@@ -591,7 +591,7 @@
     },
     "extension": {
       "title": "Browser extension",
-      "body": "The Shelfmark extension for Chrome, Edge, Brave and Arc works only when you click its button or press its shortcut, never in the background. It then sends Shelfmark the address of that one tab, to check whether you saved it already, and saves its address and title, with the folder, tags and note you pick, only when you press Save. It never sees your history or the other sites you visit. If you click “Fill in with AI” and AI is on in your account, it also sends Shelfmark that address and title, and your note when AI may read notes, to get AI suggestions, handled under the same AI terms as in the app.",
+      "body": "The Shelfmark extension for Chrome, Edge, Brave and Arc works only when you click its button or press its shortcut, never in the background. It then sends Shelfmark the address of that one tab, to check whether you saved it already, and saves its address and title, with the folder, tags and note you pick, only when you press Save. It never sees your history or the other sites you visit. If you click “Fill in with AI” and AI is on in your account, it also sends Shelfmark that address and title, and your note when AI may read notes, to get AI suggestions, handled under the same AI terms as in the app. If you switch to “All tabs”, your browser asks once for the optional tabs permission; switching then checks the addresses of your open tabs (without any #fragment) against your library, to mark the ones you saved already. Nothing is saved until you press Save, and only the tabs you tick are saved or sent for AI suggestions.",
       "access": "It uses your Shelfmark sign-in in that browser and cannot read the sign-in cookie itself. It can reach Shelfmark only, and keeps just the folders you saved to most recently on your device, to offer them next time."
     },
     "third": {
@@ -3130,6 +3130,20 @@
     "release": "Shelfmark {{version}}",
     "home": "Shelfmark, home",
     "items": {
+      "relatedInPreview": {
+        "title": "Related links, next to what you read",
+        "text": "The preview of a link has a Related button: up to five links from your shelf that are close in meaning, with what they share. Pick one and it opens right there. It needs Search by meaning in Settings › AI.",
+        "alt": "The link preview of a guide with its Related list open: five links close in meaning."
+      },
+      "motionBatch": {
+        "text": "Livelier motion: a dragged link sways and flies into its folder, the highlight glides between rows, checks draw themselves and changed numbers roll."
+      },
+      "extensionTabs": {
+        "text": "The browser extension saves several open tabs at once, with one folder and tags for all (version 1.2.0, rolling out in the Chrome Web Store)."
+      },
+      "phoneTapPreview": {
+        "text": "On a phone, tapping a card or row opens its preview, as a click does on a computer."
+      },
       "sideBySide": {
         "title": "Side by side",
         "text": "Open two feeds next to each other and drag links from one to the other.",
@@ -3736,6 +3750,7 @@
     },
     "related": {
       "title": "Related on your shelf",
+      "button": "Related · {{count}}",
       "why": "Close to: {{reasons}}",
       "show": "Show related",
       "folders": "Related folders"

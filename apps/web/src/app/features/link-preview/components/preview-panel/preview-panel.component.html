@@ -2,7 +2,12 @@
   class="preview-panel"
   [attr.aria-label]="'preview.region' | transloco: { title: preview.link()?.title ?? '' }"
 >
-  <div class="preview-panel__bar" role="toolbar" [attr.aria-label]="'preview.toolbar' | transloco">
+  <div
+    class="preview-panel__bar"
+    role="toolbar"
+    uiTooltipGroup
+    [attr.aria-label]="'preview.toolbar' | transloco"
+  >
     <ui-button
       variant="ghost"
       size="sm"
@@ -35,6 +40,7 @@
         </span>
       </div>
       <span class="preview-panel__sep" aria-hidden="true"></span>
+      <app-related-links small [linkId]="link.id" (chosen)="preview.open($event)" />
       <ui-button
         class="preview-panel__star"
         [class.preview-panel__star--on]="link.isFavorite"
@@ -62,7 +68,7 @@
         variant="ghost"
         size="sm"
         iconOnly
-        iconLeft="copy"
+        [iconLeft]="preview.copied() ? 'check' : 'copy'"
         [ariaLabel]="'preview.copy' | transloco"
         [uiTooltip]="'preview.copy' | transloco"
         (click)="preview.copyLink()"

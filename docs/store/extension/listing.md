@@ -21,8 +21,9 @@ Texts to paste into the Chrome Web Store developer dashboard (#445), as submitte
 > - Add tags and a short note if you like, then press Save (or just Enter).
 > - With AI on in your account, press Fill in with AI: the title, folder and tags are filled in for you, and you can change anything.
 > - Already saved it? Shelfmark tells you when, and where, instead of making a copy.
+> - Many tabs open? Switch to All tabs, tick the ones you want and save them in one go; with AI on, Sort with AI gives each its own folder and tags. Close the saved tabs afterwards if you like.
 >
-> The extension reads a tab only when you click its button or press its shortcut, never in the background. It then sends the address of that one tab to your Shelfmark library to check whether you saved it already; the page is saved only when you press Save. If you click Fill in with AI and AI is on in your account, that address and title (and your note, if AI may read notes) are also sent to Shelfmark for AI suggestions. It can talk to Shelfmark only.
+> The extension reads a tab only when you click its button or press its shortcut, never in the background. It then sends the address of that one tab to your Shelfmark library to check whether you saved it already; the page is saved only when you press Save. If you switch to All tabs, the browser asks once for the optional tabs permission; switching to it checks the addresses of your open tabs (without any #fragment) against your library, to mark the ones you already saved; nothing is saved until you press Save, and only the tabs you tick are saved or sent for AI suggestions. If you click Fill in with AI and AI is on in your account, that address and title (and your note, if AI may read notes) are also sent to Shelfmark for AI suggestions. It can talk to Shelfmark only.
 >
 > You need a Shelfmark account (free, sign in with Google or GitHub) at https://shelfmark-app.vercel.app. Sign in once in the browser and the extension uses that sign-in.
 >
@@ -54,14 +55,15 @@ Texts to paste into the Chrome Web Store developer dashboard (#445), as submitte
 
 | Permission | Justification to paste |
 | --- | --- |
-| `activeTab` | The popup calls `chrome.tabs.query({ active: true, currentWindow: true })` to read the address and title of the tab the user is on, only at the moment they click the extension button or press its shortcut, so that page can be saved. Without `activeTab` the tab comes back without its URL and title. No access to other tabs, history or page content; no `tabs` permission, no content scripts. |
+| `activeTab` | The popup calls `chrome.tabs.query({ active: true, currentWindow: true })` to read the address and title of the tab the user is on, only at the moment they click the extension button or press its shortcut, so that page can be saved. Without `activeTab` the tab comes back without its URL and title. No access to other tabs, history or page content through this permission; no content scripts. |
+| `tabs` (optional, requested at run time) | Only when the user switches the popup to All tabs, Chrome asks for it once. The popup then calls `chrome.tabs.query({ currentWindow: true })` to list the addresses and titles of the open tabs of that window, so the user can tick the ones to save, and `chrome.tabs.remove` to close exactly the tabs that were saved when the user presses Close saved tabs. On the switch, the addresses of the listed tabs (without the #fragment) go to the user's own library for a duplicate check, the same check the popup makes for one page; titles stay in the browser, and only the ticked tabs are saved or sent for AI, on Save or Sort with AI. It is declined without any loss: the popup keeps saving the current page. |
 | Host permission `https://shelfmark-app.vercel.app/api/*` | The extension's only server: it loads the user's folders, tags and rules, checks whether the page is already saved and saves it, using the user's existing Shelfmark sign-in in the browser. It cannot reach any other site. |
 
 **Remote code:** No, I am not using remote code. (All scripts are in the package; the Content Security Policy is `script-src 'self'`.)
 
 **Data usage.** Tick only **Web history**, and nothing else:
 
-- **Web history**: yes. When the user opens the popup, the address of the current tab goes to their own Shelfmark library to check whether it is saved already, and its address and title are stored there when they press Save. If they click Fill in with AI and AI is on in their account, the address and title (and the note, when they let AI read notes) are also sent to Shelfmark for AI suggestions (processed under its AI terms). Nothing else of their browsing is read or sent.
+- **Web history**: yes. When the user opens the popup, the address of the current tab goes to their own Shelfmark library to check whether it is saved already, and its address and title are stored there when they press Save. If they click Fill in with AI and AI is on in their account, the address and title (and the note, when they let AI read notes) are also sent to Shelfmark for AI suggestions (processed under its AI terms). With All tabs (optional `tabs` permission), the addresses of the listed tabs (without the #fragment) go to their own library for the duplicate check when they switch to it, and the addresses and titles of the ticked tabs, and only those, are saved or sent for AI the same way, on Save or Sort with AI. Nothing else of their browsing is read or sent.
 - **Website content**: no. The extension never reads the page itself (no content scripts).
 - **Personally identifiable information, health, financial, authentication, personal communications, location, user activity**: no.
 

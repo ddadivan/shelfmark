@@ -120,6 +120,7 @@ export const WithHint: Story = {
   args: { hint: 'Title and preview fill in by themselves' },
 };
 
+/** Press the x: the text dissolves word by word (blur, fade, rise 4px) while the field is empty and focused at once. Reduced motion: instant. */
 export const Clearable: Story = {
   args: { clearable: true, clearLabel: 'Clear link', value: 'https://angular.dev' },
 };

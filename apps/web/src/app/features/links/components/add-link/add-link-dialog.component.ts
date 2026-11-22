@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { LINK_LIMIT } from '@shelfmark/contracts';
 import {
+  AutoHeightDirective,
   ButtonComponent,
   CheckboxComponent,
   ChipComponent,
@@ -14,9 +15,11 @@ import {
   NoticeComponent,
   NOTICE_KIND,
   SelectComponent,
+  ShakeDirective,
   SkeletonComponent,
   TagInputComponent,
   TextareaComponent,
+  TextSwapComponent,
   UiDialogRef,
   BUTTON_VARIANT,
   BUTTON_TYPE,
@@ -50,7 +53,6 @@ import { AddLinkAiFillService } from '../../services/add-link-ai-fill.service';
 import { AddLinkAiFillComponent } from '../add-link-ai/add-link-ai-fill.component';
 import { AddLinkAiFolderComponent } from '../add-link-ai/add-link-ai-folder.component';
 import { AddLinkAiTagsComponent } from '../add-link-ai/add-link-ai-tags.component';
-import { RelatedLinksComponent } from '../../../ai/components/related-links/related-links.component';
 
 /**
  * Content of the add-link dialog (`openAddLinkDialog()`): paste a URL, the preview fills the
@@ -73,10 +75,10 @@ import { RelatedLinksComponent } from '../../../ai/components/related-links/rela
 @Component({
   selector: 'app-add-link-dialog',
   imports: [
+    AutoHeightDirective,
     AddLinkAiFillComponent,
     AddLinkAiFolderComponent,
     AddLinkAiTagsComponent,
-    RelatedLinksComponent,
     ButtonComponent,
     CheckboxComponent,
     ChipComponent,
@@ -89,10 +91,12 @@ import { RelatedLinksComponent } from '../../../ai/components/related-links/rela
     NoticeComponent,
     PasteManyListComponent,
     SelectComponent,
+    ShakeDirective,
     SkeletonComponent,
     SummaryFieldComponent,
     TagInputComponent,
     TextareaComponent,
+    TextSwapComponent,
     TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -223,6 +227,16 @@ export class AddLinkDialogComponent {
     ) {
       event.preventDefault();
       (event.currentTarget as HTMLFormElement).requestSubmit();
+    }
+  }
+
+  /** Bumped when a submit finds the address invalid: the field shakes once (#562). */
+  protected readonly urlShakes = signal(0);
+
+  /** A submit that fails validation shakes the address field; typing never does. */
+  protected onFormSubmit(): void {
+    if (this.form.url().invalid()) {
+      this.urlShakes.update((count) => count + 1);
     }
   }
 

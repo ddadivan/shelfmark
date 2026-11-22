@@ -604,7 +604,7 @@
     },
     "extension": {
       "title": "Extensão do navegador",
-      "body": "A extensão do Shelfmark para Chrome, Edge, Brave e Arc só age quando você clica no botão dela ou usa o atalho, nunca em segundo plano. Ela então envia ao Shelfmark o endereço daquela guia, para verificar se você já a salvou, e só salva o endereço e o título, com a pasta, as tags e a nota escolhidas, quando você toca em Salvar. Ela nunca vê seu histórico nem os outros sites que você visita. Se você clicar em “Preencher com IA” e a IA estiver ativada na sua conta, ela também envia ao Shelfmark esse endereço e o título, e a sua nota se a IA puder ler as notas, para obter sugestões da IA, tratadas nos mesmos termos de IA do aplicativo.",
+      "body": "A extensão do Shelfmark para Chrome, Edge, Brave e Arc só age quando você clica no botão dela ou usa o atalho, nunca em segundo plano. Ela então envia ao Shelfmark o endereço daquela guia, para verificar se você já a salvou, e só salva o endereço e o título, com a pasta, as tags e a nota escolhidas, quando você toca em Salvar. Ela nunca vê seu histórico nem os outros sites que você visita. Se você clicar em “Preencher com IA” e a IA estiver ativada na sua conta, ela também envia ao Shelfmark esse endereço e o título, e a sua nota se a IA puder ler as notas, para obter sugestões da IA, tratadas nos mesmos termos de IA do aplicativo. Se você mudar para “Todas as abas”, o navegador pede uma vez a permissão opcional de abas; ao mudar, os endereços das suas abas abertas (sem #fragmento) são comparados com a sua biblioteca, para marcar as que você já salvou. Nada é salvo até você tocar em Salvar, e só as abas que você marcar são salvas ou enviadas para sugestões da IA.",
       "access": "Ela usa o seu login do Shelfmark nesse navegador e não consegue ler o cookie de login. Só acessa o Shelfmark e guarda no seu dispositivo apenas as pastas usadas recentemente, para sugeri-las na próxima vez."
     },
     "third": {
@@ -3215,6 +3215,20 @@
     "release": "Shelfmark {{version}}",
     "home": "Shelfmark, início",
     "items": {
+      "relatedInPreview": {
+        "title": "Links relacionados ao lado do que você lê",
+        "text": "A pré-visualização de um link tem um botão Relacionados: até cinco links da sua estante próximos em significado, com o que têm em comum. Escolha um e ele abre ali mesmo. Precisa da busca por significado em Configurações › IA.",
+        "alt": "A pré-visualização de um guia com a lista Relacionados aberta: cinco links próximos em significado."
+      },
+      "motionBatch": {
+        "text": "Movimento mais vivo: um link arrastado balança e voa para a pasta, o destaque desliza entre as linhas, as marcas se desenham e os números que mudam rolam."
+      },
+      "extensionTabs": {
+        "text": "A extensão do navegador salva várias abas abertas de uma vez, com uma pasta e tags para todas (versão 1.2.0, chegando à Chrome Web Store)."
+      },
+      "phoneTapPreview": {
+        "text": "No celular, tocar num cartão ou numa linha abre a pré-visualização, como um clique no computador."
+      },
       "sideBySide": {
         "title": "Lado a lado",
         "text": "Abra duas listas uma ao lado da outra e arraste links de uma para a outra.",
@@ -3834,6 +3848,7 @@
     },
     "related": {
       "title": "Relacionados na sua estante",
+      "button": "Relacionados · {{count}}",
       "why": "Perto de: {{reasons}}",
       "show": "Mostrar relacionados",
       "folders": "Pastas relacionadas"

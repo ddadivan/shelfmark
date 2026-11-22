@@ -7,9 +7,44 @@ import type { ChangelogRelease } from './changelog-release.interface';
  * into `main` adds a patch entry with one-line fixes. Media rules (PROJECT.md 9.3): improvements
  * and fixes are one line of text; features get a short text and, when they have a `priority`, a
  * screenshot per theme (`public/media/whats-new/<version>/`, made by the generator, no video).
- * The 2.5.0 entry brings the link preview and folding sidebar sections; the 2.4.1 hotfix hides the focus ring after a click or tap; the 2.4.0 entry brings import, views by hand or in words and ten link kinds; the 2.3.0 entry makes Ask a chat; the 2.2.0 entry lists the AI release; the 2.1.0 entry lists the changes since 2.0.0; hotfixes 2.0.1 to 2.0.8 are not repeated.
+ * The 2.6.0 entry brings related links in the preview, livelier motion and saving open tabs from the extension; the 2.5.0 entry brings the link preview and folding sidebar sections; the 2.4.1 hotfix hides the focus ring after a click or tap; the 2.4.0 entry brings import, views by hand or in words and ten link kinds; the 2.3.0 entry makes Ask a chat; the 2.2.0 entry lists the AI release; the 2.1.0 entry lists the changes since 2.0.0; hotfixes 2.0.1 to 2.0.8 are not repeated.
  */
 export const CHANGELOG: readonly ChangelogRelease[] = [
+  {
+    version: '2.6.0',
+    date: '2026-11-22',
+    items: [
+      {
+        kind: CHANGELOG_ITEM_KIND.Feature,
+        id: 'relatedInPreview',
+        titleKey: 'changelog.items.relatedInPreview.title',
+        textKey: 'changelog.items.relatedInPreview.text',
+        priority: 1,
+        image: {
+          light: '/media/whats-new/2.6.0/related-links-light.webp',
+          dark: '/media/whats-new/2.6.0/related-links-dark.webp',
+          width: 2000,
+          height: 1250,
+          altKey: 'changelog.items.relatedInPreview.alt',
+        },
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'motionBatch',
+        textKey: 'changelog.items.motionBatch.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Improvement,
+        id: 'extensionTabs',
+        textKey: 'changelog.items.extensionTabs.text',
+      },
+      {
+        kind: CHANGELOG_ITEM_KIND.Fix,
+        id: 'phoneTapPreview',
+        textKey: 'changelog.items.phoneTapPreview.text',
+      },
+    ],
+  },
   {
     version: '2.5.0',
     date: '2026-11-21',

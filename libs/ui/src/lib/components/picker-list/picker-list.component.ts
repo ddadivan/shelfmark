@@ -1,4 +1,5 @@
 import { Listbox, Option } from '@angular/aria/listbox';
+import { FluidHoverDirective } from '../../directives/fluid-hover/fluid-hover.directive';
 import {
   afterNextRender,
   afterRenderEffect,
@@ -49,7 +50,14 @@ const RECENT_PREFIX = 'recent:';
  */
 @Component({
   selector: 'ui-picker-list',
-  imports: [FolderIconComponent, IconComponent, Listbox, Option, RippleDirective],
+  imports: [
+    FluidHoverDirective,
+    FolderIconComponent,
+    IconComponent,
+    Listbox,
+    Option,
+    RippleDirective,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ui-picker-list' },
   templateUrl: './picker-list.component.html',

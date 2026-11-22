@@ -20,6 +20,8 @@ export class TooltipPanelComponent {
   /** The side the tooltip really sits on (after a flip); decides which edge keeps the gap. */
   readonly side = input<TooltipPosition>(OVERLAY_SIDE.Bottom);
   readonly open = input(true);
+  /** Opens inside a tooltip group: it travels from the previous panel, no pop-in. */
+  readonly travel = input(false);
   /** The pointer entered or left the tooltip (WCAG 1.4.13: it stays open while hovered). */
   readonly hovered = output<boolean>();
 }

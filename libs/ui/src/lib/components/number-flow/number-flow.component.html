@@ -1,0 +1,15 @@
+<span class="ui-number-flow__text">{{ display() }}</span>
+<span class="ui-number-flow__digits" aria-hidden="true">
+  @for (slot of slots(); track slot.pos) {
+    <span class="ui-number-flow__slot">
+      @for (char of [slot.char]; track char) {
+        <span
+          class="ui-number-flow__char"
+          [attr.data-char]="char"
+          [animate.enter]="enterClass()"
+          animate.leave="ui-number-flow__char--leave"
+        ></span>
+      }
+    </span>
+  }
+</span>

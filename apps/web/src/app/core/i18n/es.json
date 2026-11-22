@@ -604,7 +604,7 @@
     },
     "extension": {
       "title": "Extensión del navegador",
-      "body": "La extensión de Shelfmark para Chrome, Edge, Brave y Arc solo actúa cuando pulsas su botón o su atajo, nunca en segundo plano. Entonces envía a Shelfmark la dirección de esa pestaña, para comprobar si ya la guardaste, y solo guarda su dirección y su título, con la carpeta, las etiquetas y la nota que elijas, cuando pulsas Guardar. Nunca ve tu historial ni los demás sitios que visitas. Si haces clic en «Rellenar con IA» y la IA está activada en tu cuenta, también envía a Shelfmark esa dirección y el título, y tu nota si la IA puede leer las notas, para obtener sugerencias de la IA, tratadas con las mismas condiciones de IA que en la aplicación.",
+      "body": "La extensión de Shelfmark para Chrome, Edge, Brave y Arc solo actúa cuando pulsas su botón o su atajo, nunca en segundo plano. Entonces envía a Shelfmark la dirección de esa pestaña, para comprobar si ya la guardaste, y solo guarda su dirección y su título, con la carpeta, las etiquetas y la nota que elijas, cuando pulsas Guardar. Nunca ve tu historial ni los demás sitios que visitas. Si haces clic en «Rellenar con IA» y la IA está activada en tu cuenta, también envía a Shelfmark esa dirección y el título, y tu nota si la IA puede leer las notas, para obtener sugerencias de la IA, tratadas con las mismas condiciones de IA que en la aplicación. Si cambias a «Todas las pestañas», el navegador te pide una vez el permiso opcional de pestañas; al cambiar, se comparan las direcciones de tus pestañas abiertas (sin #fragmento) con tu biblioteca, para marcar las que ya guardaste. No se guarda nada hasta que pulsas Guardar, y solo las pestañas que marques se guardan o se envían para sugerencias de la IA.",
       "access": "Usa tu sesión de Shelfmark en ese navegador y no puede leer la cookie de sesión. Solo puede conectarse a Shelfmark y guarda en tu dispositivo únicamente las carpetas que usaste hace poco, para ofrecértelas la próxima vez."
     },
     "third": {
@@ -3215,6 +3215,20 @@
     "release": "Shelfmark {{version}}",
     "home": "Shelfmark, inicio",
     "items": {
+      "relatedInPreview": {
+        "title": "Enlaces relacionados junto a lo que lees",
+        "text": "La vista previa de un enlace tiene un botón Similares: hasta cinco enlaces de tu estantería cercanos en significado y lo que comparten. Elige uno y se abre ahí mismo. Necesita la búsqueda por significado en Ajustes › IA.",
+        "alt": "La vista previa de una guía con su lista Similares abierta: cinco enlaces cercanos en significado."
+      },
+      "motionBatch": {
+        "text": "Movimiento más vivo: un enlace arrastrado se balancea y vuela a su carpeta, el resaltado se desliza entre filas, las marcas se dibujan solas y los números que cambian ruedan."
+      },
+      "extensionTabs": {
+        "text": "La extensión del navegador guarda varias pestañas abiertas a la vez, con una carpeta y etiquetas para todas (versión 1.2.0, llegando a la Chrome Web Store)."
+      },
+      "phoneTapPreview": {
+        "text": "En el teléfono, tocar una tarjeta o fila abre su vista previa, como un clic en el ordenador."
+      },
       "sideBySide": {
         "title": "Lado a lado",
         "text": "Abre dos listas una junto a otra y arrastra enlaces de una a la otra.",
@@ -3834,6 +3848,7 @@
     },
     "related": {
       "title": "Relacionados en tu estantería",
+      "button": "Similares · {{count}}",
       "why": "Cerca de: {{reasons}}",
       "show": "Mostrar relacionados",
       "folders": "Carpetas relacionadas"

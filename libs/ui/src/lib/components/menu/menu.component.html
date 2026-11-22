@@ -1,6 +1,7 @@
 @if (isOpen()) {
   <div
     class="ui-menu__surface"
+    [uiFluidHover]="'.ui-menu-item'"
     [class.ui-menu__surface--point]="atPoint()"
     animate.enter="ui-menu--enter"
     animate.leave="ui-menu--leave"

@@ -1,0 +1,25 @@
+@use '../../../styles/ui' as *;
+
+// Old and new text share one grid cell, so the box is as wide as the wider of the two only while
+// they overlap and never grows taller.
+:host {
+  display: inline-grid;
+  justify-items: start;
+}
+
+.ui-text-swap__text {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+.ui-text-swap--enter {
+  @include enter(swap);
+}
+
+.ui-text-swap--leave {
+  @include leave(swap);
+}
+
+.ui-text-swap__text--shimmer {
+  @include shimmer-text(var(--ui-text-swap-rest, var(--text-muted)), var(--text));
+}

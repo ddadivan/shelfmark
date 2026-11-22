@@ -159,7 +159,7 @@
       <span class="sidebar__menu-line">
         {{ 'whatsNew.entry' | transloco }}
         @if (whatsNewPending()) {
-          <ui-badge [tone]="BADGE_TONE.Accent">{{ 'whatsNew.unseen' | transloco }}</ui-badge>
+          <ui-badge [tone]="BADGE_TONE.Accent" pop>{{ 'whatsNew.unseen' | transloco }}</ui-badge>
         }
       </span>
     </ui-menu-item>

@@ -116,7 +116,6 @@ describe('ToastService', () => {
 
   it.each([
     [TOAST_KIND.Info, 'info'],
-    [TOAST_KIND.Success, 'check'],
     [TOAST_KIND.Danger, 'error'],
     [TOAST_KIND.Warn, 'warning'],
     [TOAST_KIND.Saved, 'saved-link'],
@@ -128,6 +127,14 @@ describe('ToastService', () => {
     const toast = toasts()[0];
     expect(toast.querySelector('use')?.getAttribute('href')).toContain(`#sm-${icon}`);
     expect(toast.querySelector('.ui-toast__icon, .ui-toast__thumb, ui-folder-icon')).not.toBeNull();
+  });
+
+  it('the success kind draws its check as a stroke that draws itself', () => {
+    const service = setup();
+    service.show({ title: 'x', kind: TOAST_KIND.Success });
+    render();
+    const mark = toasts()[0].querySelector('.ui-toast__icon ui-check-mark');
+    expect(mark?.classList.contains('ui-check-mark--draw')).toBe(true);
   });
 
   it('closes after 4 s by default', () => {
