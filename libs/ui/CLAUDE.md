@@ -22,7 +22,7 @@ libs/ui/
     testing/axe.ts       axe-core helper for specs (internal, with scss.ts; not exported)
     lib/                 by kind (ADR 0042, #318); each folder: files, spec, stories, index.ts, models/
       components/<name>/ one component per folder; sub-components in sub-folders (components/menu/menu-item/)
-      directives/<name>/ ripple, long-press, pointer-shadow, tooltip (panel in tooltip/tooltip-panel/), menu-trigger, focus-target
+      directives/<name>/ ripple, long-press, pointer-shadow, fluid-hover, tooltip (panel in tooltip/tooltip-panel/), menu-trigger, focus-target
       services/<name>/   dialog, drawer, toast (split from their components), overlay, motion
       utils/<name>/      pure functions shared beyond one component: media, platform (`isMacPlatform()`: `navigator.userAgentData.platform`, then `navigator.platform`, against `MAC_PLATFORM`; the toast shortcut, the app's shortcut caps and the import help), loader-timing, colour-contrast, custom-accent, reorder-drop-line, sheet-drag (`SheetDragTracker`, `shouldCloseSheet`, `sheetVelocity`: the dialog sheets and the emoji picker sheet), spring (`stepSpring`, `springAtRest`, `PointerVelocity`, `DragWobble`: the drag preview physics, #562)
       models/<domain>/   constants and types with no component: keyboard, heading, theme
@@ -415,3 +415,7 @@ npx nx test ui --coverage
 npx nx run-many -t lint typecheck test build -p ui
 npm run lint:styles
 ```
+
+## Fluid hover (#562)
+
+- **`[uiFluidHover]="'<row selector>'"`** on a list container (`ui-tree` root list, `ui-menu` surface, `ui-picker-list` listbox): one `aria-hidden` highlight span (global `fluid-hover` mixin, `z-index: -1` in the container's isolated stacking context: under rows, content and ripple) glides between rows with `transform` + size (200 ms `ease-out`, fade 120 ms). Mouse only (`pointerType` `mouse`, no buttons held, `(hover: hover)`); first entry and `ReducedMotion` place it at once and only fade. Positions are in the container's scroll content; resize, `transitionend` re-measure. The container gets `ui-fluid-hover--on`, which sets `--ui-row-hover: transparent`; row hover backgrounds read `var(--ui-row-hover, var(--surface-hover))` (new rows must do the same). `aria-disabled` rows are skipped; keyboard focus and active styles stay the rows' own.

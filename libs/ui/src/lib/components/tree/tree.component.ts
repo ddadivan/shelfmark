@@ -19,6 +19,7 @@ import {
   viewChildren,
 } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
+import { FluidHoverDirective } from '../../directives/fluid-hover/fluid-hover.directive';
 import { FolderColourDirective } from '../../directives/folder-colour/folder-colour.directive';
 import { FolderIconComponent } from '../folder-icon/folder-icon.component';
 import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
@@ -64,6 +65,7 @@ import { indexTreeNodes } from './tree-nodes';
   selector: 'ui-tree',
   imports: [
     ButtonComponent,
+    FluidHoverDirective,
     FolderColourDirective,
     FolderIconComponent,
     IconComponent,

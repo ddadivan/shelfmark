@@ -53,7 +53,7 @@
   @include touch-target;
 
   @include hover {
-    background: var(--surface-hover);
+    background: var(--ui-row-hover, var(--surface-hover));
 
     .ui-tree__more {
       opacity: 1;

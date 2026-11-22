@@ -19,6 +19,7 @@ import type { Subscription } from 'rxjs';
 import type { ConnectedOverlay } from '../../services/overlay/connected-overlay';
 import type { OverlayPoint } from '../../services/overlay/models/overlay-point.interface';
 import { UiOverlay } from '../../services/overlay/overlay.service';
+import { FluidHoverDirective } from '../../directives/fluid-hover/fluid-hover.directive';
 import { MenuItemComponent } from './menu-item/menu-item.component';
 import { menuPositions, pointPositions } from './menu-positions';
 import type { MenuAlign } from './models/menu-align.type';
@@ -51,6 +52,7 @@ function isElement(origin: HTMLElement | OverlayPoint): origin is HTMLElement {
  */
 @Component({
   selector: 'ui-menu',
+  imports: [FluidHoverDirective],
   hostDirectives: [{ directive: Menu, inputs: ['typeaheadDelay'] }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
