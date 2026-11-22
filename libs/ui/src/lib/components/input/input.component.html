@@ -48,9 +48,14 @@
     />
     @if (dissolveWords().length > 0) {
       <!-- The cleared text, dissolving word by word on top of the (already empty) field. -->
-      <span class="ui-input__dissolve" aria-hidden="true" (animationend)="onDissolveEnd($event)">
+      <span
+        class="ui-input__dissolve"
+        aria-hidden="true"
+        [style.--ui-dissolve-step.ms]="dissolveStep()"
+        (animationend)="onDissolveEnd($event)"
+      >
         @for (word of dissolveWords(); track $index) {
-          <span class="ui-input__word">{{ word }}</span>
+          <span class="ui-input__word" [style.--ui-dissolve-i]="$index">{{ word }}</span>
         }
       </span>
     }

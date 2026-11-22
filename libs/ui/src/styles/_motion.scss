@@ -601,6 +601,15 @@ $leave-presets: (
       transform: translateX(#{rem(2px)});
     }
   }
+
+  // Clear dissolve (#564): one cleared word blurs, fades and rises away (`ui-input`).
+  @keyframes ui-dissolve-word {
+    to {
+      opacity: 0;
+      filter: blur(#{rem(6px)});
+      transform: translateY(#{rem(-8px)});
+    }
+  }
 }
 
 // The sage ring of a landed card is the one moment longer than 320 ms (Motion principle 2).
