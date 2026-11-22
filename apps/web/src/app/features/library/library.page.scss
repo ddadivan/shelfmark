@@ -206,32 +206,6 @@
       animation: none;
     }
   }
-
-  // `--stagger` (#564, Motion «First load stagger»): the first list of an app load. Each card or
-  // row rises in one step after the one before (`--library-stagger-step`, capped by the feed
-  // service at 8, so the rest come in with the eighth). Fade and an 8px rise, `duration-base`
-  // `ease-out`, a step of 3/4 `duration-instant` (60 ms). Reduced motion and the Animations
-  // setting: none, the list simply shows.
-  &--stagger > li {
-    animation: library-stagger-in var(--duration-base) var(--ease-out) both;
-    animation-delay: calc(var(--duration-instant) * 0.75 * var(--library-stagger-step, 0));
-
-    @include reduced-motion {
-      animation: none;
-    }
-  }
-}
-
-@keyframes library-stagger-in {
-  from {
-    opacity: 0;
-    transform: translateY(rem(8px));
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
 }
 
 @keyframes library-arrive {
