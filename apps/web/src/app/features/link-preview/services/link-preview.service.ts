@@ -31,6 +31,9 @@ import { LinkPreviewRoute } from './link-preview-route.service';
  * body shows (frame, player or blocked), ↑ / ↓ through the feed, the toolbar actions, the list
  * width and "wider". Opening a link records an open, once per link while it stays open.
  */
+/** How long the copy button keeps its check after a copy. */
+const COPIED_CHECK_MS = 1600;
+
 @Service({ autoProvided: false })
 export class LinkPreviewService {
   private readonly route = inject(LinkPreviewRoute);
@@ -100,6 +103,9 @@ export class LinkPreviewService {
 
   /** "Wider preview": the list hides until toggled back (session only). */
   readonly listHidden = signal(false);
+  /** True for a moment after the link was copied: the copy button shows a check (icon swap). */
+  readonly copied = signal(false);
+  private copiedTimer: ReturnType<typeof setTimeout> | undefined;
   readonly listWidth = signal(this.readWidth());
   /** Width of the whole split (list, handle and panel), measured by the page; `null` until then. */
   private readonly splitWidth = signal<number | null>(null);
@@ -120,7 +126,10 @@ export class LinkPreviewService {
       const link = this.link();
       untracked(() => this.follow(id, link));
     });
-    inject(DestroyRef).onDestroy(() => this.recorded.clear());
+    inject(DestroyRef).onDestroy(() => {
+      this.recorded.clear();
+      clearTimeout(this.copiedTimer);
+    });
   }
 
   async open(link: Pick<LinkResponse, 'id'>): Promise<void> {
@@ -169,6 +178,11 @@ export class LinkPreviewService {
       return;
     }
     const copied = await copyText(this.doc, link.url);
+    if (copied) {
+      this.copied.set(true);
+      clearTimeout(this.copiedTimer);
+      this.copiedTimer = setTimeout(() => this.copied.set(false), COPIED_CHECK_MS);
+    }
     this.toasts.show({
       kind: copied ? TOAST_KIND.Success : TOAST_KIND.Danger,
       title: this.transloco.translate(copied ? 'preview.copied' : 'preview.copyFailed'),

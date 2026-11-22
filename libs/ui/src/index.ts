@@ -25,6 +25,7 @@ export * from './lib/components/folder-icon';
 export * from './lib/components/highlight';
 export * from './lib/components/history-row';
 export * from './lib/components/icon';
+export * from './lib/components/icon-swap';
 export * from './lib/components/illustration';
 export * from './lib/components/input';
 export * from './lib/components/list-item';

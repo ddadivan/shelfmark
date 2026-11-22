@@ -134,7 +134,8 @@ a.ui-button {
   background: var(--ui-button-ai-bg, var(--ai-fill));
   border-color: var(--ui-button-ai-border, transparent);
 
-  ui-icon {
+  ui-icon,
+  ui-icon-swap {
     color: var(--ui-button-ai-icon, var(--ai));
   }
 
@@ -154,7 +155,8 @@ a.ui-button {
 .ui-button--ai-ghost {
   --ui-icon-size: var(--icon-size-md);
 
-  ui-icon {
+  ui-icon,
+  ui-icon-swap {
     color: var(--ai);
   }
 

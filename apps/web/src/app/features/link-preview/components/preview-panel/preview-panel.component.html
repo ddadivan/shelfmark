@@ -67,7 +67,7 @@
         variant="ghost"
         size="sm"
         iconOnly
-        iconLeft="copy"
+        [iconLeft]="preview.copied() ? 'check' : 'copy'"
         [ariaLabel]="'preview.copy' | transloco"
         [uiTooltip]="'preview.copy' | transloco"
         (click)="preview.copyLink()"

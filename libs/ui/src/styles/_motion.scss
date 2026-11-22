@@ -58,6 +58,12 @@ $enter-presets: (
     'duration': 'base',
     'ease': 'in-out',
   ),
+  // An icon that replaces another (`ui-icon-swap`): scales up from 0.5 out of a 4px blur.
+  'icon': (
+    'keyframes': 'ui-icon-in',
+    'duration': 'base',
+    'ease': 'out',
+  ),
   'spinner': (
     'keyframes': 'ui-spinner-in',
     'duration': 'base',
@@ -101,6 +107,12 @@ $leave-presets: (
     'keyframes': 'ui-disclose-out',
     'duration': 'fast',
     'ease': 'in-out',
+  ),
+  // The icon that is replaced: scales to 0.5, blurs 4px and fades.
+  'icon': (
+    'keyframes': 'ui-icon-out',
+    'duration': 'base',
+    'ease': 'out',
   ),
   'spinner': (
     'keyframes': 'ui-spinner-out',
@@ -303,6 +315,30 @@ $leave-presets: (
 
     to {
       transform: scaleX(0);
+    }
+  }
+
+  // Icon swap (#562): the outgoing icon scales to 0.5, blurs 4px and fades; the incoming one grows
+  // from 0.5 out of the blur. The blur stays on small elements (icons) only.
+  @keyframes ui-icon-in {
+    from {
+      opacity: 0;
+      filter: blur(#{rem(4px)});
+      transform: scale(0.5);
+    }
+
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: none;
+    }
+  }
+
+  @keyframes ui-icon-out {
+    to {
+      opacity: 0;
+      filter: blur(#{rem(4px)});
+      transform: scale(0.5);
     }
   }
 
