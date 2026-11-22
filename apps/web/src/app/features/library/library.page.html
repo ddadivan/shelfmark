@@ -213,7 +213,7 @@
             </ui-menu>
           </div>
           } @else {
-          <div class="library__tools">
+          <div class="library__tools" uiTooltipGroup>
             @if (tidyEntry()) {
             <app-tidy-entry />
             } @if (feed.showControls() && feed.viewOptions(); as options) {

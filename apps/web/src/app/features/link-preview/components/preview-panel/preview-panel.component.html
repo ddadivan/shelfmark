@@ -2,7 +2,12 @@
   class="preview-panel"
   [attr.aria-label]="'preview.region' | transloco: { title: preview.link()?.title ?? '' }"
 >
-  <div class="preview-panel__bar" role="toolbar" [attr.aria-label]="'preview.toolbar' | transloco">
+  <div
+    class="preview-panel__bar"
+    role="toolbar"
+    uiTooltipGroup
+    [attr.aria-label]="'preview.toolbar' | transloco"
+  >
     <ui-button
       variant="ghost"
       size="sm"
