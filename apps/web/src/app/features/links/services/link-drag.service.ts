@@ -12,6 +12,7 @@ import { SIDEBAR_REMINDERS_ID } from '../../../shell/sidebar/models/sidebar-remi
 import { SIDEBAR_TRASH_ID } from '../../../shell/sidebar/models/sidebar-trash-id.const';
 import { BulkLinkActionsService } from './bulk-link-actions.service';
 import { LinkActionsService } from './link-actions.service';
+import type { DropLocation } from '../models/drop-location.interface';
 import type { NoDropHover } from '../models/no-drop-hover.interface';
 import { NO_DROP_PINNED_LINK_KEY } from '../models/no-drop-pinned-link-key.const';
 import { NO_DROP_REASON_KEYS } from '../models/no-drop-reason-keys.const';
@@ -56,6 +57,9 @@ export class LinkDragService {
   private readonly target = signal<string | null | undefined>(undefined);
   /** The target was found through a half of the side-by-side view, not a sidebar row or a tile. */
   private readonly viaHalf = signal(false);
+
+  /** The element of the current target (tree row, pinned folder, tile or half), for the drop motion. */
+  private targetElement: Element | null = null;
 
   /** The row under the pointer that cannot take links, with the reason it shows (#350). */
   private readonly noDropHover = signal<NoDropHover | null>(null);
@@ -141,10 +145,20 @@ export class LinkDragService {
       return;
     }
     this.noDropHover.set(this.noDropAt(x, y));
-    const { target, half } = this.locate(x, y);
+    const { target, half, element } = this.locate(x, y);
     const already = this.links().every((item) => item.folderId === target);
     this.target.set(already ? undefined : target);
     this.viaHalf.set(!already && half);
+    this.targetElement = already || target === undefined ? null : element;
+  }
+
+  /**
+   * The element a release now would drop the links on (the folder row, pinned folder, tile or
+   * half under the pointer); `null` when the drop would move nothing (no target, Esc pressed).
+   * The library uses it for the drop motion (Motion «Drop a link on a folder», #562).
+   */
+  dropElement(): Element | null {
+    return this.cancelled || this.target() === undefined ? null : this.targetElement;
   }
 
   /** The pointer was released: moves the link when it is over a target. */
@@ -175,6 +189,7 @@ export class LinkDragService {
     this.doc.documentElement.style.removeProperty('--drag-grab-y');
     this.doc.documentElement.style.removeProperty('--drag-slot-height');
     this.target.set(undefined);
+    this.targetElement = null;
     this.viaHalf.set(false);
     this.noDropHover.set(null);
     this.doc.removeEventListener('keydown', this.onKeydown, true);
@@ -196,16 +211,25 @@ export class LinkDragService {
   }
 
   /** The drop target under the pointer, and whether it is a half of the side-by-side view. */
-  private locate(x: number, y: number): { target: string | null | undefined; half: boolean } {
+  private locate(x: number, y: number): DropLocation {
     const element = this.doc.elementFromPoint(x, y);
     const tile = element?.closest(`[${LINK_DROP_ATTRIBUTE}]`);
     if (tile) {
       const value = tile.getAttribute(LINK_DROP_ATTRIBUTE);
       const target = value === LINKS_SCOPE.Unsorted ? null : this.folderOrNothing(value);
-      return { target, half: target !== undefined && tile.hasAttribute(LINK_DROP_HALF_ATTRIBUTE) };
+      return {
+        target,
+        half: target !== undefined && tile.hasAttribute(LINK_DROP_HALF_ATTRIBUTE),
+        element: tile,
+      };
     }
-    const id = element?.closest(TREE_ROW_SELECTOR)?.getAttribute('data-ui-tree-id');
-    return { target: id === LINKS_SCOPE.Unsorted ? null : this.folderOrNothing(id), half: false };
+    const row = element?.closest(TREE_ROW_SELECTOR) ?? null;
+    const id = row?.getAttribute('data-ui-tree-id');
+    return {
+      target: id === LINKS_SCOPE.Unsorted ? null : this.folderOrNothing(id),
+      half: false,
+      element: row,
+    };
   }
 
   private folderOrNothing(id: string | null | undefined): string | undefined {

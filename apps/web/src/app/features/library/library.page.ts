@@ -37,6 +37,7 @@ import {
   SKELETON_SHAPE,
   SkeletonComponent,
   type BreadcrumbClick,
+  DragWobbleDirective,
 } from '@shelfmark/ui';
 import { PIN_KIND, type ExportFormat } from '@shelfmark/contracts';
 import { EXPORT_FORMAT_OPTIONS } from '../export/models/export-format-options.const';
@@ -99,6 +100,7 @@ const SKELETON_COUNT = 8;
     CdkDrag,
     CdkDragPlaceholder,
     CdkDragPreview,
+    DragWobbleDirective,
     CdkDropList,
     NgTemplateOutlet,
     TranslocoPipe,

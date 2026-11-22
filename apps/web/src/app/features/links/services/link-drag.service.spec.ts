@@ -220,6 +220,31 @@ describe('LinkDragService', () => {
     expect(moveTo).not.toHaveBeenCalled();
   });
 
+  it('names the element a release would drop on, none without a target or after Esc', () => {
+    const { drag, element, under, doc } = setup();
+    const row = element({ 'data-ui-tree-id': FOLDER_B.id });
+    under.mockReturnValue(row);
+    drag.start(link(FOLDER_A.id));
+    expect(drag.dropElement()).toBeNull();
+    drag.move(1, 1);
+    expect(drag.dropElement()).toBe(row.parentElement);
+
+    const tile = element({ [LINK_DROP_ATTRIBUTE]: FOLDER_B.id });
+    under.mockReturnValue(tile);
+    drag.move(2, 2);
+    expect(drag.dropElement()).toBe(tile.parentElement);
+
+    // The folder the link is in already is no target.
+    under.mockReturnValue(element({ 'data-ui-tree-id': FOLDER_A.id }));
+    drag.move(3, 3);
+    expect(drag.dropElement()).toBeNull();
+
+    under.mockReturnValue(row);
+    drag.move(4, 4);
+    doc.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(drag.dropElement()).toBeNull();
+  });
+
   it('Esc cancels: the highlight goes and the release moves nothing', () => {
     const { drag, moveTo, element, under, doc } = setup();
     under.mockReturnValue(element({ 'data-ui-tree-id': FOLDER_B.id }));

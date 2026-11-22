@@ -120,6 +120,11 @@ app-link-card ui-card {
 // A badge (read from the template) names "Move 1 link" or "3 links"; a selection of several adds
 // silhouettes right behind the card: one for two links, two for three or more (a deck of three
 // cards, 3px and 6px apart, never more; #350). Reduced motion: no tilt; the deck stays, static.
+// Physics (#562, Motion «Drag a link»): the card, the deck and the badge sit in one wrapper
+// (`uiDragWobble`) that tilts with the pointer's velocity around the grab point and wobbles as one;
+// on release the CDK takes the root back to the slot with `ease-spring` (cancel, Esc, no target)
+// or, over a folder, with `ease-in-out` while the wrapper flies into the folder row
+// (`LibraryDragService.released`). Reduced motion: no wobble, no transition, the preview just goes.
 .library__drag-preview {
   --drag-x: calc(var(--drag-grab-x, 0rem) + 1.25rem);
   --drag-y: calc(var(--drag-grab-y, 0rem) + 1.5rem);
@@ -144,6 +149,26 @@ app-link-card ui-card {
     background: var(--surface);
     border-radius: var(--radius-md);
   }
+}
+
+// The wobble wrapper: the containing block of the deck and the badge, pivoting at the pointer.
+.library__drag-wobble {
+  position: relative;
+  transform-origin: var(--drag-grab-x, 0) var(--drag-grab-y, 0);
+}
+
+.library__drag-preview.cdk-drag-animating {
+  transition: transform var(--duration-slow) var(--ease-spring);
+}
+
+.library__drag-preview--flying.cdk-drag-animating {
+  transition-timing-function: var(--ease-in-out);
+}
+
+// The folder row (or subfolder tile) a link lands on swells as the preview arrives.
+.library__drop-bump {
+  animation: ui-suggest-accept var(--duration-base) var(--ease-spring)
+    calc(var(--duration-slow) - var(--duration-fast)) both;
 }
 
 // The deck behind a dragged selection: card silhouettes, in the card's own surface.
@@ -185,6 +210,14 @@ app-link-card ui-card {
     :is(ui-card, ui-list-item, .library__drag-stack) {
       rotate: none;
     }
+  }
+
+  .library__drag-preview.cdk-drag-animating {
+    transition: none;
+  }
+
+  .library__drop-bump {
+    animation: none;
   }
 }
 
