@@ -7,7 +7,6 @@ const base: PreviewClick = {
   url: 'https://angular.dev/guide',
   clickAction: LINK_CLICK_ACTION.Preview,
   newTabHosts: [],
-  wide: true,
   previewOpen: false,
   modifier: false,
 };
@@ -23,10 +22,6 @@ describe('wantsPreview', () => {
     expect(wantsPreview({ ...base, clickAction: LINK_CLICK_ACTION.Open, modifier: true })).toBe(
       true,
     );
-  });
-
-  it('never previews below 80em', () => {
-    expect(wantsPreview({ ...base, wide: false })).toBe(false);
   });
 
   it('switches an open preview whatever the site', () => {
