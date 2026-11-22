@@ -1,4 +1,5 @@
 // Screenshots of every popup state from the development build, with a fake chrome.tabs and a mocked API.
+// SHOT_LOCALE=uk-UA checks another language.
 // Usage: npx nx build extension --configuration=development && node apps/extension/scripts/popup-screenshots.mjs dist/apps/extension-dev tmp/extension-shots
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, mkdirSync } from 'node:fs';
@@ -94,19 +95,81 @@ const session = {
   session: { expiresAt: '' },
 };
 
+// All tabs (#569): the window's tabs, the AI answers and the batch answer.
+const windowTabs = [
+  ['https://www.cos.com/en/wool-coat-graphite', 'Wool coat, straight cut, graphite | COS'],
+  ['https://angular.dev/guide/forms/signals', 'Signal Forms in Angular'],
+  ['https://angular.dev/guide/zoneless', 'Zoneless change detection'],
+  [
+    'https://ngrx.io/guide/signals/signal-store/custom-store-features',
+    'NgRx SignalStore: custom features',
+  ],
+  ['https://github.com/angular/angular/issues', 'angular/angular issues'],
+  ['https://www.youtube.com/watch?v=abc', 'Signals in 20 minutes, a practical intro - YouTube'],
+  ['https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API', 'View transitions API'],
+  ['https://web.dev/articles/inp', 'Interaction to Next Paint'],
+  ['https://css-tricks.com/guides/container-queries', 'CSS container queries guide'],
+  ['chrome://extensions/', 'Extensions'],
+  ['https://angular.dev/guide/forms/signals#top', 'Signal Forms in Angular'],
+].map(([url, title], id) => ({ id: id + 1, active: id === 0, url, title }));
+const aiSettings = {
+  settings: { enabled: true, includeNotes: false },
+  usage: { linksUsed: 3, linksLimit: 50, resetsOn: '2026-12-01' },
+};
+const picks = [
+  'f-ng',
+  'f-ng',
+  'f-ng',
+  'f-courses',
+  'f-travel',
+  'f-recipes',
+  'f-recipes',
+  'f-clothes',
+];
+const tabsAfter = async (page) => {
+  await page.locator('input[type="radio"]').nth(1).check({ force: true });
+  await page.waitForTimeout(700);
+};
+const sortAfter = async (page) => {
+  await tabsAfter(page);
+  await page.locator('.form__ai-button button').click();
+  await page.waitForTimeout(1600);
+};
+
 const scenarios = {
+  tabs: { url: windowTabs[0].url, window: windowTabs, after: tabsAfter },
+  tabsAi: { url: windowTabs[0].url, window: windowTabs, ai: true, after: sortAfter },
+  tabsPicker: {
+    url: windowTabs[0].url,
+    window: windowTabs,
+    ai: true,
+    after: async (page) => {
+      await sortAfter(page);
+      await page.locator('.form__folder > ui-button button').click();
+      await page.waitForTimeout(400);
+    },
+  },
+  tabsSaved: {
+    url: windowTabs[0].url,
+    window: windowTabs,
+    after: async (page) => {
+      await tabsAfter(page);
+      await page.locator('.ext-foot-slot button').click();
+      await page.waitForTimeout(1200);
+    },
+  },
   form: { url: 'https://www.cos.com/en/wool-coat-graphite', recent: ['f-clothes', null, 'f-ng'] },
   picker: {
     url: 'https://www.cos.com/en/wool-coat-graphite',
     after: async (page) => {
-      await page.getByRole('button', { name: /Folder:/ }).click();
+      await page.locator('.form__folder > ui-button button').click();
       await page.waitForTimeout(400);
     },
   },
   saved: {
     url: 'https://www.cos.com/en/wool-coat-graphite',
     after: async (page) => {
-      await page.getByRole('button', { name: 'Save', exact: true }).click();
+      await page.locator('.ext-foot-slot button').click();
       await page.waitForTimeout(900);
     },
   },
@@ -123,20 +186,26 @@ for (const scheme of ['light', 'dark']) {
     const context = await browser.newContext({
       viewport: { width: 360, height: 600 },
       colorScheme: scheme,
+      locale: process.env.SHOT_LOCALE ?? 'en-US',
       deviceScaleFactor: 2,
     });
     const page = await context.newPage();
     await page.addInitScript(
-      ({ url, recent }) => {
+      ({ url, recent, window }) => {
         globalThis.chrome = {
           tabs: {
-            query: async () => [{ url, title: 'Wool coat, straight cut, graphite | COS' }],
+            query: async (q) =>
+              q.currentWindow && !q.active && window
+                ? window
+                : [{ url, title: 'Wool coat, straight cut, graphite | COS' }],
             create: async () => ({}),
+            remove: async () => undefined,
           },
+          permissions: { contains: async () => true, request: async () => true },
         };
         if (recent) localStorage.setItem('sm-ext-recent-folders', JSON.stringify(recent));
       },
-      { url: s.url, recent: s.recent },
+      { url: s.url, recent: s.recent, window: s.window },
     );
     await page.route('http://localhost:4200/api/**', async (route) => {
       const req = route.request();
@@ -150,7 +219,60 @@ for (const scheme of ['light', 'dark']) {
       if (s.offline) return route.abort('internetdisconnected');
       if (s.delay) await new Promise((r) => setTimeout(r, s.delay));
       const path = new URL(req.url()).pathname;
+      let sent = {};
+      try {
+        sent = req.postDataJSON() ?? {};
+      } catch {
+        sent = {};
+      }
+      if (path === '/api/ai/drafts') {
+        const n = Number(String(sent.url).length) % picks.length;
+        const index = windowTabs.findIndex((tab) => tab.url === sent.url);
+        return route.fulfill({
+          status: 202,
+          headers: { ...cors, 'content-type': 'application/json' },
+          body: JSON.stringify({
+            id: sent.draftId,
+            status: 'done',
+            reason: null,
+            summary: null,
+            title: null,
+            suggestions: [
+              {
+                id: 'a',
+                kind: 'folder',
+                state: 'suggested',
+                tagName: null,
+                folderId: picks[(index < 0 ? n : index) % picks.length],
+              },
+              {
+                id: 'b',
+                kind: index % 3 === 0 ? 'new-tag' : 'tag',
+                state: 'suggested',
+                tagName: ['signals', 'forms', 'css', 'video'][index % 4],
+                folderId: null,
+              },
+            ],
+          }),
+        });
+      }
+      if (path === '/api/links/batch') {
+        const links = (sent.items ?? []).map((item, i) => ({
+          ...link,
+          id: `l${i}`,
+          url: item.url,
+          title: item.title ?? item.url,
+          folderId: sent.folderId ?? item.folderId ?? 'f-ng',
+          createdAt: new Date().toISOString(),
+        }));
+        return route.fulfill({
+          status: 201,
+          headers: { ...cors, 'content-type': 'application/json' },
+          body: JSON.stringify({ links, errors: [] }),
+        });
+      }
       const body = {
+        '/api/ai/settings': s.ai ? aiSettings : undefined,
         '/api/auth/get-session': s.session === undefined ? session : s.session,
         '/api/folders': folders,
         '/api/tags': tags,

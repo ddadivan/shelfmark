@@ -1,0 +1,118 @@
+@use 'ui' as *;
+
+.saved {
+  gap: rem(12px);
+}
+
+// Three blank cards fan out and the middle one lands last (the saved link's landing, scaled to the popup).
+.saved__stack {
+  position: relative;
+  inline-size: rem(200px);
+  block-size: rem(120px);
+}
+
+.saved__card {
+  position: absolute;
+  inset-block-start: rem(10px);
+  inset-inline-start: rem(30px);
+  inline-size: rem(140px);
+  block-size: rem(100px);
+  background: var(--surface);
+  background-image:
+    linear-gradient(var(--surface-pressed), var(--surface-pressed)),
+    linear-gradient(var(--surface-pressed), var(--surface-pressed));
+  background-repeat: no-repeat;
+  background-position:
+    rem(10px) rem(72px),
+    rem(10px) rem(84px);
+  background-size:
+    calc(100% - #{rem(20px)}) rem(8px),
+    50% rem(8px);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  animation: saved-drop var(--duration-slow) var(--ease-spring) backwards;
+
+  &::before {
+    display: block;
+    block-size: rem(62px);
+    content: '';
+    background: var(--accent-bg);
+    border-start-start-radius: var(--radius-md);
+    border-start-end-radius: var(--radius-md);
+  }
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+.saved__card--left {
+  transform: rotate(-9deg) translateX(#{rem(-26px)});
+
+  &::before {
+    background: var(--surface-hover);
+  }
+}
+
+.saved__card--right {
+  animation-delay: 80ms;
+  transform: rotate(8deg) translateX(#{rem(26px)});
+
+  &::before {
+    background: var(--surface-pressed);
+  }
+}
+
+.saved__card--centre {
+  animation-delay: 160ms;
+}
+
+@keyframes saved-drop {
+  from {
+    opacity: 0;
+    transform: translateY(#{rem(-60px)}) scale(0.8);
+  }
+}
+
+.saved__skipped {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  min-height: 0;
+  padding-block: rem(6px);
+  overflow-y: auto;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+}
+
+.saved__row {
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  min-height: rem(44px);
+  padding: rem(4px) rem(12px);
+}
+
+.saved__row-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.saved__row-title {
+  @include type(label);
+  @include line-clamp(1);
+}
+
+.saved__row-why {
+  @include type(caption);
+
+  color: var(--danger);
+}
+
+.saved__heading {
+  @include type(heading);
+
+  margin: 0;
+}

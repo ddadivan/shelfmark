@@ -7,20 +7,42 @@
     [ariaLabel]="'popup.picker.back' | transloco"
     (click)="store.closePicker()"
   />
-  <h1 class="ext-screen__title">{{ 'popup.picker.title' | transloco }}</h1>
+  <h1 class="ext-screen__title">{{ title() }}</h1>
 </div>
+@if (keepRowShown()) {
+  <ui-button
+    block
+    class="picker__keep"
+    [variant]="BUTTON_VARIANT.Ghost"
+    [ariaPressed]="store.tabsAi.picksActive()"
+    (click)="store.keepAiPicks()"
+  >
+    <span class="picker__keep-body">
+      <ui-icon class="picker__keep-icon" name="spark" [size]="ICON_SIZE.Md" />
+      <span class="picker__keep-text">
+        <span class="picker__keep-title">{{ 'popup.picker.keepAi' | transloco }}</span>
+        <span class="picker__keep-hint">{{ 'popup.picker.keepAiHint' | transloco }}</span>
+      </span>
+      @if (store.tabsAi.picksActive()) {
+        <ui-icon name="check" [size]="ICON_SIZE.Md" />
+      }
+    </span>
+  </ui-button>
+}
 <ui-picker-list
   class="picker"
   [options]="store.folderOptions()"
-  [value]="store.folderId()"
-  [emptyLabel]="'popup.unsorted' | transloco"
+  [value]="value()"
+  [emptyLabel]="forOneLink() ? '' : ('popup.unsorted' | transloco)"
   [searchLabel]="'popup.picker.search' | transloco"
   [listLabel]="'popup.picker.list' | transloco"
   [noResultsLabel]="'popup.picker.noResults' | transloco"
   (chosen)="store.chooseFolder($event)"
 />
-<div class="ext-screen__foot">
-  <ui-button block iconLeft="folder-plus" (click)="store.openNewFolder()">{{
-    'popup.picker.newFolder' | transloco
-  }}</ui-button>
-</div>
+@if (!forOneLink()) {
+  <div class="ext-screen__foot">
+    <ui-button block iconLeft="folder-plus" (click)="store.openNewFolder()">{{
+      'popup.picker.newFolder' | transloco
+    }}</ui-button>
+  </div>
+}

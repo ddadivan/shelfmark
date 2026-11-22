@@ -22,7 +22,13 @@
       "note": "Nota",
       "notePlaceholder": "Por que você está salvando isto?",
       "save": "Salvar",
-      "newBadge": "nova"
+      "newBadge": "nova",
+      "tagsForAll": "Tags para todos",
+      "saveCount": {
+        "one": "Salvar {{count}} link",
+        "many": "Salvar {{count}} de links",
+        "other": "Salvar {{count}} links"
+      }
     },
     "picker": {
       "title": "Escolha uma pasta",
@@ -30,7 +36,15 @@
       "search": "Encontrar uma pasta",
       "list": "Pastas",
       "noResults": "Nenhuma pasta com esse nome",
-      "newFolder": "Nova pasta"
+      "newFolder": "Nova pasta",
+      "keepAi": "Manter as escolhas da IA",
+      "keepAiHint": "Cada link na sua própria pasta",
+      "titleAll": {
+        "one": "Pasta para {{count}} link",
+        "many": "Pasta para {{count}} de links",
+        "other": "Pasta para {{count}} links"
+      },
+      "titleOne": "Pasta deste link"
     },
     "newFolder": {
       "title": "Nova pasta",
@@ -92,6 +106,61 @@
       "dismiss": "Dispensar a sugestão {{name}}",
       "filling": "Preenchendo…",
       "tagsByAi": "Tags sugeridas pela IA"
+    },
+    "mode": {
+      "label": "O que salvar",
+      "page": "Esta página",
+      "tabs": "Todas as abas ({{count}})"
+    },
+    "tabs": {
+      "list": "Abas abertas",
+      "loading": "Lendo suas abas",
+      "selected": "{{selected}} de {{total}} selecionadas",
+      "alreadySaved": "{{count}} já salvas",
+      "savedBadge": "Salvo",
+      "pickedByAi": "Escolhido pela IA para cada link",
+      "changeFolder": "Pasta deste link: {{folder}}. Alterar",
+      "sort": {
+        "one": "Organizar {{count}} link com IA",
+        "many": "Organizar {{count}} de links com IA",
+        "other": "Organizar {{count}} links com IA"
+      },
+      "sorting": {
+        "one": "Organizando {{count}} link…",
+        "many": "Organizando {{count}} de links…",
+        "other": "Organizando {{count}} links…"
+      },
+      "limit": "Sugestões pausadas até {{date}}. Os outros links vão para a pasta do campo Pasta.",
+      "sortedDone": "Links organizados com as sugestões da IA"
+    },
+    "savedTabs": {
+      "title": {
+        "one": "{{count}} link salvo em {{folder}}",
+        "many": "{{count}} de links salvos em {{folder}}",
+        "other": "{{count}} links salvos em {{folder}}"
+      },
+      "titleMixed": {
+        "one": "{{count}} link salvo",
+        "many": "{{count}} de links salvos",
+        "other": "{{count}} links salvos"
+      },
+      "text": "Você já pode fechar as abas: elas estão na sua biblioteca.",
+      "close": {
+        "one": "Fechar {{count}} aba salva",
+        "many": "Fechar {{count}} de abas salvas",
+        "other": "Fechar {{count}} abas salvas"
+      },
+      "closed": "As abas salvas foram fechadas.",
+      "partial": "{{saved}} de {{total}} salvos",
+      "skipped": {
+        "one": "Esta aba foi ignorada. As outras estão na sua biblioteca.",
+        "many": "Estas {{count}} de abas foram ignoradas. As outras estão na sua biblioteca.",
+        "other": "Estas {{count}} abas foram ignoradas. As outras estão na sua biblioteca."
+      },
+      "reason": {
+        "urlTooLong": "O endereço é muito longo",
+        "duplicateInBatch": "Mesmo endereço de outra aba"
+      }
     }
   }
 }

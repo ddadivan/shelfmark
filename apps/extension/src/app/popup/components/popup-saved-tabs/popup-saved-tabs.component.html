@@ -1,0 +1,49 @@
+@if (skipped().length === 0) {
+  <div class="ext-screen__center saved">
+    <div class="saved__stack" aria-hidden="true">
+      <div class="saved__card saved__card--left"></div>
+      <div class="saved__card saved__card--right"></div>
+      <div class="saved__card saved__card--centre"></div>
+    </div>
+    <div role="status">
+      <h1 class="ext-screen__center-title">{{ title() }}</h1>
+    </div>
+    <p class="ext-screen__text">{{ 'popup.savedTabs.text' | transloco }}</p>
+    @if (store.tabsClosed()) {
+      <p class="ext-screen__text" role="status">{{ 'popup.savedTabs.closed' | transloco }}</p>
+    } @else {
+      <ui-button (click)="store.closeSavedTabs()">{{ closeLabel() }}</ui-button>
+    }
+  </div>
+} @else {
+  <div class="ext-screen__head">
+    <div class="ext-screen__title" role="status">
+      <h1 class="saved__heading">{{ title() }}</h1>
+    </div>
+  </div>
+  <p class="ext-screen__text">{{ skippedText() }}</p>
+  <div class="saved__skipped" role="list">
+    @for (item of skipped(); track item.entry.key) {
+      <div class="saved__row" role="listitem">
+        <ui-favicon [letter]="item.entry.letter" />
+        <span class="saved__row-text">
+          <span class="saved__row-title">{{ item.entry.title }}</span>
+          <span class="saved__row-why">{{ reason(item.code) }}</span>
+        </span>
+      </div>
+    }
+  </div>
+  @if (store.tabsClosed()) {
+    <p class="ext-screen__text" role="status">{{ 'popup.savedTabs.closed' | transloco }}</p>
+  } @else if (savedCount() > 0) {
+    <ui-button (click)="store.closeSavedTabs()">{{ closeLabel() }}</ui-button>
+  }
+}
+<div class="ext-screen__foot">
+  <ui-button block (click)="store.openSavedTabsFolder()">{{
+    'popup.openInApp' | transloco
+  }}</ui-button>
+  <ui-button block [variant]="BUTTON_VARIANT.Primary" (click)="store.close()">{{
+    'popup.saved.done' | transloco
+  }}</ui-button>
+</div>

@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
   BUTTON_VARIANT,
@@ -16,12 +22,18 @@ import { PopupStore } from '../../popup.store';
   selector: 'ext-popup-message',
   templateUrl: './popup-message.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'ext-screen' },
+  host: { class: 'ext-screen ext-screen--flow' },
   imports: [ButtonComponent, IllustrationComponent, TranslocoPipe],
 })
 export class PopupMessageComponent {
   protected readonly store = inject(PopupStore);
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
+  /** Captured once: only the first screen after opening opens its second button up. */
+  protected readonly animateSlot = this.store.animateFoot();
+
+  constructor() {
+    afterNextRender(() => this.store.animateFoot.set(false));
+  }
 
   protected readonly unsupported = computed(() => this.store.view() === POPUP_VIEW.Unsupported);
   protected readonly illustration = computed<IllustrationName>(() => {

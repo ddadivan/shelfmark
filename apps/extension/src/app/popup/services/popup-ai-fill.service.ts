@@ -75,18 +75,20 @@ export class PopupAiFillService {
     const chosen = new Set(this.target?.chosenTags().map((tag) => tag.toLowerCase()));
     return this.appliedTags().some((name) => chosen.has(name.toLowerCase()));
   });
+  /** The monthly-limit line (also used by "Sort with AI" for tabs when the allowance runs out). */
+  readonly limitLine = computed<AiLineView>(() => {
+    const usage = this.settings()?.usage;
+    return {
+      kind: AI_LINE_KIND.Limit,
+      resetsOn: usage?.resetsOn ?? '',
+      limit: usage?.linksLimit ?? 0,
+    };
+  });
   /** The one quiet line: the monthly limit, or "not available right now". */
   readonly line = computed<AiLineView | null>(() => {
     if (!this.on()) return null;
     const state = this.state();
-    if (state === AI_FILL_STATE.Quota) {
-      const usage = this.settings()?.usage;
-      return {
-        kind: AI_LINE_KIND.Limit,
-        resetsOn: usage?.resetsOn ?? '',
-        limit: usage?.linksLimit ?? 0,
-      };
-    }
+    if (state === AI_FILL_STATE.Quota) return this.limitLine();
     return state === AI_FILL_STATE.Unavailable ? { kind: AI_LINE_KIND.Unavailable } : null;
   });
   /** The form was just filled in: the live region says so. */

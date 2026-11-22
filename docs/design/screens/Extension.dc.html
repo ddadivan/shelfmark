@@ -81,11 +81,11 @@ a{color:inherit}a:hover{color:inherit}
 <div style="display: flex; gap: 6px; flex-wrap: wrap;" aria-label="Recent folders"><button class="sm-chip sm-chip--neutral sm-chip--clickable">Unsorted</button><button class="sm-chip sm-chip--clickable" aria-pressed="true">Clothes</button><button class="sm-chip sm-chip--neutral sm-chip--clickable">Angular</button></div></div>
 <div class="sm-field"><label class="sm-field__label" for="ex-t">Tags</label><div class="sm-field__control sm-taginput"><span class="sm-chip">winter<button class="sm-chip__remove" aria-label="Remove tag winter">×</button></span><input id="ex-t" placeholder="Add tag"></div></div>
 <div class="sm-field"><label class="sm-field__label" for="ex-n">Note</label><div class="sm-field__control"><input id="ex-n" placeholder="Why are you saving this?"></div></div>
-<div class="ex-foot"><a href="#" class="sm-link">Open Shelfmark</a><button class="sm-btn sm-btn--primary" style="min-width: 132px;">Save<span class="sm-kbd" style="margin-left: 6px; background: transparent; color: inherit; opacity: .7;">↵</span></button></div>
+<div class="ex-foot"><button class="sm-btn sm-btn--secondary" style="flex: 1;">Open Shelfmark</button><button class="sm-btn sm-btn--primary" style="flex: 1;">Save<span class="sm-kbd" style="margin-left: 6px; background: transparent; color: inherit; opacity: .7;">↵</span></button></div>
 </div>
 </div>
 </div>
-<p class="a-note">Every state below is the same 360 × 600 popup, so nothing jumps when one state turns into another; the footer stays on the bottom edge. Nothing is saved until Save: closing the popup leaves no trace, so there is no Remove or Undo. Everything is filled in already and focus starts on Save, so the quick path is the shortcut, then Enter; the tag and note fields keep Enter for themselves (a tag is added on Enter), and Save still takes ⌘/Ctrl+Enter there. The folder is the one a domain rule picked, else Unsorted; the hint names the rule only when one applied. The chips are the three folders saved to most recently. While saving, the button shows its spinner and the fields lock. Alt+Shift+S is the default shortcut (Option+Shift+S on a Mac); people can change it in the browser's extension shortcuts.</p>
+<p class="a-note">Open Shelfmark is the same outlined (secondary) pill button in every state, half the footer next to the primary button (it was a link before the save-tabs design, ExtensionTabs.dc.html). Every state below is the same 360 × 600 popup, so nothing jumps when one state turns into another; the footer stays on the bottom edge. Nothing is saved until Save: closing the popup leaves no trace, so there is no Remove or Undo. Everything is filled in already and focus starts on Save, so the quick path is the shortcut, then Enter; the tag and note fields keep Enter for themselves (a tag is added on Enter), and Save still takes ⌘/Ctrl+Enter there. The folder is the one a domain rule picked, else Unsorted; the hint names the rule only when one applied. The chips are the three folders saved to most recently. While saving, the button shows its spinner and the fields lock. Alt+Shift+S is the default shortcut (Option+Shift+S on a Mac); people can change it in the browser's extension shortcuts.</p>
 </section>
 
 <section class="a-state">
@@ -109,6 +109,7 @@ a{color:inherit}a:hover{color:inherit}
 <div style="display: flex; flex-direction: column; gap: 8px;"><div class="sm-skel sm-skel--line" style="width: 64px; height: 12px;"></div><div class="sm-skel sm-skel--line" style="height: 44px; border-radius: 999px;"></div></div>
 <div style="display: flex; flex-direction: column; gap: 8px;"><div class="sm-skel sm-skel--line" style="width: 48px; height: 12px;"></div><div class="sm-skel sm-skel--line" style="height: 44px; border-radius: 999px;"></div></div>
 <div style="display: flex; flex-direction: column; gap: 8px;"><div class="sm-skel sm-skel--line" style="width: 52px; height: 12px;"></div><div class="sm-skel sm-skel--line" style="height: 44px; border-radius: 999px;"></div></div>
+<div class="ex-foot"><button class="sm-btn sm-btn--secondary" style="flex: 1;">Open Shelfmark</button></div>
 </div>
 <p class="a-note">On open the popup asks the server three things at once: is the user signed in, is this URL already saved, and the folders and tags. The skeleton has the shape of state 1, so the fields appear in place. The tab's own title and host show at once, from the browser.</p>
 </section>
@@ -198,7 +199,7 @@ a{color:inherit}a:hover{color:inherit}
 <p class="ex-text" role="alert">No connection to Shelfmark. Check the internet and try again.</p>
 </div>
 <div class="ex-preview"><span class="ex-thumb" style="background: var(--surface-pressed);"></span><span style="min-width: 0;"><span class="ex-host">cos.com</span><span class="ex-title">Wool coat, straight cut, graphite</span></span></div>
-<div class="ex-foot" style="margin-top: 0;"><button class="sm-btn sm-btn--primary" style="width: 100%;">Try again</button></div>
+<div class="ex-foot" style="margin-top: 0;"><button class="sm-btn sm-btn--secondary" style="flex: 1;">Open Shelfmark</button><button class="sm-btn sm-btn--primary" style="flex: 1;">Try again</button></div>
 </div>
 <p class="a-note">The line under the heading says why: no connection (this scene); too many saves in a minute ("Too many saves in a row. Wait a minute and try again."); the library limit (the API's own limit message, e.g. the 100-link demo; no Try again then, Open Shelfmark instead); anything else ("Something went wrong on our side. Try again in a moment."). The page it tried to save stays visible. Try again repeats the same save, so a slow first answer never makes a second copy.</p>
 </section>

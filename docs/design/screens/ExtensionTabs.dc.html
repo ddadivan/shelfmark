@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A · Browser extension: save open tabs</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../reference.css">
+<link rel="stylesheet" href="boards.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{color:inherit}
+/* The popup frame, as in Extension.dc.html (360 × 600); #569 adds the switch, the tab list and the batch states. */
+.ex-pop{width:360px;height:600px;box-sizing:border-box;background:var(--surface);border-radius:22px;box-shadow:var(--shadow-float);padding:18px;display:flex;flex-direction:column;gap:14px;overflow:hidden;position:relative}
+.ex-head{display:flex;align-items:center;gap:10px;min-height:32px}
+.ex-head h3{margin:0;font-size:16px;font-weight:600;line-height:22px;flex:1;min-width:0}
+.ex-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:0 8px}
+.ex-center h3{margin:0;font-size:18px;line-height:24px;font-weight:600;letter-spacing:-0.01em}
+@keyframes ex-pop{from{transform:scale(.6);opacity:0}}
+.ex-pop--tabs{gap:12px}
+.ex-mode{flex:1;min-width:0}
+.ex-mode .sm-seg__item{gap:6px}
+.ex-mode .sm-badge{height:18px;padding:0 6px;font-size:11px}
+.ex-foot--wrap{flex-wrap:wrap}
+.ex-foot--wrap > .sm-btn--ai{flex:1 0 100%}
+.ex-tabs-btn{gap:6px;font-weight:500}
+/* Select all with some ticked: a dash instead of the tick. */
+input.sm-check.is-mixed{background:var(--primary);border-color:var(--primary)}
+input.sm-check.is-mixed::after{width:10px;height:0;border-left:0;border-bottom:2px solid var(--on-primary);transform:none;opacity:1}
+/* AI sorted each tab: its own folder and tags on a third line of the row. */
+.tb-row.tb-row--ai{align-items:flex-start;padding-top:8px;padding-bottom:8px}
+.tb-row--ai > .sm-check,.tb-row--ai > .tb-fav{margin-top:2px}
+.tb-ai{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:6px}
+.tb-ai__spark{color:var(--ai);display:inline-flex}
+.tb-ai__folder{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px 0 4px;border-radius:999px;background:var(--surface-hover);font-size:12px;line-height:16px;font-weight:500;color:var(--text);border:0;cursor:pointer}
+.tb-ai__tile{width:14px;height:14px;border-radius:4px;flex:none}
+.tb-ai__tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;background:var(--accent-bg);color:var(--accent-text);font-size:12px;line-height:16px;font-weight:500}
+.tb-ai__tag--new{background:transparent;border:1px dashed var(--ai-line);color:var(--text)}
+.tb-ai__skel{display:block;height:22px;width:62%;margin-top:6px;border-radius:999px;background:var(--surface-hover);animation:tb-pulse 1.1s ease-in-out infinite}
+@keyframes tb-pulse{50%{opacity:.5}}
+.tb-picked{display:flex;align-items:center;gap:8px;flex:1;color:var(--text)}
+.tb-picked svg{color:var(--ai)}
+@media (prefers-reduced-motion:reduce){.tb-ai__skel{animation-duration:2.4s}}
+/* Opening: Open Shelfmark fills the footer; once the page is ready Save opens up beside it. */
+.op-foot{display:flex;align-items:center;margin-top:auto}
+.op-foot > .sm-btn{flex:1;min-width:0}
+.op-slot{display:flex;flex:0 1 0;max-width:0;opacity:0;overflow:hidden;margin-left:0;transition:flex-grow var(--duration-base) var(--ease-out),max-width var(--duration-base) var(--ease-out),margin-left var(--duration-base) var(--ease-out),opacity var(--duration-base) var(--ease-out)}
+.op-slot > .sm-btn{flex:1;white-space:nowrap}
+.op-foot.is-ready .op-slot{flex-grow:1;max-width:100%;margin-left:8px;opacity:1}
+.op-skel{display:flex;flex-direction:column;gap:16px}
+.op-skel span{display:block;height:24px;border-radius:999px;background:var(--surface-hover)}
+@media (prefers-reduced-motion:reduce){.op-slot{transition:opacity var(--duration-base) linear}}
+.ex-tabs-btn .sm-badge{height:18px;padding:0 6px;font-size:11px}
+.tb-all{display:flex;align-items:center;gap:10px;padding:0 10px;min-height:32px;font-size:13px;line-height:18px}
+.tb-all__count{flex:1;font-weight:600}
+.tb-all__meta{color:var(--text-muted);font-size:12px}
+.tb-list{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;margin:0 -8px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.tb-row{flex:none;display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 18px;cursor:pointer;border-radius:12px}
+.tb-row:hover{background:var(--surface-hover)}
+.tb-fav{width:20px;height:20px;border-radius:6px;flex:none;display:grid;place-items:center;font-size:11px;font-weight:600;background:var(--surface-pressed);color:var(--text)}
+.tb-row__text{flex:1;min-width:0;display:flex;flex-direction:column}
+.tb-row__title{font-size:13px;line-height:18px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-row__host{font-size:12px;line-height:16px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-state{flex:none;width:22px;height:22px;display:grid;place-items:center}
+.tb-tick{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--surface);display:grid;place-items:center;animation:ex-pop 240ms var(--ease-spring) both}
+.tb-spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--surface-pressed);border-top-color:var(--accent);animation:tb-spin .8s linear infinite}
+@keyframes tb-spin{to{transform:rotate(360deg)}}
+.tb-compact{display:flex;flex-direction:column;gap:10px}
+.tb-progress{display:flex;flex-direction:column;gap:8px;padding:0 10px;min-height:32px;justify-content:center}
+.tb-progress__label{font-size:13px;line-height:18px;font-weight:600}
+.tb-progress__bar{height:2px;border-radius:2px;background:var(--surface-hover);overflow:hidden}
+.tb-progress__fill{display:block;height:100%;width:44%;background:var(--accent);border-radius:2px}
+.tb-stack{position:relative;width:200px;height:132px;margin-bottom:6px}
+.tb-card{position:absolute;left:30px;top:10px;width:140px;background:var(--surface);border-radius:14px;box-shadow:var(--shadow-card);overflow:hidden;animation:tb-drop 520ms var(--ease-spring) backwards}
+.tb-card--l{transform:rotate(-9deg) translate(-26px,0)}
+.tb-card--r{transform:rotate(8deg) translate(26px,0);animation-delay:80ms}
+.tb-card--c{animation-delay:160ms}
+.tb-card__media{aspect-ratio:16/10;background:var(--accent-bg)}
+.tb-card--l .tb-card__media{background:var(--surface-hover)}
+.tb-card--r .tb-card__media{background:var(--surface-pressed)}
+.tb-card__line{height:8px;border-radius:4px;background:var(--surface-pressed);margin:9px 10px 0}
+.tb-card__line + .tb-card__line{width:50%;margin-bottom:10px;margin-top:6px}
+@keyframes tb-drop{from{opacity:0;transform:rotate(0deg) translate(0,-60px) scale(.8)}}
+.tb-fail{display:flex;flex-direction:column;gap:2px;border-radius:16px;background:var(--bg);padding:6px 0}
+.tb-fail .tb-row{min-height:44px;padding:4px 12px;cursor:default}
+.tb-fail .tb-row:hover{background:transparent}
+.tb-fail__why{font-size:12px;line-height:16px;color:var(--danger)}
+@media (prefers-reduced-motion:reduce){.tb-card,.tb-tick{animation:none}.tb-spin{animation-duration:2.4s}}
+
+.pk-list{flex:1;min-height:0;display:flex;flex-direction:column;overflow:auto;margin:0 -6px}
+.pk-item{flex:none;width:100%;border:0;background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.pk-ai{display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 10px;border-radius:14px}
+.pk-ai__icon{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;background:var(--ai-bg);color:var(--ai);flex:none}
+.pk-ai__text{flex:1;min-width:0;display:flex;flex-direction:column}
+.pk-ai__title{font-size:14px;line-height:19px;font-weight:500}
+.pk-ai__sub{font-size:12px;line-height:16px;color:var(--text-muted)}
+.pk-sep{flex:none;height:1px;background:var(--border);margin:6px 10px}
+.pk-tick{margin-left:auto;color:var(--accent);display:inline-flex}
+.pk-sum{margin:0;font-size:12px;line-height:16px;color:var(--text-muted)}
+</style>
+</helmet>
+<div data-theme="{{theme}}" class="sm-root dir-a a-board" style="background: var(--bg); color: var(--text); font-family: Onest, system-ui, sans-serif;">
+
+<section class="a-state">
+<h2 class="a-cap">1 · Form: This page, with the switch to All tabs</h2>
+<div class="ex-pop" role="dialog" aria-label="Save to Shelfmark: this page">
+<div class="ex-head"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><div class="sm-seg sm-seg--slide ex-mode" role="radiogroup" aria-label="What to save" style="--seg-n: 2; --seg-i: 0;"><button class="sm-seg__item is-active" role="radio" aria-checked="true">This page</button><button class="sm-seg__item" role="radio" aria-checked="false">All tabs (11)</button></div></div><div class="ex-preview"><span class="ex-thumb"></span><span style="min-width: 0;"><span class="ex-host">angular.dev</span><span class="ex-title">Signal Forms in Angular</span></span></div>
+<div class="sm-field"><label class="sm-field__label">Folder</label><button class="sm-field__control" style="text-align: left; font: inherit; color: inherit;"><span class="sm-fic sm-fic--sm fc-ocean" aria-hidden="true"></span><span class="sm-select__value">Angular</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+<div class="sm-field"><label class="sm-field__label">Tags</label><div class="sm-field__control sm-taginput"><input placeholder="Add tag"></div></div>
+<div class="sm-field"><label class="sm-field__label">Note</label><div class="sm-field__control"><input placeholder="Why are you saving this?"></div></div><div class="ex-foot ex-foot--wrap"><button class="sm-btn sm-btn--ai"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/></svg>Fill in with AI</button><button class="sm-btn sm-btn--secondary" style="flex: 1;">Open Shelfmark</button><button class="sm-btn sm-btn--primary" style="flex: 1;">Save</button></div>
+</div>
+<p class="a-note">The header switch "This page / All tabs (11)" replaces the title and shows only when the window has more than one savable tab (the count needs no permission). This page is the default and is the single save, unchanged. Open Shelfmark is an outlined (secondary) pill button in every state, half the footer next to the primary button.</p>
+</section>
+<section class="a-state">
+<h2 class="a-cap">2 · Same form: All tabs</h2>
+<div class="ex-pop ex-pop--tabs" role="dialog" aria-label="Save to Shelfmark: all tabs">
+<div class="ex-head"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><div class="sm-seg sm-seg--slide ex-mode" role="radiogroup" aria-label="What to save" style="--seg-n: 2; --seg-i: 1;"><button class="sm-seg__item" role="radio" aria-checked="false">This page</button><button class="sm-seg__item is-active" role="radio" aria-checked="true">All tabs (11)</button></div></div><label class="tb-all"><input type="checkbox" class="sm-check is-mixed" aria-label="Select all tabs"><span class="tb-all__count">7 of 9 selected</span><span class="tb-all__meta">2 already saved</span></label>
+<div class="tb-list" role="group" aria-label="Open tabs"><label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">A</span><span class="tb-row__text"><span class="tb-row__title">Signal Forms in Angular</span><span class="tb-row__host">angular.dev</span></span></label><label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">A</span><span class="tb-row__text"><span class="tb-row__title">Zoneless change detection</span><span class="tb-row__host">angular.dev</span></span></label><label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">N</span><span class="tb-row__text"><span class="tb-row__title">NgRx SignalStore: custom features</span><span class="tb-row__host">ngrx.io</span></span></label><label class="tb-row"><input type="checkbox" class="sm-check"><span class="tb-fav">G</span><span class="tb-row__text"><span class="tb-row__title">angular/angular issues</span><span class="tb-row__host">github.com</span></span><span class="sm-badge">Saved</span></label><label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">Y</span><span class="tb-row__text"><span class="tb-row__title">Signals in 20 minutes, a practical intro</span><span class="tb-row__host">youtube.com</span></span></label><label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">M</span><span class="tb-row__text"><span class="tb-row__title">View transitions API</span><span class="tb-row__host">developer.mozilla.org</span></span></label><label class="tb-row"><input type="checkbox" class="sm-check"><span class="tb-fav">C</span><span class="tb-row__text"><span class="tb-row__title">Can I use: anchor positioning</span><span class="tb-row__host">caniuse.com</span></span><span class="sm-badge">Saved</span></label><label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">W</span><span class="tb-row__text"><span class="tb-row__title">Interaction to Next Paint</span><span class="tb-row__host">web.dev</span></span></label><label class="tb-row"><input type="checkbox" class="sm-check" checked><span class="tb-fav">C</span><span class="tb-row__text"><span class="tb-row__title">CSS container queries guide</span><span class="tb-row__host">css-tricks.com</span></span></label></div>
+<div class="sm-field"><label class="sm-field__label">Folder</label><button class="sm-field__control" style="text-align: left; font: inherit; color: inherit;"><span class="sm-fic sm-fic--sm fc-ocean" aria-hidden="true"></span><span class="sm-select__value">Angular</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+<div class="sm-field"><label class="sm-field__label">Tags for all</label><div class="sm-field__control sm-taginput"><input placeholder="Add tag"></div></div><div class="ex-foot ex-foot--wrap"><button class="sm-btn sm-btn--ai"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/></svg>Sort 7 links with AI</button><button class="sm-btn sm-btn--secondary" style="flex: 1;">Open Shelfmark</button><button class="sm-btn sm-btn--primary" style="flex: 1;">Save 7 links</button></div>
+</div>
+<p class="a-note">All tabs swaps the preview for the tab list in place; Note hides (it is about one page). All ticked except tabs already in the library (muted "Saved" badge); Select all shows a dash when only some are ticked. chrome:// pages and repeated addresses are left out; at most 100 tabs; the list scrolls inside. Folder is for all links, "Tags for all" are added to each. The AI button reads "Sort N links with AI". Save says the count and is disabled at 0. The first switch to All tabs makes Chrome ask once for the optional tabs permission (its own prompt, no screen of ours); declined, the popup stays on This page.</p>
+</section>
+<section class="a-state">
+<h2 class="a-cap">2b · All tabs after Sort with AI</h2>
+<div class="ex-pop ex-pop--tabs" role="dialog" aria-label="All tabs sorted by AI">
+<div class="ex-head"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><div class="sm-seg sm-seg--slide ex-mode" role="radiogroup" aria-label="What to save" style="--seg-n: 2; --seg-i: 1;"><button class="sm-seg__item" role="radio" aria-checked="false">This page</button><button class="sm-seg__item is-active" role="radio" aria-checked="true">All tabs (11)</button></div></div><label class="tb-all"><input type="checkbox" class="sm-check is-mixed" aria-label="Select all tabs"><span class="tb-all__count">7 of 9 selected</span><span class="tb-all__meta">2 already saved</span></label>
+<div class="tb-list" role="group" aria-label="Open tabs"><label class="tb-row tb-row--ai"><input type="checkbox" class="sm-check" checked><span class="tb-fav">A</span><span class="tb-row__text"><span class="tb-row__title">Signal Forms in Angular</span><span class="tb-row__host">angular.dev</span><span class="tb-ai"><span class="tb-ai__spark" title="Suggested by AI, may be inaccurate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/></svg></span><button class="tb-ai__folder" aria-label="Folder for this link: Angular. Change"><span class="tb-ai__tile" style="background: var(--folder-ocean);"></span>Angular</button><span class="tb-ai__tag">signals</span><span class="tb-ai__tag">forms</span></span></span></label><label class="tb-row tb-row--ai"><input type="checkbox" class="sm-check" checked><span class="tb-fav">A</span><span class="tb-row__text"><span class="tb-row__title">Zoneless change detection</span><span class="tb-row__host">angular.dev</span><span class="tb-ai"><span class="tb-ai__spark" title="Suggested by AI, may be inaccurate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/></svg></span><button class="tb-ai__folder" aria-label="Folder for this link: Angular. Change"><span class="tb-ai__tile" style="background: var(--folder-ocean);"></span>Angular</button><span class="tb-ai__tag">performance</span></span></span></label><label class="tb-row tb-row--ai"><input type="checkbox" class="sm-check" checked><span class="tb-fav">N</span><span class="tb-row__text"><span class="tb-row__title">NgRx SignalStore: custom features</span><span class="tb-row__host">ngrx.io</span><span class="tb-ai"><span class="tb-ai__spark" title="Suggested by AI, may be inaccurate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/></svg></span><button class="tb-ai__folder" aria-label="Folder for this link: Angular. Change"><span class="tb-ai__tile" style="background: var(--folder-ocean);"></span>Angular</button><span class="tb-ai__tag">state</span></span></span></label><label class="tb-row"><input type="checkbox" class="sm-check"><span class="tb-fav">G</span><span class="tb-row__text"><span class="tb-row__title">angular/angular issues</span><span class="tb-row__host">github.com</span></span><span class="sm-badge">Saved</span></label><label class="tb-row tb-row--ai"><input type="checkbox" class="sm-check" checked><span class="tb-fav">Y</span><span class="tb-row__text"><span class="tb-row__title">Signals in 20 minutes, a practical intro</span><span class="tb-row__host">youtube.com</span><span class="tb-ai"><span class="tb-ai__spark" title="Suggested by AI, may be inaccurate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/></svg></span><button class="tb-ai__folder" aria-label="Folder for this link: Courses. Change"><span class="tb-ai__tile" style="background: var(--folder-plum);"></span>Courses</button><span class="tb-ai__tag">video</span><span class="tb-ai__tag">signals</span></span></span></label><label class="tb-row tb-row--ai"><input type="checkbox" class="sm-check" checked><span class="tb-fav">M</span><span class="tb-row__text"><span class="tb-row__title">View transitions API</span><span class="tb-row__host">developer.mozilla.org</span><span class="tb-ai"><span class="tb-ai__spark" title="Suggested by AI, may be inaccurate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/></svg></span><button class="tb-ai__folder" aria-label="Folder for this link: Web platform. Change"><span class="tb-ai__tile" style="background: var(--folder-teal);"></span>Web platform</button><span class="tb-ai__tag">css</span><span class="tb-ai__tag tb-ai__tag--new">animation</span></span></span></label><label class="tb-row"><input type="checkbox" class="sm-check"><span class="tb-fav">C</span><span class="tb-row__text"><span class="tb-row__title">Can I use: anchor positioning</span><span class="tb-row__host">caniuse.com</span></span><span class="sm-badge">Saved</span></label><label class="tb-row tb-row--ai"><input type="checkbox" class="sm-check" checked><span class="tb-fav">W</span><span class="tb-row__text"><span class="tb-row__title">Interaction to Next Paint</span><span class="tb-row__host">web.dev</span><span class="tb-ai"><span class="tb-ai__spark" title="Suggested by AI, may be inaccurate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/></svg></span><button class="tb-ai__folder" aria-label="Folder for this link: Web platform. Change"><span class="tb-ai__tile" style="background: var(--folder-teal);"></span>Web platform</button><span class="tb-ai__tag">performance</span></span></span></label><label class="tb-row tb-row--ai"><input type="checkbox" class="sm-check" checked><span class="tb-fav">C</span><span class="tb-row__text"><span class="tb-row__title">CSS container queries guide</span><span class="tb-row__host">css-tricks.com</span><span class="tb-ai"><span class="tb-ai__spark" title="Suggested by AI, may be inaccurate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/></svg></span><button class="tb-ai__folder" aria-label="Folder for this link: Web platform. Change"><span class="tb-ai__tile" style="background: var(--folder-teal);"></span>Web platform</button><span class="tb-ai__tag">css</span></span></span></label></div>
+<div class="sm-field"><label class="sm-field__label">Folder</label><button class="sm-field__control" style="text-align: left; font: inherit; color: inherit;"><span class="tb-picked"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/></svg>Picked by AI for each link</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+<div class="sm-field"><label class="sm-field__label">Tags for all</label><div class="sm-field__control sm-taginput"><input placeholder="Add tag"></div></div><div class="ex-foot"><button class="sm-btn sm-btn--secondary" style="flex: 1;">Open Shelfmark</button><button class="sm-btn sm-btn--primary" style="flex: 1;">Save 7 links</button></div>
+</div>
+<p class="a-note">Sort with AI gives each ticked tab its own folder and tags: a third line under the address with the AI spark, the folder (its colour tile and name) and 1 to 2 tags. AI picks only your existing folders; a tag you do not have yet is dashed (new, created on save). While it works each row shows a grey placeholder line and the button says "Sorting N links…". Then the button goes away. Tap a row's folder to pick another one for that link; the Folder field now says "Picked by AI for each link". Each tab counts as one link of the monthly AI allowance; if it runs out, the rest keep the Folder field's folder and the quiet AI line says so. A tab ticked after sorting has no suggestions and takes the Folder field's folder.</p>
+</section>
+<section class="a-state">
+<h2 class="a-cap">2c · Tap "Picked by AI for each link": folder for all</h2>
+<div class="ex-pop" role="dialog" aria-label="Folder for all links">
+<div class="ex-head"><button class="sm-btn sm-btn--ghost sm-btn--icon sm-btn--sm" aria-label="Back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h3>Folder for 9 links</h3></div>
+<div class="sm-field__control"><input placeholder="Find a folder" aria-label="Find a folder"></div>
+<div class="pk-list" role="listbox" aria-label="Folders">
+<button class="pk-item pk-ai" role="option" aria-selected="true" style="background: var(--accent-bg);"><span class="pk-ai__icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/></svg></span><span class="pk-ai__text"><span class="pk-ai__title">Keep AI picks</span><span class="pk-ai__sub">Each link its own folder</span></span><span class="pk-tick"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></button>
+<div class="pk-sep" role="presentation"></div>
+<button class="pk-item sm-menu__item" role="option" aria-selected="false"><span class="sm-fic sm-fic--sm fc-graphite" aria-hidden="true"></span>Unsorted</button><button class="pk-item sm-menu__item" role="option" aria-selected="false"><span class="sm-fic sm-fic--sm fc-ocean" aria-hidden="true"></span>Angular</button><button class="pk-item sm-menu__item" role="option" aria-selected="false"><span class="sm-fic sm-fic--sm fc-plum" aria-hidden="true"></span>Courses</button><button class="pk-item sm-menu__item" role="option" aria-selected="false"><span class="sm-fic sm-fic--sm fc-teal" aria-hidden="true"></span>Web platform</button><button class="pk-item sm-menu__item" role="option" aria-selected="false"><span class="sm-fic sm-fic--sm fc-amber" aria-hidden="true"></span>Tools</button>
+</div>
+<p class="pk-sum" role="status">Each link keeps the folder AI picked. Tap a folder to put all 9 in it.</p>
+<div class="ex-foot"><button class="sm-btn sm-btn--secondary" style="flex: 1;">New folder</button></div>
+</div>
+<p class="a-note">The usual folder picker, with one extra first row, "Keep AI picks", ticked while each link keeps its own AI folder. Tap a folder: all links go there (the AI tags stay). Tap "Keep AI picks" to undo. Opened from a row's folder chip it picks the folder of that one link (no Keep AI picks row, no Unsorted row, no New folder). Nothing is saved until Save.</p>
+</section>
+<section class="a-state">
+<h2 class="a-cap">3 · Saved</h2>
+<div class="ex-pop" role="dialog" aria-label="Tabs saved">
+<div class="ex-center"><div class="tb-stack" aria-hidden="true"><div class="tb-card tb-card--l"><div class="tb-card__media"></div><div class="tb-card__line"></div><div class="tb-card__line"></div></div><div class="tb-card tb-card--r"><div class="tb-card__media"></div><div class="tb-card__line"></div><div class="tb-card__line"></div></div><div class="tb-card tb-card--c"><div class="tb-card__media"></div><div class="tb-card__line"></div><div class="tb-card__line"></div></div></div>
+<h3>7 links saved to Angular</h3><p class="ex-text">You can close the tabs now: they are in your library.</p><button class="sm-btn sm-btn--secondary" style="margin-top: 6px;">Close 7 saved tabs</button></div>
+<div class="ex-foot"><button class="sm-btn sm-btn--secondary" style="flex: 1;">Open in Shelfmark</button><button class="sm-btn sm-btn--primary" style="flex: 1;">Done</button></div>
+</div>
+<p class="a-note">One request, POST /api/links/batch; the spinner sits in the Save button as for one link. Then the stack of three cards lands (at rest under reduced motion). "N links saved to <folder>", or "N links saved" when AI spread them over several folders. "Close N saved tabs" closes exactly the saved tabs; it is offered, never automatic. A failed batch is the usual error state with Try again (the same idempotency keys are resent).</p>
+</section>
+<section class="a-state">
+<h2 class="a-cap">3b · Some tabs were skipped</h2>
+<div class="ex-pop" role="dialog" aria-label="Some tabs were skipped">
+<div class="ex-head"><span style="width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--warning-bg); color: var(--warning); flex: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><h3>7 of 9 saved</h3></div>
+<p class="ex-text">These 2 tabs were skipped. The rest are in your library.</p>
+<div class="tb-fail"><div class="tb-row"><span class="tb-fav">M</span><span class="tb-row__text"><span class="tb-row__title">View transitions API</span><span class="tb-fail__why">Address is too long</span></span></div><div class="tb-row"><span class="tb-fav">W</span><span class="tb-row__text"><span class="tb-row__title">Interaction to Next Paint</span><span class="tb-fail__why">Same address as another tab</span></span></div></div>
+<button class="sm-btn sm-btn--secondary" style="align-self: center;">Close 7 saved tabs</button>
+<div class="ex-foot"><button class="sm-btn sm-btn--secondary" style="flex: 1;">Open in Shelfmark</button><button class="sm-btn sm-btn--primary" style="flex: 1;">Done</button></div>
+</div>
+<p class="a-note">Tabs the API left out (address too long, same address as another tab) are named with a short reason; the rest are saved.</p>
+</section>
+<section class="a-state">
+<h2 class="a-cap">0 · Opening: Open Shelfmark full width</h2>
+<div class="ex-pop" role="dialog" aria-label="Popup opening">
+<div class="ex-head"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><h3>Save to Shelfmark</h3></div>
+<div class="ex-preview"><span class="ex-thumb" style="background: var(--surface-pressed);"></span><span style="min-width: 0;"><span class="ex-host">github.com</span><span class="ex-title">fix(ui): visible open-menu button and clear dissolve</span></span></div>
+<div class="op-skel" aria-hidden="true"><span style="width: 82%;"></span><span style="width: 64%;"></span><span style="width: 46%;"></span></div>
+<div class="op-foot"><button class="sm-btn sm-btn--secondary">Open Shelfmark</button></div>
+</div>
+<p class="a-note">While the popup loads, Open Shelfmark (outlined pill) fills the footer, so there is always a way out. The skeleton shows only if loading takes over 300 ms.</p>
+</section>
+<section class="a-state">
+<h2 class="a-cap">0b · Ready: the primary button opens up</h2>
+<div class="ex-pop" role="dialog" aria-label="Popup ready">
+<div class="ex-head"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="6" style="fill: var(--primary)"/><path d="M19 5h6v11l-3-2.4-3 2.4z" style="fill: var(--logo-bookmark)"/></svg><div class="sm-seg sm-seg--slide ex-mode" role="radiogroup" aria-label="What to save" style="--seg-n: 2; --seg-i: 0;"><button class="sm-seg__item is-active" role="radio" aria-checked="true">This page</button><button class="sm-seg__item" role="radio" aria-checked="false">All tabs (11)</button></div></div><div class="ex-preview"><span class="ex-thumb"></span><span style="min-width: 0;"><span class="ex-host">angular.dev</span><span class="ex-title">Signal Forms in Angular</span></span></div>
+<div class="sm-field"><label class="sm-field__label">Folder</label><button class="sm-field__control" style="text-align: left; font: inherit; color: inherit;"><span class="sm-fic sm-fic--sm fc-ocean" aria-hidden="true"></span><span class="sm-select__value">Angular</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+<div class="sm-field"><label class="sm-field__label">Tags</label><div class="sm-field__control sm-taginput"><input placeholder="Add tag"></div></div>
+<div class="sm-field"><label class="sm-field__label">Note</label><div class="sm-field__control"><input placeholder="Why are you saving this?"></div></div><div class="op-foot is-ready"><button class="sm-btn sm-btn--secondary">Open Shelfmark</button><span class="op-slot"><button class="sm-btn sm-btn--primary">Save</button></span></div>
+</div>
+<p class="a-note">When the form (or Try again on the error state) is ready, the primary button opens up beside Open Shelfmark: width and fade, 200 ms ease-out from the duration and easing tokens; reduced motion: fade only. It plays once, on the first screen after opening, not when the picker returns to the form.</p>
+</section>
+<section class="a-state">
+<h2 class="a-cap">Data and privacy</h2>
+<p class="ex-text" style="max-width: 360px;">Addresses and titles of the other tabs stay in the browser. Only the ticked tabs are sent, when Save or Sort with AI is pressed. The privacy page and the store listing say so.</p>
+<p class="a-note">Needs the optional <code>tabs</code> permission (<code>optional_permissions</code>), asked at run time on the first switch to All tabs.</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: (this.props.dark ?? false) ? 'dark' : 'light' };
+  }
+}
+</script>
+</body>
+</html>

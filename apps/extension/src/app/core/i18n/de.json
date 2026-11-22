@@ -22,7 +22,12 @@
       "note": "Notiz",
       "notePlaceholder": "Warum speichern Sie das?",
       "save": "Speichern",
-      "newBadge": "neu"
+      "newBadge": "neu",
+      "tagsForAll": "Tags für alle",
+      "saveCount": {
+        "one": "{{count}} Link speichern",
+        "other": "{{count}} Links speichern"
+      }
     },
     "picker": {
       "title": "Ordner wählen",
@@ -30,7 +35,14 @@
       "search": "Ordner suchen",
       "list": "Ordner",
       "noResults": "Kein Ordner mit diesem Namen",
-      "newFolder": "Neuer Ordner"
+      "newFolder": "Neuer Ordner",
+      "keepAi": "KI-Auswahl behalten",
+      "keepAiHint": "Jeder Link in seinen eigenen Ordner",
+      "titleAll": {
+        "one": "Ordner für {{count}} Link",
+        "other": "Ordner für {{count}} Links"
+      },
+      "titleOne": "Ordner für diesen Link"
     },
     "newFolder": {
       "title": "Neuer Ordner",
@@ -92,6 +104,55 @@
       "dismiss": "Vorschlag {{name}} verwerfen",
       "filling": "Wird ausgefüllt …",
       "tagsByAi": "Tags von der KI"
+    },
+    "mode": {
+      "label": "Was speichern",
+      "page": "Diese Seite",
+      "tabs": "Alle Tabs ({{count}})"
+    },
+    "tabs": {
+      "list": "Offene Tabs",
+      "loading": "Tabs werden gelesen",
+      "selected": "{{selected}} von {{total}} ausgewählt",
+      "alreadySaved": "{{count}} schon gespeichert",
+      "savedBadge": "Gespeichert",
+      "pickedByAi": "Von der KI für jeden Link gewählt",
+      "changeFolder": "Ordner für diesen Link: {{folder}}. Ändern",
+      "sort": {
+        "one": "{{count}} Link mit KI sortieren",
+        "other": "{{count}} Links mit KI sortieren"
+      },
+      "sorting": {
+        "one": "{{count}} Link wird sortiert…",
+        "other": "{{count}} Links werden sortiert…"
+      },
+      "limit": "Vorschläge pausieren bis {{date}}. Die übrigen Links kommen in den Ordner aus dem Feld Ordner.",
+      "sortedDone": "Links nach den KI-Vorschlägen sortiert"
+    },
+    "savedTabs": {
+      "title": {
+        "one": "{{count}} Link in {{folder}} gespeichert",
+        "other": "{{count}} Links in {{folder}} gespeichert"
+      },
+      "titleMixed": {
+        "one": "{{count}} Link gespeichert",
+        "other": "{{count}} Links gespeichert"
+      },
+      "text": "Sie können die Tabs jetzt schließen: Sie sind in Ihrer Bibliothek.",
+      "close": {
+        "one": "{{count}} gespeicherten Tab schließen",
+        "other": "{{count}} gespeicherte Tabs schließen"
+      },
+      "closed": "Die gespeicherten Tabs sind geschlossen.",
+      "partial": "{{saved}} von {{total}} gespeichert",
+      "skipped": {
+        "one": "Dieser Tab wurde übersprungen. Die übrigen sind in Ihrer Bibliothek.",
+        "other": "Diese {{count}} Tabs wurden übersprungen. Die übrigen sind in Ihrer Bibliothek."
+      },
+      "reason": {
+        "urlTooLong": "Adresse ist zu lang",
+        "duplicateInBatch": "Gleiche Adresse wie ein anderer Tab"
+      }
     }
   }
 }

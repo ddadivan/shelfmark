@@ -1,9 +1,24 @@
 <div class="ext-screen__head">
   <ui-logo variant="mark" />
-  <h1 class="ext-screen__title">{{ 'popup.form.title' | transloco }}</h1>
+  @if (store.tabList.switchShown()) {
+    <h1 class="form__sr-title">{{ 'popup.form.title' | transloco }}</h1>
+    <ui-segmented-control
+      #mode
+      class="form__mode"
+      [ariaLabel]="'popup.mode.label' | transloco"
+      [options]="modeOptions()"
+      [value]="store.tabList.mode()"
+      [disabled]="locked()"
+      (valueChange)="onMode($event)"
+    />
+  } @else {
+    <h1 class="ext-screen__title">{{ 'popup.form.title' | transloco }}</h1>
+  }
 </div>
 
-@if (store.page(); as page) {
+@if (store.tabList.active()) {
+  <ext-popup-tab-list />
+} @else if (store.page(); as page) {
   <div class="ext-preview">
     <span class="ext-preview__thumb" aria-hidden="true"></span>
     <span class="ext-preview__text">
@@ -13,11 +28,11 @@
   </div>
 }
 
-<div class="form">
+<div class="form" [class.form--tabs]="store.tabList.active()">
   <div class="form__folder">
     <span class="form__label-row">
       <span class="form__label" aria-hidden="true">{{ 'popup.form.folder' | transloco }}</span>
-      @if (store.ai.folderMarked()) {
+      @if (store.ai.folderMarked() && !store.tabList.active()) {
         <ui-icon
           name="spark"
           [size]="ICON_SIZE.Sm"
@@ -31,27 +46,36 @@
       iconRight="chevron-right"
       ariaHaspopup="dialog"
       [ariaLabel]="'popup.form.chooseFolder' | transloco: { folder: folderName() }"
-      [disabled]="store.saving() || store.ai.busy()"
+      [disabled]="locked()"
       (click)="store.openPicker()"
     >
       <span class="form__folder-value">
-        @if (store.newFolderName()) {
+        @if (store.tabsAi.picksActive() && store.tabList.active()) {
+          <span class="form__picked">
+            <ui-icon name="spark" [size]="ICON_SIZE.Sm" />
+            <span class="form__folder-name">{{ 'popup.tabs.pickedByAi' | transloco }}</span>
+          </span>
+        } @else if (store.newFolderName()) {
           <ui-folder-icon size="sm" icon="folder-plus" />
         } @else if (store.folder(); as folder) {
           <ui-folder-icon size="sm" [icon]="folder.icon" [colour]="folder.colour" />
         } @else {
           <ui-folder-icon size="sm" icon="inbox" />
         }
-        <span class="form__folder-name">{{ folderName() }}</span>
+        @if (!(store.tabsAi.picksActive() && store.tabList.active())) {
+          <span class="form__folder-name">{{ folderName() }}</span>
+        }
         @if (store.newFolderName()) {
           <ui-badge [tone]="BADGE_TONE.Accent">{{ 'popup.form.newBadge' | transloco }}</ui-badge>
         }
       </span>
     </ui-button>
     @if (store.ruleHint(); as domain) {
-      <span class="form__hint">{{ 'popup.form.ruleHint' | transloco: { domain } }}</span>
+      @if (!store.tabList.active()) {
+        <span class="form__hint">{{ 'popup.form.ruleHint' | transloco: { domain } }}</span>
+      }
     }
-    @if (store.recentFolders().length > 0) {
+    @if (store.recentFolders().length > 0 && !store.tabList.active()) {
       <div
         class="form__recent"
         role="group"
@@ -65,7 +89,7 @@
                 ? CHIP_VARIANT.Tag
                 : CHIP_VARIANT.Neutral
             "
-            [disabled]="store.saving() || store.ai.busy()"
+            [disabled]="locked()"
             (clicked)="store.chooseFolder(recent.id)"
             >{{ recent.folder?.name ?? ('popup.unsorted' | transloco) }}</ui-chip
           >
@@ -78,7 +102,7 @@
        the AI tags need no extra row in the fixed popup. -->
   <div class="form__tags">
     <ui-tag-input
-      [label]="'popup.form.tags' | transloco"
+      [label]="(store.tabList.active() ? 'popup.form.tagsForAll' : 'popup.form.tags') | transloco"
       [placeholder]="'popup.form.tagsPlaceholder' | transloco"
       [suggestions]="tagSuggestions()"
       [maxTags]="LINK_LIMIT.TagsMax"
@@ -89,10 +113,10 @@
       [removedLabel]="'popup.form.tagsRemoved' | transloco"
       [duplicateLabel]="'popup.form.tagsDuplicate' | transloco"
       [listLabel]="'popup.form.tagsList' | transloco"
-      [disabled]="store.saving() || store.ai.busy()"
+      [disabled]="locked()"
       [(value)]="store.chosenTags"
     />
-    @if (store.ai.tagsMarked()) {
+    @if (store.ai.tagsMarked() && !store.tabList.active()) {
       <ui-badge
         class="form__tags-mark"
         icon="spark"
@@ -102,7 +126,7 @@
     }
   </div>
 
-  @if (store.ai.chips().length > 0) {
+  @if (store.ai.chips().length > 0 && !store.tabList.active()) {
     <div class="form__ai">
       <ui-suggestion-row
         [label]="'popup.ai.suggested' | transloco"
@@ -123,14 +147,16 @@
     </div>
   }
 
-  <ui-input
-    [label]="'popup.form.note' | transloco"
-    [placeholder]="'popup.form.notePlaceholder' | transloco"
-    [disabled]="store.saving()"
-    [(value)]="store.note"
-  />
+  @if (!store.tabList.active()) {
+    <ui-input
+      [label]="'popup.form.note' | transloco"
+      [placeholder]="'popup.form.notePlaceholder' | transloco"
+      [disabled]="store.saving()"
+      [(value)]="store.note"
+    />
+  }
 
-  @if (store.ai.line(); as line) {
+  @if (line(); as line) {
     <ui-ai-line
       role="status"
       [text]="lineText()"
@@ -140,34 +166,36 @@
   }
 </div>
 
-<span class="form__live" aria-live="polite">{{
-  store.ai.filled() ? ('popup.ai.done' | transloco) : ''
-}}</span>
+<span class="form__live" aria-live="polite">{{ liveText() }}</span>
 
-<div class="ext-screen__foot form__foot">
-  @if (store.ai.buttonShown()) {
+<div class="ext-screen__foot">
+  @if (aiButtonShown()) {
     <ui-button
       class="form__ai-button"
       block
       [variant]="BUTTON_VARIANT.Ai"
       iconLeft="spark"
-      [loading]="store.ai.busy()"
-      [disabled]="store.saving()"
-      (click)="store.fillWithAi()"
-      >{{ (store.ai.busy() ? 'popup.ai.filling' : 'popup.ai.button') | transloco }}</ui-button
+      [loading]="aiBusy()"
+      [disabled]="store.saving() || (store.tabList.active() && store.tabList.selectedCount() === 0)"
+      (click)="onAi()"
+      >{{ aiLabel() }}</ui-button
     >
   }
-  <ui-button [variant]="BUTTON_VARIANT.Ghost" (click)="store.openApp()">{{
-    'popup.openApp' | transloco
-  }}</ui-button>
-  <ui-button
-    #save
-    class="form__save"
-    block
-    [variant]="BUTTON_VARIANT.Primary"
-    [loading]="store.saving()"
-    [disabled]="store.ai.busy()"
-    (click)="store.save()"
-    >{{ 'popup.form.save' | transloco }}</ui-button
-  >
+  <ui-button block (click)="store.openApp()">{{ 'popup.openApp' | transloco }}</ui-button>
+  <span class="ext-foot-slot" [class.ext-foot-slot--animate]="animateSlot">
+    <ui-button
+      #save
+      class="form__save"
+      block
+      [variant]="BUTTON_VARIANT.Primary"
+      [loading]="store.saving()"
+      [disabled]="
+        aiBusy() ||
+        store.tabList.loading() ||
+        (store.tabList.active() && store.tabList.selectedCount() === 0)
+      "
+      (click)="store.save()"
+      >{{ saveLabel() }}</ui-button
+    >
+  </span>
 </div>

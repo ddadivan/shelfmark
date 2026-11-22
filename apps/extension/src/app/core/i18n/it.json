@@ -22,7 +22,13 @@
       "note": "Nota",
       "notePlaceholder": "Perché lo salvi?",
       "save": "Salva",
-      "newBadge": "nuova"
+      "newBadge": "nuova",
+      "tagsForAll": "Tag per tutti",
+      "saveCount": {
+        "one": "Salva {{count}} link",
+        "many": "Salva {{count}} di link",
+        "other": "Salva {{count}} link"
+      }
     },
     "picker": {
       "title": "Scegli una cartella",
@@ -30,7 +36,15 @@
       "search": "Trova una cartella",
       "list": "Cartelle",
       "noResults": "Nessuna cartella con questo nome",
-      "newFolder": "Nuova cartella"
+      "newFolder": "Nuova cartella",
+      "keepAi": "Mantieni le scelte dell’IA",
+      "keepAiHint": "Ogni link nella sua cartella",
+      "titleAll": {
+        "one": "Cartella per {{count}} link",
+        "many": "Cartella per {{count}} di link",
+        "other": "Cartella per {{count}} link"
+      },
+      "titleOne": "Cartella di questo link"
     },
     "newFolder": {
       "title": "Nuova cartella",
@@ -92,6 +106,61 @@
       "dismiss": "Ignora il suggerimento {{name}}",
       "filling": "Compilazione…",
       "tagsByAi": "Tag suggeriti dall’IA"
+    },
+    "mode": {
+      "label": "Cosa salvare",
+      "page": "Questa pagina",
+      "tabs": "Tutte le schede ({{count}})"
+    },
+    "tabs": {
+      "list": "Schede aperte",
+      "loading": "Lettura delle schede",
+      "selected": "{{selected}} di {{total}} selezionate",
+      "alreadySaved": "{{count}} già salvate",
+      "savedBadge": "Salvato",
+      "pickedByAi": "Scelto dall’IA per ogni link",
+      "changeFolder": "Cartella di questo link: {{folder}}. Cambia",
+      "sort": {
+        "one": "Ordina {{count}} link con l’IA",
+        "many": "Ordina {{count}} di link con l’IA",
+        "other": "Ordina {{count}} link con l’IA"
+      },
+      "sorting": {
+        "one": "Ordino {{count}} link…",
+        "many": "Ordino {{count}} di link…",
+        "other": "Ordino {{count}} link…"
+      },
+      "limit": "Suggerimenti in pausa fino al {{date}}. Gli altri link vanno nella cartella del campo Cartella.",
+      "sortedDone": "Link ordinati con i suggerimenti dell’IA"
+    },
+    "savedTabs": {
+      "title": {
+        "one": "{{count}} link salvato in {{folder}}",
+        "many": "{{count}} di link salvati in {{folder}}",
+        "other": "{{count}} link salvati in {{folder}}"
+      },
+      "titleMixed": {
+        "one": "{{count}} link salvato",
+        "many": "{{count}} di link salvati",
+        "other": "{{count}} link salvati"
+      },
+      "text": "Ora puoi chiudere le schede: sono nella tua raccolta.",
+      "close": {
+        "one": "Chiudi {{count}} scheda salvata",
+        "many": "Chiudi {{count}} di schede salvate",
+        "other": "Chiudi {{count}} schede salvate"
+      },
+      "closed": "Le schede salvate sono chiuse.",
+      "partial": "{{saved}} di {{total}} salvati",
+      "skipped": {
+        "one": "Questa scheda è stata saltata. Le altre sono nella tua raccolta.",
+        "many": "Queste {{count}} di schede sono state saltate. Le altre sono nella tua raccolta.",
+        "other": "Queste {{count}} schede sono state saltate. Le altre sono nella tua raccolta."
+      },
+      "reason": {
+        "urlTooLong": "L’indirizzo è troppo lungo",
+        "duplicateInBatch": "Stesso indirizzo di un’altra scheda"
+      }
     }
   }
 }

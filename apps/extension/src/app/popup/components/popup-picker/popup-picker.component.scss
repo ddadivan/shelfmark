@@ -9,3 +9,36 @@
   flex-direction: column;
   min-height: 0;
 }
+
+// "Keep AI picks": the first row above the folders, in the AI colours.
+.picker__keep-body {
+  display: flex;
+  flex: 1;
+  gap: rem(10px);
+  align-items: center;
+  min-width: 0;
+  text-align: start;
+}
+
+.picker__keep-icon {
+  color: var(--ai);
+}
+
+.picker__keep-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.picker__keep-title {
+  @include type(label);
+}
+
+.picker__keep-hint {
+  @include type(caption);
+  @include line-clamp(1);
+
+  font-weight: 400;
+  color: var(--text-muted);
+}

@@ -12,7 +12,11 @@ export interface PopupHarness extends FakePopupDeps {
 }
 
 export async function createPopup(overrides: Partial<FakeData> = {}): Promise<PopupHarness> {
-  const deps = fakePopupDeps(fakeData(overrides));
+  return createPopupWith(fakePopupDeps(fakeData(overrides)));
+}
+
+/** The same with fake dependencies the test changed first (a request that never answers). */
+export async function createPopupWith(deps: FakePopupDeps): Promise<PopupHarness> {
   await TestBed.configureTestingModule({
     imports: [App],
     providers: [
