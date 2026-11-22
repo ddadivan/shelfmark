@@ -65,6 +65,7 @@ export * from './lib/components/toast';
 export * from './lib/components/tree';
 
 export * from './lib/directives/focus-target';
+export * from './lib/directives/drag-wobble';
 export * from './lib/directives/folder-colour';
 export * from './lib/directives/long-press';
 export * from './lib/directives/menu-trigger';
@@ -88,6 +89,7 @@ export * from './lib/utils/loader-timing';
 export * from './lib/utils/media';
 export * from './lib/utils/platform';
 export * from './lib/utils/reorder-drop-line';
+export * from './lib/utils/spring';
 
 export * from './lib/models/heading';
 export * from './lib/models/keyboard';
