@@ -23,8 +23,9 @@
   block-size: rem(188px);
   padding: rem(20px) rem(56px) rem(20px) var(--space-6);
   overflow: hidden;
-  background: var(--accent-bg);
+  background: var(--surface);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .extension-banner--popup {
@@ -59,7 +60,7 @@
   margin: 0;
   font-size: rem(20px);
   line-height: rem(26px);
-  color: var(--accent-text);
+  color: var(--text);
 }
 
 .extension-banner__text {

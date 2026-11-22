@@ -129,7 +129,8 @@
 }
 
 // Soft background and a small card drawing when there is no image (and no `fallback` content);
-// the tone rotates over `accent-bg`, `surface-hover` and `surface-pressed`. The opacities are
+// the tone rotates over three neutrals (`bg`, `surface-hover`, `surface-pressed`): sage is a
+// signal, never a large fill (BRAND.md), so the previews stay the colour on the screen. The opacities are
 // decorative (no text), so they are allowed.
 .ui-card__placeholder {
   position: absolute;
@@ -138,7 +139,7 @@
   transition: transform var(--duration-slow) var(--ease-out);
 
   &[data-tone='0'] {
-    background: var(--accent-bg);
+    background: var(--bg);
   }
 
   &[data-tone='2'] {
@@ -171,7 +172,7 @@
   opacity: 0.3;
 }
 
-// A custom `fallback` (for example a site letter) sits on `accent-bg` over the drawing.
+// A custom `fallback` (for example a site letter) sits on a neutral tile over the drawing.
 .ui-card__fallback {
   position: absolute;
   inset: 0;
@@ -181,8 +182,8 @@
   font-size: rem(28px);
   font-weight: 600;
   line-height: 1;
-  color: var(--accent-text);
-  background: var(--accent-bg);
+  color: var(--text-muted);
+  background: var(--surface-hover);
 
   &:empty {
     display: none;

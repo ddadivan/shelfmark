@@ -60,13 +60,15 @@
   }
 }
 
+// The active view is a selection, not an action: the sage selected look (like the current sidebar
+// row), so `primary` stays for the one main action of the view (BRAND.md).
 .ui-saved-views__chip--on {
-  color: var(--on-primary);
-  background: var(--primary);
-  border-color: var(--primary);
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  border-color: var(--accent-bg);
 
   @include hover {
-    background: var(--primary-hover);
+    background: var(--accent-bg);
   }
 }
 
@@ -111,7 +113,7 @@
 }
 
 .ui-saved-views__chip--on .ui-saved-views__count {
-  color: var(--on-primary);
+  color: var(--accent-text);
 }
 
 // Trailing "..." button, as on `ui-chip`: clipped (not hidden, it keeps its width so nothing shifts

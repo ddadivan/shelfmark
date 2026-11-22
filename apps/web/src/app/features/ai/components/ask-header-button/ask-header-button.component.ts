@@ -5,8 +5,9 @@ import { AiSettingsStore } from '../../services/ai-settings.store';
 import { AskPanelService } from '../../services/ask-panel.service';
 
 /**
- * The "Ask" pill in the shell header that opens Ask your shelf, after the search field: a tinted
- * `ai` button (spark, short label, `ai-line` edge) as high as the field. Its accessible name and
+ * The "Ask" button in the shell header that opens Ask your shelf, after the search field: the quiet
+ * `ai-ghost` button (the spark in `ai`, no fill, no edge; BRAND.md keeps `ai-fill` for the one
+ * "Fill in with AI" button). Its accessible name and
  * tooltip are the long "Ask your shelf"; nothing while Ask is off.
  */
 @Component({
@@ -17,13 +18,12 @@ import { AskPanelService } from '../../services/ask-panel.service';
     :host {
       display: inline-flex;
       flex: none;
-      --ui-button-ai-border: var(--ai-line);
     }
   `,
   template: `
     @if (settings.askOn()) {
       <ui-button
-        variant="ai"
+        variant="ai-ghost"
         iconLeft="spark"
         ariaHaspopup="dialog"
         [ariaLabel]="'ai.ask.open' | transloco"

@@ -37,6 +37,14 @@
     border-radius: 0;
   }
 
+  // A full-width info strip (the demo banner) sits on every page, so it stays neutral: a `surface`
+  // band with a bottom hairline. Sage is a signal, never a large fill (BRAND.md).
+  &--info#{&}--banner {
+    color: var(--text);
+    background: var(--surface);
+    box-shadow: inset 0 -1px 0 var(--border);
+  }
+
   &--banner &__body {
     flex: 0 1 auto;
   }
