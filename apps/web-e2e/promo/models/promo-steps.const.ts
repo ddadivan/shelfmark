@@ -9,11 +9,13 @@ import {
   folderMenu,
   libraryEntry,
   loadPage,
+  muteReminderNote,
   openAsGuest,
   openContextMenu,
   openSettings,
   pickChoice,
   pressTab,
+  reopenApp,
   useShareAccount,
 } from '../support/promo-flows';
 import { HIDE_CURSOR_CSS } from '../support/promo-director';
@@ -58,6 +60,15 @@ const SEARCH_HIT = 'Cacio e pepe';
 /** An own accent too dark for the dark base (the guard steps in), then one that passes (8:1). */
 const FAINT_ACCENT = '#1f4d47';
 const OWN_ACCENT = '#5cc2b5';
+/** Rules by domain (#398): links from this domain go to a folder with a tag. */
+const RULE_DOMAIN = 'youtube.com';
+const RULE_FOLDER = 'Recipes';
+const RULE_TAG = 'video';
+const RULE_URL = 'https://www.youtube.com/watch?v=cacio-e-pepe';
+/** Folder styling (#418, #441): a description and the background highlight of a folder. */
+const FOLDER_DESCRIPTION = 'Outfits for the season';
+/** Side by side (#386): the folder shown on the right. */
+const SPLIT_FOLDER = 'Recipes';
 /** The link the phone shares into the app from another app (the PWA share target). */
 const SHARED_URL = 'https://css-tricks.com/snippets/css/a-guide-to-flexbox/';
 
@@ -144,6 +155,37 @@ async function pickCards(context: PromoContext, indexes: readonly number[]): Pro
   await expect(page.locator('.library__selected')).toContainText(`${indexes.length} selected`);
 }
 
+/**
+ * Drags a card of the left feed onto the right half of side by side (#386), as the e2e spec does:
+ * the press near the top of the card, then small steps, until the half says "Move here".
+ */
+async function dragAcross(
+  { page, director }: PromoContext,
+  card: Locator,
+  target: Locator,
+): Promise<void> {
+  const from = await card.boundingBox();
+  const to = await target.boundingBox();
+  if (!from || !to) {
+    throw new Error('the card or the right half is not visible');
+  }
+  const start = { x: from.x + from.width / 2, y: from.y + 24 };
+  const end = { x: to.x + to.width / 2, y: to.y + to.height / 2 };
+  await page.mouse.move(start.x, start.y, { steps: 20 });
+  await director.pause(250);
+  await page.mouse.down();
+  for (let step = 1; step <= 30; step++) {
+    await page.mouse.move(
+      start.x + ((end.x - start.x) * step) / 30,
+      start.y + ((end.y - start.y) * step) / 30,
+    );
+    await director.pause(16);
+  }
+  await expect(target).toContainText('Move here');
+  await director.pause(800);
+  await page.mouse.up();
+}
+
 /** Leaves the selection mode (Done on desktop, Cancel selection on the phone). */
 async function endSelection({ page, phone, director }: PromoContext): Promise<void> {
   const header = selectionHeader(page);
@@ -180,8 +222,10 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     id: 'landing',
     chapter: 'Save',
     caption: { desktop: 'Shelfmark keeps every link you save in one place.' },
-    run: async ({ director }) => {
-      await director.pause(1400);
+    run: async (context) => {
+      // The demo has a due reminder: its note waits for the reminders scene (#465).
+      await muteReminderNote(context);
+      await context.director.pause(1400);
     },
   },
   {
@@ -283,6 +327,52 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     },
   },
 
+  {
+    id: 'rule',
+    caption: { desktop: 'Rules by domain: links from a site go to their folder, with tags.' },
+    run: async (context) => {
+      const { page, director } = context;
+      await openSettings(context, 'Library');
+      const rules = page.getByRole('group', { name: 'Rules' });
+      await glide(context, rules);
+      await director.press(rules.getByRole('button', { name: 'Add rule' }));
+      const dialog = page.getByRole('dialog', { name: 'Add rule' });
+      await director.type(dialog.getByLabel('Domain', { exact: true }), RULE_DOMAIN);
+      await director.press(dialog.getByRole('option', { name: RULE_FOLDER, exact: true }));
+      await director.type(dialog.getByRole('combobox', { name: 'Tags' }), RULE_TAG);
+      await page.keyboard.press('Enter');
+      await expect(
+        dialog.locator('ui-tag-input').getByText(RULE_TAG, { exact: true }),
+      ).toBeVisible();
+      await director.pause(300);
+      await director.press(dialog.getByRole('button', { name: 'Save rule' }));
+      await expect(dialog).toBeHidden();
+      await expect(rules.getByRole('listitem').filter({ hasText: RULE_DOMAIN })).toBeVisible();
+      await director.parkPointer();
+      await director.pause(800);
+    },
+  },
+  {
+    id: 'rule-chip',
+    caption: { desktop: 'Paste a link from that site: the rule fills in the folder and tags.' },
+    run: async (context) => {
+      const { page, director } = context;
+      await backToAllLinks(context);
+      const dialog = await openAddLink(context);
+      await director.type(dialog.getByLabel('Link', { exact: true }), RULE_URL);
+      const chip = dialog.getByText(`Rule: ${RULE_DOMAIN} → ${RULE_FOLDER}, #${RULE_TAG}`);
+      await expect(chip).toBeVisible();
+      await expect(dialog.getByLabel('Title', { exact: true })).not.toHaveValue('');
+      await director.point(chip);
+      await director.pause(1300);
+      await director.press(dialog.getByRole('button', { name: 'Save link' }));
+      await expect(dialog).toBeHidden();
+      await expect(toast(page, `Saved to ${RULE_FOLDER}`)).toBeVisible();
+      await director.parkPointer();
+      await director.pause(900);
+    },
+  },
+
   // Folders and tags
   {
     id: 'subfolder',
@@ -347,6 +437,30 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       await expect(row).toContainText(FOLDER_EMOJI);
       await director.reveal(row);
       await director.point(row);
+      await director.pause(1500);
+    },
+  },
+  {
+    id: 'highlight',
+    caption: {
+      desktop: 'Add a description and a background: the folder opens under its tint.',
+    },
+    run: async (context) => {
+      const { page, director } = context;
+      await folderMenu(context, FOLDER_STYLE, 'Color and icon…');
+      const dialog = page.getByRole('dialog', { name: FOLDER_STYLE });
+      await expect(dialog).toBeVisible();
+      await director.type(dialog.getByLabel('Description'), FOLDER_DESCRIPTION);
+      const highlight = dialog.getByRole('switch', { name: 'Highlight with background' });
+      await director.press(highlight);
+      await expect(highlight).toBeChecked();
+      await director.pause(400);
+      await director.press(dialog.getByRole('button', { name: 'Save' }));
+      await expect(dialog).toHaveCount(0);
+      await director.press(await libraryEntry(context, FOLDER_STYLE));
+      const banner = page.locator('ui-folder-banner');
+      await expect(banner.getByText(FOLDER_DESCRIPTION, { exact: true })).toBeVisible();
+      await director.parkPointer();
       await director.pause(1500);
     },
   },
@@ -551,6 +665,37 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     },
   },
   {
+    id: 'side-by-side',
+    only: PROMO_DEVICE.Desktop,
+    caption: { desktop: 'Side by side: a folder on the right, drag cards across.' },
+    run: async (context) => {
+      const { page, director } = context;
+      const toggle = page.getByRole('button', { name: 'Side by side', exact: true });
+      await director.press(toggle);
+      const picker = page.getByRole('region', { name: 'Right: choose a folder' });
+      await expect(picker).toBeVisible();
+      await director.pause(400);
+      await director.press(picker.getByRole('option', { name: SPLIT_FOLDER, exact: true }).last());
+      const right = page.getByRole('region', { name: `Right: ${SPLIT_FOLDER}` });
+      await expect(right.locator('ui-card').first()).toBeVisible();
+      await director.pause(600);
+      // Not the link the rule filed into this folder already.
+      const card = page
+        .locator('.library__scroll li.library__item')
+        .filter({ hasNotText: RULE_DOMAIN })
+        .first();
+      const title = ((await card.locator('.ui-card__link').textContent()) ?? '').trim();
+      await dragAcross(context, card, right);
+      await expect(right.getByRole('heading', { name: title, exact: true })).toBeVisible();
+      await expect(toast(page, `Moved to ${SPLIT_FOLDER}`)).toBeVisible();
+      await director.parkPointer();
+      await director.pause(1000);
+      await director.press(toggle);
+      await expect(right).toHaveCount(0);
+      await director.pause(300);
+    },
+  },
+  {
     id: 'select',
     caption: {
       desktop: 'Select links and tag them all at once…',
@@ -596,7 +741,8 @@ export const PROMO_STEPS: readonly PromoStep[] = [
       const picker = page.getByRole('dialog', { name: 'Move 3 links' });
       await expect(picker.getByRole('listbox', { name: 'Folders' })).toBeVisible();
       await director.pause(600);
-      await director.press(picker.getByRole('option', { name: FOLDER_STYLE, exact: true }));
+      // The folder shows under Recent too (#386); the first match is the recent one.
+      await director.press(picker.getByRole('option', { name: FOLDER_STYLE, exact: true }).first());
       await expect(toast(page, `3 links moved to ${FOLDER_STYLE}`)).toBeVisible();
       await endSelection(context);
       await director.parkPointer();
@@ -773,6 +919,52 @@ export const PROMO_STEPS: readonly PromoStep[] = [
         await director.pause(1200);
       }
       await director.pause(400);
+    },
+  },
+
+  {
+    id: 'reminder-due',
+    caption: {
+      desktop: 'Reminders bring a link back: a note on open says what is due.',
+    },
+    run: async (context) => {
+      const { page, director } = context;
+      await reopenApp(context, page.getByRole('heading', { level: 1, name: 'All links' }));
+      const note = toast(page, 'A reminder is due');
+      await expect(note).toBeVisible();
+      await director.point(note);
+      await director.pause(2000);
+      await director.press(note.locator('.ui-toast__close'));
+      await expect(note).toBeHidden();
+    },
+  },
+  {
+    id: 'remind',
+    caption: { desktop: '“Remind me” on any link: later today, tomorrow, or a day you pick.' },
+    run: async ({ page, director }) => {
+      const card = cards(page).first();
+      await director.press(card.getByRole('button', { name: /^Actions for / }));
+      await director.press(page.getByRole('menuitem', { name: 'Remind me…' }));
+      const dialog = page.getByRole('dialog', { name: 'Remind me' });
+      await expect(dialog).toBeVisible();
+      await director.pause(700);
+      await director.press(dialog.getByRole('button', { name: /^Tomorrow/ }));
+      await expect(dialog).toBeHidden();
+      await expect(toast(page, /^Reminder set for /)).toBeVisible();
+      await director.parkPointer();
+      await director.pause(900);
+    },
+  },
+  {
+    id: 'reminders',
+    caption: { desktop: 'Reminders lists what is due and what comes next.' },
+    run: async (context) => {
+      const { page, director } = context;
+      await director.press(await libraryEntry(context, 'Reminders'));
+      await expect(page.getByRole('heading', { level: 1, name: 'Reminders' })).toBeVisible();
+      await expect(page.getByRole('group', { name: 'Due', exact: true })).toBeVisible();
+      await director.parkPointer();
+      await director.pause(1800);
     },
   },
 

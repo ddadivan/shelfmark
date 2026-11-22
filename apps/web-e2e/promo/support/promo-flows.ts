@@ -1,4 +1,5 @@
 import { expect, type Locator } from '@playwright/test';
+import { PROMO_REMINDERS } from '../models/promo-reminders.const';
 import { PROMO_SHARE } from '../models/promo-share.const';
 import { tabBar } from '../../src/support/sidebar';
 import { settled } from '../../src/support/settled';
@@ -19,7 +20,10 @@ export async function libraryEntry(context: PromoContext, name: string | RegExp)
   const pattern = typeof name === 'string' ? new RegExp(`^${name}\\b`) : name;
   if (phone) {
     await pressTab(context, 'Library');
-    await expect(page).toHaveURL(/\/library$/);
+    // The path itself, not Settings › Library (`/settings/library`).
+    await expect(page).toHaveURL(/\/\/[^/]+\/library$/);
+    // The page slides in: its tiles count only once it shows.
+    await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
     const tile = page.locator('app-library-tile').getByRole('link', { name: pattern });
     if ((await tile.count()) > 0) {
       return tile.first();
@@ -213,13 +217,18 @@ export async function backToAllLinks(context: PromoContext): Promise<void> {
  * scenario, so it gets the demo's mockup library, and opens All links (#326).
  */
 export async function useShareAccount({ page, director }: PromoContext): Promise<void> {
-  await page.evaluate((share) => {
-    localStorage.setItem(share.SessionKey, JSON.stringify(share.User));
-    sessionStorage.setItem(share.ScenarioKey, share.Scenario);
-    // An account of nine days: the rating question comes 5 s after the load, once no dialog is open.
-    const createdAt = new Date(Date.now() - share.RatingAgeDays * 86_400_000).toISOString();
-    localStorage.setItem(share.RatingKey, JSON.stringify({ createdAt }));
-  }, PROMO_SHARE);
+  await page.evaluate(
+    ([share, reminders]) => {
+      localStorage.setItem(share.SessionKey, JSON.stringify(share.User));
+      // The reminders scene showed the due note; the share chapter goes without it.
+      localStorage.setItem(reminders.SeenKey, reminders.Never);
+      sessionStorage.setItem(share.ScenarioKey, share.Scenario);
+      // An account of nine days: the rating question comes 5 s after the load, once no dialog is open.
+      const createdAt = new Date(Date.now() - share.RatingAgeDays * 86_400_000).toISOString();
+      localStorage.setItem(share.RatingKey, JSON.stringify({ createdAt }));
+    },
+    [PROMO_SHARE, PROMO_REMINDERS] as const,
+  );
   // The new page boots on the dark scheme, and the load itself is cut from the video.
   await page.emulateMedia({ colorScheme: 'dark' });
   await director.cut(async () => {
@@ -254,6 +263,27 @@ export async function loadPage(
   await page.emulateMedia({ colorScheme: 'dark' });
   await director.cut(async () => {
     await page.goto(path);
+    await expect(ready).toBeVisible();
+  });
+}
+
+/** Hides the due note of reminders on the next page loads (#465): set before the demo opens. */
+export async function muteReminderNote({ page }: PromoContext): Promise<void> {
+  await page.evaluate(
+    (reminders) => localStorage.setItem(reminders.SeenKey, reminders.Never),
+    PROMO_REMINDERS,
+  );
+}
+
+/**
+ * Opens the app again, as a person coming back would (#465): the due note of reminders shows on
+ * the load. The load is cut from the video; the demo library starts afresh with it.
+ */
+export async function reopenApp(context: PromoContext, ready: Locator): Promise<void> {
+  const { page, director } = context;
+  await page.evaluate((key) => localStorage.removeItem(key), PROMO_REMINDERS.SeenKey);
+  await director.cut(async () => {
+    await page.goto('/links');
     await expect(ready).toBeVisible();
   });
 }
