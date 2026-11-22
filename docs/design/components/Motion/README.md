@@ -2,7 +2,7 @@ Motion defines Shelfmark's few animations. The one signature moment is saving a 
 
 ## Principles
 
-1. **Motion answers the user.** Nothing moves on its own except loaders. No entrance animations on page sections, no ambient loops.
+1. **Motion answers the user.** Nothing moves on its own except loaders. No entrance animations on page sections, no ambient loops. One proposed exception, **pending the author's decision** (#562): the first load settle below; drop its row and `FirstSettleDirective` to keep this rule absolute.
 2. **Fast in, faster out.** Entrances `duration-base` (200 ms), exits `duration-fast` (120 ms), press-down `duration-instant` (80 ms). Only the saved card, toasts and sheets use `duration-slow` (320 ms). Nothing in the UI runs longer than 320 ms except the 1.8 s sage ring fading from a new card.
 3. **The right curve for the job.**
    - `ease-out` — anything appearing or reacting: menus, dialogs, toasts, spinners, press-down.
@@ -45,6 +45,7 @@ Motion defines Shelfmark's few animations. The one signature moment is saving a 
 | Skeleton → content | content fades in | 200 ms |
 | Theme switch | colour cross-fade via the View Transitions API (one snapshot, not every element) | 200 ms |
 | First sign-in | logo card scales in, bookmark drops into the notch, once per account | ~900 ms |
+| First load settle (#562, pending the author's decision) | once per app load, the first page's top-level blocks in the main column fade in 60 ms apart (fade only, no rise, nothing on scroll, never on later pages); after the boot skeleton this is the «Skeleton → content» fade, staggered | 200 ms `ease-out` each, last step ≤ 560 ms |
 | **Drag a link (#562)** | the preview (0.65, down-right of the pointer, −4° base tilt) hangs from the pointer: its tilt follows the smoothed horizontal pointer velocity (target `clamp(vx · 6°/(px/ms), ±10°)`) through a damped spring (stiffness 220, damping 18, rAF), so it leans into a fast move and sways back once when the pointer stops; a fast vertical move squashes it by at most 4%. A dragged selection (the deck and its badge) wobbles as one piece. Only `transform` of an inner wrapper is written; the CDK keeps the root's `transform` | spring, settles in ~400 ms after the pointer stops (a physics loader, not a timed transition) |
 | Drop a link on a folder (#562) | the preview shrinks to 0.2, fades and flies into the folder row under the pointer; the row then bumps 1→1.06→1 | 320 ms `ease-in-out` / 200 ms `ease-spring` |
 | Cancel a drag (Esc, dropped outside a folder) (#562) | the preview springs back into the slot it left; its tilt springs to rest | 320 ms `ease-spring` |
@@ -73,7 +74,7 @@ The drag preview's tilt is the one physics-driven motion. `libs/ui` `utils/sprin
 
 `prefers-reduced-motion: reduce` removes all movement and scale. Dialogs, menus, toasts, sheets and the landed card simply fade in (200 ms), the sage ring still fades so the new card is findable, colour transitions stay. Spinners and the progress bar keep moving, slower — they are status, not decoration.
 
-The app's Settings › Appearance › Animations «Reduced» setting (`html[data-motion="reduced"]`, `ReducedMotion` for scripts) is the same switch: every moment above follows it. For the #562 batch that means: the drag preview keeps the static behaviour of before (no tilt, no wobble, no fly, no spring back: it disappears on release); fluid hover fades the highlight in place without travelling; the merged selection, colour changes and the drawn check stay (no movement); icon swaps, text swaps and number changes cross-fade without scale, blur or slide; the error shake becomes the error border alone; the clear dissolve and the tooltip travel are instant; the panel resize jumps; badges and two-line text appear without scale or rise; the status shimmer stops (static muted text).
+The app's Settings › Appearance › Animations «Reduced» setting (`html[data-motion="reduced"]`, `ReducedMotion` for scripts) is the same switch: every moment above follows it. For the #562 batch that means: the drag preview keeps the static behaviour of before (no tilt, no wobble, no fly, no spring back: it disappears on release); fluid hover fades the highlight in place without travelling; the merged selection, colour changes and the drawn check stay (no movement); icon swaps, text swaps and number changes cross-fade without scale, blur or slide; the error shake becomes the error border alone; the clear dissolve and the tooltip travel are instant; the panel resize jumps; badges and two-line text appear without scale or rise; the status shimmer stops (static muted text); the first load settle does not run.
 
 ## Button loading
 
