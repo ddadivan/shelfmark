@@ -24,4 +24,11 @@ export interface CreateLinksBatchItem {
   folderId?: string;
   /** This link's tag names, in place of the batch `tags` (same rules, at most `LINK_LIMIT.TagsMax`). */
   tags?: string[];
+  /**
+   * This link's AI draft id (`CreateAiDraftRequest.draftId`, a UUID), as `CreateLinkRequest.aiDraftId`:
+   * the save picks up that draft's suggestions and summary instead of starting a new AI job for the
+   * link, so a link sorted by AI before the save is not processed (and counted) twice. The extension's
+   * "Sort with AI" for open tabs (#569) sends one per tab.
+   */
+  aiDraftId?: string;
 }

@@ -81,4 +81,13 @@ export class CreateLinksBatchItemDto implements CreateLinksBatchItem {
   @NoControlChars(true, { each: true })
   @MaxLength(4 * TAG_LIMIT.NameMax, { each: true })
   tags?: string[];
+
+  @ApiPropertyOptional({
+    format: 'uuid',
+    description:
+      "This link's draftId of POST /api/ai/drafts: the save picks up that draft's result instead of starting a new AI job. An unknown draft, another user's, or one already used by an earlier item of the batch is ignored (the link gets a normal AI job).",
+  })
+  @IsOptional()
+  @IsUUID()
+  aiDraftId?: string;
 }

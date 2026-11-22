@@ -15,6 +15,7 @@ import {
 } from '@shelfmark/contracts';
 import { AiEmbedService } from '../ai/embeddings/ai-embed.service';
 import { AiJobsService } from '../ai/jobs/ai-jobs.service';
+import type { LockedDraft } from '../ai/models/locked-draft.interface';
 import type { AiRequestContext } from '../ai/models/ai-request-context.interface';
 import { hasPrismaCode } from '../common/prisma/has-prisma-code';
 import { PRISMA_ERROR_CODE } from '../common/prisma/prisma-error-code.const';
@@ -99,6 +100,9 @@ export class LinksBatchService {
             await this.folders.requireOwned(tx, userId, folderId);
           }
           await this.assertFits(tx, userId, fresh.length, isDemo);
+          // Draft job rows are locked after `folders:` and before `tags:` (ADR 0049 point 4).
+          const drafts =
+            options.skipAi === true ? new Map() : await this.lockDrafts(tx, userId, fresh);
           const inserted = await this.insert(
             tx,
             userId,
@@ -106,6 +110,7 @@ export class LinksBatchService {
             context,
             options.importId,
             options.skipAi === true,
+            drafts,
           );
           created = inserted.links;
           aiJobIds = inserted.aiJobIds;
@@ -198,6 +203,7 @@ export class LinksBatchService {
     context: AiRequestContext,
     importId?: string,
     skipAi = false,
+    drafts: ReadonlyMap<string, LockedDraft> = new Map(),
   ): Promise<BatchInsertResult> {
     const now = Date.now();
     const rows = await tx.link.createManyAndReturn({
@@ -247,21 +253,29 @@ export class LinksBatchService {
         return [row.id, target] as const;
       }),
     );
-    const ai = skipAi
-      ? { jobIds: [] }
-      : await this.aiJobs.enqueue(
-          tx,
-          userId,
-          rows.map((row) => {
-            const target = filledById.get(row.id);
-            return {
-              linkId: row.id,
-              folderSet: (target?.folderId ?? null) !== null,
-              tagsSet: (target?.tagIds.length ?? 0) > 0,
-            };
-          }),
-          context,
-        );
+    const targetOf = (row: { id: string }) => {
+      const target = filledById.get(row.id);
+      return {
+        linkId: row.id,
+        folderSet: (target?.folderId ?? null) !== null,
+        tagsSet: (target?.tagIds.length ?? 0) > 0,
+      };
+    };
+    const draftOf = (row: { id: string; idempotencyKey: string | null }) =>
+      row.idempotencyKey === null ? undefined : drafts.get(row.idempotencyKey.toLowerCase());
+    const aiJobIds: string[] = [];
+    if (!skipAi) {
+      // An item with a draft picks it up like a single save; the others get a job each.
+      const open = rows.filter((row) => draftOf(row) === undefined);
+      for (const row of rows) {
+        const draft = draftOf(row);
+        if (draft === undefined) continue;
+        const attached = await this.aiJobs.afterCreate(tx, userId, targetOf(row), draft, context);
+        aiJobIds.push(...attached.jobIds);
+      }
+      const ai = await this.aiJobs.enqueue(tx, userId, open.map(targetOf), context);
+      aiJobIds.push(...ai.jobIds);
+    }
     const saved = await tx.link.findMany({
       where: { userId, id: { in: ids } },
       include: LINK_INCLUDE,
@@ -271,7 +285,33 @@ export class LinksBatchService {
         row.idempotencyKey === null ? [] : [[row.idempotencyKey, toLinkResponse(row)] as const],
       ),
     );
-    return { links, aiJobIds: ai.jobIds };
+    return { links, aiJobIds };
+  }
+
+  /**
+   * Locks the user's unattached draft job of every `aiDraftId` of the items to create, by id (a
+   * fixed order, so two batches never wait on each other in a circle). Keyed by the item's
+   * idempotency key (lower case). An id nobody owns (unknown or another user's: the query filters
+   * by `userId`, so it never reveals which) or one already used by an earlier item of the batch
+   * gives its item no draft: it gets a normal AI job, as a single save does for an unknown draft.
+   */
+  private async lockDrafts(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    fresh: readonly PlannedBatchItem[],
+  ): Promise<Map<string, LockedDraft>> {
+    const owners = new Map<string, string>();
+    for (const { item } of fresh) {
+      const id = item.aiDraftId?.toLowerCase();
+      if (id !== undefined && !owners.has(id)) owners.set(id, item.idempotencyKey.toLowerCase());
+    }
+    const drafts = new Map<string, LockedDraft>();
+    for (const id of [...owners.keys()].sort()) {
+      const draft = await this.aiJobs.lockDraft(tx, userId, id);
+      const key = owners.get(id);
+      if (draft !== null && key !== undefined) drafts.set(key, draft);
+    }
+    return drafts;
   }
 
   /**
