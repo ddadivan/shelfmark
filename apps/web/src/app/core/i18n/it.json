@@ -3215,6 +3215,20 @@
     "release": "Shelfmark {{version}}",
     "home": "Shelfmark, home",
     "items": {
+      "relatedInPreview": {
+        "title": "Link correlati accanto a ciò che leggi",
+        "text": "L’anteprima di un link ha un pulsante Simili: fino a cinque link della tua libreria vicini per significato, con ciò che hanno in comune. Scegline uno e si apre lì. Serve la ricerca per significato in Impostazioni › IA.",
+        "alt": "L’anteprima di una guida con l’elenco Simili aperto: cinque link vicini per significato."
+      },
+      "motionBatch": {
+        "text": "Movimento più vivace: un link trascinato oscilla e vola nella sua cartella, l’evidenziazione scorre tra le righe, le spunte si disegnano e i numeri che cambiano scorrono."
+      },
+      "extensionTabs": {
+        "text": "L’estensione del browser salva più schede aperte in una volta, con una cartella e tag per tutte (versione 1.2.0, in arrivo sul Chrome Web Store)."
+      },
+      "phoneTapPreview": {
+        "text": "Sul telefono, toccare una scheda o una riga apre la sua anteprima, come un clic sul computer."
+      },
       "sideBySide": {
         "title": "Fianco a fianco",
         "text": "Apri due elenchi uno accanto all'altro e trascina i link dall'uno all'altro.",

@@ -331,3 +331,42 @@ export async function linkPreview(page: Page): Promise<WhatsNewClip> {
   ).toBeVisible();
   return { x: 0, y: 0, ...WHATS_NEW_MEDIA.viewport };
 }
+
+// The framed page of the related links shot, drawn locally like the link preview one.
+const ZONELESS_ARTICLE = `<!doctype html><html><head><title>Zoneless change detection, explained</title><style>
+body{margin:0;font:18px/1.6 system-ui,sans-serif;color:#1f2328;background:#fff}
+header{padding:20px 48px;border-bottom:1px solid #e5e7eb;font-weight:600}
+main{max-width:640px;margin:40px auto;padding:0 32px}h1{font-size:34px;line-height:1.2;margin:0 0 16px}
+p{margin:0 0 16px;color:#424a53}</style></head><body><header>angular.dev</header><main>
+<h1>Zoneless Angular</h1>
+<p>Angular can run without zone.js: change detection is scheduled by signals, events and async pipes instead.</p>
+<p>Dropping the zone makes bundles smaller, stack traces cleaner and rendering easier to reason about.</p>
+<p>New applications are zoneless by default; existing ones can switch with provideZonelessChangeDetection().</p>
+</main></body></html>`;
+
+/** Related links (2.6.0): the link preview of a guide with its "Related" popover open. */
+export async function relatedInPreview(page: Page): Promise<WhatsNewClip> {
+  await page
+    .context()
+    .route(/^https:\/\/(?!localhost|127\.0\.0\.1)/u, (route) =>
+      route.request().resourceType() === 'document'
+        ? route.fulfill({ contentType: 'text/html', body: ZONELESS_ARTICLE })
+        : route.abort(),
+    );
+  await openAiLibrary(page, { meaningSearch: true });
+  await page
+    .locator('app-link-card', { hasText: 'Zoneless change detection, explained' })
+    .first()
+    .click();
+  const panel = page.getByRole('region', { name: 'Preview: Zoneless change detection, explained' });
+  await expect(
+    panel.frameLocator('iframe').getByRole('heading', { name: 'Zoneless Angular' }),
+  ).toBeVisible();
+  await panel.getByRole('button', { name: /^Related · \d+$/ }).click(AI_WAIT);
+  const related = page.getByRole('dialog', { name: 'Related on your shelf' });
+  await expect(related.getByRole('listitem').first()).toBeVisible();
+  // The popover opening keeps a short-lived animation alive that `settled` would wait on forever: let it end first.
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(4000);
+  return { x: 0, y: 0, ...WHATS_NEW_MEDIA.viewport };
+}
