@@ -312,6 +312,7 @@ describe('motion mixins', () => {
       'ui-text-swap-out',
       'ui-shimmer-text',
       'ui-shake',
+      'ui-dissolve-word',
     ]);
     expect(out).not.toMatch(/\d+px/);
   });

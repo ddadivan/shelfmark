@@ -268,6 +268,15 @@ describe('InputComponent', () => {
         expect(host.querySelector('input')?.value).toBe('');
       });
 
+      it('steps the words one after the other (#564)', () => {
+        const { host, q } = cleared('red pepper soup');
+        expect(q('.ui-input__dissolve')?.style.getPropertyValue('--ui-dissolve-step')).toBe('60ms');
+        const steps = Array.from(host.querySelectorAll<HTMLElement>('.ui-input__word')).map(
+          (word) => word.style.getPropertyValue('--ui-dissolve-i'),
+        );
+        expect(steps).toEqual(['0', '1', '2']);
+      });
+
       it('renders the words as text, never as HTML', () => {
         const { host } = cleared('<b>bold</b> text');
         expect(host.querySelector('.ui-input__dissolve b')).toBeNull();

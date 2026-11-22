@@ -14,7 +14,7 @@ import {
 } from '@angular/core';
 import type { FormValueControl } from '@angular/forms/signals';
 import { ReducedMotion } from '../../services/motion/reduced-motion.service';
-import { dissolveWords } from './dissolve-words';
+import { dissolveStep, dissolveWords } from './dissolve-words';
 import { DISSOLVE_SAFETY_MS } from './models/dissolve-safety-ms.const';
 import { UiFieldControl } from '../field/field-control.directive';
 import { FieldShellComponent } from '../field/field-shell.component';
@@ -100,6 +100,8 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
 
   /** The words of the text that was just cleared, while they dissolve; empty otherwise. */
   protected readonly dissolveWords = signal<string[]>([]);
+  /** The step between two dissolving words (ms), so the whole dissolve stays within 320 ms. */
+  protected readonly dissolveStep = computed(() => dissolveStep(this.dissolveWords().length));
 
   /** True after the first spinner: only then the returning icon animates in. */
   protected readonly iconReturns = signal(false);
