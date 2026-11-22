@@ -6,7 +6,7 @@
 html,
 body {
   width: rem(360px);
-  height: rem(520px);
+  height: rem(600px);
   margin: 0;
   overflow: hidden;
   background: var(--surface);
@@ -91,7 +91,7 @@ body {
 
 .ext-preview__thumb {
   flex: none;
-  inline-size: rem(72px);
+  inline-size: rem(56px);
   aspect-ratio: 4 / 3;
   background: var(--accent-bg);
   border-radius: var(--radius-sm);

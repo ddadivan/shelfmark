@@ -15,16 +15,16 @@
 <style>
 body{margin:0}
 a{color:inherit}a:hover{color:inherit}
-/* The popup has one fixed size in every state, 360 × 520 (Chrome allows up to 800 × 600), so it never jumps
+/* The popup has one fixed size in every state, 360 × 600 (Chrome allows up to 800 × 600), so it never jumps
    while the state changes. The footer sits on the bottom edge; the middle takes what is left. */
-.ex-pop{width:360px;height:520px;box-sizing:border-box;background:var(--surface);border-radius:22px;box-shadow:var(--shadow-float);padding:18px;display:flex;flex-direction:column;gap:14px;overflow:hidden;position:relative}
+.ex-pop{width:360px;height:600px;box-sizing:border-box;background:var(--surface);border-radius:22px;box-shadow:var(--shadow-float);padding:18px;display:flex;flex-direction:column;gap:14px;overflow:hidden;position:relative}
 .ex-head{display:flex;align-items:center;gap:10px;min-height:32px}
 .ex-head h3{margin:0;font-size:16px;font-weight:600;line-height:22px;flex:1;min-width:0}
 .ex-lead{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none}
 .ex-lead--ok{background:var(--accent);color:var(--surface)}
 .ex-lead--muted{background:var(--surface-hover);color:var(--text-muted)}
 .ex-preview{display:flex;gap:12px;align-items:center;padding:8px;border-radius:16px;background:var(--bg)}
-.ex-thumb{width:72px;aspect-ratio:4/3;border-radius:10px;background:var(--accent-bg);flex:none}
+.ex-thumb{width:56px;aspect-ratio:4/3;border-radius:10px;background:var(--accent-bg);flex:none}
 .ex-host{display:block;font-size:12px;line-height:16px;color:var(--text-muted)}
 .ex-title{display:block;font-size:14px;font-weight:600;line-height:19px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .ex-text{margin:0;font-size:13px;line-height:19px;color:var(--text-muted)}
@@ -85,7 +85,7 @@ a{color:inherit}a:hover{color:inherit}
 </div>
 </div>
 </div>
-<p class="a-note">Every state below is the same 360 × 520 popup, so nothing jumps when one state turns into another; the footer stays on the bottom edge. Nothing is saved until Save: closing the popup leaves no trace, so there is no Remove or Undo. Everything is filled in already and focus starts on Save, so the quick path is the shortcut, then Enter; the tag and note fields keep Enter for themselves (a tag is added on Enter), and Save still takes ⌘/Ctrl+Enter there. The folder is the one a domain rule picked, else Unsorted; the hint names the rule only when one applied. The chips are the three folders saved to most recently. While saving, the button shows its spinner and the fields lock. Alt+Shift+S is the default shortcut (Option+Shift+S on a Mac); people can change it in the browser's extension shortcuts.</p>
+<p class="a-note">Every state below is the same 360 × 600 popup, so nothing jumps when one state turns into another; the footer stays on the bottom edge. Nothing is saved until Save: closing the popup leaves no trace, so there is no Remove or Undo. Everything is filled in already and focus starts on Save, so the quick path is the shortcut, then Enter; the tag and note fields keep Enter for themselves (a tag is added on Enter), and Save still takes ⌘/Ctrl+Enter there. The folder is the one a domain rule picked, else Unsorted; the hint names the rule only when one applied. The chips are the three folders saved to most recently. While saving, the button shows its spinner and the fields lock. Alt+Shift+S is the default shortcut (Option+Shift+S on a Mac); people can change it in the browser's extension shortcuts.</p>
 </section>
 
 <section class="a-state">

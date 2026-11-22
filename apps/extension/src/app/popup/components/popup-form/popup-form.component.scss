@@ -78,6 +78,18 @@
   color: var(--ai);
 }
 
+// The "Tags from AI" mark on the end of the Tags label line, centred on it.
+.form__tags {
+  position: relative;
+}
+
+.form__tags-mark {
+  position: absolute;
+  inset-block-start: rem(-1px);
+  inset-inline-end: 0;
+  color: var(--ai);
+}
+
 // Visually hidden live region: says that the form was filled in.
 .form__live {
   @include visually-hidden;
