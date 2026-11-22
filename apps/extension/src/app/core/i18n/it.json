@@ -44,7 +44,13 @@
         "many": "Cartella per {{count}} di link",
         "other": "Cartella per {{count}} link"
       },
-      "titleOne": "Cartella di questo link"
+      "titleOne": "Cartella di questo link",
+      "summaryKeep": "Ogni link mantiene la cartella scelta dall’IA.",
+      "summaryAll": {
+        "one": "Il link ({{count}}) va in {{folder}}. I tag dell’IA restano.",
+        "many": "Tutti i {{count}} di link vanno in {{folder}}. I tag dell’IA restano.",
+        "other": "Tutti i {{count}} link vanno in {{folder}}. I tag dell’IA restano."
+      }
     },
     "newFolder": {
       "title": "Nuova cartella",

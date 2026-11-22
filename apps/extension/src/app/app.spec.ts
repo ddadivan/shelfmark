@@ -619,6 +619,7 @@ describe('App', () => {
       await settle(fixture);
       expect(fixture.nativeElement.textContent).toContain('Keep AI picks');
       expect(fixture.nativeElement.textContent).toContain('Folder for 3 links');
+      expect(fixture.nativeElement.textContent).toContain('Each link keeps the folder AI picked.');
       expect(await axeViolations(fixture.nativeElement)).toEqual([]);
       const option = [...fixture.nativeElement.querySelectorAll('[role="option"]')].find(
         (el: Element) => el.textContent?.includes('Reading'),

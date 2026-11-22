@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { AI_JOB_REASON, AI_JOB_STATUS, SUGGESTION_KIND } from '@shelfmark/contracts';
 import { fakeData, fakePopupDeps, type FakeData } from '../../../testing/fake-popup-deps';
@@ -144,6 +145,20 @@ describe('PopupTabsAiService', () => {
     expect(ai.state()).toBe(AI_FILL_STATE.Hidden);
   });
 
+  it('does not count a rate limit while polling as a failure and asks again', async () => {
+    vi.useFakeTimers();
+    const { ai, api } = await setup(2);
+    api.createAiDraft.mockResolvedValue(makeAiJob({ id: 'j', status: AI_JOB_STATUS.Pending }));
+    api.aiJob
+      .mockRejectedValueOnce(new HttpErrorResponse({ status: 429 }))
+      .mockRejectedValueOnce(new HttpErrorResponse({ status: 429 }))
+      .mockResolvedValue(sorted('f-ng', ['a', false]));
+    const run = ai.sort();
+    await vi.advanceTimersByTimeAsync(20_000);
+    await run;
+    expect(ai.state()).toBe(AI_FILL_STATE.Ready);
+  });
+
   it('keeps the shared folder for the rest and shows the limit line when the allowance runs out', async () => {
     const { ai, list, api } = await setup(6);
     api.createAiDraft
@@ -233,6 +248,25 @@ describe('PopupTabsAiService', () => {
       expect(ai.ownFolder(a.key)).toBe('f-shared');
       expect(store.folderId()).toBeNull();
       expect(store.pickerTarget()).toBeNull();
+    });
+
+    it('New folder is not offered for one link, so the other AI picks stay', async () => {
+      const { store, ai, list } = await sortedSetup();
+      const a = list.entries()[0]!;
+      store.openPicker(a.key);
+      store.openNewFolder();
+      expect(store.view()).toBe('picker');
+      expect(ai.picksActive()).toBe(true);
+      store.closePicker();
+      expect(ai.shownFolder(list.entries()[1]!.key)).toBe('f-web');
+    });
+
+    it('a shared folder picked in This page keeps the AI picks of All tabs', async () => {
+      const { store, ai, list } = await sortedSetup();
+      await store.setMode(SAVE_MODE.Page);
+      store.chooseFolder('f-shared');
+      expect(ai.picksActive()).toBe(true);
+      expect(ai.shownFolder(list.entries()[0]!.key)).toBe('f-ng');
     });
 
     it('gives a tab ticked after the sort no suggestions: it takes the shared folder', async () => {

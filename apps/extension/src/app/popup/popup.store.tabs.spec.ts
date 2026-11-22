@@ -148,6 +148,16 @@ describe('PopupStore: All tabs', () => {
     expect(store.tabsClosed()).toBe(true);
   });
 
+  it('keeps the button and does not claim the tabs closed when closing fails', async () => {
+    const { store, tabs } = await setup();
+    await store.save();
+    tabs.closeTabs.mockRejectedValueOnce(new Error('no'));
+    await store.closeSavedTabs();
+    expect(store.tabsClosed()).toBe(false);
+    await store.closeSavedTabs();
+    expect(store.tabsClosed()).toBe(true);
+  });
+
   it('opens the folder page of the saved links, or the library when they went to several folders', async () => {
     const one = await setup();
     await one.store.save();

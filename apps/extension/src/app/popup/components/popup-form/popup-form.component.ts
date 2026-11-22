@@ -102,6 +102,7 @@ export class PopupFormComponent {
   protected readonly locked = computed(
     () =>
       this.store.saving() ||
+      this.store.tabList.switching() ||
       (this.store.tabList.active() ? this.store.tabsAi.busy() : this.store.ai.busy()),
   );
   protected readonly modeOptions = computed<SegmentedOption[]>(() => [

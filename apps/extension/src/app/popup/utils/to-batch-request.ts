@@ -24,7 +24,8 @@ function mergeTags(own: readonly string[], shared: readonly string[]): string[] 
 /**
  * The body of `POST /api/links/batch` for the ticked tabs. A tab AI sorted (or whose folder the user
  * picked) carries its own folder, tags (AI's plus "Tags for all") and `aiDraftId`; the others take the
- * batch folder and tags. Domain rules apply (`applyRules`) unless every item has its own values.
+ * batch folder and tags. Domain rules apply (`applyRules`) unless every item has its own values;
+ * `applyRules` is batch-wide, so in a mixed batch the rules still run for the tabs left open.
  */
 export function toBatchRequest(
   entries: readonly TabEntry[],

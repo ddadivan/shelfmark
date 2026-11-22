@@ -1,3 +1,4 @@
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { computed, inject, Service, signal } from '@angular/core';
 import {
   AI_JOB_REASON,
@@ -163,7 +164,14 @@ export class PopupTabsAiService {
         try {
           const job = await this.api.aiJob(id);
           if (!this.take(key, job)) waiting.delete(key);
-        } catch {
+        } catch (error: unknown) {
+          // A rate limit is not a failure: the job is asked again next round, within the overall wait.
+          if (
+            error instanceof HttpErrorResponse &&
+            error.status === HttpStatusCode.TooManyRequests
+          ) {
+            return;
+          }
           failed = true;
           waiting.delete(key);
           this.finishRow(key, TAB_AI_STATUS.None);

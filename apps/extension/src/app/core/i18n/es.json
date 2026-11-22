@@ -44,7 +44,13 @@
         "many": "Carpeta para {{count}} de enlaces",
         "other": "Carpeta para {{count}} enlaces"
       },
-      "titleOne": "Carpeta de este enlace"
+      "titleOne": "Carpeta de este enlace",
+      "summaryKeep": "Cada enlace mantiene la carpeta elegida por la IA.",
+      "summaryAll": {
+        "one": "El enlace ({{count}}) va a {{folder}}. Las etiquetas de la IA se quedan.",
+        "many": "Los {{count}} de enlaces van a {{folder}}. Las etiquetas de la IA se quedan.",
+        "other": "Los {{count}} enlaces van a {{folder}}. Las etiquetas de la IA se quedan."
+      }
     },
     "newFolder": {
       "title": "Nueva carpeta",

@@ -42,3 +42,10 @@
   font-weight: 400;
   color: var(--text-muted);
 }
+
+.picker__summary {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}

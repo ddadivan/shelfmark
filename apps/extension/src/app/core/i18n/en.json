@@ -42,7 +42,12 @@
         "one": "Folder for {{count}} link",
         "other": "Folder for {{count}} links"
       },
-      "titleOne": "Folder for this link"
+      "titleOne": "Folder for this link",
+      "summaryKeep": "Each link keeps the folder AI picked.",
+      "summaryAll": {
+        "one": "The link goes to {{folder}}. The AI tags stay.",
+        "other": "All {{count}} links go to {{folder}}. The AI tags stay."
+      }
     },
     "newFolder": {
       "title": "New folder",

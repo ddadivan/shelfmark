@@ -169,6 +169,25 @@ describe('PopupTabsService', () => {
     });
   });
 
+  describe('the switch while busy', () => {
+    it('ignores a second click while the first is still working (one prompt, one list, same keys)', async () => {
+      const { list, tabs, api } = await setup({ tabsPermission: false });
+      api.lookup.mockClear();
+      const first = list.setMode(SAVE_MODE.Tabs);
+      const second = list.setMode(SAVE_MODE.Tabs);
+      expect(list.switching()).toBe(true);
+      await Promise.all([first, second]);
+      expect(tabs.requestTabsPermission).toHaveBeenCalledTimes(1);
+      expect(api.lookup).toHaveBeenCalledTimes(3);
+      expect(list.entries()).toHaveLength(3);
+      expect(list.switching()).toBe(false);
+      const keys = list.entries().map((entry) => entry.idempotencyKey);
+      await list.setMode(SAVE_MODE.Page);
+      await list.setMode(SAVE_MODE.Tabs);
+      expect(list.entries().map((entry) => entry.idempotencyKey)).toEqual(keys);
+    });
+  });
+
   describe('the ticks', () => {
     it('toggles one tab and Select all ticks everything, then nothing', async () => {
       const { list } = await setup();

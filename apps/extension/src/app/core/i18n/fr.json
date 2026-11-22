@@ -44,7 +44,13 @@
         "many": "Dossier pour {{count}} de liens",
         "other": "Dossier pour {{count}} liens"
       },
-      "titleOne": "Dossier de ce lien"
+      "titleOne": "Dossier de ce lien",
+      "summaryKeep": "Chaque lien garde le dossier choisi par l’IA.",
+      "summaryAll": {
+        "one": "Le lien ({{count}}) va dans {{folder}}. Les tags de l’IA restent.",
+        "many": "Les {{count}} de liens vont dans {{folder}}. Les tags de l’IA restent.",
+        "other": "Les {{count}} liens vont dans {{folder}}. Les tags de l’IA restent."
+      }
     },
     "newFolder": {
       "title": "Nouveau dossier",

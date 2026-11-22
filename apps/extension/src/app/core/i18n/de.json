@@ -42,7 +42,12 @@
         "one": "Ordner für {{count}} Link",
         "other": "Ordner für {{count}} Links"
       },
-      "titleOne": "Ordner für diesen Link"
+      "titleOne": "Ordner für diesen Link",
+      "summaryKeep": "Jeder Link behält den Ordner, den die KI gewählt hat.",
+      "summaryAll": {
+        "one": "Der {{count}} Link kommt in {{folder}}. Die KI-Tags bleiben.",
+        "other": "Alle {{count}} Links kommen in {{folder}}. Die KI-Tags bleiben."
+      }
     },
     "newFolder": {
       "title": "Neuer Ordner",

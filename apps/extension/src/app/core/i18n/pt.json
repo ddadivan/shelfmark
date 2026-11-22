@@ -44,7 +44,13 @@
         "many": "Pasta para {{count}} de links",
         "other": "Pasta para {{count}} links"
       },
-      "titleOne": "Pasta deste link"
+      "titleOne": "Pasta deste link",
+      "summaryKeep": "Cada link mantém a pasta escolhida pela IA.",
+      "summaryAll": {
+        "one": "O link ({{count}}) vai para {{folder}}. As tags da IA ficam.",
+        "many": "Os {{count}} de links vão para {{folder}}. As tags da IA ficam.",
+        "other": "Os {{count}} links vão para {{folder}}. As tags da IA ficam."
+      }
     },
     "newFolder": {
       "title": "Nova pasta",

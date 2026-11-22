@@ -41,6 +41,23 @@ export class PopupPickerComponent {
     if (key !== null) return this.store.tabsAi.shownFolder(key);
     return this.store.tabsAi.picksActive() ? undefined : this.store.folderId();
   });
+  /** The line under the list (All tabs, after a sort): what the choice does to the links. */
+  protected readonly summary = computed(() => {
+    if (!this.keepRowShown()) return '';
+    if (this.store.tabsAi.picksActive())
+      return this.transloco.translate('popup.picker.summaryKeep');
+    const count = this.store.tabList.selectedCount();
+    return this.transloco.translate(
+      pluralKey('popup.picker.summaryAll', count, this.transloco.getActiveLang()),
+      { count, folder: this.chosenFolderName() },
+    );
+  });
+  private readonly chosenFolderName = computed(
+    () =>
+      this.store.newFolderName() ??
+      this.store.folder()?.name ??
+      this.transloco.translate('popup.unsorted'),
+  );
   protected readonly title = computed(() => {
     if (!this.store.tabList.active()) return this.transloco.translate('popup.picker.title');
     if (this.forOneLink()) return this.transloco.translate('popup.picker.titleOne');

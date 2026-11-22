@@ -39,6 +39,9 @@
   [noResultsLabel]="'popup.picker.noResults' | transloco"
   (chosen)="store.chooseFolder($event)"
 />
+@if (summary()) {
+  <p class="picker__summary" role="status">{{ summary() }}</p>
+}
 @if (!forOneLink()) {
   <div class="ext-screen__foot">
     <ui-button block iconLeft="folder-plus" (click)="store.openNewFolder()">{{

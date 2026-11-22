@@ -14,8 +14,10 @@ import { withoutFragment } from '../utils/without-fragment';
 
 /**
  * "All tabs" of the popup (#569): the switch, the optional `tabs` permission and the list of the
- * window's savable tabs with their ticks. Tab addresses and titles stay in the browser: only the ticked
- * tabs go out, on Save or "Sort with AI". `chrome.tabs.query({ currentWindow: true })` needs no
+ * window's savable tabs with their ticks. Tab titles stay in the browser. Switching to "All tabs" (a
+ * user action, like opening the popup for the single save) checks the listed tabs' addresses, without
+ * #fragment, against the library (the lookup route, so "Saved" can show); nothing is saved until Save,
+ * and only the ticked tabs are saved or sent for AI (Save, "Sort with AI"). `chrome.tabs.query({ currentWindow: true })` needs no
  * permission but then has no addresses, so it only counts; the first switch to "All tabs" asks Chrome
  * for `tabs` (declined: the popup stays on "This page").
  */
@@ -33,6 +35,8 @@ export class PopupTabsService {
   private readonly ticked = signal<ReadonlySet<string>>(new Set());
   /** The list is being built (the permission was just granted, or the library is being asked). */
   readonly loading = signal(false);
+  /** The switch is busy (permission prompt or list being built): it ignores further clicks. */
+  readonly switching = signal(false);
 
   readonly switchShown = computed(() => this.windowCount() > 1);
   readonly active = computed(() => this.mode() === SAVE_MODE.Tabs);
@@ -59,15 +63,24 @@ export class PopupTabsService {
 
   /** The switch. Only the first "All tabs" can ask for the permission or the library. */
   async setMode(mode: SaveMode): Promise<void> {
-    if (mode === this.mode()) return;
+    if (this.switching() || mode === this.mode()) return;
     if (mode === SAVE_MODE.Page || this.listed) {
       this.mode.set(mode);
       return;
     }
-    if (!this.permitted) {
-      if (!(await this.browser.requestTabsPermission())) return;
-      this.permitted = true;
+    this.switching.set(true);
+    try {
+      if (!this.permitted) {
+        if (!(await this.browser.requestTabsPermission())) return;
+        this.permitted = true;
+      }
+      await this.listTabs();
+    } finally {
+      this.switching.set(false);
     }
+  }
+
+  private async listTabs(): Promise<void> {
     this.loading.set(true);
     this.mode.set(SAVE_MODE.Tabs);
     try {

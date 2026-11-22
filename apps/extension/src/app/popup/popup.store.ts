@@ -212,8 +212,12 @@ export class PopupStore {
   /** "Close N saved tabs": exactly the tabs that were saved, only on the user's click. */
   async closeSavedTabs(): Promise<void> {
     const saved = this.savedTabs()?.saved ?? [];
-    this.tabsClosed.set(true);
-    await this.tabs.closeTabs(saved.map((entry) => entry.tabId)).catch(() => undefined);
+    try {
+      await this.tabs.closeTabs(saved.map((entry) => entry.tabId));
+      this.tabsClosed.set(true);
+    } catch {
+      // The tabs are still open: the button stays, so the user can try again.
+    }
   }
 
   async retry(): Promise<void> {
@@ -256,13 +260,15 @@ export class PopupStore {
       return;
     }
     this.pickerTarget.set(null);
-    this.tabsAi.useSharedFolder();
+    if (this.tabList.active()) this.tabsAi.useSharedFolder();
     this.folderId.set(id);
     this.newFolderName.set(null);
     this.view.set(POPUP_VIEW.Form);
   }
 
   openNewFolder(): void {
+    // Opened for one link: a new folder is for all links, never a way to drop the other AI picks.
+    if (this.pickerTarget() !== null) return;
     this.view.set(POPUP_VIEW.NewFolder);
   }
 
@@ -282,7 +288,7 @@ export class PopupStore {
     }
     this.folderId.set(null);
     this.pickerTarget.set(null);
-    this.tabsAi.useSharedFolder();
+    if (this.tabList.active()) this.tabsAi.useSharedFolder();
     this.newFolderName.set(trimmed);
     this.view.set(POPUP_VIEW.Form);
   }
