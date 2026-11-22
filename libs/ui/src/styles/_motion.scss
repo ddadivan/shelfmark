@@ -58,6 +58,12 @@ $enter-presets: (
     'duration': 'base',
     'ease': 'in-out',
   ),
+  // A counter badge that appears (`ui-badge` with `pop`): 0.6 to 1 with a small overshoot.
+  'badge': (
+    'keyframes': 'ui-badge-in',
+    'duration': 'base',
+    'ease': 'spring',
+  ),
   // A digit that changed (`ui-number-flow`): slides 0.5em from below (up) or above (down).
   'digit': (
     'keyframes': 'ui-digit-in',
@@ -227,6 +233,19 @@ $leave-presets: (
     from {
       opacity: 0;
       transform: scale(0.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  // Badge pop-in (#562).
+  @keyframes ui-badge-in {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
     }
 
     to {
