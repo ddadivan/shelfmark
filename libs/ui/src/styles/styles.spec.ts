@@ -175,6 +175,7 @@ describe('motion mixins', () => {
     ['leave(icon)', 'ui-icon-out var(--duration-base) var(--ease-out) both'],
     ['enter(digit)', 'ui-digit-in var(--duration-base) var(--ease-out) both'],
     ['leave(digit)', 'ui-digit-out var(--duration-base) var(--ease-out) both'],
+    ['enter(rise)', 'ui-rise-in var(--duration-base) var(--ease-out) both'],
     ['enter(badge)', 'ui-badge-in var(--duration-base) var(--ease-spring) both'],
     ['enter(fade)', 'ui-reveal var(--duration-base) var(--ease-out) both'],
     ['enter(toast)', 'ui-toast-in var(--duration-slow) var(--ease-spring) both'],
@@ -276,6 +277,7 @@ describe('motion mixins', () => {
     const names = [...out.matchAll(/@keyframes (\S+)/g)].map((m) => m[1]);
     expect(names).toEqual([
       'ui-pop-in',
+      'ui-rise-in',
       'ui-badge-in',
       'ui-disclose-in',
       'ui-disclose-out',
