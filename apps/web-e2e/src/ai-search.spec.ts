@@ -138,24 +138,50 @@ test.describe('search by meaning (AI-3, mock API)', () => {
   );
 
   test(
-    'Edit link lists related links that open in a new tab',
+    'the link preview offers related links and switches to the one chosen (#572)',
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
+      // Third-party pages never leave the test machine: framed documents get a tiny local page.
+      await page.context().route(/^https:\/\/(?!localhost|127\.0\.0\.1)/, (route) =>
+        route.request().resourceType() === 'document'
+          ? route.fulfill({
+              contentType: 'text/html',
+              body: '<!doctype html><title>Page</title>',
+            })
+          : route.abort(),
+      );
       await openLibrary(page);
       await page
         .locator('ui-card')
         .filter({ hasText: 'Nano Puff jacket' })
         .getByRole('button', { name: /^Actions for / })
         .click();
-      await page.getByRole('menuitem', { name: 'Edit' }).click();
-      const dialog = page.getByRole('dialog', { name: 'Edit link' });
-      const related = dialog.getByRole('region', { name: 'Related on your shelf' });
+      await page.getByRole('menuitem', { name: /Preview here/ }).click();
+      await expect(page).toHaveURL(/[?&]preview=/);
+      const before = page.url();
+      await page.getByRole('button', { name: /^Related · \d+$/ }).click();
+      const related = page.getByRole('dialog', { name: 'Related on your shelf' });
       await expect(related).toBeVisible();
-      const first = related.getByRole('link').first();
-      await expect(first).toHaveAttribute('target', '_blank');
       await expect(related).toContainText('Close to:');
+      await related.getByRole('listitem').first().getByRole('button').click();
+      await expect(related).toBeHidden();
+      await expect(page).toHaveURL(/[?&]preview=/);
+      expect(page.url()).not.toBe(before);
     },
   );
+
+  test('Edit link no longer lists related links (#572)', async ({ page }) => {
+    await openLibrary(page);
+    await page
+      .locator('ui-card')
+      .filter({ hasText: 'Nano Puff jacket' })
+      .getByRole('button', { name: /^Actions for / })
+      .click();
+    await page.getByRole('menuitem', { name: 'Edit' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Edit link' });
+    await expect(dialog.getByRole('textbox', { name: 'Title' })).toBeVisible();
+    await expect(dialog.getByText('Related on your shelf')).toHaveCount(0);
+  });
 
   test('"Show related" fills the side-by-side picker with related folders', async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) < 1280, 'side by side opens from 80em');

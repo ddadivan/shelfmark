@@ -70,6 +70,7 @@
         [ariaLabel]="'preview.share' | transloco"
         (click)="preview.share()"
       />
+      <app-related-links [linkId]="link.id" (chosen)="preview.open($event)" />
     </div>
   }
 </section>

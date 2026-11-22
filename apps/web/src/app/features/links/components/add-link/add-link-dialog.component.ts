@@ -53,7 +53,6 @@ import { AddLinkAiFillService } from '../../services/add-link-ai-fill.service';
 import { AddLinkAiFillComponent } from '../add-link-ai/add-link-ai-fill.component';
 import { AddLinkAiFolderComponent } from '../add-link-ai/add-link-ai-folder.component';
 import { AddLinkAiTagsComponent } from '../add-link-ai/add-link-ai-tags.component';
-import { RelatedLinksComponent } from '../../../ai/components/related-links/related-links.component';
 
 /**
  * Content of the add-link dialog (`openAddLinkDialog()`): paste a URL, the preview fills the
@@ -80,7 +79,6 @@ import { RelatedLinksComponent } from '../../../ai/components/related-links/rela
     AddLinkAiFillComponent,
     AddLinkAiFolderComponent,
     AddLinkAiTagsComponent,
-    RelatedLinksComponent,
     ButtonComponent,
     CheckboxComponent,
     ChipComponent,

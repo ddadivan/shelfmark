@@ -8,6 +8,7 @@ import {
   TooltipGroupDirective,
 } from '@shelfmark/ui';
 import { linkAddress, ownImageUrl, siteLetter } from '../../../links/utils/link-view';
+import { RelatedLinksComponent } from '../../../ai/components/related-links/related-links.component';
 import { LinkPreviewService } from '../../services/link-preview.service';
 import { PreviewBodyComponent } from '../preview-body/preview-body.component';
 
@@ -19,6 +20,7 @@ import { PreviewBodyComponent } from '../preview-body/preview-body.component';
 @Component({
   selector: 'app-preview-panel',
   imports: [
+    RelatedLinksComponent,
     TranslocoPipe,
     ButtonComponent,
     FaviconComponent,

@@ -1,30 +1,17 @@
 @use 'ui' as *;
 
-// "Related on your shelf" (AiDiscover 1): a caption heading and compact rows, under Folder in Edit
-// link. Fits the 360px phone sheet: titles and the "why" line truncate.
+// "Related on your shelf" (#572): a "Related · N" button in the link preview toolbar (the phone
+// preview's bottom bar) and a popover of compact rows. The rows fit the popover: titles and the
+// "why" line truncate.
 :host {
-  display: block;
-  min-width: 0;
-}
-
-.related-links {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.related-links__title {
-  @include type(caption);
-
-  margin: 0;
-  font-weight: 600;
-  color: var(--text-muted);
+  display: contents;
 }
 
 .related-links__list {
   display: flex;
   flex-direction: column;
   gap: rem(2px);
+  width: min(20rem, calc(100vw - 4rem));
   padding: 0;
   margin: 0;
   list-style: none;

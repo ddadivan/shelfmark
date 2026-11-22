@@ -1,3 +1,4 @@
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TestBed } from '@angular/core/testing';
 import {
   AI_SEARCH_STATE,
@@ -7,11 +8,11 @@ import {
   type RelatedLinksResponse,
 } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
+import { UiButtonHarness, UiPopoverHarness } from '@shelfmark/ui/testing';
 import { of, throwError } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
 import { aiSettingsResponse, fakeAiApi } from '../../../../../testing/fake-ai-api';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
-import { LinksStore } from '../../../../stores/links.store';
 import { AI_API } from '../../models/ai-api.const';
 import { AI_SETTINGS_DEFAULT } from '../../models/ai-settings-default.const';
 import { AiSettingsStore } from '../../services/ai-settings.store';
@@ -55,28 +56,31 @@ async function setup(
     }),
   );
   ai.related.mockImplementation(options.related ?? (() => of(RELATED)));
-  const actions = { recordOpen: vi.fn(() => Promise.resolve()) };
   TestBed.configureTestingModule({
-    providers: [
-      provideTranslocoForTest(),
-      { provide: AI_API, useValue: ai },
-      { provide: LinksStore, useValue: actions },
-    ],
+    providers: [provideTranslocoForTest(), { provide: AI_API, useValue: ai }],
   });
   await loadEnglish();
   await TestBed.inject(AiSettingsStore).load();
   const fixture = TestBed.createComponent(RelatedLinksComponent);
   fixture.componentRef.setInput('linkId', 'source');
+  const chosen = vi.fn<(link: LinkResponse) => void>();
+  fixture.componentInstance.chosen.subscribe(chosen);
   await fixture.whenStable();
-  return { ai, actions, fixture, element: fixture.nativeElement as HTMLElement };
+  const loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+  return { ai, chosen, fixture, loader, element: fixture.nativeElement as HTMLElement };
 }
 
 describe('RelatedLinksComponent', () => {
-  it('lists up to five related links with the AI mark and the reasons, without axe violations', async () => {
-    const { ai, element } = await setup();
+  it('shows a "Related · N" button that opens the related links, without axe violations', async () => {
+    const { ai, element, loader } = await setup();
     expect(ai.related).toHaveBeenCalledWith('source', 5);
-    expect(element.querySelector('h3')?.textContent).toBe('Related on your shelf');
-    const rows = [...element.querySelectorAll('li')];
+    const button = await loader.getHarness(UiButtonHarness.with({ text: /Related/ }));
+    expect(await button.getText()).toBe('Related · 2');
+    const popover = await loader.getHarness(UiPopoverHarness);
+    await popover.open();
+    expect(await popover.isOpen()).toBe(true);
+    expect(await popover.getHeading()).toBe('Related on your shelf');
+    const rows = [...document.querySelectorAll('.related-links__list li')];
     expect(rows).toHaveLength(2);
     expect(rows[0]?.textContent).toContain('Zoneless change detection');
     expect(rows[0]?.textContent).toContain('Close to: angular, Angular');
@@ -86,37 +90,36 @@ describe('RelatedLinksComponent', () => {
     // No reason: the address instead, without the mark.
     expect(rows[1]?.textContent).toContain('store.example.com');
     expect(rows[1]?.querySelector('ui-icon[name="spark"]')).toBeNull();
-    const anchor = rows[0]?.querySelector('a');
-    expect(anchor?.getAttribute('href')).toBe('https://zoneless.example.com/page');
-    expect(anchor?.getAttribute('target')).toBe('_blank');
     expect(await axeViolations(element)).toEqual([]);
   });
 
-  it('counts an open like any other', async () => {
-    const { actions, element } = await setup();
-    const anchor = element.querySelector('a');
-    anchor?.addEventListener('click', (event) => event.preventDefault());
-    anchor?.click();
-    expect(actions.recordOpen).toHaveBeenCalledWith('zoneless');
+  it('hands the chosen link to the preview and closes the popover', async () => {
+    const { chosen, fixture, loader } = await setup();
+    const popover = await loader.getHarness(UiPopoverHarness);
+    await popover.open();
+    document.querySelector<HTMLButtonElement>('.related-links__list li button')?.click();
+    await fixture.whenStable();
+    expect(chosen).toHaveBeenCalledWith(expect.objectContaining({ id: 'zoneless' }));
+    expect(await popover.isOpen()).toBe(false);
   });
 
   it('renders nothing and asks nothing while search by meaning is off or not ready', async () => {
     const off = await setup({ meaningSearch: false });
     expect(off.ai.related).not.toHaveBeenCalled();
-    expect(off.element.querySelector('section')).toBeNull();
+    expect(off.element.querySelector('ui-button')).toBeNull();
     TestBed.resetTestingModule();
     const processing = await setup({
       status: { state: AI_SEARCH_STATE.Processing, ready: 2, total: 10 },
     });
     expect(processing.ai.related).not.toHaveBeenCalled();
-    expect(processing.element.querySelector('section')).toBeNull();
+    expect(processing.element.querySelector('ui-button')).toBeNull();
   });
 
   it('renders nothing for an empty list or a failure', async () => {
     const empty = await setup({ related: () => of({ status: READY, items: [] }) });
-    expect(empty.element.querySelector('section')).toBeNull();
+    expect(empty.element.querySelector('ui-button')).toBeNull();
     TestBed.resetTestingModule();
     const failed = await setup({ related: () => throwError(() => new Error('down')) });
-    expect(failed.element.querySelector('section')).toBeNull();
+    expect(failed.element.querySelector('ui-button')).toBeNull();
   });
 });

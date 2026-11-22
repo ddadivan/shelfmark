@@ -3834,6 +3834,7 @@
     },
     "related": {
       "title": "Proches sur votre étagère",
+      "button": "Similaires · {{count}}",
       "why": "Proche de : {{reasons}}",
       "show": "Afficher les liens proches",
       "folders": "Dossiers proches"
