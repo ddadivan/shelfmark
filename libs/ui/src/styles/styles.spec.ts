@@ -286,6 +286,7 @@ describe('motion mixins', () => {
       'ui-icon-out',
       'ui-digit-in',
       'ui-digit-out',
+      'ui-draw-check',
       'ui-spin',
       'ui-spinner-in',
       'ui-spinner-grow',

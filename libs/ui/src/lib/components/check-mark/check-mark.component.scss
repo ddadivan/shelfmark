@@ -1,0 +1,44 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: inline-flex;
+  flex: none;
+  width: calc(var(--ui-icon-size, var(--icon-size-lg)) * var(--ui-icon-scale, 1));
+  height: calc(var(--ui-icon-size, var(--icon-size-lg)) * var(--ui-icon-scale, 1));
+  color: inherit;
+  line-height: 0;
+}
+
+:host(.ui-check-mark--20) {
+  width: calc(var(--ui-icon-size, var(--icon-size-md)) * var(--ui-icon-scale, 1));
+  height: calc(var(--ui-icon-size, var(--icon-size-md)) * var(--ui-icon-scale, 1));
+}
+
+:host(.ui-check-mark--16) {
+  width: calc(var(--ui-icon-size, var(--icon-size-sm)) * var(--ui-icon-scale, 1));
+  height: calc(var(--ui-icon-size, var(--icon-size-sm)) * var(--ui-icon-scale, 1));
+}
+
+.ui-check-mark__svg {
+  width: 100%;
+  height: 100%;
+}
+
+// `pathLength` is 1: a dash of 1 then a gap of 2 shows the whole tick at rest, and the offset
+// 1 to 0 draws it from the start. No dash at the end of the path shows a dot.
+.ui-check-mark__path {
+  stroke: currentcolor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 0;
+}
+
+:host(.ui-check-mark--draw) .ui-check-mark__path {
+  animation: ui-draw-check var(--duration-base) var(--ease-out) var(--ui-check-delay, 0s) both;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}

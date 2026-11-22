@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { FolderIconComponent } from '../folder-icon/folder-icon.component';
 import { FOLDER_COLOUR } from '../folder-icon/models/folder-colour.const';
+import { CheckMarkComponent } from '../check-mark/check-mark.component';
 import { IconComponent } from '../icon/icon.component';
 import type { IconName } from '../icon/models/icon-name.type';
 import type { ToastFolder } from './models/toast-folder.interface';
@@ -29,7 +30,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
  */
 @Component({
   selector: 'ui-toast',
-  imports: [IconComponent, FolderIconComponent],
+  imports: [CheckMarkComponent, IconComponent, FolderIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-toast',

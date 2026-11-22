@@ -374,6 +374,17 @@ $leave-presets: (
     }
   }
 
+  // Drawn check (#562): the tick (`pathLength` 1, `stroke-dasharray: 1 2`) draws along its stroke.
+  @keyframes ui-draw-check {
+    from {
+      stroke-dashoffset: 1;
+    }
+
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
   @keyframes ui-spin {
     to {
       transform: rotate(360deg);

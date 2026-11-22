@@ -6,6 +6,7 @@ export * from './lib/components/bulk-bar';
 export * from './lib/components/button';
 export * from './lib/components/card';
 export * from './lib/components/checkbox';
+export * from './lib/components/check-mark';
 export * from './lib/components/chip';
 export * from './lib/components/choice-grid';
 export * from './lib/components/color-picker';
