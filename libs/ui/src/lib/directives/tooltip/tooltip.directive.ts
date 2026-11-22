@@ -16,7 +16,7 @@ import {
   untracked,
 } from '@angular/core';
 import { ReducedMotion } from '../../services/motion/reduced-motion.service';
-import { TOOLTIP_GROUP } from './tooltip-group/models/tooltip-group.token';
+import { TOOLTIP_GROUP } from './tooltip-group/models/tooltip-group-token.const';
 import type { TooltipGroupMember } from './tooltip-group/models/tooltip-group-member.interface';
 import { travelFrom } from './tooltip-travel';
 import { UI_FOCUS_TARGET } from '../focus-target/models/ui-focus-target.const';

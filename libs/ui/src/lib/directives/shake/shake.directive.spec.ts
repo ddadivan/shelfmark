@@ -48,4 +48,15 @@ describe('ShakeDirective', () => {
     await bump(fixture, 0);
     expect(box.classList.contains('ui-shake')).toBe(false);
   });
+
+  it('ignores the animations of its children, ends on its own end or cancel', async () => {
+    const { fixture, box } = setup();
+    const child = document.createElement('span');
+    box.appendChild(child);
+    await bump(fixture, 1);
+    child.dispatchEvent(new Event('animationend', { bubbles: true }));
+    expect(box.classList.contains('ui-shake')).toBe(true);
+    box.dispatchEvent(new Event('animationcancel'));
+    expect(box.classList.contains('ui-shake')).toBe(false);
+  });
 });

@@ -1,5 +1,5 @@
 import { Directive, inject } from '@angular/core';
-import { TOOLTIP_GROUP } from './models/tooltip-group.token';
+import { TOOLTIP_GROUP } from './models/tooltip-group-token.const';
 import { TooltipGroupState } from './tooltip-group-state';
 
 /**

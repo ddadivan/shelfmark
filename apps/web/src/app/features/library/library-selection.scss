@@ -175,6 +175,10 @@
     background: var(--accent-bg);
     opacity: 0;
     transition: opacity var(--duration-base) var(--ease-in-out);
+
+    @include reduced-motion {
+      transition: none;
+    }
   }
 }
 

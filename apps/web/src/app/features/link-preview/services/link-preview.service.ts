@@ -25,15 +25,15 @@ import { clampListWidth } from '../utils/clamp-list-width';
 import { neighbourId } from '../utils/neighbour-id';
 import { LinkPreviewRoute } from './link-preview-route.service';
 
+/** How long the copy button keeps its check after a copy. */
+const COPIED_CHECK_MS = 1600;
+
 /**
  * The open link preview of the library page (#553, ADR 0059; page-scoped through
  * `provideLibraryPage`): which link it shows (from the feed, else `GET /api/links/:id`), what the
  * body shows (frame, player or blocked), ↑ / ↓ through the feed, the toolbar actions, the list
  * width and "wider". Opening a link records an open, once per link while it stays open.
  */
-/** How long the copy button keeps its check after a copy. */
-const COPIED_CHECK_MS = 1600;
-
 @Service({ autoProvided: false })
 export class LinkPreviewService {
   private readonly route = inject(LinkPreviewRoute);

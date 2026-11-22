@@ -34,6 +34,16 @@ export class ShakeDirective {
     // Reading a layout property restarts the animation when the class comes back in one frame.
     void this.host.offsetWidth;
     list.add('ui-shake');
-    this.host.addEventListener('animationend', () => list.remove('ui-shake'), { once: true });
+    // Only the host's own shake ends it: a child's animation (a spinner, a notice) bubbles too.
+    const done = (event: Event): void => {
+      if (event.target !== this.host) {
+        return;
+      }
+      list.remove('ui-shake');
+      this.host.removeEventListener('animationend', done);
+      this.host.removeEventListener('animationcancel', done);
+    };
+    this.host.addEventListener('animationend', done);
+    this.host.addEventListener('animationcancel', done);
   }
 }

@@ -63,8 +63,11 @@ export class FluidHoverDirective {
         this.hide();
       }),
       // A group that opens or closes moves the rows under a resting pointer.
-      this.renderer.listen(this.host, 'transitionend', () => {
-        this.remeasure();
+      this.renderer.listen(this.host, 'transitionend', (event: TransitionEvent) => {
+        // Only a size change (a tree group opening) moves the rows; row colour fades do not.
+        if (event.propertyName === 'grid-template-rows' || event.propertyName === 'height') {
+          this.remeasure();
+        }
       }),
       this.renderer.listen(view, 'resize', () => {
         this.remeasure();

@@ -144,8 +144,8 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
 
   /** The overlay goes after its last word ended; the timer is the way out if no animation runs. */
   protected onDissolveEnd(event: AnimationEvent): void {
-    const last = (event.currentTarget as HTMLElement).lastElementChild;
-    if (event.target === last) {
+    const overlay = event.currentTarget;
+    if (overlay instanceof Element && event.target === overlay.lastElementChild) {
       this.stopDissolve();
     }
   }
