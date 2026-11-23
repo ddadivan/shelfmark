@@ -4,7 +4,7 @@ Personal, responsive web app that keeps every saved link in one place: paste a U
 
 **Source of truth:** [`docs/PROJECT.md`](docs/PROJECT.md) — scope, stories with acceptance criteria (4), stack (5), security (5.8), data model and API (6), design (7), agent team (8), process (9). Read the relevant section before any task. If code and the document disagree, stop and ask.
 
-**Design source of truth:** [`docs/design/`](docs/design/README.md) — start with `README.md`, then `BRAND.md`, the component spec in `components/<Name>/README.md`, `components/Motion/README.md` for any animation, and `screens/*.dc.html` for layout and copy. This is the Shelfmark 2027 Refresh; the migration plan is `docs/design/MIGRATION.md`. [`docs/design-v1/`](docs/design-v1/README.md) is the stage 1 design, kept for reference during the migration only — never build from it.
+**Design source of truth (branch `redesign/shelf`, ADR 0061):** [`docs/design-next/shelf/`](docs/design-next/shelf/README.md) — start with `README.md`, then the brand book `design-system/README.md`, the tokens `design-system/tokens.json`, the component spec in `design-system/components/<Name>/README.md` (reference CSS `components/bundle.css`), the approved home page `reference/shelfmark-home-v2-final.html` and the prototypes in `designs/*.html`. The implementation plan is `docs/design-next/shelf/implementation-plan.md`. [`docs/design/`](docs/design/README.md) (2027 Refresh) and [`docs/design-v1/`](docs/design-v1/README.md) are kept for reference only — never build from them.
 
 **Decisions:** [`docs/adr/`](docs/adr/) — one file per significant decision.
 
