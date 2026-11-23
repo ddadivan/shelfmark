@@ -453,6 +453,11 @@ a.tab{text-decoration:none}
 @media (max-width:63.99em){.t-back{grid-template-columns:minmax(0,1fr)}.t-two{grid-template-columns:minmax(0,1fr)}.t-two>*{min-width:0}.ask-btn{padding:0 10px}}
 @media (max-width:39.99em){.t-sv{flex-wrap:wrap;row-gap:2px;padding:8px 12px}.t-svt{flex:1 1 60%}.t-to{flex:1 1 calc(100% - 120px);padding-left:60px}.ask-btn{display:none}}
 @media (max-width:39.99em){.bulk{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));flex-wrap:nowrap;overflow-x:auto;z-index:60}body:has(.bulk) .tabbar{display:none}}
+.card:not(.selecting) .selbox{opacity:0;transition:opacity 120ms}
+@media (hover:hover){.card:hover .selbox,.card:focus-within .selbox{opacity:1}}
+@media (hover:none){.card:not(.selecting) .selbox{display:none}}
+.card .selbox .sm-check{cursor:pointer}
+.card:not(.selecting) .selbox .sm-check:hover{border-color:var(--fg)}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -635,7 +640,7 @@ a.tab{text-decoration:none}
   }
   function card(l,grid){
     const on=S.sel.has(l.id);
-    return `<article class="card l1${S.select?' selecting':''}" data-id="${l.id}" draggable-card aria-selected="${on}"><button class="open" type="button" data-open="${l.id}" aria-label="Open ${esc(l.title)}"></button>${S.select?`<span class="selbox"><span class="sm-check" role="checkbox" aria-checked="${on}" aria-label="Select ${esc(l.title)}">${on?ic('i-check',14):''}</span></span>`:''}
+    return `<article class="card l1${S.select?' selecting':''}" data-id="${l.id}" draggable-card aria-selected="${on}"><button class="open" type="button" data-open="${l.id}" aria-label="Open ${esc(l.title)}"></button><span class="selbox"><span class="sm-check" role="checkbox" aria-checked="${on}" aria-label="Select ${esc(l.title)}" tabindex="0">${on?ic('i-check',14):''}</span></span>
       ${S.show.image?`<div class="cover" style="aspect-ratio:${grid?'16 / 9':l.ratio}"><div class="cover-in">${coverInner(l)}</div></div>`:''}
       <div class="acts"><button class="act" type="button" data-fav="${l.id}" aria-pressed="${!!l.fav}" aria-label="${l.fav?'Remove from favorites':'Add to favorites'}">${ic(l.fav?'i-star-f':'i-star',16)}</button><button class="act" type="button" data-menu="${l.id}" aria-haspopup="menu" aria-label="More actions for ${esc(l.title)}">${ic('i-more',16)}</button></div>
       <div class="body"><h2 class="title">${esc(l.title)}</h2>
@@ -817,6 +822,7 @@ a.tab{text-decoration:none}
 
   document.addEventListener('click',e=>{
     const t=e.target;
+    if(!S.select){const ck0=t.closest('.card .selbox');if(ck0){S.select=true;S.sel.add(+ck0.closest('.card').dataset.id);render();return}}
     if(S.select){const o2=t.closest('.card .open');if(o2){const id=+o2.dataset.open;S.sel.has(id)?S.sel.delete(id):S.sel.add(id);render();return}const ck=t.closest('.selbox');if(ck){const id=+ck.closest('.card').dataset.id;S.sel.has(id)?S.sel.delete(id):S.sel.add(id);render();return}}
     if(t.closest('[data-ext]')){e.preventDefault();toast('Opens the site in a new tab');closePop();return}
     const o=t.closest('[data-open]');if(o){S.link=+o.dataset.open;S.empty=false;const l=byId(S.link);S.mode=l.blocked&&l.reader?'reader':'site';closePop();render();window.scrollTo(0,0);return}
@@ -902,6 +908,8 @@ a.tab{text-decoration:none}
   document.getElementById('screen').addEventListener('change',e=>{const v=e.target.value;if(v==='g2'){location.href='save-revisit.html';return}if(v.startsWith('go:')){location.href=v.slice(3);return}S.empty=v==='empty';S.link=null;S.q='';document.getElementById('q').value='';S.select=v==='select';S.sel=new Set(v==='select'?[1,4,10]:[]);S.scope=(v==='today'||v==='today-done')?'today':'all';S.done=new Set(v==='today-done'?['b2','b8','b1','gem']:[]);
     if(v==='reader'){S.link=8;S.mode='reader'}else if(v==='site'){S.link=1;S.mode='site'}else if(v==='blocked'){S.link=3;S.mode='site'}render();window.scrollTo(0,0)});
   window.addEventListener('resize',()=>closePop());
+  let lp=null;document.addEventListener('touchstart',e=>{const c=e.target.closest('.card');if(!c||S.select||e.target.closest('.acts'))return;lp=setTimeout(()=>{S.select=true;S.sel.add(+c.dataset.id);render();if(navigator.vibrate)navigator.vibrate(10);window.__justDragged=true;setTimeout(()=>window.__justDragged=false,400)},500)},{passive:true});
+  ['touchend','touchmove','touchcancel'].forEach(n=>document.addEventListener(n,()=>{clearTimeout(lp)},{passive:true}));
   document.addEventListener('mousedown',e=>{if(!fs.hidden&&!phoneQ.matches&&!e.target.closest('#fs')&&!e.target.closest('#q')&&!e.target.closest('#tab-search'))closeSearch()});
   render();
 })();
