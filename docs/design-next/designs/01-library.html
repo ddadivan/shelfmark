@@ -231,6 +231,7 @@ svg{display:block;flex:none}
 .mi svg{color:var(--muted)}
 .mi .kbd{margin-left:auto}
 .mi.danger{color:var(--danger)}.mi.danger svg{color:var(--danger)}
+.mi[role="menuitemcheckbox"]::after{display:none!important}
 .mi[aria-checked="true"]::after{content:"";margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--accent)}
 .mh{padding:8px 8px 4px;font-size:var(--t-meta);font-weight:500;color:var(--muted)}
 .msep{height:1px;margin:8px 0;background:var(--line)}
@@ -270,7 +271,6 @@ svg{display:block;flex:none}
   .body{padding:8px 12px 12px}
   .title{font-size:var(--t-sec);line-height:1.5}
   .tc{padding:12px}.tc strong{font-size:var(--t-body);-webkit-line-clamp:2}
-  .sum{display:none}
   .chip{height:40px}
   .views{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}
   .views .chip{flex:none}
@@ -390,6 +390,12 @@ a.mi{text-decoration:none}
   .dlg .foot .btn{flex:1;height:48px}
 }
 @media (min-width:40em){.fs{display:none!important}}
+.note{display:flex;gap:8px;margin:6px 0 0;font-size:var(--t-sec);color:var(--fg)}
+.note svg{flex:none;margin-top:4px;color:var(--muted)}
+.note span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ctags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.meta:empty{display:none}
+@media (max-width:39.99em){.sum{display:flex}.sum span{-webkit-line-clamp:2}.note span{-webkit-line-clamp:2}.ctags .tag:nth-child(n+3){display:none}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -423,7 +429,7 @@ a.mi{text-decoration:none}
 <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M15 4v16" stroke="currentColor" stroke-width="1.75"/></symbol>
 <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"/></symbol>
 <symbol id="i-move" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM10 13h6M13 10l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-<symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></symbol><symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol>
+<symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></symbol><symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><circle cx="16" cy="7" r="2" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="10" cy="17" r="2" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol>
 <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol>
 <symbol id="i-rule" viewBox="0 0 24 24"><path d="M4 6h10M4 12h7M4 18h10M17 9l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-browser" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M3 9h18" stroke="currentColor" stroke-width="1.75"/></symbol>
@@ -521,13 +527,13 @@ a.mi{text-decoration:none}
   };
   const L=[
     {id:1,kind:'video',title:'Angular 22: everything about Signal Forms in 20 minutes',domain:'youtube.com',bg:'#1f2433',ink:'#3d4f8f',sx:230,dur:'19:42',ratio:'16 / 9',folder:'Angular',c:'clay',tags:['angular','video'],date:'Today',fav:true,type:'videos',summary:'Walks through form(), validators and custom controls in Angular 22, with a migration checklist.'},
-    {id:2,kind:'shirt',title:'Wool overshirt',domain:'uniqlo.com',bg:'#ece7de',ink:'#6d5b46',ratio:'4 / 5',folder:'Clothes',c:'rose',tags:['clothes'],date:'Today',type:'clothes',note:'Wait for the sale'},
+    {id:2,kind:'shirt',title:'Wool overshirt',domain:'uniqlo.com',bg:'#ece7de',ink:'#6d5b46',ratio:'4 / 5',folder:'Clothes',c:'rose',tags:['clothes'],date:'Today',type:'clothes',note:'Wait for the sale',desc:'Relaxed overshirt in brushed wool blend, with two chest pockets.'},
     {id:3,kind:'type',title:'Progressive disclosure',domain:'nngroup.com',site:'Nielsen Norman Group',bg:'#f1ede2',fg:'#1d1d1f',ratio:'1.91 / 1',folder:'Design',c:'plum',tags:['design','ux'],date:'Yesterday',type:'articles',summary:'Show the essential options first and reveal advanced ones on request.',reader:'pd',blocked:true},
     {id:4,kind:'bowl',title:'Rich tonkotsu ramen broth from scratch',domain:'seriouseats.com',bg:'#2e2620',plate:'#1d1814',ink:'#e9d3a8',ratio:'1 / 1',folder:'Recipes',c:'amber',tags:['ramen'],date:'Yesterday',fav:true,type:'recipes',pinned:true},
     {id:5,kind:'type',title:'A complete guide to CSS Grid',domain:'css-tricks.com',site:'CSS-Tricks',bg:'#d9533a',fg:'#ffffff',ratio:'1.91 / 1',folder:'Design',c:'plum',tags:['css'],date:'Mon',type:'articles'},
     {id:6,kind:'sweater',title:'Merino crew neck jumper',domain:'cosstores.com',bg:'#eeede8',ink:'#8e9a84',ratio:'4 / 5',folder:'Clothes',c:'rose',tags:['clothes'],date:'Mon',type:'clothes'},
     {id:7,kind:'none',title:'How to Do Great Work',domain:'paulgraham.com',ratio:'2 / 1',folder:'Reading',c:'graphite',tags:['reading'],date:'Sun',type:'articles',summary:'An essay on choosing a field, curiosity and doing work that matters.',reader:'pg'},
-    {id:8,kind:'type',title:'Zoneless change detection',domain:'angular.dev',site:'angular.dev',bg:'#121214',fg:'#f4f4f6',ratio:'1.91 / 1',folder:'Angular',c:'clay',tags:['angular'],date:'Sun',type:'articles',note:'Read before migrating the dashboard.',reader:'zone'},
+    {id:8,kind:'type',title:'Zoneless change detection',domain:'angular.dev',site:'angular.dev',bg:'#121214',fg:'#f4f4f6',ratio:'1.91 / 1',folder:'Angular',c:'clay',tags:['angular'],date:'Sun',type:'articles',note:'Read before migrating the dashboard.',reader:'zone',desc:'How Angular runs change detection without zone.js, and how to migrate.'},
     {id:9,kind:'jacket',title:'Nano Puff jacket',domain:'patagonia.com',bg:'#e8ebee',ink:'#2f4c6b',ratio:'4 / 5',folder:'Clothes',c:'rose',tags:['clothes'],date:'Nov 14',fav:true,type:'clothes'},
     {id:10,kind:'pancakes',title:'Lemon ricotta pancakes',domain:'smittenkitchen.com',bg:'#efe4d2',plate:'#fbf7ef',ratio:'1 / 1',folder:'Recipes',c:'amber',tags:['breakfast'],date:'Nov 12',type:'recipes'},
     {id:11,kind:'video',title:'Design systems that last',domain:'youtube.com',bg:'#2a2135',ink:'#6a4f93',sx:90,dur:'42:10',ratio:'16 / 9',folder:'Design',c:'plum',tags:['design','video'],date:'Nov 11',type:'videos'},
@@ -543,9 +549,10 @@ a.mi{text-decoration:none}
   const TAGS=[['angular',12],['reading',8],['clothes',7],['design',5]];
   const CHIPS=[['all','All',58],['videos','Videos',8],['articles','Articles',23],['clothes','Clothes',7],['recipes','Recipes',7]];
   const VIEWS=[['masonry','Masonry','i-masonry'],['grid','Grid','i-grid'],['list','List','i-list'],['headlines','Headlines','i-lines']];
-  const S={scope:'all',view:'masonry',chip:'all',q:'',link:null,mode:'site',details:false,empty:false,reader:{size:'m',font:'sans',width:'narrow',tone:'app'}};
-  try{const v=JSON.parse(localStorage.getItem('sm-lib')||'{}');if(v.view)S.view=v.view;if(v.reader)S.reader=Object.assign(S.reader,v.reader)}catch(e){}
-  const save=()=>{try{localStorage.setItem('sm-lib',JSON.stringify({view:S.view,reader:S.reader}))}catch(e){}};
+  const SHOW_DEF={image:true,desc:true,note:true,tags:false,site:true,date:false};
+  const S={show:Object.assign({},SHOW_DEF),scope:'all',view:'masonry',chip:'all',q:'',link:null,mode:'site',details:false,empty:false,reader:{size:'m',font:'sans',width:'narrow',tone:'app'}};
+  try{const v=JSON.parse(localStorage.getItem('sm-lib')||'{}');if(v.view)S.view=v.view;if(v.reader)S.reader=Object.assign(S.reader,v.reader);if(v.show)S.show=Object.assign(S.show,v.show)}catch(e){}
+  const save=()=>{try{localStorage.setItem('sm-lib',JSON.stringify({view:S.view,reader:S.reader,show:S.show}))}catch(e){}};
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const ic=(id,n)=>`<svg width="${n}" height="${n}" aria-hidden="true"><use href="#${id}"/></svg>`;
   const letter=l=>l.domain[0].toUpperCase();
@@ -569,11 +576,13 @@ a.mi{text-decoration:none}
   }
   function card(l,grid){
     return `<article class="card l1" data-id="${l.id}"><button class="open" type="button" data-open="${l.id}" aria-label="Open ${esc(l.title)}"></button>
-      <div class="cover" style="aspect-ratio:${grid?'16 / 9':l.ratio}"><div class="cover-in">${coverInner(l)}</div></div>
+      ${S.show.image?`<div class="cover" style="aspect-ratio:${grid?'16 / 9':l.ratio}"><div class="cover-in">${coverInner(l)}</div></div>`:''}
       <div class="acts"><button class="act" type="button" data-fav="${l.id}" aria-pressed="${!!l.fav}" aria-label="${l.fav?'Remove from favorites':'Add to favorites'}">${ic(l.fav?'i-star-f':'i-star',16)}</button><button class="act" type="button" data-menu="${l.id}" aria-haspopup="menu" aria-label="More actions for ${esc(l.title)}">${ic('i-more',16)}</button></div>
       <div class="body"><h2 class="title">${esc(l.title)}</h2>
-      ${l.summary?`<p class="sum"><svg width="12" height="12" style="margin-top:4px;color:var(--ai)" role="img" aria-label="Summary written by AI, may be inaccurate"><use href="#i-spark"/></svg><span>${esc(l.summary)}</span></p>`:''}
-      <div class="meta"><span class="fav">${letter(l)}</span><span class="d" title="Saved ${esc(l.date)}">${esc(l.domain)}</span><span class="end">${l.pinned?`<svg class="pin" width="14" height="14" role="img" aria-label="Pinned to top of folder"><use href="#i-pin"/></svg>`:''}${l.fav?`<svg class="star" width="16" height="16" role="img" aria-label="Favorite"><use href="#i-star-f"/></svg>`:''}</span></div></div></article>`;
+      ${S.show.desc&&l.desc?`<p class="sum"><span>${esc(l.desc)}</span></p>`:S.show.desc&&l.summary?`<p class="sum"><svg width="12" height="12" style="margin-top:4px;color:var(--ai);flex:none" role="img" aria-label="Summary written by AI, may be inaccurate"><use href="#i-spark"/></svg><span>${esc(l.summary)}</span></p>`:''}
+      ${S.show.note&&l.note?`<p class="note"><svg width="12" height="12" aria-label="Your note" role="img"><use href="#i-edit"/></svg><span>${esc(l.note)}</span></p>`:''}
+      ${S.show.tags&&l.tags.length?`<div class="ctags">${l.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>`:''}
+      <div class="meta">${S.show.site?`<span class="fav">${letter(l)}</span><span class="d" title="Saved ${esc(l.date)}">${esc(l.domain)}</span>`:''}${S.show.date?`<span class="d">${S.show.site?'· ':''}${esc(l.date)}</span>`:''}<span class="end">${l.pinned?`<svg class="pin" width="14" height="14" role="img" aria-label="Pinned to top of folder"><use href="#i-pin"/></svg>`:''}${l.fav?`<svg class="star" width="16" height="16" role="img" aria-label="Favorite"><use href="#i-star-f"/></svg>`:''}</span></div></div></article>`;
   }
   function thumb(l){
     if(l.kind==='type')return `<span class="thumb" style="background:${l.bg}"></span>`;
@@ -608,6 +617,7 @@ a.mi{text-decoration:none}
       <div class="tools"><button class="btn sm" type="button" data-pop="filter" aria-haspopup="dialog">${ic('i-filter',16)}Filter</button>
       <button class="btn sm muted sort" type="button" data-pop="sort" aria-haspopup="menu">Newest first${ic('i-chev',16)}</button>
       <div class="seg" role="radiogroup" aria-label="View" id="seg">${VIEWS.map(([id,lab,i])=>`<button type="button" role="radio" aria-checked="${S.view===id}" data-view="${id}" aria-label="${lab}" title="${lab}">${ic(i,16)}</button>`).join('')}</div>
+      <button class="ib" type="button" data-pop="display" aria-haspopup="dialog" aria-label="Show on cards" title="Show on cards">${ic('i-sliders',16)}</button>
       <button class="ib split-btn" type="button" aria-label="Side by side" title="Side by side">${ic('i-split',16)}</button>
       <button class="ib" type="button" data-pop="more" aria-haspopup="menu" aria-label="More: Select, Export this view" title="More">${ic('i-more',16)}</button></div></div>
       <div class="views" role="toolbar" aria-label="Saved views">${CHIPS.map(([id,lab,n])=>`<button class="chip" type="button" aria-pressed="${S.chip===id}" data-chip="${id}">${lab} <b>${n}</b></button>`).join('')}<button class="chip dash" type="button">${ic('i-plus',16)}Save view</button></div>
@@ -699,6 +709,7 @@ a.mi{text-decoration:none}
       <button class="mi" type="button" data-pop="move" data-id="${l.id}">${ic('i-move',16)}Move to folder…<span class="kbd">M</span></button><button class="mi" type="button" data-pop="remind" data-id="${l.id}">${ic('i-bell',16)}Remind me…<span class="kbd">R</span></button><button class="mi" type="button" data-copy>${ic('i-copy',16)}Copy link</button><button class="mi" type="button">${ic('i-rule',16)}Rule for ${esc(l.domain)}…</button>
       <div class="msep"></div><button class="mi danger" type="button" data-del="${l.id}">${ic('i-trash',16)}Delete<span class="kbd">⌫</span></button>`;
     else if(kind==='sort')h=['Newest first','Oldest first','Title A–Z'].map((t,i)=>`<button class="mi" type="button" role="menuitemradio" aria-checked="${i===0}">${t}</button>`).join('');
+    else if(kind==='display'){pop.setAttribute('role','dialog');pop.setAttribute('aria-label','Show on cards');h=`<div class="mh">Show on cards</div>`+[['image','Preview image'],['desc','Description'],['note','Note'],['tags','Tags'],['site','Site'],['date','Date saved']].map(([k,t])=>`<button class="mi" type="button" role="menuitemcheckbox" aria-checked="${!!S.show[k]}" data-show="${k}">${t}<span style="margin-left:auto;color:var(--fg)">${S.show[k]?ic('i-check',16):''}</span></button>`).join('')+`<div class="msep"></div><p class="muted" style="margin:4px 8px 4px;font-size:var(--t-meta);max-width:28ch">Description is the page's own text, or an AI summary (marked with ✦) when it has none. Same switches in Settings › Appearance.</p><button class="mi" type="button" data-show-reset>Reset to default</button>`}
     else if(kind==='more')h=`<button class="mi" type="button">Select links<span class="kbd">X</span></button><button class="mi" type="button">${ic('i-upload',16)}Export this view…</button>`;
     else if(kind==='filter'){pop.setAttribute('role','dialog');pop.setAttribute('aria-label','Filter');h=`<div class="pgroup"><span class="lbl">Type</span><div class="taglist">${['Videos','Articles','Clothes','Recipes','Tools'].map(t=>`<button class="chip" type="button" aria-pressed="false" style="height:32px">${t}</button>`).join('')}</div></div>
       <div class="pgroup"><span class="lbl">Saved</span><div class="seg" role="radiogroup" aria-label="Saved"><button type="button" role="radio" aria-checked="true">Any time</button><button type="button" role="radio" aria-checked="false">Week</button><button type="button" role="radio" aria-checked="false">Month</button></div></div>
@@ -741,6 +752,8 @@ a.mi{text-decoration:none}
     const mv=t.closest('[data-moved]');if(mv){toast('Moved to '+mv.dataset.moved,true);closePop();return}
     const rm=t.closest('[data-remind]');if(rm){toast('Reminder set: '+rm.dataset.remind.toLowerCase());closePop();return}
     if(t.closest('[data-copy]')){toast('Link copied');closePop();return}
+    const sh=t.closest('[data-show]');if(sh){const k=sh.dataset.show;S.show[k]=!S.show[k];save();render();const nt=document.querySelector('[data-pop="display"]');if(nt)openPop('display',nt);return}
+    if(t.closest('[data-show-reset]')){S.show=Object.assign({},SHOW_DEF);save();render();const nt=document.querySelector('[data-pop="display"]');if(nt)openPop('display',nt);return}
     const rn=t.closest('[data-rename]');if(rn){const trig=popFor;closePop();openRename(+rn.dataset.rename,trig);return}
     const dl=t.closest('[data-del]');if(dl){toast('Moved to Trash',true);closePop();return}
     if(t.closest('[data-undo]')){document.getElementById('toast').hidden=true;return}
