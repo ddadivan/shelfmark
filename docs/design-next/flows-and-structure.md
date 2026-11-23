@@ -71,6 +71,8 @@ Desktop (from 64em)                 Tablet (40–64em)              Phone (< 40e
 │   All links              │
 │   Unsorted          17   │
 │   Favorites              │
+│ Pinned                   │
+│   …folders and links     │
 │ Revisit              3   │        3 = due + new forgotten
 │ Folders            [+]   │
 │   …tree                  │
