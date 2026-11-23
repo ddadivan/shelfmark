@@ -358,7 +358,7 @@ h1{margin:32px 0 0;font:600 1.6rem/1.2 var(--font-sans)}
     <option value="s-empty">Save: empty</option>
     <option value="s-loading">Save: loading the preview</option>
     <option value="s-ready">Save: ready, folder by rule</option>
-    <option value="s-details">Save: with details</option>
+    
     <option value="s-dup">Save: already saved</option>
     <option value="s-many">Save: several links</option>
     <option value="s-error">Save: preview failed</option>
@@ -398,8 +398,7 @@ h1{margin:32px 0 0;font:600 1.6rem/1.2 var(--font-sans)}
     h+=preview(false);
     if(st==='dup')return h+`<div class="note warn">${ic('bell')}<span>Already saved in <b>Recipes</b>, 3 weeks ago.</span><button class="sm-btn sm-btn--sm" type="button" style="margin-left:auto">Open</button></div>`;
     h+=goes;
-    h+=`<button class="sm-btn sm-btn--sm toggle" type="button" data-toggle-details aria-expanded="${S.details}">${ic(S.details?'up':'plus')}${S.details?'Fewer details':'Add details'}</button>`;
-    if(S.details)h+=details;
+    h+=details;
     return h;
   }
   function footHTML(){
