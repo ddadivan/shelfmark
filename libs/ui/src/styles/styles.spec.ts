@@ -250,6 +250,8 @@ describe('motion mixins', () => {
       'ui-progress 2.4s linear infinite',
     );
     expect(reducedMotionBlock(css('.a { @include loop(shimmer); }'))).toContain('animation: none');
+    expect(css('.a { @include loop(wave); }')).toContain('ui-wave-turn 9s linear infinite');
+    expect(reducedMotionBlock(css('.a { @include loop(wave); }'))).toContain('animation: none');
   });
 
   it('only the loaders use linear', () => {
@@ -301,6 +303,7 @@ describe('motion mixins', () => {
       'ui-spinner-grow',
       'ui-spinner-out',
       'ui-spinner-shrink',
+      'ui-wave-turn',
       'ui-shimmer',
       'ui-progress',
       'ui-ripple-grow',
