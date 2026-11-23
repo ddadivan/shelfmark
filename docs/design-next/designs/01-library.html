@@ -468,10 +468,12 @@ a.tab{text-decoration:none}
 .sec-in{min-height:0;overflow:hidden}
 .frow{display:flex;align-items:center;position:relative}
 .frow .nav{flex:1;min-width:0}
-.tw,.tw-sp{flex:none;width:16px;height:32px;display:grid;place-items:center;margin-right:-4px;border:0;background:transparent;color:var(--muted);padding:0;border-radius:4px;cursor:pointer}
-.tw:hover{color:var(--fg)}
+.tw,.tw-sp{flex:none;width:24px;height:32px;display:grid;place-items:center;margin-right:4px;border:0;background:transparent;color:var(--muted);padding:0;border-radius:var(--r-sm);cursor:pointer}
+.tw:hover{color:var(--fg);background:var(--hover)}
+.tw:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.tw .cv{width:14px;height:14px}
 .frow[aria-expanded="true"] .tw .cv{transform:rotate(90deg)}
-.frow.sub{padding-left:16px}
+.frow.sub{padding-left:28px}
 @media (prefers-reduced-motion:reduce){.sec-body,.kids,.sec-t .cv,.tw .cv{transition:none}}
 @media (max-width:63.99em){.tw,.tw-sp,.kids,.sec-t{display:none}.sec-body.shut{grid-template-rows:1fr}}
 </style>
