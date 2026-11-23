@@ -1772,7 +1772,7 @@
         "font": {
           "label": "Шрифт",
           "hint": "Читабельний створено для людей зі слабким зором",
-          "onest": "Onest",
+          "onest": "Hanken Grotesk",
           "system": "Системний",
           "readable": "Читабельний"
         },

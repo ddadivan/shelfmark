@@ -1,12 +1,25 @@
 @use '@angular/cdk' as cdk;
 @use 'ui' as *;
 
-// Metric-matched fallback for Onest: while the web font loads, text is set in Arial scaled and
-// re-spaced to Onest's metrics, so the swap moves almost nothing (no CLS from the font).
-// Numbers: Onest has 1000 units per em, ascender 970, descender -305, line gap 0 (hhea and
-// OS/2 typo agree; read from onest-latin-wght-normal.woff2). size-adjust 102% is the measured
-// width of Onest relative to Arial over UI strings (1.040 at weight 400, 1.010 at 700).
-// ascent-override = 970 / 1000 / 1.02, descent-override = 305 / 1000 / 1.02.
+// Metric-matched fallback for Hanken Grotesk (Shelf, ADR 0061): while the web font loads, text is
+// set in Arial scaled and re-spaced to Hanken Grotesk's metrics, so the swap moves almost nothing.
+// Numbers: Hanken Grotesk has 1000 units per em, ascender 1000, descender -303, line gap 0 (hhea
+// and OS/2 typo agree, USE_TYPO_METRICS set; read from hanken-grotesk-latin-wght-normal.woff2).
+// size-adjust 101% is the measured width of Hanken Grotesk at 400 relative to Arial / Liberation
+// Sans over UI strings (1.007). ascent-override = 1000 / 1000 / 1.01, descent-override = 303 / 1000 / 1.01.
+// Hanken Grotesk has no basic Cyrillic, so `--font-sans` lists Onest (self-hosted) after it for
+// Ukrainian; the browser fetches Onest only for those characters (`unicode-range`).
+@font-face {
+  font-family: 'Hanken Grotesk Fallback';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 101%;
+  ascent-override: 99%;
+  descent-override: 30%;
+  line-gap-override: 0%;
+}
+
+// Onest's own fallback stays for the Cyrillic text it sets (numbers: Onest 1000 units per em,
+// ascender 970, descender -305; size-adjust 102%).
 @font-face {
   font-family: 'Onest Fallback';
   src: local('Arial'), local('Helvetica'), local('Liberation Sans'), local('Arimo');
@@ -159,6 +172,6 @@ body {
 @include cdk.text-field-autosize;
 @include overlay-layers;
 @include overlay-passthrough;
-@include glass-utility;
+@include float-utility;
 @include dialog-layout;
 @include scrollbars;

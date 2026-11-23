@@ -1682,7 +1682,7 @@
         "font": {
           "label": "Font",
           "hint": "Readable is designed for low vision",
-          "onest": "Onest",
+          "onest": "Hanken Grotesk",
           "system": "System",
           "readable": "Readable"
         },
