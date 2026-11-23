@@ -42,12 +42,12 @@ S_CSS = r'''
 def qrow(a, t, sub, sel=False, lead=None):
     left = lead or f'<span class="sm-thumb" style="width:40px;height:32px">{ART[a]}</span>'
     return f'<button class="qp-row" type="button" role="option" aria-selected="{str(sel).lower()}">{left}<span class="tx"><b>{t}</b><small>{sub}</small></span>{"<span class=sm-kbd>Enter</span>" if sel else ""}</button>'
-field = lambda v, extra='': f'<div class="qp-field">{ic("search", 20)}<input value="{v}" aria-label="Search or ask your shelf" placeholder="Search or ask your shelf">{extra}<span class="sm-kbd">Esc</span></div>'
+field = lambda v, extra='': f'<div class="qp-field">{ic("search", 20)}<input value="{v}" aria-label="Search your links" placeholder="Search your links">{extra}<span class="sm-kbd">Esc</span></div>'
 foot = f'<div class="qp-foot"><span><span class="sm-kbd">↑</span><span class="sm-kbd">↓</span>move</span><span><span class="sm-kbd">Enter</span>open</span><span><span class="sm-kbd">Ctrl Enter</span>new tab</span></div>'
 chips = '<div class="qp-chips" role="toolbar" aria-label="Filters"><button class="sm-chip" aria-pressed="false">Type</button><button class="sm-chip" aria-pressed="false">Folder</button><button class="sm-chip" aria-pressed="true">#angular ×</button><button class="sm-chip" aria-pressed="false">Saved: any time</button><button class="sm-chip" aria-pressed="false">Favorites</button></div>'
 recent = f'''<div class="qscrim" aria-hidden="true"></div><div class="qp sm-l2" role="dialog" aria-modal="true" aria-label="Search and ask">{field('')}
 <div class="qp-group"><div class="qp-gt">Recent searches</div>{''.join(f'<button class="qp-row" type="button">{ic("revisit")}<span class="tx"><b>{t}</b></span></button>' for t in ['signal forms', 'ramen', '#clothes sale'])}</div>
-<div class="qp-group"><div class="qp-gt">Ways to search</div><div style="padding:0 8px 8px;display:flex;flex-wrap:wrap;gap:6px">{''.join(f'<span class="sm-tag" style="font-family:var(--font-mono);font-weight:400">{x}</span>' for x in ['#tag', 'in:Recipes', 'site:youtube.com', 'last week'])}</div><p class="disc" style="margin:0 8px 8px">Or ask a question in your own words: “that coat I saved in autumn”.</p></div>{foot}</div>'''
+<div class="qp-group"><div class="qp-gt">Ways to search</div><div style="padding:0 8px 8px;display:flex;flex-wrap:wrap;gap:6px">{''.join(f'<span class="sm-tag" style="font-family:var(--font-mono);font-weight:400">{x}</span>' for x in ['#tag', 'in:Recipes', 'site:youtube.com', 'last week'])}</div><p class="disc" style="margin:0 8px 8px">For questions (how many, which, summarise) use Ask, Ctrl J.</p></div>{foot}</div>'''
 results = f'''<div class="qscrim" aria-hidden="true"></div><div class="qp sm-l2" role="dialog" aria-modal="true" aria-label="Search and ask">{field('signal forms')}{chips}
 <div class="qp-group" role="listbox" aria-label="Results"><div class="qp-gt">Links</div>
 {qrow('video', '<mark>Signal</mark> <mark>Forms</mark> in 20 minutes', 'youtube.com · in Angular · #angular', True)}
@@ -60,8 +60,7 @@ results = f'''<div class="qscrim" aria-hidden="true"></div><div class="qp sm-l2"
 <div class="qp-group"><div class="qp-gt">Folders and tags</div>
 {qrow('', 'Angular / Forms', '13 links', lead=tile('clay'))}
 {qrow('', '#signals', '9 links', lead=f'<span class="lead-ic">{ic("hash")}</span>')}</div>
-<div class="qp-group"><div class="qp-gt">{ic("spark", 14)}Ask your shelf</div>
-{qrow('', 'Ask “signal forms”', 'An answer from your links, with sources', lead=f'<span class="lead-ic" style="background:var(--ai-bg);color:var(--ai)">{ic("spark")}</span>')}</div>{foot}</div>'''
+{foot}</div>'''
 ask = f'''<div class="qscrim" aria-hidden="true"></div><div class="qp sm-l2" role="dialog" aria-modal="true" aria-label="Search and ask">{field('which signal forms video should I watch first?')}
 <div class="ans" aria-live="polite"><span class="q">Which Signal Forms video should I watch first?</span>
 <div class="a"><span style="color:var(--ai);flex:none;margin-top:2px">{ic("spark", 18)}</span><div style="display:flex;flex-direction:column;gap:12px">
@@ -73,16 +72,16 @@ streaming = f'''<div class="qscrim" aria-hidden="true"></div><div class="qp sm-l
 <div class="ans"><span class="q">Coat I saved in autumn</span><div class="a"><span style="color:var(--ai);flex:none;margin-top:2px">{ic("spark", 18)}</span><div style="display:flex;flex-direction:column;gap:8px"><span class="statuspill">{ic("search", 12)}Looking through Clothes…</span><p>You saved two coats in October: the COS wool-blend overcoat <span class="cite">1</span> and<span class="caret" aria-hidden="true"></span></p></div></div></div></div>'''
 nothing = f'''<div class="qscrim" aria-hidden="true"></div><div class="qp sm-l2" role="dialog" aria-modal="true" aria-label="Search and ask">{field('blue velvet sofa')}<div class="qp-empty">{SC['nothing-found'].replace('class="sm-scene"', 'class="sm-scene sm-scene--sm"')}<b>Nothing with these words</b><p>No link mentions “blue velvet sofa” in its title, note, tags or address.</p></div>
 <div class="qp-group"><div class="qp-gt">{ic("spark", 14)}Close in meaning</div>{qrow('shirt', 'Standing desk', 'ikea.com · about furniture')}</div>
-<div class="qp-group"><div class="qp-gt">{ic("spark", 14)}Ask your shelf</div>{qrow('', 'Ask “blue velvet sofa”', 'An answer from your links, with sources', lead=f'<span class="lead-ic" style="background:var(--ai-bg);color:var(--ai)">{ic("spark")}</span>')}</div></div>'''
+<div class="qp-foot" style="justify-content:space-between;align-items:center"><span>Looking for an answer rather than a link?</span><button class="sm-btn sm-btn--secondary sm-btn--sm" type="button">{ic("spark")}Ask instead</button></div></div>'''
 respage = f'''<div class="res-head"><h1>Results for “signal forms”</h1><span class="lead" style="margin:0">5 links, 2 close in meaning</span><button class="sm-btn sm-btn--secondary" type="button">{ic("plus")}Save as view</button></div>
 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px"><button class="sm-chip" aria-pressed="false">Type</button><button class="sm-chip" aria-pressed="false">Folder</button><button class="sm-chip" aria-pressed="true">#angular ×</button><button class="sm-chip" aria-pressed="false">Saved: any time</button></div>
 <div class="stack"><div class="sm-panel sm-l1" style="max-width:none">{''.join(f'<div class="rrow"><span class="sm-thumb">{ART[a]}</span><span class="tx"><span class="tt">{t}</span><span class="sm-meta" style="margin:0">{fav(d[0].upper())}{d}</span></span><span class="sm-tag">angular</span></div>' for a, t, d in [('video', 'Signal Forms in 20 minutes', 'youtube.com'), ('dark', 'Signal Forms: getting started', 'angular.dev'), ('type', 'Validation without Reactive Forms', 'dev.to')])}</div>
 <div><p class="sec-t" style="display:flex;gap:8px;align-items:center"><span style="color:var(--ai)">{ic("spark")}</span>Close in meaning</p><div class="sm-panel sm-l1" style="max-width:none">{''.join(f'<div class="rrow"><span class="sm-thumb">{ART[a]}</span><span class="tx"><span class="tt">{t}</span><span class="sm-meta" style="margin:0">{fav(d[0].upper())}{d}</span></span></div>' for a, t, d in [('dark', 'linkedSignal in practice', 'youtube.com'), ('type', 'NgRx SignalStore patterns', 'dev.to')])}</div></div></div>'''
 SBG = '<h1>All links</h1><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:24px">' + ''.join(f'<article class="sm-card sm-l1" style="width:auto"><div class="sm-cover" style="aspect-ratio:{r}">{ART[x]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3><div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>' for x, r, t, d in [('video', '16/9', 'Signal Forms in 20 minutes', 'youtube.com'), ('shirt', '4/5', 'Wool overshirt', 'uniqlo.com'), ('bowl', '1/1', 'Tonkotsu broth', 'seriouseats.com'), ('jacket', '4/5', 'Nano Puff jacket', 'patagonia.com')]) + '</div>'
 results, recent, ask, streaming, nothing = [SBG + x for x in (results, recent, ask, streaming, nothing)]
-page('search.html', 'Search and Ask', S_CSS, [
+page('search.html', 'Search', S_CSS, [
  ('results', 'Results (words, meaning, folders, Ask)', results), ('recent', 'Before typing: recent searches', recent),
- ('ask', 'Ask: answer with sources', ask), ('streaming', 'Ask: answering', streaming), ('nothing', 'Nothing with these words', nothing),
+ ('nothing', 'Nothing with these words', nothing),
  ('page', 'Full results page', respage)])
 
 # ================= ORGANISE =================

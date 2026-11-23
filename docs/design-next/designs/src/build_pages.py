@@ -37,7 +37,7 @@ ART = {
  'type': '<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="320" height="180" fill="#f1ede2"/><rect x="20" y="110" width="200" height="16" rx="4" fill="#1d1d1f"/><rect x="20" y="134" width="140" height="16" rx="4" fill="#1d1d1f"/></svg>',
  'dark': '<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="320" height="180" fill="#121214"/><rect x="20" y="110" width="200" height="16" rx="4" fill="#f4f4f6"/></svg>',
 }
-PAGES = [('index.html', 'Library and Link page'), ('save-revisit.html', 'Save and Revisit'), ('search.html', 'Search and Ask'), ('organise.html', 'Organise'), ('settings.html', 'Settings'), ('public.html', 'Sign-in and public pages'), ('extension.html', 'Browser extension'), ('select-move.html', 'Select, move, side by side'), ('data.html', 'Import, export, sharing'), ('first-run.html', 'First run, help, landing')]
+PAGES = [('index.html', 'Library and Link page'), ('save-revisit.html', 'Save and Revisit'), ('search.html', 'Search'), ('organise.html', 'Organise'), ('settings.html', 'Settings'), ('public.html', 'Sign-in and public pages'), ('extension.html', 'Browser extension'), ('select-move.html', 'Select, move, side by side'), ('data.html', 'Import, export, sharing'), ('first-run.html', 'First run, help, landing'), ('ask.html', 'Ask your shelf')]
 
 SHELL_CSS = r'''
 [hidden]{display:none!important}*{box-sizing:border-box}body{margin:0}
@@ -77,12 +77,12 @@ def sidebar(cur=''):
         cur_attr = ' aria-current="page"' if key == cur else ''
         return f'<button class="sm-nav" type="button"{cur_attr} title="{label}">{ic(icon, 20)}<span class="lbl">{label}</span>{extra}</button>'
     return (f'<nav class="side sm-l1" aria-label="Library"><div class="logo"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="4" fill="var(--accent)"/><path d="M14 4h5v8l-2.5-2-2.5 2z" fill="var(--brand-notch)"/></svg><span>Shelfmark</span></div>'
-        + nav('all', 'bookmark', 'All links', '<span class="n">58</span>') + nav('unsorted', 'inbox', 'Unsorted', '<span class="n">17</span>') + nav('fav', 'star', 'Favorites', '<span class="n">6</span>') + nav('revisit', 'revisit', 'Revisit', '<span class="dot">3</span>')
+        + nav('all', 'bookmark', 'All links', '<span class="n">58</span>') + nav('unsorted', 'inbox', 'Unsorted', '<span class="n">17</span>') + nav('fav', 'star', 'Favorites', '<span class="n">6</span>') + nav('revisit', 'revisit', 'Today', '<span class="dot">3</span>') + nav('ask', 'spark', 'Ask')
         + '<div class="sm-sec">Folders</div><div class="tree">'
         + ''.join(f'<button class="sm-nav sm-nav--plain" type="button"{" aria-current=%spage%s" % (chr(34), chr(34)) if cur == n.lower() else ""}>{tile(c)}<span class="lbl">{n}</span><span class="n">{k}</span></button>' for n, c, k in [('Clothes', 'rose', 7), ('Recipes', 'amber', 7), ('Work', 'ocean', 7), ('Design', 'plum', 5)])
         + f'</div><div class="sm-sec">Tags</div><div class="tree">' + ''.join(f'<button class="sm-nav sm-nav--plain" type="button">{ic("hash", 20)}<span class="lbl">{t}</span><span class="n">{k}</span></button>' for t, k in [('angular', 12), ('reading', 8), ('clothes', 7)])
         + f'</div><div style="margin-top:auto;padding-top:8px;border-top:1px solid var(--line)">{nav("trash", "trash", "Trash")}</div></nav>')
-TOP = (f'<header class="top"><label class="sm-input sm-search sm-l1">{ic("search")}<input placeholder="Search or ask your shelf" aria-label="Search or ask your shelf"><span class="sm-kbd">Ctrl K</span></label>'
+TOP = (f'<header class="top"><label class="sm-input sm-search sm-l1">{ic("search")}<input placeholder="Search your links" aria-label="Search your links"><span class="sm-kbd">Ctrl K</span></label><button class="sm-btn sm-btn--secondary ask-top" type="button">{ic("spark").replace("aria-hidden", "style=%scolor:var(--ai)%s aria-hidden" % (chr(34), chr(34)))}Ask</button>'
        f'<div class="right"><button class="sm-btn sm-btn--primary add-btn" type="button">{ic("plus")}Add link</button><button class="avatar" type="button" aria-label="Account">DU</button></div></header>')
 TABBAR = f'<div class="tabbar-wrap"><nav class="sm-tabbar sm-l2" aria-label="Main"><button class="sm-tab" type="button">{ic("bookmark",20)}Library</button><button class="sm-tab" type="button">{ic("revisit",20)}Revisit</button><button class="sm-fab" type="button" aria-label="Add link">{ic("plus",24)}</button><button class="sm-tab" type="button">{ic("search",20)}Search</button><button class="sm-tab" type="button">{ic("user",20)}You</button></nav></div>'
 

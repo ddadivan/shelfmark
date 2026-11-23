@@ -300,7 +300,7 @@ OFF = f'<div class="strip off" role="status">{ic("x")}<span><b>You’re offline.
 FEED = '<h1>All links</h1><div class="mini-feed" style="columns:4 200px;column-gap:16px;margin-top:24px">' + ''.join(f'<article class="sm-card sm-l1"><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3><div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>' for a, r, t, d in CARDS) + '</div>'
 strips = DEMO + f'<div class="app" style="min-height:auto">{sidebar("all")}<main class="main">{TOP}{FEED}</main></div>'
 strips_off = OFF + f'<div class="app" style="min-height:auto">{sidebar("all")}<main class="main">{TOP.replace("sm-btn--primary add-btn", "sm-btn--primary add-btn\" disabled title=\"Saving is off while offline")}{FEED}</main></div>'
-SHORT = [('Everywhere', [('Search or ask', ['Ctrl', 'K']), ('Add a link', ['N']), ('Paste to save', ['Ctrl', 'V']), ('Undo', ['Ctrl', 'Z']), ('All shortcuts', ['?'])]),
+SHORT = [('Everywhere', [('Search', ['Ctrl', 'K']), ('Ask your shelf', ['Ctrl', 'J']), ('Add a link', ['N']), ('Paste to save', ['Ctrl', 'V']), ('Undo', ['Ctrl', 'Z']), ('All shortcuts', ['?'])]),
          ('Library', [('Move between links', ['↑', '↓']), ('Open preview', ['Enter']), ('Open in browser', ['Ctrl', 'Enter']), ('Select', ['X']), ('Favorite', ['F']), ('Move to folder', ['M']), ('Remind me', ['R']), ('Rename', ['F2']), ('Delete', ['⌫'])]),
          ('Link page', [('Next / previous link', ['J', 'K']), ('Site / Reader', ['V']), ('Details', ['I']), ('Back to the list', ['Esc'])])]
 shortcuts = APP(f'''<h1>Keyboard shortcuts</h1><p class="lead">Press ? anywhere to see this list.</p><div style="max-width:720px">
