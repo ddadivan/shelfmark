@@ -332,7 +332,7 @@ Small broken promises found in the inventory, worth fixing now on the current co
 | D3 | Ways to mark what matters | **Keep three, each with its own job:** Pinned (sidebar quick access to folders and links), Pin to top of folder (order inside one folder), Favorites (a mark to filter by). Cut folder highlight (D4) |
 | D4 | Folder look: colour and icon only | **Yes** |
 | D5 | Side by side | **Keep** (author: useful and unique). Defined as two feeds next to each other for filing; the Link page is one link; on wide screens both exist, not at the same time |
-| D6 | Fill in with AI | **Keep the button in Suggest mode** ("apply all suggestions in one press"); hidden in Automatic mode. AI stays visible through the suggestion rows with the spark and the "Moved by AI" marks |
+| D6 | Fill in with AI | **Keep the button in Suggest mode** ("apply all suggestions in one press"); hidden in Automatic mode. AI stays visible through the suggestion rows with the spark and the "Moved by AI" marks (the author's reason for the button was to show that AI is there) |
 | D7 | Custom theme | **Keep base, accent and background; drop corners** |
 | D8 | Browser notifications for reminders, after the redesign | **Yes** |
 | D9 | Account deletion with a 7-day grace period | **Yes** |

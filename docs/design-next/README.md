@@ -30,6 +30,10 @@ Feature moves, merges or removals are proposed with reasons and decided by the a
 
 ## What exists so far
 
+- Step 1 done: `features.md` and `screens.md` (the inventory, as is).
+- Step 2 approved: `flows-and-structure.md` (three jobs, new navigation, Revisit, Reader mode, decisions D1–D15).
+- Step 3 for review: `foundations.md` (type, space, radius, elevation, three palettes with contrast), `screen-map.md` (every page and surface of the new structure), `foundations-preview.html` (visual version, published privately: https://claude.ai/artifact/64J7giL8JyZzdFFuqsQvFL).
+
 - `library-prototype.html`: the main page prototype built to the skills (body 16 / secondary 14 / meta 12, Major Second headings, 8pt grid, border-first elevation, no glass, one primary action), with the gaps against Raindrop closed: a preview on every card, density (about 10 cards above the fold), four views (Masonry, Grid, List, Headlines), a quiet sidebar, a simple card, less chrome. Covers are drawn stand-ins for real preview images. Light and dark, desktop and phone. Published as a private artifact: https://claude.ai/artifact/TKFcPWE8G6BKjcDptAe8bt
 - An earlier canvas (desktop and phone artboards, closer to the 2027 tokens): https://claude.ai/artifact/6mFHwSXpkBsa4ieXZ2Hxb4
 - `audit-and-fix-prompt.md`: the audit of `libs/ui` against the skills (type sizes outside the scale, about 50 hard-coded radii, off-grid spacing, the undefined `--space-5`, glass on cards, a glow gradient, loud sage fills, too many primary buttons) and a fix prompt. It was written against the 2027 rules; with the rule above, its findings stand but the target values come from the new foundations.
