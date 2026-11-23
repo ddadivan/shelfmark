@@ -12,7 +12,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 | --- | --- | --- | --- | --- |
 | N-01 | Sidebar: Library (All links, Unsorted, Favorites), Revisit with count, Pinned, Folders, Tags, Trash | chrome | full / rail with flyouts / Library tab | collapsed sections, counts off |
 | N-02 | Top bar: search, Add link, avatar | chrome | yes / yes / — | search open |
-| N-03 | Phone tab bar: Library, Revisit, Add, Search, You | chrome | — / — / yes | hidden on pushed pages |
+| N-03 | Phone tab bar: Library, Revisit, Add, Search, You. No search field at the top on phones: Search opens S-01 full screen | chrome | — / — / yes | hidden on pushed pages |
 | N-04 | Avatar menu: Settings, Theme (System / Light / Dark), Keyboard shortcuts, Help, What's new, Sign out | menu | yes / yes / You page | What's new dot |
 | N-05 | Demo strip | banner | all | hours left |
 | N-06 | Offline strip | banner | all | honest copy (D11) |
@@ -28,7 +28,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 | L-03 | Views: Masonry, Grid, List, Headlines | toggle | all four / all / Masonry 2 columns, List, Headlines | per-feed memory |
 | L-04 | Filter control (type, folder, tag, saved date, favorites) and saved views chips | popover + chips | yes / yes / sheet | no saved views |
 | L-05 | Card, row, headline row | component | hover actions / touch actions / long press | favorite, pinned to top, reminder, AI summary pending, no image |
-| L-06 | Link menu: Open, Details, Favorite, Pin to top, Pin to sidebar, Move, Remind me, Copy link, Share folder link, Create rule, Delete | menu | yes / yes / sheet | conditions per item |
+| L-06 | Link menu: Open, Open in browser, Rename (title only, in the shared rename dialog; F2), Details, Favorite, Pin to top, Pin to sidebar, Move, Remind me, Copy link, Share folder link, Create rule, Delete | menu | yes / yes / sheet | conditions per item |
 | L-07 | Bulk bar: Move, Tags, Favorite, Remind, Open all, Copy, Delete | toolbar | bottom glassless bar / same / stacked | count, disabled actions |
 | L-08 | Side by side: two feeds | Split pane | ≥ 80em only / — / — | picker on the right, related folders (AI) |
 | L-09 | Unsorted with the Tidy up count | part of L-01 | all | AI off: no count |
@@ -60,7 +60,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 
 | ID | Surface | Type | D / T / P | States |
 | --- | --- | --- | --- | --- |
-| S-01 | Quick search panel (⌘K / field) | popover panel | under the field ≥ 80em, centred panel 64–80em / centred / full screen | recent searches, typing, nothing found, failed |
+| S-01 | Quick search panel (⌘K / field; phone: Search tab) | popover panel | under the field ≥ 80em, centred panel 64–80em / centred / full screen with back button, field focused; a found link opens its preview (Link page), Back returns to the results | recent searches, typing, nothing found, failed |
 | S-02 | Results: links by words (title, note, address, tags, site, folder), close in meaning, folders and tags | list | all | AI off: no meaning group |
 | S-03 | Filter chips and `#tag`, `site:`, `in:` syntax | chips | all | |
 | S-04 | Ask row and answer with sources, follow-ups | part of S-01 / S-05 | all | streaming, limit, not available, nothing in your links |

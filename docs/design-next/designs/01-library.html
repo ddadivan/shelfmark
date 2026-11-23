@@ -347,6 +347,49 @@ a.mi{text-decoration:none}
 }
 @keyframes sheet-in{from{transform:translateY(100%)}to{transform:none}}
 @media (prefers-reduced-motion:reduce){#pop.sheet{animation:none}}
+
+/* rename dialog */
+.dlg-wrap{position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:16px;background:var(--scrim)}
+.dlg{width:400px;max-width:100%;padding:24px;border-radius:var(--r-lg);display:flex;flex-direction:column;gap:16px}
+.dlg h2{margin:0;font-size:1.27rem;font-weight:600;line-height:1.25}
+.dlg label{display:block;font-size:var(--t-meta);font-weight:500;margin-bottom:6px}
+.dlg input{width:100%;height:40px;padding:0 12px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--l1);color:var(--fg);font:inherit;font-size:var(--t-sec)}
+.dlg input:focus{outline:0;border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 20%,transparent)}
+.dlg .hint{margin:6px 0 0;font-size:var(--t-meta);color:var(--muted)}
+.dlg .foot{display:flex;justify-content:flex-end;gap:8px}
+/* full-screen search (phone) */
+.fs{position:fixed;inset:0;z-index:90;background:var(--l0);display:flex;flex-direction:column;animation:fs-in 200ms ease-out}
+.fs[hidden]{display:none}
+.fs-head{display:flex;align-items:center;gap:8px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;border-bottom:1px solid var(--line)}
+.fs-field{flex:1;display:flex;align-items:center;gap:8px;height:48px;padding:0 4px 0 12px;border-radius:var(--r-sm);color:var(--muted)}
+.fs-field:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 20%,transparent)}
+.fs-field input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;display:none}
+.fs-field input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--fg);font:inherit;font-size:1rem}
+.fs-body{flex:1;overflow:auto;padding:8px 16px calc(24px + env(safe-area-inset-bottom,0px))}
+.fs-gt{display:flex;align-items:center;gap:8px;margin:16px 0 4px;font-size:var(--t-meta);font-weight:500;color:var(--muted)}
+.fs-gt svg{color:var(--ai)}
+.fs-row{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 0;border:0;background:transparent;color:var(--fg);text-align:left;font:inherit}
+.fs-row+.fs-row{border-top:1px solid var(--line)}
+.fs-row .tx{flex:1;min-width:0;display:flex;flex-direction:column}
+.fs-row b{font-weight:500;font-size:var(--t-sec);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs-row small{font-size:var(--t-meta);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs-row .thumb{flex:none}
+.fs-row .ri{display:grid;place-items:center;width:40px;height:40px;border-radius:var(--r-sm);background:var(--hover);color:var(--muted);flex:none}
+.fs-ways{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.fs-ways span{display:inline-flex;align-items:center;height:28px;padding:0 8px;border-radius:var(--r-xs,4px);background:var(--hover);font-size:var(--t-meta);font-family:ui-monospace,monospace}
+.fs mark{background:color-mix(in srgb,var(--star,#B26A00) 22%,transparent);color:inherit;border-radius:2px}
+@keyframes fs-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fs{animation:none}}
+@media (max-width:39.99em){
+  .top{display:none}
+  .head{margin-top:8px}
+  .dlg-wrap{place-items:end stretch;padding:0}
+  .dlg{width:auto;border-radius:20px 20px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom,0px));gap:12px}
+  .dlg::before{content:"";display:block;width:36px;height:4px;border-radius:2px;background:var(--line-strong);margin:0 auto}
+  .dlg input{height:48px;font-size:1rem}
+  .dlg .foot .btn{flex:1;height:48px}
+}
+@media (min-width:40em){.fs{display:none!important}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -380,7 +423,7 @@ a.mi{text-decoration:none}
 <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M15 4v16" stroke="currentColor" stroke-width="1.75"/></symbol>
 <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"/></symbol>
 <symbol id="i-move" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM10 13h6M13 10l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol>
+<symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></symbol><symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol>
 <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol>
 <symbol id="i-rule" viewBox="0 0 24 24"><path d="M4 6h10M4 12h7M4 18h10M17 9l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-browser" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M3 9h18" stroke="currentColor" stroke-width="1.75"/></symbol>
@@ -442,6 +485,12 @@ a.mi{text-decoration:none}
 
 <div id="pop" class="pop l2" role="menu" hidden></div>
 <div id="toast" class="toast l2" role="status" hidden></div>
+<div id="dlg" class="dlg-wrap" hidden></div>
+<section id="fs" class="fs" role="dialog" aria-modal="true" aria-label="Search" hidden>
+  <div class="fs-head"><button class="ib" type="button" id="fs-back" aria-label="Close search"><svg width="20" height="20" aria-hidden="true"><use href="#i-left"/></svg></button>
+  <label class="fs-field l1"><svg width="18" height="18" aria-hidden="true"><use href="#i-search"/></svg><span class="sr">Search or ask</span><input id="fsq" type="search" placeholder="Search or ask your shelf" autocomplete="off" enterkeyhint="search"><button class="ib" type="button" id="fs-clear" aria-label="Clear" hidden><svg width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg></button></label></div>
+  <div class="fs-body" id="fs-body" aria-live="polite"></div>
+</section>
 
 <script>
 (function(){
@@ -646,7 +695,7 @@ a.mi{text-decoration:none}
   function openPop(kind,trigger,id){
     let h='';const l=id?byId(id):S.link?byId(S.link):null;pop.setAttribute('role','menu');
     if(kind==='menu')h=`<button class="mi" type="button" data-open="${l.id}">${ic('i-eye',16)}Open here<span class="kbd">Space</span></button><a class="mi" href="#" data-ext>${ic('i-ext',16)}Open in browser</a><div class="msep"></div>
-      <button class="mi" type="button" data-fav="${l.id}">${ic('i-star',16)}${l.fav?'Remove from favorites':'Add to favorites'}</button><button class="mi" type="button">${ic('i-pin',16)}${l.pinned?'Unpin from top of folder':'Pin to top of folder'}</button><button class="mi" type="button">${ic('i-pin',16)}Pin to sidebar</button>
+      <button class="mi" type="button" data-rename="${l.id}">${ic('i-edit',16)}Rename…<span class="kbd">F2</span></button><button class="mi" type="button" data-fav="${l.id}">${ic('i-star',16)}${l.fav?'Remove from favorites':'Add to favorites'}</button><button class="mi" type="button">${ic('i-pin',16)}${l.pinned?'Unpin from top of folder':'Pin to top of folder'}</button><button class="mi" type="button">${ic('i-pin',16)}Pin to sidebar</button>
       <button class="mi" type="button" data-pop="move" data-id="${l.id}">${ic('i-move',16)}Move to folder…<span class="kbd">M</span></button><button class="mi" type="button" data-pop="remind" data-id="${l.id}">${ic('i-bell',16)}Remind me…<span class="kbd">R</span></button><button class="mi" type="button" data-copy>${ic('i-copy',16)}Copy link</button><button class="mi" type="button">${ic('i-rule',16)}Rule for ${esc(l.domain)}…</button>
       <div class="msep"></div><button class="mi danger" type="button" data-del="${l.id}">${ic('i-trash',16)}Delete<span class="kbd">⌫</span></button>`;
     else if(kind==='sort')h=['Newest first','Oldest first','Title A–Z'].map((t,i)=>`<button class="mi" type="button" role="menuitemradio" aria-checked="${i===0}">${t}</button>`).join('');
@@ -684,7 +733,7 @@ a.mi{text-decoration:none}
     const c=t.closest('[data-chip]');if(c){S.chip=c.dataset.chip;render();return}
     const sc=t.closest('[data-scope]');if(sc){S.scope=sc.dataset.scope;S.link=null;S.empty=false;render();return}
     const md=t.closest('[data-mode]');if(md){S.mode=md.dataset.mode;render();return}
-    if(t.closest('[data-close]')){S.link=null;render();return}
+    if(t.closest('[data-close]')){S.link=null;render();if(fromSearch&&phoneQ.matches){fromSearch=false;openSearch()}return}
     const st=t.closest('[data-step]');if(st){step(+st.dataset.step);return}
     if(t.closest('[data-details]')){S.details=!S.details;render();return}
     const rs=t.closest('[data-rs]');if(rs){const [k,val]=rs.dataset.rs.split(':');S.reader[k]=val;save();const trig=popFor;render();const nt=document.querySelector('[data-pop="reading"]');if(nt)openPop('reading',nt);return}
@@ -692,6 +741,7 @@ a.mi{text-decoration:none}
     const mv=t.closest('[data-moved]');if(mv){toast('Moved to '+mv.dataset.moved,true);closePop();return}
     const rm=t.closest('[data-remind]');if(rm){toast('Reminder set: '+rm.dataset.remind.toLowerCase());closePop();return}
     if(t.closest('[data-copy]')){toast('Link copied');closePop();return}
+    const rn=t.closest('[data-rename]');if(rn){const trig=popFor;closePop();openRename(+rn.dataset.rename,trig);return}
     const dl=t.closest('[data-del]');if(dl){toast('Moved to Trash',true);closePop();return}
     if(t.closest('[data-undo]')){document.getElementById('toast').hidden=true;return}
     if(t.closest('#add')||t.closest('.fab')){toast('Opens the save panel (next design group)');return}
@@ -703,11 +753,49 @@ a.mi{text-decoration:none}
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();document.getElementById('q').focus();return}
     if(e.key==='Escape'){if(!pop.hidden){closePop(true);return}if(S.link){S.link=null;render();return}}
     if(inField)return;
+    if(e.key==='F2'){const c=e.target.closest('[data-id]')||(S.link&&{dataset:{id:S.link}});if(c){e.preventDefault();openRename(+c.dataset.id,e.target)}return}
     if(S.link&&(e.key==='ArrowDown'||e.key==='ArrowUp')){e.preventDefault();step(e.key==='ArrowDown'?1:-1)}
   });
   document.addEventListener('keydown',e=>{const g=e.target.closest('.seg');if(!g)return;const k={ArrowRight:1,ArrowLeft:-1}[e.key];if(!k)return;const bs=[...g.querySelectorAll('button')];const i=bs.indexOf(e.target);const n=bs[(i+k+bs.length)%bs.length];e.preventDefault();n.click();const again=document.querySelector(`[${[...n.attributes].find(a=>a.name.startsWith('data-')&&a.name!=='data-rs')?.name||'data-x'}="${n.getAttribute([...n.attributes].find(a=>a.name.startsWith('data-'))?.name)}"]`);if(again)again.focus()});
   document.getElementById('q').addEventListener('input',e=>{S.q=e.target.value;S.link=null;render()});
-  document.getElementById('tab-search').addEventListener('click',()=>document.getElementById('q').focus());
+
+  /* Rename */
+  const dlg=document.getElementById('dlg');let dlgFor=null;
+  function openRename(id,trigger){const l=byId(id);dlgFor=trigger||null;
+    dlg.innerHTML=`<form class="dlg l2" role="dialog" aria-modal="true" aria-labelledby="rn-t" data-rn="${id}"><h2 id="rn-t">Rename link</h2><div><label for="rn-i">Title</label><input id="rn-i" value="${esc(l.title)}" required><p class="hint">Only in Shelfmark; the page keeps its own title. Search finds both.</p></div><div class="foot"><button class="btn secondary" type="button" data-rn-cancel>Cancel</button><button class="btn primary" type="submit">Rename</button></div></form>`;
+    dlg.hidden=false;const i=document.getElementById('rn-i');i.focus();i.select();}
+  function closeRename(){dlg.hidden=true;dlg.innerHTML='';if(dlgFor&&document.contains(dlgFor))dlgFor.focus();dlgFor=null}
+  dlg.addEventListener('submit',e=>{e.preventDefault();const id=+e.target.dataset.rn;const v=document.getElementById('rn-i').value.trim();if(!v)return;byId(id).title=v;closeRename();render();toast('Renamed',true)});
+  dlg.addEventListener('click',e=>{if(e.target===dlg||e.target.closest('[data-rn-cancel]'))closeRename()});
+  dlg.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();closeRename()}});
+  /* Full-screen search on phones */
+  const fs=document.getElementById('fs'),fsq=document.getElementById('fsq'),fsBody=document.getElementById('fs-body');let fromSearch=false;
+  const RECENT=['signal forms','ramen','#clothes'];
+  const mk=(t,q)=>q?esc(t).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>'):esc(t);
+  function fsRender(){const q=fsq.value.trim();document.getElementById('fs-clear').hidden=!q;
+    if(!q){fsBody.innerHTML=`<div class="fs-gt">Recent searches</div>${RECENT.map(r=>`<button class="fs-row" type="button" data-fs-q="${esc(r)}"><span class="ri">${ic('i-revisit',18)}</span><span class="tx"><b>${esc(r)}</b></span></button>`).join('')}
+      <div class="fs-gt">Ways to search</div><div class="fs-ways"><span>#tag</span><span>in:Recipes</span><span>site:youtube.com</span><span>last week</span></div><p class="muted" style="font-size:var(--t-meta);margin:12px 0 0">Or ask in your own words: “that coat I saved in autumn”.</p>`;return}
+    const ql=q.toLowerCase().replace(/^#/,'');const hit=L.filter(l=>(l.title+' '+l.domain+' '+l.tags.join(' ')+' '+l.folder).toLowerCase().includes(ql));
+    const near=L.filter(l=>!hit.includes(l)&&hit.some(h=>h.tags.some(t=>l.tags.includes(t))||h.folder===l.folder)).slice(0,3);
+    const folders=FOLDERS.filter(([n])=>n.toLowerCase().includes(ql));
+    const rowL=l=>`<button class="fs-row" type="button" data-fs-open="${l.id}">${thumb(l)}<span class="tx"><b>${mk(l.title,ql)}</b><small>${esc(l.domain)} · in ${esc(l.folder)}</small></span></button>`;
+    let h='';
+    if(hit.length)h+=`<div class="fs-gt">Links · ${hit.length}</div>`+hit.map(rowL).join('');
+    else h+=`<div style="display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:24px 0 8px">${SC.none}<b style="font-size:var(--t-s)">Nothing with these words</b><p class="muted" style="margin:0;font-size:var(--t-sec)">No link mentions “${esc(q)}” in its title, note, tags or address.</p></div>`;
+    if(folders.length)h+=`<div class="fs-gt">Folders</div>`+folders.map(([n,c,col])=>`<button class="fs-row" type="button"><span class="ri" style="background:var(--fb-${col});color:var(--fc-${col})">${ic('i-folder',18)}</span><span class="tx"><b>${mk(n,ql)}</b><small>${c} links</small></span></button>`).join('');
+    if(near.length)h+=`<div class="fs-gt">${ic('i-spark',14)}Close in meaning</div>`+near.map(rowL).join('');
+    h+=`<div class="fs-gt">${ic('i-spark',14)}Ask your shelf</div><button class="fs-row" type="button" data-fs-ask><span class="ri" style="background:var(--ai-bg,#ECEDF9);color:var(--ai)">${ic('i-spark',18)}</span><span class="tx"><b>Ask “${esc(q)}”</b><small>An answer from your links, with sources</small></span></button>`;
+    fsBody.innerHTML=h}
+  function openSearch(){closePop();fs.hidden=false;document.body.style.overflow='hidden';fsRender();fsq.focus()}
+  function closeSearch(){fs.hidden=true;document.body.style.overflow='';const t=document.getElementById('tab-search');if(t)t.focus()}
+  fsq.addEventListener('input',fsRender);
+  document.getElementById('fs-back').addEventListener('click',()=>{fromSearch=false;closeSearch()});
+  document.getElementById('fs-clear').addEventListener('click',()=>{fsq.value='';fsRender();fsq.focus()});
+  fs.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();fromSearch=false;closeSearch()}});
+  fs.addEventListener('click',e=>{const r=e.target.closest('[data-fs-q]');if(r){fsq.value=r.dataset.fsQ;fsRender();return}
+    const o=e.target.closest('[data-fs-open]');if(o){fromSearch=true;fs.hidden=true;document.body.style.overflow='';S.link=+o.dataset.fsOpen;S.empty=false;const l=byId(S.link);S.mode=l.blocked&&l.reader?'reader':'site';render();window.scrollTo(0,0);return}
+    if(e.target.closest('[data-fs-ask]')){toast('Ask answers here, with sources (see Search and Ask)');}});
+  document.getElementById('tab-search').addEventListener('click',()=>{if(phoneQ.matches)openSearch();else document.getElementById('q').focus()});
   document.getElementById('screen').addEventListener('change',e=>{const v=e.target.value;if(v==='g2'){location.href='save-revisit.html';return}if(v.startsWith('go:')){location.href=v.slice(3);return}S.empty=v==='empty';S.link=null;S.q='';document.getElementById('q').value='';
     if(v==='reader'){S.link=8;S.mode='reader'}else if(v==='site'){S.link=1;S.mode='site'}else if(v==='blocked'){S.link=3;S.mode='site'}render();window.scrollTo(0,0)});
   window.addEventListener('resize',()=>closePop());

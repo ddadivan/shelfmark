@@ -167,7 +167,8 @@ Decided (D13, confirmed again after the first design): keep today's behaviour. A
 
 ### 5.5 Organise
 
-- Everything that names a thing renames through the same small dialog (folder, tag, view), opened from its menu or F2; a click always opens the thing.
+- Everything that names a thing renames through the same small dialog (folder, tag, view, and a link's title from its ⋯ menu), opened from its menu or F2; a click always opens the thing.
+- On phones there is no search field at the top: the Search tab opens search full screen, and a found link opens its preview like anywhere else; Back returns to the results.
 - Folder look: colour and icon only (cover, highlight, description, own colours and emoji go, D4).
 - Drag links onto folders stays; a new "Move" popover replaces the move dialog; bulk actions keep one bar.
 - After the person files three links from one site into one folder, a toast offers a rule ("Always put youtube.com in Videos?") for everyone, not only with AI on; AI only improves the guess.
