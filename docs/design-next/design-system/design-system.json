@@ -1,0 +1,64 @@
+{
+ "v": 3,
+ "layout": "files",
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-23T01:57:37Z"
+ },
+ "title": "Shelfmark Next",
+ "namespace": "Shelfmark",
+ "libraries": [],
+ "sections": {},
+ "groups": [
+  "Logos"
+ ],
+ "assetGroups": {
+  "Logos": {
+   "name": "Logos",
+   "tile": "m",
+   "order": [
+    "shelfmark-mark-light.svg",
+    "shelfmark-mark-dark.svg",
+    "shelfmark-mark-mono.svg",
+    "shelfmark-app-icon.svg"
+   ],
+   "files": {
+    "shelfmark-mark-light.svg": {
+     "name": "shelfmark-mark-light.svg",
+     "blob": "2388122af94929279820c5665b2d56a0",
+     "size": 216,
+     "type": "image/svg+xml"
+    },
+    "shelfmark-mark-dark.svg": {
+     "name": "shelfmark-mark-dark.svg",
+     "blob": "0943e68a9651b1770b56ae86bc430fac",
+     "size": 216,
+     "type": "image/svg+xml"
+    },
+    "shelfmark-mark-mono.svg": {
+     "name": "shelfmark-mark-mono.svg",
+     "blob": "5c34a8c1b158b570dab1333dbd64cf30",
+     "size": 238,
+     "type": "image/svg+xml"
+    },
+    "shelfmark-app-icon.svg": {
+     "name": "shelfmark-app-icon.svg",
+     "blob": "57770e01ea355d5f03e195688bd762eb",
+     "size": 326,
+     "type": "image/svg+xml"
+    }
+   }
+  }
+ },
+ "blobs": {},
+ "docs": {
+  "readme": "project/README.md",
+  "sections": []
+ },
+ "lastChange": {
+  "by": "Claude",
+  "at": "2026-11-23T01:57:37Z",
+  "via": "Claude Code",
+  "note": "First version: Graphite tokens, brand book, 21 components, cover."
+ }
+}
