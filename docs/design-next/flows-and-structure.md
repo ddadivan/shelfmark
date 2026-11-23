@@ -1,6 +1,6 @@
 # Step 2: flows and new structure (proposal)
 
-Status: **proposal for the author's review.** Nothing here is decided until the author answers the decisions in [section 7](#7-decisions-for-the-author). Built on the inventory in [`features.md`](features.md) and [`screens.md`](screens.md) (feature IDs such as `LIB-29` point there) and on the behaviour skills (page-patterns, surfaces, forms, defaults, empty-states, errors, keyboard, verbs). Current design rules are not a constraint ([README](README.md)).
+Status: **proposal under review.** Answers so far are recorded in [section 7](#7-decisions-for-the-author); open items are marked there. Built on the inventory in [`features.md`](features.md) and [`screens.md`](screens.md) (feature IDs such as `LIB-29` point there) and on the behaviour skills (page-patterns, surfaces, forms, defaults, empty-states, errors, keyboard, verbs). Current design rules are not a constraint ([README](README.md)).
 
 ## 1. What Shelfmark is for
 
@@ -161,9 +161,7 @@ After:
 
 ### 5.4 Open a link
 
-Before: a click opens the in-app preview by default.
-
-After: **a click opens the site** (new tab). The Link page (preview + details) opens with Space, the eye button, or "Details" in the menu. The setting stays for people who prefer the preview. On the Link page, articles can be read in Reader mode (5.7).
+Decided (D13): keep today's behaviour. A click opens the Link page (preview + details); Settings › Library › "Clicking a link" switches it to opening the site in a new tab. Fix the setting's hint, which says the preview works on wide screens only (it works on every screen: below 80em as a full page). On the Link page, articles can be read in Reader mode (5.7).
 
 ### 5.5 Organise
 
@@ -219,7 +217,7 @@ Legend: **Keep** as is · **Change** behaviour or surface · **Merge** into anot
 | LIB-08 active filter row | Merge | Into the one Filter control |
 | LIB-09..LIB-11 saved views | Change | Rename in place; reorder by drag; created from search and filters |
 | LIB-14..LIB-21 selection and bulk | Change | One delete model; toasts as P4 |
-| LIB-22, LIB-23 side by side | Cut (D5) | Drag onto sidebar folders and the Move popover cover filing; Related moves to the Link page |
+| LIB-22, LIB-23 side by side | Keep (D5) | Two feeds side by side for filing; Show related stays |
 | LIB-24..LIB-26 preview | Merge | Into the Link page (preview + details); the blocked state falls back to Reader |
 | (new, #539) Reader mode | Add | Site / Reader switch on the Link page (5.7) |
 | LIB-27, LIB-28, LIB-29, LIB-34 recent, forgotten | Merge | Into Revisit |
@@ -229,7 +227,7 @@ Legend: **Keep** as is · **Change** behaviour or surface · **Merge** into anot
 | LIB-35 Tidy entry | Change | Tidy up page with a count in Unsorted |
 | LNK-01, LNK-02 card, row | Change | Prototype card: cover, title, site; star only when favorite; actions on hover |
 | LNK-03 link menu | Change | Shorter: Open, Details, Favorite, Move, Remind me, Copy link, Delete |
-| LNK-04 open | Fix | Click opens the site (5.4) |
+| LNK-04 open | Keep (D13) | Click opens the preview by default, as today; the setting changes it; fix the setting's hint |
 | LNK-06, CAP-15 edit dialog | Merge | Into the Link page details |
 | LNK-07 delete | Change | One delete model |
 | LNK-08 move | Change | Popover picker |
@@ -325,23 +323,23 @@ Small broken promises found in the inventory, worth fixing now on the current co
 
 ## 7. Decisions for the author
 
-| # | Question | Recommendation |
+| # | Question | Answer |
 | --- | --- | --- |
-| D1 | Adopt the three jobs (Save, Find, Come back) as the product's spine and the new navigation in 4.1? | Yes |
-| D2 | Add **Revisit** as a top-level page that merges Reminders, Recently opened and Forgotten? | Yes |
-| D3 | Remove the Pinned section and Pin to top of folder; keep Favorites (links) and starred folders? | Yes |
-| D4 | Folder look limited to colour and icon (cut cover, highlight, description, own colours, emoji)? | Yes |
-| D5 | Cut side by side (split view)? | Yes; it is a power feature with an overlapping preview mode and drag to the sidebar |
-| D6 | Fold "Fill in with AI" into Automatic mode instead of a separate button? | Yes |
-| D7 | Reduce the Custom theme to base + accent (cut own background and corners)? | Yes |
-| D8 | Build browser notifications for reminders (and later a weekly email)? | Yes, after the redesign; it is the core of "come back" |
-| D9 | Account deletion with a 7-day grace period? | Yes |
-| D10 | Extension right-click save now; Pocket / Raindrop import later? | Yes |
-| D11 | Offline: honest banner now, queued saves later? | Yes |
-| D12 | Remove the rating prompt? | Yes |
-| D13 | A click on a link opens the site by default (preview on Space / eye)? | Yes |
-| D14 | Reader mode as a Site / Reader switch on the Link page; first time Site, then the last mode used per site; Reader as the fallback when a site can't be shown? | Yes |
-| D15 | Saved copy of the text ("Read the copy") and highlights: later, after Reader ships? | Yes, later |
+| D1 | Three jobs (Save, Find, Come back) as the spine; new navigation (4.1) | **Yes** |
+| D2 | Revisit as a top-level page (reminders, recently opened, forgotten) | **Yes** |
+| D3 | Pinned section | **Open.** Author: pinned is useful. Revised proposal: keep Pinned (folders and links, quick access) and Favorites (a mark to filter by); cut Pin to top of folder and folder highlight |
+| D4 | Folder look: colour and icon only | **Yes** |
+| D5 | Side by side | **Keep** (author: useful and unique). Defined as two feeds next to each other for filing; the Link page is one link; on wide screens both exist, not at the same time |
+| D6 | Fill in with AI | **Open.** Revised proposal: keep the button inside Suggest mode as "apply all suggestions in one press"; hidden in Automatic mode, where AI fills by itself. The person's choice stays: Suggest / Automatic / Off |
+| D7 | Custom theme | **Open.** Author asks why not keep it. Revised proposal: keep base, accent and background; drop only corners (custom radii break the concentric radius system). Or keep everything if the author prefers |
+| D8 | Browser notifications for reminders, after the redesign | **Yes** |
+| D9 | Account deletion with a 7-day grace period | **Yes** |
+| D10 | Extension right-click save now; Pocket / Raindrop import later | **Open** (explained to the author; awaiting the answer) |
+| D11 | Offline: honest banner now, queued saves later | **Yes** |
+| D12 | Rating prompt | **Open.** Revised proposal: no modal; a dismissible card at a calm moment (Revisit, or after a successful action) plus "Send feedback" in Help |
+| D13 | Click opens the site by default | **No: keep as is** (click opens the preview; the setting changes it). Fix the setting's hint, which says the preview works on wide screens only |
+| D14 | Reader mode as a Site / Reader switch; first Site, then the last mode per site; Reader as fallback when a site can't be shown | **Yes** |
+| D15 | Saved copy ("Read the copy") and highlights later | **Yes, later** |
 
 ## 8. After approval
 
