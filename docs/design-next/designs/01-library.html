@@ -422,7 +422,7 @@ svg{display:block;flex:none}
     <option value="site">Link page, Site</option>
     <option value="blocked">Site can't be shown</option>
     <option value="empty">Empty library</option>
-    <option value="g2">Save and Revisit →</option>
+    <option value="g2">Save and Revisit →</option><option value="go:search.html">Search and Ask →</option><option value="go:organise.html">Organise →</option><option value="go:settings.html">Settings →</option><option value="go:public.html">Sign-in and public →</option><option value="go:extension.html">Extension →</option>
   </select>
 </div>
 
@@ -685,7 +685,7 @@ svg{display:block;flex:none}
   document.addEventListener('keydown',e=>{const g=e.target.closest('.seg');if(!g)return;const k={ArrowRight:1,ArrowLeft:-1}[e.key];if(!k)return;const bs=[...g.querySelectorAll('button')];const i=bs.indexOf(e.target);const n=bs[(i+k+bs.length)%bs.length];e.preventDefault();n.click();const again=document.querySelector(`[${[...n.attributes].find(a=>a.name.startsWith('data-')&&a.name!=='data-rs')?.name||'data-x'}="${n.getAttribute([...n.attributes].find(a=>a.name.startsWith('data-'))?.name)}"]`);if(again)again.focus()});
   document.getElementById('q').addEventListener('input',e=>{S.q=e.target.value;S.link=null;render()});
   document.getElementById('tab-search').addEventListener('click',()=>document.getElementById('q').focus());
-  document.getElementById('screen').addEventListener('change',e=>{const v=e.target.value;if(v==='g2'){location.href='save-revisit.html';return}S.empty=v==='empty';S.link=null;S.q='';document.getElementById('q').value='';
+  document.getElementById('screen').addEventListener('change',e=>{const v=e.target.value;if(v==='g2'){location.href='save-revisit.html';return}if(v.startsWith('go:')){location.href=v.slice(3);return}S.empty=v==='empty';S.link=null;S.q='';document.getElementById('q').value='';
     if(v==='reader'){S.link=8;S.mode='reader'}else if(v==='site'){S.link=1;S.mode='site'}else if(v==='blocked'){S.link=3;S.mode='site'}render();window.scrollTo(0,0)});
   window.addEventListener('resize',()=>closePop());
   render();

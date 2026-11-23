@@ -34,6 +34,13 @@ Feature moves, merges or removals are proposed with reasons and decided by the a
 - Step 2 approved: `flows-and-structure.md` (three jobs, new navigation, Revisit, Reader mode, decisions D1–D15).
 - Step 4 for review: the design system **Shelfmark Next** (tokens, brand book, 21 components with live previews, cover), published privately: https://claude.ai/artifact/DvqQnrVk4HsqW1he9iUX51; source in `design-system/`.
 - Step 5, group 2 for review: `designs/02-save-revisit.html` (save panel in all its states, several links, saved landing; Revisit queue and its empty state), built from the design system's tokens and `bundle.css`; second page of the same artifact (Prototype › Save and Revisit).
+- Step 5, groups 3 to 7 for review, pages of the same artifact (Prototype › group, then screen state):
+  - `designs/03-search.html`: Search and Ask (results by words, meaning, folders and tags; recent searches; Ask answer with sources and while answering; nothing found; full results page).
+  - `designs/04-organise.html`: folder page, folder menu and rename in place, colour and icon, tags, Tidy up, rules and the rule editor, trash with named delete-forever confirmation, empty trash.
+  - `designs/05-settings.html`: Appearance (Graphite / Ink / Sage, custom theme), Library, AI, Account with deletion grace period, Your data, Language and region, phone "You" page.
+  - `designs/06-public.html`: sign-in (Google, GitHub, demo) and its error, shared folder, not found, offline.
+  - `designs/07-extension.html`: save this page, all tabs, saved with edit, already saved, signed out and unsupported page, right-click save.
+  - Generator: `designs/src/build_pages.py` (shell, tokens, icons) and `designs/src/content.py` (screens). Paths in them point to the session scratchpad.
 - Step 5, group 1 (made before the design system; to be rebuilt from its components): `designs/01-library.html` (library, four views, Link page with Site / Reader, empty library; desktop, tablet, phone; light and dark), published privately: https://claude.ai/artifact/Np6b5Wf6vLjBbcdvUybnuv
 - Step 3 approved (Graphite, smaller radii): `foundations.md` (type, space, radius, elevation, three palettes with contrast), `screen-map.md` (every page and surface of the new structure), `foundations-preview.html` (visual version, published privately: https://claude.ai/artifact/64J7giL8JyZzdFFuqsQvFL).
 

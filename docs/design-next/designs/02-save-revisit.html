@@ -348,7 +348,7 @@ h1{margin:32px 0 0;font:600 1.6rem/1.2 var(--font-sans)}
     <option value="s-error">Save: preview failed</option>
     <option value="revisit">Revisit</option>
     <option value="revisit-empty">Revisit: nothing waiting</option>
-  </select>
+  <option value="go:search.html">Search and Ask →</option><option value="go:organise.html">Organise →</option><option value="go:settings.html">Settings →</option><option value="go:public.html">Sign-in and public →</option><option value="go:extension.html">Extension →</option></select>
 </div>
 <div id="pop" class="pop" hidden></div>
 <div id="toast" class="toast" hidden></div>
@@ -457,7 +457,7 @@ h1{margin:32px 0 0;font:600 1.6rem/1.2 var(--font-sans)}
     if(e.key==='Enter'&&S.save&&S.save!=='empty'&&S.save!=='loading'&&e.target.tagName!=='TEXTAREA'&&!e.target.closest('button')){e.preventDefault();document.querySelector('[data-save]').click();return}
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='v'&&!e.target.closest('input,textarea')){e.preventDefault();openSave('loading');setTimeout(()=>{if(S.save==='loading'){S.save='ready';render()}},900)}
   });
-  document.getElementById('screen').addEventListener('change',e=>{const v=e.target.value;if(v==='library-page'){if(history.length>1)history.back();else location.href='./';return}S.landed=null;closePop();
+  document.getElementById('screen').addEventListener('change',e=>{const v=e.target.value;if(v.startsWith('go:')){location.href=v.slice(3);return}if(v==='library-page'){if(history.length>1)history.back();else location.href='./';return}S.landed=null;closePop();
     if(v.startsWith('s-')){S.page='library';const k=v.slice(2);S.save=k==='details'?'ready':k;S.details=k==='details'}else{S.save=null;S.page=v}render()});
   render();openSave('ready');
 })();
