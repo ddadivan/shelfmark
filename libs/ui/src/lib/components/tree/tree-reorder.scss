@@ -63,7 +63,7 @@
   line-height: rem(20px);
   color: var(--text);
   background: var(--surface);
-  border-radius: calc(var(--radius-md) - #{rem(2px)});
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow-float);
   transform: translate(rem(-12px), -50%) rotate(-1.5deg);
 

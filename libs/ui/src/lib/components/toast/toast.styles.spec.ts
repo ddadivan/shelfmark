@@ -34,9 +34,11 @@ describe('toast styles', () => {
     expect(mediaBlocks(region, /prefers-reduced-motion/).join('')).toContain('transition: none');
   });
 
-  it('is a glass surface with 18px corners, up to 540px wide, with a truncating detail line', () => {
+  it('is the inverted surface with 12px corners, up to 540px wide, with a truncating detail line', () => {
     expect(toast).toContain('box-shadow: var(--shadow-l2)');
-    expect(toast).toContain('border-radius: 1.125rem');
+    expect(toast).toContain('border-radius: var(--radius-md)');
+    expect(toast).toMatch(/:host\s*\{[^}]*background:\s*var\(--text\)/);
+    expect(toast).toMatch(/:host\s*\{[^}]*color:\s*var\(--ui-toast-ink\)/);
     expect(toast).not.toContain('--shadow-popover');
     expect(toast).toContain('max-inline-size: min(33.75rem, 100%)');
     expect(toast).toMatch(/\.ui-toast__detail\s*\{[^}]*text-overflow:\s*ellipsis/);
@@ -44,7 +46,7 @@ describe('toast styles', () => {
   });
 
   it('tints the icon tile by kind', () => {
-    expect(toast).toMatch(/ui-toast--success\)\s*\.ui-toast__icon\s*\{[^}]*var\(--accent-bg\)/);
+    expect(toast).toMatch(/ui-toast--success\)\s*\.ui-toast__icon\s*\{[^}]*var\(--ui-toast-tile\)/);
     expect(toast).toMatch(/ui-toast--danger\)\s*\.ui-toast__icon\s*\{[^}]*var\(--danger-bg\)/);
     expect(toast).toMatch(/ui-toast--warn\)\s*\.ui-toast__icon\s*\{[^}]*var\(--warning-bg\)/);
   });
@@ -64,7 +66,7 @@ describe('toast styles', () => {
 
   it('makes the action 44px on coarse pointers and hover only where hover exists', () => {
     expect(mediaBlocks(toast, /pointer:\s*coarse/).join('')).toContain('min-height: 2.75rem');
-    expect(mediaBlocks(toast, /hover:\s*hover/).join('')).toContain('var(--surface-pressed)');
+    expect(mediaBlocks(toast, /hover:\s*hover/).join('')).toContain('var(--ui-toast-tile-hover)');
     expect(withoutMedia(toast, /hover:\s*hover/)).not.toMatch(/:hover/);
   });
 });

@@ -50,11 +50,13 @@ describe('SearchTriggerComponent', () => {
     expect(fixture.componentInstance.pressed).toHaveBeenCalledOnce();
   });
 
-  it('is a pill on the surface with the card shadow, from tokens', () => {
+  it('is a 48px field with the inset hairline, 16px radius and 640px cap, from tokens', () => {
     const css = compileScss('lib/components/search-trigger/search-trigger.component.scss');
-    expect(css).toContain('border-radius: var(--radius-full)');
-    expect(css).toContain('background: var(--surface)');
-    expect(css).toContain('box-shadow: var(--shadow-card)');
+    expect(css).toContain('border-radius: var(--radius-card)');
+    expect(css).toContain('background: var(--surface-hover)');
+    expect(css).toContain('box-shadow: inset 0 0 0 1px var(--ui-search-hairline)');
+    expect(css).toContain('max-inline-size: 40rem');
+    expect(css).toContain('min-height: 3rem');
   });
 
   it('has no axe violations', async () => {

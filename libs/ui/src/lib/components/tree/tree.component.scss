@@ -1,7 +1,7 @@
 @use '../../../styles/ui' as *;
 
-// Sidebar navigation (Tree spec). Rows are 14 / 20 text, icons 20px in `text-muted`; folder rows have a 22px `ui-folder-icon` tile. Rows are 36px (44px on a phone), each level indents 16px
-// through `--ui-tree-level`, the active row is `accent-bg`, children open by `grid-template-rows`.
+// Sidebar navigation (Tree spec). Rows are 14 / 22 text (`secondary`), icons 16px in `text-muted`; folder rows have a 22px `ui-folder-icon` tile. Rows are `--row-nav` 36px (44px on a phone or touch), 14px sides, each level indents 16px
+// through `--ui-tree-level`, the active row is `surface-pressed` at weight 500, children open by `grid-template-rows`.
 
 :host {
   position: relative;
@@ -20,20 +20,18 @@
 // Roving focus sits on the row itself (the `treeitem`); the ring is inset because the
 // closed-group wrapper clips overflow.
 .ui-tree__row {
-  @include type(body);
+  @include type(secondary);
 
   display: flex;
   gap: rem(8px);
   align-items: center;
-  min-height: rem(36px);
-  font-size: rem(14px);
-  line-height: rem(20px);
+  min-height: var(--row-nav);
   padding-block: 0;
-  padding-inline: calc(#{rem(10px)} + (var(--ui-tree-level, 1) - 1) * #{rem(16px)}) rem(10px);
+  padding-inline: calc(#{rem(14px)} + (var(--ui-tree-level, 1) - 1) * #{rem(16px)}) rem(14px);
   color: var(--text);
   cursor: pointer;
   user-select: none;
-  border-radius: calc(var(--radius-md) - #{rem(2px)}); // 12px with the default corners
+  border-radius: var(--radius-sm);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   &:focus-visible {
@@ -53,7 +51,7 @@
   @include touch-target;
 
   @include hover {
-    background: var(--ui-row-hover, var(--surface-hover));
+    background: var(--ui-row-hover, var(--fill));
 
     .ui-tree__more {
       opacity: 1;
@@ -159,7 +157,7 @@ $more-column: rem(30px);
 
   // Tall enough for the heading action (30px button, 44px on touch) that sits over its end.
   min-height: calc(#{rem(30px)} + #{rem(12px)});
-  padding: rem(18px) rem(10px) rem(6px);
+  padding: rem(18px) rem(14px) rem(6px);
   font-weight: 500;
   color: var(--text-muted);
 
@@ -177,15 +175,9 @@ $more-column: rem(30px);
   align-items: center;
 }
 
-// Active row: the one place sage appears in navigation.
+// Active row: `surface-pressed`, weight 500, text colours unchanged.
 .ui-tree__row[aria-current] {
   font-weight: 500;
-  color: var(--accent-text);
-  background: var(--accent-bg);
-
-  .ui-tree__icon,
-  .ui-tree__twist,
-  .ui-tree__count {
-    color: var(--accent-text);
-  }
+  color: var(--text);
+  background: var(--surface-pressed);
 }

@@ -1,15 +1,16 @@
 @use '../../../styles/ui' as *;
 
-// Frosted glass (docs/design/components/Toast): 18px corners, the floating shadow, 24px blur
-// where supported. Width follows the text up to 540px; the detail line truncates.
+// Shelf toast: the inverted layer (`text` fill, `bg` text), 12px corners, `shadow-l2`. Width
+// follows the text up to 540px; the detail line truncates. The detail is a mix of the two colours:
+// 72% `bg` over `text` is at least 6:1 in both themes. Controls inside take the same pair.
 :host {
-  // No type style is 14/20 medium (the Toast spec size); body is the base, the size follows the spec.
-  @include type(body);
-  @include float-surface;
+  @include type(label);
 
-  font-size: rem(14px);
-  font-weight: 500;
-  line-height: rem(20px);
+  --ui-toast-ink: var(--bg);
+  --ui-toast-muted: color-mix(in srgb, var(--bg) 72%, var(--text));
+  --ui-toast-tile: color-mix(in srgb, var(--bg) 16%, transparent);
+  --ui-toast-tile-hover: color-mix(in srgb, var(--bg) 26%, transparent);
+
   position: relative;
   box-sizing: border-box;
   display: flex;
@@ -19,9 +20,11 @@
   min-inline-size: min(rem(300px), 100%);
   max-inline-size: min(rem(540px), 100%);
   padding: rem(10px) rem(10px) rem(10px) var(--space-3);
-  color: var(--text);
+  color: var(--ui-toast-ink);
   pointer-events: auto;
-  border-radius: rem(18px);
+  background: var(--text);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-l2);
 }
 
 // The lead: a tinted tile for success, danger, warn and info; the kind is never colour alone,
@@ -44,14 +47,14 @@
   place-items: center;
   inline-size: rem(32px);
   block-size: rem(32px);
-  color: var(--text);
-  background: var(--surface-hover);
-  border-radius: rem(10px);
+  color: var(--ui-toast-ink);
+  background: var(--ui-toast-tile);
+  border-radius: var(--radius-sm);
 }
 
 :host(.ui-toast--success) .ui-toast__icon {
-  color: var(--accent-text);
-  background: var(--accent-bg);
+  color: var(--ui-toast-ink);
+  background: var(--ui-toast-tile);
 }
 
 :host(.ui-toast--danger) .ui-toast__icon {
@@ -95,7 +98,7 @@
   color: var(--surface);
   background: var(--accent);
   border-radius: var(--radius-full);
-  box-shadow: 0 0 0 2px var(--surface);
+  box-shadow: 0 0 0 2px var(--text);
 }
 
 .ui-toast__text {
@@ -114,7 +117,7 @@
   font-size: rem(12px);
   font-weight: 400;
   line-height: rem(16px);
-  color: var(--text-muted);
+  color: var(--ui-toast-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
 }

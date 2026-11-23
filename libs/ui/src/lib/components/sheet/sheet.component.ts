@@ -8,7 +8,7 @@ import type { SheetHeight } from './models/sheet-height.type';
  * `DialogService.open(Component)`; the component renders `<ui-sheet title="…" closeLabel="…">`.
  *
  * It is a `ui-dialog` with sheet styling, so everything behind it is the dialog's: below 40em it
- * slides up from the bottom with a grip (28px top corners, `ease-drawer`) and closes by dragging
+ * slides up from the bottom with a grip (16px top corners, `ease-drawer`) and closes by dragging
  * or flicking down, Esc, the scrim and the close button (all through `UiDialogRef`, which plays
  * the leave animation); on larger screens the same content is a centred dialog (`size` of the
  * open options). Focus is trapped and restored by the CDK. Reduced motion fades instead.

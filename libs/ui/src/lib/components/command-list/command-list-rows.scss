@@ -4,14 +4,15 @@
   display: flex;
   gap: var(--space-3);
   align-items: center;
-  padding: rem(10px) var(--space-3);
+  min-height: rem(36px);
+  padding: rem(6px) var(--space-3);
   cursor: pointer;
   user-select: none;
-  border-radius: rem(12px);
+  border-radius: var(--radius-sm);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   @include hover {
-    background: var(--surface-hover);
+    background: var(--ui-row-hover, var(--fill));
   }
 
   &:active {
@@ -20,7 +21,7 @@
 
   // The option under the arrow keys (DOM focus stays in the input).
   &[data-active='true'] {
-    background: var(--accent-bg);
+    background: var(--fill);
 
     @include focus-ring(-2px);
   }

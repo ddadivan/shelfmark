@@ -16,9 +16,9 @@
     calc(100vw - #{rem(16px)})
   );
   height: min(rem(400px), calc(100dvh - #{rem(16px)}));
-  padding: rem(6px);
+  padding: var(--space-2);
   margin: var(--space-1) 0;
-  border-radius: rem(18px);
+  border-radius: var(--radius-md);
 
   &:focus-visible {
     outline: none;

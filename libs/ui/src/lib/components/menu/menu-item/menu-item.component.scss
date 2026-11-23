@@ -5,19 +5,20 @@
 }
 
 .ui-menu-item {
-  @include type(body);
+  @include type(label);
 
   display: flex;
   gap: var(--space-3);
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  padding: rem(9px) rem(12px);
+  min-height: rem(36px);
+  padding: 0 rem(12px);
   text-align: start;
   color: var(--text);
   cursor: pointer;
   user-select: none;
-  border-radius: rem(12px);
+  border-radius: var(--radius-sm);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   @include coarse {
@@ -29,11 +30,11 @@
   }
 
   @include hover {
-    background: var(--ui-row-hover, var(--surface-hover));
+    background: var(--ui-row-hover, var(--fill));
   }
 
   &:active {
-    background: var(--surface-pressed);
+    background: var(--fill-hover);
   }
 
   &[aria-disabled='true'] {
@@ -74,16 +75,11 @@
   }
 
   &__hint {
-    @include type(mono);
+    @include type(label);
 
     flex: none;
-    padding: 0 rem(5px);
     margin-inline-start: auto;
-    font-size: rem(11px);
-    line-height: rem(16px);
+    font-weight: 400;
     color: var(--text-muted);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
   }
 }

@@ -82,7 +82,7 @@ const meta: Meta<SheetArgs> = {
           '`ui-sheet` is the content of a bottom sheet, opened with `DialogService.open()` like a dialog ' +
           '(it renders a `ui-dialog` with sheet styling, so scrim, focus trap, Esc, drag and flick to close ' +
           "and the leave animation are the dialog's). Below 40em it slides up from the bottom with a grip " +
-          'and 28px top corners; `tall` fills the screen but always leaves 150px of the page above. On ' +
+          'and 16px top corners; `tall` fills the screen but always leaves 150px of the page above. On ' +
           'larger screens it is a centred dialog.',
       },
     },

@@ -105,7 +105,7 @@ describe('EmptyStateComponent', () => {
     expect(host.querySelector(`h${level}`)?.textContent).toBe('Your links will appear here');
   });
 
-  it('is inline by default and the page card with layout="page" (#315)', async () => {
+  it('is inline by default and the centred page state with layout="page" (#315)', async () => {
     const { host, update } = setup();
     const state = host.querySelector('ui-empty-state');
     expect(state?.classList.contains('ui-empty-state--page')).toBe(false);

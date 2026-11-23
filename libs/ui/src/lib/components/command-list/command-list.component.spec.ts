@@ -601,11 +601,11 @@ describe('CommandListComponent in popup mode', { timeout: 30_000 }, () => {
 describe('CommandListComponent styles', () => {
   const css = compileScss('lib/components/command-list/command-list.component.scss');
 
-  it('draws a 40px leading tile, 12px rows and an Enter cap on the active row only', () => {
+  it('draws a 40px leading tile, 10px rows and an Enter cap on the active row only', () => {
     expect(css).toMatch(/\.ui-command-item__leading\s*{[^}]*width:\s*2\.5rem/);
-    expect(css).toMatch(/\.ui-command-list__option\s*{[^}]*border-radius:\s*0\.75rem/);
+    expect(css).toMatch(/\.ui-command-list__option\s*{[^}]*border-radius:\s*var\(--radius-sm\)/);
     expect(css).toMatch(
-      /\.ui-command-list__option\[data-active=(?:'true'|"true"|true)\]\s*{[^}]*var\(--accent-bg\)/,
+      /\.ui-command-list__option\[data-active=(?:'true'|"true"|true)\]\s*{[^}]*var\(--fill\)/,
     );
     expect(css).toMatch(
       /\.ui-command-list__option\[data-active=(?:'true'|"true"|true)\] > \.ui-command-list__enter/,

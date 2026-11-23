@@ -71,7 +71,7 @@ export class DialogComponent {
   readonly phoneFullscreen = input(false, { transform: booleanAttribute });
 
   /**
-   * Set by `ui-sheet`: the content is a sheet. Below 40em it gets the 28px top corners, the
+   * Set by `ui-sheet`: the content is a sheet. Below 40em it gets the 16px top corners, the
    * 150px strip of the page above it and, with `tall`, the full height under that strip; on
    * larger screens it stays a centred dialog. Unset: a plain dialog.
    */

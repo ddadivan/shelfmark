@@ -11,8 +11,8 @@
   text-align: center;
 }
 
-// Page layout (#315): the state is the page's content. A surface card that takes the free
-// height of a flex-column parent (at least a comfortable stage), the content centred both ways.
+// Page layout (#315, Shelf): the state is the page's content, centred in the content area with no
+// card around it. It takes the free height of a flex-column parent, the content centred both ways.
 :host(.ui-empty-state--page) {
   --ui-illustration-width: #{rem(300px)};
 
@@ -21,22 +21,19 @@
   justify-content: center;
   width: 100%;
   max-width: none;
-  min-height: rem(440px);
+  min-height: rem(400px);
   padding: var(--space-8) var(--space-6);
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
 
   @include phone {
     --ui-illustration-width: #{rem(240px)};
 
-    min-height: rem(380px);
+    min-height: rem(340px);
     padding: var(--space-6) var(--space-4);
   }
 }
 
-// The scene stands on a soft disc (`illustration-disc`: a step stronger than the page background
-// in light, the page background in dark), so it reads as one object on the card.
+// The scene stands on a soft disc (`illustration-disc`: sage `ai-bg` in light, the page background
+// in dark), so it reads as one object on the page.
 .ui-empty-state__stage {
   display: grid;
   place-items: center;
@@ -64,10 +61,10 @@
 
 :host(.ui-empty-state--page) .ui-empty-state__illustration {
   // On the disc the key shapes need edges of 3:1 (WCAG 1.4.11, #315): white parts take the
-  // control border, the pale sage bodies (folder, tray, filter chip) an accent outline.
+  // control border, the pale sage bodies (folder, tray, filter chip) a sage `ai` outline.
   --ui-illustration-width: inherit;
   --ui-illustration-edge: var(--border-control);
-  --ui-illustration-key-edge: var(--accent);
+  --ui-illustration-key-edge: var(--ai);
 }
 
 .ui-empty-state__art {
@@ -93,16 +90,9 @@
   @include rise;
 }
 
-// Page: a larger heading, still below the 40px page title; the lines stay readable in width.
+// Page: 22/28 600 like the inline state; the lines stay readable in width.
 :host(.ui-empty-state--page) .ui-empty-state__title {
   max-width: rem(560px);
-  font-size: rem(28px);
-  line-height: rem(34px);
-
-  @include phone {
-    font-size: rem(24px);
-    line-height: rem(30px);
-  }
 }
 
 .ui-empty-state__text {

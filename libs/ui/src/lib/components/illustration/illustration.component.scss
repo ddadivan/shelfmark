@@ -23,7 +23,7 @@
 }
 
 .ui-illustration__surface--accent {
-  stroke: var(--accent);
+  stroke: var(--ai);
 }
 
 .ui-illustration__ink {
@@ -31,11 +31,11 @@
 }
 
 .ui-illustration__accent {
-  fill: var(--accent);
+  fill: var(--ai);
 }
 
 .ui-illustration__tint {
-  fill: var(--accent-bg);
+  fill: var(--ai-bg);
 }
 
 // A pale sage body that carries the scene (a folder, a tray, a filter chip).
@@ -70,7 +70,7 @@
 }
 
 .ui-illustration__halo {
-  fill: var(--accent-bg);
+  fill: var(--ai-bg);
   opacity: 0.7;
 }
 

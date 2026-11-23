@@ -87,7 +87,7 @@ export const TwoActions: Story = {
 
 /**
  * Page layout (#315): the page-level state of Trash, Recently opened and the library feeds. A
- * surface card that fills the free height of the page column, the scene on a soft disc.
+ * centred block (no card) that fills the free height of the page column, the scene on a soft disc.
  */
 export const Page: Story = {
   args: {

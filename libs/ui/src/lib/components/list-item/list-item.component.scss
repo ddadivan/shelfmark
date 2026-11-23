@@ -39,12 +39,12 @@
 
 :host {
   @include hover {
-    background: var(--surface-hover);
+    background: var(--ui-row-hover, var(--fill));
   }
 }
 
 :host(.ui-list-item--selected) {
-  background: var(--accent-bg);
+  background: var(--pick);
 }
 
 :host(:has(.ui-list-item__link:focus-visible)) {
@@ -61,12 +61,12 @@
 :host(.ui-list-item--checked) {
   --ui-chip-bg: var(--surface);
 
-  background: var(--accent-bg);
+  background: var(--pick);
 }
 
 // Bulk selection checkbox: above the stretched link, keeps its place (no shift on hover).
 .ui-list-item__select {
-  // The checked box is filled with the sage `accent` (like the card's), on the `accent-bg` row.
+  // The checked box is filled with the sage `accent` (like the card's), on the `pick` row.
   --ui-checkbox-fill: var(--accent);
 
   position: relative;
@@ -116,12 +116,12 @@
   display: grid;
   flex: none;
   place-items: center;
-  width: rem(56px);
-  height: rem(40px);
+  width: rem(72px);
+  height: rem(48px);
   overflow: hidden;
   color: var(--text-muted);
   background: var(--surface-hover);
-  border-radius: rem(10px);
+  border-radius: var(--radius-sm);
 }
 
 .ui-list-item__image {

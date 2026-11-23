@@ -29,8 +29,8 @@ const meta: Meta<TabBarComponent> = {
     docs: {
       description: {
         component:
-          'The phone navigation: a floating glass bar, 68px tall, with up to four destinations and the primary Add button in the middle (five slots, never more). ' +
-          'Labels are always visible. `fixed` (default on) pins it 16px from the sides and 20px plus the safe area from the bottom; the stories render it inline. ' +
+          'The phone navigation: a floating solid bar, 64px tall, with up to four destinations and the primary Add button in the middle (five slots, never more). ' +
+          'Labels are always visible. `fixed` (default on) pins it 8px from the sides and 8px plus the safe area from the bottom; the stories render it inline. ' +
           'A plain click emits `selected` with the event so the app can `preventDefault()` and route.',
       },
     },
