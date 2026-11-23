@@ -44,6 +44,7 @@ const MAX_OPTIONS = 4;
     class: 'ui-seg',
     '[class.ui-seg--none]': 'selectedIndex() < 0',
     '[class.ui-seg--disabled]': 'disabled()',
+    '[class.ui-seg--icons]': 'iconOnly()',
     '[style.--seg-n]': 'options().length',
     '[style.--seg-i]': 'selectedIndex()',
     role: 'radiogroup',

@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../../testing/axe';
+import { compileScss } from '../../../testing/scss';
 import type { IconName } from '../icon/models/icon-name.type';
 import { ChipComponent } from './chip.component';
 import type { ChipVariant } from './models/chip-variant.type';
@@ -237,5 +238,13 @@ describe('ChipComponent', () => {
     expect(await axeViolations(host)).toEqual([]);
     update((c) => c.disabled.set(true));
     expect(await axeViolations(host)).toEqual([]);
+  });
+
+  it('is quiet: text-muted on surface-hover with radius 10, never the accent', () => {
+    const css = compileScss('lib/components/chip/chip.component.scss');
+    expect(css).toContain('color: var(--text-muted)');
+    expect(css).toContain('var(--ui-chip-bg, var(--surface-hover))');
+    expect(css).toContain('border-radius: var(--radius-sm)');
+    expect(css).not.toContain('--accent');
   });
 });
