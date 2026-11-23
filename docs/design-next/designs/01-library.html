@@ -295,10 +295,10 @@ svg{display:block;flex:none}
 .sm-scene{display:block;width:240px;height:150px}
 .sm-scene--sm{width:160px;height:100px}
 .sm-scene *{transform-box:fill-box;transform-origin:center}
-.sc-surface{fill:var(--l1);stroke:var(--line-strong);stroke-width:1}
+.sc-surface{fill:var(--l1);stroke:var(--control);stroke-opacity:.6;stroke-width:1}
 .sc-tint{fill:var(--pressed)}
 .sc-hover{fill:var(--hover)}
-.sc-text{fill:var(--muted);opacity:.35}
+.sc-text{fill:var(--muted);opacity:.45}
 .sc-ink{fill:var(--accent)}
 .sc-mark{fill:#8DBB86}
 .sc-stroke{fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -326,7 +326,7 @@ svg{display:block;flex:none}
 @keyframes sc-sweep{0%{transform:translateX(-56px)}60%{transform:translateX(16px)}100%{transform:none}}
 @keyframes sc-shake{0%,100%{transform:none}20%{transform:rotate(-5deg)}40%{transform:rotate(4deg)}60%{transform:rotate(-3deg)}80%{transform:rotate(2deg)}}
 @keyframes sc-fade{from{opacity:0}to{opacity:1}}
-@keyframes sc-dim{from{opacity:1}to{opacity:.3}}
+@keyframes sc-dim{from{opacity:1}to{opacity:.6}}
 @keyframes sc-apart-l{from{transform:none}to{transform:translateX(-6px)}}
 @keyframes sc-apart-r{from{transform:none}to{transform:translateX(6px)}}
 @keyframes sc-lid{from{transform:rotate(-24deg)}to{transform:none}}
@@ -536,7 +536,7 @@ svg{display:block;flex:none}
         <button class="start" type="button"><span class="tile" style="width:32px;height:32px;background:var(--hover)">${ic('i-upload',16)}</span><b>Import bookmarks</b><span>Bring in what your browser already has.</span></button>
       </div></section>`;
     }
-    if(!items.length)feed=`<div class="panel l1" style="padding:32px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">${SC.none}<b style="font-size:var(--t-s)">Nothing found</b><p class="muted" style="margin:0">Nothing matches “${esc(S.q)}”. Try another word, or ask your shelf.</p></div>`;
+    if(!items.length)feed=`<div class="l1" style="border-radius:var(--r-lg);padding:32px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">${SC.none}<b style="font-size:var(--t-s)">Nothing found</b><p class="muted" style="margin:0">Nothing matches “${esc(S.q)}”. Try another word, or ask your shelf.</p></div>`;
     else if(S.view==='masonry'||S.view==='grid'){const g=S.view==='grid';feed=`<div class="${g?'grid':'masonry'}">${items.map(l=>card(l,g)).join('')}</div>`}
     else if(S.view==='list')feed=`<div class="panel l1">${items.map(l=>row(l)).join('')}</div>`;
     else feed=`<div class="panel l1">${items.map(hl).join('')}</div>`;

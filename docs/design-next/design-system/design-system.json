@@ -57,8 +57,8 @@
  },
  "lastChange": {
   "by": "Claude",
-  "at": "2026-11-23T02:01:14Z",
+  "at": "2026-11-23T02:07:27Z",
   "via": "Claude Code",
-  "note": "StateScene: 10 animated scenes for empty, error, offline and blocked states."
+  "note": "StateScene: stronger outlines and lighter dimming so scenes read on dark panels."
  }
 }
