@@ -16,7 +16,7 @@
 
 :host(.ui-button-host--wrap) .ui-button {
   height: auto;
-  min-height: calc(#{rem(40px)} * var(--ui-button-scale, 1));
+  min-height: calc(var(--control-md) * var(--ui-button-scale, 1));
   max-inline-size: 100%;
   padding-block: var(--space-2);
   text-align: start;
@@ -38,11 +38,11 @@
   gap: calc(var(--space-2) * var(--ui-button-scale, 1));
   align-items: center;
   justify-content: center;
-  height: calc(#{rem(40px)} * var(--ui-button-scale, 1));
+  height: calc(var(--control-md) * var(--ui-button-scale, 1));
   min-width: var(--ui-button-min-width, 0);
-  padding: 0 calc(#{rem(18px)} * var(--ui-button-scale, 1));
-  font-size: calc(#{rem(13px)} * var(--ui-button-scale, 1));
-  line-height: calc(#{rem(18px)} * var(--ui-button-scale, 1));
+  padding: 0 calc(#{rem(16px)} * var(--ui-button-scale, 1));
+  font-size: calc(#{rem(14px)} * var(--ui-button-scale, 1));
+  line-height: calc(#{rem(22px)} * var(--ui-button-scale, 1));
   color: var(--ui-button-color, var(--text));
   white-space: nowrap;
   cursor: pointer;
@@ -96,13 +96,13 @@ a.ui-button {
   }
 }
 
+// Quiet fill: `surface-hover` at rest, one step darker (`surface-pressed`) on hover and press.
 .ui-button--secondary {
-  background: var(--surface);
-  border-color: var(--border-control);
+  background: var(--surface-hover);
 
   &:not([aria-disabled='true']) {
     @include hover {
-      background: var(--surface-hover);
+      background: var(--surface-pressed);
     }
   }
 
@@ -114,23 +114,37 @@ a.ui-button {
 .ui-button--ghost {
   &:not([aria-disabled='true']) {
     @include hover {
-      background: var(--surface-hover);
+      background: var(--fill);
     }
   }
 
   &:active {
-    background: var(--surface-pressed);
+    background: var(--fill-hover);
   }
 }
 
-// The one AI action ("Fill in with AI", BRAND › AI): a quiet indigo fill (`ai-fill`), no edge,
-// the label in `text`, the icon (the spark) 20px in `ai`, also inside a dialog. Never sage, never
-// a gradient. A feature may set `--ui-button-ai-border` (the header's Ask pill) or, for a solid `ai`
+// Glass: the 28px round button over a preview (play, star, the card's "..."). Icon only.
+.ui-button--glass {
+  @include glass-button;
+
+  --ui-icon-size: var(--icon-size-sm);
+
+  width: var(--ui-button-glass-size, #{rem(28px)});
+  height: var(--ui-button-glass-size, #{rem(28px)});
+  padding: 0;
+
+  &:not([aria-disabled='true']) {
+    @include hover {
+      box-shadow: var(--shadow-hover);
+    }
+  }
+}
+
+// The one AI action ("Fill in with AI", BRAND › AI): a quiet sage fill (`ai-fill`), no edge,
+// the label in `text`, the icon (the spark) in `ai`. Never a gradient. A feature may set `--ui-button-ai-border` (the header's Ask pill) or, for a solid `ai`
 // fill with a light icon (the Ask send button when ready), `--ui-button-ai-bg`, `-bg-hover`,
 // `-bg-pressed` and `--ui-button-ai-icon`.
 .ui-button--ai {
-  --ui-icon-size: var(--icon-size-md);
-
   background: var(--ui-button-ai-bg, var(--ai-fill));
   border-color: var(--ui-button-ai-border, transparent);
 
@@ -153,8 +167,6 @@ a.ui-button {
 // The quiet AI action (`ai-ghost`, "Rewrite"): like ghost at rest, the spark in `ai`, and the
 // `ai-fill` family on hover and press (the same tints as the Fill button, one step each).
 .ui-button--ai-ghost {
-  --ui-icon-size: var(--icon-size-md);
-
   ui-icon,
   ui-icon-swap {
     color: var(--ai);
@@ -187,9 +199,8 @@ a.ui-button {
 // A button that opens a menu or another popup stays marked while it is open (#562): one rule for
 // every popup trigger (`uiMenuTrigger` and `uiPopoverTrigger` write `aria-haspopup` and
 // `aria-expanded` on the inner element). The scale of `:active` is off while open. Secondary and
-// ghost buttons take the accent tint with `accent-text` (4.5:1 on `accent-bg`, checked for every
-// theme), so it is plain which button the open menu belongs to (#564: the pressed grey was hardly
-// different from the hover grey). A plain `aria-expanded` toggle (no `aria-haspopup`) and a `disclosure` button
+// ghost buttons take `surface-pressed` with `text`, so it is plain which button the open menu
+// belongs to. A plain `aria-expanded` toggle (no `aria-haspopup`) and a `disclosure` button
 // (a section chevron) only name their state and keep the resting look.
 $-open: "[aria-haspopup]:not([aria-haspopup='false'])[aria-expanded='true']:not(.ui-button--disclosure)";
 
@@ -199,8 +210,8 @@ $-open: "[aria-haspopup]:not([aria-haspopup='false'])[aria-expanded='true']:not(
 
 .ui-button--secondary#{$-open},
 .ui-button--ghost#{$-open} {
-  color: var(--accent-text);
-  background: var(--accent-bg);
+  color: var(--text);
+  background: var(--surface-pressed);
 }
 
 .ui-button--primary#{$-open} {

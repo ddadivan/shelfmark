@@ -81,7 +81,7 @@ export const Danger: Story = { args: { variant: BUTTON_VARIANT.Danger, iconLeft:
 
 /**
  * The one AI action ("Fill in with AI", BRAND › AI): the `ai-fill` tint, no edge, the label in
- * `text` and a 20px spark in `ai`; hover and press a step stronger. Light and dark side by side.
+ * `text` and a 16px spark in `ai`; hover and press a step stronger. Light and dark side by side.
  */
 export const Ai: Story = {
   parameters: { layout: 'padded' },
@@ -164,6 +164,27 @@ export const IconOnlyTooltip: Story = {
         <ui-button variant="ghost" iconOnly iconLeft="search" ariaLabel="Search" />
         <ui-button variant="ghost" iconOnly iconLeft="star" ariaLabel="Add to favorites" />
         <ui-button variant="secondary" size="sm" iconOnly iconLeft="more" ariaLabel="More actions" />
+      </div>`,
+  }),
+};
+
+/**
+ * `glass`: the 28px round button over a preview (play, star, the card's "..."): `glass` fill with
+ * a 10px blur, icon 16px. Icon only; the touch target is the overlay hit area. Both themes.
+ */
+export const Glass: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { themes: Object.values(THEME) },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane" style="background: linear-gradient(135deg, #3b6ea5, #d98c5f); display: flex; gap: 0.75rem; padding: 2rem">
+            <ui-button variant="glass" iconOnly iconLeft="play" ariaLabel="Play" />
+            <ui-button variant="glass" iconOnly iconLeft="star" ariaLabel="Add to favorites" />
+            <ui-button variant="glass" iconOnly iconLeft="more" ariaLabel="More actions" />
+          </div>
+        }
       </div>`,
   }),
 };
@@ -345,7 +366,7 @@ export const AllVariants: Story = {
   parameters: { layout: 'fullscreen' },
   render: () => ({
     props: {
-      variants: Object.values(BUTTON_VARIANT),
+      variants: Object.values(BUTTON_VARIANT).filter((v) => v !== BUTTON_VARIANT.Glass),
       sizes: Object.values(BUTTON_SIZE),
     },
     template: `${Object.values(THEME).map(panel).join('')}`,

@@ -98,14 +98,14 @@ class GhostHostComponent {
 }
 
 describe('ButtonComponent ai-ghost variant (#512)', () => {
-  it('has its own class, a 20px spark and the same busy look as ai', async () => {
+  it('has its own class, a 16px spark and the same busy look as ai', async () => {
     const fixture = TestBed.createComponent(GhostHostComponent);
     await fixture.whenStable();
     const root = fixture.nativeElement as HTMLElement;
     const control = () => root.querySelector('.ui-button') as HTMLButtonElement;
     expect(control().classList).toContain('ui-button--ai-ghost');
     expect(control().classList).not.toContain('ui-button--ai');
-    expect(root.querySelector('ui-icon')?.classList).toContain('ui-icon--20');
+    expect(root.querySelector('ui-icon')?.classList).toContain('ui-icon--16');
 
     fixture.componentInstance.loading.set(true);
     fixture.detectChanges();
