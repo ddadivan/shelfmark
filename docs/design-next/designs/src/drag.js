@@ -1,5 +1,12 @@
 <style>
-.dragsrc{opacity:.35;transition:opacity 120ms}
+.dragsrc{position:relative}
+.dragsrc>*:not(.dslot){visibility:hidden}
+.dslot{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;text-align:center;background:var(--accent-bg);border:1.5px dashed color-mix(in srgb,var(--text) 30%,transparent);border-radius:inherit;animation:dslot-in 200ms ease-out both}
+.dslot .t{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--accent);color:var(--on-accent)}
+.dslot .l{font:400 .75rem/1.4 var(--font-sans);color:var(--text-muted)}
+.dslot .n{font:600 .875rem/1.4 var(--font-sans);color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%}
+@keyframes dslot-in{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.dslot{animation:none}}
 .dprev{position:fixed;left:0;top:0;z-index:200;pointer-events:none;transform-origin:0 0;will-change:transform}
 .dprev .wob{transform-origin:12% 8%;will-change:transform}
 .dprev .deck{position:relative;width:220px}
@@ -30,7 +37,7 @@ function start(card,ev){
   p.querySelector('.deck').appendChild(clone);
   if(group.length>1){const b=document.createElement('span');b.className='badge';b.textContent=group.length;p.querySelector('.deck').appendChild(b)}
   document.body.appendChild(p);document.documentElement.classList.add('is-dragging');window.getSelection()?.removeAllRanges();
-  group.forEach(c=>c.classList.add('dragsrc'));
+  group.forEach(c=>{c.classList.add('dragsrc');const t=(c.querySelector('.sm-card-title')||{}).textContent||'';const sl=document.createElement('div');sl.className='dslot';sl.setAttribute('aria-hidden','true');sl.innerHTML='<span class="t"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M9 13h6m-2-2 2 2-2 2" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="l">Moving</span><span class="n"></span>';sl.querySelector('.n').textContent=t;c.appendChild(sl)});
   drag={p,wob:p.querySelector('.wob'),group,origin:r,x:ev.clientX,y:ev.clientY,lx:ev.clientX,lt:performance.now(),vx:0,vy:0,th:0,om:0,sq:0,over:null,raf:0,last:performance.now()};
   place();if(!RM)drag.raf=requestAnimationFrame(tick);
 }
@@ -50,7 +57,7 @@ function move(ev){const d=drag;if(!d)return;const t=performance.now(),dt=Math.ma
   if(tg!==d.over){if(d.over)d.over.classList.remove('droptarget');d.over=tg;if(tg)tg.classList.add('droptarget')}}
 function end(){const d=drag;if(!d)return;drag=null;cancelAnimationFrame(d.raf);
   const tg=d.over;if(tg)tg.classList.remove('droptarget');
-  const finish=()=>{d.p.remove();document.documentElement.classList.remove('is-dragging');d.group.forEach(c=>c.classList.remove('dragsrc'))};
+  const finish=()=>{d.p.remove();d.group.forEach(c=>c.querySelector(':scope>.dslot')?.remove());document.documentElement.classList.remove('is-dragging');d.group.forEach(c=>c.classList.remove('dragsrc'))};
   if(tg){const r=tg.getBoundingClientRect();
     if(RM){finish();}else{d.p.style.transition='transform 320ms ease-in-out, opacity 320ms ease-in-out';d.p.style.transform=`translate(${r.left+r.width/2-22}px,${r.top+r.height/2-14}px) scale(.2)`;d.p.style.opacity='0';setTimeout(finish,330);}
     setTimeout(()=>{tg.classList.remove('bump');void tg.offsetWidth;tg.classList.add('bump')},RM?0:320);
