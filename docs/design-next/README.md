@@ -31,7 +31,7 @@ Feature moves, merges or removals are proposed with reasons and decided by the a
 ## What exists so far
 
 - Home screen: the author chose **B · Today** (`designs/home-variants.html`): Today replaces Revisit in the sidebar and is the first screen; to be built out fully next.
-- Review round 1 applied: save panel opens with details; Revisit centred; search is a wide centred dialog; Organise shows selection and bulk actions; settings nav full height, content centred, live card preview for Show on cards; sign-in keeps the drifting cards animation; import explains how to get the file without a browser choice.
+- Review round 1 applied: save panel opens with details; Revisit centred; search is a wide centred dialog; Organise shows selection and bulk actions; settings nav full height, content centred, live card preview for Show on cards; sign-in keeps the drifting cards animation; import keeps per-browser steps with the detected browser preselected.
 - Step 6 parked until every screen is designed (author: designs first): `migration-plan.md` (source-of-truth switch, tokens, components mapped to `libs/ui`, shell, screens by group with behaviour changes as separate issues, order, risks) and [ADR 0060](../adr/0060-design-next-foundations.md) (Proposed).
 - Step 1 done: `features.md` and `screens.md` (the inventory, as is).
 - Step 2 approved: `flows-and-structure.md` (three jobs, new navigation, Revisit, Reader mode, decisions D1–D15).
