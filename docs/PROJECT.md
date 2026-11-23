@@ -6,6 +6,8 @@ Nov 2, 2026 · @Dmytro
 
 Updated as work goes on — every session resumes from here.
 
+- [ ] **Shelf redesign (branch `redesign/shelf`, ADR 0061, Nov 23, 2026; not merged, no PR by the author's request).** Done: Shelf tokens on the existing property names, Hanken Grotesk, restyled `libs/ui` (buttons with a glass variant, switch, segmented control, chips and saved views, menus, popovers, dialog, inverted toast, tab bar, tree rows, search field, list rows, empty state, card with the new anatomy, favicon with site colour) and new `ui-ask-button`, `ui-range`, `ui-view-menu`; the desktop shell (240px sidebar with logo, avatar, Add link, Theme row; header with search and Ask); the library toolbar (View menu with six grid sizes and card fields per feed, Masonry / Cards / List, ⋯ menu with Sort, Side by side, Export); Masonry as the new default view (contract, migration). Tests: ui, web, api unit green, e2e green on desktop, tablet and phone except visual baselines (CI regenerates). Left: the compact top bar (search and avatar) on tablet and phone, Today, Filter and Select in the ⋯ menu, the rest of the screens (`designs/02–15`), visual baselines. Plan: `docs/design-next/shelf/implementation-plan.md`, screenshots in `docs/design-next/shelf/screens/`.
+
 - [x] Project document: sections 1–11 and backlog; landing, Try demo, PWA and Share target, export, Sentry, ADR log added
 - [x] [Shelfmark design system](https://claude.ai/artifact/BQrxb4RyTEo89FzAwgRFv7): tokens, font, spacing, radii, motion, brand book, cover, 23 components, logo, illustrations
 - [x] [Screen mockups](https://claude.ai/artifact/8vqtkwVg3JcrKZFQoe9Cs9) — 22 artboards incl. landing (desktop and phone), demo-mode banner, Share quick form, export menu, tooltips

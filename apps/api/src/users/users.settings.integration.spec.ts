@@ -723,7 +723,7 @@ describe('account settings', () => {
         .send({ defaultView: LIBRARY_VIEW.List, newLinksFolderId: id, fetchPreviews: false })
         .expect(200);
       const other = (await b.get(USER_SETTINGS_ENDPOINT).expect(200)).body as UserSettingsResponse;
-      expect(other.defaultView).toBe(LIBRARY_VIEW.Cards);
+      expect(other.defaultView).toBe(LIBRARY_VIEW.Masonry);
       expect(other.newLinksFolderId).toBeNull();
       expect(other.fetchPreviews).toBe(true);
       // Nor can B point at A's folder through a hand-written row: it reads as Unsorted.
