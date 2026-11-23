@@ -12,7 +12,7 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  padding: var(--space-3) var(--space-2) 0;
+  padding: 0;
 }
 
 // Folders only (the phone Library page): its own card, set in by the page gutter.
@@ -91,7 +91,7 @@
   overscroll-behavior: contain;
 
   // Soft edges when the tree scrolls (#352), in the sidebar card's colour.
-  @include scroll-fade(var(--surface));
+  @include scroll-fade(var(--sidebar));
 
   > * {
     flex: none;
@@ -104,6 +104,14 @@
   overflow: visible;
 }
 
+// Groups are divided by `sep` hairlines (Shelf NavItem): above Pinned, Folders and Tags.
+.sidebar__folders,
+.sidebar__scroll > app-sidebar-pinned,
+.sidebar__scroll > app-sidebar-tags {
+  margin-block-start: var(--space-3);
+  border-block-start: 1px solid var(--sep);
+}
+
 // "New here? Watch how it works": a section gap under Tags (#315), at the bottom of the middle.
 .sidebar__how-it-works {
   margin-block: auto var(--space-3);
@@ -113,14 +121,15 @@
 // Footer, fixed at the bottom of the card: the "Data & help" row, then Trash under a divider (#335, #387).
 .sidebar__footer {
   flex: none;
-  padding-block: var(--space-1) var(--space-3);
+  padding-block: var(--space-2) var(--space-3);
+  border-block-start: 1px solid var(--sep);
 }
 
 .sidebar__trash {
   display: block;
   margin-block-start: var(--space-2);
   padding-block-start: var(--space-2);
-  border-block-start: 1px solid var(--border);
+  border-block-start: 1px solid var(--sep);
 }
 
 .sidebar__error {

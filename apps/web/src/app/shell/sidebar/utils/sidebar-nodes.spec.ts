@@ -1,4 +1,4 @@
-import { dataNodes, extensionNodes, fixedNodes, trashNodes } from './sidebar-nodes';
+import { dataNodes, extensionNodes, fixedNodes, themeNodes, trashNodes } from './sidebar-nodes';
 import type { SidebarLabels } from '../models/sidebar-labels.interface';
 
 const LABELS: SidebarLabels = {
@@ -11,6 +11,7 @@ const LABELS: SidebarLabels = {
   trash: 'Trash',
   data: 'Data & help',
   extension: 'Get the extension',
+  theme: 'Theme',
   whatsNewDot: 'new',
 };
 
@@ -59,5 +60,14 @@ describe('sidebar nodes', () => {
   it('builds the trash row with or without a count', () => {
     expect(trashNodes(LABELS, 3)[0]).toMatchObject({ id: 'trash', count: 3 });
     expect('count' in (trashNodes(LABELS, undefined)[0] ?? {})).toBe(false);
+  });
+
+  it('builds the Theme row with the icon of the theme a press switches to', () => {
+    expect(themeNodes(LABELS, false)[0]).toMatchObject({
+      id: 'theme',
+      name: 'Theme',
+      icon: 'moon',
+    });
+    expect(themeNodes(LABELS, true)[0]).toMatchObject({ icon: 'sun' });
   });
 });

@@ -7,18 +7,17 @@ import {
   untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { NgTemplateOutlet } from '@angular/common';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   AvatarComponent,
   BUTTON_SIZE,
-  type IconName,
+  LogoComponent,
   TabBarComponent,
   type TabBarItem,
   type TabBarSelection,
-  THEME,
   ButtonComponent,
-  ICON_SIZE,
   MenuComponent,
   MenuItemComponent,
   MenuSeparatorComponent,
@@ -38,8 +37,6 @@ import { WhatsNewStore } from '../features/changelog/services/whats-new.store';
 import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
 import { ShortcutsDialogService } from '../features/shortcuts/services/shortcuts-dialog.service';
-import { THEME_PREFERENCE } from '@shelfmark/contracts';
-import { ThemeService } from '../core/theme/theme.service';
 import { ViewportService } from '../core/layout/viewport.service';
 import { APP_PATH } from '../models/app-path.const';
 import { PinsStore } from '../stores/pins.store';
@@ -61,8 +58,9 @@ import { ToastAreaDirective } from '../core/layout/toast-area.directive';
 import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.directive';
 
 /**
- * Layout around the signed-in pages. Desktop and tablet: the sidebar card on the left, the top bar
- * (search pill, theme, "Add link", account menu) and the page on the right. Phone: the page alone
+ * Layout around the signed-in pages (Shelf, ADR 0061). Desktop: the 240px sidebar on the left (logo,
+ * account avatar, Add link, navigation, Theme and the footer rows), the header (search field, Ask at
+ * the far right) and the page on the right. Phone: the page alone
  * under the floating tab bar (Library, Search, Add, Tags or Ask while Ask is on, You); each page
  * carries its own title.
  */
@@ -70,6 +68,9 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
   selector: 'app-shell',
   imports: [
     RouterOutlet,
+    RouterLink,
+    NgTemplateOutlet,
+    LogoComponent,
     ToastAreaDirective,
     ScrollRestorationDirective,
     TranslocoPipe,
@@ -96,7 +97,6 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
 export default class AppShellComponent {
   protected readonly auth = inject(AuthStore);
   protected readonly actions = inject(LinkActionsService);
-  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly search = inject(SearchDialogService);
   protected readonly shortcuts = inject(ShortcutsDialogService);
   protected readonly viewport = inject(ViewportService);
@@ -143,12 +143,6 @@ export default class AppShellComponent {
   });
   /** The avatar button is 44px: the 32px avatar is never clipped and it is a touch target. */
   protected readonly accountButtonSize = BUTTON_SIZE.Lg;
-  protected readonly THEME = THEME;
-  protected readonly theme = inject(ThemeService);
-  /** The icon shows what a press switches to. */
-  protected readonly themeIcon = computed<IconName>(() =>
-    this.theme.resolved() === THEME.Dark ? 'sun' : 'moon',
-  );
 
   protected readonly onboarding = inject(OnboardingStore);
   protected readonly feedback = inject(FeedbackDialogService);
@@ -215,13 +209,6 @@ export default class AppShellComponent {
     this.userSettings.whatsNewSeen();
     untracked(() => this.whatsNew.watch());
   });
-
-  /** Switches between the fixed Light and Dark themes and saves the choice on the account. */
-  protected toggleTheme(): void {
-    void this.userSettings.setAppearance({
-      theme: this.theme.resolved() === THEME.Dark ? THEME_PREFERENCE.Light : THEME_PREFERENCE.Dark,
-    });
-  }
 
   /** A tab was chosen: the pages route (the links are real `href`s), Search opens over the page. */
   protected async selectTab({ id, event }: TabBarSelection): Promise<void> {

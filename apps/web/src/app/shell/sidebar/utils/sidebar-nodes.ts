@@ -4,6 +4,7 @@ import { SIDEBAR_DATA_ID } from '../models/sidebar-data-id.const';
 import { SIDEBAR_RECENT_ID } from '../models/sidebar-recent-id.const';
 import { SIDEBAR_REMINDERS_ID } from '../models/sidebar-reminders-id.const';
 import { SIDEBAR_TRASH_ID } from '../models/sidebar-trash-id.const';
+import { SIDEBAR_THEME_ID } from '../models/sidebar-theme-id.const';
 import type { UiTreeNode } from '@shelfmark/ui';
 import type { SidebarLabels } from '../models/sidebar-labels.interface';
 import type { SidebarCounts } from '../models/sidebar-counts.interface';
@@ -72,4 +73,9 @@ export function dataNodes(labels: SidebarLabels, whatsNewUnseen = false): UiTree
 /** The Trash row under the divider; `total` undefined shows no count. */
 export function trashNodes(labels: SidebarLabels, total: number | undefined): UiTreeNode[] {
   return [{ id: SIDEBAR_TRASH_ID, name: labels.trash, icon: 'trash', ...sidebarCount(total) }];
+}
+
+/** The "Theme" row (Shelf): the icon shows what a press switches to (sun in dark, moon in light). */
+export function themeNodes(labels: SidebarLabels, dark: boolean): UiTreeNode[] {
+  return [{ id: SIDEBAR_THEME_ID, name: labels.theme, icon: dark ? 'sun' : 'moon' }];
 }

@@ -13,13 +13,40 @@
   overflow: hidden;
 }
 
-// The top bar of the desktop sits in the content column, above the page, with no rule under it
-// (the sidebar card and the page carry the layout). The mobile shell has none.
+// The header of the desktop (Shelf): the search field (48px, up to 640px) and Ask at the far
+// right, on the page canvas with no rule under it. The mobile shell has none.
 .shell__header {
   display: flex;
   gap: var(--space-3);
   align-items: center;
-  padding: var(--space-1) var(--space-6) 0;
+  padding: var(--space-4) var(--space-8) 0;
+}
+
+// Sidebar head (Shelf): the logo and the account avatar on one row, Add link under them.
+.shell__side-head {
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-1) 0 var(--space-1) var(--space-2);
+}
+
+.shell__logo {
+  display: flex;
+  align-items: center;
+  color: var(--text);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.shell__add {
+  flex: none;
+  margin-block: var(--space-4) var(--space-2);
 }
 
 .shell__user {
@@ -66,29 +93,30 @@
   flex: 1 1 0;
 }
 
-// The sidebar is an inset card (Main spec): `surface`, `shadow-card`, `radius-lg`, set in from the
-// window edges by the body padding. It scrolls on its own.
+// The sidebar (Shelf): 240px, full height, `sidebar` fill with a `sep` hairline edge, no card.
+// It scrolls only its middle part (#335).
 .shell__sidebar {
   display: flex;
   flex: none;
   flex-direction: column;
   align-self: stretch;
-  width: rem(272px);
+  width: var(--sidebar-width);
   min-height: 0;
+  padding: var(--space-4) var(--space-3) 0;
   overflow: hidden;
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  background: var(--sidebar);
+  border-inline-end: 1px solid var(--sep);
 }
 
-// The sidebar and the settings menu fill the card; the sidebar scrolls only its middle part (#335).
-.shell__sidebar > * {
+// The sidebar and the settings menu fill the rest of the column.
+.shell__sidebar > app-sidebar,
+.shell__sidebar > app-settings-nav {
   flex: 1 1 0;
   min-height: 0;
 }
 
-// The body takes the height left under the banner. Desktop: the sidebar card and the content
-// column side by side, 12px from the window edges and from each other. Mobile shell (below 64em):
+// The body takes the height left under the banner. Desktop: the sidebar and the content column side
+// by side, edge to edge (Shelf). Mobile shell (below 64em):
 // the page in a column (the content wrappers vanish), the page scrolls naturally.
 .shell__body {
   display: flex;
@@ -99,8 +127,6 @@
 
   @include desktop {
     flex-direction: row;
-    gap: var(--space-3);
-    padding: var(--space-3);
   }
 }
 
@@ -153,7 +179,7 @@
 
   @include desktop {
     min-height: 0;
-    padding: var(--space-4) var(--space-6) var(--space-6);
+    padding: var(--space-6) var(--space-8) var(--space-8);
 
     // Pages that are taller than the column (settings, privacy) scroll here; the library fits
     // and scrolls only its list.
