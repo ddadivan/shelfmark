@@ -30,6 +30,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 | L-05 | Card, row, headline row | component | hover actions / touch actions / long press | favorite, pinned to top, reminder, AI summary pending, no image |
 | L-06a | Show on cards: Preview image, Description (page text, or AI summary marked ✦ when there is none), Note, Tags, Site, Date saved; Reset to default. Same switches in Settings › Appearance | popover (toolbar button next to the views) | yes / yes / sheet | |
 | L-06 | Link menu: Open, Open in browser, Rename (title only, in the shared rename dialog; F2), Details, Favorite, Pin to top, Pin to sidebar, Move, Remind me, Copy link, Share folder link, Create rule, Delete | menu | yes / yes / sheet | conditions per item |
+| L-04a | New view and Edit view: name, optional phrase that AI turns into the rows (one Ask question, ADR 0057), editable rows (type, folder, tags, words, saved, only favorites / unread / with a reminder), icon, live match count; view menu (edit, rename, pin to sidebar, reorder, delete) | dialog + menu | yes / yes / sheet | AI off: no phrase row |
 | L-07 | Selection as on production: it is on while at least one link is picked. A click opens the preview; the checkbox appears on hover (long-press on touch); once one is picked, a click on another card picks it; unpicking the last ends selection. Bulk bar: Move, Tags, Favorite, Remind, Open all, Copy, Delete | toolbar | bottom glassless bar / same / stacked | count, disabled actions |
 | L-08 | Side by side: two feeds | Split pane | ≥ 80em only / — / — | picker on the right, related folders (AI) |
 | L-09 | Unsorted with the Tidy up count | part of L-01 | all | AI off: no count |
@@ -54,6 +55,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 | R-01 | Revisit queue: Due, Continue reading, Forgotten this week, Recently opened | Inbox | yes / yes / tab | each group empty; all empty ("Nothing waiting. Saved links will come back here.") |
 | R-02 | Row actions: Open, Done, Snooze, Keep for later, Not interested | row | hover / touch / swipe | |
 | R-03 | Remind me | popover | anchored / same / sheet | current reminder, remove, pick a date |
+| R-03a | Pick a date: quick picks, calendar, time chips and exact time, the reason shown with the reminder, summary line | dialog (phone: tall sheet) | all | |
 | R-04 | Pause history | menu item + setting | all | paused notice |
 | R-05 | "How do you like Shelfmark?" card (D12) | inline card | all | dismissed |
 | R-06 | Notifications: asked right after the first reminder (inline card, then the browser prompt; never on first visit); desktop and Android notification with Open, Snooze, Done; in-app toast when a tab is open; blocked and iPhone (Add to Home Screen) help; weekly “From your shelf” email; Settings › Notifications (switch, what to send, quiet hours, devices) | card, system notification, email, settings page | all | blocked, iPhone without Home Screen |
@@ -109,7 +111,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 | G-05 | AI: switch, modes (Suggest / Automatic / Off) for folders and tags, summaries, meaning search, process older links, usage, what is sent, delete AI data, connect your assistant | Settings | all | off, limit, provider down, Free tier line |
 | G-06 | Language and region: language, date format, clock, week start | Settings | all | |
 | G-07 | Your data: import, export, history, privacy policy, delete account (7-day grace, D9) | Settings | all | deletion scheduled (restore) |
-| G-08 | Keyboard shortcuts: list and single-key switch | Settings + dialog | all | |
+| G-08 | Keyboard shortcuts: list and single-key switch; overlay on ? anywhere | Settings + dialog | all | |
 | G-09 | Help: How it works video, What's new, Send feedback (with your feedback list), Privacy | menu + dialogs/pages | all | |
 | G-10 | AI intro (first time AI is turned on) | dialog | all | |
 | G-11 | Admin: feedback inbox, stats | List | desktop | (author only) |
