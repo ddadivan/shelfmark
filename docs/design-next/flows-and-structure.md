@@ -1,6 +1,6 @@
 # Step 2: flows and new structure (proposal)
 
-Status: **proposal under review.** Answers so far are recorded in [section 7](#7-decisions-for-the-author); open items are marked there. Built on the inventory in [`features.md`](features.md) and [`screens.md`](screens.md) (feature IDs such as `LIB-29` point there) and on the behaviour skills (page-patterns, surfaces, forms, defaults, empty-states, errors, keyboard, verbs). Current design rules are not a constraint ([README](README.md)).
+Status: **approved by the author** (answers in [section 7](#7-decisions-for-the-author)). Where a table row in section 6 disagrees with section 7, section 7 wins. Built on the inventory in [`features.md`](features.md) and [`screens.md`](screens.md) (feature IDs such as `LIB-29` point there) and on the behaviour skills (page-patterns, surfaces, forms, defaults, empty-states, errors, keyboard, verbs). Current design rules are not a constraint ([README](README.md)).
 
 ## 1. What Shelfmark is for
 
@@ -87,7 +87,7 @@ Desktop (from 64em)                 Tablet (40–64em)              Phone (< 40e
 
 - **Library** keeps the scopes All links, Unsorted, Favorites, and each folder; tags filter it.
 - **Revisit** is new: one page for coming back (see 4.2).
-- **Pinned section goes away**: folders that matter are starred (they appear at the top of Folders); links that matter are Favorites (D3).
+- **Pinned stays** for quick access to folders and links; Favorites is a mark to filter by; Pin to top of folder orders one folder (D3).
 - **Search** is one place for words, meaning and Ask (see 5.2). No Ask tab, no Ask panel.
 - **Help** (How it works, What's new, Send feedback, Privacy) lives in the avatar menu on desktop and in You on phones. The sidebar card and the Data & help menu go away.
 - **Header** keeps only search, Add link and the avatar. The theme toggle and the shortcuts button move to the avatar menu.
@@ -199,7 +199,7 @@ Legend: **Keep** as is · **Change** behaviour or surface · **Merge** into anot
 | Features | Decision | Notes |
 | --- | --- | --- |
 | SHL-01, SHL-02, SHL-04, SHL-05 | Change | New sidebar (4.1); Revisit row; tablet rail |
-| SHL-03, LNK-11, ORG-14 Pinned section | Cut / Merge | Star a folder to keep it on top; pinned links become Favorites (D3) |
+| SHL-03, LNK-11, ORG-14 Pinned section | Keep (D3) | Quick access to folders and links |
 | SHL-06 collapsible sections | Keep | |
 | SHL-07 footer, PUB-16 sidebar card | Cut / Move | Help items to the avatar menu; Trash stays |
 | SHL-08 top bar | Change | Search, Add, avatar only |
@@ -231,7 +231,7 @@ Legend: **Keep** as is · **Change** behaviour or surface · **Merge** into anot
 | LNK-06, CAP-15 edit dialog | Merge | Into the Link page details |
 | LNK-07 delete | Change | One delete model |
 | LNK-08 move | Change | Popover picker |
-| LNK-10 pin to top of folder | Cut (D3) | Favorites first within a folder instead |
+| LNK-10 pin to top of folder | Keep (D3) | Order inside one folder |
 | LNK-12..LNK-14, LNK-18 tags, folder chip, reminder chip, summary on cards | Change | Shown in List and Headlines; cards keep cover, title, site, star |
 | LNK-15, RUL-06 rule from a link | Keep | Opens the rule slide-over |
 
@@ -267,7 +267,7 @@ Legend: **Keep** as is · **Change** behaviour or surface · **Merge** into anot
 | SRC-08, AI-10 Ask | Merge | Into search (5.2); no Ask tab or panel |
 | SRC-09 process older links note | Move | To Settings › AI only |
 | AI-01, AI-02, AI-03 switch, intro, announcement | Merge | One short intro when turned on; the announcement becomes a single line in Settings and the empty search (no dialog) |
-| AI-04..AI-07 suggestions, automatic, fill in, summaries | Change | One "Goes to …" line at save; Fill in with AI becomes the default behaviour of Automatic mode, not a separate button (D6) |
+| AI-04..AI-07 suggestions, automatic, fill in, summaries | Change | One "Goes to …" line at save; Fill in with AI stays in Suggest mode, hidden in Automatic mode (D6) |
 | AI-08 meaning search | Keep | Inside search |
 | AI-09 related | Move | To the Link page |
 | AI-11, AI-17 Tidy, clean-up | Merge | Tidy up page |
@@ -297,14 +297,14 @@ Legend: **Keep** as is · **Change** behaviour or surface · **Merge** into anot
 | Features | Decision | Notes |
 | --- | --- | --- |
 | SET-01, SET-02 settings nav, You list | Change | Same six sections on every size; Shortcuts reachable on phones |
-| SET-03..SET-10 appearance | Change | Theme, text size, density, card options stay; Custom theme reduced to accent + base (D7); dates move to Language and region |
+| SET-03..SET-10 appearance | Change | Theme, text size, density, card options stay; Custom theme keeps base, accent, background, without corners (D7); dates move to Language and region |
 | SET-12..SET-15 library settings | Keep | Plus default reminder time |
 | SET-19, SET-20 language | Change | "Language and region": language, date format, clock, week start |
 | SET-21, SET-22 privacy and data | Merge | "Your data": import, export, history, AI data link, privacy policy, delete account |
 | ACC-01..ACC-03 profile, numbers, connected accounts | Keep | |
 | ACC-06 delete account | Fix | 7-day grace period with restore (D9) |
 | FBK-01..FBK-04 feedback | Move | Help in the avatar menu / You |
-| FBK-05, FBK-06 rating prompt | Cut (D12) | Interrupts the app; feedback stays one click away |
+| FBK-05, FBK-06 rating prompt | Change (D12) | Dismissible card at a calm moment instead of a modal |
 | ADM-01..ADM-05 admin | Keep | Own area, unchanged |
 | PUB-13..PUB-15 What's new, How it works | Move | Help |
 | ONB-01, ONB-02 welcome, empty library | Change | Welcome is the empty library itself: three actions (paste a link, get the extension, import bookmarks); no tour dialog |
@@ -327,16 +327,16 @@ Small broken promises found in the inventory, worth fixing now on the current co
 | --- | --- | --- |
 | D1 | Three jobs (Save, Find, Come back) as the spine; new navigation (4.1) | **Yes** |
 | D2 | Revisit as a top-level page (reminders, recently opened, forgotten) | **Yes** |
-| D3 | Pinned section | **Open.** Author: pinned is useful. Revised proposal: keep Pinned (folders and links, quick access) and Favorites (a mark to filter by); cut Pin to top of folder and folder highlight |
+| D3 | Ways to mark what matters | **Keep three, each with its own job:** Pinned (sidebar quick access to folders and links), Pin to top of folder (order inside one folder), Favorites (a mark to filter by). Cut folder highlight (D4) |
 | D4 | Folder look: colour and icon only | **Yes** |
 | D5 | Side by side | **Keep** (author: useful and unique). Defined as two feeds next to each other for filing; the Link page is one link; on wide screens both exist, not at the same time |
-| D6 | Fill in with AI | **Open.** Revised proposal: keep the button inside Suggest mode as "apply all suggestions in one press"; hidden in Automatic mode, where AI fills by itself. The person's choice stays: Suggest / Automatic / Off |
-| D7 | Custom theme | **Open.** Author asks why not keep it. Revised proposal: keep base, accent and background; drop only corners (custom radii break the concentric radius system). Or keep everything if the author prefers |
+| D6 | Fill in with AI | **Keep the button in Suggest mode** ("apply all suggestions in one press"); hidden in Automatic mode. AI stays visible through the suggestion rows with the spark and the "Moved by AI" marks |
+| D7 | Custom theme | **Keep base, accent and background; drop corners** |
 | D8 | Browser notifications for reminders, after the redesign | **Yes** |
 | D9 | Account deletion with a 7-day grace period | **Yes** |
-| D10 | Extension right-click save now; Pocket / Raindrop import later | **Open** (explained to the author; awaiting the answer) |
+| D10 | Extension right-click save now; Pocket / Raindrop import later | **Yes** |
 | D11 | Offline: honest banner now, queued saves later | **Yes** |
-| D12 | Rating prompt | **Open.** Revised proposal: no modal; a dismissible card at a calm moment (Revisit, or after a successful action) plus "Send feedback" in Help |
+| D12 | Rating prompt | **No modal.** A dismissible card at a calm moment (Revisit, or after a successful action) plus "Send feedback" in Help |
 | D13 | Click opens the site by default | **No: keep as is** (click opens the preview; the setting changes it). Fix the setting's hint, which says the preview works on wide screens only |
 | D14 | Reader mode as a Site / Reader switch; first Site, then the last mode per site; Reader as fallback when a site can't be shown | **Yes** |
 | D15 | Saved copy ("Read the copy") and highlights later | **Yes, later** |
