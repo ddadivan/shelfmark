@@ -40,7 +40,8 @@ ICON = {
  'chev': '<path d="M6 9l6 6 6-6"/>', 'plus': '<path d="M12 5v14M5 12h14"/>', 'search': '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
  'spark': '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>', 'sun': '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M5 19l1.4-1.4M17.6 6.4L19 5"/>',
  'grid': '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
- 'list': '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>', 'more': '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+ 'list': '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+ 'masonry': '<rect x="4" y="4" width="7" height="9" rx="1.5"/><rect x="13" y="4" width="7" height="5" rx="1.5"/><rect x="4" y="15" width="7" height="5" rx="1.5"/><rect x="13" y="11" width="7" height="9" rx="1.5"/>', 'more': '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
  'down': '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>', 'trash': '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>', 'user': '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
  'pen': '<path d="M4 20h4l10-10-4-4L4 16z"/><path d="M13 7l4 4"/>', 'tag': '<path d="M5 9h14M5 15h14M10 4 8 20M16 4l-2 16"/>', 'ext': '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
 }
@@ -200,6 +201,7 @@ v2 = f'''<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="
 <style>{V2_CSS}</style></head><body>{v2_body}<script>const KEY='sm-v2';{V2_CARDS}{COMMON_JS.replace('__DATA__', DATA).replace('__ICJS__', ICJS)}</script></body></html>'''
 
 # ================= V3 =================
+VIEW3 = f'<div class="viewsw" role="group" aria-label="Вигляд"><button type="button" data-view="masonry" aria-label="Masonry" title="Masonry">{ic("masonry")}</button><button type="button" data-view="cards" aria-label="Картки" title="Картки">{ic("grid")}</button><button type="button" data-view="list" aria-label="Список" title="Список">{ic("list")}</button></div>'
 V3_CSS = r'''
 :root{--bg:#ECECE9;--panel:#FBFBFA;--panel2:#F2F2EF;--sel:#E6E6E1;--hover:rgba(20,20,24,.05);--text:#18181B;--muted:#5C5D64;--sage:#4E7A52;--tile:#EDEDEA}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141518;--panel:#1B1C20;--panel2:#232429;--sel:#2C2D33;--hover:rgba(255,255,255,.06);--text:#EEEEF0;--muted:#A4A5AD;--sage:#9CCB9F;--tile:#24252A;color-scheme:dark}}
@@ -249,6 +251,8 @@ h1 .muted{font-family:"Funnel Sans",system-ui,sans-serif;font-size:16px;line-hei
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(208px,1fr));gap:32px 20px}
 .card{display:flex;flex-direction:column;gap:12px;min-width:0}
 .card.feat{grid-column:span 2}
+.mcols{columns:4 220px;column-gap:20px}.mcols .card{break-inside:avoid;margin-bottom:28px}
+@media (max-width:760px){.mcols{columns:2 auto;column-gap:10px}.mcols .card{margin-bottom:18px}}
 .tile{position:relative;aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:var(--tile);transition:transform 240ms cubic-bezier(.2,.7,.2,1)}
 .card.feat .tile{aspect-ratio:auto;height:100%;min-height:0}
 .tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -274,18 +278,20 @@ h1 .muted{font-family:"Funnel Sans",system-ui,sans-serif;font-size:16px;line-hei
 .empty{padding:64px 0;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted)}.empty b{color:var(--text);font-weight:600}
 .tabbar{display:none}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:10px 16px;border-radius:12px;background:var(--text);color:var(--panel);font-size:14px;z-index:50}
-@media (max-width:760px){.side,.desk{display:none!important}main{margin:0;border-radius:0;padding:16px 16px 104px}.card.feat{grid-column:span 2}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 10px}
+@media (max-width:760px){.side,.desk{display:none!important}main{margin:0;border-radius:0;padding:16px 16px 104px}.mcols{columns:2;column-gap:10px}.mcols .card{margin-bottom:18px}.card.feat{grid-column:span 2}
+.mcols{columns:4 220px;column-gap:20px}.mcols .card{break-inside:avoid;margin-bottom:28px}
+@media (max-width:760px){.mcols{columns:2 auto;column-gap:10px}.mcols .card{margin-bottom:18px}}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 10px}
  .tabbar{display:flex;position:fixed;left:8px;right:8px;bottom:8px;height:64px;padding:0 8px;border-radius:20px;background:var(--panel2);justify-content:space-around;align-items:center;z-index:30}
  .tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:64px;height:48px;border-radius:12px;color:var(--muted);font-size:12px;line-height:16px}.tb[aria-current]{background:var(--sel);color:var(--text);font-weight:500}
  .tbadd{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:var(--text);color:var(--panel)}.toast{bottom:84px}.rthumb{width:88px}.rnote,.dotsep{display:none}.head{margin-top:24px}h1{font-size:26px;line-height:32px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 '''
-V3_CARDS = r'''function cardHTML(l,feat){return `<a class="card${feat?' feat':''}" href="${l.url}" target="_blank" rel="noopener"><span class="tile ${l.kind}"${feat?` style="aspect-ratio:16/7"`:''}><img src="${l.img}" alt="">${l.kind==='video'?`<span class="vid" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M7 5v14l12-7z" fill="currentColor"/></svg>Відео</span>`:''}</span><span class="body"><span class="ttl">${esc(l.title)}</span>${l.note?`<span class="cap">${esc(l.note)}</span>`:''}<span class="foot2"><span class="dm">${fav(l.domain,16)}<span>${esc(l.sub)}</span></span><span class="f">${IC.folder}${esc(l.folder)}</span>${l.fav?`<span class="st" aria-label="В обраному">${IC.star}</span>`:''}</span></span></a>`}
-function cardsHTML(items){const g={};items.forEach(l=>{(g[l.month]=g[l.month]||[]).push(l)});return Object.keys(g).map((m,mi)=>`<section class="sec"><h2>${m}<span>${g[m].length}</span></h2><div class="grid">${g[m].map((l,i)=>cardHTML(l,mi===0&&i===0&&S.tab==='all'&&!S.q&&S.scope==='all')).join('')}</div></section>`).join('')}'''
+V3_CARDS = r'''function cardHTML(l,feat,mas){return `<a class="card${feat?' feat':''}" href="${l.url}" target="_blank" rel="noopener"><span class="tile ${l.kind}"${feat?` style="aspect-ratio:16/7"`:mas?` style="aspect-ratio:${l.ratio}"`:''}><img src="${l.img}" alt="">${l.kind==='video'?`<span class="vid" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M7 5v14l12-7z" fill="currentColor"/></svg>Відео</span>`:''}</span><span class="body"><span class="ttl">${esc(l.title)}</span>${l.note?`<span class="cap">${esc(l.note)}</span>`:''}<span class="foot2"><span class="dm">${fav(l.domain,16)}<span>${esc(l.sub)}</span></span><span class="f">${IC.folder}${esc(l.folder)}</span>${l.fav?`<span class="st" aria-label="В обраному">${IC.star}</span>`:''}</span></span></a>`}
+function cardsHTML(items){const g={};items.forEach(l=>{(g[l.month]=g[l.month]||[]).push(l)});const mas=S.view==='masonry';return Object.keys(g).map((m,mi)=>`<section class="sec"><h2>${m}<span>${g[m].length}</span></h2><div class="${mas?'mcols':'grid'}">${g[m].map((l,i)=>cardHTML(l,!mas&&mi===0&&i===0&&S.tab==='all'&&!S.q&&S.scope==='all',mas)).join('')}</div></section>`).join('')}'''
 v3_body = f'''<div class="app">{sidebar('side').replace('__LOGO__', LOGO('currentColor', 'var(--bg)'))}
 <main><header class="top"><label class="cmd">{ic('search', 18)}<input id="q" type="search" placeholder="Шукайте або вставте посилання, щоб зберегти" aria-label="Пошук або нове посилання"><kbd class="desk">⌘K</kbd><button type="button" class="ask" data-soon="Спитати полицю">{ic('spark')}Запитати</button></label><span class="sp"></span>
 <button type="button" class="ib desk" aria-label="Тема" data-theme-toggle>{ic('sun', 18)}</button><button type="button" class="av" aria-label="Акаунт">AL</button></header>
-<div class="head"><h1><span id="h1t">Усі посилання</span><span class="muted" id="h1n"></span></h1>{TABS}<div class="tools"><button type="button" class="sort desk" data-soon="Сортування">Спершу нові{ic('chev', 14)}</button>{VIEW}</div></div>
+<div class="head"><h1><span id="h1t">Усі посилання</span><span class="muted" id="h1n"></span></h1>{TABS}<div class="tools"><button type="button" class="sort desk" data-soon="Сортування">Спершу нові{ic('chev', 14)}</button>{VIEW3}</div></div>
 <div id="feed"></div></main></div>{TABBAR}<div class="toast" id="toast" role="status" hidden></div>'''
 v3 = f'''<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Shelfmark — варіант v3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@500;600&family=Funnel+Sans:wght@400;500;600&display=swap" rel="stylesheet">
