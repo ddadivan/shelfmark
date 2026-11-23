@@ -1,6 +1,6 @@
 # Step 3: foundations (proposal)
 
-Status: **proposal for the author's review.** The only open choice is the colour palette ([section 6](#6-colour)); everything else follows the visual-taste skills and the prototype (`library-prototype.html`). A visual version of this page, with the three palettes switchable in both themes, is published as a private artifact (link in the README).
+Status: **approved.** Palette: **C · Graphite** (author's choice); Ink and Sage stay as accent variants in Settings › Appearance. Radii revised after the author's review: controls are no longer pills ([section 3](#3-radius)). A visual version of this page, with the three palettes switchable in both themes, is published as a private artifact (link in the README).
 
 These foundations replace `docs/design/tokens.*` for the new design. When approved, they are recorded in an ADR and become the token source for `libs/ui`.
 
@@ -40,16 +40,15 @@ An 8pt grid for components, 4pt for micro gaps: `4, 8, 12, 16, 24, 32, 48, 64`.
 
 ## 3. Radius
 
-On the same grid and concentric (inner radius = outer radius − padding):
+On the 4pt grid and concentric (inner radius = outer radius − padding). Controls are rounded rectangles, not pills: pills read soft and take width; a modest radius keeps the interface precise and calm.
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `radius-xs` | 4 | Favicons, keyboard caps, tiny tiles |
-| `radius-sm` | 8 | Rows, menu items, inputs inside panels, card cover (16 − 8) |
-| `radius-md` | 12 | Inputs, tiles, popover items |
-| `radius-lg` | 16 | Cards, popovers, menus, the Link page panel |
-| `radius-xl` | 24 | Sidebar, dialogs, slide-overs, the phone tab bar |
-| `radius-full` | 999 | Buttons, chips, search field, avatars |
+| `radius-xs` | 4 | Favicons, keyboard caps, badges, small inner parts |
+| `radius-sm` | 8 | Buttons, inputs, the search field, chips and saved views, rows, menu items, segmented items, card cover (12 − 4) |
+| `radius-md` | 12 | Cards, menus, popovers, toasts, segmented track (8 + 4 padding), folder tiles |
+| `radius-lg` | 16 | Sidebar panel, dialogs, slide-overs, the Link page panel, the phone tab bar |
+| `radius-full` | 999 | Only round things: avatars, switches, the play button, count dots |
 
 The Custom theme no longer changes radii (D7).
 
@@ -122,7 +121,9 @@ All values pass WCAG AA in both themes (computed; table in 6.3).
 - **B · Sage.** The brand green, deeper and used only within the 10% budget: main button, current item, focus. Greys with a slight green bias. Closest to today's identity.
 - **C · Graphite.** No colour accent at all: the main button and the current item are graphite, selection is a neutral tint, focus is blue for visibility. The calmest option; previews and folder colours stand out most. The sage notch stays only in the logo.
 
-**Recommendation: C · Graphite.** It serves the product's idea best (the saved content is the colour), keeps the accent budget near zero, works with eight folder colours and the AI indigo without clashes, and ages well. A is the safe alternative if the interface feels too quiet; B if keeping the green identity matters more than calm.
+**Chosen: C · Graphite.** Ink and Sage become accent variants in Settings › Appearance (Accent: Graphite, Ink, Sage, or an own colour in the Custom theme).
+
+Why Graphite: It serves the product's idea best (the saved content is the colour), keeps the accent budget near zero, works with eight folder colours and the AI indigo without clashes, and ages well. A is the safe alternative if the interface feels too quiet; B if keeping the green identity matters more than calm.
 
 ### 6.3 Contrast (computed)
 
@@ -150,7 +151,7 @@ Folder colour pairs keep the values already checked in the current design (glyph
 | Area | Shipped (2027 Refresh) | New |
 | --- | --- | --- |
 | Type | 15 body, 13 label, 40 display | 16 body, 14 secondary, 12 meta; Major Second headings; page titles 25.6 |
-| Radii | 8 / 14 / 22 / 28 | 4 / 8 / 12 / 16 / 24, concentric |
+| Radii | 8 / 14 / 22 / 28, pill controls | 4 / 8 / 12 / 16, concentric; controls are rounded rectangles (8), not pills |
 | Elevation | whisper ring shadow, glass on floating layers | 1px border first, shadows ≤ 7%, no glass |
 | Accent | sage on many fills | one accent within 10% (option chosen in 6.2) |
 | Sidebar rows | 36 | 32 (40 on touch) |
