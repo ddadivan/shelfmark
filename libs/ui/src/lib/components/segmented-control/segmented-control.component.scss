@@ -1,7 +1,8 @@
 @use '../../../styles/ui' as *;
 
-$pad: rem(4px);
+$pad: rem(2px);
 $gap: rem(2px);
+$item-radius: calc(var(--radius-sm) - #{rem(2px)});
 
 :host {
   position: relative;
@@ -13,7 +14,7 @@ $gap: rem(2px);
   max-width: 100%;
   padding: $pad;
   background: var(--surface-hover);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
 }
 
 // One thumb under the active item; it slides between options (--seg-n options, --seg-i index).
@@ -25,8 +26,8 @@ $gap: rem(2px);
   width: calc((100% - #{$pad * 2} - (var(--seg-n, 2) - 1) * #{$gap}) / var(--seg-n, 2));
   content: '';
   background: var(--surface);
-  border-radius: var(--radius-full);
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 12%, transparent);
+  border-radius: $item-radius;
+  box-shadow: 0 0 0 1px var(--line);
   transition: transform var(--duration-base) var(--ease-out);
   transform: translateX(calc(var(--seg-i, 0) * (100% + #{$gap})));
 
@@ -49,12 +50,12 @@ $gap: rem(2px);
   align-items: center;
   justify-content: center;
   min-width: 0;
-  height: rem(32px);
+  height: rem(28px);
   padding: 0 rem(12px);
   color: var(--text-muted);
   white-space: nowrap;
   cursor: pointer;
-  border-radius: var(--radius-full);
+  border-radius: $item-radius;
   transition: color var(--duration-fast) var(--ease-out);
 
   &:has(.ui-seg__input:focus-visible) {
@@ -73,6 +74,12 @@ $gap: rem(2px);
     cursor: not-allowed;
     opacity: 0.45;
   }
+}
+
+// Icon-only items are 36px wide.
+:host(.ui-seg--icons) .ui-seg__item {
+  min-width: rem(36px);
+  padding: 0;
 }
 
 // The native radio covers its item (invisible), so pointer, tooltip and focus all meet on it.

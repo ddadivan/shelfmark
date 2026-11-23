@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../../testing/axe';
+import { compileScss } from '../../../testing/scss';
 import type { SegmentedOption } from './models/segmented-option.interface';
 import { SegmentedControlComponent } from './segmented-control.component';
 
@@ -144,6 +145,23 @@ describe('SegmentedControlComponent', () => {
       setup({ options: THEME_OPTIONS, iconOnly: true });
       TestBed.tick();
     }).toThrow(/icon on every option/);
+  });
+
+  it('marks an icon-only group and draws 16px icons', () => {
+    const { host } = setup({ iconOnly: true });
+    expect(host.classList).toContain('ui-seg--icons');
+    expect(host.querySelector('ui-icon')?.classList).toContain('ui-icon--16');
+    expect(setup().host.classList).not.toContain('ui-seg--icons');
+  });
+
+  it('is the Shelf shape: 2px padding, radius 10 track, 28px items with radius 8', () => {
+    const css = compileScss('lib/components/segmented-control/segmented-control.component.scss');
+    expect(css).toContain('padding: 0.125rem');
+    expect(css).toContain('border-radius: var(--radius-sm)');
+    expect(css).toContain('height: 1.75rem');
+    expect(css).toContain('border-radius: calc(var(--radius-sm) - 0.125rem)');
+    expect(css).toContain('min-width: 2.25rem');
+    expect(css).toContain('height: 2.75rem');
   });
 
   it.each([

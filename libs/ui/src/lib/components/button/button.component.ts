@@ -27,7 +27,6 @@ import { RippleDirective } from '../../directives/ripple/ripple.directive';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { SpinnerComponent } from '../spinner/spinner.component';
 import type { IconSize } from '../icon/models/icon-size.type';
-import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { BUTTON_FAB_ICON_SIZE } from './models/button-fab-icon-size.const';
 import { BUTTON_ICON_SIZE } from './models/button-icon-size.const';
 import { BUTTON_HIT_AREA } from './models/button-hit-area.const';
@@ -145,7 +144,7 @@ export class ButtonComponent implements UiFocusTarget {
   /** The inner native `<button>` / `<a>`; `undefined` until rendered. */
   readonly element = computed(() => this.control()?.nativeElement);
 
-  /** The AI variants (`ai`, `ai-ghost`) are about the spark: 20px, and busy is a pulse and a sweep. */
+  /** The AI variants (`ai`, `ai-ghost`) are about the spark; busy is a pulse and a sweep. */
   private readonly aiLook = computed(
     () => this.variant() === BUTTON_VARIANT.Ai || this.variant() === BUTTON_VARIANT.AiGhost,
   );
@@ -158,7 +157,9 @@ export class ButtonComponent implements UiFocusTarget {
   protected readonly inert = computed(() => this.disabled() || this.loading());
   /** The overlay hit area applies to icon-only buttons only. */
   protected readonly hasOverlay = computed(
-    () => this.iconOnly() && this.hitArea() === BUTTON_HIT_AREA.Overlay,
+    () =>
+      this.iconOnly() &&
+      (this.hitArea() === BUTTON_HIT_AREA.Overlay || this.variant() === BUTTON_VARIANT.Glass),
   );
   protected readonly rippleActive = computed(
     () =>
@@ -196,7 +197,7 @@ export class ButtonComponent implements UiFocusTarget {
     return classes.join(' ');
   });
 
-  /** The AI variants draw their spark at 20px whatever the size (BRAND › AI). */
+  /** 16px at every size, also the AI spark and the glass button. */
   protected readonly iconSizePx = computed(() => {
     const own = this.iconSize();
     if (own !== undefined) {
@@ -205,7 +206,7 @@ export class ButtonComponent implements UiFocusTarget {
     if (this.fab()) {
       return BUTTON_FAB_ICON_SIZE;
     }
-    return this.aiLook() ? ICON_SIZE.Md : BUTTON_ICON_SIZE[this.size()];
+    return BUTTON_ICON_SIZE[this.size()];
   });
   /**
    * An icon-only button names itself with a tooltip: the text is the accessible name, so the two

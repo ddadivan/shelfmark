@@ -1,9 +1,9 @@
 @use '../../../styles/ui' as *;
 
-$track-width: rem(44px);
-$track-height: rem(26px);
-$knob-size: rem(20px);
-$knob-inset: rem(3px);
+$track-width: rem(28px);
+$track-height: rem(16px);
+$knob-size: rem(12px);
+$knob-inset: rem(2px);
 
 :host {
   display: inline-flex;
@@ -17,7 +17,7 @@ $knob-inset: rem(3px);
   height: $track-height;
   padding: 0;
   cursor: pointer;
-  background: var(--border-control);
+  background: var(--toggle-off);
   border: 0;
   border-radius: var(--radius-full);
   transition: background-color var(--duration-base) var(--ease-out);
@@ -32,19 +32,13 @@ $knob-inset: rem(3px);
     content: '';
     background: var(--surface);
     border-radius: var(--radius-full);
-    box-shadow: 0 1px 3px color-mix(in srgb, var(--text) 25%, transparent);
-    transition: transform var(--duration-base) var(--ease-spring);
+    transition:
+      transform var(--duration-base) var(--ease-out),
+      background-color var(--duration-base) var(--ease-out);
   }
 
-  // 26px is above the 24px minimum; touch grows the target to 44px without changing the look.
-  @include hit-area(0, -9px 0);
-
-  // Only the off track darkens on hover; an on switch keeps its accent.
-  @include hover {
-    &:not(:disabled, [aria-checked='true']) {
-      background: var(--text-muted);
-    }
-  }
+  // The 16px track is below the 24px minimum: an invisible hit area grows the target to 24px, and to 44px on touch.
+  @include hit-area(-4px -2px, -14px -8px);
 
   &:focus-visible {
     @include focus-ring;
@@ -54,6 +48,7 @@ $knob-inset: rem(3px);
     background: var(--accent);
 
     &::before {
+      background: var(--on-primary);
       transform: translateX($track-width - $knob-size - 2 * $knob-inset);
     }
   }

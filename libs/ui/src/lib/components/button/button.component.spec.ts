@@ -126,7 +126,7 @@ describe('ButtonComponent', () => {
     host.ariaLabel.set('Add link');
     await settle();
     expect(button().classList.contains('ui-button--fab')).toBe(false);
-    expect(root.querySelector('ui-icon.ui-icon--24')).not.toBeNull();
+    expect(root.querySelector('ui-icon.ui-icon--16')).not.toBeNull();
 
     host.fab.set(true);
     await settle();
@@ -140,12 +140,12 @@ describe('ButtonComponent', () => {
     host.iconLeft.set('add');
     host.ariaLabel.set('Add link');
     await settle();
-    expect(root.querySelector('ui-icon.ui-icon--24')).not.toBeNull();
-
-    host.iconSize.set(16);
-    await settle();
     expect(root.querySelector('ui-icon.ui-icon--16')).not.toBeNull();
-    expect(root.querySelector('ui-icon.ui-icon--24')).toBeNull();
+
+    host.iconSize.set(24);
+    await settle();
+    expect(root.querySelector('ui-icon.ui-icon--24')).not.toBeNull();
+    expect(root.querySelector('ui-icon.ui-icon--16')).toBeNull();
   });
 
   it.each(Object.values(BUTTON_VARIANT))('applies the %s variant class', async (variant) => {
@@ -185,25 +185,25 @@ describe('ButtonComponent', () => {
     ]);
   });
 
-  it('uses 24px icons in large buttons', async () => {
+  it('uses 16px icons in large buttons', async () => {
     const { host, root, settle } = await setup();
     host.iconLeft.set('add');
     host.size.set(BUTTON_SIZE.Lg);
     await settle();
 
-    expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--24')).toBe(true);
+    expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--16')).toBe(true);
   });
 
-  it('uses 20px icons in small buttons', async () => {
+  it('uses 16px icons in small buttons', async () => {
     const { host, root, settle } = await setup();
     host.iconLeft.set('add');
     host.size.set(BUTTON_SIZE.Sm);
     await settle();
 
-    expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--20')).toBe(true);
+    expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--16')).toBe(true);
   });
 
-  it('draws the ai variant with its class and a 20px spark whatever the size', async () => {
+  it('draws the ai variant with its class and a 16px spark whatever the size', async () => {
     const { host, root, button, settle } = await setup();
     host.variant.set(BUTTON_VARIANT.Ai);
     host.iconLeft.set('spark');
@@ -211,7 +211,21 @@ describe('ButtonComponent', () => {
     await settle();
 
     expect(button().classList).toContain('ui-button--ai');
-    expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--20')).toBe(true);
+    expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--16')).toBe(true);
+    expect(await axeViolations(root)).toEqual([]);
+  });
+
+  it('draws the glass variant as an icon-only button with the overlay hit area and no ripple', async () => {
+    const { host, root, button, settle } = await setup();
+    host.variant.set(BUTTON_VARIANT.Glass);
+    host.iconOnly.set(true);
+    host.iconLeft.set('star');
+    host.ariaLabel.set('Favorite');
+    await settle();
+
+    expect(button().classList).toContain('ui-button--glass');
+    expect(button().classList).toContain('ui-button--hit-overlay');
+    expect(root.querySelector('ui-icon')?.classList.contains('ui-icon--16')).toBe(true);
     expect(await axeViolations(root)).toEqual([]);
   });
 

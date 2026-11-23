@@ -10,11 +10,11 @@ describe('ui-button pressed while open (#562 effect 8)', () => {
     expect(css).toContain(`.ui-button--primary${open}:not(.ui-button--disclosure)`);
   });
 
-  it('marks an open secondary or ghost trigger with the accent tint (#564)', () => {
+  it('marks an open secondary or ghost trigger with the pressed fill (#564)', () => {
     for (const variant of ['secondary', 'ghost']) {
       const rule = css.split('}').find((r) => r.includes(`.ui-button--${variant}${open}`));
-      expect(rule).toContain('background: var(--accent-bg)');
-      expect(rule).toContain('color: var(--accent-text)');
+      expect(rule).toContain('background: var(--surface-pressed)');
+      expect(rule).toContain('color: var(--text)');
     }
   });
 

@@ -197,4 +197,14 @@ describe('SavedViewsComponent', () => {
     expect(css).toMatch(/\.ui-saved-views__bar:focus\s*\{\s*outline:\s*none/);
     expect(css).toMatch(/\.ui-saved-views__add\):focus-visible\s*\{[^}]*outline:\s*2px solid/);
   });
+
+  it('is the Shelf tab: 28px, radius 10, fill on hover, surface-pressed when selected, no dark chip', () => {
+    const css = compileScss('lib/components/saved-views/saved-views.component.scss');
+    expect(css).toContain('height: 1.75rem');
+    expect(css).toContain('border-radius: var(--radius-sm)');
+    expect(css).toContain('background: var(--fill)');
+    expect(css).toContain('background: var(--surface-pressed)');
+    expect(css).not.toContain('var(--primary)');
+    expect(css).not.toContain('var(--on-primary)');
+  });
 });

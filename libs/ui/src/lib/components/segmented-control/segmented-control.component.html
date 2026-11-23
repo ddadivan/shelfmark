@@ -17,7 +17,7 @@
       (change)="select(option)"
     />
     @if (option.icon; as icon) {
-      <ui-icon [name]="icon" [size]="ICON_SIZE.Md" />
+      <ui-icon [name]="icon" [size]="ICON_SIZE.Sm" />
     }
     @if (!iconOnly()) {
       <span class="ui-seg__label">{{ option.label }}</span>

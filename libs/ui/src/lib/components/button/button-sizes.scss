@@ -5,19 +5,16 @@
   @return calc(#{$value} * var(--ui-button-scale, 1));
 }
 
-// sm inherits the `label` line-height; only font-size shrinks (spec: 12px text, 16px icons).
 .ui-button--sm {
   // `--ui-button-sm-size`: a feature that needs a larger small button (the card's "..." at 40px on
   // touch) sets it on an ancestor.
   height: k(var(--ui-button-sm-size, #{rem(32px)}));
   padding: 0 k(rem(12px));
-  font-size: k(rem(12px));
 }
 
 .ui-button--lg {
-  height: k(rem(48px));
-  padding: 0 k(rem(22px));
-  font-size: k(rem(15px));
+  height: k(var(--control-lg));
+  padding: 0 k(rem(20px));
 }
 
 .ui-button.ui-button--block {
@@ -26,7 +23,7 @@
 }
 
 .ui-button--icon {
-  width: k(rem(40px));
+  width: k(var(--control-md));
   padding: 0;
 
   &.ui-button--sm {
@@ -34,12 +31,30 @@
   }
 
   &.ui-button--lg {
-    width: k(rem(48px));
+    width: k(var(--control-lg));
   }
 
   // Touch: the button itself grows to 44px; `hitArea="overlay"` keeps its size instead.
   &:not(.ui-button--hit-overlay) {
     @include touch-target;
+  }
+
+  // Icon-only secondary and ghost buttons are quiet: the icon in `text-muted`, `text` on hover.
+  &.ui-button--ghost,
+  &.ui-button--secondary {
+    color: var(--ui-button-color, var(--text-muted));
+
+    &:not([aria-disabled='true']) {
+      @include hover {
+        color: var(--ui-button-color, var(--text));
+      }
+    }
+  }
+
+  // Glass is a fixed 28px round button.
+  &.ui-button--glass {
+    width: var(--ui-button-glass-size, #{rem(28px)});
+    min-height: 0;
   }
 }
 

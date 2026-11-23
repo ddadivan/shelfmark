@@ -1,0 +1,84 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: inline-flex;
+}
+
+// The glow (`wave-1..4`) sits in a clipped ::before, blurred, behind the label; it is hidden at
+// rest and fades in over 600 ms (a decorative moment, longer than the duration tokens on purpose).
+.ui-ask-button {
+  @include type(label);
+
+  position: relative;
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  height: var(--control-md);
+  padding: 0 var(--space-4);
+  overflow: hidden;
+  color: var(--text);
+  white-space: nowrap;
+  cursor: pointer;
+  isolation: isolate;
+  background: var(--surface-hover);
+  border: 0;
+  border-radius: var(--radius-full);
+  transition: color var(--duration-base) var(--ease-out);
+
+  &::before {
+    position: absolute;
+    inset: -60%;
+    z-index: -1;
+    pointer-events: none;
+    content: '';
+    background: conic-gradient(
+      from 0deg,
+      var(--wave-1),
+      var(--wave-2),
+      var(--wave-3),
+      var(--wave-4),
+      var(--wave-1),
+      var(--wave-2),
+      var(--wave-3),
+      var(--wave-4),
+      var(--wave-1)
+    );
+    filter: blur(#{rem(28px)});
+    opacity: 0;
+    transition: opacity 600ms var(--ease-out);
+
+    @include loop(wave);
+
+    animation-play-state: paused;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  // Near-black label on the glow in both themes (`on-glass`).
+  &:focus-visible:not(:disabled) {
+    color: var(--on-glass);
+
+    &::before {
+      opacity: var(--wave-opacity);
+      animation-play-state: running;
+    }
+  }
+
+  &:not(:disabled) {
+    @include hover {
+      color: var(--on-glass);
+
+      &::before {
+        opacity: var(--wave-opacity);
+        animation-play-state: running;
+      }
+    }
+  }
+}

@@ -15,10 +15,10 @@ describe('ButtonComponent --ui-button-scale', () => {
 
   it('multiplies the default box, gap and text', () => {
     const base = rule(css, '.ui-button');
-    expect(base).toContain(`height: calc(2.5rem * ${SCALE})`);
-    expect(base).toContain(`padding: 0 calc(1.125rem * ${SCALE})`);
-    expect(base).toContain(`font-size: calc(0.8125rem * ${SCALE})`);
-    expect(base).toContain(`line-height: calc(1.125rem * ${SCALE})`);
+    expect(base).toContain(`height: calc(var(--control-md) * ${SCALE})`);
+    expect(base).toContain(`padding: 0 calc(1rem * ${SCALE})`);
+    expect(base).toContain(`font-size: calc(0.875rem * ${SCALE})`);
+    expect(base).toContain(`line-height: calc(1.375rem * ${SCALE})`);
     expect(base).toContain(`gap: calc(var(--space-2) * ${SCALE})`);
   });
 
@@ -31,12 +31,12 @@ describe('ButtonComponent --ui-button-scale', () => {
   });
 
   it('multiplies the sm and lg sizes and the icon-only widths', () => {
-    expect(rule(css, '.ui-button--lg')).toContain(`height: calc(3rem * ${SCALE})`);
-    expect(rule(css, '.ui-button--lg')).toContain(`font-size: calc(0.9375rem * ${SCALE})`);
+    expect(rule(css, '.ui-button--lg')).toContain(`height: calc(var(--control-lg) * ${SCALE})`);
+    expect(rule(css, '.ui-button--lg')).toContain(`padding: 0 calc(1.25rem * ${SCALE})`);
     expect(rule(css, '.ui-button--sm')).toContain(
       `height: calc(var(--ui-button-sm-size, 2rem) * ${SCALE})`,
     );
-    expect(rule(css, '.ui-button--icon')).toContain(`width: calc(2.5rem * ${SCALE})`);
+    expect(rule(css, '.ui-button--icon')).toContain(`width: calc(var(--control-md) * ${SCALE})`);
   });
 
   it('chip and favicon read their own scale properties', () => {

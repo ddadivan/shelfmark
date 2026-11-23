@@ -1,0 +1,14 @@
+<button
+  #control
+  type="button"
+  class="ui-ask-button"
+  [uiTooltip]="tooltipText()"
+  [uiTooltipShortcut]="shortcut()"
+  [disabled]="disabled()"
+  [attr.aria-expanded]="ariaExpanded() ?? null"
+  [attr.aria-keyshortcuts]="shortcut() || null"
+  (click)="activated.emit()"
+>
+  <ui-icon name="spark" [size]="iconSize" />
+  <span class="ui-ask-button__label">{{ label() }}</span>
+</button>

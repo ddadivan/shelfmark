@@ -7,16 +7,16 @@
   // `--ui-chip-scale` (unitless, default 1): a feature that shows chips bigger (the landing)
   // sets it on an ancestor; height, padding and text grow.
   height: calc(#{rem(28px)} * var(--ui-chip-scale, 1));
-  color: var(--accent-text);
+  color: var(--text-muted);
   white-space: nowrap;
-  background: var(--ui-chip-bg, var(--accent-bg));
-  border-radius: var(--radius-full);
+  background: var(--ui-chip-bg, var(--surface-hover));
+  border-radius: var(--radius-sm);
   transition: filter var(--duration-fast) var(--ease-out);
 }
 
 :host(.ui-chip--neutral) {
-  color: var(--text);
-  background: var(--surface-hover);
+  color: var(--text-muted);
+  background: var(--ui-chip-bg, var(--surface-hover));
 }
 
 .ui-chip__body {
@@ -32,7 +32,7 @@
   color: inherit;
   background: transparent;
   border: 0;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
 }
 
 // `truncate`: the pill shrinks with its container down to its padding; the label keeps one line
