@@ -304,12 +304,16 @@ G_CSS = r'''
 .danger-panel{border-color:color-mix(in srgb,var(--danger) 40%,transparent)}
 .notice{display:flex;gap:8px;align-items:center;padding:12px 16px;border-radius:var(--radius-md);font-size:.875rem}
 @media (max-width:63.99em){.snav{display:none}}
+.snav-m{display:none}
+@media (min-width:40em) and (max-width:63.99em){.snav-m{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:8px 0 0}.snav-m .sm-chip{flex:none}}
 '''
 snav = lambda cur: f'<nav class="snav sm-l1" aria-label="Settings"><button class="sm-nav" type="button">{ic("left", 20)}Back to links</button><div class="sm-sec" style="width:auto;margin-top:8px">Settings</div>' + ''.join(f'<button class="sm-nav" type="button"{" aria-current=%spage%s" % (chr(34), chr(34)) if cur == k else ""}>{ic(i, 20)}{l}</button>' for k, i, l in [('account', 'user', 'Account'), ('appearance', 'palette', 'Appearance'), ('library', 'bookmark', 'Library'), ('notify', 'bell', 'Notifications'), ('ai', 'spark', 'AI'), ('language', 'browser', 'Language and region'), ('data', 'upload', 'Your data'), ('keys', 'text', 'Keyboard shortcuts')]) + '<p class="lbl-s ver" style="padding:16px 8px 0">Shelfmark 3.0</p></nav>'
 def srow(t, d, ctl): return f'<div class="setrow"><span class="tx"><b>{t}</b><span>{d}</span></span>{ctl}</div>'
 sw = lambda on, l: f'<button class="sm-switch" role="switch" aria-checked="{str(on).lower()}" aria-label="{l}"></button>'
 seg = lambda opts, cur, l: f'<div class="sm-seg" role="radiogroup" aria-label="{l}">' + ''.join(f'<button role="radio" aria-checked="{str(o == cur).lower()}">{o}</button>' for o in opts) + '</div>'
-def spage(cur, h, body): return f'<div class="sapp">{snav(cur)}<main class="smain"><h1>{h}</h1>{body}</main></div>{TABBAR}'
+SN_ITEMS = [('account', 'Account'), ('appearance', 'Appearance'), ('library', 'Library'), ('notify', 'Notifications'), ('ai', 'AI'), ('language', 'Language'), ('data', 'Your data'), ('keys', 'Shortcuts')]
+def snav_m(cur): return '<nav class="snav-m" aria-label="Settings sections">' + ''.join(f'<button class="sm-chip" type="button" aria-pressed="{str(k == cur).lower()}">{l}</button>' for k, l in SN_ITEMS) + '</nav>'
+def spage(cur, h, body): return f'<div class="sapp">{snav(cur)}<main class="smain">{snav_m(cur)}<h1>{h}</h1>{body}</main></div>{TABBAR}'
 appearance = spage('appearance', 'Appearance', f'''<p class="lead">Saved as you go and synced to your devices.</p>
 <section class="group"><p class="sec-t">Theme</p><div class="sm-panel sm-l1" style="max-width:none"><div class="setrow"><div class="themes" role="radiogroup" aria-label="Theme">{''.join(f'<button class="thm {c}" role="radio" aria-checked="{str(c == "t-sys").lower()}"><i></i>{l}</button>' for c, l in [('t-sys', 'System'), ('t-light', 'Light'), ('t-dark', 'Dark')])}</div></div>
 {srow('Accent', 'Graphite keeps the interface quiet; Ink and Sage add one colour.', '<div class="acc" role="radiogroup" aria-label="Accent">' + ''.join(f'<button class="adot" role="radio" aria-checked="{str(n == "Graphite").lower()}" aria-label="{n}" style="background:{v}"></button>' for n, v in [('Graphite', 'var(--accent)'), ('Ink', 'var(--accent-ink)'), ('Sage', 'var(--accent-sage)')]) + '</div>')}
