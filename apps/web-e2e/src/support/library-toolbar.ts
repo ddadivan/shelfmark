@@ -1,17 +1,27 @@
 import { expect, type Page } from '@playwright/test';
 import { isPhone } from './sidebar';
 
-export type LibraryView = 'Cards' | 'List';
+export type LibraryView = 'Masonry' | 'Cards' | 'List';
 
 /**
- * The library toolbar. From 40em (tablet and desktop) it has a sort button, a Cards / List switch
- * and an Export button; a phone has one "Options" menu with all of them (Sort by, View, Export).
+ * The library toolbar (Shelf). From 40em (tablet and desktop): View (grid size and card fields),
+ * the Masonry / Cards / List switch and a "More view options" ⋯ menu with Sort by, Side by side
+ * and Export; a phone has one "Options" menu with Sort by, View and Export.
  */
 async function openViewMenu(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Options', exact: true }).click();
 }
 
-/** Switches the feed to Cards or List. */
+/** Opens the toolbar's ⋯ menu (tablet and desktop) or the phone's Options menu. */
+export async function openMoreMenu(page: Page): Promise<void> {
+  if (isPhone(page)) {
+    await openViewMenu(page);
+  } else {
+    await page.getByRole('button', { name: 'More view options' }).click();
+  }
+}
+
+/** Switches the feed to Masonry, Cards or List. */
 export async function switchView(page: Page, view: LibraryView): Promise<void> {
   if (isPhone(page)) {
     await openViewMenu(page);
@@ -21,33 +31,32 @@ export async function switchView(page: Page, view: LibraryView): Promise<void> {
   }
 }
 
-/** Opens the menu that holds the export items (the Export button, or the phone's Options menu). */
+/** Opens the menu that holds the export items (the ⋯ menu, or the phone's Options menu). */
 export async function openExportMenu(page: Page): Promise<void> {
-  if (isPhone(page)) {
-    await openViewMenu(page);
-  } else {
-    await page.getByRole('button', { name: 'Export' }).click();
-  }
+  await openMoreMenu(page);
 }
 
-/** Picks a sort order from the sort menu. */
+/** Picks a sort order from the sort items. */
 export async function chooseSort(page: Page, name: string): Promise<void> {
-  if (isPhone(page)) {
-    await openViewMenu(page);
-  } else {
-    await page.getByRole('button', { name: /^Sort: / }).click();
-  }
+  await openMoreMenu(page);
   await page.getByRole('menuitemradio', { name }).click();
 }
 
-/** The feed is sorted as `name` (the sort button's label, or the checked item of the phone menu). */
+/** The feed is sorted as `name` (the checked sort item of the menu). */
 export async function expectSort(page: Page, name: string): Promise<void> {
-  if (isPhone(page)) {
-    await openViewMenu(page);
-    await expect(page.getByRole('menuitemradio', { name })).toHaveAttribute('aria-checked', 'true');
-    await page.keyboard.press('Escape');
-    await expect(page.getByRole('menu')).toBeHidden();
-  } else {
-    await expect(page.getByRole('button', { name: `Sort: ${name}` })).toBeVisible();
-  }
+  await openMoreMenu(page);
+  await expect(page.getByRole('menuitemradio', { name })).toHaveAttribute('aria-checked', 'true');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('menu')).toBeHidden();
+}
+
+/** The "Side by side" item of the ⋯ menu (from 80em). */
+export function sideBySideItem(page: Page) {
+  return page.getByRole('menuitemcheckbox', { name: 'Side by side', exact: true });
+}
+
+/** Opens or closes Side by side from the ⋯ menu. */
+export async function toggleSideBySide(page: Page): Promise<void> {
+  await openMoreMenu(page);
+  await sideBySideItem(page).click();
 }

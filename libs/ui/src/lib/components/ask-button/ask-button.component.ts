@@ -40,6 +40,10 @@ export class AskButtonComponent implements UiFocusTarget {
   readonly disabled = input(false, { transform: booleanAttribute });
   /** `aria-expanded` of the inner button, when it toggles a panel. */
   readonly ariaExpanded = input<boolean>();
+  /** A longer accessible name that starts with the visible label ("Ask your shelf"); empty = the label. */
+  readonly ariaLabel = input('');
+  /** `aria-haspopup` of the button, such as `dialog` when it opens a panel; empty = none. */
+  readonly ariaHaspopup = input('');
 
   /** Fires when the button is activated (click, Enter, Space). */
   readonly activated = output<void>();

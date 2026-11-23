@@ -3,6 +3,7 @@ import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { documentScrollTop, mainScrollTop } from './support/scroll';
 import { isCompact } from './support/sidebar';
+import { openMoreMenu, sideBySideItem, toggleSideBySide } from './support/library-toolbar';
 
 // Mirror MOCK_LINKS ("Simple pasta" is unsorted) and the MOCK_FOLDERS names (libs/shared/contracts);
 // the e2e project cannot import from them.
@@ -16,7 +17,7 @@ async function openWithReading(page: Page): Promise<Locator> {
   await seedSession(page);
   await page.goto('/links');
   await expect(page.locator('ui-card').first()).toBeVisible();
-  await page.getByRole('button', { name: 'Side by side' }).click();
+  await toggleSideBySide(page);
   const right = page.getByRole('region', { name: 'Right: choose a folder' });
   await right.getByRole('option', { name: READING, exact: true }).click();
   const rightHalf = page.getByRole('region', { name: `Right: ${READING}` });
@@ -66,7 +67,7 @@ test.describe('side by side (mock API)', () => {
     const pasta = page.getByRole('heading', { name: PASTA, exact: true });
     await expect(pasta).toBeVisible();
 
-    await page.getByRole('button', { name: 'Side by side' }).click();
+    await toggleSideBySide(page);
     const right = page.getByRole('region', { name: 'Right: choose a folder' });
     await expect(right.getByText('Choose a folder to move links into')).toBeVisible();
     await expect(page).toHaveURL(/[?&]split=(&|$)/);
@@ -108,7 +109,9 @@ test.describe('side by side (mock API)', () => {
     await page.goBack();
     await expect(page).not.toHaveURL(/split=/);
     await expect(page.getByRole('region', { name: /^Right:/ })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Side by side' })).toBeVisible();
+    await openMoreMenu(page);
+    await expect(sideBySideItem(page)).toHaveAttribute('aria-checked', 'false');
+    await page.keyboard.press('Escape');
   });
 
   test('each half scrolls on its own, the page does not, and the left one loads more', async ({
@@ -165,23 +168,26 @@ test.describe('side by side (mock API)', () => {
   test('closes with the toggle, the cross and Esc in the right half', async ({ page }) => {
     test.skip(isCompact(page), 'side by side starts at 80em');
     await openWithReading(page);
-    const toggle = page.getByRole('button', { name: 'Side by side', exact: true });
+    const more = page.getByRole('button', { name: 'More view options' });
     const rightRegion = page.getByRole('region', { name: /^Right:/ });
-    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await openMoreMenu(page);
+    await expect(sideBySideItem(page)).toHaveAttribute('aria-checked', 'true');
 
-    await toggle.click();
+    await sideBySideItem(page).click();
     await expect(rightRegion).toHaveCount(0);
     await expect(page).not.toHaveURL(/split=/);
-    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    await openMoreMenu(page);
+    await expect(sideBySideItem(page)).toHaveAttribute('aria-checked', 'false');
 
-    await toggle.click();
+    await sideBySideItem(page).click();
     await expect(rightRegion).toBeVisible();
     await page.getByRole('button', { name: 'Close side by side' }).click();
     await expect(rightRegion).toHaveCount(0);
-    await expect(toggle).toBeFocused();
+    // The ⋯ button that holds the toggle takes the focus back.
+    await expect(more).toBeFocused();
 
     // Esc counts only with the focus in the right half.
-    await toggle.click();
+    await toggleSideBySide(page);
     await page
       .getByRole('region', { name: 'Right: choose a folder' })
       .getByRole('option', { name: READING, exact: true })
@@ -227,7 +233,7 @@ test.describe('side by side (mock API)', () => {
     await seedSession(page);
     await page.goto('/unsorted');
     await expect(page.locator('ui-card').first()).toBeVisible();
-    await page.getByRole('button', { name: 'Side by side', exact: true }).click();
+    await toggleSideBySide(page);
     await page
       .getByRole('region', { name: 'Right: choose a folder' })
       .getByRole('option', { name: READING, exact: true })

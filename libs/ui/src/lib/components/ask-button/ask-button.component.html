@@ -6,6 +6,8 @@
   [uiTooltipShortcut]="shortcut()"
   [disabled]="disabled()"
   [attr.aria-expanded]="ariaExpanded() ?? null"
+  [attr.aria-label]="ariaLabel() || null"
+  [attr.aria-haspopup]="ariaHaspopup() || null"
   [attr.aria-keyshortcuts]="shortcut() || null"
   (click)="activated.emit()"
 >

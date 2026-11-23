@@ -233,7 +233,7 @@ describe('AppShellComponent', () => {
     expect(element.querySelector('app-header-search')).toBeNull();
   });
 
-  it('opens the shortcuts from the top bar button and from the ? key', async () => {
+  it('opens the shortcuts from the account menu and from the ? key', async () => {
     const api: AuthApi = {
       getSession: () => Promise.resolve(USER),
       signIn: vi.fn(),
@@ -255,14 +255,11 @@ describe('AppShellComponent', () => {
     await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
     await TestBed.inject(AuthStore).ensureLoaded();
     const harness = await RouterTestingHarness.create('/');
-    const button = (harness.routeNativeElement as HTMLElement).querySelector<HTMLButtonElement>(
-      'button[aria-label="Keyboard shortcuts"]',
-    );
-
-    button?.click();
+    await openAccountMenu(harness.fixture, harness.routeNativeElement as HTMLElement);
+    menuItem('Keyboard shortcuts')?.click();
+    await harness.fixture.whenStable();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: '?', shiftKey: true }));
 
-    expect(button?.getAttribute('aria-haspopup')).toBe('dialog');
     expect(shortcuts.open).toHaveBeenCalledTimes(1);
     expect(shortcuts.handleShortcut).toHaveBeenCalledTimes(1);
   });
@@ -385,30 +382,35 @@ describe('AppShellComponent', () => {
       expect(root.querySelector('.shell__sidebar app-sidebar')).not.toBeNull();
     });
 
-    it('puts the logo in the sidebar card and the search, theme switch and Add link in the top bar', async () => {
+    it('puts the logo, the avatar and Add link in the sidebar head and the search in the header', async () => {
       const { root } = await setup(false);
 
-      expect(root.querySelector('.shell__sidebar .sidebar__logo ui-logo')).not.toBeNull();
+      expect(root.querySelector('.shell__side-head ui-logo')).not.toBeNull();
+      expect(
+        root.querySelector('.shell__side-head button[aria-label="Account menu"]'),
+      ).not.toBeNull();
       expect(root.querySelector('.shell__header ui-logo')).toBeNull();
       expect(root.querySelector('.shell__header app-header-search')).not.toBeNull();
+      // Add link is the one primary button of the sidebar; the header has none (Shelf).
       expect(
-        byLabel(root, 'Switch to dark theme') ?? byLabel(root, 'Switch to light theme'),
-      ).not.toBeNull();
-      // "Add link" is the only primary button of the bar.
-      expect(root.querySelectorAll('.shell__header .ui-button--primary')).toHaveLength(1);
+        root.querySelectorAll('.shell__sidebar > .shell__add .ui-button--primary'),
+      ).toHaveLength(1);
+      expect(root.querySelectorAll('.shell__header .ui-button--primary')).toHaveLength(0);
     });
 
-    it('switches the theme from the top bar', async () => {
+    it('switches the theme from the sidebar Theme row', async () => {
       const { harness, root } = await setup(false);
       const theme = TestBed.inject(ThemeService);
       theme.setPreference(THEME_PREFERENCE.Light);
       await harness.fixture.whenStable();
 
-      byLabel(root, 'Switch to dark theme')?.click();
+      const row = Array.from(root.querySelectorAll<HTMLElement>('[role="treeitem"]')).find(
+        (item) => item.textContent?.trim() === 'Theme',
+      );
+      row?.click();
       await harness.fixture.whenStable();
 
       expect(theme.preference()).toBe(THEME_PREFERENCE.Dark);
-      expect(byLabel(root, 'Switch to light theme')).not.toBeNull();
     });
 
     const bar = (root: ParentNode) => root.querySelector('ui-tab-bar');

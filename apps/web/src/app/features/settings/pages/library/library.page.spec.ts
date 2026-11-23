@@ -157,6 +157,7 @@ describe('LibrarySettingsPage', () => {
         input.closest('label')?.textContent?.trim(),
       ),
     ).toEqual([
+      'Masonry',
       'Cards',
       'List',
       'New tab',
@@ -298,7 +299,7 @@ describe('LibrarySettingsPage', () => {
   it('shows the Viewing and Saving choices of the account, then the footer note', async () => {
     const { root } = await setup();
 
-    expect(radio(root, 'Cards').checked).toBe(true);
+    expect(radio(root, 'Masonry').checked).toBe(true);
     expect(radio(root, 'New tab').checked).toBe(true);
     expect(switchNamed(root, 'Show folder counts').getAttribute('aria-checked')).toBe('true');
     expect(switchNamed(root, 'Fetch titles and previews').getAttribute('aria-checked')).toBe(

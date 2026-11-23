@@ -213,33 +213,13 @@
             </ui-menu>
           </div>
           } @else {
+          <!-- Shelf toolbar: View (grid size and card fields), the view switch, then ⋯ with the rest. -->
           <div class="library__tools" uiTooltipGroup>
             @if (tidyEntry()) {
             <app-tidy-entry />
             } @if (feed.showControls() && feed.viewOptions(); as options) {
             <div class="library__controls">
-              <ui-button
-                [uiMenuTrigger]="sortMenu"
-                variant="ghost"
-                [iconOnly]="narrow()"
-                [iconLeft]="narrow() ? 'sort' : undefined"
-                iconRight="chevron-down"
-                [iconSize]="narrow() ? ICON_SIZE.Md : ICON_SIZE.Sm"
-                [ariaLabel]="'library.sort.label' | transloco: { sort: SORT_OPTION_KEYS[filters.feedSort()] | transloco }"
-              >
-                {{ SORT_OPTION_KEYS[filters.feedSort()] | transloco }}
-              </ui-button>
-              <ui-menu #sortMenu align="end" [ariaLabel]="'library.sort.menu' | transloco">
-                @for (option of SORT_OPTIONS; track option) {
-                <ui-menu-item
-                  type="radio"
-                  [selected]="option === filters.feedSort()"
-                  (activated)="filters.setSort(option)"
-                >
-                  {{ SORT_OPTION_KEYS[option] | transloco }}
-                </ui-menu-item>
-                }
-              </ui-menu>
+              <app-library-view-menu />
               <ui-segmented-control
                 iconOnly
                 [options]="options"
@@ -250,40 +230,49 @@
             </div>
             }
             <ui-button
-              [uiMenuTrigger]="exportMenu"
-              variant="secondary"
-              iconLeft="download"
-              iconRight="chevron-down"
-              [iconOnly]="narrow()"
-              [ariaLabel]="'export.menu' | transloco"
-            >
-              {{ 'export.menu' | transloco }}
-            </ui-button>
-            <ui-menu #exportMenu align="end" [ariaLabel]="'export.menu' | transloco">
+              #splitOpener
+              [uiMenuTrigger]="moreMenu"
+              variant="ghost"
+              iconOnly
+              iconLeft="more"
+              [ariaLabel]="'library.viewMenu.more' | transloco"
+            />
+            <ui-menu #moreMenu align="end" [ariaLabel]="'library.viewMenu.more' | transloco">
+              @if (feed.showControls()) {
+              <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
+              @for (option of SORT_OPTIONS; track option) {
+              <ui-menu-item
+                type="radio"
+                [selected]="option === filters.feedSort()"
+                (activated)="filters.setSort(option)"
+              >
+                {{ SORT_OPTION_KEYS[option] | transloco }}
+              </ui-menu-item>
+              }
+              <ui-menu-separator />
+              } @if (wide() && !preview.split()) {
+              <ui-menu-item
+                icon="columns"
+                type="checkbox"
+                [selected]="splitView.open()"
+                (activated)="splitView.toggle()"
+              >
+                {{ 'library.split.open' | transloco }}
+              </ui-menu-item>
+              <ui-menu-separator />
+              }
+              <ui-menu-label>{{ 'export.menu' | transloco }}</ui-menu-label>
               @if (filters.viewScope()) { @for (format of EXPORT_FORMAT_OPTIONS; track format.value)
               {
               <ui-menu-item [icon]="format.icon" (activated)="exportView(format.value)">
                 {{ format.viewKey | transloco }}
               </ui-menu-item>
-              }
-              <ui-menu-separator />
-              } @for (format of EXPORT_FORMAT_OPTIONS; track format.value) {
+              } } @for (format of EXPORT_FORMAT_OPTIONS; track format.value) {
               <ui-menu-item [icon]="format.icon" (activated)="exportAll(format.value)">
                 {{ format.allKey | transloco }}
               </ui-menu-item>
               }
             </ui-menu>
-            @if (wide() && !preview.split()) {
-            <ui-button
-              #splitOpener
-              variant="ghost"
-              iconOnly
-              iconLeft="columns"
-              [ariaLabel]="'library.split.open' | transloco"
-              [ariaPressed]="splitView.open()"
-              (click)="splitView.toggle()"
-            />
-            }
           </div>
           }
         </header>
@@ -536,6 +525,8 @@
         } @else {
         <ul
           class="library__grid library__list"
+          [class.library__grid--masonry]="filters.view() === UI_VIEW.Masonry"
+          [style.--library-column]="filters.gridColumn() / 16 + 'rem'"
           cdkDropList
           cdkDropListSortingDisabled
           [cdkDropListDisabled]="compact()"

@@ -13,6 +13,8 @@ import { UiAskButtonHarness } from './testing/ask-button.harness';
   template: `<ui-ask-button
     label="Ask"
     shortcut="Ctrl J"
+    [ariaLabel]="name()"
+    ariaHaspopup="dialog"
     [disabled]="locked()"
     (activated)="count.set(count() + 1)"
   />`,
@@ -20,6 +22,7 @@ import { UiAskButtonHarness } from './testing/ask-button.harness';
 class HostComponent {
   readonly count = signal(0);
   readonly locked = signal(false);
+  readonly name = signal('');
 }
 
 describe('AskButtonComponent', () => {
@@ -32,7 +35,18 @@ describe('AskButtonComponent', () => {
     expect(button.textContent?.trim()).toBe('Ask');
     expect(root.querySelector('ui-icon')).not.toBeNull();
     expect(button.getAttribute('aria-keyshortcuts')).toBe('Ctrl J');
+    expect(button.getAttribute('aria-haspopup')).toBe('dialog');
+    expect(button.hasAttribute('aria-label')).toBe(false);
     expect(await axeViolations(root)).toEqual([]);
+  });
+
+  it('takes a longer accessible name that starts with the label', async () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.name.set('Ask your shelf');
+    await fixture.whenStable();
+    const button = (fixture.nativeElement as HTMLElement).querySelector('button');
+    expect(button?.getAttribute('aria-label')).toBe('Ask your shelf');
+    expect(await axeViolations(fixture.nativeElement as HTMLElement)).toEqual([]);
   });
 
   it('emits activated on click and not while disabled', async () => {

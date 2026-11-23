@@ -7,13 +7,15 @@ import { readRepoFile } from '../testing/read-repo-file';
 const SCHEMES = ['light', 'dark'] as const;
 
 function bgToken(theme: (typeof SCHEMES)[number]): string {
-  const match = /--bg:\s*(#[0-9a-f]{6})\s*;/i.exec(
+  const match = /--bg:\s*(#[0-9a-f]{6}|#[0-9a-f]{3})\s*;/i.exec(
     readRepoFile(`libs/ui/src/styles/tokens/_${theme}.scss`),
   );
   if (!match?.[1]) {
     throw new Error(`--bg token not found in _${theme}.scss`);
   }
-  return match[1].toLowerCase();
+  const hex = match[1].toLowerCase();
+  // Short hex (stylelint's color-hex-length) is expanded to compare with index.html and the manifest.
+  return hex.length === 4 ? `#${[...hex.slice(1)].map((c) => c + c).join('')}` : hex;
 }
 
 function metaThemeColor(scheme: (typeof SCHEMES)[number]): string | undefined {

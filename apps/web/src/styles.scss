@@ -5,12 +5,12 @@
 // loaded before this file through the `styles` list in project.json.
 
 // Mobile shell (below 64em, #316): toasts are bottom centre like everywhere, but in the app shell they sit 12px above the
-// floating tab bar (`ui-tab-bar`: 20px from the edge and the home indicator, 68px high). The
+// floating tab bar (`ui-tab-bar`: 8px from the edge and the home indicator, 64px high, Shelf). The
 // landing, sign-in and share pages have no bar. `ui-toast-region` reads `--ui-toast-offset`
 // for its bottom inset.
 @include compact {
   :root:has(app-shell) {
-    --ui-toast-offset: calc(#{rem(20px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem));
+    --ui-toast-offset: calc(#{rem(8px + 64px + 12px)} + env(safe-area-inset-bottom, 0rem));
   }
 }
 
@@ -26,7 +26,7 @@
 // the bar). `ToastAreaService` measures the bar and sets the exact offset on `html` (#352); these
 // rules are the first frame before it does. Desktop: the bar's bottom is on the sidebar card's
 // bottom line, 12px above the window edge (#352), and it is 58px high. The mobile shell: above the bar
-// (68px high) whose bottom sits 12px above the tab bar (20px from the edge, 68px high).
+// (68px high) whose bottom sits 12px above the tab bar (8px from the edge, 64px high).
 :root:has(.library__bulk) {
   --ui-toast-offset: #{rem(12px + 58px + 12px)};
 }
@@ -34,7 +34,7 @@
 @include compact {
   :root:has(app-shell):has(.library__bulk) {
     --ui-toast-offset: calc(
-      #{rem(20px + 68px + 12px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem)
+      #{rem(8px + 64px + 12px + 68px + 12px)} + env(safe-area-inset-bottom, 0rem)
     );
   }
 }

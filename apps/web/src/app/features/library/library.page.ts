@@ -86,6 +86,7 @@ import { SORT_OPTIONS } from './models/sort-options.const';
 import { LinkPreviewService } from '../link-preview/services/link-preview.service';
 import { PreviewPanelComponent } from '../link-preview/components/preview-panel/preview-panel.component';
 import { PreviewPageComponent } from '../link-preview/components/preview-page/preview-page.component';
+import { LibraryViewMenuComponent } from './components/library-view-menu/library-view-menu.component';
 
 /** Number of placeholders shown while the first page loads. */
 const SKELETON_COUNT = 8;
@@ -98,6 +99,7 @@ const SKELETON_COUNT = 8;
 @Component({
   selector: 'app-library-page',
   imports: [
+    LibraryViewMenuComponent,
     CdkDrag,
     CdkDragPlaceholder,
     CdkDragPreview,

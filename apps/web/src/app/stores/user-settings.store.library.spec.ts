@@ -78,7 +78,7 @@ describe('UserSettingsStore library settings', () => {
   it('sends nothing for a choice that is already set', async () => {
     const { store, api } = setup();
     await store.load();
-    expect(await store.setLibrary({ defaultView: LIBRARY_VIEW.Cards })).toBe(true);
+    expect(await store.setLibrary({ defaultView: LIBRARY_VIEW.Masonry })).toBe(true);
     expect(api.update).not.toHaveBeenCalled();
   });
 

@@ -1,0 +1,13 @@
+<ui-view-menu
+  [label]="'library.viewMenu.view' | transloco"
+  [heading]="'library.viewMenu.gridSize' | transloco"
+  [steps]="steps"
+  [step]="filters.gridStep()"
+  [stepText]="stepText"
+  [smallLabel]="'library.viewMenu.small' | transloco"
+  [largeLabel]="'library.viewMenu.large' | transloco"
+  [gridDisabled]="listView()"
+  [fields]="fields()"
+  (stepChange)="setStep($event)"
+  (fieldChange)="setField($event)"
+/>
