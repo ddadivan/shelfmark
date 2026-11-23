@@ -51,9 +51,9 @@ ICJS = json.dumps({k: ic(k, 12, 2) for k in ['folder', 'star', 'pen', 'ext']})
 
 COMMON_JS = r'''
 const L = __DATA__, IC = __ICJS__;
-const S = {scope: 'all', tab: 'all', q: '', view: 'cards'};
-try { const v = JSON.parse(localStorage.getItem(KEY) || '{}'); if (v.view) S.view = v.view; if (v.theme) document.documentElement.dataset.theme = v.theme; } catch (e) {}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify({view: S.view, theme: document.documentElement.dataset.theme || ''})) } catch (e) {} };
+const S = {scope: 'all', tab: 'all', q: '', view: 'cards', size: 'm'};
+try { const v = JSON.parse(localStorage.getItem(KEY) || '{}'); if (v.view) S.view = v.view; if (v.size) S.size = v.size; if (v.theme) document.documentElement.dataset.theme = v.theme; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({view: S.view, size: S.size, theme: document.documentElement.dataset.theme || ''})) } catch (e) {} };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const FAVC = {'youtube.com': ['#FF0033', '#fff', 'Y'], 'github.com': ['#1F2328', '#fff', 'G'], 'allbirds.com': ['#212A2F', '#fff', 'A'], 'taylorstitch.com': ['#8A5A2B', '#fff', 'T']};
 const fav = (d, s) => { const f = FAVC[d]; return `<span class="fav" style="width:${s}px;height:${s}px;background:${f[0]};color:${f[1]}" aria-hidden="true">${f[2]}</span>`; };
@@ -73,6 +73,9 @@ function renderAll() {
   document.querySelectorAll('[data-scope]').forEach(b => { b.toggleAttribute('aria-current', b.dataset.scope === S.scope); const n = b.querySelector('.n'); if (n && c[b.dataset.scope] != null) n.textContent = c[b.dataset.scope]; });
   document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === S.tab));
   document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === S.view));
+  document.querySelectorAll('[data-size]').forEach(b => b.setAttribute('aria-pressed', b.dataset.size === S.size));
+  const sz = document.getElementById('sizesw'); if (sz) sz.hidden = S.view === 'list';
+  const fd0 = document.getElementById('feed'); fd0.classList.remove('size-s', 'size-m', 'size-l'); fd0.classList.add('size-' + S.size);
   document.getElementById('h1t').textContent = scopeTitle();
   document.getElementById('h1n').textContent = items.length + ' ' + (items.length === 1 ? 'посилання' : items.length < 5 && items.length > 0 ? 'посилання' : 'посилань');
   const feed = document.getElementById('feed');
@@ -83,6 +86,7 @@ document.addEventListener('click', e => {
   const sc = e.target.closest('[data-scope]'); if (sc) { e.preventDefault(); S.scope = sc.dataset.scope; renderAll(); return; }
   const tb = e.target.closest('[data-tab]'); if (tb) { S.tab = tb.dataset.tab; renderAll(); return; }
   const vw = e.target.closest('[data-view]'); if (vw) { S.view = vw.dataset.view; save(); renderAll(); return; }
+  const zs = e.target.closest('[data-size]'); if (zs) { S.size = zs.dataset.size; save(); renderAll(); return; }
   const fd = e.target.closest('[data-fold]'); if (fd) { const open = fd.getAttribute('aria-expanded') !== 'true'; fd.setAttribute('aria-expanded', open); document.getElementById(fd.dataset.fold).hidden = !open; return; }
   if (e.target.closest('[data-theme-toggle]')) { const r = document.documentElement; const dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; r.dataset.theme = dark ? 'light' : 'dark'; save(); return; }
   if (e.target.closest('[data-dismiss]')) { e.target.closest('[data-dismiss]').closest('aside').remove(); return; }
@@ -107,6 +111,7 @@ def sidebar(cls):
 <a href="#" class="nv" data-soon="Розширення">{ic('down')}<span class="lbl">Отримати розширення</span></a><a href="#" class="nv" data-soon="Дані й допомога">{ic('more')}<span class="lbl">Дані й допомога</span></a><a href="#" class="nv" data-soon="Кошик">{ic('trash')}<span class="lbl">Кошик</span></a></div></nav>'''
 TABBAR = f'''<nav class="tabbar" aria-label="Розділи"><a href="#" class="tb" data-scope="all">{ic('all', 20)}Полиця</a><a href="#" class="tb" onclick="document.getElementById('q').focus();return false">{ic('search', 20)}Пошук</a><button type="button" class="tbadd" aria-label="Додати посилання" data-soon="Додати посилання">{ic('plus', 22, 2)}</button><a href="#" class="tb" data-soon="Спитати полицю">{ic('spark', 20)}Спитати</a><a href="#" class="tb" data-soon="Профіль">{ic('user', 20)}Ви</a></nav>'''
 TABS = '<div class="tabs" role="tablist" aria-label="Добірки"><button type="button" role="tab" data-tab="all">Усі <span>14</span></button><button type="button" role="tab" data-tab="video">Відео <span>6</span></button><button type="button" role="tab" data-tab="repo">Репозиторії <span>4</span></button><button type="button" role="tab" data-tab="shop">Магазини <span>4</span></button></div>'
+SIZE = '<div class="sizesw" id="sizesw" role="group" aria-label="Розмір карток"><button type="button" data-size="s" aria-label="Дрібні" title="Дрібні">S</button><button type="button" data-size="m" aria-label="Середні" title="Середні">M</button><button type="button" data-size="l" aria-label="Великі" title="Великі">L</button></div>'
 VIEW = f'<div class="viewsw" role="group" aria-label="Вигляд"><button type="button" data-view="cards" aria-label="Картки">{ic("grid")}</button><button type="button" data-view="list" aria-label="Список">{ic("list")}</button></div>'
 
 # ================= V2 =================
@@ -180,6 +185,16 @@ h1{margin:0;font-size:24px;line-height:30px;font-weight:600;letter-spacing:-.01e
 .rnote{font-family:Newsreader,Georgia,serif;font-style:italic;font-size:14px}.dotsep{opacity:.6}
 .rago{flex:none;color:var(--muted);font-size:12px}.rstar{flex:none;color:var(--sage);display:grid}.rstar svg{fill:currentColor}
 .empty{padding:64px 0;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted)}.empty b{color:var(--text);font-weight:600}
+.sizesw{display:flex;gap:2px;padding:2px;border-radius:10px;background:var(--fill)}
+.sizesw[hidden]{display:none}
+.sizesw button{min-width:28px;height:28px;padding:0 6px;border-radius:8px;color:var(--muted);font-size:12px;font-weight:600}
+.sizesw button[aria-pressed="true"]{background:var(--surface);color:var(--text)}
+.size-s .cols{columns:6 150px;column-gap:16px}.size-l .cols{columns:3 300px;column-gap:28px}
+.size-s .ttl{font-size:14px;line-height:20px}.size-s .note{font-size:15px;line-height:22px}
+.card{border-radius:14px;transition:background-color 150ms,box-shadow 150ms}
+.card:hover{background:var(--surface);box-shadow:0 0 0 10px var(--surface)}
+.card:hover .tile{transform:none}
+
 .tabbar{display:none}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:10px 16px;border-radius:10px;background:var(--text);color:var(--bg);font-size:14px;z-index:50}
 @media (max-width:760px){.side,.desk{display:none!important}main{padding:16px 16px 104px}.cols{columns:2;column-gap:12px}.card{margin-bottom:20px}
@@ -194,7 +209,7 @@ v2_body = f'''<div class="app">{sidebar('side').replace('__LOGO__', LOGO('curren
 <button type="button" class="btn" data-soon="Спитати полицю">{ic('spark')}Запитати</button><span class="sp"></span>
 <button type="button" class="ib desk" aria-label="Тема" data-theme-toggle>{ic('sun', 18)}</button>
 <button type="button" class="btn add desk" data-soon="Додати посилання">{ic('plus', 16, 2)}Додати посилання</button><button type="button" class="av" aria-label="Акаунт">AL</button></header>
-<div class="head"><div class="t"><h1 id="h1t">Усі посилання</h1><span class="muted" id="h1n" style="font-size:14px"></span></div><button type="button" class="sort" data-soon="Сортування">Спершу нові{ic('chev', 14)}</button>{VIEW}</div>
+<div class="head"><div class="t"><h1 id="h1t">Усі посилання</h1><span class="muted" id="h1n" style="font-size:14px"></span></div><button type="button" class="sort" data-soon="Сортування">Спершу нові{ic('chev', 14)}</button>{SIZE}{VIEW}</div>
 {TABS}<section id="feed" aria-label="Посилання"></section></main></div>{TABBAR}<div class="toast" id="toast" role="status" hidden></div>'''
 v2 = f'''<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Shelfmark — варіант v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
@@ -276,6 +291,17 @@ h1 .muted{font-family:"Funnel Sans",system-ui,sans-serif;font-size:16px;line-hei
 .dotsep{opacity:.6}.rnote{font-size:13px}
 .rago{flex:none;color:var(--muted);font-size:12px}.rstar{flex:none;color:var(--sage);display:grid}.rstar svg{fill:currentColor}
 .empty{padding:64px 0;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted)}.empty b{color:var(--text);font-weight:600}
+.sizesw{display:flex;gap:2px;padding:4px;border-radius:12px;background:var(--panel2)}
+.sizesw[hidden]{display:none}
+.sizesw button{min-width:32px;height:32px;padding:0 8px;border-radius:8px;color:var(--muted);font-size:12px;font-weight:600}
+.sizesw button[aria-pressed="true"]{background:var(--panel);color:var(--text)}
+.size-s .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:24px 14px}.size-l .grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:40px 28px}
+.size-s .mcols{columns:6 150px;column-gap:14px}.size-l .mcols{columns:3 300px;column-gap:28px}
+.size-s .ttl{font-size:14px;line-height:20px}.size-s .card.feat .ttl{font-size:18px;line-height:24px}
+.card{border-radius:18px;transition:background-color 150ms,box-shadow 150ms}
+.card:hover{background:var(--panel2);box-shadow:0 0 0 10px var(--panel2)}
+.card:hover .tile{transform:none}
+
 .tabbar{display:none}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:10px 16px;border-radius:12px;background:var(--text);color:var(--panel);font-size:14px;z-index:50}
 @media (max-width:760px){.side,.desk{display:none!important}main{margin:0;border-radius:0;padding:16px 16px 104px}.mcols{columns:2;column-gap:10px}.mcols .card{margin-bottom:18px}.card.feat{grid-column:span 2}
@@ -291,7 +317,7 @@ function cardsHTML(items){const g={};items.forEach(l=>{(g[l.month]=g[l.month]||[
 v3_body = f'''<div class="app">{sidebar('side').replace('__LOGO__', LOGO('currentColor', 'var(--bg)'))}
 <main><header class="top"><label class="cmd">{ic('search', 18)}<input id="q" type="search" placeholder="Шукайте або вставте посилання, щоб зберегти" aria-label="Пошук або нове посилання"><kbd class="desk">⌘K</kbd><button type="button" class="ask" data-soon="Спитати полицю">{ic('spark')}Запитати</button></label><span class="sp"></span>
 <button type="button" class="ib desk" aria-label="Тема" data-theme-toggle>{ic('sun', 18)}</button><button type="button" class="av" aria-label="Акаунт">AL</button></header>
-<div class="head"><h1><span id="h1t">Усі посилання</span><span class="muted" id="h1n"></span></h1>{TABS}<div class="tools"><button type="button" class="sort desk" data-soon="Сортування">Спершу нові{ic('chev', 14)}</button>{VIEW3}</div></div>
+<div class="head"><h1><span id="h1t">Усі посилання</span><span class="muted" id="h1n"></span></h1>{TABS}<div class="tools"><button type="button" class="sort desk" data-soon="Сортування">Спершу нові{ic('chev', 14)}</button>{SIZE}{VIEW3}</div></div>
 <div id="feed"></div></main></div>{TABBAR}<div class="toast" id="toast" role="status" hidden></div>'''
 v3 = f'''<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Shelfmark — варіант v3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@500;600&family=Funnel+Sans:wght@400;500;600&display=swap" rel="stylesheet">
