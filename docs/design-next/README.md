@@ -1,0 +1,78 @@
+# Shelfmark design, next version: working notes
+
+Status: in progress. The author reviews the prototype before the next step.
+
+## The rule for this work
+
+The new design is built from scratch on the visual-taste skills (typography, colour-palette, spacing, anti-slop, viewports and the other VectorLab UX skills) and common best practice. **The current design rules do not apply to it**: `docs/design/BRAND.md`, `docs/design/tokens.*`, `docs/design/components/*` and `docs/design/screens/*` describe the shipped 2027 Refresh and are reference for what exists, not constraints. Colours (including the sage accent), type scale, radii, elevation and where features live are all open.
+
+What still applies, because it is about the product working and not about taste:
+
+- accessibility: WCAG 2.2 AA contrast, keyboard, focus, 24px / 44px touch targets;
+- translations: strings up to 40% longer, sentence case, no text in images;
+- phone from 360px, tablet, desktop, and the browser extension popup;
+- implementation limits as a starting point (components in `libs/ui`, sizes in rem, external images through an image proxy (#57), strict CSP); they can change when the product is better for it.
+
+Code changes still follow `CLAUDE.md` (branch per issue, ADR for the decision, tests).
+
+## Plan
+
+How the product works is open too, not only how it looks: flows, structure and where features live are redesigned, not just restyled.
+
+1. **Feature inventory, as is** (separate session): describe current behaviour neutrally, so nothing gets lost. Every feature with its screens, platforms, states (empty, loading, error, offline, AI off, demo) and data. Sources: `docs/PROJECT.md` section 4, `docs/design/screens/INDEX.md`, routes in `apps/web`, `docs/ai/FEATURES.md`. Commit it here as `features.md`. No judgement in this step.
+2. **Flow review and new structure**: walk the key flows (save a link, find it, organise, come back to it, share, settings) with the behaviour skills (page-patterns, surfaces, forms, defaults, empty-states, errors, loaders, keyboard, verbs, labels). Output: where there are extra steps, confusion and duplicates; a new information architecture (sections, what moves, merges or goes); before / after flows for the main jobs. The author approves before step 3.
+3. **Foundations**: type scale, spacing grid, radii, elevation, and 2 to 3 colour palette options with contrast checked in both themes. The author picks; recorded in an ADR.
+4. **Design system**: a new Design System artifact (separate from the 2027 Refresh), every component mapped to a `libs/ui` component.
+5. **Screens by group**, following the new structure from step 2, one group at a time with a review after each.
+6. **Migration plan** into code.
+
+Feature moves, merges or removals are proposed with reasons and decided by the author. Only accessibility, translations and the device range are fixed; implementation limits (CSP, image proxy, component boundaries) can change when the product is better for it.
+
+## What exists so far
+
+- Home screen: the author chose **B · Today** (`designs/home-variants.html`): Today replaces Revisit in the sidebar and is the first screen; to be built out fully next.
+- Review round 1 applied: save panel opens with details; Revisit centred; search is a wide centred dialog; Organise shows selection and bulk actions; settings nav full height, content centred, live card preview for Show on cards; sign-in keeps the drifting cards animation; import keeps per-browser steps with the detected browser preselected.
+- Review round 2: quieter selection; drag a link with the spring wobble (as in the shipped app, new colours); full folder settings (reverts D4: name, description, colour with own colours, icon or emoji, cover, highlight); **Ask is its own section** (`designs/11-ask.html`), search is search only.
+- Group 1 rebuilt around the chosen home: **Today** is the first screen (back to these with Done and Snooze, saved this week with Undo for AI moves, one forgotten link, then the library); sidebar Today, All links, Unsorted, Favorites, Ask; search opens as a wide dialog with “Ask instead”; selecting links (More › Select or X) with a bulk bar; dragging cards or a selection onto a sidebar folder; phone tab bar Today, Library, Add, Search, Ask.
+- Group 12 `designs/12-notify.html`: reminders and notifications (D8): asking at the right moment, how a reminder arrives, blocked and iPhone, weekly email; Settings › Notifications.
+- Motion carried over from the shipped app (`designs/src/motion.js`, on every page): press scale, checkbox tick drawing, menu and sheet entrance, toast rise, favorite pop, marked while open, segmented sliding thumb, fluid hover in menus and the tree, icon swap on copy, number change on folder counts, clear-search dissolve, two-line rise, delete collapse, badge pop; drag wobble, drop fly and drag slot in `drag.js`. Reduced motion turns them off. Round 2: view switch morphs cards into rows and back (View Transitions), opening and closing a link and the theme switch cross-fade, a saved link lands in the feed (neighbours shift with FLIP, a ring fades), icon-button tooltips that travel between neighbours, press ripple, error shake, accepting an AI tag suggestion pulses, the feed staggers in on a scope change (30 ms per item, 6 items max); popovers scale from 0.98 (transitions skill).
+- Group 13 `designs/13-views.html`: new view (and from a phrase with AI), view menu, pick a date for a reminder (desktop and phone), shortcuts overlay.
+- **Groups 14 and 15 (2026-11-23):** screens the inventory had and the designs lacked.
+  - `designs/14-system.html`: app opening skeleton, feed loading, feed failed to load, Link page loading, session ended, signed out in another tab (lock), update ready, demo minutes left and ended, offline and a failed save, reminders due on opening, extension offer in the library, open many links confirmation.
+  - `designs/15-tools.html`: Connect your assistant (tokens, new token, token shown once, Free plan), Clean up (duplicates, similar tags), sorting older links (progress, done), Send feedback and Your feedback with replies, welcome tour, How it works video, move a folder, tag page and merge, Recently opened with history paused.
+  - Library: the View button is a dropdown (Card size on top, views below); Reader is offered for every link (pages without article text show picture, description and note); the Link page closes with × on the right.
+- **v3 look (2026-11-23, author's choice):** every page and the design system restyled to the v3 visual language (warm neutrals, Funnel type, no borders or shadows on resting surfaces, sidebar on the canvas, one rounded main panel, 8px cards). Layout and behaviour unchanged. The view switch in the library shows named card sizes (Small, Medium, Large) on hover. Summary in `foundations.md` (top note).
+- Step 6 parked until every screen is designed (author: designs first): `migration-plan.md` (source-of-truth switch, tokens, components mapped to `libs/ui`, shell, screens by group with behaviour changes as separate issues, order, risks) and [ADR 0060](../adr/0060-design-next-foundations.md) (Proposed).
+- Step 1 done: `features.md` and `screens.md` (the inventory, as is).
+- Step 2 approved: `flows-and-structure.md` (three jobs, new navigation, Revisit, Reader mode, decisions D1–D15).
+- Step 4 for review: the design system **Shelfmark Next** (tokens, brand book, 21 components with live previews, cover), published privately: https://claude.ai/artifact/DvqQnrVk4HsqW1he9iUX51; source in `design-system/`.
+- Step 5, group 2 for review: `designs/02-save-revisit.html` (save panel in all its states, several links, saved landing; Revisit queue and its empty state), built from the design system's tokens and `bundle.css`; second page of the same artifact (Prototype › Save and Revisit).
+- Step 5, groups 3 to 7 for review, pages of the same artifact (Prototype › group, then screen state):
+  - `designs/03-search.html`: Search and Ask (results by words, meaning, folders and tags; recent searches; Ask answer with sources and while answering; nothing found; full results page).
+  - `designs/04-organise.html`: folder page, folder menu, rename and new folder dialogs, colour and icon, tags, Tidy up, rules and the rule editor, trash with named delete-forever confirmation, empty trash.
+  - `designs/05-settings.html`: Appearance (Graphite / Ink / Sage, custom theme), Library, AI, Account with deletion grace period, Your data, Language and region, phone "You" page.
+  - `designs/06-public.html`: sign-in (Google, GitHub, demo) and its error, shared folder, not found, offline.
+  - `designs/07-extension.html`: save this page, all tabs, saved with edit, already saved, signed out and unsupported page, right-click save.
+  - Generator: `designs/src/build_pages.py` (shell, tokens, icons) and `designs/src/content.py` (screens). Paths in them point to the session scratchpad.
+- Step 5, groups 8 to 10 (screens from the screen map that had no design yet), same artifact:
+  - `designs/08-select-move.html`: selecting several links and the bulk bar, Move to a folder (desktop and phone), tags for several links, Side by side while dragging, Unsorted with suggestions, rule offer, drop to save, related on your shelf, phone Library tab and selection.
+  - `designs/09-data.html`: import (choose file, check and folder choice, AI folders, progress, done with Undo), export, share a folder (on and off), phone save from another app.
+  - `designs/10-first-run.html`: empty library as first run, demo and offline strips, keyboard shortcuts, help with what's new and feedback, AI intro, custom theme, rating card, public changelog, landing, admin.
+- Step 5, group 1 (made before the design system; to be rebuilt from its components): `designs/01-library.html` (library, four views, Link page with Site / Reader, empty library; desktop, tablet, phone; light and dark), published privately: https://claude.ai/artifact/Np6b5Wf6vLjBbcdvUybnuv
+- Step 3 approved (Graphite, smaller radii): `foundations.md` (type, space, radius, elevation, three palettes with contrast), `screen-map.md` (every page and surface of the new structure), `foundations-preview.html` (visual version, published privately: https://claude.ai/artifact/64J7giL8JyZzdFFuqsQvFL).
+
+- `library-prototype.html`: the main page prototype built to the skills (body 16 / secondary 14 / meta 12, Major Second headings, 8pt grid, border-first elevation, no glass, one primary action), with the gaps against Raindrop closed: a preview on every card, density (about 10 cards above the fold), four views (Masonry, Grid, List, Headlines), a quiet sidebar, a simple card, less chrome. Covers are drawn stand-ins for real preview images. Light and dark, desktop and phone. Published as a private artifact: https://claude.ai/artifact/TKFcPWE8G6BKjcDptAe8bt
+- An earlier canvas (desktop and phone artboards, closer to the 2027 tokens): https://claude.ai/artifact/6mFHwSXpkBsa4ieXZ2Hxb4
+- `audit-and-fix-prompt.md`: the audit of `libs/ui` against the skills (type sizes outside the scale, about 50 hard-coded radii, off-grid spacing, the undefined `--space-5`, glass on cards, a glow gradient, loud sage fills, too many primary buttons) and a fix prompt. It was written against the 2027 rules; with the rule above, its findings stand but the target values come from the new foundations.
+- Branch `ccr-64889676-li4al2`, commit "quiet down sage fills, extra primaries and the Ask fill": a first colour clean-up in the app (card placeholders, extension banner, demo banner, active saved view, Ask button).
+
+## Gaps against Raindrop (design only)
+
+1. Real previews on cards: needs the image proxy (#57); the biggest gap.
+2. Density: less chrome above the feed, shorter cards.
+3. View modes: Masonry and Headlines missing.
+4. Sidebar noise: coloured row fills, sage tag chips, accent counts.
+5. Card noise: seven or eight small elements per card.
+6. Header chrome: theme and shortcuts buttons in the top bar.
+
+Features (full-text search, highlights, public collections, native apps) were not compared yet.

@@ -1,0 +1,64 @@
+{
+ "v": 3,
+ "layout": "files",
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-23T18:51:07Z"
+ },
+ "title": "Shelfmark Shelf",
+ "namespace": "Shelfmark",
+ "libraries": [],
+ "sections": {},
+ "groups": [
+  "Logos"
+ ],
+ "assetGroups": {
+  "Logos": {
+   "name": "Logos",
+   "tile": "m",
+   "order": [
+    "shelfmark-mark-light.svg",
+    "shelfmark-mark-dark.svg",
+    "shelfmark-mark-mono.svg",
+    "shelfmark-app-icon.svg"
+   ],
+   "files": {
+    "shelfmark-mark-light.svg": {
+     "name": "shelfmark-mark-light.svg",
+     "blob": "1c96b0e62c3af92a79fdcce5579d5983",
+     "size": 216,
+     "type": "image/svg+xml"
+    },
+    "shelfmark-mark-dark.svg": {
+     "name": "shelfmark-mark-dark.svg",
+     "blob": "b39a6d77f709ea0ccf9d8056a0f9dc71",
+     "size": 216,
+     "type": "image/svg+xml"
+    },
+    "shelfmark-mark-mono.svg": {
+     "name": "shelfmark-mark-mono.svg",
+     "blob": "63f72f5f89a70d5e9860b18300a6ecbc",
+     "size": 238,
+     "type": "image/svg+xml"
+    },
+    "shelfmark-app-icon.svg": {
+     "name": "shelfmark-app-icon.svg",
+     "blob": "e6439b075c6175588cf482edfaeaf32d",
+     "size": 326,
+     "type": "image/svg+xml"
+    }
+   }
+  }
+ },
+ "blobs": {},
+ "docs": {
+  "readme": "project/README.md",
+  "sections": []
+ },
+ "lastChange": {
+  "by": "Claude",
+  "at": "2026-11-23T20:13:15Z",
+  "via": "Claude Code",
+  "note": "Component guidelines rewritten for Shelf: Button, IconButton, NavItem, Search, SegmentedControl, Switch, Chip, Menu, Dialog, TabBar, Toast, EmptyState; card icons fixed."
+ }
+}

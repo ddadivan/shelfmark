@@ -1,0 +1,30 @@
+<!-- @dsCard height=300 -->
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Cover</title>
+<style>
+html,body{margin:0;height:100%}
+.c{position:relative;width:960px;height:300px;background:var(--canvas);overflow:hidden;font-family:var(--font-sans)}
+svg{position:absolute;left:0;top:0}
+.ink{fill:var(--accent)}.paper{fill:var(--surface);stroke:var(--line-strong);stroke-width:1}.tint{fill:var(--surface-pressed)}.notch{fill:var(--brand-notch)}.ocean{fill:var(--folder-ocean-bg)}.amber{fill:var(--folder-amber-bg)}
+.r12{rx:12px}.r8{rx:8px}
+.name{position:absolute;left:40px;bottom:64px;margin:0;width:440px;font-size:80px;line-height:.95;font-weight:600;letter-spacing:-.01em;color:var(--text)}
+.tag{position:absolute;left:40px;bottom:32px;margin:0;width:440px;font-size:14px;line-height:1.4;color:var(--text-muted)}
+</style></head><body>
+<div class="c">
+<svg width="960" height="300" viewBox="0 0 960 300" aria-hidden="true">
+<!-- blocks: accent (graphite) slab 160x268, surface-pressed tint, brand-notch 40x56, folder-ocean-bg and folder-amber-bg tiles; radius-md (12) cards, radius-sm (8) covers
+     arrangement: a masonry feed of cards bleeding off the top and bottom right of x = 520, like the library itself
+     pattern: geometric, modular, dense UI -> tiles cut by the radius tokens, some two-wide, because the product is a feed of saved cards
+     steps: column pitch 152 = 136 + space-16; card inset space-4; radii radius-md 12 and radius-sm 8 -->
+<rect class="ink r12" x="520" y="-20" width="136" height="200"/>
+<path class="notch" d="M612 -20h28v76l-14-12-14 12z"/>
+<rect class="paper r12" x="520" y="196" width="136" height="140"/><rect class="tint r8" x="524" y="200" width="128" height="84"/>
+<rect class="paper r12" x="672" y="-40" width="136" height="150"/><rect class="ocean r8" x="676" y="-36" width="128" height="94"/>
+<rect class="tint r12" x="672" y="126" width="136" height="104"/>
+<rect class="paper r12" x="672" y="246" width="136" height="120"/><rect class="amber r8" x="676" y="250" width="128" height="70"/>
+<rect class="paper r12" x="824" y="20" width="152" height="186"/><rect class="tint r8" x="828" y="24" width="144" height="120"/>
+<rect class="ink r12" x="824" y="222" width="152" height="110"/>
+</svg>
+<h1 class="name">Shelfmark Next</h1>
+<p class="tag">A calm shelf for everything you save, and a way back to it.</p>
+</div></body></html>

@@ -1,0 +1,250 @@
+[
+{
+"id": 1,
+"kind": "video",
+"title": "Angular in 100 Seconds",
+"domain": "youtube.com",
+"sub": "Fireship",
+"img": "img/angular100.webp",
+"ratio": "16 / 9",
+"folder": "Angular",
+"c": "clay",
+"tags": [
+"video",
+"angular"
+],
+"date": "Today",
+"type": "videos",
+"fav": true,
+"note": "Start here before Signal Forms",
+"dur": "2:14",
+"summary": "A two-minute tour of Angular: components, signals and the CLI."
+},
+{
+"id": 2,
+"kind": "shop",
+"title": "Tree Runners - Thunder Green (Blizzard Sole)",
+"domain": "allbirds.com",
+"sub": "$100 · allbirds.com",
+"img": "img/tree-runners.webp",
+"ratio": "1 / 1",
+"folder": "Shopping",
+"c": "rose",
+"tags": [
+"shoes"
+],
+"date": "Today",
+"type": "shops",
+"fav": true,
+"note": "Size 39, for spring",
+"price": "$100"
+},
+{
+"id": 3,
+"kind": "repo",
+"title": "Playwright",
+"domain": "github.com",
+"sub": "microsoft/playwright",
+"img": "img/playwright.webp",
+"ratio": "2 / 1",
+"folder": "Tools",
+"c": "ocean",
+"tags": [
+"testing"
+],
+"date": "Yesterday",
+"type": "repos"
+},
+{
+"id": 4,
+"kind": "shop",
+"title": "The Ojai Jacket in Topsoil Donegal Moon Wool",
+"domain": "taylorstitch.com",
+"sub": "$398 · taylorstitch.com",
+"img": "img/ojai-jacket.webp",
+"ratio": "4 / 5",
+"folder": "Shopping",
+"c": "rose",
+"tags": [
+"clothes"
+],
+"date": "Nov 3",
+"type": "shops",
+"note": "Waiting for the sale",
+"price": "$398"
+},
+{
+"id": 5,
+"kind": "video",
+"title": "Optimistic Nihilism",
+"domain": "youtube.com",
+"sub": "Kurzgesagt – In a Nutshell",
+"img": "img/nihilism.webp",
+"ratio": "16 / 9",
+"folder": "Watch later",
+"c": "plum",
+"tags": [
+"video"
+],
+"date": "Nov 2",
+"type": "videos",
+"note": "For the weekend, with tea",
+"dur": "6:20",
+"summary": "Why a vast, uncaring universe can still be a reason to enjoy life."
+},
+{
+"id": 6,
+"kind": "video",
+"title": "TypeScript in 100 Seconds",
+"domain": "youtube.com",
+"sub": "Fireship",
+"img": "img/typescript100.webp",
+"ratio": "16 / 9",
+"folder": "Angular",
+"c": "clay",
+"tags": [
+"video",
+"typescript"
+],
+"date": "Oct 31",
+"type": "videos",
+"dur": "2:31"
+},
+{
+"id": 7,
+"kind": "repo",
+"title": "Excalidraw",
+"domain": "github.com",
+"sub": "excalidraw/excalidraw",
+"img": "img/excalidraw.webp",
+"ratio": "2 / 1",
+"folder": "Tools",
+"c": "ocean",
+"tags": [
+"design"
+],
+"date": "Oct 29",
+"type": "repos",
+"fav": true,
+"note": "For diagrams in the docs"
+},
+{
+"id": 8,
+"kind": "shop",
+"title": "The Crater Shirt in Denver Plaid",
+"domain": "taylorstitch.com",
+"sub": "$148 · taylorstitch.com",
+"img": "img/crater-shirt.webp",
+"ratio": "4 / 5",
+"folder": "Shopping",
+"c": "rose",
+"tags": [
+"clothes"
+],
+"date": "Oct 28",
+"type": "shops",
+"price": "$148"
+},
+{
+"id": 9,
+"kind": "video",
+"title": "But what is a neural network? | Deep learning chapter 1",
+"domain": "youtube.com",
+"sub": "3Blue1Brown",
+"img": "img/neural-network.webp",
+"ratio": "16 / 9",
+"folder": "Learning",
+"c": "sage",
+"tags": [
+"ml"
+],
+"date": "Oct 27",
+"type": "videos",
+"note": "Chapters 1–4, one an evening",
+"dur": "18:40",
+"summary": "What neurons, layers and weights are, drawn step by step."
+},
+{
+"id": 10,
+"kind": "video",
+"title": "Microservices explained - the What, Why and How?",
+"domain": "youtube.com",
+"sub": "TechWorld with Nana",
+"img": "img/microservices.webp",
+"ratio": "16 / 9",
+"folder": "Learning",
+"c": "sage",
+"tags": [
+"architecture"
+],
+"date": "Oct 24",
+"type": "videos",
+"dur": "15:01"
+},
+{
+"id": 11,
+"kind": "shop",
+"title": "Tree Dasher 2 - Natural White/True Navy (Natural White Sole)",
+"domain": "allbirds.com",
+"sub": "$98 · allbirds.com",
+"img": "img/tree-dasher.webp",
+"ratio": "1 / 1",
+"folder": "Shopping",
+"c": "rose",
+"tags": [
+"shoes"
+],
+"date": "Oct 22",
+"type": "shops",
+"price": "$98"
+},
+{
+"id": 12,
+"kind": "repo",
+"title": "Nx",
+"domain": "github.com",
+"sub": "nrwl/nx",
+"img": "img/nx.webp",
+"ratio": "2 / 1",
+"folder": "Tools",
+"c": "ocean",
+"tags": [
+"monorepo"
+],
+"date": "Oct 20",
+"type": "repos"
+},
+{
+"id": 13,
+"kind": "video",
+"title": "JavaScript Course for Beginners – Your First Step to Web Development",
+"domain": "youtube.com",
+"sub": "Programming with Mosh",
+"img": "img/js-course.webp",
+"ratio": "16 / 9",
+"folder": "Learning",
+"c": "sage",
+"tags": [
+"javascript"
+],
+"date": "Oct 18",
+"type": "videos",
+"dur": "48:17"
+},
+{
+"id": 14,
+"kind": "repo",
+"title": "Tldraw",
+"domain": "github.com",
+"sub": "tldraw/tldraw",
+"img": "img/tldraw.webp",
+"ratio": "2 / 1",
+"folder": "Tools",
+"c": "ocean",
+"tags": [
+"design"
+],
+"date": "Oct 15",
+"type": "repos"
+}
+]
