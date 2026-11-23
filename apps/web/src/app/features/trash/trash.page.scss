@@ -75,7 +75,7 @@
 // The selection bar floats over the list at the bottom of the page (a glass layer, like the tab
 // bar); on a phone it sits above the tab bar.
 .trash-page__bar {
-  @include glass;
+  @include float-surface;
 
   position: sticky;
   inset-block-end: var(--space-4);

@@ -1,35 +1,48 @@
-// Light theme colours (docs/design/tokens.json, 2027 Refresh).
+// Light theme colours: Shelfmark Shelf (docs/design-next/shelf/design-system/tokens.json, ADR 0061).
+// The property names are the long-standing API of libs/ui and apps/web; the comments name the Shelf
+// token each one carries (implementation-plan.md, Token map).
 @mixin light {
   color-scheme: light;
 
-  --bg: #f4f4f1;
+  --bg: #fff; // canvas
+  --canvas: var(--bg);
+  --sidebar: #fff;
   --surface: #fff;
-  --surface-hover: #eeeeea;
-  --surface-pressed: #e6e6e1;
-  --border: #e4e4df;
-  --border-control: #85858a;
-  --text: #18181a;
-  --text-muted: #636368;
-  --primary: #18181a;
-  --primary-hover: #2e2e31;
-  --on-primary: #fff;
-  --accent: #4f7a4b;
-  --accent-bg: #e3eedf;
-  --accent-text: #2f4a2c;
-  --focus-ring: #5e8a58;
-  --highlight-bg: #d3e4cf;
-  --highlight-text: #1f3a1c;
-  --danger: #b42318;
-  --danger-bg: #fdecea;
-  --success: #2f6b2b;
-  --warning: #93600a;
+  --surface-hover: #f5f5f5;
+  --surface-pressed: #f0f0f0;
+  --pick: #eaeaee;
+  --fill: rgb(0 0 0 / 4%);
+  --fill-hover: rgb(0 0 0 / 6%);
+  --line: rgb(0 0 0 / 8%);
+  --line-strong: rgb(20 20 24 / 14%);
+  --sep: rgb(0 0 0 / 8%);
+  --border: var(--sep);
+  --border-control: #8a8b90; // control
+  --text: #1c1c1f;
+  --text-muted: #6b6b70;
+  --primary: #1c1c1f; // accent
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, var(--surface));
+  --on-primary: #fff; // on-accent
+  --accent: #1c1c1f;
+  --accent-bg: #f0f0f0;
+  --accent-text: #1c1c1f;
+  --focus-ring: #1c1c1f; // focus
+  --star: #1c1c1f;
+  --danger: #c0352b;
+  --danger-bg: #fbeceb;
+  --success: #2e7a3a;
+  --warning: #8f5b00;
   --warning-bg: #fbf1de;
-  --overlay: rgb(19 19 21 / 40%);
+  --overlay: rgb(20 20 22 / 40%); // scrim
+  --scrim: var(--overlay);
 
-  // AI: one quiet indigo for the spark and the dashed suggestion edge (never a fill, never sage; #476).
-  --ai: #4c54b5;
-  --ai-line: #767ecb;
-  --ai-bg: #e9eaf8;
+  // Sage: the AI spark, the note on a card and the search highlight; the only colour of the UI.
+  --ai: #4a6c06;
+  --ai-bg: #eef6d6;
+  --note-text: #4a6c06;
+  --ai-line: #6e8938;
+  --highlight-bg: #eef6d6;
+  --highlight-text: #1c1c1f;
 
   // The fill of the one AI action button ("Fill in with AI", `ui-button variant="ai"`): mixed from
   // `ai` and `surface`, so the Custom theme follows its base.
@@ -37,17 +50,30 @@
   --ai-fill-hover: color-mix(in srgb, var(--ai) 30%, var(--surface));
   --ai-fill-pressed: color-mix(in srgb, var(--ai) 36%, var(--surface));
 
-  // The disc behind a page-level empty-state scene (#315): one step stronger than the page `bg`, so the scene's
-  // edges (`border-control`, `accent`) keep 3:1 on it (WCAG 1.4.11).
-  --illustration-disc: var(--surface-hover);
+  // The Ask button's hover glow, four colours; never reused elsewhere.
+  --wave-1: #8fbf93;
+  --wave-2: #9ec5ff;
+  --wave-3: #f2c7a5;
+  --wave-4: #c9a9ff;
+  --wave-opacity: 0.7;
+
+  // Switch track off and the slider track.
+  --toggle-off: #d9d9de;
+
+  // The disc behind an empty-state scene (StateScene): sage `ai-bg`; the scene edges
+  // (`border-control`, `accent`) keep 3:1 on it (WCAG 1.4.11).
+  --illustration-disc: var(--ai-bg);
 
   // The canvas behind a third-party page in `ui-preview-frame`: white in both themes, because a site is drawn for a white page and keeps its own look in the dark theme (#553). Not for any Shelfmark surface.
   --frame-canvas: #fff;
-  --logo-bookmark: #8dbb86;
+  --logo-bookmark: #8dbb86; // brand-notch
 
-  // Frosted floating layers (menus, toasts, phone tab bar, bulk bar, sign-in card).
-  --glass: rgb(255 255 255 / 82%);
-  --glass-line: rgb(24 24 26 / 8%);
+  // Glass: the 28px round buttons over a preview (star, play, ⋯), with a 10px blur. White in both themes.
+  --glass: rgb(255 255 255 / 72%);
+  --on-glass: #1c1c1f;
+
+  // Edge of floating layers (menus, popovers, toasts, the tab bar, the bulk bar).
+  --glass-line: var(--line-strong);
 
   // Folder colours: glyph on tile; graphite is the default.
   --folder-graphite: #3a3a3f;
@@ -67,17 +93,18 @@
   --folder-teal: #1f6460;
   --folder-teal-bg: #daefec;
 
-  // Resting cards, panels and the sidebar: a whisper ring, no hairline border.
-  --shadow-card: 0 0 0 1px rgb(24 24 26 / 5%), 0 1px 2px rgb(24 24 26 / 4%);
-
-  // Glass layers and dialogs.
-  --shadow-float: 0 12px 40px -12px rgb(24 24 26 / 22%), 0 0 0 1px rgb(24 24 26 / 6%);
-  --shadow-card-hover: 0 4px 16px rgb(24 24 26 / 8%);
-  --shadow-card-spread: 0 18px 40px -18px rgb(24 24 26 / 28%), 0 2px 6px -2px rgb(24 24 26 / 6%);
-  --shadow-card-pointer: rgb(24 24 26 / 14%);
-  --shadow-card-press: 0 4px 10px -6px rgb(24 24 26 / 25%);
+  // Elevation: flat at rest. A resting card is set off by its hairline (`line` as a 1px ring).
+  --shadow-card: 0 0 0 1px var(--line);
+  --shadow-hover: 0 8px 28px rgb(0 0 0 / 8%);
+  --shadow-l2: 0 8px 24px rgb(0 0 0 / 14%);
+  --shadow-l3: 0 12px 40px rgb(0 0 0 / 20%);
+  --shadow-float: var(--shadow-l2);
+  --shadow-popover: var(--shadow-l2);
+  --shadow-card-hover: 0 0 0 1px var(--line), var(--shadow-hover);
+  --shadow-card-spread: 0 0 0 1px var(--line), 0 18px 40px -18px rgb(0 0 0 / 22%);
+  --shadow-card-pointer: rgb(0 0 0 / 10%);
+  --shadow-card-press: 0 0 0 1px var(--line), 0 4px 10px -6px rgb(0 0 0 / 20%);
   --card-hover-bg: var(--surface);
-  --card-hover-border: color-mix(in srgb, var(--text) 14%, var(--border));
-  --shadow-popover: 0 8px 24px rgb(24 24 26 / 12%), 0 2px 6px rgb(24 24 26 / 6%);
+  --card-hover-border: var(--line-strong);
   --skeleton-shimmer: color-mix(in srgb, var(--surface) 35%, transparent);
 }

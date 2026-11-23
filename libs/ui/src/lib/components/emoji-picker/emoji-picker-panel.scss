@@ -6,7 +6,7 @@
 // eight columns need. A fixed height, so the panel neither jumps nor flips while the names load or
 // a search shortens the list.
 .ui-emoji-picker__panel {
-  @include glass;
+  @include float-surface;
 
   display: flex;
   flex-direction: column;

@@ -10,7 +10,7 @@
 }
 
 .ui-menu__surface {
-  @include glass;
+  @include float-surface;
 
   min-width: rem(200px);
   max-width: rem(360px);

@@ -56,14 +56,13 @@
 
   @include desktop {
     // The glass card (Glass: the sign-in card is one of its places).
-    @include glass;
+    @include float-surface;
 
     flex: none;
     gap: rem(22px);
     max-width: rem(420px);
     padding: rem(36px) rem(32px) rem(28px);
     margin-inline: 0;
-    background: var(--glass);
     border-radius: rem(32px);
   }
 }

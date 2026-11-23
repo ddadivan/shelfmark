@@ -57,7 +57,7 @@
 
 // Glass popover (Glass spec: menus and listboxes), 300px wide, its own scroll above 60% of the height.
 .ui-picker-menu__panel {
-  @include glass;
+  @include float-surface;
 
   inline-size: min(rem(300px), calc(100vw - #{rem(16px)}));
   max-height: 60dvh;

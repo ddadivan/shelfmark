@@ -355,8 +355,8 @@ describe('DialogComponent command variant styles', () => {
     const block = withoutMedia(css, /./u);
     const command = block.slice(block.indexOf('.ui-dialog--command {'));
     expect(command).toContain('42.5rem');
-    expect(command).toContain('backdrop-filter');
-    expect(command).toContain('var(--glass)');
+    expect(command).not.toContain('backdrop-filter');
+    expect(command).toContain('var(--shadow-l2)');
     expect(command).toMatch(/margin-block-start:\s*6rem/);
   });
 

@@ -21,7 +21,7 @@
 }
 
 .ui-bulk-bar__bar {
-  @include glass;
+  @include float-surface;
 
   box-sizing: border-box;
   display: flex;

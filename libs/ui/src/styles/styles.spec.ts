@@ -422,19 +422,25 @@ function contrast(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-describe('glass mixin', () => {
-  it('uses the glass tokens and shadow-float, blur only where supported, none under reduced motion', () => {
-    const out = css('.g { @include glass; }');
-    expect(out).toContain('background: var(--glass)');
+describe('float-surface and glass-button mixins (Shelf)', () => {
+  it('float-surface is a solid surface with the line-strong edge and shadow-l2, no blur', () => {
+    const out = css('.g { @include float-surface; }');
+    expect(out).toContain('background: var(--surface)');
     expect(out).toContain('border: 1px solid var(--glass-line)');
-    expect(out).toContain('box-shadow: var(--shadow-float)');
+    expect(out).toContain('box-shadow: var(--shadow-l2)');
+    expect(out).not.toContain('backdrop-filter');
+  });
+
+  it('glass-button blurs 10px only where supported, none under reduced motion', () => {
+    const out = css('.g { @include glass-button; }');
+    expect(out).toContain('background: var(--glass)');
     expect(out).toMatch(/@supports \(backdrop-filter: blur\(1px\)\)/);
-    expect(out).toContain('backdrop-filter: blur(1.5rem) saturate(1.5)');
+    expect(out).toContain('backdrop-filter: blur(0.625rem)');
     expect(reducedMotionBlock(out)).toContain('backdrop-filter: none');
   });
 
-  it('glass-utility defines the global .ui-glass class', () => {
-    expect(css('@include glass-utility;')).toMatch(/\.ui-glass \{[^}]*var\(--glass\)/);
+  it('float-utility defines the global .ui-float class', () => {
+    expect(css('@include float-utility;')).toMatch(/\.ui-float \{[^}]*var\(--surface\)/);
   });
 });
 
@@ -463,8 +469,8 @@ function discHex(theme: 'light' | 'dark'): string {
 }
 
 describe('empty-state scene disc (#315, WCAG 1.4.11 3:1)', () => {
-  it('is a step stronger than the page in light, the page itself in dark', () => {
-    expect(discHex('light')).toBe(tokenHex('light', 'surface-hover'));
+  it('is sage ai-bg in light, the page itself in dark', () => {
+    expect(discHex('light')).toBe(tokenHex('light', 'ai-bg'));
     expect(discHex('dark')).toBe(tokenHex('dark', 'bg'));
   });
 
@@ -481,7 +487,7 @@ describe('empty-state scene disc (#315, WCAG 1.4.11 3:1)', () => {
 
 describe('text-muted contrast (WCAG AA 4.5:1)', () => {
   it.each(['light', 'dark'] as const)('holds on every surface in %s', (theme) => {
-    expect(tokenHex(theme, 'text-muted')).toBe(theme === 'light' ? '#636368' : '#9a9aa0');
+    expect(tokenHex(theme, 'text-muted')).toBe(theme === 'light' ? '#6b6b70' : '#a3a3aa');
     for (const surface of ['bg', 'surface', 'surface-hover', 'surface-pressed', 'accent-bg']) {
       const ratio = contrast(tokenHex(theme, 'text-muted'), tokenHex(theme, surface));
       expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);
@@ -491,7 +497,7 @@ describe('text-muted contrast (WCAG AA 4.5:1)', () => {
 
 describe('AI tokens contrast', () => {
   it.each(['light', 'dark'] as const)('ai text-grade on bg, surface and ai-bg in %s', (theme) => {
-    expect(tokenHex(theme, 'ai')).toBe(theme === 'light' ? '#4c54b5' : '#a9aef2');
+    expect(tokenHex(theme, 'ai')).toBe(theme === 'light' ? '#4a6c06' : '#8fbf93');
     for (const surface of ['bg', 'surface', 'ai-bg']) {
       const ratio = contrast(tokenHex(theme, 'ai'), tokenHex(theme, surface));
       expect(ratio, `${theme} ${surface}`).toBeGreaterThanOrEqual(4.5);
@@ -735,5 +741,61 @@ describe('scroll-fade (#352)', () => {
     }).css;
     expect(global.match(/@keyframes ui-scroll-fade-top/g)).toHaveLength(1);
     expect(global.match(/@keyframes ui-scroll-fade-bottom/g)).toHaveLength(1);
+  });
+});
+
+describe('Shelf tokens (ADR 0061)', () => {
+  const SHELF = [
+    'canvas',
+    'sidebar',
+    'pick',
+    'fill',
+    'fill-hover',
+    'line',
+    'line-strong',
+    'sep',
+    'note-text',
+    'star',
+    'glass',
+    'on-glass',
+    'toggle-off',
+    'wave-1',
+    'wave-2',
+    'wave-3',
+    'wave-4',
+    'shadow-hover',
+    'shadow-l2',
+    'shadow-l3',
+  ];
+
+  it.each(['light', 'dark'] as const)('defines every Shelf colour token in %s', (theme) => {
+    const out = css(`:root { @include ${theme}; }`);
+    for (const name of SHELF) {
+      expect(out, `${theme} --${name}`).toMatch(new RegExp(`--${name}:`));
+    }
+  });
+
+  it('uses the Shelf canvases and the graphite accent', () => {
+    expect(tokenHex('light', 'bg')).toBe('#fff');
+    expect(tokenHex('dark', 'bg')).toBe('#19191c');
+    expect(tokenHex('light', 'accent')).toBe('#1c1c1f');
+    expect(tokenHex('dark', 'accent')).toBe('#ececee');
+  });
+
+  it('note text keeps 4.5:1 on the note tint in both themes', () => {
+    for (const theme of ['light', 'dark'] as const) {
+      const ratio = contrast(tokenHex(theme, 'note-text'), tokenHex(theme, 'ai-bg'));
+      expect(ratio, theme).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('defines the Shelf radii and sizes in rem', () => {
+    const out = css(':root { @include scale; }');
+    expect(out).toContain('--radius-xs: 0.25rem');
+    expect(out).toContain('--radius-sm: 0.625rem');
+    expect(out).toContain('--radius-md: 0.75rem');
+    expect(out).toContain('--radius-card: 1rem');
+    expect(out).toContain('--sidebar-width: 15rem');
+    expect(out).toMatch(/--font-sans:\s*'Hanken Grotesk Variable'/);
   });
 });

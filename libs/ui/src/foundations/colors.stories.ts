@@ -54,7 +54,7 @@ export const Glass: Story = {
     docs: {
       description: {
         story:
-          'Frosted surface for floating layers only: menus, toasts, the phone tab bar, the bulk-action bar and the sign-in card (`@include glass` in components, `.ui-glass` in app layouts). The blur is dropped under reduced motion and without `backdrop-filter` support; the `glass` fill alone keeps text readable.',
+          'Floating layers (menus, toasts, the phone tab bar, the bulk-action bar, the sign-in card) are a solid `surface` with a `line-strong` edge and `shadow-l2` (`@include float-surface` in components, `.ui-float` in app layouts). Glass is only for the round buttons over previews (`@include glass-button`).',
       },
     },
   },
@@ -68,7 +68,7 @@ export const Glass: Story = {
             <div class="fd-glass-stage">
               <div class="fd-glass-stage__blob fd-glass-stage__blob--a"></div>
               <div class="fd-glass-stage__blob fd-glass-stage__blob--b"></div>
-              <div class="ui-glass fd-glass-bar">
+              <div class="ui-float fd-glass-bar">
                 <strong>3 selected</strong>
                 <span>Move</span>
                 <span>Favorite</span>

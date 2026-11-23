@@ -1,22 +1,25 @@
 @use 'sass:map';
 @use 'functions' as *;
 
-// Type styles from docs/design/tokens.css. Sizes in rem; applied through the mixin, no global classes.
+// Type styles of Shelf (docs/design-next/shelf/design-system/tokens.json). Sizes in rem; applied through the mixin, no global classes.
 $styles: (
+  // Sign-in, empty states, the Reader title (Shelf `display`).
   'display': (
     'family': var(--font-sans),
-    'size': 40,
-    'line': 44,
+    'size': 32,
+    'line': 40,
     'weight': 600,
-    'tracking': -0.03em,
+    'tracking': -0.02em,
   ),
+  // Page titles in the app (Shelf `display-s`, 24/30 600).
   'title': (
     'family': var(--font-sans),
-    'size': 22,
-    'line': 28,
+    'size': 24,
+    'line': 30,
     'weight': 600,
     'tracking': -0.01em,
   ),
+  // Dialog titles and section headings (Shelf `title-s`).
   'heading': (
     'family': var(--font-sans),
     'size': 16,
@@ -26,18 +29,28 @@ $styles: (
   ),
   'body': (
     'family': var(--font-sans),
-    'size': 15,
+    'size': 16,
+    'line': 24,
+    'weight': 400,
+    'tracking': normal,
+  ),
+  // Summaries, hints, navigation rows (Shelf `secondary`, 14/22).
+  'secondary': (
+    'family': var(--font-sans),
+    'size': 14,
     'line': 22,
     'weight': 400,
     'tracking': normal,
   ),
+  // Buttons, chips, menu items, field labels (Shelf `label`, 14/22 500).
   'label': (
     'family': var(--font-sans),
-    'size': 13,
-    'line': 18,
+    'size': 14,
+    'line': 22,
     'weight': 500,
     'tracking': normal,
   ),
+  // Meta: folder, date, source, counts, hashtags, tabs (Shelf `meta`, 12/16).
   'caption': (
     'family': var(--font-sans),
     'size': 12,
@@ -54,7 +67,7 @@ $styles: (
   ),
 );
 
-// Applies one of: display, title, heading, body, label, caption, mono.
+// Applies one of: display, title, heading, body, secondary, label, caption, mono.
 @mixin type($style) {
   $s: map.get($styles, $style);
 

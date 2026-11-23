@@ -19,7 +19,7 @@
 // element; the content scrolls only past that. Never sideways: content wider than the panel is
 // the feature's to truncate.
 .ui-popover__surface {
-  @include glass;
+  @include float-surface;
 
   display: flex;
   flex-direction: column;

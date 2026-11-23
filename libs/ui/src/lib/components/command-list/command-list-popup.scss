@@ -25,7 +25,7 @@
 // The results panel: glass like menus, at least the field width (the pane has the measured
 // `min-width`), up to 60% of the viewport height; the list is the part that scrolls.
 .ui-command-list__panel--floating {
-  @include glass;
+  @include float-surface;
 
   display: flex;
   flex-direction: column;

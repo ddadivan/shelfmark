@@ -86,7 +86,7 @@
 }
 
 .ui-select__panel {
-  @include glass;
+  @include float-surface;
 
   display: flex;
   flex-direction: column;

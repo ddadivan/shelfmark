@@ -35,8 +35,7 @@ describe('toast styles', () => {
   });
 
   it('is a glass surface with 18px corners, up to 540px wide, with a truncating detail line', () => {
-    expect(toast).toContain('background: var(--glass)');
-    expect(toast).toContain('box-shadow: var(--shadow-float)');
+    expect(toast).toContain('box-shadow: var(--shadow-l2)');
     expect(toast).toContain('border-radius: 1.125rem');
     expect(toast).not.toContain('--shadow-popover');
     expect(toast).toContain('max-inline-size: min(33.75rem, 100%)');

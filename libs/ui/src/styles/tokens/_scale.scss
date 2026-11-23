@@ -8,19 +8,33 @@
   --space-4: #{rem(16px)};
   --space-6: #{rem(24px)};
   --space-8: #{rem(32px)};
+  --space-12: #{rem(48px)};
+  --space-16: #{rem(64px)};
 
   // Icon sizes (ui-icon `size` 16 / 20 / 24); `lg` is the size in menus, dialogs and navigation.
   --icon-size-sm: #{rem(16px)};
   --icon-size-md: #{rem(20px)};
   --icon-size-lg: #{rem(24px)};
-  --radius-sm: #{rem(8px)};
-  --radius-md: #{rem(14px)};
-  --radius-lg: #{rem(22px)};
-  --radius-xl: #{rem(28px)};
 
-  // Floating action button (mockup: 56px square, 18px radius); no other component uses it.
-  --radius-fab: #{rem(18px)};
+  // Radii (Shelf): 4 favicons and key caps; 10 nav rows, tabs, menu items, inputs; 12 menus,
+  // dialogs, toasts, list previews; 16 cards, the search field and panels; full for buttons.
+  --radius-xs: #{rem(4px)};
+  --radius-sm: #{rem(10px)};
+  --radius-md: #{rem(12px)};
+  --radius-card: #{rem(16px)};
+  --radius-lg: #{rem(16px)};
+  --radius-xl: #{rem(16px)};
+
+  // Floating action button (the tab bar's Add): 12px.
+  --radius-fab: #{rem(12px)};
   --radius-full: #{rem(999px)};
+
+  // Sizes (Shelf): controls 32 / 40 / 48, sidebar rows 36, the sidebar 240.
+  --control-sm: #{rem(32px)};
+  --control-md: #{rem(40px)};
+  --control-lg: #{rem(48px)};
+  --row-nav: #{rem(36px)};
+  --sidebar-width: #{rem(240px)};
   --duration-instant: 80ms;
   --duration-fast: 120ms;
   --duration-base: 200ms;
@@ -31,12 +45,13 @@
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --font-sans:
-    'Onest Variable', 'Onest Fallback', 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', monospace;
+    'Hanken Grotesk Variable', 'Onest Variable', 'Hanken Grotesk Fallback', 'Hanken Grotesk',
+    system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', monospace;
 
   // Density (#285): Comfortable here; `global.scss` overrides them under [data-density='compact'].
-  --density-card-padding: var(--space-3) var(--space-4) var(--space-4);
-  --density-card-gap: var(--space-2);
+  --density-card-padding: var(--space-3);
+  --density-card-gap: var(--space-1);
   --density-feed-gap: var(--space-4);
   --density-row-padding: #{rem(10px)} #{rem(12px)};
 }

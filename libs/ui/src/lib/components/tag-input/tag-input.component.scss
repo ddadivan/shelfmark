@@ -44,7 +44,7 @@
 }
 
 .ui-tag-input__panel {
-  @include glass;
+  @include float-surface;
 
   display: flex;
   flex-direction: column;

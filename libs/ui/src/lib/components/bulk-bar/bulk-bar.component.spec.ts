@@ -157,7 +157,7 @@ describe('BulkBarComponent', () => {
 
   it('is glass, hovers only on hover pointers, grows on coarse pointers and animates like a toast', () => {
     const css = compileScss('lib/components/bulk-bar/bulk-bar.component.scss');
-    expect(css).toContain('var(--glass)');
+    expect(css).toContain('var(--shadow-l2)');
     const hoverBlocks = mediaBlocks(css, /\(hover: ?hover\)/).join('\n');
     expect(hoverBlocks).toContain('background: var(--surface-hover)');
     expect(css).toMatch(/ui-bulk-bar__action--secondary[^}]*var\(--surface\)/);

@@ -116,7 +116,7 @@
 // The mobile shell: Cancel and Apply in a glass bar just above the tab bar (the main column keeps
 // `$shell-tab-bar-room` of end padding for it, so the sticky offset starts above the tab bar).
 .cleanup__bar {
-  @include glass;
+  @include float-surface;
 
   position: sticky;
   inset-block-end: var(--space-3);

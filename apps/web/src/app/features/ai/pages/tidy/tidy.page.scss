@@ -101,7 +101,7 @@
 $tidy-bar-offset: rem(20px) - $shell-tab-bar-room;
 
 .tidy__bar {
-  @include glass;
+  @include float-surface;
 
   position: sticky;
   inset-block-end: #{$tidy-bar-offset};

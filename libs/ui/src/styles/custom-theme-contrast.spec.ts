@@ -123,7 +123,7 @@ describe('Custom theme tokens', () => {
     );
     for (const corners of Object.values(CUSTOM_THEME_CORNERS)) {
       const radii = rule(custom(`[data-custom-corners=${corners}]`));
-      for (const size of ['sm', 'md', 'lg', 'xl', 'fab']) {
+      for (const size of ['xs', 'sm', 'md', 'card', 'lg', 'xl', 'fab']) {
         expect(radii[`--radius-${size}`]).toMatch(/^[\d.]+rem$/);
       }
       expect(radii['--radius-full']).toBeUndefined();
@@ -140,13 +140,13 @@ describe('Custom theme tokens', () => {
     }
   });
 
-  it('keeps sage on the default background equal to the fixed themes', () => {
+  it('keeps graphite on the Shelf canvas equal to the fixed themes', () => {
     for (const [base, background] of [
-      ['light', 'stone'],
+      ['light', 'white'],
       ['dark', 'graphite'],
     ] as const) {
       const fixed = rule(`.base-${base}`);
-      const tokens = tokensOf(base, 'sage', background);
+      const tokens = tokensOf(base, 'graphite', background);
       for (const name of ['--bg', '--accent', '--accent-bg', '--accent-text', '--focus-ring']) {
         expect(tokens[name]?.toLowerCase(), `${base} ${name}`).toBe(fixed[name]?.toLowerCase());
       }

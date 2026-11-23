@@ -1,19 +1,25 @@
 @use 'functions' as *;
 
-// Glass (docs/design/components/Glass): the frosted surface of layers that float above content
-// for a moment or stay pinned over it. Only for menus and listboxes, toasts, the phone tab bar,
-// the bulk-action bar and the sign-in card; never cards, panels or dialog content.
-// `glass` is opaque enough that text keeps 4.5:1 without the blur, so the blur is an
-// enhancement: only where `backdrop-filter` is supported, and dropped under reduced motion.
-$glass-blur: rem(24px);
-
-@mixin glass {
-  background: var(--glass);
+// Floating layers (Shelf, ADR 0061): menus, listboxes, popovers, toasts, the phone tab bar, the
+// bulk-action bar and the sign-in card float on a solid `surface` with a `line-strong` edge and
+// `shadow-l2`. No glass, no blur.
+@mixin float-surface {
+  background: var(--surface);
   border: 1px solid var(--glass-line);
-  box-shadow: var(--shadow-float);
+  box-shadow: var(--shadow-l2);
+}
+
+// Glass (Shelf): only the 28px round buttons over a preview (play, star, the card ⋯ menu).
+// `glass` is white at 72% in both themes with a 10px blur, so it reads on any picture; the
+// blur is an enhancement where `backdrop-filter` is supported and is dropped under reduced motion.
+$glass-blur: rem(10px);
+
+@mixin glass-button {
+  color: var(--on-glass);
+  background: var(--glass);
 
   @supports (backdrop-filter: blur(1px)) {
-    backdrop-filter: blur($glass-blur) saturate(1.5);
+    backdrop-filter: blur($glass-blur);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -21,9 +27,9 @@ $glass-blur: rem(24px);
   }
 }
 
-// Global `.ui-glass` utility for app layouts (bulk bar, sign-in card); components use the mixin.
-@mixin glass-utility {
-  .ui-glass {
-    @include glass;
+// Global `.ui-float` utility for app layouts (bulk bar, sign-in card); components use the mixin.
+@mixin float-utility {
+  .ui-float {
+    @include float-surface;
   }
 }

@@ -205,7 +205,7 @@
 
 // The search card is left out on phones (mockup).
 .landing-ai__card--search {
-  @include glass;
+  @include float-surface;
 
   display: none;
   gap: var(--space-1);

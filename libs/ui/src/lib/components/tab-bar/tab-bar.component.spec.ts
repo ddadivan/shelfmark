@@ -154,7 +154,7 @@ describe('TabBarComponent', () => {
 
   it('draws a glass bar, 68px tall with 26px corners, fixed 16px / 20px plus the safe area, at most 560px wide', () => {
     const css = compileScss('lib/components/tab-bar/tab-bar.component.scss');
-    expect(css).toContain('background: var(--glass)');
+    expect(css).toContain('background: var(--surface)');
     expect(css).toContain('border: 1px solid var(--glass-line)');
     expect(css).toContain('block-size: 4.25rem');
     expect(css).toContain('border-radius: 1.625rem');

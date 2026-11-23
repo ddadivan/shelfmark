@@ -1,51 +1,65 @@
-// Dark theme colours (docs/design/tokens.json, 2027 Refresh).
+// Dark theme colours: Shelfmark Shelf (docs/design-next/shelf/design-system/tokens.json, ADR 0061).
+// See _light.scss for the Shelf token behind each property.
 @mixin dark {
   color-scheme: dark;
 
-  --bg: #111113;
-  --surface: #1a1a1d;
-  --surface-hover: #242428;
-  --surface-pressed: #2c2c31;
-  --border: #29292e;
-  --border-control: #6c6c73;
-  --text: #ededef;
-  --text-muted: #9a9aa0;
-  --primary: #ededef;
-  --primary-hover: #d4d4d8;
-  --on-primary: #131315;
-  --accent: #8dbb86;
-  --accent-bg: #21301e;
-  --accent-text: #c6dec0;
-  --highlight-bg: #3a5a34;
-  --highlight-text: #eaf3e7;
-  --focus-ring: #8dbb86;
-  --danger: #f97066;
+  --bg: #19191c;
+  --canvas: var(--bg);
+  --sidebar: #151518;
+  --surface: #212125;
+  --surface-hover: #26262b;
+  --surface-pressed: #2f2f35;
+  --pick: #3a3a42;
+  --fill: rgb(255 255 255 / 6%);
+  --fill-hover: rgb(255 255 255 / 8%);
+  --line: rgb(255 255 255 / 0%);
+  --line-strong: rgb(255 255 255 / 14%);
+  --sep: rgb(255 255 255 / 8%);
+  --border: var(--sep);
+  --border-control: #6e6f76;
+  --text: #ececee;
+  --text-muted: #a3a3aa;
+  --primary: #ececee;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, var(--surface));
+  --on-primary: #19191c;
+  --accent: #ececee;
+  --accent-bg: #2f2f35;
+  --accent-text: #ececee;
+  --focus-ring: #ececee;
+  --star: #ececee;
+  --danger: #f87168;
   --danger-bg: #3a1a18;
-  --success: #8dbb86;
-  --warning: #e6b45c;
+  --success: #7cc488;
+  --warning: #e8b45a;
   --warning-bg: #33280f;
-  --overlay: rgb(0 0 0 / 60%);
-
-  // AI (#476), see _light.scss.
-  --ai: #a9aef2;
-  --ai-line: #666cb8;
-  --ai-bg: #23253d;
-
-  // The fill of the one AI action button ("Fill in with AI", `ui-button variant="ai"`): mixed from
-  // `ai` and `surface`, so the Custom theme follows its base.
+  --overlay: rgb(0 0 0 / 55%);
+  --scrim: var(--overlay);
+  --ai: #8fbf93;
+  --ai-bg: #2b3526;
+  --note-text: #d8eb8a;
+  --ai-line: #6e9072;
+  --highlight-bg: #2b3526;
+  --highlight-text: #ececee;
   --ai-fill: color-mix(in srgb, var(--ai) 24%, var(--surface));
   --ai-fill-hover: color-mix(in srgb, var(--ai) 30%, var(--surface));
   --ai-fill-pressed: color-mix(in srgb, var(--ai) 36%, var(--surface));
+  --wave-1: #6fe3a0;
+  --wave-2: #5db4ff;
+  --wave-3: #ffb08a;
+  --wave-4: #b98cff;
+  --wave-opacity: 0.85;
+  --toggle-off: #4a4a52;
 
-  // The disc behind a page-level empty-state scene (#315): the page `bg`, darker than the
-  // card, so the scene's edges (`border-control`, `accent`) keep 3:1 on it (WCAG 1.4.11).
+  // The empty-state disc stays the page `bg` in dark: on sage `ai-bg` the scene edges
+  // (`border-control`) would drop to 2.6:1 (WCAG 1.4.11 needs 3:1).
   --illustration-disc: var(--bg);
 
   // The canvas behind a third-party page in `ui-preview-frame`: white in both themes, because a site is drawn for a white page and keeps its own look in the dark theme (#553). Not for any Shelfmark surface.
   --frame-canvas: #fff;
   --logo-bookmark: #4f7a4b;
-  --glass: rgb(30 30 34 / 84%);
-  --glass-line: rgb(237 237 239 / 8%);
+  --glass: rgb(255 255 255 / 72%);
+  --on-glass: #1c1c1f;
+  --glass-line: var(--line-strong);
   --folder-graphite: #d4d4d8;
   --folder-graphite-bg: #2a2a2e;
   --folder-sage: #a9cfa3;
@@ -62,16 +76,19 @@
   --folder-rose-bg: #3a1e27;
   --folder-teal: #93d3cc;
   --folder-teal-bg: #16302e;
-  --shadow-card: 0 0 0 1px rgb(237 237 239 / 6%);
-  --shadow-float: 0 16px 48px -12px rgb(0 0 0 / 70%), 0 0 0 1px rgb(237 237 239 / 8%);
-  --shadow-card-hover: 0 4px 16px rgb(0 0 0 / 40%);
-  --shadow-card-spread:
-    0 0 0 1px rgb(237 237 239 / 4%), 0 16px 44px -14px rgb(237 237 239 / 13%),
-    0 4px 14px -6px rgb(237 237 239 / 6%);
-  --shadow-card-pointer: rgb(237 237 239 / 7%);
-  --shadow-card-press: 0 0 0 1px rgb(237 237 239 / 4%), 0 5px 14px -6px rgb(237 237 239 / 8%);
-  --card-hover-bg: color-mix(in srgb, var(--surface) 92%, var(--text));
-  --card-hover-border: color-mix(in srgb, var(--text) 24%, var(--border));
-  --shadow-popover: 0 8px 24px rgb(0 0 0 / 50%), 0 2px 6px rgb(0 0 0 / 30%);
+
+  // Dark cards have no hairline and no shadow: a lighter fill sets them off, a hovered card lightens by 4%.
+  --shadow-card: none;
+  --shadow-hover: none;
+  --shadow-l2: 0 8px 24px rgb(0 0 0 / 50%);
+  --shadow-l3: 0 12px 40px rgb(0 0 0 / 55%);
+  --shadow-float: var(--shadow-l2);
+  --shadow-popover: var(--shadow-l2);
+  --shadow-card-hover: none;
+  --shadow-card-spread: 0 16px 44px -14px rgb(0 0 0 / 60%);
+  --shadow-card-pointer: rgb(255 255 255 / 5%);
+  --shadow-card-press: 0 5px 14px -6px rgb(0 0 0 / 50%);
+  --card-hover-bg: color-mix(in srgb, var(--surface) 96%, #fff);
+  --card-hover-border: var(--line-strong);
   --skeleton-shimmer: color-mix(in srgb, var(--text) 5%, transparent);
 }

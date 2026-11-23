@@ -5,7 +5,7 @@
 :host {
   // No type style is 14/20 medium (the Toast spec size); body is the base, the size follows the spec.
   @include type(body);
-  @include glass;
+  @include float-surface;
 
   font-size: rem(14px);
   font-weight: 500;

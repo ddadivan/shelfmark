@@ -13,64 +13,72 @@
 // accent 4.5:1 on bg and surface (links) and 3:1 on hover, pressed and accent-bg; focus-ring 3:1
 // on bg, surface, surface-hover and accent-bg; border-control 3:1 on bg and surface.
 
-// Accent family per base. Values from the Themes mockup; sage equals the fixed themes.
+// Accent family per base. Graphite equals the fixed Shelf themes; sage is Shelf `accent-sage`.
+// The coloured light tints take the deeper muted text (#636368), so meta keeps 4.5:1 on them.
 $custom-accents: (
   'light': (
     'sage': (
-      'accent': #4f7a4b,
-      'accent-bg': #e3eedf,
+      'accent': #3b7443,
+      'accent-bg': #e4efe4,
       'accent-text': #2f4a2c,
-      'focus-ring': #5e8a58,
+      'focus-ring': #3b7443,
+      'text-muted': #636368,
     ),
     'ocean': (
       'accent': #2e6a99,
       'accent-bg': #ddeaf4,
       'accent-text': #1f3f5a,
       'focus-ring': #2e6a99,
+      'text-muted': #636368,
     ),
     'plum': (
       'accent': #7a4b8a,
       'accent-bg': #efe3f3,
       'accent-text': #4a2b55,
       'focus-ring': #7a4b8a,
+      'text-muted': #636368,
     ),
     'clay': (
       'accent': #a8552f,
       'accent-bg': #f6e4da,
       'accent-text': #62301a,
       'focus-ring': #a8552f,
+      'text-muted': #636368,
     ),
     'amber': (
       'accent': #8a6206,
       'accent-bg': #f6ebcf,
       'accent-text': #563d04,
       'focus-ring': #8a6206,
+      'text-muted': #636368,
     ),
     'rose': (
       'accent': #a33a5b,
       'accent-bg': #f7e0e7,
       'accent-text': #5e1f33,
       'focus-ring': #a33a5b,
+      'text-muted': #636368,
     ),
     'teal': (
       'accent': #23716c,
       'accent-bg': #daefec,
       'accent-text': #123f3c,
       'focus-ring': #23716c,
+      'text-muted': #636368,
     ),
     'graphite': (
-      'accent': #3a3a3f,
-      'accent-bg': #ececea,
-      'accent-text': #18181a,
-      'focus-ring': #3a3a3f,
+      'accent': #1c1c1f,
+      'accent-bg': #f0f0f0,
+      'accent-text': #1c1c1f,
+      'focus-ring': #1c1c1f,
     ),
   ),
   'dark': (
     'sage': (
-      'accent': #8dbb86,
-      'accent-bg': #21301e,
+      'accent': #86c08e,
+      'accent-bg': #1b2a1d,
       'accent-text': #c6dec0,
-      'focus-ring': #8dbb86,
+      'focus-ring': #86c08e,
     ),
     'ocean': (
       'accent': #8cbce3,
@@ -109,16 +117,16 @@ $custom-accents: (
       'focus-ring': #86cfc7,
     ),
     'graphite': (
-      'accent': #c9c9ce,
-      'accent-bg': #2a2a2e,
-      'accent-text': #ededef,
-      'focus-ring': #c9c9ce,
+      'accent': #ececee,
+      'accent-bg': #2f2f35,
+      'accent-text': #ececee,
+      'focus-ring': #ececee,
     ),
   ),
 );
 
-// Page backgrounds per base (only `bg` changes; cards and panels keep `surface`). Paper is a
-// touch lighter than the mockup's #f6f3ec so sage links keep 4.5:1 on it.
+// Page backgrounds per base (only `bg` changes; cards and panels keep `surface`). `white` and
+// `graphite` are the Shelf canvases of the fixed themes.
 $custom-backgrounds: (
   'light': (
     'stone': #f4f4f1,
@@ -127,33 +135,39 @@ $custom-backgrounds: (
     'white': #fff,
   ),
   'dark': (
-    'graphite': #111113,
+    'graphite': #19191c,
     'ink': #12141a,
     'forest': #101411,
     'black': #000,
   ),
 );
 
-// Radius scales. `round` is the scale of the fixed themes; pills and
+// Radius scales. `round` is the Shelf scale of the fixed themes; pills and
 // circles (`radius-full`) never change.
 $custom-corners: (
   'round': (
-    'sm': rem(8px),
-    'md': rem(14px),
-    'lg': rem(22px),
-    'xl': rem(28px),
-    'fab': rem(18px),
-  ),
-  'soft': (
-    'sm': rem(6px),
-    'md': rem(10px),
-    'lg': rem(14px),
-    'xl': rem(18px),
+    'xs': rem(4px),
+    'sm': rem(10px),
+    'md': rem(12px),
+    'card': rem(16px),
+    'lg': rem(16px),
+    'xl': rem(16px),
     'fab': rem(12px),
   ),
+  'soft': (
+    'xs': rem(3px),
+    'sm': rem(6px),
+    'md': rem(8px),
+    'card': rem(10px),
+    'lg': rem(10px),
+    'xl': rem(10px),
+    'fab': rem(8px),
+  ),
   'square': (
+    'xs': rem(2px),
     'sm': rem(2px),
     'md': rem(3px),
+    'card': rem(4px),
     'lg': rem(4px),
     'xl': rem(6px),
     'fab': rem(4px),

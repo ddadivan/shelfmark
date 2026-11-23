@@ -14,7 +14,7 @@
 }
 
 .ui-tab-bar__nav {
-  @include glass;
+  @include float-surface;
 
   box-sizing: border-box;
   block-size: rem(68px);

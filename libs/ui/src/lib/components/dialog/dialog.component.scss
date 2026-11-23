@@ -114,7 +114,7 @@
   // Divider colour read by `ui-command-list`.
   --ui-command-divider: var(--glass-line);
 
-  @include glass;
+  @include float-surface;
 
   gap: 0;
   padding: 0;
