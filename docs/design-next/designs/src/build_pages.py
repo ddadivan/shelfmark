@@ -113,6 +113,7 @@ document.addEventListener('click',e=>{const a=e.target.closest('a[href="#"]');if
 <select id="th" aria-label="Theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
 {js}
 {open('/tmp/claude-0/-home-user-shelfmark/ebcb0130-eb79-5d11-ad3d-48330e17911a/scratchpad/dsgen/desk.js').read()}
+{open('/tmp/claude-0/-home-user-shelfmark/ebcb0130-eb79-5d11-ad3d-48330e17911a/scratchpad/dsgen/motion.js').read()}
 </body></html>
 '''
     open(f'{B}/design/{fname}', 'w').write(html)

@@ -61,7 +61,7 @@ function end(){const d=drag;if(!d)return;drag=null;window.__justDragged=true;set
   const finish=()=>{d.p.remove();d.group.forEach(c=>c.querySelector(':scope>.dslot')?.remove());document.documentElement.classList.remove('is-dragging');d.group.forEach(c=>c.classList.remove('dragsrc'))};
   if(tg){const r=tg.getBoundingClientRect();
     if(RM){finish();}else{d.p.style.transition='transform 320ms ease-in-out, opacity 320ms ease-in-out';d.p.style.transform=`translate(${r.left+r.width/2-22}px,${r.top+r.height/2-14}px) scale(.2)`;d.p.style.opacity='0';setTimeout(finish,330);}
-    setTimeout(()=>{tg.classList.remove('bump');void tg.offsetWidth;tg.classList.add('bump')},RM?0:320);
+    setTimeout(()=>{tg.classList.remove('bump');void tg.offsetWidth;tg.classList.add('bump')},RM?0:320);const nn=tg.querySelector('.n');if(nn&&window.__moNumber)setTimeout(()=>window.__moNumber(nn,(+nn.textContent.trim()||0)+d.group.length),RM?0:320);
     const name=(tg.dataset.drop||tg.textContent).trim();
     const n=d.group.length;const t=document.createElement('div');t.className='sm-toast sm-l2 dtoast';t.setAttribute('role','status');
     t.innerHTML='<span>'+(n>1?'Moved '+n+' links to ':'Moved to ')+name+'</span><button class="sm-btn sm-btn--sm" type="button">Undo</button>';

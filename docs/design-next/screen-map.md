@@ -30,7 +30,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 | L-05 | Card, row, headline row | component | hover actions / touch actions / long press | favorite, pinned to top, reminder, AI summary pending, no image |
 | L-06a | Show on cards: Preview image, Description (page text, or AI summary marked ✦ when there is none), Note, Tags, Site, Date saved; Reset to default. Same switches in Settings › Appearance | popover (toolbar button next to the views) | yes / yes / sheet | |
 | L-06 | Link menu: Open, Open in browser, Rename (title only, in the shared rename dialog; F2), Details, Favorite, Pin to top, Pin to sidebar, Move, Remind me, Copy link, Share folder link, Create rule, Delete | menu | yes / yes / sheet | conditions per item |
-| L-07 | Bulk bar: Move, Tags, Favorite, Remind, Open all, Copy, Delete | toolbar | bottom glassless bar / same / stacked | count, disabled actions |
+| L-07 | Selection as on production: it is on while at least one link is picked. A click opens the preview; the checkbox appears on hover (long-press on touch); once one is picked, a click on another card picks it; unpicking the last ends selection. Bulk bar: Move, Tags, Favorite, Remind, Open all, Copy, Delete | toolbar | bottom glassless bar / same / stacked | count, disabled actions |
 | L-08 | Side by side: two feeds | Split pane | ≥ 80em only / — / — | picker on the right, related folders (AI) |
 | L-09 | Unsorted with the Tidy up count | part of L-01 | all | AI off: no count |
 | L-10 | Phone Library page: scopes, Pinned, folders, tags | List | — / — / yes | empty |
@@ -72,7 +72,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 
 | ID | Surface | Type | D / T / P | States |
 | --- | --- | --- | --- | --- |
-| O-01 | Folder tree with drag, reorder, New folder (dialog) | tree | sidebar / rail flyout / Library page | limit reached |
+| O-01 | Folder tree with subfolders (chevron expands, children open by height), drag, reorder, New folder (dialog); Pinned, Folders and Tags sections collapse from their headers, remembered | tree | sidebar / rail flyout / Library page | limit reached |
 | O-02 | Folder menu: New subfolder, Add link here, Rename, Colour and icon, Move, Pin to sidebar, Share, Delete | menu | yes / yes / sheet | |
 | O-03 | Rename (folder, tag, view); New folder | small dialog (phone: bottom sheet above the keyboard, replaces the ⋯ actions sheet) | all | empty or invalid name |
 | O-04 | Colour and icon: 8 colours, icon set | popover | yes / yes / sheet | |
