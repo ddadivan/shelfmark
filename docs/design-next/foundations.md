@@ -76,6 +76,7 @@ Lists and tables always sit on an L1 panel with hairline row dividers.
 | Sidebar | 264 wide; tablet rail 72 |
 | Content | fluid; Reader and forms capped at 70ch / 640px |
 | Breakpoints | phone < 40em · tablet 40–64em (rail + top bar) · desktop ≥ 64em · wide ≥ 80em (side by side, Link page beside the list) |
+| Dropdowns on phones | Below 40em every menu, select and picker (⋯ actions, sort, Move to, folder picker, date) opens as a bottom sheet: grab handle, title, 48px rows, the current choice ticked, closes on pick, swipe down or a tap on the scrim. A dialog becomes a sheet above the keyboard. One sheet at a time: the next step replaces it. Exception: suggestions under a text field stay attached to the field. Each row with actions gets a visible 44px ⋯ button; long-press is only a shortcut to the same sheet |
 | Motion | 120 ms exits and hovers, 200 ms entrances, 320 ms large surfaces; `ease-out` in, `ease-in` out; one signature moment (a saved link lands in the feed); reduced motion: fades only |
 
 ## 6. Colour

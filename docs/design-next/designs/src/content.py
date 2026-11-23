@@ -184,7 +184,7 @@ O_CSS += r"""
 .phone .pc{padding:16px}
 .phone .pc h1{margin:8px 0 16px;font-size:1.6rem}
 .phone .prow{display:flex;align-items:center;gap:12px;height:52px;padding:0 12px;font-size:.9375rem;font-weight:500}
-.phone .prow .n{margin-left:auto;font-size:.75rem;color:var(--text-muted);font-weight:400}
+.phone .prow{padding-right:4px}.phone .prow .n{margin-left:auto;margin-right:4px;font-size:.75rem;color:var(--text-muted);font-weight:400}
 .phone .scrim2{position:absolute;inset:0;background:var(--scrim)}
 .sheet{position:absolute;left:0;right:0;bottom:0;border-radius:20px 20px 0 0;padding:8px 16px 16px;display:flex;flex-direction:column;gap:12px}
 .sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--line-strong);align-self:center;margin-bottom:4px}
@@ -195,16 +195,18 @@ O_CSS += r"""
 .kbd i{height:40px;border-radius:6px;background:var(--surface)}
 .phone-cap{font-size:.75rem;color:var(--text-muted);margin-top:8px;max-width:360px}
 """
-def phone(inner, overlay=''):
-    rows = ''.join(f'<div class="prow">{tile(c)}{n}<span class="n">{k}</span></div>' for n, c, k in [('Clothes', 'rose', 7), ('Recipes', 'amber', 7), ('Work', 'ocean', 7), ('Design', 'plum', 5)])
+def phone(inner, overlay='', hl=True):
+    rows = ''.join(f'<div class="prow">{tile(c)}{n}<span class="n">{k}</span><button class="sm-ib" type="button" aria-label="Actions for {n}" style="margin-right:-8px;width:44px;height:44px{";background:var(--surface-pressed)" if n == "Recipes" and hl else ""}">{ic("more")}</button></div>' for n, c, k in [('Clothes', 'rose', 7), ('Recipes', 'amber', 7), ('Work', 'ocean', 7), ('Design', 'plum', 5)])
     return f'<div class="phone"><div class="pc"><h1>Folders</h1><div class="sm-l1" style="border-radius:var(--radius-lg);padding:4px">{rows}</div></div>{overlay}{inner}</div>'
 phone_sheet = phone(f'''<div class="sheet sm-l3" role="menu" aria-label="Folder actions for Recipes"><span class="grab"></span><div style="display:flex;align-items:center;gap:12px;padding:4px 8px">{tile("amber")}<h2>Recipes</h2></div>
 <button class="sm-mi" role="menuitem">{ic("plus")}New subfolder</button><button class="sm-mi" role="menuitem">{ic("edit")}Rename</button><button class="sm-mi" role="menuitem">{ic("palette")}Colour and icon</button><button class="sm-mi" role="menuitem">{ic("move")}Move to…</button><button class="sm-mi" role="menuitem">{ic("share")}Share…</button><button class="sm-mi sm-mi--danger" role="menuitem">{ic("trash")}Delete folder</button></div>''', '<div class="scrim2"></div>')
 phone_rename = phone(f'''<div class="kbd" aria-hidden="true">{"<i></i>"*30}</div><form class="sheet sm-l3" role="dialog" aria-labelledby="prn" style="bottom:260px"><span class="grab"></span><h2 id="prn">Rename folder</h2>
 <div class="sm-field" style="min-width:0"><label for="prnf">Name</label><div class="sm-input" style="height:48px">{tile("amber")}<input id="prnf" value="Recipes and baking" style="font-size:1rem"></div></div>
 <div class="acts"><button class="sm-btn sm-btn--secondary" type="button">Cancel</button><button class="sm-btn sm-btn--primary" type="button">Rename</button></div></form>''', '<div class="scrim2"></div>')
-phone_state = f'''<h1>On the phone</h1><p class="lead">Same action, phone-shaped: long-press or ⋯ on a folder opens its actions as a bottom sheet; Rename replaces that sheet (never a sheet on a sheet) and sits right above the keyboard. Tap on a folder always opens it.</p>
-<div class="phones"><div>{phone_sheet}<p class="phone-cap">1. Long-press Recipes: actions sheet.</p></div><div>{phone_rename}<p class="phone-cap">2. Rename: field focused, keyboard open, buttons within thumb reach. Input text is 16px so the phone doesn't zoom.</p></div></div>'''
+phone_sort = phone(f'''<div class="sheet sm-l3" role="dialog" aria-labelledby="pso" style="gap:0"><span class="grab"></span><h2 id="pso" style="padding:4px 8px 8px">Sort by</h2>
+<div role="radiogroup" aria-labelledby="pso">{"".join(f'<button class="sm-mi" role="radio" aria-checked="{str(i == 0).lower()}" style="height:48px;font-size:.9375rem">{x}<span style="margin-left:auto">{ic("check") if i == 0 else ""}</span></button>' for i, x in enumerate(["Newest first", "Oldest first", "Title A to Z", "Recently opened"]))}</div></div>''', '<div class="scrim2"></div>', hl=False)
+phone_state = f'''<h1>On the phone</h1><p class="lead">On phones every dropdown (menus, selects, pickers) opens as a sheet from the bottom, where the thumb is. The ⋯ button on a folder opens its actions; Rename replaces that sheet (never a sheet on a sheet) and sits right above the keyboard. Tap on a folder always opens it.</p>
+<div class="phones"><div>{phone_sheet}<p class="phone-cap">1. ⋯ on Recipes: actions as a bottom sheet. The button is 44px, a tap on the row opens the folder.</p></div><div>{phone_rename}<p class="phone-cap">2. Rename: field focused, keyboard open, buttons within thumb reach. Input text is 16px so the phone doesn't zoom.</p></div><div>{phone_sort}<p class="phone-cap">3. Any select, here Sort: the same sheet with the current choice ticked; a tap picks and closes.</p></div></div>'''
 
 page('organise.html', 'Organise', O_CSS, [
  ('folder', 'Folder page', folder_page), ('menu', 'Folder menu, rename and new folder', folder_menu), ('phone-rename', 'Phone: actions sheet and rename', phone_state), ('colour', 'Colour and icon', colour_pop),
