@@ -65,6 +65,7 @@ A_CSS = r'''
 .ph-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .ph-top b{font:600 1.27rem/1.2 var(--font-sans);flex:1}
 .ph-top .av2{width:32px;height:32px;border-radius:50%;background:var(--surface-hover);display:grid;place-items:center;font:600 .75rem/1 var(--font-sans)}
+@media (max-width:39.99em){.sticky{bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--canvas);padding-bottom:8px}.sticky::after{content:"";position:absolute;left:-16px;right:-16px;top:100%;height:calc(100px + env(safe-area-inset-bottom,0px));background:var(--canvas)}.sticky .fine{display:none}}
 @media (max-width:63.99em){.askwrap{grid-template-columns:1fr}.hist{display:none}.caps{grid-template-columns:1fr}.lcards{grid-template-columns:1fr}}
 '''
 def side_ask(cur='ask'): return sidebar('ask')
@@ -81,10 +82,9 @@ CAPS = [('search', 'Find', ['That ramen recipe with the soft egg', 'The Signal F
         ('hash', 'Count and compare', ['How many links do I have, by folder?', 'What did I save most this month?']),
         ('text', 'Summarise', ['What is in my Design folder, in five lines?', 'The main points of my unread Angular articles']),
         ('revisit', 'Plan and pick', ['Recipes for this weekend, under an hour', 'Which Signal Forms video should I watch first?'])]
-start = APP2(f'''<div class="askwrap">{HIST}<div class="conv"><div class="start"><span class="sp">{ic("spark", 24)}</span><h1>Ask your shelf</h1><p class="lead">Questions in your own words, answered from the 58 links you saved. Every answer shows the links it used.</p></div>
-{COMPOSER()}
+start = APP2(f'''<div class="askwrap">{HIST}<div class="conv"><div class="start"><span class="sp">{ic("spark", 24)}</span><h1>Ask your shelf</h1><p class="lead">Questions in your own words, answered from the 58 links you saved. Every answer shows the links it used. Tap an example or type below.</p></div>
 <div class="caps">{''.join(f'<div class="cap sm-l1"><h3>{ic(i)}{t}</h3>' + ''.join(f'<button class="q" type="button">{q}</button>' for q in qs) + '</div>' for i, t, qs in CAPS)}</div>
-<p class="fine">Answers are written by AI and can be wrong; check the links. 47 of 50 questions left this month.</p></div></div>''')
+<div class="sticky">{COMPOSER()}<p class="fine">Answers are written by AI and can be wrong; check the links. 47 of 50 questions left this month.</p></div></div></div>''')
 LC = lambda items: '<div class="lcards">' + ''.join(f'<a class="lc" href="#"><span class="sm-thumb">{ART[a]}</span><span style="min-width:0"><b>{t}</b><span>{d}</span></span></a>' for a, t, d in items) + '</div>'
 conv = APP2(f'''<div class="askwrap">{HIST}<div class="conv"><div class="msgs">
 <div class="me">How many links do I have, by folder?</div>
