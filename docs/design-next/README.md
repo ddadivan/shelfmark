@@ -33,6 +33,7 @@ Feature moves, merges or removals are proposed with reasons and decided by the a
 - Step 1 done: `features.md` and `screens.md` (the inventory, as is).
 - Step 2 approved: `flows-and-structure.md` (three jobs, new navigation, Revisit, Reader mode, decisions D1–D15).
 - Step 4 for review: the design system **Shelfmark Next** (tokens, brand book, 21 components with live previews, cover), published privately: https://claude.ai/artifact/DvqQnrVk4HsqW1he9iUX51; source in `design-system/`.
+- Step 5, group 2 for review: `designs/02-save-revisit.html` (save panel in all its states, several links, saved landing; Revisit queue and its empty state), built from the design system's tokens and `bundle.css`; second page of the same artifact (Prototype › Save and Revisit).
 - Step 5, group 1 (made before the design system; to be rebuilt from its components): `designs/01-library.html` (library, four views, Link page with Site / Reader, empty library; desktop, tablet, phone; light and dark), published privately: https://claude.ai/artifact/Np6b5Wf6vLjBbcdvUybnuv
 - Step 3 approved (Graphite, smaller radii): `foundations.md` (type, space, radius, elevation, three palettes with contrast), `screen-map.md` (every page and surface of the new structure), `foundations-preview.html` (visual version, published privately: https://claude.ai/artifact/64J7giL8JyZzdFFuqsQvFL).
 
