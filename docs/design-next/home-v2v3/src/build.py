@@ -191,9 +191,11 @@ h1{margin:0;font-size:24px;line-height:30px;font-weight:600;letter-spacing:-.01e
 .sizesw button[aria-pressed="true"]{background:var(--surface);color:var(--text)}
 .size-s .cols{columns:6 150px;column-gap:16px}.size-l .cols{columns:3 300px;column-gap:28px}
 .size-s .ttl{font-size:14px;line-height:20px}.size-s .note{font-size:15px;line-height:22px}
-.card{border-radius:14px;transition:background-color 150ms,box-shadow 150ms}
-.card:hover{background:var(--surface);box-shadow:0 0 0 10px var(--surface)}
+.card{background:var(--surface);border-radius:8px;overflow:hidden;gap:0;transition:background-color 150ms}
+.card .tile{border-radius:0}.card .body{padding:12px 12px 14px}
+.card:hover{background:color-mix(in srgb,var(--surface) 94%,var(--text))}
 .card:hover .tile{transform:none}
+.size-s .card .body{padding:10px 10px 12px}
 
 .tabbar{display:none}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:10px 16px;border-radius:10px;background:var(--text);color:var(--bg);font-size:14px;z-index:50}
@@ -298,9 +300,11 @@ h1 .muted{font-family:"Funnel Sans",system-ui,sans-serif;font-size:16px;line-hei
 .size-s .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:24px 14px}.size-l .grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:40px 28px}
 .size-s .mcols{columns:6 150px;column-gap:14px}.size-l .mcols{columns:3 300px;column-gap:28px}
 .size-s .ttl{font-size:14px;line-height:20px}.size-s .card.feat .ttl{font-size:18px;line-height:24px}
-.card{border-radius:18px;transition:background-color 150ms,box-shadow 150ms}
-.card:hover{background:var(--panel2);box-shadow:0 0 0 10px var(--panel2)}
+.card{background:var(--panel2);border-radius:8px;overflow:hidden;gap:0;transition:background-color 150ms}
+.card .tile{border-radius:0}.card .body{padding:12px 12px 14px}
+.card:hover{background:color-mix(in srgb,var(--panel2) 94%,var(--text))}
 .card:hover .tile{transform:none}
+.size-s .card .body{padding:10px 10px 12px}
 
 .tabbar{display:none}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:10px 16px;border-radius:12px;background:var(--text);color:var(--panel);font-size:14px;z-index:50}
