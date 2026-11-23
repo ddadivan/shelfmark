@@ -335,7 +335,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 @keyframes mo-tick{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}
 /* Menus, popovers: fade + scale from the trigger */
 #pop:not([hidden]),.mo-in{animation:mo-pop 200ms cubic-bezier(.2,.8,.2,1) both;transform-origin:top right}
-@keyframes mo-pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+@keyframes mo-pop{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:none}}
 #pop.sheet:not([hidden]){animation:mo-sheet 320ms cubic-bezier(.32,.72,0,1) both}
 @keyframes mo-sheet{from{transform:translateY(100%)}to{transform:none}}
 /* Toast: slides up 12px and fades */
@@ -378,6 +378,37 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 /* Badge pop-in */
 .dot,.badge{animation:mo-badge 200ms cubic-bezier(.34,1.56,.64,1) both}
 @keyframes mo-badge{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+
+/* View Transitions: view switch morph, link page, theme */
+::view-transition-group(*){animation-duration:320ms;animation-timing-function:cubic-bezier(.4,0,.2,1)}
+::view-transition-old(root),::view-transition-new(root){animation-duration:200ms}
+/* Ripple */
+.mo-rip-host{position:relative;overflow:hidden}
+.mo-rip{position:absolute;border-radius:50%;background:currentColor;opacity:.08;transform:scale(0);pointer-events:none;animation:mo-rip 450ms cubic-bezier(.2,.8,.2,1) forwards}
+.mo-rip.out{animation:mo-rip 450ms cubic-bezier(.2,.8,.2,1) forwards,mo-rip-out 350ms ease-out forwards}
+.sm-btn--primary .mo-rip,.btn.primary .mo-rip,.sm-fab .mo-rip,.fab .mo-rip{opacity:.2}
+@keyframes mo-rip{to{transform:scale(1)}}
+@keyframes mo-rip-out{to{opacity:0}}
+/* Tooltip with travel */
+.mo-tip{position:fixed;z-index:400;pointer-events:none;padding:4px 8px;border-radius:6px;background:var(--text,var(--fg));color:var(--surface,var(--l1));font:500 .75rem/1.4 var(--font-sans,system-ui);white-space:nowrap;opacity:0;transform:translateY(2px);transition:opacity 120ms,transform 120ms,left 200ms cubic-bezier(.2,.8,.2,1),top 200ms cubic-bezier(.2,.8,.2,1)}
+.mo-tip.on{opacity:1;transform:none}
+.mo-tip kbd{margin-left:6px;opacity:.7;font:inherit}
+/* Error shake */
+.mo-shake,.state.on [role="alert"],.sm-input--error{animation:mo-shake 320ms ease-out}
+@keyframes mo-shake{20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+/* Landed: a saved link drops into the feed */
+.mo-landed{animation:mo-land 320ms cubic-bezier(.34,1.56,.64,1) both;position:relative}
+.mo-landed::after{content:"";position:absolute;inset:-2px;border-radius:inherit;box-shadow:0 0 0 2px var(--accent);animation:mo-ring 1.8s ease-out forwards;pointer-events:none}
+@keyframes mo-land{from{opacity:0;transform:translateY(-16px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes mo-ring{0%{opacity:1}100%{opacity:0}}
+/* Accept an AI suggestion */
+.mo-accept{animation:mo-accept 200ms cubic-bezier(.34,1.56,.64,1)}
+@keyframes mo-accept{50%{transform:scale(1.06)}}
+/* Feed stagger (scope change only) */
+.mo-stagger>*{animation:mo-fadeup 200ms ease-out both;animation-delay:calc(min(var(--i,0),6) * 30ms)}
+@keyframes mo-fadeup{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* Panel auto-height */
+.mo-auto{transition:height 200ms cubic-bezier(.4,0,.2,1);overflow:hidden}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:1ms!important;animation-delay:0ms!important;transition-duration:1ms!important}}
 </style>
 <script>(function(){
@@ -406,6 +437,33 @@ function scanSeg(){document.querySelectorAll('.seg,.sm-seg').forEach(initSeg)}
 const mo=new MutationObserver(()=>{scanSeg();scan()});
 function boot(){scanSeg();scan();mo.observe(document.body,{childList:true,subtree:true})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+
+/* View transition helper */
+window.__moVT=function(fn){if(RM||!document.startViewTransition){fn();return}document.startViewTransition(fn)};
+/* Theme switch cross-fade */
+document.addEventListener('change',e=>{const t=e.target;if(t.id!=='th'||RM||!document.startViewTransition)return;e.stopImmediatePropagation();const v=t.value;document.startViewTransition(()=>{if(v==='system')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',v)})},true);
+/* Ripple */
+const RSEL='.btn,.sm-btn,.ib,.sm-ib,.mi,.sm-mi,.chip,.sm-chip,.tab,.sm-tab,.fab,.sm-fab,.sm-nav,.nav';
+document.addEventListener('pointerdown',e=>{if(RM||e.button!==0)return;const h=e.target.closest(RSEL);if(!h||h.closest('.card,.sm-card,[draggable-card]')||h.disabled)return;const r=h.getBoundingClientRect();const d=Math.hypot(Math.max(e.clientX-r.left,r.right-e.clientX),Math.max(e.clientY-r.top,r.bottom-e.clientY))*2;
+  if(getComputedStyle(h).position==='static')h.style.position='relative';h.classList.add('mo-rip-host');const s=document.createElement('span');s.className='mo-rip';s.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;h.appendChild(s);
+  const end=()=>{s.classList.add('out');setTimeout(()=>s.remove(),400);window.removeEventListener('pointerup',end);window.removeEventListener('pointercancel',end)};window.addEventListener('pointerup',end);window.addEventListener('pointercancel',end)},true);
+/* Tooltips with travel: icon-only buttons (aria-label or title, no visible text) */
+const tip=document.createElement('div');tip.className='mo-tip';tip.setAttribute('role','tooltip');let tipT=null,tipGroupUntil=0,tipFor=null;
+function tipText(el){const t=el.getAttribute('data-tip')||el.getAttribute('title')||el.getAttribute('aria-label');if(el.getAttribute('title')){el.setAttribute('data-tip',el.getAttribute('title'));el.removeAttribute('title')}return t}
+function showTip(el){const t=tipText(el);if(!t)return;if(!tip.isConnected)document.body.appendChild(tip);tip.textContent=t;const r=el.getBoundingClientRect();const w=tip.offsetWidth;let x=r.left+r.width/2-w/2;x=Math.max(8,Math.min(innerWidth-w-8,x));let y=r.bottom+8;if(y+30>innerHeight)y=r.top-34;
+  if(!tip.classList.contains('on'))tip.style.transition='opacity 120ms,transform 120ms';tip.style.left=x+'px';tip.style.top=y+'px';void tip.offsetWidth;tip.style.transition='';tip.classList.add('on');tipFor=el}
+function iconOnly(el){return el.matches('.ib,.sm-ib,.act,[data-tip]')||(el.matches('button')&&!el.textContent.trim()&&(el.getAttribute('aria-label')||el.getAttribute('title')))}
+document.addEventListener('mouseover',e=>{if(!matchMedia('(hover:hover)').matches)return;const el=e.target.closest('button,a');if(!el||!iconOnly(el)||el===tipFor)return;clearTimeout(tipT);
+  if(Date.now()<tipGroupUntil||tip.classList.contains('on'))showTip(el);else tipT=setTimeout(()=>showTip(el),400)});
+document.addEventListener('mouseout',e=>{const el=e.target.closest('button,a');if(!el||el!==tipFor&&!tipT)return;if(e.relatedTarget&&el.contains(e.relatedTarget))return;clearTimeout(tipT);tipT=null;
+  setTimeout(()=>{if(tipFor===el){tip.classList.remove('on');tipFor=null;tipGroupUntil=Date.now()+300}},60)});
+document.addEventListener('pointerdown',()=>{clearTimeout(tipT);tip.classList.remove('on');tipFor=null},true);
+/* Accept an AI suggestion chip: becomes a tag and pulses */
+document.addEventListener('click',e=>{const c=e.target.closest('.sm-chip--ai');if(!c||!c.closest('#save,.popup,[data-accept-host],.tidy-row'))return;e.preventDefault();const tg=document.createElement('span');tg.className='sm-tag mo-accept';tg.textContent=c.textContent.trim();c.replaceWith(tg)},true);
+/* Landed + FLIP helper: call before and after a render */
+window.__moFlip=function(container,doRender,newSel){if(RM){doRender();return}const items=[...container.querySelectorAll('[data-id]')];const first=new Map(items.map(i=>[i.dataset.id,i.getBoundingClientRect()]));doRender();
+  const now=[...document.querySelectorAll('[data-id]')];now.forEach(el=>{const f=first.get(el.dataset.id);if(!f){return}const l=el.getBoundingClientRect();const dx=f.left-l.left,dy=f.top-l.top;if(!dx&&!dy)return;el.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:'none'}],{duration:320,easing:'cubic-bezier(.4,0,.2,1)'})});
+  if(newSel){const n=document.querySelector(newSel);if(n)n.classList.add('mo-landed')}};
 /* Icon swap on copy */
 const CHECK='<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" class="mo-swap"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 document.addEventListener('click',e=>{const b=e.target.closest('[data-copy],.mo-copy');if(!b||b.__busy)return;const svg=b.querySelector('svg');if(!svg)return;b.__busy=1;const old=svg.outerHTML;svg.outerHTML=CHECK;
