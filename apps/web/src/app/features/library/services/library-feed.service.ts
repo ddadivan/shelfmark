@@ -113,15 +113,17 @@ export class LibraryFeedService {
 
   private readonly labels = toSignal(
     combineLatest([
+      this.transloco.selectTranslate(VIEW_OPTION_KEYS[UI_VIEW.Masonry]),
       this.transloco.selectTranslate(VIEW_OPTION_KEYS[UI_VIEW.Cards]),
       this.transloco.selectTranslate(VIEW_OPTION_KEYS[UI_VIEW.List]),
-    ]).pipe(map(([cards, list]) => ({ cards, list }))),
+    ]).pipe(map(([masonry, cards, list]) => ({ masonry, cards, list }))),
   );
   /** Icon-only switch; `null` until the translations are loaded. */
   readonly viewOptions = computed<SegmentedOption[] | null>(() => {
     const labels = this.labels();
     return labels
       ? [
+          { value: UI_VIEW.Masonry, label: labels.masonry, icon: 'masonry' },
           { value: UI_VIEW.Cards, label: labels.cards, icon: 'cards' },
           { value: UI_VIEW.List, label: labels.list, icon: 'list' },
         ]

@@ -857,6 +857,7 @@
         "movedDown": "Movido para baixo, posição {{position}} de {{total}}"
       },
       "extension": "Baixar a extensão",
+      "theme": "Tema",
       "data": "Dados e ajuda",
       "dataMenu": "Dados e ajuda",
       "toggle": {
@@ -1163,6 +1164,7 @@
     },
     "view": {
       "label": "Visualização",
+      "masonry": "Mosaico",
       "cards": "Cartões",
       "list": "Lista"
     },
@@ -1245,7 +1247,21 @@
     "viewMenu": {
       "label": "Ordenar, visualizar e exportar",
       "button": "Opções",
-      "sortBy": "Ordenar por"
+      "sortBy": "Ordenar por",
+      "view": "Exibição",
+      "gridSize": "Tamanho da grade",
+      "gridStep": "{{step}} / {{steps}}",
+      "gridValue": "Nível {{step}} de {{steps}}",
+      "small": "Pequeno",
+      "large": "Grande",
+      "more": "Mais opções de exibição",
+      "select": "Selecionar links",
+      "fields": {
+        "note": "Nota",
+        "tags": "Hashtags",
+        "folder": "Pasta",
+        "date": "Data"
+      }
     },
     "split": {
       "open": "Lado a lado",

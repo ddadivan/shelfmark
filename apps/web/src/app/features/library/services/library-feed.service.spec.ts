@@ -81,7 +81,7 @@ describe('LibraryFeedService', () => {
 
   it('offers the cards / list switch once the translations are there', async () => {
     const { feed } = await setup([link(1)]);
-    expect(feed.viewOptions()?.map((option) => option.value)).toEqual(['cards', 'list']);
+    expect(feed.viewOptions()?.map((option) => option.value)).toEqual(['masonry', 'cards', 'list']);
   });
 
   it('keeps the old list on screen while the next filter loads, then swaps to the new one', async () => {

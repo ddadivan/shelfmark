@@ -857,6 +857,7 @@
         "movedDown": "Déplacé vers le bas, position {{position}} sur {{total}}"
       },
       "extension": "Obtenir l’extension",
+      "theme": "Thème",
       "data": "Données et aide",
       "dataMenu": "Données et aide",
       "toggle": {
@@ -1163,6 +1164,7 @@
     },
     "view": {
       "label": "Affichage",
+      "masonry": "Mosaïque",
       "cards": "Cartes",
       "list": "Liste"
     },
@@ -1245,7 +1247,21 @@
     "viewMenu": {
       "label": "Trier, afficher et exporter",
       "button": "Options",
-      "sortBy": "Trier par"
+      "sortBy": "Trier par",
+      "view": "Affichage",
+      "gridSize": "Taille de la grille",
+      "gridStep": "{{step}} / {{steps}}",
+      "gridValue": "Étape {{step}} sur {{steps}}",
+      "small": "Petit",
+      "large": "Grand",
+      "more": "Plus d'options d'affichage",
+      "select": "Sélectionner des liens",
+      "fields": {
+        "note": "Note",
+        "tags": "Hashtags",
+        "folder": "Dossier",
+        "date": "Date"
+      }
     },
     "split": {
       "open": "Côte à côte",

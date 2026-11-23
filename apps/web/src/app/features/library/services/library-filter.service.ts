@@ -26,6 +26,10 @@ import { EMPTY_KEYS } from '../models/empty-keys.const';
 import { FILTERED_EMPTY_KEY } from '../models/filtered-empty-key.const';
 import type { LibraryRouteInputs } from '../models/library-route-inputs.interface';
 import { FeedMemoryService } from './feed-memory.service';
+import { GRID_COLUMNS } from '../models/grid-columns.const';
+import { GRID_STEP_DEFAULT } from '../models/grid-step-default.const';
+import type { CardField } from '../models/card-field.type';
+import type { CardFields } from '../models/card-fields.type';
 
 const NO_INPUTS: LibraryRouteInputs = {
   scope: signal(LINKS_SCOPE.All),
@@ -84,6 +88,14 @@ export class LibraryFilterService {
   readonly view = computed<UiView>(
     () => this.memory.view(this.feedKey()) ?? this.settings.libraryShown().defaultView,
   );
+  /** The View menu's Grid size step (1 to 6) of this feed (Shelf). */
+  readonly gridStep = computed(() => this.memory.grid(this.feedKey()) ?? GRID_STEP_DEFAULT);
+  /** The narrowest card column of the Grid size step, in px. */
+  readonly gridColumn = computed<number>(
+    () => GRID_COLUMNS[this.gridStep() - 1] ?? GRID_COLUMNS[GRID_STEP_DEFAULT - 1],
+  );
+  /** The card fields this feed turned on or off in the View menu (missing = shown). */
+  readonly cardFields = computed<CardFields>(() => this.memory.fields(this.feedKey()) ?? {});
   /** `?split` as the URL has it (`undefined` when absent): read by `SplitViewService`. */
   readonly splitParam = computed(() => this.inputs().split?.());
   /** `?related` as the URL has it: the link of "Show related" (AI-3), read by `SplitRelatedService`. */
@@ -210,6 +222,22 @@ export class LibraryFilterService {
   /** Remembers the view (cards or list) for this feed. */
   rememberView(view: UiView, feed: string = this.feedKey()): void {
     this.memory.remember(feed, { view });
+  }
+
+  /** Whether cards of this feed show `field` (Note, Hashtags, Folder, Date). */
+  fieldShown(field: CardField): boolean {
+    return this.cardFields()[field] !== false;
+  }
+
+  /** Remembers the Grid size step for this feed (clamped to the six steps). */
+  setGridStep(step: number): void {
+    const clamped = Math.min(GRID_COLUMNS.length, Math.max(1, Math.round(step)));
+    this.memory.remember(this.feedKey(), { grid: clamped });
+  }
+
+  /** Turns one card field on or off for this feed. */
+  setCardField(field: CardField, shown: boolean): void {
+    this.memory.remember(this.feedKey(), { fields: { ...this.cardFields(), [field]: shown } });
   }
 
   /** `?sort=` for a sort: left out for the account's default (the URL stays short). */
