@@ -107,11 +107,12 @@ document.addEventListener('click',e=>{const a=e.target.closest('a[href="#"]');if
 {SHELL_CSS}
 {css}</style></head><body>
 {content}
-<div class="proto sm-l2" role="group" aria-label="Prototype"><span>Prototype</span>
+<div class="proto sm-l2" role="group" aria-label="Prototype" data-desk-host><span>Prototype</span>
 <select id="pg" aria-label="Design group">{nav}</select>
 <select id="st" aria-label="Screen">{opts}</select>
 <select id="th" aria-label="Theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
 {js}
+{open('/tmp/claude-0/-home-user-shelfmark/ebcb0130-eb79-5d11-ad3d-48330e17911a/scratchpad/dsgen/desk.js').read()}
 </body></html>
 '''
     open(f'{B}/design/{fname}', 'w').write(html)

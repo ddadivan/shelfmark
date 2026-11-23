@@ -120,7 +120,7 @@ WHY = {
  'd': ('Ask first', 'The first screen is one large field: search by words or meaning, or ask. Reading in progress sits under it.', ['Strongest AI story, very different from the category', 'Empty-looking for people who browse rather than search', 'Weak when AI is off: falls back to plain search']),
 }
 whyhtml = ''.join(f'<div class="why sm-l1 v{" on" if k == "b" else ""}" data-v="{k}"><div><h2>{t}</h2><p>{d}</p></div><ul>{"".join(f"<li>{x}</li>" for x in pts[:2])}</ul><ul><li>{pts[2]}</li></ul></div>' for k, (t, d, pts) in WHY.items())
-body = f'''<div class="vbar"><b>Home variants</b><div class="sm-seg" role="radiogroup" aria-label="Variant" id="vs">{''.join(f'<button role="radio" type="button" aria-checked="{str(k == "b").lower()}" data-k="{k}">{l}</button>' for k, l in [('a', 'A · Now'), ('b', 'B · Today'), ('c', 'C · Today, editorial'), ('d', 'D · Ask first')])}</div>
+body = f'''<div class="vbar" data-desk-host><b>Home variants</b><div class="sm-seg" role="radiogroup" aria-label="Variant" id="vs">{''.join(f'<button role="radio" type="button" aria-checked="{str(k == "b").lower()}" data-k="{k}">{l}</button>' for k, l in [('a', 'A · Now'), ('b', 'B · Today'), ('c', 'C · Today, editorial'), ('d', 'D · Ask first')])}</div>
 <select id="th" aria-label="Theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></div>
 {whyhtml}
 <div class="v" data-v="a">{VA}</div><div class="v on" data-v="b">{VB}</div><div class="v" data-v="c">{VC}</div><div class="v" data-v="d">{VD}</div>{TABBAR.replace('Revisit','Today')}'''
@@ -134,6 +134,6 @@ html = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name
 <style>{BUNDLE}
 {TOK}
 {SHELL_CSS}
-{CSS}</style></head><body>{body}{JS}</body></html>'''
+{CSS}</style></head><body>{body}{JS}{open('/tmp/claude-0/-home-user-shelfmark/ebcb0130-eb79-5d11-ad3d-48330e17911a/scratchpad/dsgen/desk.js').read()}</body></html>'''
 open(f'{B}/design/home-variants.html', 'w').write(html)
 print('ok', len(html))
