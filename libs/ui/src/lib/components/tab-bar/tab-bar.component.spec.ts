@@ -152,23 +152,23 @@ describe('TabBarComponent', () => {
     }).toThrow(/at most 4 items/);
   });
 
-  it('draws a glass bar, 68px tall with 26px corners, fixed 16px / 20px plus the safe area, at most 560px wide', () => {
+  it('draws a solid bar, 64px tall with 12px corners, fixed 8px / 8px plus the safe area, at most 560px wide', () => {
     const css = compileScss('lib/components/tab-bar/tab-bar.component.scss');
     expect(css).toContain('background: var(--surface)');
     expect(css).toContain('border: 1px solid var(--glass-line)');
-    expect(css).toContain('block-size: 4.25rem');
-    expect(css).toContain('border-radius: 1.625rem');
-    // 16px from the sides on a phone; centred and at most 560px wide on a tablet (#316).
-    expect(css).toContain('inset-inline: max(var(--space-4), (100vw - 35rem) / 2)');
+    expect(css).toContain('block-size: 4rem');
+    expect(css).toContain('border-radius: var(--radius-md)');
+    // 8px from the sides on a phone; centred and at most 560px wide on a tablet (#316).
+    expect(css).toContain('inset-inline: max(var(--space-2), (100vw - 35rem) / 2)');
     expect(css).toContain('env(safe-area-inset-bottom, 0rem)');
-    expect(css).toContain('inline-size: 3.5rem');
-    expect(css).toContain('border-radius: 1.25rem');
+    expect(css).toContain('inline-size: 3rem');
+    expect(css).toContain('border-radius: var(--radius-fab)');
     expect(css).toContain('background: var(--primary)');
   });
 
   it('keeps tabs at least 44px high and shows hover only on hover-capable pointers', () => {
     const css = compileScss('lib/components/tab-bar/tab-bar.component.scss');
-    expect(css).toContain('block-size: 3.25rem');
+    expect(css).toContain('block-size: 3rem');
     expect(css).toContain('min-inline-size: 3.5rem');
     expect(withoutMedia(css, /hover: hover/)).not.toContain(':hover');
     expect(mediaBlocks(css, /hover: hover/).join('')).toContain(':hover');

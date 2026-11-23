@@ -71,7 +71,7 @@
             [colour]="node.colour ?? FOLDER_COLOUR.Graphite"
           />
         } @else if (node.icon) {
-          <ui-icon class="ui-tree__icon" [name]="node.icon" [size]="ICON_SIZE.Md" />
+          <ui-icon class="ui-tree__icon" [name]="node.icon" [size]="ICON_SIZE.Sm" />
         }
         <span #nameText class="ui-tree__name" [id]="item.id() + '-name'">{{ node.name }}</span>
         @if (node.dot) {

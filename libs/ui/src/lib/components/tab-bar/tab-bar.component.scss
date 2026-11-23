@@ -4,12 +4,12 @@
   display: block;
 }
 
-// Pinned over the content: 16px from the sides, 20px above the bottom edge and the home indicator.
+// Pinned over the content: 8px from the sides, 8px above the bottom edge and the home indicator.
 // On a wider screen (a tablet in the mobile shell, #316) it stays a centred bar of at most 560px.
 :host(.ui-tab-bar--fixed) {
   position: fixed;
-  inset-inline: max(var(--space-4), calc((100vw - #{rem(560px)}) / 2));
-  inset-block-end: calc(#{rem(20px)} + env(safe-area-inset-bottom, 0rem));
+  inset-inline: max(var(--space-2), calc((100vw - #{rem(560px)}) / 2));
+  inset-block-end: calc(var(--space-2) + env(safe-area-inset-bottom, 0rem));
   z-index: 10;
 }
 
@@ -17,9 +17,9 @@
   @include float-surface;
 
   box-sizing: border-box;
-  block-size: rem(68px);
+  block-size: rem(64px);
   padding-inline: var(--space-2);
-  border-radius: rem(26px);
+  border-radius: var(--radius-md);
 }
 
 .ui-tab-bar__list {
@@ -49,9 +49,10 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  inline-size: rem(64px);
   min-inline-size: rem(56px);
   max-inline-size: 100%;
-  block-size: rem(52px);
+  block-size: rem(48px);
 
   // Narrow side padding: labels get the room (translations run longer; at 360px a slot is ~60px).
   padding: 0 var(--space-1);
@@ -61,7 +62,7 @@
   cursor: pointer;
   background: transparent;
   border: 0;
-  border-radius: rem(18px);
+  border-radius: rem(8px);
 
   @include hover {
     color: var(--text);
@@ -72,13 +73,13 @@
   }
 
   &:active {
-    background: var(--surface-hover);
+    background: var(--surface-pressed);
   }
 }
 
 .ui-tab-bar__tab--active {
   color: var(--text);
-  background: var(--surface-hover);
+  background: var(--surface-pressed);
 }
 
 .ui-tab-bar__label {
@@ -88,19 +89,19 @@
   white-space: nowrap;
 }
 
-// The primary Add button: 56px, 20px corners.
+// The primary Add button: 48px, 12px corners (`radius-fab`).
 .ui-tab-bar__add {
   display: grid;
   flex: none;
   place-items: center;
-  inline-size: rem(56px);
-  block-size: rem(56px);
+  inline-size: rem(48px);
+  block-size: rem(48px);
   padding: 0;
   color: var(--on-primary);
   cursor: pointer;
   background: var(--primary);
   border: 0;
-  border-radius: rem(20px);
+  border-radius: var(--radius-fab);
 
   @include hover {
     background: var(--primary-hover);
