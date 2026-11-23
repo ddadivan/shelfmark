@@ -20,6 +20,8 @@ const KEY_ICONS = ['key-command', 'key-enter', 'key-option', 'key-shift'];
  * "Send feedback" (#315).
  */
 const APP_ICONS = [
+  // The Masonry view of the library feed (Shelf, ADR 0061).
+  'masonry',
   // Folder icons added in #335 (food, sport, travel, money, music, home, health, kids, pets, ...).
   'ball',
   // The reminder chip and the Reminders entry (#275).

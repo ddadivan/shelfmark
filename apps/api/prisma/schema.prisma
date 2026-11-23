@@ -55,7 +55,7 @@ model User {
   appearanceSavedAt     DateTime?            @map("appearance_saved_at") @db.Timestamptz(3)
   // Settings › Library (#284). CHECKs in the migration keep the three text columns to the contract
   // allow-lists. newLinksFolderId has no relation on purpose (see the migration): the API checks it.
-  defaultView           String               @default("cards") @map("default_view")
+  defaultView           String               @default("masonry") @map("default_view")
   defaultSort           String               @default("newest") @map("default_sort")
   openLinksIn           String               @default("new-tab") @map("open_links_in")
   showFolderCounts      Boolean              @default(true) @map("show_folder_counts")
