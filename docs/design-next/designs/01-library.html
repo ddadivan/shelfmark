@@ -396,6 +396,7 @@ a.mi{text-decoration:none}
 .ctags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
 .meta:empty{display:none}
 @media (max-width:39.99em){.sum{display:flex}.sum span{-webkit-line-clamp:2}.note span{-webkit-line-clamp:2}.ctags .tag:nth-child(n+3){display:none}}
+.rsub{display:flex;gap:6px;font-size:var(--t-sec);color:var(--muted);min-width:0}.rsub>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rnote{color:var(--fg)}.rnote svg{flex:none;margin-top:3px;color:var(--muted)}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -589,7 +590,8 @@ a.mi{text-decoration:none}
     if(l.kind==='none')return `<span class="thumb"><span class="none"><span style="width:24px;height:24px;font-size:12px;border-radius:8px">${letter(l)}</span></span></span>`;
     return `<span class="thumb">${art(l)}${l.kind==='video'?`<span class="play" style="width:24px;height:24px;margin:-12px 0 0 -12px">${ic('i-play',12)}</span>`:''}</span>`;
   }
-  const row=(l,mini)=>`<button class="row" type="button" data-open="${l.id}" aria-current="${S.link===l.id}">${thumb(l)}<span class="tx"><span class="tt">${esc(l.title)}</span><span class="meta" style="margin:0"><span class="fav">${letter(l)}</span><span class="d">${esc(l.domain)}</span></span></span>${mini?'':`<span class="tags">${l.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</span><span class="fold"><i style="background:var(--fb-${l.c})"></i>${esc(l.folder)}</span><span class="date">${esc(l.date)}</span>`}</button>`;
+  const rowSub=l=>{const d=S.show.desc&&(l.desc||l.summary);const n=S.show.note&&l.note;return (d?`<span class="rsub">${l.desc?'':ic('i-spark',12).replace('aria-hidden="true"','role="img" aria-label="AI summary" style="color:var(--ai);flex:none;margin-top:3px"')}<span>${esc(l.desc||l.summary)}</span></span>`:'')+(n?`<span class="rsub rnote">${ic('i-edit',12)}<span>${esc(l.note)}</span></span>`:'')};
+  const row=(l,mini)=>`<button class="row" type="button" data-open="${l.id}" aria-current="${S.link===l.id}">${S.show.image?thumb(l):''}<span class="tx"><span class="tt">${esc(l.title)}</span>${mini?'':rowSub(l)}${S.show.site?`<span class="meta" style="margin:0"><span class="fav">${letter(l)}</span><span class="d">${esc(l.domain)}</span></span>`:''}</span>${mini?'':`${S.show.tags?`<span class="tags">${l.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</span>`:''}<span class="fold"><i style="background:var(--fb-${l.c})"></i>${esc(l.folder)}</span>${S.show.date?`<span class="date">${esc(l.date)}</span>`:''}`}</button>`;
   const hl=l=>`<button class="hl" type="button" data-open="${l.id}" aria-current="${S.link===l.id}"><span class="fav">${letter(l)}</span><span class="t">${esc(l.title)}</span><span class="m dom">${esc(l.domain)}</span><span class="m fo" style="display:flex;align-items:center;gap:8px"><i style="width:12px;height:12px;border-radius:4px;background:var(--fb-${l.c})"></i>${esc(l.folder)}</span><span class="m" style="text-align:right">${esc(l.date)}</span></button>`;
 
   function visible(){
