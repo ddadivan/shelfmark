@@ -362,7 +362,7 @@ export const DialogControls: Story = {
 
 const commandFrame = (theme: Theme) => `
   <div ${THEME_ATTRIBUTE}="${theme}" class="dst-gallery">
-    <p class="dst-hint">${theme} theme: command dialog (glass, 28px corners; live version in Components/CommandList)</p>
+    <p class="dst-hint">${theme} theme: command dialog (solid surface, 16px corners; live version in Components/CommandList)</p>
     <div class="dst-scrim">
       <ui-dialog title="Search" variant="command" closeLabel="Close">
         <p class="dst-text">The command list sits here; the title is visually hidden.</p>

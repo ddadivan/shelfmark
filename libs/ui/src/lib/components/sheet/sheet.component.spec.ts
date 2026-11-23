@@ -82,7 +82,7 @@ describe('SheetComponent', () => {
     expect(await axeViolations(root)).toEqual([]);
   });
 
-  it('leaves 150px of the page above and rounds the top corners to 28px on a phone', () => {
+  it('leaves 150px of the page above and rounds the top corners to 16px on a phone', () => {
     const css = compileScss('lib/components/dialog/dialog.component.scss');
     const phone = mediaBlocks(css, /width\s*<\s*40em/).join('\n');
     expect(phone).toMatch(
@@ -96,7 +96,7 @@ describe('SheetComponent', () => {
     );
   });
 
-  it('stays a bottom sheet on a tablet: centred, 560px wide, 28px top corners (#316)', () => {
+  it('stays a bottom sheet on a tablet: centred, 560px wide, 16px top corners (#316)', () => {
     const css = compileScss('lib/components/dialog/dialog.component.scss');
     const tablet = mediaBlocks(css, /40em\s*<=\s*width\s*<\s*64em/).join('\n');
     expect(tablet).toMatch(/\.ui-dialog--sheet\s*\{[^}]*width: min\(35rem, 100vw\)/);

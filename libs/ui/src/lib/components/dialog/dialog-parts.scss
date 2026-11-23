@@ -61,7 +61,7 @@
 }
 
 .ui-dialog__title {
-  @include type(title);
+  @include type(heading);
 
   margin: 0;
   color: var(--text);
