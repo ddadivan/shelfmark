@@ -21,7 +21,7 @@
   }
 
   @include hover {
-    background: var(--surface-hover);
+    background: var(--ui-row-hover, var(--fill));
   }
 }
 
@@ -68,8 +68,7 @@
   overflow: hidden;
   color: var(--text-muted);
   background: var(--surface-hover);
-  border-radius: var(--radius-md);
-  box-shadow: inset 0 0 0 1px var(--border);
+  border-radius: var(--radius-sm);
 
   @include phone {
     width: rem(48px);
@@ -124,9 +123,8 @@
 
 // The meta line holds the folder icon and name, side by side.
 .ui-history-row__meta {
-  @include type(label);
+  @include type(caption);
 
-  font-weight: 400;
   display: flex;
   gap: rem(6px);
   align-items: center;
@@ -141,9 +139,8 @@
 }
 
 .ui-history-row__time {
-  @include type(label);
+  @include type(caption);
 
-  font-weight: 400;
   flex: none;
   min-width: rem(48px);
   color: var(--text-muted);

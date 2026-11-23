@@ -477,7 +477,7 @@ describe('empty-state scene disc (#315, WCAG 1.4.11 3:1)', () => {
   it.each(['light', 'dark'] as const)(
     'keeps the scene edges and accent shapes at 3:1 on the disc in %s',
     (theme) => {
-      for (const edge of ['border-control', 'accent', 'primary']) {
+      for (const edge of ['border-control', 'ai', 'primary']) {
         const ratio = contrast(tokenHex(theme, edge), discHex(theme));
         expect(ratio, `${theme} ${edge}`).toBeGreaterThanOrEqual(3);
       }

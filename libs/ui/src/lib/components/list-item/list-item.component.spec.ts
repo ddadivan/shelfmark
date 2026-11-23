@@ -232,7 +232,7 @@ describe('ListItemComponent', () => {
 
     it('applies hover only under (hover: hover)', () => {
       expect(withoutMedia(css, /hover:\s*hover/)).not.toContain(':hover');
-      expect(mediaBlocks(css, HOVER_ONLY).join('\n')).toContain('var(--surface-hover)');
+      expect(mediaBlocks(css, HOVER_ONLY).join('\n')).toContain('var(--fill)');
     });
 
     it('shows the pressed colour under reduced motion, where there is no ripple', () => {

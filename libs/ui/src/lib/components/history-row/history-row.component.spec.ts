@@ -211,7 +211,7 @@ describe('HistoryRowComponent', () => {
 
     it('hovers only under (hover: hover)', () => {
       const hover = mediaBlocks(css, /hover:\s*hover/).join('\n');
-      expect(hover).toContain('var(--surface-hover)');
+      expect(hover).toContain('var(--fill)');
     });
 
     it('shows the pressed colour under reduced motion', () => {
