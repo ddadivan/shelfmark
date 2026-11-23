@@ -616,6 +616,11 @@ a.tab{text-decoration:none}
 @keyframes il-fade{0%,30%{opacity:var(--ill-from)}50%,100%{opacity:var(--ill-to)}}
 @keyframes il-shift{0%,100%{transform:none}50%{transform:translate(var(--ill-dx,0),var(--ill-dy,0))}}
 @media (prefers-reduced-motion:reduce){.sm-scene--il *{animation:none!important}}
+.view-btn{gap:6px}.view-btn .vb-l{font-weight:500}
+.vsz{display:flex;margin:4px 8px 8px}.vsz button{flex:1}.vsz.off{opacity:.45}.vsz.off button{cursor:not-allowed}
+@media (max-width:39.99em){.view-btn .vb-l{display:none}}
+.lp-sep{width:1px;height:20px;margin:0 4px;background:var(--line)}
+.r-fig{margin:16px 0}.r-fig>div{border-radius:12px;overflow:hidden}.r-fig svg{display:block;width:100%;height:100%}
 .viewwrap{position:relative;display:inline-flex}
 .sizepop{position:absolute;top:calc(100% + 6px);right:0;z-index:30;display:flex;flex-direction:column;gap:2px;min-width:160px;padding:6px;border-radius:12px;opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity 150ms,transform 150ms}
 .sizepop::before{content:"";position:absolute;left:0;right:0;top:-8px;height:8px}
@@ -719,7 +724,7 @@ a.tab{text-decoration:none}
     <option value="site">Link page, Site</option>
     <option value="blocked">Site can't be shown</option>
     <option value="empty">Empty library</option>
-    <option value="g2">Save and Revisit →</option><option value="go:search.html">Search →</option><option value="go:organise.html">Organise →</option><option value="go:settings.html">Settings →</option><option value="go:public.html">Sign-in and public →</option><option value="go:extension.html">Extension →</option><option value="go:select-move.html">Select, move, side by side →</option><option value="go:data.html">Import, export, sharing →</option><option value="go:first-run.html">First run, help, landing →</option><option value="go:ask.html">Ask your shelf →</option><option value="go:notify.html">Reminders and notifications →</option><option value="go:views.html">Views, dates, shortcuts →</option>
+    <option value="g2">Save and Revisit →</option><option value="go:search.html">Search →</option><option value="go:organise.html">Organise →</option><option value="go:settings.html">Settings →</option><option value="go:public.html">Sign-in and public →</option><option value="go:extension.html">Extension →</option><option value="go:select-move.html">Select, move, side by side →</option><option value="go:data.html">Import, export, sharing →</option><option value="go:first-run.html">First run, help, landing →</option><option value="go:ask.html">Ask your shelf →</option><option value="go:notify.html">Reminders and notifications →</option><option value="go:views.html">Views, dates, shortcuts →</option><option value="go:system.html">System states →</option><option value="go:tools.html">Assistant, clean-up, help →</option>
   </select>
 </div>
 
@@ -880,7 +885,7 @@ a.tab{text-decoration:none}
     return `<div class="head"><h1>${qq?'Search':scopeTitle()}</h1><span class="count">${qq?`${items.length} for “${esc(qq)}”${S.scope!=='all'?' in '+scopeTitle():''}`:(S.scope==='all'&&S.chip==='all'?58:items.length)+' links'}</span>
       <div class="tools"><button class="btn sm" type="button" data-pop="filter" aria-haspopup="dialog">${ic('i-filter',16)}Filter</button>
       <button class="btn sm muted sort" type="button" data-pop="sort" aria-haspopup="menu">Newest first${ic('i-chev',16)}</button>
-      <div class="viewwrap"><div class="seg" role="radiogroup" aria-label="View" id="seg">${VIEWS.map(([id,lab,i])=>`<button type="button" role="radio" aria-checked="${S.view===id}" data-view="${id}" aria-label="${lab}" title="${lab}">${ic(i,16)}</button>`).join('')}</div>${(S.view==='masonry'||S.view==='grid')?`<div class="sizepop l2" role="group" aria-label="Card size"><span class="sp-t">Card size</span>${[['s','Small'],['m','Medium'],['l','Large']].map(([k,t])=>`<button type="button" class="sp-b" data-size="${k}" aria-pressed="${S.size===k}">${t}</button>`).join('')}</div>`:''}</div>
+      <button class="btn sm view-btn" type="button" data-pop="view" aria-haspopup="menu" aria-label="View: ${VIEWS.find(x=>x[0]===S.view)[1]}" title="View">${ic(VIEWS.find(x=>x[0]===S.view)[2],16)}<span class="vb-l">${VIEWS.find(x=>x[0]===S.view)[1]}</span>${ic('i-chev',14)}</button>
       <button class="ib" type="button" data-pop="display" aria-haspopup="dialog" aria-label="Show on cards" title="Show on cards">${ic('i-sliders',16)}</button>
       <button class="ib split-btn" type="button" aria-label="Side by side" title="Side by side">${ic('i-split',16)}</button>
       <button class="ib" type="button" data-pop="more" aria-haspopup="menu" aria-label="More: Select, Export this view" title="More">${ic('i-more',16)}</button></div></div>
@@ -897,7 +902,16 @@ a.tab{text-decoration:none}
     return `<div class="site" style="background:#fff;color:#1d1d1f"><div class="site-bar" style="background:${bg};color:${fg}">${esc(l.site||l.domain)}</div><div class="site-body"><h2>${esc(l.title)}</h2><p style="color:#555">${esc(l.summary||'The page as the site shows it, with its own fonts and colours.')}</p>${l.kind==='type'||l.kind==='none'?'':`<div class="site-media">${art(l)}</div>`}<p>This is how ${esc(l.domain)} shows the page inside Shelfmark. Reader turns article pages into clean text when the site has one.</p></div></div>`;
   }
   function readerView(l){
-    const a=ARTICLES[l.reader];const r=S.reader;
+    const r=S.reader;
+    if(!l.reader){return `<div class="reader" data-size="${r.size}" data-font="${r.font}" data-width="${r.width}" data-tone="${r.tone}"><article class="article">
+      <div class="notice" style="margin-bottom:16px">${ic('i-text',16)}${l.kind==='video'?'A video has no text to read. Reader shows its picture, description and your note; play it on the site.':'This page has no article text. Reader shows the picture, what the page says about itself and your note.'}</div>
+      <div class="r-site"><span class="fav">${letter(l)}</span>${esc(l.site||l.domain)}</div><h2 class="r-title">${esc(l.title)}</h2>
+      ${l.price?`<div class="r-meta">${esc(l.price)}</div>`:''}
+      <figure class="r-fig"><div style="aspect-ratio:${l.kind==='video'?'16/9':'4/3'}">${art(l)}</div></figure>
+      ${(l.desc||l.summary)?`<p>${esc(l.desc||l.summary)}</p>`:''}
+      ${l.note?`<div class="r-sum">${ic('i-edit',14)}<span>${esc(l.note)}</span></div>`:''}
+      <p><a class="btn secondary" href="#" data-ext>${ic('i-ext',16)}Open ${esc(l.domain)}</a></p></article></div>`}
+    const a=ARTICLES[l.reader];
     const body=a.blocks.map(([t,v])=>t==='p'?`<p>${esc(v)}</p>`:t==='h'?`<h3>${esc(v)}</h3>`:t==='q'?`<blockquote>${esc(v)}</blockquote>`:t==='ul'?`<ul>${v.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:`<figure><div>${art({kind:'type',bg:'#e9e6dc'})}</div><figcaption>${esc(v)}</figcaption></figure>`).join('');
     return `<div class="reader" data-size="${r.size}" data-font="${r.font}" data-width="${r.width}" data-tone="${r.tone}"><div class="progress" aria-hidden="true"><i id="prog"></i></div>
       ${l.blocked?`<div class="notice">${ic('i-text',16)}Showing Reader: ${esc(l.domain)} doesn't allow showing the page here.</div>`:''}
@@ -920,23 +934,24 @@ a.tab{text-decoration:none}
   }
   function linkHTML(items){
     const l=byId(S.link);const idx=items.findIndex(x=>x.id===l.id);
-    const canRead=!!l.reader;if(!canRead&&S.mode==='reader')S.mode='site';
+    const canRead=true;
     const view=S.mode==='reader'&&canRead?readerView(l):siteView(l);
     return `<div class="split on">
       <nav class="mini l1 panel" aria-label="Links">${items.map(x=>row(x,true)).join('')}</nav>
       <section class="lp l1" aria-label="Link: ${esc(l.title)}">
         <div class="lp-head">
-          <button class="ib" type="button" data-close aria-label="Back to the links" title="Back (Esc)">${ic('i-left',16)}</button>
           <button class="ib" type="button" data-step="-1" aria-label="Previous link" title="Previous (↑)" ${idx<=0?'disabled':''}>${ic('i-up',16)}</button>
           <button class="ib" type="button" data-step="1" aria-label="Next link" title="Next (↓)" style="transform:rotate(180deg)" ${idx>=items.length-1?'disabled':''}>${ic('i-up',16)}</button>
           <div class="lp-title"><b>${esc(l.title)}</b><span><span class="fav">${letter(l)}</span>${esc(l.domain)}</span></div>
           <div class="lp-tools">
-            ${canRead?`<div class="seg" role="radiogroup" aria-label="Show as"><button type="button" role="radio" aria-checked="${S.mode==='site'}" data-mode="site">Site</button><button type="button" role="radio" aria-checked="${S.mode==='reader'}" data-mode="reader">Reader</button></div>`:''}
+            ${true?`<div class="seg" role="radiogroup" aria-label="Show as"><button type="button" role="radio" aria-checked="${S.mode==='site'}" data-mode="site">Site</button><button type="button" role="radio" aria-checked="${S.mode==='reader'}" data-mode="reader">Reader</button></div>`:''}
             ${S.mode==='reader'&&canRead?`<button class="ib" type="button" data-pop="reading" aria-haspopup="dialog" aria-label="Reading settings" title="Reading settings">${ic('i-text',16)}</button>`:''}
             <a class="btn sm secondary" href="#" data-ext>${ic('i-ext',16)}Open</a>
             <button class="ib" type="button" data-fav="${l.id}" aria-pressed="${!!l.fav}" aria-label="${l.fav?'Remove from favorites':'Add to favorites'}" title="Favorite" style="${l.fav?'color:var(--star)':''}">${ic(l.fav?'i-star-f':'i-star',16)}</button>
             <button class="ib" type="button" data-details aria-pressed="${S.details}" aria-label="Details" title="Details">${ic('i-panel',16)}</button>
             <button class="ib" type="button" data-menu="${l.id}" aria-haspopup="menu" aria-label="More actions">${ic('i-more',16)}</button>
+            <span class="lp-sep" aria-hidden="true"></span>
+            <button class="ib" type="button" data-close aria-label="Close" title="Close (Esc)">${ic('i-x',16)}</button>
           </div>
         </div>
         <div class="lp-body ${S.details?'details':''}"><div class="view" id="view">${view}</div>${S.details?detailsHTML(l):''}</div>
@@ -986,6 +1001,7 @@ a.tab{text-decoration:none}
       <button class="mi" type="button" data-rename="${l.id}">${ic('i-edit',16)}Rename…<span class="kbd">F2</span></button><button class="mi" type="button" data-fav="${l.id}">${ic('i-star',16)}${l.fav?'Remove from favorites':'Add to favorites'}</button><button class="mi" type="button">${ic('i-pin',16)}${l.pinned?'Unpin from top of folder':'Pin to top of folder'}</button><button class="mi" type="button">${ic('i-pin',16)}Pin to sidebar</button>
       <button class="mi" type="button" data-pop="move" data-id="${l.id}">${ic('i-move',16)}Move to folder…<span class="kbd">M</span></button><button class="mi" type="button" data-pop="remind" data-id="${l.id}">${ic('i-bell',16)}Remind me…<span class="kbd">R</span></button><button class="mi" type="button" data-copy>${ic('i-copy',16)}Copy link</button><button class="mi" type="button">${ic('i-rule',16)}Rule for ${esc(l.domain)}…</button>
       <div class="msep"></div><button class="mi danger" type="button" data-del="${l.id}">${ic('i-trash',16)}Delete<span class="kbd">⌫</span></button>`;
+    else if(kind==='view'){const sz=S.view==='masonry'||S.view==='grid';h=`<div class="mh">Card size</div><div class="vsz seg${sz?'':' off'}" role="radiogroup" aria-label="Card size"${sz?'':' aria-disabled="true" title="Card size is for Masonry and Grid"'}>${[['s','Small'],['m','Medium'],['l','Large']].map(([k,t])=>`<button type="button" role="radio" aria-checked="${S.size===k}" data-size="${k}"${sz?'':' disabled'}>${t}</button>`).join('')}</div><div class="msep"></div><div class="mh">View</div>`+VIEWS.map(([id,lab,i])=>`<button class="mi" type="button" role="menuitemradio" aria-checked="${S.view===id}" data-view="${id}">${ic(i,16)}${lab}</button>`).join('')}
     else if(kind==='sort')h=['Newest first','Oldest first','Title A–Z'].map((t,i)=>`<button class="mi" type="button" role="menuitemradio" aria-checked="${i===0}">${t}</button>`).join('');
     else if(kind==='display'){pop.setAttribute('role','dialog');pop.setAttribute('aria-label','Show on cards');h=`<div class="mh">Show on cards</div>`+[['image','Preview image'],['desc','Description'],['note','Note'],['tags','Tags'],['site','Site'],['date','Date saved']].map(([k,t])=>`<button class="mi" type="button" role="menuitemcheckbox" aria-checked="${!!S.show[k]}" data-show="${k}">${t}<span style="margin-left:auto;color:var(--fg)">${S.show[k]?ic('i-check',16):''}</span></button>`).join('')+`<div class="msep"></div><p class="muted" style="margin:4px 8px 4px;font-size:var(--t-meta);max-width:28ch">Description is the page's own text, or an AI summary (marked with ✦) when it has none. Same switches in Settings › Appearance.</p><button class="mi" type="button" data-show-reset>Reset to default</button>`}
     else if(kind==='more')h=`<button class="mi" type="button" data-select-on>Select links<span class="kbd">X</span></button><button class="mi" type="button">${ic('i-upload',16)}Export this view…</button>`;
@@ -999,7 +1015,7 @@ a.tab{text-decoration:none}
       h=g('size','Text size',[['s','S'],['m','M'],['l','L']])+g('font','Font',[['sans','Sans'],['serif','Serif'],['readable','Readable']])+g('width','Line width',[['narrow','Narrow'],['wide','Wide']])+g('tone','Page',[['app','Like the app'],['sepia','Sepia']]);}
     else if(kind==='account')h=`<button class="mi" type="button">${ic('i-user',16)}Settings</button><div class="mh">Theme</div>${[['system','System'],['light','Light'],['dark','Dark']].map(([v,t])=>`<button class="mi" type="button" role="menuitemradio" data-theme-set="${v}" aria-checked="${(root.getAttribute('data-theme')||'system')===v}">${t}</button>`).join('')}<div class="msep"></div><button class="mi" type="button">Keyboard shortcuts<span class="kbd">?</span></button><button class="mi" type="button">Help and feedback</button><button class="mi" type="button">What's new</button><div class="msep"></div><button class="mi" type="button">Sign out</button>`;
     pop.innerHTML=h;pop.hidden=false;if(popFor&&popFor!==trigger)popFor.removeAttribute('aria-expanded');popFor=trigger;if(trigger&&trigger.setAttribute)trigger.setAttribute('aria-expanded','true');
-    if(sheetize({menu:l&&l.title,sort:'Sort by',more:'More',filter:'Filter',reading:'Reading settings',account:'Account'}[kind])){const f=pop.querySelector('button,a');if(f)f.focus({preventScroll:true});return}
+    if(sheetize({menu:l&&l.title,view:'View',sort:'Sort by',more:'More',filter:'Filter',reading:'Reading settings',account:'Account'}[kind])){const f=pop.querySelector('button,a');if(f)f.focus({preventScroll:true});return}
     const r=trigger.getBoundingClientRect();const w=pop.offsetWidth,hh=pop.offsetHeight;
     let x=Math.min(r.left,innerWidth-w-16);if(r.right>innerWidth/2)x=Math.max(16,r.right-w);
     let y=r.bottom+8;if(y+hh>innerHeight-16)y=Math.max(16,r.top-hh-8);
@@ -1020,8 +1036,8 @@ a.tab{text-decoration:none}
     const m=t.closest('[data-menu]');if(m){if(!pop.hidden&&popFor===m){closePop(true);return}openPop('menu',m,+m.dataset.menu);return}
     if(t.closest('#avatar')){openPop('account',t.closest('#avatar'));return}
     const f=t.closest('[data-fav]');if(f){const l=byId(+f.dataset.fav);l.fav=!l.fav;toast(l.fav?'Added to favorites':'Removed from favorites',true);closePop();render();return}
-    const zs=t.closest('[data-size]');if(zs){S.size=zs.dataset.size;save();render();return}
-    const v=t.closest('[data-view]');if(v){S.view=v.dataset.view;save();(window.__moVT||(f=>f()))(()=>render());return}
+    const zs=t.closest('[data-size]');if(zs){S.size=zs.dataset.size;save();render();pop.querySelectorAll('[data-size]').forEach(b=>b.setAttribute('aria-checked',b.dataset.size===S.size));return}
+    const v=t.closest('[data-view]');if(v){S.view=v.dataset.view;save();closePop();(window.__moVT||(f=>f()))(()=>render());return}
     const c=t.closest('[data-chip]');if(c){S.chip=c.dataset.chip;render();return}
     const sc=t.closest('[data-scope]');if(sc){S.scope=sc.dataset.scope;S.link=null;S.empty=false;S.select=false;S.sel.clear();render();document.querySelectorAll('#page .masonry,#page .grid,#page .panel,#page .t-back').forEach(g=>{[...g.children].forEach((c,i)=>c.style.setProperty('--i',i));g.classList.add('mo-stagger');setTimeout(()=>g.classList.remove('mo-stagger'),500)});return}
     const md=t.closest('[data-mode]');if(md){S.mode=md.dataset.mode;render();return}
@@ -1245,7 +1261,7 @@ window.__markDrops=()=>document.querySelectorAll('.side .sm-nav--plain,.side .na
 .mo-seg>.mo-thumb{position:absolute;z-index:-1;top:0;left:0;border-radius:var(--r-sm,var(--radius-sm,8px));background:var(--l1,var(--surface));box-shadow:0 0 0 1px var(--line),var(--sh1,var(--shadow-l1));transition:transform 200ms cubic-bezier(.4,0,.2,1),width 200ms cubic-bezier(.4,0,.2,1)}
 .mo-seg>button[aria-checked="true"]{background:transparent!important;box-shadow:none!important}
 /* Fluid hover: one highlight glides between rows */
-.mo-fluid{position:relative;isolation:isolate}
+:where(.mo-fluid){position:relative}.mo-fluid{isolation:isolate}
 .mo-fluid>.mo-hl{position:absolute;z-index:-1;left:0;right:0;top:0;border-radius:var(--r-sm,var(--radius-sm,8px));background:var(--hover,var(--surface-hover));opacity:0;pointer-events:none;transition:transform 200ms cubic-bezier(.2,.8,.2,1),height 200ms cubic-bezier(.2,.8,.2,1),opacity 120ms}
 .mo-fluid.mo-hovering>.mo-hl{opacity:1}
 @media (hover:hover) and (pointer:fine){.mo-fluid .mi:hover,.mo-fluid .sm-mi:hover,.mo-fluid .nav:hover:not([aria-current]),.mo-fluid .sm-nav:hover:not([aria-current]){background:transparent!important}}

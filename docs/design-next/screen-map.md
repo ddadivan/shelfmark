@@ -25,7 +25,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 | --- | --- | --- | --- | --- |
 | L-01 | Library feed (All links, Unsorted, Favorites, folder) | List | toolbar row / same / Options sheet | empty per scope, loading, error, filtered-empty, selection |
 | L-02 | Folder header: breadcrumbs, name, folder menu, subfolders | part of L-01 | yes / yes / compact | no subfolders |
-| L-03 | Views: Masonry, Grid, List, Headlines | toggle | all four / all / Masonry 2 columns, List, Headlines | per-feed memory |
+| L-03 | Views: Masonry, Grid, List, Headlines, in one View button with a dropdown (Card size Small / Medium / Large on top, for Masonry and Grid; the views below) | dropdown | all four / all / Masonry 2 columns, List, Headlines | per-feed memory |
 | L-04 | Filter control (type, folder, tag, saved date, favorites) and saved views chips | popover + chips | yes / yes / sheet | no saved views |
 | L-05 | Card, row, headline row | component | hover actions / touch actions / long press | favorite, pinned to top, reminder, AI summary pending, no image |
 | L-06a | Show on cards: Preview image, Description (page text, or AI summary marked ✦ when there is none), Note, Tags, Site, Date saved; Reset to default. Same switches in Settings › Appearance | popover (toolbar button next to the views) | yes / yes / sheet | |
