@@ -54,9 +54,9 @@
 
   // `--ui-popup-visible-height` (FieldPopup, visible-area.ts): the room above an on-screen keyboard.
   max-height: min(rem(320px), calc(100vh - #{rem(16px)}), var(--ui-popup-visible-height, 100vh));
-  padding: rem(6px);
+  padding: var(--space-2);
   margin: var(--space-1) 0;
-  border-radius: rem(18px);
+  border-radius: var(--radius-md);
 }
 
 // `--ui-origin` is set on the overlay pane from the resolved position.
@@ -83,20 +83,21 @@
 
 // Item look of `ui-menu-item`.
 .ui-tag-input__option {
-  @include type(body);
+  @include type(label);
 
   display: flex;
   gap: rem(10px);
   align-items: center;
-  padding: rem(9px) rem(12px);
+  min-height: rem(36px);
+  padding: 0 rem(12px);
   color: var(--text);
   cursor: pointer;
   user-select: none;
-  border-radius: rem(12px);
+  border-radius: var(--radius-sm);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   @include hover {
-    background: var(--surface-hover);
+    background: var(--ui-row-hover, var(--fill));
   }
 
   &:active {
@@ -105,7 +106,7 @@
 
   // The option under the arrow keys (DOM focus stays in the input).
   &[data-active='true'] {
-    background: var(--surface-hover);
+    background: var(--ui-row-hover, var(--fill));
 
     @include focus-ring(-2px);
   }

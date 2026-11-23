@@ -35,7 +35,7 @@
   max-height: min(60vh, calc(100vh - #{rem(96px)}));
   margin: var(--space-2) 0;
   overflow: hidden;
-  border-radius: rem(18px);
+  border-radius: var(--radius-md);
 }
 
 // `--ui-origin` is set on the overlay pane from the resolved position.

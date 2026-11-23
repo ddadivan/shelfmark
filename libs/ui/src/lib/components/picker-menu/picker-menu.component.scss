@@ -61,10 +61,10 @@
 
   inline-size: min(rem(300px), calc(100vw - #{rem(16px)}));
   max-height: 60dvh;
-  padding: rem(6px);
+  padding: var(--space-2);
   margin: var(--space-1) 0;
   overflow-y: auto;
-  border-radius: rem(18px);
+  border-radius: var(--radius-md);
 
   &:focus-visible {
     outline: none;

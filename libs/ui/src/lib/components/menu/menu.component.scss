@@ -15,8 +15,8 @@
   min-width: rem(200px);
   max-width: rem(360px);
   max-height: calc(100vh - #{rem(16px)});
-  padding: rem(6px);
-  border-radius: rem(18px);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
   margin: var(--space-1) 0;
   overflow-y: auto;
   overscroll-behavior: contain;
