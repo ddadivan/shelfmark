@@ -97,7 +97,7 @@ Desktop (from 64em)                 Tablet (40–64em)              Phone (< 40e
 | Page | Route | Pattern | Contents |
 | --- | --- | --- | --- |
 | Library | `/links`, `/unsorted`, `/favorites`, `/folders/:id` | List (+ view toggle) | Title, count, one Filter control (type, tag, date, folder), saved views, view toggle (Masonry, Grid, List, Headlines), feed |
-| Link | `?link=<id>` over the list | Split pane on desktop, pushed page on phone | Preview of the page, details (title, note, folder, tags, reminder, summary), related links. Replaces the edit dialog and the preview as two things |
+| Link | `?link=<id>` over the list | Split pane on desktop, pushed page on phone | The page itself with a **Site / Reader** switch (5.7), details (title, note, folder, tags, reminder, summary), related links. Replaces the edit dialog and the preview as two things |
 | Revisit | `/revisit` | Inbox | One time-ordered queue: Due reminders, then "Forgotten this week", then Recently opened. Row actions: Open, Done, Snooze, Not interested |
 | Search results | `/search?q=` | List | Full results page (words, meaning, folders, tags), filters, "Save as view"; the ⌘K panel is its quick version |
 | Ask | inside search | (part of Search) | The answer opens in the search panel or results page, with its sources |
@@ -163,7 +163,7 @@ After:
 
 Before: a click opens the in-app preview by default.
 
-After: **a click opens the site** (new tab). The Link page (preview + details) opens with Space, the eye button, or "Details" in the menu. The setting stays for people who prefer the preview.
+After: **a click opens the site** (new tab). The Link page (preview + details) opens with Space, the eye button, or "Details" in the menu. The setting stays for people who prefer the preview. On the Link page, articles can be read in Reader mode (5.7).
 
 ### 5.5 Organise
 
@@ -177,6 +177,20 @@ After: **a click opens the site** (new tab). The Link page (preview + details) o
 
 - **Import**: one page `/import`, reached from Settings › Your data, the empty library and the avatar menu's Help. Sources: browser bookmarks now; Pocket and Raindrop files later (D10).
 - **Export**: one dialog. Entry points: Settings › Your data, and "Export this view" in the library's More menu (which opens the same dialog with the view preselected). The other three entry points go.
+
+### 5.7 Read a link (Reader mode)
+
+Designed earlier and not built (#539, "Site / Reader switch" and "Read the copy"). Proposed as part of the Link page:
+
+1. The Link page header has a **Site | Reader** switch next to "Open in browser", shown when the link is an article or a document (link kind) and a readable text could be extracted. Videos keep their embedded player; products and other pages show only Site.
+2. **Reader** shows the article as clean text: title, site, author and date when known, reading time, and the AI summary on top (with AI on). Headings, paragraphs, lists, quotes, code, images with captions. Links inside the text open in a new tab.
+3. **Reading settings** in a small popover: text size, font (sans, serif, readable), line width, theme (follows the app, or sepia). Kept per account.
+4. **When a site refuses to show inside the app** (today an empty "can't show this site" state, LIB-26), the Link page opens in Reader when a text is available, instead of a dead end.
+5. **Progress** is kept per link; Revisit gets a "Continue reading" group for articles started and not finished.
+6. Which mode opens: the last one the person used for that site; first time, Site (D14).
+7. Later: **Read the copy** (a saved copy of the text, so the article survives when the page changes or disappears) and highlights (D15).
+
+Implementation limits to plan for: the text is extracted on the server (readability-style parser behind the existing SSRF-safe fetcher) and sent as typed blocks (heading, paragraph, list, quote, code, image), never as HTML, so the app renders it with components and no `innerHTML`; images go through the image proxy (#57); extraction can fail quietly (the switch then stays on Site with a muted line "Reader isn't available for this page").
 
 ## 6. Feature decisions
 
@@ -206,7 +220,8 @@ Legend: **Keep** as is · **Change** behaviour or surface · **Merge** into anot
 | LIB-09..LIB-11 saved views | Change | Rename in place; reorder by drag; created from search and filters |
 | LIB-14..LIB-21 selection and bulk | Change | One delete model; toasts as P4 |
 | LIB-22, LIB-23 side by side | Cut (D5) | Drag onto sidebar folders and the Move popover cover filing; Related moves to the Link page |
-| LIB-24..LIB-26 preview | Merge | Into the Link page (preview + details) |
+| LIB-24..LIB-26 preview | Merge | Into the Link page (preview + details); the blocked state falls back to Reader |
+| (new, #539) Reader mode | Add | Site / Reader switch on the Link page (5.7) |
 | LIB-27, LIB-28, LIB-29, LIB-34 recent, forgotten | Merge | Into Revisit |
 | LIB-30 phone Library tab | Change | Scopes, folders, tags on one page |
 | LIB-31, EXP-02 library export menu | Merge | "Export this view" in the More menu opens the one Export dialog |
@@ -325,6 +340,8 @@ Small broken promises found in the inventory, worth fixing now on the current co
 | D11 | Offline: honest banner now, queued saves later? | Yes |
 | D12 | Remove the rating prompt? | Yes |
 | D13 | A click on a link opens the site by default (preview on Space / eye)? | Yes |
+| D14 | Reader mode as a Site / Reader switch on the Link page; first time Site, then the last mode used per site; Reader as the fallback when a site can't be shown? | Yes |
+| D15 | Saved copy of the text ("Read the copy") and highlights: later, after Reader ships? | Yes, later |
 
 ## 8. After approval
 
