@@ -30,7 +30,7 @@ Feature moves, merges or removals are proposed with reasons and decided by the a
 
 ## What exists so far
 
-- Step 6 draft for review: `migration-plan.md` (source-of-truth switch, tokens, components mapped to `libs/ui`, shell, screens by group with behaviour changes as separate issues, order, risks) and [ADR 0060](../adr/0060-design-next-foundations.md) (Proposed).
+- Step 6 parked until every screen is designed (author: designs first): `migration-plan.md` (source-of-truth switch, tokens, components mapped to `libs/ui`, shell, screens by group with behaviour changes as separate issues, order, risks) and [ADR 0060](../adr/0060-design-next-foundations.md) (Proposed).
 - Step 1 done: `features.md` and `screens.md` (the inventory, as is).
 - Step 2 approved: `flows-and-structure.md` (three jobs, new navigation, Revisit, Reader mode, decisions D1–D15).
 - Step 4 for review: the design system **Shelfmark Next** (tokens, brand book, 21 components with live previews, cover), published privately: https://claude.ai/artifact/DvqQnrVk4HsqW1he9iUX51; source in `design-system/`.
@@ -42,6 +42,10 @@ Feature moves, merges or removals are proposed with reasons and decided by the a
   - `designs/06-public.html`: sign-in (Google, GitHub, demo) and its error, shared folder, not found, offline.
   - `designs/07-extension.html`: save this page, all tabs, saved with edit, already saved, signed out and unsupported page, right-click save.
   - Generator: `designs/src/build_pages.py` (shell, tokens, icons) and `designs/src/content.py` (screens). Paths in them point to the session scratchpad.
+- Step 5, groups 8 to 10 (screens from the screen map that had no design yet), same artifact:
+  - `designs/08-select-move.html`: selecting several links and the bulk bar, Move to a folder (desktop and phone), tags for several links, Side by side while dragging, Unsorted with suggestions, rule offer, drop to save, related on your shelf, phone Library tab and selection.
+  - `designs/09-data.html`: import (choose file, check and folder choice, AI folders, progress, done with Undo), export, share a folder (on and off), phone save from another app.
+  - `designs/10-first-run.html`: empty library as first run, demo and offline strips, keyboard shortcuts, help with what's new and feedback, AI intro, custom theme, rating card, public changelog, landing, admin.
 - Step 5, group 1 (made before the design system; to be rebuilt from its components): `designs/01-library.html` (library, four views, Link page with Site / Reader, empty library; desktop, tablet, phone; light and dark), published privately: https://claude.ai/artifact/Np6b5Wf6vLjBbcdvUybnuv
 - Step 3 approved (Graphite, smaller radii): `foundations.md` (type, space, radius, elevation, three palettes with contrast), `screen-map.md` (every page and surface of the new structure), `foundations-preview.html` (visual version, published privately: https://claude.ai/artifact/64J7giL8JyZzdFFuqsQvFL).
 
