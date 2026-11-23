@@ -30,6 +30,7 @@ Feature moves, merges or removals are proposed with reasons and decided by the a
 
 ## What exists so far
 
+- Step 6 draft for review: `migration-plan.md` (source-of-truth switch, tokens, components mapped to `libs/ui`, shell, screens by group with behaviour changes as separate issues, order, risks) and [ADR 0060](../adr/0060-design-next-foundations.md) (Proposed).
 - Step 1 done: `features.md` and `screens.md` (the inventory, as is).
 - Step 2 approved: `flows-and-structure.md` (three jobs, new navigation, Revisit, Reader mode, decisions D1–D15).
 - Step 4 for review: the design system **Shelfmark Next** (tokens, brand book, 21 components with live previews, cover), published privately: https://claude.ai/artifact/DvqQnrVk4HsqW1he9iUX51; source in `design-system/`.
