@@ -389,7 +389,7 @@ a.mi{text-decoration:none}
   .dlg input{height:48px;font-size:1rem}
   .dlg .foot .btn{flex:1;height:48px}
 }
-@media (min-width:40em){.fs{display:none!important}}
+
 .note{display:flex;gap:8px;margin:6px 0 0;font-size:var(--t-sec);color:var(--fg)}
 .note svg{flex:none;margin-top:4px;color:var(--muted)}
 .note span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -397,6 +397,62 @@ a.mi{text-decoration:none}
 .meta:empty{display:none}
 @media (max-width:39.99em){.sum{display:flex}.sum span{-webkit-line-clamp:2}.note span{-webkit-line-clamp:2}.ctags .tag:nth-child(n+3){display:none}}
 .rsub{display:flex;gap:6px;font-size:var(--t-sec);color:var(--muted);min-width:0}.rsub>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rnote{color:var(--fg)}.rnote svg{flex:none;margin-top:3px;color:var(--muted)}
+
+.ask-btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--fg);border:1px solid var(--line-strong);background:var(--l1)}
+a.nav{text-decoration:none;color:inherit}
+a.tab{text-decoration:none}
+.t-sec{margin-top:32px}
+.t-h{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.t-h h2{margin:0;font-size:1.13rem;font-weight:600;line-height:1.25}
+.t-more{margin-left:auto;display:inline-flex;align-items:center;gap:2px;font-size:var(--t-sec);color:var(--muted);text-decoration:none;border:0;background:none;padding:0;cursor:pointer}
+.t-more svg{transform:rotate(-90deg)}
+.t-back{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.t-bk{position:relative;display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:var(--r-md)}
+.t-bk .open{position:absolute;inset:0;border:0;background:transparent;border-radius:inherit;cursor:pointer}
+.t-bk .thumb{width:72px;height:56px;flex:none}
+.t-bk .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.t-bk b{font-weight:600;font-size:.9375rem;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.t-why{display:flex;gap:6px;align-items:center;font-size:var(--t-meta);color:var(--muted)}
+.t-why.due{color:var(--warning,#8F5B00)}
+.t-prog{height:3px;border-radius:2px;background:var(--line);overflow:hidden;margin-top:4px}.t-prog i{display:block;height:100%;background:var(--accent)}
+.t-acts{position:relative;z-index:1;display:flex;flex-direction:column;gap:4px;opacity:0;transition:opacity 120ms}
+.t-bk:hover .t-acts,.t-bk:focus-within .t-acts{opacity:1}
+@media (hover:none){.t-acts{opacity:1}}
+.t-two{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px}
+.t-week{border-radius:var(--r-md)}
+.t-sv{display:flex;align-items:center;gap:12px;padding:8px 16px;min-height:52px}
+.t-sv+.t-sv{border-top:1px solid var(--line)}
+.t-sv .thumb{width:48px;height:36px;flex:none}
+.t-svt{flex:1;min-width:0;text-align:left;border:0;background:none;padding:0;color:var(--fg);font:inherit;font-size:var(--t-sec);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.t-to{display:flex;align-items:center;gap:6px;font-size:var(--t-meta);color:var(--muted);white-space:nowrap}
+.t-to b{color:var(--fg);font-weight:500}
+.t-gem{padding:16px;border-radius:var(--r-md);display:flex;flex-direction:column;gap:12px}
+.t-gem .cover{border-radius:var(--r-sm)}
+.t-gem h3{margin:4px 0 6px;font-size:1.13rem;font-weight:600;line-height:1.3}
+.t-gem p{margin:0;font-size:var(--t-sec)}
+.t-acts2{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.t-clear{border-radius:var(--r-md);padding:24px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.t-clear b{font-size:1rem}
+.t-clear .muted{font-size:var(--t-sec)}
+.selbox{position:absolute;top:12px;left:12px;z-index:3}
+.sm-check{width:20px;height:20px;border:1px solid var(--control);border-radius:4px;background:var(--l1);display:inline-grid;place-items:center;box-shadow:0 0 0 2px var(--l1)}
+.sm-check[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.card.selecting .open{cursor:pointer}
+.card[aria-selected="true"]{background:var(--accent-bg)!important;border-color:var(--line-strong)}
+.card[aria-selected="true"] .cover{transform:scale(.96);transition:transform 200ms}
+.bulk{position:sticky;bottom:16px;z-index:20;display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:8px;border-radius:var(--r-md);margin-top:16px;font-size:var(--t-sec)}
+.bulk .cnt{padding:0 8px 0 4px;font-weight:600}
+.fs-ask{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:var(--t-sec);color:var(--muted)}
+.fs-ask a{text-decoration:none;display:inline-flex;gap:6px;align-items:center}
+@media (min-width:40em){
+  .fs{inset:auto;left:50%;top:10vh;transform:translateX(-50%);width:min(760px,calc(100vw - 32px));max-height:78vh;border-radius:var(--r-lg);border:1px solid var(--line-strong);box-shadow:var(--sh3);background:var(--l1);animation:none}
+  .fs-head{padding:12px 16px}
+  .fs::backdrop{display:none}
+  body.search-open::after{content:"";position:fixed;inset:0;background:var(--scrim);z-index:89}
+}
+@media (max-width:63.99em){.t-back{grid-template-columns:minmax(0,1fr)}.t-two{grid-template-columns:minmax(0,1fr)}.t-two>*{min-width:0}.ask-btn{padding:0 10px}}
+@media (max-width:39.99em){.t-sv{flex-wrap:wrap;row-gap:2px;padding:8px 12px}.t-svt{flex:1 1 60%}.t-to{flex:1 1 calc(100% - 120px);padding-left:60px}.ask-btn{display:none}}
+@media (max-width:39.99em){.bulk{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));flex-wrap:nowrap;overflow-x:auto;z-index:60}body:has(.bulk) .tabbar{display:none}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -441,10 +497,11 @@ a.mi{text-decoration:none}
 <div class="app">
   <nav class="side l1" aria-label="Library">
     <div class="logo"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="4" fill="var(--accent)"/><path d="M14 4h5v8l-2.5-2-2.5 2z" fill="#8DBB86"/></svg><span>Shelfmark</span></div>
+    <button class="nav" type="button" data-scope="today" title="Today: 3 to come back to"><svg width="20" height="20"><use href="#i-revisit"/></svg><span class="lbl">Today</span><span class="dot">3</span><span class="dot-rail rail-only" aria-hidden="true"></span></button>
     <button class="nav" type="button" data-scope="all" title="All links"><svg width="20" height="20"><use href="#i-bookmark"/></svg><span class="lbl">All links</span><span class="n">58</span></button>
     <button class="nav" type="button" data-scope="unsorted" title="Unsorted"><svg width="20" height="20"><use href="#i-inbox"/></svg><span class="lbl">Unsorted</span><span class="n">17</span></button>
     <button class="nav" type="button" data-scope="favorites" title="Favorites"><svg width="20" height="20"><use href="#i-star"/></svg><span class="lbl">Favorites</span><span class="n">6</span></button>
-    <button class="nav" type="button" title="Revisit: 3 waiting"><svg width="20" height="20"><use href="#i-revisit"/></svg><span class="lbl">Revisit</span><span class="dot">3</span><span class="dot-rail rail-only" aria-hidden="true"></span></button>
+    <a class="nav" href="ask.html" title="Ask your shelf"><svg width="20" height="20" style="color:var(--ai)"><use href="#i-spark"/></svg><span class="lbl">Ask</span></a>
     <div class="sec">Pinned</div>
     <div class="tree">
       <button class="nav plain" type="button"><span class="tile" style="background:var(--fb-clay);color:var(--fc-clay)"><svg width="14" height="14"><use href="#i-folder"/></svg></span><span class="lbl">Angular</span><span class="n">6</span></button>
@@ -461,7 +518,8 @@ a.mi{text-decoration:none}
 
   <main class="main" id="main">
     <header class="top">
-      <label class="search l1"><svg width="16" height="16" aria-hidden="true"><use href="#i-search"/></svg><span class="sr">Search or ask</span><input id="q" type="search" placeholder="Search or ask your shelf" autocomplete="off"><span class="kbd kbd-hint">Ctrl K</span></label>
+      <label class="search l1"><svg width="16" height="16" aria-hidden="true"><use href="#i-search"/></svg><span class="sr">Search your links</span><input id="q" type="search" placeholder="Search your links" autocomplete="off" readonly><span class="kbd kbd-hint">Ctrl K</span></label>
+      <a class="btn ask-btn" href="ask.html" title="Ask your shelf (Ctrl J)"><svg width="16" height="16" aria-hidden="true" style="color:var(--ai)"><use href="#i-spark"/></svg>Ask</a>
       <div class="right">
         <button class="btn primary add-btn" type="button" id="add"><svg width="16" height="16" aria-hidden="true"><use href="#i-plus"/></svg>Add link</button>
         <button class="avatar" type="button" id="avatar" aria-haspopup="menu" aria-label="Account, theme, shortcuts and help">DU</button>
@@ -472,16 +530,16 @@ a.mi{text-decoration:none}
 </div>
 
 <nav class="tabbar l2" aria-label="Main">
-  <button class="tab" type="button" aria-current="page"><svg width="20" height="20"><use href="#i-bookmark"/></svg>Library</button>
-  <button class="tab" type="button"><svg width="20" height="20"><use href="#i-revisit"/></svg>Revisit</button>
+  <button class="tab" type="button" data-scope="today" aria-current="page"><svg width="20" height="20"><use href="#i-revisit"/></svg>Today</button>
+  <button class="tab" type="button" data-scope="all"><svg width="20" height="20"><use href="#i-bookmark"/></svg>Library</button>
   <button class="fab" type="button" aria-label="Add link"><svg width="24" height="24"><use href="#i-plus"/></svg></button>
   <button class="tab" type="button" id="tab-search"><svg width="20" height="20"><use href="#i-search"/></svg>Search</button>
-  <button class="tab" type="button"><svg width="20" height="20"><use href="#i-user"/></svg>You</button>
+  <a class="tab" href="ask.html"><svg width="20" height="20" style="color:var(--ai)"><use href="#i-spark"/></svg>Ask</a>
 </nav>
 
 <div class="proto l2" role="group" aria-label="Prototype screens" data-desk-host><span>Prototype</span>
   <select id="screen" aria-label="Screen">
-    <option value="library">Library</option>
+    <option value="today">Today (home)</option><option value="today-done">Today: all caught up</option><option value="library">Library</option><option value="select">Library: selecting</option>
     <option value="reader">Link page, Reader</option>
     <option value="site">Link page, Site</option>
     <option value="blocked">Site can't be shown</option>
@@ -495,7 +553,7 @@ a.mi{text-decoration:none}
 <div id="dlg" class="dlg-wrap" hidden></div>
 <section id="fs" class="fs" role="dialog" aria-modal="true" aria-label="Search" hidden>
   <div class="fs-head"><button class="ib" type="button" id="fs-back" aria-label="Close search"><svg width="20" height="20" aria-hidden="true"><use href="#i-left"/></svg></button>
-  <label class="fs-field l1"><svg width="18" height="18" aria-hidden="true"><use href="#i-search"/></svg><span class="sr">Search or ask</span><input id="fsq" type="search" placeholder="Search or ask your shelf" autocomplete="off" enterkeyhint="search"><button class="ib" type="button" id="fs-clear" aria-label="Clear" hidden><svg width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg></button></label></div>
+  <label class="fs-field l1"><svg width="18" height="18" aria-hidden="true"><use href="#i-search"/></svg><span class="sr">Search your links</span><input id="fsq" type="search" placeholder="Search your links" autocomplete="off" enterkeyhint="search"><button class="ib" type="button" id="fs-clear" aria-label="Clear" hidden><svg width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg></button></label></div>
   <div class="fs-body" id="fs-body" aria-live="polite"></div>
 </section>
 
@@ -551,7 +609,7 @@ a.mi{text-decoration:none}
   const CHIPS=[['all','All',58],['videos','Videos',8],['articles','Articles',23],['clothes','Clothes',7],['recipes','Recipes',7]];
   const VIEWS=[['masonry','Masonry','i-masonry'],['grid','Grid','i-grid'],['list','List','i-list'],['headlines','Headlines','i-lines']];
   const SHOW_DEF={image:true,desc:true,note:true,tags:false,site:true,date:false};
-  const S={show:Object.assign({},SHOW_DEF),scope:'all',view:'masonry',chip:'all',q:'',link:null,mode:'site',details:false,empty:false,reader:{size:'m',font:'sans',width:'narrow',tone:'app'}};
+  const S={sel:new Set(),select:false,done:new Set(),show:Object.assign({},SHOW_DEF),scope:'today',view:'masonry',chip:'all',q:'',link:null,mode:'site',details:false,empty:false,reader:{size:'m',font:'sans',width:'narrow',tone:'app'}};
   try{const v=JSON.parse(localStorage.getItem('sm-lib')||'{}');if(v.view)S.view=v.view;if(v.reader)S.reader=Object.assign(S.reader,v.reader);if(v.show)S.show=Object.assign(S.show,v.show)}catch(e){}
   const save=()=>{try{localStorage.setItem('sm-lib',JSON.stringify({view:S.view,reader:S.reader,show:S.show}))}catch(e){}};
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -576,7 +634,8 @@ a.mi{text-decoration:none}
     return art(l)+(l.kind==='video'?`<span class="play">${ic('i-play',18)}</span><span class="dur">${l.dur}</span>`:'');
   }
   function card(l,grid){
-    return `<article class="card l1" data-id="${l.id}"><button class="open" type="button" data-open="${l.id}" aria-label="Open ${esc(l.title)}"></button>
+    const on=S.sel.has(l.id);
+    return `<article class="card l1${S.select?' selecting':''}" data-id="${l.id}" draggable-card aria-selected="${on}"><button class="open" type="button" data-open="${l.id}" aria-label="Open ${esc(l.title)}"></button>${S.select?`<span class="selbox"><span class="sm-check" role="checkbox" aria-checked="${on}" aria-label="Select ${esc(l.title)}">${on?ic('i-check',14):''}</span></span>`:''}
       ${S.show.image?`<div class="cover" style="aspect-ratio:${grid?'16 / 9':l.ratio}"><div class="cover-in">${coverInner(l)}</div></div>`:''}
       <div class="acts"><button class="act" type="button" data-fav="${l.id}" aria-pressed="${!!l.fav}" aria-label="${l.fav?'Remove from favorites':'Add to favorites'}">${ic(l.fav?'i-star-f':'i-star',16)}</button><button class="act" type="button" data-menu="${l.id}" aria-haspopup="menu" aria-label="More actions for ${esc(l.title)}">${ic('i-more',16)}</button></div>
       <div class="body"><h2 class="title">${esc(l.title)}</h2>
@@ -598,9 +657,29 @@ a.mi{text-decoration:none}
     const q=S.q.trim().toLowerCase();
     return L.filter(l=>(S.scope!=='favorites'||l.fav)&&(S.scope!=='unsorted'||['Home','Courses'].includes(l.folder))&&(S.chip==='all'||l.type===S.chip)&&(!q||(l.title+' '+l.domain+' '+l.tags.join(' ')+' '+l.folder).toLowerCase().includes(q)));
   }
-  const scopeTitle=()=>({all:'All links',unsorted:'Unsorted',favorites:'Favorites'}[S.scope]);
+  const scopeTitle=()=>({all:'All links',unsorted:'Unsorted',favorites:'Favorites',today:'All links'}[S.scope]);
+
+  
+  const BACK=[{id:2,why:'You asked to check the sale',k:'due',i:'i-bell'},{id:8,why:'40% read · 4 min left',k:'',i:'i-text',p:40},{id:1,why:'Stopped at 12:40 of 19:42',k:'',i:'i-play',p:64}];
+  const WEEK=[{id:4,to:'Recipes',c:'amber',by:'rule'},{id:9,to:'Clothes',c:'rose',by:'AI'},{id:18,to:'Courses',c:'sage',by:''},{id:16,to:'Unsorted',c:'graphite',by:''}];
+  function todayHTML(){
+    const back=BACK.filter(b=>!S.done.has('b'+b.id));
+    const gem=!S.done.has('gem');
+    const d=new Date(2026,10,23).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+    const backHTML=back.length?`<div class="t-back">${back.map(b=>{const l=byId(b.id);return `<article class="t-bk l1"><button class="open" type="button" data-open="${l.id}" aria-label="Open ${esc(l.title)}"></button>${thumb(l)}<span class="tx"><b>${esc(l.title)}</b><span class="t-why ${b.k}">${ic(b.i,12)}${esc(b.why)}</span>${b.p?`<span class="t-prog"><i style="width:${b.p}%"></i></span>`:''}</span><span class="t-acts"><button class="btn sm" type="button" data-done="b${b.id}" title="Done">${ic('i-check',16)}<span class="sr">Done</span></button><button class="btn sm" type="button" data-pop="remind" data-id="${l.id}" title="Snooze">${ic('i-bell',16)}<span class="sr">Snooze</span></button></span></article>`}).join('')}</div>`
+      :`<div class="t-clear l1">${SC.done||''}<b>All caught up</b><span class="muted">Nothing is due. New reminders and half-read links will show up here.</span></div>`;
+    const week=`<div class="t-week l1">${WEEK.map(w=>{const l=byId(w.id);const moved=S.done.has('u'+w.id);return `<div class="t-sv">${thumb(l)}<button class="t-svt" type="button" data-open="${l.id}">${esc(l.title)}</button><span class="t-to">→ <span class="tile" style="width:20px;height:20px;background:var(--fb-${moved?'graphite':w.c});color:var(--fc-${moved?'graphite':w.c})">${ic('i-folder',12)}</span><b>${moved?'Unsorted':w.to}</b>${!moved&&w.by?' · by '+w.by:''}</span>${w.by==='AI'&&!moved?`<button class="btn sm" type="button" data-done="u${w.id}">Undo</button>`:''}</div>`}).join('')}</div>`;
+    const g=byId(10)||L[4];
+    const gemHTML=gem?`<div class="t-gem l1"><div class="cover" style="aspect-ratio:16 / 7;margin:0"><div class="cover-in">${coverInner(g)}</div></div><div><span class="muted" style="font-size:var(--t-meta)">${ic('i-revisit',12)} Saved 5 months ago · never opened</span><h3>${esc(g.title)}</h3><p class="muted">You saved it with “for a lazy Sunday”. It’s Sunday in six days.</p><div class="t-acts2"><button class="btn primary sm" type="button" data-open="${g.id}">Open</button><button class="btn secondary sm" type="button" data-done="gem" data-msg="Reminder set for Sunday">Remind me Sunday</button><button class="btn sm" type="button" data-done="gem" data-msg="Won’t show this again">Not interested</button></div></div></div>`:`<div class="t-clear l1"><b>That’s it for today</b><span class="muted">Another forgotten link comes back tomorrow.</span></div>`;
+    return `<div class="head"><h1>Today</h1><span class="count">${d}</span></div>
+    <section class="t-sec"><div class="t-h"><h2>Back to these</h2><span class="count">${back.length}</span><a href="save-revisit.html" class="t-more">Revisit${ic('i-chev',14)}</a></div>${backHTML}</section>
+    <div class="t-two"><section class="t-sec"><div class="t-h"><h2>Saved this week</h2><span class="count">12 · 9 filed for you</span></div>${week}</section>
+    <section class="t-sec"><div class="t-h"><h2>From your shelf</h2></div>${gemHTML}</section></div>
+    <section class="t-sec"><div class="t-h"><h2>All links</h2><span class="count">58</span><button class="t-more" type="button" data-scope="all">Open library${ic('i-chev',14)}</button></div><div class="masonry">${L.slice(0,8).map(l=>card(l,false)).join('')}</div></section>`;
+  }
 
   function libraryHTML(items){
+    if(S.scope==='today'&&!S.empty)return todayHTML();
     let feed;
     if(S.empty){
       return `<div class="head"><h1>All links</h1><span class="count">No links yet</span></div>
@@ -623,8 +702,10 @@ a.mi{text-decoration:none}
       <button class="ib split-btn" type="button" aria-label="Side by side" title="Side by side">${ic('i-split',16)}</button>
       <button class="ib" type="button" data-pop="more" aria-haspopup="menu" aria-label="More: Select, Export this view" title="More">${ic('i-more',16)}</button></div></div>
       <div class="views" role="toolbar" aria-label="Saved views">${CHIPS.map(([id,lab,n])=>`<button class="chip" type="button" aria-pressed="${S.chip===id}" data-chip="${id}">${lab} <b>${n}</b></button>`).join('')}<button class="chip dash" type="button">${ic('i-plus',16)}Save view</button></div>
-      <section class="feed" aria-label="Links">${feed}</section>`;
+      <section class="feed" aria-label="Links">${feed}</section>${S.select?bulkHTML():''}`;
   }
+  function bulkHTML(){const n=S.sel.size;return `<div class="bulk l2" role="toolbar" aria-label="Selected links"><button class="ib" type="button" data-select-off aria-label="Clear selection">${ic('i-x',16)}</button><span class="cnt">${n} selected</span>
+    <button class="btn sm" type="button" data-pop="move">${ic('i-move',16)}Move</button><button class="btn sm" type="button">${ic('i-hash',16)}Tags</button><button class="btn sm" type="button">${ic('i-star',16)}Favorite</button><button class="btn sm" type="button" data-pop="remind">${ic('i-bell',16)}Remind</button><button class="btn sm" type="button" data-copy>${ic('i-copy',16)}Copy links</button><span style="flex:1"></span><button class="btn sm" type="button" style="color:var(--danger,#C0352B)" data-del="0">${ic('i-trash',16)}Delete</button></div>`}
 
   function siteView(l){
     if(l.blocked)return `<div class="blocked">${SC.blocked}<b style="font-size:var(--t-s)">${esc(l.domain)} doesn't allow showing it here</b><p class="muted" style="margin:0;max-width:44ch;font-size:var(--t-sec)">Read it here in Reader, or open it in your browser.</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn secondary" type="button" data-mode="reader">${ic('i-text',16)}Open in Reader</button><a class="btn" href="#" data-ext>${ic('i-ext',16)}Open in browser</a></div></div>`;
@@ -684,11 +765,11 @@ a.mi{text-decoration:none}
     const page=document.getElementById('page');
     document.body.classList.toggle('link-open',!!S.link);
     page.innerHTML=S.link&&!S.empty?linkHTML(items):libraryHTML(items);
-    document.querySelectorAll('.side [data-scope]').forEach(b=>{if(b.dataset.scope===S.scope&&!S.empty)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+    document.querySelectorAll('.side [data-scope],.tabbar [data-scope]').forEach(b=>{if(b.dataset.scope===S.scope&&!S.empty)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
     const v=document.getElementById('view');
     if(v){v.addEventListener('scroll',()=>{const p=document.getElementById('prog');if(p){const m=v.scrollHeight-v.clientHeight;p.style.width=(m>0?v.scrollTop/m*100:0)+'%'}})}
     const sel=document.getElementById('screen');
-    sel.value=S.empty?'empty':!S.link?'library':byId(S.link).blocked?'blocked':S.mode==='reader'?'reader':'site';
+    sel.value=S.empty?'empty':!S.link?(S.scope==='today'?(S.done.has('b1')&&S.done.has('b2')&&S.done.has('b8')?'today-done':'today'):S.select?'select':'library'):byId(S.link).blocked?'blocked':S.mode==='reader'?'reader':'site';
   }
 
   document.getElementById('folders').innerHTML=FOLDERS.map(([n,c,col])=>`<button class="nav plain" type="button"><span class="tile" style="background:var(--fb-${col});color:var(--fc-${col})">${ic('i-folder',14)}</span><span class="lbl">${n}</span><span class="n">${c}</span></button>`).join('');
@@ -712,7 +793,7 @@ a.mi{text-decoration:none}
       <div class="msep"></div><button class="mi danger" type="button" data-del="${l.id}">${ic('i-trash',16)}Delete<span class="kbd">⌫</span></button>`;
     else if(kind==='sort')h=['Newest first','Oldest first','Title A–Z'].map((t,i)=>`<button class="mi" type="button" role="menuitemradio" aria-checked="${i===0}">${t}</button>`).join('');
     else if(kind==='display'){pop.setAttribute('role','dialog');pop.setAttribute('aria-label','Show on cards');h=`<div class="mh">Show on cards</div>`+[['image','Preview image'],['desc','Description'],['note','Note'],['tags','Tags'],['site','Site'],['date','Date saved']].map(([k,t])=>`<button class="mi" type="button" role="menuitemcheckbox" aria-checked="${!!S.show[k]}" data-show="${k}">${t}<span style="margin-left:auto;color:var(--fg)">${S.show[k]?ic('i-check',16):''}</span></button>`).join('')+`<div class="msep"></div><p class="muted" style="margin:4px 8px 4px;font-size:var(--t-meta);max-width:28ch">Description is the page's own text, or an AI summary (marked with ✦) when it has none. Same switches in Settings › Appearance.</p><button class="mi" type="button" data-show-reset>Reset to default</button>`}
-    else if(kind==='more')h=`<button class="mi" type="button">Select links<span class="kbd">X</span></button><button class="mi" type="button">${ic('i-upload',16)}Export this view…</button>`;
+    else if(kind==='more')h=`<button class="mi" type="button" data-select-on>Select links<span class="kbd">X</span></button><button class="mi" type="button">${ic('i-upload',16)}Export this view…</button>`;
     else if(kind==='filter'){pop.setAttribute('role','dialog');pop.setAttribute('aria-label','Filter');h=`<div class="pgroup"><span class="lbl">Type</span><div class="taglist">${['Videos','Articles','Clothes','Recipes','Tools'].map(t=>`<button class="chip" type="button" aria-pressed="false" style="height:32px">${t}</button>`).join('')}</div></div>
       <div class="pgroup"><span class="lbl">Saved</span><div class="seg" role="radiogroup" aria-label="Saved"><button type="button" role="radio" aria-checked="true">Any time</button><button type="button" role="radio" aria-checked="false">Week</button><button type="button" role="radio" aria-checked="false">Month</button></div></div>
       <div class="pgroup"><span class="lbl">Tags</span><div class="taglist">${TAGS.map(([t])=>`<button class="chip" type="button" aria-pressed="false" style="height:32px">#${t}</button>`).join('')}</div></div>
@@ -736,6 +817,7 @@ a.mi{text-decoration:none}
 
   document.addEventListener('click',e=>{
     const t=e.target;
+    if(S.select){const o2=t.closest('.card .open');if(o2){const id=+o2.dataset.open;S.sel.has(id)?S.sel.delete(id):S.sel.add(id);render();return}const ck=t.closest('.selbox');if(ck){const id=+ck.closest('.card').dataset.id;S.sel.has(id)?S.sel.delete(id):S.sel.add(id);render();return}}
     if(t.closest('[data-ext]')){e.preventDefault();toast('Opens the site in a new tab');closePop();return}
     const o=t.closest('[data-open]');if(o){S.link=+o.dataset.open;S.empty=false;const l=byId(S.link);S.mode=l.blocked&&l.reader?'reader':'site';closePop();render();window.scrollTo(0,0);return}
     const pv=t.closest('[data-pop]');if(pv){const k=pv.dataset.pop;if(!pop.hidden&&popFor===pv){closePop(true);return}openPop(k,pv,pv.dataset.id?+pv.dataset.id:null);return}
@@ -756,6 +838,9 @@ a.mi{text-decoration:none}
     if(t.closest('[data-copy]')){toast('Link copied');closePop();return}
     const sh=t.closest('[data-show]');if(sh){const k=sh.dataset.show;S.show[k]=!S.show[k];save();render();const nt=document.querySelector('[data-pop="display"]');if(nt)openPop('display',nt);return}
     if(t.closest('[data-show-reset]')){S.show=Object.assign({},SHOW_DEF);save();render();const nt=document.querySelector('[data-pop="display"]');if(nt)openPop('display',nt);return}
+    if(t.closest('[data-select-on]')){S.select=true;closePop();render();return}
+    if(t.closest('[data-select-off]')){S.select=false;S.sel.clear();render();return}
+    const dn=t.closest('[data-done]');if(dn){S.done.add(dn.dataset.done);toast(dn.dataset.msg||(dn.dataset.done.startsWith('u')?'Moved back to Unsorted':'Marked as done'),true);render();return}
     const rn=t.closest('[data-rename]');if(rn){const trig=popFor;closePop();openRename(+rn.dataset.rename,trig);return}
     const dl=t.closest('[data-del]');if(dl){toast('Moved to Trash',true);closePop();return}
     if(t.closest('[data-undo]')){document.getElementById('toast').hidden=true;return}
@@ -765,14 +850,17 @@ a.mi{text-decoration:none}
   function step(d){const items=visible();const i=items.findIndex(x=>x.id===S.link);const n=items[i+d];if(n){S.link=n.id;const l=byId(n.id);if(!l.reader)S.mode='site';else if(l.blocked)S.mode='reader';render()}}
   document.addEventListener('keydown',e=>{
     const inField=e.target.closest('input,textarea');
-    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();document.getElementById('q').focus();return}
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openSearch();return}
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='j'){e.preventDefault();location.href='ask.html';return}
     if(e.key==='Escape'){if(!pop.hidden){closePop(true);return}if(S.link){S.link=null;render();return}}
     if(inField)return;
+    if(e.key.toLowerCase()==='x'&&!S.link&&S.scope!=='today'){S.select=!S.select;if(!S.select)S.sel.clear();render();return}
+    if(e.key==='Escape'&&S.select){S.select=false;S.sel.clear();render();return}
     if(e.key==='F2'){const c=e.target.closest('[data-id]')||(S.link&&{dataset:{id:S.link}});if(c){e.preventDefault();openRename(+c.dataset.id,e.target)}return}
     if(S.link&&(e.key==='ArrowDown'||e.key==='ArrowUp')){e.preventDefault();step(e.key==='ArrowDown'?1:-1)}
   });
   document.addEventListener('keydown',e=>{const g=e.target.closest('.seg');if(!g)return;const k={ArrowRight:1,ArrowLeft:-1}[e.key];if(!k)return;const bs=[...g.querySelectorAll('button')];const i=bs.indexOf(e.target);const n=bs[(i+k+bs.length)%bs.length];e.preventDefault();n.click();const again=document.querySelector(`[${[...n.attributes].find(a=>a.name.startsWith('data-')&&a.name!=='data-rs')?.name||'data-x'}="${n.getAttribute([...n.attributes].find(a=>a.name.startsWith('data-'))?.name)}"]`);if(again)again.focus()});
-  document.getElementById('q').addEventListener('input',e=>{S.q=e.target.value;S.link=null;render()});
+  document.getElementById('q').addEventListener('focus',e=>{e.target.blur();openSearch()});document.getElementById('q').addEventListener('click',()=>openSearch());
 
   /* Rename */
   const dlg=document.getElementById('dlg');let dlgFor=null;
@@ -789,7 +877,7 @@ a.mi{text-decoration:none}
   const mk=(t,q)=>q?esc(t).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>'):esc(t);
   function fsRender(){const q=fsq.value.trim();document.getElementById('fs-clear').hidden=!q;
     if(!q){fsBody.innerHTML=`<div class="fs-gt">Recent searches</div>${RECENT.map(r=>`<button class="fs-row" type="button" data-fs-q="${esc(r)}"><span class="ri">${ic('i-revisit',18)}</span><span class="tx"><b>${esc(r)}</b></span></button>`).join('')}
-      <div class="fs-gt">Ways to search</div><div class="fs-ways"><span>#tag</span><span>in:Recipes</span><span>site:youtube.com</span><span>last week</span></div><p class="muted" style="font-size:var(--t-meta);margin:12px 0 0">Or ask in your own words: “that coat I saved in autumn”.</p>`;return}
+      <div class="fs-gt">Ways to search</div><div class="fs-ways"><span>#tag</span><span>in:Recipes</span><span>site:youtube.com</span><span>last week</span></div><p class="muted" style="font-size:var(--t-meta);margin:12px 0 0">For questions (how many, which, summarise) use Ask, Ctrl J.</p>`;return}
     const ql=q.toLowerCase().replace(/^#/,'');const hit=L.filter(l=>(l.title+' '+l.domain+' '+l.tags.join(' ')+' '+l.folder).toLowerCase().includes(ql));
     const near=L.filter(l=>!hit.includes(l)&&hit.some(h=>h.tags.some(t=>l.tags.includes(t))||h.folder===l.folder)).slice(0,3);
     const folders=FOLDERS.filter(([n])=>n.toLowerCase().includes(ql));
@@ -799,10 +887,10 @@ a.mi{text-decoration:none}
     else h+=`<div style="display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:24px 0 8px">${SC.none}<b style="font-size:var(--t-s)">Nothing with these words</b><p class="muted" style="margin:0;font-size:var(--t-sec)">No link mentions “${esc(q)}” in its title, note, tags or address.</p></div>`;
     if(folders.length)h+=`<div class="fs-gt">Folders</div>`+folders.map(([n,c,col])=>`<button class="fs-row" type="button"><span class="ri" style="background:var(--fb-${col});color:var(--fc-${col})">${ic('i-folder',18)}</span><span class="tx"><b>${mk(n,ql)}</b><small>${c} links</small></span></button>`).join('');
     if(near.length)h+=`<div class="fs-gt">${ic('i-spark',14)}Close in meaning</div>`+near.map(rowL).join('');
-    h+=`<div class="fs-gt">${ic('i-spark',14)}Ask your shelf</div><button class="fs-row" type="button" data-fs-ask><span class="ri" style="background:var(--ai-bg,#ECEDF9);color:var(--ai)">${ic('i-spark',18)}</span><span class="tx"><b>Ask “${esc(q)}”</b><small>An answer from your links, with sources</small></span></button>`;
+    h+=`<div class="fs-ask"><span>Looking for an answer rather than a link?</span><a class="btn secondary sm" href="ask.html">${ic('i-spark',16)}Ask instead</a></div>`;
     fsBody.innerHTML=h}
-  function openSearch(){closePop();fs.hidden=false;document.body.style.overflow='hidden';fsRender();fsq.focus()}
-  function closeSearch(){fs.hidden=true;document.body.style.overflow='';const t=document.getElementById('tab-search');if(t)t.focus()}
+  function openSearch(){closePop();document.body.classList.add('search-open');fs.hidden=false;document.body.style.overflow='hidden';fsRender();fsq.focus()}
+  function closeSearch(){document.body.classList.remove('search-open');fs.hidden=true;document.body.style.overflow='';const t=document.getElementById('tab-search');if(t)t.focus()}
   fsq.addEventListener('input',fsRender);
   document.getElementById('fs-back').addEventListener('click',()=>{fromSearch=false;closeSearch()});
   document.getElementById('fs-clear').addEventListener('click',()=>{fsq.value='';fsRender();fsq.focus()});
@@ -810,10 +898,11 @@ a.mi{text-decoration:none}
   fs.addEventListener('click',e=>{const r=e.target.closest('[data-fs-q]');if(r){fsq.value=r.dataset.fsQ;fsRender();return}
     const o=e.target.closest('[data-fs-open]');if(o){fromSearch=true;fs.hidden=true;document.body.style.overflow='';S.link=+o.dataset.fsOpen;S.empty=false;const l=byId(S.link);S.mode=l.blocked&&l.reader?'reader':'site';render();window.scrollTo(0,0);return}
     if(e.target.closest('[data-fs-ask]')){toast('Ask answers here, with sources (see Search and Ask)');}});
-  document.getElementById('tab-search').addEventListener('click',()=>{if(phoneQ.matches)openSearch();else document.getElementById('q').focus()});
-  document.getElementById('screen').addEventListener('change',e=>{const v=e.target.value;if(v==='g2'){location.href='save-revisit.html';return}if(v.startsWith('go:')){location.href=v.slice(3);return}S.empty=v==='empty';S.link=null;S.q='';document.getElementById('q').value='';
+  document.getElementById('tab-search').addEventListener('click',()=>openSearch());
+  document.getElementById('screen').addEventListener('change',e=>{const v=e.target.value;if(v==='g2'){location.href='save-revisit.html';return}if(v.startsWith('go:')){location.href=v.slice(3);return}S.empty=v==='empty';S.link=null;S.q='';document.getElementById('q').value='';S.select=v==='select';S.sel=new Set(v==='select'?[1,4,10]:[]);S.scope=(v==='today'||v==='today-done')?'today':'all';S.done=new Set(v==='today-done'?['b2','b8','b1','gem']:[]);
     if(v==='reader'){S.link=8;S.mode='reader'}else if(v==='site'){S.link=1;S.mode='site'}else if(v==='blocked'){S.link=3;S.mode='site'}render();window.scrollTo(0,0)});
   window.addEventListener('resize',()=>closePop());
+  document.addEventListener('mousedown',e=>{if(!fs.hidden&&!phoneQ.matches&&!e.target.closest('#fs')&&!e.target.closest('#q')&&!e.target.closest('#tab-search'))closeSearch()});
   render();
 })();
 </script>
@@ -836,3 +925,86 @@ function add(){const host=document.querySelector('[data-desk-host]');if(!host)re
  const mq=matchMedia('(max-width:63.99em)');const upd=()=>{b.hidden=!mq.matches};upd();mq.addEventListener('change',upd)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add);else add();
 })();</script>
+<style>
+.dragsrc{position:relative}
+.dragsrc>*:not(.dslot){visibility:hidden}
+.dslot{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;text-align:center;background:var(--accent-bg);border:1.5px dashed color-mix(in srgb,var(--text) 30%,transparent);border-radius:inherit;animation:dslot-in 200ms ease-out both}
+.dslot .t{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--accent);color:var(--on-accent)}
+.dslot .l{font:400 .75rem/1.4 var(--font-sans);color:var(--text-muted)}
+.dslot .n{font:600 .875rem/1.4 var(--font-sans);color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%}
+@keyframes dslot-in{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.dslot{animation:none}}
+.dprev{position:fixed;left:0;top:0;z-index:200;pointer-events:none;transform-origin:0 0;will-change:transform}
+.dprev .wob{transform-origin:12% 8%;will-change:transform}
+.dprev .deck{position:relative;width:220px}
+.dprev .deck .sm-card{width:220px;box-shadow:var(--shadow-l3);border-color:var(--line-strong)}
+.dprev .deck .under{position:absolute;inset:0;border-radius:var(--radius-md);background:var(--surface);border:1px solid var(--line-strong);box-shadow:var(--shadow-l2)}
+.dprev .deck .under.u1{transform:rotate(4deg) translate(6px,4px)}
+.dprev .deck .under.u2{transform:rotate(-3deg) translate(-4px,6px)}
+.dprev .badge{position:absolute;top:-10px;right:-10px;min-width:28px;height:28px;padding:0 8px;border-radius:999px;background:var(--accent);color:var(--on-accent);font:600 .875rem/28px var(--font-sans);text-align:center;box-shadow:var(--shadow-l2)}
+.droptarget{background:var(--accent-bg)!important;color:var(--accent-text)!important;box-shadow:inset 0 0 0 1px var(--line-strong)}
+@keyframes rowbump{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+.bump{animation:rowbump 200ms cubic-bezier(.34,1.56,.64,1)}
+.dtoast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:210}
+body:has(.bulk,.bulkbar) .dtoast{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+[draggable-card]{cursor:grab;-webkit-user-select:none;user-select:none}
+html.is-dragging,html.is-dragging *{-webkit-user-select:none!important;user-select:none!important;cursor:grabbing!important}
+</style>
+<script>(function(){
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let drag=null;
+function targets(){return [...document.querySelectorAll('[data-drop]')].filter(e=>e.offsetParent)}
+function start(card,ev){
+  const host=card.closest('.state')||document;
+  const sel=[...host.querySelectorAll('[draggable-card][aria-selected="true"]')];
+  const group=card.getAttribute('aria-selected')==='true'&&sel.length>1?sel:[card];
+  const r=card.getBoundingClientRect();
+  const p=document.createElement('div');p.className='dprev';
+  const clone=card.cloneNode(true);clone.removeAttribute('draggable-card');clone.querySelectorAll('.sb,.selbox,.acts,.open').forEach(x=>x.remove());clone.style.width='220px';clone.style.boxShadow='';
+  p.innerHTML='<div class="wob"><div class="deck">'+(group.length>1?'<div class="under u2"></div><div class="under u1"></div>':'')+'</div></div>';
+  p.querySelector('.deck').appendChild(clone);
+  if(group.length>1){const b=document.createElement('span');b.className='badge';b.textContent=group.length;p.querySelector('.deck').appendChild(b)}
+  document.body.appendChild(p);document.documentElement.classList.add('is-dragging');window.getSelection()?.removeAllRanges();
+  group.forEach(c=>{c.classList.add('dragsrc');const t=(c.querySelector('.sm-card-title,.title')||{}).textContent||'';const sl=document.createElement('div');sl.className='dslot';sl.setAttribute('aria-hidden','true');sl.innerHTML='<span class="t"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M9 13h6m-2-2 2 2-2 2" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="l">Moving</span><span class="n"></span>';sl.querySelector('.n').textContent=t;c.appendChild(sl)});
+  drag={p,wob:p.querySelector('.wob'),group,origin:r,x:ev.clientX,y:ev.clientY,lx:ev.clientX,lt:performance.now(),vx:0,vy:0,th:0,om:0,sq:0,over:null,raf:0,last:performance.now()};
+  place();if(!RM)drag.raf=requestAnimationFrame(tick);
+}
+function place(){const d=drag;d.p.style.transform=`translate(${d.x+14}px,${d.y+14}px) scale(.65)`;}
+function tick(t){const d=drag;if(!d)return;const dt=Math.min(.032,(t-d.last)/1000);d.last=t;
+  d.vx*=Math.pow(.0015,dt);d.vy*=Math.pow(.0015,dt);
+  const target=Math.max(-10,Math.min(10,d.vx*6));
+  const a=-220*(d.th-target)-18*d.om;d.om+=a*dt;d.th+=d.om*dt;
+  const sq=Math.min(.04,Math.abs(d.vy)*.02);
+  d.wob.style.transform=`rotate(${-4+d.th}deg) scale(${1+sq*.5},${1-sq})`;
+  d.raf=requestAnimationFrame(tick)}
+function move(ev){const d=drag;if(!d)return;const t=performance.now(),dt=Math.max(1,t-d.lt);
+  const vx=(ev.clientX-d.x)/dt,vy=(ev.clientY-d.y)/dt;d.vx=d.vx*.7+vx*.3;d.vy=d.vy*.7+vy*.3;d.lt=t;
+  d.x=ev.clientX;d.y=ev.clientY;place();
+  if(RM)d.wob.style.transform='rotate(-4deg)';
+  const el=document.elementFromPoint(ev.clientX,ev.clientY);const tg=el&&el.closest('[data-drop]');
+  if(tg!==d.over){if(d.over)d.over.classList.remove('droptarget');d.over=tg;if(tg)tg.classList.add('droptarget')}}
+function end(){const d=drag;if(!d)return;drag=null;window.__justDragged=true;setTimeout(()=>window.__justDragged=false,0);cancelAnimationFrame(d.raf);
+  const tg=d.over;if(tg)tg.classList.remove('droptarget');
+  const finish=()=>{d.p.remove();d.group.forEach(c=>c.querySelector(':scope>.dslot')?.remove());document.documentElement.classList.remove('is-dragging');d.group.forEach(c=>c.classList.remove('dragsrc'))};
+  if(tg){const r=tg.getBoundingClientRect();
+    if(RM){finish();}else{d.p.style.transition='transform 320ms ease-in-out, opacity 320ms ease-in-out';d.p.style.transform=`translate(${r.left+r.width/2-22}px,${r.top+r.height/2-14}px) scale(.2)`;d.p.style.opacity='0';setTimeout(finish,330);}
+    setTimeout(()=>{tg.classList.remove('bump');void tg.offsetWidth;tg.classList.add('bump')},RM?0:320);
+    const name=(tg.dataset.drop||tg.textContent).trim();
+    const n=d.group.length;const t=document.createElement('div');t.className='sm-toast sm-l2 dtoast';t.setAttribute('role','status');
+    t.innerHTML='<span>'+(n>1?'Moved '+n+' links to ':'Moved to ')+name+'</span><button class="sm-btn sm-btn--sm" type="button">Undo</button>';
+    document.body.appendChild(t);setTimeout(()=>t.remove(),3200);
+  }else{
+    if(RM){finish();return}
+    d.wob.style.transition='transform 320ms cubic-bezier(.34,1.56,.64,1)';d.wob.style.transform='none';
+    d.p.style.transition='transform 320ms cubic-bezier(.34,1.56,.64,1)';d.p.style.transform=`translate(${d.origin.left}px,${d.origin.top}px) scale(${d.origin.width/220})`;setTimeout(finish,330);
+  }}
+let pending=null;
+document.addEventListener('click',e=>{if(window.__justDragged){e.stopPropagation();e.preventDefault();window.__justDragged=false}},true);
+document.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;const c=ev.target.closest('[draggable-card]');if(!c||ev.target.closest('.sb,.selbox,button:not(.open),a'))return;pending={c,x:ev.clientX,y:ev.clientY,ev};ev.preventDefault()});
+document.addEventListener('pointermove',ev=>{if(pending&&!drag&&Math.hypot(ev.clientX-pending.x,ev.clientY-pending.y)>6){start(pending.c,pending.ev);pending=null}if(drag){ev.preventDefault();move(ev)}},{passive:false});
+document.addEventListener('pointerup',()=>{pending=null;end()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drag){if(drag.over)drag.over.classList.remove('droptarget');drag.over=null;end()}});
+document.addEventListener('click',e=>{const sb=e.target.closest('.sb .sm-check,.selbox .sm-check');if(!sb)return;const card=sb.closest('[draggable-card]');const on=card.getAttribute('aria-selected')!=='true';card.setAttribute('aria-selected',on);sb.setAttribute('aria-checked',on);sb.innerHTML=on?'<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':'';const host=card.closest('.state')||document;const n=host.querySelectorAll('[draggable-card][aria-selected="true"]').length;const c=host.querySelector('.cnt');if(c)c.textContent=n+' selected'});
+window.__markDrops=()=>document.querySelectorAll('.side .sm-nav--plain,.side .nav.plain').forEach(b=>{const l=b.querySelector('.lbl');if(l&&!b.querySelector('.fav')&&b.querySelector('.tile,.sm-tile'))b.setAttribute('data-drop',l.textContent)});window.__markDrops();
+})();</script>
+

@@ -331,6 +331,7 @@ mark{background:var(--accent-bg);color:var(--accent-text);border-radius:2px;padd
 @keyframes rowbump{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
 .bump{animation:rowbump 200ms cubic-bezier(.34,1.56,.64,1)}
 .dtoast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:210}
+body:has(.bulk,.bulkbar) .dtoast{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
 [draggable-card]{cursor:grab;-webkit-user-select:none;user-select:none}
 html.is-dragging,html.is-dragging *{-webkit-user-select:none!important;user-select:none!important;cursor:grabbing!important}
 </style>
@@ -344,12 +345,12 @@ function start(card,ev){
   const group=card.getAttribute('aria-selected')==='true'&&sel.length>1?sel:[card];
   const r=card.getBoundingClientRect();
   const p=document.createElement('div');p.className='dprev';
-  const clone=card.cloneNode(true);clone.removeAttribute('draggable-card');clone.querySelectorAll('.sb,.selbox').forEach(x=>x.remove());clone.style.width='220px';clone.style.boxShadow='';
+  const clone=card.cloneNode(true);clone.removeAttribute('draggable-card');clone.querySelectorAll('.sb,.selbox,.acts,.open').forEach(x=>x.remove());clone.style.width='220px';clone.style.boxShadow='';
   p.innerHTML='<div class="wob"><div class="deck">'+(group.length>1?'<div class="under u2"></div><div class="under u1"></div>':'')+'</div></div>';
   p.querySelector('.deck').appendChild(clone);
   if(group.length>1){const b=document.createElement('span');b.className='badge';b.textContent=group.length;p.querySelector('.deck').appendChild(b)}
   document.body.appendChild(p);document.documentElement.classList.add('is-dragging');window.getSelection()?.removeAllRanges();
-  group.forEach(c=>{c.classList.add('dragsrc');const t=(c.querySelector('.sm-card-title')||{}).textContent||'';const sl=document.createElement('div');sl.className='dslot';sl.setAttribute('aria-hidden','true');sl.innerHTML='<span class="t"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M9 13h6m-2-2 2 2-2 2" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="l">Moving</span><span class="n"></span>';sl.querySelector('.n').textContent=t;c.appendChild(sl)});
+  group.forEach(c=>{c.classList.add('dragsrc');const t=(c.querySelector('.sm-card-title,.title')||{}).textContent||'';const sl=document.createElement('div');sl.className='dslot';sl.setAttribute('aria-hidden','true');sl.innerHTML='<span class="t"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M9 13h6m-2-2 2 2-2 2" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="l">Moving</span><span class="n"></span>';sl.querySelector('.n').textContent=t;c.appendChild(sl)});
   drag={p,wob:p.querySelector('.wob'),group,origin:r,x:ev.clientX,y:ev.clientY,lx:ev.clientX,lt:performance.now(),vx:0,vy:0,th:0,om:0,sq:0,over:null,raf:0,last:performance.now()};
   place();if(!RM)drag.raf=requestAnimationFrame(tick);
 }
@@ -367,7 +368,7 @@ function move(ev){const d=drag;if(!d)return;const t=performance.now(),dt=Math.ma
   if(RM)d.wob.style.transform='rotate(-4deg)';
   const el=document.elementFromPoint(ev.clientX,ev.clientY);const tg=el&&el.closest('[data-drop]');
   if(tg!==d.over){if(d.over)d.over.classList.remove('droptarget');d.over=tg;if(tg)tg.classList.add('droptarget')}}
-function end(){const d=drag;if(!d)return;drag=null;cancelAnimationFrame(d.raf);
+function end(){const d=drag;if(!d)return;drag=null;window.__justDragged=true;setTimeout(()=>window.__justDragged=false,0);cancelAnimationFrame(d.raf);
   const tg=d.over;if(tg)tg.classList.remove('droptarget');
   const finish=()=>{d.p.remove();d.group.forEach(c=>c.querySelector(':scope>.dslot')?.remove());document.documentElement.classList.remove('is-dragging');d.group.forEach(c=>c.classList.remove('dragsrc'))};
   if(tg){const r=tg.getBoundingClientRect();
@@ -383,12 +384,13 @@ function end(){const d=drag;if(!d)return;drag=null;cancelAnimationFrame(d.raf);
     d.p.style.transition='transform 320ms cubic-bezier(.34,1.56,.64,1)';d.p.style.transform=`translate(${d.origin.left}px,${d.origin.top}px) scale(${d.origin.width/220})`;setTimeout(finish,330);
   }}
 let pending=null;
-document.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;const c=ev.target.closest('[draggable-card]');if(!c||ev.target.closest('.sb,.selbox,button:not(.open)'))return;pending={c,x:ev.clientX,y:ev.clientY,ev};ev.preventDefault()});
+document.addEventListener('click',e=>{if(window.__justDragged){e.stopPropagation();e.preventDefault();window.__justDragged=false}},true);
+document.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;const c=ev.target.closest('[draggable-card]');if(!c||ev.target.closest('.sb,.selbox,button:not(.open),a'))return;pending={c,x:ev.clientX,y:ev.clientY,ev};ev.preventDefault()});
 document.addEventListener('pointermove',ev=>{if(pending&&!drag&&Math.hypot(ev.clientX-pending.x,ev.clientY-pending.y)>6){start(pending.c,pending.ev);pending=null}if(drag){ev.preventDefault();move(ev)}},{passive:false});
 document.addEventListener('pointerup',()=>{pending=null;end()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drag){if(drag.over)drag.over.classList.remove('droptarget');drag.over=null;end()}});
-document.addEventListener('click',e=>{const sb=e.target.closest('.sb .sm-check,.selbox .sm-check');if(!sb)return;const card=sb.closest('[draggable-card]');const on=card.getAttribute('aria-selected')!=='true';card.setAttribute('aria-selected',on);sb.setAttribute('aria-checked',on);sb.innerHTML=on?'<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':'';const host=card.closest('.state');const n=host.querySelectorAll('[draggable-card][aria-selected="true"]').length;const c=host.querySelector('.cnt');if(c)c.textContent=n+' selected'});
-document.querySelectorAll('.side .sm-nav--plain').forEach(b=>{const l=b.querySelector('.lbl');if(l)b.setAttribute('data-drop',l.textContent)});
+document.addEventListener('click',e=>{const sb=e.target.closest('.sb .sm-check,.selbox .sm-check');if(!sb)return;const card=sb.closest('[draggable-card]');const on=card.getAttribute('aria-selected')!=='true';card.setAttribute('aria-selected',on);sb.setAttribute('aria-checked',on);sb.innerHTML=on?'<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>':'';const host=card.closest('.state')||document;const n=host.querySelectorAll('[draggable-card][aria-selected="true"]').length;const c=host.querySelector('.cnt');if(c)c.textContent=n+' selected'});
+window.__markDrops=()=>document.querySelectorAll('.side .sm-nav--plain,.side .nav.plain').forEach(b=>{const l=b.querySelector('.lbl');if(l&&!b.querySelector('.fav')&&b.querySelector('.tile,.sm-tile'))b.setAttribute('data-drop',l.textContent)});window.__markDrops();
 })();</script>
 </div><div class="state" data-state="move"><div class="overlay sm-l1"><div class="scrim2"></div><form class="sm-dialog sm-l3 mv" role="dialog" aria-labelledby="mvt"><h2 id="mvt">Move 3 links</h2>
 <div class="sm-input"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg><input value="" placeholder="Find a folder" aria-label="Find a folder"></div>
