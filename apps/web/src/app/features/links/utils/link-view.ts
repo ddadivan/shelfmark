@@ -64,3 +64,23 @@ function isPendingImagePath(url: string | null): boolean {
 export function hasPendingImages(link: LinkResponse): boolean {
   return isPendingImagePath(link.faviconUrl) || isPendingImagePath(link.imageUrl);
 }
+
+/** The brand colour of the link's site for the favicon square, or `undefined` (letter tile). */
+export function siteColour(
+  url: string,
+  colours: Readonly<Record<string, string>>,
+): string | undefined {
+  const host = displayHost(url).toLowerCase();
+  if (colours[host]) {
+    return colours[host];
+  }
+  // A subdomain takes its site's colour (music.youtube.com → youtube.com).
+  const parts = host.split('.');
+  for (let i = 1; i < parts.length - 1; i += 1) {
+    const parent = parts.slice(i).join('.');
+    if (colours[parent]) {
+      return colours[parent];
+    }
+  }
+  return undefined;
+}

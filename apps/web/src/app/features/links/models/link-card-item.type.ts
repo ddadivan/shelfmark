@@ -10,5 +10,8 @@ export type LinkCardItem = Pick<
   'url' | 'title' | 'note' | 'faviconUrl' | 'imageUrl' | 'tags' | 'isFavorite' | 'pinnedInFolderAt'
 > &
   Partial<
-    Pick<LinkResponse, 'id' | 'createdAt' | 'remindAt' | 'summary' | 'summarySource' | 'aiStatus'>
+    Pick<
+      LinkResponse,
+      'id' | 'kind' | 'createdAt' | 'remindAt' | 'summary' | 'summarySource' | 'aiStatus'
+    >
   >;

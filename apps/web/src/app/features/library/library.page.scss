@@ -25,8 +25,15 @@
   // Desktop (Main.dc.html, from 64em since #316): a gap under the top bar, the 24px trail line, a
   // gap, the title. The selection bar ("1 selected · Select all") sits in that room, so it is kept
   // at rest too (#350, the author's value): the title never moves when a selection starts or ends.
+  // Shelf: the title sits 24px under the header; the selection bar takes the place of the
+  // title row's tools while a selection runs.
   @include desktop {
-    padding-block-start: calc(var(--space-8) + var(--space-8));
+    padding-block-start: var(--space-2);
+
+    // A subfolder keeps room for its breadcrumb trail above the title.
+    &:has(> .library__crumbs) {
+      padding-block-start: calc(var(--space-8) + var(--space-2));
+    }
   }
 
   flex: 1;

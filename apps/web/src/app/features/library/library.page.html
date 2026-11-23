@@ -582,6 +582,11 @@
             </ng-template>
             <app-link-card
               [link]="link"
+              [media]="filters.view() === UI_VIEW.Masonry ? CARD_MEDIA.Natural : CARD_MEDIA.Cover"
+              [showNote]="filters.fieldShown(CARD_FIELD.Note)"
+              [showTags]="filters.fieldShown(CARD_FIELD.Tags)"
+              [showFolder]="filters.fieldShown(CARD_FIELD.Folder)"
+              [showDate]="filters.fieldShown(CARD_FIELD.Date)"
               [folder]="showFolderChips() ? folderChips.of(link.folderId) : null"
               [pinnable]="filters.isFolder()"
               [selecting]="selection.selecting()"

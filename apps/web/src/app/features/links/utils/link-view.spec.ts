@@ -1,5 +1,12 @@
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
-import { hasPendingImages, linkHost, ownImageUrl, safeHref, siteLetter } from './link-view';
+import {
+  hasPendingImages,
+  linkHost,
+  ownImageUrl,
+  safeHref,
+  siteColour,
+  siteLetter,
+} from './link-view';
 
 describe('link view helpers', () => {
   it('allows only http(s) hrefs', () => {
@@ -46,5 +53,17 @@ describe('link view helpers', () => {
     expect(hasPendingImages({ ...base, imageUrl: '/api/links/x/image?v=0123456789abcdef' })).toBe(
       false,
     );
+  });
+});
+
+describe('siteColour', () => {
+  const colours = { 'youtube.com': '#ff0000', 'github.com': '#181717' };
+
+  it('finds the host, a subdomain of a listed site, and nothing for others', () => {
+    expect(siteColour('https://www.youtube.com/watch?v=1', colours)).toBe('#ff0000');
+    expect(siteColour('https://music.youtube.com/x', colours)).toBe('#ff0000');
+    expect(siteColour('https://github.com/nrwl/nx', colours)).toBe('#181717');
+    expect(siteColour('https://example.com/', colours)).toBeUndefined();
+    expect(siteColour('not a url', colours)).toBeUndefined();
   });
 });

@@ -14,6 +14,7 @@ import {
   BadgeComponent,
   BreadcrumbsComponent,
   BULK_BAR_LAYOUT,
+  CARD_MEDIA,
   BulkBarComponent,
   ButtonComponent,
   CheckboxComponent,
@@ -87,6 +88,7 @@ import { LinkPreviewService } from '../link-preview/services/link-preview.servic
 import { PreviewPanelComponent } from '../link-preview/components/preview-panel/preview-panel.component';
 import { PreviewPageComponent } from '../link-preview/components/preview-page/preview-page.component';
 import { LibraryViewMenuComponent } from './components/library-view-menu/library-view-menu.component';
+import { CARD_FIELD } from './models/card-field.const';
 
 /** Number of placeholders shown while the first page loads. */
 const SKELETON_COUNT = 8;
@@ -241,6 +243,8 @@ export default class LibraryPage {
   protected readonly SORT_OPTION_KEYS = SORT_OPTION_KEYS;
 
   protected readonly BULK_BAR_LAYOUT = BULK_BAR_LAYOUT;
+  protected readonly CARD_MEDIA = CARD_MEDIA;
+  protected readonly CARD_FIELD = CARD_FIELD;
 
   /** The "Side by side" toggle: after the split closes it takes the focus the close control had. */
   private readonly splitOpener = viewChild<ButtonComponent>('splitOpener');

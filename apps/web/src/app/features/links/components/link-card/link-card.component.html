@@ -3,6 +3,7 @@
   [href]="href()"
   [image]="image()"
   [placeholderTone]="tone()"
+  [media]="cardMedia()"
   [favorited]="link().isFavorite"
   [newTab]="newTab()"
   [reveal]="reveal()"
@@ -25,25 +26,52 @@
       (click)="onCheckboxClick($event)"
     />
   }
-  <!-- No "Open" bar in selection mode: a click only toggles, so nothing opens by surprise. -->
-  @if (href() && !selecting()) {
-    <span slot="overlay" class="link-card__open">
-      <span class="link-card__address">{{ address() }}</span>
-      <span class="link-card__open-label">
-        <span class="link-card__open-text">{{ 'links.item.open' | transloco }}</span>
-        <span class="link-card__open-arrow">↗</span>
-      </span>
+  <!-- Glass buttons over the preview (Shelf LinkCard): play for videos, the star, the ⋯ menu. -->
+  @if (isVideo() && previewable() && href() && !readOnly()) {
+    <ui-button
+      slot="play"
+      variant="glass"
+      iconOnly
+      iconLeft="play"
+      [ariaLabel]="'links.item.preview' | transloco: { title: link().title }"
+      [uiTooltip]="'links.item.previewHere' | transloco"
+      (click)="previewRequested.emit()"
+    />
+  }
+  @if (!readOnly()) {
+    <ui-button
+      slot="favorite"
+      class="link-card__star"
+      [class.link-card__star--on]="link().isFavorite"
+      variant="glass"
+      iconOnly
+      [iconLeft]="link().isFavorite ? 'star-filled' : 'star'"
+      [ariaPressed]="link().isFavorite"
+      [ariaLabel]="'links.item.favorite' | transloco: { title: link().title }"
+      [uiTooltip]="
+        (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
+      "
+      (click)="favoriteToggled.emit()"
+    />
+  }
+  @if (!readOnly()) {
+    <ui-button
+      slot="actions"
+      variant="glass"
+      iconOnly
+      iconLeft="more"
+      [uiMenuTrigger]="menu"
+      [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
+      [uiTooltip]="'links.item.moreActions' | transloco"
+    />
+  }
+  @if (showFolder() && folder(); as chip) {
+    <span slot="meta" class="link-card__folder" [uiFolderColour]="chip.colour ?? null">
+      <ui-icon class="link-card__folder-icon" name="folder" [size]="ICON_SIZE.Sm" />
+      <span class="link-card__folder-name">{{ chip.name }}</span>
+      <span class="link-card__sr">{{ 'links.card.inFolder' | transloco }}</span>
     </span>
   }
-  <span slot="title">{{ link().title }}</span>
-  <span
-    slot="meta"
-    class="link-card__site"
-    [attr.title]="saved() ? host() + ' · ' + saved() : null"
-  >
-    <ui-favicon [src]="favicon()" [letter]="letter()" />
-    <span class="link-card__host">{{ host() }}</span>
-  </span>
   @if (reminder(); as chip) {
     <ui-badge
       slot="date"
@@ -52,88 +80,32 @@
       [tone]="chip.due ? BADGE_TONE.Warning : BADGE_TONE.Accent"
       >{{ chip.text }}</ui-badge
     >
-  } @else if (saved()) {
+  } @else if (showDate() && saved()) {
     <span slot="date">{{ saved() }}</span>
   }
-  @if (!readOnly()) {
-    <span slot="actions" class="link-card__actions">
-      @if (previewable() && href()) {
-        <ui-button
-          variant="secondary"
-          size="sm"
-          iconOnly
-          iconLeft="eye"
-          hitArea="overlay"
-          [ariaLabel]="'links.item.preview' | transloco: { title: link().title }"
-          [uiTooltip]="'links.item.previewHere' | transloco"
-          uiTooltipShortcut="Space"
-          (click)="previewRequested.emit()"
-        />
-      }
-      <ui-button
-        variant="secondary"
-        size="sm"
-        iconOnly
-        iconLeft="more"
-        [iconSize]="ICON_SIZE.Lg"
-        hitArea="overlay"
-        [uiMenuTrigger]="menu"
-        [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
-        [uiTooltip]="'links.item.moreActions' | transloco"
-      />
-    </span>
+  <span slot="title">{{ link().title }}</span>
+  <span slot="source" class="link-card__site" [attr.title]="host()">
+    <ui-favicon [src]="favicon()" [letter]="letter()" [colour]="colour()" />
+    <span class="link-card__host">{{ host() }}</span>
+  </span>
+  @if (showTags() && link().tags.length > 0) {
+    <app-link-card-tags
+      slot="tags"
+      class="link-card__tags"
+      [tags]="link().tags"
+      [interactive]="!readOnly() && !selecting()"
+    />
+  }
+  @if (showNote() && link().note; as note) {
+    <span slot="note">{{ note }}</span>
   }
   @if (pinnedToTop()) {
     <ui-badge class="link-card__pinned" icon="pin">{{ 'links.item.pinned' | transloco }}</ui-badge>
   }
-  <!-- The note and the bottom row always take their room, so every card is the same height (#335). -->
-  @if (link().note; as note) {
-    <p class="link-card__note">{{ note }}</p>
-  } @else if (link().summary || link().aiStatus === AI_JOB_STATUS.Pending) {
-    <!-- The user's note wins the slot; else the summary, or its skeleton right after a save (#391). -->
-    <app-link-summary class="link-card__note" [link]="link()" />
-  } @else {
-    <p class="link-card__note" aria-hidden="true"></p>
+  @if (!link().note && (link().summary || link().aiStatus === AI_JOB_STATUS.Pending)) {
+    <!-- No note of the person's: AI's summary (or its skeleton right after a save, #391), muted. -->
+    <app-link-summary class="link-card__summary" [link]="link()" />
   }
-  <!-- Tags and the favorite star share the bottom row; the star sits right whether or not there are tags. -->
-  <div class="link-card__foot">
-    @if (link().tags.length > 0) {
-      <!-- The first tag (ellipsis inside its max width), then "+N" with the "All tags" popover. -->
-      <app-link-card-tags
-        class="link-card__tags"
-        [tags]="link().tags"
-        [interactive]="!readOnly() && !selecting()"
-      />
-    }
-    <!-- Right after the tags (no gap between them), so the tags keep their place whether the feed
-         names folders or not. -->
-    @if (folder(); as chip) {
-      <ui-folder-chip
-        class="link-card__folder"
-        [label]="chip.name"
-        [icon]="chip.icon"
-        [colour]="chip.colour"
-        [hint]="'links.card.inFolder' | transloco"
-      />
-    }
-    @if (!readOnly()) {
-      <ui-button
-        class="link-card__star"
-        [class.link-card__star--on]="link().isFavorite"
-        variant="ghost"
-        size="sm"
-        iconOnly
-        hitArea="overlay"
-        [iconLeft]="link().isFavorite ? 'star-filled' : 'star'"
-        [ariaPressed]="link().isFavorite"
-        [ariaLabel]="'links.item.favorite' | transloco: { title: link().title }"
-        [uiTooltip]="
-          (link().isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco
-        "
-        (click)="favoriteToggled.emit()"
-      />
-    }
-  </div>
   <ui-menu
     #menu
     align="end"

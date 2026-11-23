@@ -1,4 +1,4 @@
-import { AI_JOB_STATUS, normalizeRuleDomain } from '@shelfmark/contracts';
+import { AI_JOB_STATUS, LINK_KIND, normalizeRuleDomain } from '@shelfmark/contracts';
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
@@ -7,8 +7,11 @@ import {
   CheckboxComponent,
   CardComponent,
   FaviconComponent,
-  FolderChipComponent,
+  CARD_MEDIA,
+  type CardMedia,
+  FolderColourDirective,
   ICON_SIZE,
+  IconComponent,
   LongPressDirective,
   MenuComponent,
   MenuItemComponent,
@@ -33,8 +36,10 @@ import {
   ownImageUrl,
   placeholderTone,
   safeHref,
+  siteColour,
   siteLetter,
 } from '../../utils/link-view';
+import { SITE_COLOURS } from '../../models/site-colours.const';
 import { LinkCardTagsComponent } from '../link-card-tags/link-card-tags.component';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { LinkPreviewRoute } from '../../../link-preview/services/link-preview-route.service';
@@ -53,7 +58,8 @@ import { LinkPreviewRoute } from '../../../link-preview/services/link-preview-ro
     LongPressDirective,
     CardComponent,
     FaviconComponent,
-    FolderChipComponent,
+    FolderColourDirective,
+    IconComponent,
     LinkCardTagsComponent,
     LinkSummaryComponent,
     MenuComponent,
@@ -85,6 +91,23 @@ export class LinkCardComponent {
   readonly reveal = input(false);
   /** The link's folder as a chip, in mixed feeds only (#418); `null` for none. */
   readonly folder = input<FolderChipView | null>(null);
+
+  /**
+   * How the preview sits (Shelf): `natural` in the Masonry view, 4:3 `cover` in Cards; shops are
+   * always `contain` (the product on a light fill).
+   */
+  readonly media = input<CardMedia>(CARD_MEDIA.Cover);
+  /** The card fields of the View menu (Shelf): Note, Hashtags, Folder, Date. */
+  readonly showNote = input(true);
+  readonly showTags = input(true);
+  readonly showFolder = input(true);
+  readonly showDate = input(true);
+  protected readonly cardMedia = computed<CardMedia>(() =>
+    this.link().kind === LINK_KIND.Shopping ? CARD_MEDIA.Contain : this.media(),
+  );
+  protected readonly isVideo = computed(() => this.link().kind === LINK_KIND.Video);
+  /** The site's brand colour for the favicon square, where known. */
+  protected readonly colour = computed(() => siteColour(this.link().url, SITE_COLOURS));
 
   /** The link is shown inside a folder: its menu offers "Pin to top" (a pinned link leads the folder). */
   readonly pinnable = input(false);
