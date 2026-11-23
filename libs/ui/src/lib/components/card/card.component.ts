@@ -14,44 +14,50 @@ import {
 } from '@angular/core';
 import type { HeadingLevel } from '../../models/heading';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
+import { IconComponent } from '../icon/icon.component';
+import { ICON_SIZE } from '../icon/models/icon-size.const';
+import { CARD_MEDIA } from './models/card-media.const';
+import type { CardMedia } from './models/card-media.type';
 
 let nextId = 0;
 
 /**
- * Surface of a saved link in the cards view: a `surface` box with a `border` hairline and
- * `radius-lg`, flat at rest. Content comes in through slots (`slot="..."` attributes):
- * `title` (inside the link, so it names the card), `meta` (favicon and domain, left of the
- * meta row), `date` (the saved date, pushed to the end of the meta row), `favorite` (a toggle
- * top right, left of `actions`; shown on hover, focus inside, always on touch and while
- * `favorited`), `actions` (the "..." menu trigger, top right), `overlay` (the bar over the preview, for example the domain and
- * "Open"), `fallback` (shown instead of the image, for example the site letter on `accent-bg`;
- * without it a picture icon is shown), `select` (a `ui-checkbox` for bulk selection, top left
- * over the preview: shown on hover, focus inside, while `selecting` and always on touch); the
- * default slot is the body below the title (note, tags).
+ * The link card of the feed (Shelf LinkCard): a `surface` box with a hairline at rest (a lighter
+ * fill in dark) and `radius-card` corners. The preview is full bleed at the top (`media`) and
+ * content comes in through slots (`slot="..."` attributes): over the preview `play` (top left,
+ * videos), `favorite` (top right), `actions` (the "..." menu trigger, beside the star, on hover)
+ * and `select` (a `ui-checkbox` for bulk selection, in the place of the play mark: shown on hover,
+ * focus inside, while `selecting` and always on touch), plus `overlay` (a bar over the preview)
+ * and `fallback` (shown instead of the image, for example the site letter; without it a picture
+ * drawing). In the body: `meta` (the folder: filled icon and name) with `date` at its end,
+ * `title` (inside the link, so it names the card), `source` (favicon and channel, repository or
+ * price and domain), `tags` (up to three `#tag` words) and `note` (the person's note, with a pen,
+ * on sage); the default slot is for anything else. Every empty slot takes no room.
  *
  * **One activation target.** The title lives in a single native `<a>` (with `href`) or
  * `<button>` (without) whose `::after` is stretched over the whole card, so the card has one
- * tab stop and no interactive element is nested inside another. `favorite` and `actions`
- * sit above that layer, so using them never activates the card. `activated` emits the click
- * (the feature may `preventDefault()` an `href` click to route); `newTab` opens `href` in a
- * new tab with `noopener noreferrer` (the same tab keeps `noreferrer`). The link sits in a heading of `headingLevel` (default
- * `h2`), so screen reader users can navigate cards by heading; the heading itself is not
- * positioned, so the stretched `::after` still covers the card.
+ * tab stop and no interactive element is nested inside another. The buttons over the preview sit
+ * above that layer, so using them never activates the card. `activated` emits the click (the
+ * feature may `preventDefault()` an `href` click to route); `newTab` opens `href` in a new tab
+ * with `noopener noreferrer` (the same tab keeps `noreferrer`). The link sits in a heading of
+ * `headingLevel` (default `h2`), so screen reader users can navigate cards by heading; the
+ * heading itself is not positioned, so the stretched `::after` still covers the card.
+ *
+ * States: `selected` (open in the preview pane) is the `pick` fill; `checked` (a bulk pick) adds a
+ * 2px `accent` ring.
  *
  * Images: the app CSP is `img-src 'self' data:`, so external preview images and favicons
  * are blocked and the fallbacks show until stage 3 decides on an image proxy or a CSP change
  * (see the image-sources issue #57 in milestone 3).
  *
- * Hover (pointer devices only): a soft shadow spreads from under the card (320 ms), the
- * border darkens (in dark theme the surface brightens a little with a faint glow), the image
- * zooms to 1.06, the overlay slides up 8 px and the actions fade in. Press tightens the
- * shadow (80 ms). The card never lifts or scales and has no ripple. Actions are always
- * visible on touch and while the card has focus inside. Under reduced motion there is no zoom
- * or slide; colour and shadow transitions stay.
+ * Hover (pointer devices only): the hover shadow settles in 200 ms (in dark the fill lightens), the
+ * preview zooms 3.5% over 900 ms, the overlay slides up 8 px and the ⋯ fades in. Press tightens
+ * the shadow (80 ms). The card never lifts or scales and has no ripple. Under reduced motion there
+ * is no zoom or slide; colour and shadow transitions stay.
  */
 @Component({
   selector: 'ui-card',
-  imports: [NgTemplateOutlet, TooltipDirective],
+  imports: [NgTemplateOutlet, TooltipDirective, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-card',
@@ -61,11 +67,18 @@ let nextId = 0;
     '[class.ui-card--pinned]': 'actionsPinned()',
     '[class.ui-card--favorited]': 'favorited()',
     '[class.ui-card--reveal]': 'reveal()',
+    '[class.ui-card--natural]': 'media() === CARD_MEDIA.Natural',
+    '[class.ui-card--contain]': 'media() === CARD_MEDIA.Contain',
+    '[class.ui-card--image]': 'imageSrc() !== null',
+    '[style.--ui-card-ratio]': 'imageRatio() ?? null',
   },
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss', './card-content.scss', './card-actions.scss'],
 })
 export class CardComponent {
+  protected readonly CARD_MEDIA = CARD_MEDIA;
+  protected readonly ICON_SIZE = ICON_SIZE;
+
   /**
    * The full title while it is cut by the two-line clamp, else empty (no tooltip). Measured on
    * hover and keyboard focus, like the breadcrumbs, so a title that fits never shows one.
@@ -77,8 +90,18 @@ export class CardComponent {
   /** Id of the visually hidden description that the link points to. */
   protected readonly descriptionId = `ui-card-description-${nextId++}`;
 
-  /** Preview image URL (16:9, cover). Without it, or when it fails, the `fallback` slot shows. */
+  /** Preview image URL. Without it, or when it fails, the `fallback` slot shows. */
   readonly image = input<string>();
+  /**
+   * How the preview is cut: `natural` (the picture's own ratio, masonry), `cover` (4:3, cropped,
+   * the Cards view; the default) or `contain` (4:3, the whole picture on `surface-hover`, shops).
+   */
+  readonly media = input<CardMedia>(CARD_MEDIA.Cover);
+  /**
+   * Width over height of the picture (1.5 for 3:2) when it is known: with `media="natural"` it
+   * reserves the preview's height before the image loads, so a masonry feed does not jump.
+   */
+  readonly imageRatio = input<number | undefined>(undefined);
   /**
    * Which soft background the drawing placeholder (no image, no `fallback` content) takes: the
    * number is taken modulo 3 over `accent-bg`, `surface-hover` and `surface-pressed`. A feature
@@ -91,10 +114,10 @@ export class CardComponent {
   readonly href = input<string>();
   /** Opens `href` in a new tab (`target="_blank"`, `rel="noopener noreferrer"`). */
   readonly newTab = input(false, { transform: booleanAttribute });
-  /** Selected state: `accent` border and `accent-bg` surface; sets `aria-current="true"`. */
+  /** Open in the preview pane: the `pick` fill; sets `aria-current="true"`. */
   readonly selected = input(false, { transform: booleanAttribute });
   /**
-   * Picked for a bulk action (Checkbox spec): a 2px `primary` ring. No ARIA of its own: the
+   * Picked for a bulk action: the `pick` fill and a 2px `accent` ring. No ARIA of its own: the
    * checkbox in the `select` slot carries the state.
    */
   readonly checked = input(false, { transform: booleanAttribute });

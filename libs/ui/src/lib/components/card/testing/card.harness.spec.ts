@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { ComponentHarness } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { describe, expect, it } from 'vitest';
 import { ButtonComponent } from '../../button/button.component';
@@ -24,7 +25,12 @@ import { CARD_HARNESS_SLOT } from './models/card-harness-slot.const';
       (activated)="onActivated($event)"
     >
       <span slot="title">Angular docs</span>
-      <span slot="meta">angular.dev</span>
+      <span slot="meta">Docs</span>
+      <span slot="date">today</span>
+      <span slot="play">P</span>
+      <span slot="source">angular.dev</span>
+      <span slot="tags">#web #signals</span>
+      <span slot="note">Read on Monday</span>
       <ui-button slot="favorite" iconOnly iconLeft="star" ariaLabel="Favorite" />
       <ui-button slot="actions" iconOnly iconLeft="more" ariaLabel="More" />
     </ui-card>
@@ -51,12 +57,23 @@ async function setup() {
   return { fixture, loader, host: fixture.componentInstance };
 }
 
+class ContentHarness extends ComponentHarness {
+  static hostSelector = 'span';
+
+  async text(): Promise<string> {
+    return (await this.host()).text();
+  }
+}
+
 describe('UiCardHarness', () => {
   it('finds cards by title and selection and reads them', async () => {
     const { loader, host } = await setup();
     expect(await loader.getAllHarnesses(UiCardHarness)).toHaveLength(2);
     const card = await loader.getHarness(UiCardHarness.with({ title: 'Angular docs' }));
-    expect(await card.getMetaText()).toBe('angular.dev');
+    expect(await card.getMetaText()).toBe('Docs');
+    expect(await card.getSourceText()).toBe('angular.dev');
+    expect(await card.getTagsText()).toBe('#web #signals');
+    expect(await card.getNoteText()).toBe('Read on Monday');
     expect(await card.getHref()).toBe('https://angular.dev');
     expect(await card.opensInNewTab()).toBe(true);
     expect(await card.getDescription()).toBe('Opens in a new tab');
@@ -72,6 +89,8 @@ describe('UiCardHarness', () => {
     expect(await card.isChecked()).toBe(true);
     expect(await loader.getAllHarnesses(UiCardHarness.with({ selected: true }))).toHaveLength(1);
     const note = await loader.getHarness(UiCardHarness.with({ title: /note/ }));
+    expect(await note.getNoteText()).toBeNull();
+    expect(await note.getSourceText()).toBe('');
     expect(await note.getHref()).toBeNull();
     expect(await note.opensInNewTab()).toBe(false);
     expect(await note.getDescription()).toBeNull();
@@ -103,5 +122,15 @@ describe('UiCardHarness', () => {
     const favorite = await card.getChildLoader(CARD_HARNESS_SLOT.Favorite);
     expect(await (await favorite.getHarness(UiButtonHarness)).getName()).toBe('Favorite');
     expect(await card.getAllHarnesses(UiButtonHarness)).toHaveLength(2);
+    for (const [slot, text] of [
+      [CARD_HARNESS_SLOT.Play, 'P'],
+      [CARD_HARNESS_SLOT.Date, 'today'],
+      [CARD_HARNESS_SLOT.Source, 'angular.dev'],
+      [CARD_HARNESS_SLOT.Tags, '#web #signals'],
+      [CARD_HARNESS_SLOT.Note, 'Read on Monday'],
+    ] as const) {
+      const area = await card.getChildLoader(slot);
+      expect(await (await area.getHarness(ContentHarness)).text()).toBe(text);
+    }
   });
 });

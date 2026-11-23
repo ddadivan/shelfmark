@@ -34,7 +34,7 @@ describe('CardComponent select slot', () => {
     expect(select?.querySelector('input[type="checkbox"]')).not.toBeNull();
     expect(host.querySelector('.ui-card__link')?.contains(select ?? null)).toBe(false);
     const css = compileScss('lib/components/card/card.component.scss');
-    expect(css).toMatch(/\.ui-card__select\s*\{[^}]*z-index: 2/);
+    expect(css).toMatch(/\.ui-card__select[^{]*\{[^}]*z-index: 2/);
   });
 
   it('sets the checked and selecting classes without aria-current', () => {
@@ -57,6 +57,8 @@ describe('CardComponent select slot', () => {
     const base = css;
     expect(base).toContain('.ui-card--selecting');
     expect(base).toMatch(/box-shadow: 0 0 0 2px var\(--accent\)/);
+    // The checkbox takes the place of the play mark.
+    expect(hover).toContain('.ui-card__play');
   });
 
   it('has no axe violations, checked or not', async () => {

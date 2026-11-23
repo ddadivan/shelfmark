@@ -83,6 +83,20 @@
   font: inherit;
 }
 
+.cs-masonry {
+  columns: 4 rem(220px);
+  column-gap: var(--space-4);
+
+  ui-card {
+    margin-block-end: var(--space-4);
+    break-inside: avoid;
+  }
+}
+
+.cs-folder {
+  color: var(--folder-sage);
+}
+
 .cs-note {
   margin: 0;
 }

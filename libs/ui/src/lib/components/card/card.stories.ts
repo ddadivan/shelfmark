@@ -2,17 +2,18 @@ import { signal } from '@angular/core';
 import type { Meta, StoryObj } from '@storybook/angular-vite';
 import { moduleMetadata } from '@storybook/angular-vite';
 import { ButtonComponent } from '../button/button.component';
-import { ChipComponent } from '../chip/chip.component';
+import { CheckboxComponent } from '../checkbox/checkbox.component';
 import { FaviconComponent } from '../favicon/favicon.component';
+import { IconComponent } from '../icon/icon.component';
 import { MenuItemComponent } from '../menu/menu-item/menu-item.component';
 import { MenuSeparatorComponent } from '../menu/menu-separator/menu-separator.component';
 import { MenuTriggerDirective } from '../../directives/menu-trigger/menu-trigger.directive';
 import { MenuComponent } from '../menu/menu.component';
 import { SkeletonComponent } from '../skeleton/skeleton.component';
 import { CardComponent } from './card.component';
+import { CARD_MEDIA } from './models/card-media.const';
 import { CARD_STORY_IMAGE } from './stories/card-story-image.const';
 import { BUTTON_HIT_AREA, BUTTON_SIZE, BUTTON_VARIANT } from '../button';
-import { CHIP_VARIANT } from '../chip';
 import { THEME, THEME_ATTRIBUTE } from '../../models/theme';
 import { SKELETON_SHAPE } from '../skeleton';
 
@@ -24,8 +25,9 @@ const meta: Meta<CardComponent> = {
     moduleMetadata({
       imports: [
         ButtonComponent,
-        ChipComponent,
+        CheckboxComponent,
         FaviconComponent,
+        IconComponent,
         MenuComponent,
         MenuItemComponent,
         MenuSeparatorComponent,
@@ -39,9 +41,10 @@ const meta: Meta<CardComponent> = {
     docs: {
       description: {
         component:
-          'Surface of a saved link in the cards view. Flat at rest; on hover (pointer devices only) a soft shadow spreads from under the card, the border darkens, the image zooms to 1.06, the overlay bar slides up and the actions fade in. It never lifts or scales and has no ripple. ' +
-          'The title sits in one native link (or button) stretched over the card, so there is one tab stop and nothing is nested in anything: the favorite toggle and the "..." trigger sit above it and never activate the card. ' +
-          'Slots: `title`, `meta`, `favorite`, `actions`, `overlay`, `fallback`; the default slot is the body below the title. Under reduced motion there is no zoom or slide.',
+          "The link card of the feed (Shelf LinkCard): the preview full bleed at the top (`media`: `natural` keeps the picture's own ratio for masonry, `cover` is 4:3, `contain` shows a product whole), a folder and date row, the title (16/24, two lines), the source (favicon and channel, repository or price and domain), up to three `#tags` and the person's note on sage. " +
+          'White with a hairline at rest (a lighter fill in dark); on hover (pointer devices only) the `shadow-hover` shadow settles in 200 ms and the preview zooms 3.5% over 900 ms. `selected` (open in the preview pane) takes the `pick` fill; `checked` (a bulk pick) adds a 2px accent ring. ' +
+          'Over the preview sit glass buttons: `play` top left, `favorite` top right, `actions` (the ⋯) beside the star on hover, and `select` in place of the play mark on hover, focus or while selecting. The title sits in one native link (or button) stretched over the card: one tab stop, nothing nested. ' +
+          'Slots: `title`, `meta`, `date`, `source`, `tags`, `note`, `play`, `favorite`, `actions`, `select`, `overlay`, `fallback`; the default slot is for anything else. Every empty slot takes no room. Under reduced motion there is no zoom or slide.',
       },
     },
   },
@@ -50,6 +53,8 @@ const meta: Meta<CardComponent> = {
     href: 'https://example.com/',
     newTab: true,
     selected: false,
+    checked: false,
+    media: CARD_MEDIA.Cover,
     actionsPinned: false,
     reveal: false,
     headingLevel: 2,
@@ -59,6 +64,8 @@ const meta: Meta<CardComponent> = {
     image: { control: 'text' },
     href: { control: 'text' },
     headingLevel: { control: 'inline-radio', options: [1, 2, 3, 4, 5, 6] },
+    media: { control: 'inline-radio', options: Object.values(CARD_MEDIA) },
+    imageRatio: { control: 'number' },
   },
 };
 
@@ -71,21 +78,26 @@ const TITLE = 'Angular 22: everything about Signal Forms in 20 minutes';
 const content = (title = TITLE, favorite = false) => `
   <span slot="fallback">Y</span>
   <span slot="overlay" class="cs-overlay"><span>youtube.com</span><strong>Open ↗</strong></span>
-  <ui-favicon slot="meta" [src]="favicon" letter="y" />
-  <span slot="meta">youtube.com</span>
-  <ui-button slot="favorite" variant="${BUTTON_VARIANT.Ghost}" size="${BUTTON_SIZE.Sm}" hitArea="${BUTTON_HIT_AREA.Overlay}" iconOnly
+  <ui-icon slot="meta" name="folder" [size]="16" class="cs-folder" />
+  <span slot="meta">Angular</span>
+  <span slot="date">today</span>
+  <ui-checkbox slot="select" hideLabel label="Select link" [checked]="checked" />
+  <ui-button slot="play" variant="${BUTTON_VARIANT.Secondary}" size="${BUTTON_SIZE.Sm}" iconOnly iconLeft="play" ariaLabel="Video" />
+  <ui-button slot="favorite" variant="${BUTTON_VARIANT.Secondary}" size="${BUTTON_SIZE.Sm}" hitArea="${BUTTON_HIT_AREA.Overlay}" iconOnly
     [iconLeft]="${favorite ? "'star-filled'" : "'star'"}"
     [ariaPressed]="${favorite}"
     ariaLabel="${favorite ? 'Remove from favorites' : 'Add to favorites'}" />
   <span slot="title">${title}</span>
-  <p class="cs-note">Watch on the weekend</p>
-  <div class="cs-tags"><ui-chip variant="${CHIP_VARIANT.Tag}">angular</ui-chip><ui-chip variant="${CHIP_VARIANT.Tag}">courses</ui-chip></div>
+  <ui-favicon slot="source" [src]="favicon" letter="y" colour="#d4352c" />
+  <span slot="source">Fireship</span>
+  <span slot="tags">#video #angular</span>
+  <span slot="note">Watch on the weekend</span>
   <ui-button slot="actions" variant="${BUTTON_VARIANT.Secondary}" size="${BUTTON_SIZE.Sm}" iconOnly iconLeft="more" ariaLabel="More actions" />`;
 
 const cardTemplate = (inner: string, attrs = '') => `
   <div class="cs-grid cs-grid--single">
     <ui-card ${attrs}
-      [image]="image" [href]="href" [newTab]="newTab" [selected]="selected"
+      [image]="image" [href]="href" [newTab]="newTab" [selected]="selected" [checked]="checked" [media]="media" [imageRatio]="imageRatio"
       [description]="description" [actionsPinned]="actionsPinned" [reveal]="reveal" [headingLevel]="headingLevel">${inner}</ui-card>
   </div>`;
 
@@ -94,7 +106,7 @@ const withProps = (args: object) => ({
   favicon: CARD_STORY_IMAGE.Favicon,
 });
 
-/** Image, favicon and domain, title, note and tags. Hover it with a mouse to see the motion. */
+/** Folder and date, title, source, tags and note. Hover it with a mouse to see the motion. */
 export const Default: Story = {
   render: (args) => ({ props: withProps(args), template: cardTemplate(content()) }),
 };
@@ -117,17 +129,41 @@ export const PlaceholderIcon: Story = {
   render: (args) => ({
     props: withProps(args),
     template: cardTemplate(`
-      <ui-favicon slot="meta" [src]="favicon" />
-      <span slot="meta">cos.com</span>
+      <span slot="meta">Shopping</span>
       <span slot="title">Wool coat, straight cut, graphite</span>
-      <div class="cs-tags"><ui-chip variant="${CHIP_VARIANT.Tag}">clothes</ui-chip></div>`),
+      <ui-favicon slot="source" colour="#1a73e8" letter="c" />
+      <span slot="source">$98 · cos.com</span>
+      <span slot="tags">#clothes</span>`),
   }),
 };
 
-/** `selected`: `accent` border and `accent-bg` surface; `aria-current` on the link. */
+/** `selected` (open in the preview pane): the `pick` fill; `aria-current` on the link. */
 export const Selected: Story = {
   args: { selected: true },
   render: (args) => ({ props: withProps(args), template: cardTemplate(content()) }),
+};
+
+/** `checked` (a bulk pick): the `pick` fill and a 2px accent ring. */
+export const Checked: Story = {
+  args: { checked: true },
+  render: (args) => ({ props: withProps(args), template: cardTemplate(content()) }),
+};
+
+/** Shops: `media="contain"` shows the whole product on `surface-hover`. */
+export const Contain: Story = {
+  args: { media: CARD_MEDIA.Contain, image: CARD_STORY_IMAGE.Portrait },
+  render: (args) => ({
+    props: withProps(args),
+    template: cardTemplate(content('Wool coat, straight cut')),
+  }),
+};
+
+/** A bare card: with no folder, date, source, tags or note, those rows take no room. */
+export const Bare: Story = {
+  render: (args) => ({
+    props: withProps(args),
+    template: cardTemplate(`<span slot="title">${TITLE}</span>`),
+  }),
 };
 
 /** The "..." actions kept visible (`actionsPinned`) and the favorite switched on. */
@@ -171,9 +207,10 @@ export const WithMenu: Story = {
         <ui-card
           [image]="image" [href]="href" [newTab]="newTab" [description]="description"
           [actionsPinned]="open()">
-          <ui-favicon slot="meta" [src]="favicon" letter="y" />
-          <span slot="meta">youtube.com</span>
+          <span slot="meta">Angular</span>
           <span slot="title">${TITLE}</span>
+          <ui-favicon slot="source" [src]="favicon" letter="y" />
+          <span slot="source">youtube.com</span>
           <ui-button slot="actions" [uiMenuTrigger]="menu" variant="${BUTTON_VARIANT.Secondary}" size="${BUTTON_SIZE.Sm}" iconOnly
             iconLeft="more" ariaLabel="More actions" />
         </ui-card>
@@ -234,10 +271,45 @@ export const Reveal: Story = {
   }),
 };
 
+const MASONRY = [
+  { image: 'Wide', ratio: 21 / 9, title: 'Excalidraw: a virtual whiteboard' },
+  { image: 'Portrait', ratio: 2 / 3, title: 'The Ojai Jacket in Topsoil Donegal Moon Wool' },
+  { image: 'Square', ratio: 1, title: 'Tree Runners: Thunder Green (Blizzard Sole)' },
+  { image: 'Preview', ratio: 16 / 9, title: 'Angular in 100 Seconds' },
+  { image: 'Portrait', ratio: 2 / 3, title: 'The Crater Shirt in Denver Plaid' },
+  { image: 'Wide', ratio: 21 / 9, title: 'nrwl/nx: smart monorepos' },
+] as const;
+
+const masonry = `
+  <div class="cs-masonry">
+    @for (c of cases; track $index) {
+      <ui-card [image]="images[c.image]" [imageRatio]="c.ratio" media="natural" href="https://example.com/">
+        <span slot="meta">Folder</span>
+        <span slot="date">today</span>
+        <span slot="title">{{ c.title }}</span>
+        <span slot="source">example.com</span>
+        <span slot="tags">#design</span>
+        @if ($index % 3 === 0) {
+          <span slot="note">A note on this one</span>
+        }
+        <ui-button slot="favorite" variant="${BUTTON_VARIANT.Secondary}" size="${BUTTON_SIZE.Sm}" iconOnly iconLeft="star" ariaLabel="Add to favorites" />
+      </ui-card>
+    }
+  </div>`;
+
+/** Masonry: `media="natural"` and `imageRatio` give every card the picture's own ratio (wide, portrait, square). */
+export const Masonry: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { images: CARD_STORY_IMAGE, cases: MASONRY },
+    template: masonry,
+  }),
+};
+
 /** Every state in both themes. */
 export const AllVariants: Story = {
   render: (args) => ({
-    props: { ...withProps(args), themes: Object.values(THEME) },
+    props: { ...withProps(args), themes: Object.values(THEME), images: CARD_STORY_IMAGE },
     template: `
       <div class="cs-themes">
         @for (theme of themes; track theme) {
@@ -246,6 +318,8 @@ export const AllVariants: Story = {
               <ui-card [image]="image" href="https://example.com/" [newTab]="true">${content()}</ui-card>
               <ui-card href="https://example.com/" [newTab]="true">${content('Without a preview image')}</ui-card>
               <ui-card [image]="image" href="https://example.com/" [selected]="true" [actionsPinned]="true">${content('Selected, with actions and a favorite', true)}</ui-card>
+              <ui-card [image]="image" href="https://example.com/" [checked]="true" [selecting]="true">${content('Checked for a bulk action')}</ui-card>
+              <ui-card [image]="images.Portrait" media="contain" href="https://example.com/">${content('A product, contained')}</ui-card>
               <ui-card [image]="image" href="https://example.com/">${content(
                 'A very long article title that goes on and on, repeating itself until it must be cut after two lines',
               )}</ui-card>

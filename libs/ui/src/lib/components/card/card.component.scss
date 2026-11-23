@@ -1,7 +1,12 @@
 @use '../../../styles/ui' as *;
 
 // Whole-card activation: the title link's ::after covers the card (z-index 1); the favorite
-// toggle and the actions sit above it (z-index 2), so they never activate the card.
+// toggle, the actions, the play mark and the selection checkbox sit above it (z-index 2), so
+// they never activate the card.
+
+// Shelf LinkCard: the preview zooms 3.5% over 900 ms (slower than any duration token: it is a
+// slow settle, not feedback).
+$zoom-duration: 900ms;
 
 :host {
   position: relative;
@@ -12,11 +17,11 @@
   color: var(--text);
   cursor: pointer;
   background: var(--surface);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
   transition:
-    box-shadow var(--duration-slow) var(--ease-out),
-    background-color var(--duration-slow) var(--ease-out);
+    box-shadow var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
 }
 
 // The ring sits on the card, not on the title text. An element's own outline and shadow are
@@ -33,13 +38,14 @@
 :host {
   @include hover {
     background: var(--card-hover-bg);
+    box-shadow: var(--shadow-card-hover);
 
-    // `--shadow-x` / `--shadow-y` come from `uiPointerShadow` (a few px, away from the
-    // pointer); without the directive they are 0 and the extra layer just deepens the spread.
-    box-shadow:
-      0 0 0 1px var(--card-hover-border),
-      var(--shadow-card-spread),
-      var(--shadow-x, 0) var(--shadow-y, 0) 24px -10px var(--shadow-card-pointer);
+    // `--shadow-x` / `--shadow-y` come from `uiPointerShadow` (a few px, away from the pointer);
+    // without the directive they are 0 and the layer is just a soft halo. A filter, because the
+    // hover shadow token is `none` in dark and a `none` cannot join a box-shadow list.
+    filter: drop-shadow(
+      var(--shadow-x, 0) var(--shadow-y, 0) #{rem(12px)} var(--shadow-card-pointer)
+    );
 
     .ui-card__overlay {
       pointer-events: auto;
@@ -47,7 +53,6 @@
       transform: none;
     }
 
-    .ui-card__favorite,
     .ui-card__more {
       opacity: 1;
       transform: none;
@@ -56,7 +61,7 @@
     @media (prefers-reduced-motion: no-preference) {
       .ui-card__image,
       .ui-card__placeholder {
-        transform: scale(1.06);
+        transform: scale(1.035);
       }
     }
   }
@@ -72,41 +77,51 @@
   }
 }
 
+// Open in the preview pane: the `pick` fill (also while hovered).
 :host(.ui-card--selected) {
-  background: var(--accent-bg);
-  box-shadow: 0 0 0 2px var(--accent);
+  background: var(--pick);
+
+  @include hover {
+    background: var(--pick);
+  }
 }
 
-// Picked for a bulk action: a thin 2px `accent` (sage) ring and a light `accent-bg` tint, also
-// while hovered. The author's choice (the Checkbox spec says a `primary` ring, which is too loud
-// in dark); `text` and `text-muted` hold 4.5:1 on `accent-bg` in both themes.
+// Picked for a bulk action: the `pick` fill and a thin 2px `accent` ring, also while hovered.
 :host(.ui-card--checked) {
-  // Chips are `accent-bg` too: on the tinted card they sit on `surface`, so they stay visible.
+  // Chips are tinted too: on the picked card they sit on `surface`, so they stay visible.
   --ui-chip-bg: var(--surface);
 
-  background: var(--accent-bg);
+  background: var(--pick);
   box-shadow: 0 0 0 2px var(--accent);
 
   @include hover {
-    background: var(--accent-bg);
-    box-shadow:
-      0 0 0 2px var(--accent),
-      var(--shadow-card-spread);
+    background: var(--pick);
+    box-shadow: 0 0 0 2px var(--accent);
   }
 }
 
 // Media ---------------------------------------------------------------------------------------
 
+// Full bleed at the top: the card's own corners clip it. `cover` and `contain` are 4:3; `natural`
+// takes the picture's own ratio (`--ui-card-ratio` while it loads, then the image itself).
 .ui-card__media {
   position: relative;
   display: grid;
   place-items: center;
-  margin: rem(6px) rem(6px) 0;
   overflow: hidden;
   color: var(--text-muted);
   background: var(--surface-hover);
-  border-radius: rem(16px); // concentric with the 22px card corner (22 - 6)
-  aspect-ratio: 16 / 9;
+  aspect-ratio: var(--ui-card-media-ratio, 4 / 3);
+}
+
+:host(.ui-card--natural.ui-card--image) {
+  --ui-card-media-ratio: var(--ui-card-ratio, auto);
+  --ui-card-image-position: static;
+  --ui-card-image-height: auto;
+
+  .ui-card__media {
+    display: block;
+  }
 }
 
 // Settings › Appearance › Cards › Preview image (#285, `data-card-preview` on an ancestor): a
@@ -120,22 +135,34 @@
 }
 
 .ui-card__image {
-  position: absolute;
+  position: var(--ui-card-image-position, absolute);
   inset: 0;
+  display: block;
   width: 100%;
-  height: 100%;
+  height: var(--ui-card-image-height, 100%);
   object-fit: cover;
-  transition: transform var(--duration-slow) var(--ease-out);
+  transition: transform #{$zoom-duration} var(--ease-out);
+}
+
+// The strip crops whatever the ratio is.
+:host-context([data-card-preview='small']) .ui-card__image {
+  --ui-card-image-position: absolute;
+  --ui-card-image-height: 100%;
+}
+
+// Shops: the whole product on `surface-hover`.
+:host(.ui-card--contain) .ui-card__image {
+  object-fit: contain;
 }
 
 // Soft background and a small card drawing when there is no image (and no `fallback` content);
-// the tone rotates over `accent-bg`, `surface-hover` and `surface-pressed`. The opacities are
-// decorative (no text), so they are allowed.
+// the tone rotates over three neutral greys. The opacities are decorative (no text), so they are
+// allowed.
 .ui-card__placeholder {
   position: absolute;
   inset: 0;
   background: var(--surface-hover);
-  transition: transform var(--duration-slow) var(--ease-out);
+  transition: transform #{$zoom-duration} var(--ease-out);
 
   &[data-tone='0'] {
     background: var(--accent-bg);
@@ -171,7 +198,7 @@
   opacity: 0.3;
 }
 
-// A custom `fallback` (for example a site letter) sits on `accent-bg` over the drawing.
+// A custom `fallback` (for example a site letter) sits on a neutral grey over the drawing.
 .ui-card__fallback {
   position: absolute;
   inset: 0;

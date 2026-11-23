@@ -38,14 +38,15 @@
 .ui-card__body {
   display: flex;
 
-  // Cards in a grid row share one height: the body takes the free room, so projected tags can sit
-  // at the bottom (`margin-block-start: auto`).
+  // Cards in a grid row share one height: the body takes the free room.
   flex: 1;
   flex-direction: column;
   gap: var(--density-card-gap);
+  min-width: 0;
   padding: var(--density-card-padding);
 }
 
+// Folder (filled icon in the folder colour and its name) and the date at the end.
 .ui-card__meta {
   @include type(caption);
 
@@ -54,6 +55,11 @@
   align-items: center;
   min-width: 0;
   color: var(--text-muted);
+
+  // No folder and no date: the row and its gap are gone.
+  &:not(:has(.ui-card__site:not(:empty), .ui-card__date:not(:empty))) {
+    display: none;
+  }
 }
 
 .ui-card__site {
@@ -85,14 +91,13 @@
   font: inherit;
 }
 
-// The one activation target: a native link or button reset to look like text.
+// The one activation target: a native link or button reset to look like text. 16/24 500, two
+// lines at most.
 .ui-card__link {
-  @include type(heading);
+  @include type(body);
   @include line-clamp(2);
 
-  font-size: rem(16px);
-  line-height: rem(22px);
-  letter-spacing: -0.01em;
+  font-weight: 500;
   padding: 0;
   margin: 0;
   color: var(--text);
@@ -128,14 +133,66 @@
   @include visually-hidden;
 }
 
-.ui-card__actions {
-  position: absolute;
+// Source (favicon and channel, repository, or price and domain), hashtags and the note: each one
+// is gone, with its spacing, while its slot is empty.
+.ui-card__source,
+.ui-card__tags {
+  @include type(caption);
 
-  --ui-button-sm-size: #{rem(32px)};
-  --ui-button-radius: #{rem(10px)};
+  min-width: 0;
+  color: var(--text-muted);
 
-  inset: rem(10px) rem(10px) auto auto;
-  z-index: 2;
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-card__source {
   display: flex;
-  gap: rem(4px);
+  gap: rem(6px);
+  align-items: center;
+  margin-block-start: var(--density-card-gap);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Up to three `#tag` words as plain text, not chips.
+.ui-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-2);
+  margin-block-start: var(--density-card-gap);
+}
+
+// The person's note: a pen and the text on the sage `ai-bg`.
+.ui-card__note {
+  @include type(secondary);
+
+  display: flex;
+  gap: var(--density-card-gap);
+  align-items: flex-start;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  padding: rem(6px) rem(8px);
+  margin-block-start: rem(6px);
+  font-size: rem(14px);
+  line-height: rem(18px);
+  color: var(--note-text);
+  background: var(--ai-bg);
+  border-radius: rem(8px);
+
+  &:has(.ui-card__note-text:empty) {
+    display: none;
+  }
+}
+
+.ui-card__note-icon {
+  flex: none;
+  margin-block-start: rem(1px);
+}
+
+.ui-card__note-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
