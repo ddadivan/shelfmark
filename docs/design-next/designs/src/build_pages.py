@@ -37,7 +37,7 @@ ART = {
  'type': '<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="320" height="180" fill="#f1ede2"/><rect x="20" y="110" width="200" height="16" rx="4" fill="#1d1d1f"/><rect x="20" y="134" width="140" height="16" rx="4" fill="#1d1d1f"/></svg>',
  'dark': '<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="320" height="180" fill="#121214"/><rect x="20" y="110" width="200" height="16" rx="4" fill="#f4f4f6"/></svg>',
 }
-PAGES = [('index.html', 'Library and Link page'), ('save-revisit.html', 'Save and Revisit'), ('search.html', 'Search'), ('organise.html', 'Organise'), ('settings.html', 'Settings'), ('public.html', 'Sign-in and public pages'), ('extension.html', 'Browser extension'), ('select-move.html', 'Select, move, side by side'), ('data.html', 'Import, export, sharing'), ('first-run.html', 'First run, help, landing'), ('ask.html', 'Ask your shelf')]
+PAGES = [('index.html', 'Library and Link page'), ('save-revisit.html', 'Save and Revisit'), ('search.html', 'Search'), ('organise.html', 'Organise'), ('settings.html', 'Settings'), ('public.html', 'Sign-in and public pages'), ('extension.html', 'Browser extension'), ('select-move.html', 'Select, move, side by side'), ('data.html', 'Import, export, sharing'), ('first-run.html', 'First run, help, landing'), ('ask.html', 'Ask your shelf'), ('notify.html', 'Reminders and notifications')]
 
 SHELL_CSS = r'''
 [hidden]{display:none!important}*{box-sizing:border-box}body{margin:0}

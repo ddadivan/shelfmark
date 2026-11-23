@@ -56,6 +56,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 | R-03 | Remind me | popover | anchored / same / sheet | current reminder, remove, pick a date |
 | R-04 | Pause history | menu item + setting | all | paused notice |
 | R-05 | "How do you like Shelfmark?" card (D12) | inline card | all | dismissed |
+| R-06 | Notifications: asked right after the first reminder (inline card, then the browser prompt; never on first visit); desktop and Android notification with Open, Snooze, Done; in-app toast when a tab is open; blocked and iPhone (Add to Home Screen) help; weekly “From your shelf” email; Settings › Notifications (switch, what to send, quiet hours, devices) | card, system notification, email, settings page | all | blocked, iPhone without Home Screen |
 
 ## 5. Search
 
