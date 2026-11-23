@@ -85,7 +85,7 @@ body{background:var(--canvas);color:var(--text);font-family:var(--font-sans)}
 .logo{display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;margin:0;font:600 1rem/1.5rem var(--font-sans)}
 .brandrow .avatar{width:32px;height:32px;font-size:.75rem;font-weight:500;background:var(--surface-pressed)}
 .sbtop{display:flex;flex-direction:column;gap:12px;padding:0 4px;margin-top:-12px}
-.sbtop .sm-btn{width:100%;height:40px;justify-content:center}
+.sbtop .sm-btn{width:100%;height:40px;justify-content:center;padding:0 16px;gap:8px}
 .side .grp{display:flex;flex-direction:column;gap:2px}
 .side .grp+.grp{border-top:1px solid var(--sep);padding-top:16px}
 .side .sm-sec{margin-top:0;padding-left:4px}
@@ -158,7 +158,7 @@ def sidebar(cur=''):
         return f'<div class="sm-sec"><button class="sm-sec-t" type="button" aria-expanded="true">{label}{ic("chev", 14)}</button>{plus}</div>'
     fold = lambda n, c, k: f'<button class="sm-nav sm-nav--plain" type="button"{" aria-current=%spage%s" % (chr(34), chr(34)) if cur == n.lower() else ""}><span class="sm-ficon" style="color:var(--folder-{c})">{ic("folder", 16)}</span><span class="lbl">{n}</span><span class="n">{k}</span></button>'
     return (f'<nav class="side" aria-label="Library"><div class="brandrow"><div class="logo">{LOGO4}<span>Shelfmark</span></div><button class="avatar" type="button" aria-label="Account">DU</button></div>'
-        + f'<div class="sbtop"><button class="sm-btn sm-btn--secondary add-btn" type="button">{ic("plus")}<span>Add link</span></button></div>'
+        + f'<div class="sbtop"><button class="sm-btn sm-btn--primary add-btn" type="button">{ic("plus")}<span>Add link</span></button></div>'
         + '<div class="grp">' + nav('all', 'bookmark', 'All links', '<span class="n">17</span>') + nav('unsorted', 'inbox', 'Unsorted', '<span class="n">3</span>') + nav('fav', 'star', 'Favorites', '<span class="n">3</span>') + nav('revisit', 'revisit', 'Today', '<span class="dot">3</span>') + nav('recent', '', 'Recently opened', raw=CLOCK) + '</div>'
         + '<div class="grp">' + sec('Pinned') + '<div class="tree">' + fold('Angular', 'clay', 2) + '</div></div>' + '<div class="grp">' + sec('Folders', 'New folder') + '<div class="tree">' + ''.join(fold(n, c, k) for n, c, k in [('Angular', 'clay', 2), ('Tools', 'ocean', 4), ('Learning', 'sage', 6), ('Shopping', 'rose', 4), ('Watch later', 'plum', 1)]) + '</div></div>'
         + '<div class="grp">' + sec('Tags', 'New tag') + '<div class="tree">' + ''.join(f'<button class="sm-nav sm-nav--plain" type="button">{ic("hash", 16)}<span class="lbl">{t}</span><span class="n">{k}</span></button>' for t, k in [('video', 6), ('design', 2), ('shoes', 2)]) + '</div></div>'

@@ -43,7 +43,7 @@ out = re.sub(r'<label class="sm-input sm-search sm-l1">.*?</label><a class="sm-b
 out = out.replace('</style>', _bp['SHELL_CSS'] + '</style>', 1)
 # v4: right block of the old header goes (Add link and avatar live in the sidebar)
 out = re.sub(r'<div class="right">\s*<button class="sm-btn sm-btn--primary add-btn"[^>]*>.*?</button>\s*<button class="avatar"[^>]*>DU</button>\s*</div>', '', out, count=1, flags=re.S)
-out = out.replace('<button class="sm-btn sm-btn--secondary add-btn" type="button">', '<button class="sm-btn sm-btn--secondary add-btn" type="button" id="add" aria-expanded="false" aria-controls="save">', 1)
+out = out.replace('<button class="sm-btn sm-btn--primary add-btn" type="button">', '<button class="sm-btn sm-btn--primary add-btn" type="button" id="add" aria-expanded="false" aria-controls="save">', 1)
 out = out.replace('</body>', _bp['SEARCH_JS'] + '</body>', 1)
 open(f'{B}/design4/save-revisit.html', 'w').write(out)
 print('ok', len(out))
