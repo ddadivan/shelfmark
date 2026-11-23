@@ -479,7 +479,7 @@ svg{display:block;flex:none}
   const TAGS=[['angular',12],['reading',8],['clothes',7],['design',5]];
   const CHIPS=[['all','All',58],['videos','Videos',8],['articles','Articles',23],['clothes','Clothes',7],['recipes','Recipes',7]];
   const VIEWS=[['masonry','Masonry','i-masonry'],['grid','Grid','i-grid'],['list','List','i-list'],['headlines','Headlines','i-lines']];
-  const S={scope:'all',view:'masonry',chip:'all',q:'',link:null,mode:'site',details:true,empty:false,reader:{size:'m',font:'sans',width:'narrow',tone:'app'}};
+  const S={scope:'all',view:'masonry',chip:'all',q:'',link:null,mode:'site',details:false,empty:false,reader:{size:'m',font:'sans',width:'narrow',tone:'app'}};
   try{const v=JSON.parse(localStorage.getItem('sm-lib')||'{}');if(v.view)S.view=v.view;if(v.reader)S.reader=Object.assign(S.reader,v.reader)}catch(e){}
   const save=()=>{try{localStorage.setItem('sm-lib',JSON.stringify({view:S.view,reader:S.reader}))}catch(e){}};
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

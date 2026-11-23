@@ -163,7 +163,7 @@ After:
 
 ### 5.4 Open a link
 
-Decided (D13): keep today's behaviour. A click opens the Link page (preview + details); Settings › Library › "Clicking a link" switches it to opening the site in a new tab. Fix the setting's hint, which says the preview works on wide screens only (it works on every screen: below 80em as a full page). On the Link page, articles can be read in Reader mode (5.7).
+Decided (D13, confirmed again after the first design): keep today's behaviour. A click opens the Link page showing the site preview; the details panel stays hidden until the person presses Details; Settings › Library › "Clicking a link" switches it to opening the site in a new tab. Fix the setting's hint, which says the preview works on wide screens only (it works on every screen: below 80em as a full page). On the Link page, articles can be read in Reader mode (5.7).
 
 ### 5.5 Organise
 

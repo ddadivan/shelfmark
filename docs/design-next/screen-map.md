@@ -42,7 +42,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 | K-02 | Site view (framed page) | part of K-01 | all | blocked, timeout |
 | K-03 | Reader view: title, site, author, date, reading time, AI summary, text blocks | part of K-01 | 70ch column / same / full width | no text, extraction failed (muted line), progress |
 | K-04 | Reading settings: size, font, width, theme | popover | yes / yes / sheet | |
-| K-05 | Details: title, note, folder, tags, reminder, summary, added / opened dates | part of K-01 (fields edit in place) | side panel / below / below | AI suggestions with the spark, Fill in with AI (Suggest mode) |
+| K-05 | Details: title, note, folder, tags, reminder, summary, added / opened dates | part of K-01 (fields edit in place); hidden until the Details button is pressed, so a click shows the site first | side panel / below / below | AI suggestions with the spark, Fill in with AI (Suggest mode) |
 | K-06 | Related on your shelf | popover | yes / yes / sheet | AI off: hidden; none found |
 | K-07 | Prev / next link | keys + buttons | yes / yes / swipe | first, last |
 
