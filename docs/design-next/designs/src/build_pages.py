@@ -71,6 +71,26 @@ mark{background:var(--accent-bg);color:var(--accent-text);border-radius:2px;padd
  .tabbar-wrap{display:block;position:fixed;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30}.tabbar-wrap .sm-tabbar{width:100%}
  .proto{bottom:auto;top:calc(8px + env(safe-area-inset-top,0px))}
  body{padding-top:96px}.sapp,body:has(.tabbar-wrap) main{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}}
+/* ===== v3 shell ===== */
+body{background:var(--canvas);color:var(--text);font-family:var(--font-sans)}
+.app{padding:0;gap:0}
+.side{background:transparent!important;box-shadow:none!important;width:232px;padding:16px 8px 16px 16px;top:0;height:100vh;border-radius:0}
+.side .sm-nav[aria-current="page"],.snav .sm-nav[aria-current="page"]{background:var(--surface);color:var(--text)}
+.side .sm-nav:not([aria-current]),.snav .sm-nav:not([aria-current]){color:var(--text-muted)}
+.side .sm-nav:not([aria-current]) svg{color:var(--text-muted)}
+.logo{font-family:var(--font-display)}
+.main{margin:8px 8px 8px 0;padding:24px 40px 56px;border-radius:20px;background:var(--surface);min-height:calc(100vh - 16px)}
+.top{height:auto;gap:12px}
+.top .sm-search{height:52px;border-radius:16px;max-width:720px;padding:0 12px 0 16px;background:var(--surface-hover)}
+.top .sm-search input{font-size:1rem}
+h1{font-size:2rem;line-height:1.25}
+.sapp{padding:0!important;gap:0!important}
+.snav{background:transparent!important;box-shadow:none!important;width:232px!important;padding:16px 8px 16px 16px!important;top:0!important;border-radius:0!important;height:100vh!important}
+.smain{margin:8px 8px 8px 0!important;padding:24px 40px 56px!important;border-radius:20px;background:var(--surface);max-width:none!important;min-height:calc(100vh - 16px)}
+.smain>*{max-width:840px;margin-left:auto;margin-right:auto}
+@media (max-width:63.99em){.side{width:var(--rail);padding:16px 8px}.main,.smain{margin:8px!important}}
+@media (max-width:39.99em){.main,.smain{margin:0!important;border-radius:0;padding:16px 16px 104px!important;min-height:100vh}.top .sm-search{height:48px}}
+
 '''
 def sidebar(cur=''):
     def nav(key, icon, label, extra=''):

@@ -48,7 +48,7 @@ A_CSS = r'''
 .bars em{font-style:normal;text-align:right;color:var(--text-muted);font-variant-numeric:tabular-nums}
 .acts2{display:flex;gap:4px;flex-wrap:wrap}
 .cite{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border:1px solid var(--line-strong);border-radius:4px;font:500 .6875rem/1 var(--font-sans);vertical-align:2px;color:var(--text-muted)}
-.sticky{position:sticky;bottom:0;margin-top:auto;padding:12px 0 16px;background:linear-gradient(to bottom,transparent,var(--canvas) 24%)}
+.sticky{position:sticky;bottom:0;margin-top:auto;padding:12px 0 16px;background:linear-gradient(to bottom,transparent,var(--surface) 24%)}
 .status2{display:inline-flex;gap:6px;align-items:center;font-size:.8125rem;color:var(--text-muted)}
 .shimmer{background:linear-gradient(90deg,var(--text-muted) 0%,var(--text) 50%,var(--text-muted) 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 1.4s ease-in-out infinite}
 @keyframes sh{from{background-position:100% 0}to{background-position:-100% 0}}
@@ -65,7 +65,7 @@ A_CSS = r'''
 .ph-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .ph-top b{font:600 1.27rem/1.2 var(--font-sans);flex:1}
 .ph-top .av2{width:32px;height:32px;border-radius:50%;background:var(--surface-hover);display:grid;place-items:center;font:600 .75rem/1 var(--font-sans)}
-@media (max-width:39.99em){.sticky{bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--canvas);padding-bottom:8px}.sticky::after{content:"";position:absolute;left:-16px;right:-16px;top:100%;height:calc(100px + env(safe-area-inset-bottom,0px));background:var(--canvas)}.sticky .fine{display:none}}
+@media (max-width:39.99em){.sticky{bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--surface);padding-bottom:8px}.sticky::after{content:"";position:absolute;left:-16px;right:-16px;top:100%;height:calc(100px + env(safe-area-inset-bottom,0px));background:var(--surface)}.sticky .fine{display:none}}
 @media (max-width:63.99em){.askwrap{grid-template-columns:1fr}.hist{display:none}.caps{grid-template-columns:1fr}.lcards{grid-template-columns:1fr}}
 '''
 def side_ask(cur='ask'): return sidebar('ask')

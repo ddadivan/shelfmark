@@ -56,9 +56,7 @@
   "sections": []
  },
  "lastChange": {
-  "by": "Claude",
-  "at": "2026-11-23T02:07:27Z",
-  "via": "Claude Code",
-  "note": "StateScene: stronger outlines and lighter dimming so scenes read on dark panels."
+  "at": "2026-11-23T16:16:32Z",
+  "summary": "Restyled to v3: canvas and one panel, fill instead of borders, Funnel Sans and Display, radii 4/8/10/12/20, shadows only on floating layers."
  }
 }

@@ -1,6 +1,6 @@
 # Shelfmark Next
 
-A calm shelf for everything you save, and a way back to it. Shelfmark keeps links people save (videos, articles, clothes, recipes, tools) so they can **save** anything in one move, **find** it in seconds and **come back** to it before it is forgotten. The interface stays graphite and quiet so the saved pages are the colour on the screen.
+A calm shelf for everything you save, and a way back to it. Shelfmark keeps links people save (videos, articles, clothes, recipes, tools) so they can **save** anything in one move, **find** it in seconds and **come back** to it before it is forgotten. The interface is one light panel on a warm grey canvas, told apart by fill rather than lines, so the saved pages are the colour on the screen.
 
 This system replaces the 2027 Refresh. It follows the visual-taste rules (type, colour, spacing, no decorative noise) and the structure in the repository's `docs/design-next/` (flows-and-structure.md, foundations.md, screen-map.md).
 
@@ -15,33 +15,20 @@ This system replaces the 2027 Refresh. It follows the visual-taste rules (type, 
 
 ## Visual foundations
 
-### Colour: Graphite
-Neutral greys with no colour accent. `accent` is graphite: the one main action per view, switches, the active view. `focus` is the only blue. Sage and Ink exist as accent variants in Settings › Appearance (`accent-sage`, `accent-ink`).
-
-| Share | Roles |
-| --- | --- |
-| ~60% | `canvas` |
-| ~30% | `surface`, `surface-hover`, `surface-pressed`, `line`, `line-strong` |
-| ≤10% | `accent`, `accent-bg` |
-
-Status colours (`danger`, `warning`, `success`) always come with words and an icon. `star` is only the favorite star. `ai` is only the spark and the edge of AI suggestions. Folder colours (`folder-*`) appear only in folder tiles, chosen by the person. All text passes 4.5:1 and UI parts 3:1 in both themes.
+### Colour: v3 (canvas and panel)
+A warm grey `canvas` (#ECECE9 / dark #141518) holds the sidebar directly, without a box. The content sits on one `surface` panel (#FBFBFA / #1B1C20, radius 20, 8px from the edges). Inside it, a second fill `surface-hover` (#F2F2EF / #232429) marks cards, inputs, segmented tracks and groups; `surface-pressed` marks the selected item. `accent` is near-black for the one main action; `focus` and favorites use the brand sage (#4E7A52 / #9CCB9F). Ink and Sage stay accent options in Settings › Appearance.
 
 ### Type
-One family, Onest; JetBrains Mono for addresses and key caps; Literata and Atkinson Hyperlegible only as Reader options. Body 16, secondary 14, meta 12 (metadata only, never primary content); headings on a Major Second scale (`title-s` 18 to `display` 32.4). Weights 400, 500, 600. Line height 1.5 for text, 1.2–1.25 for headings.
+Funnel Sans for the interface and Funnel Display for page titles, dialog titles and the logo; JetBrains Mono for addresses and key caps; Literata and Atkinson Hyperlegible only as Reader options. Body 16, secondary 14, meta 12 (metadata only, never primary content); headings on a Major Second scale (`title-s` 18 to `display` 32.4). Weights 400, 500, 600. Line height 1.5 for text, 1.2–1.25 for headings.
 
 ### Space and size
 8pt grid for components, 4pt for small gaps (`space-4` … `space-64`). Controls 32 / 40 / 48; touch targets 44. Sidebar 264, tablet rail 72, reading measure 68ch.
 
 ### Radius
-Concentric on the 4pt grid: `radius-xs` 4, `radius-sm` 8 (every control: buttons, inputs, search, chips, rows), `radius-md` 12 (cards, menus, popovers), `radius-lg` 16 (sidebar, dialogs, panels). Pills are only for round things (`radius-full`: avatars, switches).
+`radius-xs` 4 (favicons, key caps, tags), `radius-card` 8 (link cards and their full-bleed cover), `radius-sm` 10 (buttons, inputs, nav rows, chips, menu items), `radius-md` 12 (menus, popovers, segmented tracks), `radius-lg` 20 (the main panel, dialogs, slide-overs, the command bar, the tab bar). `radius-full` only for round things.
 
 ### Elevation
-Border first, then a soft shadow; no glass anywhere.
-- L0 `canvas`.
-- L1 `surface` + 1px `line` + `shadow-l1`: sidebar, cards, list panels, inputs. Lists always sit on an L1 panel with hairline rows.
-- L2 + `line-strong` + `shadow-l2`: menus, popovers, the tab bar, a hovered card.
-- L3 + `shadow-l3` over `scrim`: dialogs and slide-overs.
-- Dark theme: no shadows on L1; `highlight` (a 1px top edge) instead.
+Fill, not lines: no borders on surfaces, cards or inputs, and no shadows on anything that sits in the page. Only floating layers (menus, popovers, toasts, the tab bar) get `shadow-l2`, and dialogs and slide-overs `shadow-l3` over the scrim, so they lift off a panel of the same colour. Row dividers inside a group stay as 1px `line`.
 
 ### Motion
 Fast in, faster out: 200 ms entrances (`duration-base`), 120 ms exits and hovers, 320 ms for slide-overs. One signature moment: a saved link lands in the feed. Reduced motion: fades only.
@@ -60,7 +47,7 @@ One field: edit in place. Under 10 seconds: a popover (Filter, Move, Remind me, 
 States (empty, nothing found, offline, error, a site that can’t be shown) get an animated StateScene: flat scenes from the product’s own shapes that play once and hold.
 
 
-Shelfmark's own outline set on a 24px grid, 1.75px line, round caps; 16px in controls, 20px in navigation, 24px in empty states. Icons take the colour of their text. Website favicons show at 16px in a `radius-xs` square; a missing favicon is the site's first letter. The logo is the card-with-bookmark mark (Logos group) followed by "Shelfmark" in Onest 600.
+Shelfmark's own outline set on a 24px grid, 1.75px line, round caps; 16px in controls, 20px in navigation, 24px in empty states. Icons take the colour of their text. Website favicons show at 16px in a `radius-xs` square; a missing favicon is the site's first letter. The logo is the card-with-bookmark mark (Logos group) followed by "Shelfmark" in Funnel Display 600.
 
 ## AI
 

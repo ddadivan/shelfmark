@@ -4,6 +4,16 @@ Status: **approved.** Palette: **C · Graphite** (author's choice); Ink and Sage
 
 These foundations replace `docs/design/tokens.*` for the new design. When approved, they are recorded in an ADR and become the token source for `libs/ui`.
 
+> **Superseded in part by the v3 look (author's choice, 2026-11-23).** Layout, sizes, spacing and type scale below still hold. What changed:
+> - **Colour:** warm-neutral canvas `#ECECE9` / `#141518`, panel `#FBFBFA` / `#1B1C20`, hover `#F2F2EF` / `#232429`, pressed `#E6E6E1` / `#2C2D33`, text `#18181B` / `#EEEEF0`, muted `#5C5D64` / `#A4A5AD`. Focus and the favorite star are sage `#4E7A52` / `#9CCB9F`; there is no blue.
+> - **Type:** Funnel Sans for the interface, Funnel Display for page titles (Onest is retired).
+> - **Radius:** 4 · card 8 · controls 10 · menus 12 · panels and dialogs 20.
+> - **Elevation:** no borders or shadows on resting surfaces; depth comes from fill only (canvas → panel → hover). Shadows stay on floating layers (menus, popovers, dialogs, toasts).
+> - **Shell:** the sidebar sits on the canvas without a panel; the main area is one panel with radius 20 and an 8px margin; search is 52px tall with radius 16.
+> - **Cards:** solid fill, 8px radius, the preview fills the top edge to edge; hover darkens the fill.
+>
+> The token source is `design-system/tokens.json` (version 2.0.0-v3) and `design-system/components/bundle.css`.
+
 ## 1. Type
 
 One family for the whole interface: **Onest** (variable, self-hosted, full Cyrillic for the Ukrainian translation). **JetBrains Mono** only for addresses in fields and keyboard caps.
