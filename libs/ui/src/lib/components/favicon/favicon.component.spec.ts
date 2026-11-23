@@ -6,11 +6,12 @@ import { FaviconComponent } from './favicon.component';
 
 @Component({
   imports: [FaviconComponent],
-  template: `<ui-favicon [src]="src()" [letter]="letter()" />`,
+  template: `<ui-favicon [src]="src()" [letter]="letter()" [colour]="colour()" />`,
 })
 class HostComponent {
   readonly src = signal<string | undefined>(undefined);
   readonly letter = signal<string | undefined>(undefined);
+  readonly colour = signal<string | undefined>(undefined);
 }
 
 function setup() {
@@ -26,6 +27,29 @@ function setup() {
 }
 
 describe('FaviconComponent', () => {
+  it('fills with the site colour and a white letter', () => {
+    const { favicon, update } = setup();
+    update((c) => {
+      c.letter.set('y');
+      c.colour.set('#fc3f1d');
+    });
+    expect(favicon.classList).toContain('ui-favicon--coloured');
+    expect(favicon.style.getPropertyValue('--ui-favicon-bg')).toBe('#fc3f1d');
+    expect(favicon.style.getPropertyValue('--ui-favicon-ink')).toBe('#ffffff');
+  });
+
+  it('switches to a black letter on a light colour and ignores an invalid one', () => {
+    const { favicon, update } = setup();
+    update((c) => {
+      c.letter.set('s');
+      c.colour.set('#ffd54a');
+    });
+    expect(favicon.style.getPropertyValue('--ui-favicon-ink')).toBe('#000000');
+    update((c) => c.colour.set('red'));
+    expect(favicon.classList).not.toContain('ui-favicon--coloured');
+    expect(favicon.style.getPropertyValue('--ui-favicon-bg')).toBe('');
+  });
+
   it('shows the link icon without src and letter, and is decorative', () => {
     const { favicon } = setup();
     expect(favicon.querySelector('ui-icon')).not.toBeNull();

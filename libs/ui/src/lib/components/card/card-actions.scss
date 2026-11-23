@@ -1,61 +1,89 @@
 @use '../../../styles/ui' as *;
 
-// The favorite toggle and the "..." trigger reveal on their own, so a toggled-on favorite can stay.
+// The controls over the preview sit above the stretched link (z-index 2): the play mark and the
+// selection checkbox top left (the checkbox takes the place of the play mark), the ⋯ and the star
+// top right. Glass buttons are projected (`ui-button`, the card only places them); the card sizes
+// every projected button as a 28px round (40px under touch).
+.ui-card__play,
+.ui-card__select,
+.ui-card__actions {
+  position: absolute;
+
+  --ui-button-sm-size: #{rem(28px)};
+  --ui-button-radius: var(--radius-full);
+
+  inset-block-start: rem(8px);
+  z-index: 2;
+}
+
+.ui-card__play {
+  inset-inline-start: rem(8px);
+  display: flex;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-card__actions {
+  inset-inline-end: rem(8px);
+  display: flex;
+  gap: rem(4px);
+}
+
+// The star stays at rest (it shows a favorite); the ⋯ reveals with the card.
 .ui-card__favorite,
 .ui-card__more {
   position: relative;
   z-index: 2;
   display: flex;
   align-items: center;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.ui-card__more {
   opacity: 0;
   transform: translateY(#{rem(-2px)});
   transition:
     opacity var(--duration-fast) var(--ease-out),
     transform var(--duration-fast) var(--ease-out);
 
-  &:empty {
-    display: none;
-  }
-
   @include reduced-motion {
     transform: none;
   }
 }
 
-:host(:has(:focus-visible)) :is(.ui-card__favorite, .ui-card__more),
-:host(.ui-card--pinned) :is(.ui-card__favorite, .ui-card__more),
-:host(.ui-card--favorited) .ui-card__favorite {
+:host(:has(:focus-visible)) .ui-card__more,
+:host(.ui-card--pinned) .ui-card__more {
   opacity: 1;
   transform: none;
 }
 
-// Touch has no hover: the actions are always there.
+// Touch has no hover: the ⋯ is always there.
 @media (hover: none) {
-  .ui-card__favorite,
   .ui-card__more {
     opacity: 1;
     transform: none;
   }
 }
 
-// Bulk selection checkbox, top left over the preview (above the stretched link, like the actions).
-// The wrapper draws nothing: the checkbox's own solid `surface` box and `border-control` outline are
-// the one frame, readable on every placeholder tone.
-// It fades in with the actions on hover and keyboard focus, and stays while a selection runs.
+// Bulk selection checkbox over the preview, in the place of the play mark. The checkbox draws its
+// own solid `surface` round and `border-control` outline, readable on every picture. It fades in
+// on hover and keyboard focus and stays while a selection runs or the card is picked.
 .ui-card__select {
-  position: absolute;
-
-  // Same row, size and inset as the "..." on the right: 32px squares (40px on touch).
-  --ui-checkbox-size: #{rem(32px)};
-  --ui-checkbox-hit: #{rem(32px)};
-  --ui-checkbox-radius: #{rem(10px)};
-  --ui-checkbox-tick: #{rem(28px)};
+  --ui-checkbox-size: #{rem(28px)};
+  --ui-checkbox-hit: #{rem(28px)};
+  --ui-checkbox-radius: var(--radius-full);
+  --ui-checkbox-tick: #{rem(24px)};
   --ui-checkbox-fill: var(--accent);
   --ui-checkbox-hover-bg: var(--surface-hover);
   --ui-checkbox-pressed-bg: var(--surface-pressed);
 
-  inset: rem(10px) auto auto rem(10px);
-  z-index: 2;
+  inset-inline-start: rem(8px);
   display: flex;
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
@@ -65,37 +93,44 @@
   }
 }
 
-:host {
-  @include hover {
-    .ui-card__select {
-      opacity: 1;
-    }
-  }
-}
-
-:host(:has(:focus-visible)) .ui-card__select,
-:host(.ui-card--selecting) .ui-card__select,
-:host(.ui-card--checked) .ui-card__select {
-  opacity: 1;
-}
-
-@media (hover: none) {
+// The checkbox shows: the play mark steps aside (only when there is a checkbox to take its place).
+@mixin select-shown {
   .ui-card__select {
     opacity: 1;
   }
+
+  .ui-card__play {
+    pointer-events: none;
+    opacity: 0;
+  }
 }
 
-// Touch: the checkbox and the "..." both grow to 40px.
+:host(:has(.ui-card__select:not(:empty))) {
+  @include hover {
+    @include select-shown;
+  }
+
+  &:has(:focus-visible),
+  &.ui-card--selecting,
+  &.ui-card--checked {
+    @include select-shown;
+  }
+
+  @media (hover: none) {
+    @include select-shown;
+  }
+}
+
+// Touch: the checkbox and the buttons grow to 40px.
 @include coarse {
   .ui-card__select {
     --ui-checkbox-size: #{rem(40px)};
     --ui-checkbox-hit: #{rem(40px)};
-    --ui-checkbox-radius: #{rem(12px)};
     --ui-checkbox-tick: #{rem(34px)};
   }
 
-  .ui-card__actions {
+  .ui-card__actions,
+  .ui-card__play {
     --ui-button-sm-size: #{rem(40px)};
-    --ui-button-radius: #{rem(12px)};
   }
 }

@@ -1,0 +1,78 @@
+@use '../../../styles/ui' as *;
+
+$track-height: rem(4px);
+$thumb-size: rem(16px);
+
+:host {
+  display: block;
+  min-inline-size: 0;
+}
+
+// The input is the 24px target (2.5.8); only the 4px track and the 16px thumb are drawn. The
+// filled part is a hard-stop gradient up to the thumb centre (`--ui-range-ratio`, 0 to 1).
+.ui-range__input {
+  --ui-range-fill: calc(#{$thumb-size} / 2 + var(--ui-range-ratio, 0) * (100% - #{$thumb-size}));
+  --ui-range-track: linear-gradient(
+    to right,
+    var(--accent) var(--ui-range-fill),
+    var(--toggle-off) var(--ui-range-fill)
+  );
+
+  display: block;
+  width: 100%;
+  height: rem(24px);
+  margin: 0;
+  cursor: pointer;
+  background: transparent;
+  appearance: none;
+
+  @include coarse {
+    height: rem(44px);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &::-webkit-slider-runnable-track {
+    height: $track-height;
+    background: var(--ui-range-track);
+    border-radius: var(--radius-full);
+  }
+
+  &::-webkit-slider-thumb {
+    width: $thumb-size;
+    height: $thumb-size;
+    margin-block-start: calc((#{$track-height} - #{$thumb-size}) / 2);
+    background: var(--accent);
+    border: 0;
+    border-radius: var(--radius-full);
+    box-shadow:
+      0 0 0 2px var(--surface),
+      0 1px 3px rgb(0 0 0 / 30%);
+    appearance: none;
+  }
+
+  &::-moz-range-track {
+    height: $track-height;
+    background: var(--ui-range-track);
+    border-radius: var(--radius-full);
+  }
+
+  &::-moz-range-thumb {
+    box-sizing: border-box;
+    width: $thumb-size;
+    height: $thumb-size;
+    background: var(--accent);
+    border: 0;
+    border-radius: var(--radius-full);
+    box-shadow:
+      0 0 0 2px var(--surface),
+      0 1px 3px rgb(0 0 0 / 30%);
+  }
+}

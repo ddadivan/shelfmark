@@ -1,0 +1,143 @@
+@use '../../../styles/ui' as *;
+
+:host {
+  display: inline-block;
+}
+
+// The View button: a secondary pill on `surface-hover`, label and a chevron that turns up while open.
+.ui-view-menu__trigger {
+  @include type(label);
+
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  justify-content: center;
+  height: var(--control-sm);
+  padding: 0 var(--space-3) 0 var(--space-4);
+  color: var(--text);
+  white-space: nowrap;
+  cursor: pointer;
+  background: var(--surface-hover);
+  border: 0;
+  border-radius: var(--radius-full);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  @include hover {
+    background: var(--surface-pressed);
+  }
+
+  &:active,
+  &[aria-expanded='true'] {
+    background: var(--surface-pressed);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include coarse {
+    @include touch-target;
+  }
+}
+
+.ui-view-menu__chevron {
+  transition: transform var(--duration-base) var(--ease-out);
+
+  .ui-view-menu__trigger[aria-expanded='true'] & {
+    transform: rotate(180deg);
+  }
+
+  @include reduced-motion {
+    transition: none;
+  }
+}
+
+// Closed, the panel element sits empty where it was written; open, the overlay moves it into its pane.
+.ui-view-menu__panel {
+  display: none;
+}
+
+.ui-view-menu__panel--shown {
+  display: block;
+}
+
+:host(.ui-view-menu--inline) .ui-view-menu__panel {
+  margin-block-start: var(--space-1);
+}
+
+// The 260px floating panel (Shelf: `surface`, `shadow-l2`, 12px corners, hairline edge).
+.ui-view-menu__surface {
+  @include float-surface;
+
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  inline-size: rem(260px);
+  max-inline-size: calc(100vw - #{rem(16px)});
+  padding: var(--space-2);
+  margin: var(--space-1) 0;
+  color: var(--text);
+  border-radius: var(--radius-md);
+}
+
+.ui-view-menu__grid {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2) rem(10px);
+}
+
+.ui-view-menu__head,
+.ui-view-menu__ends {
+  @include type(caption);
+
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+}
+
+.ui-view-menu__heading {
+  color: var(--text);
+}
+
+.ui-view-menu__step {
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-view-menu__sep {
+  height: 0;
+  margin: var(--space-1) 0 var(--space-2);
+  border-block-start: 1px solid var(--sep);
+}
+
+// The row is the target: a press anywhere on it flips the switch (it sits in the row's label).
+.ui-view-menu__row {
+  @include type(body);
+
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  padding: var(--space-2) rem(10px);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+
+  @include hover {
+    background: var(--fill);
+  }
+}
+
+.ui-view-menu__row-label {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+// `--ui-origin` is set on the overlay pane from the resolved position (the corner next to the
+// trigger); `top right` is the fallback.
+.ui-view-menu--enter {
+  @include enter(pop);
+  @include origin(top right);
+}
+
+.ui-view-menu--leave {
+  @include leave(pop);
+  @include origin(top right);
+}

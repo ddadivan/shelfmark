@@ -15,7 +15,13 @@
   line-height: 1;
   color: var(--text-muted);
   background: var(--surface-hover);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
+}
+
+// A site colour: its fill and a letter that keeps 3:1 (both set by the component).
+:host(.ui-favicon--coloured) {
+  color: var(--ui-favicon-ink);
+  background: var(--ui-favicon-bg);
 }
 
 .ui-favicon__image {

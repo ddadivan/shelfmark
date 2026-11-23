@@ -99,11 +99,18 @@
       <h2 class="ui-card__heading"><ng-container [ngTemplateOutlet]="control" /></h2>
     }
   }
+  <div class="ui-card__source"><ng-content select="[slot=source]" /></div>
+  <div class="ui-card__tags"><ng-content select="[slot=tags]" /></div>
+  <div class="ui-card__note">
+    <ui-icon class="ui-card__note-icon" name="edit" [size]="ICON_SIZE.Sm" />
+    <span class="ui-card__note-text"><ng-content select="[slot=note]" /></span>
+  </div>
   <ng-content />
 </div>
+<div class="ui-card__play"><ng-content select="[slot=play]" /></div>
 <div class="ui-card__actions">
-  <div class="ui-card__favorite"><ng-content select="[slot=favorite]" /></div>
   <div class="ui-card__more"><ng-content select="[slot=actions]" /></div>
+  <div class="ui-card__favorite"><ng-content select="[slot=favorite]" /></div>
 </div>
 <div class="ui-card__select"><ng-content select="[slot=select]" /></div>
 @if (description(); as text) {

@@ -1,0 +1,66 @@
+<button
+  #trigger
+  type="button"
+  class="ui-view-menu__trigger"
+  aria-haspopup="dialog"
+  [attr.aria-expanded]="expanded()"
+  [attr.aria-controls]="id"
+  (click)="toggle($event)"
+>
+  <span class="ui-view-menu__label">{{ label() }}</span>
+  <ui-icon class="ui-view-menu__chevron" name="chevron-down" [size]="ICON_SIZE.Sm" />
+</button>
+
+<!-- The panel element is moved into an overlay pane while open; closed, it stays here, hidden. -->
+<div
+  #panel
+  class="ui-view-menu__panel"
+  role="dialog"
+  [class.ui-view-menu__panel--shown]="inline() || attached()"
+  [attr.id]="id"
+  [attr.aria-label]="label()"
+  (keydown)="onKeydown($event)"
+  (focusout)="onFocusOut($event)"
+>
+  @if (isOpen()) {
+    <div
+      class="ui-view-menu__surface"
+      animate.enter="ui-view-menu--enter"
+      animate.leave="ui-view-menu--leave"
+    >
+      <div class="ui-view-menu__grid">
+        <div class="ui-view-menu__head">
+          <span class="ui-view-menu__heading">{{ heading() }}</span>
+          <span class="ui-view-menu__step" aria-hidden="true">{{ stepLabel() }}</span>
+        </div>
+        <ui-range
+          [label]="heading()"
+          [min]="1"
+          [max]="steps()"
+          [step]="1"
+          [valueText]="stepLabel()"
+          [disabled]="gridDisabled()"
+          [(value)]="step"
+        />
+        <div class="ui-view-menu__ends" aria-hidden="true">
+          <span>{{ smallLabel() }}</span>
+          <span>{{ largeLabel() }}</span>
+        </div>
+      </div>
+      @if (fields().length > 0) {
+        <div class="ui-view-menu__sep" role="separator"></div>
+        @for (field of fields(); track field.id) {
+          <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -- the switch is a native button inside the label, so a press on the row activates it -->
+          <label class="ui-view-menu__row">
+            <span class="ui-view-menu__row-label">{{ field.label }}</span>
+            <ui-switch
+              [label]="field.label"
+              [checked]="field.checked"
+              (checkedChange)="change(field, $event)"
+            />
+          </label>
+        }
+      }
+    </div>
+  }
+</div>

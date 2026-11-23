@@ -4,7 +4,7 @@ import type { CardHarnessSlot } from './models/card-harness-slot.type';
 
 /**
  * Harness for `ui-card`. The card has one activation target: the title link (`href`) or button,
- * stretched over the card. Harnesses of projected controls (favorite, "...", checkbox) load from
+ * stretched over the card. Harnesses of projected controls (play, favorite, "...", checkbox) load from
  * this harness or from one area with `getChildLoader(CARD_HARNESS_SLOT.Actions)`.
  */
 export class UiCardHarness extends ContentContainerComponentHarness<CardHarnessSlot> {
@@ -26,15 +26,34 @@ export class UiCardHarness extends ContentContainerComponentHarness<CardHarnessS
   private readonly heading = this.locatorFor('.ui-card__heading');
   private readonly image = this.locatorForOptional('.ui-card__image');
   private readonly site = this.locatorFor('.ui-card__site');
+  private readonly source = this.locatorFor('.ui-card__source');
+  private readonly tags = this.locatorFor('.ui-card__tags');
+  private readonly note = this.locatorFor('.ui-card__note-text');
   private readonly description = this.locatorForOptional('.ui-card__description');
 
   async getTitle(): Promise<string> {
     return (await (await this.control()).text()).trim();
   }
 
-  /** Text of the meta slot (domain). */
+  /** Text of the meta slot (the folder name). */
   async getMetaText(): Promise<string> {
     return (await (await this.site()).text()).trim();
+  }
+
+  /** Text of the source slot (channel, repository or price and domain); empty without one. */
+  async getSourceText(): Promise<string> {
+    return (await (await this.source()).text()).trim();
+  }
+
+  /** Text of the tags slot; empty without one. */
+  async getTagsText(): Promise<string> {
+    return (await (await this.tags()).text()).trim();
+  }
+
+  /** Text of the note slot, `null` without a note. */
+  async getNoteText(): Promise<string | null> {
+    const text = (await (await this.note()).text()).trim();
+    return text === '' ? null : text;
   }
 
   /** The visually hidden description ("opens in a new tab"), `null` without one. */

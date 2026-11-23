@@ -7,6 +7,8 @@ import { compileScss, mediaBlocks, withoutMedia } from '../../../testing/scss';
 import { ButtonComponent } from '../button/button.component';
 import { TooltipDirective } from '../../directives/tooltip/tooltip.directive';
 import { CardComponent } from './card.component';
+import { CARD_MEDIA } from './models/card-media.const';
+import type { CardMedia } from './models/card-media.type';
 import { CARD_STORY_IMAGE } from './stories/card-story-image.const';
 
 @Component({
@@ -21,13 +23,20 @@ import { CARD_STORY_IMAGE } from './stories/card-story-image.const';
       [actionsPinned]="pinned()"
       [reveal]="reveal()"
       [placeholderTone]="tone()"
+      [media]="media()"
+      [imageRatio]="ratio()"
       [favorited]="favorited()"
       [headingLevel]="level()"
       (activated)="activated.push($event)"
     >
       <span slot="fallback">Y</span>
       <span slot="overlay">youtube.com Open</span>
-      <span slot="meta">youtube.com</span>
+      <span slot="meta">Angular</span>
+      <span slot="date">today</span>
+      <span slot="play">P</span>
+      <span slot="source">Fireship</span>
+      <span slot="tags">#video #angular</span>
+      <span slot="note">Watch it on the weekend</span>
       <ui-button
         slot="favorite"
         variant="ghost"
@@ -60,6 +69,8 @@ class HostComponent {
   readonly pinned = signal(false);
   readonly reveal = signal(false);
   readonly tone = signal(0);
+  readonly media = signal<CardMedia>(CARD_MEDIA.Cover);
+  readonly ratio = signal<number | undefined>(undefined);
   readonly favorited = signal(false);
   readonly level = signal<HeadingLevel>(2);
   readonly activated: MouseEvent[] = [];
@@ -87,12 +98,24 @@ function controls(card: HTMLElement): HTMLElement[] {
 /** The plain `(hover: hover)` query, not the combined one for the zoom. */
 const HOVER_ONLY = /^\s*\(hover:\s*hover\)\s*$/;
 
+@Component({
+  imports: [CardComponent],
+  template: `<ui-card><span slot="title">Bare</span></ui-card>`,
+})
+class BareHostComponent {}
+
 describe('CardComponent', () => {
   it('renders the slots in place', () => {
     const { card } = setup();
     expect(card.querySelector('.ui-card__link')?.textContent).toContain('Angular 22 Signal Forms');
+    expect(card.querySelector('.ui-card__source')?.textContent).toBe('Fireship');
+    expect(card.querySelector('.ui-card__tags')?.textContent).toBe('#video #angular');
+    expect(card.querySelector('.ui-card__note-text')?.textContent).toBe('Watch it on the weekend');
+    expect(card.querySelector('.ui-card__note ui-icon')?.getAttribute('name')).toBe('edit');
+    expect(card.querySelector('.ui-card__date')?.textContent).toBe('today');
+    expect(card.querySelector('.ui-card__play')?.textContent).toBe('P');
     expect(card.querySelector('.ui-card__body .note')?.textContent).toBe('Watch on the weekend');
-    expect(card.querySelector('.ui-card__site')?.textContent).toBe('youtube.com');
+    expect(card.querySelector('.ui-card__site')?.textContent).toBe('Angular');
     expect(card.querySelector('.ui-card__favorite ui-button')).not.toBeNull();
     expect(card.querySelector('.ui-card__actions ui-button')).not.toBeNull();
     expect(card.querySelector('.ui-card__overlay')?.getAttribute('aria-hidden')).toBe('true');
@@ -281,14 +304,70 @@ describe('CardComponent', () => {
     expect(link.hasAttribute('aria-describedby')).toBe(false);
   });
 
+  it('collapses every empty body slot, so a bare card has no row and no gap', () => {
+    const css = compileScss('lib/components/card/card.component.scss');
+    expect(css).toMatch(
+      /\.ui-card__source,\s*\.ui-card__tags\s*\{[^}]*\}[\s\S]*:empty\s*\{\s*display: none/,
+    );
+    expect(css).toMatch(/\.ui-card__meta:not\(:has\(/);
+    expect(css).toMatch(/\.ui-card__note:has\(\.ui-card__note-text:empty\)\s*\{\s*display: none/);
+    const bare = TestBed.createComponent(BareHostComponent);
+    bare.detectChanges();
+    const el = bare.nativeElement as HTMLElement;
+    for (const name of ['site', 'date', 'source', 'tags', 'play', 'select', 'favorite', 'more']) {
+      expect(el.querySelector(`.ui-card__${name}`)?.childNodes.length ?? 0).toBe(0);
+    }
+    expect(el.querySelector('.ui-card__note-text')?.childNodes.length).toBe(0);
+  });
+
+  it('cuts the preview by media: cover by default, natural with its own ratio, contain', () => {
+    const { card, update } = setup();
+    expect(card.classList).not.toContain('ui-card--natural');
+    expect(card.classList).not.toContain('ui-card--contain');
+    update((c) => c.image.set(CARD_STORY_IMAGE.Preview));
+    expect(card.classList).toContain('ui-card--image');
+    expect((card as HTMLElement).style.getPropertyValue('--ui-card-ratio')).toBe('');
+    update((c) => {
+      c.media.set(CARD_MEDIA.Natural);
+      c.ratio.set(1.5);
+    });
+    expect(card.classList).toContain('ui-card--natural');
+    expect((card as HTMLElement).style.getPropertyValue('--ui-card-ratio')).toBe('1.5');
+    update((c) => c.media.set(CARD_MEDIA.Contain));
+    expect(card.classList).toContain('ui-card--contain');
+    expect(card.classList).not.toContain('ui-card--natural');
+    update((c) => c.image.set(undefined));
+    expect(card.classList).not.toContain('ui-card--image');
+  });
+
   describe('styles', () => {
     const css = compileScss('lib/components/card/card.component.scss');
 
     it('applies hover only under (hover: hover)', () => {
       expect(withoutMedia(css, /hover:\s*hover/)).not.toContain(':hover');
       const hover = mediaBlocks(css, HOVER_ONLY).join('\n');
-      expect(hover).toContain('var(--shadow-card-spread)');
+      expect(hover).toContain('var(--shadow-card-hover)');
+      expect(hover).toContain('var(--card-hover-bg)');
       expect(hover).toContain('.ui-card__more');
+    });
+
+    it('draws the Shelf card: hairline, 16px corners, pick and the 4:3 preview', () => {
+      expect(css).toContain('border-radius: var(--radius-card)');
+      expect(css).toContain('box-shadow: var(--shadow-card)');
+      expect(css).toMatch(/:host\(\.ui-card--selected\)\s*\{\s*background: var\(--pick\)/);
+      expect(css).toMatch(
+        /:host\(\.ui-card--checked\)\s*\{[^}]*box-shadow: 0 0 0 2px var\(--accent\)/,
+      );
+      expect(css).toMatch(/aspect-ratio: var\(--ui-card-media-ratio, 4 ?\/ ?3\)/);
+      expect(css).toContain('object-fit: contain');
+      expect(css).toContain('--ui-card-image-position: static');
+      expect(css).toMatch(/margin: [^;]*;[\s\S]*\.ui-card__note/);
+    });
+
+    it('zooms the preview slowly and only without a reduced-motion preference', () => {
+      expect(css).toContain('transform 900ms var(--ease-out)');
+      const zoom = mediaBlocks(css, /no-preference/).join('\n');
+      expect(zoom).toContain('.ui-card__image');
     });
 
     it('shows the actions without hover on touch', () => {
@@ -298,12 +377,12 @@ describe('CardComponent', () => {
 
     it('drops the zoom and the slides under reduced motion but keeps colour and shadow', () => {
       const hover = mediaBlocks(css, HOVER_ONLY).join('\n');
-      expect(hover).not.toContain('scale(1.06)');
+      expect(hover).not.toContain('scale(1.035)');
       const zoom = mediaBlocks(css, /no-preference/).join('\n');
-      expect(zoom).toContain('scale(1.06)');
+      expect(zoom).toContain('scale(1.035)');
       const reduced = mediaBlocks(css, /prefers-reduced-motion:\s*reduce/).join('\n');
       expect(reduced).toContain('transform: none');
-      expect(css).toContain('box-shadow var(--duration-slow)');
+      expect(css).toContain('box-shadow var(--duration-base)');
     });
   });
 
