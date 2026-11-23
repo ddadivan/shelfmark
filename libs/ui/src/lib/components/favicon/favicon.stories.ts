@@ -11,14 +11,14 @@ const meta: Meta<FaviconComponent> = {
     docs: {
       description: {
         component:
-          'The site icon, 16 px in a `radius-sm` square. Without an image, or when it fails (the CSP blocks external hosts), it shows the site letter, else the link icon. Decorative: the domain next to it is the text.',
+          'The site icon, 16 px in a `radius-xs` square. Without an image, or when it fails (the CSP blocks external hosts), it shows the site letter, else the link icon. Decorative: the domain next to it is the text.',
       },
     },
   },
   args: { src: CARD_STORY_IMAGE.Favicon },
   render: (args) => ({
     props: args,
-    template: `<ui-favicon [src]="src" [letter]="letter" />`,
+    template: `<ui-favicon [src]="src" [letter]="letter" [colour]="colour" />`,
   }),
 };
 
@@ -29,6 +29,9 @@ export const Image: Story = {};
 
 /** No image: the first letter of the site. */
 export const Letter: Story = { args: { src: undefined, letter: 'y' } };
+
+/** A site colour with its letter; a light colour gets a black letter (3:1). */
+export const Coloured: Story = { args: { src: undefined, letter: 'y', colour: '#fc3f1d' } };
 
 /** No image and no letter: the link icon in `text-muted`. */
 export const Icon: Story = { args: { src: undefined } };
@@ -48,6 +51,9 @@ export const AllVariants: Story = {
         { src: undefined, letter: undefined },
         { src: CARD_STORY_IMAGE.Broken, letter: 'y' },
         { src: CARD_STORY_IMAGE.Broken, letter: undefined },
+        { src: undefined, letter: 'y', colour: '#fc3f1d' },
+        { src: undefined, letter: 'g', colour: '#1a73e8' },
+        { src: undefined, letter: 's', colour: '#ffd54a' },
       ],
     },
     template: `
@@ -56,7 +62,7 @@ export const AllVariants: Story = {
           <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
             <div class="ds-row">
               @for (s of sources; track $index) {
-                <ui-favicon [src]="s.src" [letter]="s.letter" />
+                <ui-favicon [src]="s.src" [letter]="s.letter" [colour]="s.colour" />
               }
             </div>
           </div>

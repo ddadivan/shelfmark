@@ -1,0 +1,14 @@
+<input
+  type="range"
+  class="ui-range__input"
+  [attr.aria-label]="label()"
+  [attr.aria-valuetext]="spoken()"
+  [min]="lowest()"
+  [max]="highest()"
+  [step]="step()"
+  [value]="value()"
+  [disabled]="disabled()"
+  [style.--ui-range-ratio]="ratio()"
+  (input)="onInput($event)"
+  (blur)="touch.emit()"
+/>

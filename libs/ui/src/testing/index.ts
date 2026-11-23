@@ -55,3 +55,5 @@ export * from '../lib/components/drawer/testing/drawer.harness';
 export * from '../lib/components/drop-zone/testing/drop-zone.harness';
 export type * from '../lib/components/drop-zone/testing/models/drop-zone-harness-filters.interface';
 export * from '../lib/components/resize-handle/testing/resize-handle.harness';
+export * from '../lib/components/range/testing/range.harness';
+export type * from '../lib/components/range/testing/models/range-harness-filters.interface';
