@@ -68,7 +68,7 @@ test.describe('link preview (mock API)', () => {
 
     // After the menu closes the focus is back on the card's ⋯ button, where ↓ opens the menu
     // again: nothing focused is where ↑ ↓ follow the list.
-    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+    await page.evaluate('document.activeElement?.blur()');
     await page.locator('body').press('ArrowDown');
     await expect(page.getByRole('region', { name: `Preview: ${SECOND}` })).toBeVisible();
     await expect(page.locator('[aria-current="true"]', { hasText: SECOND })).toBeVisible();
