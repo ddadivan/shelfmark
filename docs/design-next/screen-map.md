@@ -72,7 +72,7 @@ Every list keeps its frame in empty, loading and error states (an L1 panel, skel
 | --- | --- | --- | --- | --- |
 | O-01 | Folder tree with drag, reorder, New folder (dialog) | tree | sidebar / rail flyout / Library page | limit reached |
 | O-02 | Folder menu: New subfolder, Add link here, Rename, Colour and icon, Move, Pin to sidebar, Share, Delete | menu | yes / yes / sheet | |
-| O-03 | Rename (folder, tag, view); New folder | small dialog | all | empty or invalid name |
+| O-03 | Rename (folder, tag, view); New folder | small dialog (phone: bottom sheet above the keyboard, replaces the actions sheet) | all | empty or invalid name |
 | O-04 | Colour and icon: 8 colours, icon set | popover | yes / yes / sheet | |
 | O-05 | Move (link, links, folder) | popover picker | yes / yes / sheet | search, recent folders, current marked |
 | O-06 | Tags list, tag menu (Show links, Rename, Merge, Delete) | list + menu | sidebar / flyout / Library page | top 8, show all |

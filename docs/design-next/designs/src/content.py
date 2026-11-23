@@ -177,8 +177,37 @@ trash = f'''<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wra
 <div class="trash-row"><span class="sm-tile" style="width:56px;height:40px;border-radius:var(--radius-sm);background:var(--folder-plum-bg);color:var(--folder-plum)">{ic("folder", 20)}</span><span class="tx"><span class="tt">Old projects</span><span class="sm-meta">Folder with 6 links · 20 days left</span></span><button class="sm-btn sm-btn--sm sm-btn--secondary" type="button">{ic("restore")}Restore</button><button class="sm-ib" type="button" aria-label="Delete forever">{ic("trash")}</button></div></div></div>
 <div class="overlay sm-l1" style="min-height:300px"><div class="scrim2"></div><div class="sm-dialog sm-l3" role="alertdialog" aria-labelledby="dd"><h2 id="dd">Delete “Old projects” forever?</h2><p>The folder and its 6 links will be gone for good. This can't be undone.</p><div class="foot"><button class="sm-btn sm-btn--secondary">Cancel</button><button class="sm-btn sm-btn--danger">Delete forever</button></div></div></div>'''
 trash_empty = f'<h1>Trash</h1><p class="lead">Deleted links and folders wait here for 30 days.</p><div class="stack"><div class="sm-l1" style="border-radius:var(--radius-lg);padding:48px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">{SC["empty-trash"]}<b style="font:600 1.27rem/1.25 var(--font-sans)">Trash is empty</b><p class="lead" style="margin:0">Deleted links stay here for 30 days, so you can bring them back.</p><button class="sm-btn sm-btn--sm" type="button" data-replay>Replay</button></div></div>'
+
+O_CSS += r"""
+.phones{display:flex;gap:32px;flex-wrap:wrap;margin-top:24px;align-items:flex-start}
+.phone{position:relative;width:360px;height:720px;border-radius:28px;overflow:hidden;border:1px solid var(--line-strong);background:var(--canvas);flex:none}
+.phone .pc{padding:16px}
+.phone .pc h1{margin:8px 0 16px;font-size:1.6rem}
+.phone .prow{display:flex;align-items:center;gap:12px;height:52px;padding:0 12px;font-size:.9375rem;font-weight:500}
+.phone .prow .n{margin-left:auto;font-size:.75rem;color:var(--text-muted);font-weight:400}
+.phone .scrim2{position:absolute;inset:0;background:var(--scrim)}
+.sheet{position:absolute;left:0;right:0;bottom:0;border-radius:20px 20px 0 0;padding:8px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--line-strong);align-self:center;margin-bottom:4px}
+.sheet h2{margin:0;font:600 1.13rem/1.25 var(--font-sans)}
+.sheet[role=menu]{gap:0}.sheet .sm-mi{height:48px;font-size:.9375rem}
+.sheet .acts{display:flex;gap:8px}.sheet .acts .sm-btn{flex:1;height:48px}
+.kbd{position:absolute;left:0;right:0;bottom:0;height:260px;background:color-mix(in srgb,var(--text) 14%,var(--canvas));display:grid;grid-template-columns:repeat(10,1fr);gap:6px;padding:10px 4px;align-content:start}
+.kbd i{height:40px;border-radius:6px;background:var(--surface)}
+.phone-cap{font-size:.75rem;color:var(--text-muted);margin-top:8px;max-width:360px}
+"""
+def phone(inner, overlay=''):
+    rows = ''.join(f'<div class="prow">{tile(c)}{n}<span class="n">{k}</span></div>' for n, c, k in [('Clothes', 'rose', 7), ('Recipes', 'amber', 7), ('Work', 'ocean', 7), ('Design', 'plum', 5)])
+    return f'<div class="phone"><div class="pc"><h1>Folders</h1><div class="sm-l1" style="border-radius:var(--radius-lg);padding:4px">{rows}</div></div>{overlay}{inner}</div>'
+phone_sheet = phone(f'''<div class="sheet sm-l3" role="menu" aria-label="Folder actions for Recipes"><span class="grab"></span><div style="display:flex;align-items:center;gap:12px;padding:4px 8px">{tile("amber")}<h2>Recipes</h2></div>
+<button class="sm-mi" role="menuitem">{ic("plus")}New subfolder</button><button class="sm-mi" role="menuitem">{ic("edit")}Rename</button><button class="sm-mi" role="menuitem">{ic("palette")}Colour and icon</button><button class="sm-mi" role="menuitem">{ic("move")}Move to…</button><button class="sm-mi" role="menuitem">{ic("share")}Share…</button><button class="sm-mi sm-mi--danger" role="menuitem">{ic("trash")}Delete folder</button></div>''', '<div class="scrim2"></div>')
+phone_rename = phone(f'''<div class="kbd" aria-hidden="true">{"<i></i>"*30}</div><form class="sheet sm-l3" role="dialog" aria-labelledby="prn" style="bottom:260px"><span class="grab"></span><h2 id="prn">Rename folder</h2>
+<div class="sm-field" style="min-width:0"><label for="prnf">Name</label><div class="sm-input" style="height:48px">{tile("amber")}<input id="prnf" value="Recipes and baking" style="font-size:1rem"></div></div>
+<div class="acts"><button class="sm-btn sm-btn--secondary" type="button">Cancel</button><button class="sm-btn sm-btn--primary" type="button">Rename</button></div></form>''', '<div class="scrim2"></div>')
+phone_state = f'''<h1>On the phone</h1><p class="lead">Same action, phone-shaped: long-press or ⋯ on a folder opens its actions as a bottom sheet; Rename replaces that sheet (never a sheet on a sheet) and sits right above the keyboard. Tap on a folder always opens it.</p>
+<div class="phones"><div>{phone_sheet}<p class="phone-cap">1. Long-press Recipes: actions sheet.</p></div><div>{phone_rename}<p class="phone-cap">2. Rename: field focused, keyboard open, buttons within thumb reach. Input text is 16px so the phone doesn't zoom.</p></div></div>'''
+
 page('organise.html', 'Organise', O_CSS, [
- ('folder', 'Folder page', folder_page), ('menu', 'Folder menu, rename and new folder', folder_menu), ('colour', 'Colour and icon', colour_pop),
+ ('folder', 'Folder page', folder_page), ('menu', 'Folder menu, rename and new folder', folder_menu), ('phone-rename', 'Phone: actions sheet and rename', phone_state), ('colour', 'Colour and icon', colour_pop),
  ('tags', 'Tags', tags_page), ('tidy', 'Tidy up', tidy), ('rules', 'Rules and the rule editor', rules), ('trash', 'Trash and delete forever', trash), ('trash-empty', 'Trash: empty', trash_empty)], cur='recipes')
 
 # ================= SETTINGS =================
