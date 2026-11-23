@@ -8,7 +8,7 @@ V_CSS = r'''
 .vd{width:560px}
 .phrase{display:flex;gap:8px;align-items:center;padding:8px 8px 8px 12px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);background:var(--surface)}
 .phrase svg{color:var(--ai);flex:none}
-.phrase input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font:400 .9375rem/1.5 var(--font-sans)}
+.phrase input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font:400 1rem/1.5 var(--font-sans)}
 .vrows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius-md)}
 .vrow{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:center;padding:10px 12px;font-size:.875rem}
 .vrow+.vrow{border-top:1px solid var(--line)}
@@ -31,9 +31,9 @@ V_CSS = r'''
 .quick button{display:flex;justify-content:space-between;gap:8px;height:36px;padding:0 10px;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--text);font:500 .875rem/1 var(--font-sans);align-items:center;text-align:left}
 .quick button span{font-weight:400;font-size:.75rem;color:var(--text-muted)}
 .quick button[aria-pressed="true"]{background:var(--accent-bg)}
-.cal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font:600 .9375rem/1 var(--font-sans)}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:.8125rem;font-variant-numeric:tabular-nums}
-.cal .dw{font-size:.6875rem;color:var(--text-muted);padding:4px 0}
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font:600 1rem/1 var(--font-sans)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:.75rem;font-variant-numeric:tabular-nums}
+.cal .dw{font-size:.75rem;color:var(--text-muted);padding:4px 0}
 .cal button{height:34px;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--text);font:inherit}
 .cal button:hover{background:var(--surface-hover)}
 .cal button.out{color:var(--text-muted);opacity:.5}
@@ -44,8 +44,8 @@ V_CSS = r'''
 .sumline{display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:var(--radius-sm);background:var(--surface-hover);font-size:.875rem}
 .kbd-ov{width:720px}
 .kcols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
-.kcols h3{margin:0 0 8px;font:600 .8125rem/1.4 var(--font-sans);color:var(--text-muted)}
-.kr{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:5px 0;font-size:.8125rem}
+.kcols h3{margin:0 0 8px;font:600 .75rem/1.4 var(--font-sans);color:var(--text-muted)}
+.kr{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:5px 0;font-size:.75rem}
 .kr .sm-kbd+.sm-kbd{margin-left:3px}
 .phones{display:flex;gap:32px;flex-wrap:wrap;margin-top:24px;align-items:flex-start}
 .phone{position:relative;width:360px;height:780px;border-radius:28px;overflow:hidden;border:1px solid var(--line-strong);background:var(--canvas);flex:none}
@@ -53,7 +53,7 @@ V_CSS = r'''
 .phone .scrim2{position:absolute;inset:0;background:var(--scrim)}
 .sheet{position:absolute;left:0;right:0;bottom:0;border-radius:20px 20px 0 0;padding:8px 16px 16px;display:flex;flex-direction:column;gap:12px}
 .sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--line-strong);align-self:center}
-.sheet h2{margin:0;font:600 1.13rem/1.25 var(--font-sans)}
+.sheet h2{margin:0;font:600 1.125rem/1.25 var(--font-sans)}
 @media (max-width:52em){.dp .grid2{grid-template-columns:1fr}.kcols{grid-template-columns:1fr}}
 '''
 SP = I['spark']
@@ -99,7 +99,7 @@ datepick = f'''<div class="overlay sm-l1" style="min-height:720px"><div class="s
 <div class="sumline">{ic("bell")}<span>Saturday 28 November, 9:00 · in 5 days</span></div>
 <div class="foot"><button class="sm-btn sm-btn--secondary" type="button">Cancel</button><button class="sm-btn sm-btn--primary" type="button">Set reminder</button></div></form></div>
 <p class="cap2">Opened from “Pick a date…” in Remind me. Quick picks on the left set the calendar; the reason is what the notification and Today show.</p>'''
-PHONE_DP = f'''<div class="phone"><div class="pc"><h1 style="margin:8px 0 0;font-size:1.6rem">Today</h1></div><div class="scrim2"></div><div class="sheet sm-l3" role="dialog" aria-labelledby="pdp"><span class="grab"></span><h2 id="pdp">Remind me</h2>
+PHONE_DP = f'''<div class="phone"><div class="pc"><h1 style="margin:8px 0 0;font-size:2rem">Today</h1></div><div class="scrim2"></div><div class="sheet sm-l3" role="dialog" aria-labelledby="pdp"><span class="grab"></span><h2 id="pdp">Remind me</h2>
 <div class="quick">{''.join(f'<button type="button" style="height:44px" aria-pressed="{str(a == "Saturday").lower()}">{a}<span>{b}</span></button>' for a, b in [('Later today', '18:00'), ('Tomorrow', '9:00'), ('Saturday', '9:00'), ('Next week', 'Mon 9:00')])}</div>
 <div class="sm-msep" style="margin:0"></div>{cal(28)}<div class="times">{''.join(f'<button class="sm-chip" type="button" aria-pressed="{str(t == "9:00").lower()}">{t}</button>' for t in ['9:00', '13:00', '18:00'])}</div>
 <button class="sm-btn sm-btn--primary" type="button" style="height:48px">Set for Sat 28, 9:00</button></div></div>'''

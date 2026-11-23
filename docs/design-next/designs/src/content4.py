@@ -2,7 +2,8 @@ exec(open('/tmp/claude-0/-home-user-shelfmark/ebcb0130-eb79-5d11-ad3d-48330e1791
 
 A_CSS = r'''
 .app2{display:flex;min-height:100vh;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;gap:24px}
-.app2 .main{flex:1;min-width:0;display:flex;flex-direction:column}
+.app .main{display:flex;flex-direction:column}
+.sm-search-ask[aria-current]{background:var(--surface)}
 .askbtn{display:inline-flex;align-items:center;gap:6px}
 .askbtn svg{color:var(--ai)}
 .sm-nav .ai{color:var(--ai)}
@@ -15,41 +16,42 @@ A_CSS = r'''
 .conv{display:flex;flex-direction:column;min-width:0;max-width:820px;width:100%;margin:0 auto}
 .start{text-align:center;padding:48px 0 0}
 .start .sp{display:inline-grid;place-items:center;width:48px;height:48px;border-radius:var(--radius-md);background:var(--ai-bg);color:var(--ai)}
-.start h1{margin:16px 0 0;font:600 2.03rem/1.15 var(--font-sans);letter-spacing:-.01em}
+.start h1{margin:16px 0 0;font:600 2rem/2.5rem var(--font-display);letter-spacing:-.02em}
 .start .lead{margin:8px auto 0}
+.composer.sm-l2{background:var(--surface-hover);box-shadow:none}.composer:focus-within{box-shadow:0 0 0 2px var(--focus)}
 .composer{display:flex;align-items:flex-end;gap:8px;padding:8px 8px 8px 16px;border-radius:var(--radius-lg);margin-top:24px}
 .composer textarea{flex:1;border:0;outline:0;resize:none;background:transparent;color:var(--text);font:400 1rem/1.5 var(--font-sans);min-height:48px;padding:12px 0}
 .composer .sm-btn{height:40px}
 .caps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:32px;text-align:left}
 .cap{padding:16px;border-radius:var(--radius-md);display:flex;flex-direction:column;gap:8px}
-.cap h3{margin:0;display:flex;gap:8px;align-items:center;font:600 .9375rem/1.4 var(--font-sans)}
+.cap h3{margin:0;display:flex;gap:8px;align-items:center;font:600 1rem/1.4 var(--font-sans)}
 .cap h3 svg{color:var(--text-muted)}
-.cap .q{display:block;width:100%;text-align:left;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius-sm);background:transparent;color:var(--text);font:400 .875rem/1.4 var(--font-sans)}
+.cap .q{display:block;width:100%;text-align:left;padding:8px 10px;border:0;border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font:400 .875rem/1.4 var(--font-sans)}
 .cap .q:hover{background:var(--surface-hover)}
 .fine{font-size:.75rem;color:var(--text-muted);text-align:center;margin-top:12px}
 .msgs{display:flex;flex-direction:column;gap:24px;padding:16px 0 24px}
-.me{align-self:flex-end;max-width:75%;padding:10px 14px;border-radius:var(--radius-md);background:var(--surface-hover);font-size:.9375rem}
+.me{align-self:flex-end;max-width:75%;padding:10px 14px;border-radius:var(--radius-md);background:var(--surface-hover);font-size:1rem}
 .ai{display:flex;gap:12px}
 .ai .av{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:var(--radius-sm);background:var(--ai-bg);color:var(--ai)}
-.ai .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:12px;font-size:.9375rem;line-height:1.6}
+.ai .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:12px;font-size:1rem;line-height:1.6}
 .ai .body p{margin:0}
 .steps2{display:flex;flex-direction:column;gap:4px;font-size:.75rem;color:var(--text-muted)}
 .steps2 span{display:flex;gap:6px;align-items:center}
 .steps2 .done svg{color:var(--success)}
 .lcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.lc{color:var(--text);display:flex;gap:10px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);min-width:0}
+.lc{color:var(--text);display:flex;gap:10px;align-items:center;padding:8px;border:0;border-radius:var(--radius-sm);background:var(--surface-hover);min-width:0}
 .lc .sm-thumb{width:48px;height:36px;flex:none}
-.lc b{display:block;font:500 .8125rem/1.35 var(--font-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc b{display:block;font:500 .75rem/1.35 var(--font-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lc span{font-size:.75rem;color:var(--text-muted)}
-.big{font:600 2.03rem/1 var(--font-sans);font-variant-numeric:tabular-nums}
+.big{font:600 2rem/1 var(--font-sans);font-variant-numeric:tabular-nums}
 .bars{display:flex;flex-direction:column;gap:6px;max-width:420px}
-.bars div{display:grid;grid-template-columns:90px 1fr 32px;gap:8px;align-items:center;font-size:.8125rem}
+.bars div{display:grid;grid-template-columns:90px 1fr 32px;gap:8px;align-items:center;font-size:.75rem}
 .bars i{display:block;height:8px;border-radius:4px;background:var(--accent);opacity:.75}
 .bars em{font-style:normal;text-align:right;color:var(--text-muted);font-variant-numeric:tabular-nums}
 .acts2{display:flex;gap:4px;flex-wrap:wrap}
-.cite{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border:1px solid var(--line-strong);border-radius:4px;font:500 .6875rem/1 var(--font-sans);vertical-align:2px;color:var(--text-muted)}
+.cite{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border:0;background:var(--surface-pressed);border-radius:4px;font:500 .75rem/1 var(--font-sans);vertical-align:2px;color:var(--text-muted)}
 .sticky{position:sticky;bottom:0;margin-top:auto;padding:12px 0 16px;background:linear-gradient(to bottom,transparent,var(--surface) 24%)}
-.status2{display:inline-flex;gap:6px;align-items:center;font-size:.8125rem;color:var(--text-muted)}
+.status2{display:inline-flex;gap:6px;align-items:center;font-size:.75rem;color:var(--text-muted)}
 .shimmer{background:linear-gradient(90deg,var(--text-muted) 0%,var(--text) 50%,var(--text-muted) 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 1.4s ease-in-out infinite}
 @keyframes sh{from{background-position:100% 0}to{background-position:-100% 0}}
 @media (prefers-reduced-motion:reduce){.shimmer{animation:none;color:var(--text-muted)}}
@@ -63,20 +65,18 @@ A_CSS = r'''
 .phone .ptab{padding:0 12px 12px}.phone .ptab .sm-tabbar{width:100%}
 .phone .pcap{font-size:.75rem;color:var(--text-muted);margin-top:8px;max-width:360px}
 .ph-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.ph-top b{font:600 1.27rem/1.2 var(--font-sans);flex:1}
+.ph-top b{font:600 1.375rem/1.2 var(--font-sans);flex:1}
 .ph-top .av2{width:32px;height:32px;border-radius:50%;background:var(--surface-hover);display:grid;place-items:center;font:600 .75rem/1 var(--font-sans)}
 @media (max-width:39.99em){.sticky{bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--surface);padding-bottom:8px}.sticky::after{content:"";position:absolute;left:-16px;right:-16px;top:100%;height:calc(100px + env(safe-area-inset-bottom,0px));background:var(--surface)}.sticky .fine{display:none}}
 @media (max-width:63.99em){.askwrap{grid-template-columns:1fr}.hist{display:none}.caps{grid-template-columns:1fr}.lcards{grid-template-columns:1fr}}
 '''
 def side_ask(cur='ask'): return sidebar('ask')
-TOP2 = (f'<header class="top"><label class="sm-input sm-search sm-l1">{ic("search")}<input placeholder="Search your links" aria-label="Search your links"><span class="sm-kbd">Ctrl K</span></label>'
-        f'<button class="sm-btn sm-btn--secondary askbtn" type="button">{ic("spark")}Ask<span class="sm-kbd" style="margin-left:4px">Ctrl J</span></button>'
-        f'<div class="right"><button class="sm-btn sm-btn--primary add-btn" type="button">{ic("plus")}Add link</button><button class="avatar" type="button" aria-label="Account">DU</button></div></header>')
+TOP2 = TOP
 HIST = f'''<aside class="hist sm-l1" aria-label="Conversations"><button class="sm-btn sm-btn--secondary sm-btn--sm" type="button">{ic("plus")}New conversation</button>
 <div class="sec2">Today</div><a class="h" href="#" aria-current="page">Recipes for this weekend</a><a class="h" href="#">How many links do I have?</a>
 <div class="sec2">Earlier</div><a class="h" href="#">Which Signal Forms video first?</a><a class="h" href="#">Coats I saved in autumn</a><a class="h" href="#">Summarise my Design folder</a>
 <p class="lbl-s" style="padding:12px 10px 0">Kept in this browser only.</p></aside>'''
-APP2 = lambda body: f'<div class="app2">{side_ask()}<main class="main">{TOP2}{body}</main></div>{TABBAR}'
+APP2 = lambda body: f'<div class="app">{side_ask()}<main class="main">{TOP2}{body}</main></div>{TABBAR}'
 COMPOSER = lambda ph='Ask anything about your links', val='': f'<div class="composer sm-l2"><textarea rows="1" aria-label="Ask your shelf" placeholder="{ph}">{val}</textarea><button class="sm-btn sm-btn--primary" type="button" aria-label="Send">{ic("up")}</button></div>'
 CAPS = [('search', 'Find', ['That ramen recipe with the soft egg', 'The Signal Forms article I saved in October']),
         ('hash', 'Count and compare', ['How many links do I have, by folder?', 'What did I save most this month?']),
@@ -121,4 +121,4 @@ P2 = f'''<div class="ph-top"><button class="sm-ib" type="button" aria-label="Bac
 <div class="msgs" style="padding-top:4px;overflow:hidden"><div class="me">Recipes for this weekend, under an hour</div><div class="ai"><span class="av">{ic("spark", 16)}</span><div class="body"><p>Three fit: the <b>lemon ricotta pancakes</b> take 25 minutes <span class="cite">1</span>, <b>miso glazed salmon</b> 30 <span class="cite">2</span>, and the tonkotsu broth if you start tonight <span class="cite">3</span>.</p>{LC([('pancakes', '1. Lemon ricotta pancakes', '25 min'), ('type', '2. Miso glazed salmon', '30 min')])}</div></div></div>
 <div style="margin-top:auto">{COMPOSER('Ask a follow-up')}</div>'''
 phones = f'''<div class="phones"><div>{phone(P1)}<p class="pcap">Phone: Ask gets its own tab. Settings move to the avatar at the top right of every tab.</p></div><div>{phone(P2, False)}<p class="pcap">A conversation is a pushed full-screen page; the tab bar hides, the composer sits above the keyboard.</p></div></div>'''
-page('ask.html', 'Ask your shelf', A_CSS, [('start', 'Ask: what it can do', start), ('conv', 'Ask: a conversation', conv), ('thinking', 'Ask: answering', thinking), ('limit', 'Ask: limit reached, AI off', limit), ('search-hint', 'Search offers Ask for questions', search_hint), ('phone', 'Ask on the phone', phones)], shell='bare')
+page('ask.html', 'Ask your shelf', A_CSS, [('start', 'Ask: what it can do', start), ('conv', 'Ask: a conversation', conv), ('thinking', 'Ask: answering', thinking), ('limit', 'Ask: limit reached, AI off', limit), ('phone', 'Ask on the phone', phones)], shell='bare')

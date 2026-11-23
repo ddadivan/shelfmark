@@ -12,7 +12,7 @@ css = (f":root{{{colors('light')};{shadows('light')};{';'.join(other)}}}\n"
        f"@media (prefers-color-scheme: dark){{:root:not([data-theme=\"light\"]){{{colors('dark')};{shadows('dark')};color-scheme:dark}}}}\n"
        f":root[data-theme=\"dark\"]{{{colors('dark')};{shadows('dark')};color-scheme:dark}}\n")
 bundle = open(f'{B}/ds/project/components/bundle.css').read()
-scenes = json.load(open(f'{B}/dsgen/scenes.json'))
+scenes = json.load(open(f'{B}/dsgen/scenes_v3.json'))
 exec(open(f'{B}/dsgen/gen.py').read().split('# ---------- icons as inline helpers ----------')[1].split('def ic(')[0])  # defines I
 I['up'] = '<path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>'
 art = {
@@ -30,5 +30,14 @@ for key, (n, s) in {'%bookmark%': ('bookmark', 20), '%inbox%': ('inbox', 20), '%
     tpl = tpl.replace(key, icon(n, s))
 out = (tpl.replace('/*BUNDLE*/', bundle).replace('/*TOKENS*/', css)
        .replace('/*ICONS*/', json.dumps(I)).replace('/*SCENES*/', json.dumps({'revisit-done': scenes['revisit-done']})).replace('/*ART*/', json.dumps(art)))
+# shared shell from build_pages: v3 sidebar, search with Ask inside, shell CSS
+_bp = {}
+exec(open(f'{B}/dsgen/build_pages.py').read().split('def page(')[0], _bp)
+side = _bp['sidebar']('').replace('<button class="sm-nav" type="button" title="Today">', '<button class="sm-nav" type="button" data-go="revisit" title="Today">', 1).replace('<button class="sm-nav" type="button" title="All links">', '<button class="sm-nav" type="button" data-go="library" title="All links">', 1)
+out = re.sub(r'<nav class="side[^"]*" aria-label="Library">.*?</nav>', lambda m: side, out, count=1, flags=re.S)
+srch = _bp['TOP'].split('<div class="right">')[0].replace('<header class="top">', '')
+out = re.sub(r'<label class="sm-input sm-search sm-l1">.*?</label><a class="sm-btn sm-btn--secondary" href="ask.html".*?</a>', lambda m: srch, out, count=1, flags=re.S)
+out = out.replace('</style>', _bp['SHELL_CSS'] + '</style>', 1)
+out = out.replace('</body>', _bp['SEARCH_JS'] + '</body>', 1)
 open(f'{B}/design/save-revisit.html', 'w').write(out)
 print('ok', len(out))

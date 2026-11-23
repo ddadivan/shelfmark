@@ -9,16 +9,16 @@ COMMON = r'''
 .phones{display:flex;gap:32px;flex-wrap:wrap;margin-top:24px;align-items:flex-start}
 .phone{position:relative;width:360px;height:720px;border-radius:28px;overflow:hidden;border:1px solid var(--line-strong);background:var(--canvas);flex:none}
 .phone .pc{padding:16px;height:100%;overflow:hidden}
-.phone .pc h1{margin:8px 0 16px;font-size:1.6rem}
+.phone .pc h1{margin:8px 0 16px;font-size:2rem}
 .phone .scrim2{position:absolute;inset:0;background:var(--scrim)}
 .phone .ptab{position:absolute;left:12px;right:12px;bottom:12px}
 .phone .ptab .sm-tabbar{width:100%}
 .sheet{position:absolute;left:0;right:0;bottom:0;border-radius:20px 20px 0 0;padding:8px 16px 16px;display:flex;flex-direction:column;gap:12px}
 .sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--line-strong);align-self:center}
-.sheet h2{margin:0;font:600 1.13rem/1.25 var(--font-sans)}
-.sheet .sm-mi{height:48px;font-size:.9375rem}
+.sheet h2{margin:0;font:600 1.125rem/1.25 var(--font-sans)}
+.sheet .sm-mi{height:48px;font-size:1rem}
 .phone-cap{font-size:.75rem;color:var(--text-muted);margin-top:8px;max-width:360px}
-.prow{display:flex;align-items:center;gap:12px;min-height:52px;padding:0 4px 0 12px;font-size:.9375rem;font-weight:500}
+.prow{display:flex;align-items:center;gap:12px;min-height:52px;padding:0 4px 0 12px;font-size:1rem;font-weight:500}
 .prow .n{margin-left:auto;font-size:.75rem;color:var(--text-muted);font-weight:400}
 .prow+.prow{border-top:1px solid var(--line)}
 .psec{font:500 .75rem/1.4 var(--font-sans);color:var(--text-muted);margin:16px 0 6px}
@@ -46,7 +46,6 @@ M_CSS = COMMON + r'''
 .feed .selbox{position:absolute;top:12px;left:12px;z-index:2}
 .selfeed .sm-card,.feed .sm-card{transition:background-color 120ms,border-color 120ms}
 .selfeed .sm-card[aria-selected="true"],.feed .sm-card[aria-selected="true"]{background:var(--accent-bg);border-color:var(--line-strong);box-shadow:none}
-.selfeed .sm-card[aria-selected="true"] .sm-cover,.feed .sm-card[aria-selected="true"] .sm-cover{transform:scale(.96);transition:transform 200ms}
 .bulk{position:sticky;bottom:16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:8px;border-radius:var(--radius-md);margin-top:24px;font-size:.875rem}
 .bulk .cnt{padding:0 8px 0 4px;font-weight:600}
 .bulk .sp{flex:1}
@@ -74,11 +73,11 @@ M_CSS = COMMON + r'''
 .sugrow .tt{font:600 1rem/1.5 var(--font-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sugrow .sm-chip{height:28px;font-size:.75rem;padding:0 8px}
 .dropzone{position:absolute;inset:16px;border:2px dashed var(--accent);border-radius:var(--radius-lg);display:grid;place-items:center;text-align:center;background:color-mix(in srgb,var(--canvas) 88%,transparent)}
-.dropzone b{display:block;font:600 1.27rem/1.25 var(--font-sans);margin-top:12px}
+.dropzone b{display:block;font:600 1.375rem/1.25 var(--font-sans);margin-top:12px}
 .related{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .related .sm-card{width:auto}
 .reader-mock{max-width:68ch;margin:24px auto 0;font-size:1.125rem;line-height:1.6}
-.reader-mock h2{font:600 2.03rem/1.15 var(--font-sans);margin:0 0 8px}
+.reader-mock h2{font:600 2rem/1.15 var(--font-sans);margin:0 0 8px}
 @media (max-width:39.99em){.feed{grid-template-columns:1fr 1fr;gap:8px}body:has(.state.on .bulk) .tabbar-wrap{display:none}.bulk{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));flex-wrap:nowrap;overflow-x:auto;z-index:40}.bulk .sm-btn{flex:none}.sbs{grid-template-columns:1fr}.related{grid-template-columns:1fr 1fr}.mv{width:auto}}
 '''
 CARDS = [('video', '16/9', 'Signal Forms in 20 minutes', 'youtube.com'), ('shirt', '4/5', 'Wool overshirt', 'uniqlo.com'), ('bowl', '1/1', 'Rich tonkotsu ramen broth', 'seriouseats.com'), ('jacket', '4/5', 'Nano Puff jacket', 'patagonia.com'), ('pancakes', '1/1', 'Lemon ricotta pancakes', 'smittenkitchen.com'), ('dark', '16/9', 'Zoneless change detection', 'angular.dev')]
@@ -126,7 +125,7 @@ rule_offer = f'''<div class="sm-panel sm-l1" style="max-width:none;margin-top:32
 drop = f'''<div class="overlay sm-l1" style="min-height:460px;background:var(--canvas)"><div class="feed" style="padding:16px;margin:0;opacity:.35">{''.join(selcard(a, r, t, d, False).replace('<span class="selbox">', '<span class="selbox" hidden>') for a, r, t, d in CARDS[:3])}</div>
 <div class="dropzone"><div>{SC["saved"].replace('class="sm-scene"', 'class="sm-scene sm-scene--sm"')}<b>Drop to save</b><span class="lbl-s">A link, several links, or text with links in it</span></div></div></div>'''
 related = f'''<article class="reader-mock"><span class="lbl-s">angular.dev · 6 min read</span><h2>Zoneless change detection</h2><p>Angular can run without zone.js. Change detection then runs when a signal you read changes, when an event handler runs, or when you ask for it…</p>
-<hr style="border:0;border-top:1px solid var(--line);margin:32px 0 24px"><p class="sec-t" style="font-size:1.13rem">Related on your shelf</p>
+<hr style="border:0;border-top:1px solid var(--line);margin:32px 0 24px"><p class="sec-t" style="font-size:1.125rem">Related on your shelf</p>
 <div class="related">{''.join(f'<article class="sm-card sm-l1"><div class="sm-cover" style="aspect-ratio:16/9">{ART[a]}</div><div class="sm-card-body"><h3 class="sm-card-title" style="font-size:.875rem">{t}</h3><div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>' for a, t, d in [('video', 'Signal Forms in 20 minutes', 'youtube.com'), ('type', 'NgRx SignalStore patterns', 'dev.to'), ('dark', 'linkedSignal in practice', 'youtube.com')])}</div>
 <p class="disc" style="margin-top:8px">Same tags, folder or close in meaning; three at most, at the end of Reader and in Details.</p></article>'''
 PL = f'''<h1>Library</h1><div class="sm-panel sm-l1" style="max-width:none">{''.join(f'<div class="prow">{ic(i, 20)}<span>{l}</span><span class="n">{n}</span></div>' for i, l, n in [('bookmark', 'All links', 58), ('inbox', 'Unsorted', 17), ('star', 'Favorites', 6)])}</div>
@@ -151,12 +150,12 @@ D_CSS = COMMON + r'''
 .steps .ok b{background:var(--accent-bg);border-color:transparent}
 .steps i{width:24px;height:1px;background:var(--line-strong)}
 .dz{margin-top:24px;border:1.5px dashed var(--line-strong);border-radius:var(--radius-lg);padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
-.dz b{font:600 1.13rem/1.25 var(--font-sans)}
+.dz b{font:600 1.125rem/1.25 var(--font-sans)}
 .how{margin-top:24px}
 .how ol{margin:12px 0 0;padding-left:20px;font-size:.875rem;line-height:1.6}
 .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border-radius:var(--radius-md);overflow:hidden;margin-top:24px;border:1px solid var(--line)}
 .nums div{background:var(--surface);padding:16px}
-.nums b{display:block;font:600 1.6rem/1.2 var(--font-sans)}
+.nums b{display:block;font:600 2rem/1.2 var(--font-sans)}
 .nums span{font-size:.75rem;color:var(--text-muted)}
 .choice{display:grid;gap:8px;margin-top:8px}
 .opt{display:flex;gap:12px;align-items:flex-start;padding:16px;border-radius:var(--radius-md);border:1px solid var(--line);background:var(--surface)}
@@ -201,7 +200,7 @@ imp_progress = f'''<div class="wrap"><h1>Import bookmarks</h1><p class="lead">Yo
 <div class="sm-panel sm-l1" style="max-width:none;margin-top:24px;padding:24px"><div style="display:flex;justify-content:space-between;font-size:.875rem"><b style="font-weight:500">Importing… 640 of 1,163</b><span class="lbl-s">about 1 minute left</span></div><div class="bar" role="progressbar" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100" aria-label="Import progress"><i style="width:55%"></i></div>
 <p class="disc" style="margin-top:12px">Previews and pictures arrive over the next minutes.</p></div>
 <div class="sm-toast sm-l2" role="status" style="margin-top:24px;max-width:420px">{ic("upload")}<span style="flex:1">Importing 640 of 1,163</span><button class="sm-btn sm-btn--sm" type="button">Show</button></div><p class="disc" style="margin-top:8px">Elsewhere in the app the progress stays as a small toast until it finishes.</p></div>'''
-imp_done = f'''<div class="wrap"><div class="sm-l1" style="border-radius:var(--radius-lg);padding:48px 24px;margin-top:32px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">{SC["saved"]}<b style="font:600 1.6rem/1.2 var(--font-sans)">1,163 links imported</b><p class="lead" style="margin:0">Into 7 folders and Unsorted. 112 were already on your shelf.</p>
+imp_done = f'''<div class="wrap"><div class="sm-l1" style="border-radius:var(--radius-lg);padding:48px 24px;margin-top:32px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">{SC["saved"]}<b style="font:600 2rem/1.2 var(--font-sans)">1,163 links imported</b><p class="lead" style="margin:0">Into 7 folders and Unsorted. 112 were already on your shelf.</p>
 <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center"><button class="sm-btn sm-btn--primary" type="button">Open All links</button><button class="sm-btn sm-btn--secondary" type="button">Open Unsorted (140)</button><button class="sm-btn" type="button">Undo import</button></div>
 <p class="disc" style="margin-top:8px">Undo moves exactly these links and new folders to Trash, for 7 days.</p><button class="sm-btn sm-btn--sm" type="button" data-replay>Replay</button></div></div>'''
 export = f'''<div class="overlay sm-l1"><div class="scrim2"></div><form class="sm-dialog sm-l3" role="dialog" aria-labelledby="ex" style="width:460px"><h2 id="ex">Export links</h2>
@@ -219,12 +218,12 @@ share_off = f'''<div class="overlay sm-l1" style="min-height:300px"><div class="
 <div style="display:flex;align-items:center;gap:12px;padding:4px 8px">{tile("amber")}<b style="flex:1;font:600 1rem/1.5 var(--font-sans)">Share “Recipes”</b></div>
 {srow('Anyone with the link can view', 'Off: only you can see this folder.', SW(False, 'Public link'))}</div></div></div>'''
 SHARE_SHEET = f'''<div class="scrim2"></div><div class="sheet sm-l3" role="dialog" aria-labelledby="st2"><span class="grab"></span><h2 id="st2">Save to Shelfmark</h2>
-<div style="display:flex;gap:12px;align-items:center"><span class="sm-thumb" style="width:72px;height:56px">{ART['bowl']}</span><span><b style="font:600 .9375rem/1.4 var(--font-sans)">Rich tonkotsu ramen broth from scratch</b><br><span class="lbl-s">seriouseats.com</span></span></div>
+<div style="display:flex;gap:12px;align-items:center"><span class="sm-thumb" style="width:72px;height:56px">{ART['bowl']}</span><span><b style="font:600 1rem/1.4 var(--font-sans)">Rich tonkotsu ramen broth from scratch</b><br><span class="lbl-s">seriouseats.com</span></span></div>
 <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--radius-sm);background:var(--surface-hover);font-size:.875rem">{tile("amber")}<span>Goes to <b>Recipes</b> <span style="color:var(--text-muted)">· rule</span></span><button class="sm-btn sm-btn--sm" type="button" style="margin-left:auto">Change</button></div>
 <div class="sm-input" style="height:48px"><input placeholder="Add a note" style="font-size:1rem"></div>
 <div style="display:flex;gap:8px"><button class="sm-btn sm-btn--secondary" type="button" style="flex:1;height:48px">Add details</button><button class="sm-btn sm-btn--primary" type="button" style="flex:1;height:48px">Save</button></div></div>'''
-share_target = f'''<div class="phones"><div>{phone('<div style="font:600 1.13rem/1.3 var(--font-sans);margin-top:8px">seriouseats.com</div><p class="lead">Ramen broth recipe page in the browser…</p>', SHARE_SHEET, tab=False)}<p class="phone-cap">Android: Share › Shelfmark opens this sheet over the other app. Save closes it with a short confirmation; the user stays where they were.</p></div>
-<div>{phone('<div style="font:600 1.13rem/1.3 var(--font-sans);margin-top:8px">seriouseats.com</div>', '<div class="sm-toast sm-l2" role="status" style="position:absolute;left:12px;right:12px;bottom:16px">' + ic("check") + '<span style="flex:1">Saved to Recipes</span><button class="sm-btn sm-btn--sm" type="button">Open</button></div>', tab=False)}<p class="phone-cap">After Save: a toast for 4 s, then back to the other app.</p></div></div>'''
+share_target = f'''<div class="phones"><div>{phone('<div style="font:600 1.125rem/1.3 var(--font-sans);margin-top:8px">seriouseats.com</div><p class="lead">Ramen broth recipe page in the browser…</p>', SHARE_SHEET, tab=False)}<p class="phone-cap">Android: Share › Shelfmark opens this sheet over the other app. Save closes it with a short confirmation; the user stays where they were.</p></div>
+<div>{phone('<div style="font:600 1.125rem/1.3 var(--font-sans);margin-top:8px">seriouseats.com</div>', '<div class="sm-toast sm-l2" role="status" style="position:absolute;left:12px;right:12px;bottom:16px">' + ic("check") + '<span style="flex:1">Saved to Recipes</span><button class="sm-btn sm-btn--sm" type="button">Open</button></div>', tab=False)}<p class="phone-cap">After Save: a toast for 4 s, then back to the other app.</p></div></div>'''
 page('data.html', 'Import, export, sharing', D_CSS, [
  ('import', 'Import: choose a file', imp_choose), ('check', 'Import: check and folders', imp_check), ('groups', 'Import: AI folders', imp_groups), ('progress', 'Import: in progress', imp_progress), ('done', 'Import: done', imp_done),
  ('export', 'Export', export), ('share', 'Share a folder', share), ('share-off', 'Share a folder: off', share_off), ('share-target', 'Phone: save from another app', share_target)], cur='')
@@ -235,7 +234,7 @@ F_CSS = COMMON + r'''
 .strip .sm-btn{margin-left:auto}
 .strip.off{background:var(--surface-hover)}
 .onb{max-width:760px;margin:32px auto 0;text-align:center}
-.onb h1{margin:8px 0 0;font:600 2.03rem/1.15 var(--font-sans);letter-spacing:-.01em}
+.onb h1{margin:8px 0 0;font:600 2rem/1.15 var(--font-sans);letter-spacing:-.01em}
 .ways{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px;text-align:left}
 .way{padding:20px;border-radius:var(--radius-md);display:flex;flex-direction:column;gap:8px}
 .way b{font:600 1rem/1.5 var(--font-sans)}.way p{margin:0;font-size:.875rem;color:var(--text-muted);flex:1}
@@ -266,8 +265,8 @@ F_CSS = COMMON + r'''
 .lnav a{color:var(--text-muted);text-decoration:none;font-size:.875rem}
 .lnav .sm-btn{margin-left:auto}
 .hero{text-align:center;padding:64px 0 32px}
-.hero h1{margin:0 auto;font:600 2.57rem/1.1 var(--font-sans);letter-spacing:-.01em;max-width:18ch}
-.hero p{margin:16px auto 0;color:var(--text-muted);font-size:1.13rem;max-width:52ch;line-height:1.5}
+.hero h1{margin:0 auto;font:600 2.5rem/1.1 var(--font-sans);letter-spacing:-.01em;max-width:18ch}
+.hero p{margin:16px auto 0;color:var(--text-muted);font-size:1.125rem;max-width:52ch;line-height:1.5}
 .hero .cta{display:flex;gap:8px;justify-content:center;margin-top:24px;flex-wrap:wrap}
 .shot{border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--line-strong);box-shadow:var(--shadow-l3)}
 .shot .bar{height:32px;background:var(--surface-hover);display:flex;gap:6px;align-items:center;padding:0 12px}.shot .bar i{width:10px;height:10px;border-radius:50%;background:var(--control);opacity:.5}
@@ -276,18 +275,18 @@ F_CSS = COMMON + r'''
 .mini-side .sm-nav{width:100%;height:28px;font-size:.75rem}
 .mini-feed{columns:3 140px;column-gap:12px}.mini-feed .sm-card{width:auto;margin-bottom:12px;break-inside:avoid}
 .jobs{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:64px}
-.job h3{margin:12px 0 4px;font:600 1.13rem/1.25 var(--font-sans)}.job p{margin:0;color:var(--text-muted);font-size:.9375rem;line-height:1.5}
+.job h3{margin:12px 0 4px;font:600 1.125rem/1.25 var(--font-sans)}.job p{margin:0;color:var(--text-muted);font-size:1rem;line-height:1.5}
 .job .ji{display:grid;place-items:center;width:40px;height:40px;border-radius:var(--radius-md);background:var(--surface);border:1px solid var(--line)}
 .lfoot{display:flex;gap:16px;margin-top:64px;padding-top:24px;border-top:1px solid var(--line);font-size:.75rem;color:var(--text-muted);flex-wrap:wrap}
 .lfoot a{color:inherit}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
-.stat{padding:16px;border-radius:var(--radius-md)}.stat b{display:block;font:600 1.6rem/1.2 var(--font-sans)}.stat span{font-size:.75rem;color:var(--text-muted)}
+.stat{padding:16px;border-radius:var(--radius-md)}.stat b{display:block;font:600 2rem/1.2 var(--font-sans)}.stat span{font-size:.75rem;color:var(--text-muted)}
 .tbl{width:100%;border-collapse:collapse;font-size:.875rem}
 .tbl th{text-align:left;font:500 .75rem/1.4 var(--font-sans);color:var(--text-muted);padding:10px 16px;border-bottom:1px solid var(--line)}
 .tbl td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top}
 .tbl tr:last-child td{border-bottom:0}
 @media (max-width:63.99em){.ct{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.shot .in{grid-template-columns:1fr}.mini-side{display:none}}
-@media (max-width:39.99em){.lnav a{display:none}.ways,.jobs{grid-template-columns:1fr}.hero h1{font-size:2.03rem}.tbl .hide-s{display:none}}
+@media (max-width:39.99em){.lnav a{display:none}.ways,.jobs{grid-template-columns:1fr}.hero h1{font-size:2rem}.tbl .hide-s{display:none}}
 '''
 APP = lambda body, cur='all', strip='': f'{strip}<div class="app">{sidebar(cur)}<main class="main">{TOP}{body}</main></div>{TABBAR}'
 onboarding = APP(f'''<div class="onb">{SC["empty-library"]}<h1>Your shelf is empty</h1><p class="lead" style="margin:8px auto 0">Three ways to fill it. Most people start by pasting one link.</p>
@@ -333,12 +332,12 @@ rating = APP(f'''<h1>Revisit</h1><p class="lead">Nothing due today.</p><div clas
 <div class="rate" role="radiogroup" aria-label="Rating from 1 to 5">{''.join(f'<button role="radio" aria-checked="false" type="button">{n}</button>' for n in range(1, 6))}<span class="lbl-s" style="align-self:center;margin-left:8px">1 not useful · 5 can’t do without</span></div></div>
 <p class="disc" style="margin-top:8px;max-width:640px">Shown once, after 2 weeks of use and on a calm screen (an empty Revisit). Dismissed for good with ×. After a tap: “Thanks. Want to tell us more?” with a link to feedback.</p>''', cur='revisit')
 changelog = f'''<div class="land"><div class="lnav"><div class="logo"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="4" fill="var(--accent)"/><path d="M14 4h5v8l-2.5-2-2.5 2z" fill="var(--brand-notch)"/></svg>Shelfmark</div><button class="sm-btn sm-btn--secondary sm-btn--sm" type="button">Open Shelfmark</button></div>
-<div style="max-width:68ch;margin:32px auto 0"><h1 style="font-size:2.03rem;margin:0">What’s new</h1><p class="lead">Every change that you can see.</p>
-{''.join(f'<section style="margin-top:32px;padding-top:24px;border-top:1px solid var(--line)"><span class="lbl-s">{d}</span><h2 style="font:600 1.27rem/1.25 var(--font-sans);margin:4px 0 8px">{t}</h2><p style="margin:0;line-height:1.6">{p}</p></section>' for d, t, p in [('20 November 2026', 'Side by side', 'Open two folders next to each other and drag links between them to file them. From wide screens.'), ('12 November 2026', 'Import with AI folders', 'Import hundreds of browser bookmarks; AI suggests a handful of folders and you review them before anything is saved. Undo removes exactly what was imported.'), ('2 November 2026', 'Revisit', 'Reminders, links you started reading and links you forgot about, on one page.')])}</div></div>'''
+<div style="max-width:68ch;margin:32px auto 0"><h1 style="font-size:2rem;margin:0">What’s new</h1><p class="lead">Every change that you can see.</p>
+{''.join(f'<section style="margin-top:32px;padding-top:24px;border-top:1px solid var(--line)"><span class="lbl-s">{d}</span><h2 style="font:600 1.375rem/1.25 var(--font-sans);margin:4px 0 8px">{t}</h2><p style="margin:0;line-height:1.6">{p}</p></section>' for d, t, p in [('20 November 2026', 'Side by side', 'Open two folders next to each other and drag links between them to file them. From wide screens.'), ('12 November 2026', 'Import with AI folders', 'Import hundreds of browser bookmarks; AI suggests a handful of folders and you review them before anything is saved. Undo removes exactly what was imported.'), ('2 November 2026', 'Revisit', 'Reminders, links you started reading and links you forgot about, on one page.')])}</div></div>'''
 landing = f'''<div class="land"><div class="lnav"><div class="logo"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="4" fill="var(--accent)"/><path d="M14 4h5v8l-2.5-2-2.5 2z" fill="var(--brand-notch)"/></svg>Shelfmark</div><a href="#">What’s new</a><a href="#">Privacy</a><button class="sm-btn sm-btn--secondary sm-btn--sm" type="button">Sign in</button></div>
 <section class="hero"><h1>All your links, and a way back to them</h1><p>Save anything in one move, find it in seconds by words or meaning, and see it again before it’s forgotten.</p><div class="cta"><button class="sm-btn sm-btn--primary sm-btn--lg" type="button">Start for free</button><button class="sm-btn sm-btn--secondary sm-btn--lg" type="button">Look around in the demo</button></div></section>
 <div class="shot"><div class="bar"><i></i><i></i><i></i></div><div class="in"><div class="mini-side sm-l1">{''.join(f'<span class="sm-nav"{" aria-current=%spage%s" % (chr(34), chr(34)) if i == 0 else ""}>{ic(c, 16)}{t}</span>' for i, (c, t) in enumerate([('bookmark', 'All links'), ('inbox', 'Unsorted'), ('star', 'Favorites'), ('revisit', 'Revisit')]))}<span class="sm-sec" style="width:auto">Folders</span>{''.join(f'<span class="sm-nav">{tile(c, 12)}{n}</span>' for n, c in [('Clothes', 'rose'), ('Recipes', 'amber'), ('Work', 'ocean')])}</div>
-<div class="mini-feed">{''.join(f'<article class="sm-card sm-l1"><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body" style="padding:8px 10px 10px"><h3 class="sm-card-title" style="font-size:.8125rem">{t}</h3></div></article>' for a, r, t, d in CARDS)}</div></div></div>
+<div class="mini-feed">{''.join(f'<article class="sm-card sm-l1"><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body" style="padding:8px 10px 10px"><h3 class="sm-card-title" style="font-size:.75rem">{t}</h3></div></article>' for a, r, t, d in CARDS)}</div></div></div>
 <div class="jobs">{''.join(f'<div class="job"><span class="ji">{ic(i, 20)}</span><h3>{t}</h3><p>{p}</p></div>' for i, t, p in [('plus', 'Save', 'Paste, drop, share from your phone or click the extension. A rule or AI files it; you can always change it.'), ('search', 'Find', 'Search titles, notes, tags and the page itself. Or ask a question and get an answer with sources from your own links.'), ('revisit', 'Come back', 'Reminders, links you started reading and ones you forgot, in one calm queue.')])}</div>
 <div class="lfoot"><span>© 2026 Shelfmark</span><a href="#">Privacy</a><a href="#">What’s new</a><a href="#">GitHub</a></div></div>'''
 admin = APP(f'''<h1>Admin</h1><p class="lead">Visible only to the owner account.</p>

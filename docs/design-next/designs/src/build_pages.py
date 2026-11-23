@@ -8,7 +8,7 @@ for fam in ['spacing', 'radius', 'size', 'duration', 'breakpoint']: other += [f"
 other += [f"--font-{k}:{v}" for k, v in tok['type']['families'].items()]
 TOK = (f":root{{{colors('light')};{shadows('light')};{';'.join(other)}}}\n@media (prefers-color-scheme: dark){{:root:not([data-theme=\"light\"]){{{colors('dark')};{shadows('dark')};color-scheme:dark}}}}\n:root[data-theme=\"dark\"]{{{colors('dark')};{shadows('dark')};color-scheme:dark}}\n")
 BUNDLE = open(f'{B}/ds/project/components/bundle.css').read()
-SC = json.load(open(f'{B}/dsgen/scenes.json'))
+SC = json.load(open(f'{B}/dsgen/scenes_v3.json'))
 exec(open(f'{B}/dsgen/gen.py').read().split('# ---------- icons as inline helpers ----------')[1].split('def ic(')[0])
 I.update({'up': '<path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>',
  'left': '<path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -44,15 +44,15 @@ SHELL_CSS = r'''
 .app{display:flex;min-height:100vh;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;gap:24px}
 .side{flex:none;width:var(--sidebar);position:sticky;top:16px;align-self:flex-start;height:calc(100vh - 32px);display:flex;flex-direction:column;gap:2px;padding:16px 8px;border-radius:var(--radius-lg);overflow:auto}
 .side .sm-nav{width:100%}.side .sm-sec{width:auto;margin-top:12px}
-.logo{display:flex;align-items:center;gap:8px;height:40px;padding:0 8px;margin-bottom:8px;font:600 1.13rem/1.25 var(--font-sans)}
+.logo{display:flex;align-items:center;gap:8px;height:40px;padding:0 8px;margin-bottom:8px;font:600 1.125rem/1.25 var(--font-sans)}
 .main{flex:1;min-width:0;display:flex;flex-direction:column;padding-bottom:48px}
 .top{display:flex;align-items:center;gap:12px;height:40px;position:relative}
 .top .sm-search{flex:1 1 auto;max-width:560px;min-width:0}
 .right{margin-left:auto;display:flex;gap:8px;align-items:center}
 .avatar{width:40px;height:40px;border:0;border-radius:var(--radius-full);background:var(--surface-hover);font:600 .875rem/1 var(--font-sans);color:var(--text)}
-h1{margin:32px 0 0;font:600 1.6rem/1.2 var(--font-sans);text-wrap:balance}
+h1{margin:32px 0 0;font:600 2rem/1.2 var(--font-sans);text-wrap:balance}
 .lead{margin:4px 0 0;color:var(--text-muted);font-size:.875rem;max-width:68ch}
-.sec-t{margin:0 0 8px;font:600 1.13rem/1.25 var(--font-sans)}
+.sec-t{margin:0 0 8px;font:600 1.125rem/1.25 var(--font-sans)}
 .stack{display:flex;flex-direction:column;gap:24px;margin-top:24px;max-width:880px}
 .row2{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;margin-top:24px}
 .lbl-s{font:500 .75rem/1.4 var(--font-sans);color:var(--text-muted)}
@@ -66,7 +66,7 @@ mark{background:var(--accent-bg);color:var(--accent-text);border-radius:2px;padd
 .proto{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:110;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:4px 4px 4px 12px;border-radius:var(--radius-md);font-size:.75rem;color:var(--text-muted);max-width:calc(100vw - 32px)}
 .proto select{height:28px;max-width:200px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-size:.75rem;padding:0 8px}
 .tabbar-wrap{display:none}
-@media (max-width:63.99em){.side{width:var(--rail);align-items:center}.side .lbl,.side .n,.side .dot,.side .sm-sec,.side .tree{display:none}.side .sm-nav{width:48px;height:48px;justify-content:center;padding:0}.logo span{display:none}}
+@media (max-width:63.99em){.side{width:var(--rail);align-items:center}.side .lbl,.side .n,.side .dot,.side .sm-sec,.side .tree,.side .grp+.grp{display:none}.side .sm-nav{width:48px;height:48px;justify-content:center;padding:0}.logo span{display:none}}
 @media (max-width:39.99em){.top{display:none}.side{display:none}.app{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}.top .add-btn,.top .avatar,.sm-kbd{display:none}
  .tabbar-wrap{display:block;position:fixed;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30}.tabbar-wrap .sm-tabbar{width:100%}
  .proto{bottom:auto;top:calc(8px + env(safe-area-inset-top,0px))}
@@ -77,8 +77,12 @@ body{background:var(--canvas);color:var(--text);font-family:var(--font-sans)}
 .side{background:transparent!important;box-shadow:none!important;width:232px;padding:16px 8px 16px 16px;top:0;height:100vh;border-radius:0}
 .side .sm-nav[aria-current="page"],.snav .sm-nav[aria-current="page"]{background:var(--surface);color:var(--text)}
 .side .sm-nav:not([aria-current]),.snav .sm-nav:not([aria-current]){color:var(--text-muted)}
-.side .sm-nav:not([aria-current]) svg{color:var(--text-muted)}
-.logo{font-family:var(--font-display)}
+.logo{font:600 1rem/1.5rem var(--font-display);padding:0 12px;margin-bottom:0}
+.side{gap:24px}.side>*{flex-shrink:0}.side .grp{display:flex;flex-direction:column;gap:2px}.side .sm-sec{margin-top:0}
+.side .side-foot{margin-top:auto;display:flex;flex-direction:column;gap:2px}
+.side .sm-nav:hover{color:var(--text)}.side .sm-nav:hover svg{color:currentColor}
+.top .sm-search{flex:1 1 auto}
+@media (max-width:39.99em){.sm-search-ask span{display:none}}
 .main{margin:8px 8px 8px 0;padding:24px 40px 56px;border-radius:20px;background:var(--surface);min-height:calc(100vh - 16px)}
 .top{height:auto;gap:12px}
 .top .sm-search{height:52px;border-radius:16px;max-width:720px;padding:0 12px 0 16px;background:var(--surface-hover)}
@@ -95,16 +99,24 @@ h1{font-size:2rem;line-height:1.25}
 def sidebar(cur=''):
     def nav(key, icon, label, extra=''):
         cur_attr = ' aria-current="page"' if key == cur else ''
-        return f'<button class="sm-nav" type="button"{cur_attr} title="{label}">{ic(icon, 20)}<span class="lbl">{label}</span>{extra}</button>'
-    return (f'<nav class="side sm-l1" aria-label="Library"><div class="logo"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="4" fill="var(--accent)"/><path d="M14 4h5v8l-2.5-2-2.5 2z" fill="var(--brand-notch)"/></svg><span>Shelfmark</span></div>'
-        + nav('revisit', 'revisit', 'Today', '<span class="dot">3</span>') + nav('all', 'bookmark', 'All links', '<span class="n">58</span>') + nav('unsorted', 'inbox', 'Unsorted', '<span class="n">17</span>') + nav('fav', 'star', 'Favorites', '<span class="n">6</span>') + nav('ask', 'spark', 'Ask')
-        + '<div class="sm-sec">Folders</div><div class="tree">'
-        + ''.join(f'<button class="sm-nav sm-nav--plain" type="button"{" aria-current=%spage%s" % (chr(34), chr(34)) if cur == n.lower() else ""}>{tile(c)}<span class="lbl">{n}</span><span class="n">{k}</span></button>' for n, c, k in [('Clothes', 'rose', 7), ('Recipes', 'amber', 7), ('Work', 'ocean', 7), ('Design', 'plum', 5)])
-        + f'</div><div class="sm-sec">Tags</div><div class="tree">' + ''.join(f'<button class="sm-nav sm-nav--plain" type="button">{ic("hash", 20)}<span class="lbl">{t}</span><span class="n">{k}</span></button>' for t, k in [('angular', 12), ('reading', 8), ('clothes', 7)])
-        + f'</div><div style="margin-top:auto;padding-top:8px;border-top:1px solid var(--line)">{nav("trash", "trash", "Trash")}</div></nav>')
-TOP = (f'<header class="top"><label class="sm-input sm-search sm-l1">{ic("search")}<input placeholder="Search your links" aria-label="Search your links"><span class="sm-kbd">Ctrl K</span></label><button class="sm-btn sm-btn--secondary ask-top" type="button">{ic("spark").replace("aria-hidden", "style=%scolor:var(--ai)%s aria-hidden" % (chr(34), chr(34)))}Ask</button>'
+        return f'<button class="sm-nav" type="button"{cur_attr} title="{label}">{ic(icon, 16)}<span class="lbl">{label}</span>{extra}</button>'
+    def sec(label, add=''):
+        plus = f'<button class="sm-ib" type="button" aria-label="{add}" title="{add}">{ic("plus", 14)}</button>' if add else ''
+        return f'<div class="sm-sec"><button class="sm-sec-t" type="button" aria-expanded="true">{label}{ic("chev", 14)}</button>{plus}</div>'
+    fold = lambda n, c, k: f'<button class="sm-nav sm-nav--plain" type="button"{" aria-current=%spage%s" % (chr(34), chr(34)) if cur == n.lower() else ""}><span class="sm-ficon" style="color:var(--folder-{c})">{ic("folder", 16)}</span><span class="lbl">{n}</span><span class="n">{k}</span></button>'
+    return (f'<nav class="side" aria-label="Library"><div class="logo"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="4" fill="var(--accent)"/><path d="M14 4h5v8l-2.5-2-2.5 2z" fill="var(--brand-notch)"/></svg><span>Shelfmark</span></div>'
+        + '<div class="grp">' + nav('revisit', 'revisit', 'Today', '<span class="dot">3</span>') + nav('all', 'bookmark', 'All links', '<span class="n">58</span>') + nav('unsorted', 'inbox', 'Unsorted', '<span class="n">17</span>') + nav('fav', 'star', 'Favorites', '<span class="n">6</span>') + nav('ask', 'spark', 'Ask') + '</div>'
+        + '<div class="grp">' + sec('Folders', 'New folder') + '<div class="tree">' + ''.join(fold(n, c, k) for n, c, k in [('Clothes', 'rose', 7), ('Recipes', 'amber', 7), ('Work', 'ocean', 7), ('Design', 'plum', 5)]) + '</div></div>'
+        + '<div class="grp">' + sec('Tags') + '<div class="tree">' + ''.join(f'<button class="sm-nav sm-nav--plain" type="button">{ic("hash", 16)}<span class="lbl">{t}</span><span class="n">{k}</span></button>' for t, k in [('angular', 12), ('reading', 8), ('clothes', 7)]) + '</div></div>'
+        + f'<div class="side-foot">{nav("trash", "trash", "Trash")}</div></nav>')
+TOP = (f'<header class="top"><div class="sm-input sm-search" role="search">{ic("search")}<input placeholder="Search your links" aria-label="Search your links"><span class="sm-kbd">Ctrl K</span><a class="sm-search-ask" href="ask.html" title="Ask your shelf (Ctrl J)">{ic("spark")}<span>Ask</span></a></div>'
        f'<div class="right"><button class="sm-btn sm-btn--primary add-btn" type="button">{ic("plus")}Add link</button><button class="avatar" type="button" aria-label="Account">DU</button></div></header>')
 TABBAR = f'<div class="tabbar-wrap"><nav class="sm-tabbar sm-l2" aria-label="Main"><button class="sm-tab" type="button">{ic("revisit",20)}Today</button><button class="sm-tab" type="button">{ic("bookmark",20)}Library</button><button class="sm-fab" type="button" aria-label="Add link">{ic("plus",24)}</button><button class="sm-tab" type="button">{ic("search",20)}Search</button><a class="sm-tab" href="ask.html" style="text-decoration:none">{ic("spark",20).replace("aria-hidden", "style=%scolor:var(--ai)%s aria-hidden" % (chr(34), chr(34)))}Ask</a></nav></div>'
+
+SEARCH_JS = '''<script>(function(){const i=document.querySelector('.top .sm-search input');if(!i)return;
+const go=v=>{location.href='./?q='+encodeURIComponent(v)};
+i.addEventListener('input',()=>{if(i.value.trim())go(i.value)});i.addEventListener('keydown',e=>{if(e.key==='Enter')go(i.value)});
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();i.focus();i.select()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='j'){e.preventDefault();location.href='ask.html'}});})();</script>'''
 
 def page(fname, title, css, states, shell='app', cur=''):
     opts = ''.join(f'<option value="{k}">{lab}</option>' for k, lab, _ in states)
@@ -113,7 +125,7 @@ def page(fname, title, css, states, shell='app', cur=''):
     if shell == 'app': content = f'<div class="app">{sidebar(cur)}<main class="main">{TOP}{body}</main></div>{TABBAR}'
     else: content = body
     js = '''<script>(function(){const sel=document.getElementById('st'),pg=document.getElementById('pg'),th=document.getElementById('th');
-function show(k){document.querySelectorAll('.state').forEach(s=>s.classList.toggle('on',s.dataset.state===k));try{sessionStorage.setItem('st-'+location.pathname,k)}catch(e){}}
+function show(k){document.querySelectorAll('.state').forEach(s=>s.classList.toggle('on',s.dataset.state===k));const st=document.querySelector('.state.on'),qi=document.querySelector('.top .sm-search input');if(qi&&st){const d=st.querySelector('[data-q]');qi.value=d?d.dataset.q:''}try{sessionStorage.setItem('st-'+location.pathname,k)}catch(e){}}
 let k0=sel.value;try{const v=sessionStorage.getItem('st-'+location.pathname);if(v&&sel.querySelector('option[value="'+v+'"]'))k0=v}catch(e){}sel.value=k0;show(k0);
 sel.addEventListener('change',()=>show(sel.value));pg.addEventListener('change',()=>{location.href=pg.value==='index.html'?'./':pg.value});
 th.addEventListener('change',()=>{if(th.value==='system')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',th.value)});
@@ -134,7 +146,7 @@ document.addEventListener('click',e=>{const a=e.target.closest('a[href="#"]');if
 {js}
 {open('/tmp/claude-0/-home-user-shelfmark/ebcb0130-eb79-5d11-ad3d-48330e17911a/scratchpad/dsgen/desk.js').read()}
 {open('/tmp/claude-0/-home-user-shelfmark/ebcb0130-eb79-5d11-ad3d-48330e17911a/scratchpad/dsgen/motion.js').read()}
-</body></html>
+'''+SEARCH_JS+'''</body></html>
 '''
     open(f'{B}/design/{fname}', 'w').write(html)
     print('wrote', fname, len(html))

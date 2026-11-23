@@ -12,6 +12,12 @@ These foundations replace `docs/design/tokens.*` for the new design. When approv
 > - **Shell:** the sidebar sits on the canvas without a panel; the main area is one panel with radius 20 and an 8px margin; search is 52px tall with radius 16.
 > - **Cards:** solid fill, 8px radius, the preview fills the top edge to edge; hover darkens the fill.
 >
+> - **Sidebar (v3):** rows 36px, 14px text in `text-muted`, 16px outline icons, the current row on `surface`; section headings are 12px with a chevron after the label; folders show their colour on the glyph only (no tile); a folder row with subfolders is one button with the chevron inside it.
+> - **Search (v3):** one field on every page, Ask inside it on the right; typing filters the feed in place (matches, then "Close in meaning"), folders and tags that match show as "Go to" chips, a question offers Ask, nothing found shows the StateScene with Clear search and Ask your shelf. The search dialog is gone; the phone keeps its full-screen list.
+> - **Fills:** cards, panels and tiles on the main panel use the translucent `fill` / `fill-hover` tokens.
+> - **Type scale:** 12/16 meta, 14/22 secondary and labels, 16/24 body, 18/24 title-s, 22/28 title-m, 26/32 title-l (phone titles), 32/40 display (page titles, Funnel Display). Off-scale sizes in the designs were moved to these.
+> - **States:** the shipped Shelfmark illustration scenes, recoloured (sage key parts, graphite ink) on a sage disc, play once; see `design-system/components/StateScene`.
+>
 > The token source is `design-system/tokens.json` (version 2.0.0-v3) and `design-system/components/bundle.css`.
 
 ## 1. Type

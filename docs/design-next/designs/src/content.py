@@ -20,11 +20,11 @@ S_CSS = r'''
 .qp-row .lead-ic{display:grid;place-items:center;width:32px;height:32px;border-radius:var(--radius-sm);background:var(--surface-hover);flex:none}
 .qp-foot{display:flex;gap:16px;padding:8px 16px;border-top:1px solid var(--line);font-size:.75rem;color:var(--text-muted)}
 .qp-foot span{display:inline-flex;gap:4px;align-items:center}
-.ans{padding:16px;display:flex;flex-direction:column;gap:12px;font-size:.9375rem}
+.ans{padding:16px;display:flex;flex-direction:column;gap:12px;font-size:1rem}
 .ans .q{align-self:flex-end;max-width:80%;padding:8px 12px;border-radius:var(--radius-md);background:var(--surface-hover);font-size:.875rem}
 .ans .a{display:flex;gap:12px}
 .ans .a p{margin:0;line-height:1.6}
-.cite{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border:1px solid var(--line-strong);border-radius:var(--radius-xs);font:500 .6875rem/1 var(--font-sans);vertical-align:2px;color:var(--text-muted)}
+.cite{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border:1px solid var(--line-strong);border-radius:var(--radius-xs);font:500 .75rem/1 var(--font-sans);vertical-align:2px;color:var(--text-muted)}
 .srcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
 .src{display:flex;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:var(--radius-sm);font-size:.75rem}
 .src .sm-thumb{width:40px;height:32px}
@@ -36,7 +36,7 @@ S_CSS = r'''
 .res-head h1{margin:0}
 .res-head .sm-btn{margin-left:auto}
 .qp-empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:32px 16px;text-align:center}
-.qp-empty b{font:600 1.13rem/1.25 var(--font-sans)}.qp-empty p{margin:0;color:var(--text-muted);font-size:.875rem;max-width:44ch}
+.qp-empty b{font:600 1.125rem/1.25 var(--font-sans)}.qp-empty p{margin:0;color:var(--text-muted);font-size:.875rem;max-width:44ch}
 
 '''
 def qrow(a, t, sub, sel=False, lead=None):
@@ -77,12 +77,55 @@ respage = f'''<div class="res-head"><h1>Results for “signal forms”</h1><span
 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px"><button class="sm-chip" aria-pressed="false">Type</button><button class="sm-chip" aria-pressed="false">Folder</button><button class="sm-chip" aria-pressed="true">#angular ×</button><button class="sm-chip" aria-pressed="false">Saved: any time</button></div>
 <div class="stack"><div class="sm-panel sm-l1" style="max-width:none">{''.join(f'<div class="rrow"><span class="sm-thumb">{ART[a]}</span><span class="tx"><span class="tt">{t}</span><span class="sm-meta" style="margin:0">{fav(d[0].upper())}{d}</span></span><span class="sm-tag">angular</span></div>' for a, t, d in [('video', 'Signal Forms in 20 minutes', 'youtube.com'), ('dark', 'Signal Forms: getting started', 'angular.dev'), ('type', 'Validation without Reactive Forms', 'dev.to')])}</div>
 <div><p class="sec-t" style="display:flex;gap:8px;align-items:center"><span style="color:var(--ai)">{ic("spark")}</span>Close in meaning</p><div class="sm-panel sm-l1" style="max-width:none">{''.join(f'<div class="rrow"><span class="sm-thumb">{ART[a]}</span><span class="tx"><span class="tt">{t}</span><span class="sm-meta" style="margin:0">{fav(d[0].upper())}{d}</span></span></div>' for a, t, d in [('dark', 'linkedSignal in practice', 'youtube.com'), ('type', 'NgRx SignalStore patterns', 'dev.to')])}</div></div></div>'''
-SBG = '<h1>All links</h1><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:24px">' + ''.join(f'<article class="sm-card sm-l1" style="width:auto"><div class="sm-cover" style="aspect-ratio:{r}">{ART[x]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3><div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>' for x, r, t, d in [('video', '16/9', 'Signal Forms in 20 minutes', 'youtube.com'), ('shirt', '4/5', 'Wool overshirt', 'uniqlo.com'), ('bowl', '1/1', 'Tonkotsu broth', 'seriouseats.com'), ('jacket', '4/5', 'Nano Puff jacket', 'patagonia.com')]) + '</div>'
-results, recent, ask, streaming, nothing = [SBG + x for x in (results, recent, ask, streaming, nothing)]
+# Search filters the feed in place (v3); the field keeps Ask on its right. Phone: full-screen list.
+SQ_CSS = r"""
+.s-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-top:32px}
+.s-head h1{margin:0}.s-head .cnt{color:var(--text-muted)}
+.s-filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.s-jump{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.s-jump .lbl{font-size:.75rem;color:var(--text-muted);margin-right:4px}
+.s-jump .sm-chip svg{width:14px;height:14px}
+.s-ask{display:flex;align-items:center;gap:12px;margin-top:16px;padding:12px 12px 12px 16px;border-radius:var(--radius-md);background:var(--ai-bg);font-size:.875rem}
+.s-ask>svg{color:var(--ai);flex:none}.s-ask span{flex:1}
+.s-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(208px,1fr));gap:20px;margin-top:24px}
+.s-grid .sm-card{width:auto}.s-grid .sm-sum{display:block}
+.s-near{margin-top:40px}.s-near h2{display:flex;align-items:center;gap:8px;margin:0;font:600 1rem/1.5rem var(--font-display)}.s-near h2 svg{color:var(--ai)}.s-near h2 span{font:400 .875rem/1 var(--font-sans);color:var(--text-muted)}
+.s-near .s-grid{margin-top:16px}
+mark{background:var(--ai-bg);color:inherit;border-radius:2px;padding:0 1px}
+.s-empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:56px 16px;text-align:center}
+.s-empty h2{margin:4px 0 0;font:600 1.375rem/1.75rem var(--font-display);letter-spacing:-.01em}
+.s-empty p{margin:0;max-width:52ch;color:var(--text-muted)}
+.s-empty .acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}.s-empty .acts svg{color:var(--ai)}
+.s-recent{position:absolute;top:84px;left:40px;width:min(720px,calc(100% - 80px));z-index:20;padding:8px;border-radius:var(--radius-md)}
+.s-recent .h{padding:8px 8px 4px;font-size:.75rem;color:var(--text-muted)}
+.s-recent .r{display:flex;align-items:center;gap:12px;width:100%;height:36px;padding:0 8px;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--text);font:400 .875rem/1.375rem var(--font-sans);text-align:left}
+.s-recent .r:hover,.s-recent .r[aria-selected="true"]{background:var(--surface-hover)}.s-recent .r svg{color:var(--text-muted)}
+.s-recent .ways{display:flex;flex-wrap:wrap;gap:6px;padding:4px 8px 8px}
+.s-recent .ways span{height:24px;padding:0 8px;border-radius:var(--radius-xs);background:var(--surface-hover);font:400 .75rem/24px var(--font-sans);color:var(--text-muted)}
+.s-recent p{margin:4px 8px 8px;font-size:.75rem;color:var(--text-muted)}
+.main{position:relative}
+@media (max-width:39.99em){.s-recent{display:none}}
+"""
+S_CSS = S_CSS + SQ_CSS
+def scard(a, r, t, d, sub=''):
+    sp = f'<p class="sm-sum">{sub}</p>' if sub else ''
+    return f'<article class="sm-card sm-l1"><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3>{sp}<div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>'
+FILT = '<div class="s-filters" role="toolbar" aria-label="Filters"><button class="sm-chip" aria-pressed="true">All <b>5</b></button><button class="sm-chip" aria-pressed="false">Videos <b>2</b></button><button class="sm-chip" aria-pressed="false">Articles <b>3</b></button><button class="sm-chip" aria-pressed="false">Saved: any time</button><button class="sm-chip" aria-pressed="false">Favorites</button></div>'
+def shead(q, cnt): return f'<div class="s-head" data-q="{q}"><h1>Search</h1><span class="cnt">{cnt}</span></div>'
+FOLD_CHIP = '<button class="sm-chip" type="button"><span class="sm-ficon" style="color:var(--folder-clay)">' + ic("folder", 14) + '</span>Angular / Forms <b>13</b></button>'
+results = (shead('signal forms', '5 for “signal forms”') + FILT
+ + '<div class="s-jump"><span class="lbl">Go to</span>' + FOLD_CHIP + '<button class="sm-chip" type="button">' + ic("hash", 14) + 'signals <b>9</b></button></div>'
+ + '<div class="s-grid">' + scard('video', '16/9', '<mark>Signal</mark> <mark>Forms</mark> in 20 minutes', 'youtube.com', 'Walks through form(), validators and custom controls.') + scard('dark', '16/9', 'Getting started with <mark>Signal</mark> <mark>Forms</mark>', 'angular.dev') + scard('type', '16/9', 'Validation without Reactive <mark>Forms</mark>', 'dev.to', 'Note: compare with the <mark>signal</mark> approach.') + '</div>'
+ + '<section class="s-near"><h2>' + ic("spark", 16) + 'Close in meaning <span>2</span></h2><div class="s-grid">' + scard('dark', '16/9', 'linkedSignal in practice', 'youtube.com') + scard('type', '16/9', 'NgRx SignalStore: patterns for real apps', 'dev.to') + '</div></section>')
+question = (shead('which signal forms video should I watch first?', '2 links match the words') + '<div class="s-ask">' + ic("spark", 16) + '<span>Looks like a question. Your shelf can answer it with sources.</span><a class="sm-btn sm-btn--sm" href="ask.html">Ask your shelf</a></div>'
+ + '<div class="s-grid">' + scard('video', '16/9', '<mark>Signal</mark> <mark>Forms</mark> in 20 minutes', 'youtube.com') + scard('dark', '16/9', 'linkedSignal in practice', 'youtube.com') + '</div>')
+nothing = (shead('blue velvet sofa', 'Nothing for “blue velvet sofa”') + '<div class="s-empty">' + SC['nothing-found'] + '<h2>Nothing found</h2><p>No link mentions “blue velvet sofa” in its title, note, tags or address. Try another word, or ask your shelf: it also searches by meaning.</p><div class="acts"><button class="sm-btn sm-btn--secondary" type="button">Clear search</button><a class="sm-btn" href="ask.html">' + ic("spark") + 'Ask your shelf</a></div></div>')
+SBG = '<div class="s-head"><h1>All links</h1><span class="cnt">58 links</span></div><div class="s-grid">' + ''.join(scard(x, r, t, d) for x, r, t, d in [('video', '16/9', 'Signal Forms in 20 minutes', 'youtube.com'), ('shirt', '4/5', 'Wool overshirt', 'uniqlo.com'), ('bowl', '1/1', 'Tonkotsu broth', 'seriouseats.com'), ('jacket', '4/5', 'Nano Puff jacket', 'patagonia.com')]) + '</div>'
+REC = ''.join(f'<button class="r" type="button" role="option" aria-selected="{str(i == 0).lower()}">{ic("revisit")}{t}</button>' for i, t in enumerate(['signal forms', 'ramen', '#clothes sale']))
+WAYS = ''.join(f'<span>{x}</span>' for x in ['#tag', 'in:Recipes', 'site:youtube.com', 'last week'])
+recent = SBG + '<div class="s-recent sm-l2" role="listbox" aria-label="Recent searches"><div class="h">Recent searches</div>' + REC + '<div class="h">Ways to search</div><div class="ways">' + WAYS + '</div><p>For questions (how many, which, summarise) use Ask on the right of the field, or Ctrl J.</p></div>'
 page('search.html', 'Search', S_CSS, [
- ('results', 'Results (words, meaning, folders, Ask)', results), ('recent', 'Before typing: recent searches', recent),
- ('nothing', 'Nothing with these words', nothing),
- ('page', 'Full results page', respage)])
+ ('results', 'Results in the feed (words, meaning, folders and tags)', results), ('recent', 'Field focused, before typing', recent),
+ ('question', 'A question typed into search', question), ('nothing', 'Nothing found', nothing)])
 
 # ================= ORGANISE =================
 O_CSS = r'''
@@ -166,7 +209,7 @@ FS_CSS = """
 .fset .prevrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface-hover);font:500 .875rem/1.4 var(--font-sans)}
 .fset .prevrow.hl{background:var(--folder-amber-bg);color:var(--folder-amber)}
 .fset .emo{display:grid;grid-template-columns:repeat(10,36px);gap:4px}
-.fset .emo button{width:36px;height:36px;border:0;border-radius:var(--radius-sm);background:transparent;font-size:1.25rem}
+.fset .emo button{width:36px;height:36px;border:0;border-radius:var(--radius-sm);background:transparent;font-size:1.375rem}
 """
 O_CSS += FS_CSS
 ICONS20 = ['folder', 'bookmark', 'star', 'bell', 'hash', 'search', 'text', 'browser', 'user', 'copy', 'share', 'palette', 'pin', 'inbox', 'play', 'grid', 'list', 'rule', 'upload', 'edit']
@@ -209,20 +252,20 @@ trash = f'''<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wra
 {''.join(f'<div class="trash-row"><span class="sm-thumb" style="width:56px;height:40px">{ART[a]}</span><span class="tx"><span class="tt">{t}</span><span class="sm-meta">{fr} · {left}</span></span><button class="sm-btn sm-btn--sm sm-btn--secondary" type="button">{ic("restore")}Restore</button><button class="sm-ib" type="button" aria-label="Delete forever">{ic("trash")}</button></div>' for a, t, fr, left in [('shirt', 'Linen shirt', 'From Clothes', '29 days left'), ('type', 'Old design notes', 'From Unsorted', '12 days left'), ('video', 'Livestream replay', 'From Work', '2 days left')])}
 <div class="trash-row"><span class="sm-tile" style="width:56px;height:40px;border-radius:var(--radius-sm);background:var(--folder-plum-bg);color:var(--folder-plum)">{ic("folder", 20)}</span><span class="tx"><span class="tt">Old projects</span><span class="sm-meta">Folder with 6 links · 20 days left</span></span><button class="sm-btn sm-btn--sm sm-btn--secondary" type="button">{ic("restore")}Restore</button><button class="sm-ib" type="button" aria-label="Delete forever">{ic("trash")}</button></div></div></div>
 <div class="overlay sm-l1" style="min-height:300px"><div class="scrim2"></div><div class="sm-dialog sm-l3" role="alertdialog" aria-labelledby="dd"><h2 id="dd">Delete “Old projects” forever?</h2><p>The folder and its 6 links will be gone for good. This can't be undone.</p><div class="foot"><button class="sm-btn sm-btn--secondary">Cancel</button><button class="sm-btn sm-btn--danger">Delete forever</button></div></div></div>'''
-trash_empty = f'<h1>Trash</h1><p class="lead">Deleted links and folders wait here for 30 days.</p><div class="stack"><div class="sm-l1" style="border-radius:var(--radius-lg);padding:48px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">{SC["empty-trash"]}<b style="font:600 1.27rem/1.25 var(--font-sans)">Trash is empty</b><p class="lead" style="margin:0">Deleted links stay here for 30 days, so you can bring them back.</p><button class="sm-btn sm-btn--sm" type="button" data-replay>Replay</button></div></div>'
+trash_empty = f'<h1>Trash</h1><p class="lead">Deleted links and folders wait here for 30 days.</p><div class="stack"><div class="sm-l1" style="border-radius:var(--radius-lg);padding:48px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">{SC["empty-trash"]}<b style="font:600 1.375rem/1.25 var(--font-sans)">Trash is empty</b><p class="lead" style="margin:0">Deleted links stay here for 30 days, so you can bring them back.</p><button class="sm-btn sm-btn--sm" type="button" data-replay>Replay</button></div></div>'
 
 O_CSS += r"""
 .phones{display:flex;gap:32px;flex-wrap:wrap;margin-top:24px;align-items:flex-start}
 .phone{position:relative;width:360px;height:720px;border-radius:28px;overflow:hidden;border:1px solid var(--line-strong);background:var(--canvas);flex:none}
 .phone .pc{padding:16px}
-.phone .pc h1{margin:8px 0 16px;font-size:1.6rem}
-.phone .prow{display:flex;align-items:center;gap:12px;height:52px;padding:0 12px;font-size:.9375rem;font-weight:500}
+.phone .pc h1{margin:8px 0 16px;font-size:2rem}
+.phone .prow{display:flex;align-items:center;gap:12px;height:52px;padding:0 12px;font-size:1rem;font-weight:500}
 .phone .prow{padding-right:4px}.phone .prow .n{margin-left:auto;margin-right:4px;font-size:.75rem;color:var(--text-muted);font-weight:400}
 .phone .scrim2{position:absolute;inset:0;background:var(--scrim)}
 .sheet{position:absolute;left:0;right:0;bottom:0;border-radius:20px 20px 0 0;padding:8px 16px 16px;display:flex;flex-direction:column;gap:12px}
 .sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--line-strong);align-self:center;margin-bottom:4px}
-.sheet h2{margin:0;font:600 1.13rem/1.25 var(--font-sans)}
-.sheet[role=menu]{gap:0}.sheet .sm-mi{height:48px;font-size:.9375rem}
+.sheet h2{margin:0;font:600 1.125rem/1.25 var(--font-sans)}
+.sheet[role=menu]{gap:0}.sheet .sm-mi{height:48px;font-size:1rem}
 .sheet .acts{display:flex;gap:8px}.sheet .acts .sm-btn{flex:1;height:48px}
 .kbd{position:absolute;left:0;right:0;bottom:0;height:260px;background:color-mix(in srgb,var(--text) 14%,var(--canvas));display:grid;grid-template-columns:repeat(10,1fr);gap:6px;padding:10px 4px;align-content:start}
 .kbd i{height:40px;border-radius:6px;background:var(--surface)}
@@ -237,7 +280,7 @@ phone_rename = phone(f'''<div class="kbd" aria-hidden="true">{"<i></i>"*30}</div
 <div class="sm-field" style="min-width:0"><label for="prnf">Name</label><div class="sm-input" style="height:48px">{tile("amber")}<input id="prnf" value="Recipes and baking" style="font-size:1rem"></div></div>
 <div class="acts"><button class="sm-btn sm-btn--secondary" type="button">Cancel</button><button class="sm-btn sm-btn--primary" type="button">Rename</button></div></form>''', '<div class="scrim2"></div>')
 phone_sort = phone(f'''<div class="sheet sm-l3" role="dialog" aria-labelledby="pso" style="gap:0"><span class="grab"></span><h2 id="pso" style="padding:4px 8px 8px">Sort by</h2>
-<div role="radiogroup" aria-labelledby="pso">{"".join(f'<button class="sm-mi" role="radio" aria-checked="{str(i == 0).lower()}" style="height:48px;font-size:.9375rem">{x}<span style="margin-left:auto">{ic("check") if i == 0 else ""}</span></button>' for i, x in enumerate(["Newest first", "Oldest first", "Title A to Z", "Recently opened"]))}</div></div>''', '<div class="scrim2"></div>', hl=False)
+<div role="radiogroup" aria-labelledby="pso">{"".join(f'<button class="sm-mi" role="radio" aria-checked="{str(i == 0).lower()}" style="height:48px;font-size:1rem">{x}<span style="margin-left:auto">{ic("check") if i == 0 else ""}</span></button>' for i, x in enumerate(["Newest first", "Oldest first", "Title A to Z", "Recently opened"]))}</div></div>''', '<div class="scrim2"></div>', hl=False)
 phone_state = f'''<h1>On the phone</h1><p class="lead">On phones every dropdown (menus, selects, pickers) opens as a sheet from the bottom, where the thumb is. The ⋯ button on a folder opens its actions; Rename replaces that sheet (never a sheet on a sheet) and sits right above the keyboard. Tap on a folder always opens it.</p>
 <div class="phones"><div>{phone_sheet}<p class="phone-cap">1. ⋯ on Recipes: actions as a bottom sheet. The button is 44px, a tap on the row opens the folder.</p></div><div>{phone_rename}<p class="phone-cap">2. Rename: field focused, keyboard open, buttons within thumb reach. Input text is 16px so the phone doesn't zoom.</p></div><div>{phone_sort}<p class="phone-cap">3. Any select, here Sort: the same sheet with the current choice ticked; a tap picks and closes.</p></div></div>'''
 
@@ -247,7 +290,6 @@ O_CSS += r"""
 .selfeed .sb{position:absolute;top:12px;left:12px;z-index:2}
 .selfeed .sm-card,.feed .sm-card{transition:background-color 120ms,border-color 120ms}
 .selfeed .sm-card[aria-selected="true"],.feed .sm-card[aria-selected="true"]{background:var(--accent-bg);border-color:var(--line-strong);box-shadow:none}
-.selfeed .sm-card[aria-selected="true"] .sm-cover,.feed .sm-card[aria-selected="true"] .sm-cover{transform:scale(.96);transition:transform 200ms}
 .selfeed .sb .sm-check{box-shadow:0 0 0 2px var(--surface)}
 .bulkbar{position:sticky;bottom:16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:8px;border-radius:var(--radius-md);margin-top:24px;font-size:.875rem;z-index:5}
 .bulkbar .cnt{padding:0 8px 0 4px;font-weight:600}.bulkbar .sp{flex:1}
@@ -277,7 +319,7 @@ G_CSS = r'''
 @media (max-width:52em){.showgrid{grid-template-columns:1fr}.pvwrap{position:static;max-width:240px}}
 .snav .sm-nav{width:100%}
 .smain{flex:1;min-width:0;max-width:840px;margin:0 auto;padding-bottom:64px}
-.smain h1{margin:16px 0 0}
+.smain h1{margin:16px auto 0}
 .group{margin-top:24px}
 .setrow{display:flex;align-items:center;gap:16px;padding:12px 16px;flex-wrap:wrap}
 .setrow .tx{flex:1 1 240px;min-width:0}
@@ -296,10 +338,10 @@ G_CSS = r'''
 .adot{width:28px;height:28px;border-radius:var(--radius-full);border:0}
 .adot[aria-checked="true"]{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--text)}
 .profile{display:flex;align-items:center;gap:16px;padding:16px}
-.pav{width:56px;height:56px;border-radius:var(--radius-full);background:var(--surface-hover);display:grid;place-items:center;font:600 1.13rem/1 var(--font-sans)}
+.pav{width:56px;height:56px;border-radius:var(--radius-full);background:var(--surface-hover);display:grid;place-items:center;font:600 1.125rem/1 var(--font-sans)}
 .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}
 .nums div{background:var(--surface);padding:12px 16px}
-.nums b{display:block;font:600 1.27rem/1.25 var(--font-sans)}.nums span{font-size:.75rem;color:var(--text-muted)}
+.nums b{display:block;font:600 1.375rem/1.25 var(--font-sans)}.nums span{font-size:.75rem;color:var(--text-muted)}
 .meter{height:6px;border-radius:var(--radius-full);background:var(--surface-hover);overflow:hidden;width:100%;max-width:240px}.meter i{display:block;height:100%;background:var(--accent)}
 .danger-panel{border-color:color-mix(in srgb,var(--danger) 40%,transparent)}
 .notice{display:flex;gap:8px;align-items:center;padding:12px 16px;border-radius:var(--radius-md);font-size:.875rem}
@@ -360,7 +402,7 @@ page('settings.html', 'Settings', G_CSS, [('appearance', 'Appearance', appearanc
 P_CSS = r'''
 .auth{min-height:100vh;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-left,0px))}
 .authcard{width:400px;max-width:100%;padding:32px;border-radius:var(--radius-lg);display:flex;flex-direction:column;gap:16px}
-.authcard h1{margin:8px 0 0;font:600 2.03rem/1.15 var(--font-sans);letter-spacing:-.01em}
+.authcard h1{margin:8px 0 0;font:600 2rem/1.15 var(--font-sans);letter-spacing:-.01em}
 .authcard p{margin:0;color:var(--text-muted);font-size:.875rem}
 .prov{width:100%;height:48px;justify-content:center;gap:12px}
 .or{display:flex;align-items:center;gap:12px;color:var(--text-muted);font-size:.75rem}.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
@@ -374,7 +416,7 @@ P_CSS = r'''
 .pubgrid{column-width:240px;column-gap:16px;margin-top:24px}.pubgrid .sm-card{width:auto;break-inside:avoid;margin-bottom:16px}
 .pubnote{margin:4px 0 0;font-size:.875rem;color:var(--text-muted);font-style:italic}
 .nf{min-height:100vh;display:grid;place-items:center;text-align:center;padding:24px}
-.nf b{display:block;font:600 2.03rem/1.15 var(--font-sans);margin:8px 0}
+.nf b{display:block;font:600 2rem/1.15 var(--font-sans);margin:8px 0}
 .nf p{margin:0 auto 16px;color:var(--text-muted);max-width:40ch}
 '''
 signin = f'''<div class="auth"><div class="authcard sm-l2"><svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="4" fill="var(--accent)"/><path d="M14 4h5v8l-2.5-2-2.5 2z" fill="var(--brand-notch)"/></svg>
@@ -390,7 +432,7 @@ DRIFT_CSS = r"""
 .dc .fly{animation:dc-fly 1s cubic-bezier(.2,.8,.2,1) var(--dl) both}
 .dc .flt{animation:dc-float var(--fd) ease-in-out var(--fp) infinite alternate}
 .dc .sm-card{width:100%;position:relative}
-.dc .sm-card-title{font-size:.8125rem}
+.dc .sm-card-title{font-size:.75rem}
 .dc .sm-card-body{padding:8px 10px 10px}
 .dc .sm-card::after{content:"";position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 0 0 var(--accent);opacity:0;animation:dc-ring 24s ease-out var(--rd) infinite}
 @keyframes dc-fly{from{transform:translate(var(--fx),var(--fy)) scale(.55) rotate(calc(var(--r) * -1));opacity:0}to{transform:none;opacity:1}}
@@ -436,7 +478,7 @@ E_CSS = r'''
 .tabs .ln+.ln{border-top:1px solid var(--line)}
 .tabs .u{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .done{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:8px 0}
-.done b{font:600 1.13rem/1.25 var(--font-sans)}
+.done b{font:600 1.125rem/1.25 var(--font-sans)}
 .ctx{width:260px;padding:8px;border-radius:var(--radius-md)}
 .page-mock{width:420px;max-width:100%;border-radius:var(--radius-lg);overflow:hidden}
 .page-mock .bar{height:36px;background:var(--surface-hover);display:flex;align-items:center;gap:6px;padding:0 12px}
