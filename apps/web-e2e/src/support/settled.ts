@@ -7,7 +7,8 @@ export async function settled(page: Page): Promise<void> {
   // animation (an Undo toast's countdown under the pointer) never ends on its own: skip it too. So
   // does one on an element the browser does not render (`content-visibility: auto` cards off
   // screen): its `finished` promise can stay pending for good.
+  // The wait is capped at 5 s: an animation the browser stops updating must not hang the test.
   await page.evaluate(
-    'Promise.all([document.fonts.ready, ...document.getAnimations().filter((a) => a.timeline === document.timeline && a.playState !== "paused" && a.effect?.getComputedTiming().iterations !== Infinity && (a.effect?.target?.checkVisibility?.({ contentVisibilityAuto: true }) ?? true)).map((a) => a.finished.catch(() => undefined))])',
+    'Promise.race([new Promise((done) => setTimeout(done, 5000)), Promise.all([document.fonts.ready, ...document.getAnimations().filter((a) => a.timeline === document.timeline && a.playState !== "paused" && a.effect?.getComputedTiming().iterations !== Infinity && (a.effect?.target?.checkVisibility?.({ contentVisibilityAuto: true }) ?? true)).map((a) => a.finished.catch(() => undefined))])])',
   );
 }
