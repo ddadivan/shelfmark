@@ -57,6 +57,9 @@ One field: edit in place. Under 10 seconds: a popover (Filter, Move, Remind me, 
 
 ## Iconography
 
+States (empty, nothing found, offline, error, a site that can’t be shown) get an animated StateScene: flat scenes from the product’s own shapes that play once and hold.
+
+
 Shelfmark's own outline set on a 24px grid, 1.75px line, round caps; 16px in controls, 20px in navigation, 24px in empty states. Icons take the colour of their text. Website favicons show at 16px in a `radius-xs` square; a missing favicon is the site's first letter. The logo is the card-with-bookmark mark (Logos group) followed by "Shelfmark" in Onest 600.
 
 ## AI
@@ -65,6 +68,6 @@ A quiet helper inside saving (it files new links), search (meaning and "Ask your
 
 ## Components
 
-Actions: Button, IconButton. Forms: Input, Search, SegmentedControl, Chip, Switch. Navigation: NavItem, TabBar. Content: LinkCard, LinkRow, Tag, FolderTile, ReaderView, AiMark. Overlays: Menu, Popover, SlideOver, Dialog. Feedback: Toast, EmptyState.
+Actions: Button, IconButton. Forms: Input, Search, SegmentedControl, Chip, Switch. Navigation: NavItem, TabBar. Content: LinkCard, LinkRow, Tag, FolderTile, ReaderView, AiMark. Overlays: Menu, Popover, SlideOver, Dialog. Feedback: Toast, EmptyState, StateScene (animated scenes for empty, error, offline and blocked states).
 
 Components are styled by `components/bundle.css` (class prefix `sm-`) on top of the tokens; each folder's README says how the component behaves and which `libs/ui` component implements it.

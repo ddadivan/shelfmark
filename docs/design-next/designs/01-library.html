@@ -291,6 +291,48 @@ svg{display:block;flex:none}
   .toast{bottom:calc(104px + env(safe-area-inset-bottom,0px))}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* State scenes: flat scenes made of the product's own shapes; play once (600-900 ms), then hold the last frame */
+.sm-scene{display:block;width:240px;height:150px}
+.sm-scene--sm{width:160px;height:100px}
+.sm-scene *{transform-box:fill-box;transform-origin:center}
+.sc-surface{fill:var(--l1);stroke:var(--line-strong);stroke-width:1}
+.sc-tint{fill:var(--pressed)}
+.sc-hover{fill:var(--hover)}
+.sc-text{fill:var(--muted);opacity:.35}
+.sc-ink{fill:var(--accent)}
+.sc-mark{fill:#8DBB86}
+.sc-stroke{fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sc-stroke-ink{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.sc-dash{fill:none;stroke:var(--control);stroke-width:1.5;stroke-dasharray:4 4}
+.sc-danger{fill:var(--danger)}.sc-success{fill:var(--success)}.sc-star{fill:var(--star)}
+.sc-on{fill:var(--on-accent)}.sc-on-stroke{fill:none;stroke:var(--on-accent);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.sc-pop{animation:sc-pop 360ms cubic-bezier(.34,1.56,.64,1) both}
+.sc-drop{animation:sc-drop 420ms cubic-bezier(.2,.8,.2,1) both}
+.sc-rise{animation:sc-rise 420ms cubic-bezier(.2,.8,.2,1) both}
+.sc-slide{animation:sc-slide 480ms cubic-bezier(.2,.8,.2,1) both}
+.sc-sweep{animation:sc-sweep 900ms cubic-bezier(.65,0,.35,1) both}
+.sc-shake{animation:sc-shake 480ms cubic-bezier(.36,.07,.19,.97) both}
+.sc-fade{animation:sc-fade 360ms ease-out both}
+.sc-dim{animation:sc-dim 600ms ease-out both}
+.sc-apart-l{animation:sc-apart-l 480ms cubic-bezier(.2,.8,.2,1) both}
+.sc-apart-r{animation:sc-apart-r 480ms cubic-bezier(.2,.8,.2,1) both}
+.sc-lid{transform-origin:0% 100%;animation:sc-lid 520ms cubic-bezier(.2,.8,.2,1) both}
+.sc-fall{animation:sc-fall 520ms cubic-bezier(.4,0,1,1) both}
+.d1{animation-delay:120ms}.d2{animation-delay:240ms}.d3{animation-delay:360ms}.d4{animation-delay:480ms}.d5{animation-delay:600ms}
+@keyframes sc-pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes sc-drop{from{opacity:0;transform:translateY(-28px)}to{opacity:1;transform:none}}
+@keyframes sc-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes sc-slide{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes sc-sweep{0%{transform:translateX(-56px)}60%{transform:translateX(16px)}100%{transform:none}}
+@keyframes sc-shake{0%,100%{transform:none}20%{transform:rotate(-5deg)}40%{transform:rotate(4deg)}60%{transform:rotate(-3deg)}80%{transform:rotate(2deg)}}
+@keyframes sc-fade{from{opacity:0}to{opacity:1}}
+@keyframes sc-dim{from{opacity:1}to{opacity:.3}}
+@keyframes sc-apart-l{from{transform:none}to{transform:translateX(-6px)}}
+@keyframes sc-apart-r{from{transform:none}to{transform:translateX(6px)}}
+@keyframes sc-lid{from{transform:rotate(-24deg)}to{transform:none}}
+@keyframes sc-fall{0%{opacity:1;transform:translateY(-22px)}100%{opacity:0;transform:translateY(18px)}}
+@media (prefers-reduced-motion:reduce){.sm-scene *{animation:none!important}}
+
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -388,6 +430,7 @@ svg{display:block;flex:none}
 
 <script>
 (function(){
+  const SC={blocked:`<svg class="sm-scene" viewBox="0 0 240 150" role="img" aria-label="This site can’t be shown here"><rect class="sc-surface" x="34" y="16" width="148" height="112" rx="8"/><rect class="sc-tint" x="34.5" y="16.5" width="147" height="16" rx="7.5"/><circle class="sc-text" cx="46" cy="24.5" r="3"/><circle class="sc-text" cx="56" cy="24.5" r="3"/><circle class="sc-text" cx="66" cy="24.5" r="3"/><rect class="sc-dash" x="46" y="42" width="124" height="74" rx="4"/><g class="sc-pop d1"><circle class="sc-surface" cx="108" cy="79" r="20"/><circle class="sc-stroke" cx="108" cy="79" r="11"/><path class="sc-stroke" d="m100 71 16 16"/></g><g class="sc-slide d4"><rect class="sc-surface" x="150" y="58" width="60" height="78" rx="6"/><rect class="sc-ink" x="158" y="68" width="34" height="6" rx="3"/><rect class="sc-text" x="158" y="82" width="44" height="4" rx="2"/><rect class="sc-text" x="158" y="91" width="40" height="4" rx="2"/><rect class="sc-text" x="158" y="100" width="44" height="4" rx="2"/><rect class="sc-text" x="158" y="109" width="30" height="4" rx="2"/></g></svg>`,empty:`<svg class="sm-scene" viewBox="0 0 240 150" role="img" aria-label="Your links will live here"><rect class="sc-tint" x="28" y="122" width="184" height="5" rx="2.5"/><g class="sc-drop d1"><rect class="sc-surface" x="44" y="74" width="56" height="44" rx="6"/><rect class="sc-tint" x="48" y="78" width="48" height="19" rx="3"/><rect class="sc-text" x="48" y="102" width="36" height="4" rx="2"/></g><g class="sc-drop d2"><rect class="sc-surface" x="106" y="64" width="56" height="54" rx="6"/><rect class="sc-hover" x="110" y="68" width="48" height="24" rx="3"/><rect class="sc-text" x="110" y="97" width="36" height="4" rx="2"/></g><g class="sc-drop d3"><rect class="sc-ink" x="168" y="58" width="36" height="60" rx="6"/><path class="sc-mark" d="M188 58h10v18l-5-4-5 4z"/></g></svg>`,none:`<svg class="sm-scene" viewBox="0 0 240 150" role="img" aria-label="Nothing found"><g class="sc-dim d2"><g class=""><rect class="sc-surface" x="40" y="52" width="56" height="44" rx="6"/><rect class="sc-tint" x="44" y="56" width="48" height="19" rx="3"/><rect class="sc-text" x="44" y="80" width="36" height="4" rx="2"/></g><g class=""><rect class="sc-surface" x="92" y="52" width="56" height="44" rx="6"/><rect class="sc-tint" x="96" y="56" width="48" height="19" rx="3"/><rect class="sc-text" x="96" y="80" width="36" height="4" rx="2"/></g><g class=""><rect class="sc-surface" x="144" y="52" width="56" height="44" rx="6"/><rect class="sc-tint" x="148" y="56" width="48" height="19" rx="3"/><rect class="sc-text" x="148" y="80" width="36" height="4" rx="2"/></g></g><g class="sc-sweep"><circle class="sc-surface" cx="122" cy="72" r="20"/><circle class="sc-stroke-ink" cx="122" cy="72" r="12"/><path class="sc-stroke-ink" d="m131 81 14 14"/></g></svg>`};
   const ARTICLES={
     pd:{author:'Mara Lind',date:'12 Mar 2026',min:6,blocks:[
       ['p','Most screens try to show everything a person might need. The result is a wall of options where the common task hides among the rare ones. Progressive disclosure is the habit of showing the few things most people use first, and keeping the rest one deliberate step away.'],
@@ -486,14 +529,14 @@ svg{display:block;flex:none}
     let feed;
     if(S.empty){
       return `<div class="head"><h1>All links</h1><span class="count">No links yet</span></div>
-      <section class="empty l1" aria-labelledby="eh"><h2 id="eh">Your links will live here</h2><p>Save anything you want to come back to: a video, an article, something to buy. You'll find it here, and Shelfmark will remind you of what you saved.</p>
+      <section class="empty l1" aria-labelledby="eh">${SC.empty}<h2 id="eh">Your links will live here</h2><p>Save anything you want to come back to: a video, an article, something to buy. You'll find it here, and Shelfmark will remind you of what you saved.</p>
       <div class="starts">
         <button class="start" type="button"><span class="tile" style="width:32px;height:32px;background:var(--hover)">${ic('i-paste',16)}</span><b>Paste a link</b><span>Press Ctrl V anywhere, or Add link.</span></button>
         <button class="start" type="button"><span class="tile" style="width:32px;height:32px;background:var(--hover)">${ic('i-browser',16)}</span><b>Get the extension</b><span>Save the page you're on in one click.</span></button>
         <button class="start" type="button"><span class="tile" style="width:32px;height:32px;background:var(--hover)">${ic('i-upload',16)}</span><b>Import bookmarks</b><span>Bring in what your browser already has.</span></button>
       </div></section>`;
     }
-    if(!items.length)feed=`<div class="panel l1" style="padding:32px 16px;text-align:center"><p class="muted">Nothing matches “${esc(S.q)}”. Try another word, or ask your shelf.</p></div>`;
+    if(!items.length)feed=`<div class="panel l1" style="padding:32px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">${SC.none}<b style="font-size:var(--t-s)">Nothing found</b><p class="muted" style="margin:0">Nothing matches “${esc(S.q)}”. Try another word, or ask your shelf.</p></div>`;
     else if(S.view==='masonry'||S.view==='grid'){const g=S.view==='grid';feed=`<div class="${g?'grid':'masonry'}">${items.map(l=>card(l,g)).join('')}</div>`}
     else if(S.view==='list')feed=`<div class="panel l1">${items.map(l=>row(l)).join('')}</div>`;
     else feed=`<div class="panel l1">${items.map(hl).join('')}</div>`;
@@ -508,7 +551,7 @@ svg{display:block;flex:none}
   }
 
   function siteView(l){
-    if(l.blocked)return `<div class="blocked"><span class="tile" style="width:48px;height:48px;background:var(--hover)">${ic('i-browser',24)}</span><b>${esc(l.domain)} doesn't allow showing it here</b><p class="muted" style="margin:0;max-width:44ch;font-size:var(--t-sec)">Read it here in Reader, or open it in your browser.</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn secondary" type="button" data-mode="reader">${ic('i-text',16)}Open in Reader</button><a class="btn" href="#" data-ext>${ic('i-ext',16)}Open in browser</a></div></div>`;
+    if(l.blocked)return `<div class="blocked">${SC.blocked}<b style="font-size:var(--t-s)">${esc(l.domain)} doesn't allow showing it here</b><p class="muted" style="margin:0;max-width:44ch;font-size:var(--t-sec)">Read it here in Reader, or open it in your browser.</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn secondary" type="button" data-mode="reader">${ic('i-text',16)}Open in Reader</button><a class="btn" href="#" data-ext>${ic('i-ext',16)}Open in browser</a></div></div>`;
     if(l.kind==='video')return `<div class="site" style="background:#0f0f0f;color:#fff"><div class="site-bar" style="color:#fff">▶ ${esc(l.domain)}</div><div class="site-body"><div class="site-media" style="aspect-ratio:16/9">${art(l)}</div><h2 style="font-size:22px">${esc(l.title)}</h2><p style="opacity:.8">${esc(l.summary||'Video from your shelf.')}</p></div></div>`;
     const bg=l.kind==='type'?l.bg:'#ffffff',fg=l.kind==='type'?l.fg:'#1d1d1f';
     return `<div class="site" style="background:#fff;color:#1d1d1f"><div class="site-bar" style="background:${bg};color:${fg}">${esc(l.site||l.domain)}</div><div class="site-body"><h2>${esc(l.title)}</h2><p style="color:#555">${esc(l.summary||'The page as the site shows it, with its own fonts and colours.')}</p>${l.kind==='type'||l.kind==='none'?'':`<div class="site-media">${art(l)}</div>`}<p>This is how ${esc(l.domain)} shows the page inside Shelfmark. Reader turns article pages into clean text when the site has one.</p></div></div>`;
