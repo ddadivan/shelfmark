@@ -28,7 +28,7 @@ function moreTags(page: Page) {
  */
 async function expected(page: Page) {
   await expect(moreTags(page)).toBeVisible();
-  const footer = card(page).locator('.link-card__foot');
+  const footer = card(page).locator('app-link-card-tags');
   const firstShown = await footer.getByRole('button', { name: TAGS[0], exact: true }).isVisible();
   const listed = firstShown ? TAGS.slice(1) : TAGS;
   return {

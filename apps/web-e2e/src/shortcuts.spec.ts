@@ -13,13 +13,14 @@ test.describe('keyboard shortcuts (mock API)', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'All links' })).toBeVisible();
   });
 
-  test('the top bar button opens the list and Esc closes it, focus returns to the button', async ({
+  test('the account menu item opens the list and Esc closes it, focus returns to the account button', async ({
     page,
   }) => {
-    test.skip(isCompact(page), 'the top bar belongs to tablet and desktop');
-    const button = page.getByRole('banner').getByRole('button', { name: DIALOG });
+    test.skip(isCompact(page), 'the sidebar account menu belongs to desktop');
+    const button = page.locator('.shell__side-head').getByRole('button', { name: 'Account menu' });
 
     await button.click();
+    await page.getByRole('menuitem', { name: DIALOG }).click();
 
     const dialog = page.getByRole('dialog', { name: DIALOG });
     await expect(dialog).toBeVisible();

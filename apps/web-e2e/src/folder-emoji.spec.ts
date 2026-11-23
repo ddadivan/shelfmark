@@ -211,7 +211,7 @@ test.describe('folder emoji picker (mock API)', () => {
           return Math.round((sheet?.y ?? 0) + (sheet?.height ?? 0));
         })
         .toBe(viewportHeight);
-      await expect(picker).toHaveCSS('border-top-left-radius', '28px');
+      await expect(picker).toHaveCSS('border-top-left-radius', '16px');
       // The close button stays next to the grip.
       await expect(picker.getByRole('button', { name: 'Close' })).toBeVisible();
       const box = await grip.boundingBox();

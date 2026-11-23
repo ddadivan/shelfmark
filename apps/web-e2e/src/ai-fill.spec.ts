@@ -104,7 +104,8 @@ test.describe('Fill in with AI (F1c, #499, mock API)', () => {
     await expect(dialog.getByRole('button', { name: 'Remove tag docs' })).toBeVisible();
     await dialog.getByRole('button', { name: 'Cancel' }).click();
 
-    await page.getByRole('button', { name: 'Keyboard shortcuts' }).click();
+    await page.getByRole('button', { name: 'Account menu' }).click();
+    await page.getByRole('menuitem', { name: 'Keyboard shortcuts' }).click();
     await expect(
       page
         .getByRole('dialog', { name: 'Keyboard shortcuts' })

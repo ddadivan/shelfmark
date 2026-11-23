@@ -99,7 +99,7 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await pick(page, 'Theme', 'Light');
     await expect(html).toHaveAttribute('data-theme', 'light');
     await expect(html).not.toHaveAttribute('data-custom-accent', /.*/);
-    expect(await token(page, '--accent')).toBe('#4f7a4b');
+    expect(await token(page, '--accent')).toBe('#1c1c1f');
   });
 
   test('Cancel and Esc drop a previewed colour; own color swatches can be removed with Delete or the ×, with Undo (#350)', async ({

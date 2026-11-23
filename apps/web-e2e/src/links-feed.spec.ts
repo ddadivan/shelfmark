@@ -25,20 +25,23 @@ test.describe('links feed (mock API)', () => {
     return page.locator('ui-card').first().getByRole('heading').innerText();
   }
 
-  // The grid's minimum card width: 14.25rem up to 1920px, 16.25rem above (#350), so the cards fold
-  // without squeezing. The feed is centred and capped at 150rem; side padding and the sidebar eat
+  // The Cards grid's minimum card width is the Grid size step (default 4: 14.5rem, Shelf View menu),
+  // so the cards fold without squeezing. The feed is centred and capped at 150rem; side padding and the sidebar eat
   // into the content width, so the columns are the ones the window leaves.
   test('at 1280, 1920 and 2560px the grid folds cards no narrower than its minimum width', async ({
     page,
   }) => {
     for (const viewport of [
-      { width: 1280, height: 800, min: 14.25 },
-      { width: 1920, height: 1080, min: 14.25 },
-      { width: 2560, height: 1440, min: 16.25 },
+      { width: 1280, height: 800, min: 14.5 },
+      { width: 1920, height: 1080, min: 14.5 },
+      { width: 2560, height: 1440, min: 14.5 },
     ]) {
       test.skip(isCompact(page), 'the desktop grid');
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await openFeed(page);
+      // Masonry is the default view; equal row heights belong to the Cards grid.
+      await switchView(page, 'Cards');
+      await expect(page.locator('.library__grid--masonry')).toHaveCount(0);
       const { columns, card, row } = await page.evaluate<{
         columns: number;
         card: number;
@@ -63,46 +66,37 @@ test.describe('links feed (mock API)', () => {
     }
   });
 
-  test('hovering a card slides up the open bar with the address', async ({ page }, testInfo) => {
-    test.skip(testInfo.project.use.hasTouch === true, 'touch has no hover');
-    await openFeed(page);
-    const card = page.locator('ui-card').first();
-    const bar = card.locator('.ui-card__overlay');
-
-    await expect(bar).toContainText('Open');
-    await expect(bar).toContainText('↗');
-    await card.hover();
-
-    await expect(bar).toHaveCSS('opacity', '1');
-    await expect(bar).toHaveAttribute('aria-hidden', 'true');
-  });
-
-  test('the open arrow moves only while the pointer is over the bar, and ⌘ / Ctrl-click opens', async ({
+  test('hovering a card reveals the ⋯ button, and the star is always there', async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.use.hasTouch === true, 'touch has no hover');
+    await openFeed(page);
+    const card = page.locator('ui-card').first();
+    const more = card.locator('.ui-card__more');
+
+    // Shelf card: no "Open" bar over the preview; the star is a glass button, always visible.
+    await expect(card.locator('.ui-card__overlay')).toHaveText('');
+    await expect(card.getByRole('button', { name: /^Favorite: / })).toBeVisible();
+    await expect(more).toHaveCSS('opacity', '0');
+    await card.hover();
+
+    await expect(more).toHaveCSS('opacity', '1');
+    await expect(card.getByRole('button', { name: /^Actions for / })).toBeVisible();
+  });
+
+  test('⌘ / Ctrl-click on the card opens the link in a new tab', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.use.hasTouch === true, 'touch has no modifier keys');
     await page.context().route('https://**/*', (route) => route.abort());
     await openFeed(page);
     const card = page.locator('ui-card').first();
-    const arrow = card.locator('.link-card__open-arrow');
-
-    await card.hover({ position: { x: 20, y: 20 } });
-    await expect(card.locator('.ui-card__overlay')).toHaveCSS('opacity', '1');
-    await expect(arrow).toHaveCSS('transform', 'none');
-
-    await card.locator('.link-card__open').hover();
-    await expect(arrow).not.toHaveCSS('transform', 'none');
-
-    await card.hover({ position: { x: 20, y: 20 } });
-    await expect(arrow).toHaveCSS('transform', 'none');
 
     // A plain click opens the link preview (#555); ⌘ / Ctrl-click opens the link.
     const popup = page.context().waitForEvent('page');
-    await card.locator('.link-card__open').click({ modifiers: ['ControlOrMeta'] });
+    await card.getByRole('link').click({ modifiers: ['ControlOrMeta'] });
     await (await popup).close();
   });
 
-  test('keyboard focus on a card shows the open bar', async ({ page }) => {
+  test('keyboard focus on a card reveals the ⋯ button', async ({ page }) => {
     await openFeed(page);
     const card = page.locator('ui-card').first();
 
@@ -110,7 +104,7 @@ test.describe('links feed (mock API)', () => {
     await page.keyboard.press('Shift+Tab');
     await page.keyboard.press('Tab');
 
-    await expect(card.locator('.ui-card__overlay')).toHaveCSS('opacity', '1');
+    await expect(card.locator('.ui-card__more')).toHaveCSS('opacity', '1');
   });
 
   test(

@@ -74,7 +74,7 @@ test.describe('mobile polish (mock API)', () => {
 
       const box = await bar.boundingBox();
       const view = page.viewportSize();
-      expect((view?.height ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeCloseTo(20, 0);
+      expect((view?.height ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeCloseTo(8, 0);
       await expect(page.getByRole('button', { name: 'Add link' })).toBeInViewport();
     });
 

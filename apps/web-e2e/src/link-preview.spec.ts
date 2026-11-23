@@ -47,9 +47,8 @@ test.describe('link preview (mock API)', () => {
     page,
   }) => {
     await openLibrary(page);
-    const card = page.locator('app-link-card', { hasText: FIRST }).first();
-    await card.hover();
-    await card.getByRole('button', { name: `Preview ${FIRST}` }).click();
+    // Shelf card: no eye button; "Preview here" is the first item of the ⋯ menu (videos also get a play button).
+    await previewFromMenu(page, FIRST);
 
     const panel = page.getByRole('region', { name: `Preview: ${FIRST}` });
     await expect(panel).toBeVisible();
@@ -67,6 +66,9 @@ test.describe('link preview (mock API)', () => {
     await expect(frame).toHaveAttribute('referrerpolicy', 'no-referrer');
     await expect(frame).toHaveAttribute('src', /^https:\/\//);
 
+    // After the menu closes the focus is back on the card's ⋯ button, where ↓ opens the menu
+    // again: nothing focused is where ↑ ↓ follow the list.
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
     await page.locator('body').press('ArrowDown');
     await expect(page.getByRole('region', { name: `Preview: ${SECOND}` })).toBeVisible();
     await expect(page.locator('[aria-current="true"]', { hasText: SECOND })).toBeVisible();

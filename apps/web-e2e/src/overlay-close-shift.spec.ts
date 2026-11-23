@@ -59,11 +59,11 @@ test.describe('overlays do not move content when an outside click closes them (m
     await expect(page.locator('ui-card').first()).toBeVisible();
   });
 
-  test('account menu: the header stays put', async ({ page, isMobile }) => {
-    test.skip(isMobile, 'a phone has no header: the You tab holds the account');
-    const header = page.getByRole('banner');
-    const trigger = header.getByRole('button', { name: 'Account menu' });
-    const watched = [trigger, trigger.locator('ui-avatar'), header.getByRole('button').first()];
+  test('account menu: the sidebar head stays put', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'a phone has no sidebar: the You tab holds the account');
+    const head = page.locator('.shell__side-head');
+    const trigger = head.getByRole('button', { name: 'Account menu' });
+    const watched = [trigger, trigger.locator('ui-avatar'), head.locator('.shell__logo')];
     await expect(trigger).toBeVisible();
     const before = await boxes(watched);
     await observeShifts(page);

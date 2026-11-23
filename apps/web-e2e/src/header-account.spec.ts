@@ -1,9 +1,9 @@
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 
-test.describe('header account trigger (mock API)', () => {
+test.describe('sidebar head account trigger (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
-  test.skip(({ isMobile }) => isMobile, 'a phone has no header: the You tab holds the account');
+  test.skip(({ isMobile }) => isMobile, 'a phone has no sidebar: the You tab holds the account');
 
   for (const scheme of ['light', 'dark'] as const) {
     test(`the avatar sits fully inside the trigger and stays centred (${scheme})`, async ({
@@ -12,18 +12,19 @@ test.describe('header account trigger (mock API)', () => {
       await page.emulateMedia({ colorScheme: scheme });
       await seedSession(page);
       await page.goto('/links');
-      const header = page.getByRole('banner');
-      const trigger = header.getByRole('button', { name: 'Account menu' });
+      // Shelf: the avatar sits in the sidebar head next to the logo, not in the header.
+      const head = page.locator('.shell__side-head');
+      const trigger = head.getByRole('button', { name: 'Account menu' });
       await expect(trigger).toBeVisible();
       const avatar = trigger.locator('ui-avatar');
 
       const triggerBox = await trigger.boundingBox();
       const avatarBox = await avatar.boundingBox();
-      const searchBox = await header.locator('app-header-search').boundingBox();
+      const logoBox = await head.locator('.shell__logo').boundingBox();
       expect(triggerBox).not.toBeNull();
       expect(avatarBox).not.toBeNull();
-      expect(searchBox).not.toBeNull();
-      if (!triggerBox || !avatarBox || !searchBox) {
+      expect(logoBox).not.toBeNull();
+      if (!triggerBox || !avatarBox || !logoBox) {
         return;
       }
 
@@ -36,9 +37,9 @@ test.describe('header account trigger (mock API)', () => {
       expect(avatarBox.x + avatarBox.width).toBeLessThanOrEqual(
         triggerBox.x + triggerBox.width + 0.5,
       );
-      // Centred with the other header controls.
+      // Centred with the logo in the same row.
       const centre = (box: { y: number; height: number }): number => box.y + box.height / 2;
-      expect(Math.abs(centre(triggerBox) - centre(searchBox))).toBeLessThanOrEqual(1);
+      expect(Math.abs(centre(triggerBox) - centre(logoBox))).toBeLessThanOrEqual(1);
       expect(Math.abs(centre(avatarBox) - centre(triggerBox))).toBeLessThanOrEqual(1);
     });
   }

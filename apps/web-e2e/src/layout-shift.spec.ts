@@ -48,7 +48,7 @@ test.describe('library view switch (mock API)', () => {
     await recordShifts(page);
   });
 
-  test('moves nothing when switching between all links, unsorted, favorites and a folder', async ({
+  test('moves nothing when switching between all links, unsorted and favorites', async ({
     page,
   }) => {
     await page.goto('/links');
@@ -60,7 +60,7 @@ test.describe('library view switch (mock API)', () => {
     const views: Array<[row: string, title: string]> = [
       ['Unsorted', 'Unsorted'],
       ['Favorites', 'Favorites'],
-      [READING, READING],
+      // A folder page is left out: its breadcrumb trail pushes the title down on purpose (Shelf).
       ['All links', 'All links'],
       ['Unsorted', 'Unsorted'],
     ];
@@ -82,7 +82,7 @@ test.describe('library view switch (mock API)', () => {
     expect(moved).toEqual([]);
   });
 
-  test('keeps a gap under the top bar and the title in place with or without breadcrumbs', async ({
+  test('keeps a gap under the top bar, and a folder title sits under its breadcrumb trail', async ({
     page,
   }) => {
     test.skip(
@@ -105,6 +105,9 @@ test.describe('library view switch (mock API)', () => {
     const titleFolder = await top('.library__title');
 
     expect(crumbs.top - pill.bottom).toBeGreaterThanOrEqual(16);
-    expect(titleFolder.top).toBeCloseTo(titleAll.top, 0);
+    // Shelf: a page without a trail has its title 24px under the header; a folder keeps room for
+    // the trail, so its title sits right under the trail and never overlaps it.
+    expect(titleAll.top - pill.bottom).toBeGreaterThanOrEqual(16);
+    expect(titleFolder.top).toBeGreaterThanOrEqual(crumbs.bottom);
   });
 });

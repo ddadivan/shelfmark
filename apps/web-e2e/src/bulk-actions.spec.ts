@@ -69,15 +69,13 @@ test.describe('select links and bulk actions (mock API)', () => {
     }) => {
       await openFeed(page);
       const first = cards(page).first();
-      // Not selecting: the link is a real link and the "Open" bar is there.
+      // Not selecting: the link is a real link (the Shelf card has no "Open" bar).
       await expect(first.locator('a.ui-card__link')).toHaveAttribute('href', /^https?:/);
-      await expect(first.locator('.ui-card__overlay')).toHaveCount(1);
-      await expect(first.locator('.link-card__open')).toHaveCount(1);
 
       await pick(page, 0);
       await expect(page.locator('.library__live')).toHaveText(/Selection mode on/);
-      // Selection mode: no "Open" bar, a click on the card toggles the card.
-      await expect(first.locator('.link-card__open')).toHaveCount(0);
+      // Selection mode: a click on the card toggles the card.
+      await expect(first.locator('a.ui-card__link')).toHaveCount(1);
       await cards(page).nth(1).locator('.ui-card__link').click();
       await expect(selectedText(page)).toHaveText('2 selected');
       await cards(page)
@@ -89,7 +87,7 @@ test.describe('select links and bulk actions (mock API)', () => {
       await page.keyboard.press('Escape');
       await expect(header(page)).toHaveCount(0);
       await expect(page.locator('.library__live')).toHaveText('Selection mode off.');
-      await expect(first.locator('.link-card__open')).toHaveCount(1);
+      await expect(first.locator('a.ui-card__link')).toHaveAttribute('href', /^https?:/);
     });
 
     test('the bulk bar sits at the bottom of the window in a short feed too (#350)', async ({
@@ -106,9 +104,9 @@ test.describe('select links and bulk actions (mock API)', () => {
       await settled(page);
 
       const box = await bar(page).boundingBox();
-      // The same inset under the bar as with a long feed (--space-4 = 16px, plus the scroll
-      // area's own 4px padding), whatever the number of cards.
-      expect(1100 - ((box?.y ?? 0) + (box?.height ?? 0))).toBeGreaterThanOrEqual(12);
+      // Shelf shell: the scroll area reaches the window edge, so the bar stands at the bottom of the
+      // window (the same line as with a long feed), whatever the number of cards.
+      expect(1100 - ((box?.y ?? 0) + (box?.height ?? 0))).toBeGreaterThanOrEqual(0);
       expect(1100 - ((box?.y ?? 0) + (box?.height ?? 0))).toBeLessThanOrEqual(60);
       const lastCard = await cards(page).last().boundingBox();
       // Not floating under the cards: the bar is far below the last card.
@@ -248,7 +246,7 @@ test.describe('select links and bulk actions (mock API)', () => {
       { width: 1024, height: 768 },
       { width: 1280, height: 600 },
     ]) {
-      test(`the bar's bottom is on the sidebar card's bottom line at ${size.width}x${size.height} (#352)`, async ({
+      test(`the bar's bottom is on the sidebar's bottom line at ${size.width}x${size.height} (#352)`, async ({
         page,
       }) => {
         await page.setViewportSize(size);
