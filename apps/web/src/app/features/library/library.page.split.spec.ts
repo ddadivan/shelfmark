@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import type { FolderResponse, LinkResponse, ListLinksResponse } from '@shelfmark/contracts';
 import { MOCK_LIBRARY_COUNTS, MOCK_LINKS } from '@shelfmark/contracts/testing';
 import { DialogService } from '@shelfmark/ui';
-import { UiButtonHarness, UiPickerMenuHarness } from '@shelfmark/ui/testing';
+import { UiButtonHarness, UiMenuItemHarness, UiPickerMenuHarness } from '@shelfmark/ui/testing';
 import axe from 'axe-core';
 import { of } from 'rxjs';
 import { ViewportService } from '../../core/layout/viewport.service';
@@ -112,37 +112,43 @@ async function setup({
 const loader = (fixture: ComponentFixture<LibraryPage>) =>
   TestbedHarnessEnvironment.loader(fixture);
 
+const moreButton = (fixture: ComponentFixture<LibraryPage>) =>
+  loader(fixture).getHarness(UiButtonHarness.with({ name: 'More view options' }));
+
+/** Opens the toolbar's "More view options" menu and returns its "Side by side" items. */
+async function sideBySideItems(fixture: ComponentFixture<LibraryPage>) {
+  await (await moreButton(fixture)).click();
+  return TestbedHarnessEnvironment.documentRootLoader(fixture).getAllHarnesses(
+    UiMenuItemHarness.with({ text: 'Side by side' }),
+  );
+}
+
 describe('LibraryPage side by side', () => {
   beforeEach(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
   afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
 
-  it('has one feed and a "Side by side" button without ?split, from 80em', async () => {
+  it('has one feed and a "Side by side" menu item without ?split, from 80em', async () => {
     const { element, fixture } = await setup();
 
     expect(element.querySelector('app-split-right-half')).toBeNull();
     expect(element.querySelector('ui-picker-menu')).toBeNull();
-    const button = await loader(fixture).getHarness(
-      UiButtonHarness.with({ label: /Side by side/ }),
-    );
-    expect(button).toBeTruthy();
+    const items = await sideBySideItems(fixture);
+    expect(items).toHaveLength(1);
+    expect(await items[0].getRole()).toBe('menuitemcheckbox');
   });
 
-  it('has no "Side by side" button and ignores ?split below 80em', async () => {
+  it('has no "Side by side" menu item and ignores ?split below 80em', async () => {
     const { element, fixture } = await setup({ wide: false, split: B });
 
     expect(element.querySelector('app-split-right-half')).toBeNull();
-    expect(
-      await loader(fixture).getAllHarnesses(UiButtonHarness.with({ label: /Side by side/ })),
-    ).toHaveLength(0);
+    expect(await sideBySideItems(fixture)).toHaveLength(0);
   });
 
   it('opens the right half with the picker', async () => {
     const { fixture, navigate } = await setup();
-    const button = await loader(fixture).getHarness(
-      UiButtonHarness.with({ label: /Side by side/ }),
-    );
+    const [item] = await sideBySideItems(fixture);
 
-    await button.click();
+    await item.click();
 
     expect(navigate).toHaveBeenCalledWith([], {
       queryParams: { split: '', related: null },
@@ -327,13 +333,11 @@ describe('LibraryPage side by side', () => {
     });
   });
 
-  it('shows the "Side by side" button as a pressed toggle while open and closes with it', async () => {
+  it('shows the "Side by side" item as a checked toggle while open and closes with it', async () => {
     const { fixture, navigate } = await setup({ split: B });
-    const toggle = await loader(fixture).getHarness(
-      UiButtonHarness.with({ label: /^Side by side$/ }),
-    );
+    const [toggle] = await sideBySideItems(fixture);
 
-    expect(await toggle.getPressed()).toBe('true');
+    expect(await toggle.getChecked()).toBe(true);
     await toggle.click();
     expect(navigate).toHaveBeenCalledWith([], {
       queryParams: { split: null, related: null },
@@ -341,13 +345,11 @@ describe('LibraryPage side by side', () => {
     });
   });
 
-  it('is not pressed while the split is closed', async () => {
+  it('is not checked while the split is closed', async () => {
     const { fixture } = await setup();
-    const toggle = await loader(fixture).getHarness(
-      UiButtonHarness.with({ label: /^Side by side$/ }),
-    );
+    const [toggle] = await sideBySideItems(fixture);
 
-    expect(await toggle.getPressed()).toBe('false');
+    expect(await toggle.getChecked()).toBe(false);
   });
 
   it('marks both halves as the area the toasts centre on, only while split', async () => {
@@ -374,7 +376,7 @@ describe('LibraryPage side by side', () => {
     expect(navigate).toHaveBeenCalledWith([], closed);
   });
 
-  it('puts the focus on the "Side by side" button after the split closes', async () => {
+  it('puts the focus on the "More view options" button after the split closes', async () => {
     const { fixture, element } = await setup({ split: B });
     document.body.append(element);
     const close = await loader(fixture).getHarness(
@@ -385,7 +387,7 @@ describe('LibraryPage side by side', () => {
     fixture.componentRef.setInput('split', undefined);
     await fixture.whenStable();
 
-    const opener = element.querySelector('button[aria-label="Side by side"]');
+    const opener = element.querySelector('button[aria-label="More view options"]');
     expect(opener).not.toBeNull();
     expect(document.activeElement).toBe(opener);
     element.remove();

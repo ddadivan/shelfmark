@@ -74,4 +74,58 @@ describe('FeedMemoryService', () => {
     expect(memory.view('all')).toBe(LIBRARY_VIEW.List);
     spy.mockRestore();
   });
+
+  describe('grid size and card fields', () => {
+    it('remembers the grid step and the fields per feed over a reload', () => {
+      const memory = create();
+      memory.remember('all', { grid: 2, fields: { note: false, date: true } });
+      memory.remember('all', { view: LIBRARY_VIEW.Masonry });
+
+      const restored = create();
+      expect(restored.grid('all')).toBe(2);
+      expect(restored.fields('all')).toEqual({ note: false, date: true });
+      expect(restored.view('all')).toBe(LIBRARY_VIEW.Masonry);
+      expect(restored.grid('folder:f1')).toBeUndefined();
+      expect(restored.fields('folder:f1')).toBeUndefined();
+    });
+
+    it.each([0, 7, 2.5, '3', null, -1])('drops the invalid grid step %s', (grid) => {
+      localStorage.setItem(FEED_MEMORY_STORAGE_KEY, JSON.stringify({ a: { grid } }));
+      expect(create().grid('a')).toBeUndefined();
+    });
+
+    it.each([1, 6])('keeps the grid step %s at the edge of the range', (grid) => {
+      localStorage.setItem(FEED_MEMORY_STORAGE_KEY, JSON.stringify({ a: { grid } }));
+      expect(create().grid('a')).toBe(grid);
+    });
+
+    it('keeps only known field names with boolean values', () => {
+      localStorage.setItem(
+        FEED_MEMORY_STORAGE_KEY,
+        JSON.stringify({
+          a: { fields: { note: false, tags: 'no', folder: 1, bogus: true, date: true } },
+        }),
+      );
+      expect(create().fields('a')).toEqual({ note: false, date: true });
+    });
+
+    it.each([[[true]], ['note'], [{ bogus: true }], [{}], [null]])(
+      'drops the fields value %j when none of it is usable',
+      (fields) => {
+        localStorage.setItem(FEED_MEMORY_STORAGE_KEY, JSON.stringify({ a: { fields } }));
+        expect(create().fields('a')).toBeUndefined();
+      },
+    );
+
+    it('drops a whole entry when nothing in it is valid', () => {
+      localStorage.setItem(
+        FEED_MEMORY_STORAGE_KEY,
+        JSON.stringify({ a: { grid: 99, fields: { bogus: true }, view: 'grid' }, b: null }),
+      );
+      const memory = create();
+      expect(memory.grid('a')).toBeUndefined();
+      expect(memory.fields('a')).toBeUndefined();
+      expect(memory.view('b')).toBeUndefined();
+    });
+  });
 });

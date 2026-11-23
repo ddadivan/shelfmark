@@ -137,23 +137,22 @@ describe('LibraryPage folder header (#418, #440)', () => {
   });
 });
 
-describe('LibraryPage folder chips (#418)', () => {
+describe('LibraryPage card folders (#418)', () => {
   it('names the folder of each link in a mixed feed, none for an unsorted link', async () => {
     const { element } = await setup(LINKS_SCOPE.All);
 
-    const chips = [...element.querySelectorAll('app-link-card ui-folder-chip')];
-    expect(chips).toHaveLength(1);
-    expect(
-      chips[0]?.querySelector('.ui-folder-chip__label')?.textContent?.replace(/\s+/g, ' ').trim(),
-    ).toBe('In folder Recipes');
-    expect(chips[0]?.getAttribute('style')).toContain('--ui-folder-tint');
+    const folders = [...element.querySelectorAll('app-link-card .link-card__folder')];
+    expect(folders).toHaveLength(1);
+    expect(folders[0]?.textContent?.replace(/\s+/g, ' ').trim()).toBe('RecipesIn folder');
+    expect(folders[0]?.getAttribute('slot')).toBe('meta');
+    expect(element.querySelector('app-link-card ui-folder-chip')).toBeNull();
   });
 
-  it('shows no chip inside a folder or Unsorted', async () => {
+  it('shows no folder in the meta line inside a folder or Unsorted', async () => {
     const inFolder = await setup(LINKS_SCOPE.Folder, 'f1');
-    expect(inFolder.element.querySelector('ui-folder-chip')).toBeNull();
+    expect(inFolder.element.querySelector('.link-card__folder')).toBeNull();
     TestBed.resetTestingModule();
     const unsorted = await setup(LINKS_SCOPE.Unsorted);
-    expect(unsorted.element.querySelector('ui-folder-chip')).toBeNull();
+    expect(unsorted.element.querySelector('.link-card__folder')).toBeNull();
   });
 });

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { AI_JOB_STATUS, SUMMARY_SOURCE, type LinkResponse } from '@shelfmark/contracts';
+import { AI_JOB_STATUS, LINK_KIND, SUMMARY_SOURCE, type LinkResponse } from '@shelfmark/contracts';
 import { MOCK_LINKS } from '@shelfmark/contracts/testing';
 import axe from 'axe-core';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
@@ -134,21 +134,20 @@ describe('LinkCardComponent', () => {
     expect(element.querySelector('a[href]')?.getAttribute('target')).toBe('_blank');
   });
 
-  it('has a decorative open bar with the address and "Open", and no extra tab stop', async () => {
+  it('has no decorative open bar over the preview, and one tab stop for the link', async () => {
     const { element } = await setup();
 
-    const bar = element.querySelector('.ui-card__overlay');
-    expect(bar?.getAttribute('aria-hidden')).toBe('true');
-    expect(bar?.textContent).toContain('angular.dev/overview');
-    expect(bar?.textContent).toContain('Open');
-    expect(bar?.querySelector('.link-card__open-arrow')?.textContent).toBe('↗');
-    expect(bar?.querySelector('a, button')).toBeNull();
+    // The card keeps an empty overlay element; nothing is projected into it.
+    expect(element.querySelector('.ui-card__overlay')?.textContent?.trim()).toBe('');
+    expect(element.querySelector('[slot="overlay"]')).toBeNull();
+    expect(element.querySelector('.link-card__open')).toBeNull();
     expect(element.querySelectorAll('a[href]')).toHaveLength(1);
   });
 
-  it('has no open bar for a link that cannot be opened', async () => {
+  it('shows the host in the source line for a link that cannot be opened, with no anchor', async () => {
     const { element } = await setup({ ...LINK, url: 'javascript:alert(1)' });
 
+    expect(element.querySelector('a[href]')).toBeNull();
     expect(element.querySelector('.link-card__open')).toBeNull();
   });
 
@@ -201,32 +200,45 @@ describe('LinkCardComponent', () => {
     expect(names).toEqual(['docs', '3 more tags: a, b, c']);
   });
 
-  it('puts the folder chip right after the tags and the star last', async () => {
+  it('puts the folder in the meta line with a hidden "In folder" hint, not as a chip', async () => {
     const { element, fixture } = await setup();
     fixture.componentRef.setInput('folder', { name: 'Work', icon: 'folder', colour: 'graphite' });
     await fixture.whenStable();
-    const foot = element.querySelector('.link-card__foot') as HTMLElement;
-    expect([...foot.children].map((child) => child.tagName.toLowerCase())).toEqual([
-      'app-link-card-tags',
-      'ui-folder-chip',
-      'ui-button',
-    ]);
+    const folder = element.querySelector('.link-card__folder') as HTMLElement;
+    expect(folder.getAttribute('slot')).toBe('meta');
+    expect(folder.querySelector('.link-card__folder-name')?.textContent).toBe('Work');
+    expect(folder.querySelector('.link-card__sr')?.textContent).toContain('In folder');
+    expect(element.querySelector('ui-folder-chip')).toBeNull();
+    expect(element.querySelector('.link-card__foot')).toBeNull();
   });
 
-  it('keeps no tags with the card tags setting off, and keeps the folder chip', async () => {
+  it('hides the folder with showFolder off and the date with showDate off', async () => {
     const { element, fixture } = await setup();
     fixture.componentRef.setInput('folder', { name: 'Work', icon: 'folder', colour: 'graphite' });
     await fixture.whenStable();
-    // jsdom does not apply :host-context, so the rule itself is checked: it hides the tags
-    // element only, never the folder chip next to it.
-    const scss = readRepoFile(
-      'apps/web/src/app/features/links/components/link-card/link-card.component.scss',
-    );
-    expect(scss).toMatch(
-      /:host-context\(\[data-card-tags='off'\]\) \.link-card__tags \{\s*display: none;/,
-    );
-    expect(element.querySelector('app-link-card-tags')?.classList).toContain('link-card__tags');
-    expect(element.querySelector('ui-folder-chip')?.closest('.link-card__tags')).toBeNull();
+    expect(element.querySelector('[slot="date"]')?.textContent?.trim()).not.toBe('');
+    fixture.componentRef.setInput('showFolder', false);
+    fixture.componentRef.setInput('showDate', false);
+    await fixture.whenStable();
+    expect(element.querySelector('.link-card__folder')).toBeNull();
+    expect(element.querySelector('[slot="date"]')).toBeNull();
+  });
+
+  it('drops the note with showNote off and the tags with showTags off', async () => {
+    const { element, fixture } = await setup();
+    expect(element.querySelector('[slot="note"]')?.textContent).toContain('Start here.');
+    expect(element.querySelector('app-link-card-tags')).not.toBeNull();
+    fixture.componentRef.setInput('showNote', false);
+    fixture.componentRef.setInput('showTags', false);
+    await fixture.whenStable();
+    expect(element.querySelector('[slot="note"]')).toBeNull();
+    expect(element.querySelector('app-link-card-tags')).toBeNull();
+  });
+
+  it('puts the star and the menu in the glass slots', async () => {
+    const { element } = await setup();
+    expect(element.querySelector('ui-button[slot="favorite"] button[aria-pressed]')).not.toBeNull();
+    expect(element.querySelector('ui-button[slot="actions"] button[aria-haspopup]')).not.toBeNull();
   });
 
   it('makes the tag chips plain while selecting or read-only', async () => {
@@ -524,9 +536,10 @@ describe('LinkCardComponent reminder (#275)', () => {
 
     const eye = (element: HTMLElement) =>
       element.querySelector<HTMLButtonElement>('button[aria-label="Preview Angular overview"]');
+    const VIDEO: LinkResponse = { ...LINK, kind: LINK_KIND.Video };
 
     it('has no eye button or "Preview here" item unless the page offers the preview', async () => {
-      const { fixture, element } = await previewSetup();
+      const { fixture, element } = await previewSetup(false, VIDEO);
       fixture.componentRef.setInput('previewable', false);
       await fixture.whenStable();
       expect(eye(element)).toBeNull();
@@ -537,8 +550,14 @@ describe('LinkCardComponent reminder (#275)', () => {
       expect(document.body.textContent).not.toContain('Preview here');
     });
 
-    it('emits previewRequested from the eye button', async () => {
-      const { element, requested, opened } = await previewSetup();
+    it('has no eye button for a page that is not a video', async () => {
+      const { element } = await previewSetup();
+      expect(eye(element)).toBeNull();
+    });
+
+    it('emits previewRequested from the glass play button of a video', async () => {
+      const { element, requested, opened } = await previewSetup(false, VIDEO);
+      expect(eye(element)?.closest('ui-button')?.getAttribute('slot')).toBe('play');
       eye(element)?.click();
       expect(requested).toHaveBeenCalledTimes(1);
       expect(opened).not.toHaveBeenCalled();
@@ -557,7 +576,7 @@ describe('LinkCardComponent reminder (#275)', () => {
     });
 
     it('offers no preview for a link that cannot be opened', async () => {
-      const { element } = await previewSetup(false, { ...LINK, url: 'javascript:alert(1)' });
+      const { element } = await previewSetup(false, { ...VIDEO, url: 'javascript:alert(1)' });
       expect(eye(element)).toBeNull();
     });
 

@@ -4,6 +4,9 @@ import { Router } from '@angular/router';
 import { LIBRARY_SORT } from '@shelfmark/contracts';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import type { LinksScope } from '../../links/models/links-scope.type';
+import { CARD_FIELD } from '../models/card-field.const';
+import { GRID_COLUMNS } from '../models/grid-columns.const';
+import { GRID_STEP_DEFAULT } from '../models/grid-step-default.const';
 import { FEED_MEMORY_STORAGE_KEY } from '../models/feed-memory-storage-key.const';
 import { LibraryFilterService } from './library-filter.service';
 import { provideLibraryPage } from './provide-library-page';
@@ -122,6 +125,65 @@ describe('LibraryFilterService', () => {
     expect(router.navigate).toHaveBeenLastCalledWith([], {
       queryParams: { tag: null, kind: null },
       queryParamsHandling: 'merge',
+    });
+  });
+
+  describe('grid size and card fields (Shelf View menu)', () => {
+    it('starts at the default step with every field shown', () => {
+      const { service } = setup();
+      expect(service.gridStep()).toBe(GRID_STEP_DEFAULT);
+      expect(service.gridColumn()).toBe(GRID_COLUMNS[GRID_STEP_DEFAULT - 1]);
+      expect(service.cardFields()).toEqual({});
+      for (const field of Object.values(CARD_FIELD)) {
+        expect(service.fieldShown(field)).toBe(true);
+      }
+    });
+
+    it('sets the step and maps it to the column width', () => {
+      const { service } = setup();
+      service.setGridStep(1);
+      expect(service.gridStep()).toBe(1);
+      expect(service.gridColumn()).toBe(GRID_COLUMNS[0]);
+      service.setGridStep(6);
+      expect(service.gridColumn()).toBe(GRID_COLUMNS[5]);
+    });
+
+    it.each([
+      [0, 1],
+      [-5, 1],
+      [99, 6],
+      [2.6, 3],
+    ])('clamps and rounds the step %s to %s', (step, expected) => {
+      const { service } = setup();
+      service.setGridStep(step);
+      expect(service.gridStep()).toBe(expected);
+    });
+
+    it('turns one field off and on again without touching the others', () => {
+      const { service } = setup();
+      service.setCardField(CARD_FIELD.Note, false);
+      expect(service.fieldShown(CARD_FIELD.Note)).toBe(false);
+      expect(service.fieldShown(CARD_FIELD.Tags)).toBe(true);
+      service.setCardField(CARD_FIELD.Date, false);
+      expect(service.cardFields()).toEqual({ note: false, date: false });
+      service.setCardField(CARD_FIELD.Note, true);
+      expect(service.fieldShown(CARD_FIELD.Note)).toBe(true);
+      expect(service.fieldShown(CARD_FIELD.Date)).toBe(false);
+    });
+
+    it('keeps the grid and fields of each feed apart', () => {
+      const { service, scope, folderId } = setup();
+      service.setGridStep(2);
+      service.setCardField(CARD_FIELD.Tags, false);
+
+      scope.set(LINKS_SCOPE.Folder);
+      folderId.set('f1');
+      expect(service.gridStep()).toBe(GRID_STEP_DEFAULT);
+      expect(service.fieldShown(CARD_FIELD.Tags)).toBe(true);
+
+      scope.set(LINKS_SCOPE.All);
+      expect(service.gridStep()).toBe(2);
+      expect(service.fieldShown(CARD_FIELD.Tags)).toBe(false);
     });
   });
 });
