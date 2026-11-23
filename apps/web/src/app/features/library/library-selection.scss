@@ -79,8 +79,7 @@
 // The bulk bar floats at the bottom of the feed (glass); in the mobile shell above the tab bar.
 // In a short feed the auto margin pushes it to the bottom of the scroll area, so it sits there
 // whatever the length (#350); the padding keeps a gap to the last cards in a long one. Desktop:
-// the scroll area reaches the window edge and its 12px end padding is the sticky edge, which
-// puts the bar's bottom on the sidebar card's bottom line (#352).
+// the scroll area reaches the window edge, which is also the sidebar's bottom line (#352).
 .library__bulk {
   position: sticky;
   inset-block-end: 0;
@@ -93,13 +92,13 @@
   // The mobile shell's scroll area (app-shell `.shell__main`) already keeps
   // `$shell-tab-bar-room` (plus the safe area) of end padding for the tab bar, and a sticky inset
   // counts from inside that padding: the bar's own offset is what is left to stand 12px above the
-  // tab bar (20px gap + 68px bar + 12px, minus that padding; the safe areas cancel out). A short
+  // tab bar (8px gap + 64px bar + 12px, minus that padding; the safe areas cancel out). A short
   // feed leaves the bar where it is laid out, at the end of the content: the same negative margin
   // puts it on the same line there.
   @include compact {
-    inset-block-end: #{rem(20px + 68px + 12px) - $shell-tab-bar-room};
+    inset-block-end: #{rem(8px + 64px + 12px) - $shell-tab-bar-room};
     align-self: stretch;
-    margin-block-end: #{rem(20px + 68px + 12px) - $shell-tab-bar-room};
+    margin-block-end: #{rem(8px + 64px + 12px) - $shell-tab-bar-room};
   }
 
   // A tablet keeps the stacked bar as wide as the centred tab bar under it (560px, #316).

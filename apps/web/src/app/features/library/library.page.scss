@@ -174,7 +174,7 @@
   // `--library-column` (130 to 300px); as many columns as fit. A phone has two columns, a tablet
   // three (below 64em, Shelf layout).
   display: grid;
-  gap: var(--space-4);
+  gap: var(--density-feed-gap);
   grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--library-column, 14.5rem)), 1fr));
 
   @include tablet {
@@ -208,7 +208,7 @@
 .library__grid--masonry {
   display: block;
   columns: var(--library-column, 14.5rem) auto;
-  column-gap: var(--space-4);
+  column-gap: var(--density-feed-gap);
 
   @include tablet {
     columns: 3;
@@ -221,7 +221,7 @@
 
   > li {
     display: block;
-    margin-block-end: var(--space-4);
+    margin-block-end: var(--density-feed-gap);
     break-inside: avoid;
 
     @include phone {

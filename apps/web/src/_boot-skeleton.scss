@@ -26,7 +26,7 @@
 }
 
 // Under the banner (when there is one) the body takes the rest of the screen, as `.shell__body`:
-// the page in a column on the mobile shell, the sidebar card and the content side by side on desktop.
+// the page in a column on the mobile shell, the sidebar and the content side by side on desktop.
 .boot__body {
   display: flex;
   flex: 1;
@@ -35,8 +35,6 @@
 
   @include desktop {
     flex-direction: row;
-    gap: var(--space-3);
-    padding: var(--space-3);
   }
 }
 
@@ -110,18 +108,18 @@
   }
 }
 
-// Sidebar: the inset card, desktop only.
+// Sidebar (Shelf): 240px, full height, the sidebar fill with a hairline edge, desktop only.
 .boot__sidebar {
   display: none;
   flex: none;
   flex-direction: column;
   gap: var(--space-2);
   align-self: stretch;
-  width: rem(272px);
-  padding: var(--space-4) var(--space-3);
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  box-sizing: border-box;
+  width: rem(240px);
+  padding: var(--space-4) var(--space-3) 0;
+  background: var(--sidebar);
+  border-inline-end: 1px solid var(--sep);
 
   @include desktop {
     display: flex;
@@ -169,36 +167,28 @@
   gap: var(--space-3);
   align-items: center;
   box-sizing: border-box;
-  block-size: rem(52px);
-  padding: var(--space-1) var(--space-6) 0;
+  block-size: rem(64px);
+  padding: var(--space-4) var(--space-8) 0;
 
   @include desktop {
     display: flex;
   }
 }
 
-// The header search: a 44px button from 64em, the 42px field from 80em (as the real header).
+// The header search (Shelf): a 48px button from 64em, the field up to 640px from 80em. The header
+// has only the search and Ask (the account and Add link are in the sidebar head).
 .boot__search {
-  width: rem(44px);
-  height: rem(44px);
+  width: rem(48px);
+  height: rem(48px);
   border-radius: var(--radius-full);
 
   @include wide {
-    width: min(100%, rem(524px));
-    height: rem(42px);
+    width: min(100%, rem(640px));
   }
 }
 
 .boot__spacer {
   flex: 1 1 0;
-}
-
-.boot__tool,
-.boot__avatar {
-  flex: none;
-  width: rem(40px);
-  height: rem(40px);
-  border-radius: var(--radius-full);
 }
 
 .boot__add {
@@ -215,8 +205,9 @@
   min-height: 0;
 
   // The title sits where the real one does: the main column's top padding plus the library's
-  // room for the breadcrumb trail (library.page.scss).
-  padding: calc(var(--space-6) + var(--space-3) + var(--space-2)) var(--space-4) var(--space-6);
+  // room above the title (library.page.scss).
+  padding: calc(var(--space-6) + var(--space-3) + var(--space-2) + var(--space-2)) var(--space-4)
+    var(--space-6);
   overflow: hidden;
 
   @include tablet {
@@ -224,7 +215,7 @@
   }
 
   @include desktop {
-    padding: calc(var(--space-4) + var(--space-8) + var(--space-8)) var(--space-6) 0;
+    padding: calc(var(--space-6) + var(--space-2)) var(--space-8) 0;
   }
 
   // Blocks keep their size; the column clips what does not fit.
@@ -235,43 +226,47 @@
 
 .boot__title {
   width: rem(160px);
-  height: rem(38px);
+  height: rem(28px);
 
+  // The real title is centred in the 40px row of the toolbar's buttons: 5px of room above it.
   @include desktop {
-    height: rem(44px);
+    height: rem(30px);
+    margin-block-start: rem(5px);
   }
 }
 
-// The count line, then the room of the toolbar and the filters above the feed (72px).
+// The count line (read by screen readers only on desktop, so it only keeps the 5px under the
+// title row there), then the room of the toolbar and the filters above the feed (60px).
 .boot__count {
   width: rem(96px);
   height: rem(16px);
-  margin-block: var(--space-1) rem(72px);
+  margin-block: var(--space-1) rem(60px);
 
   @include desktop {
-    margin-block-start: rem(6px);
+    height: rem(5px);
+    margin-block-start: 0;
   }
 
   // Touch: the controls above the feed have 44px targets, 4px more room than with a mouse.
   @include coarse {
-    margin-block-end: rem(76px);
+    margin-block-end: rem(64px);
   }
 }
 
 // The extension banner of the library (#455, #490): the real one has one fixed height (188px,
 // extension-banner.component.scss) and sits 16px under the count line, where the saved views would
-// start; they and the 16px gaps around them (the count's 72px, 76px on touch) follow under it.
+// start; they and the 16px gaps around them (the count's 60px, 64px on touch) follow under it.
 // Drawn when `public/boot-skeleton.js` expects the banner (`html[data-boot-extension]`) and on the
 // demo start page when the app offers it (`.boot__extension--shown`).
 .boot__extension {
   display: none;
   block-size: rem(188px);
-  margin-block: calc(var(--space-4) - #{rem(72px)}) rem(72px);
+  margin-block: calc(var(--space-4) - #{rem(60px)}) rem(60px);
   background: var(--accent-bg);
   border-radius: var(--radius-lg);
 
   @include coarse {
-    margin-block: calc(var(--space-4) - #{rem(76px)}) rem(76px);
+    margin-block: calc(var(--space-4) - #{rem(64px)}) rem(64px);
   }
 }
 
@@ -366,18 +361,18 @@
   width: 45%;
 }
 
-// The floating tab bar of the mobile shell (ui-tab-bar: 16px from the sides, 20px above the
-// bottom edge and the home indicator, 68px high, at most 560px wide).
+// The floating tab bar of the mobile shell (ui-tab-bar: 8px from the sides, 8px above the
+// bottom edge and the home indicator, 64px high, at most 560px wide).
 .boot__tabbar {
   position: fixed;
-  inset-inline: max(var(--space-4), calc((100vw - #{rem(560px)}) / 2));
-  inset-block-end: calc(#{rem(20px)} + env(safe-area-inset-bottom, 0rem));
+  inset-inline: max(var(--space-2), calc((100vw - #{rem(560px)}) / 2));
+  inset-block-end: calc(var(--space-2) + env(safe-area-inset-bottom, 0rem));
   display: none;
   gap: var(--space-2);
   align-items: center;
   justify-content: space-around;
   box-sizing: border-box;
-  block-size: rem(68px);
+  block-size: rem(64px);
   padding-inline: var(--space-2);
   background: var(--surface);
   border-radius: rem(26px);
