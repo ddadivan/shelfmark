@@ -68,6 +68,7 @@ export * from './lib/components/theme-picker';
 export * from './lib/components/theme-preview';
 export * from './lib/components/toast';
 export * from './lib/components/tree';
+export * from './lib/components/view-menu';
 
 export * from './lib/directives/focus-target';
 export * from './lib/directives/drag-wobble';
