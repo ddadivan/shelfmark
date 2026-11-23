@@ -139,13 +139,15 @@ folder_menu = f'''<div class="row2"><div class="sm-menu sm-l2" role="menu" aria-
 <button class="sm-mi" role="menuitem">{ic("plus")}New subfolder</button><button class="sm-mi" role="menuitem">{ic("plus")}Add link here</button>
 <div class="sm-msep"></div><button class="sm-mi" role="menuitem">{ic("edit")}Rename<span class="sm-kbd">F2</span></button><button class="sm-mi" role="menuitem">{ic("palette")}Colour and icon…</button><button class="sm-mi" role="menuitem">{ic("move")}Move to…</button>
 <button class="sm-mi" role="menuitem">{ic("pin")}Pin to sidebar</button><button class="sm-mi" role="menuitem">{ic("share")}Share…</button><div class="sm-msep"></div><button class="sm-mi sm-mi--danger" role="menuitem">{ic("trash")}Delete folder</button></div>
-<div style="display:flex;flex-direction:column;gap:12px"><span class="lbl-s">Rename in place (Enter saves, Esc cancels; nothing around it moves)</span>
-<div class="sm-l1" style="border-radius:var(--radius-lg);padding:8px;display:flex;flex-direction:column;gap:2px;width:280px">
-<button class="sm-nav sm-nav--plain" style="width:100%">{tile("rose")}<span>Clothes</span><span class="n">7</span></button>
-<div class="inplace-row">{tile("amber")}<input value="Recipes and baking" aria-label="Folder name"></div>
-<button class="sm-nav sm-nav--plain" style="width:100%">{tile("ocean")}<span>Work</span><span class="n">7</span></button>
-<div class="inplace-row" style="color:var(--text-muted)">{ic("plus")}<input value="" placeholder="New folder name" aria-label="New folder name"></div></div>
-<span class="lbl-s">“New folder” turns into a field in the tree; no dialog.</span></div></div>'''
+<div style="display:flex;flex-direction:column;gap:12px;flex:1;min-width:280px"><span class="lbl-s">Rename opens a small dialog, so a click on a folder always opens it.</span>
+<div class="overlay sm-l1" style="min-height:300px;margin-top:0"><div class="scrim2"></div><form class="sm-dialog sm-l3" role="dialog" aria-labelledby="rn" style="width:400px;max-width:calc(100% - 32px)"><h2 id="rn">Rename folder</h2>
+<div class="sm-field" style="min-width:0;margin-top:8px"><label for="rnf">Name</label><div class="sm-input">{tile("amber")}<input id="rnf" value="Recipes and baking"></div></div>
+<div class="foot"><button class="sm-btn sm-btn--secondary" type="button">Cancel</button><button class="sm-btn sm-btn--primary" type="button">Rename</button></div></form></div>
+<div class="overlay sm-l1" style="min-height:360px;margin-top:0"><div class="scrim2"></div><form class="sm-dialog sm-l3" role="dialog" aria-labelledby="nf" style="width:400px;max-width:calc(100% - 32px)"><h2 id="nf">New folder</h2>
+<div class="sm-field" style="min-width:0;margin-top:8px"><label for="nff">Name</label><div class="sm-input"><input id="nff" value="" placeholder="For example, Travel"></div></div>
+<div class="sm-field" style="min-width:0"><label>Inside</label><button class="sm-input" type="button" style="cursor:pointer;justify-content:flex-start">{ic("folder")}Top level<span style="margin-left:auto">{ic("chev")}</span></button></div>
+<div class="foot"><button class="sm-btn sm-btn--secondary" type="button">Cancel</button><button class="sm-btn sm-btn--primary" type="button">Create folder</button></div></form></div>
+<span class="lbl-s">Enter confirms, Esc closes, focus returns to the folder. The same dialog renames tags and saved views.</span></div></div>'''
 colour_pop = f'''<div class="row2"><div class="sm-pop sm-l2" role="dialog" aria-label="Colour and icon for Recipes" style="width:344px">
 <div class="sm-pgroup"><span class="lbl">Colour</span><div class="cgrid" role="radiogroup" aria-label="Colour">{''.join(f'<button class="cdot" role="radio" aria-checked="{str(c == "amber").lower()}" aria-label="{c.capitalize()}" style="background:var(--folder-{c}-bg);color:var(--folder-{c})">{ic("folder", 16)}</button>' for c in ['graphite', 'sage', 'ocean', 'plum', 'clay', 'amber', 'rose', 'teal'])}</div></div>
 <div class="sm-pgroup"><span class="lbl">Icon</span><div class="igrid" role="radiogroup" aria-label="Icon">{''.join(f'<button role="radio" aria-checked="{str(i == 0).lower()}" aria-label="Icon {i+1}">{ic(n, 20)}</button>' for i, n in enumerate(['folder', 'bookmark', 'star', 'bell', 'hash', 'search', 'text', 'browser', 'user', 'copy', 'share', 'palette', 'pin', 'inbox']))}</div></div>
@@ -176,7 +178,7 @@ trash = f'''<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wra
 <div class="overlay sm-l1" style="min-height:300px"><div class="scrim2"></div><div class="sm-dialog sm-l3" role="alertdialog" aria-labelledby="dd"><h2 id="dd">Delete “Old projects” forever?</h2><p>The folder and its 6 links will be gone for good. This can't be undone.</p><div class="foot"><button class="sm-btn sm-btn--secondary">Cancel</button><button class="sm-btn sm-btn--danger">Delete forever</button></div></div></div>'''
 trash_empty = f'<h1>Trash</h1><p class="lead">Deleted links and folders wait here for 30 days.</p><div class="stack"><div class="sm-l1" style="border-radius:var(--radius-lg);padding:48px 24px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">{SC["empty-trash"]}<b style="font:600 1.27rem/1.25 var(--font-sans)">Trash is empty</b><p class="lead" style="margin:0">Deleted links stay here for 30 days, so you can bring them back.</p><button class="sm-btn sm-btn--sm" type="button" data-replay>Replay</button></div></div>'
 page('organise.html', 'Organise', O_CSS, [
- ('folder', 'Folder page', folder_page), ('menu', 'Folder menu and rename in place', folder_menu), ('colour', 'Colour and icon', colour_pop),
+ ('folder', 'Folder page', folder_page), ('menu', 'Folder menu, rename and new folder', folder_menu), ('colour', 'Colour and icon', colour_pop),
  ('tags', 'Tags', tags_page), ('tidy', 'Tidy up', tidy), ('rules', 'Rules and the rule editor', rules), ('trash', 'Trash and delete forever', trash), ('trash-empty', 'Trash: empty', trash_empty)], cur='recipes')
 
 # ================= SETTINGS =================

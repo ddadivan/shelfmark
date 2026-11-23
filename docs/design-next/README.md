@@ -36,7 +36,7 @@ Feature moves, merges or removals are proposed with reasons and decided by the a
 - Step 5, group 2 for review: `designs/02-save-revisit.html` (save panel in all its states, several links, saved landing; Revisit queue and its empty state), built from the design system's tokens and `bundle.css`; second page of the same artifact (Prototype › Save and Revisit).
 - Step 5, groups 3 to 7 for review, pages of the same artifact (Prototype › group, then screen state):
   - `designs/03-search.html`: Search and Ask (results by words, meaning, folders and tags; recent searches; Ask answer with sources and while answering; nothing found; full results page).
-  - `designs/04-organise.html`: folder page, folder menu and rename in place, colour and icon, tags, Tidy up, rules and the rule editor, trash with named delete-forever confirmation, empty trash.
+  - `designs/04-organise.html`: folder page, folder menu, rename and new folder dialogs, colour and icon, tags, Tidy up, rules and the rule editor, trash with named delete-forever confirmation, empty trash.
   - `designs/05-settings.html`: Appearance (Graphite / Ink / Sage, custom theme), Library, AI, Account with deletion grace period, Your data, Language and region, phone "You" page.
   - `designs/06-public.html`: sign-in (Google, GitHub, demo) and its error, shared folder, not found, offline.
   - `designs/07-extension.html`: save this page, all tabs, saved with edit, already saved, signed out and unsupported page, right-click save.

@@ -117,10 +117,10 @@ Desktop (from 64em)                 Tablet (40–64em)              Phone (< 40e
 | --- | --- | --- |
 | Add link | Large modal | Compact panel: one address field and Save; details below it, optional |
 | Edit link | Modal | Details side of the Link page (fields edit in place) |
-| Rename folder, tag, view | Dialog / inline / dialog | In place, everywhere |
+| Rename folder, tag, view | Dialog / inline / dialog | One small dialog, everywhere (author decision: a click on a folder must always open it, never start editing) |
 | Folder colour and icon | Dialog with 8 options | Small popover: colour and icon only |
 | Move to folder, Remind me | Dialog | Popover picker anchored to the control |
-| New folder | Dialog | In place in the tree ("New folder" row turns into a field) |
+| New folder | Dialog | Small dialog: name and Inside (top level or a folder) |
 | Rules | Dialog in Settings | Slide-over from Settings › Library and from the link's menu |
 | Import | Multi-step dialog | Page `/import` |
 | Delete (link, folder, tag, view, rule) | Four mechanisms | One: it disappears at once, Undo toast for 8 s, then Trash for links and folders; tags and views come back through Undo only |
@@ -167,7 +167,7 @@ Decided (D13, confirmed again after the first design): keep today's behaviour. A
 
 ### 5.5 Organise
 
-- Everything that names a thing renames in place (folder, tag, view).
+- Everything that names a thing renames through the same small dialog (folder, tag, view), opened from its menu or F2; a click always opens the thing.
 - Folder look: colour and icon only (cover, highlight, description, own colours and emoji go, D4).
 - Drag links onto folders stays; a new "Move" popover replaces the move dialog; bulk actions keep one bar.
 - After the person files three links from one site into one folder, a toast offers a rule ("Always put youtube.com in Videos?") for everyone, not only with AI on; AI only improves the guess.
@@ -217,7 +217,7 @@ Legend: **Keep** as is · **Change** behaviour or surface · **Merge** into anot
 | LIB-05 view | Change | Masonry, Grid, List, Headlines |
 | LIB-06, LIB-07 sort, per-feed memory | Keep | |
 | LIB-08 active filter row | Merge | Into the one Filter control |
-| LIB-09..LIB-11 saved views | Change | Rename in place; reorder by drag; created from search and filters |
+| LIB-09..LIB-11 saved views | Change | Rename in the shared dialog; reorder by drag; created from search and filters |
 | LIB-14..LIB-21 selection and bulk | Change | One delete model; toasts as P4 |
 | LIB-22, LIB-23 side by side | Keep (D5) | Two feeds side by side for filing; Show related stays |
 | LIB-24..LIB-26 preview | Merge | Into the Link page (preview + details); the blocked state falls back to Reader |
@@ -241,8 +241,8 @@ Legend: **Keep** as is · **Change** behaviour or surface · **Merge** into anot
 
 | Features | Decision | Notes |
 | --- | --- | --- |
-| ORG-01..ORG-03 tree, new folder, subfolder | Change | New folder in place in the tree; the Inside select only in Move |
-| ORG-04 rename | Change | In place |
+| ORG-01..ORG-03 tree, new folder, subfolder | Change | New folder in a small dialog with name and Inside |
+| ORG-04 rename | Change | Shared rename dialog |
 | ORG-05, ORG-06 move, reorder | Keep | Drag and Alt+arrows; Move popover |
 | ORG-07 folder menu | Change | Also on the folder page header and tiles |
 | ORG-08, ORG-09 colour, icon | Change | Popover; 8 colours, icon set; own colours and emoji cut (D4) |
@@ -251,7 +251,7 @@ Legend: **Keep** as is · **Change** behaviour or surface · **Merge** into anot
 | ORG-15, ORG-16 header, subfolders | Keep | |
 | ORG-17 add link here | Keep | |
 | TAG-01..TAG-03 tags list, create, show | Keep | Top 8 and Show all |
-| TAG-04 rename in place | Keep | |
+| TAG-04 rename in place | Change | Shared rename dialog |
 | TAG-05 merge | Move | Into Tidy up (similar tags) and the tag menu |
 | TAG-06 delete | Change | Undo toast |
 | TAG-09, TAG-10 phone tags | Merge | Into the phone Library page |
