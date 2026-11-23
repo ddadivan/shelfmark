@@ -305,6 +305,19 @@ h1{margin:32px 0 0;font:600 1.6rem/1.2 var(--font-sans)}
   .proto{bottom:auto;top:calc(8px + env(safe-area-inset-top,0px))}
 }
 @media (min-width:40em){.scrim{display:none}}
+
+#popscrim{position:fixed;inset:0;z-index:119;background:var(--scrim, rgba(0,0,0,.4))}
+@media (max-width:39.99em){
+ #pop.sheet{z-index:120;left:0!important;right:0;top:auto!important;bottom:0;width:auto;min-width:0;max-width:none;max-height:85vh;overflow:auto;padding:8px 16px calc(16px + env(safe-area-inset-bottom,0px));border-radius:20px 20px 0 0;animation:sheet-in 200ms ease-out}
+ #pop.sheet::before{content:"";display:block;width:36px;height:4px;border-radius:2px;background:var(--line-strong);margin:0 auto 8px}
+ #pop.sheet .sheet-t{margin:0;padding:4px 8px 8px;font-size:1.13rem;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ #pop.sheet .mi,#pop.sheet .sm-mi{text-decoration:none;min-height:48px;font-size:.9375rem}
+ #pop.sheet .mh,#pop.sheet .sm-mh{font-size:1.13rem;font-weight:600;color:inherit;padding:4px 8px 8px;text-transform:none;letter-spacing:0}
+ #pop.sheet .kbd,#pop.sheet .sm-kbd{display:none}
+ #pop.sheet .sm-menu{width:auto;padding:0;border:0;box-shadow:none;background:transparent}
+}
+@keyframes sheet-in{from{transform:translateY(100%)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){#pop.sheet{animation:none}}
 </style>
 
 </head><body>
@@ -423,16 +436,24 @@ h1{margin:32px 0 0;font:600 1.6rem/1.2 var(--font-sans)}
     document.getElementById('screen').value=S.save?('s-'+(S.save==='ready'&&S.details?'details':S.save)):S.page;
   }
   const pop=document.getElementById('pop');let popFor=null;
+
+  const phoneQ=matchMedia('(max-width:39.99em)');
+  function sheetize(title){const on=phoneQ.matches;pop.classList.toggle('sheet',on);let sc=document.getElementById('popscrim');
+    if(on){if(!sc){sc=document.createElement('div');sc.id='popscrim';sc.addEventListener('click',()=>closePop(true));pop.before(sc)}sc.hidden=false;
+      if(title&&!pop.querySelector('.mh,.sm-mh')){const h=document.createElement('h2');h.className='sheet-t';h.textContent=title;pop.prepend(h)}
+      if(pop.classList.contains('sm-sheetbg')===false&&!pop.classList.contains('l2'))pop.style.background='var(--surface)';
+      pop.style.left='';pop.style.top='';return true}
+    if(sc)sc.hidden=true;pop.style.background='';return false}
   function openPop(kind,t){
     let h='';
     if(kind==='move')h=`<div class="sm-menu sm-l2" role="menu"><div class="sm-mh">Save to</div>${[['Recipes','amber'],['Clothes','rose'],['Work','ocean'],['Unsorted','graphite']].map(([n,c])=>`<button class="sm-mi" role="menuitem" type="button" data-close-pop><span class="sm-tile" style="background:var(--folder-${c}-bg);color:var(--folder-${c})">${ic('folder',14)}</span>${n}</button>`).join('')}<div class="sm-msep"></div><button class="sm-mi" role="menuitem" type="button" data-close-pop>${ic('plus')}New folder</button></div>`;
     else if(kind==='remind')h=`<div class="sm-menu sm-l2" role="menu"><div class="sm-mh">Remind me</div>${[['Later today','18:00'],['Tomorrow','9:00'],['This weekend','Sat 9:00'],['Next week','Mon 9:00']].map(([a,b])=>`<button class="sm-mi" role="menuitem" type="button" data-remind="${a}">${a}<span style="margin-left:auto;font-size:.75rem;font-weight:400;color:var(--text-muted)">${b}</span></button>`).join('')}<div class="sm-msep"></div><button class="sm-mi" role="menuitem" type="button" data-close-pop>Pick a date…</button></div>`;
     else if(kind==='history')h=`<div class="sm-menu sm-l2" role="menu"><button class="sm-mi" role="menuitem" type="button" data-close-pop>Pause history</button><button class="sm-mi sm-mi--danger" role="menuitem" type="button" data-close-pop>${ic('trash')}Clear history</button></div>`;
-    pop.innerHTML=h;pop.hidden=false;popFor=t;const r=t.getBoundingClientRect();const w=pop.offsetWidth,hh=pop.offsetHeight;
+    pop.innerHTML=h;pop.hidden=false;popFor=t;if(sheetize({history:'History'}[kind])){const f=pop.querySelector('button');if(f)f.focus({preventScroll:true});return}const r=t.getBoundingClientRect();const w=pop.offsetWidth,hh=pop.offsetHeight;
     let x=Math.min(Math.max(16,r.right-w),innerWidth-w-16),y=r.bottom+8;if(y+hh>innerHeight-16)y=Math.max(16,r.top-hh-8);
     pop.style.left=x+'px';pop.style.top=y+'px';const f=pop.querySelector('button');if(f)f.focus();
   }
-  function closePop(back){if(!pop.hidden){pop.hidden=true;if(back&&popFor)popFor.focus()}}
+  function closePop(back){const sc=document.getElementById('popscrim');if(sc)sc.hidden=true;if(!pop.hidden){pop.hidden=true;if(back&&popFor)popFor.focus()}}
   let tt;function toast(html){const t=document.getElementById('toast');t.innerHTML=`<div class="sm-toast sm-l2" role="status">${html}</div>`;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,5000)}
   function openSave(st){S.save=st||'empty';S.details=false;closePop();render();const u=document.getElementById('url');if(u){u.focus();u.select()}}
 

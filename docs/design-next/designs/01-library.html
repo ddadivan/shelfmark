@@ -333,6 +333,20 @@ svg{display:block;flex:none}
 @keyframes sc-fall{0%{opacity:1;transform:translateY(-22px)}100%{opacity:0;transform:translateY(18px)}}
 @media (prefers-reduced-motion:reduce){.sm-scene *{animation:none!important}}
 
+
+a.mi{text-decoration:none}
+#popscrim{position:fixed;inset:0;z-index:119;background:var(--scrim, rgba(0,0,0,.4))}
+@media (max-width:39.99em){
+ #pop.sheet{z-index:120;left:0!important;right:0;top:auto!important;bottom:0;width:auto;min-width:0;max-width:none;max-height:85vh;overflow:auto;padding:8px 16px calc(16px + env(safe-area-inset-bottom,0px));border-radius:20px 20px 0 0;animation:sheet-in 200ms ease-out}
+ #pop.sheet::before{content:"";display:block;width:36px;height:4px;border-radius:2px;background:var(--line-strong);margin:0 auto 8px}
+ #pop.sheet .sheet-t{margin:0;padding:4px 8px 8px;font-size:1.13rem;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ #pop.sheet .mi,#pop.sheet .sm-mi{text-decoration:none;min-height:48px;font-size:.9375rem}
+ #pop.sheet .mh,#pop.sheet .sm-mh{font-size:1.13rem;font-weight:600;color:inherit;padding:4px 8px 8px;text-transform:none;letter-spacing:0}
+ #pop.sheet .kbd,#pop.sheet .sm-kbd{display:none}
+ #pop.sheet .sm-menu{width:auto;padding:0;border:0;box-shadow:none;background:transparent}
+}
+@keyframes sheet-in{from{transform:translateY(100%)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){#pop.sheet{animation:none}}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -621,6 +635,14 @@ svg{display:block;flex:none}
 
   /* Popovers */
   const pop=document.getElementById('pop');let popFor=null;
+
+  const phoneQ=matchMedia('(max-width:39.99em)');
+  function sheetize(title){const on=phoneQ.matches;pop.classList.toggle('sheet',on);let sc=document.getElementById('popscrim');
+    if(on){if(!sc){sc=document.createElement('div');sc.id='popscrim';sc.addEventListener('click',()=>closePop(true));pop.before(sc)}sc.hidden=false;
+      if(title&&!pop.querySelector('.mh,.sm-mh')){const h=document.createElement('h2');h.className='sheet-t';h.textContent=title;pop.prepend(h)}
+      if(pop.classList.contains('sm-sheetbg')===false&&!pop.classList.contains('l2'))pop.style.background='var(--surface)';
+      pop.style.left='';pop.style.top='';return true}
+    if(sc)sc.hidden=true;pop.style.background='';return false}
   function openPop(kind,trigger,id){
     let h='';const l=id?byId(id):S.link?byId(S.link):null;pop.setAttribute('role','menu');
     if(kind==='menu')h=`<button class="mi" type="button" data-open="${l.id}">${ic('i-eye',16)}Open here<span class="kbd">Space</span></button><a class="mi" href="#" data-ext>${ic('i-ext',16)}Open in browser</a><div class="msep"></div>
@@ -639,13 +661,14 @@ svg{display:block;flex:none}
       h=g('size','Text size',[['s','S'],['m','M'],['l','L']])+g('font','Font',[['sans','Sans'],['serif','Serif'],['readable','Readable']])+g('width','Line width',[['narrow','Narrow'],['wide','Wide']])+g('tone','Page',[['app','Like the app'],['sepia','Sepia']]);}
     else if(kind==='account')h=`<button class="mi" type="button">${ic('i-user',16)}Settings</button><div class="mh">Theme</div>${[['system','System'],['light','Light'],['dark','Dark']].map(([v,t])=>`<button class="mi" type="button" role="menuitemradio" data-theme-set="${v}" aria-checked="${(root.getAttribute('data-theme')||'system')===v}">${t}</button>`).join('')}<div class="msep"></div><button class="mi" type="button">Keyboard shortcuts<span class="kbd">?</span></button><button class="mi" type="button">Help and feedback</button><button class="mi" type="button">What's new</button><div class="msep"></div><button class="mi" type="button">Sign out</button>`;
     pop.innerHTML=h;pop.hidden=false;popFor=trigger;
+    if(sheetize({menu:l&&l.title,sort:'Sort by',more:'More',filter:'Filter',reading:'Reading settings',account:'Account'}[kind])){const f=pop.querySelector('button,a');if(f)f.focus({preventScroll:true});return}
     const r=trigger.getBoundingClientRect();const w=pop.offsetWidth,hh=pop.offsetHeight;
     let x=Math.min(r.left,innerWidth-w-16);if(r.right>innerWidth/2)x=Math.max(16,r.right-w);
     let y=r.bottom+8;if(y+hh>innerHeight-16)y=Math.max(16,r.top-hh-8);
     pop.style.left=x+'px';pop.style.top=y+'px';
     const f=pop.querySelector('button,a');if(f)f.focus();
   }
-  function closePop(back){if(!pop.hidden){pop.hidden=true;if(back&&popFor)popFor.focus();popFor=null}}
+  function closePop(back){const sc=document.getElementById('popscrim');if(sc)sc.hidden=true;if(!pop.hidden){pop.hidden=true;if(back&&popFor)popFor.focus();popFor=null}}
   const root=document.documentElement;
   let tt;function toast(msg,undo){const t=document.getElementById('toast');t.innerHTML=`<span>${esc(msg)}</span>${undo?'<button class="btn sm" type="button" data-undo>Undo</button>':''}`;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,4000)}
 
