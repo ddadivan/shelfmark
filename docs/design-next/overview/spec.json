@@ -1,56 +1,344 @@
 [
-["today","home-variants","b","Today: the first screen. What to come back to, where new links went, one forgotten link, then the library."],
-["library","library","library","Library: masonry feed with saved views, filter and view switcher."],
-["library","library","display","Show on cards: choose image, description, note, tags, site and date."],
-["library","library","site","Link page: the site opens inside Shelfmark."],
-["library","library","reader","Link page in Reader: clean text with reading settings."],
-["library","library","blocked","When a site refuses to be shown: Reader or open in a new tab."],
-["library","library","empty","Empty library."],
-["save","save-revisit","s-ready","Add link: preview, where it goes and why, details open."],
-["save","save-revisit","s-many","Several links at once."],
-["save","save-revisit","s-dup","Already saved: shows where."],
-["save","save-revisit","revisit","Revisit: due reminders, continue reading, forgotten, recently opened."],
-["save","save-revisit","revisit-empty","Revisit with nothing waiting."],
-["search","search","results","Search: words, close in meaning, folders and tags, Ask."],
-["search","search","recent","Before typing: recent searches and syntax."],
-["search","search","ask","Ask your shelf: an answer with sources from your own links."],
-["search","search","nothing","Nothing with these words: meaning and Ask still help."],
-["search","search","page","Full results page, can be saved as a view."],
-["organise","organise","folder","Folder page with subfolders."],
-["organise","organise","select","Selecting several links and acting on all of them."],
-["organise","organise","menu","Folder menu, rename and new folder dialogs."],
-["organise","organise","colour","Folder colour and icon."],
-["organise","organise","tags","Tags."],
-["organise","organise","tidy","Tidy up: suggestions, duplicates and similar tags in one place."],
-["organise","organise","rules","Rules: links from a site go to a folder automatically."],
-["organise","organise","trash","Trash with a named confirmation."],
-["more","select-move","move","Move to a folder."],
-["more","select-move","tags","Tags for several links."],
-["more","select-move","side","Side by side: drag links between two folders."],
-["more","select-move","unsorted","Unsorted with AI suggestions."],
-["more","select-move","rule-offer","After three moves from one site: offer a rule."],
-["more","select-move","related","Related links at the end of Reader."],
-["data","data","import","Import: choose a bookmarks file."],
-["data","data","check","Import: what was found and how to file it."],
-["data","data","groups","Import: folders suggested by AI."],
-["data","data","done","Import done, with Undo."],
-["data","data","export","Export."],
-["data","data","share","Share a folder with a public link."],
-["settings","settings","appearance","Settings: appearance, with a live card preview."],
-["settings","settings","library","Settings: library."],
-["settings","settings","ai","Settings: AI, with usage."],
-["settings","settings","account","Settings: account."],
-["firstrun","first-run","onboarding","First run: three ways to fill the shelf."],
-["firstrun","first-run","shortcuts","Keyboard shortcuts."],
-["firstrun","first-run","help","Help, what’s new and feedback."],
-["firstrun","first-run","ai-intro","Turning on AI: what it does and what is sent."],
-["firstrun","first-run","custom","Custom theme with a contrast check."],
-["firstrun","first-run","landing","Landing page."],
-["public","public","signin","Sign-in, with drifting cards."],
-["public","public","collection","A shared folder, as others see it."],
-["public","public","404","Not found."],
-["extension","extension","save","Extension: save this page."],
-["extension","extension","tabs","Extension: save all open tabs."],
-["extension","extension","saved","Extension: saved, with a chance to edit."],
-["extension","extension","ctx","Right-click any link to save it."]
+[
+"today",
+"home-variants",
+"b",
+"Today: the first screen. What to come back to, where new links went, one forgotten link, then the library."
+],
+[
+"library",
+"library",
+"library",
+"Library: masonry feed with saved views, filter and view switcher."
+],
+[
+"library",
+"library",
+"display",
+"Show on cards: choose image, description, note, tags, site and date."
+],
+[
+"library",
+"library",
+"site",
+"Link page: the site opens inside Shelfmark."
+],
+[
+"library",
+"library",
+"reader",
+"Link page in Reader: clean text with reading settings."
+],
+[
+"library",
+"library",
+"blocked",
+"When a site refuses to be shown: Reader or open in a new tab."
+],
+[
+"library",
+"library",
+"empty",
+"Empty library."
+],
+[
+"save",
+"save-revisit",
+"s-ready",
+"Add link: preview, where it goes and why, details open."
+],
+[
+"save",
+"save-revisit",
+"s-many",
+"Several links at once."
+],
+[
+"save",
+"save-revisit",
+"s-dup",
+"Already saved: shows where."
+],
+[
+"save",
+"save-revisit",
+"revisit",
+"Revisit: due reminders, continue reading, forgotten, recently opened."
+],
+[
+"save",
+"save-revisit",
+"revisit-empty",
+"Revisit with nothing waiting."
+],
+[
+"search",
+"search",
+"results",
+"Search: words, close in meaning, folders and tags, Ask."
+],
+[
+"search",
+"search",
+"recent",
+"Before typing: recent searches and syntax."
+],
+[
+"search",
+"search",
+"nothing",
+"Nothing with these words: meaning and Ask still help."
+],
+[
+"search",
+"search",
+"page",
+"Full results page, can be saved as a view."
+],
+[
+"ask",
+"ask",
+"start",
+"Ask: what it can do."
+],
+[
+"ask",
+"ask",
+"conv",
+"Ask: a conversation."
+],
+[
+"ask",
+"ask",
+"thinking",
+"Ask: answering."
+],
+[
+"ask",
+"ask",
+"search-hint",
+"Search offers Ask for questions."
+],
+[
+"organise",
+"organise",
+"folder",
+"Folder page with subfolders."
+],
+[
+"organise",
+"organise",
+"select",
+"Selecting several links and acting on all of them."
+],
+[
+"organise",
+"organise",
+"menu",
+"Folder menu, rename and new folder dialogs."
+],
+[
+"organise",
+"organise",
+"colour",
+"Folder settings."
+],
+[
+"organise",
+"organise",
+"tags",
+"Tags."
+],
+[
+"organise",
+"organise",
+"tidy",
+"Tidy up: suggestions, duplicates and similar tags in one place."
+],
+[
+"organise",
+"organise",
+"rules",
+"Rules: links from a site go to a folder automatically."
+],
+[
+"organise",
+"organise",
+"trash",
+"Trash with a named confirmation."
+],
+[
+"more",
+"select-move",
+"move",
+"Move to a folder."
+],
+[
+"more",
+"select-move",
+"tags",
+"Tags for several links."
+],
+[
+"more",
+"select-move",
+"side",
+"Side by side: drag links between two folders."
+],
+[
+"more",
+"select-move",
+"unsorted",
+"Unsorted with AI suggestions."
+],
+[
+"more",
+"select-move",
+"rule-offer",
+"After three moves from one site: offer a rule."
+],
+[
+"more",
+"select-move",
+"related",
+"Related links at the end of Reader."
+],
+[
+"data",
+"data",
+"import",
+"Import: choose a bookmarks file."
+],
+[
+"data",
+"data",
+"check",
+"Import: what was found and how to file it."
+],
+[
+"data",
+"data",
+"groups",
+"Import: folders suggested by AI."
+],
+[
+"data",
+"data",
+"done",
+"Import done, with Undo."
+],
+[
+"data",
+"data",
+"export",
+"Export."
+],
+[
+"data",
+"data",
+"share",
+"Share a folder with a public link."
+],
+[
+"settings",
+"settings",
+"appearance",
+"Settings: appearance, with a live card preview."
+],
+[
+"settings",
+"settings",
+"library",
+"Settings: library."
+],
+[
+"settings",
+"settings",
+"ai",
+"Settings: AI, with usage."
+],
+[
+"settings",
+"settings",
+"account",
+"Settings: account."
+],
+[
+"firstrun",
+"first-run",
+"onboarding",
+"First run: three ways to fill the shelf."
+],
+[
+"firstrun",
+"first-run",
+"shortcuts",
+"Keyboard shortcuts."
+],
+[
+"firstrun",
+"first-run",
+"help",
+"Help, what’s new and feedback."
+],
+[
+"firstrun",
+"first-run",
+"ai-intro",
+"Turning on AI: what it does and what is sent."
+],
+[
+"firstrun",
+"first-run",
+"custom",
+"Custom theme with a contrast check."
+],
+[
+"firstrun",
+"first-run",
+"landing",
+"Landing page."
+],
+[
+"public",
+"public",
+"signin",
+"Sign-in, with drifting cards."
+],
+[
+"public",
+"public",
+"collection",
+"A shared folder, as others see it."
+],
+[
+"public",
+"public",
+"404",
+"Not found."
+],
+[
+"extension",
+"extension",
+"save",
+"Extension: save this page."
+],
+[
+"extension",
+"extension",
+"tabs",
+"Extension: save all open tabs."
+],
+[
+"extension",
+"extension",
+"saved",
+"Extension: saved, with a chance to edit."
+],
+[
+"extension",
+"extension",
+"ctx",
+"Right-click any link to save it."
+]
 ]

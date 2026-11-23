@@ -15,8 +15,8 @@ async function run(ctxOpts,list,suffix,theme){const c=await b.newContext(ctxOpts
   const name=`${g}-${f}-${s}${suffix}`;await p.screenshot({path:`overview/raw/${name}.png`,fullPage:!(suffix==='-phone'||s==='display')});out.push([g,name,cap]);}
  await c.close()}
 await run({viewport:{width:1280,height:860},deviceScaleFactor:1},spec,'',null);
-const dark=[['dark','home-variants','b','Today in the dark theme.'],['dark','library','library','Library, dark.'],['dark','library','reader','Reader, dark.'],['dark','search','ask','Ask, dark.'],['dark','settings','appearance','Settings, dark.']];
+const dark=[['dark','home-variants','b','Today in the dark theme.'],['dark','library','library','Library, dark.'],['dark','library','reader','Reader, dark.'],['dark','ask','conv','Ask, dark.'],['dark','settings','appearance','Settings, dark.']];
 await run({viewport:{width:1280,height:860},deviceScaleFactor:1},dark,'-dark','dark');
-const phone=[['phone','home-variants','b','Today on a phone.'],['phone','library','library','Library on a phone, tab bar at the bottom.'],['phone','save-revisit','s-ready','Add link on a phone.'],['phone','save-revisit','revisit','Revisit on a phone.'],['phone','settings','you','Settings on a phone.'],['phone','select-move','phone','Library tab and selection on a phone.']];
+const phone=[['phone','home-variants','b','Today on a phone.'],['phone','library','library','Library on a phone, tab bar at the bottom.'],['phone','save-revisit','s-ready','Add link on a phone.'],['phone','save-revisit','revisit','Revisit on a phone.'],['phone','settings','you','Settings on a phone.'],['phone','ask','phone','Ask on a phone.'],['phone','select-move','phone','Library tab and selection on a phone.']];
 await run({...devices['iPhone 13'],deviceScaleFactor:2},phone,'-phone',null);
 fs.writeFileSync('overview/out.json',JSON.stringify(out));console.log(out.length);await b.close()})();
