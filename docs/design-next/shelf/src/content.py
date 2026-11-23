@@ -111,13 +111,13 @@ def scard(a, r, t, d, sub=''):
     return f'<article class="sm-card sm-l1"><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3>{sp}<div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>'
 FILT = '<div class="s-filters" role="toolbar" aria-label="Filters"><button class="sm-chip" aria-pressed="true">All <b>5</b></button><button class="sm-chip" aria-pressed="false">Videos <b>2</b></button><button class="sm-chip" aria-pressed="false">Articles <b>3</b></button><button class="sm-chip" aria-pressed="false">Saved: any time</button><button class="sm-chip" aria-pressed="false">Favorites</button></div>'
 def shead(q, cnt): return f'<div class="s-head" data-q="{q}"><h1>Search</h1><span class="cnt">{cnt}</span></div>'
-FOLD_CHIP = '<button class="sm-chip" type="button"><span class="sm-ficon" style="color:var(--folder-clay)">' + ic("folder", 14) + '</span>Angular / Forms <b>13</b></button>'
-results = (shead('signal forms', '5 for “signal forms”') + FILT
- + '<div class="s-jump"><span class="lbl">Go to</span>' + FOLD_CHIP + '<button class="sm-chip" type="button">' + ic("hash", 14) + 'signals <b>9</b></button></div>'
- + '<div class="s-grid">' + scard('video', '16/9', '<mark>Signal</mark> <mark>Forms</mark> in 20 minutes', 'youtube.com', 'Walks through form(), validators and custom controls.') + scard('dark', '16/9', 'Getting started with <mark>Signal</mark> <mark>Forms</mark>', 'angular.dev') + scard('type', '16/9', 'Validation without Reactive <mark>Forms</mark>', 'dev.to', 'Note: compare with the <mark>signal</mark> approach.') + '</div>'
- + '<section class="s-near"><h2>' + ic("spark", 16) + 'Close in meaning <span>2</span></h2><div class="s-grid">' + scard('dark', '16/9', 'linkedSignal in practice', 'youtube.com') + scard('type', '16/9', 'NgRx SignalStore: patterns for real apps', 'dev.to') + '</div></section>')
-question = (shead('which signal forms video should I watch first?', '2 links match the words') + '<div class="s-ask">' + ic("spark", 16) + '<span>Looks like a question. Your shelf can answer it with sources.</span><a class="sm-btn sm-btn--sm" href="ask.html">Ask your shelf</a></div>'
- + '<div class="s-grid">' + scard('video', '16/9', '<mark>Signal</mark> <mark>Forms</mark> in 20 minutes', 'youtube.com') + scard('dark', '16/9', 'linkedSignal in practice', 'youtube.com') + '</div>')
+FOLD_CHIP = '<button class="sm-chip" type="button"><span class="sm-ficon" style="color:var(--folder-clay)">' + ic("folder", 14) + '</span>Angular <b>2</b></button>'
+results = (shead('angular', '2 for “angular”') + FILT.replace('<b>5</b>', '<b>2</b>').replace('<b>3</b>', '<b>0</b>')
+ + '<div class="s-jump"><span class="lbl">Go to</span>' + FOLD_CHIP + '<button class="sm-chip" type="button">' + ic("hash", 14) + 'angular <b>1</b></button></div>'
+ + '<div class="lcmas">' + lcard(1, mark=['angular']) + lcard(6) + '</div>'
+ + '<section class="s-near"><h2>' + ic("spark", 16) + 'Close in meaning <span>2</span></h2><div class="lcmas">' + lcard(13) + lcard(10) + '</div></section>')
+question = (shead('which angular video should I watch first?', '2 links match the words') + '<div class="s-ask">' + ic("spark", 16) + '<span>Looks like a question. Your shelf can answer it with sources.</span><a class="sm-btn sm-btn--sm" href="ask.html">Ask your shelf</a></div>'
+ + '<div class="lcmas">' + lcard(1, mark=['angular']) + lcard(6) + '</div>')
 nothing = (shead('blue velvet sofa', 'Nothing for “blue velvet sofa”') + '<div class="s-empty">' + SC['nothing-found'] + '<h2>Nothing found</h2><p>No link mentions “blue velvet sofa” in its title, note, tags or address. Try another word, or ask your shelf: it also searches by meaning.</p><div class="acts"><button class="sm-btn sm-btn--secondary" type="button">Clear search</button><a class="sm-btn" href="ask.html">' + ic("spark") + 'Ask your shelf</a></div></div>')
 SBG = '<div class="s-head"><h1>All links</h1><span class="cnt">58 links</span></div><div class="s-grid">' + ''.join(scard(x, r, t, d) for x, r, t, d in [('video', '16/9', 'Signal Forms in 20 minutes', 'youtube.com'), ('shirt', '4/5', 'Wool overshirt', 'uniqlo.com'), ('bowl', '1/1', 'Tonkotsu broth', 'seriouseats.com'), ('jacket', '4/5', 'Nano Puff jacket', 'patagonia.com')]) + '</div>'
 REC = ''.join(f'<button class="r" type="button" role="option" aria-selected="{str(i == 0).lower()}">{ic("revisit")}{t}</button>' for i, t in enumerate(['signal forms', 'ramen', '#clothes sale']))
@@ -176,10 +176,10 @@ O_CSS = r'''
 @media (max-width:39.99em){.dup{grid-template-columns:1fr}.cgrid{grid-template-columns:repeat(4,32px)}}
 '''
 card = lambda a, r, t, d: f'<article class="sm-card sm-l1"><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3><div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>'
-folder_page = f'''<nav class="crumbs" aria-label="Breadcrumbs"><a href="#">All links</a>{ic("right", 14)}<span>Recipes</span></nav>
-<div class="fhead"><span class="sm-tile" style="background:var(--folder-amber-bg);color:var(--folder-amber)">{ic("folder", 20)}</span><h1>Recipes</h1><span class="lead" style="margin:0">7 links, 2 subfolders</span>
+folder_page = f'''<nav class="crumbs" aria-label="Breadcrumbs"><a href="#">All links</a>{ic("right", 14)}<span>Learning</span></nav>
+<div class="fhead"><span class="sm-tile" style="background:var(--folder-sage-bg);color:var(--folder-sage)">{ic("folder", 20)}</span><h1>Learning</h1><span class="lead" style="margin:0">6 links, 2 subfolders</span>
 <div style="margin-left:auto;display:flex;gap:8px"><button class="sm-btn sm-btn--sm" type="button">{ic("plus")}Add link here</button><button class="sm-ib" type="button" aria-label="Folder actions">{ic("more")}</button></div></div>
-<div class="subs">{''.join(f'<button class="sub sm-l1" type="button">{tile(c)}{n}<span class="n">{k}</span></button>' for n, c, k in [('Ramen', 'amber', 3), ('Baking', 'clay', 2)])}</div>
+<div class="subs">{''.join(f'<button class="sub sm-l1" type="button">{tile(c)}{n}<span class="n">{k}</span></button>' for n, c, k in [('Courses', 'amber', 3), ('Talks', 'clay', 2)])}</div>
 <div class="mini-feed">{card('bowl', '1/1', 'Rich tonkotsu ramen broth from scratch', 'seriouseats.com')}{card('pancakes', '1/1', 'Lemon ricotta pancakes', 'smittenkitchen.com')}{card('video', '16/9', 'Sourdough for beginners', 'youtube.com')}</div>'''
 folder_menu = f'''<div class="row2"><div class="sm-menu sm-l2" role="menu" aria-label="Folder actions for Recipes">
 <button class="sm-mi" role="menuitem">{ic("plus")}New subfolder</button><button class="sm-mi" role="menuitem">{ic("plus")}Add link here</button>
@@ -297,17 +297,19 @@ O_CSS += r"""
 """
 def sck(on, t): return f'<span class="sm-check" role="checkbox" aria-checked="{str(on).lower()}" aria-label="Select {t}">{ic("check", 14) if on else ""}</span>'
 SELC = [('bowl', '1/1', 'Rich tonkotsu ramen broth from scratch', 'seriouseats.com', True), ('pancakes', '1/1', 'Lemon ricotta pancakes', 'smittenkitchen.com', True), ('video', '16/9', 'Sourdough for beginners', 'youtube.com', False), ('type', '16/9', 'Miso glazed salmon', 'bonappetit.com', True), ('dark', '16/9', 'Knife skills in 10 minutes', 'youtube.com', False)]
-folder_select = f"""<nav class="crumbs" aria-label="Breadcrumbs"><a href="#">All links</a>{ic("right", 14)}<span>Recipes</span></nav>
+folder_select = f"""<nav class="crumbs" aria-label="Breadcrumbs"><a href="#">All links</a>{ic("right", 14)}<span>Learning</span></nav>
 <div class="fhead"><span class="sm-tile" style="background:var(--folder-amber-bg);color:var(--folder-amber)">{ic("folder", 20)}</span><h1>Recipes</h1><span class="lead" style="margin:0">Select with X or the checkbox on a card; Shift-click selects a range</span>
 <div style="margin-left:auto;display:flex;gap:8px"><button class="sm-btn sm-btn--sm" type="button">Select all 7</button></div></div>
 <div class="selfeed">{''.join(f'<article class="sm-card sm-l1" draggable-card aria-selected="{str(on).lower()}"><span class="sb">{sck(on, t)}</span><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3><div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>' for a, r, t, d, on in SELC)}</div>
 <div class="bulkbar sm-l2" role="toolbar" aria-label="3 links selected"><button class="sm-ib" type="button" aria-label="Clear selection">{ic("x")}</button><span class="cnt">3 selected</span>
 <button class="sm-btn sm-btn--sm" type="button">{ic("move")}Move</button><button class="sm-btn sm-btn--sm" type="button">{ic("hash")}Tags</button><button class="sm-btn sm-btn--sm" type="button">{ic("star")}Favorite</button><button class="sm-btn sm-btn--sm" type="button">{ic("bell")}Remind</button><button class="sm-btn sm-btn--sm" type="button">{ic("ext")}Open all</button><button class="sm-btn sm-btn--sm" type="button">{ic("copy")}Copy links</button><span class="sp"></span><button class="sm-btn sm-btn--sm" type="button" style="color:var(--danger)">{ic("trash")}Delete</button></div>
 <p class="lbl-s" style="margin-top:8px">Without a selection the checkbox appears on hover (always on touch, after long-press). Move, Tags and Remind open their pickers for all selected links; full set in “Select, move, side by side”. Try it: drag a card, or the selection, onto a folder in the sidebar.</p>""" + open('/tmp/claude-0/-home-user-shelfmark/ebcb0130-eb79-5d11-ad3d-48330e17911a/scratchpad/dsgen4/drag.js').read()
+PAGE_ORDER = [9, 10, 13, 1, 6, 4, 2, 5]
 page('organise.html', 'Organise', O_CSS, [
  ('folder', 'Folder page', folder_page), ('select', 'Select several links and bulk actions', folder_select), ('menu', 'Folder menu, rename and new folder', folder_menu), ('phone-rename', 'Phone: actions sheet and rename', phone_state), ('colour', 'Folder settings', colour_pop), ('colour-emoji', 'Folder settings: emoji', colour_emoji),
  ('tags', 'Tags', tags_page), ('tidy', 'Tidy up', tidy), ('rules', 'Rules and the rule editor', rules), ('trash', 'Trash and delete forever', trash), ('trash-empty', 'Trash: empty', trash_empty)], cur='recipes')
 
+PAGE_ORDER = None
 # ================= SETTINGS =================
 G_CSS = r'''
 .sapp{display:flex;min-height:100vh;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;gap:24px}

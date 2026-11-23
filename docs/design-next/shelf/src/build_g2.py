@@ -23,6 +23,9 @@ art = {
  'pancakes': '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="200" height="200" fill="#efe4d2"/><circle cx="100" cy="106" r="80" fill="#fbf7ef"/><circle cx="104" cy="100" r="46" fill="#e4b46b"/><circle cx="110" cy="94" r="44" fill="#ecc27c"/><circle cx="110" cy="92" r="16" fill="#fff6dc"/></svg>',
  'bowl': '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="200" height="200" fill="#2e2620"/><circle cx="100" cy="104" r="78" fill="#1d1814"/><circle cx="100" cy="104" r="62" fill="#e9d3a8"/><path d="M58 96q20-14 40 0t40 0M56 112q22-14 44 0t44 0" fill="none" stroke="#f1d99a" stroke-width="5" stroke-linecap="round"/><circle cx="122" cy="82" r="14" fill="#fff8ec"/><circle cx="122" cy="82" r="7" fill="#f2a93b"/></svg>',
 }
+# v4 images
+_im = lambda f, fit='cover': f'<img src="img/{f}" alt="" style="display:block;width:100%;height:100%;object-fit:{fit};background:var(--surface-hover)">'
+art.update({'video': _im('angular100.webp'), 'video2': _im('nihilism.webp'), 'shirt': _im('crater-shirt.webp', 'contain'), 'jacket': _im('ojai-jacket.webp', 'contain')})
 tpl = open(f'{B}/design4/g2.tpl.html').read()
 icon = lambda n, s: f'<svg width="{s}" height="{s}" viewBox="0 0 24 24" aria-hidden="true">{I[n]}</svg>'
 for key, (n, s) in {'%bookmark%': ('bookmark', 20), '%inbox%': ('inbox', 20), '%star%': ('star', 20), '%revisit%': ('revisit', 20), '%folder%': ('folder', 14), '%search%': ('search', 16), '%plus%': ('plus', 16),

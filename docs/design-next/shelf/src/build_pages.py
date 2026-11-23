@@ -1,3 +1,4 @@
+import re
 import json
 B = '/tmp/claude-0/-home-user-shelfmark/ebcb0130-eb79-5d11-ad3d-48330e17911a/scratchpad'
 tok = json.load(open(f'{B}/ds4/project/tokens.json'))
@@ -37,6 +38,10 @@ ART = {
  'type': '<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="320" height="180" fill="#f1ede2"/><rect x="20" y="110" width="200" height="16" rx="4" fill="#1d1d1f"/><rect x="20" y="134" width="140" height="16" rx="4" fill="#1d1d1f"/></svg>',
  'dark': '<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="320" height="180" fill="#121214"/><rect x="20" y="110" width="200" height="16" rx="4" fill="#f4f4f6"/></svg>',
 }
+
+# v4: real previews from the reference, served as files next to the pages
+_img = lambda f, fit='cover', pos='center': f'<img src="img/{f}" alt="" style="display:block;width:100%;height:100%;object-fit:{fit};object-position:{pos};background:var(--surface-hover)">'
+ART.update({'video': _img('angular100.webp'), 'shirt': _img('crater-shirt.webp', 'contain'), 'jacket': _img('ojai-jacket.webp', 'contain'), 'dark': _img('typescript100.webp')})
 PAGES = [('index.html', 'Library and Link page'), ('save-revisit.html', 'Save and Revisit'), ('search.html', 'Search'), ('organise.html', 'Organise'), ('settings.html', 'Settings'), ('public.html', 'Sign-in and public pages'), ('extension.html', 'Browser extension'), ('select-move.html', 'Select, move, side by side'), ('data.html', 'Import, export, sharing'), ('first-run.html', 'First run, help, landing'), ('ask.html', 'Ask your shelf'), ('notify.html', 'Reminders and notifications'), ('views.html', 'Views, dates, shortcuts'), ('system.html', 'System states'), ('tools.html', 'Assistant, clean-up, help')]
 
 SHELL_CSS = r'''
@@ -114,6 +119,36 @@ DOWN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="curr
 DOTS = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg>'
 CLOCK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
 LOGO4 = '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="4" fill="currentColor"/><path d="M14 4v7l2.5-1.8L19 11V4z" fill="var(--sidebar)"/></svg>'
+# v4: the home page's link card, from the same 14 links (v4links.json)
+V4 = json.load(open(f'{B}/dsgen4/v4links.json'))
+FAVC = {'youtube.com': ('#FF0033', '#fff'), 'github.com': ('#1F2328', '#fff'), 'allbirds.com': ('#212A2F', '#fff'), 'taylorstitch.com': ('#8A5A2B', '#fff')}
+STAR = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>'
+PLAY = '<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>'
+FIC = lambda c: f'<svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--folder-{c})"><path fill="currentColor" d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>'
+def lcard(i, grid=False, sel=None, mark=None, note=True, tags=True):
+    l = V4[i - 1]; f = FAVC.get(l['domain'], ('var(--surface-pressed)', 'var(--text)'))
+    t = l['title']
+    if mark:
+        for w in mark: t = re.sub('(' + re.escape(w) + ')', r'<mark>\1</mark>', t, flags=re.I)
+    fit = 'contain' if l['kind'] == 'shop' else 'cover'; pos = 'left center' if l['kind'] == 'repo' else 'center'
+    ratio = '4 / 3' if grid else l['ratio']
+    chk = '' if sel is None else f'<span class="sm-check lc-sel" role="checkbox" aria-checked="{str(sel).lower()}" aria-label="Select {l["title"]}">{ic("check", 14) if sel else ""}</span>'
+    play = f'<span class="gl play">{PLAY}</span>' if l['kind'] == 'video' and sel is None else ''
+    return (f'<article class="sm-lcard lc" aria-selected="{str(bool(sel)).lower()}"><span class="tile" style="aspect-ratio:{ratio}"><img src="{l["img"]}" alt="" loading="lazy" style="display:block;width:100%;height:100%;object-fit:{fit};object-position:{pos}">{play}{chk}<span class="gl star{" on" if l.get("fav") else ""}">{STAR}</span></span>'
+            f'<span class="bd"><span class="mt"><span class="f">{FIC(l["c"])}{l["folder"]}</span><span class="d">{l["date"]}</span></span><span class="tt">{t}</span><span class="src"><i style="background:{f[0]};color:{f[1]}">{l["domain"][0].upper()}</i>{l["sub"]}</span>'
+            + (f'<span class="tg">{"".join("<span>#" + x + "</span>" for x in l["tags"][:3])}</span>' if tags and l['tags'] else '')
+            + (f'<span class="sm-note">{ic("edit", 12)} {l["note"]}</span>' if note and l.get('note') else '') + '</span></article>')
+LC_CSS = r'''
+.lc{width:auto}.lc .tile img{transition:transform 900ms cubic-bezier(.2,.7,.2,1)}.lc:hover .tile img{transform:scale(1.035)}
+.lc .lc-sel{position:absolute;top:10px;left:10px;width:22px;height:22px;border-radius:6px;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--control)}
+.lc .lc-sel[aria-checked="true"]{background:var(--accent);color:var(--on-accent);box-shadow:none}
+.lc[aria-selected="true"]{background:var(--pick)}
+.lc .sm-note{align-items:center}.lc .sm-note svg{flex:none}
+.lcgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:22px;margin-top:24px;align-items:start}
+.lcmas{columns:auto 220px;column-gap:22px;margin-top:24px}.lcmas .lc{break-inside:avoid;margin-bottom:22px}
+'''
+SHELL_CSS = SHELL_CSS + LC_CSS
+
 def sidebar(cur=''):
     def nav(key, icon, label, extra='', raw=None):
         cur_attr = ' aria-current="page"' if key == cur else ''
@@ -124,9 +159,9 @@ def sidebar(cur=''):
     fold = lambda n, c, k: f'<button class="sm-nav sm-nav--plain" type="button"{" aria-current=%spage%s" % (chr(34), chr(34)) if cur == n.lower() else ""}><span class="sm-ficon" style="color:var(--folder-{c})">{ic("folder", 16)}</span><span class="lbl">{n}</span><span class="n">{k}</span></button>'
     return (f'<nav class="side" aria-label="Library"><div class="brandrow"><div class="logo">{LOGO4}<span>Shelfmark</span></div><button class="avatar" type="button" aria-label="Account">DU</button></div>'
         + f'<div class="sbtop"><button class="sm-btn sm-btn--secondary add-btn" type="button">{ic("plus")}<span>Add link</span></button></div>'
-        + '<div class="grp">' + nav('all', 'bookmark', 'All links', '<span class="n">58</span>') + nav('unsorted', 'inbox', 'Unsorted', '<span class="n">17</span>') + nav('fav', 'star', 'Favorites', '<span class="n">6</span>') + nav('revisit', 'revisit', 'Today', '<span class="dot">3</span>') + nav('recent', '', 'Recently opened', raw=CLOCK) + '</div>'
-        + '<div class="grp">' + sec('Folders', 'New folder') + '<div class="tree">' + ''.join(fold(n, c, k) for n, c, k in [('Clothes', 'rose', 7), ('Recipes', 'amber', 7), ('Work', 'ocean', 7), ('Design', 'plum', 5)]) + '</div></div>'
-        + '<div class="grp">' + sec('Tags', 'New tag') + '<div class="tree">' + ''.join(f'<button class="sm-nav sm-nav--plain" type="button">{ic("hash", 16)}<span class="lbl">{t}</span><span class="n">{k}</span></button>' for t, k in [('angular', 12), ('reading', 8), ('clothes', 7)]) + '</div></div>'
+        + '<div class="grp">' + nav('all', 'bookmark', 'All links', '<span class="n">17</span>') + nav('unsorted', 'inbox', 'Unsorted', '<span class="n">3</span>') + nav('fav', 'star', 'Favorites', '<span class="n">3</span>') + nav('revisit', 'revisit', 'Today', '<span class="dot">3</span>') + nav('recent', '', 'Recently opened', raw=CLOCK) + '</div>'
+        + '<div class="grp">' + sec('Pinned') + '<div class="tree">' + fold('Angular', 'clay', 2) + '</div></div>' + '<div class="grp">' + sec('Folders', 'New folder') + '<div class="tree">' + ''.join(fold(n, c, k) for n, c, k in [('Angular', 'clay', 2), ('Tools', 'ocean', 4), ('Learning', 'sage', 6), ('Shopping', 'rose', 4), ('Watch later', 'plum', 1)]) + '</div></div>'
+        + '<div class="grp">' + sec('Tags', 'New tag') + '<div class="tree">' + ''.join(f'<button class="sm-nav sm-nav--plain" type="button">{ic("hash", 16)}<span class="lbl">{t}</span><span class="n">{k}</span></button>' for t, k in [('video', 6), ('design', 2), ('shoes', 2)]) + '</div></div>'
         + f'<div class="side-foot"><aside class="intro"><a href="#">New here? See how it works</a><span class="t">{ic("play", 12)}3 minutes</span><button class="sm-ib x" type="button" aria-label="Hide">{ic("x", 14)}</button></aside>'
         + nav('theme', '', 'Theme', raw=SUN) + nav('ext', '', 'Get the extension', raw=DOWN) + nav('help', '', 'Data and help', raw=DOTS) + nav('trash', 'trash', 'Trash') + '</div></nav>')
 TOP = (f'<header class="top"><div class="sm-input sm-search" role="search">{ic("search")}<input placeholder="Search links, folders and tags" aria-label="Search links, folders and tags"><span class="sm-kbd">Ctrl K</span></div>'
@@ -138,10 +173,25 @@ const go=v=>{location.href='./?q='+encodeURIComponent(v)};
 i.addEventListener('input',()=>{if(i.value.trim())go(i.value)});i.addEventListener('keydown',e=>{if(e.key==='Enter')go(i.value)});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();i.focus();i.select()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='j'){e.preventDefault();location.href='ask.html'}});})();</script>'''
 
+
+LC_ORDER = [1, 4, 5, 2, 9, 3, 6, 8, 7, 10, 11, 12, 13, 14]
+def v4cards(html, order=None):
+    """Swap the old generic cards (sm-card) for the home page's card, in turn through the real links."""
+    seq = list(order or LC_ORDER); k = [0]
+    def rep(m):
+        whole = m.group(0)
+        if 'data-pv' in whole or 'pvcard' in whole or 'flt' in html[max(0, m.start() - 40):m.start()]: return whole
+        i = seq[k[0] % len(seq)]; k[0] += 1
+        sel = None
+        ms = re.search(r'aria-selected="(true|false)"', m.group(1))
+        if ms: sel = ms.group(1) == 'true'
+        return lcard(i, sel=sel)
+    return re.sub(r'<article class="sm-card sm-l1([^>]*)>.*?</article>', rep, html, flags=re.S)
+
 def page(fname, title, css, states, shell='app', cur=''):
     opts = ''.join(f'<option value="{k}">{lab}</option>' for k, lab, _ in states)
     nav = ''.join(f'<option value="{f}"{" selected" if f == fname else ""}>{t}</option>' for f, t in PAGES)
-    body = ''.join(f'<div class="state" data-state="{k}">{html}</div>' for k, _, html in states)
+    body = ''.join(f'<div class="state" data-state="{k}">{v4cards(html, globals().get("PAGE_ORDER"))}</div>' for k, _, html in states)
     if shell == 'app': content = f'<div class="app">{sidebar(cur)}<main class="main">{TOP}{body}</main></div>{TABBAR}'
     else: content = body
     js = '''<script>(function(){const sel=document.getElementById('st'),pg=document.getElementById('pg'),th=document.getElementById('th');

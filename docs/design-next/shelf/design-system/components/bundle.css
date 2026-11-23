@@ -354,7 +354,7 @@ h1,.sm-display{font-family:var(--font-sans);letter-spacing:-.01em}
 .sm-lcard{position:relative;display:flex;flex-direction:column;width:240px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);overflow:hidden;transition:box-shadow 200ms ease;color:var(--text);text-decoration:none}
 .sm-lcard:hover{box-shadow:var(--shadow-hover)}
 .sm-lcard .tile{position:relative;background:var(--surface-hover);overflow:hidden}
-.sm-lcard .tile svg{display:block;width:100%;height:100%}
+.sm-lcard .tile>svg{display:block;width:100%;height:100%}.sm-lcard .gl svg{width:12px;height:12px}.sm-lcard{align-self:start}
 .sm-lcard .gl{position:absolute;top:10px;width:28px;height:28px;border:0;border-radius:50%;display:grid;place-items:center;background:var(--glass);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#1C1C1F}
 .sm-lcard .gl.play{left:10px}.sm-lcard .gl.star{right:10px}.sm-lcard .gl.star.on svg{fill:currentColor}
 .sm-lcard .bd{display:flex;flex-direction:column;gap:4px;padding:10px 12px 12px}
