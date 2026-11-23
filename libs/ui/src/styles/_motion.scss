@@ -18,6 +18,9 @@
 // Looping loader timings are the one place that is not a duration token (status, not decoration).
 $spin-duration: 0.7s;
 $spin-duration-reduced: 1.6s;
+
+// The Ask button's glow turns once in 9 s (decoration, not a duration token); never reused elsewhere.
+$wave-duration: 9s;
 $progress-duration: 1.1s;
 $progress-duration-reduced: 2.4s;
 $shimmer-duration: 1.4s;
@@ -252,8 +255,14 @@ $leave-presets: (
     @include reduced-motion {
       animation: none;
     }
+  } @else if $name == 'wave' {
+    animation: ui-wave-turn $wave-duration linear infinite;
+
+    @include reduced-motion {
+      animation: none;
+    }
   } @else {
-    @error 'Unknown loop "#{$name}". Available: spin, progress, shimmer.';
+    @error 'Unknown loop "#{$name}". Available: spin, progress, shimmer, wave.';
   }
 }
 
@@ -488,6 +497,13 @@ $leave-presets: (
       opacity: 0;
       scale: 0.4;
       margin-inline-end: calc(-1rem - var(--space-2));
+    }
+  }
+
+  // The Ask button's glow (one full turn).
+  @keyframes ui-wave-turn {
+    to {
+      transform: rotate(360deg);
     }
   }
 

@@ -3,6 +3,7 @@
 // helpers next to this file (axe, scss) are not exported.
 export * from '../lib/components/button/testing/button.harness';
 export type * from '../lib/components/button/testing/models/button-harness-filters.interface';
+export * from '../lib/components/ask-button/testing/ask-button.harness';
 export * from '../lib/components/menu/testing/menu.harness';
 export * from '../lib/components/popover/testing/popover.harness';
 export type * from '../lib/components/popover/testing/models/popover-harness-filters.interface';
