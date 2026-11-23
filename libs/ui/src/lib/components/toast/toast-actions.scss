@@ -13,37 +13,41 @@
   font-size: rem(13px);
   font-weight: 600;
   line-height: rem(18px);
-  color: var(--text);
+  color: var(--ui-toast-ink);
   white-space: nowrap;
   cursor: pointer;
-  background: var(--surface-hover);
+  background: var(--ui-toast-tile);
   border: 0;
   border-radius: rem(10px);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   @include hover {
-    background: var(--surface-pressed);
+    background: var(--ui-toast-tile-hover);
   }
 
   &:active {
-    background: var(--surface-pressed);
+    background: var(--ui-toast-tile-hover);
   }
 
+  // The page ring colour would vanish on the inverted fill.
   &:focus-visible {
     @include focus-ring(0);
+
+    outline-color: var(--ui-toast-ink);
   }
 }
 
 .ui-toast__action--ghost {
-  color: var(--text-muted);
+  color: var(--ui-toast-muted);
   background: transparent;
 
   @include hover {
-    background: var(--surface-hover);
+    color: var(--ui-toast-ink);
+    background: var(--ui-toast-tile);
   }
 
   &:active {
-    background: var(--surface-hover);
+    background: var(--ui-toast-tile);
   }
 }
 
@@ -56,19 +60,21 @@
   inline-size: rem(28px);
   block-size: rem(28px);
   padding: 0;
-  color: var(--text-muted);
+  color: var(--ui-toast-muted);
   cursor: pointer;
   background: transparent;
   border: 0;
   border-radius: var(--radius-sm);
 
   @include hover {
-    color: var(--text);
-    background: var(--surface-hover);
+    color: var(--ui-toast-ink);
+    background: var(--ui-toast-tile);
   }
 
   &:focus-visible {
     @include focus-ring(0);
+
+    outline-color: var(--ui-toast-ink);
   }
 }
 
@@ -81,14 +87,14 @@
   block-size: rem(3px);
   overflow: hidden;
   pointer-events: none;
-  background: var(--surface-pressed);
+  background: var(--ui-toast-tile);
   border-radius: rem(2px);
 
   &::after {
     position: absolute;
     inset: 0;
     content: '';
-    background: var(--text-muted);
+    background: var(--ui-toast-muted);
     border-radius: inherit;
     transform-origin: left;
     animation: ui-toast-count var(--ui-toast-duration, 8s) linear forwards;
@@ -130,10 +136,10 @@
   font-family: var(--font-mono);
   font-size: rem(12px);
   line-height: 1;
-  color: var(--text-muted);
+  color: var(--ui-toast-muted);
   text-align: center;
   white-space: nowrap;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  background: transparent;
+  border: 1px solid var(--ui-toast-tile-hover);
   border-radius: rem(6px);
 }

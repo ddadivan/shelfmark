@@ -135,7 +135,7 @@ const meta: Meta<ToastComponent> = {
     docs: {
       description: {
         component:
-          '`ToastService.show({ title, detail?, kind, thumb?, folder?, action?, secondary?, duration? })` renders a `ui-toast` in the toast overlay layer: glass, a lead typed by kind (`saved` link thumbnail with a check, `moved` folder tile, tinted icon for `success`, `danger`, `warn`, `info`), a title with a truncating second line, the action and a close button. ' +
+          '`ToastService.show({ title, detail?, kind, thumb?, folder?, action?, secondary?, duration? })` renders a `ui-toast` in the toast overlay layer: the inverted Shelf surface (text fill, canvas text), a lead typed by kind (`saved` link thumbnail with a check, `moved` folder tile, tinted icon for `success`, `danger`, `warn`, `info`), a title with a truncating second line, the action and a close button. ' +
           'Durations by kind: 3 s success, 4 s info and moved, 5 s saved, 8 s with Undo (a countdown line runs down the bottom and pauses with the timer), `danger` and `warn` stay until handled; hover, focus or touch pauses. ' +
           'Up to three stack with the newest in front (hover or focus fans them out); a fourth pushes out the oldest (`replaced`). ' +
           'Normal toasts are announced by one persistent polite `role="status"` region and `danger` toasts by a persistent `role="alert"` region; a toast never takes focus by itself. ' +
