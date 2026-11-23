@@ -95,20 +95,18 @@ describe('SwitchComponent', () => {
     expect(button.disabled).toBe(true);
   });
 
-  it('styles from tokens: spring knob, accent when on, no motion under reduced motion', () => {
+  it('styles from tokens: 28 x 16 track, 12px knob sliding 12px, no motion under reduced motion', () => {
     const css = compileScss('lib/components/switch/switch.component.scss');
-    expect(css).toContain('var(--ease-spring)');
+    expect(css).toContain('width: 1.75rem');
+    expect(css).toContain('height: 1rem');
+    expect(css).toContain('width: 0.75rem');
+    expect(css).toContain('translateX(0.75rem)');
+    expect(css).toContain('var(--duration-base)');
     expect(css).toContain('background: var(--accent)');
-    expect(css).toContain('background: var(--border-control)');
+    expect(css).toContain('background: var(--toggle-off)');
+    expect(css).toContain('background: var(--on-primary)');
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*transition: none/);
     expect(css).toMatch(/@media \(pointer: coarse\)/);
-  });
-
-  it('darkens only the off track on hover, so an on switch keeps its accent', () => {
-    const css = compileScss('lib/components/switch/switch.component.scss');
-    expect(css).toMatch(
-      /@media \(hover: hover\)\s*\{[^}]*:hover:not\(:disabled, \[aria-checked=["']?true["']?\]\)/,
-    );
   });
 
   it('has no axe violations', async () => {
