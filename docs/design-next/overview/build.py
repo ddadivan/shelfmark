@@ -124,7 +124,7 @@ h1{{margin:0;font:600 2.57rem/1.1 var(--font);letter-spacing:-.01em;text-wrap:ba
 .diff li{{font-size:.9375rem}}
 .diff li b{{display:block;font-weight:600}}
 .diff li span{{color:var(--muted);font-size:.875rem}}
-.nav{{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;margin:40px calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0;padding:10px max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--canvas) 94%,transparent);border-bottom:1px solid var(--line);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}}
+.nav{{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;margin:24px calc(-1 * max(16px,env(safe-area-inset-left,0px))) 0;padding:10px max(16px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--canvas) 94%,transparent);border-bottom:1px solid var(--line);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}}
 body::before{{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--canvas)}}
 .nav a{{flex:none;display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);text-decoration:none;font-size:.875rem;font-weight:500}}
 .nav a:hover{{background:var(--hover)}}
@@ -158,19 +158,6 @@ dialog::backdrop{{background:var(--scrim)}}
 </style>
 <div class="wrap">
 <div class="brand"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="4" fill="var(--accent)"/><path d="M14 4h5v8l-2.5-2-2.5 2z" fill="var(--notch)"/></svg>Shelfmark</div>
-<div class="hero"><div><h1>Сохранять ссылки и правда к ним возвращаться</h1>
-<p class="lead">Shelfmark хранит все ссылки в одном месте, сам раскладывает их по папкам, находит по смыслу и напоминает, к чему вернуться. Ниже новый дизайн приложения: {len(items)} экранов, десктоп, телефон и тёмная тема.</p>
-<p class="note">Концепт, данные на экранах выдуманные. Нажми на скриншот, чтобы увеличить.</p></div>
-<div class="jobs"><div class="job"><b>Save</b><span>Вставка, перетаскивание, расширение, «Поделиться» на Android. Правило или AI само кладёт ссылку в папку, это можно отменить.</span></div>
-<div class="job"><b>Find</b><span>Поиск по названию, заметке, тегам и тексту страницы, по смыслу, и вопрос к своим ссылкам с ответом и источниками.</span></div>
-<div class="job"><b>Come back</b><span>Напоминания, недочитанное и забытое в одной спокойной очереди.</span></div></div></div>
-<div class="diff"><h2>Чем отличается от Raindrop, Pocket и других</h2><ul>
-<li><b>Главная про возвращение</b><span>Первый экран показывает, что пора открыть, а не стену карточек.</span></li>
-<li><b>Само раскладывает</b><span>Правила по сайтам и AI, всегда видно, куда и почему, есть Undo.</span></li>
-<li><b>Ask your shelf</b><span>Вопрос своими словами, ответ из своих ссылок с источниками.</span></li>
-<li><b>Заметка видна</b><span>Зачем сохранил — прямо на карточке и в поиске.</span></li>
-<li><b>Открывает внутри</b><span>Сайт или Reader без новой вкладки.</span></li>
-<li><b>Tidy up</b><span>Всё, что требует решения, на одной странице.</span></li></ul></div>
 <nav class="nav" aria-label="Разделы">{nav}</nav>
 {secs}
 <p class="foot">Shelfmark Next — дизайн-концепт. Интерфейс на английском, переводы приходят через ключи. Тексты, ссылки и цифры на скриншотах — примеры.</p>

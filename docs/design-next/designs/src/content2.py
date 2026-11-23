@@ -44,7 +44,9 @@ M_CSS = COMMON + r'''
 .feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:24px}
 .feed .sm-card{width:auto;position:relative}
 .feed .selbox{position:absolute;top:12px;left:12px;z-index:2}
-.feed .sm-card[aria-selected="true"]{box-shadow:0 0 0 2px var(--accent)}
+.selfeed .sm-card,.feed .sm-card{transition:background-color 120ms,border-color 120ms}
+.selfeed .sm-card[aria-selected="true"],.feed .sm-card[aria-selected="true"]{background:var(--accent-bg);border-color:var(--line-strong);box-shadow:none}
+.selfeed .sm-card[aria-selected="true"] .sm-cover,.feed .sm-card[aria-selected="true"] .sm-cover{transform:scale(.96);transition:transform 200ms}
 .bulk{position:sticky;bottom:16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:8px;border-radius:var(--radius-md);margin-top:24px;font-size:.875rem}
 .bulk .cnt{padding:0 8px 0 4px;font-weight:600}
 .bulk .sp{flex:1}
@@ -81,11 +83,11 @@ M_CSS = COMMON + r'''
 '''
 CARDS = [('video', '16/9', 'Signal Forms in 20 minutes', 'youtube.com'), ('shirt', '4/5', 'Wool overshirt', 'uniqlo.com'), ('bowl', '1/1', 'Rich tonkotsu ramen broth', 'seriouseats.com'), ('jacket', '4/5', 'Nano Puff jacket', 'patagonia.com'), ('pancakes', '1/1', 'Lemon ricotta pancakes', 'smittenkitchen.com'), ('dark', '16/9', 'Zoneless change detection', 'angular.dev')]
 def selcard(a, r, t, d, on):
-    return f'<article class="sm-card sm-l1" aria-selected="{str(on).lower()}"><span class="selbox">{CHK(on, "Select " + t)}</span><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3><div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>'
+    return f'<article class="sm-card sm-l1" draggable-card aria-selected="{str(on).lower()}"><span class="selbox">{CHK(on, "Select " + t)}</span><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3><div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>'
 BULK = f'''<div class="bulk sm-l2" role="toolbar" aria-label="3 links selected"><button class="sm-ib" type="button" aria-label="Clear selection">{ic("x")}</button><span class="cnt">3 selected</span>
 <button class="sm-btn sm-btn--sm" type="button">{ic("move")}Move</button><button class="sm-btn sm-btn--sm" type="button">{ic("hash")}Tags</button><button class="sm-btn sm-btn--sm" type="button">{ic("star")}Favorite</button><button class="sm-btn sm-btn--sm" type="button">{ic("bell")}Remind</button><button class="sm-btn sm-btn--sm" type="button">{ic("ext")}Open all</button><button class="sm-btn sm-btn--sm" type="button">{ic("copy")}Copy links</button><span class="sp"></span><button class="sm-btn sm-btn--sm" type="button" style="color:var(--danger)">{ic("trash")}Delete</button></div>'''
 select = f'''<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:32px"><h1 style="margin:0">All links</h1><span class="lead" style="margin:0">Select with X, Shift-click for a range, Ctrl A for all</span><button class="sm-btn sm-btn--sm" type="button" style="margin-left:auto">Select all 58</button></div>
-<div class="feed">{''.join(selcard(a, r, t, d, i in (0, 2, 4)) for i, (a, r, t, d) in enumerate(CARDS))}</div>{BULK}'''
+<div class="feed">{''.join(selcard(a, r, t, d, i in (0, 2, 4)) for i, (a, r, t, d) in enumerate(CARDS))}</div>{BULK}<p class="lbl-s" style="margin-top:8px">Try it: drag a card, or the selection, onto a folder in the sidebar.</p>''' + open('/tmp/claude-0/-home-user-shelfmark/ebcb0130-eb79-5d11-ad3d-48330e17911a/scratchpad/dsgen/drag.js').read()
 TREE = [('All links', None, 0, ''), ('Unsorted', 'graphite', 0, 'here'), ('Angular', 'clay', 0, ''), ('Forms', 'clay', 1, ''), ('Clothes', 'rose', 0, ''), ('Recipes', 'amber', 0, 'sel'), ('Ramen', 'amber', 1, ''), ('Baking', 'amber', 1, ''), ('Work', 'ocean', 0, '')]
 def tree(filter_=''):
     out = ''; parent = ''

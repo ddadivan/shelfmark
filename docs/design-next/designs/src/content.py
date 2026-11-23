@@ -141,7 +141,7 @@ folder_page = f'''<nav class="crumbs" aria-label="Breadcrumbs"><a href="#">All l
 <div class="mini-feed">{card('bowl', '1/1', 'Rich tonkotsu ramen broth from scratch', 'seriouseats.com')}{card('pancakes', '1/1', 'Lemon ricotta pancakes', 'smittenkitchen.com')}{card('video', '16/9', 'Sourdough for beginners', 'youtube.com')}</div>'''
 folder_menu = f'''<div class="row2"><div class="sm-menu sm-l2" role="menu" aria-label="Folder actions for Recipes">
 <button class="sm-mi" role="menuitem">{ic("plus")}New subfolder</button><button class="sm-mi" role="menuitem">{ic("plus")}Add link here</button>
-<div class="sm-msep"></div><button class="sm-mi" role="menuitem">{ic("edit")}Rename<span class="sm-kbd">F2</span></button><button class="sm-mi" role="menuitem">{ic("palette")}Colour and icon…</button><button class="sm-mi" role="menuitem">{ic("move")}Move to…</button>
+<div class="sm-msep"></div><button class="sm-mi" role="menuitem">{ic("edit")}Rename<span class="sm-kbd">F2</span></button><button class="sm-mi" role="menuitem">{ic("palette")}Folder settings…</button><button class="sm-mi" role="menuitem">{ic("move")}Move to…</button>
 <button class="sm-mi" role="menuitem">{ic("pin")}Pin to sidebar</button><button class="sm-mi" role="menuitem">{ic("share")}Share…</button><div class="sm-msep"></div><button class="sm-mi sm-mi--danger" role="menuitem">{ic("trash")}Delete folder</button></div>
 <div style="display:flex;flex-direction:column;gap:12px;flex:1;min-width:280px"><span class="lbl-s">Rename opens a small dialog, so a click on a folder always opens it.</span>
 <div class="overlay sm-l1" style="min-height:300px;margin-top:0"><div class="scrim2"></div><form class="sm-dialog sm-l3" role="dialog" aria-labelledby="rn" style="width:400px;max-width:calc(100% - 32px)"><h2 id="rn">Rename folder</h2>
@@ -152,11 +152,41 @@ folder_menu = f'''<div class="row2"><div class="sm-menu sm-l2" role="menu" aria-
 <div class="sm-field" style="min-width:0"><label>Inside</label><button class="sm-input" type="button" style="cursor:pointer;justify-content:flex-start">{ic("folder")}Top level<span style="margin-left:auto">{ic("chev")}</span></button></div>
 <div class="foot"><button class="sm-btn sm-btn--secondary" type="button">Cancel</button><button class="sm-btn sm-btn--primary" type="button">Create folder</button></div></form></div>
 <span class="lbl-s">Enter confirms, Esc closes, focus returns to the folder. The same dialog renames tags and saved views.</span></div></div>'''
-colour_pop = f'''<div class="row2"><div class="sm-pop sm-l2" role="dialog" aria-label="Colour and icon for Recipes" style="width:344px">
-<div class="sm-pgroup"><span class="lbl">Colour</span><div class="cgrid" role="radiogroup" aria-label="Colour">{''.join(f'<button class="cdot" role="radio" aria-checked="{str(c == "amber").lower()}" aria-label="{c.capitalize()}" style="background:var(--folder-{c}-bg);color:var(--folder-{c})">{ic("folder", 16)}</button>' for c in ['graphite', 'sage', 'ocean', 'plum', 'clay', 'amber', 'rose', 'teal'])}</div></div>
-<div class="sm-pgroup"><span class="lbl">Icon</span><div class="igrid" role="radiogroup" aria-label="Icon">{''.join(f'<button role="radio" aria-checked="{str(i == 0).lower()}" aria-label="Icon {i+1}">{ic(n, 20)}</button>' for i, n in enumerate(['folder', 'bookmark', 'star', 'bell', 'hash', 'search', 'text', 'browser', 'user', 'copy', 'share', 'palette', 'pin', 'inbox']))}</div></div>
-<p class="disc" style="margin:4px 8px 8px;font-size:.75rem;color:var(--text-muted)">Changes apply at once.</p></div>
-<div style="max-width:320px;font-size:.875rem;color:var(--text-muted)">Colour and icon only: cover, highlight, description, own colours and emoji are gone (D4). Opened from the folder menu, anchored to the folder.</div></div>'''
+FS_CSS = """
+.fset{width:560px;max-height:calc(100% - 32px);overflow:auto}
+.fset .grp2{display:flex;flex-direction:column;gap:8px}
+.fset .lblx{font:500 .75rem/1.4 var(--font-sans);color:var(--text-muted)}
+.fset .row{display:flex;gap:12px;align-items:center}
+.fset .tabs2{display:inline-flex;gap:2px;padding:2px;border-radius:var(--radius-sm);background:var(--surface-hover);align-self:flex-start}
+.fset .tabs2 button{height:28px;padding:0 10px;border:0;border-radius:6px;background:transparent;font:500 .75rem/1 var(--font-sans);color:var(--text-muted)}
+.fset .tabs2 button[aria-selected="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow-l1)}
+.fset .igrid{grid-template-columns:repeat(10,36px)}
+.fset .own{width:32px;height:32px;border-radius:50%;border:1px dashed var(--line-strong);display:grid;place-items:center;background:transparent;color:var(--text-muted)}
+.fset .cover{display:flex;gap:12px;align-items:center}
+.fset .cover .ph{width:120px;height:56px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--line)}
+.fset .prevrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface-hover);font:500 .875rem/1.4 var(--font-sans)}
+.fset .prevrow.hl{background:var(--folder-amber-bg);color:var(--folder-amber)}
+.fset .emo{display:grid;grid-template-columns:repeat(10,36px);gap:4px}
+.fset .emo button{width:36px;height:36px;border:0;border-radius:var(--radius-sm);background:transparent;font-size:1.25rem}
+"""
+O_CSS += FS_CSS
+ICONS20 = ['folder', 'bookmark', 'star', 'bell', 'hash', 'search', 'text', 'browser', 'user', 'copy', 'share', 'palette', 'pin', 'inbox', 'play', 'grid', 'list', 'rule', 'upload', 'edit']
+def fsdialog(tab='icons'):
+    icons = ''.join(f'<button role="radio" aria-checked="{str(i == 0).lower()}" aria-label="{n}" type="button">{ic(n, 20)}</button>' for i, n in enumerate(ICONS20))
+    emo = '<div class="sm-input" style="height:36px">' + ic("search") + '<input placeholder="Search emoji" aria-label="Search emoji"></div><span class="lblx">Recent</span><div class="emo">' + ''.join(f'<button type="button" aria-label="{e}">{e}</button>' for e in ['🍜', '🥞', '👕', '🧥', '✈️', '📚', '💻', '🎨', '🏠', '🎧']) + '</div>'
+    return f"""<form class="sm-dialog sm-l3 fset" role="dialog" aria-labelledby="fst"><h2 id="fst">Folder settings</h2>
+<div class="sm-field" style="min-width:0"><label for="fsn">Name</label><div class="sm-input">{tile("amber")}<input id="fsn" value="Recipes"></div></div>
+<div class="sm-field" style="min-width:0"><label for="fsd">Description <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label><div class="sm-input"><input id="fsd" value="Weeknight dinners and weekend projects"></div><span class="sm-hint">Shown under the folder name and on its public page.</span></div>
+<div class="grp2"><span class="lblx">Colour</span><div class="row" role="radiogroup" aria-label="Colour" style="flex-wrap:wrap;gap:8px">{''.join(f'<button class="cdot" type="button" role="radio" aria-checked="{str(c == "amber").lower()}" aria-label="{c.capitalize()}" style="background:var(--folder-{c}-bg);color:var(--folder-{c})">{ic("folder", 16)}</button>' for c in ['graphite', 'sage', 'ocean', 'plum', 'clay', 'amber', 'rose', 'teal'])}<span style="width:1px;height:24px;background:var(--line)"></span><button class="cdot" type="button" role="radio" aria-checked="false" aria-label="Own colour, coral" style="background:#FBE3DC;color:#A8432A">{ic("folder", 16)}</button><button class="own" type="button" aria-label="Add your own colour">{ic("plus")}</button></div><span class="sm-hint" style="font-size:.75rem;color:var(--text-muted)">Own colours are checked for contrast in light and dark.</span></div>
+<div class="grp2"><div class="tabs2" role="tablist" aria-label="Icon or emoji"><button type="button" role="tab" aria-selected="{str(tab == 'icons').lower()}">Icon</button><button type="button" role="tab" aria-selected="{str(tab == 'emoji').lower()}">Emoji</button></div>
+{('<div class="igrid" role="radiogroup" aria-label="Icon">' + icons + '</div><button class="sm-btn sm-btn--sm" type="button" style="align-self:flex-start">Show all 120 icons</button>') if tab == 'icons' else emo}</div>
+<div class="grp2"><span class="lblx">Cover</span><div class="cover"><span class="ph">{ART['bowl']}</span><button class="sm-btn sm-btn--secondary sm-btn--sm" type="button">Change cover</button><button class="sm-btn sm-btn--sm" type="button">Remove</button></div><span class="sm-hint" style="font-size:.75rem;color:var(--text-muted)">Shown at the top of the folder page and on its public page. A picture from one of its links, or your own.</span></div>
+<div class="setrow" style="padding:0"><span class="tx"><b>Highlight in the sidebar</b><span>The row takes the folder colour, so it stands out.</span></span><button class="sm-switch" type="button" role="switch" aria-checked="true" aria-label="Highlight in the sidebar"></button></div>
+<div class="grp2"><span class="lblx">Preview</span><div class="prevrow hl">{tile("amber")}Recipes<span style="margin-left:auto;font-weight:400;font-size:.75rem">7</span></div></div>
+<div class="foot" style="justify-content:space-between"><button class="sm-btn" type="button">Reset to default</button><span style="display:flex;gap:8px"><button class="sm-btn sm-btn--secondary" type="button">Cancel</button><button class="sm-btn sm-btn--primary" type="button">Save</button></span></div></form>"""
+colour_pop = f"""<div class="overlay sm-l1" style="min-height:1040px"><div class="scrim2"></div>{fsdialog('icons').replace('class="sm-dialog sm-l3 fset"', 'class="sm-dialog sm-l3 fset" style="top:24px;transform:translateX(-50%)"')}</div>
+<p class="lbl-s" style="margin-top:8px">Opened from the folder menu (Folder settings…) or by double-clicking the folder tile. Everything the current Shelfmark has: name, description, colour with own colours, icon or emoji, cover, highlight. On phones it is a full-height sheet.</p>"""
+colour_emoji = f"""<div class="overlay sm-l1" style="min-height:900px"><div class="scrim2"></div>{fsdialog('emoji').replace('class="sm-dialog sm-l3 fset"', 'class="sm-dialog sm-l3 fset" style="top:24px;transform:translateX(-50%)"')}</div>"""
 tags_page = f'''<h1>Tags</h1><p class="lead">12 tags. Click one to see its links; rename, merge or delete from its menu.</p>
 <div class="tags-page">{''.join(f'<button class="tagbig" type="button">{ic("hash")}{t}<b>{k}</b></button>' for t, k in [('angular', 12), ('reading', 8), ('clothes', 7), ('design', 5), ('ramen', 3), ('video', 6), ('tools', 4), ('a11y', 2), ('breakfast', 2), ('baking', 2), ('css', 1), ('home', 1)])}</div>
 <div class="row2"><div class="sm-menu sm-l2" role="menu" aria-label="Actions for tag reading"><div class="sm-mh">#reading · 8 links</div><button class="sm-mi" role="menuitem">{ic("search")}Show links</button><button class="sm-mi" role="menuitem">{ic("edit")}Rename</button><button class="sm-mi" role="menuitem">{ic("merge")}Merge into…</button><div class="sm-msep"></div><button class="sm-mi sm-mi--danger" role="menuitem">{ic("trash")}Delete tag</button></div></div>'''
@@ -216,7 +246,9 @@ O_CSS += r"""
 .selfeed{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:24px}
 .selfeed .sm-card{width:auto;position:relative}
 .selfeed .sb{position:absolute;top:12px;left:12px;z-index:2}
-.selfeed .sm-card[aria-selected="true"]{box-shadow:0 0 0 2px var(--accent)}
+.selfeed .sm-card,.feed .sm-card{transition:background-color 120ms,border-color 120ms}
+.selfeed .sm-card[aria-selected="true"],.feed .sm-card[aria-selected="true"]{background:var(--accent-bg);border-color:var(--line-strong);box-shadow:none}
+.selfeed .sm-card[aria-selected="true"] .sm-cover,.feed .sm-card[aria-selected="true"] .sm-cover{transform:scale(.96);transition:transform 200ms}
 .selfeed .sb .sm-check{box-shadow:0 0 0 2px var(--surface)}
 .bulkbar{position:sticky;bottom:16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:8px;border-radius:var(--radius-md);margin-top:24px;font-size:.875rem;z-index:5}
 .bulkbar .cnt{padding:0 8px 0 4px;font-weight:600}.bulkbar .sp{flex:1}
@@ -227,12 +259,12 @@ SELC = [('bowl', '1/1', 'Rich tonkotsu ramen broth from scratch', 'seriouseats.c
 folder_select = f"""<nav class="crumbs" aria-label="Breadcrumbs"><a href="#">All links</a>{ic("right", 14)}<span>Recipes</span></nav>
 <div class="fhead"><span class="sm-tile" style="background:var(--folder-amber-bg);color:var(--folder-amber)">{ic("folder", 20)}</span><h1>Recipes</h1><span class="lead" style="margin:0">Select with X or the checkbox on a card; Shift-click selects a range</span>
 <div style="margin-left:auto;display:flex;gap:8px"><button class="sm-btn sm-btn--sm" type="button">Select all 7</button></div></div>
-<div class="selfeed">{''.join(f'<article class="sm-card sm-l1" aria-selected="{str(on).lower()}"><span class="sb">{sck(on, t)}</span><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3><div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>' for a, r, t, d, on in SELC)}</div>
+<div class="selfeed">{''.join(f'<article class="sm-card sm-l1" draggable-card aria-selected="{str(on).lower()}"><span class="sb">{sck(on, t)}</span><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3><div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>' for a, r, t, d, on in SELC)}</div>
 <div class="bulkbar sm-l2" role="toolbar" aria-label="3 links selected"><button class="sm-ib" type="button" aria-label="Clear selection">{ic("x")}</button><span class="cnt">3 selected</span>
 <button class="sm-btn sm-btn--sm" type="button">{ic("move")}Move</button><button class="sm-btn sm-btn--sm" type="button">{ic("hash")}Tags</button><button class="sm-btn sm-btn--sm" type="button">{ic("star")}Favorite</button><button class="sm-btn sm-btn--sm" type="button">{ic("bell")}Remind</button><button class="sm-btn sm-btn--sm" type="button">{ic("ext")}Open all</button><button class="sm-btn sm-btn--sm" type="button">{ic("copy")}Copy links</button><span class="sp"></span><button class="sm-btn sm-btn--sm" type="button" style="color:var(--danger)">{ic("trash")}Delete</button></div>
-<p class="lbl-s" style="margin-top:8px">Without a selection the checkbox appears on hover (always on touch, after long-press). Move, Tags and Remind open their pickers for all selected links; full set in “Select, move, side by side”.</p>"""
+<p class="lbl-s" style="margin-top:8px">Without a selection the checkbox appears on hover (always on touch, after long-press). Move, Tags and Remind open their pickers for all selected links; full set in “Select, move, side by side”. Try it: drag a card, or the selection, onto a folder in the sidebar.</p>""" + open('/tmp/claude-0/-home-user-shelfmark/ebcb0130-eb79-5d11-ad3d-48330e17911a/scratchpad/dsgen/drag.js').read()
 page('organise.html', 'Organise', O_CSS, [
- ('folder', 'Folder page', folder_page), ('select', 'Select several links and bulk actions', folder_select), ('menu', 'Folder menu, rename and new folder', folder_menu), ('phone-rename', 'Phone: actions sheet and rename', phone_state), ('colour', 'Colour and icon', colour_pop),
+ ('folder', 'Folder page', folder_page), ('select', 'Select several links and bulk actions', folder_select), ('menu', 'Folder menu, rename and new folder', folder_menu), ('phone-rename', 'Phone: actions sheet and rename', phone_state), ('colour', 'Folder settings', colour_pop), ('colour-emoji', 'Folder settings: emoji', colour_emoji),
  ('tags', 'Tags', tags_page), ('tidy', 'Tidy up', tidy), ('rules', 'Rules and the rule editor', rules), ('trash', 'Trash and delete forever', trash), ('trash-empty', 'Trash: empty', trash_empty)], cur='recipes')
 
 # ================= SETTINGS =================
