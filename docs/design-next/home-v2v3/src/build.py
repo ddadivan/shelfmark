@@ -51,7 +51,7 @@ ICJS = json.dumps({k: ic(k, 12, 2) for k in ['folder', 'star', 'pen', 'ext']})
 
 COMMON_JS = r'''
 const L = __DATA__, IC = __ICJS__;
-const S = {scope: 'all', tab: 'all', q: '', view: 'cards', size: 'm'};
+const S = {scope: 'all', tab: 'all', q: '', view: (typeof DEFVIEW!=='undefined'?DEFVIEW:'cards'), size: 'm'};
 try { const v = JSON.parse(localStorage.getItem(KEY) || '{}'); if (v.view) S.view = v.view; if (v.size) S.size = v.size; if (v.theme) document.documentElement.dataset.theme = v.theme; } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify({view: S.view, size: S.size, theme: document.documentElement.dataset.theme || ''})) } catch (e) {} };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
@@ -115,6 +115,7 @@ SIZE = '<div class="sizesw" id="sizesw" role="group" aria-label="Розмір к
 VIEW = f'<div class="viewsw" role="group" aria-label="Вигляд"><button type="button" data-view="cards" aria-label="Картки">{ic("grid")}</button><button type="button" data-view="list" aria-label="Список">{ic("list")}</button></div>'
 
 # ================= V2 =================
+VIEW3 = f'<div class="viewsw" role="group" aria-label="Вигляд"><button type="button" data-view="masonry" aria-label="Masonry" title="Masonry">{ic("masonry")}</button><button type="button" data-view="cards" aria-label="Картки" title="Картки">{ic("grid")}</button><button type="button" data-view="list" aria-label="Список" title="Список">{ic("list")}</button></div>'
 V2_CSS = r'''
 :root{--bg:#F6F6F4;--side:#EFEFEC;--surface:#FFFFFF;--fill:#EBEBE7;--sel:#E4E4DF;--hover:rgba(24,24,28,.05);--text:#1C1C1F;--muted:#5D5D64;--sage:#4E7A52;--scrim:rgba(20,20,22,.4)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#19191C;--side:#151518;--surface:#212125;--fill:#26262B;--sel:#2F2F35;--hover:rgba(255,255,255,.06);--text:#ECECEE;--muted:#A3A3AA;--sage:#8FBF93;color-scheme:dark}}
@@ -190,6 +191,10 @@ h1{margin:0;font-size:24px;line-height:30px;font-weight:600;letter-spacing:-.01e
 .sizesw button{min-width:28px;height:28px;padding:0 6px;border-radius:8px;color:var(--muted);font-size:12px;font-weight:600}
 .sizesw button[aria-pressed="true"]{background:var(--surface);color:var(--text)}
 .size-s .cols{columns:6 150px;column-gap:16px}.size-l .cols{columns:3 300px;column-gap:28px}
+.tile.repo img{object-position:left center}
+.ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px}.ugrid .card{margin:0}
+.size-s .ugrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}.size-l .ugrid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
+@media (max-width:760px){.ugrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.size-l .ugrid{grid-template-columns:1fr}}
 .size-s .ttl{font-size:14px;line-height:20px}.size-s .note{font-size:15px;line-height:22px}
 .card{background:var(--surface);border-radius:8px;overflow:hidden;gap:0;transition:background-color 150ms}
 .card .tile{border-radius:0}.card .body{padding:12px 12px 14px}
@@ -205,20 +210,19 @@ h1{margin:0;font-size:24px;line-height:30px;font-weight:600;letter-spacing:-.01e
  .tbadd{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background:var(--text);color:var(--bg)}.toast{bottom:84px}.rthumb{width:88px}.rnote,.dotsep{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 '''
-V2_CARDS = r'''function cardsHTML(items){const cols=4;return `<div class="cols">${items.map(l=>`<a class="card" href="${l.url}" target="_blank" rel="noopener"><span class="tile ${l.kind}" style="aspect-ratio:${l.ratio}"><img src="${l.img}" alt="">${l.kind==='video'?`<span class="play" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>`:''}</span><span class="body"><span class="meta">${fav(l.domain,16)}<span>${esc(l.sub)}</span><span class="ago">${esc(l.ago)}</span></span><span class="ttl">${esc(l.title)}</span>${l.note?`<span class="note">${esc(l.note)}</span>`:''}<span class="foot2"><span class="f">${IC.folder}${esc(l.folder)}</span>${l.tags.map(t=>`<span>#${esc(t)}</span>`).join('')}${l.fav?`<span class="st" aria-label="В обраному">${IC.star}</span>`:''}</span></span></a>`).join('')}</div>`}'''
+V2_CARDS = r'''function cardsHTML(items){const mas=S.view==='masonry';return `<div class="${mas?'cols':'ugrid'}">${items.map(l=>`<a class="card" href="${l.url}" target="_blank" rel="noopener"><span class="tile ${l.kind}" style="aspect-ratio:${mas?l.ratio:'4 / 3'}"><img src="${l.img}" alt="">${l.kind==='video'?`<span class="play" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span>`:''}</span><span class="body"><span class="meta">${fav(l.domain,16)}<span>${esc(l.sub)}</span><span class="ago">${esc(l.ago)}</span></span><span class="ttl">${esc(l.title)}</span>${l.note?`<span class="note">${esc(l.note)}</span>`:''}<span class="foot2"><span class="f">${IC.folder}${esc(l.folder)}</span>${l.tags.map(t=>`<span>#${esc(t)}</span>`).join('')}${l.fav?`<span class="st" aria-label="В обраному">${IC.star}</span>`:''}</span></span></a>`).join('')}</div>`}'''
 v2_body = f'''<div class="app">{sidebar('side').replace('__LOGO__', LOGO('currentColor', 'var(--side)'))}
 <main><header class="top"><label class="search">{ic('search')}<input id="q" type="search" placeholder="Пошук посилань, папок і тегів" aria-label="Пошук"><kbd class="desk">⌘K</kbd></label>
 <button type="button" class="btn" data-soon="Спитати полицю">{ic('spark')}Запитати</button><span class="sp"></span>
 <button type="button" class="ib desk" aria-label="Тема" data-theme-toggle>{ic('sun', 18)}</button>
 <button type="button" class="btn add desk" data-soon="Додати посилання">{ic('plus', 16, 2)}Додати посилання</button><button type="button" class="av" aria-label="Акаунт">AL</button></header>
-<div class="head"><div class="t"><h1 id="h1t">Усі посилання</h1><span class="muted" id="h1n" style="font-size:14px"></span></div><button type="button" class="sort" data-soon="Сортування">Спершу нові{ic('chev', 14)}</button>{SIZE}{VIEW}</div>
+<div class="head"><div class="t"><h1 id="h1t">Усі посилання</h1><span class="muted" id="h1n" style="font-size:14px"></span></div><button type="button" class="sort" data-soon="Сортування">Спершу нові{ic('chev', 14)}</button>{SIZE}{VIEW3}</div>
 {TABS}<section id="feed" aria-label="Посилання"></section></main></div>{TABBAR}<div class="toast" id="toast" role="status" hidden></div>'''
 v2 = f'''<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Shelfmark — варіант v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
-<style>{V2_CSS}</style></head><body>{v2_body}<script>const KEY='sm-v2';{V2_CARDS}{COMMON_JS.replace('__DATA__', DATA).replace('__ICJS__', ICJS)}</script></body></html>'''
+<style>{V2_CSS}</style></head><body>{v2_body}<script>const KEY='sm-v2b';const DEFVIEW='masonry';{V2_CARDS}{COMMON_JS.replace('__DATA__', DATA).replace('__ICJS__', ICJS)}</script></body></html>'''
 
 # ================= V3 =================
-VIEW3 = f'<div class="viewsw" role="group" aria-label="Вигляд"><button type="button" data-view="masonry" aria-label="Masonry" title="Masonry">{ic("masonry")}</button><button type="button" data-view="cards" aria-label="Картки" title="Картки">{ic("grid")}</button><button type="button" data-view="list" aria-label="Список" title="Список">{ic("list")}</button></div>'
 V3_CSS = r'''
 :root{--bg:#ECECE9;--panel:#FBFBFA;--panel2:#F2F2EF;--sel:#E6E6E1;--hover:rgba(20,20,24,.05);--text:#18181B;--muted:#5C5D64;--sage:#4E7A52;--tile:#EDEDEA}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141518;--panel:#1B1C20;--panel2:#232429;--sel:#2C2D33;--hover:rgba(255,255,255,.06);--text:#EEEEF0;--muted:#A4A5AD;--sage:#9CCB9F;--tile:#24252A;color-scheme:dark}}
@@ -325,7 +329,7 @@ v3_body = f'''<div class="app">{sidebar('side').replace('__LOGO__', LOGO('curren
 <div id="feed"></div></main></div>{TABBAR}<div class="toast" id="toast" role="status" hidden></div>'''
 v3 = f'''<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Shelfmark — варіант v3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@500;600&family=Funnel+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>{V3_CSS}</style></head><body>{v3_body}<script>const KEY='sm-v3';{V3_CARDS}{COMMON_JS.replace('__DATA__', DATA).replace('__ICJS__', ICJS)}</script></body></html>'''
+<style>{V3_CSS}</style></head><body>{v3_body}<script>const KEY='sm-v3b';const DEFVIEW='masonry';{V3_CARDS}{COMMON_JS.replace('__DATA__', DATA).replace('__ICJS__', ICJS)}</script></body></html>'''
 B = '/home/user/shelfmark/docs/design-next/home-v2v3'
 import os; os.makedirs(B, exist_ok=True)
 open(f'{B}/shelfmark-home-v2.html', 'w').write(v2); open(f'{B}/shelfmark-home-v3.html', 'w').write(v3)
