@@ -1,7 +1,3 @@
-# Toast
-One line about what just happened, with Undo when the change can be reversed.
+Short confirmations with an optional action (Undo, Show, Try again).
 
-L2, `radius-md`, bottom centre (above the phone tab bar). Text: what happened, then to what in muted. 4 s, 8 s with Undo, errors stay until closed. One toast policy everywhere: every change shows one; selection alone does not.
-
-## In code
-`ToastService.show()`.
+`text` fill with `canvas` text, radius 12, 14px; bottom centre, above the tab bar on small screens. Errors carry a `danger` mark and stay until handled; others leave after 4–8 s.

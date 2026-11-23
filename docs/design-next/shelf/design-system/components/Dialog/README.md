@@ -1,7 +1,3 @@
-# Dialog
-A modal L3 panel, kept for the few things that must interrupt: confirming a permanent action, the export, the AI intro, shortcuts, What's new.
+Confirmations and short forms: rename, new folder, delete forever, tokens.
 
-`radius-lg`, 24px padding, `title-m` heading, over `scrim`. Destructive confirmations name the thing ("Delete “Wool overshirt” forever?"), use a danger verb, focus Cancel. Never a dialog on a dialog; never a dialog for a task under 10 seconds (use a Popover) or longer than one step (use a page).
-
-## In code
-`DialogService.open()`, `confirm()`.
+`surface`, radius 12, 20px padding, `shadow-l3` over `scrim`; title 16/24 600; buttons at the bottom right, pills, secondary first and the main action last. Fields are `surface-hover` with an inset hairline, radius 10. On phone a dialog becomes a bottom sheet above the keyboard.

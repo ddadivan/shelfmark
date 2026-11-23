@@ -252,13 +252,6 @@ svg{display:block;flex:none}
   .view{max-height:none}
 }
 @media (max-width:63.99em){
-  .side{width:72px;padding:16px 8px;align-items:center}
-  .side .logo span,.side .nav .lbl,.side .nav .n,.side .nav .dot,.side .sec,.side .tree,.side .taglist-side{display:none}
-  .side .nav{width:48px;height:48px;justify-content:center;padding:0;position:relative}
-  .side .nav .dot-rail{display:block;position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
-  .rail-only{display:block}
-}
-@media (max-width:39.99em){
   .side{display:none}
   .app{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
   .top .add-btn,.top .avatar,.kbd-hint{display:none}
@@ -664,6 +657,7 @@ body{background:var(--l0);font-family:var(--font)}
 .intro .x{position:absolute;top:8px;right:8px;width:28px;height:28px}
 .main{margin:0!important;padding:16px 32px 48px!important;border-radius:0!important;background:var(--l0)!important;min-height:100vh}
 .top{display:grid!important;grid-template-columns:minmax(0,640px) 1fr auto;align-items:center;gap:8px;height:auto!important}
+.avatar.mob{display:none;place-items:center;width:40px;height:40px;border:0;border-radius:50%;background:var(--pressed);color:var(--fg);font:500 .75rem/1 var(--font)}
 .top .search{grid-column:1;height:48px!important;border-radius:16px!important;max-width:none!important;padding:0 16px!important;background:var(--hover)!important;box-shadow:inset 0 0 0 1px rgba(127,127,127,.25)!important}
 .top .search:focus-within{box-shadow:inset 0 0 0 1px rgba(127,127,127,.25),0 0 0 2px var(--focus)!important}
 .top .search .kbd{background:none!important;padding:0!important;color:var(--muted)}
@@ -746,7 +740,11 @@ body{background:var(--l0);font-family:var(--font)}
 .btn.primary{border-radius:999px}.btn.secondary{border-radius:999px;background:var(--hover)}
 .chip{border-radius:10px}
 .toast{border-radius:12px;background:var(--fg);color:var(--l0)}
-@media (max-width:63.99em){.side{width:72px!important;padding:16px 8px!important}.sbtop .add-btn span,.brandrow .avatar,.intro,.side .grp:not(:first-of-type){display:none}.top{grid-template-columns:minmax(0,1fr) auto}.ask-top{grid-column:2}}
+@media (max-width:63.99em){.side{display:none!important}.main{padding:16px 24px 112px!important}.top{grid-template-columns:minmax(0,1fr) auto!important}.ask-top{display:none!important}.avatar.mob{display:grid!important}.top .search .kbd{display:none}
+ .tabbar{display:flex!important;left:max(8px,env(safe-area-inset-left,0px))!important;right:max(8px,env(safe-area-inset-right,0px))!important;bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;height:64px!important;padding:0 8px!important;border-radius:12px!important;background:var(--l1)!important;border:0!important;box-shadow:0 4px 24px rgba(0,0,0,.10)!important;justify-content:space-around!important}
+ .tab{width:64px!important;height:48px!important;border-radius:8px!important;font-size:.75rem!important;font-weight:400!important}.tab[aria-current="page"]{background:var(--pressed)!important;font-weight:500!important}
+ .fab{width:48px!important;height:48px!important;border-radius:12px!important;background:var(--fg)!important;color:var(--l0)!important}
+ .masonry{columns:3!important;column-gap:16px!important}.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important}}
 @media (max-width:39.99em){.main{padding:16px 16px 104px!important}.top .search{height:44px!important}.ask-top span{display:none}.masonry{columns:2!important;column-gap:12px!important}.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}.tools .cfgbtn{display:none}}
 </style>
 
@@ -822,6 +820,7 @@ body{background:var(--l0);font-family:var(--font)}
   <main class="main" id="main">
     <header class="top">
       <div class="search l1" role="search"><svg width="16" height="16" aria-hidden="true"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Search links, folders and tags" aria-label="Search links, folders and tags" autocomplete="off"><button class="qx" id="qx" type="button" aria-label="Clear search" hidden><svg width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg></button><span class="kbd kbd-hint">Ctrl K</span><div class="qrec l2" id="qrec" role="listbox" aria-label="Recent searches" hidden></div></div>
+      <button class="avatar mob" type="button" data-pop="account" aria-haspopup="menu" aria-label="Account and settings">DU</button>
       <a class="btn ask-top" href="ask.html" title="Ask your shelf (Ctrl J)"><svg width="16" height="16" aria-hidden="true"><use href="#i-spark"/></svg><span>Ask</span></a>
     </header>
     <div id="page"></div>
@@ -1093,7 +1092,7 @@ body{background:var(--l0);font-family:var(--font)}
   /* Popovers */
   const pop=document.getElementById('pop');let popFor=null;
 
-  const phoneQ=matchMedia('(max-width:39.99em)');
+  const phoneQ=matchMedia('(max-width:63.99em)');
   function sheetize(title){const on=phoneQ.matches;pop.classList.toggle('sheet',on);let sc=document.getElementById('popscrim');
     if(on){if(!sc){sc=document.createElement('div');sc.id='popscrim';sc.addEventListener('click',()=>closePop(true));pop.before(sc)}sc.hidden=false;
       if(title&&!pop.querySelector('.mh,.sm-mh')){const h=document.createElement('h2');h.className='sheet-t';h.textContent=title;pop.prepend(h)}
@@ -1112,7 +1111,7 @@ body{background:var(--l0);font-family:var(--font)}
     else if(kind==='sort')h=['Newest first','Oldest first','Title A–Z'].map((t,i)=>`<button class="mi" type="button" role="menuitemradio" aria-checked="${i===0}">${t}</button>`).join('');
     else if(kind==='display'){pop.setAttribute('role','dialog');pop.setAttribute('aria-label','Show on cards');h=`<div class="mh">Show on cards</div>`+[['image','Preview image'],['desc','Description'],['note','Note'],['tags','Tags'],['site','Site'],['date','Date saved']].map(([k,t])=>`<button class="mi" type="button" role="menuitemcheckbox" aria-checked="${!!S.show[k]}" data-show="${k}">${t}<span style="margin-left:auto;color:var(--fg)">${S.show[k]?ic('i-check',16):''}</span></button>`).join('')+`<div class="msep"></div><p class="muted" style="margin:4px 8px 4px;font-size:var(--t-meta);max-width:28ch">Description is the page's own text, or an AI summary (marked with ✦) when it has none. Same switches in Settings › Appearance.</p><button class="mi" type="button" data-show-reset>Reset to default</button>`}
     else if(kind==='more')h=`<div class="mh">Sort by</div>${['Newest first','Oldest first','Title A–Z'].map((t,i)=>`<button class="mi" type="button" role="menuitemradio" aria-checked="${i===0}">${t}</button>`).join('')}<div class="msep"></div><button class="mi" type="button" data-pop="filter">${ic('i-filter',16)}Filter…</button><button class="mi" type="button" data-select-on>${ic('i-check',16)}Select links<span class="kbd">X</span></button><a class="mi" href="select-move.html">${ic('i-split',16)}Side by side</a><button class="mi" type="button">${ic('i-upload',16)}Export this view…</button>`;
-    else if(kind==='filter'){pop.setAttribute('role','dialog');pop.setAttribute('aria-label','Filter');h=`<div class="pgroup"><span class="lbl">Type</span><div class="taglist">${['Videos','Articles','Clothes','Recipes','Tools'].map(t=>`<button class="chip" type="button" aria-pressed="false" style="height:32px">${t}</button>`).join('')}</div></div>
+    else if(kind==='filter'){pop.setAttribute('role','dialog');pop.setAttribute('aria-label','Filter');h=`<div class="pgroup"><span class="lbl">Type</span><div class="taglist">${['Videos','Repositories','Shops','Articles'].map(t=>`<button class="chip" type="button" aria-pressed="false" style="height:32px">${t}</button>`).join('')}</div></div>
       <div class="pgroup"><span class="lbl">Saved</span><div class="seg" role="radiogroup" aria-label="Saved"><button type="button" role="radio" aria-checked="true">Any time</button><button type="button" role="radio" aria-checked="false">Week</button><button type="button" role="radio" aria-checked="false">Month</button></div></div>
       <div class="pgroup"><span class="lbl">Tags</span><div class="taglist">${TAGS.map(([t])=>`<button class="chip" type="button" aria-pressed="false" style="height:32px">#${t}</button>`).join('')}</div></div>
       <div class="pgroup" style="flex-direction:row;justify-content:space-between;align-items:center"><span style="font-size:var(--t-sec)">Only favorites</span><button class="chip" type="button" aria-pressed="false" style="height:28px">Off</button></div>`}
@@ -1167,8 +1166,8 @@ body{background:var(--l0);font-family:var(--font)}
     const rn=t.closest('[data-rename]');if(rn){const trig=popFor;closePop();openRename(+rn.dataset.rename,trig);return}
     const dl=t.closest('[data-del]');if(dl){const id=+dl.dataset.del;closePop();const ids=id?[id]:[...S.sel];ids.forEach(i=>{const c=document.querySelector(`.card[data-id="${i}"]`);if(c)c.classList.add('mo-gone')});setTimeout(()=>{ids.forEach(i=>{const k=L.findIndex(x=>x.id===i);if(k>=0)L.splice(k,1)});S.sel.clear();S.select=false;render();toast(ids.length>1?'Moved '+ids.length+' links to Trash':'Moved to Trash',true)},200);return}
     if(t.closest('[data-undo]')){document.getElementById('toast').hidden=true;return}
-    if(t.closest('#add')||t.closest('.fab')){if(S.link){S.link=null}const k=L.findIndex(x=>x.id===99);if(k>=0)L.splice(k,1);const nl={id:99,kind:'type',title:'Miso glazed salmon',domain:'bonappetit.com',site:'Bon Appétit',cover:'Miso glazed salmon',bg:'#7a3b1f',fg:'#fff4ea',ratio:'1.91 / 1',folder:'Recipes',c:'amber',tags:['recipes'],date:'Just now',type:'articles',note:'Quick weeknight dinner'};
-    const go=()=>{L.unshift(nl);render()};if(S.scope!=='all'&&S.scope!=='today'){S.scope='all'}(window.__moFlip||((c,f)=>f()))(document.getElementById('page'),go,'.card[data-id="99"]');toast('Saved to Recipes · by rule',true);return}
+    if(t.closest('#add')||t.closest('.fab')){if(S.link){S.link=null}const k=L.findIndex(x=>x.id===99);if(k>=0)L.splice(k,1);const nl={id:99,kind:'type',title:'Svelte 5: runes explained',domain:'svelte.dev',sub:'svelte.dev',site:'svelte.dev',cover:'Svelte 5 is here',bg:'#ff3e00',fg:'#ffffff',ratio:'1.91 / 1',folder:'Learning',c:'sage',tags:['svelte'],date:'Just now',type:'articles',note:'Compare with Angular signals'};
+    const go=()=>{L.unshift(nl);render()};if(S.scope!=='all'&&S.scope!=='today'){S.scope='all'}(window.__moFlip||((c,f)=>f()))(document.getElementById('page'),go,'.card[data-id="99"]');toast('Saved to Learning · by rule',true);return}
     if(!t.closest('#pop'))closePop();
   });
   function step(d){const items=visible();const i=items.findIndex(x=>x.id===S.link);const n=items[i+d];if(n){S.link=n.id;const l=byId(n.id);if(!l.reader)S.mode='site';else if(l.blocked)S.mode='reader';render()}}
@@ -1187,7 +1186,7 @@ body{background:var(--l0);font-family:var(--font)}
   const qi=document.getElementById('q'),qx=document.getElementById('qx');
   function setQ(v){S.q=v;qi.value=v;qx.hidden=!v;if(v&&(S.scope==='today'||S.link)){S.scope='all';S.link=null}S.empty=false;render()}
   const qrec=document.getElementById('qrec');
-  const recHTML=()=>`<div class="h">Recent searches</div>${['signal forms','ramen','#clothes sale'].map(r=>`<button class="r" type="button" role="option" data-set-q="${esc(r)}">${ic('i-revisit',16)}${esc(r)}</button>`).join('')}<div class="h">Ways to search</div><div class="ways">${['#tag','in:Recipes','site:youtube.com','last week'].map(w=>`<span>${w}</span>`).join('')}</div><p>For questions (how many, which, summarise) use Ask on the right of the field, or Ctrl J.</p>`;
+  const recHTML=()=>`<div class="h">Recent searches</div>${['angular','jacket','#shoes'].map(r=>`<button class="r" type="button" role="option" data-set-q="${esc(r)}">${ic('i-revisit',16)}${esc(r)}</button>`).join('')}<div class="h">Ways to search</div><div class="ways">${['#tag','in:Recipes','site:youtube.com','last week'].map(w=>`<span>${w}</span>`).join('')}</div><p>For questions (how many, which, summarise) use Ask on the right of the field, or Ctrl J.</p>`;
   const recShow=()=>{if(phoneQ.matches)return;qrec.innerHTML=recHTML();qrec.hidden=!!qi.value};
   qi.addEventListener('focus',recShow);qi.addEventListener('blur',()=>setTimeout(()=>{qrec.hidden=true},150));
   qrec.addEventListener('mousedown',e=>e.preventDefault());
@@ -1212,7 +1211,7 @@ body{background:var(--l0);font-family:var(--font)}
   const mk=(t,q)=>q?esc(t).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>'):esc(t);
   function fsRender(){const q=fsq.value.trim();document.getElementById('fs-clear').hidden=!q;
     if(!q){fsBody.innerHTML=`<div class="fs-gt">Recent searches</div>${RECENT.map(r=>`<button class="fs-row" type="button" data-fs-q="${esc(r)}"><span class="ri">${ic('i-revisit',18)}</span><span class="tx"><b>${esc(r)}</b></span></button>`).join('')}
-      <div class="fs-gt">Ways to search</div><div class="fs-ways"><span>#tag</span><span>in:Recipes</span><span>site:youtube.com</span><span>last week</span></div><p class="muted" style="font-size:var(--t-meta);margin:12px 0 0">For questions (how many, which, summarise) use Ask, Ctrl J.</p>`;return}
+      <div class="fs-gt">Ways to search</div><div class="fs-ways"><span>#tag</span><span>in:Learning</span><span>site:youtube.com</span><span>last week</span></div><p class="muted" style="font-size:var(--t-meta);margin:12px 0 0">For questions (how many, which, summarise) use Ask, Ctrl J.</p>`;return}
     const ql=q.toLowerCase().replace(/^#/,'');const hit=L.filter(l=>(l.title+' '+l.domain+' '+l.tags.join(' ')+' '+l.folder).toLowerCase().includes(ql));
     const near=L.filter(l=>!hit.includes(l)&&hit.some(h=>h.tags.some(t=>l.tags.includes(t))||h.folder===l.folder)).slice(0,3);
     const folders=FOLDERS.filter(([n])=>n.toLowerCase().includes(ql));

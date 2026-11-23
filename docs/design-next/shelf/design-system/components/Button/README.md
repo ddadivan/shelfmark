@@ -1,18 +1,13 @@
-# Button
-A labelled action; one **primary** per view (usually Add link), everything else secondary or ghost.
+Buttons are pills: one filled primary per view (Add link), quiet fills for the rest.
 
-**Variants:** `primary` (accent fill: the one main action), `secondary` (surface with `line-strong` edge: Cancel, Open), `ghost` (no fill until hover: toolbar and inline actions), `danger` (destructive confirmation only).
-**Sizes:** `sm` 32 (toolbars, cards), `md` 40 (default), `lg` 48 (phone sheets, sign-in).
-**Shape:** `radius-sm` (8). Never a pill.
+## Variants
+- **Primary** (`sm-btn--primary`): `accent` fill, `on-accent` text: near-black in light, near-white in dark. Add link in the sidebar is the full-width primary, 40px.
+- **Secondary** (`sm-btn--secondary`): `surface-hover` fill, `text`. Cancel, Not now, the View button.
+- **Ghost** (`sm-btn`): no fill until hover (`fill`). Row actions, toolbar items.
+- **Danger** (`sm-btn--danger`): `danger` fill, only for the final step of a delete.
+
+## Sizes
+32px (`--sm`, 12px sides) in toolbars and dialogs, 40px default (16px sides), 48px (`--lg`) on touch. Label 14/22 500; icon 16px, 8px gap.
 
 ## Rules
-- Label is a verb, 1–3 words, sentence case: "Add link", "Move to Trash". No "OK" or "Submit".
-- Icon left at 16px, only when it helps recognition.
-- Loading: spinner replaces the icon, label changes to the -ing form ("Saving…"), width stays.
-- Disabled only when the reason is visible next to it; prefer an enabled button and an error.
-
-## Accessibility
-Native `<button>`; focus ring `focus` 2px with 2px offset; touch target 44×44 (the hit area grows, not the look).
-
-## In code
-`libs/ui` `ui-button` (`variant`, `size`, `loading`, `iconLeft`).
+Radius is always `radius-full`. Verb first, one to three words. Hover: primary dims to 90%, the rest take `fill`. Focus: 2px `focus` ring, 2px offset.

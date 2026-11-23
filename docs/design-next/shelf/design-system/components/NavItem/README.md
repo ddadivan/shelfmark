@@ -1,9 +1,3 @@
-# NavItem
-A row of the sidebar: icon, name, and a count or a dot.
+A sidebar row: icon, label, count.
 
-32px (40 on touch), `radius-sm`, `label` text. Current page: `accent-bg` with `accent-text`. Folders show their colour only in the 24px tile; the row never fills with the folder colour. Counts in `meta`, muted; a waiting count (Revisit) is a `radius-full` dot in `accent`.
-
-Sections: Library (All links, Unsorted, Favorites), Revisit, Pinned, Folders, Tags, Trash at the bottom.
-
-## In code
-`ui-tree` rows, shell sidebar.
+36px tall, 14px sides, radius 10 (`radius-sm`). Label 14/22 in `text`, icon 16px `text-muted`, count 12px `text-muted` at the right (Today's count in `text`, 600). Hover `fill`; current `surface-pressed` and 500. Folder rows show the folder icon in the folder colour; a folder with subfolders is one button with the chevron inside it. Section headings (Pinned, Folders, Tags) are 12px `text-muted` with a chevron after the label and a + at the right; groups are divided by a `sep` hairline.

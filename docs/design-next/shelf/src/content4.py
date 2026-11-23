@@ -73,7 +73,7 @@ A_CSS = r'''
 def side_ask(cur='ask'): return sidebar('ask')
 TOP2 = TOP
 HIST = f'''<aside class="hist sm-l1" aria-label="Conversations"><button class="sm-btn sm-btn--secondary sm-btn--sm" type="button">{ic("plus")}New conversation</button>
-<div class="sec2">Today</div><a class="h" href="#" aria-current="page">Recipes for this weekend</a><a class="h" href="#">How many links do I have?</a>
+<div class="sec2">Today</div><a class="h" href="#" aria-current="page">Something to watch this weekend</a><a class="h" href="#">How many links do I have?</a>
 <div class="sec2">Earlier</div><a class="h" href="#">Which Signal Forms video first?</a><a class="h" href="#">Coats I saved in autumn</a><a class="h" href="#">Summarise my Design folder</a>
 <p class="lbl-s" style="padding:12px 10px 0">Kept in this browser only.</p></aside>'''
 APP2 = lambda body: f'<div class="app">{side_ask()}<main class="main">{TOP2}{body}</main></div>{TABBAR}'
@@ -81,25 +81,25 @@ COMPOSER = lambda ph='Ask anything about your links', val='': f'<div class="comp
 CAPS = [('search', 'Find', ['That ramen recipe with the soft egg', 'The Signal Forms article I saved in October']),
         ('hash', 'Count and compare', ['How many links do I have, by folder?', 'What did I save most this month?']),
         ('text', 'Summarise', ['What is in my Design folder, in five lines?', 'The main points of my unread Angular articles']),
-        ('revisit', 'Plan and pick', ['Recipes for this weekend, under an hour', 'Which Signal Forms video should I watch first?'])]
-start = APP2(f'''<div class="askwrap">{HIST}<div class="conv"><div class="start"><span class="sp">{ic("spark", 24)}</span><h1>Ask your shelf</h1><p class="lead">Questions in your own words, answered from the 58 links you saved. Every answer shows the links it used. Tap an example or type below.</p></div>
+        ('revisit', 'Plan and pick', ['Something to watch this weekend, under an hour', 'Which Signal Forms video should I watch first?'])]
+start = APP2(f'''<div class="askwrap">{HIST}<div class="conv"><div class="start"><span class="sp">{ic("spark", 24)}</span><h1>Ask your shelf</h1><p class="lead">Questions in your own words, answered from the 17 links you saved. Every answer shows the links it used. Tap an example or type below.</p></div>
 <div class="caps">{''.join(f'<div class="cap sm-l1"><h3>{ic(i)}{t}</h3>' + ''.join(f'<button class="q" type="button">{q}</button>' for q in qs) + '</div>' for i, t, qs in CAPS)}</div>
 <div class="sticky">{COMPOSER()}<p class="fine">Answers are written by AI and can be wrong; check the links. 47 of 50 questions left this month.</p></div></div></div>''')
 LC = lambda items: '<div class="lcards">' + ''.join(f'<a class="lc" href="#"><span class="sm-thumb">{ART[a]}</span><span style="min-width:0"><b>{t}</b><span>{d}</span></span></a>' for a, t, d in items) + '</div>'
 conv = APP2(f'''<div class="askwrap">{HIST}<div class="conv"><div class="msgs">
 <div class="me">How many links do I have, by folder?</div>
-<div class="ai"><span class="av">{ic("spark", 16)}</span><div class="body"><div class="steps2"><span class="done">{ic("check", 12)}Counted links in 6 folders</span></div>
-<p>You have <b>58 links</b>. Most are in Angular and Clothes:</p>
-<div class="bars">{''.join(f'<div><span>{n}</span><i style="width:{v / 17 * 100:.0f}%"></i><em>{v}</em></div>' for n, v in [('Unsorted', 17), ('Angular', 12), ('Clothes', 7), ('Recipes', 7), ('Work', 7), ('Design', 5), ('Courses', 3)])}</div></div></div>
-<div class="me">Recipes for this weekend, under an hour</div>
-<div class="ai"><span class="av">{ic("spark", 16)}</span><div class="body"><div class="steps2"><span class="done">{ic("check", 12)}Looked through Recipes</span><span class="done">{ic("check", 12)}Read 7 pages for cooking times</span></div>
-<p>Three fit: the <b>lemon ricotta pancakes</b> take 25 minutes <span class="cite">1</span>, <b>miso glazed salmon</b> 30 <span class="cite">2</span>. The tonkotsu broth needs 12 hours, but you noted “start on Friday evening”, so it works if you start tonight <span class="cite">3</span>.</p>
-{LC([('pancakes', '1. Lemon ricotta pancakes', 'smittenkitchen.com · 25 min'), ('type', '2. Miso glazed salmon', 'bonappetit.com · 30 min'), ('bowl', '3. Tonkotsu ramen broth', 'seriouseats.com · 12 h')])}
+<div class="ai"><span class="av">{ic("spark", 16)}</span><div class="body"><div class="steps2"><span class="done">{ic("check", 12)}Counted links in 5 folders</span></div>
+<p>You have <b>17 links</b>. Most are in Learning, then Tools and Shopping:</p>
+<div class="bars">{''.join(f'<div><span>{n}</span><i style="width:{v / 6 * 100:.0f}%"></i><em>{v}</em></div>' for n, v in [('Learning', 6), ('Tools', 4), ('Shopping', 4), ('Unsorted', 3), ('Angular', 2), ('Watch later', 1)])}</div></div></div>
+<div class="me">Something to watch this weekend, under an hour</div>
+<div class="ai"><span class="av">{ic("spark", 16)}</span><div class="body"><div class="steps2"><span class="done">{ic("check", 12)}Looked through Watch later and Learning</span><span class="done">{ic("check", 12)}Checked 6 video lengths</span></div>
+<p>Three fit: <b>Optimistic Nihilism</b> is 6 minutes and you saved it “for the weekend, with tea” <span class="cite">1</span>. The first <b>neural network</b> chapter is 19 minutes, and you planned one chapter an evening <span class="cite">2</span>. <b>Microservices explained</b> takes 15 <span class="cite">3</span>.</p>
+{LC([('pancakes', '1. Optimistic Nihilism', 'youtube.com · 6 min'), ('nn', '2. But what is a neural network?', 'youtube.com · 19 min'), ('ms', '3. Microservices explained', 'youtube.com · 15 min')])}
 <div class="acts2"><button class="sm-btn sm-btn--sm" type="button">{ic("bell")}Remind me Saturday</button><button class="sm-btn sm-btn--sm" type="button">{ic("plus")}Save as view</button><button class="sm-btn sm-btn--sm" type="button">{ic("copy")}Copy</button></div></div></div>
 </div><div class="sticky">{COMPOSER('Ask a follow-up')}<p class="fine">Written by AI from your links, may be inaccurate. 45 questions left this month.</p></div></div></div>''')
 thinking = APP2(f'''<div class="askwrap">{HIST}<div class="conv"><div class="msgs">
 <div class="me">Coats I saved in autumn</div>
-<div class="ai"><span class="av">{ic("spark", 16)}</span><div class="body"><div class="steps2"><span class="done">{ic("check", 12)}Searched for coats and jackets</span><span><span class="shimmer">Checking dates in Clothes…</span></span></div>
+<div class="ai"><span class="av">{ic("spark", 16)}</span><div class="body"><div class="steps2"><span class="done">{ic("check", 12)}Searched for coats and jackets</span><span><span class="shimmer">Checking dates in Shopping…</span></span></div>
 <p>You saved two coats in October: the COS wool-blend overcoat <span class="cite">1</span> and</p></div></div></div>
 <div class="sticky"><div class="composer sm-l2"><textarea rows="1" aria-label="Ask your shelf" placeholder="Ask a follow-up" disabled></textarea><button class="sm-btn sm-btn--secondary" type="button">Stop</button></div></div></div></div>''')
 limit = APP2(f'''<div class="askwrap">{HIST}<div class="conv"><div class="start" style="padding-top:32px"><span class="sp">{ic("spark", 24)}</span><h1>Ask your shelf</h1></div>
@@ -114,11 +114,11 @@ search_hint = APP2(f'''<div class="qp sm-l2" style="max-width:720px;margin-top:1
 TAB_ASK = f'<nav class="sm-tabbar sm-l2" aria-label="Main"><button class="sm-tab" type="button">{ic("revisit", 20)}Today</button><button class="sm-tab" type="button">{ic("bookmark", 20)}Library</button><button class="sm-fab" type="button" aria-label="Add link">{ic("plus", 24)}</button><button class="sm-tab" type="button">{ic("search", 20)}Search</button><button class="sm-tab" type="button" aria-current="page">{ic("spark", 20)}Ask</button></nav>'
 def phone(inner, tab=True): return f'<div class="phone"><div class="pc">{inner}</div>{"<div class=ptab>" + TAB_ASK + "</div>" if tab else ""}</div>'
 P1 = f'''<div class="ph-top"><b>Ask</b><button class="sm-ib" type="button" aria-label="Conversations">{ic("list")}</button><span class="av2" aria-label="Account and settings">DU</span></div>
-<div style="text-align:center;padding:16px 0 8px"><span class="sp" style="display:inline-grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--ai-bg);color:var(--ai)">{ic("spark", 20)}</span><p class="lead" style="margin:8px auto 0">Ask anything about your 58 links.</p></div>
-<div style="display:flex;flex-direction:column;gap:8px">{''.join(f'<button class="sm-btn sm-btn--secondary" type="button" style="justify-content:flex-start;height:auto;padding:10px 12px;text-align:left;white-space:normal;font-weight:400">{q}</button>' for q in ['How many links do I have, by folder?', 'Recipes for this weekend, under an hour', 'What is in my Design folder?', 'The Signal Forms article from October'])}</div>
+<div style="text-align:center;padding:16px 0 8px"><span class="sp" style="display:inline-grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--ai-bg);color:var(--ai)">{ic("spark", 20)}</span><p class="lead" style="margin:8px auto 0">Ask anything about your 17 links.</p></div>
+<div style="display:flex;flex-direction:column;gap:8px">{''.join(f'<button class="sm-btn sm-btn--secondary" type="button" style="justify-content:flex-start;height:auto;padding:10px 12px;text-align:left;white-space:normal;font-weight:400">{q}</button>' for q in ['How many links do I have, by folder?', 'Something to watch this weekend, under an hour', 'What is in my Design folder?', 'The Signal Forms article from October'])}</div>
 <div style="margin-top:auto">{COMPOSER()}</div>'''
-P2 = f'''<div class="ph-top"><button class="sm-ib" type="button" aria-label="Back">{ic("left")}</button><b style="font-size:1rem">Recipes for this weekend</b><button class="sm-ib" type="button" aria-label="New conversation">{ic("plus")}</button></div>
-<div class="msgs" style="padding-top:4px;overflow:hidden"><div class="me">Recipes for this weekend, under an hour</div><div class="ai"><span class="av">{ic("spark", 16)}</span><div class="body"><p>Three fit: the <b>lemon ricotta pancakes</b> take 25 minutes <span class="cite">1</span>, <b>miso glazed salmon</b> 30 <span class="cite">2</span>, and the tonkotsu broth if you start tonight <span class="cite">3</span>.</p>{LC([('pancakes', '1. Lemon ricotta pancakes', '25 min'), ('type', '2. Miso glazed salmon', '30 min')])}</div></div></div>
+P2 = f'''<div class="ph-top"><button class="sm-ib" type="button" aria-label="Back">{ic("left")}</button><b style="font-size:1rem">Something to watch this weekend</b><button class="sm-ib" type="button" aria-label="New conversation">{ic("plus")}</button></div>
+<div class="msgs" style="padding-top:4px;overflow:hidden"><div class="me">Something to watch this weekend, under an hour</div><div class="ai"><span class="av">{ic("spark", 16)}</span><div class="body"><p>Three fit: <b>Optimistic Nihilism</b>, 6 minutes <span class="cite">1</span>, the first <b>neural network</b> chapter, 19 <span class="cite">2</span>, and <b>Microservices explained</b>, 15 <span class="cite">3</span>.</p>{LC([('pancakes', '1. Optimistic Nihilism', '6 min'), ('nn', '2. Neural network, ch. 1', '19 min')])}</div></div></div>
 <div style="margin-top:auto">{COMPOSER('Ask a follow-up')}</div>'''
 phones = f'''<div class="phones"><div>{phone(P1)}<p class="pcap">Phone: Ask gets its own tab. Settings move to the avatar at the top right of every tab.</p></div><div>{phone(P2, False)}<p class="pcap">A conversation is a pushed full-screen page; the tab bar hides, the composer sits above the keyboard.</p></div></div>'''
 page('ask.html', 'Ask your shelf', A_CSS, [('start', 'Ask: what it can do', start), ('conv', 'Ask: a conversation', conv), ('thinking', 'Ask: answering', thinking), ('limit', 'Ask: limit reached, AI off', limit), ('phone', 'Ask on the phone', phones)], shell='bare')

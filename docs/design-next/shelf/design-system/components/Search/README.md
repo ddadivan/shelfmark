@@ -1,12 +1,3 @@
-# Search
-The one field for finding and asking: words, meaning and "Ask your shelf" live in the same place.
+The search field at the top of every page: search links, folders and tags; Ask sits apart at the far right.
 
-**Anatomy:** search icon · input ("Search or ask your shelf") · `Ctrl K` / `⌘K` key cap. 40px, `radius-sm`, L1 surface.
-**Behaviour:** ⌘K focuses it from anywhere; results open in a popover panel under it (desktop) or full screen (phone); the last row asks the question when AI is on.
-
-## Rules
-- No other search fields in the app shell; filters live in the results and the library toolbar.
-- The key cap hides on touch screens.
-
-## In code
-`ui-command-list` in popup mode, `ui-search-trigger`.
+48px tall, up to 640px wide, radius 16 (`radius-card`), `surface-hover` fill with an inset hairline (rgba 127/127/127 at 25%); placeholder and the Ctrl K hint in `text-muted`. Focus adds the 2px `focus` ring. Typing filters the current feed in place; an empty focus shows recent searches and ways to search. On tablet and phone the field spans the width with the avatar beside it.

@@ -1,7 +1,3 @@
-# TabBar
-The phone's bottom navigation: Library, Revisit, Add, Search, You.
+The bottom bar on tablet and phone (below 64em), in place of the sidebar.
 
-L2 (opaque, no blur), `radius-lg`, 72px, 16px from the edges plus the safe area. Tabs 56px with icon 20 and `meta` label; Add is the accent square in the middle (`radius-md`). Hidden on pushed pages (the Link page).
-
-## In code
-`ui-tab-bar`.
+Fixed 8px from the sides and bottom, 64px tall, radius 12, `surface` with a soft shadow. Five slots: Today, Library, Add (48px, radius 12, `accent` fill), Search, Ask. Tabs 64×48, radius 8, label 12px; the current tab on `surface-pressed`. Settings and the account sit behind the avatar beside the search field.

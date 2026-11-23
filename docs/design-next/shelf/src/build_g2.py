@@ -25,7 +25,7 @@ art = {
 }
 # v4 images
 _im = lambda f, fit='cover': f'<img src="img/{f}" alt="" style="display:block;width:100%;height:100%;object-fit:{fit};background:var(--surface-hover)">'
-art.update({'video': _im('angular100.webp'), 'video2': _im('nihilism.webp'), 'shirt': _im('crater-shirt.webp', 'contain'), 'jacket': _im('ojai-jacket.webp', 'contain')})
+art.update({'bowl': _im('tree-runners.webp', 'contain'), 'pancakes': _im('nihilism.webp'), 'video': _im('angular100.webp'), 'video2': _im('nihilism.webp'), 'shirt': _im('crater-shirt.webp', 'contain'), 'jacket': _im('ojai-jacket.webp', 'contain')})
 tpl = open(f'{B}/design4/g2.tpl.html').read()
 icon = lambda n, s: f'<svg width="{s}" height="{s}" viewBox="0 0 24 24" aria-hidden="true">{I[n]}</svg>'
 for key, (n, s) in {'%bookmark%': ('bookmark', 20), '%inbox%': ('inbox', 20), '%star%': ('star', 20), '%revisit%': ('revisit', 20), '%folder%': ('folder', 14), '%search%': ('search', 16), '%plus%': ('plus', 16),
@@ -44,6 +44,7 @@ out = out.replace('</style>', _bp['SHELL_CSS'] + '</style>', 1)
 # v4: right block of the old header goes (Add link and avatar live in the sidebar)
 out = re.sub(r'<div class="right">\s*<button class="sm-btn sm-btn--primary add-btn"[^>]*>.*?</button>\s*<button class="avatar"[^>]*>DU</button>\s*</div>', '', out, count=1, flags=re.S)
 out = out.replace('<button class="sm-btn sm-btn--primary add-btn" type="button">', '<button class="sm-btn sm-btn--primary add-btn" type="button" id="add" aria-expanded="false" aria-controls="save">', 1)
+out = out.replace('</style>', _bp['LC_CSS'] + '</style>', 1)
 out = out.replace('</body>', _bp['SEARCH_JS'] + '</body>', 1)
 open(f'{B}/design4/save-revisit.html', 'w').write(out)
 print('ok', len(out))

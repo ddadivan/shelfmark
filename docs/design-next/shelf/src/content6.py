@@ -61,7 +61,7 @@ def chip(t, on=False, ai=False): return f'<button class="sm-chip{" ai-fill" if a
 def vrows(ai=False):
     a = ai
     return f'''<div class="vrows">
-<div class="vrow"><span class="k">Type</span><span class="v">{chip("Videos", True, a)}{chip("Articles")}{chip("Recipes")}{chip("+ More")}</span></div>
+<div class="vrow"><span class="k">Type</span><span class="v">{chip("Videos", True, a)}{chip("Articles")}{chip("Learning")}{chip("+ More")}</span></div>
 <div class="vrow"><span class="k">Folder</span><span class="v">{chip(tile("clay", 12) + " Angular", True, a)}{chip("Any folder")}</span></div>
 <div class="vrow"><span class="k">Tags</span><span class="v">{chip("#signals", True, a)}{chip("+ Tag")}</span></div>
 <div class="vrow"><span class="k">Words</span><span class="v"><span class="sm-input" style="height:30px;flex:1;min-width:120px"><input value="{"forms" if a else ""}" placeholder="In title, note or page" aria-label="Words"></span></span></div>
@@ -72,13 +72,13 @@ def vdialog(ai=False, title='New view'):
     phrase = f'''<div class="phrase">{ic("spark", 18)}<input value="{'Angular videos about forms from last month I haven’t watched' if ai else ''}" placeholder="Describe the view, e.g. “recipes under an hour”" aria-label="Describe the view"><button class="sm-btn sm-btn--secondary sm-btn--sm" type="button">{'Done' if ai else 'Fill in'}</button></div>'''
     note = f'<div class="note2">{ic("spark", 12)}<span>{"Filled in from your words; check the rows. Used 1 of 47 Ask questions." if ai else "Optional: describe it and AI fills the rows below. Counts as one Ask question."}</span></div>'
     return f'''<form class="sm-dialog sm-l3 vd" role="dialog" aria-labelledby="vdt"><h2 id="vdt">{title}</h2>{phrase}{note}
-<div class="sm-field" style="min-width:0"><label for="vn">Name</label><div class="sm-input"><input id="vn" value="{'Angular videos to watch' if ai else ''}" placeholder="For example, Recipes to try"></div></div>
+<div class="sm-field" style="min-width:0"><label for="vn">Name</label><div class="sm-input"><input id="vn" value="{'Angular videos to watch' if ai else ''}" placeholder="For example, Learning to try"></div></div>
 <div class="grp" style="display:flex;flex-direction:column;gap:8px"><span class="lbl-s">Show links where</span>{vrows(ai)}</div>
-<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span class="lbl-s">Icon</span><div class="iconpick" role="radiogroup" aria-label="Icon">{ICONS}</div><span class="lbl-s" style="margin-left:auto">{'4 links match' if ai else '58 links match'}</span></div>
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span class="lbl-s">Icon</span><div class="iconpick" role="radiogroup" aria-label="Icon">{ICONS}</div><span class="lbl-s" style="margin-left:auto">{'4 links match' if ai else '17 links match'}</span></div>
 <div class="foot"><button class="sm-btn sm-btn--secondary" type="button">Cancel</button><button class="sm-btn sm-btn--primary" type="button">Save view</button></div></form>'''
 new_view = f'''<div class="overlay sm-l1" style="min-height:760px"><div class="scrim2"></div>{vdialog(False)}</div><p class="cap2">From “+ Save view” in the library or “Save as view” on search results: the rows start from the current filters. Works fully without AI.</p>'''
 new_view_ai = f'''<div class="overlay sm-l1" style="min-height:780px"><div class="scrim2"></div>{vdialog(True)}</div><p class="cap2">With AI on, a phrase fills the same rows (highlighted until you touch them) and suggests a name. Unknown folder or tag names become search words.</p>'''
-VCH = [('All', 58), ('Videos', 8), ('Articles', 23), ('Clothes', 7), ('Recipes', 7), ('Angular videos to watch', 4)]
+VCH = [('All', 58), ('Videos', 8), ('Articles', 23), ('Shopping', 7), ('Learning', 7), ('Angular videos to watch', 4)]
 views_menu = f'''<h1>All links</h1><div class="views-bar" role="toolbar" aria-label="Saved views">{''.join(f'<button class="sm-chip" type="button" aria-pressed="{str(t == "Angular videos to watch").lower()}"{" aria-expanded=%strue%s" % (chr(34), chr(34)) if t == "Angular videos to watch" else ""}>{t} <b>{n}</b></button>' for t, n in VCH)}<button class="sm-chip sm-chip--dashed" type="button">{ic("plus")}Save view</button></div>
 <div class="anch" style="margin-left:420px"><div class="sm-menu sm-l2" role="menu" aria-label="Actions for Angular videos to watch"><button class="sm-mi" role="menuitem">{ic("filter")}Edit view…</button><button class="sm-mi" role="menuitem">{ic("edit")}Rename</button><button class="sm-mi" role="menuitem">{ic("pin")}Pin to sidebar</button><button class="sm-mi" role="menuitem">{ic("move")}Reorder views…</button><div class="sm-msep"></div><button class="sm-mi sm-mi--danger" role="menuitem">{ic("trash")}Delete view</button></div></div>
 <p class="cap2" style="margin-top:260px">Right-click or long-press a view, or its ⋯ on hover. Drag chips to reorder. Deleting a view never deletes links.</p>'''
@@ -92,7 +92,7 @@ def cal(sel=28):
         if not out and n == 23: cls += ' today'
         cells += f'<button type="button" class="{cls.strip()}" aria-selected="{str((not out) and n == sel).lower()}">{n}</button>'
     return f'<div><div class="cal-h"><button class="sm-ib" type="button" aria-label="Previous month">{ic("left")}</button>November 2026<button class="sm-ib" type="button" aria-label="Next month">{ic("right")}</button></div><div class="cal" role="grid" aria-label="November 2026">{cells}</div></div>'
-datepick = f'''<div class="overlay sm-l1" style="min-height:720px"><div class="scrim2"></div><form class="sm-dialog sm-l3 dp" role="dialog" aria-labelledby="dpt"><h2 id="dpt">Remind me about “Wool overshirt”</h2>
+datepick = f'''<div class="overlay sm-l1" style="min-height:720px"><div class="scrim2"></div><form class="sm-dialog sm-l3 dp" role="dialog" aria-labelledby="dpt"><h2 id="dpt">Remind me about “The Ojai Jacket”</h2>
 <div class="grid2"><div class="quick">{''.join(f'<button type="button" aria-pressed="{str(a == "Saturday").lower()}">{a}<span>{b}</span></button>' for a, b in [('Later today', '18:00'), ('Tomorrow', '9:00'), ('Saturday', 'Sat 28, 9:00'), ('Next week', 'Mon 30, 9:00'), ('In a month', '23 Dec, 9:00')])}</div>
 <div>{cal(28)}<div class="times"><span class="lbl-s">Time</span>{''.join(f'<button class="sm-chip" type="button" aria-pressed="{str(t == "9:00").lower()}">{t}</button>' for t in ['9:00', '13:00', '18:00', '21:00'])}<span class="sm-input" style="height:30px;width:88px"><input value="9:00" aria-label="Exact time"></span></div></div></div>
 <div class="sm-field" style="min-width:0"><label for="rw">Why <span style="font-weight:400;color:var(--text-muted)">(optional, shown with the reminder)</span></label><div class="sm-input"><input id="rw" value="Check the sale"></div></div>

@@ -1,7 +1,3 @@
-# EmptyState
-What a space holds and the first actions to fill it; the empty library is the onboarding.
+What an empty space says and what to do next.
 
-L1, `radius-lg`, centred; heading in `display` names the space ("Your links will live here"), one sentence, up to three starting actions as quiet tiles. No illustrations of people, no apology. Lists keep their frame when empty.
-
-## In code
-`ui-empty-state` layout page.
+A StateScene (see StateScene), a heading 22/28 600, one sentence in `text-muted`, up to three actions as pills. Centred in the content area with no card around it.

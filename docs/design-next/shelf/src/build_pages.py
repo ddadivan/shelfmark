@@ -41,7 +41,7 @@ ART = {
 
 # v4: real previews from the reference, served as files next to the pages
 _img = lambda f, fit='cover', pos='center': f'<img src="img/{f}" alt="" style="display:block;width:100%;height:100%;object-fit:{fit};object-position:{pos};background:var(--surface-hover)">'
-ART.update({'video': _img('angular100.webp'), 'shirt': _img('crater-shirt.webp', 'contain'), 'jacket': _img('ojai-jacket.webp', 'contain'), 'dark': _img('typescript100.webp')})
+ART.update({'bowl': _img('tree-runners.webp', 'contain'), 'pancakes': _img('nihilism.webp'), 'nn': _img('neural-network.webp'), 'ms': _img('microservices.webp'), 'video': _img('angular100.webp'), 'shirt': _img('crater-shirt.webp', 'contain'), 'jacket': _img('ojai-jacket.webp', 'contain'), 'dark': _img('typescript100.webp')})
 PAGES = [('index.html', 'Library and Link page'), ('save-revisit.html', 'Save and Revisit'), ('search.html', 'Search'), ('organise.html', 'Organise'), ('settings.html', 'Settings'), ('public.html', 'Sign-in and public pages'), ('extension.html', 'Browser extension'), ('select-move.html', 'Select, move, side by side'), ('data.html', 'Import, export, sharing'), ('first-run.html', 'First run, help, landing'), ('ask.html', 'Ask your shelf'), ('notify.html', 'Reminders and notifications'), ('views.html', 'Views, dates, shortcuts'), ('system.html', 'System states'), ('tools.html', 'Assistant, clean-up, help')]
 
 SHELL_CSS = r'''
@@ -110,7 +110,15 @@ h1{margin:32px 0 0;font:600 1.5rem/1.875rem var(--font-sans);letter-spacing:-.01
 .snav{background:var(--sidebar)!important;box-shadow:none!important;width:240px!important;padding:16px 12px!important;top:0!important;border-radius:0!important;height:100vh!important;border-right:1px solid var(--sep)}
 .smain{margin:0!important;padding:16px 32px 56px!important;border-radius:0;background:var(--canvas);max-width:none!important;min-height:100vh}
 .smain>*{max-width:840px;margin-left:auto;margin-right:auto}
-@media (max-width:63.99em){.side{width:var(--rail);padding:16px 8px}.sbtop .sm-btn span,.brandrow .avatar,.intro{display:none}.sbtop .sm-btn{width:48px;padding:0}.top{grid-template-columns:minmax(0,1fr) auto}.ask-top{grid-column:2}}
+@media (max-width:63.99em){.side,.snav{display:none!important}.main,.smain{padding:16px 24px 112px!important}.top{display:grid!important;height:auto!important;grid-template-columns:minmax(0,1fr) auto}.ask-top{display:none}.top-av{display:grid!important}.top .sm-kbd{display:none}
+ body{padding-top:0!important}.app{padding-bottom:0!important}
+ .tabbar-wrap{display:block!important;position:fixed;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:30}
+ .tabbar-wrap .sm-tabbar{width:100%;height:64px;justify-content:space-around;border-radius:12px;background:var(--surface);box-shadow:0 4px 24px rgba(0,0,0,.10)}
+ .tabbar-wrap .sm-tab{width:64px;height:48px;border-radius:8px;font-weight:400}.tabbar-wrap .sm-tab[aria-current="page"]{background:var(--surface-pressed);font-weight:500}
+ .tabbar-wrap .sm-fab{width:48px;height:48px;border-radius:12px}
+ .proto{bottom:calc(84px + env(safe-area-inset-bottom,0px))!important;top:auto!important}
+ .lcmas{columns:3 160px!important}.lcgrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media (max-width:39.99em){.main,.smain{padding:16px 16px 104px!important}.lcmas{columns:2!important;column-gap:12px!important}.lcmas .lc{margin-bottom:12px}.lcgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}}
 @media (max-width:39.99em){.main,.smain{padding:16px 16px 104px!important;min-height:100vh}.top .sm-search{height:44px}}
 
 '''
@@ -139,7 +147,7 @@ def lcard(i, grid=False, sel=None, mark=None, note=True, tags=True):
             + (f'<span class="tg">{"".join("<span>#" + x + "</span>" for x in l["tags"][:3])}</span>' if tags and l['tags'] else '')
             + (f'<span class="sm-note">{ic("edit", 12)} {l["note"]}</span>' if note and l.get('note') else '') + '</span></article>')
 LC_CSS = r'''
-.lc{width:auto}.lc .tile img{transition:transform 900ms cubic-bezier(.2,.7,.2,1)}.lc:hover .tile img{transform:scale(1.035)}
+.lc{width:auto}.sm-lcard .src,.sm-lcard .mt,.sm-lcard .tg{border:0;padding:0;background:none;border-radius:0;box-shadow:none}.lc .tile img{transition:transform 900ms cubic-bezier(.2,.7,.2,1)}.lc:hover .tile img{transform:scale(1.035)}
 .lc .lc-sel{position:absolute;top:10px;left:10px;width:22px;height:22px;border-radius:6px;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--control)}
 .lc .lc-sel[aria-checked="true"]{background:var(--accent);color:var(--on-accent);box-shadow:none}
 .lc[aria-selected="true"]{background:var(--pick)}
@@ -165,7 +173,7 @@ def sidebar(cur=''):
         + f'<div class="side-foot"><aside class="intro"><a href="#">New here? See how it works</a><span class="t">{ic("play", 12)}3 minutes</span><button class="sm-ib x" type="button" aria-label="Hide">{ic("x", 14)}</button></aside>'
         + nav('theme', '', 'Theme', raw=SUN) + nav('ext', '', 'Get the extension', raw=DOWN) + nav('help', '', 'Data and help', raw=DOTS) + nav('trash', 'trash', 'Trash') + '</div></nav>')
 TOP = (f'<header class="top"><div class="sm-input sm-search" role="search">{ic("search")}<input placeholder="Search links, folders and tags" aria-label="Search links, folders and tags"><span class="sm-kbd">Ctrl K</span></div>'
-       f'<a class="sm-btn ask-top" href="ask.html" title="Ask your shelf (Ctrl J)">{ic("spark")}<span>Ask</span></a></header>')
+       f'<a class="sm-btn ask-top" href="ask.html" title="Ask your shelf (Ctrl J)">{ic("spark")}<span>Ask</span></a><button class="avatar top-av" type="button" aria-label="Account and settings" style="display:none;place-items:center;width:40px;height:40px;font-size:.75rem;font-weight:500;background:var(--surface-pressed)">DU</button></header>')
 TABBAR = f'<div class="tabbar-wrap"><nav class="sm-tabbar sm-l2" aria-label="Main"><button class="sm-tab" type="button">{ic("revisit",20)}Today</button><button class="sm-tab" type="button">{ic("bookmark",20)}Library</button><button class="sm-fab" type="button" aria-label="Add link">{ic("plus",24)}</button><button class="sm-tab" type="button">{ic("search",20)}Search</button><a class="sm-tab" href="ask.html" style="text-decoration:none">{ic("spark",20).replace("aria-hidden", "style=%scolor:var(--ai)%s aria-hidden" % (chr(34), chr(34)))}Ask</a></nav></div>'
 
 SEARCH_JS = '''<script>(function(){const i=document.querySelector('.top .sm-search input');if(!i)return;

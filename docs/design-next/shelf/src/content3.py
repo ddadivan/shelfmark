@@ -70,7 +70,7 @@ CSS = r'''
 .top{display:flex}
 @media (max-width:39.99em){.top{display:none}}
 '''
-CARDS = [('video', '16/9', 'Signal Forms in 20 minutes', 'youtube.com', '', ''), ('shirt', '4/5', 'Wool overshirt', 'uniqlo.com', 'Wait for the sale', 'rose'), ('bowl', '1/1', 'Rich tonkotsu ramen broth', 'seriouseats.com', 'Start on Friday evening', 'amber'), ('jacket', '4/5', 'Nano Puff jacket', 'patagonia.com', '', ''), ('pancakes', '1/1', 'Lemon ricotta pancakes', 'smittenkitchen.com', '', ''), ('dark', '16/9', 'Zoneless change detection', 'angular.dev', 'Read before migrating the dashboard', 'clay'), ('type', '16/9', 'Learn accessibility', 'web.dev', '', '')]
+CARDS = [('video', '16/9', 'Angular in 100 Seconds', 'youtube.com', '', ''), ('shirt', '4/5', 'The Ojai Jacket', 'taylorstitch.com', 'Wait for the sale', 'rose'), ('bowl', '1/1', 'Tree Runners – Thunder Green', 'allbirds.com', 'Start on Friday evening', 'amber'), ('jacket', '4/5', 'The Crater Shirt', 'taylorstitch.com', '', ''), ('pancakes', '1/1', 'Optimistic Nihilism', 'youtube.com', '', ''), ('dark', '16/9', 'Zoneless change detection', 'angular.dev', 'Read before migrating the dashboard', 'clay'), ('type', '16/9', 'Learn accessibility', 'web.dev', '', '')]
 def card(a, r, t, d, note='', c='', label=False):
     nb = ''
     if note and label: nb = f'<p class="label" style="--lbg:var(--folder-{c}-bg);--lfg:var(--folder-{c})">{ic("edit", 12)}<span>{note}</span></p>'
@@ -78,7 +78,7 @@ def card(a, r, t, d, note='', c='', label=False):
     return f'<article class="sm-card sm-l1{" notecard" if label else ""}"><div class="sm-cover" style="aspect-ratio:{r}">{ART[a]}</div><div class="sm-card-body"><h3 class="sm-card-title">{t}</h3>{nb}<div class="sm-meta">{fav(d[0].upper())}{d}</div></div></article>'
 feed = lambda label=False, n=7: '<div class="feed">' + ''.join(card(*x, label=label) for x in CARDS[:n]) + '</div>'
 tools = f'<div class="tools"><button class="sm-btn sm-btn--sm" type="button">{ic("filter")}Filter</button><div class="sm-seg" role="radiogroup" aria-label="View"><button role="radio" aria-checked="true" aria-label="Masonry">{ic("masonry")}</button><button role="radio" aria-checked="false" aria-label="Grid">{ic("grid")}</button><button role="radio" aria-checked="false" aria-label="List">{ic("list")}</button></div></div>'
-chips = '<div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">' + ''.join(f'<button class="sm-chip" aria-pressed="{str(i == 0).lower()}" type="button">{t} <b style="font-weight:400;color:var(--text-muted)">{n}</b></button>' for i, (t, n) in enumerate([('All', 58), ('Videos', 8), ('Articles', 23), ('Clothes', 7), ('Recipes', 7)])) + '</div>'
+chips = '<div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">' + ''.join(f'<button class="sm-chip" aria-pressed="{str(i == 0).lower()}" type="button">{t} <b style="font-weight:400;color:var(--text-muted)">{n}</b></button>' for i, (t, n) in enumerate([('All', 58), ('Videos', 8), ('Articles', 23), ('Shopping', 7), ('Learning', 7)])) + '</div>'
 APP = lambda body, cur='all': f'<div class="app">{sidebar(cur)}<main class="main">{TOP}{body}</main></div>'
 SB_TODAY = lambda: sidebar('all').replace('<span class="lbl">All links</span>', '<span class="lbl">All links</span>').replace(f'title="All links">', 'title="All links">', 1)
 def sidebar_today():
@@ -88,15 +88,15 @@ def sidebar_today():
     return s.replace(f'<button class="sm-nav" type="button" title="Revisit">{ic("revisit", 20)}<span class="lbl">Revisit</span><span class="dot">3</span></button>', '')
 APPT = lambda body: f'<div class="app">{sidebar_today()}<main class="main">{TOP}{body}</main></div>'
 
-BACK = [('shirt', 'Wool overshirt', 'You asked to check the sale', 'due', 'bell', None), ('dark', 'Zoneless change detection', '40% read · 4 min left', '', 'text', 40), ('video', 'Signal Forms in 20 minutes', 'Stopped at 12:40 of 19:42', '', 'play', 64)]
+BACK = [('shirt', 'The Ojai Jacket', 'You asked to check the sale', 'due', 'bell', None), ('dark', 'Zoneless change detection', '40% read · 4 min left', '', 'text', 40), ('video', 'Angular in 100 Seconds', 'Stopped at 12:40 of 19:42', '', 'play', 64)]
 def back():
     return '<div class="back">' + ''.join(f'<article class="bk sm-l1"><span class="sm-thumb">{ART[a]}</span><span class="tx"><b>{t}</b><span class="why2 {k}">{ic(i, 12)}{w}</span>{f"<span class=prog><i style=width:{p}%></i></span>" if p else ""}</span></article>' for a, t, w, k, i, p in BACK) + '</div>'
-SAVED = [('bowl', 'Rich tonkotsu ramen broth from scratch', 'Recipes', 'amber', 'rule'), ('jacket', 'Nano Puff jacket', 'Clothes', 'rose', 'AI'), ('type', 'Learn accessibility', 'Courses', 'sage', 'you'), ('video', 'Sourdough for beginners', 'Unsorted', 'graphite', '')]
+SAVED = [('bowl', 'Tree Runners – Thunder Green', 'Learning', 'amber', 'rule'), ('jacket', 'The Crater Shirt', 'Shopping', 'rose', 'AI'), ('type', 'Learn accessibility', 'Courses', 'sage', 'you'), ('video', 'Sourdough for beginners', 'Unsorted', 'graphite', '')]
 def saved():
     return '<div class="saved sm-l1">' + ''.join(f'<div class="sv"><span class="sm-thumb" style="width:48px;height:36px">{ART[a]}</span><span class="tx">{t}</span><span class="to">→ {tile(c, 12)}<b>{f}</b>{(" · " + ("by rule" if by == "rule" else "by AI" if by == "AI" else "")) if by in ("rule", "AI") else ""}</span>{"<button class=%ssm-btn sm-btn--sm%s type=button>Undo</button>" % (chr(34), chr(34)) if by == "AI" else ""}</div>' for a, t, f, c, by in SAVED) + '</div>'
-gem = f'''<div class="gem sm-l1"><div class="sm-cover">{ART['pancakes']}</div><div><span class="lbl-s">{ic("revisit", 12)} Saved 5 months ago · never opened</span><h3>Lemon ricotta pancakes</h3><p>You saved it with “for a lazy Sunday”. It’s Sunday in six days.</p><div class="acts"><button class="sm-btn sm-btn--primary sm-btn--sm" type="button">Open</button><button class="sm-btn sm-btn--secondary sm-btn--sm" type="button">Remind me Sunday</button><button class="sm-btn sm-btn--sm" type="button">Not interested</button></div></div></div>'''
+gem = f'''<div class="gem sm-l1"><div class="sm-cover">{ART['pancakes']}</div><div><span class="lbl-s">{ic("revisit", 12)} Saved 5 months ago · never opened</span><h3>Optimistic Nihilism</h3><p>You saved it with “for a lazy Sunday”. It’s Sunday in six days.</p><div class="acts"><button class="sm-btn sm-btn--primary sm-btn--sm" type="button">Open</button><button class="sm-btn sm-btn--secondary sm-btn--sm" type="button">Remind me Sunday</button><button class="sm-btn sm-btn--sm" type="button">Not interested</button></div></div></div>'''
 
-VA = APP(f'<div class="headrow"><h1>All links</h1><span class="lead" style="margin:0">58 links</span>{tools}</div>{chips}{feed()}')
+VA = APP(f'<div class="headrow"><h1>All links</h1><span class="lead" style="margin:0">17 links</span>{tools}</div>{chips}{feed()}')
 VB = APPT(f'''<div class="headrow"><h1>Today</h1><span class="lead" style="margin:0">Monday, 23 November</span></div>
 <section class="sec"><div class="sech"><h2>Back to these</h2><span class="n">3</span><a href="#">Revisit{ic("right", 14)}</a></div>{back()}</section>
 <div class="twocol"><section class="sec"><div class="sech"><h2>Saved this week</h2><span class="n">12 · 9 filed for you</span><a href="#">All{ic("right", 14)}</a></div>{saved()}</section>
@@ -107,9 +107,9 @@ VC = f'<div class="v-sage v-c">' + APPT(f'''<div class="headrow"><h1>Today</h1><
 <div class="twocol"><section class="sec"><div class="sech"><h2>Saved this week</h2><span class="n">12 · 9 filed for you</span><a href="#">All{ic("right", 14)}</a></div>{saved()}</section>
 <section class="sec"><div class="sech"><h2>From your shelf</h2></div>{gem}</section></div>
 <section class="sec"><div class="sech"><h2>Your shelf</h2><span class="n">58</span><a href="#">Open library{ic("right", 14)}</a></div>{feed(label=True)}</section>''') + '</div>'
-VD = APPT(f'''<div class="askhome"><h1>What are you looking for?</h1><p class="lead" style="margin:8px auto 0">Search 58 links by words or meaning, or ask a question.</p>
+VD = APPT(f'''<div class="askhome"><h1>What are you looking for?</h1><p class="lead" style="margin:8px auto 0">Search 17 links by words or meaning, or ask a question.</p>
 <label class="askbar sm-l2">{ic("spark", 20).replace('aria-hidden="true"', 'aria-hidden="true" style="color:var(--ai)"')}<input placeholder="That ramen recipe with the soft egg…" aria-label="Search or ask your shelf"><span class="sm-kbd">Ctrl K</span></label>
-<div class="qs">{''.join(f'<button class="sm-chip" type="button">{q}</button>' for q in ['Which Signal Forms video first?', 'Coats I saved in autumn', 'Recipes for this weekend', '#reading I never opened'])}</div>
+<div class="qs">{''.join(f'<button class="sm-chip" type="button">{q}</button>' for q in ['Which Signal Forms video first?', 'Coats I saved in autumn', 'Learning for this weekend', '#reading I never opened'])}</div>
 <div class="cont">{''.join(f'<article class="bk sm-l1"><span class="sm-thumb">{ART[a]}</span><span class="tx"><b>{t}</b><span class="why2 {k}">{ic(i, 12)}{w}</span>{f"<span class=prog><i style=width:{p}%></i></span>" if p else ""}</span></article>' for a, t, w, k, i, p in BACK)}</div>
 <p class="lbl-s" style="margin-top:12px">Pick up where you left off · <a href="#" style="color:inherit">Revisit</a></p></div>''')
 

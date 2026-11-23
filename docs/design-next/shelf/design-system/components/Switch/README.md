@@ -1,7 +1,3 @@
-# Switch
-An on/off setting that applies at once (Settings rows).
+On or off, applied at once.
 
-44×24, `radius-full`; off on `control`, on on `accent` with an `on-accent` knob. The label is the row's text; the switch carries the same name for screen readers. A choice saved later is a Checkbox.
-
-## In code
-`ui-switch`, `ui-checkbox`.
+28×16 track, radius full: off `toggle-off`, on `accent`; a 12px knob (`surface` off, `on-accent` on) slides 12px over 200 ms. Used in the View menu (Note, Hashtags, Folder, Date) and in Settings. The row is the target; the switch carries the name.
