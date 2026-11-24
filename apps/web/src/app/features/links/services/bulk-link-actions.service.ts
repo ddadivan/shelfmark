@@ -149,7 +149,8 @@ export class BulkLinkActionsService {
     if (links.length === 0) {
       return false;
     }
-    void this.tags.load();
+    // The list offers every tag of the account (the mobile shell has no sidebar that loaded them).
+    await this.tags.load().catch(() => undefined);
     const present = tagCounts(links);
     const change = await this.dialogs.open<
       BulkTagsDialogComponent,

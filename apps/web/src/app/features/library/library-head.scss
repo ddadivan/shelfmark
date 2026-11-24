@@ -9,6 +9,11 @@
   gap: var(--space-1) var(--space-3);
   align-items: center;
 
+  // A word moves to the next line whole instead of breaking letter by letter beside the tile.
+  > .library__title {
+    overflow-wrap: break-word;
+  }
+
   > .library__count {
     @include type(secondary);
 

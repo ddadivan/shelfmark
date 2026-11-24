@@ -170,7 +170,7 @@
             </ui-button>
             } } @else { @if (tidyEntry()) {
             <app-tidy-entry />
-            } @if (folderHead()) {
+            } @if (folderHead() && !compact()) {
             <ui-button
               class="library__add-here"
               variant="ghost"
