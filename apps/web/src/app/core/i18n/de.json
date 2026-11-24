@@ -3199,7 +3199,10 @@
         "one": "Eine Erinnerung ist fällig",
         "other": "{{count}} Erinnerungen sind fällig"
       },
-      "show": "Anzeigen"
+      "show": "Anzeigen",
+      "dueOne": "Erinnerung: {{title}}",
+      "open": "Öffnen",
+      "snooze": "Später"
     },
     "edit": {
       "set": "Erinnerung: {{when}}",

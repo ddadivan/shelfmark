@@ -3199,7 +3199,10 @@
         "one": "A reminder is due",
         "other": "{{count}} reminders are due"
       },
-      "show": "Show"
+      "show": "Show",
+      "dueOne": "{{title}} is due",
+      "open": "Open",
+      "snooze": "Snooze"
     },
     "edit": {
       "set": "Reminder: {{when}}",

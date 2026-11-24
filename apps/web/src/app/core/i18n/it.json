@@ -3280,7 +3280,10 @@
         "many": "Sono arrivati {{count}} promemoria",
         "other": "Sono arrivati {{count}} promemoria"
       },
-      "show": "Mostra"
+      "show": "Mostra",
+      "dueOne": "Promemoria: {{title}}",
+      "open": "Apri",
+      "snooze": "Posticipa"
     },
     "edit": {
       "set": "Promemoria: {{when}}",

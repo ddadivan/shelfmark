@@ -3280,7 +3280,10 @@
         "many": "Han llegado {{count}} recordatorios",
         "other": "Han llegado {{count}} recordatorios"
       },
-      "show": "Ver"
+      "show": "Ver",
+      "dueOne": "Recordatorio: {{title}}",
+      "open": "Abrir",
+      "snooze": "Posponer"
     },
     "edit": {
       "set": "Recordatorio: {{when}}",

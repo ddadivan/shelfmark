@@ -3280,7 +3280,10 @@
         "many": "{{count}} rappels sont arrivés",
         "other": "{{count}} rappels sont arrivés"
       },
-      "show": "Voir"
+      "show": "Voir",
+      "dueOne": "Rappel : {{title}}",
+      "open": "Ouvrir",
+      "snooze": "Reporter"
     },
     "edit": {
       "set": "Rappel : {{when}}",

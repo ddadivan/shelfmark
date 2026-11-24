@@ -3280,7 +3280,10 @@
         "many": "{{count}} lembretes chegaram",
         "other": "{{count}} lembretes chegaram"
       },
-      "show": "Ver"
+      "show": "Ver",
+      "dueOne": "Lembrete: {{title}}",
+      "open": "Abrir",
+      "snooze": "Adiar"
     },
     "edit": {
       "set": "Lembrete: {{when}}",
