@@ -63,8 +63,9 @@
     border-block-end: 1px solid var(--sep);
   }
 
+  // The action moves under the text when the line is too narrow for both (a phone).
   &--quiet#{&}--banner &__body {
-    flex: 1 1 0;
+    flex: 1 1 rem(240px);
   }
 
   &__action {

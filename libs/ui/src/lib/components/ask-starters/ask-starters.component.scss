@@ -16,13 +16,14 @@
   }
 }
 
-// Shelf `cap` (`sm-l1`): `surface` with the `line` hairline, radius 12, 16px padding.
+// Shelf `cap` (`sm-l1`): the page colour with the `line` hairline (transparent in dark, where the
+// `bg` fill sets it off a `surface` panel), radius 12, 16px padding.
 .ui-ask-starters__card {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
   padding: var(--space-4);
-  background: var(--surface);
+  background: var(--bg);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
 }
@@ -68,7 +69,7 @@
   color: var(--text);
   text-align: start;
   cursor: pointer;
-  background: var(--surface);
+  background: transparent;
   border: 0;
   border-radius: var(--radius-sm);
   transition: background-color var(--duration-fast) var(--ease-out);
