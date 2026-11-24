@@ -9,6 +9,11 @@
   display: block;
 }
 
+// The sheet's host spans the full-width pane (a pane is a flex box that would shrink it).
+:host(.ui-menu--sheet) {
+  inline-size: 100%;
+}
+
 .ui-menu__surface {
   @include float-surface;
 
@@ -38,6 +43,7 @@
   max-height: 85dvh;
   padding: var(--space-2) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom, 0rem));
   margin: 0 auto;
+  text-align: start;
   border-block-end: 0;
   border-radius: rem(20px) rem(20px) 0 0;
 }

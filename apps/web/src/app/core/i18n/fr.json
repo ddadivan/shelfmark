@@ -811,6 +811,7 @@
     "addLink": "Ajouter un lien",
     "tabs": {
       "label": "Principal",
+      "today": "Aujourd'hui",
       "library": "Liens",
       "search": "Trouver",
       "tags": "Tags",
@@ -4104,6 +4105,38 @@
       "one": "{{count}} oublié",
       "many": "{{count}} oubliés",
       "other": "{{count}} oubliés"
+    }
+  },
+  "today": {
+    "title": "Aujourd'hui",
+    "failed": "Impossible de charger cette partie.",
+    "retry": "Réessayer",
+    "back": {
+      "title": "À revoir",
+      "more": "Tout revoir",
+      "done": "Terminé : {{title}}",
+      "snooze": "Reporter {{title}}",
+      "clearTitle": "Tout est à jour",
+      "clearText": "Rien n’est dû. Les nouveaux rappels apparaîtront ici."
+    },
+    "week": {
+      "title": "Enregistrés cette semaine",
+      "summary": "{{count}} · {{filed}} dans des dossiers",
+      "more": "Tout afficher",
+      "empty": "Rien d’enregistré cette semaine. Les nouveaux liens restent ici sept jours."
+    },
+    "shelf": {
+      "title": "De votre étagère",
+      "saved": "Enregistré {{when}}",
+      "savedNever": "Enregistré {{when}} · jamais ouvert",
+      "note": "Votre note : « {{note}} ».",
+      "open": "Ouvrir",
+      "emptyTitle": "C’est tout pour cette semaine",
+      "emptyText": "D’autres liens oubliés reviendront la semaine prochaine."
+    },
+    "all": {
+      "title": "Tous les liens",
+      "more": "Ouvrir la bibliothèque"
     }
   },
   "cleanup": {

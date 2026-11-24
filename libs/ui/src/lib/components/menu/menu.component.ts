@@ -65,6 +65,7 @@ function isElement(origin: HTMLElement | OverlayPoint): origin is HTMLElement {
   host: {
     class: 'ui-menu',
     '[class.ui-menu--shown]': 'shown()',
+    '[class.ui-menu--sheet]': 'sheet()',
     '[attr.aria-label]': 'ariaLabel() || null',
     '(keydown)': 'onKeydown($event)',
     '(focusout)': 'onFocusOut($event)',

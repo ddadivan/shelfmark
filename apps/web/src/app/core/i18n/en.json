@@ -797,6 +797,7 @@
     "addLink": "Add link",
     "tabs": {
       "label": "Main",
+      "today": "Today",
       "library": "Library",
       "search": "Search",
       "tags": "Tags",
@@ -4002,6 +4003,38 @@
     "note": {
       "one": "{{count}} forgotten",
       "other": "{{count}} forgotten"
+    }
+  },
+  "today": {
+    "title": "Today",
+    "failed": "Couldn't load this part.",
+    "retry": "Try again",
+    "back": {
+      "title": "Back to these",
+      "more": "Revisit",
+      "done": "Done: {{title}}",
+      "snooze": "Snooze {{title}}",
+      "clearTitle": "All caught up",
+      "clearText": "Nothing is due. New reminders will show up here."
+    },
+    "week": {
+      "title": "Saved this week",
+      "summary": "{{count}} · {{filed}} in folders",
+      "more": "Show all",
+      "empty": "Nothing saved this week yet. New links show up here for seven days."
+    },
+    "shelf": {
+      "title": "From your shelf",
+      "saved": "Saved {{when}}",
+      "savedNever": "Saved {{when}} · never opened",
+      "note": "You saved it “{{note}}”.",
+      "open": "Open",
+      "emptyTitle": "That’s it for this week",
+      "emptyText": "More forgotten links come back next week."
+    },
+    "all": {
+      "title": "All links",
+      "more": "Open library"
     }
   },
   "cleanup": {

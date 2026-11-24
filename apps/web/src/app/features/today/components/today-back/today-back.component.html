@@ -1,0 +1,74 @@
+<section class="today-section" aria-labelledby="today-back-title">
+  <div class="today-section__head">
+    <h2 id="today-back-title" class="today-section__title">{{ 'today.back.title' | transloco }}</h2>
+    <span class="today-section__count">{{ count() }}</span>
+    <a class="today-section__more" [routerLink]="remindersHref">
+      {{ 'today.back.more' | transloco }}
+      <ui-icon name="chevron-right" [size]="ICON_SIZE.Sm" />
+    </a>
+  </div>
+  @if (links().length > 0) {
+    <ul class="today-back">
+      @for (link of links(); track link.id) {
+        <li class="today-back__item">
+          <app-today-thumb class="today-back__thumb" [link]="link" />
+          <div class="today-back__text">
+            <a
+              class="today-back__title"
+              [href]="safeHref(link.url)"
+              [attr.target]="newTab() ? '_blank' : null"
+              rel="noopener noreferrer"
+              (click)="opened(link)"
+              >{{ link.title }}</a
+            >
+            <span class="today-back__why">
+              <ui-icon name="bell" [size]="ICON_SIZE.Sm" />
+              {{ why(link) }}
+            </span>
+          </div>
+          <div class="today-back__actions">
+            <ui-button
+              variant="ghost"
+              size="sm"
+              iconOnly
+              iconLeft="check"
+              [ariaLabel]="'today.back.done' | transloco: { title: link.title }"
+              (click)="done(link)"
+            />
+            <ui-button
+              variant="ghost"
+              size="sm"
+              iconOnly
+              iconLeft="bell"
+              [uiMenuTrigger]="snoozeMenu"
+              [ariaLabel]="'today.back.snooze' | transloco: { title: link.title }"
+              (click)="refreshNow()"
+            />
+            <ui-menu
+              #snoozeMenu
+              align="end"
+              [ariaLabel]="'today.back.snooze' | transloco: { title: link.title }"
+              [sheetTitle]="link.title"
+            >
+              @for (option of snoozeOptions(); track option.preset) {
+                <ui-menu-item (activated)="snooze(link, option)">
+                  {{ 'reminders.preset.' + option.preset | transloco }}
+                  <span class="today-back__preset-time">{{ hint(option) }}</span>
+                </ui-menu-item>
+              }
+              <ui-menu-separator />
+              <ui-menu-item icon="calendar" (activated)="pick(link)">
+                {{ 'reminders.dialog.pick' | transloco }}
+              </ui-menu-item>
+            </ui-menu>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <div class="today-clear today-box">
+      <h3 class="today-clear__title">{{ 'today.back.clearTitle' | transloco }}</h3>
+      <p class="today-clear__text">{{ 'today.back.clearText' | transloco }}</p>
+    </div>
+  }
+</section>

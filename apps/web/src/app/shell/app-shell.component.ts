@@ -22,6 +22,7 @@ import {
   MenuItemComponent,
   MenuSeparatorComponent,
   MenuTriggerDirective,
+  SearchTriggerComponent,
   ToastService,
   TooltipDirective,
 } from '@shelfmark/ui';
@@ -60,9 +61,9 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
 /**
  * Layout around the signed-in pages (Shelf, ADR 0061). Desktop: the 240px sidebar on the left (logo,
  * account avatar, Add link, navigation, Theme and the footer rows), the header (search field, Ask at
- * the far right) and the page on the right. Phone: the page alone
- * under the floating tab bar (Library, Search, Add, Tags or Ask while Ask is on, You); each page
- * carries its own title.
+ * the far right) and the page on the right. Mobile shell (below 64em, Shelf `01-library.html`): a
+ * top bar with the search field and the avatar (settings and the account menu behind it), the page,
+ * and the floating tab bar (Today, Library, Add, Search, Ask, or Tags while Ask is off).
  */
 @Component({
   selector: 'app-shell',
@@ -87,6 +88,7 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
     SettingsNavComponent,
     SidebarComponent,
     TabBarComponent,
+    SearchTriggerComponent,
     TooltipDirective,
   ],
   host: { '(document:keydown)': 'onKeydown($event)' },
@@ -118,27 +120,34 @@ export default class AppShellComponent {
   protected readonly pushed = computed(() => isPushedUrl(this.url()));
   /** On the settings pages the settings nav takes the place of the sidebar (tablet and up). */
   protected readonly inSettings = computed(() => this.activeTab() === PHONE_TAB.You);
+  /**
+   * The top bar of the mobile shell (search and avatar): not on a pushed page (it has its own bar)
+   * nor on the settings pages (their own header leads back).
+   */
+  protected readonly topBar = computed(
+    () => this.viewport.compact() && !this.pushed() && !this.inSettings(),
+  );
   private readonly tabLabels = toSignal(
     combineLatest([
+      this.transloco.selectTranslate('shell.tabs.today'),
       this.transloco.selectTranslate('shell.tabs.library'),
       this.transloco.selectTranslate('shell.tabs.search'),
       this.transloco.selectTranslate('shell.tabs.tags'),
       this.transloco.selectTranslate('shell.tabs.ask'),
-      this.transloco.selectTranslate('shell.tabs.you'),
     ]),
     { initialValue: ['', '', '', '', ''] },
   );
   private readonly ai = inject(AiSettingsStore);
   protected readonly tabs = computed<TabBarItem[]>(() => {
-    const [library, search, tags, ask, you] = this.tabLabels();
+    const [today, library, search, tags, ask] = this.tabLabels();
     return [
+      { id: PHONE_TAB.Today, label: today, icon: 'history', href: `/${APP_PATH.Today}` },
       { id: PHONE_TAB.Library, label: library, icon: 'bookmark', href: `/${APP_PATH.Library}` },
       { id: PHONE_TAB.Search, label: search, icon: 'search' },
-      // While Ask is on it takes the place of Tags; tags move into Library (#499).
+      // Ask takes the last place; while it is off the place is Tags, as before (#499).
       this.ai.askOn()
         ? { id: PHONE_TAB.Ask, label: ask, icon: 'spark', href: `/${APP_PATH.Ask}` }
         : { id: PHONE_TAB.Tags, label: tags, icon: 'tag', href: `/${APP_PATH.Tags}` },
-      { id: PHONE_TAB.You, label: you, icon: 'user', href: `/${APP_PATH.Settings}` },
     ];
   });
   /** The account button is the 32px avatar itself (Shelf sidebar head; `--ui-button-sm-padding: 0`). */

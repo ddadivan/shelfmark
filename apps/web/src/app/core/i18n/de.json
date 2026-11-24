@@ -797,6 +797,7 @@
     "addLink": "Link hinzufügen",
     "tabs": {
       "label": "Hauptmenü",
+      "today": "Heute",
       "library": "Links",
       "search": "Suche",
       "tags": "Tags",
@@ -4002,6 +4003,38 @@
     "note": {
       "one": "{{count}} vergessen",
       "other": "{{count}} vergessen"
+    }
+  },
+  "today": {
+    "title": "Heute",
+    "failed": "Dieser Teil konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "back": {
+      "title": "Zurück zu diesen",
+      "more": "Alle ansehen",
+      "done": "Erledigt: {{title}}",
+      "snooze": "{{title}} verschieben",
+      "clearTitle": "Alles erledigt",
+      "clearText": "Nichts ist fällig. Neue Erinnerungen erscheinen hier."
+    },
+    "week": {
+      "title": "Diese Woche gespeichert",
+      "summary": "{{count}} · {{filed}} in Ordnern",
+      "more": "Alle anzeigen",
+      "empty": "Diese Woche noch nichts gespeichert. Neue Links stehen sieben Tage hier."
+    },
+    "shelf": {
+      "title": "Aus deinem Regal",
+      "saved": "Gespeichert {{when}}",
+      "savedNever": "Gespeichert {{when}} · nie geöffnet",
+      "note": "Deine Notiz: „{{note}}“.",
+      "open": "Öffnen",
+      "emptyTitle": "Das war’s für diese Woche",
+      "emptyText": "Nächste Woche kommen weitere vergessene Links zurück."
+    },
+    "all": {
+      "title": "Alle Links",
+      "more": "Bibliothek öffnen"
     }
   },
   "cleanup": {

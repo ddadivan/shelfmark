@@ -326,6 +326,7 @@ describe('AppShellComponent', () => {
               children: [
                 { path: 'settings', children: [{ path: 'account', children: [] }] },
                 { path: 'recent', children: [] },
+                { path: 'today', children: [] },
                 { path: 'tags', children: [] },
                 { path: 'ask', children: [] },
               ],
@@ -419,17 +420,21 @@ describe('AppShellComponent', () => {
         (item) => item.textContent?.trim() === name,
       );
 
-    it('on a phone has the tab bar and no header, sidebar, menu button or FAB', async () => {
+    it('on a phone has the top bar and the tab bar, no header, sidebar, menu button or FAB', async () => {
       const { root } = await setup(true);
 
       expect(bar(root)?.querySelector('nav[aria-label="Main"]')).not.toBeNull();
       expect(root.querySelector('.shell__header')).toBeNull();
+      expect(root.querySelector('.shell__top ui-search-trigger')?.textContent).toContain(
+        'Search links, folders and tags',
+      );
+      expect(byLabel(root, 'Account menu')).not.toBeNull();
       expect(root.querySelector('.shell__sidebar')).toBeNull();
       expect(byLabel(root, 'Open menu')).toBeNull();
       expect(root.querySelector('.shell__fab')).toBeNull();
       expect(
         Array.from(root.querySelectorAll('ui-tab-bar li')).map((item) => item.textContent?.trim()),
-      ).toEqual(['Library', 'Search', '', 'Tags', 'You']);
+      ).toEqual(['Today', 'Library', '', 'Search', 'Tags']);
       expect(byLabel(root, 'Add link')).not.toBeNull();
     });
 
@@ -446,30 +451,54 @@ describe('AppShellComponent', () => {
       expect(bar(root)?.querySelector('nav[aria-label="Main"]')).not.toBeNull();
       expect(root.querySelector('.shell__sidebar')).toBeNull();
       expect(root.querySelector('.shell__header')).toBeNull();
+      expect(root.querySelector('.shell__top')).not.toBeNull();
+    });
+
+    it('opens the search from the top bar field', async () => {
+      const { harness, root } = await setup(true);
+      const open = vi
+        .spyOn(TestBed.inject(SearchDialogService), 'open')
+        .mockImplementation(() => undefined);
+      root.querySelector<HTMLButtonElement>('.shell__top ui-search-trigger button')?.click();
+      await harness.fixture.whenStable();
+      expect(open).toHaveBeenCalled();
+    });
+
+    it('opens the account menu as a bottom sheet from the top bar avatar, with Settings', async () => {
+      const { harness, root } = await setup(true);
+      root.querySelector<HTMLButtonElement>('.shell__top .shell__user button')?.click();
+      await harness.fixture.whenStable();
+      expect(document.querySelector('.ui-menu__surface--sheet')?.textContent).toContain('Settings');
     });
 
     it('marks the tab of the current route with aria-current', async () => {
       const { harness, root } = await setup(true);
       expect(tab(root, 'Library')?.getAttribute('aria-current')).toBe('page');
 
+      await TestBed.inject(Router).navigateByUrl('/today');
+      await harness.fixture.whenStable();
+      expect(tab(root, 'Today')?.getAttribute('aria-current')).toBe('page');
+      expect(tab(root, 'Library')?.hasAttribute('aria-current')).toBe(false);
+
+      // Settings sit behind the avatar: no tab is current there, and the top bar steps aside.
       await TestBed.inject(Router).navigateByUrl('/settings');
       await harness.fixture.whenStable();
-
-      expect(tab(root, 'You')?.getAttribute('aria-current')).toBe('page');
-      expect(tab(root, 'Library')?.hasAttribute('aria-current')).toBe(false);
+      expect(root.querySelector('ui-tab-bar [aria-current]')).toBeNull();
+      expect(root.querySelector('.shell__top')).toBeNull();
     });
 
-    it('routes the Tags and You tabs and keeps real hrefs', async () => {
+    it('routes the Today and Tags tabs and keeps real hrefs', async () => {
       const { harness, root } = await setup(true);
+
+      expect(tab(root, 'Today')?.getAttribute('href')).toBe('/today');
+      tab(root, 'Today')?.click();
+      await harness.fixture.whenStable();
+      expect(TestBed.inject(Router).url).toBe('/today');
 
       expect(tab(root, 'Tags')?.getAttribute('href')).toBe('/tags');
       tab(root, 'Tags')?.click();
       await harness.fixture.whenStable();
       expect(TestBed.inject(Router).url).toBe('/tags');
-
-      tab(root, 'You')?.click();
-      await harness.fixture.whenStable();
-      expect(TestBed.inject(Router).url).toBe('/settings');
     });
 
     it('shows Ask with the spark in place of Tags while Ask is on (#499)', async () => {
@@ -481,7 +510,7 @@ describe('AppShellComponent', () => {
 
       expect(
         Array.from(root.querySelectorAll('ui-tab-bar li')).map((item) => item.textContent?.trim()),
-      ).toEqual(['Library', 'Search', '', 'Ask', 'You']);
+      ).toEqual(['Today', 'Library', '', 'Search', 'Ask']);
       expect(tab(root, 'Ask')?.getAttribute('href')).toBe('/ask');
       expect(tab(root, 'Ask')?.querySelector('ui-icon use')?.getAttribute('href')).toMatch(
         /-spark$/,

@@ -1,0 +1,63 @@
+<section class="today-section" aria-labelledby="today-shelf-title">
+  <div class="today-section__head">
+    <h2 id="today-shelf-title" class="today-section__title">
+      {{ 'today.shelf.title' | transloco }}
+    </h2>
+  </div>
+  @if (store.loaded()) {
+    @if (link(); as link) {
+      <article class="today-shelf today-box">
+        <div class="today-shelf__cover" aria-hidden="true">
+          @if (image(); as src) {
+            <img
+              class="today-shelf__img"
+              [src]="src"
+              alt=""
+              decoding="async"
+              (error)="imageFailed.set(true)"
+            />
+          } @else {
+            <span class="today-shelf__letter">{{ letter() }}</span>
+          }
+        </div>
+        <div class="today-shelf__body">
+          <span class="today-shelf__meta">
+            <ui-icon name="history" [size]="ICON_SIZE.Sm" />
+            {{
+              (link.lastOpenedAt === null ? 'today.shelf.savedNever' : 'today.shelf.saved')
+                | transloco: { when: savedAgo() }
+            }}
+          </span>
+          <h3 class="today-shelf__title">{{ link.title }}</h3>
+          @if (link.note) {
+            <p class="today-shelf__note">
+              {{ 'today.shelf.note' | transloco: { note: link.note } }}
+            </p>
+          }
+          <div class="today-shelf__actions">
+            <ui-button
+              variant="primary"
+              size="sm"
+              [href]="href()"
+              [newTab]="newTab()"
+              (linkClick)="opened(link)"
+            >
+              {{ 'today.shelf.open' | transloco }}
+            </ui-button>
+            <ui-button variant="secondary" size="sm" (click)="remind(link)">
+              {{ 'rediscover.remind' | transloco }}
+            </ui-button>
+            <ui-button variant="ghost" size="sm" (click)="hide(link)">
+              {{ 'rediscover.notInterested' | transloco }}
+            </ui-button>
+          </div>
+        </div>
+      </article>
+    } @else {
+      <div class="today-clear today-box">
+        <h3 class="today-clear__title">{{ 'today.shelf.emptyTitle' | transloco }}</h3>
+        <p class="today-clear__text">{{ 'today.shelf.emptyText' | transloco }}</p>
+      </div>
+    }
+  }
+</section>

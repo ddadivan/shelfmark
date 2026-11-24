@@ -10,6 +10,7 @@ import {
   CARD_MEDIA,
   type CardMedia,
   FolderColourDirective,
+  type HeadingLevel,
   ICON_SIZE,
   IconComponent,
   LongPressDirective,
@@ -87,6 +88,8 @@ export class LinkCardComponent {
   readonly link = input.required<LinkCardItem>();
   /** No favorite button and no actions menu: a guest looks at someone else's link (#276). */
   readonly readOnly = input(false);
+  /** Level of the title heading (2 in a feed; 3 under a section heading, as on Today). */
+  readonly headingLevel = input<HeadingLevel>(2);
   /** Plays the fade-in of cards that replace the skeleton. */
   readonly reveal = input(false);
   /** The link's folder as a chip, in mixed feeds only (#418); `null` for none. */

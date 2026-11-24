@@ -19,6 +19,7 @@ const tagsPage = () => import('./features/tags/pages/tags-page/tags.page');
 const sharePage = () => import('./features/share/share.page');
 const tidyPage = () => import('./features/ai/pages/tidy/tidy.page');
 const askPage = () => import('./features/ai/pages/ask/ask.page');
+const todayPage = () => import('./features/today/today.page');
 
 /** The real pages. `app.routes.ts` serves them as they are; the e2e build adds a test page. */
 export const pageRoutes: Routes = [
@@ -37,6 +38,7 @@ export const pageRoutes: Routes = [
     loadComponent: () => import('./shell/app-shell.component'),
     children: [
       { path: '', pathMatch: 'full', redirectTo: APP_PATH.Links },
+      { path: APP_PATH.Today, loadComponent: todayPage },
       { path: APP_PATH.Library, loadComponent: phoneLibraryPage },
       { path: APP_PATH.Tags, loadComponent: tagsPage },
       { path: APP_PATH.Ask, canActivate: [askOnGuard], loadComponent: askPage },
@@ -81,6 +83,7 @@ export const pageRoutes: Routes = [
   // Web Share Target (Android): outside the shell, a quick save sheet. Signed-in only.
   { path: APP_PATH.Share, canMatch: [authOnly], loadComponent: sharePage },
   // A guest on a protected URL: to sign-in, then back.
+  { path: APP_PATH.Today, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Library, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Tags, canActivate: [redirectToSignIn], children: [] },
   { path: APP_PATH.Ask, canActivate: [redirectToSignIn], children: [] },

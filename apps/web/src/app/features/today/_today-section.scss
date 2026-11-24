@@ -1,0 +1,84 @@
+@use 'ui' as *;
+
+// One part of the Today page (Shelf `.t-sec`): an 18px heading with its muted count and a quiet
+// "more" link at the end, 12px above the content. Every part component includes it.
+@mixin today-section {
+  .today-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-inline-size: 0;
+  }
+
+  .today-section__head {
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+    min-inline-size: 0;
+  }
+
+  .today-section__title {
+    @include type(heading);
+
+    margin: 0;
+    font-size: rem(18px);
+    line-height: 1.25;
+  }
+
+  .today-section__count {
+    @include type(secondary);
+
+    color: var(--text-muted);
+  }
+
+  .today-section__more {
+    @include type(secondary);
+
+    display: inline-flex;
+    flex: none;
+    gap: rem(2px);
+    align-items: center;
+    margin-inline-start: auto;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: var(--radius-xs);
+
+    @include hover {
+      color: var(--text);
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+
+  // The boxes of the parts (Shelf v3: `surface` with a `line` hairline, 16px corners).
+  .today-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+  }
+
+  // "All caught up" and the like (Shelf `.t-clear`): a short title and a muted line, centred.
+  .today-clear {
+    display: flex;
+    flex-direction: column;
+    gap: rem(6px);
+    align-items: center;
+    padding: var(--space-6);
+    text-align: center;
+  }
+
+  .today-clear__title {
+    @include type(heading);
+
+    margin: 0;
+  }
+
+  .today-clear__text {
+    @include type(secondary);
+
+    margin: 0;
+    color: var(--text-muted);
+  }
+}

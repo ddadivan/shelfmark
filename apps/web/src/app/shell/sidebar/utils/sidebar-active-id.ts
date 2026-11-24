@@ -1,7 +1,7 @@
 import { LINKS_SCOPE } from '../../../features/links/models/links-scope.const';
 import { APP_PATH } from '../../../models/app-path.const';
 import { SIDEBAR_RECENT_ID } from '../models/sidebar-recent-id.const';
-import { SIDEBAR_REMINDERS_ID } from '../models/sidebar-reminders-id.const';
+import { SIDEBAR_TODAY_ID } from '../models/sidebar-today-id.const';
 import { SIDEBAR_TRASH_ID } from '../models/sidebar-trash-id.const';
 
 /**
@@ -19,8 +19,10 @@ export function sidebarActiveId(url: string): string | null {
       return LINKS_SCOPE.Favorites;
     case APP_PATH.Recent:
       return SIDEBAR_RECENT_ID;
+    // The Reminders page is the "Revisit" of Today (Shelf): its row stays current there.
+    case APP_PATH.Today:
     case APP_PATH.Reminders:
-      return SIDEBAR_REMINDERS_ID;
+      return SIDEBAR_TODAY_ID;
     case APP_PATH.Trash:
       return SIDEBAR_TRASH_ID;
     case APP_PATH.Folders:

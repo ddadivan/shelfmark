@@ -94,6 +94,7 @@
       #menu
       align="end"
       [ariaLabel]="'links.item.actions' | transloco: { title: link().title }"
+      [sheetTitle]="link().title"
     >
       @if (previewable() && href()) {
         <ui-menu-item

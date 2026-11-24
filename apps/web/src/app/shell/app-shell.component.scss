@@ -22,6 +22,33 @@
   padding: var(--space-4) var(--space-8) 0;
 }
 
+// Top bar of the mobile shell (Shelf `01-library.html` below 64em): the 48px search field (44px on
+// a phone) and the 40px round avatar, 8px apart, over the page with the page gutter.
+.shell__top {
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-4) var(--space-6) 0;
+
+  --ui-button-sm-size: #{rem(40px)};
+  --ui-button-sm-padding: 0;
+
+  @include phone {
+    padding-inline: var(--space-4);
+  }
+}
+
+.shell__top-search {
+  --ui-search-trigger-max-inline-size: none;
+
+  flex: 1 1 0;
+
+  @include phone {
+    --ui-search-trigger-height: #{rem(44px)};
+  }
+}
+
 // Sidebar head (Shelf reference `.brandrow`): a 32px row with the logo (22px mark, 16/24 600
 // wordmark, 8px apart, 8px in) and the 32px account avatar 4px from the end; Add link 24px under it.
 .shell__side-head {
@@ -183,6 +210,11 @@
     padding-block-end: calc(#{$shell-tab-bar-room} + env(safe-area-inset-bottom));
     overflow-y: auto;
     overscroll-behavior: contain;
+  }
+
+  // Under the top bar of the mobile shell (Shelf): 16px to the page title.
+  &--under-top {
+    padding-block-start: var(--space-4);
   }
 
   // A tablet in the mobile shell keeps the wider page gutter.

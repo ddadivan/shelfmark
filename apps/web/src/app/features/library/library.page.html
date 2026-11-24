@@ -157,79 +157,16 @@
               feed.shownCount()) | transloco: { count: feed.shownCount() } }} } }
             </p>
           </ng-template>
-          @if (phone()) {
-          <div class="library__tools">
-            @if (tidyEntry()) {
-            <app-tidy-entry />
-            }
-            <ui-button
-              #viewButton
-              [uiMenuTrigger]="viewMenu"
-              variant="secondary"
-              iconLeft="settings"
-              iconRight="chevron-down"
-              [iconSize]="ICON_SIZE.Sm"
-            >
-              {{ 'library.viewMenu.button' | transloco }}
-            </ui-button>
-            <ui-menu #viewMenu align="end" [ariaLabel]="'library.viewMenu.label' | transloco">
-              @if (feed.showControls() && feed.viewOptions(); as options) {
-              <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
-              @for (option of SORT_OPTIONS; track option) {
-              <ui-menu-item
-                type="radio"
-                [selected]="option === filters.feedSort()"
-                (activated)="filters.setSort(option)"
-              >
-                {{ SORT_OPTION_KEYS[option] | transloco }}
-              </ui-menu-item>
-              }
-              <ui-menu-separator />
-              <ui-menu-label>{{ 'library.view.label' | transloco }}</ui-menu-label>
-              @for (option of options; track option.value) {
-              <ui-menu-item
-                type="radio"
-                [icon]="option.icon"
-                [selected]="option.value === filters.view()"
-                (activated)="feed.setView(option.value)"
-              >
-                {{ option.label }}
-              </ui-menu-item>
-              }
-              <ui-menu-separator />
-              <ui-menu-item icon="filter" (activated)="openFilter(filterPanel, viewButton)">
-                {{ filters.filterCount() === 0 ? ('library.filterPanel.menuItem' | transloco) :
-                ('library.filterPanel.menuItemCount' | transloco: { count: filters.filterCount() })
-                }}
-              </ui-menu-item>
-              <ui-menu-item icon="check" (activated)="selection.startSelection()">
-                {{ 'library.viewMenu.select' | transloco }}
-              </ui-menu-item>
-              <ui-menu-separator />
-              }
-              <ui-menu-label>{{ 'export.menu' | transloco }}</ui-menu-label>
-              @if (filters.viewScope()) { @for (format of EXPORT_FORMAT_OPTIONS; track format.value)
-              {
-              <ui-menu-item [icon]="format.icon" (activated)="exportView(format.value)">
-                {{ format.viewKey | transloco }}
-              </ui-menu-item>
-              }
-              <ui-menu-separator />
-              } @for (format of EXPORT_FORMAT_OPTIONS; track format.value) {
-              <ui-menu-item [icon]="format.icon" (activated)="exportAll(format.value)">
-                {{ format.allKey | transloco }}
-              </ui-menu-item>
-              }
-            </ui-menu>
-          </div>
-          } @else {
-          <!-- Shelf toolbar: View (grid size and card fields), the view switch, then ⋯ with the rest. -->
+          <!-- Shelf toolbar: View (grid size and card fields; not on a phone, where the feed has two
+               columns), the view switch, then ⋯ with the rest (a bottom sheet below 64em). -->
           <div class="library__tools" uiTooltipGroup>
             @if (tidyEntry()) {
             <app-tidy-entry />
             } @if (feed.showControls() && feed.viewOptions(); as options) {
             <div class="library__controls">
+              @if (!phone()) {
               <app-library-view-menu />
+              }
               <ui-segmented-control
                 iconOnly
                 [options]="options"
@@ -302,7 +239,6 @@
               }
             </ui-menu>
           </div>
-          }
         </header>
       </ng-template>
       @if (!narrow() && !selection.selecting()) {

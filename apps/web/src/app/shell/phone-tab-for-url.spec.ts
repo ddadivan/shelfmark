@@ -3,6 +3,7 @@ import { phoneTabForUrl } from './phone-tab-for-url';
 
 describe('phoneTabForUrl', () => {
   it.each([
+    ['/today', PHONE_TAB.Today],
     ['/library', PHONE_TAB.Library],
     ['/links', PHONE_TAB.Library],
     ['/links?tag=docs', PHONE_TAB.Library],

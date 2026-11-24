@@ -1,0 +1,5 @@
+@if (src(); as url) {
+  <img class="today-thumb__img" [src]="url" alt="" decoding="async" (error)="failed.set(true)" />
+} @else {
+  <span class="today-thumb__letter">{{ letter() }}</span>
+}
