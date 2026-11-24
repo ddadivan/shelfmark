@@ -175,6 +175,16 @@ describe('ReaderComponent', () => {
     vi.restoreAllMocks();
   });
 
+  it('is a focusable scroll region named by the title, and a code block is focusable too', () => {
+    const { reader } = setup();
+    expect(reader.getAttribute('role')).toBe('region');
+    expect(reader.getAttribute('tabindex')).toBe('0');
+    const title = reader.querySelector('h2');
+    expect(title?.id).toMatch(/^ui-reader-title-\d+$/);
+    expect(reader.getAttribute('aria-labelledby')).toBe(title?.id);
+    expect(reader.querySelector('pre')?.getAttribute('tabindex')).toBe('0');
+  });
+
   it('has no axe violations', async () => {
     const { host } = setup();
     expect(await axeViolations(host)).toEqual([]);

@@ -18,6 +18,11 @@
   overscroll-behavior: contain;
   color: var(--ui-reader-text);
   background: var(--ui-reader-bg);
+
+  // The host fills its pane, so the ring sits inside it.
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
 }
 
 :host([data-width='narrow']) {

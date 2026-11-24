@@ -25,6 +25,8 @@ import type { ReaderTheme } from './models/reader-theme.type';
 import { READER_VIEW_BLOCK } from './models/reader-block-kind.const';
 import type { ReaderViewBlock } from './models/reader-view-block.interface';
 
+let nextId = 0;
+
 /**
  * An article as clean text (Shelf ReaderView, the Reader mode of the Link page). The host is the
  * scroll area: a 2px progress line sticks to its top and `progressed` reports the share read
@@ -39,7 +41,9 @@ import type { ReaderViewBlock } from './models/reader-view-block.interface';
  * palette whatever the app theme: the host takes `data-theme` light or dark (the global token
  * rules then give every token inside, summary and note included, that theme's value) and
  * `data-reader-theme`, which swaps page, text and muted text for Sepia and Black. Without a theme
- * the reader follows the app. All text comes in through inputs.
+ * the reader follows the app. All text comes in through inputs. The host is a focusable `region`
+ * named by the title, so the keyboard can scroll it; a wide code block scrolls on its own and is
+ * focusable too.
  */
 @Component({
   selector: 'ui-reader',
@@ -53,6 +57,10 @@ import type { ReaderViewBlock } from './models/reader-view-block.interface';
     '[attr.data-spacing]': 'lineSpacing()',
     '[attr.data-theme]': 'baseTheme()',
     '[attr.data-reader-theme]': 'theme()',
+    // The host is the scroll area: keyboard users reach it to scroll, named by the title.
+    role: 'region',
+    tabindex: '0',
+    '[attr.aria-labelledby]': 'titleId',
     '(scroll)': 'onScroll()',
   },
   templateUrl: './reader.component.html',
@@ -106,6 +114,8 @@ export class ReaderComponent {
     }
   });
 
+  /** Id of the title that names the scroll region. */
+  protected readonly titleId = `ui-reader-title-${nextId++}`;
   protected readonly progress = signal(0);
   /** A picture that failed to load is left out. */
   protected readonly imageFailed = signal<string | null>(null);

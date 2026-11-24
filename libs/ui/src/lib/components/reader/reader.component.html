@@ -16,7 +16,7 @@
       </p>
     }
     <!-- prettier-ignore -->
-    <h2 class="ui-reader__title">{{ heading() }}</h2>
+    <h2 class="ui-reader__title" [id]="titleId">{{ heading() }}</h2>
     @if (meta()) {
       <p class="ui-reader__meta">{{ meta() }}</p>
     }
@@ -52,7 +52,7 @@
           <blockquote class="ui-reader__quote">{{ block.text }}</blockquote>
         }
         @case (BLOCK.Code) {
-          <pre class="ui-reader__code"><code>{{ block.text }}</code></pre>
+          <pre class="ui-reader__code" tabindex="0"><code>{{ block.text }}</code></pre>
         }
         @case (BLOCK.Image) {
           <figure class="ui-reader__figure">
