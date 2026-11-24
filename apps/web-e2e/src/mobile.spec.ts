@@ -70,7 +70,7 @@ test.describe('mobile layout (mock API)', () => {
   );
 
   test(
-    'the tab bar is a landmark with Library, Search, Add, Tags and You in that order',
+    'the tab bar is a landmark with Today, Library, Add, Search and Tags in that order',
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       await page.goto('/links');
@@ -82,7 +82,9 @@ test.describe('mobile layout (mock API)', () => {
           items.map((item) => item.getAttribute('aria-label') ?? item.textContent?.trim()),
         );
 
-      expect(names).toEqual(['Library', 'Search', 'Add link', 'Tags', 'You']);
+      // Shelf block 1 (AI off: Tags in Ask's place); the You tab is gone, Settings sit behind the
+      // avatar of the top bar.
+      expect(names).toEqual(['Today', 'Library', 'Add link', 'Search', 'Tags']);
       await expect(page.locator('ui-tab-bar ui-icon[name="chevron-down"]')).toHaveCount(0);
     },
   );
@@ -99,9 +101,10 @@ test.describe('mobile layout (mock API)', () => {
       await expect(tab(page, 'Tags')).toHaveAttribute('aria-current', 'page');
       await expect(tab(page, 'Library')).not.toHaveAttribute('aria-current', 'page');
 
-      await tab(page, 'You').click();
-      await expect(page).toHaveURL('/settings');
-      await expect(tab(page, 'You')).toHaveAttribute('aria-current', 'page');
+      await tab(page, 'Today').click();
+      await expect(page).toHaveURL('/today');
+      await expect(tab(page, 'Today')).toHaveAttribute('aria-current', 'page');
+      await expect(tab(page, 'Tags')).not.toHaveAttribute('aria-current', 'page');
 
       await page.goto(`/folders/${READING.id}`);
       await expect(tab(page, 'Library')).toHaveAttribute('aria-current', 'page');
@@ -203,13 +206,9 @@ test.describe('mobile layout (mock API)', () => {
       await expect(
         page.getByRole('combobox', { name: 'Search links, folders and tags' }),
       ).toBeFocused();
+      // The full-screen search on every width of the mobile shell (Shelf block 3).
       const box = await dialog.boundingBox();
-      if (isPhone(page)) {
-        expect(box?.width).toBe(page.viewportSize()?.width);
-      } else {
-        // A tablet in the mobile shell keeps the centred search dialog (680px, #316).
-        expect(box?.width).toBeLessThanOrEqual(680);
-      }
+      expect(box?.width).toBe(page.viewportSize()?.width);
       expect(await overflow(page)).toBeLessThanOrEqual(0);
       await page.keyboard.press('Escape');
       await expect(dialog).toHaveCount(0);
@@ -350,22 +349,25 @@ test.describe('mobile layout (mock API)', () => {
   });
 
   test(
-    'the You tab opens the settings with the account, sign out and no account menu',
+    'the top bar avatar opens Settings: the You list with the account and sign out, no top bar',
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       await page.goto('/links');
 
-      await tab(page, 'You').click();
+      await page.getByRole('banner').getByRole('button', { name: 'Account menu' }).click();
+      await page.getByRole('menuitem', { name: 'Settings' }).click();
 
       await expect(page).toHaveURL('/settings');
       await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();
+      await expect(page.getByRole('link', { name: /^Account: / })).toBeVisible();
       await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
+      // The settings pages step out of the top bar.
       await expect(page.getByRole('button', { name: 'Account menu' })).toHaveCount(0);
     },
   );
 
   test(
-    'the tab bar floats 8px from the sides (centred, at most 560px on a tablet) and 8px from the bottom and does not cover the last row',
+    'the tab bar floats 8px from the sides (full width on a tablet too) and 8px from the bottom and does not cover the last row',
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       await page.goto('/links');
@@ -373,8 +375,8 @@ test.describe('mobile layout (mock API)', () => {
 
       const box = await tabBar(page).boundingBox();
       const view = page.viewportSize();
-      // 8px from each side on a phone; centred and at most 560px wide on a tablet (#316).
-      const side = Math.max(8, ((view?.width ?? 0) - 560) / 2);
+      // 8px from each side on a phone and on a tablet (Shelf block 1: full width).
+      const side = 8;
       expect(box?.x).toBeCloseTo(side, 0);
       expect((view?.width ?? 0) - ((box?.x ?? 0) + (box?.width ?? 0))).toBeCloseTo(side, 0);
       expect((view?.height ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0))).toBeCloseTo(8, 0);
