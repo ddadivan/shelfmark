@@ -1,0 +1,166 @@
+@use 'ui' as *;
+
+// Shelf Revisit: one centred column (880px), groups 24px apart, each a 18px heading with a muted
+// count, rows in a hairline panel, the forgotten links as cards.
+:host {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+.revisit {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: rem(880px);
+  padding-block: var(--space-2) var(--space-8);
+  margin-inline: auto;
+}
+
+.revisit__title {
+  @include type(title);
+
+  margin: 0;
+}
+
+.revisit__lead {
+  @include type(secondary);
+
+  min-height: 1lh;
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+}
+
+.revisit__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.revisit__heading {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  margin: 0;
+  font-size: rem(18px);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.revisit__count {
+  @include type(caption);
+
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.revisit__more {
+  align-self: center;
+  margin-inline-start: auto;
+}
+
+.revisit__panel {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+
+  > li + li {
+    border-block-start: 1px solid var(--sep);
+  }
+}
+
+.revisit__meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  align-items: center;
+}
+
+.revisit__when {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+
+  @include type(caption);
+
+  &--due {
+    color: var(--warning);
+  }
+}
+
+.revisit__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.revisit__actions--progress {
+  gap: var(--space-3);
+}
+
+.revisit__progress {
+  inline-size: rem(160px);
+
+  @include phone {
+    display: none;
+  }
+}
+
+.revisit__left,
+.revisit__opened {
+  @include type(caption);
+
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.revisit__lead2 {
+  @include type(secondary);
+
+  margin: 0 0 var(--space-1);
+  color: var(--text-muted);
+}
+
+.revisit__cards {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(rem(240px), 1fr));
+}
+
+.revisit__source {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+}
+
+.revisit__host {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.revisit__saved {
+  margin-inline-start: auto;
+  white-space: nowrap;
+}
+
+// The card's buttons sit above its stretched link.
+.revisit__card-actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-block-start: var(--space-2);
+}

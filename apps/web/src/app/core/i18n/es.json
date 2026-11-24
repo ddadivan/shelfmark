@@ -4338,5 +4338,49 @@
       "saveFailed": "No se pudo guardar el cambio",
       "retry": "Reintentar"
     }
+  },
+  "revisit": {
+    "title": "Volver a ver",
+    "lead": {
+      "one": "{{count}} pendiente. Recordatorios, artículos a medio leer y enlaces que guardaste y olvidaste.",
+      "other": "{{count}} pendientes. Recordatorios, artículos a medio leer y enlaces que guardaste y olvidaste.",
+      "many": "{{count}} pendientes. Recordatorios, artículos a medio leer y enlaces que guardaste y olvidaste."
+    },
+    "leadEmpty": "Los enlaces pendientes, a medio leer u olvidados vuelven aquí.",
+    "loading": "Cargando",
+    "empty": {
+      "title": "Nada pendiente",
+      "text": "Estás al día. Los enlaces vuelven aquí cuando vence un recordatorio o cuando hace tiempo que no los abres."
+    },
+    "due": {
+      "title": "Pendientes",
+      "done": "Hecho",
+      "snooze": "Posponer",
+      "snoozeLabel": "Posponer {{title}}"
+    },
+    "continue": {
+      "title": "Seguir leyendo",
+      "read": "{{percent}} % leído",
+      "left": "quedan {{count}} min",
+      "action": "Seguir"
+    },
+    "forgotten": {
+      "title": "Olvidados esta semana",
+      "lead": "Los guardaste hace tiempo y no los has abierto desde entonces.",
+      "saved": "guardado en {{month}}",
+      "open": "Abrir",
+      "openLabel": "Abrir {{title}}",
+      "later": "Más tarde",
+      "notInterested": "No me interesa"
+    },
+    "recent": {
+      "title": "Abiertos recientemente",
+      "window": "últimos 30 días",
+      "options": "Opciones del historial",
+      "all": "Ver todo",
+      "clear": "Borrar historial",
+      "clearTitle": "¿Borrar el historial?",
+      "clearText": "Tus enlaces siguen guardados; solo se borra la lista de lo que abriste."
+    }
   }
 }

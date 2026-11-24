@@ -4229,5 +4229,48 @@
       "saveFailed": "Couldn't save the change",
       "retry": "Try again"
     }
+  },
+  "revisit": {
+    "title": "Revisit",
+    "lead": {
+      "one": "{{count}} waiting. Reminders, half-read articles and links you saved and forgot.",
+      "other": "{{count}} waiting. Reminders, half-read articles and links you saved and forgot."
+    },
+    "leadEmpty": "Links that are due, half-read or forgotten come back here.",
+    "loading": "Loading Revisit",
+    "empty": {
+      "title": "Nothing waiting",
+      "text": "You're up to date. Saved links come back here when a reminder is due or when you haven't opened them for a while."
+    },
+    "due": {
+      "title": "Due",
+      "done": "Done",
+      "snooze": "Snooze",
+      "snoozeLabel": "Snooze {{title}}"
+    },
+    "continue": {
+      "title": "Continue reading",
+      "read": "{{percent}}% read",
+      "left": "{{count}} min left",
+      "action": "Continue"
+    },
+    "forgotten": {
+      "title": "Forgotten this week",
+      "lead": "You saved these a while ago and haven't opened them since.",
+      "saved": "saved in {{month}}",
+      "open": "Open",
+      "openLabel": "Open {{title}}",
+      "later": "Later",
+      "notInterested": "Not interested"
+    },
+    "recent": {
+      "title": "Recently opened",
+      "window": "last 30 days",
+      "options": "History options",
+      "all": "Show all",
+      "clear": "Clear history",
+      "clearTitle": "Clear the history?",
+      "clearText": "Your links stay saved; only the list of what you opened goes."
+    }
   }
 }

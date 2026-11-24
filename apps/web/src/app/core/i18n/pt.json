@@ -4338,5 +4338,49 @@
       "saveFailed": "Não foi possível salvar a alteração",
       "retry": "Tentar de novo"
     }
+  },
+  "revisit": {
+    "title": "Rever",
+    "lead": {
+      "one": "{{count}} esperando. Lembretes, artigos lidos pela metade e links que você salvou e esqueceu.",
+      "other": "{{count}} esperando. Lembretes, artigos lidos pela metade e links que você salvou e esqueceu.",
+      "many": "{{count}} esperando. Lembretes, artigos lidos pela metade e links que você salvou e esqueceu."
+    },
+    "leadEmpty": "Links pendentes, lidos pela metade ou esquecidos voltam para cá.",
+    "loading": "Carregando",
+    "empty": {
+      "title": "Nada esperando",
+      "text": "Tudo em dia. Os links voltam para cá quando um lembrete vence ou quando você não os abre há algum tempo."
+    },
+    "due": {
+      "title": "Pendentes",
+      "done": "Feito",
+      "snooze": "Adiar",
+      "snoozeLabel": "Adiar {{title}}"
+    },
+    "continue": {
+      "title": "Continuar lendo",
+      "read": "{{percent}}% lido",
+      "left": "faltam {{count}} min",
+      "action": "Continuar"
+    },
+    "forgotten": {
+      "title": "Esquecidos nesta semana",
+      "lead": "Você os salvou há algum tempo e não abriu desde então.",
+      "saved": "salvo em {{month}}",
+      "open": "Abrir",
+      "openLabel": "Abrir {{title}}",
+      "later": "Depois",
+      "notInterested": "Não tenho interesse"
+    },
+    "recent": {
+      "title": "Abertos recentemente",
+      "window": "últimos 30 dias",
+      "options": "Opções do histórico",
+      "all": "Ver tudo",
+      "clear": "Limpar histórico",
+      "clearTitle": "Limpar o histórico?",
+      "clearText": "Seus links continuam salvos; só a lista do que você abriu é apagada."
+    }
   }
 }

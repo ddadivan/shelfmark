@@ -4338,5 +4338,49 @@
       "saveFailed": "Impossible d'enregistrer la modification",
       "retry": "Réessayer"
     }
+  },
+  "revisit": {
+    "title": "À revoir",
+    "lead": {
+      "one": "{{count}} en attente. Rappels, articles à moitié lus et liens enregistrés puis oubliés.",
+      "other": "{{count}} en attente. Rappels, articles à moitié lus et liens enregistrés puis oubliés.",
+      "many": "{{count}} en attente. Rappels, articles à moitié lus et liens enregistrés puis oubliés."
+    },
+    "leadEmpty": "Les liens à revoir, à moitié lus ou oubliés reviennent ici.",
+    "loading": "Chargement",
+    "empty": {
+      "title": "Rien en attente",
+      "text": "Vous êtes à jour. Les liens reviennent ici quand un rappel arrive ou quand vous ne les avez pas ouverts depuis longtemps."
+    },
+    "due": {
+      "title": "À revoir",
+      "done": "Fait",
+      "snooze": "Reporter",
+      "snoozeLabel": "Reporter {{title}}"
+    },
+    "continue": {
+      "title": "Reprendre la lecture",
+      "read": "{{percent}} % lu",
+      "left": "encore {{count}} min",
+      "action": "Reprendre"
+    },
+    "forgotten": {
+      "title": "Oubliés cette semaine",
+      "lead": "Vous les avez enregistrés il y a un moment et ne les avez pas rouverts depuis.",
+      "saved": "enregistré en {{month}}",
+      "open": "Ouvrir",
+      "openLabel": "Ouvrir {{title}}",
+      "later": "Plus tard",
+      "notInterested": "Pas intéressé"
+    },
+    "recent": {
+      "title": "Ouverts récemment",
+      "window": "30 derniers jours",
+      "options": "Options de l'historique",
+      "all": "Tout afficher",
+      "clear": "Effacer l'historique",
+      "clearTitle": "Effacer l'historique ?",
+      "clearText": "Vos liens restent enregistrés ; seule la liste de ce que vous avez ouvert disparaît."
+    }
   }
 }

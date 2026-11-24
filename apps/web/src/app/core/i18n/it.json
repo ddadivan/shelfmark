@@ -4338,5 +4338,49 @@
       "saveFailed": "Impossibile salvare la modifica",
       "retry": "Riprova"
     }
+  },
+  "revisit": {
+    "title": "Da rivedere",
+    "lead": {
+      "one": "{{count}} in attesa. Promemoria, articoli letti a metà e link salvati e dimenticati.",
+      "other": "{{count}} in attesa. Promemoria, articoli letti a metà e link salvati e dimenticati.",
+      "many": "{{count}} in attesa. Promemoria, articoli letti a metà e link salvati e dimenticati."
+    },
+    "leadEmpty": "I link in scadenza, letti a metà o dimenticati tornano qui.",
+    "loading": "Caricamento",
+    "empty": {
+      "title": "Niente in attesa",
+      "text": "Sei in pari. I link tornano qui quando scade un promemoria o quando non li apri da un po’."
+    },
+    "due": {
+      "title": "In scadenza",
+      "done": "Fatto",
+      "snooze": "Posticipa",
+      "snoozeLabel": "Posticipa {{title}}"
+    },
+    "continue": {
+      "title": "Continua a leggere",
+      "read": "{{percent}}% letto",
+      "left": "ancora {{count}} min",
+      "action": "Continua"
+    },
+    "forgotten": {
+      "title": "Dimenticati questa settimana",
+      "lead": "Li hai salvati tempo fa e da allora non li hai più aperti.",
+      "saved": "salvato a {{month}}",
+      "open": "Apri",
+      "openLabel": "Apri {{title}}",
+      "later": "Più tardi",
+      "notInterested": "Non mi interessa"
+    },
+    "recent": {
+      "title": "Aperti di recente",
+      "window": "ultimi 30 giorni",
+      "options": "Opzioni cronologia",
+      "all": "Mostra tutto",
+      "clear": "Cancella cronologia",
+      "clearTitle": "Cancellare la cronologia?",
+      "clearText": "I tuoi link restano salvati; sparisce solo l'elenco di quelli aperti."
+    }
   }
 }

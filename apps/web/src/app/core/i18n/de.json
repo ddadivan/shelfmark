@@ -4229,5 +4229,48 @@
       "saveFailed": "Änderung konnte nicht gespeichert werden",
       "retry": "Erneut versuchen"
     }
+  },
+  "revisit": {
+    "title": "Wiedersehen",
+    "lead": {
+      "one": "{{count}} wartet. Erinnerungen, halb gelesene Artikel und gespeicherte, vergessene Links.",
+      "other": "{{count}} warten. Erinnerungen, halb gelesene Artikel und gespeicherte, vergessene Links."
+    },
+    "leadEmpty": "Fällige, halb gelesene oder vergessene Links kommen hierher zurück.",
+    "loading": "Wird geladen",
+    "empty": {
+      "title": "Nichts wartet",
+      "text": "Alles erledigt. Links kommen hierher zurück, wenn eine Erinnerung fällig ist oder du sie lange nicht geöffnet hast."
+    },
+    "due": {
+      "title": "Fällig",
+      "done": "Erledigt",
+      "snooze": "Später",
+      "snoozeLabel": "{{title}} später erinnern"
+    },
+    "continue": {
+      "title": "Weiterlesen",
+      "read": "{{percent}} % gelesen",
+      "left": "noch {{count}} Min.",
+      "action": "Weiter"
+    },
+    "forgotten": {
+      "title": "Diese Woche vergessen",
+      "lead": "Du hast sie vor einer Weile gespeichert und seitdem nicht geöffnet.",
+      "saved": "gespeichert im {{month}}",
+      "open": "Öffnen",
+      "openLabel": "{{title}} öffnen",
+      "later": "Später",
+      "notInterested": "Kein Interesse"
+    },
+    "recent": {
+      "title": "Zuletzt geöffnet",
+      "window": "letzte 30 Tage",
+      "options": "Verlaufsoptionen",
+      "all": "Alle anzeigen",
+      "clear": "Verlauf löschen",
+      "clearTitle": "Verlauf löschen?",
+      "clearText": "Deine Links bleiben gespeichert; nur die Liste der geöffneten verschwindet."
+    }
   }
 }

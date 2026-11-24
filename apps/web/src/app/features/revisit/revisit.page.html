@@ -1,0 +1,203 @@
+<div class="revisit" [attr.aria-busy]="!revisit.loaded()">
+  <header class="revisit__head">
+    <h1 class="revisit__title">{{ 'revisit.title' | transloco }}</h1>
+    <p class="revisit__lead">
+      @if (revisit.waiting() > 0) { {{ pluralKey('revisit.lead', revisit.waiting()) | transloco: {
+      count: revisit.waiting() } }} } @else { {{ 'revisit.leadEmpty' | transloco }} }
+    </p>
+  </header>
+
+  @if (!revisit.loaded()) {
+  <div class="revisit__skeleton" [attr.aria-label]="'revisit.loading' | transloco">
+    <ui-skeleton [shape]="SKELETON_SHAPE.Row" [count]="4" />
+  </div>
+  } @else if (revisit.empty()) {
+  <ui-empty-state
+    layout="page"
+    illustration="empty-recent"
+    [heading]="'revisit.empty.title' | transloco"
+    [text]="'revisit.empty.text' | transloco"
+  />
+  } @else { @if (revisit.due().length > 0) {
+  <section class="revisit__group" aria-labelledby="revisit-due">
+    <h2 class="revisit__heading" id="revisit-due">
+      {{ 'revisit.due.title' | transloco }}
+      <small class="revisit__count">{{ revisit.due().length }}</small>
+    </h2>
+    <ul class="revisit__panel">
+      @for (link of revisit.due(); track link.id) {
+      <li>
+        <ui-list-item
+          [href]="safeHref(link.url)"
+          [newTab]="newTab()"
+          [thumb]="thumb(link)"
+          (activated)="opened(link)"
+        >
+          <span slot="title">{{ link.title }}</span>
+          <span slot="meta" class="revisit__meta">
+            <ui-favicon [src]="favicon(link)" [letter]="siteLetter(link.url)" />
+            {{ linkHost(link.url) }}
+            <span class="revisit__when revisit__when--due">
+              <ui-icon name="bell" [size]="ICON_SIZE.Sm" />{{ when(link) }}
+            </span>
+          </span>
+          <span slot="trailing" class="revisit__actions">
+            <ui-button size="sm" iconLeft="check" (click)="done(link)">
+              {{ 'revisit.due.done' | transloco }}
+            </ui-button>
+            <ui-button
+              size="sm"
+              variant="ghost"
+              iconLeft="bell"
+              [uiMenuTrigger]="snoozeMenu"
+              [ariaLabel]="'revisit.due.snoozeLabel' | transloco: { title: link.title }"
+              >{{ 'revisit.due.snooze' | transloco }}</ui-button
+            >
+            <ui-menu
+              #snoozeMenu
+              align="end"
+              [ariaLabel]="'revisit.due.snoozeLabel' | transloco: { title: link.title }"
+            >
+              @for (option of snoozeOptions(); track option.preset) {
+              <ui-menu-item [shortcut]="snoozeHint(option)" (activated)="snooze(link, option)">
+                {{ 'reminders.preset.' + option.preset | transloco }}
+              </ui-menu-item>
+              }
+            </ui-menu>
+          </span>
+        </ui-list-item>
+      </li>
+      }
+    </ul>
+  </section>
+  } @if (revisit.continueReading().length > 0) {
+  <section class="revisit__group" aria-labelledby="revisit-continue">
+    <h2 class="revisit__heading" id="revisit-continue">
+      {{ 'revisit.continue.title' | transloco }}
+      <small class="revisit__count">{{ revisit.continueReading().length }}</small>
+    </h2>
+    <ul class="revisit__panel">
+      @for (item of revisit.continueReading(); track item.link.id) {
+      <li>
+        <ui-list-item
+          [href]="safeHref(item.link.url)"
+          [newTab]="newTab()"
+          [thumb]="thumb(item.link)"
+          (activated)="opened(item.link)"
+        >
+          <span slot="title">{{ item.link.title }}</span>
+          <span slot="meta" class="revisit__meta">
+            <ui-favicon [src]="favicon(item.link)" [letter]="siteLetter(item.link.url)" />
+            {{ linkHost(item.link.url) }}
+          </span>
+          <span slot="trailing" class="revisit__actions revisit__actions--progress">
+            <ui-meter
+              class="revisit__progress"
+              [value]="item.progress.fraction * 100"
+              [label]="
+                      'revisit.continue.read'
+                        | transloco: { percent: (item.progress.fraction * 100).toFixed(0) }
+                    "
+            />
+            <span class="revisit__left"
+              >{{ 'revisit.continue.left' | transloco: { count: item.progress.minutesLeft } }}</span
+            >
+            <ui-button size="sm" iconLeft="text-size" (click)="continueReading(item.link)">
+              {{ 'revisit.continue.action' | transloco }}
+            </ui-button>
+          </span>
+        </ui-list-item>
+      </li>
+      }
+    </ul>
+  </section>
+  } @if (revisit.forgotten().length > 0) {
+  <section class="revisit__group" aria-labelledby="revisit-forgotten">
+    <h2 class="revisit__heading" id="revisit-forgotten">
+      {{ 'revisit.forgotten.title' | transloco }}
+      <small class="revisit__count">{{ revisit.forgotten().length }}</small>
+    </h2>
+    <p class="revisit__lead2">{{ 'revisit.forgotten.lead' | transloco }}</p>
+    <div class="revisit__cards">
+      @for (link of revisit.forgotten(); track link.id) {
+      <ui-card
+        [href]="safeHref(link.url)"
+        [newTab]="newTab()"
+        [image]="thumb(link) || undefined"
+        [headingLevel]="3"
+        [imageRatio]="1.6"
+        (activated)="opened(link)"
+      >
+        <span slot="title">{{ link.title }}</span>
+        <span slot="source" class="revisit__source">
+          <ui-favicon [src]="favicon(link)" [letter]="siteLetter(link.url)" />
+          <span class="revisit__host">{{ linkHost(link.url) }}</span>
+          <span class="revisit__saved"
+            >{{ 'revisit.forgotten.saved' | transloco: { month: savedMonth(link) } }}</span
+          >
+        </span>
+        <span class="revisit__card-actions">
+          <ui-button
+            size="sm"
+            [href]="safeHref(link.url)"
+            [newTab]="newTab()"
+            [ariaLabel]="'revisit.forgotten.openLabel' | transloco: { title: link.title }"
+            (linkClick)="opened(link)"
+            >{{ 'revisit.forgotten.open' | transloco }}</ui-button
+          >
+          <ui-button size="sm" variant="ghost" (click)="later(link)">
+            {{ 'revisit.forgotten.later' | transloco }}
+          </ui-button>
+          <ui-button size="sm" variant="ghost" (click)="notInterested(link)">
+            {{ 'revisit.forgotten.notInterested' | transloco }}
+          </ui-button>
+        </span>
+      </ui-card>
+      }
+    </div>
+  </section>
+  } @if (revisit.recent().length > 0) {
+  <section class="revisit__group" aria-labelledby="revisit-recent">
+    <h2 class="revisit__heading" id="revisit-recent">
+      {{ 'revisit.recent.title' | transloco }}
+      <small class="revisit__count">{{ 'revisit.recent.window' | transloco }}</small>
+      <ui-button
+        class="revisit__more"
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="more"
+        [ariaLabel]="'revisit.recent.options' | transloco"
+        [uiMenuTrigger]="historyMenu"
+      />
+      <ui-menu #historyMenu align="end" [ariaLabel]="'revisit.recent.options' | transloco">
+        <ui-menu-item icon="clock" (activated)="allHistory()">
+          {{ 'revisit.recent.all' | transloco }}
+        </ui-menu-item>
+        <ui-menu-item icon="trash" danger (activated)="clearHistory()">
+          {{ 'revisit.recent.clear' | transloco }}
+        </ui-menu-item>
+      </ui-menu>
+    </h2>
+    <ul class="revisit__panel">
+      @for (link of revisit.recent(); track link.id) {
+      <li>
+        <ui-list-item
+          [href]="safeHref(link.url)"
+          [newTab]="newTab()"
+          [thumb]="thumb(link)"
+          (activated)="opened(link)"
+        >
+          <span slot="title">{{ link.title }}</span>
+          <span slot="meta" class="revisit__meta">
+            <ui-favicon [src]="favicon(link)" [letter]="siteLetter(link.url)" />
+            {{ linkHost(link.url) }}
+          </span>
+          <span slot="trailing" class="revisit__opened">{{ openedWhen(link) }}</span>
+        </ui-list-item>
+      </li>
+      }
+    </ul>
+  </section>
+  } }
+</div>
