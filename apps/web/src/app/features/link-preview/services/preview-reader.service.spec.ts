@@ -102,9 +102,10 @@ describe('PreviewReaderService', () => {
     await service.onProgress(0.02);
     expect(api.saveProgress).not.toHaveBeenCalled();
     await service.onProgress(0.5);
-    expect(api.saveProgress).toHaveBeenCalledWith(
-      expect.objectContaining({ linkId: PREVIEW_STUB_LINK.id, fraction: 0.5, minutesLeft: 5 }),
-    );
+    expect(api.saveProgress).toHaveBeenCalledWith(PREVIEW_STUB_LINK.id, {
+      fraction: 0.5,
+      minutesLeft: 5,
+    });
     await service.onProgress(0.52);
     expect(api.saveProgress).toHaveBeenCalledTimes(1);
     api.saveProgress.mockReturnValueOnce(throwError(() => new Error('offline')));

@@ -13,7 +13,7 @@ import { openedWithin } from '../utils/opened-within';
 /**
  * The Revisit queue (Shelf `02-save-revisit.html`, flows-and-structure 5.3; page-scoped): one place
  * for coming back, built from data the app already has. Due reminders (`RemindersStore`),
- * Continue reading (the Reader progress of `READER_API`; empty until the API keeps progress),
+ * Continue reading (the Reader progress of `READER_API`, kept per link by the API),
  * Forgotten this week (`RediscoverStore`) and Recently opened (the history of `LinksStore`, last
  * 30 days, the newest few).
  */

@@ -1,4 +1,6 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { Injector } from '@angular/core';
 import { LINK_KIND, READER_BLOCK_KIND } from '@shelfmark/contracts';
 import { firstValueFrom, type Observable } from 'rxjs';
@@ -50,19 +52,13 @@ describe('MockReaderApi', () => {
   it('keeps started, unfinished texts of live links, newest first', async () => {
     const { api, library } = setup();
     const [a, b, c] = library.links;
-    const at = (minute: number) => new Date(Date.UTC(2026, 10, 24, 10, minute)).toISOString();
-    await run(
-      api.saveProgress({ linkId: a?.id ?? '', fraction: 0.4, minutesLeft: 3, updatedAt: at(1) }),
-    );
-    await run(
-      api.saveProgress({ linkId: b?.id ?? '', fraction: 0.6, minutesLeft: 2, updatedAt: at(2) }),
-    );
-    await run(
-      api.saveProgress({ linkId: c?.id ?? '', fraction: 0.99, minutesLeft: 0, updatedAt: at(3) }),
-    );
-    await run(
-      api.saveProgress({ linkId: 'gone', fraction: 0.5, minutesLeft: 1, updatedAt: at(4) }),
-    );
+    const save = async (id: string, fraction: number, minute: number) => {
+      vi.setSystemTime(new Date(Date.UTC(2026, 10, 24, 10, minute)));
+      await run(api.saveProgress(id, { fraction, minutesLeft: 1 }));
+    };
+    await save(a?.id ?? '', 0.4, 1);
+    await save(b?.id ?? '', 0.6, 2);
+    await save(c?.id ?? '', 0.99, 3);
     expect((await run(api.progress())).map((item) => item.linkId)).toEqual([b?.id, a?.id]);
   });
 
@@ -73,11 +69,50 @@ describe('MockReaderApi', () => {
   });
 });
 
+describe('MockReaderApi progress writes', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => {
+    vi.useRealTimers();
+    localStorage.clear();
+  });
+
+  it.each([
+    ['an unknown link', 'gone', { fraction: 0.5, minutesLeft: 1 }, 404],
+    ['a share above 1', '', { fraction: 1.5, minutesLeft: 1 }, 400],
+    ['fractional minutes', '', { fraction: 0.5, minutesLeft: 0.5 }, 400],
+  ])('refuses %s like the API', async (_name, id, request, status) => {
+    const { api, library } = setup();
+    const linkId = id === '' ? (library.links[0]?.id ?? '') : id;
+    const failed = expect(firstValueFrom(api.saveProgress(linkId, request))).rejects.toMatchObject({
+      status,
+    });
+    await vi.advanceTimersByTimeAsync(2_000);
+    await failed;
+  });
+});
+
 describe('HttpReaderApi', () => {
-  it('answers no article and no progress without a request', async () => {
-    const api = new HttpReaderApi();
-    expect(await firstValueFrom(api.article())).toEqual({ article: null });
-    expect(await firstValueFrom(api.progress())).toEqual([]);
-    expect(await firstValueFrom(api.saveProgress())).toBeUndefined();
+  afterEach(() => TestBed.inject(HttpTestingController).verify());
+
+  it('calls the Reader endpoints', async () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    const api = TestBed.inject(HttpReaderApi);
+    const http = TestBed.inject(HttpTestingController);
+
+    const article = firstValueFrom(api.article('l 1'));
+    http.expectOne({ method: 'GET', url: '/api/links/l%201/reader' }).flush({ article: null });
+    expect(await article).toEqual({ article: null });
+
+    const progress = firstValueFrom(api.progress());
+    http.expectOne({ method: 'GET', url: '/api/reader/progress' }).flush([]);
+    expect(await progress).toEqual([]);
+
+    const saved = firstValueFrom(api.saveProgress('l1', { fraction: 0.3, minutesLeft: 2 }));
+    const put = http.expectOne({ method: 'PUT', url: '/api/reader/progress/l1' });
+    expect(put.request.body).toEqual({ fraction: 0.3, minutesLeft: 2 });
+    put.flush(null);
+    expect(await saved).toBeNull();
   });
 });
