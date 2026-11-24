@@ -19,7 +19,7 @@
 
 .preview-panel__bar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: var(--space-2);
   min-block-size: 3.5rem;
@@ -27,11 +27,14 @@
   border-block-end: 1px solid var(--border);
 }
 
-// Shelf `lp-tools`: Site | Reader, Aa, Open, star, Details and ⋯, 4px apart; they wrap under the
-// title when the panel is narrow.
+// Shelf `lp-tools`: Site | Reader, Aa, Open, star, Details and ⋯, 4px apart. In a narrow panel
+// they wrap onto a second line inside their own box, so × close stays at the top right.
 .preview-panel__tools {
   display: flex;
-  flex-wrap: nowrap;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-inline-size: 0;
   align-items: center;
   gap: var(--space-1);
 }
