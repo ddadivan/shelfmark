@@ -1,10 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { axeViolations } from '../../../testing/axe';
+import { THEME_ATTRIBUTE } from '../../models/theme/models/theme-attribute.const';
 import { READER_FONT } from './models/reader-font.const';
 import type { ReaderFont } from './models/reader-font.type';
-import { READER_TONE } from './models/reader-tone.const';
-import type { ReaderTone } from './models/reader-tone.type';
+import { READER_LINE_SPACING } from './models/reader-line-spacing.const';
+import type { ReaderLineSpacing } from './models/reader-line-spacing.type';
+import { READER_THEME } from './models/reader-theme.const';
+import type { ReaderTheme } from './models/reader-theme.type';
 import { READER_VIEW_BLOCK } from './models/reader-block-kind.const';
 import type { ReaderViewBlock } from './models/reader-view-block.interface';
 import { ReaderComponent } from './reader.component';
@@ -29,7 +32,9 @@ const BLOCKS: ReaderViewBlock[] = [
     [image]="image()"
     [blocks]="blocks()"
     [font]="font()"
-    [tone]="tone()"
+    [theme]="theme()"
+    [textSize]="textSize()"
+    [lineSpacing]="spacing()"
     (progressed)="progress.set($event)"
     ><p slot="summary">Summary</p>
     <p class="note">Note</p></ui-reader
@@ -41,7 +46,9 @@ class HostComponent {
   readonly image = signal<string | null>(null);
   readonly blocks = signal<readonly ReaderViewBlock[]>(BLOCKS);
   readonly font = signal<ReaderFont>(READER_FONT.Sans);
-  readonly tone = signal<ReaderTone>(READER_TONE.App);
+  readonly theme = signal<ReaderTheme | null>(null);
+  readonly textSize = signal(18);
+  readonly spacing = signal<ReaderLineSpacing>(READER_LINE_SPACING.Normal);
   readonly progress = signal(-1);
 }
 
@@ -94,16 +101,46 @@ describe('ReaderComponent', () => {
     expect(reader.querySelector('.ui-reader__figure--lead')).toBeNull();
   });
 
-  it('puts the reading settings on host attributes', () => {
+  it('puts the reading settings on host attributes and the text size in rem', () => {
     const { reader, update } = setup();
-    expect(reader.getAttribute('data-size')).toBe('m');
-    expect(reader.getAttribute('data-width')).toBe('narrow');
+    expect(reader.style.getPropertyValue('--ui-reader-size')).toBe('1.125rem');
+    expect(reader.getAttribute('data-width')).toBe('normal');
+    expect(reader.getAttribute('data-spacing')).toBe('normal');
     update((c) => {
       c.font.set(READER_FONT.Serif);
-      c.tone.set(READER_TONE.Sepia);
+      c.textSize.set(22);
+      c.spacing.set(READER_LINE_SPACING.Relaxed);
     });
     expect(reader.getAttribute('data-font')).toBe('serif');
-    expect(reader.getAttribute('data-tone')).toBe('sepia');
+    expect(reader.getAttribute('data-spacing')).toBe('relaxed');
+    expect(reader.style.getPropertyValue('--ui-reader-size')).toBe('1.375rem');
+  });
+
+  it('keeps the text size between 14 and 24px', () => {
+    const { reader, update } = setup();
+    update((c) => c.textSize.set(40));
+    expect(reader.style.getPropertyValue('--ui-reader-size')).toBe('1.5rem');
+    update((c) => c.textSize.set(2));
+    expect(reader.style.getPropertyValue('--ui-reader-size')).toBe('0.875rem');
+    update((c) => c.textSize.set(Number.NaN));
+    expect(reader.style.getPropertyValue('--ui-reader-size')).toBe('1.125rem');
+  });
+
+  it('follows the app until a theme is chosen, then draws on that theme base', () => {
+    const { reader, update } = setup();
+    expect(reader.hasAttribute(THEME_ATTRIBUTE)).toBe(false);
+    expect(reader.hasAttribute('data-reader-theme')).toBe(false);
+    const cases: [ReaderTheme, string][] = [
+      [READER_THEME.Light, 'light'],
+      [READER_THEME.Sepia, 'light'],
+      [READER_THEME.Dark, 'dark'],
+      [READER_THEME.Black, 'dark'],
+    ];
+    for (const [theme, base] of cases) {
+      update((c) => c.theme.set(theme));
+      expect(reader.getAttribute(THEME_ATTRIBUTE)).toBe(base);
+      expect(reader.getAttribute('data-reader-theme')).toBe(theme);
+    }
   });
 
   it('reports the share scrolled once per frame', () => {

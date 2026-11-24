@@ -128,6 +128,23 @@ a.ui-button {
   }
 }
 
+// Window control (the Link page's full screen button): the Site / Reader track's look.
+.ui-button--window {
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+
+  &:not([aria-disabled='true']) {
+    @include hover {
+      background: var(--surface-pressed);
+    }
+  }
+
+  &:active,
+  &[aria-pressed='true'] {
+    background: var(--surface-pressed);
+  }
+}
+
 // Glass: the 28px round button over a preview (play, star, the card's "..."). Icon only.
 .ui-button--glass {
   @include glass-button;

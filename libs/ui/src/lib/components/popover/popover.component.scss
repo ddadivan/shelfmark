@@ -41,6 +41,10 @@
   margin: 0;
   font-weight: 600;
   color: var(--text-muted);
+
+  :host(.ui-popover--heading-hidden) & {
+    @include visually-hidden;
+  }
 }
 
 // `--ui-origin` is set on the overlay pane from the resolved position (the corner next to the

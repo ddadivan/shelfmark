@@ -2,6 +2,8 @@ import '@fontsource-variable/hanken-grotesk/wght.css';
 import '@fontsource-variable/onest/wght.css';
 import '@fontsource/atkinson-hyperlegible/400.css';
 import '@fontsource/atkinson-hyperlegible/700.css';
+import '@fontsource-variable/literata/wght.css';
+import '@fontsource-variable/literata/wght-italic.css';
 import '../src/styles/global.scss';
 import './breadcrumbs-stories.scss';
 import './card-stories.scss';

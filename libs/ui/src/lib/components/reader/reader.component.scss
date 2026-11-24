@@ -1,9 +1,12 @@
 @use '../../../styles/ui' as *;
 
 // Shelf ReaderView: the host scrolls; reading settings only set the custom properties below.
+// The body size is the reader's own setting (14 to 24px, the documented exception to the type
+// scale), set by the component as `--ui-reader-size`.
 :host {
   --ui-reader-size: #{rem(18px)};
   --ui-reader-measure: 68ch;
+  --ui-reader-leading: 1.6;
   --ui-reader-font: var(--font-sans);
   --ui-reader-bg: var(--surface);
   --ui-reader-text: var(--text);
@@ -17,16 +20,20 @@
   background: var(--ui-reader-bg);
 }
 
-:host([data-size='s']) {
-  --ui-reader-size: #{rem(16px)};
-}
-
-:host([data-size='l']) {
-  --ui-reader-size: #{rem(20px)};
+:host([data-width='narrow']) {
+  --ui-reader-measure: 60ch;
 }
 
 :host([data-width='wide']) {
   --ui-reader-measure: 84ch;
+}
+
+:host([data-spacing='compact']) {
+  --ui-reader-leading: 1.45;
+}
+
+:host([data-spacing='relaxed']) {
+  --ui-reader-leading: 1.8;
 }
 
 :host([data-font='serif']) {
@@ -37,10 +44,21 @@
   --ui-reader-font: var(--font-readable);
 }
 
-:host([data-tone='sepia']) {
-  --ui-reader-bg: var(--sepia-bg);
-  --ui-reader-text: var(--sepia-text);
-  --ui-reader-muted: var(--sepia-muted);
+// Fixed palettes (Reading settings › Theme). `data-theme` light / dark on the host already gives
+// every token inside that theme's value (global token rules); Sepia and Black then swap the page,
+// the text and the muted text for their own tokens, so the summary and note follow too.
+:host([data-reader-theme='sepia']) {
+  --surface: var(--reader-sepia-bg);
+  --text: var(--reader-sepia-text);
+  --text-muted: var(--reader-sepia-muted);
+  --surface-hover: color-mix(in srgb, var(--text) 6%, var(--surface));
+}
+
+:host([data-reader-theme='black']) {
+  --surface: var(--reader-black-bg);
+  --text: var(--reader-black-text);
+  --text-muted: var(--reader-black-muted);
+  --surface-hover: color-mix(in srgb, var(--text) 6%, var(--surface));
 }
 
 .ui-reader__progress {
@@ -91,7 +109,7 @@
 .ui-reader__article {
   font-family: var(--ui-reader-font);
   font-size: var(--ui-reader-size);
-  line-height: 1.6;
+  line-height: var(--ui-reader-leading);
 }
 
 .ui-reader__site {

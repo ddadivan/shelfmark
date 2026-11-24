@@ -5,3 +5,5 @@ declare module '@fontsource-variable/hanken-grotesk/wght.css';
 declare module '@fontsource-variable/onest/wght.css';
 declare module '@fontsource/atkinson-hyperlegible/400.css';
 declare module '@fontsource/atkinson-hyperlegible/700.css';
+declare module '@fontsource-variable/literata/wght.css';
+declare module '@fontsource-variable/literata/wght-italic.css';

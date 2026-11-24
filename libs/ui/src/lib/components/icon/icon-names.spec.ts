@@ -29,6 +29,8 @@ const APP_ICONS = [
   'masonry',
   // Shelf Link page: Reading settings and the Reader notice (two letters T, large and small).
   'text-size',
+  // Shelf Reading settings: the smaller / larger text buttons around the size slider (a letter A).
+  'letter-a',
   // Folder icons added in #335 (food, sport, travel, money, music, home, health, kids, pets, ...).
   'ball',
   // The reminder chip and the Reminders entry (#275).

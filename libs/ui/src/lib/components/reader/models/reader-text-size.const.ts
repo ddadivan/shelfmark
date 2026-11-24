@@ -1,6 +1,7 @@
-/** Text size of `ui-reader` (Reading settings): 16, 18 (default) or 20px body text. */
+/** Body text size of `ui-reader` in px (Reading settings › Text size: a slider, 1px steps). */
 export const READER_TEXT_SIZE = {
-  S: 's',
-  M: 'm',
-  L: 'l',
+  Min: 14,
+  Max: 24,
+  Default: 18,
+  Step: 1,
 } as const;

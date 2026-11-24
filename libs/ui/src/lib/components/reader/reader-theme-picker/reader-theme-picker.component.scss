@@ -1,0 +1,101 @@
+@use '../../../../styles/ui' as *;
+
+// Shelf Reading settings › Theme: four equal tiles, 8px apart, a 44px "Aa" swatch (radius 10)
+// over the 12px name.
+:host {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.ui-reader-theme {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: rem(6px);
+  align-items: center;
+  min-inline-size: 0;
+  color: var(--text-muted);
+  cursor: pointer;
+
+  @include type(caption);
+
+  &--checked {
+    font-weight: 500;
+    color: var(--text);
+  }
+}
+
+// The native radio covers the tile (invisible), so pointer and focus meet on it.
+.ui-reader-theme__input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  cursor: inherit;
+  opacity: 0;
+}
+
+// The frame is drawn in the page's tokens (ring, gap and edge); the swatch inside in the theme's.
+.ui-reader-theme__frame {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+  border-radius: var(--radius-sm);
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    content: '';
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px var(--line-strong);
+  }
+
+  .ui-reader-theme--checked & {
+    box-shadow:
+      0 0 0 2px var(--surface),
+      0 0 0 4px var(--text);
+  }
+
+  .ui-reader-theme--checked &::after {
+    box-shadow: none;
+  }
+
+  .ui-reader-theme:has(.ui-reader-theme__input:focus-visible) & {
+    @include focus-ring(4px);
+  }
+}
+
+.ui-reader-theme__swatch {
+  display: grid;
+  place-items: center;
+  block-size: rem(44px);
+  font-family: var(--font-sans);
+  font-size: rem(16px);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text);
+  background: var(--surface);
+  border-radius: inherit;
+}
+
+// Light and Dark come from `data-theme` (global token rules); Sepia and Black swap the page and
+// text for their fixed tokens, as `ui-reader` does.
+.ui-reader-theme__swatch[data-reader-theme='sepia'] {
+  --surface: var(--reader-sepia-bg);
+  --text: var(--reader-sepia-text);
+}
+
+.ui-reader-theme__swatch[data-reader-theme='black'] {
+  --surface: var(--reader-black-bg);
+  --text: var(--reader-black-text);
+}
+
+.ui-reader-theme__label {
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

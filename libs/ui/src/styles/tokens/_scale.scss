@@ -48,11 +48,21 @@
     'Hanken Grotesk Variable', 'Onest Variable', 'Hanken Grotesk Fallback', 'Hanken Grotesk',
     system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  // Reader fonts (Reading settings › Font): Literata is not self-hosted (Georgia stands in);
-  // Atkinson Hyperlegible is the app's self-hosted Readable font.
-  --font-serif: 'Literata', georgia, 'Times New Roman', serif;
+  // Reader fonts (Reading settings › Font): Literata (self-hosted, `@fontsource-variable/literata`)
+  // and Atkinson Hyperlegible, the app's self-hosted Readable font.
+  --font-serif: 'Literata Variable', 'Literata', georgia, 'Times New Roman', serif;
   --font-readable: 'Atkinson Hyperlegible', 'Hanken Grotesk Variable', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', monospace;
+
+  // Reader themes Sepia and Black (Reading settings › Theme, Shelf `reader-sepia-*` and
+  // `reader-black-*`): fixed palettes, the same in every app theme. Light and Dark reuse the light
+  // and dark theme tokens (`ui-reader` sets `data-theme` on itself).
+  --reader-sepia-bg: #f6efe2;
+  --reader-sepia-text: #3b3024;
+  --reader-sepia-muted: #6e5f4c;
+  --reader-black-bg: #000;
+  --reader-black-text: #d4d4d8;
+  --reader-black-muted: #8a8b90;
 
   // Density (#285): Comfortable here; `global.scss` overrides them under [data-density='compact'].
   --density-card-padding: #{rem(10px)} var(--space-3) var(--space-3);

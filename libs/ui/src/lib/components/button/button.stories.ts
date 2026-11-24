@@ -120,6 +120,26 @@ export const AiGhost: Story = {
 };
 
 /**
+ * The window control of the Link page head (full screen and exit full screen): a `surface-hover`
+ * square with `radius-sm`; pressed (`ariaPressed`) and hovered it is `surface-pressed`.
+ */
+export const Window: Story = {
+  parameters: { layout: 'padded' },
+  render: () => ({
+    props: { themes: Object.values(THEME) },
+    template: `
+      <div class="ds-themes">
+        @for (theme of themes; track theme) {
+          <div [attr.${THEME_ATTRIBUTE}]="theme" class="ds-pane">
+            <ui-button variant="window" size="sm" iconOnly iconLeft="expand" ariaLabel="Full screen" />
+            <ui-button variant="window" size="sm" iconOnly iconLeft="collapse" ariaLabel="Exit full screen" [ariaPressed]="true" />
+          </div>
+        }
+      </div>`,
+  }),
+};
+
+/**
  * Fill in with AI states: `ariaDisabled` (waits for a link: dimmed, still focusable, tooltip
  * readable) and `loading` (the spark pulses and a soft light sweeps across; no spinner).
  */

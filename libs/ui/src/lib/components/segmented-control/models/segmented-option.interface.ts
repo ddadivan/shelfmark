@@ -7,4 +7,6 @@ export interface SegmentedOption {
   readonly label: string;
   readonly icon?: IconName;
   readonly disabled?: boolean;
+  /** A font token for the label (`var(--font-serif)`): Reading settings sets each font in itself. */
+  readonly font?: string;
 }
