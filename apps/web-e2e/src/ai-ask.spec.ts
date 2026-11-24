@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { seedSession } from './support/mock-session';
+import { isCompact } from './support/sidebar';
 import { SEARCH_BUTTON, SEARCH_FIELD_NAME } from './support/search-button';
 import { expect, test } from './support/test';
 
@@ -369,4 +370,16 @@ test.describe('Ask your shelf (AI-4 chat, mock API)', () => {
       await expect(page.getByRole('main')).toContainText('You saved a few ramen recipes.');
     },
   );
+});
+
+test.describe('Ask in the header with AI off (Shelf: always shown)', () => {
+  test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
+
+  test('the Ask button shows and offers to turn AI on', async ({ page }) => {
+    test.skip(isCompact(page), 'the header shows from 64em');
+    await seedSession(page);
+    await page.goto('/links');
+    await page.getByRole('button', { name: 'Ask your shelf' }).click();
+    await expect(page.getByRole('dialog', { name: /Turn on AI/ })).toBeVisible();
+  });
 });
