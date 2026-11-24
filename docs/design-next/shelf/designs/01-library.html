@@ -770,6 +770,9 @@ body{background:var(--l0);font-family:var(--font)}
 .rs-val{min-width:24px;text-align:right;font-size:var(--t-sec);font-variant-numeric:tabular-nums;color:var(--muted)}
 .rs-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;padding:12px 8px 4px;border-top:1px solid var(--line)}
 .rs-foot span{font-size:var(--t-meta);color:var(--muted)}
+/* Window controls: full screen and close sit apart from the link actions, after the separator */
+.lp-win{color:var(--fg)}
+.lp-win[aria-pressed="true"]{background:var(--sel)}
 /* Full screen link page */
 .lp-pos{font-size:var(--t-meta);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;display:none}
 body.link-full .lp-pos{display:inline}
@@ -1090,7 +1093,7 @@ body.link-full .view{height:100%}
             <button class="ib" type="button" data-fav="${l.id}" aria-pressed="${!!l.fav}" aria-label="${l.fav?'Remove from favorites':'Add to favorites'}" title="Favorite" style="${l.fav?'color:var(--star)':''}">${ic(l.fav?'i-star-f':'i-star',16)}</button>
             <button class="ib" type="button" data-details aria-pressed="${S.details}" aria-label="Details" title="Details">${ic('i-panel',16)}</button>
             <button class="ib" type="button" data-menu="${l.id}" aria-haspopup="menu" aria-label="More actions">${ic('i-more',16)}</button>
-            <button class="ib" type="button" data-full aria-pressed="${S.full}" aria-label="${S.full?'Exit full screen':'Full screen'}" title="${S.full?'Exit full screen (F)':'Full screen (F)'}">${ic(S.full?'i-collapse':'i-expand',16)}</button><span class="lp-sep" aria-hidden="true"></span>
+            <span class="lp-sep" aria-hidden="true"></span><button class="ib lp-win" type="button" data-full aria-pressed="${S.full}" aria-label="${S.full?'Exit full screen':'Full screen'}" title="${S.full?'Exit full screen (F)':'Full screen (F)'}">${ic(S.full?'i-collapse':'i-expand',16)}</button>
             <button class="ib" type="button" data-close aria-label="Close" title="Close (Esc)">${ic('i-x',16)}</button>
           </div>
         </div>
