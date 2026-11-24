@@ -10,4 +10,9 @@ export const BUTTON_VARIANT = {
   Ai: 'ai',
   /** A quiet AI action next to text ("Rewrite"): transparent at rest, the `ai` tints on hover and press. */
   AiGhost: 'ai-ghost',
+  /**
+   * A window control of the Link page head (full screen): a square on `surface-hover` with
+   * `radius-sm`, like the Site / Reader track; `surface-pressed` on hover and while pressed.
+   */
+  Window: 'window',
 } as const;

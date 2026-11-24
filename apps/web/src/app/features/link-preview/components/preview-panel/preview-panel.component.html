@@ -1,5 +1,6 @@
 <section
   class="preview-panel"
+  [class.preview-panel--full]="preview.fullScreen()"
   [attr.aria-label]="'preview.region' | transloco: { title: preview.link()?.title ?? '' }"
 >
   <div
@@ -39,6 +40,11 @@
           <span class="preview-panel__url">{{ address() }}</span>
         </span>
       </div>
+      @if (preview.fullScreen() && preview.position(); as position) {
+        <span class="preview-panel__position">
+          {{ 'preview.position' | transloco: position }}
+        </span>
+      }
       <div class="preview-panel__tools">
         <app-related-links small [linkId]="link.id" (chosen)="preview.open($event)" />
         <ui-segmented-control
@@ -107,6 +113,23 @@
       <span class="preview-panel__title"></span>
     }
     <span class="preview-panel__sep" aria-hidden="true"></span>
+    @if (preview.fullScreenAvailable()) {
+      <ui-button
+        variant="window"
+        size="sm"
+        iconOnly
+        [iconLeft]="preview.fullScreen() ? 'collapse' : 'expand'"
+        [ariaPressed]="preview.fullScreen()"
+        [ariaLabel]="
+          (preview.fullScreen() ? 'preview.exitFullScreen' : 'preview.fullScreen') | transloco
+        "
+        [uiTooltip]="
+          (preview.fullScreen() ? 'preview.exitFullScreen' : 'preview.fullScreen') | transloco
+        "
+        uiTooltipShortcut="F"
+        (click)="preview.toggleFullScreen()"
+      />
+    }
     <ui-button
       variant="ghost"
       size="sm"

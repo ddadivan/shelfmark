@@ -18,10 +18,11 @@
       [image]="article ? null : (image() ?? null)"
       [imageRatio]="imageRatio()"
       [blocks]="article?.blocks ?? []"
-      [size]="settings.size"
+      [textSize]="settings.size"
       [font]="settings.font"
+      [lineSpacing]="settings.lineSpacing"
       [width]="settings.width"
-      [tone]="settings.tone"
+      [theme]="settings.theme"
       (progressed)="reader.onProgress($event)"
     >
       @if (article && link.summary) {

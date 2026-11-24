@@ -36,6 +36,11 @@ $item-radius: calc(var(--radius-sm) - #{rem(2px)});
   }
 }
 
+:host(.ui-seg--block) {
+  display: grid;
+  inline-size: 100%;
+}
+
 :host(.ui-seg--none)::before {
   display: none;
 }

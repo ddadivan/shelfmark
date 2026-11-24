@@ -52,6 +52,7 @@ const FOCUSABLE =
     role: 'dialog',
     '[class.ui-popover--shown]': 'inline() || attached()',
     '[class.ui-popover--inline]': 'inline()',
+    '[class.ui-popover--heading-hidden]': 'headingHidden()',
     '[attr.id]': 'id',
     '[attr.aria-labelledby]': 'headingId',
     '(keydown)': 'onKeydown($event)',
@@ -65,6 +66,8 @@ const FOCUSABLE =
 export class PopoverComponent {
   /** The visible title, also the accessible name of the dialog ("All tags"). */
   readonly heading = input.required<string>();
+  /** The heading only names the dialog (visually hidden): Reading settings has none on screen. */
+  readonly headingHidden = input(false, { transform: booleanAttribute });
   /** Render in place, always open (docs and Storybook). */
   readonly inline = input(false, { transform: booleanAttribute });
 

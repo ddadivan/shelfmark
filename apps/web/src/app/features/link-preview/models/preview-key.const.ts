@@ -4,4 +4,5 @@ export const PREVIEW_KEY = {
   Next: 'next',
   OpenInNewTab: 'open-in-new-tab',
   Close: 'close',
+  FullScreen: 'full-screen',
 } as const;

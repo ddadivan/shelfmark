@@ -1,0 +1,21 @@
+@for (option of options(); track option.value) {
+  <label class="ui-reader-theme" [class.ui-reader-theme--checked]="value() === option.value">
+    <input
+      type="radio"
+      class="ui-reader-theme__input"
+      [name]="name() || groupId"
+      [value]="option.value"
+      [checked]="value() === option.value"
+      (change)="select(option)"
+    />
+    <span class="ui-reader-theme__frame" aria-hidden="true">
+      <span
+        class="ui-reader-theme__swatch"
+        [attr.data-theme]="base(option.value)"
+        [attr.data-reader-theme]="option.value"
+        >Aa</span
+      >
+    </span>
+    <span class="ui-reader-theme__label">{{ option.label }}</span>
+  </label>
+}

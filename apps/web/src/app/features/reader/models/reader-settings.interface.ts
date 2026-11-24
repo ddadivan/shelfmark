@@ -1,9 +1,12 @@
-import type { ReaderFont, ReaderLineWidth, ReaderTextSize, ReaderTone } from '@shelfmark/ui';
+import type { ReaderFont, ReaderLineSpacing, ReaderLineWidth, ReaderTheme } from '@shelfmark/ui';
 
-/** Reading settings of Reader (the Link page's popover): a preference of this device. */
+/** Reading settings of Reader (the Link page's Aa): a preference of this device. */
 export interface ReaderSettings {
-  size: ReaderTextSize;
+  /** A fixed page palette, or `null` until the person picks one (Reader follows the app). */
+  theme: ReaderTheme | null;
   font: ReaderFont;
+  /** Body text size in px, 14 to 24 in 1px steps. */
+  size: number;
+  lineSpacing: ReaderLineSpacing;
   width: ReaderLineWidth;
-  tone: ReaderTone;
 }

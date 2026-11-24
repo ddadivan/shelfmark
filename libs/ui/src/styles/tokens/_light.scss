@@ -45,11 +45,6 @@
   --highlight-bg: #eef6d6;
   --highlight-text: #1c1c1f;
 
-  // Reader's sepia page (Reading settings › Page).
-  --sepia-bg: #f6efe2;
-  --sepia-text: #3b3024;
-  --sepia-muted: #6e5f4c;
-
   // The fill of the one AI action button ("Fill in with AI", `ui-button variant="ai"`): mixed from
   // `ai` and `surface`, so the Custom theme follows its base.
   --ai-fill: color-mix(in srgb, var(--ai) 24%, var(--surface));

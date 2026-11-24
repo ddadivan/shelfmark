@@ -20,7 +20,9 @@
       <ui-icon [name]="icon" [size]="ICON_SIZE.Sm" />
     }
     @if (!iconOnly()) {
-      <span class="ui-seg__label">{{ option.label }}</span>
+      <span class="ui-seg__label" [style.font-family]="option.font ?? null">{{
+        option.label
+      }}</span>
     }
   </label>
 }

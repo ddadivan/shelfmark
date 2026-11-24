@@ -2184,7 +2184,8 @@
       "preview": "Vista previa del enlace enfocado",
       "previewNext": "Enlace anterior o siguiente",
       "previewNewTab": "Abrir el enlace de la vista previa en una pestaña nueva",
-      "previewClose": "Cerrar la vista previa"
+      "previewClose": "Cerrar la vista previa",
+      "previewFullScreen": "Activar o salir de pantalla completa"
     },
     "keys": {
       "command": "Comando",
@@ -4420,6 +4421,9 @@
     "openInBrowser": "Abrir en el navegador",
     "more": "Más acciones",
     "share": "Compartir",
+    "fullScreen": "Pantalla completa",
+    "exitFullScreen": "Salir de pantalla completa",
+    "position": "{{index}} de {{total}}",
     "resize": "Cambiar el ancho de la lista",
     "resizeHint": "Arrastra o usa ← y →. Doble clic para restablecer.",
     "blocked": {
@@ -4441,11 +4445,12 @@
     },
     "reading": {
       "title": "Ajustes de lectura",
-      "size": {
-        "label": "Tamaño del texto",
-        "s": "P",
-        "m": "M",
-        "l": "G"
+      "theme": {
+        "label": "Tema",
+        "light": "Claro",
+        "sepia": "Sepia",
+        "dark": "Oscuro",
+        "black": "Negro"
       },
       "font": {
         "label": "Fuente",
@@ -4453,16 +4458,26 @@
         "serif": "Serif",
         "readable": "Legible"
       },
+      "size": {
+        "label": "Tamaño del texto",
+        "smaller": "Texto más pequeño",
+        "larger": "Texto más grande",
+        "value": "{{size}} px"
+      },
+      "spacing": {
+        "label": "Interlineado",
+        "compact": "Compacto",
+        "normal": "Normal",
+        "relaxed": "Amplio"
+      },
       "width": {
         "label": "Ancho de línea",
         "narrow": "Estrecho",
+        "normal": "Normal",
         "wide": "Ancho"
       },
-      "tone": {
-        "label": "Página",
-        "app": "Como la app",
-        "sepia": "Sepia"
-      }
+      "saved": "Guardado en este dispositivo",
+      "reset": "Restablecer"
     },
     "reader": {
       "loading": "Cargando el texto",

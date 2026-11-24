@@ -29,6 +29,9 @@ const previewStub = {
   go: vi.fn<(step: -1 | 1) => Promise<void>>(() => Promise.resolve()),
   close: vi.fn(() => Promise.resolve()),
   openInNewTab: vi.fn(),
+  fullScreen: signal(false),
+  toggleFullScreen: vi.fn(),
+  exitFullScreen: vi.fn(),
 };
 
 @Component({
@@ -95,6 +98,9 @@ describe('LibraryHotkeysDirective', () => {
     previewStub.go.mockClear();
     previewStub.close.mockClear();
     previewStub.openInNewTab.mockClear();
+    previewStub.fullScreen.set(false);
+    previewStub.toggleFullScreen.mockClear();
+    previewStub.exitFullScreen.mockClear();
   });
   afterAll(() => localStorage.removeItem(FEED_MEMORY_STORAGE_KEY));
 
@@ -160,6 +166,34 @@ describe('LibraryHotkeysDirective', () => {
       await setup();
       previewStub.split.set(true);
       expect(key({ key: 'Escape' }).defaultPrevented).toBe(true);
+      expect(previewStub.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('toggles full screen with F, also on another keyboard layout, but not while typing', async () => {
+      await setup();
+      previewStub.split.set(true);
+      expect(key({ key: 'f', code: 'KeyF' }).defaultPrevented).toBe(true);
+      key({ key: 'а', code: 'KeyF' });
+      expect(previewStub.toggleFullScreen).toHaveBeenCalledTimes(2);
+      key({ key: 'f', code: 'KeyF', metaKey: true });
+      const input = document.createElement('input');
+      document.body.append(input);
+      input.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'f', code: 'KeyF', bubbles: true, cancelable: true }),
+      );
+      input.remove();
+      expect(previewStub.toggleFullScreen).toHaveBeenCalledTimes(2);
+    });
+
+    it('leaves full screen with the first Esc and closes with the next', async () => {
+      await setup();
+      previewStub.split.set(true);
+      previewStub.fullScreen.set(true);
+      expect(key({ key: 'Escape' }).defaultPrevented).toBe(true);
+      expect(previewStub.exitFullScreen).toHaveBeenCalledTimes(1);
+      expect(previewStub.close).not.toHaveBeenCalled();
+      previewStub.fullScreen.set(false);
+      key({ key: 'Escape' });
       expect(previewStub.close).toHaveBeenCalledTimes(1);
     });
 

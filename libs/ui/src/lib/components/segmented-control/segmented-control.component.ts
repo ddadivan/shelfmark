@@ -34,7 +34,8 @@ const MAX_OPTIONS = 4;
  * (`aria-pressed`) rather than one choice, so it is not used.
  *
  * The white thumb slides to the selected option (200 ms, `ease-out`; it jumps under reduced
- * motion); options share one width. Name the group with `ariaLabel` or `ariaLabelledby`.
+ * motion); options share one width (`block` stretches the control to its container). Name the
+ * group with `ariaLabel` or `ariaLabelledby`.
  */
 @Component({
   selector: 'ui-segmented-control',
@@ -45,6 +46,7 @@ const MAX_OPTIONS = 4;
     '[class.ui-seg--none]': 'selectedIndex() < 0',
     '[class.ui-seg--disabled]': 'disabled()',
     '[class.ui-seg--icons]': 'iconOnly()',
+    '[class.ui-seg--block]': 'block()',
     '[style.--seg-n]': 'options().length',
     '[style.--seg-i]': 'selectedIndex()',
     role: 'radiogroup',
@@ -67,6 +69,8 @@ export class SegmentedControlComponent implements FormValueControl<string> {
   /** Only icons are shown; each option's `label` is then its name and tooltip. */
   readonly iconOnly = input(false, { transform: booleanAttribute });
   readonly disabled = input(false, { transform: booleanAttribute });
+  /** Fills the width of its container, the options sharing it equally (Reading settings). */
+  readonly block = input(false, { transform: booleanAttribute });
   /** Form field name; the native radios share it. Generated when empty. */
   readonly name = input('');
   /** Accessible name of the group, for example "View". */

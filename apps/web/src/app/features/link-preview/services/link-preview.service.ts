@@ -24,6 +24,7 @@ import { PREVIEW_LIST_WIDTH } from '../models/preview-list-width.const';
 import { clampListWidth } from '../utils/clamp-list-width';
 import { neighbourId } from '../utils/neighbour-id';
 import { LinkPreviewRoute } from './link-preview-route.service';
+import { PreviewFullScreen } from './preview-full-screen.service';
 
 /** How long the copy button keeps its check after a copy. */
 const COPIED_CHECK_MS = 1600;
@@ -45,6 +46,7 @@ export class LinkPreviewService {
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly doc = inject(DOCUMENT);
+  private readonly full = inject(PreviewFullScreen);
 
   readonly currentId = this.route.currentId;
   readonly split = this.route.split;
@@ -98,6 +100,15 @@ export class LinkPreviewService {
   });
 
   private readonly ids = computed(() => this.feed.shownLinks().map((link) => link.id));
+  /** "3 of 17": where the open link sits in the shown feed; `null` when it is not in it. */
+  readonly position = computed(() => {
+    const ids = this.ids();
+    const index = ids.indexOf(this.currentId() ?? '');
+    return index < 0 ? null : { index: index + 1, total: ids.length };
+  });
+  /** Full screen (the split view only): the Link page covers the window. */
+  readonly fullScreen = this.full.active;
+  readonly fullScreenAvailable = this.full.available;
   readonly previousId = computed(() => neighbourId(this.ids(), this.currentId(), -1));
   readonly nextId = computed(() => neighbourId(this.ids(), this.currentId(), 1));
 
@@ -138,6 +149,7 @@ export class LinkPreviewService {
 
   async close(): Promise<void> {
     this.listHidden.set(false);
+    this.full.exit();
     await this.route.close();
   }
 
@@ -220,6 +232,14 @@ export class LinkPreviewService {
         title: this.transloco.translate('preview.saveFailed'),
       });
     }
+  }
+
+  toggleFullScreen(): void {
+    this.full.toggle();
+  }
+
+  exitFullScreen(): void {
+    this.full.exit();
   }
 
   frameTimedOut(): void {

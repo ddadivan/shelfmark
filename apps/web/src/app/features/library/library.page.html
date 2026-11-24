@@ -2,6 +2,7 @@
 <section
   class="library"
   [class.library--selecting]="selection.selecting()"
+  [class.library--link-full]="preview.fullScreen()"
   [attr.aria-busy]="store.loading()"
 >
   <p class="library__live" role="status">{{ selection.modeAnnouncement() }}</p>
@@ -59,7 +60,7 @@
     class="library__split"
     [class.library__split--open]="splitView.open() && !preview.split()"
     [class.library__split--preview]="preview.split()"
-    [class.library__split--wider]="preview.split() && preview.listHidden()"
+    [class.library__split--wider]="preview.split() && (preview.listHidden() || preview.fullScreen())"
     [style.--library-preview-list]="preview.shownListWidth() / 16 + 'rem'"
     (appElementWidth)="preview.setSplitWidth($event)"
   >
@@ -666,7 +667,7 @@
       </p>
       }
     </div>
-    @if (preview.split()) { @if (!preview.listHidden()) {
+    @if (preview.split()) { @if (!preview.listHidden() && !preview.fullScreen()) {
     <ui-resize-handle
       class="library__preview-handle"
       [value]="preview.shownListWidth()"

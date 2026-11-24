@@ -14,7 +14,7 @@
 }
 
 // One row (Shelf `.t-sv`): the 48 x 36 preview, the title (one line) and "→ folder", 52px high;
-// rows are divided by a `line` hairline. On a phone the folder goes under the title.
+// rows are divided by a `sep` line. On a phone the folder goes under the title.
 .today-week__row {
   display: flex;
   gap: var(--space-3);
@@ -23,7 +23,7 @@
   padding: var(--space-2) var(--space-4);
 
   & + & {
-    border-block-start: 1px solid var(--line);
+    border-block-start: 1px solid var(--sep);
   }
 
   @include phone {

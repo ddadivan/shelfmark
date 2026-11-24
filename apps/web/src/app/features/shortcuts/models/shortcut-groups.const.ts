@@ -54,6 +54,8 @@ export const SHORTCUT_GROUPS: readonly ShortcutGroup[] = [
       { labelKey: 'shortcuts.items.previewNext', keys: [SHORTCUT_KEY.Up, SHORTCUT_KEY.Down] },
       { labelKey: 'shortcuts.items.previewNewTab', keys: [SHORTCUT_KEY.Enter] },
       { labelKey: 'shortcuts.items.previewClose', keys: [SHORTCUT_KEY.Escape] },
+      // The Link page's full screen (split view); Esc leaves it before it closes the page.
+      { labelKey: 'shortcuts.items.previewFullScreen', keys: [SHORTCUT_KEY.F] },
     ],
   },
   {

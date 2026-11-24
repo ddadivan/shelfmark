@@ -37,6 +37,8 @@
           "node_modules/@fontsource-variable/onest/wght.css",
           "node_modules/@fontsource/atkinson-hyperlegible/400.css",
           "node_modules/@fontsource/atkinson-hyperlegible/700.css",
+          "node_modules/@fontsource-variable/literata/wght.css",
+          "node_modules/@fontsource-variable/literata/wght-italic.css",
           "libs/ui/src/styles/global.scss",
           "apps/web/src/styles.scss"
         ],

@@ -70,7 +70,8 @@ export class LibraryHotkeysDirective {
   /**
    * Page keys: Esc clears the selection, X starts selecting, Cmd/Ctrl+A selects every link on screen (not in a field,
    * dialog or menu); with nothing focused the paging keys scroll the feed area. While the desktop
-   * link preview is open (#553), ↑ / ↓ move it, ↵ opens its link in a new tab and Esc closes it.
+   * link preview is open (#553), ↑ / ↓ move it, ↵ opens its link in a new tab, F turns full screen
+   * on and off and Esc leaves full screen, else closes it.
    */
   onKeydown(event: KeyboardEvent): void {
     if (this.selectionKey(event) || this.previewKeyHandled(event)) {
@@ -125,8 +126,13 @@ export class LibraryHotkeysDirective {
       return false;
     }
     event.preventDefault();
-    if (key === PREVIEW_KEY.Close) {
+    if (key === PREVIEW_KEY.Close && this.preview.fullScreen()) {
+      // Esc leaves full screen first; the next one closes the Link page.
+      this.preview.exitFullScreen();
+    } else if (key === PREVIEW_KEY.Close) {
       void this.preview.close();
+    } else if (key === PREVIEW_KEY.FullScreen) {
+      this.preview.toggleFullScreen();
     } else if (key === PREVIEW_KEY.OpenInNewTab) {
       this.preview.openInNewTab();
     } else {

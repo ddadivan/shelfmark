@@ -39,6 +39,9 @@ export function createLinkPreviewStub(link: LinkResponse | null = PREVIEW_STUB_L
     listWidth: signal(400),
     split: signal(true),
     pushed: signal(false),
+    fullScreen: signal(false),
+    fullScreenAvailable: signal(true),
+    position: signal<{ index: number; total: number } | null>({ index: 3, total: 17 }),
     frameTimedOut: vi.fn(),
     openInNewTab: vi.fn(),
     setAlwaysNewTab: vi.fn(() => Promise.resolve()),
@@ -49,7 +52,11 @@ export function createLinkPreviewStub(link: LinkResponse | null = PREVIEW_STUB_L
     toggleList: vi.fn(),
     go: vi.fn(() => Promise.resolve()),
     close: vi.fn(() => Promise.resolve()),
+    toggleFullScreen: vi.fn(),
+    exitFullScreen: vi.fn(),
   };
+  stub.toggleFullScreen.mockImplementation(() => stub.fullScreen.update((on) => !on));
+  stub.exitFullScreen.mockImplementation(() => stub.fullScreen.set(false));
   return stub;
 }
 

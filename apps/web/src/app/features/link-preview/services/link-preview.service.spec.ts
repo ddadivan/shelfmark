@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { signal } from '@angular/core';
+import { computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslocoService } from '@jsverse/transloco';
 import {
@@ -62,6 +62,7 @@ function setup(options: SetupOptions = {}) {
   );
   const route = {
     currentId,
+    isOpen: computed(() => currentId() !== null),
     split: signal(true),
     pushed: signal(false),
     open: vi.fn((id: string) => {
@@ -552,6 +553,41 @@ describe('LinkPreviewService', () => {
       expect(service.listWidth()).toBe(PREVIEW_LIST_WIDTH.Default);
       service.setListWidth(450);
       expect(service.listWidth()).toBe(450);
+    });
+  });
+
+  describe('full screen', () => {
+    it('toggles in the split view, steps with it on and ends when the Link page closes', async () => {
+      const { service } = setup();
+      expect(service.fullScreen()).toBe(false);
+      service.toggleFullScreen();
+      expect(service.fullScreen()).toBe(true);
+      await service.go(1);
+      expect(service.fullScreen()).toBe(true);
+      await service.close();
+      TestBed.tick();
+      expect(service.fullScreen()).toBe(false);
+    });
+
+    it('exits on request and is not offered below the split view', () => {
+      const { service, route } = setup();
+      service.toggleFullScreen();
+      service.exitFullScreen();
+      expect(service.fullScreen()).toBe(false);
+      route.split.set(false);
+      expect(service.fullScreenAvailable()).toBe(false);
+      service.toggleFullScreen();
+      route.split.set(true);
+      expect(service.fullScreen()).toBe(false);
+    });
+
+    it('says where the open link sits in the shown feed', async () => {
+      const { service, currentId } = setup();
+      expect(service.position()).toEqual({ index: 1, total: 3 });
+      await service.go(1);
+      expect(service.position()).toEqual({ index: 2, total: 3 });
+      currentId.set('id-99');
+      expect(service.position()).toBeNull();
     });
   });
 });

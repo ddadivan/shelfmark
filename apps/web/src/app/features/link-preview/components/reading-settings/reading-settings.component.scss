@@ -1,25 +1,11 @@
 @use 'ui' as *;
 
-// Shelf Reading settings: four groups, 8px padding each, a 12px 500 muted label over the switch.
+// Shelf Reading settings popover: 320px wide (the popover's 12px padding around 296px of
+// content), tall enough for every group without scrolling.
 .reading-settings {
-  --ui-popover-max-block-size: #{rem(480px)};
+  --ui-popover-max-block-size: #{rem(560px)};
 }
 
-.reading-settings__groups {
-  display: flex;
-  flex-direction: column;
-}
-
-.reading-settings__group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-2);
-}
-
-.reading-settings__label {
-  @include type(caption);
-
-  font-weight: 500;
-  color: var(--text-muted);
+.reading-settings__form {
+  inline-size: min(#{rem(296px)}, calc(100vw - #{rem(40px)}));
 }

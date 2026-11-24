@@ -1,0 +1,94 @@
+@let current = settings();
+<div class="reading-settings-form">
+  <div class="reading-settings-form__group">
+    <span class="reading-settings-form__label" [id]="ids.theme">
+      {{ 'preview.reading.theme.label' | transloco }}
+    </span>
+    <ui-reader-theme-picker
+      [ariaLabelledby]="ids.theme"
+      [options]="themes()"
+      [value]="shownTheme()"
+      (valueChange)="setTheme($event)"
+    />
+  </div>
+  <div class="reading-settings-form__group">
+    <span class="reading-settings-form__label" [id]="ids.font">
+      {{ 'preview.reading.font.label' | transloco }}
+    </span>
+    <ui-segmented-control
+      block
+      [ariaLabelledby]="ids.font"
+      [options]="fonts()"
+      [value]="current.font"
+      (valueChange)="setFont($event)"
+    />
+  </div>
+  <div class="reading-settings-form__group">
+    <span class="reading-settings-form__label" [id]="ids.size">
+      {{ 'preview.reading.size.label' | transloco }}
+    </span>
+    <div class="reading-settings-form__size">
+      <ui-button
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="letter-a"
+        [iconSize]="ICON_SIZE.Sm"
+        [ariaDisabled]="current.size <= SIZE.Min"
+        [ariaLabel]="'preview.reading.size.smaller' | transloco"
+        (click)="stepSize(-1)"
+      />
+      <ui-range
+        class="reading-settings-form__slider"
+        [label]="'preview.reading.size.label' | transloco"
+        [valueText]="sizeText()"
+        [min]="SIZE.Min"
+        [max]="SIZE.Max"
+        [step]="SIZE.Step"
+        [value]="current.size"
+        (valueChange)="setSize($event)"
+      />
+      <ui-button
+        variant="ghost"
+        size="sm"
+        iconOnly
+        iconLeft="letter-a"
+        [iconSize]="ICON_SIZE.Lg"
+        [ariaDisabled]="current.size >= SIZE.Max"
+        [ariaLabel]="'preview.reading.size.larger' | transloco"
+        (click)="stepSize(1)"
+      />
+      <span class="reading-settings-form__value" aria-hidden="true">{{ current.size }}</span>
+    </div>
+  </div>
+  <div class="reading-settings-form__group">
+    <span class="reading-settings-form__label" [id]="ids.spacing">
+      {{ 'preview.reading.spacing.label' | transloco }}
+    </span>
+    <ui-segmented-control
+      block
+      [ariaLabelledby]="ids.spacing"
+      [options]="spacings()"
+      [value]="current.lineSpacing"
+      (valueChange)="setSpacing($event)"
+    />
+  </div>
+  <div class="reading-settings-form__group">
+    <span class="reading-settings-form__label" [id]="ids.width">
+      {{ 'preview.reading.width.label' | transloco }}
+    </span>
+    <ui-segmented-control
+      block
+      [ariaLabelledby]="ids.width"
+      [options]="widths()"
+      [value]="current.width"
+      (valueChange)="setWidth($event)"
+    />
+  </div>
+  <div class="reading-settings-form__foot">
+    <span class="reading-settings-form__saved">{{ 'preview.reading.saved' | transloco }}</span>
+    <ui-button variant="ghost" size="sm" (click)="reset()">
+      {{ 'preview.reading.reset' | transloco }}
+    </ui-button>
+  </div>
+</div>

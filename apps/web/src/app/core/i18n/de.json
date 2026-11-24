@@ -2137,7 +2137,8 @@
       "preview": "Fokussierten Link ansehen",
       "previewNext": "Vorheriger oder nächster Link",
       "previewNewTab": "Link der Vorschau in neuem Tab öffnen",
-      "previewClose": "Vorschau schließen"
+      "previewClose": "Vorschau schließen",
+      "previewFullScreen": "Vollbild ein oder aus"
     },
     "keys": {
       "command": "Befehl",
@@ -4308,6 +4309,9 @@
     "openInBrowser": "Im Browser öffnen",
     "more": "Weitere Aktionen",
     "share": "Teilen",
+    "fullScreen": "Vollbild",
+    "exitFullScreen": "Vollbild beenden",
+    "position": "{{index}} von {{total}}",
     "resize": "Listenbreite ändern",
     "resizeHint": "Ziehen oder ← und → nutzen. Doppelklick setzt zurück.",
     "blocked": {
@@ -4329,11 +4333,12 @@
     },
     "reading": {
       "title": "Leseeinstellungen",
-      "size": {
-        "label": "Textgröße",
-        "s": "S",
-        "m": "M",
-        "l": "L"
+      "theme": {
+        "label": "Design",
+        "light": "Hell",
+        "sepia": "Sepia",
+        "dark": "Dunkel",
+        "black": "Schwarz"
       },
       "font": {
         "label": "Schrift",
@@ -4341,16 +4346,26 @@
         "serif": "Serif",
         "readable": "Gut lesbar"
       },
+      "size": {
+        "label": "Textgröße",
+        "smaller": "Kleinerer Text",
+        "larger": "Größerer Text",
+        "value": "{{size}} px"
+      },
+      "spacing": {
+        "label": "Zeilenabstand",
+        "compact": "Eng",
+        "normal": "Normal",
+        "relaxed": "Weit"
+      },
       "width": {
         "label": "Zeilenbreite",
         "narrow": "Schmal",
+        "normal": "Normal",
         "wide": "Breit"
       },
-      "tone": {
-        "label": "Seite",
-        "app": "Wie die App",
-        "sepia": "Sepia"
-      }
+      "saved": "Auf diesem Gerät gespeichert",
+      "reset": "Zurücksetzen"
     },
     "reader": {
       "loading": "Text wird geladen",

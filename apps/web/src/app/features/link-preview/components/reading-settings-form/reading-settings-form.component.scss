@@ -1,0 +1,61 @@
+@use 'ui' as *;
+
+// Shelf Reading settings: groups with 8px padding, a 12px 500 muted label over the control, the
+// segmented controls stretched with equal segments, a footer over a `sep` line.
+:host {
+  display: block;
+}
+
+.reading-settings-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.reading-settings-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.reading-settings-form__label {
+  @include type(caption);
+
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.reading-settings-form__size {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.reading-settings-form__slider {
+  flex: 1 1 auto;
+}
+
+.reading-settings-form__value {
+  min-inline-size: rem(24px);
+  color: var(--text-muted);
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+
+  @include type(secondary);
+}
+
+.reading-settings-form__foot {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-2) var(--space-1);
+  margin-block-start: var(--space-1);
+  border-block-start: 1px solid var(--sep);
+}
+
+.reading-settings-form__saved {
+  color: var(--text-muted);
+
+  @include type(caption);
+}

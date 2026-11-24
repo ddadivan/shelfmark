@@ -82,3 +82,16 @@
     overflow-wrap: break-word;
   }
 }
+
+// Full screen Link page (Shelf ReaderView): the list and the trail go; the panel covers the window
+// (the shell hides its sidebar and header).
+.library--link-full .library__crumbs {
+  display: none;
+}
+
+.library--link-full .library__preview {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  margin: 0;
+}

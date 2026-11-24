@@ -74,10 +74,25 @@
   white-space: nowrap;
 }
 
+.preview-panel--full {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+// "3 of 17" in full screen (Shelf `lp-pos`).
+.preview-panel__position {
+  flex: none;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  @include type(caption);
+}
+
 .preview-panel__sep {
   block-size: 1.25rem;
   margin-inline: var(--space-1);
-  border-inline-start: 1px solid var(--border);
+  border-inline-start: 1px solid var(--sep);
 }
 
 .preview-panel__star--on {

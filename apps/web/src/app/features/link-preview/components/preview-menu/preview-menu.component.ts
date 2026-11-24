@@ -12,11 +12,12 @@ import { MenuComponent, MenuItemComponent, MenuSeparatorComponent } from '@shelf
 import { LinkActionsService } from '../../../links/services/link-actions.service';
 import { linkHost } from '../../../links/utils/link-view';
 import { LinkPreviewService } from '../../services/link-preview.service';
+import { PreviewReaderService } from '../../services/preview-reader.service';
 
 /**
  * The ⋯ menu of the Link page (Shelf `01-library.html`): Open in browser, Edit, favorite, pin to
  * the top of the folder, pin to the sidebar, Move, Remind me, Copy link, the site rule, "Wider
- * preview" (desktop) and Delete. The trigger binds `[uiMenuTrigger]="more.menu()"`.
+ * preview" (desktop, not in full screen), Details (the phone head) and Delete. The trigger binds `[uiMenuTrigger]="more.menu()"`.
  */
 @Component({
   selector: 'app-preview-menu',
@@ -27,9 +28,12 @@ import { LinkPreviewService } from '../../services/link-preview.service';
 export class PreviewMenuComponent {
   /** The desktop panel: offers "Wider preview" / "Show the list". */
   readonly wide = input(false, { transform: booleanAttribute });
+  /** The phone head: offers the Details toggle (its button moved into this menu). */
+  readonly details = input(false, { transform: booleanAttribute });
 
   protected readonly preview = inject(LinkPreviewService);
   protected readonly actions = inject(LinkActionsService);
+  protected readonly reader = inject(PreviewReaderService);
   readonly menu = viewChild.required(MenuComponent);
 
   protected readonly domain = computed(() => {

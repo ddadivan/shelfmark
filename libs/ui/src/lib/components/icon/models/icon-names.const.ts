@@ -72,6 +72,7 @@ export const ICON_NAMES = [
   'kids',
   'laptop',
   'leaf',
+  'letter-a',
   'link',
   'list',
   'lock',
