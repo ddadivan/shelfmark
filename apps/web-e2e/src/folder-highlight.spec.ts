@@ -24,7 +24,7 @@ test.describe('per-folder highlight (mock API)', () => {
     await page.goto('/links');
     await expect(page.locator('ui-card').first()).toBeVisible();
     await pickFolderMenuItem(page, READING, 'Folder settings…');
-    const dialog = page.getByRole('dialog', { name: READING });
+    const dialog = page.getByRole('dialog', { name: 'Folder settings' });
     await dialog
       .locator('label.ui-choice', { has: page.getByLabel('Clay', { exact: true }) })
       .click();
@@ -106,15 +106,15 @@ test.describe('per-folder highlight (mock API)', () => {
   );
 
   test(
-    'a highlighted folder page shows the tinted header block',
+    'a highlighted folder page keeps the plain title block: the highlight colours only the row',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
+      // Shelf 04-organise: the tinted header block is gone.
       await styleReading(page, true);
       await row(page).click();
       await expect(page).toHaveURL(`/folders/${MOCK_FIXTURE.readingId}`);
-      const banner = page.locator('ui-folder-banner');
-      await expect(banner).toHaveCount(1);
-      await expect(banner.getByRole('heading', { level: 1, name: READING })).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1, name: READING })).toBeVisible();
+      await expect(page.locator('ui-folder-banner')).toHaveCount(0);
     },
   );
 });

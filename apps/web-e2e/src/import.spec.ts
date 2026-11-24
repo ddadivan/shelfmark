@@ -4,7 +4,6 @@ import { expect, test } from './support/test';
 import { seedAi } from './support/ai';
 import { openDataDialog } from './support/data-menu';
 import { seedSession } from './support/mock-session';
-import { isPhone } from './support/sidebar';
 import { openTrash, trashRow } from './support/trash';
 import { E2E_TAG } from './models/e2e-tag.const';
 
@@ -16,18 +15,27 @@ const CHROME_EXPORT = join(
   '../../web/src/app/features/import/utils/fixtures/chrome-bookmarks.html',
 );
 
-/** Opens "Import links" from the library: the sidebar's Data & help menu, or the You tab on a phone. */
+/**
+ * Opens "Import links" from the library: the sidebar's Data & help menu, or Your data in the
+ * mobile shell. Shelf block 5b: the /import page with the numbered steps (the dialog is gone).
+ */
 async function openImport(page: Page) {
   await page.goto('/links');
   return reopenImport(page);
 }
 
-/** Opens the dialog again without a page load (a reload would start the mock library over). */
+/** Opens the page again without a page load (a reload would start the mock library over). */
 async function reopenImport(page: Page) {
   await openDataDialog(page, 'Import links');
-  const dialog = page.getByRole('dialog', { name: 'Import links' });
-  await expect(dialog).toBeVisible();
-  return dialog;
+  await expect(page).toHaveURL('/import');
+  const main = page.getByRole('main');
+  await expect(main.getByRole('heading', { level: 1, name: 'Import bookmarks' })).toBeVisible();
+  return main;
+}
+
+/** The "How to get the file from" help of step 1: one browser at a time. */
+function exportHelp(page: Page) {
+  return page.getByRole('region', { name: 'How to get the file from' });
 }
 
 // #387, ADR 0056: browser bookmarks in three steps (and AI groups in between), then Undo through Trash.
@@ -50,26 +58,23 @@ test.describe('import browser bookmarks (mock API)', () => {
       await expect(dialog.getByRole('button', { name: 'Choose file' })).toBeVisible();
       await expect(dialog.getByText('or drag the file here')).toBeVisible();
       await expect(dialog.getByText(/^\.html, up to 50 MB and 10,000 links$/)).toBeVisible();
-      await dialog.getByRole('button', { name: 'How to export bookmarks from a browser' }).click();
-      await expect(dialog.getByText(/^Chrome: open the bookmark manager/)).toBeVisible();
+      // The help shows the detected browser (Chromium: Chrome) at once.
+      await expect(exportHelp(page).getByText(/^Chrome: open the bookmark manager/)).toBeVisible();
+      await expect(
+        dialog.getByRole('list', { name: 'Import steps' }).getByRole('listitem'),
+      ).toHaveText([/1\s*Choose file/, /2\s*Check/, /3\s*Folders/, /4\s*Import/]);
       // The picker button opens the hidden file input; Playwright fills it directly.
       await dialog.locator('input[type="file"]').setInputFiles(CHROME_EXPORT);
 
-      // Step 2: the file name is the title; nothing is written yet.
-      const review = page.getByRole('dialog', { name: 'chrome-bookmarks.html' });
+      // Step 2: the file name is the lead; nothing is written yet.
+      const review = page.getByRole('main');
+      await expect(review.getByText('chrome-bookmarks.html', { exact: true })).toBeVisible();
       await expect(review.getByText('already on your shelf', { exact: true })).toBeVisible();
       await expect(review.getByRole('checkbox', { name: /^Skip the 1 duplicate/ })).toBeChecked();
       // The file has folders: they are the default; AI is off, so it is not offered.
       await expect(review.getByRole('radio', { name: /^As in the file/ })).toBeChecked();
       await expect(review.getByRole('radio', { name: /^No folders/ })).not.toBeChecked();
       await expect(review.getByRole('radio', { name: /Let AI sort/ })).toHaveCount(0);
-      if (isPhone(page)) {
-        // The sheet's footer buttons span the width.
-        const button = review.getByRole('button', { name: 'Import 7 links' });
-        const box = await button.boundingBox();
-        const sheet = await review.boundingBox();
-        expect(box?.width ?? 0).toBeGreaterThan((sheet?.width ?? 0) * 0.8);
-      }
       await review.getByRole('button', { name: 'Import 7 links' }).click();
 
       // Step 3: the summary.
@@ -90,7 +95,6 @@ test.describe('import browser bookmarks (mock API)', () => {
       await confirm.getByRole('button', { name: 'Undo import' }).click();
       await expect(page.getByText('Import undone')).toBeVisible();
       await expect(again.getByText('chrome-bookmarks.html')).toHaveCount(0);
-      await again.getByRole('button', { name: 'Close' }).click();
 
       // One Trash entry: the import's folder with everything inside.
       await openTrash(page);
@@ -106,7 +110,7 @@ test.describe('import browser bookmarks (mock API)', () => {
       const dialog = await openImport(page);
       await dialog.locator('input[type="file"]').setInputFiles(CHROME_EXPORT);
 
-      const review = page.getByRole('dialog', { name: 'chrome-bookmarks.html' });
+      const review = page.getByRole('main');
       // The three choices, with the cost of the AI one named.
       await expect(review.getByRole('radio', { name: /^As in the file/ })).toBeChecked();
       await expect(review.getByText(/Uses 7 of [\d,]+ runs for existing links\./)).toBeVisible();
@@ -141,7 +145,7 @@ test.describe('import browser bookmarks (mock API)', () => {
     },
   );
 
-  test('takes a file dropped anywhere on the dialog and says so while it is dragged over', async ({
+  test('takes a file dropped anywhere on the page and says so while it is dragged over', async ({
     page,
   }) => {
     const dialog = await openImport(page);
@@ -164,26 +168,28 @@ test.describe('import browser bookmarks (mock API)', () => {
 
   test('gives the export help with the keys of the platform', async ({ page }) => {
     // Chromium on Linux: Windows-style keys, no Safari.
-    let dialog = await openImport(page);
-    await dialog.getByRole('button', { name: 'How to export bookmarks from a browser' }).click();
-    const help = dialog.locator('#import-help');
-    await expect(help.getByRole('listitem')).toHaveCount(3);
+    await openImport(page);
+    const help = exportHelp(page);
+    await expect(help.getByRole('radio')).toHaveCount(3);
+    await expect(help.getByRole('radio', { name: 'Chrome' })).toBeChecked();
     await expect(help.getByText(/^Chrome: open the bookmark manager/)).toContainText(
       'Ctrl+Shift+O',
     );
-    await expect(help.getByText(/^Safari/)).toHaveCount(0);
+    await expect(help.getByRole('radio', { name: 'Safari' })).toHaveCount(0);
 
     // The same browser reporting a Mac: Command / Option glyph caps and the Safari step.
     await page.addInitScript(() => {
       Object.defineProperty(Navigator.prototype, 'platform', { get: () => 'MacIntel' });
       Object.defineProperty(Navigator.prototype, 'userAgentData', { get: () => undefined });
     });
-    dialog = await openImport(page);
-    await dialog.getByRole('button', { name: 'How to export bookmarks from a browser' }).click();
-    await expect(help.getByRole('listitem')).toHaveCount(4);
+    await openImport(page);
+    await expect(help.getByRole('radio')).toHaveCount(4);
     const chrome = help.getByText(/^Chrome: open the bookmark manager/);
     await expect(chrome).toContainText('Command+Option+B');
     await expect(chrome.locator('kbd ui-icon')).toHaveCount(2);
+    // A click event on the radio itself (the segmented control's label sits over it).
+    await help.getByRole('radio', { name: 'Safari' }).dispatchEvent('click');
+    await expect(help.getByRole('radio', { name: 'Safari' })).toBeChecked();
     await expect(help.getByText('Safari: File, Export, Bookmarks.')).toBeVisible();
   });
 
@@ -194,7 +200,7 @@ test.describe('import browser bookmarks (mock API)', () => {
       mimeType: 'text/plain',
       buffer: Buffer.from('just some notes'),
     });
-    await expect(dialog.getByRole('alert')).toContainText(
+    await expect(dialog.locator('ui-notice')).toContainText(
       'There are no bookmarks in this file. Choose the HTML file your browser saved',
     );
   });

@@ -67,7 +67,7 @@ test.describe('visual: library (mock API)', () => {
 
   test('folder colour and icon dialog', async ({ page }) => {
     await pickFolderMenuItem(page, READING, 'Folder settings…');
-    await expect(page.getByRole('dialog', { name: READING })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Folder settings' })).toBeVisible();
 
     await expectScreen(page, 'folder-style');
   });

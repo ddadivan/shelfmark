@@ -70,7 +70,7 @@ test.describe('folder style and pins (mock API)', () => {
 
   async function chooseStyle(page: Page, colour: string, icon: string): Promise<void> {
     await pickFolderMenuItem(page, READING, 'Folder settings…');
-    const dialog = page.getByRole('dialog', { name: READING });
+    const dialog = page.getByRole('dialog', { name: 'Folder settings' });
     await expect(dialog).toBeVisible();
     await choose(dialog, colour);
     await choose(dialog, icon);
@@ -101,7 +101,7 @@ test.describe('folder style and pins (mock API)', () => {
     page,
   }) => {
     await pickFolderMenuItem(page, READING, 'Folder settings…');
-    const dialog = page.getByRole('dialog', { name: READING });
+    const dialog = page.getByRole('dialog', { name: 'Folder settings' });
     await expect(dialog).toBeVisible();
 
     // The eight built-in swatches share one line.

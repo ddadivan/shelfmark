@@ -61,7 +61,7 @@ export async function sideBySide(page: Page): Promise<WhatsNewClip> {
 export async function folderStyling(page: Page): Promise<WhatsNewClip> {
   await openFeed(page);
   await pickFolderMenuItem(page, READING, 'Folder settings…');
-  const dialog = page.getByRole('dialog', { name: READING });
+  const dialog = page.getByRole('dialog', { name: 'Folder settings' });
   await chooseOption(dialog, 'Ocean');
   await chooseOption(dialog, 'Star');
   await dialog.getByLabel('Description').fill(DESCRIPTION);

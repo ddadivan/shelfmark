@@ -42,12 +42,12 @@ test.describe('folder description and cover (mock API)', () => {
   }
 
   test(
-    'a description and a cover of a highlighted folder show in the folder header',
+    'a description and a cover of a highlighted folder show in the plain folder header',
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await start(page);
       await pickFolderMenuItem(page, READING, 'Folder settings…');
-      const dialog = page.getByRole('dialog', { name: READING });
+      const dialog = page.getByRole('dialog', { name: 'Folder settings' });
       await dialog.getByLabel('Description').fill(`  ${DESCRIPTION}  `);
       await dialog
         .locator('label.ui-choice', { has: page.getByLabel('Clay', { exact: true }) })
@@ -65,24 +65,23 @@ test.describe('folder description and cover (mock API)', () => {
       await openSidebar(page);
       await expect(folderRow(page)).toHaveAttribute('aria-description', DESCRIPTION);
 
+      // Shelf 04-organise: every folder page has the same header (the cover or the 40px tile, the
+      // title, the counts, the description); the highlight colours only the sidebar row.
       await openReading(page);
-      const banner = page.locator('ui-folder-banner');
-      await expect(banner.getByRole('heading', { level: 1, name: READING })).toBeVisible();
-      await expect(banner.getByText(DESCRIPTION, { exact: true })).toBeVisible();
-      const cover = banner.locator('img.ui-folder-banner__cover');
+      await expect(page.locator('ui-folder-banner')).toHaveCount(0);
+      const head = page.locator('.library__heading--folder');
+      await expect(head.getByRole('heading', { level: 1, name: READING })).toBeVisible();
+      await expect(head.getByText(DESCRIPTION, { exact: true })).toBeVisible();
+      const cover = head.locator('app-folder-cover img');
       await expect(cover).toBeVisible();
       await expect(cover).toHaveAttribute('src', /\/api\/links\/[^/]+\/image\?v=/);
-      // The heading sits under the picture room, on the scrim.
-      const room = (await cover.boundingBox())?.y ?? 0;
-      const heading = (await banner.getByRole('heading', { level: 1 }).boundingBox())?.y ?? 0;
-      expect(heading - room).toBeGreaterThan(40);
     },
   );
 
-  test('a cover that fails to load falls back to the colour band', async ({ page }) => {
+  test('a cover that fails to load leaves no broken picture in the header', async ({ page }) => {
     await start(page, true);
     await pickFolderMenuItem(page, READING, 'Folder settings…');
-    const dialog = page.getByRole('dialog', { name: READING });
+    const dialog = page.getByRole('dialog', { name: 'Folder settings' });
     await dialog
       .locator('label.ui-choice', { has: page.getByLabel('Teal', { exact: true }) })
       .click();
@@ -96,10 +95,11 @@ test.describe('folder description and cover (mock API)', () => {
     await expect(dialog).toHaveCount(0);
 
     await openReading(page);
-    const banner = page.locator('ui-folder-banner');
-    await expect(banner.locator('img.ui-folder-banner__cover')).toHaveCount(0);
-    await expect(banner).toHaveAttribute('data-ui-folder-colour', '');
-    await expect(banner).toHaveCSS('background-image', /gradient/);
+    const head = page.locator('.library__heading--folder');
+    await expect(head.getByRole('heading', { level: 1, name: READING })).toBeVisible();
+    // The picture answered 404: the cover draws nothing rather than a broken image.
+    await expect(head.locator('app-folder-cover')).toHaveClass(/folder-cover--failed/);
+    await expect(head.locator('app-folder-cover img')).toHaveCount(0);
   });
 
   test(
@@ -108,7 +108,7 @@ test.describe('folder description and cover (mock API)', () => {
     async ({ page }) => {
       await start(page);
       await pickFolderMenuItem(page, READING, 'Folder settings…');
-      const dialog = page.getByRole('dialog', { name: READING });
+      const dialog = page.getByRole('dialog', { name: 'Folder settings' });
       await dialog.getByLabel('Description').fill(DESCRIPTION);
       await dialog
         .getByRole('radiogroup', { name: 'Cover' })
