@@ -17,5 +17,6 @@ export function progressToSave(share: number, last: number | null): boolean {
   if (share >= READER_LIMIT.DoneFraction && last < READER_LIMIT.DoneFraction) {
     return true;
   }
-  return Math.abs(share - last) >= SAVE_STEP;
+  // The epsilon keeps 0.15 - 0.1 (0.04999…) a full step.
+  return Math.abs(share - last) >= SAVE_STEP - 1e-9;
 }
