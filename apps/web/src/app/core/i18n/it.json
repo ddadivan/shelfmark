@@ -1630,6 +1630,27 @@
         "other": "Ci sono suggerimenti di tag per {{count}} link."
       },
       "review": "Rivedi i tag"
+    },
+    "page": {
+      "title": "Importa segnalibri",
+      "lead": "Porta i link dal tuo browser. Nulla viene salvato finché non confermi.",
+      "background": "Puoi continuare a usare Shelfmark; l’importazione prosegue in background.",
+      "steps": "Passaggi dell’importazione",
+      "step": {
+        "source": "Scegli file",
+        "check": "Controlla",
+        "folders": "Cartelle",
+        "import": "Importa"
+      },
+      "helpTitle": "Come ottenere il file da",
+      "detected": "{{browser}} rilevato",
+      "again": "Importa un altro file",
+      "browser": {
+        "chrome": "Chrome",
+        "edge": "Edge",
+        "firefox": "Firefox",
+        "safari": "Safari"
+      }
     }
   },
   "settings": {

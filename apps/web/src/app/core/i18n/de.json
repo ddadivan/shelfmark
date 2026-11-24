@@ -1585,6 +1585,27 @@
         "other": "Für {{count}} Links gibt es Tag-Vorschläge."
       },
       "review": "Tags ansehen"
+    },
+    "page": {
+      "title": "Lesezeichen importieren",
+      "lead": "Hol Links aus deinem Browser. Gespeichert wird erst, wenn du bestätigst.",
+      "background": "Du kannst Shelfmark weiter nutzen; der Import läuft im Hintergrund weiter.",
+      "steps": "Schritte des Imports",
+      "step": {
+        "source": "Datei wählen",
+        "check": "Prüfen",
+        "folders": "Ordner",
+        "import": "Import"
+      },
+      "helpTitle": "So bekommst du die Datei aus",
+      "detected": "{{browser}} erkannt",
+      "again": "Weitere Datei importieren",
+      "browser": {
+        "chrome": "Chrome",
+        "edge": "Edge",
+        "firefox": "Firefox",
+        "safari": "Safari"
+      }
     }
   },
   "settings": {

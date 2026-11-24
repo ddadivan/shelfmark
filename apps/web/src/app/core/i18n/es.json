@@ -1630,6 +1630,27 @@
         "other": "Hay sugerencias de etiquetas para {{count}} enlaces."
       },
       "review": "Revisar etiquetas"
+    },
+    "page": {
+      "title": "Importar marcadores",
+      "lead": "Trae los enlaces de tu navegador. No se guarda nada hasta que confirmes.",
+      "background": "Puedes seguir usando Shelfmark; la importación sigue en segundo plano.",
+      "steps": "Pasos de la importación",
+      "step": {
+        "source": "Elegir archivo",
+        "check": "Revisar",
+        "folders": "Carpetas",
+        "import": "Importar"
+      },
+      "helpTitle": "Cómo obtener el archivo de",
+      "detected": "{{browser}} detectado",
+      "again": "Importar otro archivo",
+      "browser": {
+        "chrome": "Chrome",
+        "edge": "Edge",
+        "firefox": "Firefox",
+        "safari": "Safari"
+      }
     }
   },
   "settings": {

@@ -1585,6 +1585,27 @@
         "other": "There are tag suggestions for {{count}} links."
       },
       "review": "Review tags"
+    },
+    "page": {
+      "title": "Import bookmarks",
+      "lead": "Bring links from your browser. Nothing is saved until you confirm.",
+      "background": "You can keep using Shelfmark; this continues in the background.",
+      "steps": "Import steps",
+      "step": {
+        "source": "Choose file",
+        "check": "Check",
+        "folders": "Folders",
+        "import": "Import"
+      },
+      "helpTitle": "How to get the file from",
+      "detected": "{{browser}} detected",
+      "again": "Import another file",
+      "browser": {
+        "chrome": "Chrome",
+        "edge": "Edge",
+        "firefox": "Firefox",
+        "safari": "Safari"
+      }
     }
   },
   "settings": {

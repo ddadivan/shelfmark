@@ -1,0 +1,112 @@
+@use 'ui' as *;
+
+// Shelf 09-data "Import bookmarks": a 720px column under the shell header.
+:host {
+  display: block;
+}
+
+.import-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: rem(720px);
+  padding-block-end: var(--space-8);
+}
+
+.import-page__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-block-end: calc(-1 * var(--space-2));
+}
+
+.import-page__title {
+  @include type(title);
+
+  margin: 0;
+}
+
+.import-page__lead {
+  @include type(secondary);
+
+  margin: 0;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.import-page__status:empty {
+  display: none;
+}
+
+.import-page__reading {
+  @include type(label);
+
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.import-page__help {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.import-page__help-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.import-page__help-title,
+.import-page__detected {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// The run and its end on a bordered card (Shelf: 16px corners).
+.import-page__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-card);
+}
+
+.import-page__card--done {
+  align-items: center;
+  padding-block: var(--space-12);
+  text-align: center;
+}
+
+.import-page__actions,
+.import-page__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.import-page__actions {
+  justify-content: center;
+}
+
+.import-page__foot:empty {
+  display: none;
+}
+
+@include phone {
+  .import-page__foot {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}
+
+.import-page__sr {
+  @include visually-hidden;
+}

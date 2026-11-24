@@ -1,0 +1,19 @@
+<ol class="ui-stepper__list" [attr.aria-label]="label()">
+  @for (item of items(); track item.number) {
+    <li
+      class="ui-stepper__step"
+      [class.ui-stepper__step--done]="item.done"
+      [class.ui-stepper__step--current]="item.current"
+      [attr.aria-current]="item.current ? 'step' : null"
+    >
+      <span class="ui-stepper__mark" aria-hidden="true">
+        @if (item.done) {
+          <ui-icon name="check" [size]="16" />
+        } @else {
+          {{ item.number }}
+        }
+      </span>
+      <span class="ui-stepper__name">{{ item.name }}</span>
+    </li>
+  }
+</ol>

@@ -1630,6 +1630,27 @@
         "other": "Des suggestions de tags existent pour {{count}} liens."
       },
       "review": "Voir les tags"
+    },
+    "page": {
+      "title": "Importer des favoris",
+      "lead": "Récupérez les liens de votre navigateur. Rien n’est enregistré avant votre confirmation.",
+      "background": "Vous pouvez continuer à utiliser Shelfmark ; l’import se poursuit en arrière-plan.",
+      "steps": "Étapes de l’import",
+      "step": {
+        "source": "Fichier",
+        "check": "Vérifier",
+        "folders": "Dossiers",
+        "import": "Import"
+      },
+      "helpTitle": "Obtenir le fichier depuis",
+      "detected": "{{browser}} détecté",
+      "again": "Importer un autre fichier",
+      "browser": {
+        "chrome": "Chrome",
+        "edge": "Edge",
+        "firefox": "Firefox",
+        "safari": "Safari"
+      }
     }
   },
   "settings": {
