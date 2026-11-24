@@ -1322,7 +1322,9 @@
       "empty": {
         "text": "Faites glisser des liens ici depuis la gauche."
       },
-      "moveToLeft": "Déplacer « {{title}} » vers {{folder}}"
+      "moveToLeft": "Déplacer « {{title}} » vers {{folder}}",
+      "hint": "Glissez des liens d’un fil à l’autre pour les classer. Échap ferme.",
+      "closeShort": "Fermer"
     },
     "extension": {
       "title": "Enregistrez des pages directement depuis votre navigateur",

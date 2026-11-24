@@ -1299,7 +1299,9 @@
       "empty": {
         "text": "Drag links here from the left."
       },
-      "moveToLeft": "Move “{{title}}” to {{folder}}"
+      "moveToLeft": "Move “{{title}}” to {{folder}}",
+      "hint": "Drag links between two feeds to file them. Esc closes.",
+      "closeShort": "Close"
     },
     "extension": {
       "title": "Save pages straight from your browser",

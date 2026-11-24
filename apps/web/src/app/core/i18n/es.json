@@ -1322,7 +1322,9 @@
       "empty": {
         "text": "Arrastra enlaces aquí desde la izquierda."
       },
-      "moveToLeft": "Mover «{{title}}» a {{folder}}"
+      "moveToLeft": "Mover «{{title}}» a {{folder}}",
+      "hint": "Arrastra enlaces entre dos listas para archivarlos. Esc cierra.",
+      "closeShort": "Cerrar"
     },
     "extension": {
       "title": "Guarda páginas directamente desde el navegador",

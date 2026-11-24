@@ -168,6 +168,15 @@ describe('LibraryPage side by side', () => {
     expect(element.querySelector('h1')?.textContent).toBe('Unsorted');
   });
 
+  it('puts the Shelf "Side by side" line with the hint and Close over both feeds', async () => {
+    const { element } = await setup({ split: '' });
+
+    const head = element.querySelector('.library__split-head') as HTMLElement;
+    expect(head.querySelector('.library__split-title')?.textContent?.trim()).toBe('Side by side');
+    expect(head.textContent).toContain('Drag links between two feeds to file them.');
+    expect(head.querySelector('button[aria-label="Close side by side"]')).not.toBeNull();
+  });
+
   it('shows the left picker menu, a hidden title and the drop values of both halves', async () => {
     const { element, fixture } = await setup({ split: B });
 

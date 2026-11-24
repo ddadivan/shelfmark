@@ -162,6 +162,7 @@ const SKELETON_COUNT = 8;
     './library-feed.scss',
     './library-selection.scss',
     './library-preview.scss',
+    './library-split.scss',
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: provideLibraryPage(),

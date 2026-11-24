@@ -38,7 +38,23 @@
     [collapsedLabel]="'library.breadcrumb.collapsed' | transloco"
     (linkClick)="openCrumb($event)"
   />
-  } }
+  } } @if (splitView.open() && !preview.split()) {
+  <!-- Shelf side by side (08-select-move): the page's own line over both feeds. -->
+  <div class="library__split-head">
+    <p class="library__split-title" aria-hidden="true">{{ 'library.split.open' | transloco }}</p>
+    <p class="library__split-hint">{{ 'library.split.hint' | transloco }}</p>
+    <ui-button
+      class="library__split-close"
+      variant="ghost"
+      size="sm"
+      iconLeft="close"
+      [ariaLabel]="'library.split.close' | transloco"
+      (click)="splitView.close()"
+    >
+      {{ 'library.split.closeShort' | transloco }}
+    </ui-button>
+  </div>
+  }
   <div
     class="library__split"
     [class.library__split--open]="splitView.open() && !preview.split()"

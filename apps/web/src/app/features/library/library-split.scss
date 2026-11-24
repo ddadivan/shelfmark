@@ -1,0 +1,54 @@
+@use 'ui' as *;
+
+// Shelf side by side (`08-select-move` "Side by side"): a line with "Side by side", the hint and
+// Close over the two feeds, each feed a card (surface, the card ring, radius 16), 16px apart; the
+// feed a dragged link would land in gets a 2px `accent` ring.
+.library__split-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  align-items: baseline;
+  margin-block-end: var(--space-4);
+}
+
+.library__split-title {
+  @include type(title);
+
+  margin: 0;
+}
+
+.library__split-hint {
+  @include type(secondary);
+
+  flex: 1 1 auto;
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.library__split-close {
+  align-self: center;
+}
+
+.library__split--open {
+  column-gap: var(--space-2);
+}
+
+.library__split--open > .library__half,
+.library__split--open > app-split-right-half {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.library__split--open > .library__half {
+  padding: var(--space-3) var(--space-3) 0;
+}
+
+.library__split--open > .library__half--target {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+// The divider keeps the swap button between the cards, without a line.
+.library__split--open > .library__divider {
+  border-inline-start: 0;
+}

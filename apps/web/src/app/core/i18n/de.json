@@ -1299,7 +1299,9 @@
       "empty": {
         "text": "Ziehe Links von links hierher."
       },
-      "moveToLeft": "„{{title}}“ nach {{folder}} verschieben"
+      "moveToLeft": "„{{title}}“ nach {{folder}} verschieben",
+      "hint": "Ziehe Links zwischen zwei Feeds, um sie abzulegen. Esc schließt.",
+      "closeShort": "Schließen"
     },
     "extension": {
       "title": "Seiten direkt aus dem Browser speichern",

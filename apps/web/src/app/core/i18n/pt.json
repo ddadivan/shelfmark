@@ -1322,7 +1322,9 @@
       "empty": {
         "text": "Arraste links para cá a partir da esquerda."
       },
-      "moveToLeft": "Mover “{{title}}” para {{folder}}"
+      "moveToLeft": "Mover “{{title}}” para {{folder}}",
+      "hint": "Arraste links entre duas listas para organizá-los. Esc fecha.",
+      "closeShort": "Fechar"
     },
     "extension": {
       "title": "Salve páginas direto do navegador",

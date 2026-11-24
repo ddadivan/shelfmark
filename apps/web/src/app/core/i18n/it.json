@@ -1322,7 +1322,9 @@
       "empty": {
         "text": "Trascina qui i link da sinistra."
       },
-      "moveToLeft": "Sposta “{{title}}” in {{folder}}"
+      "moveToLeft": "Sposta “{{title}}” in {{folder}}",
+      "hint": "Trascina i link tra due feed per archiviarli. Esc chiude.",
+      "closeShort": "Chiudi"
     },
     "extension": {
       "title": "Salva le pagine direttamente dal browser",
