@@ -5,4 +5,5 @@ export const CRON_ENDPOINT = {
   AiSweep: '/api/cron/ai-sweep',
   Notifications: '/api/cron/notifications',
   AccountPurge: '/api/cron/account-purge',
+  AskHistoryPurge: '/api/cron/ask-history',
 } as const;

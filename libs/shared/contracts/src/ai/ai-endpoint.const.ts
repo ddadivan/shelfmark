@@ -34,6 +34,10 @@ export const AI_ENDPOINT = {
   RelatedLinks: '/api/links/:id/related',
   /** `POST` a question; answers a `text/event-stream` of `AskEvent`s (AI-4, ADR 0052). */
   Ask: '/api/ai/ask',
+  /** `GET` the stored Ask conversations (newest first, paged); `DELETE` all of them. */
+  AskConversations: '/api/ai/ask/conversations',
+  /** `GET` one stored conversation with its turns (links re-read live); `DELETE` it. */
+  AskConversation: '/api/ai/ask/conversations/:id',
   /** Daily Vercel Cron sweep (`CRON_SECRET` bearer). */
   Sweep: '/api/cron/ai-sweep',
 } as const;
