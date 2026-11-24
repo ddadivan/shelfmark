@@ -1,3 +1,4 @@
+import { openTags } from './support/sidebar';
 import { type Locator, type Page } from '@playwright/test';
 import { openFeed } from './support/a11y-flows';
 import { makePageTall, scrollMainTo, SHELL_MAIN } from './support/scroll';
@@ -95,6 +96,8 @@ test.describe('select links and bulk actions (mock API)', () => {
     }) => {
       await page.setViewportSize({ width: 1440, height: 1100 });
       await openFeed(page);
+      // Tags start folded in the desktop sidebar (Shelf).
+      await openTags(page);
       // The "recipes" tag and the Videos view together leave two links.
       await page.getByRole('navigation').getByText('recipes', { exact: true }).first().click();
       await page.getByRole('button', { name: /^Videos \d+$/ }).click();

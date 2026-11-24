@@ -27,7 +27,6 @@ import { AskPanelService } from '../../services/ask-panel.service';
   template: `
     <ui-ask-button
       [label]="'ai.ask.button' | transloco"
-      [ariaLabel]="'ai.ask.open' | transloco"
       [tooltip]="'ai.ask.open' | transloco"
       ariaHaspopup="dialog"
       (activated)="ask()"

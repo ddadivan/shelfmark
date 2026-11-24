@@ -41,13 +41,15 @@ async function press(): Promise<HTMLElement> {
 }
 
 describe('AskHeaderButtonComponent', () => {
-  it('is always shown, named "Ask your shelf", and opens Ask while Ask is on', async () => {
+  it('is always shown, named by its visible "Ask", and opens Ask while Ask is on', async () => {
     const { panel, actions } = setup({ isOn: true, askOn: true });
     const root = await press();
 
     const button = root.querySelector('button');
     expect(button?.textContent?.trim()).toBe('Ask');
-    expect(button?.getAttribute('aria-label')).toBe('Ask your shelf');
+    // The visible label is the name (axe label-content-name-mismatch in every language);
+    // "Ask your shelf" is the tooltip.
+    expect(button?.hasAttribute('aria-label')).toBe(false);
     expect(button?.getAttribute('aria-haspopup')).toBe('dialog');
     expect(panel.open).toHaveBeenCalledTimes(1);
     expect(actions.setEnabled).not.toHaveBeenCalled();

@@ -31,7 +31,10 @@ test.describe('folder style and pins (mock API)', () => {
     }
   }
   const coloured = (page: Page, colour: string): Locator =>
-    page.locator(`ui-folder-icon.ui-folder-icon--${colour}`);
+    // A tile (phone Library), or a Shelf tree row whose glyph takes the folder colour.
+    page.locator(
+      `ui-folder-icon.ui-folder-icon--${colour}, [data-ui-folder-colour][style*="var(--folder-${colour})"]`,
+    );
 
   // The native radio sits under its drawing: click the option (its label) like a person would.
   async function choose(dialog: Locator, name: string): Promise<void> {

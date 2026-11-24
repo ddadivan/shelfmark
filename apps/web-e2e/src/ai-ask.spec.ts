@@ -36,7 +36,7 @@ async function openLibrary(page: Page): Promise<void> {
 
 /** Opens the Ask drawer from the header Ask pill. */
 async function openPanel(page: Page): Promise<Locator> {
-  await page.getByRole('button', { name: 'Ask your shelf' }).click();
+  await page.getByRole('button', { name: 'Ask', exact: true }).click();
   const panel = page.getByRole('dialog', { name: 'Ask your shelf' });
   await expect(panel).toBeVisible();
   return panel;
@@ -379,7 +379,7 @@ test.describe('Ask in the header with AI off (Shelf: always shown)', () => {
     test.skip(isCompact(page), 'the header shows from 64em');
     await seedSession(page);
     await page.goto('/links');
-    await page.getByRole('button', { name: 'Ask your shelf' }).click();
+    await page.getByRole('button', { name: 'Ask', exact: true }).click();
     await expect(page.getByRole('dialog', { name: /Turn on AI/ })).toBeVisible();
   });
 });

@@ -70,7 +70,7 @@ test.describe('domain rules (mock API)', () => {
         page.getByRole('status').filter({ hasText: `Saved to ${READING}` }),
       ).toBeVisible();
       const card = page.locator('ui-card').filter({ hasText: 'm.youtube.com' }).first();
-      await expect(card.getByText('video', { exact: true })).toBeVisible();
+      await expect(card.getByRole('button', { name: 'video', exact: true })).toBeVisible();
     },
   );
 

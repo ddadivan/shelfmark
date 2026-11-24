@@ -99,7 +99,8 @@
 
 // "New here? Watch how it works": a section gap under Tags (#315), at the bottom of the middle.
 .sidebar__how-it-works {
-  margin-block: auto var(--space-3);
+  // The card brings its own 8px under it (Shelf reference); it sits right above the footer.
+  margin-block: auto 0;
   padding-block-start: var(--space-6);
 }
 

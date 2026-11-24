@@ -50,7 +50,8 @@ test.describe('folder emoji picker (mock API)', () => {
   const readingEmoji = (page: Page): Locator =>
     page
       .getByRole('treeitem', { name: new RegExp(`^${READING}\\b`) })
-      .locator('.ui-folder-icon__emoji');
+      // Shelf: the tree draws an emoji folder as plain text where the glyph goes.
+      .locator('.ui-folder-icon__emoji, .ui-tree__folder--emoji');
 
   test('searches, chooses with the keyboard and saves the emoji on the folder', async ({
     page,

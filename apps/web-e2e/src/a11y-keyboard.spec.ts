@@ -1,3 +1,4 @@
+import { openTags } from './support/sidebar';
 import { type Locator, type Page } from '@playwright/test';
 import { expect, test } from './support/test';
 import { openFeed } from './support/a11y-flows';
@@ -202,6 +203,8 @@ test.describe('keyboard-only flows (mock API)', () => {
 
   test('renames a tag with the keyboard', async ({ page }) => {
     await openFeed(page);
+    // Tags start folded in the desktop sidebar (Shelf).
+    await openTags(page);
     const chip = library(page).getByRole('button', { name: DOCS, exact: true });
 
     await pressUntilFocused(page, chip);

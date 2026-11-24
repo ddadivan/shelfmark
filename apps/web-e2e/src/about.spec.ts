@@ -4,7 +4,7 @@ import { HOW_IT_WORKS_CHAPTERS } from './models/how-it-works-chapters.const';
 import { expectNoBlockingViolations } from './support/axe';
 import { openAccountMenu, seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { isCompact, isPhone, tabBar } from './support/sidebar';
+import { isCompact, isPhone, tabBar, openTags } from './support/sidebar';
 import { E2E_TAG } from './models/e2e-tag.const';
 
 /** `HTMLMediaElement.HAVE_METADATA`: duration and size are known. */
@@ -179,6 +179,8 @@ test.describe('About and "How it works" (mock API)', () => {
     await page.goto('/links');
     const card = page.getByRole('region', { name: 'How it works' });
     await expect(card).toBeVisible();
+    // Tags start folded (Shelf): open them, the card keeps its gap under the rows.
+    await openTags(page);
     await expect(page.locator('app-sidebar-tags ui-chip').first()).toBeVisible();
 
     const tags = await page.locator('app-sidebar-tags').boundingBox();
@@ -187,10 +189,10 @@ test.describe('About and "How it works" (mock API)', () => {
     expect(tags && box && footer).toBeTruthy();
     const tagsBottom = (tags?.y ?? 0) + (tags?.height ?? 0);
     // 24px (space-6) under the last row of tags; the card is the last block of the scrolling
-    // middle, 12px above the footer divider (not under Tags with empty space below).
+    // middle, 8px above the footer rows (Shelf reference `.intro` margin-bottom).
     expect(Math.round((box?.y ?? 0) - tagsBottom)).toBeGreaterThanOrEqual(24);
     const gap = (footer?.y ?? 0) - ((box?.y ?? 0) + (box?.height ?? 0));
-    expect(gap).toBeGreaterThanOrEqual(12);
-    expect(gap).toBeLessThanOrEqual(16);
+    expect(gap).toBeGreaterThanOrEqual(8);
+    expect(gap).toBeLessThanOrEqual(12);
   });
 });

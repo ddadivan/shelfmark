@@ -228,46 +228,44 @@
   width: rem(160px);
   height: rem(28px);
 
-  // The real title is centred in the 40px row of the toolbar's buttons: 5px of room above it.
+  // Desktop (Shelf): the real title is centred in the 32px row of the toolbar's buttons: 1px of
+  // room above it.
   @include desktop {
     height: rem(30px);
-    margin-block-start: rem(5px);
+    margin-block-start: rem(1px);
   }
 }
 
-// The count line (read by screen readers only on desktop, so it only keeps the 5px under the
-// title row there), then the room of the toolbar and the filters above the feed (60px).
+// The count line (read by screen readers only on desktop, so it only keeps the 1px under the
+// title row there), then the room of the toolbar and the saved views above the feed: 12px, the
+// 28px tabs, then 16px (56px; 60px on touch) below 64em and 24px (64px) on desktop.
 .boot__count {
   width: rem(96px);
   height: rem(16px);
-  margin-block: var(--space-1) rem(60px);
-
-  @include desktop {
-    height: rem(5px);
-    margin-block-start: 0;
-  }
+  margin-block: var(--space-1) rem(56px);
 
   // Touch: the controls above the feed have 44px targets, 4px more room than with a mouse.
   @include coarse {
-    margin-block-end: rem(64px);
+    margin-block-end: rem(60px);
+  }
+
+  @include desktop {
+    height: rem(1px);
+    margin-block: 0 rem(64px);
   }
 }
 
 // The extension banner of the library (#455, #490): the real one has one fixed height (188px,
-// extension-banner.component.scss) and sits 16px under the count line, where the saved views would
-// start; they and the 16px gaps around them (the count's 60px, 64px on touch) follow under it.
+// extension-banner.component.scss) and sits 12px under the title row, where the saved views would
+// start; its own 16px gap, the 28px tabs and their 24px follow under it (68px). Desktop only.
 // Drawn when `public/boot-skeleton.js` expects the banner (`html[data-boot-extension]`) and on the
 // demo start page when the app offers it (`.boot__extension--shown`).
 .boot__extension {
   display: none;
   block-size: rem(188px);
-  margin-block: calc(var(--space-4) - #{rem(60px)}) rem(60px);
+  margin-block: calc(var(--space-3) - #{rem(64px)}) rem(68px);
   background: var(--accent-bg);
   border-radius: var(--radius-lg);
-
-  @include coarse {
-    margin-block: calc(var(--space-4) - #{rem(64px)}) rem(64px);
-  }
 }
 
 :root[data-boot-extension] .boot__extension,
