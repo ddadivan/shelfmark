@@ -136,6 +136,8 @@ export { FEEDBACK_SCREENSHOT_ERROR_MESSAGE } from './feedback/feedback-screensho
 export { dueFeedbackMilestone, reachedFeedbackMilestone } from './feedback/due-feedback-milestone';
 export type { DeleteAccountRequest } from './users/delete-account-request.interface';
 export { USER_LIMIT } from './users/user-limit.const';
+export type { AccountDeletionStatus } from './users/account-deletion-status.interface';
+export { ACCOUNT_DELETION } from './users/account-deletion.const';
 export { RELEASE_VERSION_PATTERN } from './users/release-version-pattern.const';
 export { isReleaseVersion } from './users/is-release-version';
 

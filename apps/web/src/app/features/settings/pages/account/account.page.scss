@@ -42,3 +42,8 @@
   padding-block: var(--space-3);
   color: var(--text-muted);
 }
+
+// The deletion notice stands where the sections would (one group of the 840px column).
+.account__deletion {
+  display: block;
+}

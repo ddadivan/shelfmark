@@ -11,4 +11,6 @@ export const CRON_ROUTE = {
   AiSweepPath: CRON_ENDPOINT.AiSweep,
   Notifications: 'notifications',
   NotificationsPath: CRON_ENDPOINT.Notifications,
+  AccountPurge: 'account-purge',
+  AccountPurgePath: CRON_ENDPOINT.AccountPurge,
 } as const;

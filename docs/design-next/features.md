@@ -3028,7 +3028,7 @@ Breakpoint words used below: "compact" = below 64em (phones and tablet portrait:
 - Source: `account.page.ts`, `settings-index.page.ts`, `app-shell.component.ts` (`auth.signOutAndLeave`).
 
 #### ACC-06 Delete account
-- What it does: Danger section "Delete account" ("Removes your account and all your links, folders and tags for good. This can't be undone.") with a danger button. Opens an alert dialog where the user types their email; the delete button stays disabled until the typed email matches (case-insensitive, trimmed). On success the session is dropped, the app goes to the landing (`/`) and a success toast shows. Deletion is immediate and permanent; there is no grace period and Trash is not used.
+- What it does: Danger section "Delete account" ("Removes your account and all your links, folders and tags for good. This can't be undone.") with a danger button. Opens an alert dialog where the user types their email; the delete button stays disabled until the typed email matches (case-insensitive, trimmed). On success every session is dropped, the app goes to the landing (`/`) and a toast says the account will be deleted on a date 7 days ahead unless the user signs in before then. Shelf grace period: the data is kept for 7 days (`users.deletion_scheduled_at`); signing in again shows only the notice "Your account will be deleted on … · Keep my account" on Settings › Account; afterwards a daily cron deletes the account for good (Trash is not used).
 - Entry points: Settings › Account › Delete account.
 - Screens / routes: SCR-ACC-01, SCR-ACC-02.
 - Platforms: All (button large on compact; dialog small size).
@@ -5039,7 +5039,7 @@ Facts only, no fixes. 6.0 lists the cross-area findings that matter most for the
 - After a folder is deleted or restored, the Rules list is not refreshed and is not tab-synced.
 - The MCP search tool returns no meaning matches, although search by meaning exists. The API's clean-up card for All links is not shown anywhere in the web app.
 - "Sign in with your own account" in the demo signs the demo out and its data is lost. "Demo transfer" is designed, not built.
-- Account deletion is immediate and permanent: no grace period, no restore.
+- Account deletion keeps the data for a 7-day grace period ("Keep my account" after signing in again), then deletes it for good: no Trash, no restore after the purge.
 - The privacy page shows the literal placeholder "[PROVIDER]".
 - The JSON export option mentions "reminders", but the export file has no reminder field.
 - About 13 en.json keys in the library area (and others listed per area, e.g. `import.entry.*`, `import.menu`) are never used.
@@ -5152,7 +5152,7 @@ Facts only, no fixes. 6.0 lists the cross-area findings that matter most for the
 - The You list shows only sections marked `phone: true`: Account (reached only through the account card) and Keyboard shortcuts have no row; `/settings/shortcuts` is reachable on compact screens only by URL.
 - The You list (`settingsIndexGuard`, `compact`) applies below 64em, so tablets in portrait get the phone list, not only phones below 40em.
 - Admin pages reuse the settings page header: on compact screens their back control says "You" and leads to `/settings`, while on desktop `/admin/*` shows the normal library sidebar, not the settings nav.
-- Account deletion is immediate and permanent (`DELETE /api/me` deletes the user row in one transaction); there is no grace period or restore. Demo accounts cannot delete (section hidden).
+- Account deletion schedules the purge 7 days ahead (`DELETE /api/me` sets `deletion_scheduled_at` and ends every session; `DELETE /api/me/deletion` keeps the account); the purge cron then deletes the user row in one transaction per account. Demo accounts cannot delete (section hidden).
 - The Account page has no profile editing, no connect/disconnect of sign-in methods and no list of sessions / "Sign out everywhere else"; the `SetAccount.dc.html` mockup draws photo upload, name/email change, email-and-password, connect/disconnect and "Where you’re signed in". Designed, not built.
 - `SetNotifications.dc.html` (Settings › Notifications and reminders: browser notifications, email, default time, quiet hours, weekly digest, product news) is designed, not built; mockups also list "Import and export" as a settings section, which in code is only a redirect to Account › Your data.
 - `SetPrivacy.dc.html` draws usage-data and crash-report switches, public links management and "Load previews through Shelfmark"; none exist in code. The built page instead has Remember recently opened, Import/Export, AI text and What we keep.

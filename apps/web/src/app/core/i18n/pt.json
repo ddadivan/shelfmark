@@ -685,7 +685,7 @@
     "control": {
       "title": "O controle é seu",
       "export": "Nas Configurações você pode exportar seus links, pastas, tags e notas em JSON ou como arquivo de favoritos do navegador (HTML).",
-      "delete": "Você pode excluir qualquer link a qualquer momento, ou excluir sua conta inteira nas Configurações. Sua conta e todos os dados dela são então removidos do banco de dados. Backups mantidos pelo provedor do banco de dados podem levar um pouco para expirar."
+      "delete": "Você pode excluir qualquer link a qualquer momento ou excluir toda a sua conta nas Configurações. A conta fica guardada por 7 dias caso você mude de ideia; depois ela e todos os dados dela são removidos do banco de dados. Os backups do provedor do banco de dados podem levar um pouco para expirar."
     },
     "security": {
       "title": "Segurança",
@@ -1929,13 +1929,13 @@
     },
     "delete": {
       "title": "Excluir conta",
-      "hint": "Remove para sempre sua conta e todos os seus links, pastas e tags. Isso não pode ser desfeito.",
+      "hint": "Seus links, pastas e tags ficam guardados por 7 dias caso você mude de ideia e depois são excluídos para sempre.",
       "action": "Excluir conta",
-      "done": "Conta excluída",
-      "doneDetail": "Todos os seus dados foram excluídos",
+      "done": "Exclusão da conta agendada",
+      "doneDetail": "Ela será excluída em {{date}}. Entre antes disso para mantê-la.",
       "dialog": {
         "title": "Excluir sua conta?",
-        "text": "Todos os seus links, pastas e tags serão excluídos para sempre. Isso não pode ser desfeito.",
+        "text": "Você será desconectado em todos os lugares. Seus links, pastas e tags ficam guardados por 7 dias: entre antes disso para manter sua conta. Depois eles são excluídos para sempre.",
         "label": "Digite seu e-mail para confirmar",
         "hint": "Digite {{email}} para confirmar.",
         "cancel": "Cancelar",
@@ -1946,7 +1946,13 @@
         "mismatch": "Esse e-mail não corresponde à sua conta. Confira e tente de novo.",
         "rateLimited": "Muitas tentativas. Tente de novo em um minuto.",
         "failed": "Não conseguimos excluir sua conta. Nada foi excluído. Tente de novo."
-      }
+      },
+      "scheduled": {
+        "text": "Sua conta será excluída em {{date}}. Até lá, você pode recuperar tudo.",
+        "keep": "Manter minha conta"
+      },
+      "kept": "Sua conta foi mantida",
+      "keepFailed": "Não foi possível manter sua conta. Tente de novo."
     },
     "library": {
       "viewing": {

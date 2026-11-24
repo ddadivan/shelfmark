@@ -685,7 +685,7 @@
     "control": {
       "title": "Il controllo è tuo",
       "export": "Nelle impostazioni puoi esportare link, cartelle, tag e note in JSON o come file di preferiti del browser (HTML).",
-      "delete": "Puoi eliminare qualsiasi link in qualsiasi momento, o eliminare l’intero account nelle impostazioni. L’account e tutti i suoi dati vengono allora rimossi dal database. I backup del fornitore del database possono richiedere un po’ di tempo per scadere."
+      "delete": "Puoi eliminare qualsiasi link in qualsiasi momento, o eliminare l'intero account nelle Impostazioni. L'account viene poi conservato per 7 giorni nel caso cambi idea, dopodiché viene rimosso dal database con tutti i suoi dati. I backup del fornitore del database possono richiedere un po' di tempo per scadere."
     },
     "security": {
       "title": "Sicurezza",
@@ -1929,13 +1929,13 @@
     },
     "delete": {
       "title": "Elimina account",
-      "hint": "Rimuove per sempre il tuo account e tutti i tuoi link, cartelle e tag. Non si può annullare.",
+      "hint": "I tuoi link, cartelle e tag vengono conservati per 7 giorni nel caso cambi idea, poi eliminati definitivamente.",
       "action": "Elimina account",
-      "done": "Account eliminato",
-      "doneDetail": "Tutti i tuoi dati sono stati eliminati",
+      "done": "Eliminazione dell'account programmata",
+      "doneDetail": "Verrà eliminato il {{date}}. Accedi prima di allora per tenerlo.",
       "dialog": {
         "title": "Eliminare il tuo account?",
-        "text": "Tutti i tuoi link, cartelle e tag verranno eliminati per sempre. Non si può annullare.",
+        "text": "Verrai disconnesso ovunque. I tuoi link, cartelle e tag vengono conservati per 7 giorni: accedi prima di allora per tenere l'account. Dopo vengono eliminati definitivamente.",
         "label": "Scrivi la tua email per confermare",
         "hint": "Inserisci {{email}} per confermare.",
         "cancel": "Annulla",
@@ -1946,7 +1946,13 @@
         "mismatch": "Questa email non corrisponde al tuo account. Controllala e riprova.",
         "rateLimited": "Troppi tentativi. Riprova tra un minuto.",
         "failed": "Non siamo riusciti a eliminare il tuo account. Non è stato eliminato nulla. Riprova."
-      }
+      },
+      "scheduled": {
+        "text": "Il tuo account verrà eliminato il {{date}}. Fino ad allora puoi recuperare tutto.",
+        "keep": "Tieni il mio account"
+      },
+      "kept": "Il tuo account resta",
+      "keepFailed": "Impossibile tenere il tuo account. Riprova."
     },
     "library": {
       "viewing": {

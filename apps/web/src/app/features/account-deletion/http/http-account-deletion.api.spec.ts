@@ -38,4 +38,21 @@ describe('HttpAccountDeletionApi', () => {
 
     await expect(result).rejects.toMatchObject({ status: 400 });
   });
+
+  it('reads the scheduled deletion and keeps the account', async () => {
+    const { api, http } = setup();
+
+    const status = api.status();
+    const get = http.expectOne('/api/me/deletion');
+    expect(get.request.method).toBe('GET');
+    expect(get.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
+    get.flush({ deletionScheduledAt: '2026-12-01T10:00:00.000Z' });
+    await expect(status).resolves.toEqual({ deletionScheduledAt: '2026-12-01T10:00:00.000Z' });
+
+    const kept = api.cancel();
+    const cancel = http.expectOne('/api/me/deletion');
+    expect(cancel.request.method).toBe('DELETE');
+    cancel.flush({ deletionScheduledAt: null });
+    await expect(kept).resolves.toEqual({ deletionScheduledAt: null });
+  });
 });

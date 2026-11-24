@@ -24,7 +24,8 @@
     { "path": "/api/cron/demo-cleanup", "schedule": "17 3 * * *" },
     { "path": "/api/cron/trash-cleanup", "schedule": "47 3 * * *" },
     { "path": "/api/cron/ai-sweep", "schedule": "17 4 * * *" },
-    { "path": "/api/cron/notifications", "schedule": "7 8 * * *" }
+    { "path": "/api/cron/notifications", "schedule": "7 8 * * *" },
+    { "path": "/api/cron/account-purge", "schedule": "37 2 * * *" }
   ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },

@@ -685,7 +685,7 @@
     "control": {
       "title": "Vous gardez la main",
       "export": "Dans les paramètres, vous pouvez exporter vos liens, dossiers, tags et notes en JSON ou en fichier de favoris pour navigateur (HTML).",
-      "delete": "Vous pouvez supprimer un lien à tout moment, ou supprimer tout votre compte dans les paramètres. Votre compte et toutes ses données sont alors effacés de la base. Les sauvegardes du fournisseur de base de données peuvent mettre un peu de temps à expirer."
+      "delete": "Vous pouvez supprimer un lien à tout moment, ou supprimer tout votre compte dans les Paramètres. Votre compte est alors conservé 7 jours au cas où vous changeriez d'avis, puis il est retiré de la base de données avec toutes ses données. Les sauvegardes du fournisseur de base de données peuvent mettre un peu de temps à expirer."
     },
     "security": {
       "title": "Sécurité",
@@ -1929,13 +1929,13 @@
     },
     "delete": {
       "title": "Supprimer le compte",
-      "hint": "Supprime définitivement votre compte et tous vos liens, dossiers et tags. Action irréversible.",
+      "hint": "Vos liens, dossiers et tags sont conservés 7 jours au cas où vous changeriez d'avis, puis supprimés définitivement.",
       "action": "Supprimer le compte",
-      "done": "Compte supprimé",
-      "doneDetail": "Toutes vos données ont été supprimées",
+      "done": "Suppression du compte programmée",
+      "doneDetail": "Il sera supprimé le {{date}}. Connectez-vous avant pour le garder.",
       "dialog": {
         "title": "Supprimer votre compte ?",
-        "text": "Tous vos liens, dossiers et tags seront définitivement supprimés. Action irréversible.",
+        "text": "Vous serez déconnecté partout. Vos liens, dossiers et tags sont conservés 7 jours : connectez-vous avant pour garder votre compte. Ensuite, ils sont supprimés définitivement.",
         "label": "Saisissez votre e-mail pour confirmer",
         "hint": "Saisissez {{email}} pour confirmer.",
         "cancel": "Annuler",
@@ -1946,7 +1946,13 @@
         "mismatch": "Cet e-mail ne correspond pas à votre compte. Vérifiez-le et réessayez.",
         "rateLimited": "Trop de tentatives. Réessayez dans une minute.",
         "failed": "Impossible de supprimer votre compte. Rien n’a été supprimé. Réessayez."
-      }
+      },
+      "scheduled": {
+        "text": "Votre compte sera supprimé le {{date}}. D'ici là, vous pouvez tout récupérer.",
+        "keep": "Garder mon compte"
+      },
+      "kept": "Votre compte est conservé",
+      "keepFailed": "Impossible de garder votre compte. Réessayez."
     },
     "library": {
       "viewing": {

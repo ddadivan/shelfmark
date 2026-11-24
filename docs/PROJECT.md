@@ -804,7 +804,7 @@ All routes except `/api/auth/*` and the allow-listed public routes (`PUBLIC_ROUT
 | Method | Path | Purpose |
 | `*` | `/api/auth/*` | Sign-in / sign-out with Google and GitHub (Better Auth) |
 | GET | `/api/auth/get-session` | Current user and session (Better Auth); `null` when signed out |
-| DELETE | `/api/me` | Delete the account and all data |
+| DELETE | `/api/me` | Schedule the deletion of the account and all data 7 days ahead and end every session (Shelf grace period; `GET`/`DELETE /api/me/deletion` read and cancel it, `GET /api/cron/account-purge` deletes for good) |
 | POST | `/api/links/lookup` | `{ url }` → `{ link: LinkResponse \| null }`: the user's newest live (not trashed) link whose normalized URL equals the URL without tracking parameters. Never fetches the page; rate limit as `POST /api/links` (browser extension, ADR 0046) |
 | POST | `/api/links/preview` | For a URL, return title, icon, image + the existing link if it is a duplicate (for form autofill). With the account's `fetchPreviews` off no page is loaded (`fetched: false`, only the duplicate check); the URL is always checked and fetched without tracking parameters (#284, #315) |
 | GET | `/api/links` | List with filters: `folderId`, `unsorted`, `favorite`, `tag` (repeated, `?tag=a&tag=b`: AND, case-insensitive, max 5, more is a 400; empty or absent = no filter), `q` (search in title, note and URL; every word must match, at most 5 words), `kind` (one of `video`, `article`, `shopping`, `other`; ADR 0038), `sort` (`createdAt` / `title`), `order`, `cursor`, `limit`. With `folderId` the first page also returns `pinned`: the links pinned to the top of that folder in pin order (same filters), not repeated in `items` or later pages (ADR 0037) |

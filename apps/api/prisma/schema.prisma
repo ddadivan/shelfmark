@@ -105,6 +105,10 @@ model User {
   notifyContinueReading Boolean              @default(false) @map("notify_continue_reading")
   quietFrom             String?              @map("quiet_from") @db.VarChar(5)
   quietTo               String?              @map("quiet_to") @db.VarChar(5)
+  // Account deletion with a grace period (Shelf 05-settings): when the purge cron may delete the
+  // account for good; NULL = no deletion scheduled. "Keep my account" clears it. Partial index in
+  // the migration.
+  deletionScheduledAt   DateTime?            @map("deletion_scheduled_at") @db.Timestamptz(3)
   createdAt             DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]

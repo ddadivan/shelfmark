@@ -685,7 +685,7 @@
     "control": {
       "title": "Tú tienes el control",
       "export": "En Ajustes puedes exportar tus enlaces, carpetas, etiquetas y notas en JSON o como archivo de marcadores del navegador (HTML).",
-      "delete": "Puedes eliminar cualquier enlace cuando quieras, o eliminar toda tu cuenta en Ajustes. Tu cuenta y todos sus datos se borran entonces de la base de datos. Las copias de seguridad del proveedor de la base de datos pueden tardar un poco en caducar."
+      "delete": "Puedes eliminar cualquier enlace en cualquier momento, o eliminar toda tu cuenta en Ajustes. Tu cuenta se guarda entonces 7 días por si cambias de opinión; después se elimina de la base de datos con todos sus datos. Las copias de seguridad del proveedor de la base de datos pueden tardar un poco en caducar."
     },
     "security": {
       "title": "Seguridad",
@@ -1929,13 +1929,13 @@
     },
     "delete": {
       "title": "Eliminar cuenta",
-      "hint": "Elimina para siempre tu cuenta y todos tus enlaces, carpetas y etiquetas. No se puede deshacer.",
+      "hint": "Tus enlaces, carpetas y etiquetas se guardan 7 días por si cambias de opinión, y después se eliminan para siempre.",
       "action": "Eliminar cuenta",
-      "done": "Cuenta eliminada",
-      "doneDetail": "Se han eliminado todos tus datos",
+      "done": "Eliminación de la cuenta programada",
+      "doneDetail": "Se eliminará el {{date}}. Inicia sesión antes para conservarla.",
       "dialog": {
         "title": "¿Eliminar tu cuenta?",
-        "text": "Todos tus enlaces, carpetas y etiquetas se eliminarán para siempre. No se puede deshacer.",
+        "text": "Se cerrará tu sesión en todas partes. Tus enlaces, carpetas y etiquetas se guardan 7 días: inicia sesión antes para conservar tu cuenta. Después se eliminan para siempre.",
         "label": "Escribe tu correo para confirmar",
         "hint": "Introduce {{email}} para confirmar.",
         "cancel": "Cancelar",
@@ -1946,7 +1946,13 @@
         "mismatch": "Ese correo no coincide con tu cuenta. Revísalo e inténtalo de nuevo.",
         "rateLimited": "Demasiados intentos. Inténtalo dentro de un minuto.",
         "failed": "No pudimos eliminar tu cuenta. No se ha eliminado nada. Inténtalo de nuevo."
-      }
+      },
+      "scheduled": {
+        "text": "Tu cuenta se eliminará el {{date}}. Hasta entonces puedes recuperarlo todo.",
+        "keep": "Conservar mi cuenta"
+      },
+      "kept": "Tu cuenta se conserva",
+      "keepFailed": "No se pudo conservar tu cuenta. Inténtalo de nuevo."
     },
     "library": {
       "viewing": {

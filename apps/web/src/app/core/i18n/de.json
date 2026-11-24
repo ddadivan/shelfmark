@@ -672,7 +672,7 @@
     "control": {
       "title": "Deine Kontrolle",
       "export": "In den Einstellungen kannst du deine Links, Ordner, Tags und Notizen als JSON oder als Lesezeichendatei für den Browser (HTML) exportieren.",
-      "delete": "Du kannst jeden Link jederzeit löschen oder dein ganzes Konto in den Einstellungen löschen. Dein Konto und alle Daten werden dann aus der Datenbank entfernt. Backups des Datenbankanbieters können eine kurze Zeit brauchen, bis sie ablaufen."
+      "delete": "Du kannst jeden Link jederzeit löschen oder dein ganzes Konto in den Einstellungen löschen. Dein Konto bleibt dann 7 Tage erhalten, falls du es dir anders überlegst; danach werden es und alle seine Daten aus der Datenbank entfernt. Sicherungen des Datenbankanbieters können kurz brauchen, bis sie ablaufen."
     },
     "security": {
       "title": "Sicherheit",
@@ -1884,13 +1884,13 @@
     },
     "delete": {
       "title": "Konto löschen",
-      "hint": "Entfernt dein Konto und alle deine Links, Ordner und Tags endgültig. Das lässt sich nicht rückgängig machen.",
+      "hint": "Deine Links, Ordner und Tags bleiben 7 Tage erhalten, falls du es dir anders überlegst, und werden dann endgültig gelöscht.",
       "action": "Konto löschen",
-      "done": "Konto gelöscht",
-      "doneDetail": "Alle deine Daten wurden gelöscht",
+      "done": "Kontolöschung geplant",
+      "doneDetail": "Es wird am {{date}} gelöscht. Melde dich vorher an, um es zu behalten.",
       "dialog": {
         "title": "Dein Konto löschen?",
-        "text": "Alle deine Links, Ordner und Tags werden endgültig gelöscht. Das lässt sich nicht rückgängig machen.",
+        "text": "Du wirst überall abgemeldet. Deine Links, Ordner und Tags bleiben 7 Tage erhalten: Melde dich vorher an, um dein Konto zu behalten. Danach werden sie endgültig gelöscht.",
         "label": "Gib zur Bestätigung deine E-Mail ein",
         "hint": "Gib {{email}} ein, um zu bestätigen.",
         "cancel": "Abbrechen",
@@ -1901,7 +1901,13 @@
         "mismatch": "Diese E-Mail passt nicht zu deinem Konto. Prüfe sie und versuch es noch einmal.",
         "rateLimited": "Zu viele Versuche. Versuch es in einer Minute noch einmal.",
         "failed": "Wir konnten dein Konto nicht löschen. Es wurde nichts gelöscht. Versuch es noch einmal."
-      }
+      },
+      "scheduled": {
+        "text": "Dein Konto wird am {{date}} gelöscht. Bis dahin kannst du alles zurückholen.",
+        "keep": "Konto behalten"
+      },
+      "kept": "Dein Konto bleibt bestehen",
+      "keepFailed": "Dein Konto konnte nicht behalten werden. Versuche es erneut."
     },
     "library": {
       "viewing": {

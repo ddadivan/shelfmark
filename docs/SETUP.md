@@ -303,6 +303,7 @@ Reminders reach a closed Shelfmark through Web Push (VAPID, RFC 8292). Without t
 - [ ] Vercel → Settings → Environment Variables (Production only): `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` (**Sensitive**) and `VAPID_SUBJECT` = `mailto:<your email>` (5.3), then redeploy. Changing the key pair later makes every stored subscription useless: people turn notifications on again.
 - [ ] Vercel → Settings → **Cron Jobs** shows `/api/cron/notifications` (daily at 08:07 UTC, `vercel.json`; Hobby allows one run a day per cron). It uses the same `CRON_SECRET` (5.8). Use **Run** once and check `{ "configured": true, "sent": …, "removed": …, "quiet": …, "hasMore": … }`. For timely reminders (every 15 minutes) point an external scheduler at the same route with the `Authorization: Bearer <CRON_SECRET>` header, or move to Vercel Pro and change the schedule; the route is idempotent (a reminder is pushed once).
 - [ ] After the release: Settings › Notifications on a desktop Chrome, turn notifications on, **Send a test**: the notification arrives through the push service.
+- [ ] Vercel → Settings → **Cron Jobs** also shows `/api/cron/account-purge` (daily at 02:37 UTC): it deletes accounts whose 7-day deletion grace period is over (Shelf 05-settings), with the same `CRON_SECRET`.
 
 ## 6. Secrets policy
 
