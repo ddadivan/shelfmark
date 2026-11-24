@@ -544,6 +544,24 @@ export type { ReaderProgressRequest } from './reader/reader-progress-request.int
 export type { ReaderProgressResponse } from './reader/reader-progress-response.interface';
 export { READER_ENDPOINT } from './reader/reader-endpoint.const';
 export { READER_LIMIT } from './reader/reader-limit.const';
+export { READER_PAGE_THEME } from './reader/reader-page-theme.const';
+export type { ReaderPageTheme } from './reader/reader-page-theme.type';
+export { READER_TEXT_FONT } from './reader/reader-text-font.const';
+export type { ReaderTextFont } from './reader/reader-text-font.type';
+export { READER_TEXT_SPACING } from './reader/reader-text-spacing.const';
+export type { ReaderTextSpacing } from './reader/reader-text-spacing.type';
+export { READER_TEXT_MEASURE } from './reader/reader-text-measure.const';
+export type { ReaderTextMeasure } from './reader/reader-text-measure.type';
+export { READER_TEXT_SIZE_RANGE } from './reader/reader-text-size-range.const';
+export type { ReaderPreferences } from './reader/reader-preferences.interface';
+export { READER_PREFERENCES_DEFAULT } from './reader/reader-preferences-default.const';
+export {
+  isReaderPageTheme,
+  isReaderTextFont,
+  isReaderTextMeasure,
+  isReaderTextSize,
+  isReaderTextSpacing,
+} from './reader/is-reader-preference';
 export type { NotificationSettings } from './notifications/notification-settings.interface';
 export type { NotificationDevice } from './notifications/notification-device.interface';
 export type { NotificationSettingsResponse } from './notifications/notification-settings-response.interface';

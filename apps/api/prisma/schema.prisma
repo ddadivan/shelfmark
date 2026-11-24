@@ -88,6 +88,15 @@ model User {
   // longer reads or writes spellcheck; a later migration drops it.
   spellcheck            Boolean              @default(true) @map("spellcheck")
   languageSavedAt       DateTime?            @map("language_saved_at") @db.Timestamptz(3)
+  // Reading settings of Reader (Shelf Link page). CHECKs in the migration keep them to the contract
+  // allow-lists (READER_PAGE_THEME, READER_TEXT_FONT, READER_TEXT_SIZE_RANGE, READER_TEXT_SPACING,
+  // READER_TEXT_MEASURE); readerTheme NULL follows the app; readerSavedAt marks the first write.
+  readerTheme           String?              @map("reader_theme")
+  readerFont            String               @default("sans") @map("reader_font")
+  readerSize            Int                  @default(18) @map("reader_size") @db.SmallInt
+  readerLineSpacing     String               @default("normal") @map("reader_line_spacing")
+  readerLineWidth       String               @default("normal") @map("reader_line_width")
+  readerSavedAt         DateTime?            @map("reader_saved_at") @db.Timestamptz(3)
   // Admin usage stats (#333, ADR 0045): UTC day of the last authenticated non-demo request, written
   // at most once a day by UserActivityService; backfilled once in the migration.
   lastActiveOn          DateTime?            @map("last_active_on") @db.Date

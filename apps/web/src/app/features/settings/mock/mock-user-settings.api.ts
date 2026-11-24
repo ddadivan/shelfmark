@@ -17,6 +17,8 @@ import {
   isMotionPreference,
   isThemePreference,
   isReleaseVersion,
+  READER_PREFERENCES_DEFAULT,
+  type ReaderPreferences,
   type UpdateUserSettingsRequest,
   type UserSettingsResponse,
 } from '@shelfmark/contracts';
@@ -31,12 +33,16 @@ import type { MockAppearance } from '../models/mock-appearance.type';
 import type { UserSettingsApi } from '../models/user-settings-api.interface';
 import { settingsRequestProblems } from './settings-request-problems';
 import { readMockLanguageSettings, writeMockLanguageSettings } from './read-mock-language-settings';
+import {
+  readMockReaderPreferences,
+  writeMockReaderPreferences,
+} from './read-mock-reader-preferences';
 
 /**
  * `UserSettingsApi` over the shared in-memory library, with simulated latency: the retention
  * lives next to the mock Trash, so a change shows in the days left of the mock entries. The
  * appearance (theme, custom theme, motion, whether it was ever saved) and the Settings › Library
- * choices stand in for the account: they are kept in `localStorage`, so a reload and another tab
+ * choices and the reading settings stand in for the account: they are kept in `localStorage`, so a reload and another tab
  * see them like they would see the server's.
  */
 @Service()
@@ -113,6 +119,16 @@ export class MockUserSettingsApi implements UserSettingsApi {
         }
         writeMockLanguageSettings(this.storage, language);
       }
+      const readerKeys = Object.keys(READER_PREFERENCES_DEFAULT) as (keyof ReaderPreferences)[];
+      if (readerKeys.some((key) => request[key] !== undefined)) {
+        const reader = readMockReaderPreferences(this.storage).preferences;
+        for (const key of readerKeys) {
+          if (request[key] !== undefined) {
+            Object.assign(reader, { [key]: request[key] });
+          }
+        }
+        writeMockReaderPreferences(this.storage, reader);
+      }
       if (request.whatsNewSeen !== undefined) {
         this.writeWhatsNewSeen(request.whatsNewSeen);
       }
@@ -130,8 +146,14 @@ export class MockUserSettingsApi implements UserSettingsApi {
       ...this.readAppearance(),
       ...this.data.library,
       ...this.readLanguage(),
+      ...this.readReader(),
       whatsNewSeen: this.readWhatsNewSeen(),
     };
+  }
+
+  private readReader(): ReaderPreferences & Pick<UserSettingsResponse, 'readerSaved'> {
+    const { preferences, saved } = readMockReaderPreferences(this.storage);
+    return { ...preferences, readerSaved: saved };
   }
 
   /** The last seen "What's new" release of the mock account; `null` when missing or broken. */

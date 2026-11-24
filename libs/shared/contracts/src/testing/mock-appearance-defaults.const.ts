@@ -4,19 +4,28 @@ import { LANGUAGE_SETTINGS_DEFAULT } from '../users/language-settings-default.co
 import type { LayoutSettings } from '../users/layout-settings.interface';
 import { LAYOUT_SETTINGS_DEFAULT } from '../users/layout-settings-default.const';
 import { MOTION_PREFERENCE } from '../users/motion-preference.const';
+import type { ReaderPreferences } from '../reader/reader-preferences.interface';
+import { READER_PREFERENCES_DEFAULT } from '../reader/reader-preferences-default.const';
 import { THEME_PREFERENCE } from '../users/theme-preference.const';
 import type { UserSettingsResponse } from '../users/user-settings-response.interface';
 
 /**
- * The appearance and language parts (never saved) of a new account's `UserSettingsResponse`, and
+ * The appearance, language and reading settings parts (never saved) of a new account's `UserSettingsResponse`, and
  * its unwritten "What's new" release (#424); spread it into fixtures.
  */
 export const MOCK_APPEARANCE_DEFAULTS: Pick<
   UserSettingsResponse,
-  'theme' | 'customTheme' | 'motion' | 'appearanceSaved' | 'languageSaved' | 'whatsNewSeen'
+  | 'theme'
+  | 'customTheme'
+  | 'motion'
+  | 'appearanceSaved'
+  | 'languageSaved'
+  | 'readerSaved'
+  | 'whatsNewSeen'
 > &
   LayoutSettings &
-  LanguageSettings = {
+  LanguageSettings &
+  ReaderPreferences = {
   theme: THEME_PREFERENCE.System,
   customTheme: CUSTOM_THEME_DEFAULT,
   motion: MOTION_PREFERENCE.System,
@@ -24,5 +33,7 @@ export const MOCK_APPEARANCE_DEFAULTS: Pick<
   ...LAYOUT_SETTINGS_DEFAULT,
   ...LANGUAGE_SETTINGS_DEFAULT,
   languageSaved: false,
+  ...READER_PREFERENCES_DEFAULT,
+  readerSaved: false,
   whatsNewSeen: null,
 };

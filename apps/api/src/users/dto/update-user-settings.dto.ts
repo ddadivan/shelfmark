@@ -36,6 +36,15 @@ import {
   type ThemePreference,
   type TrashRetentionDays,
   type UpdateUserSettingsRequest,
+  READER_PAGE_THEME,
+  READER_TEXT_FONT,
+  READER_TEXT_MEASURE,
+  READER_TEXT_SIZE_RANGE,
+  READER_TEXT_SPACING,
+  type ReaderPageTheme,
+  type ReaderTextFont,
+  type ReaderTextMeasure,
+  type ReaderTextSpacing,
 } from '@shelfmark/contracts';
 import { Type } from 'class-transformer';
 import { IsFolderEmoji } from './is-folder-emoji.decorator';
@@ -45,6 +54,9 @@ import {
   IsArray,
   IsBoolean,
   IsIn,
+  IsInt,
+  Max,
+  Min,
   IsObject,
   IsUUID,
   Matches,
@@ -248,4 +260,47 @@ export class UpdateUserSettingsDto implements UpdateUserSettingsRequest {
   @ValidateIf(present)
   @IsIn(Object.values(WEEK_START))
   weekStart?: WeekStart;
+
+  @ApiPropertyOptional({
+    enum: Object.values(READER_PAGE_THEME),
+    nullable: true,
+    example: READER_PAGE_THEME.Sepia,
+    description: 'Reader page palette; null follows the app theme',
+  })
+  @ValidateIf(notNull)
+  @IsIn(Object.values(READER_PAGE_THEME))
+  readerTheme?: ReaderPageTheme | null;
+
+  @ApiPropertyOptional({ enum: Object.values(READER_TEXT_FONT), example: READER_TEXT_FONT.Serif })
+  @ValidateIf(present)
+  @IsIn(Object.values(READER_TEXT_FONT))
+  readerFont?: ReaderTextFont;
+
+  @ApiPropertyOptional({
+    minimum: READER_TEXT_SIZE_RANGE.Min,
+    maximum: READER_TEXT_SIZE_RANGE.Max,
+    example: READER_TEXT_SIZE_RANGE.Default,
+    description: 'Reader text size in px (whole numbers)',
+  })
+  @ValidateIf(present)
+  @IsInt()
+  @Min(READER_TEXT_SIZE_RANGE.Min)
+  @Max(READER_TEXT_SIZE_RANGE.Max)
+  readerSize?: number;
+
+  @ApiPropertyOptional({
+    enum: Object.values(READER_TEXT_SPACING),
+    example: READER_TEXT_SPACING.Relaxed,
+  })
+  @ValidateIf(present)
+  @IsIn(Object.values(READER_TEXT_SPACING))
+  readerLineSpacing?: ReaderTextSpacing;
+
+  @ApiPropertyOptional({
+    enum: Object.values(READER_TEXT_MEASURE),
+    example: READER_TEXT_MEASURE.Wide,
+  })
+  @ValidateIf(present)
+  @IsIn(Object.values(READER_TEXT_MEASURE))
+  readerLineWidth?: ReaderTextMeasure;
 }
