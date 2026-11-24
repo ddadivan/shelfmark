@@ -8,7 +8,7 @@
   height: rem(32px);
   overflow: hidden;
   font-family: var(--font-sans);
-  font-size: rem(12px);
+  font-size: var(--font-size-meta);
   font-weight: 600;
   line-height: 1;
   color: var(--accent-text);
@@ -19,13 +19,13 @@
 :host(.ui-avatar--sm) {
   width: rem(24px);
   height: rem(24px);
-  font-size: rem(11px);
+  font-size: var(--font-size-meta);
 }
 
 :host(.ui-avatar--lg) {
   width: rem(48px);
   height: rem(48px);
-  font-size: rem(18px);
+  font-size: var(--font-size-section);
 }
 
 .ui-avatar__image {

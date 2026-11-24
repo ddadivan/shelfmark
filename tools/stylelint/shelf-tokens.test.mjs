@@ -100,7 +100,7 @@ describe('shelf/shadow-token', () => {
 
   it('rejects soft shadows that are not tokens', async () => {
     await fails('a { box-shadow: 0 8px 24px var(--overlay); }', 'shelf/shadow-token');
-    await fails('a { box-shadow: 0 0 0 #{rem(2px)} var(--accent); }', 'shelf/shadow-token');
+    await ok('a { box-shadow: 0 0 0 #{rem(2px)} var(--accent); }');
   });
 });
 

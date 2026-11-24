@@ -25,9 +25,54 @@
   --radius-lg: #{rem(16px)};
   --radius-xl: #{rem(16px)};
 
+  // Code-only radii (not in tokens.json; listed with their reason in token-sync.spec.ts): the
+  // 6px and 8px corners the prototypes draw on small tiles and thumbs (folder tile sm / md, the
+  // note highlight `.sm-note`, key caps in rows, toast thumbs, the segment inside a 10px track).
+  --radius-tile-sm: #{rem(6px)};
+  --radius-tile: #{rem(8px)};
+
   // Floating action button (the tab bar's Add): 12px.
   --radius-fab: #{rem(12px)};
   --radius-full: #{rem(999px)};
+
+  // Type scale (Shelf `type.groups`): font size and line height per style. The `type()` mixin in
+  // _typography.scss applies a whole style; a bare `font-size` uses these tokens only (DS guard,
+  // ADR 0063). A new size is first added to tokens.json and here.
+  --font-size-display-l: #{rem(40px)};
+  --line-height-display-l: #{rem(48px)};
+  --font-size-display: #{rem(32px)};
+  --line-height-display: #{rem(40px)};
+  --font-size-display-s: #{rem(24px)};
+  --line-height-display-s: #{rem(30px)};
+  --font-size-title-l: #{rem(22px)};
+  --line-height-title-l: #{rem(28px)};
+  --font-size-title-m: #{rem(20px)};
+  --line-height-title-m: #{rem(28px)};
+  --font-size-title-s: #{rem(16px)};
+  --line-height-title-s: #{rem(24px)};
+  --font-size-body: #{rem(16px)};
+  --line-height-body: #{rem(24px)};
+  --font-size-body-strong: #{rem(16px)};
+  --line-height-body-strong: #{rem(24px)};
+  --font-size-secondary: #{rem(14px)};
+  --line-height-secondary: #{rem(22px)};
+  --font-size-label: #{rem(14px)};
+  --line-height-label: #{rem(22px)};
+  --font-size-meta: #{rem(12px)};
+  --line-height-meta: #{rem(16px)};
+  --font-size-reader-body: #{rem(18px)};
+  --line-height-reader-body: 1.6;
+  --font-size-reader-heading: #{rem(22px)};
+  --line-height-reader-heading: #{rem(28px)};
+  --font-size-mono: #{rem(12px)};
+  --line-height-mono: 1.4;
+
+  // Code-only type sizes (not in tokens.json; listed with their reason in
+  // token-sync.spec.ts): the 18/22 section title the prototypes draw (05-settings `.sec-t`, menu
+  // sheet titles, the wordmark-sized initials) and the 10px letter of a favicon fallback (01-library).
+  --font-size-section: #{rem(18px)};
+  --line-height-section: #{rem(22px)};
+  --font-size-micro: #{rem(10px)};
 
   // Sizes (Shelf): controls 32 / 40 / 48, sidebar rows 36, the sidebar 240.
   --control-sm: #{rem(32px)};

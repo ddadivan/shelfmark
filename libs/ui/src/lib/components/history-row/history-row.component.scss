@@ -114,8 +114,8 @@
 .ui-history-row__title {
   @include type(body);
 
-  font-size: var(--ui-history-row-title-size, #{rem(16px)});
-  line-height: var(--ui-history-row-title-line, #{rem(24px)});
+  font-size: var(--ui-history-row-title-size, var(--font-size-body));
+  line-height: var(--ui-history-row-title-line, var(--line-height-body));
   overflow: hidden;
   font-weight: 500;
   color: var(--text);

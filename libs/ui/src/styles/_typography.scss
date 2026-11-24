@@ -1,67 +1,61 @@
 @use 'sass:map';
 @use 'functions' as *;
 
-// Type styles of Shelf (docs/design-next/shelf/design-system/tokens.json). Sizes in rem; applied through the mixin, no global classes.
+// Type styles of Shelf (docs/design-next/shelf/design-system/tokens.json). Size and line height
+// come from the `--font-size-*` / `--line-height-*` tokens (`token`, tokens/_scale.scss), so the
+// values live in one place. Applied through the mixin, no global classes.
 $styles: (
   // Sign-in, empty states, the Reader title (Shelf `display`).
   'display': (
+    'token': 'display',
     'family': var(--font-sans),
-    'size': 32,
-    'line': 40,
     'weight': 600,
     'tracking': -0.02em,
   ),
   // Page titles in the app (Shelf `display-s`, 24/30 600).
   'title': (
+    'token': 'display-s',
     'family': var(--font-sans),
-    'size': 24,
-    'line': 30,
     'weight': 600,
     'tracking': -0.01em,
   ),
   // Dialog titles and section headings (Shelf `title-s`).
   'heading': (
+    'token': 'title-s',
     'family': var(--font-sans),
-    'size': 16,
-    'line': 24,
     'weight': 600,
     'tracking': normal,
   ),
   'body': (
+    'token': 'body',
     'family': var(--font-sans),
-    'size': 16,
-    'line': 24,
     'weight': 400,
     'tracking': normal,
   ),
   // Summaries, hints, navigation rows (Shelf `secondary`, 14/22).
   'secondary': (
+    'token': 'secondary',
     'family': var(--font-sans),
-    'size': 14,
-    'line': 22,
     'weight': 400,
     'tracking': normal,
   ),
   // Buttons, chips, menu items, field labels (Shelf `label`, 14/22 500).
   'label': (
+    'token': 'label',
     'family': var(--font-sans),
-    'size': 14,
-    'line': 22,
     'weight': 500,
     'tracking': normal,
   ),
   // Meta: folder, date, source, counts, hashtags, tabs (Shelf `meta`, 12/16).
   'caption': (
+    'token': 'meta',
     'family': var(--font-sans),
-    'size': 12,
-    'line': 16,
     'weight': 400,
     'tracking': normal,
   ),
   'mono': (
+    'token': 'mono',
     'family': var(--font-mono),
-    'size': 13,
-    'line': 20,
     'weight': 400,
     'tracking': normal,
   ),
@@ -75,9 +69,11 @@ $styles: (
     @error 'Unknown type style "#{$style}".';
   }
 
+  $token: map.get($s, 'token');
+
   font-family: map.get($s, 'family');
-  font-size: rem(map.get($s, 'size') * 1px);
-  line-height: rem(map.get($s, 'line') * 1px);
+  font-size: var(--font-size-#{$token});
+  line-height: var(--line-height-#{$token});
   font-weight: map.get($s, 'weight');
   letter-spacing: map.get($s, 'tracking');
 }

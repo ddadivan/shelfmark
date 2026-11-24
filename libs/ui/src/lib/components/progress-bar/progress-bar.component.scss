@@ -19,7 +19,7 @@
     width: 40%;
     content: '';
     background: var(--accent);
-    border-radius: 0 rem(2px) rem(2px) 0;
+    border-radius: 0 var(--radius-full) var(--radius-full) 0;
 
     @include loop(progress);
   }
@@ -39,7 +39,7 @@
   width: 100%;
   height: rem(3px);
   background: var(--surface-hover);
-  border-radius: rem(2px);
+  border-radius: var(--radius-full);
 }
 
 // Finished: fill to 100%, then fade after a short hold. A fade, so reduced motion keeps it.

@@ -23,7 +23,9 @@ const GLOBAL_KEYWORDS = new Set(['inherit', 'initial', 'unset', 'revert', 'rever
 /** Top-level parts of a value: split at commas (`groups`) and then at spaces (`words`). */
 function groups(value) {
   const result = [[]];
-  for (const node of valueParser(value).nodes) {
+  // A Sass `#{rem(2px)}` is one length: read it as its px value so it stays one part.
+  const plain = value.replace(/#\{rem\((-?[\d.]+px)\)\}/g, '$1');
+  for (const node of valueParser(plain).nodes) {
     if (node.type === 'div' && node.value === ',') {
       result.push([]);
     } else if (node.type !== 'space' && node.type !== 'comment') {
@@ -125,9 +127,9 @@ function isTokenColour(part) {
     : /^(transparent|currentcolor)$/i.test(part);
 }
 
-/** A length a shadow may use: `0` or plain px (the unit rule keeps px to borders and shadows). */
+/** A length a shadow may use: `0`, px or rem (`#{rem(2px)}` arrives as `2px`, see `groups`). */
 function isShadowLength(part) {
-  return part === '0' || /^-?\d*\.?\d+px$/.test(part);
+  return part === '0' || /^-?\d*\.?\d+(px|rem)$/.test(part);
 }
 
 /**

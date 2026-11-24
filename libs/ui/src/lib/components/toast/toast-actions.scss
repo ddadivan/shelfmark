@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   padding: rem(6px) rem(10px);
-  font-size: rem(14px);
+  font-size: var(--font-size-label);
   font-weight: 600;
   line-height: rem(18px);
   color: var(--ui-toast-ink);
@@ -18,7 +18,7 @@
   cursor: pointer;
   background: var(--ui-toast-tile);
   border: 0;
-  border-radius: rem(10px);
+  border-radius: var(--radius-sm);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   @include hover {
@@ -88,7 +88,7 @@
   overflow: hidden;
   pointer-events: none;
   background: var(--ui-toast-tile);
-  border-radius: rem(2px);
+  border-radius: var(--radius-full);
 
   &::after {
     position: absolute;
@@ -134,12 +134,12 @@
   height: 1.5rem;
   padding: 0 rem(6px);
   font-family: var(--font-mono);
-  font-size: rem(12px);
+  font-size: var(--font-size-meta);
   line-height: 1;
   color: var(--ui-toast-muted);
   text-align: center;
   white-space: nowrap;
   background: transparent;
   border: 1px solid var(--ui-toast-tile-hover);
-  border-radius: rem(6px);
+  border-radius: var(--radius-tile-sm);
 }

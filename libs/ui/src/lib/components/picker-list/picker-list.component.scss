@@ -63,7 +63,7 @@
   color: var(--text);
   cursor: pointer;
   user-select: none;
-  border-radius: rem(12px);
+  border-radius: var(--radius-md);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   @include hover {

@@ -53,7 +53,7 @@
 // 640px, `radius-card`, 16px icon), the text in the body size, the hint in `text-muted`, no divider
 // (the panel is a separate surface). Focus draws the 2px ring.
 .ui-command-list--popup .ui-command-list__field {
-  --ui-search-hairline: rgb(127 127 127 / 25%);
+  --ui-search-hairline: var(--search-hairline);
   --ui-icon-size: var(--icon-size-sm);
 
   gap: var(--space-2);

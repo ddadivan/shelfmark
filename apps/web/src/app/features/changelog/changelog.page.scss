@@ -53,7 +53,7 @@
   @include type(display);
 
   margin: 0;
-  font-size: rem(32px);
+  font-size: var(--font-size-display);
   line-height: rem(38px);
   letter-spacing: -0.02em;
 }
@@ -81,7 +81,7 @@
   @include type(heading);
 
   margin: 0;
-  font-size: rem(18px);
+  font-size: var(--font-size-section);
 }
 
 .release__date {

@@ -107,5 +107,11 @@
   --shadow-card-press: 0 0 0 1px var(--line), 0 4px 10px -6px rgb(0 0 0 / 20%);
   --card-hover-bg: var(--surface);
   --card-hover-border: var(--line-strong);
+
+  // Code-only (token-sync.spec.ts): the neutral hairline of the search fields (prototypes draw
+  // `inset 0 0 0 1px rgba(127,127,127,.25)` in both themes) and the soft lift under the slider
+  // thumb.
+  --search-hairline: rgb(127 127 127 / 25%);
+  --shadow-thumb: 0 1px 3px rgb(0 0 0 / 30%);
   --skeleton-shimmer: color-mix(in srgb, var(--surface) 35%, transparent);
 }

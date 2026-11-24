@@ -49,7 +49,7 @@
   color: var(--ai);
   background: var(--ai-fill);
   border: 1px solid var(--ai-line);
-  border-radius: rem(24px);
+  border-radius: var(--radius-lg);
   animation: ai-announce-spark calc(var(--duration-slow) * 3) var(--ease-spring) both;
 }
 
@@ -72,7 +72,7 @@
   @include type(title);
 
   margin: 0;
-  font-size: rem(28px);
+  font-size: var(--font-size-display-s);
   line-height: 1.2;
   color: var(--text);
 }

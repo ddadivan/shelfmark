@@ -29,7 +29,7 @@
   display: inline-block;
   max-width: rem(280px);
   padding: rem(6px) rem(8px);
-  font-size: rem(12px);
+  font-size: var(--font-size-meta);
   line-height: rem(16px);
   color: var(--on-primary);
   overflow-wrap: anywhere;

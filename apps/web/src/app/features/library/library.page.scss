@@ -138,7 +138,7 @@
   overflow-wrap: anywhere;
 
   @include compact {
-    font-size: rem(22px);
+    font-size: var(--font-size-title-l);
     line-height: rem(28px);
   }
 }
@@ -159,7 +159,7 @@
 
   @include compact {
     margin-block-start: var(--space-1);
-    font-size: rem(12px);
+    font-size: var(--font-size-meta);
   }
 }
 

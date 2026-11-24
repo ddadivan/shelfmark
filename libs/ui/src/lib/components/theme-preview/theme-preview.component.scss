@@ -72,7 +72,7 @@
   inline-size: rem(12px);
   block-size: rem(12px);
   background: var(--text-muted);
-  border-radius: rem(3px);
+  border-radius: var(--radius-xs);
 }
 
 .ui-theme-preview__row--active .ui-theme-preview__glyph {

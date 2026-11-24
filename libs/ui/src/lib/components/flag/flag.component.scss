@@ -7,7 +7,7 @@
   inline-size: rem(20px);
   block-size: rem(14px);
   overflow: hidden;
-  border-radius: rem(3px);
+  border-radius: var(--radius-xs);
 }
 
 .ui-flag__img {

@@ -103,7 +103,7 @@
   .tags__heading {
     @include type(display);
 
-    font-size: rem(32px);
+    font-size: var(--font-size-display);
     line-height: rem(40px);
     color: var(--text);
 

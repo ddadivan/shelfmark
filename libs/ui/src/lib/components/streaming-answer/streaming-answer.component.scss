@@ -15,13 +15,13 @@
   max-width: 85%;
   margin: 0;
   padding: rem(10px) rem(14px);
-  font-size: rem(14px);
+  font-size: var(--font-size-secondary);
   line-height: rem(20px);
   overflow-wrap: anywhere;
   white-space: pre-line;
   color: var(--text);
   background: var(--surface-hover);
-  border-radius: rem(16px) rem(16px) rem(4px);
+  border-radius: var(--radius-card) var(--radius-card) var(--radius-xs);
 }
 
 // The reply: a small spark tile (`ai-fill`) beside the text, disclaimer and projected sources.
@@ -39,7 +39,7 @@
   height: rem(28px);
   color: var(--ai);
   background: var(--ai-fill);
-  border-radius: rem(8px);
+  border-radius: var(--radius-tile);
 }
 
 .ui-streaming-answer__body {
@@ -71,14 +71,14 @@
   height: rem(18px);
   margin: 0 rem(1px);
   padding: 0 rem(4px);
-  font: 600 #{rem(11px)} / #{rem(16px)} var(--font-sans);
+  font: 600 var(--font-size-meta) / #{rem(16px)} var(--font-sans);
   white-space: nowrap;
   vertical-align: rem(2px);
   color: var(--text);
   cursor: pointer;
   background: var(--ai-fill);
   border: 0;
-  border-radius: rem(6px);
+  border-radius: var(--radius-tile-sm);
 
   @include hover {
     background: var(--ai-fill-hover);
@@ -104,7 +104,7 @@
   margin-inline-start: rem(2px);
   vertical-align: rem(-3px);
   background: var(--ai);
-  border-radius: rem(1px);
+  border-radius: var(--radius-full);
   animation: ui-streaming-caret 1s steps(2, start) infinite;
 
   @include reduced-motion {

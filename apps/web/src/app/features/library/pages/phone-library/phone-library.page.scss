@@ -12,7 +12,7 @@
   // MobileMenu title: 34 / 38.
   padding-block-start: var(--space-2);
   margin: 0;
-  font-size: rem(32px);
+  font-size: var(--font-size-display);
   line-height: rem(38px);
 
   // Held from the first frame, before the translation fills the heading in.

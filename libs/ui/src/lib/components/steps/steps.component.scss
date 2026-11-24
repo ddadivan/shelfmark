@@ -14,7 +14,7 @@
   width: rem(6px);
   height: rem(6px);
   background: var(--border-control);
-  border-radius: rem(3px);
+  border-radius: var(--radius-full);
   transition:
     width var(--duration-base) var(--ease-out),
     background-color var(--duration-base) var(--ease-out);

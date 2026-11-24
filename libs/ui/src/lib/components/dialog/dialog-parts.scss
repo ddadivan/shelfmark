@@ -28,7 +28,7 @@
   width: rem(36px);
   height: rem(4px);
   background: var(--border-control);
-  border-radius: rem(2px);
+  border-radius: var(--radius-full);
 
   @include phone {
     display: block;

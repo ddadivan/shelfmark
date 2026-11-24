@@ -28,7 +28,7 @@
   min-height: rem(36px);
   padding-block: 0;
   padding-inline: calc(#{rem(10px)} + (var(--ui-tree-level, 1) - 1) * #{rem(16px)}) rem(10px);
-  font-size: rem(14px);
+  font-size: var(--font-size-secondary);
   line-height: rem(20px);
   color: var(--text-muted);
   list-style: none;
@@ -58,7 +58,7 @@
   max-width: rem(240px);
   min-height: rem(36px);
   padding-inline: rem(10px) rem(14px);
-  font-size: rem(14px);
+  font-size: var(--font-size-label);
   font-weight: 500;
   line-height: rem(20px);
   color: var(--text);

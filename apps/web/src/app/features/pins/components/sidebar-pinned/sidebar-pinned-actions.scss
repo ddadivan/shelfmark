@@ -10,7 +10,7 @@
   gap: var(--space-1);
   align-items: center;
   background: inherit;
-  border-radius: calc(var(--radius-md) - #{rem(2px)});
+  border-radius: var(--radius-sm);
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
   transform: translateY(-50%);

@@ -79,7 +79,7 @@
 :host(.ui-theme-picker--theme) {
   .ui-theme-picker__frame {
     block-size: rem(68px);
-    border-radius: rem(16px);
+    border-radius: var(--radius-card);
   }
 
   .ui-theme-picker__option--checked .ui-theme-picker__frame {
@@ -94,7 +94,7 @@
   inset: rem(10px) rem(26px) auto rem(10px);
   block-size: rem(24px);
   background: var(--surface);
-  border-radius: rem(8px);
+  border-radius: var(--radius-tile);
   box-shadow: var(--shadow-card);
 }
 
@@ -105,7 +105,7 @@
   inline-size: rem(30px);
   block-size: rem(9px);
   background: var(--accent);
-  border-radius: rem(5px);
+  border-radius: var(--radius-tile-sm);
 }
 
 .ui-theme-picker__dot {

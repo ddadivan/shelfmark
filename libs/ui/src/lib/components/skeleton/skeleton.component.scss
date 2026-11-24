@@ -73,7 +73,7 @@
 .ui-skeleton__media {
   margin: rem(6px) rem(6px) 0;
   aspect-ratio: 16 / 9;
-  border-radius: rem(16px);
+  border-radius: var(--radius-card);
 }
 
 .ui-skeleton__card-body {

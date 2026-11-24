@@ -130,7 +130,7 @@
 .ui-radio__title {
   @include type(label);
 
-  font-size: rem(14px);
+  font-size: var(--font-size-label);
   line-height: rem(20px);
   color: var(--text);
 }

@@ -14,7 +14,7 @@
   @include type(heading);
 
   padding: var(--space-2) var(--space-2) var(--space-1);
-  font-size: rem(18px);
+  font-size: var(--font-size-section);
   line-height: 1.3;
   color: var(--text);
 }

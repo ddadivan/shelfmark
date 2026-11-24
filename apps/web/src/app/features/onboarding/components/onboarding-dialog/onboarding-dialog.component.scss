@@ -63,7 +63,7 @@ ui-dialog {
   @include type(title);
 
   margin: 0;
-  font-size: rem(22px);
+  font-size: var(--font-size-title-l);
   line-height: rem(28px);
   color: var(--text);
 
