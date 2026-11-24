@@ -195,13 +195,13 @@ describe('AppearancePage', () => {
     expect(page.textContent).toContain('Start from');
     expect(radioIn(page, 'Background', 'Paper').checked).toBe(true);
 
-    radioIn(page, 'Accent color', 'Rose').click();
+    radioIn(page, 'Accent color', 'Ink').click();
     await stable();
-    expect(theme.customTheme().accent).toBe('rose');
+    expect(theme.customTheme().accent).toBe('ink');
     expect(settingsApi.update).toHaveBeenLastCalledWith({
-      customTheme: { ...CUSTOM_THEME_DEFAULT, accent: 'rose' },
+      customTheme: { ...CUSTOM_THEME_DEFAULT, accent: 'ink' },
     });
-    expect(root.getAttribute(CUSTOM_THEME_ATTRIBUTE.Accent)).toBe('rose');
+    expect(root.getAttribute(CUSTOM_THEME_ATTRIBUTE.Accent)).toBe('ink');
 
     radioIn(page, 'Background', 'Mist').click();
     await stable();
@@ -216,7 +216,7 @@ describe('AppearancePage', () => {
     await stable();
     expect(theme.customTheme()).toEqual({
       base: 'dark',
-      accent: 'rose',
+      accent: 'ink',
       background: 'graphite',
       corners: 'square',
     });
@@ -252,14 +252,14 @@ describe('AppearancePage', () => {
     expect(root.getAttribute(CUSTOM_THEME_ATTRIBUTE.Accent)).toBe(CUSTOM_ACCENT_OWN);
     expect(root.style.getPropertyValue('--accent')).toBe('#23716c');
     // No curated swatch is checked; the own color is a swatch of its own and is checked (#335).
-    expect(radioIn(page, 'Accent color', 'Ocean').checked).toBe(false);
+    expect(radioIn(page, 'Accent color', 'Graphite').checked).toBe(false);
     expect(radioIn(page, 'Accent color', '#23716c').checked).toBe(true);
     expect(page.querySelector('ui-notice')).toBeNull();
 
     // A curated accent takes over again and drops the custom properties.
-    radioIn(page, 'Accent color', 'Teal').click();
+    radioIn(page, 'Accent color', 'Sage').click();
     await stable();
-    expect(theme.customTheme().accent).toBe('teal');
+    expect(theme.customTheme().accent).toBe('sage');
     expect(root.style.getPropertyValue('--accent')).toBe('');
   });
 

@@ -4,8 +4,8 @@ import { PanelComponent } from '../../panel/panel.component';
 let nextSectionId = 0;
 
 /**
- * A titled group of settings on the panel surface. `title` is the `h2` of the group; the group
- * is named by it. Put `ui-settings-row`s in the default slot. `danger` is the red-ringed group
+ * A titled group of settings (Shelf `.group`): the `h2` title above a panel that holds the rows
+ * edge to edge; the group is named by the title. Put `ui-settings-row`s in the default slot. `danger` is the red-ringed group
  * for destructive actions (BRAND.md Settings: only in Account, never next to toggles).
  */
 @Component({
@@ -15,20 +15,22 @@ let nextSectionId = 0;
   host: {
     class: 'ui-settings-section',
     role: 'group',
-    '[attr.aria-labelledby]': 'titleId',
+    '[attr.aria-labelledby]': 'title() ? titleId : null',
     '[class.ui-settings-section--danger]': 'danger()',
   },
   template: `
-    <ui-panel class="ui-settings-section__panel">
+    @if (title()) {
       <h2 class="ui-settings-section__title" [id]="titleId">{{ title() }}</h2>
+    }
+    <ui-panel class="ui-settings-section__panel">
       <ng-content />
     </ui-panel>
   `,
   styleUrl: './settings-section.component.scss',
 })
 export class SettingsSectionComponent {
-  /** Already translated group title. */
-  readonly title = input.required<string>();
+  /** Already translated group title; empty for a lone group with no heading (Settings › AI's main switch). */
+  readonly title = input('');
 
   /** Red ring and red title for the group that holds destructive actions. */
   readonly danger = input(false, { transform: booleanAttribute });

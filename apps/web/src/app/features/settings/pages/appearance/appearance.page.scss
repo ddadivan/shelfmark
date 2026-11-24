@@ -1,92 +1,44 @@
 @use 'ui' as *;
 @use '../../settings-page' as *;
 
-// Appearance gets more room than the other pages (#315, #335): up to 100rem. The options and the
-// live preview sit side by side from 90em (1440px); below it they stack, the preview on top, so
-// the options never squeeze.
-@include settings-page(rem(1600px));
+// Shelf 05-settings: one 840px column like every settings page; the live preview (#315) follows
+// the options as its own group.
+@include settings-page;
 
-:host {
-  container-type: inline-size;
-}
-
-// Narrow content area (phone, tablet, a small desktop window): header, preview, options in one
-// column; the preview scrolls away with the page.
-.appearance {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  min-width: 0;
-
-  @include tablet-up {
-    gap: rem(18px);
-  }
-}
-
+.appearance,
 .appearance__options {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-6);
   min-width: 0;
-
-  @include tablet-up {
-    gap: rem(18px);
-  }
 }
 
 .appearance__preview {
   display: flex;
   flex-direction: column;
-  gap: rem(10px);
+  gap: var(--space-2);
   min-width: 0;
 }
 
-// Themes mockup: options on the left, the preview on the right and sticky while the options scroll
-// (the shell's main column is the scroller). The columns keep the mockup's 680 : 520 ratio. The
-// switch follows the window (90em), not the content column, so it is the same at every sidebar.
-@media (min-width: 90em) {
-  .appearance {
-    display: grid;
-    grid-template:
-      'header preview' auto
-      'options preview' 1fr / minmax(0, 17fr) minmax(0, 13fr);
-    column-gap: var(--space-6);
-    align-items: start;
-  }
-
-  .appearance__header {
-    grid-area: header;
-  }
-
-  .appearance__options {
-    grid-area: options;
-  }
-
-  .appearance__preview {
-    position: sticky;
-    top: var(--space-3);
-    grid-area: preview;
-  }
-}
-
 .appearance__preview-title {
-  @include type(label);
+  @include type(heading);
 
   margin: 0;
-  color: var(--text-muted);
-  font-weight: 600;
+  font-size: rem(18px);
+  line-height: rem(22px);
+  color: var(--text);
 }
 
 .appearance__themes {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding: var(--space-1) 0 var(--space-4);
+  padding: var(--space-4) 0;
 }
 
 .appearance__hint,
 .appearance__note {
-  @include type(body);
+  @include type(secondary);
 
   margin: 0;
   color: var(--text-muted);
@@ -147,7 +99,7 @@
   padding: var(--space-1) var(--space-4);
   margin-bottom: rem(14px);
   background: var(--bg);
-  border-radius: rem(18px);
+  border-radius: var(--radius-lg);
 }
 
 .appearance__reset {

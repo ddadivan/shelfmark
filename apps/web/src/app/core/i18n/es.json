@@ -1371,7 +1371,7 @@
       "detail": "Esta vista no tiene enlaces. Exporta todo o abre otra vista"
     },
     "dialog": {
-      "title": "Exportar",
+      "title": "Exportar enlaces",
       "close": "Cerrar",
       "formatLabel": "Formato de archivo",
       "format": {
@@ -1392,7 +1392,9 @@
       "preparing": "Preparando el archivo {{format}}…",
       "cancel": "Cancelar",
       "download": "Descargar",
-      "saved": "Archivo guardado"
+      "saved": "Archivo guardado",
+      "formatHeading": "Formato",
+      "downloadAs": "Exportar {{format}}"
     }
   },
   "import": {
@@ -1637,20 +1639,22 @@
       "appearance": "Apariencia",
       "library": "Biblioteca",
       "ai": "IA",
-      "language": "Idioma",
-      "privacy": "Privacidad y datos",
+      "language": "Idioma y región",
+      "privacy": "Tus datos",
       "shortcuts": "Atajos de teclado",
-      "feedback": "Tus comentarios"
+      "feedback": "Tus comentarios",
+      "notifications": "Notificaciones"
     },
     "description": {
       "account": "Tu perfil, tu estantería y tus datos.",
       "appearance": "Se guarda al momento y se sincroniza en todos tus dispositivos.",
       "library": "Cómo se muestran, guardan y conservan los enlaces.",
       "ai": "Ayuda para organizar, solo cuando la quieras. Desactivada hasta que la actives.",
-      "language": "El idioma de la interfaz. Los formatos de fecha y hora están en Apariencia.",
-      "privacy": "Qué guardamos y cómo llevártelo.",
+      "language": "El idioma de la interfaz, las fechas y el reloj.",
+      "privacy": "Importa y exporta enlaces y decide qué recuerda Shelfmark.",
       "shortcuts": "Trabaja sin ratón.",
-      "feedback": "Ideas, problemas y nuestras respuestas."
+      "feedback": "Ideas, problemas y nuestras respuestas.",
+      "notifications": "Cómo te avisa Shelfmark cuando toca volver a un enlace."
     },
     "account": {
       "profile": "Perfil",
@@ -1686,7 +1690,8 @@
         "none": "La cuenta de demostración no está vinculada a Google ni a GitHub.",
         "google": "Google",
         "github": "GitHub"
-      }
+      },
+      "cardHint": "Cuenta e inicio de sesión"
     },
     "data": {
       "title": "Tus datos",
@@ -1724,7 +1729,8 @@
           "amber": "Ámbar",
           "rose": "Rosa",
           "teal": "Verde azulado",
-          "graphite": "Grafito"
+          "graphite": "Grafito",
+          "ink": "Tinta"
         },
         "background": {
           "label": "Fondo",
@@ -1865,11 +1871,12 @@
         "label": "Política de privacidad",
         "hint": "Qué guardamos y por qué, con palabras sencillas",
         "action": "Leer",
-        "actionLabel": "Leer la política de privacidad"
+        "actionLabel": "Leer la política de privacidad",
+        "title": "Privacidad"
       },
       "recent": {
         "label": "Recordar abiertos recientemente",
-        "hint": "Mantiene la lista Abiertos recientemente. Desactivado la borra y deja de registrar.",
+        "hint": "Alimenta Abiertos recientemente y Seguir leyendo. Desactivado, se borra y deja de registrar.",
         "confirm": {
           "title": "¿Dejar de recordar los abiertos recientemente?",
           "message": "La lista Abiertos recientemente se borra y los enlaces que abras no se añaden hasta que vuelvas a activarlo. Tus enlaces siguen guardados.",
@@ -1894,12 +1901,17 @@
       "importExport": {
         "title": "Importar y exportar",
         "import": {
-          "hint": "Trae los marcadores de tu navegador"
+          "hint": "Marcadores de Chrome, Safari, Firefox o Edge."
         },
         "export": {
-          "hint": "Descarga toda tu biblioteca en un archivo"
+          "hint": "JSON, marcadores HTML o CSV."
         },
-        "open": "Abrir"
+        "open": "Abrir",
+        "importAction": "Importar",
+        "exportAction": "Exportar…"
+      },
+      "history": {
+        "title": "Historial"
       }
     },
     "footer": {
@@ -2053,7 +2065,71 @@
       "failed": "No se pudo guardar el ajuste",
       "failedDetail": "Ha vuelto a como estaba."
     },
-    "help": "Ayuda"
+    "help": "Ayuda",
+    "notifications": {
+      "device": {
+        "title": "En este dispositivo",
+        "label": "Notificaciones del navegador",
+        "hint": "Permite que Shelfmark muestre notificaciones del sistema en este dispositivo.",
+        "unsupported": "Este navegador no puede mostrar notificaciones."
+      },
+      "homeScreen": {
+        "title": "En iPhone, añade Shelfmark a la pantalla de inicio",
+        "text": "Safari solo permite notificaciones a las apps de la pantalla de inicio.",
+        "step1": "Toca Compartir en la parte inferior de Safari.",
+        "step2": "Elige Añadir a pantalla de inicio.",
+        "step3": "Abre Shelfmark desde la pantalla de inicio y activa las notificaciones."
+      },
+      "blocked": {
+        "title": "Las notificaciones están bloqueadas en este navegador",
+        "text": "Shelfmark no puede activarlas por ti. En la mayoría de navegadores:",
+        "step1": "Haz clic en el icono a la izquierda de la dirección, {{site}}.",
+        "step2": "Cambia Notificaciones a Permitir.",
+        "step3": "Recarga la página."
+      },
+      "test": {
+        "label": "Prueba",
+        "hint": "Envía una ahora para ver cómo se ve.",
+        "action": "Enviar una prueba",
+        "title": "Shelfmark",
+        "body": "Las notificaciones están activadas. Así se ven.",
+        "failed": "No se pudo mostrar una notificación"
+      },
+      "send": {
+        "title": "Qué enviar",
+        "reminders": {
+          "label": "Recordatorios",
+          "hint": "Cuando vence un recordatorio que pusiste."
+        },
+        "continue": {
+          "label": "Seguir leyendo",
+          "hint": "Un aviso por un artículo a medio leer, como mucho una vez al día."
+        },
+        "weekly": {
+          "label": "De tu estantería, correo semanal",
+          "hint": "Domingo por la mañana: lo pendiente, lo que guardaste y un enlace olvidado."
+        }
+      },
+      "quiet": {
+        "title": "Horas de silencio",
+        "label": "No avisar entre",
+        "hint": "Los recordatorios en horas de silencio llegan cuando terminan.",
+        "from": "Desde",
+        "to": "Hasta",
+        "off": "Desactivadas",
+        "and": "y"
+      },
+      "devices": {
+        "title": "Dispositivos",
+        "this": "Este dispositivo",
+        "thisHint": "Aquí las notificaciones están activadas.",
+        "since": "Activadas el {{date}}",
+        "turnOff": "Desactivar",
+        "turnOffLabel": "Desactivar las notificaciones en {{name}}",
+        "none": "Ningún dispositivo tiene las notificaciones activadas."
+      },
+      "failed": "No se pudieron guardar los ajustes de notificaciones"
+    }
   },
   "shortcuts": {
     "title": "Atajos de teclado",
@@ -4441,6 +4517,17 @@
       "clear": "Borrar historial",
       "clearTitle": "¿Borrar el historial?",
       "clearText": "Tus enlaces siguen guardados; solo se borra la lista de lo que abriste."
+    }
+  },
+  "notifications": {
+    "device": {
+      "name": "{{browser}} en {{system}}",
+      "unknown": "Este navegador"
+    },
+    "prompt": {
+      "question": "¿Quieres un aviso aunque Shelfmark esté cerrado? Tu navegador lo preguntará una vez.",
+      "turnOn": "Activar notificaciones",
+      "notNow": "Ahora no"
     }
   }
 }

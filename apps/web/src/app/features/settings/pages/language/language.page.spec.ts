@@ -100,19 +100,16 @@ describe('LanguageSettingsPage', () => {
     localStorage.clear();
   });
 
-  it('shows only the language: no dates, no dropdown (#315)', async () => {
+  it('shows the language, then dates and the clock (Shelf "Language and region")', async () => {
     const { root } = await setup();
 
-    expect(root.querySelector('h1')?.textContent).toContain('Language');
+    expect(root.querySelector('h1')?.textContent).toContain('Language and region');
     expect([...root.querySelectorAll('h2')].map((h) => h.textContent?.trim())).toEqual([
       'Language',
+      'Dates and numbers',
     ]);
     expect(root.textContent).toContain('Your links and notes stay as they are');
-    expect(root.textContent).toContain('Date and time formats are in Appearance');
-    for (const text of ['Date format', 'Week starts on', 'Preview']) {
-      expect(root.textContent).not.toContain(text);
-    }
-    expect(root.querySelector('ui-select, [role="combobox"]')).toBeNull();
+    expect(root.querySelector('app-date-time-settings')).not.toBeNull();
     expect(root.querySelector('[role="radiogroup"]')?.getAttribute('aria-label')).toBe(
       'Interface language',
     );

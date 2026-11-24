@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { EXPORT_FORMAT, WEEK_START } from '@shelfmark/contracts';
+import { WEEK_START } from '@shelfmark/contracts';
 import { of, throwError } from 'rxjs';
 import { SETTINGS_TEST_STATS } from '../../../../../testing/settings-test-stats.const';
 import { axeViolations } from '../../../../../testing/axe';
@@ -15,14 +15,6 @@ import AccountPage from './account.page';
 const setup = (user = SETTINGS_TEST_USER, stats = () => of(SETTINGS_TEST_STATS)) =>
   setupSettingsPage(AccountPage, 'account', { user, stats });
 
-function button(root: HTMLElement, label: string): HTMLButtonElement {
-  const found = root.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`);
-  if (!found) {
-    throw new Error(`No button "${label}"`);
-  }
-  return found;
-}
-
 describe('AccountPage', () => {
   it('shows the account from the session, read-only', async () => {
     const { root } = await setup();
@@ -33,7 +25,7 @@ describe('AccountPage', () => {
     expect(root.querySelector('input')).toBeNull();
   });
 
-  it('groups the page: profile, shelf, connected accounts, your data, delete, sign out', async () => {
+  it('groups the page: profile, shelf, connected accounts, sign out, delete', async () => {
     const { root } = await setup();
     const headings = Array.from(root.querySelectorAll('h2')).map((h) => h.textContent?.trim());
 
@@ -41,9 +33,8 @@ describe('AccountPage', () => {
       'Profile',
       'Your shelf',
       'Connected accounts',
-      'Your data',
-      'Delete account',
       'Sign out',
+      'Delete account',
     ]);
   });
 
@@ -131,18 +122,11 @@ describe('AccountPage', () => {
     expect(root.querySelector('.shelf__counts')).not.toBeNull();
   });
 
-  it('exports everything from Your data', async () => {
-    const { exportApi, root, harness } = await setup();
-    exportApi.download.mockReturnValue(of(undefined));
+  it('leaves export to Settings › Your data (Shelf)', async () => {
+    const { root } = await setup();
 
-    button(root, 'Download Bookmarks HTML').click();
-    await harness.fixture.whenStable();
-    button(root, 'Download JSON').click();
-    await harness.fixture.whenStable();
-
-    expect(root.querySelector('#your-data')).not.toBeNull();
-    expect(exportApi.download).toHaveBeenNthCalledWith(1, EXPORT_FORMAT.Html, {});
-    expect(exportApi.download).toHaveBeenNthCalledWith(2, EXPORT_FORMAT.Json, {});
+    expect(root.querySelector('#your-data')).toBeNull();
+    expect(buttonWith(root, 'Download')).toBeFalsy();
   });
 
   it('leaves Import and Recent imports to the data menu and the import dialog (#387)', async () => {

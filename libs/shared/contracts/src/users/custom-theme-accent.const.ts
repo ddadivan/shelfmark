@@ -12,4 +12,6 @@ export const CUSTOM_THEME_ACCENT = {
   Rose: 'rose',
   Teal: 'teal',
   Graphite: 'graphite',
+  /** Shelf `accent-ink` (05-settings Accent: Graphite, Ink, Sage). */
+  Ink: 'ink',
 } as const;

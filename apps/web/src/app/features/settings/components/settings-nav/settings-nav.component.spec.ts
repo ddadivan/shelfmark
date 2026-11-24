@@ -24,29 +24,39 @@ async function setup(url: string) {
 describe('SettingsNavComponent', () => {
   it('has a row for each section that exists, in the settings nav', async () => {
     const { root } = await setup('/settings/account');
-    const rows = Array.from(root.querySelectorAll('nav a.settings-nav__row'));
+    const rows = Array.from(
+      root.querySelectorAll('nav a.settings-nav__row:not(.settings-nav__back)'),
+    );
 
     expect(root.querySelector('nav')?.getAttribute('aria-label')).toBe('Settings');
     expect(rows.map((row) => row.textContent?.trim())).toEqual([
       'Account',
       'Appearance',
       'Library',
+      'Notifications',
       'AI',
-      'Language',
+      'Language and region',
+      'Your data',
       'Keyboard shortcuts',
-      'Privacy and data',
       'Your feedback',
     ]);
     expect(rows.map((row) => row.getAttribute('href'))).toEqual([
       '/settings/account',
       '/settings/appearance',
       '/settings/library',
+      '/settings/notifications',
       '/settings/ai',
       '/settings/language',
-      '/settings/shortcuts',
       '/settings/privacy',
+      '/settings/shortcuts',
       '/settings/feedback',
     ]);
+  });
+
+  it('draws a glyph on every row (Shelf 05-settings)', async () => {
+    const { root } = await setup('/settings/account');
+
+    expect(root.querySelectorAll('nav a.settings-nav__row ui-icon')).toHaveLength(10);
   });
 
   it('marks the open page', async () => {

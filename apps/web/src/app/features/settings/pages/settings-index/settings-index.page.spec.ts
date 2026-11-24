@@ -64,22 +64,26 @@ describe('the You list (/settings)', () => {
     expect(root.querySelector('a[href="/settings/account"]')?.textContent).toContain(
       'Ada Lovelace',
     );
+    expect(root.querySelector('a[href="/settings/account"]')?.textContent).toContain(
+      'Account and sign-in',
+    );
     expect(Array.from(root.querySelectorAll('nav a')).map((a) => a.getAttribute('href'))).toEqual([
       '/settings/appearance',
       '/settings/library',
+      '/settings/notifications',
       '/settings/ai',
       '/settings/language',
       '/settings/privacy',
       '/settings/feedback',
+      '/settings/feedback',
       '/changelog',
       '/about',
     ]);
+    expect(root.querySelectorAll('nav ui-icon.settings-index__icon')).toHaveLength(7);
     expect(
       Array.from(root.querySelectorAll('ui-button')).map((b) => b.textContent?.trim()),
-    ).toEqual(['Send feedback', 'How it works', 'Sign out']);
-    expect(
-      Array.from(root.querySelectorAll('[role="group"] a')).map((a) => a.textContent?.trim()),
-    ).toEqual(['Import links', 'Export']);
+    ).toEqual(['How it works', 'Sign out']);
+    expect(root.querySelector('[role="group"]')).toBeNull();
     expect(root.querySelector('nav a[href="/settings/appearance"]')?.textContent).toContain(
       'System',
     );

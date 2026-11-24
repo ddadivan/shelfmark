@@ -39,17 +39,12 @@
         <ng-container [ngTemplateOutlet]="account" />
       </header>
     }
-    @if (!viewport.compact()) {
+    <!-- Settings pages have nothing to search and no header (#335, Shelf 05-settings). -->
+    @if (!viewport.compact() && !inSettings()) {
       <header class="shell__header">
-        <!-- Settings pages have nothing to search: no field, no button (#335). -->
-        @if (!inSettings()) {
-          <app-header-search />
-          <span class="shell__spacer"></span>
-          <app-ask-header-button />
-        } @else {
-          <span class="shell__spacer"></span>
-          <ng-container [ngTemplateOutlet]="account" />
-        }
+        <app-header-search />
+        <span class="shell__spacer"></span>
+        <app-ask-header-button />
       </header>
     }
     <div class="shell__row">

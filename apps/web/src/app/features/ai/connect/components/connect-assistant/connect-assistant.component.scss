@@ -5,8 +5,9 @@
 }
 
 .connect__lead {
-  @include type(body);
+  @include type(secondary);
 
+  padding-block-start: var(--space-3);
   margin: 0 0 var(--space-3);
   color: var(--text-muted);
 }
@@ -35,13 +36,14 @@
 .connect__code {
   @include type(mono);
 
+  // Shelf 15-tools: the server address on a filled 12px block.
+  flex: 1 1 rem(240px);
   min-inline-size: 0;
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
   color: var(--text);
   overflow-wrap: anywhere;
-  background: var(--bg);
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
 }
 
 .connect__list-title {

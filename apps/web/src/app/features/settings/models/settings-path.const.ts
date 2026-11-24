@@ -4,6 +4,8 @@ export const SETTINGS_PATH = {
   Appearance: 'appearance',
   /** What happens to deleted items (Trash). */
   Library: 'library',
+  /** Browser notifications and what Shelfmark may send (Shelf 05-settings, 12-notify). */
+  Notifications: 'notifications',
   /** AI features, usage, existing links and AI data (#389); phone sub-pages `ai/folder`, `ai/tags`. */
   Ai: 'ai',
   /** Interface language, date format, clock, week start and spell-check (#274). */

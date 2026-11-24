@@ -8,12 +8,10 @@
 }
 
 .settings-header__title {
-  @include type(display);
+  @include type(title);
 
-  // SetAccount: 34 / 40.
+  // Shelf page title: 24 / 30 600.
   margin: 0;
-  font-size: rem(34px);
-  line-height: rem(40px);
 
   @include compact {
     padding-block-start: var(--space-2);
@@ -21,8 +19,10 @@
 }
 
 .settings-header__description {
-  @include type(body);
+  @include type(secondary);
 
+  max-width: 68ch;
   margin: var(--space-1) 0 0;
+  line-height: rem(21px);
   color: var(--text-muted);
 }

@@ -3,8 +3,11 @@
   [closeLabel]="'export.dialog.close' | transloco"
 >
   <div class="export-dialog">
+    <p id="export-dialog-format" class="export-dialog__label">
+      {{ 'export.dialog.formatHeading' | transloco }}
+    </p>
     <ui-radio-group
-      [ariaLabel]="'export.dialog.formatLabel' | transloco"
+      ariaLabelledby="export-dialog-format"
       [options]="options()"
       [value]="format()"
       [disabled]="preparing()"
@@ -30,9 +33,10 @@
       [block]="phone()"
       [variant]="BUTTON_VARIANT.Primary"
       [disabled]="preparing()"
+      iconLeft="upload"
       (click)="download()"
     >
-      {{ 'export.dialog.download' | transloco }}
+      {{ 'export.dialog.downloadAs' | transloco: { format: formatName() } }}
     </ui-button>
   </div>
 </ui-dialog>

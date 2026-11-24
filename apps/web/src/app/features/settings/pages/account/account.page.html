@@ -9,10 +9,11 @@
     <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="lg" />
     <div class="account__identity">
       <div class="account__name">{{ user.name }}</div>
-      <div class="account__email">{{ user.email }}</div>
-      @if (stats.memberSince(); as date) {
-      <div class="account__email">{{ 'settings.account.memberSince' | transloco: { date } }}</div>
-      }
+      <div class="account__email">
+        {{ user.email }} @if (stats.memberSince(); as date) {
+        <span>· {{ 'settings.account.memberSince' | transloco: { date } }}</span>
+        }
+      </div>
     </div>
   </div>
 </ui-settings-section>
@@ -36,38 +37,6 @@
 </ui-settings-section>
 }
 
-<div #yourData class="account__anchor" [id]="YOUR_DATA_FRAGMENT">
-  <ui-settings-section [title]="'settings.data.title' | transloco">
-    @for (format of EXPORT_FORMAT_OPTIONS; track format.value) { @let name = format.titleKey |
-    transloco;
-    <ui-settings-row
-      [icon]="format.icon"
-      [title]="name"
-      [description]="format.descriptionKey | transloco"
-    >
-      <ui-button
-        iconLeft="download"
-        [size]="buttonSize()"
-        [ariaLabel]="'settings.data.export.downloadAs' | transloco: { format: name }"
-        (click)="exportAll(format.value)"
-      >
-        {{ 'settings.data.export.download' | transloco }}
-      </ui-button>
-    </ui-settings-row>
-    }
-  </ui-settings-section>
-</div>
-
-@if (canDeleteAccount()) {
-<ui-settings-section danger [title]="'settings.delete.title' | transloco">
-  <ui-settings-row [title]="'settings.delete.hint' | transloco">
-    <ui-button [size]="buttonSize()" [variant]="BUTTON_VARIANT.Danger" (click)="deleteAccount()">
-      {{ 'settings.delete.action' | transloco }}
-    </ui-button>
-  </ui-settings-row>
-</ui-settings-section>
-}
-
 <ui-settings-section [title]="'settings.account.signOut.title' | transloco">
   <ui-settings-row
     [title]="'settings.account.signOut.label' | transloco"
@@ -78,3 +47,13 @@
     </ui-button>
   </ui-settings-row>
 </ui-settings-section>
+
+@if (canDeleteAccount()) {
+<ui-settings-section danger [title]="'settings.delete.title' | transloco">
+  <ui-settings-row [title]="'settings.delete.hint' | transloco">
+    <ui-button [size]="buttonSize()" [variant]="BUTTON_VARIANT.Danger" (click)="deleteAccount()">
+      {{ 'settings.delete.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+}

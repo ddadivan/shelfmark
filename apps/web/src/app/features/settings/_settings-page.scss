@@ -1,22 +1,21 @@
 @use 'ui' as *;
 
-// A section page of the settings: a column of panels under the page header (SetAccount: 18px
-// between panels). Tablet and up the column is centred in the content area (#315): the mockup's
-// 720px panel column plus its notes column (360px) make about 1104px; without the notes the
-// panels take the middle 880px, so rows keep a readable line length. `$max` lets a page with a
-// wider layout (Appearance: options and the live preview side by side) take more room.
-@mixin settings-page($max: rem(880px)) {
+// A section page of the settings (Shelf 05-settings `.smain`): the page header, then the groups
+// 24px apart in a column of at most 840px, centred in the content area. `$max` lets a page with
+// a wider layout take more room.
+@mixin settings-page($max: rem(840px)) {
   :host {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-6);
+    width: 100%;
     min-width: 0;
+    max-width: $max;
+    margin-inline: auto;
 
-    @include tablet-up {
-      gap: rem(18px);
-      width: 100%;
-      max-width: $max;
-      margin-inline: auto;
+    // No shell header on the settings pages: the title sits 32px under the top (Shelf).
+    @include desktop {
+      padding-block-start: var(--space-2);
     }
   }
 }

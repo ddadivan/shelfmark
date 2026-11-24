@@ -90,6 +90,32 @@
   }
 }
 
+// Pill (Shelf 05-settings "9:00 ⌄"): a 32px `surface-hover` pill as wide as its value, no edge at
+// rest (the focus halo stays), 14px medium text.
+:host(.ui-select--pill) {
+  --ui-field-bg: var(--surface-hover);
+  --ui-field-border: transparent;
+  --ui-field-border-hover: transparent;
+  --ui-field-radius: var(--radius-full);
+
+  display: inline-block;
+
+  .ui-select__trigger {
+    @include type(label);
+
+    gap: var(--space-2);
+    min-height: var(--control-sm);
+  }
+
+  .ui-select__chevron {
+    --ui-icon-size: var(--icon-size-sm);
+  }
+
+  @include hover {
+    --ui-field-bg: var(--fill-hover);
+  }
+}
+
 .ui-select__row-text {
   flex: 1 1 auto;
   min-width: 0;

@@ -53,6 +53,10 @@ import type { RediscoverApi } from '../../rediscover/models/rediscover-api.inter
 import { HttpReaderApi } from '../../reader/http/http-reader.api';
 import { MockReaderApi } from '../../reader/mock/mock-reader.api';
 import { READER_API } from '../../reader/models/reader-api.const';
+import { HttpNotificationsApi } from '../../notifications/http/http-notifications.api';
+import { MockNotificationsApi } from '../../notifications/mock/mock-notifications.api';
+import { NOTIFICATIONS_API } from '../../notifications/models/notifications-api.const';
+import type { NotificationsApi } from '../../notifications/models/notifications-api.interface';
 import type { ReaderApi } from '../../reader/models/reader-api.interface';
 import { HttpCleanupApi } from '../../cleanup/http/http-cleanup.api';
 import { MockCleanupApi } from '../../cleanup/mock/mock-cleanup.api';
@@ -200,5 +204,10 @@ export function provideLinksApi(): Provider[] {
       useFactory: (): ReaderApi => (useRealApi() ? inject(HttpReaderApi) : inject(MockReaderApi)),
     },
     { provide: EXPORT_API, useExisting: MockExportApi },
+    {
+      provide: NOTIFICATIONS_API,
+      useFactory: (): NotificationsApi =>
+        useRealApi() ? inject(HttpNotificationsApi) : inject(MockNotificationsApi),
+    },
   ];
 }

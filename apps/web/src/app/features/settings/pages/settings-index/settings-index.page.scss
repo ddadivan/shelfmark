@@ -3,22 +3,21 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: rem(14px);
+  gap: var(--space-4);
 }
 
 .settings-index__title {
-  @include type(display);
+  @include type(title);
 
-  // MobileSettings title: 34 / 38.
+  // Shelf "You": the 24 / 30 page title.
   padding-block-start: var(--space-2);
   margin: 0;
-  font-size: rem(34px);
-  line-height: rem(38px);
 }
 
-// The account card and the list: surface cards with the whisper ring (MobileSettings).
+// The account card and the lists: Shelf panels (`surface`, the card hairline, 16px corners).
 .settings-index__card,
 .settings-index__list {
+  overflow: hidden;
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
@@ -73,17 +72,16 @@
 .settings-index__list {
   display: flex;
   flex-direction: column;
-  padding-block: var(--space-1);
 }
 
 .settings-index__row {
   @include type(body);
 
   display: flex;
-  gap: rem(10px);
+  gap: var(--space-4);
   align-items: center;
-  min-height: rem(46px);
-  padding-inline: rem(14px);
+  min-height: rem(52px);
+  padding-inline: var(--space-4);
   color: var(--text);
   text-decoration: none;
   transition: background-color var(--duration-fast) var(--ease-out);
@@ -95,6 +93,15 @@
   &:focus-visible {
     @include focus-ring(-2px);
   }
+}
+
+.settings-index__row + .settings-index__row {
+  border-top: 1px solid var(--sep);
+}
+
+.settings-index__icon {
+  flex: none;
+  color: var(--text);
 }
 
 .settings-index__label {
@@ -115,7 +122,17 @@
   border-radius: var(--radius-full);
 }
 
+.settings-index__label,
 .settings-index__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// The current choice (theme, language) stays on the row's line and gives way to the label.
+.settings-index__value {
+  flex: 0 1 auto;
+  max-width: 45%;
   color: var(--text-muted);
 }
 

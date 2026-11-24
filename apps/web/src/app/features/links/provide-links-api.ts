@@ -44,6 +44,8 @@ import { HttpSharesApi } from '../sharing/http/http-shares.api';
 import { SHARES_API } from '../sharing/models/shares-api.const';
 import { HttpReaderApi } from '../reader/http/http-reader.api';
 import { READER_API } from '../reader/models/reader-api.const';
+import { HttpNotificationsApi } from '../notifications/http/http-notifications.api';
+import { NOTIFICATIONS_API } from '../notifications/models/notifications-api.const';
 
 /**
  * Registers the data seams of the links feature (`LINKS_API`, `FOLDERS_API`, `TAGS_API`) and
@@ -91,5 +93,6 @@ export function provideLinksApi(): Provider[] {
     { provide: CLEANUP_API, useExisting: HttpCleanupApi },
     { provide: IMPORT_API, useExisting: HttpImportApi },
     { provide: READER_API, useExisting: HttpReaderApi },
+    { provide: NOTIFICATIONS_API, useExisting: HttpNotificationsApi },
   ];
 }

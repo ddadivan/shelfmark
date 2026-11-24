@@ -1348,7 +1348,7 @@
       "detail": "This view has no links. Export everything, or open another view"
     },
     "dialog": {
-      "title": "Export",
+      "title": "Export links",
       "close": "Close",
       "formatLabel": "File format",
       "format": {
@@ -1369,7 +1369,9 @@
       "preparing": "Preparing the {{format}} file…",
       "cancel": "Cancel",
       "download": "Download",
-      "saved": "File saved"
+      "saved": "File saved",
+      "formatHeading": "Format",
+      "downloadAs": "Export {{format}}"
     }
   },
   "import": {
@@ -1592,20 +1594,22 @@
       "appearance": "Appearance",
       "library": "Library",
       "ai": "AI",
-      "language": "Language",
-      "privacy": "Privacy and data",
+      "language": "Language and region",
+      "privacy": "Your data",
       "shortcuts": "Keyboard shortcuts",
-      "feedback": "Your feedback"
+      "feedback": "Your feedback",
+      "notifications": "Notifications"
     },
     "description": {
       "account": "Your profile, your shelf and your data.",
       "appearance": "Saved as you go and synced to all your devices.",
       "library": "How links are shown, saved and kept.",
       "ai": "Help with organising, only when you want it. Off until you turn it on.",
-      "language": "The language of the interface. Date and time formats are in Appearance.",
-      "privacy": "What we keep, and how to take it with you.",
+      "language": "The language of the interface, dates and the clock.",
+      "privacy": "Bring links in, take them out, and control what Shelfmark remembers.",
       "shortcuts": "Work without the mouse.",
-      "feedback": "Ideas, problems and the answers we sent."
+      "feedback": "Ideas, problems and the answers we sent.",
+      "notifications": "How Shelfmark reaches you when it's time to come back to a link."
     },
     "account": {
       "profile": "Profile",
@@ -1641,7 +1645,8 @@
         "none": "The demo account isn't linked to Google or GitHub.",
         "google": "Google",
         "github": "GitHub"
-      }
+      },
+      "cardHint": "Account and sign-in"
     },
     "data": {
       "title": "Your data",
@@ -1679,7 +1684,8 @@
           "amber": "Amber",
           "rose": "Rose",
           "teal": "Teal",
-          "graphite": "Graphite"
+          "graphite": "Graphite",
+          "ink": "Ink"
         },
         "background": {
           "label": "Background",
@@ -1820,11 +1826,12 @@
         "label": "Privacy policy",
         "hint": "What we store and why, in plain words",
         "action": "Read",
-        "actionLabel": "Read the privacy policy"
+        "actionLabel": "Read the privacy policy",
+        "title": "Privacy"
       },
       "recent": {
         "label": "Remember recently opened",
-        "hint": "Keeps the Recently opened list. Off clears it and stops recording.",
+        "hint": "Powers Recently opened and Continue reading. Off clears it and stops recording.",
         "confirm": {
           "title": "Stop remembering recently opened?",
           "message": "The Recently opened list is cleared, and links you open are not added until you turn this back on. Your links stay saved.",
@@ -1849,12 +1856,17 @@
       "importExport": {
         "title": "Import and export",
         "import": {
-          "hint": "Bring in bookmarks from your browser"
+          "hint": "Bookmarks from Chrome, Safari, Firefox or Edge."
         },
         "export": {
-          "hint": "Download your whole library as a file"
+          "hint": "JSON, bookmarks HTML or CSV."
         },
-        "open": "Open"
+        "open": "Open",
+        "importAction": "Import",
+        "exportAction": "Export…"
+      },
+      "history": {
+        "title": "History"
       }
     },
     "footer": {
@@ -2006,7 +2018,71 @@
       "failed": "Couldn’t save the setting",
       "failedDetail": "It is back to how it was."
     },
-    "help": "Help"
+    "help": "Help",
+    "notifications": {
+      "device": {
+        "title": "On this device",
+        "label": "Browser notifications",
+        "hint": "Lets Shelfmark show system notifications on this device.",
+        "unsupported": "This browser can't show notifications."
+      },
+      "homeScreen": {
+        "title": "On iPhone, add Shelfmark to the Home Screen",
+        "text": "Safari allows notifications only for apps on the Home Screen.",
+        "step1": "Tap Share at the bottom of Safari.",
+        "step2": "Choose Add to Home Screen.",
+        "step3": "Open Shelfmark from the Home Screen and turn notifications on."
+      },
+      "blocked": {
+        "title": "Notifications are blocked in this browser",
+        "text": "Shelfmark can't turn them on for you. In most browsers:",
+        "step1": "Click the icon left of the address, {{site}}.",
+        "step2": "Set Notifications to Allow.",
+        "step3": "Reload the page."
+      },
+      "test": {
+        "label": "Test",
+        "hint": "Send one now to see how it looks.",
+        "action": "Send a test",
+        "title": "Shelfmark",
+        "body": "Notifications are on. This is how they look.",
+        "failed": "Couldn't show a notification"
+      },
+      "send": {
+        "title": "What to send",
+        "reminders": {
+          "label": "Reminders",
+          "hint": "When a reminder you set is due."
+        },
+        "continue": {
+          "label": "Continue reading",
+          "hint": "A nudge for an article you left half-read, at most once a day."
+        },
+        "weekly": {
+          "label": "From your shelf, weekly email",
+          "hint": "Sunday morning: what is due, what you saved, one forgotten link."
+        }
+      },
+      "quiet": {
+        "title": "Quiet hours",
+        "label": "Don't notify between",
+        "hint": "Reminders that fall in quiet hours arrive when they end.",
+        "from": "From",
+        "to": "Until",
+        "off": "Off",
+        "and": "and"
+      },
+      "devices": {
+        "title": "Devices",
+        "this": "This device",
+        "thisHint": "Notifications are on here.",
+        "since": "Turned on {{date}}",
+        "turnOff": "Turn off",
+        "turnOffLabel": "Turn off notifications on {{name}}",
+        "none": "No device has notifications on."
+      },
+      "failed": "Couldn't save the notification settings"
+    }
   },
   "shortcuts": {
     "title": "Keyboard shortcuts",
@@ -4331,6 +4407,17 @@
       "clear": "Clear history",
       "clearTitle": "Clear the history?",
       "clearText": "Your links stay saved; only the list of what you opened goes."
+    }
+  },
+  "notifications": {
+    "device": {
+      "name": "{{browser}} on {{system}}",
+      "unknown": "This browser"
+    },
+    "prompt": {
+      "question": "Want a nudge even when Shelfmark is closed? Your browser will ask once.",
+      "turnOn": "Turn on notifications",
+      "notNow": "Not now"
     }
   }
 }

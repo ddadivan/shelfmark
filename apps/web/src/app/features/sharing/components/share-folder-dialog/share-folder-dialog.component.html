@@ -19,7 +19,6 @@
     } @else {
       <div class="share__public">
         <ui-settings-row
-          icon="link"
           [title]="'sharing.dialog.public' | transloco"
           [description]="'sharing.dialog.publicHint' | transloco"
         >
@@ -45,7 +44,7 @@
           <ui-button
             class="share__copy"
             iconLeft="copy"
-            [variant]="BUTTON_VARIANT.Primary"
+            [variant]="BUTTON_VARIANT.Secondary"
             (click)="copy()"
             >{{ 'sharing.dialog.copy' | transloco }}</ui-button
           >

@@ -12,7 +12,7 @@
   text-align: center;
   background: transparent;
   border: 1.5px dashed var(--border-control);
-  border-radius: rem(18px);
+  border-radius: var(--radius-lg);
   transition:
     background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out);
