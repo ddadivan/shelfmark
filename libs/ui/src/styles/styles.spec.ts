@@ -461,31 +461,38 @@ describe('folder colour contrast (WCAG AA 4.5:1)', () => {
   });
 });
 
-/** The hex behind `--illustration-disc`, an alias of another colour token. */
+/** The hex behind `--illustration-disc`: sage `ai-bg` at 75% over the page `bg` (StateScene). */
 function discHex(theme: 'light' | 'dark'): string {
   const out = css(`:root { @include ${theme}; }`);
-  const alias = /--illustration-disc:\s*var\(--([a-z-]+)\)/.exec(out);
-  if (!alias) {
-    throw new Error(`token --illustration-disc is not an alias in ${theme}`);
+  const mix =
+    /--illustration-disc:\s*color-mix\(in srgb, var\(--([a-z-]+)\) (\d+)%, transparent\)/.exec(out);
+  if (!mix?.[1] || !mix[2]) {
+    throw new Error(`token --illustration-disc is not a sage mix in ${theme}`);
   }
-  return tokenHex(theme, alias[1]);
+  return mixHex(tokenHex(theme, mix[1]), tokenHex(theme, 'bg'), Number(mix[2]) / 100);
 }
 
-describe('empty-state scene disc (#315, WCAG 1.4.11 3:1)', () => {
-  it('is sage ai-bg in light, the page itself in dark', () => {
-    expect(discHex('light')).toBe(tokenHex('light', 'ai-bg'));
-    expect(discHex('dark')).toBe(tokenHex('dark', 'bg'));
+describe('empty-state scene disc (StateScene)', () => {
+  it('is sage ai-bg at 75% in both themes, as in the design', () => {
+    for (const theme of ['light', 'dark'] as const) {
+      expect(discHex(theme)).toBe(mixHex(tokenHex(theme, 'ai-bg'), tokenHex(theme, 'bg'), 0.75));
+    }
   });
 
-  it.each(['light', 'dark'] as const)(
-    'keeps the scene edges and accent shapes at 3:1 on the disc in %s',
-    (theme) => {
-      for (const edge of ['border-control', 'ai', 'primary']) {
-        const ratio = contrast(tokenHex(theme, edge), discHex(theme));
-        expect(ratio, `${theme} ${edge}`).toBeGreaterThanOrEqual(3);
-      }
-    },
-  );
+  it('keeps the scene edges and key shapes at 3:1 on the disc in light (WCAG 1.4.11)', () => {
+    for (const edge of ['border-control', 'ai', 'primary']) {
+      const ratio = contrast(tokenHex('light', edge), discHex('light'));
+      expect(ratio, `light ${edge}`).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('keeps the key shapes and the ink at 3:1 in dark (the author kept the sage disc, Nov 24, 2026)', () => {
+    // Known gap the author accepted: `border-control` on the dark sage disc is about 2.6:1.
+    for (const edge of ['ai', 'primary']) {
+      const ratio = contrast(tokenHex('dark', edge), discHex('dark'));
+      expect(ratio, `dark ${edge}`).toBeGreaterThanOrEqual(3);
+    }
+  });
 });
 
 describe('text-muted contrast (WCAG AA 4.5:1)', () => {

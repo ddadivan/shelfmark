@@ -50,9 +50,9 @@
   --wave-opacity: 0.85;
   --toggle-off: #4a4a52;
 
-  // The empty-state disc stays the page `bg` in dark: on sage `ai-bg` the scene edges
-  // (`border-control`) would drop to 2.6:1 (WCAG 1.4.11 needs 3:1).
-  --illustration-disc: var(--bg);
+  // The disc behind an empty-state scene (StateScene): sage `ai-bg` at 75% over the page, as in
+  // the design (author decision, Nov 24, 2026, also in dark where the scene edges fall below 3:1).
+  --illustration-disc: color-mix(in srgb, var(--ai-bg) 75%, transparent);
 
   // The canvas behind a third-party page in `ui-preview-frame`: white in both themes, because a site is drawn for a white page and keeps its own look in the dark theme (#553). Not for any Shelfmark surface.
   --frame-canvas: #fff;

@@ -19,6 +19,12 @@
 5. **Custom theme** keeps base, accent, background and corners; the fixed themes use the graphite accent.
 6. **Layout.** Desktop (≥ 64em): sidebar plus header with the search and Ask. Below 64em the existing compact shell (tab bar, top search and avatar, #316) stays.
 
+7. **Author decisions (Nov 24, 2026): the design wins over the project rules where they disagree.**
+   - The Ask button is always in the header, also while AI is off (then it turns AI on through the intro; with Ask switched off it opens Settings › AI). This overrides "nothing AI renders while AI is off" for this one entry.
+   - Every account moves to the Masonry view (migration `20261223120000_default_view_masonry`, a stored `cards` or `list` included).
+   - The design's values stay where they fall below WCAG 1.4.11 / 1.4.3: the off switch and slider track (`toggle-off`, about 1.4:1 light and 2:1 dark), muted text on `pick` (4.42:1 / 4.49:1) and the sage empty-state disc in dark (scene edges about 2.6:1).
+   - Ukrainian is set in Onest, the Cyrillic fallback after Hanken Grotesk.
+
 ## Consequences
 
 - Every screen changes colour, type and radius through the tokens; the home page is rebuilt to the reference first, other screens in later steps.
