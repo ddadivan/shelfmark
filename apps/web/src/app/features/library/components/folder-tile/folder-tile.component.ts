@@ -2,14 +2,15 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import type { FolderResponse } from '@shelfmark/contracts';
-import { FolderIconComponent, ICON_SIZE, IconComponent } from '@shelfmark/ui';
+import { FOLDER_ICON_SIZE, FolderIconComponent, ICON_SIZE, IconComponent } from '@shelfmark/ui';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { APP_PATH } from '../../../../models/app-path.const';
 
 /**
- * A subfolder in the content of a folder view: a compact tile (cards) or a full-width row (list)
- * with the folder icon, the name, "12 links, 2 subfolders" and a chevron. The whole tile is one
+ * A subfolder in the content of a folder view: a Shelf chip (cards: the small tile, the name and
+ * the link count) or a full-width row (list: the folder icon, the name, "12 links, 2 subfolders"
+ * and a chevron). The whole tile is one
  * link to the folder route, so keyboard, middle click and "open in new tab" work. The tile wears the
  * folder's colour and icon (graphite while "Folder colours" is off).
  */
@@ -37,6 +38,7 @@ export class FolderTileComponent {
 
   protected readonly settings = inject(UserSettingsStore);
   protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
   protected readonly pluralKey = pluralKey;
   protected readonly commands = computed(() => ['/', APP_PATH.Folders, this.folder().id]);
 }

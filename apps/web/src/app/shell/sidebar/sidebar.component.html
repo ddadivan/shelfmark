@@ -182,26 +182,28 @@
     [ariaLabel]="'shell.sidebar.folderMenu' | transloco"
     (closed)="folderMenu.menuClosed()"
   >
-    <ui-menu-item icon="pin" (activated)="folderMenu.togglePin()">
-      {{
-        (folderMenu.menuPinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin')
-          | transloco
-      }}
-    </ui-menu-item>
-    <ui-menu-item icon="edit" (activated)="folderMenu.style()">
-      {{ 'shell.sidebar.menu.style' | transloco }}
-    </ui-menu-item>
+    <!-- Shelf folder menu (04-organise): create first, then the folder's own actions, Delete last. -->
     <ui-menu-item icon="folder-plus" (activated)="folderMenu.createSubfolder()">
       {{ 'shell.sidebar.menu.newSubfolder' | transloco }}
     </ui-menu-item>
     <ui-menu-item icon="add" (activated)="folderMenu.addLinkHere()">
       {{ 'shell.sidebar.menu.addLink' | transloco }}
     </ui-menu-item>
+    <ui-menu-separator />
     <ui-menu-item icon="edit" (activated)="folderMenu.rename()">
       {{ 'shell.sidebar.menu.rename' | transloco }}
     </ui-menu-item>
+    <ui-menu-item icon="palette" (activated)="folderMenu.style()">
+      {{ 'shell.sidebar.menu.style' | transloco }}
+    </ui-menu-item>
     <ui-menu-item icon="folder-move" (activated)="folderMenu.move()">
       {{ 'shell.sidebar.menu.move' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="pin" (activated)="folderMenu.togglePin()">
+      {{
+        (folderMenu.menuPinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin')
+          | transloco
+      }}
     </ui-menu-item>
     <ui-menu-item icon="share" (activated)="folderMenu.share()">
       {{ 'shell.sidebar.menu.share' | transloco }}

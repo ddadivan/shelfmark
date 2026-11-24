@@ -849,7 +849,7 @@
         "delete": "Ordner löschen…",
         "pin": "An Seitenleiste anheften",
         "unpin": "Von Seitenleiste lösen",
-        "style": "Farbe und Symbol…"
+        "style": "Ordnereinstellungen…"
       },
       "views": "Ansichten",
       "foldersTree": "Ordner",
@@ -1322,6 +1322,11 @@
       "favoritesRemove": "Filter entfernen: nur Favoriten",
       "menuItem": "Filtern…",
       "menuItemCount": "Filtern… ({{count}})"
+    },
+    "folderMenu": {
+      "label": "Ordneraktionen",
+      "addHere": "Link hier hinzufügen",
+      "view": "Ansicht und Sortierung"
     }
   },
   "export": {

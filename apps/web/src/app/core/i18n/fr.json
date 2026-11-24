@@ -863,7 +863,7 @@
         "delete": "Supprimer le dossier…",
         "pin": "Épingler dans la barre latérale",
         "unpin": "Désépingler de la barre latérale",
-        "style": "Couleur et icône…"
+        "style": "Réglages du dossier…"
       },
       "views": "Vues",
       "foldersTree": "Dossiers",
@@ -1345,6 +1345,11 @@
       "favoritesRemove": "Retirer le filtre : favoris uniquement",
       "menuItem": "Filtrer…",
       "menuItemCount": "Filtrer… ({{count}})"
+    },
+    "folderMenu": {
+      "label": "Actions du dossier",
+      "addHere": "Ajouter un lien ici",
+      "view": "Affichage et tri"
     }
   },
   "export": {

@@ -849,7 +849,7 @@
         "delete": "Delete folder…",
         "pin": "Pin to sidebar",
         "unpin": "Unpin from sidebar",
-        "style": "Color and icon…"
+        "style": "Folder settings…"
       },
       "views": "Views",
       "foldersTree": "Folders",
@@ -1322,6 +1322,11 @@
       "favoritesRemove": "Remove filter: only favorites",
       "menuItem": "Filter…",
       "menuItemCount": "Filter… ({{count}})"
+    },
+    "folderMenu": {
+      "label": "Folder actions",
+      "addHere": "Add link here",
+      "view": "View and sort"
     }
   },
   "export": {

@@ -4,6 +4,7 @@ import { LibraryDragService } from './library-drag.service';
 import { LibraryFeedService } from './library-feed.service';
 import { LibraryFilterService } from './library-filter.service';
 import { LibraryHeadService } from './library-head.service';
+import { LibraryFolderService } from './library-folder.service';
 import { LibrarySelectionService } from './library-selection.service';
 import { SplitFeedStore } from './split-feed.store';
 import { SplitRelatedService } from './split-related.service';
@@ -20,6 +21,7 @@ export function provideLibraryPage(): Provider[] {
     LibraryFilterService,
     LibraryFeedService,
     LibraryHeadService,
+    LibraryFolderService,
     LibrarySelectionService,
     LibraryBulkService,
     LibraryDragService,

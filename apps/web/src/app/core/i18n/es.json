@@ -863,7 +863,7 @@
         "delete": "Eliminar carpeta…",
         "pin": "Fijar en la barra lateral",
         "unpin": "Quitar de la barra lateral",
-        "style": "Color e icono…"
+        "style": "Ajustes de la carpeta…"
       },
       "views": "Vistas",
       "foldersTree": "Carpetas",
@@ -1345,6 +1345,11 @@
       "favoritesRemove": "Quitar filtro: solo favoritos",
       "menuItem": "Filtrar…",
       "menuItemCount": "Filtrar… ({{count}})"
+    },
+    "folderMenu": {
+      "label": "Acciones de la carpeta",
+      "addHere": "Añadir enlace aquí",
+      "view": "Vista y orden"
     }
   },
   "export": {

@@ -27,13 +27,13 @@ describe('FolderTileComponent', () => {
     expect(anchor?.getAttribute('href')).toBe('/folders/f2');
     expect(anchor?.getAttribute('aria-label')).toBe('Open folder Angular, 12 links');
     expect(anchor?.textContent).toContain('Angular');
-    expect(anchor?.textContent).toContain('12 links');
-    expect(element.querySelector('ui-folder-icon')).not.toBeNull();
-    expect(element.querySelector('ui-icon[name="chevron-right"]')).not.toBeNull();
+    expect(element.querySelector('.folder-tile__count')?.textContent?.trim()).toBe('12');
+    expect(element.querySelector('ui-folder-icon')?.classList).toContain('ui-folder-icon--sm');
+    expect(element.querySelector('ui-icon[name="chevron-right"]')).toBeNull();
   });
 
   it('uses the singular for one link and one subfolder and adds the folder count', async () => {
-    const { element } = await setup(1, 1);
+    const { element } = await setup(1, 1, true);
 
     expect(element.querySelector('a')?.getAttribute('aria-label')).toBe(
       'Open folder Angular, 1 link, 1 subfolder',
@@ -42,15 +42,17 @@ describe('FolderTileComponent', () => {
   });
 
   it('counts several subfolders and an empty folder', async () => {
-    const { element } = await setup(2, 0);
+    const { element } = await setup(2, 0, true);
 
     expect(element.textContent).toContain('0 links, 2 subfolders');
   });
 
-  it('marks the row variant on the host', async () => {
+  it('marks the row variant on the host, with the big tile and the chevron', async () => {
     const { element } = await setup(0, 3, true);
 
     expect(element.classList.contains('folder-tile--row')).toBe(true);
+    expect(element.querySelector('ui-folder-icon')?.classList).toContain('ui-folder-icon--lg');
+    expect(element.querySelector('ui-icon[name="chevron-right"]')).not.toBeNull();
   });
 
   it('has no axe violations', async () => {

@@ -534,12 +534,12 @@ describe('SidebarComponent', () => {
     expect(await menu.isOpen()).toBe(true);
     const items = await Promise.all((await menu.getItems()).map((item) => item.getText()));
     expect(items).toEqual([
-      'Pin to sidebar',
-      'Color and icon…',
       'New subfolder',
       'Add link here',
       'Rename',
+      'Folder settings…',
       'Move to…',
+      'Pin to sidebar',
       'Share…',
       'Delete folder…',
     ]);

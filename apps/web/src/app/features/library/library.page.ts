@@ -23,7 +23,6 @@ import {
   CheckboxComponent,
   ChipComponent,
   EmptyStateComponent,
-  FolderBannerComponent,
   FolderIconComponent,
   FOLDER_ICON_SIZE,
   LoadMoreComponent,
@@ -67,6 +66,7 @@ import { UI_VIEW } from '../../stores/models/ui-view.const';
 import { UserSettingsStore } from '../../stores/user-settings.store';
 import { LibraryFeedService } from './services/library-feed.service';
 import { LibraryHeadService } from './services/library-head.service';
+import { LibraryFolderService } from './services/library-folder.service';
 import { BulkBarFitDirective } from './directives/bulk-bar-fit.directive';
 import { LibraryHotkeysDirective } from './directives/library-hotkeys.directive';
 import { ToastAboveDirective } from '../../core/layout/toast-above.directive';
@@ -122,7 +122,6 @@ const SKELETON_COUNT = 8;
     CheckboxComponent,
     ChipComponent,
     EmptyStateComponent,
-    FolderBannerComponent,
     FolderCoverComponent,
     FolderIconComponent,
     FolderTileComponent,
@@ -202,16 +201,12 @@ export default class LibraryPage {
     () =>
       this.filters.scope() !== LINKS_SCOPE.Folder && this.filters.scope() !== LINKS_SCOPE.Unsorted,
   );
-  /** The tinted folder header (#418): band or cover, big tile, description; only for a highlighted folder (#440), never in the split view. */
-  protected readonly folderBanner = computed(() => {
-    const banner = this.narrow() ? null : this.head.banner();
-    return banner?.highlighted ? banner : null;
-  });
-  /** A folder that is not highlighted: its description and cover beside the plain title (#440). */
-  protected readonly plainFolder = computed(() => {
-    const banner = this.narrow() ? null : this.head.banner();
-    return banner && !banner.highlighted ? banner : null;
-  });
+  /**
+   * The Shelf folder header (04-organise): tile or cover, title, counts, description, "Add link
+   * here" and the folder menu; never in the split view. The highlight colours the sidebar row only.
+   */
+  protected readonly folderHead = computed(() => (this.narrow() ? null : this.head.banner()));
+  protected readonly folderMenu = inject(LibraryFolderService);
   /** "Tidy with suggestions" (AI-2): only in Unsorted, not in the split view; it hides itself while AI is off. */
   protected readonly tidyEntry = computed(
     () => this.filters.scope() === LINKS_SCOPE.Unsorted && !this.narrow(),

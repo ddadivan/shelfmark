@@ -83,9 +83,8 @@ describe('LibraryPage subfolders', () => {
     expect(tiles.map((a) => a.getAttribute('href'))).toEqual(['/folders/f2', '/folders/f3']);
     expect(tiles[0].getAttribute('aria-label')).toBe('Open folder Angular, 12 links, 1 subfolder');
     expect(tiles[1].getAttribute('aria-label')).toBe('Open folder Courses, 1 link');
-    expect(tiles[0].textContent).toContain('12 links, 1 subfolder');
-    expect(tiles[1].textContent).toContain('1 link');
-    expect(tiles[1].textContent).not.toContain('subfolder');
+    expect(tiles[0].querySelector('.folder-tile__count')?.textContent?.trim()).toBe('12');
+    expect(tiles[1].querySelector('.folder-tile__name')?.textContent?.trim()).toBe('Courses');
     const folders = element.querySelector('.library__folders');
     const cards = element.querySelector('app-link-card');
     expect(folders).not.toBeNull();

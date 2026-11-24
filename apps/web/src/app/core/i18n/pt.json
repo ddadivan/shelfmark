@@ -863,7 +863,7 @@
         "delete": "Excluir pasta…",
         "pin": "Fixar na barra lateral",
         "unpin": "Desafixar da barra lateral",
-        "style": "Cor e ícone…"
+        "style": "Configurações da pasta…"
       },
       "views": "Visualizações",
       "foldersTree": "Pastas",
@@ -1345,6 +1345,11 @@
       "favoritesRemove": "Remover filtro: só favoritos",
       "menuItem": "Filtrar…",
       "menuItemCount": "Filtrar… ({{count}})"
+    },
+    "folderMenu": {
+      "label": "Ações da pasta",
+      "addHere": "Adicionar link aqui",
+      "view": "Visualização e ordem"
     }
   },
   "export": {
