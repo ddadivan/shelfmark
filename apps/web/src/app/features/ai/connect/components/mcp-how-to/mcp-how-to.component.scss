@@ -4,6 +4,10 @@
 :host {
   display: block;
   padding: var(--space-4);
+
+  @include phone {
+    padding: var(--space-3) 0;
+  }
 }
 
 .how-to {
@@ -35,9 +39,16 @@
   border-radius: var(--radius-md);
 }
 
-.how-to__clients {
-  align-self: flex-start;
+// A phone scrolls the assistant names sideways rather than cutting them.
+.how-to__clients-row {
   max-inline-size: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.how-to__clients {
+  width: max-content;
+  max-width: none;
 }
 
 .how-to__head {

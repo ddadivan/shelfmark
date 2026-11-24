@@ -20,13 +20,15 @@
     </div>
   </div>
 
-  <ui-segmented-control
-    class="how-to__clients"
-    [ariaLabel]="'ai.connect.page.clients' | transloco"
-    [options]="clientOptions()"
-    [value]="client()"
-    (valueChange)="choose($event)"
-  />
+  <div class="how-to__clients-row">
+    <ui-segmented-control
+      class="how-to__clients"
+      [ariaLabel]="'ai.connect.page.clients' | transloco"
+      [options]="clientOptions()"
+      [value]="client()"
+      (valueChange)="choose($event)"
+    />
+  </div>
 
   @if (current(); as entry) {
     <section class="how-to__client" [attr.aria-labelledby]="panelId + '-title'">
