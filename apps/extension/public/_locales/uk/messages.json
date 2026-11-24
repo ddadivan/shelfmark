@@ -10,5 +10,53 @@
   "actionTitle": {
     "message": "Зберегти в Shelfmark",
     "description": "Tooltip of the toolbar button."
+  },
+  "menuSaveLink": {
+    "message": "Зберегти посилання в Shelfmark",
+    "description": "Right-click menu item on a link."
+  },
+  "menuSavePage": {
+    "message": "Зберегти сторінку в Shelfmark",
+    "description": "Right-click menu item on a page."
+  },
+  "savedTo": {
+    "message": "Збережено в $FOLDER$",
+    "description": "Toolbar button tooltip after a right-click save; $FOLDER$ is the folder name.",
+    "placeholders": {
+      "folder": {
+        "content": "$1",
+        "example": "Shopping"
+      }
+    }
+  },
+  "alreadySavedIn": {
+    "message": "Уже збережено в $FOLDER$",
+    "description": "Toolbar button tooltip when the right-clicked address is saved already.",
+    "placeholders": {
+      "folder": {
+        "content": "$1",
+        "example": "Shopping"
+      }
+    }
+  },
+  "unsorted": {
+    "message": "Без папки",
+    "description": "Name of the place for links without a folder, used as $FOLDER$."
+  },
+  "signInToSave": {
+    "message": "Увійдіть у Shelfmark, щоб зберігати",
+    "description": "Toolbar button tooltip when a right-click save needs sign-in."
+  },
+  "cannotSave": {
+    "message": "Цю адресу не можна зберегти",
+    "description": "Toolbar button tooltip when the address is not a web address."
+  },
+  "libraryFull": {
+    "message": "Ваша бібліотека заповнена. Приберіть кілька посилань у Shelfmark, щоб зберігати нові.",
+    "description": "Toolbar button tooltip when the library is at its link limit."
+  },
+  "saveFailed": {
+    "message": "Не вдалося зберегти в Shelfmark. Спробуйте ще раз за мить.",
+    "description": "Toolbar button tooltip when a right-click save failed."
   }
 }

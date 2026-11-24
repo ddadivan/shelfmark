@@ -46,6 +46,11 @@
               "glob": "manifest.json",
               "input": "apps/extension/manifest/production",
               "output": "."
+            },
+            {
+              "glob": "background.js",
+              "input": "dist/apps/extension-worker/production",
+              "output": "."
             }
           ],
           "budgets": [
@@ -62,6 +67,11 @@
               "glob": "manifest.json",
               "input": "apps/extension/manifest/development",
               "output": "."
+            },
+            {
+              "glob": "background.js",
+              "input": "dist/apps/extension-worker/development",
+              "output": "."
             }
           ],
           "fileReplacements": [
@@ -74,7 +84,21 @@
           "sourceMap": true
         }
       },
-      "dependsOn": ["^build", "ui:icons"]
+      "dependsOn": ["^build", "ui:icons", "build-worker"]
+    },
+    "build-worker": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/apps/extension-worker"],
+      "defaultConfiguration": "production",
+      "options": { "cwd": "{workspaceRoot}" },
+      "configurations": {
+        "production": {
+          "command": "node apps/extension/scripts/build-worker.mjs --configuration=production"
+        },
+        "development": {
+          "command": "node apps/extension/scripts/build-worker.mjs --configuration=development"
+        }
+      }
     },
     "package": {
       "executor": "nx:run-commands",

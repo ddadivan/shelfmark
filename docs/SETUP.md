@@ -238,7 +238,7 @@ The demo sign-in (#67) creates a 24 hour sandbox user per visitor. A Vercel Cron
 
 ### 5.9 Browser extension (#445)
 
-The extension is `apps/extension`, a Chrome Manifest V3 popup. It asks for `activeTab` and host access to the Shelfmark API only, and it uses the session cookie of the app in the same browser (ADR 0046). There are two builds:
+The extension is `apps/extension`, a Chrome Manifest V3 popup. It asks for `activeTab`, `contextMenus` (right-click "Save link / Save page to Shelfmark", from 1.3.0; no install warning) and host access to the Shelfmark API only, plus the optional `tabs` for All tabs, and it uses the session cookie of the app in the same browser (ADR 0046). There are two builds:
 
 | Build | Command | Output | Talks to |
 | --- | --- | --- | --- |
@@ -263,7 +263,7 @@ The store build can also be loaded unpacked (`dist/apps/extension`). It saves to
 - [ ] `npm run extension:package`, then **New item** → upload `dist/shelfmark-extension-<version>.zip`. Uploading creates a draft and gives the item its permanent id (32 letters a–p, on the item's page and in its URL).
 - [ ] Vercel → Settings → Environment Variables → `EXTENSION_ORIGINS` = `chrome-extension://<item id>` for **Production** (a comma-separated list if an Edge Add-ons copy is added later), then redeploy. Without it the published extension can sign in but every Save gets 403.
 - [ ] **Store listing** tab: description, category, language, the 128 px icon (`apps/extension/public/icons/icon-128.png`), the screenshots and the small promo tile from `docs/store/extension/`.
-- [ ] **Privacy practices** tab: the single purpose, a justification for `activeTab` and for the host permission, the data usage answers and the privacy policy URL `https://shelfmark-app.vercel.app/privacy`, all from `docs/store/extension/listing.md`.
+- [ ] **Privacy practices** tab: the single purpose, a justification for `activeTab`, `contextMenus`, the optional `tabs` and the host permission (all in `docs/store/extension/listing.md`), the data usage answers and the privacy policy URL `https://shelfmark-app.vercel.app/privacy`, all from `docs/store/extension/listing.md`.
 - [ ] **Distribution**: **Unlisted** for a first round with a few people, **Public** later; all regions.
 - [ ] **Submit for review**. A first review usually takes a few days; the dashboard emails the result.
 - [ ] Every update: raise `version` in `apps/extension/manifest/production/manifest.json` (and the development manifest), package, upload, submit again.

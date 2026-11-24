@@ -1,5 +1,6 @@
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { MESSAGE_KEY } from '../../../background/models/message-key.const';
 import { readRepoFile } from '../../../testing/read-repo-file';
 import { SHELFMARK_ORIGIN } from './shelfmark-origin.const';
 
@@ -36,8 +37,12 @@ const manifest = (name: string): Manifest =>
 describe.each(BUILDS)('$name manifest', ({ name, host, origin, originFile }) => {
   const m = manifest(name);
 
-  it('requests exactly the activeTab permission', () => {
-    expect(m.permissions).toEqual(['activeTab']);
+  it('requests exactly the activeTab and contextMenus permissions (right-click save)', () => {
+    expect(m.permissions).toEqual(['activeTab', 'contextMenus']);
+  });
+
+  it('runs the right-click save in a module service worker', () => {
+    expect(m['background']).toEqual({ service_worker: 'background.js', type: 'module' });
   });
 
   it('asks for the tabs permission only as an optional one (#569)', () => {
@@ -48,7 +53,7 @@ describe.each(BUILDS)('$name manifest', ({ name, host, origin, originFile }) => 
     expect(m.host_permissions).toEqual([host]);
   });
 
-  it.each(['key', 'content_scripts', 'background', 'web_accessible_resources'])(
+  it.each(['key', 'content_scripts', 'web_accessible_resources', 'optional_host_permissions'])(
     'has no %s',
     (field) => {
       expect(m).not.toHaveProperty(field);
@@ -95,6 +100,16 @@ describe('store texts', () => {
       expect(messages[key]?.message?.trim()).toBeTruthy();
     });
 
+    it.each(Object.values(MESSAGE_KEY))('has the worker text %s', (key) => {
+      expect(messages[key]?.message?.trim()).toBeTruthy();
+    });
+
+    it('keeps the $FOLDER$ placeholder in the texts that name a folder', () => {
+      for (const key of [MESSAGE_KEY.SavedTo, MESSAGE_KEY.AlreadySavedIn]) {
+        expect(messages[key]?.message).toContain('$FOLDER$');
+      }
+    });
+
     it('keeps the description within the store limit of 132 characters', () => {
       expect(messages['extDescription']?.message?.length).toBeLessThanOrEqual(132);
     });
@@ -117,6 +132,17 @@ describe('browser API use the store can see (#478, #569)', () => {
   it('does not reach the chrome global through Reflect or globalThis', () => {
     expect(service).not.toMatch(/Reflect\.get\(globalThis|globalThis\.chrome/u);
   });
+});
+
+describe('worker API use the store can see', () => {
+  const worker = readRepoFile(`${ROOT}/src/background/context-menu.ts`);
+
+  it.each(['chrome.contextMenus.create(', 'chrome.contextMenus.onClicked.addListener('])(
+    'calls %s literally',
+    (call) => {
+      expect(worker).toContain(call);
+    },
+  );
 });
 
 describe('manifest versions', () => {

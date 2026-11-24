@@ -10,5 +10,53 @@
   "actionTitle": {
     "message": "Salva in Shelfmark",
     "description": "Tooltip of the toolbar button."
+  },
+  "menuSaveLink": {
+    "message": "Salva link in Shelfmark",
+    "description": "Right-click menu item on a link."
+  },
+  "menuSavePage": {
+    "message": "Salva pagina in Shelfmark",
+    "description": "Right-click menu item on a page."
+  },
+  "savedTo": {
+    "message": "Salvato in $FOLDER$",
+    "description": "Toolbar button tooltip after a right-click save; $FOLDER$ is the folder name.",
+    "placeholders": {
+      "folder": {
+        "content": "$1",
+        "example": "Shopping"
+      }
+    }
+  },
+  "alreadySavedIn": {
+    "message": "Già salvato in $FOLDER$",
+    "description": "Toolbar button tooltip when the right-clicked address is saved already.",
+    "placeholders": {
+      "folder": {
+        "content": "$1",
+        "example": "Shopping"
+      }
+    }
+  },
+  "unsorted": {
+    "message": "Non ordinati",
+    "description": "Name of the place for links without a folder, used as $FOLDER$."
+  },
+  "signInToSave": {
+    "message": "Accedi a Shelfmark per salvare",
+    "description": "Toolbar button tooltip when a right-click save needs sign-in."
+  },
+  "cannotSave": {
+    "message": "Questo indirizzo non si può salvare",
+    "description": "Toolbar button tooltip when the address is not a web address."
+  },
+  "libraryFull": {
+    "message": "La tua libreria è piena. Rimuovi alcuni link in Shelfmark per salvarne di nuovi.",
+    "description": "Toolbar button tooltip when the library is at its link limit."
+  },
+  "saveFailed": {
+    "message": "Impossibile salvare in Shelfmark. Riprova tra poco.",
+    "description": "Toolbar button tooltip when a right-click save failed."
   }
 }
