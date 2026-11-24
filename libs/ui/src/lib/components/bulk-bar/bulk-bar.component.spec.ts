@@ -23,7 +23,10 @@ const ACTIONS: BulkBarAction[] = [
       ariaLabel="Actions for 3 selected links"
       [actions]="actions()"
       [layout]="layout()"
+      [count]="count()"
+      [closeLabel]="closeLabel()"
       (action)="pressed.set($event)"
+      (closed)="closedCount.set(closedCount() + 1)"
     />
   `,
 })
@@ -31,6 +34,9 @@ class HostComponent {
   readonly actions = signal<BulkBarAction[]>(ACTIONS);
   readonly layout = signal<BulkBarLayout>(BULK_BAR_LAYOUT.Inline);
   readonly pressed = signal<string | null>(null);
+  readonly count = signal('');
+  readonly closeLabel = signal('');
+  readonly closedCount = signal(0);
 }
 
 function setup() {
@@ -58,6 +64,22 @@ describe('BulkBarComponent', () => {
       'Delete',
     ]);
     expect(buttons().every((b) => b.type === 'button')).toBe(true);
+  });
+
+  it('starts with a named × and the count when given (Shelf), and emits closed', () => {
+    const { host, update, cmp } = setup();
+    expect(host.querySelector('.ui-bulk-bar__close')).toBeNull();
+    expect(host.querySelector('.ui-bulk-bar__count')).toBeNull();
+
+    update((c) => {
+      c.closeLabel.set('Cancel selection');
+      c.count.set('3 selected');
+    });
+    const close = host.querySelector<HTMLButtonElement>('.ui-bulk-bar__close');
+    expect(close?.getAttribute('aria-label')).toBe('Cancel selection');
+    expect(host.querySelector('.ui-bulk-bar__count')?.textContent?.trim()).toBe('3 selected');
+    close?.click();
+    expect(cmp.closedCount()).toBe(1);
   });
 
   it('emits the id of the pressed action and blocks disabled ones', () => {

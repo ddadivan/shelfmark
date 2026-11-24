@@ -1,32 +1,18 @@
 @use 'ui' as *;
 @use '../../shell/shell-metrics' as *;
 
-// Selection header (Bulk.dc.html): "3 selected", "Select all 12", the hints and Done. It lies over
-// the room of the breadcrumb trail (phone: over the title), so starting a selection never moves
-// the feed under the pointer.
+// Selection header of the mobile shell (Shelf `08-select-move` "Phone"): ×, "2 selected" and
+// "Select all" on a line over the title (the page makes room for it). From 64em the hint and
+// "Select all N" take the place of the title row's tools and the bulk bar holds × and the count.
 .library__selection {
   position: absolute;
   inset-block-start: calc(var(--space-2) - var(--space-6));
   inset-inline: 0;
   z-index: 4;
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-1);
   align-items: center;
   min-height: rem(48px);
-  padding-inline: var(--space-4) var(--space-2);
-  background: var(--surface);
-  border-radius: var(--radius-full);
-  box-shadow: var(--shadow-card);
-
-  // Desktop: the bar starts 8px above the trail line (it covers the trail) and its 48px end
-  // 24px above the title box (the 64px room, #350); nothing moves when the bar appears.
-  @include desktop {
-    inset-block-start: calc(var(--space-2) * -1);
-  }
-}
-
-.library__selection--phone {
-  gap: var(--space-1);
   padding-inline: var(--space-1) var(--space-2);
 }
 
@@ -37,14 +23,6 @@
   margin: 0;
   font-weight: 600;
   white-space: nowrap;
-
-  .library__selection:not(.library__selection--phone) & {
-    flex: none;
-  }
-}
-
-.library__selection-spacer {
-  flex: 1;
 }
 
 .library__hint {
@@ -61,6 +39,15 @@
   @include compact {
     display: none;
   }
+}
+
+// "Select with X, Shift-click for a range, Ctrl A for all" beside "Select all N" (14px muted).
+.library__hint--select {
+  @include type(secondary);
+
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .library__kbd {
@@ -84,7 +71,9 @@
   position: sticky;
   inset-block-end: 0;
   z-index: 3;
-  align-self: center;
+
+  // Shelf: the inline bar spans the feed, Delete at its end.
+  align-self: stretch;
   max-width: 100%;
   padding-block-start: var(--space-4);
   margin-block-start: auto;

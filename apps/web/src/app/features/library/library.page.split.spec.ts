@@ -279,7 +279,7 @@ describe('LibraryPage side by side', () => {
 
   describe('bulk bar', () => {
     const bulkLabels = (element: HTMLElement): string[] =>
-      [...element.querySelectorAll('ui-bulk-bar button')].map((button) =>
+      [...element.querySelectorAll('ui-bulk-bar .ui-bulk-bar__action')].map((button) =>
         (button.textContent ?? '').trim(),
       );
 

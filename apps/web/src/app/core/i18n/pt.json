@@ -2995,20 +2995,12 @@
       },
       "selectAll": "Selecionar todos os {{count}}",
       "selectAllShort": "Selecionar tudo",
-      "selectAllBox": {
-        "one": "Selecionar {{count}} link",
-        "many": "Selecionar todos os {{count}} links",
-        "other": "Selecionar todos os {{count}} links"
-      },
-      "shift": "Shift",
-      "rangeHint": "+ clique seleciona um intervalo",
-      "esc": "Esc",
-      "clearHint": "limpa",
-      "done": "Concluído",
       "cancel": "Cancelar seleção",
       "longPressHint": "Toque e segure um link para começar a selecionar, depois toque nos outros.",
       "modeOn": "Modo de seleção ativado. Ativar um link agora o seleciona.",
-      "modeOff": "Modo de seleção desativado."
+      "modeOff": "Modo de seleção desativado.",
+      "desktopHint": "Selecione com X, Shift+clique para um intervalo, Ctrl A para tudo",
+      "selectNone": "Desmarcar tudo"
     },
     "item": {
       "select": "Selecionar {{title}}"

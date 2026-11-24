@@ -5,14 +5,13 @@
   [attr.aria-busy]="store.loading()"
 >
   <p class="library__live" role="status">{{ selection.modeAnnouncement() }}</p>
-  @if (selection.selecting()) {
+  @if (selection.selecting() && compact()) {
+  <!-- Mobile shell: × , "2 selected" and "Select all" on a line over the title. -->
   <div
-    class="library__selection"
+    class="library__selection library__selection--phone"
     role="group"
-    [class.library__selection--phone]="compact()"
     [attr.aria-label]="'bulk.header.label' | transloco"
   >
-    @if (compact()) {
     <ui-button
       variant="ghost"
       iconOnly
@@ -20,15 +19,6 @@
       [ariaLabel]="'bulk.header.cancel' | transloco"
       (click)="selection.endSelection()"
     />
-    } @else {
-    <ui-checkbox
-      hideLabel
-      [label]="pluralKey('bulk.header.selectAllBox', feed.shownCount()) | transloco: { count: feed.shownCount() }"
-      [checked]="selection.allSelected()"
-      [indeterminate]="!selection.allSelected()"
-      (checkedChange)="selection.toggleAll($event)"
-    />
-    }
     <p class="library__selected" aria-live="polite">
       {{ pluralKey('bulk.header.selected', selection.selectedCount()) | transloco: { count:
       selection.selectedCount() } }}
@@ -37,19 +27,6 @@
     <ui-button variant="ghost" size="sm" (click)="selection.selectAll()">
       @if (phone()) { {{ 'bulk.header.selectAllShort' | transloco }} } @else { {{
       'bulk.header.selectAll' | transloco: { count: feed.shownCount() } }} }
-    </ui-button>
-    } @if (!compact()) {
-    <span class="library__selection-spacer"></span>
-    <span class="library__hint"
-      ><kbd class="library__kbd">{{ 'bulk.header.shift' | transloco }}</kbd> {{
-      'bulk.header.rangeHint' | transloco }}</span
-    >
-    <span class="library__hint"
-      ><kbd class="library__kbd">{{ 'bulk.header.esc' | transloco }}</kbd> {{
-      'bulk.header.clearHint' | transloco }}</span
-    >
-    <ui-button variant="ghost" size="sm" (click)="selection.endSelection()">
-      {{ 'bulk.header.done' | transloco }}
     </ui-button>
     }
   </div>
@@ -161,7 +138,21 @@
           <!-- Shelf toolbar: View (grid size and card fields; not on a phone, where the feed has two
                columns), the view switch, then ⋯ with the rest (a bottom sheet below 64em). -->
           <div class="library__tools" uiTooltipGroup>
-            @if (tidyEntry()) {
+            @if (selection.selecting() && !compact()) {
+            <!-- Shelf selection (08-select-move): the hint and "Select all N" take the tools' place;
+                 the bulk bar's × ends it. -->
+            <p class="library__hint library__hint--select">
+              {{ 'bulk.header.desktopHint' | transloco }}
+            </p>
+            @if (selection.allSelected()) {
+            <ui-button variant="ghost" size="sm" (click)="selection.toggleAll(false)">
+              {{ 'bulk.header.selectNone' | transloco }}
+            </ui-button>
+            } @else {
+            <ui-button variant="ghost" size="sm" (click)="selection.selectAll()">
+              {{ 'bulk.header.selectAll' | transloco: { count: feed.shownCount() } }}
+            </ui-button>
+            } } @else { @if (tidyEntry()) {
             <app-tidy-entry />
             } @if (folderHead()) {
             <ui-button
@@ -284,6 +275,7 @@
               </ui-menu-item>
               }
             </ui-menu>
+            }
           </div>
         </header>
       </ng-template>
@@ -709,7 +701,10 @@
       [actions]="bulk.barActions()"
       [ariaLabel]="pluralKey('bulk.bar.label', selection.selectedCount()) | transloco: { count: selection.selectedCount() }"
       [layout]="compact() || bulkFit.stacked() ? BULK_BAR_LAYOUT.Stacked : BULK_BAR_LAYOUT.Inline"
+      [count]="compact() ? '' : (pluralKey('bulk.header.selected', selection.selectedCount()) | transloco: { count: selection.selectedCount() })"
+      [closeLabel]="compact() ? '' : ('bulk.header.cancel' | transloco)"
       (action)="bulk.run($event)"
+      (closed)="selection.endSelection()"
     />
   </ng-template>
 </section>

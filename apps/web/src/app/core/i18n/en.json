@@ -2928,19 +2928,12 @@
       },
       "selectAll": "Select all {{count}}",
       "selectAllShort": "Select all",
-      "selectAllBox": {
-        "one": "Select all {{count}} link",
-        "other": "Select all {{count}} links"
-      },
-      "shift": "Shift",
-      "rangeHint": "+ click selects a range",
-      "esc": "Esc",
-      "clearHint": "clears",
-      "done": "Done",
       "cancel": "Cancel selection",
       "longPressHint": "Long-press a link to start selecting, then tap others.",
       "modeOn": "Selection mode on. Activating a link now selects it.",
-      "modeOff": "Selection mode off."
+      "modeOff": "Selection mode off.",
+      "desktopHint": "Select with X, Shift-click for a range, Ctrl A for all",
+      "selectNone": "Select none"
     },
     "item": {
       "select": "Select {{title}}"

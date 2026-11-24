@@ -2928,19 +2928,12 @@
       },
       "selectAll": "Alle {{count}} auswählen",
       "selectAllShort": "Alle auswählen",
-      "selectAllBox": {
-        "one": "{{count}} Link auswählen",
-        "other": "Alle {{count}} Links auswählen"
-      },
-      "shift": "Umschalt",
-      "rangeHint": "+ Klick wählt einen Bereich",
-      "esc": "Esc",
-      "clearHint": "hebt auf",
-      "done": "Fertig",
       "cancel": "Auswahl abbrechen",
       "longPressHint": "Halte einen Link gedrückt, um die Auswahl zu starten, und tippe dann weitere an.",
       "modeOn": "Auswahlmodus an. Ein Link wird jetzt ausgewählt, statt geöffnet.",
-      "modeOff": "Auswahlmodus aus."
+      "modeOff": "Auswahlmodus aus.",
+      "desktopHint": "Mit X auswählen, Umschalt+Klick für einen Bereich, Strg A für alle",
+      "selectNone": "Auswahl aufheben"
     },
     "item": {
       "select": "{{title}} auswählen"
