@@ -43,14 +43,14 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .app .sb{background:var(--side);border-right:1px solid var(--sep);padding:14px 10px;display:flex;flex-direction:column;gap:2px;font-size:12px}
 .app .sb .lg{display:flex;align-items:center;gap:6px;font-weight:600;padding:0 6px 10px;font-size:13px}
 .app .sb .add{height:28px;border-radius:999px;background:var(--text);color:var(--bg);display:grid;place-items:center;font-weight:500;margin:0 2px 10px}
-.app .sb .r{display:flex;align-items:center;gap:8px;height:26px;padding:0 8px;border-radius:8px}.app .sb .r b{margin-left:auto;font-weight:400;color:var(--muted)}
+.app .sb .r{transition:background 300ms,font-weight 300ms;display:flex;align-items:center;gap:8px;height:26px;padding:0 8px;border-radius:8px}.app .sb .r b{margin-left:auto;font-weight:400;color:var(--muted)}
 .app .sb .r.on{background:var(--sel);font-weight:500}
 .app .sb .h{font-size:10px;color:var(--muted);padding:10px 8px 4px;border-top:1px solid var(--sep);margin-top:8px}
 .app .mn{padding:14px 16px;overflow:hidden;position:relative}
 .app .q{height:32px;border-radius:12px;background:var(--fill);box-shadow:inset 0 0 0 1px rgba(127,127,127,.25);display:flex;align-items:center;gap:8px;padding:0 12px;font-size:12px;color:var(--muted);max-width:280px}
 .app .th{display:flex;align-items:center;gap:8px;margin-top:14px}.app .th b{font-size:16px;font-weight:600;flex:1}
 .app .vw{display:flex;gap:2px;padding:2px;border-radius:8px;background:var(--fill)}.app .vw i{width:24px;height:20px;border-radius:6px;display:grid;place-items:center;color:var(--muted)}.app .vw i svg{width:12px;height:12px}.app .vw i.on{color:var(--text)}.app .vw i.on{background:var(--surface)}
-.app .tb{display:flex;gap:2px;margin-top:8px;font-size:10px;color:var(--muted)}.app .tb span{padding:3px 8px;border-radius:7px;transition:background 250ms,color 250ms}.app .tb span.on{background:var(--sel);color:var(--text);font-weight:500}
+.app .tb{transition:opacity 300ms;display:flex;gap:2px;margin-top:8px;font-size:10px;color:var(--muted)}.app .tb span{padding:3px 8px;border-radius:7px;transition:background 250ms,color 250ms}.app .tb span.on{background:var(--sel);color:var(--text);font-weight:500}
 .app .grid{columns:3;column-gap:10px;margin-top:12px}
 .mc{break-inside:avoid;margin-bottom:10px;border-radius:10px;background:var(--surface);border:1px solid var(--line);overflow:hidden;font-size:10px;transition:opacity 300ms,transform 300ms}
 .mc img{display:block;width:100%;object-fit:cover}.mc .shop{object-fit:contain;background:var(--fill)}
@@ -216,19 +216,19 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   </div>
   <div class="app" role="img" aria-label="The Shelfmark app: a folder of saved links with previews, notes and a toast that says Saved to Watch later">
     <div class="sb"><div class="lg"><svg width="16" height="16"><use href="#logo"/></svg>Shelfmark</div><div class="add">+ Add link</div>
-      <div class="r on">All links<b>17</b></div><div class="r">Unsorted<b>3</b></div><div class="r">Favorites<b>3</b></div><div class="r">Today<b style="color:var(--text);font-weight:600">3</b></div>
-      <div class="h">Folders</div><div class="r"><svg width="12" height="12" style="color:var(--fc-clay)"><use href="#folder"/></svg>Angular<b>2</b></div><div class="r"><svg width="12" height="12" style="color:var(--fc-ocean)"><use href="#folder"/></svg>Tools<b>4</b></div><div class="r"><svg width="12" height="12" style="color:var(--fc-sage)"><use href="#folder"/></svg>Learning<b>6</b></div><div class="r"><svg width="12" height="12" style="color:var(--fc-rose)"><use href="#folder"/></svg>Shopping<b>4</b></div><div class="r"><svg width="12" height="12" style="color:var(--fc-plum)"><use href="#folder"/></svg>Watch later<b>1</b></div></div>
+      <div class="r on" data-s="all">All links<b>17</b></div><div class="r" data-s="unsorted">Unsorted<b>3</b></div><div class="r" data-s="fav">Favorites<b>3</b></div><div class="r">Today<b style="color:var(--text);font-weight:600">3</b></div>
+      <div class="h">Folders</div><div class="r" data-s="f:Angular"><svg width="12" height="12" style="color:var(--fc-clay)"><use href="#folder"/></svg>Angular<b>2</b></div><div class="r" data-s="f:Tools"><svg width="12" height="12" style="color:var(--fc-ocean)"><use href="#folder"/></svg>Tools<b>4</b></div><div class="r" data-s="f:Learning"><svg width="12" height="12" style="color:var(--fc-sage)"><use href="#folder"/></svg>Learning<b>6</b></div><div class="r" data-s="f:Shopping"><svg width="12" height="12" style="color:var(--fc-rose)"><use href="#folder"/></svg>Shopping<b>4</b></div><div class="r" data-s="f:Watch later"><svg width="12" height="12" style="color:var(--fc-plum)"><use href="#folder"/></svg>Watch later<b>1</b></div></div>
     <div class="mn">
       <div class="q"><svg width="13" height="13"><use href="#search"/></svg>Search links, folders and tags</div>
-      <div class="th"><b>All links</b><span class="vw"><i class="on"><svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="9" rx="1.5"/><rect x="13" y="4" width="7" height="5" rx="1.5"/><rect x="4" y="15" width="7" height="5" rx="1.5"/><rect x="13" y="11" width="7" height="9" rx="1.5"/></g></svg></i><i><svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></g></svg></i><i><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></i></span></div>
+      <div class="th"><b id="pvtitle">All links</b><span class="vw"><i class="on"><svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="9" rx="1.5"/><rect x="13" y="4" width="7" height="5" rx="1.5"/><rect x="4" y="15" width="7" height="5" rx="1.5"/><rect x="13" y="11" width="7" height="9" rx="1.5"/></g></svg></i><i><svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></g></svg></i><i><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></i></span></div>
       <div class="tb"><span class="on" data-tab="all">All 17</span><span data-tab="video">Videos 6</span><span data-tab="shop">Shops 4</span></div>
       <div class="grid" id="pvgrid">
-        <div class="mc" style="view-transition-name:pv1" data-k="video"><img src="img/nihilism.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Watch later</span><span>Just now</span></div><div class="t">Optimistic Nihilism</div><div class="nt">For the weekend, with tea</div></div></div>
-        <div class="mc" style="view-transition-name:pv2" data-k="shop"><img class="shop" src="img/tree-runners.webp" alt="" style="aspect-ratio:1/1"><div class="bd"><div class="mt"><span>Shopping</span><span>Today</span></div><div class="t">Tree Runners</div><div class="nt">Size 39, for spring</div></div></div>
-        <div class="mc" style="view-transition-name:pv3" data-k="video"><img src="img/angular100.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Angular</span><span>Today</span></div><div class="t">Angular in 100 Seconds</div></div></div>
-        <div class="mc" style="view-transition-name:pv4" data-k="repo"><img src="img/excalidraw.webp" alt="" style="aspect-ratio:2/1"><div class="bd"><div class="mt"><span>Tools</span><span>Oct 29</span></div><div class="t">Excalidraw</div></div></div>
-        <div class="mc" style="view-transition-name:pv5" data-k="shop"><img class="shop" src="img/ojai-jacket.webp" alt="" style="aspect-ratio:4/5"><div class="bd"><div class="mt"><span>Shopping</span><span>Nov 3</span></div><div class="t">The Ojai Jacket</div><div class="nt">Waiting for the sale</div></div></div>
-        <div class="mc" style="view-transition-name:pv6" data-k="video"><img src="img/neural-network.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Learning</span><span>Oct 27</span></div><div class="t">But what is a neural network?</div></div></div>
+        <div class="mc" style="view-transition-name:pv1" data-k="video" data-f="Watch later" data-fav="0"><img src="img/nihilism.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Watch later</span><span>Just now</span></div><div class="t">Optimistic Nihilism</div><div class="nt">For the weekend, with tea</div></div></div>
+        <div class="mc" style="view-transition-name:pv2" data-k="shop" data-f="Shopping" data-fav="1"><img class="shop" src="img/tree-runners.webp" alt="" style="aspect-ratio:1/1"><div class="bd"><div class="mt"><span>Shopping</span><span>Today</span></div><div class="t">Tree Runners</div><div class="nt">Size 39, for spring</div></div></div>
+        <div class="mc" style="view-transition-name:pv3" data-k="video" data-f="Angular" data-fav="1"><img src="img/angular100.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Angular</span><span>Today</span></div><div class="t">Angular in 100 Seconds</div></div></div>
+        <div class="mc" style="view-transition-name:pv4" data-k="repo" data-f="Tools" data-fav="1"><img src="img/excalidraw.webp" alt="" style="aspect-ratio:2/1"><div class="bd"><div class="mt"><span>Tools</span><span>Oct 29</span></div><div class="t">Excalidraw</div></div></div>
+        <div class="mc" style="view-transition-name:pv5" data-k="shop" data-f="Shopping" data-fav="0"><img class="shop" src="img/ojai-jacket.webp" alt="" style="aspect-ratio:4/5"><div class="bd"><div class="mt"><span>Shopping</span><span>Nov 3</span></div><div class="t">The Ojai Jacket</div><div class="nt">Waiting for the sale</div></div></div>
+        <div class="mc" style="view-transition-name:pv6" data-k="video" data-f="Learning" data-fav="0"><img src="img/neural-network.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Learning</span><span>Oct 27</span></div><div class="t">But what is a neural network?</div></div></div>
       </div>
       <div class="toast hidden" id="pvtoast">Saved to Watch later <b>Undo</b></div>
     </div>
@@ -362,17 +362,23 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   const grid=document.getElementById('pvgrid'),cards=[...grid.querySelectorAll('.mc')],tabs=[...document.querySelectorAll('.app .tb span')],toast=document.getElementById('pvtoast');
   if(!reduce){cards.forEach((c,i)=>{c.style.animationDelay=(250+i*140)+'ms';c.classList.add('land')});setTimeout(()=>{toast.classList.remove('hidden');toast.classList.add('show')},1500)}
   else{toast.classList.remove('hidden')}
-  const apply=t=>{tabs.forEach(s=>s.classList.toggle('on',s.dataset.tab===t));cards.forEach(c=>{c.classList.remove('land');c.classList.toggle('hide',t!=='all'&&c.dataset.k!==t)})};
-  const swap=t=>{
-    if(document.startViewTransition&&!reduce){document.startViewTransition(()=>apply(t))}
-    else if(!reduce){grid.classList.add('fade');setTimeout(()=>{apply(t);grid.classList.remove('fade')},260)}
-    else apply(t);
-    if(t!=='all'){toast.classList.add('hidden');toast.classList.remove('show')}else{setTimeout(()=>{toast.classList.remove('hidden');toast.classList.add('show')},700)}
+  const rows=[...document.querySelectorAll('.app .sb [data-s]')],title=document.getElementById('pvtitle'),tbar=document.querySelector('.app .tb');
+  const STATES=[{s:'all',t:'all',title:'All links'},{s:'all',t:'video',title:'All links'},{s:'f:Shopping',title:'Shopping'},{s:'fav',title:'Favorites'},{s:'f:Watch later',title:'Watch later'}];
+  const show=c=>(st=>st.s==='all'?(st.t==='all'||c.dataset.k===st.t):st.s==='fav'?c.dataset.fav==='1':c.dataset.f===st.s.slice(2));
+  const apply=st=>{rows.forEach(r=>r.classList.toggle('on',r.dataset.s===st.s));title.textContent=st.title;tbar.style.opacity=st.s==='all'?1:0;
+    tabs.forEach(x=>x.classList.toggle('on',x.dataset.tab===(st.t||'all')));cards.forEach(c=>{c.classList.remove('land');c.classList.toggle('hide',!show(c)(st))})};
+  const swap=st=>{
+    if(document.startViewTransition&&!reduce){document.startViewTransition(()=>apply(st))}
+    else if(!reduce){grid.classList.add('fade');setTimeout(()=>{apply(st);grid.classList.remove('fade')},260)}
+    else apply(st);
+    if(!(st.s==='all'&&st.t==='all')){toast.classList.add('hidden');toast.classList.remove('show')}else{setTimeout(()=>{toast.classList.remove('hidden');toast.classList.add('show')},700)}
   };
-  const order=['all','video','all','shop'];let k=0,timer=null;
-  const tick=()=>{k=(k+1)%order.length;swap(order[k])};
+  let k=0,timer=null;
+  const tick=()=>{k=(k+1)%STATES.length;swap(STATES[k])};
   const start=()=>{if(!reduce&&!timer)timer=setInterval(tick,3600)};const stop=()=>{clearInterval(timer);timer=null};
-  tabs.forEach(s=>{s.style.cursor='pointer';s.addEventListener('click',()=>{stop();k=Math.max(0,order.indexOf(s.dataset.tab));swap(s.dataset.tab);setTimeout(start,6000)})});
+  const pick=i=>{stop();k=i;swap(STATES[i]);setTimeout(start,6000)};
+  tabs.forEach(x=>{x.style.cursor='pointer';x.addEventListener('click',()=>pick(x.dataset.tab==='video'?1:0))});
+  rows.forEach(r=>{const i=STATES.findIndex(st=>st.s===r.dataset.s&&!st.t||st.s===r.dataset.s&&st.t==='all');if(i>=0){r.style.cursor='pointer';r.addEventListener('click',()=>pick(i))}});
   const app=document.querySelector('.app');
   if('IntersectionObserver' in window){new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?start():stop()),{threshold:.3}).observe(app)}else start();
   document.addEventListener('visibilitychange',()=>document.hidden?stop():start());
