@@ -2,6 +2,7 @@ import {
   MCP_ENDPOINT,
   MCP_ERROR_MESSAGE,
   MCP_LIMIT,
+  MCP_TOKEN_ACCESS,
   MCP_TOKEN_PREFIX,
   type CreateMcpTokenResponse,
   type McpTokensResponse,
@@ -76,7 +77,9 @@ describe('MCP tokens API', () => {
       name: 'Claude Code',
       last4: created.secret.slice(-4),
       includeNotes: true,
+      access: MCP_TOKEN_ACCESS.Read,
       createdAt: expect.any(String),
+      expiresAt: null,
       lastUsedAt: null,
       callsThisWeek: 0,
     });
@@ -88,6 +91,28 @@ describe('MCP tokens API', () => {
     const listed = await list();
     expect(listed).toEqual({ available: true, items: [created.token] });
     expect(JSON.stringify(listed)).not.toContain(created.secret);
+  });
+
+  it('keeps the access level and the expiry the token was created with', async () => {
+    const before = Date.now();
+    const created = await create(a, {
+      name: 'Cursor',
+      includeNotes: false,
+      access: MCP_TOKEN_ACCESS.Save,
+      expiresInDays: 30,
+    });
+    expect(created.token.access).toBe(MCP_TOKEN_ACCESS.Save);
+    const expires = Date.parse(created.token.expiresAt ?? '');
+    expect(expires - before).toBeGreaterThanOrEqual(30 * 86_400_000 - 1000);
+    expect(expires - before).toBeLessThanOrEqual(30 * 86_400_000 + 60_000);
+
+    const never = await create(a, { name: 'Never', includeNotes: false, expiresInDays: null });
+    expect(never.token.expiresAt).toBeNull();
+    expect(never.token.access).toBe(MCP_TOKEN_ACCESS.Read);
+    expect((await list()).items.map((item) => item.access)).toEqual([
+      MCP_TOKEN_ACCESS.Read,
+      MCP_TOKEN_ACCESS.Save,
+    ]);
   });
 
   it('lists newest first with the calls of the last seven days', async () => {
@@ -117,6 +142,9 @@ describe('MCP tokens API', () => {
       { name: 'ok' },
       { name: 'ok', includeNotes: 'yes' },
       { name: 'ok', includeNotes: false, secret: 'mine' },
+      { name: 'ok', includeNotes: false, access: 'delete' },
+      { name: 'ok', includeNotes: false, expiresInDays: 7 },
+      { name: 'ok', includeNotes: false, expiresInDays: '30' },
     ]) {
       await a.post(TOKENS).send(body).expect(400);
     }

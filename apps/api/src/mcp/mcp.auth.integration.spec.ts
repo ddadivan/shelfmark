@@ -95,6 +95,20 @@ describe('MCP server authentication', () => {
     expectUnauthorized(await post(bearer()).send(PING));
   });
 
+  it('is a 401 once the token has expired, and works until then', async () => {
+    await t.db.prisma.mcpToken.update({
+      where: { id: token.id },
+      data: { expiresAt: new Date(Date.now() + 60_000) },
+    });
+    await post(bearer()).send(PING).expect(200);
+
+    await t.db.prisma.mcpToken.update({
+      where: { id: token.id },
+      data: { expiresAt: new Date(Date.now() - 1000) },
+    });
+    expectUnauthorized(await post(bearer()).send(PING));
+  });
+
   it('is a 403 for an account without Pro or after a downgrade', async () => {
     await t.db.prisma.user.update({ where: { id: users.owner.userId }, data: { plan: 'free' } });
     const res = await post(bearer()).send(PING).expect(403);
