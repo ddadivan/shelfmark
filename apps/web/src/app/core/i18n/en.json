@@ -2529,23 +2529,18 @@
       "title": "New view",
       "lead": "Start from the filter of the feed you are on, or change it here.",
       "action": "Save view",
-      "change": "Change",
       "composed": "The filter was filled in from your description.",
       "dropped": "Left out: {{names}}",
-      "compose": "Compose",
       "composing": "Composing…",
       "ideas": "Ideas",
       "ideaLabel": "Use the idea: {{name}}",
       "ideaPhrase": "Links about {{name}}",
       "unavailable": "Couldn’t compose a view right now. This didn’t count toward your limit; you can set the filter yourself.",
-      "skip": {
-        "or": "or",
-        "action": "save the current filter"
-      },
       "phrase": {
         "label": "Describe what to show",
         "placeholder": "videos about Angular I haven’t watched yet",
-        "hint": "For example: “articles about design from my Work folder”, “what to buy from clothes”, “recipes, newest first”."
+        "hint": "For example: “articles about design from my Work folder”, “what to buy from clothes”, “recipes, newest first”.",
+        "optional": "Optional: describe it and AI fills the rows below. Counts as one Ask question."
       },
       "where": {
         "label": "Where",
@@ -2578,8 +2573,9 @@
         "other": "Found {{count}} links"
       },
       "foundMore": "Found {{count}}+ links",
-      "andMore": "and {{count}} more",
-      "meta": "{{host}} · {{folder}}"
+      "fill": "Fill in",
+      "filled": "Done",
+      "showWhere": "Show links where"
     }
   },
   "feedback": {

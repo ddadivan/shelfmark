@@ -2591,23 +2591,18 @@
       "title": "Nouvelle vue",
       "lead": "Partez du filtre du flux actuel, ou modifiez-le ici.",
       "action": "Enregistrer la vue",
-      "change": "Modifier",
       "composed": "Le filtre a été rempli d’après votre description.",
       "dropped": "Laissé de côté : {{names}}",
-      "compose": "Composer",
       "composing": "Composition…",
       "ideas": "Idées",
       "ideaLabel": "Utiliser l’idée : {{name}}",
       "ideaPhrase": "Liens sur {{name}}",
       "unavailable": "Impossible de composer une vue pour l’instant. Cela n’a pas compté dans votre limite ; vous pouvez régler le filtre vous-même.",
-      "skip": {
-        "or": "ou",
-        "action": "enregistrer le filtre actuel"
-      },
       "phrase": {
         "label": "Décrivez ce qu’il faut afficher",
         "placeholder": "les vidéos sur Angular que je n’ai pas encore vues",
-        "hint": "Par exemple : « articles de design de mon dossier Travail », « quoi acheter côté vêtements », « recettes, les plus récentes d’abord »."
+        "hint": "Par exemple : « articles de design de mon dossier Travail », « quoi acheter côté vêtements », « recettes, les plus récentes d’abord ».",
+        "optional": "Facultatif : décrivez-la et l’IA remplit les lignes ci-dessous. Compte comme une question à Ask."
       },
       "where": {
         "label": "Où",
@@ -2641,8 +2636,9 @@
         "other": "{{count}} liens trouvés"
       },
       "foundMore": "Plus de {{count}} liens trouvés",
-      "andMore": "et {{count}} de plus",
-      "meta": "{{host}} · {{folder}}"
+      "fill": "Remplir",
+      "filled": "Fait",
+      "showWhere": "Afficher les liens où"
     }
   },
   "feedback": {

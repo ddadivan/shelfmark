@@ -136,7 +136,6 @@ describe('NewViewDialogComponent without AI', () => {
     expect(await type.getValueText()).toBe('Article');
     await until(() => {
       expect(text()).toMatch(/Found \d+ links?/u);
-      expect(root()?.querySelectorAll('.nv__link').length).toBeGreaterThan(0);
     });
     const where = await loader.getHarness(UiSelectHarness.with({ label: 'Where' }));
     await where.chooseOption({ text: /Favorites/u });
@@ -214,14 +213,15 @@ describe('NewViewDialogComponent with AI', () => {
     return ai;
   }
 
-  it('shows the phrase first with ideas, and Compose waits for a long enough phrase', async () => {
+  it('shows the optional phrase over the rows with ideas, and Fill in waits for a long enough phrase', async () => {
     const { loader, api } = await setup(aiOn());
     expect(root()?.querySelector(PHRASE)).not.toBeNull();
-    expect(root()?.querySelector('ui-select')).toBeNull();
+    expect(root()?.querySelector('ui-select')).not.toBeNull();
+    expect(text()).toContain('Show links where');
     await until(() => {
       expect(root()?.querySelectorAll('.nv__idea')).toHaveLength(3);
     });
-    const compose = await loader.getHarness(UiButtonHarness.with({ text: 'Compose' }));
+    const compose = await loader.getHarness(UiButtonHarness.with({ text: 'Fill in' }));
     await compose.click();
     expect(api.draftView).not.toHaveBeenCalled();
     typeInto(PHRASE, 'ab');
@@ -243,7 +243,7 @@ describe('NewViewDialogComponent with AI', () => {
   it('fills the rows from the draft with sparks, names the view and drops a spark on change', async () => {
     const { loader, api } = await setup(aiOn());
     typeInto(PHRASE, 'videos about docs');
-    const compose = await loader.getHarness(UiButtonHarness.with({ text: 'Compose' }));
+    const compose = await loader.getHarness(UiButtonHarness.with({ text: 'Fill in' }));
     await compose.click();
     await until(() => {
       expect(root()?.querySelector(NAME)).not.toBeNull();
@@ -265,19 +265,16 @@ describe('NewViewDialogComponent with AI', () => {
     });
   });
 
-  it('"Change" goes back to the phrase; a typed name is kept by the next draft', async () => {
+  it('keeps the phrase editable after a draft; a typed name is kept by the next draft', async () => {
     const { loader } = await setup(aiOn());
     typeInto(PHRASE, 'videos about docs');
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Compose' }))).click();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Fill in' }))).click();
     await until(() => {
-      expect(root()?.querySelector(NAME)).not.toBeNull();
+      expect(root()?.querySelector<HTMLInputElement>(NAME)?.value).toBe('Video docs');
     });
     typeInto(NAME, 'Mine');
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Change' }))).click();
-    await until(() => {
-      expect(root()?.querySelector(PHRASE)).not.toBeNull();
-    });
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Compose' }))).click();
+    typeInto(PHRASE, 'videos about docs again');
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Done' }))).click();
     await until(() => {
       expect(root()?.querySelector<HTMLInputElement>(NAME)?.value).toBe('Mine');
     });
@@ -291,12 +288,11 @@ describe('NewViewDialogComponent with AI', () => {
     };
     const { loader, api } = await setup(aiOn(quota));
     typeInto(PHRASE, 'videos about docs');
-    const compose = await loader.getHarness(UiButtonHarness.with({ text: 'Compose' }));
+    const compose = await loader.getHarness(UiButtonHarness.with({ text: 'Fill in' }));
     await compose.click();
     await until(() => {
       expect(text()).toContain('You’ve used today’s questions');
     });
-    expect(root()?.querySelector('ui-select')).toBeNull();
     api.draftView.mockReturnValue(throwError(() => mockHttpError(500)));
     await compose.click();
     await until(() => {
@@ -305,15 +301,11 @@ describe('NewViewDialogComponent with AI', () => {
     expect(document.querySelector('ui-toast')).toBeNull();
   });
 
-  it('"save the current filter" skips the phrase and shows the rows', async () => {
-    await setup(aiOn());
-    const skip = [...(root()?.querySelectorAll('button') ?? [])].find((button) =>
-      button.textContent?.includes('save the current filter'),
-    );
-    skip?.click();
-    await until(() => {
-      expect(root()?.querySelector('ui-select')).not.toBeNull();
-    });
-    expect(root()?.querySelector(PHRASE)).toBeNull();
+  it('saves the current filter without a phrase: Save view is always the main action', async () => {
+    const { loader, api } = await setup(aiOn());
+    expect(
+      await (await loader.getHarness(UiButtonHarness.with({ text: 'Save view' }))).isDisabled(),
+    ).toBe(false);
+    expect(api.draftView).not.toHaveBeenCalled();
   });
 });

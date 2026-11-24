@@ -2591,23 +2591,18 @@
       "title": "Nueva vista",
       "lead": "Empieza con el filtro de la lista en la que estás, o cámbialo aquí.",
       "action": "Guardar vista",
-      "change": "Cambiar",
       "composed": "El filtro se rellenó con tu descripción.",
       "dropped": "Se dejó fuera: {{names}}",
-      "compose": "Componer",
       "composing": "Componiendo…",
       "ideas": "Ideas",
       "ideaLabel": "Usar la idea: {{name}}",
       "ideaPhrase": "Enlaces sobre {{name}}",
       "unavailable": "Ahora no se puede componer una vista. No contó para tu límite; puedes ajustar el filtro tú mismo.",
-      "skip": {
-        "or": "o",
-        "action": "guardar el filtro actual"
-      },
       "phrase": {
         "label": "Describe qué mostrar",
         "placeholder": "los vídeos sobre Angular que aún no he visto",
-        "hint": "Por ejemplo: «artículos de diseño de mi carpeta Trabajo», «qué comprar de ropa», «recetas, las más recientes primero»."
+        "hint": "Por ejemplo: «artículos de diseño de mi carpeta Trabajo», «qué comprar de ropa», «recetas, las más recientes primero».",
+        "optional": "Opcional: descríbela y la IA rellena las filas de abajo. Cuenta como una pregunta a Ask."
       },
       "where": {
         "label": "Dónde",
@@ -2641,8 +2636,9 @@
         "other": "{{count}} enlaces encontrados"
       },
       "foundMore": "Más de {{count}} enlaces encontrados",
-      "andMore": "y {{count}} más",
-      "meta": "{{host}} · {{folder}}"
+      "fill": "Rellenar",
+      "filled": "Hecho",
+      "showWhere": "Mostrar enlaces donde"
     }
   },
   "feedback": {

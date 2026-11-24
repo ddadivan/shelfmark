@@ -5,7 +5,7 @@
   [error]="message()"
   [invalid]="showInvalid()"
   [disabled]="disabled()"
-  [labelHidden]="row()"
+  [labelHidden]="row() || labelHidden()"
   (click)="onHostClick($event)"
 >
   <button

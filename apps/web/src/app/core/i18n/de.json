@@ -2529,23 +2529,18 @@
       "title": "Neue Ansicht",
       "lead": "Starte mit dem Filter der aktuellen Liste oder ändere ihn hier.",
       "action": "Ansicht speichern",
-      "change": "Ändern",
       "composed": "Der Filter wurde aus deiner Beschreibung erstellt.",
       "dropped": "Nicht berücksichtigt: {{names}}",
-      "compose": "Erstellen",
       "composing": "Wird erstellt…",
       "ideas": "Ideen",
       "ideaLabel": "Idee übernehmen: {{name}}",
       "ideaPhrase": "Links zu {{name}}",
       "unavailable": "Gerade lässt sich keine Ansicht erstellen. Das zählt nicht zu deinem Limit; du kannst den Filter selbst einstellen.",
-      "skip": {
-        "or": "oder",
-        "action": "den aktuellen Filter speichern"
-      },
       "phrase": {
         "label": "Beschreibe, was gezeigt werden soll",
         "placeholder": "Videos über Angular, die ich noch nicht gesehen habe",
-        "hint": "Zum Beispiel: „Artikel über Design aus meinem Ordner Arbeit“, „was ich an Kleidung kaufen will“, „Rezepte, neueste zuerst“."
+        "hint": "Zum Beispiel: „Artikel über Design aus meinem Ordner Arbeit“, „was ich an Kleidung kaufen will“, „Rezepte, neueste zuerst“.",
+        "optional": "Optional: Beschreibe sie, und die KI füllt die Zeilen unten aus. Zählt als eine Ask-Frage."
       },
       "where": {
         "label": "Wo",
@@ -2578,8 +2573,9 @@
         "other": "{{count}} Links gefunden"
       },
       "foundMore": "Mehr als {{count}} Links gefunden",
-      "andMore": "und {{count}} weitere",
-      "meta": "{{host}} · {{folder}}"
+      "fill": "Ausfüllen",
+      "filled": "Fertig",
+      "showWhere": "Links zeigen, bei denen"
     }
   },
   "feedback": {

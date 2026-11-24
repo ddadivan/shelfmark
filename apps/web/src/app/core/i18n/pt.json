@@ -2591,23 +2591,18 @@
       "title": "Nova visualização",
       "lead": "Comece com o filtro da lista em que você está ou mude aqui.",
       "action": "Salvar visualização",
-      "change": "Alterar",
       "composed": "O filtro foi preenchido com a sua descrição.",
       "dropped": "Ficou de fora: {{names}}",
-      "compose": "Montar",
       "composing": "Montando…",
       "ideas": "Ideias",
       "ideaLabel": "Usar a ideia: {{name}}",
       "ideaPhrase": "Links sobre {{name}}",
       "unavailable": "Não foi possível montar uma visualização agora. Isso não contou no seu limite; você pode ajustar o filtro por conta própria.",
-      "skip": {
-        "or": "ou",
-        "action": "salvar o filtro atual"
-      },
       "phrase": {
         "label": "Descreva o que mostrar",
         "placeholder": "os vídeos sobre Angular que ainda não assisti",
-        "hint": "Por exemplo: “artigos de design da pasta Trabalho”, “o que comprar de roupa”, “receitas, mais recentes primeiro”."
+        "hint": "Por exemplo: “artigos de design da pasta Trabalho”, “o que comprar de roupa”, “receitas, mais recentes primeiro”.",
+        "optional": "Opcional: descreva e a IA preenche as linhas abaixo. Conta como uma pergunta ao Ask."
       },
       "where": {
         "label": "Onde",
@@ -2641,8 +2636,9 @@
         "other": "{{count}} links encontrados"
       },
       "foundMore": "Mais de {{count}} links encontrados",
-      "andMore": "e mais {{count}}",
-      "meta": "{{host}} · {{folder}}"
+      "fill": "Preencher",
+      "filled": "Pronto",
+      "showWhere": "Mostrar links em que"
     }
   },
   "feedback": {

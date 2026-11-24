@@ -717,3 +717,20 @@ describe('SelectComponent row appearance', () => {
     expect(await axeViolations(host)).toEqual([]);
   });
 });
+
+@Component({
+  imports: [SelectComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `<ui-select label="Folder" labelHidden [options]="[]" emptyLabel="Unsorted" />`,
+})
+class HiddenLabelHostComponent {}
+
+describe('SelectComponent labelHidden', () => {
+  it('keeps the label for assistive technology only', () => {
+    const fixture = TestBed.createComponent(HiddenLabelHostComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('.ui-field--label-hidden')).not.toBeNull();
+    expect(host.querySelector('label')?.textContent?.trim()).toBe('Folder');
+  });
+});
