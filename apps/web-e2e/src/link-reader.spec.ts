@@ -64,13 +64,13 @@ test.describe('Link page: Reader package (mock API)', () => {
     expect(box?.height).toBe(viewport?.height);
     await expect(page.getByRole('button', { name: 'Add link' })).toBeHidden();
     await expect(page.getByRole('separator', { name: 'Resize the list' })).toHaveCount(0);
-    await expect(panel.getByText(/^1 of \d+$/)).toBeVisible();
+    await expect(panel.getByText(/^\s*1 of \d+\s*$/)).toBeVisible();
 
     // ↓ steps to the next link and full screen stays.
     await page.keyboard.press('ArrowDown');
     const next = page.getByRole('region', { name: `Preview: ${SECOND}` });
     await expect(next).toBeVisible();
-    await expect(next.getByText(/^2 of \d+$/)).toBeVisible();
+    await expect(next.getByText(/^\s*2 of \d+\s*$/)).toBeVisible();
     await expect(next.getByRole('button', { name: 'Exit full screen' })).toBeVisible();
 
     // F toggles; Esc leaves full screen first, the next Esc closes the Link page.
@@ -95,13 +95,17 @@ test.describe('Link page: Reader package (mock API)', () => {
     await openLibrary(page);
     await previewFromMenu(page, FIRST);
     const panel = page.getByRole('region', { name: `Preview: ${FIRST}` });
-    await panel.getByRole('radio', { name: 'Reader' }).check();
+    // A click event on the radio itself (the segmented control's label sits over it).
+    await panel.getByRole('radio', { name: 'Reader' }).dispatchEvent('click');
+    await expect(panel.getByRole('radio', { name: 'Reader' })).toBeChecked();
     await panel.getByRole('button', { name: 'Full screen' }).click();
     await panel.getByRole('button', { name: 'Reading settings' }).click();
     const settings = page.getByRole('dialog', { name: 'Reading settings' });
     await expect(settings).toBeVisible();
     await expect(settings.getByRole('radiogroup', { name: 'Theme' })).toBeVisible();
-    await settings.getByRole('radio', { name: 'Sepia' }).check();
+    // A click event on the radio itself: the tile's swatch and the transparent input overlap.
+    await settings.getByRole('radio', { name: 'Sepia' }).dispatchEvent('click');
+    await expect(settings.getByRole('radio', { name: 'Sepia' })).toBeChecked();
     await expect(settings.getByRole('slider', { name: 'Text size' })).toHaveValue('18');
     await settings.getByRole('button', { name: 'Larger text' }).click();
     await expect(settings.getByRole('slider', { name: 'Text size' })).toHaveValue('19');

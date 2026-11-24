@@ -93,10 +93,13 @@ test.describe('link preview (mock API)', () => {
     await handle.press('ArrowRight');
     await expect(handle).toHaveAttribute('aria-valuenow', String(before + 16));
 
+    // Shelf: "Wider preview" and "Show the list" are items of the toolbar's ⋯ menu.
     const panel = page.getByRole('region', { name: `Preview: ${FIRST}` });
-    await panel.getByRole('button', { name: 'Wider preview' }).click();
+    await panel.getByRole('button', { name: 'More actions' }).click();
+    await page.getByRole('menuitem', { name: 'Wider preview' }).click();
     await expect(handle).toHaveCount(0);
-    await panel.getByRole('button', { name: 'Wider preview' }).click();
+    await panel.getByRole('button', { name: 'More actions' }).click();
+    await page.getByRole('menuitem', { name: 'Show the list' }).click();
     await expect(page.getByRole('separator', { name: 'Resize the list' })).toBeVisible();
   });
 
@@ -114,10 +117,11 @@ test.describe('link preview (mock API)', () => {
     await previewFromMenu(page, 'Page on github.com');
     const panel = page.getByRole('region', { name: 'Preview: Page on github.com' });
     await expect(
-      panel.getByRole('heading', { name: "github.com doesn't open inside other apps" }),
+      panel.getByRole('heading', { name: "github.com doesn't allow showing it here" }),
     ).toBeVisible();
     await expect(panel.locator('iframe')).toHaveCount(0);
-    await expect(panel.getByRole('button', { name: 'Open in new tab' })).toBeVisible();
+    await expect(panel.getByRole('button', { name: 'Open in browser' }).last()).toBeVisible();
+    await expect(panel.getByRole('button', { name: 'Open in Reader' })).toBeVisible();
     // Only the user adds a site to the new-tab list (#555): the check leaves it unticked.
     await expect(
       panel.getByRole('checkbox', { name: 'Always open github.com in a new tab' }),

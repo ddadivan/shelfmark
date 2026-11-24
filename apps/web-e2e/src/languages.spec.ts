@@ -72,21 +72,19 @@ test.describe('interface languages (mock API)', () => {
     page,
   }) => {
     await seedSession(page);
-    // The date preview lives in Appearance since #315.
-    await page.goto('/settings/appearance');
+    // Shelf block 5: the language, the dates and the clock share "Language and region".
+    await page.goto('/settings/language');
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Language and region' }),
+    ).toBeVisible();
     await expect(preview(page)).toContainText(/\d/);
     const english = (await preview(page).textContent()) ?? '';
-    await page.goto('/settings/language');
-    await expect(page.getByRole('heading', { level: 1, name: 'Language' })).toBeVisible();
-    // Only the language here: a plain list with flags, no dropdown and no dates.
-    await expect(page.getByRole('main').getByRole('combobox')).toHaveCount(0);
-    await expect(preview(page)).toHaveCount(0);
     await expect(page.locator('ui-flag')).toHaveCount(7);
     await page.evaluate('window.__noReload = true');
 
     await chooseLanguage(page, 'Interface language', 'Français');
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Langue' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Langue et région' })).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
     await expect(
       page
@@ -94,15 +92,14 @@ test.describe('interface languages (mock API)', () => {
         .getByRole('radio', { name: 'Français' }),
     ).toBeChecked();
     expect(await page.evaluate('window.__noReload === true')).toBe(true);
-    await page.goto('/settings/appearance');
     await expect(preview(page)).not.toHaveText(english);
     await expect(preview(page)).toContainText(
       /(janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc)/,
     );
 
-    // A full load (the dates page above was one) keeps French.
-    await page.goto('/settings/language');
-    await expect(page.getByRole('heading', { level: 1, name: 'Langue' })).toBeVisible();
+    // A full load keeps French.
+    await page.reload();
+    await expect(page.getByRole('heading', { level: 1, name: 'Langue et région' })).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
 
     await page.goto('/links');
@@ -114,12 +111,14 @@ test.describe('interface languages (mock API)', () => {
   }) => {
     await seedSession(page);
     await page.goto('/settings/language');
-    await expect(page.getByRole('heading', { level: 1, name: 'Language' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Language and region' }),
+    ).toBeVisible();
     await page.evaluate('window.__noReload = true');
 
     await chooseLanguage(page, 'Interface language', 'Українська');
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Мова' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Мова та регіон' })).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
     await expect(
       page
@@ -128,7 +127,6 @@ test.describe('interface languages (mock API)', () => {
     ).toBeChecked();
     expect(await page.evaluate('window.__noReload === true')).toBe(true);
 
-    await page.goto('/settings/appearance');
     await expect(preview(page)).toContainText(
       /(січ|лют|бер|квіт|трав|черв|лип|серп|вер|жовт|лист|груд)/,
     );
@@ -151,11 +149,11 @@ test.describe('interface languages (mock API)', () => {
     });
   });
 
-  test('date format, clock and week start (Appearance, #315) apply to the preview and the app', async ({
+  test('date format, clock and week start (Language and region) apply to the preview and the app', async ({
     page,
   }) => {
     await seedSession(page);
-    await page.goto('/settings/appearance');
+    await page.goto('/settings/language');
     await expect(preview(page)).toContainText(/\d/);
 
     await chooseOption(page, 'Date format', await isoSample(page));

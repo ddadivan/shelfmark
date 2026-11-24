@@ -199,7 +199,7 @@ test.describe('links feed (mock API)', () => {
     await expect(page.locator('ui-card').first()).toContainText('Page on example.org');
   });
 
-  test('the shell fills the viewport and the empty state sits in the middle of the free space', async ({
+  test('the shell fills the viewport and an empty library shows the first run under the head', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -208,7 +208,8 @@ test.describe('links feed (mock API)', () => {
       [MOCK_LINKS_SCENARIO.key, MOCK_LINKS_SCENARIO.empty],
     );
     await page.goto('/links');
-    const title = page.getByRole('heading', { name: 'Your links will live here' });
+    // Shelf block 6a: All links of an empty library is the first run, not an empty state.
+    const title = page.getByRole('heading', { name: 'Your shelf is empty' });
     await expect(title).toBeVisible();
 
     const box = async (selector: string) => {
@@ -220,31 +221,19 @@ test.describe('links feed (mock API)', () => {
     };
     const sidebar = await box('.shell__sidebar');
     const main = await box('.shell__main');
-    // Sidebar card and main column both run to the bottom of the window; the
-    // card and the content are inset by the 12px body padding.
-    const INSET = 12;
+    // Sidebar and main column both run to the bottom of the window; the document never scrolls.
     for (const column of [sidebar, main]) {
-      expect(column.y + column.height).toBeGreaterThanOrEqual(900 - INSET - 1);
+      expect(column.y + column.height).toBeGreaterThanOrEqual(900 - 1);
     }
     expect(await page.evaluate('document.documentElement.scrollHeight')).toBeLessThanOrEqual(900);
 
-    // The state is the page card (#315): it fills the free space under the toolbar (and under the
-    // extension banner, #490, which desktop Chromium shows) down to the bottom padding of the
-    // column, and its content sits in the middle of it.
-    const state = await box('ui-empty-state');
+    // The first run follows the page head (title and toolbar), inside the main column.
+    const firstRun = await box('app-first-run');
     const toolbar = await box('.library__toolbar');
-    const banner = await page.locator('app-extension-banner section').boundingBox();
-    const freeTop = Math.max(toolbar.y + toolbar.height, banner ? banner.y + banner.height : 0);
-    const freeBottom = main.y + main.height;
-    expect(state.y).toBeGreaterThanOrEqual(freeTop);
-    expect(freeBottom - (state.y + state.height)).toBeLessThanOrEqual(32);
-    expect(state.height).toBeGreaterThan((freeBottom - freeTop) * 0.7);
-    const art = await box('ui-empty-state .ui-empty-state__stage');
-    const actions = await box('ui-empty-state .ui-empty-state__actions');
-    const gapAbove = art.y - state.y;
-    const gapBelow = state.y + state.height - (actions.y + actions.height);
-    expect(Math.abs(gapAbove - gapBelow)).toBeLessThanOrEqual(24);
-    expect(gapAbove).toBeGreaterThan(40);
+    expect(firstRun.y).toBeGreaterThanOrEqual(toolbar.y + toolbar.height);
+    expect(firstRun.x).toBeGreaterThanOrEqual(main.x);
+    expect(firstRun.x + firstRun.width).toBeLessThanOrEqual(main.x + main.width);
+    await expect(page.getByRole('main').getByRole('listitem')).toHaveCount(3);
   });
 
   test.describe('pending image capture', () => {
