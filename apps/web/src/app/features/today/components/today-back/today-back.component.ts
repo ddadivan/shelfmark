@@ -24,7 +24,7 @@ import { TodayThumbComponent } from '../today-thumb/today-thumb.component';
 /**
  * "Back to these" of Today (Shelf): the due reminders, the longest due first. Each tile opens its
  * link; Done clears the reminder, Snooze offers the presets (a bottom sheet below 64em) or a date.
- * "Revisit" leads to the Reminders page. With nothing due it says so.
+ * "Revisit" leads to the Revisit queue (Shelf). With nothing due it says so.
  */
 @Component({
   selector: 'app-today-back',
@@ -53,7 +53,7 @@ export class TodayBackComponent {
   private readonly actions = inject(LinkActionsService);
   protected readonly newTab = inject(UserSettingsStore).openInNewTab;
   protected readonly ICON_SIZE = ICON_SIZE;
-  protected readonly remindersHref = `/${APP_PATH.Reminders}`;
+  protected readonly remindersHref = `/${APP_PATH.Revisit}`;
   protected readonly safeHref = safeHref;
 
   private readonly now = signal(Date.now());

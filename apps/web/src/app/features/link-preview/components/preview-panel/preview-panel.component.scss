@@ -19,19 +19,31 @@
 
 .preview-panel__bar {
   display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: 3.5rem;
+  padding: var(--space-2) var(--space-3);
+  border-block-end: 1px solid var(--border);
+}
+
+// Shelf `lp-tools`: Site | Reader, Aa, Open, star, Details and ⋯, 4px apart. In a narrow panel
+// they wrap onto a second line inside their own box, so × close stays at the top right.
+.preview-panel__tools {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-inline-size: 0;
   align-items: center;
   gap: var(--space-1);
-  min-block-size: 3.75rem;
-  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
-  border-block-end: 1px solid var(--border);
 }
 
 .preview-panel__title {
   display: flex;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   flex-direction: column;
-  gap: 0.125rem;
-  min-inline-size: 0;
+  min-inline-size: 6rem;
   padding-inline: var(--space-1);
 }
 
@@ -41,7 +53,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  @include type(label);
+  @include type(secondary);
+
+  font-weight: 600;
 }
 
 .preview-panel__address {
@@ -61,15 +75,31 @@
 }
 
 .preview-panel__sep {
-  block-size: 1.5rem;
+  block-size: 1.25rem;
   margin-inline: var(--space-1);
   border-inline-start: 1px solid var(--border);
 }
 
 .preview-panel__star--on {
-  color: var(--accent);
+  color: var(--star);
+}
+
+// The page and, when open, the 296px details column beside it (Shelf `lp-body.details`).
+.preview-panel__main {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(0, 1fr);
+  min-block-size: 0;
+
+  &--details {
+    grid-template-columns: minmax(0, 1fr) #{rem(296px)};
+  }
 }
 
 .preview-panel__body {
-  flex: 1 1 auto;
+  min-block-size: 0;
+}
+
+.preview-panel__details {
+  border-inline-start: 1px solid var(--border);
 }

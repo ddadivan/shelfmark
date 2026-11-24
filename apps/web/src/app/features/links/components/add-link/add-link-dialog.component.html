@@ -48,22 +48,32 @@
       [closeLabel]="'links.add.close' | transloco"
       size="md"
     >
-      <div class="add-link__fields" [attr.aria-busy]="aiFill.busy() ? 'true' : null">
+      <div
+        class="add-link__fields"
+        [class.add-link__fields--panel]="!editing"
+        [attr.aria-busy]="aiFill.busy() ? 'true' : null"
+      >
         <ui-input
+          class="add-link__url"
           (paste)="severalLinks.onUrlPaste($event)"
           (focusout)="onUrlBlur()"
           [type]="INPUT_TYPE.Url"
+          [icon]="editing ? undefined : 'link'"
+          [labelHidden]="!editing"
           [label]="'links.add.url.label' | transloco"
-          [placeholder]="'links.add.url.placeholder' | transloco"
-          [hint]="editing ? '' : ('links.add.url.hint' | transloco)"
+          [placeholder]="
+            (editing ? 'links.add.url.placeholder' : 'links.add.url.panel') | transloco
+          "
           [loading]="shownState() === PREVIEW_STATE.Loading"
           [formField]="form.url"
           [uiShake]="urlShakes()"
         />
-        @if (!editing) {
-          <!-- Paste many (story 3, #265) made findable (#315). -->
-          <div class="add-link__several">
-            <span class="add-link__several-hint">{{ 'links.add.several.offer' | transloco }}</span>
+        @if (urlEmpty()) {
+          <!-- Shelf "Save: empty": the tip, and paste many made findable (#315). -->
+          <div class="add-link__tip">
+            <p class="add-link__tip-text">
+              {{ (mac ? 'links.add.tip.mac' : 'links.add.tip.other') | transloco }}
+            </p>
             <ui-button
               class="add-link__several-open"
               [variant]="BUTTON_VARIANT.Ghost"
@@ -104,43 +114,55 @@
                 <div class="add-link__preview add-link__preview--loading" aria-busy="true">
                   <ui-skeleton [shape]="SKELETON_SHAPE.Preview" />
                 </div>
-                <p class="add-link__note add-link__note--loading">
-                  {{ 'links.add.preview.loadingHint' | transloco }}
-                </p>
               }
               @case (PREVIEW_STATE.Failed) {
-                <ui-notice [kind]="NOTICE_KIND.Danger">{{
-                  'links.add.preview.failed' | transloco
-                }}</ui-notice>
+                <p class="add-link__state" role="alert">
+                  <ui-icon class="add-link__state-icon" name="external" [size]="ICON_SIZE.Sm" />
+                  <span>{{ 'links.add.preview.failed' | transloco }}</span>
+                </p>
               }
               @case (PREVIEW_STATE.Ready) {
-                @if (duplicate(); as existing) {
-                  <ui-notice>{{
-                    'links.add.duplicate.text'
-                      | transloco
-                        : {
-                            folder:
-                              existing.folderName ?? ('links.add.folder.unsorted' | transloco),
-                          }
-                  }}</ui-notice>
-                }
                 @if (noPreview()) {
-                  <ui-notice>{{ 'links.add.preview.unavailable' | transloco }}</ui-notice>
+                  <p class="add-link__state">
+                    <ui-icon class="add-link__state-icon" name="info" [size]="ICON_SIZE.Sm" />
+                    <span>{{ 'links.add.preview.unavailable' | transloco }}</span>
+                  </p>
                 }
                 @if (previewData(); as data) {
                   <div class="add-link__preview">
                     <span class="add-link__thumb" aria-hidden="true">{{ previewHost()[0] }}</span>
                     <div class="add-link__preview-main">
+                      <div class="add-link__title">{{ data.title }}</div>
                       <div class="add-link__meta">
                         <ui-favicon [letter]="previewHost()[0]" />
                         <span class="add-link__host">{{ previewHost() }}</span>
                       </div>
-                      <div class="add-link__title">{{ data.title }}</div>
-                      @if (data.description) {
+                      @if (editing && data.description) {
                         <div class="add-link__description">{{ data.description }}</div>
                       }
-                      <div class="add-link__note">{{ 'links.add.preview.filled' | transloco }}</div>
                     </div>
+                  </div>
+                }
+                @if (duplicate(); as existing) {
+                  <div class="add-link__state add-link__state--warn">
+                    <ui-icon class="add-link__state-icon" name="bell" [size]="ICON_SIZE.Sm" />
+                    <span class="add-link__state-text">{{
+                      'links.add.duplicate.panel'
+                        | transloco
+                          : {
+                              folder:
+                                existing.folderName ?? ('links.add.folder.unsorted' | transloco),
+                            }
+                    }}</span>
+                    @if (!editing) {
+                      <ui-button
+                        class="add-link__state-action"
+                        [variant]="BUTTON_VARIANT.Ghost"
+                        size="sm"
+                        (click)="openExisting()"
+                        >{{ 'links.add.actions.open' | transloco }}</ui-button
+                      >
+                    }
                   </div>
                 }
               }
@@ -148,83 +170,107 @@
           </div>
         </div>
 
-        <ui-input [label]="'links.add.titleField.label' | transloco" [formField]="form.title" />
-
-        @if (summary.shown()) {
-          <app-summary-field
-            [field]="form.summary"
-            [source]="summary.source()"
-            [canRewrite]="summary.canRewrite()"
-            [rewriting]="summary.rewriting()"
-            (rewrite)="summary.rewrite()"
-          />
+        @if (goesShown()) {
+          <ng-container [ngTemplateOutlet]="folderField" />
         }
 
-        @if (ruleChip(); as chip) {
-          <!-- A domain rule filled folder and tags (#398); removing the chip takes them out. -->
-          <div class="add-link__rule">
-            <ui-chip
-              variant="neutral"
-              icon="globe"
-              removable
-              [removeLabel]="'links.add.rule.remove' | transloco: { domain: chip.domain }"
-              (removed)="dismissRule()"
-              >{{ 'links.add.rule.chip' | transloco: chip }}</ui-chip
-            >
+        @if (detailsShown()) {
+          <ui-input [label]="'links.add.titleField.label' | transloco" [formField]="form.title" />
+
+          @if (summary.shown()) {
+            <app-summary-field
+              [field]="form.summary"
+              [source]="summary.source()"
+              [canRewrite]="summary.canRewrite()"
+              [rewriting]="summary.rewriting()"
+              (rewrite)="summary.rewrite()"
+            />
+          }
+
+          @if (editing) {
+            <ng-container [ngTemplateOutlet]="folderField" />
+          }
+
+          <div class="add-link__group">
+            <ui-tag-input
+              [label]="'links.add.tags.label' | transloco"
+              [placeholder]="'links.add.tags.placeholder' | transloco"
+              [suggestions]="tagSuggestions()"
+              [maxTags]="LINK_LIMIT.TagsMax"
+              [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
+              [createLabel]="'links.add.tags.create' | transloco"
+              [removeLabel]="'links.add.tags.remove' | transloco"
+              [addedLabel]="'links.add.tags.added' | transloco"
+              [removedLabel]="'links.add.tags.removed' | transloco"
+              [duplicateLabel]="'links.add.tags.duplicate' | transloco"
+              [listLabel]="'links.add.tags.list' | transloco"
+              [formField]="form.tags"
+            />
+            <app-add-link-ai-tags />
           </div>
-        }
 
-        <div class="add-link__group">
-          <ui-select
-            [label]="'links.add.folder.label' | transloco"
-            [options]="folderOptions()"
-            [emptyLabel]="'links.add.folder.unsorted' | transloco"
-            [searchLabel]="'links.add.folder.searchLabel' | transloco"
-            [noResultsLabel]="'links.add.folder.noResults' | transloco"
-            [createLabel]="'links.add.folder.create' | transloco"
-            searchable
-            [formField]="form.folderId"
-            (created)="onFolderCreated($event)"
+          <!-- The note is the user's own: last, set apart from what Fill in with AI can change. -->
+          <ui-textarea
+            class="add-link__own-note"
+            [label]="'links.add.note.label' | transloco"
+            [placeholder]="'links.add.note.placeholder' | transloco"
+            [hint]="editing ? ('links.add.note.hint' | transloco) : ''"
+            [counterLabel]="'links.add.note.counter' | transloco"
+            [rows]="2"
+            [formField]="form.note"
           />
-          <app-add-link-ai-folder />
-        </div>
 
-        <div class="add-link__group">
-          <ui-tag-input
-            [label]="'links.add.tags.label' | transloco"
-            [placeholder]="'links.add.tags.placeholder' | transloco"
-            [suggestions]="tagSuggestions()"
-            [maxTags]="LINK_LIMIT.TagsMax"
-            [maxTagsLabel]="'links.add.tags.max' | transloco: { max: LINK_LIMIT.TagsMax }"
-            [createLabel]="'links.add.tags.create' | transloco"
-            [removeLabel]="'links.add.tags.remove' | transloco"
-            [addedLabel]="'links.add.tags.added' | transloco"
-            [removedLabel]="'links.add.tags.removed' | transloco"
-            [duplicateLabel]="'links.add.tags.duplicate' | transloco"
-            [listLabel]="'links.add.tags.list' | transloco"
-            [formField]="form.tags"
-          />
-          <app-add-link-ai-tags />
-        </div>
+          @if (!editing) {
+            <!-- Shelf: Remind me… and Favorite, applied once the link is saved. -->
+            <div class="add-link__extras">
+              <ui-button
+                size="sm"
+                iconLeft="bell"
+                [uiMenuTrigger]="remindMenu"
+                [ariaLabel]="
+                  extras.remindLabel()
+                    ? ('links.add.extras.remindSet' | transloco: { when: extras.remindLabel() })
+                    : ('links.add.extras.remind' | transloco)
+                "
+                >{{ extras.remindLabel() ?? ('links.add.extras.remind' | transloco) }}</ui-button
+              >
+              <ui-menu #remindMenu [ariaLabel]="'links.add.extras.remindMenu' | transloco">
+                @for (option of extras.presets; track option.preset) {
+                  <ui-menu-item
+                    [shortcut]="extras.hint(option)"
+                    (activated)="extras.choose(option)"
+                  >
+                    {{ 'reminders.preset.' + option.preset | transloco }}
+                  </ui-menu-item>
+                }
+                @if (extras.remindAt()) {
+                  <ui-menu-separator />
+                  <ui-menu-item icon="close" (activated)="extras.choose(null)">
+                    {{ 'links.add.extras.noReminder' | transloco }}
+                  </ui-menu-item>
+                }
+              </ui-menu>
+              <ui-button
+                size="sm"
+                [iconLeft]="extras.favorite() ? 'star-filled' : 'star'"
+                [ariaPressed]="extras.favorite()"
+                (click)="extras.toggleFavorite()"
+                >{{ 'links.add.extras.favorite' | transloco }}</ui-button
+              >
+            </div>
+          }
 
-        <!-- The note is the user's own: last, set apart from what Fill in with AI can change. -->
-        <ui-textarea
-          class="add-link__own-note"
-          [label]="'links.add.note.label' | transloco"
-          [placeholder]="'links.add.note.placeholder' | transloco"
-          [hint]="'links.add.note.hint' | transloco"
-          [counterLabel]="'links.add.note.counter' | transloco"
-          [rows]="2"
-          [formField]="form.note"
-        />
-
-        @if (editing) {
-          <ui-select
-            [label]="'links.kind.label' | transloco"
-            [options]="kindOptions()"
-            [formField]="form.kind"
-          />
-          <ui-checkbox [label]="'links.edit.favorite' | transloco" [formField]="form.isFavorite" />
+          @if (editing) {
+            <ui-select
+              [label]="'links.kind.label' | transloco"
+              [options]="kindOptions()"
+              [formField]="form.kind"
+            />
+            <ui-checkbox
+              [label]="'links.edit.favorite' | transloco"
+              [formField]="form.isFavorite"
+            />
+          }
         }
 
         @if (saveError(); as key) {
@@ -258,6 +304,42 @@
         }
       </div>
 
+      <ng-template #folderField>
+        <div class="add-link__group">
+          @if (ruleChip(); as chip) {
+            <!-- A domain rule filled folder and tags (#398); removing the chip takes them out. -->
+            <div class="add-link__rule">
+              <ui-chip
+                variant="neutral"
+                icon="globe"
+                removable
+                [removeLabel]="'links.add.rule.remove' | transloco: { domain: chip.domain }"
+                (removed)="dismissRule()"
+                >{{ 'links.add.rule.chip' | transloco: chip }}</ui-chip
+              >
+            </div>
+          }
+          <ui-select
+            [label]="'links.add.folder.label' | transloco"
+            [appearance]="editing ? SELECT_APPEARANCE.Field : SELECT_APPEARANCE.Row"
+            [rowLead]="'links.add.goes.lead' | transloco"
+            [rowNote]="
+              ruleChip() ? ('links.add.goes.rule' | transloco: { domain: ruleChip()?.domain }) : ''
+            "
+            [rowAction]="'links.add.goes.change' | transloco"
+            [options]="folderOptions()"
+            [emptyLabel]="'links.add.folder.unsorted' | transloco"
+            [searchLabel]="'links.add.folder.searchLabel' | transloco"
+            [noResultsLabel]="'links.add.folder.noResults' | transloco"
+            [createLabel]="'links.add.folder.create' | transloco"
+            searchable
+            [formField]="form.folderId"
+            (created)="onFolderCreated($event)"
+          />
+          <app-add-link-ai-folder />
+        </div>
+      </ng-template>
+
       @if (editing) {
         <!-- Icon-only (its name is the tooltip) while "Fill in with AI" shares the row on a tablet
              and wider; with AI off, and on the phone sheet, it keeps its label. -->
@@ -283,12 +365,11 @@
            stay on the right; nothing while hidden. -->
       <app-add-link-ai-fill slot="footer" />
 
-      <!-- The save hint makes room for "Fill in with AI" while it shows (the row stays one line). -->
+      <!-- Shelf: "Paste to start", then "Enter to save · Esc to close" (the hint makes room for
+           "Fill in with AI" while it shows; a phone has no keys to press). -->
       @if (!editing && !phone() && !aiFill.available()) {
         <span slot="footer" class="add-link__shortcut">
-          <kbd>{{ (mac ? 'links.add.shortcut.cmd' : 'links.add.shortcut.ctrl') | transloco }}</kbd>
-          <kbd>{{ 'links.add.shortcut.enter' | transloco }}</kbd>
-          {{ 'links.add.shortcut.create' | transloco }}
+          {{ (urlEmpty() ? 'links.add.footer.start' : 'links.add.footer.keys') | transloco }}
         </span>
       }
       <!-- Cancel and the main action are one group that never splits across rows. -->
@@ -302,18 +383,13 @@
           (click)="cancel()"
           >{{ 'links.add.actions.cancel' | transloco }}</ui-button
         >
-        @if (duplicate() && !editing) {
-          <ui-button class="add-link__action" [block]="phone()" (click)="openExisting()">{{
-            'links.add.actions.openSaved' | transloco
-          }}</ui-button>
-        }
         <ui-button
           class="add-link__action"
           [block]="phone()"
           [type]="BUTTON_TYPE.Submit"
           [variant]="BUTTON_VARIANT.Primary"
           [loading]="saving()"
-          [disabled]="aiFill.busy()"
+          [disabled]="aiFill.busy() || urlEmpty()"
           ><ui-text-swap
             [text]="
               (editing

@@ -230,7 +230,8 @@
         "hint": "Füge einen Link ein — Titel und Vorschau füllen sich von selbst",
         "required": "Gib einen Link ein",
         "invalid": "Gib eine Adresse ein, die mit http:// oder https:// beginnt",
-        "tooLong": "Der Link ist zu lang (höchstens {{max}} Zeichen)"
+        "tooLong": "Der Link ist zu lang (höchstens {{max}} Zeichen)",
+        "panel": "Link einfügen, oder mehrere"
       },
       "shortcut": {
         "cmd": "⌘",
@@ -242,7 +243,7 @@
         "loading": "Vorschau wird geladen",
         "loadingHint": "Du kannst währenddessen weiter eine Notiz schreiben und einen Ordner wählen.",
         "filled": "Von der Seite übernommen. Du kannst den Titel bearbeiten.",
-        "failed": "Vorschau konnte nicht geladen werden. Der Link wird mit seiner Adresse als Titel gespeichert — du kannst ihn umbenennen.",
+        "failed": "Keine Vorschau verfügbar. Der Link wird mit seiner Adresse als Titel gespeichert; du kannst ihn später umbenennen.",
         "ready": "Vorschau geladen: {{title}}",
         "unavailable": "Für diese Seite gibt es keine Vorschau. Der Link wird mit seiner Adresse als Titel gespeichert — du kannst ihn umbenennen."
       },
@@ -280,7 +281,8 @@
         "tooLong": "Die Notiz ist zu lang (höchstens {{max}} Zeichen)"
       },
       "duplicate": {
-        "text": "Du hast diesen Link schon in {{folder}} gespeichert. Öffne ihn oder speichere ihn noch einmal."
+        "text": "Du hast diesen Link schon in {{folder}} gespeichert. Öffne ihn oder speichere ihn noch einmal.",
+        "panel": "Bereits in {{folder}} gespeichert."
       },
       "saveFailed": "Der Link konnte nicht gespeichert werden. Versuch es noch einmal.",
       "saveFailedLimit": "Du hast das Limit von {{max}} gespeicherten Links erreicht. Lösche einige, um mehr zu speichern.",
@@ -290,11 +292,12 @@
       "actions": {
         "cancel": "Abbrechen",
         "openSaved": "Gespeicherten öffnen",
-        "create": "Link erstellen",
-        "createAnyway": "Trotzdem erstellen",
-        "creating": "Wird erstellt…",
+        "create": "Speichern",
+        "createAnyway": "Trotzdem speichern",
+        "creating": "Wird gespeichert…",
         "saveAnyway": "Trotzdem speichern",
-        "saving": "Wird gespeichert…"
+        "saving": "Wird gespeichert…",
+        "open": "Öffnen"
       },
       "several": {
         "offer": "Mehrere Links? Füge alle auf einmal ein",
@@ -311,6 +314,28 @@
       "rule": {
         "chip": "Regel: {{domain}} → {{target}}",
         "remove": "Regel für {{domain}} nicht anwenden"
+      },
+      "tip": {
+        "mac": "Tipp: Drücke ⌘ V irgendwo in Shelfmark, um Kopiertes zu speichern. Mehrere Links auf einmal gehen auch.",
+        "other": "Tipp: Drücke Strg V irgendwo in Shelfmark, um Kopiertes zu speichern. Mehrere Links auf einmal gehen auch."
+      },
+      "goes": {
+        "lead": "Kommt in",
+        "rule": "Regel für {{domain}}",
+        "change": "Ändern"
+      },
+      "extras": {
+        "remind": "Erinnere mich…",
+        "remindSet": "Erinnerung: {{when}}",
+        "remindMenu": "Erinnere mich",
+        "noReminder": "Keine Erinnerung",
+        "favorite": "Favorit",
+        "favoriteFailed": "Gespeichert, aber nicht zu den Favoriten hinzugefügt",
+        "remindFailed": "Gespeichert, aber die Erinnerung wurde nicht gesetzt"
+      },
+      "footer": {
+        "start": "Zum Start einfügen",
+        "keys": "Enter zum Speichern · Esc zum Schließen"
       }
     },
     "edit": {
@@ -4169,15 +4194,117 @@
     "resize": "Listenbreite ändern",
     "resizeHint": "Ziehen oder ← und → nutzen. Doppelklick setzt zurück.",
     "blocked": {
-      "title": "{{domain}} lässt sich nicht in anderen Apps öffnen",
-      "text": "Die Website blockiert das, nicht Shelfmark. Öffne sie in einem neuen Tab.",
-      "open": "In neuem Tab öffnen",
-      "always": "{{domain}} immer in neuem Tab öffnen"
+      "title": "{{domain}} erlaubt die Anzeige hier nicht",
+      "text": "Lies sie hier in der Leseansicht oder öffne sie im Browser.",
+      "open": "Im Browser öffnen",
+      "always": "{{domain}} immer in neuem Tab öffnen",
+      "reader": "In der Leseansicht öffnen"
     },
     "keys": {
       "next": "Nächster Link",
       "newTab": "Neuer Tab",
       "close": "Schließen"
+    },
+    "mode": {
+      "label": "Anzeigen als",
+      "site": "Website",
+      "reader": "Leseansicht"
+    },
+    "reading": {
+      "title": "Leseeinstellungen",
+      "size": {
+        "label": "Textgröße",
+        "s": "S",
+        "m": "M",
+        "l": "L"
+      },
+      "font": {
+        "label": "Schrift",
+        "sans": "Sans",
+        "serif": "Serif",
+        "readable": "Gut lesbar"
+      },
+      "width": {
+        "label": "Zeilenbreite",
+        "narrow": "Schmal",
+        "wide": "Breit"
+      },
+      "tone": {
+        "label": "Seite",
+        "app": "Wie die App",
+        "sepia": "Sepia"
+      }
+    },
+    "reader": {
+      "loading": "Text wird geladen",
+      "minutes": "{{count}} Min. Lesezeit",
+      "noText": "Diese Seite hat keinen Artikeltext. Die Leseansicht zeigt das Bild, die Beschreibung der Seite und deine Notiz.",
+      "noTextVideo": "Ein Video hat keinen Text zum Lesen. Die Leseansicht zeigt Bild, Beschreibung und deine Notiz; abspielen kannst du es auf der Website.",
+      "blockedNotice": "Leseansicht: {{domain}} erlaubt nicht, die Seite hier zu zeigen.",
+      "openSite": "{{domain}} öffnen"
+    },
+    "details": {
+      "toggle": "Details",
+      "region": "Details",
+      "title": "Titel",
+      "note": "Notiz",
+      "folder": "Ordner",
+      "moveLabel": "Ordner: {{folder}}. In einen anderen Ordner verschieben",
+      "tags": "Tags",
+      "addTag": "Tag hinzufügen",
+      "reminder": "Erinnerung",
+      "remind": "Erinnere mich…",
+      "reminderSet": "{{when}}",
+      "summary": "Zusammenfassung",
+      "address": "Adresse",
+      "saved": "Gespeichert",
+      "savedOpened": "{{saved}} · geöffnet {{opened}}",
+      "saveFailed": "Änderung konnte nicht gespeichert werden",
+      "retry": "Erneut versuchen"
+    }
+  },
+  "revisit": {
+    "title": "Wiedersehen",
+    "lead": {
+      "one": "{{count}} wartet. Erinnerungen, halb gelesene Artikel und gespeicherte, vergessene Links.",
+      "other": "{{count}} warten. Erinnerungen, halb gelesene Artikel und gespeicherte, vergessene Links."
+    },
+    "leadEmpty": "Fällige, halb gelesene oder vergessene Links kommen hierher zurück.",
+    "loading": "Wird geladen",
+    "empty": {
+      "title": "Nichts wartet",
+      "text": "Alles erledigt. Links kommen hierher zurück, wenn eine Erinnerung fällig ist oder du sie lange nicht geöffnet hast."
+    },
+    "due": {
+      "title": "Fällig",
+      "done": "Erledigt",
+      "snooze": "Später",
+      "snoozeLabel": "{{title}} später erinnern",
+      "doneLabel": "Erledigt: {{title}}"
+    },
+    "continue": {
+      "title": "Weiterlesen",
+      "read": "{{percent}} % gelesen",
+      "left": "noch {{count}} Min.",
+      "action": "Weiter"
+    },
+    "forgotten": {
+      "title": "Diese Woche vergessen",
+      "lead": "Du hast sie vor einer Weile gespeichert und seitdem nicht geöffnet.",
+      "saved": "gespeichert im {{month}}",
+      "open": "Öffnen",
+      "openLabel": "{{title}} öffnen",
+      "later": "Später",
+      "notInterested": "Kein Interesse"
+    },
+    "recent": {
+      "title": "Zuletzt geöffnet",
+      "window": "letzte 30 Tage",
+      "options": "Verlaufsoptionen",
+      "all": "Alle anzeigen",
+      "clear": "Verlauf löschen",
+      "clearTitle": "Verlauf löschen?",
+      "clearText": "Deine Links bleiben gespeichert; nur die Liste der geöffneten verschwindet."
     }
   }
 }

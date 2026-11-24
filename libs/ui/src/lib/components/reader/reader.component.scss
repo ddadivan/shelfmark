@@ -1,0 +1,186 @@
+@use '../../../styles/ui' as *;
+
+// Shelf ReaderView: the host scrolls; reading settings only set the custom properties below.
+:host {
+  --ui-reader-size: #{rem(18px)};
+  --ui-reader-measure: 68ch;
+  --ui-reader-font: var(--font-sans);
+  --ui-reader-bg: var(--surface);
+  --ui-reader-text: var(--text);
+  --ui-reader-muted: var(--text-muted);
+
+  display: block;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: var(--ui-reader-text);
+  background: var(--ui-reader-bg);
+}
+
+:host([data-size='s']) {
+  --ui-reader-size: #{rem(16px)};
+}
+
+:host([data-size='l']) {
+  --ui-reader-size: #{rem(20px)};
+}
+
+:host([data-width='wide']) {
+  --ui-reader-measure: 84ch;
+}
+
+:host([data-font='serif']) {
+  --ui-reader-font: var(--font-serif);
+}
+
+:host([data-font='readable']) {
+  --ui-reader-font: var(--font-readable);
+}
+
+:host([data-tone='sepia']) {
+  --ui-reader-bg: var(--sepia-bg);
+  --ui-reader-text: var(--sepia-text);
+  --ui-reader-muted: var(--sepia-muted);
+}
+
+.ui-reader__progress {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  /* stylelint-disable-next-line unit-disallowed-list -- 2px progress bar per spec */
+  block-size: 2px;
+  overflow: hidden;
+}
+
+.ui-reader__progress-bar {
+  display: block;
+  block-size: 100%;
+  background: var(--accent);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+.ui-reader__page {
+  max-inline-size: var(--ui-reader-measure);
+  padding: var(--space-8) var(--space-6) var(--space-16);
+  margin-inline: auto;
+
+  @include phone {
+    padding: var(--space-6) var(--space-4) var(--space-12);
+  }
+}
+
+.ui-reader__notice {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  padding: var(--space-2) var(--space-3);
+  margin: 0 0 var(--space-4);
+  color: var(--ui-reader-muted);
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+
+  @include type(secondary);
+
+  ui-icon {
+    flex: none;
+    margin-block-start: rem(3px);
+  }
+}
+
+.ui-reader__article {
+  font-family: var(--ui-reader-font);
+  font-size: var(--ui-reader-size);
+  line-height: 1.6;
+}
+
+.ui-reader__site {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--ui-reader-muted);
+
+  @include type(secondary);
+}
+
+.ui-reader__title {
+  margin: var(--space-3) 0 var(--space-2);
+  font-family: var(--ui-reader-font);
+  font-size: rem(32px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+
+  @include phone {
+    font-size: rem(24px);
+    line-height: 1.2;
+  }
+}
+
+.ui-reader__meta {
+  margin: 0 0 var(--space-6);
+  font-family: var(--font-sans);
+  color: var(--ui-reader-muted);
+
+  @include type(secondary);
+}
+
+.ui-reader__heading {
+  margin: var(--space-8) 0 var(--space-2);
+  font-size: 1.27em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.ui-reader__paragraph {
+  margin: 0 0 1em;
+}
+
+.ui-reader__list {
+  padding-inline-start: 1.25em;
+  margin: 0 0 1em;
+}
+
+.ui-reader__quote {
+  padding-inline-start: var(--space-4);
+  margin: 1.5em 0;
+  font-style: italic;
+  border-inline-start: 2px solid var(--line-strong);
+}
+
+.ui-reader__code {
+  padding: var(--space-3) var(--space-4);
+  margin: 0 0 1em;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+}
+
+.ui-reader__figure {
+  margin: 1.5em 0;
+
+  &--lead {
+    margin: var(--space-4) 0 var(--space-6);
+  }
+}
+
+.ui-reader__image {
+  display: block;
+  inline-size: 100%;
+  object-fit: cover;
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+}
+
+.ui-reader__caption {
+  margin-block-start: var(--space-2);
+  font-family: var(--font-sans);
+  color: var(--ui-reader-muted);
+
+  @include type(caption);
+}

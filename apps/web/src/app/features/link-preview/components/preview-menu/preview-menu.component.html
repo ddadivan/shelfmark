@@ -1,0 +1,55 @@
+<ui-menu align="end" [ariaLabel]="'preview.more' | transloco">
+  @if (preview.link(); as link) {
+    @if (preview.href()) {
+      <ui-menu-item icon="external" (activated)="preview.openInNewTab()">
+        {{ 'preview.openInBrowser' | transloco }}
+      </ui-menu-item>
+      <ui-menu-separator />
+    }
+    <ui-menu-item icon="edit" (activated)="actions.edit(link)">
+      {{ 'links.item.edit' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item
+      [icon]="link.isFavorite ? 'star-filled' : 'star'"
+      (activated)="actions.toggleFavorite(link)"
+    >
+      {{ (link.isFavorite ? 'links.item.removeFavorite' : 'links.item.addFavorite') | transloco }}
+    </ui-menu-item>
+    @if (link.folderId !== null) {
+      <ui-menu-item icon="pin" (activated)="actions.togglePinInFolder(link)">
+        {{
+          (link.pinnedInFolderAt ? 'links.item.unpinFromTop' : 'links.item.pinToTop') | transloco
+        }}
+      </ui-menu-item>
+    }
+    <ui-menu-item icon="pin" (activated)="actions.togglePinToSidebar(link)">
+      {{ (link.pinned ? 'links.item.unpinFromSidebar' : 'links.item.pinToSidebar') | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="folder-move" (activated)="actions.move(link)">
+      {{ 'links.item.move' | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="bell" (activated)="actions.remind(link)">
+      {{ (link.remindAt ? 'reminders.menu.change' : 'reminders.menu.remind') | transloco }}
+    </ui-menu-item>
+    <ui-menu-item icon="copy" (activated)="preview.copyLink()">
+      {{ 'preview.copy' | transloco }}
+    </ui-menu-item>
+    @if (domain(); as host) {
+      <ui-menu-item icon="globe" (activated)="actions.createRule(link)">
+        {{ 'links.item.createRule' | transloco: { domain: host } }}
+      </ui-menu-item>
+    }
+    @if (wide()) {
+      <ui-menu-item
+        [icon]="preview.listHidden() ? 'collapse' : 'expand'"
+        (activated)="preview.toggleList()"
+      >
+        {{ (preview.listHidden() ? 'preview.showList' : 'preview.wider') | transloco }}
+      </ui-menu-item>
+    }
+    <ui-menu-separator />
+    <ui-menu-item icon="trash" danger (activated)="actions.delete(link)">
+      {{ 'links.item.delete' | transloco }}
+    </ui-menu-item>
+  }
+</ui-menu>

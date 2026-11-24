@@ -24,3 +24,10 @@
 .preview-body__always {
   color: var(--text-muted);
 }
+
+.preview-body__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+}

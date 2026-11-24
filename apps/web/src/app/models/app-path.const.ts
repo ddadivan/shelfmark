@@ -18,6 +18,8 @@ export const APP_PATH = {
   Recent: 'recent',
   /** Due and upcoming reminders (#275); reached from the sidebar and the phone Library. */
   Reminders: 'reminders',
+  /** Shelf Revisit: due reminders, continue reading, forgotten and recently opened in one queue. */
+  Revisit: 'revisit',
   /** Deleted links and folders waiting for their retention to pass; reached from the sidebar and the phone Library. */
   Trash: 'trash',
   Settings: 'settings',

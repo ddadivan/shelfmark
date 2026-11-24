@@ -175,7 +175,7 @@ describe('TodayPage', () => {
     expect(text(element, '.today-back__title')).toEqual(['Wool coat']);
     expect(element.querySelector('.today-back__why')?.textContent).toContain('Due 3 hours ago');
     expect(element.querySelector('app-today-back .today-section__more')?.getAttribute('href')).toBe(
-      '/reminders',
+      '/revisit',
     );
   });
 

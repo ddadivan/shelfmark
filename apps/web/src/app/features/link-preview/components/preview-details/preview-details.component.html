@@ -1,0 +1,105 @@
+@let current = link();
+<aside class="preview-details" [attr.aria-label]="'preview.details.region' | transloco">
+  <ui-textarea
+    class="preview-details__field"
+    [label]="'preview.details.title' | transloco"
+    [rows]="2"
+    [(value)]="title"
+    (touch)="saveTitle()"
+  />
+  <ui-textarea
+    class="preview-details__field"
+    [label]="'preview.details.note' | transloco"
+    [placeholder]="'links.add.note.placeholder' | transloco"
+    [rows]="2"
+    [(value)]="note"
+    (touch)="saveNote()"
+  />
+
+  <div class="preview-details__field">
+    <span class="preview-details__label">
+      {{ 'preview.details.folder' | transloco }}
+    </span>
+    <ui-button
+      class="preview-details__pick"
+      variant="ghost"
+      size="sm"
+      iconRight="chevron-down"
+      [ariaLabel]="
+        'preview.details.moveLabel'
+          | transloco: { folder: folder()?.name ?? ('links.add.folder.unsorted' | transloco) }
+      "
+      (click)="actions.move(current)"
+    >
+      <ui-folder-icon
+        class="preview-details__tile"
+        size="sm"
+        [icon]="folder()?.icon ?? 'inbox'"
+        [colour]="folder()?.colour ?? 'graphite'"
+      />
+      {{ folder()?.name ?? ('links.add.folder.unsorted' | transloco) }}
+    </ui-button>
+  </div>
+
+  <div class="preview-details__field">
+    <span class="preview-details__label">{{ 'preview.details.tags' | transloco }}</span>
+    <div class="preview-details__tags">
+      @for (tag of current.tags; track tag) {
+        <ui-chip variant="tag">{{ tag }}</ui-chip>
+      }
+      <ui-button variant="ghost" size="sm" iconLeft="add" (click)="actions.edit(current)">
+        {{ 'preview.details.addTag' | transloco }}
+      </ui-button>
+    </div>
+  </div>
+
+  <div class="preview-details__field">
+    <span class="preview-details__label">{{ 'preview.details.reminder' | transloco }}</span>
+    <ui-button
+      class="preview-details__pick"
+      variant="ghost"
+      size="sm"
+      iconLeft="bell"
+      (click)="actions.remind(current)"
+    >
+      {{
+        reminder()
+          ? ('preview.details.reminderSet' | transloco: { when: reminder() })
+          : ('preview.details.remind' | transloco)
+      }}
+    </ui-button>
+  </div>
+
+  @if (current.summary) {
+    <div class="preview-details__field">
+      <span class="preview-details__label">{{ 'preview.details.summary' | transloco }}</span>
+      <p class="preview-details__summary">
+        @if (aiSummary()) {
+          <ui-icon
+            class="preview-details__spark"
+            name="spark"
+            [size]="ICON_SIZE.Sm"
+            [label]="'ai.disclaimer' | transloco"
+          />
+        }
+        <span>{{ current.summary }}</span>
+      </p>
+    </div>
+  }
+
+  <div class="preview-details__field">
+    <span class="preview-details__label">{{ 'preview.details.address' | transloco }}</span>
+    <span class="preview-details__address">{{ current.url }}</span>
+  </div>
+
+  <div class="preview-details__field">
+    <span class="preview-details__label">{{ 'preview.details.saved' | transloco }}</span>
+    <span class="preview-details__text">
+      {{
+        opened()
+          ? ('preview.details.savedOpened' | transloco: { saved: saved(), opened: opened() })
+          : saved()
+      }}
+    </span>
+  </div>
+</aside>

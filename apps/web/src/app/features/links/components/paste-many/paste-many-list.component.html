@@ -134,25 +134,27 @@
     </div>
 
     <span slot="footer" class="paste-many__note">{{ 'links.many.note' | transloco }}</span>
-    @if (!phone()) {
-      <ui-button slot="footer" [disabled]="saving()" (click)="cancel()">{{
-        'links.add.actions.cancel' | transloco
-      }}</ui-button>
-    }
-    <ui-button
-      slot="footer"
-      [type]="BUTTON_TYPE.Submit"
-      [variant]="BUTTON_VARIANT.Primary"
-      [loading]="saving()"
-      [disabled]="selectedCount() === 0"
-      >{{
-        (saving()
-          ? 'links.add.actions.saving'
-          : selectedCount() === 0
-            ? 'links.many.saveNone'
-            : pluralKey('links.many.save', selectedCount())
-        ) | transloco: { count: selectedCount() }
-      }}</ui-button
-    >
+    <div slot="footer" class="paste-many__confirm">
+      @if (!phone()) {
+        <ui-button [disabled]="saving()" (click)="cancel()">{{
+          'links.add.actions.cancel' | transloco
+        }}</ui-button>
+      }
+      <ui-button
+        [type]="BUTTON_TYPE.Submit"
+        [variant]="BUTTON_VARIANT.Primary"
+        [block]="phone()"
+        [loading]="saving()"
+        [disabled]="selectedCount() === 0"
+        >{{
+          (saving()
+            ? 'links.add.actions.saving'
+            : selectedCount() === 0
+              ? 'links.many.saveNone'
+              : pluralKey('links.many.save', selectedCount())
+          ) | transloco: { count: selectedCount() }
+        }}</ui-button
+      >
+    </div>
   </ui-dialog>
 </form>

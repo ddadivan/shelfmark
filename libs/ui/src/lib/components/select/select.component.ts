@@ -28,6 +28,8 @@ import { BADGE_TONE } from '../badge/models/badge-tone.const';
 import { fillName } from '../tag-input/tag-input-rows';
 import { FieldPopup } from '../../services/overlay/field-popup';
 import { RippleDirective } from '../../directives/ripple/ripple.directive';
+import { SELECT_APPEARANCE } from './models/select-appearance.const';
+import type { SelectAppearance } from './models/select-appearance.type';
 import type { SelectOption } from './models/select-option.interface';
 import type { SelectIcon } from './models/select-icon.type';
 import { SELECT_ICON } from './models/select-icon.const';
@@ -79,7 +81,7 @@ const COARSE_POINTER = '(pointer: coarse)';
     Option,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'ui-select' },
+  host: { class: 'ui-select', '[class.ui-select--row]': 'row()' },
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.scss', './select-list.scss'],
 })
@@ -110,6 +112,15 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   readonly createLabel = input('');
   /** The "Create" row was chosen: the trimmed search text. The value is left to the feature. */
   readonly created = output<string>();
+  /** `field` (default) or `row` (`SELECT_APPEARANCE`). */
+  readonly appearance = input<SelectAppearance>(SELECT_APPEARANCE.Field);
+  /** Row: the words before the value ("Goes to"). */
+  readonly rowLead = input('');
+  /** Row: a muted note after the value ("rule for allbirds.com"). */
+  readonly rowNote = input('');
+  /** Row: the action word at the end ("Change"). */
+  readonly rowAction = input('');
+  protected readonly row = computed(() => this.appearance() === SELECT_APPEARANCE.Row);
 
   private readonly injector = inject(Injector);
   private readonly document = inject(DOCUMENT);

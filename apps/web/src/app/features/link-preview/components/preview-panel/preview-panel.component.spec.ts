@@ -1,24 +1,56 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { TestBed } from '@angular/core/testing';
-import { UiButtonHarness } from '@shelfmark/ui/testing';
+import { UiButtonHarness, UiMenuHarness } from '@shelfmark/ui/testing';
 import { axeViolations } from '../../../../../testing/axe';
 import { createLinkPreviewStub, PREVIEW_STUB_LINK } from '../../../../../testing/link-preview-stub';
+import {
+  createLinkActionsStub,
+  createPreviewReaderStub,
+} from '../../../../../testing/preview-reader-stub';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { PREVIEW_BODY_KIND } from '../../models/preview-body-kind.const';
+import { LinkActionsService } from '../../../links/services/link-actions.service';
 import { LinkPreviewService } from '../../services/link-preview.service';
+import { PreviewReaderService } from '../../services/preview-reader.service';
+import { LinkInlineEditService } from '../../services/link-inline-edit.service';
 import { PreviewPanelComponent } from './preview-panel.component';
 
 async function setup(link = PREVIEW_STUB_LINK) {
   const stub = createLinkPreviewStub(link);
+  const reader = createPreviewReaderStub();
+  const actions = createLinkActionsStub();
   TestBed.configureTestingModule({
-    providers: [provideTranslocoForTest(), { provide: LinkPreviewService, useValue: stub }],
+    providers: [
+      provideTranslocoForTest(),
+      { provide: LinkPreviewService, useValue: stub },
+      { provide: PreviewReaderService, useValue: reader },
+      { provide: LinkActionsService, useValue: actions },
+      {
+        provide: LinkInlineEditService,
+        useValue: { saveTitle: vi.fn(), saveNote: vi.fn() },
+      },
+    ],
   });
   await loadEnglish();
   const fixture = TestBed.createComponent(PreviewPanelComponent);
   await fixture.whenStable();
   const loader = TestbedHarnessEnvironment.loader(fixture);
+  const overlays = TestbedHarnessEnvironment.documentRootLoader(fixture);
   const button = (name: string | RegExp) => loader.getHarness(UiButtonHarness.with({ name }));
-  return { stub, fixture, element: fixture.nativeElement as HTMLElement, loader, button };
+  const menu = async () => {
+    await (await button('More actions')).click();
+    return overlays.getHarness(UiMenuHarness);
+  };
+  return {
+    stub,
+    reader,
+    actions,
+    fixture,
+    element: fixture.nativeElement as HTMLElement,
+    loader,
+    button,
+    menu,
+  };
 }
 
 describe('PreviewPanelComponent', () => {
@@ -68,35 +100,45 @@ describe('PreviewPanelComponent', () => {
     expect(await (await button('Favorite')).getPressed()).toBe('true');
   });
 
-  it('edits and copies the link', async () => {
-    const { stub, button } = await setup();
-    await (await button('Edit')).click();
-    await (await button('Copy link')).click();
-    expect(stub.edit).toHaveBeenCalledTimes(1);
+  it('edits, copies and widens from the ⋯ menu', async () => {
+    const { stub, actions, menu } = await setup();
+    await (await menu()).clickItem({ text: 'Edit' });
+    expect(actions.edit).toHaveBeenCalledWith(PREVIEW_STUB_LINK);
+    await (await menu()).clickItem({ text: 'Copy link' });
     expect(stub.copyLink).toHaveBeenCalledTimes(1);
-  });
-
-  it('swaps the copy icon for a check while the link counts as copied', async () => {
-    const { stub, fixture, button } = await setup();
-    const icon = () =>
-      fixture.nativeElement.querySelector('[aria-label="Copy link"] use')?.getAttribute('href');
-    expect(icon()).toContain('#sm-copy');
-    stub.copied.set(true);
-    await fixture.whenStable();
-    expect(icon()).toContain('#sm-check');
-    expect(await button('Copy link')).toBeDefined();
-  });
-
-  it('hides and shows the list with the wider button', async () => {
-    const { stub, fixture, button } = await setup();
-    const wider = await button('Wider preview');
-    expect(await wider.getPressed()).toBe('false');
-    await wider.click();
+    await (await menu()).clickItem({ text: 'Wider preview' });
     expect(stub.toggleList).toHaveBeenCalledTimes(1);
+  });
 
-    stub.listHidden.set(true);
+  it('moves, reminds and deletes from the ⋯ menu', async () => {
+    const { actions, menu } = await setup();
+    await (await menu()).clickItem({ text: 'Move to folder…' });
+    await (await menu()).clickItem({ text: 'Delete' });
+    expect(actions.move).toHaveBeenCalledWith(PREVIEW_STUB_LINK);
+    expect(actions.delete).toHaveBeenCalledWith(PREVIEW_STUB_LINK);
+  });
+
+  it('switches to Reader and back, with reading settings only in Reader', async () => {
+    const { reader, fixture, element, loader } = await setup();
+    const settings = () =>
+      loader.getAllHarnesses(UiButtonHarness.with({ name: 'Reading settings' }));
+    expect(await settings()).toHaveLength(0);
+    expect(element.querySelector('app-preview-body')).not.toBeNull();
+    element.querySelector<HTMLInputElement>('input[type="radio"][value="reader"]')?.click();
     await fixture.whenStable();
-    expect(await (await button('Wider preview')).getPressed()).toBe('true');
+    expect(reader.setMode).toHaveBeenCalledWith('reader');
+    expect(element.querySelector('app-preview-reader')).not.toBeNull();
+    expect(element.querySelector('app-preview-body')).toBeNull();
+    expect(await settings()).toHaveLength(1);
+  });
+
+  it('toggles the details panel', async () => {
+    const { reader, button } = await setup();
+    const details = await button('Details');
+    expect(await details.getPressed()).toBe('false');
+    await details.click();
+    expect(reader.toggleDetails).toHaveBeenCalledTimes(1);
+    expect(await (await button('Details')).getPressed()).toBe('true');
   });
 
   it('opens the link in a new tab from the Open button', async () => {
@@ -125,5 +167,6 @@ describe('PreviewPanelComponent', () => {
       (await loader.getAllHarnesses(UiButtonHarness)).map((harness) => harness.getAriaLabel()),
     );
     expect(names).toEqual(['Previous link', 'Next link', 'Close preview']);
+    expect(element.querySelector('ui-segmented-control')).toBeNull();
   });
 });

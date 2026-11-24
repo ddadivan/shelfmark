@@ -72,6 +72,53 @@
   color: var(--text-muted);
 }
 
+// Row (Shelf Add link "Goes to"): a filled row without an edge at rest (the focus halo stays), the
+// text in `secondary`, the value bold, a muted note, the action word at the end.
+:host(.ui-select--row) {
+  --ui-field-bg: var(--surface-hover);
+  --ui-field-border: transparent;
+  --ui-field-border-hover: transparent;
+
+  .ui-select__trigger {
+    @include type(secondary);
+
+    min-height: var(--control-md);
+  }
+
+  .ui-select__icon {
+    --ui-icon-size: var(--icon-size-sm);
+  }
+}
+
+.ui-select__row-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-select__row-value {
+  font-weight: 600;
+}
+
+.ui-select__row-note {
+  color: var(--text-muted);
+}
+
+.ui-select__row-action {
+  @include type(label);
+
+  flex: none;
+  padding: 0 var(--space-3);
+  line-height: var(--control-sm);
+  border-radius: var(--radius-full);
+
+  @include hover {
+    background: var(--fill-hover);
+  }
+}
+
 // The popup element sits empty where it is written; open, the overlay moves it into its pane.
 .ui-select__popup {
   display: none;

@@ -9,6 +9,7 @@ import { SplitFeedStore } from './split-feed.store';
 import { SplitRelatedService } from './split-related.service';
 import { SplitViewService } from './split-view.service';
 import { LinkPreviewService } from '../../link-preview/services/link-preview.service';
+import { PreviewReaderService } from '../../link-preview/services/preview-reader.service';
 
 /**
  * The page-scoped services of one library page (#338). They are `autoProvided: false`, so each
@@ -26,5 +27,6 @@ export function provideLibraryPage(): Provider[] {
     SplitRelatedService,
     SplitFeedStore,
     LinkPreviewService,
+    PreviewReaderService,
   ];
 }

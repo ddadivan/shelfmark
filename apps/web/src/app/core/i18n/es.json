@@ -230,7 +230,8 @@
         "hint": "Pega un enlace — el título y la vista previa se rellenan solos",
         "required": "Introduce un enlace",
         "invalid": "Introduce una dirección que empiece por http:// o https://",
-        "tooLong": "El enlace es demasiado largo (máximo {{max}} caracteres)"
+        "tooLong": "El enlace es demasiado largo (máximo {{max}} caracteres)",
+        "panel": "Pega un enlace, o varios"
       },
       "shortcut": {
         "cmd": "⌘",
@@ -242,7 +243,7 @@
         "loading": "Cargando vista previa",
         "loadingHint": "Puedes seguir escribiendo una nota y eligiendo una carpeta mientras carga.",
         "filled": "Rellenado desde la página. Puedes editar el título.",
-        "failed": "No se pudo cargar la vista previa. El enlace se guardará con su dirección como título — puedes cambiarle el nombre.",
+        "failed": "No se pudo cargar la vista previa. El enlace se guardará con su dirección como título; podrás cambiarle el nombre más tarde.",
         "ready": "Vista previa cargada: {{title}}",
         "unavailable": "No hay vista previa para esta página. El enlace se guardará con su dirección como título — puedes cambiarle el nombre."
       },
@@ -280,7 +281,8 @@
         "tooLong": "La nota es demasiado larga (máximo {{max}} caracteres)"
       },
       "duplicate": {
-        "text": "Ya guardaste este enlace en {{folder}}. Ábrelo o guárdalo otra vez."
+        "text": "Ya guardaste este enlace en {{folder}}. Ábrelo o guárdalo otra vez.",
+        "panel": "Ya guardado en {{folder}}."
       },
       "saveFailed": "No se pudo guardar el enlace. Inténtalo de nuevo.",
       "saveFailedLimit": "Has alcanzado el límite de {{max}} enlaces guardados. Elimina algunos para guardar más.",
@@ -290,11 +292,12 @@
       "actions": {
         "cancel": "Cancelar",
         "openSaved": "Abrir el guardado",
-        "create": "Crear enlace",
-        "createAnyway": "Crear de todos modos",
-        "creating": "Creando…",
+        "create": "Guardar",
+        "createAnyway": "Guardar de todos modos",
+        "creating": "Guardando…",
         "saveAnyway": "Guardar de todos modos",
-        "saving": "Guardando…"
+        "saving": "Guardando…",
+        "open": "Abrir"
       },
       "several": {
         "offer": "¿Tienes varios enlaces? Pégalos todos a la vez",
@@ -311,6 +314,28 @@
       "rule": {
         "chip": "Regla: {{domain}} → {{target}}",
         "remove": "No aplicar la regla de {{domain}}"
+      },
+      "tip": {
+        "mac": "Consejo: pulsa ⌘ V en cualquier parte de Shelfmark para guardar lo que copiaste. También funciona con varios enlaces a la vez.",
+        "other": "Consejo: pulsa Ctrl V en cualquier parte de Shelfmark para guardar lo que copiaste. También funciona con varios enlaces a la vez."
+      },
+      "goes": {
+        "lead": "Va a",
+        "rule": "regla para {{domain}}",
+        "change": "Cambiar"
+      },
+      "extras": {
+        "remind": "Recuérdamelo…",
+        "remindSet": "Recordatorio: {{when}}",
+        "remindMenu": "Recuérdamelo",
+        "noReminder": "Sin recordatorio",
+        "favorite": "Favorito",
+        "favoriteFailed": "Guardado, pero no se pudo añadir a favoritos",
+        "remindFailed": "Guardado, pero no se pudo poner el recordatorio"
+      },
+      "footer": {
+        "start": "Pega para empezar",
+        "keys": "Intro para guardar · Esc para cerrar"
       }
     },
     "edit": {
@@ -4278,15 +4303,118 @@
     "resize": "Cambiar el ancho de la lista",
     "resizeHint": "Arrastra o usa ← y →. Doble clic para restablecer.",
     "blocked": {
-      "title": "{{domain}} no se abre dentro de otras apps",
-      "text": "Lo bloquea el sitio, no Shelfmark. Ábrelo en una pestaña nueva.",
-      "open": "Abrir en una pestaña nueva",
-      "always": "Abrir siempre {{domain}} en una pestaña nueva"
+      "title": "{{domain}} no permite mostrarlo aquí",
+      "text": "Léela aquí en Lectura o ábrela en tu navegador.",
+      "open": "Abrir en el navegador",
+      "always": "Abrir siempre {{domain}} en una pestaña nueva",
+      "reader": "Abrir en Lectura"
     },
     "keys": {
       "next": "Enlace siguiente",
       "newTab": "Pestaña nueva",
       "close": "Cerrar"
+    },
+    "mode": {
+      "label": "Mostrar como",
+      "site": "Sitio",
+      "reader": "Lectura"
+    },
+    "reading": {
+      "title": "Ajustes de lectura",
+      "size": {
+        "label": "Tamaño del texto",
+        "s": "P",
+        "m": "M",
+        "l": "G"
+      },
+      "font": {
+        "label": "Fuente",
+        "sans": "Sans",
+        "serif": "Serif",
+        "readable": "Legible"
+      },
+      "width": {
+        "label": "Ancho de línea",
+        "narrow": "Estrecho",
+        "wide": "Ancho"
+      },
+      "tone": {
+        "label": "Página",
+        "app": "Como la app",
+        "sepia": "Sepia"
+      }
+    },
+    "reader": {
+      "loading": "Cargando el texto",
+      "minutes": "{{count}} min de lectura",
+      "noText": "Esta página no tiene texto de artículo. Lectura muestra la imagen, lo que la página dice de sí misma y tu nota.",
+      "noTextVideo": "Un vídeo no tiene texto que leer. Lectura muestra su imagen, la descripción y tu nota; míralo en el sitio.",
+      "blockedNotice": "Mostrando Lectura: {{domain}} no permite mostrar la página aquí.",
+      "openSite": "Abrir {{domain}}"
+    },
+    "details": {
+      "toggle": "Detalles",
+      "region": "Detalles",
+      "title": "Título",
+      "note": "Nota",
+      "folder": "Carpeta",
+      "moveLabel": "Carpeta: {{folder}}. Mover a otra carpeta",
+      "tags": "Etiquetas",
+      "addTag": "Añadir etiqueta",
+      "reminder": "Recordatorio",
+      "remind": "Recuérdamelo…",
+      "reminderSet": "{{when}}",
+      "summary": "Resumen",
+      "address": "Dirección",
+      "saved": "Guardado",
+      "savedOpened": "{{saved}} · abierto {{opened}}",
+      "saveFailed": "No se pudo guardar el cambio",
+      "retry": "Reintentar"
+    }
+  },
+  "revisit": {
+    "title": "Volver a ver",
+    "lead": {
+      "one": "{{count}} pendiente. Recordatorios, artículos a medio leer y enlaces que guardaste y olvidaste.",
+      "other": "{{count}} pendientes. Recordatorios, artículos a medio leer y enlaces que guardaste y olvidaste.",
+      "many": "{{count}} pendientes. Recordatorios, artículos a medio leer y enlaces que guardaste y olvidaste."
+    },
+    "leadEmpty": "Los enlaces pendientes, a medio leer u olvidados vuelven aquí.",
+    "loading": "Cargando",
+    "empty": {
+      "title": "Nada pendiente",
+      "text": "Estás al día. Los enlaces vuelven aquí cuando vence un recordatorio o cuando hace tiempo que no los abres."
+    },
+    "due": {
+      "title": "Pendientes",
+      "done": "Hecho",
+      "snooze": "Posponer",
+      "snoozeLabel": "Posponer {{title}}",
+      "doneLabel": "Hecho: {{title}}"
+    },
+    "continue": {
+      "title": "Seguir leyendo",
+      "read": "{{percent}} % leído",
+      "left": "quedan {{count}} min",
+      "action": "Seguir"
+    },
+    "forgotten": {
+      "title": "Olvidados esta semana",
+      "lead": "Los guardaste hace tiempo y no los has abierto desde entonces.",
+      "saved": "guardado en {{month}}",
+      "open": "Abrir",
+      "openLabel": "Abrir {{title}}",
+      "later": "Más tarde",
+      "notInterested": "No me interesa"
+    },
+    "recent": {
+      "title": "Abiertos recientemente",
+      "window": "últimos 30 días",
+      "options": "Opciones del historial",
+      "all": "Ver todo",
+      "clear": "Borrar historial",
+      "clearTitle": "¿Borrar el historial?",
+      "clearText": "Tus enlaces siguen guardados; solo se borra la lista de lo que abriste."
     }
   }
 }

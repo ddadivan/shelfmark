@@ -230,7 +230,8 @@
         "hint": "Incolla un link — titolo e anteprima si compilano da soli",
         "required": "Inserisci un link",
         "invalid": "Inserisci un indirizzo che inizia con http:// o https://",
-        "tooLong": "Il link è troppo lungo (massimo {{max}} caratteri)"
+        "tooLong": "Il link è troppo lungo (massimo {{max}} caratteri)",
+        "panel": "Incolla un link, o più di uno"
       },
       "shortcut": {
         "cmd": "⌘",
@@ -242,7 +243,7 @@
         "loading": "Caricamento anteprima",
         "loadingHint": "Puoi continuare a scrivere una nota e scegliere una cartella mentre carica.",
         "filled": "Compilato dalla pagina. Puoi modificare il titolo.",
-        "failed": "Impossibile caricare un’anteprima. Il link sarà salvato con l’indirizzo come titolo — puoi rinominarlo.",
+        "failed": "Impossibile caricare un'anteprima. Il link verrà salvato con l'indirizzo come titolo; potrai rinominarlo in seguito.",
         "ready": "Anteprima caricata: {{title}}",
         "unavailable": "Non c’è un’anteprima per questa pagina. Il link sarà salvato con l’indirizzo come titolo — puoi rinominarlo."
       },
@@ -280,7 +281,8 @@
         "tooLong": "La nota è troppo lunga (massimo {{max}} caratteri)"
       },
       "duplicate": {
-        "text": "Hai già salvato questo link in {{folder}}. Aprilo o salvalo di nuovo."
+        "text": "Hai già salvato questo link in {{folder}}. Aprilo o salvalo di nuovo.",
+        "panel": "Già salvato in {{folder}}."
       },
       "saveFailed": "Impossibile salvare il link. Riprova.",
       "saveFailedLimit": "Hai raggiunto il limite di {{max}} link salvati. Eliminane qualcuno per salvarne altri.",
@@ -290,11 +292,12 @@
       "actions": {
         "cancel": "Annulla",
         "openSaved": "Apri il salvato",
-        "create": "Crea link",
-        "createAnyway": "Crea comunque",
-        "creating": "Creazione…",
+        "create": "Salva",
+        "createAnyway": "Salva comunque",
+        "creating": "Salvataggio…",
         "saveAnyway": "Salva comunque",
-        "saving": "Salvataggio…"
+        "saving": "Salvataggio…",
+        "open": "Apri"
       },
       "several": {
         "offer": "Hai più link? Incollali tutti insieme",
@@ -311,6 +314,28 @@
       "rule": {
         "chip": "Regola: {{domain}} → {{target}}",
         "remove": "Non applicare la regola per {{domain}}"
+      },
+      "tip": {
+        "mac": "Suggerimento: premi ⌘ V ovunque in Shelfmark per salvare ciò che hai copiato. Funziona anche con più link insieme.",
+        "other": "Suggerimento: premi Ctrl V ovunque in Shelfmark per salvare ciò che hai copiato. Funziona anche con più link insieme."
+      },
+      "goes": {
+        "lead": "Va in",
+        "rule": "regola per {{domain}}",
+        "change": "Cambia"
+      },
+      "extras": {
+        "remind": "Ricordamelo…",
+        "remindSet": "Promemoria: {{when}}",
+        "remindMenu": "Ricordamelo",
+        "noReminder": "Nessun promemoria",
+        "favorite": "Preferito",
+        "favoriteFailed": "Salvato, ma non è stato possibile aggiungerlo ai preferiti",
+        "remindFailed": "Salvato, ma non è stato possibile impostare il promemoria"
+      },
+      "footer": {
+        "start": "Incolla per iniziare",
+        "keys": "Invio per salvare · Esc per chiudere"
       }
     },
     "edit": {
@@ -4278,15 +4303,118 @@
     "resize": "Ridimensiona la lista",
     "resizeHint": "Trascina o usa ← e →. Doppio clic per ripristinare.",
     "blocked": {
-      "title": "{{domain}} non si apre dentro altre app",
-      "text": "Lo blocca il sito, non Shelfmark. Aprilo in una nuova scheda.",
-      "open": "Apri in una nuova scheda",
-      "always": "Apri sempre {{domain}} in una nuova scheda"
+      "title": "{{domain}} non permette di mostrarlo qui",
+      "text": "Leggila qui in modalità lettura o aprila nel browser.",
+      "open": "Apri nel browser",
+      "always": "Apri sempre {{domain}} in una nuova scheda",
+      "reader": "Apri in lettura"
     },
     "keys": {
       "next": "Link successivo",
       "newTab": "Nuova scheda",
       "close": "Chiudi"
+    },
+    "mode": {
+      "label": "Mostra come",
+      "site": "Sito",
+      "reader": "Lettura"
+    },
+    "reading": {
+      "title": "Impostazioni di lettura",
+      "size": {
+        "label": "Dimensione testo",
+        "s": "P",
+        "m": "M",
+        "l": "G"
+      },
+      "font": {
+        "label": "Carattere",
+        "sans": "Sans",
+        "serif": "Serif",
+        "readable": "Leggibile"
+      },
+      "width": {
+        "label": "Larghezza riga",
+        "narrow": "Stretta",
+        "wide": "Larga"
+      },
+      "tone": {
+        "label": "Pagina",
+        "app": "Come l'app",
+        "sepia": "Seppia"
+      }
+    },
+    "reader": {
+      "loading": "Caricamento del testo",
+      "minutes": "{{count}} min di lettura",
+      "noText": "Questa pagina non ha testo da leggere. Lettura mostra l'immagine, ciò che la pagina dice di sé e la tua nota.",
+      "noTextVideo": "Un video non ha testo da leggere. Lettura mostra immagine, descrizione e la tua nota; guardalo sul sito.",
+      "blockedNotice": "Modalità lettura: {{domain}} non permette di mostrare la pagina qui.",
+      "openSite": "Apri {{domain}}"
+    },
+    "details": {
+      "toggle": "Dettagli",
+      "region": "Dettagli",
+      "title": "Titolo",
+      "note": "Nota",
+      "folder": "Cartella",
+      "moveLabel": "Cartella: {{folder}}. Sposta in un’altra cartella",
+      "tags": "Tag",
+      "addTag": "Aggiungi tag",
+      "reminder": "Promemoria",
+      "remind": "Ricordamelo…",
+      "reminderSet": "{{when}}",
+      "summary": "Riepilogo",
+      "address": "Indirizzo",
+      "saved": "Salvato",
+      "savedOpened": "{{saved}} · aperto {{opened}}",
+      "saveFailed": "Impossibile salvare la modifica",
+      "retry": "Riprova"
+    }
+  },
+  "revisit": {
+    "title": "Da rivedere",
+    "lead": {
+      "one": "{{count}} in attesa. Promemoria, articoli letti a metà e link salvati e dimenticati.",
+      "other": "{{count}} in attesa. Promemoria, articoli letti a metà e link salvati e dimenticati.",
+      "many": "{{count}} in attesa. Promemoria, articoli letti a metà e link salvati e dimenticati."
+    },
+    "leadEmpty": "I link in scadenza, letti a metà o dimenticati tornano qui.",
+    "loading": "Caricamento",
+    "empty": {
+      "title": "Niente in attesa",
+      "text": "Sei in pari. I link tornano qui quando scade un promemoria o quando non li apri da un po’."
+    },
+    "due": {
+      "title": "In scadenza",
+      "done": "Fatto",
+      "snooze": "Posticipa",
+      "snoozeLabel": "Posticipa {{title}}",
+      "doneLabel": "Fatto: {{title}}"
+    },
+    "continue": {
+      "title": "Continua a leggere",
+      "read": "{{percent}}% letto",
+      "left": "ancora {{count}} min",
+      "action": "Continua"
+    },
+    "forgotten": {
+      "title": "Dimenticati questa settimana",
+      "lead": "Li hai salvati tempo fa e da allora non li hai più aperti.",
+      "saved": "salvato a {{month}}",
+      "open": "Apri",
+      "openLabel": "Apri {{title}}",
+      "later": "Più tardi",
+      "notInterested": "Non mi interessa"
+    },
+    "recent": {
+      "title": "Aperti di recente",
+      "window": "ultimi 30 giorni",
+      "options": "Opzioni cronologia",
+      "all": "Mostra tutto",
+      "clear": "Cancella cronologia",
+      "clearTitle": "Cancellare la cronologia?",
+      "clearText": "I tuoi link restano salvati; sparisce solo l'elenco di quelli aperti."
     }
   }
 }

@@ -677,3 +677,43 @@ describe('SelectComponent with Signal Forms', () => {
     expect(trigger.getAttribute('aria-describedby')).toContain('-error');
   });
 });
+
+@Component({
+  imports: [SelectComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `<ui-select
+    label="Folder"
+    appearance="row"
+    rowLead="Goes to"
+    rowNote="rule for allbirds.com"
+    rowAction="Change"
+    emptyLabel="Unsorted"
+    [options]="options"
+    [(value)]="value"
+  />`,
+})
+class RowHostComponent {
+  readonly options = TREE;
+  readonly value = signal<string | null>(SELECT_FIXTURE_ID.Clothes);
+}
+
+describe('SelectComponent row appearance', () => {
+  it('reads as a sentence with the action at the end and keeps the label for screen readers', async () => {
+    const fixture = TestBed.createComponent(RowHostComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const select = host.querySelector('ui-select') as HTMLElement;
+    expect(select.classList).toContain('ui-select--row');
+    const trigger = host.querySelector('button') as HTMLButtonElement;
+    expect(trigger.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      'Goes to Clothes · rule for allbirds.com Change',
+    );
+    expect(host.querySelector('.ui-select__chevron')).toBeNull();
+    expect(host.querySelector('label')?.getAttribute('for')).toBe(trigger.id);
+    expect(host.querySelector('.ui-field--label-hidden')).not.toBeNull();
+    fixture.componentInstance.value.set(null);
+    fixture.detectChanges();
+    expect(host.querySelector('.ui-select__row-value')?.textContent).toBe('Unsorted');
+    expect(await axeViolations(host)).toEqual([]);
+  });
+});

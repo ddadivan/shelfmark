@@ -36,23 +36,20 @@
   white-space: nowrap;
 }
 
-// AddLink.dc.html: a card on `bg` (8px inside, 20px corner) with a thumbnail tile, then the host,
-// the title and a note. The loading state keeps the bordered box of AddLinkStates.dc.html.
+// Shelf preview card (`02-save-revisit.html` `.pv`): a card with the page tile (112 x 72, 10px
+// corners), the title (16/24 600, two lines) and the site under it. The loading state keeps the
+// same box with a skeleton.
 .add-link__preview {
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-3);
   align-items: center;
   min-width: 0;
   padding: var(--space-2);
-  background: var(--bg);
-  border-radius: calc(var(--radius-lg) - var(--space-2) / 2);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
 
   &--loading {
-    padding: var(--space-3);
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-
     ui-skeleton {
       flex: 1;
       min-width: 0;
@@ -67,19 +64,12 @@
   display: grid;
   flex: none;
   place-items: center;
-  align-self: stretch;
-  width: rem(148px);
-  min-height: rem(88px);
+  width: rem(112px);
+  height: rem(72px);
   color: var(--accent-text);
   text-transform: uppercase;
   background: var(--accent-bg);
-  border-radius: var(--radius-md);
-
-  @include phone {
-    width: rem(88px);
-    min-height: rem(66px);
-    border-radius: var(--radius-sm);
-  }
+  border-radius: var(--radius-sm);
 }
 
 .add-link__preview-main {
@@ -108,6 +98,7 @@
 
 .add-link__title {
   @include type(heading);
+  @include line-clamp(2);
 
   color: var(--text);
   overflow-wrap: anywhere;
@@ -186,7 +177,7 @@
 // ("Open saved" next to Create anyway) stacks above the main action.
 .add-link__confirm {
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-2);
 
   @include tablet-up {
     flex: none;
@@ -197,11 +188,13 @@
   }
 }
 
-// The "save" shortcut at the start of the footer; a phone has no keyboard to press it.
+// The footer hint at its start ("Paste to start", "Enter to save · Esc to close"); a phone has
+// no keyboard to press it.
 .add-link__shortcut {
   @include type(caption);
 
   display: inline-flex;
+  flex: 1 1 auto;
   gap: var(--space-1);
   align-items: center;
   margin-inline-end: auto;
@@ -240,4 +233,76 @@
 // fields Fill in with AI can change.
 .add-link__own-note {
   margin-block-start: var(--space-2);
+}
+
+// Shelf panel body: 12px between the parts.
+.add-link__fields--panel {
+  gap: var(--space-3);
+}
+
+// "Save: empty": the tip about pasting anywhere, and "Add several links".
+.add-link__tip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.add-link__tip-text {
+  @include type(secondary);
+
+  flex: 1 1 16rem;
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// A line about the address (preview failed, no preview, already saved): Shelf `.note`, a
+// `line-strong` box with a small icon; "already saved" has the warning icon and Open at its end.
+.add-link__state {
+  @include type(secondary);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  padding: var(--space-2) var(--space-3);
+  margin: 0;
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+
+  &--warn {
+    align-items: center;
+
+    .add-link__state-icon {
+      color: var(--warning);
+    }
+  }
+}
+
+.add-link__state-icon {
+  flex: none;
+  margin-block-start: rem(3px);
+  color: var(--text-muted);
+
+  .add-link__state--warn & {
+    margin-block-start: 0;
+  }
+}
+
+.add-link__state-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.add-link__state-action {
+  flex: none;
+  margin-inline-start: auto;
+}
+
+// Remind me… and Favorite under the note.
+.add-link__extras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }

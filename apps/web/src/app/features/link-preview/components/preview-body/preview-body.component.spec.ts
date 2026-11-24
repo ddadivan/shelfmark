@@ -6,18 +6,25 @@ import { createLinkPreviewStub, PREVIEW_STUB_LINK } from '../../../../../testing
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { PREVIEW_BODY_KIND } from '../../models/preview-body-kind.const';
 import { LinkPreviewService } from '../../services/link-preview.service';
+import { PreviewReaderService } from '../../services/preview-reader.service';
+import { createPreviewReaderStub } from '../../../../../testing/preview-reader-stub';
 import { PreviewBodyComponent } from './preview-body.component';
 
 async function setup(link = PREVIEW_STUB_LINK) {
   const stub = createLinkPreviewStub(link);
+  const reader = createPreviewReaderStub();
   TestBed.configureTestingModule({
-    providers: [provideTranslocoForTest(), { provide: LinkPreviewService, useValue: stub }],
+    providers: [
+      provideTranslocoForTest(),
+      { provide: LinkPreviewService, useValue: stub },
+      { provide: PreviewReaderService, useValue: reader },
+    ],
   });
   await loadEnglish();
   const fixture = TestBed.createComponent(PreviewBodyComponent);
   await fixture.whenStable();
   const element: HTMLElement = fixture.nativeElement;
-  return { stub, fixture, element, loader: TestbedHarnessEnvironment.loader(fixture) };
+  return { stub, reader, fixture, element, loader: TestbedHarnessEnvironment.loader(fixture) };
 }
 
 describe('PreviewBodyComponent', () => {
@@ -73,10 +80,12 @@ describe('PreviewBodyComponent', () => {
       return context;
     }
 
-    it('names the domain and offers to open it in a new tab', async () => {
-      const { element, loader, stub } = await blocked();
-      expect(element.textContent).toContain("angular.dev doesn't open inside other apps");
-      const open = await loader.getHarness(UiButtonHarness.with({ text: 'Open in new tab' }));
+    it('names the domain and offers Reader and the browser', async () => {
+      const { element, loader, stub, reader } = await blocked();
+      expect(element.textContent).toContain("angular.dev doesn't allow showing it here");
+      await (await loader.getHarness(UiButtonHarness.with({ text: 'Open in Reader' }))).click();
+      expect(reader.setMode).toHaveBeenCalledWith('reader');
+      const open = await loader.getHarness(UiButtonHarness.with({ text: 'Open in browser' }));
       await open.click();
       expect(stub.openInNewTab).toHaveBeenCalledTimes(1);
       expect(element.querySelector('iframe')).toBeNull();
@@ -91,7 +100,10 @@ describe('PreviewBodyComponent', () => {
       const { stub, fixture, loader } = await blocked();
       stub.href.set(undefined);
       await fixture.whenStable();
-      expect(await loader.getAllHarnesses(UiButtonHarness)).toHaveLength(0);
+      const texts = await Promise.all(
+        (await loader.getAllHarnesses(UiButtonHarness)).map((button) => button.getText()),
+      );
+      expect(texts).toEqual(['Open in Reader']);
     });
 
     it('saves the "always open in a new tab" choice both ways', async () => {

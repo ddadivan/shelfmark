@@ -49,6 +49,7 @@ export * from './lib/components/radio-group';
 export * from './lib/components/range';
 export * from './lib/components/resize-handle';
 export * from './lib/components/rating-scale';
+export * from './lib/components/reader';
 export * from './lib/components/save-status';
 export * from './lib/components/saved-views';
 export * from './lib/components/search-trigger';

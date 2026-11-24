@@ -66,6 +66,8 @@ export class DialogService {
       dismissible,
       scrimClose: config.scrimClose ?? true,
       restoreFocus: config.restoreFocus,
+      // The panel variant leaves the page undimmed from 40em (`_dialog.scss`).
+      scrimClasses: variant === DIALOG_VARIANT.Panel ? ['ui-dialog-scrim--clear'] : [],
       // The command dialog sits at the top (its panel keeps the 96px gap); others are centred.
       positionStrategy:
         variant === DIALOG_VARIANT.Command

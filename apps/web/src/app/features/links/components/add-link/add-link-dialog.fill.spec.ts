@@ -188,7 +188,7 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
         '[slot="footer"]:not(.add-link__confirm), .add-link__confirm > *',
       ) ?? []),
     ];
-    expect(footer.map((el) => el.textContent?.trim())).toEqual([FILL, 'Cancel', 'Create link']);
+    expect(footer.map((el) => el.textContent?.trim())).toEqual([FILL, 'Cancel', 'Save']);
     expect(root()?.querySelector('app-add-link-ai-fill button')?.classList).toContain(
       'ui-button--ai',
     );
@@ -211,7 +211,7 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     // Ordinary values: no "Moved by AI" mark.
     expect(root()?.textContent).not.toContain('Moved by AI');
 
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Create link' }))).click();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Save' }))).click();
     await result;
     expect(links.create.mock.calls[0]?.[0]).toMatchObject({
       folderId: MOCK_ID.FolderAngular,
@@ -275,8 +275,8 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     expect(button()?.disabled).toBe(false);
     expect(root()?.textContent).toContain('Paste a link first');
     button()?.click();
-    const tags = await loader.getHarness(UiTagInputHarness);
-    expect(await tags.getTags()).toEqual([]);
+    // Nothing was filled: the details wait for an address (Shelf).
+    expect(root()?.querySelector('ui-tag-input')).toBeNull();
 
     await typeUrl(URL);
     await until(() => expect(button()?.getAttribute('aria-disabled')).toBeNull());
@@ -297,7 +297,7 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
       root()?.querySelector<HTMLInputElement>(selector) ?? null;
     expect(field('input[type="url"]')?.disabled).toBe(true);
     expect(root()?.querySelector('.add-link__fields')?.getAttribute('aria-busy')).toBe('true');
-    const create = await loader.getHarness(UiButtonHarness.with({ text: 'Create link' }));
+    const create = await loader.getHarness(UiButtonHarness.with({ text: 'Save' }));
     expect(await create.isDisabled()).toBe(true);
     // Title and note stay editable.
     const free = [...(root()?.querySelectorAll<HTMLInputElement>('input, textarea') ?? [])].filter(
@@ -319,7 +319,7 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
     expect(root()?.querySelector('app-summary-field')?.textContent).toContain('Written by AI');
     expect(root()?.querySelector<HTMLInputElement>('input[type="text"]')?.value).not.toBe('');
 
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Create link' }))).click();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Save' }))).click();
     await result;
     // AI's own summary is the draft's: the request carries the cleaned title, not the summary.
     expect(links.create.mock.calls[0]?.[0]).toMatchObject({ title: 'A cleaner title' });
@@ -351,7 +351,7 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
       summary.dispatchEvent(new Event('input'));
     }
     TestBed.tick();
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Create link' }))).click();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Save' }))).click();
     await result;
     expect(links.create.mock.calls[0]?.[0]).toMatchObject({
       title: 'My own title',
@@ -373,7 +373,7 @@ describe('AddLinkDialogComponent: Fill in with AI (F1c)', () => {
       summary.dispatchEvent(new Event('input'));
     }
     TestBed.tick();
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Create link' }))).click();
+    await (await loader.getHarness(UiButtonHarness.with({ text: 'Save' }))).click();
     await result;
     expect(links.create.mock.calls[0]?.[0]).toMatchObject({ summary: null });
   });

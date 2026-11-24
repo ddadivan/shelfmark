@@ -113,6 +113,7 @@ export const ICON_NAMES = [
   'sun',
   'swap',
   'tag',
+  'text-size',
   'trash',
   'tree',
   'trophy',
