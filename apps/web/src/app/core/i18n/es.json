@@ -1128,7 +1128,9 @@
         "current": "Portada actual",
         "empty": "Los enlaces de esta carpeta con imagen de vista previa pueden ser su portada.",
         "loading": "Cargando imágenes"
-      }
+      },
+      "title": "Ajustes de la carpeta",
+      "preview": "Vista previa"
     }
   },
   "library": {

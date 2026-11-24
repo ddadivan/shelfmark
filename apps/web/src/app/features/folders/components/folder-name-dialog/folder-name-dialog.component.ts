@@ -16,6 +16,8 @@ import {
   BUTTON_VARIANT,
   ButtonComponent,
   DialogComponent,
+  FOLDER_ICON_SIZE,
+  FolderIconComponent,
   injectDialogData,
   InputComponent,
   SelectComponent,
@@ -39,6 +41,7 @@ import type { FolderNameDialogData } from '../../models/folder-name-dialog-data.
   imports: [
     ButtonComponent,
     DialogComponent,
+    FolderIconComponent,
     FormField,
     FormRoot,
     InputComponent,
@@ -55,6 +58,7 @@ export class FolderNameDialogComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly FOLDER_LIMIT = FOLDER_LIMIT;
+  protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
 
   private readonly ref = inject<UiDialogRef<boolean>>(UiDialogRef);
   private readonly transloco = inject(TranslocoService);
@@ -67,7 +71,7 @@ export class FolderNameDialogComponent {
 
   /** Folder tiles in the folder select, as the account shows colours (#418). */
 
-  private readonly shownColour = inject(UserSettingsStore).shownColour;
+  protected readonly shownColour = inject(UserSettingsStore).shownColour;
 
   private readonly model = signal<{ name: string; parentId: string | null }>({
     name: this.data.name,

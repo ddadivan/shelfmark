@@ -1128,7 +1128,9 @@
         "current": "Capa atual",
         "empty": "Links desta pasta com imagem de prévia podem ser a capa dela.",
         "loading": "Carregando imagens"
-      }
+      },
+      "title": "Configurações da pasta",
+      "preview": "Prévia"
     }
   },
   "library": {

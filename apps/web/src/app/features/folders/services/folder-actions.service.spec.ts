@@ -266,6 +266,8 @@ describe('FolderActionsService', () => {
       const done = actions.rename(store.entityMap()[MOCK_ID.FolderAngular]);
       await opened();
       expect(nameField().value).toBe(MOCK_NAME.FolderAngular);
+      // Shelf: the folder tile leads the name field of Rename.
+      expect(document.querySelector('ui-input [uiInputLead]')).not.toBeNull();
       await until(() => {
         expect(document.activeElement).toBe(nameField());
       });

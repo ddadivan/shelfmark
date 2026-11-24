@@ -1,4 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/angular-vite';
+import { moduleMetadata, type Meta, type StoryObj } from '@storybook/angular-vite';
+import { FolderIconComponent } from '../folder-icon/folder-icon.component';
 import { InputComponent } from './input.component';
 import { THEME, THEME_ATTRIBUTE } from '../../models/theme';
 import { INPUT_TYPE } from './models/input-type.const';
@@ -114,6 +115,17 @@ export const UrlLoading: Story = {
 
 export const Filled: Story = {
   args: { label: 'Title', value: "Angular 22: what's new" },
+};
+
+/** Shelf Rename folder: a decorative lead projected with `uiInputLead` (here a folder tile). */
+export const WithLead: Story = {
+  decorators: [moduleMetadata({ imports: [FolderIconComponent] })],
+  render: (args) => ({
+    props: args,
+    template: `<ui-input label="Name" [value]="'Learning and baking'"
+      ><ui-folder-icon uiInputLead size="sm" colour="amber"
+    /></ui-input>`,
+  }),
 };
 
 export const WithHint: Story = {

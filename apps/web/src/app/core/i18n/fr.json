@@ -1128,7 +1128,9 @@
         "current": "Couverture actuelle",
         "empty": "Les liens de ce dossier avec une image d’aperçu peuvent servir de couverture.",
         "loading": "Chargement des images"
-      }
+      },
+      "title": "Réglages du dossier",
+      "preview": "Aperçu"
     }
   },
   "library": {

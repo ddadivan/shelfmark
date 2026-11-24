@@ -134,8 +134,10 @@ describe('FolderActionsService style', () => {
     void actions.style(folder);
     const root = await opened();
 
-    expect(root.querySelector('h2')?.textContent).toBe(MOCK_NAME.FolderReading);
-    expect(root.textContent).toContain('links');
+    expect(root.querySelector('h2')?.textContent).toBe('Folder settings');
+    expect(root.querySelector<HTMLInputElement>('ui-input input')?.value).toBe(
+      MOCK_NAME.FolderReading,
+    );
     const colours = [...root.querySelectorAll('[aria-labelledby="folder-style-colour"] input')].map(
       (input) => input.getAttribute('aria-label'),
     );
@@ -206,12 +208,37 @@ describe('FolderActionsService style', () => {
     expect(store.entityMap()[MOCK_ID.FolderReading].highlighted).toBe(true);
   });
 
+  it('renames the folder from the Name field and refuses a blank name (Shelf)', async () => {
+    const { actions, store } = await setup();
+
+    const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
+    const root = await opened();
+    const name = root.querySelector<HTMLInputElement>('ui-input input') as HTMLInputElement;
+    name.value = '   ';
+    name.dispatchEvent(new Event('input'));
+    TestBed.tick();
+    button('Save').click();
+    TestBed.tick();
+    expect(dialog()).not.toBeNull();
+
+    name.value = ' Weekend ';
+    name.dispatchEvent(new Event('input'));
+    TestBed.tick();
+    button('Save').click();
+    await closed();
+    await done;
+
+    await until(() => {
+      expect(store.entityMap()[MOCK_ID.FolderReading].name).toBe('Weekend');
+    });
+  });
+
   it('saves a trimmed description and refuses one that is too long (#418)', async () => {
     const { actions, store } = await setup();
 
     const done = actions.style(store.entityMap()[MOCK_ID.FolderReading]);
     const root = await opened();
-    const field = root.querySelector<HTMLInputElement>('ui-input input');
+    const field = root.querySelectorAll<HTMLInputElement>('ui-input input')[1];
     if (!field) {
       throw new Error('no description field');
     }

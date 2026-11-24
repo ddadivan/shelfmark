@@ -1110,7 +1110,9 @@
         "current": "Current cover",
         "empty": "Links in this folder with a preview picture can be its cover.",
         "loading": "Loading pictures"
-      }
+      },
+      "title": "Folder settings",
+      "preview": "Preview"
     }
   },
   "library": {

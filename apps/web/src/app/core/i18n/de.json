@@ -1110,7 +1110,9 @@
         "current": "Aktuelles Titelbild",
         "empty": "Links in diesem Ordner mit Vorschaubild können sein Titelbild sein.",
         "loading": "Bilder werden geladen"
-      }
+      },
+      "title": "Ordnereinstellungen",
+      "preview": "Vorschau"
     }
   },
   "library": {

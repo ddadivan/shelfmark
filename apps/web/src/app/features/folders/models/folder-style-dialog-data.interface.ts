@@ -4,12 +4,11 @@ import type { FolderStyleChange } from '../../../stores/models/folder-style-chan
 /** What `FolderActionsService` hands to the colour and icon dialog. */
 export interface FolderStyleDialogData {
   readonly folder: FolderResponse;
-  /** Links directly in the folder and folders directly inside it, for the preview line. */
-  readonly linkCount: number;
-  readonly subfolderCount: number;
   /**
    * Called with the whole chosen style (colour, icon, highlight, description, cover) and the picture of the
    * chosen cover; the caller skips the request when nothing differs. The dialog closes at once.
    */
   readonly submit: (style: Required<FolderStyleChange>, coverUrl: string | null) => void;
+  /** Called with the trimmed new name when Save changed it (before `submit`). */
+  readonly rename: (name: string) => void;
 }

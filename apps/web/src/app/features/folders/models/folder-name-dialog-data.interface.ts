@@ -1,3 +1,4 @@
+import type { FolderResponse } from '@shelfmark/contracts';
 import type { FolderNameMode } from './folder-name-mode.type';
 
 /** What `FolderActionsService` hands to the create / rename dialog. */
@@ -7,6 +8,8 @@ export interface FolderNameDialogData {
   readonly parentId: string | null;
   /** The current name (rename) or empty (create). */
   readonly name: string;
+  /** Rename: the folder, whose tile leads the name field (Shelf 04-organise). */
+  readonly folder?: FolderResponse;
   /**
    * Called with the trimmed name and the chosen parent (create only; rename passes `null`). Resolves true to close the dialog, false to keep it open with
    * an error. Create waits for the server here; rename starts its optimistic update and resolves.

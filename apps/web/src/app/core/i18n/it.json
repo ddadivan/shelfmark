@@ -1128,7 +1128,9 @@
         "current": "Copertina attuale",
         "empty": "I link di questa cartella con un’immagine di anteprima possono farle da copertina.",
         "loading": "Caricamento immagini"
-      }
+      },
+      "title": "Impostazioni cartella",
+      "preview": "Anteprima"
     }
   },
   "library": {

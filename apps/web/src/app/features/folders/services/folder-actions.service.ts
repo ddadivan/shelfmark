@@ -91,17 +91,10 @@ export class FolderActionsService {
           mode: FOLDER_NAME_MODE.Rename,
           parentId: null,
           name: folder.name,
+          folder,
           submit: (name) => {
             if (name !== folder.name) {
-              void this.folders.rename(folder.id, name).then((saved) => {
-                if (!saved) {
-                  this.toasts.show({
-                    kind: TOAST_KIND.Danger,
-                    title: this.t('folders.rename.failed'),
-                    detail: this.t('folders.rename.failedDetail'),
-                  });
-                }
-              });
+              this.saveName(folder.id, name);
             }
             return Promise.resolve(true);
           },
@@ -153,7 +146,7 @@ export class FolderActionsService {
   }
 
   /**
-   * "Colour and icon" (with the description and cover, #418): only what changed is sent; the dialog closes at once on Save and the
+   * Folder settings (Shelf; the name, colour and icon, description, cover, highlight): only what changed is sent; the dialog closes at once on Save and the
    * folder wears the new style while the request runs; a failure puts the old style back with a toast.
    */
   async style(folder: FolderResponse): Promise<void> {
@@ -164,9 +157,7 @@ export class FolderActionsService {
         autoFocus: 'input:checked',
         data: {
           folder,
-          linkCount: folder.linkCount,
-          subfolderCount: this.folders.entities().filter((item) => item.parentId === folder.id)
-            .length,
+          rename: (name) => this.saveName(folder.id, name),
           submit: (style, coverUrl) => {
             const change = changedStyle(style, folder);
             if (Object.keys(change).length === 0) {
@@ -238,6 +229,19 @@ export class FolderActionsService {
   }
 
   /** Before the folders disappear: moves off the page of a deleted folder, so it never shows "not found". */
+  /** Renames optimistically; a refusal puts the old name back with a toast. */
+  private saveName(folderId: string, name: string): void {
+    void this.folders.rename(folderId, name).then((saved) => {
+      if (!saved) {
+        this.toasts.show({
+          kind: TOAST_KIND.Danger,
+          title: this.t('folders.rename.failed'),
+          detail: this.t('folders.rename.failedDetail'),
+        });
+      }
+    });
+  }
+
   private async leaveDeleted(doomed: readonly string[]): Promise<void> {
     const active = sidebarActiveId(this.router.url);
     if (active !== null && doomed.includes(active)) {
