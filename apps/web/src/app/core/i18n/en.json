@@ -2537,7 +2537,10 @@
       "rename": "Rename",
       "moveLeft": "Move left",
       "moveRight": "Move right",
-      "delete": "Delete view"
+      "delete": "Delete view",
+      "edit": "Edit view…",
+      "pin": "Pin to sidebar",
+      "unpin": "Unpin from sidebar"
     },
     "name": {
       "label": "Name",
@@ -2651,7 +2654,38 @@
       "foundMore": "Found {{count}}+ links",
       "fill": "Fill in",
       "filled": "Done",
-      "showWhere": "Show links where"
+      "showWhere": "Show links where",
+      "saved": {
+        "label": "Saved",
+        "any": "Any time",
+        "month": "Last month",
+        "week": "Last week"
+      },
+      "only": {
+        "label": "Only",
+        "favorites": "Favorites"
+      },
+      "icon": {
+        "label": "Icon",
+        "none": "No icon",
+        "bookmark": "Bookmark",
+        "star": "Star",
+        "play": "Play",
+        "text": "Text",
+        "hash": "Hash",
+        "bell": "Bell",
+        "search": "Search",
+        "grid": "Grid"
+      }
+    },
+    "edit": {
+      "title": "Edit view",
+      "action": "Save changes",
+      "failed": "Couldn't save the view. Try again.",
+      "missing": "This view or its folder is gone. Close and try again."
+    },
+    "edited": {
+      "title": "View updated"
     }
   },
   "feedback": {

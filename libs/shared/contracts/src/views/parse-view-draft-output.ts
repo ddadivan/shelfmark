@@ -147,6 +147,9 @@ export function parseViewDraftOutput(
       sort: sort?.sort ?? LINK_SORT_FIELD.CreatedAt,
       order: sort?.order ?? SORT_ORDER.Desc,
       q,
+      // The draft never sets a period or favorites-only: the person picks those rows.
+      saved: null,
+      favorite: false,
     },
     set,
     name,

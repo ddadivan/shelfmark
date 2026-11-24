@@ -8,6 +8,7 @@ import {
   type PinKind,
   type PinRef,
   type PinResponse,
+  type SavedViewResponse,
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { isConflictError } from '../core/api/is-conflict-error';
@@ -19,12 +20,18 @@ import { PINS_API } from '../features/pins/models/pins-api.const';
 import { pinKey } from '../features/pins/utils/pin-key';
 import { FoldersStore } from './folders.store';
 import { LinksStore } from './links.store';
+import { SavedViewsStore } from './saved-views.store';
 import type { PinsState } from './models/pins-state.interface';
 
 const initialState: PinsState = { items: [], loaded: false, loading: false, error: false };
 
 function toRef(pin: PinResponse): PinRef {
-  const id = pin.kind === PIN_KIND.Folder ? pin.folder?.id : pin.link?.id;
+  const id =
+    pin.kind === PIN_KIND.Folder
+      ? pin.folder?.id
+      : pin.kind === PIN_KIND.View
+        ? pin.view?.id
+        : pin.link?.id;
   return { kind: pin.kind, id: id ?? '' };
 }
 
@@ -33,7 +40,7 @@ function renumber(items: readonly PinResponse[]): PinResponse[] {
 }
 
 /**
- * The sidebar pins (`/api/pins`): at most `PIN_LIMIT.Max` folders and links in one order, cached
+ * The sidebar pins (`/api/pins`): at most `PIN_LIMIT.Max` folders, links and saved views in one order, cached
  * for the whole app. Pin, unpin and reorder are optimistic and roll back when the request fails;
  * the caller says what failed. `rows` shows the live folder or link behind each pin (a rename or a
  * new colour shows at once), `has` answers for menus. The session end forgets everything and
@@ -45,6 +52,7 @@ export const PinsStore = signalStore(
   withComputed(({ items }) => {
     const folders = inject(FoldersStore);
     const links = inject(LinksStore);
+    const views = inject(SavedViewsStore);
     return {
       count: computed(() => items().length),
       atLimit: computed(() => items().length >= PIN_LIMIT.Max),
@@ -56,11 +64,20 @@ export const PinsStore = signalStore(
           const { kind, id } = toRef(pin);
           if (kind === PIN_KIND.Folder) {
             const folder = folders.entityMap()[id] ?? pin.folder;
-            return folder ? [{ key: pinKey(kind, id), kind, id, folder, link: null }] : [];
+            return folder
+              ? [{ key: pinKey(kind, id), kind, id, folder, link: null, view: null }]
+              : [];
+          }
+          if (kind === PIN_KIND.View) {
+            // The view as the views store has it now (a rename shows at once), else the pin's copy.
+            const view = views.items().find((item) => item.id === id) ?? pin.view;
+            return view
+              ? [{ key: pinKey(kind, id), kind, id, folder: null, link: null, view }]
+              : [];
           }
           const link =
             links.entityMap()[id] ?? links.recent().find((item) => item.id === id) ?? pin.link;
-          return link ? [{ key: pinKey(kind, id), kind, id, folder: null, link }] : [];
+          return link ? [{ key: pinKey(kind, id), kind, id, folder: null, link, view: null }] : [];
         }),
       ),
     };
@@ -70,6 +87,7 @@ export const PinsStore = signalStore(
     const api = () => injector.get(PINS_API);
     const folders = inject(FoldersStore);
     const links = inject(LinksStore);
+    const views = inject(SavedViewsStore);
     const scope = inject(SessionScope);
     let epoch = 0;
     // Bumped by every change: a list that started before it must not overwrite it.
@@ -104,11 +122,17 @@ export const PinsStore = signalStore(
       const position = store.items().length;
       if (ref.kind === PIN_KIND.Folder) {
         const folder: FolderResponse | undefined = folders.entityMap()[ref.id];
-        return folder ? { kind: ref.kind, position, folder, link: null } : null;
+        return folder ? { kind: ref.kind, position, folder, link: null, view: null } : null;
+      }
+      if (ref.kind === PIN_KIND.View) {
+        const view: SavedViewResponse | undefined = views
+          .items()
+          .find((item) => item.id === ref.id);
+        return view ? { kind: ref.kind, position, folder: null, link: null, view } : null;
       }
       const link: LinkResponse | undefined =
         links.entityMap()[ref.id] ?? links.recent().find((item) => item.id === ref.id);
-      return link ? { kind: ref.kind, position, folder: null, link } : null;
+      return link ? { kind: ref.kind, position, folder: null, link, view: null } : null;
     }
 
     function isPinned(ref: PinRef): boolean {
@@ -247,6 +271,16 @@ export const PinsStore = signalStore(
             store
               .items()
               .filter((pin) => pin.kind !== PIN_KIND.Folder || !ids.includes(toRef(pin).id)),
+          ),
+        });
+      },
+
+      /** A deleted saved view is no longer pinned (the server drops the pin with the row). */
+      dropView(id: string): void {
+        version++;
+        patchState(store, {
+          items: renumber(
+            store.items().filter((pin) => pin.kind !== PIN_KIND.View || toRef(pin).id !== id),
           ),
         });
       },

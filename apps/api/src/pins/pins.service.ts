@@ -19,6 +19,7 @@ import type { Prisma } from '../generated/prisma/client';
 import { LINK_INCLUDE } from '../links/models/link-include.const';
 import { toLinkResponse } from '../links/to-link-response';
 import { PrismaService } from '../prisma/prisma.service';
+import { ViewsService } from '../views/views.service';
 
 /** A pinned row reduced to what ordering needs. */
 interface PinSlot extends PinRef {
@@ -26,8 +27,9 @@ interface PinSlot extends PinRef {
 }
 
 /**
- * Sidebar pins (ADR 0037): up to `PIN_LIMIT.Max` live folders and links of one user, ordered by the
- * `pinned_position` column of both tables. Writes run under the `folders:` lock, so the count and the
+ * Sidebar pins (ADR 0037): up to `PIN_LIMIT.Max` live folders, links and saved views (Shelf
+ * 13-views) of one user, ordered by the `pinned_position` column of the three tables. A view has no
+ * Trash: deleting it removes its pin with the row; the `views:` lock is not taken here. Writes run under the `folders:` lock, so the count and the
  * positions cannot be raced. Plain SQL keeps `updated_at`: pinning is not an edit. A row that goes to
  * Trash is unpinned at that moment (the delete paths clear the column), and every read filters
  * `deleted_at IS NULL` as well.
@@ -37,6 +39,7 @@ export class PinsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly folders: FoldersService,
+    private readonly views: ViewsService,
   ) {}
 
   list(userId: string): Promise<ListPinsResponse> {
@@ -90,16 +93,13 @@ export class PinsService {
     userId: string,
     ref: PinRef,
   ): Promise<number | null> {
+    const select = { pinnedPosition: true } as const;
     const row =
       ref.kind === PIN_KIND.Folder
-        ? await tx.folder.findFirst({
-            where: { id: ref.id, userId, deletedAt: null },
-            select: { pinnedPosition: true },
-          })
-        : await tx.link.findFirst({
-            where: { id: ref.id, userId, deletedAt: null },
-            select: { pinnedPosition: true },
-          });
+        ? await tx.folder.findFirst({ where: { id: ref.id, userId, deletedAt: null }, select })
+        : ref.kind === PIN_KIND.View
+          ? await tx.savedView.findFirst({ where: { id: ref.id, userId }, select })
+          : await tx.link.findFirst({ where: { id: ref.id, userId, deletedAt: null }, select });
     if (!row) throw new NotFoundException(PIN_ERROR_MESSAGE.NotFound);
     return row.pinnedPosition;
   }
@@ -114,6 +114,10 @@ export class PinsService {
       await tx.$executeRaw`
         UPDATE folders SET pinned_position = ${position}::smallint
         WHERE id = ${ref.id}::uuid AND user_id = ${userId}::uuid AND deleted_at IS NULL`;
+    } else if (ref.kind === PIN_KIND.View) {
+      await tx.$executeRaw`
+        UPDATE saved_views SET pinned_position = ${position}::smallint
+        WHERE id = ${ref.id}::uuid AND user_id = ${userId}::uuid`;
     } else {
       await tx.$executeRaw`
         UPDATE links SET pinned_position = ${position}::smallint
@@ -122,13 +126,17 @@ export class PinsService {
   }
 
   private async slots(tx: Prisma.TransactionClient, userId: string): Promise<PinSlot[]> {
-    const [folders, links] = await Promise.all([
+    const [folders, links, views] = await Promise.all([
       tx.folder.findMany({
         where: { userId, deletedAt: null, pinnedPosition: { not: null } },
         select: { id: true, pinnedPosition: true },
       }),
       tx.link.findMany({
         where: { userId, deletedAt: null, pinnedPosition: { not: null } },
+        select: { id: true, pinnedPosition: true },
+      }),
+      tx.savedView.findMany({
+        where: { userId, pinnedPosition: { not: null } },
         select: { id: true, pinnedPosition: true },
       }),
     ]);
@@ -140,6 +148,11 @@ export class PinsService {
       })),
       ...links.map((row) => ({
         kind: PIN_KIND.Link,
+        id: row.id,
+        position: row.pinnedPosition ?? 0,
+      })),
+      ...views.map((row) => ({
+        kind: PIN_KIND.View,
         id: row.id,
         position: row.pinnedPosition ?? 0,
       })),
@@ -172,6 +185,7 @@ export class PinsService {
       }
     }
     const covers = await loadFolderCovers(client, userId, folders);
+    const views = await this.views.pinned(client, userId);
     const entries = [
       ...folders.map((row) => ({
         kind: PIN_KIND.Folder,
@@ -179,6 +193,7 @@ export class PinsService {
         id: row.id,
         folder: toFolderResponse(row, counts.get(row.id) ?? 0, covers.get(row.id)),
         link: null,
+        view: null,
       })),
       ...links.map((row) => ({
         kind: PIN_KIND.Link,
@@ -186,6 +201,15 @@ export class PinsService {
         id: row.id,
         folder: null,
         link: toLinkResponse(row),
+        view: null,
+      })),
+      ...views.map(({ view, pinnedPosition }) => ({
+        kind: PIN_KIND.View,
+        position: pinnedPosition,
+        id: view.id,
+        folder: null,
+        link: null,
+        view,
       })),
     ].sort(
       (a, b) => a.position - b.position || a.kind.localeCompare(b.kind) || a.id.localeCompare(b.id),
@@ -195,6 +219,7 @@ export class PinsService {
       position: index,
       folder: entry.folder,
       link: entry.link,
+      view: entry.view,
     }));
     return { items };
   }

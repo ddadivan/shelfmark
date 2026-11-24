@@ -141,6 +141,13 @@
   }
 }
 
+// Saved (a three-way switch) and Icon (a single line of glyph tiles) keep their own width.
+.nv__saved,
+.nv__icons {
+  justify-self: start;
+  max-inline-size: 100%;
+}
+
 .nv__sr {
   position: absolute;
   width: rem(1px);

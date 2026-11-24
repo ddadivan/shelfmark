@@ -4,14 +4,17 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import {
   SAVED_VIEW_LIMIT,
   type ListSavedViewsQuery,
+  type SavedViewIcon,
   type SavedViewQueryRequest,
   type SavedViewResponse,
+  type UpdateSavedViewRequest,
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { isConflictError } from '../core/api/is-conflict-error';
 import { SessionScope } from '../core/auth/session-scope.service';
 import { SAVED_VIEWS_API } from '../features/views/models/saved-views-api.const';
 import type { SavedViewsState } from './models/saved-views-state.interface';
+import { PinsStore } from './pins.store';
 import { VIEW_OUTCOME } from './models/view-outcome.const';
 import type { ViewCreateResult } from './models/view-create-result.interface';
 import type { ViewOutcome } from './models/view-outcome.type';
@@ -139,13 +142,19 @@ export const SavedViewsStore = signalStore(
       },
 
       /** Saves a filter as a view at the end; waits for the server. */
-      async create(name: string, query: SavedViewQueryRequest): Promise<ViewCreateResult> {
+      async create(
+        name: string,
+        query: SavedViewQueryRequest,
+        icon: SavedViewIcon | null = null,
+      ): Promise<ViewCreateResult> {
         if (store.atLimit()) {
           return { outcome: VIEW_OUTCOME.Limit };
         }
         const started = epoch;
         try {
-          const view = await firstValueFrom(api().create({ name, query }));
+          const view = await firstValueFrom(
+            api().create({ name, query, ...(icon === null ? {} : { icon }) }),
+          );
           if (started === epoch) {
             version++;
             patchState(store, {
@@ -153,6 +162,28 @@ export const SavedViewsStore = signalStore(
             });
           }
           return { outcome: VIEW_OUTCOME.Done, view };
+        } catch (error) {
+          return { outcome: outcomeOf(error) };
+        }
+      },
+
+      /**
+       * Edit view… (Shelf 13-views): saves a new name, filter or icon and waits for the server (the
+       * dialog shows the outcome). Inside a feed the counts are read again for it afterwards.
+       */
+      async edit(id: string, change: UpdateSavedViewRequest): Promise<ViewCreateResult> {
+        const before = store.items().find((item) => item.id === id);
+        const started = epoch;
+        try {
+          const saved = await firstValueFrom(api().update(id, change));
+          if (started === epoch) {
+            version++;
+            replace({ ...saved, position: before?.position ?? saved.position });
+            if (feed !== undefined) {
+              void fetchList();
+            }
+          }
+          return { outcome: VIEW_OUTCOME.Done, view: saved };
         } catch (error) {
           return { outcome: outcomeOf(error) };
         }
@@ -196,6 +227,10 @@ export const SavedViewsStore = signalStore(
         patchState(store, { items: renumber(before.filter((item) => item.id !== id)) });
         try {
           await firstValueFrom(api().remove(id));
+          // The server drops the view's sidebar pin with the row.
+          if (started === epoch) {
+            injector.get(PinsStore).dropView(id);
+          }
           return true;
         } catch {
           if (started === epoch) {

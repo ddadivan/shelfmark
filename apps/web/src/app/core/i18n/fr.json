@@ -2599,7 +2599,10 @@
       "rename": "Renommer",
       "moveLeft": "Déplacer à gauche",
       "moveRight": "Déplacer à droite",
-      "delete": "Supprimer la vue"
+      "delete": "Supprimer la vue",
+      "edit": "Modifier la vue…",
+      "pin": "Épingler dans la barre latérale",
+      "unpin": "Détacher de la barre latérale"
     },
     "name": {
       "label": "Nom",
@@ -2714,7 +2717,38 @@
       "foundMore": "Plus de {{count}} liens trouvés",
       "fill": "Remplir",
       "filled": "Fait",
-      "showWhere": "Afficher les liens où"
+      "showWhere": "Afficher les liens où",
+      "saved": {
+        "label": "Ajouté",
+        "any": "Toujours",
+        "month": "Le mois dernier",
+        "week": "La semaine dernière"
+      },
+      "only": {
+        "label": "Seulement",
+        "favorites": "Favoris"
+      },
+      "icon": {
+        "label": "Icône",
+        "none": "Sans icône",
+        "bookmark": "Signet",
+        "star": "Étoile",
+        "play": "Lecture",
+        "text": "Texte",
+        "hash": "Dièse",
+        "bell": "Cloche",
+        "search": "Recherche",
+        "grid": "Grille"
+      }
+    },
+    "edit": {
+      "title": "Modifier la vue",
+      "action": "Enregistrer",
+      "failed": "Impossible d'enregistrer la vue. Réessayez.",
+      "missing": "Cette vue ou son dossier n'existe plus. Fermez et réessayez."
+    },
+    "edited": {
+      "title": "Vue mise à jour"
     }
   },
   "feedback": {

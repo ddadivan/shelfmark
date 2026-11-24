@@ -452,14 +452,18 @@ model FolderShare {
 // SavedViewQuery (validated by the API); at most SAVED_VIEW_LIMIT.PerUserMax per user. New users get
 // the starter views from a database trigger (see the migration).
 model SavedView {
-  id        String   @id @default(uuid(7)) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  name      String   @db.VarChar(40)
-  query     Json     @db.JsonB
-  position  Int      @db.SmallInt
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid(7)) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  name           String   @db.VarChar(40)
+  query          Json     @db.JsonB
+  position       Int      @db.SmallInt
+  // The view's glyph (SAVED_VIEW_ICON, CHECK in the migration); NULL = the default one.
+  icon           String?  @db.VarChar(16)
+  // Place in the user's sidebar pins (ADR 0037, with folders and links); NULL = not pinned.
+  pinnedPosition Int?     @map("pinned_position") @db.SmallInt
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, position])
   @@map("saved_views")
@@ -556,17 +560,17 @@ model AiSettings {
 // Links processed per UTC month (counts only, never content). `month` is the first day of the month.
 // Reserved with one INSERT ... ON CONFLICT statement before the model call, refunded on a provider failure.
 model AiUsage {
-  userId        String   @map("user_id") @db.Uuid
-  month         DateTime @db.Date
-  links         Int      @default(0)
+  userId           String   @map("user_id") @db.Uuid
+  month            DateTime @db.Date
+  links            Int      @default(0)
   // Search by meaning (AI-3): link texts embedded and search queries embedded this month.
-  embeds        Int      @default(0)
-  searchQueries Int      @default(0) @map("search_queries")
+  embeds           Int      @default(0)
+  searchQueries    Int      @default(0) @map("search_queries")
   // Library clean-up runs with AI checks this month (AI-5, ADR 0053 point 3).
-  cleanupRuns   Int      @default(0) @map("cleanup_runs")
+  cleanupRuns      Int      @default(0) @map("cleanup_runs")
   // Links sent to import AI grouping this month (ADR 0056 decision 10); refunded only on a provider failure.
-  importGroupLinks Int   @default(0) @map("import_group_links")
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  importGroupLinks Int      @default(0) @map("import_group_links")
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, month])
   @@map("ai_usage")
@@ -788,26 +792,26 @@ model McpTokenUsage {
 // migration. `targetFolderId` has no relation on purpose (like users.new_links_folder_id): the API
 // answers it only while it is a live own folder.
 model Import {
-  id             String    @id @default(uuid(7)) @db.Uuid
-  userId         String    @map("user_id") @db.Uuid
-  source         String    @db.VarChar(16)
-  fileName       String    @map("file_name") @db.VarChar(255)
-  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  finishedAt     DateTime? @map("finished_at") @db.Timestamptz(3)
-  undoneAt       DateTime? @map("undone_at") @db.Timestamptz(3)
-  linksCreated   Int       @default(0) @map("links_created")
-  foldersCreated Int       @default(0) @map("folders_created")
-  skipped        Int       @default(0)
-  failed         Int       @default(0)
-  targetFolderId String?   @map("target_folder_id") @db.Uuid
+  id             String       @id @default(uuid(7)) @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  source         String       @db.VarChar(16)
+  fileName       String       @map("file_name") @db.VarChar(255)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  finishedAt     DateTime?    @map("finished_at") @db.Timestamptz(3)
+  undoneAt       DateTime?    @map("undone_at") @db.Timestamptz(3)
+  linksCreated   Int          @default(0) @map("links_created")
+  foldersCreated Int          @default(0) @map("folders_created")
+  skipped        Int          @default(0)
+  failed         Int          @default(0)
+  targetFolderId String?      @map("target_folder_id") @db.Uuid
   // The AI pass (ADR 0056 decision 9): asked for at start, `running` | `done` | `skipped` once it
   // began or could not run (CHECK in the migration), the backfill units the grouping took that no
   // chunk used yet, and the links the pass covers.
-  aiRequested    Boolean   @default(false) @map("ai_requested")
-  aiState        String?   @map("ai_state") @db.VarChar(8)
-  aiPrepaid      Int       @default(0) @map("ai_prepaid")
-  aiTotal        Int       @default(0) @map("ai_total")
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aiRequested    Boolean      @default(false) @map("ai_requested")
+  aiState        String?      @map("ai_state") @db.VarChar(8)
+  aiPrepaid      Int          @default(0) @map("ai_prepaid")
+  aiTotal        Int          @default(0) @map("ai_total")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   scopedRuns     AiSettings[]
   links          Link[]
   folders        Folder[]

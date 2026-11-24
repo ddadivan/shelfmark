@@ -20,6 +20,7 @@ function view(id: string, query: Partial<SavedViewResponse['query']>): SavedView
   return {
     id,
     name: id,
+    icon: null,
     position: 0,
     count: 0,
     available: true,
@@ -31,6 +32,8 @@ function view(id: string, query: Partial<SavedViewResponse['query']>): SavedView
       sort: LINK_SORT_FIELD.CreatedAt,
       order: SORT_ORDER.Desc,
       q: '',
+      saved: null,
+      favorite: false,
       ...query,
     },
   };

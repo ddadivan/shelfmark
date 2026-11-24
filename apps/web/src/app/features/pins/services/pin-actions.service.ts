@@ -6,6 +6,7 @@ import {
   type FolderResponse,
   type LinkResponse,
   type PinKind,
+  type SavedViewResponse,
 } from '@shelfmark/contracts';
 import { TOAST_DURATION_MS, TOAST_KIND, toastShortcutLabel, ToastService } from '@shelfmark/ui';
 import { PinsStore } from '../../../stores/pins.store';
@@ -31,6 +32,14 @@ export class PinActionsService {
     return this.pin(PIN_KIND.Link, link.id, link.title);
   }
 
+  pinView(view: SavedViewResponse): Promise<void> {
+    return this.pin(PIN_KIND.View, view.id, view.name);
+  }
+
+  unpinView(view: SavedViewResponse): Promise<void> {
+    return this.unpin(PIN_KIND.View, view.id, view.name);
+  }
+
   unpinFolder(folder: FolderResponse): Promise<void> {
     return this.unpin(PIN_KIND.Folder, folder.id, folder.name);
   }
@@ -45,7 +54,7 @@ export class PinActionsService {
    */
   async unpinRow(row: PinRow): Promise<void> {
     const index = this.pins.rows().findIndex((item) => item.key === row.key);
-    const name = row.folder?.name ?? row.link?.title ?? '';
+    const name = row.folder?.name ?? row.link?.title ?? row.view?.name ?? '';
     if (!(await this.pins.unpin({ kind: row.kind, id: row.id }))) {
       this.toasts.show({
         kind: TOAST_KIND.Danger,

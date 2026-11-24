@@ -13,7 +13,12 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { LINK_KIND, SAVED_VIEW_SCOPE, type SavedViewResponse } from '@shelfmark/contracts';
+import {
+  LINK_KIND,
+  PIN_KIND,
+  SAVED_VIEW_SCOPE,
+  type SavedViewResponse,
+} from '@shelfmark/contracts';
 import {
   MenuComponent,
   MenuItemComponent,
@@ -25,6 +30,7 @@ import {
 } from '@shelfmark/ui';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { FoldersStore } from '../../../../stores/folders.store';
+import { PinsStore } from '../../../../stores/pins.store';
 import { SavedViewsStore } from '../../../../stores/saved-views.store';
 import type { LinksFilter } from '../../../links/models/links-filter.type';
 import { ALL_VIEW_ID } from '../../models/all-view-id.const';
@@ -35,7 +41,8 @@ import { activeViewOf, feedQueryOf, viewOnFeed } from '../../utils/feed-views';
  * The saved view chips above the feed: "All" (the whole library), the user's views with their
  * counts and "+ Save this view" for the current filter. The pressed chip is the view whose query
  * is the current filter (else "All" when nothing is narrowed, else none). Each view has a menu:
- * Rename, Move left / right (the keyboard alternative to reordering) and Delete. Counts are
+ * Edit view…, Rename, Pin to sidebar, Move left / right (the keyboard alternative to reordering)
+ * and Delete. Counts are
  * re-read whenever the library counts change. Wraps on desktop, scrolls in one row on a phone.
  */
 @Component({
@@ -56,6 +63,7 @@ export class SavedViewChipsComponent {
   readonly filter = input.required<LinksFilter>();
 
   protected readonly store = inject(SavedViewsStore);
+  private readonly pins = inject(PinsStore);
   private readonly actions = inject(SavedViewActionsService);
   private readonly folders = inject(FoldersStore);
   private readonly transloco = inject(TranslocoService);
@@ -108,6 +116,11 @@ export class SavedViewChipsComponent {
   protected readonly menuIndex = computed(() => {
     const view = this.menuView();
     return view ? this.store.items().findIndex((item) => item.id === view.id) : -1;
+  });
+  /** The open menu's view is pinned to the sidebar. */
+  protected readonly menuPinned = computed(() => {
+    const view = this.menuView();
+    return view !== null && this.pins.has(PIN_KIND.View, view.id);
   });
   protected readonly menuLabel = computed(() => {
     this.i18n();
@@ -169,6 +182,20 @@ export class SavedViewChipsComponent {
     }
     this.menuView.set(view);
     this.menu().openFrom(request.origin);
+  }
+
+  protected async editView(): Promise<void> {
+    const view = this.menuView();
+    if (view) {
+      await this.actions.edit(view);
+    }
+  }
+
+  protected async togglePin(): Promise<void> {
+    const view = this.menuView();
+    if (view) {
+      await this.actions.togglePin(view);
+    }
   }
 
   protected async rename(): Promise<void> {

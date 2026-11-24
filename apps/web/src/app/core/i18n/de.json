@@ -2537,7 +2537,10 @@
       "rename": "Umbenennen",
       "moveLeft": "Nach links",
       "moveRight": "Nach rechts",
-      "delete": "Ansicht löschen"
+      "delete": "Ansicht löschen",
+      "edit": "Ansicht bearbeiten…",
+      "pin": "An Seitenleiste anheften",
+      "unpin": "Von Seitenleiste lösen"
     },
     "name": {
       "label": "Name",
@@ -2651,7 +2654,38 @@
       "foundMore": "Mehr als {{count}} Links gefunden",
       "fill": "Ausfüllen",
       "filled": "Fertig",
-      "showWhere": "Links zeigen, bei denen"
+      "showWhere": "Links zeigen, bei denen",
+      "saved": {
+        "label": "Gespeichert",
+        "any": "Jederzeit",
+        "month": "Letzter Monat",
+        "week": "Letzte Woche"
+      },
+      "only": {
+        "label": "Nur",
+        "favorites": "Favoriten"
+      },
+      "icon": {
+        "label": "Symbol",
+        "none": "Kein Symbol",
+        "bookmark": "Lesezeichen",
+        "star": "Stern",
+        "play": "Abspielen",
+        "text": "Text",
+        "hash": "Raute",
+        "bell": "Glocke",
+        "search": "Suche",
+        "grid": "Raster"
+      }
+    },
+    "edit": {
+      "title": "Ansicht bearbeiten",
+      "action": "Änderungen speichern",
+      "failed": "Die Ansicht konnte nicht gespeichert werden. Versuche es erneut.",
+      "missing": "Diese Ansicht oder ihr Ordner existiert nicht mehr. Schließe und versuche es erneut."
+    },
+    "edited": {
+      "title": "Ansicht aktualisiert"
     }
   },
   "feedback": {

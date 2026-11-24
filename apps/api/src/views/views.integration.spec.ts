@@ -335,6 +335,40 @@ describe('saved views API', () => {
     expect((await list()).items.map((item) => item.name)).toContain('Mine');
   });
 
+  it('counts by period and favorites like the library filters, and keeps the icon', async () => {
+    const day = 24 * 60 * 60 * 1000;
+    await seedLink(t.db.prisma, users.owner.userId, { createdAt: new Date(Date.now() - 10 * day) });
+    await seedLink(t.db.prisma, users.owner.userId, {
+      createdAt: new Date(Date.now() - 40 * day),
+      isFavorite: true,
+    });
+    await seedLink(t.db.prisma, users.owner.userId, { isFavorite: true });
+    const week = await create('Week', { scope: 'all', saved: 'week' });
+    const month = await create('Month', { scope: 'all', saved: 'month' });
+    const favorites = await create('Fav', { scope: 'all', favorite: true });
+    const both = await create('Fav month', { scope: 'unsorted', saved: 'month', favorite: true });
+    expect([week.count, month.count, favorites.count, both.count]).toEqual([1, 2, 2, 1]);
+
+    const iconed = (
+      await a
+        .post(BASE)
+        .send({ name: 'Star', icon: 'star', query: { scope: 'all' } })
+        .expect(201)
+    ).body as SavedViewResponse;
+    expect(iconed.icon).toBe('star');
+    expect(
+      (
+        (await a.patch(`${BASE}/${iconed.id}`).send({ name: 'Renamed' }).expect(200))
+          .body as SavedViewResponse
+      ).icon,
+    ).toBe('star');
+    await a.patch(`${BASE}/${iconed.id}`).send({ icon: 'rocket' }).expect(400);
+    await a
+      .post(BASE)
+      .send({ name: 'Bad', query: { scope: 'all', favorite: 'yes' } })
+      .expect(400);
+  });
+
   it('counts only the own links, also for the same tag names', async () => {
     await seedLink(t.db.prisma, users.intruder.userId, { tags: ['shared'], kind: 'video' });
     await create('Shared', { scope: 'all', tags: ['shared'] });

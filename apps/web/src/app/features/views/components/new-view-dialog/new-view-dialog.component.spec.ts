@@ -51,6 +51,8 @@ const DRAFT: ViewDraftResponse = {
       sort: LINK_SORT_FIELD.CreatedAt,
       order: SORT_ORDER.Desc,
       q: '',
+      saved: null,
+      favorite: false,
     },
     set: [VIEW_DRAFT_FIELD.Kind, VIEW_DRAFT_FIELD.Tags],
     name: 'Video docs',

@@ -10,6 +10,8 @@ export function mockStarterViews(): MockSavedView[] {
     sort: LINK_SORT_FIELD.CreatedAt,
     order: SORT_ORDER.Desc,
     q: '',
+    saved: null,
+    favorite: false,
   };
   return [
     {

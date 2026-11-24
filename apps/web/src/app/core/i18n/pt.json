@@ -2599,7 +2599,10 @@
       "rename": "Renomear",
       "moveLeft": "Mover para a esquerda",
       "moveRight": "Mover para a direita",
-      "delete": "Excluir visualização"
+      "delete": "Excluir visualização",
+      "edit": "Editar visualização…",
+      "pin": "Fixar na barra lateral",
+      "unpin": "Desafixar da barra lateral"
     },
     "name": {
       "label": "Nome",
@@ -2714,7 +2717,38 @@
       "foundMore": "Mais de {{count}} links encontrados",
       "fill": "Preencher",
       "filled": "Pronto",
-      "showWhere": "Mostrar links em que"
+      "showWhere": "Mostrar links em que",
+      "saved": {
+        "label": "Salvos",
+        "any": "Qualquer data",
+        "month": "Último mês",
+        "week": "Última semana"
+      },
+      "only": {
+        "label": "Só",
+        "favorites": "Favoritos"
+      },
+      "icon": {
+        "label": "Ícone",
+        "none": "Sem ícone",
+        "bookmark": "Marcador",
+        "star": "Estrela",
+        "play": "Reproduzir",
+        "text": "Texto",
+        "hash": "Cerquilha",
+        "bell": "Sino",
+        "search": "Busca",
+        "grid": "Grade"
+      }
+    },
+    "edit": {
+      "title": "Editar visualização",
+      "action": "Salvar alterações",
+      "failed": "Não foi possível salvar a visualização. Tente de novo.",
+      "missing": "Esta visualização ou a pasta dela não existe mais. Feche e tente de novo."
+    },
+    "edited": {
+      "title": "Visualização atualizada"
     }
   },
   "feedback": {

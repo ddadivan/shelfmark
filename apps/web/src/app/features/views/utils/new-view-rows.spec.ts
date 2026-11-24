@@ -3,12 +3,14 @@ import {
   LINK_SORT_FIELD,
   SAVED_VIEW_LIMIT,
   SAVED_VIEW_SCOPE,
+  SAVED_WITHIN,
   SORT_ORDER,
   VIEW_DRAFT_FIELD,
   type SavedViewQuery,
 } from '@shelfmark/contracts';
 import { ALL_KINDS } from '../../links/models/all-kinds.const';
 import { FEED_SORT } from '../../links/models/feed-sort.const';
+import { VIEW_SAVED_ANY } from '../models/view-saved-any.const';
 import { VIEW_WHERE } from '../models/view-where.const';
 import { queryOfRows, rowsOfQuery, sameRow } from './new-view-rows';
 
@@ -20,6 +22,8 @@ const QUERY: SavedViewQuery = {
   sort: LINK_SORT_FIELD.Title,
   order: SORT_ORDER.Asc,
   q: 'signals',
+  saved: null,
+  favorite: false,
 };
 
 describe('new view rows', () => {
@@ -31,8 +35,17 @@ describe('new view rows', () => {
       tags: ['docs'],
       q: 'signals',
       sort: FEED_SORT.Title,
+      saved: VIEW_SAVED_ANY,
+      favorite: false,
     });
     expect(queryOfRows(rows)).toEqual(QUERY);
+    const fresh = { ...QUERY, saved: SAVED_WITHIN.Week, favorite: true };
+    expect(rowsOfQuery(fresh)).toMatchObject({ saved: SAVED_WITHIN.Week, favorite: true });
+    expect(queryOfRows(rowsOfQuery(fresh))).toEqual(fresh);
+    expect(queryOfRows({ ...rows, saved: 'year' }).saved).toBeNull();
+    expect(queryOfRows({ ...rows, where: VIEW_WHERE.Favorites, favorite: true }).favorite).toBe(
+      false,
+    );
   });
 
   it('maps the three places without a folder', () => {

@@ -5,17 +5,20 @@ import {
   LINK_SORT_FIELD,
   SAVED_VIEW_LIMIT,
   SAVED_VIEW_SCOPE,
+  SAVED_WITHIN,
   SORT_ORDER,
   TAG_LIMIT,
   type LinkKind,
   type LinkSortField,
   type SavedViewQueryRequest,
   type SavedViewScope,
+  type SavedWithin,
   type SortOrder,
 } from '@shelfmark/contracts';
 import {
   ArrayMaxSize,
   IsArray,
+  IsBoolean,
   IsIn,
   IsOptional,
   IsString,
@@ -74,4 +77,14 @@ export class SavedViewQueryRequestDto implements SavedViewQueryRequest {
   @NoControlChars()
   @MaxLength(LINK_LIMIT.QueryMax)
   q?: string;
+
+  @ApiPropertyOptional({ enum: Object.values(SAVED_WITHIN), nullable: true })
+  @ValidateIf(hasValue)
+  @IsIn(Object.values(SAVED_WITHIN))
+  saved?: SavedWithin | null;
+
+  @ApiPropertyOptional({ description: 'Only favorites' })
+  @IsOptional()
+  @IsBoolean()
+  favorite?: boolean;
 }

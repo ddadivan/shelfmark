@@ -9,6 +9,8 @@ import {
   BUTTON_TYPE,
   BUTTON_VARIANT,
   ButtonComponent,
+  CheckboxComponent,
+  ChoiceGridComponent,
   DialogCancelDirective,
   DialogComponent,
   ICON_SIZE,
@@ -16,6 +18,7 @@ import {
   InputComponent,
   NOTICE_KIND,
   NoticeComponent,
+  SegmentedControlComponent,
   SelectComponent,
   TagInputComponent,
 } from '@shelfmark/ui';
@@ -29,14 +32,17 @@ import { NewViewPreviewService } from '../../services/new-view-preview.service';
 /**
  * "+ Save view" (#535; Shelf `13-views` "New view"): one page for everyone. With AI on an optional
  * phrase sits on top and "Fill in" lets AI fill the rows (marked with a spark until changed) and
- * name the view; then the name, the "Show links where" rows (where, type, tags, words, sort) and
- * the live count. Opened by `SavedViewActionsService.saveCurrent`, which owns the saving.
+ * name the view; then the name, the "Show links where" rows (where, type, tags, words, sort, saved,
+ * only favorites, icon) and the live count. Opened by `SavedViewActionsService.saveCurrent`, which
+ * owns the saving, and as Edit view… by `SavedViewActionsService.edit` (title and action change).
  */
 @Component({
   selector: 'app-new-view-dialog',
   imports: [
     AiLineComponent,
     ButtonComponent,
+    CheckboxComponent,
+    ChoiceGridComponent,
     DialogCancelDirective,
     DialogComponent,
     FormField,
@@ -45,6 +51,7 @@ import { NewViewPreviewService } from '../../services/new-view-preview.service';
     InputComponent,
     NgTemplateOutlet,
     NoticeComponent,
+    SegmentedControlComponent,
     SelectComponent,
     TagInputComponent,
     TranslocoPipe,
@@ -77,6 +84,7 @@ export class NewViewDialogComponent {
   protected readonly sparks = this.formState.sparks;
   protected readonly saving = this.formState.saving;
   protected readonly errorKey = this.formState.errorKey;
+  protected readonly editing = this.formState.editing;
 
   constructor() {
     // Usually loaded by the sidebar already; the choices fill in when the lists arrive.

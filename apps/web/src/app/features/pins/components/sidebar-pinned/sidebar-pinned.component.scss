@@ -98,6 +98,12 @@
   }
 }
 
+// A pinned saved view: its glyph in the muted ink of the row icons.
+.pinned__view-icon {
+  flex: none;
+  color: var(--text-muted);
+}
+
 .pinned__name {
   flex: 1 1 auto;
   min-width: 0;

@@ -1,5 +1,6 @@
 import type { LinkKind } from '../links/link-kind.type';
 import type { LinkSortField } from '../links/link-sort-field.type';
+import type { SavedWithin } from '../links/saved-within.type';
 import type { SortOrder } from '../pagination/sort-order.type';
 import type { SavedViewScope } from './saved-view-scope.type';
 
@@ -16,4 +17,8 @@ export interface SavedViewQuery {
   order: SortOrder;
   /** Search text, `''` = no search. */
   q: string;
+  /** Saved in the last week or month, counted back from each request (`SAVED_WITHIN`); `null` = any time. */
+  saved: SavedWithin | null;
+  /** Only favorites (on top of the scope); `false` = favorites or not. */
+  favorite: boolean;
 }

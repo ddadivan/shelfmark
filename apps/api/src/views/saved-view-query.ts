@@ -5,12 +5,14 @@ import {
   SAVED_VIEW_ERROR_MESSAGE,
   SAVED_VIEW_LIMIT,
   SAVED_VIEW_SCOPE,
+  SAVED_WITHIN,
   SORT_ORDER,
   type LinkKind,
   type LinkSortField,
   type SavedViewQuery,
   type SavedViewQueryRequest,
   type SavedViewScope,
+  type SavedWithin,
   type SortOrder,
 } from '@shelfmark/contracts';
 import { DEFAULT_SAVED_VIEW_QUERY } from './models/default-saved-view-query.const';
@@ -39,6 +41,8 @@ export function normalizeSavedViewQuery(request: SavedViewQueryRequest): SavedVi
     sort: request.sort ?? DEFAULT_SAVED_VIEW_QUERY.sort,
     order: request.order ?? DEFAULT_SAVED_VIEW_QUERY.order,
     q: request.q ?? '',
+    saved: request.saved ?? null,
+    favorite: request.favorite ?? false,
   };
 }
 
@@ -71,6 +75,11 @@ export function parseStoredQuery(value: unknown): SavedViewQuery {
     ? raw['order']
     : DEFAULT_SAVED_VIEW_QUERY.order;
   const q = typeof raw['q'] === 'string' ? raw['q'] : '';
+  // Views stored before Shelf have neither field: any time, favorites or not.
+  const saved: SavedWithin | null = oneOf(Object.values(SAVED_WITHIN), raw['saved'])
+    ? raw['saved']
+    : null;
+  const favorite = raw['favorite'] === true;
   // A folder view without a folder stays one: it is unavailable and counts 0, never "everything".
   return {
     scope,
@@ -80,5 +89,7 @@ export function parseStoredQuery(value: unknown): SavedViewQuery {
     sort,
     order,
     q,
+    saved,
+    favorite,
   };
 }

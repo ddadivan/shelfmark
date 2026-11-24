@@ -2,8 +2,10 @@ import { HttpStatusCode } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import {
   SAVED_VIEW_ERROR_MESSAGE,
+  SAVED_VIEW_ICON,
   SAVED_VIEW_LIMIT,
   SAVED_VIEW_SCOPE,
+  SAVED_WITHIN,
   type CreateSavedViewRequest,
   type ListSavedViewsQuery,
   type ListSavedViewsResponse,
@@ -22,6 +24,9 @@ import type { MockSavedView } from './models/mock-saved-view.interface';
 function failure(status: number, message?: string | string[]): Observable<never> {
   return throwError(() => mockHttpError(status, message));
 }
+
+const PERIODS: readonly string[] = Object.values(SAVED_WITHIN);
+const ICONS: readonly string[] = Object.values(SAVED_VIEW_ICON);
 
 /** A view name that fails to save (e2e and manual checks of the rollback). */
 const FAILING_NAME = 'Fails to save';
@@ -52,7 +57,7 @@ export class MockSavedViewsApi implements SavedViewsApi {
   create(request: CreateSavedViewRequest): Observable<SavedViewResponse> {
     return defer(() => {
       const name = request.name.trim();
-      const refused = this.refuse(name, request.query);
+      const refused = this.refuse(name, request.query, request.icon);
       if (refused) {
         return refused;
       }
@@ -63,6 +68,7 @@ export class MockSavedViewsApi implements SavedViewsApi {
         id: globalThis.crypto.randomUUID(),
         name,
         query: normalizeViewQuery(request.query),
+        icon: request.icon ?? null,
       };
       this.data.views = [...this.data.views, view];
       return of(this.one(view.id));
@@ -76,7 +82,7 @@ export class MockSavedViewsApi implements SavedViewsApi {
         return failure(HttpStatusCode.NotFound, SAVED_VIEW_ERROR_MESSAGE.NotFound);
       }
       const name = request.name?.trim() ?? current.name;
-      const refused = this.refuse(name, request.query);
+      const refused = this.refuse(name, request.query, request.icon);
       if (refused) {
         return refused;
       }
@@ -84,6 +90,7 @@ export class MockSavedViewsApi implements SavedViewsApi {
         ...current,
         name,
         query: request.query ? normalizeViewQuery(request.query) : current.query,
+        icon: request.icon === undefined ? (current.icon ?? null) : request.icon,
       };
       this.data.views = this.data.views.map((view) => (view.id === id ? next : view));
       return of(this.one(id));
@@ -96,6 +103,8 @@ export class MockSavedViewsApi implements SavedViewsApi {
         return failure(HttpStatusCode.NotFound, SAVED_VIEW_ERROR_MESSAGE.NotFound);
       }
       this.data.views = this.data.views.filter((view) => view.id !== id);
+      // Like the API: the pin goes with the view row.
+      this.data.pins = this.data.pins.filter((pin) => pin.id !== id);
       return of(undefined);
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
@@ -116,9 +125,21 @@ export class MockSavedViewsApi implements SavedViewsApi {
   }
 
   /** The error the API would answer for this name and query, or `null`. */
-  private refuse(name: string, query?: SavedViewQueryRequest): Observable<never> | null {
+  private refuse(
+    name: string,
+    query?: SavedViewQueryRequest,
+    icon?: string | null,
+  ): Observable<never> | null {
     if (name === FAILING_NAME) {
       return failure(HttpStatusCode.InternalServerError, 'Internal Server Error');
+    }
+    // Strict like the API's DTO: a period, favorites flag or icon outside the contract is a 400.
+    if (
+      (query?.saved != null && !PERIODS.includes(query.saved)) ||
+      (query?.favorite !== undefined && typeof query.favorite !== 'boolean') ||
+      (icon != null && !ICONS.includes(icon))
+    ) {
+      return failure(HttpStatusCode.BadRequest, ['invalid saved, favorite or icon']);
     }
     if (name === '' || name.length > SAVED_VIEW_LIMIT.NameMax) {
       return failure(HttpStatusCode.BadRequest, ['name must be 1 to 40 characters']);
@@ -161,6 +182,7 @@ export class MockSavedViewsApi implements SavedViewsApi {
         return {
           id: view.id,
           name: view.name,
+          icon: view.icon ?? null,
           query: { ...view.query, tags: [...view.query.tags] },
           position,
           available,

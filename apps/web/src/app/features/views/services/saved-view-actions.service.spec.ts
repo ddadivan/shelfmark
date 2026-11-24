@@ -15,6 +15,9 @@ import { MockLinksApi } from '../../links/mock/mock-links.api';
 import { MockTagsApi } from '../../links/mock/mock-tags.api';
 import { MockSavedViewsApi } from '../mock/mock-saved-views.api';
 import { SAVED_VIEWS_API } from '../models/saved-views-api.const';
+import { MockPinsApi } from '../../pins/mock/mock-pins.api';
+import { PINS_API } from '../../pins/models/pins-api.const';
+import { PinsStore } from '../../../stores/pins.store';
 import { SavedViewActionsService } from './saved-view-actions.service';
 import { normalizeViewQuery } from '../utils/saved-view-query';
 
@@ -32,6 +35,7 @@ async function setup() {
       { provide: LINKS_API, useClass: MockLinksApi },
       { provide: FOLDERS_API, useClass: MockFoldersApi },
       { provide: TAGS_API, useClass: MockTagsApi },
+      { provide: PINS_API, useClass: MockPinsApi },
     ],
   });
   await loadEnglish();
@@ -171,6 +175,43 @@ describe('SavedViewActionsService', () => {
     await until(() => {
       expect(document.body.textContent).toContain('View saved');
     });
+  });
+
+  it('edits a view in the same dialog: name, period, favorites only and icon', async () => {
+    const { actions, store } = await setup();
+    const view = store.items()[0];
+    const done = actions.edit(view);
+    await opened();
+    expect(dialog().textContent).toContain('Edit view');
+    const name = dialog().querySelector<HTMLInputElement>('input[placeholder="To read"]');
+    expect(name?.value).toBe(view.name);
+    dialog().querySelector<HTMLInputElement>('input[type="radio"][value="week"]')?.click();
+    dialog().querySelector<HTMLInputElement>('input[type="checkbox"]')?.click();
+    dialog().querySelector<HTMLInputElement>('input[type="radio"][value="star"]')?.click();
+    TestBed.tick();
+    button('Save changes').click();
+    await closed();
+    await done;
+    expect(store.items()[0]).toMatchObject({
+      id: view.id,
+      name: view.name,
+      icon: 'star',
+      query: { kind: view.query.kind, saved: 'week', favorite: true },
+    });
+    await until(() => {
+      expect(document.body.textContent).toContain('View updated');
+    });
+  });
+
+  it('pins a view to the sidebar and unpins it', async () => {
+    const { actions, store } = await setup();
+    const pins = TestBed.inject(PinsStore);
+    const view = store.items()[0];
+    await actions.togglePin(view);
+    expect(actions.pinned(view)).toBe(true);
+    expect(pins.rows()[0]).toMatchObject({ kind: 'view', id: view.id, view: { name: view.name } });
+    await actions.togglePin(view);
+    expect(actions.pinned(view)).toBe(false);
   });
 
   it('keeps the dialog open with the reason when the save fails', async () => {

@@ -3,6 +3,7 @@ import {
   PIN_ERROR_MESSAGE,
   PIN_KIND,
   PIN_LIMIT,
+  SAVED_VIEW_SCOPE,
   type PinRef,
 } from '@shelfmark/contracts';
 import type { ContractScenario } from '../models/contract-scenario.interface';
@@ -21,6 +22,32 @@ export const PINS_SCENARIOS: readonly ContractScenario[] = [
 
   scenario(
     'pins',
+    'pins a saved view with its count and unpins it with the view',
+    async ({ pins, views, links }) => {
+      await links.create({ url: 'https://a.example/', title: 'A' });
+      const view = await views.create({
+        name: 'Everything',
+        query: { scope: SAVED_VIEW_SCOPE.All },
+      });
+      const list = await pins.create({ kind: PIN_KIND.View, id: view.id });
+      expectEqual(list.items.length, 1);
+      expectEqual(list.items[0].kind, PIN_KIND.View);
+      expectEqual(list.items[0].folder, null);
+      expectEqual(list.items[0].link, null);
+      expectEqual(list.items[0].view?.id, view.id);
+      expectEqual(list.items[0].view?.count, 1);
+      await views.remove(view.id);
+      expectEqual((await pins.list()).items, []);
+      await expectError(
+        pins.create({ kind: PIN_KIND.View, id: MISSING_ID }),
+        { status: 404, code: PIN_ERROR_MESSAGE.NotFound },
+        'pin view',
+      );
+    },
+  ),
+
+  scenario(
+    'pins',
     'pins a folder and a link in order and flags them',
     async ({ pins, folders, links }) => {
       const folder = await folders.create({ name: 'Reading' });
@@ -34,12 +61,14 @@ export const PINS_SCENARIOS: readonly ContractScenario[] = [
             position: 0,
             folder: expectedFolder('Reading', { id: folder.id, pinned: true }),
             link: null,
+            view: null,
           },
           {
             kind: PIN_KIND.Link,
             position: 1,
             folder: null,
             link: expectedLink('https://a.example/', 'A', { id: link.id, pinned: true }),
+            view: null,
           },
         ],
       });

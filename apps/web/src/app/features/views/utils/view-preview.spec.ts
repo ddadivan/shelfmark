@@ -18,6 +18,8 @@ const QUERY: SavedViewQuery = {
   sort: LINK_SORT_FIELD.Title,
   order: SORT_ORDER.Asc,
   q: 'x',
+  saved: null,
+  favorite: false,
 };
 
 function link(id: string, folderId: string | null): LinkResponse {

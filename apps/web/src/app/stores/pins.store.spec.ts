@@ -24,7 +24,7 @@ function folder(id: string): FolderResponse {
 }
 
 function pin(id: string, position: number): PinResponse {
-  return { kind: PIN_KIND.Folder, position, folder: folder(id), link: null };
+  return { kind: PIN_KIND.Folder, position, folder: folder(id), link: null, view: null };
 }
 
 function list(...ids: string[]): ListPinsResponse {

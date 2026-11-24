@@ -1,4 +1,4 @@
-import { SAVED_VIEW_SCOPE, type SavedViewQuery } from '@shelfmark/contracts';
+import { SAVED_VIEW_SCOPE, SAVED_WITHIN_DAYS, type SavedViewQuery } from '@shelfmark/contracts';
 import { Prisma } from '../generated/prisma/client';
 import { escapeLike } from '../common/util/escape-like';
 import { searchTerms } from '../links/link-where';
@@ -7,11 +7,15 @@ import type { SavedViewCounts } from './models/saved-view-counts.interface';
 
 /**
  * The SQL twin of `buildLinkWhere` for one view, over the alias `l` of `links`: the same scope,
- * kind, tag (AND, case-insensitive, escaped) and search word (AND over title, note and URL, escaped)
- * rules. Every value is a bound parameter. `null` for a query that can match nothing (a folder view
+ * kind, tag (AND, case-insensitive, escaped), search word (AND over title, note and URL, escaped),
+ * saved within (days back from `now`, like `buildLinkWhere`) and favorites-only rules. Every value is a bound parameter. `null` for a query that can match nothing (a folder view
  * without a folder).
  */
-export function viewCondition(userId: string, query: SavedViewQuery): Prisma.Sql | null {
+export function viewCondition(
+  userId: string,
+  query: SavedViewQuery,
+  now: Date = new Date(),
+): Prisma.Sql | null {
   const parts: Prisma.Sql[] = [];
   if (query.scope === SAVED_VIEW_SCOPE.Unsorted) parts.push(Prisma.sql`l."folder_id" IS NULL`);
   if (query.scope === SAVED_VIEW_SCOPE.Favorites) parts.push(Prisma.sql`l."is_favorite"`);
@@ -20,6 +24,13 @@ export function viewCondition(userId: string, query: SavedViewQuery): Prisma.Sql
     parts.push(Prisma.sql`l."folder_id" = ${query.folderId}::uuid`);
   }
   if (query.kind !== null) parts.push(Prisma.sql`l."kind" = ${query.kind}`);
+  if (query.favorite && query.scope !== SAVED_VIEW_SCOPE.Favorites) {
+    parts.push(Prisma.sql`l."is_favorite"`);
+  }
+  if (query.saved !== null) {
+    const since = new Date(now.getTime() - SAVED_WITHIN_DAYS[query.saved] * 24 * 60 * 60 * 1000);
+    parts.push(Prisma.sql`l."created_at" >= ${since}::timestamptz`);
+  }
   for (const name of query.tags) {
     parts.push(Prisma.sql`EXISTS (
       SELECT 1 FROM "link_tags" lt JOIN "tags" t ON t."id" = lt."tag_id"
@@ -45,12 +56,15 @@ export async function countViews(
   userId: string,
   queries: readonly (SavedViewQuery | null)[],
   feed?: SavedViewQuery,
+  now: Date = new Date(),
 ): Promise<SavedViewCounts> {
-  const feedCondition = feed === undefined ? Prisma.sql`TRUE` : viewCondition(userId, feed);
+  const feedCondition = feed === undefined ? Prisma.sql`TRUE` : viewCondition(userId, feed, now);
   if (feedCondition === null) {
     return { total: 0, counts: queries.map(() => 0) };
   }
-  const conditions = queries.map((query) => (query === null ? null : viewCondition(userId, query)));
+  const conditions = queries.map((query) =>
+    query === null ? null : viewCondition(userId, query, now),
+  );
   const filters = conditions.map((condition) =>
     condition === null ? Prisma.sql`0` : Prisma.sql`(COUNT(*) FILTER (WHERE ${condition}))::int`,
   );

@@ -292,6 +292,8 @@ export { LINK_KIND_URL_RULES } from './links/link-kind-url-rules.const';
 export { PDF_CONTENT_TYPES } from './links/pdf-content-types.const';
 
 export { SAVED_VIEW_SCOPE } from './views/saved-view-scope.const';
+export { SAVED_VIEW_ICON } from './views/saved-view-icon.const';
+export type { SavedViewIcon } from './views/saved-view-icon.type';
 export type { SavedViewScope } from './views/saved-view-scope.type';
 export { SAVED_VIEW_LIMIT } from './views/saved-view-limit.const';
 export { SAVED_VIEW_ENDPOINT } from './views/saved-view-endpoint.const';

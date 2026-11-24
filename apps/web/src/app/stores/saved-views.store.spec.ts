@@ -25,10 +25,12 @@ const QUERY: SavedViewQuery = {
   sort: LINK_SORT_FIELD.CreatedAt,
   order: SORT_ORDER.Desc,
   q: '',
+  saved: null,
+  favorite: false,
 };
 
 function view(id: string, position = 0): SavedViewResponse {
-  return { id, name: id, query: QUERY, position, count: 3, available: true };
+  return { id, name: id, icon: null, query: QUERY, position, count: 3, available: true };
 }
 
 function list(...ids: string[]): ListSavedViewsResponse {

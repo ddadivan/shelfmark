@@ -4,6 +4,7 @@ import { MOCK_LINKS_SCENARIO_KEY } from '../models/mock-links-scenario-key.const
 import {
   FOLDER_DELETE_MODE,
   PIN_KIND,
+  SAVED_VIEW_SCOPE,
   TRASH_ITEM_KIND,
   TRASH_RETENTION_DEFAULT,
   type FolderDeleteMode,
@@ -17,6 +18,7 @@ import {
   type PinKind,
   type PinRef,
   type PinResponse,
+  type SavedViewResponse,
   type TagResponse,
   type TrashRetentionDays,
   type FolderEmoji,
@@ -35,6 +37,7 @@ import { generateMockLinks } from './generate-mock-links';
 import { withMockPreviews } from './with-mock-previews';
 import type { MockSavedView } from '../../views/mock/models/mock-saved-view.interface';
 import { mockStarterViews } from '../../views/mock/mock-starter-views';
+import { listQueryOf } from '../../views/utils/saved-view-query';
 import type { MockRule } from '../../rules/mock/models/mock-rule.interface';
 import type { MockRuleEffect } from '../../rules/mock/models/mock-rule-effect.interface';
 import {
@@ -183,11 +186,38 @@ export class MockLibraryData {
       items: this.pins.flatMap((pin, position): PinResponse[] => {
         if (pin.kind === PIN_KIND.Folder) {
           const folder = folders.find((item) => item.id === pin.id);
-          return folder ? [{ kind: pin.kind, position, folder, link: null }] : [];
+          return folder ? [{ kind: pin.kind, position, folder, link: null, view: null }] : [];
+        }
+        if (pin.kind === PIN_KIND.View) {
+          const view = this.savedViewResponse(pin.id);
+          return view ? [{ kind: pin.kind, position, folder: null, link: null, view }] : [];
         }
         const link = this.links.find((item) => item.id === pin.id);
-        return link ? [{ kind: pin.kind, position, folder: null, link: this.linkView(link) }] : [];
+        return link
+          ? [{ kind: pin.kind, position, folder: null, link: this.linkView(link), view: null }]
+          : [];
       }),
+    };
+  }
+
+  /** A saved view as the API answers it (count and availability like `GET /api/views`). */
+  savedViewResponse(id: string): SavedViewResponse | null {
+    const position = this.views.findIndex((view) => view.id === id);
+    const view = this.views[position];
+    if (!view) {
+      return null;
+    }
+    const available =
+      view.query.scope !== SAVED_VIEW_SCOPE.Folder ||
+      this.folderList.some((folder) => folder.id === view.query.folderId);
+    return {
+      id: view.id,
+      name: view.name,
+      icon: view.icon ?? null,
+      query: { ...view.query, tags: [...view.query.tags] },
+      position,
+      available,
+      count: available ? this.matching(listQueryOf(view.query)).length : 0,
     };
   }
 

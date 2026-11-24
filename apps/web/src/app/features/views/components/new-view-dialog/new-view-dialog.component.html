@@ -1,6 +1,6 @@
 <form [formRoot]="form" class="nv">
   <ui-dialog
-    [title]="'views.new.title' | transloco"
+    [title]="(editing ? 'views.edit.title' : 'views.new.title') | transloco"
     [closeLabel]="'views.dialog.close' | transloco"
     size="md"
   >
@@ -185,6 +185,42 @@
               <ng-container *ngTemplateOutlet="spark" />
             }
           </div>
+
+          <div class="nv__row">
+            <span id="nv-saved-label" class="nv__row-label">{{
+              'views.new.saved.label' | transloco
+            }}</span>
+            <ui-segmented-control
+              class="nv__saved"
+              ariaLabelledby="nv-saved-label"
+              [options]="options.savedOptions()"
+              [formField]="form.saved"
+            />
+          </div>
+
+          <div class="nv__row">
+            <span class="nv__row-label" aria-hidden="true">{{
+              'views.new.only.label' | transloco
+            }}</span>
+            <ui-checkbox
+              [label]="'views.new.only.favorites' | transloco"
+              [formField]="form.favorite"
+            />
+          </div>
+
+          <div class="nv__row">
+            <span id="nv-icon-label" class="nv__row-label">{{
+              'views.new.icon.label' | transloco
+            }}</span>
+            <ui-choice-grid
+              class="nv__icons"
+              kind="icon"
+              singleLine
+              ariaLabelledby="nv-icon-label"
+              [options]="options.iconOptions()"
+              [formField]="form.icon"
+            />
+          </div>
         </div>
       </section>
 
@@ -208,7 +244,10 @@
       [type]="BUTTON_TYPE.Submit"
       [variant]="BUTTON_VARIANT.Primary"
       [loading]="saving()"
-      >{{ (saving() ? 'views.create.saving' : 'views.new.action') | transloco }}</ui-button
+      >{{
+        (saving() ? 'views.create.saving' : editing ? 'views.edit.action' : 'views.new.action')
+          | transloco
+      }}</ui-button
     >
   </ui-dialog>
 </form>

@@ -6,4 +6,5 @@ export interface SavedViewRow {
   name: string;
   query: Prisma.JsonValue;
   position: number;
+  icon: string | null;
 }
