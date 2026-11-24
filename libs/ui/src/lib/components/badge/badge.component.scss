@@ -25,6 +25,11 @@
   background: var(--warning-bg);
 }
 
+:host(.ui-badge--ai) {
+  color: var(--ai);
+  background: var(--ai-bg);
+}
+
 :host(.ui-badge--danger) {
   color: var(--danger);
   background: var(--danger-bg);

@@ -21,6 +21,7 @@ import type { BadgeTone } from './models/badge-tone.type';
     '[class.ui-badge--accent]': 'tone() === BADGE_TONE.Accent',
     '[class.ui-badge--warning]': 'tone() === BADGE_TONE.Warning',
     '[class.ui-badge--danger]': 'tone() === BADGE_TONE.Danger',
+    '[class.ui-badge--ai]': 'tone() === BADGE_TONE.Ai',
     '[class.ui-badge--pop]': 'pop()',
   },
   templateUrl: './badge.component.html',
