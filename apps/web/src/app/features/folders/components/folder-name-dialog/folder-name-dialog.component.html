@@ -8,7 +8,16 @@
         [label]="'folders.name.label' | transloco"
         [placeholder]="'folders.name.placeholder' | transloco"
         [formField]="form.name"
-      />
+      >
+        @if (data.folder; as folder) {
+          <ui-folder-icon
+            uiInputLead
+            [size]="FOLDER_ICON_SIZE.Sm"
+            [icon]="folder.icon"
+            [colour]="shownColour(folder.colour)"
+          />
+        }
+      </ui-input>
 
       @if (picksParent) {
         <ui-select

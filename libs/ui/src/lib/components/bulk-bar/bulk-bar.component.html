@@ -1,4 +1,20 @@
 <div ngToolbar class="ui-bulk-bar__bar" orientation="horizontal" [attr.aria-label]="ariaLabel()">
+  @if (closeLabel()) {
+    <!-- Shelf: × ends the selection, the count follows it (inline layout only). -->
+    <button
+      ngToolbarWidget
+      type="button"
+      class="ui-bulk-bar__close"
+      uiRipple
+      [attr.aria-label]="closeLabel()"
+      (click)="closed.emit()"
+    >
+      <ui-icon name="close" [size]="ICON_SIZE.Sm" />
+    </button>
+  }
+  @if (count()) {
+    <span class="ui-bulk-bar__count" aria-live="polite">{{ count() }}</span>
+  }
   @for (item of actions(); track item.id; let index = $index) {
     @if (index === dividerAt()) {
       <span class="ui-bulk-bar__divider" aria-hidden="true"></span>
@@ -23,7 +39,7 @@
           [size]="FOLDER_ICON_SIZE.Sm"
         />
       } @else if (item.icon) {
-        <ui-icon class="ui-bulk-bar__icon" [name]="item.icon" [size]="ICON_SIZE.Md" />
+        <ui-icon class="ui-bulk-bar__icon" [name]="item.icon" [size]="iconSize()" />
       }
       <span class="ui-bulk-bar__label">{{ item.label }}</span>
     </button>

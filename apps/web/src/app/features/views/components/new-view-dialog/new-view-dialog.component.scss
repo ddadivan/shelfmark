@@ -14,18 +14,11 @@
   padding: rem(2px);
 }
 
-.nv__lead,
-.nv__skip,
-.nv__more {
+.nv__lead {
   @include type(body);
 
   margin: 0;
   color: var(--text-muted);
-}
-
-.nv__skip {
-  padding-block-start: var(--space-3);
-  border-block-start: 1px solid var(--border);
 }
 
 // Ideas: dashed `ai-line` pills with the spark; they wrap on the phone.
@@ -51,27 +44,6 @@
   color: var(--ai);
 }
 
-// The phrase as one line once AI filled the rows, with "Change".
-.nv__said {
-  display: flex;
-  gap: var(--space-2);
-  align-items: center;
-  min-width: 0;
-  padding: var(--space-2) var(--space-3);
-  background: var(--surface-hover);
-  border-radius: var(--radius-md);
-}
-
-.nv__said-text {
-  @include type(body);
-
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .nv__notes {
   display: flex;
   flex-direction: column;
@@ -91,70 +63,82 @@
   min-width: 0;
 }
 
+.nv__row-label {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
 .nv__row-spark {
   position: absolute;
-  inset-block-start: rem(2px);
-  inset-inline-end: 0;
+  inset-block-start: var(--space-2);
+  inset-inline-start: calc(var(--space-3) + #{rem(80px)});
 }
 
-// The live count and the first links.
-.nv__found {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
+// The live count under the rows (12px muted).
 .nv__count {
   @include type(caption);
 
   min-height: 1lh;
   margin: 0;
-  font-weight: 600;
   color: var(--text-muted);
+  text-align: end;
 }
 
-.nv__links {
+// The phrase and "Fill in" on one line (Shelf: the button sits at the end of the field).
+.nv__phrase-row {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.nv__link {
-  display: flex;
-  gap: var(--space-3);
+  gap: var(--space-2);
   align-items: center;
-  min-width: 0;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
 }
 
-.nv__link-main {
+.nv__phrase {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.nv__fill {
+  flex: none;
+}
+
+// "Show links where": the rows in one box, split by `sep` lines.
+.nv__where {
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  gap: var(--space-2);
 }
 
-.nv__link-title {
-  @include type(body);
-
-  overflow: hidden;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.nv__link-meta {
+.nv__where-heading {
   @include type(caption);
 
-  overflow: hidden;
+  margin: 0;
+  font-weight: 500;
   color: var(--text-muted);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.nv__box {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+
+  // Shelf: the row name in a 96px column (12px muted), the control beside it.
+  > .nv__row {
+    display: grid;
+    grid-template-columns: rem(96px) minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+
+    @include phone {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-1);
+    }
+  }
+
+  > .nv__row + .nv__row {
+    border-block-start: 1px solid var(--sep);
+  }
 }
 
 .nv__sr {

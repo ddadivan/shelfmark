@@ -13,39 +13,29 @@
   padding: var(--space-2);
 }
 
-// The folder as it will look: a bg-coloured strip, as in the FolderStyle spec.
-.folder-style__preview {
-  display: flex;
-  gap: var(--space-4);
-  align-items: center;
-  padding: var(--space-3);
-  background: var(--bg);
-  border-radius: var(--radius-md);
-}
-
-.folder-style__text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.folder-style__name {
+// Preview (Shelf Folder settings): the sidebar row as the highlight draws it, 36px, radius 10.
+.folder-style__row {
   @include type(label);
+  @include folder-highlight($current: '');
+
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-height: var(--row-nav);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-sm);
+}
+
+.folder-style__row-name {
   @include line-clamp(1);
 
-  font-size: rem(16px);
-}
-
-.folder-style__meta {
-  @include type(caption);
-
-  color: var(--text-muted);
+  color: var(--ui-folder-ink, var(--text));
 }
 
 .folder-style__group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .folder-style__label {

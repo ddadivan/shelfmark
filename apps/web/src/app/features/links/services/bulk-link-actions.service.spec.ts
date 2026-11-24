@@ -233,15 +233,16 @@ describe('BulkLinkActionsService', () => {
   });
 
   describe('tags', () => {
-    it('offers every tag to add and the selected links’ tags to remove', async () => {
+    it('lists the selected links’ tags with their counts first, then the other tags', async () => {
       let data: BulkTagsDialogData | undefined;
       const { bulk } = await setup({ onDialog: (d) => (data = d as BulkTagsDialogData) });
       await bulk.editTags([link(1, { tags: ['css'] }), link(2, { tags: ['css', 'a'] })]);
       expect(data?.heading).toBe('Tags for 2 links');
-      expect(data?.suggestions.map((s) => s.name)).toEqual(['video']);
-      expect(data?.present).toEqual([
-        { name: 'css', countLabel: 'on 2 of 2' },
-        { name: 'a', countLabel: 'on 1 of 2' },
+      expect(data?.total).toBe(2);
+      expect(data?.tags).toEqual([
+        { name: 'css', count: 2 },
+        { name: 'a', count: 1 },
+        { name: 'video', count: 0 },
       ]);
     });
 

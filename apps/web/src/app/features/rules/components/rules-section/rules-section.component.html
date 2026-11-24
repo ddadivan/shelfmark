@@ -24,29 +24,37 @@
     <ul class="rules__list" [attr.aria-label]="'rules.list' | transloco">
       @for (row of rows(); track row.rule.id) {
         <li class="rules__row">
-          <div class="rules__domain">
-            <ui-favicon [letter]="row.rule.domain[0]" />
+          <!-- Shelf rules (04-organise): the site, then "→ Learning · #shoes" under it, Edit and ⋯. -->
+          <ui-favicon class="rules__favicon" [letter]="row.rule.domain[0]" />
+          <div class="rules__text">
             <span class="rules__domain-name">{{ row.rule.domain }}</span>
+            <span class="rules__target">
+              <ui-icon class="rules__arrow" name="chevron-right" [size]="ICON_SIZE.Sm" />
+              @if (row.folder; as folder) {
+                <span class="rules__folder">
+                  <ui-folder-icon size="sm" [icon]="folder.icon" [colour]="folder.colour" />
+                  <span class="rules__folder-name">{{ folder.name }}</span>
+                </span>
+              } @else if (row.folderTrashed) {
+                <span class="rules__flag">{{ 'rules.folderTrashed' | transloco }}</span>
+              }
+              @if (row.rule.tags.length > 0) {
+                <ul class="rules__tags" [attr.aria-label]="'rules.tags' | transloco">
+                  @for (tag of row.rule.tags; track tag) {
+                    <li class="rules__tag">#{{ tag }}</li>
+                  }
+                </ul>
+              }
+            </span>
           </div>
-          <div class="rules__target">
-            @if (row.folder; as folder) {
-              <span class="rules__folder">
-                <ui-folder-icon size="sm" [icon]="folder.icon" [colour]="folder.colour" />
-                <span class="rules__folder-name">{{ folder.name }}</span>
-              </span>
-            } @else if (row.folderTrashed) {
-              <span class="rules__flag">{{ 'rules.folderTrashed' | transloco }}</span>
-            }
-            @if (row.rule.tags.length > 0) {
-              <ul class="rules__tags" [attr.aria-label]="'rules.tags' | transloco">
-                @for (tag of row.rule.tags; track tag) {
-                  <li>
-                    <ui-chip>{{ tag }}</ui-chip>
-                  </li>
-                }
-              </ul>
-            }
-          </div>
+          <ui-button
+            class="rules__edit"
+            variant="ghost"
+            size="sm"
+            [ariaLabel]="'rules.editFor' | transloco: { domain: row.rule.domain }"
+            (click)="edit(row.rule)"
+            >{{ 'rules.edit' | transloco }}</ui-button
+          >
           <ui-button
             class="rules__more"
             variant="ghost"

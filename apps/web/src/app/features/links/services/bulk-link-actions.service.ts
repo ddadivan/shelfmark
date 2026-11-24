@@ -15,7 +15,6 @@ import {
   TOAST_KIND,
   ToastService,
   toastShortcutLabel,
-  type TagSuggestion,
 } from '@shelfmark/ui';
 import { firstValueFrom } from 'rxjs';
 import { pluralKey } from '../../../core/i18n/plural-key';
@@ -150,7 +149,8 @@ export class BulkLinkActionsService {
     if (links.length === 0) {
       return false;
     }
-    void this.tags.load();
+    // The list offers every tag of the account (the mobile shell has no sidebar that loaded them).
+    await this.tags.load().catch(() => undefined);
     const present = tagCounts(links);
     const change = await this.dialogs.open<
       BulkTagsDialogComponent,
@@ -160,17 +160,17 @@ export class BulkLinkActionsService {
       size: DIALOG_SIZE.Sm,
       data: {
         heading: this.plural('bulk.tags.title', links.length),
-        suggestions: this.tags.entities().map<TagSuggestion>((tag) => ({
-          name: tag.name,
-          countLabel: this.plural('tags.count', tag.linkCount),
-        })),
-        present: [...present].map<TagSuggestion>(([name, count]) => ({
-          name,
-          countLabel: this.t('bulk.tags.onLinks', {
-            count: String(count),
-            total: String(links.length),
-          }),
-        })),
+        total: links.length,
+        // The selection's tags first (most used first), then the rest of the account's.
+        tags: [
+          ...[...present].sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ name, count })),
+          ...this.tags
+            .entities()
+            .filter(
+              (tag) => ![...present.keys()].some((n) => n.toLowerCase() === tag.name.toLowerCase()),
+            )
+            .map((tag) => ({ name: tag.name, count: 0 })),
+        ],
       },
     }).result;
     if (!change) {

@@ -849,7 +849,7 @@
         "delete": "Ordner löschen…",
         "pin": "An Seitenleiste anheften",
         "unpin": "Von Seitenleiste lösen",
-        "style": "Farbe und Symbol…"
+        "style": "Ordnereinstellungen…"
       },
       "views": "Ansichten",
       "foldersTree": "Ordner",
@@ -1110,7 +1110,9 @@
         "current": "Aktuelles Titelbild",
         "empty": "Links in diesem Ordner mit Vorschaubild können sein Titelbild sein.",
         "loading": "Bilder werden geladen"
-      }
+      },
+      "title": "Ordnereinstellungen",
+      "preview": "Vorschau"
     }
   },
   "library": {
@@ -1297,7 +1299,9 @@
       "empty": {
         "text": "Ziehe Links von links hierher."
       },
-      "moveToLeft": "„{{title}}“ nach {{folder}} verschieben"
+      "moveToLeft": "„{{title}}“ nach {{folder}} verschieben",
+      "hint": "Ziehe Links zwischen zwei Feeds, um sie abzulegen. Esc schließt.",
+      "closeShort": "Schließen"
     },
     "extension": {
       "title": "Seiten direkt aus dem Browser speichern",
@@ -1322,6 +1326,11 @@
       "favoritesRemove": "Filter entfernen: nur Favoriten",
       "menuItem": "Filtern…",
       "menuItemCount": "Filtern… ({{count}})"
+    },
+    "folderMenu": {
+      "label": "Ordneraktionen",
+      "addHere": "Link hier hinzufügen",
+      "view": "Ansicht und Sortierung"
     }
   },
   "export": {
@@ -2173,6 +2182,10 @@
       "empty": {
         "title": "Noch keine Tags",
         "text": "Tags fassen Links über Ordner hinweg zusammen. Füge hier einen hinzu oder beim Speichern eines Links."
+      },
+      "lead": {
+        "one": "{{count}} Tag. Öffne ihn, um seine Links zu sehen; umbenennen, zusammenführen oder löschen über sein Menü.",
+        "other": "{{count}} Tags. Öffne einen, um seine Links zu sehen; umbenennen, zusammenführen oder löschen über sein Menü."
       }
     },
     "add": {
@@ -2592,23 +2605,18 @@
       "title": "Neue Ansicht",
       "lead": "Starte mit dem Filter der aktuellen Liste oder ändere ihn hier.",
       "action": "Ansicht speichern",
-      "change": "Ändern",
       "composed": "Der Filter wurde aus deiner Beschreibung erstellt.",
       "dropped": "Nicht berücksichtigt: {{names}}",
-      "compose": "Erstellen",
       "composing": "Wird erstellt…",
       "ideas": "Ideen",
       "ideaLabel": "Idee übernehmen: {{name}}",
       "ideaPhrase": "Links zu {{name}}",
       "unavailable": "Gerade lässt sich keine Ansicht erstellen. Das zählt nicht zu deinem Limit; du kannst den Filter selbst einstellen.",
-      "skip": {
-        "or": "oder",
-        "action": "den aktuellen Filter speichern"
-      },
       "phrase": {
         "label": "Beschreibe, was gezeigt werden soll",
         "placeholder": "Videos über Angular, die ich noch nicht gesehen habe",
-        "hint": "Zum Beispiel: „Artikel über Design aus meinem Ordner Arbeit“, „was ich an Kleidung kaufen will“, „Rezepte, neueste zuerst“."
+        "hint": "Zum Beispiel: „Artikel über Design aus meinem Ordner Arbeit“, „was ich an Kleidung kaufen will“, „Rezepte, neueste zuerst“.",
+        "optional": "Optional: Beschreibe sie, und die KI füllt die Zeilen unten aus. Zählt als eine Ask-Frage."
       },
       "where": {
         "label": "Wo",
@@ -2641,8 +2649,9 @@
         "other": "{{count}} Links gefunden"
       },
       "foundMore": "Mehr als {{count}} Links gefunden",
-      "andMore": "und {{count}} weitere",
-      "meta": "{{host}} · {{folder}}"
+      "fill": "Ausfüllen",
+      "filled": "Fertig",
+      "showWhere": "Links zeigen, bei denen"
     }
   },
   "feedback": {
@@ -2993,19 +3002,12 @@
       },
       "selectAll": "Alle {{count}} auswählen",
       "selectAllShort": "Alle auswählen",
-      "selectAllBox": {
-        "one": "{{count}} Link auswählen",
-        "other": "Alle {{count}} Links auswählen"
-      },
-      "shift": "Umschalt",
-      "rangeHint": "+ Klick wählt einen Bereich",
-      "esc": "Esc",
-      "clearHint": "hebt auf",
-      "done": "Fertig",
       "cancel": "Auswahl abbrechen",
       "longPressHint": "Halte einen Link gedrückt, um die Auswahl zu starten, und tippe dann weitere an.",
       "modeOn": "Auswahlmodus an. Ein Link wird jetzt ausgewählt, statt geöffnet.",
-      "modeOff": "Auswahlmodus aus."
+      "modeOff": "Auswahlmodus aus.",
+      "desktopHint": "Mit X auswählen, Umschalt+Klick für einen Bereich, Strg A für alle",
+      "selectNone": "Auswahl aufheben"
     },
     "item": {
       "select": "{{title}} auswählen"
@@ -3028,13 +3030,7 @@
         "one": "Tags für {{count}} Link",
         "other": "Tags für {{count}} Links"
       },
-      "add": "Zu allen hinzufügen",
-      "addHint": "Wird jedem ausgewählten Link hinzugefügt",
-      "remove": "Von allen entfernen",
-      "removeHint": "Wird von jedem ausgewählten Link entfernt; die Tags selbst bleiben",
-      "removePlaceholder": "Tag wählen",
       "onLinks": "auf {{count}} von {{total}}",
-      "apply": "Anwenden",
       "cancel": "Abbrechen",
       "close": "Schließen",
       "done": {
@@ -3043,7 +3039,16 @@
       },
       "failed": "Tags konnten nicht geändert werden",
       "failedDetail": "Es wurde nichts geändert",
-      "tooMany": "Ein Link kann höchstens {{max}} Tags haben. Es wurde nichts geändert."
+      "tooMany": "Ein Link kann höchstens {{max}} Tags haben. Es wurde nichts geändert.",
+      "find": "Tag hinzufügen oder finden",
+      "hint": "Ein Strich heißt: Einige der ausgewählten Links haben den Tag. Einmal klicken fügt ihn allen hinzu, noch einmal entfernt ihn von allen.",
+      "list": "Tags",
+      "onAll": "auf allen {{total}}",
+      "enterToAdd": "Mit Enter „{{name}}“ hinzufügen",
+      "applyTo": {
+        "one": "Auf {{count}} Link anwenden",
+        "other": "Auf {{count}} Links anwenden"
+      }
     },
     "favorite": {
       "on": {
@@ -3282,7 +3287,8 @@
       "created": "Regel erstellt",
       "applyExisting": "Auf „Ohne Ordner“ anwenden",
       "failed": "Regel konnte nicht erstellt werden"
-    }
+    },
+    "editFor": "Regel für {{domain}} bearbeiten"
   },
   "changelog": {
     "title": "Neuigkeiten",
@@ -3900,6 +3906,15 @@
       "import": {
         "line": "Es werden nur die Links dieses Imports angezeigt.",
         "all": "Alles durchgehen"
+      },
+      "section": "Unsortiert: vorgeschlagene Ordner und Tags",
+      "sectionCount": {
+        "one": "{{count}} Link",
+        "other": "{{count}} Links"
+      },
+      "selected": {
+        "one": "{{count}} Link ausgewählt",
+        "other": "{{count}} Links ausgewählt"
       }
     },
     "search": {

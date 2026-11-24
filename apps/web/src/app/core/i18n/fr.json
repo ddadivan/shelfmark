@@ -863,7 +863,7 @@
         "delete": "Supprimer le dossier…",
         "pin": "Épingler dans la barre latérale",
         "unpin": "Désépingler de la barre latérale",
-        "style": "Couleur et icône…"
+        "style": "Réglages du dossier…"
       },
       "views": "Vues",
       "foldersTree": "Dossiers",
@@ -1128,7 +1128,9 @@
         "current": "Couverture actuelle",
         "empty": "Les liens de ce dossier avec une image d’aperçu peuvent servir de couverture.",
         "loading": "Chargement des images"
-      }
+      },
+      "title": "Réglages du dossier",
+      "preview": "Aperçu"
     }
   },
   "library": {
@@ -1320,7 +1322,9 @@
       "empty": {
         "text": "Faites glisser des liens ici depuis la gauche."
       },
-      "moveToLeft": "Déplacer « {{title}} » vers {{folder}}"
+      "moveToLeft": "Déplacer « {{title}} » vers {{folder}}",
+      "hint": "Glissez des liens d’un fil à l’autre pour les classer. Échap ferme.",
+      "closeShort": "Fermer"
     },
     "extension": {
       "title": "Enregistrez des pages directement depuis votre navigateur",
@@ -1345,6 +1349,11 @@
       "favoritesRemove": "Retirer le filtre : favoris uniquement",
       "menuItem": "Filtrer…",
       "menuItemCount": "Filtrer… ({{count}})"
+    },
+    "folderMenu": {
+      "label": "Actions du dossier",
+      "addHere": "Ajouter un lien ici",
+      "view": "Affichage et tri"
     }
   },
   "export": {
@@ -2220,6 +2229,11 @@
       "empty": {
         "title": "Pas encore d’étiquettes",
         "text": "Les étiquettes regroupent des liens de plusieurs dossiers. Ajoutez-en une ici ou en enregistrant un lien."
+      },
+      "lead": {
+        "one": "{{count}} tag. Ouvrez-le pour voir ses liens ; renommez, fusionnez ou supprimez-le depuis son menu.",
+        "many": "{{count}} tags. Ouvrez-en un pour voir ses liens ; renommez, fusionnez ou supprimez depuis son menu.",
+        "other": "{{count}} tags. Ouvrez-en un pour voir ses liens ; renommez, fusionnez ou supprimez depuis son menu."
       }
     },
     "add": {
@@ -2653,23 +2667,18 @@
       "title": "Nouvelle vue",
       "lead": "Partez du filtre du flux actuel, ou modifiez-le ici.",
       "action": "Enregistrer la vue",
-      "change": "Modifier",
       "composed": "Le filtre a été rempli d’après votre description.",
       "dropped": "Laissé de côté : {{names}}",
-      "compose": "Composer",
       "composing": "Composition…",
       "ideas": "Idées",
       "ideaLabel": "Utiliser l’idée : {{name}}",
       "ideaPhrase": "Liens sur {{name}}",
       "unavailable": "Impossible de composer une vue pour l’instant. Cela n’a pas compté dans votre limite ; vous pouvez régler le filtre vous-même.",
-      "skip": {
-        "or": "ou",
-        "action": "enregistrer le filtre actuel"
-      },
       "phrase": {
         "label": "Décrivez ce qu’il faut afficher",
         "placeholder": "les vidéos sur Angular que je n’ai pas encore vues",
-        "hint": "Par exemple : « articles de design de mon dossier Travail », « quoi acheter côté vêtements », « recettes, les plus récentes d’abord »."
+        "hint": "Par exemple : « articles de design de mon dossier Travail », « quoi acheter côté vêtements », « recettes, les plus récentes d’abord ».",
+        "optional": "Facultatif : décrivez-la et l’IA remplit les lignes ci-dessous. Compte comme une question à Ask."
       },
       "where": {
         "label": "Où",
@@ -2703,8 +2712,9 @@
         "other": "{{count}} liens trouvés"
       },
       "foundMore": "Plus de {{count}} liens trouvés",
-      "andMore": "et {{count}} de plus",
-      "meta": "{{host}} · {{folder}}"
+      "fill": "Remplir",
+      "filled": "Fait",
+      "showWhere": "Afficher les liens où"
     }
   },
   "feedback": {
@@ -3059,20 +3069,12 @@
       },
       "selectAll": "Tout sélectionner ({{count}})",
       "selectAllShort": "Tout sélectionner",
-      "selectAllBox": {
-        "one": "Sélectionner le lien ({{count}})",
-        "many": "Sélectionner les {{count}} liens",
-        "other": "Sélectionner les {{count}} liens"
-      },
-      "shift": "Maj",
-      "rangeHint": "+ clic sélectionne une plage",
-      "esc": "Échap",
-      "clearHint": "efface",
-      "done": "Terminé",
       "cancel": "Annuler la sélection",
       "longPressHint": "Appuyez longuement sur un lien pour commencer la sélection, puis touchez les autres.",
       "modeOn": "Mode sélection activé. Activer un lien le sélectionne désormais.",
-      "modeOff": "Mode sélection désactivé."
+      "modeOff": "Mode sélection désactivé.",
+      "desktopHint": "Sélectionnez avec X, Maj+clic pour une plage, Ctrl A pour tout",
+      "selectNone": "Ne rien sélectionner"
     },
     "item": {
       "select": "Sélectionner {{title}}"
@@ -3098,13 +3100,7 @@
         "many": "Tags pour {{count}} liens",
         "other": "Tags pour {{count}} liens"
       },
-      "add": "Ajouter à tous",
-      "addHint": "Ajouté à chaque lien sélectionné",
-      "remove": "Retirer de tous",
-      "removeHint": "Retiré de chaque lien sélectionné ; les tags eux-mêmes restent",
-      "removePlaceholder": "Choisissez un tag",
       "onLinks": "sur {{count}} de {{total}}",
-      "apply": "Appliquer",
       "cancel": "Annuler",
       "close": "Fermer",
       "done": {
@@ -3114,7 +3110,17 @@
       },
       "failed": "Impossible de modifier les tags",
       "failedDetail": "Rien n’a été modifié",
-      "tooMany": "Un lien peut avoir au maximum {{max}} tags. Rien n’a été modifié."
+      "tooMany": "Un lien peut avoir au maximum {{max}} tags. Rien n’a été modifié.",
+      "find": "Ajouter ou trouver un tag",
+      "hint": "Un tiret indique que certains liens sélectionnés ont ce tag. Cliquez une fois pour l’ajouter à tous, encore pour l’enlever de tous.",
+      "list": "Tags",
+      "onAll": "sur les {{total}}",
+      "enterToAdd": "Appuyez sur Entrée pour ajouter « {{name}} »",
+      "applyTo": {
+        "one": "Appliquer à {{count}} lien",
+        "many": "Appliquer à {{count}} liens",
+        "other": "Appliquer à {{count}} liens"
+      }
     },
     "favorite": {
       "on": {
@@ -3367,7 +3373,8 @@
       "created": "Règle créée",
       "applyExisting": "Appliquer à « Sans dossier »",
       "failed": "Impossible de créer la règle"
-    }
+    },
+    "editFor": "Modifier la règle de {{domain}}"
   },
   "changelog": {
     "title": "Nouveautés",
@@ -3998,6 +4005,17 @@
       "import": {
         "line": "Seuls les liens de cet import sont affichés.",
         "all": "Tout passer en revue"
+      },
+      "section": "Non classés : dossiers et tags suggérés",
+      "sectionCount": {
+        "one": "{{count}} lien",
+        "many": "{{count}} liens",
+        "other": "{{count}} liens"
+      },
+      "selected": {
+        "one": "{{count}} lien sélectionné",
+        "many": "{{count}} liens sélectionnés",
+        "other": "{{count}} liens sélectionnés"
       }
     },
     "search": {

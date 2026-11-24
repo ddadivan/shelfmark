@@ -28,7 +28,7 @@
       </p>
     </div>
     @if (!viewport.compact() && store.total() > 0) {
-    <ui-button iconLeft="trash" (click)="actions.empty()">
+    <ui-button size="sm" (click)="actions.empty()">
       {{ 'trash.emptyAction' | transloco }}
     </ui-button>
     }
@@ -55,7 +55,15 @@
     [text]="'trash.emptyState.text' | transloco: { days: settings.retentionDays() }"
   />
   } @else {
+  <!-- Shelf Trash: the filter under the title, "Select all" after it while selecting. -->
   <div class="trash-page__tools">
+    <ui-segmented-control
+      class="trash-page__filter"
+      [ariaLabel]="'trash.filter.label' | transloco"
+      [options]="filterOptions()"
+      [value]="filter()"
+      (valueChange)="setFilter($event)"
+    />
     @if (selecting()) {
     <ui-checkbox
       class="trash-page__all"
@@ -65,13 +73,6 @@
       (checkedChange)="toggleAll($event)"
     />
     }
-    <ui-segmented-control
-      class="trash-page__filter"
-      [ariaLabel]="'trash.filter.label' | transloco"
-      [options]="filterOptions()"
-      [value]="filter()"
-      (valueChange)="setFilter($event)"
-    />
   </div>
 
   @if (visible().length === 0) {

@@ -80,6 +80,17 @@
   }
 }
 
+// The projected lead (`uiInputLead`, Shelf Rename folder: the folder tile); gone when empty.
+.ui-input__lead {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+
+  &:empty {
+    display: none;
+  }
+}
+
 // One 24px slot for the search icon and the spinner: the field never shifts.
 .ui-input__slot {
   display: inline-grid;

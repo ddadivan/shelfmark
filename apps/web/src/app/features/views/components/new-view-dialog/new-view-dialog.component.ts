@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { SAVED_VIEW_LIMIT, VIEW_DRAFT_FIELD } from '@shelfmark/contracts';
@@ -11,7 +11,6 @@ import {
   ButtonComponent,
   DialogCancelDirective,
   DialogComponent,
-  FaviconComponent,
   ICON_SIZE,
   IconComponent,
   InputComponent,
@@ -26,13 +25,12 @@ import { NewViewFormService } from '../../services/new-view-form.service';
 import { NewViewOptionsService } from '../../services/new-view-options.service';
 import { NewViewPhraseService } from '../../services/new-view-phrase.service';
 import { NewViewPreviewService } from '../../services/new-view-preview.service';
-import { NEW_VIEW_PREVIEW } from '../../models/new-view-preview.const';
 
 /**
- * "+ Save view" (#535): one dialog for everyone. Rows for where, type, tags, search words and sort,
- * a live count with the first links, a name. With AI on a phrase comes first: AI fills the rows
- * (marked with a spark until changed) and names the view; the user can always skip it and fill the
- * rows by hand. Opened by `SavedViewActionsService.saveCurrent`, which owns the saving.
+ * "+ Save view" (#535; Shelf `13-views` "New view"): one page for everyone. With AI on an optional
+ * phrase sits on top and "Fill in" lets AI fill the rows (marked with a spark until changed) and
+ * name the view; then the name, the "Show links where" rows (where, type, tags, words, sort) and
+ * the live count. Opened by `SavedViewActionsService.saveCurrent`, which owns the saving.
  */
 @Component({
   selector: 'app-new-view-dialog',
@@ -41,7 +39,6 @@ import { NEW_VIEW_PREVIEW } from '../../models/new-view-preview.const';
     ButtonComponent,
     DialogCancelDirective,
     DialogComponent,
-    FaviconComponent,
     FormField,
     FormRoot,
     IconComponent,
@@ -70,7 +67,6 @@ export class NewViewDialogComponent {
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly FIELD = VIEW_DRAFT_FIELD;
   protected readonly TAGS_MAX = SAVED_VIEW_LIMIT.TagsMax;
-  protected readonly PREVIEW_ROWS = NEW_VIEW_PREVIEW.Rows;
 
   private readonly formState = inject(NewViewFormService);
   protected readonly options = inject(NewViewOptionsService);
@@ -81,8 +77,6 @@ export class NewViewDialogComponent {
   protected readonly sparks = this.formState.sparks;
   protected readonly saving = this.formState.saving;
   protected readonly errorKey = this.formState.errorKey;
-
-  private readonly phraseField = viewChild<InputComponent>('phraseField');
 
   constructor() {
     // Usually loaded by the sidebar already; the choices fill in when the lists arrive.
@@ -98,10 +92,5 @@ export class NewViewDialogComponent {
   protected onPhraseEnter(event: Event): void {
     event.preventDefault();
     void this.phrase.compose();
-  }
-
-  protected edit(): void {
-    this.phrase.edit();
-    queueMicrotask(() => this.phraseField()?.focus());
   }
 }

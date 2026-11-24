@@ -4,6 +4,8 @@
  * description and the cover link id (#418, empty for none).
  */
 export interface FolderStyleFormModel {
+  /** The folder name (Shelf Folder settings); saved through a rename when it changed. */
+  name: string;
   colour: string;
   icon: string;
   emoji: string;

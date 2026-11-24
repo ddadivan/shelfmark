@@ -1,3 +1,4 @@
+import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../../testing/axe';
@@ -377,5 +378,30 @@ describe('InputComponent', () => {
     const { fixture, host } = setup(inputs);
     fixture.detectChanges();
     expect(await axeViolations(host)).toEqual([]);
+  });
+});
+
+@Component({
+  imports: [InputComponent],
+  template: `<ui-input label="Name" value="Learning"
+    ><span uiInputLead class="lead-probe" aria-hidden="true">L</span></ui-input
+  >`,
+})
+class LeadHostComponent {}
+
+describe('InputComponent lead slot', () => {
+  it('projects a uiInputLead element before the text; the slot stays empty without one', async () => {
+    const fixture = TestBed.createComponent(LeadHostComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const lead = host.querySelector('.ui-input__lead');
+    expect(lead?.querySelector('.lead-probe')).not.toBeNull();
+    expect(lead?.compareDocumentPosition(host.querySelector('input') as Node)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+    expect(await axeViolations(host)).toEqual([]);
+
+    const plain = setup();
+    expect(plain.q('.ui-input__lead')?.childElementCount).toBe(0);
   });
 });

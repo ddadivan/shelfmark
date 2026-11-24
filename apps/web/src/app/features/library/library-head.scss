@@ -1,82 +1,47 @@
 @use 'ui' as *;
 
-// The folder header (#418): for a highlighted folder (#440) the toolbar sits in `ui-folder-banner`,
-// which draws the band of the folder colour or the cover. Any other page (and the split view) has
-// the plain title block.
-.library__banner {
-  // The band bleeds a little past the content, so the title, the tools and the feed below keep the
-  // places they have on every other page (the layout-shift and alignment checks); only a cover
-  // adds room above the heading. Never squeezed by the page column (the banner clips its cover).
-  --ui-folder-banner-padding-block: var(--space-3);
-  --ui-folder-banner-padding-inline: var(--space-4);
-
-  flex: none;
-
-  // The room under the block (#440) is a full `space-6`, so the chips row (All / Videos / ...) no
-  // longer touches the band; the band's own bottom padding comes on top.
-  margin: calc(var(--space-3) * -1) calc(var(--space-4) * -1) var(--space-6);
-
-  @include compact {
-    --ui-folder-banner-padding-inline: var(--space-3);
-
-    margin-inline: calc(var(--space-3) * -1);
-  }
-
-  .library__toolbar {
-    margin-block-end: 0;
-  }
-}
-
-// The big tile beside the title, the description under it, the count last.
+// Shelf folder page (04-organise `.fhead`): the 40px tile (or the cover picture), the title and the
+// counts on one line, 12px apart; the description under them as the lead. The highlight (#440)
+// colours the sidebar row only, so every folder has this one header.
 .library__heading--folder {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
   align-items: center;
 
-  > :not(.library__folder-icon) {
-    grid-column: 2;
+  // A word moves to the next line whole instead of breaking letter by letter beside the tile.
+  > .library__title {
+    overflow-wrap: break-word;
   }
 
-  @include phone {
-    column-gap: var(--space-3);
+  > .library__count {
+    @include type(secondary);
+
+    min-height: 0;
+    margin: 0;
+    color: var(--text-muted);
   }
 }
 
 .library__folder-icon {
-  grid-row: 1 / span 3;
-  align-self: center;
+  flex: none;
 }
 
 .library__description {
-  @include type(body);
+  @include type(secondary);
   @include line-clamp(2);
 
-  margin: var(--space-1) 0 0;
+  flex-basis: 100%;
+  max-width: 68ch;
+  margin: 0;
   color: var(--text-muted);
   overflow-wrap: anywhere;
 }
 
-// A folder that is not highlighted (#440) keeps the plain title block; a cover sits beside the
-// title as a small picture, the description and the count under the title.
-.library__heading--cover {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: var(--space-4);
-  align-items: start;
-
-  > :not(.library__cover) {
-    grid-column: 2;
-  }
-
-  @include phone {
-    column-gap: var(--space-3);
-  }
-}
-
+// A cover stands in for the tile: a 40px high picture.
 .library__cover {
-  grid-row: 1 / span 3;
-  align-self: center;
+  flex: none;
+  inline-size: rem(72px);
 }
 
 // Search in the feed (Shelf `03-search.html` `.s-head`): "Search" and the count on one baseline,

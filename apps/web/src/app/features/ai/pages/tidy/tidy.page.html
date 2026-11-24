@@ -21,11 +21,6 @@
         | transloco: { count: store.items().length } }} }
       </p>
     </div>
-    @if (!compact() && store.loaded() && !store.empty()) {
-    <div class="tidy__actions">
-      <ng-container *ngTemplateOutlet="actions" />
-    </div>
-    }
   </header>
 
   @if (store.importId() !== null) {
@@ -47,6 +42,14 @@
     </ui-button>
   </section>
   } @else {
+  <!-- Shelf Tidy up (04-organise): the section heading with its count over the list. -->
+  <h2 class="tidy__section">
+    {{ 'ai.tidy.section' | transloco }}
+    <span class="tidy__section-count"
+      >{{ pluralKey('ai.tidy.sectionCount', store.items().length) | transloco: { count:
+      store.items().length } }}</span
+    >
+  </h2>
   <ul class="tidy__list" [attr.aria-label]="'ai.tidy.listLabel' | transloco">
     @for (row of store.rows(); track row.link.id) {
     <li class="tidy__item">
@@ -71,16 +74,22 @@
     </ui-button>
     }
   </div>
-  } @if (compact()) {
+  }
   <div
     class="tidy__bar"
     appToastAbove
     role="group"
     [attr.aria-label]="'ai.tidy.barLabel' | transloco"
   >
+    @if (!compact()) {
+    <p class="tidy__bar-count">
+      {{ pluralKey('ai.tidy.selected', store.applyCount()) | transloco: { count: store.applyCount()
+      } }}
+    </p>
+    }
     <ng-container *ngTemplateOutlet="actions" />
   </div>
-  } } }
+  } }
 </div>
 }
 

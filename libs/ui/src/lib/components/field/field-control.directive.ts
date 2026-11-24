@@ -19,6 +19,11 @@ export abstract class UiFieldControl {
   readonly label = input.required<string>();
   readonly hint = input('');
   /**
+   * The label is for assistive technology only (the feature shows its own text beside the field);
+   * `ui-input`, `ui-textarea`, `ui-select` and `ui-tag-input` pass it to the shell.
+   */
+  readonly labelHidden = input(false, { transform: booleanAttribute });
+  /**
    * A small pill for fields that sit inline among chips (a new or renamed tag): the label stays
    * for assistive technology but is not shown, and the box is a 30px pill (44px for touch).
    */

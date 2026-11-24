@@ -863,7 +863,7 @@
         "delete": "Eliminar carpeta…",
         "pin": "Fijar en la barra lateral",
         "unpin": "Quitar de la barra lateral",
-        "style": "Color e icono…"
+        "style": "Ajustes de la carpeta…"
       },
       "views": "Vistas",
       "foldersTree": "Carpetas",
@@ -1128,7 +1128,9 @@
         "current": "Portada actual",
         "empty": "Los enlaces de esta carpeta con imagen de vista previa pueden ser su portada.",
         "loading": "Cargando imágenes"
-      }
+      },
+      "title": "Ajustes de la carpeta",
+      "preview": "Vista previa"
     }
   },
   "library": {
@@ -1320,7 +1322,9 @@
       "empty": {
         "text": "Arrastra enlaces aquí desde la izquierda."
       },
-      "moveToLeft": "Mover «{{title}}» a {{folder}}"
+      "moveToLeft": "Mover «{{title}}» a {{folder}}",
+      "hint": "Arrastra enlaces entre dos listas para archivarlos. Esc cierra.",
+      "closeShort": "Cerrar"
     },
     "extension": {
       "title": "Guarda páginas directamente desde el navegador",
@@ -1345,6 +1349,11 @@
       "favoritesRemove": "Quitar filtro: solo favoritos",
       "menuItem": "Filtrar…",
       "menuItemCount": "Filtrar… ({{count}})"
+    },
+    "folderMenu": {
+      "label": "Acciones de la carpeta",
+      "addHere": "Añadir enlace aquí",
+      "view": "Vista y orden"
     }
   },
   "export": {
@@ -2220,6 +2229,11 @@
       "empty": {
         "title": "Todavía no hay etiquetas",
         "text": "Las etiquetas agrupan enlaces de distintas carpetas. Añade una aquí o al guardar un enlace."
+      },
+      "lead": {
+        "one": "{{count}} etiqueta. Ábrela para ver sus enlaces; renómbrala, combínala o elimínala desde su menú.",
+        "many": "{{count}} etiquetas. Abre una para ver sus enlaces; renombra, combina o elimina desde su menú.",
+        "other": "{{count}} etiquetas. Abre una para ver sus enlaces; renombra, combina o elimina desde su menú."
       }
     },
     "add": {
@@ -2653,23 +2667,18 @@
       "title": "Nueva vista",
       "lead": "Empieza con el filtro de la lista en la que estás, o cámbialo aquí.",
       "action": "Guardar vista",
-      "change": "Cambiar",
       "composed": "El filtro se rellenó con tu descripción.",
       "dropped": "Se dejó fuera: {{names}}",
-      "compose": "Componer",
       "composing": "Componiendo…",
       "ideas": "Ideas",
       "ideaLabel": "Usar la idea: {{name}}",
       "ideaPhrase": "Enlaces sobre {{name}}",
       "unavailable": "Ahora no se puede componer una vista. No contó para tu límite; puedes ajustar el filtro tú mismo.",
-      "skip": {
-        "or": "o",
-        "action": "guardar el filtro actual"
-      },
       "phrase": {
         "label": "Describe qué mostrar",
         "placeholder": "los vídeos sobre Angular que aún no he visto",
-        "hint": "Por ejemplo: «artículos de diseño de mi carpeta Trabajo», «qué comprar de ropa», «recetas, las más recientes primero»."
+        "hint": "Por ejemplo: «artículos de diseño de mi carpeta Trabajo», «qué comprar de ropa», «recetas, las más recientes primero».",
+        "optional": "Opcional: descríbela y la IA rellena las filas de abajo. Cuenta como una pregunta a Ask."
       },
       "where": {
         "label": "Dónde",
@@ -2703,8 +2712,9 @@
         "other": "{{count}} enlaces encontrados"
       },
       "foundMore": "Más de {{count}} enlaces encontrados",
-      "andMore": "y {{count}} más",
-      "meta": "{{host}} · {{folder}}"
+      "fill": "Rellenar",
+      "filled": "Hecho",
+      "showWhere": "Mostrar enlaces donde"
     }
   },
   "feedback": {
@@ -3059,20 +3069,12 @@
       },
       "selectAll": "Seleccionar los {{count}}",
       "selectAllShort": "Seleccionar todo",
-      "selectAllBox": {
-        "one": "Seleccionar {{count}} enlace",
-        "many": "Seleccionar los {{count}} enlaces",
-        "other": "Seleccionar los {{count}} enlaces"
-      },
-      "shift": "Mayús",
-      "rangeHint": "+ clic selecciona un rango",
-      "esc": "Esc",
-      "clearHint": "borra",
-      "done": "Listo",
       "cancel": "Cancelar selección",
       "longPressHint": "Mantén pulsado un enlace para empezar a seleccionar y luego toca otros.",
       "modeOn": "Modo de selección activado. Activar un enlace ahora lo selecciona.",
-      "modeOff": "Modo de selección desactivado."
+      "modeOff": "Modo de selección desactivado.",
+      "desktopHint": "Selecciona con X, Mayús+clic para un rango, Ctrl A para todo",
+      "selectNone": "No seleccionar nada"
     },
     "item": {
       "select": "Seleccionar {{title}}"
@@ -3098,13 +3100,7 @@
         "many": "Etiquetas de {{count}} enlaces",
         "other": "Etiquetas de {{count}} enlaces"
       },
-      "add": "Añadir a todos",
-      "addHint": "Se añade a cada enlace seleccionado",
-      "remove": "Quitar de todos",
-      "removeHint": "Se quita de cada enlace seleccionado; las etiquetas siguen existiendo",
-      "removePlaceholder": "Elige una etiqueta",
       "onLinks": "en {{count}} de {{total}}",
-      "apply": "Aplicar",
       "cancel": "Cancelar",
       "close": "Cerrar",
       "done": {
@@ -3114,7 +3110,17 @@
       },
       "failed": "No se pudieron cambiar las etiquetas",
       "failedDetail": "No se ha cambiado nada",
-      "tooMany": "Un enlace puede tener como máximo {{max}} etiquetas. No se ha cambiado nada."
+      "tooMany": "Un enlace puede tener como máximo {{max}} etiquetas. No se ha cambiado nada.",
+      "find": "Añadir o buscar una etiqueta",
+      "hint": "Un guion indica que algunos enlaces seleccionados tienen la etiqueta. Haz clic una vez para añadirla a todos y otra para quitarla de todos.",
+      "list": "Etiquetas",
+      "onAll": "en los {{total}}",
+      "enterToAdd": "Pulsa Intro para añadir «{{name}}»",
+      "applyTo": {
+        "one": "Aplicar a {{count}} enlace",
+        "many": "Aplicar a {{count}} enlaces",
+        "other": "Aplicar a {{count}} enlaces"
+      }
     },
     "favorite": {
       "on": {
@@ -3367,7 +3373,8 @@
       "created": "Regla creada",
       "applyExisting": "Aplicar a «Sin carpeta»",
       "failed": "No se pudo crear la regla"
-    }
+    },
+    "editFor": "Editar la regla de {{domain}}"
   },
   "changelog": {
     "title": "Novedades",
@@ -3998,6 +4005,17 @@
       "import": {
         "line": "Solo se muestran los enlaces de esta importación.",
         "all": "Revisar todo"
+      },
+      "section": "Sin ordenar: carpetas y etiquetas sugeridas",
+      "sectionCount": {
+        "one": "{{count}} enlace",
+        "many": "{{count}} enlaces",
+        "other": "{{count}} enlaces"
+      },
+      "selected": {
+        "one": "{{count}} enlace seleccionado",
+        "many": "{{count}} enlaces seleccionados",
+        "other": "{{count}} enlaces seleccionados"
       }
     },
     "search": {

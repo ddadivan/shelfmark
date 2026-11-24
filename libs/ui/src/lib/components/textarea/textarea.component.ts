@@ -46,8 +46,6 @@ export class TextareaComponent extends UiFieldControl implements FormValueContro
   /** The browser's spell-check (its own dictionary) while typing; on by default. */
   readonly spellcheck = input(true, { transform: booleanAttribute });
 
-  /** The label is for assistive technology only (a field whose purpose is clear from its place). */
-  readonly labelHidden = input(false, { transform: booleanAttribute });
   /** Rows after which the field scrolls instead of growing. */
   readonly maxRows = input(TEXTAREA_MAX_ROWS, { transform: numberAttribute });
 

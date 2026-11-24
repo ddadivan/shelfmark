@@ -863,7 +863,7 @@
         "delete": "Excluir pasta…",
         "pin": "Fixar na barra lateral",
         "unpin": "Desafixar da barra lateral",
-        "style": "Cor e ícone…"
+        "style": "Configurações da pasta…"
       },
       "views": "Visualizações",
       "foldersTree": "Pastas",
@@ -1128,7 +1128,9 @@
         "current": "Capa atual",
         "empty": "Links desta pasta com imagem de prévia podem ser a capa dela.",
         "loading": "Carregando imagens"
-      }
+      },
+      "title": "Configurações da pasta",
+      "preview": "Prévia"
     }
   },
   "library": {
@@ -1320,7 +1322,9 @@
       "empty": {
         "text": "Arraste links para cá a partir da esquerda."
       },
-      "moveToLeft": "Mover “{{title}}” para {{folder}}"
+      "moveToLeft": "Mover “{{title}}” para {{folder}}",
+      "hint": "Arraste links entre duas listas para organizá-los. Esc fecha.",
+      "closeShort": "Fechar"
     },
     "extension": {
       "title": "Salve páginas direto do navegador",
@@ -1345,6 +1349,11 @@
       "favoritesRemove": "Remover filtro: só favoritos",
       "menuItem": "Filtrar…",
       "menuItemCount": "Filtrar… ({{count}})"
+    },
+    "folderMenu": {
+      "label": "Ações da pasta",
+      "addHere": "Adicionar link aqui",
+      "view": "Visualização e ordem"
     }
   },
   "export": {
@@ -2220,6 +2229,11 @@
       "empty": {
         "title": "Ainda não há tags",
         "text": "As tags agrupam links de pastas diferentes. Adicione uma aqui ou ao salvar um link."
+      },
+      "lead": {
+        "one": "{{count}} tag. Abra para ver os links; renomeie, mescle ou exclua pelo menu.",
+        "many": "{{count}} tags. Abra uma para ver os links; renomeie, mescle ou exclua pelo menu.",
+        "other": "{{count}} tags. Abra uma para ver os links; renomeie, mescle ou exclua pelo menu."
       }
     },
     "add": {
@@ -2653,23 +2667,18 @@
       "title": "Nova visualização",
       "lead": "Comece com o filtro da lista em que você está ou mude aqui.",
       "action": "Salvar visualização",
-      "change": "Alterar",
       "composed": "O filtro foi preenchido com a sua descrição.",
       "dropped": "Ficou de fora: {{names}}",
-      "compose": "Montar",
       "composing": "Montando…",
       "ideas": "Ideias",
       "ideaLabel": "Usar a ideia: {{name}}",
       "ideaPhrase": "Links sobre {{name}}",
       "unavailable": "Não foi possível montar uma visualização agora. Isso não contou no seu limite; você pode ajustar o filtro por conta própria.",
-      "skip": {
-        "or": "ou",
-        "action": "salvar o filtro atual"
-      },
       "phrase": {
         "label": "Descreva o que mostrar",
         "placeholder": "os vídeos sobre Angular que ainda não assisti",
-        "hint": "Por exemplo: “artigos de design da pasta Trabalho”, “o que comprar de roupa”, “receitas, mais recentes primeiro”."
+        "hint": "Por exemplo: “artigos de design da pasta Trabalho”, “o que comprar de roupa”, “receitas, mais recentes primeiro”.",
+        "optional": "Opcional: descreva e a IA preenche as linhas abaixo. Conta como uma pergunta ao Ask."
       },
       "where": {
         "label": "Onde",
@@ -2703,8 +2712,9 @@
         "other": "{{count}} links encontrados"
       },
       "foundMore": "Mais de {{count}} links encontrados",
-      "andMore": "e mais {{count}}",
-      "meta": "{{host}} · {{folder}}"
+      "fill": "Preencher",
+      "filled": "Pronto",
+      "showWhere": "Mostrar links em que"
     }
   },
   "feedback": {
@@ -3059,20 +3069,12 @@
       },
       "selectAll": "Selecionar todos os {{count}}",
       "selectAllShort": "Selecionar tudo",
-      "selectAllBox": {
-        "one": "Selecionar {{count}} link",
-        "many": "Selecionar todos os {{count}} links",
-        "other": "Selecionar todos os {{count}} links"
-      },
-      "shift": "Shift",
-      "rangeHint": "+ clique seleciona um intervalo",
-      "esc": "Esc",
-      "clearHint": "limpa",
-      "done": "Concluído",
       "cancel": "Cancelar seleção",
       "longPressHint": "Toque e segure um link para começar a selecionar, depois toque nos outros.",
       "modeOn": "Modo de seleção ativado. Ativar um link agora o seleciona.",
-      "modeOff": "Modo de seleção desativado."
+      "modeOff": "Modo de seleção desativado.",
+      "desktopHint": "Selecione com X, Shift+clique para um intervalo, Ctrl A para tudo",
+      "selectNone": "Desmarcar tudo"
     },
     "item": {
       "select": "Selecionar {{title}}"
@@ -3098,13 +3100,7 @@
         "many": "Tags de {{count}} links",
         "other": "Tags de {{count}} links"
       },
-      "add": "Adicionar a todos",
-      "addHint": "Adicionada a cada link selecionado",
-      "remove": "Remover de todos",
-      "removeHint": "Removida de cada link selecionado; as tags continuam existindo",
-      "removePlaceholder": "Escolha uma tag",
       "onLinks": "em {{count}} de {{total}}",
-      "apply": "Aplicar",
       "cancel": "Cancelar",
       "close": "Fechar",
       "done": {
@@ -3114,7 +3110,17 @@
       },
       "failed": "Não foi possível mudar as tags",
       "failedDetail": "Nada foi alterado",
-      "tooMany": "Um link pode ter no máximo {{max}} tags. Nada foi alterado."
+      "tooMany": "Um link pode ter no máximo {{max}} tags. Nada foi alterado.",
+      "find": "Adicionar ou encontrar uma tag",
+      "hint": "Um traço indica que alguns links selecionados têm a tag. Clique uma vez para adicioná-la a todos e de novo para removê-la de todos.",
+      "list": "Tags",
+      "onAll": "em todos os {{total}}",
+      "enterToAdd": "Pressione Enter para adicionar “{{name}}”",
+      "applyTo": {
+        "one": "Aplicar a {{count}} link",
+        "many": "Aplicar a {{count}} links",
+        "other": "Aplicar a {{count}} links"
+      }
     },
     "favorite": {
       "on": {
@@ -3367,7 +3373,8 @@
       "created": "Regra criada",
       "applyExisting": "Aplicar a “Sem pasta”",
       "failed": "Não foi possível criar a regra"
-    }
+    },
+    "editFor": "Editar a regra de {{domain}}"
   },
   "changelog": {
     "title": "Novidades",
@@ -3998,6 +4005,17 @@
       "import": {
         "line": "Mostrando só os links desta importação.",
         "all": "Revisar tudo"
+      },
+      "section": "Sem pasta: pastas e tags sugeridas",
+      "sectionCount": {
+        "one": "{{count}} link",
+        "many": "{{count}} links",
+        "other": "{{count}} links"
+      },
+      "selected": {
+        "one": "{{count}} link selecionado",
+        "many": "{{count}} links selecionados",
+        "other": "{{count}} links selecionados"
       }
     },
     "search": {

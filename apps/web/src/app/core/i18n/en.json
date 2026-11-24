@@ -849,7 +849,7 @@
         "delete": "Delete folder…",
         "pin": "Pin to sidebar",
         "unpin": "Unpin from sidebar",
-        "style": "Color and icon…"
+        "style": "Folder settings…"
       },
       "views": "Views",
       "foldersTree": "Folders",
@@ -1110,7 +1110,9 @@
         "current": "Current cover",
         "empty": "Links in this folder with a preview picture can be its cover.",
         "loading": "Loading pictures"
-      }
+      },
+      "title": "Folder settings",
+      "preview": "Preview"
     }
   },
   "library": {
@@ -1297,7 +1299,9 @@
       "empty": {
         "text": "Drag links here from the left."
       },
-      "moveToLeft": "Move “{{title}}” to {{folder}}"
+      "moveToLeft": "Move “{{title}}” to {{folder}}",
+      "hint": "Drag links between two feeds to file them. Esc closes.",
+      "closeShort": "Close"
     },
     "extension": {
       "title": "Save pages straight from your browser",
@@ -1322,6 +1326,11 @@
       "favoritesRemove": "Remove filter: only favorites",
       "menuItem": "Filter…",
       "menuItemCount": "Filter… ({{count}})"
+    },
+    "folderMenu": {
+      "label": "Folder actions",
+      "addHere": "Add link here",
+      "view": "View and sort"
     }
   },
   "export": {
@@ -2173,6 +2182,10 @@
       "empty": {
         "title": "No tags yet",
         "text": "Tags group links across folders. Add one here, or while you save a link."
+      },
+      "lead": {
+        "one": "{{count}} tag. Open it to see its links; rename, merge or delete it from its menu.",
+        "other": "{{count}} tags. Open one to see its links; rename, merge or delete from its menu."
       }
     },
     "add": {
@@ -2592,23 +2605,18 @@
       "title": "New view",
       "lead": "Start from the filter of the feed you are on, or change it here.",
       "action": "Save view",
-      "change": "Change",
       "composed": "The filter was filled in from your description.",
       "dropped": "Left out: {{names}}",
-      "compose": "Compose",
       "composing": "Composing…",
       "ideas": "Ideas",
       "ideaLabel": "Use the idea: {{name}}",
       "ideaPhrase": "Links about {{name}}",
       "unavailable": "Couldn’t compose a view right now. This didn’t count toward your limit; you can set the filter yourself.",
-      "skip": {
-        "or": "or",
-        "action": "save the current filter"
-      },
       "phrase": {
         "label": "Describe what to show",
         "placeholder": "videos about Angular I haven’t watched yet",
-        "hint": "For example: “articles about design from my Work folder”, “what to buy from clothes”, “recipes, newest first”."
+        "hint": "For example: “articles about design from my Work folder”, “what to buy from clothes”, “recipes, newest first”.",
+        "optional": "Optional: describe it and AI fills the rows below. Counts as one Ask question."
       },
       "where": {
         "label": "Where",
@@ -2641,8 +2649,9 @@
         "other": "Found {{count}} links"
       },
       "foundMore": "Found {{count}}+ links",
-      "andMore": "and {{count}} more",
-      "meta": "{{host}} · {{folder}}"
+      "fill": "Fill in",
+      "filled": "Done",
+      "showWhere": "Show links where"
     }
   },
   "feedback": {
@@ -2993,19 +3002,12 @@
       },
       "selectAll": "Select all {{count}}",
       "selectAllShort": "Select all",
-      "selectAllBox": {
-        "one": "Select all {{count}} link",
-        "other": "Select all {{count}} links"
-      },
-      "shift": "Shift",
-      "rangeHint": "+ click selects a range",
-      "esc": "Esc",
-      "clearHint": "clears",
-      "done": "Done",
       "cancel": "Cancel selection",
       "longPressHint": "Long-press a link to start selecting, then tap others.",
       "modeOn": "Selection mode on. Activating a link now selects it.",
-      "modeOff": "Selection mode off."
+      "modeOff": "Selection mode off.",
+      "desktopHint": "Select with X, Shift-click for a range, Ctrl A for all",
+      "selectNone": "Select none"
     },
     "item": {
       "select": "Select {{title}}"
@@ -3028,13 +3030,7 @@
         "one": "Tags for {{count}} link",
         "other": "Tags for {{count}} links"
       },
-      "add": "Add to all",
-      "addHint": "Added to every selected link",
-      "remove": "Remove from all",
-      "removeHint": "Taken off every selected link; the tags themselves stay",
-      "removePlaceholder": "Pick a tag",
       "onLinks": "on {{count}} of {{total}}",
-      "apply": "Apply",
       "cancel": "Cancel",
       "close": "Close",
       "done": {
@@ -3043,7 +3039,16 @@
       },
       "failed": "Couldn't change the tags",
       "failedDetail": "Nothing was changed",
-      "tooMany": "A link can have at most {{max}} tags. Nothing was changed."
+      "tooMany": "A link can have at most {{max}} tags. Nothing was changed.",
+      "find": "Add or find a tag",
+      "hint": "A dash means some of the selected links have the tag. Click once to add it to all, again to remove it from all.",
+      "list": "Tags",
+      "onAll": "on all {{total}}",
+      "enterToAdd": "Press Enter to add “{{name}}”",
+      "applyTo": {
+        "one": "Apply to {{count}} link",
+        "other": "Apply to {{count}} links"
+      }
     },
     "favorite": {
       "on": {
@@ -3282,7 +3287,8 @@
       "created": "Rule created",
       "applyExisting": "Apply to Unsorted",
       "failed": "Couldn’t create the rule"
-    }
+    },
+    "editFor": "Edit the rule for {{domain}}"
   },
   "changelog": {
     "title": "What's new",
@@ -3900,6 +3906,15 @@
       "import": {
         "line": "Showing only the links of this import.",
         "all": "Review everything"
+      },
+      "section": "Unsorted: suggested folders and tags",
+      "sectionCount": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      },
+      "selected": {
+        "one": "{{count}} link selected",
+        "other": "{{count}} links selected"
       }
     },
     "search": {

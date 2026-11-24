@@ -33,6 +33,7 @@ import {
   ColorPickerComponent,
   DialogComponent,
   EmojiPickerComponent,
+  FolderColourDirective,
   FolderIconComponent,
   InputComponent,
   injectDialogData,
@@ -45,7 +46,6 @@ import {
 } from '@shelfmark/ui';
 import { FOLDER_ICON_COMMON } from '../../models/folder-icon-common.const';
 import { FOLDER_ICON_GRID } from '../../models/folder-icon-rows-shown.const';
-import { pluralKey } from '../../../../core/i18n/plural-key';
 import { OwnColourActionsService } from '../../../../core/colours/own-colour-actions.service';
 import { FolderEmojiService } from '../../services/folder-emoji.service';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
@@ -54,6 +54,7 @@ import { FOLDER_STYLE_TAB } from '../../models/folder-style-tab.const';
 import type { FolderStyleTab } from '../../models/folder-style-tab.type';
 import { folderStyleSymbol } from '../../utils/folder-style-symbol';
 import { descriptionError } from '../../utils/description-error';
+import { folderNameError } from '../../utils/folder-name-error';
 import { FolderCoverPickerComponent } from '../folder-cover-picker/folder-cover-picker.component';
 import type { FolderStyleFormModel } from '../../models/folder-style-form-model.interface';
 
@@ -61,7 +62,7 @@ const COLOURS: readonly FolderColour[] = Object.values(FOLDER_COLOUR);
 const ICONS: readonly FolderIcon[] = Object.values(FOLDER_ICON);
 
 /**
- * "Colour and icon" of a folder (FolderStyle spec): a preview tile with the name and counts, the
+ * Folder settings (Shelf 04-organise; FolderStyle spec): the name (with the tile as it will look), the
  * eight built-in colours on one line, the account's own colours and a "+" swatch that opens the
  * colour picker to add one (#335), the icon set as a radio group in a scrolling grid, and the emoji
  * picker (#363) whose one emoji replaces the icon. Reset (graphite folder), Cancel and Save.
@@ -76,6 +77,7 @@ const ICONS: readonly FolderIcon[] = Object.values(FOLDER_ICON);
     DialogComponent,
     EmojiPickerComponent,
     FolderCoverPickerComponent,
+    FolderColourDirective,
     FolderIconComponent,
     FormField,
     InputComponent,
@@ -104,6 +106,7 @@ export class FolderStyleDialogComponent {
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
   private readonly model = signal<FolderStyleFormModel>({
+    name: this.data.folder.name,
     colour: this.data.folder.colour,
     icon: isFolderIconName(this.data.folder.icon) ? this.data.folder.icon : FOLDER_DEFAULT_ICON,
     emoji: isFolderIconName(this.data.folder.icon) ? '' : this.data.folder.icon,
@@ -128,6 +131,10 @@ export class FolderStyleDialogComponent {
   protected readonly form = form(
     this.model,
     (path) => {
+      validate(path.name, ({ value }) => {
+        this.i18n();
+        return folderNameError(value(), (key, params) => this.transloco.translate(key, params));
+      });
       validate(path.description, ({ value }) => {
         this.i18n();
         return descriptionError(value(), (key) =>
@@ -200,6 +207,8 @@ export class FolderStyleDialogComponent {
   });
 
   protected readonly colourValue = computed(() => this.model().colour);
+  /** The preview row wears the highlight while the switch is on. */
+  protected readonly highlighted = computed(() => this.model().highlighted);
 
   /** The colour in the picker while it is open: the last one picked there. */
   protected readonly picked = signal('');
@@ -232,22 +241,6 @@ export class FolderStyleDialogComponent {
 
   /** The icon the grid checks; kept while the Emoji tab is active. */
   protected readonly iconChecked = computed(() => this.model().icon);
-
-  /** "12 links, 2 subfolders" (the counts of the folder itself, as on the folder tile). */
-  protected readonly meta = computed(() => {
-    const { linkCount, subfolderCount } = this.data;
-    const links = this.transloco.translate(pluralKey('library.subfolders.links', linkCount), {
-      count: linkCount,
-    });
-    if (subfolderCount === 0) {
-      return this.transloco.translate('library.subfolders.meta', { links });
-    }
-    const folders = this.transloco.translate(
-      pluralKey('library.subfolders.folders', subfolderCount),
-      { count: subfolderCount },
-    );
-    return this.transloco.translate('library.subfolders.metaWithFolders', { links, folders });
-  });
 
   /** A built-in colour or an own one was chosen. */
   protected chooseColour(value: string): void {
@@ -299,13 +292,17 @@ export class FolderStyleDialogComponent {
   }
 
   private save(): Promise<undefined> {
-    const { colour, highlighted, description, cover } = this.model();
+    const { name, colour, highlighted, description, cover } = this.model();
     const icon = this.previewIcon();
     if (
       (isFolderColourName(colour) || isHexColour(colour)) &&
+      this.form.name().valid() &&
       this.form.emoji().valid() &&
       this.form.description().valid()
     ) {
+      if (name.trim() !== this.data.folder.name) {
+        this.data.rename(name.trim());
+      }
       // "Recent" on this device; an emoji the collection lacks is kept under "Yours".
       this.emoji.remember(icon);
       this.data.submit(

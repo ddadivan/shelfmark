@@ -4,11 +4,48 @@
   display: block;
 }
 
-.bulk-tags__fields {
+// Shelf `08-select-move` "Tags for several links": the field, then one row per tag (36px), the
+// count ("on 2 of 3") at the end of the row in 12px muted.
+.bulk-tags {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-2);
 
-  // Room for the focus ring of the fields at the edge of the scrolling body.
+  // Room for the focus ring of the field at the edge of the scrolling body.
   padding: rem(2px);
+}
+
+.bulk-tags__hint,
+.bulk-tags__empty {
+  @include type(caption);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.bulk-tags__list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.bulk-tags__row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-block-size: var(--row-nav);
+}
+
+.bulk-tags__check {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.bulk-tags__count {
+  @include type(caption);
+
+  flex: none;
+  color: var(--text-muted);
 }

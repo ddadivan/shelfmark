@@ -64,7 +64,8 @@ const boxes = (element: HTMLElement) => [
   ...element.querySelectorAll<HTMLElement>('app-link-card ui-checkbox'),
 ];
 const selectedText = (element: HTMLElement) =>
-  element.querySelector('.library__selected')?.textContent?.trim();
+  // Desktop (Shelf): the count is in the bulk bar, after its ×.
+  element.querySelector('.ui-bulk-bar__count')?.textContent?.trim();
 const barButton = (element: HTMLElement, name: string) =>
   [...element.querySelectorAll<HTMLButtonElement>('.ui-bulk-bar__action')].find(
     (button) => button.textContent?.trim() === name,
@@ -103,7 +104,7 @@ describe('LibraryPage selection', () => {
     );
     expect(
       [...element.querySelectorAll('.library__hint')].map((hint) => hint.textContent?.trim()),
-    ).toEqual(['Shift + click selects a range', 'Esc clears']);
+    ).toEqual(['Select with X, Shift-click for a range, Ctrl A for all']);
     expect(
       [...element.querySelectorAll('.ui-bulk-bar__action')].map((b) => b.textContent?.trim()),
     ).toEqual(['Move', 'Tags', 'Favorite', 'Remind', 'Open all', 'Copy links', 'Delete']);
@@ -151,7 +152,7 @@ describe('LibraryPage selection', () => {
     expect(element.querySelector('.library__selection')).toBeNull();
   });
 
-  it('Esc and Done hand focus back to the last picked card, not to the toolbar above', async () => {
+  it('Esc and the bulk bar × hand focus back to the last picked card, not to the toolbar above', async () => {
     const { element, fixture, selection } = await setup();
     const links = () => [...element.querySelectorAll<HTMLElement>('.ui-card__link')];
     selection.toggle('id-1', ['id-1', 'id-2', 'id-3', 'id-4']);
@@ -164,12 +165,10 @@ describe('LibraryPage selection', () => {
     expect(element.querySelector('.library__selection')).toBeNull();
     expect(document.activeElement).toBe(links()[2]);
 
-    // Done (focus in the selection bar, which goes away): the anchor again.
+    // The bulk bar's × (focus in the bar, which goes away): the anchor again.
     selection.toggle('id-2', ['id-1', 'id-2', 'id-3', 'id-4']);
     await stable(fixture);
-    const done = [
-      ...element.querySelectorAll<HTMLButtonElement>('.library__selection button'),
-    ].find((button) => button.textContent?.trim() === 'Done');
+    const done = element.querySelector<HTMLButtonElement>('.ui-bulk-bar__close');
     done?.focus();
     done?.click();
     await stable(fixture);
@@ -205,20 +204,18 @@ describe('LibraryPage selection', () => {
     expect(bulk.move).not.toHaveBeenCalled();
   });
 
-  it('"Select all" and the header checkbox pick every link; Done clears', async () => {
+  it('"Select all N" in the title row picks every link; the bulk bar × clears', async () => {
     const { element, fixture, selection } = await setup();
     selection.toggle('id-1', ['id-1']);
     await stable(fixture);
     const selectAll = [
-      ...element.querySelectorAll<HTMLButtonElement>('.library__selection button'),
+      ...element.querySelectorAll<HTMLButtonElement>('.library__tools button'),
     ].find((button) => button.textContent?.trim() === 'Select all 4');
     selectAll?.click();
     await stable(fixture);
     expect(selectedText(element)).toBe('4 selected');
-    const done = [
-      ...element.querySelectorAll<HTMLButtonElement>('.library__selection button'),
-    ].find((button) => button.textContent?.trim() === 'Done');
-    done?.click();
+    expect(element.querySelector('.library__tools')?.textContent).toContain('Select none');
+    element.querySelector<HTMLButtonElement>('.ui-bulk-bar__close')?.click();
     await stable(fixture);
     expect(selection.count()).toBe(0);
   });

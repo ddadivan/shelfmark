@@ -47,6 +47,14 @@ type Story = StoryObj<BulkBarComponent>;
 /** Desktop: icon and label side by side, Delete after a divider. */
 export const Inline: Story = {};
 
+/** Shelf (08-select-move): the × and the count lead the inline bar; Delete sits at the end. */
+export const WithCount: Story = {
+  render: (args) => ({
+    props: args,
+    template: `<ui-bulk-bar [actions]="actions" [ariaLabel]="ariaLabel" count="3 selected" closeLabel="Cancel selection" (action)="action($event)" />`,
+  }),
+};
+
 /** Phone: icon above the label, the buttons share the width like the tab bar. */
 export const Stacked: Story = {
   args: { actions: PHONE, layout: BULK_BAR_LAYOUT.Stacked },

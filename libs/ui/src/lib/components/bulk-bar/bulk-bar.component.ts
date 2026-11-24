@@ -15,7 +15,8 @@ import type { BulkBarLayout } from './models/bulk-bar-layout.type';
  * The bulk-action bar (Bulk and MobileBulk screens): a glass toolbar of actions for the selected
  * items ("Move", "Tags", "Favorite", …, "Delete"). Angular Aria's toolbar gives one tab stop, the
  * arrow keys, Home and End; Enter and Space are the native button activation. Danger actions get
- * `danger` text and, in the `inline` layout, a divider before the first of them. `stacked` puts the
+ * `danger` text and, in the `inline` layout, are pushed to the end (Shelf `08-select-move`); the
+ * inline bar may start with a × (`closeLabel`, output `closed`) and the count (`count`). `stacked` puts the
  * icon above the label and lets the buttons share the width (phone, like the tab bar). An action
  * may be `secondary` (a surface button with an edge) and draw a small folder tile instead of its
  * icon ("Move to Clothes").
@@ -46,9 +47,20 @@ export class BulkBarComponent {
   /** Accessible name of the toolbar, for example "Actions for 3 selected links". */
   readonly ariaLabel = input.required<string>();
   readonly layout = input<BulkBarLayout>(BULK_BAR_LAYOUT.Inline);
+  /** Shelf: the visible count ("3 selected") after the close button, inline layout only. */
+  readonly count = input('');
+  /** Shelf: accessible name of a leading × that ends the selection (inline layout only); none when empty. */
+  readonly closeLabel = input('');
 
   /** The id of the pressed action. */
   readonly action = output<string>();
+  /** The × was pressed. */
+  readonly closed = output<void>();
+
+  /** Shelf: 16px icons beside the label, 20px above it in the stacked bar. */
+  protected readonly iconSize = computed(() =>
+    this.layout() === BULK_BAR_LAYOUT.Inline ? ICON_SIZE.Sm : ICON_SIZE.Md,
+  );
 
   /** Index of the first danger action: the inline layout draws a divider before it. */
   protected readonly dividerAt = computed(() => {

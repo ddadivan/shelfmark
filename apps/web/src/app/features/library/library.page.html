@@ -5,14 +5,13 @@
   [attr.aria-busy]="store.loading()"
 >
   <p class="library__live" role="status">{{ selection.modeAnnouncement() }}</p>
-  @if (selection.selecting()) {
+  @if (selection.selecting() && compact()) {
+  <!-- Mobile shell: × , "2 selected" and "Select all" on a line over the title. -->
   <div
-    class="library__selection"
+    class="library__selection library__selection--phone"
     role="group"
-    [class.library__selection--phone]="compact()"
     [attr.aria-label]="'bulk.header.label' | transloco"
   >
-    @if (compact()) {
     <ui-button
       variant="ghost"
       iconOnly
@@ -20,15 +19,6 @@
       [ariaLabel]="'bulk.header.cancel' | transloco"
       (click)="selection.endSelection()"
     />
-    } @else {
-    <ui-checkbox
-      hideLabel
-      [label]="pluralKey('bulk.header.selectAllBox', feed.shownCount()) | transloco: { count: feed.shownCount() }"
-      [checked]="selection.allSelected()"
-      [indeterminate]="!selection.allSelected()"
-      (checkedChange)="selection.toggleAll($event)"
-    />
-    }
     <p class="library__selected" aria-live="polite">
       {{ pluralKey('bulk.header.selected', selection.selectedCount()) | transloco: { count:
       selection.selectedCount() } }}
@@ -37,19 +27,6 @@
     <ui-button variant="ghost" size="sm" (click)="selection.selectAll()">
       @if (phone()) { {{ 'bulk.header.selectAllShort' | transloco }} } @else { {{
       'bulk.header.selectAll' | transloco: { count: feed.shownCount() } }} }
-    </ui-button>
-    } @if (!compact()) {
-    <span class="library__selection-spacer"></span>
-    <span class="library__hint"
-      ><kbd class="library__kbd">{{ 'bulk.header.shift' | transloco }}</kbd> {{
-      'bulk.header.rangeHint' | transloco }}</span
-    >
-    <span class="library__hint"
-      ><kbd class="library__kbd">{{ 'bulk.header.esc' | transloco }}</kbd> {{
-      'bulk.header.clearHint' | transloco }}</span
-    >
-    <ui-button variant="ghost" size="sm" (click)="selection.endSelection()">
-      {{ 'bulk.header.done' | transloco }}
     </ui-button>
     }
   </div>
@@ -61,7 +38,23 @@
     [collapsedLabel]="'library.breadcrumb.collapsed' | transloco"
     (linkClick)="openCrumb($event)"
   />
-  } }
+  } } @if (splitView.open() && !preview.split()) {
+  <!-- Shelf side by side (08-select-move): the page's own line over both feeds. -->
+  <div class="library__split-head">
+    <p class="library__split-title" aria-hidden="true">{{ 'library.split.open' | transloco }}</p>
+    <p class="library__split-hint">{{ 'library.split.hint' | transloco }}</p>
+    <ui-button
+      class="library__split-close"
+      variant="ghost"
+      size="sm"
+      iconLeft="close"
+      [ariaLabel]="'library.split.close' | transloco"
+      (click)="splitView.close()"
+    >
+      {{ 'library.split.closeShort' | transloco }}
+    </ui-button>
+  </div>
+  }
   <div
     class="library__split"
     [class.library__split--open]="splitView.open() && !preview.split()"
@@ -82,43 +75,37 @@
       <ui-badge class="library__here" tone="accent" aria-hidden="true"
         >{{ 'links.drag.moveHere' | transloco }}</ui-badge
       >
-      } @if (!filters.folderMissing()) { @if (folderBanner(); as banner) {
-      <!-- The folder header (#418): the toolbar on the band or the cover of the folder. -->
-      <ui-folder-banner class="library__banner" [colour]="banner.colour" [image]="banner.cover">
-        <ng-container *ngTemplateOutlet="toolbar" />
-      </ui-folder-banner>
-      } @else {
+      } @if (!filters.folderMissing()) {
       <ng-container *ngTemplateOutlet="toolbar" />
-      }
       <ng-template #toolbar>
         <header class="library__toolbar" [class.library__toolbar--split]="narrow()">
-          @if (folderBanner(); as banner) {
-          <!-- A folder page draws its own heading block (#418): the big tile, the title and the
-               description. A new block, not the other one moved, so nothing shifts on the way. -->
+          @if (folderHead(); as head) {
+          <!-- Shelf folder page (04-organise): the 40px tile (or the cover picture), the title and
+               "6 links, 2 subfolders" on one line, the description under them. -->
           <div class="library__heading library__heading--folder">
+            @if (head.cover; as cover) {
+            <app-folder-cover class="library__cover" [src]="cover" />
+            } @else {
             <ui-folder-icon
               class="library__folder-icon"
-              [size]="phone() ? FOLDER_ICON_SIZE.Lg : FOLDER_ICON_SIZE.Xl"
-              [icon]="banner.icon"
-              [colour]="banner.colour"
+              [size]="FOLDER_ICON_SIZE.Lg"
+              [icon]="head.icon"
+              [colour]="head.colour"
             />
+            }
             <!-- prettier-ignore -->
             <h1 class="library__title">{{ filters.folder()?.name }}</h1>
-            @if (banner.description; as description) {
+            <ng-container *ngTemplateOutlet="countLine" />
+            @if (head.description; as description) {
             <p class="library__description">{{ description }}</p>
             }
-            <ng-container *ngTemplateOutlet="countLine" />
           </div>
           } @else {
           <div
             class="library__heading"
             [class.library__heading--search]="filters.searching() && !splitView.open()"
             [class.library__heading--split]="splitView.open()"
-            [class.library__heading--cover]="!!plainFolder()?.cover"
           >
-            @if (plainFolder()?.cover; as cover) {
-            <app-folder-cover class="library__cover" [src]="cover" />
-            }
             <!-- prettier-ignore -->
             <h1 class="library__title" [class.library__title--hidden]="splitView.open()">{{ filters.searching() ? ('search.title' | transloco) : (filters.folder()?.name ?? (filters.titleKey() | transloco)) }}</h1>
             @if (filters.searching() && !splitView.open()) {
@@ -144,8 +131,6 @@
               [triggerLabel]="'library.split.leftTrigger' | transloco: { name: splitView.leftLabel() }"
               (chosen)="splitView.chooseLeft($event)"
             />
-            } @if (plainFolder()?.description; as description) {
-            <p class="library__description">{{ description }}</p>
             }
             <ng-container *ngTemplateOutlet="countLine" />
           </div>
@@ -169,8 +154,32 @@
           <!-- Shelf toolbar: View (grid size and card fields; not on a phone, where the feed has two
                columns), the view switch, then ⋯ with the rest (a bottom sheet below 64em). -->
           <div class="library__tools" uiTooltipGroup>
-            @if (tidyEntry()) {
+            @if (selection.selecting() && !compact()) {
+            <!-- Shelf selection (08-select-move): the hint and "Select all N" take the tools' place;
+                 the bulk bar's × ends it. -->
+            <p class="library__hint library__hint--select">
+              {{ 'bulk.header.desktopHint' | transloco }}
+            </p>
+            @if (selection.allSelected()) {
+            <ui-button variant="ghost" size="sm" (click)="selection.toggleAll(false)">
+              {{ 'bulk.header.selectNone' | transloco }}
+            </ui-button>
+            } @else {
+            <ui-button variant="ghost" size="sm" (click)="selection.selectAll()">
+              {{ 'bulk.header.selectAll' | transloco: { count: feed.shownCount() } }}
+            </ui-button>
+            } } @else { @if (tidyEntry()) {
             <app-tidy-entry />
+            } @if (folderHead() && !compact()) {
+            <ui-button
+              class="library__add-here"
+              variant="ghost"
+              size="sm"
+              iconLeft="add"
+              (click)="folderMenu.addLinkHere()"
+            >
+              {{ 'library.folderMenu.addHere' | transloco }}
+            </ui-button>
             } @if (feed.showControls() && feed.viewOptions(); as options) {
             <div class="library__controls">
               @if (!phone()) {
@@ -192,10 +201,40 @@
               size="sm"
               iconOnly
               iconLeft="more"
-              [ariaLabel]="'library.viewMenu.more' | transloco"
+              [ariaLabel]="(folderMenu.folder() ? 'library.folderMenu.label' : 'library.viewMenu.more') | transloco"
             />
-            <ui-menu #moreMenu align="end" [ariaLabel]="'library.viewMenu.more' | transloco">
-              @if (feed.showControls()) {
+            <ui-menu
+              #moreMenu
+              align="end"
+              [ariaLabel]="(folderMenu.folder() ? 'library.folderMenu.label' : 'library.viewMenu.more') | transloco"
+            >
+              @if (folderMenu.folder()) {
+              <!-- Shelf folder menu (04-organise), the same items as the sidebar row's menu. -->
+              <ui-menu-item icon="folder-plus" (activated)="folderMenu.createSubfolder()">
+                {{ 'shell.sidebar.menu.newSubfolder' | transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="add" (activated)="folderMenu.addLinkHere()">
+                {{ 'shell.sidebar.menu.addLink' | transloco }}
+              </ui-menu-item>
+              <ui-menu-separator />
+              <ui-menu-item icon="edit" (activated)="folderMenu.rename()">
+                {{ 'shell.sidebar.menu.rename' | transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="palette" (activated)="folderMenu.settings()">
+                {{ 'shell.sidebar.menu.style' | transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="folder-move" (activated)="folderMenu.move()">
+                {{ 'shell.sidebar.menu.move' | transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="pin" (activated)="folderMenu.togglePin()">
+                {{ (folderMenu.pinned() ? 'shell.sidebar.menu.unpin' : 'shell.sidebar.menu.pin') |
+                transloco }}
+              </ui-menu-item>
+              <ui-menu-item icon="share" (activated)="folderMenu.share()">
+                {{ 'shell.sidebar.menu.share' | transloco }}
+              </ui-menu-item>
+              <ui-menu-separator />
+              } @if (feed.showControls()) {
               <ui-menu-label>{{ 'library.viewMenu.sortBy' | transloco }}</ui-menu-label>
               @for (option of SORT_OPTIONS; track option) {
               <ui-menu-item
@@ -245,8 +284,14 @@
               <ui-menu-item [icon]="format.icon" (activated)="exportAll(format.value)">
                 {{ format.allKey | transloco }}
               </ui-menu-item>
+              } @if (folderMenu.folder()) {
+              <ui-menu-separator />
+              <ui-menu-item icon="trash" danger (activated)="folderMenu.remove()">
+                {{ 'shell.sidebar.menu.delete' | transloco }}
+              </ui-menu-item>
               }
             </ui-menu>
+            }
           </div>
         </header>
       </ng-template>
@@ -672,7 +717,10 @@
       [actions]="bulk.barActions()"
       [ariaLabel]="pluralKey('bulk.bar.label', selection.selectedCount()) | transloco: { count: selection.selectedCount() }"
       [layout]="compact() || bulkFit.stacked() ? BULK_BAR_LAYOUT.Stacked : BULK_BAR_LAYOUT.Inline"
+      [count]="compact() ? '' : (pluralKey('bulk.header.selected', selection.selectedCount()) | transloco: { count: selection.selectedCount() })"
+      [closeLabel]="compact() ? '' : ('bulk.header.cancel' | transloco)"
       (action)="bulk.run($event)"
+      (closed)="selection.endSelection()"
     />
   </ng-template>
 </section>

@@ -1,13 +1,13 @@
 <form [formRoot]="form">
-  <ui-dialog [title]="data.folder.name" [closeLabel]="'folders.style.close' | transloco">
+  <ui-dialog
+    [title]="'folders.style.title' | transloco"
+    [closeLabel]="'folders.style.close' | transloco"
+  >
     <div class="folder-style">
-      <div class="folder-style__preview">
-        <ui-folder-icon size="xl" [icon]="previewIcon()" [colour]="previewColour()" />
-        <span class="folder-style__text">
-          <span class="folder-style__name">{{ data.folder.name }}</span>
-          <span class="folder-style__meta">{{ meta() }}</span>
-        </span>
-      </div>
+      <!-- Shelf Folder settings: the name first, led by the tile as Save would draw it. -->
+      <ui-input [label]="'folders.name.label' | transloco" [formField]="form.name">
+        <ui-folder-icon uiInputLead size="sm" [icon]="previewIcon()" [colour]="previewColour()" />
+      </ui-input>
 
       <ui-input
         [label]="'folders.style.description.label' | transloco"
@@ -131,6 +131,14 @@
         </div>
       </div>
 
+      <app-folder-cover-picker
+        [folderId]="data.folder.id"
+        [current]="currentCover"
+        [value]="coverValue()"
+        (valueChange)="chooseCover($event)"
+        [(image)]="coverImage"
+      />
+
       <ui-settings-row
         class="folder-style__highlight"
         [title]="'folders.style.highlight.label' | transloco"
@@ -142,13 +150,18 @@
         />
       </ui-settings-row>
 
-      <app-folder-cover-picker
-        [folderId]="data.folder.id"
-        [current]="currentCover"
-        [value]="coverValue()"
-        (valueChange)="chooseCover($event)"
-        [(image)]="coverImage"
-      />
+      <!-- The sidebar row as the highlight draws it (decorative; the switch says it in words). -->
+      <div class="folder-style__group" aria-hidden="true">
+        <span class="folder-style__label">{{ 'folders.style.preview' | transloco }}</span>
+        <div
+          class="folder-style__row"
+          [uiFolderColour]="previewColour()"
+          [attr.data-ui-folder-highlight]="highlighted() ? '' : null"
+        >
+          <ui-folder-icon size="sm" [icon]="previewIcon()" [colour]="previewColour()" />
+          <span class="folder-style__row-name">{{ form.name().value() }}</span>
+        </div>
+      </div>
     </div>
 
     <ui-button slot="footer" class="folder-style__reset" variant="ghost" (click)="reset()">{{

@@ -48,6 +48,7 @@ import type { UiFocusTarget } from '../../directives/focus-target/models/ui-focu
     '[class.ui-chip--hashtag]': 'variant() === CHIP_VARIANT.Hashtag',
     '[class.ui-chip--filter]': 'variant() === CHIP_VARIANT.Filter',
     '[class.ui-chip--jump]': 'variant() === CHIP_VARIANT.Jump',
+    '[class.ui-chip--cloud]': 'variant() === CHIP_VARIANT.Cloud',
     '[class.ui-chip--pressed]': 'pressed() === true',
     '[class.ui-chip--clickable]': 'clickable()',
     '[class.ui-chip--removable]': 'removable()',
