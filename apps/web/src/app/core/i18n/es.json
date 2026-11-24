@@ -1204,7 +1204,7 @@
     "loadMoreFailed": "No se pudieron cargar más enlaces.",
     "error": {
       "title": "No se pudieron cargar tus enlaces",
-      "text": "Comprueba tu conexión e inténtalo de nuevo.",
+      "text": "El servidor no respondió. Tus enlaces están a salvo; es un problema de conexión.",
       "retry": "Reintentar"
     },
     "empty": {
@@ -2440,6 +2440,24 @@
     "find": {
       "title": "Encuéntralo al momento",
       "text": "Carpetas, etiquetas, favoritos y la búsqueda con ⌘K recuperan cualquier enlace en un par de pulsaciones."
+    },
+    "firstRun": {
+      "title": "Tu estantería está vacía",
+      "lead": "Tres formas de llenarla. Casi todos empiezan pegando un enlace.",
+      "paste": {
+        "title": "Pega un enlace",
+        "text": "Copia cualquier dirección y pulsa {{keys}} en cualquier parte de Shelfmark."
+      },
+      "extension": {
+        "title": "Instala la extensión",
+        "text": "Guarda la página abierta con un clic, o todas las pestañas abiertas a la vez.",
+        "action": "Añadir a Chrome"
+      },
+      "import": {
+        "title": "Importa marcadores",
+        "text": "Trae todo desde tu navegador; la IA puede agruparlo en unas pocas carpetas.",
+        "action": "Importar"
+      }
     }
   },
   "rating": {

@@ -1181,7 +1181,7 @@
     "loadMoreFailed": "Couldn't load more links.",
     "error": {
       "title": "Couldn't load your links",
-      "text": "Check your connection and try again.",
+      "text": "The server didn’t answer. Your links are safe; this is a connection problem.",
       "retry": "Try again"
     },
     "empty": {
@@ -2387,6 +2387,24 @@
     "find": {
       "title": "Find it right away",
       "text": "Folders, tags, favorites and search with ⌘K bring back any link in a couple of keystrokes."
+    },
+    "firstRun": {
+      "title": "Your shelf is empty",
+      "lead": "Three ways to fill it. Most people start by pasting one link.",
+      "paste": {
+        "title": "Paste a link",
+        "text": "Copy any address and press {{keys}} anywhere in Shelfmark."
+      },
+      "extension": {
+        "title": "Get the extension",
+        "text": "Save the page you’re on in one click, or all open tabs at once.",
+        "action": "Add to Chrome"
+      },
+      "import": {
+        "title": "Import bookmarks",
+        "text": "Bring everything from your browser; AI can group it into a few folders.",
+        "action": "Import"
+      }
     }
   },
   "rating": {

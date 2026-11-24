@@ -57,6 +57,27 @@
   fill: var(--logo-bookmark);
 }
 
+// Status badges of the system scenes (Shelf `sc-danger`, `sc-success`) with their white marks.
+.ui-illustration__danger {
+  fill: var(--danger);
+}
+
+.ui-illustration__success {
+  fill: var(--success);
+}
+
+.ui-illustration__on {
+  fill: var(--surface);
+}
+
+.ui-illustration__on-stroke {
+  fill: none;
+  stroke: var(--surface);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .ui-illustration__plus {
   fill: var(--surface);
 }

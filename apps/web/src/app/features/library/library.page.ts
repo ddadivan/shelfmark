@@ -57,6 +57,8 @@ import { LinkCardComponent } from '../links/components/link-card/link-card.compo
 import { LinkRowComponent } from '../links/components/link-row/link-row.component';
 import { FolderChipsService } from '../links/services/folder-chips.service';
 import { LINKS_SCOPE } from '../links/models/links-scope.const';
+import { FirstRunComponent } from '../onboarding/components/first-run/first-run.component';
+import { FoldersStore } from '../../stores/folders.store';
 import type { LinksScope } from '../links/models/links-scope.type';
 import { APP_PATH } from '../../models/app-path.const';
 import { LinksStore } from '../../stores/links.store';
@@ -154,6 +156,7 @@ const SKELETON_COUNT = 8;
     SearchGoToComponent,
     SearchMeaningComponent,
     SearchQuestionHintComponent,
+    FirstRunComponent,
   ],
   templateUrl: './library.page.html',
   styleUrls: [
@@ -240,6 +243,18 @@ export default class LibraryPage {
   readonly related = input<unknown>();
 
   protected readonly emptyIllustration = this.filters.emptyIllustration;
+  private readonly libraryFolders = inject(FoldersStore);
+  /**
+   * The whole library is empty on All links (no filter): the first run (Shelf 10-first-run) takes
+   * the place of the empty state.
+   */
+  protected readonly firstRun = computed(
+    () =>
+      this.filters.scope() === LINKS_SCOPE.All &&
+      !this.filters.filtered() &&
+      this.libraryFolders.loaded() &&
+      this.libraryFolders.counts().all === 0,
+  );
   protected readonly UI_VIEW = UI_VIEW;
   protected readonly EXPORT_FORMAT_OPTIONS = EXPORT_FORMAT_OPTIONS;
   protected readonly LINKS_SCOPE = LINKS_SCOPE;

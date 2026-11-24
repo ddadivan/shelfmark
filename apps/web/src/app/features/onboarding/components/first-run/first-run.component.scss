@@ -1,0 +1,79 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+// Shelf `ways`: three cards 16px apart, 32px under the lead, one column on a phone.
+.first-run__ways {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  width: 100%;
+  max-width: rem(760px);
+  padding: 0;
+  margin: var(--space-4) 0 0;
+  text-align: start;
+  list-style: none;
+
+  @include phone {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.first-run__ways:has(> :nth-child(2):last-child) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @include phone {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// Shelf `way` (`sm-l1`): `surface` with the `line` hairline, radius 12, 20px padding.
+.first-run__way {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+  padding: rem(20px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+// The step number: a 28px `surface-hover` tile, radius 10, 14px 600.
+.first-run__n {
+  display: inline-grid;
+  place-items: center;
+  width: rem(28px);
+  height: rem(28px);
+  font: 600 var(--font-size-secondary) / 1 var(--font-sans);
+  color: var(--text);
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+}
+
+.first-run__title {
+  @include type(heading);
+
+  margin: 0;
+}
+
+.first-run__text {
+  @include type(secondary);
+
+  flex: 1;
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.first-run__field {
+  width: 100%;
+  margin-block-start: var(--space-2);
+}
+
+.first-run__way ui-button {
+  margin-block-start: var(--space-2);
+}

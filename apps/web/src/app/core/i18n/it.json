@@ -1204,7 +1204,7 @@
     "loadMoreFailed": "Impossibile caricare altri link.",
     "error": {
       "title": "Impossibile caricare i tuoi link",
-      "text": "Controlla la connessione e riprova.",
+      "text": "Il server non ha risposto. I tuoi link sono al sicuro; è un problema di connessione.",
       "retry": "Riprova"
     },
     "empty": {
@@ -2440,6 +2440,24 @@
     "find": {
       "title": "Ritrovalo subito",
       "text": "Cartelle, tag, preferiti e ricerca con ⌘K riportano qualsiasi link in un paio di tasti."
+    },
+    "firstRun": {
+      "title": "Il tuo scaffale è vuoto",
+      "lead": "Tre modi per riempirlo. Quasi tutti iniziano incollando un link.",
+      "paste": {
+        "title": "Incolla un link",
+        "text": "Copia un indirizzo e premi {{keys}} ovunque in Shelfmark."
+      },
+      "extension": {
+        "title": "Installa l’estensione",
+        "text": "Salva la pagina aperta con un clic, o tutte le schede aperte insieme.",
+        "action": "Aggiungi a Chrome"
+      },
+      "import": {
+        "title": "Importa i preferiti",
+        "text": "Porta tutto dal tuo browser; l’IA può raggrupparlo in poche cartelle.",
+        "action": "Importa"
+      }
     }
   },
   "rating": {

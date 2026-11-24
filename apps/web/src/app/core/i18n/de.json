@@ -1181,7 +1181,7 @@
     "loadMoreFailed": "Weitere Links konnten nicht geladen werden.",
     "error": {
       "title": "Deine Links konnten nicht geladen werden",
-      "text": "Prüfe deine Verbindung und versuch es noch einmal.",
+      "text": "Der Server hat nicht geantwortet. Deine Links sind sicher; es ist ein Verbindungsproblem.",
       "retry": "Erneut versuchen"
     },
     "empty": {
@@ -2387,6 +2387,24 @@
     "find": {
       "title": "Sofort wiederfinden",
       "text": "Ordner, Tags, Favoriten und die Suche mit ⌘K holen jeden Link mit ein paar Tastendrücken zurück."
+    },
+    "firstRun": {
+      "title": "Dein Regal ist leer",
+      "lead": "Drei Wege, es zu füllen. Die meisten fangen mit einem eingefügten Link an.",
+      "paste": {
+        "title": "Link einfügen",
+        "text": "Kopiere eine Adresse und drücke {{keys}} irgendwo in Shelfmark."
+      },
+      "extension": {
+        "title": "Erweiterung holen",
+        "text": "Speichere die geöffnete Seite mit einem Klick oder alle offenen Tabs auf einmal.",
+        "action": "Zu Chrome hinzufügen"
+      },
+      "import": {
+        "title": "Lesezeichen importieren",
+        "text": "Hol alles aus deinem Browser; die KI kann es in ein paar Ordner sortieren.",
+        "action": "Importieren"
+      }
     }
   },
   "rating": {

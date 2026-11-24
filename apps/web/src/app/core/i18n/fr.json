@@ -1204,7 +1204,7 @@
     "loadMoreFailed": "Impossible de charger plus de liens.",
     "error": {
       "title": "Impossible de charger vos liens",
-      "text": "Vérifiez votre connexion et réessayez.",
+      "text": "Le serveur n’a pas répondu. Vos liens sont en sécurité ; c’est un problème de connexion.",
       "retry": "Réessayer"
     },
     "empty": {
@@ -2440,6 +2440,24 @@
     "find": {
       "title": "Retrouvez-le tout de suite",
       "text": "Dossiers, tags, favoris et recherche avec ⌘K retrouvent n’importe quel lien en quelques touches."
+    },
+    "firstRun": {
+      "title": "Votre étagère est vide",
+      "lead": "Trois façons de la remplir. La plupart commencent par coller un lien.",
+      "paste": {
+        "title": "Coller un lien",
+        "text": "Copiez une adresse et appuyez sur {{keys}} n’importe où dans Shelfmark."
+      },
+      "extension": {
+        "title": "Installer l’extension",
+        "text": "Enregistrez la page ouverte en un clic, ou tous les onglets ouverts d’un coup.",
+        "action": "Ajouter à Chrome"
+      },
+      "import": {
+        "title": "Importer des favoris",
+        "text": "Récupérez tout depuis votre navigateur ; l’IA peut le ranger en quelques dossiers.",
+        "action": "Importer"
+      }
     }
   },
   "rating": {
