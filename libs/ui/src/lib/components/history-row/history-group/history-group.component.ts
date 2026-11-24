@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { HISTORY_HEADING_LEVEL } from '../models/history-heading-level.const';
 import type { HistoryHeadingLevel } from '../models/history-heading-level.type';
 
@@ -14,6 +14,7 @@ let nextGroupId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-history-group',
+    '[class.ui-history-group--flat]': 'flat()',
     role: 'group',
     '[attr.aria-labelledby]': 'titleId',
     // `title` is an input: keep the browser from showing it as a native tooltip.
@@ -30,4 +31,9 @@ export class HistoryGroupComponent {
   readonly title = input.required<string>();
   /** Level of the title heading. Default 2. */
   readonly headingLevel = input<HistoryHeadingLevel>(HISTORY_HEADING_LEVEL.Two);
+  /**
+   * Shelf flat rows (15-tools "Recently opened"): no card and no lines between the rows, the
+   * title a 12px muted caption, 56 x 40 previews.
+   */
+  readonly flat = input(false, { transform: booleanAttribute });
 }

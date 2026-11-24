@@ -25,3 +25,27 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
 }
+
+// Shelf flat rows: the rows sit on the page, told apart by their hover only.
+:host(.ui-history-group--flat) {
+  --ui-history-row-line: transparent;
+  --ui-history-row-preview-width: #{rem(56px)};
+  --ui-history-row-preview-height: #{rem(40px)};
+  --ui-history-row-title-size: #{rem(14px)};
+  --ui-history-row-title-line: #{rem(22px)};
+
+  .ui-history-group__title {
+    @include type(caption);
+
+    padding-inline-start: 0;
+    font-weight: 500;
+  }
+
+  .ui-history-group__list {
+    gap: 0;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}

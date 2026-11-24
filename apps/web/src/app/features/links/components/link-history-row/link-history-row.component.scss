@@ -63,3 +63,10 @@
   color: var(--text-muted);
   white-space: nowrap;
 }
+
+// Shelf flat row: the site under the title.
+.link-history-row__host {
+  @include type(caption);
+
+  color: var(--text-muted);
+}

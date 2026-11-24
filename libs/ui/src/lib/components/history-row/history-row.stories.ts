@@ -44,8 +44,8 @@ const row = (title: string, folder: string, colour: string, time: string, action
     }
   </ui-history-row>`;
 
-const group = (title: string, actions = false) => `
-  <ui-history-group title="${title}">
+const group = (title: string, actions = false, flat = false) => `
+  <ui-history-group title="${title}" [flat]="${flat}">
     ${row('Wool coat, straight cut, graphite', 'Shopping', 'amber', '10:42', actions)}
     ${row('Signal Forms in 20 minutes', 'Angular', 'sage', '9:15', actions)}
     ${row('A very long article title that goes on and on until it has to be cut with an ellipsis', 'Reading', 'graphite', '8:03', actions)}
@@ -54,6 +54,13 @@ const group = (title: string, actions = false) => `
 /** Time text and a remove button per row; hover, focus and press act on the whole row. */
 export const Default: Story = {
   render: () => ({ template: `<div class="hst-pane">${group('Today', true)}</div>` }),
+};
+
+/** Shelf flat rows (15-tools "Recently opened"): no card, no lines, 56 x 40 previews. */
+export const Flat: Story = {
+  render: () => ({
+    template: `<div class="hst-pane">${group('Today', true, true)}${group('Yesterday', true, true)}</div>`,
+  }),
 };
 
 /** Several days, no actions (the phone sheet swipes instead). */
