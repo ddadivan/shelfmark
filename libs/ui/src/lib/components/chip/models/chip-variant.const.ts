@@ -7,4 +7,6 @@ export const CHIP_VARIANT = {
   Hashtag: 'hashtag',
   /** A filter option (Shelf Filter popover): 32px, `line` edge, `accent-bg` while `pressed`. */
   Filter: 'filter',
+  /** A "Go to" place of search (Shelf `03-search.html`): a quiet 28px tab, 14px glyph, muted text. */
+  Jump: 'jump',
 } as const;

@@ -11,8 +11,10 @@ import { SearchDialogComponent } from '../components/search-dialog/search-dialog
 const SEARCH_FIELD = 'input[role="combobox"]';
 
 /**
- * Starts a search from the header button, the Search tab and the Cmd or Ctrl + K shortcut: on a
- * wide screen (from 80em) it focuses the header field, otherwise it opens the search dialog.
+ * Starts a search from the Search tab, the top bar field and the Cmd or Ctrl + K shortcut: with
+ * the desktop header (from 64em, Shelf) it focuses the header field, which filters the feed in
+ * place; in the mobile shell (below 64em) it opens the full-screen search dialog. A desktop page
+ * without the field (Settings) still gets the dialog.
  */
 @Service()
 export class SearchDialogService {
@@ -22,14 +24,14 @@ export class SearchDialogService {
   private readonly field = inject(SearchFieldService);
 
   /**
-   * Focuses the header field on a wide screen, else opens the dialog; nothing happens while any
+   * Focuses the header field from 64em, else opens the dialog; nothing happens while any
    * dialog is open (the search itself included).
    */
   open(): void {
     if (this.cdk.openDialogs.length > 0) {
       return;
     }
-    if (this.viewport.wide() && this.field.focus()) {
+    if (!this.viewport.compact() && this.field.focus()) {
       return;
     }
     this.dialogs.open(SearchDialogComponent, {

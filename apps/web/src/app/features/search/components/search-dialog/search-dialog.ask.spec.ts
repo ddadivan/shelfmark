@@ -98,6 +98,17 @@ describe('SearchDialogComponent with Ask (AI-4, #499)', () => {
     expect(await axeViolations(element)).toEqual([]);
   });
 
+  it('is the full-screen search in the mobile shell and says "Nothing found" over a lone Ask row', async () => {
+    const { element, loader } = await setup(true);
+    expect(element.querySelector('.ui-dialog--screen')).not.toBeNull();
+    expect(element.querySelector('.ui-command-list--screen')).not.toBeNull();
+    const list = await loader.getHarness(UiCommandListHarness);
+    await list.setQuery('blue velvet sofa');
+    await vi.waitFor(async () => {
+      expect(await list.getGroupLeads()).toEqual(['Nothing found for “blue velvet sofa”']);
+    }, WAIT);
+  });
+
   it('closes and opens the Ask panel with a header', async () => {
     const { loader, ref, panel } = await setup(false);
     const list = await loader.getHarness(UiCommandListHarness);

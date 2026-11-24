@@ -2245,7 +2245,34 @@
       "background": "ouvrir en arrière-plan"
     },
     "askRow": "Interroger mes liens : « {{query}} »",
-    "askRowCompact": "Interroger mes liens à ce sujet"
+    "askRowCompact": "Interroger mes liens à ce sujet",
+    "clear": "Effacer la recherche",
+    "recent": {
+      "title": "Recherches récentes"
+    },
+    "askHint": "Pour les questions (combien, lequel, résumer), utilisez Question à droite du champ.",
+    "askHintCompact": "Pour les questions (combien, lequel, résumer), utilisez Question.",
+    "askShelf": "Interroger mes liens",
+    "closeInMeaning": "Proches par le sens",
+    "goTo": {
+      "label": "Aller à",
+      "folder": "Ouvrir le dossier {{name}}, {{count}}",
+      "tag": "Afficher les liens avec le tag {{name}}, {{count}}",
+      "view": "Ouvrir la vue {{name}}, {{count}}"
+    },
+    "question": {
+      "text": "On dirait une question. Vos liens peuvent y répondre, sources à l’appui."
+    },
+    "empty": {
+      "title": "Aucun résultat",
+      "text": "Aucun lien ne mentionne « {{query}} » dans son titre, sa note, ses tags ou son adresse. Essayez un autre mot.",
+      "textAsk": "Aucun lien ne mentionne « {{query}} » dans son titre, sa note, ses tags ou son adresse. Essayez un autre mot, ou interrogez vos liens : la recherche se fait aussi par le sens."
+    },
+    "feed": {
+      "count": "{{count}} pour « {{query}} »",
+      "countIn": "{{count}} pour « {{query}} » dans {{scope}}",
+      "nothing": "Rien pour « {{query}} »"
+    }
   },
   "share": {
     "title": "Enregistrer dans Shelfmark",
@@ -3898,7 +3925,6 @@
       }
     },
     "search": {
-      "related": "Proches par le sens",
       "noWordMatches": "Aucun lien avec ces mots",
       "why": "Proche de : {{reasons}}",
       "fromSummary": "Proche de : {{reasons}} (d’après le résumé)",

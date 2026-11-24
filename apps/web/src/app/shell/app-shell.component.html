@@ -33,6 +33,7 @@
           class="shell__top-search"
           ariaHaspopup="dialog"
           [label]="'search.placeholder' | transloco"
+          [value]="feedSearch.text()"
           (click)="search.open()"
         />
         <ng-container [ngTemplateOutlet]="account" />

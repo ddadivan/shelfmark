@@ -1,13 +1,39 @@
-@if (viewport.wide()) {
-  <app-search-results popup (ask)="askPanel.open($event)" />
-} @else {
-  <ui-button
-    [variant]="BUTTON_VARIANT.Secondary"
-    iconLeft="search"
-    ariaHaspopup="dialog"
-    (click)="search.open()"
-  >
-    {{ 'shell.searchButton' | transloco }}
-    <kbd class="header-search__kbd" aria-hidden="true">{{ shortcut }}</kbd>
-  </ui-button>
-}
+<ui-command-list
+  popup
+  emptyPanel
+  [query]="search.text()"
+  [inputLabel]="'search.label' | transloco"
+  [placeholder]="'search.placeholder' | transloco"
+  [listLabel]="'search.recent.title' | transloco"
+  (queryChange)="search.setText($event)"
+  (selected)="choose($event)"
+  (keydown)="onKeydown($event)"
+>
+  @if (search.text() === '') {
+    <kbd slot="input-end">{{ shortcut }}</kbd>
+  } @else {
+    <ui-button
+      slot="input-end"
+      variant="ghost"
+      size="sm"
+      iconOnly
+      iconLeft="close"
+      [ariaLabel]="'search.clear' | transloco"
+      (click)="clear()"
+    />
+  }
+
+  @if (search.text() === '' && recent.items().length > 0) {
+    <ui-command-group [heading]="'search.recent.title' | transloco">
+      @for (item of recent.items(); track item) {
+        <ui-command-item [value]="item">
+          <ui-icon slot="leading" name="history" />
+          {{ item }}
+        </ui-command-item>
+      }
+    </ui-command-group>
+  }
+  @if (ai.askOn()) {
+    <span slot="note">{{ 'search.askHint' | transloco }}</span>
+  }
+</ui-command-list>

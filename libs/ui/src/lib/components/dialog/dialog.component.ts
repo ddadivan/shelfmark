@@ -69,6 +69,12 @@ export class DialogComponent {
    * tasks such as search, where the keyboard takes half the screen.
    */
   readonly phoneFullscreen = input(false, { transform: booleanAttribute });
+  /**
+   * Below 64em (the mobile shell) the panel is a page of its own (Shelf full-screen search): the
+   * whole viewport on the page background, the title row visually hidden (the title still names
+   * the dialog; the content brings its own Back control). Use with `phoneFullscreen`.
+   */
+  readonly screen = input(false, { transform: booleanAttribute });
 
   /**
    * Set by `ui-sheet`: the content is a sheet. Below 40em it gets the 16px top corners, the

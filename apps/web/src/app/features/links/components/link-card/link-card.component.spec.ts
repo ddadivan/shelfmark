@@ -122,6 +122,16 @@ describe('LinkCardComponent', () => {
     fixture.destroy();
   });
 
+  it('marks the words of the search in the title (Shelf search feed), and nothing without one', async () => {
+    const { fixture, element } = await setup({ ...LINK, title: 'Angular in 100 Seconds' });
+    expect(element.querySelector('mark')).toBeNull();
+
+    fixture.componentRef.setInput('highlight', 'angular');
+    await fixture.whenStable();
+
+    expect(element.querySelector('mark')?.textContent).toBe('Angular');
+  });
+
   it('readOnly drops the favorite button, the actions menu and the select box, and keeps the link', async () => {
     const { fixture, element } = await setup();
     fixture.componentRef.setInput('readOnly', true);

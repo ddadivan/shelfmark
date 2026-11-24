@@ -207,3 +207,29 @@
     }
   }
 }
+
+// `screen`: below 64em a page of its own (Shelf full-screen search). After the command rules, so
+// it wins over their tablet look; the title row stays in the DOM for the name, visually hidden.
+.ui-dialog--screen {
+  @include compact {
+    width: 100vw;
+    height: calc(100dvh - var(--ui-keyboard-inset, 0rem));
+    max-height: calc(100dvh - var(--ui-keyboard-inset, 0rem));
+    padding: 0;
+    margin-block-start: 0;
+    background: var(--bg);
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+
+    .ui-dialog__drag {
+      @include visually-hidden;
+    }
+
+    .ui-dialog__body {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 0;
+    }
+  }
+}

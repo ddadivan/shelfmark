@@ -1,0 +1,8 @@
+@if (shown()) {
+  <ui-ai-line
+    banner
+    [text]="'search.question.text' | transloco"
+    [actionLabel]="'search.askShelf' | transloco"
+    (action)="ask()"
+  />
+}

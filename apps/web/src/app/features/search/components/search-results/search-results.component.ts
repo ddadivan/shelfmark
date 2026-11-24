@@ -19,9 +19,9 @@ import {
   CommandListComponent,
   FaviconComponent,
   HighlightComponent,
+  ButtonComponent,
   ICON_SIZE,
   IconComponent,
-  KEYBOARD_KEY,
   type CommandSelection,
   isMacPlatform,
 } from '@shelfmark/ui';
@@ -56,13 +56,14 @@ import { pluralKey } from '../../../../core/i18n/plural-key';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { ASK_LIMIT } from '@shelfmark/contracts';
+import { RecentSearchesService } from '../../services/recent-searches.service';
 
 const IDLE: SearchState = { query: '', links: [], more: false, failed: false };
 
 /**
- * The search core and its results list, shared by the two shells: the dialog (Cmd or Ctrl + K on
- * narrower screens, the phone and tablet search) and the header field with a results panel (from
- * 80em, `popup`). It owns its data: the typed text is debounced, a newer text cancels the request
+ * The search core and its results list of the search dialog: the full-screen search of the mobile
+ * shell (`screen`: the Search tab and the top bar field, below 64em, Shelf) and the command dialog
+ * of a desktop page without the header field (Settings). It owns its data: the typed text is debounced, a newer text cancels the request
  * in flight (`switchMap`) and the previous results stay on screen, marked busy, until the new ones
  * arrive. Links come from the API (title, note and URL); folders and tags are matched in the lists
  * the app already holds.
@@ -70,8 +71,8 @@ const IDLE: SearchState = { query: '', links: [], more: false, failed: false };
  * Enter opens a link in a new tab and finishes the search (`done`); Cmd or Ctrl + Enter opens it
  * in the background and keeps the list. A folder or a tag opens its page, "Show all results" the
  * library page with the query. Meaning matches (AI-3, `MeaningSearch`) follow the word matches
- * under "Related by meaning" and open like links. In `popup` mode the finished search also clears the field after
- * a navigation (a link opened in a new tab leaves the text, so it can be searched again).
+ * under "Close in meaning" and open like links. The empty field offers the recent searches
+ * (`RecentSearchesService`); a search that opened something is remembered there.
  */
 @Component({
   selector: 'app-search-results',
@@ -79,6 +80,7 @@ const IDLE: SearchState = { query: '', links: [], more: false, failed: false };
     TranslocoPipe,
     AiLineComponent,
     BackfillReminderComponent,
+    ButtonComponent,
     CommandGroupComponent,
     CommandItemComponent,
     CommandListComponent,
@@ -92,15 +94,15 @@ const IDLE: SearchState = { query: '', links: [], more: false, failed: false };
   styleUrl: './search-results.component.scss',
 })
 export class SearchResultsComponent {
-  /** The header field with a results panel instead of the list of a dialog. */
-  readonly popup = input(false, { transform: booleanAttribute });
+  /** The Shelf full-screen search (below 64em): a Back button before the field, the screen look. */
+  readonly screen = input(false, { transform: booleanAttribute });
   /** The search is finished (a link opened, a page chosen): the dialog closes. */
   readonly done = output<void>();
   /** "Ask your shelf" with the query (AI-4): the shell hands it to Ask. */
   readonly ask = output<string>();
 
   private readonly list = viewChild.required(CommandListComponent);
-  private readonly reminder = viewChild(BackfillReminderComponent);
+  protected readonly recent = inject(RecentSearchesService);
   private readonly api = inject(LINKS_API);
   private readonly folders = inject(FoldersStore);
   private readonly tags = inject(TagsStore);
@@ -113,7 +115,7 @@ export class SearchResultsComponent {
   protected readonly askRow = computed(
     () => this.ai.askOn() && this.query().trim().length >= ASK_LIMIT.QuestionMin,
   );
-  private readonly ai = inject(AiSettingsStore);
+  protected readonly ai = inject(AiSettingsStore);
   /** The mobile shell: the Ask row reads "Ask your shelf about this" and opens the Ask segment. */
   protected readonly compact = inject(ViewportService).compact;
 
@@ -123,8 +125,6 @@ export class SearchResultsComponent {
   protected readonly linkHost = linkHost;
   protected readonly siteLetter = siteLetter;
   protected readonly mac = isMacPlatform();
-  /** Shortcut cap of the header field (the key is Cmd on Apple devices, else Ctrl). */
-  protected readonly shortcut = this.mac ? '⌘K' : 'Ctrl K';
 
   /** The text in the input, as typed. */
   protected readonly query = signal('');
@@ -213,32 +213,17 @@ export class SearchResultsComponent {
         void this.go([`/${APP_PATH.Links}`], { [TAG_QUERY_PARAM]: id });
         break;
       case SEARCH_RESULT_KIND.Ask:
+        this.recent.add(this.query());
         this.ask.emit(this.query().trim());
-        if (this.popup()) {
-          this.query.set('');
-        }
+        break;
+      case SEARCH_RESULT_KIND.Recent:
+        this.query.set(id);
         break;
       case SEARCH_RESULT_KIND.All:
         void this.go([`/${APP_PATH.Links}`], { [SEARCH_QUERY_PARAM]: this.state().query });
         break;
       default:
         break;
-    }
-  }
-
-  /**
-   * The header panel lives in an overlay away from the field, so Tab would skip it: Tab in the
-   * field moves to the reminder's buttons while they show (the dialog keeps the natural order).
-   */
-  protected onKeydown(event: KeyboardEvent): void {
-    if (
-      this.popup() &&
-      event.key === KEYBOARD_KEY.Tab &&
-      !event.shiftKey &&
-      event.target instanceof HTMLInputElement &&
-      this.reminder()?.focusFirst()
-    ) {
-      event.preventDefault();
     }
   }
 
@@ -255,6 +240,7 @@ export class SearchResultsComponent {
     if (!link || href === undefined) {
       return;
     }
+    this.recent.add(this.state().query);
     this.actions.open(link);
     this.opener.open(href, background);
     if (!background) {
@@ -265,9 +251,7 @@ export class SearchResultsComponent {
   /** Navigates first; the search finishes only when the navigation went through. */
   private async go(commands: string[], queryParams: Record<string, string>): Promise<void> {
     if (await this.router.navigate(commands, { queryParams })) {
-      if (this.popup()) {
-        this.query.set('');
-      }
+      this.recent.add(this.state().query);
       this.done.emit();
     }
   }

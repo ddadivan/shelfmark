@@ -15,6 +15,7 @@ import { DIALOG_SIZE } from './models/dialog-size.const';
       title="Add link"
       [size]="size()"
       [phoneFullscreen]="phoneFullscreen()"
+      [screen]="screen()"
       [closeLabel]="closeLabel()"
       (closeRequested)="closes.set(closes() + 1)"
     >
@@ -27,6 +28,7 @@ import { DIALOG_SIZE } from './models/dialog-size.const';
 class HostComponent {
   readonly size = signal<DialogSize | undefined>(undefined);
   readonly phoneFullscreen = signal(false);
+  readonly screen = signal(false);
   readonly closeLabel = signal<string | undefined>('Close');
   readonly closes = signal(0);
 }
@@ -213,6 +215,19 @@ describe('DialogComponent', () => {
       expect(panel.classList.contains('ui-dialog--dragging')).toBe(false);
       // The leave animation starts from where the finger left it.
       expect(panel.style.getPropertyValue('--ui-sheet-drag')).toBe('150px');
+    });
+
+    it('is a page of its own below 64em with screen: the class set, the title row hidden', async () => {
+      stubMatchMedia(true);
+      const { fixture, root } = await setup();
+      fixture.componentInstance.screen.set(true);
+      fixture.detectChanges();
+      const { panel } = drag(root, 400);
+      expect(panel.classList.contains('ui-dialog--screen')).toBe(true);
+      const css = compileScss('lib/components/dialog/dialog.component.scss');
+      const compact = mediaBlocks(css, /width\s*<\s*64em/).join('\n');
+      expect(compact).toMatch(/\.ui-dialog--screen\s*\{[^}]*background: var\(--bg\)/);
+      expect(compact).toMatch(/\.ui-dialog--screen \.ui-dialog__drag\s*\{[^}]*clip/);
     });
 
     it('is full screen with phoneFullscreen: no drag to close, the class set', async () => {

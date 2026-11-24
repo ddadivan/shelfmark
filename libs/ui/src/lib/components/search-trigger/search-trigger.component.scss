@@ -52,6 +52,10 @@
   white-space: nowrap;
 }
 
+.ui-search-trigger__label--value {
+  color: var(--text);
+}
+
 .ui-search-trigger__kbd {
   @include type(caption);
 

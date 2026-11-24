@@ -165,3 +165,8 @@
   padding: var(--space-2) var(--space-3) 0;
   color: var(--text-muted);
 }
+
+// The field and an optional `input-start` control (Back): no box of their own unless `screen`.
+.ui-command-list__field-row {
+  display: contents;
+}

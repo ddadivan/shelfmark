@@ -1,19 +1,39 @@
 <ui-command-list
-  [popup]="popup()"
+  [screen]="screen()"
   [(query)]="query"
   [busy]="busy()"
   [inputLabel]="'search.label' | transloco"
   [placeholder]="'search.placeholder' | transloco"
   [listLabel]="'search.results' | transloco"
   (selected)="choose($event)"
-  (keydown)="onKeydown($event)"
 >
+  @if (screen()) {
+    <ui-button
+      slot="input-start"
+      variant="ghost"
+      iconOnly
+      iconLeft="chevron-left"
+      [ariaLabel]="'search.close' | transloco"
+      (click)="done.emit()"
+    />
+  }
   <span slot="status" [class.search-results__sr]="resultCount() === 0">
     @if (settled()) {
       {{ pluralKey('search.status', resultCount()) | transloco: { count: resultCount() } }}
     }
   </span>
-  <kbd slot="input-end">{{ popup() ? shortcut : ('search.esc' | transloco) }}</kbd>
+  <kbd slot="input-end">{{ 'search.esc' | transloco }}</kbd>
+
+  @if (parsed() === '' && recent.items().length > 0) {
+    <ui-command-group [heading]="'search.recent.title' | transloco">
+      @for (item of recent.items(); track item) {
+        <ui-command-item [value]="SEARCH_RESULT_KIND.Recent + ':' + item">
+          <ui-icon slot="leading" name="history" />
+          {{ item }}
+        </ui-command-item>
+      }
+    </ui-command-group>
+  }
 
   @if (linkCount() > 0) {
     <ui-command-group
@@ -51,10 +71,34 @@
     </ui-command-group>
   }
 
+  @if (hasLocal()) {
+    <ui-command-group [heading]="'search.foldersAndTags' | transloco">
+      @for (match of folderMatches(); track match.folder.id) {
+        <ui-command-item [value]="SEARCH_RESULT_KIND.Folder + ':' + match.folder.id">
+          <ui-icon slot="leading" name="folder" />
+          <ui-highlight [text]="match.path" [query]="parsed()" />
+          <span slot="trailing">{{
+            pluralKey('search.linkCount', match.folder.linkCount)
+              | transloco: { count: match.folder.linkCount }
+          }}</span>
+        </ui-command-item>
+      }
+      @for (tag of tagMatches(); track tag.id) {
+        <ui-command-item [value]="SEARCH_RESULT_KIND.Tag + ':' + tag.name">
+          <ui-icon slot="leading" name="tag" />
+          <ui-highlight [text]="tag.name" [query]="parsed()" />
+          <span slot="meta">{{
+            pluralKey('search.tagMeta', tag.linkCount) | transloco: { count: tag.linkCount }
+          }}</span>
+        </ui-command-item>
+      }
+    </ui-command-group>
+  }
+
   @if (meaning.rows().length > 0) {
     <ui-command-group
       icon="spark"
-      [heading]="'ai.search.related' | transloco"
+      [heading]="'search.closeInMeaning' | transloco"
       [lead]="linkCount() === 0 ? ('ai.search.noWordMatches' | transloco) : undefined"
     >
       @for (row of meaning.rows(); track row.link.id) {
@@ -82,32 +126,15 @@
     </ui-command-group>
   }
 
-  @if (hasLocal()) {
-    <ui-command-group [heading]="'search.foldersAndTags' | transloco">
-      @for (match of folderMatches(); track match.folder.id) {
-        <ui-command-item [value]="SEARCH_RESULT_KIND.Folder + ':' + match.folder.id">
-          <ui-icon slot="leading" name="folder" />
-          <ui-highlight [text]="match.path" [query]="parsed()" />
-          <span slot="trailing">{{
-            pluralKey('search.linkCount', match.folder.linkCount)
-              | transloco: { count: match.folder.linkCount }
-          }}</span>
-        </ui-command-item>
-      }
-      @for (tag of tagMatches(); track tag.id) {
-        <ui-command-item [value]="SEARCH_RESULT_KIND.Tag + ':' + tag.name">
-          <ui-icon slot="leading" name="tag" />
-          <ui-highlight [text]="tag.name" [query]="parsed()" />
-          <span slot="meta">{{
-            pluralKey('search.tagMeta', tag.linkCount) | transloco: { count: tag.linkCount }
-          }}</span>
-        </ui-command-item>
-      }
-    </ui-command-group>
-  }
-
   @if (askRow()) {
-    <ui-command-group [heading]="'ai.ask.title' | transloco">
+    <ui-command-group
+      [heading]="'ai.ask.title' | transloco"
+      [lead]="
+        settled() && resultCount() === 0
+          ? ('library.emptySearch.title' | transloco: { query: parsed() })
+          : undefined
+      "
+    >
       <ui-command-item [value]="SEARCH_RESULT_KIND.Ask">
         <ui-icon slot="leading" class="search-results__ask-icon" name="spark" />
         {{
@@ -138,11 +165,16 @@
     }
   </div>
 
+  @if (parsed() === '' && ai.askOn()) {
+    <span slot="note">{{
+      (screen() ? 'search.askHintCompact' : 'search.askHint') | transloco
+    }}</span>
+  }
   @if (meaning.hint(); as hint) {
     <ui-ai-line slot="note" [text]="'ai.search.preparing' | transloco: hint" />
   }
   @if (parsed() !== '') {
-    <app-backfill-reminder slot="note" [popup]="popup()" (leave)="focus()" />
+    <app-backfill-reminder slot="note" (leave)="focus()" />
   }
 
   <span slot="footer"

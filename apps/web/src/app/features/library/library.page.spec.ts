@@ -675,20 +675,17 @@ describe('LibraryPage of a folder', () => {
       expect(api.list).toHaveBeenLastCalledWith({});
     });
 
-    it('shows a Search chip that clears the search', async () => {
+    it('names the search in the title with its count, and keeps it out of the filter row (Shelf)', async () => {
       const { element, fixture } = await setup();
-      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
       fixture.componentRef.setInput('q', 'signal');
       await fixture.whenStable();
 
-      const group = element.querySelector('.library__filter');
-      expect(group?.textContent).toContain('Search: signal');
-      group?.querySelector<HTMLButtonElement>('button[aria-label="Remove search signal"]')?.click();
-      expect(navigate).toHaveBeenCalledWith([], {
-        queryParams: { q: null },
-        queryParamsHandling: 'merge',
-      });
+      expect(element.querySelector('h1')?.textContent?.trim()).toBe('Search');
+      expect(element.querySelector('.library__search-count')?.textContent).toMatch(
+        /\d+\+? for “signal”/u,
+      );
+      expect(element.querySelector('.library__filter')).toBeNull();
     });
 
     it('shows the empty search state, with Search all folders off the all-links page', async () => {
@@ -698,7 +695,8 @@ describe('LibraryPage of a folder', () => {
       fixture.componentRef.setInput('q', 'zzz');
       await fixture.whenStable();
 
-      expect(text(fixture)).toContain('Nothing found for “zzz”');
+      expect(text(fixture)).toContain('Nothing found');
+      expect(text(fixture)).toContain('Nothing for “zzz”');
       expect(text(fixture)).toContain('Clear search');
       expect(text(fixture)).not.toContain('Search all folders');
 
@@ -715,7 +713,7 @@ describe('LibraryPage of a folder', () => {
       });
     });
 
-    it('clears the search and the tags together with the Clear filter button', async () => {
+    it('clears the tags with the Clear filter button and keeps the search (the field holds it)', async () => {
       const { element, fixture } = await setup();
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
@@ -728,7 +726,7 @@ describe('LibraryPage of a folder', () => {
         ?.click();
 
       expect(navigate).toHaveBeenCalledWith([], {
-        queryParams: { q: null, tag: null, kind: null, saved: null, fav: null },
+        queryParams: { tag: null, kind: null, saved: null, fav: null },
         queryParamsHandling: 'merge',
       });
     });

@@ -2193,7 +2193,34 @@
       "background": "im Hintergrund öffnen"
     },
     "askRow": "Frag deine Links: „{{query}}“",
-    "askRowCompact": "Deine Links dazu fragen"
+    "askRowCompact": "Deine Links dazu fragen",
+    "clear": "Suche löschen",
+    "recent": {
+      "title": "Letzte Suchen"
+    },
+    "askHint": "Für Fragen (wie viele, welche, zusammenfassen) nutze Fragen rechts neben dem Feld.",
+    "askHintCompact": "Für Fragen (wie viele, welche, zusammenfassen) nutze Fragen.",
+    "askShelf": "Frag deine Links",
+    "closeInMeaning": "Ähnlich in der Bedeutung",
+    "goTo": {
+      "label": "Gehe zu",
+      "folder": "Ordner {{name}} öffnen, {{count}}",
+      "tag": "Links mit Tag {{name}} zeigen, {{count}}",
+      "view": "Ansicht {{name}} öffnen, {{count}}"
+    },
+    "question": {
+      "text": "Klingt nach einer Frage. Deine Links können sie mit Quellen beantworten."
+    },
+    "empty": {
+      "title": "Nichts gefunden",
+      "text": "Kein Link erwähnt „{{query}}“ in Titel, Notiz, Tags oder Adresse. Versuch ein anderes Wort.",
+      "textAsk": "Kein Link erwähnt „{{query}}“ in Titel, Notiz, Tags oder Adresse. Versuch ein anderes Wort oder frag deine Links: Dabei wird auch nach Bedeutung gesucht."
+    },
+    "feed": {
+      "count": "{{count}} für „{{query}}“",
+      "countIn": "{{count}} für „{{query}}“ in {{scope}}",
+      "nothing": "Nichts für „{{query}}“"
+    }
   },
   "share": {
     "title": "In Shelfmark speichern",
@@ -3800,7 +3827,6 @@
       }
     },
     "search": {
-      "related": "Ähnlich nach Bedeutung",
       "noWordMatches": "Keine Links mit diesen Wörtern",
       "why": "Nah an: {{reasons}}",
       "fromSummary": "Nah an: {{reasons}} (aus der Zusammenfassung)",

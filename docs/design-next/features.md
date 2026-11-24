@@ -1585,7 +1585,7 @@ Scope: search (⌘K dialog, header search field, phone Search tab, results), eve
 Breakpoints used below: phone below 40em; tablet 40–64em; desktop from 64em; "wide" from 80em. The mobile shell (tab bar, no header, no sidebar) is everything below 64em ("compact").
 
 #### SRC-01 Start a search (shortcut, header field, header button, Search tab)
-- What it does: opens search from anywhere in the signed-in app. From 80em the header holds a real search field with a results panel (SRC-07); from 64em to 80em the header holds a "Search" button that opens the search dialog; below 64em (no header) the phone/tablet tab bar has a "Search" tab that opens the search dialog over the current page (the tab is not a route).
+- What it does: opens search from anywhere in the signed-in app. Shelf (block 3): from 64em the header holds a search field that filters the library feed in place (SRC-07); below 64em (no header) the top bar field and the "Search" tab open the full-screen search over the current page (the tab is not a route). Cmd/Ctrl+K focuses the header field, or opens the full-screen search below 64em; a desktop page without the field (Settings) opens the command dialog.
 - Entry points:
   - Keyboard: Cmd+K (Apple devices) / Ctrl+K (others), global, also while typing in a text field. On non-Latin keyboard layouts the physical K key counts. Ignored with Alt or Shift held, during IME composition, and for key events without a key (autofill). The browser's own use of the shortcut is prevented.
   - From 80em the shortcut focuses the header field instead of opening a dialog.
@@ -1673,7 +1673,7 @@ Breakpoints used below: phone below 40em; tablet 40–64em; desktop from 64em; "
 - Source: `search-results.component.html`.
 
 #### SRC-07 Inline header search with results panel (from 80em)
-- What it does: from 80em the header search is a field; typing (or ArrowDown with text) opens a glass results panel under the field, with the same results, groups, empty states and footer as the dialog. First Esc closes the panel and keeps the text, a second Esc clears it; a press outside, leaving the field, or choosing a row closes it. Choosing a folder, tag, "Show all results" or the Ask row clears the field. Tab in the field moves into the backfill reminder's buttons while they show (SRC-09). The key cap at the end of the field reads "⌘K"/"Ctrl K" (the dialog shows "Esc").
+- What it does: Shelf (block 3, replaces the results panel): from 64em the header field puts its text in the feed's `?q=` after a short pause (in the current feed on All links, Unsorted, Favorites or a folder, else All links), and the feed shows "Search" with the count, "Looks like a question" with Ask your shelf (Ask on), "Go to" chips (folders, tags, saved views whose names hold every word), the word matches with the words marked, "Close in meaning · N" (search by meaning) and, with nothing at all, "Nothing found" with Clear search and Ask your shelf. Focus in the empty field lists "Recent searches" (last five, this device). Enter moves to the first result, Esc clears the field.
 - Entry points: click in the field; Cmd/Ctrl+K focuses it.
 - Screens / routes: SCR-SRC-02.
 - Platforms: desktop ≥80em only.

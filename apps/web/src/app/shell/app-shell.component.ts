@@ -37,6 +37,7 @@ import { AiAnnouncementService } from '../features/ai/services/ai-announcement.s
 import { WhatsNewStore } from '../features/changelog/services/whats-new.store';
 import { HeaderSearchComponent } from '../features/search/components/header-search/header-search.component';
 import { SearchDialogService } from '../features/search/services/search-dialog.service';
+import { FeedSearchService } from '../features/search/services/feed-search.service';
 import { ShortcutsDialogService } from '../features/shortcuts/services/shortcuts-dialog.service';
 import { ViewportService } from '../core/layout/viewport.service';
 import { APP_PATH } from '../models/app-path.const';
@@ -100,6 +101,8 @@ export default class AppShellComponent {
   protected readonly auth = inject(AuthStore);
   protected readonly actions = inject(LinkActionsService);
   protected readonly search = inject(SearchDialogService);
+  /** The feed's search text, shown in the top bar field (Shelf block 3). */
+  protected readonly feedSearch = inject(FeedSearchService);
   protected readonly shortcuts = inject(ShortcutsDialogService);
   protected readonly viewport = inject(ViewportService);
   private readonly transloco = inject(TranslocoService);

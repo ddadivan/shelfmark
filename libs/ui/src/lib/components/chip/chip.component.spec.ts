@@ -83,6 +83,13 @@ describe('ChipComponent', () => {
     expect(chip.classList.contains('ui-chip--tag')).toBe(false);
   });
 
+  it('renders the jump variant (search "Go to") and drops the tag class', () => {
+    const { chip, update } = setup();
+    update((c) => c.variant.set(CHIP_VARIANT.Jump));
+    expect(chip.classList.contains('ui-chip--jump')).toBe(true);
+    expect(chip.classList.contains('ui-chip--tag')).toBe(false);
+  });
+
   it('renders the filter variant and sets aria-pressed only when pressed is given', () => {
     const { chip, update } = setup();
     update((c) => {

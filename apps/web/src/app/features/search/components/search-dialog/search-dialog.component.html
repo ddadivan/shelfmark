@@ -1,8 +1,9 @@
 <ui-dialog
   class="search-dialog"
   phoneFullscreen
+  [screen]="compact()"
   [title]="'search.title' | transloco"
   [closeLabel]="'search.close' | transloco"
 >
-  <app-search-results (done)="close()" (ask)="ask($event)" />
+  <app-search-results [screen]="compact()" (done)="close()" (ask)="ask($event)" />
 </ui-dialog>

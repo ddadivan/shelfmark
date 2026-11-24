@@ -2193,7 +2193,34 @@
       "background": "open in background"
     },
     "askRow": "Ask your shelf: “{{query}}”",
-    "askRowCompact": "Ask your shelf about this"
+    "askRowCompact": "Ask your shelf about this",
+    "clear": "Clear search",
+    "recent": {
+      "title": "Recent searches"
+    },
+    "askHint": "For questions (how many, which, summarise) use Ask on the right of the field.",
+    "askHintCompact": "For questions (how many, which, summarise) use Ask.",
+    "askShelf": "Ask your shelf",
+    "closeInMeaning": "Close in meaning",
+    "goTo": {
+      "label": "Go to",
+      "folder": "Open folder {{name}}, {{count}}",
+      "tag": "Show links tagged {{name}}, {{count}}",
+      "view": "Open view {{name}}, {{count}}"
+    },
+    "question": {
+      "text": "Looks like a question. Your shelf can answer it with sources."
+    },
+    "empty": {
+      "title": "Nothing found",
+      "text": "No link mentions “{{query}}” in its title, note, tags or address. Try another word.",
+      "textAsk": "No link mentions “{{query}}” in its title, note, tags or address. Try another word, or ask your shelf: it also searches by meaning."
+    },
+    "feed": {
+      "count": "{{count}} for “{{query}}”",
+      "countIn": "{{count}} for “{{query}}” in {{scope}}",
+      "nothing": "Nothing for “{{query}}”"
+    }
   },
   "share": {
     "title": "Save to Shelfmark",
@@ -3800,7 +3827,6 @@
       }
     },
     "search": {
-      "related": "Related by meaning",
       "noWordMatches": "No links with these words",
       "why": "Close to: {{reasons}}",
       "fromSummary": "Close to: {{reasons}} (from the summary)",

@@ -1,0 +1,76 @@
+@use 'ui' as *;
+
+:host {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+// Shelf `03-search.html` `.s-near`: 40px under the word results, a 16/24 600 heading with the
+// spark in `ai` and the count in 14px `text-muted`, the cards 16px under it.
+.search-meaning {
+  margin-block-start: var(--space-8);
+}
+
+:host:first-child .search-meaning {
+  margin-block-start: 0;
+}
+
+.search-meaning__lead {
+  @include type(secondary);
+
+  margin: 0 0 var(--space-4);
+  color: var(--text-muted);
+}
+
+.search-meaning__heading {
+  @include type(heading);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin: 0;
+}
+
+.search-meaning__spark {
+  --ui-icon-size: var(--icon-size-sm);
+
+  color: var(--ai);
+}
+
+.search-meaning__count {
+  @include type(secondary);
+
+  color: var(--text-muted);
+}
+
+.search-meaning__note {
+  margin-block-start: var(--space-2);
+}
+
+// The feed's card grid (Grid size from the feed's View menu; three columns on a tablet, two on a phone).
+.search-meaning__grid {
+  display: grid;
+  gap: var(--density-feed-gap);
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, var(--search-meaning-column, 14.5rem)), 1fr)
+  );
+  padding: 0;
+  margin: var(--space-4) 0 0;
+  list-style: none;
+
+  @include tablet {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include phone {
+    gap: var(--space-3);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  > li {
+    display: flex;
+    flex-direction: column;
+  }
+}

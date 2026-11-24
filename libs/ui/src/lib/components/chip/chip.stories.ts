@@ -75,6 +75,11 @@ export const FilterOptionPressed: Story = {
   args: { variant: CHIP_VARIANT.Filter, clickable: true, pressed: true },
 };
 
+/** A "Go to" place of search (Shelf): quiet until hover, 14px glyph. */
+export const Jump: Story = {
+  args: { variant: CHIP_VARIANT.Jump, clickable: true, icon: 'folder' },
+};
+
 /** Remove button, Delete and Backspace on focus. */
 export const Removable: Story = { args: { removable: true } };
 

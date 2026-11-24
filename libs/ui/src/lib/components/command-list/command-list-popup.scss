@@ -107,6 +107,49 @@
   }
 }
 
+// `emptyPanel` (Shelf `03-search.html` `.s-recent`): 8px padding, 36px rows with a bare 16px glyph
+// and 14px text, the row under the arrow keys on `surface-hover` (with its ring), no Enter cap.
+.ui-command-list__panel--compact {
+  .ui-command-list__list {
+    padding: var(--space-2);
+  }
+
+  .ui-command-list__heading {
+    padding: var(--space-2) var(--space-2) var(--space-1);
+  }
+
+  .ui-command-list__option {
+    min-height: rem(36px);
+    padding: 0 var(--space-2);
+
+    &[data-active='true'] {
+      background: var(--surface-hover);
+    }
+  }
+
+  .ui-command-item__leading,
+  .ui-command-list__option[data-active='true'] .ui-command-item__leading {
+    --ui-icon-size: var(--icon-size-sm);
+
+    width: auto;
+    height: auto;
+    background: transparent;
+  }
+
+  .ui-command-item__title {
+    @include type(secondary);
+  }
+
+  .ui-command-list__enter,
+  .ui-command-list__option[data-active='true'] > .ui-command-list__enter {
+    display: none;
+  }
+
+  .ui-command-list__note {
+    padding: var(--space-1) var(--space-2) var(--space-2);
+  }
+}
+
 // Nothing found: the key hints have nothing to act on, so the panel ends with the message.
 .ui-command-list__panel--floating .ui-command-list__status--empty + .ui-command-list__footer {
   display: none;

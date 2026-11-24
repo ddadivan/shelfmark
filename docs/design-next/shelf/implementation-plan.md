@@ -116,6 +116,15 @@ Everything else in `libs/ui` (60+ components) changes through the tokens only in
 - **Today:** `features/today/` (see `apps/web/CLAUDE.md`). Everything comes from existing APIs (reminders, `?saved=week`, Rediscover, links); nothing is mocked. Not drawn from the design because the data does not exist: reading progress ("40% read", "Stopped at 6:20") and "filed by rule / by AI" with Undo in Saved this week; the All links cards are read-only (no star or menu), as in the side by side right half.
 - **Sidebar:** the Today row replaces the Reminders row (design); the Reminders page is Today's "Revisit".
 
+## Block 3: search (branch `redesign/shelf-b3-search`)
+
+- **Header field (from 64em):** `app-header-search` is a field at every desktop width (the 64–80em "Search" button and the results panel are gone); typing filters the feed in place (`FeedSearchService`, `?q=`), Ctrl/Cmd K focuses it, focus in the empty field shows Recent searches (`ui-command-list` `emptyPanel`, compact 36px rows).
+- **Feed while searching:** title "Search" + count, question hint (`ui-ai-line banner`), Go to chips (`ui-chip variant="jump"`), highlighted card titles, "Close in meaning · N" (AI-3 meaning search as cards), Nothing found with Clear search / Ask your shelf. The toolbar (View, switch, ⋯) and the view tabs stay (the prototype hides them while searching).
+- **Below 64em:** the Search tab and the top bar keep the full-screen search list, restyled (`ui-dialog screen`, `ui-command-list screen`: Back + 48px field, 56px rows with dividers, 12px headings, no key hints).
+- **Not built:** "Ways to search" (`#tag`, `in:Learning`, `site:`, `last week`): the search has no query syntax; the counts on the view tabs stay the feed's (not the search's).
+
+## Mocked in the Shelf redesign
+
 ## Block 2: the Link page, Add link and Revisit (branch `redesign/shelf-b2-link`)
 
 - **Link page** (`features/link-preview/`): the desktop panel toolbar is Shelf's (previous / next, title, Related, Site | Reader, Reading settings in Reader, Open, favorite, Details, the ⋯ menu, × close after a divider); edit, copy and "Wider preview" moved into the ⋯ menu (`preview-menu`). `PreviewReaderService` (page-scoped) keeps the mode per site while the page lives, the details toggle and the reading progress; `preview-reader` renders `ui-reader` (an article, or for a page without text the link's own picture, summary and note with "Open <site>"); `preview-details` edits title and note in place (`LinkInlineEditService`); `reading-settings` is the popover. The blocked site offers "Open in Reader" first. The phone page has the same Site | Reader, Reading settings and Details under its header. Left: the list beside the preview keeps the feed's own view (#555) instead of the design's compact rows (that is `library.page`, block 1's file).
@@ -127,3 +136,4 @@ Everything else in `libs/ui` (60+ components) changes through the tokens only in
 - Block 1: nothing (Today uses the existing reminders, links `?saved=week` and Rediscover endpoints and their mock implementations).
 
 - **Reader text and reading progress** (`READER_API`, contracts `libs/shared/contracts/src/reader/`): `apps/api` has no extraction (it needs the SSRF-safe fetcher of PROJECT.md 5.8, not a small endpoint). `features/reader/http/http-reader.api.ts` answers "no article" and no progress without a request, so production Reader shows the link's own picture, summary and note; `features/reader/mock/mock-reader.api.ts` (+ `mock-reader-article.ts`) serves generic article text for readable kinds of the mock library and keeps progress in `localStorage` `sm-mock-reader-progress`. Marked `MOCK (Shelf)` in code.
+- Block 3: nothing (search uses `GET /api/links?q=`, `AI_API.searchMeaning` and the folders, tags and saved views already loaded; recent searches live on the device).

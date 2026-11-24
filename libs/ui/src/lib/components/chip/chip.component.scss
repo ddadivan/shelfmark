@@ -271,3 +271,31 @@ button.ui-chip__body {
   background: var(--accent-bg);
   box-shadow: none;
 }
+
+// `variant="jump"` (Shelf search "Go to"): a quiet tab like the saved views, transparent until
+// hover (`surface-hover`, `text`), a 14px glyph, the label in 12px `text-muted`.
+:host(.ui-chip--jump) {
+  background: transparent;
+
+  .ui-chip__body {
+    gap: var(--space-2);
+    padding: 0 var(--space-2);
+  }
+
+  .ui-chip__icon {
+    --ui-icon-size: #{rem(14px)};
+  }
+}
+
+:host(.ui-chip--jump.ui-chip--clickable:not(.ui-chip--disabled)) {
+  @include hover {
+    filter: none;
+    color: var(--text);
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    filter: none;
+    background: var(--surface-pressed);
+  }
+}

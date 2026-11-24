@@ -8,4 +8,6 @@ export const SEARCH_RESULT_KIND = {
   Meaning: 'meaning',
   /** "Ask your shelf" with the query (AI-4): hands the text to Ask. */
   Ask: 'ask',
+  /** A recent search (the empty field of the full-screen search): searches it again. */
+  Recent: 'recent',
 } as const;

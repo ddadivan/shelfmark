@@ -1,25 +1,28 @@
-<div class="ui-command-list__field">
-  <ui-icon class="ui-command-list__icon" name="search" [size]="ICON_SIZE.Md" />
-  <input
-    #field
-    ngCombobox
-    #combobox="ngCombobox"
-    [alwaysExpanded]="!popup()"
-    type="text"
-    class="ui-command-list__input"
-    autocomplete="off"
-    autocapitalize="off"
-    spellcheck="false"
-    enterkeyhint="go"
-    [softDisabled]="false"
-    [value]="query()"
-    [attr.aria-label]="inputLabel()"
-    [attr.placeholder]="placeholder() || null"
-    (valueChange)="onValue($event)"
-    (expandedChange)="onExpandedChange($event)"
-    (keydown)="onKeydown($event)"
-  />
-  <ng-content select="[slot=input-end]" />
+<div class="ui-command-list__field-row">
+  <ng-content select="[slot=input-start]" />
+  <div class="ui-command-list__field">
+    <ui-icon class="ui-command-list__icon" name="search" [size]="ICON_SIZE.Md" />
+    <input
+      #field
+      ngCombobox
+      #combobox="ngCombobox"
+      [alwaysExpanded]="!popup()"
+      type="text"
+      class="ui-command-list__input"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+      enterkeyhint="go"
+      [softDisabled]="false"
+      [value]="query()"
+      [attr.aria-label]="inputLabel()"
+      [attr.placeholder]="placeholder() || null"
+      (valueChange)="onValue($event)"
+      (expandedChange)="onExpandedChange($event)"
+      (keydown)="onKeydown($event)"
+    />
+    <ng-content select="[slot=input-end]" />
+  </div>
 </div>
 
 <!--
@@ -38,6 +41,7 @@
     <div
       class="ui-command-list__panel"
       [class.ui-command-list__panel--floating]="popup()"
+      [class.ui-command-list__panel--compact]="emptyPanel()"
       animate.enter="ui-command-list--enter"
       animate.leave="ui-command-list--leave"
     >

@@ -11,6 +11,7 @@ import {
   type CardMedia,
   FolderColourDirective,
   type HeadingLevel,
+  HighlightComponent,
   ICON_SIZE,
   IconComponent,
   LongPressDirective,
@@ -56,6 +57,7 @@ import { LinkPreviewRoute } from '../../../link-preview/services/link-preview-ro
     BadgeComponent,
     ButtonComponent,
     CheckboxComponent,
+    HighlightComponent,
     LongPressDirective,
     CardComponent,
     FaviconComponent,
@@ -90,6 +92,8 @@ export class LinkCardComponent {
   readonly readOnly = input(false);
   /** Level of the title heading (2 in a feed; 3 under a section heading, as on Today). */
   readonly headingLevel = input<HeadingLevel>(2);
+  /** The search text whose words are marked in the title (Shelf search feed); empty for none. */
+  readonly highlight = input('');
   /** Plays the fade-in of cards that replace the skeleton. */
   readonly reveal = input(false);
   /** The link's folder as a chip, in mixed feeds only (#418); `null` for none. */

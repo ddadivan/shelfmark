@@ -31,6 +31,15 @@ export const Default: Story = {};
 /** With "Try again" (a provider error, once). */
 export const WithAction: Story = { args: { actionLabel: 'Try again' } };
 
+/** The sage band of search ("Looks like a question"). */
+export const Banner: Story = {
+  args: {
+    banner: true,
+    text: 'Looks like a question. Your shelf can answer it with sources.',
+    actionLabel: 'Ask your shelf',
+  },
+};
+
 /** Limit reached, with the way to the settings. */
 export const LimitReached: Story = {
   args: {
