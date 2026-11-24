@@ -11,10 +11,20 @@ const SHOWCASE = 'showcase';
 const DUE_TITLE = 'Wool overshirt';
 const UPCOMING_TITLE = "TypeScript: the complete developer's guide";
 
-/** Opens the Reminders page from the sidebar row (the Library tile on the mobile shell). */
+/**
+ * Opens the Reminders page: the Library tile in the mobile shell. From 64em the sidebar has the
+ * Today row in its place (Shelf block 1) and the page is reached by its address: an in-app
+ * navigation (the History API and a popstate the router follows), so the mock state stays.
+ */
 async function openReminders(page: Page): Promise<void> {
-  await openSidebar(page);
-  await viewEntry(page, 'Reminders').click();
+  if (isCompact(page)) {
+    await openSidebar(page);
+    await viewEntry(page, 'Reminders').click();
+  } else {
+    await page.evaluate(
+      "history.pushState(null, '', '/reminders'); dispatchEvent(new PopStateEvent('popstate'))",
+    );
+  }
   await expect(page).toHaveURL('/reminders');
   await expect(page.getByRole('heading', { level: 1, name: 'Reminders' })).toBeVisible();
 }
@@ -76,7 +86,7 @@ test.describe('reminders (mock API)', { tag: E2E_TAG.Phone }, () => {
       .getByRole('button', { name: /\b15\b/ })
       .first()
       .click();
-    await dialog.getByRole('button', { name: /^Remind me / }).click();
+    await dialog.getByRole('button', { name: 'Set reminder' }).click();
     await expect(dialog).toBeHidden();
 
     await card.getByRole('button', { name: /^Actions for / }).click();
@@ -96,17 +106,21 @@ test.describe('reminders (mock API)', { tag: E2E_TAG.Phone }, () => {
       [SCENARIO_KEY, SHOWCASE],
     );
     await openFeed(page);
-    const note = page.getByRole('status').filter({ hasText: 'A reminder is due' });
-    await expect(note).toContainText(DUE_TITLE);
+    // Shelf 12-notify: one due link is "<title> is due" with Open and Snooze.
+    const note = page.getByRole('status').filter({ hasText: `${DUE_TITLE} is due` });
+    await expect(note).toBeVisible();
+    await expect(note.getByRole('button', { name: 'Open' })).toBeVisible();
+    await expect(note.getByRole('button', { name: 'Snooze' })).toBeVisible();
 
     await openSidebar(page);
-    // The badge: the count of the sidebar row, or "1 due" on the Library tile.
-    await expect(viewEntry(page, 'Reminders')).toContainText(isCompact(page) ? '1 due' : '1');
+    // The badge: the Today row's count from 64em, "1 due" on the Library tile.
+    await expect(viewEntry(page, isCompact(page) ? 'Reminders' : 'Today')).toContainText(
+      isCompact(page) ? '1 due' : '1',
+    );
 
-    // "Show" on the note opens the Reminders page.
-    await note.getByRole('button', { name: 'Show' }).click();
-    await expect(page).toHaveURL('/reminders');
+    await note.getByRole('button', { name: 'Dismiss' }).click();
     await expect(note).toHaveCount(0);
+    await openReminders(page);
     await expect(group(page, 'Due')).toContainText(DUE_TITLE);
     await expect(reminderRow(page, DUE_TITLE)).toContainText(/Due \d+ hours? ago/);
     await expect(reminderRow(page, UPCOMING_TITLE)).toBeVisible();

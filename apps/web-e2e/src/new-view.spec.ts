@@ -67,16 +67,16 @@ test.describe('new view dialog (mock API)', () => {
       const phrase = dialog.getByRole('textbox', { name: 'Describe what to show' });
       await expect(phrase).toBeFocused();
       await phrase.fill('videos, newest first');
-      await dialog.getByRole('button', { name: 'Compose' }).click();
+      await dialog.getByRole('button', { name: 'Fill in' }).click();
 
       await expect(type(dialog)).toContainText('Video', { timeout: 10_000 });
-      await expect(spark(dialog)).toHaveCount(3);
+      await expect(spark(dialog)).toHaveCount(2);
       await expect(dialog.getByRole('textbox', { name: 'Name' })).toHaveValue(
         'Videos, newest first',
       );
 
       await chooseType(page, dialog, 'Article');
-      await expect(spark(dialog)).toHaveCount(2);
+      await expect(spark(dialog)).toHaveCount(1);
 
       await dialog.getByRole('button', { name: 'Save view' }).click();
       await expect(dialog).toHaveCount(0);
@@ -126,9 +126,10 @@ test.describe('new view dialog (mock API)', () => {
     await openFeed(page);
     const dialog = await openDialog(page);
     await dialog.getByRole('textbox', { name: 'Describe what to show' }).fill('anything ai-quota');
-    await dialog.getByRole('button', { name: 'Compose' }).click();
+    await dialog.getByRole('button', { name: 'Fill in' }).click();
     await expect(dialog.getByText(/used today’s questions/u)).toBeVisible({ timeout: 10_000 });
-    await dialog.getByRole('button', { name: 'save the current filter' }).click();
+    // One page (Shelf 13-views): the rows are there all along and still take a choice.
     await expect(dialog.getByRole('combobox', { name: 'Where' })).toBeVisible();
+    await expect(dialog.getByRole('combobox', { name: 'Type' })).toBeEnabled();
   });
 });

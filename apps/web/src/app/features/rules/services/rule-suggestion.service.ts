@@ -4,7 +4,7 @@ import { RulesStore } from '../../../stores/rules.store';
 import type { AppliedRule } from '../models/applied-rule.interface';
 import type { RuleSuggestionSource } from '../models/rule-suggestion-source.interface';
 import { ruleChipTarget } from '../utils/rule-chip-target';
-import { applyRule, changedSomething, revertRule } from '../utils/rule-suggestion';
+import { applyRule, changedSomething, revertRule, stillInForm } from '../utils/rule-suggestion';
 
 /**
  * Domain rules in a save form (#398; provided by the form, one per form, `connect`ed once): when
@@ -28,9 +28,13 @@ export class RuleSuggestionService {
   /** Whether the create request should say `applyRules: false`: the form shows the outcome. */
   readonly handled = computed(() => this.rules.loaded());
 
-  /** The chip: shown only while the rule changed something in the form. */
+  /**
+   * The chip: shown only while what the rule put in is still in the form (a folder or tags the
+   * user changed afterwards leave it); `setsFolder` while the form's folder is the rule's.
+   */
   readonly chip = computed(() => {
-    const applied = this.applied();
+    const put = this.applied();
+    const applied = put && this.source ? stillInForm(put, this.source.read()) : put;
     if (!changedSomething(applied)) {
       return null;
     }
@@ -38,6 +42,7 @@ export class RuleSuggestionService {
     return {
       domain: applied.domain,
       target: ruleChipTarget(applied, (id) => folders[id]?.name ?? ''),
+      setsFolder: applied.folderId !== null,
     };
   });
 

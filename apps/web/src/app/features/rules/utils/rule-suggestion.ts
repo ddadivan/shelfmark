@@ -49,6 +49,20 @@ export function revertRule(fields: RuleFields, applied: AppliedRule): RuleFields
   };
 }
 
+/**
+ * What of the rule the form still shows: its folder while the form keeps it (a folder the user
+ * picked afterwards wins, Shelf Add link's "Goes to" row comes after the address), the added tags
+ * the form still has.
+ */
+export function stillInForm(applied: AppliedRule, fields: RuleFields): AppliedRule {
+  return {
+    ...applied,
+    folderId:
+      applied.folderId !== null && fields.folderId === applied.folderId ? applied.folderId : null,
+    tags: applied.tags.filter((tag) => fields.tags.some((current) => sameTag(current, tag))),
+  };
+}
+
 /** Whether the rule changed anything in the form (only then the chip shows). */
 export function changedSomething(applied: AppliedRule | null): applied is AppliedRule {
   return applied !== null && (applied.folderId !== null || applied.tags.length > 0);

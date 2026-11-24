@@ -73,7 +73,7 @@ test.describe('public collections (mock API)', () => {
     await expect(first.guest.getByRole('button', { name: /^Actions for / })).toHaveCount(0);
     await expect(first.guest.getByRole('button', { name: /^Favorite / })).toHaveCount(0);
     await expect(first.guest.getByText(NOTE)).toHaveCount(0);
-    await expect(first.guest.getByRole('link', { name: 'Sign in' })).toBeVisible();
+    await expect(first.guest.getByRole('link', { name: 'Start your own shelf' })).toBeVisible();
     await expect(first.guest.getByRole('link', { name: 'Start your shelf' })).toBeVisible();
     await expect(first.guest.locator('meta[name="robots"]')).toHaveAttribute(
       'content',

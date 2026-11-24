@@ -81,10 +81,13 @@ test.describe('domain rules (mock API)', () => {
       await openFeed(page);
       await ruleFromCard(page);
 
+      // Shelf block 2: the "Goes to" row shows once the address is in, with the rule as its note.
       const dialog = await openAddLink(page);
+      await dialog.getByLabel('Link', { exact: true }).fill('https://youtube.com/watch?v=third');
+      await expect(dialog.getByText(`Rule: youtube.com → ${READING}, #video`)).toBeVisible();
       await dialog.getByRole('combobox', { name: 'Folder' }).click();
       await page.getByRole('option', { name: `${READING} / ${ANGULAR}`, exact: true }).click();
-      await dialog.getByLabel('Link', { exact: true }).fill('https://youtube.com/watch?v=third');
+      // The chosen folder wins: the rule keeps only its tag.
       await expect(dialog.getByText('Rule: youtube.com → #video')).toBeVisible();
       await expect(dialog.getByLabel('Title', { exact: true })).not.toHaveValue('');
       await dialog.getByRole('button', { name: 'Save', exact: true }).click();

@@ -109,7 +109,8 @@ test.describe('paste several links (mock API)', () => {
       await openFeed(page);
       await page.getByRole('button', { name: 'Add link' }).first().click();
       const dialog = page.getByRole('dialog', { name: 'Add link' });
-      await expect(dialog.getByText('Have several links? Paste them all at once')).toBeVisible();
+      // The empty Add link panel (Shelf block 2): the paste tip, then "Add several links".
+      await expect(dialog.getByText(/Several links at once work too/)).toBeVisible();
 
       await dialog.getByRole('button', { name: 'Add several links' }).click();
       const several = page.getByRole('dialog', { name: 'Add several links' });

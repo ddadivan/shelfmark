@@ -1,5 +1,5 @@
 import type { RuleResponse } from '@shelfmark/contracts';
-import { applyRule, changedSomething, revertRule } from './rule-suggestion';
+import { applyRule, changedSomething, revertRule, stillInForm } from './rule-suggestion';
 
 const rule: RuleResponse = {
   id: 'r',
@@ -50,5 +50,17 @@ describe('applyRule / revertRule', () => {
       tags: ['mine'],
     });
     expect(changedSomething(null)).toBe(false);
+  });
+
+  it('keeps only what the form still shows: a folder picked afterwards wins', () => {
+    const { applied } = applyRule({ folderId: null, tags: [] }, rule, free);
+    expect(stillInForm(applied, { folderId: applied.folderId, tags: ['video', 'Clip'] })).toEqual(
+      applied,
+    );
+    const picked = stillInForm(applied, { folderId: 'other', tags: ['VIDEO'] });
+    expect(picked.folderId).toBeNull();
+    expect(picked.tags).toEqual(['video']);
+    expect(changedSomething(picked)).toBe(true);
+    expect(changedSomething(stillInForm(applied, { folderId: 'other', tags: [] }))).toBe(false);
   });
 });

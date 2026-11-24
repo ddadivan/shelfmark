@@ -324,7 +324,9 @@
             [appearance]="editing ? SELECT_APPEARANCE.Field : SELECT_APPEARANCE.Row"
             [rowLead]="'links.add.goes.lead' | transloco"
             [rowNote]="
-              ruleChip() ? ('links.add.goes.rule' | transloco: { domain: ruleChip()?.domain }) : ''
+              ruleChip()?.setsFolder
+                ? ('links.add.goes.rule' | transloco: { domain: ruleChip()?.domain })
+                : ''
             "
             [rowAction]="'links.add.goes.change' | transloco"
             [options]="folderOptions()"
