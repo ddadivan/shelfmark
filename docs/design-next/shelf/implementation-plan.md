@@ -94,7 +94,7 @@ Everything else in `libs/ui` (60+ components) changes through the tokens only in
 ## Home page (step 2)
 
 1. **Shell, desktop (≥ 64em):** 240px `sidebar` with a `sep` edge: logo + avatar, Add link (full-width primary pill), the library rows, Pinned / Folders / Tags (collapsible), then the intro card, Theme, Get the extension, Data and help, Trash. The header holds the 48px search (up to 640px) and the Ask button at the far right. The current header actions (theme, shortcuts, Add link, avatar) move into the sidebar.
-2. **Shell, below 64em:** the existing compact shell (#316): tab bar and the top search with the avatar.
+2. **Shell, below 64em:** a top bar with the search field and the avatar (account menu and Settings), the tab bar Today, Library, Add, Search, Ask (Tags while Ask is off); menus open as bottom sheets (block 1, below).
 3. **Library feed:** page title (24/30 600) with View (menu), the view switch (Masonry / Cards / List) and a ⋯ menu (Sort by, Filter, Select, Side by side, Export); saved views as small tabs; then the feed. Grid size (six steps, 130–300px) and the card fields (Note, Hashtags, Folder, Date) are remembered per feed in the existing local per-feed memory.
 4. **Card:** the new `ui-card` anatomy; favicon colour from the site where known, letter fallback; selection, ⋯ menu, drag to folders and favorite keep working.
 5. **Tests:** unit and e2e updated for the changed DOM (desktop, tablet, phone). No test is skipped to get green.
@@ -107,3 +107,15 @@ Everything else in `libs/ui` (60+ components) changes through the tokens only in
 3. Hanken Grotesk.
 4. Components, one group per commit: button and icon button; switch, segmented control, chip / saved views; menu, popover, dialog, toast; tab bar, tree rows, search; card, list item, favicon; view menu and range; ask button.
 5. App shell, library page, card wiring, tests, screenshots.
+
+## Block 1: the rest of the home page (branch `redesign/shelf-b1-home`)
+
+- **Mobile shell (below 64em):** `app-shell` top bar (`ui-search-trigger` full width, 44px on a phone, and the avatar with the account menu), tab bar Today (`history` icon) / Library / Add / Search / Ask or Tags; the You tab is gone (Settings sit behind the avatar). `ui-tab-bar` is full width on a tablet too. The page sits 16px under the top bar.
+- **Bottom sheets:** `ui-menu` opened from an element below 64em is a sheet (`UiOverlay.sheet()`, scrim, grip, optional `sheetTitle`, 48px rows): the library More menu, card and row menus (titled with the link), the account menu, Snooze on Today.
+- **Library toolbar on a phone:** the view switch and the More menu like the tablet (the phone Options menu is gone); View (grid size, fields) stays from 40em. Feed gaps 16px on a tablet, 12px on a phone.
+- **Today:** `features/today/` (see `apps/web/CLAUDE.md`). Everything comes from existing APIs (reminders, `?saved=week`, Rediscover, links); nothing is mocked. Not drawn from the design because the data does not exist: reading progress ("40% read", "Stopped at 6:20") and "filed by rule / by AI" with Undo in Saved this week; the All links cards are read-only (no star or menu), as in the side by side right half.
+- **Sidebar:** the Today row replaces the Reminders row (design); the Reminders page is Today's "Revisit".
+
+## Mocked in the Shelf redesign
+
+- Block 1: nothing (Today uses the existing reminders, links `?saved=week` and Rediscover endpoints and their mock implementations).
