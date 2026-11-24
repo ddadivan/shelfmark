@@ -718,11 +718,11 @@
   },
   "auth": {
     "signIn": {
-      "title": "Tutti i tuoi link su un solo scaffale",
-      "subtitle": "Salva una volta, ritrova in pochi secondi.",
+      "title": "Tutti i tuoi link, e un modo per ritrovarli",
+      "subtitle": "Salva qualsiasi cosa con un gesto, ritrovala in pochi secondi e rivedila prima di dimenticarla.",
       "google": "Continua con Google",
       "github": "Continua con GitHub",
-      "demo": "Apri la demo",
+      "demo": "Dai un’occhiata alla demo",
       "failed": "Non siamo riusciti a farti accedere. Riprova.",
       "error": {
         "generic": "L’accesso non è stato completato. Riprova.",
@@ -741,13 +741,13 @@
       "or": "oppure",
       "tiles": {
         "signalForms": {
-          "title": "Signal Forms in 20 minuti"
+          "title": "Angular in 100 Seconds"
         },
         "woolCoat": {
-          "title": "Cappotto di lana, taglio dritto"
+          "title": "The Ojai Jacket"
         },
         "nestjs": {
-          "title": "NestJS per sviluppatori frontend"
+          "title": "Microservices explained"
         },
         "ramen": {
           "title": "Il miglior ramen dei giorni feriali"
@@ -759,7 +759,7 @@
           "title": "Lisbona a maggio: un lungo weekend"
         },
         "icons": {
-          "title": "Set di icone gratuiti per progetti personali"
+          "title": "Excalidraw"
         },
         "grid": {
           "title": "La guida completa a CSS grid"
@@ -768,19 +768,19 @@
           "title": "Pane a lievito madre per principianti, passo passo"
         },
         "sneakers": {
-          "title": "Sneaker minimali in pelle"
+          "title": "Tree Runners – Thunder Green"
         },
         "typeScale": {
           "title": "Scale tipografiche che funzionano davvero"
         },
         "kyoto": {
-          "title": "Kyoto lontano dalla folla"
+          "title": "Optimistic Nihilism"
         },
         "containerQueries": {
           "title": "Le container query in pratica"
         },
         "linenShirt": {
-          "title": "Camicia di lino verde salvia"
+          "title": "The Crater Shirt in Denver Plaid"
         },
         "bikepacking": {
           "title": "Le Dolomiti in bicicletta in cinque giorni"
@@ -789,13 +789,13 @@
           "title": "Come abbinare due caratteri"
         },
         "rxjs": {
-          "title": "Gli operatori RxJS che usi davvero"
+          "title": "But what is a neural network?"
         },
         "cacioEPepe": {
           "title": "Cacio e pepe senza grumi"
         },
         "standingDesk": {
-          "title": "Le migliori scrivanie regolabili, provate"
+          "title": "Tree Dasher 2 – Natural White"
         },
         "contrast": {
           "title": "Guida pratica al contrasto dei colori"
@@ -818,8 +818,8 @@
         "css": "css"
       },
       "privacyBefore": "Continuando accetti la nostra",
-      "privacyLink": "Informativa sulla privacy",
-      "privacyAfter": ". Usiamo solo il tuo nome, l’email e l’avatar."
+      "privacyLink": "informativa sulla privacy",
+      "privacyAfter": "."
     },
     "demo": {
       "starting": "Apertura della demo…"

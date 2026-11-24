@@ -1,3 +1,4 @@
+import type { LandingImage } from '../../../../landing/models/landing-image.interface';
 import type { SignInDriftLayer } from './sign-in-drift-layer.type';
 import type { SignInDriftSide } from './sign-in-drift-side.type';
 import type { SignInDriftTier } from './sign-in-drift-tier.type';
@@ -17,4 +18,8 @@ export interface SignInDriftCard {
   readonly side: SignInDriftSide;
   /** The smallest layout that draws it: `narrow` cards are on every desktop, `huge` ones only from 160em. */
   readonly tier: SignInDriftTier;
+  /** The real preview picture (Shelf 06-public); without one the card shows its soft placeholder. */
+  readonly image?: LandingImage;
+  /** A product shot: shown whole on the soft fill instead of cropped. */
+  readonly product?: boolean;
 }

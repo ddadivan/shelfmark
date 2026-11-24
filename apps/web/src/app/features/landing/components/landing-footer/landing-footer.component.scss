@@ -36,6 +36,8 @@
   // 28px buttons with 12px labels (the 32px small button scaled), muted until chosen.
   --ui-button-scale: 0.875;
   --ui-button-color: var(--text-muted);
+  --ui-button-pressed-color: var(--text);
+  --ui-button-pressed-bg: var(--surface);
 
   display: flex;
   flex-wrap: wrap;

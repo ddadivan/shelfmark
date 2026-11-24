@@ -44,15 +44,14 @@ describe('SignInDriftComponent', () => {
     expect(root.querySelectorAll('.sd-lane--start .sd-card')).toHaveLength(7);
     expect(root.querySelectorAll('.sd-lane--end .sd-card')).toHaveLength(7);
     expect(root.querySelectorAll('.sd-ring')).toHaveLength(14);
-    expect(root.querySelectorAll('ui-card .ui-card__placeholder')).toHaveLength(14);
-    expect(root.querySelectorAll('ui-card .ui-card__date').length).toBe(14);
-    expect(root.querySelectorAll('ui-chip').length).toBeGreaterThanOrEqual(14);
+    // Real preview pictures where the link has one (Shelf 06-public), the soft placeholder elsewhere.
+    expect(root.querySelectorAll('ui-card img')).toHaveLength(8);
+    expect(root.querySelectorAll('ui-card .ui-card__placeholder')).toHaveLength(6);
     for (const layer of ['far', 'mid', 'near']) {
       expect(root.querySelectorAll(`.sd-card--${layer}`).length).toBeGreaterThan(0);
     }
-    expect(text).toContain('youtube.com');
-    expect(text).toContain('Signal Forms in 20 minutes');
-    expect(text).toContain('NestJS for frontend developers');
+    expect(text).toContain('Angular in 100 Seconds');
+    expect(text).toContain('Microservices explained');
   });
 
   it('draws twenty-two cards, eleven a side, on a 4K / 5K screen (the fourteen of a wide one plus eight)', async () => {
@@ -62,8 +61,8 @@ describe('SignInDriftComponent', () => {
     expect(root.querySelectorAll('.sd-lane--start .sd-card')).toHaveLength(11);
     expect(root.querySelectorAll('.sd-lane--end .sd-card')).toHaveLength(11);
     expect(root.querySelectorAll('.sd-ring')).toHaveLength(22);
-    expect(root.textContent).toContain('Signal Forms in 20 minutes');
-    expect(root.textContent).toContain('The best standing desks, tested');
+    expect(root.textContent).toContain('Angular in 100 Seconds');
+    expect(root.textContent).toContain('Tree Dasher 2 – Natural White');
   });
 
   it('draws eight cards, four a side, on a narrower desktop', async () => {

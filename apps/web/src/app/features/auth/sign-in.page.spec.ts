@@ -82,12 +82,12 @@ describe('SignInPage', () => {
     await harness.navigateByUrl('/sign-in');
     const root = harness.routeNativeElement as HTMLElement;
 
-    expect(root.querySelector('h1')?.textContent).toBe('All your links on one shelf');
+    expect(root.querySelector('h1')?.textContent).toBe('All your links, and a way back to them');
     // The email form is stage 2: only the providers and the demo.
     expect(buttons(root).map((b) => b.textContent?.trim())).toEqual([
       'Continue with Google',
       'Continue with GitHub',
-      'Open the demo',
+      'Look around in the demo',
     ]);
     expect(root.querySelector('ui-notice')).toBeNull();
   });
@@ -100,11 +100,11 @@ describe('SignInPage', () => {
 
     expect(line?.querySelector('a')?.getAttribute('href')).toBe('/privacy');
     expect(line?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
-      'By continuing you agree to the Privacy policy. We only use your name, email and avatar.',
+      'By continuing you agree to the privacy policy.',
     );
   });
 
-  it('shows fourteen decorative, inert drifting cards on a desktop and no phone strip', async () => {
+  it('shows fourteen decorative, inert drifting cards on a desktop', async () => {
     const { harness } = await setup();
     await harness.navigateByUrl('/sign-in');
     const root = harness.routeNativeElement as HTMLElement;
@@ -113,28 +113,17 @@ describe('SignInPage', () => {
     expect(drift?.getAttribute('aria-hidden')).toBe('true');
     expect(drift?.hasAttribute('inert')).toBe(true);
     expect(drift?.querySelectorAll('.sd-card')).toHaveLength(14);
-    expect(drift?.textContent).toContain('Signal Forms in 20 minutes');
-    expect(root.querySelector('.sign-in__art')).toBeNull();
-    expect(root.querySelector('app-sign-in-phone-cards')).toBeNull();
+    expect(drift?.textContent).toContain('Angular in 100 Seconds');
   });
 
-  it('shows the strip of small cards instead of the drifting ones below 64em, before the panel', async () => {
+  it('shows the card alone below 64em, with the "or" divider (Shelf 06-public)', async () => {
     const { harness } = await setup(undefined, undefined, false);
     await harness.navigateByUrl('/sign-in');
     const root = harness.routeNativeElement as HTMLElement;
 
-    expect(root.querySelector('.sign-in__art')?.getAttribute('aria-hidden')).toBe('true');
     expect(root.querySelector('app-sign-in-drift')).toBeNull();
-    const strip = root.querySelector('app-sign-in-phone-cards');
-    expect(strip?.hasAttribute('inert')).toBe(true);
-    expect(strip?.querySelectorAll('.pc-card')).toHaveLength(6);
-    // Decorative and first in the DOM: the panel (and its buttons) is the first thing to focus.
     expect(root.querySelector('.sign-in__panel')).not.toBeNull();
-    expect(strip?.compareDocumentPosition(root.querySelector('.sign-in__panel') as Node)).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING,
-    );
-    // The "or" divider is a desktop card detail: not rendered on a phone.
-    expect(root.querySelector('.sign-in__or')).toBeNull();
+    expect(root.querySelector('.sign-in__or')).not.toBeNull();
   });
 
   it('renders the "or" divider on a desktop', async () => {

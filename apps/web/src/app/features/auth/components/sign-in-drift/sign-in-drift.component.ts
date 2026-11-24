@@ -11,10 +11,9 @@ import {
   untracked,
 } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { ReducedMotion } from '@shelfmark/ui';
+import { CARD_MEDIA, CardComponent, ReducedMotion } from '@shelfmark/ui';
 import { activeLang } from '../../../../core/i18n/active-lang';
 import { ViewportService } from '../../../../core/layout/viewport.service';
-import { LinkPreviewCardComponent } from '../../../links/components/link-preview-card/link-preview-card.component';
 import { layoutDriftLane } from './drift-layout';
 import { SIGN_IN_DRIFT_CARDS } from './models/sign-in-drift-cards.const';
 import { SIGN_IN_DRIFT_FRAMES } from './models/sign-in-drift-frames.const';
@@ -99,13 +98,14 @@ function cachedLayout(tier: SignInDriftTier): SignInDriftLane[] {
  */
 @Component({
   selector: 'app-sign-in-drift',
-  imports: [TranslocoPipe, LinkPreviewCardComponent],
+  imports: [TranslocoPipe, CardComponent],
   templateUrl: './sign-in-drift.component.html',
   styleUrl: './sign-in-drift.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { 'aria-hidden': 'true', inert: '' },
 })
 export class SignInDriftComponent {
+  protected readonly CARD_MEDIA = CARD_MEDIA;
   private readonly viewport = inject(ViewportService);
 
   /** Which set of cards: eight below 80em, fourteen from 80em, twenty-two from 160em. */

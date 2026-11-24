@@ -705,11 +705,11 @@
   },
   "auth": {
     "signIn": {
-      "title": "All your links on one shelf",
-      "subtitle": "Save anything once, find it again in seconds.",
+      "title": "All your links, and a way back to them",
+      "subtitle": "Save anything in one move, find it in seconds, and see it again before it’s forgotten.",
       "google": "Continue with Google",
       "github": "Continue with GitHub",
-      "demo": "Open the demo",
+      "demo": "Look around in the demo",
       "failed": "We could not sign you in. Try again.",
       "error": {
         "generic": "Sign-in did not finish. Try again.",
@@ -728,13 +728,13 @@
       "or": "or",
       "tiles": {
         "signalForms": {
-          "title": "Signal Forms in 20 minutes"
+          "title": "Angular in 100 Seconds"
         },
         "woolCoat": {
-          "title": "Wool coat, straight cut"
+          "title": "The Ojai Jacket"
         },
         "nestjs": {
-          "title": "NestJS for frontend developers"
+          "title": "Microservices explained"
         },
         "ramen": {
           "title": "The best weeknight ramen"
@@ -746,7 +746,7 @@
           "title": "Lisbon in May: a long weekend"
         },
         "icons": {
-          "title": "Free icon sets for side projects"
+          "title": "Excalidraw"
         },
         "grid": {
           "title": "A complete guide to CSS grid"
@@ -755,19 +755,19 @@
           "title": "Beginner sourdough, step by step"
         },
         "sneakers": {
-          "title": "Minimal leather sneakers"
+          "title": "Tree Runners – Thunder Green"
         },
         "typeScale": {
           "title": "Type scales that actually work"
         },
         "kyoto": {
-          "title": "Kyoto away from the crowds"
+          "title": "Optimistic Nihilism"
         },
         "containerQueries": {
           "title": "Container queries in practice"
         },
         "linenShirt": {
-          "title": "Linen shirt in sage green"
+          "title": "The Crater Shirt in Denver Plaid"
         },
         "bikepacking": {
           "title": "Bikepacking the Dolomites in five days"
@@ -776,13 +776,13 @@
           "title": "How to pair two typefaces"
         },
         "rxjs": {
-          "title": "RxJS operators you actually use"
+          "title": "But what is a neural network?"
         },
         "cacioEPepe": {
           "title": "Cacio e pepe without the clumps"
         },
         "standingDesk": {
-          "title": "The best standing desks, tested"
+          "title": "Tree Dasher 2 – Natural White"
         },
         "contrast": {
           "title": "A practical guide to color contrast"
@@ -805,8 +805,8 @@
         "css": "css"
       },
       "privacyBefore": "By continuing you agree to the",
-      "privacyLink": "Privacy policy",
-      "privacyAfter": ". We only use your name, email and avatar."
+      "privacyLink": "privacy policy",
+      "privacyAfter": "."
     },
     "demo": {
       "starting": "Opening the demo…"

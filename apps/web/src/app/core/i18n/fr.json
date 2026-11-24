@@ -718,11 +718,11 @@
   },
   "auth": {
     "signIn": {
-      "title": "Tous vos liens sur une seule étagère",
-      "subtitle": "Enregistrez une fois, retrouvez en quelques secondes.",
+      "title": "Tous vos liens, et un moyen de les retrouver",
+      "subtitle": "Enregistrez tout d’un geste, retrouvez-le en quelques secondes et revoyez-le avant de l’oublier.",
       "google": "Continuer avec Google",
       "github": "Continuer avec GitHub",
-      "demo": "Ouvrir la démo",
+      "demo": "Faire un tour dans la démo",
       "failed": "Impossible de vous connecter. Réessayez.",
       "error": {
         "generic": "La connexion n’a pas abouti. Réessayez.",
@@ -741,13 +741,13 @@
       "or": "ou",
       "tiles": {
         "signalForms": {
-          "title": "Signal Forms en 20 minutes"
+          "title": "Angular in 100 Seconds"
         },
         "woolCoat": {
-          "title": "Manteau en laine, coupe droite"
+          "title": "The Ojai Jacket"
         },
         "nestjs": {
-          "title": "NestJS pour les développeurs frontend"
+          "title": "Microservices explained"
         },
         "ramen": {
           "title": "Les meilleurs ramen de la semaine"
@@ -759,7 +759,7 @@
           "title": "Lisbonne en mai : un long week-end"
         },
         "icons": {
-          "title": "Jeux d’icônes gratuits pour projets perso"
+          "title": "Excalidraw"
         },
         "grid": {
           "title": "Le guide complet de CSS grid"
@@ -768,19 +768,19 @@
           "title": "Pain au levain pour débutants, pas à pas"
         },
         "sneakers": {
-          "title": "Baskets minimalistes en cuir"
+          "title": "Tree Runners – Thunder Green"
         },
         "typeScale": {
           "title": "Des échelles typographiques qui marchent"
         },
         "kyoto": {
-          "title": "Kyoto loin de la foule"
+          "title": "Optimistic Nihilism"
         },
         "containerQueries": {
           "title": "Les container queries en pratique"
         },
         "linenShirt": {
-          "title": "Chemise en lin vert sauge"
+          "title": "The Crater Shirt in Denver Plaid"
         },
         "bikepacking": {
           "title": "Les Dolomites à vélo en cinq jours"
@@ -789,13 +789,13 @@
           "title": "Comment associer deux polices"
         },
         "rxjs": {
-          "title": "Les opérateurs RxJS que vous utilisez vraiment"
+          "title": "But what is a neural network?"
         },
         "cacioEPepe": {
           "title": "Cacio e pepe sans grumeaux"
         },
         "standingDesk": {
-          "title": "Les meilleurs bureaux assis-debout, testés"
+          "title": "Tree Dasher 2 – Natural White"
         },
         "contrast": {
           "title": "Guide pratique du contraste des couleurs"
@@ -818,8 +818,8 @@
         "css": "css"
       },
       "privacyBefore": "En continuant, vous acceptez la",
-      "privacyLink": "Politique de confidentialité",
-      "privacyAfter": ". Nous n’utilisons que votre nom, votre e-mail et votre avatar."
+      "privacyLink": "politique de confidentialité",
+      "privacyAfter": "."
     },
     "demo": {
       "starting": "Ouverture de la démo…"

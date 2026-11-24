@@ -718,11 +718,11 @@
   },
   "auth": {
     "signIn": {
-      "title": "Todos tus enlaces en una estantería",
-      "subtitle": "Guarda cualquier cosa una vez y encuéntrala en segundos.",
+      "title": "Todos tus enlaces, y una forma de volver a ellos",
+      "subtitle": "Guarda cualquier cosa de un gesto, encuéntrala en segundos y vuelve a verla antes de olvidarla.",
       "google": "Continuar con Google",
       "github": "Continuar con GitHub",
-      "demo": "Abrir la demo",
+      "demo": "Echar un vistazo a la demo",
       "failed": "No pudimos iniciar tu sesión. Inténtalo de nuevo.",
       "error": {
         "generic": "El inicio de sesión no terminó. Inténtalo de nuevo.",
@@ -741,13 +741,13 @@
       "or": "o",
       "tiles": {
         "signalForms": {
-          "title": "Signal Forms en 20 minutos"
+          "title": "Angular in 100 Seconds"
         },
         "woolCoat": {
-          "title": "Abrigo de lana, corte recto"
+          "title": "The Ojai Jacket"
         },
         "nestjs": {
-          "title": "NestJS para desarrolladores frontend"
+          "title": "Microservices explained"
         },
         "ramen": {
           "title": "El mejor ramen para entre semana"
@@ -759,7 +759,7 @@
           "title": "Lisboa en mayo: un fin de semana largo"
         },
         "icons": {
-          "title": "Sets de iconos gratis para proyectos personales"
+          "title": "Excalidraw"
         },
         "grid": {
           "title": "La guía completa de CSS grid"
@@ -768,19 +768,19 @@
           "title": "Pan de masa madre para principiantes, paso a paso"
         },
         "sneakers": {
-          "title": "Zapatillas de cuero minimalistas"
+          "title": "Tree Runners – Thunder Green"
         },
         "typeScale": {
           "title": "Escalas tipográficas que funcionan de verdad"
         },
         "kyoto": {
-          "title": "Kioto lejos de las multitudes"
+          "title": "Optimistic Nihilism"
         },
         "containerQueries": {
           "title": "Container queries en la práctica"
         },
         "linenShirt": {
-          "title": "Camisa de lino verde salvia"
+          "title": "The Crater Shirt in Denver Plaid"
         },
         "bikepacking": {
           "title": "Las Dolomitas en bicicleta en cinco días"
@@ -789,13 +789,13 @@
           "title": "Cómo combinar dos tipografías"
         },
         "rxjs": {
-          "title": "Los operadores de RxJS que sí usas"
+          "title": "But what is a neural network?"
         },
         "cacioEPepe": {
           "title": "Cacio e pepe sin grumos"
         },
         "standingDesk": {
-          "title": "Los mejores escritorios elevables, probados"
+          "title": "Tree Dasher 2 – Natural White"
         },
         "contrast": {
           "title": "Guía práctica del contraste de color"
@@ -818,8 +818,8 @@
         "css": "css"
       },
       "privacyBefore": "Al continuar aceptas la",
-      "privacyLink": "Política de privacidad",
-      "privacyAfter": ". Solo usamos tu nombre, tu correo y tu avatar."
+      "privacyLink": "política de privacidad",
+      "privacyAfter": "."
     },
     "demo": {
       "starting": "Abriendo la demo…"

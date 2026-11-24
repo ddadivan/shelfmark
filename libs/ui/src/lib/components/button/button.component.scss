@@ -126,6 +126,13 @@ a.ui-button {
   &:active {
     background: var(--fill-hover);
   }
+
+  // A pressed toggle keeps the resting look unless a feature marks it through the hooks
+  // (the landing's language switcher: `surface` with `text` on a `surface-hover` track).
+  &[aria-pressed='true'] {
+    color: var(--ui-button-pressed-color, var(--ui-button-color, var(--text)));
+    background: var(--ui-button-pressed-bg, transparent);
+  }
 }
 
 // Window control (the Link page's full screen button): the Site / Reader track's look.

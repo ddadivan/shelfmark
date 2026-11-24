@@ -731,11 +731,11 @@
   },
   "auth": {
     "signIn": {
-      "title": "Усі ваші посилання на одній полиці",
-      "subtitle": "Збережіть будь-що раз — знайдіть за секунди.",
+      "title": "Усі ваші посилання і шлях назад до них",
+      "subtitle": "Зберігайте будь-що одним рухом, знаходьте за секунди й повертайтеся до цього, перш ніж забудете.",
       "google": "Продовжити з Google",
       "github": "Продовжити з GitHub",
-      "demo": "Відкрити демо",
+      "demo": "Роздивитися в демо",
       "failed": "Не вдалося вас увійти. Спробуйте ще раз.",
       "error": {
         "generic": "Вхід не завершився. Спробуйте ще раз.",
@@ -754,13 +754,13 @@
       "or": "або",
       "tiles": {
         "signalForms": {
-          "title": "Signal Forms за 20 хвилин"
+          "title": "Angular in 100 Seconds"
         },
         "woolCoat": {
-          "title": "Вовняне пальто прямого крою"
+          "title": "The Ojai Jacket"
         },
         "nestjs": {
-          "title": "NestJS для фронтенд-розробників"
+          "title": "Microservices explained"
         },
         "ramen": {
           "title": "Найкращий рамен на будній вечір"
@@ -772,7 +772,7 @@
           "title": "Лісабон у травні: довгі вихідні"
         },
         "icons": {
-          "title": "Безкоштовні набори іконок для пет-проєктів"
+          "title": "Excalidraw"
         },
         "grid": {
           "title": "Повний посібник із CSS grid"
@@ -781,19 +781,19 @@
           "title": "Хліб на заквасці для початківців, крок за кроком"
         },
         "sneakers": {
-          "title": "Мінімалістичні шкіряні кеди"
+          "title": "Tree Runners – Thunder Green"
         },
         "typeScale": {
           "title": "Типографічні шкали, які справді працюють"
         },
         "kyoto": {
-          "title": "Кіото подалі від натовпів"
+          "title": "Optimistic Nihilism"
         },
         "containerQueries": {
           "title": "Container queries на практиці"
         },
         "linenShirt": {
-          "title": "Лляна сорочка шавлієвого кольору"
+          "title": "The Crater Shirt in Denver Plaid"
         },
         "bikepacking": {
           "title": "Байкпекінг Доломітами за п’ять днів"
@@ -802,13 +802,13 @@
           "title": "Як поєднати два шрифти"
         },
         "rxjs": {
-          "title": "Оператори RxJS, якими ви справді користуєтеся"
+          "title": "But what is a neural network?"
         },
         "cacioEPepe": {
           "title": "Качо е пепе без грудочок"
         },
         "standingDesk": {
-          "title": "Найкращі столи для роботи стоячи, перевірено"
+          "title": "Tree Dasher 2 – Natural White"
         },
         "contrast": {
           "title": "Практичний посібник із контрасту кольорів"
@@ -831,8 +831,8 @@
         "css": "css"
       },
       "privacyBefore": "Продовжуючи, ви погоджуєтеся з",
-      "privacyLink": "Політикою конфіденційності",
-      "privacyAfter": ". Ми використовуємо лише ваше ім’я, пошту й аватар."
+      "privacyLink": "політикою конфіденційності",
+      "privacyAfter": "."
     },
     "demo": {
       "starting": "Відкриваємо демо…"
