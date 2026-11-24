@@ -78,3 +78,32 @@
   grid-row: 1 / span 3;
   align-self: center;
 }
+
+// Search in the feed (Shelf `03-search.html` `.s-head`): "Search" and the count on one baseline,
+// 16px apart; the count in the body size, `text-muted`.
+.library__heading--search {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-4);
+  align-items: baseline;
+}
+
+.library__search-count {
+  @include type(body);
+
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// "Go to" sits 12px under the view tabs; the feed starts 24px under it (16px below 64em).
+.library__views:has(+ .library__go-to.search-go-to--shown) {
+  margin-bottom: var(--space-3);
+}
+
+.library__go-to.search-go-to--shown {
+  margin-bottom: var(--space-6);
+
+  @include compact {
+    margin-bottom: var(--space-4);
+  }
+}

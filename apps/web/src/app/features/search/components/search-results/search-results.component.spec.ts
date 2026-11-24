@@ -12,6 +12,8 @@ import { TAGS_API } from '../../../links/models/tags-api.const';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { SEARCH_DEBOUNCE_MS } from '../../models/search-debounce-ms.const';
 import { LinkOpener } from '../../services/link-opener.service';
+import { RecentSearchesService } from '../../services/recent-searches.service';
+import { signal } from '@angular/core';
 import { SearchResultsComponent } from './search-results.component';
 
 function link(n: number): LinkResponse {
@@ -29,8 +31,12 @@ function page(items: LinkResponse[], nextCursor: string | null = null): ListLink
   return { items, nextCursor, pinned: [] };
 }
 
-async function setup(list: LinksApi['list'] = () => of(page([link(1), link(2)]))) {
+async function setup(
+  list: LinksApi['list'] = () => of(page([link(1), link(2)])),
+  { screen = false, recent: recentItems = [] as string[] } = {},
+) {
   const opener = { open: vi.fn() };
+  const recent = { items: signal(recentItems), add: vi.fn() };
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),
@@ -48,64 +54,49 @@ async function setup(list: LinksApi['list'] = () => of(page([link(1), link(2)]))
       { provide: TAGS_API, useValue: { list: () => of([]) } },
       { provide: LinkActionsService, useValue: { open: vi.fn() } },
       { provide: LinkOpener, useValue: opener },
+      { provide: RecentSearchesService, useValue: recent },
     ],
   });
   await loadEnglish();
   const fixture = TestBed.createComponent(SearchResultsComponent);
-  fixture.componentRef.setInput('popup', true);
+  fixture.componentRef.setInput('screen', screen);
   document.body.append(fixture.nativeElement as HTMLElement);
   const done = vi.fn();
   fixture.componentInstance.done.subscribe(done);
   await fixture.whenStable();
   const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
-  return { fixture, done, navigate, opener, element: fixture.nativeElement as HTMLElement };
+  return { fixture, done, navigate, opener, recent, element: fixture.nativeElement as HTMLElement };
 }
 
-const field = (element: HTMLElement): HTMLInputElement =>
-  element.querySelector<HTMLInputElement>('input[role="combobox"]')!;
+const field = (element: HTMLElement): HTMLInputElement => {
+  const input = element.querySelector<HTMLInputElement>('input[role="combobox"]');
+  if (!input) {
+    throw new Error('no search field');
+  }
+  return input;
+};
 /** Generous: a loaded CI runner is many times slower than a laptop. */
-const PANEL_GONE_TIMEOUT_MS = 15_000;
-const panel = (): HTMLElement | null => document.querySelector('.ui-command-list__panel');
-/** The leave animation and the overlay release take longer on a loaded runner: wait, do not guess. */
-const panelGone = (): Promise<void> =>
-  vi.waitFor(
-    () => {
-      // Zoneless: each poll runs change detection, so the removal is never waiting for a tick.
-      TestBed.tick();
-      expect(panel()).toBeNull();
-    },
-    { timeout: PANEL_GONE_TIMEOUT_MS },
-  );
-const options = (): HTMLElement[] => [
-  ...document.querySelectorAll<HTMLElement>('.ui-command-list__panel [role="option"]'),
+const RESULTS_TIMEOUT_MS = 15_000;
+const options = (element: HTMLElement): HTMLElement[] => [
+  ...element.querySelectorAll<HTMLElement>('[role="option"]'),
 ];
 
-async function type(
-  fixture: ComponentFixture<unknown>,
-  text: string,
-  { waitForResults = true } = {},
-): Promise<void> {
-  const input = field(fixture.nativeElement as HTMLElement);
+async function type(fixture: ComponentFixture<unknown>, text: string): Promise<void> {
+  const element = fixture.nativeElement as HTMLElement;
+  const input = field(element);
   input.focus();
   input.value = text;
   input.dispatchEvent(new Event('input', { bubbles: true }));
   await fixture.whenStable();
   await new Promise((resolve) => setTimeout(resolve, SEARCH_DEBOUNCE_MS + 60));
   await fixture.whenStable();
-  if (!waitForResults) {
-    return;
-  }
-  // The results (or "nothing found") are in the panel: a request that answers after the next
-  // step is what made these tests depend on the speed of the machine.
+  // The results (or "nothing found") are on screen: wait for the status, do not guess the time.
   await vi.waitFor(
     () => {
       TestBed.tick();
-      expect(
-        document.querySelector('.ui-command-list__panel [role="status"]')?.textContent?.trim() ??
-          '',
-      ).not.toBe('');
+      expect(element.querySelector('[role="status"]')?.textContent?.trim() ?? '').not.toBe('');
     },
-    { timeout: PANEL_GONE_TIMEOUT_MS },
+    { timeout: RESULTS_TIMEOUT_MS },
   );
 }
 
@@ -125,47 +116,38 @@ async function key(
   return event;
 }
 
-describe('SearchResultsComponent as the header field (popup)', { timeout: 30_000 }, () => {
+describe('SearchResultsComponent (the search dialog list)', { timeout: 30_000 }, () => {
   afterEach(() => {
     document.querySelector('app-search-results')?.remove();
-    // A panel left open by a test lives in the overlay pane: it must not be the next test's panel.
-    document.querySelectorAll('.cdk-overlay-container > *').forEach((node) => {
-      node.remove();
-    });
   });
 
-  it('is a closed combobox until the first character, then lists the results in a panel', async () => {
+  it('lists the links, then the folders and tags, with the active row on the field', async () => {
     const { element, fixture } = await setup();
-
-    expect(field(element).getAttribute('aria-expanded')).toBe('false');
-    expect(panel()).toBeNull();
-    expect(element.querySelector('.ui-command-list__field kbd')?.textContent).toMatch(/K$/u);
 
     await type(fixture, 'signal');
 
-    expect(field(element).getAttribute('aria-expanded')).toBe('true');
-    expect(panel()).not.toBeNull();
-    const texts = options().map((option) => option.textContent);
-    expect(texts.some((text) => text?.includes('Signal 1'))).toBe(true);
-    expect(texts.some((text) => text?.includes('Signals club'))).toBe(true);
-    expect(options().map((option) => option.id)).toContain(
+    const texts = options(element).map((option) => option.textContent ?? '');
+    const linkRow = texts.findIndex((text) => text.includes('Signal 1'));
+    const folderRow = texts.findIndex((text) => text.includes('Signals club'));
+    expect(linkRow).toBeGreaterThanOrEqual(0);
+    expect(folderRow).toBeGreaterThan(linkRow);
+    expect(options(element).map((option) => option.id)).toContain(
       field(element).getAttribute('aria-activedescendant'),
     );
   });
 
-  it('opens a link in a new tab with Enter and closes the panel, keeping the text', async () => {
-    const { done, element, fixture, opener } = await setup();
+  it('opens a link in a new tab with Enter, finishes and remembers the search', async () => {
+    const { done, fixture, opener, recent } = await setup();
 
     await type(fixture, 'signal');
     await key(fixture, 'Enter');
 
     expect(opener.open).toHaveBeenCalledWith(expect.stringContaining('https://'), false);
     expect(done).toHaveBeenCalledTimes(1);
-    await panelGone();
-    expect(field(element).value).toBe('signal');
+    expect(recent.add).toHaveBeenCalledWith('signal');
   });
 
-  it('keeps the panel for Cmd+Enter (background tab)', async () => {
+  it('keeps the list for Cmd+Enter (background tab)', async () => {
     const { done, fixture, opener } = await setup();
 
     await type(fixture, 'signal');
@@ -173,64 +155,45 @@ describe('SearchResultsComponent as the header field (popup)', { timeout: 30_000
 
     expect(opener.open).toHaveBeenCalledWith(expect.stringContaining('https://'), true);
     expect(done).not.toHaveBeenCalled();
-    expect(panel()).not.toBeNull();
   });
 
-  it('navigates to "Show all results" and clears the field', async () => {
-    const { done, element, fixture, navigate } = await setup(() => of(page([link(1)], 'next')));
+  it('navigates to "Show all results" and finishes', async () => {
+    const { done, element, fixture, navigate, recent } = await setup(() =>
+      of(page([link(1)], 'next')),
+    );
 
     await type(fixture, 'signal');
-    options()
+    options(element)
       .find((option) => option.textContent?.includes('Show all results'))
       ?.click();
     await vi.waitFor(() => expect(done).toHaveBeenCalled());
 
     expect(navigate).toHaveBeenCalledWith(['/links'], { queryParams: { q: 'signal' } });
-    expect(field(element).value).toBe('');
-    await panelGone();
+    expect(recent.add).toHaveBeenCalledWith('signal');
   });
 
-  it('Esc closes the panel and keeps the text, a second Esc clears it', async () => {
-    const { element, fixture } = await setup();
+  it('offers the recent searches while the field is empty and searches the one chosen', async () => {
+    const { element, fixture } = await setup(undefined, { recent: ['shoes', 'recipes'] });
 
-    await type(fixture, 'signal');
-    await key(fixture, 'Escape');
-    await panelGone();
-    expect(field(element).value).toBe('signal');
+    const rows = options(element);
+    expect(rows.map((row) => row.textContent?.trim())).toEqual(['shoes', 'recipes']);
 
-    await key(fixture, 'Escape');
-    expect(field(element).value).toBe('');
-  });
-
-  it('results that arrive after Esc do not open the closed panel again', async () => {
-    const answer = new Subject<ListLinksResponse>();
-    const { element, fixture } = await setup(() => answer);
-
-    await type(fixture, 'signal', { waitForResults: false });
-    expect(panel()).not.toBeNull();
-    await key(fixture, 'Escape');
-    await panelGone();
-
-    // The request answers only now (a slow runner or network): the panel stays shut.
-    answer.next(page([link(1), link(2)]));
-    answer.complete();
+    rows[0]?.click();
     await fixture.whenStable();
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    TestBed.tick();
-    expect(panel()).toBeNull();
-    expect(field(element).getAttribute('aria-expanded')).toBe('false');
-    expect(field(element).value).toBe('signal');
+
+    expect(field(element).value).toBe('shoes');
   });
 
-  it('leaves nothing of the open panel in the page when the field is destroyed', async () => {
-    const { fixture } = await setup();
-    await type(fixture, 'signal');
-    expect(panel()).not.toBeNull();
+  it('screen: a Back button before the field finishes the search', async () => {
+    const { done, element } = await setup(undefined, { screen: true });
 
-    fixture.destroy();
+    const back = element.querySelector<HTMLButtonElement>('button[aria-label="Close search"]');
+    expect(element.querySelector('ui-command-list')?.classList).toContain(
+      'ui-command-list--screen',
+    );
+    back?.click();
 
-    expect(document.querySelector('.ui-command-list__popup')).toBeNull();
-    expect(panel()).toBeNull();
+    expect(done).toHaveBeenCalledTimes(1);
   });
 
   it('focus() puts the caret in the field', async () => {
@@ -241,19 +204,37 @@ describe('SearchResultsComponent as the header field (popup)', { timeout: 30_000
     expect(document.activeElement).toBe(field(element));
   });
 
-  it('says so in the panel when nothing matches', async () => {
-    const { fixture } = await setup(() => of(page([])));
+  it('says so when nothing matches', async () => {
+    const { element, fixture } = await setup(() => of(page([])));
 
     await type(fixture, 'zzzz');
 
-    expect(panel()?.textContent).toContain('Nothing found for “zzzz”');
+    expect(element.textContent).toContain('Nothing found for “zzzz”');
   });
 
-  it('has no axe violations with the panel open', async () => {
+  it('keeps the previous results while a new answer loads', async () => {
+    const answer = new Subject<ListLinksResponse>();
+    let calls = 0;
+    const { element, fixture } = await setup(() => {
+      calls += 1;
+      return calls === 1 ? of(page([link(1)])) : answer;
+    });
+
+    await type(fixture, 'signal');
+    const input = field(element);
+    input.value = 'signal 1';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    await fixture.whenStable();
+
+    expect(options(element).some((option) => option.textContent?.includes('Signal 1'))).toBe(true);
+    answer.complete();
+  });
+
+  it('has no axe violations with results', async () => {
     const { element, fixture } = await setup();
     await type(fixture, 'signal');
 
-    const { violations } = await axe.run([element, panel()!], {
+    const { violations } = await axe.run(element, {
       rules: { 'color-contrast': { enabled: false }, region: { enabled: false } },
     });
 

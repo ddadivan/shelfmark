@@ -84,7 +84,7 @@
   } @else if (showDate() && saved()) {
     <span slot="date">{{ saved() }}</span>
   }
-  <span slot="title">{{ link().title }}</span>
+  <span slot="title"><ui-highlight [text]="link().title" [query]="highlight()" /></span>
   <span slot="source" class="link-card__site" [attr.title]="host()">
     <ui-favicon [src]="favicon()" [letter]="letter()" [colour]="colour()" />
     <span class="link-card__host">{{ host() }}</span>

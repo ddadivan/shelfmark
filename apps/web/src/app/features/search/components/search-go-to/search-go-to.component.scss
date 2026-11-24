@@ -1,0 +1,26 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+// Shelf `03-search.html` `.s-goto`: "Go to" in 12px `text-muted`, then the chips, 8px apart.
+.search-go-to {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.search-go-to__label {
+  @include type(caption);
+
+  margin-inline-end: var(--space-2);
+  color: var(--text-muted);
+}
+
+.search-go-to__count {
+  margin-inline-start: var(--space-1);
+  font-weight: 400;
+  color: var(--text-muted);
+}

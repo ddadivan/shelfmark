@@ -1,0 +1,45 @@
+@if (any()) {
+  <div class="search-go-to" role="group" aria-labelledby="search-go-to-label">
+    <span id="search-go-to-label" class="search-go-to__label">{{
+      'search.goTo.label' | transloco
+    }}</span>
+    @for (match of folderMatches(); track match.folder.id) {
+      <ui-chip
+        variant="jump"
+        clickable
+        icon="folder"
+        [ariaLabel]="
+          'search.goTo.folder' | transloco: { name: match.path, count: match.folder.linkCount }
+        "
+        (clicked)="openFolder(match.folder.id)"
+      >
+        {{ match.path }}
+        <span class="search-go-to__count" aria-hidden="true">{{ match.folder.linkCount }}</span>
+      </ui-chip>
+    }
+    @for (tag of tagMatches(); track tag.id) {
+      <ui-chip
+        variant="jump"
+        clickable
+        icon="hash"
+        [ariaLabel]="'search.goTo.tag' | transloco: { name: tag.name, count: tag.linkCount }"
+        (clicked)="openTag(tag.name)"
+      >
+        {{ tag.name }}
+        <span class="search-go-to__count" aria-hidden="true">{{ tag.linkCount }}</span>
+      </ui-chip>
+    }
+    @for (view of viewMatches(); track view.id) {
+      <ui-chip
+        variant="jump"
+        clickable
+        icon="filter"
+        [ariaLabel]="'search.goTo.view' | transloco: { name: view.name, count: view.count }"
+        (clicked)="openView(view)"
+      >
+        {{ view.name }}
+        <span class="search-go-to__count" aria-hidden="true">{{ view.count }}</span>
+      </ui-chip>
+    }
+  </div>
+}

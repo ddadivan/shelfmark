@@ -42,7 +42,6 @@ interface Options {
   backfill?: Partial<AiBackfillStatus>;
   meaningSearch?: boolean;
   enabled?: boolean;
-  popup?: boolean;
   startFails?: boolean;
 }
 
@@ -83,9 +82,6 @@ async function setup(options: Options = {}) {
   await loadEnglish();
   await TestBed.inject(AiSettingsStore).load();
   const fixture = TestBed.createComponent(SearchResultsComponent);
-  if (options.popup) {
-    fixture.componentRef.setInput('popup', true);
-  }
   document.body.append(fixture.nativeElement as HTMLElement);
   await fixture.whenStable();
   const loader = TestbedHarnessEnvironment.loader(fixture);
@@ -163,24 +159,5 @@ describe('SearchResultsComponent: the older-links reminder (hotfix 2.2.1)', () =
     const { list } = await setup();
     await vi.waitFor(async () => expect(await list.getOptions()).not.toHaveLength(0), WAIT);
     expect(await list.getNoteText()).not.toContain('older links');
-  });
-
-  it('header panel: Tab in the field reaches the buttons, Esc hands focus back to the field', async () => {
-    const { list, root, element } = await setup({ popup: true });
-    await vi.waitFor(async () => expect(await list.getNoteText()).toContain(REMINDER), WAIT);
-    const field = element.querySelector('input[role="combobox"]') as HTMLInputElement;
-    field.focus();
-    const tab = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
-    field.dispatchEvent(tab);
-    expect(tab.defaultPrevented).toBe(true);
-    const process = await root.getHarness(UiButtonHarness.with({ text: 'Process' }));
-    expect(await process.isFocused()).toBe(true);
-    // Focus left the field for the panel: the panel stays open.
-    expect(await list.isOpen()).toBe(true);
-    document.activeElement?.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
-    );
-    expect(document.activeElement).toBe(field);
-    expect(await list.isOpen()).toBe(true);
   });
 });

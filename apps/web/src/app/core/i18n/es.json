@@ -2220,7 +2220,34 @@
       "background": "abrir en segundo plano"
     },
     "askRow": "Pregunta a tus enlaces: «{{query}}»",
-    "askRowCompact": "Pregunta a tus enlaces sobre esto"
+    "askRowCompact": "Pregunta a tus enlaces sobre esto",
+    "clear": "Borrar búsqueda",
+    "recent": {
+      "title": "Búsquedas recientes"
+    },
+    "askHint": "Para preguntas (cuántos, cuál, resume) usa Consulta a la derecha del campo.",
+    "askHintCompact": "Para preguntas (cuántos, cuál, resume) usa Consulta.",
+    "askShelf": "Pregunta a tus enlaces",
+    "closeInMeaning": "Cercanos en significado",
+    "goTo": {
+      "label": "Ir a",
+      "folder": "Abrir la carpeta {{name}}, {{count}}",
+      "tag": "Ver enlaces con la etiqueta {{name}}, {{count}}",
+      "view": "Abrir la vista {{name}}, {{count}}"
+    },
+    "question": {
+      "text": "Parece una pregunta. Tus enlaces pueden responderla con fuentes."
+    },
+    "empty": {
+      "title": "No se encontró nada",
+      "text": "Ningún enlace menciona «{{query}}» en su título, nota, etiquetas o dirección. Prueba otra palabra.",
+      "textAsk": "Ningún enlace menciona «{{query}}» en su título, nota, etiquetas o dirección. Prueba otra palabra o pregunta a tus enlaces: también se busca por significado."
+    },
+    "feed": {
+      "count": "{{count}} para «{{query}}»",
+      "countIn": "{{count}} para «{{query}}» en {{scope}}",
+      "nothing": "Nada para «{{query}}»"
+    }
   },
   "share": {
     "title": "Guardar en Shelfmark",
@@ -3873,7 +3900,6 @@
       }
     },
     "search": {
-      "related": "Relacionados por significado",
       "noWordMatches": "Ningún enlace con estas palabras",
       "why": "Cerca de: {{reasons}}",
       "fromSummary": "Cerca de: {{reasons}} (del resumen)",

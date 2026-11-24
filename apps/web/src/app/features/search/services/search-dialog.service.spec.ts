@@ -170,21 +170,21 @@ describe('SearchDialogService dialog', () => {
   });
 });
 
-describe('SearchDialogService on a wide screen (#329)', () => {
-  function setup(wide: boolean) {
+describe('SearchDialogService with the desktop header (Shelf, from 64em)', () => {
+  function setup(compact: boolean) {
     const dialogs = { open: vi.fn() };
     TestBed.configureTestingModule({
       providers: [
         { provide: DialogService, useValue: dialogs },
         { provide: Dialog, useValue: { openDialogs: [] } },
-        { provide: ViewportService, useValue: { wide: signal(wide) } },
+        { provide: ViewportService, useValue: { compact: signal(compact) } },
       ],
     });
     return { dialogs, service: TestBed.inject(SearchDialogService) };
   }
 
   it('focuses the header field instead of opening the dialog', () => {
-    const { dialogs, service } = setup(true);
+    const { dialogs, service } = setup(false);
     const focus = vi.fn(() => true);
     TestBed.inject(SearchFieldService).register(focus);
 
@@ -195,15 +195,15 @@ describe('SearchDialogService on a wide screen (#329)', () => {
   });
 
   it('opens the dialog when no field is there', () => {
-    const { dialogs, service } = setup(true);
+    const { dialogs, service } = setup(false);
 
     service.open();
 
     expect(dialogs.open).toHaveBeenCalledTimes(1);
   });
 
-  it('opens the dialog below 80em even if a field is registered', () => {
-    const { dialogs, service } = setup(false);
+  it('opens the full-screen dialog below 64em even if a field is registered', () => {
+    const { dialogs, service } = setup(true);
     const focus = vi.fn(() => true);
     TestBed.inject(SearchFieldService).register(focus);
 

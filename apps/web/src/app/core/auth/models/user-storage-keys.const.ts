@@ -3,6 +3,7 @@ import { EXTENSION_BANNER_DISMISSED_STORAGE_KEY } from './extension-banner-dismi
 import { EMOJI_RECENT_STORAGE_KEY } from './emoji-recent-storage-key.const';
 import { LAST_EXPORT_STORAGE_KEY } from './last-export-storage-key.const';
 import { RECENT_FOLDERS_STORAGE_KEY } from './recent-folders-storage-key.const';
+import { RECENT_SEARCHES_STORAGE_KEY } from './recent-searches-storage-key.const';
 import { REMINDERS_SEEN_STORAGE_KEY } from './reminders-seen-storage-key.const';
 import { SESSION_HINT_STORAGE_KEY } from './session-hint-storage-key.const';
 
@@ -23,4 +24,6 @@ export const USER_STORAGE_KEYS: readonly string[] = [
   BACKFILL_REMINDER_DISMISSED_STORAGE_KEY,
   // When and how the whole library was last exported (the export dialog, #387).
   LAST_EXPORT_STORAGE_KEY,
+  // The texts of the last searches, offered under the empty search field (Shelf).
+  RECENT_SEARCHES_STORAGE_KEY,
 ];

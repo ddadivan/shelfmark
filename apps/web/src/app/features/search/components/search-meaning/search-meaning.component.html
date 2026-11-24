@@ -1,0 +1,67 @@
+@if (meaning.rows().length > 0) {
+  <section class="search-meaning" aria-labelledby="search-meaning-heading">
+    @if (empty()) {
+      <p class="search-meaning__lead">{{ 'ai.search.noWordMatches' | transloco }}</p>
+    }
+    <h2 id="search-meaning-heading" class="search-meaning__heading">
+      <ui-icon class="search-meaning__spark" name="spark" />
+      {{ 'search.closeInMeaning' | transloco }}
+      <span class="search-meaning__count">{{ meaning.rows().length }}</span>
+    </h2>
+    @if (meaning.hint(); as hint) {
+      <ui-ai-line class="search-meaning__note" [text]="'ai.search.preparing' | transloco: hint" />
+    }
+    <ul
+      class="search-meaning__grid"
+      [style.--search-meaning-column]="filters.gridColumn() / 16 + 'rem'"
+      [attr.aria-label]="'search.closeInMeaning' | transloco"
+    >
+      @for (row of meaning.rows(); track row.link.id) {
+        <li>
+          <app-link-card
+            [link]="row.link"
+            [headingLevel]="3"
+            [showNote]="filters.fieldShown(CARD_FIELD.Note)"
+            [showTags]="filters.fieldShown(CARD_FIELD.Tags)"
+            [showFolder]="filters.fieldShown(CARD_FIELD.Folder)"
+            [showDate]="filters.fieldShown(CARD_FIELD.Date)"
+            [folder]="folderChips.of(row.link.folderId)"
+            [previewable]="true"
+            (previewRequested)="preview.open(row.link)"
+            (opened)="actions.open(row.link)"
+            (openRequested)="actions.openFromMenu(row.link)"
+            (favoriteToggled)="actions.toggleFavorite(row.link)"
+            (editRequested)="actions.edit(row.link)"
+            (moveRequested)="actions.move(row.link)"
+            (remindRequested)="actions.remind(row.link)"
+            (deleteRequested)="actions.delete(row.link)"
+          />
+        </li>
+      }
+    </ul>
+  </section>
+} @else if (empty()) {
+  <ui-empty-state
+    layout="page"
+    illustration="not-found"
+    [heading]="'search.empty.title' | transloco"
+    [text]="
+      (ai.askOn() ? 'search.empty.textAsk' : 'search.empty.text')
+        | transloco: { query: filters.query() }
+    "
+  >
+    <ui-button (click)="filters.clearSearch()">{{
+      'library.emptySearch.clear' | transloco
+    }}</ui-button>
+    @if (elsewhere()) {
+      <ui-button (click)="filters.searchEverywhere()">
+        {{ 'library.emptySearch.all' | transloco }}
+      </ui-button>
+    }
+    @if (ai.askOn()) {
+      <ui-button variant="ai-ghost" iconLeft="spark" (click)="ask()">
+        {{ 'search.askShelf' | transloco }}
+      </ui-button>
+    }
+  </ui-empty-state>
+}

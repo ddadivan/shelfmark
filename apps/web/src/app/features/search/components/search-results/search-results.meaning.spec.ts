@@ -106,10 +106,10 @@ describe('SearchResultsComponent with search by meaning (AI-3)', () => {
     const { ai, list, element } = await setup();
     await list.setQuery('talk about signals and performance');
     await vi.waitFor(async () => {
-      expect(await list.getDividerHeadings()).toEqual(['Related by meaning']);
+      expect(await list.getDividerHeadings()).toEqual(['Close in meaning']);
     }, WAIT);
 
-    expect(await list.getGroupHeadings()).toEqual(['1 link', 'Related by meaning']);
+    expect(await list.getGroupHeadings()).toEqual(['1 link', 'Close in meaning']);
     expect(await list.getGroupLeads()).toEqual([]);
     expect(ai.searchMeaning).toHaveBeenCalledTimes(1);
     const rows = await Promise.all((await list.getOptions()).map((option) => option.getText()));
@@ -133,7 +133,7 @@ describe('SearchResultsComponent with search by meaning (AI-3)', () => {
     await vi.waitFor(async () => {
       expect(await list.getGroupLeads()).toEqual(['No links with these words']);
     }, WAIT);
-    expect(await list.getGroupHeadings()).toEqual(['Related by meaning']);
+    expect(await list.getGroupHeadings()).toEqual(['Close in meaning']);
     expect(await list.isEmpty()).toBe(false);
     expect(await list.getOptions()).toHaveLength(3);
   });

@@ -91,6 +91,9 @@ import { PreviewPanelComponent } from '../link-preview/components/preview-panel/
 import { PreviewPageComponent } from '../link-preview/components/preview-page/preview-page.component';
 import { LibraryViewMenuComponent } from './components/library-view-menu/library-view-menu.component';
 import { CARD_FIELD } from './models/card-field.const';
+import { SearchGoToComponent } from '../search/components/search-go-to/search-go-to.component';
+import { SearchMeaningComponent } from '../search/components/search-meaning/search-meaning.component';
+import { SearchQuestionHintComponent } from '../search/components/search-question-hint/search-question-hint.component';
 
 /** Number of placeholders shown while the first page loads. */
 const SKELETON_COUNT = 8;
@@ -151,6 +154,9 @@ const SKELETON_COUNT = 8;
     SkeletonComponent,
     SplitRightHalfComponent,
     TidyEntryComponent,
+    SearchGoToComponent,
+    SearchMeaningComponent,
+    SearchQuestionHintComponent,
   ],
   templateUrl: './library.page.html',
   styleUrls: [

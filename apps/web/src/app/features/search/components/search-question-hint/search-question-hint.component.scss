@@ -1,0 +1,10 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+}
+
+// Shelf: the band sits 16px over the results.
+:host(.search-question-hint--shown) {
+  margin-block-end: var(--space-4);
+}

@@ -2220,7 +2220,34 @@
       "background": "abrir em segundo plano"
     },
     "askRow": "Pergunte aos seus links: “{{query}}”",
-    "askRowCompact": "Pergunte aos seus links sobre isso"
+    "askRowCompact": "Pergunte aos seus links sobre isso",
+    "clear": "Limpar busca",
+    "recent": {
+      "title": "Buscas recentes"
+    },
+    "askHint": "Para perguntas (quantos, qual, resuma) use Consulta à direita do campo.",
+    "askHintCompact": "Para perguntas (quantos, qual, resuma) use Consulta.",
+    "askShelf": "Pergunte aos seus links",
+    "closeInMeaning": "Próximos no sentido",
+    "goTo": {
+      "label": "Ir para",
+      "folder": "Abrir a pasta {{name}}, {{count}}",
+      "tag": "Ver links com a tag {{name}}, {{count}}",
+      "view": "Abrir a visualização {{name}}, {{count}}"
+    },
+    "question": {
+      "text": "Parece uma pergunta. Seus links podem responder com fontes."
+    },
+    "empty": {
+      "title": "Nada encontrado",
+      "text": "Nenhum link menciona “{{query}}” no título, na nota, nas tags ou no endereço. Tente outra palavra.",
+      "textAsk": "Nenhum link menciona “{{query}}” no título, na nota, nas tags ou no endereço. Tente outra palavra ou pergunte aos seus links: a busca também é pelo sentido."
+    },
+    "feed": {
+      "count": "{{count}} para “{{query}}”",
+      "countIn": "{{count}} para “{{query}}” em {{scope}}",
+      "nothing": "Nada para “{{query}}”"
+    }
   },
   "share": {
     "title": "Salvar no Shelfmark",
@@ -3873,7 +3900,6 @@
       }
     },
     "search": {
-      "related": "Relacionados pelo significado",
       "noWordMatches": "Nenhum link com essas palavras",
       "why": "Perto de: {{reasons}}",
       "fromSummary": "Perto de: {{reasons}} (do resumo)",

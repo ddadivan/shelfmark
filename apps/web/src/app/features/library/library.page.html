@@ -112,6 +112,7 @@
           } @else {
           <div
             class="library__heading"
+            [class.library__heading--search]="filters.searching() && !splitView.open()"
             [class.library__heading--split]="splitView.open()"
             [class.library__heading--cover]="!!plainFolder()?.cover"
           >
@@ -119,8 +120,16 @@
             <app-folder-cover class="library__cover" [src]="cover" />
             }
             <!-- prettier-ignore -->
-            <h1 class="library__title" [class.library__title--hidden]="splitView.open()">{{ filters.folder()?.name ?? (filters.titleKey() | transloco) }}</h1>
-            @if (splitView.open()) {
+            <h1 class="library__title" [class.library__title--hidden]="splitView.open()">{{ filters.searching() ? ('search.title' | transloco) : (filters.folder()?.name ?? (filters.titleKey() | transloco)) }}</h1>
+            @if (filters.searching() && !splitView.open()) {
+            <p class="library__search-count">
+              @if (feed.empty()) { {{ 'search.feed.nothing' | transloco: { query: filters.query() }
+              }} } @else if (feed.showLinks()) { {{ (scope() === LINKS_SCOPE.All ?
+              'search.feed.count' : 'search.feed.countIn') | transloco: { count: feed.shownCount() +
+              (feed.shownHasMore() ? '+' : ''), query: filters.query(), scope:
+              filters.folder()?.name ?? (filters.titleKey() | transloco) } }} }
+            </p>
+            } @if (splitView.open()) {
             <ui-picker-menu
               [options]="splitView.leftOptions()"
               [value]="splitView.leftValue()"
@@ -244,25 +253,23 @@
       @if (!narrow() && !selection.selecting()) {
       <!-- Install the extension (#455): renders nothing unless offered and not closed. -->
       <app-extension-banner class="library__extension" />
+      } @if (filters.searching()) {
+      <app-search-question-hint [query]="filters.query()" />
       } @if (!feed.emptyLibrary()) {
       <app-saved-view-chips class="library__views" [filter]="filters.filter()" />
-      } @if (filters.filtered()) {
+      } @if (filters.searching()) {
+      <app-search-go-to
+        class="library__go-to"
+        [query]="filters.query()"
+        [filter]="filters.filter()"
+      />
+      } @if (filters.filterCount() > 0) {
       <div
         class="library__filter"
         role="group"
         [attr.aria-label]="'library.filter.label' | transloco"
       >
-        @if (filters.searching()) {
-        <ui-chip
-          variant="neutral"
-          icon="search"
-          removable
-          [removeLabel]="'library.search.remove' | transloco: { query: filters.query() }"
-          (removed)="filters.clearSearch()"
-        >
-          {{ 'library.search.chip' | transloco: { query: filters.query() } }}
-        </ui-chip>
-        } @if (filters.linkKind(); as kind) {
+        @if (filters.linkKind(); as kind) {
         <ui-chip
           variant="neutral"
           removable
@@ -300,7 +307,7 @@
           {{ name }}
         </ui-chip>
         }
-        <ui-button variant="ghost" size="sm" (click)="filters.clearAll()">
+        <ui-button variant="ghost" size="sm" (click)="filters.clearFilters()">
           {{ 'tags.filter.clear' | transloco }}
         </ui-button>
       </div>
@@ -361,21 +368,7 @@
           <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="SKELETON_COUNT" />
         </div>
         } } @else if (feed.empty() && filters.searching()) {
-        <ui-empty-state
-          layout="page"
-          illustration="not-found"
-          [heading]="'library.emptySearch.title' | transloco: { query: filters.query() }"
-          [text]="'library.emptySearch.text' | transloco"
-        >
-          <ui-button (click)="filters.clearSearch()"
-            >{{ 'library.emptySearch.clear' | transloco }}</ui-button
-          >
-          @if (scope() !== LINKS_SCOPE.All) {
-          <ui-button (click)="filters.searchEverywhere()">
-            {{ 'library.emptySearch.all' | transloco }}
-          </ui-button>
-          }
-        </ui-empty-state>
+        <app-search-meaning [empty]="true" />
         } @else if (feed.empty() && filters.filtered()) {
         <ui-empty-state
           layout="page"
@@ -566,6 +559,7 @@
             </ng-template>
             <app-link-card
               [link]="link"
+              [highlight]="filters.query()"
               [media]="filters.view() === UI_VIEW.Masonry ? CARD_MEDIA.Natural : CARD_MEDIA.Cover"
               [showNote]="filters.fieldShown(CARD_FIELD.Note)"
               [showTags]="filters.fieldShown(CARD_FIELD.Tags)"
@@ -595,7 +589,9 @@
           </li>
           }
         </ul>
-        } }
+        } } @if (filters.searching() && !store.hasMore()) {
+        <app-search-meaning />
+        }
 
         <ui-load-more [loading]="store.loadingMore()" [text]="'library.loadingMore' | transloco" />
         @if (store.hasMore() && !feed.stale()) {
