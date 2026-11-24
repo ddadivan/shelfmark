@@ -25,6 +25,8 @@ const ALL: SavedViewQuery = {
   sort: LINK_SORT_FIELD.CreatedAt,
   order: SORT_ORDER.Desc,
   q: '',
+  saved: null,
+  favorite: false,
 };
 
 function setup(showPhrase = false) {

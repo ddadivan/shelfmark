@@ -4,7 +4,6 @@ import type { NotificationSettings } from './notification-settings.interface';
 export const NOTIFICATION_DEFAULTS: NotificationSettings = {
   reminders: true,
   continueReading: false,
-  weeklyEmail: false,
   quietFrom: null,
   quietTo: null,
 };

@@ -672,7 +672,7 @@
     "control": {
       "title": "Your control",
       "export": "In Settings you can export your links, folders, tags and notes as JSON or as a browser bookmarks file (HTML).",
-      "delete": "You can delete any link at any time, or delete your whole account in Settings. Your account and all its data are then removed from the database. Backups kept by the database provider may take a short while to expire."
+      "delete": "You can delete any link at any time, or delete your whole account in Settings. Your account is then kept for 7 days in case you change your mind, after which it and all its data are removed from the database. Backups kept by the database provider may take a short while to expire."
     },
     "security": {
       "title": "Security",
@@ -1917,13 +1917,13 @@
     },
     "delete": {
       "title": "Delete account",
-      "hint": "Removes your account and all your links, folders and tags for good. This can't be undone.",
+      "hint": "Your links, folders and tags are kept for 7 days in case you change your mind, then deleted for good.",
       "action": "Delete account",
-      "done": "Account deleted",
-      "doneDetail": "All your data was deleted",
+      "done": "Account deletion scheduled",
+      "doneDetail": "It will be deleted on {{date}}. Sign in before then to keep it.",
       "dialog": {
         "title": "Delete your account?",
-        "text": "All your links, folders and tags will be deleted for good. This can't be undone.",
+        "text": "You will be signed out everywhere. Your links, folders and tags are kept for 7 days: sign in before then to keep your account. After that they are deleted for good.",
         "label": "Type your email to confirm",
         "hint": "Enter {{email}} to confirm.",
         "cancel": "Cancel",
@@ -1934,7 +1934,13 @@
         "mismatch": "That email does not match your account. Check it and try again.",
         "rateLimited": "Too many attempts. Try again in a minute.",
         "failed": "We could not delete your account. Nothing was deleted. Try again."
-      }
+      },
+      "scheduled": {
+        "text": "Your account will be deleted on {{date}}. Until then you can bring everything back.",
+        "keep": "Keep my account"
+      },
+      "kept": "Your account stays",
+      "keepFailed": "We could not keep your account. Try again."
     },
     "library": {
       "viewing": {
@@ -2575,7 +2581,10 @@
       "rename": "Rename",
       "moveLeft": "Move left",
       "moveRight": "Move right",
-      "delete": "Delete view"
+      "delete": "Delete view",
+      "edit": "Edit view…",
+      "pin": "Pin to sidebar",
+      "unpin": "Unpin from sidebar"
     },
     "name": {
       "label": "Name",
@@ -2689,7 +2698,38 @@
       "foundMore": "Found {{count}}+ links",
       "fill": "Fill in",
       "filled": "Done",
-      "showWhere": "Show links where"
+      "showWhere": "Show links where",
+      "saved": {
+        "label": "Saved",
+        "any": "Any time",
+        "month": "Last month",
+        "week": "Last week"
+      },
+      "only": {
+        "label": "Only",
+        "favorites": "Favorites"
+      },
+      "icon": {
+        "label": "Icon",
+        "none": "No icon",
+        "bookmark": "Bookmark",
+        "star": "Star",
+        "play": "Play",
+        "text": "Text",
+        "hash": "Hash",
+        "bell": "Bell",
+        "search": "Search",
+        "grid": "Grid"
+      }
+    },
+    "edit": {
+      "title": "Edit view",
+      "action": "Save changes",
+      "failed": "Couldn't save the view. Try again.",
+      "missing": "This view or its folder is gone. Close and try again."
+    },
+    "edited": {
+      "title": "View updated"
     }
   },
   "feedback": {

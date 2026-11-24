@@ -1,7 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { SAVED_VIEW_LIMIT, type UpdateSavedViewRequest } from '@shelfmark/contracts';
+import {
+  SAVED_VIEW_ICON,
+  SAVED_VIEW_LIMIT,
+  type SavedViewIcon,
+  type UpdateSavedViewRequest,
+} from '@shelfmark/contracts';
 import { Type } from 'class-transformer';
-import { IsObject, ValidateIf, ValidateNested } from 'class-validator';
+import { IsIn, IsObject, ValidateIf, ValidateNested } from 'class-validator';
 import { SavedViewName } from './saved-view-name.decorator';
 import { SavedViewQueryRequestDto } from './saved-view-query-request.dto';
 
@@ -20,4 +25,10 @@ export class UpdateSavedViewDto implements UpdateSavedViewRequest {
   @ValidateNested()
   @Type(() => SavedViewQueryRequestDto)
   query?: SavedViewQueryRequestDto;
+
+  /** `null` clears the glyph; absent keeps it. */
+  @ApiPropertyOptional({ enum: Object.values(SAVED_VIEW_ICON), nullable: true })
+  @ValidateIf((_object: unknown, value: unknown) => value !== undefined && value !== null)
+  @IsIn(Object.values(SAVED_VIEW_ICON))
+  icon?: SavedViewIcon | null;
 }

@@ -137,6 +137,21 @@ describe('SidebarPinnedComponent', () => {
     expect(rows[1].textContent).toContain(data.links[0].title);
   });
 
+  it('lists a pinned saved view with its glyph and count, opening its filter (Shelf 13-views)', async () => {
+    const { fixture, element, pins, data } = await setup('none');
+    data.views = data.views.map((view, index) => (index === 0 ? { ...view, icon: 'play' } : view));
+    await pins.pin({ kind: PIN_KIND.View, id: data.views[0].id });
+    await fixture.whenStable();
+
+    const row = items(element)[0];
+    expect(row?.querySelector('.pinned__name')?.textContent?.trim()).toBe('Videos');
+    expect(row?.querySelector('.pinned__view-icon use')?.getAttribute('href')).toMatch(/#sm-play$/);
+    expect(row?.querySelector('a.pinned__link')?.getAttribute('href')).toBe('/links?kind=video');
+    expect(row?.querySelector('.pinned__unpin button')?.getAttribute('aria-label')).toContain(
+      'Videos',
+    );
+  });
+
   it('has no fold chevron unless the sidebar asks for one (#556)', async () => {
     const { fixture } = await setup();
     const toggles = await TestbedHarnessEnvironment.loader(fixture).getAllHarnesses(

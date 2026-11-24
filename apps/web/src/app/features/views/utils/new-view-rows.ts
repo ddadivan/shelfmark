@@ -3,13 +3,16 @@ import {
   LINK_LIMIT,
   SAVED_VIEW_LIMIT,
   SAVED_VIEW_SCOPE,
+  SAVED_WITHIN,
   VIEW_DRAFT_FIELD,
   type LinkKind,
   type SavedViewQuery,
+  type SavedWithin,
   type ViewDraftField,
 } from '@shelfmark/contracts';
 import { ALL_KINDS } from '../../links/models/all-kinds.const';
 import type { NewViewRows } from '../models/new-view-rows.interface';
+import { VIEW_SAVED_ANY } from '../models/view-saved-any.const';
 import { VIEW_WHERE } from '../models/view-where.const';
 import { feedSortOf, sortFieldsOf } from './view-sort';
 import { normalizeViewQuery } from './saved-view-query';
@@ -18,6 +21,12 @@ const KINDS: readonly string[] = Object.values(LINK_KIND);
 
 function isLinkKind(value: string): value is LinkKind {
   return KINDS.includes(value);
+}
+
+const PERIODS: readonly string[] = Object.values(SAVED_WITHIN);
+
+function isSavedWithin(value: string): value is SavedWithin {
+  return PERIODS.includes(value);
 }
 
 /** The rows of the dialog for a stored query (what the controls show). */
@@ -33,6 +42,8 @@ export function rowsOfQuery(query: SavedViewQuery): NewViewRows {
     tags: [...query.tags],
     q: query.q,
     sort: feedSortOf(query),
+    saved: query.saved ?? VIEW_SAVED_ANY,
+    favorite: query.favorite,
   };
 }
 
@@ -50,6 +61,9 @@ export function queryOfRows(rows: NewViewRows): SavedViewQuery {
     kind: isLinkKind(rows.kind) ? rows.kind : null,
     q: rows.q.slice(0, LINK_LIMIT.QueryMax),
     ...sortFieldsOf(rows.sort),
+    saved: isSavedWithin(rows.saved) ? rows.saved : null,
+    // On Favorites the place already says it.
+    favorite: rows.favorite && rows.where !== VIEW_WHERE.Favorites,
   });
   return { ...normalized, tags: normalized.tags.slice(0, SAVED_VIEW_LIMIT.TagsMax) };
 }

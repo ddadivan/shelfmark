@@ -19,6 +19,8 @@ describe('normalizeSavedViewQuery', () => {
         sort: 'title',
         order: 'asc',
         q: 'x',
+        saved: 'week',
+        favorite: true,
       }),
     ).toEqual({
       scope: 'folder',
@@ -28,6 +30,8 @@ describe('normalizeSavedViewQuery', () => {
       sort: 'title',
       order: 'asc',
       q: 'x',
+      saved: 'week',
+      favorite: true,
     });
   });
 
@@ -51,6 +55,15 @@ describe('parseStoredQuery', () => {
       kind: 'article',
     };
     expect(parseStoredQuery(stored)).toEqual(stored);
+    const shelf = { ...DEFAULT_SAVED_VIEW_QUERY, saved: 'month', favorite: true };
+    expect(parseStoredQuery(shelf)).toEqual(shelf);
+  });
+
+  it('reads a view stored before the period and favorites fields as any time, any link', () => {
+    const old: Record<string, unknown> = { ...DEFAULT_SAVED_VIEW_QUERY };
+    delete old['saved'];
+    delete old['favorite'];
+    expect(parseStoredQuery(old)).toEqual(DEFAULT_SAVED_VIEW_QUERY);
   });
 
   it('falls back to the defaults for anything malformed', () => {
@@ -68,6 +81,9 @@ describe('parseStoredQuery', () => {
       }),
     ).toEqual({ ...DEFAULT_SAVED_VIEW_QUERY, tags: ['a', 'b', 'c', 'd', 'e'] });
     expect(parseStoredQuery({ scope: 'all', tags: 'a' }).tags).toEqual([]);
+    expect(parseStoredQuery({ scope: 'all', saved: 'year', favorite: 'yes' })).toEqual(
+      DEFAULT_SAVED_VIEW_QUERY,
+    );
   });
 
   it('drops a folder id outside the folder scope and keeps a folder view without one', () => {

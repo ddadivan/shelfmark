@@ -17,7 +17,6 @@ import {
 } from '@shelfmark/ui';
 import { LocaleService } from '../../../../core/i18n/locale.service';
 import { DeviceNotificationsService } from '../../../notifications/services/device-notifications.service';
-import { EMAIL_ENABLED } from '../../../notifications/models/email-enabled.const';
 import { NotificationSettingsStore } from '../../../notifications/services/notification-settings.store';
 import { quietHourValues } from '../../../notifications/utils/quiet-hours';
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
@@ -52,8 +51,6 @@ export default class NotificationsPage {
   private readonly transloco = inject(TranslocoService);
 
   protected readonly ICON_SIZE = ICON_SIZE;
-  /** Shelf: email postponed by the author; the weekly email row stays hidden. */
-  protected readonly EMAIL_ENABLED = EMAIL_ENABLED;
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   /** The address shown in the "blocked" steps. */
   protected readonly site = inject(DOCUMENT).defaultView?.location.host ?? '';

@@ -7,6 +7,8 @@ import {
   type ListPinsResponse,
   type PinKind,
   type PinRef,
+  type SavedViewResponse,
+  SAVED_VIEW_ENDPOINT,
 } from '@shelfmark/contracts';
 import { createAuthTestApp } from '../../test-utils/auth-test-app';
 import { createIsolationUsers } from '../../test-utils/isolation/create-isolation-users';
@@ -55,8 +57,19 @@ describe('sidebar pins', () => {
   const pins = async (agent: TestAgent): Promise<PinRef[]> =>
     ((await agent.get(PIN_ENDPOINT).expect(200)).body as ListPinsResponse).items.map((item) => ({
       kind: item.kind,
-      id: (item.folder ?? item.link)?.id ?? '',
+      id: (item.folder ?? item.link ?? item.view)?.id ?? '',
     }));
+  const view = async (agent: TestAgent, name: string): Promise<PinRef> => ({
+    kind: PIN_KIND.View,
+    id: (
+      (
+        await agent
+          .post(SAVED_VIEW_ENDPOINT)
+          .send({ name, query: { scope: 'all' } })
+          .expect(201)
+      ).body as SavedViewResponse
+    ).id,
+  });
   const trashFolder = (id: string) =>
     a.delete(`/api/folders/${id}`).query({ mode: 'delete-links' }).expect(204);
 
@@ -188,6 +201,46 @@ describe('sidebar pins', () => {
       .post(PIN_ENDPOINT)
       .send({ kind: 'folder', id: '00000000-0000-4000-8000-000000000000' })
       .expect(404);
+  });
+
+  it('pins a saved view with folders and links, under the same cap, and isolates it', async () => {
+    const f = await folder(a, 'Work');
+    const v = await view(a, 'Fresh');
+    await a.post(PIN_ENDPOINT).send(v).expect(200);
+    const list = (await a.post(PIN_ENDPOINT).send(f).expect(200)).body as ListPinsResponse;
+    expect(list.items.map((item) => [item.kind, item.view?.name ?? item.folder?.name])).toEqual([
+      [PIN_KIND.View, 'Fresh'],
+      [PIN_KIND.Folder, 'Work'],
+    ]);
+    const reordered = (
+      await a
+        .put(`${PIN_ENDPOINT}/order`)
+        .send({ items: [f, v] })
+        .expect(200)
+    ).body as ListPinsResponse;
+    expect(reordered.items.map((item) => item.kind)).toEqual([PIN_KIND.Folder, PIN_KIND.View]);
+
+    await b.post(PIN_ENDPOINT).send(v).expect(404);
+    await b.delete(`${PIN_ENDPOINT}/view/${v.id}`).expect(404);
+    expect(await pins(b)).toEqual([]);
+    await a.post(PIN_ENDPOINT).send({ kind: 'view', id: f.id }).expect(404);
+
+    for (let i = 0; i < PIN_LIMIT.Max - 2; i += 1) {
+      await a
+        .post(PIN_ENDPOINT)
+        .send(await view(a, `V${i}`))
+        .expect(200);
+    }
+    await a
+      .post(PIN_ENDPOINT)
+      .send(await link(a, 'Over'))
+      .expect(409);
+
+    await a.delete(`${PIN_ENDPOINT}/view/${v.id}`).expect(204);
+    expect((await pins(a)).some((ref) => ref.id === v.id)).toBe(false);
+    await a.post(PIN_ENDPOINT).send(v).expect(200);
+    await a.delete(`${SAVED_VIEW_ENDPOINT}/${v.id}`).expect(204);
+    expect((await pins(a)).some((ref) => ref.id === v.id)).toBe(false);
   });
 
   it('requires a session', async () => {

@@ -3,7 +3,9 @@ import { inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { DIALOG_ROLE, DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
+import { ACCOUNT_DELETION } from '@shelfmark/contracts';
 import { AuthStore } from '../../../core/auth/auth.store';
+import { LocaleService } from '../../../core/i18n/locale.service';
 import { AUTH_ROUTE } from '../../../core/auth/models/auth-routes.const';
 import { DIALOG_FIRST_FIELD } from '../../../models/dialog-first-field.const';
 import { DeleteAccountDialogComponent } from '../components/delete-account-dialog/delete-account-dialog.component';
@@ -13,10 +15,13 @@ import { ACCOUNT_DELETION_OUTCOME } from '../models/account-deletion-outcome.con
 import type { AccountDeletionOutcome } from '../models/account-deletion-outcome.type';
 import type { DeleteAccountDialogData } from '../models/delete-account-dialog-data.interface';
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 /**
  * Settings, "Delete account": opens the typed-email confirmation, sends `DELETE /api/me` from
- * inside it (so errors show in the dialog) and, once the server confirmed, forgets the session
- * and every cached store, goes to the landing page and confirms with a toast. Demo users cannot
+ * inside it (so errors show in the dialog) and, once the server confirmed (the deletion is
+ * scheduled `ACCOUNT_DELETION.GraceDays` ahead and every session ended), forgets the session and
+ * every cached store, goes to the landing page and says until when signing in keeps the account. Demo users cannot
  * delete (their sandbox expires on its own): `open()` does nothing for them.
  */
 @Service()
@@ -27,6 +32,7 @@ export class AccountDeletionService {
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
+  private readonly locale = inject(LocaleService);
 
   async open(): Promise<void> {
     const user = this.auth.user();
@@ -57,10 +63,13 @@ export class AccountDeletionService {
       // The server cleared the cookie; drop the user and the cached library without a sign-out call.
       this.auth.expireSession();
       await this.router.navigateByUrl(AUTH_ROUTE.Home);
+      const due = new Date(Date.now() + ACCOUNT_DELETION.GraceDays * DAY_MS);
       this.toasts.show({
         kind: TOAST_KIND.Success,
         title: this.transloco.translate('settings.delete.done'),
-        detail: this.transloco.translate('settings.delete.doneDetail'),
+        detail: this.transloco.translate('settings.delete.doneDetail', {
+          date: this.locale.formatDate(due),
+        }),
       });
     }
   }

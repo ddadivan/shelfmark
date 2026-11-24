@@ -5,7 +5,7 @@ import {
   type SavedViewQuery,
 } from '@shelfmark/contracts';
 
-/** A view that lists everything, newest first: the defaults of every absent field. */
+/** A view that lists everything, newest first, any time: the defaults of every absent field. */
 export const DEFAULT_SAVED_VIEW_QUERY: Readonly<SavedViewQuery> = {
   scope: SAVED_VIEW_SCOPE.All,
   folderId: null,
@@ -14,4 +14,6 @@ export const DEFAULT_SAVED_VIEW_QUERY: Readonly<SavedViewQuery> = {
   sort: LINK_SORT_FIELD.CreatedAt,
   order: SORT_ORDER.Desc,
   q: '',
+  saved: null,
+  favorite: false,
 };

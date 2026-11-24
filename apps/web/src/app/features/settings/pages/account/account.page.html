@@ -3,7 +3,23 @@
   [description]="'settings.description.account' | transloco"
 />
 
-@if (auth.user(); as user) {
+@if (deletion.scheduledAt(); as due) {
+<!-- Shelf 05-settings "deletion scheduled": the notice alone, with Keep my account. -->
+<section class="account__deletion">
+  <ui-notice kind="warning" icon="bell">
+    {{ 'settings.delete.scheduled.text' | transloco: { date: locale.formatDate(due) } }}
+    <ui-button
+      uiNoticeAction
+      [size]="buttonSize()"
+      [variant]="BUTTON_VARIANT.Primary"
+      [loading]="deletion.keeping()"
+      (click)="keepAccount()"
+    >
+      {{ 'settings.delete.scheduled.keep' | transloco }}
+    </ui-button>
+  </ui-notice>
+</section>
+} @else { @if (auth.user(); as user) {
 <ui-settings-section [title]="'settings.account.profile' | transloco">
   <div class="account__profile">
     <ui-avatar [name]="user.name" [src]="user.image ?? undefined" size="lg" />
@@ -56,4 +72,4 @@
     </ui-button>
   </ui-settings-row>
 </ui-settings-section>
-}
+} }

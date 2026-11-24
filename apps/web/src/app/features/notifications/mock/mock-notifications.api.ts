@@ -1,12 +1,17 @@
 import { Service } from '@angular/core';
 import {
   NOTIFICATION_DEFAULTS,
+  NOTIFICATION_LIMIT,
+  NOTIFICATION_TIME_PATTERN,
+  type AddNotificationDeviceRequest,
+  type AddNotificationDeviceResponse,
   type NotificationDevice,
   type NotificationSettings,
   type NotificationSettingsResponse,
+  type NotificationTestResponse,
   type UpdateNotificationSettings,
 } from '@shelfmark/contracts';
-import { defer, delay, of, type Observable } from 'rxjs';
+import { defer, delay, of, throwError, type Observable } from 'rxjs';
 import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { NotificationsApi } from '../models/notifications-api.interface';
 import { MOCK_NOTIFICATIONS_STORAGE_KEY } from './models/mock-notifications-storage-key.const';
@@ -16,18 +21,24 @@ const MOCK_OTHER_DEVICE: NotificationDevice = {
   id: 'mock-device-phone',
   name: 'Shelfmark on Pixel 8',
   createdAt: '2026-11-03T09:00:00.000Z',
+  lastUsedAt: null,
 };
+
+interface StoredDevice extends NotificationDevice {
+  /** The subscription endpoint, kept only to recognise a re-subscribe; never answered. */
+  endpoint?: string;
+}
 
 interface Stored {
   settings: NotificationSettings;
-  devices: NotificationDevice[];
+  devices: StoredDevice[];
 }
 
-function isDevice(value: unknown): value is NotificationDevice {
+function isDevice(value: unknown): value is StoredDevice {
   if (typeof value !== 'object' || value === null) {
     return false;
   }
-  const item = value as Partial<Record<keyof NotificationDevice, unknown>>;
+  const item = value as Partial<Record<keyof StoredDevice, unknown>>;
   return (
     typeof item.id === 'string' &&
     typeof item.name === 'string' &&
@@ -41,13 +52,15 @@ function pickSettings(value: unknown): NotificationSettings {
   >;
   const bool = (v: unknown, fallback: boolean): boolean => (typeof v === 'boolean' ? v : fallback);
   const time = (v: unknown): string | null =>
-    typeof v === 'string' && /^\d{2}:\d{2}$/.test(v) ? v : null;
+    typeof v === 'string' && NOTIFICATION_TIME_PATTERN.test(v) ? v : null;
+  const quietFrom = time(item.quietFrom);
+  const quietTo = time(item.quietTo);
+  const pair = quietFrom !== null && quietTo !== null;
   return {
     reminders: bool(item.reminders, NOTIFICATION_DEFAULTS.reminders),
     continueReading: bool(item.continueReading, NOTIFICATION_DEFAULTS.continueReading),
-    weeklyEmail: bool(item.weeklyEmail, NOTIFICATION_DEFAULTS.weeklyEmail),
-    quietFrom: time(item.quietFrom),
-    quietTo: time(item.quietTo),
+    quietFrom: pair ? quietFrom : null,
+    quietTo: pair ? quietTo : null,
   };
 }
 
@@ -60,7 +73,9 @@ function read(): Stored {
     const parsed = JSON.parse(raw) as { settings?: unknown; devices?: unknown };
     return {
       settings: pickSettings(parsed.settings),
-      devices: Array.isArray(parsed.devices) ? parsed.devices.filter(isDevice) : [],
+      devices: Array.isArray(parsed.devices)
+        ? parsed.devices.filter(isDevice).map((d) => ({ ...d, lastUsedAt: d.lastUsedAt ?? null }))
+        : [],
     };
   } catch {
     return { settings: NOTIFICATION_DEFAULTS, devices: [MOCK_OTHER_DEVICE] };
@@ -77,7 +92,9 @@ function write(stored: Stored): void {
 
 /**
  * MOCK (Shelf): notification settings of the mock account (mock builds only), kept in
- * `localStorage` (`sm-mock-notifications`) with one other device; nothing is ever delivered.
+ * `localStorage` (`sm-mock-notifications`) with one other device; nothing is ever pushed (the
+ * service worker is off in dev builds, so no subscription is made either). `test` answers how
+ * many devices there are. Follows the API: push only, quiet hours as a pair, the device cap.
  */
 @Service()
 export class MockNotificationsApi implements NotificationsApi {
@@ -94,6 +111,33 @@ export class MockNotificationsApi implements NotificationsApi {
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
+  addDevice(body: AddNotificationDeviceRequest): Observable<AddNotificationDeviceResponse> {
+    return defer(() => {
+      const stored = read();
+      const same = stored.devices.find((device) => device.endpoint === body.endpoint);
+      if (!same && stored.devices.length >= NOTIFICATION_LIMIT.DevicesPerUserMax) {
+        return throwError(() => new Error('Too many devices'));
+      }
+      const device: StoredDevice = same
+        ? { ...same, name: body.name }
+        : {
+            id: `mock-device-${Date.now().toString(36)}`,
+            name: body.name,
+            createdAt: new Date().toISOString(),
+            lastUsedAt: null,
+            endpoint: body.endpoint,
+          };
+      const next = {
+        ...stored,
+        devices: same
+          ? stored.devices.map((d) => (d.id === same.id ? device : d))
+          : [...stored.devices, device],
+      };
+      write(next);
+      return of({ ...this.response(next), deviceId: device.id });
+    }).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
   removeDevice(id: string): Observable<NotificationSettingsResponse> {
     return defer(() => {
       const stored = read();
@@ -103,7 +147,21 @@ export class MockNotificationsApi implements NotificationsApi {
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
+  test(): Observable<NotificationTestResponse> {
+    return defer(() => of({ sent: read().devices.length })).pipe(delay(MOCK_LATENCY_MS.List));
+  }
+
   private response(stored: Stored): NotificationSettingsResponse {
-    return { available: true, settings: stored.settings, devices: stored.devices };
+    return {
+      available: true,
+      publicKey: null,
+      settings: stored.settings,
+      devices: stored.devices.map(({ id, name, createdAt, lastUsedAt }) => ({
+        id,
+        name,
+        createdAt,
+        lastUsedAt,
+      })),
+    };
   }
 }

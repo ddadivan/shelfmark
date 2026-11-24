@@ -5,6 +5,7 @@ import { LAST_EXPORT_STORAGE_KEY } from './last-export-storage-key.const';
 import { RECENT_FOLDERS_STORAGE_KEY } from './recent-folders-storage-key.const';
 import { RECENT_SEARCHES_STORAGE_KEY } from './recent-searches-storage-key.const';
 import { REMINDERS_SEEN_STORAGE_KEY } from './reminders-seen-storage-key.const';
+import { PUSH_DEVICE_STORAGE_KEY } from './push-device-storage-key.const';
 import { SESSION_HINT_STORAGE_KEY } from './session-hint-storage-key.const';
 
 /**
@@ -26,4 +27,6 @@ export const USER_STORAGE_KEYS: readonly string[] = [
   LAST_EXPORT_STORAGE_KEY,
   // The texts of the last searches, offered under the empty search field (Shelf).
   RECENT_SEARCHES_STORAGE_KEY,
+  // This browser's Web Push device id (Settings › Notifications).
+  PUSH_DEVICE_STORAGE_KEY,
 ];

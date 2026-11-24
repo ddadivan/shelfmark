@@ -1,11 +1,13 @@
 import { inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { SAVED_VIEW_LIMIT, type SavedViewResponse } from '@shelfmark/contracts';
+import { PIN_KIND, SAVED_VIEW_LIMIT, type SavedViewResponse } from '@shelfmark/contracts';
 import { DIALOG_SIZE, DialogService, TOAST_KIND, ToastService } from '@shelfmark/ui';
 import { DIALOG_FIRST_FIELD } from '../../../models/dialog-first-field.const';
 import { VIEW_OUTCOME } from '../../../stores/models/view-outcome.const';
+import { PinsStore } from '../../../stores/pins.store';
 import { SavedViewsStore } from '../../../stores/saved-views.store';
+import { PinActionsService } from '../../pins/services/pin-actions.service';
 import { AiSettingsStore } from '../../ai/services/ai-settings.store';
 import type { LinksFilter } from '../../links/models/links-filter.type';
 import type { ViewNameDialogData } from '../models/view-name-dialog-data.interface';
@@ -19,7 +21,8 @@ import type { NewViewDialogData } from '../models/new-view-dialog-data.interface
 
 /**
  * What a user can do with saved views: apply one (or "All"), save the current filter as a view (the new view dialog),
- * rename, delete (after a confirmation) and move one left or right. Dialogs, texts and toasts live
+ * edit one in the same dialog (Edit view…), pin it to the sidebar or unpin it, rename, delete
+ * (after a confirmation) and move one left or right. Dialogs, texts and toasts live
  * here, so components only call. Save waits for the server inside its dialog; rename, delete and
  * move change the chips at once and roll back with a toast when the request fails.
  */
@@ -30,6 +33,8 @@ export class SavedViewActionsService {
   private readonly dialogs = inject(DialogService);
   private readonly toasts = inject(ToastService);
   private readonly router = inject(Router);
+  private readonly pins = inject(PinsStore);
+  private readonly pinActions = inject(PinActionsService);
   private readonly transloco = inject(TranslocoService);
 
   /** "All": the feed the chips sit on, with no type and no search (its own tags kept). */
@@ -82,8 +87,8 @@ export class SavedViewActionsService {
         autoFocus: this.ai.isOn() ? NEW_VIEW_FOCUS.Phrase : NEW_VIEW_FOCUS.FirstRow,
         data: {
           query,
-          submit: async (name, chosen) => {
-            const { outcome, view } = await this.store.create(name, chosen);
+          submit: async (name, chosen, icon) => {
+            const { outcome, view } = await this.store.create(name, chosen, icon);
             saved = name;
             if (outcome === VIEW_OUTCOME.Done) {
               createdId = view?.id ?? null;
@@ -108,6 +113,49 @@ export class SavedViewActionsService {
       return createdId;
     }
     return null;
+  }
+
+  /**
+   * Edit view… (Shelf 13-views): the new view dialog on the view's own filter, name and icon; Save
+   * replaces them (`PATCH /api/views/:id`). The dialog stays open with the error when it fails.
+   */
+  async edit(view: SavedViewResponse): Promise<void> {
+    const ref = this.dialogs.open<NewViewDialogComponent, boolean, NewViewDialogData>(
+      NewViewDialogComponent,
+      {
+        size: DIALOG_SIZE.Md,
+        autoFocus: NEW_VIEW_FOCUS.FirstRow,
+        data: {
+          query: view.query,
+          edit: { name: view.name, icon: view.icon },
+          submit: async (name, query, icon) => {
+            const { outcome } = await this.store.edit(view.id, { name, query, icon });
+            if (outcome === VIEW_OUTCOME.Done) {
+              return null;
+            }
+            return outcome === VIEW_OUTCOME.Missing ? 'views.edit.missing' : 'views.edit.failed';
+          },
+        },
+      },
+    );
+    if (await ref.result) {
+      this.toasts.show({ kind: TOAST_KIND.Success, title: this.t('views.edited.title') });
+    }
+  }
+
+  /** Whether the view is pinned to the sidebar. */
+  pinned(view: SavedViewResponse): boolean {
+    return this.pins.has(PIN_KIND.View, view.id);
+  }
+
+  /** "Pin to sidebar" / "Unpin from sidebar" (pins share the cap of folders and links). */
+  async togglePin(view: SavedViewResponse): Promise<void> {
+    await this.pins.load();
+    if (this.pinned(view)) {
+      await this.pinActions.unpinView(view);
+    } else {
+      await this.pinActions.pinView(view);
+    }
   }
 
   async rename(view: SavedViewResponse): Promise<void> {

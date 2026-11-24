@@ -70,6 +70,7 @@
     "@types/express": "5.0.6",
     "@types/node": "26.6.6",
     "@types/supertest": "7.2.1",
+    "@types/web-push": "3.6.4",
     "@typescript-eslint/utils": "8.72.2",
     "@vitest/coverage-v8": "5.1.0",
     "angular-eslint": "22.6.0",
@@ -135,7 +136,8 @@
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
     "sharp": "0.35.5",
-    "swagger-ui-dist": "5.35.0"
+    "swagger-ui-dist": "5.35.0",
+    "web-push": "3.6.7"
   },
   "overrides": {
     "swagger-ui-dist": "$swagger-ui-dist",

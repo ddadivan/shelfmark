@@ -10,6 +10,7 @@ import {
   setupSettingsPage,
 } from '../../../../../testing/settings-page-testbed';
 import { LocaleService } from '../../../../core/i18n/locale.service';
+import { ACCOUNT_DELETION_API } from '../../../account-deletion/models/account-deletion-api.const';
 import AccountPage from './account.page';
 
 const setup = (user = SETTINGS_TEST_USER, stats = () => of(SETTINGS_TEST_STATS)) =>
@@ -175,6 +176,29 @@ describe('AccountPage', () => {
 
     expect(root.textContent).not.toContain('Delete account');
     expect(root.textContent).toContain("The demo account isn't linked to Google or GitHub.");
+  });
+
+  it('shows only the deletion notice while a deletion is scheduled, and keeps the account', async () => {
+    const api = {
+      delete: vi.fn(),
+      status: vi.fn(() => Promise.resolve({ deletionScheduledAt: '2026-11-30T10:00:00.000Z' })),
+      cancel: vi.fn(() => Promise.resolve({ deletionScheduledAt: null })),
+    };
+    TestBed.overrideProvider(ACCOUNT_DELETION_API, { useValue: api });
+    const { root, harness } = await setup();
+    await vi.waitFor(() => {
+      expect(root.textContent).toContain('Your account will be deleted on');
+    });
+    expect(root.querySelectorAll('ui-settings-section')).toHaveLength(0);
+    expect(await axeViolations(root)).toEqual([]);
+
+    buttonWith(root, 'Keep my account')?.click();
+    await harness.fixture.whenStable();
+    await vi.waitFor(() => {
+      expect(root.textContent).not.toContain('Your account will be deleted on');
+    });
+    expect(api.cancel).toHaveBeenCalledTimes(1);
+    expect(root.textContent).toContain('Delete account');
   });
 
   it('has no axe violations', async () => {

@@ -1,4 +1,10 @@
-import { LINK_KIND, LINK_SORT_FIELD, SORT_ORDER, type SavedViewQuery } from '@shelfmark/contracts';
+import {
+  LINK_KIND,
+  LINK_SORT_FIELD,
+  SAVED_WITHIN,
+  SORT_ORDER,
+  type SavedViewQuery,
+} from '@shelfmark/contracts';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import {
   isAllFilter,
@@ -18,6 +24,8 @@ const BASE: SavedViewQuery = {
   sort: LINK_SORT_FIELD.CreatedAt,
   order: SORT_ORDER.Desc,
   q: '',
+  saved: null,
+  favorite: false,
 };
 
 describe('saved view queries', () => {
@@ -32,6 +40,8 @@ describe('saved view queries', () => {
         kind: LINK_KIND.Article,
         sort: LINK_SORT_FIELD.Title,
         order: SORT_ORDER.Asc,
+        saved: SAVED_WITHIN.Week,
+        favorite: true,
       }),
     ).toEqual({
       scope: LINKS_SCOPE.Folder,
@@ -41,7 +51,22 @@ describe('saved view queries', () => {
       sort: LINK_SORT_FIELD.Title,
       order: SORT_ORDER.Asc,
       q: 'x',
+      saved: SAVED_WITHIN.Week,
+      favorite: true,
     });
+    // On Favorites the scope says it: favorites-only is not stored twice.
+    expect(viewQueryOf({ scope: LINKS_SCOPE.Favorites, favorite: true }).favorite).toBe(false);
+  });
+
+  it('leads a period and favorites-only view to the feed filters', () => {
+    const query = { ...BASE, saved: SAVED_WITHIN.Month, favorite: true };
+    expect(viewNavigation(query).queryParams).toEqual({ saved: 'month', fav: '1' });
+    expect(listQueryOf(query)).toEqual({ saved: SAVED_WITHIN.Month, favorite: true });
+    expect(
+      sameViewQuery(query, { scope: LINKS_SCOPE.All, saved: SAVED_WITHIN.Month, favorite: true }),
+    ).toBe(true);
+    expect(sameViewQuery(query, { scope: LINKS_SCOPE.All, saved: SAVED_WITHIN.Month })).toBe(false);
+    expect(isAllFilter({ scope: LINKS_SCOPE.All, saved: SAVED_WITHIN.Week })).toBe(false);
   });
 
   it('normalizes a request like the API', () => {

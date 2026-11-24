@@ -5,5 +5,6 @@ import { ViewsService } from './views.service';
 @Module({
   controllers: [ViewsController],
   providers: [ViewsService],
+  exports: [ViewsService],
 })
 export class ViewsModule {}

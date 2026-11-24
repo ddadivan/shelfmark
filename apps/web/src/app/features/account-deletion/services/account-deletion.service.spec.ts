@@ -164,7 +164,7 @@ describe('AccountDeletionService', () => {
     expect(TestBed.inject(Router).url).toBe('/');
     await vi.waitFor(() => {
       TestBed.tick();
-      expect(document.body.textContent).toContain('All your data was deleted');
+      expect(document.body.textContent).toContain('Sign in before then to keep it.');
     });
   });
 
@@ -241,7 +241,7 @@ describe('AccountDeletionService', () => {
     expect(TestBed.inject(Router).url).toBe('/');
     await vi.waitFor(() => {
       TestBed.tick();
-      expect(document.body.textContent).toContain('All your data was deleted');
+      expect(document.body.textContent).toContain('Sign in before then to keep it.');
     });
   });
 

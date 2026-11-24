@@ -136,6 +136,8 @@ export { FEEDBACK_SCREENSHOT_ERROR_MESSAGE } from './feedback/feedback-screensho
 export { dueFeedbackMilestone, reachedFeedbackMilestone } from './feedback/due-feedback-milestone';
 export type { DeleteAccountRequest } from './users/delete-account-request.interface';
 export { USER_LIMIT } from './users/user-limit.const';
+export type { AccountDeletionStatus } from './users/account-deletion-status.interface';
+export { ACCOUNT_DELETION } from './users/account-deletion.const';
 export { RELEASE_VERSION_PATTERN } from './users/release-version-pattern.const';
 export { isReleaseVersion } from './users/is-release-version';
 
@@ -292,6 +294,8 @@ export { LINK_KIND_URL_RULES } from './links/link-kind-url-rules.const';
 export { PDF_CONTENT_TYPES } from './links/pdf-content-types.const';
 
 export { SAVED_VIEW_SCOPE } from './views/saved-view-scope.const';
+export { SAVED_VIEW_ICON } from './views/saved-view-icon.const';
+export type { SavedViewIcon } from './views/saved-view-icon.type';
 export type { SavedViewScope } from './views/saved-view-scope.type';
 export { SAVED_VIEW_LIMIT } from './views/saved-view-limit.const';
 export { SAVED_VIEW_ENDPOINT } from './views/saved-view-endpoint.const';
@@ -572,3 +576,10 @@ export type { NotificationSettingsResponse } from './notifications/notification-
 export type { UpdateNotificationSettings } from './notifications/update-notification-settings.type';
 export { NOTIFICATION_ENDPOINT } from './notifications/notification-endpoint.const';
 export { NOTIFICATION_DEFAULTS } from './notifications/notification-defaults.const';
+export type { PushSubscriptionKeys } from './notifications/push-subscription-keys.interface';
+export type { AddNotificationDeviceRequest } from './notifications/add-notification-device-request.interface';
+export type { AddNotificationDeviceResponse } from './notifications/add-notification-device-response.interface';
+export type { NotificationTestResponse } from './notifications/notification-test-response.interface';
+export { NOTIFICATION_LIMIT } from './notifications/notification-limit.const';
+export { NOTIFICATION_TIME_PATTERN } from './notifications/notification-time-pattern.const';
+export { NOTIFICATION_ERROR_MESSAGE } from './notifications/notification-error-message.const';

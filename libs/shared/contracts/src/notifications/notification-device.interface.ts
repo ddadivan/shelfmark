@@ -5,4 +5,6 @@ export interface NotificationDevice {
   name: string;
   /** ISO time notifications were turned on there. */
   createdAt: string;
+  /** ISO time the last notification was handed to its push service; `null` = none yet. */
+  lastUsedAt: string | null;
 }

@@ -20,13 +20,20 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { PIN_KIND, type FolderResponse, type LinkResponse } from '@shelfmark/contracts';
+import {
+  PIN_KIND,
+  type FolderResponse,
+  type LinkResponse,
+  type SavedViewResponse,
+} from '@shelfmark/contracts';
 import {
   ButtonComponent,
   FaviconComponent,
   FolderColourDirective,
   FolderIconComponent,
   holdRowsStill,
+  IconComponent,
+  type IconName,
   ICON_SIZE,
   KEYBOARD_KEY,
   reorderDropLine,
@@ -45,12 +52,15 @@ import { LinkDragService } from '../../../links/services/link-drag.service';
 import { LinkActionsService } from '../../../links/services/link-actions.service';
 import { ownImageUrl, safeHref, siteLetter } from '../../../links/utils/link-view';
 import type { PinRow } from '../../models/pin-row.interface';
+import type { ViewNavigation } from '../../../views/models/view-navigation.interface';
+import { viewNavigation } from '../../../views/utils/saved-view-query';
 import { PinActionsService } from '../../services/pin-actions.service';
 
 /**
- * The "Pinned" section of the sidebar and of the phone Library page: up to seven folders and
- * links in the order the user chose, a folder with its colour, icon and count, a link with its
- * favicon letter. A folder opens its page, a link opens in a new tab. Reorder by dragging (a
+ * The "Pinned" section of the sidebar and of the phone Library page: up to seven folders, links
+ * and saved views in the order the user chose, a folder with its colour, icon and count, a link
+ * with its favicon letter, a view with its glyph and count. A folder opens its page, a link opens
+ * in a new tab, a view opens its filter. Reorder by dragging (a
  * mouse, or a finger after a short rest; the rows hold still and a line marks the place, #315) or
  * with Alt+Up / Alt+Down on the focused row (announced). Unpin is the row's only action: an icon
  * button (hover / focus, always on touch) with Undo, no "…" menu (#314). While nothing is pinned
@@ -69,6 +79,7 @@ import { PinActionsService } from '../../services/pin-actions.service';
     FaviconComponent,
     FolderColourDirective,
     FolderIconComponent,
+    IconComponent,
     RouterLink,
     TooltipDirective,
     TranslocoPipe,
@@ -162,6 +173,16 @@ export class SidebarPinnedComponent {
 
   protected favicon(link: LinkResponse): string | undefined {
     return ownImageUrl(link.faviconUrl);
+  }
+
+  /** Where a pinned view leads (its filter on its feed, like its chip on All links). */
+  protected viewNavigation(view: SavedViewResponse): ViewNavigation {
+    return viewNavigation(view.query);
+  }
+
+  /** The view's own glyph, else the filter glyph. */
+  protected viewIcon(view: SavedViewResponse): IconName {
+    return view.icon ?? 'filter';
   }
 
   protected openLink(link: LinkResponse): void {

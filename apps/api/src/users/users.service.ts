@@ -1,10 +1,12 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import type {
-  AuthUser,
-  DeleteAccountRequest,
-  OnboardingResponse,
-  UpdateUserSettingsRequest,
-  UserSettingsResponse,
+import {
+  ACCOUNT_DELETION,
+  type AccountDeletionStatus,
+  type AuthUser,
+  type DeleteAccountRequest,
+  type OnboardingResponse,
+  type UpdateUserSettingsRequest,
+  type UserSettingsResponse,
 } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
 import { FoldersService } from '../folders/folders.service';
@@ -19,6 +21,8 @@ import { toLanguageSettings } from './to-language-settings';
 import { toLibrarySettings } from './to-library-settings';
 import { readerColumns, toReaderPreferences } from './to-reader-preferences';
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
@@ -29,25 +33,55 @@ export class UsersService {
   ) {}
 
   /**
-   * Deletes the session user and all their data in one transaction. The `User` delete cascades to
-   * sessions, accounts, folders, links, tags and (through links and tags) link tags.
-   * `Verification` has no user relation: its rows are keyed by `identifier`, so rows whose
-   * `identifier` equals the user's email (case-insensitive) go in the same transaction. The owner
-   * always comes from the session, never from the request. A mismatching confirmation is a 400
-   * and deletes nothing; a failing transaction propagates (500) and deletes nothing.
+   * Schedules the deletion of the session user (Shelf 05-settings): `deletion_scheduled_at` is set
+   * `ACCOUNT_DELETION.GraceDays` ahead, or kept when one is already scheduled (a repeat never moves
+   * it). Every session of the user is then deleted, so every device is signed out; the controller
+   * clears the cookie. Nothing else changes until the purge cron (`AccountPurgeService`) deletes
+   * the account for good. The owner always comes from the session, never from the request; a
+   * mismatching confirmation is a 400 and schedules nothing.
    */
-  async deleteAccount(user: AuthUser, body: DeleteAccountRequest): Promise<void> {
+  async scheduleDeletion(
+    user: AuthUser,
+    body: DeleteAccountRequest,
+  ): Promise<AccountDeletionStatus> {
     if (body.email.toLowerCase() !== user.email.toLowerCase()) {
       throw new BadRequestException('The confirmation does not match the account email');
     }
-    await this.prisma.$transaction([
-      this.prisma.verification.deleteMany({
-        where: { identifier: { equals: user.email, mode: 'insensitive' } },
+    const due = new Date(Date.now() + ACCOUNT_DELETION.GraceDays * DAY_MS);
+    const [, , row] = await this.prisma.$transaction([
+      this.prisma.user.updateMany({
+        where: { id: user.id, deletionScheduledAt: null },
+        data: { deletionScheduledAt: due },
       }),
-      this.prisma.user.deleteMany({ where: { id: user.id } }),
+      this.prisma.session.deleteMany({ where: { userId: user.id } }),
+      this.prisma.user.findUnique({
+        where: { id: user.id },
+        select: { deletionScheduledAt: true },
+      }),
     ]);
     // The user id is an opaque uuid, not personal data; never log the email or name.
-    this.logger.log(`Account deleted: ${user.id}`);
+    this.logger.log(`Account deletion scheduled: ${user.id}`);
+    return { deletionScheduledAt: row?.deletionScheduledAt?.toISOString() ?? null };
+  }
+
+  /** When the session user's account will be deleted, or `null`. */
+  async deletionStatus(userId: string): Promise<AccountDeletionStatus> {
+    const row = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { deletionScheduledAt: true },
+    });
+    if (!row) throw new NotFoundException();
+    return { deletionScheduledAt: row.deletionScheduledAt?.toISOString() ?? null };
+  }
+
+  /** "Keep my account": cancels a scheduled deletion of the session user (idempotent). */
+  async cancelDeletion(userId: string): Promise<AccountDeletionStatus> {
+    const { count } = await this.prisma.user.updateMany({
+      where: { id: userId, deletionScheduledAt: { not: null } },
+      data: { deletionScheduledAt: null },
+    });
+    if (count > 0) this.logger.log(`Account deletion cancelled: ${userId}`);
+    return { deletionScheduledAt: null };
   }
 
   /**

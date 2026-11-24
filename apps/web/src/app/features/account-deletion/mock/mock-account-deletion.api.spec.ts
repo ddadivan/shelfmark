@@ -3,6 +3,7 @@ import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session
 import { MockAccountDeletionApi } from './mock-account-deletion.api';
 import { MOCK_ACCOUNT_DELETION_SCENARIO } from './models/mock-account-deletion-scenario.const';
 import { MOCK_ACCOUNT_DELETION_SCENARIO_STORAGE_KEY } from './models/mock-account-deletion-scenario-storage-key.const';
+import { MOCK_ACCOUNT_DELETION_SCHEDULED_STORAGE_KEY } from './models/mock-account-deletion-scheduled-storage-key.const';
 
 const USER = { id: 'e2e', name: 'E2E', email: 'e2e@example.com', image: null, isDemo: false };
 
@@ -19,6 +20,24 @@ describe('MockAccountDeletionApi', () => {
     await create().delete({ email: 'E2E@Example.com' });
 
     expect(localStorage.getItem(MOCK_SESSION_STORAGE_KEY)).toBeNull();
+  });
+
+  it('schedules the deletion once, reports it after signing in again and keeps the account on request', async () => {
+    await create().delete({ email: USER.email });
+    const first = localStorage.getItem(MOCK_ACCOUNT_DELETION_SCHEDULED_STORAGE_KEY);
+    expect(Date.parse(first ?? '')).toBeGreaterThan(Date.now());
+
+    localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify(USER));
+    expect(await create().status()).toEqual({ deletionScheduledAt: first });
+    await create().delete({ email: USER.email });
+    expect(localStorage.getItem(MOCK_ACCOUNT_DELETION_SCHEDULED_STORAGE_KEY)).toBe(first);
+
+    localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify(USER));
+    expect(await create().cancel()).toEqual({ deletionScheduledAt: null });
+    expect(await create().status()).toEqual({ deletionScheduledAt: null });
+    localStorage.removeItem(MOCK_SESSION_STORAGE_KEY);
+    await expect(create().status()).rejects.toMatchObject({ status: 401 });
+    await expect(create().cancel()).rejects.toMatchObject({ status: 401 });
   });
 
   it('answers 400 for another email and keeps the session', async () => {

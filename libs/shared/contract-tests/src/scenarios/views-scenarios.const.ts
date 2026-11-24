@@ -2,8 +2,10 @@ import {
   LINK_KIND,
   LINK_SORT_FIELD,
   SAVED_VIEW_ERROR_MESSAGE,
+  SAVED_VIEW_ICON,
   SAVED_VIEW_LIMIT,
   SAVED_VIEW_SCOPE,
+  SAVED_WITHIN,
   SORT_ORDER,
   FOLDER_DELETE_MODE,
   type SavedViewQuery,
@@ -26,6 +28,8 @@ function query(fields: Partial<SavedViewQuery> = {}): SavedViewQuery {
     sort: LINK_SORT_FIELD.CreatedAt,
     order: SORT_ORDER.Desc,
     q: '',
+    saved: null,
+    favorite: false,
     ...fields,
   };
 }
@@ -36,7 +40,16 @@ function view(
   count: number,
   fields: Partial<SavedViewResponse> = {},
 ) {
-  return { id: ANY.id, name, query: query(), position, count, available: true, ...fields };
+  return {
+    id: ANY.id,
+    name,
+    icon: null,
+    query: query(),
+    position,
+    count,
+    available: true,
+    ...fields,
+  };
 }
 
 const starterViews = [
@@ -144,6 +157,44 @@ export const VIEWS_SCENARIOS: readonly ContractScenario[] = [
       view('Yours', 2, 0, { id: created.id, query: query({ scope: SAVED_VIEW_SCOPE.Favorites }) }),
     );
   }),
+
+  scenario(
+    'views',
+    'saves a period, favorites only and an icon, and edits them',
+    async ({ views, links }) => {
+      await links.create({ url: 'https://a.example/', title: 'Plain' });
+      const fav = await links.create({ url: 'https://b.example/', title: 'Fav' });
+      await links.update(fav.id, { isFavorite: true });
+
+      const created = await views.create({
+        name: 'Fresh favorites',
+        icon: SAVED_VIEW_ICON.Star,
+        query: { scope: SAVED_VIEW_SCOPE.All, saved: SAVED_WITHIN.Week, favorite: true },
+      });
+      expectEqual(
+        created,
+        view('Fresh favorites', 2, 1, {
+          icon: SAVED_VIEW_ICON.Star,
+          query: query({ saved: SAVED_WITHIN.Week, favorite: true }),
+        }),
+      );
+      const edited = await views.update(created.id, {
+        icon: null,
+        query: { scope: SAVED_VIEW_SCOPE.All, saved: SAVED_WITHIN.Month },
+      });
+      expectEqual(
+        edited,
+        view('Fresh favorites', 2, 2, { query: query({ saved: SAVED_WITHIN.Month }) }),
+      );
+      await expectError(
+        views.update(created.id, {
+          query: { scope: SAVED_VIEW_SCOPE.All, saved: 'year' as never },
+        }),
+        { status: 400 },
+        'unknown period',
+      );
+    },
+  ),
 
   scenario('views', 'removes a view', async ({ views }) => {
     const created = await views.create({ name: 'Temp', query: { scope: SAVED_VIEW_SCOPE.All } });

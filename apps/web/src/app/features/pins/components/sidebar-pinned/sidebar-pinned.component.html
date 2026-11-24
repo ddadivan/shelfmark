@@ -76,6 +76,13 @@
                     } @else if (row.link; as link) {
                       <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
                       <span class="pinned__name">{{ link.title }}</span>
+                    } @else if (row.view; as view) {
+                      <ui-icon
+                        class="pinned__view-icon"
+                        [name]="viewIcon(view)"
+                        [size]="ICON_SIZE.Sm"
+                      />
+                      <span class="pinned__name">{{ view.name }}</span>
                     }
                   </div>
                 </div>
@@ -93,6 +100,13 @@
                   } @else if (row.link; as link) {
                     <ui-favicon [src]="favicon(link)" [letter]="letter(link)" />
                     <span class="pinned__name">{{ link.title }}</span>
+                  } @else if (row.view; as view) {
+                    <ui-icon
+                      class="pinned__view-icon"
+                      [name]="viewIcon(view)"
+                      [size]="ICON_SIZE.Sm"
+                    />
+                    <span class="pinned__name">{{ view.name }}</span>
                   }
                 </div>
                 @if (row.folder; as folder) {
@@ -137,6 +151,25 @@
                       }}</span>
                     }
                   </a>
+                } @else if (row.view; as view) {
+                  <!-- A pinned saved view (Shelf 13-views) opens its filter like its chip. -->
+                  <a
+                    class="pinned__link"
+                    [attr.aria-disabled]="linkDragging() ? 'true' : null"
+                    [routerLink]="viewNavigation(view).commands"
+                    [queryParams]="viewNavigation(view).queryParams"
+                    (keydown)="onKeydown($event, index, row.key)"
+                  >
+                    <ui-icon
+                      class="pinned__view-icon"
+                      [name]="viewIcon(view)"
+                      [size]="ICON_SIZE.Sm"
+                    />
+                    <span class="pinned__name">{{ view.name }}</span>
+                    @if (settings.countsShown() && view.available) {
+                      <span class="pinned__count">&ngsp;{{ view.count }}</span>
+                    }
+                  </a>
                 }
                 <!-- Unpin is the row's only action, so no "…" menu (author, #314): shown on hover or
                    focus, always on touch. -->
@@ -147,8 +180,12 @@
                     size="sm"
                     iconOnly
                     iconLeft="pin-off"
-                    [ariaLabel]="unpinLabel(row.folder?.name ?? row.link?.title ?? '')"
-                    [uiTooltip]="unpinLabel(row.folder?.name ?? row.link?.title ?? '')"
+                    [ariaLabel]="
+                      unpinLabel(row.folder?.name ?? row.link?.title ?? row.view?.name ?? '')
+                    "
+                    [uiTooltip]="
+                      unpinLabel(row.folder?.name ?? row.link?.title ?? row.view?.name ?? '')
+                    "
                     (click)="unpin(row)"
                   />
                 </div>

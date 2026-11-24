@@ -49,6 +49,15 @@ const networkPaths = [
   ...['undici', 'node:undici'].map((name) => ({ name, message: networkMessage })),
 ];
 
+// Web Push (Shelf 12-notify): `web-push` POSTs to the push service endpoint a browser gave, so it is
+// confined to the sender, which re-checks the endpoint against the push service host allow-list.
+const webPushAllowedFile = 'src/notifications/push/web-push.sender.ts';
+const webPushPath = {
+  name: 'web-push',
+  message:
+    'Only src/notifications/push/web-push.sender.ts may import web-push (allow-listed push service hosts).',
+};
+
 export default [
   ...base,
   {
@@ -82,7 +91,17 @@ export default [
   },
   {
     files: ['src/**/*.ts'],
-    ignores: ['src/**/*.spec.ts', 'src/fetcher/safe-fetcher.service.ts'],
+    ignores: ['src/**/*.spec.ts', 'src/fetcher/safe-fetcher.service.ts', webPushAllowedFile],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        { paths: [...networkPaths, webPushPath] },
+      ],
+    },
+  },
+  {
+    // The Web Push sender may import `web-push`, but no raw HTTP client either.
+    files: [webPushAllowedFile],
     rules: {
       '@typescript-eslint/no-restricted-imports': ['error', { paths: networkPaths }],
     },

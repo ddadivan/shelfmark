@@ -13,7 +13,10 @@ import { APP_PATH } from '../../../models/app-path.const';
 import { FEED_SORT } from '../../links/models/feed-sort.const';
 import type { LinksFilter } from '../../links/models/links-filter.type';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
+import { FAVORITE_QUERY_PARAM } from '../../links/models/favorite-query-param.const';
+import { FAVORITE_QUERY_VALUE } from '../../links/models/favorite-query-value.const';
 import { KIND_QUERY_PARAM } from '../../links/models/kind-query-param.const';
+import { SAVED_QUERY_PARAM } from '../../links/models/saved-query-param.const';
 import { SEARCH_QUERY_PARAM } from '../../links/models/search-query-param.const';
 import { SORT_QUERY_PARAM } from '../../links/models/sort-query-param.const';
 import { TAG_QUERY_PARAM } from '../../tags/models/tag-query-param.const';
@@ -30,6 +33,9 @@ export function viewQueryOf(filter: LinksFilter): SavedViewQuery {
     sort: filter.sort ?? LINK_SORT_FIELD.CreatedAt,
     order: filter.order ?? SORT_ORDER.Desc,
     q: filter.q ?? '',
+    saved: filter.saved ?? null,
+    // On the Favorites feed the scope already says it.
+    favorite: filter.scope !== LINKS_SCOPE.Favorites && filter.favorite === true,
   };
 }
 
@@ -55,6 +61,8 @@ export function normalizeViewQuery(request: SavedViewQueryRequest): SavedViewQue
     sort: request.sort ?? LINK_SORT_FIELD.CreatedAt,
     order: request.order ?? SORT_ORDER.Desc,
     q: (request.q ?? '').trim(),
+    saved: request.saved ?? null,
+    favorite: request.favorite ?? false,
   };
 }
 
@@ -74,7 +82,9 @@ export function sameViewQuery(query: SavedViewQuery, filter: LinksFilter): boole
     query.kind === current.kind &&
     query.sort === current.sort &&
     query.order === current.order &&
-    query.q.trim() === current.q.trim()
+    query.q.trim() === current.q.trim() &&
+    query.saved === current.saved &&
+    (query.favorite && query.scope !== SAVED_VIEW_SCOPE.Favorites) === current.favorite
   );
 }
 
@@ -84,7 +94,9 @@ export function isAllFilter(filter: LinksFilter): boolean {
     filter.scope === LINKS_SCOPE.All &&
     (filter.tags ?? []).length === 0 &&
     !filter.q &&
-    filter.kind === undefined
+    filter.kind === undefined &&
+    filter.saved === undefined &&
+    filter.favorite !== true
   );
 }
 
@@ -106,6 +118,12 @@ export function listQueryOf(query: SavedViewQuery): ListLinksQuery {
   }
   if (query.q !== '') {
     list.q = query.q;
+  }
+  if (query.saved !== null) {
+    list.saved = query.saved;
+  }
+  if (query.favorite) {
+    list.favorite = true;
   }
   return list;
 }
@@ -130,6 +148,12 @@ export function viewNavigation(query: SavedViewQuery): ViewNavigation {
   }
   if (query.kind !== null) {
     queryParams[KIND_QUERY_PARAM] = query.kind;
+  }
+  if (query.saved !== null) {
+    queryParams[SAVED_QUERY_PARAM] = query.saved;
+  }
+  if (query.favorite && query.scope !== SAVED_VIEW_SCOPE.Favorites) {
+    queryParams[FAVORITE_QUERY_PARAM] = FAVORITE_QUERY_VALUE;
   }
   if (sort !== FEED_SORT.Newest) {
     queryParams[SORT_QUERY_PARAM] = sort;

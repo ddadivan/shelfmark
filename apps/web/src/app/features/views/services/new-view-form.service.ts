@@ -1,6 +1,7 @@
 import { computed, inject, Service, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
+  disabled,
   form,
   maxLength,
   readonly,
@@ -12,6 +13,8 @@ import { TranslocoService } from '@jsverse/transloco';
 import {
   LINK_LIMIT,
   SAVED_VIEW_LIMIT,
+  SAVED_VIEW_ICON,
+  type SavedViewIcon,
   type ViewDraft,
   type ViewDraftField,
 } from '@shelfmark/contracts';
@@ -22,9 +25,16 @@ import type { NewViewModel } from '../models/new-view-model.interface';
 import type { NewViewRows } from '../models/new-view-rows.interface';
 import { NEW_VIEW_ERROR } from '../models/new-view-error.const';
 import { VIEW_NAME_ERROR } from '../models/view-name-error.const';
+import { VIEW_WHERE } from '../models/view-where.const';
 import { queryOfRows, rowsOfQuery, sameRow } from '../utils/new-view-rows';
 
 const sameJson = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);
+
+const ICONS: readonly string[] = Object.values(SAVED_VIEW_ICON);
+
+function iconOf(value: string): SavedViewIcon | null {
+  return ICONS.includes(value) ? (value as SavedViewIcon) : null;
+}
 
 /**
  * Form state of the new view dialog (provided by the dialog component, one instance per dialog):
@@ -42,10 +52,14 @@ export class NewViewFormService {
   /** Ticks when the active language or its translations change, so messages re-translate. */
   readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
 
+  /** Edit view… of an existing view (else a new one). */
+  readonly editing = this.data.edit !== undefined;
+
   readonly model = signal<NewViewModel>({
     phrase: '',
     ...rowsOfQuery(this.data.query),
-    name: '',
+    name: this.data.edit?.name ?? '',
+    icon: this.data.edit?.icon ?? '',
   });
 
   /** The phrase cannot change while AI composes from it. */
@@ -55,6 +69,8 @@ export class NewViewFormService {
     this.model,
     (path) => {
       readonly(path.phrase, () => this.phraseLocked());
+      // On Favorites "Only favorites" says nothing more.
+      disabled(path.favorite, () => this.model().where === VIEW_WHERE.Favorites);
       required(path.name, { message: () => this.text('views.name.required') });
       validate(path.name, ({ value }): ValidationError.WithoutFieldTree | undefined =>
         value() !== '' && value().trim() === ''
@@ -95,8 +111,8 @@ export class NewViewFormService {
   /** The filter rows as the controls hold them. */
   readonly rows = computed<NewViewRows>(
     () => {
-      const { where, kind, tags, q, sort } = this.model();
-      return { where, kind, tags, q, sort };
+      const { where, kind, tags, q, sort, saved, favorite } = this.model();
+      return { where, kind, tags, q, sort, saved, favorite };
     },
     { equal: sameJson },
   );
@@ -143,7 +159,11 @@ export class NewViewFormService {
     }
     this.saving.set(true);
     this.errorKey.set(null);
-    const error = await this.data.submit(this.model().name.trim(), this.query());
+    const error = await this.data.submit(
+      this.model().name.trim(),
+      this.query(),
+      iconOf(this.model().icon),
+    );
     if (error === null) {
       // `saving` stays on: the button keeps its spinner while the dialog leaves.
       this.ref.close(true);

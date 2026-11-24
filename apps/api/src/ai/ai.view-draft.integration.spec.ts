@@ -106,6 +106,8 @@ describe('POST /api/ai/view-draft (#535)', () => {
       sort: 'createdAt',
       order: 'asc',
       q: '',
+      saved: null,
+      favorite: false,
     });
     expect(body.draft?.set).toEqual(['scope', 'tags', 'kind', 'sort']);
     expect(body.draft?.note).not.toBeNull();

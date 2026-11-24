@@ -19,7 +19,7 @@ function failure(status: number, message: string): Observable<never> {
 
 /**
  * `PinsApi` over the shared in-memory library, with simulated latency. Like the real API: a pin
- * is idempotent, goes to the end, needs a live folder or link (404) and is refused beyond
+ * is idempotent, goes to the end, needs a live folder or link or a saved view (404) and is refused beyond
  * `PIN_LIMIT.Max` (409); a reorder must list exactly the pinned items (400).
  */
 @Service()
@@ -74,6 +74,9 @@ export class MockPinsApi implements PinsApi {
   }
 
   private exists(ref: PinRef): boolean {
+    if (ref.kind === PIN_KIND.View) {
+      return this.data.views.some((view) => view.id === ref.id);
+    }
     return ref.kind === PIN_KIND.Folder
       ? this.data.folderList.some((folder) => folder.id === ref.id)
       : this.data.links.some((link) => link.id === ref.id);

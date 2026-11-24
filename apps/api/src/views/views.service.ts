@@ -6,11 +6,13 @@ import {
 } from '@nestjs/common';
 import {
   SAVED_VIEW_ERROR_MESSAGE,
+  SAVED_VIEW_ICON,
   SAVED_VIEW_LIMIT,
   SAVED_VIEW_SCOPE,
   type CreateSavedViewRequest,
   type ListSavedViewsQuery,
   type ListSavedViewsResponse,
+  type SavedViewIcon,
   type SavedViewQuery,
   type SavedViewResponse,
   type UpdateSavedViewRequest,
@@ -45,7 +47,14 @@ function feedOf(query: ListSavedViewsQuery): SavedViewQuery | undefined {
   };
 }
 
-const VIEW_SELECT = { id: true, name: true, query: true, position: true } as const;
+const VIEW_SELECT = { id: true, name: true, query: true, position: true, icon: true } as const;
+
+/** A stored glyph, or `null` for anything a hand edit put past the CHECK. */
+function toIcon(value: string | null): SavedViewIcon | null {
+  return (Object.values(SAVED_VIEW_ICON) as readonly string[]).includes(value ?? '')
+    ? (value as SavedViewIcon)
+    : null;
+}
 
 /**
  * Saved views (#264, ADR 0038): named filters of one user, at most `SAVED_VIEW_LIMIT.PerUserMax`,
@@ -78,7 +87,13 @@ export class ViewsService {
       }
       const position = rows.reduce((max, row) => Math.max(max, row.position), -1) + 1;
       const row = await tx.savedView.create({
-        data: { userId, name: request.name, query: { ...query }, position },
+        data: {
+          userId,
+          name: request.name,
+          query: { ...query },
+          position,
+          icon: request.icon ?? null,
+        },
         select: VIEW_SELECT,
       });
       return this.one(tx, userId, row);
@@ -101,6 +116,7 @@ export class ViewsService {
         data: {
           ...(request.name === undefined ? {} : { name: request.name }),
           ...(query === undefined ? {} : { query: { ...query } }),
+          ...(request.icon === undefined ? {} : { icon: request.icon }),
         },
         select: VIEW_SELECT,
       });
@@ -162,6 +178,24 @@ export class ViewsService {
     return this.respond(db, userId, rows, feed);
   }
 
+  /**
+   * The user's views pinned to the sidebar (ADR 0037, Shelf 13-views) with their counts, for
+   * `PinsService` (same client, so inside its transaction). Each carries its `pinnedPosition`.
+   */
+  async pinned(
+    db: LinkDbClient,
+    userId: string,
+  ): Promise<{ view: SavedViewResponse; pinnedPosition: number }[]> {
+    const rows = await db.savedView.findMany({
+      where: { userId, pinnedPosition: { not: null } },
+      orderBy: [{ pinnedPosition: 'asc' }, { id: 'asc' }],
+      select: { ...VIEW_SELECT, pinnedPosition: true },
+    });
+    if (rows.length === 0) return [];
+    const { items } = await this.respond(db, userId, rows);
+    return items.map((view, index) => ({ view, pinnedPosition: rows[index]?.pinnedPosition ?? 0 }));
+  }
+
   private async one(
     db: LinkDbClient,
     userId: string,
@@ -210,6 +244,7 @@ export class ViewsService {
       items: rows.map((row, index) => ({
         id: row.id,
         name: row.name,
+        icon: toIcon(row.icon),
         query: queries[index] ?? parseStoredQuery(null),
         position: row.position,
         count: counts[index] ?? 0,
