@@ -1,4 +1,3 @@
-/* stylelint-disable shelf/font-size-token -- landing is rebuilt in block 6 (Shelf 16-landing) */
 @use 'ui' as *;
 @use '../../landing' as landing;
 
@@ -10,117 +9,304 @@
   @include landing.wrap;
   @include landing.section-pad;
 
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
+  scroll-margin-top: var(--landing-header-height);
+
+  &:focus {
+    outline: none;
+  }
+
+  > div {
+    @include landing.reveal;
+  }
 }
 
 .landing-bento__title {
   @include landing.section-title;
 }
 
-// One column on a phone; from 40em (the mockup breaks at 760px) six columns: a wide tile of
-// four and a tile of two, then three tiles of two.
 .landing-bento__grid {
   @include landing.reveal;
 
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: rem(16px);
+  padding: 0;
+  margin: rem(36px) 0 0;
+  list-style: none;
 
-  @include tablet-up {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+  @include landing.stacked {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include landing.narrow {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 .landing-bento__tile {
+  @include landing.card;
+
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  min-width: 0;
-  padding: var(--space-6);
-  color: var(--text);
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  gap: rem(10px);
+  min-height: rem(260px);
+  padding: rem(24px);
+  overflow: hidden;
 
-  @include tablet-up {
+  // Lift on hover. Longhands, so the reveal's stagger delay (from the mixin) is kept.
+  .landing-bento__grid:not(.landing-reveal--pending) > & {
+    transition-property: box-shadow, transform, opacity;
+    transition-duration: 250ms, 250ms, 700ms;
+  }
+
+  .landing-bento__grid:not(.landing-reveal--pending) > &:hover {
+    box-shadow: var(--shadow-l2);
+    transform: translateY(rem(-3px));
+  }
+
+  &--wide {
     grid-column: span 2;
-    padding: var(--space-8);
+
+    @include landing.narrow {
+      grid-column: auto;
+    }
+  }
+
+  &--inverse {
+    color: var(--bg);
+    background: var(--text);
+    border: 0;
   }
 }
 
-.landing-bento__tile--wide {
-  @include tablet-up {
-    grid-column: span 4;
-  }
-}
-
-.landing-bento__tile--preview {
-  flex-flow: row wrap;
-  align-items: center;
-}
-
-.landing-bento__tile--inverse {
-  color: var(--on-primary);
-  background: var(--primary);
-  box-shadow: none;
-
-  .landing-bento__text {
-    color: inherit;
-  }
-}
-
-.landing-bento__copy {
-  display: flex;
-  flex: 1 1 rem(220px);
-  flex-direction: column;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-.landing-bento__heading {
+.landing-bento__name {
   margin: 0;
-  font-size: rem(22px);
+  font-size: var(--font-size-title-m);
   font-weight: 600;
-  line-height: rem(28px);
+  line-height: var(--line-height-title-m);
+  letter-spacing: -0.01em;
 }
 
 .landing-bento__text {
+  @include type(secondary);
+
   margin: 0;
-  font-size: rem(15px);
-  line-height: rem(22px);
+  color: var(--text-muted);
+
+  .landing-bento__tile--inverse & {
+    color: color-mix(in srgb, var(--bg) 70%, transparent);
+  }
+}
+
+.landing-bento__visual {
+  margin-top: auto;
+}
+
+.landing-bento__muted {
   color: var(--text-muted);
 }
 
-.landing-bento__demo {
-  display: flex;
-  flex: 1 1 rem(260px);
-  flex-direction: column;
-  gap: var(--space-3);
-  min-width: 0;
-  padding: var(--space-3);
-  background: var(--bg);
-  border-radius: var(--radius-lg);
-}
+.landing-bento__url,
+.landing-bento__field {
+  @include type(secondary);
 
-.landing-bento__url {
   display: flex;
-  gap: var(--space-2);
+  gap: rem(10px);
   align-items: center;
   min-width: 0;
-  padding: var(--space-3) var(--space-4);
-  color: var(--text-muted);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  height: rem(44px);
+  padding-inline: rem(14px);
+  overflow: hidden;
+  white-space: nowrap;
+  background: var(--surface-hover);
   border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px var(--search-hairline);
 }
 
-.landing-bento__mono {
-  @include line-clamp(1);
+.landing-bento__field {
+  gap: rem(8px);
+  height: rem(40px);
+  padding-inline: rem(12px);
+  box-shadow: none;
+}
 
-  font-family: var(--font-mono);
-  font-size: rem(13px);
-  line-height: rem(18px);
-  color: var(--text);
+.landing-bento__kbd {
+  margin-inline-start: auto;
+  font-family: inherit;
+  font-size: var(--font-size-meta);
+  color: var(--text-muted);
+}
+
+.landing-bento__result {
+  display: flex;
+  gap: rem(12px);
+  align-items: center;
+  padding: rem(10px);
+  margin-top: rem(10px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+
+  &--flat {
+    margin-top: 0;
+  }
+}
+
+.landing-bento__still {
+  flex: none;
+  width: rem(96px);
+  height: rem(54px);
+  object-fit: cover;
+  border-radius: var(--radius-tile);
+}
+
+.landing-bento__product {
+  flex: none;
+  width: rem(54px);
+  height: rem(54px);
+  object-fit: contain;
+  background: var(--surface-hover);
+  border-radius: var(--radius-tile);
+}
+
+.landing-bento__result-title {
+  display: block;
+  font-weight: 500;
+}
+
+.landing-bento__result-meta {
+  @include type(caption);
+
+  display: block;
+  color: var(--text-muted);
+}
+
+.landing-bento__note {
+  @include type(caption);
+
+  --ui-icon-size: #{rem(10px)};
+
+  display: inline-flex;
+  gap: rem(4px);
+  align-items: center;
+  min-height: rem(22px);
+  padding-inline: rem(10px);
+  margin-top: rem(4px);
+  color: var(--note-text);
+  background: var(--ai-bg);
+  border-radius: var(--radius-full);
+}
+
+.landing-bento__search {
+  display: flex;
+  flex-direction: column;
+  gap: rem(8px);
+}
+
+.landing-bento__tree {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+}
+
+.landing-bento__row {
+  @include type(secondary);
+
+  --ui-icon-size: #{rem(14px)};
+
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  height: rem(32px);
+  padding-inline: rem(10px);
+  border-radius: var(--radius-sm);
+
+  &--nested {
+    padding-inline-start: rem(30px);
+  }
+
+  &--on {
+    font-weight: 500;
+    background: var(--surface-pressed);
+  }
+}
+
+.landing-bento__count {
+  margin-inline-start: auto;
+  font-size: var(--font-size-meta);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.landing-bento__phone {
+  display: block;
+  width: rem(150px);
+  height: rem(200px);
+  padding: rem(10px) rem(10px) 0;
+  margin: 0 auto rem(-24px);
+  background: var(--surface-hover);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: 0 0 0 1px var(--sep);
+}
+
+.landing-bento__sheet {
+  display: flex;
+  flex-direction: column;
+  gap: rem(6px);
+  height: 100%;
+  padding: rem(10px);
+  overflow-wrap: anywhere;
+  font-size: var(--font-size-micro);
+  line-height: 1.4;
+  background: var(--surface);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+
+  b {
+    font-weight: 600;
+  }
+}
+
+.landing-bento__apps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: rem(6px);
+  padding-bottom: rem(10px);
+  margin-top: auto;
+
+  i {
+    aspect-ratio: 1;
+    background: var(--surface-hover);
+    border-radius: 50%;
+  }
+
+  .landing-bento__me {
+    background: var(--text);
+  }
+}
+
+.landing-bento__files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(8px);
+}
+
+.landing-bento__file {
+  display: inline-flex;
+  align-items: center;
+  height: rem(32px);
+  padding-inline: rem(12px);
+  font-size: var(--font-size-meta);
+  font-weight: 500;
+  background: color-mix(in srgb, var(--bg) 14%, transparent);
+  border-radius: var(--radius-full);
+}
+
+@include reduced-motion {
+  .landing-bento__grid > .landing-bento__tile {
+    transition: none;
+  }
+
+  .landing-bento__grid > .landing-bento__tile:hover {
+    transform: none;
+  }
 }

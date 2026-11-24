@@ -27,7 +27,6 @@
           >{{ 'landing.hero.start' | transloco }}</ui-button
         >
         <ui-button
-          [variant]="BUTTON_VARIANT.Secondary"
           [size]="BUTTON_SIZE.Lg"
           [href]="LANDING_LINKS.Demo"
           [appAppLink]="LANDING_LINKS.Demo"
@@ -35,9 +34,6 @@
         >
       }
     </div>
-    @if (!signedIn()) {
-      <p class="landing-hero__note">{{ 'landing.hero.note' | transloco }}</p>
-    }
   </div>
   <app-landing-hero-preview class="landing-hero__preview" />
 </section>

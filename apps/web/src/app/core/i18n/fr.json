@@ -1,192 +1,84 @@
 {
   "landing": {
     "header": {
-      "navLabel": "Principal",
+      "navLabel": "Page",
       "brand": "Shelfmark",
       "signIn": "Se connecter",
       "howItWorks": "Comment ça marche",
+      "ai": "IA",
+      "whatsNew": "Nouveautés",
       "privacy": "Confidentialité",
-      "getStarted": "Commencer"
+      "start": "Créer mon étagère",
+      "theme": "Changer de thème"
     },
     "hero": {
       "line1": "Collez un lien.",
       "line2": "Retrouvez-le.",
       "line3": "Même dans un an.",
-      "lead": "Vidéos, articles, achats, cours — sur une étagère calme plutôt que dans des discussions et des onglets ouverts.",
+      "lead": "Vidéos, dépôts, achats, cours : sur une étagère calme plutôt que dans des discussions et quarante onglets ouverts.",
       "demo": "Ouvrir la démo",
-      "start": "Créer mon étagère",
-      "note": "Connexion avec Google ou GitHub.",
-      "preview": {
-        "label": "Aperçu de l’application",
-        "folder": "À lire plus tard",
-        "count": "21 liens",
-        "countArticles": "6 liens",
-        "view": "Vue",
-        "all": "Tous 21",
-        "articles": "Articles 6",
-        "savedTo": "Enregistré dans {{folder}}",
-        "undo": "Annuler",
-        "items": {
-          "talk": {
-            "title": "La technologie calme, une conférence de 20 minutes",
-            "tag": "vidéo"
-          },
-          "grid": {
-            "title": "Le guide complet de CSS grid",
-            "tag": "css"
-          },
-          "design": {
-            "title": "Concevoir pour la lecture longue",
-            "tag": "design"
-          },
-          "slow": {
-            "title": "Pourquoi un logiciel lent paraît cassé",
-            "tag": "ux"
-          }
+      "start": "Créer mon étagère"
+    },
+    "preview": {
+      "label": "L’app Shelfmark : un dossier de liens enregistrés avec aperçus, notes et un message « Enregistré dans À regarder »",
+      "add": "+ Ajouter un lien",
+      "folders": "Dossiers",
+      "search": "Chercher des liens, dossiers et tags",
+      "toast": "Enregistré dans À regarder",
+      "undo": "Annuler",
+      "rows": {
+        "all": "Tous les liens",
+        "unsorted": "Non classés",
+        "favorites": "Favoris",
+        "today": "Aujourd’hui"
+      },
+      "tabs": {
+        "all": "Tous",
+        "video": "Vidéos",
+        "shop": "Boutiques"
+      },
+      "items": {
+        "nihilism": {
+          "title": "Optimistic Nihilism",
+          "date": "À l’instant",
+          "note": "Pour le week-end, avec un thé"
+        },
+        "runners": {
+          "title": "Tree Runners",
+          "date": "Aujourd’hui",
+          "note": "Pointure 39, pour le printemps"
+        },
+        "angular": {
+          "title": "Angular in 100 Seconds",
+          "date": "Aujourd’hui"
+        },
+        "excalidraw": {
+          "title": "Excalidraw",
+          "date": "29 oct."
+        },
+        "jacket": {
+          "title": "The Ojai Jacket",
+          "date": "3 nov.",
+          "note": "J’attends les soldes"
+        },
+        "neural": {
+          "title": "But what is a neural network?",
+          "date": "27 oct."
         }
       }
     },
-    "bento": {
-      "title": "Enregistrez une fois, retrouvez en quelques secondes",
-      "preview": {
-        "title": "L’aperçu se remplit tout seul",
-        "text": "Collez un lien : le titre et le site arrivent d’eux-mêmes. Ajoutez une note pour vous rappeler pourquoi vous l’avez gardé.",
-        "url": "youtube.com/watch?v=ng22",
-        "domain": "youtube.com",
-        "cardTitle": "Signal Forms en 20 minutes"
-      },
-      "folders": {
-        "title": "Des dossiers dans des dossiers",
-        "text": "Rangez les liens dans des dossiers, et les dossiers dans d’autres dossiers, aussi profond que votre système l’exige.",
-        "work": "Travail",
-        "angular": "Angular",
-        "courses": "Cours"
-      },
-      "search": {
-        "title": "Retrouvez-le avec n’importe quel mot",
-        "text": "Cherchez dans le titre, la note ou l’adresse de chaque lien, de partout avec ⌘K.",
-        "word": "manteau",
-        "tag": "vêtements"
-      },
-      "phone": {
-        "title": "Enregistrez depuis votre téléphone",
-        "text": "Installez Shelfmark et il apparaît dans le menu Partager sur Android. Partagez une page et elle arrive sur votre étagère."
-      },
-      "own": {
-        "title": "Vos liens restent à vous",
-        "text": "Exportez tout en JSON ou en fichier de favoris pour navigateur, quand vous voulez."
-      }
+    "folders": {
+      "angular": "Angular",
+      "tools": "Outils",
+      "learning": "Apprendre",
+      "shopping": "Achats",
+      "watchLater": "À regarder",
+      "courses": "Cours",
+      "talks": "Conférences"
     },
-    "beforeAfter": {
-      "title": "Les mêmes liens, avant et après",
-      "before": "Avant : éparpillés",
-      "after": "Après : sur une seule étagère",
-      "pauseMotion": "Mettre les animations en pause"
-    },
-    "before": {
-      "pingTitle": "+1 dans Messages enregistrés",
-      "pingLink": "youtu.be/…",
-      "bubbleTitle": "Messages enregistrés",
-      "bubbleLink": "youtube.com/watch?v=ng22…",
-      "tabCoat": "Manteau en l…",
-      "tabCourse": "Cours Nest…",
-      "tabMore": "+ 37",
-      "sticky": "à regarder : recette de ramen ?? lien quelque part dans le chat",
-      "bookmarks": "Barre de favoris (91)",
-      "summary": "Des liens éparpillés entre Messages enregistrés, des onglets, des post-it et une barre de favoris."
-    },
-    "after": {
-      "treeLabel": "Dossiers",
-      "listLabel": "Liens du dossier sélectionné",
-      "tagsTitle": "Tags",
-      "tags": {
-        "video": "vidéo",
-        "courses": "cours"
-      },
-      "folders": {
-        "clothes": "Vêtements",
-        "work": "Travail",
-        "angular": "Angular",
-        "recipes": "Recettes"
-      },
-      "links": {
-        "coat": {
-          "title": "Manteau en laine, graphite",
-          "note": "Attendre les soldes, taille M"
-        },
-        "boots": {
-          "title": "Bottines Chelsea en cuir",
-          "note": "Pour l’hiver"
-        },
-        "jumper": {
-          "title": "Pull col rond en mérinos",
-          "note": "Idée de cadeau"
-        },
-        "signalForms": {
-          "title": "Signal Forms en 20 minutes",
-          "note": "À regarder ce week-end"
-        },
-        "nestjs": {
-          "title": "NestJS pour les développeurs frontend",
-          "note": "Pour le projet perso"
-        },
-        "zoneless": {
-          "title": "Détection des changements zoneless",
-          "note": "À lire avant l’étape 0"
-        },
-        "ramen": {
-          "title": "Les meilleurs ramen de la semaine",
-          "note": "Dîner du vendredi"
-        },
-        "focaccia": {
-          "title": "Focaccia sans pétrissage",
-          "note": "Pour dimanche"
-        },
-        "kimchi": {
-          "title": "Kimchi en bocal",
-          "note": "Il faut un grand bocal"
-        }
-      }
-    },
-    "why": {
-      "title": "Pourquoi ce projet existe",
-      "quote": "« Mes messages enregistrés contenaient des centaines de liens : des cours, un manteau qui me plaisait, une recette de ramen, cet article sur Angular zoneless. Je n’arrivais jamais à les retrouver. Alors j’ai construit l’étagère que je voulais. »",
-      "author": "Dmytro",
-      "authorName": "Dmytro Dadivan",
-      "role": "Développeur frontend"
-    },
-    "built": {
-      "title": "Comment c’est fait",
-      "text": "Angular 22 avec les signals, NestJS, PostgreSQL. Planifié, codé, testé et relu par une équipe d’agents Claude Code, avec chaque décision publique.",
-      "agentsLabel": "Agents Claude Code",
-      "code": "Lire le code sur GitHub",
-      "decisions": "Lire le journal des décisions"
-    },
-    "finale": {
-      "title": "Videz vos Messages enregistrés.",
-      "lead": "Collez un lien, donnez-lui un dossier et une note. Tout ce que vous enregistrez arrive désormais sur une seule étagère, à deux touches de distance.",
-      "demo": "Ouvrir la démo",
-      "signIn": "Se connecter"
-    },
-    "footer": {
-      "copyright": "© 2026 Shelfmark",
-      "privacy": "Confidentialité",
-      "github": "GitHub",
-      "language": "Langue",
-      "changelog": "Nouveautés"
-    },
-    "newTab": "s’ouvre dans un nouvel onglet",
-    "backToShelf": "Retour à mon étagère",
     "whatsNew": {
       "title": "Nouveautés",
       "all": "Voir tous les changements"
-    },
-    "extension": {
-      "badge": "Extension de navigateur",
-      "title": "Enregistrez la page que vous lisez",
-      "text": "Un clic dans la barre d’outils ou Alt+Maj+S. Le titre, vos règles de dossier et vos dossiers récents sont déjà remplis : la plupart des pages ne demandent qu’un clic de plus.",
-      "browsers": "Pour Chrome, Edge, Brave et Arc. Installez-la depuis votre étagère une fois connecté.",
-      "alt": "L’extension Shelfmark : Enregistrer dans Shelfmark avec le titre de la page, le dossier Vêtements issu d’une règle, des tags et une note"
     },
     "ai": {
       "badge": "IA facultative",
@@ -199,7 +91,7 @@
         },
         "meaning": {
           "title": "Retrouvez-le par son sujet",
-          "text": "« Cette conférence sur les signals » trouve la vidéo, même sans ces mots."
+          "text": "« Cette conférence sur la façon dont les neurones apprennent » trouve la vidéo, même sans ces mots."
         },
         "ask": {
           "title": "Interrogez votre étagère",
@@ -209,16 +101,134 @@
       "note": "Désactivée tant que vous ne l’activez pas. Vos liens ne servent jamais à entraîner des modèles d’IA.",
       "privacy": "Comment l’IA fonctionne dans Shelfmark",
       "demo": {
-        "video": "NgRx SignalStore en pratique",
-        "newTag": "gestion d’état",
-        "query": "conférence sur les signals et la performance",
-        "related": "Liés par le sens",
-        "result": "La détection des changements sans zone, expliquée",
-        "why": "Proche de : rendu plus rapide",
-        "recipe": "Le meilleur ramen de semaine",
-        "summary": "Un ramen en 30 minutes avec un bouillon du commerce, des œufs mollets et des pickles express."
+        "suggestLabel": "Un nouveau lien avec des suggestions de l’IA : le dossier Apprendre, les tags architecture et backend et un nouveau tag system design",
+        "video": "Microservices explained – the What, Why and How?",
+        "source": "youtube.com · TechWorld with Nana",
+        "tagArchitecture": "#architecture",
+        "tagBackend": "#backend",
+        "newTag": "nouveau : #system-design",
+        "searchLabel": "Une recherche par le sens : « conférence sur la façon dont les neurones apprennent » trouve la vidéo sur les réseaux de neurones",
+        "query": "conférence sur la façon dont les neurones apprennent",
+        "close": "Proche par le sens",
+        "result": "But what is a neural network? | Deep learning chapter 1",
+        "askLabel": "Interrogez votre étagère : une question sur quoi regarder ce week-end et une réponse avec deux sources",
+        "question": "Quelque chose à regarder ce week-end, en moins d’une heure ?",
+        "answerTitle": "Optimistic Nihilism",
+        "answerFirst": "dure 6 minutes, enregistré « pour le week-end, avec un thé »",
+        "answerSecond": ". Ensuite le premier chapitre sur les réseaux de neurones, 19 minutes"
       }
-    }
+    },
+    "extension": {
+      "badge": "Extension de navigateur",
+      "title": "Enregistrez la page que vous lisez",
+      "text": "Un clic dans la barre d’outils ou Alt+Maj+S. Le titre, vos règles de dossier et vos dossiers récents sont déjà remplis : la plupart des pages ne demandent qu’un clic de plus.",
+      "browsers": "Pour Chrome, Edge, Brave et Arc. Installez-la depuis votre étagère une fois connecté.",
+      "alt": "L’extension Shelfmark enregistre une veste depuis une boutique, avec le dossier Achats rempli par une règle",
+      "popup": {
+        "title": "Enregistrer dans Shelfmark",
+        "scope": "Cette page",
+        "name": "The Ojai Jacket in Topsoil",
+        "price": "398 $ · taylorstitch.com",
+        "goesTo": "Va dans",
+        "rule": "règle",
+        "tag": "#vêtements",
+        "suggested": "#automne",
+        "note": "J’attends les soldes",
+        "save": "Enregistrer"
+      }
+    },
+    "bento": {
+      "title": "Enregistrez une fois, retrouvez en quelques secondes",
+      "preview": {
+        "title": "L’aperçu se remplit tout seul",
+        "text": "Collez un lien : l’image, le titre et le site arrivent d’eux-mêmes. Ajoutez une note pour vous rappeler pourquoi vous l’avez gardé.",
+        "note": "Commencer par ça avant Signal Forms"
+      },
+      "folders": {
+        "title": "Des dossiers dans des dossiers",
+        "text": "Aussi profond que votre système l’exige."
+      },
+      "search": {
+        "title": "Retrouvez-le avec n’importe quel mot",
+        "text": "Titre, note, tag ou adresse, de partout avec Ctrl K.",
+        "word": "jacket",
+        "result": "The Ojai Jacket",
+        "meta": "Achats · #vêtements"
+      },
+      "phone": {
+        "title": "Enregistrez depuis votre téléphone",
+        "text": "Installez Shelfmark et il apparaît dans le menu Partager. Partagez une page et elle arrive sur votre étagère.",
+        "share": "Partager"
+      },
+      "own": {
+        "title": "Vos liens restent à vous",
+        "text": "Exportez tout quand vous voulez. Sans enfermement."
+      }
+    },
+    "beforeAfter": {
+      "title": "Les mêmes liens, avant et après",
+      "before": "Avant : éparpillés",
+      "after": "Après : sur une seule étagère",
+      "mess": {
+        "label": "Des liens éparpillés entre messages enregistrés, onglets du navigateur, un pense-bête et une barre de favoris",
+        "messages": "Messages enregistrés",
+        "more": "+1 autre lien · 23:41",
+        "bookmarks": "Barre de favoris (91)",
+        "path": "Dossier 4 › nouveau › divers",
+        "tabs": "40 onglets, deux fenêtres",
+        "sticky": "à regarder : cette vidéo sur les réseaux de neurones ?? le lien est quelque part dans le chat",
+        "notes": "Notes › liens.txt",
+        "notesText": "allbirds tree runners 39 · chemise crater · tldraw ?"
+      },
+      "shelfLabel": "Les mêmes liens sur une seule étagère : le dossier Achats avec quatre liens et leurs notes",
+      "links": {
+        "jacket": {
+          "title": "The Ojai Jacket in Topsoil",
+          "note": "J’attends les soldes"
+        },
+        "runners": {
+          "title": "Tree Runners – Thunder Green",
+          "note": "Pointure 39, pour le printemps"
+        },
+        "shirt": {
+          "title": "The Crater Shirt in Denver Plaid",
+          "note": "Idée cadeau"
+        },
+        "dasher": {
+          "title": "Tree Dasher 2 – Natural White",
+          "note": "À comparer avec les Runners"
+        }
+      }
+    },
+    "why": {
+      "title": "Pourquoi ce projet existe",
+      "quote": "« Mes messages enregistrés contenaient des centaines de liens : des cours, une veste qui me plaisait, cette vidéo sur les réseaux de neurones. Je n’arrivais jamais à les retrouver. Alors j’ai construit l’étagère que je voulais. »",
+      "author": "Dmytro",
+      "authorName": "Dmytro Dadivan",
+      "role": "Développeur frontend"
+    },
+    "built": {
+      "title": "Comment c’est fait",
+      "text": "Angular 22 avec les signals, NestJS, PostgreSQL. Planifié, codé, testé et relu par une équipe d’agents Claude Code, avec chaque décision publique.",
+      "agentsLabel": "Agents Claude Code",
+      "code": "Lire le code sur GitHub",
+      "decisions": "Lire le journal des décisions"
+    },
+    "finale": {
+      "title": "Videz vos messages enregistrés.",
+      "lead": "Collez un lien, donnez-lui un dossier et une note. Tout ce que vous enregistrez arrive désormais sur une seule étagère, à deux touches de distance.",
+      "demo": "Ouvrir la démo",
+      "signIn": "Se connecter"
+    },
+    "footer": {
+      "copyright": "© 2026 Shelfmark",
+      "privacy": "Confidentialité",
+      "github": "GitHub",
+      "language": "Langue",
+      "changelog": "Nouveautés"
+    },
+    "newTab": "s’ouvre dans un nouvel onglet",
+    "backToShelf": "Retour à mon étagère"
   },
   "links": {
     "add": {
@@ -708,11 +718,11 @@
   },
   "auth": {
     "signIn": {
-      "title": "Tous vos liens sur une seule étagère",
-      "subtitle": "Enregistrez une fois, retrouvez en quelques secondes.",
+      "title": "Tous vos liens, et un moyen de les retrouver",
+      "subtitle": "Enregistrez tout d’un geste, retrouvez-le en quelques secondes et revoyez-le avant de l’oublier.",
       "google": "Continuer avec Google",
       "github": "Continuer avec GitHub",
-      "demo": "Ouvrir la démo",
+      "demo": "Faire un tour dans la démo",
       "failed": "Impossible de vous connecter. Réessayez.",
       "error": {
         "generic": "La connexion n’a pas abouti. Réessayez.",
@@ -731,13 +741,13 @@
       "or": "ou",
       "tiles": {
         "signalForms": {
-          "title": "Signal Forms en 20 minutes"
+          "title": "Angular in 100 Seconds"
         },
         "woolCoat": {
-          "title": "Manteau en laine, coupe droite"
+          "title": "The Ojai Jacket"
         },
         "nestjs": {
-          "title": "NestJS pour les développeurs frontend"
+          "title": "Microservices explained"
         },
         "ramen": {
           "title": "Les meilleurs ramen de la semaine"
@@ -749,7 +759,7 @@
           "title": "Lisbonne en mai : un long week-end"
         },
         "icons": {
-          "title": "Jeux d’icônes gratuits pour projets perso"
+          "title": "Excalidraw"
         },
         "grid": {
           "title": "Le guide complet de CSS grid"
@@ -758,19 +768,19 @@
           "title": "Pain au levain pour débutants, pas à pas"
         },
         "sneakers": {
-          "title": "Baskets minimalistes en cuir"
+          "title": "Tree Runners – Thunder Green"
         },
         "typeScale": {
           "title": "Des échelles typographiques qui marchent"
         },
         "kyoto": {
-          "title": "Kyoto loin de la foule"
+          "title": "Optimistic Nihilism"
         },
         "containerQueries": {
           "title": "Les container queries en pratique"
         },
         "linenShirt": {
-          "title": "Chemise en lin vert sauge"
+          "title": "The Crater Shirt in Denver Plaid"
         },
         "bikepacking": {
           "title": "Les Dolomites à vélo en cinq jours"
@@ -779,13 +789,13 @@
           "title": "Comment associer deux polices"
         },
         "rxjs": {
-          "title": "Les opérateurs RxJS que vous utilisez vraiment"
+          "title": "But what is a neural network?"
         },
         "cacioEPepe": {
           "title": "Cacio e pepe sans grumeaux"
         },
         "standingDesk": {
-          "title": "Les meilleurs bureaux assis-debout, testés"
+          "title": "Tree Dasher 2 – Natural White"
         },
         "contrast": {
           "title": "Guide pratique du contraste des couleurs"
@@ -808,8 +818,8 @@
         "css": "css"
       },
       "privacyBefore": "En continuant, vous acceptez la",
-      "privacyLink": "Politique de confidentialité",
-      "privacyAfter": ". Nous n’utilisons que votre nom, votre e-mail et votre avatar."
+      "privacyLink": "politique de confidentialité",
+      "privacyAfter": "."
     },
     "demo": {
       "starting": "Ouverture de la démo…"
@@ -3110,7 +3120,6 @@
   },
   "publicCollection": {
     "home": "Accueil Shelfmark",
-    "signIn": "Se connecter",
     "backToShelf": "Retour à mon étagère",
     "sharedBy": "Partagé par {{name}}",
     "sharedAnonymous": "Partagé sur Shelfmark",
@@ -3145,7 +3154,12 @@
       "text": "Shelfmark range vidéos, articles, achats à faire et cours sur une seule étagère, au calme.",
       "action": "Créer votre étagère"
     },
-    "madeWith": "Fait avec Shelfmark"
+    "madeWith": "Fait avec Shelfmark",
+    "startOwn": "Créer votre étagère",
+    "offline": {
+      "title": "Vous êtes hors ligne",
+      "text": "Cette collection se chargera dès que vous serez de nouveau en ligne."
+    }
   },
   "bulk": {
     "bar": {
@@ -4780,5 +4794,11 @@
       "turnOn": "Activer les notifications",
       "notNow": "Pas maintenant"
     }
+  },
+  "notFound": {
+    "title": "Cette page n’existe pas",
+    "text": "L’adresse est peut-être mal saisie, ou la page a été déplacée.",
+    "links": "Aller à vos liens",
+    "home": "Aller sur Shelfmark"
   }
 }

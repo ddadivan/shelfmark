@@ -7,8 +7,6 @@
     "form": {
       "title": "Salvar no Shelfmark",
       "folder": "Pasta",
-      "chooseFolder": "Pasta: {{folder}}. Alterar",
-      "ruleHint": "Pela sua regra para {{domain}}",
       "recentFolders": "Pastas recentes",
       "tags": "Tags",
       "tagsPlaceholder": "Adicionar tag",
@@ -28,7 +26,12 @@
         "one": "Salvar {{count}} link",
         "many": "Salvar {{count}} de links",
         "other": "Salvar {{count}} links"
-      }
+      },
+      "saveHint": "Ctrl Enter para salvar",
+      "saveHintMac": "⌘ Enter para salvar",
+      "goesTo": "Vai para",
+      "ruleNote": "regra",
+      "change": "Alterar"
     },
     "picker": {
       "title": "Escolha uma pasta",
@@ -71,22 +74,14 @@
     },
     "signedOut": {
       "title": "Entre para salvar esta página",
-      "text": "Entre uma vez neste navegador, e cada página fica a um clique de distância.",
+      "text": "A extensão usa sua conta do Shelfmark neste navegador.",
       "signIn": "Entrar no Shelfmark",
       "privacy": "Só a página que você salva é enviada, nada mais do que você navega.",
-      "privacyLink": "Política de privacidade",
-      "cards": {
-        "grid": "O guia completo de CSS grid",
-        "nestjs": "NestJS para desenvolvedores frontend",
-        "icons": "Ícones grátis para projetos pessoais",
-        "ramen": "O melhor lámen para a semana",
-        "woolCoat": "Casaco de lã, corte reto",
-        "signalForms": "Signal Forms em 20 minutos"
-      }
+      "privacyLink": "Política de privacidade"
     },
     "unsupported": {
       "title": "Esta página não pode ser salva",
-      "text": "O Shelfmark salva páginas da web. Páginas do navegador, arquivos e a nova guia ficam de fora."
+      "text": "Páginas do navegador, como as configurações ou uma nova aba, não têm endereço para salvar."
     },
     "error": {
       "title": "Não foi possível salvar esta página",

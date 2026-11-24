@@ -7,8 +7,6 @@
     "form": {
       "title": "Salva in Shelfmark",
       "folder": "Cartella",
-      "chooseFolder": "Cartella: {{folder}}. Cambia",
-      "ruleHint": "Dalla tua regola per {{domain}}",
       "recentFolders": "Cartelle recenti",
       "tags": "Tag",
       "tagsPlaceholder": "Aggiungi tag",
@@ -28,7 +26,12 @@
         "one": "Salva {{count}} link",
         "many": "Salva {{count}} di link",
         "other": "Salva {{count}} link"
-      }
+      },
+      "saveHint": "Ctrl Invio per salvare",
+      "saveHintMac": "⌘ Invio per salvare",
+      "goesTo": "Va in",
+      "ruleNote": "regola",
+      "change": "Cambia"
     },
     "picker": {
       "title": "Scegli una cartella",
@@ -71,22 +74,14 @@
     },
     "signedOut": {
       "title": "Accedi per salvare questa pagina",
-      "text": "Accedi una volta in questo browser e ogni pagina sarà a un clic di distanza.",
+      "text": "L’estensione usa il tuo account Shelfmark in questo browser.",
       "signIn": "Accedi a Shelfmark",
       "privacy": "Viene inviata solo la pagina che salvi, nient’altro di ciò che navighi.",
-      "privacyLink": "Privacy",
-      "cards": {
-        "grid": "La guida completa a CSS grid",
-        "nestjs": "NestJS per sviluppatori frontend",
-        "icons": "Icone gratuite per i progetti personali",
-        "ramen": "Il miglior ramen infrasettimanale",
-        "woolCoat": "Cappotto di lana, taglio dritto",
-        "signalForms": "Signal Forms in 20 minuti"
-      }
+      "privacyLink": "Privacy"
     },
     "unsupported": {
       "title": "Questa pagina non si può salvare",
-      "text": "Shelfmark salva pagine web. Le pagine del browser, i file e la nuova scheda restano fuori."
+      "text": "Le pagine del browser, come le impostazioni o una nuova scheda, non hanno un indirizzo da salvare."
     },
     "error": {
       "title": "Impossibile salvare questa pagina",

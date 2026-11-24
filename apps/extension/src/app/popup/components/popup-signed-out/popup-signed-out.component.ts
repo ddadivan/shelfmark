@@ -1,19 +1,16 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 import {
   BUTTON_VARIANT,
   ButtonComponent,
-  CardComponent,
-  ChipComponent,
-  FaviconComponent,
+  IllustrationComponent,
   LogoComponent,
 } from '@shelfmark/ui';
 import { PopupStore } from '../../popup.store';
-import { SIGN_IN_CARDS } from './models/sign-in-cards.const';
 
 /**
- * State 6: the phone sign-in strip of saved-link cards (fly in on every open, then float) above the
- * sign-in button, so the popup and the site look like one product. The strip is `inert`: decoration.
+ * Signed out (Shelf 07-extension): the logo row, the collect scene, "Sign in to save this page"
+ * with its line, the privacy note and "Sign in to Shelfmark" in the foot.
  */
 @Component({
   selector: 'ext-popup-signed-out',
@@ -21,26 +18,9 @@ import { SIGN_IN_CARDS } from './models/sign-in-cards.const';
   styleUrl: './popup-signed-out.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ext-screen' },
-  imports: [
-    ButtonComponent,
-    CardComponent,
-    ChipComponent,
-    FaviconComponent,
-    LogoComponent,
-    TranslocoPipe,
-  ],
+  imports: [ButtonComponent, IllustrationComponent, LogoComponent, TranslocoPipe],
 })
 export class PopupSignedOutComponent {
   protected readonly store = inject(PopupStore);
-  private readonly transloco = inject(TranslocoService);
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
-
-  protected readonly cards = computed(() => {
-    const format = new Intl.RelativeTimeFormat(this.transloco.getActiveLang(), { numeric: 'auto' });
-    return SIGN_IN_CARDS.map((card) => ({
-      ...card,
-      letter: card.host.charAt(0).toUpperCase(),
-      saved: format.format(-card.daysAgo, 'day'),
-    }));
-  });
 }

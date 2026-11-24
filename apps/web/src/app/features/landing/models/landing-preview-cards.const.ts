@@ -1,14 +1,62 @@
+import { LANDING_FOLDER } from './landing-folder.const';
+import { LANDING_IMAGES } from './landing-images.const';
 import type { LandingPreviewCard } from './landing-preview-card.interface';
+import { LANDING_PREVIEW_KIND } from './landing-preview-kind.const';
 
-/**
- * The hero's "Read later" preview, static demo content: a video first, then three articles with
- * real-looking domains, one soft background tone each, saved this week, last week and a while
- * ago. "All" shows them from the first ("Articles" from the first article) as far as the panel
- * has room; the last article only comes in under "Articles".
- */
+/** The cards of the app preview, in feed order (16-landing). */
 export const LANDING_PREVIEW_CARDS: readonly LandingPreviewCard[] = [
-  { id: 'talk', host: 'youtube.com', daysAgo: 1, tone: 1, article: false },
-  { id: 'grid', host: 'web.dev', daysAgo: 2, tone: 0, article: true },
-  { id: 'design', host: 'vox.com', daysAgo: 8, tone: 1, article: true },
-  { id: 'slow', host: 'wired.com', daysAgo: 21, tone: 2, article: true },
+  {
+    id: 'nihilism',
+    image: LANDING_IMAGES.nihilism,
+    product: false,
+    kind: LANDING_PREVIEW_KIND.Video,
+    folder: LANDING_FOLDER.WatchLater,
+    favorite: false,
+    note: true,
+  },
+  {
+    id: 'runners',
+    image: LANDING_IMAGES.runners,
+    product: true,
+    kind: LANDING_PREVIEW_KIND.Shop,
+    folder: LANDING_FOLDER.Shopping,
+    favorite: true,
+    note: true,
+  },
+  {
+    id: 'angular',
+    image: LANDING_IMAGES.angular,
+    product: false,
+    kind: LANDING_PREVIEW_KIND.Video,
+    folder: LANDING_FOLDER.Angular,
+    favorite: true,
+    note: false,
+  },
+  {
+    id: 'excalidraw',
+    image: LANDING_IMAGES.excalidraw,
+    product: false,
+    kind: LANDING_PREVIEW_KIND.Repo,
+    folder: LANDING_FOLDER.Tools,
+    favorite: true,
+    note: false,
+  },
+  {
+    id: 'jacket',
+    image: LANDING_IMAGES.jacket,
+    product: true,
+    kind: LANDING_PREVIEW_KIND.Shop,
+    folder: LANDING_FOLDER.Shopping,
+    favorite: false,
+    note: true,
+  },
+  {
+    id: 'neural',
+    image: LANDING_IMAGES.neural,
+    product: false,
+    kind: LANDING_PREVIEW_KIND.Video,
+    folder: LANDING_FOLDER.Learning,
+    favorite: false,
+    note: false,
+  },
 ];

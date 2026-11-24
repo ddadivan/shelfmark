@@ -1,0 +1,13 @@
+<main class="not-found">
+  <ui-empty-state
+    layout="page"
+    illustration="page-not-found"
+    [headingLevel]="1"
+    [heading]="'notFound.title' | transloco"
+    [text]="'notFound.text' | transloco"
+  >
+    <ui-button [variant]="BUTTON_VARIANT.Primary" [href]="home()"
+      >{{ (signedIn() ? 'notFound.links' : 'notFound.home') | transloco }}</ui-button
+    >
+  </ui-empty-state>
+</main>

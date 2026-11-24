@@ -7,8 +7,6 @@
     "form": {
       "title": "Guardar en Shelfmark",
       "folder": "Carpeta",
-      "chooseFolder": "Carpeta: {{folder}}. Cambiar",
-      "ruleHint": "Según tu regla para {{domain}}",
       "recentFolders": "Carpetas recientes",
       "tags": "Etiquetas",
       "tagsPlaceholder": "Añadir etiqueta",
@@ -28,7 +26,12 @@
         "one": "Guardar {{count}} enlace",
         "many": "Guardar {{count}} de enlaces",
         "other": "Guardar {{count}} enlaces"
-      }
+      },
+      "saveHint": "Ctrl Intro para guardar",
+      "saveHintMac": "⌘ Intro para guardar",
+      "goesTo": "Va a",
+      "ruleNote": "regla",
+      "change": "Cambiar"
     },
     "picker": {
       "title": "Elige una carpeta",
@@ -71,22 +74,14 @@
     },
     "signedOut": {
       "title": "Inicia sesión para guardar esta página",
-      "text": "Inicia sesión una vez en este navegador y cada página quedará a un clic.",
+      "text": "La extensión usa tu cuenta de Shelfmark en este navegador.",
       "signIn": "Iniciar sesión en Shelfmark",
       "privacy": "Solo se envía la página que guardas, nada más de lo que navegas.",
-      "privacyLink": "Privacidad",
-      "cards": {
-        "grid": "La guía completa de CSS grid",
-        "nestjs": "NestJS para desarrolladores frontend",
-        "icons": "Iconos gratis para proyectos personales",
-        "ramen": "El mejor ramen para entre semana",
-        "woolCoat": "Abrigo de lana, corte recto",
-        "signalForms": "Signal Forms en 20 minutos"
-      }
+      "privacyLink": "Privacidad"
     },
     "unsupported": {
       "title": "Esta página no se puede guardar",
-      "text": "Shelfmark guarda páginas web. Las páginas del navegador, los archivos y la pestaña nueva quedan fuera."
+      "text": "Las páginas del navegador, como los ajustes o una pestaña nueva, no tienen una dirección que guardar."
     },
     "error": {
       "title": "No se pudo guardar esta página",

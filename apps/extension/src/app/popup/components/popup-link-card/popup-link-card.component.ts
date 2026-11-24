@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import type { LinkResponse } from '@shelfmark/contracts';
-import { CardComponent, ChipComponent, FaviconComponent } from '@shelfmark/ui';
+import { FaviconComponent, ListItemComponent } from '@shelfmark/ui';
 import { toAppAsset } from '../../utils/to-app-asset';
 
-/** The saved link as its library card: image, site, title and tags. */
+/** The saved link as a library row: its picture, title and site (Shelf 07-extension). */
 @Component({
   selector: 'ext-popup-link-card',
   templateUrl: './popup-link-card.component.html',
   styleUrl: './popup-link-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CardComponent, ChipComponent, FaviconComponent],
+  imports: [FaviconComponent, ListItemComponent],
 })
 export class PopupLinkCardComponent {
   readonly link = input.required<LinkResponse>();

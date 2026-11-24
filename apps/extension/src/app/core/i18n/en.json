@@ -7,8 +7,6 @@
     "form": {
       "title": "Save to Shelfmark",
       "folder": "Folder",
-      "chooseFolder": "Folder: {{folder}}. Change",
-      "ruleHint": "From your rule for {{domain}}",
       "recentFolders": "Recent folders",
       "tags": "Tags",
       "tagsPlaceholder": "Add tag",
@@ -27,7 +25,12 @@
       "saveCount": {
         "one": "Save {{count}} link",
         "other": "Save {{count}} links"
-      }
+      },
+      "saveHint": "Ctrl Enter to save",
+      "saveHintMac": "⌘ Enter to save",
+      "goesTo": "Goes to",
+      "ruleNote": "rule",
+      "change": "Change"
     },
     "picker": {
       "title": "Choose a folder",
@@ -68,22 +71,14 @@
     },
     "signedOut": {
       "title": "Sign in to save this page",
-      "text": "Sign in once in this browser, and every page after that is one click away.",
+      "text": "The extension uses your Shelfmark account in this browser.",
       "signIn": "Sign in to Shelfmark",
       "privacy": "Only the page you save is sent, nothing else you browse.",
-      "privacyLink": "Privacy policy",
-      "cards": {
-        "grid": "A complete guide to CSS grid",
-        "nestjs": "NestJS for frontend developers",
-        "icons": "Free icon sets for side projects",
-        "ramen": "The best weeknight ramen",
-        "woolCoat": "Wool coat, straight cut",
-        "signalForms": "Signal Forms in 20 minutes"
-      }
+      "privacyLink": "Privacy policy"
     },
     "unsupported": {
       "title": "This page can't be saved",
-      "text": "Shelfmark saves web pages. Browser pages, files and the new tab page stay out."
+      "text": "Browser pages like settings and new tabs have no address to save."
     },
     "error": {
       "title": "Couldn't save this page",

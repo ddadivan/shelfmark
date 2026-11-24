@@ -1,0 +1,15 @@
+@use 'ui' as *;
+
+// The empty state centred on the whole window (no shell), on the page background.
+:host {
+  display: block;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.not-found {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: var(--space-6) var(--space-4);
+}

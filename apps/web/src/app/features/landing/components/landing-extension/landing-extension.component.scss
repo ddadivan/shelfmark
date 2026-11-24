@@ -1,97 +1,52 @@
-/* stylelint-disable shelf/font-size-token, shelf/radius-token -- landing is rebuilt in block 6 (Shelf 16-landing) */
 @use 'ui' as *;
 @use '../../landing' as landing;
 
 :host {
   display: block;
-
-  @include landing.wrap;
 }
 
-// Landing mockup, "Save the page you are on" (#455): a surface card, the copy on the left and a
-// browser bar with the real popup on a sage disc on the right. The section reveals like the
-// others; the popup rises a little further as it does.
 .landing-extension {
-  @include landing.reveal;
-  @include landing.section-gap;
+  @include landing.wrap;
+  @include landing.section-pad;
 
-  display: flex;
-  flex-wrap: wrap;
-  gap: rem(48px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: rem(56px);
   align-items: center;
-  padding: rem(48px);
-  overflow: hidden;
-  background: var(--surface);
-  border-radius: rem(32px);
-  box-shadow: var(--shadow-card);
-}
+  padding-block-start: rem(24px);
 
-.landing-extension__copy {
-  display: flex;
-  flex: 1 1 rem(380px);
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.landing-extension__badge {
-  align-self: flex-start;
-  margin: 0;
-  padding: var(--space-1) var(--space-3);
-  font-size: rem(13px);
-  line-height: rem(20px);
-  color: var(--accent-text);
-  background: var(--accent-bg);
-  border-radius: var(--radius-full);
-}
-
-.landing-extension__title {
-  @include landing.section-title;
-}
-
-.landing-extension__text {
-  max-width: rem(440px);
-  margin: 0;
-  font-size: rem(17px);
-  line-height: rem(26px);
-  color: var(--text-muted);
-}
-
-.landing-extension__browsers {
-  margin: 0;
-  font-size: rem(14px);
-  line-height: rem(20px);
-  color: var(--text-muted);
+  @include landing.stacked {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .landing-extension__visual {
-  position: relative;
-  flex: 1 1 rem(420px);
-  align-self: stretch;
-  min-height: rem(548px);
+  @include landing.reveal($scale: true);
+
+  min-width: 0;
 }
 
-.landing-extension__disc {
-  position: absolute;
-  inset-block-start: rem(40px);
-  inset-inline-end: rem(-60px);
-  inline-size: rem(440px);
-  block-size: rem(440px);
-  background: var(--accent-bg);
-  border-radius: 50%;
+.landing-extension__copy {
+  @include landing.reveal;
+}
+
+.landing-extension__browser {
+  display: block;
+  overflow: hidden;
+  background: var(--surface-hover);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    var(--shadow-l3),
+    0 0 0 1px var(--sep);
 }
 
 .landing-extension__bar {
-  position: absolute;
-  inset-block-start: rem(24px);
-  inset-inline: 0 rem(-48px);
   display: flex;
   gap: rem(10px);
   align-items: center;
-  block-size: rem(44px);
-  padding-inline: rem(14px);
-  background: var(--bg);
-  border-radius: rem(14px) 0 0 rem(14px);
-  box-shadow: var(--shadow-card);
+  height: rem(44px);
+  padding-inline: rem(12px);
+  background: var(--surface-pressed);
 }
 
 .landing-extension__dots {
@@ -99,21 +54,23 @@
   gap: rem(6px);
 
   i {
-    inline-size: rem(10px);
-    block-size: rem(10px);
-    background: var(--border-control);
+    width: rem(10px);
+    height: rem(10px);
+    background: var(--text-muted);
     border-radius: 50%;
+    opacity: 0.35;
   }
 }
 
-.landing-extension__address {
+.landing-extension__url {
+  display: flex;
   flex: 1;
+  align-items: center;
   min-width: 0;
-  padding-inline: var(--space-3);
+  height: rem(28px);
+  padding-inline: rem(12px);
   overflow: hidden;
-  font-family: var(--font-mono);
-  font-size: rem(12px);
-  line-height: rem(26px);
+  font-size: var(--font-size-meta);
   color: var(--text-muted);
   white-space: nowrap;
   background: var(--surface);
@@ -123,40 +80,228 @@
 .landing-extension__button {
   display: grid;
   place-items: center;
-  inline-size: rem(30px);
-  block-size: rem(30px);
-  background: var(--accent-bg);
-  border-radius: rem(9px);
-  box-shadow: 0 0 0 2px var(--accent);
+  width: rem(28px);
+  height: rem(28px);
+  background: var(--surface);
+  border-radius: var(--radius-tile);
+  box-shadow: 0 0 0 2px var(--ai);
+}
 
-  --ui-logo-size: #{rem(18px)};
+.landing-extension__mark {
+  --ui-logo-size: #{rem(16px)};
+}
+
+.landing-extension__page {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: rem(24px);
+  height: rem(380px);
+  padding: rem(24px);
+  background: var(--surface);
+
+  @include landing.narrow {
+    grid-template-columns: minmax(0, 1fr);
+    height: rem(420px);
+  }
+}
+
+.landing-extension__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+}
+
+.landing-extension__lines {
+  @include landing.narrow {
+    display: none;
+  }
+
+  i {
+    display: block;
+    height: rem(10px);
+    margin-bottom: rem(10px);
+    background: var(--surface-hover);
+    border-radius: var(--radius-full);
+
+    &:nth-child(1) {
+      width: 70%;
+    }
+
+    &:nth-child(2) {
+      width: 40%;
+    }
+
+    &:nth-child(3) {
+      width: 85%;
+      margin-top: rem(22px);
+    }
+
+    &:nth-child(4) {
+      width: 78%;
+    }
+
+    &:nth-child(5) {
+      width: 60%;
+    }
+  }
 }
 
 .landing-extension__popup {
   position: absolute;
-  inset-block-start: rem(80px);
-  inset-inline-end: rem(12px);
-  inline-size: rem(320px);
-  block-size: auto;
-  border-radius: rem(20px);
-  box-shadow: var(--shadow-float);
-  transition-timing-function: var(--ease-out);
-}
+  top: rem(10px);
+  right: rem(14px);
+  display: flex;
+  flex-direction: column;
+  gap: rem(10px);
+  width: rem(300px);
+  padding: rem(14px);
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow:
+    var(--shadow-l3),
+    0 0 0 1px var(--sep);
 
-.landing-reveal--pending .landing-extension__popup {
-  opacity: 0;
-  transform: translateY(rem(48px));
-}
-
-.landing-reveal--shown .landing-extension__popup {
-  transition-delay: 160ms;
-  transition-duration: var(--duration-slow);
-  transition-property: opacity, transform;
-}
-
-@include reduced-motion {
-  .landing-reveal--pending .landing-extension__popup {
-    opacity: 1;
-    transform: none;
+  @include landing.narrow {
+    right: rem(12px);
+    left: rem(12px);
+    width: auto;
   }
+}
+
+.landing-extension__head {
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  font-weight: 600;
+}
+
+.landing-extension__scope {
+  margin-inline-start: auto;
+  font-size: var(--font-size-micro);
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.landing-extension__link {
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+}
+
+.landing-extension__thumb {
+  flex: none;
+  width: rem(52px);
+  height: rem(52px);
+  object-fit: contain;
+  background: var(--surface-hover);
+  border-radius: var(--radius-tile);
+}
+
+.landing-extension__name {
+  display: block;
+  font-weight: 500;
+}
+
+.landing-extension__price {
+  color: var(--text-muted);
+}
+
+.landing-extension__rule {
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  padding: rem(8px) rem(10px);
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+
+  b {
+    font-weight: 600;
+  }
+}
+
+.landing-extension__folder {
+  --ui-icon-size: #{rem(12px)};
+
+  color: var(--folder-rose);
+}
+
+.landing-extension__rule-note {
+  margin-inline-start: auto;
+  color: var(--text-muted);
+}
+
+.landing-extension__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(6px);
+}
+
+.landing-extension__chip {
+  @include landing.chip;
+
+  &--on {
+    @include landing.chip-on;
+  }
+}
+
+.landing-extension__spark {
+  --ui-icon-size: #{rem(11px)};
+}
+
+.landing-extension__note {
+  display: flex;
+  align-items: center;
+  height: rem(36px);
+  padding-inline: rem(14px);
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px var(--search-hairline);
+}
+
+.landing-extension__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--font-size-micro);
+  color: var(--text-muted);
+}
+
+.landing-extension__save {
+  display: grid;
+  place-items: center;
+  height: rem(32px);
+  padding-inline: rem(14px);
+  font-size: var(--font-size-label);
+  font-weight: 500;
+  color: var(--on-primary);
+  background: var(--primary);
+  border-radius: var(--radius-full);
+}
+
+.landing-extension__eyebrow {
+  @include landing.eyebrow;
+
+  margin: 0;
+}
+
+.landing-extension__title {
+  @include landing.section-title;
+
+  margin-top: rem(14px);
+}
+
+.landing-extension__text {
+  @include landing.section-lead;
+
+  max-width: 36em;
+}
+
+.landing-extension__browsers {
+  @include landing.fine;
 }

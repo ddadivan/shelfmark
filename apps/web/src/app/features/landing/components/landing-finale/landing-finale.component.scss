@@ -1,4 +1,3 @@
-/* stylelint-disable shelf/font-size-token, shelf/radius-token -- landing is rebuilt in block 6 (Shelf 16-landing) */
 @use 'ui' as *;
 @use '../../landing' as landing;
 
@@ -8,35 +7,52 @@
 
 .landing-finale {
   @include landing.wrap;
-  @include landing.reveal;
   @include landing.section-pad;
 
-  // The card sits inside the page column; the section only carries the column and the padding.
-  display: block;
+  padding-block-start: rem(24px);
 }
 
-// "Give your links a home": a surface card, as in Landing.dc.html.
-.landing-finale__card {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-6);
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-6);
-  background: var(--surface);
-  border-radius: rem(32px);
-  box-shadow: var(--shadow-card);
+.landing-finale__reveal {
+  @include landing.reveal($scale: true);
+}
 
-  @include tablet-up {
-    padding: rem(48px);
+// "Empty your saved messages." on a soft wave of the four glow colours, turning slowly.
+.landing-finale__card {
+  position: relative;
+  isolation: isolate;
+  padding: rem(64px) rem(32px);
+  overflow: hidden;
+  text-align: center;
+  background: var(--surface-hover);
+  border-radius: var(--radius-lg);
+
+  &::before {
+    position: absolute;
+    inset: -40%;
+    z-index: -1;
+    content: '';
+    background: conic-gradient(
+      from 0deg,
+      var(--wave-1),
+      var(--wave-2),
+      var(--wave-3),
+      var(--wave-4),
+      var(--wave-1)
+    );
+    filter: blur(rem(70px));
+    opacity: calc(var(--wave-opacity) * 0.55);
+    animation: landing-wave 24s linear infinite;
+  }
+
+  @include landing.narrow {
+    padding: rem(48px) rem(20px);
   }
 }
 
-.landing-finale__copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  max-width: rem(640px);
+@keyframes landing-wave {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .landing-finale__title {
@@ -44,19 +60,22 @@
 }
 
 .landing-finale__lead {
-  margin: 0;
-  font-size: rem(16px);
-  line-height: rem(24px);
-  color: var(--text-muted);
+  @include landing.section-lead;
 
-  @include tablet-up {
-    font-size: rem(18px);
-    line-height: rem(28px);
-  }
+  max-width: 34em;
+  margin: rem(16px) auto 0;
 }
 
 .landing-finale__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: rem(10px);
+  gap: var(--space-2);
+  justify-content: center;
+  margin-top: rem(28px);
+}
+
+@include reduced-motion {
+  .landing-finale__card::before {
+    animation: none;
+  }
 }

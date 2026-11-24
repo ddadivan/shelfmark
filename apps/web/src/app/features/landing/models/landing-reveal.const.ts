@@ -1,7 +1,7 @@
-/** Scroll-reveal spec (PROJECT.md story 20); duration and easing come from the Motion tokens in CSS. */
+/** Scroll-reveal spec (16-landing); duration and easing live in the `landing.reveal` mixin. */
 export const LANDING_REVEAL = {
-  /** Share of a section that must be on screen before it reveals. */
-  Threshold: 0.2,
-  /** Delay between two children of a revealed section. */
-  StaggerMs: 60,
+  /** Share of a block that must be on screen before it reveals. */
+  Threshold: 0.12,
+  /** Delay between two children of a revealed block. */
+  StaggerMs: 90,
 } as const;

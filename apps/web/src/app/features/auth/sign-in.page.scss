@@ -1,102 +1,58 @@
 @use 'ui' as *;
 
-// Phone and tablet (below 64em): a strip of small floating cards on top, the form under it. From 64em: a
-// centred glass card on `bg` with saved-link cards drifting around it (SignIn.dc.html).
+// Shelf 06-public: one centred 400px card on `bg`; from 64em saved-link cards drift around it.
 .sign-in {
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: grid;
   min-height: 100dvh;
+  padding: var(--space-6) var(--space-4);
   overflow: hidden;
   color: var(--text);
   background: var(--bg);
-
-  @include desktop {
-    display: grid;
-    padding: var(--space-6);
-    place-items: center;
-  }
-}
-
-.sign-in__art {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  height: rem(300px);
-
-  // Not clipped: the cards fly in from below the screen (the page clips them).
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  place-items: center;
 }
 
 .sign-in__panel {
   position: relative;
+  z-index: 2;
   display: flex;
-  flex: 1;
   flex-direction: column;
   gap: var(--space-4);
   width: 100%;
-  padding: rem(28px) var(--space-6) var(--space-6);
+  max-width: rem(400px);
+  padding: var(--space-8);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    var(--shadow-l2),
+    0 0 0 1px var(--line);
 
-  // The panel rises after the cards have flown past (480 ms): a short slide and fade, `transform`
-  // and `opacity` only. It is in place, clickable and focusable from the first frame.
-  @include compact {
-    animation: sign-in-rise var(--duration-slow) var(--ease-drawer) 480ms backwards;
-
-    @include reduced-motion {
-      animation: none;
-    }
-  }
-
-  @include tablet-up {
-    max-width: rem(480px);
-    margin-inline: auto;
-  }
-
-  @include desktop {
-    // The glass card (Glass: the sign-in card is one of its places).
-    @include float-surface;
-
-    flex: none;
-    gap: rem(22px);
-    max-width: rem(420px);
-    padding: rem(36px) rem(32px) rem(28px);
-    margin-inline: 0;
-    border-radius: var(--radius-lg);
+  @include phone {
+    padding: var(--space-6);
   }
 }
 
 .sign-in__logo {
-  --ui-logo-size: #{rem(24px)};
-
-  @include desktop {
-    --ui-logo-size: #{rem(30px)};
-  }
+  --ui-logo-size: #{rem(40px)};
 }
 
 .sign-in__intro {
   display: flex;
   flex-direction: column;
-  gap: rem(6px);
-
-  @include desktop {
-    gap: rem(10px);
-  }
+  gap: var(--space-4);
 }
 
 .sign-in__title {
-  @include type(title);
+  @include type(display);
 
-  margin: 0;
-
-  @include desktop {
-    @include type(display);
-  }
+  margin: var(--space-2) 0 0;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 .sign-in__subtitle {
-  @include type(body);
+  @include type(secondary);
 
   margin: 0;
   color: var(--text-muted);
@@ -105,16 +61,17 @@
 .sign-in__actions {
   display: flex;
   flex-direction: column;
-  gap: rem(10px);
+  gap: var(--space-4);
 }
 
 // The host is a column flex box so the native button inside stretches to the full width.
-.sign-in__button {
+.sign-in__button,
+.sign-in__demo {
   display: flex;
   flex-direction: column;
 }
 
-// "or" between the providers and the demo, with a line on each side (desktop card only).
+// "or" between the providers and the demo, with a line on each side.
 .sign-in__or {
   @include type(caption);
 
@@ -128,12 +85,8 @@
   &::after {
     flex: 1;
     content: '';
-    border-block-start: 1px solid var(--border);
+    border-block-start: 1px solid var(--line);
   }
-}
-
-.sign-in__demo {
-  align-self: center;
 }
 
 .sign-in__privacy {
@@ -141,28 +94,12 @@
 
   margin: 0;
   color: var(--text-muted);
-
-  @include desktop {
-    text-align: center;
-  }
 }
 
 // Underlined: the link sits inside a sentence, so colour alone must not carry it.
 .sign-in__privacy-link {
-  color: inherit;
+  color: var(--text);
   text-decoration: underline;
-
-  &:hover,
-  &:active {
-    color: var(--text);
-  }
-}
-
-@keyframes sign-in-rise {
-  from {
-    opacity: 0;
-    transform: translateY(#{rem(40px)});
-  }
 }
 
 // The notices shake together on a failed attempt (`uiShake`); the wrapper takes no room without them.

@@ -1,14 +1,10 @@
 <div class="sign-in">
   @if (isDesktop()) {
   <app-sign-in-drift />
-  } @else {
-  <div class="sign-in__art" aria-hidden="true">
-    <app-sign-in-phone-cards />
-  </div>
   }
 
   <main class="sign-in__panel">
-    <ui-logo class="sign-in__logo" />
+    <ui-logo class="sign-in__logo" [variant]="LOGO_VARIANT.Mark" />
 
     <div class="sign-in__intro">
       <h1 class="sign-in__title">{{ 'auth.signIn.title' | transloco }}</h1>
@@ -32,7 +28,6 @@
         class="sign-in__button"
         size="lg"
         iconLeft="google"
-        [variant]="isDesktop() ? BUTTON_VARIANT.Primary : BUTTON_VARIANT.Secondary"
         [loading]="isLoading(AUTH_PROVIDER.Google)"
         [disabled]="isLocked(AUTH_PROVIDER.Google)"
         (click)="signIn(AUTH_PROVIDER.Google)"
@@ -51,13 +46,12 @@
       </ui-button>
     </div>
 
-    @if (isDesktop()) {
     <p class="sign-in__or">{{ 'auth.signIn.or' | transloco }}</p>
-    }
 
     <ui-button
       class="sign-in__demo"
       variant="ghost"
+      size="lg"
       [loading]="isLoading(AUTH_DEMO)"
       [disabled]="isLocked(AUTH_DEMO)"
       (click)="signInDemo()"

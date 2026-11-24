@@ -10,7 +10,7 @@ describe('LandingFinaleComponent', () => {
     const fixture = await createTranslated(LandingFinaleComponent);
     const root = fixture.nativeElement as HTMLElement;
 
-    expect(root.querySelector('h2')?.textContent?.trim()).toBe('Empty your Saved Messages.');
+    expect(root.querySelector('h2')?.textContent?.trim()).toBe('Empty your saved messages.');
     expect(root.querySelector('.landing-finale__lead')?.textContent).toContain(
       'Everything you save from now on lands on one shelf',
     );

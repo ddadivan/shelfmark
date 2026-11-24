@@ -1,3 +1,4 @@
+import { LANDING_IMAGES } from '../../../../landing/models/landing-images.const';
 import { SIGN_IN_DRIFT_LAYER } from './sign-in-drift-layer.const';
 import { SIGN_IN_DRIFT_SIDE } from './sign-in-drift-side.const';
 import { SIGN_IN_DRIFT_TIER } from './sign-in-drift-tier.const';
@@ -18,6 +19,7 @@ const { Narrow, Wide, Huge } = SIGN_IN_DRIFT_TIER;
 export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   {
     id: 'signalForms',
+    image: LANDING_IMAGES.angular,
     host: 'youtube.com',
     daysAgo: 1,
     tags: ['video', 'angular'],
@@ -38,6 +40,8 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   },
   {
     id: 'woolCoat',
+    image: LANDING_IMAGES.jacket,
+    product: true,
     host: 'cos.com',
     daysAgo: 3,
     tags: ['shopping'],
@@ -78,6 +82,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   },
   {
     id: 'kyoto',
+    image: LANDING_IMAGES.nihilism,
     host: 'lonelyplanet.com',
     daysAgo: 11,
     tags: ['travel'],
@@ -88,6 +93,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   },
   {
     id: 'nestjs',
+    image: LANDING_IMAGES.microservices,
     host: 'stepik.org',
     daysAgo: 8,
     tags: ['course'],
@@ -98,6 +104,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   },
   {
     id: 'icons',
+    image: LANDING_IMAGES.excalidraw,
     host: 'lucide.dev',
     daysAgo: 2,
     tags: ['design'],
@@ -118,6 +125,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   },
   {
     id: 'zoneless',
+    image: LANDING_IMAGES.typescript,
     host: 'angular.dev',
     daysAgo: 12,
     tags: ['angular'],
@@ -128,6 +136,8 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   },
   {
     id: 'sneakers',
+    image: LANDING_IMAGES.runners,
+    product: true,
     host: 'everlane.com',
     daysAgo: 21,
     tags: ['shopping'],
@@ -148,6 +158,8 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   },
   {
     id: 'linenShirt',
+    image: LANDING_IMAGES.shirt,
+    product: true,
     host: 'arket.com',
     daysAgo: 7,
     tags: ['shopping'],
@@ -178,6 +190,7 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   },
   {
     id: 'rxjs',
+    image: LANDING_IMAGES.neural,
     host: 'rxjs.dev',
     daysAgo: 5,
     tags: ['angular'],
@@ -198,6 +211,8 @@ export const SIGN_IN_DRIFT_CARDS: readonly SignInDriftCard[] = [
   },
   {
     id: 'standingDesk',
+    image: LANDING_IMAGES.dasher,
+    product: true,
     host: 'wirecutter.com',
     daysAgo: 2,
     tags: ['shopping'],

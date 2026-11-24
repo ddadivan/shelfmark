@@ -1,11 +1,13 @@
-/** Timing of the landing scene loops (PROJECT.md story 20). */
+/** Timing of the landing's app preview (16-landing). */
 export const LANDING_LOOP = {
-  /** One full pass of the shelf through every folder of the cycle. */
-  ShelfCycleMs: 9000,
-  /**
-   * The hero preview's switch: how long "All" holds (the first time it also covers the cards
-   * landing and the toast, about a second) and how long "Articles" holds before it switches back.
-   */
-  PreviewAllHoldMs: 4200,
-  PreviewArticlesHoldMs: 3200,
+  /** One frame of the cycle (All links, Videos, Shopping, Favorites, Watch later). */
+  PreviewStepMs: 3600,
+  /** After a click on a row or a tab the cycle waits this long before it moves on. */
+  PreviewResumeMs: 6000,
+  /** The toast slides in this long after the page shows the preview. */
+  PreviewToastMs: 1500,
+  /** Back on All links › All the toast returns after this pause. */
+  PreviewToastAgainMs: 700,
+  /** The fade of the fallback where View Transitions are missing. */
+  PreviewFadeMs: 260,
 } as const;

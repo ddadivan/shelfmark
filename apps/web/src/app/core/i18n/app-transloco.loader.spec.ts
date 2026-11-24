@@ -10,7 +10,7 @@ describe('AppTranslocoLoader', () => {
     expect(translation).toMatchObject({
       landing: {
         hero: { line1: 'Paste a link.' },
-        finale: { title: 'Empty your Saved Messages.' },
+        finale: { title: 'Empty your saved messages.' },
       },
     });
     for (const scope of ['landing', 'auth', 'shell', 'library', 'privacy']) {

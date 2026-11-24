@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { BUTTON_VARIANT, ButtonComponent, NOTICE_KIND, NoticeComponent } from '@shelfmark/ui';
+import {
+  BUTTON_VARIANT,
+  ButtonComponent,
+  LogoComponent,
+  NOTICE_KIND,
+  NoticeComponent,
+} from '@shelfmark/ui';
 import { PopupStore } from '../../popup.store';
 import { relativeDay } from '../../utils/relative-day';
 import { PopupLinkCardComponent } from '../popup-link-card/popup-link-card.component';
@@ -12,7 +18,7 @@ import { PopupLinkCardComponent } from '../popup-link-card/popup-link-card.compo
   styleUrl: './popup-duplicate.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'ext-screen' },
-  imports: [ButtonComponent, NoticeComponent, PopupLinkCardComponent, TranslocoPipe],
+  imports: [ButtonComponent, LogoComponent, NoticeComponent, PopupLinkCardComponent, TranslocoPipe],
 })
 export class PopupDuplicateComponent {
   protected readonly store = inject(PopupStore);

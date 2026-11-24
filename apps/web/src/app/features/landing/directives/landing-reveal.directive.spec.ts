@@ -38,20 +38,20 @@ describe('LandingRevealDirective', () => {
     return { fixture, section };
   }
 
-  it('hides the section until it scrolls in, observing with a 20% threshold', async () => {
+  it('hides the section until it scrolls in, observing with a 12% threshold', async () => {
     const { section } = await create();
 
     expect(section.classList.contains('landing-reveal--pending')).toBe(true);
-    expect(MockIntersectionObserver.instances[0].options?.threshold).toEqual([0, 0.2]);
+    expect(MockIntersectionObserver.instances[0].options?.threshold).toEqual([0, 0.12]);
   });
 
-  it('staggers the children by 60 ms', async () => {
+  it('staggers the children by 90 ms', async () => {
     const { section } = await create();
 
     const delays = Array.from(section.children).map((child) =>
       (child as HTMLElement).style.getPropertyValue('--landing-reveal-delay'),
     );
-    expect(delays).toEqual(['0ms', '60ms', '120ms']);
+    expect(delays).toEqual(['0ms', '90ms', '180ms']);
   });
 
   it('reveals once and stops observing', async () => {
@@ -69,7 +69,7 @@ describe('LandingRevealDirective', () => {
     expect(observer.disconnected).toBe(true);
   });
 
-  it('does not hide a section that is already at least 20% on screen at load', async () => {
+  it('does not hide a section that is already at least 12% on screen at load', async () => {
     const { section } = await create([true, 40, 100]);
 
     expect(section.className).not.toContain('landing-reveal');
@@ -92,13 +92,13 @@ describe('LandingRevealDirective', () => {
     expect(section.classList.contains('landing-reveal--shown')).toBe(false);
   });
 
-  it('reveals a section taller than five screens once a fifth of the viewport shows it', async () => {
+  it('reveals a section taller than five screens once an eighth of the viewport shows it', async () => {
     vi.stubGlobal('innerHeight', 800);
     const { fixture, section } = await create();
     const observer = MockIntersectionObserver.instances[0];
 
-    // 100 of 10 000 px is 1% of the section, but under a fifth of the viewport: still hidden.
-    observer.trigger(true, 100, 10_000);
+    // 80 of 10 000 px is under 1% of the section and a tenth of the viewport: still hidden.
+    observer.trigger(true, 80, 10_000);
     await fixture.whenStable();
     expect(section.classList.contains('landing-reveal--pending')).toBe(true);
 

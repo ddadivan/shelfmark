@@ -4,35 +4,18 @@
 :host {
   display: block;
   min-height: 100dvh;
-  background: var(--bg);
   color: var(--text);
+  background: var(--bg);
 
-  // Height of the header, shared with the hero: the first screen (header + hero) is exactly one
-  // viewport tall, so the hero takes `100svh` minus this. A fixed block size (not content-sized)
-  // keeps it exact from the first frame.
-  --landing-header-height: #{rem(72px)};
-
-  @include tablet-up {
-    --landing-header-height: #{rem(96px)};
-  }
-
-  @include landing.wide {
-    --landing-header-height: #{rem(96px)};
-  }
-
-  @include landing.xwide {
-    --landing-header-height: #{rem(108px)};
-  }
+  // The sticky header's height (64px, 16-landing).
+  --landing-header-height: #{rem(64px)};
 }
 
 // Reserves space for the deferred sections, so nothing below the hero jumps when they arrive.
-// A lower bound only: the real sections are taller (about 3 to 5 screens), and everything below
-// the fold shifts when they land, which is outside the viewport and does not count as CLS.
 .landing__placeholder {
   min-height: 100dvh;
 }
 
-// Lower bounds for the other deferred blocks (the real ones are taller), same idea as above.
 .landing__placeholder--about {
   min-height: 60dvh;
 }
@@ -45,17 +28,18 @@
   min-height: 40dvh;
 }
 
+// "Why this exists" and "How it's built" side by side (id `how`).
 .landing__about {
   @include landing.wrap;
   @include landing.section-pad;
+  @include landing.reveal;
 
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-8);
-  align-items: start;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: rem(16px);
+  padding-block-start: rem(24px);
 
-  @include desktop {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: rem(64px);
+  @include landing.stacked {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

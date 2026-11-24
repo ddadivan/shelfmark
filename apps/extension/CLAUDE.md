@@ -1,6 +1,6 @@
 # apps/extension
 
-Chrome Manifest V3 extension (#445): a popup that saves the current tab to the user's Shelfmark library. Design: `docs/design/screens/Extension.dc.html` and `ExtensionTabs.dc.html` (All tabs, #569); auth decision: ADR 0046; author steps: `docs/SETUP.md` 5.9; store texts and images: `docs/store/extension/`.
+Chrome Manifest V3 extension (#445): a popup that saves the current tab to the user's Shelfmark library. Design: Shelf `docs/design-next/shelf/designs/07-extension.html` (block 6b: head and foot rows with `sep` lines, "Goes to … Change", the save shortcut in the foot); earlier `docs/design/screens/Extension.dc.html` and `ExtensionTabs.dc.html` (All tabs, #569); auth decision: ADR 0046; author steps: `docs/SETUP.md` 5.9; store texts and images: `docs/store/extension/`.
 
 ## Rules
 

@@ -110,12 +110,36 @@ describe('LandingPage', () => {
     const h2 = Array.from(root.querySelectorAll('h2')).map((h) => h.textContent?.trim());
     expect(h2).toEqual([
       'Help with sorting, when you want it',
+      'Save the page you are on',
       'Save once, find in seconds',
       'The same links, before and after',
       'Why this exists',
-      "How it's built",
-      'Empty your Saved Messages.',
+      'How it’s built',
+      'Empty your saved messages.',
     ]);
+  });
+
+  it('"AI" in the header loads the sections and scrolls to the AI block', async () => {
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const fixture = await createTranslated(LandingPage);
+    const root = fixture.nativeElement as HTMLElement;
+
+    root.querySelector<HTMLElement>('a[href="#ai"]')?.click();
+    await vi.waitFor(() => {
+      fixture.detectChanges();
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    });
+
+    expect(scrollIntoView.mock.contexts[0]).toBe(root.querySelector('#ai'));
+  });
+
+  it('shows "What’s new" under the hero only for a signed-in visitor (/about)', async () => {
+    const guest = await createTranslated(LandingPage);
+    expect((guest.nativeElement as HTMLElement).querySelector('app-landing-whats-new')).toBeNull();
   });
 
   it('has no axe violations', async () => {

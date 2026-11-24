@@ -1,7 +1,7 @@
 <div class="ext-screen__head">
-  <ui-logo variant="mark" />
+  <ui-logo class="form__logo" />
+  <h1 class="form__sr-title">{{ 'popup.form.title' | transloco }}</h1>
   @if (store.tabList.switchShown()) {
-    <h1 class="form__sr-title">{{ 'popup.form.title' | transloco }}</h1>
     <ui-segmented-control
       #mode
       class="form__mode"
@@ -11,8 +11,6 @@
       [disabled]="locked()"
       (valueChange)="onMode($event)"
     />
-  } @else {
-    <h1 class="ext-screen__title">{{ 'popup.form.title' | transloco }}</h1>
   }
 </div>
 
@@ -43,9 +41,8 @@
     </span>
     <ui-button
       block
-      iconRight="chevron-right"
+      class="form__goes"
       ariaHaspopup="dialog"
-      [ariaLabel]="'popup.form.chooseFolder' | transloco: { folder: folderName() }"
       [disabled]="locked()"
       (click)="store.openPicker()"
     >
@@ -63,18 +60,19 @@
           <ui-folder-icon size="sm" icon="inbox" />
         }
         @if (!(store.tabsAi.picksActive() && store.tabList.active())) {
-          <span class="form__folder-name">{{ folderName() }}</span>
+          <span class="form__folder-name"
+            >{{ 'popup.form.goesTo' | transloco }} <b>{{ folderName() }}</b>
+            @if (store.ruleHint() && !store.tabList.active()) {
+              <span class="form__rule"> · {{ 'popup.form.ruleNote' | transloco }}</span>
+            }
+          </span>
         }
         @if (store.newFolderName()) {
           <ui-badge [tone]="BADGE_TONE.Accent">{{ 'popup.form.newBadge' | transloco }}</ui-badge>
         }
       </span>
+      <span class="form__change">{{ 'popup.form.change' | transloco }}</span>
     </ui-button>
-    @if (store.ruleHint(); as domain) {
-      @if (!store.tabList.active()) {
-        <span class="form__hint">{{ 'popup.form.ruleHint' | transloco: { domain } }}</span>
-      }
-    }
     @if (store.recentFolders().length > 0 && !store.tabList.active()) {
       <div
         class="form__recent"
@@ -172,7 +170,6 @@
   @if (aiButtonShown()) {
     <ui-button
       class="form__ai-button"
-      block
       [variant]="BUTTON_VARIANT.Ai"
       iconLeft="spark"
       [loading]="aiBusy()"
@@ -181,12 +178,13 @@
       >{{ aiLabel() }}</ui-button
     >
   }
-  <ui-button block (click)="store.openApp()">{{ 'popup.openApp' | transloco }}</ui-button>
+  @if (!aiButtonShown() && !store.tabList.active()) {
+    <span class="ext-screen__hint" aria-hidden="true">{{ saveHintKey | transloco }}</span>
+  }
   <span class="ext-foot-slot" [class.ext-foot-slot--animate]="animateSlot">
     <ui-button
       #save
       class="form__save"
-      block
       [variant]="BUTTON_VARIANT.Primary"
       [loading]="store.saving()"
       [disabled]="

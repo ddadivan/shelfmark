@@ -1,28 +1,23 @@
 import { NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { LOGO_VARIANT, LogoComponent } from '@shelfmark/ui';
-import { BrowserExtensionService } from '../../../../core/browser-extension/browser-extension.service';
-import { ThemeService } from '../../../../core/theme/theme.service';
-import { extensionPopupSrc } from '../../../library/components/extension-banner/extension-popup-src';
+import { IconComponent, LOGO_VARIANT, LogoComponent } from '@shelfmark/ui';
 import { LandingRevealDirective } from '../../directives/landing-reveal.directive';
+import { LANDING_IMAGES } from '../../models/landing-images.const';
 
 /**
- * "Save the page you are on" (#455, Landing mockup): a mention of the browser extension with the
- * real popup screenshot, no link (author: the install link is for signed-in people, in the app).
- * Only on a desktop Chrome, Edge, Brave or Arc (`BrowserExtensionService.fits`, rendered with
- * `@if`). Deferred below the fold like the other sections, so the first paint does not change.
+ * "Save the page you are on" (16-landing, #455): a browser frame with the extension popup saving a
+ * jacket, its folder filled in by a rule, beside the eyebrow, the title and the text. No install
+ * link (author: the install link is for signed-in people, in the app). A picture (`role="img"`).
  */
 @Component({
   selector: 'app-landing-extension',
-  imports: [LandingRevealDirective, LogoComponent, NgOptimizedImage, TranslocoPipe],
+  imports: [IconComponent, LandingRevealDirective, LogoComponent, NgOptimizedImage, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-extension.component.html',
   styleUrl: './landing-extension.component.scss',
 })
 export class LandingExtensionComponent {
-  protected readonly extension = inject(BrowserExtensionService);
-  private readonly theme = inject(ThemeService);
   protected readonly LOGO_VARIANT = LOGO_VARIANT;
-  protected readonly popupSrc = computed(() => extensionPopupSrc(this.theme.resolved()));
+  protected readonly jacket = LANDING_IMAGES.jacket;
 }

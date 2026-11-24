@@ -5,3 +5,8 @@
   min-height: 0;
   overflow: hidden;
 }
+
+// The logo names the popup; the title is for assistive technology.
+.duplicate__title {
+  @include visually-hidden;
+}

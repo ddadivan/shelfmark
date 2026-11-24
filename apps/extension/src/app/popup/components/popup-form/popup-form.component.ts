@@ -20,6 +20,7 @@ import {
   IconComponent,
   ICON_SIZE,
   InputComponent,
+  isMacPlatform,
   LogoComponent,
   SegmentedControlComponent,
   type SegmentedOption,
@@ -70,6 +71,10 @@ export class PopupFormComponent {
   private readonly transloco = inject(TranslocoService);
   protected readonly BADGE_TONE = BADGE_TONE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
+  /** The save shortcut named for this platform (Cmd on a Mac). */
+  protected readonly saveHintKey = isMacPlatform()
+    ? 'popup.form.saveHintMac'
+    : 'popup.form.saveHint';
   protected readonly CHIP_VARIANT = CHIP_VARIANT;
   protected readonly AI_LINE_KIND = AI_LINE_KIND;
   protected readonly ICON_SIZE = ICON_SIZE;

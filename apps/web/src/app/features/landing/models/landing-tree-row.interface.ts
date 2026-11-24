@@ -1,10 +1,11 @@
 import type { LandingFolder } from './landing-folder.type';
 
-/** A row of the folder tree in the "after" scene. */
+/** One folder row of a drawn folder tree (the bento tile, the "after" shelf). */
 export interface LandingTreeRow {
-  readonly id: LandingFolder;
-  /** Translation key of the folder name. */
-  readonly nameKey: string;
-  /** Nesting level, 0 for a top-level folder. */
-  readonly depth: number;
+  readonly folder: LandingFolder;
+  readonly count: number;
+  /** A subfolder: indented under the row above. */
+  readonly nested?: boolean;
+  /** The selected row. */
+  readonly current?: boolean;
 }

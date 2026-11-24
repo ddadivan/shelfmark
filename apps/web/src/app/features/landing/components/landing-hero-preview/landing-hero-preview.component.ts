@@ -1,122 +1,78 @@
-import {
-  afterNextRender,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { SegmentedControlComponent, ToastComponent, TOAST_KIND } from '@shelfmark/ui';
-import { activeLang } from '../../../../core/i18n/active-lang';
-import { LinkPreviewCardComponent } from '../../../links/components/link-preview-card/link-preview-card.component';
+import { NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { IconComponent } from '@shelfmark/ui';
 import { LandingLoopGateDirective } from '../../directives/landing-loop-gate.directive';
-import { LandingMotionService } from '../../services/landing-motion.service';
-import { LANDING_LOOP } from '../../models/landing-loop.const';
+import { LANDING_FOLDER_COLOUR } from '../../models/landing-folder-colour.const';
+import type { LandingFolder } from '../../models/landing-folder.type';
 import { LANDING_PREVIEW_CARDS } from '../../models/landing-preview-cards.const';
-import { LANDING_PREVIEW_FILTER } from '../../models/landing-preview-filter.const';
-import type { LandingPreviewFilter } from '../../models/landing-preview-filter.type';
+import { LANDING_PREVIEW_KIND } from '../../models/landing-preview-kind.const';
+import type { LandingPreviewRow } from '../../models/landing-preview-row.interface';
+import { LANDING_PREVIEW_ROWS } from '../../models/landing-preview-rows.const';
+import { LANDING_PREVIEW_SCOPE } from '../../models/landing-preview-scope.const';
+import type { LandingPreviewTab } from '../../models/landing-preview-tab.type';
+import { LandingPreviewCycleService } from '../../services/landing-preview-cycle.service';
+import { previewShows } from '../../utils/landing-preview';
 
-/** Cards the intro staggers before the toast: the three of a full row (the fourth waits off it). */
-const INTRO_SLOTS = 3;
+/** The All links tabs with their counts. */
+const TABS: readonly { tab: LandingPreviewTab; count: number }[] = [
+  { tab: 'all', count: 17 },
+  { tab: LANDING_PREVIEW_KIND.Video, count: 6 },
+  { tab: LANDING_PREVIEW_KIND.Shop, count: 4 },
+];
 
 /**
- * The app preview on the first screen (Landing.dc.html): a "Read later" folder with a view
- * switch, link cards drawn like the library's and a "Saved to Read later" toast with Undo
- * overlapping its corner. Only as many cards as fit at a readable width are visible. Decorative
- * and static (no real links). When the preview is first in view in a visible tab
- * (`LandingLoopGateDirective`) the cards land one after another and the toast slides in, once.
- * Then the switch plays a loop: its thumb slides from "All" to "Articles", the video leaves, the
- * articles glide one slot over and the next article comes in; after a pause it goes back. The
- * loop runs only while the gate is open (in view, tab visible, motion allowed) and pauses where it
- * is otherwise. Every card sits in one grid cell and is moved to its slot by `translate`, so
- * nothing is laid out again and only `transform` / `opacity` change. With reduced motion nothing
- * waits and nothing plays: the "All" frame is simply there.
+ * The live app preview on the first screen (16-landing): the Shelf sidebar, the search field, the
+ * title with the view switch, the All links tabs, a masonry feed of real cards with notes and the
+ * "Saved to Watch later · Undo" toast. A picture of the app (`role="img"` with its name); the rows
+ * and tabs still answer a click by picking that frame of the cycle (`LandingPreviewCycleService`).
  */
 @Component({
   selector: 'app-landing-hero-preview',
-  imports: [TranslocoPipe, SegmentedControlComponent, ToastComponent, LinkPreviewCardComponent],
+  imports: [IconComponent, NgOptimizedImage, TranslocoPipe],
   hostDirectives: [LandingLoopGateDirective],
+  providers: [LandingPreviewCycleService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing-hero-preview.component.html',
-  styleUrls: ['./landing-hero-preview.component.scss', './landing-hero-preview-motion.scss'],
+  styleUrl: './landing-hero-preview.component.scss',
 })
 export class LandingHeroPreviewComponent {
-  protected readonly TOAST_KIND = TOAST_KIND;
-  protected readonly INTRO_SLOTS = INTRO_SLOTS;
+  protected readonly cycle = inject(LandingPreviewCycleService);
+  protected readonly TABS = TABS;
+  protected readonly ALL = LANDING_PREVIEW_SCOPE.All;
 
-  private readonly motion = inject(LandingMotionService);
-  private readonly transloco = inject(TranslocoService);
-  private readonly gate = inject(LandingLoopGateDirective);
+  protected readonly libraryRows = LANDING_PREVIEW_ROWS.filter((row) => !row.folder);
+  protected readonly folderRows = LANDING_PREVIEW_ROWS.filter((row) => row.folder).map((row) => ({
+    row,
+    colour: LANDING_FOLDER_COLOUR[row.scope as LandingFolder],
+  }));
 
-  /** Can the parts be hidden until the preview is seen: after the first render, with a viewport observer. */
-  private readonly armed = signal(false);
-  /** The preview was seen once: the landing animation runs and is never repeated. */
-  protected readonly playing = signal(false);
-  /** Hidden, waiting to be seen. Never under reduced motion, whatever else happens. */
-  protected readonly waiting = computed(
-    () => this.armed() && !this.playing() && !this.motion.reducedMotion(),
-  );
-
-  /** Where the loop is; what is shown is always "All" under reduced motion. */
-  private readonly filter = signal<LandingPreviewFilter>(LANDING_PREVIEW_FILTER.All);
-  protected readonly shown = computed<LandingPreviewFilter>(() =>
-    this.motion.reducedMotion() ? LANDING_PREVIEW_FILTER.All : this.filter(),
-  );
-  protected readonly articles = computed(() => this.shown() === LANDING_PREVIEW_FILTER.Articles);
-
-  /**
-   * Each card with its slot in the row: "All" counts from the first card, "Articles" from the
-   * first article, so a card that is not an article goes to slot -1 (it leaves) and every article
-   * moves one slot over. Slots past the row's last column are off it (transparent).
-   */
-  protected readonly cards = computed(() => {
-    const firstArticle = LANDING_PREVIEW_CARDS.findIndex((card) => card.article);
-    const offset = this.articles() ? firstArticle : 0;
-    return LANDING_PREVIEW_CARDS.map((card, index) => ({
+  /** Every card with whether the current frame shows it (hidden ones stay in the DOM). */
+  protected readonly cards = computed(() =>
+    LANDING_PREVIEW_CARDS.map((card, index) => ({
       card,
       index,
-      slot: !card.article && this.articles() ? -1 : index - offset,
-    }));
-  });
+      shown: previewShows(card, this.cycle.state()),
+    })),
+  );
 
-  protected readonly options = computed(() => [
-    { value: LANDING_PREVIEW_FILTER.All, label: this.label('landing.hero.preview.all') },
-    { value: LANDING_PREVIEW_FILTER.Articles, label: this.label('landing.hero.preview.articles') },
-  ]);
+  protected readonly titleKey = computed(() => this.rowKey(this.cycle.state().scope));
 
-  protected readonly folder = computed(() => this.label('landing.hero.preview.folder'));
-
-  constructor() {
-    afterNextRender(() => {
-      if (typeof IntersectionObserver !== 'undefined') {
-        this.armed.set(true);
-      }
-    });
-    effect(() => {
-      if (this.gate.active()) {
-        this.playing.set(true);
-      }
-    });
-    // The switch loop: one timer at a time, only while the gate is open; a closed gate (out of
-    // view, hidden tab, reduced motion) clears it and the loop waits where it is.
-    effect((onCleanup) => {
-      if (!this.playing() || !this.gate.active()) {
-        return;
-      }
-      const all = this.filter() === LANDING_PREVIEW_FILTER.All;
-      const timer = setTimeout(
-        () => this.filter.set(all ? LANDING_PREVIEW_FILTER.Articles : LANDING_PREVIEW_FILTER.All),
-        all ? LANDING_LOOP.PreviewAllHoldMs : LANDING_LOOP.PreviewArticlesHoldMs,
-      );
-      onCleanup(() => clearTimeout(timer));
-    });
+  /** A library row is `landing.preview.rows.<scope>`, a folder row its folder name. */
+  protected rowKey(scope: string): string {
+    const folder = LANDING_PREVIEW_ROWS.some((row) => row.scope === scope && row.folder);
+    return folder ? `landing.folders.${scope}` : `landing.preview.rows.${scope}`;
   }
 
-  /** `translate` is not reactive: reading the active language makes the label follow a switch. */
-  private label(key: string): string {
-    activeLang();
-    return this.transloco.translate(key);
+  protected folderKey(folder: LandingFolder): string {
+    return `landing.folders.${folder}`;
+  }
+
+  protected pickRow(row: LandingPreviewRow): void {
+    this.cycle.pick(row.scope, 'all');
+  }
+
+  protected pickTab(tab: LandingPreviewTab): void {
+    this.cycle.pick(LANDING_PREVIEW_SCOPE.All, tab);
   }
 }

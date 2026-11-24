@@ -1,53 +1,96 @@
 <section class="landing-ba" aria-labelledby="landing-ba-title">
-  <div class="landing-ba__inner" appLandingReveal>
+  <div appLandingReveal>
     <h2 id="landing-ba-title" class="landing-ba__title">
       {{ 'landing.beforeAfter.title' | transloco }}
     </h2>
-    <div
-      #scenes
-      class="landing-ba__scenes"
-      (pointerenter)="setHovered(true)"
-      (pointerleave)="setHovered(false)"
-      (focusin)="onFocusIn()"
-      (focusout)="onFocusOut($event, scenes)"
-    >
-      <div class="landing-ba__scene">
-        <h3 class="landing-ba__label">{{ 'landing.beforeAfter.before' | transloco }}</h3>
-        <app-landing-before-scene [paused]="paused()" />
+  </div>
+  <div class="landing-ba__halves" appLandingReveal>
+    <div class="landing-ba__half landing-ba__half--before">
+      <p class="landing-ba__label">{{ 'landing.beforeAfter.before' | transloco }}</p>
+      <!-- Drawings of other apps (a chat, browser tabs, a sticky note): outside the DS. -->
+      <div
+        class="landing-ba__mess"
+        role="img"
+        data-ds-ignore
+        [attr.aria-label]="'landing.beforeAfter.mess.label' | transloco"
+      >
+        <span class="landing-ba__note landing-ba__note--1">
+          <b>{{ 'landing.beforeAfter.mess.messages' | transloco }}</b>
+          <span class="landing-ba__muted">youtube.com/watch?v=aircAruvnKk…</span>
+          <span class="landing-ba__muted landing-ba__more">{{
+            'landing.beforeAfter.mess.more' | transloco
+          }}</span>
+        </span>
+        <span class="landing-ba__note landing-ba__note--2">
+          <b>{{ 'landing.beforeAfter.mess.bookmarks' | transloco }}</b>
+          <span class="landing-ba__muted">{{ 'landing.beforeAfter.mess.path' | transloco }}</span>
+        </span>
+        <span class="landing-ba__note landing-ba__note--3">
+          <span class="landing-ba__tabs">
+            <span>The Ojai Jacket…</span><span>Excalidraw</span><span>Nx docs</span
+            ><span>+ 37</span>
+          </span>
+          <span class="landing-ba__muted landing-ba__tabs-note">{{
+            'landing.beforeAfter.mess.tabs' | transloco
+          }}</span>
+        </span>
+        <span class="landing-ba__note landing-ba__note--4">{{
+          'landing.beforeAfter.mess.sticky' | transloco
+        }}</span>
+        <span class="landing-ba__note landing-ba__note--5">
+          <b>{{ 'landing.beforeAfter.mess.notes' | transloco }}</b>
+          <span class="landing-ba__muted">{{
+            'landing.beforeAfter.mess.notesText' | transloco
+          }}</span>
+        </span>
       </div>
-
-      <div class="landing-ba__scene">
-        <h3 class="landing-ba__label">{{ 'landing.beforeAfter.after' | transloco }}</h3>
-        <div class="landing-ba__after">
-          <div class="landing-ba__tree" aria-hidden="true">
-            @for (row of treeRows; track row.id) {
-              <div
-                class="landing-ba__row"
-                [class.landing-ba__row--active]="row.id === activeFolder()"
-                [attr.data-testid]="row.id === activeFolder() ? 'landing-ba-active-row' : null"
-                [class.landing-ba__row--nested]="row.depth > 0"
-              >
-                {{ row.nameKey | transloco }}
-              </div>
-            }
-            <p class="landing-ba__section">{{ 'landing.after.tagsTitle' | transloco }}</p>
-            <div class="landing-ba__tags">
-              <ui-chip>{{ 'landing.after.tags.video' | transloco }}</ui-chip>
-              <ui-chip>{{ 'landing.after.tags.courses' | transloco }}</ui-chip>
-            </div>
-          </div>
-          <ul class="landing-ba__list" [attr.aria-label]="'landing.after.listLabel' | transloco">
-            @for (link of lists[activeFolder()]; track link.id) {
-              <li class="landing-ba__item" animate.enter="landing-ba__item--enter">
-                <ui-favicon [letter]="link.letter" />
-                <span class="landing-ba__item-text">
-                  <span class="landing-ba__item-title">{{ link.titleKey | transloco }}</span>
-                  <span class="landing-ba__item-note">{{ link.noteKey | transloco }}</span>
-                </span>
-              </li>
-            }
-          </ul>
-        </div>
+    </div>
+    <div class="landing-ba__half landing-ba__half--after">
+      <p class="landing-ba__label">{{ 'landing.beforeAfter.after' | transloco }}</p>
+      <div
+        class="landing-ba__shelf"
+        role="img"
+        [attr.aria-label]="'landing.beforeAfter.shelfLabel' | transloco"
+      >
+        <span class="landing-ba__tree">
+          @for (row of tree; track row.folder) {
+            <span class="landing-ba__row" [class.landing-ba__row--on]="row.current"
+              ><ui-icon
+                class="landing-ba__folder"
+                name="folder-filled"
+                [size]="16"
+                [style.color]="COLOUR[row.folder]"
+              />{{ 'landing.folders.' + row.folder | transloco
+              }}<b class="landing-ba__count">{{ row.count }}</b></span
+            >
+          }
+        </span>
+        <span
+          class="landing-ba__links"
+          appLandingReveal
+          [revealStartMs]="ROWS_START_MS"
+          [revealStepMs]="ROWS_STEP_MS"
+        >
+          @for (link of links; track link.id) {
+            <span class="landing-ba__link">
+              <img
+                class="landing-ba__thumb"
+                alt=""
+                [ngSrc]="link.image.src"
+                [width]="link.image.width"
+                [height]="link.image.height"
+              />
+              <span class="landing-ba__text">
+                <b class="landing-ba__name">{{
+                  'landing.beforeAfter.links.' + link.id + '.title' | transloco
+                }}</b>
+                <span class="landing-ba__link-note">{{
+                  'landing.beforeAfter.links.' + link.id + '.note' | transloco
+                }}</span>
+              </span>
+            </span>
+          }
+        </span>
       </div>
     </div>
   </div>

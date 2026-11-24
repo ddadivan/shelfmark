@@ -1,46 +1,56 @@
 <header class="landing-header">
-  <ui-logo class="landing-header__logo" [wordmark]="'landing.header.brand' | transloco" />
-  @if (!phone()) {
+  <div class="landing-header__bar">
+    <ui-logo class="landing-header__logo" [wordmark]="'landing.header.brand' | transloco" />
     <nav class="landing-header__nav" [attr.aria-label]="'landing.header.navLabel' | transloco">
-      <ui-button
+      <a
         class="landing-header__link"
-        [variant]="BUTTON_VARIANT.Ghost"
-        [size]="BUTTON_SIZE.Sm"
-        [href]="LANDING_LINKS.HowItWorks"
-        (linkClick)="onHowItWorks($event)"
-        >{{ 'landing.header.howItWorks' | transloco }}</ui-button
+        [attr.href]="LANDING_LINKS.HowItWorks"
+        (click)="onSection($event, TARGET.HowItWorks)"
+        >{{ 'landing.header.howItWorks' | transloco }}</a
       >
-      <ui-button
+      <a
         class="landing-header__link"
-        [variant]="BUTTON_VARIANT.Ghost"
-        [size]="BUTTON_SIZE.Sm"
-        [href]="LANDING_LINKS.Privacy"
-        [appAppLink]="LANDING_LINKS.Privacy"
-        [appAppLinkPreload]="false"
-        >{{ 'landing.header.privacy' | transloco }}</ui-button
+        [attr.href]="LANDING_LINKS.Ai"
+        (click)="onSection($event, TARGET.Ai)"
+        >{{ 'landing.header.ai' | transloco }}</a
       >
+      <a class="landing-header__link" [routerLink]="LANDING_LINKS.Changelog">{{
+        'landing.header.whatsNew' | transloco
+      }}</a>
+      <a class="landing-header__link" [routerLink]="LANDING_LINKS.Privacy">{{
+        'landing.header.privacy' | transloco
+      }}</a>
     </nav>
-  }
-  <div class="landing-header__actions">
+    <span class="landing-header__space"></span>
+    <ui-button
+      class="landing-header__theme"
+      [variant]="BUTTON_VARIANT.Ghost"
+      [size]="BUTTON_SIZE.Md"
+      [iconLeft]="dark() ? 'sun' : 'moon'"
+      iconOnly
+      [ariaLabel]="'landing.header.theme' | transloco"
+      (click)="toggleTheme()"
+    />
     @if (signedIn()) {
-      <ui-button [href]="LANDING_LINKS.Shelf" [appAppLink]="LANDING_LINKS.Shelf">{{
-        'landing.backToShelf' | transloco
-      }}</ui-button>
+      <ui-button
+        [variant]="BUTTON_VARIANT.Primary"
+        [href]="LANDING_LINKS.Shelf"
+        [appAppLink]="LANDING_LINKS.Shelf"
+        >{{ 'landing.backToShelf' | transloco }}</ui-button
+      >
     } @else {
       <ui-button
-        [variant]="BUTTON_VARIANT.Ghost"
+        class="landing-header__sign-in"
         [href]="LANDING_LINKS.SignIn"
         [appAppLink]="LANDING_LINKS.SignIn"
         >{{ 'landing.header.signIn' | transloco }}</ui-button
       >
-      @if (!phone()) {
-        <ui-button
-          [variant]="BUTTON_VARIANT.Primary"
-          [href]="LANDING_LINKS.SignIn"
-          [appAppLink]="LANDING_LINKS.SignIn"
-          >{{ 'landing.header.getStarted' | transloco }}</ui-button
-        >
-      }
+      <ui-button
+        [variant]="BUTTON_VARIANT.Primary"
+        [href]="LANDING_LINKS.SignIn"
+        [appAppLink]="LANDING_LINKS.SignIn"
+        >{{ 'landing.header.start' | transloco }}</ui-button
+      >
     }
   </div>
 </header>
