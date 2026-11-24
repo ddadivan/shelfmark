@@ -3710,7 +3710,20 @@
       "stop": "Stop",
       "done": "Every existing link has been processed.",
       "startFailed": "Couldn’t start processing your links",
-      "stopFailed": "Couldn’t stop processing. Try again."
+      "stopFailed": "Couldn’t stop processing. Try again.",
+      "show": "Show",
+      "dialog": {
+        "title": "Sorting older links",
+        "text": "Shelfmark is adding folders, tags and summaries to links saved before AI was on. You can close this; it keeps going in the background.",
+        "of": "of {{total}} done",
+        "note": "Uses your AI allowance for older links: {{used}} of {{limit}} this month. Suggestions wait in Tidy up; nothing is moved without you in Suggest mode.",
+        "pause": "Pause",
+        "close": "Close",
+        "doneTitle": "Older links are sorted",
+        "doneText": "{{count}} older links now have suggestions. Review them in Tidy up.",
+        "later": "Later",
+        "openTidy": "Open Tidy up"
+      }
     },
     "backfillOffer": {
       "title": {

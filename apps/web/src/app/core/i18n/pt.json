@@ -3797,7 +3797,20 @@
       "stop": "Parar",
       "done": "Todos os links existentes foram processados.",
       "startFailed": "Não foi possível começar a processar seus links",
-      "stopFailed": "Não foi possível parar o processamento. Tente de novo."
+      "stopFailed": "Não foi possível parar o processamento. Tente de novo.",
+      "show": "Mostrar",
+      "dialog": {
+        "title": "Organizando links antigos",
+        "text": "O Shelfmark está adicionando pastas, tags e resumos aos links salvos antes da IA. Você pode fechar; continua em segundo plano.",
+        "of": "de {{total}} concluídos",
+        "note": "Usa a sua cota de IA para links antigos: {{used}} de {{limit}} neste mês. As sugestões aguardam em Organizar; no modo Sugerir nada é movido sem você.",
+        "pause": "Pausar",
+        "close": "Fechar",
+        "doneTitle": "Os links antigos estão organizados",
+        "doneText": "{{count}} links antigos agora têm sugestões. Revise-as em Organizar.",
+        "later": "Depois",
+        "openTidy": "Abrir Organizar"
+      }
     },
     "backfillOffer": {
       "title": {

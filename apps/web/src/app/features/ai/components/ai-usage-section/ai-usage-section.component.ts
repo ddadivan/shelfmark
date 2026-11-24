@@ -79,4 +79,9 @@ export class AiUsageSectionComponent {
       minutes: this.locale.formatNumber(backfill?.estimatedMinutes ?? 0),
     };
   });
+
+  /** Starts the run and shows its progress in the dialog. */
+  protected async start(): Promise<void> {
+    if (await this.actions.startBackfill()) this.actions.showBackfill();
+  }
 }

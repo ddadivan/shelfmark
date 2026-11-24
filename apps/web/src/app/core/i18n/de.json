@@ -3710,7 +3710,20 @@
       "stop": "Stoppen",
       "done": "Alle vorhandenen Links sind verarbeitet.",
       "startFailed": "Verarbeitung deiner Links konnte nicht gestartet werden",
-      "stopFailed": "Verarbeitung konnte nicht gestoppt werden. Versuch es noch einmal."
+      "stopFailed": "Verarbeitung konnte nicht gestoppt werden. Versuch es noch einmal.",
+      "show": "Anzeigen",
+      "dialog": {
+        "title": "Ältere Links werden sortiert",
+        "text": "Shelfmark ergänzt Ordner, Tags und Zusammenfassungen für Links, die vor der KI gespeichert wurden. Du kannst das schließen; es läuft im Hintergrund weiter.",
+        "of": "von {{total}} fertig",
+        "note": "Nutzt dein KI-Kontingent für ältere Links: {{used}} von {{limit}} in diesem Monat. Vorschläge warten in Aufräumen; im Modus Vorschlagen wird nichts ohne dich verschoben.",
+        "pause": "Pausieren",
+        "close": "Schließen",
+        "doneTitle": "Ältere Links sind sortiert",
+        "doneText": "{{count}} ältere Links haben jetzt Vorschläge. Sieh sie dir in Aufräumen an.",
+        "later": "Später",
+        "openTidy": "Aufräumen öffnen"
+      }
     },
     "backfillOffer": {
       "title": {

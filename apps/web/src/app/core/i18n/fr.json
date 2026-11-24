@@ -3797,7 +3797,20 @@
       "stop": "Arrêter",
       "done": "Tous les liens existants ont été traités.",
       "startFailed": "Impossible de lancer le traitement de vos liens",
-      "stopFailed": "Impossible d’arrêter le traitement. Réessayez."
+      "stopFailed": "Impossible d’arrêter le traitement. Réessayez.",
+      "show": "Afficher",
+      "dialog": {
+        "title": "Tri des anciens liens",
+        "text": "Shelfmark ajoute dossiers, tags et résumés aux liens enregistrés avant l’activation de l’IA. Vous pouvez fermer : le tri continue en arrière-plan.",
+        "of": "sur {{total}} terminés",
+        "note": "Utilise votre quota IA pour les anciens liens : {{used}} sur {{limit}} ce mois-ci. Les suggestions attendent dans Ranger ; rien n’est déplacé sans vous en mode Suggérer.",
+        "pause": "Mettre en pause",
+        "close": "Fermer",
+        "doneTitle": "Les anciens liens sont triés",
+        "doneText": "{{count}} anciens liens ont maintenant des suggestions. Passez-les en revue dans Ranger.",
+        "later": "Plus tard",
+        "openTidy": "Ouvrir Ranger"
+      }
     },
     "backfillOffer": {
       "title": {

@@ -3797,7 +3797,20 @@
       "stop": "Interrompi",
       "done": "Tutti i link esistenti sono stati elaborati.",
       "startFailed": "Impossibile avviare l’elaborazione dei link",
-      "stopFailed": "Impossibile interrompere l’elaborazione. Riprova."
+      "stopFailed": "Impossibile interrompere l’elaborazione. Riprova.",
+      "show": "Mostra",
+      "dialog": {
+        "title": "Riordino dei link più vecchi",
+        "text": "Shelfmark aggiunge cartelle, tag e riassunti ai link salvati prima dell’IA. Puoi chiudere: continua in background.",
+        "of": "di {{total}} completati",
+        "note": "Usa la tua quota IA per i link più vecchi: {{used}} di {{limit}} questo mese. I suggerimenti aspettano in Riordina; in modalità Suggerisci nulla viene spostato senza di te.",
+        "pause": "Metti in pausa",
+        "close": "Chiudi",
+        "doneTitle": "I link più vecchi sono in ordine",
+        "doneText": "{{count}} link più vecchi ora hanno suggerimenti. Rivedili in Riordina.",
+        "later": "Più tardi",
+        "openTidy": "Apri Riordina"
+      }
     },
     "backfillOffer": {
       "title": {

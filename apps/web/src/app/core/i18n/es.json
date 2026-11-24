@@ -3797,7 +3797,20 @@
       "stop": "Detener",
       "done": "Todos los enlaces existentes están procesados.",
       "startFailed": "No se pudo empezar a procesar tus enlaces",
-      "stopFailed": "No se pudo detener el procesamiento. Inténtalo de nuevo."
+      "stopFailed": "No se pudo detener el procesamiento. Inténtalo de nuevo.",
+      "show": "Ver",
+      "dialog": {
+        "title": "Ordenando enlaces antiguos",
+        "text": "Shelfmark añade carpetas, etiquetas y resúmenes a los enlaces guardados antes de activar la IA. Puedes cerrar esto; sigue en segundo plano.",
+        "of": "de {{total}} listos",
+        "note": "Usa tu cupo de IA para enlaces antiguos: {{used}} de {{limit}} este mes. Las sugerencias esperan en Ordenar; en modo Sugerir no se mueve nada sin ti.",
+        "pause": "Pausar",
+        "close": "Cerrar",
+        "doneTitle": "Los enlaces antiguos están ordenados",
+        "doneText": "{{count}} enlaces antiguos tienen ahora sugerencias. Revísalas en Ordenar.",
+        "later": "Más tarde",
+        "openTidy": "Abrir Ordenar"
+      }
     },
     "backfillOffer": {
       "title": {
