@@ -18,6 +18,7 @@ import { APP_LANG } from '../../../../core/i18n/models/app-lang.const';
 import { LANGUAGE_NAMES } from '../../../../core/i18n/models/language-names.const';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
 import { SettingsPageHeaderComponent } from '../../components/settings-page-header/settings-page-header.component';
+import { DateTimeSettingsComponent } from './date-time-settings/date-time-settings.component';
 import { LANGUAGE_FLAGS } from './models/language-flags.const';
 
 /**
@@ -29,6 +30,7 @@ import { LANGUAGE_FLAGS } from './models/language-flags.const';
 @Component({
   selector: 'app-settings-language-page',
   imports: [
+    DateTimeSettingsComponent,
     TranslocoPipe,
     RadioGroupComponent,
     SettingsPageHeaderComponent,

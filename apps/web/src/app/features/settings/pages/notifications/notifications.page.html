@@ -1,0 +1,167 @@
+<app-settings-page-header
+  [title]="'settings.nav.notifications' | transloco"
+  [description]="'settings.description.notifications' | transloco"
+/>
+
+<ui-settings-section [title]="'settings.notifications.device.title' | transloco">
+  @if (!device.supported()) {
+  <ui-settings-row
+    [title]="'settings.notifications.device.label' | transloco"
+    [description]="'settings.notifications.device.unsupported' | transloco"
+  />
+  } @else if (device.needsHomeScreen) {
+  <div class="notifications__help" data-testid="notifications-home-screen">
+    <ui-icon class="notifications__help-icon" name="smartphone" [size]="ICON_SIZE.Md" />
+    <div>
+      <p class="notifications__help-title">
+        {{ 'settings.notifications.homeScreen.title' | transloco }}
+      </p>
+      <p class="notifications__help-text">
+        {{ 'settings.notifications.homeScreen.text' | transloco }}
+      </p>
+      <ol class="notifications__steps">
+        <li>{{ 'settings.notifications.homeScreen.step1' | transloco }}</li>
+        <li>{{ 'settings.notifications.homeScreen.step2' | transloco }}</li>
+        <li>{{ 'settings.notifications.homeScreen.step3' | transloco }}</li>
+      </ol>
+    </div>
+  </div>
+  } @else if (device.blocked()) {
+  <div class="notifications__help" data-testid="notifications-blocked">
+    <ui-icon
+      class="notifications__help-icon notifications__help-icon--warn"
+      name="bell"
+      [size]="ICON_SIZE.Md"
+    />
+    <div>
+      <p class="notifications__help-title">
+        {{ 'settings.notifications.blocked.title' | transloco }}
+      </p>
+      <p class="notifications__help-text">
+        {{ 'settings.notifications.blocked.text' | transloco }}
+      </p>
+      <ol class="notifications__steps">
+        <li>{{ 'settings.notifications.blocked.step1' | transloco: { site: site } }}</li>
+        <li>{{ 'settings.notifications.blocked.step2' | transloco }}</li>
+        <li>{{ 'settings.notifications.blocked.step3' | transloco }}</li>
+      </ol>
+    </div>
+  </div>
+  } @else {
+  <ui-settings-row
+    [title]="'settings.notifications.device.label' | transloco"
+    [description]="'settings.notifications.device.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.notifications.device.label' | transloco"
+      [checked]="device.enabled()"
+      (checkedChange)="setDevice($event)"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.notifications.test.label' | transloco"
+    [description]="'settings.notifications.test.hint' | transloco"
+  >
+    <ui-button [size]="BUTTON_SIZE.Sm" [disabled]="!device.enabled()" (click)="test()">
+      {{ 'settings.notifications.test.action' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+  }
+</ui-settings-section>
+
+@if (store.available()) {
+<ui-settings-section [title]="'settings.notifications.send.title' | transloco">
+  <ui-settings-row
+    [title]="'settings.notifications.send.reminders.label' | transloco"
+    [description]="'settings.notifications.send.reminders.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.notifications.send.reminders.label' | transloco"
+      [checked]="store.settings().reminders"
+      (checkedChange)="save({ reminders: $event })"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.notifications.send.continue.label' | transloco"
+    [description]="'settings.notifications.send.continue.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.notifications.send.continue.label' | transloco"
+      [checked]="store.settings().continueReading"
+      (checkedChange)="save({ continueReading: $event })"
+    />
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'settings.notifications.send.weekly.label' | transloco"
+    [description]="'settings.notifications.send.weekly.hint' | transloco"
+  >
+    <ui-switch
+      [label]="'settings.notifications.send.weekly.label' | transloco"
+      [checked]="store.settings().weeklyEmail"
+      (checkedChange)="save({ weeklyEmail: $event })"
+    />
+  </ui-settings-row>
+</ui-settings-section>
+
+<ui-settings-section [title]="'settings.notifications.quiet.title' | transloco">
+  <ui-settings-row
+    #quietRow
+    [title]="'settings.notifications.quiet.label' | transloco"
+    [description]="'settings.notifications.quiet.hint' | transloco"
+  >
+    <div class="notifications__quiet">
+      <ui-select
+        class="notifications__time"
+        appearance="pill"
+        [label]="'settings.notifications.quiet.from' | transloco"
+        [emptyLabel]="'settings.notifications.quiet.off' | transloco"
+        [options]="hourOptions()"
+        [value]="store.settings().quietFrom"
+        (valueChange)="setQuietFrom($event)"
+      />
+      @if (store.settings().quietFrom !== null) {
+      <span class="notifications__and">{{ 'settings.notifications.quiet.and' | transloco }}</span>
+      <ui-select
+        class="notifications__time"
+        appearance="pill"
+        [label]="'settings.notifications.quiet.to' | transloco"
+        [options]="hourOptions()"
+        [value]="store.settings().quietTo"
+        (valueChange)="save({ quietTo: $event })"
+      />
+      }
+    </div>
+  </ui-settings-row>
+</ui-settings-section>
+
+<ui-settings-section [title]="'settings.notifications.devices.title' | transloco">
+  @if (device.enabled()) {
+  <ui-settings-row
+    [title]="device.deviceName()"
+    [description]="'settings.notifications.devices.thisHint' | transloco"
+  >
+    <span class="notifications__muted"
+      >{{ 'settings.notifications.devices.this' | transloco }}</span
+    >
+  </ui-settings-row>
+  } @for (item of store.devices(); track item.id) {
+  <ui-settings-row
+    [title]="item.name"
+    [description]="
+          'settings.notifications.devices.since' | transloco: { date: locale.formatDate(item.createdAt) }
+        "
+  >
+    <ui-button
+      variant="ghost"
+      [size]="BUTTON_SIZE.Sm"
+      [ariaLabel]="'settings.notifications.devices.turnOffLabel' | transloco: { name: item.name }"
+      (click)="removeDevice(item.id, item.name)"
+    >
+      {{ 'settings.notifications.devices.turnOff' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+  } @empty { @if (!device.enabled()) {
+  <ui-settings-row [title]="'settings.notifications.devices.none' | transloco" />
+  } }
+</ui-settings-section>
+}

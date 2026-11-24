@@ -6,7 +6,7 @@
   display: flex;
   gap: var(--space-3);
   align-items: center;
-  padding-block-start: var(--space-1);
+  padding-block: var(--space-4);
 
   @include tablet-up {
     gap: var(--space-4);
@@ -39,11 +39,6 @@
   @include type(caption);
 
   margin: 0;
+  padding-block: var(--space-3);
   color: var(--text-muted);
-}
-
-// "Your data": the target of the old export page and of Privacy and data's "Open export" (#352).
-.account__anchor {
-  display: block;
-  scroll-margin-block-start: var(--space-4);
 }

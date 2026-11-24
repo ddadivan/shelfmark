@@ -1,8 +1,11 @@
+import type { IconName } from '@shelfmark/ui';
 import type { SettingsPath } from './settings-path.type';
 
 /** One section of the settings: a row of the desktop nav and, where `phone` is set, of the You list. */
 export interface SettingsNavEntry {
   path: SettingsPath;
+  /** Outline glyph of the nav row and the You list row (Shelf 05-settings). */
+  icon: IconName;
   /** Translation key of the section name (nav row and page title). */
   labelKey: string;
   /** Translation key of the line under the page title. */

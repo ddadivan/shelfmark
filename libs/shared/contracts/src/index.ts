@@ -542,3 +542,9 @@ export type { ReaderArticleResponse } from './reader/reader-article-response.int
 export type { ReaderProgress } from './reader/reader-progress.interface';
 export { READER_ENDPOINT } from './reader/reader-endpoint.const';
 export { READER_LIMIT } from './reader/reader-limit.const';
+export type { NotificationSettings } from './notifications/notification-settings.interface';
+export type { NotificationDevice } from './notifications/notification-device.interface';
+export type { NotificationSettingsResponse } from './notifications/notification-settings-response.interface';
+export type { UpdateNotificationSettings } from './notifications/update-notification-settings.type';
+export { NOTIFICATION_ENDPOINT } from './notifications/notification-endpoint.const';
+export { NOTIFICATION_DEFAULTS } from './notifications/notification-defaults.const';

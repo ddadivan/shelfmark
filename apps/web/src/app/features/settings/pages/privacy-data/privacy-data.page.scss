@@ -3,7 +3,7 @@
 @include settings-page;
 
 .privacy-data__points {
-  @include type(body);
+  @include type(secondary);
 
   display: flex;
   flex-direction: column;
@@ -13,9 +13,15 @@
   color: var(--text-muted);
 }
 
+.privacy-data__kept {
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
 .privacy-data__text {
-  @include type(body);
+  @include type(secondary);
 
   margin: 0;
+  padding-block: var(--space-3);
   color: var(--text-muted);
 }

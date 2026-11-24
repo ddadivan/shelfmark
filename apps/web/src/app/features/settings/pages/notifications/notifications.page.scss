@@ -1,0 +1,65 @@
+@use 'ui' as *;
+@use '../../settings-page' as *;
+@include settings-page;
+
+// Shelf 12-notify "When notifications are off": the steps in place of the switch.
+.notifications__help {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding-block: var(--space-4);
+}
+
+.notifications__help-icon {
+  flex: none;
+  margin-block-start: rem(2px);
+  color: var(--text);
+}
+
+.notifications__help-icon--warn {
+  color: var(--warning);
+}
+
+.notifications__help-title {
+  @include type(heading);
+
+  margin: 0;
+  color: var(--text);
+}
+
+.notifications__help-text {
+  @include type(secondary);
+
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+}
+
+.notifications__steps {
+  @include type(secondary);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: var(--space-3) 0 0;
+  padding-inline-start: var(--space-5);
+  color: var(--text);
+}
+
+.notifications__quiet {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.notifications__time {
+  // The Shelf settings pill: as wide as its value, capped so a long name truncates.
+  max-width: rem(240px);
+}
+
+.notifications__and,
+.notifications__muted {
+  @include type(caption);
+
+  color: var(--text-muted);
+}

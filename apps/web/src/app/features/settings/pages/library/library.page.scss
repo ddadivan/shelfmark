@@ -4,8 +4,8 @@
 
 // The two choices from a list (sort, folder) get the width of the mockup's field.
 .library__select {
-  display: block;
-  min-width: rem(200px);
+  // The Shelf settings pill: as wide as its value, capped so a long name truncates.
+  max-width: rem(240px);
 }
 
 .library__note {

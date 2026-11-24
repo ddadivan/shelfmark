@@ -1637,20 +1637,22 @@
       "appearance": "Aspetto",
       "library": "Libreria",
       "ai": "IA",
-      "language": "Lingua",
-      "privacy": "Privacy e dati",
+      "language": "Lingua e regione",
+      "privacy": "I tuoi dati",
       "shortcuts": "Scorciatoie da tastiera",
-      "feedback": "Il tuo feedback"
+      "feedback": "Il tuo feedback",
+      "notifications": "Notifiche"
     },
     "description": {
       "account": "Il tuo profilo, il tuo scaffale e i tuoi dati.",
       "appearance": "Salvato mentre lo cambi e sincronizzato su tutti i tuoi dispositivi.",
       "library": "Come i link vengono mostrati, salvati e conservati.",
       "ai": "Un aiuto per organizzare, solo quando lo vuoi. Spenta finché non la attivi.",
-      "language": "La lingua dell’interfaccia. I formati di data e ora sono in Aspetto.",
-      "privacy": "Cosa conserviamo e come portarlo con te.",
+      "language": "La lingua dell'interfaccia, le date e l'orologio.",
+      "privacy": "Importa ed esporta i link e decidi cosa ricorda Shelfmark.",
       "shortcuts": "Lavora senza mouse.",
-      "feedback": "Idee, problemi e le nostre risposte."
+      "feedback": "Idee, problemi e le nostre risposte.",
+      "notifications": "Come Shelfmark ti avvisa quando è il momento di tornare a un link."
     },
     "account": {
       "profile": "Profilo",
@@ -1686,7 +1688,8 @@
         "none": "L'account demo non è collegato a Google o GitHub.",
         "google": "Google",
         "github": "GitHub"
-      }
+      },
+      "cardHint": "Account e accesso"
     },
     "data": {
       "title": "I tuoi dati",
@@ -1724,7 +1727,8 @@
           "amber": "Ambra",
           "rose": "Rosa",
           "teal": "Verde acqua",
-          "graphite": "Grafite"
+          "graphite": "Grafite",
+          "ink": "Inchiostro"
         },
         "background": {
           "label": "Sfondo",
@@ -1865,11 +1869,12 @@
         "label": "Informativa sulla privacy",
         "hint": "Cosa conserviamo e perché, in parole semplici",
         "action": "Leggi",
-        "actionLabel": "Leggi l’informativa sulla privacy"
+        "actionLabel": "Leggi l’informativa sulla privacy",
+        "title": "Privacy"
       },
       "recent": {
         "label": "Ricorda gli aperti di recente",
-        "hint": "Mantiene l’elenco Aperti di recente. Disattivato lo cancella e smette di registrare.",
+        "hint": "Alimenta Aperti di recente e Continua a leggere. Disattivato, la cronologia viene cancellata e non si registra più nulla.",
         "confirm": {
           "title": "Smettere di ricordare gli aperti di recente?",
           "message": "L’elenco Aperti di recente viene cancellato e i link che apri non vengono aggiunti finché non riattivi l’opzione. I tuoi link restano salvati.",
@@ -1894,12 +1899,17 @@
       "importExport": {
         "title": "Importa ed esporta",
         "import": {
-          "hint": "Porta qui i segnalibri del tuo browser"
+          "hint": "Segnalibri da Chrome, Safari, Firefox o Edge."
         },
         "export": {
-          "hint": "Scarica l'intera libreria in un file"
+          "hint": "JSON, segnalibri HTML o CSV."
         },
-        "open": "Apri"
+        "open": "Apri",
+        "importAction": "Importa",
+        "exportAction": "Esporta…"
+      },
+      "history": {
+        "title": "Cronologia"
       }
     },
     "footer": {
@@ -2053,7 +2063,71 @@
       "failed": "Impossibile salvare l’impostazione",
       "failedDetail": "È tornata com’era."
     },
-    "help": "Aiuto"
+    "help": "Aiuto",
+    "notifications": {
+      "device": {
+        "title": "Su questo dispositivo",
+        "label": "Notifiche del browser",
+        "hint": "Permette a Shelfmark di mostrare notifiche di sistema su questo dispositivo.",
+        "unsupported": "Questo browser non può mostrare notifiche."
+      },
+      "homeScreen": {
+        "title": "Su iPhone, aggiungi Shelfmark alla schermata Home",
+        "text": "Safari consente le notifiche solo alle app nella schermata Home.",
+        "step1": "Tocca Condividi in fondo a Safari.",
+        "step2": "Scegli Aggiungi alla schermata Home.",
+        "step3": "Apri Shelfmark dalla schermata Home e attiva le notifiche."
+      },
+      "blocked": {
+        "title": "Le notifiche sono bloccate in questo browser",
+        "text": "Shelfmark non può attivarle al posto tuo. Nella maggior parte dei browser:",
+        "step1": "Fai clic sull'icona a sinistra dell'indirizzo, {{site}}.",
+        "step2": "Imposta Notifiche su Consenti.",
+        "step3": "Ricarica la pagina."
+      },
+      "test": {
+        "label": "Prova",
+        "hint": "Inviane una ora per vedere come appare.",
+        "action": "Invia una prova",
+        "title": "Shelfmark",
+        "body": "Le notifiche sono attive. Ecco come appaiono.",
+        "failed": "Impossibile mostrare una notifica"
+      },
+      "send": {
+        "title": "Cosa inviare",
+        "reminders": {
+          "label": "Promemoria",
+          "hint": "Quando scade un promemoria che hai impostato."
+        },
+        "continue": {
+          "label": "Continua a leggere",
+          "hint": "Un promemoria per un articolo letto a metà, al massimo una volta al giorno."
+        },
+        "weekly": {
+          "label": "Dal tuo scaffale, email settimanale",
+          "hint": "Domenica mattina: cosa scade, cosa hai salvato, un link dimenticato."
+        }
+      },
+      "quiet": {
+        "title": "Ore di silenzio",
+        "label": "Non avvisare tra le",
+        "hint": "I promemoria nelle ore di silenzio arrivano quando finiscono.",
+        "from": "Dalle",
+        "to": "Alle",
+        "off": "Disattivate",
+        "and": "e le"
+      },
+      "devices": {
+        "title": "Dispositivi",
+        "this": "Questo dispositivo",
+        "thisHint": "Qui le notifiche sono attive.",
+        "since": "Attivate il {{date}}",
+        "turnOff": "Disattiva",
+        "turnOffLabel": "Disattiva le notifiche su {{name}}",
+        "none": "Nessun dispositivo ha le notifiche attive."
+      },
+      "failed": "Impossibile salvare le impostazioni delle notifiche"
+    }
   },
   "shortcuts": {
     "title": "Scorciatoie da tastiera",
@@ -4441,6 +4515,17 @@
       "clear": "Cancella cronologia",
       "clearTitle": "Cancellare la cronologia?",
       "clearText": "I tuoi link restano salvati; sparisce solo l'elenco di quelli aperti."
+    }
+  },
+  "notifications": {
+    "device": {
+      "name": "{{browser}} su {{system}}",
+      "unknown": "Questo browser"
+    },
+    "prompt": {
+      "question": "Vuoi un avviso anche a Shelfmark chiuso? Il browser lo chiederà una volta.",
+      "turnOn": "Attiva le notifiche",
+      "notNow": "Non ora"
     }
   }
 }

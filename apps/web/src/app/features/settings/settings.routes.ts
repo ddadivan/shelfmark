@@ -3,7 +3,6 @@ import { Router, type Routes } from '@angular/router';
 import { AI_APPLIED_PART } from '@shelfmark/contracts';
 import { APP_PATH } from '../../models/app-path.const';
 import { CLEANUP_SEGMENT } from '../cleanup/models/cleanup-segment.const';
-import { YOUR_DATA_FRAGMENT } from './models/your-data-fragment.const';
 import { SETTINGS_PATH } from './models/settings-path.const';
 import { settingsIndexGuard } from './pages/settings-index/settings-index.guard';
 
@@ -33,6 +32,10 @@ export default [
     loadComponent: () => import('../cleanup/cleanup.page'),
   },
   {
+    path: SETTINGS_PATH.Notifications,
+    loadComponent: () => import('./pages/notifications/notifications.page'),
+  },
+  {
     path: SETTINGS_PATH.Ai,
     loadComponent: () => import('./pages/ai/ai-settings.page'),
   },
@@ -50,13 +53,10 @@ export default [
     path: SETTINGS_PATH.Shortcuts,
     loadComponent: () => import('./pages/shortcuts/shortcuts.page'),
   },
-  // Export moved to Account › Your data (#352); old links and bookmarks land there.
+  // Import and export live in Settings › Your data (Shelf); old links and bookmarks land there.
   {
     path: SETTINGS_PATH.ImportExport,
-    redirectTo: () =>
-      inject(Router).createUrlTree(['/', APP_PATH.Settings, SETTINGS_PATH.Account], {
-        fragment: YOUR_DATA_FRAGMENT,
-      }),
+    redirectTo: () => inject(Router).createUrlTree(['/', APP_PATH.Settings, SETTINGS_PATH.Privacy]),
   },
   {
     path: SETTINGS_PATH.Privacy,

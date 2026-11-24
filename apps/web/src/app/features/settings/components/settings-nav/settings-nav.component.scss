@@ -6,39 +6,39 @@
   overscroll-behavior: contain;
 }
 
-// SetAccount nav: rows of the sidebar tree, 2px apart, in the sidebar card.
+// Shelf 05-settings `.snav`: Back to links, the "Settings" heading, one 36px row per section
+// (16px outline glyph, 14px label, radius 10, current `surface-pressed` 500), the version at the
+// bottom.
 .settings-nav {
   display: flex;
   flex-direction: column;
   gap: rem(2px);
-  padding: var(--space-3) var(--space-2);
-}
-
-.settings-nav__back {
-  align-self: flex-start;
-  margin-block-end: var(--space-2);
+  min-height: 100%;
+  padding-block-end: var(--space-3);
 }
 
 .settings-nav__heading {
-  @include type(caption);
-
-  padding: var(--space-1) rem(10px) var(--space-1);
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
-// The row of `ui-tree`: 36px, 10px inset, 14px corners.
-.settings-nav__row {
   @include type(body);
 
   display: flex;
   align-items: center;
-  min-height: rem(36px);
-  padding-block: 0;
-  padding-inline: rem(10px);
+  min-height: rem(32px);
+  margin-block-start: var(--space-2);
+  padding-inline-start: var(--space-1);
+  color: var(--text);
+}
+
+.settings-nav__row {
+  @include type(secondary);
+
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  min-height: var(--row-nav);
+  padding-inline: rem(14px);
   color: var(--text);
   text-decoration: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   &:focus-visible {
@@ -46,7 +46,7 @@
   }
 
   @include hover {
-    background: var(--surface-hover);
+    background: var(--fill);
   }
 
   @include reduced-motion {
@@ -59,15 +59,26 @@
 
   &[aria-current='page'] {
     font-weight: 500;
-    color: var(--accent-text);
-    background: var(--accent-bg);
+    background: var(--surface-pressed);
   }
+}
+
+.settings-nav__icon {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.settings-nav__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .settings-nav__version {
   @include type(caption);
 
-  margin: var(--space-6) 0 0;
-  padding-inline: rem(10px);
+  margin: auto 0 0;
+  padding: var(--space-4) var(--space-2) 0;
+  font-weight: 500;
   color: var(--text-muted);
 }

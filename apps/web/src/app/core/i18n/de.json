@@ -1592,20 +1592,22 @@
       "appearance": "Darstellung",
       "library": "Bibliothek",
       "ai": "KI",
-      "language": "Sprache",
-      "privacy": "Datenschutz und Daten",
+      "language": "Sprache und Region",
+      "privacy": "Deine Daten",
       "shortcuts": "Tastenkürzel",
-      "feedback": "Dein Feedback"
+      "feedback": "Dein Feedback",
+      "notifications": "Benachrichtigungen"
     },
     "description": {
       "account": "Dein Profil, dein Regal und deine Daten.",
       "appearance": "Wird sofort gespeichert und auf all deinen Geräten synchronisiert.",
       "library": "Wie Links gezeigt, gespeichert und aufbewahrt werden.",
       "ai": "Hilfe beim Ordnen, nur wenn du sie willst. Aus, bis du sie einschaltest.",
-      "language": "Die Sprache der Oberfläche. Datums- und Zeitformate findest du unter Darstellung.",
-      "privacy": "Was wir speichern und wie du es mitnimmst.",
+      "language": "Die Sprache der Oberfläche, Datum und Uhrzeit.",
+      "privacy": "Links importieren, exportieren und festlegen, was Shelfmark sich merkt.",
       "shortcuts": "Arbeite ohne Maus.",
-      "feedback": "Ideen, Probleme und unsere Antworten."
+      "feedback": "Ideen, Probleme und unsere Antworten.",
+      "notifications": "Wie Shelfmark dich erreicht, wenn es Zeit ist, zu einem Link zurückzukehren."
     },
     "account": {
       "profile": "Profil",
@@ -1641,7 +1643,8 @@
         "none": "Das Demokonto ist nicht mit Google oder GitHub verknüpft.",
         "google": "Google",
         "github": "GitHub"
-      }
+      },
+      "cardHint": "Konto und Anmeldung"
     },
     "data": {
       "title": "Deine Daten",
@@ -1679,7 +1682,8 @@
           "amber": "Bernstein",
           "rose": "Rosé",
           "teal": "Petrol",
-          "graphite": "Graphit"
+          "graphite": "Graphit",
+          "ink": "Tinte"
         },
         "background": {
           "label": "Hintergrund",
@@ -1820,11 +1824,12 @@
         "label": "Datenschutzerklärung",
         "hint": "Was wir speichern und warum, in einfachen Worten",
         "action": "Lesen",
-        "actionLabel": "Datenschutzerklärung lesen"
+        "actionLabel": "Datenschutzerklärung lesen",
+        "title": "Datenschutz"
       },
       "recent": {
         "label": "Zuletzt geöffnete merken",
-        "hint": "Behält die Liste „Zuletzt geöffnet“. Aus löscht sie und zeichnet nichts mehr auf.",
+        "hint": "Für Zuletzt geöffnet und Weiterlesen. Aus löscht den Verlauf und zeichnet nichts mehr auf.",
         "confirm": {
           "title": "Zuletzt geöffnete nicht mehr merken?",
           "message": "Die Liste „Zuletzt geöffnet“ wird gelöscht, und geöffnete Links werden erst wieder hinzugefügt, wenn du das wieder einschaltest. Deine Links bleiben gespeichert.",
@@ -1849,12 +1854,17 @@
       "importExport": {
         "title": "Import und Export",
         "import": {
-          "hint": "Lesezeichen aus deinem Browser übernehmen"
+          "hint": "Lesezeichen aus Chrome, Safari, Firefox oder Edge."
         },
         "export": {
-          "hint": "Deine ganze Bibliothek als Datei herunterladen"
+          "hint": "JSON, Lesezeichen-HTML oder CSV."
         },
-        "open": "Öffnen"
+        "open": "Öffnen",
+        "importAction": "Importieren",
+        "exportAction": "Exportieren…"
+      },
+      "history": {
+        "title": "Verlauf"
       }
     },
     "footer": {
@@ -2006,7 +2016,71 @@
       "failed": "Einstellung konnte nicht gespeichert werden",
       "failedDetail": "Sie ist wieder wie vorher."
     },
-    "help": "Hilfe"
+    "help": "Hilfe",
+    "notifications": {
+      "device": {
+        "title": "Auf diesem Gerät",
+        "label": "Browser-Benachrichtigungen",
+        "hint": "Erlaubt Shelfmark, auf diesem Gerät Systembenachrichtigungen zu zeigen.",
+        "unsupported": "Dieser Browser kann keine Benachrichtigungen zeigen."
+      },
+      "homeScreen": {
+        "title": "Auf dem iPhone: Shelfmark zum Home-Bildschirm hinzufügen",
+        "text": "Safari erlaubt Benachrichtigungen nur für Apps auf dem Home-Bildschirm.",
+        "step1": "Tippe unten in Safari auf Teilen.",
+        "step2": "Wähle Zum Home-Bildschirm.",
+        "step3": "Öffne Shelfmark vom Home-Bildschirm und schalte Benachrichtigungen ein."
+      },
+      "blocked": {
+        "title": "Benachrichtigungen sind in diesem Browser blockiert",
+        "text": "Shelfmark kann sie nicht für dich einschalten. In den meisten Browsern:",
+        "step1": "Klicke auf das Symbol links neben der Adresse {{site}}.",
+        "step2": "Stelle Benachrichtigungen auf Zulassen.",
+        "step3": "Lade die Seite neu."
+      },
+      "test": {
+        "label": "Test",
+        "hint": "Sende jetzt eine, um zu sehen, wie sie aussieht.",
+        "action": "Test senden",
+        "title": "Shelfmark",
+        "body": "Benachrichtigungen sind an. So sehen sie aus.",
+        "failed": "Benachrichtigung konnte nicht gezeigt werden"
+      },
+      "send": {
+        "title": "Was gesendet wird",
+        "reminders": {
+          "label": "Erinnerungen",
+          "hint": "Wenn eine Erinnerung fällig ist."
+        },
+        "continue": {
+          "label": "Weiterlesen",
+          "hint": "Ein Anstoß für einen halb gelesenen Artikel, höchstens einmal am Tag."
+        },
+        "weekly": {
+          "label": "Aus deinem Regal, wöchentliche E-Mail",
+          "hint": "Sonntagmorgen: was fällig ist, was du gespeichert hast, ein vergessener Link."
+        }
+      },
+      "quiet": {
+        "title": "Ruhezeiten",
+        "label": "Nicht benachrichtigen zwischen",
+        "hint": "Erinnerungen in den Ruhezeiten kommen, wenn diese enden.",
+        "from": "Von",
+        "to": "Bis",
+        "off": "Aus",
+        "and": "und"
+      },
+      "devices": {
+        "title": "Geräte",
+        "this": "Dieses Gerät",
+        "thisHint": "Benachrichtigungen sind hier an.",
+        "since": "Eingeschaltet am {{date}}",
+        "turnOff": "Ausschalten",
+        "turnOffLabel": "Benachrichtigungen auf {{name}} ausschalten",
+        "none": "Auf keinem Gerät sind Benachrichtigungen an."
+      },
+      "failed": "Benachrichtigungseinstellungen konnten nicht gespeichert werden"
+    }
   },
   "shortcuts": {
     "title": "Tastenkürzel",
@@ -4331,6 +4405,17 @@
       "clear": "Verlauf löschen",
       "clearTitle": "Verlauf löschen?",
       "clearText": "Deine Links bleiben gespeichert; nur die Liste der geöffneten verschwindet."
+    }
+  },
+  "notifications": {
+    "device": {
+      "name": "{{browser}} auf {{system}}",
+      "unknown": "Dieser Browser"
+    },
+    "prompt": {
+      "question": "Auch eine Erinnerung, wenn Shelfmark geschlossen ist? Dein Browser fragt einmal.",
+      "turnOn": "Benachrichtigungen einschalten",
+      "notNow": "Nicht jetzt"
     }
   }
 }

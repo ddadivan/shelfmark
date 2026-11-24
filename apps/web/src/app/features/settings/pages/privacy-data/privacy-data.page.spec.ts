@@ -64,7 +64,7 @@ describe('PrivacyDataPage', () => {
   it('links the privacy policy and states what is kept', async () => {
     const { root } = await setup();
 
-    expect(root.querySelector('h1')?.textContent).toContain('Privacy and data');
+    expect(root.querySelector('h1')?.textContent).toContain('Your data');
     expect(root.querySelector('a[href="/privacy"]')?.getAttribute('aria-label')).toBe(
       'Read the privacy policy',
     );

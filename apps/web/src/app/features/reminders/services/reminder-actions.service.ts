@@ -8,6 +8,7 @@ import { RemindDialogComponent } from '../components/remind-dialog/remind-dialog
 import type { RemindDialogData } from '../models/remind-dialog-data.interface';
 import type { RemindDialogResult } from '../models/remind-dialog-result.interface';
 import type { RemindOption } from '../models/remind-option.interface';
+import { NotificationPromptService } from '../../notifications/services/notification-prompt.service';
 import { ReminderFormatService } from './reminder-format.service';
 
 /**
@@ -22,6 +23,7 @@ export class ReminderActionsService {
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly format = inject(ReminderFormatService);
+  private readonly notificationPrompt = inject(NotificationPromptService);
 
   /** "Remind me" (or "Change"): the dialog, then the save. Resolves `true` when something changed. */
   async remind(links: readonly LinkResponse[]): Promise<boolean> {
@@ -74,6 +76,16 @@ export class ReminderActionsService {
         },
       });
       return false;
+    }
+    // Shelf 12-notify: right after a reminder is set, the confirmation may become the question
+    // whether to turn notifications on (only while this browser was never asked).
+    if (
+      remindAt !== null &&
+      this.notificationPrompt.offer(
+        this.t('reminders.toast.set', { when: this.format.when(remindAt) }),
+      )
+    ) {
+      return true;
     }
     this.toasts.show({
       kind: TOAST_KIND.Success,

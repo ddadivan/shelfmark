@@ -375,6 +375,8 @@ describe('AppShellComponent', () => {
 
       expect(root.querySelector('.shell__sidebar app-settings-nav')).not.toBeNull();
       expect(root.querySelector('.shell__sidebar app-sidebar')).toBeNull();
+      // Shelf: the settings pages have no header (no search, no avatar).
+      expect(root.querySelector('.shell__header')).toBeNull();
 
       await router.navigateByUrl('/recent');
       await harness.fixture.whenStable();

@@ -6,7 +6,7 @@
   <span class="settings-index__identity">
     <span class="settings-index__sr">{{ 'settings.account.open' | transloco }}: </span>
     <span class="settings-index__name">{{ user.name }}</span>
-    <span class="settings-index__email">{{ user.email }}</span>
+    <span class="settings-index__email">{{ 'settings.account.cardHint' | transloco }}</span>
   </span>
   <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
 </a>
@@ -15,6 +15,7 @@
 <nav class="settings-index__list" [attr.aria-label]="'settings.title' | transloco">
   @for (entry of rows; track entry.path) {
   <a class="settings-index__row" [routerLink]="[settingsPath, entry.path]">
+    <ui-icon class="settings-index__icon" [name]="entry.icon" [size]="ICON_SIZE.Md" />
     <span class="settings-index__label">{{ entry.labelKey | transloco }}</span>
     @if (entry.path === SETTINGS_PATH.Appearance) {
     <span class="settings-index__value">{{ themeKey() | transloco }}</span>
@@ -39,40 +40,17 @@
   }
 </nav>
 
-<!-- Import and export are things you do now and then, not settings: each row opens its dialog as a
-     sheet (#387); the link to Privacy and data (where both also live) is only the no-script fallback. -->
-<div class="settings-index__list" role="group" [attr.aria-label]="'shell.data.group' | transloco">
-  <a
-    class="settings-index__row"
-    [href]="privacyDataHref"
-    aria-haspopup="dialog"
-    (click)="openImport($event)"
-  >
-    <span class="settings-index__label">{{ 'shell.data.import' | transloco }}</span>
-    <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
-  </a>
-  <a
-    class="settings-index__row"
-    [href]="privacyDataHref"
-    aria-haspopup="dialog"
-    (click)="openExport($event)"
-  >
-    <span class="settings-index__label">{{ 'shell.data.export' | transloco }}</span>
-    <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
-  </a>
-</div>
-
-<ui-button
-  block
-  [size]="BUTTON_SIZE.Lg"
-  iconLeft="message"
-  ariaHaspopup="dialog"
-  (click)="feedback.open()"
->
-  {{ 'shell.sendFeedback' | transloco }}
-</ui-button>
-
 <nav class="settings-index__list" [attr.aria-label]="'settings.help' | transloco">
+  <!-- Shelf "Help and feedback": opens the dialog; the link to Your feedback is the fallback. -->
+  <a
+    class="settings-index__row"
+    [href]="feedbackHref"
+    aria-haspopup="dialog"
+    (click)="openFeedback($event)"
+  >
+    <span class="settings-index__label">{{ 'shell.sendFeedback' | transloco }}</span>
+    <ui-icon class="settings-index__chevron" name="chevron-right" [size]="ICON_SIZE.Md" />
+  </a>
   <a class="settings-index__row" [routerLink]="changelogHref" (click)="openWhatsNew($event)">
     <span class="settings-index__label settings-index__label--fit"
       >{{ 'whatsNew.entry' | transloco }}</span

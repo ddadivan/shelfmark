@@ -4,8 +4,8 @@
 
 // The summary language list gets the width of the mockup's field.
 .ai-settings__select {
-  display: block;
-  min-width: rem(200px);
+  // The Shelf settings pill: as wide as its value, capped so a long name truncates.
+  max-width: rem(240px);
 }
 
 .ai-settings__status {

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
+  BUTTON_SIZE,
   ButtonComponent,
   DialogService,
   SettingsRowComponent,
@@ -22,9 +23,9 @@ import { SettingsPageHeaderComponent } from '../../components/settings-page-head
 const KEY = 'settings.privacy.recent';
 
 /**
- * `/settings/privacy`: "Remember recently opened" (moved here from Appearance in #315), Import and export (the dialogs of the
- * sidebar's data menu), the policy, what AI sends (with the way to
- * Settings › AI "Delete AI data") and what is kept.
+ * `/settings/privacy`, "Your data" (Shelf 05-settings): Import and export (the dialogs of the
+ * sidebar's data menu), History ("Remember recently opened", #315), Privacy (the policy and what
+ * is kept), then what AI sends (with the way to Settings › AI "Delete AI data").
  */
 @Component({
   selector: 'app-settings-privacy-page',
@@ -48,6 +49,7 @@ export default class PrivacyDataPage {
   private readonly transloco = inject(TranslocoService);
   private readonly toasts = inject(ToastService);
 
+  protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly policyHref = `/${APP_PATH.Privacy}`;
   private readonly importer = inject(ImportDialogService);
   private readonly exporter = inject(ExportDialogService);

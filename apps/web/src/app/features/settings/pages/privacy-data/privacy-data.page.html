@@ -3,7 +3,38 @@
   [description]="'settings.description.privacy' | transloco"
 />
 
-<ui-settings-section [title]="'settings.data.title' | transloco">
+<!-- Shelf 05-settings "Your data": Import and export, History, Privacy; then what AI sends. -->
+<ui-settings-section [title]="'settings.privacy.importExport.title' | transloco">
+  <ui-settings-row
+    [title]="'shell.data.import' | transloco"
+    [description]="'settings.privacy.importExport.import.hint' | transloco"
+  >
+    <ui-button
+      iconLeft="upload"
+      [size]="BUTTON_SIZE.Sm"
+      ariaHaspopup="dialog"
+      [ariaLabel]="'shell.data.import' | transloco"
+      (click)="openImport()"
+    >
+      {{ 'settings.privacy.importExport.importAction' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+  <ui-settings-row
+    [title]="'shell.data.export' | transloco"
+    [description]="'settings.privacy.importExport.export.hint' | transloco"
+  >
+    <ui-button
+      [size]="BUTTON_SIZE.Sm"
+      ariaHaspopup="dialog"
+      [ariaLabel]="'shell.data.export' | transloco"
+      (click)="openExport()"
+    >
+      {{ 'settings.privacy.importExport.exportAction' | transloco }}
+    </ui-button>
+  </ui-settings-row>
+</ui-settings-section>
+
+<ui-settings-section [title]="'settings.privacy.history.title' | transloco">
   <ui-settings-row
     [title]="'settings.privacy.recent.label' | transloco"
     [description]="'settings.privacy.recent.hint' | transloco"
@@ -15,11 +46,17 @@
       (checkedChange)="setRemember($event, rememberSwitch)"
     />
   </ui-settings-row>
+</ui-settings-section>
+
+<ui-settings-section [title]="'settings.privacy.policy.title' | transloco">
   <ui-settings-row
     [title]="'settings.privacy.policy.label' | transloco"
     [description]="'settings.privacy.policy.hint' | transloco"
   >
     <ui-button
+      variant="ghost"
+      iconRight="chevron-right"
+      [size]="BUTTON_SIZE.Sm"
       [href]="policyHref"
       [ariaLabel]="'settings.privacy.policy.actionLabel' | transloco"
       (linkClick)="open($event, policyHref)"
@@ -27,35 +64,14 @@
       {{ 'settings.privacy.policy.action' | transloco }}
     </ui-button>
   </ui-settings-row>
-</ui-settings-section>
-
-<ui-settings-section [title]="'settings.privacy.importExport.title' | transloco">
-  <ui-settings-row
-    icon="download"
-    [title]="'shell.data.import' | transloco"
-    [description]="'settings.privacy.importExport.import.hint' | transloco"
-  >
-    <ui-button
-      ariaHaspopup="dialog"
-      [ariaLabel]="'shell.data.import' | transloco"
-      (click)="openImport()"
-    >
-      {{ 'settings.privacy.importExport.open' | transloco }}
-    </ui-button>
-  </ui-settings-row>
-  <ui-settings-row
-    icon="share"
-    [title]="'shell.data.export' | transloco"
-    [description]="'settings.privacy.importExport.export.hint' | transloco"
-  >
-    <ui-button
-      ariaHaspopup="dialog"
-      [ariaLabel]="'shell.data.export' | transloco"
-      (click)="openExport()"
-    >
-      {{ 'settings.privacy.importExport.open' | transloco }}
-    </ui-button>
-  </ui-settings-row>
+  <div class="privacy-data__kept">
+    <ul class="privacy-data__points">
+      <li>{{ 'privacy.store.content' | transloco }}</li>
+      <li>{{ 'privacy.retention.data' | transloco }}</li>
+      <li>{{ 'privacy.dont.sell' | transloco }}</li>
+      <li>{{ 'privacy.cookies.none' | transloco }}</li>
+    </ul>
+  </div>
 </ui-settings-section>
 
 <ui-settings-section [title]="'settings.privacy.ai.title' | transloco">
@@ -65,6 +81,9 @@
     [description]="'settings.privacy.ai.delete.hint' | transloco"
   >
     <ui-button
+      variant="ghost"
+      iconRight="chevron-right"
+      [size]="BUTTON_SIZE.Sm"
       [href]="aiDataHref"
       [ariaLabel]="'settings.privacy.ai.delete.actionLabel' | transloco"
       (linkClick)="open($event, aiDataHref)"
@@ -72,13 +91,4 @@
       {{ 'settings.privacy.ai.delete.action' | transloco }}
     </ui-button>
   </ui-settings-row>
-</ui-settings-section>
-
-<ui-settings-section [title]="'settings.privacy.kept.title' | transloco">
-  <ul class="privacy-data__points">
-    <li>{{ 'privacy.store.content' | transloco }}</li>
-    <li>{{ 'privacy.retention.data' | transloco }}</li>
-    <li>{{ 'privacy.dont.sell' | transloco }}</li>
-    <li>{{ 'privacy.cookies.none' | transloco }}</li>
-  </ul>
 </ui-settings-section>

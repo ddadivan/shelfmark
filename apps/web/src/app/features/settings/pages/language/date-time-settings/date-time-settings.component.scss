@@ -7,8 +7,8 @@
 // Sized for the longest date sample (Languages mockup: fixed-width controls fit the longest
 // language), so the field never jumps when the format or the language changes.
 .date-time__select {
-  display: block;
-  min-width: rem(232px);
+  // The Shelf settings pill: as wide as its value, capped so a long name truncates.
+  max-width: rem(240px);
 }
 
 .date-time__preview {
