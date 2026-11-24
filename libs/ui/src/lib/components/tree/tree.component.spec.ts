@@ -482,28 +482,33 @@ describe('TreeComponent', () => {
       expect(row(TREE_STORY_NAME.Angular).style.getPropertyValue('--ui-tree-level')).toBe('2');
     });
 
-    it('shows a folder tile on folder rows and an explicit icon on fixed rows', async () => {
+    it('shows the filled folder glyph on folder rows and an explicit icon on fixed rows', async () => {
       const { row } = await setup();
       const href = (id: string) =>
         row(id).querySelector('.ui-tree__icon use')?.getAttribute('href') ?? '';
-      // Folder rows draw their glyph in a graphite `ui-folder-icon` tile.
-      const tile = row(TREE_STORY_NAME.Work).querySelector('ui-folder-icon');
-      expect(tile?.classList).toContain('ui-folder-icon--sm');
-      expect(tile?.querySelector('use')?.getAttribute('href')).toContain('#sm-folder');
+      // Shelf NavItem: folder rows draw the filled folder glyph, no tile.
+      const glyph = row(TREE_STORY_NAME.Work).querySelector('.ui-tree__folder use');
+      expect(glyph?.getAttribute('href')).toContain('#sm-folder-filled');
+      expect(row(TREE_STORY_NAME.Work).querySelector('ui-folder-icon')).toBeNull();
       expect(href(TREE_STORY_NAME.All)).toContain('#sm-link');
     });
 
-    it('draws the folder tile in the node colour and icon, graphite without one', async () => {
+    it('draws the folder glyph in the folder colour and its own icon, an emoji as text', async () => {
       const { host, fixture, row } = await setup();
       host.nodes.set([
         { id: 'a', name: 'Angular', colour: 'clay', icon: 'star' },
         { id: 'b', name: 'Plain' },
+        { id: 'c', name: 'Pasta', icon: '🍝' },
       ]);
       await settle(fixture);
-      const tile = (name: string) => row(name).querySelector('ui-folder-icon');
-      expect(tile('Angular')?.classList).toContain('ui-folder-icon--clay');
-      expect(tile('Angular')?.querySelector('use')?.getAttribute('href')).toContain('#sm-star');
-      expect(tile('Plain')?.classList).toContain('ui-folder-icon--graphite');
+      const glyph = (name: string) => row(name).querySelector('.ui-tree__folder');
+      expect(row('Angular').hasAttribute('data-ui-folder-colour')).toBe(true);
+      expect(row('Plain').hasAttribute('data-ui-folder-colour')).toBe(false);
+      expect(glyph('Angular')?.querySelector('use')?.getAttribute('href')).toContain('#sm-star');
+      expect(glyph('Plain')?.querySelector('use')?.getAttribute('href')).toContain(
+        '#sm-folder-filled',
+      );
+      expect(glyph('Pasta')?.textContent?.trim()).toBe('🍝');
     });
 
     it('hides closed children from the tab order and assistive tech through the closed class', async () => {

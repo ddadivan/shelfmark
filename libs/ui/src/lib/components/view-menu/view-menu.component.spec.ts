@@ -133,7 +133,8 @@ describe('ViewMenuComponent', () => {
     expect(range().value).toBe('4');
     expect(range().getAttribute('aria-label')).toBe('Grid size');
     expect(range().getAttribute('aria-valuetext')).toBe('4 / 6');
-    expect(panel().querySelector('[role="separator"]')).not.toBeNull();
+    // The hairline under the grid size is the block's own edge (no separator element).
+    expect(panel().querySelector('[role="separator"]')).toBeNull();
     expect(switches().map((s) => s.getAttribute('aria-label'))).toEqual([
       'Note',
       'Hashtags',
@@ -314,12 +315,13 @@ describe('ViewMenuComponent', () => {
     await menu.close();
   });
 
-  it('draws the 260px floating panel with a turning chevron from tokens', () => {
+  it('draws the reference panel (at least 240px) and a 13px pill with a turning caret', () => {
     const css = compileScss('lib/components/view-menu/view-menu.component.scss');
-    expect(css).toContain('16.25rem');
+    expect(css).toContain('min-inline-size: 15rem');
+    expect(css).toContain('font-size: 0.8125rem');
+    expect(css).toContain('rotate(225deg)');
     expect(css).toContain('var(--surface)');
     expect(css).toContain('var(--shadow-l2)');
-    expect(css).toContain('rotate(180deg)');
     expect(css).toContain('var(--surface-hover)');
   });
 });

@@ -172,3 +172,55 @@ button.ui-chip__body {
     transition: none;
   }
 }
+
+// `nav`: a sidebar row (Shelf NavItem, the reference's tag rows): full width, 36px (44px on touch),
+// 12px in from the start, a 16px glyph in `text-muted` 12px before a 14/22 label in `text`; hover
+// `fill`; the "..." keeps its clipped place at the end.
+:host(.ui-chip--nav) {
+  --ui-icon-size: var(--icon-size-sm);
+
+  display: flex;
+  inline-size: 100%;
+  height: var(--row-nav);
+  color: var(--text);
+  background: transparent;
+
+  @include coarse {
+    height: rem(44px);
+  }
+
+  @include hover {
+    background: var(--fill);
+  }
+
+  .ui-chip__body {
+    @include type(secondary);
+
+    flex: 1;
+    gap: rem(12px);
+    min-inline-size: 0;
+    padding: 0 rem(14px) 0 rem(12px);
+    font-size: rem(14px);
+  }
+
+  .ui-chip__icon {
+    color: var(--text-muted);
+  }
+
+  .ui-chip__label {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+:host(.ui-chip--nav.ui-chip--clickable:not(.ui-chip--disabled)) {
+  @include hover {
+    filter: none;
+  }
+
+  &:active {
+    filter: none;
+    background: var(--surface-pressed);
+  }
+}

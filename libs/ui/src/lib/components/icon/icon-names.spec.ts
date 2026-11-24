@@ -20,6 +20,9 @@ const KEY_ICONS = ['key-command', 'key-enter', 'key-option', 'key-shift'];
  * "Send feedback" (#315).
  */
 const APP_ICONS = [
+  // Shelf (ADR 0061): the filled folder glyph of sidebar rows and card meta, the tag row's hash.
+  'folder-filled',
+  'hash',
   // The Masonry view of the library feed (Shelf, ADR 0061).
   'masonry',
   // Folder icons added in #335 (food, sport, travel, money, music, home, health, kids, pets, ...).

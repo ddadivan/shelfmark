@@ -8,7 +8,7 @@
 .ui-saved-views__bar {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: rem(2px);
   align-items: center;
 
   // The toolbar is never a tab stop (Aria gives it tabindex -1; Tab and the arrows land on the
@@ -42,6 +42,7 @@
 // The tab: the fill lives here, the buttons inside are transparent. No dark filled chip: the
 // selected tab is `surface-pressed` with `text` at weight 500.
 .ui-saved-views__chip {
+  position: relative;
   display: inline-flex;
   flex: none;
   align-items: stretch;
@@ -95,37 +96,34 @@
   @include type(caption);
 
   display: inline-flex;
-  gap: rem(6px);
+  gap: var(--space-1);
   align-items: center;
   padding: 0 var(--space-3);
 }
 
-.ui-saved-views__chip--menu .ui-saved-views__body {
-  padding-right: var(--space-1);
-}
-
-// "Lighter" count: `text-muted` at regular weight beside the label (no opacity on text, 4.5:1 kept).
+// The count beside the label (Shelf reference): the tab's own colour at 80%.
 .ui-saved-views__count {
   // A one-digit count is padded with a figure space (`countText`) so 7 and 39 are the same width:
   // a count that changes width while another feed's numbers arrive would count as a layout shift.
-  font-weight: 400;
+  font-weight: inherit;
   font-variant-numeric: tabular-nums;
-  color: var(--text-muted);
+  color: color-mix(in srgb, currentcolor 80%, transparent);
 }
 
-.ui-saved-views__chip--on .ui-saved-views__count {
-  font-weight: 400;
-  color: var(--text-muted);
-}
-
-// Trailing "..." button, as on `ui-chip`: clipped (not hidden, it keeps its width so nothing shifts
-// and stays focusable) until the chip is hovered or has focus inside on hover-capable pointers;
-// always shown on touch.
+// Trailing "..." button: on hover-capable pointers it lies over the end of the tab (the tab keeps
+// the reference width) and is clipped until the tab is hovered or has focus inside; always shown,
+// in the flow, on touch.
 .ui-saved-views__menu {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0 var(--space-2) 0 var(--space-1);
+
+  @media (hover: hover) {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+  }
 
   @include hit-area(-4px 0 -4px -2px);
 
@@ -171,5 +169,17 @@
 
   @include coarse {
     height: rem(44px);
+  }
+}
+
+// The overlaid "..." covers the count with the tab's own fill (hover `fill` over the page reads as
+// `surface-hover`; the selected tab is `surface-pressed`).
+@media (hover: hover) {
+  .ui-saved-views__bar .ui-saved-views__chip .ui-saved-views__menu {
+    background: var(--surface-hover);
+  }
+
+  .ui-saved-views__bar .ui-saved-views__chip--on .ui-saved-views__menu {
+    background: var(--surface-pressed);
   }
 }

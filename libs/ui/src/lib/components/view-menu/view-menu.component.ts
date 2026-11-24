@@ -21,8 +21,6 @@ import { KEYBOARD_KEY } from '../../models/keyboard';
 import type { ConnectedOverlay } from '../../services/overlay/connected-overlay';
 import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
 import { UiOverlay } from '../../services/overlay/overlay.service';
-import { IconComponent } from '../icon/icon.component';
-import { ICON_SIZE } from '../icon/models/icon-size.const';
 import { RangeComponent } from '../range/range.component';
 import { SwitchComponent } from '../switch/switch.component';
 import type { ViewMenuFieldChange } from './models/view-menu-field-change.interface';
@@ -37,7 +35,7 @@ const FOCUSABLE =
 
 /**
  * The "View" button of a feed and its panel (ViewMenu spec): a secondary pill (label and a
- * chevron that turns up while open) that opens a 260px floating panel with the grid size (a
+ * chevron that turns up while open) that opens a floating panel (at least 240px) with the grid size (a
  * stepped `ui-range`, its step text and the Small / Large captions) and one `ui-switch` row per
  * field of what the cards show (Note, Hashtags, Folder, Date). Changes apply at once: `step` is a
  * model, `fieldChange` emits `{ id, checked }`; the caller owns the state and passes `fields`
@@ -52,7 +50,7 @@ const FOCUSABLE =
  */
 @Component({
   selector: 'ui-view-menu',
-  imports: [IconComponent, RangeComponent, SwitchComponent],
+  imports: [RangeComponent, SwitchComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ui-view-menu',
@@ -64,8 +62,6 @@ const FOCUSABLE =
   styleUrl: './view-menu.component.scss',
 })
 export class ViewMenuComponent {
-  protected readonly ICON_SIZE = ICON_SIZE;
-
   /** Text of the trigger and the name of the dialog ("View"). */
   readonly label = input.required<string>();
   /** Title of the grid-size block, also the name of the slider ("Grid size"). */

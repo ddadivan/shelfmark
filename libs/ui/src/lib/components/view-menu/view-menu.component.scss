@@ -4,16 +4,18 @@
   display: inline-block;
 }
 
-// The View button: a secondary pill on `surface-hover`, label and a chevron that turns up while open.
+// The View button (Shelf reference): a pill on `surface-hover`, 13px label and a small caret that
+// turns up while open.
 .ui-view-menu__trigger {
-  @include type(label);
+  @include type(secondary);
 
   display: inline-flex;
-  gap: var(--space-1);
+  gap: rem(6px);
   align-items: center;
   justify-content: center;
   height: var(--control-sm);
-  padding: 0 var(--space-3) 0 var(--space-4);
+  padding: 0 var(--space-3);
+  font-size: rem(13px);
   color: var(--text);
   white-space: nowrap;
   cursor: pointer;
@@ -41,10 +43,16 @@
 }
 
 .ui-view-menu__chevron {
+  flex: none;
+  inline-size: rem(6px);
+  block-size: rem(6px);
+  border-inline-end: 1.5px solid currentcolor;
+  border-block-end: 1.5px solid currentcolor;
+  transform: translateY(#{rem(-2px)}) rotate(45deg);
   transition: transform var(--duration-base) var(--ease-out);
 
   .ui-view-menu__trigger[aria-expanded='true'] & {
-    transform: rotate(180deg);
+    transform: translateY(#{rem(1px)}) rotate(225deg);
   }
 
   @include reduced-motion {
@@ -65,14 +73,14 @@
   margin-block-start: var(--space-1);
 }
 
-// The 260px floating panel (Shelf: `surface`, `shadow-l2`, 12px corners, hairline edge).
+// The floating panel (Shelf reference: at least 240px, `surface`, `shadow-l2`, 12px corners).
 .ui-view-menu__surface {
   @include float-surface;
 
   display: flex;
   flex-direction: column;
   gap: rem(2px);
-  inline-size: rem(260px);
+  min-inline-size: rem(240px);
   max-inline-size: calc(100vw - #{rem(16px)});
   padding: var(--space-2);
   margin: var(--space-1) 0;
@@ -82,8 +90,10 @@
 
 .ui-view-menu__grid {
   display: grid;
-  gap: var(--space-1);
-  padding: var(--space-2) rem(10px);
+  gap: rem(6px);
+  padding: var(--space-2) rem(10px) var(--space-3);
+  margin-block-end: var(--space-1);
+  border-block-end: 1px solid var(--sep);
 }
 
 .ui-view-menu__head,
@@ -95,30 +105,20 @@
   color: var(--text-muted);
 }
 
-.ui-view-menu__heading {
-  color: var(--text);
-}
-
 .ui-view-menu__step {
   font-variant-numeric: tabular-nums;
 }
 
-.ui-view-menu__sep {
-  height: 0;
-  margin: var(--space-1) 0 var(--space-2);
-  border-block-start: 1px solid var(--sep);
-}
-
 // The row is the target: a press anywhere on it flips the switch (it sits in the row's label).
 .ui-view-menu__row {
-  @include type(body);
+  @include type(secondary);
 
   display: flex;
   gap: rem(10px);
   align-items: center;
   padding: var(--space-2) rem(10px);
   cursor: pointer;
-  border-radius: var(--radius-sm);
+  border-radius: rem(8px);
 
   @include hover {
     background: var(--fill);

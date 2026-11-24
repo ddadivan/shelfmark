@@ -9,7 +9,10 @@
   // `--ui-button-sm-size`: a feature that needs a larger small button (the card's "..." at 40px on
   // touch) sets it on an ancestor.
   height: k(var(--ui-button-sm-size, #{rem(32px)}));
-  padding: 0 k(rem(12px));
+
+  // `--ui-button-sm-padding`: the side padding of a small button (12px); 0 for a button that only
+  // wraps a 32px avatar (the sidebar's account button).
+  padding: 0 k(var(--ui-button-sm-padding, #{rem(12px)}));
 }
 
 .ui-button--lg {

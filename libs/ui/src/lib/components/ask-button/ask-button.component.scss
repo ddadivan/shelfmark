@@ -7,7 +7,8 @@
 // The glow (`wave-1..4`) sits in a clipped ::before, blurred, behind the label; it is hidden at
 // rest and fades in over 600 ms (a decorative moment, longer than the duration tokens on purpose).
 .ui-ask-button {
-  @include type(label);
+  // Shelf reference: 14/22 at weight 400.
+  @include type(secondary);
 
   position: relative;
   display: inline-flex;

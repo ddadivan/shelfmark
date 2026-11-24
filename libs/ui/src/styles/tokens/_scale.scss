@@ -50,7 +50,7 @@
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', monospace;
 
   // Density (#285): Comfortable here; `global.scss` overrides them under [data-density='compact'].
-  --density-card-padding: var(--space-3);
+  --density-card-padding: #{rem(10px)} var(--space-3) var(--space-3);
   --density-card-gap: var(--space-1);
   --density-feed-gap: var(--space-4);
   --density-row-padding: #{rem(10px)} #{rem(12px)};

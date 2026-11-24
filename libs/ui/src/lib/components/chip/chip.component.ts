@@ -44,6 +44,7 @@ import type { UiFocusTarget } from '../../directives/focus-target/models/ui-focu
     class: 'ui-chip',
     '[class.ui-chip--tag]': 'variant() === CHIP_VARIANT.Tag',
     '[class.ui-chip--neutral]': 'variant() === CHIP_VARIANT.Neutral',
+    '[class.ui-chip--nav]': 'variant() === CHIP_VARIANT.Nav',
     '[class.ui-chip--clickable]': 'clickable()',
     '[class.ui-chip--removable]': 'removable()',
     '[class.ui-chip--menu]': 'hasMenu()',

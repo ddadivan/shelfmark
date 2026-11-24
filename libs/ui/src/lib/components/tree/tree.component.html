@@ -52,24 +52,25 @@
         (keyup)="menu.release()"
         (blur)="menu.disarm()"
       >
-        @if (folder) {
+        @if (folder && node.children?.length) {
           <span
             class="ui-tree__twist"
             [class.is-open]="item.expanded()"
             aria-hidden="true"
             (click)="onTwist($event, item.expanded)"
           >
-            @if (node.children?.length) {
-              <ui-icon name="chevron-right" [size]="ICON_SIZE.Sm" />
-            }
+            <ui-icon name="chevron-right" [size]="ICON_SIZE.Sm" />
           </span>
         }
         @if (folder) {
-          <ui-folder-icon
-            [size]="FOLDER_ICON_SIZE.Sm"
-            [icon]="node.icon ?? 'folder'"
-            [colour]="node.colour ?? FOLDER_COLOUR.Graphite"
-          />
+          <!-- Shelf NavItem: the folder glyph in the folder colour (an emoji stays text). -->
+          @if (folderGlyph(node.icon); as glyph) {
+            <ui-icon class="ui-tree__folder" [name]="glyph" [size]="ICON_SIZE.Sm" />
+          } @else {
+            <span class="ui-tree__folder ui-tree__folder--emoji" aria-hidden="true">{{
+              node.icon
+            }}</span>
+          }
         } @else if (node.icon) {
           <ui-icon class="ui-tree__icon" [name]="node.icon" [size]="ICON_SIZE.Sm" />
         }

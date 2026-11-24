@@ -8,7 +8,7 @@
   (click)="toggle($event)"
 >
   <span class="ui-view-menu__label">{{ label() }}</span>
-  <ui-icon class="ui-view-menu__chevron" name="chevron-down" [size]="ICON_SIZE.Sm" />
+  <span class="ui-view-menu__chevron" aria-hidden="true"></span>
 </button>
 
 <!-- The panel element is moved into an overlay pane while open; closed, it stays here, hidden. -->
@@ -48,7 +48,6 @@
         </div>
       </div>
       @if (fields().length > 0) {
-        <div class="ui-view-menu__sep" role="separator"></div>
         @for (field of fields(); track field.id) {
           <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -- the switch is a native button inside the label, so a press on the row activates it -->
           <label class="ui-view-menu__row">

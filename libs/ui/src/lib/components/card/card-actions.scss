@@ -12,12 +12,15 @@
   --ui-button-sm-size: #{rem(28px)};
   --ui-button-radius: var(--radius-full);
 
-  inset-block-start: rem(8px);
+  // Shelf reference: the glass marks carry a 12px glyph, 10px in from the preview's edges.
+  --ui-icon-size: #{rem(12px)};
+
+  inset-block-start: rem(10px);
   z-index: 2;
 }
 
 .ui-card__play {
-  inset-inline-start: rem(8px);
+  inset-inline-start: rem(10px);
   display: flex;
   transition: opacity var(--duration-fast) var(--ease-out);
 
@@ -27,7 +30,7 @@
 }
 
 .ui-card__actions {
-  inset-inline-end: rem(8px);
+  inset-inline-end: rem(10px);
   display: flex;
   gap: rem(4px);
 }
@@ -83,7 +86,7 @@
   --ui-checkbox-hover-bg: var(--surface-hover);
   --ui-checkbox-pressed-bg: var(--surface-pressed);
 
-  inset-inline-start: rem(8px);
+  inset-inline-start: rem(10px);
   display: flex;
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);

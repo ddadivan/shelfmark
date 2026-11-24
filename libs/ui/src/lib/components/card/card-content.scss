@@ -149,9 +149,9 @@
 
 .ui-card__source {
   display: flex;
-  gap: rem(6px);
+  gap: var(--space-2);
   align-items: center;
-  margin-block-start: var(--density-card-gap);
+  margin-block-start: rem(2px);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -161,21 +161,24 @@
 .ui-card__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 var(--space-2);
-  margin-block-start: var(--density-card-gap);
+  gap: var(--space-1) var(--space-3);
+  padding-block-start: var(--space-2);
 }
 
 // The person's note: a pen and the text on the sage `ai-bg`.
 .ui-card__note {
   @include type(secondary);
 
+  // Shelf reference: the pen sits inline before the text, 4px apart, 12px.
+  --ui-icon-size: #{rem(12px)};
+
   display: flex;
-  gap: var(--density-card-gap);
+  gap: var(--space-1);
   align-items: flex-start;
   inline-size: fit-content;
   max-inline-size: 100%;
   padding: rem(6px) rem(8px);
-  margin-block-start: rem(6px);
+  margin-block-start: rem(10px);
   font-size: rem(14px);
   line-height: rem(18px);
   color: var(--note-text);
@@ -189,7 +192,7 @@
 
 .ui-card__note-icon {
   flex: none;
-  margin-block-start: rem(1px);
+  margin-block-start: rem(3px);
 }
 
 .ui-card__note-text {

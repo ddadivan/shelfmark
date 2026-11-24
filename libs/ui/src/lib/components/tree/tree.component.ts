@@ -32,6 +32,8 @@ import type { UiTreeContextMenuEvent } from './models/tree-context-menu-event.in
 import type { UiTreeNode } from './models/tree-node.interface';
 import type { UiTreeToggleEvent } from './models/tree-toggle-event.interface';
 import { ICON_SIZE } from '../icon/models/icon-size.const';
+import { ICON_NAMES } from '../icon/models/icon-names.const';
+import type { IconName } from '../icon/models/icon-name.type';
 import { TREE_DROP_OPEN_DELAY_MS } from './models/tree-drop-open-delay.const';
 import type { TreeReorderDrop } from './models/tree-reorder-drop.interface';
 import type { UiTreeReorderEvent } from './models/tree-reorder-event.interface';
@@ -147,6 +149,15 @@ export class TreeComponent {
   readonly contextMenu = output<UiTreeContextMenuEvent>();
 
   protected readonly ICON_SIZE = ICON_SIZE;
+
+  /**
+   * The glyph of a folder row (Shelf NavItem): the filled folder by default, the person's own icon
+   * from the set, or `null` for an emoji (drawn as text).
+   */
+  protected folderGlyph(icon: string | undefined): IconName | null {
+    const name = !icon || icon === 'folder' ? 'folder-filled' : icon;
+    return ICON_NAMES.find((candidate) => candidate === name) ?? null;
+  }
   protected readonly FOLDER_ICON_SIZE = FOLDER_ICON_SIZE;
   protected readonly FOLDER_COLOUR = FOLDER_COLOUR;
   /**

@@ -10,8 +10,10 @@
   height: calc(#{rem(16px)} * var(--ui-favicon-scale, 1));
   overflow: hidden;
   font-family: var(--font-sans);
-  font-size: calc(#{rem(11px)} * var(--ui-favicon-scale, 1));
-  font-weight: 600;
+
+  // Shelf reference: the site letter is 10px at weight 700.
+  font-size: calc(#{rem(10px)} * var(--ui-favicon-scale, 1));
+  font-weight: 700;
   line-height: 1;
   color: var(--text-muted);
   background: var(--surface-hover);

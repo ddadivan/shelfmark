@@ -51,6 +51,16 @@ export const Neutral: Story = { args: { variant: CHIP_VARIANT.Neutral } };
 /** Button semantics with ripple; filters the feed by the tag. */
 export const Clickable: Story = { args: { clickable: true } };
 
+/** A sidebar tag row (Shelf NavItem): the hash glyph, the name and the "..." on hover. */
+export const NavRow: Story = {
+  args: {
+    variant: CHIP_VARIANT.Nav,
+    icon: 'hash',
+    clickable: true,
+    menuLabel: 'Actions for design',
+  },
+};
+
 /** Remove button, Delete and Backspace on focus. */
 export const Removable: Story = { args: { removable: true } };
 

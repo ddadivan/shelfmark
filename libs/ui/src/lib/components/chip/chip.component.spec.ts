@@ -67,6 +67,13 @@ describe('ChipComponent', () => {
     expect(chip.classList.contains('ui-chip--tag')).toBe(false);
   });
 
+  it('renders the nav variant (a sidebar row) and drops the tag class', () => {
+    const { chip, update } = setup();
+    update((c) => c.variant.set(CHIP_VARIANT.Nav));
+    expect(chip.classList.contains('ui-chip--nav')).toBe(true);
+    expect(chip.classList.contains('ui-chip--tag')).toBe(false);
+  });
+
   it('shows a leading icon', () => {
     const { chip, update } = setup();
     update((c) => c.icon.set('tag'));
