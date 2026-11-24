@@ -1279,6 +1279,23 @@
       "install": "Install extension",
       "installLabel": "Install extension from the Chrome Web Store (opens in a new tab)",
       "dismiss": "Not now"
+    },
+    "filterPanel": {
+      "title": "Filter",
+      "type": "Type",
+      "savedLabel": "Saved",
+      "saved": {
+        "any": "Any time",
+        "week": "Past week",
+        "month": "Past month"
+      },
+      "tags": "Tags",
+      "noTags": "No tags yet",
+      "favorites": "Only favorites",
+      "savedRemove": "Remove filter: {{period}}",
+      "favoritesRemove": "Remove filter: only favorites",
+      "menuItem": "Filter…",
+      "menuItemCount": "Filter… ({{count}})"
     }
   },
   "export": {

@@ -15,6 +15,10 @@ export interface LibraryRouteInputs {
   readonly sort: Signal<unknown>;
   /** From the query (`?kind=video`): see `parseLinkKind`. */
   readonly kind: Signal<unknown>;
+  /** From the query (`?saved=week`): see `parseSavedWithin`. */
+  readonly saved?: Signal<unknown>;
+  /** From the query (`?fav=1`): "Only favorites"; see `parseFavoriteParam`. */
+  readonly fav?: Signal<unknown>;
   /** From the query (`?split=<folder id>`): the right half of the side-by-side view; see `parseSplitParam`. */
   readonly split?: Signal<unknown>;
   /** From the query (`?related=<link id>`): "Show related" (AI-3); read by `SplitRelatedService`. */

@@ -69,6 +69,21 @@ describe('inFilter', () => {
   });
 });
 
+describe('Filter › Saved and Only favorites', () => {
+  it('sends ?saved and ?favorite and keeps only matching links', () => {
+    expect(linksQuery({ scope: LINKS_SCOPE.All, saved: 'week', favorite: true })).toEqual({
+      saved: 'week',
+      favorite: true,
+    });
+    const fresh = { ...LINK, createdAt: new Date().toISOString(), isFavorite: true };
+    const old = { ...LINK, createdAt: '2000-01-01T00:00:00.000Z', isFavorite: false };
+    expect(inFilter({ scope: LINKS_SCOPE.All, saved: 'month' }, fresh)).toBe(true);
+    expect(inFilter({ scope: LINKS_SCOPE.All, saved: 'month' }, old)).toBe(false);
+    expect(inFilter({ scope: LINKS_SCOPE.All, favorite: true }, fresh)).toBe(true);
+    expect(inFilter({ scope: LINKS_SCOPE.All, favorite: true }, old)).toBe(false);
+  });
+});
+
 describe('sameFilter', () => {
   it('compares what is requested', () => {
     expect(sameFilter({ scope: LINKS_SCOPE.All }, { scope: LINKS_SCOPE.All, tags: [] })).toBe(true);

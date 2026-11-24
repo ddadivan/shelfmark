@@ -28,6 +28,7 @@ import type { MockTrashEntry } from '../../trash/mock/models/mock-trash-entry.in
 import { MOCK_TRASH_SCENARIO } from '../../trash/mock/models/mock-trash-scenario.const';
 import { MOCK_TRASH_SCENARIO_KEY } from '../../trash/mock/models/mock-trash-scenario-key.const';
 import { MS_PER_DAY } from '../../../core/models/ms-per-day.const';
+import { savedWithin } from '../utils/filter-params';
 import { matchesQuery } from '../utils/search-query';
 import { buildDemoLibrarySeed, usesDemoLibrary } from './demo-library-seed';
 import { generateMockLinks } from './generate-mock-links';
@@ -204,6 +205,7 @@ export class MockLibraryData {
         (!query.unsorted || link.folderId === null) &&
         (query.favorite === undefined || link.isFavorite === query.favorite) &&
         (query.kind === undefined || link.kind === query.kind) &&
+        (query.saved === undefined || savedWithin(link.createdAt, query.saved)) &&
         wanted.every((tag) => link.tags.some((name) => name.toLowerCase() === tag)) &&
         (query.q === undefined || matchesQuery(link, query.q)),
     );

@@ -68,7 +68,7 @@ export class LibraryHotkeysDirective {
   }
 
   /**
-   * Page keys: Esc clears the selection, Cmd/Ctrl+A selects every link on screen (not in a field,
+   * Page keys: Esc clears the selection, X starts selecting, Cmd/Ctrl+A selects every link on screen (not in a field,
    * dialog or menu); with nothing focused the paging keys scroll the feed area. While the desktop
    * link preview is open (#553), ↑ / ↓ move it, ↵ opens its link in a new tab and Esc closes it.
    */
@@ -85,6 +85,22 @@ export class LibraryHotkeysDirective {
     }
     if (event.key === KEYBOARD_KEY.Escape && this.selection.selecting()) {
       this.selection.endSelection();
+      return true;
+    }
+    const startSelect =
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.altKey &&
+      !event.shiftKey &&
+      isLetter(event, LINK_SELECT_SHORTCUT.SelectKey, LINK_SELECT_SHORTCUT.SelectCode);
+    if (
+      startSelect &&
+      !this.selection.selecting() &&
+      this.feed.showLinks() &&
+      this.feed.shownCount() > 0
+    ) {
+      event.preventDefault();
+      this.selection.startSelection();
       return true;
     }
     const selectAll =

@@ -48,7 +48,7 @@
 
 .how-it-works-card__hide {
   --ui-button-sm-size: #{rem(28px)};
-  --ui-icon-size: #{rem(14px)};
+  --ui-button-icon-size: #{rem(14px)};
 
   position: absolute;
   inset-block-start: var(--space-2);

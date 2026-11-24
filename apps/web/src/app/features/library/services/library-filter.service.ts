@@ -1,4 +1,5 @@
 import { computed, inject, Service, signal } from '@angular/core';
+import type { LinkKind, SavedWithin } from '@shelfmark/contracts';
 import { Router } from '@angular/router';
 import { FoldersStore } from '../../../stores/folders.store';
 import { SavedViewsStore } from '../../../stores/saved-views.store';
@@ -8,6 +9,10 @@ import { exportScopeOf } from '../../export/utils/export-url';
 import { FEED_SORT } from '../../links/models/feed-sort.const';
 import type { FeedSort } from '../../links/models/feed-sort.type';
 import { KIND_QUERY_PARAM } from '../../links/models/kind-query-param.const';
+import { FAVORITE_QUERY_PARAM } from '../../links/models/favorite-query-param.const';
+import { FAVORITE_QUERY_VALUE } from '../../links/models/favorite-query-value.const';
+import { SAVED_QUERY_PARAM } from '../../links/models/saved-query-param.const';
+import { parseFavoriteParam, parseSavedWithin } from '../../links/utils/filter-params';
 import type { AddLinkData } from '../../links/models/add-link-data.interface';
 import type { LinksFilter } from '../../links/models/links-filter.type';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
@@ -28,6 +33,7 @@ import type { LibraryRouteInputs } from '../models/library-route-inputs.interfac
 import { FeedMemoryService } from './feed-memory.service';
 import { GRID_COLUMNS } from '../models/grid-columns.const';
 import { GRID_STEP_DEFAULT } from '../models/grid-step-default.const';
+import { FILTER_PARAMS_OFF } from '../models/filter-params-off.const';
 import type { CardField } from '../models/card-field.type';
 import type { CardFields } from '../models/card-fields.type';
 
@@ -101,9 +107,32 @@ export class LibraryFilterService {
   /** `?related` as the URL has it: the link of "Show related" (AI-3), read by `SplitRelatedService`. */
   readonly relatedParam = computed(() => this.inputs().related?.());
   readonly linkKind = computed(() => parseLinkKind(this.inputs().kind()));
+  /** Filter › Saved: the last week or month, `undefined` for any time. */
+  readonly saved = computed(() => parseSavedWithin(this.inputs().saved?.()));
+  /** Filter › Only favorites; always on the Favorites feed itself (there it is the scope). */
+  readonly onlyFavorites = computed(
+    () => this.scope() === LINKS_SCOPE.Favorites || parseFavoriteParam(this.inputs().fav?.()),
+  );
+  /** "Only favorites" as a filter of its own (not the Favorites feed). */
+  readonly favoriteFilter = computed(
+    () => this.scope() !== LINKS_SCOPE.Favorites && this.onlyFavorites(),
+  );
   readonly searching = computed(() => this.query() !== '');
   readonly filtered = computed(
-    () => this.tags().length > 0 || this.searching() || this.linkKind() !== undefined,
+    () =>
+      this.tags().length > 0 ||
+      this.searching() ||
+      this.linkKind() !== undefined ||
+      this.saved() !== undefined ||
+      this.favoriteFilter(),
+  );
+  /** How many Filter settings are on (the ⋯ menu's "Filter…" count): type, saved, tags, favorites. */
+  readonly filterCount = computed(
+    () =>
+      (this.linkKind() === undefined ? 0 : 1) +
+      (this.saved() === undefined ? 0 : 1) +
+      this.tags().length +
+      (this.favoriteFilter() ? 1 : 0),
   );
 
   /** The folder of the page, once the folder list has it. */
@@ -154,10 +183,13 @@ export class LibraryFilterService {
       const q = this.query();
       const sort = this.feedSort();
       const kind = this.linkKind();
+      const saved = this.saved();
       const options = {
         ...(tags.length > 0 ? { tags } : {}),
         ...(q === '' ? {} : { q }),
         ...(kind === undefined ? {} : { kind }),
+        ...(saved === undefined ? {} : { saved }),
+        ...(this.favoriteFilter() ? { favorite: true as const } : {}),
         ...(sort === FEED_SORT.Newest ? {} : feedSortQuery(sort)),
       };
       if (scope !== LINKS_SCOPE.Folder) {
@@ -184,13 +216,36 @@ export class LibraryFilterService {
     await this.setQueryParams({ [SEARCH_QUERY_PARAM]: null });
   }
 
-  /** Clears everything the filter holds: the search, the tags and the kind. */
+  /** Clears everything the filter holds: the search, the tags, the kind, Saved and favorites. */
   async clearAll(): Promise<void> {
     await this.setQueryParams({
       [SEARCH_QUERY_PARAM]: null,
-      [TAG_QUERY_PARAM]: null,
-      [KIND_QUERY_PARAM]: null,
+      ...FILTER_PARAMS_OFF,
     });
+  }
+
+  /** Filter › Type: one kind at a time; choosing the current one again turns it off. */
+  async toggleKind(kind: LinkKind): Promise<void> {
+    await this.setQueryParams({ [KIND_QUERY_PARAM]: this.linkKind() === kind ? null : kind });
+  }
+
+  /** Filter › Tags: adds the tag to the filter, or takes it out. */
+  async toggleTag(name: string): Promise<void> {
+    const tags = this.tags();
+    const has = tags.some((tag) => tag.toLowerCase() === name.toLowerCase());
+    await this.setTags(
+      has ? tags.filter((tag) => tag.toLowerCase() !== name.toLowerCase()) : [...tags, name],
+    );
+  }
+
+  /** Filter › Saved: the last week or month; `undefined` is any time. */
+  async setSaved(saved: SavedWithin | undefined): Promise<void> {
+    await this.setQueryParams({ [SAVED_QUERY_PARAM]: saved ?? null });
+  }
+
+  /** Filter › Only favorites (on any feed but Favorites, where it is the feed itself). */
+  async setOnlyFavorites(on: boolean): Promise<void> {
+    await this.setQueryParams({ [FAVORITE_QUERY_PARAM]: on ? FAVORITE_QUERY_VALUE : null });
   }
 
   /** Takes the kind out of the filter. */
@@ -198,9 +253,9 @@ export class LibraryFilterService {
     await this.setQueryParams({ [KIND_QUERY_PARAM]: null });
   }
 
-  /** The empty filtered state: drops the tags and the kind (the search has its own state). */
+  /** The empty filtered state: drops the Filter settings (the search has its own state). */
   async clearFilters(): Promise<void> {
-    await this.setQueryParams({ [TAG_QUERY_PARAM]: null, [KIND_QUERY_PARAM]: null });
+    await this.setQueryParams(FILTER_PARAMS_OFF);
   }
 
   /** Repeats the search in all folders (the "all links" page keeps the query and sort, drops the tags). */

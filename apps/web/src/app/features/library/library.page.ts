@@ -1,3 +1,5 @@
+import { LINK_SELECT_SHORTCUT } from '../links/models/link-select-shortcut.const';
+import { LibraryFilterPanelComponent } from './components/library-filter-panel/library-filter-panel.component';
 import { SavedViewActionsService } from '../views/services/saved-view-actions.service';
 import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
 import { NgTemplateOutlet } from '@angular/common';
@@ -103,6 +105,7 @@ const SKELETON_COUNT = 8;
   selector: 'app-library-page',
   imports: [
     LibraryViewMenuComponent,
+    LibraryFilterPanelComponent,
     CdkDrag,
     CdkDragPlaceholder,
     CdkDragPreview,
@@ -228,6 +231,10 @@ export default class LibraryPage {
   readonly sort = input<unknown>();
   /** From the query (`?kind=video`): see `parseLinkKind`. */
   readonly kind = input<unknown>();
+  /** From the query (`?saved=week`): see `parseSavedWithin`. */
+  readonly saved = input<unknown>();
+  /** From the query (`?fav=1`): see `parseFavoriteParam`. */
+  readonly fav = input<unknown>();
   /** From the query (`?split=<folder id>`): the right half of the side-by-side view. */
   readonly split = input<unknown>();
   /** From the query (`?related=<link id>`): "Show related" fills the split picker (AI-3). */
@@ -259,6 +266,8 @@ export default class LibraryPage {
       q: this.q,
       sort: this.sort,
       kind: this.kind,
+      saved: this.saved,
+      fav: this.fav,
       split: this.split,
       related: this.related,
     });
@@ -280,6 +289,17 @@ export default class LibraryPage {
     await this.exporter.download(format, this.filters.viewScope(), {
       viewEmpty: this.feed.empty(),
     });
+  }
+
+  /** The key cap next to "Select links" (X). */
+  protected readonly SELECT_SHORTCUT_CAP = LINK_SELECT_SHORTCUT.SelectKey.toUpperCase();
+
+  /** Opens the Filter popover under the menu's button (the menu has closed and handed focus back). */
+  protected openFilter(panel: LibraryFilterPanelComponent, button: ButtonComponent): void {
+    const anchor = button.element();
+    if (anchor) {
+      panel.open(anchor);
+    }
   }
 
   /** "Save this view" in the ⋯ menu (Shelf: the tabs row has no "+" on desktop). */

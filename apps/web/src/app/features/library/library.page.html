@@ -163,6 +163,7 @@
             <app-tidy-entry />
             }
             <ui-button
+              #viewButton
               [uiMenuTrigger]="viewMenu"
               variant="secondary"
               iconLeft="settings"
@@ -195,6 +196,15 @@
                 {{ option.label }}
               </ui-menu-item>
               }
+              <ui-menu-separator />
+              <ui-menu-item icon="filter" (activated)="openFilter(filterPanel, viewButton)">
+                {{ filters.filterCount() === 0 ? ('library.filterPanel.menuItem' | transloco) :
+                ('library.filterPanel.menuItemCount' | transloco: { count: filters.filterCount() })
+                }}
+              </ui-menu-item>
+              <ui-menu-item icon="check" (activated)="selection.startSelection()">
+                {{ 'library.viewMenu.select' | transloco }}
+              </ui-menu-item>
               <ui-menu-separator />
               }
               <ui-menu-label>{{ 'export.menu' | transloco }}</ui-menu-label>
@@ -251,6 +261,18 @@
               </ui-menu-item>
               }
               <ui-menu-separator />
+              <ui-menu-item icon="filter" (activated)="openFilter(filterPanel, splitOpener)">
+                {{ filters.filterCount() === 0 ? ('library.filterPanel.menuItem' | transloco) :
+                ('library.filterPanel.menuItemCount' | transloco: { count: filters.filterCount() })
+                }}
+              </ui-menu-item>
+              <ui-menu-item
+                icon="check"
+                [shortcut]="SELECT_SHORTCUT_CAP"
+                (activated)="selection.startSelection()"
+              >
+                {{ 'library.viewMenu.select' | transloco }}
+              </ui-menu-item>
               } @if (!feed.emptyLibrary()) {
               <ui-menu-item icon="add" (activated)="saveView()">
                 {{ 'views.add' | transloco }}
@@ -312,6 +334,26 @@
           (removed)="filters.clearKind()"
         >
           {{ 'links.kind.' + kind | transloco }}
+        </ui-chip>
+        } @if (filters.saved(); as saved) {
+        <ui-chip
+          variant="neutral"
+          icon="calendar"
+          removable
+          [removeLabel]="'library.filterPanel.savedRemove' | transloco: { period: ('library.filterPanel.saved.' + saved | transloco) }"
+          (removed)="filters.setSaved(undefined)"
+        >
+          {{ 'library.filterPanel.saved.' + saved | transloco }}
+        </ui-chip>
+        } @if (filters.favoriteFilter()) {
+        <ui-chip
+          variant="neutral"
+          icon="star"
+          removable
+          [removeLabel]="'library.filterPanel.favoritesRemove' | transloco"
+          (removed)="filters.setOnlyFavorites(false)"
+        >
+          {{ 'library.filterPanel.favorites' | transloco }}
         </ui-chip>
         } @for (name of filters.tags(); track name) {
         <ui-chip
@@ -685,6 +727,8 @@
   <!-- Registered after the left scroll area, so the toasts centre on both halves, like the bulk bar. -->
   <span class="library__toast-area" aria-hidden="true" appToastArea></span>
   }
+  <!-- "Filter…" of the ⋯ menu (Shelf): opened under the menu's button. -->
+  <app-library-filter-panel #filterPanel />
   <ng-template #bulkBar>
     <ui-bulk-bar
       #bulkFit="appBulkBarFit"

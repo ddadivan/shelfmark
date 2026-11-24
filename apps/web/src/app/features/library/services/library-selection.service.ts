@@ -1,4 +1,6 @@
 import {
+  afterNextRender,
+  Injector,
   computed,
   DestroyRef,
   DOCUMENT,
@@ -31,6 +33,7 @@ export class LibrarySelectionService {
   private readonly filters = inject(LibraryFilterService);
   private readonly transloco = inject(TranslocoService);
   private readonly doc = inject(DOCUMENT);
+  private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   /** Ids of the links on screen, in order: the range and "select all" of the selection. */
@@ -41,10 +44,12 @@ export class LibrarySelectionService {
     return this.feed.shownLinks().filter((link) => ids.has(link.id));
   });
   readonly selectedCount = computed(() => this.selectedLinks().length);
+  /** "Select links" (⋯ menu, X) turned selecting on with nothing picked yet (Shelf). */
+  private readonly started = signal(false);
   /** A selection is in progress: checkboxes everywhere, the header and the bulk bar show. */
-  readonly selecting = computed(() => this.selectedCount() > 0);
+  readonly selecting = computed(() => this.started() || this.selectedCount() > 0);
   readonly allSelected = computed(
-    () => this.selecting() && this.selectedCount() === this.feed.shownCount(),
+    () => this.selectedCount() > 0 && this.selectedCount() === this.feed.shownCount(),
   );
   private readonly announcement = signal('');
   /** Polite live text for entering / leaving selection mode and for a drag (empty until the first change). */
@@ -97,6 +102,26 @@ export class LibrarySelectionService {
     return this.store.anchor();
   }
 
+  /**
+   * "Select links" (⋯ menu, X): checkboxes on every card and row before anything is picked; focus
+   * goes to the first checkbox, so the keyboard can pick at once. Done or Esc ends it.
+   */
+  startSelection(): void {
+    this.started.set(true);
+    // After the render that shows the checkboxes, and after the menu that may have opened this
+    // has handed focus back to its button.
+    afterNextRender(
+      () => {
+        setTimeout(() => {
+          this.host
+            .querySelector<HTMLElement>(`${FEED_ITEM_SELECTOR} input[type="checkbox"]`)
+            ?.focus();
+        });
+      },
+      { injector: this.injector },
+    );
+  }
+
   /** A card or row asked to toggle (checkbox, click while selecting, Space, long press). */
   toggleSelected(link: LinkResponse, toggle: LinkSelectToggle): void {
     this.store.toggle(link.id, this.order(), toggle.range);
@@ -126,6 +151,7 @@ export class LibrarySelectionService {
    */
   endSelection(): void {
     const anchor = this.store.anchor();
+    this.started.set(false);
     this.clear();
     const active = this.doc.activeElement;
     if (active instanceof HTMLElement && active.closest(FEED_ITEM_SELECTOR)) {

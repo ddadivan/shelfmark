@@ -59,6 +59,16 @@ describe('LibrarySelectionService', () => {
     expect(selection.selectedCount()).toBe(0);
   });
 
+  it('"Select links" turns the mode on with nothing picked; Done ends it (Shelf)', async () => {
+    const { selection } = await setup();
+    selection.startSelection();
+    expect(selection.selecting()).toBe(true);
+    expect(selection.selectedCount()).toBe(0);
+    expect(selection.allSelected()).toBe(false);
+    selection.endSelection();
+    expect(selection.selecting()).toBe(false);
+  });
+
   it('toggles single links and a Shift range from the anchor', async () => {
     const { selection } = await setup();
     selection.toggleSelected(link(2), { range: false });

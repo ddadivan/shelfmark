@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { type NavigationExtras, Router } from '@angular/router';
 import { LIBRARY_SORT } from '@shelfmark/contracts';
 import { LINKS_SCOPE } from '../../links/models/links-scope.const';
 import type { LinksScope } from '../../links/models/links-scope.type';
@@ -12,7 +12,11 @@ import { LibraryFilterService } from './library-filter.service';
 import { provideLibraryPage } from './provide-library-page';
 
 function setup() {
-  const router = { navigate: vi.fn(() => Promise.resolve(true)) };
+  const router = {
+    navigate: vi.fn((_commands: readonly unknown[], _extras?: NavigationExtras) =>
+      Promise.resolve(true),
+    ),
+  };
   TestBed.configureTestingModule({
     providers: [...provideLibraryPage(), { provide: Router, useValue: router }],
   });
@@ -117,14 +121,75 @@ describe('LibraryFilterService', () => {
 
     await service.clearAll();
     expect(router.navigate).toHaveBeenLastCalledWith([], {
-      queryParams: { q: null, tag: null, kind: null },
+      queryParams: { q: null, tag: null, kind: null, saved: null, fav: null },
       queryParamsHandling: 'merge',
     });
 
     await service.clearFilters();
     expect(router.navigate).toHaveBeenLastCalledWith([], {
-      queryParams: { tag: null, kind: null },
+      queryParams: { tag: null, kind: null, saved: null, fav: null },
       queryParamsHandling: 'merge',
+    });
+  });
+
+  describe('Filter popover (Shelf)', () => {
+    function withFilterInputs() {
+      const base = setup();
+      const saved = signal<unknown>(undefined);
+      const fav = signal<unknown>(undefined);
+      base.service.connect({
+        scope: base.scope,
+        folderId: base.folderId,
+        tag: base.tag,
+        q: base.q,
+        sort: base.sort,
+        kind: base.kind,
+        saved,
+        fav,
+      });
+      return { ...base, saved, fav };
+    }
+
+    it('reads ?saved and ?fav into the filter and counts the settings that are on', () => {
+      const { service, saved, fav, tag, kind, scope } = withFilterInputs();
+      expect(service.filterCount()).toBe(0);
+      saved.set('week');
+      fav.set('1');
+      tag.set(['a', 'b']);
+      kind.set('video');
+      expect(service.filter()).toMatchObject({ saved: 'week', favorite: true, kind: 'video' });
+      expect(service.filtered()).toBe(true);
+      expect(service.filterCount()).toBe(5);
+      // On the Favorites feed "Only favorites" is the feed itself, not a filter.
+      scope.set(LINKS_SCOPE.Favorites);
+      expect(service.onlyFavorites()).toBe(true);
+      expect(service.favoriteFilter()).toBe(false);
+      expect(service.filter()).not.toHaveProperty('favorite');
+      saved.set('year');
+      expect(service.saved()).toBeUndefined();
+    });
+
+    it('toggles a kind and a tag, sets Saved and Only favorites in the URL', async () => {
+      const { service, router, kind, tag } = withFilterInputs();
+      const last = () => router.navigate.mock.lastCall?.[1]?.queryParams;
+      await service.toggleKind('video');
+      expect(last()).toEqual({ kind: 'video' });
+      kind.set('video');
+      await service.toggleKind('video');
+      expect(last()).toEqual({ kind: null });
+      tag.set(['a']);
+      await service.toggleTag('B');
+      expect(last()).toEqual({ tag: ['a', 'B'] });
+      await service.toggleTag('A');
+      expect(last()).toEqual({ tag: null });
+      await service.setSaved('month');
+      expect(last()).toEqual({ saved: 'month' });
+      await service.setSaved(undefined);
+      expect(last()).toEqual({ saved: null });
+      await service.setOnlyFavorites(true);
+      expect(last()).toEqual({ fav: '1' });
+      await service.setOnlyFavorites(false);
+      expect(last()).toEqual({ fav: null });
     });
   });
 

@@ -5,7 +5,7 @@
 
 // On the `ui-button` host: the chevron points down while open and right while folded.
 @mixin toggle {
-  --ui-icon-size: #{rem(14px)};
+  --ui-button-icon-size: #{rem(14px)};
 
   display: inline-flex;
 
@@ -80,5 +80,5 @@
 
 // A 14px glyph in the 28px heading buttons.
 @mixin small-glyph {
-  --ui-icon-size: #{rem(14px)};
+  --ui-button-icon-size: #{rem(14px)};
 }

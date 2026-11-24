@@ -72,12 +72,18 @@ export class LibraryBulkService {
       icon: 'trash',
       danger: true,
     });
-    return actions;
+    // "Select links" with nothing picked yet: the bar shows, its actions wait for a pick.
+    return this.selection.selectedCount() === 0
+      ? actions.map((action) => ({ ...action, disabled: true }))
+      : actions;
   });
 
   /** A bulk bar button: runs the action on the picked links; some clear the selection afterwards. */
   async run(id: string): Promise<void> {
     const links = this.selection.selectedLinks();
+    if (links.length === 0) {
+      return;
+    }
     let clear = false;
     switch (id) {
       case BULK_ACTION.MoveToSplit: {

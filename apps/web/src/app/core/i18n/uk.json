@@ -1325,6 +1325,23 @@
       "install": "Встановити розширення",
       "installLabel": "Встановити розширення з Chrome Web Store (відкриється в новій вкладці)",
       "dismiss": "Не зараз"
+    },
+    "filterPanel": {
+      "title": "Фільтр",
+      "type": "Тип",
+      "savedLabel": "Збережено",
+      "saved": {
+        "any": "Будь-коли",
+        "week": "Останній тиждень",
+        "month": "Останній місяць"
+      },
+      "tags": "Теги",
+      "noTags": "Тегів ще немає",
+      "favorites": "Лише обране",
+      "savedRemove": "Прибрати фільтр: {{period}}",
+      "favoritesRemove": "Прибрати фільтр: лише обране",
+      "menuItem": "Фільтр…",
+      "menuItemCount": "Фільтр… ({{count}})"
     }
   },
   "export": {

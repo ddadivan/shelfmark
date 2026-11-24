@@ -1279,6 +1279,23 @@
       "install": "Erweiterung installieren",
       "installLabel": "Erweiterung installieren, aus dem Chrome Web Store (öffnet in einem neuen Tab)",
       "dismiss": "Nicht jetzt"
+    },
+    "filterPanel": {
+      "title": "Filtern",
+      "type": "Typ",
+      "savedLabel": "Gespeichert",
+      "saved": {
+        "any": "Jederzeit",
+        "week": "Letzte Woche",
+        "month": "Letzter Monat"
+      },
+      "tags": "Tags",
+      "noTags": "Noch keine Tags",
+      "favorites": "Nur Favoriten",
+      "savedRemove": "Filter entfernen: {{period}}",
+      "favoritesRemove": "Filter entfernen: nur Favoriten",
+      "menuItem": "Filtern…",
+      "menuItemCount": "Filtern… ({{count}})"
     }
   },
   "export": {

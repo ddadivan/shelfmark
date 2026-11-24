@@ -1302,6 +1302,23 @@
       "install": "Instalar extensão",
       "installLabel": "Instalar extensão pela Chrome Web Store (abre em uma nova aba)",
       "dismiss": "Agora não"
+    },
+    "filterPanel": {
+      "title": "Filtrar",
+      "type": "Tipo",
+      "savedLabel": "Salvos",
+      "saved": {
+        "any": "Qualquer data",
+        "week": "Última semana",
+        "month": "Último mês"
+      },
+      "tags": "Tags",
+      "noTags": "Nenhuma tag ainda",
+      "favorites": "Só favoritos",
+      "savedRemove": "Remover filtro: {{period}}",
+      "favoritesRemove": "Remover filtro: só favoritos",
+      "menuItem": "Filtrar…",
+      "menuItemCount": "Filtrar… ({{count}})"
     }
   },
   "export": {

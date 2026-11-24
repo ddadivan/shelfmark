@@ -130,7 +130,8 @@ describe('LibraryBulkService', () => {
   });
 
   it('puts "Move to <folder>" first while the right half shows a folder', async () => {
-    const { bulk } = await setup(true, 'folder-1');
+    const { bulk, selection } = await setup(true, 'folder-1');
+    selection.selectAll();
     const [first] = bulk.barActions();
     expect(first).toEqual({
       id: BULK_ACTION.MoveToSplit,
@@ -138,6 +139,12 @@ describe('LibraryBulkService', () => {
       variant: BULK_BAR_ACTION_VARIANT.Secondary,
       folder: { colour: 'rose', icon: 'folder' },
     });
+  });
+
+  it('"Select links" with nothing picked shows the bar with every action disabled', async () => {
+    const { bulk, selection } = await setup(true);
+    selection.startSelection();
+    expect(bulk.barActions().every((action) => action.disabled === true)).toBe(true);
   });
 
   it('moves the picked links to the folder on the right and ends the selection', async () => {

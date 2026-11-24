@@ -108,6 +108,16 @@ describe('LibraryHotkeysDirective', () => {
     expect(selection.selecting()).toBe(false);
   });
 
+  it('starts selecting with X, nothing picked yet (Shelf "Select links")', async () => {
+    const { selection } = await setup();
+    const press = key({ key: 'x', code: 'KeyX' });
+    expect(press.defaultPrevented).toBe(true);
+    expect(selection.selecting()).toBe(true);
+    expect(selection.selectedCount()).toBe(0);
+    key({ key: 'Escape' });
+    expect(selection.selecting()).toBe(false);
+  });
+
   it('leaves the keys of a text field alone', async () => {
     const { selection } = await setup();
     const input = document.createElement('input');
