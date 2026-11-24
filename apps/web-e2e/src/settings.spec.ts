@@ -6,7 +6,7 @@ import {
   openSettingsSection,
   seedSession,
 } from './support/mock-session';
-import { isCompact } from './support/sidebar';
+import { isCompact, isPhone } from './support/sidebar';
 import { E2E_TAG } from './models/e2e-tag.const';
 
 test.describe('settings (mock auth)', () => {
@@ -36,7 +36,7 @@ test.describe('settings (mock auth)', () => {
   });
 
   test(
-    'the phone lists the sections in the You tab, each opens a page with a way back',
+    'the mobile shell lists the sections on You, each opens a page with a way back',
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       test.skip(!isCompact(page), 'tablet and desktop have the nav instead of the list');
@@ -47,15 +47,29 @@ test.describe('settings (mock auth)', () => {
 
       await expect(page).toHaveURL(/\/settings$/);
       await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'Appearance' })).toContainText('System');
+      // The You list (a tablet also shows the section chips above it, Shelf block 5).
+      const row = page
+        .locator('app-settings-index-page')
+        .getByRole('link', { name: /^Appearance/ });
+      await expect(row).toContainText('System');
       await expect(page.getByRole('link', { name: 'Keyboard shortcuts' })).toHaveCount(0);
 
-      await page.getByRole('link', { name: 'Appearance' }).click();
+      await row.click();
 
       await expect(page).toHaveURL(/\/settings\/appearance$/);
       await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
 
-      await page.getByRole('link', { name: 'You' }).first().click();
+      if (isPhone(page)) {
+        await page.getByRole('link', { name: 'Back to You' }).click();
+      } else {
+        // Between the phone and 64em the sections are a chip row; Back returns to You.
+        await expect(
+          page
+            .getByRole('navigation', { name: 'Settings' })
+            .getByRole('link', { name: 'Appearance' }),
+        ).toHaveAttribute('aria-current', 'page');
+        await page.goBack();
+      }
 
       await expect(page).toHaveURL(/\/settings$/);
       await expect(page.getByRole('heading', { level: 1, name: 'You' })).toBeVisible();

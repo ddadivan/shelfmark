@@ -181,7 +181,8 @@ test.describe('side by side (mock API)', () => {
 
     await sideBySideItem(page).click();
     await expect(rightRegion).toBeVisible();
-    await page.getByRole('button', { name: 'Close side by side' }).click();
+    // The Close of the "Side by side" line (the right half has its own ×).
+    await page.getByRole('button', { name: 'Close side by side' }).first().click();
     await expect(rightRegion).toHaveCount(0);
     // The ⋯ button that holds the toggle takes the focus back.
     await expect(more).toBeFocused();

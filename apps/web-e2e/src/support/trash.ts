@@ -62,14 +62,12 @@ export async function restoreRow(page: Page, title: string): Promise<void> {
   await pressRowButton(page, `Restore ${title}`);
 }
 
-/** Deletes one entry for good: the row menu on desktop, the swipe button on a phone, then the confirmation. */
+/**
+ * Deletes one entry for good: the row's trash button (Shelf; behind the row on a phone), then the
+ * confirmation.
+ */
 export async function deleteRowForever(page: Page, title: string): Promise<void> {
-  if (isCompact(page)) {
-    await pressRowButton(page, `Delete ${title} forever`);
-  } else {
-    await page.getByRole('button', { name: `More for ${title}`, exact: true }).click();
-    await page.getByRole('menuitem', { name: 'Delete forever' }).click();
-  }
+  await pressRowButton(page, `Delete ${title} forever`);
   await page
     .getByRole('alertdialog')
     .getByRole('button', { name: 'Delete forever', exact: true })
