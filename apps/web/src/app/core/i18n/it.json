@@ -673,7 +673,7 @@
       },
       "ask": {
         "term": "Chiedi ai tuoi link:",
-        "text": "solo quando fai una domanda, vengono inviati a [PROVIDER] la tua domanda, le domande e risposte precedenti della conversazione aperta e i tuoi link che l’assistente consulta con strumenti di ricerca, conteggio ed elenco in sola lettura (titolo, indirizzo senza parametri, nomi di cartelle e tag, riassunto, la tua nota solo con «Includi le mie note»). La risposta cita e mostra solo i tuoi link. Né le domande, né le risposte, né la conversazione vengono conservate, e chiudendo il pannello la conversazione viene dimenticata; contiamo solo il numero di domande al giorno e al mese (e quante hanno avuto una risposta più approfondita), per il tuo limite."
+        "text": "solo quando fai una domanda, vengono inviati a [PROVIDER] la tua domanda, le domande e risposte precedenti della conversazione aperta e i tuoi link che l’assistente consulta con strumenti di ricerca, conteggio ed elenco in sola lettura (titolo, indirizzo senza parametri, nomi di cartelle e tag, riassunto, la tua nota solo con «Includi le mie note»). La risposta cita e mostra solo i tuoi link. Finché «Conserva la cronologia di Ask» è attiva (predefinito), ogni domanda conclusa e la sua risposta vengono salvate nel tuo account per riaprire la conversazione: i link solo come riferimenti ai tuoi link (mai copie), al massimo 50 conversazioni, ciascuna eliminata 30 giorni dopo l’ultima domanda. Puoi eliminare una conversazione o tutte e disattivare la cronologia in Impostazioni › IA; «Elimina dati IA» e l’eliminazione dell’account la rimuovono, l’esportazione dei dati la include. Disattivata, non viene salvato nulla. Contiamo anche il numero di domande al giorno e al mese (e quante hanno avuto una risposta più approfondita), per il tuo limite."
       }
     },
     "retention": {
@@ -3877,7 +3877,14 @@
       },
       "ask": {
         "title": "Chiedi ai tuoi link",
-        "text": "Risponde alle domande a partire dai tuoi link, anche a quelle successive. Usa Claude di Anthropic: vengono inviati la tua domanda, gli scambi precedenti della conversazione aperta e i link consultati; non viene conservato nulla."
+        "text": "Risponde alle domande a partire dai tuoi link, anche a quelle successive. Usa Claude di Anthropic: vengono inviati la tua domanda, gli scambi precedenti della conversazione aperta e i link consultati. Con la cronologia di Ask attiva, le conversazioni restano nel tuo account per 30 giorni."
+      },
+      "askHistory": {
+        "title": "Conserva la cronologia di Ask",
+        "text": "Domande e risposte restano nel tuo account per 30 giorni, al massimo 50 conversazioni, per riaprirle da qualsiasi dispositivo. I link sono salvati solo come riferimento. Disattivata: le nuove conversazioni non vengono salvate.",
+        "clear": "Cancella la cronologia di Ask",
+        "clearTitle": "Cancellare la cronologia di Ask?",
+        "clearMessage": "Tutte le conversazioni salvate vengono rimosse. Non si può annullare."
       }
     },
     "backfill": {
@@ -3943,7 +3950,7 @@
     "deleteData": {
       "confirm": {
         "title": "Eliminare i dati IA?",
-        "message": "Tutti i riepiloghi e i suggerimenti dell’IA vengono rimossi e la ricerca per significato si disattiva. Le tue modifiche, i tag e le cartelle restano. Non si può annullare.",
+        "message": "Tutti i riepiloghi e i suggerimenti dell’IA e tutte le conversazioni di Ask salvate vengono rimossi e la ricerca per significato si disattiva. Le tue modifiche, i tag e le cartelle restano. Non si può annullare.",
         "confirm": "Elimina dati IA",
         "cancel": "Annulla",
         "close": "Chiudi"
@@ -3983,7 +3990,7 @@
       },
       "ask": {
         "title": "Risponde alle domande dai tuoi link",
-        "text": "Solo quando chiedi: la domanda e i link pertinenti vanno al modello. La risposta indica le fonti e non viene conservato nulla. Puoi disattivarlo da solo in Impostazioni › IA."
+        "text": "Solo quando chiedi: la domanda e i link pertinenti vanno al modello. La risposta indica le fonti; le conversazioni restano nel tuo account per 30 giorni, a meno che tu non disattivi la cronologia di Ask. Puoi disattivarlo da solo in Impostazioni › IA."
       }
     },
     "suggest": {
@@ -4265,7 +4272,39 @@
         "many": "{{count}} di trovati",
         "other": "{{count}} trovati"
       },
-      "openSearch": "Apri la ricerca"
+      "openSearch": "Apri la ricerca",
+      "history": {
+        "title": "Conversazioni",
+        "today": "Oggi",
+        "earlier": "Prima",
+        "kept": "Conservate nel tuo account per 30 giorni.",
+        "off": "La cronologia di Ask è disattivata: le nuove conversazioni non vengono salvate.",
+        "empty": "Qui trovi le tue conversazioni.",
+        "failed": "Impossibile caricare le conversazioni.",
+        "retry": "Riprova",
+        "more": "Mostra altre",
+        "delete": "Elimina conversazione",
+        "deleteTitle": "Eliminare questa conversazione?",
+        "deleteMessage": "«{{title}}» viene rimossa dalla cronologia di Ask.",
+        "deleteConfirm": "Elimina",
+        "clear": "Cancella tutto",
+        "clearTitle": "Cancellare tutte le conversazioni?",
+        "clearMessage": "Tutte le conversazioni vengono rimosse dalla cronologia di Ask. Non si può annullare.",
+        "clearConfirm": "Cancella tutto",
+        "cancel": "Annulla",
+        "openFailed": "Impossibile aprire questa conversazione.",
+        "openPage": "Apri a pagina intera",
+        "deleted": "Conversazione eliminata",
+        "cleared": "Cronologia di Ask cancellata",
+        "close": "Chiudi"
+      },
+      "leave": {
+        "title": "Lasciare questa conversazione?",
+        "streaming": "Una risposta è ancora in corso. Se esci, si interrompe e la conversazione va persa.",
+        "unsaved": "Questa conversazione non è salvata nella cronologia di Ask. Se esci, va persa.",
+        "stay": "Resta",
+        "leave": "Esci"
+      }
     },
     "connect": {
       "title": "Collega il tuo assistente",

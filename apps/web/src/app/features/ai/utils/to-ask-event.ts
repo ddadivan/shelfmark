@@ -135,6 +135,13 @@ export function toAskEvent(value: unknown): AskEvent | null {
             allowance: value['allowance'],
             turn: value['turn'],
             depth,
+            // Ask history (ADR 0055 amendment): a server without it, or a malformed id, reads as
+            // not stored.
+            conversationId:
+              typeof value['conversationId'] === 'string' &&
+              /^[0-9a-f-]{36}$/iu.test(value['conversationId'])
+                ? value['conversationId']
+                : null,
           }
         : null;
     }

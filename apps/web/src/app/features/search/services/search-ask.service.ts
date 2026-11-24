@@ -7,8 +7,8 @@ import { AskPanelService } from '../../ai/services/ask-panel.service';
 
 /**
  * Hands a search text to Ask your shelf (the Ask row of the search dialog, the question hint and
- * the nothing-found state of the feed): the full-screen Ask page in the mobile shell (below 64em,
- * through `AskInbox`), the Ask panel with a header. Nothing happens while Ask is off (the panel
+ * the nothing-found state of the feed): the Ask page through `AskInbox` in the mobile shell (below
+ * 64em) and while the Ask page is open (it asks in the open conversation), the Ask panel otherwise. Nothing happens while Ask is off (the panel
  * opens nothing; callers show the action only while it is on).
  */
 @Service()
@@ -19,9 +19,10 @@ export class SearchAskService {
   private readonly router = inject(Router);
 
   async ask(question: string): Promise<void> {
-    if (this.viewport.compact()) {
+    const onAskPage = this.router.url.split(/[?#]/u)[0] === `/${APP_PATH.Ask}`;
+    if (this.viewport.compact() || onAskPage) {
       this.inbox.put(question);
-      await this.router.navigateByUrl(`/${APP_PATH.Ask}`);
+      if (!onAskPage) await this.router.navigateByUrl(`/${APP_PATH.Ask}`);
       return;
     }
     this.panel.open(question);

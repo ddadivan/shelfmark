@@ -7,6 +7,7 @@ import { loadLandingPage } from './features/landing/load-landing-page';
 import { adminOnly } from './features/admin/admin.guard';
 import { tidyAiOn } from './features/ai/pages/tidy/tidy.guard';
 import { askOnGuard } from './features/ai/pages/ask/ask.guard';
+import { askLeaveGuard } from './features/ai/pages/ask/ask-leave.guard';
 
 const libraryPage = loadLibraryPage;
 const settingsRoutes = () => import('./features/settings/settings.routes');
@@ -43,7 +44,12 @@ export const pageRoutes: Routes = [
       { path: APP_PATH.Today, loadComponent: todayPage },
       { path: APP_PATH.Library, loadComponent: phoneLibraryPage },
       { path: APP_PATH.Tags, loadComponent: tagsPage },
-      { path: APP_PATH.Ask, canActivate: [askOnGuard], loadComponent: askPage },
+      {
+        path: APP_PATH.Ask,
+        canActivate: [askOnGuard],
+        canDeactivate: [askLeaveGuard],
+        loadComponent: askPage,
+      },
       { path: APP_PATH.Links, loadComponent: libraryPage, data: { scope: LINKS_SCOPE.All } },
       {
         path: APP_PATH.Unsorted,

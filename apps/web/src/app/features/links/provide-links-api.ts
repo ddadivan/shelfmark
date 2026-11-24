@@ -34,6 +34,8 @@ import { HttpAiApi } from '../ai/http/http-ai.api';
 import { AI_API } from '../ai/models/ai-api.const';
 import { HttpMcpApi } from '../ai/connect/http/http-mcp.api';
 import { MCP_API } from '../ai/connect/models/mcp-api.const';
+import { HttpAskHistoryApi } from '../ai/http/http-ask-history.api';
+import { ASK_HISTORY_API } from '../ai/models/ask-history-api.const';
 import { HttpRediscoverApi } from '../rediscover/http/http-rediscover.api';
 import { REDISCOVER_API } from '../rediscover/models/rediscover-api.const';
 import { HttpCleanupApi } from '../cleanup/http/http-cleanup.api';
@@ -49,7 +51,7 @@ import { NOTIFICATIONS_API } from '../notifications/models/notifications-api.con
 
 /**
  * Registers the data seams of the links feature (`LINKS_API`, `FOLDERS_API`, `TAGS_API`) and
- * `EXPORT_API`, `TRASH_API`, `USER_SETTINGS_API`, `SAVED_VIEWS_API`, `RULES_API`, `SHARES_API`, `AI_API`, `MCP_API`, `REDISCOVER_API`, `CLEANUP_API` and `IMPORT_API` over the REST API. `EXPORT_API` is registered here, not in `app.config.ts`,
+ * `EXPORT_API`, `TRASH_API`, `USER_SETTINGS_API`, `SAVED_VIEWS_API`, `RULES_API`, `SHARES_API`, `AI_API`, `ASK_HISTORY_API`, `MCP_API`, `REDISCOVER_API`, `CLEANUP_API` and `IMPORT_API` over the REST API. `EXPORT_API` is registered here, not in `app.config.ts`,
  * because this file is the single seam `fileReplacements` swaps: the `development` and `e2e`
  * builds replace it with `mock/provide-links-api.e2e.ts`, which provides `MockExportApi`
  * instead, so no export code needs its own build switch.
@@ -89,6 +91,7 @@ export function provideLinksApi(): Provider[] {
     { provide: RULES_API, useExisting: HttpRulesApi },
     { provide: AI_API, useExisting: HttpAiApi },
     { provide: MCP_API, useExisting: HttpMcpApi },
+    { provide: ASK_HISTORY_API, useExisting: HttpAskHistoryApi },
     { provide: REDISCOVER_API, useExisting: HttpRediscoverApi },
     { provide: CLEANUP_API, useExisting: HttpCleanupApi },
     { provide: IMPORT_API, useExisting: HttpImportApi },

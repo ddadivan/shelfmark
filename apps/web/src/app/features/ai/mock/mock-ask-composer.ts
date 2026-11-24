@@ -142,6 +142,7 @@ export class MockAskComposer {
             links: sources.map((s) => ({ n: s.n, id: s.link.id })),
           },
           depth: options.depth ?? ASK_DEPTH.Quick,
+          conversationId: null,
         },
       },
     ];

@@ -9,6 +9,7 @@ import { AUTH_ROUTE } from '../../../core/auth/models/auth-routes.const';
 import { aiSettingsResponse, fakeAiApi } from '../../../../testing/fake-ai-api';
 import { AI_API } from '../models/ai-api.const';
 import { AiSettingsStore } from './ai-settings.store';
+import { AskHistoryChanges } from './ask-history-changes.service';
 import { AskStore } from './ask.store';
 
 const ALLOWANCE = { questionsLeft: 7, period: ASK_PERIOD.Day, resetsOn: '2026-11-19' };
@@ -50,6 +51,7 @@ describe('AskStore', () => {
       allowance: ALLOWANCE,
       turn: { question: '', answer: '', links: [] },
       depth: 'quick',
+      conversationId: null,
     });
     streams[0]?.complete();
     expect(store.streaming()).toBe(false);
@@ -70,6 +72,7 @@ describe('AskStore', () => {
         allowance: ALLOWANCE,
         turn: { question, answer: `answer ${index}`, links: [] },
         depth: 'quick',
+        conversationId: null,
       });
       streams[index]?.complete();
     };
@@ -155,5 +158,79 @@ describe('AskStore', () => {
     expect(store.entries()[1]).toMatchObject({ state: 'error', reason: 'unavailable' });
     expect(auth.expireSession).toHaveBeenCalledTimes(1);
     expect(navigate).toHaveBeenCalledWith([AUTH_ROUTE.SignIn], expect.anything());
+  });
+
+  describe('Ask history (ADR 0055 amendment)', () => {
+    const ID = '0192f3a4-5b6c-7d8e-9f01-23456789abcd';
+    const done = (conversationId: string | null): AskEvent => ({
+      type: 'done',
+      sources: [],
+      notFound: false,
+      truncated: false,
+      allowance: ALLOWANCE,
+      turn: { question: 'Which ramen?', answer: 'Two [1].', links: [{ n: 1, id: 'l1' }] },
+      depth: 'quick',
+      conversationId,
+    });
+
+    it('is unsaved while an answer streams and once a finished turn was not stored', async () => {
+      const { streams, store } = await setup();
+      expect(store.unsaved()).toBe(false);
+      store.ask('Which ramen?');
+      expect(store.unsaved()).toBe(true);
+      streams[0]?.next(done(null));
+      streams[0]?.complete();
+      expect(store.entries()[0]?.persisted).toBe(false);
+      expect(store.unsaved()).toBe(true);
+      expect(store.conversationId()).toBeNull();
+    });
+
+    it('keeps the stored conversation id, sends it with the next question and tells the list', async () => {
+      const { api, streams, store } = await setup();
+      const changes = TestBed.inject(AskHistoryChanges);
+      store.ask('Which ramen?');
+      streams[0]?.next(done(ID));
+      streams[0]?.complete();
+      expect(store.conversationId()).toBe(ID);
+      expect(store.unsaved()).toBe(false);
+      expect(changes.version()).toBe(1);
+      store.ask('the first one');
+      expect(api.ask).toHaveBeenLastCalledWith('the first one', [store.entries()[0]?.turn], ID);
+      store.reset();
+      expect(store.conversationId()).toBeNull();
+      expect(store.unsaved()).toBe(false);
+    });
+
+    it('opens a stored conversation as persisted, finished entries with its citations', async () => {
+      const { store } = await setup();
+      store.open({
+        id: ID,
+        title: 'Which ramen?',
+        createdAt: '2026-11-24T10:00:00.000Z',
+        updatedAt: '2026-11-24T10:00:00.000Z',
+        turns: [
+          {
+            turn: { question: 'Which ramen?', answer: 'Two [1] and [2024].', links: [] },
+            sources: [],
+            cards: [],
+            steps: [{ activity: 'search', found: 2 }],
+            notFound: false,
+            truncated: false,
+            depth: 'quick',
+            createdAt: '2026-11-24T10:00:00.000Z',
+          },
+        ],
+      });
+      expect(store.conversationId()).toBe(ID);
+      expect(store.unsaved()).toBe(false);
+      expect(store.answered()).toBe(true);
+      expect(store.entries()[0]).toMatchObject({
+        state: 'done',
+        persisted: true,
+        sourcesKnown: true,
+        steps: [{ activity: 'search', found: 2 }],
+        segments: [{ text: 'Two ' }, { cite: 1 }, { text: ' and [2024].' }],
+      });
+    });
   });
 });

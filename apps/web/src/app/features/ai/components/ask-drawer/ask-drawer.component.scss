@@ -7,7 +7,12 @@
   flex: 1;
   gap: var(--space-2);
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   min-width: 0;
   padding-block: var(--space-3);
+}
+
+// Open full page sits at the end of the head, before the drawer's own close button.
+.ask-drawer__page {
+  margin-inline-start: auto;
 }

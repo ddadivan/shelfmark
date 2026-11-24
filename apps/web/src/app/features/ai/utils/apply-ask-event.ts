@@ -51,6 +51,7 @@ export function applyAskEvent(entry: AskEntry, event: AskEvent): AskEntry {
         sourcesKnown: true,
         notFound: event.notFound,
         truncated: event.truncated,
+        persisted: event.conversationId !== null,
       };
     case ASK_EVENT_TYPE.Error:
       return {
