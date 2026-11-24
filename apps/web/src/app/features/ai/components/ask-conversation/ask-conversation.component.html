@@ -1,25 +1,32 @@
 @if (store.entries().length === 0) {
-  <div class="ask-conversation__empty">
-    <div class="ask-conversation__intro">
-      @if (onPage()) {
-        <h2 class="ask-conversation__title">{{ 'ai.ask.emptyTitle' | transloco }}</h2>
-      } @else {
-        <h3 class="ask-conversation__title">{{ 'ai.ask.emptyTitle' | transloco }}</h3>
-      }
-      <p class="ask-conversation__lead">{{ 'ai.ask.lead' | transloco }}</p>
+  @if (onPage()) {
+    <div class="ask-conversation__start ask-conversation__start--compact">
+      <span class="ask-conversation__spark" aria-hidden="true">
+        <ui-icon name="spark" [size]="ICON_SIZE.Sm" />
+      </span>
+      <p class="ask-conversation__lead">{{ startShort().key | transloco: startShort().params }}</p>
     </div>
-    <div class="ask-conversation__starters">
-      <p class="ask-conversation__try">{{ 'ai.ask.try' | transloco }}</p>
-      @for (starter of starters(); track starter.key) {
-        @let text = starter.key | transloco: { folder: starter.folder };
-        <ui-list-item class="ask-conversation__starter" (activated)="store.ask(text)">
-          <ui-icon slot="leading" [name]="starterIcon(starter.key)" />
-          <span slot="title" class="ask-conversation__starter-text">{{ text }}</span>
-          <ui-icon slot="trailing" name="chevron-right" />
-        </ui-list-item>
+    @if (limited()) {
+      <ng-container [ngTemplateOutlet]="limit" />
+    } @else {
+      <ui-ask-starters compact [groups]="groups()" (picked)="store.ask($event)" />
+    }
+  } @else {
+    <div class="ask-conversation__start">
+      <span class="ask-conversation__spark ask-conversation__spark--lg" aria-hidden="true">
+        <ui-icon name="spark" [size]="ICON_SIZE.Md" />
+      </span>
+      <h2 class="ask-conversation__title">{{ 'ai.ask.title' | transloco }}</h2>
+      @if (!limited()) {
+        <p class="ask-conversation__lead">{{ startLead().key | transloco: startLead().params }}</p>
       }
     </div>
-  </div>
+    @if (limited()) {
+      <ng-container [ngTemplateOutlet]="limit" />
+    } @else {
+      <ui-ask-starters [groups]="groups()" (picked)="store.ask($event)" />
+    }
+  }
 } @else {
   @if (store.historyTrimmed()) {
     <p class="ask-conversation__trimmed">{{ 'ai.ask.historyTrimmed' | transloco }}</p>
@@ -33,3 +40,14 @@
     />
   }
 }
+
+<ng-template #limit>
+  @if (limitLine(); as line) {
+    <ui-notice class="ask-conversation__limit" kind="quiet" icon="bell">
+      {{ line.key | transloco: line.params }}
+      <ui-button uiNoticeAction variant="secondary" size="sm" (click)="openSearch()">
+        {{ 'ai.ask.openSearch' | transloco }}
+      </ui-button>
+    </ui-notice>
+  }
+</ng-template>

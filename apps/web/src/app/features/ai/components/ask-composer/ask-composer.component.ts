@@ -1,4 +1,5 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
@@ -7,6 +8,7 @@ import {
   computed,
   effect,
   inject,
+  input,
   signal,
   viewChild,
 } from '@angular/core';
@@ -15,11 +17,14 @@ import { ASK_LIMIT } from '@shelfmark/contracts';
 import { ButtonComponent, TextareaComponent } from '@shelfmark/ui';
 import { AiSettingsStore } from '../../services/ai-settings.store';
 import { AskStore } from '../../services/ask.store';
+import { askAllowanceLine } from '../../utils/ask-allowance-line';
 
 /**
- * The Ask composer: one box with the auto-growing question field and the round send button
- * inside (Stop while an answer streams), and the footer line. Disabled while streaming and once
- * the limit is reached. Uses the panel's `AskStore`. A question sent from the composer while it
+ * The Ask composer (Shelf `composer`): one `surface-hover` box, radius 16, with the auto-growing
+ * question field and the round 40px primary send button inside (Stop while an answer streams),
+ * and the fine line under it: answers can be wrong, and the questions left. Disabled while
+ * streaming; once the limit is reached only the fine line stays (the conversation shows the limit
+ * row). Uses the panel's `AskStore`. A question sent from the composer while it
  * had focus puts focus back into the field once the answer ends (done, error or Stop): the field
  * is disabled while streaming, so the browser drops its focus.
  */
@@ -31,6 +36,9 @@ import { AskStore } from '../../services/ask.store';
   styleUrl: './ask-composer.component.scss',
 })
 export class AskComposerComponent {
+  /** Leaves the fine line out (the phone page: Shelf hides it below 40em). */
+  readonly hideFine = input(false, { transform: booleanAttribute });
+
   protected readonly store = inject(AskStore);
   private readonly settings = inject(AiSettingsStore);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -42,6 +50,11 @@ export class AskComposerComponent {
   protected readonly text = signal('');
   /** No questions left in the day or month: the field is disabled. */
   protected readonly limited = computed(() => this.settings.askAllowance()?.questionsLeft === 0);
+  /** "{n} questions left this month" once the allowance is known. */
+  protected readonly left = computed(() => {
+    const allowance = this.settings.askAllowance();
+    return allowance ? askAllowanceLine(allowance) : null;
+  });
   protected readonly canSend = computed(
     () =>
       !this.store.streaming() &&

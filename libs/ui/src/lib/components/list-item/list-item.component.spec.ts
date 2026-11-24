@@ -16,6 +16,7 @@ import { KEYBOARD_KEY } from '../../models/keyboard';
       [newTab]="newTab()"
       [selected]="selected()"
       [compact]="compact()"
+      [tile]="tile()"
       [thumb]="thumb()"
       [description]="description()"
       [reveal]="reveal()"
@@ -50,6 +51,7 @@ class HostComponent {
   readonly newTab = signal(false);
   readonly selected = signal(false);
   readonly compact = signal(false);
+  readonly tile = signal(false);
   readonly thumb = signal<string | undefined>(undefined);
   readonly description = signal<string | undefined>(undefined);
   readonly reveal = signal(false);
@@ -138,11 +140,13 @@ describe('ListItemComponent', () => {
     update((c) => {
       c.selected.set(true);
       c.compact.set(true);
+      c.tile.set(true);
       c.reveal.set(true);
       c.description.set('opens in a new tab');
     });
     expect(row.classList.contains('ui-list-item--selected')).toBe(true);
     expect(row.classList.contains('ui-list-item--compact')).toBe(true);
+    expect(row.classList.contains('ui-list-item--tile')).toBe(true);
     expect(row.classList.contains('ui-list-item--reveal')).toBe(true);
     expect(main().getAttribute('aria-current')).toBe('true');
     const description = row.querySelector('.ui-list-item__description') as HTMLElement;

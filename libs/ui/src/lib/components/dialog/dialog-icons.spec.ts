@@ -40,9 +40,9 @@ describe('pressed menu trigger (CSS)', () => {
 });
 
 describe('empty state actions (CSS)', () => {
-  it('equal-width buttons, 12px apart, wrapping', () => {
+  it('pills at their own width (Shelf sm-empty), 12px apart, wrapping', () => {
     const css = compileScss('lib/components/empty-state/empty-state.component.scss');
-    expect(css).toMatch(/--ui-button-min-width:\s*10rem/);
+    expect(css).not.toMatch(/--ui-button-min-width/);
     expect(css).toMatch(/\.ui-empty-state__actions\s*\{[^}]*flex-wrap:\s*wrap/);
     expect(css).toMatch(/\.ui-empty-state__actions\s*\{[^}]*gap:\s*var\(--space-3\)/);
   });

@@ -18,4 +18,7 @@ export const ILLUSTRATION_DEFAULT_MOTION: Readonly<Record<IllustrationName, Illu
   'empty-unsorted': ILLUSTRATION_MOTION.Once,
   'empty-tags': ILLUSTRATION_MOTION.Once,
   'empty-filter': ILLUSTRATION_MOTION.Once,
+  error: ILLUSTRATION_MOTION.Once,
+  'signed-out': ILLUSTRATION_MOTION.Once,
+  'all-done': ILLUSTRATION_MOTION.Once,
 };

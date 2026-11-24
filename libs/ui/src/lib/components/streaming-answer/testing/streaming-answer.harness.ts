@@ -24,7 +24,10 @@ export class UiStreamingAnswerHarness extends ComponentHarness {
   private readonly caret = this.locatorForOptional('.ui-streaming-answer__caret');
   private readonly disclaimerLine = this.locatorForOptional('.ui-streaming-answer__disclaimer');
   private readonly live = this.locatorFor('.ui-streaming-answer__live');
-  private readonly pill = this.locatorForOptional('.ui-streaming-answer__pill');
+  private readonly pill = this.locatorForOptional('.ui-streaming-answer__step--now');
+  private readonly doneSteps = this.locatorForAll(
+    '.ui-streaming-answer__step:not(.ui-streaming-answer__step--now)',
+  );
 
   async getQuestion(): Promise<string> {
     return (await (await this.bubble()).text()).trim();
@@ -59,15 +62,20 @@ export class UiStreamingAnswerHarness extends ComponentHarness {
     await cite.click();
   }
 
-  /** The caret or the status pill shows: the answer is still arriving. */
+  /** The caret or the status line shows: the answer is still arriving. */
   async isStreaming(): Promise<boolean> {
     return (await this.caret()) !== null || (await this.pill()) !== null;
   }
 
-  /** The status pill's text ("Searching your links…"), or `null` when none shows. */
+  /** The status line's text ("Searching your links…"), or `null` when none shows. */
   async getStatus(): Promise<string | null> {
     const pill = await this.pill();
     return pill ? (await pill.text()).trim() : null;
+  }
+
+  /** The finished steps above the answer ("Searched your links · 9 found"). */
+  async getSteps(): Promise<string[]> {
+    return Promise.all((await this.doneSteps()).map(async (step) => (await step.text()).trim()));
   }
 
   /** The disclaimer line, or `null` while streaming or before any text. */

@@ -28,6 +28,16 @@
     background: var(--accent-bg);
   }
 
+  &--quiet {
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+
+  &--quiet &__icon {
+    color: var(--text-muted);
+  }
+
   &--banner {
     flex-wrap: wrap;
     gap: rem(8px) rem(12px);
@@ -40,6 +50,22 @@
 
   &--banner &__body {
     flex: 0 1 auto;
+  }
+
+  // Shelf strip (10-first-run demo and offline strips): a quiet banner reads left to right on
+  // `surface` over a `sep` line, 48px high, the action at the end.
+  &--quiet#{&}--banner {
+    gap: var(--space-3);
+    justify-content: flex-start;
+    min-height: rem(48px);
+    text-align: start;
+    border: 0;
+    border-block-end: 1px solid var(--sep);
+  }
+
+  // The action moves under the text when the line is too narrow for both (a phone).
+  &--quiet#{&}--banner &__body {
+    flex: 1 1 rem(240px);
   }
 
   &__action {

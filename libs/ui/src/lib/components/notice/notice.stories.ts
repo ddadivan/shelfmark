@@ -66,6 +66,32 @@ export const Banner: Story = {
   }),
 };
 
+/** `quiet`: the plain row (the Ask limit) with a trailing action. */
+export const Quiet: Story = {
+  args: { kind: 'quiet', icon: 'bell' },
+  render: (args) => ({
+    props: args,
+    template: `
+      <ui-notice [kind]="kind" [icon]="icon">
+        You’ve used this month’s questions. Ask again on 1 December; search works as usual.
+        <ui-button uiNoticeAction variant="secondary" size="sm">Open search</ui-button>
+      </ui-notice>`,
+  }),
+};
+
+/** `quiet` + `banner`: the Shelf strip (demo, offline) at the top of the app. */
+export const Strip: Story = {
+  args: { kind: 'quiet', icon: 'user', banner: true },
+  render: (args) => ({
+    props: args,
+    template: `
+      <ui-notice [kind]="kind" [icon]="icon" banner>
+        <strong>You’re in a demo.</strong> Play with everything; this sandbox resets in 3 hours.
+        <ui-button uiNoticeAction variant="primary" size="sm">Sign in with your own account</ui-button>
+      </ui-notice>`,
+  }),
+};
+
 export const CustomIcon: Story = { args: { icon: 'info' } };
 
 /** Both kinds, with and without a link, in both themes. */

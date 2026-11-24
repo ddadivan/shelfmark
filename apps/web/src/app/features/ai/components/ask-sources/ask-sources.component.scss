@@ -6,53 +6,10 @@
   gap: var(--space-2);
 }
 
-// The caption over the cards (BRAND › AI): small, upper case, muted.
+// Shelf caption over the tiles: 12px muted.
 .ask-sources__heading {
   @include type(caption);
 
   margin: 0;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.ask-sources__list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-// Compact cards: `bg` fill, a border, `radius-md`; the title keeps to one line with an ellipsis.
-.ask-sources__card {
-  padding: rem(10px) var(--space-3);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-}
-
-// The citation number of the card (the same number as the chip in the answer).
-.ask-sources__n {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: rem(24px);
-  height: rem(24px);
-  font: 700 var(--font-size-meta) / var(--line-height-meta) var(--font-sans);
-  color: var(--ai);
-  background: var(--ai-fill);
-  border-radius: var(--radius-tile);
-}
-
-.ask-sources__actions {
-  display: inline-flex;
-  gap: var(--space-1);
-  align-items: center;
-}
-
-.ask-sources__open {
   color: var(--text-muted);
 }

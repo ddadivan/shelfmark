@@ -3,10 +3,10 @@ import { previewIdOfUrl } from '../features/link-preview/utils/preview-id-of-url
 
 /**
  * Pages pushed over their tab with a bar of their own at the bottom (the tab bar hides): Tidy
- * Unsorted and Ask your shelf full screen (its composer). The link preview (#553) is pushed over
- * a library feed while `?preview=` is set.
+ * Unsorted. The link preview (#553) is pushed over a library feed while `?preview=` is set. The
+ * Ask page is pushed only while a conversation runs (`PushedPage`, Shelf 11-ask).
  */
-const PUSHED_PATHS: readonly string[] = [`/${APP_PATH.Tidy}`, `/${APP_PATH.Ask}`];
+const PUSHED_PATHS: readonly string[] = [`/${APP_PATH.Tidy}`];
 
 /** Whether the URL (query and fragment ignored) is a pushed page. */
 export function isPushedUrl(url: string): boolean {

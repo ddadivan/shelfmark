@@ -1,188 +1,68 @@
 @use 'ui' as *;
 
-// ExtensionInstall mockup (#455). The entrance is the author's call (a banner that should be
-// noticed), once per appearance: the band itself stays put (it takes the place of the app
-// skeleton's placeholder of the same size, #490, so nothing blinks), the popup screenshot slides
-// up into it from below its bottom edge, and the logo, title, text and button rise in one after
-// another. Only transform and opacity move, inside the band's clip, so its 188px height never
-// changes. Every step stays within `duration-slow`; under reduced motion nothing animates.
+// Shelf 14-system "Extension offer in the library": one `ai-bg` strip, radius 12, the 24px mark,
+// the bold title and the sentence on one line (14px), the small primary button and ×. The band
+// fades in once; under reduced motion nothing animates. One fixed height for every width and
+// language (#490): the copy takes at most two lines (one on wide windows in English, two in German
+// at 64em), so the app skeleton can hold its place (`.boot__extension` in src/_boot-skeleton.scss,
+// the same value).
 
 :host {
   display: block;
 }
 
 .extension-banner {
-  position: relative;
   display: flex;
-  gap: rem(20px);
+  gap: var(--space-3);
   align-items: center;
-
-  // One fixed height for every width and language (#490), so the app skeleton can hold its place
-  // and nothing moves when the app takes over (`.boot__extension` in src/_boot-skeleton.scss, the
-  // same value). 188px fits the tallest copy measured: French at 64em, German at 80em.
-  block-size: rem(188px);
-  padding: rem(20px) rem(56px) rem(20px) var(--space-6);
-  overflow: hidden;
-  background: var(--accent-bg);
-  border-radius: var(--radius-lg);
-}
-
-.extension-banner--popup {
-  padding-inline-end: rem(280px);
+  box-sizing: border-box;
+  block-size: rem(64px);
+  padding: rem(8px) rem(12px) rem(8px) var(--space-4);
+  background: var(--ai-bg);
+  border-radius: var(--radius-md);
 }
 
 .extension-banner__logo {
   display: grid;
   flex: none;
   place-items: center;
-  inline-size: rem(52px);
-  block-size: rem(52px);
-  background: var(--surface);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
 
-  --ui-logo-size: #{rem(30px)};
+  --ui-logo-size: #{rem(24px)};
 }
 
 .extension-banner__copy {
-  display: flex;
+  @include type(secondary);
+
+  display: -webkit-box;
   flex: 1 1 auto;
-  flex-direction: column;
-  gap: var(--space-1);
   min-width: 0;
-  max-width: rem(520px);
+  overflow: hidden;
+  color: var(--text);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.extension-banner__title,
+.extension-banner__text {
+  display: inline;
+  margin: 0;
+  font: inherit;
 }
 
 .extension-banner__title {
-  @include type(heading);
-
-  margin: 0;
-  font-size: var(--font-size-title-m);
-  line-height: rem(26px);
-  color: var(--accent-text);
+  font-weight: 600;
 }
 
-.extension-banner__text {
-  @include type(body);
-
-  margin: 0;
-  color: var(--text);
-}
-
-.extension-banner__install {
-  position: relative;
-  z-index: 1;
-  flex: none;
-
-  // The longest label (Ukrainian, German) stays on one line; `wrap` only lets it break when even
-  // this much room is not there (#507).
-  max-width: rem(300px);
-}
-
-.extension-banner__popup {
-  position: absolute;
-  inset-block-start: var(--space-4);
-  inset-inline-end: rem(56px);
-  inline-size: rem(200px);
-  block-size: auto;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-float);
-}
-
+.extension-banner__install,
 .extension-banner__close {
-  position: absolute;
-  inset-block-start: var(--space-2);
-  inset-inline-end: var(--space-2);
-  z-index: 2;
+  flex: none;
 }
 
-// Entrance, step by step.
 .extension-banner--enter {
-  // Draws nothing: Angular removes the enter class when the element's own animation ends, so this
-  // one lasts as long as the longest step below (the popup: 520ms delay plus three `duration-slow`).
-  animation: extension-hold calc(var(--duration-slow) * 3 + 520ms) linear both;
-
-  .extension-banner__logo {
-    animation: extension-pop calc(var(--duration-slow) * 2) var(--ease-out) 480ms both;
-  }
-
-  .extension-banner__title,
-  .extension-banner__text,
-  .extension-banner__install {
-    animation: extension-rise calc(var(--duration-slow) * 2) var(--ease-out) both;
-  }
-
-  .extension-banner__title {
-    animation-delay: 560ms;
-  }
-
-  .extension-banner__text {
-    animation-delay: 640ms;
-  }
-
-  .extension-banner__install {
-    animation-delay: 720ms;
-  }
-
-  .extension-banner__popup {
-    animation: extension-popup calc(var(--duration-slow) * 3) var(--ease-drawer) 520ms both;
-  }
+  @include enter(fade);
 }
 
 .extension-banner--leave {
-  animation: extension-leave var(--duration-fast) var(--ease-in) both;
-}
-
-@include reduced-motion {
-  .extension-banner--enter,
-  .extension-banner--enter .extension-banner__logo,
-  .extension-banner--enter .extension-banner__title,
-  .extension-banner--enter .extension-banner__text,
-  .extension-banner--enter .extension-banner__install,
-  .extension-banner--enter .extension-banner__popup {
-    animation: none;
-  }
-
-  .extension-banner--leave {
-    animation-name: extension-fade-out;
-  }
-}
-
-@keyframes extension-hold {
-  from {
-    opacity: 1;
-  }
-}
-
-@keyframes extension-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-}
-
-@keyframes extension-rise {
-  from {
-    opacity: 0;
-    transform: translateY(0.75rem);
-  }
-}
-
-@keyframes extension-popup {
-  from {
-    transform: translateY(calc(100% + #{rem(16px)}));
-  }
-}
-
-@keyframes extension-leave {
-  to {
-    opacity: 0;
-    transform: translateY(-0.5rem);
-  }
-}
-
-@keyframes extension-fade-out {
-  to {
-    opacity: 0;
-  }
+  @include leave(fade);
 }

@@ -155,7 +155,7 @@ describe('DemoBannerComponent', () => {
   it('is an info notice banner with the action in its slot', async () => {
     const { root } = await setup(demoIn(5 * HOUR));
 
-    expect(root.querySelector('ui-notice.ui-notice--banner.ui-notice--info')).not.toBeNull();
+    expect(root.querySelector('ui-notice.ui-notice--banner.ui-notice--quiet')).not.toBeNull();
     expect(root.querySelector('.ui-notice__action button')).not.toBeNull();
   });
 

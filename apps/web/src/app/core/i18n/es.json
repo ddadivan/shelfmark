@@ -1204,7 +1204,7 @@
     "loadMoreFailed": "No se pudieron cargar más enlaces.",
     "error": {
       "title": "No se pudieron cargar tus enlaces",
-      "text": "Comprueba tu conexión e inténtalo de nuevo.",
+      "text": "El servidor no respondió. Tus enlaces están a salvo; es un problema de conexión.",
       "retry": "Reintentar"
     },
     "empty": {
@@ -2440,6 +2440,24 @@
     "find": {
       "title": "Encuéntralo al momento",
       "text": "Carpetas, etiquetas, favoritos y la búsqueda con ⌘K recuperan cualquier enlace en un par de pulsaciones."
+    },
+    "firstRun": {
+      "title": "Tu estantería está vacía",
+      "lead": "Tres formas de llenarla. Casi todos empiezan pegando un enlace.",
+      "paste": {
+        "title": "Pega un enlace",
+        "text": "Copia cualquier dirección y pulsa {{keys}} en cualquier parte de Shelfmark."
+      },
+      "extension": {
+        "title": "Instala la extensión",
+        "text": "Guarda la página abierta con un clic, o todas las pestañas abiertas a la vez.",
+        "action": "Añadir a Chrome"
+      },
+      "import": {
+        "title": "Importa marcadores",
+        "text": "Trae todo desde tu navegador; la IA puede agruparlo en unas pocas carpetas.",
+        "action": "Importar"
+      }
     }
   },
   "rating": {
@@ -4151,8 +4169,8 @@
         "generic": "¿Qué guardé este mes?"
       },
       "label": "Pregunta sobre tus enlaces",
-      "placeholder": "Pregunta sobre tus enlaces",
-      "followUp": "Pregunta otra cosa…",
+      "placeholder": "Pregunta lo que quieras sobre tus enlaces",
+      "followUp": "Haz otra pregunta",
       "send": "Preguntar",
       "stop": "Detener",
       "left": {
@@ -4203,7 +4221,51 @@
         "showAll": "Ver los {{count}} en la búsqueda"
       },
       "button": "Preguntar",
-      "try": "Prueba"
+      "try": "Prueba",
+      "startLead": {
+        "one": "Preguntas con tus propias palabras, respondidas a partir del {{count}} enlace que guardaste. Cada respuesta muestra los enlaces que usó. Toca un ejemplo o escribe abajo.",
+        "many": "Preguntas con tus propias palabras, respondidas a partir de los {{count}} de enlaces que guardaste. Cada respuesta muestra los enlaces que usó. Toca un ejemplo o escribe abajo.",
+        "other": "Preguntas con tus propias palabras, respondidas a partir de los {{count}} enlaces que guardaste. Cada respuesta muestra los enlaces que usó. Toca un ejemplo o escribe abajo."
+      },
+      "startShort": {
+        "one": "Pregunta lo que quieras sobre tu {{count}} enlace.",
+        "many": "Pregunta lo que quieras sobre tus {{count}} de enlaces.",
+        "other": "Pregunta lo que quieras sobre tus {{count}} enlaces."
+      },
+      "caps": {
+        "find": "Encontrar",
+        "count": "Contar y comparar",
+        "summarise": "Resumir",
+        "plan": "Planear y elegir"
+      },
+      "examples": {
+        "findFolder": "¿Qué guardé sobre {{folder}}?",
+        "find": "El artículo que guardé la semana pasada",
+        "findVideo": "El vídeo que guardé el mes pasado",
+        "countFolders": "¿Cuántos enlaces tengo, por carpeta?",
+        "countMonth": "¿Qué guardé más este mes?",
+        "summariseFolder": "¿Qué hay en mi carpeta {{folder}}, en cinco líneas?",
+        "summarise": "¿Qué guardé este mes, en cinco líneas?",
+        "ideasFolder": "Las ideas principales de {{folder}}",
+        "ideas": "Las ideas principales de mis últimos enlaces",
+        "watch": "Algo para ver este fin de semana, de menos de una hora",
+        "firstFolder": "¿Qué debería leer primero en {{folder}}?",
+        "first": "¿Qué debería leer primero?"
+      },
+      "fine": "Las respuestas las escribe la IA y pueden estar mal; revisa los enlaces.",
+      "step": {
+        "search": "Busqué en tus enlaces",
+        "count": "Conté tus enlaces",
+        "read": "Leí un enlace",
+        "browse": "Revisé carpetas y etiquetas",
+        "deep": "Miré con más detalle"
+      },
+      "found": {
+        "one": "{{count}} encontrado",
+        "many": "{{count}} de encontrados",
+        "other": "{{count}} encontrados"
+      },
+      "openSearch": "Abrir la búsqueda"
     },
     "connect": {
       "title": "Conecta tu asistente",

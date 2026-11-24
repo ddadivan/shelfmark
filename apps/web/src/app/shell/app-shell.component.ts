@@ -54,6 +54,7 @@ import { OfflineBannerComponent } from './offline-banner/offline-banner.componen
 import { PHONE_TAB } from './models/phone-tab.const';
 import { phoneTabForUrl } from './phone-tab-for-url';
 import { isPushedUrl } from './pushed-url';
+import { PushedPage } from '../core/layout/pushed-page.service';
 import { PreviewFullScreen } from '../features/link-preview/services/preview-full-screen.service';
 import { SettingsNavComponent } from '../features/settings/components/settings-nav/settings-nav.component';
 import { SettingsChipsComponent } from '../features/settings/components/settings-chips/settings-chips.component';
@@ -127,8 +128,12 @@ export default class AppShellComponent {
   );
   /** The tab of the current page (the tab bar marks it with `aria-current`). */
   protected readonly activeTab = computed(() => phoneTabForUrl(this.url()));
-  /** A pushed page with its own bottom bar (Tidy Unsorted): the mobile shell hides the tab bar. */
-  protected readonly pushed = computed(() => isPushedUrl(this.url()));
+  private readonly pushedPage = inject(PushedPage);
+  /**
+   * A pushed page with its own bottom bar (Tidy Unsorted, the phone Ask page while a conversation
+   * runs): the mobile shell hides the tab bar.
+   */
+  protected readonly pushed = computed(() => isPushedUrl(this.url()) || this.pushedPage.active());
   /** On the settings pages the settings nav takes the place of the sidebar (tablet and up). */
   protected readonly inSettings = computed(() => this.activeTab() === PHONE_TAB.You);
   /** Tablet (Shelf 05-settings at 820px): the settings sections as a chip row above the page. */

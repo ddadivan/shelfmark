@@ -32,12 +32,12 @@ describe('ExtensionBannerComponent', () => {
     expect(root.querySelector('section')).toBeNull();
   });
 
-  it('offers the extension with the store link in a new tab and the popup screenshot', async () => {
+  it('offers the extension with the store link in a new tab', async () => {
     const { root, loader } = await setup();
     const install = await loader.getHarness(UiButtonHarness.with({ text: 'Install extension' }));
 
     expect(root.querySelector('h2')?.textContent?.trim()).toBe(
-      'Save pages straight from your browser',
+      'Save pages straight from your browser.',
     );
     expect(root.textContent).toContain('Alt+Shift+S');
     expect(await install.getHref()).toBe(STORE_URL);
@@ -45,15 +45,7 @@ describe('ExtensionBannerComponent', () => {
       'Install extension from the Chrome Web Store (opens in a new tab)',
     );
     expect(root.querySelector<HTMLAnchorElement>(`a[href="${STORE_URL}"]`)?.target).toBe('_blank');
-    expect(root.querySelector('img')?.getAttribute('src')).toBe(
-      '/media/extension/popup-form-light.webp',
-    );
-  });
-
-  it('leaves the screenshot out below 80em, where the copy needs the room', async () => {
-    const { root } = await setup({ wide: false });
-
-    expect(root.querySelector('section')).not.toBeNull();
+    // Shelf draws one strip without the popup screenshot.
     expect(root.querySelector('img')).toBeNull();
   });
 

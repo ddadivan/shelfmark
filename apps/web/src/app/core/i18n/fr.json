@@ -1204,7 +1204,7 @@
     "loadMoreFailed": "Impossible de charger plus de liens.",
     "error": {
       "title": "Impossible de charger vos liens",
-      "text": "Vérifiez votre connexion et réessayez.",
+      "text": "Le serveur n’a pas répondu. Vos liens sont en sécurité ; c’est un problème de connexion.",
       "retry": "Réessayer"
     },
     "empty": {
@@ -2440,6 +2440,24 @@
     "find": {
       "title": "Retrouvez-le tout de suite",
       "text": "Dossiers, tags, favoris et recherche avec ⌘K retrouvent n’importe quel lien en quelques touches."
+    },
+    "firstRun": {
+      "title": "Votre étagère est vide",
+      "lead": "Trois façons de la remplir. La plupart commencent par coller un lien.",
+      "paste": {
+        "title": "Coller un lien",
+        "text": "Copiez une adresse et appuyez sur {{keys}} n’importe où dans Shelfmark."
+      },
+      "extension": {
+        "title": "Installer l’extension",
+        "text": "Enregistrez la page ouverte en un clic, ou tous les onglets ouverts d’un coup.",
+        "action": "Ajouter à Chrome"
+      },
+      "import": {
+        "title": "Importer des favoris",
+        "text": "Récupérez tout depuis votre navigateur ; l’IA peut le ranger en quelques dossiers.",
+        "action": "Importer"
+      }
     }
   },
   "rating": {
@@ -4151,8 +4169,8 @@
         "generic": "Qu’ai-je enregistré ce mois-ci ?"
       },
       "label": "Posez une question sur vos liens",
-      "placeholder": "Posez une question sur vos liens",
-      "followUp": "Demandez autre chose…",
+      "placeholder": "Posez n’importe quelle question sur vos liens",
+      "followUp": "Poser une question de suivi",
       "send": "Demander",
       "stop": "Arrêter",
       "left": {
@@ -4203,7 +4221,51 @@
         "showAll": "Voir les {{count}} dans la recherche"
       },
       "button": "Demander",
-      "try": "Essayez"
+      "try": "Essayez",
+      "startLead": {
+        "one": "Des questions avec vos propres mots, répondues à partir du {{count}} lien que vous avez enregistré. Chaque réponse montre les liens utilisés. Touchez un exemple ou écrivez ci-dessous.",
+        "many": "Des questions avec vos propres mots, répondues à partir des {{count}} de liens que vous avez enregistrés. Chaque réponse montre les liens utilisés. Touchez un exemple ou écrivez ci-dessous.",
+        "other": "Des questions avec vos propres mots, répondues à partir des {{count}} liens que vous avez enregistrés. Chaque réponse montre les liens utilisés. Touchez un exemple ou écrivez ci-dessous."
+      },
+      "startShort": {
+        "one": "Posez n’importe quelle question sur votre {{count}} lien.",
+        "many": "Posez n’importe quelle question sur vos {{count}} de liens.",
+        "other": "Posez n’importe quelle question sur vos {{count}} liens."
+      },
+      "caps": {
+        "find": "Trouver",
+        "count": "Compter et comparer",
+        "summarise": "Résumer",
+        "plan": "Planifier et choisir"
+      },
+      "examples": {
+        "findFolder": "Qu’ai-je enregistré sur {{folder}} ?",
+        "find": "L’article que j’ai enregistré la semaine dernière",
+        "findVideo": "La vidéo que j’ai enregistrée le mois dernier",
+        "countFolders": "Combien de liens ai-je, par dossier ?",
+        "countMonth": "Qu’ai-je le plus enregistré ce mois-ci ?",
+        "summariseFolder": "Que contient mon dossier {{folder}}, en cinq lignes ?",
+        "summarise": "Qu’ai-je enregistré ce mois-ci, en cinq lignes ?",
+        "ideasFolder": "Les idées principales de {{folder}}",
+        "ideas": "Les idées principales de mes derniers liens",
+        "watch": "Quelque chose à regarder ce week-end, en moins d’une heure",
+        "firstFolder": "Que devrais-je lire en premier dans {{folder}} ?",
+        "first": "Que devrais-je lire en premier ?"
+      },
+      "fine": "Les réponses sont écrites par l’IA et peuvent être fausses ; vérifiez les liens.",
+      "step": {
+        "search": "Recherche dans vos liens faite",
+        "count": "Liens comptés",
+        "read": "Lien lu",
+        "browse": "Dossiers et tags parcourus",
+        "deep": "Analyse approfondie faite"
+      },
+      "found": {
+        "one": "{{count}} trouvé",
+        "many": "{{count}} de trouvés",
+        "other": "{{count}} trouvés"
+      },
+      "openSearch": "Ouvrir la recherche"
     },
     "connect": {
       "title": "Connecter votre assistant",

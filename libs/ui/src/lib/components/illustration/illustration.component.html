@@ -356,5 +356,45 @@
         transform="rotate(-20 125 104)"
       />
     }
+    @case ('error') {
+      <rect class="ui-illustration__surface" x="70" y="66" width="84" height="56" rx="6" />
+      <rect class="ui-illustration__tint" x="74" y="70" width="76" height="25" rx="3" />
+      <rect class="ui-illustration__line" x="74" y="100" width="57" height="4" rx="2" />
+      <g class="ui-illustration__shift ui-illustration__shift--nudge">
+        <rect class="ui-illustration__surface" x="86" y="50" width="84" height="56" rx="6" />
+        <rect class="ui-illustration__line" x="90" y="54" width="76" height="25" rx="3" />
+        <rect class="ui-illustration__line" x="90" y="84" width="57" height="4" rx="2" />
+      </g>
+      <g class="ui-illustration__grow">
+        <circle class="ui-illustration__danger" cx="168" cy="50" r="11" />
+        <path class="ui-illustration__on-stroke" d="M168 44v7" />
+        <circle class="ui-illustration__on" cx="168" cy="55.5" r="1.6" />
+      </g>
+    }
+    @case ('signed-out') {
+      <rect class="ui-illustration__surface" x="70" y="30" width="100" height="90" rx="12" />
+      <path
+        class="ui-illustration__mark ui-illustration__shift ui-illustration__shift--nudge"
+        d="M146 30h14v34l-7-5.5-7 5.5z"
+      />
+      <rect class="ui-illustration__line" x="84" y="78" width="72" height="8" rx="4" />
+      <rect class="ui-illustration__line" x="84" y="94" width="44" height="8" rx="4" />
+    }
+    @case ('all-done') {
+      <g class="ui-illustration__fly ui-illustration__fly--1">
+        <rect class="ui-illustration__surface" x="80" y="74" width="80" height="48" rx="6" />
+        <rect class="ui-illustration__tint" x="84" y="78" width="72" height="21" rx="3" />
+        <rect class="ui-illustration__line" x="84" y="104" width="54" height="4" rx="2" />
+      </g>
+      <g class="ui-illustration__fly ui-illustration__fly--2">
+        <rect class="ui-illustration__surface" x="84" y="62" width="72" height="44" rx="6" />
+        <rect class="ui-illustration__line" x="88" y="66" width="64" height="19" rx="3" />
+        <rect class="ui-illustration__line" x="88" y="90" width="48" height="4" rx="2" />
+      </g>
+      <g class="ui-illustration__grow">
+        <circle class="ui-illustration__success" cx="158" cy="62" r="13" />
+        <path class="ui-illustration__on-stroke" d="m152 62 4.5 4.5 8-9" />
+      </g>
+    }
   }
 </svg>

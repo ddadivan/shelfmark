@@ -1181,7 +1181,7 @@
     "loadMoreFailed": "Couldn't load more links.",
     "error": {
       "title": "Couldn't load your links",
-      "text": "Check your connection and try again.",
+      "text": "The server didn’t answer. Your links are safe; this is a connection problem.",
       "retry": "Try again"
     },
     "empty": {
@@ -2387,6 +2387,24 @@
     "find": {
       "title": "Find it right away",
       "text": "Folders, tags, favorites and search with ⌘K bring back any link in a couple of keystrokes."
+    },
+    "firstRun": {
+      "title": "Your shelf is empty",
+      "lead": "Three ways to fill it. Most people start by pasting one link.",
+      "paste": {
+        "title": "Paste a link",
+        "text": "Copy any address and press {{keys}} anywhere in Shelfmark."
+      },
+      "extension": {
+        "title": "Get the extension",
+        "text": "Save the page you’re on in one click, or all open tabs at once.",
+        "action": "Add to Chrome"
+      },
+      "import": {
+        "title": "Import bookmarks",
+        "text": "Bring everything from your browser; AI can group it into a few folders.",
+        "action": "Import"
+      }
     }
   },
   "rating": {
@@ -4050,8 +4068,8 @@
         "generic": "What did I save this month?"
       },
       "label": "Ask about your links",
-      "placeholder": "Ask about your links",
-      "followUp": "Ask something else…",
+      "placeholder": "Ask anything about your links",
+      "followUp": "Ask a follow-up",
       "send": "Ask",
       "stop": "Stop",
       "left": {
@@ -4100,7 +4118,48 @@
         "showAll": "Show all {{count}} in search"
       },
       "button": "Ask",
-      "try": "Try"
+      "try": "Try",
+      "startLead": {
+        "one": "Questions in your own words, answered from the {{count}} link you saved. Every answer shows the links it used. Tap an example or type below.",
+        "other": "Questions in your own words, answered from the {{count}} links you saved. Every answer shows the links it used. Tap an example or type below."
+      },
+      "startShort": {
+        "one": "Ask anything about your {{count}} link.",
+        "other": "Ask anything about your {{count}} links."
+      },
+      "caps": {
+        "find": "Find",
+        "count": "Count and compare",
+        "summarise": "Summarise",
+        "plan": "Plan and pick"
+      },
+      "examples": {
+        "findFolder": "What did I save about {{folder}}?",
+        "find": "The article I saved last week",
+        "findVideo": "The video I saved last month",
+        "countFolders": "How many links do I have, by folder?",
+        "countMonth": "What did I save most this month?",
+        "summariseFolder": "What is in my {{folder}} folder, in five lines?",
+        "summarise": "What did I save this month, in five lines?",
+        "ideasFolder": "The main ideas in {{folder}}",
+        "ideas": "The main ideas of my latest links",
+        "watch": "Something to watch this weekend, under an hour",
+        "firstFolder": "What should I read first in {{folder}}?",
+        "first": "What should I read first?"
+      },
+      "fine": "Answers are written by AI and can be wrong; check the links.",
+      "step": {
+        "search": "Searched your links",
+        "count": "Counted your links",
+        "read": "Read a link",
+        "browse": "Looked through folders and tags",
+        "deep": "Looked closer"
+      },
+      "found": {
+        "one": "{{count}} found",
+        "other": "{{count}} found"
+      },
+      "openSearch": "Open search"
     },
     "connect": {
       "title": "Connect your assistant",

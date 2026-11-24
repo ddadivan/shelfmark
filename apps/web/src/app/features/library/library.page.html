@@ -397,11 +397,11 @@
         } @else if (feed.failed()) {
         <ui-empty-state
           layout="page"
-          illustration="offline"
+          illustration="error"
           [heading]="'library.error.title' | transloco"
           [text]="'library.error.text' | transloco"
         >
-          <ui-button variant="primary" (click)="retry()">
+          <ui-button iconLeft="refresh" (click)="retry()">
             {{ 'library.error.retry' | transloco }}
           </ui-button>
         </ui-empty-state>
@@ -426,6 +426,8 @@
             {{ filters.filteredEmptyKey() + '.clear' | transloco }}
           </ui-button>
         </ui-empty-state>
+        } @else if (feed.empty() && firstRun()) {
+        <app-first-run />
         } @else if (feed.empty()) {
         <ui-empty-state
           layout="page"

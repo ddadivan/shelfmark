@@ -53,12 +53,13 @@ describe('SkeletonComponent', () => {
     expect(skeleton.querySelector('.ui-skeleton__block')).not.toBeNull();
   });
 
-  it('card has a 16:9 media block, two title lines and chips', () => {
+  it('card has a 16:9 media block, two title lines and a meta line (Shelf y-skc)', () => {
     const { skeleton, update } = setup();
     update((c) => c.shape.set(SKELETON_SHAPE.Card));
     expect(skeleton.querySelector('.ui-skeleton__media')).not.toBeNull();
     expect(skeleton.querySelectorAll('.ui-skeleton__title').length).toBe(2);
-    expect(skeleton.querySelectorAll('.ui-skeleton__chip').length).toBe(2);
+    expect(skeleton.querySelectorAll('.ui-skeleton__card .ui-skeleton__line--meta').length).toBe(1);
+    expect(skeleton.querySelector('.ui-skeleton__chip')).toBeNull();
   });
 
   it('accepts a numeric string and clamps count to 0..50', () => {

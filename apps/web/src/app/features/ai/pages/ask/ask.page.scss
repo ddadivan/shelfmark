@@ -12,38 +12,56 @@
   display: flex;
   flex: 1 0 auto;
   flex-direction: column;
-  gap: var(--space-4);
   width: 100%;
   max-width: rem(720px);
   margin-inline: auto;
 }
 
-.ask-page__top {
+.ask-page__hidden-title {
+  @include visually-hidden;
+}
+
+// The pushed conversation's head: Back and the first question (16 / 600, one line).
+.ask-page__head {
   display: flex;
+  gap: var(--space-1);
   align-items: center;
-  justify-content: space-between;
-  margin-block: calc(-1 * var(--space-3)) calc(-1 * var(--space-2));
+  margin-block: calc(-1 * var(--space-2)) 0;
   margin-inline-start: calc(-1 * var(--space-2));
 }
 
-// The conversation starts right under the title (`MobileAiMore` 2); the panel centres its empty
-// state in the drawer's height instead.
-.ask-page__conversation {
-  min-height: 0;
-  padding: 0;
+.ask-page__title {
+  @include type(heading);
+
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-// The composer floats where the tab bar is (the same offset as the Tidy bar): the shell's main
-// column keeps `$shell-tab-bar-room` of end padding for the tab bar this page hides.
-$ask-bar-offset: rem(20px) - $shell-tab-bar-room;
+.ask-page__conversation {
+  min-height: 0;
+  padding-inline: 0;
+}
+
+// Shelf `sticky`: the composer at the bottom on a `bg` fade. On the tab page it stands 12px over
+// the tab bar; pushed (no tab bar) 16px over the edge. The shell's main column keeps
+// `$shell-tab-bar-room` of end padding for the tab bar either way.
+$ask-bar-offset-tabs: rem(8px + 64px + 12px) - $shell-tab-bar-room;
+$ask-bar-offset: rem(16px) - $shell-tab-bar-room;
 
 .ask-page__bar {
-  @include float-surface;
-
   position: sticky;
-  inset-block-end: #{$ask-bar-offset};
+  inset-block-end: calc(#{$ask-bar-offset-tabs} + env(safe-area-inset-bottom));
   z-index: 3;
-  padding: var(--space-3);
-  margin-block: auto #{$ask-bar-offset};
-  border-radius: var(--radius-lg);
+  padding-block-start: var(--space-3);
+  margin-block: auto #{$ask-bar-offset-tabs};
+  background: linear-gradient(to bottom, transparent, var(--bg) 24%);
+}
+
+.ask-page--chat .ask-page__bar {
+  inset-block-end: calc(#{$ask-bar-offset} + env(safe-area-inset-bottom));
+  margin-block-end: $ask-bar-offset;
 }

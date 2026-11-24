@@ -33,7 +33,7 @@
   // A feature may reshape the box through these hooks (the Ask composer: rounder, `bg` fill, the
   // send button inside at the end).
   padding: var(--ui-field-block-padding, 0) var(--ui-field-end-padding, var(--space-3))
-    var(--ui-field-block-padding, 0) var(--space-3);
+    var(--ui-field-block-padding, 0) var(--ui-field-start-padding, var(--space-3));
   color: var(--text-muted);
   background: var(--ui-field-bg, var(--surface));
   border: 1px solid var(--ui-field-border, var(--border-control));

@@ -2,6 +2,7 @@ import type { AskAllowance, AskSource, AskTurn } from '@shelfmark/contracts';
 import type { StreamingSegment } from '@shelfmark/ui';
 import type { AskCardGroup } from './ask-card-group.interface';
 import type { AskEntryActivity } from './ask-entry-activity.interface';
+import type { AskEntryStep } from './ask-entry-step.interface';
 import type { AskEntryReason } from './ask-entry-reason.type';
 import type { AskEntryState } from './ask-entry-state.type';
 
@@ -14,8 +15,10 @@ export interface AskEntry {
   readonly segments: readonly StreamingSegment[];
   /** Link cards in stream order (`show_links`), numbered like the citations. */
   readonly cards: readonly AskCardGroup[];
-  /** The status pill while tools run, `null` when nothing runs (or text is streaming). */
+  /** The status line while tools run, `null` when nothing runs (or text is streaming). */
   readonly activity: AskEntryActivity | null;
+  /** Activities that ended, in order: the checked steps above the answer. */
+  readonly steps: readonly AskEntryStep[];
   /** The turn the server wrote (`done.turn`), sent back with the next question; `null` until done. */
   readonly turn: AskTurn | null;
   /** Cited and shown links, live, from the `done` event. */

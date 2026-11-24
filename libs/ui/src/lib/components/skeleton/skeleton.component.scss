@@ -59,55 +59,48 @@
   height: rem(16px);
 }
 
-// Card ----------------------------------------------------------------------------------------
-
+// Card (Shelf 14-system `y-skc`): a `fill` card, radius 16, the full-bleed preview block, then
+// two 14px title lines (85%, 55%) and a 10px meta line (40%) in 12px of padding.
 .ui-skeleton__card {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  background: var(--fill);
+  border-radius: var(--radius-card);
 }
 
 .ui-skeleton__media {
-  margin: rem(6px) rem(6px) 0;
   aspect-ratio: 16 / 9;
-  border-radius: var(--radius-card);
+  background: var(--surface-hover);
+  border-radius: 0;
 }
 
 .ui-skeleton__card-body {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4) var(--space-4);
+  padding: var(--space-3);
+}
+
+.ui-skeleton__card .ui-skeleton__title {
+  height: rem(14px);
+  background: var(--surface-hover);
+  border-radius: var(--radius-tile);
 }
 
 .ui-skeleton__card .ui-skeleton__line--meta {
-  width: 45%;
+  width: 40%;
+  height: rem(10px);
+  background: var(--surface-hover);
+  border-radius: var(--radius-tile);
 }
 
 .ui-skeleton__title--long {
-  width: 90%;
+  width: 85%;
 }
 
 .ui-skeleton__title--short {
-  width: 65%;
-}
-
-.ui-skeleton__chips {
-  display: flex;
-  gap: rem(6px);
-}
-
-.ui-skeleton__chip {
-  width: rem(56px);
-  height: rem(22px);
-  border-radius: var(--radius-full);
-}
-
-.ui-skeleton__chip--short {
-  width: rem(44px);
+  width: 55%;
 }
 
 // Row -----------------------------------------------------------------------------------------

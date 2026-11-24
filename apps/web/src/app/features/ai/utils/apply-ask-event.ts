@@ -18,15 +18,19 @@ function appendText(segments: readonly StreamingSegment[], text: string): Stream
 
 /**
  * An entry after one stream event (`meta` changes nothing here; the store reads its allowance): an
- * activity start shows the status pill, its end, text, cards or the last event hide it.
+ * activity start shows the status line; its end adds a finished step; text, cards or the last event
+ * hide the status line.
  */
 export function applyAskEvent(entry: AskEntry, event: AskEvent): AskEntry {
   switch (event.type) {
     case ASK_EVENT_TYPE.Activity:
-      return {
-        ...entry,
-        activity: event.phase === ASK_ACTIVITY_PHASE.Start ? { activity: event.activity } : null,
-      };
+      return event.phase === ASK_ACTIVITY_PHASE.Start
+        ? { ...entry, activity: { activity: event.activity } }
+        : {
+            ...entry,
+            activity: null,
+            steps: [...entry.steps, { activity: event.activity, found: event.found }],
+          };
     case ASK_EVENT_TYPE.Text:
       return { ...entry, activity: null, segments: appendText(entry.segments, event.text) };
     case ASK_EVENT_TYPE.Cite:

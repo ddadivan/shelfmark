@@ -1,0 +1,47 @@
+<ui-empty-state
+  class="first-run"
+  layout="page"
+  illustration="welcome-collect"
+  illustrationMotion="once"
+  [headingLevel]="2"
+  [heading]="'onboarding.firstRun.title' | transloco"
+  [text]="'onboarding.firstRun.lead' | transloco"
+>
+  <ol class="first-run__ways">
+    <li class="first-run__way">
+      <span class="first-run__n" aria-hidden="true">1</span>
+      <h3 class="first-run__title">{{ 'onboarding.firstRun.paste.title' | transloco }}</h3>
+      <p class="first-run__text">
+        {{ 'onboarding.firstRun.paste.text' | transloco: { keys: pasteKeys } }}
+      </p>
+      <ui-input
+        class="first-run__field"
+        icon="copy"
+        labelHidden
+        [label]="'onboarding.firstRun.paste.title' | transloco"
+        [placeholder]="'onboarding.firstRun.paste.title' | transloco"
+        [(value)]="text"
+        (paste)="onPaste($event)"
+        (keydown.enter)="onEnter($event)"
+      />
+    </li>
+    @if (extension.offered()) {
+      <li class="first-run__way">
+        <span class="first-run__n" aria-hidden="true">2</span>
+        <h3 class="first-run__title">{{ 'onboarding.firstRun.extension.title' | transloco }}</h3>
+        <p class="first-run__text">{{ 'onboarding.firstRun.extension.text' | transloco }}</p>
+        <ui-button variant="secondary" iconLeft="globe" block newTab [href]="extension.storeUrl">
+          {{ 'onboarding.firstRun.extension.action' | transloco }}
+        </ui-button>
+      </li>
+    }
+    <li class="first-run__way">
+      <span class="first-run__n" aria-hidden="true">{{ extension.offered() ? 3 : 2 }}</span>
+      <h3 class="first-run__title">{{ 'onboarding.firstRun.import.title' | transloco }}</h3>
+      <p class="first-run__text">{{ 'onboarding.firstRun.import.text' | transloco }}</p>
+      <ui-button variant="secondary" iconLeft="upload" block (click)="openImport()">
+        {{ 'onboarding.firstRun.import.action' | transloco }}
+      </ui-button>
+    </li>
+  </ol>
+</ui-empty-state>

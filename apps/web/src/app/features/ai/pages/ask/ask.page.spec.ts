@@ -1,5 +1,4 @@
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { Location } from '@angular/common';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
@@ -12,6 +11,7 @@ import { aiSettingsResponse, fakeAiApi } from '../../../../../testing/fake-ai-ap
 import { AppTranslocoLoader } from '../../../../core/i18n/app-transloco.loader';
 import { APP_LANG } from '../../../../core/i18n/models/app-lang.const';
 import { translocoConfig } from '../../../../core/i18n/transloco.config';
+import { PushedPage } from '../../../../core/layout/pushed-page.service';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { FoldersStore } from '../../../../stores/folders.store';
 import { UserSettingsStore } from '../../../../stores/user-settings.store';
@@ -43,7 +43,14 @@ async function setup({ compact = true, ask = true } = {}) {
         provide: LinkActionsService,
         useValue: { open: vi.fn(), remind: vi.fn(), addLink: vi.fn() },
       },
-      { provide: FoldersStore, useValue: { load: vi.fn(), entities: signal([]) } },
+      {
+        provide: FoldersStore,
+        useValue: {
+          load: vi.fn(),
+          entities: signal([]),
+          counts: signal({ all: 17, unsorted: 0, favorites: 0 }),
+        },
+      },
       { provide: UserSettingsStore, useValue: { openInNewTab: signal(true) } },
       { provide: AskPanelService, useValue: panel },
       {
@@ -64,49 +71,47 @@ describe('AskPage (#499)', () => {
     Element.prototype.scrollIntoView = vi.fn();
   });
 
-  it('shows Back, the title with the spark, the allowance, the starters and the composer', async () => {
-    const { fixture, loader } = await setup();
+  it('starts as a tab page: the hidden title, the spark, one example per kind and the composer', async () => {
+    const { fixture, api } = await setup();
     const host = fixture.nativeElement as HTMLElement;
     expect(host.querySelector('h1')?.textContent?.trim()).toBe('Ask your shelf');
-    expect(host.querySelector('.ask-heading__tile ui-icon use')?.getAttribute('href')).toMatch(
-      /-spark$/,
-    );
-    expect(host.textContent).toContain('12 questions left today');
-    expect(host.textContent).toContain('What do you want to find out?');
-    expect(host.querySelector('.ask-page__bar app-ask-composer')).not.toBeNull();
-    expect(await loader.getHarness(UiButtonHarness.with({ text: 'Back' }))).toBeTruthy();
     expect(
-      await loader.getAllHarnesses(UiButtonHarness.with({ name: 'New conversation' })),
-    ).toEqual([]);
+      host.querySelector('.ask-conversation__spark ui-icon use')?.getAttribute('href'),
+    ).toMatch(/-spark$/);
+    expect(host.textContent).toContain('Ask anything about your 17 links.');
+    // The fine line is left out on a phone (Shelf hides it below 40em).
+    expect(host.querySelector('.ask-composer__footer')).toBeNull();
+    expect(host.querySelector('.ask-page__bar app-ask-composer')).not.toBeNull();
+    const pills = host.querySelectorAll<HTMLButtonElement>('.ui-ask-starters__pill');
+    expect(pills.length).toBe(4);
+    expect(TestBed.inject(PushedPage).active()).toBe(false);
     expect(await axeViolations(host)).toEqual([]);
+    pills[1].click();
+    expect(api.ask).toHaveBeenCalledWith('How many links do I have, by folder?', []);
   });
 
-  it('asks a question handed over from search, then offers "New conversation"', async () => {
+  it('pushes the conversation over the tab with Back and the question as the title', async () => {
     const { fixture, loader, api } = await setup();
     TestBed.inject(AskInbox).put('Which ramen recipes did I save?');
     await fixture.whenStable();
     expect(api.ask).toHaveBeenCalledWith('Which ramen recipes did I save?', []);
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('h1')?.textContent?.trim()).toBe('Which ramen recipes did I save?');
+    expect(TestBed.inject(PushedPage).active()).toBe(true);
     const answer = await loader.getHarness(UiStreamingAnswerHarness);
     expect(await answer.getQuestion()).toBe('Which ramen recipes did I save?');
-    const reset = await loader.getHarness(UiButtonHarness.with({ name: 'New conversation' }));
-    await reset.click();
+    await (await loader.getHarness(UiButtonHarness.with({ name: 'Back' }))).click();
+    await fixture.whenStable();
     expect(await loader.getAllHarnesses(UiStreamingAnswerHarness)).toEqual([]);
+    expect(TestBed.inject(PushedPage).active()).toBe(false);
   });
 
-  it('goes back to Library when Ask was the first page of the visit', async () => {
-    const { loader } = await setup();
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Back' }))).click();
-    await vi.waitFor(() => expect(TestBed.inject(Router).url).toBe('/library'));
-  });
-
-  it('goes back in history after an in-app navigation', async () => {
-    const { loader } = await setup();
-    const router = TestBed.inject(Router);
-    await router.navigateByUrl('/links');
-    await router.navigateByUrl('/ask');
-    const back = vi.spyOn(TestBed.inject(Location), 'back').mockImplementation(() => undefined);
-    await (await loader.getHarness(UiButtonHarness.with({ text: 'Back' }))).click();
-    expect(back).toHaveBeenCalled();
+  it('is no longer pushed once it leaves', async () => {
+    const { fixture } = await setup();
+    TestBed.inject(AskInbox).put('Which ramen recipes did I save?');
+    await fixture.whenStable();
+    fixture.destroy();
+    expect(TestBed.inject(PushedPage).active()).toBe(false);
   });
 
   it('hands over to the Ask panel from the desktop width', async () => {

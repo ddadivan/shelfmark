@@ -50,6 +50,7 @@ const meta: Meta<ListItemComponent> = {
     newTab: true,
     selected: false,
     compact: false,
+    tile: false,
     reveal: false,
     thumb: undefined,
     description: 'opens in a new tab',
@@ -106,6 +107,21 @@ export const Compact: Story = {
   render: (args) => ({
     props: withProps(args),
     template: rowTemplate(content('NestJS course for frontend developers', false, false)),
+  }),
+};
+
+/** `tile`: the link tile of an Ask answer (48 x 36 thumb, 12px title and meta, filled). */
+export const Tile: Story = {
+  args: { tile: true, thumb: CARD_STORY_IMAGE.Preview },
+  render: (args) => ({
+    props: withProps(args),
+    template: `
+      <div class="cs-list" style="max-width: 18rem">
+        <ui-list-item [href]="href" [newTab]="newTab" [selected]="selected" tile [thumb]="thumb">
+          <span slot="title">1. Optimistic Nihilism</span>
+          <span slot="meta">youtube.com · Watch later</span>
+        </ui-list-item>
+      </div>`,
   }),
 };
 

@@ -1,7 +1,6 @@
 @if (banner.bannerShown()) {
   <section
     class="extension-banner"
-    [class.extension-banner--popup]="viewport.wide()"
     aria-labelledby="extension-banner-title"
     animate.enter="extension-banner--enter"
     animate.leave="extension-banner--leave"
@@ -11,31 +10,20 @@
     </span>
     <div class="extension-banner__copy">
       <h2 id="extension-banner-title" class="extension-banner__title">
-        {{ 'library.extension.title' | transloco }}
+        {{ 'library.extension.title' | transloco }}.
       </h2>
       <p class="extension-banner__text">{{ 'library.extension.text' | transloco }}</p>
     </div>
     <ui-button
       class="extension-banner__install"
       newTab
-      wrap
-      iconRight="external"
       [variant]="BUTTON_VARIANT.Primary"
+      [size]="BUTTON_SIZE.Sm"
       [href]="banner.storeUrl"
       [ariaLabel]="'library.extension.installLabel' | transloco"
     >
       {{ 'library.extension.install' | transloco }}
     </ui-button>
-    @if (viewport.wide()) {
-      <img
-        class="extension-banner__popup"
-        alt=""
-        aria-hidden="true"
-        width="360"
-        height="520"
-        [ngSrc]="popupSrc()"
-      />
-    }
     <ui-button
       class="extension-banner__close"
       iconOnly
