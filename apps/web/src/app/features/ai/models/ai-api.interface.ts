@@ -72,10 +72,11 @@ export interface AiApi {
   /**
    * `POST /api/ai/ask` (AI-4, ADR 0052 and 0055): one chat turn as a stream of events, ending with
    * one `done` or `error`; `history` is the open chat's earlier turns (`done.turn`, at most
-   * `ASK_LIMIT.HistoryTurnsMax`). Errors (an `HttpErrorResponse`) only for a refused request (400,
+   * `ASK_LIMIT.HistoryTurnsMax`), `conversationId` the stored conversation it continues (the server
+   * then reads its own turns). Errors (an `HttpErrorResponse`) only for a refused request (400,
    * 401, 403, 429) or a broken connection; unsubscribing aborts the request.
    */
-  ask(question: string, history: readonly AskTurn[]): Observable<AskEvent>;
+  ask(question: string, history: readonly AskTurn[], conversationId?: string): Observable<AskEvent>;
   /**
    * `POST /api/ai/view-draft` (#535): turns a phrase into the filter of a new saved view; always 200
    * with an `outcome` while AI is on and the phrase is valid (3 to 200 characters after trimming),

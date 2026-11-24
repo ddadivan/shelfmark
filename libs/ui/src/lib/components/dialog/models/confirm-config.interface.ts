@@ -8,4 +8,9 @@ export interface ConfirmDialogConfig {
   readonly closeLabel?: string;
   /** Irreversible action: red confirm button, `alertdialog`, scrim does not close, Cancel has focus. */
   readonly destructive?: boolean;
+  /**
+   * Cancel takes focus without the destructive styling (a "Stay or leave?" question where staying
+   * is the safe answer). Esc and the scrim still answer `false`.
+   */
+  readonly focusCancel?: boolean;
 }

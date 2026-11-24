@@ -52,6 +52,7 @@ export function toStoredAiSettings(row: AiSettingsRow | null): StoredAiSettings 
         : AI_SETTINGS_DEFAULT.summaryLanguage,
       meaningSearch: row.meaningSearch,
       ask: row.ask,
+      askHistory: row.askHistory,
     },
     enabledAt: row.enabledAt,
     introSeenAt: row.introSeenAt,

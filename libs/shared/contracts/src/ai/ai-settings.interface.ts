@@ -23,7 +23,13 @@ export interface AiSettings {
   meaningSearch: boolean;
   /**
    * Ask your shelf (AI-4, ADR 0052): the question and the matching links go to the model when the
-   * user asks; nothing is stored. Default on, existing rows too.
+   * user asks. Default on, existing rows too.
    */
   ask: boolean;
+  /**
+   * Keep Ask history (ADR 0055 amendment, 2026-11-24): finished questions and answers are stored on
+   * the server for `ASK_HISTORY_LIMIT.RetentionDays` (links by id only). Off: nothing new is stored;
+   * what was stored stays until cleared. Default on.
+   */
+  askHistory: boolean;
 }

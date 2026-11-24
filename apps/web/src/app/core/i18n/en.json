@@ -670,7 +670,7 @@
       },
       "ask": {
         "term": "Ask your shelf:",
-        "text": "only when you ask a question, your question, the earlier questions and answers of the open chat and the links of yours that the assistant looks up with read-only search, count and list tools (title, address without its query, folder and tag names, summary, your note only with \"Include my notes\") are sent to [PROVIDER]. The answer cites and shows only your own links. Neither the questions, the answers nor the chat are stored, and closing the panel forgets the chat; we count only the number of questions per day and month (and how many got a deeper answer), for your limit."
+        "text": "only when you ask a question, your question, the earlier questions and answers of the open chat and the links of yours that the assistant looks up with read-only search, count and list tools (title, address without its query, folder and tag names, summary, your note only with \"Include my notes\") are sent to [PROVIDER]. The answer cites and shows only your own links. While \"Keep Ask history\" is on (the default), each finished question and answer is stored with your account so you can open the conversation again: the links only as references to your own links (never copies), at most 50 conversations, each deleted 30 days after its last question. You can delete one conversation or all of them, turn the history off in Settings › AI, and \"Delete AI data\" and deleting your account remove it; the data export includes it. Off, nothing is stored. We also count the number of questions per day and month (and how many got a deeper answer), for your limit."
       }
     },
     "retention": {
@@ -3804,7 +3804,14 @@
       },
       "ask": {
         "title": "Ask your shelf",
-        "text": "Answers questions from your own links, also follow-ups. Uses Claude by Anthropic: your question, the earlier turns of the open chat and the links it looks up are sent; nothing is stored."
+        "text": "Answers questions from your own links, also follow-ups. Uses Claude by Anthropic: your question, the earlier turns of the open chat and the links it looks up are sent. With Keep Ask history on, conversations are kept on your account for 30 days."
+      },
+      "askHistory": {
+        "title": "Keep Ask history",
+        "text": "Your questions and answers are kept on your account for 30 days, at most 50 conversations, so you can open them again on any device. Links are kept by reference only. Off: new conversations aren’t saved.",
+        "clear": "Clear Ask history",
+        "clearTitle": "Clear your Ask history?",
+        "clearMessage": "Every stored conversation is removed. This can’t be undone."
       }
     },
     "backfill": {
@@ -3866,7 +3873,7 @@
     "deleteData": {
       "confirm": {
         "title": "Delete AI data?",
-        "message": "Every summary and suggestion AI made is removed, and search by meaning turns off. Your own edits, tags and folders stay. This can’t be undone.",
+        "message": "Every summary and suggestion AI made and every stored Ask conversation are removed, and search by meaning turns off. Your own edits, tags and folders stay. This can’t be undone.",
         "confirm": "Delete AI data",
         "cancel": "Cancel",
         "close": "Close"
@@ -3906,7 +3913,7 @@
       },
       "ask": {
         "title": "Answers questions from your links",
-        "text": "Only when you ask: your question and the matching links go to the model. The answer lists its sources and nothing is stored. Turn it off on its own in Settings › AI."
+        "text": "Only when you ask: your question and the matching links go to the model. The answer lists its sources; conversations are kept on your account for 30 days unless you turn Ask history off. Turn it off on its own in Settings › AI."
       }
     },
     "suggest": {
@@ -4173,7 +4180,39 @@
         "one": "{{count}} found",
         "other": "{{count}} found"
       },
-      "openSearch": "Open search"
+      "openSearch": "Open search",
+      "history": {
+        "title": "Conversations",
+        "today": "Today",
+        "earlier": "Earlier",
+        "kept": "Kept on your account for 30 days.",
+        "off": "Keep Ask history is off: new conversations aren’t saved.",
+        "empty": "Your conversations show here.",
+        "failed": "Conversations couldn’t be loaded.",
+        "retry": "Try again",
+        "more": "Show more",
+        "delete": "Delete conversation",
+        "deleteTitle": "Delete this conversation?",
+        "deleteMessage": "“{{title}}” is removed from your Ask history.",
+        "deleteConfirm": "Delete",
+        "clear": "Clear all",
+        "clearTitle": "Clear all conversations?",
+        "clearMessage": "Every conversation is removed from your Ask history. This can’t be undone.",
+        "clearConfirm": "Clear all",
+        "cancel": "Cancel",
+        "openFailed": "This conversation couldn’t be opened.",
+        "openPage": "Open full page",
+        "deleted": "Conversation deleted",
+        "cleared": "Ask history cleared",
+        "close": "Close"
+      },
+      "leave": {
+        "title": "Leave this conversation?",
+        "streaming": "An answer is still being written. If you leave, it stops and this conversation is lost.",
+        "unsaved": "This conversation isn’t saved to your Ask history. If you leave, it’s gone.",
+        "stay": "Stay",
+        "leave": "Leave"
+      }
     },
     "connect": {
       "title": "Connect your assistant",

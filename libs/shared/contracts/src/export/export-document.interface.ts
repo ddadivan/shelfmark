@@ -1,3 +1,4 @@
+import type { ExportAskConversation } from './export-ask-conversation.interface';
 import type { ExportFolder } from './export-folder.interface';
 import type { ExportLink } from './export-link.interface';
 import type { ExportRule } from './export-rule.interface';
@@ -15,4 +16,9 @@ export interface ExportDocument {
    * schema version change: readers of version 1 may find the key missing.
    */
   rules: ExportRule[];
+  /**
+   * The stored Ask conversations (ADR 0055 amendment, 2026-11-24), newest first: all of them in a
+   * full export, none in a subset. Added without a schema version change (the key may be missing).
+   */
+  askConversations: ExportAskConversation[];
 }

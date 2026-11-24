@@ -28,6 +28,7 @@ export * from './lib/components/folder-chip';
 export * from './lib/components/folder-icon';
 export * from './lib/components/highlight';
 export * from './lib/components/history-row';
+export * from './lib/components/conversation-row';
 export * from './lib/components/icon';
 export * from './lib/components/icon-swap';
 export * from './lib/components/illustration';

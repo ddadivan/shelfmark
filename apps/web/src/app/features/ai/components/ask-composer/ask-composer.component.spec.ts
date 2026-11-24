@@ -54,6 +54,7 @@ function finish(stream: Subject<AskEvent>): void {
     allowance: ALLOWANCE,
     turn: { question: '', answer: '', links: [] },
     depth: 'quick',
+    conversationId: null,
   });
   stream.complete();
 }

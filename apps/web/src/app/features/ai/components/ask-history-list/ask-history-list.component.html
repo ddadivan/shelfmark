@@ -1,0 +1,71 @@
+<aside class="ask-history" [attr.aria-label]="'ai.ask.history.title' | transloco">
+  @if (!sheet()) {
+    <ui-button
+      class="ask-history__new"
+      variant="secondary"
+      size="sm"
+      iconLeft="add"
+      (click)="started.emit()"
+    >
+      {{ 'ai.ask.newChat' | transloco }}
+    </ui-button>
+  }
+  @for (group of store.groups(); track group.labelKey; let index = $index) {
+    <h2 class="ask-history__section" [id]="idBase + '-' + index">
+      {{ group.labelKey | transloco }}
+    </h2>
+    <div class="ask-history__rows" role="list" [attr.aria-labelledby]="idBase + '-' + index">
+      @for (item of group.items; track item.id) {
+        <ui-conversation-row
+          [href]="href(item.id)"
+          [current]="item.id === activeId()"
+          (activated)="open($event, item.id)"
+        >
+          {{ item.title }}
+          <ui-button
+            slot="actions"
+            variant="ghost"
+            size="sm"
+            iconLeft="trash"
+            iconOnly
+            [ariaLabel]="'ai.ask.history.delete' | transloco"
+            (click)="remove(item)"
+          />
+        </ui-conversation-row>
+      }
+    </div>
+  }
+  @if (store.failed()) {
+    <p class="ask-history__note" role="status">
+      {{ 'ai.ask.history.failed' | transloco }}
+      <ui-button variant="ghost" size="sm" (click)="store.load()">
+        {{ 'ai.ask.history.retry' | transloco }}
+      </ui-button>
+    </p>
+  } @else if (store.loaded() && store.items().length === 0) {
+    <p class="ask-history__note">{{ 'ai.ask.history.empty' | transloco }}</p>
+  }
+  @if (store.nextCursor() !== null) {
+    <ui-button
+      class="ask-history__more"
+      variant="ghost"
+      size="sm"
+      [loading]="store.loading()"
+      (click)="store.loadMore()"
+    >
+      {{ 'ai.ask.history.more' | transloco }}
+    </ui-button>
+  }
+  <div class="ask-history__foot">
+    <p class="ask-history__kept">
+      {{
+        (settings.settings().askHistory ? 'ai.ask.history.kept' : 'ai.ask.history.off') | transloco
+      }}
+    </p>
+    @if (store.items().length > 0) {
+      <ui-button variant="ghost" size="sm" (click)="clear()">
+        {{ 'ai.ask.history.clear' | transloco }}
+      </ui-button>
+    }
+  </div>
+</aside>

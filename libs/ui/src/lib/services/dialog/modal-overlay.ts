@@ -121,14 +121,12 @@ export function openModalOverlay<C, R, D>(
   cdkRef.keydownEvents.subscribe((event) => {
     if (event.key === KEYBOARD_KEY.Escape && options.dismissible && !event.defaultPrevented) {
       event.preventDefault();
-      if (!result.locked()) {
-        result.close();
-      }
+      void result.requestClose();
     }
   });
   cdkRef.backdropClick.subscribe(() => {
     if (options.dismissible && options.scrimClose && !result.locked()) {
-      result.close();
+      void result.requestClose();
     } else {
       // A click on the scrim must not leave focus on <body>. `_recaptureFocus` is internal CDK
       // API (no public equivalent; present in @angular/cdk 22.2.x): re-check on CDK upgrades.

@@ -13,4 +13,5 @@ export const AI_SETTINGS_DEFAULT: AiSettings = {
   summaryLanguage: AI_SUMMARY_LANGUAGE_APP,
   meaningSearch: true,
   ask: true,
+  askHistory: true,
 };

@@ -17,17 +17,60 @@
   margin-inline: auto;
 }
 
+// Shelf 11-ask `.askwrap` (from 64em): the 240px list beside the conversation, 24px apart, 16px
+// under the header; the conversation is at most 820px, centred in its column.
+.ask-page--desktop {
+  display: grid;
+  grid-template-columns: rem(240px) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+  max-width: none;
+
+  // 16px under the header (the shell column already has 24px on top).
+  margin-block-start: calc(-1 * var(--space-2));
+}
+
+.ask-page__history {
+  position: sticky;
+  inset-block-start: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ask-page__main {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ask-page--desktop .ask-page__main {
+  align-self: stretch;
+  width: 100%;
+  max-width: rem(820px);
+  margin-inline: auto;
+}
+
 .ask-page__hidden-title {
   @include visually-hidden;
 }
 
-// The pushed conversation's head: Back and the first question (16 / 600, one line).
+// The tab page's Conversations button (the list of the design's top bar), at the end.
+.ask-page__tools {
+  display: flex;
+  justify-content: flex-end;
+  margin-block: calc(-1 * var(--space-2)) 0;
+  margin-inline-end: calc(-1 * var(--space-2));
+}
+
+// The pushed conversation's head: Back, the first question (16 / 600, one line), New conversation.
 .ask-page__head {
   display: flex;
   gap: var(--space-1);
   align-items: center;
   margin-block: calc(-1 * var(--space-2)) 0;
-  margin-inline-start: calc(-1 * var(--space-2));
+  margin-inline: calc(-1 * var(--space-2));
 }
 
 .ask-page__title {
@@ -48,7 +91,8 @@
 
 // Shelf `sticky`: the composer at the bottom on a `bg` fade. On the tab page it stands 12px over
 // the tab bar; pushed (no tab bar) 16px over the edge. The shell's main column keeps
-// `$shell-tab-bar-room` of end padding for the tab bar either way.
+// `$shell-tab-bar-room` of end padding for the tab bar either way. From 64em it sits at the end
+// of the column (the shell keeps its own end padding).
 $ask-bar-offset-tabs: rem(8px + 64px + 12px) - $shell-tab-bar-room;
 $ask-bar-offset: rem(16px) - $shell-tab-bar-room;
 
@@ -64,4 +108,11 @@ $ask-bar-offset: rem(16px) - $shell-tab-bar-room;
 .ask-page--chat .ask-page__bar {
   inset-block-end: calc(#{$ask-bar-offset} + env(safe-area-inset-bottom));
   margin-block-end: $ask-bar-offset;
+}
+
+.ask-page--desktop .ask-page__bar,
+.ask-page--desktop.ask-page--chat .ask-page__bar {
+  inset-block-end: 0;
+  margin-block-end: 0;
+  padding-block-end: var(--space-2);
 }

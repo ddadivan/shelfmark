@@ -683,7 +683,7 @@
       },
       "ask": {
         "term": "Pergunte aos seus links:",
-        "text": "só quando você faz uma pergunta, são enviados para [PROVIDER] sua pergunta, as perguntas e respostas anteriores da conversa aberta e os seus links que o assistente consulta com ferramentas de busca, contagem e listagem somente leitura (título, endereço sem os parâmetros, nomes de pastas e tags, resumo, sua nota só com “Incluir minhas notas”). A resposta cita e mostra só os seus próprios links. Nem as perguntas, nem as respostas, nem a conversa são guardadas, e fechar o painel esquece a conversa; contamos só o número de perguntas por dia e por mês (e quantas receberam uma resposta mais detalhada), para o seu limite."
+        "text": "só quando você faz uma pergunta, são enviados para [PROVIDER] sua pergunta, as perguntas e respostas anteriores da conversa aberta e os seus links que o assistente consulta com ferramentas de busca, contagem e listagem somente leitura (título, endereço sem os parâmetros, nomes de pastas e tags, resumo, sua nota só com “Incluir minhas notas”). A resposta cita e mostra só os seus próprios links. Enquanto “Manter o histórico do Ask” estiver ativado (padrão), cada pergunta concluída e sua resposta ficam guardadas na sua conta para você abrir a conversa de novo: os links só como referências aos seus próprios links (nunca cópias), até 50 conversas, cada uma excluída 30 dias após a última pergunta. Você pode excluir uma conversa ou todas e desativar o histórico em Configurações › IA; “Excluir dados de IA” e excluir sua conta o removem, e a exportação de dados o inclui. Desativado, nada é guardado. Também contamos o número de perguntas por dia e por mês (e quantas receberam uma resposta mais detalhada), para o seu limite."
       }
     },
     "retention": {
@@ -3891,7 +3891,14 @@
       },
       "ask": {
         "title": "Pergunte aos seus links",
-        "text": "Responde perguntas a partir dos seus próprios links, inclusive as de acompanhamento. Usa o Claude da Anthropic: sua pergunta, as trocas anteriores da conversa aberta e os links consultados são enviados; nada é guardado."
+        "text": "Responde perguntas a partir dos seus próprios links, inclusive as de acompanhamento. Usa o Claude da Anthropic: sua pergunta, as trocas anteriores da conversa aberta e os links consultados são enviados. Com o histórico do Ask ativado, as conversas ficam na sua conta por 30 dias."
+      },
+      "askHistory": {
+        "title": "Manter o histórico do Ask",
+        "text": "Suas perguntas e respostas ficam na sua conta por 30 dias, até 50 conversas, para abrir de novo em qualquer dispositivo. Os links ficam só como referência. Desativado: novas conversas não são salvas.",
+        "clear": "Limpar o histórico do Ask",
+        "clearTitle": "Limpar seu histórico do Ask?",
+        "clearMessage": "Todas as conversas guardadas são removidas. Não dá para desfazer."
       }
     },
     "backfill": {
@@ -3957,7 +3964,7 @@
     "deleteData": {
       "confirm": {
         "title": "Excluir dados de IA?",
-        "message": "Todos os resumos e sugestões da IA são removidos, e a busca por significado é desativada. Suas edições, tags e pastas continuam. Não dá para desfazer.",
+        "message": "Todos os resumos e sugestões da IA e todas as conversas do Ask guardadas são removidos, e a busca por significado é desativada. Suas edições, tags e pastas continuam. Não dá para desfazer.",
         "confirm": "Excluir dados de IA",
         "cancel": "Cancelar",
         "close": "Fechar"
@@ -3997,7 +4004,7 @@
       },
       "ask": {
         "title": "Responde perguntas com seus links",
-        "text": "Só quando você pergunta: sua pergunta e os links relacionados vão para o modelo. A resposta lista as fontes e nada é guardado. Desative separadamente em Configurações › IA."
+        "text": "Só quando você pergunta: sua pergunta e os links relacionados vão para o modelo. A resposta lista as fontes; as conversas ficam na sua conta por 30 dias, a menos que você desative o histórico do Ask. Desative separadamente em Configurações › IA."
       }
     },
     "suggest": {
@@ -4279,7 +4286,39 @@
         "many": "{{count}} de encontrados",
         "other": "{{count}} encontrados"
       },
-      "openSearch": "Abrir a busca"
+      "openSearch": "Abrir a busca",
+      "history": {
+        "title": "Conversas",
+        "today": "Hoje",
+        "earlier": "Antes",
+        "kept": "Guardadas na sua conta por 30 dias.",
+        "off": "O histórico do Ask está desativado: novas conversas não são salvas.",
+        "empty": "Suas conversas aparecem aqui.",
+        "failed": "Não foi possível carregar as conversas.",
+        "retry": "Tentar de novo",
+        "more": "Mostrar mais",
+        "delete": "Excluir conversa",
+        "deleteTitle": "Excluir esta conversa?",
+        "deleteMessage": "“{{title}}” sai do seu histórico do Ask.",
+        "deleteConfirm": "Excluir",
+        "clear": "Limpar tudo",
+        "clearTitle": "Limpar todas as conversas?",
+        "clearMessage": "Todas as conversas saem do seu histórico do Ask. Não dá para desfazer.",
+        "clearConfirm": "Limpar tudo",
+        "cancel": "Cancelar",
+        "openFailed": "Não foi possível abrir esta conversa.",
+        "openPage": "Abrir em página inteira",
+        "deleted": "Conversa excluída",
+        "cleared": "Histórico do Ask limpo",
+        "close": "Fechar"
+      },
+      "leave": {
+        "title": "Sair desta conversa?",
+        "streaming": "Uma resposta ainda está sendo escrita. Se você sair, ela para e esta conversa se perde.",
+        "unsaved": "Esta conversa não está salva no seu histórico do Ask. Se você sair, ela se perde.",
+        "stay": "Ficar",
+        "leave": "Sair"
+      }
     },
     "connect": {
       "title": "Conecte seu assistente",

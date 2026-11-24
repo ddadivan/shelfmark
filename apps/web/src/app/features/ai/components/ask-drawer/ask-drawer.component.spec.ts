@@ -1,10 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { signal } from '@angular/core';
+import { signal, type Provider } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideTransloco, TranslocoService } from '@jsverse/transloco';
 import { ASK_PERIOD, type AskEvent, type LinkResponse } from '@shelfmark/contracts';
+import { DialogService, UiDialogRef, type ConfirmDialogConfig } from '@shelfmark/ui';
 import { UiButtonHarness, UiStreamingAnswerHarness } from '@shelfmark/ui/testing';
 import { firstValueFrom, Subject } from 'rxjs';
 import { axeViolations } from '../../../../../testing/axe';
@@ -30,7 +31,7 @@ const LINK = {
   tags: [],
 } as unknown as LinkResponse;
 
-async function setup() {
+async function setup(extra: Provider[] = []) {
   const api = fakeAiApi(aiSettingsResponse());
   const stream = new Subject<AskEvent>();
   api.ask.mockReturnValue(stream);
@@ -53,6 +54,7 @@ async function setup() {
         },
       },
       { provide: UserSettingsStore, useValue: { openInNewTab: signal(true) } },
+      ...extra,
     ],
   });
   await firstValueFrom(TestBed.inject(TranslocoService).load(APP_LANG.En));
@@ -112,6 +114,7 @@ describe('AskDrawerComponent', () => {
       allowance: ALLOWANCE,
       turn: { question: '', answer: '', links: [] },
       depth: 'quick',
+      conversationId: null,
     });
     stream.complete();
     await fixture.whenStable();
@@ -169,6 +172,8 @@ describe('AskDrawerComponent', () => {
         links: [{ n: 1, id: 'l1' }],
       },
       depth: 'quick',
+      // Stored on the server: New conversation asks nothing.
+      conversationId: '0192f3a4-5b6c-7d8e-9f01-23456789abcd',
     });
     stream.complete();
     await fixture.whenStable();
@@ -202,6 +207,7 @@ describe('AskDrawerComponent', () => {
       allowance: ALLOWANCE,
       turn: { question: '', answer: '', links: [] },
       depth: 'quick',
+      conversationId: null,
     });
     stream.complete();
     await fixture.whenStable();
@@ -280,6 +286,7 @@ describe('AskDrawerComponent', () => {
       allowance: ALLOWANCE,
       turn: { question: '', answer: '', links: [] },
       depth: 'quick',
+      conversationId: null,
     });
     second.complete();
     await fixture.whenStable();
@@ -304,6 +311,7 @@ describe('AskDrawerComponent', () => {
       allowance: ALLOWANCE,
       turn: { question, answer: '', links: [] },
       depth: 'quick',
+      conversationId: null,
     });
     stream.complete();
     await fixture.whenStable();
@@ -313,5 +321,99 @@ describe('AskDrawerComponent', () => {
     );
     await search.click();
     expect(navigate).toHaveBeenCalledWith(['/links'], { queryParams: { q: question } });
+  });
+
+  describe('leave guard (Ask history)', () => {
+    const done = (conversationId: string | null): AskEvent => ({
+      type: 'done',
+      sources: [],
+      notFound: false,
+      truncated: false,
+      allowance: ALLOWANCE,
+      turn: { question: 'find ramen', answer: 'Two links.', links: [] },
+      depth: 'quick',
+      conversationId,
+    });
+    const ID = '0192f3a4-5b6c-7d8e-9f01-23456789abcd';
+
+    async function guarded(answer: boolean) {
+      let guard: (() => boolean | Promise<boolean>) | null = null;
+      const ref = {
+        setCloseGuard: vi.fn((next: typeof guard) => {
+          guard = next;
+        }),
+        close: vi.fn(),
+        locked: () => false,
+        leaving: signal(false),
+      };
+      const dialogs = { confirm: vi.fn(async (_config: ConfirmDialogConfig) => answer) };
+      const context = await setup([
+        { provide: UiDialogRef, useValue: ref },
+        { provide: DialogService, useValue: dialogs },
+      ]);
+      const ask = async (event: AskEvent | null) => {
+        context.fixture.componentInstance['store'].ask('find ramen');
+        if (event !== null) context.stream.next(event);
+        await context.fixture.whenStable();
+      };
+      return { ...context, ref, dialogs, ask, guard: () => guard };
+    }
+
+    it('closes without asking while everything is stored or nothing was asked', async () => {
+      const { guard, dialogs, ask } = await guarded(false);
+      expect(await guard()?.()).toBe(true);
+      await ask(done(ID));
+      expect(await guard()?.()).toBe(true);
+      expect(dialogs.confirm).not.toHaveBeenCalled();
+    });
+
+    it('asks before closing while an answer streams: Stay keeps it open', async () => {
+      const { guard, dialogs, ask } = await guarded(false);
+      await ask(null);
+      expect(await guard()?.()).toBe(false);
+      expect(dialogs.confirm).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Leave this conversation?',
+          confirmLabel: 'Leave',
+          cancelLabel: 'Stay',
+          focusCancel: true,
+        }),
+      );
+      expect(dialogs.confirm.mock.calls[0]?.[0]).not.toHaveProperty('destructive');
+    });
+
+    it('asks before New conversation when the answer was not stored; Leave starts over', async () => {
+      const { dialogs, ask, fixture, loader } = await guarded(true);
+      await ask(done(null));
+      await (await loader.getHarness(UiButtonHarness.with({ name: 'New conversation' }))).click();
+      await fixture.whenStable();
+      expect(dialogs.confirm).toHaveBeenCalledWith(
+        expect.objectContaining({ message: expect.stringContaining('isn’t saved') }),
+      );
+      expect(fixture.componentInstance['store'].entries()).toEqual([]);
+    });
+
+    it('opens the full page with the stored conversation', async () => {
+      const navigate = vi.spyOn(Router.prototype, 'navigate').mockResolvedValue(true);
+      const { ref, ask, fixture, loader, dialogs } = await guarded(true);
+      await ask(done(ID));
+      await (await loader.getHarness(UiButtonHarness.with({ name: 'Open full page' }))).click();
+      await fixture.whenStable();
+      expect(dialogs.confirm).not.toHaveBeenCalled();
+      expect(ref.close).toHaveBeenCalled();
+      expect(navigate).toHaveBeenCalledWith(['/', 'ask'], { queryParams: { c: ID } });
+    });
+
+    it('lets the browser ask on tab close only while something is not stored', async () => {
+      const { ask } = await guarded(true);
+      const unload = () => {
+        const event = new Event('beforeunload', { cancelable: true });
+        window.dispatchEvent(event);
+        return event.defaultPrevented;
+      };
+      expect(unload()).toBe(false);
+      await ask(null);
+      expect(unload()).toBe(true);
+    });
   });
 });

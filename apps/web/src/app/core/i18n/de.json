@@ -670,7 +670,7 @@
       },
       "ask": {
         "term": "Frag deine Links:",
-        "text": "nur wenn du eine Frage stellst, werden deine Frage, die bisherigen Fragen und Antworten der offenen Unterhaltung und die Links von dir, die der Assistent mit Such-, Zähl- und Listenwerkzeugen nur lesend abruft (Titel, Adresse ohne Abfrageteil, Ordner- und Tag-Namen, Zusammenfassung, deine Notiz nur mit „Meine Notizen einbeziehen“), an [PROVIDER] gesendet. Die Antwort zitiert und zeigt nur deine eigenen Links. Weder die Fragen noch die Antworten noch die Unterhaltung werden gespeichert, und beim Schließen des Bereichs wird die Unterhaltung vergessen; wir zählen nur die Fragen pro Tag und Monat (und wie viele eine ausführlichere Antwort bekamen), für dein Limit."
+        "text": "nur wenn du eine Frage stellst, werden deine Frage, die bisherigen Fragen und Antworten der offenen Unterhaltung und die Links von dir, die der Assistent mit Such-, Zähl- und Listenwerkzeugen nur lesend abruft (Titel, Adresse ohne Abfrageteil, Ordner- und Tag-Namen, Zusammenfassung, deine Notiz nur mit „Meine Notizen einbeziehen“), an [PROVIDER] gesendet. Die Antwort zitiert und zeigt nur deine eigenen Links. Solange „Ask-Verlauf behalten“ an ist (Standard), wird jede beantwortete Frage mit ihrer Antwort in deinem Konto gespeichert, damit du die Unterhaltung wieder öffnen kannst: Links nur als Verweise auf deine eigenen Links (nie als Kopie), höchstens 50 Unterhaltungen, jede 30 Tage nach ihrer letzten Frage gelöscht. Du kannst eine oder alle Unterhaltungen löschen und den Verlauf unter Einstellungen › KI ausschalten; „KI-Daten löschen“ und das Löschen deines Kontos entfernen ihn, der Datenexport enthält ihn. Aus wird nichts gespeichert. Außerdem zählen wir die Fragen pro Tag und Monat (und wie viele eine ausführlichere Antwort bekamen), für dein Limit."
       }
     },
     "retention": {
@@ -3804,7 +3804,14 @@
       },
       "ask": {
         "title": "Frag deine Links",
-        "text": "Beantwortet Fragen aus deinen eigenen Links, auch Rückfragen. Nutzt Claude von Anthropic: Deine Frage, die bisherigen Beiträge der offenen Unterhaltung und die nachgeschlagenen Links werden gesendet; nichts wird gespeichert."
+        "text": "Beantwortet Fragen aus deinen eigenen Links, auch Rückfragen. Nutzt Claude von Anthropic: Deine Frage, die bisherigen Beiträge der offenen Unterhaltung und die nachgeschlagenen Links werden gesendet. Mit Ask-Verlauf bleiben Unterhaltungen 30 Tage in deinem Konto."
+      },
+      "askHistory": {
+        "title": "Ask-Verlauf behalten",
+        "text": "Deine Fragen und Antworten bleiben 30 Tage in deinem Konto, höchstens 50 Unterhaltungen, damit du sie auf jedem Gerät wieder öffnen kannst. Links werden nur als Verweis gespeichert. Aus: Neue Unterhaltungen werden nicht gespeichert.",
+        "clear": "Ask-Verlauf löschen",
+        "clearTitle": "Deinen Ask-Verlauf löschen?",
+        "clearMessage": "Alle gespeicherten Unterhaltungen werden entfernt. Das lässt sich nicht rückgängig machen."
       }
     },
     "backfill": {
@@ -3866,7 +3873,7 @@
     "deleteData": {
       "confirm": {
         "title": "KI-Daten löschen?",
-        "message": "Alle Zusammenfassungen und Vorschläge der KI werden entfernt, und die Suche nach Bedeutung wird ausgeschaltet. Deine eigenen Änderungen, Tags und Ordner bleiben. Das lässt sich nicht rückgängig machen.",
+        "message": "Alle Zusammenfassungen und Vorschläge der KI und alle gespeicherten Ask-Unterhaltungen werden entfernt, und die Suche nach Bedeutung wird ausgeschaltet. Deine eigenen Änderungen, Tags und Ordner bleiben. Das lässt sich nicht rückgängig machen.",
         "confirm": "KI-Daten löschen",
         "cancel": "Abbrechen",
         "close": "Schließen"
@@ -3906,7 +3913,7 @@
       },
       "ask": {
         "title": "Beantwortet Fragen aus deinen Links",
-        "text": "Nur wenn du fragst: Deine Frage und die passenden Links gehen an das Modell. Die Antwort nennt ihre Quellen, nichts wird gespeichert. Einzeln ausschaltbar unter Einstellungen › KI."
+        "text": "Nur wenn du fragst: Deine Frage und die passenden Links gehen an das Modell. Die Antwort nennt ihre Quellen; Unterhaltungen bleiben 30 Tage in deinem Konto, außer du schaltest den Ask-Verlauf aus. Einzeln ausschaltbar unter Einstellungen › KI."
       }
     },
     "suggest": {
@@ -4173,7 +4180,39 @@
         "one": "{{count}} gefunden",
         "other": "{{count}} gefunden"
       },
-      "openSearch": "Suche öffnen"
+      "openSearch": "Suche öffnen",
+      "history": {
+        "title": "Unterhaltungen",
+        "today": "Heute",
+        "earlier": "Früher",
+        "kept": "30 Tage in deinem Konto gespeichert.",
+        "off": "Ask-Verlauf ist aus: Neue Unterhaltungen werden nicht gespeichert.",
+        "empty": "Hier erscheinen deine Unterhaltungen.",
+        "failed": "Unterhaltungen konnten nicht geladen werden.",
+        "retry": "Erneut versuchen",
+        "more": "Mehr anzeigen",
+        "delete": "Unterhaltung löschen",
+        "deleteTitle": "Diese Unterhaltung löschen?",
+        "deleteMessage": "„{{title}}“ wird aus deinem Ask-Verlauf entfernt.",
+        "deleteConfirm": "Löschen",
+        "clear": "Alle löschen",
+        "clearTitle": "Alle Unterhaltungen löschen?",
+        "clearMessage": "Alle Unterhaltungen werden aus deinem Ask-Verlauf entfernt. Das lässt sich nicht rückgängig machen.",
+        "clearConfirm": "Alle löschen",
+        "cancel": "Abbrechen",
+        "openFailed": "Diese Unterhaltung konnte nicht geöffnet werden.",
+        "openPage": "Als ganze Seite öffnen",
+        "deleted": "Unterhaltung gelöscht",
+        "cleared": "Ask-Verlauf gelöscht",
+        "close": "Schließen"
+      },
+      "leave": {
+        "title": "Diese Unterhaltung verlassen?",
+        "streaming": "Eine Antwort wird noch geschrieben. Wenn du gehst, bricht sie ab und die Unterhaltung ist weg.",
+        "unsaved": "Diese Unterhaltung ist nicht in deinem Ask-Verlauf gespeichert. Wenn du gehst, ist sie weg.",
+        "stay": "Bleiben",
+        "leave": "Verlassen"
+      }
     },
     "connect": {
       "title": "Assistenten verbinden",

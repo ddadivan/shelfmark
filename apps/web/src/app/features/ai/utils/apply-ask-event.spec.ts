@@ -11,6 +11,7 @@ const ENTRY: AskEntry = {
   segments: [],
   sources: [],
   sourcesKnown: false,
+  persisted: false,
   notFound: false,
   truncated: false,
   reason: null,
@@ -38,6 +39,7 @@ describe('applyAskEvent', () => {
       allowance: ALLOWANCE,
       turn: { question: '', answer: '', links: [] },
       depth: 'quick',
+      conversationId: null,
     });
     expect(entry).toMatchObject({ state: 'done', notFound: true, truncated: true });
   });
@@ -120,6 +122,7 @@ describe('applyAskEvent for the chat events (ADR 0055)', () => {
       allowance: ALLOWANCE,
       turn,
       depth: 'quick',
+      conversationId: null,
     });
     expect(entry.turn).toEqual(turn);
     expect(endAskEntry({ ...ENTRY, cards: entry.cards }).state).toBe(ASK_ENTRY_STATE.Done);

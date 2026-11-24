@@ -13,4 +13,6 @@ export const CRON_ROUTE = {
   NotificationsPath: CRON_ENDPOINT.Notifications,
   AccountPurge: 'account-purge',
   AccountPurgePath: CRON_ENDPOINT.AccountPurge,
+  AskHistoryPurge: 'ask-history',
+  AskHistoryPurgePath: CRON_ENDPOINT.AskHistoryPurge,
 } as const;

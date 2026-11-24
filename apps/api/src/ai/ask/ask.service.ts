@@ -36,6 +36,8 @@ import {
 import { buildAskMessages } from '../prompt/build-ask-messages';
 import { AiProviderRegistry } from '../providers/ai-provider.registry';
 import { AiSettingsService } from '../settings/ai-settings.service';
+import { AskHistoryService } from '../history/ask-history.service';
+import type { AskRecording } from '../models/ask-recording.interface';
 import { AskEscalation } from './ask-escalation';
 import { AskLoop } from './ask-loop';
 import { askDay, AskUsageService } from './ask-usage.service';
@@ -73,6 +75,33 @@ function trackProgress(sink: AskSink, progress: AskProgress): AskSink {
 }
 
 /**
+ * The sink, recording the finished steps and the card groups that went out (for the stored turn;
+ * card items by marker number only).
+ */
+function recordEvents(sink: AskSink, recording: AskRecording): AskSink {
+  return {
+    get closed() {
+      return sink.closed;
+    },
+    send(event) {
+      if (event.type === ASK_EVENT_TYPE.Activity && event.phase === ASK_ACTIVITY_PHASE.End) {
+        recording.steps.push({ activity: event.activity, found: event.found });
+      } else if (event.type === ASK_EVENT_TYPE.Links) {
+        recording.cards.push({
+          n: event.items.map((item) => item.n),
+          total: event.total,
+          search: event.search,
+        });
+      }
+      sink.send(event);
+    },
+    onAbort(listener) {
+      sink.onAbort(listener);
+    },
+  };
+}
+
+/**
  * `POST /api/ai/ask` (F4, ADR 0052 and 0055): one turn of a chat over the session user's own links,
  * streamed as events. Order: AI and Ask on (else `off`) → the lease (else `busy`) → the history
  * re-read for the session user (refs first) → reserve one question (else `quota`) → `meta` → the
@@ -82,8 +111,14 @@ function trackProgress(sink: AskSink, progress: AskProgress): AskSink {
  * One question is one count whatever the rounds, tools or escalation. It is refunded (with a reserved
  * deep answer) when nothing reached the client (no text and no cards: failure, refusal, a deadline,
  * a client gone); once something arrived it counts. Any other exception after the reserve refunds
- * unless text was sent and ends the stream with `error` `unavailable`. Nothing is stored; the log line
- * carries counts, durations and tokens, never the question, history, tool arguments, results or answer.
+ * unless text was sent and ends the stream with `error` `unavailable`. The log line carries counts,
+ * durations and tokens, never the question, history, tool arguments, results or answer.
+ *
+ * Ask history (ADR 0055 amendment, 2026-11-24): while "Keep Ask history" is on, a `conversationId`
+ * of the user makes the server read the earlier turns from its own store (the client's `history` is
+ * ignored; an unknown id starts a new conversation with the client's history), and a turn that
+ * reaches `done` is appended by `AskHistoryService` from what the server streamed (never from the
+ * client); `done.conversationId` names it. A failed write is logged by error name and answers `null`.
  */
 @Injectable()
 export class AskService {
@@ -96,6 +131,7 @@ export class AskService {
     private readonly registry: AiProviderRegistry,
     private readonly tools: AskToolRegistry,
     private readonly usage: AskUsageService,
+    private readonly askHistory: AskHistoryService,
     @Inject(ASK_DEADLINES) private readonly deadlines: AskDeadlines,
   ) {}
 
@@ -149,13 +185,14 @@ export class AskService {
       const includeNotes = stored.settings.includeNotes;
       const status = await this.searchStatus.status(userId, stored, tier);
       const refs = new LinkRefs();
-      const history = await hydrateAskHistory(
-        this.prisma,
-        userId,
-        request.history,
-        refs,
-        includeNotes,
-      );
+      const keepHistory = stored.settings.askHistory;
+      const wanted = keepHistory ? (request.conversationId ?? null) : null;
+      const storedTurns =
+        wanted === null ? null : await this.askHistory.storedHistory(userId, wanted);
+      const conversationId = storedTurns === null ? null : wanted;
+      const turns = storedTurns ?? request.history;
+      log.history = turns.length;
+      const history = await hydrateAskHistory(this.prisma, userId, turns, refs, includeNotes);
       if (sink.closed) {
         log.outcome = 'client';
         return;
@@ -167,7 +204,8 @@ export class AskService {
         return;
       }
       const progress: AskProgress = { text: false, ended: false };
-      const tracked = trackProgress(sink, progress);
+      const recording: AskRecording = { steps: [], cards: [] };
+      const tracked = recordEvents(trackProgress(sink, progress), recording);
       const run: AskRun = {
         user,
         tier,
@@ -181,6 +219,9 @@ export class AskService {
         started,
         log,
         refunded: false,
+        keepHistory,
+        conversationId,
+        recording,
       };
       const citations = new CitationStream((ref) => refs.has(ref));
       const escalation = new AskEscalation(
@@ -376,18 +417,46 @@ export class AskService {
         .slice(0, ASK_LIMIT.LinksPerTurnMax)
         .map((source) => ({ n: source.n, id: source.link.id })),
     };
+    const notFound =
+      searches.length > 0 &&
+      searches.every((search) => search.total === 0) &&
+      citations.cited.length === 0;
+    const conversationId = await this.store(run, turn, notFound, truncated);
     sink.send({
       type: ASK_EVENT_TYPE.Done,
       sources,
-      notFound:
-        searches.length > 0 &&
-        searches.every((search) => search.total === 0) &&
-        citations.cited.length === 0,
+      notFound,
       truncated,
       allowance: await this.usage.allowance(userId, run.tier),
       turn,
       depth: log.depth,
+      conversationId,
     });
+  }
+
+  /** Appends the finished turn to the Ask history while it is kept; `null` when not stored. */
+  private async store(
+    run: AskRun,
+    turn: AskTurn,
+    notFound: boolean,
+    truncated: boolean,
+  ): Promise<string | null> {
+    if (!run.keepHistory) return null;
+    try {
+      return await this.askHistory.append(run.user.id, run.conversationId, {
+        turn,
+        steps: run.recording.steps,
+        cards: run.recording.cards,
+        notFound,
+        truncated,
+        depth: run.log.depth,
+      });
+    } catch (error: unknown) {
+      this.logger.warn(
+        `Ask history write failed: ${error instanceof Error ? error.name : 'unknown error'}`,
+      );
+      return null;
+    }
   }
 
   /** The session user's live links of these refs, as the web shows them; others left out. */

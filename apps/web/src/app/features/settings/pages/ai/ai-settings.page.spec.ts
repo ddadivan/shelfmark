@@ -22,6 +22,7 @@ import { LinksStore } from '../../../../stores/links.store';
 import { AiIntroDialogComponent } from '../../../ai/components/ai-intro-dialog/ai-intro-dialog.component';
 import { AI_API } from '../../../ai/models/ai-api.const';
 import { MCP_API } from '../../../ai/connect/models/mcp-api.const';
+import { ASK_HISTORY_API } from '../../../ai/models/ask-history-api.const';
 import { AI_SETTINGS_DEFAULT } from '../../../ai/models/ai-settings-default.const';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
 import AiSettingsPage from './ai-settings.page';
@@ -111,6 +112,15 @@ async function setup(
     providers: [
       { provide: AI_API, useValue: api },
       { provide: MCP_API, useValue: fakeMcpApi() },
+      {
+        provide: ASK_HISTORY_API,
+        useValue: {
+          list: vi.fn(),
+          get: vi.fn(),
+          remove: vi.fn(),
+          clear: vi.fn(() => of({ deleted: 0 })),
+        },
+      },
       { provide: DialogService, useValue: { confirm, open } },
       { provide: LinksStore, useValue: { refresh } },
       {
@@ -290,13 +300,24 @@ describe('AiSettingsPage', () => {
       root.querySelector<HTMLButtonElement>('button[role="switch"][aria-label="Ask your shelf"]');
     const row = askSwitch()?.closest('ui-settings-row');
     expect(row?.textContent).toContain('Uses Claude by Anthropic');
-    expect(row?.textContent).toContain('nothing is stored');
+    expect(row?.textContent).toContain('kept on your account for 30 days');
     expect(row?.textContent).toContain('12 questions left today');
     askSwitch()?.click();
     await settle();
     expect(api.updateSettings).toHaveBeenLastCalledWith({ ask: false });
     expect(askSwitch()?.getAttribute('aria-checked')).toBe('false');
     expect(askSwitch()?.closest('ui-settings-row')?.textContent).not.toContain('questions left');
+  });
+
+  it('saves Keep Ask history at once (on by default)', async () => {
+    const { root, api, settle } = await setup({ initial: response(ON) });
+    const historySwitch = (): HTMLButtonElement | null =>
+      root.querySelector<HTMLButtonElement>('button[role="switch"][aria-label="Keep Ask history"]');
+    expect(historySwitch()?.getAttribute('aria-checked')).toBe('true');
+    expect(historySwitch()?.closest('ui-settings-row')?.textContent).toContain('Clear Ask history');
+    historySwitch()?.click();
+    await settle();
+    expect(api.updateSettings).toHaveBeenLastCalledWith({ askHistory: false });
   });
 
   it('says Ready, or paused until the reset day at the limit', async () => {

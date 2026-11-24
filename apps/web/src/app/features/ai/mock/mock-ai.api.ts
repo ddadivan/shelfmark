@@ -31,6 +31,7 @@ import { MOCK_LATENCY_MS } from '../../links/models/mock-latency.const';
 import type { AiApi } from '../models/ai-api.interface';
 import { isAiFeatureMode } from '../utils/ai-setting-values';
 import { MockAiAsk } from './mock-ai-ask';
+import { MockAskHistory } from './mock-ask-history';
 import { MockAiViewDraft } from './mock-ai-view-draft';
 import { MockAiData } from './mock-ai-data';
 import { meaningQueryProblems, MockAiMeaning } from './mock-ai-meaning';
@@ -90,6 +91,7 @@ export class MockAiApi implements AiApi {
   private readonly tidy = inject(MockAiTidy);
   private readonly meaning = inject(MockAiMeaning);
   private readonly asking = inject(MockAiAsk);
+  private readonly askHistory = inject(MockAskHistory);
   private readonly viewDraft = inject(MockAiViewDraft);
   private readonly cleanup = inject(MockCleanupData);
 
@@ -156,6 +158,8 @@ export class MockAiApi implements AiApi {
     return defer(() => {
       this.data.deleteData();
       this.cleanup.reset();
+      // Ask history (ADR 0055 amendment): Delete AI data removes the stored conversations.
+      this.askHistory.clear();
       return of(undefined);
     }).pipe(delay(MOCK_LATENCY_MS.Create));
   }
@@ -241,8 +245,12 @@ export class MockAiApi implements AiApi {
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
-  ask(question: string, history: readonly AskTurn[]): Observable<AskEvent> {
-    return this.asking.ask(question, history);
+  ask(
+    question: string,
+    history: readonly AskTurn[],
+    conversationId?: string,
+  ): Observable<AskEvent> {
+    return this.asking.ask(question, history, conversationId);
   }
 
   draftView(phrase: string): Observable<ViewDraftResponse> {

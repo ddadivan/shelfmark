@@ -9,10 +9,19 @@
 >
   <div slot="head" class="ask-drawer__head">
     @if (store.entries().length > 0) {
-      <ui-button variant="secondary" size="sm" iconLeft="add" (click)="store.reset()">
+      <ui-button variant="secondary" size="sm" iconLeft="add" (click)="startOver()">
         {{ 'ai.ask.newChat' | transloco }}
       </ui-button>
     }
+    <ui-button
+      class="ask-drawer__page"
+      variant="ghost"
+      size="sm"
+      iconOnly
+      iconLeft="expand"
+      [ariaLabel]="'ai.ask.history.openPage' | transloco"
+      (click)="openPage()"
+    />
   </div>
   <app-ask-conversation />
   <app-ask-composer slot="foot" />

@@ -683,7 +683,7 @@
       },
       "ask": {
         "term": "Pregunta a tus enlaces:",
-        "text": "solo cuando haces una pregunta, se envían a [PROVIDER] tu pregunta, las preguntas y respuestas anteriores de la conversación abierta y los enlaces tuyos que el asistente consulta con herramientas de búsqueda, recuento y listado de solo lectura (título, dirección sin sus parámetros, nombres de carpetas y etiquetas, resumen, tu nota solo con «Incluir mis notas»). La respuesta cita y muestra solo tus propios enlaces. No se guardan ni las preguntas, ni las respuestas, ni la conversación, y al cerrar el panel la conversación se olvida; solo contamos el número de preguntas por día y por mes (y cuántas recibieron una respuesta más detallada), para tu límite."
+        "text": "solo cuando haces una pregunta, se envían a [PROVIDER] tu pregunta, las preguntas y respuestas anteriores de la conversación abierta y los enlaces tuyos que el asistente consulta con herramientas de búsqueda, recuento y listado de solo lectura (título, dirección sin sus parámetros, nombres de carpetas y etiquetas, resumen, tu nota solo con «Incluir mis notas»). La respuesta cita y muestra solo tus propios enlaces. Mientras «Guardar el historial de Ask» esté activado (por defecto), cada pregunta terminada y su respuesta se guardan con tu cuenta para volver a abrir la conversación: los enlaces solo como referencias a tus propios enlaces (nunca copias), hasta 50 conversaciones, cada una se elimina 30 días después de su última pregunta. Puedes eliminar una conversación o todas y desactivar el historial en Ajustes › IA; «Eliminar datos de IA» y eliminar tu cuenta lo borran, y la exportación de datos lo incluye. Desactivado, no se guarda nada. También contamos el número de preguntas por día y por mes (y cuántas recibieron una respuesta más detallada), para tu límite."
       }
     },
     "retention": {
@@ -3891,7 +3891,14 @@
       },
       "ask": {
         "title": "Pregunta a tus enlaces",
-        "text": "Responde preguntas a partir de tus propios enlaces, también las de seguimiento. Usa Claude de Anthropic: se envían tu pregunta, los turnos anteriores de la conversación abierta y los enlaces que consulta; no se guarda nada."
+        "text": "Responde preguntas a partir de tus propios enlaces, también las de seguimiento. Usa Claude de Anthropic: se envían tu pregunta, los turnos anteriores de la conversación abierta y los enlaces que consulta. Con el historial de Ask activado, las conversaciones se guardan en tu cuenta durante 30 días."
+      },
+      "askHistory": {
+        "title": "Guardar el historial de Ask",
+        "text": "Tus preguntas y respuestas se guardan en tu cuenta durante 30 días, hasta 50 conversaciones, para volver a abrirlas en cualquier dispositivo. Los enlaces solo se guardan como referencia. Desactivado: las conversaciones nuevas no se guardan.",
+        "clear": "Borrar el historial de Ask",
+        "clearTitle": "¿Borrar tu historial de Ask?",
+        "clearMessage": "Se eliminan todas las conversaciones guardadas. No se puede deshacer."
       }
     },
     "backfill": {
@@ -3957,7 +3964,7 @@
     "deleteData": {
       "confirm": {
         "title": "¿Eliminar los datos de IA?",
-        "message": "Se eliminan todos los resúmenes y sugerencias de la IA y se desactiva la búsqueda por significado. Tus cambios, etiquetas y carpetas se mantienen. No se puede deshacer.",
+        "message": "Se eliminan todos los resúmenes y sugerencias de la IA y todas las conversaciones de Ask guardadas, y se desactiva la búsqueda por significado. Tus cambios, etiquetas y carpetas se mantienen. No se puede deshacer.",
         "confirm": "Eliminar datos de IA",
         "cancel": "Cancelar",
         "close": "Cerrar"
@@ -3997,7 +4004,7 @@
       },
       "ask": {
         "title": "Responde preguntas con tus enlaces",
-        "text": "Solo cuando preguntas: tu pregunta y los enlaces relacionados van al modelo. La respuesta indica sus fuentes y no se guarda nada. Desactívalo por separado en Ajustes › IA."
+        "text": "Solo cuando preguntas: tu pregunta y los enlaces relacionados van al modelo. La respuesta indica sus fuentes; las conversaciones se guardan en tu cuenta durante 30 días salvo que desactives el historial de Ask. Desactívalo por separado en Ajustes › IA."
       }
     },
     "suggest": {
@@ -4279,7 +4286,39 @@
         "many": "{{count}} de encontrados",
         "other": "{{count}} encontrados"
       },
-      "openSearch": "Abrir la búsqueda"
+      "openSearch": "Abrir la búsqueda",
+      "history": {
+        "title": "Conversaciones",
+        "today": "Hoy",
+        "earlier": "Antes",
+        "kept": "Se guardan en tu cuenta durante 30 días.",
+        "off": "El historial de Ask está desactivado: las conversaciones nuevas no se guardan.",
+        "empty": "Aquí aparecen tus conversaciones.",
+        "failed": "No se pudieron cargar las conversaciones.",
+        "retry": "Reintentar",
+        "more": "Ver más",
+        "delete": "Eliminar conversación",
+        "deleteTitle": "¿Eliminar esta conversación?",
+        "deleteMessage": "«{{title}}» se quita de tu historial de Ask.",
+        "deleteConfirm": "Eliminar",
+        "clear": "Borrar todo",
+        "clearTitle": "¿Borrar todas las conversaciones?",
+        "clearMessage": "Se quitan todas las conversaciones de tu historial de Ask. No se puede deshacer.",
+        "clearConfirm": "Borrar todo",
+        "cancel": "Cancelar",
+        "openFailed": "No se pudo abrir esta conversación.",
+        "openPage": "Abrir a página completa",
+        "deleted": "Conversación eliminada",
+        "cleared": "Historial de Ask borrado",
+        "close": "Cerrar"
+      },
+      "leave": {
+        "title": "¿Salir de esta conversación?",
+        "streaming": "Todavía se está escribiendo una respuesta. Si sales, se detiene y esta conversación se pierde.",
+        "unsaved": "Esta conversación no está guardada en tu historial de Ask. Si sales, se pierde.",
+        "stay": "Quedarme",
+        "leave": "Salir"
+      }
     },
     "connect": {
       "title": "Conecta tu asistente",

@@ -26,6 +26,7 @@ import { MockAiData } from './mock-ai-data';
 import { MockAiTidy } from './mock-ai-tidy';
 import { MockAiMeaning } from './mock-ai-meaning';
 import { MockAiAsk } from './mock-ai-ask';
+import { MockAskHistory } from './mock-ask-history';
 import { MockAiViewDraft } from './mock-ai-view-draft';
 import { MOCK_AI_TIMING } from './models/mock-ai-timing.const';
 
@@ -54,6 +55,7 @@ function setup() {
       MockAiTidy,
       MockAiMeaning,
       MockAiAsk,
+      MockAskHistory,
       MockAiViewDraft,
       MockCleanupData,
     ],
