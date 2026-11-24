@@ -130,7 +130,9 @@ test.describe('saved views (mock API)', () => {
 
     await page.getByRole('button', { name: 'More view options' }).focus();
     await page.keyboard.press('Enter');
-    await page.getByRole('menuitem', { name: 'Save this view' }).focus();
+    // Typeahead moves the menu's active item (focus() alone would not tell Angular Aria).
+    await page.keyboard.type('Save this');
+    await expect(page.getByRole('menuitem', { name: 'Save this view' })).toBeFocused();
     await page.keyboard.press('Enter');
     const dialog = page.getByRole('dialog', { name: 'New view' });
     await dialog.getByRole('textbox', { name: 'Name' }).fill('Keyboard view');

@@ -3,7 +3,7 @@ import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 
 // #556: Pinned, Folders and Tags fold under their heading in the desktop sidebar, and this device
-// remembers which ones (all open at first).
+// remembers which ones (Shelf: Tags folded at first, the others open).
 test.describe('foldable sidebar sections (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
@@ -30,9 +30,12 @@ test.describe('foldable sidebar sections (mock API)', () => {
     const pinnedToggle = sidebar.getByRole('button', { name: 'Show or hide pinned' });
     const foldersToggle = sidebar.getByRole('button', { name: 'Show or hide folders' });
     const tagsToggle = sidebar.getByRole('button', { name: 'Show or hide tags' });
-    for (const toggle of [pinnedToggle, foldersToggle, tagsToggle]) {
+    for (const toggle of [pinnedToggle, foldersToggle]) {
       await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     }
+    await expect(tagsToggle).toHaveAttribute('aria-expanded', 'false');
+    await tagsToggle.click();
+    await expect(tagsToggle).toHaveAttribute('aria-expanded', 'true');
 
     await foldersToggle.click();
     await expect(foldersToggle).toHaveAttribute('aria-expanded', 'false');
