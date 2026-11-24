@@ -158,6 +158,26 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 /* proto */
 .proto{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;gap:6px;align-items:center;padding:4px 4px 4px 12px;border-radius:12px;background:var(--surface);box-shadow:var(--shadow2),0 0 0 1px var(--sep);font-size:12px;color:var(--muted)}
 .proto button{height:28px;padding:0 10px;border-radius:8px;background:var(--fill);font-size:12px}.proto button[aria-pressed="true"]{background:var(--text);color:var(--bg)}
+
+/* motion: reveal on scroll (only for blocks below the first screen at load), hero entrance, smooth feed */
+.rv{transition:opacity 700ms cubic-bezier(.2,.7,.2,1),transform 700ms cubic-bezier(.2,.7,.2,1)}
+.rv.pre{opacity:0;transform:translateY(28px)}
+.rv.pre.scale{transform:translateY(20px) scale(.97)}
+.hero h1 span,.hero .lead,.hero .cta,.hero .hnote,.hero .app{animation:rise 800ms cubic-bezier(.2,.7,.2,1) both}
+.hero h1 span:nth-child(2){animation-delay:90ms}.hero h1 span:nth-child(3){animation-delay:180ms}.hero .lead{animation-delay:260ms}.hero .cta{animation-delay:340ms}.hero .hnote{animation-delay:400ms}.hero .app{animation-delay:200ms;animation-duration:1000ms}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.app .grid{transition:opacity 260ms ease}
+.mc{view-transition-class:card}
+::view-transition-group(*.card){animation-duration:520ms;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-old(*.card),::view-transition-new(*.card){animation-duration:320ms}
+.app .grid.fade{opacity:0}
+.toast{animation:none}
+.toast.show{animation:toastin 500ms cubic-bezier(.2,.8,.2,1) both}
+.toast.hidden{opacity:0;transform:translate(-50%,16px);transition:opacity 300ms,transform 300ms}
+.mess>*{transition:translate 900ms cubic-bezier(.2,.7,.2,1)}
+.ba .after .rw{transition:opacity 600ms cubic-bezier(.2,.7,.2,1),transform 600ms cubic-bezier(.2,.7,.2,1)}
+.tile{transition:box-shadow 250ms,transform 250ms,opacity 700ms cubic-bezier(.2,.7,.2,1)}.tile:hover{box-shadow:var(--shadow);transform:translateY(-3px)}
+.tile.rv.pre:hover{transform:translateY(28px)}
 @media (max-width:900px){.hero .wrap,.two,.why{grid-template-columns:1fr}.hero .wrap{gap:36px;padding-block:32px 48px}.bento{grid-template-columns:1fr 1fr}.tile.wide{grid-column:span 2}.ba{grid-template-columns:1fr}.wnl{grid-template-columns:1fr 1fr}.nav{display:none}}
 @media (max-width:560px){.app{grid-template-columns:1fr;height:420px}.app .sb{display:none}.app .grid{columns:2}.bento{grid-template-columns:1fr}.tile.wide{grid-column:auto}.browser .page{grid-template-columns:1fr;height:420px}.browser .page .lines{display:none}.popup{left:12px;right:12px;width:auto}.ai-card{grid-template-columns:1fr}.ai-card img{height:150px}.shelf{grid-template-columns:1fr}.shelf .tree{display:none}.hdr .btn.alt{display:none}.sec{padding-block:48px}.wnl{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -203,14 +223,14 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
       <div class="th"><b>All links</b><span class="vw"><i class="on"><svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="9" rx="1.5"/><rect x="13" y="4" width="7" height="5" rx="1.5"/><rect x="4" y="15" width="7" height="5" rx="1.5"/><rect x="13" y="11" width="7" height="9" rx="1.5"/></g></svg></i><i><svg viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></g></svg></i><i><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></i></span></div>
       <div class="tb"><span class="on" data-tab="all">All 17</span><span data-tab="video">Videos 6</span><span data-tab="shop">Shops 4</span></div>
       <div class="grid" id="pvgrid">
-        <div class="mc" data-k="video"><img src="img/nihilism.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Watch later</span><span>Just now</span></div><div class="t">Optimistic Nihilism</div><div class="nt">For the weekend, with tea</div></div></div>
-        <div class="mc" data-k="shop"><img class="shop" src="img/tree-runners.webp" alt="" style="aspect-ratio:1/1"><div class="bd"><div class="mt"><span>Shopping</span><span>Today</span></div><div class="t">Tree Runners</div><div class="nt">Size 39, for spring</div></div></div>
-        <div class="mc" data-k="video"><img src="img/angular100.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Angular</span><span>Today</span></div><div class="t">Angular in 100 Seconds</div></div></div>
-        <div class="mc" data-k="repo"><img src="img/excalidraw.webp" alt="" style="aspect-ratio:2/1"><div class="bd"><div class="mt"><span>Tools</span><span>Oct 29</span></div><div class="t">Excalidraw</div></div></div>
-        <div class="mc" data-k="shop"><img class="shop" src="img/ojai-jacket.webp" alt="" style="aspect-ratio:4/5"><div class="bd"><div class="mt"><span>Shopping</span><span>Nov 3</span></div><div class="t">The Ojai Jacket</div><div class="nt">Waiting for the sale</div></div></div>
-        <div class="mc" data-k="video"><img src="img/neural-network.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Learning</span><span>Oct 27</span></div><div class="t">But what is a neural network?</div></div></div>
+        <div class="mc" style="view-transition-name:pv1" data-k="video"><img src="img/nihilism.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Watch later</span><span>Just now</span></div><div class="t">Optimistic Nihilism</div><div class="nt">For the weekend, with tea</div></div></div>
+        <div class="mc" style="view-transition-name:pv2" data-k="shop"><img class="shop" src="img/tree-runners.webp" alt="" style="aspect-ratio:1/1"><div class="bd"><div class="mt"><span>Shopping</span><span>Today</span></div><div class="t">Tree Runners</div><div class="nt">Size 39, for spring</div></div></div>
+        <div class="mc" style="view-transition-name:pv3" data-k="video"><img src="img/angular100.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Angular</span><span>Today</span></div><div class="t">Angular in 100 Seconds</div></div></div>
+        <div class="mc" style="view-transition-name:pv4" data-k="repo"><img src="img/excalidraw.webp" alt="" style="aspect-ratio:2/1"><div class="bd"><div class="mt"><span>Tools</span><span>Oct 29</span></div><div class="t">Excalidraw</div></div></div>
+        <div class="mc" style="view-transition-name:pv5" data-k="shop"><img class="shop" src="img/ojai-jacket.webp" alt="" style="aspect-ratio:4/5"><div class="bd"><div class="mt"><span>Shopping</span><span>Nov 3</span></div><div class="t">The Ojai Jacket</div><div class="nt">Waiting for the sale</div></div></div>
+        <div class="mc" style="view-transition-name:pv6" data-k="video"><img src="img/neural-network.webp" alt="" style="aspect-ratio:16/9"><div class="bd"><div class="mt"><span>Learning</span><span>Oct 27</span></div><div class="t">But what is a neural network?</div></div></div>
       </div>
-      <div class="toast">Saved to Watch later <b>Undo</b></div>
+      <div class="toast hidden" id="pvtoast">Saved to Watch later <b>Undo</b></div>
     </div>
   </div>
 </div></section>
@@ -222,18 +242,18 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 </div></section>
 
 <section class="sec" id="ai"><div class="wrap two">
-  <div>
+  <div class="rv">
     <span class="eyebrow"><svg width="14" height="14"><use href="#spark"/></svg>Optional AI</span>
     <h2>Help with sorting, when you want it</h2>
     <p class="sub">Turn on AI and each new link arrives with suggested tags, a folder and a two-line summary. Nothing moves until you tap it.</p>
-    <div class="points">
+    <div class="points rv-kids">
       <div class="pt"><i><svg width="18" height="18"><use href="#check"/></svg></i><div><b>Suggestions you accept</b><span>Tags and folders from the ones you already have, one tap each.</span></div></div>
       <div class="pt"><i><svg width="18" height="18"><use href="#search"/></svg></i><div><b>Find it by what it’s about</b><span>“That talk about how neurons learn” finds the video, even without those words.</span></div></div>
       <div class="pt"><i><svg width="18" height="18"><use href="#spark"/></svg></i><div><b>Ask your shelf</b><span>A question in your own words, an answer from your links, with sources.</span></div></div>
     </div>
     <p class="fine">Off until you turn it on. Your links are never used to train AI models. <a href="#privacy">How AI works in Shelfmark</a></p>
   </div>
-  <div class="stack">
+  <div class="stack rv-kids">
     <div class="card ai-card"><img src="img/microservices.webp" alt=""><div class="bd"><div class="t">Microservices explained – the What, Why and How?</div><div class="s">youtube.com · TechWorld with Nana</div><div class="chips"><span class="chip on"><svg width="11" height="11"><use href="#folder"/></svg>Learning</span><span class="chip on">#architecture</span><span class="chip"><svg width="11" height="11"><use href="#spark"/></svg>#backend</span><span class="chip"><svg width="11" height="11"><use href="#spark"/></svg>new: #system-design</span></div></div></div>
     <div class="card sq"><div class="f"><svg width="16" height="16"><use href="#search"/></svg>talk about how neurons learn</div><div class="hd"><svg width="12" height="12" style="color:var(--sage)"><use href="#spark"/></svg>Close in meaning</div><div class="rr"><img src="img/neural-network.webp" alt=""><span>But what is a neural network? | Deep learning chapter 1</span><span>youtube.com</span></div></div>
     <div class="card ask"><div class="me">Something to watch this weekend, under an hour?</div><div><svg width="14" height="14" style="color:var(--sage);vertical-align:-2px"><use href="#spark"/></svg> <b>Optimistic Nihilism</b> is 6 minutes, saved “for the weekend, with tea” <span class="cite">1</span>. Then the first neural network chapter, 19 minutes <span class="cite">2</span>.</div></div>
@@ -241,7 +261,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 </div></section>
 
 <section class="sec" id="extension" style="padding-top:24px"><div class="wrap two">
-  <div class="browser" role="img" aria-label="The Shelfmark extension saving a jacket from a shop, with the folder Shopping filled in by a rule">
+  <div class="browser rv scale" role="img" aria-label="The Shelfmark extension saving a jacket from a shop, with the folder Shopping filled in by a rule">
     <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">taylorstitch.com/products/ojai-jacket</span><span class="ext"><svg width="16" height="16"><use href="#logo"/></svg></span></div>
     <div class="page"><img src="img/ojai-jacket.webp" alt=""><div class="lines"><i style="width:70%"></i><i style="width:40%"></i><i style="width:85%;margin-top:22px"></i><i style="width:78%"></i><i style="width:60%"></i></div>
       <div class="popup"><div class="hd"><svg width="16" height="16"><use href="#logo"/></svg>Save to Shelfmark<span>This page</span></div>
@@ -253,16 +273,16 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     </div>
   </div>
   <div>
-    <span class="eyebrow">Browser extension</span>
-    <h2>Save the page you are on</h2>
+    <span class="eyebrow rv">Browser extension</span>
+    <h2 class="rv">Save the page you are on</h2>
     <p class="sub">One click on the toolbar or Alt+Shift+S. The title, your folder rules and recent folders are already filled in, so most pages take one more click.</p>
     <p class="fine">For Chrome, Edge, Brave and Arc. Install it from your shelf after you sign in.</p>
   </div>
 </div></section>
 
 <section class="sec" id="works"><div class="wrap">
-  <h2>Save once, find in seconds</h2>
-  <div class="bento">
+  <h2 class="rv">Save once, find in seconds</h2>
+  <div class="bento rv-kids">
     <div class="tile wide"><h3>The preview fills in by itself</h3><p>Paste a link: the picture, the title and the site arrive on their own. Add a note so you remember why you saved it.</p>
       <div class="vis"><div class="urlbox"><svg width="16" height="16" style="color:var(--muted)"><use href="#ext"/></svg>youtube.com/watch?v=Ata9cSC2WpM</div><div class="result"><img src="img/angular100.webp" alt=""><div><b>Angular in 100 Seconds</b><span>youtube.com · Fireship</span><div class="chips"><span class="chip on" style="height:22px"><svg width="10" height="10"><use href="#pen"/></svg>Start here before Signal Forms</span></div></div></div></div></div>
     <div class="tile"><h3>Folders inside folders</h3><p>As deep as your own system needs.</p>
@@ -277,8 +297,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 </div></section>
 
 <section class="sec" style="padding-top:24px"><div class="wrap">
-  <h2>The same links, before and after</h2>
-  <div class="ba">
+  <h2 class="rv">The same links, before and after</h2>
+  <div class="ba rv-kids">
     <div class="side before"><div class="lbl">BEFORE: SCATTERED</div>
       <div class="mess" role="img" aria-label="Links scattered across saved messages, browser tabs, a sticky note and a bookmarks bar">
         <div class="m1"><b>Saved messages</b><div class="muted">youtube.com/watch?v=aircAruvnKk…</div><div class="muted" style="margin-top:4px">+1 more link · 23:41</div></div>
@@ -293,7 +313,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   </div>
 </div></section>
 
-<section class="sec" id="how" style="padding-top:24px"><div class="wrap why">
+<section class="sec" id="how" style="padding-top:24px"><div class="wrap why rv-kids">
   <div class="q"><blockquote>“My saved messages had hundreds of links: courses, a jacket I wanted, that one video about neural networks. I could never find any of them again. So I built the shelf I wanted.”</blockquote>
     <div class="who"><i>DD</i><div><b>Dmytro</b><span>Frontend developer</span></div></div></div>
   <div class="how"><h3>How it’s built</h3><p>Angular 22 with signals, NestJS, PostgreSQL. Planned, coded, tested and reviewed by a team of Claude Code agents, with every decision in the open.</p>
@@ -301,7 +321,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     <div class="links"><a href="#code">Read the code on GitHub <svg width="14" height="14"><use href="#ext"/></svg></a><a href="#adr">Read the decision log <svg width="14" height="14"><use href="#ext"/></svg></a></div></div>
 </div></section>
 
-<section class="sec" style="padding-top:24px"><div class="wrap"><div class="fin">
+<section class="sec" style="padding-top:24px"><div class="wrap"><div class="fin rv scale">
   <h2>Empty your saved messages.</h2>
   <p>Paste a link, give it a folder and a note. Everything you save from now on lands on one shelf, and any of it is two keystrokes away.</p>
   <div class="cta guest"><a class="btn pri glow" href="#demo">Open the demo</a><a class="btn alt" href="#signin">Sign in</a></div>
@@ -325,11 +345,36 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   document.querySelectorAll('.langs button').forEach(b=>b.addEventListener('click',()=>document.querySelectorAll('.langs button').forEach(x=>x.setAttribute('aria-pressed',x===b))));
   document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const id=a.getAttribute('href').slice(1);if(!document.getElementById(id))e.preventDefault()}));
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const cards=[...document.querySelectorAll('#pvgrid .mc')];
-  // cards land one after another, then the tabs loop between All and Videos
-  if(!reduce){cards.forEach((c,i)=>{c.style.animationDelay=(i*140)+'ms';c.classList.add('land')})}
-  const tabs=[...document.querySelectorAll('.app .tb span')];let k=0;
-  const order=['all','video','all','shop'];
-  if(!reduce)setInterval(()=>{k=(k+1)%order.length;const t=order[k];tabs.forEach(s=>s.classList.toggle('on',s.dataset.tab===t));cards.forEach(c=>{c.classList.remove('land');c.classList.toggle('hide',t!=='all'&&c.dataset.k!==t)})},4200);
+  // reveal on scroll: only blocks that start below the first screen get hidden, so the page is complete at rest
+  const targets=[];
+  document.querySelectorAll('.rv').forEach(el=>targets.push(el));
+  document.querySelectorAll('.rv-kids').forEach(p=>[...p.children].forEach((c,i)=>{c.classList.add('rv');c.style.transitionDelay=(i*90)+'ms';targets.push(c)}));
+  if(!reduce&&'IntersectionObserver' in window){
+    const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.remove('pre');io.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px',threshold:.12});
+    targets.forEach(el=>{if(el.getBoundingClientRect().top>innerHeight*0.92){el.classList.add('pre');io.observe(el)}});
+    // before / after: scattered notes drift apart, shelf rows land one by one
+    const after=document.querySelector('.ba .after');
+    if(after){const rows=[...after.querySelectorAll('.rw')];rows.forEach((r,i)=>{r.style.transitionDelay=(300+i*120)+'ms'});
+      if(after.getBoundingClientRect().top>innerHeight){rows.forEach(r=>{r.style.opacity=0;r.style.transform='translateX(24px)'});
+        new IntersectionObserver((es,o)=>es.forEach(e=>{if(e.isIntersecting){rows.forEach(r=>{r.style.opacity='';r.style.transform=''});o.disconnect()}}),{threshold:.3}).observe(after)}}
+  }
+  // the app preview: cards land, the toast slides in, then the tabs cycle and the feed changes smoothly
+  const grid=document.getElementById('pvgrid'),cards=[...grid.querySelectorAll('.mc')],tabs=[...document.querySelectorAll('.app .tb span')],toast=document.getElementById('pvtoast');
+  if(!reduce){cards.forEach((c,i)=>{c.style.animationDelay=(250+i*140)+'ms';c.classList.add('land')});setTimeout(()=>{toast.classList.remove('hidden');toast.classList.add('show')},1500)}
+  else{toast.classList.remove('hidden')}
+  const apply=t=>{tabs.forEach(s=>s.classList.toggle('on',s.dataset.tab===t));cards.forEach(c=>{c.classList.remove('land');c.classList.toggle('hide',t!=='all'&&c.dataset.k!==t)})};
+  const swap=t=>{
+    if(document.startViewTransition&&!reduce){document.startViewTransition(()=>apply(t))}
+    else if(!reduce){grid.classList.add('fade');setTimeout(()=>{apply(t);grid.classList.remove('fade')},260)}
+    else apply(t);
+    if(t!=='all'){toast.classList.add('hidden');toast.classList.remove('show')}else{setTimeout(()=>{toast.classList.remove('hidden');toast.classList.add('show')},700)}
+  };
+  const order=['all','video','all','shop'];let k=0,timer=null;
+  const tick=()=>{k=(k+1)%order.length;swap(order[k])};
+  const start=()=>{if(!reduce&&!timer)timer=setInterval(tick,3600)};const stop=()=>{clearInterval(timer);timer=null};
+  tabs.forEach(s=>{s.style.cursor='pointer';s.addEventListener('click',()=>{stop();k=Math.max(0,order.indexOf(s.dataset.tab));swap(s.dataset.tab);setTimeout(start,6000)})});
+  const app=document.querySelector('.app');
+  if('IntersectionObserver' in window){new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?start():stop()),{threshold:.3}).observe(app)}else start();
+  document.addEventListener('visibilitychange',()=>document.hidden?stop():start());
 })();
 </script>
