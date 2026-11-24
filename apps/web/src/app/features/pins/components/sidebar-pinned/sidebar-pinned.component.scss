@@ -37,7 +37,7 @@
 // row's corners; a tap explains how to pin.
 .pinned__empty {
   --ui-button-color: var(--text-muted);
-  --ui-button-radius: calc(var(--radius-md) - #{rem(2px)});
+  --ui-button-radius: var(--radius-sm);
 }
 
 // A row like a tree row: 36px (44px on touch), `radius-md`, hover tint, the "..." button at the end.
@@ -45,7 +45,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  border-radius: calc(var(--radius-md) - #{rem(2px)});
+  border-radius: var(--radius-sm);
 
   @include hover {
     background: var(--surface-hover);
@@ -73,13 +73,13 @@
   align-items: center;
   min-width: 0;
   min-height: rem(36px);
-  font-size: rem(14px);
+  font-size: var(--font-size-secondary);
   line-height: rem(20px);
   padding-block: 0;
   padding-inline: rem(10px) rem(40px);
   color: var(--text);
   text-decoration: none;
-  border-radius: calc(var(--radius-md) - #{rem(2px)});
+  border-radius: var(--radius-sm);
 
   &:focus-visible {
     @include focus-ring(-2px);

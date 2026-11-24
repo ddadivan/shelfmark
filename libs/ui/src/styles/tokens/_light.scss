@@ -95,6 +95,10 @@
   --folder-teal-bg: #daefec;
 
   // Elevation: flat at rest. A resting card is set off by its hairline (`line` as a 1px ring).
+  // Shelf `shadow-l1` and `highlight`: resting cards have no shadow (the hairline below sets them
+  // off); no dark top-edge highlight either.
+  --shadow-l1: none;
+  --shadow-highlight: none;
   --shadow-card: 0 0 0 1px var(--line);
   --shadow-hover: 0 8px 28px rgb(0 0 0 / 8%);
   --shadow-l2: 0 8px 24px rgb(0 0 0 / 14%);
@@ -107,5 +111,21 @@
   --shadow-card-press: 0 0 0 1px var(--line), 0 4px 10px -6px rgb(0 0 0 / 20%);
   --card-hover-bg: var(--surface);
   --card-hover-border: var(--line-strong);
+
+  // Code-only (token-sync.spec.ts): the neutral hairline of the search fields (prototypes draw
+  // `inset 0 0 0 1px rgba(127,127,127,.25)` in both themes) and the soft lift under the slider
+  // thumb.
+  --search-hairline: rgb(127 127 127 / 25%);
+  --shadow-thumb: 0 1px 3px rgb(0 0 0 / 30%);
   --skeleton-shimmer: color-mix(in srgb, var(--surface) 35%, transparent);
+
+  // Derived tints used by components, kept as tokens so the rendered check (ADR 0062) knows
+  // them: the inverted toast's muted text and button tiles, the tooltip key cap text and the
+  // translucent bar over a card preview, the resting text of the Ask status pill.
+  --toast-muted: color-mix(in srgb, var(--bg) 72%, var(--text));
+  --toast-tile: color-mix(in srgb, var(--bg) 16%, transparent);
+  --toast-tile-hover: color-mix(in srgb, var(--bg) 26%, transparent);
+  --tooltip-kbd: color-mix(in srgb, var(--on-primary) 70%, var(--primary));
+  --card-overlay: color-mix(in srgb, var(--surface) 88%, transparent);
+  --status-text: color-mix(in srgb, var(--text) 75%, var(--text-muted));
 }

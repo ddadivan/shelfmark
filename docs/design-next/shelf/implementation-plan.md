@@ -62,6 +62,13 @@ The machinery (`data-theme="custom"` with base, accent, background, corners) kee
 
 All text pairs are checked for 4.5:1 and UI parts for 3:1 in both themes by `custom-theme-contrast.spec.ts` and a new Shelf pair check. Pairs from the reference that fail are listed in the summary to the author, not silently changed.
 
+### DS guard (ADR 0062, branch `redesign/shelf-ds-guard`)
+
+- The token map above is now checked: `libs/ui/src/styles/token-sync.spec.ts` compares the compiled tokens with `tokens.json` (renames in `styles/models/token-renames.const.ts`, code-only tokens with their reason in `styles/models/code-only-tokens.const.ts`, AA pairs in `contrast-pairs.const.ts`).
+- Type scale tokens `--font-size-<style>` / `--line-height-<style>` for every Shelf style; `type()` reads them (`title` = `display-s`, `heading` = `title-s`, `caption` = `meta`; `mono` is now the Shelf 12 / 1.4).
+- Code-only values the prototypes draw outside `tokens.json`: `--font-size-section` 18/22 (section titles), `--font-size-micro` 10 (favicon letter), `--radius-tile-sm` 6 and `--radius-tile` 8 (small tiles, thumbs, key caps, the segment in a 10px track), `--search-hairline` (25% grey ring of the search fields), `--shadow-thumb` (range thumb), and component tints as tokens (`--toast-muted`, `--toast-tile`, `--toast-tile-hover`, `--tooltip-kbd`, `--card-overlay`, `--status-text`). Candidates for `tokens.json`.
+- Stylelint (`tools/stylelint/shelf-tokens.mjs`) and the Storybook rendered check (`libs/ui/a11y/ds-tokens.mts`) keep new code on tokens. The landing (`apps/web/src/app/features/landing/`) has file-level `stylelint-disable … -- landing is rebuilt in block 6 (Shelf 16-landing)` comments: block 6 removes them.
+
 ## Component map
 
 | Shelf component | libs/ui today | Action |

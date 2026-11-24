@@ -30,7 +30,7 @@
   margin: 0;
 
   @include compact {
-    font-size: rem(22px);
+    font-size: var(--font-size-title-l);
     line-height: rem(28px);
   }
 }
@@ -70,7 +70,7 @@
   @include type(heading);
 
   margin: 0;
-  font-size: rem(18px);
+  font-size: var(--font-size-section);
   line-height: 1.25;
 }
 

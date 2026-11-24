@@ -54,7 +54,7 @@
   @include type(heading);
 
   margin: 0;
-  font-size: rem(18px);
+  font-size: var(--font-size-section);
   line-height: rem(24px);
   color: var(--text);
 }

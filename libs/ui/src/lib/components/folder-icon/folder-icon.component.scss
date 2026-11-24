@@ -3,7 +3,7 @@
 // Tile sizes and corner radii follow the design (22 / 28 / 40 / 56 px, radius 6 / 8 / 12 / 16 px on the DS scale).
 :host {
   --ui-folder-icon-size: #{rem(28px)};
-  --ui-folder-icon-radius: #{rem(8px)};
+  --ui-folder-icon-radius: var(--radius-tile);
 
   display: inline-grid;
   flex: none;
@@ -17,17 +17,17 @@
 
 :host(.ui-folder-icon--sm) {
   --ui-folder-icon-size: #{rem(22px)};
-  --ui-folder-icon-radius: #{rem(6px)};
+  --ui-folder-icon-radius: var(--radius-tile-sm);
 }
 
 :host(.ui-folder-icon--lg) {
   --ui-folder-icon-size: #{rem(40px)};
-  --ui-folder-icon-radius: #{rem(12px)};
+  --ui-folder-icon-radius: var(--radius-md);
 }
 
 :host(.ui-folder-icon--xl) {
   --ui-folder-icon-size: #{rem(56px)};
-  --ui-folder-icon-radius: #{rem(16px)};
+  --ui-folder-icon-radius: var(--radius-lg);
 }
 
 @each $name in 'graphite', 'sage', 'ocean', 'plum', 'clay', 'amber', 'rose', 'teal' {

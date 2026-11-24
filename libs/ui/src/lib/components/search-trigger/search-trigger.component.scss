@@ -11,7 +11,7 @@
 .ui-search-trigger__control {
   @include type(body);
 
-  --ui-search-hairline: rgb(127 127 127 / 25%);
+  --ui-search-hairline: var(--search-hairline);
   --ui-icon-size: var(--icon-size-sm);
 
   display: flex;

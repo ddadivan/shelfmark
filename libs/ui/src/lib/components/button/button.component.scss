@@ -46,7 +46,7 @@
   height: calc(var(--control-md) * var(--ui-button-scale, 1));
   min-width: var(--ui-button-min-width, 0);
   padding: 0 calc(#{rem(16px)} * var(--ui-button-scale, 1));
-  font-size: calc(#{rem(14px)} * var(--ui-button-scale, 1));
+  font-size: calc(var(--font-size-label) * var(--ui-button-scale, 1));
   line-height: calc(#{rem(22px)} * var(--ui-button-scale, 1));
   color: var(--ui-button-color, var(--text));
   white-space: nowrap;

@@ -44,7 +44,7 @@
   width: rem(40px);
   height: rem(5px);
   background: var(--border-control);
-  border-radius: rem(3px);
+  border-radius: var(--radius-full);
 }
 
 .share__header {
@@ -68,7 +68,7 @@
   @include type(heading);
 
   margin: 0;
-  font-size: rem(18px);
+  font-size: var(--font-size-section);
 }
 
 .share__subtitle {

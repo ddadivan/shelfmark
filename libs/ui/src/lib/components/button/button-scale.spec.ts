@@ -17,7 +17,7 @@ describe('ButtonComponent --ui-button-scale', () => {
     const base = rule(css, '.ui-button');
     expect(base).toContain(`height: calc(var(--control-md) * ${SCALE})`);
     expect(base).toContain(`padding: 0 calc(1rem * ${SCALE})`);
-    expect(base).toContain(`font-size: calc(0.875rem * ${SCALE})`);
+    expect(base).toContain(`font-size: calc(var(--font-size-label) * ${SCALE})`);
     expect(base).toContain(`line-height: calc(1.375rem * ${SCALE})`);
     expect(base).toContain(`gap: calc(var(--space-2) * ${SCALE})`);
   });

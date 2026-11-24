@@ -41,10 +41,10 @@
   place-items: center;
   width: rem(24px);
   height: rem(24px);
-  font: 700 #{rem(12px)} / #{rem(16px)} var(--font-sans);
+  font: 700 var(--font-size-meta) / var(--line-height-meta) var(--font-sans);
   color: var(--ai);
   background: var(--ai-fill);
-  border-radius: rem(8px);
+  border-radius: var(--radius-tile);
 }
 
 .ask-sources__actions {

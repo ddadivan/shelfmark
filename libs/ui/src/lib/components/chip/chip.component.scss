@@ -27,7 +27,7 @@
   align-items: center;
   align-self: stretch;
   padding: 0 calc(#{rem(12px)} * var(--ui-chip-scale, 1));
-  font-size: calc(#{rem(12px)} * var(--ui-chip-scale, 1));
+  font-size: calc(var(--font-size-meta) * var(--ui-chip-scale, 1));
   font-weight: 500;
   color: inherit;
   background: transparent;
@@ -200,7 +200,7 @@ button.ui-chip__body {
     gap: rem(12px);
     min-inline-size: 0;
     padding: 0 rem(14px) 0 rem(12px);
-    font-size: rem(14px);
+    font-size: var(--font-size-secondary);
   }
 
   .ui-chip__icon {
@@ -262,7 +262,7 @@ button.ui-chip__body {
   .ui-chip__body {
     @include type(label);
 
-    font-size: rem(14px);
+    font-size: var(--font-size-label);
   }
 }
 

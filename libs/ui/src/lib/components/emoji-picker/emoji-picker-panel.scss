@@ -86,12 +86,12 @@
   min-width: rem(26px);
   height: rem(30px);
   padding: 0;
-  font-size: rem(16px);
+  font-size: var(--font-size-body);
   line-height: 1;
   cursor: pointer;
   background: transparent;
   border: 0;
-  border-radius: rem(8px);
+  border-radius: var(--radius-tile);
   transition:
     background-color var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-fast) var(--ease-out);

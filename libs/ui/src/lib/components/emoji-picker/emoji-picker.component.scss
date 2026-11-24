@@ -17,7 +17,7 @@
 .ui-emoji-picker__native--emoji {
   block-size: rem(40px);
   padding-block: 0;
-  font-size: rem(24px);
+  font-size: var(--font-size-display-s);
   line-height: rem(40px);
 }
 

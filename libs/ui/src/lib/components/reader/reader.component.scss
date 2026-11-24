@@ -126,14 +126,14 @@
 .ui-reader__title {
   margin: var(--space-3) 0 var(--space-2);
   font-family: var(--ui-reader-font);
-  font-size: rem(32px);
+  font-size: var(--font-size-display);
   font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.01em;
   text-wrap: balance;
 
   @include phone {
-    font-size: rem(24px);
+    font-size: var(--font-size-display-s);
     line-height: 1.2;
   }
 }
@@ -148,6 +148,7 @@
 
 .ui-reader__heading {
   margin: var(--space-8) 0 var(--space-2);
+  /* stylelint-disable-next-line shelf/font-size-token -- an article heading scales with the reading text size the person picks (em of the Reader body) */
   font-size: 1.27em;
   font-weight: 600;
   line-height: 1.25;
@@ -174,6 +175,7 @@
   margin: 0 0 1em;
   overflow-x: auto;
   font-family: var(--font-mono);
+  /* stylelint-disable-next-line shelf/font-size-token -- code inside an article scales with the reading text size the person picks (em of the Reader body) */
   font-size: 0.85em;
   background: var(--surface-hover);
   border-radius: var(--radius-sm);

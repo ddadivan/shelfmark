@@ -62,7 +62,7 @@ h2 {
 .title {
   @include type(display);
 
-  font-size: rem(32px);
+  font-size: var(--font-size-display);
   line-height: rem(38px);
   letter-spacing: -0.02em;
 }
@@ -71,7 +71,7 @@ h2 {
   @include type(heading);
 
   margin-top: var(--space-3);
-  font-size: rem(18px);
+  font-size: var(--font-size-section);
 }
 
 ul {

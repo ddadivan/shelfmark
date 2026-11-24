@@ -109,7 +109,7 @@
 }
 
 .ui-suggestion__new {
-  font-size: rem(11px);
+  font-size: var(--font-size-meta);
   color: var(--text-muted);
 }
 

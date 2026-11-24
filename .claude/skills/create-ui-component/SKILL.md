@@ -67,7 +67,8 @@ export class ButtonComponent {
 
 ## 4. Styles
 
-- Only CSS custom properties from tokens (`var(--surface)`, `var(--space-4)`, `var(--duration-base)`, `var(--ease-out)`).
+- Only CSS custom properties from tokens (`var(--surface)`, `var(--space-4)`, `var(--duration-base)`, `var(--ease-out)`, `var(--radius-md)`, `var(--font-size-label)`, `var(--shadow-l2)`).
+- A new colour, radius, font size or shadow is first added as a token in `docs/design-next/shelf/design-system/tokens.json` (and `libs/ui/src/styles/tokens/*`), then used; a value the design has no token for goes into `CODE_ONLY_TOKENS` with its reason (DS guard, ADR 0062). Stylelint, `token-sync.spec.ts` and the rendered check in the Storybook runner fail otherwise. A subtree that draws other people's UI or colours from data gets `data-ds-ignore`.
 - Sizes in `rem` via `rem($px)`; px only for border widths, outline, outline-offset, box-shadow, the 2px progress bar. Breakpoints in `em`.
 - `:hover` only inside `@media (hover: hover)`; `:focus-visible` ring per BRAND; `@media (prefers-reduced-motion: reduce)` removes movement and scale.
 - Target size: every pointer target is at least 24 x 24 px and 44 x 44 under `pointer: coarse`; a smaller visual gets `@include hit-area(...)` or `touch-target` (see `libs/ui/CLAUDE.md`). No `opacity` for busy, stale or secondary text.

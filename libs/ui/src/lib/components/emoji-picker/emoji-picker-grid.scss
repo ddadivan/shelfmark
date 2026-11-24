@@ -32,11 +32,11 @@
   display: grid;
   place-items: center;
   height: rem(40px);
-  font-size: rem(24px);
+  font-size: var(--font-size-display-s);
   line-height: 1;
   cursor: pointer;
   user-select: none;
-  border-radius: rem(12px);
+  border-radius: var(--radius-md);
   transition: background-color var(--duration-fast) var(--ease-out);
 
   @include hover {

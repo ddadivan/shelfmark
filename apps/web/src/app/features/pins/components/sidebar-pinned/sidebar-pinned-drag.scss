@@ -16,7 +16,7 @@
   min-height: rem(36px);
   padding-block: 0;
   padding-inline: rem(10px) rem(40px);
-  font-size: rem(14px);
+  font-size: var(--font-size-secondary);
   line-height: rem(20px);
   color: var(--text-muted);
   opacity: 0.45;
@@ -43,12 +43,12 @@
   max-width: rem(240px);
   min-height: rem(36px);
   padding-inline: rem(10px) rem(14px);
-  font-size: rem(14px);
+  font-size: var(--font-size-label);
   font-weight: 500;
   line-height: rem(20px);
   color: var(--text);
   background: var(--surface);
-  border-radius: calc(var(--radius-md) - #{rem(2px)});
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow-float);
   transform: translate(rem(-12px), -50%) rotate(-1.5deg);
 

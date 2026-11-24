@@ -69,6 +69,7 @@ jobs:
       - run: node --test .claude/hooks/
       - run: node --test scripts/
       - run: node --test tools/ci/
+      - run: node --test tools/stylelint/
       # #424: a PR into main (release or hotfix) must raise the package.json version, without -dev.
       - name: Check the version bump
         if: github.event_name == 'pull_request' && github.base_ref == 'main'

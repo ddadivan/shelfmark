@@ -205,7 +205,7 @@ $zoom-duration: 900ms;
   display: grid;
   place-items: center;
   font-family: var(--font-sans);
-  font-size: rem(28px);
+  font-size: var(--font-size-display-s);
   font-weight: 600;
   line-height: 1;
   color: var(--accent-text);

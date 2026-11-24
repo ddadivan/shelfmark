@@ -2,11 +2,14 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { expect, test, type Page } from '@playwright/test';
 import { THEME, THEME_ATTRIBUTE } from '../src/lib/models/theme';
+import { dsCheckScript, loadDsTokenNames } from './ds-tokens.mjs';
 
 // Runs axe-core (including colour contrast) on every story of the built Storybook, in a real
 // browser, under the production CSP from libs/ui/vercel.json (see serve-storybook.mjs).
 // Each story and each docs page (auto-generated component docs and the Foundations pages) is
-// checked in the light and the dark theme.
+// checked in the light and the dark theme. Each story also runs the DS guard's rendered check
+// (ds-tokens.mts, ADR 0062): every painted colour, border colour, font size and radius must be a
+// token of the active theme.
 
 interface IndexEntry {
   readonly id: string;
@@ -60,6 +63,7 @@ async function trackCspViolations(page: Page): Promise<void> {
 }
 
 const stories = loadStories();
+const dsTokens = loadDsTokenNames();
 
 test('the built Storybook lists stories', () => {
   expect(stories.length).toBeGreaterThan(0);
@@ -137,6 +141,17 @@ for (const story of stories) {
           { timeout: 10_000, intervals: [0, 250, 500, 1000] },
         )
         .toEqual([]);
+      if (story.type === 'story') {
+        // Docs pages are Storybook's chrome; the stories are ours. Polled like axe, so a colour
+        // still mid-transition settles first.
+        await expect
+          .poll(async () => page.evaluate<string[]>(dsCheckScript(dsTokens, '#storybook-root')), {
+            message: 'off-token values (DS guard, ADR 0062): add a token or mark data-ds-ignore',
+            timeout: 10_000,
+            intervals: [0, 250, 500, 1000],
+          })
+          .toEqual([]);
+      }
       expect(await page.evaluate<string[]>(`globalThis.__cspViolations ?? []`)).toEqual([]);
     });
   }

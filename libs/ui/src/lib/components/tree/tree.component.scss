@@ -79,7 +79,7 @@
 
 .ui-tree__folder--emoji {
   inline-size: var(--icon-size-sm);
-  font-size: rem(14px);
+  font-size: var(--font-size-secondary);
   line-height: 1;
   text-align: center;
 }

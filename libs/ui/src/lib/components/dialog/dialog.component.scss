@@ -80,7 +80,7 @@
     @include compact {
       width: rem(40px);
       height: rem(5px);
-      border-radius: rem(3px);
+      border-radius: var(--radius-full);
     }
   }
 
@@ -157,7 +157,7 @@
     .ui-dialog__title {
       @include type(display);
 
-      font-size: rem(34px);
+      font-size: var(--font-size-display);
       line-height: rem(38px);
     }
   }
@@ -189,7 +189,7 @@
     }
 
     .ui-dialog__title {
-      font-size: rem(18px);
+      font-size: var(--font-size-section);
       line-height: 1.25;
     }
 

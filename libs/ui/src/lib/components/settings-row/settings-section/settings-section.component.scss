@@ -27,7 +27,7 @@
   @include type(heading);
 
   margin: 0 0 var(--space-2);
-  font-size: rem(18px);
+  font-size: var(--font-size-section);
   line-height: rem(22px);
   color: var(--text);
 }

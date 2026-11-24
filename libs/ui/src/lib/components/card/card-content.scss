@@ -9,7 +9,7 @@
   padding: rem(6px) rem(8px) rem(6px) rem(10px);
   color: var(--text);
   pointer-events: none;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  background: var(--card-overlay);
   border-radius: var(--radius-md);
   opacity: 0;
   backdrop-filter: blur(#{rem(6px)});
@@ -179,11 +179,11 @@
   max-inline-size: 100%;
   padding: rem(6px) rem(8px);
   margin-block-start: rem(10px);
-  font-size: rem(14px);
+  font-size: var(--font-size-secondary);
   line-height: rem(18px);
   color: var(--note-text);
   background: var(--ai-bg);
-  border-radius: rem(8px);
+  border-radius: var(--radius-tile);
 
   &:has(.ui-card__note-text:empty) {
     display: none;

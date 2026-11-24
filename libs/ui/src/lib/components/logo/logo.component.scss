@@ -31,7 +31,7 @@
 
   // The wordmark follows the mark (20px type next to the 32px mark) unless a host sets its own
   // size (Shelf sidebar: 16/24 600 next to a 22px mark).
-  font-size: var(--ui-logo-wordmark-size, calc(var(--ui-logo-size, #{rem(32px)}) * 0.625));
+  font-size: var(--ui-logo-wordmark-size, calc(var(--ui-logo-size, var(--control-sm)) * 0.625));
   line-height: var(--ui-logo-wordmark-line, 1);
   letter-spacing: normal;
   color: inherit;

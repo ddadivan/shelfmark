@@ -23,13 +23,13 @@
     height: 2rem;
     padding: 0 rem(8px);
     font-family: var(--font-mono);
-    font-size: 1.1rem;
+    font-size: var(--font-size-section);
     line-height: 1;
     text-align: center;
     color: var(--text-muted);
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: rem(6px);
+    border-radius: var(--radius-tile-sm);
   }
 }
 
@@ -92,12 +92,12 @@
 .ui-command-list__input {
   @include field-native;
 
-  font-size: rem(19px);
+  font-size: var(--font-size-title-m);
   line-height: rem(26px);
 
   // 16px keeps iOS from zooming the page on focus.
   @include phone {
-    font-size: rem(16px);
+    font-size: var(--font-size-body);
     line-height: rem(24px);
   }
 }

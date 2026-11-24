@@ -40,7 +40,7 @@ export const PopIn: Story = {
   render: (args) => ({
     props: { ...args, shown: true },
     template: `
-      <button type="button" (click)="shown = !shown">Toggle badge</button>
+      <button type="button" data-ds-ignore (click)="shown = !shown">Toggle badge</button>
       @if (shown) {
         <ui-badge [tone]="tone" [pop]="pop">New</ui-badge>
       }`,

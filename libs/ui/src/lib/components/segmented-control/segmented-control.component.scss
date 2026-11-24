@@ -2,7 +2,6 @@
 
 $pad: rem(2px);
 $gap: rem(2px);
-$item-radius: calc(var(--radius-sm) - #{rem(2px)});
 
 :host {
   position: relative;
@@ -26,7 +25,7 @@ $item-radius: calc(var(--radius-sm) - #{rem(2px)});
   width: calc((100% - #{$pad * 2} - (var(--seg-n, 2) - 1) * #{$gap}) / var(--seg-n, 2));
   content: '';
   background: var(--surface);
-  border-radius: $item-radius;
+  border-radius: var(--radius-tile);
   box-shadow: 0 0 0 1px var(--line);
   transition: transform var(--duration-base) var(--ease-out);
   transform: translateX(calc(var(--seg-i, 0) * (100% + #{$gap})));
@@ -60,7 +59,7 @@ $item-radius: calc(var(--radius-sm) - #{rem(2px)});
   color: var(--text-muted);
   white-space: nowrap;
   cursor: pointer;
-  border-radius: $item-radius;
+  border-radius: var(--radius-tile);
   transition: color var(--duration-fast) var(--ease-out);
 
   &:has(.ui-seg__input:focus-visible) {

@@ -63,7 +63,7 @@
   cursor: pointer;
   background: transparent;
   border: 0;
-  border-radius: rem(8px);
+  border-radius: var(--radius-tile);
 
   @include hover {
     color: var(--text);

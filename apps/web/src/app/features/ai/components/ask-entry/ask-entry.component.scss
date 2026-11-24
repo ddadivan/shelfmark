@@ -12,11 +12,11 @@
   max-width: 85%;
   margin: 0;
   padding: rem(10px) rem(14px);
-  font: 400 #{rem(14px)} / #{rem(20px)} var(--font-sans);
+  font: 400 var(--font-size-secondary) / #{rem(20px)} var(--font-sans);
   overflow-wrap: anywhere;
   color: var(--text);
   background: var(--surface-hover);
-  border-radius: rem(16px) rem(16px) rem(4px);
+  border-radius: var(--radius-card) var(--radius-card) var(--radius-xs);
 }
 
 .ask-entry__text {

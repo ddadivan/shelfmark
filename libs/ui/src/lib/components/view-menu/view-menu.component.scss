@@ -121,7 +121,7 @@
   align-items: center;
   padding: var(--space-2) rem(10px);
   cursor: pointer;
-  border-radius: rem(8px);
+  border-radius: var(--radius-tile);
 
   @include hover {
     background: var(--fill);

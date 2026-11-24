@@ -123,7 +123,7 @@ describe('Custom theme tokens', () => {
     );
     for (const corners of Object.values(CUSTOM_THEME_CORNERS)) {
       const radii = rule(custom(`[data-custom-corners=${corners}]`));
-      for (const size of ['xs', 'sm', 'md', 'card', 'lg', 'xl', 'fab']) {
+      for (const size of ['xs', 'tile-sm', 'tile', 'sm', 'md', 'card', 'lg', 'xl', 'fab']) {
         expect(radii[`--radius-${size}`]).toMatch(/^[\d.]+rem$/);
       }
       expect(radii['--radius-full']).toBeUndefined();

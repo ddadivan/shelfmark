@@ -327,7 +327,7 @@ export const Screen: Story = {
     moduleMetadata: { imports },
     template: box(`
       <ui-command-list screen [inputLabel]="inputLabel" listLabel="Search results" [placeholder]="placeholder" query="sig">
-        <button slot="input-start" type="button" aria-label="Close search">‹</button>
+        <button data-ds-ignore slot="input-start" type="button" aria-label="Close search">‹</button>
         <ui-command-group heading="2 links">
           <ui-command-item value="a">Signals vs RxJS <span slot="meta">medium.com</span></ui-command-item>
           <ui-command-item value="b">Angular signals: the guide <span slot="meta">angular.dev</span></ui-command-item>

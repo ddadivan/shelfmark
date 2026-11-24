@@ -159,7 +159,7 @@ describe('SegmentedControlComponent', () => {
     expect(css).toContain('padding: 0.125rem');
     expect(css).toContain('border-radius: var(--radius-sm)');
     expect(css).toContain('height: 1.75rem');
-    expect(css).toContain('border-radius: calc(var(--radius-sm) - 0.125rem)');
+    expect(css).toContain('border-radius: var(--radius-tile)');
     expect(css).toContain('min-width: 2.25rem');
     expect(css).toContain('height: 2.75rem');
   });

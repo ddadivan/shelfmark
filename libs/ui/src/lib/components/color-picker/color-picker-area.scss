@@ -1,3 +1,4 @@
+/* stylelint-disable color-no-hex, function-disallowed-list, shelf/shadow-token -- the picker draws the colour space itself (white, black, the hue wheel) and its handles need a white and black edge that reads on any picked colour, whatever the theme */
 @use '../../../styles/ui' as *;
 
 // Saturation (x) and brightness (y): the hue's colour, white to the left, black below. The two
