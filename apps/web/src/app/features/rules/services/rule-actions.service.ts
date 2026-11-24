@@ -3,6 +3,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { normalizeRuleDomain, type RuleResponse } from '@shelfmark/contracts';
 import {
   DIALOG_SIZE,
+  DIALOG_VARIANT,
   DialogService,
   TOAST_DURATION_MS,
   TOAST_KIND,
@@ -150,7 +151,8 @@ export class RuleActionsService {
   private async open(data: RuleDialogData): Promise<RuleResponse | null> {
     const ref = this.dialogs.open<RuleDialogComponent, RuleResponse, RuleDialogData>(
       RuleDialogComponent,
-      { size: DIALOG_SIZE.Md, autoFocus: DIALOG_FIRST_FIELD, data },
+      // Shelf: the rule editor is the side panel (04-organise "Edit rule").
+      { size: DIALOG_SIZE.Md, variant: DIALOG_VARIANT.Panel, autoFocus: DIALOG_FIRST_FIELD, data },
     );
     return (await ref.result) ?? null;
   }

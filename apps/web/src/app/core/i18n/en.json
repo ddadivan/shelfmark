@@ -3211,7 +3211,8 @@
       "created": "Rule created",
       "applyExisting": "Apply to Unsorted",
       "failed": "Couldn’t create the rule"
-    }
+    },
+    "editFor": "Edit the rule for {{domain}}"
   },
   "changelog": {
     "title": "What's new",

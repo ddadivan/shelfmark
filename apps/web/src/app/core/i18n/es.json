@@ -3297,7 +3297,8 @@
       "created": "Regla creada",
       "applyExisting": "Aplicar a «Sin carpeta»",
       "failed": "No se pudo crear la regla"
-    }
+    },
+    "editFor": "Editar la regla de {{domain}}"
   },
   "changelog": {
     "title": "Novedades",

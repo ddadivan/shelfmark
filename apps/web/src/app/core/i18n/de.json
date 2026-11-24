@@ -3211,7 +3211,8 @@
       "created": "Regel erstellt",
       "applyExisting": "Auf „Ohne Ordner“ anwenden",
       "failed": "Regel konnte nicht erstellt werden"
-    }
+    },
+    "editFor": "Regel für {{domain}} bearbeiten"
   },
   "changelog": {
     "title": "Neuigkeiten",

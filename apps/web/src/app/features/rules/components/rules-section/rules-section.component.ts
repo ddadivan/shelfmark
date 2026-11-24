@@ -4,7 +4,8 @@ import { RULE_LIMIT, type RuleResponse } from '@shelfmark/contracts';
 import {
   BUTTON_SIZE,
   ButtonComponent,
-  ChipComponent,
+  ICON_SIZE,
+  IconComponent,
   FaviconComponent,
   FolderIconComponent,
   MenuComponent,
@@ -31,7 +32,7 @@ import { ruleRows } from '../../utils/rule-rows';
   selector: 'app-rules-section',
   imports: [
     ButtonComponent,
-    ChipComponent,
+    IconComponent,
     FaviconComponent,
     FolderIconComponent,
     MenuComponent,
@@ -51,6 +52,7 @@ export class RulesSectionComponent {
   protected readonly BUTTON_SIZE = BUTTON_SIZE;
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly RULE_LIMIT = RULE_LIMIT;
+  protected readonly ICON_SIZE = ICON_SIZE;
 
   protected readonly store = inject(RulesStore);
   private readonly folders = inject(FoldersStore);

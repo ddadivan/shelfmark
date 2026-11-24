@@ -3297,7 +3297,8 @@
       "created": "Regra criada",
       "applyExisting": "Aplicar a “Sem pasta”",
       "failed": "Não foi possível criar a regra"
-    }
+    },
+    "editFor": "Editar a regra de {{domain}}"
   },
   "changelog": {
     "title": "Novidades",

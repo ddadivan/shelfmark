@@ -3297,7 +3297,8 @@
       "created": "Règle créée",
       "applyExisting": "Appliquer à « Sans dossier »",
       "failed": "Impossible de créer la règle"
-    }
+    },
+    "editFor": "Modifier la règle de {{domain}}"
   },
   "changelog": {
     "title": "Nouveautés",

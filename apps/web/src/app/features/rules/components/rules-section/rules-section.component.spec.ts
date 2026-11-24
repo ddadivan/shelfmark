@@ -101,4 +101,15 @@ describe('RulesSectionComponent', () => {
     await fixture.whenStable();
     expect(actions.delete).toHaveBeenCalled();
   });
+
+  it('shows "#tag" under the site and an Edit button on the row (Shelf)', async () => {
+    const rule = { id: 'a', domain: 'youtube.com', folderId: null, tags: ['video'], createdAt: AT };
+    const { element, actions } = await setup([rule]);
+
+    expect(element.querySelector('.rules__tag')?.textContent?.trim()).toBe('#video');
+    element
+      .querySelector<HTMLButtonElement>('button[aria-label="Edit the rule for youtube.com"]')
+      ?.click();
+    expect(actions.edit).toHaveBeenCalledWith(expect.objectContaining({ domain: 'youtube.com' }));
+  });
 });
