@@ -192,6 +192,31 @@ describe('links API: kind (ADR 0038)', () => {
     expect(await ids({ kind: 'shopping' })).toEqual([]);
   });
 
+  it('filters the list by when the link was saved: the last week or month (Filter › Saved)', async () => {
+    const userId = users.owner.userId;
+    const day = 24 * 60 * 60 * 1000;
+    const recent = await seedLink(t.db.prisma, userId, {
+      kind: 'recipe',
+      createdAt: new Date(Date.now() - 2 * day),
+    });
+    const lastMonth = await seedLink(t.db.prisma, userId, {
+      kind: 'recipe',
+      createdAt: new Date(Date.now() - 20 * day),
+    });
+    await seedLink(t.db.prisma, userId, {
+      kind: 'recipe',
+      createdAt: new Date(Date.now() - 90 * day),
+    });
+    const ids = async (query: Record<string, unknown>): Promise<string[]> =>
+      ((await a.get(BASE).query(query).expect(200)).body as ListLinksResponse).items.map(
+        (item) => item.id,
+      );
+    expect(await ids({ kind: 'recipe', saved: 'week' })).toEqual([recent]);
+    expect(await ids({ kind: 'recipe', saved: 'month' })).toEqual([recent, lastMonth]);
+    expect(await ids({ kind: 'recipe' })).toHaveLength(3);
+    await a.get(BASE).query({ saved: 'year' }).expect(400);
+  });
+
   it('the export carries the kind and filters by it', async () => {
     const userId = users.owner.userId;
     await seedLink(t.db.prisma, userId, {

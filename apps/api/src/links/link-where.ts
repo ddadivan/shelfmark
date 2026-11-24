@@ -1,4 +1,4 @@
-import { LINK_LIMIT } from '@shelfmark/contracts';
+import { LINK_LIMIT, SAVED_WITHIN_DAYS } from '@shelfmark/contracts';
 import type { Prisma } from '../generated/prisma/client';
 import { escapeLike } from '../common/util/escape-like';
 import type { LinkFilter } from './models/link-filter.interface';
@@ -38,6 +38,11 @@ export function buildLinkWhere(
   else if (filter.folderId !== undefined) and.push({ folderId: filter.folderId });
   if (filter.favorite !== undefined) and.push({ isFavorite: filter.favorite });
   if (filter.kind !== undefined) and.push({ kind: filter.kind });
+  if (filter.saved !== undefined) {
+    const now = options.now ?? new Date();
+    const days = SAVED_WITHIN_DAYS[filter.saved];
+    and.push({ createdAt: { gte: new Date(now.getTime() - days * 24 * 60 * 60 * 1000) } });
+  }
   for (const name of filter.tag ?? []) {
     and.push({
       tags: { some: { tag: { userId, name: { equals: escapeLike(name), mode: 'insensitive' } } } },

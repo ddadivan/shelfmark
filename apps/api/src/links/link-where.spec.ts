@@ -32,6 +32,16 @@ describe('buildLinkWhere', () => {
     expect(buildLinkWhere(USER, { favorite: false }).AND).toEqual([{ isFavorite: false }]);
   });
 
+  it('keeps links saved in the last 7 or 30 days, counted back from now', () => {
+    const now = new Date('2026-11-24T12:00:00.000Z');
+    expect(buildLinkWhere(USER, { saved: 'week' }, { now }).AND).toEqual([
+      { createdAt: { gte: new Date('2026-11-17T12:00:00.000Z') } },
+    ]);
+    expect(buildLinkWhere(USER, { saved: 'month' }, { now }).AND).toEqual([
+      { createdAt: { gte: new Date('2026-10-25T12:00:00.000Z') } },
+    ]);
+  });
+
   it('requires every tag, case-insensitively and scoped to the user', () => {
     const where = buildLinkWhere(USER, { tag: ['ts', 'Angular'] });
     expect(where.AND).toEqual([

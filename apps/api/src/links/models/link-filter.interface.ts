@@ -1,4 +1,4 @@
-import type { LinkKind } from '@shelfmark/contracts';
+import type { LinkKind, SavedWithin } from '@shelfmark/contracts';
 
 /** The filters shared by the list endpoint (and, later, the export): what narrows a user's links. */
 export interface LinkFilter {
@@ -13,4 +13,6 @@ export interface LinkFilter {
   q?: string;
   /** Only links of this kind (ADR 0038). */
   kind?: LinkKind;
+  /** Only links saved in the last 7 or 30 days (`SAVED_WITHIN_DAYS`), counted back from `options.now`. */
+  saved?: SavedWithin;
 }

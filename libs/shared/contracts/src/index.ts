@@ -280,6 +280,9 @@ export type { ReminderCountResponse } from './reminders/reminder-count-response.
 
 export { LINK_KIND } from './links/link-kind.const';
 export type { LinkKind } from './links/link-kind.type';
+export { SAVED_WITHIN } from './links/saved-within.const';
+export type { SavedWithin } from './links/saved-within.type';
+export { SAVED_WITHIN_DAYS } from './links/saved-within-days.const';
 export { LINK_KIND_VIDEO_HOSTS } from './links/link-kind-video-hosts.const';
 export { LINK_KIND_SHOP_HOSTS } from './links/link-kind-shop-hosts.const';
 export { deriveLinkKind } from './links/derive-link-kind';

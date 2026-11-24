@@ -4,11 +4,13 @@ import {
   LINK_LIMIT,
   LINK_SORT_FIELD,
   PAGE_LIMIT,
+  SAVED_WITHIN,
   SORT_ORDER,
   TAG_LIMIT,
   type LinkKind,
   type LinkSortField,
   type ListLinksQuery,
+  type SavedWithin,
   type SortOrder,
 } from '@shelfmark/contracts';
 import { Type } from 'class-transformer';
@@ -79,6 +81,14 @@ export class ListLinksQueryDto implements ListLinksQuery {
   @IsOptional()
   @IsIn(Object.values(LINK_KIND))
   kind?: LinkKind;
+
+  @ApiPropertyOptional({
+    enum: Object.values(SAVED_WITHIN),
+    description: 'Only links saved in the last 7 (week) or 30 (month) days',
+  })
+  @IsOptional()
+  @IsIn(Object.values(SAVED_WITHIN))
+  saved?: SavedWithin;
 
   @ApiPropertyOptional({ enum: Object.values(LINK_SORT_FIELD), default: LINK_SORT_FIELD.CreatedAt })
   @IsOptional()
