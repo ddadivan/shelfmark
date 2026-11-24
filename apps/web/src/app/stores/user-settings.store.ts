@@ -18,6 +18,7 @@ import type { Appearance } from '../core/theme/models/appearance.type';
 import { ThemeService } from '../core/theme/theme.service';
 import { LocaleService } from '../core/i18n/locale.service';
 import { SessionScope } from '../core/auth/session-scope.service';
+import { ReaderSettingsService } from '../features/reader/services/reader-settings.service';
 import { USER_SETTINGS_API } from '../features/settings/models/user-settings-api.const';
 import {
   appearanceOf,
@@ -47,7 +48,8 @@ const initialState: UserSettingsState = {
 /**
  * The account preferences (`/api/me/settings`), cached for the whole app. Today: how long Trash
  * keeps deleted items, folder colours, whether Recently opened records opens, and the appearance
- * (theme, Custom theme, Animations), which lives in ThemeService and is applied from here. A change is optimistic and rolls back when the request fails; the Trash
+ * (theme, Custom theme, Animations), which lives in ThemeService and is applied from here, and the
+ * reading settings of Reader (`ReaderSettingsService.adopt`). A change is optimistic and rolls back when the request fails; the Trash
  * list is reloaded after it, because the days left of every entry change. The session end
  * forgets everything and drops responses still in flight.
  */
@@ -91,12 +93,16 @@ export const UserSettingsStore = signalStore(
     async function fetchSettings(): Promise<void> {
       const started = epoch;
       const startedVersion = version;
+      const reader = injector.get(ReaderSettingsService);
+      const readerToken = reader.editToken();
       patchState(store, { loading: true, error: false });
       try {
         const settings = await firstValueFrom(api().get());
         if (started !== epoch) {
           return;
         }
+        // Reading settings of Reader: the account wins once saved, else a local copy is saved once.
+        reader.adopt(settings, readerToken);
         if (startedVersion === version) {
           if (settings.appearanceSaved) {
             // The account wins over the copy in this browser (it follows the user to every device).

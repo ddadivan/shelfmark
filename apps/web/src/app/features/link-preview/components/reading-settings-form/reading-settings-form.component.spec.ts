@@ -52,7 +52,7 @@ describe('ReadingSettingsFormComponent', () => {
       '1',
       '18',
     ]);
-    expect(host.textContent).toContain('Saved on this device');
+    expect(host.textContent).toContain('Saved to your account');
     expect(await axeViolations(host)).toEqual([]);
   });
 

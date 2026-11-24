@@ -1,4 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import {
+  READER_PREFERENCES_DEFAULT,
+  type UpdateUserSettingsRequest,
+  type UserSettingsResponse,
+} from '@shelfmark/contracts';
+import { MOCK_APPEARANCE_DEFAULTS } from '@shelfmark/contracts/testing';
+import { of, throwError } from 'rxjs';
+import { SessionScope } from '../../../core/auth/session-scope.service';
+import { USER_SETTINGS_API } from '../../settings/models/user-settings-api.const';
 import { READER_SETTINGS_STORAGE_KEY } from '../models/reader-settings-storage-key.const';
 import { READER_SETTINGS_DEFAULT } from '../models/reader-settings-default.const';
 import { ReaderSettingsService } from './reader-settings.service';
@@ -71,5 +80,105 @@ describe('ReaderSettingsService', () => {
     service.set({ size: 20 });
     expect(service.settings().size).toBe(20);
     spy.mockRestore();
+  });
+
+  describe('on the account', () => {
+    const update = vi.fn<(request: UpdateUserSettingsRequest) => unknown>();
+    const account = (change: Partial<UserSettingsResponse> = {}): UserSettingsResponse =>
+      ({ ...MOCK_APPEARANCE_DEFAULTS, ...change }) as UserSettingsResponse;
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      update.mockReset();
+      update.mockReturnValue(of(account()));
+      TestBed.configureTestingModule({
+        providers: [{ provide: USER_SETTINGS_API, useValue: { get: vi.fn(), update } }],
+      });
+    });
+
+    afterEach(() => vi.useRealTimers());
+
+    it('saves changes together after a short pause, only the fields changed', () => {
+      const service = TestBed.inject(ReaderSettingsService);
+      service.stepSize(1);
+      service.stepSize(1);
+      service.set({ theme: 'sepia' });
+      expect(update).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(600);
+      expect(update).toHaveBeenCalledExactlyOnceWith({ readerSize: 20, readerTheme: 'sepia' });
+    });
+
+    it('keeps a failed change and sends it again with the next one', async () => {
+      update.mockReturnValueOnce(throwError(() => new Error('offline')));
+      const service = TestBed.inject(ReaderSettingsService);
+      service.set({ font: 'serif' });
+      await vi.advanceTimersByTimeAsync(600);
+      service.set({ width: 'wide' });
+      await vi.advanceTimersByTimeAsync(600);
+      expect(update).toHaveBeenLastCalledWith({ readerFont: 'serif', readerLineWidth: 'wide' });
+      expect(service.settings().font).toBe('serif');
+    });
+
+    it('takes the account settings once saved there', () => {
+      localStorage.setItem(READER_SETTINGS_STORAGE_KEY, JSON.stringify({ font: 'serif' }));
+      const service = TestBed.inject(ReaderSettingsService);
+      service.adopt(
+        account({
+          readerSaved: true,
+          readerFont: 'readable',
+          readerSize: 22,
+          readerTheme: 'black',
+        }),
+        service.editToken(),
+      );
+      expect(service.settings()).toEqual({
+        theme: 'black',
+        font: 'readable',
+        size: 22,
+        lineSpacing: 'normal',
+        width: 'normal',
+      });
+      expect(JSON.parse(localStorage.getItem(READER_SETTINGS_STORAGE_KEY) ?? '{}')).toMatchObject({
+        font: 'readable',
+      });
+      expect(update).not.toHaveBeenCalled();
+    });
+
+    it('keeps a change made while the account answer was on its way', () => {
+      const service = TestBed.inject(ReaderSettingsService);
+      const token = service.editToken();
+      service.set({ size: 16 });
+      service.adopt(account({ readerSaved: true, readerSize: 22 }), token);
+      expect(service.settings().size).toBe(16);
+    });
+
+    it('saves the settings of this browser once when the account has none', () => {
+      localStorage.setItem(READER_SETTINGS_STORAGE_KEY, JSON.stringify({ font: 'serif' }));
+      const service = TestBed.inject(ReaderSettingsService);
+      service.adopt(account({ readerSaved: false }), service.editToken());
+      expect(update).toHaveBeenCalledExactlyOnceWith({
+        ...READER_PREFERENCES_DEFAULT,
+        readerFont: 'serif',
+      });
+    });
+
+    it('writes nothing when neither the account nor this browser has settings', () => {
+      const service = TestBed.inject(ReaderSettingsService);
+      service.adopt(account(), service.editToken());
+      expect(update).not.toHaveBeenCalled();
+      expect(localStorage.getItem(READER_SETTINGS_STORAGE_KEY)).toBeNull();
+    });
+
+    it('sends a waiting change before the session ends and forgets it after', async () => {
+      const service = TestBed.inject(ReaderSettingsService);
+      const scope = TestBed.inject(SessionScope);
+      service.set({ lineSpacing: 'relaxed' });
+      await scope.flush();
+      expect(update).toHaveBeenCalledExactlyOnceWith({ readerLineSpacing: 'relaxed' });
+      service.set({ width: 'narrow' });
+      scope.end();
+      await vi.advanceTimersByTimeAsync(600);
+      expect(update).toHaveBeenCalledTimes(1);
+    });
   });
 });
