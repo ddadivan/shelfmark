@@ -4,6 +4,11 @@
   display: block;
 }
 
+// Shelf 13-views "Pick a date": the presets beside the calendar from 40em.
+ui-dialog.remind-dialog--wide {
+  --ui-dialog-custom-width: #{rem(552px)};
+}
+
 .remind-dialog {
   display: flex;
   flex-direction: column;
@@ -52,10 +57,62 @@
   color: var(--text-muted);
 }
 
+.remind-dialog__pick {
+  display: grid;
+  grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
+  gap: var(--space-4);
+
+  @include phone {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.remind-dialog__quick {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.remind-dialog__preset--on {
+  border-radius: var(--radius-sm);
+  background: var(--surface-pressed);
+}
+
 .remind-dialog__picker {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  min-width: 0;
+}
+
+.remind-dialog__times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.remind-dialog__times-label {
+  @include type(caption);
+
+  color: var(--text-muted);
+}
+
+// The chosen moment on a filled line, with the bell.
+.remind-dialog__summary {
+  @include type(secondary);
+
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin: 0;
+  padding: var(--space-3);
+  color: var(--text);
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
 }
 
 .remind-dialog__remove {

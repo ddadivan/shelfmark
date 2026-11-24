@@ -3254,7 +3254,9 @@
       "remove": "Supprimer le rappel",
       "cancel": "Annuler",
       "confirm": "Me le rappeler {{when}}",
-      "confirmEmpty": "Choisissez un jour"
+      "confirmEmpty": "Choisissez un jour",
+      "set": "Créer le rappel",
+      "timeExact": "Heure précise"
     },
     "menu": {
       "remind": "Me le rappeler…",

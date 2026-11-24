@@ -3175,7 +3175,9 @@
       "remove": "Erinnerung entfernen",
       "cancel": "Abbrechen",
       "confirm": "Erinnern: {{when}}",
-      "confirmEmpty": "Tag wählen"
+      "confirmEmpty": "Tag wählen",
+      "set": "Erinnerung setzen",
+      "timeExact": "Genaue Uhrzeit"
     },
     "menu": {
       "remind": "Erinnern…",

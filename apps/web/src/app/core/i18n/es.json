@@ -3254,7 +3254,9 @@
       "remove": "Quitar recordatorio",
       "cancel": "Cancelar",
       "confirm": "Recordármelo {{when}}",
-      "confirmEmpty": "Elige un día"
+      "confirmEmpty": "Elige un día",
+      "set": "Crear recordatorio",
+      "timeExact": "Hora exacta"
     },
     "menu": {
       "remind": "Recordármelo…",

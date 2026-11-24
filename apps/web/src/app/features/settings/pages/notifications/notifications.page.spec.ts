@@ -75,12 +75,11 @@ describe('NotificationsPage', () => {
     const { root, api, harness } = await setup();
 
     expect(headings(root)).toEqual(['On this device', 'What to send', 'Quiet hours', 'Devices']);
-    const weekly = root.querySelector<HTMLButtonElement>(
-      'button[role="switch"][aria-label="From your shelf, weekly email"]',
-    );
-    weekly?.click();
-    await harness.fixture.whenStable();
-    expect(api.update).toHaveBeenCalledWith({ weeklyEmail: true });
+    // Shelf: email postponed by the author: no weekly email switch at all.
+    expect(
+      root.querySelector('button[role="switch"][aria-label="From your shelf, weekly email"]'),
+    ).toBeNull();
+    expect(root.textContent).not.toContain('email');
 
     buttonWith(root, 'Turn off')?.click();
     await harness.fixture.whenStable();

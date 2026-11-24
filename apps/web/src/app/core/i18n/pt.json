@@ -3254,7 +3254,9 @@
       "remove": "Remover lembrete",
       "cancel": "Cancelar",
       "confirm": "Lembrar-me {{when}}",
-      "confirmEmpty": "Escolha um dia"
+      "confirmEmpty": "Escolha um dia",
+      "set": "Criar lembrete",
+      "timeExact": "Hora exata"
     },
     "menu": {
       "remind": "Lembrar-me…",

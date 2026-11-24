@@ -3254,7 +3254,9 @@
       "remove": "Rimuovi promemoria",
       "cancel": "Annulla",
       "confirm": "Ricordamelo {{when}}",
-      "confirmEmpty": "Scegli un giorno"
+      "confirmEmpty": "Scegli un giorno",
+      "set": "Imposta promemoria",
+      "timeExact": "Ora esatta"
     },
     "menu": {
       "remind": "Ricordamelo…",

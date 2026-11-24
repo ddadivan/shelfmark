@@ -85,8 +85,11 @@ describe('RemindDialogComponent', () => {
     if (!time) throw new Error('no time field');
     time.value = '18:30';
     time.dispatchEvent(new Event('input'));
-    const confirm = await dialog.getHarness(UiButtonHarness.with({ text: /^Remind me / }));
-    expect(await confirm.getText()).toMatch(/^Remind me Nov 20, /);
+    // Shelf 13-views: the moment reads under the picker; the button says Set reminder.
+    await vi.waitFor(() =>
+      expect(root()?.querySelector('.remind-dialog__summary')?.textContent).toMatch(/Nov 20, /),
+    );
+    const confirm = await dialog.getHarness(UiButtonHarness.with({ text: 'Set reminder' }));
     await confirm.click();
     await vi.waitFor(() => expect(closed).toHaveBeenCalled());
     expect(closed).toHaveBeenCalledWith({
@@ -102,9 +105,26 @@ describe('RemindDialogComponent', () => {
     time.value = '08:00';
     time.dispatchEvent(new Event('input'));
     await vi.waitFor(() => expect(root()?.textContent).toContain('This time has already passed'));
-    const confirm = await dialog.getHarness(UiButtonHarness.with({ text: 'Pick a day' }));
+    const confirm = await dialog.getHarness(UiButtonHarness.with({ text: 'Set reminder' }));
     expect(await confirm.isDisabled()).toBe(true);
     expect(closed).not.toHaveBeenCalled();
+  });
+
+  it('lets a preset set the calendar in the picker, then saves with Set reminder', async () => {
+    const { dialog, closed } = await setup();
+    await (await dialog.getHarness(UiButtonHarness.with({ text: 'Pick date and time…' }))).click();
+    const tomorrow = await dialog.getHarness(UiButtonHarness.with({ text: /^Tomorrow/ }));
+    await tomorrow.click();
+    expect(closed).not.toHaveBeenCalled();
+    expect(await (await dialog.getHarness(UiDatePickerHarness)).getSelectedDay()).toBe(
+      '2026-11-12',
+    );
+    await (await dialog.getHarness(UiButtonHarness.with({ text: 'Set reminder' }))).click();
+    await vi.waitFor(() =>
+      expect(closed).toHaveBeenCalledWith({
+        remindAt: new Date(2026, 10, 12, 9, 0).toISOString(),
+      }),
+    );
   });
 
   it('shows the current reminder and removes it', async () => {

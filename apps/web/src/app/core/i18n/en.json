@@ -3175,7 +3175,9 @@
       "remove": "Remove reminder",
       "cancel": "Cancel",
       "confirm": "Remind me {{when}}",
-      "confirmEmpty": "Pick a day"
+      "confirmEmpty": "Pick a day",
+      "set": "Set reminder",
+      "timeExact": "Exact time"
     },
     "menu": {
       "remind": "Remind me…",
