@@ -1417,7 +1417,10 @@
       "download": "Завантажити",
       "saved": "Файл збережено",
       "formatHeading": "Формат",
-      "downloadAs": "Експортувати {{format}}"
+      "downloadAs": "Експортувати {{format}}",
+      "what": "Що",
+      "whole": "Уся бібліотека · {{count}}",
+      "folder": "{{name}} · {{count}}"
     }
   },
   "import": {

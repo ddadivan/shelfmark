@@ -1394,7 +1394,10 @@
       "download": "Scarica",
       "saved": "File salvato",
       "formatHeading": "Formato",
-      "downloadAs": "Esporta {{format}}"
+      "downloadAs": "Esporta {{format}}",
+      "what": "Cosa",
+      "whole": "Tutta la libreria · {{count}}",
+      "folder": "{{name}} · {{count}}"
     }
   },
   "import": {

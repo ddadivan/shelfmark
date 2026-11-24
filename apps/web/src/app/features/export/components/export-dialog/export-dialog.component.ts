@@ -13,12 +13,15 @@ import {
   ButtonComponent,
   DialogCancelDirective,
   DialogComponent,
+  injectDialogData,
   RadioGroupComponent,
+  SegmentedControlComponent,
   SpinnerComponent,
   TOAST_KIND,
   ToastService,
   UiDialogRef,
   type RadioOption,
+  type SegmentedOption,
 } from '@shelfmark/ui';
 import { activeLang } from '../../../../core/i18n/active-lang';
 import { LocaleService } from '../../../../core/i18n/locale.service';
@@ -27,8 +30,13 @@ import { ViewportService } from '../../../../core/layout/viewport.service';
 import { EXPORT_FORMAT_OPTIONS } from '../../models/export-format-options.const';
 import { EXPORT_RESULT } from '../../models/export-result.const';
 import type { LastExport } from '../../models/last-export.interface';
+import { FoldersStore } from '../../../../stores/folders.store';
+import type { ExportFolderChoice } from '../../models/export-folder-choice.interface';
 import { ExportActionsService } from '../../services/export-actions.service';
 import { readLastExport, writeLastExport } from '../../utils/last-export';
+
+/** The segmented value of "Whole library". */
+const ALL_LINKS = 'all';
 
 function isFormat(value: string): value is ExportFormat {
   return (Object.values(EXPORT_FORMAT) as string[]).includes(value);
@@ -48,6 +56,7 @@ function isFormat(value: string): value is ExportFormat {
     DialogCancelDirective,
     DialogComponent,
     RadioGroupComponent,
+    SegmentedControlComponent,
     SpinnerComponent,
   ],
   templateUrl: './export-dialog.component.html',
@@ -71,6 +80,32 @@ export class ExportDialogComponent {
   protected readonly preparing = signal(false);
   private readonly last = signal<LastExport | null>(readLastExport());
   private readonly abort = new AbortController();
+  private readonly folders = inject(FoldersStore);
+
+  /** The folder page the dialog was opened on, offered next to the whole library. */
+  protected readonly folder = injectDialogData<ExportFolderChoice | null>() ?? null;
+  /** `ALL_LINKS` or the folder's id. */
+  protected readonly scope = signal<string>(ALL_LINKS);
+  protected readonly scopeOptions = computed<SegmentedOption[]>(() => {
+    activeLang();
+    const folder = this.folder;
+    if (folder === null) return [];
+    return [
+      {
+        value: ALL_LINKS,
+        label: this.transloco.translate('export.dialog.whole', {
+          count: this.locale.formatNumber(this.folders.counts().all),
+        }),
+      },
+      {
+        value: folder.id,
+        label: this.transloco.translate('export.dialog.folder', {
+          name: folder.name,
+          count: this.locale.formatNumber(folder.count),
+        }),
+      },
+    ];
+  });
 
   protected readonly options = computed<RadioOption[]>(() => {
     activeLang();
@@ -114,7 +149,8 @@ export class ExportDialogComponent {
     }
     const format = this.format();
     this.preparing.set(true);
-    const result = await this.exporter.download(format, {}, { signal: this.abort.signal });
+    const scope = this.scope() === ALL_LINKS ? {} : { folderId: this.scope() };
+    const result = await this.exporter.download(format, scope, { signal: this.abort.signal });
     if (this.abort.signal.aborted) {
       return;
     }

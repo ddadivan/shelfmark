@@ -1371,7 +1371,10 @@
       "download": "Download",
       "saved": "File saved",
       "formatHeading": "Format",
-      "downloadAs": "Export {{format}}"
+      "downloadAs": "Export {{format}}",
+      "what": "What",
+      "whole": "Whole library · {{count}}",
+      "folder": "{{name}} · {{count}}"
     }
   },
   "import": {

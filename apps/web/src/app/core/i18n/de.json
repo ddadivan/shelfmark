@@ -1371,7 +1371,10 @@
       "download": "Herunterladen",
       "saved": "Datei gespeichert",
       "formatHeading": "Format",
-      "downloadAs": "Als {{format}} exportieren"
+      "downloadAs": "Als {{format}} exportieren",
+      "what": "Was",
+      "whole": "Ganze Bibliothek · {{count}}",
+      "folder": "{{name}} · {{count}}"
     }
   },
   "import": {
