@@ -250,3 +250,24 @@ button.ui-chip__body {
     color: var(--text);
   }
 }
+
+// `variant="filter"` (Shelf Filter popover): a 32px option with a `line` edge on `surface`, 14px
+// 500 text; `pressed` turns it `accent-bg` with `accent-text` and no edge.
+:host(.ui-chip--filter) {
+  height: var(--control-sm);
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+
+  .ui-chip__body {
+    @include type(label);
+
+    font-size: rem(14px);
+  }
+}
+
+:host(.ui-chip--filter.ui-chip--pressed) {
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  box-shadow: none;
+}

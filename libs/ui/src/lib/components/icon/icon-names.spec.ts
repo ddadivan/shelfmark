@@ -23,6 +23,8 @@ const APP_ICONS = [
   // Shelf (ADR 0061): the filled folder glyph of sidebar rows and card meta, the tag row's hash.
   'folder-filled',
   'hash',
+  // Shelf: the library's Filter… item (three lines, shortest last).
+  'filter',
   // The Masonry view of the library feed (Shelf, ADR 0061).
   'masonry',
   // Folder icons added in #335 (food, sport, travel, money, music, home, health, kids, pets, ...).

@@ -13,7 +13,7 @@
   --ui-button-radius: var(--radius-full);
 
   // Shelf reference: the glass marks carry a 12px glyph, 10px in from the preview's edges.
-  --ui-icon-size: #{rem(12px)};
+  --ui-button-icon-size: #{rem(12px)};
 
   inset-block-start: rem(10px);
   z-index: 2;

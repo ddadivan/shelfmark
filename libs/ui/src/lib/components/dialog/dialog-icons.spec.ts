@@ -10,7 +10,7 @@ describe('dialog sizes (CSS)', () => {
       'lib/components/select/select.component.scss',
       'lib/components/chip/chip.component.scss',
     ]) {
-      expect(compileScss(file)).toMatch(/--ui-icon-size:\s*var\(--ui-dialog-icon-size\)/);
+      expect(compileScss(file)).toMatch(/--ui-icon-size:\s*var\(--ui-dialog-icon-size[,)]/);
     }
   });
 

@@ -12,6 +12,7 @@
     uiRipple
     [disabled]="disabled()"
     [attr.aria-label]="ariaLabel() || null"
+    [attr.aria-pressed]="pressed() ?? null"
     (click)="clicked.emit()"
   >
     <ng-container [ngTemplateOutlet]="content" />

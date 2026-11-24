@@ -46,6 +46,8 @@ import type { UiFocusTarget } from '../../directives/focus-target/models/ui-focu
     '[class.ui-chip--neutral]': 'variant() === CHIP_VARIANT.Neutral',
     '[class.ui-chip--nav]': 'variant() === CHIP_VARIANT.Nav',
     '[class.ui-chip--hashtag]': 'variant() === CHIP_VARIANT.Hashtag',
+    '[class.ui-chip--filter]': 'variant() === CHIP_VARIANT.Filter',
+    '[class.ui-chip--pressed]': 'pressed() === true',
     '[class.ui-chip--clickable]': 'clickable()',
     '[class.ui-chip--removable]': 'removable()',
     '[class.ui-chip--menu]': 'hasMenu()',
@@ -72,6 +74,11 @@ export class ChipComponent implements UiFocusTarget {
   readonly truncate = input(false, { transform: booleanAttribute });
   /** Optional leading icon. */
   readonly icon = input<IconName>();
+  /**
+   * A clickable chip that toggles (a filter option): `aria-pressed` on its button. Unset (the
+   * default) leaves it a plain button.
+   */
+  readonly pressed = input<boolean>();
   /**
    * Accessible name of the clickable body when its text alone says too little (a "+3" chip:
    * "3 more tags: a, b, c"). Without it the projected text names the button.

@@ -20,6 +20,7 @@ import { CHIP_VARIANT } from './models/chip-variant.const';
       [removeLabel]="removeLabel()"
       [truncate]="truncate()"
       [ariaLabel]="ariaLabel()"
+      [pressed]="pressed()"
       (clicked)="clicks.set(clicks() + 1)"
       (removed)="removals.set(removals() + 1)"
       >design</ui-chip
@@ -35,6 +36,7 @@ class HostComponent {
   readonly removeLabel = signal<string | undefined>('Remove tag design');
   readonly truncate = signal(false);
   readonly ariaLabel = signal<string | undefined>(undefined);
+  readonly pressed = signal<boolean | undefined>(undefined);
   readonly clicks = signal(0);
   readonly removals = signal(0);
 }
@@ -79,6 +81,21 @@ describe('ChipComponent', () => {
     update((c) => c.variant.set(CHIP_VARIANT.Hashtag));
     expect(chip.classList.contains('ui-chip--hashtag')).toBe(true);
     expect(chip.classList.contains('ui-chip--tag')).toBe(false);
+  });
+
+  it('renders the filter variant and sets aria-pressed only when pressed is given', () => {
+    const { chip, update } = setup();
+    update((c) => {
+      c.variant.set(CHIP_VARIANT.Filter);
+      c.clickable.set(true);
+    });
+    expect(chip.classList.contains('ui-chip--filter')).toBe(true);
+    expect(chip.querySelector('button')?.hasAttribute('aria-pressed')).toBe(false);
+    update((c) => c.pressed.set(true));
+    expect(chip.classList.contains('ui-chip--pressed')).toBe(true);
+    expect(chip.querySelector('button')?.getAttribute('aria-pressed')).toBe('true');
+    update((c) => c.pressed.set(false));
+    expect(chip.querySelector('button')?.getAttribute('aria-pressed')).toBe('false');
   });
 
   it('shows a leading icon', () => {
@@ -254,11 +271,14 @@ describe('ChipComponent', () => {
     expect(await axeViolations(host)).toEqual([]);
   });
 
-  it('is quiet: text-muted on surface-hover with radius 10, never the accent', () => {
+  it('is quiet: text-muted on surface-hover with radius 10; the accent tint only on a pressed filter', () => {
     const css = compileScss('lib/components/chip/chip.component.scss');
     expect(css).toContain('color: var(--text-muted)');
     expect(css).toContain('var(--ui-chip-bg, var(--surface-hover))');
     expect(css).toContain('border-radius: var(--radius-sm)');
-    expect(css).not.toContain('--accent');
+    // The near-black accent itself is never used; its soft tint marks a pressed Filter option only.
+    expect(css).not.toMatch(/var\(--accent\)/);
+    const accentRules = css.split('}').filter((rule) => rule.includes('--accent'));
+    expect(accentRules.every((rule) => rule.includes('.ui-chip--pressed'))).toBe(true);
   });
 });

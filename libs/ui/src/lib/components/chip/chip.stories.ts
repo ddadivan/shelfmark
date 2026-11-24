@@ -66,6 +66,15 @@ export const Hashtag: Story = {
   args: { variant: CHIP_VARIANT.Hashtag, clickable: true },
 };
 
+/** A Filter popover option (Shelf): `line` edge; pressed is `accent-bg`. */
+export const FilterOption: Story = {
+  args: { variant: CHIP_VARIANT.Filter, clickable: true, pressed: false },
+};
+
+export const FilterOptionPressed: Story = {
+  args: { variant: CHIP_VARIANT.Filter, clickable: true, pressed: true },
+};
+
 /** Remove button, Delete and Backspace on focus. */
 export const Removable: Story = { args: { removable: true } };
 

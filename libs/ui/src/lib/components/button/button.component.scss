@@ -31,7 +31,9 @@
   @include type(label);
 
   // Inside a dialog every icon is 24px (`--ui-dialog-icon-size` from `ui-dialog`).
-  --ui-icon-size: var(--ui-dialog-icon-size);
+  // `--ui-button-icon-size`: a feature that draws a button's icon smaller than its size gives (the
+  // Shelf sidebar's 14px chevrons and "+", the 12px glyphs of the glass buttons on a card).
+  --ui-icon-size: var(--ui-dialog-icon-size, var(--ui-button-icon-size));
 
   // `--ui-button-scale` (unitless, default 1): a feature that needs bigger buttons than the
   // three sizes (the landing on wide screens) sets it on an ancestor; box, text and icons grow.
@@ -130,7 +132,7 @@ a.ui-button {
 .ui-button--glass {
   @include glass-button;
 
-  --ui-icon-size: var(--icon-size-sm);
+  --ui-icon-size: var(--ui-button-icon-size, var(--icon-size-sm));
 
   width: var(--ui-button-glass-size, #{rem(28px)});
   height: var(--ui-button-glass-size, #{rem(28px)});

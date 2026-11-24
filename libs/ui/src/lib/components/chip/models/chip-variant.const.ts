@@ -5,4 +5,6 @@ export const CHIP_VARIANT = {
   Nav: 'nav',
   /** A hashtag on a card (Shelf LinkCard): plain 12px muted text, no pill. */
   Hashtag: 'hashtag',
+  /** A filter option (Shelf Filter popover): 32px, `line` edge, `accent-bg` while `pressed`. */
+  Filter: 'filter',
 } as const;

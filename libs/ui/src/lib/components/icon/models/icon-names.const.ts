@@ -41,6 +41,7 @@ export const ICON_NAMES = [
   'eye',
   'file',
   'film',
+  'filter',
   'flag',
   'folder',
   'folder-filled',
