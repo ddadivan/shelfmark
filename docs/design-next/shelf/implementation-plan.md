@@ -196,5 +196,7 @@ From `04-organise.html`, `08-select-move.html` and `13-views.html`. Screens: `sc
 
 ## For the author at the end (manual setup, not done by agents)
 
+- **Later, after the redesign (author, Nov 24, 2026): MCP `save_link` tool.** "Read and save" tokens can be created and stay visible, but the MCP server is read-only (ADR 0054), so they act as read-only today. Plan: a `save_link` tool (url, optional title, note, folder, tags) through the normal create path (rules, duplicates, SSRF-safe preview), allowed only for `save` tokens, its own rate limit and idempotency, isolation and access tests; needs an ADR 0054 update and the shared create logic moved where `McpModule` can use it without importing `LinksModule`. About one to two hours of agent work.
+
 - **Web Push keys in Vercel:** `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (e.g. `mailto:` of the project). Without them the API answers "not configured" for push notifications and sends nothing.
 - **Weekly email:** postponed by the author (Nov 24, 2026): the screen stays as designed with mocked data; delivery needs a mail provider and is not built.
