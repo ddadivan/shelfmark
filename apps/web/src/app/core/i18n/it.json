@@ -2758,7 +2758,8 @@
       "error": "Invio non riuscito. Il tuo testo è salvato — riprova tra un momento.",
       "rateLimited": "Hai inviato molti messaggi nell’ultima ora. Il tuo testo è salvato — riprova più tardi.",
       "attachClientInfoLabel": "Cosa viene inviato?",
-      "attachClientInfo": "Ci aiuta a riprodurre i problemi. Vengono inviati solo la versione dell’app e il nome e la versione del browser."
+      "attachClientInfo": "Ci aiuta a riprodurre i problemi. Vengono inviati solo la versione dell’app e il nome e la versione del browser.",
+      "kindQuestion": "Di cosa si tratta?"
     },
     "screenshot": {
       "label": "Screenshot (facoltativi)",
@@ -2803,7 +2804,10 @@
       },
       "sent": "Inviato il {{date}}",
       "sentToday": "Inviato oggi",
-      "reply": "Risposta: {{reply}}"
+      "reply": "Risposta: {{reply}}",
+      "lead": "Cosa hai inviato e cosa ne è venuto fuori.",
+      "replyFrom": "Shelfmark",
+      "replyLabel": "Risposta:"
     }
   },
   "admin": {

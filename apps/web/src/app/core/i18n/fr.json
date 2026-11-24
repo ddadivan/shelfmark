@@ -2758,7 +2758,8 @@
       "error": "Envoi impossible. Votre texte est conservé — réessayez dans un instant.",
       "rateLimited": "Vous avez envoyé beaucoup de messages dans la dernière heure. Votre texte est conservé — réessayez plus tard.",
       "attachClientInfoLabel": "Qu’est-ce qui est envoyé ?",
-      "attachClientInfo": "Nous aide à reproduire les problèmes. Seuls la version de l’app ainsi que le nom et la version de votre navigateur sont envoyés."
+      "attachClientInfo": "Nous aide à reproduire les problèmes. Seuls la version de l’app ainsi que le nom et la version de votre navigateur sont envoyés.",
+      "kindQuestion": "De quoi s’agit-il ?"
     },
     "screenshot": {
       "label": "Captures d’écran (facultatif)",
@@ -2803,7 +2804,10 @@
       },
       "sent": "Envoyé le {{date}}",
       "sentToday": "Envoyé aujourd’hui",
-      "reply": "Réponse : {{reply}}"
+      "reply": "Réponse : {{reply}}",
+      "lead": "Ce que vous avez envoyé et ce qu’il en est advenu.",
+      "replyFrom": "Shelfmark",
+      "replyLabel": "Réponse :"
     }
   },
   "admin": {

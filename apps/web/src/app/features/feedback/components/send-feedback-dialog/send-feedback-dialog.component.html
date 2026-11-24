@@ -21,12 +21,19 @@
       </div>
     } @else {
       <div class="feedback-dialog__fields">
-        <ui-segmented-control
-          [ariaLabel]="'feedback.dialog.kind' | transloco"
-          [options]="kindOptions()"
-          [value]="form.kind().value()"
-          (valueChange)="setKind($event)"
-        />
+        <!-- Shelf 15-tools: "What is it about?" above a full-width segmented choice. -->
+        <div class="feedback-dialog__kind">
+          <span class="feedback-dialog__kind-label" id="feedback-kind-label">{{
+            'feedback.dialog.kindQuestion' | transloco
+          }}</span>
+          <ui-segmented-control
+            class="feedback-dialog__kinds"
+            ariaLabelledby="feedback-kind-label"
+            [options]="kindOptions()"
+            [value]="form.kind().value()"
+            (valueChange)="setKind($event)"
+          />
+        </div>
 
         <ui-textarea
           [label]="copy().fieldKey | transloco"

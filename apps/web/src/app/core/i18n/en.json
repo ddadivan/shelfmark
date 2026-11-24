@@ -2696,7 +2696,8 @@
       "error": "Couldn't send. Your text is kept — try again in a moment.",
       "rateLimited": "You have sent a lot of messages in the last hour. Your text is kept — try again later.",
       "attachClientInfoLabel": "What is sent?",
-      "attachClientInfo": "Helps us reproduce problems. Only the app version and your browser name and version are sent."
+      "attachClientInfo": "Helps us reproduce problems. Only the app version and your browser name and version are sent.",
+      "kindQuestion": "What is it about?"
     },
     "screenshot": {
       "label": "Screenshots (optional)",
@@ -2741,7 +2742,10 @@
       },
       "sent": "Sent {{date}}",
       "sentToday": "Sent today",
-      "reply": "Reply: {{reply}}"
+      "reply": "Reply: {{reply}}",
+      "lead": "What you’ve sent and what came of it.",
+      "replyFrom": "Shelfmark",
+      "replyLabel": "Reply:"
     }
   },
   "admin": {

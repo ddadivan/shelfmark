@@ -2758,7 +2758,8 @@
       "error": "Não foi possível enviar. Seu texto foi mantido — tente de novo em instantes.",
       "rateLimited": "Você enviou muitas mensagens na última hora. Seu texto foi mantido — tente mais tarde.",
       "attachClientInfoLabel": "O que é enviado?",
-      "attachClientInfo": "Ajuda a reproduzir os problemas. Só são enviados a versão do app e o nome e a versão do seu navegador."
+      "attachClientInfo": "Ajuda a reproduzir os problemas. Só são enviados a versão do app e o nome e a versão do seu navegador.",
+      "kindQuestion": "Sobre o que é?"
     },
     "screenshot": {
       "label": "Capturas de tela (opcional)",
@@ -2803,7 +2804,10 @@
       },
       "sent": "Enviado em {{date}}",
       "sentToday": "Enviado hoje",
-      "reply": "Resposta: {{reply}}"
+      "reply": "Resposta: {{reply}}",
+      "lead": "O que você enviou e no que deu.",
+      "replyFrom": "Shelfmark",
+      "replyLabel": "Resposta:"
     }
   },
   "admin": {

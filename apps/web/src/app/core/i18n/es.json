@@ -2758,7 +2758,8 @@
       "error": "No se pudo enviar. Tu texto se conserva — inténtalo de nuevo en un momento.",
       "rateLimited": "Has enviado muchos mensajes en la última hora. Tu texto se conserva — inténtalo más tarde.",
       "attachClientInfoLabel": "¿Qué se envía?",
-      "attachClientInfo": "Nos ayuda a reproducir los problemas. Solo se envían la versión de la app y el nombre y la versión de tu navegador."
+      "attachClientInfo": "Nos ayuda a reproducir los problemas. Solo se envían la versión de la app y el nombre y la versión de tu navegador.",
+      "kindQuestion": "¿De qué se trata?"
     },
     "screenshot": {
       "label": "Capturas de pantalla (opcional)",
@@ -2803,7 +2804,10 @@
       },
       "sent": "Enviado el {{date}}",
       "sentToday": "Enviado hoy",
-      "reply": "Respuesta: {{reply}}"
+      "reply": "Respuesta: {{reply}}",
+      "lead": "Lo que has enviado y en qué quedó.",
+      "replyFrom": "Shelfmark",
+      "replyLabel": "Respuesta:"
     }
   },
   "admin": {

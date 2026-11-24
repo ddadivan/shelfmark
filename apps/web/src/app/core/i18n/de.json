@@ -2696,7 +2696,8 @@
       "error": "Senden fehlgeschlagen. Dein Text bleibt erhalten — versuch es gleich noch einmal.",
       "rateLimited": "Du hast in der letzten Stunde viele Nachrichten gesendet. Dein Text bleibt erhalten — versuch es später noch einmal.",
       "attachClientInfoLabel": "Was wird gesendet?",
-      "attachClientInfo": "Hilft uns, Probleme nachzustellen. Gesendet werden nur die App-Version sowie Name und Version deines Browsers."
+      "attachClientInfo": "Hilft uns, Probleme nachzustellen. Gesendet werden nur die App-Version sowie Name und Version deines Browsers.",
+      "kindQuestion": "Worum geht es?"
     },
     "screenshot": {
       "label": "Screenshots (optional)",
@@ -2741,7 +2742,10 @@
       },
       "sent": "Gesendet am {{date}}",
       "sentToday": "Heute gesendet",
-      "reply": "Antwort: {{reply}}"
+      "reply": "Antwort: {{reply}}",
+      "lead": "Was du geschickt hast und was daraus wurde.",
+      "replyFrom": "Shelfmark",
+      "replyLabel": "Antwort:"
     }
   },
   "admin": {
