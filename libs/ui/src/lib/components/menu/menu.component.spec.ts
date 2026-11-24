@@ -527,10 +527,12 @@ describe('MenuComponent', () => {
       expect(menuHost.querySelector('.ui-menu__grip')).toBeNull();
     });
 
-    it('draws the sheet full width with 20px top corners, at most 560px, 48px rows', () => {
+    it('draws the sheet full width with 16px (radius-lg) top corners, at most 560px, 48px rows', () => {
       const css = compileScss('lib/components/menu/menu.component.scss');
       expect(css).toMatch(/\.ui-menu__surface--sheet \{[^}]*max-width: 35rem/);
-      expect(css).toMatch(/\.ui-menu__surface--sheet \{[^}]*border-radius: 1\.25rem 1\.25rem 0 0/);
+      expect(css).toMatch(
+        /\.ui-menu__surface--sheet \{[^}]*border-radius: var\(--radius-lg\) var\(--radius-lg\) 0 0/,
+      );
       expect(css).toContain('env(safe-area-inset-bottom, 0rem)');
       const item = compileScss('lib/components/menu/menu-item/menu-item.component.scss');
       expect(item).toMatch(

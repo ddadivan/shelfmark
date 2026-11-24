@@ -315,10 +315,11 @@ describe('ViewMenuComponent', () => {
     await menu.close();
   });
 
-  it('draws the reference panel (at least 240px) and a 13px pill with a turning caret', () => {
+  it('draws the reference panel (at least 240px) and a 14px 500 pill with a turning caret', () => {
     const css = compileScss('lib/components/view-menu/view-menu.component.scss');
     expect(css).toContain('min-inline-size: 15rem');
-    expect(css).toContain('font-size: 0.8125rem');
+    expect(css).toContain('font-size: 0.875rem');
+    expect(css).toContain('font-weight: 500');
     expect(css).toContain('rotate(225deg)');
     expect(css).toContain('var(--surface)');
     expect(css).toContain('var(--shadow-l2)');

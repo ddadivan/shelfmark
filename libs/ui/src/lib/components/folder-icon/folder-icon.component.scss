@@ -3,7 +3,7 @@
 // Tile sizes and corner radii follow the design (22 / 28 / 40 / 56 px, radius 7 / 9 / 12 / 16 px).
 :host {
   --ui-folder-icon-size: #{rem(28px)};
-  --ui-folder-icon-radius: #{rem(9px)};
+  --ui-folder-icon-radius: #{rem(8px)};
 
   display: inline-grid;
   flex: none;
@@ -17,7 +17,7 @@
 
 :host(.ui-folder-icon--sm) {
   --ui-folder-icon-size: #{rem(22px)};
-  --ui-folder-icon-radius: #{rem(7px)};
+  --ui-folder-icon-radius: #{rem(6px)};
 }
 
 :host(.ui-folder-icon--lg) {

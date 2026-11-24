@@ -74,7 +74,7 @@
   height: rem(72px);
   color: var(--accent-text);
   background: var(--accent-bg);
-  border-radius: rem(20px);
+  border-radius: var(--radius-lg);
 }
 
 .ui-empty-state__title {

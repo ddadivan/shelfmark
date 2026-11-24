@@ -15,7 +15,10 @@
   justify-content: center;
   height: var(--control-sm);
   padding: 0 var(--space-3);
-  font-size: rem(13px);
+
+  // Shelf `label` style (design update): 14px, 500.
+  @include type(label);
+
   color: var(--text);
   white-space: nowrap;
   cursor: pointer;

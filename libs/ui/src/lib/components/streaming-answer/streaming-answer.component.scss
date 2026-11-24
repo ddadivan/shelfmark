@@ -21,7 +21,7 @@
   white-space: pre-line;
   color: var(--text);
   background: var(--surface-hover);
-  border-radius: rem(20px) rem(20px) rem(6px);
+  border-radius: rem(16px) rem(16px) rem(4px);
 }
 
 // The reply: a small spark tile (`ai-fill`) beside the text, disclaimer and projected sources.
@@ -39,7 +39,7 @@
   height: rem(28px);
   color: var(--ai);
   background: var(--ai-fill);
-  border-radius: rem(9px);
+  border-radius: rem(8px);
 }
 
 .ui-streaming-answer__body {

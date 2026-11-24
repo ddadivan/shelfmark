@@ -45,7 +45,7 @@
   margin: 0 auto;
   text-align: start;
   border-block-end: 0;
-  border-radius: rem(20px) rem(20px) 0 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .ui-menu__grip {
