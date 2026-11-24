@@ -95,6 +95,10 @@
   --folder-teal-bg: #daefec;
 
   // Elevation: flat at rest. A resting card is set off by its hairline (`line` as a 1px ring).
+  // Shelf `shadow-l1` and `highlight`: resting cards have no shadow (the hairline below sets them
+  // off); no dark top-edge highlight either.
+  --shadow-l1: none;
+  --shadow-highlight: none;
   --shadow-card: 0 0 0 1px var(--line);
   --shadow-hover: 0 8px 28px rgb(0 0 0 / 8%);
   --shadow-l2: 0 8px 24px rgb(0 0 0 / 14%);

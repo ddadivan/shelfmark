@@ -161,6 +161,8 @@ $custom-backgrounds: (
 $custom-corners: (
   'round': (
     'xs': rem(4px),
+    'tile-sm': rem(6px),
+    'tile': rem(8px),
     'sm': rem(10px),
     'md': rem(12px),
     'card': rem(16px),
@@ -170,6 +172,8 @@ $custom-corners: (
   ),
   'soft': (
     'xs': rem(3px),
+    'tile-sm': rem(4px),
+    'tile': rem(5px),
     'sm': rem(6px),
     'md': rem(8px),
     'card': rem(10px),
@@ -179,6 +183,8 @@ $custom-corners: (
   ),
   'square': (
     'xs': rem(2px),
+    'tile-sm': rem(2px),
+    'tile': rem(2px),
     'sm': rem(2px),
     'md': rem(3px),
     'card': rem(4px),

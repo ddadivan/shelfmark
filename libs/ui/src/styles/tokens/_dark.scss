@@ -79,6 +79,8 @@
   --folder-teal-bg: #16302e;
 
   // Dark cards have no hairline and no shadow: a lighter fill sets them off, a hovered card lightens by 4%.
+  --shadow-l1: none;
+  --shadow-highlight: none;
   --shadow-card: none;
   --shadow-hover: none;
   --shadow-l2: 0 8px 24px rgb(0 0 0 / 50%);
