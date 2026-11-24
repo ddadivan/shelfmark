@@ -139,7 +139,7 @@ $tidy-bar-offset: rem(20px) - $shell-tab-bar-room;
   height: rem(72px);
   color: var(--ai);
   background: var(--ai-bg);
-  border-radius: rem(20px);
+  border-radius: var(--radius-lg);
 }
 
 .tidy__empty-title {

@@ -120,7 +120,7 @@
     block-size: rem(68px);
     padding-block: 0;
     padding-inline: var(--space-2);
-    border-radius: rem(26px);
+    border-radius: var(--radius-md);
   }
 
   .ui-bulk-bar__bar .ui-bulk-bar__action {
@@ -133,7 +133,7 @@
     block-size: rem(52px);
     padding: 0 var(--space-1);
     font-weight: 500;
-    border-radius: rem(18px);
+    border-radius: var(--radius-lg);
   }
 
   .ui-bulk-bar__label {
