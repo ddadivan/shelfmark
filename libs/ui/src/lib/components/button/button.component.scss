@@ -16,9 +16,12 @@
 
 :host(.ui-button-host--wrap) .ui-button {
   height: auto;
-  min-height: calc(var(--control-md) * var(--ui-button-scale, 1));
+
+  // `--ui-button-wrap-min-height` / `--ui-button-wrap-padding-block`: a wrapping label that reads
+  // as a text link (the sidebar intro card's title) sets both to 0.
+  min-height: var(--ui-button-wrap-min-height, calc(var(--control-md) * var(--ui-button-scale, 1)));
   max-inline-size: 100%;
-  padding-block: var(--space-2);
+  padding-block: var(--ui-button-wrap-padding-block, var(--space-2));
   text-align: start;
   white-space: normal;
   overflow-wrap: anywhere;

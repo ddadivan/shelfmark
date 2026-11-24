@@ -22,6 +22,9 @@
 .how-it-works-card__open {
   --ui-button-sm-size: auto;
   --ui-button-sm-padding: 0;
+  --ui-button-wrap-min-height: 0;
+  --ui-button-wrap-padding-block: 0;
+  --ui-button-radius: var(--radius-xs);
 
   justify-self: start;
   font-weight: 500;

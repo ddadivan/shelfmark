@@ -119,15 +119,13 @@
   justify-content: center;
   padding: 0 var(--space-2) 0 var(--space-1);
 
+  @include hit-area(-4px 0 -4px -2px);
+
+  // After `hit-area`, which makes the host `relative`.
   @media (hover: hover) {
     position: absolute;
     inset-block: 0;
     inset-inline-end: 0;
-  }
-
-  @include hit-area(-4px 0 -4px -2px);
-
-  @media (hover: hover) {
     pointer-events: none;
     clip-path: inset(50%);
   }
