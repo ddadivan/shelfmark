@@ -36,6 +36,10 @@ import { AiSettingsService } from './settings/ai-settings.service';
 import { AiTidyUndoService } from './tidy/ai-tidy-undo.service';
 import { AiTidyService } from './tidy/ai-tidy.service';
 import { AskController } from './ask/ask.controller';
+import { AskHistoryController } from './history/ask-history.controller';
+import { AskHistoryCronController } from './history/ask-history-cron.controller';
+import { AskHistoryPurgeService } from './history/ask-history-purge.service';
+import { AskHistoryService } from './history/ask-history.service';
 import { AskService } from './ask/ask.service';
 import { AskUsageService } from './ask/ask-usage.service';
 import { AskToolRegistry } from './ask/tools/ask-tool.registry';
@@ -67,6 +71,8 @@ import { ViewDraftService } from './view-draft/view-draft.service';
     RelatedLinksController,
     AiSweepController,
     AskController,
+    AskHistoryController,
+    AskHistoryCronController,
     ViewDraftController,
   ],
   providers: [
@@ -98,6 +104,8 @@ import { ViewDraftService } from './view-draft/view-draft.service';
     RelatedLinksService,
     AskUsageService,
     AskService,
+    AskHistoryService,
+    AskHistoryPurgeService,
     ViewDraftService,
     SearchLinksAskTool,
     CountLinksAskTool,

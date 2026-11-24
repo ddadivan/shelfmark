@@ -76,6 +76,8 @@ describe('AI settings API', () => {
         summaryLanguage: 'app',
         meaningSearch: true,
         ask: true,
+        askHistory: true,
+        askHistory: true,
       },
       introSeen: false,
       announcementSeen: false,
@@ -160,8 +162,19 @@ describe('AI settings API', () => {
       summaryLanguage: 'app',
       meaningSearch: true,
       ask: true,
+      askHistory: true,
     });
     expect(changed.introSeen).toBe(false);
+  });
+
+  it('switches Keep Ask history, on by default (ADR 0055 amendment)', async () => {
+    const off = await patch({ askHistory: false });
+    expect(off.settings.askHistory).toBe(false);
+    const row = await t.db.prisma.aiSettings.findUnique({ where: { userId: users.owner.userId } });
+    expect(row?.askHistory).toBe(false);
+    expect((await patch({ askHistory: true })).settings.askHistory).toBe(true);
+    await a.patch(BASE).send({ askHistory: null }).expect(400);
+    await a.patch(BASE).send({ askHistory: 'no' }).expect(400);
   });
 
   it('switches Ask your shelf, available only while AI is on too (AI-4)', async () => {

@@ -74,6 +74,7 @@ describe('GET /api/cron/demo-cleanup', () => {
       CRON_ROUTE.AiSweepPath,
       CRON_ROUTE.NotificationsPath,
       CRON_ROUTE.AccountPurgePath,
+      CRON_ROUTE.AskHistoryPurgePath,
     ]);
     // Hobby allows one run per day: a fixed minute and hour, nothing more frequent.
     for (const cron of crons) expect(cron.schedule).toMatch(/^\d{1,2} \d{1,2} \* \* \*$/);

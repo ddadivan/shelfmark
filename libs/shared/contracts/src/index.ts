@@ -485,6 +485,9 @@ export type { AskConversationCards } from './ai/ask-conversation-cards.interface
 export type { AskConversationTurn } from './ai/ask-conversation-turn.interface';
 export type { AskConversationResponse } from './ai/ask-conversation-response.interface';
 export type { AskConversationsDeletedResponse } from './ai/ask-conversations-deleted-response.interface';
+export type { ExportAskConversation } from './export/export-ask-conversation.interface';
+export type { ExportAskTurn } from './export/export-ask-turn.interface';
+export type { ExportAskTurnLink } from './export/export-ask-turn-link.interface';
 export type { AskActivity } from './ai/ask-activity.type';
 export type { AskActivityPhase } from './ai/ask-activity-phase.type';
 export type { AskActivityEvent } from './ai/ask-activity-event.interface';

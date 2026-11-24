@@ -38,7 +38,7 @@ export class AskController {
   @ApiOperation({
     summary: 'Ask your shelf',
     description:
-      "One turn of a chat over the session user's own links (read-only tools, link cards, citations to those links only), streamed. The open chat's earlier turns come back in history; nothing is stored.",
+      "One turn of a chat over the session user's own links (read-only tools, link cards, citations to those links only), streamed. A stored conversation is continued by conversationId (its turns read from the server), else the open chat's earlier turns come back in history. While Keep Ask history is on, the finished turn is stored and done carries the conversationId.",
   })
   async ask(
     @CurrentUser() user: AuthUser,
@@ -47,7 +47,15 @@ export class AskController {
   ): Promise<void> {
     const writer = new SseWriter(res);
     try {
-      await this.asks.ask(user, { question: body.question, history: body.history ?? [] }, writer);
+      await this.asks.ask(
+        user,
+        {
+          question: body.question,
+          history: body.history ?? [],
+          conversationId: body.conversationId ?? null,
+        },
+        writer,
+      );
     } finally {
       writer.end();
     }

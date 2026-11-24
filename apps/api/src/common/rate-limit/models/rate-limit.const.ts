@@ -75,6 +75,10 @@ export const RATE_LIMIT = {
   AiAsk: { limit: 10, ttl: MINUTE_MS },
   // A saved view from a phrase (#535): one short model call each (the Ask question limits apply on top).
   AiViewDraft: { limit: 10, ttl: MINUTE_MS },
+  // Ask history (ADR 0055 amendment): the conversation list and one conversation (cheap reads), and
+  // Delete / Clear all.
+  AskHistoryRead: { limit: 60, ttl: MINUTE_MS },
+  AskHistoryWrite: { limit: 20, ttl: MINUTE_MS },
   // Reader text of a link: a stored result is a cheap read, a cold one fetches the page through the
   // SSRF-safe fetcher, so tighter than the default.
   ReaderArticle: { limit: 30, ttl: MINUTE_MS },
