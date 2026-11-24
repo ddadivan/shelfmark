@@ -116,6 +116,14 @@ Everything else in `libs/ui` (60+ components) changes through the tokens only in
 - **Today:** `features/today/` (see `apps/web/CLAUDE.md`). Everything comes from existing APIs (reminders, `?saved=week`, Rediscover, links); nothing is mocked. Not drawn from the design because the data does not exist: reading progress ("40% read", "Stopped at 6:20") and "filed by rule / by AI" with Undo in Saved this week; the All links cards are read-only (no star or menu), as in the side by side right half.
 - **Sidebar:** the Today row replaces the Reminders row (design); the Reminders page is Today's "Revisit".
 
+## Block 3: search (branch `redesign/shelf-b3-search`)
+
+- **Header field (from 64em):** `app-header-search` is a field at every desktop width (the 64–80em "Search" button and the results panel are gone); typing filters the feed in place (`FeedSearchService`, `?q=`), Ctrl/Cmd K focuses it, focus in the empty field shows Recent searches (`ui-command-list` `emptyPanel`, compact 36px rows).
+- **Feed while searching:** title "Search" + count, question hint (`ui-ai-line banner`), Go to chips (`ui-chip variant="jump"`), highlighted card titles, "Close in meaning · N" (AI-3 meaning search as cards), Nothing found with Clear search / Ask your shelf. The toolbar (View, switch, ⋯) and the view tabs stay (the prototype hides them while searching).
+- **Below 64em:** the Search tab and the top bar keep the full-screen search list, restyled (`ui-dialog screen`, `ui-command-list screen`: Back + 48px field, 56px rows with dividers, 12px headings, no key hints).
+- **Not built:** "Ways to search" (`#tag`, `in:Learning`, `site:`, `last week`): the search has no query syntax; the counts on the view tabs stay the feed's (not the search's).
+
 ## Mocked in the Shelf redesign
 
 - Block 1: nothing (Today uses the existing reminders, links `?saved=week` and Rediscover endpoints and their mock implementations).
+- Block 3: nothing (search uses `GET /api/links?q=`, `AI_API.searchMeaning` and the folders, tags and saved views already loaded; recent searches live on the device).
