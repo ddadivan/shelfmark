@@ -34,7 +34,10 @@ test.describe('add link dialog (mock API)', () => {
 
       await dialog.getByLabel('Link', { exact: true }).fill('https://example.org/post');
       await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on example.org');
-      await expect(dialog.getByText('Filled in from the page')).toBeVisible();
+      // The preview card of Shelf Add link says it was read from the page.
+      await expect(dialog.getByRole('status').filter({ hasText: 'Preview loaded' })).toContainText(
+        'Page on example.org',
+      );
 
       await dialog.getByLabel('Your note').fill('Read on the weekend');
       await dialog.getByRole('button', { name: 'Save', exact: true }).click();
@@ -75,7 +78,9 @@ test.describe('a link typed without https:// (#405, mock API)', () => {
 
       await field.fill('example.com');
       await expect(dialog.getByLabel('Title', { exact: true })).toHaveValue('Page on example.com');
-      await expect(dialog.getByText('Filled in from the page')).toBeVisible();
+      await expect(dialog.getByRole('status').filter({ hasText: 'Preview loaded' })).toContainText(
+        'Page on example.com',
+      );
       await field.blur();
       await expect(field).toHaveValue('https://example.com');
 
@@ -130,6 +135,8 @@ test.describe('folder field on a touch screen (mock API)', () => {
       await openFeed(page);
       await page.getByRole('button', { name: 'Add link' }).first().click();
       const dialog = page.getByRole('dialog', { name: 'Add link' });
+      // The "Goes to" row shows once there is an address (Shelf block 2).
+      await dialog.getByLabel('Link', { exact: true }).fill('https://example.org/folder');
       const folder = dialog.getByRole('combobox', { name: 'Folder' });
 
       await folder.tap();
@@ -163,6 +170,7 @@ test.describe('folder field on a touch screen (mock API)', () => {
       await expect(dialog).toBeVisible();
       const grip = dialog.locator('.ui-dialog__grip');
       test.skip(!(await grip.isVisible()), 'the dialog is not a bottom sheet at this width');
+      await dialog.getByLabel('Link', { exact: true }).fill('https://example.org/folder');
       await dialog.getByRole('combobox', { name: 'Folder' }).tap();
       await expect(page.getByRole('listbox', { name: 'Folder' })).toBeVisible();
 

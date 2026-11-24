@@ -38,16 +38,17 @@
   }
 }
 
-// The demo banner (shell/demo-banner, `ui-notice` banner), measured on the real page: 48px on one
-// line (the 13px text of 444px and the 32px button side by side, from 686px of width), 74px with
-// the button under a one-line text, 92px with the text on two lines (below 476px). Same padding,
-// gap, wrapping; the Shelf strip is `surface` over a `sep` line, read from the start. Only for a demo start: `html[data-boot-demo]` (set by
-// `public/boot-skeleton.js`) or the demo start page itself (`.boot--page`).
+// The demo banner (shell/demo-banner, the Shelf strip: `ui-notice` quiet banner), measured on the
+// real page: the 16px icon, the text (14 / 20, about 457px on one line, `flex: 1 1 240px`) and the
+// 213px button in one row with 12px gaps: 49px from 742px of width, 57px with the text on two
+// lines, 101px below 525px where the button wraps under the text (113px on touch). Same padding,
+// gap and wrapping; `surface` over a `sep` line, read from the start. Only for a demo start:
+// `html[data-boot-demo]` (set by `public/boot-skeleton.js`) or the demo start page (`.boot--page`).
 .boot__banner {
   display: none;
   flex: none;
   flex-wrap: wrap;
-  gap: rem(8px) rem(12px);
+  gap: rem(12px);
   align-items: center;
   justify-content: flex-start;
   box-sizing: border-box;
@@ -55,6 +56,14 @@
   padding: rem(8px) rem(16px);
   background: var(--surface);
   border-block-end: 1px solid var(--sep);
+
+  // The notice's icon, a flex item like the real one (it takes part in the wrapping).
+  &::before {
+    flex: none;
+    inline-size: rem(16px);
+    block-size: rem(16px);
+    content: '';
+  }
 }
 
 :root[data-boot-demo] .boot__banner,
@@ -63,20 +72,18 @@
 }
 
 .boot__banner-text {
-  flex: 1 1 auto;
-  inline-size: rem(444px);
-  max-inline-size: 100%;
-  block-size: rem(18px);
+  flex: 1 1 rem(240px);
+  block-size: rem(20px);
 
-  // The text wraps to a second line below 476px (444px and the 16px padding of both sides).
-  @media (width < 29.75em) {
-    block-size: rem(36px);
+  // Two lines below 742px: the text (~457px) no longer fits beside the icon and the button.
+  @media (width < 46.375em) {
+    block-size: rem(40px);
   }
 }
 
 .boot__banner-button {
   flex: none;
-  inline-size: rem(198px);
+  inline-size: rem(213px);
   block-size: rem(32px);
   border-radius: var(--radius-full);
 
@@ -276,6 +283,16 @@
   width: rem(160px);
   height: rem(28px);
 
+  // Below 64em the library keeps 20px above its title row (library.page.scss) and centres the
+  // title in the toolbar's row: 32px buttons, 48px with the 44px touch targets.
+  @include compact {
+    margin-block-start: rem(22px);
+
+    @include coarse {
+      margin-block-start: rem(30px);
+    }
+  }
+
   // Desktop (Shelf): the real title is centred in the 32px row of the toolbar's buttons: 1px of
   // room above it.
   @include desktop {
@@ -292,9 +309,14 @@
   height: rem(16px);
   margin-block: var(--space-1) rem(56px);
 
-  // Touch: the controls above the feed have 44px targets, 4px more room than with a mouse.
-  @include coarse {
-    margin-block-end: rem(60px);
+  // Below 64em (measured on the real page): the rest of the title row and the saved views, 38px
+  // under the count line; touch: 62px (the 44px targets of the toolbar and the tabs).
+  @include compact {
+    margin-block-end: rem(38px);
+
+    @include coarse {
+      margin-block-end: rem(62px);
+    }
   }
 
   @include desktop {
