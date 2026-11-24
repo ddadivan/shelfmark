@@ -76,8 +76,18 @@ export async function openAccountMenu(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Account menu' }).click();
 }
 
-/** Opens Settings: the "Settings" item of the account menu (the You list in the mobile shell). */
+/**
+ * Opens Settings: the "Settings" item of the account menu (the You list in the mobile shell). A
+ * settings page of the mobile shell has no top bar: its "Back to You" link leads there instead.
+ */
 export async function openSettingsPage(page: Page): Promise<void> {
+  const path = new URL(page.url()).pathname;
+  if (isCompact(page) && path.startsWith('/settings')) {
+    if (path !== '/settings') {
+      await page.getByRole('link', { name: 'Back to You' }).click();
+    }
+    return;
+  }
   await openAccountMenu(page);
   await page.getByRole('menuitem', { name: 'Settings' }).click();
 }

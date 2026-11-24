@@ -27,13 +27,11 @@ test.describe('edit link (mock API)', () => {
     await expect(page.locator('ui-card').first()).toContainText('A renamed link');
   });
 
-  test('"Open saved" from the add-link duplicate notice opens the edit dialog', async ({
-    page,
-  }) => {
+  test('"Open" on the add-link duplicate notice opens the edit dialog', async ({ page }) => {
     await page.getByRole('button', { name: 'Add link' }).first().click();
     const add = page.getByRole('dialog', { name: 'Add link' });
     await add.getByLabel('Link', { exact: true }).fill(DUPLICATE_URL);
-    await add.getByRole('button', { name: 'Open saved' }).click();
+    await add.getByRole('button', { name: 'Open', exact: true }).click();
 
     const edit = page.getByRole('dialog', { name: 'Edit link' });
     await expect(edit).toBeVisible();

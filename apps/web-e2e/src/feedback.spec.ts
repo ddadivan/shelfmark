@@ -36,8 +36,8 @@ test.describe('send feedback (mock API)', () => {
       const main = page.getByRole('main');
       const item = main.getByRole('listitem').filter({ hasText: IDEA });
       await expect(item).toBeVisible();
-      await expect(item.getByText('Idea', { exact: true })).toBeVisible();
-      await expect(item.getByText('Sent today')).toBeVisible();
+      // Shelf flat row: the status badge, then "Idea · Sent today".
+      await expect(item).toContainText('Idea · Sent today');
       await expect(item.getByText('Received', { exact: true })).toBeVisible();
     },
   );

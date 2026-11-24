@@ -10,7 +10,8 @@ import { E2E_TAG } from './models/e2e-tag.const';
 const MOCK_MARKER = 'sm-mock-export';
 
 // #387, ADR 0056 decision 11: Import and export open from the "Data & help" row of the sidebar
-// footer (desktop) and from the Import / Export group of the You tab (phone), both as dialogs.
+// footer (desktop) and from the Import and export group of Your data (mobile shell): Import is the
+// /import page (Shelf block 5b), Export a dialog.
 test.describe('data menu and its entries (mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
@@ -51,12 +52,13 @@ test.describe('data menu and its entries (mock API)', () => {
       await expect(dataRow(page)).toBeFocused();
     });
 
-    test('Import opens the import dialog', async ({ page }) => {
+    test('Import opens the import page', async ({ page }) => {
       await page.goto('/links');
       const menu = await openDataMenu(page);
       await menu.getByRole('menuitem', { name: 'Import links' }).click();
 
-      await expect(page.getByRole('dialog', { name: 'Import links' })).toBeVisible();
+      await expect(page).toHaveURL('/import');
+      await expect(page.getByRole('heading', { level: 1, name: 'Import bookmarks' })).toBeVisible();
     });
 
     test('Export opens the export dialog and downloads JSON', async ({ page }) => {
@@ -64,10 +66,10 @@ test.describe('data menu and its entries (mock API)', () => {
       const menu = await openDataMenu(page);
       await menu.getByRole('menuitem', { name: 'Export' }).click();
 
-      const dialog = page.getByRole('dialog', { name: 'Export' });
+      const dialog = page.getByRole('dialog', { name: 'Export links' });
       await expect(dialog).toBeVisible();
       const download = page.waitForEvent('download');
-      await dialog.getByRole('button', { name: 'Download' }).click();
+      await dialog.getByRole('button', { name: 'Export JSON' }).click();
       const file = await download;
 
       expect(file.suggestedFilename()).toMatch(/^shelfmark-\d{4}-\d{2}-\d{2}\.json$/);
@@ -102,25 +104,28 @@ test.describe('data menu and its entries (mock API)', () => {
     });
   });
 
-  test.describe('phone You tab', { tag: E2E_TAG.Phone }, () => {
+  test.describe('mobile shell: Your data', { tag: E2E_TAG.Phone }, () => {
     test.beforeEach(({ page }) => {
-      test.skip(!isCompact(page), 'the You tab exists below 64em');
+      test.skip(!isCompact(page), 'the You list exists below 64em');
     });
 
-    test('has an Import / Export group; both open as bottom sheets', async ({ page }) => {
+    test('Your data has an Import and export group: the import page and the export sheet', async ({
+      page,
+    }) => {
       await page.goto('/links');
       await openYouTab(page);
+      await page.getByRole('main').getByRole('link', { name: 'Your data' }).click();
       const group = page.getByRole('group', { name: 'Import and export' });
-      await expect(group.getByRole('link')).toHaveText([/Import links/, /Export/]);
+      await expect(group.getByRole('button')).toHaveText(['Import', 'Export…']);
 
-      await group.getByRole('link', { name: 'Import links' }).click();
-      const importDialog = page.getByRole('dialog', { name: 'Import links' });
-      await expect(importDialog).toBeVisible();
-      await page.keyboard.press('Escape');
-      await expect(importDialog).toHaveCount(0);
+      await group.getByRole('button', { name: 'Import links' }).click();
+      await expect(page).toHaveURL('/import');
+      await expect(page.getByRole('heading', { level: 1, name: 'Import bookmarks' })).toBeVisible();
+      await page.goBack();
+      await expect(page).toHaveURL('/settings/privacy');
 
-      await group.getByRole('link', { name: 'Export' }).click();
-      const exportDialog = page.getByRole('dialog', { name: 'Export' });
+      await group.getByRole('button', { name: 'Export' }).click();
+      const exportDialog = page.getByRole('dialog', { name: 'Export links' });
       await expect(exportDialog).toBeVisible();
       const box = await exportDialog.boundingBox();
       const viewport = page.viewportSize();
@@ -128,7 +133,7 @@ test.describe('data menu and its entries (mock API)', () => {
       expect(box && viewport && Math.abs(box.y + box.height - viewport.height) <= 2).toBe(true);
     });
 
-    test('Send feedback stays under the group', async ({ page }) => {
+    test('Send feedback opens from the account menu', async ({ page }) => {
       await page.goto('/links');
       const dialog = await openSendFeedback(page);
       await expect(dialog).toBeVisible();

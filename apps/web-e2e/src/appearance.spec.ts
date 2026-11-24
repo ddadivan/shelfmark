@@ -47,6 +47,15 @@ async function misalignment(plus: Locator, last: Locator): Promise<number> {
   return a.y > b.y + b.height + 16 ? 0 : Number.POSITIVE_INFINITY;
 }
 
+/**
+ * Turns the Custom theme on: the "Customize" button of the Custom theme row (Shelf 05-settings),
+ * after which the Theme group gains its Custom choice and the Custom rows show.
+ */
+async function openCustom(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Customize' }).click();
+  await expect(choice(page, 'Theme', 'Custom')).toBeChecked();
+}
+
 async function openAppearance(page: Page): Promise<void> {
   await page.goto('/settings/appearance');
   await expect(page.getByRole('heading', { level: 1, name: 'Appearance' })).toBeVisible();
@@ -64,7 +73,7 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     const html = page.locator('html');
     await expect(page.getByText('Start from')).toHaveCount(0);
 
-    await pick(page, 'Theme', 'Custom');
+    await openCustom(page);
     await expect(html).toHaveAttribute('data-theme', 'custom');
     await expect(html).toHaveAttribute('data-custom-base', 'light');
     // The default custom theme: Ocean on Paper with soft corners.
@@ -74,11 +83,11 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await pick(page, 'Start from', 'Dark');
     await expect(html).toHaveAttribute('data-custom-base', 'dark');
     await expect(html).toHaveCSS('color-scheme', 'dark');
-    await pick(page, 'Accent color', 'Rose');
+    await pick(page, 'Accent', 'Sage');
     await pick(page, 'Background', 'Ink');
     await pick(page, 'Corners', 'Square');
 
-    expect(await token(page, '--accent')).toBe('#e79ab2');
+    expect(await token(page, '--accent')).toBe('#86c08e');
     expect(await token(page, '--bg')).toBe('#12141a');
     expect(await token(page, '--radius-md')).toMatch(/^0?\.1875rem$/);
     await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(18, 20, 26)');
@@ -86,10 +95,10 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await page.reload();
 
     await expect(html).toHaveAttribute('data-theme', 'custom');
-    await expect(html).toHaveAttribute('data-custom-accent', 'rose');
+    await expect(html).toHaveAttribute('data-custom-accent', 'sage');
     await expect(html).toHaveAttribute('data-custom-background', 'ink');
     await expect(html).toHaveAttribute('data-custom-corners', 'square');
-    await expect(choice(page, 'Accent color', 'Rose')).toBeChecked();
+    await expect(choice(page, 'Accent', 'Sage')).toBeChecked();
 
     await page.getByRole('button', { name: 'Reset custom theme' }).click();
     await expect(html).toHaveAttribute('data-custom-base', 'light');
@@ -107,7 +116,7 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
   }, testInfo) => {
     await openAppearance(page);
     const html = page.locator('html');
-    await pick(page, 'Theme', 'Custom');
+    await openCustom(page);
     const swatch = page.getByRole('button', { name: 'Your own color' });
     const hex = page.getByRole('textbox', { name: 'Hex code' });
     const add = page.getByRole('button', { name: 'Add color', exact: true });
@@ -117,7 +126,7 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await hex.fill('#23716c');
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await expect(hex).toHaveCount(0);
-    await expect(choice(page, 'Accent color', '#23716c')).toHaveCount(0);
+    await expect(choice(page, 'Accent', '#23716c')).toHaveCount(0);
     await expect(swatch.locator('.ui-color-picker__plus')).toBeVisible();
 
     // Two own colors; the second is the accent, so the first can go.
@@ -128,8 +137,8 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await swatch.click();
     await hex.fill('#1d4f91');
     await add.click();
-    await expect(choice(page, 'Accent color', '#1d4f91')).toBeChecked();
-    const first = choice(page, 'Accent color', '#23716c');
+    await expect(choice(page, 'Accent', '#1d4f91')).toBeChecked();
+    const first = choice(page, 'Accent', '#23716c');
     await expect(first).toBeVisible();
 
     // The "×" shows on hover (never on the colour in use) and removes the swatch.
@@ -141,19 +150,19 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await expect(toast).toBeVisible();
     // The accent in use keeps its colour and its swatch.
     await expect(html).toHaveAttribute('data-custom-accent', 'own');
-    await expect(choice(page, 'Accent color', '#1d4f91')).toBeChecked();
+    await expect(choice(page, 'Accent', '#1d4f91')).toBeChecked();
 
     // Undo brings the swatch back.
     await toast.getByRole('button', { name: 'Undo' }).click();
-    await expect(choice(page, 'Accent color', '#23716c')).toBeVisible();
+    await expect(choice(page, 'Accent', '#23716c')).toBeVisible();
 
     // The colour in use is not removable: no "×", Delete does nothing.
-    const inUse = choice(page, 'Accent color', '#1d4f91');
+    const inUse = choice(page, 'Accent', '#1d4f91');
     await inUse.focus();
     await page.keyboard.press('Delete');
     await expect(inUse).toBeVisible();
     await expect(
-      page.getByRole('radiogroup', { name: 'Accent color' }).locator('.ui-theme-picker__remove'),
+      page.getByRole('radiogroup', { name: 'Accent' }).locator('.ui-theme-picker__remove'),
     ).toHaveCount(1);
   });
 
@@ -162,7 +171,7 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
   }) => {
     await openAppearance(page);
     const html = page.locator('html');
-    await pick(page, 'Theme', 'Custom');
+    await openCustom(page);
 
     const swatch = page.getByRole('button', { name: 'Your own color' });
     await swatch.click();
@@ -175,14 +184,15 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await hex.fill('#23716c');
     await hex.press('Enter');
     await expect(html).not.toHaveAttribute('data-custom-accent', 'own');
-    await expect(choice(page, 'Accent color', '#23716c')).toHaveCount(0);
+    await expect(choice(page, 'Accent', '#23716c')).toHaveCount(0);
     // Readable on Paper: it is the accent as soon as it is added.
     await page.getByRole('button', { name: 'Add color', exact: true }).click();
     await expect(html).toHaveAttribute('data-custom-accent', 'own');
     expect(await token(page, '--accent')).toBe('#23716c');
-    await expect(choice(page, 'Accent color', 'Ocean')).not.toBeChecked();
+    // Ocean was only shown while it was the accent; the Shelf swatches stay.
+    await expect(choice(page, 'Accent', 'Ocean')).toHaveCount(0);
     // The colour is a swatch of the account now (#335) and the "+" panel closed.
-    await expect(choice(page, 'Accent color', '#23716c')).toBeChecked();
+    await expect(choice(page, 'Accent', '#23716c')).toBeChecked();
     await expect(swatch).toHaveAttribute('aria-expanded', 'false');
     await expect(swatch.locator('.ui-color-picker__plus')).toBeVisible();
     await expect(hex).toHaveCount(0);
@@ -226,7 +236,7 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await openAppearance(page);
-      await pick(page, 'Theme', 'Custom');
+      await openCustom(page);
       const swatch = page.getByRole('button', { name: 'Your own background color' });
       await swatch.click();
       const hex = page.getByRole('textbox', { name: 'Hex code' });
@@ -287,11 +297,11 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await openAppearance(page);
-      await pick(page, 'Theme', 'Custom');
+      await openCustom(page);
       for (const base of ['Light', 'Dark']) {
         await pick(page, 'Start from', base);
         for (const [group, picker] of [
-          ['Accent color', 'Your own color'],
+          ['Accent', 'Your own color'],
           ['Background', 'Your own background color'],
         ] as const) {
           const plus = page.getByRole('button', { name: picker, exact: true });
@@ -316,11 +326,11 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
     await other.goto('/settings/library');
     await expect(other.getByRole('radio', { name: '30 days' })).toBeChecked();
 
-    await pick(page, 'Theme', 'Custom');
-    await pick(page, 'Accent color', 'Teal');
+    await openCustom(page);
+    await pick(page, 'Accent', 'Ink');
 
     await expect(other.locator('html')).toHaveAttribute('data-theme', 'custom');
-    await expect(other.locator('html')).toHaveAttribute('data-custom-accent', 'teal');
+    await expect(other.locator('html')).toHaveAttribute('data-custom-accent', 'ink');
     await other.close();
   });
 
@@ -372,11 +382,17 @@ test.describe('appearance: custom theme and animations (mock API)', () => {
       false,
     );
     await expect(guest.locator('html')).toHaveAttribute('data-motion', 'reduced');
-    // The app preview shows its final frame and never moves.
-    await expect(guest.locator('.landing-hero-preview__toast')).toHaveCSS('opacity', '1');
+    // The app preview shows its first frame with the toast and never moves.
+    await expect(guest.locator('app-landing-hero-preview .preview__toast')).toHaveClass(
+      /preview__toast--shown/,
+    );
+    await expect(guest.locator('app-landing-hero-preview .preview__toast')).toHaveCSS(
+      'opacity',
+      '1',
+    );
     expect(
       await guest
-        .locator('.landing-hero-preview')
+        .locator('app-landing-hero-preview')
         .evaluate((el) => el.getAnimations({ subtree: true }).length),
     ).toBe(0);
     await guest.close();
@@ -393,44 +409,36 @@ async function scanSettled(page: Page, testInfo: TestInfo): Promise<void> {
   await expectNoBlockingViolations(page, testInfo);
 }
 
-test.describe('appearance width (mock API, #315)', () => {
+test.describe('appearance width (mock API, Shelf 05-settings)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
-  test('Appearance is wider than the 880px pages; options beside the preview from 1440px, stacked below', async ({
+  test('Appearance is the one 840px settings column like the other pages, the preview under the options', async ({
     page,
   }, testInfo) => {
+    test.skip(testInfo.project.name !== E2E_PROJECT.Desktop, 'a desktop layout check');
+    await seedSession(page);
     for (const [width, height] of [
       [1280, 800],
       [1440, 900],
       [1920, 1080],
     ] as const) {
-      test.skip(testInfo.project.name !== E2E_PROJECT.Desktop, 'a desktop layout check');
       await page.setViewportSize({ width, height });
-      await seedSession(page);
       await page.goto('/settings/library');
       await expect(page.getByRole('heading', { level: 1, name: 'Library' })).toBeVisible();
-      const library = await page.locator('app-settings-library-page').boundingBox();
+      const library = await boxOf(page.locator('app-settings-library-page'));
       await openAppearance(page);
-      const host = await page.locator('app-settings-appearance-page').boundingBox();
-      const options = await page.locator('.appearance__options').boundingBox();
-      const preview = await page.locator('.appearance__preview').boundingBox();
+      const host = await boxOf(page.locator('app-settings-appearance-page'));
+      const options = await boxOf(page.locator('.appearance__options'));
+      const preview = await boxOf(page.locator('.appearance__preview'));
 
-      // The other pages keep the 880px column; Appearance takes up to 100rem (#335).
-      expect(library?.width).toBeLessThanOrEqual(880.5);
-      expect(host?.width).toBeLessThanOrEqual(1600.5);
-      expect(host?.width ?? 0).toBeGreaterThan(library?.width ?? 0);
-      if (width >= 1440) {
-        // From 90em: two columns, the preview right of the options, about 680 : 520.
-        expect(preview?.x ?? 0).toBeGreaterThan((options?.x ?? 0) + (options?.width ?? 0));
-        const ratio = (options?.width ?? 0) / (preview?.width ?? 1);
-        expect(ratio).toBeGreaterThan(1.2);
-        expect(ratio).toBeLessThan(1.4);
-      } else {
-        // Below 90em: one column, the preview on top, the options never squeezed.
-        expect(preview?.y ?? 0).toBeLessThan(options?.y ?? 0);
-        expect(options?.x).toBeCloseTo(preview?.x ?? 0, 0);
-        expect(options?.width ?? 0).toBeGreaterThan(600);
-      }
+      // Every settings page is the `settings-page` column: at most 840px, the same edges.
+      expect(library.width).toBeLessThanOrEqual(840.5);
+      expect(host.width).toBeCloseTo(library.width, 0);
+      expect(host.x).toBeCloseTo(library.x, 0);
+      // The live preview follows the options in the same column, never squeezed beside them.
+      expect(preview.y).toBeGreaterThanOrEqual(options.y + options.height);
+      expect(preview.x).toBeCloseTo(options.x, 0);
+      expect(preview.width).toBeCloseTo(options.width, 0);
     }
   });
 });
@@ -448,9 +456,9 @@ test.describe('appearance accessibility (mock API)', () => {
     page,
   }, testInfo) => {
     await openAppearance(page);
-    await pick(page, 'Theme', 'Custom');
+    await openCustom(page);
     await pick(page, 'Start from', 'Dark');
-    await pick(page, 'Accent color', 'Amber');
+    await pick(page, 'Accent', 'Ink');
     await pick(page, 'Background', 'Black');
     await expect(page.locator('html')).toHaveAttribute('data-custom-background', 'black');
     await scanSettled(page, testInfo);

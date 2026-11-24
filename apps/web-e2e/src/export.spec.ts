@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { type Download } from '@playwright/test';
 import { expect, test } from './support/test';
 import { openDataDialog } from './support/data-menu';
-import { openSettingsSection, seedSession } from './support/mock-session';
+import { seedSession } from './support/mock-session';
 import { openExportMenu } from './support/library-toolbar';
 import { E2E_TAG } from './models/e2e-tag.const';
 import { MOCK_LINKS_SCENARIO } from './models/mock-links-scenario.const';
@@ -106,24 +106,29 @@ test.describe('export (mock API)', () => {
       await openDataDialog(page, 'Export');
       const download = page.waitForEvent('download');
       await page
-        .getByRole('dialog', { name: 'Export' })
-        .getByRole('button', { name: 'Download' })
+        .getByRole('dialog', { name: 'Export links' })
+        .getByRole('button', { name: 'Export JSON' })
         .click();
 
       expect(await requestedUrl(await download)).toBe('/api/export?format=json');
     },
   );
 
-  test('Account › Your data exports both formats; the old export page leads there', async ({
+  test('Settings › Your data exports through the dialog; the old export page leads there', async ({
     page,
   }) => {
     await page.goto('/settings/import-export');
-    await expect(page).toHaveURL('/settings/account#your-data');
-    const yourData = page.getByRole('heading', { name: 'Your data' });
-    await expect(yourData).toBeInViewport();
+    await expect(page).toHaveURL('/settings/privacy');
+    await expect(page.getByRole('heading', { level: 1, name: 'Your data' })).toBeVisible();
 
+    await page
+      .getByRole('group', { name: 'Import and export' })
+      .getByRole('button', { name: 'Export' })
+      .click();
+    const dialog = page.getByRole('dialog', { name: 'Export links' });
+    await dialog.getByText('Bookmarks HTML', { exact: true }).click();
     const download = page.waitForEvent('download');
-    await page.getByRole('button', { name: 'Download Bookmarks HTML' }).click();
+    await dialog.getByRole('button', { name: /^Export / }).click();
 
     expect(await requestedUrl(await download)).toBe('/api/export?format=html');
   });
@@ -150,7 +155,8 @@ test.describe('export with nothing to export (mock API)', () => {
       const notice = page.getByText('Nothing to export yet');
 
       await page.goto('/links');
-      await expect(page.getByRole('heading', { name: 'Your links will live here' })).toBeVisible();
+      // The first run of an empty library (Shelf block 6a).
+      await expect(page.getByRole('heading', { name: 'Your shelf is empty' })).toBeVisible();
       await openExportMenu(page);
       await page.getByRole('menuitem', { name: 'Everything as JSON' }).click();
       await expect(notice).toBeVisible();
@@ -158,15 +164,12 @@ test.describe('export with nothing to export (mock API)', () => {
         page.getByText('Save a link first, then you can export your library'),
       ).toBeVisible();
 
-      await openSettingsSection(page, 'Account');
-      await page.getByRole('button', { name: 'Download Bookmarks HTML' }).click();
-      await expect(notice.first()).toBeVisible();
-
-      // The export dialog explains the same and closes (the data menu is in the library sidebar).
-      await page.goto('/links');
+      // The export dialog (data menu, or Your data in the mobile shell) explains the same and closes.
+      await page.locator('ui-toast').getByRole('button', { name: 'Dismiss' }).first().click();
       await openDataDialog(page, 'Export');
-      const dialog = page.getByRole('dialog', { name: 'Export' });
-      await dialog.getByRole('button', { name: 'Download' }).click();
+      const dialog = page.getByRole('dialog', { name: 'Export links' });
+      await dialog.getByText('Bookmarks HTML', { exact: true }).click();
+      await dialog.getByRole('button', { name: /^Export / }).click();
       await expect(dialog).toHaveCount(0);
       await expect(notice.first()).toBeVisible();
 

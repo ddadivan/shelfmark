@@ -1,37 +1,24 @@
 import { expect, type Page } from '@playwright/test';
-import { isCompact, isPhone } from './sidebar';
+import { isCompact } from './sidebar';
 
 export type LibraryView = 'Masonry' | 'Cards' | 'List';
 
 /**
- * The library toolbar (Shelf). From 40em (tablet and desktop): View (grid size and card fields),
- * the Masonry / Cards / List switch and a "More view options" ⋯ menu with Sort by, Side by side
- * Save this view and Export; a phone has one "Options" menu with Sort by, View and Export.
+ * The library toolbar (Shelf): on every width the Masonry / Cards / List switch and the "More
+ * view options" ⋯ menu with Sort by, Side by side, Save this view and Export (a bottom sheet in the
+ * mobile shell; block 1 replaced the phone's one "Options" menu); View (grid size and card
+ * fields) from 40em.
  */
-async function openViewMenu(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Options', exact: true }).click();
-}
-
-/** Opens the toolbar's ⋯ menu (tablet and desktop) or the phone's Options menu. */
 export async function openMoreMenu(page: Page): Promise<void> {
-  if (isPhone(page)) {
-    await openViewMenu(page);
-  } else {
-    await page.getByRole('button', { name: 'More view options' }).click();
-  }
+  await page.getByRole('button', { name: 'More view options' }).click();
 }
 
 /** Switches the feed to Masonry, Cards or List. */
 export async function switchView(page: Page, view: LibraryView): Promise<void> {
-  if (isPhone(page)) {
-    await openViewMenu(page);
-    await page.getByRole('menuitemradio', { name: view }).click();
-  } else {
-    await page.getByRole('radio', { name: view }).click();
-  }
+  await page.getByRole('radio', { name: view, exact: true }).click();
 }
 
-/** Opens the menu that holds the export items (the ⋯ menu, or the phone's Options menu). */
+/** Opens the menu that holds the export items (the ⋯ menu). */
 export async function openExportMenu(page: Page): Promise<void> {
   await openMoreMenu(page);
 }

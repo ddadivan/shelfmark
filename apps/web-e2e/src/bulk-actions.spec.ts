@@ -1,4 +1,4 @@
-import { openTags } from './support/sidebar';
+import { isCompact, openTags } from './support/sidebar';
 import { type Locator, type Page } from '@playwright/test';
 import { openFeed } from './support/a11y-flows';
 import { makePageTall, scrollMainTo, SHELL_MAIN } from './support/scroll';
@@ -12,12 +12,21 @@ const READING = 'Reading';
 const ALL_LINKS = 60;
 
 const cards = (page: Page): Locator => page.locator('ui-card');
-const header = (page: Page): Locator => page.getByRole('group', { name: 'Selection' });
+/**
+ * What shows while selecting: the "Selection" line over the title in the mobile shell; from 64em
+ * the hint that takes the toolbar's place (Shelf 08-select-move, the title stays).
+ */
+const header = (page: Page): Locator =>
+  isCompact(page)
+    ? page.getByRole('group', { name: 'Selection' })
+    : page.locator('.library__hint--select');
 const bar = (page: Page): Locator =>
   page.getByRole('toolbar', { name: /^Actions for \d+ selected/ });
 const barButton = (page: Page, name: string): Locator =>
   bar(page).getByRole('button', { name, exact: true });
-const selectedText = (page: Page): Locator => page.locator('.library__selected');
+/** "N selected": in the Selection line (mobile shell), in the bulk bar from 64em. */
+const selectedText = (page: Page): Locator =>
+  page.locator(isCompact(page) ? '.library__selected' : '.ui-bulk-bar__count');
 
 /** The toast sits exactly 12px above the visible bulk bar (#350, #352), within 1px. */
 async function expectToastGap(page: Page, toast: Locator): Promise<void> {
@@ -125,11 +134,10 @@ test.describe('select links and bulk actions (mock API)', () => {
       await expect(header(page)).toBeVisible();
       await expect(selectedText(page)).toHaveText('1 selected');
       await expect(bar(page)).toBeVisible();
-      // Two separate hints, never chained with a middle dot.
-      await expect(header(page).locator('.library__hint')).toHaveText([
-        'Shift + click selects a range',
-        'Esc clears',
-      ]);
+      // The one hint of the Shelf selection replaces the tools.
+      await expect(header(page)).toHaveText(
+        'Select with X, Shift-click for a range, Ctrl A for all',
+      );
 
       await pick(page, 3, ['Shift']);
       await expect(selectedText(page)).toHaveText('4 selected');
@@ -143,7 +151,8 @@ test.describe('select links and bulk actions (mock API)', () => {
       expect(opened).toBe(false);
 
       const total = await cards(page).count();
-      await header(page)
+      await page
+        .getByRole('main')
         .getByRole('button', { name: `Select all ${total}` })
         .click();
       await expect(selectedText(page)).toHaveText(`${total} selected`);
@@ -184,10 +193,12 @@ test.describe('select links and bulk actions (mock API)', () => {
       await pick(page, 0);
       await pick(page, 1);
       await barButton(page, 'Tags').click();
+      // Shelf: one list of ticks (on all) and dashes (on some); a typed name is a new ticked row.
       let dialog = page.getByRole('dialog', { name: 'Tags for 2 links' });
-      await dialog.getByRole('combobox', { name: 'Add to all' }).fill('bulk-e2e');
+      await dialog.getByRole('textbox', { name: 'Add or find a tag' }).fill('bulk-e2e');
       await page.keyboard.press('Enter');
-      await dialog.getByRole('button', { name: 'Apply' }).click();
+      await expect(dialog.getByRole('checkbox', { name: 'bulk-e2e' })).toBeChecked();
+      await dialog.getByRole('button', { name: 'Apply to 2 links' }).click();
       await expect(page.getByText('Tags updated on 2 links')).toBeVisible();
       await expect(cards(page).nth(0).getByText('bulk-e2e')).toBeVisible();
       await expect(cards(page).nth(1).getByText('bulk-e2e')).toBeVisible();
@@ -196,9 +207,12 @@ test.describe('select links and bulk actions (mock API)', () => {
 
       await barButton(page, 'Tags').click();
       dialog = page.getByRole('dialog', { name: 'Tags for 2 links' });
-      await dialog.getByRole('combobox', { name: 'Remove from all' }).fill('bulk-e2e');
-      await page.getByRole('option', { name: /bulk-e2e/ }).click();
-      await dialog.getByRole('button', { name: 'Apply' }).click();
+      const tick = dialog.getByRole('checkbox', { name: 'bulk-e2e' });
+      await expect(tick).toBeChecked();
+      // The native box is visually hidden; its label is the click target.
+      await dialog.getByText('bulk-e2e', { exact: true }).click();
+      await expect(tick).not.toBeChecked();
+      await dialog.getByRole('button', { name: 'Apply to 2 links' }).click();
       await expect(cards(page).nth(0).getByText('bulk-e2e')).toHaveCount(0);
       await expect(cards(page).nth(1).getByText('bulk-e2e')).toHaveCount(0);
     });

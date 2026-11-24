@@ -25,7 +25,7 @@ test.describe('export dialog (mock API)', () => {
       await dialog.getByText('Bookmarks HTML', { exact: true }).click();
       await expect(dialog.getByRole('radio', { name: /^Bookmarks HTML/ })).toBeChecked();
       const download = page.waitForEvent('download');
-      await dialog.getByRole('button', { name: 'Download' }).click();
+      await dialog.getByRole('button', { name: /^Export / }).click();
       const file = await download;
 
       expect(file.suggestedFilename()).toMatch(/^shelfmark-\d{4}-\d{2}-\d{2}\.html$/);
