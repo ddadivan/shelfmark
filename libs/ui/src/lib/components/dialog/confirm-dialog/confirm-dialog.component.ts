@@ -14,7 +14,8 @@ import { BUTTON_VARIANT } from '../../button/models/button-variant.const';
 
 /**
  * Content of `DialogService.confirm()`. Cancel (secondary) sits left of the confirm button.
- * Focus goes to confirm, or to Cancel for a destructive action, so a stray Enter cannot delete.
+ * Focus goes to confirm, or to Cancel for a destructive action (or with `focusCancel`), so a stray
+ * Enter cannot delete or leave.
  */
 @Component({
   selector: 'ui-confirm-dialog',
@@ -35,7 +36,7 @@ export class ConfirmDialogComponent {
       const all = this.buttons();
       const confirm = all[all.length - 1];
       const cancel = all[all.length - 2];
-      (this.config.destructive ? cancel : confirm)?.focus();
+      (this.config.destructive || this.config.focusCancel ? cancel : confirm)?.focus();
     });
   }
 

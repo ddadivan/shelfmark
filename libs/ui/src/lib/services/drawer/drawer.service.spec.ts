@@ -125,6 +125,47 @@ describe('DrawerService', () => {
     expect(document.activeElement).toBe(trigger);
   });
 
+  it('asks the close guard before Esc, the scrim and the close button close it', async () => {
+    const ref = service.open(MenuComponent, { ariaLabel: 'Library menu' });
+    settle();
+    let answer = false;
+    const guard = vi.fn(async () => answer);
+    ref.setCloseGuard(guard);
+    const asked = async (times: number) => {
+      await vi.waitFor(() => {
+        expect(guard).toHaveBeenCalledTimes(times);
+      });
+      await Promise.resolve();
+    };
+    press(KEYBOARD_KEY.Escape);
+    await asked(1);
+    document.querySelector<HTMLElement>('.ui-dialog-scrim')?.click();
+    await asked(2);
+    container().querySelector<HTMLButtonElement>('button[aria-label="Close menu"]')?.click();
+    await asked(3);
+    settle();
+    expect(ref.isClosing).toBe(false);
+    answer = true;
+    press(KEYBOARD_KEY.Escape);
+    await closed();
+    expect(guard).toHaveBeenCalledTimes(4);
+  });
+
+  it('never asks the close guard for a close from code or while locked', async () => {
+    const ref = service.open(MenuComponent, { ariaLabel: 'Library menu' });
+    settle();
+    const guard = vi.fn(() => false);
+    ref.setCloseGuard(guard);
+    ref.setLocked(true);
+    await ref.requestClose();
+    expect(guard).not.toHaveBeenCalled();
+    ref.setCloseGuard(null);
+    ref.setLocked(false);
+    ref.close();
+    await closed();
+    expect(guard).not.toHaveBeenCalled();
+  });
+
   it('closes on a scrim click', async () => {
     const ref = service.open(MenuComponent, { ariaLabel: 'Library menu' });
     settle();
@@ -199,7 +240,12 @@ describe('DrawerComponent', () => {
       providers: [
         {
           provide: UiDialogRef,
-          useValue: { leaving, locked: () => false, close: () => leaving.set(true) },
+          useValue: {
+            leaving,
+            locked: () => false,
+            close: () => leaving.set(true),
+            requestClose: async () => leaving.set(true),
+          },
         },
       ],
     });
