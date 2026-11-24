@@ -54,6 +54,11 @@
   color: var(--text-muted);
 }
 
+// The changelog texts are longer than a tile: three lines, the rest is on /changelog.
+.landing-whats-new__lead {
+  @include line-clamp(3);
+}
+
 .landing-whats-new__name {
   @include type(heading);
 
