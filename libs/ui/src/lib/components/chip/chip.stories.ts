@@ -76,6 +76,11 @@ export const FilterOptionPressed: Story = {
 };
 
 /** A "Go to" place of search (Shelf): quiet until hover, 14px glyph. */
+/** Shelf Tags page: a tag with its glyph and count. */
+export const Cloud: Story = {
+  args: { variant: CHIP_VARIANT.Cloud, clickable: true, icon: 'hash' },
+};
+
 export const Jump: Story = {
   args: { variant: CHIP_VARIANT.Jump, clickable: true, icon: 'folder' },
 };

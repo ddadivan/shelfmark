@@ -2151,6 +2151,11 @@
       "empty": {
         "title": "Ainda não há tags",
         "text": "As tags agrupam links de pastas diferentes. Adicione uma aqui ou ao salvar um link."
+      },
+      "lead": {
+        "one": "{{count}} tag. Abra para ver os links; renomeie, mescle ou exclua pelo menu.",
+        "many": "{{count}} tags. Abra uma para ver os links; renomeie, mescle ou exclua pelo menu.",
+        "other": "{{count}} tags. Abra uma para ver os links; renomeie, mescle ou exclua pelo menu."
       }
     },
     "add": {

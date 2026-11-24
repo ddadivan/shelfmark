@@ -39,6 +39,12 @@
       (click)="toggleAdd($event)"
     />
   </div>
+  @if (asPage() && tags.count() > 0) {
+    <!-- Shelf Tags page: how many and what a tag offers. -->
+    <p class="tags__lead">
+      {{ pluralKey('tags.page.lead', tags.count()) | transloco: { count: tags.count() } }}
+    </p>
+  }
 
   <div
     id="sidebar-tags-body"
@@ -93,8 +99,8 @@
             } @else {
               <ui-chip
                 clickable
-                [variant]="asPage() ? CHIP_VARIANT.Tag : CHIP_VARIANT.Nav"
-                [icon]="asPage() ? undefined : 'hash'"
+                [variant]="asPage() ? CHIP_VARIANT.Cloud : CHIP_VARIANT.Nav"
+                icon="hash"
                 [attr.data-tag-id]="tag.id"
                 uiLongPress
                 (uiLongPress)="openMenuFromLongPress(tag, $event)"
@@ -105,6 +111,9 @@
                 (menuRequested)="openMenuFrom(tag, $event)"
               >
                 {{ tag.name }}
+                @if (asPage()) {
+                  <span class="tags__count" aria-hidden="true">{{ tag.linkCount }}</span>
+                }
               </ui-chip>
             }
           </li>

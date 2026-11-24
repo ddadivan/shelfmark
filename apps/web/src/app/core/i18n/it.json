@@ -2151,6 +2151,11 @@
       "empty": {
         "title": "Ancora nessun tag",
         "text": "I tag raggruppano link di cartelle diverse. Aggiungine uno qui o mentre salvi un link."
+      },
+      "lead": {
+        "one": "{{count}} tag. Aprilo per vederne i link; rinominalo, uniscilo o eliminalo dal suo menu.",
+        "many": "{{count}} tag. Aprine uno per vederne i link; rinomina, unisci o elimina dal suo menu.",
+        "other": "{{count}} tag. Aprine uno per vederne i link; rinomina, unisci o elimina dal suo menu."
       }
     },
     "add": {

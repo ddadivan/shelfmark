@@ -83,6 +83,12 @@ describe('ChipComponent', () => {
     expect(chip.classList.contains('ui-chip--tag')).toBe(false);
   });
 
+  it('renders the cloud variant (Shelf Tags page)', () => {
+    const { chip, update } = setup();
+    update((c) => c.variant.set(CHIP_VARIANT.Cloud));
+    expect(chip.classList.contains('ui-chip--cloud')).toBe(true);
+  });
+
   it('renders the jump variant (search "Go to") and drops the tag class', () => {
     const { chip, update } = setup();
     update((c) => c.variant.set(CHIP_VARIANT.Jump));

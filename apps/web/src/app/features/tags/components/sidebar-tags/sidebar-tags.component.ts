@@ -16,6 +16,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormField, FormRoot } from '@angular/forms/signals';
+import { pluralKey } from '../../../../core/i18n/plural-key';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { type TagResponse } from '@shelfmark/contracts';
 import {
@@ -74,6 +75,7 @@ import { splitTags } from '../../utils/tag-split';
 export class SidebarTagsComponent {
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
   protected readonly CHIP_VARIANT = CHIP_VARIANT;
+  protected readonly pluralKey = pluralKey;
   protected readonly ICON_SIZE = ICON_SIZE;
 
   /** The Tags tab of the phone: the heading is the page title (an `h1`, large) and chips are bigger. */

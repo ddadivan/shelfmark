@@ -9,4 +9,6 @@ export const CHIP_VARIANT = {
   Filter: 'filter',
   /** A "Go to" place of search (Shelf `03-search.html`): a quiet 28px tab, 14px glyph, muted text. */
   Jump: 'jump',
+  /** A tag on the Tags page (Shelf `04-organise` "Tags"): 36px on `surface` with the card ring, 14px label. */
+  Cloud: 'cloud',
 } as const;

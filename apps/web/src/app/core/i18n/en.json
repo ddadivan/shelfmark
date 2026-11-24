@@ -2104,6 +2104,10 @@
       "empty": {
         "title": "No tags yet",
         "text": "Tags group links across folders. Add one here, or while you save a link."
+      },
+      "lead": {
+        "one": "{{count}} tag. Open it to see its links; rename, merge or delete it from its menu.",
+        "other": "{{count}} tags. Open one to see its links; rename, merge or delete from its menu."
       }
     },
     "add": {

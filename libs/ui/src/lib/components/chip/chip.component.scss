@@ -299,3 +299,42 @@ button.ui-chip__body {
     background: var(--surface-pressed);
   }
 }
+
+// `variant="cloud"` (Shelf `04-organise` "Tags" page): 36px on `surface` with the card ring, radius
+// 10, a 16px muted glyph before the 14px 500 label in `text`; the consumer projects the count
+// (12px muted). Hover `surface-hover`.
+:host(.ui-chip--cloud) {
+  --ui-icon-size: var(--icon-size-sm);
+
+  height: var(--row-nav);
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+
+  @include coarse {
+    height: rem(44px);
+  }
+
+  .ui-chip__body {
+    @include type(label);
+
+    gap: var(--space-2);
+    padding: 0 var(--space-3);
+  }
+
+  .ui-chip__icon {
+    color: var(--text-muted);
+  }
+}
+
+:host(.ui-chip--cloud.ui-chip--clickable:not(.ui-chip--disabled)) {
+  @include hover {
+    filter: none;
+    background: var(--surface-hover);
+  }
+
+  &:active {
+    filter: none;
+    background: var(--surface-pressed);
+  }
+}

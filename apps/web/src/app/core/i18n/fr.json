@@ -2151,6 +2151,11 @@
       "empty": {
         "title": "Pas encore d’étiquettes",
         "text": "Les étiquettes regroupent des liens de plusieurs dossiers. Ajoutez-en une ici ou en enregistrant un lien."
+      },
+      "lead": {
+        "one": "{{count}} tag. Ouvrez-le pour voir ses liens ; renommez, fusionnez ou supprimez-le depuis son menu.",
+        "many": "{{count}} tags. Ouvrez-en un pour voir ses liens ; renommez, fusionnez ou supprimez depuis son menu.",
+        "other": "{{count}} tags. Ouvrez-en un pour voir ses liens ; renommez, fusionnez ou supprimez depuis son menu."
       }
     },
     "add": {

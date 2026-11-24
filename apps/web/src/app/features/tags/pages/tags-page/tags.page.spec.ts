@@ -37,10 +37,14 @@ describe('TagsPage', () => {
     expect(element.querySelectorAll('ui-chip').length).toBeGreaterThan(0);
   });
 
-  it('leaves for All links when the viewport is not a phone', async () => {
-    await setup(false);
+  it('stays on a wide screen and shows the lead and a count on every tag (Shelf)', async () => {
+    const element = await setup(false);
     const router = TestBed.inject(Router);
 
-    await vi.waitFor(() => expect(router.url).toBe('/links'));
+    expect(router.url).toBe('/');
+    expect(element.querySelector('.tags__lead')?.textContent).toMatch(/\d+ tags?\./);
+    const chips = element.querySelectorAll('ui-chip.ui-chip--cloud');
+    expect(chips.length).toBeGreaterThan(0);
+    expect(chips[0].querySelector('.tags__count')?.textContent?.trim()).toMatch(/^\d+$/);
   });
 });

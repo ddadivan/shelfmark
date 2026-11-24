@@ -2104,6 +2104,10 @@
       "empty": {
         "title": "Noch keine Tags",
         "text": "Tags fassen Links über Ordner hinweg zusammen. Füge hier einen hinzu oder beim Speichern eines Links."
+      },
+      "lead": {
+        "one": "{{count}} Tag. Öffne ihn, um seine Links zu sehen; umbenennen, zusammenführen oder löschen über sein Menü.",
+        "other": "{{count}} Tags. Öffne einen, um seine Links zu sehen; umbenennen, zusammenführen oder löschen über sein Menü."
       }
     },
     "add": {

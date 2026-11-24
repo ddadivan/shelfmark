@@ -2151,6 +2151,11 @@
       "empty": {
         "title": "Todavía no hay etiquetas",
         "text": "Las etiquetas agrupan enlaces de distintas carpetas. Añade una aquí o al guardar un enlace."
+      },
+      "lead": {
+        "one": "{{count}} etiqueta. Ábrela para ver sus enlaces; renómbrala, combínala o elimínala desde su menú.",
+        "many": "{{count}} etiquetas. Abre una para ver sus enlaces; renombra, combina o elimina desde su menú.",
+        "other": "{{count}} etiquetas. Abre una para ver sus enlaces; renombra, combina o elimina desde su menú."
       }
     },
     "add": {
