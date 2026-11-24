@@ -811,6 +811,7 @@
     "addLink": "Añadir enlace",
     "tabs": {
       "label": "Principal",
+      "today": "Hoy",
       "library": "Enlaces",
       "search": "Buscar",
       "tags": "Etiquetas",
@@ -4104,6 +4105,38 @@
       "one": "{{count}} olvidado",
       "many": "{{count}} olvidados",
       "other": "{{count}} olvidados"
+    }
+  },
+  "today": {
+    "title": "Hoy",
+    "failed": "No se pudo cargar esta parte.",
+    "retry": "Reintentar",
+    "back": {
+      "title": "Para retomar",
+      "more": "Repasar",
+      "done": "Hecho: {{title}}",
+      "snooze": "Posponer {{title}}",
+      "clearTitle": "Todo al día",
+      "clearText": "No hay nada pendiente. Los nuevos recordatorios aparecerán aquí."
+    },
+    "week": {
+      "title": "Guardados esta semana",
+      "summary": "{{count}} · {{filed}} en carpetas",
+      "more": "Ver todos",
+      "empty": "Aún no has guardado nada esta semana. Los enlaces nuevos se quedan aquí siete días."
+    },
+    "shelf": {
+      "title": "De tu estantería",
+      "saved": "Guardado {{when}}",
+      "savedNever": "Guardado {{when}} · nunca abierto",
+      "note": "Tu nota: «{{note}}».",
+      "open": "Abrir",
+      "emptyTitle": "Eso es todo esta semana",
+      "emptyText": "La próxima semana vuelven más enlaces olvidados."
+    },
+    "all": {
+      "title": "Todos los enlaces",
+      "more": "Abrir la biblioteca"
     }
   },
   "cleanup": {

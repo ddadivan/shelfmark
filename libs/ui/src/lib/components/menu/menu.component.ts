@@ -30,6 +30,8 @@ import { KEYBOARD_KEY } from '../../models/keyboard';
 import { MENU_FOCUS_EDGE } from './models/menu-focus-edge.const';
 import { MENU_ALIGN } from './models/menu-align.const';
 import { OVERLAY_LAYER } from '../../services/overlay/models/overlay-layer.const';
+import { mediaMatch } from '../../utils/media/media-match';
+import { COMPACT_MEDIA_QUERY } from '../../utils/media/models/compact-media-query.const';
 
 function isElement(origin: HTMLElement | OverlayPoint): origin is HTMLElement {
   return 'nodeType' in origin;
@@ -45,6 +47,11 @@ function isElement(origin: HTMLElement | OverlayPoint): origin is HTMLElement {
  * an item closes it; Esc and a choice give focus back to the trigger (or to the element that had
  * it when opened at a point). Closed, the host is hidden and empty.
  *
+ * Below 64em (the mobile shell, Shelf) a menu opened from an element is a bottom sheet instead:
+ * full width on a phone, centred and at most 560px on a tablet, over the scrim, with a grip and
+ * `sheetTitle` as its heading; items grow to 48px and shortcut hints hide. A press on the scrim
+ * closes it like any press outside. A context menu (`openAt`) keeps its place at the pointer.
+ *
  * `inline` renders the menu in place and always open, without overlay or trigger (docs and
  * Storybook only).
  *
@@ -58,6 +65,7 @@ function isElement(origin: HTMLElement | OverlayPoint): origin is HTMLElement {
   host: {
     class: 'ui-menu',
     '[class.ui-menu--shown]': 'shown()',
+    '[class.ui-menu--sheet]': 'sheet()',
     '[attr.aria-label]': 'ariaLabel() || null',
     '(keydown)': 'onKeydown($event)',
     '(focusout)': 'onFocusOut($event)',
@@ -72,6 +80,8 @@ export class MenuComponent {
   readonly ariaLabel = input<string>();
   /** Render in place, always open (docs and Storybook). */
   readonly inline = input(false, { transform: booleanAttribute });
+  /** Visible heading of the bottom sheet below 64em ("More", the link title); none when unset. */
+  readonly sheetTitle = input<string>();
 
   /** The menu opened. */
   readonly opened = output<void>();
@@ -99,10 +109,14 @@ export class MenuComponent {
 
   protected readonly shown = computed(() => this.inline() || this.attached());
   protected readonly atPoint = signal(false);
+  /** Below 64em: the open menu is a bottom sheet (set when it opens). */
+  protected readonly sheet = signal(false);
+  private readonly compact = mediaMatch(COMPACT_MEDIA_QUERY);
 
   private overlay: ConnectedOverlay | null = null;
   private overlayOrigin: HTMLElement | OverlayPoint | null = null;
   private overlayAlign: MenuAlign | null = null;
+  private overlaySheet = false;
   private detachSubscription: Subscription | null = null;
   private restoreTarget: HTMLElement | null = null;
   private listening = false;
@@ -161,18 +175,21 @@ export class MenuComponent {
           ? active
           : null;
     }
+    const sheet = isElement(origin) && this.compact();
     if (
       this.overlay?.isAttached &&
       isElement(origin) &&
       origin === this.overlayOrigin &&
-      this.align() === this.overlayAlign
+      this.align() === this.overlayAlign &&
+      sheet === this.overlaySheet
     ) {
       // Reopened on the same trigger (same alignment) while the leave animation runs.
       this.overlay.cancelRelease();
     } else {
       this.disposeOverlay();
-      this.createOverlay(origin);
+      this.createOverlay(origin, sheet);
     }
+    this.sheet.set(sheet);
     this.atPoint.set(!isElement(origin));
     this.anchorElement.set(isElement(origin) ? origin : null);
     this.attached.set(true);
@@ -192,18 +209,21 @@ export class MenuComponent {
     );
   }
 
-  private createOverlay(origin: HTMLElement | OverlayPoint): void {
-    const overlay = this.overlays.connect(
-      {
-        origin,
-        positions: isElement(origin) ? menuPositions(this.align()) : pointPositions(),
-        layer: OVERLAY_LAYER.Menu,
-      },
-      { injector: this.injector },
-    );
+  private createOverlay(origin: HTMLElement | OverlayPoint, sheet: boolean): void {
+    const overlay = sheet
+      ? this.overlays.sheet({ layer: OVERLAY_LAYER.Menu }, { injector: this.injector })
+      : this.overlays.connect(
+          {
+            origin,
+            positions: isElement(origin) ? menuPositions(this.align()) : pointPositions(),
+            layer: OVERLAY_LAYER.Menu,
+          },
+          { injector: this.injector },
+        );
     this.overlay = overlay;
     this.overlayOrigin = origin;
     this.overlayAlign = this.align();
+    this.overlaySheet = sheet;
     overlay.attachElement(this.host);
     this.detachSubscription = overlay.detachments().subscribe(() => {
       if (this.overlay === overlay) {
@@ -226,6 +246,7 @@ export class MenuComponent {
     this.overlay = null;
     this.overlayOrigin = null;
     this.overlayAlign = null;
+    this.overlaySheet = false;
     overlay?.dispose();
   }
 

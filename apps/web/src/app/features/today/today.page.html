@@ -1,0 +1,66 @@
+<div class="today">
+  <header class="today__head">
+    <h1 class="today__title">{{ 'today.title' | transloco }}</h1>
+    <span class="today__date">{{ date() }}</span>
+  </header>
+
+  @if (store.backFailed()) {
+  <ui-notice kind="danger">
+    {{ 'today.failed' | transloco }}
+    <ui-button uiNoticeAction size="sm" (click)="store.retryBack()"
+      >{{ 'today.retry' | transloco }}</ui-button
+    >
+  </ui-notice>
+  } @else if (store.backLoaded()) {
+  <app-today-back [links]="store.back()" [count]="store.backCount()" />
+  }
+
+  <div class="today__two">
+    <app-today-week
+      [rows]="store.weekRows()"
+      [count]="store.weekCount()"
+      [filed]="store.weekFiled()"
+      [loaded]="store.weekLoaded()"
+      [failed]="store.weekFailed()"
+      (retry)="store.retryWeek()"
+    />
+    <app-today-shelf />
+  </div>
+
+  <section class="today__all" aria-labelledby="today-all-title">
+    <div class="today__all-head">
+      <h2 id="today-all-title" class="today__all-title">{{ 'today.all.title' | transloco }}</h2>
+      <a class="today__all-more" [routerLink]="libraryHref">
+        {{ 'today.all.more' | transloco }}
+        <ui-icon name="chevron-right" [size]="ICON_SIZE.Sm" />
+      </a>
+    </div>
+    @if (store.latestFailed()) {
+    <ui-notice kind="danger">
+      {{ 'today.failed' | transloco }}
+      <ui-button uiNoticeAction size="sm" (click)="store.retryLatest()"
+        >{{ 'today.retry' | transloco }}</ui-button
+      >
+    </ui-notice>
+    } @else if (!store.latestLoaded()) {
+    <div class="today__cards" aria-hidden="true">
+      <ui-skeleton [shape]="SKELETON_SHAPE.Card" [count]="4" />
+    </div>
+    } @else {
+    <ul class="today__cards today__cards--masonry">
+      @for (link of store.latest(); track link.id) {
+      <li>
+        <app-link-card
+          [link]="link"
+          [readOnly]="true"
+          [headingLevel]="3"
+          [media]="CARD_MEDIA.Natural"
+          [folder]="chips.of(link.folderId)"
+          (opened)="actions.open(link)"
+        />
+      </li>
+      }
+    </ul>
+    }
+  </section>
+</div>

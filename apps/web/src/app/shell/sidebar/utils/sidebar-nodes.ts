@@ -2,7 +2,7 @@ import { LINKS_SCOPE } from '../../../features/links/models/links-scope.const';
 import { SIDEBAR_EXTENSION_ID } from '../models/sidebar-extension-id.const';
 import { SIDEBAR_DATA_ID } from '../models/sidebar-data-id.const';
 import { SIDEBAR_RECENT_ID } from '../models/sidebar-recent-id.const';
-import { SIDEBAR_REMINDERS_ID } from '../models/sidebar-reminders-id.const';
+import { SIDEBAR_TODAY_ID } from '../models/sidebar-today-id.const';
 import { SIDEBAR_TRASH_ID } from '../models/sidebar-trash-id.const';
 import { SIDEBAR_THEME_ID } from '../models/sidebar-theme-id.const';
 import type { UiTreeNode } from '@shelfmark/ui';
@@ -11,8 +11,9 @@ import type { SidebarCounts } from '../models/sidebar-counts.interface';
 import { sidebarCount } from './sidebar-count';
 
 /**
- * "All links", "Unsorted", "Favorites", "Recently opened", "Reminders"; `counts` null leaves the
- * link counts out. `dueReminders` (undefined = none) is the count of the Reminders row (#275);
+ * "All links", "Unsorted", "Favorites", "Today", "Recently opened" (Shelf); `counts` null leaves the
+ * link counts out. `dueReminders` (undefined = none) is the count of the Today row, whose "Back to
+ * these" holds the due reminders (#275; the Reminders page is its "Revisit");
  * `forgottenNote` ("5 forgotten", undefined = none) is the note of the Recently opened row (#512).
  */
 export function fixedNodes(
@@ -36,16 +37,16 @@ export function fixedNodes(
       ...sidebarCount(counts?.favorites),
     },
     {
+      id: SIDEBAR_TODAY_ID,
+      name: labels.today,
+      icon: 'history',
+      ...sidebarCount(dueReminders),
+    },
+    {
       id: SIDEBAR_RECENT_ID,
       name: labels.recent,
       icon: 'clock',
       ...(forgottenNote ? { note: forgottenNote } : {}),
-    },
-    {
-      id: SIDEBAR_REMINDERS_ID,
-      name: labels.reminders,
-      icon: 'bell',
-      ...sidebarCount(dueReminders),
     },
   ];
 }

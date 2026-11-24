@@ -26,7 +26,6 @@ import {
   FolderBannerComponent,
   FolderIconComponent,
   FOLDER_ICON_SIZE,
-  ICON_SIZE,
   LoadMoreComponent,
   MenuComponent,
   MenuItemComponent,
@@ -245,7 +244,6 @@ export default class LibraryPage {
   protected readonly EXPORT_FORMAT_OPTIONS = EXPORT_FORMAT_OPTIONS;
   protected readonly LINKS_SCOPE = LINKS_SCOPE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
-  protected readonly ICON_SIZE = ICON_SIZE;
   protected readonly pluralKey = pluralKey;
   protected readonly SKELETON_COUNT = SKELETON_COUNT;
   protected readonly SORT_OPTIONS = SORT_OPTIONS;

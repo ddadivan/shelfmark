@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { axeViolations } from '../../../testing/axe';
+import { compileScss } from '../../../testing/scss';
 import { ButtonComponent } from '../button/button.component';
 import type { MenuAlign } from './models/menu-align.type';
 import type { MenuItemType } from './models/menu-item-type.type';
@@ -31,6 +32,7 @@ import { MENU_FOCUS_EDGE } from './models/menu-focus-edge.const';
       #menu
       [align]="align()"
       ariaLabel="Link actions"
+      sheetTitle="Angular in 100 Seconds"
       (opened)="opened.set(opened() + 1)"
       (closed)="closed.set(closed() + 1)"
     >
@@ -463,6 +465,77 @@ describe('MenuComponent', () => {
       await settle(fixture);
       expect(menu.anchor()).toBe(inner);
       expect(menuHost.querySelector('.ui-menu__surface--point')).toBeNull();
+    });
+  });
+
+  describe('bottom sheet below 64em (Shelf)', () => {
+    function stubCompact(): void {
+      vi.stubGlobal('matchMedia', (query: string) => ({
+        matches: query.includes('64em'),
+        media: query,
+        addEventListener: () => undefined,
+        removeEventListener: () => undefined,
+      }));
+    }
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('opens from its trigger as a sheet over the scrim, with a grip and the title', async () => {
+      stubCompact();
+      const { fixture, inner, menuHost, items } = await setup();
+      inner.click();
+      await settle(fixture);
+      const surface = menuHost.querySelector('.ui-menu__surface') as HTMLElement;
+      expect(surface.classList.contains('ui-menu__surface--sheet')).toBe(true);
+      expect(menuHost.querySelector('.ui-menu__grip')?.getAttribute('aria-hidden')).toBe('true');
+      expect(menuHost.querySelector('.ui-menu__sheet-title')?.textContent.trim()).toBe(
+        'Angular in 100 Seconds',
+      );
+      expect(menuHost.closest('.ui-overlay-pane--sheet')).not.toBeNull();
+      const scrim = document.querySelector('.cdk-overlay-backdrop.ui-dialog-scrim');
+      expect(scrim?.classList.contains(overlayLayerClass(OVERLAY_LAYER.Menu))).toBe(true);
+      expect(document.activeElement).toBe(items()[0]);
+    });
+
+    it('closes on a press on the scrim and on Esc, giving focus back to the trigger', async () => {
+      stubCompact();
+      const { fixture, inner, menuHost, key } = await setup();
+      inner.click();
+      await settle(fixture);
+      const scrim = document.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      scrim.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      await settle(fixture);
+      expect(menuHost.querySelector('.ui-menu__surface')).toBeNull();
+      inner.click();
+      await settle(fixture);
+      await key(document.activeElement as Element, KEYBOARD_KEY.Escape);
+      expect(menuHost.querySelector('.ui-menu__surface')).toBeNull();
+      expect(document.activeElement).toBe(inner);
+    });
+
+    it('stays a positioned menu at a point (context menu) and on a desktop', async () => {
+      stubCompact();
+      const { fixture, menuHost } = await setup();
+      const menu = fixture.debugElement.children
+        .map((child) => child.componentInstance as unknown)
+        .find((instance): instance is MenuComponent => instance instanceof MenuComponent);
+      menu?.openAt({ x: 10, y: 10 });
+      await settle(fixture);
+      expect(menuHost.querySelector('.ui-menu__surface--sheet')).toBeNull();
+      expect(menuHost.querySelector('.ui-menu__grip')).toBeNull();
+    });
+
+    it('draws the sheet full width with 20px top corners, at most 560px, 48px rows', () => {
+      const css = compileScss('lib/components/menu/menu.component.scss');
+      expect(css).toMatch(/\.ui-menu__surface--sheet \{[^}]*max-width: 35rem/);
+      expect(css).toMatch(/\.ui-menu__surface--sheet \{[^}]*border-radius: 1\.25rem 1\.25rem 0 0/);
+      expect(css).toContain('env(safe-area-inset-bottom, 0rem)');
+      const item = compileScss('lib/components/menu/menu-item/menu-item.component.scss');
+      expect(item).toMatch(
+        /ui-menu__surface--sheet[^{]*\.ui-menu-item[^{]*\{[^}]*min-height: 3rem/,
+      );
     });
   });
 

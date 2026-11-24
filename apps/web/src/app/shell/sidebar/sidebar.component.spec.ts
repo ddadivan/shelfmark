@@ -366,7 +366,13 @@ describe('SidebarComponent', () => {
     const { element, fixture } = await setup();
 
     const names = await rowNames(fixture);
-    expect(names.slice(0, 4)).toEqual(['All links', 'Unsorted', 'Favorites', 'Recently opened']);
+    expect(names.slice(0, 5)).toEqual([
+      'All links',
+      'Unsorted',
+      'Favorites',
+      'Today',
+      'Recently opened',
+    ]);
     // Trash is the last row, alone under a divider (its own tree), and has no count while empty.
     expect(names.at(-1)).toBe('Trash');
     expect(element.querySelector('.sidebar__footer [role="tree"]')).not.toBeNull();

@@ -7,7 +7,7 @@ const LABELS: SidebarLabels = {
   favorites: 'Favorites',
   actions: 'Actions for {name}',
   recent: 'Recently opened',
-  reminders: 'Reminders',
+  today: 'Today',
   trash: 'Trash',
   data: 'Data & help',
   extension: 'Get the extension',
@@ -22,14 +22,14 @@ describe('sidebar nodes', () => {
       ['all', 'All links', 5],
       ['unsorted', 'Unsorted', 2],
       ['favorites', 'Favorites', 1],
+      ['today', 'Today', undefined],
       ['recent', 'Recently opened', undefined],
-      ['reminders', 'Reminders', undefined],
     ]);
   });
 
-  it('counts the due reminders on the Reminders row, even without link counts', () => {
-    const reminders = fixedNodes(LABELS, null, 2).find((node) => node.id === 'reminders');
-    expect(reminders).toMatchObject({ name: 'Reminders', icon: 'bell', count: 2 });
+  it('counts the due reminders on the Today row, even without link counts', () => {
+    const today = fixedNodes(LABELS, null, 2).find((node) => node.id === 'today');
+    expect(today).toMatchObject({ name: 'Today', icon: 'history', count: 2 });
   });
 
   it('puts the forgotten note on the Recently opened row only while there is one', () => {

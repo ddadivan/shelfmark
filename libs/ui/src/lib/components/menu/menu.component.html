@@ -3,9 +3,16 @@
     class="ui-menu__surface"
     [uiFluidHover]="'.ui-menu-item'"
     [class.ui-menu__surface--point]="atPoint()"
-    animate.enter="ui-menu--enter"
-    animate.leave="ui-menu--leave"
+    [class.ui-menu__surface--sheet]="sheet()"
+    [animate.enter]="sheet() ? 'ui-menu--sheet-enter' : 'ui-menu--enter'"
+    [animate.leave]="sheet() ? 'ui-menu--sheet-leave' : 'ui-menu--leave'"
   >
+    @if (sheet()) {
+      <div class="ui-menu__grip" aria-hidden="true"></div>
+      @if (sheetTitle(); as title) {
+        <div class="ui-menu__sheet-title" role="none">{{ title }}</div>
+      }
+    }
     <ng-content />
   </div>
 }

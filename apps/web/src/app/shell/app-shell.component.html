@@ -26,7 +26,18 @@
     </div>
   }
   <div class="shell__content">
-    <!-- Mobile shell: no header; every page has its own title and the tab bar is the navigation. -->
+    <!-- Mobile shell (Shelf): the search field and the avatar; the tab bar is the navigation. -->
+    @if (topBar()) {
+      <header class="shell__top">
+        <ui-search-trigger
+          class="shell__top-search"
+          ariaHaspopup="dialog"
+          [label]="'search.placeholder' | transloco"
+          (click)="search.open()"
+        />
+        <ng-container [ngTemplateOutlet]="account" />
+      </header>
+    }
     @if (!viewport.compact()) {
       <header class="shell__header">
         <!-- Settings pages have nothing to search: no field, no button (#335). -->
@@ -41,7 +52,12 @@
       </header>
     }
     <div class="shell__row">
-      <main class="shell__main" appToastArea appScrollRestoration>
+      <main
+        class="shell__main"
+        [class.shell__main--under-top]="topBar()"
+        appToastArea
+        appScrollRestoration
+      >
         <router-outlet />
       </main>
     </div>
@@ -58,7 +74,8 @@
   />
 }
 
-<!-- The account avatar and its menu: in the sidebar head on desktop, in the header on Settings. -->
+<!-- The account avatar and its menu: in the sidebar head on desktop, in the header on Settings,
+     in the top bar of the mobile shell (there the menu is a bottom sheet). -->
 <ng-template #account>
   @if (auth.user(); as user) {
     <div class="shell__user">

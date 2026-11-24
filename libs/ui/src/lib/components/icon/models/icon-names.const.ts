@@ -59,6 +59,7 @@ export const ICON_NAMES = [
   'hash',
   'health',
   'heart',
+  'history',
   'home',
   'image',
   'inbox',

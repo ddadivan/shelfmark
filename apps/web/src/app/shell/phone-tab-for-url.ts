@@ -3,13 +3,16 @@ import { PHONE_TAB } from './models/phone-tab.const';
 import type { PhoneTab } from './models/phone-tab.type';
 
 /**
- * The tab a URL belongs to: Tags, Ask and You have their own page, every other signed-in page (the
- * feed, a folder, Recently opened, the Library page) is under Library. Search opens over the page
- * and is never the current tab.
+ * The tab a URL belongs to: Today, Tags and Ask have their own page, the settings pages are `You`
+ * (no tab of the bar, so none is current there), every other signed-in page (the feed, a folder,
+ * Recently opened, the Library page) is under Library. Search opens over the page and is never the
+ * current tab.
  */
 export function phoneTabForUrl(url: string): PhoneTab {
   const first = (url.split(/[?#]/)[0] ?? '').split('/').find(Boolean);
   switch (first) {
+    case APP_PATH.Today:
+      return PHONE_TAB.Today;
     case APP_PATH.Tags:
       return PHONE_TAB.Tags;
     case APP_PATH.Ask:

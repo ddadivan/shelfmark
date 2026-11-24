@@ -811,6 +811,7 @@
     "addLink": "Adicionar link",
     "tabs": {
       "label": "Principal",
+      "today": "Hoje",
       "library": "Links",
       "search": "Buscar",
       "tags": "Tags",
@@ -4104,6 +4105,38 @@
       "one": "{{count}} esquecido",
       "many": "{{count}} esquecidos",
       "other": "{{count}} esquecidos"
+    }
+  },
+  "today": {
+    "title": "Hoje",
+    "failed": "Não foi possível carregar esta parte.",
+    "retry": "Tentar de novo",
+    "back": {
+      "title": "Para retomar",
+      "more": "Rever",
+      "done": "Concluído: {{title}}",
+      "snooze": "Adiar {{title}}",
+      "clearTitle": "Tudo em dia",
+      "clearText": "Nada pendente. Novos lembretes aparecem aqui."
+    },
+    "week": {
+      "title": "Salvos esta semana",
+      "summary": "{{count}} · {{filed}} em pastas",
+      "more": "Ver todos",
+      "empty": "Nada salvo esta semana ainda. Links novos ficam aqui por sete dias."
+    },
+    "shelf": {
+      "title": "Da sua estante",
+      "saved": "Salvo {{when}}",
+      "savedNever": "Salvo {{when}} · nunca aberto",
+      "note": "Sua nota: “{{note}}”.",
+      "open": "Abrir",
+      "emptyTitle": "É isso por esta semana",
+      "emptyText": "Mais links esquecidos voltam na próxima semana."
+    },
+    "all": {
+      "title": "Todos os links",
+      "more": "Abrir a biblioteca"
     }
   },
   "cleanup": {

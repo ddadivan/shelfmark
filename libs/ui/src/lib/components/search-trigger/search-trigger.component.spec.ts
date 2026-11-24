@@ -55,8 +55,8 @@ describe('SearchTriggerComponent', () => {
     expect(css).toContain('border-radius: var(--radius-card)');
     expect(css).toContain('background: var(--surface-hover)');
     expect(css).toContain('box-shadow: inset 0 0 0 1px var(--ui-search-hairline)');
-    expect(css).toContain('max-inline-size: 40rem');
-    expect(css).toContain('min-height: 3rem');
+    expect(css).toContain('max-inline-size: var(--ui-search-trigger-max-inline-size, 40rem)');
+    expect(css).toContain('min-height: var(--ui-search-trigger-height, 3rem)');
   });
 
   it('has no axe violations', async () => {

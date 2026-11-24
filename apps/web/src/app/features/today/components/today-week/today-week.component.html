@@ -1,0 +1,54 @@
+<section class="today-section" aria-labelledby="today-week-title">
+  <div class="today-section__head">
+    <h2 id="today-week-title" class="today-section__title">{{ 'today.week.title' | transloco }}</h2>
+    @if (loaded() && !failed() && rows().length > 0) {
+      <span class="today-section__count">{{
+        'today.week.summary' | transloco: { count: count(), filed: filed() }
+      }}</span>
+      <a class="today-section__more" [routerLink]="allHref" [queryParams]="allQuery">
+        {{ 'today.week.more' | transloco }}
+        <ui-icon name="chevron-right" [size]="ICON_SIZE.Sm" />
+      </a>
+    }
+  </div>
+  @if (failed()) {
+    <ui-notice kind="danger">
+      {{ 'today.failed' | transloco }}
+      <ui-button uiNoticeAction size="sm" (click)="retry.emit()">{{
+        'today.retry' | transloco
+      }}</ui-button>
+    </ui-notice>
+  } @else if (loaded()) {
+    @if (rows().length > 0) {
+      <ul class="today-week today-box">
+        @for (link of rows(); track link.id) {
+          @let chip = chips.of(link.folderId);
+          <li class="today-week__row">
+            <app-today-thumb class="today-week__thumb" [link]="link" />
+            <a
+              class="today-week__title"
+              [href]="safeHref(link.url)"
+              [attr.target]="newTab() ? '_blank' : null"
+              rel="noopener noreferrer"
+              (click)="opened(link)"
+              >{{ link.title }}</a
+            >
+            <span class="today-week__to">
+              <ui-icon class="today-week__arrow" name="arrow-up" [size]="ICON_SIZE.Sm" />
+              <ui-folder-icon
+                size="sm"
+                [icon]="chip?.icon ?? 'inbox'"
+                [colour]="chip?.colour ?? 'graphite'"
+              />
+              <span class="today-week__folder">{{
+                chip?.name ?? ('library.scope.unsorted' | transloco)
+              }}</span>
+            </span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="today-week__empty today-box">{{ 'today.week.empty' | transloco }}</p>
+    }
+  }
+</section>

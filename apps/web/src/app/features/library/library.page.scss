@@ -188,7 +188,7 @@
   }
 
   @include phone {
-    gap: var(--space-2);
+    gap: var(--space-3);
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -218,13 +218,15 @@
   // Shelf reference: the gap grows with the column, 12px to 28px.
   column-gap: clamp(0.75rem, calc(var(--library-column, 13.75rem) * 0.1), 1.75rem);
 
+  // Shelf below 64em: 16px gaps on a tablet, 12px on a phone.
   @include tablet {
     columns: 3;
+    column-gap: var(--space-4);
   }
 
   @include phone {
     columns: 2;
-    column-gap: var(--space-2);
+    column-gap: var(--space-3);
   }
 
   > li {
@@ -232,8 +234,12 @@
     margin-block-end: rem(20px);
     break-inside: avoid;
 
+    @include tablet {
+      margin-block-end: var(--space-4);
+    }
+
     @include phone {
-      margin-block-end: var(--space-2);
+      margin-block-end: var(--space-3);
     }
   }
 }

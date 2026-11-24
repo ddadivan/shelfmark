@@ -1,0 +1,23 @@
+@use 'ui' as *;
+
+// The host sets the size (`inline-size` / `block-size`); the preview fills it, 10px corners.
+:host {
+  display: grid;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+}
+
+.today-thumb__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.today-thumb__letter {
+  @include type(label);
+
+  color: var(--text-muted);
+}

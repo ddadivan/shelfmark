@@ -9,6 +9,11 @@
   display: block;
 }
 
+// The sheet's host spans the full-width pane (a pane is a flex box that would shrink it).
+:host(.ui-menu--sheet) {
+  inline-size: 100%;
+}
+
 .ui-menu__surface {
   @include float-surface;
 
@@ -25,6 +30,48 @@
   &--point {
     margin: 0;
   }
+}
+
+// Below 64em (Shelf): a bottom sheet. Full width with 20px top corners on a phone; a tablet
+// keeps it centred and at most 560px wide, like `ui-sheet`. The grip is decoration (the scrim and
+// Esc close it); the bottom padding clears the home indicator.
+.ui-menu__surface--sheet {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-width: 0;
+  max-width: rem(560px);
+  max-height: 85dvh;
+  padding: var(--space-2) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom, 0rem));
+  margin: 0 auto;
+  text-align: start;
+  border-block-end: 0;
+  border-radius: rem(20px) rem(20px) 0 0;
+}
+
+.ui-menu__grip {
+  inline-size: rem(36px);
+  block-size: rem(4px);
+  margin: 0 auto var(--space-2);
+  background: var(--line-strong);
+  border-radius: var(--radius-full);
+}
+
+.ui-menu__sheet-title {
+  @include type(heading);
+  @include line-clamp(2);
+
+  padding: var(--space-1) var(--space-2) var(--space-2);
+  font-size: rem(18px);
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.ui-menu--sheet-enter {
+  @include enter(sheet);
+}
+
+.ui-menu--sheet-leave {
+  @include leave(sheet);
 }
 
 // `--ui-origin` is set on the overlay pane from the resolved position (the corner next to the

@@ -1,0 +1,144 @@
+@use 'ui' as *;
+
+:host {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: #{rem(2400px)};
+  margin-inline: auto;
+}
+
+// Shelf Today: the parts 32px apart, under the title row.
+.today {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding-block-start: var(--space-2);
+}
+
+// "Today  Monday 23 November": the page title and the date in muted text on its baseline.
+.today__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: baseline;
+  margin-block-end: calc(var(--space-2) * -1);
+}
+
+.today__title {
+  @include type(title);
+
+  margin: 0;
+
+  @include compact {
+    font-size: rem(22px);
+    line-height: rem(28px);
+  }
+}
+
+.today__date {
+  @include type(secondary);
+
+  color: var(--text-muted);
+}
+
+// "Saved this week" (wider) beside "From your shelf"; stacked below 64em.
+.today__two {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+
+  @include compact {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+}
+
+.today__all {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.today__all-head {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.today__all-title {
+  @include type(heading);
+
+  margin: 0;
+  font-size: rem(18px);
+  line-height: 1.25;
+}
+
+.today__all-more {
+  @include type(secondary);
+
+  display: inline-flex;
+  gap: rem(2px);
+  align-items: center;
+  margin-inline-start: auto;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: var(--radius-xs);
+
+  @include hover {
+    color: var(--text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+// The newest links as the library's masonry (Shelf): as many 13.75rem columns as fit on a
+// desktop, three on a tablet, two on a phone.
+.today__cards {
+  display: grid;
+  gap: var(--density-feed-gap);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.75rem), 1fr));
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  @include tablet {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include phone {
+    gap: var(--space-3);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.today__cards--masonry {
+  display: block;
+  columns: 13.75rem auto;
+  column-gap: #{rem(20px)};
+
+  @include tablet {
+    columns: 3;
+    column-gap: var(--space-4);
+  }
+
+  @include phone {
+    columns: 2;
+    column-gap: var(--space-3);
+  }
+
+  > li {
+    margin-block-end: rem(20px);
+    break-inside: avoid;
+
+    @include tablet {
+      margin-block-end: var(--space-4);
+    }
+
+    @include phone {
+      margin-block-end: var(--space-3);
+    }
+  }
+}

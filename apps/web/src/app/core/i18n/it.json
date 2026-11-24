@@ -811,6 +811,7 @@
     "addLink": "Aggiungi link",
     "tabs": {
       "label": "Principale",
+      "today": "Oggi",
       "library": "Link",
       "search": "Cerca",
       "tags": "Tag",
@@ -4104,6 +4105,38 @@
       "one": "{{count}} dimenticato",
       "many": "{{count}} dimenticati",
       "other": "{{count}} dimenticati"
+    }
+  },
+  "today": {
+    "title": "Oggi",
+    "failed": "Impossibile caricare questa parte.",
+    "retry": "Riprova",
+    "back": {
+      "title": "Da riprendere",
+      "more": "Rivedi",
+      "done": "Fatto: {{title}}",
+      "snooze": "Posticipa {{title}}",
+      "clearTitle": "Tutto in pari",
+      "clearText": "Niente in scadenza. I nuovi promemoria compariranno qui."
+    },
+    "week": {
+      "title": "Salvati questa settimana",
+      "summary": "{{count}} · {{filed}} in cartelle",
+      "more": "Mostra tutti",
+      "empty": "Ancora niente salvato questa settimana. I nuovi link restano qui per sette giorni."
+    },
+    "shelf": {
+      "title": "Dal tuo scaffale",
+      "saved": "Salvato {{when}}",
+      "savedNever": "Salvato {{when}} · mai aperto",
+      "note": "La tua nota: «{{note}}».",
+      "open": "Apri",
+      "emptyTitle": "È tutto per questa settimana",
+      "emptyText": "Altri link dimenticati tornano la prossima settimana."
+    },
+    "all": {
+      "title": "Tutti i link",
+      "more": "Apri la libreria"
     }
   },
   "cleanup": {
