@@ -540,6 +540,8 @@ export type { ReaderBlock } from './reader/reader-block.interface';
 export type { ReaderArticle } from './reader/reader-article.interface';
 export type { ReaderArticleResponse } from './reader/reader-article-response.interface';
 export type { ReaderProgress } from './reader/reader-progress.interface';
+export type { ReaderProgressRequest } from './reader/reader-progress-request.interface';
+export type { ReaderProgressResponse } from './reader/reader-progress-response.interface';
 export { READER_ENDPOINT } from './reader/reader-endpoint.const';
 export { READER_LIMIT } from './reader/reader-limit.const';
 export type { NotificationSettings } from './notifications/notification-settings.interface';

@@ -126,6 +126,7 @@ model User {
   cleanupReport         CleanupReport?
   imports               Import[]
   readerArticles        LinkReaderArticle[]
+  readingProgress       ReadingProgress[]
 
   @@map("users")
 }
@@ -289,6 +290,7 @@ model Link {
   embeddings         LinkEmbedding[]
   rediscoverHidden   RediscoverHidden[]
   readerArticles     LinkReaderArticle[]
+  readingProgress    ReadingProgress[]
 
   @@unique([id, userId])
   @@unique([userId, idempotencyKey])
@@ -836,4 +838,21 @@ model LinkReaderArticle {
 
   @@index([userId])
   @@map("link_reader_articles")
+}
+
+// Reader progress (Revisit's "Continue reading"): how far the user read a link's Reader text. One
+// row per link, same-user composite FK with cascade; written in plain SQL (the link's `updated_at`
+// stays), deleted when the link gets a new page. CHECKs in the migration keep `fraction` within 0
+// to 1 and `minutes_left` within 0 to 999 (`READER_LIMIT.MinutesLeftMax`).
+model ReadingProgress {
+  linkId      String   @id @map("link_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  fraction    Float    @db.Real
+  minutesLeft Int      @map("minutes_left") @db.SmallInt
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(3)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  link        Link     @relation(fields: [linkId, userId], references: [id, userId], onDelete: Cascade)
+
+  @@index([userId, updatedAt])
+  @@map("reading_progress")
 }
