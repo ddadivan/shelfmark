@@ -27,6 +27,8 @@ const APP_ICONS = [
   'filter',
   // The Masonry view of the library feed (Shelf, ADR 0061).
   'masonry',
+  // Shelf Link page: Reading settings and the Reader notice (two letters T, large and small).
+  'text-size',
   // Folder icons added in #335 (food, sport, travel, money, music, home, health, kids, pets, ...).
   'ball',
   // The reminder chip and the Reminders entry (#275).

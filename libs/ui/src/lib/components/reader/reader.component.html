@@ -1,0 +1,81 @@
+<div class="ui-reader__progress" aria-hidden="true">
+  <span class="ui-reader__progress-bar" [style.transform]="'scaleX(' + progress() + ')'"></span>
+</div>
+<div class="ui-reader__page">
+  @if (notice()) {
+    <p class="ui-reader__notice">
+      <ui-icon name="text-size" [size]="ICON_SIZE.Sm" />
+      <span>{{ notice() }}</span>
+    </p>
+  }
+  <article class="ui-reader__article">
+    @if (site()) {
+      <p class="ui-reader__site">
+        <ui-favicon [src]="faviconSrc()" [letter]="faviconLetter()" [colour]="faviconColour()" />
+        <span>{{ site() }}</span>
+      </p>
+    }
+    <!-- prettier-ignore -->
+    <h2 class="ui-reader__title">{{ heading() }}</h2>
+    @if (meta()) {
+      <p class="ui-reader__meta">{{ meta() }}</p>
+    }
+    <ng-content select="[slot=summary]" />
+    @if (image(); as src) {
+      @if (imageFailed() !== src) {
+        <figure class="ui-reader__figure ui-reader__figure--lead">
+          <img
+            class="ui-reader__image"
+            [src]="src"
+            [style.aspect-ratio]="imageRatio()"
+            alt=""
+            decoding="async"
+            referrerpolicy="no-referrer"
+            (error)="onImageError(src)"
+          />
+        </figure>
+      }
+    }
+    @for (block of blocks(); track $index) {
+      @switch (block.kind) {
+        @case (BLOCK.Heading) {
+          <h3 class="ui-reader__heading">{{ block.text }}</h3>
+        }
+        @case (BLOCK.List) {
+          <ul class="ui-reader__list">
+            @for (item of block.items; track $index) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        }
+        @case (BLOCK.Quote) {
+          <blockquote class="ui-reader__quote">{{ block.text }}</blockquote>
+        }
+        @case (BLOCK.Code) {
+          <pre class="ui-reader__code"><code>{{ block.text }}</code></pre>
+        }
+        @case (BLOCK.Image) {
+          <figure class="ui-reader__figure">
+            @if (block.imageUrl) {
+              <img
+                class="ui-reader__image"
+                [src]="block.imageUrl"
+                alt=""
+                decoding="async"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+              />
+            }
+            @if (block.text) {
+              <figcaption class="ui-reader__caption">{{ block.text }}</figcaption>
+            }
+          </figure>
+        }
+        @default {
+          <p class="ui-reader__paragraph">{{ block.text }}</p>
+        }
+      }
+    }
+    <ng-content />
+  </article>
+</div>

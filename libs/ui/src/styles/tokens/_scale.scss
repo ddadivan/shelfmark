@@ -47,6 +47,11 @@
   --font-sans:
     'Hanken Grotesk Variable', 'Onest Variable', 'Hanken Grotesk Fallback', 'Hanken Grotesk',
     system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  // Reader fonts (Reading settings › Font): Literata is not self-hosted (Georgia stands in);
+  // Atkinson Hyperlegible is the app's self-hosted Readable font.
+  --font-serif: 'Literata', georgia, 'Times New Roman', serif;
+  --font-readable: 'Atkinson Hyperlegible', 'Hanken Grotesk Variable', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', monospace;
 
   // Density (#285): Comfortable here; `global.scss` overrides them under [data-density='compact'].

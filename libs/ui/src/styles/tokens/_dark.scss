@@ -40,6 +40,11 @@
   --ai-line: #6e9072;
   --highlight-bg: #2b3526;
   --highlight-text: #ececee;
+
+  // Reader's sepia page (Reading settings › Page).
+  --sepia-bg: #2a241c;
+  --sepia-text: #eadfcb;
+  --sepia-muted: #b8a88e;
   --ai-fill: color-mix(in srgb, var(--ai) 24%, var(--surface));
   --ai-fill-hover: color-mix(in srgb, var(--ai) 30%, var(--surface));
   --ai-fill-pressed: color-mix(in srgb, var(--ai) 36%, var(--surface));

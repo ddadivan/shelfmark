@@ -533,3 +533,12 @@ export type { ImportGroupLink } from './imports/import-group-link.interface';
 export type { ImportGroupsRequest } from './imports/import-groups-request.interface';
 export type { ImportGroup } from './imports/import-group.interface';
 export type { ImportGroupsResponse } from './imports/import-groups-response.interface';
+
+export { READER_BLOCK_KIND } from './reader/reader-block-kind.const';
+export type { ReaderBlockKind } from './reader/reader-block-kind.type';
+export type { ReaderBlock } from './reader/reader-block.interface';
+export type { ReaderArticle } from './reader/reader-article.interface';
+export type { ReaderArticleResponse } from './reader/reader-article-response.interface';
+export type { ReaderProgress } from './reader/reader-progress.interface';
+export { READER_ENDPOINT } from './reader/reader-endpoint.const';
+export { READER_LIMIT } from './reader/reader-limit.const';

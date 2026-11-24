@@ -50,6 +50,10 @@ import { HttpRediscoverApi } from '../../rediscover/http/http-rediscover.api';
 import { MockRediscoverApi } from '../../rediscover/mock/mock-rediscover.api';
 import { REDISCOVER_API } from '../../rediscover/models/rediscover-api.const';
 import type { RediscoverApi } from '../../rediscover/models/rediscover-api.interface';
+import { HttpReaderApi } from '../../reader/http/http-reader.api';
+import { MockReaderApi } from '../../reader/mock/mock-reader.api';
+import { READER_API } from '../../reader/models/reader-api.const';
+import type { ReaderApi } from '../../reader/models/reader-api.interface';
 import { HttpCleanupApi } from '../../cleanup/http/http-cleanup.api';
 import { MockCleanupApi } from '../../cleanup/mock/mock-cleanup.api';
 import { CLEANUP_API } from '../../cleanup/models/cleanup-api.const';
@@ -190,6 +194,10 @@ export function provideLinksApi(): Provider[] {
     {
       provide: IMPORT_API,
       useFactory: (): ImportApi => (useRealApi() ? inject(HttpImportApi) : inject(MockImportApi)),
+    },
+    {
+      provide: READER_API,
+      useFactory: (): ReaderApi => (useRealApi() ? inject(HttpReaderApi) : inject(MockReaderApi)),
     },
     { provide: EXPORT_API, useExisting: MockExportApi },
   ];

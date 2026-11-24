@@ -1,0 +1,12 @@
+export { ReaderComponent } from './reader.component';
+export { READER_TEXT_SIZE } from './models/reader-text-size.const';
+export type { ReaderTextSize } from './models/reader-text-size.type';
+export { READER_FONT } from './models/reader-font.const';
+export type { ReaderFont } from './models/reader-font.type';
+export { READER_LINE_WIDTH } from './models/reader-line-width.const';
+export type { ReaderLineWidth } from './models/reader-line-width.type';
+export { READER_TONE } from './models/reader-tone.const';
+export type { ReaderTone } from './models/reader-tone.type';
+export { READER_VIEW_BLOCK } from './models/reader-block-kind.const';
+export type { ReaderViewBlockKind } from './models/reader-block-kind.type';
+export type { ReaderViewBlock } from './models/reader-view-block.interface';
