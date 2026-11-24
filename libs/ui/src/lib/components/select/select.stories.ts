@@ -254,6 +254,15 @@ export const Row: Story = {
   }),
 };
 
+/** `appearance="pill"` (Shelf 05-settings): the quiet value pill of a settings row. */
+export const Pill: Story = {
+  render: (args) => ({
+    props: args,
+    template: `<ui-select label="Folder" appearance="pill" emptyLabel="Unsorted" [options]="options"
+      [(value)]="value" />`,
+  }),
+};
+
 /** Every state in both themes, independent of the toolbar (closed; open states have own stories). */
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },

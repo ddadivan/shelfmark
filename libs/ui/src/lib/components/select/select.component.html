@@ -5,7 +5,7 @@
   [error]="message()"
   [invalid]="showInvalid()"
   [disabled]="disabled()"
-  [labelHidden]="row()"
+  [labelHidden]="row() || pill()"
   (click)="onHostClick($event)"
 >
   <button
@@ -32,7 +32,7 @@
         [icon]="chosen()?.icon ?? 'folder'"
         [colour]="chosen()?.colour ?? 'graphite'"
       />
-    } @else {
+    } @else if (!pill()) {
       <ui-icon class="ui-select__icon" [name]="triggerIcon()" [size]="ICON_SIZE.Md" />
     }
     @if (row()) {

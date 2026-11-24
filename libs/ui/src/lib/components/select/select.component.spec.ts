@@ -717,3 +717,35 @@ describe('SelectComponent row appearance', () => {
     expect(await axeViolations(host)).toEqual([]);
   });
 });
+
+@Component({
+  imports: [SelectComponent],
+  template: `<ui-select
+    label="Reminder time"
+    appearance="pill"
+    [options]="options"
+    [(value)]="value"
+  />`,
+})
+class PillHostComponent {
+  readonly options = [
+    { id: '09:00', name: '9:00' },
+    { id: '18:00', name: '18:00' },
+  ];
+  readonly value = signal<string | null>('09:00');
+}
+
+describe('SelectComponent pill appearance', () => {
+  it('shows only the value and the chevron and keeps the label for screen readers', async () => {
+    const fixture = TestBed.createComponent(PillHostComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('ui-select')?.classList).toContain('ui-select--pill');
+    const trigger = host.querySelector('button') as HTMLButtonElement;
+    expect(trigger.textContent?.trim()).toBe('9:00');
+    expect(host.querySelector('.ui-select__icon')).toBeNull();
+    expect(host.querySelector('.ui-select__chevron')).not.toBeNull();
+    expect(host.querySelector('.ui-field--label-hidden')).not.toBeNull();
+    expect(await axeViolations(host)).toEqual([]);
+  });
+});

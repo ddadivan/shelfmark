@@ -1,33 +1,40 @@
 @use '../../../../styles/ui' as *;
 
+// Shelf settings group (05-settings `.group`): the title sits above the panel (18/22 600, 8px
+// under it), the panel is the `surface` with the card hairline and 16px corners and holds the
+// rows edge to edge; each row has its own 12px 16px padding and a `sep` line above it.
 :host {
   display: flex;
   flex-direction: column;
+
+  // Rows inside a section bleed to the panel edges (their lines run full width).
+  --ui-settings-row-inset: var(--space-4);
 }
 
-// The rows carry their own padding and separators, so the panel gap is off. In a grid cell taller
-// than the section (equal-height groups, #350) the panel fills it.
+// The rows carry their own padding and separators, so the panel gap is off; other content gets
+// the row inset at the sides. In a grid cell taller than the section (equal-height groups, #350)
+// the panel fills it.
 .ui-settings-section__panel {
   flex: 1;
   gap: 0;
+  padding-block: 0;
+  padding-inline: var(--space-4);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
 }
 
 .ui-settings-section__title {
   @include type(heading);
 
   margin: 0 0 var(--space-2);
+  font-size: rem(18px);
+  line-height: rem(22px);
   color: var(--text);
 }
 
-// Destructive group (SetAccount.dc.html): a danger-bg ring over the card shadow, red title.
+// Destructive group (05-settings Account): the hairline turns a soft red.
 :host(.ui-settings-section--danger) {
   .ui-settings-section__panel {
-    box-shadow:
-      0 0 0 1px var(--danger-bg),
-      var(--shadow-card);
-  }
-
-  .ui-settings-section__title {
-    color: var(--danger);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--danger) 40%, transparent);
   }
 }

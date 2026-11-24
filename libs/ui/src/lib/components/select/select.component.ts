@@ -81,7 +81,11 @@ const COARSE_POINTER = '(pointer: coarse)';
     Option,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'ui-select', '[class.ui-select--row]': 'row()' },
+  host: {
+    class: 'ui-select',
+    '[class.ui-select--row]': 'row()',
+    '[class.ui-select--pill]': 'pill()',
+  },
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.scss', './select-list.scss'],
 })
@@ -112,7 +116,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   readonly createLabel = input('');
   /** The "Create" row was chosen: the trimmed search text. The value is left to the feature. */
   readonly created = output<string>();
-  /** `field` (default) or `row` (`SELECT_APPEARANCE`). */
+  /** `field` (default), `row` or `pill` (`SELECT_APPEARANCE`). */
   readonly appearance = input<SelectAppearance>(SELECT_APPEARANCE.Field);
   /** Row: the words before the value ("Goes to"). */
   readonly rowLead = input('');
@@ -121,6 +125,7 @@ export class SelectComponent extends UiFieldControl implements FormValueControl<
   /** Row: the action word at the end ("Change"). */
   readonly rowAction = input('');
   protected readonly row = computed(() => this.appearance() === SELECT_APPEARANCE.Row);
+  protected readonly pill = computed(() => this.appearance() === SELECT_APPEARANCE.Pill);
 
   private readonly injector = inject(Injector);
   private readonly document = inject(DOCUMENT);

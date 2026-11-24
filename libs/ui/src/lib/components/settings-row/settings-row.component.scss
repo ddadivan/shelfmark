@@ -6,13 +6,18 @@
   gap: var(--space-4);
   align-items: center;
   justify-content: space-between;
-  padding-block: rem(14px);
+
+  // Shelf `.setrow`: 12px 16px inside a settings section (`--ui-settings-row-inset`, set by
+  // `ui-settings-section`: the row bleeds to the panel edges so its line runs full width);
+  // elsewhere (dialogs) the row keeps no side padding.
+  margin-inline: calc(-1 * var(--ui-settings-row-inset, 0rem));
+  padding-block: var(--space-3);
+  padding-inline: var(--ui-settings-row-inset, 0);
   border-top: 1px solid var(--border);
 }
 
-// The first row follows the group title: no line, less air above.
+// The first row has no line above it.
 :host(:first-of-type) {
-  padding-block-start: var(--space-1);
   border-top: 0;
 }
 
@@ -51,14 +56,16 @@
 .ui-settings-row__title {
   @include type(label);
 
+  line-height: rem(21px);
   color: var(--text);
 }
 
 .ui-settings-row__desc {
   @include type(caption);
 
-  max-inline-size: rem(380px);
-  margin-block-start: var(--space-1);
+  max-inline-size: rem(560px);
+  margin-block-start: rem(2px);
+  line-height: rem(18px);
   color: var(--text-muted);
 }
 

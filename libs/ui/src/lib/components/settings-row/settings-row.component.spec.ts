@@ -86,11 +86,12 @@ describe('SettingsSectionComponent and SettingsRowComponent', () => {
     expect(css).toContain('border-top: 1px solid var(--border)');
     expect(css).toMatch(/:host\(:first-of-type\)\s*{[^}]*border-top: 0/);
     expect(css).toContain('flex-wrap: wrap');
-    expect(css).toContain('max-inline-size: 23.75rem');
+    expect(css).toContain('max-inline-size: 35rem');
     expect(css).toContain('inline-size: 2.25rem');
+    expect(css).toContain('padding-inline: var(--ui-settings-row-inset, 0)');
   });
 
-  it('marks the destructive group with danger: class, red ring and red title', () => {
+  it('marks the destructive group with danger: class and a soft red ring', () => {
     const { fixture, root } = render();
     const section = root.querySelector('ui-settings-section');
     expect(section?.classList).not.toContain('ui-settings-section--danger');
@@ -101,10 +102,7 @@ describe('SettingsSectionComponent and SettingsRowComponent', () => {
       'lib/components/settings-row/settings-section/settings-section.component.scss',
     );
     expect(css).toMatch(
-      /ui-settings-section--danger[^{]*\.ui-settings-section__panel\s*\{[^}]*var\(--danger-bg\)/,
-    );
-    expect(css).toMatch(
-      /ui-settings-section--danger[^{]*\.ui-settings-section__title\s*\{[^}]*color: var\(--danger\)/,
+      /ui-settings-section--danger[^{]*\.ui-settings-section__panel\s*\{[^}]*var\(--danger\) 40%/,
     );
   });
 
