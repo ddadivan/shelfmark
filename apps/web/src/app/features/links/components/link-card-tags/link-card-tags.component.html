@@ -1,36 +1,31 @@
-@if (tags().length > 0) {
-  @if (first(); as tag) {
-    <ui-chip
-      #firstChip
-      class="link-card-tags__first"
-      truncate
-      [clickable]="interactive()"
-      (clicked)="select(tag)"
-      >{{ tag }}</ui-chip
-    >
-  }
-  @if (more().count > 0) {
-    <ui-chip
-      class="link-card-tags__more"
-      variant="neutral"
-      clickable
-      [ariaLabel]="moreLabelKey() | transloco: more()"
-      [uiPopoverTrigger]="popover"
-      >{{ 'links.card.moreTags' | transloco: { count: more().count } }}</ui-chip
-    >
-    <ui-popover
-      #popover
-      [heading]="(collapsed() ? 'links.card.allTags' : 'links.card.otherTags') | transloco"
-    >
-      <ul class="link-card-tags__all">
-        @for (name of hidden(); track name) {
-          <li class="link-card-tags__item">
-            <ui-chip truncate [clickable]="interactive()" (clicked)="select(name, popover)">{{
-              name
-            }}</ui-chip>
-          </li>
-        }
-      </ul>
-    </ui-popover>
-  }
+@for (tag of shown(); track tag) {
+  <ui-chip
+    class="link-card-tags__tag"
+    [variant]="CHIP_VARIANT.Hashtag"
+    truncate
+    [clickable]="interactive()"
+    (clicked)="select(tag)"
+    ><span aria-hidden="true">#</span>{{ tag }}</ui-chip
+  >
+}
+@if (more().count > 0) {
+  <ui-chip
+    class="link-card-tags__more"
+    [variant]="CHIP_VARIANT.Hashtag"
+    clickable
+    [ariaLabel]="moreLabelKey() | transloco: more()"
+    [uiPopoverTrigger]="popover"
+    >{{ 'links.card.moreTags' | transloco: { count: more().count } }}</ui-chip
+  >
+  <ui-popover #popover [heading]="'links.card.otherTags' | transloco">
+    <ul class="link-card-tags__all">
+      @for (name of hidden(); track name) {
+        <li class="link-card-tags__item">
+          <ui-chip truncate [clickable]="interactive()" (clicked)="select(name, popover)">{{
+            name
+          }}</ui-chip>
+        </li>
+      }
+    </ul>
+  </ui-popover>
 }

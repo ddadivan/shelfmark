@@ -1,44 +1,33 @@
 @use 'ui' as *;
 
-// One line, start-aligned: the first tag, then "+N". The group shrinks before the folder chip
-// next to it (the card footer gives it the larger shrink factor); the first tag ends in an
-// ellipsis inside its own pill, never cut by the edge of the row.
+// Shelf reference: the hashtags wrap, 4px between lines and 12px between tags (the card's tags
+// slot holds this one element, so the group lays them out itself).
 :host {
   display: flex;
-  gap: var(--space-1);
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
   align-items: center;
   min-inline-size: 0;
 }
 
-// Until the first measure decided whether the first tag fits whole (no flash of a cut tag).
-:host(.link-card-tags--measuring) {
-  visibility: hidden;
+.link-card-tags__tag {
+  --ui-chip-max-inline-size: 100%;
 }
 
-.link-card-tags__first {
-  --ui-chip-max-inline-size: #{rem(160px)};
-
-  flex: 0 1 auto;
-}
-
-.link-card-tags__more {
-  flex: none;
-}
-
-// The chips that act sit above the card's stretched link (z-index 1), so a click filters by the
-// tag or opens the popover instead of opening the link. A plain chip (read-only, selecting) lets
+// The tags that act sit above the card's stretched link (z-index 1), so a click filters by the
+// tag or opens the popover instead of opening the link. A plain tag (read-only, selecting) lets
 // the click through to the card.
 .link-card-tags__more,
-:host(.link-card-tags--interactive) .link-card-tags__first {
+:host(.link-card-tags--interactive) .link-card-tags__tag {
   position: relative;
   z-index: 2;
 }
 
-:host(:not(.link-card-tags--interactive)) .link-card-tags__first {
+:host(:not(.link-card-tags--interactive)) .link-card-tags__tag {
   pointer-events: none;
 }
 
-// Inside the "All tags" popover (the overlay moves it into <body>; the styles stay scoped).
+// Inside the popover (the overlay moves it into <body>; the styles stay scoped).
 .link-card-tags__all {
   display: flex;
   flex-wrap: wrap;

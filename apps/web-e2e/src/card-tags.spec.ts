@@ -18,26 +18,6 @@ function card(page: Page) {
   return page.locator('ui-card', { hasText: TITLE });
 }
 
-function moreTags(page: Page) {
-  return card(page).getByRole('button', { name: /more tags?:/ });
-}
-
-/**
- * What the card shows: the first tag while it fits whole, then "+N" for the tags not on the card
- * ("Other tags"); when the first tag would be cut, only "+N" for every tag ("All tags").
- */
-async function expected(page: Page) {
-  await expect(moreTags(page)).toBeVisible();
-  const footer = card(page).locator('app-link-card-tags');
-  const firstShown = await footer.getByRole('button', { name: TAGS[0], exact: true }).isVisible();
-  const listed = firstShown ? TAGS.slice(1) : TAGS;
-  return {
-    listed,
-    heading: firstShown ? 'Other tags' : 'All tags',
-    name: `${listed.length} more tags: ${listed.join(', ')}`,
-  };
-}
-
 /**
  * Tag chips on cards in view whose name is cut. Whole pixels miss an overflow under one pixel
  * (the browser already draws "angul…"), so the text width is compared with its box as well.
@@ -78,77 +58,27 @@ async function cutTagsWhileScrolling(page: Page): Promise<string[]> {
   return found;
 }
 
-test.describe('card tags (hotfix 2.2.1, mock API)', () => {
+test.describe('card tags (Shelf hashtags, mock API)', () => {
   test.skip(!!process.env['BASE_URL'], 'deployed builds have no mock APIs');
 
+  // "+N" and its popover (hover, Esc, a press outside) are covered by
+  // apps/web/src/app/features/links/components/link-card-tags/link-card-tags.component.spec.ts.
   test(
-    'the footer shows whole tags only; "+N" opens the tags not on the card and a tag filters the library',
+    'the card shows up to three whole "#tag"s and a tag filters the library',
     { tag: E2E_TAG.Mobile },
     async ({ page }) => {
       await openCards(page);
-      const { listed, heading, name } = await expected(page);
-      await expect(moreTags(page)).toHaveAccessibleName(name);
-      await expect(moreTags(page)).toHaveText(`+${listed.length}`);
-      await expect(moreTags(page)).toHaveAttribute('aria-haspopup', 'dialog');
-      await expect(moreTags(page)).toHaveAttribute('aria-expanded', 'false');
+      const tags = card(page).locator('app-link-card-tags');
+      await expect(tags.getByRole('button')).toHaveText(TAGS.map((tag) => `#${tag}`));
+      // The "#" is for the eye: the accessible name is the tag itself.
+      await expect(tags.getByRole('button', { name: TAGS[0], exact: true })).toBeVisible();
+      await expect(tags.getByRole('button', { name: /more tags?:/ })).toHaveCount(0);
       expect(await cutTags(page)).toEqual([]);
 
-      // Hover on a desktop pointer; a tap on touch, where nothing hovers.
-      const touch = await page.evaluate<boolean>("matchMedia('(hover: none)').matches");
-      if (touch) {
-        await moreTags(page).tap();
-      } else {
-        await moreTags(page).hover();
-      }
-      const dialog = page.getByRole('dialog', { name: heading });
-      await expect(dialog).toBeVisible();
-      await expect(moreTags(page)).toHaveAttribute('aria-expanded', 'true');
-      await expect(dialog.getByRole('button')).toHaveText(listed);
-      // The panel opens above "+N".
-      const panel = await dialog.boundingBox();
-      const trigger = await moreTags(page).boundingBox();
-      expect(panel && trigger && panel.y + panel.height <= trigger.y + 1).toBe(true);
-
-      await dialog.getByRole('button', { name: 'reading', exact: true }).click();
+      await tags.getByRole('button', { name: 'reading', exact: true }).click();
       await expect(page).toHaveURL(/[?&]tag=reading(&|$)/);
-      await expect(dialog).toBeHidden();
     },
   );
-
-  test('the pointer can move from "+N" into the panel; Esc closes it on "+N"', async ({ page }) => {
-    await openCards(page);
-    const { listed, heading } = await expected(page);
-    await moreTags(page).hover();
-    const dialog = page.getByRole('dialog', { name: heading });
-    await expect(dialog).toBeVisible();
-    await dialog.getByRole('button', { name: 'javascript', exact: true }).hover();
-    await page.waitForTimeout(400);
-    await expect(dialog).toBeVisible();
-
-    // Keyboard: Enter moves focus into the panel, Esc gives it back to "+N".
-    await page.mouse.move(0, 0);
-    await expect(dialog).toBeHidden();
-    await moreTags(page).focus();
-    await page.keyboard.press('Enter');
-    await expect(dialog.getByRole('button', { name: listed[0], exact: true })).toBeFocused();
-    await page.keyboard.press('Escape');
-    await expect(dialog).toBeHidden();
-    await expect(moreTags(page)).toBeFocused();
-  });
-
-  test('a press outside closes the panel opened by a click', async ({ page }) => {
-    await openCards(page);
-    const { heading } = await expected(page);
-    await moreTags(page).click();
-    const dialog = page.getByRole('dialog', { name: heading });
-    await expect(dialog).toBeVisible();
-    await page.mouse.move(0, 0);
-    await page.waitForTimeout(400);
-    // Pinned by the click: leaving it with the pointer keeps it open.
-    await expect(dialog).toBeVisible();
-    await page.getByRole('heading', { level: 1 }).click();
-    await expect(dialog).toBeHidden();
-  });
 
   test('no tag is ever cut on a card: at several widths, after a resize and while scrolling', async ({
     page,

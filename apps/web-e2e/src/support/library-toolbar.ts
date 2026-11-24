@@ -1,12 +1,12 @@
 import { expect, type Page } from '@playwright/test';
-import { isPhone } from './sidebar';
+import { isCompact, isPhone } from './sidebar';
 
 export type LibraryView = 'Masonry' | 'Cards' | 'List';
 
 /**
  * The library toolbar (Shelf). From 40em (tablet and desktop): View (grid size and card fields),
  * the Masonry / Cards / List switch and a "More view options" ⋯ menu with Sort by, Side by side
- * and Export; a phone has one "Options" menu with Sort by, View and Export.
+ * Save this view and Export; a phone has one "Options" menu with Sort by, View and Export.
  */
 async function openViewMenu(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Options', exact: true }).click();
@@ -59,4 +59,17 @@ export function sideBySideItem(page: Page) {
 export async function toggleSideBySide(page: Page): Promise<void> {
   await openMoreMenu(page);
   await sideBySideItem(page).click();
+}
+
+/** The "Save this view" control: the ⋯ menu item on desktop, the button after the tabs below 64em. */
+export async function openSaveThisView(page: Page): Promise<void> {
+  if (isCompact(page)) {
+    await page
+      .locator('app-saved-view-chips')
+      .getByRole('button', { name: 'Save this view' })
+      .click();
+  } else {
+    await openMoreMenu(page);
+    await page.getByRole('menuitem', { name: 'Save this view' }).click();
+  }
 }

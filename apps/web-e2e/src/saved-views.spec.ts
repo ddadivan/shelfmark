@@ -1,5 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
 import { openFeed } from './support/a11y-flows';
+import { openSaveThisView } from './support/library-toolbar';
 import { isCompact } from './support/sidebar';
 import { expect, test } from './support/test';
 
@@ -38,7 +39,8 @@ test.describe('saved views (mock API)', () => {
     await expect(views(page)).toBeVisible();
     expect(await chipNames(page)).toEqual(['All', 'Videos', 'Articles']);
     await expect(chip(page, /^All \d+$/)).toHaveAttribute('aria-pressed', 'true');
-    await expect(views(page).getByRole('button', { name: 'Save this view' })).toBeVisible();
+    // Desktop (Shelf): "Save this view" is in the ⋯ menu, not after the tabs.
+    await expect(views(page).getByRole('button', { name: 'Save this view' })).toHaveCount(0);
 
     const videos = chip(page, /^Videos \d+$/);
     const count = Number(/(\d+)$/.exec((await videos.textContent())?.trim() ?? '')?.[1]);
@@ -59,7 +61,7 @@ test.describe('saved views (mock API)', () => {
     await expect(chip(page, /^All \d+$/)).toHaveAttribute('aria-pressed', 'false');
 
     // On a feed other than All links "Save this view" stores the type only (#335).
-    await views(page).getByRole('button', { name: 'Save this view' }).click();
+    await openSaveThisView(page);
     const dialog = page.getByRole('dialog', { name: 'New view' });
     // AI is off: no phrase, the first row has focus and the type of the feed is already chosen.
     await expect(dialog.getByRole('combobox', { name: 'Where' })).toBeFocused();
@@ -123,16 +125,18 @@ test.describe('saved views (mock API)', () => {
     await expect(page).toHaveURL(/\/folders\/00000000-0000-4000-8000-000000000101$/u);
   });
 
-  test('after saving a view with the keyboard focus is on its chip', async ({ page }) => {
+  test('saves a view from the ⋯ menu with the keyboard', async ({ page }) => {
     await openFeed(page, '/unsorted?kind=shopping');
 
-    await views(page).getByRole('button', { name: 'Save this view' }).focus();
+    await page.getByRole('button', { name: 'More view options' }).focus();
+    await page.keyboard.press('Enter');
+    await page.getByRole('menuitem', { name: 'Save this view' }).focus();
     await page.keyboard.press('Enter');
     const dialog = page.getByRole('dialog', { name: 'New view' });
     await dialog.getByRole('textbox', { name: 'Name' }).fill('Keyboard view');
     await page.keyboard.press('Enter');
 
     await expect(dialog).toHaveCount(0);
-    await expect(chip(page, /^Keyboard view \d+$/)).toBeFocused();
+    await expect(chip(page, /^Keyboard view \d+$/)).toBeVisible();
   });
 });

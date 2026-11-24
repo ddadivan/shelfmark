@@ -2,6 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 import { openFeed } from './support/a11y-flows';
 import { AI_DISCLAIMER, seedAi } from './support/ai';
 import { E2E_TAG } from './models/e2e-tag.const';
+import { openSaveThisView } from './support/library-toolbar';
 import { expect, test } from './support/test';
 
 // "+ Save view" (#535): one dialog for everyone, a phrase step while AI is on (mock API).
@@ -20,7 +21,7 @@ test.describe('new view dialog (mock API)', () => {
   }
 
   async function openDialog(page: Page): Promise<Locator> {
-    await views(page).getByRole('button', { name: 'Save this view' }).click();
+    await openSaveThisView(page);
     const dialog = page.getByRole('dialog', { name: 'New view' });
     await expect(dialog).toBeVisible();
     return dialog;

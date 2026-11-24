@@ -22,6 +22,8 @@ ui-card {
 }
 
 .link-card__folder-icon {
+  --ui-icon-size: #{rem(12px)};
+
   flex: none;
   color: var(--ui-folder-ink, var(--text-muted));
 }

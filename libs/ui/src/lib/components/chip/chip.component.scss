@@ -224,3 +224,29 @@ button.ui-chip__body {
     background: var(--surface-pressed);
   }
 }
+
+// `variant="hashtag"` (Shelf LinkCard): plain `#tag` text in 12/16 muted, no pill and no padding
+// (the consumer writes the "#", hidden from assistive tech). A clickable one turns `text` on hover.
+:host(.ui-chip--hashtag) {
+  height: auto;
+  background: transparent;
+  border-radius: var(--radius-xs);
+
+  .ui-chip__body {
+    gap: 0;
+    padding: 0;
+    font-weight: 400;
+  }
+}
+
+:host(.ui-chip--hashtag.ui-chip--clickable:not(.ui-chip--disabled)) {
+  @include hover {
+    filter: none;
+    color: var(--text);
+  }
+
+  &:active {
+    filter: none;
+    color: var(--text);
+  }
+}

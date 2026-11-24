@@ -187,7 +187,7 @@ describe('LinkCardComponent', () => {
     expect(anchor?.textContent).toContain('Angular overview');
   });
 
-  it('shows the host without www, the note, the first tag and "+N" for the rest', async () => {
+  it('shows the host without www, the note, the first three tags and "+N" for the rest', async () => {
     const { element } = await setup();
 
     expect(element.textContent).toContain('angular.dev');
@@ -197,7 +197,7 @@ describe('LinkCardComponent', () => {
     const names = [...footer.querySelectorAll('button')].map(
       (button) => button.getAttribute('aria-label') ?? button.textContent.trim(),
     );
-    expect(names).toEqual(['docs', '3 more tags: a, b, c']);
+    expect(names).toEqual(['#docs', '#a', '#b', '1 more tag: c']);
   });
 
   it('puts the folder in the meta line with a hidden "In folder" hint, not as a chip', async () => {

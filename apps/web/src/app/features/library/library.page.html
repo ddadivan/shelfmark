@@ -233,6 +233,7 @@
               #splitOpener
               [uiMenuTrigger]="moreMenu"
               variant="ghost"
+              size="sm"
               iconOnly
               iconLeft="more"
               [ariaLabel]="'library.viewMenu.more' | transloco"
@@ -249,6 +250,11 @@
                 {{ SORT_OPTION_KEYS[option] | transloco }}
               </ui-menu-item>
               }
+              <ui-menu-separator />
+              } @if (!feed.emptyLibrary()) {
+              <ui-menu-item icon="add" (activated)="saveView()">
+                {{ 'views.add' | transloco }}
+              </ui-menu-item>
               <ui-menu-separator />
               } @if (wide() && !preview.split()) {
               <ui-menu-item

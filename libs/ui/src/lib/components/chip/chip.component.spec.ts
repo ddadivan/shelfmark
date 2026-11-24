@@ -74,6 +74,13 @@ describe('ChipComponent', () => {
     expect(chip.classList.contains('ui-chip--tag')).toBe(false);
   });
 
+  it('renders the hashtag variant (plain card text) and drops the tag class', () => {
+    const { chip, update } = setup();
+    update((c) => c.variant.set(CHIP_VARIANT.Hashtag));
+    expect(chip.classList.contains('ui-chip--hashtag')).toBe(true);
+    expect(chip.classList.contains('ui-chip--tag')).toBe(false);
+  });
+
   it('shows a leading icon', () => {
     const { chip, update } = setup();
     update((c) => c.icon.set('tag'));

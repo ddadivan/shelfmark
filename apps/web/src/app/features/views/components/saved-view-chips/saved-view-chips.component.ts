@@ -60,6 +60,8 @@ export class SavedViewChipsComponent {
   private readonly folders = inject(FoldersStore);
   private readonly transloco = inject(TranslocoService);
   private readonly phone = inject(ViewportService).phone;
+  /** Desktop (Shelf): "Save this view" lives in the feed's ⋯ menu, not at the end of the tabs. */
+  protected readonly desktop = inject(ViewportService).desktop;
   private readonly injector = inject(Injector);
   private readonly menu = viewChild.required(MenuComponent);
   private readonly chips = viewChild.required(SavedViewsComponent);

@@ -1,3 +1,4 @@
+import { SavedViewActionsService } from '../views/services/saved-view-actions.service';
 import { CdkDrag, CdkDragPlaceholder, CdkDragPreview, CdkDropList } from '@angular/cdk/drag-drop';
 import { NgTemplateOutlet } from '@angular/common';
 import {
@@ -212,6 +213,7 @@ export default class LibraryPage {
   protected readonly drag = inject(LinkDragService);
   protected readonly dnd = inject(LibraryDragService);
   private readonly exporter = inject(ExportActionsService);
+  private readonly savedViews = inject(SavedViewActionsService);
   private readonly router = inject(Router);
 
   /** From the route data. */
@@ -278,6 +280,11 @@ export default class LibraryPage {
     await this.exporter.download(format, this.filters.viewScope(), {
       viewEmpty: this.feed.empty(),
     });
+  }
+
+  /** "Save this view" in the ⋯ menu (Shelf: the tabs row has no "+" on desktop). */
+  protected async saveView(): Promise<void> {
+    await this.savedViews.saveCurrent(this.filters.filter());
   }
 
   protected async exportAll(format: ExportFormat): Promise<void> {

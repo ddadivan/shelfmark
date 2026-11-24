@@ -61,6 +61,11 @@ export const NavRow: Story = {
   },
 };
 
+/** A card hashtag (Shelf LinkCard): plain `#tag` text; the "#" is the consumer's, hidden from AT. */
+export const Hashtag: Story = {
+  args: { variant: CHIP_VARIANT.Hashtag, clickable: true },
+};
+
 /** Remove button, Delete and Backspace on focus. */
 export const Removable: Story = { args: { removable: true } };
 

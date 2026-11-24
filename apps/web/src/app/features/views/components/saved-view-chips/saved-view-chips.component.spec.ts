@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { LINK_KIND } from '@shelfmark/contracts';
@@ -13,6 +13,7 @@ import { LINKS_SCOPE } from '../../../links/models/links-scope.const';
 import { MockSavedViewsApi } from '../../mock/mock-saved-views.api';
 import { SAVED_VIEWS_API } from '../../models/saved-views-api.const';
 import { SavedViewActionsService } from '../../services/saved-view-actions.service';
+import { ViewportService } from '../../../../core/layout/viewport.service';
 import { SavedViewChipsComponent } from './saved-view-chips.component';
 
 @Component({
@@ -23,7 +24,9 @@ class HostComponent {
   readonly filter = signal<LinksFilter>({ scope: LINKS_SCOPE.All });
 }
 
-async function setup() {
+/** `compact`: the mobile shell (below 64em), where "Save this view" ends the tabs. */
+async function setup({ compact = false } = {}) {
+  const compactSignal = signal(compact);
   const actions = {
     apply: vi.fn(() => Promise.resolve()),
     applyAll: vi.fn(() => Promise.resolve()),
@@ -40,6 +43,15 @@ async function setup() {
       { provide: SAVED_VIEWS_API, useClass: MockSavedViewsApi },
       { provide: FOLDERS_API, useClass: MockFoldersApi },
       { provide: SavedViewActionsService, useValue: actions },
+      {
+        provide: ViewportService,
+        useValue: {
+          phone: signal(false),
+          compact: compactSignal,
+          desktop: computed(() => !compactSignal()),
+          wide: signal(false),
+        },
+      },
     ],
   });
   await loadEnglish();
@@ -60,7 +72,7 @@ afterEach(() => {
 
 describe('SavedViewChipsComponent', () => {
   it('shows All with the total, then the views with their counts and the add button', async () => {
-    const { element, chips, text, store } = await setup();
+    const { element, chips, text, store } = await setup({ compact: true });
     expect(chips().map((chip) => text(chip))).toEqual([
       `All ${store.total()}`,
       `Videos ${store.items()[0]?.count}`,
@@ -70,6 +82,10 @@ describe('SavedViewChipsComponent', () => {
       'Saved views',
     );
     expect(element.querySelector('.ui-saved-views__add')?.textContent).toContain('Save this view');
+    TestBed.resetTestingModule();
+    // Desktop (Shelf): "Save this view" is in the feed's ⋯ menu, not after the tabs.
+    const desktop = await setup();
+    expect(desktop.element.querySelector('.ui-saved-views__add')).toBeNull();
     expect(
       [...element.querySelectorAll('.ui-saved-views__menu')].map((menu) =>
         menu.getAttribute('aria-label'),
@@ -97,7 +113,7 @@ describe('SavedViewChipsComponent', () => {
   });
 
   it('applies All or a view, and saves the current filter', async () => {
-    const { fixture, chips, actions, store, element } = await setup();
+    const { fixture, chips, actions, store, element } = await setup({ compact: true });
     chips()[0]?.click();
     expect(actions.applyAll).toHaveBeenCalledWith({ scope: LINKS_SCOPE.All }, store.items());
     chips()[1]?.click();

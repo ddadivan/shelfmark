@@ -2,7 +2,7 @@
   [items]="items()"
   [activeId]="activeId()"
   [ariaLabel]="'views.label' | transloco"
-  [addLabel]="'views.add' | transloco"
+  [addLabel]="desktop() ? '' : ('views.add' | transloco)"
   [layout]="layout()"
   (selected)="select($event)"
   (add)="add()"

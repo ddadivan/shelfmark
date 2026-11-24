@@ -66,7 +66,12 @@
 }
 
 .library__views {
-  margin-bottom: var(--space-4);
+  // Shelf reference: the feed starts 24px under the tabs.
+  margin-bottom: var(--space-6);
+
+  @include compact {
+    margin-bottom: var(--space-4);
+  }
 }
 
 // The extension banner (#455) renders nothing once closed, so its gap lives inside it.
@@ -84,7 +89,9 @@
 
 .library__controls {
   display: flex;
-  gap: var(--space-2);
+
+  // Shelf reference: View, then the view switch 16px further.
+  gap: var(--space-4);
   align-items: center;
 }
 

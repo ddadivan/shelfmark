@@ -103,7 +103,9 @@
   gap: var(--space-4);
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-4);
+
+  // Shelf reference: the saved-view tabs sit 12px under the title row.
+  margin-bottom: var(--space-3);
 
   // Phone: the title and the one "View" button share a line; a long title wraps inside its block.
   @include phone {
@@ -119,9 +121,13 @@
   display: flex;
   flex-wrap: wrap;
   flex-shrink: 0;
-  gap: var(--space-2);
+  gap: var(--space-4);
   align-items: center;
   max-width: 100%;
+
+  @include compact {
+    gap: var(--space-2);
+  }
 }
 
 .library__title {
@@ -207,8 +213,10 @@
 // columns; the column count follows the same Grid size.
 .library__grid--masonry {
   display: block;
-  columns: var(--library-column, 14.5rem) auto;
-  column-gap: var(--density-feed-gap);
+  columns: var(--library-column, 13.75rem) auto;
+
+  // Shelf reference: the gap grows with the column, 12px to 28px.
+  column-gap: clamp(0.75rem, calc(var(--library-column, 13.75rem) * 0.1), 1.75rem);
 
   @include tablet {
     columns: 3;
@@ -221,7 +229,7 @@
 
   > li {
     display: block;
-    margin-block-end: var(--density-feed-gap);
+    margin-block-end: rem(20px);
     break-inside: avoid;
 
     @include phone {

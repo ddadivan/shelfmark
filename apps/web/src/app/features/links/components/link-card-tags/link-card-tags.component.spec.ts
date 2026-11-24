@@ -7,7 +7,7 @@ import { readRepoFile } from '../../../../../testing/read-repo-file';
 import { loadEnglish, provideTranslocoForTest } from '../../../../testing/transloco-testing';
 import { LinkCardTagsComponent } from './link-card-tags.component';
 
-const TAGS = ['angular', 'javascript', 'reading'];
+const TAGS = ['angular', 'javascript', 'reading', 'video', 'design'];
 
 async function setup(tags: readonly string[] = TAGS, interactive = true) {
   TestBed.configureTestingModule({
@@ -47,22 +47,29 @@ describe('LinkCardTagsComponent', () => {
     });
   });
 
-  it('shows only the first tag, then "+N" named after the other tags', async () => {
+  it('shows the first three tags as "#tag", then "+N" named after the other tags', async () => {
     const { element } = await setup();
     const visible = buttons(element);
-    expect(visible.map((button) => button.textContent.trim())).toEqual(['angular', '+2']);
+    expect(visible.map((button) => button.textContent.trim())).toEqual([
+      '#angular',
+      '#javascript',
+      '#reading',
+      '+2',
+    ]);
     const trigger = more(element);
-    expect(trigger?.getAttribute('aria-label')).toBe('2 more tags: javascript, reading');
+    expect(trigger?.getAttribute('aria-label')).toBe('2 more tags: video, design');
     expect(trigger?.getAttribute('aria-expanded')).toBe('false');
   });
 
-  it('uses the singular name for one more tag and has no "+N" for a single tag', async () => {
-    const two = await setup(['angular', 'video']);
-    expect(more(two.element)?.getAttribute('aria-label')).toBe('1 more tag: video');
+  it('uses the singular name for one more tag and has no "+N" for up to three', async () => {
+    const four = await setup(['angular', 'javascript', 'reading', 'video']);
+    expect(more(four.element)?.getAttribute('aria-label')).toBe('1 more tag: video');
     TestBed.resetTestingModule();
 
     const one = await setup(['angular']);
-    expect(buttons(one.element).map((button) => button.textContent.trim())).toEqual(['angular']);
+    expect(buttons(one.element).map((button) => button.textContent.trim())).toEqual(['#angular']);
+    // The "#" is drawn for the eye only: the accessible name stays the tag.
+    expect(one.element.querySelector('[aria-hidden="true"]')?.textContent).toBe('#');
     expect(more(one.element)).toBeUndefined();
     expect(one.element.querySelector('ui-popover')).toBeNull();
   });
@@ -86,7 +93,7 @@ describe('LinkCardTagsComponent', () => {
     const host = await popover.host();
     expect(await host.getAttribute('role')).toBe('dialog');
     const dialog = document.querySelector('ui-popover') as HTMLElement;
-    expect(buttons(dialog).map((button) => button.textContent.trim())).toEqual(TAGS.slice(1));
+    expect(buttons(dialog).map((button) => button.textContent.trim())).toEqual(TAGS.slice(3));
   });
 
   it('opens on hover after the hover-intent delay', async () => {
@@ -107,17 +114,17 @@ describe('LinkCardTagsComponent', () => {
     await settle(fixture);
     const dialog = document.querySelector('ui-popover') as HTMLElement;
     buttons(dialog)
-      .find((button) => button.textContent.trim() === 'reading')
+      .find((button) => button.textContent.trim() === 'design')
       ?.click();
     await settle(fixture);
 
     await vi.waitFor(() => {
-      expect(router.url).toBe('/links?tag=reading');
+      expect(router.url).toBe('/links?tag=design');
     });
     expect(await (await loader.getHarness(UiPopoverHarness)).isOpen()).toBe(false);
   });
 
-  it('the first tag lists its links too', async () => {
+  it('a tag on the card lists its links too', async () => {
     const { element, router } = await setup();
     buttons(element)[0]?.click();
     await vi.waitFor(() => {
@@ -157,66 +164,21 @@ describe('LinkCardTagsComponent', () => {
   it('read-only: plain tag chips that filter nothing, "+N" still opens the list', async () => {
     const { element, fixture, router } = await setup(TAGS, false);
     expect(buttons(element).map((button) => button.textContent.trim())).toEqual(['+2']);
-    expect(element.textContent).toContain('angular');
+    expect(element.textContent).toContain('#angular');
     more(element)?.click();
     await settle(fixture);
     const dialog = document.querySelector('ui-popover') as HTMLElement;
-    expect(dialog.textContent).toContain('reading');
+    expect(dialog.textContent).toContain('design');
     expect(buttons(dialog)).toHaveLength(0);
     expect(router.url).toBe('/');
   });
 
-  it('a first tag that would be cut is not shown: "+N" holds every tag under "All tags"', async () => {
-    let resize: () => void = () => undefined;
-    const original = globalThis.ResizeObserver;
-    globalThis.ResizeObserver = class {
-      constructor(callback: () => void) {
-        resize = callback;
-      }
-      observe(): void {
-        return undefined;
-      }
-      unobserve(): void {
-        return undefined;
-      }
-      disconnect(): void {
-        return undefined;
-      }
-    } as unknown as typeof ResizeObserver;
-    try {
-      const host = document.createElement('div');
-      document.body.append(host);
-      const { element, fixture, loader } = await setup(['a-very-long-tag-name', 'b']);
-      host.append(element);
-      Object.defineProperty(host, 'clientWidth', { configurable: true, value: 200 });
-      const label = element.querySelector<HTMLElement>('.ui-chip__label') as HTMLElement;
-      Object.defineProperty(label, 'clientWidth', { configurable: true, value: 80 });
-      Object.defineProperty(label, 'scrollWidth', { configurable: true, value: 160 });
-      resize();
-      await settle(fixture);
-
-      expect(buttons(element).map((button) => button.textContent.trim())).toEqual(['+2']);
-      more(element)?.click();
-      await settle(fixture);
-      const popover = await loader.getHarness(UiPopoverHarness);
-      expect(await popover.getHeading()).toBe('All tags');
-      const dialog = document.querySelector('ui-popover') as HTMLElement;
-      expect(buttons(dialog).map((button) => button.textContent.trim())).toEqual([
-        'a-very-long-tag-name',
-        'b',
-      ]);
-      host.remove();
-    } finally {
-      globalThis.ResizeObserver = original;
-    }
-  });
-
-  it('keeps "+N" and the first tag above the card\'s stretched link, so hover reaches them', () => {
+  it('keeps "+N" and the tags above the card\'s stretched link, so hover reaches them', () => {
     const scss = readRepoFile(
       'apps/web/src/app/features/links/components/link-card-tags/link-card-tags.component.scss',
     );
     expect(scss).toMatch(
-      /\.link-card-tags__more,\s*:host\(\.link-card-tags--interactive\) \.link-card-tags__first \{\s*position: relative;\s*z-index: 2;/,
+      /\.link-card-tags__more,\s*:host\(\.link-card-tags--interactive\) \.link-card-tags__tag \{\s*position: relative;\s*z-index: 2;/,
     );
   });
 
