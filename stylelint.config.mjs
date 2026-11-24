@@ -1,6 +1,12 @@
+import shelfTokens from './tools/stylelint/shelf-tokens.mjs';
+
+// The token files are the only place where raw colours live (ADR 0063, DS guard).
+const TOKEN_FILES = ['libs/ui/src/styles/tokens/**'];
+
 /** @type {import('stylelint').Config} */
 export default {
   extends: ['stylelint-config-standard-scss'],
+  plugins: shelfTokens,
   // docs/design holds exported design-system references, not app code.
   ignoreFiles: [
     'docs/**',
@@ -35,5 +41,28 @@ export default {
     'media-feature-range-notation': null,
     // Breakpoints in em only.
     'media-feature-name-unit-allowed-list': [{ '/^(min-|max-)?(width|height)$/': ['em'] }],
+
+    // DS guard (ADR 0063): colours, radii, font sizes and shadows only through libs/ui tokens.
+    // `transparent`, `currentcolor` and `inherit` stay allowed; `color-mix()` over tokens too.
+    'color-no-hex': true,
+    'color-named': 'never',
+    'function-disallowed-list': [
+      ['rgb', 'rgba', 'hsl', 'hsla', 'hwb', 'lab', 'lch', 'oklab', 'oklch', 'color'],
+      { message: (name) => `Unexpected colour function "${name}()". Use a var(--…) token` },
+    ],
+    'shelf/radius-token': true,
+    'shelf/font-size-token': true,
+    'shelf/shadow-token': true,
   },
+  overrides: [
+    {
+      files: TOKEN_FILES,
+      rules: {
+        'color-no-hex': null,
+        'color-named': null,
+        'function-disallowed-list': null,
+        'shelf/shadow-token': null,
+      },
+    },
+  ],
 };
