@@ -41,7 +41,7 @@
 // The demo banner (shell/demo-banner, `ui-notice` banner), measured on the real page: 48px on one
 // line (the 13px text of 444px and the 32px button side by side, from 686px of width), 74px with
 // the button under a one-line text, 92px with the text on two lines (below 476px). Same padding,
-// gap, wrapping, `accent-bg`. Only for a demo start: `html[data-boot-demo]` (set by
+// gap, wrapping; the Shelf strip is `surface` over a `sep` line, read from the start. Only for a demo start: `html[data-boot-demo]` (set by
 // `public/boot-skeleton.js`) or the demo start page itself (`.boot--page`).
 .boot__banner {
   display: none;
@@ -49,9 +49,12 @@
   flex-wrap: wrap;
   gap: rem(8px) rem(12px);
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  min-height: rem(48px);
   padding: rem(8px) rem(16px);
-  background: var(--accent-bg);
+  background: var(--surface);
+  border-block-end: 1px solid var(--sep);
 }
 
 :root[data-boot-demo] .boot__banner,
@@ -59,13 +62,8 @@
   display: flex;
 }
 
-.boot__banner-text,
-.boot__banner-button {
-  background: color-mix(in srgb, var(--accent-text) 18%, transparent);
-}
-
 .boot__banner-text {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   inline-size: rem(444px);
   max-inline-size: 100%;
   block-size: rem(18px);
@@ -88,14 +86,14 @@
   }
 }
 
-// One placeholder block, as `ui-skeleton`: `surface-pressed` with a sweeping highlight; the sweep
-// stops under reduced motion (`loop(shimmer)`), the block stays.
+// One placeholder block (Shelf 14-system `sk`): `surface-hover`, radius 8, with a sweeping
+// highlight; the sweep stops under reduced motion (`loop(shimmer)`), the block stays.
 .boot__block {
   position: relative;
   display: block;
   overflow: hidden;
-  background: var(--surface-pressed);
-  border-radius: var(--radius-sm);
+  background: var(--surface-hover);
+  border-radius: var(--radius-tile);
 
   &::after {
     position: absolute;
@@ -108,12 +106,13 @@
   }
 }
 
-// Sidebar (Shelf): 240px, full height, the sidebar fill with a hairline edge, desktop only.
+// Sidebar (Shelf 14-system): 240px, full height, the sidebar fill with a hairline edge, the logo
+// block and thin 12px lines of varied length; desktop only.
 .boot__sidebar {
   display: none;
   flex: none;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: rem(10px);
   align-self: stretch;
   box-sizing: border-box;
   width: rem(240px);
@@ -127,17 +126,36 @@
 }
 
 .boot__logo {
-  width: 55%;
-  height: rem(28px);
-  margin-block-end: var(--space-4);
+  width: 50%;
+  height: rem(24px);
+  margin-block-end: var(--space-6);
 }
 
 .boot__row {
-  height: rem(36px);
+  width: 66%;
+  height: rem(12px);
+  margin-inline-start: var(--space-3);
+  border-radius: var(--radius-full);
+
+  &:nth-child(2) {
+    width: 70%;
+  }
+
+  &:nth-child(3) {
+    width: 60%;
+  }
+
+  &:nth-child(4) {
+    width: 52%;
+  }
 }
 
 .boot__row--folder {
-  margin-inline-start: rem(24px);
+  width: 58%;
+
+  & + & {
+    width: 72%;
+  }
 }
 
 // The sidebar footer at the bottom of the card (#335): "What's new" and "Send feedback", then Trash
@@ -151,7 +169,43 @@
 
 .boot__divider {
   display: block;
-  border-block-start: 1px solid var(--border);
+  border-block-start: 1px solid var(--sep);
+}
+
+// The mobile shell's top bar (shell `.shell__top`, Shelf block 1): 16px from the top, the search
+// field (48px, 44px on a phone, radius 16) and the 32px avatar in its 40px button; below 64em.
+.boot__topbar {
+  display: none;
+  flex: none;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-4) var(--space-6) 0;
+
+  @include compact {
+    display: flex;
+  }
+
+  @include phone {
+    padding-inline: var(--space-4);
+  }
+}
+
+.boot__top-search {
+  flex: 1 1 0;
+  height: rem(48px);
+  border-radius: var(--radius-lg);
+
+  @include phone {
+    height: rem(44px);
+  }
+}
+
+.boot__avatar {
+  flex: none;
+  width: rem(32px);
+  height: rem(32px);
+  margin-inline: rem(4px);
+  border-radius: var(--radius-full);
 }
 
 .boot__content {
@@ -178,24 +232,18 @@
 // The header search (Shelf): a 48px button from 64em, the field up to 640px from 80em. The header
 // has only the search and Ask (the account and Add link are in the sidebar head).
 .boot__search {
-  width: rem(48px);
+  width: min(100%, rem(640px));
   height: rem(48px);
-  border-radius: var(--radius-full);
-
-  @include wide {
-    width: min(100%, rem(640px));
-  }
+  border-radius: var(--radius-lg);
 }
 
 .boot__spacer {
   flex: 1 1 0;
 }
 
+// Shelf draws no Ask button in the opening skeleton (it shows only while Ask is on).
 .boot__add {
-  flex: none;
-  width: rem(112px);
-  height: rem(40px);
-  border-radius: var(--radius-full);
+  display: none;
 }
 
 .boot__main {
@@ -206,8 +254,8 @@
 
   // The title sits where the real one does: the main column's top padding plus the library's
   // room above the title (library.page.scss).
-  padding: calc(var(--space-6) + var(--space-3) + var(--space-2) + var(--space-2)) var(--space-4)
-    var(--space-6);
+  // Below 64em the page sits 16px under the top bar (Shelf block 1).
+  padding: var(--space-4) var(--space-4) var(--space-6);
   overflow: hidden;
 
   @include tablet {
@@ -255,17 +303,17 @@
   }
 }
 
-// The extension banner of the library (#455, #490): the real one has one fixed height (188px,
-// extension-banner.component.scss) and sits 12px under the title row, where the saved views would
-// start; its own 16px gap, the 28px tabs and their 24px follow under it (68px). Desktop only.
+// The extension banner of the library (#455, #490; Shelf strip): the real one is 64px (two lines)
+// (extension-banner.component.scss) 12px under the title row, where the saved views would start;
+// its own 16px gap, the 28px tabs and their 24px follow under it (68px). Desktop only.
 // Drawn when `public/boot-skeleton.js` expects the banner (`html[data-boot-extension]`) and on the
 // demo start page when the app offers it (`.boot__extension--shown`).
 .boot__extension {
   display: none;
-  block-size: rem(188px);
+  block-size: rem(64px);
   margin-block: calc(var(--space-3) - #{rem(64px)}) rem(68px);
-  background: var(--accent-bg);
-  border-radius: var(--radius-lg);
+  background: var(--ai-bg);
+  border-radius: var(--radius-md);
 }
 
 :root[data-boot-extension] .boot__extension,
@@ -328,6 +376,8 @@
   @include boot-visible-cards(16.25);
 }
 
+// Shelf 14-system: a card is one `surface-hover` block, radius 16 (its parts in the same fill only
+// carry the sweep).
 .boot__card {
   display: flex;
   flex-direction: column;
@@ -335,9 +385,8 @@
   block-size: var(--boot-card-height);
   padding-block-end: var(--space-4);
   overflow: hidden;
-  background: var(--surface);
+  background: var(--surface-hover);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
 }
 
 .boot__media {

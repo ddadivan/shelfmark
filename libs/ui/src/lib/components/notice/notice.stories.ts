@@ -79,6 +79,19 @@ export const Quiet: Story = {
   }),
 };
 
+/** `quiet` + `banner`: the Shelf strip (demo, offline) at the top of the app. */
+export const Strip: Story = {
+  args: { kind: 'quiet', icon: 'user', banner: true },
+  render: (args) => ({
+    props: args,
+    template: `
+      <ui-notice [kind]="kind" [icon]="icon" banner>
+        <strong>You’re in a demo.</strong> Play with everything; this sandbox resets in 3 hours.
+        <ui-button uiNoticeAction variant="primary" size="sm">Sign in with your own account</ui-button>
+      </ui-notice>`,
+  }),
+};
+
 export const CustomIcon: Story = { args: { icon: 'info' } };
 
 /** Both kinds, with and without a link, in both themes. */

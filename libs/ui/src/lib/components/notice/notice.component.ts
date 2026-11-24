@@ -19,7 +19,8 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
  * `warning` is a polite `role="status"`, `danger` an assertive `role="alert"`. The icon is
  * decorative; the default is `warning` / `error` / `info` by kind. `info` is a polite status in the
  * accent tint; `quiet` (a polite status too) is the plain Shelf row: `surface` with the `line`
- * hairline, text colour and a muted icon (the Ask limit row). `banner` turns it into a full-width, centred strip (no radius, wraps on a phone)
+ * hairline, text colour and a muted icon (the Ask limit row); with `banner` it is the Shelf strip
+ * (left-aligned on `surface` over a `sep` line, the action at the end). `banner` turns it into a full-width, centred strip (no radius, wraps on a phone)
  * for page-level messages such as the demo banner; the icon is then hidden unless `icon` is set.
  * An optional trailing action (a small button or link) is projected with `uiNoticeAction`.
  * Encapsulation is off so projected links get the notice's link style (BEM-prefixed selectors).

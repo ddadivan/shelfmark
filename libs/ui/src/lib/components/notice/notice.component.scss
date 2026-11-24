@@ -52,6 +52,21 @@
     flex: 0 1 auto;
   }
 
+  // Shelf strip (10-first-run demo and offline strips): a quiet banner reads left to right on
+  // `surface` over a `sep` line, 48px high, the action at the end.
+  &--quiet#{&}--banner {
+    gap: var(--space-3);
+    justify-content: flex-start;
+    min-height: rem(48px);
+    text-align: start;
+    border: 0;
+    border-block-end: 1px solid var(--sep);
+  }
+
+  &--quiet#{&}--banner &__body {
+    flex: 1 1 0;
+  }
+
   &__action {
     flex: none;
 

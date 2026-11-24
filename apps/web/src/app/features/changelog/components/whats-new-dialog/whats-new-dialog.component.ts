@@ -1,3 +1,4 @@
+import { LocaleDatePipe } from '../../../../core/i18n/locale-date.pipe';
 import { NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -6,6 +7,8 @@ import {
   BUTTON_VARIANT,
   ButtonComponent,
   DialogComponent,
+  ICON_SIZE,
+  IconComponent,
   injectDialogData,
   UiDialogRef,
 } from '@shelfmark/ui';
@@ -19,13 +22,22 @@ import type { WhatsNewDialogData } from '../../models/whats-new-dialog-data.inte
 
 /**
  * The "What's new" card (#424, #442): the priority 1 feature of the releases since the last visit
- * first and large, with its screenshot for the current theme, then up to three more as small cards
- * (a title and a line), then "And N more improvements and fixes" linking to `/changelog` (left out
+ * first and large, with its screenshot for the current theme, then up to three more as the rows of
+ * one card (Shelf 10-first-run "What's new": the release date in a 88px column, the title and its
+ * line), then "And N more improvements and fixes" linking to `/changelog` (left out
  * when N is 0). "See all changes" opens `/changelog`, "Got it" closes.
  */
 @Component({
   selector: 'app-whats-new-dialog',
-  imports: [ButtonComponent, DialogComponent, NgOptimizedImage, RouterLink, TranslocoPipe],
+  imports: [
+    ButtonComponent,
+    DialogComponent,
+    IconComponent,
+    LocaleDatePipe,
+    NgOptimizedImage,
+    RouterLink,
+    TranslocoPipe,
+  ],
   templateUrl: './whats-new-dialog.component.html',
   styleUrl: './whats-new-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,6 +57,7 @@ export class WhatsNewDialogComponent {
   protected readonly changelogHref = `/${APP_PATH.Changelog}`;
   protected readonly phone = inject(ViewportService).phone;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
+  protected readonly ICON_SIZE = ICON_SIZE;
 
   protected imageSrc(image: ChangelogImage): string {
     return changelogImageSrc(image, this.theme.resolved());

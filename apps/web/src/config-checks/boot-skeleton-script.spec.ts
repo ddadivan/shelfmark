@@ -7,7 +7,7 @@ import { readRepoFile } from '../testing/read-repo-file';
 // public/boot-skeleton.js runs before the app and cannot import its constants (#490): it repeats
 // the ones that decide the extension banner, and both stylesheets repeat the banner's height.
 const script = readRepoFile('apps/web/public/boot-skeleton.js');
-const BANNER_HEIGHT = 'block-size: rem(188px);';
+const BANNER_HEIGHT = 'block-size: rem(64px);';
 
 describe('boot-skeleton.js and the extension banner', () => {
   it('reads the same dismissed key as ExtensionBannerService', () => {

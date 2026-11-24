@@ -1,5 +1,5 @@
 @if (!network.online()) {
-  <ui-notice [kind]="NOTICE_KIND.Warning" icon="offline" banner>
+  <ui-notice [kind]="NOTICE_KIND.Quiet" icon="offline" banner>
     {{ 'shell.offlineBanner.text' | transloco }}
   </ui-notice>
 }

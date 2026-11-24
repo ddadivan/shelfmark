@@ -18,20 +18,53 @@
   padding-block-end: var(--space-3);
 }
 
+// Shelf "What's new" card: rows split by `sep` in a `line` card, radius 12; the date in a 88px
+// column (12px muted), the title (14 / 500) and its line (14px muted).
 .whats-new__list {
   display: flex;
   flex-direction: column;
-  margin: 0;
+  margin: var(--space-2) 0 0;
   padding: 0;
   list-style: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
 }
 
 .whats-new__item {
+  display: grid;
+  grid-template-columns: rem(88px) minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-4);
+
+  & + & {
+    border-top: 1px solid var(--sep);
+  }
+
+  @include phone {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+}
+
+.whats-new__date {
+  @include type(caption);
+
+  padding-block-start: rem(3px);
+  color: var(--text-muted);
+}
+
+.whats-new__body {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  padding-block: var(--space-3);
-  border-top: 1px solid var(--border);
+}
+
+.whats-new__item .whats-new__name {
+  @include type(label);
+}
+
+.whats-new__item .whats-new__text {
+  @include type(secondary);
 }
 
 .whats-new__media {
@@ -63,15 +96,22 @@
   color: var(--text-muted);
 }
 
+// Shelf "All changes ›": a quiet 14 / 500 link with the chevron.
 .whats-new__more {
   @include type(label);
 
-  display: inline-block;
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
   margin-block: var(--space-3) var(--space-1);
   color: var(--text);
-  text-decoration: underline;
-  text-underline-offset: rem(3px);
+  text-decoration: none;
   border-radius: var(--radius-sm);
+
+  @include hover {
+    text-decoration: underline;
+    text-underline-offset: rem(3px);
+  }
 
   &:focus-visible {
     @include focus-ring;

@@ -1,5 +1,5 @@
 @if (demoUser()) {
-  <ui-notice [kind]="NOTICE_KIND.Info" banner>
+  <ui-notice [kind]="NOTICE_KIND.Quiet" icon="user" banner>
     <strong>{{ 'shell.demoBanner.title' | transloco }}</strong>
     @if (remainingKey(); as key) {
       {{ key | transloco: { hours: hoursLeft() } }}
