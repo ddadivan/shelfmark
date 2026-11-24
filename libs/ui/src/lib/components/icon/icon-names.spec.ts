@@ -100,6 +100,8 @@ const APP_ICONS = [
   'eye',
   'frame-off',
   'sidebar',
+  // Shelf Today (the sidebar row and the phone tab): a clock in a turning arrow.
+  'history',
 ];
 
 const sprite = readFileSync(SPRITE_PATH, 'utf8');

@@ -8,3 +8,13 @@
   font-weight: 500;
   color: var(--text-muted);
 }
+
+// A group heading in the bottom sheet of a menu (Shelf): the sheet title style.
+:host-context(.ui-menu__surface--sheet) {
+  @include type(heading);
+
+  padding: var(--space-2) var(--space-2) var(--space-1);
+  font-size: rem(18px);
+  line-height: 1.3;
+  color: var(--text);
+}
