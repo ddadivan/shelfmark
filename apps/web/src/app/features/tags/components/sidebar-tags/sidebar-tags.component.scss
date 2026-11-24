@@ -5,31 +5,18 @@
   display: block;
 }
 
-.tags {
-  margin-top: var(--space-2);
-}
-
-// Same section heading as "Folders" in the tree (Tags spec): caption, muted, the "+" at the end.
+// The Shelf section heading, like "Folders": the 12px label, the chevron, the "+" at the end.
 .tags__header {
-  display: flex;
-  align-items: center;
-  min-height: calc(#{rem(30px)} + #{rem(12px)});
-  padding: rem(18px) 0 rem(6px) rem(10px);
-
-  @include coarse {
-    min-height: calc(#{rem(44px)} + #{rem(12px)});
-  }
+  @include sidebar-section.header;
 }
 
 .tags__heading {
-  @include type(caption);
-
-  margin: 0;
-  font-weight: 500;
-  color: var(--text-muted);
+  @include sidebar-section.heading;
 }
 
 .tags__add {
+  @include sidebar-section.small-glyph;
+
   margin-inline-start: auto;
 }
 
@@ -64,6 +51,13 @@
   list-style: none;
 }
 
+// Desktop sidebar (Shelf reference): one tag row under the other, like the folder rows.
+.tags:not(.tags--page) .tags__list {
+  flex-flow: column nowrap;
+  gap: 0;
+  padding: 0;
+}
+
 .tags__item {
   max-width: 100%;
 }
@@ -93,8 +87,6 @@
 
 // The Tags tab: the heading is the page title like "Library" and "You", the list sits on a card.
 .tags--page {
-  margin-top: 0;
-
   // The Tags tab with no tags: the page empty state (#315), a little below the header.
   .tags__empty {
     margin-block-start: var(--space-2);

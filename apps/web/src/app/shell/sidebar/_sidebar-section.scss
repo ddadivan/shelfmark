@@ -5,8 +5,12 @@
 
 // On the `ui-button` host: the chevron points down while open and right while folded.
 @mixin toggle {
+  --ui-icon-size: #{rem(14px)};
+
   display: inline-flex;
-  margin-inline-start: var(--space-1);
+
+  // The 14px chevron sits 4px after the label (the 28px box centres it 7px in).
+  margin-inline-start: rem(-3px);
   transition: transform var(--duration-fast) var(--ease-in-out);
 
   &.is-collapsed {
@@ -49,4 +53,32 @@
       transition: none;
     }
   }
+}
+
+// The section heading row (Shelf reference `.sech` / `.secb`): 32px, the 12px muted label 20px in
+// from the sidebar edge, the 14px chevron right after it and the 28px "+" at the end.
+@mixin header {
+  --ui-button-sm-size: #{rem(28px)};
+
+  display: flex;
+  align-items: center;
+  min-height: var(--control-sm);
+  padding: 0 0 0 var(--space-2);
+
+  @include coarse {
+    min-height: rem(44px);
+  }
+}
+
+@mixin heading {
+  @include type(caption);
+
+  margin: 0;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+// A 14px glyph in the 28px heading buttons.
+@mixin small-glyph {
+  --ui-icon-size: #{rem(14px)};
 }

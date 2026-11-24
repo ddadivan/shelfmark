@@ -93,6 +93,8 @@
             } @else {
               <ui-chip
                 clickable
+                [variant]="asPage() ? CHIP_VARIANT.Tag : CHIP_VARIANT.Nav"
+                [icon]="asPage() ? undefined : 'hash'"
                 [attr.data-tag-id]="tag.id"
                 uiLongPress
                 (uiLongPress)="openMenuFromLongPress(tag, $event)"
@@ -113,7 +115,7 @@
             <ui-chip
               #moreChip
               clickable
-              [variant]="CHIP_VARIANT.Neutral"
+              [variant]="asPage() ? CHIP_VARIANT.Neutral : CHIP_VARIANT.Nav"
               (clicked)="toggleExpanded()"
             >
               @if (expanded()) {

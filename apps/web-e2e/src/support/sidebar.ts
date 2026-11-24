@@ -43,9 +43,15 @@ export async function openSidebar(page: Page): Promise<void> {
   await expect(page.locator('app-library-tile').first()).toBeVisible();
 }
 
-/** Makes the tags reachable: inline in the sidebar, or the Tags tab on a phone. */
+/** Makes the tags reachable: unfolded in the sidebar (Tags starts folded), or the Tags tab on a phone. */
 export async function openTags(page: Page): Promise<void> {
   if (!isCompact(page)) {
+    const toggle = page.getByRole('button', { name: 'Show or hide tags' });
+    await expect(toggle).toBeVisible();
+    if ((await toggle.getAttribute('aria-expanded')) === 'false') {
+      await toggle.click();
+    }
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     return;
   }
   if (!/\/tags$/.test(new URL(page.url()).pathname)) {

@@ -379,11 +379,13 @@ describe('SidebarComponent', () => {
     expect(foldersHeading(element)).toBe('Folders');
   });
 
-  it('shows folders as graphite tiles', async () => {
+  it('shows folders with the filled folder glyph, graphite without a colour (Shelf)', async () => {
     const { element } = await setup();
 
-    const tile = row(element, MOCK_NAME.FolderReading).querySelector('ui-folder-icon');
-    expect(tile?.classList).toContain('ui-folder-icon--graphite');
+    const reading = row(element, MOCK_NAME.FolderReading);
+    expect(reading.querySelector('ui-folder-icon')).toBeNull();
+    expect(reading.querySelector('ui-icon.ui-tree__folder')).not.toBeNull();
+    expect(reading.hasAttribute('data-ui-folder-colour')).toBe(false);
   });
 
   it('tints only the rows of highlighted coloured folders, and the open one too (#440)', async () => {
@@ -557,7 +559,9 @@ describe('SidebarComponent', () => {
     await toggle.click();
     expect(await toggle.isExpanded()).toBe(false);
     expect(body?.classList).toContain('is-collapsed');
+    // Tags start folded (Shelf), so they stay in the list.
     expect(JSON.parse(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) ?? '[]')).toEqual([
+      'tags',
       'folders',
     ]);
     // The rows stay rendered (they keep their open folders) and the "+" stays.
@@ -565,7 +569,9 @@ describe('SidebarComponent', () => {
 
     await toggle.click();
     expect(await toggle.isExpanded()).toBe(true);
-    expect(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY)).toBeNull();
+    expect(JSON.parse(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) ?? '[]')).toEqual([
+      'tags',
+    ]);
   });
 
   it('starts folded from the stored choice and "New folder" opens it again (#556)', async () => {

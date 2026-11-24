@@ -141,8 +141,8 @@ export default class AppShellComponent {
       { id: PHONE_TAB.You, label: you, icon: 'user', href: `/${APP_PATH.Settings}` },
     ];
   });
-  /** The avatar button is 44px: the 32px avatar is never clipped and it is a touch target. */
-  protected readonly accountButtonSize = BUTTON_SIZE.Lg;
+  /** The account button is the 32px avatar itself (Shelf sidebar head; `--ui-button-sm-padding: 0`). */
+  protected readonly accountButtonSize = BUTTON_SIZE.Sm;
 
   protected readonly onboarding = inject(OnboardingStore);
   protected readonly feedback = inject(FeedbackDialogService);

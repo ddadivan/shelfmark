@@ -190,7 +190,8 @@ describe('SidebarTagsComponent', () => {
     const more = [...element.querySelectorAll('button')].find((b) =>
       /\+ 3 more/.test(b.textContent ?? ''),
     );
-    expect(more?.closest('ui-chip')?.classList.contains('ui-chip--neutral')).toBe(true);
+    // Sidebar (Shelf): "+ N more" is a row like the tags.
+    expect(more?.closest('ui-chip')?.classList.contains('ui-chip--nav')).toBe(true);
     expect(more?.getAttribute('aria-expanded')).toBe('false');
 
     more?.click();

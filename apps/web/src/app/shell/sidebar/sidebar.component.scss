@@ -23,33 +23,14 @@
   box-shadow: var(--shadow-card);
 }
 
-// The "Folders" heading row (Tree spec `sm-tree__section`): caption, muted, then (desktop, #556)
-// the chevron that folds the tree, and the "New folder" button at the end.
+// The "Folders" heading row (Shelf reference): the 12px label, the chevron that folds the tree
+// (desktop, #556) and the "New folder" button at the end.
 .sidebar__section-header {
-  display: flex;
-  align-items: center;
-
-  // Tall enough for the 30px buttons (44px on touch).
-  min-height: calc(#{rem(30px)} + #{rem(12px)});
-  padding: rem(18px) 0 rem(6px) rem(10px);
-
-  @include coarse {
-    min-height: calc(#{rem(44px)} + #{rem(12px)});
-  }
+  @include sidebar-section.header;
 }
 
 .sidebar__section-heading {
-  @include type(caption);
-
-  margin: 0;
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
-// The buttons are centred on the heading text and may overhang the row, which keeps the height of
-// the tree heading it replaced (the "+" used to be laid over it).
-.sidebar__section-header > ui-button {
-  margin-block: calc(-1 * var(--space-4));
+  @include sidebar-section.heading;
 }
 
 .sidebar__section-toggle {
@@ -57,6 +38,8 @@
 }
 
 .sidebar__section-add {
+  @include sidebar-section.small-glyph;
+
   margin-inline-start: auto;
 }
 
@@ -104,11 +87,13 @@
   overflow: visible;
 }
 
-// Groups are divided by `sep` hairlines (Shelf NavItem): above Pinned, Folders and Tags.
+// Groups are 24px apart and divided by `sep` hairlines with 16px under them (Shelf reference
+// `.grp + .grp`): above Pinned, Folders and Tags.
 .sidebar__folders,
-.sidebar__scroll > app-sidebar-pinned,
+.sidebar__scroll > app-sidebar-pinned:has(.pinned),
 .sidebar__scroll > app-sidebar-tags {
-  margin-block-start: var(--space-3);
+  padding-block-start: var(--space-4);
+  margin-block-start: var(--space-6);
   border-block-start: 1px solid var(--sep);
 }
 
@@ -122,14 +107,10 @@
 .sidebar__footer {
   flex: none;
   padding-block: var(--space-2) var(--space-3);
-  border-block-start: 1px solid var(--sep);
 }
 
 .sidebar__trash {
   display: block;
-  margin-block-start: var(--space-2);
-  padding-block-start: var(--space-2);
-  border-block-start: 1px solid var(--sep);
 }
 
 .sidebar__error {

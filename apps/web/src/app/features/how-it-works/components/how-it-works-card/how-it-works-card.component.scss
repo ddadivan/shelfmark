@@ -4,31 +4,50 @@
   display: block;
 }
 
+// Shelf reference `.intro`: a `fill` card, radius 12, the 14/22 title (500) as a link, the 12px
+// length with a 12px play glyph under it and the 28px × in the top end corner.
 .how-it-works-card {
-  display: flex;
-  gap: var(--space-2);
-  align-items: center;
-  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
-  background: var(--accent-bg);
+  @include type(secondary);
+
+  position: relative;
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) rem(36px) var(--space-3) var(--space-3);
+  margin-block-end: var(--space-2);
+  background: var(--fill);
   border-radius: var(--radius-md);
 }
 
-.how-it-works-card__icon {
-  flex: none;
-  color: var(--accent-text);
-}
+// The title reads as a link, not a pill: no height or padding of its own.
+.how-it-works-card__open {
+  --ui-button-sm-size: auto;
+  --ui-button-sm-padding: 0;
 
-.how-it-works-card__text {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 0;
+  justify-self: start;
+  font-weight: 500;
+  text-align: start;
 }
 
 .how-it-works-card__meta {
   @include type(caption);
 
-  padding-inline: var(--space-3);
+  display: inline-flex;
+  gap: rem(6px);
+  align-items: center;
   color: var(--text-muted);
+}
+
+.how-it-works-card__icon {
+  --ui-icon-size: #{rem(12px)};
+
+  flex: none;
+}
+
+.how-it-works-card__hide {
+  --ui-button-sm-size: #{rem(28px)};
+  --ui-icon-size: #{rem(14px)};
+
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-end: var(--space-2);
 }

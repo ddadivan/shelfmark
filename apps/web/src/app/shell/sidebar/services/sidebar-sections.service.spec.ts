@@ -9,16 +9,14 @@ describe('SidebarSections', () => {
     vi.restoreAllMocks();
   });
 
-  it('starts with every section open', () => {
+  it('starts with Tags folded and the other sections open (Shelf reference)', () => {
     const sections = TestBed.inject(SidebarSections);
-    expect(Object.values(SIDEBAR_SECTION).map((section) => sections.collapsed(section))).toEqual([
-      false,
-      false,
-      false,
-    ]);
+    expect(sections.collapsed(SIDEBAR_SECTION.Tags)).toBe(true);
+    expect(sections.collapsed(SIDEBAR_SECTION.Pinned)).toBe(false);
+    expect(sections.collapsed(SIDEBAR_SECTION.Folders)).toBe(false);
   });
 
-  it('reads, writes and removes the folded sections of this device', () => {
+  it('reads and writes the folded sections of this device, an empty list when all are open', () => {
     localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, JSON.stringify([SIDEBAR_SECTION.Tags]));
     const sections = TestBed.inject(SidebarSections);
     expect(sections.collapsed(SIDEBAR_SECTION.Tags)).toBe(true);
@@ -33,12 +31,14 @@ describe('SidebarSections', () => {
 
     sections.setCollapsed(SIDEBAR_SECTION.Tags, false);
     sections.setCollapsed(SIDEBAR_SECTION.Pinned, false);
-    expect(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY)).toBeNull();
+    expect(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY)).toBe('[]');
+    TestBed.resetTestingModule();
+    expect(TestBed.inject(SidebarSections).collapsed(SIDEBAR_SECTION.Tags)).toBe(false);
   });
 
   it('writes nothing when the section is already as asked', () => {
     const sections = TestBed.inject(SidebarSections);
-    const write = vi.spyOn(Storage.prototype, 'removeItem');
+    const write = vi.spyOn(Storage.prototype, 'setItem');
     sections.setCollapsed(SIDEBAR_SECTION.Folders, false);
     expect(write).not.toHaveBeenCalled();
   });
@@ -46,6 +46,7 @@ describe('SidebarSections', () => {
   it('ignores garbage, unknown sections and blocked storage', () => {
     localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, '{not json');
     expect(TestBed.inject(SidebarSections).collapsed(SIDEBAR_SECTION.Folders)).toBe(false);
+    expect(TestBed.inject(SidebarSections).collapsed(SIDEBAR_SECTION.Tags)).toBe(true);
     TestBed.resetTestingModule();
     localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, JSON.stringify(['folders', 'menu', 3]));
     expect(TestBed.inject(SidebarSections).collapsed(SIDEBAR_SECTION.Folders)).toBe(true);
@@ -61,8 +62,8 @@ describe('SidebarSections', () => {
       throw new Error('blocked');
     });
     const sections = TestBed.inject(SidebarSections);
-    expect(sections.collapsed(SIDEBAR_SECTION.Tags)).toBe(false);
-    sections.setCollapsed(SIDEBAR_SECTION.Tags, true);
     expect(sections.collapsed(SIDEBAR_SECTION.Tags)).toBe(true);
+    sections.setCollapsed(SIDEBAR_SECTION.Tags, false);
+    expect(sections.collapsed(SIDEBAR_SECTION.Tags)).toBe(false);
   });
 });

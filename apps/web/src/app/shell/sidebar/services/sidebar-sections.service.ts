@@ -9,19 +9,27 @@ function isSection(value: unknown): value is SidebarSection {
   return typeof value === 'string' && SECTIONS.includes(value);
 }
 
+/** Until the person folds or opens a section, Tags starts folded (Shelf reference sidebar). */
+const DEFAULT_COLLAPSED: readonly SidebarSection[] = [SIDEBAR_SECTION.Tags];
+
 function readCollapsed(): ReadonlySet<SidebarSection> {
   try {
-    const value: unknown = JSON.parse(localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) ?? '[]');
+    const stored = localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY);
+    if (stored === null) {
+      return new Set(DEFAULT_COLLAPSED);
+    }
+    const value: unknown = JSON.parse(stored);
     return new Set(Array.isArray(value) ? value.filter(isSection) : []);
   } catch {
-    return new Set();
+    return new Set(DEFAULT_COLLAPSED);
   }
 }
 
 /**
  * Which desktop sidebar sections (Pinned, Folders, Tags) are folded under their heading (#556), a
- * device preference in `localStorage`: read once (safely: garbage or blocked storage means all
- * open), written on every change, removed when every section is open again.
+ * device preference in `localStorage`: read once (no choice yet, garbage or blocked storage means
+ * the default: Tags folded, as in the Shelf reference), written on every change (an empty list
+ * when every section is open).
  */
 @Service()
 export class SidebarSections {
@@ -43,11 +51,7 @@ export class SidebarSections {
     }
     this.folded.set(next);
     try {
-      if (next.size === 0) {
-        localStorage.removeItem(SIDEBAR_COLLAPSED_STORAGE_KEY);
-      } else {
-        localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, JSON.stringify([...next]));
-      }
+      localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, JSON.stringify([...next]));
     } catch {
       // Storage blocked: the sections stay as they are for this page only.
     }
