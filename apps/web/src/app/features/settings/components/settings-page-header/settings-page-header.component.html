@@ -1,4 +1,5 @@
-@if (viewport.compact()) {
+<!-- The phone goes back to the You list; the tablet has the chip row, so only deeper pages lead back. -->
+@if (viewport.phone() || (viewport.compact() && backLabel())) {
   <ui-button
     class="settings-header__back"
     variant="ghost"

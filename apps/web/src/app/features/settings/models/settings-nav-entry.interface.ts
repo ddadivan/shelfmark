@@ -8,6 +8,8 @@ export interface SettingsNavEntry {
   icon: IconName;
   /** Translation key of the section name (nav row and page title). */
   labelKey: string;
+  /** Shorter label of the tablet chip row (Shelf 05-settings: "Language", "Shortcuts"). */
+  chipKey?: string;
   /** Translation key of the line under the page title. */
   descriptionKey: string;
   /**

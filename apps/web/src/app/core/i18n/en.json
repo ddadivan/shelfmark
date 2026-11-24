@@ -1819,7 +1819,16 @@
         "recent": "Recently opened"
       },
       "failed": "Couldn't save the appearance",
-      "failedDetail": "It is back to how it was."
+      "failedDetail": "It is back to how it was.",
+      "accent": {
+        "label": "Accent",
+        "hint": "Graphite keeps the interface quiet; Ink and Sage add one colour."
+      },
+      "customRow": {
+        "label": "Custom theme",
+        "hint": "Your own accent and background, checked for contrast.",
+        "action": "Customize"
+      }
     },
     "privacy": {
       "policy": {
@@ -2082,6 +2091,10 @@
         "none": "No device has notifications on."
       },
       "failed": "Couldn't save the notification settings"
+    },
+    "chips": {
+      "language": "Language",
+      "shortcuts": "Shortcuts"
     }
   },
   "shortcuts": {

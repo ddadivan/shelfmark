@@ -1864,7 +1864,16 @@
         "recent": "Abertos recentemente"
       },
       "failed": "Não foi possível salvar a aparência",
-      "failedDetail": "Ela voltou a ser como era."
+      "failedDetail": "Ela voltou a ser como era.",
+      "accent": {
+        "label": "Destaque",
+        "hint": "Grafite mantém a interface discreta; Tinta e Sálvia juntam uma cor."
+      },
+      "customRow": {
+        "label": "Tema personalizado",
+        "hint": "O seu destaque e fundo, com o contraste verificado.",
+        "action": "Personalizar"
+      }
     },
     "privacy": {
       "policy": {
@@ -2129,6 +2138,10 @@
         "none": "Nenhum dispositivo está com notificações ativadas."
       },
       "failed": "Não foi possível salvar as configurações de notificações"
+    },
+    "chips": {
+      "language": "Idioma",
+      "shortcuts": "Atalhos"
     }
   },
   "shortcuts": {

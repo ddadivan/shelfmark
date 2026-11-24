@@ -5,8 +5,11 @@ import {
   CUSTOM_THEME_BACKGROUNDS,
   CUSTOM_THEME_BASE,
   CUSTOM_THEME_DEFAULT,
+  CUSTOM_THEME_ACCENT,
   MOTION_PREFERENCE,
+  THEME_PREFERENCE,
   type CustomTheme,
+  type ThemePreference,
 } from '@shelfmark/contracts';
 import {
   type ColorPickerComponent,
@@ -26,8 +29,13 @@ import { AppearanceSettingsService } from './appearance-settings.service';
 const PALE = '#ffff66';
 const DEEP = '#1a4d8f';
 
-function setup({ saved = true }: { saved?: boolean } = {}) {
+function setup({
+  saved = true,
+  preference = THEME_PREFERENCE.Custom,
+}: { saved?: boolean; preference?: ThemePreference } = {}) {
   const customTheme = signal<CustomTheme>({ ...CUSTOM_THEME_DEFAULT });
+  const themePreference = signal<ThemePreference>(preference);
+  const resolved = signal<'light' | 'dark'>(CUSTOM_THEME_BASE.Dark);
   const shown: ToastOptions[] = [];
   const setAppearance = vi.fn(() => Promise.resolve(saved));
   const setFolderColours = vi.fn(() => Promise.resolve(saved));
@@ -36,7 +44,7 @@ function setup({ saved = true }: { saved?: boolean } = {}) {
   TestBed.configureTestingModule({
     providers: [
       AppearanceSettingsService,
-      { provide: ThemeService, useValue: { customTheme } },
+      { provide: ThemeService, useValue: { customTheme, preference: themePreference, resolved } },
       {
         provide: UserSettingsStore,
         useValue: { setAppearance, setFolderColours, addCustomColour },
@@ -65,6 +73,33 @@ function setup({ saved = true }: { saved?: boolean } = {}) {
 }
 
 describe('AppearanceSettingsService', () => {
+  it('keeps Graphite on a fixed theme as it is and turns Custom on for another accent (Shelf)', () => {
+    const { service, setAppearance, pickerRef } = setup({ preference: THEME_PREFERENCE.System });
+
+    service.chooseAccent(CUSTOM_THEME_ACCENT.Graphite, pickerRef);
+    expect(setAppearance).not.toHaveBeenCalled();
+
+    service.chooseAccent(CUSTOM_THEME_ACCENT.Ink, pickerRef);
+    expect(setAppearance).toHaveBeenCalledWith({
+      theme: THEME_PREFERENCE.Custom,
+      customTheme: {
+        ...CUSTOM_THEME_DEFAULT,
+        base: CUSTOM_THEME_BASE.Dark,
+        background: CUSTOM_THEME_BACKGROUNDS[CUSTOM_THEME_BASE.Dark][0],
+        accent: CUSTOM_THEME_ACCENT.Ink,
+      },
+    });
+  });
+
+  it('changes only the accent while Custom is on', () => {
+    const { service, setAppearance, pickerRef } = setup();
+
+    service.chooseAccent(CUSTOM_THEME_ACCENT.Graphite, pickerRef);
+    expect(setAppearance).toHaveBeenCalledWith({
+      customTheme: { ...CUSTOM_THEME_DEFAULT, accent: CUSTOM_THEME_ACCENT.Graphite },
+    });
+  });
+
   it('applies an own accent that keeps 4.5:1, remembers it and closes the picker', () => {
     const { service, setAppearance, addCustomColour, picker, pickerRef } = setup();
 

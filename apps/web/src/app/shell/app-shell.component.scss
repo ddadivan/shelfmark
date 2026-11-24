@@ -233,3 +233,8 @@
     scrollbar-gutter: stable;
   }
 }
+
+// Tablet settings (Shelf 05-settings at 820px): the section chips above the page.
+.shell__settings-chips {
+  margin-block-end: var(--space-4);
+}

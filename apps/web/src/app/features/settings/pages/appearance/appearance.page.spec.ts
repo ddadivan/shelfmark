@@ -56,6 +56,17 @@ function radioIn(root: HTMLElement, group: string, label: string): HTMLInputElem
   return found;
 }
 
+/** "Custom theme › Customize" (Shelf 05-settings), which turns the Custom theme on. */
+function customize(root: HTMLElement): void {
+  const button = Array.from(root.querySelectorAll<HTMLButtonElement>('button')).find(
+    (item) => item.textContent?.trim() === 'Customize',
+  );
+  if (!button) {
+    throw new Error('No Customize button');
+  }
+  button.click();
+}
+
 /** The own-colour picker whose swatch button is named `label`. */
 async function pickerNamed(
   harness: { fixture: ComponentFixture<unknown> },
@@ -133,8 +144,10 @@ describe('AppearancePage', () => {
 
     expect(page.querySelector('h1')?.textContent).toContain('Appearance');
     expect(page.textContent).toContain('Saved as you go and synced to all your devices.');
-    expect(page.textContent).toContain('Light and Dark are tuned by us');
-    expect(page.textContent).toContain('Want other colors or corners? Choose Custom.');
+    // Shelf 05-settings: System, Light, Dark, the Accent row and the Custom theme row.
+    expect(page.textContent).toContain('Graphite keeps the interface quiet');
+    expect(page.textContent).toContain('Your own accent and background, checked for contrast.');
+    expect(() => radioIn(page, 'Theme', 'Custom')).toThrow();
     expect(page.textContent).toContain('Animations');
     // Language has its own page, link counts live in Library, recently opened in Privacy.
     expect(page.querySelector('a[href="/settings/language"]')).toBeNull();
@@ -189,13 +202,13 @@ describe('AppearancePage', () => {
   it('picks Custom and changes base, accent, background and corners', async () => {
     const { root: page, theme, settingsApi, stable } = await setup();
 
-    radioIn(page, 'Theme', 'Custom').click();
+    customize(page);
     await stable();
     expect(root.getAttribute(THEME_ATTRIBUTE)).toBe(THEME_CUSTOM);
     expect(page.textContent).toContain('Start from');
     expect(radioIn(page, 'Background', 'Paper').checked).toBe(true);
 
-    radioIn(page, 'Accent color', 'Ink').click();
+    radioIn(page, 'Accent', 'Ink').click();
     await stable();
     expect(theme.customTheme().accent).toBe('ink');
     expect(settingsApi.update).toHaveBeenLastCalledWith({
@@ -235,7 +248,7 @@ describe('AppearancePage', () => {
 
   it('saves an own accent color that keeps 4.5:1 from the "+" swatch (#315)', async () => {
     const { root: page, theme, settingsApi, stable, harness } = await setup();
-    radioIn(page, 'Theme', 'Custom').click();
+    customize(page);
     await stable();
 
     const picker = await pickerNamed(harness, 'Your own color');
@@ -252,12 +265,12 @@ describe('AppearancePage', () => {
     expect(root.getAttribute(CUSTOM_THEME_ATTRIBUTE.Accent)).toBe(CUSTOM_ACCENT_OWN);
     expect(root.style.getPropertyValue('--accent')).toBe('#23716c');
     // No curated swatch is checked; the own color is a swatch of its own and is checked (#335).
-    expect(radioIn(page, 'Accent color', 'Graphite').checked).toBe(false);
-    expect(radioIn(page, 'Accent color', '#23716c').checked).toBe(true);
+    expect(radioIn(page, 'Accent', 'Graphite').checked).toBe(false);
+    expect(radioIn(page, 'Accent', '#23716c').checked).toBe(true);
     expect(page.querySelector('ui-notice')).toBeNull();
 
     // A curated accent takes over again and drops the custom properties.
-    radioIn(page, 'Accent color', 'Sage').click();
+    radioIn(page, 'Accent', 'Sage').click();
     await stable();
     expect(theme.customTheme().accent).toBe('sage');
     expect(root.style.getPropertyValue('--accent')).toBe('');
@@ -265,7 +278,7 @@ describe('AppearancePage', () => {
 
   it('warns about an own color below 4.5:1 and offers the nearest passing shade', async () => {
     const { root: page, theme, settingsApi, stable, harness } = await setup();
-    radioIn(page, 'Theme', 'Custom').click();
+    customize(page);
     await stable();
     settingsApi.update.mockClear();
 
@@ -298,12 +311,12 @@ describe('AppearancePage', () => {
     });
     expect(page.querySelector('ui-notice')).toBeNull();
     // The shade is a swatch of its own now, checked; the "+" panel closed.
-    expect(radioIn(page, 'Accent color', shade).checked).toBe(true);
+    expect(radioIn(page, 'Accent', shade).checked).toBe(true);
   });
 
   it('saves an own background color that keeps text at 4.5:1 and draws it as a swatch (#335)', async () => {
     const { root: page, theme, settingsApi, stable, harness } = await setup();
-    radioIn(page, 'Theme', 'Custom').click();
+    customize(page);
     await stable();
 
     const picker = await pickerNamed(harness, 'Your own background color');
@@ -329,7 +342,7 @@ describe('AppearancePage', () => {
 
   it('warns about a background that hides the text and offers the nearest readable shade (#335)', async () => {
     const { root: page, theme, settingsApi, stable, harness } = await setup();
-    radioIn(page, 'Theme', 'Custom').click();
+    customize(page);
     await stable();
     settingsApi.update.mockClear();
 
@@ -355,7 +368,7 @@ describe('AppearancePage', () => {
 
   it('a palette pick moves to the nearest readable shade with a note; Add is enabled (#415)', async () => {
     const { root: page, theme, stable, harness } = await setup();
-    radioIn(page, 'Theme', 'Custom').click();
+    customize(page);
     await stable();
 
     const picker = await pickerNamed(harness, 'Your own background color');
@@ -386,7 +399,7 @@ describe('AppearancePage', () => {
 
   it('the accent pick is adjusted for the current page too (#415)', async () => {
     const { root: page, stable, harness } = await setup();
-    radioIn(page, 'Theme', 'Custom').click();
+    customize(page);
     await stable();
 
     const picker = await pickerNamed(harness, 'Your own color');
@@ -542,7 +555,7 @@ describe('AppearancePage', () => {
     const { root: page, stable } = await setup();
     expect(await axeViolations(page)).toEqual([]);
 
-    radioIn(page, 'Theme', 'Custom').click();
+    customize(page);
     await stable();
     expect(await axeViolations(page)).toEqual([]);
   });

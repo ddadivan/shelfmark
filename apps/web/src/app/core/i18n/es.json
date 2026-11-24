@@ -1864,7 +1864,16 @@
         "recent": "Abiertos recientemente"
       },
       "failed": "No se pudo guardar la apariencia",
-      "failedDetail": "Ha vuelto a como estaba."
+      "failedDetail": "Ha vuelto a como estaba.",
+      "accent": {
+        "label": "Acento",
+        "hint": "Grafito mantiene la interfaz tranquila; Tinta y Salvia añaden un color."
+      },
+      "customRow": {
+        "label": "Tema personalizado",
+        "hint": "Tu propio acento y fondo, con el contraste comprobado.",
+        "action": "Personalizar"
+      }
     },
     "privacy": {
       "policy": {
@@ -2129,6 +2138,10 @@
         "none": "Ningún dispositivo tiene las notificaciones activadas."
       },
       "failed": "No se pudieron guardar los ajustes de notificaciones"
+    },
+    "chips": {
+      "language": "Idioma",
+      "shortcuts": "Atajos"
     }
   },
   "shortcuts": {

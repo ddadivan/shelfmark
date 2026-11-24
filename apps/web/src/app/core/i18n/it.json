@@ -1864,7 +1864,16 @@
         "recent": "Aperti di recente"
       },
       "failed": "Impossibile salvare l’aspetto",
-      "failedDetail": "È tornato com’era."
+      "failedDetail": "È tornato com’era.",
+      "accent": {
+        "label": "Accento",
+        "hint": "Grafite mantiene l’interfaccia sobria; Inchiostro e Salvia aggiungono un colore."
+      },
+      "customRow": {
+        "label": "Tema personalizzato",
+        "hint": "Il tuo accento e il tuo sfondo, con il contrasto verificato.",
+        "action": "Personalizza"
+      }
     },
     "privacy": {
       "policy": {
@@ -2129,6 +2138,10 @@
         "none": "Nessun dispositivo ha le notifiche attive."
       },
       "failed": "Impossibile salvare le impostazioni delle notifiche"
+    },
+    "chips": {
+      "language": "Lingua",
+      "shortcuts": "Scorciatoie"
     }
   },
   "shortcuts": {

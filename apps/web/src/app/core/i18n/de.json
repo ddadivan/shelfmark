@@ -1819,7 +1819,16 @@
         "recent": "Zuletzt geöffnet"
       },
       "failed": "Darstellung konnte nicht gespeichert werden",
-      "failedDetail": "Sie ist wieder wie vorher."
+      "failedDetail": "Sie ist wieder wie vorher.",
+      "accent": {
+        "label": "Akzent",
+        "hint": "Graphit hält die Oberfläche ruhig; Tinte und Salbei bringen eine Farbe dazu."
+      },
+      "customRow": {
+        "label": "Eigenes Design",
+        "hint": "Eigener Akzent und Hintergrund, auf Kontrast geprüft.",
+        "action": "Anpassen"
+      }
     },
     "privacy": {
       "policy": {
@@ -2082,6 +2091,10 @@
         "none": "Auf keinem Gerät sind Benachrichtigungen an."
       },
       "failed": "Benachrichtigungseinstellungen konnten nicht gespeichert werden"
+    },
+    "chips": {
+      "language": "Sprache",
+      "shortcuts": "Kürzel"
     }
   },
   "shortcuts": {

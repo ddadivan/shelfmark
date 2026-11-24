@@ -1864,7 +1864,16 @@
         "recent": "Ouverts récemment"
       },
       "failed": "Impossible d’enregistrer l’apparence",
-      "failedDetail": "Elle est revenue comme avant."
+      "failedDetail": "Elle est revenue comme avant.",
+      "accent": {
+        "label": "Accent",
+        "hint": "Graphite garde l’interface sobre ; Encre et Sauge ajoutent une couleur."
+      },
+      "customRow": {
+        "label": "Thème personnalisé",
+        "hint": "Votre accent et votre fond, avec contraste vérifié.",
+        "action": "Personnaliser"
+      }
     },
     "privacy": {
       "policy": {
@@ -2129,6 +2138,10 @@
         "none": "Aucun appareil n'a les notifications activées."
       },
       "failed": "Impossible d'enregistrer les réglages des notifications"
+    },
+    "chips": {
+      "language": "Langue",
+      "shortcuts": "Raccourcis"
     }
   },
   "shortcuts": {
