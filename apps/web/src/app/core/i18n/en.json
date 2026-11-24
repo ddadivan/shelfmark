@@ -1348,7 +1348,7 @@
       "detail": "This view has no links. Export everything, or open another view"
     },
     "dialog": {
-      "title": "Export",
+      "title": "Export links",
       "close": "Close",
       "formatLabel": "File format",
       "format": {
@@ -1369,7 +1369,9 @@
       "preparing": "Preparing the {{format}} file…",
       "cancel": "Cancel",
       "download": "Download",
-      "saved": "File saved"
+      "saved": "File saved",
+      "formatHeading": "Format",
+      "downloadAs": "Export {{format}}"
     }
   },
   "import": {

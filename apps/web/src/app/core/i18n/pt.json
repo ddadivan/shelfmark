@@ -1371,7 +1371,7 @@
       "detail": "Esta visualização não tem links. Exporte tudo ou abra outra visualização"
     },
     "dialog": {
-      "title": "Exportar",
+      "title": "Exportar links",
       "close": "Fechar",
       "formatLabel": "Formato do arquivo",
       "format": {
@@ -1392,7 +1392,9 @@
       "preparing": "Preparando o arquivo {{format}}…",
       "cancel": "Cancelar",
       "download": "Baixar",
-      "saved": "Arquivo salvo"
+      "saved": "Arquivo salvo",
+      "formatHeading": "Formato",
+      "downloadAs": "Exportar {{format}}"
     }
   },
   "import": {

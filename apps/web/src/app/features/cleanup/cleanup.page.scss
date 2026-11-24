@@ -11,8 +11,16 @@
   display: flex;
   flex: 1 0 auto;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-6);
   width: 100%;
+
+  // Shelf 15-tools Clean up: the settings column (840px), the title 32px under the top.
+  max-width: rem(840px);
+  margin-inline: auto;
+
+  @include desktop {
+    padding-block-start: var(--space-2);
+  }
 
   @include compact {
     gap: var(--space-4);

@@ -47,7 +47,7 @@ async function setup(download: ExportApi['download'] = () => of(undefined), link
     TestBed.createComponent(RootComponent),
   );
   const dialog = await loader.getHarness(UiDialogHarness);
-  const button = (text: string) => loader.getHarness(UiButtonHarness.with({ text }));
+  const button = (text: string | RegExp) => loader.getHarness(UiButtonHarness.with({ text }));
   const radios = () => [
     ...document.querySelectorAll<HTMLInputElement>('.cdk-dialog-container input[type="radio"]'),
   ];
@@ -71,7 +71,7 @@ describe('ExportDialogComponent', () => {
   it('is a small dialog titled Export with the formats as radio cards, JSON chosen', async () => {
     const { dialog, radios, body } = await setup();
 
-    expect(await dialog.getTitle()).toBe('Export');
+    expect(await dialog.getTitle()).toBe('Export links');
     expect(await dialog.getSize()).toBe(DIALOG_SIZE.Sm);
     const values = radios().map((radio) => radio.value);
     expect(values).toEqual([EXPORT_FORMAT.Json, EXPORT_FORMAT.Html, EXPORT_FORMAT.Csv]);
@@ -101,7 +101,7 @@ describe('ExportDialogComponent', () => {
     const { api, show, closed, button, radios, until } = await setup();
 
     radios()[1].click();
-    await (await button('Download')).click();
+    await (await button(/^Export /)).click();
 
     await until(() => {
       expect(closed).toHaveBeenCalledTimes(1);
@@ -119,12 +119,12 @@ describe('ExportDialogComponent', () => {
     const pending = new Subject<void>();
     const { button, radios, body, until, closed } = await setup(() => pending);
 
-    await (await button('Download')).click();
+    await (await button(/^Export /)).click();
 
     await until(() => {
       expect(body()).toContain('Preparing the JSON file…');
     });
-    expect(await (await button('Download')).isDisabled()).toBe(true);
+    expect(await (await button(/^Export /)).isDisabled()).toBe(true);
     expect(await (await button('Cancel')).isDisabled()).toBe(false);
     expect(radios().every((radio) => radio.disabled)).toBe(true);
     expect(closed).not.toHaveBeenCalled();
@@ -144,9 +144,9 @@ describe('ExportDialogComponent', () => {
         }),
     );
 
-    await (await button('Download')).click();
+    await (await button(/^Export /)).click();
     await until(async () => {
-      expect(await (await button('Download')).isDisabled()).toBe(true);
+      expect(await (await button(/^Export /)).isDisabled()).toBe(true);
     });
     await (await button('Cancel')).click();
 
@@ -161,21 +161,21 @@ describe('ExportDialogComponent', () => {
   it('keeps the dialog open after a failure, with the error toast and Download usable again', async () => {
     const { show, button, until, closed } = await setup(() => throwError(() => new Error('down')));
 
-    await (await button('Download')).click();
+    await (await button(/^Export /)).click();
 
     await until(() => {
       expect(show).toHaveBeenCalledWith(expect.objectContaining({ kind: TOAST_KIND.Danger }));
     });
     expect(closed).not.toHaveBeenCalled();
     await until(async () => {
-      expect(await (await button('Download')).isDisabled()).toBe(false);
+      expect(await (await button(/^Export /)).isDisabled()).toBe(false);
     });
   });
 
   it('closes after explaining when the library is empty', async () => {
     const { api, show, until, closed, button } = await setup(undefined, 0);
 
-    await (await button('Download')).click();
+    await (await button(/^Export /)).click();
 
     await until(() => {
       expect(closed).toHaveBeenCalledTimes(1);

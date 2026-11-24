@@ -13,6 +13,14 @@
   padding: rem(2px);
 }
 
+.export-dialog__label {
+  @include type(caption);
+
+  margin: 0 0 calc(-1 * var(--space-2));
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
 .export-dialog__status:empty {
   display: none;
 }

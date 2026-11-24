@@ -122,7 +122,17 @@
   border-radius: var(--radius-full);
 }
 
+.settings-index__label,
 .settings-index__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// The current choice (theme, language) stays on the row's line and gives way to the label.
+.settings-index__value {
+  flex: 0 1 auto;
+  max-width: 45%;
   color: var(--text-muted);
 }
 
