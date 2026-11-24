@@ -102,6 +102,9 @@ export class DialogComponent {
   protected readonly command = computed(
     () => (this.variant() ?? this.context?.variant) === DIALOG_VARIANT.Command,
   );
+  protected readonly panelVariant = computed(
+    () => (this.variant() ?? this.context?.variant) === DIALOG_VARIANT.Panel,
+  );
   protected readonly leaving = computed(() => this.context?.leaving() ?? false);
   /** The content holds the dialog open (`UiDialogRef.setLocked`): no close button, no drag. */
   protected readonly locked = computed(() => this.ref?.locked() ?? false);

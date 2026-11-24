@@ -1,5 +1,5 @@
 import { inject, Service } from '@angular/core';
-import { DIALOG_SIZE, DialogService } from '@shelfmark/ui';
+import { DIALOG_SIZE, DIALOG_VARIANT, DialogService } from '@shelfmark/ui';
 import { DIALOG_FIRST_FIELD } from '../../../models/dialog-first-field.const';
 import type { AddLinkData } from '../models/add-link-data.interface';
 import type { AddLinkDialogData } from '../models/add-link-dialog-data.interface';
@@ -8,7 +8,7 @@ import type { AddLinkSession } from '../models/add-link-session.interface';
 import { AddLinkDialogComponent } from '../components/add-link/add-link-dialog.component';
 
 /**
- * Opens the add-link dialog; features call `inject(AddLinkDialogService).open({ folderId })`.
+ * Opens the add-link dialog (the Shelf panel when adding, a centred dialog when editing); features call `inject(AddLinkDialogService).open({ folderId })`.
  * Resolves with the saved link, the "open existing" choice (the caller navigates), or
  * `undefined` when the dialog was dismissed.
  *
@@ -30,6 +30,8 @@ export class AddLinkDialogService {
     return this.dialogs
       .open<AddLinkDialogComponent, AddLinkResult, AddLinkDialogData>(AddLinkDialogComponent, {
         size: DIALOG_SIZE.Md,
+        // Shelf: adding is a panel under the top end corner; editing stays a centred dialog.
+        variant: data.link === undefined ? DIALOG_VARIANT.Panel : DIALOG_VARIANT.Default,
         autoFocus: DIALOG_FIRST_FIELD,
         data: { ...data, session },
       })

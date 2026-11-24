@@ -11,7 +11,9 @@ export interface UiDialogConfig<D = undefined> {
    * wide, 96px from the top of the viewport (not centred), and the title is visually hidden (it
    * still names the dialog); the header close button is not shown from 40em (Esc and the scrim
    * close it), on a phone the dialog is a plain full-screen page with its title shown. Pair it
-   * with `phoneFullscreen` on `ui-dialog`. Default `default`: the plain panel, unchanged.
+   * with `phoneFullscreen` on `ui-dialog`. `panel`: 480px wide under the top end corner of the
+   * page (Shelf Add link), the page stays undimmed, header and footer are divided off; a bottom
+   * sheet below 40em. Default `default`: the plain panel, unchanged.
    */
   readonly variant?: DialogVariant;
   /** Read in the dialog component with `injectDialogData<D>()`. */

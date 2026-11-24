@@ -230,7 +230,8 @@
         "hint": "Collez un lien — le titre et l’aperçu se remplissent tout seuls",
         "required": "Saisissez un lien",
         "invalid": "Saisissez une adresse qui commence par http:// ou https://",
-        "tooLong": "Le lien est trop long ({{max}} caractères au maximum)"
+        "tooLong": "Le lien est trop long ({{max}} caractères au maximum)",
+        "panel": "Collez un lien, ou plusieurs"
       },
       "shortcut": {
         "cmd": "⌘",
@@ -242,7 +243,7 @@
         "loading": "Chargement de l’aperçu",
         "loadingHint": "Vous pouvez continuer à écrire une note et choisir un dossier pendant le chargement.",
         "filled": "Rempli depuis la page. Vous pouvez modifier le titre.",
-        "failed": "Impossible de charger un aperçu. Le lien sera enregistré avec son adresse comme titre — vous pourrez le renommer.",
+        "failed": "Impossible de charger un aperçu. Le lien sera enregistré avec son adresse comme titre ; vous pourrez le renommer plus tard.",
         "ready": "Aperçu chargé : {{title}}",
         "unavailable": "Aucun aperçu n’est disponible pour cette page. Le lien sera enregistré avec son adresse comme titre — vous pourrez le renommer."
       },
@@ -280,7 +281,8 @@
         "tooLong": "La note est trop longue ({{max}} caractères au maximum)"
       },
       "duplicate": {
-        "text": "Vous avez déjà enregistré ce lien dans {{folder}}. Ouvrez-le, ou enregistrez-le à nouveau."
+        "text": "Vous avez déjà enregistré ce lien dans {{folder}}. Ouvrez-le, ou enregistrez-le à nouveau.",
+        "panel": "Déjà enregistré dans {{folder}}."
       },
       "saveFailed": "Impossible d’enregistrer le lien. Réessayez.",
       "saveFailedLimit": "Vous avez atteint la limite de {{max}} liens enregistrés. Supprimez-en pour en ajouter d’autres.",
@@ -290,11 +292,12 @@
       "actions": {
         "cancel": "Annuler",
         "openSaved": "Ouvrir l’existant",
-        "create": "Créer le lien",
-        "createAnyway": "Créer quand même",
-        "creating": "Création…",
+        "create": "Enregistrer",
+        "createAnyway": "Enregistrer quand même",
+        "creating": "Enregistrement…",
         "saveAnyway": "Enregistrer quand même",
-        "saving": "Enregistrement…"
+        "saving": "Enregistrement…",
+        "open": "Ouvrir"
       },
       "several": {
         "offer": "Plusieurs liens ? Collez-les tous d’un coup",
@@ -311,6 +314,28 @@
       "rule": {
         "chip": "Règle : {{domain}} → {{target}}",
         "remove": "Ne pas appliquer la règle pour {{domain}}"
+      },
+      "tip": {
+        "mac": "Astuce : appuyez sur ⌘ V n'importe où dans Shelfmark pour enregistrer ce que vous avez copié. Plusieurs liens à la fois, ça marche aussi.",
+        "other": "Astuce : appuyez sur Ctrl V n'importe où dans Shelfmark pour enregistrer ce que vous avez copié. Plusieurs liens à la fois, ça marche aussi."
+      },
+      "goes": {
+        "lead": "Va dans",
+        "rule": "règle pour {{domain}}",
+        "change": "Modifier"
+      },
+      "extras": {
+        "remind": "Me le rappeler…",
+        "remindSet": "Rappel : {{when}}",
+        "remindMenu": "Me le rappeler",
+        "noReminder": "Pas de rappel",
+        "favorite": "Favori",
+        "favoriteFailed": "Enregistré, mais impossible de l'ajouter aux favoris",
+        "remindFailed": "Enregistré, mais impossible de régler le rappel"
+      },
+      "footer": {
+        "start": "Collez pour commencer",
+        "keys": "Entrée pour enregistrer · Échap pour fermer"
       }
     },
     "edit": {

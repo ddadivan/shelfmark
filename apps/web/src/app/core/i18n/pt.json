@@ -230,7 +230,8 @@
         "hint": "Cole um link — o título e a prévia se preenchem sozinhos",
         "required": "Digite um link",
         "invalid": "Digite um endereço que comece com http:// ou https://",
-        "tooLong": "O link é longo demais (no máximo {{max}} caracteres)"
+        "tooLong": "O link é longo demais (no máximo {{max}} caracteres)",
+        "panel": "Cole um link, ou vários"
       },
       "shortcut": {
         "cmd": "⌘",
@@ -242,7 +243,7 @@
         "loading": "Carregando prévia",
         "loadingHint": "Você pode continuar escrevendo uma nota e escolhendo uma pasta enquanto carrega.",
         "filled": "Preenchido a partir da página. Você pode editar o título.",
-        "failed": "Não foi possível carregar a prévia. O link será salvo com o endereço como título — você pode renomeá-lo.",
+        "failed": "Não foi possível carregar a prévia. O link será salvo com o endereço como título; você pode renomeá-lo depois.",
         "ready": "Prévia carregada: {{title}}",
         "unavailable": "Não há prévia para esta página. O link será salvo com o endereço como título — você pode renomeá-lo."
       },
@@ -280,7 +281,8 @@
         "tooLong": "A nota é longa demais (no máximo {{max}} caracteres)"
       },
       "duplicate": {
-        "text": "Você já salvou este link em {{folder}}. Abra-o ou salve de novo."
+        "text": "Você já salvou este link em {{folder}}. Abra-o ou salve de novo.",
+        "panel": "Já salvo em {{folder}}."
       },
       "saveFailed": "Não foi possível salvar o link. Tente de novo.",
       "saveFailedLimit": "Você atingiu o limite de {{max}} links salvos. Exclua alguns para salvar mais.",
@@ -290,11 +292,12 @@
       "actions": {
         "cancel": "Cancelar",
         "openSaved": "Abrir o salvo",
-        "create": "Criar link",
-        "createAnyway": "Criar mesmo assim",
-        "creating": "Criando…",
+        "create": "Salvar",
+        "createAnyway": "Salvar mesmo assim",
+        "creating": "Salvando…",
         "saveAnyway": "Salvar mesmo assim",
-        "saving": "Salvando…"
+        "saving": "Salvando…",
+        "open": "Abrir"
       },
       "several": {
         "offer": "Tem vários links? Cole todos de uma vez",
@@ -311,6 +314,28 @@
       "rule": {
         "chip": "Regra: {{domain}} → {{target}}",
         "remove": "Não aplicar a regra de {{domain}}"
+      },
+      "tip": {
+        "mac": "Dica: pressione ⌘ V em qualquer lugar do Shelfmark para salvar o que você copiou. Vários links de uma vez também funcionam.",
+        "other": "Dica: pressione Ctrl V em qualquer lugar do Shelfmark para salvar o que você copiou. Vários links de uma vez também funcionam."
+      },
+      "goes": {
+        "lead": "Vai para",
+        "rule": "regra para {{domain}}",
+        "change": "Alterar"
+      },
+      "extras": {
+        "remind": "Lembrar-me…",
+        "remindSet": "Lembrete: {{when}}",
+        "remindMenu": "Lembrar-me",
+        "noReminder": "Sem lembrete",
+        "favorite": "Favorito",
+        "favoriteFailed": "Salvo, mas não foi possível adicionar aos favoritos",
+        "remindFailed": "Salvo, mas não foi possível definir o lembrete"
+      },
+      "footer": {
+        "start": "Cole para começar",
+        "keys": "Enter para salvar · Esc para fechar"
       }
     },
     "edit": {

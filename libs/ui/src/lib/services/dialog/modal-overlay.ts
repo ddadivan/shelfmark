@@ -70,7 +70,11 @@ export function openModalOverlay<C, R, D>(
     closeOnDestroy: true,
     // The CDK would restore focus with the ring of the last key (Esc): done below, per opener.
     restoreFocus: false,
-    backdropClass: ['ui-dialog-scrim', overlayLayerClass(OVERLAY_LAYER.Dialog)],
+    backdropClass: [
+      'ui-dialog-scrim',
+      overlayLayerClass(OVERLAY_LAYER.Dialog),
+      ...(options.scrimClasses ?? []),
+    ],
     positionStrategy: options.positionStrategy,
     injector: deps.injector,
     providers: (ref) => {

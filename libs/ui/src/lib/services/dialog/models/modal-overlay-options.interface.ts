@@ -18,6 +18,8 @@ export interface ModalOverlayOptions<R, C, D> {
   /** Fallback focus target, see `UiDialogConfig.restoreFocus`. */
   readonly restoreFocus?: () => HTMLElement | null;
   readonly positionStrategy: PositionStrategy;
+  /** Extra classes on the scrim (the panel variant's clear scrim from 40em). */
+  readonly scrimClasses?: readonly string[];
   /** Providers for the content component, next to `UiDialogRef`. */
   readonly providers: (ref: UiDialogRef<R, C>) => StaticProvider[];
 }

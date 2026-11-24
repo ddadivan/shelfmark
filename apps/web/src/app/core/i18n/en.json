@@ -230,7 +230,8 @@
         "hint": "Paste a link — the title and preview fill in by themselves",
         "required": "Enter a link",
         "invalid": "Enter an address that starts with http:// or https://",
-        "tooLong": "The link is too long (at most {{max}} characters)"
+        "tooLong": "The link is too long (at most {{max}} characters)",
+        "panel": "Paste a link, or several"
       },
       "shortcut": {
         "cmd": "⌘",
@@ -242,7 +243,7 @@
         "loading": "Loading preview",
         "loadingHint": "You can keep typing a note and choosing a folder while it loads.",
         "filled": "Filled in from the page. You can edit the title.",
-        "failed": "Couldn't load a preview. The link will be saved with its address as the title — you can rename it.",
+        "failed": "Couldn't load a preview. The link will be saved with its address as the title; you can rename it later.",
         "ready": "Preview loaded: {{title}}",
         "unavailable": "No preview is available for this page. The link will be saved with its address as the title — you can rename it."
       },
@@ -280,7 +281,8 @@
         "tooLong": "The note is too long (at most {{max}} characters)"
       },
       "duplicate": {
-        "text": "You already saved this link in {{folder}}. Open it, or save it again."
+        "text": "You already saved this link in {{folder}}. Open it, or save it again.",
+        "panel": "Already saved in {{folder}}."
       },
       "saveFailed": "Couldn't save the link. Try again.",
       "saveFailedLimit": "You have reached the limit of {{max}} saved links. Delete some to save more.",
@@ -290,11 +292,12 @@
       "actions": {
         "cancel": "Cancel",
         "openSaved": "Open saved",
-        "create": "Create link",
-        "createAnyway": "Create anyway",
-        "creating": "Creating…",
+        "create": "Save",
+        "createAnyway": "Save anyway",
+        "creating": "Saving…",
         "saveAnyway": "Save anyway",
-        "saving": "Saving…"
+        "saving": "Saving…",
+        "open": "Open"
       },
       "several": {
         "offer": "Have several links? Paste them all at once",
@@ -311,6 +314,28 @@
       "rule": {
         "chip": "Rule: {{domain}} → {{target}}",
         "remove": "Don't apply the rule for {{domain}}"
+      },
+      "tip": {
+        "mac": "Tip: press ⌘ V anywhere in Shelfmark to save what you copied. Several links at once work too.",
+        "other": "Tip: press Ctrl V anywhere in Shelfmark to save what you copied. Several links at once work too."
+      },
+      "goes": {
+        "lead": "Goes to",
+        "rule": "rule for {{domain}}",
+        "change": "Change"
+      },
+      "extras": {
+        "remind": "Remind me…",
+        "remindSet": "Reminder: {{when}}",
+        "remindMenu": "Remind me",
+        "noReminder": "No reminder",
+        "favorite": "Favorite",
+        "favoriteFailed": "Saved, but couldn't add it to favorites",
+        "remindFailed": "Saved, but couldn't set the reminder"
+      },
+      "footer": {
+        "start": "Paste to start",
+        "keys": "Enter to save · Esc to close"
       }
     },
     "edit": {

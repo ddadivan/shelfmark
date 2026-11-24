@@ -162,3 +162,48 @@
     }
   }
 }
+
+// Panel (`variant: panel`, Shelf Add link): 480px under the top end corner of the page (the
+// wrapper placement and the clear scrim are global, `_dialog.scss`), 16px corners, no outer
+// padding: the header (12px, 16px at the start) and the footer (12px 16px) are divided off by
+// `sep` lines and the body has 16px. Below 40em it is the plain bottom sheet.
+.ui-dialog--panel {
+  @include tablet-up {
+    --ui-dialog-width: #{rem(480px)};
+
+    // Shelf panel icons are 16px (buttons, the folder row, the close button).
+    --ui-dialog-icon-size: var(--icon-size-sm);
+
+    gap: 0;
+    padding: 0;
+    border-radius: var(--radius-lg);
+    max-height: calc(100dvh - var(--ui-keyboard-inset, 0rem) - #{rem(52px + 24px)});
+
+    .ui-dialog__drag {
+      padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+      border-block-end: 1px solid var(--sep);
+    }
+
+    .ui-dialog__head {
+      align-items: center;
+    }
+
+    .ui-dialog__title {
+      font-size: rem(18px);
+      line-height: 1.25;
+    }
+
+    .ui-dialog__body {
+      padding: var(--space-4);
+      margin-inline: 0;
+    }
+
+    .ui-dialog__foot {
+      gap: var(--space-2);
+      align-items: center;
+      padding: var(--space-3) var(--space-4);
+      margin: 0;
+      border-block-start: 1px solid var(--sep);
+    }
+  }
+}

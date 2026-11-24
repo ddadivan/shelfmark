@@ -36,6 +36,12 @@ describe('InputComponent', () => {
     expect(q('label')?.getAttribute('for')).toBe(input().id);
   });
 
+  it('labelHidden keeps the label for assistive technology only', () => {
+    const { q, input } = setup({ labelHidden: true });
+    expect(q('.ui-field--label-hidden')).not.toBeNull();
+    expect(q('label')?.getAttribute('for')).toBe(input().id);
+  });
+
   it('url uses the mono control and URL hints', () => {
     const { q, input } = setup({ type: INPUT_TYPE.Url });
     expect(input().type).toBe('url');

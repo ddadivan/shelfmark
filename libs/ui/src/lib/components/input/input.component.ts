@@ -55,6 +55,8 @@ export class InputComponent extends UiFieldControl implements FormValueControl<s
   readonly placeholder = input('');
   /** Leading icon; `search` fields default to the search icon. */
   readonly icon = input<IconName>();
+  /** The label stays for assistive technology only (Shelf Add link: the field speaks for itself). */
+  readonly labelHidden = input(false, { transform: booleanAttribute });
   /** Shows a clear button while the field has a value. */
   readonly clearable = input(false, { transform: booleanAttribute });
   /** Accessible name of the clear button; without it no clear button is rendered. */

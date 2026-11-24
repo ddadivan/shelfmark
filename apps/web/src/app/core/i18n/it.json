@@ -230,7 +230,8 @@
         "hint": "Incolla un link — titolo e anteprima si compilano da soli",
         "required": "Inserisci un link",
         "invalid": "Inserisci un indirizzo che inizia con http:// o https://",
-        "tooLong": "Il link è troppo lungo (massimo {{max}} caratteri)"
+        "tooLong": "Il link è troppo lungo (massimo {{max}} caratteri)",
+        "panel": "Incolla un link, o più di uno"
       },
       "shortcut": {
         "cmd": "⌘",
@@ -242,7 +243,7 @@
         "loading": "Caricamento anteprima",
         "loadingHint": "Puoi continuare a scrivere una nota e scegliere una cartella mentre carica.",
         "filled": "Compilato dalla pagina. Puoi modificare il titolo.",
-        "failed": "Impossibile caricare un’anteprima. Il link sarà salvato con l’indirizzo come titolo — puoi rinominarlo.",
+        "failed": "Impossibile caricare un'anteprima. Il link verrà salvato con l'indirizzo come titolo; potrai rinominarlo in seguito.",
         "ready": "Anteprima caricata: {{title}}",
         "unavailable": "Non c’è un’anteprima per questa pagina. Il link sarà salvato con l’indirizzo come titolo — puoi rinominarlo."
       },
@@ -280,7 +281,8 @@
         "tooLong": "La nota è troppo lunga (massimo {{max}} caratteri)"
       },
       "duplicate": {
-        "text": "Hai già salvato questo link in {{folder}}. Aprilo o salvalo di nuovo."
+        "text": "Hai già salvato questo link in {{folder}}. Aprilo o salvalo di nuovo.",
+        "panel": "Già salvato in {{folder}}."
       },
       "saveFailed": "Impossibile salvare il link. Riprova.",
       "saveFailedLimit": "Hai raggiunto il limite di {{max}} link salvati. Eliminane qualcuno per salvarne altri.",
@@ -290,11 +292,12 @@
       "actions": {
         "cancel": "Annulla",
         "openSaved": "Apri il salvato",
-        "create": "Crea link",
-        "createAnyway": "Crea comunque",
-        "creating": "Creazione…",
+        "create": "Salva",
+        "createAnyway": "Salva comunque",
+        "creating": "Salvataggio…",
         "saveAnyway": "Salva comunque",
-        "saving": "Salvataggio…"
+        "saving": "Salvataggio…",
+        "open": "Apri"
       },
       "several": {
         "offer": "Hai più link? Incollali tutti insieme",
@@ -311,6 +314,28 @@
       "rule": {
         "chip": "Regola: {{domain}} → {{target}}",
         "remove": "Non applicare la regola per {{domain}}"
+      },
+      "tip": {
+        "mac": "Suggerimento: premi ⌘ V ovunque in Shelfmark per salvare ciò che hai copiato. Funziona anche con più link insieme.",
+        "other": "Suggerimento: premi Ctrl V ovunque in Shelfmark per salvare ciò che hai copiato. Funziona anche con più link insieme."
+      },
+      "goes": {
+        "lead": "Va in",
+        "rule": "regola per {{domain}}",
+        "change": "Cambia"
+      },
+      "extras": {
+        "remind": "Ricordamelo…",
+        "remindSet": "Promemoria: {{when}}",
+        "remindMenu": "Ricordamelo",
+        "noReminder": "Nessun promemoria",
+        "favorite": "Preferito",
+        "favoriteFailed": "Salvato, ma non è stato possibile aggiungerlo ai preferiti",
+        "remindFailed": "Salvato, ma non è stato possibile impostare il promemoria"
+      },
+      "footer": {
+        "start": "Incolla per iniziare",
+        "keys": "Invio per salvare · Esc per chiudere"
       }
     },
     "edit": {

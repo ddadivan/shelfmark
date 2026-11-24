@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormField, FormRoot } from '@angular/forms/signals';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -10,6 +11,8 @@ import {
   DialogCancelDirective,
   DialogComponent,
   FaviconComponent,
+  ICON_SIZE,
+  IconComponent,
   KEYBOARD_KEY,
   InputComponent,
   NoticeComponent,
@@ -22,6 +25,11 @@ import {
   TextSwapComponent,
   UiDialogRef,
   BUTTON_VARIANT,
+  MenuComponent,
+  MenuItemComponent,
+  MenuSeparatorComponent,
+  MenuTriggerDirective,
+  SELECT_APPEARANCE,
   BUTTON_TYPE,
   INPUT_TYPE,
   SKELETON_SHAPE,
@@ -50,6 +58,7 @@ import { AiDraftService } from '../../../ai/services/ai-draft.service';
 import { AiLinkStateService } from '../../../ai/services/ai-link-state.service';
 import { AddLinkAiAppliedService } from '../../services/add-link-ai-applied.service';
 import { AddLinkAiFillService } from '../../services/add-link-ai-fill.service';
+import { AddLinkExtrasService } from '../../services/add-link-extras.service';
 import { AddLinkAiFillComponent } from '../add-link-ai/add-link-ai-fill.component';
 import { AddLinkAiFolderComponent } from '../add-link-ai/add-link-ai-folder.component';
 import { AddLinkAiTagsComponent } from '../add-link-ai/add-link-ai-tags.component';
@@ -87,7 +96,13 @@ import { AddLinkAiTagsComponent } from '../add-link-ai/add-link-ai-tags.componen
     FaviconComponent,
     FormField,
     FormRoot,
+    IconComponent,
     InputComponent,
+    MenuComponent,
+    MenuItemComponent,
+    MenuSeparatorComponent,
+    MenuTriggerDirective,
+    NgTemplateOutlet,
     NoticeComponent,
     PasteManyListComponent,
     SelectComponent,
@@ -115,6 +130,7 @@ import { AddLinkAiTagsComponent } from '../add-link-ai/add-link-ai-tags.componen
     AddLinkAiFillService,
     AddLinkSummaryService,
     AddLinkLabelsService,
+    AddLinkExtrasService,
   ],
   templateUrl: './add-link-dialog.component.html',
   styleUrl: './add-link-dialog.component.scss',
@@ -127,6 +143,8 @@ export class AddLinkDialogComponent {
   protected readonly PREVIEW_STATE = PREVIEW_STATE;
   protected readonly SKELETON_SHAPE = SKELETON_SHAPE;
   protected readonly LINK_LIMIT = LINK_LIMIT;
+  protected readonly SELECT_APPEARANCE = SELECT_APPEARANCE;
+  protected readonly ICON_SIZE = ICON_SIZE;
   /** Cmd (macOS) or Ctrl: the key of the "save" shortcut shown in the footer. */
   protected readonly mac = isMacPlatform();
 
@@ -184,6 +202,26 @@ export class AddLinkDialogComponent {
     void this.folders.load();
     void this.tagStore.load();
   }
+
+  /** Add link (Shelf panel): Remind me and Favorite, applied after the save. */
+  protected readonly extras = inject(AddLinkExtrasService);
+
+  /** Add mode with nothing in the address yet: the tip, "Paste to start", Save off. */
+  protected readonly urlEmpty = computed(
+    () => !this.editing && this.form.url().value().trim() === '',
+  );
+  /** The "Goes to" row: add mode with an address, not while it is already saved. */
+  protected readonly goesShown = computed(
+    () => !this.editing && !this.urlEmpty() && this.duplicate() === null,
+  );
+  /**
+   * Title, tags, note, Remind me and Favorite: always when editing; when adding, once there is an
+   * address (they stay usable while the preview loads or after it failed), never for a link that
+   * is already saved.
+   */
+  protected readonly detailsShown = computed(
+    () => this.editing || (!this.urlEmpty() && this.duplicate() === null),
+  );
 
   /** Fill in with AI (F1c): the footer drops the save hint while its button shows. */
   protected readonly aiFill = inject(AddLinkAiFillService);

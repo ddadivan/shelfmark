@@ -243,6 +243,17 @@ export const NewOptionBadge: Story = {
   },
 };
 
+/** `appearance="row"` (Shelf Add link): "Goes to **Courses** · rule for youtube.com  Change". */
+export const Row: Story = {
+  render: (args) => ({
+    props: args,
+    template: `<div style="max-inline-size: 28rem">
+      <ui-select label="Folder" appearance="row" rowLead="Goes to" rowNote="rule for youtube.com"
+        rowAction="Change" emptyLabel="Unsorted" [options]="options" [(value)]="value" />
+    </div>`,
+  }),
+};
+
 /** Every state in both themes, independent of the toolbar (closed; open states have own stories). */
 export const AllVariants: Story = {
   parameters: { layout: 'padded' },

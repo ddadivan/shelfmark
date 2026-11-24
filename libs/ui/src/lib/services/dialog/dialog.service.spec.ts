@@ -215,6 +215,35 @@ describe('DialogService', () => {
       });
     });
 
+    describe('panel variant', () => {
+      @Component({
+        imports: [DialogComponent],
+        template: `<ui-dialog title="Add link" closeLabel="Close"
+          ><input aria-label="Link"
+        /></ui-dialog>`,
+      })
+      class PanelComponent {}
+
+      it('draws the panel and leaves the page undimmed', async () => {
+        const ref = service.open(PanelComponent, { variant: DIALOG_VARIANT.Panel });
+        settle();
+        expect(container().querySelector('.ui-dialog--panel')).not.toBeNull();
+        expect(document.querySelector('.ui-dialog-scrim--clear')).not.toBeNull();
+        expect(await axeViolations(container())).toEqual([]);
+        ref.close();
+        settle();
+        await closed();
+      });
+
+      it('keeps the scrim of plain dialogs', () => {
+        const ref = service.open(PanelComponent);
+        settle();
+        expect(container().querySelector('.ui-dialog--panel')).toBeNull();
+        expect(document.querySelector('.ui-dialog-scrim--clear')).toBeNull();
+        ref.close();
+      });
+    });
+
     it('locks page scroll while open', () => {
       // The CDK block strategy only engages when the page can scroll.
       Object.defineProperty(document.documentElement, 'scrollHeight', {

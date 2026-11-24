@@ -5,6 +5,7 @@
   [error]="message()"
   [invalid]="showInvalid()"
   [disabled]="disabled()"
+  [labelHidden]="row()"
   (click)="onHostClick($event)"
 >
   <button
@@ -34,16 +35,36 @@
     } @else {
       <ui-icon class="ui-select__icon" [name]="triggerIcon()" [size]="ICON_SIZE.Md" />
     }
-    <span
-      class="ui-select__value"
-      [class.ui-select__value--placeholder]="!chosen()"
-      [attr.lang]="chosen()?.lang ?? null"
-      >{{ triggerText() }}</span
-    >
-    @if (chosen()?.badge; as badge) {
-      <ui-badge class="ui-select__badge" [tone]="BADGE_TONE.Accent">{{ badge }}</ui-badge>
+    @if (row()) {
+      <span class="ui-select__row-text">
+        @if (rowLead()) {
+          {{ rowLead() }}
+        }
+        <b class="ui-select__value ui-select__row-value" [attr.lang]="chosen()?.lang ?? null">{{
+          triggerText()
+        }}</b>
+        @if (rowNote()) {
+          <span class="ui-select__row-note">{{ ' · ' + rowNote() }}</span>
+        }
+      </span>
+      @if (chosen()?.badge; as badge) {
+        <ui-badge class="ui-select__badge" [tone]="BADGE_TONE.Accent">{{ badge }}</ui-badge>
+      }
+      @if (rowAction()) {
+        {{ ' ' }}<span class="ui-select__row-action">{{ rowAction() }}</span>
+      }
+    } @else {
+      <span
+        class="ui-select__value"
+        [class.ui-select__value--placeholder]="!chosen()"
+        [attr.lang]="chosen()?.lang ?? null"
+        >{{ triggerText() }}</span
+      >
+      @if (chosen()?.badge; as badge) {
+        <ui-badge class="ui-select__badge" [tone]="BADGE_TONE.Accent">{{ badge }}</ui-badge>
+      }
+      <ui-icon class="ui-select__chevron" name="chevron-down" [size]="ICON_SIZE.Md" />
     }
-    <ui-icon class="ui-select__chevron" name="chevron-down" [size]="ICON_SIZE.Md" />
   </button>
 </ui-field-shell>
 

@@ -106,22 +106,36 @@ describe('ReaderComponent', () => {
     expect(reader.getAttribute('data-tone')).toBe('sepia');
   });
 
-  it('reports the share scrolled once per frame', async () => {
+  it('reports the share scrolled once per frame', () => {
+    const frames: FrameRequestCallback[] = [];
+    vi.spyOn(globalThis, 'requestAnimationFrame').mockImplementation((callback) => {
+      frames.push(callback);
+      return frames.length;
+    });
     const { fixture, reader } = setup();
     Object.defineProperty(reader, 'scrollHeight', { value: 1000, configurable: true });
     Object.defineProperty(reader, 'clientHeight', { value: 500, configurable: true });
     reader.scrollTop = 250;
     reader.dispatchEvent(new Event('scroll'));
     reader.dispatchEvent(new Event('scroll'));
-    await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
+    const before = frames.length;
+    reader.dispatchEvent(new Event('scroll'));
+    // A scroll while a frame is pending asks for no second one.
+    expect(frames).toHaveLength(before);
+    frames.forEach((frame) => frame(0));
     expect(fixture.componentInstance.progress()).toBe(0.5);
+    vi.restoreAllMocks();
   });
 
-  it('counts a text that does not scroll as read', async () => {
+  it('counts a text that does not scroll as read', () => {
+    vi.spyOn(globalThis, 'requestAnimationFrame').mockImplementation((callback) => {
+      callback(0);
+      return 1;
+    });
     const { fixture, reader } = setup();
     reader.dispatchEvent(new Event('scroll'));
-    await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
     expect(fixture.componentInstance.progress()).toBe(1);
+    vi.restoreAllMocks();
   });
 
   it('has no axe violations', async () => {

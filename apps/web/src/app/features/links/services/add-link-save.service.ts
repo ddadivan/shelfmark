@@ -16,6 +16,7 @@ import { LINKS_API } from '../models/links-api.const';
 import { isLinkKind } from '../utils/link-kind';
 import { saveErrorKey } from '../utils/save-error-key';
 import { AddLinkAiService } from './add-link-ai.service';
+import { AddLinkExtrasService } from './add-link-extras.service';
 import { AddLinkSummaryService } from './add-link-summary.service';
 import { AddLinkFormService } from './add-link-form.service';
 import { AddLinkNewFolderService } from './add-link-new-folder.service';
@@ -40,6 +41,8 @@ export class AddLinkSaveService {
   // Optional: specs of the save flow alone run without AI.
   private readonly ai = inject(AddLinkAiService, { optional: true });
   private readonly summary = inject(AddLinkSummaryService, { optional: true });
+  // Optional: the panel's Remind me and Favorite (add mode); specs of the save flow run without.
+  private readonly extras = inject(AddLinkExtrasService, { optional: true });
   private readonly toasts = inject(ToastService);
   private readonly transloco = inject(TranslocoService);
   private readonly ref = inject<UiDialogRef<AddLinkResult>>(UiDialogRef);
@@ -115,7 +118,12 @@ export class AddLinkSaveService {
         !this.formState.original &&
         value.folderId !== null &&
         this.formState.form.folderId().dirty();
-      const pending = firstValueFrom(request$).then((link): AddLinkSaved => ({
+      const created = firstValueFrom(request$);
+      const withExtras =
+        this.extras && !this.formState.original
+          ? created.then((link) => this.extras?.apply(link) ?? link)
+          : created;
+      const pending = withExtras.then((link): AddLinkSaved => ({
         action: ADD_LINK_ACTION.Saved,
         link,
         ...(folderChosen && { folderChosen }),

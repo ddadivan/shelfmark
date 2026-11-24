@@ -1,5 +1,6 @@
 @use 'media' as *;
 @use 'breakpoints' as *;
+@use 'functions' as *;
 
 // Global part of `ui-dialog` (issue #28): the CDK scrim and the wrapper that places the panel.
 // Both elements are created by the CDK outside any view encapsulation, so they are styled here
@@ -26,6 +27,13 @@
     &.cdk-overlay-backdrop-showing {
       transition-duration: var(--duration-base);
     }
+
+    // The panel variant keeps the page undimmed from 40em (a press outside still closes it).
+    &.ui-dialog-scrim--clear {
+      @include tablet-up {
+        background: transparent;
+      }
+    }
   }
 
   .cdk-global-overlay-wrapper.ui-overlay-layer--dialog {
@@ -40,6 +48,20 @@
 
     @include phone {
       align-items: flex-end;
+    }
+
+    // The panel variant (Shelf Add link) sits under the top end corner from 40em: 52px from the
+    // top, 48px from the end (16px on a tablet).
+    &:has(.ui-dialog--panel) {
+      @include tablet-up {
+        align-items: flex-start;
+        justify-content: flex-end;
+        padding: rem(52px) rem(16px) 0;
+      }
+
+      @include desktop {
+        padding-inline-end: rem(48px);
+      }
     }
 
     // A `ui-sheet` (quick lists) stays at the bottom edge on a tablet too (#316).

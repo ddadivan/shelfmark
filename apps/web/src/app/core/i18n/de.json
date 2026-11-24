@@ -230,7 +230,8 @@
         "hint": "Füge einen Link ein — Titel und Vorschau füllen sich von selbst",
         "required": "Gib einen Link ein",
         "invalid": "Gib eine Adresse ein, die mit http:// oder https:// beginnt",
-        "tooLong": "Der Link ist zu lang (höchstens {{max}} Zeichen)"
+        "tooLong": "Der Link ist zu lang (höchstens {{max}} Zeichen)",
+        "panel": "Link einfügen, oder mehrere"
       },
       "shortcut": {
         "cmd": "⌘",
@@ -242,7 +243,7 @@
         "loading": "Vorschau wird geladen",
         "loadingHint": "Du kannst währenddessen weiter eine Notiz schreiben und einen Ordner wählen.",
         "filled": "Von der Seite übernommen. Du kannst den Titel bearbeiten.",
-        "failed": "Vorschau konnte nicht geladen werden. Der Link wird mit seiner Adresse als Titel gespeichert — du kannst ihn umbenennen.",
+        "failed": "Keine Vorschau verfügbar. Der Link wird mit seiner Adresse als Titel gespeichert; du kannst ihn später umbenennen.",
         "ready": "Vorschau geladen: {{title}}",
         "unavailable": "Für diese Seite gibt es keine Vorschau. Der Link wird mit seiner Adresse als Titel gespeichert — du kannst ihn umbenennen."
       },
@@ -280,7 +281,8 @@
         "tooLong": "Die Notiz ist zu lang (höchstens {{max}} Zeichen)"
       },
       "duplicate": {
-        "text": "Du hast diesen Link schon in {{folder}} gespeichert. Öffne ihn oder speichere ihn noch einmal."
+        "text": "Du hast diesen Link schon in {{folder}} gespeichert. Öffne ihn oder speichere ihn noch einmal.",
+        "panel": "Bereits in {{folder}} gespeichert."
       },
       "saveFailed": "Der Link konnte nicht gespeichert werden. Versuch es noch einmal.",
       "saveFailedLimit": "Du hast das Limit von {{max}} gespeicherten Links erreicht. Lösche einige, um mehr zu speichern.",
@@ -290,11 +292,12 @@
       "actions": {
         "cancel": "Abbrechen",
         "openSaved": "Gespeicherten öffnen",
-        "create": "Link erstellen",
-        "createAnyway": "Trotzdem erstellen",
-        "creating": "Wird erstellt…",
+        "create": "Speichern",
+        "createAnyway": "Trotzdem speichern",
+        "creating": "Wird gespeichert…",
         "saveAnyway": "Trotzdem speichern",
-        "saving": "Wird gespeichert…"
+        "saving": "Wird gespeichert…",
+        "open": "Öffnen"
       },
       "several": {
         "offer": "Mehrere Links? Füge alle auf einmal ein",
@@ -311,6 +314,28 @@
       "rule": {
         "chip": "Regel: {{domain}} → {{target}}",
         "remove": "Regel für {{domain}} nicht anwenden"
+      },
+      "tip": {
+        "mac": "Tipp: Drücke ⌘ V irgendwo in Shelfmark, um Kopiertes zu speichern. Mehrere Links auf einmal gehen auch.",
+        "other": "Tipp: Drücke Strg V irgendwo in Shelfmark, um Kopiertes zu speichern. Mehrere Links auf einmal gehen auch."
+      },
+      "goes": {
+        "lead": "Kommt in",
+        "rule": "Regel für {{domain}}",
+        "change": "Ändern"
+      },
+      "extras": {
+        "remind": "Erinnere mich…",
+        "remindSet": "Erinnerung: {{when}}",
+        "remindMenu": "Erinnere mich",
+        "noReminder": "Keine Erinnerung",
+        "favorite": "Favorit",
+        "favoriteFailed": "Gespeichert, aber nicht zu den Favoriten hinzugefügt",
+        "remindFailed": "Gespeichert, aber die Erinnerung wurde nicht gesetzt"
+      },
+      "footer": {
+        "start": "Zum Start einfügen",
+        "keys": "Enter zum Speichern · Esc zum Schließen"
       }
     },
     "edit": {
