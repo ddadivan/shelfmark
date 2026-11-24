@@ -60,7 +60,7 @@ export async function sideBySide(page: Page): Promise<WhatsNewClip> {
 /** A highlighted folder (colour, icon, description): the tinted header block and the sidebar rows. */
 export async function folderStyling(page: Page): Promise<WhatsNewClip> {
   await openFeed(page);
-  await pickFolderMenuItem(page, READING, 'Color and icon…');
+  await pickFolderMenuItem(page, READING, 'Folder settings…');
   const dialog = page.getByRole('dialog', { name: READING });
   await chooseOption(dialog, 'Ocean');
   await chooseOption(dialog, 'Star');
@@ -73,7 +73,7 @@ export async function folderStyling(page: Page): Promise<WhatsNewClip> {
 
   // A second highlighted folder that is not open: the subfolder under Reading.
   await page.getByRole('treeitem', { name: /^Angular\b/ }).click({ button: 'right' });
-  await page.getByRole('menuitem', { name: 'Color and icon…' }).click();
+  await page.getByRole('menuitem', { name: 'Folder settings…' }).click();
   const sub = page.getByRole('dialog', { name: 'Angular' });
   await chooseOption(sub, 'Amber');
   await sub.getByRole('switch', { name: 'Highlight with background' }).click();

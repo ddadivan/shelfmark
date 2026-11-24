@@ -69,7 +69,7 @@ test.describe('folder style and pins (mock API)', () => {
   }
 
   async function chooseStyle(page: Page, colour: string, icon: string): Promise<void> {
-    await pickFolderMenuItem(page, READING, 'Color and icon…');
+    await pickFolderMenuItem(page, READING, 'Folder settings…');
     const dialog = page.getByRole('dialog', { name: READING });
     await expect(dialog).toBeVisible();
     await choose(dialog, colour);
@@ -100,7 +100,7 @@ test.describe('folder style and pins (mock API)', () => {
   test('the style dialog lays out its swatches on one line and folds the icon grid by height (#335, #350)', async ({
     page,
   }) => {
-    await pickFolderMenuItem(page, READING, 'Color and icon…');
+    await pickFolderMenuItem(page, READING, 'Folder settings…');
     const dialog = page.getByRole('dialog', { name: READING });
     await expect(dialog).toBeVisible();
 

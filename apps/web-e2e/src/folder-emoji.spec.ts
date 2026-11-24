@@ -22,7 +22,7 @@ test.describe('folder emoji picker (mock API)', () => {
   // The dialog opens on the Icon tab (or on Emoji for an emoji folder, #376); `tab` says which
   // one the test wants.
   async function openStyle(page: Page, tab: 'Icon' | 'Emoji' = 'Emoji'): Promise<Locator> {
-    await pickFolderMenuItem(page, READING, 'Color and icon…');
+    await pickFolderMenuItem(page, READING, 'Folder settings…');
     const dialog = page.getByRole('dialog', { name: READING });
     await expect(dialog).toBeVisible();
     await dialog.getByRole('radio', { name: tab, exact: true }).check();
@@ -115,7 +115,7 @@ test.describe('folder emoji picker (mock API)', () => {
     await openSidebar(page);
     await expect(readingEmoji(page)).toHaveText('🍕');
 
-    await pickFolderMenuItem(page, READING, 'Color and icon…');
+    await pickFolderMenuItem(page, READING, 'Folder settings…');
     dialog = page.getByRole('dialog', { name: READING });
     await expect(dialog.getByRole('radio', { name: 'Emoji', exact: true })).toBeChecked();
     await expect(emojiField(dialog)).toHaveValue('🍕');

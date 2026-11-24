@@ -23,7 +23,7 @@ test.describe('per-folder highlight (mock API)', () => {
   async function styleReading(page: Page, highlighted: boolean): Promise<void> {
     await page.goto('/links');
     await expect(page.locator('ui-card').first()).toBeVisible();
-    await pickFolderMenuItem(page, READING, 'Color and icon…');
+    await pickFolderMenuItem(page, READING, 'Folder settings…');
     const dialog = page.getByRole('dialog', { name: READING });
     await dialog
       .locator('label.ui-choice', { has: page.getByLabel('Clay', { exact: true }) })

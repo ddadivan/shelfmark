@@ -46,7 +46,7 @@ test.describe('folder description and cover (mock API)', () => {
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await start(page);
-      await pickFolderMenuItem(page, READING, 'Color and icon…');
+      await pickFolderMenuItem(page, READING, 'Folder settings…');
       const dialog = page.getByRole('dialog', { name: READING });
       await dialog.getByLabel('Description').fill(`  ${DESCRIPTION}  `);
       await dialog
@@ -81,7 +81,7 @@ test.describe('folder description and cover (mock API)', () => {
 
   test('a cover that fails to load falls back to the colour band', async ({ page }) => {
     await start(page, true);
-    await pickFolderMenuItem(page, READING, 'Color and icon…');
+    await pickFolderMenuItem(page, READING, 'Folder settings…');
     const dialog = page.getByRole('dialog', { name: READING });
     await dialog
       .locator('label.ui-choice', { has: page.getByLabel('Teal', { exact: true }) })
@@ -107,7 +107,7 @@ test.describe('folder description and cover (mock API)', () => {
     { tag: E2E_TAG.Phone },
     async ({ page }) => {
       await start(page);
-      await pickFolderMenuItem(page, READING, 'Color and icon…');
+      await pickFolderMenuItem(page, READING, 'Folder settings…');
       const dialog = page.getByRole('dialog', { name: READING });
       await dialog.getByLabel('Description').fill(DESCRIPTION);
       await dialog

@@ -307,7 +307,7 @@ export const PROMO_STEPS: readonly PromoStep[] = [
     },
     run: async (context) => {
       const { page, director } = context;
-      await folderMenu(context, FOLDER_STYLE, 'Color and icon…', true);
+      await folderMenu(context, FOLDER_STYLE, 'Folder settings…', true);
       const dialog = page.getByRole('dialog', { name: FOLDER_STYLE });
       await expect(dialog).toBeVisible();
       await director.pause(200);
