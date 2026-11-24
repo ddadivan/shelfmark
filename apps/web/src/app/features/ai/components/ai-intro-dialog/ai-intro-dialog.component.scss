@@ -10,18 +10,20 @@
   gap: var(--space-4);
 }
 
-// The spark tile and the title in one row, the tile left of the title, both centred; the close
-// button sits at the end (the dialog's own header is hidden for this).
+// Shelf 10-first-run "AI intro": the sage spark on its own line with the close button at the end,
+// then the title (16 / 24 600, the dialog title size; the dialog's own header is hidden for this).
 .ai-intro__head {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-3);
   align-items: center;
 }
 
 .ai-intro__heading {
-  @include type(title);
+  @include type(heading);
 
-  flex: 1;
+  flex: 1 0 100%;
+  order: 3;
   min-width: 0;
   margin: 0;
   color: var(--text);
@@ -29,44 +31,40 @@
 
 .ai-intro__close {
   flex: none;
+  margin-inline-start: auto;
 }
 
-// The soft indigo-to-sage tile: the only gradient of the AI design (AiIntro, BRAND.md › AI).
 .ai-intro__tile {
   display: grid;
-  place-items: center;
-  width: rem(48px);
-  height: rem(48px);
   flex: none;
+  place-items: center;
   color: var(--ai);
-  background: linear-gradient(135deg, var(--ai-bg), var(--accent-bg));
-  border-radius: var(--radius-md);
 }
 
+// The points as the rows of one card (`line` edge, radius 12, `sep` between), title over text.
 .ai-intro__points {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
 }
 
 .ai-intro__point {
   display: flex;
   gap: var(--space-3);
   align-items: flex-start;
+  padding: var(--space-3);
+
+  & + & {
+    border-top: 1px solid var(--sep);
+  }
 }
 
 .ai-intro__icon {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: rem(32px);
-  height: rem(32px);
-  color: var(--text-muted);
-  background: var(--surface-hover);
-  border-radius: var(--radius-sm);
+  display: none;
 }
 
 .ai-intro__text {
@@ -87,6 +85,7 @@
   @include type(caption);
 
   margin: 0;
+  line-height: 2;
   color: var(--text-muted);
 }
 
@@ -98,12 +97,12 @@
   justify-content: flex-end;
 }
 
-// The next step (AiIntro state 3): a plain `ai-bg` tile, a little larger than the intro's.
+// The next step (AiIntro state 3): the spark on a 48px `ai-bg` tile.
 .ai-intro__tile--offer {
-  width: rem(52px);
-  height: rem(52px);
+  width: rem(48px);
+  height: rem(48px);
   background: var(--ai-bg);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
 }
 
 // Focused by script when the step opens; no ring on a heading that is not interactive.
