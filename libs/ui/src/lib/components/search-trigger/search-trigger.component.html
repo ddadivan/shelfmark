@@ -4,9 +4,12 @@
   class="ui-search-trigger__control"
   [attr.aria-keyshortcuts]="ariaKeyshortcuts() || null"
   [attr.aria-haspopup]="ariaHaspopup() ?? null"
+  [attr.aria-label]="value() ? label() + ': ' + value() : null"
 >
   <ui-icon class="ui-search-trigger__icon" name="search" />
-  <span class="ui-search-trigger__label">{{ label() }}</span>
+  <span class="ui-search-trigger__label" [class.ui-search-trigger__label--value]="!!value()">{{
+    value() || label()
+  }}</span>
   @if (shortcut()) {
     <kbd class="ui-search-trigger__kbd" aria-hidden="true">{{ shortcut() }}</kbd>
   }

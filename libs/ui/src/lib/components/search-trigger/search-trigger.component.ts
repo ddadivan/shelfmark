@@ -21,6 +21,11 @@ export class SearchTriggerComponent {
   readonly label = input.required<string>();
   /** Shortcut caps on the right, for example `⌘K`. */
   readonly shortcut = input('');
+  /**
+   * The current search text (Shelf: the feed is filtered by it): shown in `text` in place of the
+   * placeholder `label`, which stays the accessible name with the text after it.
+   */
+  readonly value = input('');
   /** Value of `aria-keyshortcuts`, for example `Meta+K Control+K`. */
   readonly ariaKeyshortcuts = input<string>();
   /** `aria-haspopup` of the button: the overlay it opens. */

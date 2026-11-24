@@ -44,6 +44,22 @@ describe('SearchTriggerComponent', () => {
     expect((fixture.nativeElement as HTMLElement).querySelector('kbd')).toBeNull();
   });
 
+  it('shows the current search text in place of the placeholder, named by both', () => {
+    const fixture = TestBed.createComponent(SearchTriggerComponent);
+    fixture.componentRef.setInput('label', 'Search');
+    fixture.componentRef.setInput('value', 'angular');
+    fixture.detectChanges();
+    const button = (fixture.nativeElement as HTMLElement).querySelector('button');
+    expect(button?.textContent?.trim()).toBe('angular');
+    expect(button?.getAttribute('aria-label')).toBe('Search: angular');
+    expect(button?.querySelector('.ui-search-trigger__label--value')).not.toBeNull();
+
+    fixture.componentRef.setInput('value', '');
+    fixture.detectChanges();
+    expect(button?.textContent?.trim()).toBe('Search');
+    expect(button?.hasAttribute('aria-label')).toBe(false);
+  });
+
   it('click reaches the host', () => {
     const { fixture, button } = setup();
     button.click();
