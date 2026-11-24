@@ -94,6 +94,7 @@ export function makeAiSettings(
       summaryLanguage: AI_SUMMARY_LANGUAGE_APP,
       meaningSearch: true,
       ask: true,
+      askHistory: true,
       ...overrides.settings,
     },
     introSeen: true,

@@ -86,6 +86,12 @@ export const PUBLIC_ROUTES: readonly PublicRoute[] = [
       'Vercel Cron cannot send a session: authenticated by the CRON_SECRET bearer guard on the handler, fails closed (Shelf 05-settings account deletion grace period)',
   },
   {
+    method: HTTP_METHOD.Get,
+    path: CRON_ENDPOINT.AskHistoryPurge,
+    reason:
+      'Vercel Cron cannot send a session: authenticated by the CRON_SECRET bearer guard on the handler, fails closed (Ask history retention, ADR 0055 amendment)',
+  },
+  {
     method: HTTP_METHOD.Post,
     path: MCP_ENDPOINT.Server,
     reason:

@@ -2,7 +2,13 @@ import { toLinkKind } from '../links/to-link-kind';
 import { Readable } from 'node:stream';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EXPORT_FORMAT, EXPORT_SCHEMA_VERSION, normalizeTagName } from '@shelfmark/contracts';
-import type { ExportFolder, ExportLink, ExportQuery, ExportRule } from '@shelfmark/contracts';
+import type {
+  ExportAskConversation,
+  ExportFolder,
+  ExportLink,
+  ExportQuery,
+  ExportRule,
+} from '@shelfmark/contracts';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EXPORT_CONTENT_TYPE } from './models/export-content-type.const';
@@ -81,13 +87,18 @@ export class ExportService {
     const folders = filtered ? await this.nonEmpty(scope, byId, base) : scope;
     // Rules are account settings: only a full export carries them (#398).
     const rules = filtered || query.folderId !== undefined ? [] : await this.rules(userId, byId);
+    // Ask history (ADR 0055 amendment): only a full JSON export carries the stored conversations.
+    // Read at the end of the stream, after the links.
+    const askOwner = filtered || query.folderId !== undefined ? null : userId;
 
     const date = now.toISOString().slice(0, 10);
     if (query.format === EXPORT_FORMAT.Json) {
       return {
         filename: `shelfmark-${date}.json`,
         contentType: EXPORT_CONTENT_TYPE.Json,
-        body: Readable.from(this.guarded(this.jsonChunks(folders, byId, base, now, rules))),
+        body: Readable.from(
+          this.guarded(this.jsonChunks(folders, byId, base, now, rules, askOwner)),
+        ),
       };
     }
     if (query.format === EXPORT_FORMAT.Csv) {
@@ -214,6 +225,58 @@ export class ExportService {
       }));
   }
 
+  /**
+   * The user's stored Ask conversations, newest first, each turn's links read live by id (deleted
+   * or trashed ones left out). Bounded by the history caps (50 conversations of 50 turns).
+   */
+  private async askConversations(userId: string): Promise<ExportAskConversation[]> {
+    const rows = await this.prisma.askConversation.findMany({
+      where: { userId },
+      orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+      select: {
+        title: true,
+        createdAt: true,
+        updatedAt: true,
+        turns: {
+          orderBy: { position: 'asc' },
+          select: {
+            question: true,
+            answer: true,
+            createdAt: true,
+            links: { select: { n: true, linkId: true }, orderBy: { n: 'asc' } },
+          },
+        },
+      },
+    });
+    const ids = [
+      ...new Set(
+        rows.flatMap((row) => row.turns.flatMap((turn) => turn.links.map((l) => l.linkId))),
+      ),
+    ];
+    const links =
+      ids.length === 0
+        ? []
+        : await this.prisma.link.findMany({
+            where: { userId, deletedAt: null, id: { in: ids } },
+            select: { id: true, url: true, title: true },
+          });
+    const byId = new Map(links.map((link) => [link.id, link]));
+    return rows.map((row) => ({
+      title: row.title,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+      turns: row.turns.map((turn) => ({
+        question: turn.question,
+        answer: turn.answer,
+        links: turn.links.flatMap((ref) => {
+          const link = byId.get(ref.linkId);
+          return link === undefined ? [] : [{ n: ref.n, url: link.url, title: link.title }];
+        }),
+        createdAt: turn.createdAt.toISOString(),
+      })),
+    }));
+  }
+
   private pathOf(id: string, byId: Map<string, ExportFolderRow>): string[] {
     const path: string[] = [];
     const seen = new Set<string>();
@@ -232,6 +295,7 @@ export class ExportService {
     where: Prisma.LinkWhereInput,
     now: Date,
     rules: ExportRule[],
+    askOwner: string | null,
   ): AsyncGenerator<string> {
     const exportFolders: ExportFolder[] = folders
       .map((folder) => ({
@@ -261,7 +325,8 @@ export class ExportService {
       yield (first ? '' : ',') + parts.join(',');
       first = false;
     }
-    yield `],"rules":${JSON.stringify(rules)}}\n`;
+    const askConversations = askOwner === null ? [] : await this.askConversations(askOwner);
+    yield `],"rules":${JSON.stringify(rules)},"askConversations":${JSON.stringify(askConversations)}}\n`;
   }
 
   /** One row per live link (batched, ordered by id), after a BOM and the header row. */

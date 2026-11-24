@@ -46,6 +46,7 @@ function readSettings(value: unknown, fallback: AiSettings): AiSettings {
     meaningSearch:
       typeof stored.meaningSearch === 'boolean' ? stored.meaningSearch : fallback.meaningSearch,
     ask: typeof stored.ask === 'boolean' ? stored.ask : fallback.ask,
+    askHistory: typeof stored.askHistory === 'boolean' ? stored.askHistory : fallback.askHistory,
   };
 }
 

@@ -618,6 +618,21 @@ describe('DialogService', () => {
       expect(await answer).toBe(false);
     });
 
+    it('focusCancel: Cancel focused without the red button, scrim answers false', async () => {
+      const answer = service.confirm({ ...confirmConfig, focusCancel: true });
+      settle();
+      await vi.waitFor(() => {
+        settle();
+        expect(document.activeElement).toBe(button('Cancel'));
+      });
+      const root = container();
+      expect(root.getAttribute('role')).toBe('dialog');
+      expect(root.querySelector('.ui-button--danger')).toBeNull();
+      document.querySelector<HTMLElement>('.ui-dialog-scrim')?.click();
+      await closed();
+      expect(await answer).toBe(false);
+    });
+
     it('destructive: the confirm button still resolves true', async () => {
       const answer = service.confirm({ ...confirmConfig, destructive: true });
       const dialog = await openDialog();

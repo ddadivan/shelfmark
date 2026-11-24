@@ -52,6 +52,7 @@ describe('createAskSseParser', () => {
           allowance: ALLOWANCE,
           turn: { question: '', answer: '', links: [] },
           depth: 'quick',
+          conversationId: null,
         }) +
         frame({
           type: 'done',
@@ -61,6 +62,7 @@ describe('createAskSseParser', () => {
           allowance: ALLOWANCE,
           turn: { question: '', answer: '', links: [] },
           depth: 'quick',
+          conversationId: null,
         }) +
         frame({
           type: 'done',
@@ -70,6 +72,7 @@ describe('createAskSseParser', () => {
           allowance: ALLOWANCE,
           turn: { question: '', answer: '', links: [] },
           depth: 'quick',
+          conversationId: null,
         }) +
         frame({ type: 'text', text: 'kept' }),
     );
@@ -87,6 +90,7 @@ describe('createAskSseParser', () => {
         allowance: ALLOWANCE,
         turn: { question: '', answer: '', links: [] },
         depth: 'quick',
+        conversationId: null,
         extra: 1,
       }) +
         frame({ type: 'error', reason: 'quota', counted: false, allowance: ALLOWANCE }) +
@@ -101,6 +105,7 @@ describe('createAskSseParser', () => {
         allowance: ALLOWANCE,
         turn: { question: '', answer: '', links: [] },
         depth: 'quick',
+        conversationId: null,
       },
       { type: 'error', reason: 'quota', counted: false, allowance: ALLOWANCE },
       { type: 'error', reason: 'off', counted: false, allowance: null },

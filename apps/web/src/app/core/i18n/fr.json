@@ -638,7 +638,7 @@
     },
     "extension": {
       "title": "Extension de navigateur",
-      "body": "L’extension Shelfmark pour Chrome, Edge, Brave et Arc ne s’active que lorsque vous cliquez sur son bouton ou utilisez son raccourci, jamais en arrière-plan. Elle envoie alors à Shelfmark l’adresse de cet onglet, pour vérifier s’il est déjà enregistré, et n’enregistre son adresse et son titre, avec le dossier, les tags et la note choisis, que lorsque vous appuyez sur Enregistrer. Elle ne voit ni votre historique ni les autres sites que vous visitez. Si vous cliquez sur « Remplir avec l’IA » et que l’IA est activée sur votre compte, elle envoie aussi à Shelfmark cette adresse et ce titre, ainsi que votre note si l’IA peut lire les notes, pour obtenir des suggestions de l’IA, traitées selon les mêmes conditions d’IA que dans l’application. Si vous passez à « Tous les onglets », votre navigateur demande une fois l’autorisation facultative « onglets » ; ce passage compare alors les adresses de vos onglets ouverts (sans #fragment) à votre bibliothèque, pour repérer ceux déjà enregistrés. Rien n’est enregistré avant que vous appuyiez sur Enregistrer, et seuls les onglets que vous cochez sont enregistrés ou envoyés pour des suggestions de l’IA.",
+      "body": "L’extension Shelfmark pour Chrome, Edge, Brave et Arc ne s’active que lorsque vous cliquez sur son bouton, utilisez son raccourci ou choisissez « Enregistrer le lien dans Shelfmark » ou « Enregistrer la page dans Shelfmark » dans le menu du clic droit, jamais en arrière-plan. Elle envoie alors à Shelfmark l’adresse de cet onglet, pour vérifier s’il est déjà enregistré, et n’enregistre son adresse et son titre, avec le dossier, les tags et la note choisis, que lorsque vous appuyez sur Enregistrer. Elle ne voit ni votre historique ni les autres sites que vous visitez. Si vous cliquez sur « Remplir avec l’IA » et que l’IA est activée sur votre compte, elle envoie aussi à Shelfmark cette adresse et ce titre, ainsi que votre note si l’IA peut lire les notes, pour obtenir des suggestions de l’IA, traitées selon les mêmes conditions d’IA que dans l’application. Si vous passez à « Tous les onglets », votre navigateur demande une fois l’autorisation facultative « onglets » ; ce passage compare alors les adresses de vos onglets ouverts (sans #fragment) à votre bibliothèque, pour repérer ceux déjà enregistrés. Rien n’est enregistré avant que vous appuyiez sur Enregistrer, et seuls les onglets que vous cochez sont enregistrés ou envoyés pour des suggestions de l’IA. Depuis le menu du clic droit, elle envoie à Shelfmark l’adresse du lien ou de la page choisis (et le titre de la page), vérifie s’ils sont déjà enregistrés et, sinon, les enregistre aussitôt dans le dossier choisi par vos règles, ou dans Non classés.",
       "access": "Elle utilise votre connexion à Shelfmark dans ce navigateur et ne peut pas lire le cookie de connexion lui-même. Elle ne peut joindre que Shelfmark et garde seulement, sur votre appareil, les dossiers utilisés récemment pour vous les proposer la fois suivante."
     },
     "third": {
@@ -683,7 +683,7 @@
       },
       "ask": {
         "term": "Interroger mes liens :",
-        "text": "uniquement quand vous posez une question, votre question, les questions et réponses précédentes de la conversation ouverte et ceux de vos liens que l’assistant consulte avec des outils de recherche, de comptage et de liste en lecture seule (titre, adresse sans ses paramètres, noms de dossier et de tags, résumé, votre note seulement avec « Inclure mes notes ») sont envoyés à [PROVIDER]. La réponse ne cite et n’affiche que vos propres liens. Ni les questions, ni les réponses, ni la conversation ne sont conservées, et fermer le panneau oublie la conversation ; nous comptons seulement le nombre de questions par jour et par mois (et combien ont reçu une réponse approfondie), pour votre limite."
+        "text": "uniquement quand vous posez une question, votre question, les questions et réponses précédentes de la conversation ouverte et ceux de vos liens que l’assistant consulte avec des outils de recherche, de comptage et de liste en lecture seule (titre, adresse sans ses paramètres, noms de dossier et de tags, résumé, votre note seulement avec « Inclure mes notes ») sont envoyés à [PROVIDER]. La réponse ne cite et n’affiche que vos propres liens. Tant que « Garder l’historique d’Ask » est activé (par défaut), chaque question terminée et sa réponse sont conservées avec votre compte pour rouvrir la conversation : les liens seulement comme références à vos propres liens (jamais de copie), 50 conversations au plus, chacune supprimée 30 jours après sa dernière question. Vous pouvez supprimer une conversation ou toutes, désactiver l’historique dans Paramètres › IA, et « Supprimer les données IA » ou la suppression du compte l’effacent ; l’export de données l’inclut. Désactivé, rien n’est conservé. Nous comptons aussi le nombre de questions par jour et par mois (et combien ont reçu une réponse approfondie), pour votre limite."
       }
     },
     "retention": {
@@ -3891,7 +3891,14 @@
       },
       "ask": {
         "title": "Interroger mes liens",
-        "text": "Répond aux questions à partir de vos liens, y compris les questions de suivi. Utilise Claude d’Anthropic : votre question, les échanges précédents de la conversation ouverte et les liens consultés sont envoyés ; rien n’est conservé."
+        "text": "Répond aux questions à partir de vos liens, y compris les questions de suivi. Utilise Claude d’Anthropic : votre question, les échanges précédents de la conversation ouverte et les liens consultés sont envoyés. Avec l’historique d’Ask activé, les conversations sont conservées dans votre compte pendant 30 jours."
+      },
+      "askHistory": {
+        "title": "Garder l’historique d’Ask",
+        "text": "Vos questions et réponses sont conservées dans votre compte pendant 30 jours, 50 conversations au plus, pour les rouvrir sur n’importe quel appareil. Les liens ne sont gardés que par référence. Désactivé : les nouvelles conversations ne sont pas enregistrées.",
+        "clear": "Effacer l’historique d’Ask",
+        "clearTitle": "Effacer votre historique d’Ask ?",
+        "clearMessage": "Toutes les conversations conservées sont supprimées. Action irréversible."
       }
     },
     "backfill": {
@@ -3957,7 +3964,7 @@
     "deleteData": {
       "confirm": {
         "title": "Supprimer les données d’IA ?",
-        "message": "Tous les résumés et suggestions faits par l’IA sont supprimés, et la recherche par le sens est désactivée. Vos modifications, tags et dossiers restent. Action irréversible.",
+        "message": "Tous les résumés et suggestions faits par l’IA et toutes les conversations d’Ask conservées sont supprimés, et la recherche par le sens est désactivée. Vos modifications, tags et dossiers restent. Action irréversible.",
         "confirm": "Supprimer les données d’IA",
         "cancel": "Annuler",
         "close": "Fermer"
@@ -3997,7 +4004,7 @@
       },
       "ask": {
         "title": "Répond à vos questions à partir de vos liens",
-        "text": "Seulement quand vous posez une question : votre question et les liens correspondants sont envoyés au modèle. La réponse indique ses sources et rien n’est conservé. Désactivez-le séparément dans Paramètres › IA."
+        "text": "Seulement quand vous posez une question : votre question et les liens correspondants sont envoyés au modèle. La réponse indique ses sources ; les conversations sont conservées dans votre compte pendant 30 jours, sauf si vous désactivez l’historique d’Ask. Désactivez-le séparément dans Paramètres › IA."
       }
     },
     "suggest": {
@@ -4279,7 +4286,39 @@
         "many": "{{count}} de trouvés",
         "other": "{{count}} trouvés"
       },
-      "openSearch": "Ouvrir la recherche"
+      "openSearch": "Ouvrir la recherche",
+      "history": {
+        "title": "Conversations",
+        "today": "Aujourd’hui",
+        "earlier": "Plus tôt",
+        "kept": "Conservées dans votre compte pendant 30 jours.",
+        "off": "L’historique d’Ask est désactivé : les nouvelles conversations ne sont pas enregistrées.",
+        "empty": "Vos conversations s’affichent ici.",
+        "failed": "Impossible de charger les conversations.",
+        "retry": "Réessayer",
+        "more": "Afficher plus",
+        "delete": "Supprimer la conversation",
+        "deleteTitle": "Supprimer cette conversation ?",
+        "deleteMessage": "« {{title}} » est retirée de votre historique d’Ask.",
+        "deleteConfirm": "Supprimer",
+        "clear": "Tout effacer",
+        "clearTitle": "Effacer toutes les conversations ?",
+        "clearMessage": "Toutes les conversations sont retirées de votre historique d’Ask. Action irréversible.",
+        "clearConfirm": "Tout effacer",
+        "cancel": "Annuler",
+        "openFailed": "Impossible d’ouvrir cette conversation.",
+        "openPage": "Ouvrir en pleine page",
+        "deleted": "Conversation supprimée",
+        "cleared": "Historique d’Ask effacé",
+        "close": "Fermer"
+      },
+      "leave": {
+        "title": "Quitter cette conversation ?",
+        "streaming": "Une réponse est encore en cours. Si vous partez, elle s’arrête et cette conversation est perdue.",
+        "unsaved": "Cette conversation n’est pas enregistrée dans votre historique d’Ask. Si vous partez, elle disparaît.",
+        "stay": "Rester",
+        "leave": "Quitter"
+      }
     },
     "connect": {
       "title": "Connecter votre assistant",

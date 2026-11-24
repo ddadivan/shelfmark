@@ -21,4 +21,9 @@ export interface AskDoneEvent {
   turn: AskTurn;
   /** Which profile wrote the answer (logs and the web; not shown on the answer in v1). */
   depth: AskDepth;
+  /**
+   * The stored conversation this turn was appended to (pass it as `AskRequest.conversationId` for
+   * the next question); `null` when nothing was stored ("Keep Ask history" off, or the write failed).
+   */
+  conversationId: string | null;
 }

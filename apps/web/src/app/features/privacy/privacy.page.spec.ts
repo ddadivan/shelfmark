@@ -94,8 +94,9 @@ describe('PrivacyPage', () => {
     expect(element.textContent).toContain('sent to Voyage AI, our second processor');
     expect(element.textContent).toContain('your search text is not stored');
     expect(element.textContent).toContain(
-      'Neither the questions, the answers nor the chat are stored',
+      'each finished question and answer is stored with your account',
     );
+    expect(element.textContent).toContain('each deleted 30 days after its last question');
     expect(element.textContent).toContain('to train AI models');
   });
 

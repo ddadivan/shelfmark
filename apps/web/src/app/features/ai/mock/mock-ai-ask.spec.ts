@@ -10,6 +10,7 @@ import {
 import { MOCK_SESSION_STORAGE_KEY } from '../../../core/auth/models/mock-session-storage-key.const';
 import { MockLibraryData } from '../../links/mock/mock-library-data';
 import { MockAiAsk } from './mock-ai-ask';
+import { MockAskHistory } from './mock-ask-history';
 import { MockAiData } from './mock-ai-data';
 import { mockAskTopic } from './mock-ask-plan';
 import { MOCK_ASK } from './models/mock-ask.const';
@@ -18,7 +19,9 @@ const NOW = Date.UTC(2026, 10, 18, 12);
 
 function setup() {
   localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify({ isDemo: true }));
-  const injector = Injector.create({ providers: [MockLibraryData, MockAiData, MockAiAsk] });
+  const injector = Injector.create({
+    providers: [MockLibraryData, MockAiData, MockAskHistory, MockAiAsk],
+  });
   return { ask: injector.get(MockAiAsk), data: injector.get(MockAiData) };
 }
 

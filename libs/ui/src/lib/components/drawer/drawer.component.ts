@@ -118,7 +118,7 @@ export class DrawerComponent {
   }
 
   protected requestClose(): void {
-    this.ref?.close();
+    void this.ref?.requestClose();
   }
 
   /** An end drawer in ltr (or a start drawer in rtl) grows when its handle moves left. */

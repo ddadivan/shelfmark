@@ -40,6 +40,7 @@ const SETTINGS_SELECT = {
   summaryLanguage: true,
   meaningSearch: true,
   ask: true,
+  askHistory: true,
   enabledAt: true,
   introSeenAt: true,
   announcementSeenAt: true,
@@ -143,6 +144,7 @@ export class AiSettingsService {
           : { summaryLanguage: request.summaryLanguage }),
         ...(request.meaningSearch === undefined ? {} : { meaningSearch: request.meaningSearch }),
         ...(request.ask === undefined ? {} : { ask: request.ask }),
+        ...(request.askHistory === undefined ? {} : { askHistory: request.askHistory }),
         // Once seen, always seen: the first time is kept.
         ...(request.announcementSeen === true && current.announcementSeenAt === null
           ? { announcementSeenAt: now }

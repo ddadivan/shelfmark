@@ -16,4 +16,6 @@ export class AiSettingsDto implements AiSettings {
   @ApiProperty({ enum: AI_SUMMARY_LANGUAGES }) summaryLanguage!: AiSummaryLanguage;
   @ApiProperty({ description: 'Search by meaning and related links' }) meaningSearch!: boolean;
   @ApiProperty({ description: 'Ask your shelf' }) ask!: boolean;
+  @ApiProperty({ description: 'Keep Ask history: finished turns are stored for 30 days' })
+  askHistory!: boolean;
 }

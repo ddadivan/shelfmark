@@ -6,7 +6,10 @@ import type { AskEntryStep } from './ask-entry-step.interface';
 import type { AskEntryReason } from './ask-entry-reason.type';
 import type { AskEntryState } from './ask-entry-state.type';
 
-/** One question of the Ask chat and its answer, kept in memory until the panel closes. */
+/**
+ * One question of the Ask chat and its answer: streamed in this panel or page, or read back from the
+ * Ask history (ADR 0055 amendment).
+ */
 export interface AskEntry {
   readonly id: number;
   readonly question: string;
@@ -36,4 +39,9 @@ export interface AskEntry {
   readonly reason: AskEntryReason | null;
   /** The limit line's allowance (`limit`), `null` otherwise. */
   readonly allowance: AskAllowance | null;
+  /**
+   * The server stored this turn in the Ask history (`done.conversationId`, or read back from it).
+   * A finished answer that is not persisted is lost when the chat is left (the leave guard asks).
+   */
+  readonly persisted: boolean;
 }

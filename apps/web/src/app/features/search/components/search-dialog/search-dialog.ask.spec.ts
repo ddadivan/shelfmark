@@ -34,7 +34,7 @@ async function setup(compact: boolean, ask = true) {
   ai.ask.mockReturnValue(stream);
   const ref = { close: vi.fn(), locked: () => false };
   const panel = { open: vi.fn() };
-  const router = { navigateByUrl: vi.fn(() => Promise.resolve(true)) };
+  const router = { url: '/links', navigateByUrl: vi.fn(() => Promise.resolve(true)) };
   TestBed.configureTestingModule({
     providers: [
       provideTranslocoForTest(),

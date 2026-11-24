@@ -140,6 +140,9 @@ model User {
   linkEmbeddings        LinkEmbedding[]
   mcpTokens             McpToken[]
   aiAskUsage            AiAskUsage[]
+  askConversations      AskConversation[]
+  askTurns              AskConversationTurn[]
+  askTurnLinks          AskConversationTurnLink[]
   rediscoverHidden      RediscoverHidden[]
   rediscoverState       RediscoverState?
   cleanupReport         CleanupReport?
@@ -311,6 +314,7 @@ model Link {
   aiJobs             AiJob[]
   suggestions        LinkSuggestion[]
   embeddings         LinkEmbedding[]
+  askTurnLinks       AskConversationTurnLink[]
   rediscoverHidden   RediscoverHidden[]
   readerArticles     LinkReaderArticle[]
   readingProgress    ReadingProgress[]
@@ -558,6 +562,8 @@ model AiSettings {
   // one-question-at-a-time lease (30 s, released when the answer ends).
   ask                Boolean   @default(true)
   askLeaseUntil      DateTime? @map("ask_lease_until") @db.Timestamptz(3)
+  // Keep Ask history (ADR 0055 amendment, 2026-11-24): finished turns are stored; default on.
+  askHistory         Boolean   @default(true) @map("ask_history")
   // Import AI pass (ADR 0056): the import a running backfill run is scoped to (null = every eligible
   // link), and the backfill units an AI grouping took that no import has used yet.
   backfillImportId   String?   @map("backfill_import_id") @db.Uuid
@@ -606,6 +612,68 @@ model AiAskUsage {
 
   @@id([userId, day])
   @@map("ai_ask_usage")
+}
+
+// Ask history (ADR 0055 amendment, 2026-11-24): the user's Ask conversations, written by
+// `POST /api/ai/ask` when an answer finishes (never by the client) while `ai_settings.ask_history`
+// is on. At most 50 per user (the oldest by `updated_at` dropped on insert), purged 30 days after
+// the last turn by `GET /api/cron/ask-history`; deleted by `DELETE /api/ai/data`, the account cascade
+// and the user's Delete / Clear all. The title is the first question (1-120 characters, CHECK).
+model AskConversation {
+  id        String                @id @default(uuid(7)) @db.Uuid
+  userId    String                @map("user_id") @db.Uuid
+  title     String                @db.VarChar(120)
+  createdAt DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  // The last stored turn: the list order, the cap and the retention read it.
+  updatedAt DateTime              @default(now()) @map("updated_at") @db.Timestamptz(3)
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  turns     AskConversationTurn[]
+
+  @@unique([id, userId])
+  @@index([userId, updatedAt(sort: Desc), id(sort: Desc)])
+  @@index([updatedAt])
+  @@map("ask_conversations")
+}
+
+// One finished turn as the server wrote it: the question, the answer text with its `[n]` markers
+// (at most 4,000 characters, CHECK), the finished steps and the card groups (`jsonb`, card items by
+// marker number only), never a copy of link data. Same-user composite FK to the conversation.
+model AskConversationTurn {
+  id             String                    @id @default(uuid(7)) @db.Uuid
+  conversationId String                    @map("conversation_id") @db.Uuid
+  userId         String                    @map("user_id") @db.Uuid
+  position       Int
+  question       String                    @db.VarChar(500)
+  answer         String
+  steps          Json                      @default("[]")
+  cards          Json                      @default("[]")
+  notFound       Boolean                   @default(false) @map("not_found")
+  truncated      Boolean                   @default(false)
+  depth          String                    @db.VarChar(8)
+  createdAt      DateTime                  @default(now()) @map("created_at") @db.Timestamptz(3)
+  user           User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation   AskConversation           @relation(fields: [conversationId, userId], references: [id, userId], onDelete: Cascade)
+  links          AskConversationTurnLink[]
+
+  @@unique([id, userId])
+  @@unique([conversationId, position])
+  @@map("ask_conversation_turns")
+}
+
+// The links of a stored turn by marker number (cited or shown), same-user composite FKs to the turn
+// and the link: deleting the link for good drops the ref; a trashed link is left out on read.
+model AskConversationTurnLink {
+  turnId String              @map("turn_id") @db.Uuid
+  userId String              @map("user_id") @db.Uuid
+  n      Int                 @db.SmallInt
+  linkId String              @map("link_id") @db.Uuid
+  user   User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  turn   AskConversationTurn @relation(fields: [turnId, userId], references: [id, userId], onDelete: Cascade)
+  link   Link                @relation(fields: [linkId, userId], references: [id, userId], onDelete: Cascade)
+
+  @@id([turnId, n])
+  @@index([linkId, userId])
+  @@map("ask_conversation_turn_links")
 }
 
 // "Not interested" in the Rediscover block (F8): the link never shows there again. Library

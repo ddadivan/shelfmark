@@ -70,6 +70,10 @@ import type { AiApi } from '../../ai/models/ai-api.interface';
 import { HttpMcpApi } from '../../ai/connect/http/http-mcp.api';
 import { MockMcpApi } from '../../ai/connect/mock/mock-mcp.api';
 import { MCP_API } from '../../ai/connect/models/mcp-api.const';
+import { HttpAskHistoryApi } from '../../ai/http/http-ask-history.api';
+import { MockAskHistoryApi } from '../../ai/mock/mock-ask-history.api';
+import { ASK_HISTORY_API } from '../../ai/models/ask-history-api.const';
+import type { AskHistoryApi } from '../../ai/models/ask-history-api.interface';
 import type { McpApi } from '../../ai/connect/models/mcp-api.interface';
 import { HttpSharesApi } from '../../sharing/http/http-shares.api';
 import { MockSharesApi } from '../../sharing/mock/mock-shares.api';
@@ -180,6 +184,11 @@ export function provideLinksApi(): Provider[] {
     {
       provide: AI_API,
       useFactory: (): AiApi => (useRealApi() ? inject(HttpAiApi) : inject(MockAiApi)),
+    },
+    {
+      provide: ASK_HISTORY_API,
+      useFactory: (): AskHistoryApi =>
+        useRealApi() ? inject(HttpAskHistoryApi) : inject(MockAskHistoryApi),
     },
     {
       provide: MCP_API,

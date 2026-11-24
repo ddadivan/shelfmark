@@ -54,12 +54,19 @@ export class UpdateAiSettingsDto implements UpdateAiSettingsRequest {
   meaningSearch?: boolean;
 
   @ApiPropertyOptional({
-    description:
-      'Ask your shelf: the question and the matching links go to the model when asked; nothing is stored',
+    description: 'Ask your shelf: the question and the matching links go to the model when asked',
   })
   @ValidateIf(present)
   @IsBoolean()
   ask?: boolean;
+
+  @ApiPropertyOptional({
+    description:
+      'Keep Ask history: finished questions and answers are stored for 30 days (links by id). Off stores nothing new; what was stored stays until cleared',
+  })
+  @ValidateIf(present)
+  @IsBoolean()
+  askHistory?: boolean;
 
   @ApiPropertyOptional({
     description: 'The one-time AI announcement was closed or answered (only true is accepted)',

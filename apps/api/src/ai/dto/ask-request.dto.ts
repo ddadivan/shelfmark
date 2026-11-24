@@ -6,6 +6,7 @@ import {
   IsArray,
   IsOptional,
   IsString,
+  IsUUID,
   MaxLength,
   MinLength,
   ValidateNested,
@@ -16,7 +17,7 @@ import { AskTurnDto } from './ask-turn.dto';
 /**
  * `POST /api/ai/ask`: the question trimmed and whitespace collapsed before the checks, and the open
  * chat's earlier turns (at most `ASK_LIMIT.HistoryTurnsMax`). Anything invalid is a JSON 400 before
- * the stream. Never logged or stored.
+ * the stream. Never logged; the finished turn is stored by the server while "Keep Ask history" is on.
  */
 export class AskRequestDto implements AskRequest {
   @ApiProperty({ minLength: ASK_LIMIT.QuestionMin, maxLength: ASK_LIMIT.QuestionMax })
@@ -36,4 +37,13 @@ export class AskRequestDto implements AskRequest {
   @ValidateNested({ each: true })
   @Type(() => AskTurnDto)
   history?: AskTurnDto[];
+
+  @ApiPropertyOptional({
+    format: 'uuid',
+    description:
+      'A stored conversation of yours to continue: its turns are read from the server (history is then ignored); an unknown one starts a new conversation',
+  })
+  @IsOptional()
+  @IsUUID()
+  conversationId?: string;
 }

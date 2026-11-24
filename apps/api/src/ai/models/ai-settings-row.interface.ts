@@ -8,6 +8,7 @@ export interface AiSettingsRow {
   summaryLanguage: string;
   meaningSearch: boolean;
   ask: boolean;
+  askHistory: boolean;
   enabledAt: Date | null;
   introSeenAt: Date | null;
   announcementSeenAt: Date | null;

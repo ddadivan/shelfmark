@@ -1,0 +1,104 @@
+@use '../../../styles/ui' as *;
+
+// Shelf 11-ask `.hist .h`: 8px 10px, radius sm, 14px text on one line; the current row on
+// `surface-hover` in 500 weight.
+:host {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: rem(36px);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+
+@media (hover: hover) {
+  :host(:hover) {
+    background: var(--ui-row-hover, var(--surface-hover));
+  }
+}
+
+:host(.ui-conversation-row--current) {
+  background: var(--surface-hover);
+}
+
+.ui-conversation-row__link {
+  @include type(secondary);
+
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2) rem(10px);
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+
+  // The whole row is the target; actions sit above this layer.
+  &::after {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    content: '';
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    &::after {
+      @include focus-ring;
+    }
+  }
+}
+
+:host(.ui-conversation-row--current) .ui-conversation-row__link {
+  font-weight: 500;
+}
+
+.ui-conversation-row__title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-conversation-row__actions {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  z-index: 2;
+  display: none;
+  align-items: center;
+  padding-inline: var(--space-1);
+  border-radius: inherit;
+  background: var(--surface-hover);
+
+  &:has(*) {
+    display: flex;
+  }
+}
+
+// With a pointer the actions show on hover and keyboard focus, over the end of the title (which
+// keeps the whole width otherwise, as in the design). With touch they always show and the title
+// leaves room for them.
+@media (hover: hover) and (pointer: fine) {
+  .ui-conversation-row__actions:has(*) {
+    visibility: hidden;
+  }
+
+  :host(:hover) .ui-conversation-row__actions,
+  :host(:focus-within) .ui-conversation-row__actions {
+    visibility: visible;
+  }
+}
+
+@media not ((hover: hover) and (pointer: fine)) {
+  :host(:has(.ui-conversation-row__actions > *)) .ui-conversation-row__link {
+    padding-inline-end: rem(44px);
+  }
+
+  .ui-conversation-row__actions {
+    background: transparent;
+  }
+}

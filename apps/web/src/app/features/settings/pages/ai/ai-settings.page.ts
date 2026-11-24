@@ -41,6 +41,7 @@ import { AiUsageSectionComponent } from '../../../ai/components/ai-usage-section
 import { CONNECT_SEGMENT } from '../../../ai/connect/models/connect-segment.const';
 import { MeaningSearchControlComponent } from '../../../ai/components/meaning-search-control/meaning-search-control.component';
 import { AskControlComponent } from '../../../ai/components/ask-control/ask-control.component';
+import { AskHistoryControlComponent } from '../../../ai/components/ask-history-control/ask-history-control.component';
 import { AI_MODE_LABEL_KEYS } from '../../../ai/models/ai-mode-label-keys.const';
 import { AiSettingsActions } from '../../../ai/services/ai-settings-actions.service';
 import { AiSettingsStore } from '../../../ai/services/ai-settings.store';
@@ -71,6 +72,7 @@ import { SETTINGS_PATH } from '../../models/settings-path.const';
     FragmentTargetDirective,
     MeaningSearchControlComponent,
     AskControlComponent,
+    AskHistoryControlComponent,
     NoticeComponent,
     SegmentedControlComponent,
     SelectComponent,

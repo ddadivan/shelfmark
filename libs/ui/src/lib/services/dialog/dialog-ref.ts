@@ -23,6 +23,9 @@ export class UiDialogRef<R = undefined, C = unknown> {
    */
   readonly locked = this.lockedState.asReadonly();
 
+  private closeGuard: (() => boolean | Promise<boolean>) | null = null;
+  private asking = false;
+
   private readonly closedSubject = new ReplaySubject<R | undefined>(1);
   private closing = false;
   private timers: ReturnType<typeof setTimeout>[] = [];
@@ -74,6 +77,34 @@ export class UiDialogRef<R = undefined, C = unknown> {
   /** Holds the dialog open against every dismissal by the user (see `locked`), or releases it. */
   setLocked(locked: boolean): void {
     this.lockedState.set(locked);
+  }
+
+  /**
+   * Asks `guard` before a dismissal by the user (Esc, the scrim, the close button, the sheet drag)
+   * closes the dialog: it closes only when the guard answers `true` (for example after a "Leave
+   * this conversation?" question). `null` removes it. `close()` from code is never asked.
+   */
+  setCloseGuard(guard: (() => boolean | Promise<boolean>) | null): void {
+    this.closeGuard = guard;
+  }
+
+  /** A dismissal by the user: closes unless locked or the close guard says no (asked once at a time). */
+  async requestClose(): Promise<void> {
+    if (this.closing || this.locked() || this.asking) {
+      return;
+    }
+    const guard = this.closeGuard;
+    if (guard !== null) {
+      this.asking = true;
+      try {
+        if (!(await guard())) {
+          return;
+        }
+      } finally {
+        this.asking = false;
+      }
+    }
+    this.close();
   }
 
   close(result?: R): void {

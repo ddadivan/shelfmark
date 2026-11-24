@@ -1,22 +1,52 @@
 @if (settings.askOn()) {
-<div class="ask-page" [class.ask-page--chat]="chatting()">
-  @if (chatting()) {
-  <div class="ask-page__head">
-    <ui-button
-      variant="ghost"
-      iconOnly
-      iconLeft="chevron-left"
-      [ariaLabel]="'ai.ask.back' | transloco"
-      (click)="store.reset()"
-    />
-    <h1 class="ask-page__title">{{ store.entries()[0].question }}</h1>
-  </div>
-  } @else {
-  <h1 class="ask-page__hidden-title">{{ 'ai.ask.title' | transloco }}</h1>
+<div class="ask-page" [class.ask-page--chat]="chatting()" [class.ask-page--desktop]="desktop()">
+  @if (desktop()) {
+  <app-ask-history-list
+    class="ask-page__history"
+    [activeId]="store.conversationId()"
+    (opened)="openConversation($event)"
+    (started)="startOver()"
+    (removed)="forget($event)"
+    (cleared)="forget()"
+  />
   }
-  <app-ask-conversation class="ask-page__conversation" onPage />
-  <div class="ask-page__bar">
-    <app-ask-composer [hideFine]="viewport.phone()" />
+  <div class="ask-page__main">
+    @if (chatting() && !desktop()) {
+    <div class="ask-page__head">
+      <ui-button
+        variant="ghost"
+        iconOnly
+        iconLeft="chevron-left"
+        [ariaLabel]="'ai.ask.back' | transloco"
+        (click)="startOver()"
+      />
+      <h1 class="ask-page__title">{{ store.entries()[0].question }}</h1>
+      <ui-button
+        variant="ghost"
+        iconOnly
+        iconLeft="add"
+        [ariaLabel]="'ai.ask.newChat' | transloco"
+        (click)="startOver()"
+      />
+    </div>
+    } @else {
+    <h1 class="ask-page__hidden-title">{{ 'ai.ask.title' | transloco }}</h1>
+    @if (!desktop()) {
+    <div class="ask-page__tools">
+      <ui-button
+        variant="ghost"
+        iconOnly
+        iconLeft="list"
+        ariaHaspopup="dialog"
+        [ariaLabel]="'ai.ask.history.title' | transloco"
+        (click)="openSheet()"
+      />
+    </div>
+    } }
+    <app-ask-conversation class="ask-page__conversation" [onPage]="!desktop()" />
+    <div class="ask-page__bar">
+      <app-ask-composer [hideFine]="viewport.phone()" />
+    </div>
   </div>
 </div>
 }

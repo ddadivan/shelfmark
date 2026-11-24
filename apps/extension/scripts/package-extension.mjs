@@ -21,16 +21,28 @@ if (hosts.length === 0 || hosts.some((host) => !host.startsWith('https://'))) {
 if ('key' in manifest) {
   throw new Error('The store manifest must not contain a `key`.');
 }
-// The permissions the store review and the privacy texts describe; anything wider needs the author's OK.
-if (JSON.stringify(manifest.permissions) !== JSON.stringify(['activeTab']) || hosts.length !== 1) {
-  throw new Error('The store manifest asks for more than activeTab and the one API host.');
+// The permissions the store review and the privacy texts describe; anything wider needs the author's OK:
+// activeTab, contextMenus (right-click save), the optional tabs (All tabs, #569) and the one API host.
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+if (!same(manifest.permissions, ['activeTab', 'contextMenus']) || hosts.length !== 1) {
+  throw new Error(
+    'The store manifest asks for more than activeTab, contextMenus and the one API host.',
+  );
+}
+if (!same(manifest.optional_permissions ?? [], ['tabs'])) {
+  throw new Error('The store manifest may ask only for the optional tabs permission.');
+}
+// The right-click save worker, which must be in the build.
+if (!same(manifest.background, { service_worker: 'background.js', type: 'module' })) {
+  throw new Error('The store manifest has an unexpected `background`.');
+}
+if (!existsSync(resolve(build, 'background.js'))) {
+  throw new Error('The build has no background.js: run `npx nx build extension`.');
 }
 for (const field of [
-  'background',
   'content_scripts',
   'web_accessible_resources',
   'externally_connectable',
-  'optional_permissions',
   'optional_host_permissions',
 ]) {
   if (field in manifest) throw new Error(`The store manifest must not contain \`${field}\`.`);
