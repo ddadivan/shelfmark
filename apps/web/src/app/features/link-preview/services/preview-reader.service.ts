@@ -1,7 +1,7 @@
 import { computed, inject, Service, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { TranslocoService } from '@jsverse/transloco';
-import { LINK_KIND, type ReaderArticle } from '@shelfmark/contracts';
+import { LINK_KIND, READER_LIMIT, type ReaderArticle } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
 import { LocaleService } from '../../../core/i18n/locale.service';
 import { READER_API } from '../../reader/models/reader-api.const';
@@ -110,11 +110,12 @@ export class PreviewReaderService {
     this.saved.set(link.id, share);
     try {
       await firstValueFrom(
-        this.api.saveProgress({
-          linkId: link.id,
-          fraction: Math.round(share * 100) / 100,
-          minutesLeft: Math.max(0, Math.ceil(article.minutes * (1 - share))),
-          updatedAt: new Date().toISOString(),
+        this.api.saveProgress(link.id, {
+          fraction: Math.min(1, Math.max(0, Math.round(share * 100) / 100)),
+          minutesLeft: Math.min(
+            READER_LIMIT.MinutesLeftMax,
+            Math.max(0, Math.ceil(article.minutes * (1 - share))),
+          ),
         }),
       );
     } catch {

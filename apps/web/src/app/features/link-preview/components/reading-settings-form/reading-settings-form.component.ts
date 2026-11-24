@@ -28,7 +28,7 @@ let nextFormId = 0;
 /**
  * The content of Reading settings (Shelf ReaderView): Theme (four tiles; until one is picked the
  * tile of the app theme is checked), Font (each label in its own font), Text size (A, a slider
- * 14 to 24px, A, the value), Line spacing, Line width, then "Saved on this device" and Reset.
+ * 14 to 24px, A, the value), Line spacing, Line width, then "Saved to your account" and Reset.
  * Each change applies at once through `ReaderSettingsService` (root), so the popover and the
  * phone sheet share it.
  */

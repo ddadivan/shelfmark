@@ -287,6 +287,9 @@ export class LinksWriteService {
           data.normalizedUrl !== undefined && data.normalizedUrl !== current.normalizedUrl;
         if (newPage) {
           await tx.linkImage.deleteMany({ where: { linkId: id, userId } });
+          // Reader: the stored article and the reading progress belong to the old page.
+          await tx.linkReaderArticle.deleteMany({ where: { linkId: id, userId } });
+          await tx.readingProgress.deleteMany({ where: { linkId: id, userId } });
           data.faviconSourceUrl = null;
           data.imageSourceUrl = null;
           // Pending: the first image request for the new page re-captures lazily (ADR 0027 note).

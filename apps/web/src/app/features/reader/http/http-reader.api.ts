@@ -1,25 +1,41 @@
-import { Service } from '@angular/core';
-import type { ReaderArticleResponse, ReaderProgress } from '@shelfmark/contracts';
-import { of, type Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import {
+  READER_ENDPOINT,
+  type ReaderArticleResponse,
+  type ReaderProgress,
+  type ReaderProgressRequest,
+} from '@shelfmark/contracts';
+import type { Observable } from 'rxjs';
+import { skipErrorToast } from '../../../core/api/skip-error-toast';
 import type { ReaderApi } from '../models/reader-api.interface';
 
 /**
- * `ReaderApi` for the real API. MOCK (Shelf): `apps/api` has no Reader extraction yet (a server
- * fetch of third-party pages needs the SSRF guard of PROJECT.md 5.8, so it is not a small
- * endpoint). Until it ships every link answers "no article", which shows the link's own picture,
- * summary and note, and progress is neither read nor kept. Nothing is faked: no request is sent.
+ * `ReaderApi` over `READER_ENDPOINT`. Reader falls back to the link's own picture, summary and note
+ * and progress is a convenience, so none of these show an error toast.
  */
 @Service()
 export class HttpReaderApi implements ReaderApi {
-  article(): Observable<ReaderArticleResponse> {
-    return of({ article: null });
+  private readonly http = inject(HttpClient);
+
+  article(linkId: string): Observable<ReaderArticleResponse> {
+    return this.http.get<ReaderArticleResponse>(
+      READER_ENDPOINT.Article.replace(':id', encodeURIComponent(linkId)),
+      { context: skipErrorToast() },
+    );
   }
 
   progress(): Observable<ReaderProgress[]> {
-    return of([]);
+    return this.http.get<ReaderProgress[]>(READER_ENDPOINT.Progress, {
+      context: skipErrorToast(),
+    });
   }
 
-  saveProgress(): Observable<void> {
-    return of(undefined);
+  saveProgress(linkId: string, request: ReaderProgressRequest): Observable<void> {
+    return this.http.put<void>(
+      READER_ENDPOINT.LinkProgress.replace(':linkId', encodeURIComponent(linkId)),
+      request,
+      { context: skipErrorToast() },
+    );
   }
 }

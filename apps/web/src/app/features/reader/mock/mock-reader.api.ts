@@ -4,6 +4,7 @@ import {
   READER_LIMIT,
   type ReaderArticleResponse,
   type ReaderProgress,
+  type ReaderProgressRequest,
 } from '@shelfmark/contracts';
 import { defer, delay, of, throwError, type Observable } from 'rxjs';
 import { mockHttpError } from '../../../core/api/mock-http-error';
@@ -46,9 +47,10 @@ function write(items: readonly ReaderProgress[]): void {
 }
 
 /**
- * MOCK (Shelf): Reader over the mock library (mock builds only). Articles come from
+ * Reader over the mock library (mock builds only), in step with the API. Articles come from
  * `mockReaderArticle` (readable kinds only); progress lives in `localStorage`
- * (`sm-mock-reader-progress`): started and unfinished texts of live links, newest first.
+ * (`sm-mock-reader-progress`): started and unfinished texts of live links, newest first; a write
+ * is checked like the API (404 for an unknown link, 400 out of range) and stamped with this clock.
  */
 @Service()
 export class MockReaderApi implements ReaderApi {
@@ -80,9 +82,30 @@ export class MockReaderApi implements ReaderApi {
     }).pipe(delay(MOCK_LATENCY_MS.List));
   }
 
-  saveProgress(progress: ReaderProgress): Observable<void> {
+  saveProgress(linkId: string, request: ReaderProgressRequest): Observable<void> {
     return defer(() => {
-      write([progress, ...read().filter((item) => item.linkId !== progress.linkId)]);
+      // Like the API: a live link of the account, a share 0 to 1, whole minutes; the time is ours.
+      if (!this.library.links.some((link) => link.id === linkId)) {
+        return throwError(() => mockHttpError(HttpStatusCode.NotFound));
+      }
+      const { fraction, minutesLeft } = request;
+      if (
+        !Number.isFinite(fraction) ||
+        fraction < 0 ||
+        fraction > 1 ||
+        !Number.isInteger(minutesLeft) ||
+        minutesLeft < 0 ||
+        minutesLeft > READER_LIMIT.MinutesLeftMax
+      ) {
+        return throwError(() => mockHttpError(HttpStatusCode.BadRequest));
+      }
+      const progress: ReaderProgress = {
+        linkId,
+        fraction,
+        minutesLeft,
+        updatedAt: new Date().toISOString(),
+      };
+      write([progress, ...read().filter((item) => item.linkId !== linkId)]);
       return of(undefined);
     });
   }

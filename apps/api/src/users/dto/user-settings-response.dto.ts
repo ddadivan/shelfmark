@@ -33,6 +33,15 @@ import {
   type ThemePreference,
   type TrashRetentionDays,
   type UserSettingsResponse,
+  READER_PAGE_THEME,
+  READER_TEXT_FONT,
+  READER_TEXT_MEASURE,
+  READER_TEXT_SIZE_RANGE,
+  READER_TEXT_SPACING,
+  type ReaderPageTheme,
+  type ReaderTextFont,
+  type ReaderTextMeasure,
+  type ReaderTextSpacing,
 } from '@shelfmark/contracts';
 import { CustomThemeDto } from './custom-theme.dto';
 
@@ -151,4 +160,34 @@ export class UserSettingsResponseDto implements UserSettingsResponse {
     description: "The newest release whose What's new the user has seen; null until first written",
   })
   whatsNewSeen!: string | null;
+
+  @ApiProperty({
+    enum: Object.values(READER_PAGE_THEME),
+    nullable: true,
+    example: null,
+    description: 'Reader page palette; null follows the app theme',
+  })
+  readerTheme!: ReaderPageTheme | null;
+
+  @ApiProperty({ enum: Object.values(READER_TEXT_FONT), example: READER_TEXT_FONT.Sans })
+  readerFont!: ReaderTextFont;
+
+  @ApiProperty({
+    minimum: READER_TEXT_SIZE_RANGE.Min,
+    maximum: READER_TEXT_SIZE_RANGE.Max,
+    example: READER_TEXT_SIZE_RANGE.Default,
+  })
+  readerSize!: number;
+
+  @ApiProperty({ enum: Object.values(READER_TEXT_SPACING), example: READER_TEXT_SPACING.Normal })
+  readerLineSpacing!: ReaderTextSpacing;
+
+  @ApiProperty({ enum: Object.values(READER_TEXT_MEASURE), example: READER_TEXT_MEASURE.Normal })
+  readerLineWidth!: ReaderTextMeasure;
+
+  @ApiProperty({
+    example: false,
+    description: 'False until a reading setting is first written (the web keeps a local choice)',
+  })
+  readerSaved!: boolean;
 }

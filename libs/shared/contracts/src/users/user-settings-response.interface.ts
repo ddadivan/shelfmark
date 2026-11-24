@@ -6,10 +6,12 @@ import type { LanguageSettings } from './language-settings.interface';
 import type { LayoutSettings } from './layout-settings.interface';
 import type { LibrarySettings } from './library-settings.interface';
 import type { MotionPreference } from './motion-preference.type';
+import type { ReaderPreferences } from '../reader/reader-preferences.interface';
 import type { ThemePreference } from './theme-preference.type';
 
 /** `GET /api/me/settings`: preferences kept on the account, so they follow the user to every device. */
-export interface UserSettingsResponse extends LibrarySettings, LayoutSettings, LanguageSettings {
+export interface UserSettingsResponse
+  extends LibrarySettings, LayoutSettings, LanguageSettings, ReaderPreferences {
   trashRetentionDays: TrashRetentionDays;
   /** Coloured folder icons; off shows every folder in graphite. Default on. */
   folderColours: boolean;
@@ -45,6 +47,11 @@ export interface UserSettingsResponse extends LibrarySettings, LayoutSettings, L
    * web app keeps (and saves once) a language the browser already had (a guest's choice).
    */
   languageSaved: boolean;
+  /**
+   * False until a `ReaderPreferences` field is first written: they then hold the defaults, and the
+   * web app keeps (and saves once) reading settings this browser already had.
+   */
+  readerSaved: boolean;
   /**
    * The newest release (`x.y.z`) whose "What's new" the user has seen (#424); `null` until the web
    * app first writes it (at sign-up it writes the current release, so a new account sees none).

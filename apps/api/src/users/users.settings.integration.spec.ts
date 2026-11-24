@@ -22,6 +22,7 @@ import {
   LIBRARY_VIEW,
   LINK_OPEN_TARGET,
   MOTION_PREFERENCE,
+  READER_PREFERENCES_DEFAULT,
   THEME_PREFERENCE,
   TRASH_RETENTION_DAYS,
   USER_SETTINGS_ENDPOINT,
@@ -46,6 +47,9 @@ const APPEARANCE_DEFAULTS = {
   // Not the appearance, but every whole-body expectation needs them too (#274).
   ...LANGUAGE_SETTINGS_DEFAULT,
   languageSaved: false,
+  // Reading settings of Reader: not written yet.
+  ...READER_PREFERENCES_DEFAULT,
+  readerSaved: false,
   // "What's new" (#424): not written yet.
   whatsNewSeen: null,
 };
@@ -294,6 +298,8 @@ describe('account settings', () => {
         ...LIBRARY_SETTINGS_DEFAULT,
         ...LANGUAGE_SETTINGS_DEFAULT,
         languageSaved: false,
+        ...READER_PREFERENCES_DEFAULT,
+        readerSaved: false,
         whatsNewSeen: null,
       });
       // Choosing another theme keeps the custom one for later.

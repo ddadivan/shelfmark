@@ -13,9 +13,11 @@ import { toRetentionDays } from '../trash/trash.service';
 import { APPEARANCE_SELECT } from './models/appearance-select.const';
 import { LANGUAGE_SELECT } from './models/language-select.const';
 import { LIBRARY_SELECT } from './models/library-select.const';
+import { READER_SELECT } from './models/reader-select.const';
 import { customThemeColumns, toAppearanceSettings } from './to-appearance-settings';
 import { toLanguageSettings } from './to-language-settings';
 import { toLibrarySettings } from './to-library-settings';
+import { readerColumns, toReaderPreferences } from './to-reader-preferences';
 
 @Injectable()
 export class UsersService {
@@ -77,6 +79,7 @@ export class UsersService {
         ...APPEARANCE_SELECT,
         ...LIBRARY_SELECT,
         ...LANGUAGE_SELECT,
+        ...READER_SELECT,
       },
     });
     if (!row) throw new NotFoundException();
@@ -93,6 +96,7 @@ export class UsersService {
       ...toAppearanceSettings(row),
       ...toLibrarySettings(row, liveFolder),
       ...toLanguageSettings(row),
+      ...toReaderPreferences(row),
       whatsNewSeen: row.whatsNewSeen,
     };
   }
@@ -144,6 +148,8 @@ export class UsersService {
     }
     if (request.customTheme !== undefined)
       Object.assign(data, customThemeColumns(request.customTheme));
+    // Reading settings: only the fields sent; the first write marks them saved.
+    Object.assign(data, readerColumns(request, new Date()));
     if (request.defaultView !== undefined) data.defaultView = request.defaultView;
     if (request.defaultSort !== undefined) data.defaultSort = request.defaultSort;
     if (request.openLinksIn !== undefined) data.openLinksIn = request.openLinksIn;

@@ -18,6 +18,11 @@ import {
   LINK_CLICK_ACTION,
   LINK_OPEN_TARGET,
   MOTION_PREFERENCE,
+  READER_PAGE_THEME,
+  READER_PREFERENCES_DEFAULT,
+  READER_TEXT_FONT,
+  READER_TEXT_MEASURE,
+  READER_TEXT_SPACING,
   TEXT_SIZE,
   THEME_PREFERENCE,
   TRASH_RETENTION_DEFAULT,
@@ -48,6 +53,8 @@ const DEFAULT_SETTINGS = {
   motion: MOTION_PREFERENCE.System,
   appearanceSaved: false,
   languageSaved: false,
+  ...READER_PREFERENCES_DEFAULT,
+  readerSaved: false,
   whatsNewSeen: null,
 };
 
@@ -310,6 +317,33 @@ export const SETTINGS_SCENARIOS: readonly ContractScenario[] = [
     });
     expectEqual((await settings.get()).language, INTERFACE_LANGUAGE.Uk);
   }),
+
+  scenario(
+    'settings',
+    'saves the reading settings of Reader and marks them as saved',
+    async ({ settings }) => {
+      const reader = {
+        readerTheme: READER_PAGE_THEME.Sepia,
+        readerFont: READER_TEXT_FONT.Serif,
+        readerSize: 20,
+        readerLineSpacing: READER_TEXT_SPACING.Relaxed,
+        readerLineWidth: READER_TEXT_MEASURE.Wide,
+      };
+      expectEqual(await settings.update(reader), {
+        ...DEFAULT_SETTINGS,
+        ...reader,
+        readerSaved: true,
+      });
+      expectEqual((await settings.update({ readerTheme: null })).readerTheme, null);
+      await expectError(settings.update({ readerSize: 25 }), { status: 400 }, 'a size past 24');
+      await expectError(
+        settings.update({ readerFont: 'comic' as never }),
+        { status: 400 },
+        'an unknown font',
+      );
+      expectEqual((await settings.get()).readerSize, 20);
+    },
+  ),
 
   scenario('settings', "keeps the last seen What's new release (#424)", async ({ settings }) => {
     const updated = await settings.update({ whatsNewSeen: '2.0.5' });

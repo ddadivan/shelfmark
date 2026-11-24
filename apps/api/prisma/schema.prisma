@@ -88,6 +88,15 @@ model User {
   // longer reads or writes spellcheck; a later migration drops it.
   spellcheck            Boolean              @default(true) @map("spellcheck")
   languageSavedAt       DateTime?            @map("language_saved_at") @db.Timestamptz(3)
+  // Reading settings of Reader (Shelf Link page). CHECKs in the migration keep them to the contract
+  // allow-lists (READER_PAGE_THEME, READER_TEXT_FONT, READER_TEXT_SIZE_RANGE, READER_TEXT_SPACING,
+  // READER_TEXT_MEASURE); readerTheme NULL follows the app; readerSavedAt marks the first write.
+  readerTheme           String?              @map("reader_theme")
+  readerFont            String               @default("sans") @map("reader_font")
+  readerSize            Int                  @default(18) @map("reader_size") @db.SmallInt
+  readerLineSpacing     String               @default("normal") @map("reader_line_spacing")
+  readerLineWidth       String               @default("normal") @map("reader_line_width")
+  readerSavedAt         DateTime?            @map("reader_saved_at") @db.Timestamptz(3)
   // Admin usage stats (#333, ADR 0045): UTC day of the last authenticated non-demo request, written
   // at most once a day by UserActivityService; backfilled once in the migration.
   lastActiveOn          DateTime?            @map("last_active_on") @db.Date
@@ -125,6 +134,8 @@ model User {
   rediscoverState       RediscoverState?
   cleanupReport         CleanupReport?
   imports               Import[]
+  readerArticles        LinkReaderArticle[]
+  readingProgress       ReadingProgress[]
 
   @@map("users")
 }
@@ -287,6 +298,8 @@ model Link {
   suggestions        LinkSuggestion[]
   embeddings         LinkEmbedding[]
   rediscoverHidden   RediscoverHidden[]
+  readerArticles     LinkReaderArticle[]
+  readingProgress    ReadingProgress[]
 
   @@unique([id, userId])
   @@unique([userId, idempotencyKey])
@@ -820,4 +833,39 @@ model FrameCheck {
   checkedAt DateTime @map("checked_at") @db.Timestamptz(3)
 
   @@map("frame_checks")
+}
+
+// Reader (Shelf Link page): the article extracted from a link's page as typed blocks
+// (`ReaderArticle` of the contracts, never HTML), so a second open does not fetch again. One row per
+// link, same-user composite FK with cascade. `article` NULL = the page has no article; `failed` = the
+// fetch failed (asked again after `READER_CACHE.FailedRetryMs`). Written after the fetch only while
+// the link still has the URL that was fetched; `PATCH /api/links/:id` with a new page deletes it.
+model LinkReaderArticle {
+  linkId      String   @id @map("link_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  article     Json?    @db.JsonB
+  failed      Boolean  @default(false)
+  extractedAt DateTime @map("extracted_at") @db.Timestamptz(3)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  link        Link     @relation(fields: [linkId, userId], references: [id, userId], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("link_reader_articles")
+}
+
+// Reader progress (Revisit's "Continue reading"): how far the user read a link's Reader text. One
+// row per link, same-user composite FK with cascade; written in plain SQL (the link's `updated_at`
+// stays), deleted when the link gets a new page. CHECKs in the migration keep `fraction` within 0
+// to 1 and `minutes_left` within 0 to 999 (`READER_LIMIT.MinutesLeftMax`).
+model ReadingProgress {
+  linkId      String   @id @map("link_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  fraction    Float    @db.Real
+  minutesLeft Int      @map("minutes_left") @db.SmallInt
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(3)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  link        Link     @relation(fields: [linkId, userId], references: [id, userId], onDelete: Cascade)
+
+  @@index([userId, updatedAt])
+  @@map("reading_progress")
 }

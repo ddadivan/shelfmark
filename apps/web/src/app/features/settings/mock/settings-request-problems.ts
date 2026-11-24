@@ -18,6 +18,11 @@ import {
   isTimeFormat,
   isWeekStart,
   isReleaseVersion,
+  isReaderPageTheme,
+  isReaderTextFont,
+  isReaderTextMeasure,
+  isReaderTextSize,
+  isReaderTextSpacing,
   TRASH_RETENTION_DAYS,
   USER_LIMIT,
 } from '@shelfmark/contracts';
@@ -68,6 +73,11 @@ const FIELD_CHECKS: Readonly<Record<string, Check>> = {
   timeFormat: isTimeFormat,
   weekStart: isWeekStart,
   whatsNewSeen: isReleaseVersion,
+  readerTheme: (value) => value === null || isReaderPageTheme(value),
+  readerFont: isReaderTextFont,
+  readerSize: isReaderTextSize,
+  readerLineSpacing: isReaderTextSpacing,
+  readerLineWidth: isReaderTextMeasure,
 };
 
 /**

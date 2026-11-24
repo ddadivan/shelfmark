@@ -6,4 +6,6 @@ export const READER_LIMIT = {
   StartedFraction: 0.05,
   /** ...and as finished from this one (it leaves "Continue reading"). */
   DoneFraction: 0.95,
+  /** Highest `minutesLeft` a progress write may carry. */
+  MinutesLeftMax: 999,
 } as const;
