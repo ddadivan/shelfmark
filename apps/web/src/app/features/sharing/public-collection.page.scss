@@ -1,7 +1,7 @@
 @use 'ui' as *;
 
-// PublicCollection.dc: a 1160px column, a bare header, the intro row, subfolder chips, a card
-// grid, the invitation panel and a one-line footer.
+// Shelf 06-public: a 1040px column, the logo bar, the folder header (tile, title, byline),
+// subfolder chips, a masonry of read-only cards, the invitation panel and a one-line footer.
 :host {
   display: block;
   min-height: 100dvh;
@@ -14,13 +14,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
-  max-width: 72.5rem;
+  max-width: rem(1040px);
   margin: 0 auto;
   padding: 0 var(--space-4) var(--space-8);
-
-  @include tablet-up {
-    padding-inline: var(--space-6);
-  }
 }
 
 .collection__header {
@@ -28,7 +24,8 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  min-height: 3.75rem;
+  min-height: rem(56px);
+  padding-top: var(--space-4);
 }
 
 .collection__home {
@@ -54,8 +51,11 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  justify-content: space-between;
   gap: var(--space-4);
+}
+
+.collection__copy {
+  margin-inline-start: auto;
 }
 
 .collection__titles {
@@ -65,31 +65,22 @@
   min-width: 0;
 }
 
-.collection__owner {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0;
-  color: var(--text-muted);
-
-  @include type(caption);
-}
-
 .collection__title {
   margin: 0;
   overflow-wrap: anywhere;
 
-  @include type(display);
+  @include type(title);
 }
 
 .collection__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
-  margin: 0;
+  gap: var(--space-1) var(--space-2);
+  align-items: center;
+  margin: var(--space-1) 0 0;
   color: var(--text-muted);
 
-  @include type(body);
+  @include type(secondary);
 }
 
 .collection__chips {
@@ -103,13 +94,18 @@
   font-weight: 600;
 }
 
+// Masonry of 240px columns, 16px apart (the library's look).
 .collection__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
-  gap: rem(20px);
   margin: 0;
   padding: 0;
   list-style: none;
+  column-width: rem(240px);
+  column-gap: var(--space-4);
+
+  > li {
+    margin-bottom: var(--space-4);
+    break-inside: avoid;
+  }
 }
 
 .collection__more,

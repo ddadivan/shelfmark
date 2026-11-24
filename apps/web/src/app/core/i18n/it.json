@@ -3102,7 +3102,6 @@
   },
   "publicCollection": {
     "home": "Home di Shelfmark",
-    "signIn": "Accedi",
     "backToShelf": "Torna al mio scaffale",
     "sharedBy": "Condiviso da {{name}}",
     "sharedAnonymous": "Condiviso su Shelfmark",
@@ -3137,7 +3136,12 @@
       "text": "Shelfmark raccoglie video, articoli, cose da comprare e corsi su un unico scaffale tranquillo.",
       "action": "Inizia il tuo scaffale"
     },
-    "madeWith": "Creato con Shelfmark"
+    "madeWith": "Creato con Shelfmark",
+    "startOwn": "Crea il tuo scaffale",
+    "offline": {
+      "title": "Sei offline",
+      "text": "La raccolta si caricherà appena tornerai online."
+    }
   },
   "bulk": {
     "bar": {
@@ -4728,5 +4732,11 @@
       "turnOn": "Attiva le notifiche",
       "notNow": "Non ora"
     }
+  },
+  "notFound": {
+    "title": "Questa pagina non esiste",
+    "text": "Forse l’indirizzo è sbagliato, o la pagina è stata spostata.",
+    "links": "Vai ai tuoi link",
+    "home": "Vai a Shelfmark"
   }
 }

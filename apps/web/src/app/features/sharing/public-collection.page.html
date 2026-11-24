@@ -10,9 +10,7 @@
     @if (signedIn()) {
     <ui-button [href]="shelfHref">{{ 'publicCollection.backToShelf' | transloco }}</ui-button>
     } @else {
-    <ui-button [href]="signInHref" [variant]="BUTTON_VARIANT.Ghost"
-      >{{ 'publicCollection.signIn' | transloco }}</ui-button
-    >
+    <ui-button [href]="signInHref">{{ 'publicCollection.startOwn' | transloco }}</ui-button>
     }
   </header>
 
@@ -31,20 +29,21 @@
     </ui-empty-state>
     } @else if (store.collection(); as collection) {
     <section class="collection__intro">
+      <ui-folder-icon class="collection__tile" size="lg" colour="amber" />
       <div class="collection__titles">
-        <p class="collection__owner">
-          @if (collection.ownerName) {
-          <ui-avatar size="sm" [name]="collection.ownerName" />
-          {{ 'publicCollection.sharedBy' | transloco: { name: collection.ownerName } }} } @else { {{
-          'publicCollection.sharedAnonymous' | transloco }} }
-        </p>
         <h1 class="collection__title">{{ collection.name }}</h1>
         <p class="collection__meta">
-          <span>{{ countKey() | transloco: { count: collection.linkCount } }}</span>
-          <span>{{ 'publicCollection.updated' | transloco: { time: updated() } }}</span>
+          @if (collection.ownerName) {
+          <ui-avatar size="sm" [name]="collection.ownerName" />
+          <span>{{ 'publicCollection.sharedBy' | transloco: { name: collection.ownerName } }}</span>
+          } @else {
+          <span>{{ 'publicCollection.sharedAnonymous' | transloco }}</span>
+          }
+          <span>· {{ countKey() | transloco: { count: collection.linkCount } }}</span>
+          <span>· {{ 'publicCollection.updated' | transloco: { time: updated() } }}</span>
         </p>
       </div>
-      <ui-button iconLeft="copy" (click)="copy()"
+      <ui-button class="collection__copy" size="sm" iconLeft="copy" (click)="copy()"
         >{{ 'publicCollection.copy' | transloco }}</ui-button
       >
     </section>
@@ -112,7 +111,7 @@
         >{{ 'publicCollection.cta.action' | transloco }}</ui-button
       >
     </ui-panel>
-    } } @else if (store.failed()) {
+    } } @else if (store.failed()) { @if (online()) {
     <div class="collection__state">
       <ui-notice [kind]="NOTICE_KIND.Danger">{{ 'publicCollection.failed' | transloco }}</ui-notice>
       <ui-button class="collection__retry" (click)="retry()"
@@ -120,6 +119,17 @@
       >
     </div>
     } @else {
+    <!-- Shelf 06-public "Offline": the scene, why nothing shows, and Try again. -->
+    <ui-empty-state
+      layout="page"
+      illustration="offline"
+      [headingLevel]="1"
+      [heading]="'publicCollection.offline.title' | transloco"
+      [text]="'publicCollection.offline.text' | transloco"
+    >
+      <ui-button (click)="retry()">{{ 'publicCollection.retry' | transloco }}</ui-button>
+    </ui-empty-state>
+    } } @else {
     <p class="collection__status" role="status">{{ 'publicCollection.loading' | transloco }}</p>
     }
   </main>

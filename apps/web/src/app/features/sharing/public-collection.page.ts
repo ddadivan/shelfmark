@@ -19,6 +19,7 @@ import {
   BUTTON_VARIANT,
   ButtonComponent,
   EmptyStateComponent,
+  FolderIconComponent,
   LogoComponent,
   NOTICE_KIND,
   NoticeComponent,
@@ -27,6 +28,7 @@ import {
   ToastService,
 } from '@shelfmark/ui';
 import { AuthStore } from '../../core/auth/auth.store';
+import { OnlineService } from '../../core/network/online.service';
 import { pluralKey } from '../../core/i18n/plural-key';
 import { APP_PATH } from '../../models/app-path.const';
 import { LinkCardComponent } from '../links/components/link-card/link-card.component';
@@ -51,6 +53,7 @@ const ROBOTS = { name: 'robots', content: 'noindex, nofollow' } as const;
     ButtonComponent,
     EmptyStateComponent,
     LinkCardComponent,
+    FolderIconComponent,
     LogoComponent,
     NoticeComponent,
     PanelComponent,
@@ -83,6 +86,8 @@ export default class PublicCollectionPage {
   private readonly meta = inject(Meta);
 
   protected readonly signedIn = computed(() => this.auth.user() !== null);
+  /** A failed load while the browser is offline shows the offline state instead of the error. */
+  protected readonly online = inject(OnlineService).online;
   private readonly lang = toSignal(this.transloco.langChanges$, {
     initialValue: this.transloco.getActiveLang(),
   });

@@ -65,15 +65,15 @@ describe('PublicCollectionPage', () => {
 
     expect(host.querySelector('h1')?.textContent).toContain('Recipes');
     expect(host.textContent).toContain('Shared by Ada');
-    const meta = [...host.querySelectorAll('.collection__meta span')].map((s) =>
+    const meta = [...host.querySelectorAll('.collection__meta > span')].map((s) =>
       s.textContent?.trim(),
     );
-    expect(meta).toEqual(['3 links', 'Updated 2 days ago']);
+    expect(meta).toEqual(['Shared by Ada', '· 3 links', '· Updated 2 days ago']);
     expect(host.querySelectorAll('app-link-card')).toHaveLength(1);
     expect(host.textContent).toContain('Why I saved it');
     expect(host.querySelector('button[aria-label^="Actions for"]')).toBeNull();
     expect(host.querySelector('[aria-pressed][aria-label^="Favorite"]')).toBeNull();
-    expect(host.textContent).toContain('Sign in');
+    expect(host.textContent).toContain('Start your own shelf');
     expect(host.textContent).toContain('Keep your own links like this');
     expect(host.textContent).toContain('Made with Shelfmark');
     expect(document.head.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe(
@@ -121,5 +121,15 @@ describe('PublicCollectionPage', () => {
     const broken = await setup(() => throwError(() => new HttpErrorResponse({ status: 503 })));
     expect(broken.host.textContent).toContain("Couldn't load the collection.");
     expect(broken.host.textContent).toContain('Try again');
+  });
+
+  it('shows the offline state when the load fails while the browser is offline', async () => {
+    const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+    const { host } = await setup(() => throwError(() => new HttpErrorResponse({ status: 0 })));
+
+    expect(host.querySelector('h1')?.textContent).toContain('You’re offline');
+    expect(host.textContent).toContain('Try again');
+    expect(host.textContent).not.toContain("Couldn't load the collection.");
+    online.mockRestore();
   });
 });

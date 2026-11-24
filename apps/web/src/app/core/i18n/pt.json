@@ -3102,7 +3102,6 @@
   },
   "publicCollection": {
     "home": "Início do Shelfmark",
-    "signIn": "Entrar",
     "backToShelf": "Voltar para minha estante",
     "sharedBy": "Compartilhado por {{name}}",
     "sharedAnonymous": "Compartilhado no Shelfmark",
@@ -3137,7 +3136,12 @@
       "text": "O Shelfmark guarda vídeos, artigos, coisas para comprar e cursos em uma única estante tranquila.",
       "action": "Comece sua estante"
     },
-    "madeWith": "Feito com Shelfmark"
+    "madeWith": "Feito com Shelfmark",
+    "startOwn": "Crie sua estante",
+    "offline": {
+      "title": "Você está offline",
+      "text": "A coleção carrega assim que você voltar a ficar online."
+    }
   },
   "bulk": {
     "bar": {
@@ -4728,5 +4732,11 @@
       "turnOn": "Ativar notificações",
       "notNow": "Agora não"
     }
+  },
+  "notFound": {
+    "title": "Esta página não existe",
+    "text": "O endereço pode estar errado, ou a página mudou de lugar.",
+    "links": "Ir para seus links",
+    "home": "Ir para o Shelfmark"
   }
 }

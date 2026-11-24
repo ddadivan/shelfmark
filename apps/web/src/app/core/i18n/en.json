@@ -3038,7 +3038,6 @@
   },
   "publicCollection": {
     "home": "Shelfmark home",
-    "signIn": "Sign in",
     "backToShelf": "Back to my shelf",
     "sharedBy": "Shared by {{name}}",
     "sharedAnonymous": "Shared on Shelfmark",
@@ -3072,7 +3071,12 @@
       "text": "Shelfmark saves videos, articles, things to buy and courses on one calm shelf.",
       "action": "Start your shelf"
     },
-    "madeWith": "Made with Shelfmark"
+    "madeWith": "Made with Shelfmark",
+    "startOwn": "Start your own shelf",
+    "offline": {
+      "title": "You’re offline",
+      "text": "This collection loads once you’re back online."
+    }
   },
   "bulk": {
     "bar": {
@@ -4615,5 +4619,11 @@
       "turnOn": "Turn on notifications",
       "notNow": "Not now"
     }
+  },
+  "notFound": {
+    "title": "This page doesn’t exist",
+    "text": "The address may be mistyped, or the page has moved.",
+    "links": "Go to your links",
+    "home": "Go to Shelfmark"
   }
 }

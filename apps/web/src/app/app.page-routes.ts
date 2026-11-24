@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { Route, Routes } from '@angular/router';
 import { LINKS_SCOPE } from './features/links/models/links-scope.const';
 import { APP_PATH } from './models/app-path.const';
 import { authOnly, guestOnly, landingGuestOnly, redirectToSignIn } from './core/auth/auth.guards';
@@ -121,3 +121,9 @@ export const pageRoutes: Routes = [
   },
   { path: APP_PATH.SignIn, redirectTo: APP_PATH.Links },
 ];
+
+/** Any other address (Shelf 06-public "Not found"): the last entry of every route table. */
+export const notFoundRoute: Route = {
+  path: '**',
+  loadComponent: () => import('./features/not-found/not-found.page'),
+};
