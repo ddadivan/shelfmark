@@ -49,7 +49,8 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
  * one clears it. The field keeps the combobox semantics (`aria-expanded`, `aria-controls`,
  * `aria-activedescendant`).
  *
- * Slots: `slot="input-end"` (after the input, for example an `Esc` hint), `slot="empty"` (shown
+ * Slots: `slot="input-start"` (before the field, for example the Back button of `screen`),
+ * `slot="input-end"` (after the input, for example an `Esc` hint), `slot="empty"` (shown
  * in a status region while there are no items), `slot="footer"` (keyboard hints, `kbd` is
  * styled). All texts come in through inputs or projected content.
  *
@@ -77,6 +78,8 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
   host: {
     class: 'ui-command-list',
     '[class.ui-command-list--popup]': 'popup()',
+    '[class.ui-command-list--screen]': 'screen()',
+    '(focusin)': 'onFocusin($event)',
     '(focusout)': 'onFocusout($event)',
   },
   templateUrl: './command-list.component.html',
@@ -84,6 +87,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
     './command-list.component.scss',
     './command-list-rows.scss',
     './command-list-popup.scss',
+    './command-list-screen.scss',
   ],
 })
 export class CommandListComponent {
@@ -105,6 +109,17 @@ export class CommandListComponent {
   readonly popup = input(false, { transform: booleanAttribute });
   /** Popup mode: the panel is wanted (typing, ArrowDown); it shows only while there is text. */
   readonly open = model(false);
+  /**
+   * Popup mode, the other way round (Shelf header search): the panel is for the empty field
+   * (recent searches, opened by focus or ArrowDown) and hides as soon as there is text, which the
+   * feature shows elsewhere (the feed). With text and no panel, Esc clears the field.
+   */
+  readonly emptyPanel = input(false, { transform: booleanAttribute });
+  /**
+   * The Shelf full-screen search (a phone or tablet page): a 48px field on `surface-hover` with
+   * a hairline, 56px rows with dividers, 12px group headings, no key caps or key hints.
+   */
+  readonly screen = input(false, { transform: booleanAttribute });
 
   /** An item was chosen (Enter, click); `background` when Ctrl or Cmd was held. */
   readonly selected = output<CommandSelection>();
@@ -121,7 +136,12 @@ export class CommandListComponent {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   /** The results are on screen: always in a dialog, in popup mode while wanted and there is text. */
-  protected readonly shown = computed(() => !this.popup() || (this.open() && this.query() !== ''));
+  protected readonly shown = computed(
+    () =>
+      !this.popup() ||
+      (this.open() &&
+        (this.emptyPanel() ? this.query() === '' && !this.empty() : this.query() !== '')),
+  );
   /** Popup mode: the results panel's overlay pane, exactly as wide as the field. */
   private readonly pane = new FieldPopup({
     origin: () => this.host,
@@ -222,7 +242,7 @@ export class CommandListComponent {
   /** Text typed in the field (from the Aria `value` model). */
   protected onValue(text: string): void {
     this.query.set(text);
-    if (this.popup() && text !== '') {
+    if (this.popup() && (text !== '' || this.emptyPanel())) {
       this.open.set(true);
     }
   }
@@ -231,8 +251,15 @@ export class CommandListComponent {
     if (!this.popup() || this.syncing) {
       return;
     }
-    // ArrowDown opens it, but only with text to show results for.
-    this.open.set(expanded && this.query() !== '');
+    // ArrowDown opens it, but only with something to show: text, or the empty field's panel.
+    this.open.set(expanded && (this.emptyPanel() || this.query() !== ''));
+  }
+
+  /** `emptyPanel`: focus in the empty field opens its panel. */
+  protected onFocusin(event: FocusEvent): void {
+    if (this.popup() && this.emptyPanel() && event.target === this.field().nativeElement) {
+      this.open.set(true);
+    }
   }
 
   private onEscape(event: KeyboardEvent): void {

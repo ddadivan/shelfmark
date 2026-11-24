@@ -10,12 +10,14 @@ import { AiLineComponent } from './ai-line.component';
     <ui-ai-line
       text="Suggestions aren't available right now. Your link saves as usual."
       [actionLabel]="actionLabel()"
+      [banner]="banner()"
       (action)="actions.set(actions() + 1)"
     />
   `,
 })
 class HostComponent {
   readonly actionLabel = signal('');
+  readonly banner = signal(false);
   readonly actions = signal(0);
 }
 
@@ -55,6 +57,15 @@ describe('ui-ai-line', () => {
 
     update((c) => c.actionLabel.set(''));
     expect(host.querySelector('ui-button')).toBeNull();
+  });
+
+  it('banner: a sage band with the sentence in text (Shelf search)', () => {
+    const { host, update } = setup();
+    update((c) => c.banner.set(true));
+    expect(host.querySelector('ui-ai-line')?.classList).toContain('ui-ai-line--banner');
+    const css = compileScss('lib/components/ai-line/ai-line.component.scss');
+    expect(css).toMatch(/:host\(\.ui-ai-line--banner\)\s*\{[^}]*background: var\(--ai-bg\)/);
+    expect(css).toMatch(/:host\(\.ui-ai-line--banner\)\s*\{[^}]*color: var\(--text\)/);
   });
 
   it('is quiet: text-muted caption, mark in ai, never a danger colour', () => {

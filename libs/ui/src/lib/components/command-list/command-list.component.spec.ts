@@ -598,6 +598,138 @@ describe('CommandListComponent in popup mode', { timeout: 30_000 }, () => {
   });
 });
 
+@Component({
+  imports: [CommandListComponent, CommandGroupComponent, CommandItemComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <button id="outside" type="button">Outside</button>
+    <ui-command-list
+      popup
+      emptyPanel
+      inputLabel="Search"
+      listLabel="Recent searches"
+      [(query)]="query"
+      [(open)]="open"
+      (selected)="chosen.update((list) => [...list, $event])"
+    >
+      @if (query() === '') {
+        <ui-command-group heading="Recent searches">
+          <ui-command-item value="shoes">shoes</ui-command-item>
+          <ui-command-item value="recipes">recipes</ui-command-item>
+        </ui-command-group>
+      }
+    </ui-command-list>
+  `,
+})
+class EmptyPanelHostComponent {
+  readonly query = signal('');
+  readonly open = signal(false);
+  readonly chosen = signal<CommandSelection[]>([]);
+}
+
+describe('CommandListComponent in popup mode with emptyPanel', { timeout: 30_000 }, () => {
+  let fixture: ComponentFixture<EmptyPanelHostComponent>;
+  let host: EmptyPanelHostComponent;
+  let el: HTMLElement;
+
+  beforeEach(async () => {
+    fixture = TestBed.createComponent(EmptyPanelHostComponent);
+    host = fixture.componentInstance;
+    el = fixture.nativeElement;
+    document.body.appendChild(el);
+    await settle(fixture);
+  });
+
+  afterEach(() => {
+    fixture.destroy();
+    el.remove();
+    document.querySelectorAll('.cdk-overlay-container').forEach((node) => node.replaceChildren());
+  });
+
+  const input = (): HTMLInputElement => {
+    const field = el.querySelector<HTMLInputElement>('input');
+    if (!field) {
+      throw new Error('no input');
+    }
+    return field;
+  };
+  const options = (): HTMLElement[] => [
+    ...document.querySelectorAll<HTMLElement>('.ui-command-list__panel [role="option"]'),
+  ];
+
+  it('opens the panel when the empty field takes focus, and chooses with Enter', async () => {
+    input().focus();
+    await settle(fixture);
+    expect(host.open()).toBe(true);
+    expect(input().getAttribute('aria-expanded')).toBe('true');
+    expect(options().map((option) => option.textContent?.trim())).toEqual(['shoes', 'recipes']);
+
+    input().dispatchEvent(
+      new KeyboardEvent('keydown', { key: KEYBOARD_KEY.Enter, bubbles: true, cancelable: true }),
+    );
+    await settle(fixture);
+    expect(host.chosen()).toEqual([{ value: 'shoes', background: false }]);
+  });
+
+  it('hides the panel as soon as there is text, and Esc then clears the text', async () => {
+    input().focus();
+    input().value = 'sh';
+    input().dispatchEvent(new InputEvent('input', { bubbles: true, data: 'sh' }));
+    await settle(fixture);
+    expect(input().getAttribute('aria-expanded')).toBe('false');
+
+    const escape = new KeyboardEvent('keydown', {
+      key: KEYBOARD_KEY.Escape,
+      bubbles: true,
+      cancelable: true,
+    });
+    input().dispatchEvent(escape);
+    await settle(fixture);
+    expect(escape.defaultPrevented).toBe(true);
+    expect(host.query()).toBe('');
+  });
+});
+
+@Component({
+  imports: [CommandListComponent, CommandItemComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <ui-command-list screen inputLabel="Search" listLabel="Results">
+      <button slot="input-start" type="button" aria-label="Close search">Back</button>
+      <ui-command-item value="a">Alpha</ui-command-item>
+    </ui-command-list>
+  `,
+})
+class ScreenHostComponent {}
+
+describe('CommandListComponent screen', () => {
+  it('marks the host and puts the input-start slot before the field', async () => {
+    const fixture = TestBed.createComponent(ScreenHostComponent);
+    await settle(fixture);
+    const el: HTMLElement = fixture.nativeElement;
+
+    expect(el.querySelector('.ui-command-list--screen')).not.toBeNull();
+    const row = el.querySelector('.ui-command-list__field-row');
+    expect(row?.firstElementChild?.getAttribute('aria-label')).toBe('Close search');
+    expect(row?.querySelector('.ui-command-list__field input')).not.toBeNull();
+    expect(await axeViolations(el)).toEqual([]);
+  });
+
+  it('draws 56px rows with dividers, a 48px field, and hides the key hints', () => {
+    const css = compileScss('lib/components/command-list/command-list-screen.scss');
+    expect(css).toMatch(
+      /\.ui-command-list--screen \.ui-command-list__option\s*{[^}]*min-height:\s*3\.5rem/,
+    );
+    expect(css).toMatch(
+      /\.ui-command-list--screen \.ui-command-list__field\s*{[^}]*min-height:\s*3rem/,
+    );
+    expect(css).toMatch(
+      /\.ui-command-list__option \+ \.ui-command-list__option\s*{[^}]*border-top/,
+    );
+    expect(mediaBlocks(css, /pointer:\s*coarse/).join('\n')).toContain('outline: none');
+  });
+});
+
 describe('CommandListComponent styles', () => {
   const css = compileScss('lib/components/command-list/command-list.component.scss');
 

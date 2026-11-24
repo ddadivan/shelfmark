@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { BUTTON_SIZE } from '../button/models/button-size.const';
 import { BUTTON_VARIANT } from '../button/models/button-variant.const';
 import { ButtonComponent } from '../button/button.component';
@@ -17,7 +17,7 @@ import { ICON_SIZE } from '../icon/models/icon-size.const';
   selector: 'ui-ai-line',
   imports: [ButtonComponent, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'ui-ai-line' },
+  host: { class: 'ui-ai-line', '[class.ui-ai-line--banner]': 'banner()' },
   templateUrl: './ai-line.component.html',
   styleUrl: './ai-line.component.scss',
 })
@@ -30,6 +30,11 @@ export class AiLineComponent {
   readonly text = input.required<string>();
   /** Label of the ghost button; no button when empty. */
   readonly actionLabel = input('');
+  /**
+   * A sage band (Shelf search "Looks like a question"): `ai-bg` fill, 14px text in `text`, the
+   * button at the end of the line. Still no colour but the mark and the tint.
+   */
+  readonly banner = input(false, { transform: booleanAttribute });
 
   /** The ghost button was pressed. */
   readonly action = output<void>();

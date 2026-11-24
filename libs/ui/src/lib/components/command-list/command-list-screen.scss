@@ -1,0 +1,137 @@
+@use '../../../styles/ui' as *;
+
+// `screen` (Shelf full-screen search, `01-library.html` `.fs`): a head with Back and a 48px field
+// over a `sep` line, then the list with 56px rows split by hairlines, 12px headings, no key caps
+// and no key hints (a phone or tablet page).
+.ui-command-list--screen {
+  .ui-command-list__field-row {
+    display: flex;
+    flex: none;
+    gap: var(--space-2);
+    align-items: center;
+    padding: calc(var(--space-3) + env(safe-area-inset-top)) var(--space-4) var(--space-3);
+    border-bottom: 1px solid var(--sep);
+  }
+
+  .ui-command-list__field {
+    --ui-search-hairline: rgb(127 127 127 / 25%);
+
+    flex: 1 1 auto;
+    gap: var(--space-2);
+    min-width: 0;
+    min-height: rem(48px);
+    padding: 0 var(--space-1) 0 var(--space-3);
+    background: var(--surface-hover);
+    border: 0;
+    border-radius: var(--radius-sm);
+    box-shadow: inset 0 0 0 1px var(--ui-search-hairline);
+
+    &:has(.ui-command-list__input:focus-visible) {
+      border: 0;
+      box-shadow:
+        inset 0 0 0 1px var(--ui-search-hairline),
+        0 0 0 2px var(--focus-ring);
+    }
+
+    > kbd {
+      display: none;
+    }
+  }
+
+  .ui-command-list__icon {
+    --ui-icon-size: #{rem(18px)};
+  }
+
+  .ui-command-list__input {
+    @include type(body);
+
+    &::placeholder {
+      color: var(--text-muted);
+      opacity: 1;
+    }
+  }
+
+  .ui-command-list__list {
+    gap: 0;
+    padding: var(--space-2) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom));
+  }
+
+  .ui-command-list__group {
+    gap: 0;
+  }
+
+  .ui-command-list__heading {
+    @include type(caption);
+
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    padding: var(--space-4) 0 var(--space-1);
+    font-weight: 500;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  .ui-command-list__lead {
+    padding: var(--space-4) 0 0;
+  }
+
+  .ui-command-list__option {
+    min-height: rem(56px);
+    padding: var(--space-2) 0;
+    border-radius: 0;
+
+    @include hover {
+      background: transparent;
+    }
+
+    &:active {
+      background: transparent;
+    }
+
+    &[data-active='true'] {
+      background: transparent;
+
+      // A touch screen has no arrow keys: no ring on the first row there.
+      @include coarse {
+        outline: none;
+      }
+    }
+  }
+
+  .ui-command-list__option + .ui-command-list__option {
+    border-top: 1px solid var(--line);
+  }
+
+  .ui-command-item__title {
+    @include type(secondary);
+
+    font-weight: 500;
+  }
+
+  .ui-command-item__leading {
+    border-radius: var(--radius-sm);
+  }
+
+  .ui-command-list__option[data-active='true'] .ui-command-item__leading {
+    background: var(--surface-hover);
+  }
+
+  .ui-command-list__option[data-active='true'] > .ui-command-list__enter {
+    display: none;
+  }
+
+  .ui-command-list__note {
+    padding: var(--space-2) var(--space-4) var(--space-4);
+  }
+
+  .ui-command-list__footer {
+    @include visually-hidden;
+  }
+
+  .ui-command-list__status--empty {
+    padding: var(--space-6) var(--space-4);
+  }
+}

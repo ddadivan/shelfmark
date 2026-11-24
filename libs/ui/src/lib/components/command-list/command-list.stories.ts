@@ -300,6 +300,42 @@ export const Popup: Story = {
   }),
 };
 
+/**
+ * `popup` with `emptyPanel` (Shelf header search): focus in the empty field opens the panel
+ * (recent searches); typing hides it, the feature shows the results elsewhere.
+ */
+export const RecentSearches: Story = {
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports },
+    template: box(`
+      <ui-command-list popup emptyPanel [inputLabel]="inputLabel" listLabel="Recent searches" [placeholder]="placeholder">
+        <kbd slot="input-end">Ctrl K</kbd>
+        <ui-command-group heading="Recent searches">
+          <ui-command-item value="signal forms">signal forms</ui-command-item>
+          <ui-command-item value="shoes">shoes</ui-command-item>
+        </ui-command-group>
+        <span slot="note">For questions use Ask on the right of the field.</span>
+      </ui-command-list>`),
+  }),
+};
+
+/** `screen` (Shelf full-screen search below 64em): Back in `input-start`, 56px rows with dividers. */
+export const Screen: Story = {
+  render: (args) => ({
+    props: args,
+    moduleMetadata: { imports },
+    template: box(`
+      <ui-command-list screen [inputLabel]="inputLabel" listLabel="Search results" [placeholder]="placeholder" query="sig">
+        <button slot="input-start" type="button" aria-label="Close search">‹</button>
+        <ui-command-group heading="2 links">
+          <ui-command-item value="a">Signals vs RxJS <span slot="meta">medium.com</span></ui-command-item>
+          <ui-command-item value="b">Angular signals: the guide <span slot="meta">angular.dev</span></ui-command-item>
+        </ui-command-group>
+      </ui-command-list>`),
+  }),
+};
+
 /** No match: the empty slot sits in a status region and the listbox is hidden. */
 export const Empty: Story = {
   render: (args) => ({
