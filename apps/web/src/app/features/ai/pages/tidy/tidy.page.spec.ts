@@ -81,6 +81,12 @@ describe('TidyPage', () => {
     const { element, loader } = await setup();
     expect(element.querySelector('h1')?.textContent).toContain('Tidy Unsorted');
     expect(element.textContent).toContain('Suggestions for 2 links. Tap a chip to leave it out.');
+    // Shelf: the section heading with its count, and the bar's count beside Apply.
+    expect(element.querySelector('h2.tidy__section')?.textContent).toContain(
+      'Unsorted: suggested folders and tags',
+    );
+    expect(element.querySelector('.tidy__section-count')?.textContent?.trim()).toBe('2 links');
+    expect(element.querySelector('.tidy__bar-count')?.textContent?.trim()).toBe('2 links selected');
     const row = await loader.getHarness(
       UiSuggestionRowHarness.with({ ariaLabel: `Changes for ${TIDY_LINK.title}` }),
     );

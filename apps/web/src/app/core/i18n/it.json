@@ -3928,6 +3928,17 @@
       "import": {
         "line": "Sono mostrati solo i link di questa importazione.",
         "all": "Rivedi tutto"
+      },
+      "section": "Non ordinati: cartelle e tag suggeriti",
+      "sectionCount": {
+        "one": "{{count}} link",
+        "many": "{{count}} link",
+        "other": "{{count}} link"
+      },
+      "selected": {
+        "one": "{{count}} link selezionato",
+        "many": "{{count}} link selezionati",
+        "other": "{{count}} link selezionati"
       }
     },
     "search": {

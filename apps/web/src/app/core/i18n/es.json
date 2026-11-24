@@ -3928,6 +3928,17 @@
       "import": {
         "line": "Solo se muestran los enlaces de esta importación.",
         "all": "Revisar todo"
+      },
+      "section": "Sin ordenar: carpetas y etiquetas sugeridas",
+      "sectionCount": {
+        "one": "{{count}} enlace",
+        "many": "{{count}} enlaces",
+        "other": "{{count}} enlaces"
+      },
+      "selected": {
+        "one": "{{count}} enlace seleccionado",
+        "many": "{{count}} enlaces seleccionados",
+        "other": "{{count}} enlaces seleccionados"
       }
     },
     "search": {

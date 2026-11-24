@@ -12,16 +12,12 @@
   display: flex;
   flex: 1 0 auto;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-4);
   width: 100%;
-  max-width: rem(1100px);
-  padding-block: var(--space-2) var(--space-8);
-  margin-inline: auto;
 
-  @include compact {
-    gap: var(--space-4);
-    padding-block-end: 0;
-  }
+  // Shelf Tidy up: left-aligned like the other pages, the list up to 880px wide.
+  max-width: rem(880px);
+  padding-block: var(--space-2) 0;
 }
 
 .tidy__top {
@@ -38,35 +34,38 @@
 }
 
 .tidy__title {
-  @include type(display);
+  @include type(title);
 
   margin: 0;
+}
 
-  @include phone {
-    @include type(title);
-  }
+// "Unsorted: suggested folders and tags" with "4 links" in the caption size.
+.tidy__section {
+  @include type(heading);
+
+  margin: var(--space-2) 0 0;
+}
+
+.tidy__section-count {
+  @include type(caption);
+
+  margin-inline-start: var(--space-1);
+  color: var(--text-muted);
 }
 
 .tidy__lead {
-  @include type(caption);
+  @include type(secondary);
 
   min-height: 1lh;
   margin: var(--space-1) 0 0;
   color: var(--text-muted);
 }
 
-.tidy__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
 // Desktop: one surface with a row per link; the mobile shell: a card per link.
 .tidy__list {
   display: flex;
   flex-direction: column;
-  gap: rem(2px);
-  padding: var(--space-1);
+  padding: 0;
   margin: 0;
   list-style: none;
   background: var(--surface);
@@ -75,10 +74,24 @@
 
   @include compact {
     gap: var(--space-3);
-    padding: 0;
     background: none;
     box-shadow: none;
   }
+}
+
+// Shelf: one card, the rows split by `sep` lines (desktop).
+.tidy__item + .tidy__item {
+  @include desktop {
+    border-block-start: 1px solid var(--sep);
+  }
+}
+
+.tidy__bar-count {
+  @include type(label);
+
+  flex: 1 1 auto;
+  padding-inline: var(--space-2);
+  margin: 0;
 }
 
 .tidy__more {
@@ -100,18 +113,27 @@
 // edge.
 $tidy-bar-offset: rem(20px) - $shell-tab-bar-room;
 
+// Desktop (Shelf): the bar stands 16px above the bottom edge, "6 changes selected" at its start.
 .tidy__bar {
   @include float-surface;
 
   position: sticky;
-  inset-block-end: #{$tidy-bar-offset};
+  inset-block-end: var(--space-4);
   z-index: 3;
   display: flex;
   gap: var(--space-2);
+  align-items: center;
   justify-content: flex-end;
-  padding: var(--space-3);
-  margin-block: auto #{$tidy-bar-offset};
-  border-radius: var(--radius-lg);
+  padding: var(--space-2);
+  margin-block: auto var(--space-4);
+  border-radius: var(--radius-md);
+
+  @include compact {
+    inset-block-end: #{$tidy-bar-offset};
+    padding: var(--space-3);
+    margin-block: auto #{$tidy-bar-offset};
+    border-radius: var(--radius-lg);
+  }
 
   @include tablet {
     align-self: center;

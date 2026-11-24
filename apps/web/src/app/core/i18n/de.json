@@ -3829,6 +3829,15 @@
       "import": {
         "line": "Es werden nur die Links dieses Imports angezeigt.",
         "all": "Alles durchgehen"
+      },
+      "section": "Unsortiert: vorgeschlagene Ordner und Tags",
+      "sectionCount": {
+        "one": "{{count}} Link",
+        "other": "{{count}} Links"
+      },
+      "selected": {
+        "one": "{{count}} Link ausgewählt",
+        "other": "{{count}} Links ausgewählt"
       }
     },
     "search": {

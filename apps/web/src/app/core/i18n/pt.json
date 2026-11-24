@@ -3928,6 +3928,17 @@
       "import": {
         "line": "Mostrando só os links desta importação.",
         "all": "Revisar tudo"
+      },
+      "section": "Sem pasta: pastas e tags sugeridas",
+      "sectionCount": {
+        "one": "{{count}} link",
+        "many": "{{count}} links",
+        "other": "{{count}} links"
+      },
+      "selected": {
+        "one": "{{count}} link selecionado",
+        "many": "{{count}} links selecionados",
+        "other": "{{count}} links selecionados"
       }
     },
     "search": {

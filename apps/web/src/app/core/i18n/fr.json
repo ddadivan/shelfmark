@@ -3928,6 +3928,17 @@
       "import": {
         "line": "Seuls les liens de cet import sont affichés.",
         "all": "Tout passer en revue"
+      },
+      "section": "Non classés : dossiers et tags suggérés",
+      "sectionCount": {
+        "one": "{{count}} lien",
+        "many": "{{count}} liens",
+        "other": "{{count}} liens"
+      },
+      "selected": {
+        "one": "{{count}} lien sélectionné",
+        "many": "{{count}} liens sélectionnés",
+        "other": "{{count}} liens sélectionnés"
       }
     },
     "search": {

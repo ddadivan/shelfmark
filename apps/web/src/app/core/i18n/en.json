@@ -3829,6 +3829,15 @@
       "import": {
         "line": "Showing only the links of this import.",
         "all": "Review everything"
+      },
+      "section": "Unsorted: suggested folders and tags",
+      "sectionCount": {
+        "one": "{{count}} link",
+        "other": "{{count}} links"
+      },
+      "selected": {
+        "one": "{{count}} link selected",
+        "other": "{{count}} links selected"
       }
     },
     "search": {
