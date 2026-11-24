@@ -14,7 +14,7 @@ Segmented controls fill the width with equal segments.
 
 **Full screen** (desktop and tablet, button after Details, key F; Esc leaves full screen first, then closes):
 - The Link page covers the whole window: no sidebar, header or link list.
-- The head stays: previous / next (↑ ↓, also J / K), title and site, "3 of 17" position in the current feed, Site / Reader, Aa, Open, star, details, ⋯, exit full screen, close.
+- The head stays: previous / next (↑ ↓), title and site, "3 of 17" position in the current feed, Site / Reader, Aa, Open, star, details, ⋯, exit full screen, close.
 - Works for Site and Reader, so people can run through their links or read one without distraction. Full screen is remembered while stepping through links and ends when the Link page closes.
 - Phones: the Link page is already full screen, so there is no button.
 
