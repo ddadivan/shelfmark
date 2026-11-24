@@ -3,4 +3,5 @@ export const CRON_ENDPOINT = {
   DemoCleanup: '/api/cron/demo-cleanup',
   TrashCleanup: '/api/cron/trash-cleanup',
   AiSweep: '/api/cron/ai-sweep',
+  Notifications: '/api/cron/notifications',
 } as const;

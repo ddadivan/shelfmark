@@ -1,10 +1,12 @@
 /**
- * Notification endpoints (planned, not implemented by `apps/api` yet): delivery needs Web Push
- * (VAPID keys, a push subscription per device, a sender job) and an email sender, which are not
- * small endpoints. Until then the web app's `NOTIFICATIONS_API` HTTP seam answers "not available"
- * without a request.
+ * Settings › Notifications (Shelf 05-settings / 12-notify). `Settings` answers what may be sent,
+ * the quiet hours, the devices and whether the server can deliver Web Push at all (`available`,
+ * false while the VAPID keys are not configured). `Devices` adds this browser's push subscription;
+ * `Device` removes one; `Test` sends a sample notification to every device of the account.
  */
 export const NOTIFICATION_ENDPOINT = {
   Settings: '/api/me/notifications',
+  Devices: '/api/me/notifications/devices',
   Device: '/api/me/notifications/devices/:id',
+  Test: '/api/me/notifications/test',
 } as const;

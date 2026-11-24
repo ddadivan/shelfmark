@@ -33,8 +33,16 @@ async function setup({
   }
   let answer: NotificationSettingsResponse = {
     available,
+    publicKey: available ? 'key' : null,
     settings: NOTIFICATION_DEFAULTS,
-    devices: [{ id: 'd1', name: 'Shelfmark on Pixel 8', createdAt: '2026-11-03T09:00:00.000Z' }],
+    devices: [
+      {
+        id: 'd1',
+        name: 'Shelfmark on Pixel 8',
+        createdAt: '2026-11-03T09:00:00.000Z',
+        lastUsedAt: null,
+      },
+    ],
   };
   const api = {
     get: vi.fn(() => of(answer)),
@@ -46,6 +54,8 @@ async function setup({
       answer = { ...answer, devices: [] };
       return of(answer);
     }),
+    addDevice: vi.fn(() => of({ ...answer, deviceId: 'd2' })),
+    test: vi.fn(() => of({ sent: 1 })),
   };
   TestBed.configureTestingModule({ providers: [{ provide: NOTIFICATIONS_API, useValue: api }] });
   const page = await setupSettingsPage(NotificationsPage, 'notifications');
@@ -75,12 +85,13 @@ describe('NotificationsPage', () => {
     const { root, api, harness } = await setup();
 
     expect(headings(root)).toEqual(['On this device', 'What to send', 'Quiet hours', 'Devices']);
-    const weekly = root.querySelector<HTMLButtonElement>(
-      'button[role="switch"][aria-label="From your shelf, weekly email"]',
+    const nudge = root.querySelector<HTMLButtonElement>(
+      'button[role="switch"][aria-label="Continue reading"]',
     );
-    weekly?.click();
+    nudge?.click();
     await harness.fixture.whenStable();
-    expect(api.update).toHaveBeenCalledWith({ weeklyEmail: true });
+    expect(api.update).toHaveBeenCalledWith({ continueReading: true });
+    expect(root.textContent).not.toContain('weekly email');
 
     buttonWith(root, 'Turn off')?.click();
     await harness.fixture.whenStable();

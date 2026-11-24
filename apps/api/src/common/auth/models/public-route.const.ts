@@ -74,6 +74,12 @@ export const PUBLIC_ROUTES: readonly PublicRoute[] = [
       'Vercel Cron cannot send a session: authenticated by the CRON_SECRET bearer guard on the handler, fails closed (ADR 0049)',
   },
   {
+    method: HTTP_METHOD.Get,
+    path: CRON_ENDPOINT.Notifications,
+    reason:
+      'Vercel Cron (or an external scheduler) cannot send a session: authenticated by the CRON_SECRET bearer guard on the handler, fails closed (Shelf 12-notify)',
+  },
+  {
     method: HTTP_METHOD.Post,
     path: MCP_ENDPOINT.Server,
     reason:

@@ -5,17 +5,20 @@ import { NOTIFICATION_PERMISSION } from '../models/notification-permission.const
 import type { NotificationPermissionState } from '../models/notification-permission.type';
 import { NOTIFICATION_STORAGE_KEY } from '../models/notification-storage-key.const';
 import { deviceParts, needsHomeScreen } from '../utils/device-name';
+import { PushSubscriptionService } from './push-subscription.service';
 
 /**
  * Notifications on this device (Shelf 05-settings "On this device", 12-notify): the browser's
  * permission, the device switch (a device preference: `NOTIFICATION_STORAGE_KEY.Device`), the
  * browser's own prompt (only from a user's press, never on its own) and a test notification.
- * Delivery of reminders while Shelfmark is closed needs Web Push on the server (not built).
+ * Turning on also subscribes this browser to Web Push (`PushSubscriptionService`, in the
+ * background) so reminders arrive while Shelfmark is closed; turning off removes the device.
  */
 @Service()
 export class DeviceNotificationsService {
   private readonly window = inject(DOCUMENT).defaultView;
   private readonly transloco = inject(TranslocoService);
+  private readonly push = inject(PushSubscriptionService);
 
   private readonly permissionState = signal<NotificationPermissionState>(this.readPermission());
   private readonly switchedOff = signal(this.readOff());
@@ -60,17 +63,27 @@ export class DeviceNotificationsService {
     }
     this.refresh();
     this.writeOff(false);
+    if (this.enabled()) {
+      void this.push.subscribe(this.deviceName());
+    }
     return this.enabled();
   }
 
   turnOff(): void {
     this.writeOff(true);
+    void this.push.unsubscribe();
   }
 
-  /** Shows a sample notification (through the service worker when there is one). */
+  /**
+   * Shows a sample notification: a real push through the server when this browser is subscribed,
+   * else a local one (through the service worker when there is one).
+   */
   async test(title: string, body: string): Promise<boolean> {
     if (!this.enabled() || !this.window) {
       return false;
+    }
+    if (await this.push.sendTest()) {
+      return true;
     }
     const options: NotificationOptions = { body, icon: '/icons/icon-192.png', tag: 'sm-test' };
     try {

@@ -1,31 +1,55 @@
-import { Service } from '@angular/core';
-import { NOTIFICATION_DEFAULTS, type NotificationSettingsResponse } from '@shelfmark/contracts';
-import { of, type Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import {
+  NOTIFICATION_ENDPOINT,
+  type AddNotificationDeviceRequest,
+  type AddNotificationDeviceResponse,
+  type NotificationSettingsResponse,
+  type NotificationTestResponse,
+  type UpdateNotificationSettings,
+} from '@shelfmark/contracts';
+import type { Observable } from 'rxjs';
+import { skipErrorToast } from '../../../core/api/skip-error-toast';
 import type { NotificationsApi } from '../models/notifications-api.interface';
 
-const UNAVAILABLE: NotificationSettingsResponse = {
-  available: false,
-  settings: NOTIFICATION_DEFAULTS,
-  devices: [],
-};
-
 /**
- * `NotificationsApi` for the real API. MOCK (Shelf): `apps/api` cannot deliver notifications yet
- * (Web Push needs VAPID keys, a subscription per device and a sender job; the weekly email needs a
- * mail sender), so nothing is stored there and every call answers "not available" without a
- * request. The page then shows only what this device can do (permission and a test).
+ * `NotificationsApi` over `NOTIFICATION_ENDPOINT`. The page shows its own failure toasts (and the
+ * push subscription runs in the background), so the global error toast is skipped.
  */
 @Service()
 export class HttpNotificationsApi implements NotificationsApi {
+  private readonly http = inject(HttpClient);
+
   get(): Observable<NotificationSettingsResponse> {
-    return of(UNAVAILABLE);
+    return this.http.get<NotificationSettingsResponse>(NOTIFICATION_ENDPOINT.Settings, {
+      context: skipErrorToast(),
+    });
   }
 
-  update(): Observable<NotificationSettingsResponse> {
-    return of(UNAVAILABLE);
+  update(change: UpdateNotificationSettings): Observable<NotificationSettingsResponse> {
+    return this.http.patch<NotificationSettingsResponse>(NOTIFICATION_ENDPOINT.Settings, change, {
+      context: skipErrorToast(),
+    });
   }
 
-  removeDevice(): Observable<NotificationSettingsResponse> {
-    return of(UNAVAILABLE);
+  addDevice(body: AddNotificationDeviceRequest): Observable<AddNotificationDeviceResponse> {
+    return this.http.post<AddNotificationDeviceResponse>(NOTIFICATION_ENDPOINT.Devices, body, {
+      context: skipErrorToast(),
+    });
+  }
+
+  removeDevice(id: string): Observable<NotificationSettingsResponse> {
+    return this.http.delete<NotificationSettingsResponse>(
+      NOTIFICATION_ENDPOINT.Device.replace(':id', encodeURIComponent(id)),
+      { context: skipErrorToast() },
+    );
+  }
+
+  test(): Observable<NotificationTestResponse> {
+    return this.http.post<NotificationTestResponse>(
+      NOTIFICATION_ENDPOINT.Test,
+      {},
+      { context: skipErrorToast() },
+    );
   }
 }

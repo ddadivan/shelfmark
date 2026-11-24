@@ -39,6 +39,7 @@ import { TOAST_DISMISS_LABEL, trackInputModality } from '@shelfmark/ui';
 import { ThemeService } from './core/theme/theme.service';
 import { TabSyncService } from './core/sync/tab-sync.service';
 import { UpdatePromptService } from './core/pwa/update-prompt.service';
+import { PushSubscriptionService } from './features/notifications/services/push-subscription.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -94,5 +95,7 @@ export const appConfig: ApplicationConfig = {
     // Keeps the tabs of this browser in step (#268).
     provideAppInitializer(() => inject(TabSyncService).init()),
     provideAppInitializer(() => inject(UpdatePromptService).init()),
+    // Web Push: drops this browser's subscription when the session ends (Shelf 12-notify).
+    provideAppInitializer(() => inject(PushSubscriptionService).init()),
   ],
 };

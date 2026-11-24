@@ -99,6 +99,12 @@ model User {
   // CHECKs in the migration keep plan to free | pro.
   plan                  String               @default("free") @db.VarChar(8)
   aiPack                Boolean              @default(false) @map("ai_pack")
+  // Settings › Notifications (Shelf 12-notify): what may be sent and the quiet hours (both NULL or
+  // both HH:MM, CHECKs in the migration). Quiet hours are read in each device's own time zone.
+  notifyReminders       Boolean              @default(true) @map("notify_reminders")
+  notifyContinueReading Boolean              @default(false) @map("notify_continue_reading")
+  quietFrom             String?              @map("quiet_from") @db.VarChar(5)
+  quietTo               String?              @map("quiet_to") @db.VarChar(5)
   createdAt             DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt             DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
   sessions              Session[]
@@ -125,6 +131,7 @@ model User {
   rediscoverState       RediscoverState?
   cleanupReport         CleanupReport?
   imports               Import[]
+  pushSubscriptions     PushSubscription[]
 
   @@map("users")
 }
@@ -266,6 +273,9 @@ model Link {
   // In-app reminder (#275): the link is due once this time has passed; NULL = no reminder. Done
   // clears it. Written with plain SQL so `updated_at` stays; the partial index lives in the migration.
   remindAt           DateTime?          @map("remind_at") @db.Timestamptz(3)
+  // When the due reminder was last handed to Web Push (Shelf 12-notify); a reminder is pushed once:
+  // while this is NULL or older than remind_at. Plain SQL, so `updated_at` stays.
+  remindPushedAt     DateTime?          @map("remind_pushed_at") @db.Timestamptz(3)
   // AI summary (#391): plain text, at most AI_LIMIT.SummaryMax. `summarySource` is `ai` or `user`
   // (both null or both set, CHECKs in the migration); a `user` summary is never overwritten by AI.
   // `aiStatus` is the latest job status for the cards (pending | done | failed | skipped).
@@ -816,4 +826,25 @@ model FrameCheck {
   checkedAt DateTime @map("checked_at") @db.Timestamptz(3)
 
   @@map("frame_checks")
+}
+
+// A browser's Web Push subscription (Shelf 12-notify): one per device and account, at most
+// NOTIFICATION_LIMIT.DevicesPerUserMax. `endpoint` is the push service URL the browser gave (https,
+// an allow-listed push service host) and, with the keys, a capability: never logged or answered.
+// `timeZone` is the device's IANA zone for the quiet hours. A push service answering 404 / 410
+// deletes the row.
+model PushSubscription {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  endpoint   String    @db.VarChar(2048)
+  p256dh     String    @db.VarChar(128)
+  auth       String    @db.VarChar(64)
+  name       String    @db.VarChar(80)
+  timeZone   String    @map("time_zone") @db.VarChar(64)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  lastUsedAt DateTime? @map("last_used_at") @db.Timestamptz(3)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpoint])
+  @@map("push_subscriptions")
 }

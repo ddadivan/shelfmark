@@ -40,5 +40,6 @@ import 'rxjs';
 import 'sharp';
 import 'swagger-ui-dist';
 import 'tslib';
+import 'web-push';
 
 export { default } from '../dist/apps/api/vercel-handler.mjs';

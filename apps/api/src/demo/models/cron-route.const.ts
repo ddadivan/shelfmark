@@ -9,4 +9,6 @@ export const CRON_ROUTE = {
   TrashCleanupPath: CRON_ENDPOINT.TrashCleanup,
   AiSweep: 'ai-sweep',
   AiSweepPath: CRON_ENDPOINT.AiSweep,
+  Notifications: 'notifications',
+  NotificationsPath: CRON_ENDPOINT.Notifications,
 } as const;

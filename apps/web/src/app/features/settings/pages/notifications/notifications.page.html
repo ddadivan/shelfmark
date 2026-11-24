@@ -91,16 +91,6 @@
       (checkedChange)="save({ continueReading: $event })"
     />
   </ui-settings-row>
-  <ui-settings-row
-    [title]="'settings.notifications.send.weekly.label' | transloco"
-    [description]="'settings.notifications.send.weekly.hint' | transloco"
-  >
-    <ui-switch
-      [label]="'settings.notifications.send.weekly.label' | transloco"
-      [checked]="store.settings().weeklyEmail"
-      (checkedChange)="save({ weeklyEmail: $event })"
-    />
-  </ui-settings-row>
 </ui-settings-section>
 
 <ui-settings-section [title]="'settings.notifications.quiet.title' | transloco">

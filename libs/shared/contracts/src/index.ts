@@ -548,3 +548,10 @@ export type { NotificationSettingsResponse } from './notifications/notification-
 export type { UpdateNotificationSettings } from './notifications/update-notification-settings.type';
 export { NOTIFICATION_ENDPOINT } from './notifications/notification-endpoint.const';
 export { NOTIFICATION_DEFAULTS } from './notifications/notification-defaults.const';
+export type { PushSubscriptionKeys } from './notifications/push-subscription-keys.interface';
+export type { AddNotificationDeviceRequest } from './notifications/add-notification-device-request.interface';
+export type { AddNotificationDeviceResponse } from './notifications/add-notification-device-response.interface';
+export type { NotificationTestResponse } from './notifications/notification-test-response.interface';
+export { NOTIFICATION_LIMIT } from './notifications/notification-limit.const';
+export { NOTIFICATION_TIME_PATTERN } from './notifications/notification-time-pattern.const';
+export { NOTIFICATION_ERROR_MESSAGE } from './notifications/notification-error-message.const';

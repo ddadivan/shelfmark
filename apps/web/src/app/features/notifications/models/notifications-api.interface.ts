@@ -1,18 +1,25 @@
 import type {
+  AddNotificationDeviceRequest,
+  AddNotificationDeviceResponse,
   NotificationSettingsResponse,
+  NotificationTestResponse,
   UpdateNotificationSettings,
 } from '@shelfmark/contracts';
 import type { Observable } from 'rxjs';
 
 /**
  * Seam for Settings › Notifications (`NOTIFICATION_ENDPOINT`, Shelf 05-settings / 12-notify): what
- * Shelfmark may send, the quiet hours and the devices with notifications on. The API cannot
- * deliver notifications yet (Web Push and email are not built): the HTTP implementation answers
- * `available: false` without a request; the mock builds keep the settings on the device.
+ * Shelfmark may push, the quiet hours, the devices with push on (this browser's Web Push
+ * subscription is added with `addDevice`) and a test push. `available` is false while the server
+ * has no VAPID keys. Push only: email is postponed.
  */
 export interface NotificationsApi {
   get(): Observable<NotificationSettingsResponse>;
   update(change: UpdateNotificationSettings): Observable<NotificationSettingsResponse>;
+  /** Stores this browser's push subscription; answers the settings and its device id. */
+  addDevice(body: AddNotificationDeviceRequest): Observable<AddNotificationDeviceResponse>;
   /** Turns notifications off for one device. */
   removeDevice(id: string): Observable<NotificationSettingsResponse>;
+  /** Sends a sample push to every device of the account. */
+  test(): Observable<NotificationTestResponse>;
 }

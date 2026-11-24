@@ -3,6 +3,7 @@ import {
   NOTIFICATION_DEFAULTS,
   type NotificationDevice,
   type NotificationSettings,
+  type NotificationSettingsResponse,
   type UpdateNotificationSettings,
 } from '@shelfmark/contracts';
 import { firstValueFrom } from 'rxjs';
@@ -10,8 +11,8 @@ import { NOTIFICATIONS_API } from '../models/notifications-api.const';
 
 /**
  * Settings › Notifications on the account (root): loaded by the page, changes saved optimistically
- * with a rollback of the changed fields. `available` is false while the server cannot deliver
- * (the HTTP seam today): the page then shows only the device part.
+ * with a rollback of the changed fields. `available` is false while the server cannot push (no
+ * VAPID keys): the page then shows only the device part.
  */
 @Service()
 export class NotificationSettingsStore {
@@ -19,15 +20,14 @@ export class NotificationSettingsStore {
 
   readonly loaded = signal(false);
   readonly available = signal(false);
+  /** The server's VAPID public key while it can push; `null` otherwise. */
+  readonly publicKey = signal<string | null>(null);
   readonly settings = signal<NotificationSettings>(NOTIFICATION_DEFAULTS);
   readonly devices = signal<readonly NotificationDevice[]>([]);
 
   async load(): Promise<void> {
     try {
-      const answer = await firstValueFrom(this.api.get());
-      this.available.set(answer.available);
-      this.settings.set(answer.settings);
-      this.devices.set(answer.devices);
+      this.apply(await firstValueFrom(this.api.get()));
     } catch {
       this.available.set(false);
     } finally {
@@ -54,6 +54,15 @@ export class NotificationSettingsStore {
       });
       return false;
     }
+  }
+
+  /** Takes a whole answer of the API (also the push subscription's `addDevice`). */
+  apply(answer: NotificationSettingsResponse): void {
+    this.available.set(answer.available);
+    this.publicKey.set(answer.publicKey);
+    this.settings.set(answer.settings);
+    this.devices.set(answer.devices);
+    this.loaded.set(true);
   }
 
   async removeDevice(id: string): Promise<boolean> {

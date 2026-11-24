@@ -47,6 +47,10 @@ export const RATE_LIMIT = {
   ViewWrite: { limit: 30, ttl: MINUTE_MS },
   // Reminder writes (#275: set, change, clear, snooze, bulk): generous for menus and snoozes.
   ReminderWrite: { limit: 60, ttl: MINUTE_MS },
+  // Settings › Notifications writes (Shelf 12-notify): settings, add and remove a device.
+  NotificationWrite: { limit: 30, ttl: MINUTE_MS },
+  // "Send a test": one push per device of the account, each an outbound request.
+  NotificationTest: { limit: 5, ttl: MINUTE_MS },
   // Domain rule writes (#398, create, edit, delete): like the saved views.
   RuleWrite: { limit: 30, ttl: MINUTE_MS },
   // AI (#389–#391, docs/ai/IMPLEMENTATION-AI-1.md 4): settings and suggestion writes, draft jobs from

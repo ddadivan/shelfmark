@@ -189,6 +189,7 @@ Settings → **Environment Variables**. Each variable is set per environment: **
 | `VOYAGE_API_KEY` | already set | not set | Search by meaning and related links (AI-3, ADR 0052). **Production only**, mark **Sensitive**; never add it to Preview or Development. Read once at boot (an invalid value stops the boot, the error names the variable only). Real Voyage embeddings are used only when the key is set, `NODE_ENV` is production, `VERCEL_ENV` is not `preview`, `AI_PROVIDER` is not `mock` and the user is not a demo user; everything else gets the deterministic mock. The code pins `https://api.voyageai.com/v1/embeddings`; there is no base-URL variable. Unset = mock everywhere. |
 | `AI_FULL_ACCESS_EMAILS` | your and the second account's sign-in emails, comma-separated | optional | Issue #389, ADR 0047 point 7 (private phase). Same format as `ADMIN_EMAILS` (case-insensitive, normalised the same way): these accounts get Pro and the AI pack (1,000 links a month, 5,000 one-time "Process existing links"); everyone else is Free (50 a month, no backfill). Read per request, never written to the database. Unset or empty = nobody. Redeploy after changing. |
 | `AI_PROVIDER` | leave unset | leave unset | Optional. `mock` forces the mock providers (language model and embeddings) even with a key (a production smoke test, a self-host without AI cost); `anthropic` is the same as unset; any other value stops the boot. |
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | a key pair (5.12) and `mailto:<your email>` | not set | Web Push for due reminders (Shelf 12-notify). All three or none; mark the private key **Sensitive**. Unset, partial or malformed = "not configured": Settings › Notifications shows only the device part and nothing is sent (one boot warning names the variable, never a value). Redeploy after setting. |
 
 Mark every secret as **Sensitive** (value cannot be read back in the dashboard). Do not set `PORT` on Vercel. An env change applies only to **new** deployments: redeploy after editing.
 
@@ -294,6 +295,15 @@ AI is opt-in per user (Settings › AI) and runs on Anthropic's API (ADR 0047: C
 - [ ] Rotation follows section 6: create the new key, update Vercel, redeploy, then delete the old key in the Console.
 - [x] **Voyage AI, before AI-3 goes to production** (done by the author on Nov 18, 2026: payment method added, training opt-out set, zero-day retention) (checked Nov 18, 2026, Voyage FAQ and Terms of Service): Voyage may use API data to train its models **unless the organisation opts out**. In the Voyage dashboard add a payment method (required for the opt-out), set a monthly usage limit if Billing offers one, then, as the organisation admin, opt out of data use for training in the **Terms of Service** section. The opt-out cannot be undone in the dashboard and covers only data sent after it; with it Voyage deletes each request right after processing (zero-day retention). The privacy page AI section already describes this state, so it must be true before AI-3 is released.
 
+### 5.12 Web Push for reminders (Shelf 12-notify)
+
+Reminders reach a closed Shelfmark through Web Push (VAPID, RFC 8292). Without the keys the app works as before (reminders wait in Today); nothing below is needed for local work, CI or previews.
+
+- [ ] Create a key pair once on your machine: `npx web-push generate-vapid-keys` (from the repo, the package is a dependency). Store both values in your password manager.
+- [ ] Vercel → Settings → Environment Variables (Production only): `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` (**Sensitive**) and `VAPID_SUBJECT` = `mailto:<your email>` (5.3), then redeploy. Changing the key pair later makes every stored subscription useless: people turn notifications on again.
+- [ ] Vercel → Settings → **Cron Jobs** shows `/api/cron/notifications` (daily at 08:07 UTC, `vercel.json`; Hobby allows one run a day per cron). It uses the same `CRON_SECRET` (5.8). Use **Run** once and check `{ "configured": true, "sent": …, "removed": …, "quiet": …, "hasMore": … }`. For timely reminders (every 15 minutes) point an external scheduler at the same route with the `Authorization: Bearer <CRON_SECRET>` header, or move to Vercel Pro and change the schedule; the route is idempotent (a reminder is pushed once).
+- [ ] After the release: Settings › Notifications on a desktop Chrome, turn notifications on, **Send a test**: the notification arrives through the push service.
+
 ## 6. Secrets policy
 
 | Secret | Lives in | Never in |
@@ -347,5 +357,6 @@ Prevention layers: gitleaks in the pre-commit hook (locally) and in CI (CI task)
 | 21 | `ANTHROPIC_API_KEY` (Production only, Sensitive) and `AI_FULL_ACCESS_EMAILS` in Vercel; `VOYAGE_API_KEY` stays as is for AI-3 | Vercel env | author | AI foundation (#389) |
 | 22 | Fluid compute on, `maxDuration` 30 s visible, `/api/cron/ai-sweep` listed and run once | Vercel project settings | author | AI foundation (#389) |
 | 23 | Provider retention period, region and no-training statement copied for the privacy page | Anthropic terms | author | AI foundation (#389) |
+| 24 | VAPID key pair and subject in Vercel Production; `/api/cron/notifications` listed and run once; optionally an external scheduler for it (section 5.12) | Vercel env, scheduler | author | Shelf notifications |
 
 The showcase builds only from `main`: `ignoreCommand` in `libs/ui/vercel.json` skips every other branch (issue #50), so PRs create no `shelfmark-ui` deployments and the Hobby deployment limit is spent on the app project. Storybook on PRs is checked by CI (`nx test-storybook ui`).

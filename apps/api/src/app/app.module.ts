@@ -26,6 +26,7 @@ import { McpModule } from '../mcp/mcp.module';
 import { MonitoringModule } from '../monitoring/monitoring.module';
 import { PinsModule } from '../pins/pins.module';
 import { ImportsModule } from '../imports/imports.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { RemindersModule } from '../reminders/reminders.module';
 import { ViewsModule } from '../views/views.module';
 import { RulesModule } from '../rules/rules.module';
@@ -55,6 +56,7 @@ import { UsersModule } from '../users/users.module';
     PinsModule,
     ViewsModule,
     RemindersModule,
+    NotificationsModule,
     RulesModule,
     AiModule,
     McpModule,
