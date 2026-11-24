@@ -1,5 +1,7 @@
 import { KEYBOARD_KEY } from '@shelfmark/ui';
 import { isTypingTarget } from '../../links/utils/is-typing-target';
+import { isLetter } from '../../links/utils/link-select-keys';
+import { PREVIEW_FULL_SCREEN_SHORTCUT } from '../models/preview-full-screen-shortcut.const';
 import { PREVIEW_KEY } from '../models/preview-key.const';
 import type { PreviewKey } from '../models/preview-key.type';
 
@@ -11,8 +13,9 @@ const ENTER_TARGETS = '.ui-card__link, .ui-list-item__link';
 
 /**
  * The preview meaning of a key on the library page (#553): ↑ / ↓ the previous or next link, ↵ the
- * link in a new tab (on a feed link or with nothing focused), Esc closes. Never in a field, menu,
- * dialog or overlay, with a modifier, or once someone else handled the key.
+ * link in a new tab (on a feed link or with nothing focused), Esc closes (the caller leaves full
+ * screen first), F turns full screen on and off. Never in a field, menu, dialog or overlay, with
+ * a modifier, or once someone else handled the key.
  */
 export function previewKey(event: KeyboardEvent): PreviewKey | null {
   if (
@@ -42,6 +45,11 @@ export function previewKey(event: KeyboardEvent): PreviewKey | null {
     case KEYBOARD_KEY.Escape:
       return target?.closest('.cdk-overlay-container') ? null : PREVIEW_KEY.Close;
     default:
-      return null;
+      if (target?.closest('.cdk-overlay-container')) {
+        return null;
+      }
+      return isLetter(event, PREVIEW_FULL_SCREEN_SHORTCUT.Key, PREVIEW_FULL_SCREEN_SHORTCUT.Code)
+        ? PREVIEW_KEY.FullScreen
+        : null;
   }
 }

@@ -20,19 +20,54 @@
 .preview-page__head {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   min-block-size: 3.5rem;
-  padding: var(--space-1);
-  padding-block-start: max(var(--space-1), env(safe-area-inset-top));
-  border-block-end: 1px solid var(--border);
+  padding: var(--space-2) var(--space-3);
+  padding-block-start: max(var(--space-2), env(safe-area-inset-top));
+  border-block-end: 1px solid var(--sep);
+
+  // Phone (Shelf): two deliberate rows.
+  &--rows {
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: stretch;
+    padding: var(--space-2);
+    padding-block-start: max(var(--space-2), env(safe-area-inset-top));
+  }
+}
+
+.preview-page__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-inline-size: 0;
+}
+
+.preview-page__spacer {
+  flex: 1 1 auto;
+}
+
+// Site | Reader, Aa, Open, star, Details and ⋯, 4px apart (Shelf `lp-tools`).
+.preview-page__tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.preview-page__sep {
+  flex: none;
+  block-size: 1.25rem;
+  margin-inline: var(--space-1);
+  border-inline-start: 1px solid var(--sep);
 }
 
 .preview-page__title {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: 0.0625rem;
   min-inline-size: 0;
+  padding-inline: var(--space-1);
 }
 
 .preview-page__name {
@@ -41,7 +76,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  @include type(label);
+  @include type(secondary);
+
+  font-weight: 600;
 }
 
 .preview-page__domain {
@@ -60,18 +97,6 @@
   white-space: nowrap;
 }
 
-.preview-page__modes {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
-  border-block-end: 1px solid var(--border);
-}
-
-.preview-page__details-toggle {
-  margin-inline-start: auto;
-}
-
 // The page, and the details under it (Shelf phone: the details follow the text).
 .preview-page__main {
   display: flex;
@@ -87,7 +112,7 @@
 
 .preview-page__details {
   flex: 0 1 50%;
-  border-block-start: 1px solid var(--border);
+  border-block-start: 1px solid var(--sep);
 }
 
 .preview-page__bar {

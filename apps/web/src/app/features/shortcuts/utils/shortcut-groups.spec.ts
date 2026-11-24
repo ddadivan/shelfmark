@@ -68,6 +68,8 @@ const BOUND: readonly { labelKey: string; keys: readonly ShortcutKey[] }[] = [
   { labelKey: 'shortcuts.items.previewNext', keys: [SHORTCUT_KEY.Up, SHORTCUT_KEY.Down] },
   { labelKey: 'shortcuts.items.previewNewTab', keys: [SHORTCUT_KEY.Enter] },
   { labelKey: 'shortcuts.items.previewClose', keys: [SHORTCUT_KEY.Escape] },
+  // previewKey: the Link page's full screen
+  { labelKey: 'shortcuts.items.previewFullScreen', keys: [SHORTCUT_KEY.F] },
   // linkKeyIntent (cards and rows) and LibraryPage.selectionKey
   { labelKey: 'shortcuts.items.select', keys: [SHORTCUT_KEY.Space] },
   { labelKey: 'shortcuts.items.selectRange', keys: [SHORTCUT_KEY.Shift, SHORTCUT_KEY.Space] },

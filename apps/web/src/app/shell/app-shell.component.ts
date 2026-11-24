@@ -54,6 +54,7 @@ import { OfflineBannerComponent } from './offline-banner/offline-banner.componen
 import { PHONE_TAB } from './models/phone-tab.const';
 import { phoneTabForUrl } from './phone-tab-for-url';
 import { isPushedUrl } from './pushed-url';
+import { PreviewFullScreen } from '../features/link-preview/services/preview-full-screen.service';
 import { SettingsNavComponent } from '../features/settings/components/settings-nav/settings-nav.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ToastAreaDirective } from '../core/layout/toast-area.directive';
@@ -92,7 +93,10 @@ import { ScrollRestorationDirective } from '../core/layout/scroll-restoration.di
     SearchTriggerComponent,
     TooltipDirective,
   ],
-  host: { '(document:keydown)': 'onKeydown($event)' },
+  host: {
+    '(document:keydown)': 'onKeydown($event)',
+    '[class.shell--link-full]': 'linkFullScreen.active()',
+  },
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -110,6 +114,8 @@ export default class AppShellComponent {
 
   private readonly router = inject(Router);
   protected readonly howItWorks = inject(HowItWorksService);
+  /** The Link page in full screen: the sidebar and the header step aside. */
+  protected readonly linkFullScreen = inject(PreviewFullScreen);
   private readonly url = toSignal(
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd),

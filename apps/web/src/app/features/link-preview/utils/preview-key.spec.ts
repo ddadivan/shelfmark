@@ -20,6 +20,19 @@ describe('previewKey', () => {
     expect(previewKey(press('Escape', document.body))).toBe(PREVIEW_KEY.Close);
   });
 
+  it('maps F to full screen (the physical key on other layouts), not in an overlay', () => {
+    expect(previewKey(press('f', document.body, { code: 'KeyF' }))).toBe(PREVIEW_KEY.FullScreen);
+    expect(previewKey(press('F', document.body, { code: 'KeyF' }))).toBe(PREVIEW_KEY.FullScreen);
+    expect(previewKey(press('а', document.body, { code: 'KeyF' }))).toBe(PREVIEW_KEY.FullScreen);
+    expect(previewKey(press('g', document.body, { code: 'KeyG' }))).toBeNull();
+    const overlay = document.createElement('div');
+    overlay.className = 'cdk-overlay-container';
+    const item = document.createElement('div');
+    overlay.append(item);
+    document.body.append(overlay);
+    expect(previewKey(press('f', item, { code: 'KeyF' }))).toBeNull();
+  });
+
   it('opens in a new tab from a feed link but not from a button', () => {
     const link = document.createElement('a');
     link.className = 'ui-list-item__link';

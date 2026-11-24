@@ -2184,7 +2184,8 @@
       "preview": "Prévia do link em foco",
       "previewNext": "Link anterior ou próximo",
       "previewNewTab": "Abrir o link da prévia em nova aba",
-      "previewClose": "Fechar a prévia"
+      "previewClose": "Fechar a prévia",
+      "previewFullScreen": "Ativar ou sair da tela cheia"
     },
     "keys": {
       "command": "Command",
@@ -4420,6 +4421,9 @@
     "openInBrowser": "Abrir no navegador",
     "more": "Mais ações",
     "share": "Compartilhar",
+    "fullScreen": "Tela cheia",
+    "exitFullScreen": "Sair da tela cheia",
+    "position": "{{index}} de {{total}}",
     "resize": "Ajustar a largura da lista",
     "resizeHint": "Arraste ou use ← e →. Clique duplo restaura.",
     "blocked": {
@@ -4441,11 +4445,12 @@
     },
     "reading": {
       "title": "Ajustes de leitura",
-      "size": {
-        "label": "Tamanho do texto",
-        "s": "P",
-        "m": "M",
-        "l": "G"
+      "theme": {
+        "label": "Tema",
+        "light": "Claro",
+        "sepia": "Sépia",
+        "dark": "Escuro",
+        "black": "Preto"
       },
       "font": {
         "label": "Fonte",
@@ -4453,16 +4458,26 @@
         "serif": "Serif",
         "readable": "Legível"
       },
+      "size": {
+        "label": "Tamanho do texto",
+        "smaller": "Texto menor",
+        "larger": "Texto maior",
+        "value": "{{size}} px"
+      },
+      "spacing": {
+        "label": "Entrelinha",
+        "compact": "Compacta",
+        "normal": "Normal",
+        "relaxed": "Ampla"
+      },
       "width": {
         "label": "Largura da linha",
         "narrow": "Estreita",
+        "normal": "Normal",
         "wide": "Larga"
       },
-      "tone": {
-        "label": "Página",
-        "app": "Como o app",
-        "sepia": "Sépia"
-      }
+      "saved": "Salvo neste dispositivo",
+      "reset": "Redefinir"
     },
     "reader": {
       "loading": "Carregando o texto",

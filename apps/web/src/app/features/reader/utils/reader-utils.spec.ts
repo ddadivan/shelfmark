@@ -28,21 +28,33 @@ describe('progressToSave', () => {
 
 describe('parseReaderSettings', () => {
   it('reads valid settings', () => {
-    expect(
-      parseReaderSettings(
-        JSON.stringify({ size: 'l', font: 'serif', width: 'wide', tone: 'sepia' }),
-      ),
-    ).toEqual({ size: 'l', font: 'serif', width: 'wide', tone: 'sepia' });
+    const settings = {
+      theme: 'black',
+      font: 'serif',
+      size: 22,
+      lineSpacing: 'relaxed',
+      width: 'wide',
+    };
+    expect(parseReaderSettings(JSON.stringify(settings))).toEqual(settings);
   });
 
   it('falls back field by field and on broken or missing storage', () => {
-    expect(parseReaderSettings(JSON.stringify({ size: 'xl', font: 'serif' }))).toEqual({
-      size: 'm',
-      font: 'serif',
-      width: 'narrow',
-      tone: 'app',
-    });
+    expect(
+      parseReaderSettings(JSON.stringify({ theme: 'neon', size: 30, font: 'serif', width: 'x' })),
+    ).toEqual({ theme: null, font: 'serif', size: 18, lineSpacing: 'normal', width: 'normal' });
+    expect(parseReaderSettings(JSON.stringify({ size: 15.5 })).size).toBe(18);
     expect(parseReaderSettings('{nope')).toEqual(parseReaderSettings(null));
-    expect(parseReaderSettings('3').size).toBe('m');
+    expect(parseReaderSettings('3').size).toBe(18);
+  });
+
+  it('carries over the first version (S / M / L, Narrow / Wide, Sepia)', () => {
+    expect(
+      parseReaderSettings(JSON.stringify({ size: 's', font: 'serif', width: 'wide', tone: 'app' })),
+    ).toEqual({ theme: null, font: 'serif', size: 16, lineSpacing: 'normal', width: 'wide' });
+    expect(parseReaderSettings(JSON.stringify({ size: 'xl', tone: 'sepia' }))).toMatchObject({
+      theme: 'sepia',
+      size: 18,
+      width: 'normal',
+    });
   });
 });

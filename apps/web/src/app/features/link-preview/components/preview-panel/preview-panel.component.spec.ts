@@ -166,7 +166,33 @@ describe('PreviewPanelComponent', () => {
     const names = await Promise.all(
       (await loader.getAllHarnesses(UiButtonHarness)).map((harness) => harness.getAriaLabel()),
     );
-    expect(names).toEqual(['Previous link', 'Next link', 'Close preview']);
+    expect(names).toEqual(['Previous link', 'Next link', 'Full screen', 'Close preview']);
     expect(element.querySelector('ui-segmented-control')).toBeNull();
+  });
+
+  it('has the full screen window control after the divider, next to Close', async () => {
+    const { stub, fixture, element, button } = await setup();
+    const full = await button('Full screen');
+    expect(await full.getPressed()).toBe('false');
+    expect(element.querySelector('.preview-panel__position')).toBeNull();
+    await full.click();
+    expect(stub.toggleFullScreen).toHaveBeenCalledTimes(1);
+    await fixture.whenStable();
+    const exit = await button('Exit full screen');
+    expect(await exit.getPressed()).toBe('true');
+    expect(element.querySelector('.preview-panel')?.classList).toContain('preview-panel--full');
+    expect(element.querySelector('.preview-panel__position')?.textContent?.trim()).toBe('3 of 17');
+    const sep = element.querySelector('.preview-panel__sep');
+    const next = sep?.nextElementSibling;
+    expect(next?.querySelector('button')?.getAttribute('aria-label')).toBe('Exit full screen');
+  });
+
+  it('has no full screen button where the split view is not available', async () => {
+    const { stub, fixture, loader } = await setup();
+    stub.fullScreenAvailable.set(false);
+    await fixture.whenStable();
+    expect(
+      await loader.getAllHarnesses(UiButtonHarness.with({ name: 'Full screen' })),
+    ).toHaveLength(0);
   });
 });

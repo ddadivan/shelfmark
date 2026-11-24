@@ -1,10 +1,16 @@
-import { READER_FONT, READER_LINE_WIDTH, READER_TEXT_SIZE, READER_TONE } from '@shelfmark/ui';
+import {
+  READER_FONT,
+  READER_LINE_SPACING,
+  READER_LINE_WIDTH,
+  READER_TEXT_SIZE,
+} from '@shelfmark/ui';
 import type { ReaderSettings } from './reader-settings.interface';
 
-/** M, Sans, Narrow, like the app (the design's defaults). */
+/** Like the app, Sans, 18px, Normal spacing, Normal width (the design's defaults; Reset). */
 export const READER_SETTINGS_DEFAULT: Readonly<ReaderSettings> = {
-  size: READER_TEXT_SIZE.M,
+  theme: null,
   font: READER_FONT.Sans,
-  width: READER_LINE_WIDTH.Narrow,
-  tone: READER_TONE.App,
+  size: READER_TEXT_SIZE.Default,
+  lineSpacing: READER_LINE_SPACING.Normal,
+  width: READER_LINE_WIDTH.Normal,
 };

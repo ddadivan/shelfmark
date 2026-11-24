@@ -2137,7 +2137,8 @@
       "preview": "Preview the focused link",
       "previewNext": "Previous or next link",
       "previewNewTab": "Open the previewed link in a new tab",
-      "previewClose": "Close the preview"
+      "previewClose": "Close the preview",
+      "previewFullScreen": "Full screen on or off"
     },
     "keys": {
       "command": "Command",
@@ -4308,6 +4309,9 @@
     "openInBrowser": "Open in browser",
     "more": "More actions",
     "share": "Share",
+    "fullScreen": "Full screen",
+    "exitFullScreen": "Exit full screen",
+    "position": "{{index}} of {{total}}",
     "resize": "Resize the list",
     "resizeHint": "Drag, or use ← and →. Double-click resets.",
     "blocked": {
@@ -4329,11 +4333,12 @@
     },
     "reading": {
       "title": "Reading settings",
-      "size": {
-        "label": "Text size",
-        "s": "S",
-        "m": "M",
-        "l": "L"
+      "theme": {
+        "label": "Theme",
+        "light": "Light",
+        "sepia": "Sepia",
+        "dark": "Dark",
+        "black": "Black"
       },
       "font": {
         "label": "Font",
@@ -4341,16 +4346,26 @@
         "serif": "Serif",
         "readable": "Readable"
       },
+      "size": {
+        "label": "Text size",
+        "smaller": "Smaller text",
+        "larger": "Larger text",
+        "value": "{{size}} px"
+      },
+      "spacing": {
+        "label": "Line spacing",
+        "compact": "Compact",
+        "normal": "Normal",
+        "relaxed": "Relaxed"
+      },
       "width": {
         "label": "Line width",
         "narrow": "Narrow",
+        "normal": "Normal",
         "wide": "Wide"
       },
-      "tone": {
-        "label": "Page",
-        "app": "Like the app",
-        "sepia": "Sepia"
-      }
+      "saved": "Saved on this device",
+      "reset": "Reset"
     },
     "reader": {
       "loading": "Loading the text",

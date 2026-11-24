@@ -233,3 +233,10 @@
     scrollbar-gutter: stable;
   }
 }
+
+// The Link page in full screen (Shelf ReaderView): no sidebar and no header, so they leave the
+// tab order too; the page covers the window.
+:host(.shell--link-full) .shell__sidebar,
+:host(.shell--link-full) .shell__header {
+  display: none;
+}

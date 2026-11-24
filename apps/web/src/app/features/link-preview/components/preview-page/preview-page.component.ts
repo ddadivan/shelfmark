@@ -1,10 +1,11 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   ButtonComponent,
+  DialogService,
   FaviconComponent,
-  ICON_SIZE,
   MenuTriggerDirective,
   PopoverTriggerDirective,
   SegmentedControlComponent,
@@ -21,17 +22,21 @@ import { PreviewDetailsComponent } from '../preview-details/preview-details.comp
 import { PreviewMenuComponent } from '../preview-menu/preview-menu.component';
 import { PreviewReaderComponent } from '../preview-reader/preview-reader.component';
 import { ReadingSettingsComponent } from '../reading-settings/reading-settings.component';
+import { ReadingSettingsSheetComponent } from '../reading-settings-sheet/reading-settings-sheet.component';
+import { ViewportService } from '../../../../core/layout/viewport.service';
 
 /**
- * The link preview below 80em (#553, `MobileLinkPreview.dc.html`): a page pushed over the feed
- * (the shell hides the tab bar while `?preview=` is set), Back returns to the feed where it was;
- * the header has the title and domain, open in browser and More; under it Site | Reader, Reading
- * settings and Details (the details panel shows under the page); a floating bar has favorite,
- * share and related links.
+ * The link preview below 80em (#553, Shelf `01-library.html`): a page pushed over the feed (the
+ * shell hides the tab bar while `?preview=` is set), × returns to the feed where it was. On a
+ * tablet the head is one row like the desktop panel (previous / next, title, Site | Reader, Aa,
+ * Open, star, Details, ⋯, ×). On a phone it is two rows: title and site, ⋯ and ×; then Site |
+ * Reader, Aa (a bottom sheet), Open as an icon and previous / next; star and Details are in ⋯.
+ * The details panel shows under the page; a floating bar has share and related links.
  */
 @Component({
   selector: 'app-preview-page',
   imports: [
+    NgTemplateOutlet,
     RelatedLinksComponent,
     TranslocoPipe,
     ButtonComponent,
@@ -54,7 +59,8 @@ export class PreviewPageComponent {
   protected readonly reader = inject(PreviewReaderService);
   private readonly transloco = inject(TranslocoService);
   private readonly i18n = toSignal(this.transloco.events$, { initialValue: undefined });
-  protected readonly ICON_SIZE = ICON_SIZE;
+  protected readonly viewport = inject(ViewportService);
+  private readonly dialogs = inject(DialogService);
   protected readonly domain = computed(() => {
     const link = this.preview.link();
     return link ? linkHost(link.url) : '';
@@ -74,5 +80,10 @@ export class PreviewPageComponent {
 
   protected setMode(mode: string): void {
     this.reader.setMode(mode as PreviewMode);
+  }
+
+  /** Aa on the phone: Reading settings as a bottom sheet. */
+  protected openReadingSheet(): void {
+    this.dialogs.open(ReadingSettingsSheetComponent);
   }
 }
