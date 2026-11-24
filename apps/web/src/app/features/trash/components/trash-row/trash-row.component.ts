@@ -20,25 +20,21 @@ import {
   FolderIconComponent,
   HistoryRowComponent,
   LongPressDirective,
-  MenuComponent,
-  MenuItemComponent,
-  MenuTriggerDirective,
   TooltipDirective,
 } from '@shelfmark/ui';
 import { pluralKey } from '../../../../core/i18n/plural-key';
 import { SwipeReveal } from '../../../../core/layout/swipe-reveal';
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { ownImageUrl, siteLetter } from '../../../links/utils/link-view';
-import { LocaleService } from '../../../../core/i18n/locale.service';
 import { TRASH_EXPIRING_SOON_DAYS } from '../../models/trash-expiring-soon-days.const';
 import { daysLeft } from '../../utils/trash-days-left';
 
 /**
  * One entry of Trash as a `ui-history-row`: preview (the link's image, else its letter; a folder
- * tile for a folder), title, where it came from and when it was deleted (separate elements), the
- * days-left badge and Restore. It only renders and emits; the page does the work.
+ * tile for a folder), title, where it came from and the days left (separate elements; a warning
+ * badge in the last days) and Restore (Shelf `04-organise` Trash). It only renders and emits.
  *
- * Desktop: a checkbox before the preview, a Restore button and a menu with Delete forever. Phone:
+ * Desktop: a checkbox before the preview, a Restore button and a trash button for Delete forever. Phone:
  * the same row, swiped left to reveal Restore and Delete; the two buttons are always in the DOM
  * behind the row, so keyboard and screen reader users never need the swipe (focusing one slides
  * the row aside). A long press starts the selection; while selecting, the row has a checkbox and a
@@ -55,9 +51,6 @@ import { daysLeft } from '../../utils/trash-days-left';
     FolderIconComponent,
     HistoryRowComponent,
     LongPressDirective,
-    MenuComponent,
-    MenuItemComponent,
-    MenuTriggerDirective,
     TooltipDirective,
   ],
   templateUrl: './trash-row.component.html',
@@ -67,7 +60,6 @@ import { daysLeft } from '../../utils/trash-days-left';
 })
 export class TrashRowComponent {
   protected readonly viewport = inject(ViewportService);
-  private readonly locale = inject(LocaleService);
 
   protected readonly BADGE_TONE = BADGE_TONE;
   protected readonly BUTTON_VARIANT = BUTTON_VARIANT;
@@ -98,9 +90,6 @@ export class TrashRowComponent {
   });
   protected readonly left = computed(() => daysLeft(this.item().expiresAt, this.now()));
   protected readonly soon = computed(() => this.left() <= TRASH_EXPIRING_SOON_DAYS);
-  protected readonly deletedAgo = computed(() =>
-    this.locale.formatRelative(this.item().deletedAt, this.now()),
-  );
 
   protected readonly swipeable = computed(() => this.viewport.compact() && !this.selecting());
   /** Swipe state of the phone row (Restore and Delete wait behind it). */

@@ -152,32 +152,25 @@ describe('TrashPage', () => {
     );
   });
 
-  it('puts where it came from, the link count and the delete time in separate elements, never chained', async () => {
+  it('puts where it came from, the link count and the days left in separate elements, never chained', async () => {
     const { element } = await setup();
     const [coat, courses, ramen] = rows(element);
 
     const parts = (row: Element) =>
       [...row.querySelectorAll('.trash-row__part')].map((part) => part.textContent?.trim());
-    expect(parts(coat)).toEqual(['From Clothes', 'Deleted 3 days ago']);
-    expect(parts(courses)).toEqual(['From Work', '9 links', 'Deleted 3 days ago']);
-    expect(parts(ramen)).toEqual(['From Unsorted', 'Deleted 3 days ago']);
+    expect(parts(coat)).toEqual(['From Clothes', '30 days left']);
+    expect(parts(courses)).toEqual(['From Work', '9 links', '30 days left']);
+    // The last days are a warning badge instead (below).
+    expect(parts(ramen)).toEqual(['From Unsorted']);
     expect(element.textContent).not.toContain('·');
   });
 
-  it('shows the days left as a badge, warning at three days or fewer', async () => {
+  it('shows a warning badge only at three days left or fewer', async () => {
     const { element } = await setup();
     const badges = [...element.querySelectorAll('ui-badge')];
 
-    expect(badges.map((badge) => badge.textContent?.trim())).toEqual([
-      '30 days left',
-      '30 days left',
-      '2 days left',
-    ]);
-    expect(badges.map((badge) => badge.classList.contains('ui-badge--warning'))).toEqual([
-      false,
-      false,
-      true,
-    ]);
+    expect(badges.map((badge) => badge.textContent?.trim())).toEqual(['2 days left']);
+    expect(badges[0]?.classList.contains('ui-badge--warning')).toBe(true);
   });
 
   it('falls back to a folder tile for a folder and the site letter for a link', async () => {
@@ -263,14 +256,10 @@ describe('TrashPage', () => {
     expect(toasts[0]).toMatchObject({ kind: TOAST_KIND.Danger, title: "Couldn't restore" });
   });
 
-  it('deletes one entry for good from its menu after a confirmation', async () => {
+  it('deletes one entry for good from its trash button after a confirmation', async () => {
     const { element, api, confirm, toasts, fixture } = await setup();
 
-    element.querySelector<HTMLButtonElement>('button[aria-label="More for Coat"]')?.click();
-    await settle(fixture);
-    [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')]
-      .find((item) => item.textContent?.includes('Delete forever'))
-      ?.click();
+    element.querySelector<HTMLButtonElement>('button[aria-label="Delete Coat forever"]')?.click();
     await settle(fixture);
 
     expect(confirm).toHaveBeenCalledWith(
@@ -287,11 +276,7 @@ describe('TrashPage', () => {
   it('deletes nothing when the confirmation is declined', async () => {
     const { element, api, fixture } = await setup({ confirm: false });
 
-    element.querySelector<HTMLButtonElement>('button[aria-label="More for Coat"]')?.click();
-    await settle(fixture);
-    [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')]
-      .find((item) => item.textContent?.includes('Delete forever'))
-      ?.click();
+    element.querySelector<HTMLButtonElement>('button[aria-label="Delete Coat forever"]')?.click();
     await settle(fixture);
 
     expect(api.deleteForever).not.toHaveBeenCalled();

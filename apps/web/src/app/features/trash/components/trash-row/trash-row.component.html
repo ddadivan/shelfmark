@@ -36,17 +36,22 @@
             | transloco: { count: item().linkCount ?? 0 }
         }}</span>
       }
-      <span class="trash-row__part">{{
-        'trash.row.deleted' | transloco: { when: deletedAgo() }
-      }}</span>
-    </ng-container>
-    <ui-badge slot="time" [tone]="soon() ? BADGE_TONE.Warning : BADGE_TONE.Neutral">
-      @if (left() >= 1) {
-        {{ pluralKey('trash.row.daysLeft', left()) | transloco: { count: left() } }}
-      } @else {
-        {{ 'trash.row.lastDay' | transloco }}
+      <!-- Shelf Trash: "From Shopping · 29 days left"; the last days stand out as a warning badge. -->
+      @if (!soon()) {
+        <span class="trash-row__part">{{
+          pluralKey('trash.row.daysLeft', left()) | transloco: { count: left() }
+        }}</span>
       }
-    </ui-badge>
+    </ng-container>
+    @if (soon()) {
+      <ui-badge slot="time" [tone]="BADGE_TONE.Warning">
+        @if (left() >= 1) {
+          {{ pluralKey('trash.row.daysLeft', left()) | transloco: { count: left() } }}
+        } @else {
+          {{ 'trash.row.lastDay' | transloco }}
+        }
+      </ui-badge>
+    }
     @if (!viewport.compact()) {
       <ng-container slot="actions">
         <ui-button
@@ -57,24 +62,16 @@
         >
           {{ 'trash.row.restore' | transloco }}
         </ui-button>
+        <!-- Shelf Trash: Delete forever is the trash button of the row (it asks first). -->
         <ui-button
           variant="ghost"
           size="sm"
           iconOnly
-          iconLeft="more"
-          [uiMenuTrigger]="menu"
-          [ariaLabel]="'trash.row.more' | transloco: { title: item().title }"
-          [uiTooltip]="'trash.row.moreTooltip' | transloco"
+          iconLeft="trash"
+          [ariaLabel]="'trash.row.deleteItem' | transloco: { title: item().title }"
+          [uiTooltip]="'trash.row.deleteForever' | transloco"
+          (click)="deleteRequested.emit()"
         />
-        <ui-menu
-          #menu
-          align="end"
-          [ariaLabel]="'trash.row.more' | transloco: { title: item().title }"
-        >
-          <ui-menu-item icon="trash" danger (activated)="deleteRequested.emit()">
-            {{ 'trash.row.deleteForever' | transloco }}
-          </ui-menu-item>
-        </ui-menu>
       </ng-container>
     }
   </ui-history-row>

@@ -12,10 +12,10 @@
   flex: 1 0 auto;
   flex-direction: column;
   width: 100%;
-  gap: var(--space-6);
-  max-width: rem(960px);
+  gap: var(--space-4);
+
+  // Shelf Trash (04-organise): left-aligned with the other pages; the list is up to 880px wide.
   padding-block: var(--space-2) var(--space-8);
-  margin-inline: auto;
 }
 
 // Phone: the way back to the Library and "Empty" on one line above the title (MobileTrash).
@@ -26,12 +26,26 @@
   margin-block-end: calc(-1 * var(--space-3));
 }
 
+// The title and "4 items, kept for 30 days" on one baseline, "Empty trash" at the end.
 .trash-page__head {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
+}
+
+.trash-page > ui-history-group,
+.trash-page__tools,
+.trash-page__note {
+  max-width: rem(880px);
+}
+
+.trash-page__heading {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-3);
+  align-items: baseline;
 }
 
 .trash-page__title {
@@ -42,10 +56,10 @@
 
 // Always there (empty while the list loads) so the title block keeps its height.
 .trash-page__count {
-  @include type(caption);
+  @include type(secondary);
 
   min-height: 1lh;
-  margin: var(--space-1) 0 0;
+  margin: 0;
   color: var(--text-muted);
 }
 
@@ -58,10 +72,6 @@
 }
 
 .trash-page__all {
-  padding-inline-start: var(--space-3);
-}
-
-.trash-page__filter {
   margin-inline-start: auto;
 }
 
