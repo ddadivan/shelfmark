@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+  <head>
+    <title><script>alert(1)</script>Harmless title</title>
+    <meta property="og:title" content="&lt;img src=x onerror=alert(1)&gt;" />
+    <meta name="author" content="javascript:alert(1)" />
+    <meta property="article:published_time" content="not a date" />
+    <base href="javascript:alert(1)//" />
+  </head>
+  <body onload="alert('body')">
+    <div class="content">
+      <p onclick="alert(1)">
+        This page tries every trick in the book: inline handlers, script tags hidden inside text,
+        links with javascript URLs, hidden paragraphs, iframes, objects, templates and a style block
+        that would hide the real text. None of that must leave the extractor as anything but text.
+      </p>
+      <script>
+        document.write('<p>written by a script</p>');
+      </script>
+      <p hidden>Hidden paragraph that must never be read.</p>
+      <p aria-hidden="true">Another hidden paragraph that must never be read.</p>
+      <p style="display: none">A third hidden paragraph that must never be read.</p>
+      <iframe src="https://evil.example/frame"></iframe>
+      <object data="https://evil.example/flash.swf"></object>
+      <template><p>Template content that must never be read.</p></template>
+      <p>
+        A <a href="javascript:alert(document.cookie)">link with a script URL</a> keeps only its
+        words. Markup written as text, such as &lt;script&gt;alert(1)&lt;/script&gt;, stays plain
+        text, and so does an attempt to close the paragraph early with &lt;/p&gt;&lt;img src=x&gt;.
+      </p>
+      <p>
+        Control characters such as and are replaced by spaces, so the database never sees a NUL byte
+        and the client never sees a raw escape sequence in the middle of the text.
+      </p>
+      <svg>
+        <text>SVG text that must never be read.</text>
+        <script>
+          alert(2);
+        </script>
+      </svg>
+      <p>
+        The rest of this paragraph is ordinary prose so that the page passes the length check: a
+        reader opens it, the server extracts it, and the result is a handful of plain text blocks
+        with no attributes, no URLs and no elements of any kind, ready for the web app to render.
+      </p>
+      <noscript><p>Noscript content that must never be read.</p></noscript>
+      <style>
+        .content p {
+          display: none;
+        }
+      </style>
+    </div>
+  </body>
+</html>

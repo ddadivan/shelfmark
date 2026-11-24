@@ -1,0 +1,41 @@
+/**
+ * Elements never read as article text: code, chrome, forms, media and embedded documents. Images
+ * and figures are dropped on purpose: no remote image URL reaches the client (CSP `img-src 'self'`);
+ * Reader shows the link's own captured picture instead.
+ */
+export const READER_SKIPPED_TAGS: ReadonlySet<string> = new Set([
+  'script',
+  'style',
+  'noscript',
+  'nav',
+  'header',
+  'footer',
+  'aside',
+  'form',
+  'button',
+  'input',
+  'select',
+  'textarea',
+  'label',
+  'svg',
+  'math',
+  'canvas',
+  'template',
+  'iframe',
+  'frame',
+  'frameset',
+  'object',
+  'embed',
+  'video',
+  'audio',
+  'picture',
+  'img',
+  'figure',
+  'dialog',
+  'menu',
+  'link',
+  'meta',
+  'title',
+  'head',
+  'base',
+]);

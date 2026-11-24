@@ -71,6 +71,11 @@ export const RATE_LIMIT = {
   AiAsk: { limit: 10, ttl: MINUTE_MS },
   // A saved view from a phrase (#535): one short model call each (the Ask question limits apply on top).
   AiViewDraft: { limit: 10, ttl: MINUTE_MS },
+  // Reader text of a link: a stored result is a cheap read, a cold one fetches the page through the
+  // SSRF-safe fetcher, so tighter than the default.
+  ReaderArticle: { limit: 30, ttl: MINUTE_MS },
+  // Reading progress writes: one per 5 % of scrolling in Reader.
+  ReaderProgressWrite: { limit: 60, ttl: MINUTE_MS },
   // Rediscover dismiss and "Not interested".
   RediscoverWrite: { limit: 30, ttl: MINUTE_MS },
   // Rule offer check (AI-2): read-only, asked after each filing by the user.
