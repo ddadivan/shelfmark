@@ -759,7 +759,7 @@ body{background:var(--l0);font-family:var(--font)}
 .view:has(>.reader[data-rt]){background:transparent}
 /* Reading settings */
 #pop.rs-pop:not(.sheet){width:320px;max-width:calc(100vw - 32px)}
-.rs-pop .pgroup .seg{display:flex}.rs-pop .pgroup .seg button{flex:1;height:32px}
+.rs-pop .pgroup .seg{display:flex}.rs-pop .pgroup .seg button{flex:1}
 .rs-themes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .rs-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0;border:0;background:none;color:var(--muted);font-size:var(--t-meta);cursor:pointer}
 .rs-tile i{display:grid;place-items:center;width:100%;height:44px;border-radius:var(--r-sm);font:600 1rem/1 var(--font);font-style:normal;box-shadow:inset 0 0 0 1px var(--line-strong)}
@@ -771,10 +771,11 @@ body{background:var(--l0);font-family:var(--font)}
 .rs-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;padding:12px 8px 4px;border-top:1px solid var(--line)}
 .rs-foot span{font-size:var(--t-meta);color:var(--muted)}
 /* Window controls: full screen and close sit apart from the link actions, after the separator */
-.lp-head .lp-win[data-full]{color:var(--fg);background:var(--hover);border-radius:4px}
-.lp-head .lp-win[data-full]:hover{background:var(--sel)}
-.lp-head .lp-win[data-full][aria-pressed="true"]{background:var(--sel)}
-.lp-head .seg{border-radius:6px;padding:2px}.lp-head .seg button{border-radius:4px;height:28px}
+/* Full screen button matches the Site / Reader switch track: 32px, surface-hover, radius-sm (10) */
+.lp-head .lp-win[data-full]{width:32px;height:32px;color:var(--fg);background:var(--hover);border-radius:10px}
+.lp-head .lp-win[data-full]:hover,.lp-head .lp-win[data-full][aria-pressed="true"]{background:var(--sel)}
+/* Segmented controls per the DS SegmentedControl: track radius 10, 2px padding; items 28px, radius 8 */
+.seg{padding:2px;border-radius:10px}.seg button{height:28px;border-radius:8px}
 /* Full screen link page */
 .lp-pos{font-size:var(--t-meta);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;display:none}
 body.link-full .lp-pos{display:inline}
