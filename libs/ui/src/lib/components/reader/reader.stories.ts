@@ -124,7 +124,10 @@ export const NoArticle: Story = {
   },
 };
 
-/** In both app themes: following the app, then the four fixed Reader themes (they never change). */
+/**
+ * In both app themes: following the app, then the four fixed Reader themes (they never change).
+ * Each reader is a region named by its title, so every title says which variant it is.
+ */
 export const AllVariants: Story = {
   render: (args) => ({
     props: { ...args, themes: Object.values(THEME), readerThemes: Object.values(READER_THEME) },
@@ -133,10 +136,11 @@ export const AllVariants: Story = {
         @for (theme of themes; track theme) {
           <div [attr.${THEME_ATTRIBUTE}]="theme" style="background: var(--bg); padding: 1rem">
             <ui-reader style="block-size: 24rem" [site]="site" [faviconLetter]="faviconLetter"
-              [heading]="heading" [meta]="meta" [blocks]="blocks" />
+              [heading]="heading + ' (' + theme + ')'" [meta]="meta" [blocks]="blocks" />
             @for (readerTheme of readerThemes; track readerTheme) {
               <ui-reader style="block-size: 16rem; margin-block-start: 1rem" [theme]="readerTheme"
-                [site]="site" [faviconLetter]="faviconLetter" [heading]="heading" [meta]="meta" [blocks]="blocks" />
+                [site]="site" [faviconLetter]="faviconLetter" [heading]="heading + ' (' + theme + ', ' + readerTheme + ')'"
+                [meta]="meta" [blocks]="blocks" />
             }
           </div>
         }

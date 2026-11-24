@@ -42,7 +42,7 @@ const meta: Meta<AskStartersComponent> = {
       },
     },
   },
-  args: { groups: GROUPS, compact: false, headingLevel: 3 },
+  args: { groups: GROUPS, compact: false, headingLevel: 2 },
   argTypes: { picked: { action: 'picked' } },
   render: (args) => ({
     props: args,
