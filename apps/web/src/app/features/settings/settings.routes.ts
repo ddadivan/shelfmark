@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { Router, type Routes } from '@angular/router';
 import { AI_APPLIED_PART } from '@shelfmark/contracts';
 import { APP_PATH } from '../../models/app-path.const';
+import { CONNECT_SEGMENT } from '../ai/connect/models/connect-segment.const';
 import { CLEANUP_SEGMENT } from '../cleanup/models/cleanup-segment.const';
 import { SETTINGS_PATH } from './models/settings-path.const';
 import { settingsIndexGuard } from './pages/settings-index/settings-index.guard';
@@ -38,6 +39,11 @@ export default [
   {
     path: SETTINGS_PATH.Ai,
     loadComponent: () => import('./pages/ai/ai-settings.page'),
+  },
+  // Connect your assistant (Shelf 15-tools): a page of its own under AI, phone included.
+  {
+    path: `${SETTINGS_PATH.Ai}/${CONNECT_SEGMENT}`,
+    loadComponent: () => import('../ai/connect/connect.page'),
   },
   // Phone: the full-label choices of folder and tags mode (MobileAi state 7).
   ...Object.values(AI_APPLIED_PART).map((part) => ({

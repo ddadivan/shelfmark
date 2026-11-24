@@ -5,6 +5,7 @@ import {
   AI_TIER,
   MCP_ERROR_MESSAGE,
   MCP_LIMIT,
+  MCP_TOKEN_ACCESS,
   MCP_TOKEN_PREFIX,
   type CreateMcpTokenRequest,
   type CreateMcpTokenResponse,
@@ -22,7 +23,22 @@ import type { McpApi } from '../models/mcp-api.interface';
 /** Characters of the random part of a real token (32 bytes, base64url). */
 const SECRET_LENGTH = 43;
 
-function isSummary(value: unknown): value is McpTokenSummary {
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** A stored summary; one written before access and expiry existed reads as read only, never expiring. */
+function toSummary(value: unknown): McpTokenSummary | null {
+  if (!isStoredSummary(value)) return null;
+  return {
+    ...value,
+    access: value.access === MCP_TOKEN_ACCESS.Save ? MCP_TOKEN_ACCESS.Save : MCP_TOKEN_ACCESS.Read,
+    expiresAt: typeof value.expiresAt === 'string' ? value.expiresAt : null,
+  };
+}
+
+function isStoredSummary(value: unknown): value is Omit<McpTokenSummary, 'access' | 'expiresAt'> & {
+  access?: unknown;
+  expiresAt?: unknown;
+} {
   if (typeof value !== 'object' || value === null) return false;
   const candidate = value as Partial<Record<keyof McpTokenSummary, unknown>>;
   return (
@@ -90,7 +106,12 @@ export class MockMcpApi implements McpApi {
         name,
         last4: secret.slice(-4),
         includeNotes: request.includeNotes,
+        access: request.access ?? MCP_TOKEN_ACCESS.Read,
         createdAt: new Date().toISOString(),
+        expiresAt:
+          request.expiresInDays == null
+            ? null
+            : new Date(Date.now() + request.expiresInDays * DAY_MS).toISOString(),
         lastUsedAt: null,
         callsThisWeek: 0,
       };
@@ -127,7 +148,12 @@ export class MockMcpApi implements McpApi {
   private records(): McpTokenSummary[] {
     try {
       const parsed: unknown = JSON.parse(this.storage?.getItem(MOCK_MCP_STORAGE_KEY) ?? '[]');
-      return Array.isArray(parsed) ? parsed.filter(isSummary) : [];
+      return Array.isArray(parsed)
+        ? parsed.flatMap((item) => {
+            const summary = toSummary(item);
+            return summary === null ? [] : [summary];
+          })
+        : [];
     } catch {
       return [];
     }

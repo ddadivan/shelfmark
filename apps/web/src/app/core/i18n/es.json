@@ -4123,7 +4123,14 @@
         "never": "Creado el {{date}}, nunca usado",
         "notes": "Con notas",
         "revoke": "Revocar",
-        "revokeLabel": "Revocar {{name}}"
+        "revokeLabel": "Revocar {{name}}",
+        "created": "Creado el {{date}}",
+        "usedWhen": "usado {{when}}",
+        "neverUsed": "nunca usado",
+        "calls": "llamadas esta semana: {{calls}}",
+        "expires": "caduca el {{date}}",
+        "expired": "Caducado",
+        "withNotes": "incluye notas"
       },
       "empty": {
         "title": "Ningún asistente conectado",
@@ -4153,7 +4160,21 @@
           "limit": "Tienes {{max}} tokens. Revoca uno para crear otro.",
           "notAvailable": "Conectar un asistente es parte de Pro.",
           "save": "No se pudo crear el token. Inténtalo de nuevo."
-        }
+        },
+        "access": "Acceso",
+        "accessOption": {
+          "read": {
+            "title": "Solo lectura",
+            "hint": "Buscar y leer tus enlaces."
+          },
+          "save": {
+            "title": "Leer y guardar",
+            "hint": "También guarda los enlaces que pidas, en cuanto sea posible. No puede borrar nada."
+          }
+        },
+        "expires": "Caduca",
+        "days": "{{count}} días",
+        "never": "Nunca"
       },
       "secret": {
         "title": "Token para {{name}}",
@@ -4189,6 +4210,38 @@
             "hint": "Añade esto a .vscode/mcp.json en tu proyecto:"
           }
         }
+      },
+      "page": {
+        "lead": "Deja que un asistente de IA compatible con MCP busque y lea tu estantería. Cada asistente tiene su propio token y puedes revocarlo cuando quieras.",
+        "pro": "Pro",
+        "tokens": "Tokens",
+        "howTo": "Cómo conectar",
+        "address": "Dirección del servidor",
+        "clients": "Asistente",
+        "can": {
+          "title": "Qué puede hacer un asistente",
+          "read": {
+            "title": "Buscar y leer tus enlaces",
+            "text": "Títulos, etiquetas, carpetas y resúmenes, y las notas si el token las incluye. Nunca los datos de tu cuenta."
+          },
+          "save": {
+            "title": "Guardar enlaces",
+            "text": "Solo con un token «Leer y guardar», cuando las herramientas para asistentes de Shelfmark puedan guardar. No se puede borrar nada."
+          }
+        },
+        "free": {
+          "title": "Conectar un asistente forma parte de Pro",
+          "text": "Pro aún no está a la venta. Todo lo demás de Shelfmark, IA incluida, funciona con tu plan."
+        }
+      },
+      "access": {
+        "read": "Solo lectura",
+        "save": "Leer y guardar"
+      },
+      "row": {
+        "title": "Tokens y configuración",
+        "hint": "Deja que un asistente compatible con MCP busque y lea tu estantería.",
+        "open": "Abrir"
       }
     },
     "announce": {

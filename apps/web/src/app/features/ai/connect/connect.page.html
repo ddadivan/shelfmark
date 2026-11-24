@@ -1,0 +1,12 @@
+<app-settings-page-header
+  [title]="'ai.connect.title' | transloco"
+  [backHref]="aiHref"
+  [backLabel]="'settings.nav.ai' | transloco"
+/>
+<p class="connect-page__lead">
+  {{ 'ai.connect.page.lead' | transloco }}
+  <ui-badge class="connect-page__pro" [tone]="BADGE_TONE.Ai"
+    >{{ 'ai.connect.page.pro' | transloco }}</ui-badge
+  >
+</p>
+<app-connect-assistant />

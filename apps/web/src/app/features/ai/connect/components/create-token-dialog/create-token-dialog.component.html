@@ -35,6 +35,28 @@
           [placeholder]="'ai.connect.create.namePlaceholder' | transloco"
           [formField]="form.name"
         />
+        <div class="token__group">
+          <p class="token__label" id="token-access">{{ 'ai.connect.create.access' | transloco }}</p>
+          <ui-radio-group
+            ariaLabelledby="token-access"
+            [options]="accessOptions()"
+            [value]="access()"
+            [disabled]="saving()"
+            (valueChange)="setAccess($event)"
+          />
+        </div>
+        <div class="token__group">
+          <p class="token__label" id="token-expiry">
+            {{ 'ai.connect.create.expires' | transloco }}
+          </p>
+          <ui-segmented-control
+            ariaLabelledby="token-expiry"
+            [options]="expiryOptions()"
+            [value]="expiry()"
+            [disabled]="saving()"
+            (valueChange)="setExpiry($event)"
+          />
+        </div>
         <ui-settings-row
           align="top"
           [title]="'ai.connect.create.notes' | transloco"

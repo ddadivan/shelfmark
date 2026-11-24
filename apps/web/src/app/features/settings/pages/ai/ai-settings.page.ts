@@ -38,7 +38,7 @@ import { FragmentTargetDirective } from '../../../../core/layout/fragment-target
 import { ViewportService } from '../../../../core/layout/viewport.service';
 import { APP_PATH } from '../../../../models/app-path.const';
 import { AiUsageSectionComponent } from '../../../ai/components/ai-usage-section/ai-usage-section.component';
-import { ConnectAssistantComponent } from '../../../ai/connect/components/connect-assistant/connect-assistant.component';
+import { CONNECT_SEGMENT } from '../../../ai/connect/models/connect-segment.const';
 import { MeaningSearchControlComponent } from '../../../ai/components/meaning-search-control/meaning-search-control.component';
 import { AskControlComponent } from '../../../ai/components/ask-control/ask-control.component';
 import { AI_MODE_LABEL_KEYS } from '../../../ai/models/ai-mode-label-keys.const';
@@ -68,7 +68,6 @@ import { SETTINGS_PATH } from '../../models/settings-path.const';
     AiLineComponent,
     AiUsageSectionComponent,
     ButtonComponent,
-    ConnectAssistantComponent,
     FragmentTargetDirective,
     MeaningSearchControlComponent,
     AskControlComponent,
@@ -97,6 +96,7 @@ export default class AiSettingsPage {
   protected readonly NOTICE_KIND = NOTICE_KIND;
   protected readonly AI_MODE_LABEL_KEYS = AI_MODE_LABEL_KEYS;
   protected readonly AI_DATA_FRAGMENT = AI_DATA_FRAGMENT;
+  protected readonly connectHref = `/${APP_PATH.Settings}/${SETTINGS_PATH.Ai}/${CONNECT_SEGMENT}`;
   protected readonly privacyHref = `/${APP_PATH.Privacy}#${PRIVACY_AI_FRAGMENT}`;
 
   /** The folder and tags rows: their keys, current mode and phone page. */

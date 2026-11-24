@@ -19,7 +19,12 @@ import {
   type ValidationError,
 } from '@angular/forms/signals';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { MCP_LIMIT } from '@shelfmark/contracts';
+import {
+  MCP_LIMIT,
+  MCP_TOKEN_ACCESS,
+  MCP_TOKEN_EXPIRY_DAYS,
+  type McpTokenAccess,
+} from '@shelfmark/contracts';
 import {
   BUTTON_TYPE,
   BUTTON_VARIANT,
@@ -28,11 +33,15 @@ import {
   InputComponent,
   NOTICE_KIND,
   NoticeComponent,
+  RadioGroupComponent,
+  SegmentedControlComponent,
   SettingsRowComponent,
   SwitchComponent,
   TOAST_KIND,
   ToastService,
   UiDialogRef,
+  type RadioOption,
+  type SegmentedOption,
 } from '@shelfmark/ui';
 import { MCP_NAME_ERROR } from '../../models/mcp-name-error.const';
 import { MCP_TOKEN_ERROR_KEY } from '../../models/mcp-token-error-key.const';
@@ -41,8 +50,12 @@ import { McpTokensStore } from '../../services/mcp-tokens.store';
 import { copyText } from '../../utils/copy-text';
 import { maskSecret } from '../../utils/mask-secret';
 
+/** The segmented value of "Never" in Expires. */
+const EXPIRY_NEVER = 'never';
+
 /**
- * Create a personal MCP token (AiConnect board 2): a name and "Include my notes" (off), then the
+ * Create a personal MCP token (AiConnect board 2, Shelf 15-tools "New token"): a name, Access
+ * (read only, or read and save), Expires (30 days, 90 days, never) and "Include my notes" (off), then the
  * shown-once view with the masked token, Copy and the warning. The secret lives only in this
  * dialog's signal: never in a store, storage or log, and cleared when the dialog closes (Done,
  * Esc, the close button or the scrim). A phone shows it as a bottom sheet (`ui-dialog`).
@@ -56,6 +69,8 @@ import { maskSecret } from '../../utils/mask-secret';
     FormRoot,
     InputComponent,
     NoticeComponent,
+    RadioGroupComponent,
+    SegmentedControlComponent,
     SettingsRowComponent,
     SwitchComponent,
     TranslocoPipe,
@@ -106,6 +121,25 @@ export class CreateTokenDialogComponent {
   );
 
   protected readonly includeNotes = signal(false);
+  /** Shelf 15-tools: "Read only" or "Read and save" (fixed per token). */
+  protected readonly access = signal<McpTokenAccess>(MCP_TOKEN_ACCESS.Read);
+  /** Expires: `30`, `90` or `never` as the segmented value. */
+  protected readonly expiry = signal<string>(String(MCP_TOKEN_EXPIRY_DAYS[1]));
+
+  protected readonly accessOptions = computed<RadioOption[]>(() =>
+    Object.values(MCP_TOKEN_ACCESS).map((value) => ({
+      value,
+      title: this.text(`ai.connect.create.accessOption.${value}.title`),
+      description: this.text(`ai.connect.create.accessOption.${value}.hint`),
+    })),
+  );
+  protected readonly expiryOptions = computed<SegmentedOption[]>(() => [
+    ...MCP_TOKEN_EXPIRY_DAYS.map((days) => ({
+      value: String(days),
+      label: this.text('ai.connect.create.days', { count: days }),
+    })),
+    { value: EXPIRY_NEVER, label: this.text('ai.connect.create.never') },
+  ]);
   protected readonly saving = signal(false);
   protected readonly error = signal<McpTokenError | null>(null);
 
@@ -128,6 +162,15 @@ export class CreateTokenDialogComponent {
     inject(DestroyRef).onDestroy(() => {
       this.clear();
     });
+  }
+
+  protected setAccess(value: string): void {
+    const access = Object.values(MCP_TOKEN_ACCESS).find((item) => item === value);
+    if (access) this.access.set(access);
+  }
+
+  protected setExpiry(value: string): void {
+    this.expiry.set(value);
   }
 
   protected setIncludeNotes(on: boolean): void {
@@ -161,7 +204,13 @@ export class CreateTokenDialogComponent {
     this.error.set(null);
     this.ref.setLocked(true);
     const name = this.model().name.trim();
-    const result = await this.store.create({ name, includeNotes: this.includeNotes() });
+    const days = MCP_TOKEN_EXPIRY_DAYS.find((item) => String(item) === this.expiry()) ?? null;
+    const result = await this.store.create({
+      name,
+      includeNotes: this.includeNotes(),
+      access: this.access(),
+      expiresInDays: days,
+    });
     this.ref.setLocked(false);
     this.saving.set(false);
     if (result.ok) {

@@ -78,6 +78,25 @@ describe('CreateTokenDialogComponent', () => {
     expect(await axeViolations(container())).toEqual([]);
   });
 
+  it('sends the chosen access and expiry', async () => {
+    const { api, loader } = await setup();
+    api.create.mockReturnValue(of({ token: mcpToken(), secret: SECRET }));
+    typeName('Cursor');
+    const radio = (value: string) =>
+      container().querySelector<HTMLInputElement>(`input[type="radio"][value="${value}"]`);
+    radio('save')?.click();
+    radio('never')?.click();
+    await create(loader);
+    await vi.waitFor(() =>
+      expect(api.create).toHaveBeenCalledWith({
+        name: 'Cursor',
+        includeNotes: false,
+        access: 'save',
+        expiresInDays: null,
+      }),
+    );
+  });
+
   it('refuses an empty or blank name', async () => {
     const { api, loader, dialog } = await setup();
     await create(loader);
@@ -100,7 +119,13 @@ describe('CreateTokenDialogComponent', () => {
     await create(loader);
 
     await vi.waitFor(async () => expect(await dialog.getTitle()).toBe('Token for Claude Desktop'));
-    expect(api.create).toHaveBeenCalledWith({ name: 'Claude Desktop', includeNotes: true });
+    // Access read only and 90 days unless chosen otherwise (Shelf 15-tools "New token").
+    expect(api.create).toHaveBeenCalledWith({
+      name: 'Claude Desktop',
+      includeNotes: true,
+      access: 'read',
+      expiresInDays: 90,
+    });
     const body = await dialog.getBodyText();
     expect(body).toContain('smk_live_Spec…wxyz');
     expect(body).not.toContain(SECRET);

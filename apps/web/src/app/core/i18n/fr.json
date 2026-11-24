@@ -4123,7 +4123,14 @@
         "never": "Créé le {{date}}, jamais utilisé",
         "notes": "Avec les notes",
         "revoke": "Révoquer",
-        "revokeLabel": "Révoquer {{name}}"
+        "revokeLabel": "Révoquer {{name}}",
+        "created": "Créé le {{date}}",
+        "usedWhen": "utilisé {{when}}",
+        "neverUsed": "jamais utilisé",
+        "calls": "appels cette semaine : {{calls}}",
+        "expires": "expire le {{date}}",
+        "expired": "Expiré",
+        "withNotes": "inclut les notes"
       },
       "empty": {
         "title": "Aucun assistant connecté",
@@ -4153,7 +4160,21 @@
           "limit": "Vous avez {{max}} jetons. Révoquez-en un pour en créer un autre.",
           "notAvailable": "Connecter un assistant fait partie de Pro.",
           "save": "Impossible de créer le jeton. Réessayez."
-        }
+        },
+        "access": "Accès",
+        "accessOption": {
+          "read": {
+            "title": "Lecture seule",
+            "hint": "Chercher et lire vos liens."
+          },
+          "save": {
+            "title": "Lire et enregistrer",
+            "hint": "Enregistre aussi les liens que vous demandez, dès que ce sera possible. Il ne peut rien supprimer."
+          }
+        },
+        "expires": "Expire",
+        "days": "{{count}} jours",
+        "never": "Jamais"
       },
       "secret": {
         "title": "Jeton pour {{name}}",
@@ -4189,6 +4210,38 @@
             "hint": "Ajoutez ceci à .vscode/mcp.json dans votre projet :"
           }
         }
+      },
+      "page": {
+        "lead": "Laissez un assistant IA compatible MCP chercher et lire votre étagère. Chaque assistant a son propre jeton, révocable à tout moment.",
+        "pro": "Pro",
+        "tokens": "Jetons",
+        "howTo": "Comment connecter",
+        "address": "Adresse du serveur",
+        "clients": "Assistant",
+        "can": {
+          "title": "Ce qu’un assistant peut faire",
+          "read": {
+            "title": "Chercher et lire vos liens",
+            "text": "Titres, tags, dossiers et résumés, et les notes si le jeton les inclut. Jamais les détails de votre compte."
+          },
+          "save": {
+            "title": "Enregistrer des liens",
+            "text": "Seulement avec un jeton « Lire et enregistrer », dès que les outils d’assistant de Shelfmark sauront enregistrer. Rien ne peut être supprimé."
+          }
+        },
+        "free": {
+          "title": "Connecter un assistant fait partie de Pro",
+          "text": "Pro n’est pas encore en vente. Tout le reste de Shelfmark, IA comprise, fonctionne avec votre offre."
+        }
+      },
+      "access": {
+        "read": "Lecture seule",
+        "save": "Lire et enregistrer"
+      },
+      "row": {
+        "title": "Jetons et configuration",
+        "hint": "Laissez un assistant compatible MCP chercher et lire votre étagère.",
+        "open": "Ouvrir"
       }
     },
     "announce": {

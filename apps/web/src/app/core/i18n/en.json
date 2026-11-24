@@ -4023,7 +4023,14 @@
         "never": "Created {{date}}, never used",
         "notes": "Includes notes",
         "revoke": "Revoke",
-        "revokeLabel": "Revoke {{name}}"
+        "revokeLabel": "Revoke {{name}}",
+        "created": "Created {{date}}",
+        "usedWhen": "used {{when}}",
+        "neverUsed": "never used",
+        "calls": "calls this week: {{calls}}",
+        "expires": "expires {{date}}",
+        "expired": "Expired",
+        "withNotes": "includes notes"
       },
       "empty": {
         "title": "No assistants connected",
@@ -4053,7 +4060,21 @@
           "limit": "You have {{max}} tokens. Revoke one to create another.",
           "notAvailable": "Connecting an assistant is part of Pro.",
           "save": "Couldn’t create the token. Try again."
-        }
+        },
+        "access": "Access",
+        "accessOption": {
+          "read": {
+            "title": "Read only",
+            "hint": "Search and read your links."
+          },
+          "save": {
+            "title": "Read and save",
+            "hint": "Also save new links you ask for, once saving arrives. It can’t delete anything."
+          }
+        },
+        "expires": "Expires",
+        "days": "{{count}} days",
+        "never": "Never"
       },
       "secret": {
         "title": "Token for {{name}}",
@@ -4089,6 +4110,38 @@
             "hint": "Add this to .vscode/mcp.json in your project:"
           }
         }
+      },
+      "page": {
+        "lead": "Let an AI assistant that speaks MCP search and read your shelf. Each assistant gets its own token; you can revoke it any time.",
+        "pro": "Pro",
+        "tokens": "Tokens",
+        "howTo": "How to connect",
+        "address": "Server address",
+        "clients": "Assistant",
+        "can": {
+          "title": "What an assistant can do",
+          "read": {
+            "title": "Search and read your links",
+            "text": "Titles, tags, folders and summaries, and notes when the token includes them. Never your account details."
+          },
+          "save": {
+            "title": "Save links",
+            "text": "Only with a “Read and save” token, once Shelfmark’s assistant tools can save. Nothing can be deleted."
+          }
+        },
+        "free": {
+          "title": "Connecting an assistant is part of Pro",
+          "text": "Pro isn’t on sale yet. Everything else in Shelfmark, AI included, works on your plan."
+        }
+      },
+      "access": {
+        "read": "Read only",
+        "save": "Read and save"
+      },
+      "row": {
+        "title": "Tokens and setup",
+        "hint": "Let an assistant that speaks MCP search and read your shelf.",
+        "open": "Open"
       }
     },
     "announce": {

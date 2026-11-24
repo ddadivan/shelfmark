@@ -4023,7 +4023,14 @@
         "never": "Erstellt am {{date}}, nie genutzt",
         "notes": "Mit Notizen",
         "revoke": "Widerrufen",
-        "revokeLabel": "{{name}} widerrufen"
+        "revokeLabel": "{{name}} widerrufen",
+        "created": "Erstellt am {{date}}",
+        "usedWhen": "genutzt {{when}}",
+        "neverUsed": "nie genutzt",
+        "calls": "Aufrufe diese Woche: {{calls}}",
+        "expires": "läuft am {{date}} ab",
+        "expired": "Abgelaufen",
+        "withNotes": "mit Notizen"
       },
       "empty": {
         "title": "Keine Assistenten verbunden",
@@ -4053,7 +4060,21 @@
           "limit": "Du hast {{max}} Tokens. Widerrufe eines, um ein neues zu erstellen.",
           "notAvailable": "Einen Assistenten zu verbinden ist Teil von Pro.",
           "save": "Das Token konnte nicht erstellt werden. Versuch es noch einmal."
-        }
+        },
+        "access": "Zugriff",
+        "accessOption": {
+          "read": {
+            "title": "Nur lesen",
+            "hint": "Deine Links durchsuchen und lesen."
+          },
+          "save": {
+            "title": "Lesen und speichern",
+            "hint": "Speichert auch neue Links, um die du bittest, sobald das möglich ist. Löschen kann es nichts."
+          }
+        },
+        "expires": "Läuft ab",
+        "days": "{{count}} Tage",
+        "never": "Nie"
       },
       "secret": {
         "title": "Token für {{name}}",
@@ -4089,6 +4110,38 @@
             "hint": "Füge das in .vscode/mcp.json in deinem Projekt ein:"
           }
         }
+      },
+      "page": {
+        "lead": "Lass einen KI-Assistenten, der MCP spricht, dein Regal durchsuchen und lesen. Jeder Assistent bekommt ein eigenes Token, das du jederzeit widerrufen kannst.",
+        "pro": "Pro",
+        "tokens": "Tokens",
+        "howTo": "So verbindest du",
+        "address": "Serveradresse",
+        "clients": "Assistent",
+        "can": {
+          "title": "Was ein Assistent kann",
+          "read": {
+            "title": "Deine Links durchsuchen und lesen",
+            "text": "Titel, Tags, Ordner und Zusammenfassungen, Notizen nur, wenn das Token sie einschließt. Nie deine Kontodaten."
+          },
+          "save": {
+            "title": "Links speichern",
+            "text": "Nur mit einem Token „Lesen und speichern“, sobald die Assistenten-Werkzeuge von Shelfmark speichern können. Löschen ist nie möglich."
+          }
+        },
+        "free": {
+          "title": "Einen Assistenten zu verbinden gehört zu Pro",
+          "text": "Pro gibt es noch nicht zu kaufen. Alles andere in Shelfmark, auch die KI, funktioniert mit deinem Tarif."
+        }
+      },
+      "access": {
+        "read": "Nur lesen",
+        "save": "Lesen und speichern"
+      },
+      "row": {
+        "title": "Tokens und Einrichtung",
+        "hint": "Lass einen Assistenten, der MCP spricht, dein Regal durchsuchen und lesen.",
+        "open": "Öffnen"
       }
     },
     "announce": {
