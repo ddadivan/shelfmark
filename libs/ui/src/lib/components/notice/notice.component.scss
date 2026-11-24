@@ -4,10 +4,11 @@
 .ui-notice {
   @include type(body);
 
+  // Shelf notice: the 16px icon centred on the text line (a flex box, never the baseline).
   display: flex;
-  gap: rem(10px);
-  align-items: flex-start;
-  padding: rem(10px) rem(12px);
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
   font-size: rem(14px);
   line-height: rem(20px);
   border-radius: var(--radius-md);
@@ -50,7 +51,12 @@
   }
 
   &__icon {
+    display: flex;
     flex: none;
+
+    svg {
+      display: block;
+    }
   }
 
   &__body {
