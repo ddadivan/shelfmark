@@ -57,13 +57,17 @@ export async function expectScreen(page: Page, name: string): Promise<void> {
 }
 
 /**
- * Waits until every icon has its shape: an `<svg><use href="sprite.svg#id">` of an element added
+ * Waits until every shown icon has its shape: an `<svg><use href="sprite.svg#id">` of an element added
  * after the first paint is drawn a moment after it is in the DOM, and under CPU load a shot
  * taken in between has empty icon slots (and stays empty for the retries of `toHaveScreenshot`).
  */
 async function iconsDrawn(page: Page): Promise<void> {
   await page.waitForFunction(
     `Array.from(document.querySelectorAll('ui-icon svg use')).every((use) => {
+      // Only icons that are drawn at all: one inside a hidden part (a closed menu, a collapsed
+      // section) has no box whatever the sprite does.
+      const svg = use.closest('svg');
+      if (!svg || svg.getBoundingClientRect().width === 0 || !svg.checkVisibility()) return true;
       const box = use.getBoundingClientRect();
       return box.width > 0 || box.height > 0;
     })`,

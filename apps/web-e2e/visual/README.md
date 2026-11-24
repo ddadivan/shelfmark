@@ -10,22 +10,27 @@ Signed-in screens run on the mock APIs of the `e2e` build, dates frozen at 2026-
 (`support/visual-test.ts`), animations off, `reducedMotion: reduce`, `en-US`, UTC, fonts and the
 network settled before every shot. Each screen is a viewport shot named `<screen>.png`.
 
-| Screen                                         | Spec                     | Projects              |
-| ---------------------------------------------- | ------------------------ | --------------------- |
-| landing (above the fold), sign-in              | `public.visual.spec.ts`  | all                   |
-| library cards, list, folder feed, sidebar      | `library.visual.spec.ts` | all                   |
-| add link (dialog / phone sheet), folder style  | `library.visual.spec.ts` | all                   |
-| empty filter result                            | `library.visual.spec.ts` | all                   |
-| search results panel (header field, from 80em) | `library.visual.spec.ts` | desktop only          |
-| tab bar, bottom sheet (Recently opened)        | `library.visual.spec.ts` | tablet and phone only |
-| settings appearance, settings library          | `account.visual.spec.ts` | all                   |
-| trash with items, empty trash, empty library   | `account.visual.spec.ts` | all                   |
-| Ask chat: a find answer with link cards (#521) | `ask.visual.spec.ts`     | all                   |
+| Screen                                        | Spec                     | Projects              |
+| --------------------------------------------- | ------------------------ | --------------------- |
+| landing (above the fold), sign-in             | `public.visual.spec.ts`  | all                   |
+| library cards, list, folder feed, sidebar     | `library.visual.spec.ts` | all                   |
+| add link (dialog / phone sheet), folder style | `library.visual.spec.ts` | all                   |
+| empty filter result                           | `library.visual.spec.ts` | all                   |
+| search in the feed (header field, from 64em)  | `library.visual.spec.ts` | desktop only          |
+| tab bar, bottom sheet (Recently opened)       | `library.visual.spec.ts` | tablet and phone only |
+| settings appearance, settings library         | `account.visual.spec.ts` | all                   |
+| trash with items, empty trash, first run      | `account.visual.spec.ts` | all                   |
+| Ask page: a find answer with link cards       | `ask.visual.spec.ts`     | all                   |
 
 Projects: `desktop` (1280x800), `tablet` (820x1180, touch), `phone` (360x780, touch), each in
 `light` and `dark`, so `desktop-light`, `desktop-dark`, `tablet-light`, ... The sidebar of the
 tablet and phone is the Library tab (the tab bar replaces the sidebar below 64em).
 Baselines live in `__screenshots__/<project>/<spec file>/<screen>.png`.
+
+Regenerated for the Shelf redesign on Nov 24, 2026 (branch `redesign/shelf-final-tests`) in a
+Linux container with the repo's Playwright Chromium, not in the CI image below: if the first CI
+run on `stage` reports anti-aliasing-only diffs, regenerate them there with the `visual:update`
+label.
 
 ## Why the baselines come from CI
 

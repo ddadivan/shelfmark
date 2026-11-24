@@ -49,12 +49,12 @@ test.describe('visual: library (mock API)', () => {
     await expectScreen(page, 'sidebar');
   });
 
-  test('search results panel under the header field', async ({ page }) => {
-    test.skip(isCompact(page), 'the header search field exists from 80em (desktop project only)');
+  test('search in the feed from the header field', async ({ page }) => {
+    test.skip(isCompact(page), 'the header search field exists from 64em');
+    // Shelf block 3: the field filters the feed in place (Search title, count, marked words).
     await page.getByRole('combobox', { name: SEARCH_FIELD_NAME }).fill(MOCK_FIXTURE.searchWord);
-    const results = page.getByRole('listbox', { name: 'Search results' });
-    await expect(page.getByRole('option').first()).toBeVisible();
-    await expect(results).not.toHaveAttribute('aria-busy', 'true');
+    await expect(page.getByRole('heading', { level: 1, name: 'Search' })).toBeVisible();
+    await expect(page.locator('ui-card').first()).toBeVisible();
 
     await expectScreen(page, 'search-results');
   });

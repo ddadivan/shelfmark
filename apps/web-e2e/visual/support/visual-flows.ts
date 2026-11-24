@@ -17,5 +17,6 @@ export async function openEmptyLibraryAsNewUser(page: Page): Promise<void> {
   await seedSession(page, NEW_USER);
   await page.goto('/links');
   await dismissOnboarding(page);
-  await expect(page.getByRole('heading', { name: 'Your links will live here' })).toBeVisible();
+  // The first run of an empty library (Shelf block 6a).
+  await expect(page.getByRole('heading', { name: 'Your shelf is empty' })).toBeVisible();
 }
