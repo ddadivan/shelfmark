@@ -127,7 +127,14 @@
   }
 
   @if (askRow()) {
-    <ui-command-group [heading]="'ai.ask.title' | transloco">
+    <ui-command-group
+      [heading]="'ai.ask.title' | transloco"
+      [lead]="
+        settled() && resultCount() === 0
+          ? ('library.emptySearch.title' | transloco: { query: parsed() })
+          : undefined
+      "
+    >
       <ui-command-item [value]="SEARCH_RESULT_KIND.Ask">
         <ui-icon slot="leading" class="search-results__ask-icon" name="spark" />
         {{
