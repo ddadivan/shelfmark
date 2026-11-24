@@ -1,6 +1,6 @@
 <footer class="landing-footer">
-  <span>{{ 'landing.footer.copyright' | transloco }}</span>
-  <span class="landing-footer__links">
+  <div class="landing-footer__bar">
+    <span>{{ 'landing.footer.copyright' | transloco }}</span>
     <a class="landing-footer__link" [routerLink]="LANDING_LINKS.Changelog">{{
       'landing.footer.changelog' | transloco
     }}</a>
@@ -15,21 +15,23 @@
       >{{ 'landing.footer.github' | transloco
       }}<span class="landing-footer__hint"> ({{ 'landing.newTab' | transloco }})</span></a
     >
-  </span>
-  <div
-    class="landing-footer__languages"
-    role="group"
-    [attr.aria-label]="'landing.footer.language' | transloco"
-  >
-    @for (item of languages; track item.lang) {
-      <ui-button
-        [variant]="BUTTON_VARIANT.Ghost"
-        [size]="BUTTON_SIZE.Sm"
-        [attr.lang]="item.lang"
-        [ariaPressed]="locale.lang() === item.lang"
-        (click)="choose(item.lang)"
-        >{{ item.name }}</ui-button
-      >
-    }
+    <span class="landing-footer__space"></span>
+    <div
+      class="landing-footer__languages"
+      role="group"
+      [attr.aria-label]="'landing.footer.language' | transloco"
+    >
+      @for (item of languages; track item.lang) {
+        <ui-button
+          class="landing-footer__language"
+          [variant]="BUTTON_VARIANT.Ghost"
+          [size]="BUTTON_SIZE.Sm"
+          [attr.lang]="item.lang"
+          [ariaPressed]="locale.lang() === item.lang"
+          (click)="choose(item.lang)"
+          >{{ item.name }}</ui-button
+        >
+      }
+    </div>
   </div>
 </footer>

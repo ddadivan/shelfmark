@@ -1,53 +1,111 @@
 <!--
-  A picture of the app, not the app: decorative, so hidden from assistive technology and inert
-  (the cards' own title buttons and the switch's radios must not be tab stops).
+  A picture of the app, not the app: one image with its name. The rows and the tabs still answer
+  a mouse click (they pick that frame of the cycle); they are no tab stops.
 -->
 <div
-  class="landing-hero-preview"
-  aria-hidden="true"
-  inert
-  [class.landing-hero-preview--waiting]="waiting()"
-  [class.landing-hero-preview--playing]="playing()"
+  class="preview"
+  role="img"
+  data-ds-ignore
+  [attr.aria-label]="'landing.preview.label' | transloco"
+  [class.preview--intro]="cycle.intro()"
 >
-  <div class="landing-hero-preview__panel">
-    <div class="landing-hero-preview__head">
-      <span class="landing-hero-preview__folder">{{
-        'landing.hero.preview.folder' | transloco
-      }}</span>
-      <span class="landing-hero-preview__count">{{
-        (articles() ? 'landing.hero.preview.countArticles' : 'landing.hero.preview.count')
-          | transloco
-      }}</span>
-      <ui-segmented-control
-        class="landing-hero-preview__switch"
-        [options]="options()"
-        [value]="shown()"
-        [ariaLabel]="'landing.hero.preview.view' | transloco"
-      />
+  <div class="preview__side" aria-hidden="true">
+    <span class="preview__logo"
+      ><ui-icon class="preview__logo-mark" name="saved-link" [size]="16" />{{
+        'landing.header.brand' | transloco
+      }}</span
+    >
+    <span class="preview__add">{{ 'landing.preview.add' | transloco }}</span>
+    @for (row of libraryRows; track row.scope) {
+      <span
+        class="preview__row"
+        [class.preview__row--on]="row.scope === cycle.state().scope"
+        (click)="pickRow(row)"
+        >{{ rowKey(row.scope) | transloco
+        }}<b class="preview__count" [class.preview__count--strong]="row.strong">{{
+          row.count
+        }}</b></span
+      >
+    }
+    <span class="preview__heading">{{ 'landing.preview.folders' | transloco }}</span>
+    @for (item of folderRows; track item.row.scope) {
+      <span
+        class="preview__row"
+        [class.preview__row--on]="item.row.scope === cycle.state().scope"
+        (click)="pickRow(item.row)"
+        ><ui-icon
+          class="preview__folder"
+          name="folder-filled"
+          [size]="16"
+          [style.color]="item.colour"
+        />{{ rowKey(item.row.scope) | transloco
+        }}<b class="preview__count">{{ item.row.count }}</b></span
+      >
+    }
+  </div>
+  <div class="preview__main" aria-hidden="true">
+    <span class="preview__search"
+      ><ui-icon class="preview__search-icon" name="search" [size]="16" />{{
+        'landing.preview.search' | transloco
+      }}</span
+    >
+    <div class="preview__head">
+      <b class="preview__title">{{ titleKey() | transloco }}</b>
+      <span class="preview__views">
+        <span class="preview__view preview__view--on"><ui-icon name="masonry" [size]="16" /></span>
+        <span class="preview__view"><ui-icon name="cards" [size]="16" /></span>
+        <span class="preview__view"><ui-icon name="list" [size]="16" /></span>
+      </span>
     </div>
-    <div class="landing-hero-preview__grid">
+    <div class="preview__tabs" [class.preview__tabs--off]="cycle.state().scope !== ALL">
+      @for (item of TABS; track item.tab) {
+        <span
+          class="preview__tab"
+          [class.preview__tab--on]="cycle.state().scope === ALL && cycle.state().tab === item.tab"
+          (click)="pickTab(item.tab)"
+          >{{ 'landing.preview.tabs.' + item.tab | transloco }} {{ item.count }}</span
+        >
+      }
+    </div>
+    <div class="preview__grid" [class.preview__grid--fade]="cycle.fading()">
       @for (item of cards(); track item.card.id) {
         <div
-          class="landing-hero-preview__item"
-          [style.--landing-preview-index]="item.index"
-          [style.--landing-preview-slot]="item.slot"
+          class="preview__card"
+          [class.preview__card--hidden]="!item.shown"
+          [style.--landing-card-index]="item.index"
+          [style.view-transition-name]="cycle.named() ? 'landing-card-' + item.card.id : null"
         >
-          <app-link-preview-card
-            [title]="'landing.hero.preview.items.' + item.card.id + '.title' | transloco"
-            [host]="item.card.host"
-            [daysAgo]="item.card.daysAgo"
-            [tone]="item.card.tone"
-            [tags]="['landing.hero.preview.items.' + item.card.id + '.tag' | transloco]"
+          <img
+            class="preview__image"
+            alt=""
+            priority
+            [class.preview__image--product]="item.card.product"
+            [ngSrc]="item.card.image.src"
+            [width]="item.card.image.width"
+            [height]="item.card.image.height"
           />
+          <span class="preview__body">
+            <span class="preview__meta"
+              ><span>{{ folderKey(item.card.folder) | transloco }}</span
+              ><span>{{
+                'landing.preview.items.' + item.card.id + '.date' | transloco
+              }}</span></span
+            >
+            <span class="preview__name">{{
+              'landing.preview.items.' + item.card.id + '.title' | transloco
+            }}</span>
+            @if (item.card.note) {
+              <span class="preview__note">{{
+                'landing.preview.items.' + item.card.id + '.note' | transloco
+              }}</span>
+            }
+          </span>
         </div>
       }
     </div>
+    <span class="preview__toast" [class.preview__toast--shown]="cycle.toast()"
+      >{{ 'landing.preview.toast' | transloco
+      }}<b class="preview__undo">{{ 'landing.preview.undo' | transloco }}</b></span
+    >
   </div>
-  <ui-toast
-    class="landing-hero-preview__toast"
-    [style.--landing-preview-index]="INTRO_SLOTS"
-    [kind]="TOAST_KIND.Saved"
-    [title]="'landing.hero.preview.savedTo' | transloco: { folder: folder() }"
-    [actionLabel]="'landing.hero.preview.undo' | transloco"
-  />
 </div>

@@ -1,69 +1,113 @@
 <section class="landing-bento" id="works" tabindex="-1" aria-labelledby="landing-bento-title">
-  <h2 id="landing-bento-title" class="landing-bento__title">
-    {{ 'landing.bento.title' | transloco }}
-  </h2>
-  <div class="landing-bento__grid" appLandingReveal>
-    <article class="landing-bento__tile landing-bento__tile--wide landing-bento__tile--preview">
-      <div class="landing-bento__copy">
-        <h3 class="landing-bento__heading">{{ 'landing.bento.preview.title' | transloco }}</h3>
-        <p class="landing-bento__text">{{ 'landing.bento.preview.text' | transloco }}</p>
-      </div>
-      <div class="landing-bento__demo" aria-hidden="true">
-        <div class="landing-bento__url">
-          <ui-icon name="link" />
-          <span class="landing-bento__mono">{{ 'landing.bento.preview.url' | transloco }}</span>
-        </div>
-        <div class="landing-bento__result">
-          <span class="landing-bento__media"></span>
-          <span class="landing-bento__result-text">
-            <span class="landing-bento__meta"
-              ><ui-favicon letter="Y" />{{ 'landing.bento.preview.domain' | transloco }}</span
+  <div appLandingReveal>
+    <h2 id="landing-bento-title" class="landing-bento__title">
+      {{ 'landing.bento.title' | transloco }}
+    </h2>
+  </div>
+  <ul class="landing-bento__grid" appLandingReveal>
+    <li class="landing-bento__tile landing-bento__tile--wide">
+      <h3 class="landing-bento__name">{{ 'landing.bento.preview.title' | transloco }}</h3>
+      <p class="landing-bento__text">{{ 'landing.bento.preview.text' | transloco }}</p>
+      <div class="landing-bento__visual" aria-hidden="true">
+        <span class="landing-bento__url"
+          ><ui-icon class="landing-bento__muted" name="external" [size]="16" />
+          youtube.com/watch?v=Ata9cSC2WpM</span
+        >
+        <span class="landing-bento__result">
+          <img
+            class="landing-bento__still"
+            alt=""
+            [ngSrc]="IMAGES.angular.src"
+            [width]="IMAGES.angular.width"
+            [height]="IMAGES.angular.height"
+          />
+          <span>
+            <b class="landing-bento__result-title">{{
+              'landing.preview.items.angular.title' | transloco
+            }}</b>
+            <span class="landing-bento__result-meta">youtube.com · Fireship</span>
+            <span class="landing-bento__note"
+              ><ui-icon class="landing-bento__note-icon" name="edit" [size]="16" />{{
+                'landing.bento.preview.note' | transloco
+              }}</span
             >
-            <span class="landing-bento__result-title">{{
-              'landing.bento.preview.cardTitle' | transloco
-            }}</span>
           </span>
-        </div>
+        </span>
       </div>
-    </article>
-
-    <article class="landing-bento__tile">
-      <h3 class="landing-bento__heading">{{ 'landing.bento.folders.title' | transloco }}</h3>
+    </li>
+    <li class="landing-bento__tile">
+      <h3 class="landing-bento__name">{{ 'landing.bento.folders.title' | transloco }}</h3>
       <p class="landing-bento__text">{{ 'landing.bento.folders.text' | transloco }}</p>
-      <div class="landing-bento__tree" aria-hidden="true">
-        @for (folder of folders; track folder.nameKey) {
+      <div class="landing-bento__visual landing-bento__tree" aria-hidden="true">
+        @for (row of tree; track row.folder) {
           <span
             class="landing-bento__row"
-            [class.landing-bento__row--active]="folder.active"
-            [class.landing-bento__row--nested]="folder.depth > 0"
+            [class.landing-bento__row--nested]="row.nested"
+            [class.landing-bento__row--on]="row.current"
+            ><ui-icon
+              class="landing-bento__folder"
+              name="folder-filled"
+              [size]="16"
+              [style.color]="COLOUR[row.folder]"
+            />{{ 'landing.folders.' + row.folder | transloco
+            }}<b class="landing-bento__count">{{ row.count }}</b></span
           >
-            <ui-icon name="folder" />
-            <span class="landing-bento__row-name">{{ folder.nameKey | transloco }}</span>
-            <span class="landing-bento__count">{{ folder.count }}</span>
-          </span>
         }
       </div>
-    </article>
-
-    <article class="landing-bento__tile">
-      <h3 class="landing-bento__heading">{{ 'landing.bento.search.title' | transloco }}</h3>
+    </li>
+    <li class="landing-bento__tile">
+      <h3 class="landing-bento__name">{{ 'landing.bento.search.title' | transloco }}</h3>
       <p class="landing-bento__text">{{ 'landing.bento.search.text' | transloco }}</p>
-      <div class="landing-bento__tokens" aria-hidden="true">
-        <ui-chip [variant]="CHIP_VARIANT.Neutral">{{
-          'landing.bento.search.word' | transloco
-        }}</ui-chip>
-        <ui-chip [variant]="CHIP_VARIANT.Tag">{{ 'landing.bento.search.tag' | transloco }}</ui-chip>
+      <div class="landing-bento__visual landing-bento__search" aria-hidden="true">
+        <span class="landing-bento__field"
+          ><ui-icon name="search" [size]="16" />{{ 'landing.bento.search.word' | transloco
+          }}<kbd class="landing-bento__kbd">Ctrl K</kbd></span
+        >
+        <span class="landing-bento__result landing-bento__result--flat">
+          <img
+            class="landing-bento__product"
+            alt=""
+            [ngSrc]="IMAGES.jacket.src"
+            [width]="IMAGES.jacket.width"
+            [height]="IMAGES.jacket.height"
+          />
+          <span>
+            <b class="landing-bento__result-title"
+              ><ui-highlight
+                [text]="'landing.bento.search.result' | transloco"
+                [query]="'landing.bento.search.word' | transloco"
+            /></b>
+            <span class="landing-bento__result-meta">{{
+              'landing.bento.search.meta' | transloco
+            }}</span>
+          </span>
+        </span>
       </div>
-    </article>
-
-    <article class="landing-bento__tile">
-      <h3 class="landing-bento__heading">{{ 'landing.bento.phone.title' | transloco }}</h3>
+    </li>
+    <li class="landing-bento__tile">
+      <h3 class="landing-bento__name">{{ 'landing.bento.phone.title' | transloco }}</h3>
       <p class="landing-bento__text">{{ 'landing.bento.phone.text' | transloco }}</p>
-    </article>
-
-    <article class="landing-bento__tile landing-bento__tile--inverse">
-      <h3 class="landing-bento__heading">{{ 'landing.bento.own.title' | transloco }}</h3>
+      <!-- A drawing of a phone's share sheet (the system's UI, outside the DS). -->
+      <div class="landing-bento__visual" aria-hidden="true" data-ds-ignore>
+        <span class="landing-bento__phone">
+          <span class="landing-bento__sheet">
+            <b>{{ 'landing.bento.phone.share' | transloco }}</b>
+            <span class="landing-bento__muted">allbirds.com/products/tree-runners</span>
+            <span class="landing-bento__apps"
+              ><i></i><i class="landing-bento__me"></i><i></i><i></i
+            ></span>
+          </span>
+        </span>
+      </div>
+    </li>
+    <li class="landing-bento__tile landing-bento__tile--inverse">
+      <h3 class="landing-bento__name">{{ 'landing.bento.own.title' | transloco }}</h3>
       <p class="landing-bento__text">{{ 'landing.bento.own.text' | transloco }}</p>
-    </article>
-  </div>
+      <div class="landing-bento__visual landing-bento__files" aria-hidden="true">
+        @for (format of FORMATS; track format) {
+          <span class="landing-bento__file">{{ format }}</span>
+        }
+      </div>
+    </li>
+  </ul>
 </section>

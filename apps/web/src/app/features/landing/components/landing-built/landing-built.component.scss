@@ -1,34 +1,39 @@
-/* stylelint-disable shelf/font-size-token -- landing is rebuilt in block 6 (Shelf 16-landing) */
 @use 'ui' as *;
 @use '../../landing' as landing;
 
 :host {
   display: block;
-  scroll-margin-top: var(--space-4);
 }
 
 .landing-built {
-  @include landing.reveal;
-  @include landing.card-pad;
+  @include landing.card;
 
-  scroll-margin-top: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--landing-card-pad);
-  background: var(--surface);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  gap: rem(16px);
+  height: 100%;
+  padding: rem(32px);
+  scroll-margin-top: var(--landing-header-height);
+
+  &:focus {
+    outline: none;
+  }
+
+  @include landing.narrow {
+    padding: rem(24px);
+  }
 }
 
 .landing-built__title {
-  @include landing.eyebrow;
+  margin: 0;
+  font-size: var(--font-size-title-l);
+  font-weight: 600;
+  line-height: var(--line-height-title-l);
 }
 
 .landing-built__text {
   margin: 0;
-  font-size: rem(15px);
-  line-height: rem(23px);
+  color: var(--text-muted);
 }
 
 .landing-built__agents {
@@ -41,29 +46,35 @@
 }
 
 .landing-built__agent {
-  padding: var(--space-1) rem(10px);
-  font-family: var(--font-mono);
-  font-size: rem(12px);
-  line-height: rem(16px);
-  background: var(--bg);
+  @include type(mono);
+
+  display: inline-flex;
+  align-items: center;
+  height: rem(30px);
+  padding-inline: rem(12px);
+  background: var(--surface-hover);
   border-radius: var(--radius-full);
 }
 
 .landing-built__links {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  gap: rem(16px);
   padding: 0;
-  margin: 0;
+  margin: auto 0 0;
   list-style: none;
 }
 
 .landing-built__link {
+  @include type(label);
+
+  --ui-icon-size: #{rem(14px)};
+
   display: inline-flex;
-  gap: var(--space-1);
+  gap: rem(6px);
   align-items: center;
-  font-size: rem(14px);
   color: var(--text);
+  text-decoration: underline;
   text-underline-offset: rem(3px);
 }
 

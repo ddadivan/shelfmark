@@ -1,4 +1,12 @@
-import { afterNextRender, DestroyRef, Directive, ElementRef, inject, signal } from '@angular/core';
+import {
+  afterNextRender,
+  DestroyRef,
+  Directive,
+  ElementRef,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { LandingMotionService } from '../services/landing-motion.service';
 import { LANDING_REVEAL } from '../models/landing-reveal.const';
 import { LANDING_REVEAL_STATE } from '../models/landing-reveal-state.const';
@@ -23,6 +31,11 @@ const DELAY_PROPERTY = '--landing-reveal-delay';
 export class LandingRevealDirective {
   protected readonly STATE = LANDING_REVEAL_STATE;
   protected readonly state = signal<LandingRevealState>(LANDING_REVEAL_STATE.Idle);
+
+  /** Delay before the first child rises in. */
+  readonly revealStartMs = input(0);
+  /** Delay between two children. */
+  readonly revealStepMs = input<number>(LANDING_REVEAL.StaggerMs);
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly motion = inject(LandingMotionService);
@@ -68,7 +81,10 @@ export class LandingRevealDirective {
           pendingSet = true;
           Array.from(this.host.children).forEach((child, index) => {
             if (child instanceof HTMLElement) {
-              child.style.setProperty(DELAY_PROPERTY, `${index * LANDING_REVEAL.StaggerMs}ms`);
+              child.style.setProperty(
+                DELAY_PROPERTY,
+                `${this.revealStartMs() + index * this.revealStepMs()}ms`,
+              );
             }
           });
           this.showNow = reveal;

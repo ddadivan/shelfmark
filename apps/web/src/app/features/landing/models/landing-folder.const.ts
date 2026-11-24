@@ -1,7 +1,13 @@
-/** Folders of the "after" scene's tree; ids shared by the tree rows and the link lists. */
+/**
+ * The folders drawn on the landing (the app preview, the before / after shelf, the bento tree):
+ * ids for `landing.folders.<id>` and the Shelf folder colour of each.
+ */
 export const LANDING_FOLDER = {
-  Clothes: 'clothes',
-  Work: 'work',
   Angular: 'angular',
-  Recipes: 'recipes',
+  Tools: 'tools',
+  Learning: 'learning',
+  Shopping: 'shopping',
+  WatchLater: 'watchLater',
+  Courses: 'courses',
+  Talks: 'talks',
 } as const;

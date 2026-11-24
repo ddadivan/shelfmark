@@ -2,62 +2,72 @@
 @use '../../landing' as landing;
 
 :host {
+  position: sticky;
+  top: env(safe-area-inset-top, 0);
+  z-index: 20;
   display: block;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(rem(12px));
 }
 
-.landing-header {
+.landing-header__bar {
   @include landing.wrap;
 
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-2);
   align-items: center;
-  justify-content: space-between;
-  block-size: var(--landing-header-height, #{rem(72px)});
-
-  // The links and actions are `ui-button`s: they grow with the wide breakpoints like the hero's.
-  @include landing.wide {
-    --ui-button-scale: 1.1;
-  }
-
-  @include landing.xwide {
-    --ui-button-scale: 1.2;
-  }
+  block-size: var(--landing-header-height, #{rem(64px)});
 }
 
 .landing-header__logo {
   --ui-logo-size: #{rem(24px)};
-
-  @include tablet-up {
-    --ui-logo-size: #{rem(32px)};
-  }
-
-  @include landing.wide {
-    --ui-logo-size: #{rem(34px)};
-  }
-
-  @include landing.xwide {
-    --ui-logo-size: #{rem(40px)};
-  }
+  --ui-logo-wordmark-size: var(--font-size-title-s);
+  --ui-logo-wordmark-line: var(--line-height-title-s);
+  --ui-logo-gap: #{rem(8px)};
 }
 
 .landing-header__nav {
   display: flex;
+  gap: rem(4px);
+  margin-inline-start: rem(24px);
 
-  // Stays the height of a small button before it is styled, so the header has its final height
-  // from the first frame (no CLS).
-  min-block-size: rem(32px);
-  gap: var(--space-1);
-  align-items: center;
-  margin-inline: var(--space-4) auto;
+  @include landing.stacked {
+    display: none;
+  }
 }
 
-.landing-header__actions {
-  display: flex;
-  min-block-size: rem(36px);
-  gap: var(--space-2);
-  align-items: center;
+.landing-header__link {
+  @include type(secondary);
 
-  // Without the nav (a phone) the actions go to the end by themselves; with it, the nav's
-  // auto margin does.
-  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  height: rem(36px);
+  padding-inline: rem(12px);
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+
+  @include hover {
+    color: var(--text);
+    background: var(--fill);
+  }
+}
+
+.landing-header__space {
+  flex: 1;
+}
+
+.landing-header__theme {
+  margin-inline-end: var(--space-4);
+
+  @include landing.narrow {
+    margin-inline-end: 0;
+  }
+}
+
+.landing-header__sign-in {
+  @include landing.narrow {
+    display: none;
+  }
 }

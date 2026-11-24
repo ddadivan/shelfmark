@@ -1,192 +1,84 @@
 {
   "landing": {
     "header": {
-      "navLabel": "Principale",
+      "navLabel": "Pagina",
       "brand": "Shelfmark",
       "signIn": "Accedi",
       "howItWorks": "Come funziona",
+      "ai": "IA",
+      "whatsNew": "Novità",
       "privacy": "Privacy",
-      "getStarted": "Inizia"
+      "start": "Crea il tuo scaffale",
+      "theme": "Cambia tema"
     },
     "hero": {
       "line1": "Incolla un link.",
       "line2": "Ritrovalo.",
       "line3": "Anche tra un anno.",
-      "lead": "Video, articoli, cose da comprare, corsi — su uno scaffale tranquillo invece che in chat e schede aperte.",
+      "lead": "Video, repository, cose da comprare, corsi: su uno scaffale tranquillo invece che in chat e quaranta schede aperte.",
       "demo": "Apri la demo",
-      "start": "Crea il tuo scaffale",
-      "note": "Accedi con Google o GitHub.",
-      "preview": {
-        "label": "Anteprima dell’app",
-        "folder": "Da leggere",
-        "count": "21 link",
-        "countArticles": "6 link",
-        "view": "Vista",
-        "all": "Tutti 21",
-        "articles": "Articoli 6",
-        "savedTo": "Salvato in {{folder}}",
-        "undo": "Annulla",
-        "items": {
-          "talk": {
-            "title": "Tecnologia calma, un talk di 20 minuti",
-            "tag": "video"
-          },
-          "grid": {
-            "title": "La guida completa a CSS grid",
-            "tag": "css"
-          },
-          "design": {
-            "title": "Progettare per la lettura lunga",
-            "tag": "design"
-          },
-          "slow": {
-            "title": "Perché un software lento sembra rotto",
-            "tag": "ux"
-          }
+      "start": "Crea il tuo scaffale"
+    },
+    "preview": {
+      "label": "L’app Shelfmark: una cartella di link salvati con anteprime, note e l’avviso «Salvato in Da guardare»",
+      "add": "+ Aggiungi link",
+      "folders": "Cartelle",
+      "search": "Cerca link, cartelle e tag",
+      "toast": "Salvato in Da guardare",
+      "undo": "Annulla",
+      "rows": {
+        "all": "Tutti i link",
+        "unsorted": "Da ordinare",
+        "favorites": "Preferiti",
+        "today": "Oggi"
+      },
+      "tabs": {
+        "all": "Tutti",
+        "video": "Video",
+        "shop": "Negozi"
+      },
+      "items": {
+        "nihilism": {
+          "title": "Optimistic Nihilism",
+          "date": "Adesso",
+          "note": "Per il weekend, con un tè"
+        },
+        "runners": {
+          "title": "Tree Runners",
+          "date": "Oggi",
+          "note": "Numero 39, per la primavera"
+        },
+        "angular": {
+          "title": "Angular in 100 Seconds",
+          "date": "Oggi"
+        },
+        "excalidraw": {
+          "title": "Excalidraw",
+          "date": "29 ott"
+        },
+        "jacket": {
+          "title": "The Ojai Jacket",
+          "date": "3 nov",
+          "note": "Aspetto i saldi"
+        },
+        "neural": {
+          "title": "But what is a neural network?",
+          "date": "27 ott"
         }
       }
     },
-    "bento": {
-      "title": "Salva una volta, ritrova in pochi secondi",
-      "preview": {
-        "title": "L’anteprima si compila da sola",
-        "text": "Incolla un link: titolo e sito arrivano da soli. Aggiungi una nota per ricordarti perché l’hai salvato.",
-        "url": "youtube.com/watch?v=ng22",
-        "domain": "youtube.com",
-        "cardTitle": "Signal Forms in 20 minuti"
-      },
-      "folders": {
-        "title": "Cartelle dentro cartelle",
-        "text": "Metti i link in cartelle e le cartelle in altre cartelle, profonde quanto serve al tuo sistema.",
-        "work": "Lavoro",
-        "angular": "Angular",
-        "courses": "Corsi"
-      },
-      "search": {
-        "title": "Ritrovalo con qualsiasi parola",
-        "text": "Cerca nel titolo, nella nota o nell’indirizzo di ogni link, da ovunque con ⌘K.",
-        "word": "cappotto",
-        "tag": "vestiti"
-      },
-      "phone": {
-        "title": "Salva dal telefono",
-        "text": "Installa Shelfmark e compare nel menu Condividi su Android. Condividi una pagina e arriva sul tuo scaffale."
-      },
-      "own": {
-        "title": "I tuoi link restano tuoi",
-        "text": "Esporta tutto in JSON o come file di preferiti del browser, quando vuoi."
-      }
+    "folders": {
+      "angular": "Angular",
+      "tools": "Strumenti",
+      "learning": "Studio",
+      "shopping": "Acquisti",
+      "watchLater": "Da guardare",
+      "courses": "Corsi",
+      "talks": "Talk"
     },
-    "beforeAfter": {
-      "title": "Gli stessi link, prima e dopo",
-      "before": "Prima: sparsi",
-      "after": "Dopo: su un solo scaffale",
-      "pauseMotion": "Metti in pausa le animazioni"
-    },
-    "before": {
-      "pingTitle": "+1 in Messaggi salvati",
-      "pingLink": "youtu.be/…",
-      "bubbleTitle": "Messaggi salvati",
-      "bubbleLink": "youtube.com/watch?v=ng22…",
-      "tabCoat": "Cappotto di…",
-      "tabCourse": "Corso Nest…",
-      "tabMore": "+ 37",
-      "sticky": "da guardare: ricetta ramen?? link da qualche parte in chat",
-      "bookmarks": "Barra dei preferiti (91)",
-      "summary": "Link sparsi tra Messaggi salvati, schede del browser, post-it e una barra dei preferiti."
-    },
-    "after": {
-      "treeLabel": "Cartelle",
-      "listLabel": "Link nella cartella selezionata",
-      "tagsTitle": "Tag",
-      "tags": {
-        "video": "video",
-        "courses": "corsi"
-      },
-      "folders": {
-        "clothes": "Vestiti",
-        "work": "Lavoro",
-        "angular": "Angular",
-        "recipes": "Ricette"
-      },
-      "links": {
-        "coat": {
-          "title": "Cappotto di lana, grafite",
-          "note": "Aspettare i saldi, taglia M"
-        },
-        "boots": {
-          "title": "Stivaletti Chelsea in pelle",
-          "note": "Per l’inverno"
-        },
-        "jumper": {
-          "title": "Maglione girocollo in merino",
-          "note": "Idea regalo"
-        },
-        "signalForms": {
-          "title": "Signal Forms in 20 minuti",
-          "note": "Da guardare nel weekend"
-        },
-        "nestjs": {
-          "title": "NestJS per sviluppatori frontend",
-          "note": "Per il progetto personale"
-        },
-        "zoneless": {
-          "title": "Change detection zoneless",
-          "note": "Da leggere prima della fase 0"
-        },
-        "ramen": {
-          "title": "Il miglior ramen dei giorni feriali",
-          "note": "Cena del venerdì"
-        },
-        "focaccia": {
-          "title": "Focaccia senza impasto",
-          "note": "Per domenica"
-        },
-        "kimchi": {
-          "title": "Kimchi in barattolo",
-          "note": "Serve un barattolo grande"
-        }
-      }
-    },
-    "why": {
-      "title": "Perché esiste",
-      "quote": "“Nei miei messaggi salvati c’erano centinaia di link: corsi, un cappotto che volevo, una ricetta del ramen, quell’articolo su Angular zoneless. Non riuscivo mai a ritrovarli. Così ho costruito lo scaffale che volevo.”",
-      "author": "Dmytro",
-      "authorName": "Dmytro Dadivan",
-      "role": "Sviluppatore frontend"
-    },
-    "built": {
-      "title": "Come è fatto",
-      "text": "Angular 22 con i signal, NestJS, PostgreSQL. Pianificato, scritto, testato e revisionato da un team di agenti Claude Code, con ogni decisione pubblica.",
-      "agentsLabel": "Agenti Claude Code",
-      "code": "Leggi il codice su GitHub",
-      "decisions": "Leggi il registro delle decisioni"
-    },
-    "finale": {
-      "title": "Svuota i tuoi Messaggi salvati.",
-      "lead": "Incolla un link, dagli una cartella e una nota. Tutto quello che salvi da ora finisce su un solo scaffale, a due tasti di distanza.",
-      "demo": "Apri la demo",
-      "signIn": "Accedi"
-    },
-    "footer": {
-      "copyright": "© 2026 Shelfmark",
-      "privacy": "Privacy",
-      "github": "GitHub",
-      "language": "Lingua",
-      "changelog": "Novità"
-    },
-    "newTab": "si apre in una nuova scheda",
-    "backToShelf": "Torna al mio scaffale",
     "whatsNew": {
       "title": "Novità",
       "all": "Vedi tutte le modifiche"
-    },
-    "extension": {
-      "badge": "Estensione del browser",
-      "title": "Salva la pagina che stai leggendo",
-      "text": "Un clic sulla barra degli strumenti o Alt+Maiusc+S. Titolo, regole delle cartelle e cartelle recenti sono già compilati: per quasi tutte le pagine basta un altro clic.",
-      "browsers": "Per Chrome, Edge, Brave e Arc. Installala dalla tua libreria dopo l’accesso.",
-      "alt": "L’estensione Shelfmark: Salva in Shelfmark con il titolo della pagina, la cartella Abbigliamento da una regola, tag e una nota"
     },
     "ai": {
       "badge": "IA facoltativa",
@@ -199,26 +91,144 @@
         },
         "meaning": {
           "title": "Trovalo per argomento",
-          "text": "«Quel talk sui signals» trova il video, anche senza quelle parole."
+          "text": "«Quel talk su come imparano i neuroni» trova il video, anche senza quelle parole."
         },
         "ask": {
-          "title": "Chiedi alla tua libreria",
-          "text": "Una domanda con parole tue, una risposta dai tuoi link con le fonti."
+          "title": "Chiedi al tuo scaffale",
+          "text": "Una domanda con parole tue, una risposta dai tuoi link, con le fonti."
         }
       },
       "note": "Spenta finché non la attivi. I tuoi link non vengono mai usati per addestrare modelli di IA.",
       "privacy": "Come funziona l’IA in Shelfmark",
       "demo": {
-        "video": "NgRx SignalStore in pratica",
-        "newTag": "gestione dello stato",
-        "query": "talk su signals e prestazioni",
-        "related": "Simili per significato",
-        "result": "Change detection zoneless, spiegata",
-        "why": "Vicino a: rendering più veloce",
-        "recipe": "Il miglior ramen infrasettimanale",
-        "summary": "Un ramen in 30 minuti con brodo pronto, uova morbide e sottaceti veloci."
+        "suggestLabel": "Un nuovo link con i suggerimenti dell’IA: la cartella Studio, i tag architecture e backend e un nuovo tag system design",
+        "video": "Microservices explained – the What, Why and How?",
+        "source": "youtube.com · TechWorld with Nana",
+        "tagArchitecture": "#architecture",
+        "tagBackend": "#backend",
+        "newTag": "nuovo: #system-design",
+        "searchLabel": "Una ricerca per significato: «talk su come imparano i neuroni» trova il video sulle reti neurali",
+        "query": "talk su come imparano i neuroni",
+        "close": "Vicini per significato",
+        "result": "But what is a neural network? | Deep learning chapter 1",
+        "askLabel": "Chiedi al tuo scaffale: una domanda su cosa guardare questo weekend e una risposta con due fonti",
+        "question": "Qualcosa da guardare questo weekend, sotto l’ora?",
+        "answerTitle": "Optimistic Nihilism",
+        "answerFirst": "dura 6 minuti, salvato «per il weekend, con un tè»",
+        "answerSecond": ". Poi il primo capitolo sulle reti neurali, 19 minuti"
       }
-    }
+    },
+    "extension": {
+      "badge": "Estensione del browser",
+      "title": "Salva la pagina che stai leggendo",
+      "text": "Un clic sulla barra degli strumenti o Alt+Maiusc+S. Titolo, regole delle cartelle e cartelle recenti sono già compilati: per quasi tutte le pagine basta un altro clic.",
+      "browsers": "Per Chrome, Edge, Brave e Arc. Installala dal tuo scaffale dopo l’accesso.",
+      "alt": "L’estensione Shelfmark salva una giacca da un negozio, con la cartella Acquisti scelta da una regola",
+      "popup": {
+        "title": "Salva in Shelfmark",
+        "scope": "Questa pagina",
+        "name": "The Ojai Jacket in Topsoil",
+        "price": "398 $ · taylorstitch.com",
+        "goesTo": "Va in",
+        "rule": "regola",
+        "tag": "#abbigliamento",
+        "suggested": "#autunno",
+        "note": "Aspetto i saldi",
+        "save": "Salva"
+      }
+    },
+    "bento": {
+      "title": "Salva una volta, ritrova in pochi secondi",
+      "preview": {
+        "title": "L’anteprima si compila da sola",
+        "text": "Incolla un link: immagine, titolo e sito arrivano da soli. Aggiungi una nota per ricordare perché l’hai salvato.",
+        "note": "Da vedere prima di Signal Forms"
+      },
+      "folders": {
+        "title": "Cartelle dentro cartelle",
+        "text": "Profonde quanto serve al tuo sistema."
+      },
+      "search": {
+        "title": "Ritrovalo con qualsiasi parola",
+        "text": "Titolo, nota, tag o indirizzo, da ovunque con Ctrl K.",
+        "word": "jacket",
+        "result": "The Ojai Jacket",
+        "meta": "Acquisti · #abbigliamento"
+      },
+      "phone": {
+        "title": "Salva dal telefono",
+        "text": "Installa Shelfmark e compare nel menu Condividi. Condividi una pagina e arriva sul tuo scaffale.",
+        "share": "Condividi"
+      },
+      "own": {
+        "title": "I tuoi link restano tuoi",
+        "text": "Esporta tutto quando vuoi. Nessun vincolo."
+      }
+    },
+    "beforeAfter": {
+      "title": "Gli stessi link, prima e dopo",
+      "before": "Prima: sparsi",
+      "after": "Dopo: su un solo scaffale",
+      "mess": {
+        "label": "Link sparsi tra messaggi salvati, schede del browser, un post-it e una barra dei preferiti",
+        "messages": "Messaggi salvati",
+        "more": "+1 altro link · 23:41",
+        "bookmarks": "Barra dei preferiti (91)",
+        "path": "Cartella 4 › nuovo › varie",
+        "tabs": "40 schede, due finestre",
+        "sticky": "da guardare: quel video sulle reti neurali?? link da qualche parte in chat",
+        "notes": "Note › link.txt",
+        "notesText": "allbirds tree runners 39 · camicia crater · tldraw?"
+      },
+      "shelfLabel": "Gli stessi link su un solo scaffale: la cartella Acquisti con quattro link e le loro note",
+      "links": {
+        "jacket": {
+          "title": "The Ojai Jacket in Topsoil",
+          "note": "Aspetto i saldi"
+        },
+        "runners": {
+          "title": "Tree Runners – Thunder Green",
+          "note": "Numero 39, per la primavera"
+        },
+        "shirt": {
+          "title": "The Crater Shirt in Denver Plaid",
+          "note": "Idea regalo"
+        },
+        "dasher": {
+          "title": "Tree Dasher 2 – Natural White",
+          "note": "Da confrontare con le Runners"
+        }
+      }
+    },
+    "why": {
+      "title": "Perché esiste",
+      "quote": "“Nei miei messaggi salvati c’erano centinaia di link: corsi, una giacca che volevo, quel video sulle reti neurali. Non riuscivo mai a ritrovarli. Così ho costruito lo scaffale che volevo.”",
+      "author": "Dmytro",
+      "authorName": "Dmytro Dadivan",
+      "role": "Sviluppatore frontend"
+    },
+    "built": {
+      "title": "Come è fatto",
+      "text": "Angular 22 con i signal, NestJS, PostgreSQL. Pianificato, scritto, testato e revisionato da un team di agenti Claude Code, con ogni decisione pubblica.",
+      "agentsLabel": "Agenti Claude Code",
+      "code": "Leggi il codice su GitHub",
+      "decisions": "Leggi il registro delle decisioni"
+    },
+    "finale": {
+      "title": "Svuota i tuoi messaggi salvati.",
+      "lead": "Incolla un link, dagli una cartella e una nota. Tutto quello che salvi da ora finisce su un solo scaffale, a due tasti di distanza.",
+      "demo": "Apri la demo",
+      "signIn": "Accedi"
+    },
+    "footer": {
+      "copyright": "© 2026 Shelfmark",
+      "privacy": "Privacy",
+      "github": "GitHub",
+      "language": "Lingua",
+      "changelog": "Novità"
+    },
+    "newTab": "si apre in una nuova scheda",
+    "backToShelf": "Torna al mio scaffale"
   },
   "links": {
     "add": {

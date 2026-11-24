@@ -1,192 +1,84 @@
 {
   "landing": {
     "header": {
-      "navLabel": "Main",
+      "navLabel": "Page",
       "brand": "Shelfmark",
       "signIn": "Sign in",
       "howItWorks": "How it works",
+      "ai": "AI",
+      "whatsNew": "What’s new",
       "privacy": "Privacy",
-      "getStarted": "Get started"
+      "start": "Start your shelf",
+      "theme": "Switch theme"
     },
     "hero": {
       "line1": "Paste a link.",
       "line2": "Find it again.",
       "line3": "Even in a year.",
-      "lead": "Videos, articles, things to buy, courses — on one calm shelf instead of chats and open tabs.",
+      "lead": "Videos, repositories, things to buy, courses: on one calm shelf instead of chats and forty open tabs.",
       "demo": "Open the demo",
-      "start": "Start your shelf",
-      "note": "Sign in with Google or GitHub.",
-      "preview": {
-        "label": "App preview",
-        "folder": "Read later",
-        "count": "21 links",
-        "countArticles": "6 links",
-        "view": "View",
-        "all": "All 21",
-        "articles": "Articles 6",
-        "savedTo": "Saved to {{folder}}",
-        "undo": "Undo",
-        "items": {
-          "talk": {
-            "title": "Calm technology, a 20-minute talk",
-            "tag": "video"
-          },
-          "grid": {
-            "title": "A complete guide to CSS grid",
-            "tag": "css"
-          },
-          "design": {
-            "title": "Designing for the long read",
-            "tag": "design"
-          },
-          "slow": {
-            "title": "Why slow software feels broken",
-            "tag": "ux"
-          }
+      "start": "Start your shelf"
+    },
+    "preview": {
+      "label": "The Shelfmark app: a folder of saved links with previews, notes and a toast that says Saved to Watch later",
+      "add": "+ Add link",
+      "folders": "Folders",
+      "search": "Search links, folders and tags",
+      "toast": "Saved to Watch later",
+      "undo": "Undo",
+      "rows": {
+        "all": "All links",
+        "unsorted": "Unsorted",
+        "favorites": "Favorites",
+        "today": "Today"
+      },
+      "tabs": {
+        "all": "All",
+        "video": "Videos",
+        "shop": "Shops"
+      },
+      "items": {
+        "nihilism": {
+          "title": "Optimistic Nihilism",
+          "date": "Just now",
+          "note": "For the weekend, with tea"
+        },
+        "runners": {
+          "title": "Tree Runners",
+          "date": "Today",
+          "note": "Size 39, for spring"
+        },
+        "angular": {
+          "title": "Angular in 100 Seconds",
+          "date": "Today"
+        },
+        "excalidraw": {
+          "title": "Excalidraw",
+          "date": "Oct 29"
+        },
+        "jacket": {
+          "title": "The Ojai Jacket",
+          "date": "Nov 3",
+          "note": "Waiting for the sale"
+        },
+        "neural": {
+          "title": "But what is a neural network?",
+          "date": "Oct 27"
         }
       }
     },
-    "bento": {
-      "title": "Save once, find in seconds",
-      "preview": {
-        "title": "The preview fills in by itself",
-        "text": "Paste a link: the title and the site arrive on their own. Add a note so you remember why you saved it.",
-        "url": "youtube.com/watch?v=ng22",
-        "domain": "youtube.com",
-        "cardTitle": "Signal Forms in 20 minutes"
-      },
-      "folders": {
-        "title": "Folders inside folders",
-        "text": "Keep links in folders and put folders in folders, as deep as your own system needs.",
-        "work": "Work",
-        "angular": "Angular",
-        "courses": "Courses"
-      },
-      "search": {
-        "title": "Find it by any word",
-        "text": "Search the title, note or address of every link, from anywhere with ⌘K.",
-        "word": "coat",
-        "tag": "clothes"
-      },
-      "phone": {
-        "title": "Save from your phone",
-        "text": "Install Shelfmark and it shows up in the Share menu on Android. Share a page and it lands on your shelf."
-      },
-      "own": {
-        "title": "Your links stay yours",
-        "text": "Export everything as JSON or as a browser bookmarks file whenever you like."
-      }
+    "folders": {
+      "angular": "Angular",
+      "tools": "Tools",
+      "learning": "Learning",
+      "shopping": "Shopping",
+      "watchLater": "Watch later",
+      "courses": "Courses",
+      "talks": "Talks"
     },
-    "beforeAfter": {
-      "title": "The same links, before and after",
-      "before": "Before: scattered",
-      "after": "After: on one shelf",
-      "pauseMotion": "Pause animations"
-    },
-    "before": {
-      "pingTitle": "+1 in Saved Messages",
-      "pingLink": "youtu.be/…",
-      "bubbleTitle": "Saved messages",
-      "bubbleLink": "youtube.com/watch?v=ng22…",
-      "tabCoat": "Wool coat…",
-      "tabCourse": "NestJS c…",
-      "tabMore": "+ 37",
-      "sticky": "watch later: ramen recipe?? link somewhere in chat",
-      "bookmarks": "Bookmarks bar (91)",
-      "summary": "Links scattered across Saved Messages, browser tabs, sticky notes and a bookmarks bar."
-    },
-    "after": {
-      "treeLabel": "Folders",
-      "listLabel": "Links in the selected folder",
-      "tagsTitle": "Tags",
-      "tags": {
-        "video": "video",
-        "courses": "courses"
-      },
-      "folders": {
-        "clothes": "Clothes",
-        "work": "Work",
-        "angular": "Angular",
-        "recipes": "Recipes"
-      },
-      "links": {
-        "coat": {
-          "title": "Wool coat, graphite",
-          "note": "Wait for the sale, size M"
-        },
-        "boots": {
-          "title": "Leather Chelsea boots",
-          "note": "For the winter"
-        },
-        "jumper": {
-          "title": "Merino crew-neck jumper",
-          "note": "Gift idea"
-        },
-        "signalForms": {
-          "title": "Signal Forms in 20 minutes",
-          "note": "Watch on the weekend"
-        },
-        "nestjs": {
-          "title": "NestJS for frontend developers",
-          "note": "For the side project"
-        },
-        "zoneless": {
-          "title": "Zoneless change detection",
-          "note": "Read before stage 0"
-        },
-        "ramen": {
-          "title": "The best weeknight ramen",
-          "note": "Friday dinner"
-        },
-        "focaccia": {
-          "title": "Focaccia, no knead",
-          "note": "For Sunday"
-        },
-        "kimchi": {
-          "title": "Kimchi in a jar",
-          "note": "Needs a big jar"
-        }
-      }
-    },
-    "why": {
-      "title": "Why this exists",
-      "quote": "“My saved messages had hundreds of links: courses, a coat I wanted, a ramen recipe, that one article about zoneless Angular. I could never find any of them again. So I built the shelf I wanted.”",
-      "author": "Dmytro",
-      "authorName": "Dmytro Dadivan",
-      "role": "Frontend developer"
-    },
-    "built": {
-      "title": "How it's built",
-      "text": "Angular 22 with signals, NestJS, PostgreSQL. Planned, coded, tested and reviewed by a team of Claude Code agents, with every decision in the open.",
-      "agentsLabel": "Claude Code agents",
-      "code": "Read the code on GitHub",
-      "decisions": "Read the decision log"
-    },
-    "finale": {
-      "title": "Empty your Saved Messages.",
-      "lead": "Paste a link, give it a folder and a note. Everything you save from now on lands on one shelf, and any of it is two keystrokes away.",
-      "demo": "Open the demo",
-      "signIn": "Sign in"
-    },
-    "footer": {
-      "copyright": "© 2026 Shelfmark",
-      "privacy": "Privacy",
-      "github": "GitHub",
-      "language": "Language",
-      "changelog": "What's new"
-    },
-    "newTab": "opens in a new tab",
-    "backToShelf": "Back to my shelf",
     "whatsNew": {
-      "title": "What's new",
+      "title": "What’s new",
       "all": "See all changes"
-    },
-    "extension": {
-      "badge": "Browser extension",
-      "title": "Save the page you are on",
-      "text": "One click on the toolbar or Alt+Shift+S. The title, your folder rules and recent folders are already filled in, so most pages take one more click.",
-      "browsers": "For Chrome, Edge, Brave and Arc. Install it from your shelf after you sign in.",
-      "alt": "The Shelfmark extension: Save to Shelfmark with the page title, the folder Clothes from a rule, tags and a note"
     },
     "ai": {
       "badge": "Optional AI",
@@ -199,26 +91,144 @@
         },
         "meaning": {
           "title": "Find it by what it’s about",
-          "text": "“That talk about signals” finds the video, even without those words."
+          "text": "“That talk about how neurons learn” finds the video, even without those words."
         },
         "ask": {
           "title": "Ask your shelf",
-          "text": "A question in your own words, an answer from your links with sources."
+          "text": "A question in your own words, an answer from your links, with sources."
         }
       },
       "note": "Off until you turn it on. Your links are never used to train AI models.",
       "privacy": "How AI works in Shelfmark",
       "demo": {
-        "video": "NgRx SignalStore in practice",
-        "newTag": "state management",
-        "query": "talk about signals and performance",
-        "related": "Related by meaning",
-        "result": "Zoneless change detection, explained",
-        "why": "Close to: faster rendering",
-        "recipe": "The best weeknight ramen",
-        "summary": "A 30-minute ramen with store-bought stock, soft eggs and quick pickles."
+        "suggestLabel": "A new link with AI suggestions: the folder Learning, the tags architecture and backend, and a new tag system design",
+        "video": "Microservices explained – the What, Why and How?",
+        "source": "youtube.com · TechWorld with Nana",
+        "tagArchitecture": "#architecture",
+        "tagBackend": "#backend",
+        "newTag": "new: #system-design",
+        "searchLabel": "A search by meaning: “talk about how neurons learn” finds the neural network video",
+        "query": "talk about how neurons learn",
+        "close": "Close in meaning",
+        "result": "But what is a neural network? | Deep learning chapter 1",
+        "askLabel": "Ask your shelf: a question about something to watch this weekend and an answer with two sources",
+        "question": "Something to watch this weekend, under an hour?",
+        "answerTitle": "Optimistic Nihilism",
+        "answerFirst": "is 6 minutes, saved “for the weekend, with tea”",
+        "answerSecond": ". Then the first neural network chapter, 19 minutes"
       }
-    }
+    },
+    "extension": {
+      "badge": "Browser extension",
+      "title": "Save the page you are on",
+      "text": "One click on the toolbar or Alt+Shift+S. The title, your folder rules and recent folders are already filled in, so most pages take one more click.",
+      "browsers": "For Chrome, Edge, Brave and Arc. Install it from your shelf after you sign in.",
+      "alt": "The Shelfmark extension saving a jacket from a shop, with the folder Shopping filled in by a rule",
+      "popup": {
+        "title": "Save to Shelfmark",
+        "scope": "This page",
+        "name": "The Ojai Jacket in Topsoil",
+        "price": "$398 · taylorstitch.com",
+        "goesTo": "Goes to",
+        "rule": "rule",
+        "tag": "#clothes",
+        "suggested": "#autumn",
+        "note": "Waiting for the sale",
+        "save": "Save"
+      }
+    },
+    "bento": {
+      "title": "Save once, find in seconds",
+      "preview": {
+        "title": "The preview fills in by itself",
+        "text": "Paste a link: the picture, the title and the site arrive on their own. Add a note so you remember why you saved it.",
+        "note": "Start here before Signal Forms"
+      },
+      "folders": {
+        "title": "Folders inside folders",
+        "text": "As deep as your own system needs."
+      },
+      "search": {
+        "title": "Find it by any word",
+        "text": "Title, note, tag or address, from anywhere with Ctrl K.",
+        "word": "jacket",
+        "result": "The Ojai Jacket",
+        "meta": "Shopping · #clothes"
+      },
+      "phone": {
+        "title": "Save from your phone",
+        "text": "Install Shelfmark and it shows up in the Share menu. Share a page and it lands on your shelf.",
+        "share": "Share"
+      },
+      "own": {
+        "title": "Your links stay yours",
+        "text": "Export everything whenever you like. No lock-in."
+      }
+    },
+    "beforeAfter": {
+      "title": "The same links, before and after",
+      "before": "Before: scattered",
+      "after": "After: on one shelf",
+      "mess": {
+        "label": "Links scattered across saved messages, browser tabs, a sticky note and a bookmarks bar",
+        "messages": "Saved messages",
+        "more": "+1 more link · 23:41",
+        "bookmarks": "Bookmarks bar (91)",
+        "path": "Folder 4 › new › misc",
+        "tabs": "40 tabs, two windows",
+        "sticky": "watch later: that neural network video?? link somewhere in chat",
+        "notes": "Notes › links.txt",
+        "notesText": "allbirds tree runners 39 · crater shirt · tldraw?"
+      },
+      "shelfLabel": "The same links on one shelf: the folder Shopping with four links and their notes",
+      "links": {
+        "jacket": {
+          "title": "The Ojai Jacket in Topsoil",
+          "note": "Waiting for the sale"
+        },
+        "runners": {
+          "title": "Tree Runners – Thunder Green",
+          "note": "Size 39, for spring"
+        },
+        "shirt": {
+          "title": "The Crater Shirt in Denver Plaid",
+          "note": "Gift idea"
+        },
+        "dasher": {
+          "title": "Tree Dasher 2 – Natural White",
+          "note": "Compare with the runners"
+        }
+      }
+    },
+    "why": {
+      "title": "Why this exists",
+      "quote": "“My saved messages had hundreds of links: courses, a jacket I wanted, that one video about neural networks. I could never find any of them again. So I built the shelf I wanted.”",
+      "author": "Dmytro",
+      "authorName": "Dmytro Dadivan",
+      "role": "Frontend developer"
+    },
+    "built": {
+      "title": "How it’s built",
+      "text": "Angular 22 with signals, NestJS, PostgreSQL. Planned, coded, tested and reviewed by a team of Claude Code agents, with every decision in the open.",
+      "agentsLabel": "Claude Code agents",
+      "code": "Read the code on GitHub",
+      "decisions": "Read the decision log"
+    },
+    "finale": {
+      "title": "Empty your saved messages.",
+      "lead": "Paste a link, give it a folder and a note. Everything you save from now on lands on one shelf, and any of it is two keystrokes away.",
+      "demo": "Open the demo",
+      "signIn": "Sign in"
+    },
+    "footer": {
+      "copyright": "© 2026 Shelfmark",
+      "privacy": "Privacy",
+      "github": "GitHub",
+      "language": "Language",
+      "changelog": "What’s new"
+    },
+    "newTab": "opens in a new tab",
+    "backToShelf": "Back to my shelf"
   },
   "links": {
     "add": {

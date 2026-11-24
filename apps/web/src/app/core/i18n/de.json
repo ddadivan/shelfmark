@@ -1,192 +1,84 @@
 {
   "landing": {
     "header": {
-      "navLabel": "Hauptmenü",
+      "navLabel": "Seite",
       "brand": "Shelfmark",
       "signIn": "Anmelden",
       "howItWorks": "So funktioniert’s",
+      "ai": "KI",
+      "whatsNew": "Neuigkeiten",
       "privacy": "Datenschutz",
-      "getStarted": "Loslegen"
+      "start": "Mein Regal anlegen",
+      "theme": "Design wechseln"
     },
     "hero": {
       "line1": "Link einfügen.",
       "line2": "Wiederfinden.",
       "line3": "Auch in einem Jahr.",
-      "lead": "Videos, Artikel, Kaufideen, Kurse – in einem ruhigen Regal statt in Chats und offenen Tabs.",
+      "lead": "Videos, Repositorys, Kaufideen, Kurse: in einem ruhigen Regal statt in Chats und vierzig offenen Tabs.",
       "demo": "Demo öffnen",
-      "start": "Mein Regal anlegen",
-      "note": "Anmeldung mit Google oder GitHub.",
-      "preview": {
-        "label": "Vorschau der App",
-        "folder": "Später lesen",
-        "count": "21 Links",
-        "countArticles": "6 Links",
-        "view": "Ansicht",
-        "all": "Alle 21",
-        "articles": "Artikel 6",
-        "savedTo": "Gespeichert in {{folder}}",
-        "undo": "Rückgängig",
-        "items": {
-          "talk": {
-            "title": "Ruhige Technologie, ein 20-Minuten-Vortrag",
-            "tag": "Video"
-          },
-          "grid": {
-            "title": "Der komplette Guide zu CSS Grid",
-            "tag": "css"
-          },
-          "design": {
-            "title": "Gestalten für lange Texte",
-            "tag": "Design"
-          },
-          "slow": {
-            "title": "Warum langsame Software kaputt wirkt",
-            "tag": "UX"
-          }
+      "start": "Mein Regal anlegen"
+    },
+    "preview": {
+      "label": "Die Shelfmark-App: ein Ordner gespeicherter Links mit Vorschauen, Notizen und der Meldung „In Später ansehen gespeichert“",
+      "add": "+ Link hinzufügen",
+      "folders": "Ordner",
+      "search": "Links, Ordner und Tags suchen",
+      "toast": "In Später ansehen gespeichert",
+      "undo": "Rückgängig",
+      "rows": {
+        "all": "Alle Links",
+        "unsorted": "Unsortiert",
+        "favorites": "Favoriten",
+        "today": "Heute"
+      },
+      "tabs": {
+        "all": "Alle",
+        "video": "Videos",
+        "shop": "Shops"
+      },
+      "items": {
+        "nihilism": {
+          "title": "Optimistic Nihilism",
+          "date": "Gerade eben",
+          "note": "Fürs Wochenende, mit Tee"
+        },
+        "runners": {
+          "title": "Tree Runners",
+          "date": "Heute",
+          "note": "Größe 39, für den Frühling"
+        },
+        "angular": {
+          "title": "Angular in 100 Seconds",
+          "date": "Heute"
+        },
+        "excalidraw": {
+          "title": "Excalidraw",
+          "date": "29. Okt."
+        },
+        "jacket": {
+          "title": "The Ojai Jacket",
+          "date": "3. Nov.",
+          "note": "Warte auf den Sale"
+        },
+        "neural": {
+          "title": "But what is a neural network?",
+          "date": "27. Okt."
         }
       }
     },
-    "bento": {
-      "title": "Einmal speichern, in Sekunden finden",
-      "preview": {
-        "title": "Die Vorschau füllt sich von selbst",
-        "text": "Füge einen Link ein: Titel und Website kommen von allein. Mit einer Notiz weißt du später noch, warum du ihn gespeichert hast.",
-        "url": "youtube.com/watch?v=ng22",
-        "domain": "youtube.com",
-        "cardTitle": "Signal Forms in 20 Minuten"
-      },
-      "folders": {
-        "title": "Ordner in Ordnern",
-        "text": "Lege Links in Ordner und Ordner in Ordner, so tief, wie dein eigenes System es braucht.",
-        "work": "Arbeit",
-        "angular": "Angular",
-        "courses": "Kurse"
-      },
-      "search": {
-        "title": "Mit jedem Wort finden",
-        "text": "Durchsuche Titel, Notiz oder Adresse jedes Links, von überall mit ⌘K.",
-        "word": "Mantel",
-        "tag": "Kleidung"
-      },
-      "phone": {
-        "title": "Vom Handy speichern",
-        "text": "Installiere Shelfmark und es erscheint unter Android im Teilen-Menü. Teile eine Seite und sie landet in deinem Regal."
-      },
-      "own": {
-        "title": "Deine Links bleiben deine",
-        "text": "Exportiere alles als JSON oder als Lesezeichendatei für den Browser, wann immer du willst."
-      }
+    "folders": {
+      "angular": "Angular",
+      "tools": "Tools",
+      "learning": "Lernen",
+      "shopping": "Einkaufen",
+      "watchLater": "Später ansehen",
+      "courses": "Kurse",
+      "talks": "Vorträge"
     },
-    "beforeAfter": {
-      "title": "Dieselben Links, vorher und nachher",
-      "before": "Vorher: verstreut",
-      "after": "Nachher: in einem Regal",
-      "pauseMotion": "Animationen pausieren"
-    },
-    "before": {
-      "pingTitle": "+1 in Gespeicherte Nachrichten",
-      "pingLink": "youtu.be/…",
-      "bubbleTitle": "Gespeicherte Nachrichten",
-      "bubbleLink": "youtube.com/watch?v=ng22…",
-      "tabCoat": "Wollmantel…",
-      "tabCourse": "NestJS-K…",
-      "tabMore": "+ 37",
-      "sticky": "später ansehen: Ramen-Rezept?? Link irgendwo im Chat",
-      "bookmarks": "Lesezeichenleiste (91)",
-      "summary": "Links verstreut über Gespeicherte Nachrichten, Browser-Tabs, Haftnotizen und eine Lesezeichenleiste."
-    },
-    "after": {
-      "treeLabel": "Ordner",
-      "listLabel": "Links im ausgewählten Ordner",
-      "tagsTitle": "Tags",
-      "tags": {
-        "video": "video",
-        "courses": "kurse"
-      },
-      "folders": {
-        "clothes": "Kleidung",
-        "work": "Arbeit",
-        "angular": "Angular",
-        "recipes": "Rezepte"
-      },
-      "links": {
-        "coat": {
-          "title": "Wollmantel, Graphit",
-          "note": "Auf den Sale warten, Größe M"
-        },
-        "boots": {
-          "title": "Chelsea Boots aus Leder",
-          "note": "Für den Winter"
-        },
-        "jumper": {
-          "title": "Merino-Pullover mit Rundhals",
-          "note": "Geschenkidee"
-        },
-        "signalForms": {
-          "title": "Signal Forms in 20 Minuten",
-          "note": "Am Wochenende ansehen"
-        },
-        "nestjs": {
-          "title": "NestJS für Frontend-Entwickler",
-          "note": "Für das Nebenprojekt"
-        },
-        "zoneless": {
-          "title": "Zoneless Change Detection",
-          "note": "Vor Phase 0 lesen"
-        },
-        "ramen": {
-          "title": "Die besten Ramen für unter der Woche",
-          "note": "Abendessen am Freitag"
-        },
-        "focaccia": {
-          "title": "Focaccia ohne Kneten",
-          "note": "Für Sonntag"
-        },
-        "kimchi": {
-          "title": "Kimchi im Glas",
-          "note": "Braucht ein großes Glas"
-        }
-      }
-    },
-    "why": {
-      "title": "Warum es das gibt",
-      "quote": "„In meinen gespeicherten Nachrichten lagen Hunderte Links: Kurse, ein Mantel, den ich wollte, ein Ramen-Rezept, dieser eine Artikel über Zoneless Angular. Ich habe keinen davon je wiedergefunden. Also habe ich das Regal gebaut, das ich wollte.“",
-      "author": "Dmytro",
-      "authorName": "Dmytro Dadivan",
-      "role": "Frontend-Entwickler"
-    },
-    "built": {
-      "title": "So ist es gebaut",
-      "text": "Angular 22 mit Signals, NestJS, PostgreSQL. Geplant, programmiert, getestet und geprüft von einem Team aus Claude-Code-Agenten, jede Entscheidung öffentlich.",
-      "agentsLabel": "Claude-Code-Agenten",
-      "code": "Den Code auf GitHub lesen",
-      "decisions": "Das Entscheidungsprotokoll lesen"
-    },
-    "finale": {
-      "title": "Leere deine Gespeicherten Nachrichten.",
-      "lead": "Link einfügen, Ordner und Notiz dazu. Alles, was du ab jetzt speicherst, landet in einem Regal, und alles davon ist zwei Tastendrücke entfernt.",
-      "demo": "Demo öffnen",
-      "signIn": "Anmelden"
-    },
-    "footer": {
-      "copyright": "© 2026 Shelfmark",
-      "privacy": "Datenschutz",
-      "github": "GitHub",
-      "language": "Sprache",
-      "changelog": "Neuigkeiten"
-    },
-    "newTab": "öffnet in einem neuen Tab",
-    "backToShelf": "Zurück zu meinem Regal",
     "whatsNew": {
       "title": "Neuigkeiten",
       "all": "Alle Änderungen"
-    },
-    "extension": {
-      "badge": "Browsererweiterung",
-      "title": "Speichere die Seite, auf der du bist",
-      "text": "Ein Klick in der Symbolleiste oder Alt+Umschalt+S. Titel, deine Ordnerregeln und letzten Ordner sind schon ausgefüllt, für die meisten Seiten reicht ein weiterer Klick.",
-      "browsers": "Für Chrome, Edge, Brave und Arc. Nach der Anmeldung installierst du sie aus deinem Regal.",
-      "alt": "Die Shelfmark-Erweiterung: In Shelfmark speichern mit dem Seitentitel, dem Ordner Kleidung aus einer Regel, Tags und einer Notiz"
     },
     "ai": {
       "badge": "Optionale KI",
@@ -199,26 +91,144 @@
         },
         "meaning": {
           "title": "Finden, worum es geht",
-          "text": "„Der Vortrag über Signals“ findet das Video, auch ohne diese Wörter."
+          "text": "„Der Vortrag darüber, wie Neuronen lernen“ findet das Video, auch ohne diese Wörter."
         },
         "ask": {
           "title": "Frag dein Regal",
-          "text": "Eine Frage in deinen Worten, eine Antwort aus deinen Links mit Quellen."
+          "text": "Eine Frage in deinen Worten, eine Antwort aus deinen Links, mit Quellen."
         }
       },
       "note": "Aus, bis du sie einschaltest. Deine Links werden nie zum Trainieren von KI-Modellen verwendet.",
       "privacy": "So funktioniert KI in Shelfmark",
       "demo": {
-        "video": "NgRx SignalStore in der Praxis",
-        "newTag": "State-Management",
-        "query": "Vortrag über Signals und Performance",
-        "related": "Ähnlich im Inhalt",
-        "result": "Zoneless Change Detection erklärt",
-        "why": "Nah an: schnelleres Rendern",
-        "recipe": "Das beste Ramen für unter der Woche",
-        "summary": "Ein Ramen in 30 Minuten mit gekaufter Brühe, weichen Eiern und schnellen Pickles."
+        "suggestLabel": "Ein neuer Link mit KI-Vorschlägen: der Ordner Lernen, die Tags architecture und backend und ein neuer Tag system design",
+        "video": "Microservices explained – the What, Why and How?",
+        "source": "youtube.com · TechWorld with Nana",
+        "tagArchitecture": "#architecture",
+        "tagBackend": "#backend",
+        "newTag": "neu: #system-design",
+        "searchLabel": "Eine Suche nach Bedeutung: „Vortrag darüber, wie Neuronen lernen“ findet das Video über neuronale Netze",
+        "query": "Vortrag darüber, wie Neuronen lernen",
+        "close": "Ähnlich in der Bedeutung",
+        "result": "But what is a neural network? | Deep learning chapter 1",
+        "askLabel": "Frag dein Regal: eine Frage nach etwas für dieses Wochenende und eine Antwort mit zwei Quellen",
+        "question": "Etwas für dieses Wochenende, unter einer Stunde?",
+        "answerTitle": "Optimistic Nihilism",
+        "answerFirst": "dauert 6 Minuten, gespeichert „fürs Wochenende, mit Tee“",
+        "answerSecond": ". Danach das erste Kapitel über neuronale Netze, 19 Minuten"
       }
-    }
+    },
+    "extension": {
+      "badge": "Browsererweiterung",
+      "title": "Speichere die Seite, auf der du bist",
+      "text": "Ein Klick in der Symbolleiste oder Alt+Umschalt+S. Titel, deine Ordnerregeln und letzten Ordner sind schon ausgefüllt, für die meisten Seiten reicht ein weiterer Klick.",
+      "browsers": "Für Chrome, Edge, Brave und Arc. Nach der Anmeldung installierst du sie aus deinem Regal.",
+      "alt": "Die Shelfmark-Erweiterung speichert eine Jacke aus einem Shop, der Ordner Einkaufen kommt aus einer Regel",
+      "popup": {
+        "title": "In Shelfmark speichern",
+        "scope": "Diese Seite",
+        "name": "The Ojai Jacket in Topsoil",
+        "price": "398 $ · taylorstitch.com",
+        "goesTo": "Kommt in",
+        "rule": "Regel",
+        "tag": "#kleidung",
+        "suggested": "#herbst",
+        "note": "Warte auf den Sale",
+        "save": "Speichern"
+      }
+    },
+    "bento": {
+      "title": "Einmal speichern, in Sekunden finden",
+      "preview": {
+        "title": "Die Vorschau füllt sich von selbst",
+        "text": "Füge einen Link ein: Bild, Titel und Website kommen von allein. Mit einer Notiz weißt du später noch, warum du ihn gespeichert hast.",
+        "note": "Vor Signal Forms hier anfangen"
+      },
+      "folders": {
+        "title": "Ordner in Ordnern",
+        "text": "So tief, wie dein eigenes System es braucht."
+      },
+      "search": {
+        "title": "Mit jedem Wort finden",
+        "text": "Titel, Notiz, Tag oder Adresse, von überall mit Strg K.",
+        "word": "jacket",
+        "result": "The Ojai Jacket",
+        "meta": "Einkaufen · #kleidung"
+      },
+      "phone": {
+        "title": "Vom Handy speichern",
+        "text": "Installiere Shelfmark und es erscheint im Teilen-Menü. Teile eine Seite und sie landet in deinem Regal.",
+        "share": "Teilen"
+      },
+      "own": {
+        "title": "Deine Links bleiben deine",
+        "text": "Exportiere alles, wann immer du willst. Kein Lock-in."
+      }
+    },
+    "beforeAfter": {
+      "title": "Dieselben Links, vorher und nachher",
+      "before": "Vorher: verstreut",
+      "after": "Nachher: in einem Regal",
+      "mess": {
+        "label": "Links verstreut über gespeicherte Nachrichten, Browsertabs, einen Klebezettel und eine Lesezeichenleiste",
+        "messages": "Gespeicherte Nachrichten",
+        "more": "+1 weiterer Link · 23:41",
+        "bookmarks": "Lesezeichenleiste (91)",
+        "path": "Ordner 4 › neu › diverses",
+        "tabs": "40 Tabs, zwei Fenster",
+        "sticky": "später ansehen: das Video über neuronale Netze?? Link irgendwo im Chat",
+        "notes": "Notizen › links.txt",
+        "notesText": "allbirds tree runners 39 · crater hemd · tldraw?"
+      },
+      "shelfLabel": "Dieselben Links in einem Regal: der Ordner Einkaufen mit vier Links und ihren Notizen",
+      "links": {
+        "jacket": {
+          "title": "The Ojai Jacket in Topsoil",
+          "note": "Warte auf den Sale"
+        },
+        "runners": {
+          "title": "Tree Runners – Thunder Green",
+          "note": "Größe 39, für den Frühling"
+        },
+        "shirt": {
+          "title": "The Crater Shirt in Denver Plaid",
+          "note": "Geschenkidee"
+        },
+        "dasher": {
+          "title": "Tree Dasher 2 – Natural White",
+          "note": "Mit den Runners vergleichen"
+        }
+      }
+    },
+    "why": {
+      "title": "Warum es das gibt",
+      "quote": "„In meinen gespeicherten Nachrichten lagen Hunderte Links: Kurse, eine Jacke, die ich wollte, dieses eine Video über neuronale Netze. Ich habe keinen davon je wiedergefunden. Also habe ich das Regal gebaut, das ich wollte.“",
+      "author": "Dmytro",
+      "authorName": "Dmytro Dadivan",
+      "role": "Frontend-Entwickler"
+    },
+    "built": {
+      "title": "So ist es gebaut",
+      "text": "Angular 22 mit Signals, NestJS, PostgreSQL. Geplant, programmiert, getestet und geprüft von einem Team aus Claude-Code-Agenten, jede Entscheidung öffentlich.",
+      "agentsLabel": "Claude-Code-Agenten",
+      "code": "Den Code auf GitHub lesen",
+      "decisions": "Das Entscheidungsprotokoll lesen"
+    },
+    "finale": {
+      "title": "Leere deine gespeicherten Nachrichten.",
+      "lead": "Link einfügen, Ordner und Notiz dazu. Alles, was du ab jetzt speicherst, landet in einem Regal, und alles davon ist zwei Tastendrücke entfernt.",
+      "demo": "Demo öffnen",
+      "signIn": "Anmelden"
+    },
+    "footer": {
+      "copyright": "© 2026 Shelfmark",
+      "privacy": "Datenschutz",
+      "github": "GitHub",
+      "language": "Sprache",
+      "changelog": "Neuigkeiten"
+    },
+    "newTab": "öffnet in einem neuen Tab",
+    "backToShelf": "Zurück zu meinem Regal"
   },
   "links": {
     "add": {

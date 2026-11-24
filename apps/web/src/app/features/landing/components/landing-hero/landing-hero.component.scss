@@ -1,4 +1,3 @@
-/* stylelint-disable shelf/font-size-token -- landing is rebuilt in block 6 (Shelf 16-landing) */
 @use 'ui' as *;
 @use '../../landing' as landing;
 
@@ -10,136 +9,28 @@
   @include landing.wrap;
 
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-8);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: rem(48px);
   align-items: center;
-  padding-block: var(--space-4) var(--space-8);
+  padding-block: rem(56px) rem(72px);
 
-  // The first screen is header + hero: the hero fills what the header leaves of one viewport
-  // (`svh`, the small viewport, so a phone's collapsing address bar does not resize it), and
-  // centres its content in it. On a short window it never gets smaller than its content.
-  min-block-size: max(rem(560px), calc(100svh - var(--landing-header-height, #{rem(72px)})));
-
-  // Desktop: half the row for the preview, so two cards fit from 1024px; from 1280px it takes a
-  // little more than half, for three (the headline scales to its column, below).
-  @include desktop {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: rem(48px);
-    padding-block: var(--space-6) calc(var(--space-8) * 2);
-  }
-
-  @include landing.large {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-  }
-
-  @include landing.wide {
-    // Equal columns: the preview gets the room for three readable cards.
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: calc(var(--space-8) * 3);
-  }
-
-  @include landing.xwide {
-    gap: calc(var(--space-8) * 4);
-  }
-}
-
-.landing-hero__copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-
-  @include desktop {
-    gap: rem(28px);
-
-    // The headline's size follows this column's width (`cqi`).
-    container-type: inline-size;
-  }
-
-  @include landing.wide {
-    gap: var(--space-8);
+  @include landing.stacked {
+    grid-template-columns: minmax(0, 1fr);
+    gap: rem(36px);
+    padding-block: rem(32px) rem(48px);
   }
 }
 
 .landing-hero__title {
   margin: 0;
-  font-size: rem(44px);
+
+  // The one display size above the DS scale (the landing brief): the hero headline is 40 to 64px.
+  /* stylelint-disable-next-line shelf/font-size-token -- the landing hero headline is the one type size above the DS scale (16-landing, ADR 0062) */
+  font-size: clamp(#{rem(40px)}, 5.4vw, #{rem(64px)});
   font-weight: 600;
-  line-height: rem(42px);
-  letter-spacing: -0.04em;
-
-  @include tablet {
-    font-size: rem(64px);
-    line-height: rem(60px);
-  }
-
-  // From the desktop up the headline keeps its three lines: its longest line ("Even in a year.")
-  // is about 6.35em wide, so the size is capped at 15.5% of the column (`cqi` of the copy).
-  @include desktop {
-    font-size: min(#{rem(84px)}, 15.5cqi);
-    line-height: 0.93;
-  }
-
-  @include landing.wide {
-    font-size: min(#{rem(96px)}, 15.5cqi);
-  }
-
-  @include landing.xwide {
-    font-size: min(#{rem(112px)}, 15.5cqi);
-  }
-}
-
-// Longer languages (#507): the headline is sized for English ("Even in a year." is the widest
-// line). Ukrainian, Spanish and Portuguese run about 70% longer per line, German, French and
-// Italian about 30%, so they get a smaller size (still the same fluid rules) and may wrap inside a
-// sentence instead of breaking into one word per line.
-.landing-hero__title:lang(uk),
-.landing-hero__title:lang(es),
-.landing-hero__title:lang(pt) {
-  font-size: rem(32px);
-  line-height: rem(32px);
-
-  @include tablet {
-    font-size: rem(46px);
-    line-height: rem(46px);
-  }
-
-  @include desktop {
-    font-size: min(#{rem(64px)}, 9.5cqi);
-    line-height: 0.96;
-  }
-
-  @include landing.wide {
-    font-size: min(#{rem(76px)}, 9.5cqi);
-  }
-
-  @include landing.xwide {
-    font-size: min(#{rem(88px)}, 9.5cqi);
-  }
-}
-
-.landing-hero__title:lang(de),
-.landing-hero__title:lang(fr),
-.landing-hero__title:lang(it) {
-  font-size: rem(38px);
-  line-height: rem(38px);
-
-  @include tablet {
-    font-size: rem(54px);
-    line-height: rem(52px);
-  }
-
-  @include desktop {
-    font-size: min(#{rem(74px)}, 12cqi);
-    line-height: 0.95;
-  }
-
-  @include landing.wide {
-    font-size: min(#{rem(84px)}, 12cqi);
-  }
-
-  @include landing.xwide {
-    font-size: min(#{rem(96px)}, 12cqi);
-  }
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
 }
 
 .landing-hero__line {
@@ -151,59 +42,66 @@
 }
 
 .landing-hero__lead {
-  max-width: rem(500px);
-  padding-block-end: rem(48px);
-  margin: 0;
-  font-size: rem(15px);
-  line-height: rem(22px);
+  max-width: 30em;
+  margin: rem(20px) 0 0;
+  font-size: var(--font-size-section);
+  line-height: 1.55;
   color: var(--text-muted);
-
-  @include tablet-up {
-    font-size: rem(18px);
-    line-height: rem(28px);
-  }
-
-  @include landing.wide {
-    max-width: rem(580px);
-    font-size: rem(20px);
-    line-height: rem(30px);
-  }
-
-  @include landing.xwide {
-    max-width: rem(660px);
-    font-size: rem(23px);
-    line-height: rem(35px);
-  }
 }
 
 .landing-hero__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: rem(10px);
-
-  // The `lg` buttons grow with the wide breakpoints (`ui-button` reads `--ui-button-scale`).
-  @include landing.wide {
-    --ui-button-scale: 1.2;
-  }
-
-  @include landing.xwide {
-    --ui-button-scale: 1.45;
-  }
+  gap: var(--space-2);
+  margin-top: rem(28px);
 }
 
-.landing-hero__note {
-  margin: 0;
-  font-size: rem(13px);
-  line-height: rem(18px);
-  color: var(--text-muted);
+// Entrance: the headline lines, then the lead, the buttons and the preview rise in.
+.landing-hero__line,
+.landing-hero__lead,
+.landing-hero__actions,
+.landing-hero__preview {
+  animation: landing-hero-rise 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
 
-  @include landing.wide {
-    font-size: rem(15px);
-    line-height: rem(22px);
-  }
+.landing-hero__line:nth-child(2) {
+  animation-delay: 90ms;
+}
+
+.landing-hero__line:nth-child(3) {
+  animation-delay: 180ms;
+}
+
+.landing-hero__lead {
+  animation-delay: 260ms;
+}
+
+.landing-hero__actions {
+  animation-delay: 340ms;
 }
 
 .landing-hero__preview {
-  // The preview is a block of its own (not stretched by the grid): centred next to the copy.
-  align-self: center;
+  animation-duration: 1000ms;
+  animation-delay: 200ms;
+}
+
+@keyframes landing-hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(rem(22px));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@include reduced-motion {
+  .landing-hero__line,
+  .landing-hero__lead,
+  .landing-hero__actions,
+  .landing-hero__preview {
+    animation: none;
+  }
 }

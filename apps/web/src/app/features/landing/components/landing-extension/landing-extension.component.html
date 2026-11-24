@@ -1,27 +1,92 @@
-@if (extension.fits()) {
-  <section class="landing-extension" appLandingReveal aria-labelledby="landing-extension-title">
-    <div class="landing-extension__copy">
-      <p class="landing-extension__badge">{{ 'landing.extension.badge' | transloco }}</p>
-      <h2 id="landing-extension-title" class="landing-extension__title">
-        {{ 'landing.extension.title' | transloco }}
-      </h2>
-      <p class="landing-extension__text">{{ 'landing.extension.text' | transloco }}</p>
-      <p class="landing-extension__browsers">{{ 'landing.extension.browsers' | transloco }}</p>
-    </div>
-    <div class="landing-extension__visual">
-      <span class="landing-extension__disc" aria-hidden="true"></span>
-      <span class="landing-extension__bar" aria-hidden="true">
+<section class="landing-extension" aria-labelledby="landing-extension-title">
+  <div class="landing-extension__visual" appLandingReveal>
+    <!-- A drawing of a browser window (someone else's UI): its chrome is outside the DS. -->
+    <div
+      class="landing-extension__browser"
+      role="img"
+      data-ds-ignore
+      [attr.aria-label]="'landing.extension.alt' | transloco"
+    >
+      <span class="landing-extension__bar">
         <span class="landing-extension__dots"><i></i><i></i><i></i></span>
-        <span class="landing-extension__address">cos.com/wool-coat-straight-cut</span>
-        <span class="landing-extension__button"><ui-logo [variant]="LOGO_VARIANT.Mark" /></span>
+        <span class="landing-extension__url">taylorstitch.com/products/ojai-jacket</span>
+        <span class="landing-extension__button"
+          ><ui-logo [variant]="LOGO_VARIANT.Mark" class="landing-extension__mark"
+        /></span>
       </span>
-      <img
-        class="landing-extension__popup"
-        width="360"
-        height="520"
-        [ngSrc]="popupSrc()"
-        [alt]="'landing.extension.alt' | transloco"
-      />
+      <span class="landing-extension__page">
+        <img
+          class="landing-extension__photo"
+          alt=""
+          [ngSrc]="jacket.src"
+          [width]="jacket.width"
+          [height]="jacket.height"
+        />
+        <span class="landing-extension__lines">
+          <i></i><i></i><i class="landing-extension__gap"></i><i></i><i></i>
+        </span>
+        <span class="landing-extension__popup">
+          <span class="landing-extension__head"
+            ><ui-logo [variant]="LOGO_VARIANT.Mark" class="landing-extension__mark" />{{
+              'landing.extension.popup.title' | transloco
+            }}<span class="landing-extension__scope">{{
+              'landing.extension.popup.scope' | transloco
+            }}</span></span
+          >
+          <span class="landing-extension__link">
+            <img
+              class="landing-extension__thumb"
+              alt=""
+              [ngSrc]="jacket.src"
+              [width]="jacket.width"
+              [height]="jacket.height"
+            />
+            <span>
+              <b class="landing-extension__name">{{
+                'landing.extension.popup.name' | transloco
+              }}</b>
+              <span class="landing-extension__price">{{
+                'landing.extension.popup.price' | transloco
+              }}</span>
+            </span>
+          </span>
+          <span class="landing-extension__rule"
+            ><ui-icon class="landing-extension__folder" name="folder-filled" [size]="16" />{{
+              'landing.extension.popup.goesTo' | transloco
+            }}&ngsp;<b>{{ 'landing.folders.shopping' | transloco }}</b
+            ><span class="landing-extension__rule-note">{{
+              'landing.extension.popup.rule' | transloco
+            }}</span></span
+          >
+          <span class="landing-extension__chips">
+            <span class="landing-extension__chip landing-extension__chip--on">{{
+              'landing.extension.popup.tag' | transloco
+            }}</span>
+            <span class="landing-extension__chip"
+              ><ui-icon class="landing-extension__spark" name="spark" [size]="16" />{{
+                'landing.extension.popup.suggested' | transloco
+              }}</span
+            >
+          </span>
+          <span class="landing-extension__note">{{
+            'landing.extension.popup.note' | transloco
+          }}</span>
+          <span class="landing-extension__foot"
+            ><span>Alt Shift S</span
+            ><span class="landing-extension__save">{{
+              'landing.extension.popup.save' | transloco
+            }}</span></span
+          >
+        </span>
+      </span>
     </div>
-  </section>
-}
+  </div>
+  <div class="landing-extension__copy" appLandingReveal>
+    <p class="landing-extension__eyebrow">{{ 'landing.extension.badge' | transloco }}</p>
+    <h2 id="landing-extension-title" class="landing-extension__title">
+      {{ 'landing.extension.title' | transloco }}
+    </h2>
+    <p class="landing-extension__text">{{ 'landing.extension.text' | transloco }}</p>
+    <p class="landing-extension__browsers">{{ 'landing.extension.browsers' | transloco }}</p>
+  </div>
+</section>

@@ -1,115 +1,125 @@
-/* stylelint-disable shelf/font-size-token -- landing is rebuilt in block 6 (Shelf 16-landing) */
 @use 'ui' as *;
 
-// Wide screens (landing only, in `em` like the layout breakpoints): 1440px and 1920px, and a
-// large desktop from 1280px (room for three preview cards next to the headline).
-$large-min: 80em;
-$wide-min: 90em;
-$xwide-min: 120em;
+// Shelf 16-landing: one column of sections, 1120px wide; the app's own look (white, hairline
+// cards, pills, sage notes) carries the page. Every size is on the DS scale (only the hero
+// headline is bigger, in its own component).
 
-@mixin large {
-  @media (width >= #{$large-min}) {
+// The prototype's two steps, in `em` like the layout breakpoints: below 900px the two-column
+// blocks stack and the header loses its page links; below 560px the bento is one column and the
+// app preview drops its sidebar.
+$stack-max: 56.25em;
+$narrow-max: 35em;
+
+@mixin stacked {
+  @media (width < #{$stack-max}) {
     @content;
   }
 }
 
-@mixin wide {
-  @media (width >= #{$wide-min}) {
+@mixin narrow {
+  @media (width < #{$narrow-max}) {
     @content;
   }
 }
 
-@mixin xwide {
-  @media (width >= #{$xwide-min}) {
-    @content;
-  }
-}
-
-// Centred content column shared by every section: wider on big screens.
+// Centred content column shared by every section.
 @mixin wrap {
   width: 100%;
-  max-width: rem(1200px);
-  padding-inline: var(--space-4);
+  max-width: rem(1120px);
+  padding-inline: max(var(--space-4), env(safe-area-inset-left, 0rem))
+    max(var(--space-4), env(safe-area-inset-right, 0rem));
   margin-inline: auto;
-
-  @include tablet-up {
-    padding-inline: var(--space-6);
-  }
-
-  @include wide {
-    max-width: rem(1440px);
-    padding-inline: var(--space-8);
-  }
-
-  @include xwide {
-    max-width: rem(1760px);
-    padding-inline: calc(var(--space-8) * 2);
-  }
 }
 
-// One vertical padding for the top and the bottom of every landing section (spacing tokens).
+// Vertical rhythm of a section: 72px, 48px on a narrow phone.
 @mixin section-pad {
-  padding-block: calc(var(--space-8) * 2);
+  padding-block: rem(72px);
 
-  @include tablet-up {
-    padding-block: calc(var(--space-8) * 3);
-  }
-
-  @include wide {
-    padding-block: calc(var(--space-8) * 4);
+  @include narrow {
+    padding-block: rem(48px);
   }
 }
 
-// The space above a section card that has no section padding of its own (the AI and extension
-// cards right after the hero, #507): the same step as `section-pad`, as a margin, so a card that
-// renders nothing (the extension outside desktop Chromium) leaves no gap.
-@mixin section-gap {
-  margin-block-start: calc(var(--space-8) * 2);
-
-  @include tablet-up {
-    margin-block-start: calc(var(--space-8) * 3);
-  }
-
-  @include wide {
-    margin-block-start: calc(var(--space-8) * 4);
-  }
-}
-
-// The inner padding of the cards (before, after, "How it's built"): one value, slightly bigger
-// than the old 16px / 24px. Sets the custom property so absolutely placed content can use it too.
-@mixin card-pad {
-  --landing-card-pad: calc(var(--space-4) * 1.25);
-
-  @include tablet-up {
-    --landing-card-pad: calc(var(--space-6) * 1.25);
-  }
-}
-
-// Section heading in the page's display scale.
+// Section heading (Shelf display-l, 40/48 600; 28px on a phone like the prototype's clamp).
 @mixin section-title {
   margin: 0;
-  font-size: rem(24px);
+  font-size: var(--font-size-display-l);
   font-weight: 600;
-  line-height: rem(30px);
+  line-height: 1.2;
   letter-spacing: -0.02em;
+  text-wrap: balance;
 
-  @include tablet-up {
-    font-size: rem(32px);
-    line-height: rem(38px);
+  @include stacked {
+    font-size: var(--font-size-display);
   }
 }
 
-// Small mono label above a block ("Why this exists").
-@mixin eyebrow {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: rem(12px);
+// The lead under a section heading: 18px muted.
+@mixin section-lead {
+  margin: rem(14px) 0 0;
+  font-size: var(--font-size-section);
   font-weight: 400;
-  line-height: rem(16px);
+  line-height: 1.5;
   color: var(--text-muted);
 }
 
-// Plain text link: muted, full colour on hover and keyboard focus ring from the global rule.
+// The sage pill above a heading ("Optional AI", "Browser extension").
+@mixin eyebrow {
+  display: inline-flex;
+  gap: rem(6px);
+  align-items: center;
+  height: rem(28px);
+  padding-inline: rem(12px);
+  font-size: var(--font-size-meta);
+  font-weight: 500;
+  line-height: var(--line-height-meta);
+  color: var(--note-text);
+  background: var(--ai-bg);
+  border-radius: var(--radius-full);
+}
+
+// The 12px muted note under a block, with an underlined link.
+@mixin fine {
+  margin: rem(22px) 0 0;
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+  color: var(--text-muted);
+
+  a {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: rem(3px);
+  }
+}
+
+// A hairline card on the surface (AI examples, tiles, the after half).
+@mixin card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+// A suggestion chip of the AI card and the extension popup: sage ring, `on` filled.
+@mixin chip {
+  display: inline-flex;
+  gap: rem(4px);
+  align-items: center;
+  height: rem(26px);
+  padding-inline: rem(10px);
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+  color: var(--note-text);
+  white-space: nowrap;
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ai) 45%, transparent);
+}
+
+@mixin chip-on {
+  background: var(--ai-bg);
+  box-shadow: none;
+}
+
+// Plain text link: muted, full colour on hover.
 @mixin text-link {
   color: var(--text-muted);
   text-decoration: none;
@@ -117,33 +127,32 @@ $xwide-min: 120em;
   @include hover {
     color: var(--text);
   }
-
-  &:active {
-    color: var(--text);
-  }
 }
 
-// Scroll reveal for the direct children of an element carrying `appLandingReveal`: fade + 1rem
-// rise over `duration-slow`, each child delayed by `--landing-reveal-delay` (set by the
-// directive). Only the directive's `--pending` class hides content, and reduced motion never does.
-@mixin reveal {
-  &.landing-reveal--pending > * {
-    opacity: 0;
-    transform: translateY(rem(16px));
+// Scroll reveal for the direct children of an element carrying `appLandingReveal`: they rise
+// 28px and fade in over 700ms, each delayed by `--landing-reveal-delay` (set by the directive).
+// Only the directive's `--pending` class hides content; reduced motion and print never do.
+@mixin reveal($scale: false) {
+  & > * {
+    transition-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
-  // Longhands on purpose (the easing is set apart so stylelint does not ask for the shorthand).
-  & > * {
-    transition-timing-function: var(--ease-out);
+  &.landing-reveal--pending > * {
+    opacity: 0;
+
+    @if $scale {
+      transform: translateY(rem(20px)) scale(0.97);
+    } @else {
+      transform: translateY(rem(28px));
+    }
   }
 
   &.landing-reveal--shown > * {
     transition-property: opacity, transform;
-    transition-duration: var(--duration-slow);
+    transition-duration: 700ms;
     transition-delay: var(--landing-reveal-delay, 0ms);
   }
 
-  // Print has no scrolling to reveal anything: show every section.
   @media print {
     &.landing-reveal--pending > * {
       opacity: 1;

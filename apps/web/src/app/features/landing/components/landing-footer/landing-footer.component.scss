@@ -3,25 +3,20 @@
 
 :host {
   display: block;
+  padding-block: rem(40px) rem(56px);
+  margin-top: rem(72px);
+  border-top: 1px solid var(--sep);
 }
 
-.landing-footer {
+.landing-footer__bar {
   @include landing.wrap;
-  @include type(label);
+  @include type(secondary);
 
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
-  justify-content: space-between;
-  padding-block: var(--space-6);
-  font-weight: 400;
+  gap: rem(16px) rem(28px);
+  align-items: center;
   color: var(--text-muted);
-}
-
-.landing-footer__links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
 }
 
 .landing-footer__link {
@@ -32,11 +27,20 @@
   @include visually-hidden;
 }
 
-// Language switcher (#274): a row of the six languages that wraps on a phone.
+.landing-footer__space {
+  flex: 1;
+}
+
+// Language switcher (#274): the seven languages on a soft track that wraps on a phone.
 .landing-footer__languages {
+  // 28px buttons with 12px labels (the 32px small button scaled), muted until chosen.
+  --ui-button-scale: 0.875;
+  --ui-button-color: var(--text-muted);
+
   display: flex;
   flex-wrap: wrap;
-  flex-basis: 100%;
-  gap: var(--space-1);
-  margin-inline-start: calc(-1 * var(--space-2));
+  gap: rem(2px);
+  padding: rem(2px);
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
 }

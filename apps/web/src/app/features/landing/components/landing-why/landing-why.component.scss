@@ -1,4 +1,3 @@
-/* stylelint-disable shelf/font-size-token -- landing is rebuilt in block 6 (Shelf 16-landing) */
 @use 'ui' as *;
 @use '../../landing' as landing;
 
@@ -7,44 +6,45 @@
 }
 
 .landing-why {
-  @include landing.reveal;
-
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: rem(22px);
+  height: 100%;
+  padding: rem(32px);
+  background: var(--surface-hover);
+  border-radius: var(--radius-lg);
+
+  @include landing.narrow {
+    padding: rem(24px);
+  }
 }
 
+// The quote speaks for itself on the page; the heading is for the document outline.
 .landing-why__title {
-  @include landing.eyebrow;
+  @include visually-hidden;
 }
 
 .landing-why__figure {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: rem(22px);
   margin: 0;
 }
 
 .landing-why__quote {
-  max-width: rem(640px);
   margin: 0;
-  font-size: rem(17px);
-  line-height: rem(27px);
-  letter-spacing: -0.005em;
-
-  @include tablet-up {
-    font-size: rem(20px);
-    line-height: rem(31px);
-  }
 
   p {
     margin: 0;
+    font-size: var(--font-size-title-l);
+    line-height: 1.45;
+    letter-spacing: -0.01em;
   }
 }
 
 .landing-why__author {
   display: flex;
-  gap: var(--space-3);
+  gap: rem(12px);
   align-items: center;
 }
 
@@ -58,8 +58,7 @@
 }
 
 .landing-why__role {
-  @include type(label);
+  @include type(secondary);
 
-  font-weight: 400;
   color: var(--text-muted);
 }

@@ -1,4 +1,4 @@
-<app-landing-header (howItWorksRequested)="showHowItWorks()" />
+<app-landing-header (sectionRequested)="showSection($event)" />
 <main class="landing">
   <app-landing-hero />
   @if (signedIn()) {
@@ -6,18 +6,13 @@
   }
   <!--
     Below the fold: loaded when the browser is idle, so the first paint ships less JS, or at once
-    when the visitor asks for "How it works" or opens `/#how` (their targets live in here). Each part is its own
-    block on its own trigger, a little apart, so the browser renders them in separate tasks
-    instead of one long one. The delays are literals because `on timer()` takes no constants.
-    Every block has a placeholder, and the same box again as `@loading`: while its chunk downloads
-    the placeholder is gone otherwise, and what follows jumps up and back. So what is below the
-    fold only grows towards its real height.
+    when the visitor asks for a section (How it works, AI) or opens `/#how`. Each part is its own
+    block on its own trigger, a little apart, so the browser renders them in separate tasks.
+    The delays are literals because `on timer()` takes no constants. Every block has a
+    placeholder, and the same box again as `@loading`, so what is below the fold only grows.
   -->
   @defer (on idle; when sectionsRequested()) {
-  <!-- The AI features (#481) and the browser extension (#455) come right after the hero (#507),
-       then the bento. All three are one block: the bento's "How it works" scroll waits for it, so
-       nothing above its target arrives later and moves the page. The extension block renders
-       nothing outside a desktop Chromium browser, so it needs no placeholder of its own. -->
+  <!-- AI, the extension and the bento are one block: a scroll to any of them waits for it. -->
   <app-landing-ai />
   <app-landing-extension />
   <app-landing-bento #bento />
@@ -32,7 +27,7 @@
   } @loading {
   <div class="landing__placeholder"></div>
   } @defer (on timer(150ms); when sectionsRequested()) {
-  <div class="landing__about">
+  <div class="landing__about" appLandingReveal>
     <app-landing-why />
     <app-landing-built #built />
   </div>
@@ -50,7 +45,7 @@
 </main>
 <!--
   The footer is a separate block on purpose: it is the `contentinfo` landmark and must stay
-  outside `<main>`, and a defer block cannot span the closing `</main>`. It follows the last section.
+  outside `<main>`, and a defer block cannot span the closing `</main>`.
 -->
 @defer (on timer(450ms); when sectionsRequested()) {
 <app-landing-footer />

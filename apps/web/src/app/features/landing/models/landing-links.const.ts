@@ -13,6 +13,8 @@ export const LANDING_LINKS = {
   Repository: 'https://github.com/ddadivan/shelfmark',
   DecisionLog: 'https://github.com/ddadivan/shelfmark/tree/main/docs/adr',
   HowItsBuilt: '#how',
+  /** The optional AI section. */
+  Ai: '#ai',
   /** The "Save once, find in seconds" section (the bento). */
   HowItWorks: '#works',
 } as const;

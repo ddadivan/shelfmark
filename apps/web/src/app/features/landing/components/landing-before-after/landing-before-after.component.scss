@@ -1,4 +1,3 @@
-/* stylelint-disable shelf/font-size-token -- landing is rebuilt in block 6 (Shelf 16-landing) */
 @use 'ui' as *;
 @use '../../landing' as landing;
 
@@ -6,106 +5,282 @@
   display: block;
 }
 
-.landing-ba__inner {
+.landing-ba {
   @include landing.wrap;
-  @include landing.reveal;
   @include landing.section-pad;
 
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
+  padding-block-start: rem(24px);
 
-  @include tablet-up {
-    gap: var(--space-8);
+  > div:first-child {
+    @include landing.reveal;
   }
 }
 
 .landing-ba__title {
   @include landing.section-title;
-
-  max-width: rem(640px);
 }
 
-.landing-ba__scenes {
-  @include landing.card-pad;
-
-  // The two panels are the same height (the scene reads it too).
-  --landing-panel-height: #{rem(320px)};
+.landing-ba__halves {
+  @include landing.reveal;
 
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-6);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: rem(16px);
+  margin-top: rem(36px);
 
-  @include tablet-up {
-    --landing-panel-height: #{rem(344px)};
-
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  // Taller on desktop, where the scraps of the before board are bigger.
-  @include desktop {
-    --landing-panel-height: #{rem(400px)};
+  @include landing.stacked {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-.landing-ba__scene {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  min-width: 0;
+.landing-ba__half {
+  position: relative;
+  min-height: rem(400px);
+  padding: rem(22px);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+
+  &--before {
+    background: var(--surface-hover);
+  }
+
+  &--after {
+    @include landing.card;
+  }
 }
 
 .landing-ba__label {
-  @include type(label);
-
   margin: 0;
-  font-size: rem(14px);
+  font-size: var(--font-size-meta);
+  font-weight: 600;
+  line-height: var(--line-height-meta);
   color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
-// After: the folder tree and the links of the selected folder.
-.landing-ba__after {
+.landing-ba__mess {
+  position: relative;
+  display: block;
+  height: rem(340px);
+}
+
+.landing-ba__note {
+  position: absolute;
   display: flex;
-  gap: var(--space-4);
-  height: var(--landing-panel-height);
-  padding: var(--landing-card-pad);
-  overflow: hidden;
+  flex-direction: column;
+  padding: rem(10px) rem(12px);
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
   background: var(--surface);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-l2);
+  animation: landing-drift 7s ease-in-out infinite alternate;
+
+  b {
+    font-weight: 600;
+  }
+
+  &--1 {
+    top: 8%;
+    left: 4%;
+    width: 58%;
+    rotate: -4deg;
+  }
+
+  &--2 {
+    top: 4%;
+    right: 4%;
+    width: 40%;
+    rotate: 5deg;
+    animation-delay: -2s;
+  }
+
+  &--3 {
+    top: 40%;
+    left: 10%;
+    width: 52%;
+    padding: 0;
+    overflow: hidden;
+    rotate: 3deg;
+    animation-delay: -4s;
+  }
+
+  // A sticky note: the amber folder pair is the closest Shelf colour.
+  &--4 {
+    top: 46%;
+    right: 2%;
+    width: 38%;
+    color: var(--folder-amber);
+    background: var(--folder-amber-bg);
+    rotate: -6deg;
+    animation-delay: -1s;
+  }
+
+  &--5 {
+    bottom: 2%;
+    left: 6%;
+    width: 70%;
+    rotate: -2deg;
+    animation-delay: -3s;
+  }
+}
+
+@keyframes landing-drift {
+  to {
+    translate: 0 rem(-6px);
+  }
+}
+
+.landing-ba__muted {
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+}
+
+.landing-ba__more {
+  margin-top: rem(4px);
+}
+
+.landing-ba__tabs {
+  display: flex;
+  gap: rem(2px);
+  padding: rem(6px) rem(6px) 0;
+  background: var(--surface-pressed);
+
+  span {
+    flex: 1;
+    min-width: 0;
+    padding: rem(5px) rem(6px);
+    overflow: hidden;
+    font-size: var(--font-size-micro);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: var(--surface-hover);
+    border-radius: var(--radius-tile-sm) var(--radius-tile-sm) 0 0;
+
+    &:first-child {
+      background: var(--surface);
+    }
+  }
+}
+
+.landing-ba__tabs-note {
+  padding: rem(10px) rem(12px);
+}
+
+.landing-ba__shelf {
+  display: grid;
+  grid-template-columns: rem(150px) minmax(0, 1fr);
+  gap: rem(14px);
+  margin-top: rem(14px);
+
+  @include landing.narrow {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .landing-ba__tree {
   display: flex;
-  flex: none;
   flex-direction: column;
   gap: rem(2px);
-  width: rem(110px);
 
-  @include tablet {
-    width: rem(130px);
-  }
-
-  @include desktop {
-    width: rem(150px);
+  @include landing.narrow {
+    display: none;
   }
 }
 
 .landing-ba__row {
-  @include type(label);
+  --ui-icon-size: #{rem(13px)};
 
-  padding: rem(6px) var(--space-2);
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  height: rem(30px);
+  padding-inline: rem(10px);
+  font-size: var(--font-size-meta);
+  border-radius: var(--radius-sm);
+
+  &--on {
+    font-weight: 500;
+    background: var(--surface-pressed);
+  }
+}
+
+.landing-ba__count {
+  margin-inline-start: auto;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.landing-ba__links {
+  display: flex;
+  flex-direction: column;
+  gap: rem(8px);
+
+  // The rows slide in from the side, one by one (`revealStartMs`, `revealStepMs`).
+  & > * {
+    transition-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  &.landing-reveal--pending > * {
+    opacity: 0;
+    transform: translateX(rem(24px));
+  }
+
+  &.landing-reveal--shown > * {
+    transition-property: opacity, transform;
+    transition-duration: 600ms;
+    transition-delay: var(--landing-reveal-delay, 0ms);
+  }
+
+  @include reduced-motion {
+    &.landing-reveal--pending > * {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+.landing-ba__link {
+  display: grid;
+  grid-template-columns: rem(56px) minmax(0, 1fr);
+  gap: rem(10px);
+  align-items: center;
+  padding: rem(8px);
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: var(--radius-md);
 }
 
-.landing-ba__row--nested {
-  padding-inline-start: var(--space-6);
+.landing-ba__thumb {
+  width: rem(56px);
+  height: rem(42px);
+  object-fit: contain;
+  background: var(--surface-hover);
+  border-radius: var(--radius-tile);
 }
 
-.landing-ba__row {
-  transition: background-color var(--duration-base) var(--ease-in-out);
+.landing-ba__text {
+  min-width: 0;
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
 }
 
-.landing-ba__row--active {
-  background: var(--accent-bg);
+.landing-ba__name {
+  display: block;
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.landing-ba__link-note {
+  color: var(--note-text);
+}
+
+@include reduced-motion {
+  .landing-ba__note {
+    animation: none;
+  }
 }

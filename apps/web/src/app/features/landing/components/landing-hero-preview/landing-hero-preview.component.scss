@@ -1,120 +1,336 @@
 @use 'ui' as *;
 @use '../../landing' as landing;
 
+// A small copy of the Shelf app: the type is the DS meta / micro scale, radii the DS steps.
 :host {
   display: block;
+  min-width: 0;
 }
 
-// The panel, with the toast overlapping its bottom-left corner like the mockup: the wrapper
-// leaves room for the toast to hang out under and to the left of the panel.
-.landing-hero-preview {
+.preview {
   position: relative;
-  padding: 0 0 var(--space-6);
+  display: grid;
+  grid-template-columns: rem(148px) minmax(0, 1fr);
+  height: rem(460px);
+  overflow: hidden;
+  contain: paint;
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    var(--shadow-l3),
+    0 0 0 1px var(--sep);
 
-  @include tablet-up {
-    padding-inline-start: var(--space-6);
+  @include landing.narrow {
+    grid-template-columns: minmax(0, 1fr);
+    height: rem(420px);
   }
 }
 
-.landing-hero-preview__panel {
+.preview__side {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  background: var(--surface);
+  gap: rem(2px);
+  padding: rem(14px) rem(10px);
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+  background: var(--sidebar);
+  border-inline-end: 1px solid var(--sep);
 
-  // The panel is the container the card count is queried against (a container cannot query
-  // itself, so not the grid).
-  container-type: inline-size;
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-float);
+  @include landing.narrow {
+    display: none;
+  }
 }
 
-.landing-hero-preview__head {
+.preview__logo {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-3);
+  gap: rem(6px);
   align-items: center;
-}
-
-.landing-hero-preview__folder {
-  @include type(title);
-
+  padding: 0 rem(6px) rem(10px);
   font-weight: 600;
-  letter-spacing: -0.02em;
 }
 
-.landing-hero-preview__count {
-  @include type(caption);
+.preview__logo-mark {
+  color: var(--text);
+}
 
+.preview__add {
+  display: grid;
+  place-items: center;
+  height: rem(28px);
+  margin: 0 rem(2px) rem(10px);
+  font-weight: 500;
+  color: var(--on-primary);
+  background: var(--primary);
+  border-radius: var(--radius-full);
+}
+
+.preview__row {
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  height: rem(26px);
+  padding-inline: rem(8px);
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: var(--radius-tile);
+  transition:
+    background-color 300ms,
+    font-weight 300ms;
+
+  &--on {
+    font-weight: 500;
+    background: var(--surface-pressed);
+  }
+}
+
+.preview__count {
+  margin-inline-start: auto;
+  font-weight: 400;
+  color: var(--text-muted);
+
+  &--strong {
+    font-weight: 600;
+    color: var(--text);
+  }
+}
+
+.preview__folder {
+  --ui-icon-size: #{rem(12px)};
+}
+
+.preview__heading {
+  padding: rem(10px) rem(8px) rem(4px);
+  margin-top: rem(8px);
+  font-size: var(--font-size-micro);
+  color: var(--text-muted);
+  border-top: 1px solid var(--sep);
+}
+
+.preview__main {
+  position: relative;
+  padding: rem(14px) rem(16px);
+  overflow: hidden;
+}
+
+.preview__search {
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  max-width: rem(280px);
+  height: rem(32px);
+  padding-inline: rem(12px);
+  font-size: var(--font-size-meta);
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 1px var(--search-hairline);
+}
+
+.preview__search-icon {
+  --ui-icon-size: #{rem(13px)};
+}
+
+.preview__head {
+  display: flex;
+  gap: rem(8px);
+  align-items: center;
+  margin-top: rem(14px);
+}
+
+.preview__title {
+  flex: 1;
+  font-size: var(--font-size-title-s);
+  font-weight: 600;
+  line-height: var(--line-height-title-s);
+}
+
+.preview__views {
+  display: flex;
+  gap: rem(2px);
+  padding: rem(2px);
+  background: var(--surface-hover);
+  border-radius: var(--radius-tile);
+}
+
+.preview__view {
+  --ui-icon-size: #{rem(12px)};
+
+  display: grid;
+  place-items: center;
+  width: rem(24px);
+  height: rem(20px);
+  color: var(--text-muted);
+  border-radius: var(--radius-tile-sm);
+
+  &--on {
+    color: var(--text);
+    background: var(--surface);
+  }
+}
+
+.preview__tabs {
+  display: flex;
+  gap: rem(2px);
+  margin-top: rem(8px);
+  font-size: var(--font-size-micro);
+  line-height: var(--line-height-meta);
+  color: var(--text-muted);
+  transition: opacity 300ms;
+
+  &--off {
+    opacity: 0;
+  }
+}
+
+.preview__tab {
+  padding: rem(3px) rem(8px);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition:
+    background-color 250ms,
+    color 250ms;
+
+  &--on {
+    font-weight: 500;
+    color: var(--text);
+    background: var(--surface-pressed);
+  }
+}
+
+.preview__grid {
+  margin-top: rem(12px);
+  column-gap: rem(10px);
+  columns: 3;
+  transition: opacity 260ms ease;
+
+  &--fade {
+    opacity: 0;
+  }
+
+  @include landing.narrow {
+    columns: 2;
+  }
+}
+
+.preview__card {
+  margin-bottom: rem(10px);
+  overflow: hidden;
+  font-size: var(--font-size-micro);
+  line-height: 1.3;
+  break-inside: avoid;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+
+  &--hidden {
+    display: none;
+  }
+}
+
+// The first frame: the cards land one by one (once).
+.preview--intro .preview__card {
+  animation: landing-card-land 520ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+  animation-delay: calc(250ms + var(--landing-card-index, 0) * 140ms);
+}
+
+@keyframes landing-card-land {
+  from {
+    opacity: 0;
+    transform: translateY(rem(-18px)) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.preview__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+
+  &--product {
+    object-fit: contain;
+    background: var(--surface-hover);
+  }
+}
+
+.preview__body {
+  display: flex;
+  flex-direction: column;
+  gap: rem(2px);
+  padding: rem(6px) rem(8px) rem(8px);
+}
+
+.preview__meta {
+  display: flex;
+  justify-content: space-between;
   color: var(--text-muted);
 }
 
-.landing-hero-preview__switch {
-  margin-inline-start: auto;
+.preview__name {
+  font-size: var(--font-size-micro);
+  font-weight: 500;
 }
 
-// As many cards as fit at a readable width (160px each): three, two or one. The panel's width
-// decides (a container query on it, 32px of padding included), not the window's, because the
-// preview sits in a column that changes with the layout. Every card sits in the first cell and is moved to its slot (`--landing-preview-slot`, from the
-// component) by `translate`, one column plus the gap per slot, so the switch loop never lays
-// anything out again: it only changes `translate`, `scale` and `opacity`. A slot past the last
-// column (`--landing-preview-cols`) is off the row and transparent; slot -1 is a card that left
-// (it fades and shrinks where it stood). The grid clips what slides past its edges.
-.landing-hero-preview__grid {
-  --landing-preview-cols: 3;
-  --landing-preview-gap: var(--space-3);
-
-  display: grid;
-  grid-template-columns: repeat(var(--landing-preview-cols), minmax(0, 1fr));
-  gap: var(--landing-preview-gap);
-  overflow: clip;
-  overflow-clip-margin: var(--space-3);
+.preview__note {
+  width: fit-content;
+  padding: rem(3px) rem(6px);
+  margin-top: rem(4px);
+  color: var(--note-text);
+  background: var(--ai-bg);
+  border-radius: var(--radius-tile-sm);
 }
 
-// The cards are a picture: nothing reacts to the pointer.
-.landing-hero-preview__item {
-  --landing-preview-shown: min(
-    clamp(0, var(--landing-preview-cols) - var(--landing-preview-slot), 1),
-    clamp(0, var(--landing-preview-slot) + 1, 1)
-  );
-
-  display: flex;
-  grid-area: 1 / 1;
-  min-width: 0;
-  pointer-events: none;
-  opacity: var(--landing-preview-shown);
-  translate: calc(max(var(--landing-preview-slot), 0) * (100% + var(--landing-preview-gap))) 0;
-  scale: calc(1 - 0.08 * clamp(0, -1 * var(--landing-preview-slot), 1));
-  transition:
-    translate var(--duration-slow) var(--ease-in-out) 60ms,
-    opacity var(--duration-base) var(--ease-out),
-    scale var(--duration-base) var(--ease-out);
-
-  @include reduced-motion {
-    transition: none;
-  }
-}
-
-@container (inline-size < #{rem(536px)}) {
-  .landing-hero-preview__grid {
-    --landing-preview-cols: 2;
-  }
-}
-
-@container (inline-size < #{rem(364px)}) {
-  .landing-hero-preview__grid {
-    --landing-preview-cols: 1;
-  }
-}
-
-.landing-hero-preview__toast {
+.preview__toast {
   position: absolute;
-  inset-block-end: 0;
-  inset-inline-start: var(--space-3);
-  max-inline-size: calc(100% - var(--space-6));
+  bottom: rem(14px);
+  left: 50%;
+  display: flex;
+  gap: rem(10px);
+  align-items: center;
+  padding: rem(8px) rem(8px) rem(8px) rem(12px);
+  font-size: var(--font-size-meta);
+  line-height: var(--line-height-meta);
+  color: var(--bg);
+  white-space: nowrap;
+  background: var(--text);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-l2);
+  opacity: 0;
+  transform: translate(-50%, rem(16px));
+  transition:
+    opacity 300ms,
+    transform 300ms;
 
-  @include tablet-up {
-    inset-inline-start: 0;
+  &--shown {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    transition:
+      opacity 500ms var(--ease-out),
+      transform 500ms var(--ease-out);
+  }
+}
+
+.preview__undo {
+  padding: rem(4px) rem(8px);
+  font-weight: 500;
+  background: var(--toast-tile);
+  border-radius: var(--radius-tile);
+}
+
+@include reduced-motion {
+  .preview--intro .preview__card {
+    animation: none;
+  }
+
+  .preview__toast,
+  .preview__row,
+  .preview__tab,
+  .preview__tabs,
+  .preview__grid {
+    transition: none;
   }
 }
