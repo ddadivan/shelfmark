@@ -1,7 +1,7 @@
 import { expect, test } from './support/test';
 import { seedSession } from './support/mock-session';
 import { settled } from './support/settled';
-import { SEARCH_BUTTON, useSearchDialogWidth } from './support/search-button';
+import { openSearchDialog, SEARCH_BUTTON, searchDialogStart } from './support/search-button';
 import { openSidebar, tabBar } from './support/sidebar';
 import { switchView } from './support/library-toolbar';
 import { documentScrollTop, mainScrollTop, makePageTall, scrollMainTo } from './support/scroll';
@@ -164,23 +164,24 @@ test.describe('mobile polish (mock API)', () => {
   test.describe('library toolbar on a phone', { tag: E2E_TAG.Phone }, () => {
     test.skip(({ viewport }) => (viewport?.width ?? 0) >= 640, 'phone only');
 
-    test('one Options menu holds sort, view and export; the saved views scroll in one row', async ({
+    test('the view switch and the ⋯ menu (sort, select, export); the saved views scroll in one row', async ({
       page,
     }) => {
       await page.goto('/links');
       await expect(page.locator('ui-card').first()).toBeVisible();
-      // No loose sort button, switch or Export button next to the title.
+      // Shelf block 1: the Masonry / Cards / List switch stays, the rest is in ⋯ (a sheet).
       await expect(page.getByRole('button', { name: /^Sort: / })).toHaveCount(0);
-      await expect(page.getByRole('radio', { name: 'List' })).toHaveCount(0);
+      await expect(page.getByRole('radiogroup', { name: 'View' }).getByRole('radio')).toHaveCount(
+        3,
+      );
       await expect(page.getByRole('button', { name: 'Export' })).toHaveCount(0);
 
-      await page.getByRole('button', { name: 'Options', exact: true }).click();
-      const menu = page.getByRole('menu', { name: 'Sort, view and export' });
+      await page.getByRole('button', { name: 'More view options' }).click();
+      const menu = page.getByRole('menu', { name: 'More view options' });
       await expect(menu.getByText('Sort by', { exact: true })).toBeVisible();
-      await expect(menu.getByText('View', { exact: true })).toBeVisible();
       await expect(menu.getByText('Export', { exact: true })).toBeVisible();
       await expect(menu.getByRole('menuitemradio', { name: 'Newest first' })).toBeVisible();
-      await expect(menu.getByRole('menuitemradio', { name: 'Cards' })).toBeVisible();
+      await expect(menu.getByRole('menuitem', { name: 'Select links' })).toBeVisible();
       await expect(menu.getByRole('menuitem', { name: 'Everything as JSON' })).toBeVisible();
       await page.keyboard.press('Escape');
 
@@ -198,11 +199,9 @@ test.describe('mobile polish (mock API)', () => {
     test.skip(({ hasTouch }) => hasTouch, 'the desktop project covers the keyboard hints');
 
     test('the search dialog keeps the keyboard hints', async ({ page }) => {
-      await useSearchDialogWidth(page);
-      await page.goto('/links');
-      await page.getByRole('button', { name: SEARCH_BUTTON }).click();
-      const dialog = page.getByRole('dialog', { name: 'Search' });
-      await expect(dialog).toBeVisible();
+      // From 64em the dialog opens with Ctrl+K on a settings page (Shelf block 3).
+      await page.goto(searchDialogStart(page));
+      const dialog = await openSearchDialog(page);
 
       await expect(dialog.getByText('Esc', { exact: true })).toBeVisible();
       const box = await dialog.locator('.ui-command-list__footer').boundingBox();

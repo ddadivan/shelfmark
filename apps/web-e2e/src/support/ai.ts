@@ -61,7 +61,8 @@ export async function seedAi(page: Page, settings: AiSeed = { enabled: true }): 
 export async function openAiSettings(page: Page): Promise<void> {
   await openSettingsPage(page);
   if (isCompact(page)) {
-    await page.getByRole('main').getByRole('link', { name: /^AI\b/ }).click();
+    // The You list's row (a tablet also shows the section chips above it).
+    await page.getByRole('main').getByRole('link', { name: /^AI\b/ }).last().click();
   } else {
     await page
       .getByRole('navigation', { name: 'Settings' })

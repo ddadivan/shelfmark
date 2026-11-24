@@ -12,16 +12,25 @@ const MOCK_AI_KEY = 'sm-mock-ai';
 /** `MCP_TOKEN_PREFIX`, then the mock marker and 39 more base64url characters. */
 const MOCK_SECRET = /^smk_live_mock[A-Za-z0-9_-]{39}$/;
 
-/** Signed in, on Settings › AI (or You › AI on a phone), scrolled to Connect your assistant. */
+/**
+ * Signed in, on the "Connect your assistant" page (`/settings/ai/connect`, Shelf 15-tools),
+ * reached from its row in Settings › AI (You › AI in the mobile shell). Resolves with the page.
+ */
 async function openConnect(page: Page): Promise<Locator> {
   await seedSession(page);
   await page.goto('/links');
   await expect(page.locator('ui-card').first()).toBeVisible();
   await openAiSettings(page);
-  const group = page.getByRole('group', { name: 'Connect your assistant' });
-  await group.scrollIntoViewIfNeeded();
-  await expect(group).toBeVisible();
-  return group;
+  await page
+    .getByRole('group', { name: 'Connect your assistant' })
+    .getByRole('link', { name: 'Open' })
+    .click();
+  await expect(page).toHaveURL('/settings/ai/connect');
+  const main = page.getByRole('main');
+  await expect(
+    main.getByRole('heading', { level: 1, name: 'Connect your assistant' }),
+  ).toBeVisible();
+  return main;
 }
 
 /** Creates a token named `name` from the group and returns the dialog on its shown-once view. */
@@ -46,7 +55,9 @@ test.describe('Connect your assistant (#395, mock API)', () => {
   }, testInfo) => {
     const group = await openConnect(page);
     await expect(group.getByText('No assistants connected')).toBeVisible();
-    await expect(group.locator('code')).toHaveText(/\/api\/mcp$/);
+    await expect(
+      group.getByRole('group', { name: 'How to connect' }).locator('code').first(),
+    ).toHaveText(/\/api\/mcp$/);
 
     const dialog = await createToken(page, group, 'Claude Desktop');
     await expect(dialog.locator('code')).toHaveText(/^smk_live_mock.{0,4}….{4}$/);
@@ -66,10 +77,13 @@ test.describe('Connect your assistant (#395, mock API)', () => {
     await expect(dialog).toBeHidden();
     await expect(page.getByText(secret)).toHaveCount(0);
 
-    const item = group.getByRole('listitem').filter({ hasText: 'Claude Desktop' });
-    await expect(item).toContainText(`Ends in ${secret.slice(-4)}`);
+    // A Tokens row (Shelf 15-tools): the name, "Created … · never used · expires … · includes
+    // notes" and the access badge.
+    const item = group.locator('ui-settings-row').filter({ hasText: 'Claude Desktop' });
     await expect(item).toContainText('never used');
-    await expect(item).toContainText('Includes notes');
+    await expect(item).toContainText(/expires \w{3} \d+, \d{4}/);
+    await expect(item).toContainText('includes notes');
+    await expect(item).toContainText('Read only');
     await expectNoBlockingViolations(page, testInfo);
 
     await item.getByRole('button', { name: 'Revoke Claude Desktop' }).click();
@@ -82,12 +96,14 @@ test.describe('Connect your assistant (#395, mock API)', () => {
 
   test('shows the setup per client with the server address', async ({ page }) => {
     const group = await openConnect(page);
-    const toggle = group.getByRole('button', { name: /^How to connect/ });
-    await toggle.click();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    await expect(group.getByRole('heading', { name: 'Claude Code' })).toBeVisible();
-    await expect(group.locator('pre').first()).toContainText('claude mcp add --transport http');
-    await expect(group.locator('pre').first()).toContainText('/api/mcp');
+    // One assistant at a time (Shelf 15-tools): Claude Desktop first, the others by their chip.
+    const howTo = group.getByRole('group', { name: 'How to connect' });
+    await expect(howTo.getByRole('region', { name: 'Claude Desktop' })).toBeVisible();
+    await howTo.getByRole('radio', { name: 'Claude Code' }).dispatchEvent('click');
+    const setup = howTo.getByRole('region', { name: 'Claude Code' });
+    await expect(setup.getByRole('heading', { name: 'Claude Code' })).toBeVisible();
+    await expect(setup.locator('pre').first()).toContainText('claude mcp add --transport http');
+    await expect(setup.locator('pre').first()).toContainText('/api/mcp');
   });
 
   test('a Free account sees it is part of Pro and cannot create a token', async ({ page }) => {
@@ -96,8 +112,12 @@ test.describe('Connect your assistant (#395, mock API)', () => {
       [MOCK_AI_KEY],
     );
     const group = await openConnect(page);
-    await expect(group.getByText('Connecting an assistant is part of Pro.')).toBeVisible();
-    await expect(group.getByRole('button', { name: 'Create token' })).toBeDisabled();
+    // The Pro card takes the place of Create token and the how-to.
+    await expect(
+      group.getByRole('heading', { name: 'Connecting an assistant is part of Pro' }),
+    ).toBeVisible();
+    await expect(group.getByRole('button', { name: 'Create token' })).toHaveCount(0);
+    await expect(group.getByRole('group', { name: 'How to connect' })).toHaveCount(0);
   });
 });
 
@@ -116,7 +136,7 @@ test.describe('Connect your assistant on touch (#395, mock API)', { tag: E2E_TAG
     await dialog.getByRole('button', { name: 'Done' }).click();
     await expect(dialog).toBeHidden();
 
-    const item = group.getByRole('listitem').filter({ hasText: 'Phone' });
+    const item = group.locator('ui-settings-row').filter({ hasText: 'Phone' });
     await expect(item).toContainText('never used');
     const overflow = await page.evaluate<number>(
       'document.documentElement.scrollWidth - document.documentElement.clientWidth',
