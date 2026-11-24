@@ -117,7 +117,8 @@ test.describe('Content-Security-Policy', () => {
       await button.click();
       const panel = page.getByRole('dialog', { name: 'CSP test overlay' });
       await expect(panel).toBeVisible();
-      await expect(panel).toHaveCSS('border-top-left-radius', '14px');
+      // The Shelf popover radius (--radius-md).
+      await expect(panel).toHaveCSS('border-top-left-radius', '12px');
 
       expect(await readViolations(page)).toEqual([]);
     });

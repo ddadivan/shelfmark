@@ -55,7 +55,7 @@ test.describe('add link dialog (mock API)', () => {
     await page.setViewportSize({ width: 360, height: 780 });
     const dialog = await open(page);
     await dialog.getByLabel('Link', { exact: true }).fill(duplicateUrl);
-    await expect(dialog.getByRole('button', { name: 'Create anyway' })).toBeInViewport();
+    await expect(dialog.getByRole('button', { name: 'Save anyway' })).toBeInViewport();
 
     const overflow = await page.evaluate<number>(
       '(document.scrollingElement ?? document.documentElement).scrollWidth - innerWidth',
